@@ -3,7 +3,7 @@
 **Estimate:** ~3 weeks — 1 phase, 5 stages, 15 days of stage estimates
 (13 until [S1c.1.1](p1c.1_stdlib_conformance/s1c.1.1_what_the_stdlib_promises.md)
 measured what S1c.1.4 is actually up against).
-**Status:** **started 2026-08-23** — S1c.1.1 and S1c.1.2 shipped, three stages to go.
+**Status:** **started 2026-08-23** — S1c.1.1, S1c.1.2 and S1c.1.3 shipped, two stages to go.
 **Created 2026-08-21** at the user's direction — one evening after
 the same batch put P1a.10–12 into M1a — out of one phase that was never the
 Rust port and one that had nowhere to live.
@@ -69,7 +69,7 @@ depend on the two sharing a directory.
 
 | phase | title | stages | est. | gate |
 |---|---|---|---|---|
-| [P1c.1](p1c.1_stdlib_conformance/README.md) | stdlib conformance — `:expect` on `query`, `ein test`, a corpus per rule | 5 (2 shipped) | 3 w | every stdlib rule has a program that activates it and states what it derives |
+| [P1c.1](p1c.1_stdlib_conformance/README.md) | stdlib conformance — `:expect` on `query`, `ein test`, a corpus per rule | 5 (3 shipped) | 3 w | every stdlib rule has a program that activates it and states what it derives |
 
 5 stages, 15 days of stage estimates ≈ 3 weeks. The other five went to
 [M10](../m10_external_benchmarks/README.md) on 2026-08-23.
@@ -113,6 +113,35 @@ false, so a file carrying one is a test with no harness around it —
 the worked fixture. What it cost: **0** new grammar productions, **0** goldens
 moved, 14 call sites, and five new load-time refusals which are the repo's
 first diagnostics with no Python counterpart.
+
+### The runner, built — S1c.1.3, 2026-08-24
+
+`ein test` is the fourth subcommand, and it is what makes a directory of
+expectations a **status code** rather than something to read:
+
+```sh
+$ ein test examples/features/
+(no expect)  examples/features/01_not_and_absent.ein
+…
+ok           examples/features/10_expect.ein
+ok           examples/features/11_expect_ambiguity.ein
+ok           examples/features/12_expect_false.ein
+12 files, 3 expectations: 3 held, 0 FAILED, 0 not checked, 0 errors  (0.00 s); 9 files state no expectations
+```
+
+**It exhausts** — an expectation is a claim about the exhausted answer, so
+there is no `-n` and no `--exhaustive` — and **it runs only what the
+expectations need**: the nine files above are loaded and never solved, which is
+why `04_open.ein`, an unbounded enumeration the corpus marks `slow`, costs
+nothing here. Exit **1** means a claim is false and **2** means the run is not a
+verdict at all: a load error, a budget abort, or a selection that checked
+nothing. That last one is M1c's "a missing tool is reported, never skipped
+past", in the shape a test runner can fail in.
+
+The stage also found a **bug in the checker S1c.1.2 shipped**: a
+`Contradiction` from a depth-capped search was reported as a refutation, where
+`k = 0` from a truncated lattice is "no model within the cap". Exhausting by
+default is what made it reachable.
 
 ## Acceptance for the milestone
 

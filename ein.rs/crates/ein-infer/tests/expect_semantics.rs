@@ -48,12 +48,29 @@ fn check(body: &str, query: &str) -> Result<expect::Report, String> {
     check_stopping(body, query, None)
 }
 
-/// The same, with a `-n` cap — the only way to reach a *non-exhausted* answer,
-/// which is the state a verdict claim cannot be checked against.
+/// The same, with a `-n` cap — one of the two ways to reach a *non-exhausted*
+/// answer, which is the state a verdict claim cannot be checked against.
 fn check_stopping(
     body: &str,
     query: &str,
     stop_after: Option<u64>,
+) -> Result<expect::Report, String> {
+    check_with(body, query, stop_after, 5)
+}
+
+/// The **other** way: a lattice depth cap with the frontier still alive at it.
+/// `-n` can only ever find too few models; a cap can leave *none*, which is a
+/// `Contradiction` that has proved nothing — the case
+/// [`a_contradiction_from_a_truncated_search_is_not_checked`] pins.
+fn check_capped(body: &str, query: &str, max_set_size: u32) -> Result<expect::Report, String> {
+    check_with(body, query, None, max_set_size)
+}
+
+fn check_with(
+    body: &str,
+    query: &str,
+    stop_after: Option<u64>,
+    max_set_size: u32,
 ) -> Result<expect::Report, String> {
     let src = format!("{body}\n{query}\n");
     let mut ast = Ast::new();
@@ -62,23 +79,17 @@ fn check_stopping(
     let mut kb: Kb = ein_ir::load(&mut ast, &mut terms, &forms, None).map_err(|e| e.0)?;
     let opts = SolveOptions {
         stop_after,
+        max_set_size,
         ..SolveOptions::default()
     };
     let mut events = Events::off();
-    let solved = solve(
-        &mut kb,
-        &mut terms,
-        &ast,
-        &mut events,
-        &mut NoDumper,
-        &opts,
-    )
-    .map_err(|e| e.to_string())?;
+    let solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
+        .map_err(|e| e.to_string())?;
     let node = expect_node(&ast, &kb).expect("the query carries an :expect");
     let expectation = ein_ir::expect::parse(&ast, node)?;
     Ok(expect::check(
         &ast,
-        &terms,
+        &mut terms,
         &expectation,
         &solved.answer,
         solved.stats.exhausted,
@@ -120,16 +131,44 @@ fn a_complete_extent_holds() {
 
 /// The rule's whole point, and the one a per-fact `:derives` cannot state: a
 /// **surplus** fact in a named relation is a failure, and the message says
-/// which fact was unexpected.
+/// which fact was unexpected — and, since M1c
+/// [T1c.1.3.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md),
+/// where it came from on the line under it. `(p B H2)` is authored here, so
+/// the provenance is the program's own text; `a_surplus_fact_names_the_rule_that_derived_it`
+/// is the case that matters.
 #[test]
 fn a_surplus_fact_in_a_named_relation_fails_and_is_named() {
     let lines = why(
         DETERMINATE,
         "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A H1)))",
     );
-    assert_eq!(lines.len(), 1, "{lines:?}");
+    assert_eq!(lines.len(), 2, "{lines:?}");
     assert!(lines[0].contains("(p B H2)"), "{lines:?}");
-    assert!(lines[0].contains("naming a relation closes it"), "{lines:?}");
+    assert!(
+        lines[0].contains("naming a relation closes it"),
+        "{lines:?}"
+    );
+    assert!(lines[1].contains("in the program's own text"), "{lines:?}");
+}
+
+/// **The line that is worth the plumbing.** A surplus fact a *rule* put there
+/// is the shape of the bug this milestone is written around —
+/// `disjunctive-prune` derived one for a year — and the next question after
+/// "there is an extra fact here" is always "which rule?". One level of
+/// premises, because the rest of the chain is `--trace`'s.
+#[test]
+fn a_surplus_fact_names_the_rule_that_derived_it() {
+    let lines = why(
+        "(import std.algebra :symbols (symmetric))\n\
+         (relation p Thing Thing)\n(symmetric p)\n(p A B)\n",
+        "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A B)))",
+    );
+    assert_eq!(lines.len(), 2, "{lines:?}");
+    assert!(lines[0].contains("(p B A)"), "the mirrored edge: {lines:?}");
+    assert!(
+        lines[1].contains("derived by symmetric from (p A B)"),
+        "the rule and its premise: {lines:?}"
+    );
 }
 
 #[test]
@@ -140,7 +179,9 @@ fn a_missing_fact_fails_and_is_named() {
          :expect (model (p A H1) (p B H2) (p C H3)))",
     );
     assert!(
-        lines.iter().any(|l| l.contains("(p C H3)") && l.contains("no such fact")),
+        lines
+            .iter()
+            .any(|l| l.contains("(p C H3)") && l.contains("no such fact")),
         "{lines:?}"
     );
 }
@@ -222,6 +263,60 @@ fn k_is_implied_by_the_number_of_disjuncts() {
     );
     assert!(lines[0].contains("k = 1"), "{lines:?}");
     assert!(lines[0].contains("k = 2"), "{lines:?}");
+}
+
+/// …and the count is followed by **what the models were**, projected through
+/// the query's own `:goal` — M1c
+/// [T1c.1.3.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md).
+/// "You said one and I found two" without saying what the second one was
+/// leaves the reader to go and re-run the search by hand, which is the thing
+/// this whole form is for not having to do.
+#[test]
+fn a_count_mismatch_says_what_the_models_were() {
+    let lines = why(
+        AMBIGUOUS,
+        "(query :goal (seat ?w ?s) :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
+         :expect (model (seat Ann S1) (seat Bob S2)))",
+    );
+    assert_eq!(
+        lines.len(),
+        3,
+        "the count, then one line per model: {lines:?}"
+    );
+    let rows: Vec<&String> = lines[1..].iter().collect();
+    assert!(
+        rows.iter()
+            .all(|l| l.contains("model ") && l.contains("of 2")),
+        "{rows:?}"
+    );
+    // Both seatings, each shown as the goal's own variables.
+    let both = format!("{}{}", rows[0], rows[1]);
+    for want in [
+        "?w=Ann ?s=S1",
+        "?w=Bob ?s=S2",
+        "?w=Ann ?s=S2",
+        "?w=Bob ?s=S1",
+    ] {
+        let cells: Vec<&str> = want.split(' ').collect();
+        assert!(
+            both.contains(cells[1]) && both.contains(cells[0]),
+            "{want} is not in {rows:?}"
+        );
+    }
+    // **Sorted**, because the row order a goal projection happens to produce
+    // is `defined_behaviour.md` §6's under-determined one — a report that
+    // inherited it could not be diffed.
+    for row in &rows {
+        let cells: Vec<&str> = row
+            .split(": ")
+            .nth(1)
+            .expect("a projection")
+            .split("; ")
+            .collect();
+        let mut sorted = cells.clone();
+        sorted.sort();
+        assert_eq!(cells, sorted, "{row}");
+    }
 }
 
 // ── `(or …)` is a set ──────────────────────────────────────────────
@@ -360,7 +455,11 @@ fn an_unexhausted_search_does_not_confirm_a_verdict() {
     );
 
     let exhausted = check_stopping(AMBIGUOUS, TWO_MODELS, None).expect("solves");
-    assert_eq!(exhausted.outcome, expect::Outcome::Held, "the same claim, proved");
+    assert_eq!(
+        exhausted.outcome,
+        expect::Outcome::Held,
+        "the same claim, proved"
+    );
 }
 
 /// …and it bites only where more searching could have changed the answer.
@@ -373,6 +472,52 @@ fn too_many_models_is_a_failure_not_an_unchecked_one() {
          :expect (model (seat Ann S1) (seat Bob S2)))";
     let r = check_stopping(AMBIGUOUS, one, Some(2)).expect("solves");
     assert_eq!(r.outcome, expect::Outcome::Failed, "{:?}", r.lines);
+}
+
+/// **A `k = 0` from a truncated search is not a refutation either**, and it
+/// used to be reported as one.
+///
+/// `MonotonicStats::exhausted`'s own words: a `k = 0` from a truncated run is
+/// "no model within the cap", not proven unsat. The `Contradiction` arm short-
+/// circuited above the shortfall check that says so, so a claim of two models
+/// against a depth-1 search came back `FAILED` — a refutation on the strength
+/// of a search that stopped. Found by M1c
+/// [S1c.1.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md),
+/// where `ein test` exhausts by default and `--max-set-size` is the only thing
+/// left that can truncate a run.
+#[test]
+fn a_contradiction_from_a_truncated_search_is_not_checked() {
+    // Both models seat two people, so nothing is complete at depth 1.
+    let capped = check_capped(AMBIGUOUS, TWO_MODELS, 1).expect("solves");
+    assert_eq!(
+        capped.outcome,
+        expect::Outcome::NotChecked,
+        "{:?}",
+        capped.lines
+    );
+    assert!(
+        capped.lines[0].contains("no model within the cap"),
+        "and says which cap to raise: {:?}",
+        capped.lines
+    );
+
+    // The same claim at a cap that admits the answer.
+    let deep = check_capped(AMBIGUOUS, TWO_MODELS, 5).expect("solves");
+    assert_eq!(deep.outcome, expect::Outcome::Held);
+}
+
+/// …and an *exhausted* `Contradiction` against a model claim still fails, so
+/// the guard above did not turn a refutation into a shrug.
+#[test]
+fn an_exhausted_contradiction_still_refutes_a_model_claim() {
+    let r = check(
+        "(relation p Thing Place)\n(p A H1)\n\
+         (rule no (?R) :match (?R ?a ?b) :assert (false) :priority 250)\n(no p)\n",
+        "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A H1)))",
+    )
+    .expect("solves");
+    assert_eq!(r.outcome, expect::Outcome::Failed, "{:?}", r.lines);
+    assert!(r.lines[0].contains("`:expect (false)`"), "{:?}", r.lines);
 }
 
 /// A model that disagrees with the expectation it was matched to is a

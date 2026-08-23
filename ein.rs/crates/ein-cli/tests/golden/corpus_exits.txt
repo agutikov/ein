@@ -366,12 +366,14 @@
 0    examples/features/10_expect.ein :: saturate --dump
 0    examples/features/10_expect.ein :: solve
 0    examples/features/10_expect.ein :: solve -e
+0    examples/features/10_expect.ein :: test
 0    examples/features/11_expect_ambiguity.ein :: render constraints
 0    examples/features/11_expect_ambiguity.ein :: render lattice
 0    examples/features/11_expect_ambiguity.ein :: render rules
 0    examples/features/11_expect_ambiguity.ein :: saturate
 0    examples/features/11_expect_ambiguity.ein :: saturate --dump
 0    examples/features/11_expect_ambiguity.ein :: solve -e
+0    examples/features/11_expect_ambiguity.ein :: test
 0    examples/features/12_expect_false.ein :: render constraints
 0    examples/features/12_expect_false.ein :: render lattice
 0    examples/features/12_expect_false.ein :: render rules
@@ -379,6 +381,7 @@
 0    examples/features/12_expect_false.ein :: saturate --dump
 0    examples/features/12_expect_false.ein :: solve
 0    examples/features/12_expect_false.ein :: solve -e
+0    examples/features/12_expect_false.ein :: test
 0    examples/lattice/01_subset_pruned.ein :: render constraints
 0    examples/lattice/01_subset_pruned.ein :: render lattice
 0    examples/lattice/01_subset_pruned.ein :: render rules

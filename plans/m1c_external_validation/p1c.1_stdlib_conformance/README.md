@@ -47,8 +47,8 @@ that gets **stronger** when the oracle leaves.
 |---|---|---|---|
 | [S1c.1.1](s1c.1.1_what_the_stdlib_promises.md) | What the stdlib promises, and what is exercised | 3 d | **shipped 2026-08-23** — [`stdlib_census.md`](stdlib_census.md) |
 | [S1c.1.2](s1c.1.2_test_form.md) | How a program states what it expects | 3 d | **shipped 2026-08-23** — `:expect`, and `Program.queries` |
-| [S1c.1.3](s1c.1.3_test_subcommand.md) | `ein test` | 2 d | next |
-| [S1c.1.4](s1c.1.4_stdlib_corpus.md) | The stdlib corpus | ~~4~~ **6 d** | re-estimated against the census |
+| [S1c.1.3](s1c.1.3_test_subcommand.md) | `ein test` | 2 d | **shipped 2026-08-24** — the fourth subcommand |
+| [S1c.1.4](s1c.1.4_stdlib_corpus.md) | The stdlib corpus | ~~4~~ **6 d** | next — re-estimated against the census |
 | [S1c.1.5](s1c.1.5_gate.md) | In the gate | 1 d | |
 
 ### What S1c.1.2 built
@@ -70,6 +70,33 @@ knowing without opening the stage:
 - **Five load-time refusals**, and they are the first diagnostics in the repo
   with no Python counterpart, which settled a question `defined_behaviour.md`
   had left for whichever error arrived first.
+
+### What S1c.1.3 built
+
+`ein test <PATH>…` — a file, a directory, or several of either — which runs
+every `:expect` in the selection and reports a status code and one summary
+line. Three things about it are decisions rather than implementation:
+
+- **It exhausts, and has no flag not to.** An expectation is a claim about the
+  *exhausted* answer, so a `-n` here would be a way to ask for `NOT CHECKED`.
+  `11_expect_ambiguity.ein` needs `solve -e` and plain `test`.
+- **A query with no `:expect` is never solved** — the stage's "only the work
+  the expectations need runs", which under the shipped form means exactly this.
+  `ein test examples/features/` checks 3 of 12 files and never enters
+  `04_open.ein`, the entry the corpus marks as "a run nobody can finish is not
+  coverage".
+- **1 means a claim is false, so a load error takes 2.** `solve` gives a load
+  error 1, because that is ein.py's; here 1 is taken, and a runner that cannot
+  tell a broken file from a false claim is the failure T1c.1.3.5 is written
+  against. A selection that checked *nothing* is 2 as well.
+
+Two of the stage's five tasks were already decided by S1c.1.2 and S1c.1.1 —
+there is one expectation kind, not four, and route is parked, so "decide about
+redundant firings" has no `:fires` to decide about. What the stage did find is
+a **bug in S1c.1.2's checker**: a `Contradiction` from a depth-capped search
+was reported as a hard failure, where `k = 0` from a truncated lattice is "no
+model within the cap". It is `NotChecked` now. Nothing reached it before,
+because `solve -n 1` cannot produce a truncated `k = 0`.
 
 ### What the census settled
 

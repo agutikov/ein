@@ -1,6 +1,6 @@
 [package]
 name        = "ein-cli"
-description = "The `ein` binary — render / saturate / solve"
+description = "The `ein` binary — render / saturate / solve / test"
 version.workspace    = true
 edition.workspace    = true
 license.workspace    = true

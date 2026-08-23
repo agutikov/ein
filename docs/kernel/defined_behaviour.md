@@ -294,15 +294,39 @@ several `(query …)` blocks runs each and exits non-zero if any expectation
 fails; the flags that name a single output path are refused on such a file with
 exit **2**, which is §5's code because that one *is* a usage error.
 
+A third label joins `holds` and `FAILED`: **`NOT CHECKED`**, for a claim a
+stopped search neither confirmed nor refuted. It takes **1**, the same code a
+false claim does, because a green line for a claim nobody checked is what the
+whole form exists to prevent. Two things reach it — a run that stopped at `-n`,
+and a lattice frontier still alive at `--max-set-size`, where `k = 0` means "no
+model within the cap" rather than "no model".
+
 ## 5. The CLI surface
 
-Everything a script or a habit can depend on is fixed: the three subcommands
+Everything a script or a habit can depend on is fixed: the four subcommands
 and four `render` sub-subcommands, the delegated dispatch (`ein saturate
 --help` prints `saturate`'s own help; `saturate` appears in `ein --help`
 though the top parser never parses it), every option's long name, short key,
 metavar, arity, default, choices and mutually-exclusive group, its help
 *string*, the accept/reject verdict on every invocation, the exit code, and
 which stream each byte goes to.
+
+**`ein test` is the fourth**, added by M1c
+[S1c.1.3](../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md),
+and it is where the exit codes of §4 are **deliberately not** ein.py's:
+
+| code | `solve` / `render` / `saturate` | `test` |
+|---|---|---|
+| 0 | success | every expectation held, and at least one was checked |
+| 1 | a load error — or a false `:expect` | an expectation is **false**, or was not checked |
+| 2 | a usage error, or a budget abort | a load error, a usage error, a budget abort — or nothing to check |
+
+1 is taken there, and a runner that cannot tell a broken file from a false
+claim is the one failure mode a test runner must not have. 2 dominates 1 in a
+multi-file run for the same reason: with one file unloaded, "every expectation
+was checked and some are false" would be a false description of the run.
+`test` has no ein.py counterpart to diverge from — it is the second such
+subcommand, after `ein kb`.
 
 **Free, and different from the Python CLI's:** wrapping, indentation,
 headings, ordering within a section, and the wording of a usage diagnosis.

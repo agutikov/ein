@@ -61,14 +61,26 @@
 //! That is [P1d.4](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/README.md)
 //! / [Q-M1d.7](../../../../plans/m1d_satisfiability/open_questions.md#q-m1d7--may-a-program-require-its-own-model-count),
 //! and it is deliberately not decided here.
+//!
+//! # Who calls this
+//!
+//! Two commands, and the difference between them is exactly `exhausted`.
+//! `ein solve` checks a query's `:expect` because ignoring one would be worse
+//! than not having the keyword, and it stops at `-n 1` by default, so a
+//! verdict-shaped claim there routinely comes back [`Outcome::NotChecked`].
+//! `ein test` (M1c
+//! [S1c.1.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md))
+//! exhausts, has no flag not to, and never solves a query that carries no
+//! `:expect` — so under it the only thing left that can truncate a run is the
+//! lattice depth cap.
 
-use ein_core::{Kb, Symbol, Terms};
+use ein_core::{FactId, Kb, ProvKind, Symbol, Terms};
 use ein_ir::Ast;
 use ein_ir::expect::{Expectation, Model};
 use rustc_hash::{FxHashMap, FxHashSet};
 
-use crate::events::sexpr;
-use crate::verdict::{Answer, Solution, Verdict};
+use crate::events::{sexpr, sexpr_value};
+use crate::verdict::{Answer, Solution, Verdict, goal_bindings};
 
 /// Three outcomes, not two.
 ///
@@ -138,24 +150,32 @@ impl Report {
         }
         Report::unchecked(vec![format!(
             "{what} matches, but the search was not exhausted — k is a lower \
-             bound, so nothing here is established. Pass --exhaustive."
+             bound, so nothing here is established. Either the run stopped at \
+             -n, or the frontier is still alive at --max-set-size."
         )])
     }
 }
 
 /// A model, indexed the two ways the comparison asks about it.
-struct Actual {
+struct Actual<'a> {
+    /// The model itself, kept for the question a **surplus** fact raises next:
+    /// not *that* it is there but *why*. M1c
+    /// [T1c.1.3.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md).
+    kb: &'a Kb,
     /// Every fact, rendered — what a listed `(not …)` is looked up in.
     all: FxHashSet<String>,
-    /// Positive extent per relation name, rendered. `(not X)` facts are not
-    /// here: they are not `not`'s extent in any sense a test means.
-    by_relation: FxHashMap<String, FxHashSet<String>>,
+    /// Positive extent per relation name: rendering → the fact it renders.
+    /// `(not X)` facts are not here — they are not `not`'s extent in any sense
+    /// a test means. The `FactId` is the provenance handle and nothing else:
+    /// the comparison itself is on the rendering, because two runs do not
+    /// share an interner.
+    by_relation: FxHashMap<String, FxHashMap<String, FactId>>,
 }
 
-impl Actual {
-    fn of(terms: &Terms, kb: &Kb, not: Symbol) -> Self {
+impl<'a> Actual<'a> {
+    fn of(terms: &Terms, kb: &'a Kb, not: Symbol) -> Self {
         let mut all = FxHashSet::default();
-        let mut by_relation: FxHashMap<String, FxHashSet<String>> = FxHashMap::default();
+        let mut by_relation: FxHashMap<String, FxHashMap<String, FactId>> = FxHashMap::default();
         for f in kb.facts() {
             let rendered = sexpr(terms, f);
             let rel = terms.facts.rel(f);
@@ -163,25 +183,65 @@ impl Actual {
                 by_relation
                     .entry(terms.sym(rel).to_string())
                     .or_default()
-                    .insert(rendered.clone());
+                    .insert(rendered.clone(), f);
             }
             all.insert(rendered);
         }
-        Actual { all, by_relation }
+        Actual {
+            kb,
+            all,
+            by_relation,
+        }
+    }
+}
+
+/// Why this fact is in the model — one line, because "and where did *that*
+/// come from" is `--trace`'s question and not this report's.
+///
+/// A surplus fact is the case [S1c.1.2](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)
+/// built relation-closure for, and the *next* thing its reader wants is the
+/// rule that put it there — the `disjunctive-prune` guard bug this milestone
+/// is written around was found exactly one step past "there is an extra fact
+/// here". One level of premises, not a walk: the primary justification is what
+/// the engine chose, and a reader who needs the rest reaches for `--trace`.
+fn provenance(terms: &Terms, kb: &Kb, id: FactId) -> Option<String> {
+    let prov = terms.provs.get(kb.primary(id)?);
+    match prov.kind {
+        ProvKind::Rule => {
+            let rule = terms.sym(prov.rule?);
+            if prov.premises.is_empty() {
+                // A rule record with no premises is a synthetic engine
+                // writeback, whose contract is that walks stop on it.
+                return Some(format!("written back by {rule}"));
+            }
+            let premises: Vec<String> = prov.premises.iter().map(|&p| sexpr(terms, p)).collect();
+            Some(format!("derived by {rule} from {}", premises.join(" ")))
+        }
+        ProvKind::Source => Some(match prov.source {
+            Some(s) => format!("given by {}", terms.sym(s)),
+            None => "in the program's own text".to_string(),
+        }),
+        ProvKind::Hypothesis => Some(match prov.branch {
+            Some(b) => format!("hypothesised in branch {b}"),
+            None => "hypothesised".to_string(),
+        }),
+        // Not reachable from a model — a rejected fact is not in one — and
+        // named rather than swallowed, so it reads as a bug if it ever is.
+        ProvKind::Rejected => Some("recorded as rejected".to_string()),
     }
 }
 
 /// Check one query's expectation against the answer it got.
 ///
-/// `exhausted` is the run's own `MonotonicStats::exhausted`. It is not part of
-/// the comparison — an expectation whose models are exactly the ones found
-/// holds either way — but it is what turns the *disagreement* into something
-/// actionable: `k` from a stopped search is a lower bound, so "expected 2, got
-/// 1" usually means `--exhaustive` was not passed rather than that the puzzle
-/// is wrong.
+/// `exhausted` is the run's own `MonotonicStats::exhausted`, and it is not part
+/// of the comparison — an expectation whose models are exactly the ones found
+/// matches either way. What it decides is whether a match is a **verdict**:
+/// `k` from a stopped search is a lower bound, so "expected 2, got 1" is
+/// usually a run that stopped at `-n` or a frontier still alive at
+/// `--max-set-size`, rather than a puzzle that is wrong.
 pub fn check(
     ast: &Ast,
-    terms: &Terms,
+    terms: &mut Terms,
     expectation: &Expectation,
     answer: &Answer,
     exhausted: bool,
@@ -217,11 +277,32 @@ pub fn check(
         };
     }
     if matches!(verdict, Verdict::Contradiction { .. }) {
+        // A `k = 0` from a **truncated** search is "no model within the cap",
+        // not "proven unsat" — [`MonotonicStats::exhausted`]'s own words — so
+        // it is the rescuable shortfall, the same one the `distinct.len() <
+        // wanted.len()` arm below reports, arriving as a different verdict
+        // because zero models is a verdict of its own. Calling it a failure
+        // would refute a claim on the strength of a search that stopped.
+        //
+        // Found by M1c [S1c.1.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md),
+        // where exhausting is the default and `--max-set-size` is therefore
+        // the only thing left that can truncate one.
+        if !exhausted {
+            return Report::unchecked(vec![
+                format!(
+                    "expected {want}, got Contradiction — but the search was not \
+                     exhausted, so k = 0 means \"no model within the cap\" and not \
+                     \"no model\""
+                ),
+                "raise --max-set-size, or write `:expect (false)` if ⊥ really is \
+                 the answer"
+                    .into(),
+            ]);
+        }
         return Report::failed(vec![format!(
             "expected {want}, got Contradiction — write `:expect (false)` if that is the answer"
         )]);
     }
-    let _ = exhausted;
 
     // Models are compared as a **set**: the order a search happens to find
     // them in is exactly what S1a.7.0's invariance tests assert is not
@@ -236,12 +317,26 @@ pub fn check(
             verdict.as_str(),
             distinct.len()
         )];
+        // A count is not actionable on its own — "you said one model and I
+        // found two" leaves the reader to go and run `solve -e` to see what
+        // the second one was. So each model is projected through the query's
+        // own `:goal`, which is the question the file asked and the smallest
+        // rendering of a model that answers it.
+        for (i, m) in distinct.iter().enumerate() {
+            lines.push(format!(
+                "  model {} of {}: {}",
+                i + 1,
+                distinct.len(),
+                goal_row(ast, terms, m.kb)
+            ));
+        }
         // Too FEW models is the one shortfall a longer search could fix; too
         // many is a refutation whatever the search did next.
         if distinct.len() < wanted.len() && !exhausted {
             lines.push(
                 "…and the search was not exhausted, so that k is a lower bound — \
-                 pass --exhaustive (or -n) before believing it"
+                 exhaust it (`solve -e`; `test` always does) and raise \
+                 --max-set-size if the frontier is capped"
                     .into(),
             );
             return Report::unchecked(lines);
@@ -250,7 +345,13 @@ pub fn check(
     }
 
     let mut lines = Vec::new();
-    if matching(ast, &wanted.iter().collect::<Vec<_>>(), &distinct, &mut lines) {
+    if matching(
+        ast,
+        &*terms,
+        &wanted.iter().collect::<Vec<_>>(),
+        &distinct,
+        &mut lines,
+    ) {
         Report::ok_if_exhausted(exhausted, "every listed model")
     } else {
         // A model that matches no expectation is a disagreement about content,
@@ -259,12 +360,40 @@ pub fn check(
     }
 }
 
+/// One model as the answer to the query's own `:goal`, sorted.
+///
+/// **Sorted** because the row order is not observable: `defined_behaviour.md`
+/// §6 files the goal row a solve *table* prints as under-determined — it moves
+/// under a permuted id space — and a failure report that inherited that would
+/// be a diagnostic nobody could diff. Keys inside a row are sorted for the same
+/// reason, which is `summary.json`'s rule too.
+fn goal_row(ast: &Ast, terms: &mut Terms, kb: &Kb) -> String {
+    let rows = goal_bindings(ast, terms, kb, None);
+    if rows.is_empty() {
+        return "the :goal matches nothing in it".to_string();
+    }
+    let mut shown: Vec<String> = rows
+        .iter()
+        .map(|row| {
+            let mut cells: Vec<String> = row
+                .iter()
+                .map(|(k, v)| format!("?{}={}", terms.sym(*k), sexpr_value(terms, *v)))
+                .collect();
+            cells.sort();
+            cells.join(" ")
+        })
+        .collect();
+    shown.sort();
+    shown.dedup();
+    shown.join("; ")
+}
+
 /// The distinct models among the branches, keyed the way `answer.rs` counts
 /// `k` — by canonical state, so two branches that reached the same model are
 /// one model here too.
-fn distinct_models(terms: &Terms, models: &[&Solution]) -> Vec<Actual> {
+fn distinct_models<'a>(terms: &Terms, models: &[&'a Solution]) -> Vec<Actual<'a>> {
     let not = terms.kernel.not;
-    let mut keys: Vec<Box<[ein_core::FactId]>> = Vec::new();
+    let mut keys: Vec<Box<[FactId]>> = Vec::new();
     let mut out = Vec::new();
     for s in models {
         let key = crate::canon::state_key(&s.kb);
@@ -287,14 +416,26 @@ fn distinct_models(terms: &Terms, models: &[&Solution]) -> Vec<Actual> {
 /// On failure `lines` gets the *first* expectation that matched nothing,
 /// explained against the model closest to it — an unmatched expectation is
 /// what a person needs to see, and the whole bipartite story is not.
-fn matching(ast: &Ast, wanted: &[&Model], actual: &[Actual], lines: &mut Vec<String>) -> bool {
+///
+/// `terms` is threaded in for one reason: the report explains a surplus fact
+/// and the two probes above it do not. Passing `None` there is not an
+/// optimisation, it is the correctness of the *choice* — a provenance line is
+/// still a line, and counting it would let the model with the noisiest
+/// derivation win `min_by_key`.
+fn matching(
+    ast: &Ast,
+    terms: &Terms,
+    wanted: &[&Model],
+    actual: &[Actual],
+    lines: &mut Vec<String>,
+) -> bool {
     let n = wanted.len();
     let fits: Vec<Vec<bool>> = wanted
         .iter()
         .map(|w| {
             actual
                 .iter()
-                .map(|a| explain(ast, w, a).is_empty())
+                .map(|a| explain(ast, w, a, None).is_empty())
                 .collect()
         })
         .collect();
@@ -305,14 +446,14 @@ fn matching(ast: &Ast, wanted: &[&Model], actual: &[Actual], lines: &mut Vec<Str
             // Report against whichever model this expectation is closest to,
             // which is the one a reader will have been looking at.
             let best = (0..actual.len())
-                .min_by_key(|&j| explain(ast, wanted[i], &actual[j]).len())
+                .min_by_key(|&j| explain(ast, wanted[i], &actual[j], None).len())
                 .unwrap_or(0);
             let which = if n == 1 {
                 String::new()
             } else {
                 format!("expectation {} of {n}: ", i + 1)
             };
-            for line in explain(ast, wanted[i], &actual[best]) {
+            for line in explain(ast, wanted[i], &actual[best], Some(terms)) {
                 lines.push(format!("{which}{line}"));
             }
             if lines.is_empty() {
@@ -328,7 +469,12 @@ fn matching(ast: &Ast, wanted: &[&Model], actual: &[Actual], lines: &mut Vec<Str
     true
 }
 
-fn augment(i: usize, fits: &[Vec<bool>], taken_by: &mut [Option<usize>], seen: &mut [bool]) -> bool {
+fn augment(
+    i: usize,
+    fits: &[Vec<bool>],
+    taken_by: &mut [Option<usize>],
+    seen: &mut [bool],
+) -> bool {
     for j in 0..taken_by.len() {
         if !fits[i][j] || seen[j] {
             continue;
@@ -351,7 +497,10 @@ fn augment(i: usize, fits: &[Vec<bool>], taken_by: &mut [Option<usize>], seen: &
 /// Two checks, and only the first is closure: every relation the expectation
 /// names positively must have *exactly* the listed extent, and every listed
 /// `(not …)` must be present.
-fn explain(ast: &Ast, want: &Model, actual: &Actual) -> Vec<String> {
+///
+/// `why` is `Some` only on the reporting pass — see [`matching`]. With it, a
+/// surplus fact is followed by the derivation that put it there.
+fn explain(ast: &Ast, want: &Model, actual: &Actual, why: Option<&Terms>) -> Vec<String> {
     let mut listed: FxHashMap<&str, FxHashSet<String>> = FxHashMap::default();
     let mut negatives: Vec<String> = Vec::new();
     for &node in &want.facts {
@@ -373,20 +522,34 @@ fn explain(ast: &Ast, want: &Model, actual: &Actual) -> Vec<String> {
     relations.sort_unstable();
     for rel in relations {
         let want_set = &listed[rel];
-        let empty = FxHashSet::default();
+        let empty = FxHashMap::default();
         let got = actual.by_relation.get(rel).unwrap_or(&empty);
-        let mut missing: Vec<&String> = want_set.difference(got).collect();
-        let mut surplus: Vec<&String> = got.difference(want_set).collect();
+        let mut missing: Vec<&String> = want_set.iter().filter(|f| !got.contains_key(*f)).collect();
+        let mut surplus: Vec<(&String, FactId)> = got
+            .iter()
+            .filter(|(f, _)| !want_set.contains(*f))
+            .map(|(f, &id)| (f, id))
+            .collect();
         missing.sort();
-        surplus.sort();
+        surplus.sort_by(|a, b| a.0.cmp(b.0));
         for f in missing {
-            lines.push(format!("{rel}: expected {f}, and the model has no such fact"));
+            lines.push(format!(
+                "{rel}: expected {f}, and the model has no such fact"
+            ));
         }
-        for f in surplus {
+        for (f, id) in surplus {
             lines.push(format!(
                 "{rel}: the model also has {f}, which the expectation does not list \
                  (naming a relation closes it)"
             ));
+            // The next question, answered where it is asked. `--trace` is the
+            // rest of the story; this is the one step that says which rule to
+            // go and look at.
+            if let Some(terms) = why
+                && let Some(how) = provenance(terms, actual.kb, id)
+            {
+                lines.push(format!("  …{f} is {how}"));
+            }
         }
     }
     negatives.sort();

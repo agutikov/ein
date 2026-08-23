@@ -291,7 +291,10 @@ pub(crate) fn config_json(cfg: &SolverConfig) -> Vec<(&'static str, String)> {
 }
 
 /// `_events.start` — open the log and emit `run`.
-fn events_start(m: &ArgMatches, file: &str, cfg: &SolverConfig) -> Events {
+///
+/// Shared with `test`, which takes the same two flags for the same reason: a
+/// failing expectation is exactly when someone wants the stream.
+pub(crate) fn events_start(m: &ArgMatches, file: &str, cfg: &SolverConfig) -> Events {
     let Some(path) = m.get_one::<String>("events") else {
         return Events::off();
     };
@@ -336,7 +339,12 @@ pub(crate) fn events_load(events: &mut Events, terms: &Terms, kb: &Kb) {
 }
 
 /// `_events.verdict` — the answer plus every counter.
-fn events_verdict(events: &mut Events, terms: &Terms, answer: &Answer, stats: &MonotonicStats) {
+pub(crate) fn events_verdict(
+    events: &mut Events,
+    terms: &Terms,
+    answer: &Answer,
+    stats: &MonotonicStats,
+) {
     if !events.on() {
         return;
     }
@@ -659,7 +667,13 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
     // `:expect` that `solve` merely ignored would be worse than no `:expect`,
     // which is the whole reason the keyword is not a comment.
     (
-        check_expectation(&ast, &terms, &kb, &solved.answer, solved.stats.exhausted),
+        check_expectation(
+            &ast,
+            &mut terms,
+            &kb,
+            &solved.answer,
+            solved.stats.exhausted,
+        ),
         n_queries,
     )
 }
@@ -670,7 +684,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
 /// claim by the program is a result, not a usage error.
 fn check_expectation(
     ast: &Ast,
-    terms: &Terms,
+    terms: &mut Terms,
     kb: &Kb,
     answer: &Answer,
     exhausted: bool,

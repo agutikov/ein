@@ -22,6 +22,12 @@ constrained-reasoning research.
   ([`ir/03-ein-lang/01_grammar.md` § Query](docs/kernel/ir/03-ein-lang/01_grammar.md#query)).
   A file may carry several `(query …)` blocks and each is run; the last one no
   longer silently wins, and an unrecognised query keyword is now a load error.
+  **S1c.1.3 added the runner**: `ein test <file|dir>…` is the fourth
+  subcommand, and it turns a directory of expectations into a status code.
+  It **exhausts** (an expectation is a claim about the exhausted answer, so
+  there is no `-n`), it **never solves a query that carries no `:expect`**, and
+  its exit **1 means a claim is false** — which is why a load error there takes
+  2, where `solve` gives it 1.
   Since M1a S1a.10.6 two pages are new or renamed and worth knowing:
   [`defined_behaviour.md`](docs/kernel/defined_behaviour.md) — the thirteen
   diagnostics, orderings and error strings whose only statement used to be a
@@ -136,7 +142,9 @@ constrained-reasoning research.
   is a crate at all), `ein-render` (DOT views, the markdown trace, the
   state/lattice dumps, the JSON summary) and `ein-cli`. They stack linearly up
   to `ein-infer` and fork there — `ein-einb` and `ein-render` are siblings
-  above it, and `ein-cli` depends on both.
+  above it, and `ein-cli` depends on both. `ein-cli` fronts **four**
+  subcommands since M1c S1c.1.3 — `ein {render,saturate,solve,test}`, plus
+  `ein kb` under the `einb` feature.
 
   **`.einb` is a private cache format, never an interchange one.** `ein kb save
   <file.ein> <out.einb>` writes one and every command that takes a `.ein` path

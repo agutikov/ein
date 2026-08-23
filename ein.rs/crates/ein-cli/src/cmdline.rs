@@ -1,4 +1,4 @@
-//! The argument surface — `ein`, `render`, `solve`, and `saturate`'s own.
+//! The argument surface — `ein`, `render`, `solve`, `test`, and `saturate`'s own.
 //!
 //! One module so the whole surface can be *introspected* rather than scraped:
 //! [Q-M1a.13](../../../../docs/history/m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity)
@@ -397,6 +397,89 @@ fn solve_command() -> Command {
         ))
 }
 
+/// `ein test` — M1c
+/// [S1c.1.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md).
+///
+/// **Small on purpose.** The only engine knobs here are the three that decide
+/// whether a run *can finish* — the lattice depth cap and the two budgets —
+/// because everything else `solve` offers is a way to ask a different
+/// question, and this command asks the one the file already asked. In
+/// particular there is no `-n` and no `--exhaustive`: an expectation is a
+/// claim about the exhausted answer, so exhausting is the behaviour rather
+/// than a flag ([`crate::test`]).
+///
+/// The two file-only flags are here because the stage's acceptance asks for
+/// them by name: a failing expectation is exactly when someone wants the
+/// stream. Each still names one path, so each is refused on a selection that
+/// is more than one run.
+fn test_command() -> Command {
+    let cmd = Command::new("test")
+        .about("run the expectations the programs state about themselves (M1c)")
+        .arg(
+            Arg::new("path")
+                .required(true)
+                .num_args(1..)
+                .value_name("PATH")
+                .help("a .ein file, or a directory to walk for them"),
+        )
+        .arg(
+            Arg::new("max-set-size")
+                .short('m')
+                .long("max-set-size")
+                .value_name("MAX_SET_SIZE")
+                .value_parser(py_int)
+                .default_value("5")
+                .help("commitment-set depth cap (default: 5)"),
+        )
+        .arg(
+            Arg::new("max-time")
+                .short('T')
+                .long("max-time")
+                .value_name("MAX_TIME")
+                .value_parser(py_float)
+                .help(
+                    "abort a query after N wall-clock seconds. An abort is an \
+                     ERROR, never a pass and never a failure: nothing was \
+                     established either way",
+                ),
+        )
+        .arg(
+            Arg::new("max-enterings")
+                .short('E')
+                .long("max-enterings")
+                .value_name("MAX_ENTERINGS")
+                .value_parser(py_int)
+                .help("abort a query after N commitment tries (as --max-time)"),
+        )
+        .arg(flag(
+            'v',
+            "verbose",
+            "one line per query, held ones included, with the verdict and k",
+        ))
+        .arg(flag(
+            'q',
+            "quiet",
+            "the summary line, and whatever was not ok",
+        ))
+        .group(
+            ArgGroup::new("volume")
+                .args(["verbose", "quiet"])
+                .multiple(false),
+        );
+    let cmd = event_args(cmd);
+    cmd.arg(
+        Arg::new("json-summary")
+            .long("json-summary")
+            .value_name("FILE.json")
+            .help(
+                "write the structured run summary (verdict, model, every \
+                 engine counter, the root-saturation shape, the resolved \
+                 config) to FILE as JSON. Additive, and refused when the \
+                 selection is more than one run.",
+            ),
+    )
+}
+
 /// `ein saturate`'s **own** parser, with its own `prog`.
 ///
 /// Registered in the top-level tree as a bare subcommand purely so it appears
@@ -480,6 +563,7 @@ pub fn command() -> Command {
         )
         .subcommand(render_command())
         .subcommand(solve_command())
+        .subcommand(test_command())
         .subcommand(
             // Bare — never parsed. Its flags live in `saturate_command`.
             Command::new("saturate")

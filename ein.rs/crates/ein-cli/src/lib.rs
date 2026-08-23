@@ -1,6 +1,6 @@
 //! `ein` — the drop-in binary, as a library.
 //!
-//! Three subcommands, and the **delegated** dispatch that gives `saturate` its
+//! Four subcommands, and the **delegated** dispatch that gives `saturate` its
 //! own parser while still listing it in `ein --help`: `argv[0]` is intercepted
 //! before the top-level parser ever sees it, exactly as `cli/__init__.py`'s
 //! `_DELEGATED` does — `clap` has no equivalent of "registered so it appears
@@ -9,6 +9,13 @@
 //! Exit codes are ein.py's: 0 success, 1 load error, 2 usage error, and 2
 //! again for a budget abort. The last two collide there and the collision is
 //! reproduced rather than fixed.
+//!
+//! **`test` is the one exception, and it is deliberate**: there 1 means *an
+//! expectation is false* and a load error takes 2, because a test runner that
+//! cannot tell a broken file from a false claim is the failure mode M1c
+//! [S1c.1.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md)
+//! T1c.1.3.5 is written against. That subcommand has no ein.py counterpart to
+//! diverge from.
 
 #![forbid(unsafe_code)]
 
@@ -23,6 +30,7 @@ mod render;
 pub mod saturate;
 pub mod solve;
 pub mod summary;
+pub mod test;
 pub mod version;
 
 use std::process::ExitCode;
@@ -56,6 +64,7 @@ fn code(status: i32) -> ExitCode {
 fn dispatch(m: &clap::ArgMatches) -> i32 {
     match m.subcommand() {
         Some(("solve", sm)) => solve::run(sm),
+        Some(("test", sm)) => test::run(sm),
         Some(("render", sm)) => {
             let file =
                 |s: &clap::ArgMatches| s.get_one::<String>("file").expect("required").clone();

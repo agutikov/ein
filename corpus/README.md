@@ -78,6 +78,16 @@ S1a.10.3 it read "…*compared* under", and the difference is the whole of that
 stage: a run is now a thing that must work, not a thing two engines must agree
 about.
 
+**`test` is the one run name that can fail on the file's own account.** M1c
+[S1c.1.3](../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md)
+added `ein test <path>`, which runs whatever `:expect` the file's queries carry
+and exits 1 when one of them is false — so a `test` cell in the exit golden is
+banking a claim the *program* makes, not one the engine happens to render. It
+is declared only on the three entries that carry an `:expect`
+(`examples/features/1{0,1,2}_expect*.ein`); on anything else it would exit 2
+with "nothing to check", which is the right answer and not a useful cell.
+Adding one to a file that grows an `:expect` is the growth rule below, applied.
+
 ## Groups
 
 | group | what it holds | the sweep expects |

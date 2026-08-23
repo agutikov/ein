@@ -60,6 +60,17 @@ COMMAND ein solve
   OPTION --trace -r metavar=FILE.md arity=1 default=None choices=- group=- required=False help=write the self-contained markdown derivation trace to FILE (a file, not stdout)
   OPTION --verbose -v metavar=- arity=0 default=False choices=- group=- required=False help=stream per-layer + per-entering progress to stderr
   POSITIONAL file required=True help=
+COMMAND ein test
+  ABOUT run the expectations the programs state about themselves (M1c)
+  OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Schema: docs/kernel/inference/events.md.
+  OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume, and what T2 comparisons run at, since a dropped redundant firing is exactly what a port loses.
+  OPTION --json-summary -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write the structured run summary (verdict, model, every engine counter, the root-saturation shape, the resolved config) to FILE as JSON. Additive, and refused when the selection is more than one run.
+  OPTION --max-enterings -E metavar=MAX_ENTERINGS arity=1 default=None choices=- group=- required=False help=abort a query after N commitment tries (as --max-time)
+  OPTION --max-set-size -m metavar=MAX_SET_SIZE arity=1 default='5' choices=- group=- required=False help=commitment-set depth cap (default: 5)
+  OPTION --max-time -T metavar=MAX_TIME arity=1 default=None choices=- group=- required=False help=abort a query after N wall-clock seconds. An abort is an ERROR, never a pass and never a failure: nothing was established either way
+  OPTION --quiet -q metavar=- arity=0 default=False choices=- group=volume required=False help=the summary line, and whatever was not ok
+  OPTION --verbose -v metavar=- arity=0 default=False choices=- group=volume required=False help=one line per query, held ones included, with the verdict and k
+  POSITIONAL path required=True help=a .ein file, or a directory to walk for them
 COMMAND ein saturate
   ABOUT Benchmark + state dump for the Saturator.
   OPTION --dump -- metavar=- arity=0 default=False choices=- group=- required=False help=after the benchmark, print the saturated KB grouped by origin
