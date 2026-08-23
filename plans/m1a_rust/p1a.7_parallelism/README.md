@@ -321,15 +321,12 @@ That is the phase's shape more than any speedup is:
 | **level 2**, the enqueue pass | 1.4–3.1 tasks per pass against a ~10 µs barrier |
 | **`--unordered`** | 0 % — `fan_out` is a barrier, so the commit's order costs nothing to keep |
 
-The through-line for the last three is one sentence: **incrementality and
-parallelism compete for the same work, and P1a.6 got there first.**
-
-**The decline rests on one sentence:**
-**levels 2 and 3 fan out units that arrive one to three at a time and cost a
-fraction of a microsecond, inside loops that run hundreds of thousands of
-times.** Level 1 fans out *enterings*, which arrive thousands to a layer and
-cost tens of microseconds each, and that is the whole of why it is 3.16–4.30×
-where these would be overhead.
+**The last three rest on one sentence:** levels 2 and 3 and `--unordered` fan
+out units that arrive one to three at a time and cost a fraction of a
+microsecond, inside loops that run hundreds of thousands of times. Level 1 fans
+out *enterings*, which arrive thousands to a layer and cost tens of
+microseconds each, and that is the whole of why it is 3.17–4.40× where these
+would be overhead.
 
 And the reason is worth more than the decision: **P1a.6 already took this work
 by making it incremental, and incrementality and parallelism compete for the
