@@ -29,12 +29,35 @@ user-visible:
 |---|---|---|
 | **sequential** | `--jobs 1` (**default**) | T3 — byte-identical to ein.py. This is what the conformance harness runs. |
 | **deterministic parallel** | `--jobs N` | T3 as well: same verdict, same models, same dead set, **same counters**, same stdout. Only wall-clock differs. |
-| **unordered parallel** | `--jobs N --unordered` | T0 only: same verdict and same model set. Counters and traversal order may differ. Opt-in, for throughput on large searches. |
+| ~~**unordered parallel**~~ | ~~`--jobs N --unordered`~~ | **Declined 2026-08-23** — see below. |
 
 The default being `--jobs 1` is deliberate: a benchmark or a golden run
-must never silently become a different computation. `--unordered` exists
-because there are workloads where the last 20 % of determinism costs 2×,
-and the user should be able to buy it back knowingly.
+must never silently become a different computation.
+
+> **The third mode is not built, and the reason is that there is nothing to
+> buy back.** `--unordered` existed here "because there are workloads where the
+> last 20 % of determinism costs 2 %, and the user should be able to buy it
+> back knowingly". In the fan-out §2 actually shipped it costs **0 %**:
+> `Run::fan_out` is a barrier, so by the time the ordered commit runs every
+> worker in the batch is already finished, and consuming the results in
+> completion order rather than in candidate order changes *which* order serial
+> work happens in and not *when* it happens.
+>
+> The version that would be worth something — overlapping the commit with
+> speculation — needs `&mut Terms` (the provenance arena, `record_node`'s
+> promotion) while a worker holds `&Terms`, which is a **concurrent interner**;
+> [S1a.7.1](../p1a.7_parallelism/s1a.7.1_sync_shared_state.md) measured that
+> spelling at **4 % slower** and chose lending instead. Its ceiling is the
+> ordered commit's share, **3.6–9.8 %** at `--jobs 8`, and only if the overlap
+> were free.
+>
+> So the contract is **two modes, and both are the same computation**. What
+> `--unordered` would have cost is the whole apparatus that says so:
+> `jobs_invariance`'s 20 712 cells, `summary_properties`' thirteen identities
+> and the fuzzer's `jobs` property are all written against it, and a flag that
+> exempts itself from every one of them for a speedup it cannot collect is a
+> promise nobody should be able to opt into by accident.
+> [S1a.7.5](../p1a.7_parallelism/s1a.7.5_jobs_contract.md) T1a.7.5.4.
 
 ### The invariant that makes determinism affordable
 

@@ -45,8 +45,8 @@ pub use prov::{NafArg, NafRef, Prov, ProvArena, ProvId, ProvKind, Region};
 pub use pynum::{python_float, python_int};
 pub use shape::shape;
 pub use terms::{
-    Kernel, Kernel as KernelSymbols, PREDICATES, RESERVED, STRUCTURAL, Table, Terms, is_predicate,
-    is_reserved,
+    Kernel, Kernel as KernelSymbols, Lent, PREDICATES, RESERVED, STRUCTURAL, Table, Terms,
+    is_predicate, is_reserved,
 };
 pub use value::{IntId, IntPool, Tag, Value};
 pub use walks::{

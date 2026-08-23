@@ -387,6 +387,29 @@ fn sorted_model(terms: &Terms, kb: &Kb) -> Vec<String> {
     out
 }
 
+/// `--jobs N`, or `--jobs auto` — which the parser gives us as `0`.
+///
+/// **The default is 1 and stays 1** ([S1a.7.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+/// T1a.7.5.1): a benchmark, a golden run and the corpus sweep must never
+/// silently become a different computation, even one that is provably the
+/// same. `auto` is what a user opts into, and it is the *machine's* number:
+/// [`std::thread::available_parallelism`] respects a cgroup quota and a
+/// `taskset` affinity mask, and counts logical CPUs — SMT siblings and E-cores
+/// included, which on a hybrid box is not the fastest setting.
+///
+/// This lives here and **not in `SolverConfig`**, which is the ruling
+/// T1a.7.5.1 owed: every `SolverConfig` field is printed by `--dump-config`
+/// and parsed from `(config …)`, so putting a thread count there would let a
+/// *puzzle file* set it — a `.ein` that reads differently on an 8-core machine
+/// than on a 4-core one, through a field the parity contract compares. Jobs is
+/// an execution knob; `SolverConfig` is the semantics.
+fn resolve_jobs(n: i64) -> usize {
+    if n == 0 {
+        return std::thread::available_parallelism().map_or(1, |n| n.get());
+    }
+    n.max(1) as usize
+}
+
 pub fn run(m: &ArgMatches) -> i32 {
     let file = m.get_one::<String>("file").expect("required").clone();
     let mut ast = Ast::new();
@@ -465,7 +488,7 @@ pub fn run(m: &ArgMatches) -> i32 {
             .get_one::<i64>("max-enterings")
             .map(|n| (*n).max(0) as u64),
         store_lattice: trace_path.is_some(),
-        jobs: (*m.get_one::<i64>("jobs").unwrap_or(&1)).max(1) as usize,
+        jobs: resolve_jobs(*m.get_one::<i64>("jobs").unwrap_or(&1)),
         ..SolveOptions::default()
     };
 

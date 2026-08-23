@@ -17,6 +17,35 @@ fn py_int(s: &str) -> Result<i64, String> {
     ein_core::python_int(s).ok_or_else(|| format!("invalid int value: '{s}'"))
 }
 
+/// `-j/--jobs` — a positive integer, or the word `auto`.
+///
+/// `auto` parses to **0**, which [`crate::solve`] resolves through
+/// [`std::thread::available_parallelism`]. It is a sentinel and not a
+/// spelling: `--jobs 0` is refused, because a user who types it means "none"
+/// far more often than "all of them", and a flag with two ways to say the same
+/// thing has two ways to be misread.
+///
+/// What `auto` promises is the *machine's* answer, not the best one:
+/// `available_parallelism` counts logical CPUs, and on a hybrid CPU that
+/// includes SMT siblings and E-cores. P1a.7's measurements say more threads
+/// than physical P-cores is not faster
+/// ([scaling.md](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md)), so
+/// `auto` is a convenience and `--jobs N` is what a measurement uses.
+fn jobs_spec(s: &str) -> Result<i64, String> {
+    if s.eq_ignore_ascii_case("auto") {
+        return Ok(0);
+    }
+    match ein_core::python_int(s) {
+        Some(n) if n >= 1 => Ok(n),
+        Some(n) => Err(format!(
+            "invalid job count: '{n}' (expected 1 or more, or 'auto')"
+        )),
+        None => Err(format!(
+            "invalid job count: '{s}' (expected an integer or 'auto')"
+        )),
+    }
+}
+
 /// `type=float`, same argument.
 fn py_float(s: &str) -> Result<f64, String> {
     ein_core::python_float(s).ok_or_else(|| format!("invalid float value: '{s}'"))
@@ -192,11 +221,11 @@ fn solve_command() -> Command {
                 .short('j')
                 .long("jobs")
                 .value_name("JOBS")
-                .value_parser(py_int)
+                .value_parser(jobs_spec)
                 .default_value("1")
                 .help(
-                    "threads for a layer's enterings (default: 1). \
-                     Same verdict, same models, same counters",
+                    "threads for a layer's enterings, or 'auto' \
+                     (default: 1). Same verdict, same models, same counters",
                 ),
         )
         .arg(flag(

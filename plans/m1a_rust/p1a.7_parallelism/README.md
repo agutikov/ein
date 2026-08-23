@@ -1,13 +1,19 @@
 # P1a.7 — Parallelism
 
 **Milestone:** [M1a — Rust port](../README.md)
-**Status:** **resumed 2026-08-22**, three stages in —
-[S1a.7.1](s1a.7.1_sync_shared_state.md) and
-[S1a.7.2](s1a.7.2_parallel_enterings.md) are both **closed**, threads
-included. **The premises of the two remaining engine stages were then measured,
-neither held, and both are declined** —
-[scaling.md §9](scaling.md#9-levels-2-and-3-measured-before-they-are-built).
-What is left is [S1a.7.5](s1a.7.5_jobs_contract.md), the contract.
+**Status:** ✅ **CLOSED 2026-08-23.** Four stages shipped
+([S1a.7.0](s1a.7.0_speculation_audit.md),
+[S1a.7.1](s1a.7.1_sync_shared_state.md),
+[S1a.7.2](s1a.7.2_parallel_enterings.md),
+[S1a.7.5](s1a.7.5_jobs_contract.md)) and **two declined by measurement**
+([S1a.7.3](s1a.7.3_parallel_boundary.md),
+[S1a.7.4](s1a.7.4_parallel_enqueue.md) —
+[scaling.md §9](scaling.md#9-levels-2-and-3-measured-before-they-are-built)),
+along with `--unordered`, the validator, the concurrent interner, the fact
+store's lock and the multi-threaded stress. **`--jobs N` is 3.17–4.40× on 8
+P-cores and is the same computation as `--jobs 1`**, which 20 712 corpus cells,
+a byte-identical event stream and 10 000 paired fuzz runs say. The ≥ 6× target
+is **not met**, and § What is left names where the rest is.
 [S1a.7.0](s1a.7.0_speculation_audit.md) shipped 2026-08-20 — a stage the plan
 did not have, because the phase's central risk was measurable *before* any of
 it was built. The phase then **paused for two days** at the user's direction
@@ -263,7 +269,11 @@ Use the cores without giving up the gate. `--jobs 1` stays the default;
 `--jobs N` is **the same computation** — same verdict, same models, same
 unsat core, same counters, and the same renderings up to the narration
 [`ein-parity`](../../../ein.rs/crates/ein-parity/src/lib.rs) already admits.
-`--unordered` is an explicit opt-out for throughput.
+~~`--unordered` is an explicit opt-out for throughput.~~ **There are two
+modes and both are the same computation** — `--unordered` was declined
+2026-08-23, because in the fan-out this phase built it is worth **0 %**:
+`fan_out` is a barrier, so when the ordered commit runs every worker is
+already finished ([S1a.7.5](s1a.7.5_jobs_contract.md) T1a.7.5.4).
 
 > It read "via speculate-and-validate" until 2026-08-22. There is no
 > validation: [S1a.7.2](s1a.7.2_parallel_enterings.md) fans out **only layers
@@ -286,18 +296,33 @@ Design: [design/08](../design/08_parallelism.md).
 | [S1a.7.2](s1a.7.2_parallel_enterings.md) ✅ | Level 1: parallel enterings — **closed 2026-08-23**. Its layer-1 question was decided on paper (a layer is fanned out iff it cannot write to root), which deleted the validator, the fail-fast ruling and two acceptance items. The layer stack coalesced (3.17× at `--jobs 1`), the predicate asserted, the seam, the fan-out, the layer's own serial work — **3.16–4.30× on 8 P-cores**, same computation on all 47 corpus entries, byte-identical event streams — then the diagnostics, the early stop (**1.69 → 3.13×** on the CLI's *default* `-n 1` run) and the stress, 10 000 paired `--jobs 8` runs with zero findings | 4 d → 3 d |
 | [S1a.7.3](s1a.7.3_parallel_boundary.md) ✗ | Level 3: the parallel boundary round — **declined 2026-08-23**, premise measured before the build: three of the four measurement-set workloads never park a candidate, the fourth judges a median of one per round, and a round is 0.18 µs against a ~10 µs barrier | ~~2 d~~ |
 | [S1a.7.4](s1a.7.4_parallel_enqueue.md) ✗ | Level 2: the parallel enqueue pass — **declined 2026-08-23**: right about the share (10.6–31.2 % everywhere, more than S1a.7.3's on every measurement-set cell) and wrong about the width — **1.4–3.1 tasks per pass** against a fan-out of 8, and a pass is 0.26 µs | ~~2 d~~ |
-| [S1a.7.5](s1a.7.5_jobs_contract.md) | The `--jobs` contract | 2 d |
+| [S1a.7.5](s1a.7.5_jobs_contract.md) ✅ | The `--jobs` contract — **closed 2026-08-23**. `jobs_invariance` (20 712 cells at `--jobs {2,4,8,16}`, 0 moved, 30 s), `--jobs auto` with the ruling that jobs stays out of `SolverConfig`, the lend guard that survives a worker panic, the failure-mode rulings, and the scaling table in [design/README § Measured](../design/README.md#measured). **`--unordered` declined**: in this fan-out it is worth 0 %, and the version that would be worth ≤ 9.8 % is a concurrent interner, which [S1a.7.1](s1a.7.1_sync_shared_state.md) declined on its own measurement | 2 d |
 
 ## What is left, and what was declined
 
-**Three stages are closed and two are declined**, which leaves
-[S1a.7.5](s1a.7.5_jobs_contract.md) — the contract, `jobs_invariance`,
-`--unordered`, the failure-mode rulings — as the phase's remaining work. The
-phase will close at **3.16–4.30×** against a ≥ 6× target, with the shortfall
-named rather than papered over: it is the fan-out's own ~5× on 8 cores, the
-profile puts it on memory rather than contention, and reducing what a fork
-allocates is [P1a.6](../p1a.6_performance/README.md)-shaped
+**Nothing is left in the phase.** What is left in the *subject* is the
+**1.5×** between 4.40× and the ≥ 6× target, and it is named rather than
+papered over: the serial terms are down to 8–17 %, so Amdahl would allow 7.5×,
+and what does not deliver it is the **fan-out's own ~5× on 8 cores**. The
+profile puts that on memory rather than on contention — no lock in it, 11 %
+allocator — so it is a question about *what a fork allocates*, which is
+[P1a.6](../p1a.6_performance/README.md)-shaped work and not more threads
 ([scaling.md § Where the other 1.5× is](scaling.md#where-the-other-15-is)).
+
+**Six things were declined in this phase, and every one of them by a number.**
+That is the phase's shape more than any speedup is:
+
+| declined | the number that declined it |
+|---|---|
+| design/08 §2's **speculate-and-validate** | 248 of 248 writebacks are in layer 1, so a fanned-out layer has no `W` to repair ([S1a.7.2](s1a.7.2_parallel_enterings.md)) |
+| the **interner's lock** and the fact store's | 0 enterings append on four of six workloads, 7 of 111 on the worst ([shared_state.md](shared_state.md)) |
+| the **multi-threaded stress** and `loom` | every structure ends `&`-shared or per-worker, so there is no protocol to model |
+| **level 3**, the boundary round | 0.0 % of three of the four measurement-set workloads; a median of one candidate per round on the fourth |
+| **level 2**, the enqueue pass | 1.4–3.1 tasks per pass against a ~10 µs barrier |
+| **`--unordered`** | 0 % — `fan_out` is a barrier, so the commit's order costs nothing to keep |
+
+The through-line for the last three is one sentence: **incrementality and
+parallelism compete for the same work, and P1a.6 got there first.**
 
 **The decline rests on one sentence:**
 **levels 2 and 3 fan out units that arrive one to three at a time and cost a

@@ -253,6 +253,42 @@ fn reclaiming_under_a_live_view_is_loud() {
     terms.reclaim();
 }
 
+/// **A panic inside the lend window leaves the tables usable** — T1a.7.5.6.
+///
+/// `Terms::share` and `Terms::reclaim` have to come in pairs, and the window
+/// between them is one function call wide today. What makes that safe is not
+/// that the call cannot fail: a worker panic propagates out of `rayon`'s
+/// `install` on the calling thread, and a future `?` in the same window would
+/// return through it. Either way a bare `share()` would leave the tables lent
+/// — not a crash, but a `Terms` that has silently stopped growing, which is
+/// exactly what `reclaiming_under_a_live_view_is_loud` above is about from the
+/// other side. `Terms::lend` makes the pairing the borrow checker's.
+///
+/// The panic is caught here because that is the only way to observe the state
+/// afterwards; nothing in the engine catches one.
+#[test]
+fn a_panic_inside_the_lend_window_gives_the_tables_back() {
+    let (_ast, mut terms, _kb) = load("examples/zebra2.ein");
+    let before = terms.syms.len();
+    let caught = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        let lent = terms.lend();
+        assert!(lent.get().is_shared(), "lend() did not lend the tables");
+        panic!("a worker died");
+    }));
+    assert!(caught.is_err(), "the panic did not propagate");
+    assert!(
+        !terms.is_shared(),
+        "the tables are still lent after a panic — every later entering would \
+         hand itself back, for ever"
+    );
+    // …and they can still grow, which is the half that matters.
+    let fresh = terms
+        .intern_text("@after-the-panic")
+        .expect("a reclaimed table assigns");
+    assert_eq!(terms.syms.len(), before + 1);
+    assert_eq!(terms.syms.text(fresh), "@after-the-panic");
+}
+
 /// Branching an unsealed root would hand the fork a view that does not contain
 /// the parent's newest facts. It is an assertion in every build, not a debug
 /// one: what it prevents is a fork that silently believes less than its

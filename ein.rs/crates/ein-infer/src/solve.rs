@@ -843,17 +843,23 @@ impl Run<'_> {
                     // half of `Kb::fork` that mutates, and after it every
                     // worker branches the same root through a `&`.
                     root.seal_top();
-                    terms.share();
-                    let speculated = self.fan_out(
-                        root,
-                        terms,
-                        ast,
-                        events.narration(),
-                        self.opts.store_lattice || dumper.reads_forks(),
-                        layer,
-                        &candidates[i..end],
-                    );
-                    terms.reclaim();
+                    // `lend` rather than `share` + `reclaim`, so the pairing is
+                    // the borrow checker's rather than this function's: an
+                    // early `?` or a worker panic between the two would leave
+                    // the tables lent, and a lent `Terms` is one that has
+                    // silently stopped growing (T1a.7.5.6).
+                    let speculated = {
+                        let lent = terms.lend();
+                        self.fan_out(
+                            root,
+                            lent.get(),
+                            ast,
+                            events.narration(),
+                            self.opts.store_lattice || dumper.reads_forks(),
+                            layer,
+                            &candidates[i..end],
+                        )
+                    };
                     self.jobs.workers = self.jobs.workers.max(jobs.min(end - i));
                     self.jobs.speculated += (end - i) as u64;
 

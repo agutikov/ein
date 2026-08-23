@@ -552,6 +552,64 @@ fn the_stop_policy_is_honoured() {
     );
 }
 
+/// **`-j/--jobs` takes a count or the word `auto`, and refuses everything
+/// else** — [S1a.7.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+/// T1a.7.5.1.
+///
+/// `auto` is [`std::thread::available_parallelism`], so the test cannot assert
+/// a number; what it asserts is that the flag resolves to *something the block
+/// reports* and that the answer is the default run's. `--jobs 0` is refused on
+/// purpose: it is the sentinel `auto` parses to, and letting a user type it
+/// would give one meaning two spellings — the more so because "0 threads"
+/// reads as "none" at least as often as "all of them".
+#[test]
+fn jobs_takes_a_count_or_auto_and_nothing_else() {
+    let one = ein(&["solve", TWO_MODELS, "-e"]);
+    one.ok();
+    for spec in ["2", "auto"] {
+        let r = ein(&["solve", TWO_MODELS, "-e", "--jobs", spec, "--stats"]);
+        r.ok();
+        assert_eq!(
+            r.out.contains("verdict"),
+            one.out.contains("verdict"),
+            "--jobs {spec} changed the answer"
+        );
+        // The block exists only above one job, and it names what was asked.
+        assert!(
+            r.out.contains("\njobs\n"),
+            "--jobs {spec} printed no jobs block:\n{}",
+            r.out
+        );
+        let asked: usize = r
+            .out
+            .lines()
+            .find_map(|l| l.trim().strip_prefix("workers"))
+            .and_then(|l| l.split("of ").nth(1))
+            .and_then(|l| l.split_whitespace().next())
+            .and_then(|n| n.parse().ok())
+            .expect("the workers row names the job count");
+        assert!(asked >= 2, "--jobs {spec} resolved to {asked}");
+    }
+    // …and the default prints no block at all, which is what keeps every
+    // `--stats` run in the repo byte-identical to what it was.
+    let plain = ein(&["solve", TWO_MODELS, "-e", "--stats"]);
+    plain.ok();
+    assert!(
+        !plain.out.contains("\njobs\n"),
+        "--jobs 1 printed a jobs block"
+    );
+
+    for bad in ["0", "xyz", "1.5"] {
+        let r = ein(&["solve", TWO_MODELS, "--jobs", bad]);
+        assert_ne!(r.code, 0, "--jobs {bad} was accepted");
+        assert!(
+            r.err.contains("job count"),
+            "--jobs {bad} was refused without saying why:\n{}",
+            r.err
+        );
+    }
+}
+
 /// **The `--stats` block reports the engine's counters**, and they are the
 /// same numbers `--json-summary` writes.
 ///

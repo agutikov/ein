@@ -368,12 +368,36 @@ impl Terms {
     /// is not a crash but a table that has silently stopped growing, and an
     /// entering that then hands itself back **for ever**.
     pub fn reclaim(&mut self) {
-        let ok = self.syms.reclaim() & self.ints.reclaim() & self.facts.reclaim();
         assert!(
-            ok,
+            self.try_reclaim(),
             "Terms::reclaim while a worker still holds a view — every \
              Terms::worker has to be dropped before the layer closes"
         );
+    }
+
+    /// The same, reporting rather than asserting.
+    ///
+    /// One caller: [`Lent`]'s `Drop` while the thread is already panicking,
+    /// where the assertion above would be a *second* panic and would abort the
+    /// process with the original message lost.
+    pub fn try_reclaim(&mut self) -> bool {
+        self.syms.reclaim() & self.ints.reclaim() & self.facts.reclaim()
+    }
+
+    /// Lend the tables for the duration of a fan-out, and take them back when
+    /// the guard drops.
+    ///
+    /// [`Terms::share`] and [`Terms::reclaim`] have to come in pairs, and the
+    /// window between them is the one place a `?`, a `return` or a panic would
+    /// leave the tables lent — which is [`Terms::reclaim`]'s own warning read
+    /// from the other side: not a crash, but a `Terms` that has silently
+    /// stopped growing and an entering that hands itself back for ever. The
+    /// pairing is structural here rather than a rule someone has to keep
+    /// ([S1a.7.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+    /// T1a.7.5.6).
+    pub fn lend(&mut self) -> Lent<'_> {
+        self.share();
+        Lent { terms: self }
     }
 
     /// Is this `Terms` lending its tables — would an interning call have to
@@ -398,7 +422,7 @@ impl Terms {
         Err(Overflow::Shared)
     }
 
-    /// One worker's view — call [`Terms::share`] first.
+    /// One worker's view — call [`Terms::lend`] first.
     pub fn worker(&self) -> Terms {
         Terms {
             syms: self.syms.holder(),
@@ -598,6 +622,37 @@ impl Terms {
             Tag::Sym => self.sym(v.as_sym().expect("tagged Sym")).to_string(),
             Tag::Int => self.int_text(v.as_int().expect("tagged Int")).to_string(),
             Tag::Fact => pyrepr::repr(&self.py_fact(v.as_fact().expect("tagged Fact"))),
+        }
+    }
+}
+
+/// The tables, lent for the duration of one fan-out — [`Terms::lend`].
+///
+/// It carries the `&mut Terms` and hands out `&Terms`, which is exactly the
+/// asymmetry the seam needs: workers may look up and may not assign, and the
+/// borrow checker is what says so rather than a comment.
+pub struct Lent<'a> {
+    terms: &'a mut Terms,
+}
+
+impl Lent<'_> {
+    /// What a worker is handed.
+    pub fn get(&self) -> &Terms {
+        self.terms
+    }
+}
+
+impl Drop for Lent<'_> {
+    fn drop(&mut self) {
+        if std::thread::panicking() {
+            // A failed reclaim here means a view outlived the fan-out, which
+            // is worth an assertion on the ordinary path and is worth nothing
+            // on this one: a second panic while unwinding aborts the process
+            // and takes the *first* panic's message with it, and that message
+            // is the one somebody needs.
+            let _ = self.terms.try_reclaim();
+        } else {
+            self.terms.reclaim();
         }
     }
 }
