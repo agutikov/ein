@@ -8,7 +8,7 @@
 ## Context
 
 The artefact people quote, which is exactly why its job is to be quotable
-*and* hedged in the same sentence. [M2b](../../m2b_presentation/README.md)
+*and* hedged in the same sentence. [M5](../../m5_presentation/README.md)
 Track A wants "head-to-head numbers where applicable" and Track C wants a
 "threat-to-validity discussion"; this stage produces both at once, so the
 paper cites a measurement rather than commissioning one.
@@ -50,9 +50,9 @@ paper cites a measurement rather than commissioning one.
 ### Task T1c.2.5.2 — The prose sections
 ### Task T1c.2.5.3 — Threats to validity
 ### Task T1c.2.5.4 — Nightly wiring for the answer subset
-### Task T1c.2.5.5 — The M2b handoff
+### Task T1c.2.5.5 — The M5 handoff
 
-One paragraph in [M2b](../../m2b_presentation/README.md) Track A pointing at
+One paragraph in [M5](../../m5_presentation/README.md) Track A pointing at
 `results.md` and saying what is already measured, so the paper's comparison
 axis starts from data instead of from a plan.
 

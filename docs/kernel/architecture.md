@@ -39,7 +39,7 @@ is read from the model count `k` — never chosen by a flag (see
 [`README.md`](README.md)).
 
 > **Driving this pipeline from another program** means one of two things.
-> From **Rust**, link the crates — the surface M1b's Tauri backend and M1c's
+> From **Rust**, link the crates — the surface M20's Tauri backend and M1c's
 > `ein-bench` use, documented by
 > [S1a.9.4](../../plans/m1a_rust/p1a.9_release/s1a.9.4_documentation.md).
 > From **anything else**, run the `ein` binary and read
@@ -101,9 +101,9 @@ digraph milestones {
   M2 [label="M2\nnl_to_ir · llm client · GBNF"];
   M1 -> M2;
   M1a [label="M1a · ein.rs (Rust port)"];
-  M1b [label="M1b · GUI (Tauri)"];
-  M2b [label="M2b · paper"];
-  M1 -> M1a -> M1b; M2 -> M2b;
+  M20 [label="M20 · GUI (Tauri)"];
+  M5 [label="M5 · paper"];
+  M1 -> M1a -> M20; M2 -> M5;
 }
 ```
 
@@ -112,7 +112,7 @@ digraph milestones {
   off one run.
 - **M2** — NL → IR: an LLM extractor under GBNF constraint produces IR; no new
   *kernel* module, a new front-end consuming it.
-- **M1a / M1b / M2b** — Rust port / GUI / paper (out of the kernel tree).
+- **M1a / M20 / M5** — Rust port / GUI / paper (out of the kernel tree).
 - **M3** (SMT slice: `IR → SMT-LIB` with a hybrid driver) was **dropped
   2026-08-18**. There is no solver back-end and no planned one; the kernel
   is the whole reasoner.

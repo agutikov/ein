@@ -15,7 +15,7 @@ sections can be used **directly out of an mmap**.
 It is a private, versioned cache format, not an interchange format.
 Anything crossing a tool boundary stays `.ein` text or the event
 protocol's JSON. With the server dropped (2026-08-18) the only consumers
-are the CLI, the library, and whatever [M1b](../../m1b_gui/README.md)
+are the CLI, the library, and whatever [M20](../../m20_gui/README.md)
 loads through it — which is why T1a.8.1.7's CLI surface *is* the
 acceptance surface.
 

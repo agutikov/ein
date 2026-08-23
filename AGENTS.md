@@ -27,7 +27,7 @@ constrained-reasoning research.
 - **`docs/api/`** — **how to drive Ein as a library.** Since M1a S1a.9.4 its
   subject is [`rust.md`](docs/api/rust.md): the **crates** — `ein-ir` to load,
   `ein-infer` to solve, `ein-render` to explain, `ein-einb` to cache — which
-  is what [M1b](plans/m1b_gui/README.md) binds against and what nothing
+  is what [M20](plans/m20_gui/README.md) binds against and what nothing
   documented before. **Its worked example is a test.** The page's `rust` block
   is the marked region of
   [`ein-cli/tests/embedding.rs`](ein.rs/crates/ein-cli/tests/embedding.rs) and

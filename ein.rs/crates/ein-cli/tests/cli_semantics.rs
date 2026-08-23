@@ -1070,7 +1070,7 @@ const EVENT_COVER: [(&str, &str); 5] = [
 
 /// Where the `--events` schema lives. It was `conformance/EVENTS.md` until
 /// S1a.10.3: the protocol is a product surface — a debugging tool, and
-/// M1b's likely feed — and it outlived both the directory named after the
+/// M20's likely feed — and it outlived both the directory named after the
 /// two-engine harness and the tier that was its first reader.
 const EVENTS_DOC: &str = "docs/kernel/inference/events.md";
 

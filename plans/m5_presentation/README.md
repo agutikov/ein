@@ -1,8 +1,9 @@
-# M2b — Presentation + paper
+# M5 — Presentation + paper
 
 **Estimate:** TBD.
-**Status:** **placeholder** — slotted after M2. (It used to read
-"between M2 and M3, or after M3"; M3 was dropped 2026-08-18.)
+**Status:** **placeholder** — after M2, which is a dependency and not a
+slot. (It used to read "between M2 and M3, or after M3"; M3 was dropped
+2026-08-18, and the milestone was renumbered from **M2b** 2026-08-23.)
 **Depends on:** [M2](../m2_nl_to_ir/README.md) — needs the NL → IR
 pipeline working on at least one benchmark suite to have a
 concrete result to write up.
@@ -190,7 +191,7 @@ known unknowns rather than aspirational.
 - Implementation work driven *by* the paper. The paper writes
   about what's already shipped; if a benchmark needs a missing
   feature, that's a milestone-back-pressure signal, not paper work.
-- Multiple papers / venues; M2b is one write-up cycle.
+- Multiple papers / venues; M5 is one write-up cycle.
 
 ## Acceptance (sketch)
 

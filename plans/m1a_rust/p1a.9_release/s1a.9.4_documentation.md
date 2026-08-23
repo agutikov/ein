@@ -73,7 +73,7 @@ tripping restores a contract rather than starting one.
   crates, which are the two ways there are.
 - **`docs/api/` documents a surface that exists.** Its subject becomes the
   **Rust** embedding API — the crates, which is what
-  [M1b](../../m1b_gui/README.md) binds against and what nothing in the tree
+  [M20](../../m20_gui/README.md) binds against and what nothing in the tree
   documents today — and the five Python pages are filed as history with a
   header saying what they specify and what would revive them. No page in
   `docs/api/` describes an import that fails.
@@ -126,7 +126,7 @@ that stage decides what happens to `python_impl.md`; this one owns the
 had: how to drive the engine from another Rust program — `ein-ir` to parse
 and load, `ein-infer` to saturate and solve, `ein-render` to explain,
 `ein-einb` to cache a loaded KB. It is the surface
-[M1b](../../m1b_gui/README.md)'s Tauri backend binds against, the surface
+[M20](../../m20_gui/README.md)'s Tauri backend binds against, the surface
 [M1c](../../m1c_external_validation/README.md)'s `ein-bench` uses, and the
 surface an NL frontend would use if
 [M2](../../m2_nl_to_ir/README.md) is written in Rust. Three consumers, no
@@ -182,7 +182,7 @@ now means two surfaces of one engine disagreeing rather than two engines.
 
 ### Task T1a.9.4.6 — Downstream pointers
 
-[M1b](../../m1b_gui/README.md): note that the engine it binds to is
+[M20](../../m20_gui/README.md): note that the engine it binds to is
 ein.rs, linked as ordinary crates (its Tauri backend *is* the Rust
 process — there is no server between them), and that `.einb`
 ([P1a.8](../p1a.8_binary_container/README.md)) is available for saved
@@ -219,7 +219,7 @@ expensive to rediscover.
 | T1a.9.4.3 | Embedding docs | [`docs/api/rust.md`](../../../docs/api/rust.md), 300 lines, example-as-test; the five Python pages re-bannered 🏛; `docs/api/README.md` rewritten to route |
 | T1a.9.4.4 | The quoted numbers | `features.md`'s `ein.rs` half re-taken over four puzzles — **and two published cells corrected**; `architecture_and_algorithms.md` §7 gains the axis that is not an algorithm |
 | T1a.9.4.5 | Close the milestone | `plans/README.md`, `m1a_rust/README.md`, `divergences.md`, `open_questions.md` |
-| T1a.9.4.6 | Downstream | M1b, [M2 Q25](../../m2_nl_to_ir/open_questions.md#q25--what-language-is-the-frontend-written-in), F11 |
+| T1a.9.4.6 | Downstream | M20, [M2 Q25](../../m2_nl_to_ir/open_questions.md#q25--what-language-is-the-frontend-written-in), F11 |
 
 ### T1a.9.4.3 — the page's example is a test, and that is the whole design
 

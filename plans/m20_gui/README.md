@@ -1,10 +1,12 @@
-# M1b — GUI
+# M20 — GUI
 
 **Estimate:** TBD.
-**Status:** **placeholder with the stack decided** — slotted between
-[M1a](../m1a_rust/README.md) and [M2](../m2_nl_to_ir/README.md). The
-views below are the 2026-05 sketch; § Stack is the 2026-08-18 decision
-(merged from this directory's `tauri.md`, now folded in here).
+**Status:** **placeholder with the stack decided** — renumbered from **M1b**
+2026-08-23, which is also when it stopped claiming a slot: it depends on
+[M1a](../m1a_rust/README.md) and blocks nothing, so it runs when someone
+wants it rather than at a fixed point in the sequence. The views below are
+the 2026-05 sketch; § Stack is the 2026-08-18 decision (merged from this
+directory's `tauri.md`, now folded in here).
 **Depends on:** [M1a](../m1a_rust/README.md) — the GUI binds to *the
 engine that ships*, and after the port that engine is a set of Rust
 crates. M1's kernel, IR parser, search-tree artefact and DOT rendering
@@ -21,7 +23,7 @@ productivity multiplier for puzzle authoring, debugging, and
 trace-quality review.
 
 The TUI / CLI surface (`ein solve`, `ein saturate`, DOT dumps, markdown
-traces) covers the *machine-readable* output. M1b owns the
+traces) covers the *machine-readable* output. M20 owns the
 *human-readable* interactive view.
 
 ---
@@ -102,7 +104,7 @@ Linux/Windows/macOS testing is a real line item, not a formality.
 **The surface it calls now has a page**: [`docs/api/rust.md`](../../docs/api/rust.md)
 (M1a [S1a.9.4](../m1a_rust/p1a.9_release/s1a.9.4_documentation.md)) — the five
 steps, which crate owns each, and a worked example that is a test the gate
-runs. It is written for exactly this consumer, and M1b is the first of its
+runs. It is written for exactly this consumer, and M20 is the first of its
 three.
 
 The Tauri backend calls the engine's public Rust API in-process. That is
@@ -269,7 +271,7 @@ ein.rs/
     └── package.json
 ```
 
-**No separate GUI-API crate at M1b** unless one earns its place — the
+**No separate GUI-API crate at M20** unless one earns its place — the
 Tauri layer uses the engine's public Rust API directly.
 
 A later split is worth designing *toward*, not building yet: a shared
@@ -285,12 +287,12 @@ there's a use case.**
 - Real-time engine integration (run-and-watch) — first cut is
   load-saved-artefact; live mode lands when there's a use case, and the
   commands/events split above is what makes it a non-migration.
-- Multi-puzzle workspace — single-file load is fine for M1b's
+- Multi-puzzle workspace — single-file load is fine for M20's
   ergonomic-multiplier framing.
 - Authoring shortcuts beyond round-trip parse — power-user
   features (refactoring, code-mod) wait for usage signal.
 - A browser-hosted build. Designed toward (see § Workspace layout), not
-  shipped at M1b.
+  shipped at M20.
 
 ## Acceptance (sketch)
 

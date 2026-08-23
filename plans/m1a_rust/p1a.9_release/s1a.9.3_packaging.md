@@ -26,7 +26,7 @@
 
 ## Context
 
-Distribution was reason #1 for the port — "M1b GUI + M2 NL frontend ship
+Distribution was reason #1 for the port — "M20 GUI + M2 NL frontend ship
 to end-users; PyPy adds a second interpreter for the user to install,
 ein.rs ships as a single binary". This stage cashes that in: static
 binaries for three platforms and a release process that cannot ship an

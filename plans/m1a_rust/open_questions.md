@@ -473,9 +473,9 @@ answer, D2's trigger, is recorded there too — the *cyclic body* half is met by
 ## Q-M1a.11 — Server wire protocol
 
 **Closed moot 2026-08-18: there is no server.** The question was to be
-decided at P1a.8 kickoff "informed by what M1b picks for its stack" —
-and that is exactly what dissolved it. M1b picked Tauri
-([M1b § Stack](../m1b_gui/README.md#stack)), whose backend is a Rust
+decided at P1a.8 kickoff "informed by what M20 picks for its stack" —
+and that is exactly what dissolved it. M20 picked Tauri
+([M20 § Stack](../m20_gui/README.md#stack)), whose backend is a Rust
 process linking `ein-core`/`ein-ir`/`ein-infer` directly; a wire protocol
 between the GUI and the engine would have been a serialisation boundary
 inside one process. With M2 crossing into CPython through PyO3
@@ -958,7 +958,7 @@ So the narration moves further than this question assumed:
   accepts that a fact's recorded proof may name a different one of its valid
   derivations.
 - **(c) Yes, behind a flag** that is off in the parity build. Keeps I1 and
-  gets the speed for the M1b/M2 consumers — at the cost of a second code
+  gets the speed for the M20/M2 consumers — at the cost of a second code
   path through the saturator's most delicate ordering, which is exactly
   what P1a.6 Rule 3 (a wash is a revert) exists to discourage. The flag is
   **already built** (`fork-delta` + `EIN_FORK_DELTA`), so this option is the
@@ -1081,7 +1081,7 @@ so that "later" is a condition rather than a shrug.
 ### Why there is nothing to bind for
 
 The phase justified PyO3 with one consumer and the census does not support it.
-[M1b](../m1b_gui/README.md) links the crates into a Tauri backend.
+[M20](../m20_gui/README.md) links the crates into a Tauri backend.
 [M1c](../m1c_external_validation/README.md)'s runner is `ein-bench`, Rust, and
 [S1c.2.2](../m1c_external_validation/p1c.2_external_benchmarks/s1c.2.2_systems_and_install.md)
 *requires* it to shell out — "`cargo build` never needs Z3" — because a linked
@@ -1137,7 +1137,7 @@ true today.
 3. **A Python consumer the project does not control** — a notebook, a
    downstream library, or a paper's artifact package.
    **This is the one most likely to arrive**, with
-   [M2b](../m2b_presentation/README.md), whose reviewers will expect
+   [M5](../m5_presentation/README.md), whose reviewers will expect
    `pip install`. It is a milestone away, not a phase.
 
 ### What is held in reserve

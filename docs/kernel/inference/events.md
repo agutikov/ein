@@ -10,7 +10,7 @@ in the order the engine performed them.
 
 It is specified as a schema rather than as debug output, so every observer — a
 trace viewer, a benchmark harness, an embedder,
-[M1b](../../../plans/m1b_gui/README.md)'s likely feed — reads the same
+[M20](../../../plans/m20_gui/README.md)'s likely feed — reads the same
 stream.
 
 > **Where it came from.** The protocol was built at

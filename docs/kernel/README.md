@@ -5,7 +5,7 @@ graph it reasons over, the data structures that hold the graph in
 memory, the surface language users write, and (placeholder, P1.3)
 the inference engine that fires rules.
 
-Everything above the kernel — NL → IR (M2), the GUI (M1b), the
+Everything above the kernel — NL → IR (M2), the GUI (M20), the
 self-modifying constraint language (followup F2) — *consumes* the
 kernel. Below it there is one implementation, [`ein.rs`](../../ein.rs/)
 (M1a). This tree is the contract between them.

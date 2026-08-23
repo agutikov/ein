@@ -62,7 +62,7 @@ it does not die**; P1a.6's whole record is denominated in it.
 ### Task T1a.10.3.4 — The events protocol
 
 `conformance/EVENTS.md` specifies `--events`, which is a *product* surface
-(T2's operand, but also a debugging tool and M1b's likely feed). The protocol
+(T2's operand, but also a debugging tool and M20's likely feed). The protocol
 document survives; its framing as "the oracle event protocol" does not.
 
 ## Notes

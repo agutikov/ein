@@ -6,7 +6,7 @@
 **Scope change 2026-08-18:** this phase used to be **Server mode** —
 daemon, sessions, JSON-RPC, streaming, solution cache, `ein <cmd>
 --server` (8 stages, 3 weeks). The server is **dropped**: a Rust library
-plus a Rust CLI covers every consumer M1a has ([M1b](../../m1b_gui/README.md)
+plus a Rust CLI covers every consumer M1a has ([M20](../../m20_gui/README.md)
 links the crates directly — see its § Stack — and [M2](../../m2_nl_to_ir/README.md)
 crosses the boundary through PyO3 in [P1a.9](../p1a.9_release/README.md)).
 What survives is the one deliverable that was never about the daemon:

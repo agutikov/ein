@@ -497,7 +497,7 @@ the first chunk that contains a pass.
 
 Independent work with no shared mutable state: the conformance corpus
 runner, the fuzzer, `feature_matrix`, and any embedder that drives
-several engines at once — [M1b](../../m1b_gui/README.md)'s GUI holding
+several engines at once — [M20](../../m20_gui/README.md)'s GUI holding
 one session per open puzzle is the concrete one. Level 4 needs nothing
 from the engine beyond `Send + Sync` on the shared `Arc<KbCore>` /
 `Arc<Program>` / `Arc<PlanMemo>`, which levels 1–3 already require.

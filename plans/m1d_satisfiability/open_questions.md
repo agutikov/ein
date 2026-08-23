@@ -143,7 +143,7 @@ the phase has to say so explicitly rather than discover it in a golden diff.
 If a puzzle has 32 models, is the answer 32 models or a description of them?
 [P1d.3](p1d.3_model_sets/README.md) owns it, and the reason it is a question
 rather than an obvious yes is that every consumer downstream reads *models*:
-the trace, `:expect`, [M1b](../m1b_gui/README.md)'s views, and the benchmark
+the trace, `:expect`, [M20](../m20_gui/README.md)'s views, and the benchmark
 adapters that compare Ein's answer to Clingo's.
 
 "Enumerate, and say so" is a legitimate answer. So is "report the factorisation

@@ -46,7 +46,7 @@ Two adjacent secondary milestones surface Ein externally, plus a Rust
 port slotted before the GUI and the two milestones that came out of it:
 
 - **M1a — Rust port (ein.rs)** ([m1a_rust/](m1a_rust/README.md)) —
-  **shipped 2026-08-23**, between M1 and M1b; the engine that ships from M2
+  **shipped 2026-08-23**, between M1 and M2; the engine that ships from M2
   onward. Two invariants held the whole way: a **1:1 observable surface**
   (same language, same CLI, same bytes, with `ein.py` as the parity oracle
   until it had banked everything it could prove) and a **free hand inside**
@@ -55,9 +55,9 @@ port slotted before the GUI and the two milestones that came out of it:
   server mode was dropped 2026-08-18 and the PyO3 binding deferred 2026-08-21
   for want of a consumer
   ([Q-M1a.23](m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
-- **M1b — GUI** ([m1b_gui/](m1b_gui/README.md)) between M1a
-  and M2 — **Tauri 2 + React + Monaco + Cytoscape.js**, linking the
-  ein.rs crates directly (stack decided 2026-08-18).
+- **M20 — GUI** ([m20_gui/](m20_gui/README.md)) after M1a —
+  **Tauri 2 + React + Monaco + Cytoscape.js**, linking the ein.rs crates
+  directly (stack decided 2026-08-18). Renumbered from M1b 2026-08-23.
 - **M1c — External validation** ([m1c_external_validation/](m1c_external_validation/README.md))
   after M1a — the two checks that are *not* relative to Ein's own past:
   the stdlib's rules get expectations of their own (`:expect` on
@@ -71,8 +71,8 @@ port slotted before the GUI and the two milestones that came out of it:
   (`total` / `surjective` with the force their names claim) as
   first-class obligations rather than as refutations at the extreme.
   Created 2026-08-21 out of M1a's ex-P1a.12 plus the F14 note.
-- **M2b — paper + presentation** ([m2b_presentation/](m2b_presentation/README.md))
-  after M2.
+- **M5 — paper + presentation** ([m5_presentation/](m5_presentation/README.md))
+  after M2. Renumbered from M2b 2026-08-23.
 
 The followups in [`followups/`](followups/README.md) park the
 research-level threads (self-modification F2/F5/F6, formal
@@ -86,7 +86,7 @@ User decision: the *idea* is dropped, not merely the schedule — Ein
 stays a graph-native reasoner with no solver back-end. The plan folder
 is in git history. What stays: [`smt/`](../smt/) as a scratch area with
 its CVC4 submodule, and [`docs/lib/02`](../docs/lib/02-solvers-csp-sat-smt.md)
-as external-tech catalogue and [M2b](m2b_presentation/README.md) Track A's
+as external-tech catalogue and [M5](m5_presentation/README.md) Track A's
 *comparison* axis — which [M1c](m1c_external_validation/README.md)'s
 [P1c.2](m1c_external_validation/p1c.2_external_benchmarks/README.md) turns
 into a corpus and a harness, scheduled 2026-08-21. Benchmarking Z3 is the
@@ -127,7 +127,7 @@ plans/
 │   ├── divergences.md
 │   ├── design/ …                     11 numbered design docs
 │   └── p1a.0_conformance_harness/ …
-├── m1b_gui/                          the GUI — Tauri 2 + React + Monaco + Cytoscape
+├── m20_gui/                          the GUI — Tauri 2 + React + Monaco + Cytoscape
 │   └── README.md
 ├── m1c_external_validation/          checks that are not relative to Ein
 │   ├── README.md
@@ -145,7 +145,7 @@ plans/
 │   ├── README.md
 │   ├── open_questions.md
 │   └── p2.1_investigations/ …
-├── m2b_presentation/                 paper + talk after M2
+├── m5_presentation/                 paper + talk after M2
 │   └── README.md
 ├── m3_smt_integration/               (deleted 2026-08-18 — dropped; see git history)
 └── followups/                        parking lot — neither MVP-blocking nor scheduled
@@ -184,11 +184,11 @@ Stage files have a stable shape:
 |-----------|--------------|----------|----------------|
 | M1 | *(plans removed at P1.22 — git history)* | **shipped** — done 2026-06-17 (gate green) | ~3 months |
 | [M1a](m1a_rust/README.md)               | **full** — 11 design docs + 11 phases + 54 stage files | **shipped** — done 2026-08-23, all eleven phases closed. `ein.rs` is the only implementation: `solve zebra2.ein -e` end-to-end **4.53 s → 29.0 ms (157×)** with peak RSS 223 → 17 MB (the PyPy half frozen — nothing can re-measure it), `--jobs N` a further **3.17–4.40×** on 8 cores with every counter identical over 20 712 cells, and the gate **616 tests in 1 m 51 s** with no Python process in any of them | est. ~7 months; ran 2026-08-17 → 2026-08-23 |
-| [M1b](m1b_gui/README.md)                | README + stack decision | parked — slots between M1a and M2; Tauri stack settled 2026-08-18 | TBD |
+| [M20](m20_gui/README.md)                | README + stack decision | parked — depends on M1a, blocks nothing; Tauri stack settled 2026-08-18 | TBD |
 | [M1c](m1c_external_validation/README.md) | **full** — 2 phases + 10 stage files | queued behind M1a — stdlib expectations (`ein test`) + benchmarks against the field | ~1 month |
 | [M1d](m1d_satisfiability/README.md)     | mixed — P1d.1 at stage depth, P1d.2 / P1d.3 phase READMEs | queued behind M1a — exhaustive search over many models + existence obligations | ~2 months |
 | [M2](m2_nl_to_ir/README.md)             | medium (stage skeletons) | next | ~2 months after M1 |
-| [M2b](m2b_presentation/README.md)       | placeholder README only | parked — paper + talk after M2 | TBD |
+| [M5](m5_presentation/README.md)       | placeholder README only | parked — paper + talk after M2 | TBD |
 | ~~M3 — SMT integration~~                | *(deleted 2026-08-18 — dropped; see git history)* | **dropped** | — |
 | [followups](followups/README.md)        | theme files only | parking lot | unscheduled |
 

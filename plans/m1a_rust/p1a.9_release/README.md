@@ -22,7 +22,7 @@ and this phase closes the milestone behind it.
 > else. Both files are in git history.
 >
 > **Why.** The phase justified PyO3 with one consumer, and the census does not
-> support it. [M1b](../../m1b_gui/README.md) links the crates into a Tauri
+> support it. [M20](../../m20_gui/README.md) links the crates into a Tauri
 > backend; [M1c](../../m1c_external_validation/README.md)'s benchmark runner is
 > `ein-bench`, Rust, and
 > [S1c.2.2](../../m1c_external_validation/p1c.2_external_benchmarks/s1c.2.2_systems_and_install.md)
@@ -62,7 +62,7 @@ and this phase closes the milestone behind it.
 > **This is a deferral with a trip-wire, not a cancellation** —
 > [Q-M1a.23](../open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
 > records the three conditions that would bring it back, and the likeliest one
-> ([M2b](../../m2b_presentation/README.md): a paper whose artifact reviewers
+> ([M5](../../m5_presentation/README.md): a paper whose artifact reviewers
 > expect `pip install`) is a milestone away, not a phase.
 
 ## Goal
@@ -157,7 +157,7 @@ deliberate.
   pages and 1 051 lines specify a Python embedding API whose implementation
   this phase was going to build. With the binding deferred, the honest move is
   the one [S1a.9.4](s1a.9.4_documentation.md) T1a.9.4.3 already half-wanted: a
-  **Rust** embedding page, which is the surface [M1b](../../m1b_gui/README.md)
+  **Rust** embedding page, which is the surface [M20](../../m20_gui/README.md)
   binds against and which nothing documents today, with the Python pages moved
   to history beside
   [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md)'s

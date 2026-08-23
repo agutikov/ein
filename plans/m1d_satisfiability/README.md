@@ -14,7 +14,7 @@ speed P1a.6 bought, without which every experiment here costs a coffee break.
 P1d.1 was written against [P1a.7](../m1a_rust/p1a.7_parallelism/README.md),
 which is **paused after one stage**, so that dependency is now a decision
 rather than a wait — see the phase.
-**Blocks:** nothing on the critical path. [M1b](../m1b_gui/README.md) displays
+**Blocks:** nothing on the critical path. [M20](../m20_gui/README.md) displays
 whatever verdict vocabulary this milestone lands, so if the GUI ships first it
 follows this rather than the other way round.
 

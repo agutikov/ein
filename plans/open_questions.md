@@ -81,7 +81,7 @@ and no back-end to pick. Idea 02's threshold conditions
 cardinality) still describe where a graph-native engine is *weakest* —
 they are now a statement about Ein's scope rather than a trigger for a
 solver call, and they are the honest limitations paragraph
-[M2b](m2b_presentation/README.md) Track A owes its readers.
+[M5](m5_presentation/README.md) Track A owes its readers.
 
 ## Q3 — Surface IR syntax
 

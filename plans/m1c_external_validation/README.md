@@ -14,7 +14,7 @@ for P1c.1 (a new surface form is written once when there is one
 implementation and twice when there are two), and P1a.6's shipped speed for
 P1c.2 (a comparison run against the pre-optimisation engine measures the
 wrong thing).
-**Blocks:** nothing on the critical path. [M2b](../m2b_presentation/README.md)
+**Blocks:** nothing on the critical path. [M5](../m5_presentation/README.md)
 Track A is the consumer: its "head-to-head numbers where applicable" are
 this milestone's output, and the paper is not where a benchmark should be run
 for the first time.
@@ -127,6 +127,6 @@ harness lives.
   that scratch directory was gesturing at
 - [`utils/`](../../utils/) — `bench_env.sh` and `e2e_baseline.py`, the
   measurement discipline P1c.2 inherits rather than re-invents
-- [M2b](../m2b_presentation/README.md) Track A / Track B — the consumer
+- [M5](../m5_presentation/README.md) Track A / Track B — the consumer
 - [M1d](../m1d_satisfiability/README.md) — the sibling created the same day;
   `zebra2-minus-15`'s 32 models are P1c.2's cross-check and M1d's subject

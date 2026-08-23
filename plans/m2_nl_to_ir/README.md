@@ -22,7 +22,7 @@ end to end: the Wikipedia NL text in one column, the corresponding
 ein facts / rule firings / branch-depth in the other. NL → IR
 realises the input side of this table; the explanation side (IR
 trace → NL paragraphs) is M2's stretch goal and the natural lead-in
-to [M2b](../m2b_presentation/README.md).
+to [M5](../m5_presentation/README.md).
 
 Per [`docs/ideas/04-nlp-to-graph-to-solver-pipeline.md`](../ideas/04-nlp-to-graph-to-solver-pipeline.md):
 **do NOT go directly from NLP-tree to SMT**. The IR is the *third*

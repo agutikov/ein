@@ -26,7 +26,7 @@ it work. The package was deleted at M1a
 [S1a.10.5](../../plans/m1a_rust/p1a.10_single_implementation/s1a.10.5_removal.md)
 (2026-08-21); the PyO3 module that was to succeed it was **deferred the same
 day** for want of a consumer —
-[M1b](../../plans/m1b_gui/README.md) links the crates,
+[M20](../../plans/m20_gui/README.md) links the crates,
 [M1c](../../plans/m1c_external_validation/README.md)'s benchmark runner must
 shell out to be a fair measurement, and
 [M2](../../plans/m2_nl_to_ir/README.md)'s premise turned out to be an HTTP

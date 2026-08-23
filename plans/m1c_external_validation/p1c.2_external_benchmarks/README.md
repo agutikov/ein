@@ -22,7 +22,7 @@ M3 (SMT integration) was dropped 2026-08-18 and stays dropped: Ein has no
 solver back-end, hands no `(hard-slice …)` to anybody, and this phase does
 not reopen that. The drop note already made the distinction — what survived
 the milestone was [`docs/lib/02`](../../../docs/lib/02-solvers-csp-sat-smt.md)
-"as external-tech catalogue and M2b Track A's *comparison* axis" — and the
+"as external-tech catalogue and M5 Track A's *comparison* axis" — and the
 sharpening it added is the reason to run the benchmarks at all:
 
 > Ein never hands a slice to a solver … which sharpens the question rather
@@ -139,7 +139,7 @@ algorithm compares to a CDCL solver on the same puzzle.
   happens to hold
 - [`examples/README.md`](../../../examples/README.md) — the catalog
   convention the benchmark corpus follows
-- [M2b](../../m2b_presentation/README.md) Track A/B — the consumer
+- [M5](../../m5_presentation/README.md) Track A/B — the consumer
 - [F13](../../followups/f13_puzzles_beyond_zebra/ideas.md) — the *other*
   benchmark direction (BBH, ProofWriter, LogiQA): NL-shaped, M2-gated, and
   deliberately not this
