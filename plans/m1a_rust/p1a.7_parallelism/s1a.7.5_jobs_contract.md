@@ -2,13 +2,27 @@
 
 **Phase:** P1a.7 (Parallelism)
 **Estimate:** 2 days
+**Status:** in progress — **T1a.7.5.3 shipped 2026-08-23**, the corpus-wide
+sweep: **20 712 (file, op, jobs) cells at `--jobs {2,4,8,16}` over 128 files ×
+45 ops, 13 920 of them running a solve, 0 moved**, in 30 s against the retired
+T3 harness's 738.
 **Depends on:** [S1a.7.2](s1a.7.2_parallel_enterings.md),
-[S1a.7.3](s1a.7.3_parallel_boundary.md),
-[S1a.7.4](s1a.7.4_parallel_enqueue.md)
+~~[S1a.7.3](s1a.7.3_parallel_boundary.md)~~,
+~~[S1a.7.4](s1a.7.4_parallel_enqueue.md)~~ — **both declined 2026-08-23**
+([scaling.md §9](scaling.md#9-levels-2-and-3-measured-before-they-are-built)),
+so this stage is the phase's last and the "three parallel levels" its Context
+assumes are **one**: level 1, plus level 4, which needed nothing
 **Implements:** [design/08](../design/08_parallelism.md) §1
 **Decides:** Q-M1a.7
 
 ## Context
+
+> **One level exists, not three** — [S1a.7.3](s1a.7.3_parallel_boundary.md) and
+> [S1a.7.4](s1a.7.4_parallel_enqueue.md) were declined on measured premises,
+> which changes this stage in exactly one place: T1a.7.5.2's "threaded to the
+> three levels" is a `SolveOptions` field read at one site. The contract, the
+> matrix and `--unordered` are unaffected, because they were always about what
+> the *flag* promises rather than about how many sites honour it.
 
 Three parallel levels exist by now; this stage turns them into a *user
 contract* — one flag, three documented modes, and the conformance matrix
@@ -77,7 +91,7 @@ One `ExecPolicy { jobs, ordered }` threaded to the three levels, with
 one-worker pool — the sequential path must stay the reference
 implementation and must not bit-rot).
 
-### Task T1a.7.5.3 — The cross-jobs matrix
+### Task T1a.7.5.3 — The cross-jobs matrix ✅
 
 **Re-aimed 2026-08-22.** "Extend the harness" named `ein-conformance`; what
 this builds instead is `ein-render/tests/jobs_invariance.rs` — the third sweep
@@ -105,6 +119,38 @@ corpus cell cost 738 s; `id_order_invariance` does the whole corpus twice in
 seconds. If the `jobs` axis lands in the same envelope it belongs in
 `cargo test --workspace`, and a gate that runs is worth more than a tier that
 is read on Mondays.
+
+> **Shipped 2026-08-23, and nightly is not needed.**
+> `ein-render/tests/jobs_invariance.rs`: **5 178 cells in 12 s** at the default
+> `--jobs 2`, **20 712 in 30 s** at `EIN_JOBS_SWEEP=2,4,8,16` — which is the
+> acceptance's whole matrix, 25× cheaper than the harness it replaces, and in
+> `cargo test --workspace` rather than on a schedule. **0 moved**, and 13 920
+> of the cells ran a solve, which is asserted with a floor so the sweep cannot
+> go green by ceasing to reach them.
+>
+> Four things are worth carrying forward.
+>
+> - **The jobs axis is a parameter, not a global.** `solve_shape`, `dot_shape`,
+>   `trace_shape` and `dump_shape` take a `jobs: usize`; `corpus_ops::run_with`
+>   passes it and `run` is `run_with(…, 1)`. A global would have been three
+>   lines shorter and would have made the sweep's two runs share it.
+> - **The test is stricter than the contract, on purpose.** The contract admits
+>   narration movement — a firing count, an event ordinal, a dying fork's
+>   stopping point — and `id_order_invariance` measures 51 of 3 160 such
+>   movements under a permuted id space. Under a job count there are **none**,
+>   because a worker's events get their ordinals at the ordered commit
+>   (T1a.7.2.2), so the sweep asserts byte equality and classifies any
+>   difference through `ein-parity`'s cut only to say *which half* broke. A
+>   narration difference fails too, with a message saying the contract would
+>   have allowed it and that relaxing the assertion is a deliberate edit.
+> - **It was made to fail before it was trusted.** Committing a batch's results
+>   in reverse order — correct pairing, wrong order — turns it red on **179 of
+>   5 178** cells, and every one of them is classified as an *answer*
+>   difference rather than a narration one.
+> - **The default sweep is `--jobs 2` and that is a measurement decision**, in
+>   `EIN_ID_SEEDS`' shape: what makes a fan-out wrong is committing out of
+>   order or handing a worker the wrong root, and two threads reach both.
+>   `EIN_JOBS_SWEEP` is the seam, and `2,4,8,16` is what a release run uses.
 
 ### Task T1a.7.5.4 — `--unordered`
 

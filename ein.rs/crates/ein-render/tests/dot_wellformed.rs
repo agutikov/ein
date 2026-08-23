@@ -195,7 +195,7 @@ fn graphviz_accepts_every_view_of_every_corpus_file() {
             let Ok(forms) = parse(&mut ast, &text, path.to_str()) else {
                 continue;
             };
-            let Ok(out) = dot_shape(&mut ast, &mut terms, &forms, path.parent(), view) else {
+            let Ok(out) = dot_shape(&mut ast, &mut terms, &forms, path.parent(), view, 1) else {
                 continue;
             };
             let dot = digraphs_only(&out);

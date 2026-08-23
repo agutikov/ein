@@ -36,7 +36,7 @@ fn rendered(path: &Path, mode: &str) -> Option<String> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = parse(&mut ast, &text, path.to_str()).ok()?;
-    dump_shape(&mut ast, &mut terms, &forms, path.parent(), mode).ok()
+    dump_shape(&mut ast, &mut terms, &forms, path.parent(), mode, 1).ok()
 }
 
 /// **A budget abort leaves a timeline and no summary.**

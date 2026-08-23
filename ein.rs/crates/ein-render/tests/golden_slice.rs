@@ -36,7 +36,8 @@ fn slice_view(rel: &str) -> String {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = parse(&mut ast, &text, path.to_str()).expect("the fixture parses");
-    dot_shape(&mut ast, &mut terms, &forms, path.parent(), "slice").expect("the slice view renders")
+    dot_shape(&mut ast, &mut terms, &forms, path.parent(), "slice", 1)
+        .expect("the slice view renders")
 }
 
 #[test]

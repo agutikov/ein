@@ -157,7 +157,7 @@ fn a_forks_own_dump_reproduces_its_golden() {
 #[test]
 fn the_snapshot_projection_reproduces_its_golden() {
     let (path, mut ast, mut terms, forms) = parsed(FIXTURE);
-    let got = dump_shape(&mut ast, &mut terms, &forms, path.parent(), "snapshot")
+    let got = dump_shape(&mut ast, &mut terms, &forms, path.parent(), "snapshot", 1)
         .expect("the snapshot renders");
     // The two things `ein-parity` blanks out of this text when it is compared
     // against ein.py — so if they were not here, this golden would be pinning

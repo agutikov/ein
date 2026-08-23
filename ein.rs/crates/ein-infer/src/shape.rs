@@ -791,6 +791,7 @@ pub fn solve_shape(
     terms: &mut Terms,
     kb: &mut Kb,
     mode: &str,
+    jobs: usize,
 ) -> Result<String, String> {
     use crate::solve::{NoDumper, OnBudget, SolveOptions, solve};
 
@@ -808,6 +809,7 @@ pub fn solve_shape(
         max_enterings: Some(if exhaustive { 60 } else { 300 }),
         on_budget: OnBudget::Verdict,
         store_lattice: true,
+        jobs,
         ..SolveOptions::default()
     };
     let buffer = crate::events::Buffer::new();

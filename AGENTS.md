@@ -198,6 +198,7 @@ constrained-reasoning research.
 cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the whole gate
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 2 slow entries
 EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance
+EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
 ```
 

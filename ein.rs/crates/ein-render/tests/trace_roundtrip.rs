@@ -42,7 +42,7 @@ fn every_rendered_trace_round_trips_through_the_ir() {
         let Ok(forms) = parse(&mut ast, &text, path.to_str()) else {
             continue;
         };
-        let Ok(shape) = trace_shape(&mut ast, &mut terms, &forms, path.parent(), "trace") else {
+        let Ok(shape) = trace_shape(&mut ast, &mut terms, &forms, path.parent(), "trace", 1) else {
             continue;
         };
         rendered += 1;

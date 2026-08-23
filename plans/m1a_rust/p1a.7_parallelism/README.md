@@ -133,7 +133,7 @@ the table is that each now names *what* to build instead of naming a harness.
 
 | the criterion, as it was written | what it named | what asserts it now |
 |---|---|---|
-| `--jobs {1,2,4,8,16}` **T3-identical** on the whole corpus | `ein-conformance --tier T3`, two processes diffed per corpus cell | **`ein-render/tests/jobs_invariance.rs`** — a third sweep over [`corpus_ops`](../../../ein.rs/crates/ein-render/tests/corpus_ops/mod.rs), in `id_order_invariance`'s shape: the manifest's 128 files × 45 ops, run at `--jobs 1` and at `--jobs N` in one process, compared through `ein-parity`'s cut |
+| `--jobs {1,2,4,8,16}` **T3-identical** on the whole corpus | `ein-conformance --tier T3`, two processes diffed per corpus cell | ✅ **`ein-render/tests/jobs_invariance.rs`, shipped 2026-08-23** (T1a.7.5.3) — a third sweep over [`corpus_ops`](../../../ein.rs/crates/ein-render/tests/corpus_ops/mod.rs), in `id_order_invariance`'s shape: **20 712 cells** over the manifest's 128 files × 45 ops × `--jobs {2,4,8,16}`, 13 920 of them running a solve, **0 moved**, in **30 s** against T3's 738. It asserts byte equality and uses the cut only to name which half a future difference is |
 | — its counter half | T1: every `enterings_*`, `saturate_count`, `nogoods_*`, the NAF and hypgen counters | `ein-cli/tests/summary_properties.rs` ✅, whose thirteen identities already run over every `solve` cell — extended to run the sweep at `--jobs N`. The cut above holds the counters *exactly*, so this is the belt to that braces |
 | — its process half | T0/T3: exit code, stdout, `--json-summary` | `ein-cli/tests/corpus_cli.rs` ✅ — every declared cell as a process against a banked exit table — extended with a `--jobs` axis |
 | — its byte half | T3: the rendered surfaces | the goldens ✅ (`golden_events`, `golden_trace`, `golden_dot`, `golden_dump`) re-run at `--jobs N`. These are **stricter** than the cut and are where a narration change is *supposed* to be visible |
@@ -333,7 +333,11 @@ stays readable.
 
 - `--jobs {1,2,4,8,16}` **is the same computation as `--jobs 1`** on the whole
   corpus — exact on the answer and every counter, and no wider in narration
-  than a permuted id space already is.
+  than a permuted id space already is. ✅ **2026-08-23** — and *narrower*: a
+  permuted id space moves 51 of 3 160 renderings and a job count moves **0 of
+  20 712**, because a worker's events get their ordinals at the ordered commit.
+  `EIN_JOBS_SWEEP=2,4,8,16 cargo test -p ein-render --test jobs_invariance`,
+  30 s.
 - A 10 000-run randomised stress of `--jobs 8` vs `--jobs 1` with no
   divergence, as a sixth property of the fuzzer rather than a harness run.
   ✅ **2026-08-23** — `utils/fuzz_ein.py --seed 20260823 --iters 5000

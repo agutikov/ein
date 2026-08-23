@@ -189,7 +189,13 @@ fn saturate(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<(), String> {
     Ok(())
 }
 
-fn solve_view(ast: &Ast, terms: &mut Terms, kb: &mut Kb, view: &str) -> Result<String, String> {
+fn solve_view(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+    view: &str,
+    jobs: usize,
+) -> Result<String, String> {
     use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
 
     let opts = SolveOptions {
@@ -198,6 +204,7 @@ fn solve_view(ast: &Ast, terms: &mut Terms, kb: &mut Kb, view: &str) -> Result<S
         max_enterings: Some(60),
         on_budget: OnBudget::Verdict,
         store_lattice: true,
+        jobs,
         ..SolveOptions::default()
     };
     let mut events = ein_infer::events::Events::off();
@@ -269,12 +276,20 @@ fn solve_view(ast: &Ast, terms: &mut Terms, kb: &mut Kb, view: &str) -> Result<S
 }
 
 /// Render one view of a parsed program.
+///
+/// `jobs` is [S1a.7.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+/// T1a.7.5.3's axis and the reason it is a parameter rather than a default:
+/// `jobs_invariance` runs every op at `--jobs 1` and again at `--jobs N` in one
+/// process, and a knob it could not set per call would have to be a global.
+/// Every other caller passes `1`, which is the engine's default and the shape
+/// these renderings were blessed at.
 pub fn dot_shape(
     ast: &mut Ast,
     terms: &mut Terms,
     forms: &[NodeId],
     base_dir: Option<&Path>,
     view: &str,
+    jobs: usize,
 ) -> Result<String, String> {
     if PARSE_VIEWS.contains(&view) {
         return parse_view(ast, forms, view);
@@ -283,7 +298,7 @@ pub fn dot_shape(
     if KB_VIEWS.contains(&view) {
         return kb_view(ast, terms, &mut kb, view);
     }
-    solve_view(ast, terms, &mut kb, view)
+    solve_view(ast, terms, &mut kb, view, jobs)
 }
 
 // ── The trace and answer surface ───────────────────────────────────
@@ -303,6 +318,7 @@ fn solve_for_trace(
     kb: &mut Kb,
     store_lattice: bool,
     first: bool,
+    jobs: usize,
 ) -> Result<ein_infer::solve::Solved, String> {
     use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
     let opts = SolveOptions {
@@ -311,6 +327,7 @@ fn solve_for_trace(
         max_enterings: Some(if first { 300 } else { 60 }),
         on_budget: OnBudget::Verdict,
         store_lattice,
+        jobs,
         ..SolveOptions::default()
     };
     let mut events = ein_infer::events::Events::off();
@@ -355,18 +372,21 @@ fn trace_markdown(
     )
 }
 
-/// Render one mode of the trace / answer surface.
+/// Render one mode of the trace / answer surface.///
+/// `jobs` is [S1a.7.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+/// T1a.7.5.3's axis — see [`dot_shape`].
 pub fn trace_shape(
     ast: &mut Ast,
     terms: &mut Terms,
     forms: &[NodeId],
     base_dir: Option<&Path>,
     mode: &str,
+    jobs: usize,
 ) -> Result<String, String> {
     let mut kb = ein_ir::load(ast, terms, forms, base_dir).map_err(|e| e.to_string())?;
 
     if mode == "no-proof" {
-        let solved = solve_for_trace(ast, terms, &mut kb, false, false)?;
+        let solved = solve_for_trace(ast, terms, &mut kb, false, false, jobs)?;
         return Ok(trace_markdown(
             ast,
             terms,
@@ -380,7 +400,7 @@ pub fn trace_shape(
     }
 
     if mode == "answer" {
-        let solved = solve_for_trace(ast, terms, &mut kb, true, false)?;
+        let solved = solve_for_trace(ast, terms, &mut kb, true, false, jobs)?;
         let mut out: Vec<String> = Vec::new();
         for exhausted in [true, false] {
             out.push(format!("--- answer exhausted={}", py_bool(exhausted)));
@@ -418,7 +438,7 @@ pub fn trace_shape(
         return Ok(out.join("\n"));
     }
 
-    let solved = solve_for_trace(ast, terms, &mut kb, true, true)?;
+    let solved = solve_for_trace(ast, terms, &mut kb, true, true, jobs)?;
     let f = |diagrams, full_kb, relevant, reorder| Flags {
         diagrams,
         full_kb,
@@ -620,19 +640,22 @@ fn temp_dir(tag: &str) -> PathBuf {
     p
 }
 
-/// Render one mode of the state-dump surface.
+/// Render one mode of the state-dump surface.///
+/// `jobs` is [S1a.7.5](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+/// T1a.7.5.3's axis — see [`dot_shape`].
 pub fn dump_shape(
     ast: &mut Ast,
     terms: &mut Terms,
     forms: &[NodeId],
     base_dir: Option<&Path>,
     mode: &str,
+    jobs: usize,
 ) -> Result<String, String> {
     use ein_infer::solve::{OnBudget, SolveError, SolveOptions, solve};
 
     let mut kb = ein_ir::load(ast, terms, forms, base_dir).map_err(|e| e.to_string())?;
     if mode == "snapshot" {
-        return snapshot_shape(ast, terms, &mut kb);
+        return snapshot_shape(ast, terms, &mut kb, jobs);
     }
 
     let tmp = temp_dir(mode);
@@ -649,6 +672,7 @@ pub fn dump_shape(
             OnBudget::Verdict
         },
         store_lattice: matches!(mode, "lattice" | "abort"),
+        jobs,
         ..SolveOptions::default()
     };
     let mut events = ein_infer::events::Events::off();
@@ -702,7 +726,12 @@ pub fn dump_shape(
 /// snapshot's `solutions` are post-saturation state keys, so its solution view
 /// draws whole states where the proof's draws commitments. What matters is
 /// that both implementations draw the same one.
-fn snapshot_shape(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<String, String> {
+fn snapshot_shape(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+    jobs: usize,
+) -> Result<String, String> {
     use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
 
     let opts = SolveOptions {
@@ -711,6 +740,7 @@ fn snapshot_shape(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<String, S
         max_enterings: Some(60),
         on_budget: OnBudget::Verdict,
         store_lattice: true,
+        jobs,
         ..SolveOptions::default()
     };
     let mut events = ein_infer::events::Events::off();

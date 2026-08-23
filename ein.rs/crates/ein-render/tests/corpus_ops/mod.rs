@@ -155,6 +155,17 @@ impl Op {
 /// agrees trivially and a file that refuses in only one is a difference, which
 /// is why the error text is returned rather than swallowed.
 pub fn run(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
+    run_with(terms, path, op, 1)
+}
+
+/// The same, at a chosen job count — [S1a.7.5](../../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md)
+/// T1a.7.5.3's axis.
+///
+/// It is a parameter and not a global because `jobs_invariance` runs the same
+/// op at two job counts inside one process, and because the ops that *cannot*
+/// differ by job count — every frontend one — should be visibly passing the
+/// same 1 they always did.
+pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<String> {
     let text = std::fs::read_to_string(path).ok()?;
     let mut ast = Ast::new();
     let base = path.parent();
@@ -181,9 +192,9 @@ pub fn run(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
         });
     }
     let outcome = match op {
-        Op::Dot(view) => dot_shape(&mut ast, terms, &forms, base, view),
-        Op::Trace(mode) => trace_shape(&mut ast, terms, &forms, base, mode),
-        Op::Dump(mode) => dump_shape(&mut ast, terms, &forms, base, mode),
+        Op::Dot(view) => dot_shape(&mut ast, terms, &forms, base, view, jobs),
+        Op::Trace(mode) => trace_shape(&mut ast, terms, &forms, base, mode, jobs),
+        Op::Dump(mode) => dump_shape(&mut ast, terms, &forms, base, mode, jobs),
         _ => {
             let mut kb = ein_ir::load(&mut ast, terms, &forms, base).ok()?;
             match op {
@@ -197,7 +208,7 @@ pub fn run(terms: &mut Terms, path: &Path, op: Op) -> Option<String> {
                 Op::Saturate => {
                     ein_infer::saturate_events(&ast, terms, &mut kb).map_err(|e| e.to_string())
                 }
-                Op::Solve(mode) => ein_infer::solve_shape(&ast, terms, &mut kb, mode),
+                Op::Solve(mode) => ein_infer::solve_shape(&ast, terms, &mut kb, mode, jobs),
                 Op::Commit(ff) => {
                     ein_infer::commit_shape(&ast, terms, &mut kb, ff).map_err(|e| e.to_string())
                 }
