@@ -191,6 +191,26 @@ pub struct Counters {
     /// fork's records die with the fork, root's do not.
     pub prov_push_in_entering: u64,
 
+    // ── the enqueue pass ───────────────────────────────────────────
+    /// Enqueue passes run — one full pass at saturation start, then one delta
+    /// pass per firing. **No ein.py counterpart**; it exists because
+    /// [S1a.7.4](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.4_parallel_enqueue.md)
+    /// proposes to fan a pass out and the question that decides it is not how
+    /// much the passes cost in total but how much *one* of them has to hand out.
+    pub enqueue_pass: u64,
+    /// The units such a fan-out would schedule: one `full_match` (a plan) or
+    /// one `seed_match` (a `(delta fact, plan)` pair). `enqueue_task /
+    /// enqueue_pass` is the mean width of the fan-out T1a.7.4.1 describes, and
+    /// a mean near 1 is a fan-out with nothing in it.
+    pub enqueue_task: u64,
+    /// …of which `full_match` — the whole-plan-list kind, which a fresh
+    /// saturator runs once and a reflective rule's freshly-compiled plan runs
+    /// one of. Split out because the two kinds have wildly different widths:
+    /// a full pass is `engine.len()` tasks and a delta pass is one per plan
+    /// that reads the new fact, so a mean taken over both says nothing about
+    /// either.
+    pub enqueue_task_full: u64,
+
     // ── negation at the boundary ───────────────────────────────────
     /// Guard sub-plan evaluations — one per guard, so ein.py's comparable site
     /// is `World.absent` and not the `first_failing` that loops over it. 33 113
@@ -377,6 +397,9 @@ impl Counters {
             entering_prov_new: 0,
             entering_fact_new_max_i: 0,
             prov_push_in_entering: 0,
+            enqueue_pass: 0,
+            enqueue_task: 0,
+            enqueue_task_full: 0,
             guard_query: 0,
             watch_stamp: 0,
             watch_stamp_rel: 0,
@@ -402,7 +425,7 @@ impl Counters {
 
     /// `(name, value)` in declaration order, so a printed table and a JSON
     /// artefact cannot drift from the struct or from each other.
-    pub fn rows(&self) -> [(&'static str, u64); 50] {
+    pub fn rows(&self) -> [(&'static str, u64); 53] {
         [
             ("unify_slot", self.unify_slot),
             ("unify", self.unify),
@@ -436,6 +459,9 @@ impl Counters {
             ("entering_prov_new", self.entering_prov_new),
             ("entering_fact_new_max_i", self.entering_fact_new_max_i),
             ("prov_push_in_entering", self.prov_push_in_entering),
+            ("enqueue_pass", self.enqueue_pass),
+            ("enqueue_task", self.enqueue_task),
+            ("enqueue_task_full", self.enqueue_task_full),
             ("guard_query", self.guard_query),
             ("watch_stamp", self.watch_stamp),
             ("watch_stamp_rel", self.watch_stamp_rel),
@@ -515,6 +541,9 @@ mod tests {
         c.entering_prov_new = 1;
         c.entering_fact_new_max_i = 1;
         c.prov_push_in_entering = 1;
+        c.enqueue_pass = 1;
+        c.enqueue_task = 1;
+        c.enqueue_task_full = 1;
         c.guard_query = 1;
         c.watch_stamp = 1;
         c.watch_stamp_rel = 1;
@@ -537,6 +566,6 @@ mod tests {
             Counters { ..c },
             "no field left out of the literal above"
         );
-        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 49);
+        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 52);
     }
 }

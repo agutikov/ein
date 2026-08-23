@@ -2,8 +2,63 @@
 
 **Phase:** P1a.7 (Parallelism)
 **Estimate:** 2 days
+**Status:** **premise measured 2026-08-23 — right about the share, wrong about
+the width** — awaiting a decision on whether to decline the stage
+([scaling.md §9](scaling.md#9-levels-2-and-3-measured-before-they-are-built)).
 **Depends on:** [S1a.7.1](s1a.7.1_sync_shared_state.md)
 **Implements:** [design/08](../design/08_parallelism.md) §3
+
+## The premise, measured
+
+> **Taken 2026-08-23, before any of the mechanism was built**, in the form
+> [S1a.7.0](s1a.7.0_speculation_audit.md) and
+> [S1a.7.1](s1a.7.1_sync_shared_state.md) established for this phase.
+
+**This stage's self-assessment is wrong in the direction that flatters it.**
+§ Context calls it "the smallest of the three engine-level parallel wins";
+`enqueue_pass` is **10.6–31.2 % of a solve on every workload measured**,
+including all four of the phase's measurement set, where
+[S1a.7.3](s1a.7.3_parallel_boundary.md)'s site is 0.0 % on three of them. By
+share, the two stages should swap places.
+
+**By fan-out width they should both go.** T1a.7.4.1 schedules one task per plan
+(full pass) or per `(delta fact, plan)` pair (delta pass), and the two counters
+added for this question — `enqueue_pass`, `enqueue_task`, and `enqueue_task_full`
+to keep the two kinds apart — say what one pass has to hand out:
+
+| workload | passes | tasks | of which full | **tasks per pass** | share |
+|---|---:|---:|---:|---:|---:|
+| `zebra2 -e` | 1 945 | 89 042 | 125 | **45.7** | 25.3 % |
+| `zebra -e` | 6 587 | 71 695 | 32 | **10.9** | 31.2 % |
+| `branching/07 -e` | 66 946 | 204 220 | 4 | **3.1** | 20.7 % |
+| `branching/06 -e` | 27 481 | 80 480 | 4 | **2.9** | 12.8 % |
+| `sq-bwd/houses -e` | 118 790 | 197 811 | 1 | **1.7** | 30.2 % |
+| `features/01 -e` | 665 801 | 900 254 | 2 | **1.4** | 10.6 % |
+
+The `full` column is 1–4 outside the zebras — one per compiled plan, once — so
+those means *are* the delta-pass width. **1.4 to 3.1 tasks on the measurement
+set**, against a fan-out of 8.
+
+**And a pass is shorter than a barrier**: 0.26 µs on `features/01 -e`, 0.64 on
+`houses -e`, 0.87 on `branching/07 -e`, against ~10 µs for a barrier on the
+pool ([§8a](scaling.md#8a-t1a724--the-early-stop-and-the-batch-that-was-flat)
+priced that while measuring something else). T1a.7.4.4's threshold would
+therefore be met on the two zebras and nowhere else — which is § Context's own
+escape hatch, "if the threshold ends up *never*, that is a legitimate result",
+arriving with a number.
+
+**Why the premise moved.** The stage was written against a *full* re-match per
+firing. [S1a.3.4](../p1a.3_deductive_core/s1a.3.4_world_and_contradiction.md)'s
+semi-naive re-evaluation replaced it with delta seeding, on the finding that
+"91 % of matcher output was re-discovery a full re-match would recompute" —
+and that 91 % is exactly the bulk T1a.7.4.1 proposed to spread over cores.
+**Incrementality and parallelism compete for the same work**, and here the
+incremental version shipped three phases ago.
+
+**The recommendation is to decline the stage with these numbers**, beside
+S1a.7.3's. What would re-open it is a program whose delta passes are wide — the
+zebras' 45.7 shows the shape exists — and the predicate to re-take is `tasks
+per pass ≥ jobs`, not `share ≥ x %`.
 
 ## Context
 

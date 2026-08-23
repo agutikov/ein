@@ -2,8 +2,64 @@
 
 **Phase:** P1a.7 (Parallelism)
 **Estimate:** 2 days
+**Status:** **premise measured 2026-08-23, and it does not hold** — awaiting a
+decision on whether to decline the stage
+([scaling.md §9](scaling.md#9-levels-2-and-3-measured-before-they-are-built)).
 **Depends on:** [S1a.7.1](s1a.7.1_sync_shared_state.md)
 **Implements:** [design/08](../design/08_parallelism.md) §4
+
+## The premise, measured
+
+> **Taken 2026-08-23, before any of the mechanism was built**, in the form
+> [S1a.7.0](s1a.7.0_speculation_audit.md) and
+> [S1a.7.1](s1a.7.1_sync_shared_state.md) established for this phase.
+> § Context below is the stage as written and its opening sentence is from an
+> engine that no longer exists.
+
+**Three of the four workloads of the phase's measurement set never park a
+single candidate.** `branching/06 -e`, `branching/07 -e` and
+`saturation/square-bwd/houses -e` run 4 775, 10 932 and 21 700 boundary rounds
+between them and every one returns at `admit_from_boundary`'s
+`parked.is_empty()` line. `admit_from_boundary` is **0.0 %** of each of those
+three profiles, and that zero is structural rather than a sampling artefact.
+
+On the fourth, `features/01_not_and_absent -e` — the corpus's NAF fixture, and
+the workload this stage would most expect to serve — it is **3.2 %**, and a
+round judges a **median of one** parked candidate and never more than five.
+T1a.7.3.1 fans out a round's `first_failing` queries *in chunks of `jobs`*;
+there is nothing to put in the chunk.
+
+The site is 18.9–30.2 % on the two zebras, whose rounds judge a median of 3 and
+6 — still short of one chunk at `--jobs 8`, and
+[§5.4](scaling.md#5-what-this-chooses) already moved them out of the scaling
+set for being 30 and 47 ms runs whose layer 1 cannot be fanned out at all.
+
+**And a round is shorter than a barrier.** 0.18 µs on `features/01 -e`, 2.8 and
+4.8 µs on the zebras, against ~10 µs for a barrier on the pool — which
+[§8a](scaling.md#8a-t1a724--the-early-stop-and-the-batch-that-was-flat) priced
+while measuring something else.
+
+**Why the premise moved, and it is not that the plan was wrong.**
+[S1a.6.12](../p1a.6_performance/s1a.6.12_boundary_and_snapshot.md) gave the
+boundary epoch invalidation: a round now re-judges only the candidates whose
+watched relations moved. 3 216 rounds of `zebra -e` visit 248 043 of the
+947 758 candidates a copying round would have handled, and stop early on the
+admission that ends each one. **That is the bulk this stage proposed to spread
+over cores, and an earlier stage already deleted it** — incrementality and
+parallelism compete for the same work.
+
+**The recommendation is to decline the stage with these numbers**, the way
+[S1a.7.1](s1a.7.1_sync_shared_state.md) lost three of its eight tasks: removed
+by a measurement, not by a preference. § Notes below pre-authorised the softer
+half of this ("gated off by default with the number recorded"); the numbers say
+the gate would never open, and a mechanism whose gate never opens is a
+mechanism with tests, a config field and no caller.
+
+**What would re-open it** is a workload that parks in bulk — the predicate is
+"does a boundary round have `jobs` candidates to judge", not "is the boundary
+expensive". [M1c P1c.2](../../m1c_external_validation/p1c.2_external_benchmarks/README.md)'s
+external benchmark corpus is where one would come from, and re-taking the two
+tables above is a morning's work at that point.
 
 ## Context
 

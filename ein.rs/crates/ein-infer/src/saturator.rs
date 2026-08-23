@@ -829,6 +829,7 @@ impl Saturator {
         // reflective rule-implication case (S1.8.A9).
         self.engine.compile_all(s.ast, s.terms, s.kb, s.events)?;
         self.matched_plans.resize(self.engine.len(), false);
+        ein_core::counters::bump(|c| c.enqueue_pass += 1);
         let Some(delta) = delta else {
             for at in 0..self.engine.len() {
                 self.matched_plans[at] = true;
@@ -891,6 +892,10 @@ impl Saturator {
     }
 
     fn full_match(&mut self, s: &mut Session<'_>, at: usize) {
+        ein_core::counters::bump(|c| {
+            c.enqueue_task += 1;
+            c.enqueue_task_full += 1;
+        });
         let plan = self.engine.plan_arc(at);
         let priority = self.priority_for(s, &plan);
         // The matcher is moved out for the duration: `enqueue_binding` runs
@@ -910,6 +915,7 @@ impl Saturator {
     }
 
     fn seed_match(&mut self, s: &mut Session<'_>, at: usize, fact: FactId) {
+        ein_core::counters::bump(|c| c.enqueue_task += 1);
         let plan = self.engine.plan_arc(at);
         let priority = self.priority_for(s, &plan);
         let mut m = std::mem::take(&mut self.matcher);

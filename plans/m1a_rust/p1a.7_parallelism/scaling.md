@@ -912,7 +912,139 @@ Both were written to fail loudly rather than vacuously: the first asserts that
 at least four of its runs really did stop early, the second that at least one
 really did waste something.
 
-## 9. Reproducing
+## 9. Levels 2 and 3, measured before they are built
+
+**[S1a.7.3](s1a.7.3_parallel_boundary.md) and
+[S1a.7.4](s1a.7.4_parallel_enqueue.md) are the phase's remaining engine
+stages, and their premises are from a deleted engine.** S1a.7.3 opens with
+"`_admit_from_boundary` is 72 % of an exhaustive solve under ein.py"; S1a.7.4
+calls itself "the smallest of the three engine-level parallel wins". Both
+sentences predate [P1a.6](../p1a.6_performance/README.md), which spent a stage
+on each of the two sites, and the port has run without a Python engine since
+[S1a.10.5](../p1a.10_single_implementation/README.md). So the same thing was
+done here that [S1a.7.0](s1a.7.0_speculation_audit.md) did to S1a.7.2 and
+[S1a.7.1](s1a.7.1_sync_shared_state.md) did to itself: measure first.
+
+Three instruments, none of them new: `utils/profile_ein_rs.py --cum-of` for
+the share, the `--events` stream for the per-round width, and two counters
+added here — `enqueue_pass` / `enqueue_task` / `enqueue_task_full`, which are
+what a fan-out over the enqueue pass would schedule.
+
+### The share of a solve each site holds
+
+`--cum-of`, samples whose stack passes through the frame, `profiling` build,
+`cpu4`:
+
+| workload | `admit_from_boundary` | `enqueue_pass` |
+|---|---:|---:|
+| `zebra2 -e` | **30.2 %** | 25.3 % |
+| `zebra -e` | **18.9 %** | 31.2 % |
+| `features/01 -e` | 3.2 % | 10.6 % |
+| `branching/06 -e` | **0.0 %** | 12.8 % |
+| `branching/07 -e` | **0.0 %** | 20.7 % |
+| `sq-bwd/houses -e` | **0.0 %** | 30.2 % |
+
+Read alone this says S1a.7.4 has a target everywhere and S1a.7.3 has one only
+on the two zebras — which §5.4 already excluded from the scaling set, because
+they are 30 and 47 ms runs whose layer 1 cannot be fanned out. That would be
+enough to re-order the two stages. It is not enough to decide either, because
+**a share is not a fan-out.** What matters for a chunked fan-out is how much
+*one* invocation has to hand out.
+
+### …and what one invocation has to hand out
+
+**The boundary round.** T1a.7.3.1 fans out the `first_failing` queries of one
+round in chunks of `jobs`. One `first_failing` call emits exactly one
+`park` / `retire` / `admit` event, and a round is bracketed by `quiesce`, so
+the event stream counts the chunk directly:
+
+| workload | rounds | with anything to judge | median | p90 | max | rounds ≥ 8 |
+|---|---:|---:|---:|---:|---:|---:|
+| `zebra2 -e` | 1 891 | 1 868 | **6** | 51 | 244 | 37 % |
+| `zebra -e` | 3 216 | 3 216 | **3** | 17 | 165 | 22 % |
+| `features/01 -e` | 665 800 | 287 650 | **1** | 1 | 5 | **0 %** |
+| `branching/06 -e` | 4 775 | **0** | — | — | — | — |
+| `branching/07 -e` | 10 932 | **0** | — | — | — | — |
+| `sq-bwd/houses -e` | 21 700 | **0** | — | — | — | — |
+
+**Three of the four workloads of the phase's measurement set never park a
+single candidate**, so their boundary rounds return at the `parked.is_empty()`
+line and there is nothing to parallelise — the 0.0 % above is structural and
+not a sampling artefact. The fourth judges a **median of one** candidate per
+round and never more than five. Even on the two zebras the median round cannot
+fill one chunk at `--jobs 8`.
+
+**The enqueue pass.** T1a.7.4.1 fans out one task per plan (full pass) or per
+`(delta fact, plan)` pair (delta pass) — which is exactly `enqueue_task`:
+
+| workload | passes | tasks | of which full | **tasks per pass** |
+|---|---:|---:|---:|---:|
+| `zebra2 -e` | 1 945 | 89 042 | 125 | **45.7** |
+| `zebra -e` | 6 587 | 71 695 | 32 | **10.9** |
+| `branching/07 -e` | 66 946 | 204 220 | 4 | **3.1** |
+| `branching/06 -e` | 27 481 | 80 480 | 4 | **2.9** |
+| `sq-bwd/houses -e` | 118 790 | 197 811 | 1 | **1.7** |
+| `features/01 -e` | 665 801 | 900 254 | 2 | **1.4** |
+
+The `full` column is why the split was worth counting: a full pass is
+`engine.len()` tasks and a delta pass is one per plan that reads the new fact,
+so a mean over both would have been a different number about neither. It is 1–4
+outside the zebras — one per compiled plan, once — so the means above *are* the
+delta-pass width. **1.4 to 3.1 on the measurement set.**
+
+### And an invocation is shorter than a barrier
+
+Multiply the share by the wall clock and divide by the count:
+
+| workload | one boundary round | one enqueue pass |
+|---|---:|---:|
+| `features/01 -e` | **0.18 µs** | **0.26 µs** |
+| `sq-bwd/houses -e` | — (never parks) | 0.64 µs |
+| `branching/07 -e` | — | 0.87 µs |
+| `branching/06 -e` | — | 0.91 µs |
+| `zebra -e` | 2.8 µs | 2.2 µs |
+| `zebra2 -e` | 4.8 µs | 3.9 µs |
+
+**And a barrier on the pool costs about 10 µs**, which §8a priced by accident
+rather than by design: `features/01 -e` at `--jobs 8` with a flat `batch = jobs`
+runs 48 021 barriers in 994.9 ms and with the ramped batch 1 501 in 527.3 ms —
+467.6 ms for 46 520 barriers, load imbalance included, so 10 µs is an upper
+bound and the right order. Against 0.18 and 0.26 µs that is **40–60×**.
+
+### What this says about the two stages
+
+Level 1 fans out **enterings**, which arrive thousands to a layer and cost tens
+of microseconds each; that is why it is 3.16–4.30×. Levels 2 and 3 fan out
+units that arrive **one to three at a time** and cost a fraction of a
+microsecond, inside a loop that runs hundreds of thousands of times.
+
+The reason is not that the plan was wrong when it was written. It is that
+**P1a.6 already took this work by making it incremental, and incrementality and
+parallelism are competing for the same bulk.**
+[S1a.6.12](../p1a.6_performance/s1a.6.12_boundary_and_snapshot.md) gave the
+boundary its epoch invalidation, so a round now re-judges only the candidates
+whose watched relations moved — 3 216 rounds of `zebra -e` visit 248 043 of the
+947 758 candidates they would have copied, and stop early on the admission that
+ends each one.
+[S1a.3.4](../p1a.3_deductive_core/s1a.3.4_world_and_contradiction.md)'s
+semi-naive re-evaluation gave the enqueue pass its delta seeding, so a pass now
+seeds only the plans that read the one new fact — "91 % of matcher output was
+re-discovery a full re-match would recompute", and that 91 % is exactly the
+bulk T1a.7.4.1 proposed to spread over cores.
+
+A stage that fans out what an earlier stage already deleted measures the
+overhead and nothing else. **The recommendation is to decline both with these
+numbers**, in [S1a.7.1](s1a.7.1_sync_shared_state.md)'s form — the tasks
+removed by a measurement rather than by a preference — and to spend the
+remaining budget on [S1a.7.5](s1a.7.5_jobs_contract.md), which owes the
+contract, `jobs_invariance` and `--unordered`, and on the fan-out's own
+efficiency, which is where the phase's missing 1.5× actually is
+([§ Where the other 1.5× is](#where-the-other-15-is)). S1a.7.3's Notes
+pre-authorised half of this — "if this stage does not show a speedup … the
+stage should then be gated off by default with the number recorded" — and the
+numbers say the gate would never open.
+
+## 10. Reproducing
 
 ```sh
 # §1
@@ -980,6 +1112,33 @@ cargo test -p ein-infer --test search_invariants speculative_waste
 # …and the same-computation sweep, both arms: every non-slow corpus entry's
 # `solve` and `solve -e` at -j 1 and -j 8, compared on exit, stdout and every
 # --json-summary field.
+
+# §9 — the two premises, three instruments
+python3 utils/profile_ein_rs.py --top 0 --repeat 8 \
+    --cum-of admit_from_boundary --cum-of enqueue_pass solve examples/zebra2.ein -e
+cd ein.rs && cargo run --release --features counters -p ein-infer \
+    --example counter_cost -- examples/branching/06_lookahead_on.ein \
+    examples/branching/07_lookahead_off.ein \
+    examples/saturation/square-bwd/houses.ein \
+    examples/features/01_not_and_absent.ein     # enqueue_pass / _task / _task_full
+# …and the per-round width, off the event stream: a round is bracketed by
+# `quiesce`, and one `first_failing` call emits one park / retire / admit.
+ein.rs/target/release/ein solve examples/zebra2.ein -e --events /tmp/ev.jsonl \
+    --events-level verbose
+python3 - <<'EOF'
+import json
+sizes, cur = [], None
+for line in open('/tmp/ev.jsonl'):
+    k = json.loads(line)['e']
+    if k == 'quiesce':
+        if cur is not None: sizes.append(cur)
+        cur = 0
+    elif k in ('park', 'retire', 'admit') and cur is not None:
+        cur += 1
+if cur is not None: sizes.append(cur)
+nz = sorted(s for s in sizes if s)
+print(f'rounds={len(sizes)} non-empty={len(nz)} median={nz[len(nz)//2]} max={nz[-1]}')
+EOF
 
 # §6 — the cost/benefit columns, and the corpus sweep behind the threshold
 cargo run --release --features counters -p ein-infer --example flatten_probe
