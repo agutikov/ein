@@ -1,0 +1,4 @@
+(tracex (step s1 :rule from-condition :using (c10) :derives (lives-in N H1))
+  (step s2 :rule adjacent :using (and s1 c15) :derives (color-loc Blue H2))
+  (step s3 :using (s2))
+  (step s4 :derives (final X)))

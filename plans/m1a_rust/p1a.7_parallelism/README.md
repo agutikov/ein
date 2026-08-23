@@ -2,9 +2,11 @@
 
 **Milestone:** [M1a — Rust port](../README.md)
 **Status:** **resumed 2026-08-22**, three stages in —
-[S1a.7.1](s1a.7.1_sync_shared_state.md) is **closed** and
-[S1a.7.2](s1a.7.2_parallel_enterings.md) is four tasks in, **threads
-included**.
+[S1a.7.1](s1a.7.1_sync_shared_state.md) and
+[S1a.7.2](s1a.7.2_parallel_enterings.md) are both **closed**, threads
+included. What remains is [S1a.7.3](s1a.7.3_parallel_boundary.md),
+[S1a.7.4](s1a.7.4_parallel_enqueue.md) and
+[S1a.7.5](s1a.7.5_jobs_contract.md), which are Phase 1 and the contract.
 [S1a.7.0](s1a.7.0_speculation_audit.md) shipped 2026-08-20 — a stage the plan
 did not have, because the phase's central risk was measurable *before* any of
 it was built. The phase then **paused for two days** at the user's direction
@@ -20,9 +22,11 @@ them declined, each of them removed by a number.
 **Nothing is half-built.** No engine code is in an intermediate state and no
 scaffolding is waiting to be removed. What has shipped is three instruments
 (`spec_audit`, `shared_state_probe`, `flatten_probe`), two measurement
-documents, eleven invariance tests, a batch-synchronous integration mode that is
-worth 2.8× at `--jobs 1` on its own, a core-set-aware bench harness, the
-fan-out predicate and the assertion that holds it, **`--jobs N` itself** — and
+documents, **fourteen** invariance tests, a batch-synchronous integration mode
+that is worth 2.8× at `--jobs 1` on its own, a core-set-aware bench harness, the
+fan-out predicate and the assertion that holds it, **`--jobs N` itself**, the
+`--stats` block that says what it did, a **sixth fuzzer property** and the
+10 000-run stress behind it — and
 **seven** engine changes that are unconditional improvements rather than
 parallel scaffolding: the engine's own names interned once instead of per
 firing, a load pass that does what the compiler would otherwise do mid-search,
@@ -38,6 +42,19 @@ shipped `--jobs N` — a `rayon` pool built once per solve, a bounded batch, an
 ordered commit — and it is **3.16–4.30× on 8 P-cores** with the answer, every
 counter and the whole verbose event stream unchanged. That is short of the
 **≥ 6×** the acceptance asks for, and the gap is measured rather than guessed.
+
+> **And the *default* run was not in that number.** The measurement set is four
+> `-e` cells; `ein solve <file>` without `-e` means `-n 1`, and the batch that
+> bounds an early stop's waste was flat for the whole of such a run — a barrier
+> every `jobs` enterings for a cut that, on three of those four workloads,
+> never comes. `features/01 -n 1` was **1.69×** where its `-e` control is 3.17×.
+> [T1a.7.2.4](s1a.7.2_parallel_enterings.md#task-t1a724--early-stop) made the
+> batch ramp with the commits, which bounds the waste by the work instead of by
+> the job count: **1.69 → 3.13×, 2.72 → 4.46×, 3.07 → 4.30×**, each now tracking
+> its own `-e` control
+> ([scaling.md §8a](scaling.md#8a-t1a724--the-early-stop-and-the-batch-that-was-flat)).
+> It is the stage's pattern once more — the fix was found by taking a
+> measurement the acceptance did not ask for.
 
 The first fan-out was 2.19–2.89×, and what closed the rest is **four things the
 measurement found and none of them designed for** — a fork freed on the thread
@@ -119,8 +136,8 @@ the table is that each now names *what* to build instead of naming a harness.
 | — its counter half | T1: every `enterings_*`, `saturate_count`, `nogoods_*`, the NAF and hypgen counters | `ein-cli/tests/summary_properties.rs` ✅, whose thirteen identities already run over every `solve` cell — extended to run the sweep at `--jobs N`. The cut above holds the counters *exactly*, so this is the belt to that braces |
 | — its process half | T0/T3: exit code, stdout, `--json-summary` | `ein-cli/tests/corpus_cli.rs` ✅ — every declared cell as a process against a banked exit table — extended with a `--jobs` axis |
 | — its byte half | T3: the rendered surfaces | the goldens ✅ (`golden_events`, `golden_trace`, `golden_dot`, `golden_dump`) re-run at `--jobs N`. These are **stricter** than the cut and are where a narration change is *supposed* to be visible |
-| a **10 000-run randomised stress** of `--jobs 8` vs `--jobs 1` | the harness driving two processes per run | [`utils/fuzz_ein.py`](../../../utils/fuzz_ein.py) ✅, which kept its generator and lost its differ at [S1a.10.4](../p1a.10_single_implementation/s1a.10.4_utils.md) — a sixth property, *the same program at `--jobs 8` answers as it does at `--jobs 1`*, joining the five one engine can already check |
-| — and the id-space arm nobody asked for | — | `id_order_invariance` ✅ with `EIN_ID_FILES` already points that sweep at generated input; `--jobs` composes with it, and the composition is the interesting run |
+| a **10 000-run randomised stress** of `--jobs 8` vs `--jobs 1` | the harness driving two processes per run | ✅ **built and run, 2026-08-23** (T1a.7.2.6). [`utils/fuzz_ein.py`](../../../utils/fuzz_ein.py)'s sixth property, `jobs`, is the `deterministic` comparison with one argument changed. **5 000 cases, 25 000 runs — 10 000 of them `solve` runs, each paired against a `--jobs 8` process of its own — zero `jobs` findings** — with 758 cases reaching a fan-out, 79 055 enterings on workers, 875 hand-backs and 155 cases with `:enable-singleton-writeback false` |
+| — and the id-space arm nobody asked for | — | `id_order_invariance` ✅ with `EIN_ID_FILES` already points that sweep at generated input. **The composition is not free, and that is a correction taken 2026-08-23**: `corpus_ops` drives `solve_shape`, which pins `jobs` at 1, so the sweep is a `--jobs 1` sweep whatever the CLI is doing. The jobs axis on `solve_shape` is [S1a.7.5](s1a.7.5_jobs_contract.md) T1a.7.5.3's first line, and *then* the composition is the interesting run |
 
 **The one place the restatement promises more.** T3 was *bytes*, and a byte
 comparison cannot say which difference is allowed — it only says there is one.
@@ -265,7 +282,7 @@ Design: [design/08](../design/08_parallelism.md).
 |---|---|---|
 | [S1a.7.0](s1a.7.0_speculation_audit.md) ✅ | The speculation audit | 1 d |
 | [S1a.7.1](s1a.7.1_sync_shared_state.md) ✅ | Making the shared state `Sync` — **closed 2026-08-22**, three of eight tasks deleted by measurement and no lock built, [shared_state.md](shared_state.md) | 3 d → 4.5 d |
-| [S1a.7.2](s1a.7.2_parallel_enterings.md) ◑ | Level 1: parallel enterings — **its layer-1 question is decided** (2026-08-22: a layer is fanned out iff it cannot write to root), which deleted the validator, the fail-fast ruling and two acceptance items. **.0, .8, .1, .2 shipped**: the layer stack coalesced (3.17× at `--jobs 1`), the predicate asserted, the seam, the fan-out and **.7**, the layer's own serial work — **3.16–4.30× on 8 P-cores**, same computation on all 47 corpus entries, byte-identical event streams | 4 d → 3 d |
+| [S1a.7.2](s1a.7.2_parallel_enterings.md) ✅ | Level 1: parallel enterings — **closed 2026-08-23**. Its layer-1 question was decided on paper (a layer is fanned out iff it cannot write to root), which deleted the validator, the fail-fast ruling and two acceptance items. The layer stack coalesced (3.17× at `--jobs 1`), the predicate asserted, the seam, the fan-out, the layer's own serial work — **3.16–4.30× on 8 P-cores**, same computation on all 47 corpus entries, byte-identical event streams — then the diagnostics, the early stop (**1.69 → 3.13×** on the CLI's *default* `-n 1` run) and the stress, 10 000 paired `--jobs 8` runs with zero findings | 4 d → 3 d |
 | [S1a.7.3](s1a.7.3_parallel_boundary.md) | Level 3: the parallel boundary round | 2 d |
 | [S1a.7.4](s1a.7.4_parallel_enqueue.md) | Level 2: the parallel enqueue pass | 2 d |
 | [S1a.7.5](s1a.7.5_jobs_contract.md) | The `--jobs` contract | 2 d |
@@ -281,6 +298,13 @@ stays readable.
   than a permuted id space already is.
 - A 10 000-run randomised stress of `--jobs 8` vs `--jobs 1` with no
   divergence, as a sixth property of the fuzzer rather than a harness run.
+  ✅ **2026-08-23** — `utils/fuzz_ein.py --seed 20260823 --iters 5000
+  --no-id-order --jobs 8`, 4.7 minutes, zero `jobs` findings, and the coverage
+  counted rather than assumed
+  ([S1a.7.2 T1a.7.2.6](s1a.7.2_parallel_enterings.md#task-t1a726--the-stress-test)).
+  The one thing the session did find is a `render constraints` panic that has
+  nothing to do with `--jobs`
+  ([`kwpair-below-the-filter`](../../../corpus/fuzz_findings/kwpair-below-the-filter.md)).
 - **≥ 6× on 8 P-cores** on the phase's measurement set — `branching/06 -e`,
   `branching/07 -e`, `saturation/square-bwd/houses -e`, `features/01 -e`.
   ◑ **3.16–4.30× as of T1a.7.2.7**, and the shortfall is measured rather than
@@ -396,9 +420,19 @@ stays readable.
   **684–708 MB to 85–91 MB** at `--jobs 1`. So the "~1 KB per entering" figure
   is a pre-S1a.7.1 number and `terminus.ein` is worth re-measuring before it
   is used to size anything ([shared_state.md §2c](shared_state.md#2c-what-the-region-did--the-after-column)).
-- **Speculative waste at `stop_after`.** Bounded by the job count, but
-  measure it: a `-n 1` solve that speculates 16 enterings to use 1 is
-  fine; one that speculates 16 layers is not.
+- ~~**Speculative waste at `stop_after`.**~~ **Bounded, measured, and it was
+  the bound that was wrong — 2026-08-23.** "Bounded by the job count" is what
+  T1a.7.2.1 shipped, and it cost the CLI's *default* run 1.7× of its speedup:
+  `-n 1` is what `ein solve` means without `-e`, three of the four
+  measurement-set workloads never reach a solution under it, and the flat
+  `batch = jobs` therefore paid a barrier every `jobs` enterings for a cut that
+  never came — `features/01 -n 1` was **1.69×**, and *slower than `--jobs 1`*
+  at `--jobs 2`. The batch now ramps from `jobs` to `jobs × 32` with the
+  commits, which bounds the waste by the work rather than by the job count: a
+  cut can at worst double a run's work, and the default run scales like its own
+  `-e` control (**3.13× / 4.46× / 4.30×**). Measured per run by the `--stats`
+  block, and at 603 discarded enterings over the T1a.7.2.6 stress
+  ([scaling.md §8a](scaling.md#8a-t1a724--the-early-stop-and-the-batch-that-was-flat)).
 
 ## Cross-links
 

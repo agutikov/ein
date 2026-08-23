@@ -799,20 +799,45 @@ impl Run<'_> {
             // cost wildly different amounts — a `dead-pre` is a contradiction
             // check and an alive one is a whole saturation.
             //
-            // A cut narrows it further: `stop_after` and `max_enterings` both
-            // stop mid-layer, and everything speculated past the cut is waste,
-            // so the batch is one round of workers (T1a.7.2.4).
+            // **A cut narrows it, and the narrowing has to be temporary**
+            // (T1a.7.2.4). `stop_after`, `max_enterings` and `max_time` all
+            // stop the run mid-layer, and everything speculated past the cut
+            // is thrown away — so a run that can cut starts at one round of
+            // workers and *doubles* from there, capped at the full batch:
+            //
+            //     batch = clamp(enterings committed so far, jobs, jobs × 32)
+            //
+            // which bounds the waste by the work. The enterings discarded at a
+            // cut are at most one batch, and a batch is at most what has
+            // already been committed, so **a cut can never more than double a
+            // run's work** — while a search that never cuts pays the small
+            // batch only for its first `jobs × 32` enterings and runs at full
+            // width after that.
+            //
+            // The flat `batch = jobs` this replaces was right about the cut and
+            // wrong about everything else: `-n 1` is the CLI's *default*, and
+            // three of the four workloads of the phase's measurement set never
+            // reach a solution under it — so the common invocation paid a
+            // barrier every `jobs` enterings for a search that cut nothing.
+            // That is `houses -n 1` at 2.72× where `houses -e` is 4.38×, for
+            // the same 21 699 enterings
+            // ([scaling.md §8a](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md#8a-t1a724--the-early-stop-and-the-batch-that-was-flat)).
             #[cfg(feature = "parallel")]
-            let batch = if self.opts.stop_after.is_some() || self.opts.max_enterings.is_some() {
-                jobs
-            } else {
-                jobs.saturating_mul(batch_per_worker())
-            };
+            let full_batch = jobs.saturating_mul(batch_per_worker());
+            #[cfg(feature = "parallel")]
+            let may_cut = self.opts.stop_after.is_some()
+                || self.opts.max_enterings.is_some()
+                || self.opts.max_time.is_some();
 
             let mut i = 0usize;
             while i < candidates.len() {
                 #[cfg(feature = "parallel")]
                 if fan_out && candidates.len() - i > 1 {
+                    let batch = if may_cut {
+                        (self.stats.base.enterings_total as usize).clamp(jobs, full_batch)
+                    } else {
+                        full_batch
+                    };
                     let end = i.saturating_add(batch).min(candidates.len());
                     // Once for the batch, not once per worker: sealing is the
                     // half of `Kb::fork` that mutates, and after it every

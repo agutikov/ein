@@ -33,6 +33,7 @@ rather than "the fuzzer failed".
 | `terminates` | every run finishes inside `--timeout`, under budgets that bound the *search* | this script; the timeout **is** the instrument |
 | `deterministic` | the same argv twice gives the same exit code and the same bytes | this script, with durations masked |
 | `id-order` | the same program under a **permuted interner** answers the same way | `ein-render`'s `id_order_invariance`, pointed at the batch with `EIN_ID_FILES` |
+| `jobs` | the same program at `--jobs 8` answers as it does at `--jobs 1` | this script, on the `solve` runs; `--jobs N` names the width, `--jobs 1` is how it is turned off |
 
 `deterministic` is the **dynamic** counterpart of
 `utils/check_hashmap_iteration.py`: the grep finds an iteration whose order
@@ -44,7 +45,7 @@ one quantity that is nondeterministic **by construction** — and the fuzzer
 deliberately owns no other, because a private idea of "what two outputs are
 allowed to differ in" is how a checker drifts away from the gate.
 
-`id-order` is the ledger's property 3 and the strongest of the five: it is the
+`id-order` is the ledger's property 3 and the strongest of the six: it is the
 successor to the `PYTHONHASHSEED` sweep, asked of generated input rather than
 of the corpus, and it compares **45 rendering ops** per file rather than what
 a CLI prints. It is also the only one that needs `cargo`, so `--no-id-order`
@@ -52,7 +53,18 @@ turns it off — explicitly, because a property that skips itself when a tool is
 missing is how the workspace ended up reporting 41 passing tests that asserted
 nothing ([the ledger §2](../plans/m1a_rust/p1a.10_single_implementation/oracle_ledger.md#2-the-finding--46--of-einrss-own-integration-tests-are-differential)).
 
-## Two properties that are not here, and where they are
+`jobs` is [M1a P1a.7](../plans/m1a_rust/p1a.7_parallelism/README.md)'s, and it
+is the one property whose *subject* is the engine's execution rather than its
+input: `--jobs N` fans a layer's enterings out across a `rayon` pool and
+commits them in candidate order, and the promise is that the run is **the same
+computation** — same verdict, same models, same counters, same bytes. So the
+check is the `deterministic` comparison with one argument changed, which is
+exactly the point: a job count is allowed to change the wall clock and nothing
+else. It rides the two `solve` runs only — `saturate` and `render` take no
+`--jobs` — and it is `--jobs 1` that turns it off, because a property whose
+"off" is comparing a run to itself would pass silently.
+
+## The property that is not here, and where it is
 
 - **`dump → parse → dump` is a fixed point.** A *frontend* property, and it
   has an owner with its own generator: `ein-ir/tests/fuzz_properties.rs`,
@@ -61,15 +73,13 @@ nothing ([the ledger §2](../plans/m1a_rust/p1a.10_single_implementation/oracle_
   removed in P1.11 (`ein ir dump`) and is not coming back for a fuzzer. **The
   division is: that file owns the frontend, this one owns what happens after
   it** — load, compile, saturate, search, render.
-- **`--jobs` invariance.** There is no `--jobs` yet;
-  [S1a.7.5](../plans/m1a_rust/p1a.7_parallelism/s1a.7.5_jobs_contract.md) is
-  where the flag and its contract land, and that is where this row goes.
 
 ## What is honestly weaker
 
-All five properties are things a **correct-looking wrong answer satisfies**. A
-generated program that loads, terminates, is deterministic and permutation-
-invariant can still derive the wrong facts, and nothing here would notice.
+All six properties are things a **correct-looking wrong answer satisfies**. A
+generated program that loads, terminates, is deterministic, permutation-
+invariant and job-count-invariant can still derive the wrong facts, and nothing
+here would notice.
 That is L1 stated exactly, and its only mitigation is
 [P1c.1](../plans/m1c_external_validation/p1c.1_stdlib_conformance/README.md)'s
 stated expectations — a stdlib rule whose result is written down.
@@ -504,6 +514,7 @@ PROPERTIES = {
     "terminates": "finishes inside the timeout",
     "deterministic": "the same argv twice gives the same exit code and bytes",
     "id-order": "the same answer under a permuted interner",
+    "jobs": "the same answer at --jobs N as at --jobs 1",
 }
 
 
@@ -533,8 +544,9 @@ def run_bounded(argv: list[str], timeout: float) -> tuple[int, str, str]:
     return proc.returncode, proc.stdout, proc.stderr
 
 
-def check_run(case: Path, run: str, timeout: float) -> tuple[str, str] | None:
-    """The four per-process properties, for one run. `(property, detail)` or None."""
+def check_run(case: Path, run: str, timeout: float,
+              jobs: int = 1) -> tuple[str, str] | None:
+    """The five per-process properties, for one run. `(property, detail)` or None."""
     code, out, err = run_bounded(argv_for(run, case), timeout)
     if code == -2:
         return ("terminates", f"still running after {timeout:g}s")
@@ -547,6 +559,20 @@ def check_run(case: Path, run: str, timeout: float) -> tuple[str, str] | None:
         return ("deterministic",
                 f"run 1: exit {code}\n{first_difference(masked(out), masked(out2))}\n"
                 f"stderr: {first_difference(masked(err), masked(err2))}")
+    # T1a.7.2.6 — the same comparison with one argument changed. `--jobs N`
+    # promises the *same computation*, so anything `deterministic` compares is
+    # what this compares too, and a job count that moved a counter or a byte
+    # is a finding under the same masking rule. Only the `solve` runs: nothing
+    # else takes the flag, and passing it would be a `no-crash` finding about
+    # clap rather than about the fan-out.
+    if jobs > 1 and run.split()[0] == "solve":
+        argv = argv_for(run, case) + ["--jobs", str(jobs)]
+        codej, outj, errj = run_bounded(argv, timeout)
+        if (codej, masked(outj), masked(errj)) != (code, masked(out), masked(err)):
+            return ("jobs",
+                    f"--jobs 1: exit {code}, --jobs {jobs}: exit {codej}\n"
+                    f"{first_difference(masked(out), masked(outj))}\n"
+                    f"stderr: {first_difference(masked(err), masked(errj))}")
     return None
 
 
@@ -561,11 +587,12 @@ def first_difference(a: str, b: str) -> str:
             f"then {len(a.splitlines())} vs {len(b.splitlines())}")
 
 
-def check_case(case: Path, timeout: float) -> list[tuple[str, str, str]]:
+def check_case(case: Path, timeout: float,
+               jobs: int = 1) -> list[tuple[str, str, str]]:
     """Every run of one case: `(property, run, detail)` for each violation."""
     out = []
     for run in RUNS:
-        hit = check_run(case, run, timeout)
+        hit = check_run(case, run, timeout, jobs)
         if hit:
             out.append((hit[0], run, hit[1]))
     return out
@@ -648,11 +675,12 @@ def minimise(text: str, case: Path, fails) -> str:
     return best
 
 
-def process_predicate(case: Path, prop: str, run: str, timeout: float):
-    """`fails(text)` for one of the four per-process properties."""
+def process_predicate(case: Path, prop: str, run: str, timeout: float,
+                      jobs: int = 1):
+    """`fails(text)` for one of the five per-process properties."""
     def fails(text: str) -> bool:
         case.write_text(text, encoding="utf-8")
-        hit = check_run(case, run, timeout)
+        hit = check_run(case, run, timeout, jobs)
         return bool(hit) and hit[0] == prop
     return fails
 
@@ -734,6 +762,8 @@ def main() -> int:
                     help="interner permutations per file (EIN_ID_SEEDS)")
     ap.add_argument("--no-id-order", action="store_true",
                     help="skip the permuted-interner property (it needs cargo)")
+    ap.add_argument("--jobs", type=int, default=8, metavar="N",
+                    help="the `jobs` property's width (default 8; 1 turns it off)")
     ap.add_argument("--replay", type=Path, default=None,
                     help="re-check and minimise one saved case, then exit")
     ap.add_argument("--keep", action="store_true", help="keep the generated cases")
@@ -770,7 +800,8 @@ def main() -> int:
         if run == SWEEP:
             fails = id_order_predicate(work_case, WORK, args.id_seeds, prop)
         else:
-            fails = process_predicate(work_case, prop, run, args.timeout)
+            fails = process_predicate(work_case, prop, run, args.timeout,
+                                      args.jobs)
         small = minimise(text, work_case, fails)
         # One report per distinct *cause*. A grammar-directed generator
         # reaches the same shapes over and over, and three programs that abort
@@ -791,7 +822,7 @@ def main() -> int:
         if run == SWEEP:
             fresh = id_order(WORK / "min-id", args.id_seeds)[1]
         else:
-            hit = check_run(work_case, run, args.timeout)
+            hit = check_run(work_case, run, args.timeout, args.jobs)
             fresh = hit[1] if hit else detail
         name = f"{prop}-{stamp}"
         write_finding(name, prop, run, small, fresh, origin, args.seed,
@@ -806,7 +837,7 @@ def main() -> int:
         case = CASES / args.replay.name
         text = args.replay.read_text(encoding="utf-8")
         case.write_text(text, encoding="utf-8")
-        bad = check_case(case, args.timeout)
+        bad = check_case(case, args.timeout, args.jobs)
         if want_id_order:
             solo = WORK / "replay"
             shutil.rmtree(solo, ignore_errors=True)
@@ -826,7 +857,8 @@ def main() -> int:
             if run == SWEEP:
                 fails = id_order_predicate(case, WORK, args.id_seeds, prop)
             else:
-                fails = process_predicate(case, prop, run, args.timeout)
+                fails = process_predicate(case, prop, run, args.timeout,
+                                          args.jobs)
             print(minimise(text, case, fails))
             print(detail.strip()[-1500:], file=sys.stderr)
         return 1
@@ -849,7 +881,7 @@ def main() -> int:
             case = CASES / f"c{n:06d}.ein"
             case.write_text(text, encoding="utf-8")
             stats["cases"] += 1
-            for prop, run, detail in check_case(case, args.timeout):
+            for prop, run, detail in check_case(case, args.timeout, args.jobs):
                 report(prop, run, detail, case, origin, text)
             stats["runs"] += len(RUNS)
             batch.append((case, origin, text))

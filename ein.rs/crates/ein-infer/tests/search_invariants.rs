@@ -71,6 +71,12 @@ struct Ran {
     stats: ein_infer::solve::MonotonicStats,
     /// What the fan-out did — and the one thing that is *allowed* to differ.
     jobs: ein_infer::solve::JobStats,
+    /// The models as the run recorded them, **before** the sort `Answered`
+    /// applies. A model *set* is the right claim for an exhaustive run; a
+    /// `stop_after` run answers with a *prefix of a traversal*, and a prefix
+    /// that arrived in a different order is a different cut wearing the same
+    /// set's clothes (T1a.7.2.4).
+    models_in_order: Vec<Vec<String>>,
 }
 
 fn facts_of(kb: &Kb, terms: &Terms) -> Vec<String> {
@@ -130,8 +136,10 @@ fn run(rel: &str, tweak: impl FnOnce(&mut SolveOptions, &mut ein_core::SolverCon
         }
         Answer::Aborted { reason } => panic!("{rel} aborted: {reason}"),
     };
+    let models_in_order = models.clone();
     models.sort();
     Ran {
+        models_in_order,
         answered: Answered {
             verdict,
             models,
@@ -619,6 +627,170 @@ fn a_deep_search_is_counter_identical_under_jobs() {
             many.jobs.speculated
         );
     }
+}
+
+/// **The predicate's other branch, as the same claim.**
+///
+/// With `enable_singleton_writeback` off nothing writes to root at any depth,
+/// so **layer 1 is fanned out too** — and layer 1 is where the zebra family
+/// keeps half its firings, so this is not a corner of the corpus but the
+/// regime that most wants the cores. It is also the branch every other jobs
+/// test in this file leaves alone, because the default config takes the other
+/// one.
+///
+/// [S1a.7.2](../../../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+/// T1a.7.2.6 asks for it in the fuzzer as well, and gets it there for free:
+/// `:enable-singleton-writeback` is one of the seven levers the generator
+/// flips, so a share of every session runs in this regime. What that cannot do
+/// is fail *here*, on named files, on the first `cargo test`.
+#[test]
+fn with_the_writeback_off_jobs_still_does_not_move_a_counter() {
+    for rel in FILES {
+        let one = run(rel, |_, cfg| cfg.enable_singleton_writeback = false);
+        for jobs in [2usize, 8] {
+            let many = run(rel, |o, cfg| {
+                cfg.enable_singleton_writeback = false;
+                o.jobs = jobs;
+            });
+            assert_eq!(
+                one.answered, many.answered,
+                "{rel} (writeback off): --jobs {jobs} changed the answer"
+            );
+            assert_eq!(
+                one.stats, many.stats,
+                "{rel} (writeback off): --jobs {jobs} moved a search counter"
+            );
+            assert_eq!(
+                many.jobs.sequential, 0,
+                "{rel} (writeback off): {} enterings ran sequentially, and with \
+                 no writeback there is no layer that could have needed to",
+                many.jobs.sequential
+            );
+        }
+    }
+}
+
+// ── T1a.7.2.4 — the early stop ────────────────────────────────────────────
+
+/// **An early stop cuts at the same candidate at every job count.**
+///
+/// This is the one place the fan-out can still differ from the sequential
+/// engine, and it is why it has a test of its own rather than leaning on
+/// `jobs_does_not_move_the_answer_or_a_counter`: every other invariance test
+/// in this file runs **exhaustively**, because comparing two traversals by
+/// their answers only means anything when both ran to the end. A `stop_after`
+/// run answers with a prefix, and a prefix is only comparable to another
+/// prefix of the same length.
+///
+/// Three things are asserted, and the middle one is the sharp one:
+///
+/// - the answer and the models **in recording order**, which is the branch
+///   order an `Ambiguity` reports;
+/// - `enterings_total`, which *is* the cut's position — the run stops the
+///   moment the *k*-th solution commits, so a fan-out that cut one candidate
+///   early or late would be off by exactly that many enterings;
+/// - every other search counter, as everywhere else in this file.
+#[test]
+fn an_early_stop_cuts_at_the_same_candidate() {
+    let mut cut_somewhere = 0usize;
+    for rel in FILES {
+        for n in [1u64, 2, 3] {
+            let one = run(rel, |o, _| o.stop_after = Some(n));
+            if !one.stats.exhausted {
+                cut_somewhere += 1;
+            }
+            for jobs in [2usize, 4, 8] {
+                let many = run(rel, |o, _| {
+                    o.stop_after = Some(n);
+                    o.jobs = jobs;
+                });
+                assert_eq!(
+                    one.answered, many.answered,
+                    "{rel} -n {n}: --jobs {jobs} changed the answer"
+                );
+                assert_eq!(
+                    one.models_in_order, many.models_in_order,
+                    "{rel} -n {n}: --jobs {jobs} recorded the same models in a \
+                     different order, so the ordered commit is not ordered"
+                );
+                assert_eq!(
+                    one.stats, many.stats,
+                    "{rel} -n {n}: --jobs {jobs} moved a search counter — and \
+                     `enterings_total` moving is the cut landing elsewhere"
+                );
+            }
+        }
+    }
+    // Otherwise every pair above compared two exhaustive runs and this test is
+    // `jobs_does_not_move_the_answer_or_a_counter` spelled longer.
+    assert!(
+        cut_somewhere >= 4,
+        "only {cut_somewhere} of the runs above actually stopped early, so the \
+         cut is barely exercised — pick files with more solutions"
+    );
+}
+
+/// **What a cut throws away is bounded by the work already done — and a run
+/// that cannot cut throws nothing away at all.**
+///
+/// The batch is what bounds it: a cut discards at most the enterings in
+/// flight, and the batch ramps from one round of workers to `jobs × 32` as
+/// commits accumulate, so it is never larger than what has already been
+/// committed. Hence *a cut can at worst double a run's work* — the bound this
+/// asserts — while a search with no cut configured runs at full batch width
+/// from its first entering and discards nothing.
+///
+/// The flat `batch = jobs` this replaced satisfied a *tighter* bound and was
+/// the wrong trade: `-n 1` is the CLI's default and most searches under it
+/// never reach a solution at all, so the common invocation paid a barrier
+/// every `jobs` enterings to bound a waste it was never going to incur
+/// ([scaling.md §8a](../../../../plans/m1a_rust/p1a.7_parallelism/scaling.md)).
+#[test]
+fn speculative_waste_is_bounded_by_the_work_and_absent_without_a_cut() {
+    let waste = |r: &Ran| {
+        r.jobs
+            .speculated
+            .saturating_sub(r.jobs.committed)
+            .saturating_sub(r.jobs.handed_back)
+    };
+    let mut wasted_somewhere = 0u64;
+    for rel in FILES {
+        for jobs in [2usize, 8] {
+            // With a cut configured: bounded by the work done, or by one round
+            // of workers while there is not yet any work to bound it by.
+            let cut = run(rel, |o, _| {
+                o.stop_after = Some(1);
+                o.jobs = jobs;
+            });
+            let bound = (jobs as u64).max(cut.stats.base.enterings_total);
+            assert!(
+                waste(&cut) <= bound,
+                "{rel} -n 1 --jobs {jobs}: {} enterings speculated past the \
+                 cut against a bound of {bound} — the batch grew faster than \
+                 the commits did",
+                waste(&cut)
+            );
+            wasted_somewhere += waste(&cut);
+
+            // With none configured: nothing may be discarded, because nothing
+            // stops the loop before the layer ends.
+            let whole = run(rel, |o, _| o.jobs = jobs);
+            assert_eq!(
+                waste(&whole),
+                0,
+                "{rel} --jobs {jobs}: an exhaustive run discarded {} \
+                 speculated enterings, and an exhaustive run has no cut to \
+                 discard them at",
+                waste(&whole)
+            );
+        }
+    }
+    assert!(
+        wasted_somewhere > 0,
+        "no run in this file set speculated past its cut, so the bound above \
+         held vacuously — a file whose first solution lands mid-batch is what \
+         exercises it"
+    );
 }
 
 /// The predicate, from the fan-out's side: layer 1 runs sequentially exactly

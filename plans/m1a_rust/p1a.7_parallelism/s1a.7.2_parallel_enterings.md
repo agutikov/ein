@@ -1,16 +1,20 @@
 # S1a.7.2 — Level 1: parallel enterings
 
 **Phase:** P1a.7 (Parallelism)
-**Estimate:** 4 days → **3 d.** The layer-1 question was decided on paper
-before any of the mechanism was built (§ The decision), which deleted the
-validator, the fail-fast ruling and two acceptance items. **.0, .8, .1 and .2
-are shipped**: the layer stack coalesced (3.17× at `--jobs 1`), the predicate
-asserted, the seam, and the fan-out with its ordered commit —
-**3.16–4.30× on 8 P-cores**, the same computation on all 47 corpus entries and
-byte-identical event streams. **.7** shipped with them — the layer's own serial
-work, which the fan-out's measurements found and which turned out to be three
-things. What is left is .4 (early stop), .5 (diagnostics) and .6 (the stress);
-the target is **1.5×** away and that is now the fan-out's own efficiency rather
+**Estimate:** 4 days → **3 d. Closed 2026-08-23**, every task shipped or
+deleted. The layer-1 question was decided on paper before any of the mechanism
+was built (§ The decision), which deleted the validator, the fail-fast ruling
+and two acceptance items. **.0, .8, .1 and .2**: the layer stack coalesced
+(3.17× at `--jobs 1`), the predicate asserted, the seam, and the fan-out with
+its ordered commit — **3.16–4.30× on 8 P-cores**, the same computation on all
+47 corpus entries and byte-identical event streams. **.7** shipped with them —
+the layer's own serial work, which the fan-out's measurements found and which
+turned out to be three things. **.5, .4 and .6** close it: the `--stats` block
+`--jobs N` adds, the early stop — whose cut was already right and whose
+*batch* was not, **1.69 → 3.13× on the CLI's default `-n 1` run** — and the
+stress, 10 000 paired `--jobs 8` runs with zero findings.
+
+The target is **1.5×** away and that is the fan-out's own efficiency rather
 than a serial fraction
 ([scaling.md §8 § Where the other 1.5× is](scaling.md#where-the-other-15-is)).
 **Depends on:** [S1a.7.1](s1a.7.1_sync_shared_state.md),
@@ -249,7 +253,11 @@ now cheap rather than merely preferred.
   `--json-summary` field, the verbose event stream is byte-identical, and
   `search_invariants.rs` compares the whole `MonotonicStats` over 16 files —
   but `jobs_invariance` over `corpus_ops` × 45 ops, which is what the phase
-  README's table names, is still the sweep to write.
+  README's table names, is still the sweep to write —
+  [S1a.7.5](s1a.7.5_jobs_contract.md) T1a.7.5.3's, and it needs a jobs axis on
+  `solve_shape`, which pins `jobs` at 1 today. What T1a.7.2.6 added instead is
+  the *generated-input* form: 10 000 paired `--jobs 8` runs through the CLI,
+  zero findings.
 - **The fan-out predicate is asserted, not assumed.** A debug assertion that no
   root fact write happens between a fanned-out layer opening and closing —
   which is the invariant the whole decision rests on, and which
@@ -293,10 +301,18 @@ now cheap rather than merely preferred.
   3.17× on `branching/07 -e`
   ([scaling.md §6](scaling.md#6-t1a720--the-layer-stack-coalesced-at-the-barrier)).
 - Speculative waste at `stop_after` bounded by the job count and measured.
-  ◑ **Bounded, not yet measured**: the batch is one round of workers whenever
-  `stop_after` or `max_enterings` is set, so nothing past the cut is speculated
-  beyond `jobs` enterings. `JobStats::speculated - committed` is the number and
-  T1a.7.2.4 is where it gets taken.
+  ✅ **T1a.7.2.4, 2026-08-23 — and the bound moved on purpose.** It was "one
+  round of workers whenever a cut is configured", which bounded the waste at
+  `jobs − 1` and cost the CLI's *default* run 1.7× of its speedup, because
+  `-n 1` is what `ein solve` means without `-e` and most searches under it
+  never cut at all. The batch now ramps from `jobs` to `jobs × 32` as commits
+  accumulate, so the waste is bounded **by the work already done** — a cut can
+  at worst double a run's work — and the default run scales like its own `-e`
+  control. Measured: `branching/06 -n 1 --jobs 8` speculates 42 to commit 25
+  and discards 17; the other three of the measurement set discard nothing
+  because they never cut; and over the T1a.7.2.6 stress it is 603 enterings on
+  84 of 5 000 cases
+  ([scaling.md §8a](scaling.md#8a-t1a724--the-early-stop-and-the-batch-that-was-flat)).
 - Peak RSS at `--jobs 16` on the worst corpus entry recorded. ✅ **`features/01
   -e`: 79.8 MB at `--jobs 1`, 82.8 at 8, 90.3 at 16.** **The baseline moved** —
   [T1a.7.1.7](s1a.7.1_sync_shared_state.md#task-t1a717--the-provenance-arena)
@@ -530,7 +546,70 @@ change, and `jobs_does_not_move_the_answer_or_a_counter` is where that shows.
 that finds sequential waste, because it is the one place a serial millisecond
 cannot hide.
 
-### Task T1a.7.2.4 — Early stop
+### Task T1a.7.2.4 — Early stop ✅
+
+**Shipped 2026-08-23, and the cut was already right — what was wrong was the
+batch that bounds it.** The ordered commit cuts at the same candidate by
+construction (it walks candidates in order and breaks at the *k*-th solution),
+so this task's mechanism was in place at T1a.7.2.2 and what it owed was the
+two tests and the measurement. Taking the measurement is what found the
+defect, which is the pattern
+[§ Where the other 1.5× is](scaling.md#where-the-other-15-is) has had all
+stage: **the parallel run is an instrument.**
+
+**`-n 1` is the CLI's default**, and the rule T1a.7.2.1 shipped read *any*
+`stop_after` as "a cut is coming" and dropped the batch to one round of
+workers for the whole run. Three of the four workloads of the measurement set
+never reach a solution under `-n 1` — the depth cap ends the search first — so
+the default invocation paid a barrier every `jobs` enterings for a cut that
+never came. `features/01 -n 1` at `--jobs 8` was **1.69×** where `-e` is 3.17×,
+and at `--jobs 2` it was *slower than `--jobs 1`*: 384 167 enterings in one
+layer is 48 021 barriers.
+
+The rule is now a **bound rather than a constant**:
+
+    batch = clamp(enterings committed so far, jobs, jobs × 32)   if a cut is configured
+          = jobs × 32                                            otherwise
+
+so the enterings discarded at a cut are at most the enterings already
+committed — *a cut can at worst double a run's work* — while the geometric
+growth reaches full width after ~`jobs × 32` enterings and the never-cutting
+case pays almost nothing. **1.69 → 3.13×, 2.72 → 4.46×, 3.07 → 4.30×**, each
+now tracking its own `-e` control to within noise, with peak RSS unmoved and
+every counter identical
+([scaling.md §8a](scaling.md#8a-t1a724--the-early-stop-and-the-batch-that-was-flat)).
+
+"A cut is configured" is `stop_after`, `max_enterings` **or `max_time`** — the
+three things that stop the loop mid-layer. The third was not in the rule it
+replaces and belongs in it for the same reason as the other two.
+
+Three things are worth carrying forward.
+
+- **There is nothing to cancel, and that is the design rather than an
+  omission.** The task says "cancel outstanding speculative work", which
+  presumes workers still running when the cut lands. They are not: `fan_out`
+  collects a whole batch before the commit loop starts, so at the cut every
+  worker has already finished and what the cut discards is a `Vec<Speculated>`.
+  **The batch bound is the cancellation**, which is why moving it was the whole
+  of this task. The cooperative-cancellation flag an *embedder* needs — to stop
+  a solve from outside — is a different mechanism and is
+  [S1a.7.5](s1a.7.5_jobs_contract.md) T1a.7.5.6's.
+- **The waste is a number now, not a bound in a comment.**
+  `JobStats::speculated − committed − handed_back`, printed by the `--stats`
+  block under `--jobs N` (T1a.7.2.5): `branching/06 -n 1 --jobs 8` speculates
+  42 to commit 25 and discards **17**, and the other three of the measurement
+  set discard nothing because they never cut. That is also why the bound is
+  `max(jobs, committed)` and not `committed`: a run's *first* batch has no
+  committed work to be bounded by.
+- **Both tests were made to fail before they were trusted.** Cutting at batch
+  granularity instead of candidate granularity fails
+  `an_early_stop_cuts_at_the_same_candidate` on the first file — 29 enterings
+  against 36 — and un-ramping the batch fails
+  `speculative_waste_is_bounded_by_the_work_and_absent_without_a_cut` with 53
+  discarded against a bound of 29. A test for a property that already holds is
+  worth exactly what its failure mode is worth.
+
+What follows is the task as written.
 
 `stop_after` must cut at the same candidate. Commit in order, break there, and
 cancel outstanding speculative work. Measure the waste: a `-n 1` solve that
@@ -542,7 +621,40 @@ engine, which is why it keeps its own test rather than leaning on
 `jobs_invariance`: an early stop is the one case S1a.7.0's invariance tests
 deliberately do not claim.
 
-### Task T1a.7.2.5 — Diagnostics
+### Task T1a.7.2.5 — Diagnostics ✅
+
+**Shipped 2026-08-23**, as four rows `--stats` prints **only when `--jobs > 1`**:
+
+```text
+jobs
+  workers          8 (of 8 asked)
+  speculated       42 (committed=25 handed_back=0 wasted=17)
+  sequential       42
+```
+
+`--stats` is the right home and the gating is why. It is already the one block
+that reports the *run* rather than the answer — it has printed a `wall` since
+ein.py and no two runs agree on that — so a job count is at home there and
+nowhere else. And at the default `--jobs 1` the block would be four rows of
+zero, so every `--stats` run in the repo keeps the bytes it has.
+
+**None of it may go in `--json-summary` or `MonotonicStats`**, which is the
+same argument from the other side: those are compared *exactly* between
+`--jobs 1` and `--jobs N` by `summary_properties` and by the phase's
+acceptance, so a number that must differ by job count cannot live in them.
+`JobStats` is where differing is the point, and it is not part of the answer.
+
+The `wasted` column is derived — `speculated − committed − handed_back` — and
+it is the one T1a.7.2.4's acceptance bounds. The other three answer the
+questions a reader of a scaling number actually has: how many threads a layer
+used, how many enterings a worker had to hand back
+([shared_state.md §2a](shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)),
+and how many ran in order because their layer could write to root — 0 on three
+of the four measurement-set workloads and 204 on the fourth, which is Amdahl's
+numerator per run and a build where it grew would be a build where the fan-out
+predicate had changed.
+
+What follows is the task as written.
 
 Report, under the existing `--stats`-adjacent surface: worker count,
 speculative enterings computed vs committed, and how many enterings ran on the
@@ -553,7 +665,62 @@ nothing to count. What replaced them is the last column: it is 0 on three of
 the four measurement-set workloads and 203 on the fourth, and a build where it
 grew would be a build where the fan-out predicate had changed.
 
-### Task T1a.7.2.6 — The stress test
+### Task T1a.7.2.6 — The stress test ✅
+
+**Shipped 2026-08-23, and the stress is run.**
+[`utils/fuzz_ein.py`](../../../utils/fuzz_ein.py) has a sixth property, `jobs`
+— *the same program at `--jobs 8` answers as it does at `--jobs 1`* — and it
+is the `deterministic` comparison with one argument changed, which is exactly
+the shape the promise has: a job count may move the wall clock and nothing
+else. Same exit code, same stdout, same stderr, one masking rule (durations)
+and no private idea of what is allowed to differ. It rides the two `solve`
+runs only, and `--jobs 1` is how it is turned off, because a property whose
+"off" compares a run to itself passes silently.
+
+```sh
+utils/fuzz_ein.py --seed 20260823 --iters 5000 --no-id-order --jobs 8
+```
+
+**5 000 cases and 25 000 runs, of which 10 000 are `solve` runs — each one
+paired against a `--jobs 8` process of its own, which is the acceptance's
+10 000. Zero `jobs` findings**, in 4.7 minutes.
+
+And the coverage is measured rather than assumed, because a green property
+over programs that never fan out is not a result:
+
+| over the 5 000 cases | `solve -e` arm | `solve -n 1` arm |
+|---|---:|---:|
+| reached a solve verdict | 3 167 | 3 196 |
+| **actually fanned out** | 758 | 787 |
+| enterings evaluated on a worker | **79 055** | 78 586 |
+| ran something on the sequential path | 927 | 955 |
+| enterings handed back (`Terms::refused`) | 875 | 851 |
+| **enterings discarded past a cut** | 0 | **603**, on 84 cases |
+
+The last two rows are the ones worth having. The hand-back is the path
+[scaling.md §8](scaling.md#and-one-entering-in-the-corpus-cannot-be-done-on-a-worker)
+found *one* corpus file for, and the stress exercises it 875 times across 186
+programs. The waste column is T1a.7.2.4's, and it is zero on the exhaustive arm
+because nothing cuts there and non-zero on the arm that has `-n 1` in it —
+which is the point of running both.
+
+**The `enable_singleton_writeback=false` entry the task asks for is 155 of the
+5 000**, and for free: `:enable-singleton-writeback` is one of the seven levers
+the generator flips, so a share of every session runs with layer 1 fanned out
+too. What a rate cannot do is fail on the first `cargo test`, so the named-file
+form is a unit test —
+`with_the_writeback_off_jobs_still_does_not_move_a_counter`, 16 files ×
+`--jobs {2,8}`, which also asserts `JobStats::sequential == 0` so it cannot
+pass by the fan-out quietly not happening.
+
+**What the session did find is not a `--jobs` bug**, and it is filed rather
+than fixed: `render constraints` panics on a keyword pair below the top level
+of an undeclared form
+([`kwpair-below-the-filter`](../../../corpus/fuzz_findings/kwpair-below-the-filter.md)).
+`render` takes no `--jobs`; it is the fuzzer's other four properties doing
+their job while this one was being asked.
+
+What follows is the task as written.
 
 10 000 randomised `--jobs 8` runs across the corpus, diffed against
 `--jobs 1` through `ein-parity`'s cut — a **sixth property** of
@@ -562,6 +729,15 @@ can already check, rather than a harness run. Include the
 `enable_singleton_writeback=false` entry: with the writeback off, layer 1 is
 fanned out too, so that entry is the one that exercises the predicate's *other*
 branch — where the old plan wanted it for having the largest `W`.
+
+> **One thing it does not do, and the difference is worth naming.** The task
+> says "across the corpus, diffed through `ein-parity`'s cut". The fuzzer
+> compares *processes* — exit code and bytes — over **generated** programs,
+> which is stronger in coverage and weaker in surface: it sees what a CLI
+> prints, not the 45 rendering ops. The corpus × op × `--jobs` sweep through
+> the cut is [S1a.7.5](s1a.7.5_jobs_contract.md) T1a.7.5.3's `jobs_invariance`,
+> and it needs a jobs axis on `corpus_ops`'s `solve_shape`, which today pins
+> `jobs` at 1. The two are complements, not substitutes.
 
 ### Task T1a.7.2.8 — The predicate, asserted ✅
 

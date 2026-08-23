@@ -542,6 +542,12 @@ pub fn run(m: &ArgMatches) -> i32 {
     print_final(&ast, &terms, &kb, &solved.answer, m);
     if m.get_flag("stats") {
         printers::print_stats(&solved.stats, elapsed_ms);
+        // Only when a fan-out was possible. At the default `--jobs 1` the
+        // block would be four rows of zero, and every `--stats` run in the
+        // repo would have grown them for nothing.
+        if opts.jobs > 1 {
+            printers::print_job_stats(&solved.jobs, opts.jobs);
+        }
     }
     if timing {
         printers::print_timing(

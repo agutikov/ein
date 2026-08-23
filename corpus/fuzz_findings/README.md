@@ -37,6 +37,20 @@ The two `id-order` rows are the class
 and they are the first the id-space sweep has found that the corpus does not
 reach — which is the argument for running it over generated input.
 
+### 2026-08-23 — the `jobs` property's first session
+
+[T1a.7.2.6](../../plans/m1a_rust/p1a.7_parallelism/s1a.7.2_parallel_enterings.md)
+added a sixth property — *the same program at `--jobs 8` answers as it does at
+`--jobs 1`* — and ran the phase's acceptance stress through it: **5 000 cases
+and 25 000 runs, of which 10 000 `solve` runs each paired against a `--jobs 8`
+process of its own**, with 758 cases reaching a fan-out and 79 055 enterings
+evaluated on workers. `jobs` was green on all of
+them. What the session found was one thing, and it is about the DOT renderer:
+
+| file | property | what it is |
+|---|---|---|
+| [`kwpair-below-the-filter.ein`](kwpair-below-the-filter.md) | `no-crash` | `render constraints` panics on a keyword pair *below* the top level of an undeclared form — `constraints.rs` filters `KwPair` out of a declaration's arguments, and `value_label` then recurses into an `SForm` and reaches the ones inside. The loader accepts the program; `saturate` answers it. Two defensible fixes and nothing has chosen one, so it is a defined-behaviour question rather than a crash to paper over |
+
 ### `d3-*.ein` — 2026-08-20, S1a.6.6's first session
 
 Both were filed as

@@ -802,6 +802,116 @@ default `--jobs 1` run creates no thread at all; it lives behind `ein-infer`'s
 `collect_into_vec` over an *indexed* parallel iterator is what keeps the
 results in candidate order whatever order the workers finished in.
 
+## 8a. T1a.7.2.4 — the early stop, and the batch that was flat
+
+**The batch that bounds a cut's waste was bounding it on every run**, and the
+CLI's default run is a run with a cut. `-n 1` is what `ein solve <file>` means
+without `-e`, and the rule §8 shipped read *any* `stop_after` or
+`max_enterings` as "cut soon" and dropped the batch to one round of workers.
+On three of the four workloads of the measurement set `-n 1` never reaches a
+solution at all — the depth cap ends the search first — so the common
+invocation paid a barrier every `jobs` enterings for a cut that never came:
+
+| `--jobs 8`, best of five, `P:8` | flat `batch = jobs` | ramped | `-e` control |
+|---|---:|---:|---:|
+| `features/01 -n 1` | 994.9 ms — **1.69×** | **527.3 ms — 3.13×** | 3.17× |
+| `sq-bwd/houses -n 1` | 94.9 ms — 2.72× | **56.7 ms — 4.46×** | 4.38× |
+| `branching/07 -n 1` | 89.4 ms — 3.07× | **65.9 ms — 4.30×** | 4.20× |
+| `branching/06 -n 1` | 3.9 ms | 5.0 ms — *see below* | 4.28× |
+
+`features/01 -n 1` is the whole finding in one row: **384 167 enterings in one
+layer, 48 021 barriers**, and at `--jobs 2` the flat batch was *slower than
+`--jobs 1`* (1 842.6 ms against 1 677.3) — the same signature the whole-layer
+batch had in §8, arrived at from the opposite direction. One is too much memory
+in flight and the other is too little work between barriers, and the knee
+between them is the same 32 enterings per worker.
+
+**The last row is below the instrument's resolution**, and it is in the table
+to say so rather than to claim a direction. `branching/06 -n 1` finds its
+solution in ~3 ms — the same file's exhaustive run is 195 — and at that size a
+process's wall clock is startup and page faults. Best of five said 3.9 flat and
+5.0 ramped; best of **twenty-five** says `-j 1` 3.4, `-j 2` 5.7, `-j 4` 6.0,
+`-j 8` 3.2, which is not a curve. What can be said exactly is what the counters
+say: the larger batch speculates 42 enterings to commit 25 where the flat one
+speculated 32, so the ramp trades 10 more discarded enterings for the
+throughput the rows above. On a 3 ms run neither number is worth a thread pool,
+and that is what `--jobs 1` being the default is for.
+
+### The rule, and why it is a bound rather than a constant
+
+    batch = clamp(enterings committed so far, jobs, jobs × 32)     if a cut is configured
+          = jobs × 32                                              otherwise
+
+A cut discards at most the enterings in flight, and a batch is at most what has
+already been committed — so **speculative waste at an early stop is bounded by
+the work already done**, and a cut can at worst double a run's work. The
+geometric growth reaches full width after ~`jobs × 32` enterings, which is why
+the `-n 1` column above now tracks its `-e` control to within noise while the
+bound still holds.
+
+"A cut is configured" is `stop_after`, `max_enterings` or `max_time` — the
+three things that stop the loop mid-layer. An exhaustive run with no budget
+takes the full batch from its first entering and is **byte-for-byte the run §8
+measured** — no code on that path changed — which is why the table's last
+column is a *control* rather than a result. It is this session's reading of
+§8's cells (3.17 / 4.38 / 4.20 / 4.28 against §8's 3.16 / 4.30 / 4.06 / 3.72),
+and the spread between the two is what a `powersave` governor and a different
+hour cost. Read the `-n 1` columns against that control, not against §8's
+table.
+
+### What it costs, measured rather than argued
+
+`JobStats::speculated − committed − handed_back`, which the `--stats` block
+prints under `--jobs N` (T1a.7.2.5):
+
+| `--jobs 8` | committed | wasted | sequential |
+|---|---:|---:|---:|
+| `branching/06 -n 1` | 25 | **17** | 42 |
+| `branching/07 -n 1` | 11 297 | 0 | 204 |
+| `sq-bwd/houses -n 1` | 21 678 | 0 | 20 |
+| `features/01 -n 1` | 384 132 | 0 | 35 |
+
+Three of the four waste nothing because they never cut. The one that does
+wastes 17 against 25 committed — inside the bound, and the reason the bound is
+`max(jobs, committed)` rather than `committed`: the very first batch of a run
+has no committed work to be bounded by.
+
+Peak RSS is unmoved, which is the other half of the batch's job: `features/01`
+reads 67–79 MB at `--jobs {1, 8, 16}` under both `-n 1` and `-e`, against the
+same file's **1.9 GB** with a whole layer in flight.
+
+### And it is still the same computation
+
+The batch is a scheduling decision and may not be anything else, so the three
+instruments §8 used were re-run with the ramp in and the `-n 1` arm added:
+
+- **142 corpus cells** — every non-slow entry's `solve` and `solve -e` runs —
+  at `--jobs 1` and `--jobs 8`: same exit code, byte-identical stdout, every
+  `--json-summary` field equal. **0 divergences.**
+- **The verbose event stream, byte for byte**, at both job counts and in both
+  modes: `branching/06 -e`'s 2 200 561 lines, `07`'s 827 167 under `-e` *and*
+  under `-n 1`, `houses`' 598 381 in both, `zebra2 -n 1`'s 17 086.
+- `search_invariants.rs`, now fifteen tests, including the two below.
+
+### And both halves are tests rather than numbers
+
+`search_invariants.rs`:
+
+- `an_early_stop_cuts_at_the_same_candidate` — every file × `-n {1,2,3}` ×
+  `--jobs {2,4,8}`, comparing the answer, the models **in recording order** and
+  every counter. `enterings_total` *is* the cut's position, so a fan-out that
+  cut one candidate early would move it. Verified live: made to cut at batch
+  granularity instead of candidate granularity, it fails on the first file with
+  29 enterings against 36.
+- `speculative_waste_is_bounded_by_the_work_and_absent_without_a_cut` — the
+  bound above, plus *zero* waste on every run with no cut configured. Verified
+  live: with the batch un-ramped it fails on the first file with 53 discarded
+  against a bound of 29.
+
+Both were written to fail loudly rather than vacuously: the first asserts that
+at least four of its runs really did stop early, the second that at least one
+really did waste something.
+
 ## 9. Reproducing
 
 ```sh
@@ -856,6 +966,20 @@ ein.rs/target/release/ein solve -e examples/branching/06_lookahead_on.ein \
 ein.rs/target/release/ein solve -e examples/branching/06_lookahead_on.ein \
     -j 8 --events /tmp/b.jsonl --events-level verbose
 diff <(tail -n +2 /tmp/a.jsonl) <(tail -n +2 /tmp/b.jsonl) && echo identical
+
+# §8a — the default run, which is the one with a cut in it, and its sweep
+for j in 1 2 4 8; do
+  utils/bench_env.sh --cores P:8 ein.rs/target/release/ein \
+      solve examples/saturation/square-bwd/houses.ein -j $j
+done
+# …and what it threw away, which is the `--stats` block `--jobs N` adds
+ein.rs/target/release/ein solve examples/branching/06_lookahead_on.ein \
+    -j 8 --stats            # speculated=42 (committed=25 … wasted=17)
+cargo test -p ein-infer --test search_invariants an_early_stop
+cargo test -p ein-infer --test search_invariants speculative_waste
+# …and the same-computation sweep, both arms: every non-slow corpus entry's
+# `solve` and `solve -e` at -j 1 and -j 8, compared on exit, stdout and every
+# --json-summary field.
 
 # §6 — the cost/benefit columns, and the corpus sweep behind the threshold
 cargo run --release --features counters -p ein-infer --example flatten_probe

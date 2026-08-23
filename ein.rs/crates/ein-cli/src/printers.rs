@@ -10,7 +10,7 @@ use std::time::Instant;
 use ein_core::pyfmt::format_spec;
 use ein_core::{Kb, SolverConfig, Terms};
 use ein_infer::SharedMemo;
-use ein_infer::solve::{Dumper, MonotonicStats};
+use ein_infer::solve::{Dumper, JobStats, MonotonicStats};
 use ein_infer::verdict::Answer;
 use ein_ir::Ast;
 
@@ -80,6 +80,44 @@ pub fn print_stats(stats: &MonotonicStats, elapsed_ms: f64) {
         b.nogoods_emitted, b.nogoods_subsumed
     );
     println!("  wall             {} ms", format_spec(elapsed_ms, ".1f"));
+}
+
+/// `-s/--stats` under `--jobs N` — what the fan-out did (T1a.7.2.5).
+///
+/// **Printed only when `--jobs > 1`**, and that is the whole of why it may
+/// live on a surface the invariance sweeps read. `--stats` is already the one
+/// block that reports the *run* rather than the answer — it has printed a
+/// `wall` since ein.py, and no two runs agree on that — so a job count is at
+/// home here and nowhere else. Every number below is deliberately absent from
+/// [`MonotonicStats`] and from `--json-summary`, because those are compared
+/// exactly between `--jobs 1` and `--jobs N` and these must differ.
+///
+/// The four rows answer four questions a reader of a scaling number has:
+///
+/// - **workers** — how many threads a layer actually used, which is
+///   `min(--jobs, the batch)` and is `0` when no layer was fanned out at all;
+/// - **speculated** — enterings evaluated on a worker, and its three-way
+///   split. `wasted` is the one the acceptance bounds: enterings computed on
+///   a worker that the run stopped before committing, which can only happen
+///   at a `stop_after` / budget cut and is at most one batch (T1a.7.2.4);
+/// - **handed_back** — enterings a worker could not finish because it would
+///   have had to number a proposition, re-run on the committing thread;
+/// - **sequential** — enterings whose *layer* could write a fact to root
+///   ([`ein_infer::solve`]'s fan-out predicate), so they ran in order however
+///   many jobs were asked for. Amdahl's numerator, per run.
+pub fn print_job_stats(jobs: &JobStats, asked: usize) {
+    let wasted = jobs
+        .speculated
+        .saturating_sub(jobs.committed)
+        .saturating_sub(jobs.handed_back);
+    println!();
+    println!("jobs");
+    println!("  workers          {} (of {asked} asked)", jobs.workers);
+    println!(
+        "  speculated       {} (committed={} handed_back={} wasted={})",
+        jobs.speculated, jobs.committed, jobs.handed_back, wasted
+    );
+    println!("  sequential       {}", jobs.sequential);
 }
 
 /// `-t/--timing` — the per-phase wall-clock table.

@@ -48,7 +48,7 @@ generator.
 |---|---|---|
 | [`stdlib_manifest.py`](stdlib_manifest.py) | **writes** `stdlib/MANIFEST.sha256`, and verifies it per module without a toolchain. The writing is the half no test can do — a test that rewrote the file it checks would check nothing. What *is* a test: `ein-ir`'s `the_embedded_copy_matches_the_manifest`, which is not stale-able because `include_dir!` makes each module a build dependency | per-commit CI |
 | [`check_hashmap_iteration.py`](check_hashmap_iteration.py) | the determinism grep — no iteration over a hash map at a site whose order could reach an output, `// determinism-ok: <reason>` the only escape. 152 files, 21 annotated | per-commit CI |
-| [`fuzz_ein.py`](fuzz_ein.py) | the engine fuzzer: generate or mutate ein programs, then check the five properties one engine can check — `no-crash`, `diagnosed`, `terminates`, `deterministic`, `id-order`. Findings land in [`corpus/fuzz_findings/`](../corpus/fuzz_findings/README.md) | `ein`, and `cargo` for `id-order` |
+| [`fuzz_ein.py`](fuzz_ein.py) | the engine fuzzer: generate or mutate ein programs, then check the **six** properties one engine can check — `no-crash`, `diagnosed`, `terminates`, `deterministic`, `id-order` and, since M1a T1a.7.2.6, `jobs` (the same program at `--jobs 8` answers as at `--jobs 1`; `--jobs 1` turns it off). Findings land in [`corpus/fuzz_findings/`](../corpus/fuzz_findings/README.md) | `ein`, and `cargo` for `id-order` |
 | [`gen_unicode_printable.py`](gen_unicode_printable.py) | regenerates `ein-core/src/printable.rs` — CPython's `Py_UNICODE_ISPRINTABLE` as a binary-searchable table. Run it after a CPython upgrade | — |
 
 > `fuzz_ein.py`'s strongest property is not its own: `id-order` runs

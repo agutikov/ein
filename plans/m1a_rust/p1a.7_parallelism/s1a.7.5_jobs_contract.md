@@ -87,6 +87,19 @@ permuted). Every corpus file × every op × every `jobs` value, in one process,
 cut by `ein-parity`. This is the mechanism that keeps the promise; without it,
 "deterministic parallel" decays within a month.
 
+**Its first line is a jobs axis on `solve_shape`**, and that is worth knowing
+before the sweep is written: `Op::Solve` reaches `ein_infer::solve_shape`,
+which builds its own `SolveOptions` and therefore pins `jobs` at 1. Until it
+takes one, *every* `corpus_ops` sweep — `corpus_shapes` and
+`id_order_invariance` included — is a `--jobs 1` sweep, so the "`--jobs`
+composes with the permuted id space" the phase
+[README](README.md#the-acceptance-restated)'s last table row wants is
+downstream of this and not already true. What *is* already true is the
+generated-input form, [S1a.7.2](s1a.7.2_parallel_enterings.md) T1a.7.2.6's
+`jobs` property in `utils/fuzz_ein.py`: 10 000 paired `--jobs 8` runs through
+the CLI, which compares processes rather than the 45 ops. The two are
+complements.
+
 **Nightly may not be needed.** The tier was nightly because two processes per
 corpus cell cost 738 s; `id_order_invariance` does the whole corpus twice in
 seconds. If the `jobs` axis lands in the same envelope it belongs in
