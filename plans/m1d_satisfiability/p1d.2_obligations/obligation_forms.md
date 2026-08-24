@@ -2,8 +2,10 @@
 
 **Phase:** [P1d.2](README.md) — this is [S1d.2.3](README.md#stages)'s input, written
 before its stage file so the decision is the user's and the plan follows it.
-**Status:** **a menu, not a decision.** Six forms, each stated as syntax +
-mechanism + what it cannot say. Written 2026-08-24.
+**Status:** **a menu, not a decision.** Seven forms, each stated as syntax +
+mechanism + what it cannot say. Written 2026-08-24; **G arrived the same
+day**, the user's follow-up proposal, quoted verbatim in
+[§ G](#g--a-verdict-atom-assert-open-the-dual-of-false).
 **Reads:** [`../ideas.md`](../ideas.md) (authoritative on intent),
 [`../p1d.10_exhaustive_search/layer_census.md`](../p1d.10_exhaustive_search/layer_census.md)
 (what the corpus actually does today).
@@ -235,21 +237,206 @@ weakness: *"while it is not part of the theory (rules + ontology)"*. With F,
 `complete` can never mean **discharged**; it stays "the generator proposes
 nothing".
 
+### G — a verdict atom: `:assert open`, the dual of `(false)`
+
+**The user's proposal (2026-08-24, verbatim):**
+
+> now we have upper limit of relations in 2 forms (assert false and assert
+> negative fact that then can conflict and assert false finally); also the KB
+> can be in one of 3 states: open, false (contradiction) and satisfy (model);
+> So I propose to introduce new special atom to assert ":assert open" that
+> will indicate KB is in open state; we count open assertions and it should be
+> equal to the number of sum of obligated facts multiplied to it's arity; So
+> engine has this number for every KB, also it see relations and objects used
+> in matcher and can build indexes and thus domain and co-domain
+
+and the example, from the same session:
+
+```lisp
+(rule :match (and (is-a ?who Nationality) (absent co-loc House_1 ?who))
+      :assert open
+      :why "somebody must live in the House_1")
+```
+
+**The symmetry it starts from** is one this page had not stated. The upper
+bounds exist in *two* forms — a **verdict atom**
+([`std.algebra`](../../../stdlib/algebra.ein)'s `functional` / `injective`
+fire `(false)` directly, priority 250) and a **stored fact**
+([`std.bijection`](../../../stdlib/bijection.ein)'s `functional-negative` /
+`injective-negative` store `(not (?R ?a ?b'))` at 240, which a later positive
+conflicts into `(false)`). G claims the lower bounds deserve the same two
+duals — and the menu already held the other one without saying so:
+
+| | upper bound `≤` — exists | lower bound `≥` — proposed |
+|---|---|---|
+| **verdict atom** | `:assert (false)` on violation | `:assert open` while unmet — **G** |
+| **stored fact** | `:assert (not …)`, conflicts later | a stored positive clause, discharged later — **E** |
+
+So G and E are not rivals for one slot: they are the two halves the upper
+bounds already have, and a design can take both.
+
+**What the example counts — the guard's side of the `absent` decides.** Read
+literally, the rule binds `?who` *outside* the NAF, so it fires once per
+Nationality not present in House_1 — **four** ways in a *solved* state (the
+four who correctly live elsewhere; a stored `(not …)` still passes `absent`),
+five in an empty one. That tally is `|domain| − #witnesses`: per-candidate
+slack, bottoming out at four, not zero. Moving the guard *inside* the
+`absent` makes it the obligation count:
+
+```lisp
+(rule house-1-inhabited ()
+  :match  (absent (and (is-a ?who Nationality) (co-loc House_1 ?who)))  ; ∄who
+  :assert open
+  :why    "somebody must live in the House_1")
+```
+
+— fires exactly once while House_1 has no inhabitant, and not at all once it
+has one. Both spellings are legal today up to the atom (`forall`'s own
+expansion is an `absent` over an internally-bound variable). The proposal
+tests *equality* against a predicted number rather than zero, which either
+spelling can satisfy — but the ledger whose satisfied state reads 0 needs no
+prediction, so the arithmetic below is the ∄ spelling's. Its generic form is
+`std.algebra`'s `total`, one modality down — scan *absence* where `total`
+scans stored `(not …)`, and say *unfinished* where it says *dead*:
+
+```lisp
+(rule total-owed (?R ?isa)
+  :match  (and (relation ?R ?A ?B) (?isa ?a ?A)
+               (absent (?R ?a ?b)))            ; ∄b — no witness yet
+  :assert (open ?R 0 ?a)                       ; owed: some (?R ?a _)
+  :priority 500
+  :why    "{?R} owes {?a} a {?B}")
+```
+
+`(open ?R 0 ?a)` borrows B's positional spelling (with B's ugliness) so a
+tally line has an identity and a slot; the proposal's bare `:assert open`
+stays as the anonymous degenerate. Priority is the probe band (500): an
+obligation read before negative-completion (240) and elimination (400) have
+run would report debts the same quiescence was about to pay.
+[`bijective-setup`](../../../stdlib/bijection.ein) fans out two more
+activators (`total-owed` / `surjective-owed`) and no puzzle changes a line.
+
+**Mechanism — and the one thing it must not be.** `(false)` can live as an
+ordinary stored fact because contradiction is extension-stable: a dead state
+stays dead under any addition. Openness is the opposite — it exists to be
+destroyed by an extension — so **an `open` conclusion must not enter the
+store**: a fork inheriting the root's `open` facts would still carry the debt
+after paying it. The atom is a **per-quiescence verdict, not a fact**: at
+each KB's NAF boundary the engine evaluates the open-rules against *that* KB,
+counts the matches, and stores nothing — the discipline `absents_still_pass`
+already applies to every NAF premise, one band later and read by the engine
+instead of written back. Terminal like `(false)`: no rule matches on it. The
+read-out is then the proposal's three states, each locally decidable at one
+quiescent KB:
+
+| the quiescent KB has | it is |
+|---|---|
+| `(false)` | **false** — contradiction, exactly as today |
+| no `(false)`, tally > 0 | **open** — unfinished; the firing rules' `:why`s *are* the outstanding-obligations report |
+| no `(false)`, tally = 0 | **satisfy** — a model, by **discharge** rather than by exhaustion |
+
+**The count, and the number that already checked it.** The proposal's
+invariant — open assertions = obligated facts × arity — is the ledger's
+*size*: a `bijective` n×n relation owes each of its n arrows from both ends,
+n × 2 slots. On `zebra2-minus-15` that is 5 relations × 5 facts × 2 = **50 —
+the exact "obligations they imply" row of
+[§5](#5-what-this-looks-like-on-zebra2-minus-15)** — and the 2 arrows already
+true at root discharge 2 × 2 = 4 of them: tally **46 = §5's 23 forward + 23
+backward**, measured by hand before this form had a name. The equality is a
+**conservation audit** in the
+[`layer_census`](../p1d.10_exhaustive_search/layer_census.md) style: the
+engine can predict the ledger from the declarations and diff what the rules
+emit, and a mismatch is an encoding bug with a number attached.
+
+**Candidates, with no payload anywhere.** The proposal's last clause — the
+engine "can build indexes and thus domain and co-domain" — is where the
+candidate set lives: nowhere. A still-firing open names a slot through its
+rule's compiled matcher and bindings — `(co-loc House_1 _)` — and candidates
+are a join taken on demand: `alive ∩ slot`. §5's per-obligation histograms
+(23 forward at 3–5 candidates each) are exactly that join, taken manually.
+Nothing is stored, so nothing needs invalidating; the cost moved into the
+read.
+
+**What it buys, that A–F do not.**
+
+- **[Q-M1d.2](../open_questions.md#q-m1d2--where-does-a-requirement-live)
+  answered at (c)** — a rule shape, the answer under which "the phase is much
+  smaller than it looks": one reserved atom, a tally per KB, rows in
+  [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md);
+  no data-model object, nothing in `.einb`, nothing in the renderers' types.
+- **The verdict is the content.** G is the only form whose primary output is
+  the three-state read-out —
+  [Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)'s
+  candidate (c) mechanised. The ten `Contradiction, exhausted=False` entries
+  partition measurably: owes-something ⇒ *incomplete*; owes-nothing ⇒ the
+  vacuous edge below.
+- **Additive, reversible.** §8's six scans stay untouched and gain two duals;
+  hypotheses still come from `alive`, so **no
+  [Q-M1d.4](../open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal)
+  exposure and every counter stands**. It can ship as a report line
+  (`--events`, `--json-summary`, the trace) with **no verdict word moved** —
+  the phase's "every existing verdict is unchanged" acceptance holds until
+  Q-M1d.6 is *deliberately* spent.
+- **No domain freeze.** Re-evaluated per state, so a late `(is-a b₆ House)`
+  is seen — the assumption E bakes in at materialisation time, G never makes.
+- **It is the instrument.** An openness census per corpus entry is S1d.2.6's
+  table, available *before* S1d.2.4/5 commit to machinery — measure before
+  designing, the discipline that put P1d.10 first.
+
+**Cannot say, and costs.**
+
+- **`L ≥ 2` and any `U`** — E's boundary exactly; `U` stays with
+  `functional` / `injective`, where it already works.
+- **No propagation.** G never narrows, forces, or refutes:
+  `domain-elimination` still forces at one, `total` still kills at zero, by
+  the same `forall` scans — §8's six-into-one collapse is **not available**
+  under G alone. G is the *record + report* half of the phase goal; *narrow /
+  close / refute* stay where they are, or arrive with E.
+- **A re-query per quiescence** — §1's 72 % cost shape. But it is
+  boundary-shaped: the exact cost P1a.6 spent twelve stages engineering down,
+  not a new kind, and the tally is one band of it.
+- **The vacuous edge.** An entry stating no obligations has tally ≡ 0, so its
+  consistent quiescent states read *satisfy* — where today's `complete(kb)`
+  ("does the generator propose anything") says otherwise.
+  [`ideas.md`](../ideas.md) § "Когда fixed point является решением" endorses
+  exactly this under closed-world completion; the entries where the two
+  definitions disagree become tests, as the
+  [phase acceptance](README.md#acceptance-for-the-phase) already requires. G
+  forces that question early, because G's content *is* the model criterion.
+
+**The sub-decision, and it is mechanical, not aesthetic.** `open` is
+[`std.macro`](../../../stdlib/macro.ein)'s, arity-1, match-side — and macros
+expand in `:assert` too (§2). So today `:assert (open)` is an arity error and
+`:assert (open X)` expands into an `absent`-conjunction that is illegal in
+assert position. Three ways out: **claim `open` as a reserved head** and
+rename the probe (touching the `tests/stdlib` probe idiom at priority 500);
+**a sibling word** — `(owe …)` reads well in assert position and is the
+phase's own vocabulary ("what it still owes"); or arity-passthrough in the
+expander (fragile — rejected on sight). One shape question rides along: the
+slot spelling above is positional because assert-side variables come bound
+from the match, so a hole has no spelling there today — relaxing that *for
+the verdict head only* (`(open (?R ?a ?b))`, unbound `?b` as the hole) is
+prettier and bends a rule that is otherwise uniform. Both are S1d.2.3's,
+beside E's fact-or-kernel-object.
+
 ## 4. The two axes
 
-The six are not six independent choices. They separate cleanly:
+The seven are not seven independent choices. They separate cleanly:
 
 **Axis 1 — the surface** (how an author writes one): A (declarator metadata),
 B (a bare reserved fact), C (a new head), D (an assert form), F (an `hrule`
-clause).
+clause), G (a verdict atom in `:assert`, derivable only by a rule).
 
 **Axis 2 — the payload** (what the engine holds for an *open* one): a
-**counter** over a re-queried candidate set (B/C/D), or a **clause** over a
-materialised one (E).
+**counter** over a re-queried candidate set (B/C/D), a **clause** over a
+materialised one (E), or **nothing** — a per-quiescence tally that re-derives
+instead of persisting (G).
 
 E is therefore orthogonal: it is an answer to axis 2 that any of B/C/D can
-carry. And A is orthogonal again — it is sugar, and it can desugar to whatever
-the other two axes settle on.
+carry. A is orthogonal again — it is sugar, and it can desugar to whatever
+the other two axes settle on. And G is the corner of axis 2 that needs no
+axis-1 carrier under it: the tally has no fact to ride on, which is what the
+other six pay for somewhere.
 
 ## 5. What this looks like on `zebra2-minus-15`
 
@@ -300,6 +487,7 @@ Two arithmetic consequences worth having before the design starts:
 | **D** `at-least` in `:assert` | **none** (a `std.macro`) | yes | yes | yes | its carrier's | yes | via B |
 | **E** positive clause | none, if via D | yes | yes | yes | **in the object** | **no** | yes |
 | **F** `hrule :choose` | new kw on `hrule` | yes | yes | yes | in the search | yes | n/a |
+| **G** `:assert open` verdict | **none** (one reserved atom) | **only** a rule can | yes — φ is the rule's match | yes (∀-side; the witness side names no domain) | recomputed — `alive ∩ slot` | **no** | **per-KB by construction** |
 
 ## 7. A recommendation
 
@@ -319,6 +507,18 @@ case**, with **A as free sugar** on top.
 - `(relation R A B :cardinality 1..1)` then desugars to the same thing for the
   common declaration-site case, and the dead slot in the grammar finally means
   something.
+
+**Where G lands in that stack** (added 2026-08-24, with the form): it takes
+the **verdict stratum** away from B — the tally needs no carrier fact — so
+the composed shape becomes **G first** (the three-state read-out and the
+outstanding-obligations report, as an `--events` / summary line, no verdict
+word moved), **E when S1d.2.5 wants branches**, **D as the surface over
+both**, A as sugar; B is left holding only what G cannot say, `L ≥ 2` and
+`U`, which no corpus entry states. G's openness census is then the number
+that says whether E's machinery is needed at all, and the verdict word itself
+moves only when
+[Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
+is decided, never as a side effect.
 
 **What that leaves open, deliberately**: `L ≥ 2` and `U` have no clause
 representation, so they stay counters — and by
@@ -347,13 +547,22 @@ the strongest argument for doing this at all, and it is also the strongest
 argument for **S1d.2.1 running first**: if the six are not as redundant as this
 table claims, the collapse is not available.
 
+**G reads the table the other way**: the six stay as written and gain two
+duals (`total-owed` / `surjective-owed`) — the middle *word* added without
+the endpoint *mechanisms* absorbed. Additive and reversible where the
+collapse is neither; if S1d.2.1 finds the six less redundant than claimed, G
+is the one form that does not care.
+
 ## 9. What this leaves for the stage files
 
 - **S1d.2.1** — the audit, which decides whether §8's table is true.
 - **S1d.2.2** — the domain: what closes it, and whether `?isa` is enough.
-- **S1d.2.3** — this decision, plus the sub-decision E raises (is a stored
-  clause a fact or a kernel object?).
+- **S1d.2.3** — this decision, plus the sub-decisions E raises (is a stored
+  clause a fact or a kernel object?) and G raises (the `open`-macro name
+  collision; the slot spelling).
 - **S1d.2.4** — the saturator: invalidation, and the per-quiescence cost §1
   warns about.
 - **S1d.2.5** — hypotheses from obligations, and Q-M1a.18's shape.
-- **S1d.2.6** — verdicts, counters, corpus.
+- **S1d.2.6** — verdicts, counters, corpus — and G's openness census: the
+  tally per entry, and which of Q-M1d.6's ten it reads as *incomplete*
+  versus *vacuously satisfied*.
