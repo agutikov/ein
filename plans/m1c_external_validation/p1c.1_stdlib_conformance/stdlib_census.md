@@ -630,11 +630,58 @@ those terms, so 0/73 closes it. Three things it is not:
 
 ---
 
+## 12. The suite on its own — S1c.1.5
+
+**Taken:** 2026-08-24, `ein 0.1.0`, `python3 utils/stdlib_census.py -k
+tests/stdlib` — 45 entries, **135 inference runs**, 0.7 s wall.
+
+§11's number is over the whole corpus, and the whole corpus is not what tests
+the stdlib. [S1c.1.5](s1c.1.5_gate.md) asked the narrower question — *what does
+the suite written to activate rules activate on its own?* — because that is the
+one a gate can hold: a rule that fires only inside `examples/zebra.ein` has no
+test, and 20 rules were in exactly that state before S1c.1.4.
+
+| | all 180 entries (§11) | `tests/stdlib/` alone |
+|---|---:|---:|
+| entries | 180 | **45** |
+| inference runs | 557 | **135** |
+| **rules no run activates** | 0 | **0** |
+| rules that fire but derive nothing | 0 | **1** |
+| rules activated by exactly one entry | 31 | **44** |
+| firings, productive / redundant | — | **1 110 / 1 236** |
+
+Two rows are worth reading rather than counting.
+
+**The zero column was 1 when the question was first asked, and the rule was
+`transitive`.** Its fixture is a two-cycle — A→B, B→A — where `R(a,b) ∧ R(b,c)`
+matches twice and `(neq ?a ?c)` refuses both, deliberately, because a rule
+tested only where it fires has had its guard tested nowhere. The argument is
+right about the guard and silent about the assertion, which was resting on the
+six puzzles §3 lists. `algebra/21_transitive.ein` has a three-chain now and the
+column is 0.
+
+**`slot-adjacent-fwd` fires only redundantly here**, which §11 already
+predicted in the paragraph headed *What the numbers still do not say*: its
+productive case wants the lower end of a spatial clue placed before the upper
+one, and a three-seat row has no slack for both orders. It is productive 54
+times in `examples/zebra.ein`. This is the one place where the suite is weaker
+than the corpus, and it is the difference between *activation* — which the gate
+holds — and a *productive* firing, which it does not.
+
+**44 of 73 rules have exactly one activating program**, against 31 over the
+whole corpus, and the direction is right rather than alarming: every one of
+those 44 entries is a file whose whole purpose is to be that rule's activator.
+The fragility §4 measured was the opposite shape — one *puzzle* carrying 20
+rules that were never anybody's subject.
+
+---
+
 ## Cross-links
 
 - [`utils/stdlib_census.py`](../../../utils/stdlib_census.py) — the instrument;
-  `--check` exits 1 while any rule is at zero, which is
-  [S1c.1.5](s1c.1.5_gate.md)'s coverage gate in script form
+  `--check` exits 1 while any rule is at zero. **The gate is not this** since
+  [S1c.1.5](s1c.1.5_gate.md): it is `ein-infer/tests/stdlib_coverage.rs`,
+  in-process, 0.04 s, and scoped to `tests/stdlib/` — §12
 - [`stdlib/README.md`](../../../stdlib/README.md) — the module catalogue, and
   the `std.bijection` vs `std.slots` comparison §4 turns into a fragility
 - [`docs/kernel/inference/events.md`](../../../docs/kernel/inference/events.md)

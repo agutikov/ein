@@ -122,7 +122,13 @@ constrained-reasoning research.
   two rules reach one verdict, separate them by activation**, because an
   expectation made of facts cannot say which one got there. The coverage claim
   is measured by `utils/stdlib_census.py`, never by reading the directory, and
-  the suite's sensitivity by a 51-mutant sweep it catches 50 of.
+  the suite's sensitivity by a 51-mutant sweep it catches 50 of. **Since M1c
+  S1c.1.5 two claims about this directory are in `cargo test`**
+  (`ein-infer/tests/stdlib_coverage.rs`, 0.04 s): every stdlib rule is
+  activated by a program *here* — 73 of 73, with no `examples/` entry
+  contributing — and every program here states an expectation. Scoping the
+  first to the suite is what found `transitive`, whose fixture was a two-cycle
+  the `(neq ?a ?c)` guard refuses every match of; it grew a three-chain.
 - **`corpus/`** — the **corpus**: `corpus.toml` (one entry per `.ein`, with
   the runs it is exercised under) plus `fuzz_findings/`. A file under
   `examples/`, `stdlib/` or `tests/` with no entry fails a completeness check. What
@@ -208,8 +214,9 @@ constrained-reasoning research.
   to close, and S1c.1.4 closed it: **0 of 73** on the re-take of 2026-08-24,
   180 entries and 557 runs
   ([§11](plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md#11-the-re-take--2026-08-24-and-the-zero-set-is-empty)).
-  `--check` exits 1 while any rule is at zero, which is S1c.1.5's gate before
-  it is a test.
+  `--check` exits 1 while any rule is at zero and is **not** the gate: S1c.1.5
+  made that a cargo test, in-process and scoped to `tests/stdlib/`. What stays
+  here is the measurement the gate is a yes/no of.
 - **`build.sh`** — **everything this repo builds, in one command**: the Rust
   workspace (`--release` by default, into `ein.rs/target/`) and then the three
   C baselines in `c/` (into the gitignored `build/`). `--debug`,
@@ -274,9 +281,28 @@ EIN_BLESS=1       cargo test … --workspace                   # re-bank the gol
 
 Everything runs one engine. `cargo test --workspace` is the gate — the corpus
 sweep through the CLI, the shape digests, the goldens, the manifest's own
-invariants — and it needs **Graphviz** on `PATH`, because
-`dot_wellformed.rs` is the only authority the DOT views have on being
-well-formed and it fails rather than skips without it.
+invariants, and since M1c S1c.1.5 the **stdlib conformance** pair — and it
+needs **Graphviz** on `PATH`, because `dot_wellformed.rs` is the only authority
+the DOT views have on being well-formed and it fails rather than skips without
+it.
+
+**The stdlib conformance gate** is `ein-infer/tests/stdlib_coverage.rs`, and
+what it costs is 0.04 s:
+
+```sh
+cargo test … -p ein-infer --test stdlib_coverage   # 73 rules, 45 programs, 796 firings
+ein test tests/                                    # the same suite, as a status code
+```
+
+It loads `stdlib/*.ein` for its rule heads, solves every `tests/stdlib/`
+program the way `ein test` does with `--events` on, and fails on any rule no
+program activated — so **adding a rule to the stdlib without a test fails the
+gate**, the way a `.ein` file with no corpus entry does. Its sibling fails on a
+program under `tests/` that states no `:expect`. It is scoped to `tests/`
+rather than to the corpus on purpose: a rule that fires only inside
+`examples/zebra.ein` has no test, and 20 of them were in that state before
+S1c.1.4. `utils/stdlib_census.py` is the same census with the *numbers*
+(37 s, all 180 entries) and is not the gate.
 
 The `ein` binary links `snmalloc` by default since S1a.6.2 (worth 8–16 % of a
 solve), so the build needs **`cmake` and a C++ compiler**;

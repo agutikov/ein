@@ -103,18 +103,44 @@ meeting — a bigger puzzle than the acceptance allows a fixture to be. It is
 recorded here rather than papered over, because a mutation score with an
 unnamed survivor is a slogan.
 
+### What holds this directory up
+
+Two claims about it are **in `cargo test`**, since M1c
+[S1c.1.5](../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.5_gate.md)
+— `ein-infer/tests/stdlib_coverage.rs`, 0.04 s for the whole sweep:
+
+| the claim | what fails without it |
+|---|---|
+| **every stdlib rule is activated by a program *here*** | a rule added to `stdlib/` with no test. It is named, with its module, so the failure says which directory the missing file goes in |
+| **every program here states an expectation** | a fixture whose `:expect` was lost in a refactor, which would then load, run and pass forever |
+
+The first is deliberately scoped to this directory and not to the corpus. The
+corpus-wide version is weaker in exactly the way that matters: a rule that
+happened to fire somewhere inside `examples/zebra.ein` would pass it with **no
+test written**, which is the state
+[the census](../plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md)
+found 20 rules in. Scoping it also found the one rule this suite did not run —
+`transitive`, whose fixture was a two-cycle where the `(neq ?a ?c)` guard
+refuses every match. `algebra/21_transitive.ein` grew a three-chain, and the
+suite now stands on its own: **73 of 73, no `examples/` entry contributing.**
+
+The third file every entry here is swept by is `corpus/corpus.toml` — five
+runs each, 225 of the sweep's 889 cells, **0.72 s** of its 5.1 s.
+
 ### Re-measuring the coverage
 
-The claim "every stdlib rule is activated by at least one program" is
-*measured*, not read off the directory:
+The gate is a yes/no. The *numbers* — firings per rule, productive vs
+redundant, who the sole activator is — stay with the instrument:
 
 ```sh
-python3 utils/stdlib_census.py            # the table
-python3 utils/stdlib_census.py --check    # exit 1 while any rule is at zero
+python3 utils/stdlib_census.py                     # the table, all 180 entries
+python3 utils/stdlib_census.py -k tests/stdlib     # this directory's own contribution
+python3 utils/stdlib_census.py --check             # exit 1 while any rule is at zero
 ```
 
 It parses `stdlib/*.ein` for rule heads, then sweeps every corpus entry under
 every declared `solve` / `saturate` / `test` run with `--events` and counts
 `fire` by rule. A firing counts for a module only when the file does not
 declare that name itself and the module is in its import closure, so a puzzle's
-inline `symmetric` is never credited to `std.algebra`'s.
+inline `symmetric` is never credited to `std.algebra`'s. That attribution rule
+is the one the cargo test re-implements, and the two have to stay one rule.

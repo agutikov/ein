@@ -14,42 +14,53 @@
 ;;;
 ;;; ── What this program does to them ─────────────────────────────────────────
 ;;;
-;;; A two-cycle is the smallest shape on which the guard bites: A→B and B→A.
+;;; Three relations, and the third is why there are three:
 ;;;
-;;;   tr   (transitive tr)      A→B→A would close to A→A — `neq` refuses.
-;;;                             B→A→B likewise. So `tr` never grows, and the
-;;;                             closure of a cycle stays irreflexive.
-;;;   cyc  (compose cyc cyc cyc)  the same two edges with no guard: both
-;;;                             self-loops appear.
+;;;   chn  (transitive chn)      A→B→C, acyclic: the rule **fires**, once, and
+;;;                              derives A→C. The assertion's own test.
+;;;   tr   (transitive tr)       A→B and B→A. A→B→A would close to A→A — `neq`
+;;;                              refuses; B→A→B likewise. So `tr` never grows,
+;;;                              and the closure of a cycle stays irreflexive.
+;;;   cyc  (compose cyc cyc cyc) the same two edges with no guard: both
+;;;                              self-loops appear.
+;;;
+;;; A two-cycle is the smallest shape on which the guard bites; a three-chain
+;;; is the smallest on which the rule has anything to say at all.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
 ;;;
-;;; `tr` closed at two edges is the guard's test in the direction that finds a
-;;; bug: drop the `(neq ?a ?c)` and `(tr A A)` appears as a surplus fact. `cyc`
-;;; closed at four is the control — it says the two rules were both reached and
-;;; that the difference is the guard rather than the fixture.
+;;; `chn` closed at three edges is what the rule *derives*. `tr` closed at two
+;;; is the guard's test in the direction that finds a bug: drop the
+;;; `(neq ?a ?c)` and `(tr A A)` appears as a surplus fact. `cyc` closed at
+;;; four is the control — it says both rules were reached and that the
+;;; difference between them is the guard rather than the fixture.
 ;;;
-;;; So `transitive` **fires zero times here**, and that is the point rather
-;;; than a gap: every match it finds is one the guard refuses. A rule that is
-;;; only ever tested where it fires has had its guard tested nowhere.
-;;;
-;;; `transitive` fires in six corpus entries already, all of them puzzles whose
-;;; hierarchies are acyclic, where the guard can never be the thing that
-;;; decides. Here it is the only thing that decides.
+;;; `tr` and `cyc` were this file's whole subject until M1c
+;;; [S1c.1.5](../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.5_gate.md),
+;;; and `transitive` fired **zero** times here — deliberately, because a rule
+;;; tested only where it fires has had its guard tested nowhere. What changed
+;;; is who the coverage gate asks: it asks this suite rather than the corpus,
+;;; and `transitive`'s six other activators are all puzzles whose hierarchies
+;;; are acyclic, where the guard can never be the thing that decides. `chn` is
+;;; those puzzles' case, in three facts.
 
 (import std.algebra :symbols (transitive compose))
 
+(relation chn Node Node :why "{?1} precedes {?2}")
 (relation tr  Node Node :why "{?1} reaches {?2}")
 (relation cyc Node Node)
 
+(transitive chn)
 (transitive tr)
 (compose    cyc cyc cyc)
 
+(chn A B) (chn B C)
 (tr  A B) (tr  B A)
 (cyc A B) (cyc B A)
 
 (query
   :goal (tr ?x ?y)
-  :no-hypothesis (tr cyc)
-  :expect (model (tr  A B) (tr  B A)
+  :no-hypothesis (chn tr cyc)
+  :expect (model (chn A B) (chn B C) (chn A C)
+                 (tr  A B) (tr  B A)
                  (cyc A B) (cyc B A) (cyc A A) (cyc B B)))

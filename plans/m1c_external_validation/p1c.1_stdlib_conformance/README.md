@@ -8,6 +8,9 @@
 [P1a.10](../../../docs/history/m1a_rust/README.md#p1a10--one-implementation) — a new
 surface form is cheap to add to one implementation and expensive to add to two
 in step. Landing it before the oracle leaves means writing it twice.
+**Status: complete 2026-08-24** — five stages, and the phase's own number is
+73 of 73 rules activated by a program written to activate them, held by
+`cargo test`.
 **Was P1a.11; moved here 2026-08-21** at the user's direction. Nothing in the
 phase changed — the dependency it was written against is simply a
 cross-milestone one now, and the reason for the move is that this phase adds
@@ -49,7 +52,7 @@ that gets **stronger** when the oracle leaves.
 | [S1c.1.2](s1c.1.2_test_form.md) | How a program states what it expects | 3 d | **shipped 2026-08-23** — `:expect`, and `Program.queries` |
 | [S1c.1.3](s1c.1.3_test_subcommand.md) | `ein test` | 2 d | **shipped 2026-08-24** — the fourth subcommand |
 | [S1c.1.4](s1c.1.4_stdlib_corpus.md) | The stdlib corpus | ~~4~~ **6 d** | **shipped 2026-08-24** — 45 programs in `tests/stdlib/`, and the zero-firing set is **0** |
-| [S1c.1.5](s1c.1.5_gate.md) | In the gate | 1 d | |
+| [S1c.1.5](s1c.1.5_gate.md) | In the gate | 1 d | **shipped 2026-08-24** — the census is a test, and the suite stands on its own |
 
 ### What S1c.1.2 built
 
@@ -147,6 +150,39 @@ It opened one question:
 whose entire output is derived activator facts, cannot be pinned directly and
 are checked through what they activate.
 
+### What S1c.1.5 built
+
+**The coverage claim is a test** — `ein-infer/tests/stdlib_coverage.rs`, two
+assertions, **0.04 s**, no binary and no subprocess. Three things about it are
+decisions rather than code:
+
+- **It asks the suite, not the corpus.** `utils/stdlib_census.py --check`
+  sweeps all 180 entries, and would go on exiting 0 for a rule added tomorrow
+  that happened to fire inside `examples/zebra.ein` — *with no test written*,
+  which is the state 20 rules were in before S1c.1.4. The test sweeps
+  `tests/stdlib/` and nothing else, which is the phase's acceptance in its own
+  words rather than the census's weaker one. What stays with the script is the
+  measurement: firings per rule, productive vs redundant, the sole-activator
+  table ([§12](stdlib_census.md#12-the-suite-on-its-own--s1c15)).
+- **And that scope found the one rule the suite never ran.** `transitive`'s
+  fixture is a two-cycle where `(neq ?a ?c)` refuses every match it finds —
+  the right test of the *guard*, and silent about the assertion, which was
+  resting on six puzzles. `algebra/21_transitive.ein` has a three-chain now,
+  and the suite's number went 72 → **73 of 73**.
+- **A program that states nothing is not a test.** The second assertion fails
+  on any `.ein` under `tests/` carrying no `:expect` — the failure mode a
+  refactor produces, and one `ein test` reports rather than fails on.
+
+All three failure modes were exercised against the tree and reverted: revert
+the fixture and it names `std.algebra/transitive`; append a rule to
+`stdlib/algebra.ein` and it names it, 1 of **74**; delete an `:expect` and it
+names the file. A coverage gate nobody has seen fail is a coverage gate nobody
+has tested.
+
+The other acceptance bullet was already met when S1c.1.4 registered the 45
+programs as corpus entries, and what this stage owed it was a number: the
+stdlib corpus is **225 of the sweep's 889 cells and 0.72 s of its 5.08 s**.
+
 ### What the census settled
 
 The phase opened on a claim — the stdlib is *"exercised only as a side effect
@@ -181,7 +217,10 @@ Three findings change what the later stages do:
 
 - **Every stdlib rule has at least one program that activates it and states
   what it should derive**, and the coverage claim is *measured* — a firing
-  count per rule over the corpus, not a reading of the source.
+  count per rule over the corpus, not a reading of the source. **Met** —
+  73 of 73 ([§11](stdlib_census.md#11-the-re-take--2026-08-24-and-the-zero-set-is-empty)),
+  and 73 of 73 over `tests/stdlib/` alone
+  ([§12](stdlib_census.md#12-the-suite-on-its-own--s1c15)).
 - `ein test <file>` exits 0 / non-zero and prints what failed. No stdout
   diffing, no golden file, no second engine.
 - A **negative** case per rule wherever one is meaningful: not only "this fires
@@ -195,7 +234,9 @@ Three findings change what the later stages do:
   that file, so the edit is still the deliberate cross-milestone one — it is
   just one paragraph rather than a grammar change.
 - Adding a rule to the stdlib without a test fails the gate, the same way a
-  file without a corpus entry does today.
+  file without a corpus entry does today. **Met** — S1c.1.5's
+  `every_stdlib_rule_is_activated_by_a_program`, and it is the reason the
+  gate is scoped to `tests/stdlib/` rather than to the corpus.
 
 ## Risks
 

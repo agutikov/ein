@@ -3,7 +3,10 @@
 **Estimate:** ~3 weeks — 1 phase, 5 stages, 15 days of stage estimates
 (13 until [S1c.1.1](p1c.1_stdlib_conformance/s1c.1.1_what_the_stdlib_promises.md)
 measured what S1c.1.4 is actually up against).
-**Status:** **started 2026-08-23** — S1c.1.1, S1c.1.2 and S1c.1.3 shipped, two stages to go.
+**Status:** **complete 2026-08-24** — all five stages shipped, in two days
+against 15 days of stage estimates. Its one phase is done and its acceptance is
+met; the half that needed an external solver installed left for
+[M10](../m10_external_benchmarks/README.md) on 2026-08-23.
 **Created 2026-08-21** at the user's direction — one evening after
 the same batch put P1a.10–12 into M1a — out of one phase that was never the
 Rust port and one that had nowhere to live.
@@ -69,7 +72,7 @@ depend on the two sharing a directory.
 
 | phase | title | stages | est. | gate |
 |---|---|---|---|---|
-| [P1c.1](p1c.1_stdlib_conformance/README.md) | stdlib conformance — `:expect` on `query`, `ein test`, a corpus per rule | 5 (3 shipped) | 3 w | every stdlib rule has a program that activates it and states what it derives |
+| [P1c.1](p1c.1_stdlib_conformance/README.md) | stdlib conformance — `:expect` on `query`, `ein test`, a corpus per rule | **5, all shipped** | 3 w | **met** — 73 of 73 rules have a program that activates it and states what it derives, and `cargo test` holds it |
 
 5 stages, 15 days of stage estimates ≈ 3 weeks. The other five went to
 [M10](../m10_external_benchmarks/README.md) on 2026-08-23.
@@ -143,20 +146,65 @@ The stage also found a **bug in the checker S1c.1.2 shipped**: a
 `k = 0` from a truncated lattice is "no model within the cap". Exhausting by
 default is what made it reachable.
 
+### The corpus, written — S1c.1.4, 2026-08-24
+
+**45 programs under [`tests/stdlib/`](../../tests/README.md)**, one per rule or
+tight family, and the acceptance number is measured by the same instrument
+S1c.1.1 used: the zero-firing set goes **38 → 0**
+([§11](p1c.1_stdlib_conformance/stdlib_census.md#11-the-re-take--2026-08-24-and-the-zero-set-is-empty)),
+`examples/zebra.ein` is nobody's sole activator any more, and the whole suite
+runs under `ein test` in 0.03 s. They are a third corpus root rather than more
+`examples/`, because that directory is things to read and these are three
+declarations and two facts apiece that exist to break. Measured for
+*sensitivity* as well as coverage — 51 deliberate defects injected into a copy
+of `stdlib/`, **50 caught**, and the seven first-pass survivors were one
+finding: where two rules reach the same verdict, a fact-shaped expectation
+cannot say which one did, so five fixtures were narrowed to declare a single
+activator.
+
+### The gate, closed — S1c.1.5, 2026-08-24
+
+The claim is in `cargo test` — `ein-infer/tests/stdlib_coverage.rs`, **0.04 s**,
+no binary and no subprocess — and it asks the **suite** rather than the corpus:
+
+```
+73 rules, all activated; 45 programs, 796 firings, 0.04 s
+```
+
+Scope is the whole decision. `utils/stdlib_census.py --check` sweeps all 180
+entries and would go on exiting 0 for a rule added tomorrow that happened to
+fire inside `examples/zebra.ein` — with *no test written*, which is the state
+20 rules were in before S1c.1.4. Scoping it to `tests/stdlib/` is what makes
+"adding a rule without a test fails the gate" true, and it is also what found
+the one rule the suite never ran: `transitive`, whose fixture was a two-cycle
+where the `(neq ?a ?c)` guard refuses every match. It has a three-chain now,
+and the suite's own number is **73 of 73**
+([§12](p1c.1_stdlib_conformance/stdlib_census.md#12-the-suite-on-its-own--s1c15)).
+
+A second assertion fails on any program under `tests/` that states no
+`:expect`, and all three failure modes were exercised against the tree and
+reverted — a coverage gate nobody has seen fail is a coverage gate nobody has
+tested.
+
 ## Acceptance for the milestone
 
 - **No stdlib rule rests only on self-agreement.** Every one has a program
   that activates it and states what it derives — and the statement is
-  machine-checked, not prose.
+  machine-checked, not prose. **Met** — 73 of 73, by a test rather than by a
+  reading, and by a test scoped to the programs written to activate them.
 - The expectations are **checked in as `:expect`**, so an answer established
   anywhere — by hand, by argument, or by the six systems of
   [M10](../m10_external_benchmarks/README.md) — survives the absence of
-  whatever produced it.
+  whatever produced it. **Met** — S1c.1.2's form, and `ein test` needs nothing
+  installed to re-check one.
 - **A missing tool is reported, never skipped past.**
   [S1a.10.1](../../docs/history/m1a_rust/README.md#s1a101--bank-what-only-the-oracle-proves)
   found 42 tests that started a Python process and skipped invisibly when one
   would not start; `ein test` has the same failure mode available to it and
-  must not take it.
+  must not take it. **Met** — a selection that checked nothing exits 2 and says
+  so, and S1c.1.5's second assertion is the same rule applied to the directory:
+  a program that states no expectation fails the gate rather than being counted
+  as one that passed.
 - The milestone's other half — every benchmark problem's answer confirmed by
   a system that is not Ein, and the report that says where Ein loses — is
   [M10](../m10_external_benchmarks/README.md)'s acceptance now.

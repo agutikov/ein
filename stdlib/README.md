@@ -46,12 +46,18 @@ alone, so a change to that one puzzle's encoding could have untested a whole
 module silently
 ([`stdlib_census.md`](../plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md)).
 The claim that every rule is now activated is *measured*, not read off the
-directory: `python3 utils/stdlib_census.py --check` exits 1 while any rule is
-at zero.
+directory, and since M1c
+[S1c.1.5](../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.5_gate.md)
+it is **in the gate**: `ein-infer/tests/stdlib_coverage.rs` solves every
+program under `tests/stdlib/` with `--events` on and fails on any rule none of
+them activated — 0.04 s, and 73 of 73 today. `python3
+utils/stdlib_census.py --check` is the same census with the numbers, over all
+180 corpus entries rather than the suite.
 
-Adding a rule here therefore means adding a program there. It is the same
-discipline as the corpus's growth rule, one level up: a rule with no activating
-program is not tested, it is merely not contradicted.
+Adding a rule here therefore means adding a program there, and the gate says so
+rather than a README. It is the same discipline as the corpus's growth rule,
+one level up: a rule with no activating program is not tested, it is merely not
+contradicted.
 
 ## Location decision (S1.8.A4 — closes [Q30](../plans/open_questions.md#q30--universal-rule-library--import-mechanism))
 
