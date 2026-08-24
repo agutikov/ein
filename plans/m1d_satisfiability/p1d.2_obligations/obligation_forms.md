@@ -509,16 +509,83 @@ which side.
 [`std.macro`](../../../stdlib/macro.ein)'s, arity-1, match-side — and macros
 expand in `:assert` too (§2). So today `:assert (open)` is an arity error and
 `:assert (open X)` expands into an `absent`-conjunction that is illegal in
-assert position. Three ways out: **claim `open` as a reserved head** and
-rename the probe (touching the `tests/stdlib` probe idiom at priority 500);
-**a sibling word** — `(owe …)` reads well in assert position and is the
-phase's own vocabulary ("what it still owes"); or arity-passthrough in the
-expander (fragile — rejected on sight). One shape question rides along: the
+assert position. The ways out are a menu of their own — § The naming menu,
+next, measured against the corpus. One shape question rides along: the
 slot spelling above is positional because assert-side variables come bound
 from the match, so a hole has no spelling there today — relaxing that *for
 the verdict head only* (`(open (?R ?a ?b))`, unbound `?b` as the hole) is
 prettier and bends a rule that is otherwise uniform. Both are S1d.2.3's,
 beside E's fact-or-kernel-object.
+
+**The naming menu — probe and verdict, measured against the corpus**
+(2026-08-24, the user asked for the variants). Two different things need
+names, and the collision hides that they are different:
+
+- **the probe** — match-side, *fact*-level, exists: `(open P)` ⟺ P is
+  neither asserted nor negated. This is [`ideas.md`](../ideas.md)'s third
+  fact-state (`present` / `forbidden` / `open`) — the note owns that word
+  *for facts*.
+- **the verdict** — assert-side, *KB*-level, proposed: this state has an
+  unmet obligation. **Not the same notion one level up**: a KB with tally 0
+  and a hundred open *facts* is *satisfy* (the vacuous edge above), so a KB
+  is not "open" because its facts are — one word for both would rebuild
+  [Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)'s
+  confusion (`alive ≠ ∅` versus "owes something") inside the language itself.
+
+The measured footprint, before choosing. The probe is used by **12
+programs** — 11 under `tests/stdlib/`, where it is one of the suite's three
+idioms, plus [`examples/features/04_open.ein`](../../../examples/features/04_open.ein)
+— so renaming it touches those, [`stdlib/macro.ein`](../../../stdlib/macro.ein),
+the manifest, and the pages that teach the idiom. And the suite has already
+voted on the probe's semantic field: **seven of those programs name their
+observable `undecided`** — `:assert (undecided B C)` as the witness that the
+probe passed — which both recommends the word and **blocks it as the macro's
+own name** (a 2-ary userspace `(undecided B C)` under a 1-ary `undecided`
+macro is an arity collision at expansion). `pending` is taken by
+`examples/branching/14`; `owe`, `due`, `must`, `need`, `unknown`,
+`undetermined`, `incomplete`, `missing`, `debt`, `unmet` are free
+corpus-wide.
+
+**For the probe** — the name must mean *neither asserted nor negated*:
+
+| candidate | the case |
+|---|---|
+| `open` (keep) | zero migration, and the note's own fact-state word |
+| `unknown` | Kleene's third truth value — the standard name for exactly this |
+| `undetermined` | the stdlib's own phrase ("saturation-determined"), negated |
+| `undecided` | the suite's word for it — and blocked, above |
+| ~~`free`~~ | the note itself warns «свободные слоты» conflates *may appear* with *must appear* |
+| ~~`possible`~~ | that is `absent (not P)` alone — one conjunct of two |
+| ~~`pending`~~ | taken; and obligation-flavoured, re-inviting the confusion from the other side |
+
+**For the verdict** — the name must mean *this state owes*:
+
+| candidate | the case |
+|---|---|
+| `owe` | the phase's own prose ("what it still owes"); a verb that takes the slot — `(owe co-loc House_1)`; `due` / `debt` are its siblings |
+| `must` | the obligation said as itself, deontic; free since B dissolved into G's tally |
+| `incomplete` | [`ideas.md`](../ideas.md)'s outcome word and Q-M1d.6 candidate (c); maximal `(false)` symmetry — but an adjective that carries no slot |
+| ~~`open`~~ | the two-notions point above — though pair P3 keeps it by paying elsewhere |
+| ~~`unknown`~~ | SMT's word for *gave up*; this state is not unknown, it is known-unfinished |
+| ~~`goal`~~ | the query keyword |
+| ~~`missing`~~ | absence is not debt — a fact can be missing and owed by nobody |
+
+**The pairs that survive**, each a coherent vocabulary:
+
+| pair | probe | verdict | migration | the argument |
+|---|---|---|---|---|
+| **P1** | `open` (keep) | **`owe`** | **zero** — one reserved-name row | fact-states stay the note's; debt words match the ledger/discharge mechanism; the slot argument is natural |
+| **P2** | `open` (keep) | `incomplete` | zero | verdict-adjective symmetry with `(false)`; but instances want a slot and an adjective holds none |
+| **P3** | `unknown` | `open` | 12 programs + macro + manifest + docs | the proposal's original spelling for the KB state; costs the note's fact-word and re-invites the two-opens confusion |
+| **P4** | `unknown` or `undetermined` | `incomplete` | the same 12 — and bare `open` becomes a **free userspace name**, the `closed` → `__closed__` precedent ([`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)) | the clean slate: standard words both sides, the overloaded word evacuated |
+| **P5** | `open` | `open`, position-split | zero files, one fragile expander rule | dual positions get dual *words* elsewhere on this page — `forall` (match) / `at-least` (assert) is D's own precedent — and the fact/KB conflation stays; still rejected on sight |
+
+One decoupling softens P2's loss and P4's cost: **the atom's name need not be
+the printed verdict's.** Rules assert instances; the engine prints the
+aggregate — `(owe …)` atoms under an `Incomplete (owes 46)` verdict line are
+one design, not two. So `ideas.md`'s outcome word is available downstream of
+*any* pair, which removes the strongest argument for spending the atom on an
+adjective.
 
 ## 4. The two axes
 
@@ -664,8 +731,8 @@ is the one form that does not care.
 - **S1d.2.1** — the audit, which decides whether §8's table is true.
 - **S1d.2.2** — the domain: what closes it, and whether `?isa` is enough.
 - **S1d.2.3** — this decision, plus the sub-decisions E raises (is a stored
-  clause a fact or a kernel object?) and G raises (the `open`-macro name
-  collision; the slot spelling).
+  clause a fact or a kernel object?) and G raises (the naming menu — § G,
+  pairs P1–P5; the slot spelling).
 - **S1d.2.4** — the saturator: invalidation, and the per-quiescence cost §1
   warns about.
 - **S1d.2.5** — hypotheses from obligations: the supersession ladder
