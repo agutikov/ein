@@ -26,7 +26,7 @@ Four operands, and two structural questions the existing code forces:
 |---|---|---|
 | **the counted slot** | which argument positions are fixed (`x̄`) and which are counted (`ȳ`) | `std.elim` already uses a positional convention — `(functional R 0 1)`, `(total R 0)` — so there is precedent, and it is ugly |
 | **the domain** of `ȳ` | the set the count ranges over | **The hard one.** See below |
-| **the bounds** `L`, `U` | `0`, `1`, `n`, `*` | `RANGE` is already a lexer token |
+| **the bounds** `L`, `U` | `0`, `1`, `n`, `*` | `RANGE` is already a lexer token — though § G's revision argues numerals are the wrong currency for any bound past `0`/`1`/`*`, and `n` is really a reference set |
 | **the side condition** `φ` | a guard on which `ȳ` count | whatever expresses it must be as expressive as a `:match` |
 | *derived or static?* | can a **rule** produce an obligation? | `bijective` fans out into its four markers *through a rule* (`stdlib/algebra.ein` `bijective-properties`, priority 100). A form a rule cannot produce cannot participate in that, and every stdlib property is written that way |
 | *who holds the candidate set?* | the engine, or a re-run query | `_admit_from_boundary`'s re-query was **72 %** of an exhaustive `zebra2` before P1a.6. An obligation index rebuilt at every quiescence is the same cost shape |
@@ -258,6 +258,15 @@ and the example, from the same session:
       :why "somebody must live in the House_1")
 ```
 
+and the revision, later the same day, after the first write-up (verbatim):
+
+> L >= 2 : yes, G form can't say that, but remember, the ein language does
+> not use numbers, so it will define domain/comdomain size by rules that use
+> other relations and objects, not just by simple "2" number that has no
+> connections to relations and objects; the obligations mechanism also has to
+> supersed the hrule and :hrules, so if no :hrules in query - then hypothesis
+> must be generated from obligations
+
 **The symmetry it starts from** is one this page had not stated. The upper
 bounds exist in *two* forms — a **verdict atom**
 ([`std.algebra`](../../../stdlib/algebra.ein)'s `functional` / `injective`
@@ -357,6 +366,92 @@ are a join taken on demand: `alive ∩ slot`. §5's per-obligation histograms
 Nothing is stored, so nothing needs invalidating; the cost moved into the
 read.
 
+**Cardinality without numerals — the revision's first clause.** The
+"cannot say `L ≥ 2`" verdict below and in §6 scores G against the note's
+numeric form, and the revision rejects the yardstick: **the domain of
+discourse has no numerals.** [`zebra2.ein`](../../../examples/zebra2.ein)'s
+houses carry no positions — order is `right-of` / `next-to`, House×House —
+and the only integers in the file are `:priority` metadata. A bound written
+`2` names nothing any relation touches; a bound the language can own is a
+**relation to a reference extent**, and for that the four properties are
+already the complete comparison vocabulary — Cantor's ordering, not Peano's
+arithmetic:
+
+| the numeric claim | said with relations and objects |
+|---|---|
+| `#W ≥ 1` | one obligation — **G, this page** |
+| `#W ≤ 1` | `functional` on the witness relation — **exists** |
+| `#W ≥ #S` | an injection S → W: a pairing relation, `total` on S (G's obligations, one per member) + `functional` + `injective` (the existing `(false)` checks) |
+| `#W ≤ #S` | an injection W → S — the same three, the other way |
+| `#W = #S` — the note's `same-count-as` | a bijection — **the stdlib's one word** |
+
+"At least two" is then an injection from a declared two-object reference set —
+the `2` connected to relations and objects, as the revision demands — and
+`L ≤ # ≤ U` decomposes back into `functional ∧ injective ∧ total ∧
+surjective` on pairings: the note's opening equivalence is not the first
+example of an obligation, it is the **complete basis for bounds**. Two honest
+consequences. The cost is ontology — every bound is an extra relation with
+its own obligations and checks, declared by the puzzle, not a token. And the
+re-scoring cuts across the whole menu: A, B, C and D all carry numeral
+operands (`1..1`, `… 1 1`, `:between 1..1`, `at-least 1`) — the currency the
+language otherwise refuses — so under this clause the parsed-and-meaningless
+`RANGE` token reads as the anomaly, not the missing feature. (The `0` in this
+page's own `(open ?R 0 ?a)` sketch is the same foreign currency — a point for
+the unbound-hole spelling in the sub-decision below. `odd` stays exotic in
+any basis, and the phase's keyword rule already gates it.)
+
+**Superseding `hrule` / `:hrules` — the revision's second clause.** The
+restraint claimed below ("hypotheses still come from `alive`") is, per the
+revision, only half the design: *the obligations mechanism has to supersede
+`hrule` and `:hrules` — no `:hrules` in the query means hypotheses are
+generated from obligations.*
+[design/07](../../../docs/history/m1a_rust/design/07_search_layer.md) already
+says "two modes, and hrule presence *is* the switch" — hrule-driven when the
+query's `:hrules` activators light one, blind otherwise. The supersession
+makes the switch a ladder:
+
+| the query has | hypotheses come from |
+|---|---|
+| `:hrules (…)` | the user's hrules — an **override**, as today |
+| no `:hrules`, open obligations | **the obligations**: pick an open slot, branch on `alive ∩ slot` — mutually exclusive, jointly exhaustive at that node |
+| no `:hrules`, tally 0 | nothing to guess — the state is already judged; the blind generator survives only for programs that state no obligations at all |
+
+Three consequences, one of them the settling of an old complaint:
+
+- **The hypothesis space stops being an input.** The idea block at the
+  [phase README](README.md)'s head objects to hrules in exactly these words —
+  *"while it is not part of the theory (rules + ontology)"* — and this rung
+  closes it: declarations → obligations → slots is *derived from the theory*,
+  and [`zebra2.ein`](../../../examples/zebra2.ein)'s `hrule guess` with its
+  per-relation `:hrules` activators demotes to an optional override.
+  [§5](#5-what-this-looks-like-on-zebra2-minus-15)'s arithmetic is this
+  rung's value measured in advance: a 5-candidate obligation is a 5-way
+  branch complete by construction, layer 2's 318 same-obligation pairs are
+  never formed, and the milestone README's sentence — *a requirement is a
+  choice point* — is this line of the table.
+- **It is
+  [Q-M1d.4](../open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal),
+  spent deliberately.** Branching from obligations changes the traversal, the
+  counters, the no-goods and the discovery order. So the strata ship
+  separately: the tally line first (nothing moves), the generator rung behind
+  the explicit decision (everything moves, on purpose).
+- **F is subsumed.** `hrule :choose` attached obligations to the choice
+  construct; the ladder derives choices from obligations, leaves `hrule`
+  unextended as the override, and — unlike F — a *saturated* state still
+  knows what it owes, which was F's disqualifier.
+
+And the completeness condition, stated rather than assumed: obligations are an
+exhaustive branch source **iff obligations + saturation determine every
+remaining open fact** — true on the zebra family, where the obligated arrows
+are the decision variables and everything else propagates. Where it fails,
+the leftover open facts at a discharged, consistent state are the model
+family's free arrows: [`ideas.md`](../ideas.md)'s closed-world sentence ("все
+оставшиеся open считаются отсутствующими") is one legal reading, and
+[P1d.3](../p1d.3_model_sets/README.md)'s compact model set is the other —
+arriving early, as a *state* rather than a data structure. The stage that
+flips the generator owes the corpus a measured answer to which entries sit on
+which side.
+
 **What it buys, that A–F do not.**
 
 - **[Q-M1d.2](../open_questions.md#q-m1d2--where-does-a-requirement-live)
@@ -370,13 +465,14 @@ read.
   candidate (c) mechanised. The ten `Contradiction, exhausted=False` entries
   partition measurably: owes-something ⇒ *incomplete*; owes-nothing ⇒ the
   vacuous edge below.
-- **Additive, reversible.** §8's six scans stay untouched and gain two duals;
-  hypotheses still come from `alive`, so **no
+- **Additive and reversible — in the report stratum.** §8's six scans stay
+  untouched and gain two duals; the tally ships as a report line (`--events`,
+  `--json-summary`, the trace) with hypotheses still from `alive`, so **no
   [Q-M1d.4](../open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal)
-  exposure and every counter stands**. It can ship as a report line
-  (`--events`, `--json-summary`, the trace) with **no verdict word moved** —
-  the phase's "every existing verdict is unchanged" acceptance holds until
-  Q-M1d.6 is *deliberately* spent.
+  exposure, every counter standing, no verdict word moved** — the phase's
+  "every existing verdict is unchanged" acceptance holds until Q-M1d.6 is
+  *deliberately* spent. The generator rung (§ Superseding `hrule` /
+  `:hrules`, above) is the opposite, by design and on purpose.
 - **No domain freeze.** Re-evaluated per state, so a late `(is-a b₆ House)`
   is seen — the assumption E bakes in at materialisation time, G never makes.
 - **It is the instrument.** An openness census per corpus entry is S1d.2.6's
@@ -385,8 +481,13 @@ read.
 
 **Cannot say, and costs.**
 
-- **`L ≥ 2` and any `U`** — E's boundary exactly; `U` stays with
-  `functional` / `injective`, where it already works.
+- **Numeric `L ≥ 2` and `U`** — though § Cardinality without numerals, above,
+  argues the numeric form is mis-posed for *every* form on this page, and its
+  numeral-free decomposition is pairings that G plus the existing checks
+  already state (`U = 1` stays `functional` / `injective`, where it already
+  works). What G alone does not do is hold the pairing for you: the reference
+  set and its map are ontology the puzzle must declare, one relation per
+  bound.
 - **No propagation.** G never narrows, forces, or refutes:
   `domain-elimination` still forces at one, `total` still kills at zero, by
   the same `forall` scans — §8's six-into-one collapse is **not available**
@@ -487,7 +588,7 @@ Two arithmetic consequences worth having before the design starts:
 | **D** `at-least` in `:assert` | **none** (a `std.macro`) | yes | yes | yes | its carrier's | yes | via B |
 | **E** positive clause | none, if via D | yes | yes | yes | **in the object** | **no** | yes |
 | **F** `hrule :choose` | new kw on `hrule` | yes | yes | yes | in the search | yes | n/a |
-| **G** `:assert open` verdict | **none** (one reserved atom) | **only** a rule can | yes — φ is the rule's match | yes (∀-side; the witness side names no domain) | recomputed — `alive ∩ slot` | **no** | **per-KB by construction** |
+| **G** `:assert open` verdict | **none** (one reserved atom) | **only** a rule can | yes — φ is the rule's match | yes (∀-side; the witness side names no domain) | recomputed — `alive ∩ slot` | as pairings, not numerals (§ G) | **per-KB by construction** |
 
 ## 7. A recommendation
 
@@ -508,15 +609,20 @@ case**, with **A as free sugar** on top.
   common declaration-site case, and the dead slot in the grammar finally means
   something.
 
-**Where G lands in that stack** (added 2026-08-24, with the form): it takes
-the **verdict stratum** away from B — the tally needs no carrier fact — so
-the composed shape becomes **G first** (the three-state read-out and the
-outstanding-obligations report, as an `--events` / summary line, no verdict
-word moved), **E when S1d.2.5 wants branches**, **D as the surface over
-both**, A as sugar; B is left holding only what G cannot say, `L ≥ 2` and
-`U`, which no corpus entry states. G's openness census is then the number
-that says whether E's machinery is needed at all, and the verdict word itself
-moves only when
+**Where G lands in that stack** (added 2026-08-24, with the form; revised the
+same day): it takes the **verdict stratum** away from B — the tally needs no
+carrier fact — and the revision then empties B's residue too: `L ≥ 2` / `U`,
+the one claim B still held, is mis-posed as numerals (§ G — Cardinality
+without numerals) and decomposes into pairing relations if a corpus entry
+ever asks. The composed shape becomes **G-report first** (the three-state
+read-out and the outstanding-obligations report, as an `--events` / summary
+line, no verdict word moved), then **G-generate behind the
+[Q-M1d.4](../open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal)
+decision** — the supersession ladder, `:hrules` as override, obligations as
+the default hypothesis source — with **E as the branch representation when
+S1d.2.5 wants it materialised**, **D as the surface**, A as sugar. G's
+openness census is the number that says whether E's machinery is needed at
+all, and the verdict word itself moves only when
 [Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
 is decided, never as a side effect.
 
@@ -562,7 +668,9 @@ is the one form that does not care.
   collision; the slot spelling).
 - **S1d.2.4** — the saturator: invalidation, and the per-quiescence cost §1
   warns about.
-- **S1d.2.5** — hypotheses from obligations, and Q-M1a.18's shape.
+- **S1d.2.5** — hypotheses from obligations: the supersession ladder
+  (`:hrules` → obligations → blind), its completeness condition, and
+  Q-M1a.18's shape.
 - **S1d.2.6** — verdicts, counters, corpus — and G's openness census: the
   tally per entry, and which of Q-M1d.6's ten it reads as *incomplete*
   versus *vacuously satisfied*.
