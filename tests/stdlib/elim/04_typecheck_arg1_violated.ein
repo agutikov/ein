@@ -1,0 +1,25 @@
+;;; `std.elim/typecheck-arg-1` — argument 1 is not an `?isa`-member of the
+;;; declared range, so ⊥. `03_typecheck_arg0_violated.ein` with the error moved
+;;; to the other argument, and the same pairing argument holds: a check that
+;;; read the wrong position would pass one file and fail the other.
+
+(import std.elim :symbols (typecheck-arg-1))
+
+(relation is-a  T T        :why "{?1} is a {?2}")
+(relation holds Slot Value :why "{?1} holds {?2}")
+
+(is-a S1 Slot)
+(is-a V1 Value)
+
+(typecheck-arg-1 holds is-a Value)   ; and *not* arg-0 — see below
+
+;; Argument 0 is `V1`, a perfectly good Value, for the reason its sibling gives
+;; at length: with a well-typed value in the position the mutation would read,
+;; a check that looked at the wrong argument stays silent and the file reports
+;; a model instead of ⊥.
+(holds V1 Nothing)   ; ⊥ — Nothing is not an `is-a` Value
+
+(query
+  :goal (holds ?slot ?value)
+  :no-hypothesis (is-a holds)
+  :expect (false))

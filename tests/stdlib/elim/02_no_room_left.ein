@@ -1,0 +1,72 @@
+;;; `std.elim/no-room-left` — every value excluded for some `a`: nothing left
+;;; to force, so ⊥.
+;;;
+;;; ── The rule the corpus loaded and never satisfied ─────────────────────────
+;;;
+;;; One of the five rules the census found *compiled, activated and waiting*
+;;; with the state that fires them never arising (§3b). Every one of the five
+;;; asserts `(false)`, and the finding was not that a refutation rule fails to
+;;; fire in a corpus of solvable puzzles — that is expected — but that it had
+;;; never fired in a corpus of **broken** ones either: `examples/broken/` is
+;;; thirty-seven parse and load errors and not one program that loads, runs,
+;;; and is inconsistent.
+;;;
+;;; ── What this program does to it ───────────────────────────────────────────
+;;;
+;;; `01_domain_elimination.ein` with one more exclusion. There the rows read
+;;;
+;;;   S1  V1 ✗  V2 ✗  V3 ·     one candidate left  ⟹ forced
+;;;
+;;; and here
+;;;
+;;;   S1  V1 ✗  V2 ✗  V3 ✗     no candidate left   ⟹ ⊥
+;;;
+;;; so the two files differ by exactly the fact the rule is about, and between
+;;; them they cover the `forall`'s two ends: the last survivor, and none.
+;;;
+;;; ── Why the ⊥ is this rule's, and what that cost ──────────────────────────
+;;;
+;;; **Only `no-room-left` is activated here.** `01_domain_elimination.ein`
+;;; declares both activators and this file declares one, which is a deliberate
+;;; asymmetry: on a fully excluded row *both* rules match, because "every value
+;;; but `?v` is excluded" holds for every `?v` once every value is excluded —
+;;; so `domain-elimination` would force `(holds S1 V1)` against the stored
+;;; negative and reach `(false)` by a different road. The verdict would be the
+;;; same and the diagnosis would not.
+;;;
+;;; Leaving it out is what makes this a test of `no-room-left` rather than of
+;;; the module, and it was measured rather than assumed: with both activated, a
+;;; `no-room-left` mutated to quantify over the wrong type stops firing and the
+;;; whole suite still passes, because elimination refutes anyway. With one, the
+;;; same mutant turns this file into a `Solution` and is caught. An expectation
+;;; is made of facts and cannot say which rule produced them — the `route`
+;;; residue Q-M1c.2 parks (plans/m1c_external_validation/open_questions.md) —
+;;; so where two rules can reach one verdict, a fixture has to separate them by
+;;; **activation**.
+;;;
+;;; The priorities are still why the module can afford to ship both:
+;;; `no-room-left` is 110 and elimination is 400, so in a program that
+;;; activates the pair the exhausted row is diagnosed before the forced
+;;; collision is.
+
+(import std.macro :symbols (forall))
+(import std.elim  :symbols (no-room-left))
+
+(relation is-a  T T        :why "{?1} is a {?2}")
+(relation holds Slot Value :why "{?1} holds {?2}")
+
+(is-a S1 Slot) (is-a S2 Slot) (is-a S3 Slot)
+(is-a V1 Value) (is-a V2 Value) (is-a V3 Value)
+
+(functional holds 0 1)
+(total      holds 0)
+(no-room-left holds is-a Slot Value)   ; and *not* domain-elimination — see above
+
+(not (holds S1 V1))
+(not (holds S1 V2))
+(not (holds S1 V3))        ; ⊥ — S1 has nowhere left to go
+
+(query
+  :goal (holds ?slot ?value)
+  :no-hypothesis (is-a holds)
+  :expect (false))

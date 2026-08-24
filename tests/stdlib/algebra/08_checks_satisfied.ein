@@ -1,0 +1,88 @@
+;;; `std.algebra` — the seven **checks**, in the direction that does not
+;;; refute: `irreflexive`, `antisymmetric`, `asymmetric`, `connex`, `empty`,
+;;; `functional`, `injective`.
+;;;
+;;; ── Why this file exists before the seven that follow it ───────────────────
+;;;
+;;; A refutation rule has two tests and only one of them finds a bug. "It fires
+;;; and the answer is ⊥" is checked by `09_…_violated.ein` and its six
+;;; siblings, one rule each. This file is the other one: **seven checks
+;;; loaded, activated, and satisfied**, so that a guard which admitted too much
+;;; would turn a program with a perfectly ordinary model into a contradiction.
+;;;
+;;; That is the shape of the bug this whole phase was opened by — a
+;;; `(neq …)` guard that was wrong for a year and that every *positive* test
+;;; passed. The census's §7 counts 27 `neq` guards over 25 rules and says the
+;;; identical case is what each of them is for; three of the seven below are
+;;; exactly that shape.
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;;   lt        a strict total order on three nodes — A<B<C, all three edges
+;;;             authored. It satisfies four checks at once, and each of them
+;;;             fails on a *different* single added edge:
+;;;               irreflexive     (lt A A)
+;;;               asymmetric      (lt B A)   — any mutual pair, self-loops too
+;;;               antisymmetric   (lt B A)   — a mutual pair between distinct
+;;;                                            endpoints, so the `neq` guard is
+;;;                                            what separates it from asymmetric
+;;;               connex          drop (lt A C), leaving A and C incomparable
+;;;   pick      a partial injection {A↦X, B↦Y}: one image each, one source each
+;;;               functional      (pick A Y)
+;;;               injective       (pick B X)
+;;;   loopy     one self-loop, tagged `antisymmetric` and nothing else
+;;;   nothing   declared, tagged `(empty nothing)`, and authored with no edge
+;;;
+;;; `loopy` is the `neq` guard's own test, and the reason it is a fourth
+;;; relation rather than a fifth edge on `lt`. `antisymmetric` means
+;;; R(a,b) ∧ R(b,a) ⟹ a = b, so a self-loop is *legal* and the rule's
+;;; `(neq ?a ?b)` is what makes it legal: the match finds `(loopy A A)` twice,
+;;; and only the guard stops it concluding ⊥. Drop that guard and this file
+;;; refutes — which is the failure mode `08_checks_satisfied` exists to have.
+;;; The same shape covers three more guards for free: `connex`'s `(neq ?a ?b)`
+;;; against the pair (A,A), and `functional`'s and `injective`'s
+;;; `(neq ?b ?c)` against each `pick` edge matched with itself.
+;;;
+;;; `nothing` is the one relation here the expectation cannot mention: naming a
+;;; relation closes it, and there is no fact of it to name — Q-M1c.6, reached
+;;; from the corpus. What stands in for the missing clause is the verdict: had
+;;; `empty` fired, this file would be `(false)` and no `(model …)` would match.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The whole claim is "a model exists, and it is the authored one". Every rule
+;;; here asserts `(false)`, so *any* of the seven firing replaces the model
+;;; with a contradiction, and closing `lt` and `pick` says the seven did not
+;;; quietly add an edge either.
+
+(import std.algebra
+  :symbols (irreflexive antisymmetric asymmetric connex empty
+            functional injective))
+
+(relation instance Thing Type)
+(relation lt       Node Node :why "{?1} comes before {?2}")
+(relation pick     Node Mark :why "{?1} is marked {?2}")
+(relation loopy    Node Node)
+(relation nothing  Node Node)
+
+(instance A Node) (instance B Node) (instance C Node)
+
+(irreflexive   lt)
+(antisymmetric lt)
+(asymmetric    lt)
+(connex        lt instance Node)
+(functional    pick)
+(injective     pick)
+(antisymmetric loopy)          ; a self-loop is legal, and `neq` is why
+(empty         nothing)
+
+(lt A B) (lt B C) (lt A C)
+(pick A X) (pick B Y)
+(loopy A A)
+
+(query
+  :goal (lt ?x ?y)
+  :no-hypothesis (instance lt pick loopy nothing)
+  :expect (model (lt A B) (lt B C) (lt A C)
+                 (pick A X) (pick B Y)
+                 (loopy A A)))

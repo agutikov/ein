@@ -1,0 +1,63 @@
+;;; `std.slots/slot-no-room` — a value with every slot excluded: there is
+;;; nowhere left for it, so ⊥.
+;;;
+;;; One of the two violation duals, and the encoding's main branch killer: on
+;;; the real Zebra `slot-no-room` and `slot-no-fill` produce 43 and 5 of the
+;;; refutations that end a branch, and everything else in the module is
+;;; propagation feeding them. Both are documented open-world-safe — each fires
+;;; only when the stored negatives cover the whole extent, never on a
+;;; merely-undecided state — and `04_elimination.ein` is where that guard is
+;;; tested in the direction that does not fire: a value excluded from two seats
+;;; of three is forced into the third, not refuted.
+;;;
+;;; ── What this program does to it ───────────────────────────────────────────
+;;;
+;;; Two seats and a cat that may be in neither.
+;;;
+;;; ── Why the ⊥ is this rule's, and what that cost ──────────────────────────
+;;;
+;;; The activators are declared **by hand** here, and `slot-partition-setup` is
+;;; not used: it fans one `(slot-partition …)` fact into all eight at once, and
+;;; two of the eight can reach this program's ⊥ by another road. On a fully
+;;; excluded row `slot-elimination`'s "every slot but `?i` is excluded" holds
+;;; for *every* `?i`, so it forces the value into all of them against the
+;;; stored negatives; on a fully excluded seat `slot-fill` does the same down
+;;; the other axis. Either way the verdict is ⊥ and the diagnosis is not this
+;;; rule's.
+;;;
+;;; It was measured rather than assumed: with the whole fan-out in place, a
+;;; version of this rule mutated to quantify over the wrong type stops firing
+;;; and the suite still passes. With the activators narrowed, the same mutant
+;;; turns this file into a `Solution` and is caught. An expectation is made of
+;;; facts and cannot say which rule produced them — the `route` residue
+;;; Q-M1c.2 parks (plans/m1c_external_validation/open_questions.md) — so where
+;;; two rules reach one verdict, a fixture separates them by **activation**.
+;;; `slot-partition-setup` itself is exercised by `01`–`04`.
+
+(import std.algebra :symbols (symmetric symmetric-negative-setup))
+(import std.slots   :symbols (slot-exclusive slot-occupied slot-negative slot-no-room))
+
+(relation type     T T :why "{?1} is a subtype of {?2}")
+(relation instance T T :why "{?1} is an instance of {?2}")
+(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same seat")
+
+(symmetric co-loc)
+(slot-exclusive co-loc instance type Attribute)
+(slot-occupied  co-loc instance type Attribute)
+(slot-negative  co-loc instance Seat)
+(slot-no-room   co-loc instance type Attribute Seat)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat)
+(instance Ann Who) (instance Bob Who)
+(instance Cat Pet) (instance Dog Pet)
+
+(not (co-loc Cat S1))
+(not (co-loc Cat S2))      ; ⊥ — the cat has nowhere to be
+
+(query
+  :goal (co-loc ?a ?b)
+  :no-hypothesis (type instance co-loc)
+  :expect (false))

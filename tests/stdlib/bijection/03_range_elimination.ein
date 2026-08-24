@@ -1,0 +1,56 @@
+;;; `std.bijection/range-elimination` — injective ∧ surjective, every A but one
+;;; excluded for `b` ⟹ force it. `02_domain_elimination.ein` transposed.
+;;;
+;;;   (range-elimination R isa)
+;;;     (injective R) ∧ (surjective R) ∧ b∈B ∧ a∈A
+;;;     ∧ ∀a′∈A, a′≠a. ¬R(a′,b)          ⟹  R(a,b)
+;;;
+;;; ── What this program does to it ───────────────────────────────────────────
+;;;
+;;; The exclusions run down a **column** now:
+;;;
+;;;   ¬(wears Ann Red), ¬(wears Bob Red)   ⟹ (wears Cid Red)      forced
+;;;   Green: only Cid excluded (by the forcing above)              open
+;;;   Blue:  only Cid excluded                                     open
+;;;
+;;; and the two rules' premises are exchanged: Red's column is exhausted and
+;;; Cid's row is not, so the range rule is the only one that can fire first.
+;;; Together the two files say that the pair is not one rule read twice — the
+;;; conclusions are interchangeable, the quantifiers are not, and a module that
+;;; shipped only one of them would leave half of these two puzzles unsolved.
+;;;
+;;; The `open` probe is the same instrument as its sibling's, moved to the
+;;; other axis: `(wears Ann Green)` is in neither store, so nothing was forced
+;;; out of a column that still has two candidates.
+
+(import std.macro     :symbols (forall open))
+(import std.algebra   :symbols (bijective-properties functional injective total surjective))
+(import std.bijection :symbols (bijective-setup functional-negative injective-negative
+                                domain-elimination range-elimination))
+
+(relation is-a      T T          :why "{?1} is a {?2}")
+(relation wears     Agent Colour :why "{?1} wears {?2}")
+(relation undecided Agent Colour :why "whether {?1} wears {?2} is still open")
+
+(is-a Ann Agent)  (is-a Bob Agent)    (is-a Cid Agent)
+(is-a Red Colour) (is-a Green Colour) (is-a Blue Colour)
+
+(bijective wears)
+(bijection-hierarchy is-a)
+
+(not (wears Ann Red))
+(not (wears Bob Red))
+
+(rule probe-undecided ()
+  :match  (open (wears Ann Green))
+  :assert (undecided Ann Green)
+  :priority 500
+  :why    "Green's column is only one-third excluded, so nothing may be forced into it")
+
+(query
+  :goal (wears ?who ?colour)
+  :no-hypothesis (is-a wears undecided)
+  :expect (model (wears Cid Red)
+                 (not (wears Ann Red)) (not (wears Bob Red))
+                 (not (wears Cid Green)) (not (wears Cid Blue))
+                 (undecided Ann Green)))

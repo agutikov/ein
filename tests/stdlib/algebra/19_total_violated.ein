@@ -1,0 +1,33 @@
+;;; `std.algebra/total` — ∀a∈A. ∃b. R(a,b): an `a` with **every** b explicitly
+;;; excluded is ⊥.
+;;;
+;;; `18_totality_open_world.ein` is the same four objects with one exclusion
+;;; instead of two, and it is a model. The pair is the `forall` guard's two
+;;; directions, and the second fact below is the only difference between them.
+;;;
+;;; Note what the rule does *not* say: it never obliges Ann to like anything.
+;;; A state in which nothing at all is known about Ann is not a violation — it
+;;; is an open world — and turning "R is total" into a first-class obligation
+;;; rather than a refutation at the extreme is
+;;; M1d's subject — plans/m1d_satisfiability/p1d.2_obligations/.
+;;; That is why both exclusions have to be *stated*.
+
+(import std.algebra :symbols (total))
+(import std.macro   :symbols (forall))
+
+(relation is-a  T T         :why "{?1} is a {?2}")
+(relation likes Person Food :why "{?1} likes {?2}")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+
+(total likes is-a)
+
+(likes Bob Stew)
+(not (likes Ann Soup))
+(not (likes Ann Stew))       ; ⊥ — Ann's whole extent is excluded
+
+(query
+  :goal (likes ?who ?what)
+  :no-hypothesis (is-a likes)
+  :expect (false))

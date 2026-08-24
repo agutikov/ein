@@ -1,0 +1,24 @@
+;;; `std.algebra/irreflexive` — R ∩ 1' = 0: a self-loop is ⊥.
+;;;
+;;; The ⊥ direction. `08_checks_satisfied.ein` is the other one, and holds the
+;;; whole argument for why both exist.
+;;;
+;;; The rule has no guard: its `:match` is `(?R ?a ?a)`, and the *repeated*
+;;; variable is the constraint — the matcher binds `?a` once and requires the
+;;; second argument to equal it. So this file is also the only thing in the
+;;; corpus that says a repeated match variable is an equality: `(loops A B)`
+;;; below is present and does not fire; `(loops A A)` does.
+
+(import std.algebra :symbols (irreflexive))
+
+(relation loops Node Node :why "{?1} points at {?2}")
+
+(irreflexive loops)
+
+(loops A B)          ; not a self-loop — silent
+(loops A A)          ; ⊥
+
+(query
+  :goal (loops ?x ?y)
+  :no-hypothesis (loops)
+  :expect (false))

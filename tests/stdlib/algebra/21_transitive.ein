@@ -1,0 +1,55 @@
+;;; `std.algebra/transitive` — R;R ⊆ R, and the `(neq ?a ?c)` guard that is
+;;; the only difference between it and `(compose R R R)`.
+;;;
+;;; ── What the rule promises ─────────────────────────────────────────────────
+;;;
+;;;   (transitive R)   R(a,b) ∧ R(b,c) ∧ a ≠ c ⟹ R(a,c)
+;;;
+;;; The module's own description is "the guarded special case of
+;;; `(compose R R R)` — the guard suppresses the self-loop a bare
+;;; compose-into-self would add, which keeps an irreflexive closure
+;;; irreflexive". That sentence is a claim about two rules, so this file runs
+;;; both, over the same two-cycle, and the answers differ by exactly the
+;;; self-loops.
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;; A two-cycle is the smallest shape on which the guard bites: A→B and B→A.
+;;;
+;;;   tr   (transitive tr)      A→B→A would close to A→A — `neq` refuses.
+;;;                             B→A→B likewise. So `tr` never grows, and the
+;;;                             closure of a cycle stays irreflexive.
+;;;   cyc  (compose cyc cyc cyc)  the same two edges with no guard: both
+;;;                             self-loops appear.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `tr` closed at two edges is the guard's test in the direction that finds a
+;;; bug: drop the `(neq ?a ?c)` and `(tr A A)` appears as a surplus fact. `cyc`
+;;; closed at four is the control — it says the two rules were both reached and
+;;; that the difference is the guard rather than the fixture.
+;;;
+;;; So `transitive` **fires zero times here**, and that is the point rather
+;;; than a gap: every match it finds is one the guard refuses. A rule that is
+;;; only ever tested where it fires has had its guard tested nowhere.
+;;;
+;;; `transitive` fires in six corpus entries already, all of them puzzles whose
+;;; hierarchies are acyclic, where the guard can never be the thing that
+;;; decides. Here it is the only thing that decides.
+
+(import std.algebra :symbols (transitive compose))
+
+(relation tr  Node Node :why "{?1} reaches {?2}")
+(relation cyc Node Node)
+
+(transitive tr)
+(compose    cyc cyc cyc)
+
+(tr  A B) (tr  B A)
+(cyc A B) (cyc B A)
+
+(query
+  :goal (tr ?x ?y)
+  :no-hypothesis (tr cyc)
+  :expect (model (tr  A B) (tr  B A)
+                 (cyc A B) (cyc B A) (cyc A A) (cyc B B)))

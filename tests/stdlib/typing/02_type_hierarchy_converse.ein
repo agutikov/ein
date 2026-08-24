@@ -1,0 +1,44 @@
+;;; `std.typing/type-hierarchy-converse` — one `(type-hierarchy isR*)` knob
+;;; typechecks **every** converse pair in the program.
+;;;
+;;; ── What the rule promises ─────────────────────────────────────────────────
+;;;
+;;;   (converse R1 R2) ∧ (type-hierarchy isR*)
+;;;     ⟹ (converse-illtyped-dom R1 R2 isR*) ∧ (converse-illtyped-ran R1 R2 isR*)
+;;;
+;;; It is variant (c) of the converse domain-check. Variant (b) is
+;;; `std.algebra`'s raw form, where a puzzle declares one activator **per
+;;; converse pair** and names the hierarchy relation each time
+;;; (`../algebra/16_converse_illtyped_dom.ein` is that); here the hierarchy is
+;;; named once and the activators are derived, which is reflective rule
+;;; implication — a fact this rule asserts is an activator the next saturation
+;;; pass reads.
+;;;
+;;; ── What this program does to it ───────────────────────────────────────────
+;;;
+;;; `owns : Person → Pet` and `owned-by : Place → Person`. The range side is
+;;; wrong — `Pet` is neither `Place` nor a subtype of it — so the ⊥ is
+;;; `converse-illtyped-dom`'s, and the domain side is right (`Person` on both),
+;;; so its sibling is silent.
+;;;
+;;; **No activator is declared in this file.** That absence is the whole test:
+;;; the only route from `(converse owns owned-by)` to a refutation runs through
+;;; the knob, so a `type-hierarchy-converse` that fanned out the wrong operands
+;;; — or the wrong hierarchy relation — leaves this program with a model.
+;;; `03_type_hierarchy_welltyped.ein` is where the *right* hierarchy relation
+;;; is what stops the refutation, which is the other half of the same claim.
+
+(import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran))
+(import std.typing  :symbols (type-hierarchy-converse))
+
+(relation is-a*    T T          :why "{?1} is a subtype of {?2}")
+(relation owns     Person Pet   :why "{?1} owns {?2}")
+(relation owned-by Place  Person)
+
+(converse owns owned-by)
+(type-hierarchy is-a*)         ; the only wiring there is
+
+(query
+  :goal (owns ?who ?what)
+  :no-hypothesis (is-a* owns owned-by)
+  :expect (false))

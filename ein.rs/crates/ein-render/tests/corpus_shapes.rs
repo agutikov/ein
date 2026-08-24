@@ -20,7 +20,7 @@
 //! It sweeps the *shape* functions rather than the CLI, because they are a
 //! superset: `render rules` is one of `dot_shape`'s seventeen views, `solve`'s
 //! stdout is `trace_shape`'s `--- table`, and `plan_shape` / `match_shape`
-//! have no CLI surface at all. 4 228 pairs against the CLI's 505 cells.
+//! have no CLI surface at all. 7 462 pairs against the CLI's 901 cells.
 //!
 //! ## What a digest can and cannot say
 //!
@@ -182,7 +182,7 @@ fn every_corpus_rendering_reproduces_its_digest() {
 }
 
 /// The lines that moved, named, so a failure reads as a list of renderings
-/// rather than as a line number in a 4 228-line file.
+/// rather than as a line number in a 7 462-line file.
 fn first_moved(got: &str) -> String {
     let Ok(want) = std::fs::read_to_string(golden_path("ein-render", "corpus_shapes.md5")) else {
         return String::new();

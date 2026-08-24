@@ -1,0 +1,42 @@
+;;; `std.typing/type-hierarchy-converse`, the direction that does not refute —
+;;; and the one that says the knob carried the **right relation**.
+;;;
+;;; ── What this program does ─────────────────────────────────────────────────
+;;;
+;;; `owns : Person → Pet` and `owned-by : Animal → Person`. The range side is
+;;; not an exact match — `Pet` is not `Animal` — so the `(neq …)` guard passes
+;;; and the check comes down entirely to `(absent (is-a* Pet Animal))`. That
+;;; edge is declared, so the pair is well-typed *through the hierarchy* and
+;;; nothing fires.
+;;;
+;;; That is what makes this more than a control. `type-hierarchy-converse`'s
+;;; payload is the hierarchy relation it writes into the activators it derives;
+;;; a version that wrote some other name would leave the `absent` guard looking
+;;; at an empty relation, the guard would pass, and this program would be ⊥.
+;;; So the two files bracket the rule: `02` says the activators exist, `03`
+;;; says they carry the relation the knob was given.
+;;;
+;;; The subtype edge is authored rather than closed from `(is-a …)`, because
+;;; the closure is `std.algebra`'s job (`(includes is-a is-a*)` +
+;;; `(transitive is-a*)`) and a fixture that built it would be testing that
+;;; instead — `../algebra/01_copiers.ein` and `../algebra/21_transitive.ein`
+;;; are where those two live.
+
+(import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran))
+(import std.typing  :symbols (type-hierarchy-converse))
+
+(relation is-a*    T T          :why "{?1} is a subtype of {?2}")
+(relation owns     Person Pet   :why "{?1} owns {?2}")
+(relation owned-by Animal Person)
+
+(is-a* Pet Animal)             ; a Pet is an Animal — the pair is well-typed
+
+(converse owns owned-by)
+(type-hierarchy is-a*)
+
+(owns Ann Rex)
+
+(query
+  :goal (owns ?who ?what)
+  :no-hypothesis (is-a* owns owned-by)
+  :expect (model (owns Ann Rex) (is-a* Pet Animal)))

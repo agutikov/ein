@@ -1,0 +1,73 @@
+;;; `std.algebra` — the tag lemmas: `symmetric-is-self-converse`,
+;;; `self-converse-is-symmetric`, `converse-pair-symmetric`.
+;;;
+;;; ── What the rules promise ─────────────────────────────────────────────────
+;;;
+;;;   (symmetric R)     ⟹ (converse R R)     a symmetric relation is its own inverse
+;;;   (converse R R)    ⟹ (symmetric R)      …and the converse of that
+;;;   (converse R1 R2)  ⟹ (converse R2 R1)   the pair is symmetric on its operands
+;;;
+;;; These three derive nothing about *edges*. What they derive is other
+;;; **operator facts**, which the next saturation pass then reads as activators
+;;; — the reflective rule-implication the module calls A9. So each lemma has
+;;; two observable consequences: the operator fact it asserts, and the edges
+;;; the rule that fact activates goes on to produce.
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;; Three relations, one lemma each, and each entered from the side the lemma
+;;; is about:
+;;;
+;;;   n   tagged `(symmetric n)`   ⟹ (converse n n)
+;;;   m   tagged `(converse m m)`  ⟹ (symmetric m)
+;;;   p/q tagged `(converse p q)`  ⟹ (converse q p), and *that* is what
+;;;                                  mirrors q's edge back into p
+;;;
+;;; The third is the one with a consequence at a distance that nothing else in
+;;; the file can reach: `p` has no authored edge and no activator naming it as
+;;; a source, so `(p F E)` exists only because `converse-pair-symmetric` turned
+;;; `(converse p q)` around first. Closing `p` at that one edge is therefore a
+;;; claim about the lemma, not about the copier.
+;;;
+;;; The first two are honest about being weaker. `(converse n n)` and
+;;; `(symmetric n)` activate rules with the *same* mirror, so at the edge level
+;;; the two routes coincide and no expectation made of edges can separate them
+;;; — which is exactly what "these lemmas converge" means in the module's
+;;; comment. What *is* separable is the operator fact each asserts, and closing
+;;; `symmetric` and `converse` pins all four of them: nothing else may appear
+;;; in either relation, so a lemma firing on the wrong operand is a failure
+;;; here even though it derives no edge.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The goal asks which relations turned out symmetric. `m` is in the answer
+;;; and was never tagged.
+
+(import std.algebra
+  :symbols (symmetric converse
+            symmetric-is-self-converse self-converse-is-symmetric
+            converse-pair-symmetric))
+
+(relation n Node Node :why "{?1} and {?2} are n-linked")
+(relation m Node Node)
+(relation p Node Node)
+(relation q Node Node)
+
+(symmetric n)          ; ⟹ (converse n n)
+(converse  m m)        ; ⟹ (symmetric m)
+(converse  p q)        ; ⟹ (converse q p)
+
+(n A B)
+(m C D)
+(q E F)                ; p is authored empty on purpose
+
+(query
+  :goal (symmetric ?rel)
+  :no-hypothesis (n m p q)
+  :expect (model (symmetric n) (symmetric m)
+                 (converse n n) (converse m m)
+                 (converse p q) (converse q p)
+                 (n A B) (n B A)
+                 (m C D) (m D C)
+                 (q E F)
+                 (p F E)))

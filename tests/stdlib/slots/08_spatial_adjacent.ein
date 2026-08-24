@@ -1,0 +1,103 @@
+;;; `std.slots` — unique-neighbour propagation over a spatial relation that
+;;; **is** functional on positions: `slot-adjacent-fwd`, `slot-adjacent-bwd`,
+;;; and their two contrapositives.
+;;;
+;;; ── What the rules promise ─────────────────────────────────────────────────
+;;;
+;;;   slot-adjacent-fwd      b is at p1, whose *only* S-source is p2 ⟹ a at p2
+;;;   slot-adjacent-bwd      a is at p2, whose *only* S-target is p1 ⟹ b at p1
+;;;   slot-adjacent-fwd-neg  a cannot be at that p2 ⟹ b cannot be at p1
+;;;   slot-adjacent-bwd-neg  b cannot be at that p1 ⟹ a cannot be at p2
+;;;
+;;; The `absent` guard in all four is a **uniqueness** test, not an ordinary
+;;; NAF: it holds trivially when S is functional on positions (`right-of` on a
+;;; row of seats) and selects the corner cases when it is not (`next-to`, where
+;;; an interior seat has two neighbours and the conclusion is a disjunction the
+;;; hypothesis search has to take). These two subsume the "square rule" —
+;;; projecting a directional spatial relation across the co-location bridge —
+;;; as the special case where the uniqueness guard is vacuous, which is why
+;;; `examples/zebra.ein` no longer carries `square-fwd` / `square-bwd` of its
+;;; own.
+;;;
+;;; `07_spatial_prune.ein` is the other half of the spatial family, and it is
+;;; deliberately built so these four are silent: there S has two sources for
+;;; one seat and two targets for another, so every uniqueness guard fails.
+;;; Here S is a three-seat row, every guard holds, and the pruning rules
+;;; contribute nothing the adjacency rules have not already said.
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;;   right-of:  S1 ← S2 ← S3      (right-of S2 S1) (right-of S3 S2)
+;;;
+;;; Two clues, and one authored exclusion each — never a placement, so the
+;;; contrapositives are what start both chains:
+;;;
+;;;   (right-of Ann Cat)  ¬(co-loc Ann S2)
+;;;     fwd-neg   Ann cannot be at S2, the only seat right of S1 ⟹ ¬(Cat at S1)
+;;;     endpoint  Ann cannot be at S1, which has nothing to its left
+;;;     ⟹ Ann is at S3 by elimination, and `bwd` then puts Cat at S2
+;;;
+;;;   (right-of Bob Dog)  ¬(co-loc Dog S2)
+;;;     bwd-neg   Dog cannot be at S2, the only seat left of S3 ⟹ ¬(Bob at S3)
+;;;     endpoint  Bob cannot be at S1
+;;;     ⟹ Bob is at S2 by elimination, and `bwd` then puts Dog at S1
+;;;
+;;; and the partition rules finish it: Cid and Rat take the seats left over.
+;;; Three of the four are **productive** here — the two contrapositives derive
+;;; negatives reachable no other way at the point they fire, which is the
+;;; module's own claim for why they exist ("without these, a negative on one
+;;; side of a spatial clue never reaches the other, and the eliminations stall
+;;; a pass behind where the human trace is"), and `slot-adjacent-bwd` places
+;;; both pets.
+;;;
+;;; `slot-adjacent-fwd` fires and re-derives what elimination has already
+;;; concluded, and on a three-seat row that is unavoidable: its productive
+;;; case needs the *lower* end of a clue placed before the upper one, and here
+;;; both chains run the other way. It is productive 54 times in
+;;; `examples/zebra.ein`, which is a five-seat row with enough slack for both
+;;; orders; the point of this file is that it is no longer the only program
+;;; that reaches the rule at all.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The seating is fully determined, so closing `co-loc` pins all six
+;;; placements, and each of them is a step no other rule could have taken. The
+;;; two authored exclusions are the only input besides the clues; delete either
+;;; one and the puzzle becomes ambiguous rather than wrong, which is the shape
+;;; a propagation rule's absence has.
+
+(import std.algebra :symbols (symmetric symmetric-negative-setup))
+(import std.slots   :symbols (slot-partition-setup slot-spatial-setup))
+
+(relation type     T T :why "{?1} is a subtype of {?2}")
+(relation instance T T :why "{?1} is an instance of {?2}")
+(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same seat")
+(relation right-of Attribute Attribute :why "{?1}'s seat is immediately right of {?2}'s")
+
+(symmetric co-loc)
+(slot-partition co-loc instance type Attribute Seat)
+(slot-spatial   co-loc right-of instance Seat)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat) (instance S3 Seat)
+(instance Ann Who) (instance Bob Who) (instance Cid Who)
+(instance Cat Pet) (instance Dog Pet) (instance Rat Pet)
+
+;; Three seats in a row.
+(right-of S2 S1) (right-of S3 S2)
+
+;; Two clues, each started by an exclusion rather than a placement.
+(right-of Ann Cat) (not (co-loc Ann S2))
+(right-of Bob Dog) (not (co-loc Dog S2))
+
+(query
+  :goal (co-loc ?a ?b)
+  :no-hypothesis (type instance co-loc right-of)
+  :expect (model (co-loc Cid S1) (co-loc S1 Cid)
+                 (co-loc Dog S1) (co-loc S1 Dog)
+                 (co-loc Bob S2) (co-loc S2 Bob)
+                 (co-loc Cat S2) (co-loc S2 Cat)
+                 (co-loc Ann S3) (co-loc S3 Ann)
+                 (co-loc Rat S3) (co-loc S3 Rat)))

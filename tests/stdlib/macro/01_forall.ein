@@ -1,0 +1,79 @@
+;;; `std.macro/forall` — the guarded universal, and the expansion checked
+;;; against itself.
+;;;
+;;; ── What the macro promises ────────────────────────────────────────────────
+;;;
+;;;   (forall ?b (G) (B))   ≡   (absent (and G (absent B)))
+;;;
+;;; ∀b. G(b) → B(b), encoded classically as ¬∃b. G(b) ∧ ¬B(b). It is not a
+;;; kernel form: until M1 S1.5.9 it was a compile-time desugar baked into the
+;;; compiler, and it is now an ordinary `(macro …)` declaration in an ordinary
+;;; ein-lang file.
+;;;
+;;; ── How a macro is tested at all ───────────────────────────────────────────
+;;;
+;;; Macros expand at **load**, and expansion emits no `fire` event, so a firing
+;;; census cannot see one: `forall` appears in ten stdlib rule bodies and its
+;;; coverage is inherited from whether those rules fire. That is enough to say
+;;; it *works* and nothing at all about whether it expands to the right thing.
+;;;
+;;; So this file writes the same rule twice — once with the macro, once with
+;;; the expansion spelled out by hand — and asserts into two different
+;;; relations. If the expansion is what the module says it is, the two
+;;; relations have the same extent; if `forall` grew an off-by-one, or lost the
+;;; inner `absent`, or scoped the bound variable differently, they do not. The
+;;; expectation closes both.
+;;;
+;;; It also settles a question the stage list asked: whether an expectation
+;;; sees the program before or after expansion. It sees neither — an
+;;; expectation is about a **model**, and a model is facts, which exist only
+;;; after everything has expanded and run.
+;;;
+;;; ── What this program does to it ───────────────────────────────────────────
+;;;
+;;; Two groups, and the quantifier's two ends:
+;;;
+;;;   Team  — Ann and Bob, both marked          ⟹ complete
+;;;   Crew  — Cid and Dee, only Cid marked      ⟹ not complete
+;;;
+;;; Closing `complete` at one group is the negative direction: a `forall` that
+;;; fired on a partially satisfied guard would put `Crew` there too. That is
+;;; the same failure mode every quantifying stdlib rule has — and
+;;; `../algebra/18_totality_open_world.ein` is where it is checked through one
+;;; of them — but here it is checked on the macro itself, with no rule in the
+;;; way.
+
+(import std.macro :symbols (forall))
+
+(relation group        Group)
+(relation member       Thing Group :why "{?1} is in {?2}")
+(relation marked       Thing       :why "{?1} is marked")
+(relation complete     Group       :why "every member of {?1} is marked")
+(relation complete-raw Group)
+
+(group Team) (group Crew)
+(member Ann Team) (member Bob Team)
+(member Cid Crew) (member Dee Crew)
+(marked Ann) (marked Bob) (marked Cid)
+
+;; The macro.
+(rule complete-via-macro ()
+  :match  (and (group ?g)
+               (forall ?y (member ?y ?g) (marked ?y)))
+  :assert (complete ?g)
+  :priority 300
+  :why    "every member of {?g} is marked (via forall)")
+
+;; …and the same thing with `forall` expanded by hand. `(forall ?b G B)` is
+;; `(absent (and G (absent B)))` — that is the whole macro, and this is it.
+(rule complete-via-expansion ()
+  :match  (and (group ?g)
+               (absent (and (member ?y ?g) (absent (marked ?y)))))
+  :assert (complete-raw ?g)
+  :priority 300
+  :why    "every member of {?g} is marked (expansion written out)")
+
+(query
+  :goal (complete ?g)
+  :no-hypothesis (group member marked complete complete-raw)
+  :expect (model (complete Team) (complete-raw Team)))

@@ -1,0 +1,77 @@
+;;; `std.elim/domain-elimination` — the **positional** formulation: every value
+;;; but one excluded for `a` ⟹ force it.
+;;;
+;;; ── Two modules, one inference ─────────────────────────────────────────────
+;;;
+;;; `std.bijection` reads a relation's argument types off its
+;;; `(relation R A B)` signature; `std.elim` takes them as parameters, and
+;;; states the cardinality properties positionally:
+;;;
+;;;   (functional R 0 1)                 R's argument 0 determines argument 1
+;;;   (total      R 0)                   …and every argument-0 value has one
+;;;   (domain-elimination R isa OT VT)   the activator, naming both types
+;;;
+;;; A `fire` event carries its activator, so the four-parameter form here and
+;;; `std.bijection`'s two-parameter one are the two things a firing census can
+;;; actually tell apart — which is how the two `domain-elimination`s stopped
+;;; being one number.
+;;;
+;;; ── Why this rule in particular ────────────────────────────────────────────
+;;;
+;;; It fires **twice** in the entire corpus, both times inside
+;;; `examples/features/05_stdlib_domain_elim.ein`, whose declared runs are
+;;; `saturate` only — so the whole positional module has one activating file
+;;; and no test of its own. It is also the positional twin of the rule the
+;;; phase was opened by: asserting a positive out of accumulated negatives is
+;;; the mechanism that turned a mid-layer writeback into a refutation, and
+;;; nothing tested it directly.
+;;;
+;;; ── What this program does to it ───────────────────────────────────────────
+;;;
+;;; Three slots, three values, and two authored exclusions. `std.elim` has **no
+;;; negative completion** — that is `std.bijection`'s addition — so nothing
+;;; propagates and the two rows that were not written about stay untouched:
+;;;
+;;;   ¬(holds S1 V1), ¬(holds S1 V2)   ⟹ (holds S1 V3)   forced
+;;;   S2, S3                            nothing excluded  open
+;;;
+;;; which makes this the cleanest statement of the `forall` guard's two
+;;; directions anywhere in the corpus: one row exhausted, two rows empty, and
+;;; the empty ones are the case a rule that quantified wrongly would force a
+;;; value into. The probe says so as a fact — `(holds S2 V1)` is in neither
+;;; store, so `(undecided S2 V1)` is in the model.
+;;;
+;;; `no-room-left` is imported and activated here too, and is silent: S1's V3
+;;; is not excluded, and S2 and S3 have nothing excluded at all.
+;;; `02_no_room_left.ein` is the state where it is not.
+
+(import std.macro :symbols (forall open))
+(import std.elim  :symbols (domain-elimination no-room-left))
+
+(relation is-a      T T        :why "{?1} is a {?2}")
+(relation holds     Slot Value :why "{?1} holds {?2}")
+(relation undecided Slot Value :why "whether {?1} holds {?2} is still open")
+
+(is-a S1 Slot) (is-a S2 Slot) (is-a S3 Slot)
+(is-a V1 Value) (is-a V2 Value) (is-a V3 Value)
+
+(functional holds 0 1)
+(total      holds 0)
+(domain-elimination holds is-a Slot Value)
+(no-room-left       holds is-a Slot Value)
+
+(not (holds S1 V1))
+(not (holds S1 V2))
+
+(rule probe-undecided ()
+  :match  (open (holds S2 V1))
+  :assert (undecided S2 V1)
+  :priority 500
+  :why    "S2 has nothing excluded, so nothing may be forced into it")
+
+(query
+  :goal (holds ?slot ?value)
+  :no-hypothesis (is-a holds undecided)
+  :expect (model (holds S1 V3)
+                 (not (holds S1 V1)) (not (holds S1 V2))
+                 (undecided S2 V1)))

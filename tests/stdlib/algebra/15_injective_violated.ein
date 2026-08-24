@@ -1,0 +1,24 @@
+;;; `std.algebra/injective` — ∀b. |{a : R(a,b)}| ≤ 1: one `b` reached from two
+;;; distinct sources is ⊥. The left-unique dual of
+;;; `14_functional_violated.ein`, and its census reading is the same one:
+;;; 2 000 redundant firings and not a single productive one.
+;;;
+;;; The two rules are not the same body under two names — the census's §8 lists
+;;; four such pairs and this is not one of them — but they are the same body
+;;; with the argument positions exchanged, so the only thing that separates
+;;; them in a test is which side of the relation the duplicate is on. Here it
+;;; is the right: one worker, two tasks.
+
+(import std.algebra :symbols (injective))
+
+(relation assigned Task Worker :why "{?1} is assigned to {?2}")
+
+(injective assigned)
+
+(assigned Build Ann)
+(assigned Ship  Ann)   ; ⊥ — one worker, two distinct tasks
+
+(query
+  :goal (assigned ?task ?who)
+  :no-hypothesis (assigned)
+  :expect (false))

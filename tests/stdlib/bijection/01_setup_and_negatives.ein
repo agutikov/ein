@@ -1,0 +1,82 @@
+;;; `std.bijection` — the glue and the negative completion:
+;;; `bijective-setup`, `typecheck-setup`, `functional-negative`,
+;;; `injective-negative`.
+;;;
+;;; ── What the rules promise ─────────────────────────────────────────────────
+;;;
+;;;   bijective-setup      (bijective R) + (bijection-hierarchy isa) fans out
+;;;                        into six activators: totality both ways, elimination
+;;;                        both ways, negative completion both ways
+;;;   typecheck-setup      R's (relation R A B) signature + (typecheck-hierarchy
+;;;                        isa) fans out into the two arg typechecks
+;;;   functional-negative  a positive (R a b) excludes every *other* B-member
+;;;                        for a
+;;;   injective-negative   the dual — excludes every other A-member for b
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;; Three agents, three colours, one authored positive. `(wears Ann Red)`
+;;; excludes Green and Blue for Ann and Red for Bob and Cid, so Bob and Cid are
+;;; each left with two colours open and **nothing new is forced**: the 400 band
+;;; re-derives the given for Ann (its negatives now cover Ann's whole row) and
+;;; is silent for the other two, which is the open-world guard doing its job.
+;;; This file is therefore about the 240 band alone;
+;;; `02_domain_elimination.ein` and `03_range_elimination.ein` are where
+;;; elimination produces something that was not already there.
+;;;
+;;; ── What the expectation means, and what it cannot say ─────────────────────
+;;;
+;;; Closing `wears` at one edge is the negative rules' scope test: they assert
+;;; `(not …)` facts, so a rule that asserted a *positive* by mistake would show
+;;; up here as a surplus edge. The four listed negatives are the output itself
+;;; — one positive, five excluded pairs, and the fifth (`(not (wears Ann Ann))`
+;;; and friends) never appears because both rules quantify over the declared
+;;; type, not over the value universe.
+;;;
+;;; The two setup rules are checked **at one remove**, and this is a limitation
+;;; of the form rather than a choice: their whole output is derived activator
+;;; facts, and `:expect` may only name a relation some declaration or fact in
+;;; the *program text* already makes. `domain-elimination`, `functional-negative`
+;;; and the rest exist only after saturation, so they cannot be named — the
+;;; same shape as Q-M1c.6's empty-relation gap, and recorded beside it as
+;;; Q-M1c.7 — both in plans/m1c_external_validation/open_questions.md.
+;;; What stands in for the missing clause: `functional-negative` and
+;;; `injective-negative` have no other activator, so a `bijective-setup` that
+;;; dropped one of them leaves this file with two negatives instead of four.
+;;;
+;;; ── Two hierarchies, and why they can be one relation ──────────────────────
+;;;
+;;; The module takes them separately on purpose: elimination and negative
+;;; completion quantify over **direct** membership, while typecheck accepts a
+;;; value whose type matches directly *or* through the subtype closure. With a
+;;; flat type schema the two coincide, and passing `is-a` to both is the
+;;; smallest thing that exercises the pair. `examples/zebra2.ein` is where they
+;;; differ.
+
+(import std.macro     :symbols (forall))
+(import std.algebra   :symbols (bijective-properties functional injective total surjective))
+(import std.bijection :symbols (bijective-setup typecheck-setup
+                                functional-negative injective-negative
+                                domain-elimination range-elimination
+                                typecheck-arg-0 typecheck-arg-1))
+
+(relation is-a  T T           :why "{?1} is a {?2}")
+(relation wears Agent Colour  :why "{?1} wears {?2}")
+
+(is-a Ann Agent)  (is-a Bob Agent)    (is-a Cid Agent)
+(is-a Red Colour) (is-a Green Colour) (is-a Blue Colour)
+
+(bijective wears)
+(bijection-hierarchy is-a)
+(typecheck-hierarchy is-a)
+
+(wears Ann Red)
+
+(query
+  :goal (wears ?who ?colour)
+  :no-hypothesis (is-a wears)
+  :expect (model (wears Ann Red)
+                 ;; functional-negative: Ann's other two colours
+                 (not (wears Ann Green)) (not (wears Ann Blue))
+                 ;; injective-negative: Red's other two agents
+                 (not (wears Bob Red))   (not (wears Cid Red))))

@@ -53,18 +53,21 @@ pub fn corpus() -> Corpus {
     Corpus::load(&path).unwrap_or_else(|e| panic!("{e}"))
 }
 
-/// Every `.ein` under `examples/` and `stdlib/`, sorted — the file set
-/// [`manifest`] enumerates, discovered rather than listed so a new fixture is
-/// covered the moment it lands.
+/// Every `.ein` under `examples/`, `stdlib/` and `tests/`, sorted — the file
+/// set [`manifest`] enumerates, discovered rather than listed so a new fixture
+/// is covered the moment it lands.
 ///
 /// The two views are kept the same set by
 /// [`manifest::tests::every_ein_file_has_an_entry`], which is what lets a
 /// sweep walk the *files* and the CLI sweep walk the *rows* without either one
 /// having to trust the other.
+///
+/// `tests/` is M1c S1c.1.4's — the stdlib conformance programs, which are a
+/// suite rather than a set of examples and so are not under `examples/`.
 pub fn corpus_files() -> Vec<PathBuf> {
     let root = repo_root();
     let mut out = Vec::new();
-    for dir in ["examples", "stdlib"] {
+    for dir in ["examples", "stdlib", "tests"] {
         collect(&root.join(dir), &mut out);
     }
     out.sort();

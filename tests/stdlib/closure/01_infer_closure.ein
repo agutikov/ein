@@ -1,0 +1,92 @@
+;;; `std.closure/infer-closure` — functional ∧ total ⟹ `(__closed__ R)`, and
+;;; the soundness caveat **exhibited** rather than described.
+;;;
+;;; ── What the rule promises ─────────────────────────────────────────────────
+;;;
+;;;   (functional R) ∧ (total R)  ⟹  (__closed__ R)
+;;;
+;;; `(__closed__ R)` tells the hypothesis generator never to speculate an
+;;; R-fact: R's extension is taken as fixed. The witness is **operational** —
+;;; a total function has exactly one image per domain element, so *given enough
+;;; elimination* every R-fact arrives by saturation rather than by guessing.
+;;;
+;;; ── The caveat, which is larger than the promise ───────────────────────────
+;;;
+;;; "Given enough elimination" is the whole of it. If R needs hypothesis
+;;; **branching** to be solved — as every bijective attribute relation of the
+;;; Zebra puzzle does — closing it prunes the branches the search depends on.
+;;; The module's header is a boxed warning saying so, and the import is the
+;;; only gate there is.
+;;;
+;;; The census's §6 named this the one place the corpus could document a
+;;; soundness caveat **by exhibiting it**. This file is that, and the exhibit
+;;; is a number:
+;;;
+;;;   with    (import std.closure …)   Solution,  k = 1    ← what this file claims
+;;;   without it                       Ambiguity, k = 54
+;;;
+;;; Three agents, three colours, one given. `functional-negative` excludes
+;;; Green and Blue for Ann and `injective-negative` excludes Red for Bob and
+;;; Cid, and there it stops: Bob and Cid have two colours each, so the relation
+;;; is **not** determined by saturation and a guess is what would settle it.
+;;; Closed, the generator never makes that guess, and the search reports the
+;;; root as the unique model — with two of the three agents nowhere at all.
+;;;
+;;; Nothing is *wrong* in that answer. It is a completeness hazard rather than
+;;; a soundness one: every fact in the model is true, and fifty-three models
+;;; that were equally true have silently stopped existing. That is exactly the
+;;; failure the boxed warning describes, and it is the reason the marker is
+;;; opt-in by import and must never be imported into the zebra family.
+;;;
+;;; (Fifty-three, and not one — the unclosed count is 54 rather than the 2 a
+;;; reader expects, because a state that places one agent and leaves two
+;;; unplaced is **complete** in an open world: nothing obliges an agent to wear
+;;; anything, so every partial placement counts. Turning `total` into a
+;;; first-class obligation is M1d's subject
+;;; (plans/m1d_satisfiability/p1d.2_obligations/), and until it arrives the two
+;;; numbers measure slightly different things. The comparison survives that:
+;;; 54 → 1 is not a rounding.)
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `wears` is deliberately **absent** from `:no-hypothesis`: the generator is
+;;; free to speculate about it, and what stops it is the derived
+;;; `(__closed__ wears)`. Closing `wears` at the one given edge is therefore
+;;; the claim that no speculation survived — and, read the other way, the
+;;; record of the model that was lost.
+
+(import std.macro     :symbols (forall))
+(import std.bijection :symbols (functional-negative injective-negative
+                                domain-elimination))
+(import std.closure   :symbols (infer-closure))
+
+(relation is-a  T T          :why "{?1} is a {?2}")
+(relation wears Agent Colour :why "{?1} wears {?2}")
+
+(is-a Ann Agent)  (is-a Bob Agent)   (is-a Cid Agent)
+(is-a Red Colour) (is-a Green Colour) (is-a Blue Colour)
+
+;; The two markers are **authored**, not derived from `(bijective wears)`, and
+;; that is what makes the ⊥— sorry, the *closure* — attributable: a version of
+;; `infer-closure` that needed only one of the two would still fire if
+;; `bijective-properties` had put all four cardinality markers here. It has
+;; not: `injective` and `surjective` are absent from this program, so a rule
+;; that read either of them derives nothing and the search speculates.
+(functional wears)
+(total      wears)
+
+;; The operational activators, declared directly — the module's documented
+;; route for a relation that is a function but not a full bijection.
+(functional-negative wears is-a)
+(injective-negative  wears is-a)
+(domain-elimination  wears is-a)
+
+(wears Ann Red)
+
+(query
+  :goal (wears ?who ?colour)
+  ;; `wears` is deliberately not here — see above.
+  :no-hypothesis (is-a)
+  :expect (model (wears Ann Red)
+                 (not (wears Ann Green)) (not (wears Ann Blue))
+                 (not (wears Bob Red))   (not (wears Cid Red))))

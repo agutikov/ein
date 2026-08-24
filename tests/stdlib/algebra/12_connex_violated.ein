@@ -1,0 +1,33 @@
+;;; `std.algebra/connex` — R ∪ R° = 1 over Dom: two distinct Dom members with
+;;; neither orientation present are ⊥.
+;;;
+;;; **Extensive**, so it ranges over the `?isa`-extent rather than over edges,
+;;; and it is the check that quantifies over pairs that are *absent* — which
+;;; makes it closed-world in the same way `complement` is
+;;; (`04_extensive.ein` carries that argument). A connex reading of a relation
+;;; the hypothesis search has not finished is a refutation on the strength of
+;;; what is not known yet.
+;;;
+;;; ── What this program does to it ───────────────────────────────────────────
+;;;
+;;; Three nodes and a chain that misses one rung: A<B and B<C are stated, A<C
+;;; is not, and A and C are therefore incomparable. `08_checks_satisfied.ein`
+;;; is the same three nodes with the third edge present, so this file and that
+;;; one differ by exactly the fact the rule is about.
+
+(import std.algebra :symbols (connex))
+
+(relation instance Thing Type)
+(relation lt       Node Node :why "{?1} comes before {?2}")
+
+(instance A Node) (instance B Node) (instance C Node)
+
+(connex lt instance Node)
+
+(lt A B)
+(lt B C)             ; and no (lt A C) — so A and C are incomparable: ⊥
+
+(query
+  :goal (lt ?x ?y)
+  :no-hypothesis (instance lt)
+  :expect (false))

@@ -1,0 +1,64 @@
+;;; `std.algebra` — the negative mirror: `symmetric-negative-setup` and
+;;; `symmetric-negative`.
+;;;
+;;; ── Why there are two rules and not one ────────────────────────────────────
+;;;
+;;; The promise is one sentence — `(symmetric R)` ∧ ¬R(a,b) ⟹ ¬R(b,a) — and the
+;;; *shape* is a workaround, which the census files as one of the six promises
+;;; that do not fit in a sentence (§9). The matcher can scan a **variable**
+;;; relation head inside `(not …)` only when that head is an activator
+;;; parameter, not a premise-bound variable. So `symmetric-negative-setup`
+;;; lifts the `(symmetric R)` tag into a `(symmetric-negative R)` activator,
+;;; and the worker — which now has `?rel` as a parameter — does the mirroring.
+;;; A reader cannot tell from the pair which half is the semantics; this file
+;;; is where the semantics is stated on its own.
+;;;
+;;; ── Why it matters, and where it was tested before ─────────────────────────
+;;;
+;;; Both rules had exactly one activator in the whole corpus,
+;;; `examples/zebra.ein` — 4 651 firings inside a five-house puzzle, and no
+;;; other file loading them at all. In that puzzle the mirror is load-bearing:
+;;; without it `(not (co-located House-2 Green))` never reaches a rule matching
+;;; `(not (co-located Green House-2))`, and the human walkthrough's whole
+;;; *Blue@H2 ⟹ ¬Green@H2 ⟹ ¬Ivory@H1 ⟹ Yellow@H1* chain stalls at step one.
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;; One symmetric relation, one authored positive, one authored negative, and
+;;; one pair left alone:
+;;;
+;;;   (sits-with A B)         mirrors to (sits-with B A)      — the positive rule
+;;;   ¬(sits-with A C)        mirrors to ¬(sits-with C A)     — this pair
+;;;   (sits-with B C)         **undecided**, and stays that way
+;;;
+;;; The third line is the file's negative direction. Stored negatives are the
+;;; one thing an expectation does not close, so "no other exclusion was
+;;; invented" cannot be said by listing the ones that exist; the `open` probe
+;;; says it instead, by turning "neither asserted nor denied" into an ordinary
+;;; fact that *can* be closed. A mirror that fired on absence rather than on a
+;;; stored negative would empty `undecided` and fail this file.
+
+(import std.algebra :symbols (symmetric symmetric-negative-setup symmetric-negative))
+(import std.macro   :symbols (open))
+
+(relation sits-with Guest Guest :why "{?1} sits with {?2}")
+(relation undecided Guest Guest :why "whether {?1} sits with {?2} is still open")
+
+(symmetric sits-with)
+
+(sits-with A B)
+(not (sits-with A C))
+
+(rule probe-undecided ()
+  :match  (open (sits-with B C))
+  :assert (undecided B C)
+  :priority 500
+  :why    "B and C were never related either way, and the mirror must not invent it")
+
+(query
+  :goal (sits-with ?x ?y)
+  :no-hypothesis (sits-with undecided)
+  :expect (model (sits-with A B) (sits-with B A)
+                 (not (sits-with A C))
+                 (not (sits-with C A))
+                 (undecided B C)))

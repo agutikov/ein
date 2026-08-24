@@ -1,0 +1,46 @@
+;;; `std.bijection/typecheck-arg-0` — a fact whose argument 0 is not an
+;;; `?isa`-member of the declared domain is ⊥.
+;;;
+;;; ── What the rule promises ─────────────────────────────────────────────────
+;;;
+;;;   (typecheck-arg-0 R isa Dom)   (R a b) ∧ ¬∃(isa a Dom)  ⟹  (false)
+;;;
+;;; and its priority is **220**, chosen so the NAF evaluates after a puzzle's
+;;; transitive closure at 200 has finished saturating the hierarchy. `std.elim`
+;;; ships the identical body at **110** — the census's §8 calls that a
+;;; divergence rather than an alias, because no puzzle can import both (a
+;;; same-name differing body is a load conflict) and so nothing has ever had to
+;;; reconcile them. `../elim/03_typecheck_arg0_violated.ein` is the other one,
+;;; and the pair is now the first place in the repository where both run.
+;;;
+;;; ── What this program does to it ───────────────────────────────────────────
+;;;
+;;; The activators are **declared by hand** rather than derived from
+;;; `(bijective R)` + `typecheck-setup`, and that is deliberate: the module
+;;; documents the direct route for a relation that is not a full bijection, and
+;;; it is also the only way to get a file in which nothing *but* the typecheck
+;;; can refute. Wire the bijection stack up here and `surjective` fires too —
+;;; Red would have every declared Agent excluded, since the offending `Zed` is
+;;; not one — and the ⊥ would belong to two rules at once.
+;;;
+;;; Both argument checks are activated and only one can fire: `Red` is a
+;;; perfectly good `Colour`, so `typecheck-arg-1` is silent.
+;;; `05_typecheck_arg1_violated.ein` is the same file with the error moved.
+
+(import std.bijection :symbols (typecheck-arg-0 typecheck-arg-1))
+
+(relation is-a  T T           :why "{?1} is a {?2}")
+(relation wears Agent Colour  :why "{?1} wears {?2}")
+
+(is-a Ann Agent)
+(is-a Red Colour)
+
+(typecheck-arg-0 wears is-a Agent)
+(typecheck-arg-1 wears is-a Colour)
+
+(wears Zed Red)      ; ⊥ — Zed is not an `is-a` Agent
+
+(query
+  :goal (wears ?who ?colour)
+  :no-hypothesis (is-a wears)
+  :expect (false))

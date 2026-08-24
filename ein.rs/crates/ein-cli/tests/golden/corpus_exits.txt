@@ -674,3 +674,228 @@
 0    stdlib/typing.ein :: render rules
 0    stdlib/typing.ein :: saturate
 0    stdlib/typing.ein :: solve
+0    tests/stdlib/algebra/01_copiers.ein :: render constraints
+1    tests/stdlib/algebra/01_copiers.ein :: render rules
+0    tests/stdlib/algebra/01_copiers.ein :: saturate
+0    tests/stdlib/algebra/01_copiers.ein :: solve
+0    tests/stdlib/algebra/01_copiers.ein :: test
+0    tests/stdlib/algebra/02_compose.ein :: render constraints
+1    tests/stdlib/algebra/02_compose.ein :: render rules
+0    tests/stdlib/algebra/02_compose.ein :: saturate
+0    tests/stdlib/algebra/02_compose.ein :: solve
+0    tests/stdlib/algebra/02_compose.ein :: test
+0    tests/stdlib/algebra/03_boolean.ein :: render constraints
+1    tests/stdlib/algebra/03_boolean.ein :: render rules
+0    tests/stdlib/algebra/03_boolean.ein :: saturate
+0    tests/stdlib/algebra/03_boolean.ein :: solve
+0    tests/stdlib/algebra/03_boolean.ein :: test
+0    tests/stdlib/algebra/04_extensive.ein :: render constraints
+1    tests/stdlib/algebra/04_extensive.ein :: render rules
+0    tests/stdlib/algebra/04_extensive.ein :: saturate
+0    tests/stdlib/algebra/04_extensive.ein :: solve
+0    tests/stdlib/algebra/04_extensive.ein :: test
+0    tests/stdlib/algebra/05_tag_lemmas.ein :: render constraints
+1    tests/stdlib/algebra/05_tag_lemmas.ein :: render rules
+0    tests/stdlib/algebra/05_tag_lemmas.ein :: saturate
+0    tests/stdlib/algebra/05_tag_lemmas.ein :: solve
+0    tests/stdlib/algebra/05_tag_lemmas.ein :: test
+0    tests/stdlib/algebra/06_equational.ein :: render constraints
+1    tests/stdlib/algebra/06_equational.ein :: render rules
+0    tests/stdlib/algebra/06_equational.ein :: saturate
+0    tests/stdlib/algebra/06_equational.ein :: solve
+0    tests/stdlib/algebra/06_equational.ein :: test
+0    tests/stdlib/algebra/07_schroder.ein :: render constraints
+0    tests/stdlib/algebra/07_schroder.ein :: render rules
+0    tests/stdlib/algebra/07_schroder.ein :: saturate
+0    tests/stdlib/algebra/07_schroder.ein :: solve
+0    tests/stdlib/algebra/07_schroder.ein :: test
+0    tests/stdlib/algebra/08_checks_satisfied.ein :: render constraints
+1    tests/stdlib/algebra/08_checks_satisfied.ein :: render rules
+0    tests/stdlib/algebra/08_checks_satisfied.ein :: saturate
+0    tests/stdlib/algebra/08_checks_satisfied.ein :: solve
+0    tests/stdlib/algebra/08_checks_satisfied.ein :: test
+0    tests/stdlib/algebra/09_irreflexive_violated.ein :: render constraints
+1    tests/stdlib/algebra/09_irreflexive_violated.ein :: render rules
+0    tests/stdlib/algebra/09_irreflexive_violated.ein :: saturate
+0    tests/stdlib/algebra/09_irreflexive_violated.ein :: solve
+0    tests/stdlib/algebra/09_irreflexive_violated.ein :: test
+0    tests/stdlib/algebra/10_antisymmetric_violated.ein :: render constraints
+1    tests/stdlib/algebra/10_antisymmetric_violated.ein :: render rules
+0    tests/stdlib/algebra/10_antisymmetric_violated.ein :: saturate
+0    tests/stdlib/algebra/10_antisymmetric_violated.ein :: solve
+0    tests/stdlib/algebra/10_antisymmetric_violated.ein :: test
+0    tests/stdlib/algebra/11_asymmetric_violated.ein :: render constraints
+1    tests/stdlib/algebra/11_asymmetric_violated.ein :: render rules
+0    tests/stdlib/algebra/11_asymmetric_violated.ein :: saturate
+0    tests/stdlib/algebra/11_asymmetric_violated.ein :: solve
+0    tests/stdlib/algebra/11_asymmetric_violated.ein :: test
+0    tests/stdlib/algebra/12_connex_violated.ein :: render constraints
+1    tests/stdlib/algebra/12_connex_violated.ein :: render rules
+0    tests/stdlib/algebra/12_connex_violated.ein :: saturate
+0    tests/stdlib/algebra/12_connex_violated.ein :: solve
+0    tests/stdlib/algebra/12_connex_violated.ein :: test
+0    tests/stdlib/algebra/13_empty_violated.ein :: render constraints
+1    tests/stdlib/algebra/13_empty_violated.ein :: render rules
+0    tests/stdlib/algebra/13_empty_violated.ein :: saturate
+0    tests/stdlib/algebra/13_empty_violated.ein :: solve
+0    tests/stdlib/algebra/13_empty_violated.ein :: test
+0    tests/stdlib/algebra/14_functional_violated.ein :: render constraints
+1    tests/stdlib/algebra/14_functional_violated.ein :: render rules
+0    tests/stdlib/algebra/14_functional_violated.ein :: saturate
+0    tests/stdlib/algebra/14_functional_violated.ein :: solve
+0    tests/stdlib/algebra/14_functional_violated.ein :: test
+0    tests/stdlib/algebra/15_injective_violated.ein :: render constraints
+1    tests/stdlib/algebra/15_injective_violated.ein :: render rules
+0    tests/stdlib/algebra/15_injective_violated.ein :: saturate
+0    tests/stdlib/algebra/15_injective_violated.ein :: solve
+0    tests/stdlib/algebra/15_injective_violated.ein :: test
+0    tests/stdlib/algebra/16_converse_illtyped_dom.ein :: render constraints
+1    tests/stdlib/algebra/16_converse_illtyped_dom.ein :: render rules
+0    tests/stdlib/algebra/16_converse_illtyped_dom.ein :: saturate
+0    tests/stdlib/algebra/16_converse_illtyped_dom.ein :: solve
+0    tests/stdlib/algebra/16_converse_illtyped_dom.ein :: test
+0    tests/stdlib/algebra/17_converse_illtyped_ran.ein :: render constraints
+1    tests/stdlib/algebra/17_converse_illtyped_ran.ein :: render rules
+0    tests/stdlib/algebra/17_converse_illtyped_ran.ein :: saturate
+0    tests/stdlib/algebra/17_converse_illtyped_ran.ein :: solve
+0    tests/stdlib/algebra/17_converse_illtyped_ran.ein :: test
+0    tests/stdlib/algebra/18_totality_open_world.ein :: render constraints
+0    tests/stdlib/algebra/18_totality_open_world.ein :: render rules
+0    tests/stdlib/algebra/18_totality_open_world.ein :: saturate
+0    tests/stdlib/algebra/18_totality_open_world.ein :: solve
+0    tests/stdlib/algebra/18_totality_open_world.ein :: test
+0    tests/stdlib/algebra/19_total_violated.ein :: render constraints
+1    tests/stdlib/algebra/19_total_violated.ein :: render rules
+0    tests/stdlib/algebra/19_total_violated.ein :: saturate
+0    tests/stdlib/algebra/19_total_violated.ein :: solve
+0    tests/stdlib/algebra/19_total_violated.ein :: test
+0    tests/stdlib/algebra/20_surjective_violated.ein :: render constraints
+1    tests/stdlib/algebra/20_surjective_violated.ein :: render rules
+0    tests/stdlib/algebra/20_surjective_violated.ein :: saturate
+0    tests/stdlib/algebra/20_surjective_violated.ein :: solve
+0    tests/stdlib/algebra/20_surjective_violated.ein :: test
+0    tests/stdlib/algebra/21_transitive.ein :: render constraints
+1    tests/stdlib/algebra/21_transitive.ein :: render rules
+0    tests/stdlib/algebra/21_transitive.ein :: saturate
+0    tests/stdlib/algebra/21_transitive.ein :: solve
+0    tests/stdlib/algebra/21_transitive.ein :: test
+0    tests/stdlib/algebra/22_symmetric_negative.ein :: render constraints
+0    tests/stdlib/algebra/22_symmetric_negative.ein :: render rules
+0    tests/stdlib/algebra/22_symmetric_negative.ein :: saturate
+0    tests/stdlib/algebra/22_symmetric_negative.ein :: solve
+0    tests/stdlib/algebra/22_symmetric_negative.ein :: test
+0    tests/stdlib/bijection/01_setup_and_negatives.ein :: render constraints
+1    tests/stdlib/bijection/01_setup_and_negatives.ein :: render rules
+0    tests/stdlib/bijection/01_setup_and_negatives.ein :: saturate
+0    tests/stdlib/bijection/01_setup_and_negatives.ein :: solve
+0    tests/stdlib/bijection/01_setup_and_negatives.ein :: test
+0    tests/stdlib/bijection/02_domain_elimination.ein :: render constraints
+0    tests/stdlib/bijection/02_domain_elimination.ein :: render rules
+0    tests/stdlib/bijection/02_domain_elimination.ein :: saturate
+0    tests/stdlib/bijection/02_domain_elimination.ein :: solve
+0    tests/stdlib/bijection/02_domain_elimination.ein :: test
+0    tests/stdlib/bijection/03_range_elimination.ein :: render constraints
+0    tests/stdlib/bijection/03_range_elimination.ein :: render rules
+0    tests/stdlib/bijection/03_range_elimination.ein :: saturate
+0    tests/stdlib/bijection/03_range_elimination.ein :: solve
+0    tests/stdlib/bijection/03_range_elimination.ein :: test
+0    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: render constraints
+1    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: render rules
+0    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: saturate
+0    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: solve
+0    tests/stdlib/bijection/04_typecheck_arg0_violated.ein :: test
+0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: render constraints
+1    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: render rules
+0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: saturate
+0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: solve
+0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: test
+0    tests/stdlib/closure/01_infer_closure.ein :: render constraints
+1    tests/stdlib/closure/01_infer_closure.ein :: render rules
+0    tests/stdlib/closure/01_infer_closure.ein :: saturate
+0    tests/stdlib/closure/01_infer_closure.ein :: solve
+0    tests/stdlib/closure/01_infer_closure.ein :: test
+0    tests/stdlib/elim/01_domain_elimination.ein :: render constraints
+0    tests/stdlib/elim/01_domain_elimination.ein :: render rules
+0    tests/stdlib/elim/01_domain_elimination.ein :: saturate
+0    tests/stdlib/elim/01_domain_elimination.ein :: solve
+0    tests/stdlib/elim/01_domain_elimination.ein :: test
+0    tests/stdlib/elim/02_no_room_left.ein :: render constraints
+1    tests/stdlib/elim/02_no_room_left.ein :: render rules
+0    tests/stdlib/elim/02_no_room_left.ein :: saturate
+0    tests/stdlib/elim/02_no_room_left.ein :: solve
+0    tests/stdlib/elim/02_no_room_left.ein :: test
+0    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: render constraints
+1    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: render rules
+0    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: saturate
+0    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: solve
+0    tests/stdlib/elim/03_typecheck_arg0_violated.ein :: test
+0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: render constraints
+1    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: render rules
+0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: saturate
+0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: solve
+0    tests/stdlib/elim/04_typecheck_arg1_violated.ein :: test
+0    tests/stdlib/macro/01_forall.ein :: render constraints
+0    tests/stdlib/macro/01_forall.ein :: render rules
+0    tests/stdlib/macro/01_forall.ein :: saturate
+0    tests/stdlib/macro/01_forall.ein :: solve
+0    tests/stdlib/macro/01_forall.ein :: test
+0    tests/stdlib/macro/02_open.ein :: render constraints
+0    tests/stdlib/macro/02_open.ein :: render rules
+0    tests/stdlib/macro/02_open.ein :: saturate
+0    tests/stdlib/macro/02_open.ein :: solve
+0    tests/stdlib/macro/02_open.ein :: test
+0    tests/stdlib/slots/01_partition.ein :: render constraints
+0    tests/stdlib/slots/01_partition.ein :: render rules
+0    tests/stdlib/slots/01_partition.ein :: saturate
+0    tests/stdlib/slots/01_partition.ein :: solve
+0    tests/stdlib/slots/01_partition.ein :: test
+0    tests/stdlib/slots/02_negative.ein :: render constraints
+0    tests/stdlib/slots/02_negative.ein :: render rules
+0    tests/stdlib/slots/02_negative.ein :: saturate
+0    tests/stdlib/slots/02_negative.ein :: solve
+0    tests/stdlib/slots/02_negative.ein :: test
+0    tests/stdlib/slots/03_fill.ein :: render constraints
+0    tests/stdlib/slots/03_fill.ein :: render rules
+0    tests/stdlib/slots/03_fill.ein :: saturate
+0    tests/stdlib/slots/03_fill.ein :: solve
+0    tests/stdlib/slots/03_fill.ein :: test
+0    tests/stdlib/slots/04_elimination.ein :: render constraints
+0    tests/stdlib/slots/04_elimination.ein :: render rules
+0    tests/stdlib/slots/04_elimination.ein :: saturate
+0    tests/stdlib/slots/04_elimination.ein :: solve
+0    tests/stdlib/slots/04_elimination.ein :: test
+0    tests/stdlib/slots/05_no_room.ein :: render constraints
+1    tests/stdlib/slots/05_no_room.ein :: render rules
+0    tests/stdlib/slots/05_no_room.ein :: saturate
+0    tests/stdlib/slots/05_no_room.ein :: solve
+0    tests/stdlib/slots/05_no_room.ein :: test
+0    tests/stdlib/slots/06_no_fill.ein :: render constraints
+1    tests/stdlib/slots/06_no_fill.ein :: render rules
+0    tests/stdlib/slots/06_no_fill.ein :: saturate
+0    tests/stdlib/slots/06_no_fill.ein :: solve
+0    tests/stdlib/slots/06_no_fill.ein :: test
+0    tests/stdlib/slots/07_spatial_prune.ein :: render constraints
+1    tests/stdlib/slots/07_spatial_prune.ein :: render rules
+0    tests/stdlib/slots/07_spatial_prune.ein :: saturate
+0    tests/stdlib/slots/07_spatial_prune.ein :: solve
+0    tests/stdlib/slots/07_spatial_prune.ein :: test
+0    tests/stdlib/slots/08_spatial_adjacent.ein :: render constraints
+1    tests/stdlib/slots/08_spatial_adjacent.ein :: render rules
+0    tests/stdlib/slots/08_spatial_adjacent.ein :: saturate
+0    tests/stdlib/slots/08_spatial_adjacent.ein :: solve
+0    tests/stdlib/slots/08_spatial_adjacent.ein :: test
+0    tests/stdlib/typing/01_reflexive.ein :: render constraints
+1    tests/stdlib/typing/01_reflexive.ein :: render rules
+0    tests/stdlib/typing/01_reflexive.ein :: saturate
+0    tests/stdlib/typing/01_reflexive.ein :: solve
+0    tests/stdlib/typing/01_reflexive.ein :: test
+0    tests/stdlib/typing/02_type_hierarchy_converse.ein :: render constraints
+1    tests/stdlib/typing/02_type_hierarchy_converse.ein :: render rules
+0    tests/stdlib/typing/02_type_hierarchy_converse.ein :: saturate
+0    tests/stdlib/typing/02_type_hierarchy_converse.ein :: solve
+0    tests/stdlib/typing/02_type_hierarchy_converse.ein :: test
+0    tests/stdlib/typing/03_type_hierarchy_welltyped.ein :: render constraints
+1    tests/stdlib/typing/03_type_hierarchy_welltyped.ein :: render rules
+0    tests/stdlib/typing/03_type_hierarchy_welltyped.ein :: saturate
+0    tests/stdlib/typing/03_type_hierarchy_welltyped.ein :: solve
+0    tests/stdlib/typing/03_type_hierarchy_welltyped.ein :: test

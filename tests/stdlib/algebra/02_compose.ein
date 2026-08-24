@@ -1,0 +1,57 @@
+;;; `std.algebra` — the relative product: `compose`, and the closure that is
+;;; built out of it, `difunctional`.
+;;;
+;;; ── What the rules promise ─────────────────────────────────────────────────
+;;;
+;;;   (compose R1 R2 R3)   R3 ⊇ R1;R2 — an R1 edge into ?b and an R2 edge out
+;;;                        of ?b derive the R3 edge across
+;;;   (difunctional R)     R;R°;R ⊆ R — rows that overlap in a column agree on
+;;;                        every column: R(a,b) ∧ R(c,b) ∧ R(c,d) ⟹ R(a,d)
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;; `step` is a three-node path A→B→C, and `(compose step step two-step)` asks
+;;; for the two-step relation over it. One composite exists: A→C. The pairs
+;;; that do *not* exist are the point — a `compose` that dropped the shared
+;;; `?b` would produce all nine.
+;;;
+;;; `seat` is a 2×2-shaped fragment with one corner missing: R1 and R2 both sit
+;;; in column C1, R2 also sits in C2, so the missing corner (R1,C2) is forced.
+;;; `difunctional` is a closure on its own relation, so it re-enters: the
+;;; derived edge is itself a premise on the next pass, and the module's claim
+;;; that it converges is what the model's finite extent records.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; Neither rule carries a guard, so — as with the copiers — the only *must
+;;; not* is scope, and relation-closure is what states it. `two-step` closed at
+;;; one edge says the composite is A→C **and nothing else**; `seat` closed at
+;;; four says the closure added the one corner and then stopped.
+
+(import std.algebra :symbols (compose difunctional))
+
+(relation instance Thing Type)
+(relation step     Node Node  :why "{?1} steps to {?2}")
+(relation two-step Node Node  :why "{?1} reaches {?2} in two steps")
+(relation seat     Row  Col   :why "{?1} occupies {?2}")
+
+(instance A Node) (instance B Node) (instance C Node)
+
+(compose      step step two-step)
+(difunctional seat)
+
+(step A B)
+(step B C)
+
+;; Two rows overlapping in C1; R2 also reaches C2, so R1 must too.
+(seat R1 C1)
+(seat R2 C1)
+(seat R2 C2)
+
+(query
+  :goal (two-step ?x ?y)
+  :no-hypothesis (instance step two-step seat)
+  :expect (model (step     A B) (step B C)
+                 (two-step A C)
+                 (seat     R1 C1) (seat R1 C2)
+                 (seat     R2 C1) (seat R2 C2)))

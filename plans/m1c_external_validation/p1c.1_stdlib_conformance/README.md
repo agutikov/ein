@@ -48,7 +48,7 @@ that gets **stronger** when the oracle leaves.
 | [S1c.1.1](s1c.1.1_what_the_stdlib_promises.md) | What the stdlib promises, and what is exercised | 3 d | **shipped 2026-08-23** — [`stdlib_census.md`](stdlib_census.md) |
 | [S1c.1.2](s1c.1.2_test_form.md) | How a program states what it expects | 3 d | **shipped 2026-08-23** — `:expect`, and `Program.queries` |
 | [S1c.1.3](s1c.1.3_test_subcommand.md) | `ein test` | 2 d | **shipped 2026-08-24** — the fourth subcommand |
-| [S1c.1.4](s1c.1.4_stdlib_corpus.md) | The stdlib corpus | ~~4~~ **6 d** | next — re-estimated against the census |
+| [S1c.1.4](s1c.1.4_stdlib_corpus.md) | The stdlib corpus | ~~4~~ **6 d** | **shipped 2026-08-24** — 45 programs in `tests/stdlib/`, and the zero-firing set is **0** |
 | [S1c.1.5](s1c.1.5_gate.md) | In the gate | 1 d | |
 
 ### What S1c.1.2 built
@@ -97,6 +97,55 @@ a **bug in S1c.1.2's checker**: a `Contradiction` from a depth-capped search
 was reported as a hard failure, where `k = 0` from a truncated lattice is "no
 model within the cap". It is `NotChecked` now. Nothing reached it before,
 because `solve -n 1` cannot produce a truncated `k = 0`.
+
+### What S1c.1.4 built
+
+**45 programs under [`tests/stdlib/`](../../../tests/README.md)**, one per rule
+or tight family, and the acceptance number is measured rather than read: the
+zero-firing set goes **38 → 0**
+([`stdlib_census.md` §11](stdlib_census.md#11-the-re-take--2026-08-24-and-the-zero-set-is-empty)).
+Four things about them are decisions rather than files:
+
+- **They are not in `examples/`.** That directory is things to read; these are
+  things that exist to break, and 45 of them would have tripled a catalogue
+  nobody would learn the language from. `tests/` is a third corpus root beside
+  `examples/` and `stdlib/`, walked by the same completeness check, so a test
+  file with no manifest entry still fails the gate.
+- **`(open …)` is how a program says a negative was *not* invented.** Stored
+  negatives are deliberately not closed by an expectation, so listing the
+  exclusions that exist says nothing about the ones that do not. Ten programs
+  carry a four-line `probe-undecided` rule at priority 500 whose body is
+  `std.macro`'s `(open P)`, turning "in neither store" into a positive fact the
+  expectation *can* close (an eleventh, `macro/02_open.ein`, is the probe's own
+  test). It is the stage's one invention and it is what makes
+  the `forall` family's open-world claim checkable at all.
+- **A refutation rule gets two files.** "It fires and the answer is ⊥" is not
+  the test that finds bugs; the other is a program where the rule is loaded,
+  activated and *satisfied*, so a guard admitting too much turns an ordinary
+  model into a contradiction. `algebra/08_checks_satisfied.ein` is that file for
+  seven rules at once, and each of the seven has a `_violated` sibling.
+- **The census's one open question is answered.** `slot-prune-bwd` had 606
+  firings and no productive one; §5 could not say whether that was structural
+  or a scheduling artefact, and named the puzzle that would settle it — a slot
+  structure whose spatial relation is asymmetric *and* non-functional on
+  positions. `slots/07_spatial_prune.ein` is that puzzle, both rules are
+  productive in it, and exchanging the operands inside either `absent` turns it
+  into a contradiction (verified against a mutated copy of the stdlib). It is
+  structural.
+
+It was also **measured for sensitivity**, which activation does not imply: 51
+deliberate defects — one per rule family — injected into a copy of `stdlib/`
+and run past `ein test tests/`. The first pass caught 44, and the seven
+survivors were one finding seven times over: where two rules reach the same
+verdict, a fact-shaped expectation cannot say which one did, so five fixtures
+were narrowed to declare a single activator and two were rewritten. **50 of
+51** now, with the survivor named rather than hidden.
+
+It opened one question:
+[Q-M1c.7](../open_questions.md#q-m1c7--may-an-expectation-name-a-relation-that-only-saturation-creates)
+— `:expect` validates its relation names at load, so the seven fan-out rules,
+whose entire output is derived activator facts, cannot be pinned directly and
+are checked through what they activate.
 
 ### What the census settled
 

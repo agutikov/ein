@@ -1,0 +1,35 @@
+;;; `std.algebra/functional` — ∀a. |{b : R(a,b)}| ≤ 1: one `a` with two
+;;; distinct images is ⊥.
+;;;
+;;; ── Why this file is the census's finding, not just its coverage ───────────
+;;;
+;;; `functional` fires in the corpus and has **never once been productive**:
+;;; 2 000 redundant firings, no productive ones, and outside
+;;; `examples/ein-bugs/zebra2-bad.ein` it is never activated at all
+;;; (plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md §5).
+;;; It is dominated twice over: `std.bijection`'s `functional-negative` at 240
+;;; excludes every other partner the moment a positive lands, and the totality
+;;; checks at 110 reach `(false)` first when a contradiction does occur. So in
+;;; a puzzle this rule is never the first to refute, and a fixture that merely
+;;; made it fire alongside the others would record that rather than test it.
+;;;
+;;; What this file does instead is put it somewhere nothing else can reach:
+;;; **`functional` alone**, no bijection stack, no negative completion, no
+;;; totality. Then the ⊥ is its and only its, and the `(neq ?b ?c)` guard —
+;;; the same shape as the `disjunctive-prune` guard that was wrong for a year
+;;; — has a test in the direction that finds a bug. The other direction, an
+;;; edge matched against itself, is `08_checks_satisfied.ein`'s `pick`.
+
+(import std.algebra :symbols (functional))
+
+(relation assigned Task Worker :why "{?1} is assigned to {?2}")
+
+(functional assigned)
+
+(assigned Build Ann)
+(assigned Build Bob)   ; ⊥ — one task, two distinct workers
+
+(query
+  :goal (assigned ?task ?who)
+  :no-hypothesis (assigned)
+  :expect (false))

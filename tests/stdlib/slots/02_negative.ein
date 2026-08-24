@@ -1,0 +1,85 @@
+;;; `std.slots/slot-negative` — the contrapositive of transitivity: what one
+;;; end of a clue cannot be, the other end cannot be either.
+;;;
+;;; ── What the rule promises ─────────────────────────────────────────────────
+;;;
+;;;   (R a b) ∧ ¬(R b i) ∧ i : Index  ⟹  ¬(R a i)
+;;;
+;;; Were `a` at `i`, then `b ↔ a ↔ i` would put `b` at `i` by symmetry and
+;;; transitivity. This is what makes the equivalence carry **negative**
+;;; information across an authored cross-attribute clue, and it is anchored at
+;;; the index for the same reason `slot-locate` is: the unanchored form
+;;; concludes over the whole value square, and since the rule joins positives
+;;; against negatives its cost is the product of the two.
+;;;
+;;; ── What this program does to it ───────────────────────────────────────────
+;;;
+;;; Three seats, one clue, one placement — and the placement is a **pet**,
+;;; which is what leaves the conclusion reachable no other way:
+;;;
+;;;   (co-loc Ann Cat)         the clue — no seat named
+;;;   (co-loc Dog S1)          the dog is in seat 1
+;;;   ⟹ ¬(co-loc Cat S1)        slot-occupied: S1's pet seat is taken
+;;;   ⟹ ¬(co-loc Ann S1)        slot-negative, carrying that along the clue
+;;;
+;;; and only `slot-negative` can take the second step. `slot-occupied` works by
+;;; **type** — S1 holding a Pet says nothing about where a Who may be — and the
+;;; symmetric mirror only turns an exclusion around rather than moving it. Nor
+;;; does anything else place Ann or Cat: three seats and one exclusion each
+;;; leaves both of them two candidates, so neither elimination nor fill fires
+;;; and the model is four positive edges.
+;;;
+;;; Put a **person** in S1 instead and the file stops testing this rule: the
+;;; occupancy of a Who seat excludes Ann from S1 directly, and `slot-negative`
+;;; becomes redundant. That is the whole reason for the pet.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; The two listed negatives are the chain, and `(not (co-loc Ann S1))` is the
+;;; rule's own output — delete `slot-negative` from the module and it is the
+;;; fact that goes missing.
+;;;
+;;; The `undecided` probe is the other direction, and it is needed because
+;;; stored negatives are the one thing an expectation does **not** close:
+;;; listing the exclusions that exist says nothing about the ones that do not.
+;;; Bob and Rat are unplaced and unrelated, and the model says so of neither —
+;;; `(co-loc Bob Rat)` is not derived and `(not (co-loc Bob Rat))` is not
+;;; derived either — so the pair sits in the third state, where a rule that
+;;; propagated an exclusion out of ignorance would have left a fact.
+
+(import std.algebra :symbols (symmetric symmetric-negative-setup))
+(import std.slots   :symbols (slot-partition-setup))
+(import std.macro   :symbols (open))
+
+(relation type      T T :why "{?1} is a subtype of {?2}")
+(relation instance  T T :why "{?1} is an instance of {?2}")
+(relation co-loc    Attribute Attribute :why "{?1} and {?2} are in the same seat")
+(relation undecided Attribute Attribute :why "{?1} and {?2}: seat still open")
+
+(symmetric co-loc)
+(slot-partition co-loc instance type Attribute Seat)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat) (instance S3 Seat)
+(instance Ann Who) (instance Bob Who) (instance Cid Who)
+(instance Cat Pet) (instance Dog Pet) (instance Rat Pet)
+
+(co-loc Ann Cat)
+(co-loc Dog S1)
+
+(rule probe-undecided ()
+  :match  (open (co-loc Bob Rat))
+  :assert (undecided Bob Rat)
+  :priority 500
+  :why    "nothing relates Bob and Rat either way, and no rule may invent it")
+
+(query
+  :goal (co-loc ?a ?b)
+  :no-hypothesis (type instance co-loc undecided)
+  :expect (model (co-loc Ann Cat) (co-loc Cat Ann)
+                 (co-loc Dog S1)  (co-loc S1 Dog)
+                 (not (co-loc Cat S1))
+                 (not (co-loc Ann S1))
+                 (undecided Bob Rat)))

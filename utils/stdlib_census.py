@@ -28,8 +28,8 @@ Two halves, and only the second runs the engine:
    `domain-elimination` and `typecheck-arg-{0,1}` — the positional and the
    signature-driven formulations).
 2. **The firing census.** Every corpus entry, under every declared run that
-   reaches the engine (`solve …` / `saturate …` — `render` has no `--events`,
-   and `render lattice`'s solve is a subset of `solve -e`'s), with
+   reaches the engine (`solve …` / `saturate …` / `test` — `render` has no
+   `--events`, and `render lattice`'s solve is a subset of `solve -e`'s), with
    `--events`. `fire` events counted by rule, split productive vs redundant;
    `load` events read for which rules were *available* to a file at all, which
    is what separates "imported and never activated" from "no corpus entry
@@ -256,16 +256,31 @@ def all_runs(entry: dict) -> list[str]:
     return [*entry.get("runs", []), *(f"solve {lv}" for lv in entry.get("levers", []))]
 
 
+#: Subcommands that reach the engine and accept `--events`. `render` is
+#: excluded on both counts: `render rules` / `render constraints` never
+#: saturate, and `render lattice` runs a solve the entry's own `solve -e`
+#: covers — with no `--events` flag to record it either way.
+#:
+#: `test` joined the pair at M1c S1c.1.4, when `tests/stdlib/` arrived: a
+#: fixture that declared only `test` would otherwise be invisible to the
+#: census, which is the one thing this instrument must not be. Adding it moves
+#: no cell on the corpus as it stood — the three entries that declared `test`
+#: before that stage reach only `symmetric`, which eight others already do —
+#: so the before and after stay comparable by construction.
+ENGINE_SUBCOMMANDS = ("solve", "saturate", "test")
+
+
 def inference_runs(entry: dict) -> list[str]:
     """The declared runs that reach the engine and take `--events`.
 
-    `render` is excluded on both counts: `render rules` / `render constraints`
-    never saturate, and `render lattice` runs a solve the entry's own
-    `solve -e` covers — with no `--events` flag to record it either way.
+    A `test` run on a file carrying more than one `:expect` is refused (an
+    artefact flag names one path), and the sweep below then records no events
+    for that cell — which is why every `tests/stdlib/` entry also declares
+    `saturate`.
     """
     seen, out = set(), []
     for run in all_runs(entry):
-        if run.split()[0] in ("solve", "saturate") and run not in seen:
+        if run.split()[0] in ENGINE_SUBCOMMANDS and run not in seen:
             seen.add(run)
             out.append(run)
     return out

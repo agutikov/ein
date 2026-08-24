@@ -20,6 +20,7 @@ as Q-M10.1–3 and the rows below say so.
 | [Q-M1c.1](#q-m1c1--how-does-a-program-state-what-it-expects) | How does a program state what it expects? | **closed 2026-08-23 → (c)**, `:expect` on `query`, several queries per file *(was Q-M1a.19)* |
 | [Q-M1c.2](#q-m1c2--what-may-an-expectation-say) | What may an expectation say? | **closed 2026-08-23** — a `(model …)` of ground facts, relation-closed; `(or …)` a set; `(false)` for ⊥; route parked *(was Q-M1a.20)* |
 | [Q-M1c.6](#q-m1c6--how-does-an-expectation-say-a-relation-is-empty) | How does an expectation say a relation is *empty*? | **open**, and found by building S1c.1.2 |
+| [Q-M1c.7](#q-m1c7--may-an-expectation-name-a-relation-that-only-saturation-creates) | May an expectation name a relation that only saturation creates? | **open**, and found by building S1c.1.4 |
 | ~~Q-M1c.3~~ | What makes a benchmark encoding fair? | **moved 2026-08-23 with P1c.2 → [Q-M10.1](../m10_external_benchmarks/open_questions.md#q-m101--what-makes-an-encoding-fair)** |
 | ~~Q-M1c.4~~ | Does a proof assistant belong in a timing table? | **moved 2026-08-23 with P1c.2 → [Q-M10.2](../m10_external_benchmarks/open_questions.md#q-m102--does-a-proof-assistant-belong-in-a-timing-table)** |
 | ~~Q-M1c.5~~ | Where does the benchmark live, and is any of it a gate? | **moved 2026-08-23 with P1c.2 → [Q-M10.3](../m10_external_benchmarks/open_questions.md#q-m103--where-does-the-benchmark-live-and-is-any-of-it-a-gate)** |
@@ -182,3 +183,58 @@ name as a model item (`(model p (q A))` — "`p` is empty, `q` is exactly
 `(q A)`"); relax rule 1 to "names, or the model is `(model)`"; or a keyword.
 **Deliberately not decided while no fixture needs it** — the residue-parking
 discipline Q-M1c.2 used for route.
+
+---
+
+## Q-M1c.7 — May an expectation name a relation that only saturation creates?
+
+**Opened 2026-08-24**, by building [S1c.1.4](p1c.1_stdlib_conformance/s1c.1.4_stdlib_corpus.md).
+
+`:expect` is validated at **load**, and one of its five refusals is that a
+relation it names must be one `kb.program().relations` already has — a name no
+declaration and no fact makes would close a relation that does not exist, and
+pass vacuously for ever. That is the right check for a typo. It is the wrong
+check for a **derived** relation.
+
+The stdlib's fan-out rules are exactly that case, and there are seven of them:
+`std.bijection`'s `bijective-setup` and `typecheck-setup`, `std.slots`'
+`slot-partition-setup` and `slot-spatial-setup`, `std.typing`'s
+`derive-reflexive`, and `std.algebra`'s `derive-join` and
+`bijective-properties`. Their entire output is activator facts —
+`(domain-elimination R isa)`, `(slot-locate R isa Index)`,
+`(typecheck-arg-0 R isa A)` — in relations that exist *only after saturation*.
+So the one thing each of those rules promises is the one thing an expectation
+cannot state, and
+[`stdlib_census.md` §6](p1c.1_stdlib_conformance/stdlib_census.md#6-what-would-activate-a-rule-that-nothing-activates--t1c113)'s
+prediction that the fan-outs would be the cheapest bucket — *"a claim about
+facts, and so exactly what an `:expect` can say with nothing else in the
+file"* — is false as the loader stands.
+
+What S1c.1.4 did instead is pin the fan-outs **at one remove**: the rules they
+activate have no other activator, so a setup rule that dropped an operand
+leaves the file with fewer negatives, or with none. That works, and it is
+weaker than the direct claim in a specific way — it cannot catch a fan-out
+that produces a *surplus* activator, because closure is what catches surplus
+and closure is what is unavailable.
+
+The shape of the fix is small and the risk is that it is too small to be
+right: widen the check from "some declaration or fact makes this a relation"
+to "…**or some rule can assert it**", computed from the compiled plans'
+ground assert heads (`ein_infer::compile::asserted_relation` already does this
+for the closed-relation pass, one crate above `ein-ir`, which is why it is not
+a two-line change). That keeps the anti-typo property — a misspelling is
+neither declared nor asserted — and admits every derived relation. The
+question is whether a relation asserted only through a **variable** head
+(`(?R ?a ?b)`, which is most of the stdlib) should count, and it cannot: the
+head is not known until the activator is. So the widening admits the fan-outs
+and still refuses, say, `(model (co-loc Ann S1))` in a file where `co-loc` is
+declared nowhere — which is the case that matters.
+
+**Deliberately not decided here**, for the reason S1c.1.4 is a corpus stage
+and not a language one: the fixtures it owed are written and they are
+checkable without it. Same residue-parking discipline as
+[Q-M1c.2](#q-m1c2--what-may-an-expectation-say) used for route and
+[Q-M1c.6](#q-m1c6--how-does-an-expectation-say-a-relation-is-empty) for the
+empty extent — and the three are the same question asked three ways, which is
+**what may appear on the left of a closure claim**. If a fourth arrives they
+should be answered together.

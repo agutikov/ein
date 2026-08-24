@@ -1,0 +1,72 @@
+;;; `std.bijection/domain-elimination` — functional ∧ total, every B but one
+;;; excluded for `a` ⟹ force it.
+;;;
+;;; ── What the rule promises, and the guard that is the whole of it ──────────
+;;;
+;;;   (domain-elimination R isa)
+;;;     (functional R) ∧ (total R) ∧ a∈A ∧ b∈B
+;;;     ∧ ∀b′∈B, b′≠b. ¬R(a,b′)          ⟹  R(a,b)
+;;;
+;;; The `forall` is the rule. Fire it one negative early and it forces a value
+;;; that is merely *unrefuted* rather than *forced* — a wrong model, silently,
+;;; because the answer still looks like an answer. That is the failure mode the
+;;; census's §7 singles out across ten quantifying rules, and this is the one
+;;; where a puzzle would believe the result.
+;;;
+;;; ── What this program does to it ───────────────────────────────────────────
+;;;
+;;; Three agents, three colours, and **no positive at all** — the two authored
+;;; facts are exclusions:
+;;;
+;;;   ¬(wears Ann Red), ¬(wears Ann Green)   ⟹ (wears Ann Blue)     forced
+;;;   Bob: only Blue excluded (by the forcing above)                 open
+;;;   Cid: only Blue excluded                                        open
+;;;
+;;; So one row is exhausted and two are half-exhausted, and the rule has to
+;;; tell them apart. The `open` probe turns the second condition into a fact:
+;;; `(wears Bob Red)` is in neither store, and `(undecided Bob Red)` exists
+;;; exactly while that is true. Add `(not (wears Bob Red))` and Bob is forced
+;;; to Green; add it *and* `(not (wears Bob Green))` and the file is
+;;; `../elim/02_no_room_left.ein`'s shape instead.
+;;;
+;;; ── The route this file cannot state ───────────────────────────────────────
+;;;
+;;; `domain-elimination` and `range-elimination` reach the same positive from
+;;; opposite directions, so a fact-shaped expectation cannot say which one got
+;;; there — the `route` residue
+;;; Q-M1c.2 parks (plans/m1c_external_validation/open_questions.md). What
+;;; separates them here is the **premises**, not the conclusion:
+;;; Ann's row is exhausted and Blue's column is not, so only the domain rule
+;;; can fire first. `03_range_elimination.ein` is the same puzzle transposed.
+
+(import std.macro     :symbols (forall open))
+(import std.algebra   :symbols (bijective-properties functional injective total surjective))
+(import std.bijection :symbols (bijective-setup functional-negative injective-negative
+                                domain-elimination range-elimination))
+
+(relation is-a      T T          :why "{?1} is a {?2}")
+(relation wears     Agent Colour :why "{?1} wears {?2}")
+(relation undecided Agent Colour :why "whether {?1} wears {?2} is still open")
+
+(is-a Ann Agent)  (is-a Bob Agent)    (is-a Cid Agent)
+(is-a Red Colour) (is-a Green Colour) (is-a Blue Colour)
+
+(bijective wears)
+(bijection-hierarchy is-a)
+
+(not (wears Ann Red))
+(not (wears Ann Green))
+
+(rule probe-undecided ()
+  :match  (open (wears Bob Red))
+  :assert (undecided Bob Red)
+  :priority 500
+  :why    "Bob's row is only one-third excluded, so nothing may be forced into it")
+
+(query
+  :goal (wears ?who ?colour)
+  :no-hypothesis (is-a wears undecided)
+  :expect (model (wears Ann Blue)
+                 (not (wears Ann Red)) (not (wears Ann Green))
+                 (not (wears Bob Blue)) (not (wears Cid Blue))
+                 (undecided Bob Red)))

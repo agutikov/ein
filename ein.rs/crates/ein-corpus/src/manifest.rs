@@ -180,10 +180,21 @@ mod tests {
     /// turned "the stdlib directory is gone" into "the check passes over
     /// seven fewer files". The ledger's §4 lists it as the one relocation the
     /// removal still owed.
+    ///
+    /// `tests/` joined them at M1c
+    /// [S1c.1.4](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.4_stdlib_corpus.md):
+    /// the stdlib conformance programs are a suite rather than a set of
+    /// examples, and they are walked here for the same reason the other two
+    /// roots are — a test file with no corpus entry is a file the sweep never
+    /// runs, which reads as coverage nobody has.
     fn tracked() -> BTreeSet<String> {
         let repo = repo_root();
         let mut out = BTreeSet::new();
-        let mut stack = vec![repo.join("examples"), repo.join("stdlib")];
+        let mut stack = vec![
+            repo.join("examples"),
+            repo.join("stdlib"),
+            repo.join("tests"),
+        ];
         while let Some(dir) = stack.pop() {
             for entry in std::fs::read_dir(&dir).expect("read_dir").flatten() {
                 let path = entry.path();
@@ -350,6 +361,13 @@ mod tests {
                 &["regression"]
             } else if path.starts_with("examples/") {
                 &["positive"]
+            } else if path.starts_with("tests/stdlib/") {
+                // M1c S1c.1.4 — the stdlib conformance programs. They are in
+                // the `stdlib` group with the modules they exercise, because
+                // the group names a *subject* here rather than a failure
+                // point: what a `tests/stdlib/` entry is about is a rule of
+                // `stdlib/`, and nothing else in the corpus is.
+                &["stdlib"]
             } else {
                 continue;
             };

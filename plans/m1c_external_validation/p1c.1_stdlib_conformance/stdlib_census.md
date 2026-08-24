@@ -7,7 +7,13 @@
 corpus entries, **400 inference runs**, `--events-level verbose`, 35.6 s wall
 **Re-take:** `python3 utils/stdlib_census.py --json census.json`
 
-> **Since the take.** [S1c.1.2](s1c.1.2_test_form.md) added five fixtures to
+> **Since the take, twice.** The tables below are the 2026-08-23 `114835d`
+> take and are kept as the *before* column;
+> [§11](#11-the-re-take--2026-08-24-and-the-zero-set-is-empty) is the re-take
+> after [S1c.1.4](s1c.1.4_stdlib_corpus.md), where the zero-firing set is
+> **0**. What follows in this callout is the smaller of the two moves.
+>
+> [S1c.1.2](s1c.1.2_test_form.md) added five fixtures to
 > the corpus on the same day. Re-taken against them, exactly one cell moves:
 > `std.algebra`'s `symmetric` goes from **7 entries to 8** and 1 084 → 1 092
 > productive firings, because
@@ -515,6 +521,112 @@ most of the zero set. The two implementation stages before it are unchanged:
 nothing here argues against `:expect`, and §7 is an argument *for* it, since
 relation-closure is the only one of the three candidate forms that can state
 what a `forall` guard must not do.
+
+---
+
+## 11. The re-take — 2026-08-24, and the zero set is empty
+
+**Taken:** 2026-08-24, `ein 0.1.0`, 180 corpus entries, **557 inference
+runs**, `--events-level verbose`, 36.6 s wall. `python3
+utils/stdlib_census.py --check` exits **0**.
+
+[S1c.1.4](s1c.1.4_stdlib_corpus.md) shipped **45 programs** under
+`tests/stdlib/`, and T1c.1.4.6 is this: the same instrument, re-run, so the
+before and after are comparable by construction. One thing about the
+instrument changed — `inference_runs` now sweeps `test` runs as well as `solve`
+and `saturate`, because a fixture that declared only `test` would have been
+invisible to the census. That is neutral on the corpus as it stood: the three
+entries that declared `test` before this stage
+(`examples/features/1{0,1,2}_expect*.ein`) reach only `symmetric`, which eight
+others already do.
+
+| | 2026-08-23 | 2026-08-24 |
+|---|---:|---:|
+| corpus entries | 128 | **180** |
+| inference runs | 400 | **557** |
+| rules declared | 73 | 73 |
+| **rules no run activates** | **38** | **0** |
+| rules that fire but derive nothing | 3 | **0** |
+| modules with zero coverage | 2 | **0** |
+| rules activated by exactly one entry | 23 | 31 |
+| …and how many of those entries exist to be one | 3 of 23 | **31 of 31** |
+| …and that entry is `examples/zebra.ein` | **20** | **0** |
+| ambiguous attributions | 0 | 0 |
+
+The *before* column is the 2026-08-23 take this document's tables are, not the
+tree immediately before S1c.1.4: seven entries landed in between (S1c.1.2's
+five `:expect` fixtures and two more), which took the corpus to 135 entries and
+419 runs and moved no coverage cell. The 45 that follow are this stage's.
+
+Per module, and the first column is unchanged because the stdlib is:
+
+| module | rules | covered before | covered after |
+|---|---:|---:|---:|
+| `std.algebra` | 38 | 10 | **38** |
+| `std.bijection` | 8 | 6 | **8** |
+| `std.closure` | 1 | 0 | **1** |
+| `std.elim` | 4 | 1 | **4** |
+| `std.slots` | 18 | 18 | 18 |
+| `std.typing` | 4 | 0 | **4** |
+
+### Three rows that moved for a reason, not for a count
+
+**§5's whole finding is gone, and it was three rules.** `functional`,
+`injective` and `slot-prune-bwd` fired only ever redundantly — matched, passed
+their guards, and derived nothing that was not already there. All three are
+productive now, and each for the reason §5 predicted:
+
+| rule | p before | p after | what did it |
+|---|---:|---:|---|
+| `functional` | 0 | 3 | `algebra/14_functional_violated.ein` — the rule **alone**, with no bijection stack to reach `(false)` first and no negative completion to make the violation unreachable |
+| `injective` | 0 | 3 | `algebra/15_injective_violated.ein`, the same idea transposed |
+| `slot-prune-bwd` | 0 | 3 | `slots/07_spatial_prune.ein` — the puzzle §5 said did not exist |
+
+**And §5's open question is answered.** It asked whether `slot-prune-bwd`'s
+sterility was *structural* — both of `examples/zebra.ein`'s spatial relations
+being either functional on positions or symmetric, so the two guards coincide
+— or an artefact of scheduling at equal priority 250. It is structural. Over a
+four-seat diamond, where `above` is asymmetric and functional in **neither**
+direction, the two rules derive different exclusions from the same clue pair:
+forward excludes a seat that is no *source* of the anchor, backward one that is
+no *target*. Exchanging the operands inside either `absent` turns that program
+into a contradiction, which was verified by mutating a copy of the stdlib and
+re-running it.
+
+**`examples/zebra.ein` is no longer anybody's sole activator.** It carried 20
+rules on 2026-08-23; the column is 0 now, and the 31 entries that are somebody's
+only activator are all `tests/stdlib/` files whose whole purpose is to be one.
+The fragility §4 named — *"delete `examples/zebra.ein` and coverage falls from
+35 rules to 15"* — is what this stage was for, and it is worth being precise
+about what replaced it: `std.slots`' eighteen rules now have a second
+activating program (eight, in fact), so a change to that puzzle's encoding no
+longer silently untests a module.
+
+### What the numbers still do not say
+
+The census counts **activation**, and this stage's acceptance is stated in
+those terms, so 0/73 closes it. Three things it is not:
+
+- **Not every rule is productive in the new corpus.** `slot-adjacent-fwd`
+  fires 54 productive times in `examples/zebra.ein` and only redundantly in
+  `slots/07_spatial_adjacent.ein`, because its productive case wants the lower
+  end of a spatial clue placed before the upper one and a three-seat row has no
+  slack for both orders. Coverage is a firing; a *productive* firing is a
+  stronger claim the census reports but does not gate on.
+- **Not every promise is pinned.** The seven fan-out rules assert into
+  relations that exist only after saturation, and `:expect` may name only a
+  relation the program text already makes — so their output is checked through
+  what it activates rather than directly
+  ([Q-M1c.7](../open_questions.md#q-m1c7--may-an-expectation-name-a-relation-that-only-saturation-creates)).
+- **Not a mutation score.** "Every rule fires somewhere" and "every rule's
+  guard is tested" are different claims, and only the first is what this
+  instrument measures. The second was taken separately and by hand — 51
+  deliberate defects, one per rule family, injected into a copy of `stdlib/`
+  and run past `ein test tests/` — and it is **50 of 51**, with the survivor
+  named in [`tests/README.md`](../../../tests/README.md). Seven fixtures were
+  changed because of what it found, which is the difference between a coverage
+  number and a test suite. Making either check a *gate* is
+  [S1c.1.5](s1c.1.5_gate.md)'s.
 
 ---
 

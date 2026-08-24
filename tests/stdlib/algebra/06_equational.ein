@@ -1,0 +1,73 @@
+;;; `std.algebra` — the equational lemmas: `compose-contravariant` (Tarski B7,
+;;; `(A;B)° = B°;A°`) and `join-converse` (B8, `(A∪B)° = A°∪B°`).
+;;;
+;;; ── What the rules promise ─────────────────────────────────────────────────
+;;;
+;;;   (compose R S T) + the three converse facts ⟹ (compose S° R° T°)
+;;;   (join    R S U) + the three converse facts ⟹ (join    R° S° U°)
+;;;
+;;; Note the swap in the first and its absence in the second: composition is
+;;; contravariant, join is not. Getting that backwards is the bug these two
+;;; rules exist to not have, and it is invisible in any test where the two
+;;; operands are the same relation — so they are not, here.
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;; The trick is to author edges **only on the converse side**. `r` and `s` are
+;;; declared and empty; `r-c` and `s-c` carry one edge each. So the direct
+;;; routes are all dead — `(compose r s t)` has no `r`-edge to start from, and
+;;; `(join r s j)` has no operand edge to copy — and every derived edge in the
+;;; model exists because a lemma turned an operator fact around first:
+;;;
+;;;   (compose r s t) ⟹ (compose s-c r-c t-c) ⟹ (t-c C A)   from (s-c C B),(r-c B A)
+;;;   (join    r s j) ⟹ (join    r-c s-c j-c) ⟹ (j-c B A),(j-c C B)
+;;;
+;;; That is what the census calls a *consequence at a distance*: the claim is
+;;; not "the lemma asserted an operator fact" but "an edge exists that only the
+;;; lemma's asserted operator fact could have produced".
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; Closing `compose` and `join` pins the operator facts — two each, the
+;;; authored one and the derived one, and no third. Closing `t-c` and `j-c`
+;;; pins what they went on to produce. Had B7 been written without the swap it
+;;; would have derived `(compose r-c s-c t-c)`, which composes nothing, and
+;;; `t-c` would be empty — a relation an expectation cannot name, which is why
+;;; the failure would show up as a missing fact rather than as a surplus one.
+;;;
+;;; **These lemmas converge, and this file does not show it.** The module's
+;;; convergence argument is that re-applying B7 to its own conclusion yields
+;;; the fact it started from — which needs `converse-pair-symmetric` to supply
+;;; the back-edges `(converse r-c r)`. That rule is deliberately not imported
+;;; here, so each lemma fires exactly once and the model is small enough to
+;;; read. `05_tag_lemmas.ein` is where the back-edges are.
+
+(import std.algebra
+  :symbols (compose derive-join join-l join-r
+            compose-contravariant join-converse))
+
+(relation r   Node Node)   ; declared and empty — every route runs backwards
+(relation s   Node Node)
+(relation t   Node Node)   ; = r;s
+(relation j   Node Node)   ; = r∪s
+(relation r-c Node Node :why "{?1} is r-reached from {?2}")
+(relation s-c Node Node)
+(relation t-c Node Node)
+(relation j-c Node Node)
+
+(converse r r-c) (converse s s-c) (converse t t-c) (converse j j-c)
+
+(compose r s t)        ; ⟹ (compose s-c r-c t-c)   — B7, with the swap
+(join    r s j)        ; ⟹ (join    r-c s-c j-c)   — B8, without one
+
+(r-c B A)
+(s-c C B)
+
+(query
+  :goal (t-c ?x ?y)
+  :no-hypothesis (r s t j r-c s-c t-c j-c)
+  :expect (model (compose r s t) (compose s-c r-c t-c)
+                 (join    r s j) (join    r-c s-c j-c)
+                 (r-c B A) (s-c C B)
+                 (t-c C A)
+                 (j-c B A) (j-c C B)))

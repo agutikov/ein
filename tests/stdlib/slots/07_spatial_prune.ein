@@ -1,0 +1,112 @@
+;;; `std.slots` — disjunctive pruning over an **asymmetric, non-functional**
+;;; spatial relation: `slot-spatial-setup`, `slot-prune-fwd`,
+;;; `slot-prune-bwd`, `slot-endpoint-fwd`, `slot-endpoint-bwd`.
+;;;
+;;; ── The census's finding this file exists to close ─────────────────────────
+;;;
+;;; `slot-prune-bwd` fires 606 times in the corpus and is **productive zero
+;;; times** — its forward twin always gets there first
+;;; (plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md §5).
+;;; The census could not say whether that is structural or an artefact of
+;;; scheduling at equal priority, and said what would settle it: *"separating
+;;; them needs an `S` that is asymmetric **and** non-functional on positions,
+;;; and there is no such puzzle."* Both of `examples/zebra.ein`'s spatial
+;;; relations fail that test — `right-of` is functional on positions (each
+;;; house has at most one neighbour on a side) and `next-to` is symmetric — so
+;;; the two guards coincide there for two different reasons.
+;;;
+;;; This is that puzzle.
+;;;
+;;; ── The structure ──────────────────────────────────────────────────────────
+;;;
+;;; Four seats in a diamond, `above` read as "the seat above":
+;;;
+;;;         S4              (above S2 S1)  (above S3 S1)
+;;;        /  \             (above S4 S2)  (above S4 S3)
+;;;      S2    S3
+;;;        \  /             S-sources of S1 = {S2, S3}   ← two: not functional
+;;;         S1              S-targets of S4 = {S2, S3}   ← two: not functional
+;;;
+;;; asymmetric (no mutual pair anywhere) and non-functional in **both**
+;;; directions, which is exactly the state in which the two prune rules
+;;; disagree.
+;;;
+;;; ── The two exclusions, and why neither rule could produce the other's ─────
+;;;
+;;; Two clues, anchored at opposite ends:
+;;;
+;;;   (above Ann Cat) + Cat at S1
+;;;     slot-prune-fwd: Ann sits at an S-**source** of S1, and S4 is not one
+;;;     ⟹ ¬(co-loc Ann S4)
+;;;
+;;;   (above Dog Bob) + Dog at S4
+;;;     slot-prune-bwd: Bob sits at an S-**target** of S4, and S1 is not one
+;;;     ⟹ ¬(co-loc Bob S1)
+;;;
+;;; The guards differ only in the operand order inside the `absent` —
+;;; `(?S ?p_o ?p1)` against `(?S ?p2 ?p_o)` — and that is the whole difference
+;;; between the two rules. Exchange them and this program does not merely
+;;; derive something else: it **refutes**, because a mirrored forward guard
+;;; would read S1's *targets* (there are none) and exclude every seat for Ann.
+;;;
+;;; Neither exclusion is reachable any other way here, and keeping it that way
+;;; is why **both anchors are pets**. `slot-occupied` excludes by type, so a
+;;; seat holding a Who would exclude every other Who from it and hand
+;;; `slot-prune-fwd` its conclusion for nothing; with Cat in S1 and Dog in S4
+;;; the two pruned values — Ann and Bob, both Whos — are untouched by
+;;; occupancy. The adjacency rules are silent by construction: S1 has two
+;;; sources and S4 has two targets, so both uniqueness guards fail.
+;;; `08_spatial_adjacent.ein` is where those fire, over a relation that *is*
+;;; functional on positions.
+;;;
+;;; ── The endpoints, which need no positive at all ───────────────────────────
+;;;
+;;; `slot-endpoint-fwd` and `-bwd` read the structure's gaps alone and fire at
+;;; depth 0: a seat with no S-source cannot hold the lower end of a clue, and
+;;; one with no S-target cannot hold the upper end. Here S4 has no source and
+;;; S1 has no target, so `¬(co-loc Cat S4)` and `¬(co-loc Bob S4)` — the two
+;;; lower ends — and `¬(co-loc Ann S1)` and `¬(co-loc Dog S1)` — the two upper
+;;; ones — hold before anything is placed.
+;;; For a symmetric relation both guards fail everywhere and nothing spurious
+;;; fires, which is why `examples/zebra.ein`'s `next-to` contributes none of
+;;; these.
+
+(import std.algebra :symbols (symmetric symmetric-negative-setup))
+(import std.slots   :symbols (slot-partition-setup slot-spatial-setup))
+
+(relation type     T T :why "{?1} is a subtype of {?2}")
+(relation instance T T :why "{?1} is an instance of {?2}")
+(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same seat")
+(relation above    Attribute Attribute :why "{?1}'s seat is above {?2}'s")
+
+(symmetric co-loc)
+(slot-partition co-loc instance type Attribute Seat)
+(slot-spatial   co-loc above instance Seat)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat) (instance S3 Seat) (instance S4 Seat)
+(instance Ann Who) (instance Bob Who) (instance Cid Who) (instance Dee Who)
+(instance Cat Pet) (instance Dog Pet) (instance Rat Pet) (instance Fox Pet)
+
+;; The position structure: a diamond, so `above` is asymmetric and functional
+;; in neither direction.
+(above S2 S1) (above S3 S1)
+(above S4 S2) (above S4 S3)
+
+;; The two clues, and the two placements that anchor them at opposite ends.
+(above Ann Cat) (co-loc Cat S1)
+(above Dog Bob) (co-loc Dog S4)
+
+(query
+  :goal (co-loc ?a ?b)
+  :no-hypothesis (type instance co-loc above)
+  :expect (model (co-loc Cat S1) (co-loc S1 Cat)
+                 (co-loc Dog S4) (co-loc S4 Dog)
+                 (not (co-loc Ann S4))    ; slot-prune-fwd — S4 is no source of S1
+                 (not (co-loc Bob S1))    ; slot-prune-bwd — S1 is no target of S4
+                 (not (co-loc Cat S4))    ; slot-endpoint-fwd — S4 has no source
+                 (not (co-loc Bob S4))
+                 (not (co-loc Ann S1))    ; slot-endpoint-bwd — S1 has no target
+                 (not (co-loc Dog S1))))

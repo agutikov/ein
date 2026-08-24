@@ -1,0 +1,73 @@
+;;; `std.slots/slot-fill` — every member of a type but one excluded **for a
+;;; slot** ⟹ that member is in it.
+;;;
+;;; ── The pair that is not a mirror ──────────────────────────────────────────
+;;;
+;;;   slot-elimination   every SLOT but i is excluded for the value a ⟹ a at i
+;;;   slot-fill          every MEMBER of a type but v is excluded for slot i
+;;;                      ⟹ v at i
+;;;
+;;; R's symmetry makes the two conclusions the same edge, which is why they
+;;; look like one rule read twice. They are not: they quantify over different
+;;; domains, so they consume different negatives and fire at different times.
+;;; The Zebra opening needs `slot-fill` ("House-1's colour seat has only Yellow
+;;; left") and its endgame needs `slot-elimination` ("Zebra has only House-5
+;;; left"), and any one-line promise loses the reason both exist.
+;;;
+;;; `01_partition.ein` cannot tell them apart, because with two members per
+;;; type both rules see the same single exclusion. It takes three, and it takes
+;;; two files: `04_elimination.ein` is this one transposed, where a *pet* runs
+;;; out of seats and no seat runs out of pets.
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;; Three seats, three pets, and two exclusions **down a column**:
+;;;
+;;;   ¬(co-loc S1 Cat), ¬(co-loc S1 Dog)   ⟹ (co-loc S1 Rat)     slot-fill
+;;;   Cat: excluded from S1 only, S2 and S3 open                  nothing forced
+;;;
+;;; so the seat has run out of candidates while no pet has run out of seats,
+;;; and only the fill rule can fire. `slot-elimination` is activated, matches
+;;; nothing, and that is the `forall` guard's negative direction — the probe
+;;; says it as a fact: `(co-loc Cat S2)` is in neither store.
+;;;
+;;; What follows is small on purpose. Rat's placement excludes it from S2 and
+;;; S3, and there the chain stops: two pets with two seats each, and three
+;;; people nobody has said anything about. The model is two edges, and a
+;;; `slot-elimination` that fired one negative early would put a third in it.
+
+(import std.algebra :symbols (symmetric symmetric-negative-setup))
+(import std.slots   :symbols (slot-partition-setup))
+(import std.macro   :symbols (open))
+
+(relation type      T T :why "{?1} is a subtype of {?2}")
+(relation instance  T T :why "{?1} is an instance of {?2}")
+(relation co-loc    Attribute Attribute :why "{?1} and {?2} are in the same seat")
+(relation undecided Attribute Attribute :why "{?1} and {?2}: seat still open")
+
+(symmetric co-loc)
+(slot-partition co-loc instance type Attribute Seat)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat) (instance S3 Seat)
+(instance Ann Who) (instance Bob Who) (instance Cid Who)
+(instance Cat Pet) (instance Dog Pet) (instance Rat Pet)
+
+(not (co-loc S1 Cat))
+(not (co-loc S1 Dog))
+
+(rule probe-undecided ()
+  :match  (open (co-loc Cat S2))
+  :assert (undecided Cat S2)
+  :priority 500
+  :why    "Cat is excluded from one seat of three — nothing may be forced")
+
+(query
+  :goal (co-loc ?a ?b)
+  :no-hypothesis (type instance co-loc undecided)
+  :expect (model (co-loc S1 Rat) (co-loc Rat S1)
+                 (not (co-loc S1 Cat)) (not (co-loc S1 Dog))
+                 (not (co-loc Rat S2)) (not (co-loc Rat S3))
+                 (undecided Cat S2)))

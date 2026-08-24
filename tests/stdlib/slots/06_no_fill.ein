@@ -1,0 +1,63 @@
+;;; `std.slots/slot-no-fill` — a slot with every member of some type excluded:
+;;; it has no member of that type left, so ⊥.
+;;;
+;;; The dual of `05_no_room.ein` down the other axis, and `03_fill.ein` with
+;;; one more exclusion:
+;;;
+;;;   ¬(co-loc S1 Cat), ¬(co-loc S1 Dog)                  ⟹ (co-loc S1 Rat)
+;;;   ¬(co-loc S1 Cat), ¬(co-loc S1 Dog), ¬(co-loc S1 Rat) ⟹ ⊥
+;;;
+;;; so the pair brackets the `forall` from above and its sibling `03_fill.ein`
+;;; from below: with one pet excluded nothing is forced (that file's `open`
+;;; probe says so), with two the third is forced, with three there is nothing
+;;; to force and the seat is ⊥. Three states, and the difference between any
+;;; two of them is one authored fact.
+;;;
+;;; ── Why the ⊥ is this rule's, and what that cost ──────────────────────────
+;;;
+;;; The activators are declared **by hand** here, and `slot-partition-setup` is
+;;; not used: it fans one `(slot-partition …)` fact into all eight at once, and
+;;; two of the eight can reach this program's ⊥ by another road. On a fully
+;;; excluded row `slot-elimination`'s "every slot but `?i` is excluded" holds
+;;; for *every* `?i`, so it forces the value into all of them against the
+;;; stored negatives; on a fully excluded seat `slot-fill` does the same down
+;;; the other axis. Either way the verdict is ⊥ and the diagnosis is not this
+;;; rule's.
+;;;
+;;; It was measured rather than assumed: with the whole fan-out in place, a
+;;; version of this rule mutated to quantify over the wrong type stops firing
+;;; and the suite still passes. With the activators narrowed, the same mutant
+;;; turns this file into a `Solution` and is caught. An expectation is made of
+;;; facts and cannot say which rule produced them — the `route` residue
+;;; Q-M1c.2 parks (plans/m1c_external_validation/open_questions.md) — so where
+;;; two rules reach one verdict, a fixture separates them by **activation**.
+;;; `slot-partition-setup` itself is exercised by `01`–`04`.
+
+(import std.algebra :symbols (symmetric symmetric-negative-setup))
+(import std.slots   :symbols (slot-exclusive slot-occupied slot-negative slot-no-fill))
+
+(relation type     T T :why "{?1} is a subtype of {?2}")
+(relation instance T T :why "{?1} is an instance of {?2}")
+(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same seat")
+
+(symmetric co-loc)
+(slot-exclusive co-loc instance type Attribute)
+(slot-occupied  co-loc instance type Attribute)
+(slot-negative  co-loc instance Seat)
+(slot-no-fill   co-loc instance type Attribute Seat)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat) (instance S3 Seat)
+(instance Ann Who) (instance Bob Who) (instance Cid Who)
+(instance Cat Pet) (instance Dog Pet) (instance Rat Pet)
+
+(not (co-loc S1 Cat))
+(not (co-loc S1 Dog))
+(not (co-loc S1 Rat))      ; ⊥ — seat 1 has no pet left
+
+(query
+  :goal (co-loc ?a ?b)
+  :no-hypothesis (type instance co-loc)
+  :expect (false))

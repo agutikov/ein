@@ -1,0 +1,70 @@
+;;; `std.algebra` — the **extensive** operators: `identity`, `top`,
+;;; `complement`. The ones that reach pairs the edge set does not contain.
+;;;
+;;; ── What the rules promise ─────────────────────────────────────────────────
+;;;
+;;;   (identity   R isa Dom)          R ⊇ 1' — self-loop every Dom member
+;;;   (top        R isa Dom Ran)      R ⊇ 1  — the whole Dom×Ran rectangle
+;;;   (complement R1 R2 isa Dom Ran)  R2 ⊇ ¬R1 over that rectangle
+;;;
+;;; The intrinsic operators of `03_boolean.ein` read only existing edges. These
+;;; three quantify over a **type extent** instead, which is why each takes the
+;;; puzzle's membership relation as a parameter `?isa` and its argument types
+;;; by name: there is no edge to start from, so the universe has to be handed
+;;; in. That is the whole of "extensive", and it is also the whole of why they
+;;; are opt-in per use.
+;;;
+;;; ── The caveat, which is the point of this file ────────────────────────────
+;;;
+;;; `complement` is sound **only when its operand is saturation-determined**.
+;;; It reads `(absent (R1 a b))` over the rectangle, so every pair the search
+;;; has not yet decided reads as *false* and lands in R2 — a closed-world
+;;; reading of an open world. Here `edge` is authored and no rule concludes
+;;; into it, so its extent is fixed before `complement` looks and the reading
+;;; is sound. In a puzzle where `edge` is what the hypothesis search is *for*,
+;;; the same declaration would materialise the complement of a half-known
+;;; relation, and the answer would be wrong rather than incomplete.
+;;;
+;;; This is the same shape as `std.closure`'s caveat
+;;; (`../closure/01_infer_closure.ein` exhibits that one) and as `difference`'s
+;;; and `connex`'s: the sentence is easy, the condition under which it is true
+;;; is not. The census files all four together — §9, "promises that do not fit
+;;; in one sentence".
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; Two nodes, so the rectangle is four pairs and each answer is small enough
+;;; to read whole:
+;;;
+;;;   edge  = {(A B)}          authored
+;;;   loop  = {(A A), (B B)}   identity — the diagonal, and only the diagonal
+;;;   full  = all four         top
+;;;   gap   = the other three  complement — exactly the rectangle minus `edge`
+;;;
+;;; Naming `gap` closes it, so the claim is not "the complement contains (B A)"
+;;; but "the complement is those three and no more" — which is the only form in
+;;; which `(A B) ∉ gap` is checked at all.
+
+(import std.algebra :symbols (identity top complement))
+
+(relation instance Thing Type)
+(relation edge     Node Node :why "{?1} is joined to {?2}")
+(relation loop     Node Node)   ; 1' on Node
+(relation full     Node Node)   ; 1 on Node×Node
+(relation gap      Node Node)   ; ¬edge on Node×Node
+
+(instance A Node) (instance B Node)
+
+(identity   loop instance Node)
+(top        full instance Node Node)
+(complement edge gap instance Node Node)
+
+(edge A B)
+
+(query
+  :goal (gap ?x ?y)
+  :no-hypothesis (instance edge loop full gap)
+  :expect (model (edge A B)
+                 (loop A A) (loop B B)
+                 (full A A) (full A B) (full B A) (full B B)
+                 (gap  A A) (gap  B A) (gap  B B)))

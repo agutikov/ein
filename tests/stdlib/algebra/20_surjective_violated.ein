@@ -1,0 +1,27 @@
+;;; `std.algebra/surjective` — ∀b∈B. ∃a. R(a,b): a `b` with **every** a
+;;; explicitly excluded is ⊥. The right-total dual of
+;;; `19_total_violated.ein`, and the exclusions run down the other axis.
+;;;
+;;; Both are declared here, and only `surjective` can fire: Ann and Bob each
+;;; still have Stew open, so `total` has no exhausted row. That is what makes
+;;; the ⊥ attributable to one rule rather than to the pair.
+
+(import std.algebra :symbols (total surjective))
+(import std.macro   :symbols (forall))
+
+(relation is-a  T T         :why "{?1} is a {?2}")
+(relation likes Person Food :why "{?1} likes {?2}")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+
+(total      likes is-a)
+(surjective likes is-a)
+
+(not (likes Ann Soup))
+(not (likes Bob Soup))       ; ⊥ — nobody may like Soup
+
+(query
+  :goal (likes ?who ?what)
+  :no-hypothesis (is-a likes)
+  :expect (false))

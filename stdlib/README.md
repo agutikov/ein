@@ -32,6 +32,27 @@ meaningless — a diff would report "the engines disagree" when in fact the
 *programs* differ
 ([design/11](../docs/history/m1a_rust/design/11_shared_assets.md)).
 
+## What tests these modules
+
+[**`tests/stdlib/`**](../tests/README.md) — 45 programs, one per rule or tight
+family, each stating what it should and should not derive, added by M1c
+[S1c.1.4](../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.4_stdlib_corpus.md).
+`ein test tests/stdlib/` runs the lot in 0.03 s and exits 1 if a claim is
+false.
+
+Before them, **38 of the 73 rules below had never fired** in any of 400 corpus
+runs — 33 never even loaded — and 20 more were reached by `examples/zebra.ein`
+alone, so a change to that one puzzle's encoding could have untested a whole
+module silently
+([`stdlib_census.md`](../plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md)).
+The claim that every rule is now activated is *measured*, not read off the
+directory: `python3 utils/stdlib_census.py --check` exits 1 while any rule is
+at zero.
+
+Adding a rule here therefore means adding a program there. It is the same
+discipline as the corpus's growth rule, one level up: a rule with no activating
+program is not tested, it is merely not contradicted.
+
 ## Location decision (S1.8.A4 — closes [Q30](../plans/open_questions.md#q30--universal-rule-library--import-mechanism))
 
 **Q30 → (c) hybrid.** Puzzle-*agnostic* vocabulary (the pattern macros today;

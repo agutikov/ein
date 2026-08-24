@@ -1,0 +1,49 @@
+;;; `std.typing` — the reflexive closure knob: `derive-reflexive`,
+;;; `reflexive-dom`, `reflexive-cod`.
+;;;
+;;; ── What the rules promise ─────────────────────────────────────────────────
+;;;
+;;;   (reflexive R)  ⟹ (reflexive-dom R) ∧ (reflexive-cod R)     derive-reflexive
+;;;   (R a b)        ⟹ (R a a)                                   reflexive-dom
+;;;   (R a b)        ⟹ (R b b)                                   reflexive-cod
+;;;
+;;; One knob, two per-position closers. The split exists because a *generic*
+;;; rule may not multi-assert — the load-time split renames it out of reach of
+;;; its own activator — so the fan-out has to be a separate, non-generic rule.
+;;; The same idiom is `std.algebra`'s `derive-join` and `std.bijection`'s
+;;; `bijective-setup`.
+;;;
+;;; ── Why anyone wants it ────────────────────────────────────────────────────
+;;;
+;;; A transitive hierarchy built by `(includes is-a is-a*)` + `(transitive
+;;; is-a*)` carries no self-loops, so it is a strict order rather than a
+;;; preorder. `(reflexive is-a*)` makes it one, which is what lets a typecheck
+;;; be written as the plain `(absent (?isR* X X))` reading instead of needing
+;;; `(neq …)` as an escape hatch for identical types — see
+;;; `../algebra/16_converse_illtyped_dom.ein`, which does carry the escape
+;;; hatch.
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;; One edge, A→B, and the two closers reach **different** endpoints from it:
+;;; `reflexive-dom` gives `(r A A)` and `reflexive-cod` gives `(r B B)`. So a
+;;; module that shipped only one of them, or that read one argument position
+;;; twice, leaves this file with a self-loop missing. Closing `r` at three
+;;; edges is what says both fired and that neither invented a fourth.
+;;;
+;;; The closers re-enter on their own output — `(r A A)` matches them again —
+;;; and derive what is already there, which is the convergence the module
+;;; claims and the finite extent below records.
+
+(import std.typing :symbols (derive-reflexive reflexive-dom reflexive-cod))
+
+(relation r Node Node :why "{?1} relates to {?2}")
+
+(reflexive r)
+
+(r A B)
+
+(query
+  :goal (r ?x ?y)
+  :no-hypothesis (r)
+  :expect (model (r A B) (r A A) (r B B)))

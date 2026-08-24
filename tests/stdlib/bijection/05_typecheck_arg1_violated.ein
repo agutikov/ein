@@ -1,0 +1,26 @@
+;;; `std.bijection/typecheck-arg-1` — a fact whose argument 1 is not an
+;;; `?isa`-member of the declared range is ⊥.
+;;;
+;;; `04_typecheck_arg0_violated.ein` with the error moved to the other
+;;; argument: `Ann` is a declared `Agent`, so the domain check is silent, and
+;;; `Puce` is no `Colour`. The pair is what makes either file mean anything —
+;;; a check that read the wrong argument position would pass one and fail the
+;;; other rather than passing both.
+
+(import std.bijection :symbols (typecheck-arg-0 typecheck-arg-1))
+
+(relation is-a  T T           :why "{?1} is a {?2}")
+(relation wears Agent Colour  :why "{?1} wears {?2}")
+
+(is-a Ann Agent)
+(is-a Red Colour)
+
+(typecheck-arg-0 wears is-a Agent)
+(typecheck-arg-1 wears is-a Colour)
+
+(wears Ann Puce)     ; ⊥ — Puce is not an `is-a` Colour
+
+(query
+  :goal (wears ?who ?colour)
+  :no-hypothesis (is-a wears)
+  :expect (false))

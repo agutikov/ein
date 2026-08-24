@@ -1,0 +1,24 @@
+;;; `std.algebra/antisymmetric` — R ∩ R° ⊆ 1': a mutual pair between
+;;; **distinct** endpoints is ⊥.
+;;;
+;;; The ⊥ direction; the guard's own direction — a self-loop, which
+;;; antisymmetry permits — is `08_checks_satisfied.ein`'s `loopy`.
+;;;
+;;; The pair `(before A B)` / `(before B A)` is what the `(neq ?a ?b)` guard
+;;; lets through, and it is the only thing in the file. A `before` that had
+;;; only the self-loop would be a model, which is exactly the difference
+;;; between this rule and `11_asymmetric_violated.ein`'s.
+
+(import std.algebra :symbols (antisymmetric))
+
+(relation before Node Node :why "{?1} comes before {?2}")
+
+(antisymmetric before)
+
+(before A B)
+(before B A)         ; ⊥ — A ≠ B, so the guard passes
+
+(query
+  :goal (before ?x ?y)
+  :no-hypothesis (before)
+  :expect (false))

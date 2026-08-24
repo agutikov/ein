@@ -9,6 +9,20 @@
 A corpus nobody runs is documentation. This wires it into `cargo test` and
 makes the coverage claim self-enforcing.
 
+**What [S1c.1.4](s1c.1.4_stdlib_corpus.md) already handed it, 2026-08-24.** The
+45 programs are corpus entries, so the sweep runs each one's `test` cell and
+holds its exit code to the banked golden — the first acceptance bullet, met by
+registration rather than by new code, and it cost the default sweep nothing
+measurable (889 cells, still 5.3 s). The second and third bullets are the
+stage's own work and neither exists yet: `utils/stdlib_census.py --check` exits
+1 while any rule is at zero and exits **0** today, but it is a script that takes
+36 s and shells out to a release binary, which is the shape the Notes below say
+decays. The third bullet reads "with no `(test …)`" because it predates
+[S1c.1.2](s1c.1.2_test_form.md); the form is `:expect` on a `(query …)`, and
+what it asks for is that a file under `tests/` carrying none of them fails —
+`ein test` already prints `nothing to check` and exits 2 in that case, so the
+check has an implementation to call rather than to write.
+
 ## Acceptance
 
 - The stdlib corpus runs in `cargo test --workspace`, and its runtime is

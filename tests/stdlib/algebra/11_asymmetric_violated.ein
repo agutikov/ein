@@ -1,0 +1,22 @@
+;;; `std.algebra/asymmetric` — R ∩ R° = 0: **any** mutual pair is ⊥, a
+;;; self-loop included.
+;;;
+;;; Strictly stronger than `antisymmetric`, and the difference is one missing
+;;; `(neq …)`: asymmetric = antisymmetric ∧ irreflexive. So this file's whole
+;;; content is the case its neighbour permits — a self-loop, and nothing else.
+;;; `(strictly-under A A)` refutes here and is a model in
+;;; `10_antisymmetric_violated.ein`'s reading, which is the only way to state
+;;; the difference between the two rules in facts.
+
+(import std.algebra :symbols (asymmetric))
+
+(relation strictly-under Node Node :why "{?1} is strictly under {?2}")
+
+(asymmetric strictly-under)
+
+(strictly-under A A)   ; ⊥ — the match is (?R ?a ?b) ∧ (?R ?b ?a) with a = b
+
+(query
+  :goal (strictly-under ?x ?y)
+  :no-hypothesis (strictly-under)
+  :expect (false))

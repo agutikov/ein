@@ -1,0 +1,70 @@
+;;; `std.slots/slot-elimination` — every slot but one excluded **for a value**
+;;; ⟹ the value is in that one.
+;;;
+;;; ── The mirror image of `03_fill.ein`, and why both files exist ────────────
+;;;
+;;;   slot-elimination   every SLOT but i is excluded for the value a ⟹ a at i
+;;;   slot-fill          every MEMBER of a type but v is excluded for slot i
+;;;                      ⟹ v at i
+;;;
+;;; R's symmetry makes the two conclusions the same edge, so the pair reads
+;;; like one rule written twice. The module insists it is not, and these two
+;;; files are that claim made checkable: each is the smallest state in which
+;;; **only one of them can fire**, and neither state is reachable from the
+;;; other by exchanging the arguments.
+;;;
+;;;   03_fill.ein         two pets excluded from **one seat**  → the seat is out
+;;;                       of candidates; no pet is out of seats
+;;;   04_elimination.ein  one pet excluded from **two seats**  → the pet is out
+;;;                       of seats; no seat is out of candidates
+;;;
+;;; ── What this program does to it ───────────────────────────────────────────
+;;;
+;;; Three seats, three pets, and two exclusions **across a row**:
+;;;
+;;;   ¬(co-loc Cat S1), ¬(co-loc Cat S2)   ⟹ (co-loc Cat S3)     slot-elimination
+;;;   S1: only Cat excluded, Dog and Rat open                     nothing filled
+;;;
+;;; so `slot-fill` is activated, matches nothing, and stays silent — the same
+;;; `forall` guard checked from the other side. The probe says it as a fact:
+;;; `(co-loc S1 Dog)` is in neither store, so no seat was filled out of a
+;;; single exclusion.
+;;;
+;;; What follows is short. Cat's placement takes S3's pet seat, excluding Dog
+;;; and Rat from it, and there the chain stops: two pets with two seats each.
+
+(import std.algebra :symbols (symmetric symmetric-negative-setup))
+(import std.slots   :symbols (slot-partition-setup))
+(import std.macro   :symbols (open))
+
+(relation type      T T :why "{?1} is a subtype of {?2}")
+(relation instance  T T :why "{?1} is an instance of {?2}")
+(relation co-loc    Attribute Attribute :why "{?1} and {?2} are in the same seat")
+(relation undecided Attribute Attribute :why "{?1} and {?2}: seat still open")
+
+(symmetric co-loc)
+(slot-partition co-loc instance type Attribute Seat)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat) (instance S3 Seat)
+(instance Ann Who) (instance Bob Who) (instance Cid Who)
+(instance Cat Pet) (instance Dog Pet) (instance Rat Pet)
+
+(not (co-loc Cat S1))
+(not (co-loc Cat S2))
+
+(rule probe-undecided ()
+  :match  (open (co-loc S1 Dog))
+  :assert (undecided S1 Dog)
+  :priority 500
+  :why    "S1 has one pet of three excluded — nothing may be filled into it")
+
+(query
+  :goal (co-loc ?a ?b)
+  :no-hypothesis (type instance co-loc undecided)
+  :expect (model (co-loc Cat S3) (co-loc S3 Cat)
+                 (not (co-loc Cat S1)) (not (co-loc Cat S2))
+                 (not (co-loc S3 Dog)) (not (co-loc S3 Rat))
+                 (undecided S1 Dog)))

@@ -8,6 +8,16 @@ saturation demos); see [`docs/api/`](../docs/api/) to drive them from Python.
 > live here; it moved to
 > [`docs/kernel/inference/zebra_walkthrough.md`](../docs/kernel/inference/zebra_walkthrough.md).
 
+> **The stdlib conformance corpus is not here.** M1c
+> [S1c.1.4](../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.4_stdlib_corpus.md)
+> added 45 programs — one per `std.*` rule or tight family, each stating what
+> it should and should not derive — and they live in
+> [`tests/stdlib/`](../tests/README.md). They are a suite rather than a set of
+> things to read: each exists to break, most are three declarations and two
+> facts, and nobody would learn ein-lang from them. What *is* here is the three
+> `features/1{0,1,2}_expect*.ein` fixtures, which demonstrate the form they are
+> written in.
+
 ## Zebra puzzle — two ontologies, one puzzle
 
 `zebra.ein` and `zebra2.ein` are not "classic vs modern". They encode the

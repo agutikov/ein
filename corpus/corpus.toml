@@ -717,6 +717,250 @@ group  = "stdlib"
 runs   = ["solve", "saturate", "render rules", "render constraints"]
 
 
+# ── stdlib conformance (M1c S1c.1.4) ────────────────────────
+#
+# `tests/stdlib/` — one program per stdlib rule or tight family, each stating
+# what it should derive and what it must not. They are *tests* rather than
+# examples, which is why they are not under `examples/`, and they are in the
+# `stdlib` group with the modules they exercise, because the group names a
+# subject here rather than a failure point.
+#
+# The run set is the `stdlib` group's plus **`test`**, which is the one that
+# can fail on the file's own account: it runs the `:expect` the file's query
+# carries and exits 1 when the claim is false. `saturate` is what the firing
+# census reads (`utils/stdlib_census.py` sweeps `solve` / `saturate` / `test`
+# runs under `--events`), and `solve` is the same claim checked from the
+# subcommand that renders a solution table.
+#
+# Every one of them is microseconds; the whole directory under `ein test` is
+# 0.02 s.
+
+[[entry]]
+path   = "tests/stdlib/algebra/01_copiers.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/02_compose.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/03_boolean.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/04_extensive.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/05_tag_lemmas.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/06_equational.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/07_schroder.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/08_checks_satisfied.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/09_irreflexive_violated.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/10_antisymmetric_violated.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/11_asymmetric_violated.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/12_connex_violated.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/13_empty_violated.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/14_functional_violated.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/15_injective_violated.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/16_converse_illtyped_dom.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/17_converse_illtyped_ran.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/18_totality_open_world.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/19_total_violated.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/20_surjective_violated.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/21_transitive.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/22_symmetric_negative.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/bijection/01_setup_and_negatives.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/bijection/02_domain_elimination.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/bijection/03_range_elimination.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/bijection/04_typecheck_arg0_violated.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/bijection/05_typecheck_arg1_violated.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/closure/01_infer_closure.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/elim/01_domain_elimination.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/elim/02_no_room_left.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/elim/03_typecheck_arg0_violated.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/elim/04_typecheck_arg1_violated.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/macro/01_forall.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/macro/02_open.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/slots/01_partition.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/slots/02_negative.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/slots/03_fill.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/slots/04_elimination.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/slots/05_no_room.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/slots/06_no_fill.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/slots/07_spatial_prune.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/slots/08_spatial_adjacent.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/typing/01_reflexive.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/typing/02_type_hierarchy_converse.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/typing/03_type_hierarchy_welltyped.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+
 # ── syntax probes ───────────────────────────────────────────
 #
 # The eighteen node-kind fixtures S1a.10.2 moved out of

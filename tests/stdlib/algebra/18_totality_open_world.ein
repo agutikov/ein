@@ -1,0 +1,73 @@
+;;; `std.algebra` — `total` and `surjective`, in the direction that is not
+;;; checked anywhere else: **the `forall` must not fire on a partially
+;;; excluded extent.**
+;;;
+;;; ── Why this is the family the census says to write first ──────────────────
+;;;
+;;; Ten stdlib rules quantify with `std.macro`'s `forall`, every one of them
+;;; documents itself as open-world-safe — "fires only when the stored negatives
+;;; cover the whole extent, never on a merely-undecided state" — and before
+;;; this file that claim was checked by nothing at all
+;;; (plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md §7).
+;;; It is also the claim whose failure is silent: a `forall` that fires one
+;;; negative early yields a **wrong model**, not a crash. `total` firing early
+;;; would refute a satisfiable puzzle; `domain-elimination` firing early would
+;;; force the wrong value and be believed.
+;;;
+;;; ── What the rules promise ─────────────────────────────────────────────────
+;;;
+;;;   (total R isa)       some a∈A with *every* b∈B explicitly excluded is ⊥
+;;;   (surjective R isa)  some b∈B with *every* a∈A explicitly excluded is ⊥
+;;;
+;;; The promise is not "R is total" — it is "R is *provably not* total **in the
+;;; closed-world reading**, because the stored negatives cover the extent".
+;;; That distinction is the whole open-world-safety argument and it lives in a
+;;; comment; here it is a fact.
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;; Two people, two foods, and exactly one exclusion:
+;;;
+;;;   (likes Bob Stew)        stated
+;;;   ¬(likes Ann Soup)       stated
+;;;   (likes Ann Stew)        **undecided** — neither stated nor denied
+;;;
+;;; So Ann's extent is *half* excluded. `total` must not fire, and the `open`
+;;; probe below is what says so in the model rather than in this comment:
+;;; `(undecided Ann Stew)` exists exactly when `(likes Ann Stew)` is in neither
+;;; store. Add `(not (likes Ann Stew))` and this file becomes
+;;; `19_total_violated.ein`.
+;;;
+;;; `surjective` is in the same state from the other side: Soup has Ann
+;;; excluded and Bob open.
+
+(import std.algebra :symbols (total surjective))
+(import std.macro   :symbols (forall open))
+
+(relation is-a      T T          :why "{?1} is a {?2}")
+(relation likes     Person Food  :why "{?1} likes {?2}")
+(relation undecided Person Food  :why "whether {?1} likes {?2} is still open")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+
+(total      likes is-a)
+(surjective likes is-a)
+
+(likes Bob Stew)
+(not (likes Ann Soup))
+
+;; Priority 500 — above everything the stdlib declares, so the probe reads the
+;; world after the rules under test have finished writing to it.
+(rule probe-undecided ()
+  :match  (open (likes Ann Stew))
+  :assert (undecided Ann Stew)
+  :priority 500
+  :why    "Ann's extent is only half excluded, so `total` has nothing to refute")
+
+(query
+  :goal (likes ?who ?what)
+  :no-hypothesis (is-a likes undecided)
+  :expect (model (likes Bob Stew)
+                 (not (likes Ann Soup))
+                 (undecided Ann Stew)))

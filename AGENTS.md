@@ -104,10 +104,28 @@ constrained-reasoning research.
   of truth. `MANIFEST.sha256` is what identifies a directory as the stdlib and
   what CI checks for drift; `ein-ir` embeds a copy with `include_dir!`, so the
   manifest is a build dependency and cannot go stale. Resolution: `$EIN_STDLIB`
-  → the checkout → the embedded copy.
+  → the checkout → the embedded copy. **What tests it is `tests/stdlib/`**
+  (below), and adding a rule here means adding a program there.
+- **`tests/`** — **the ein-lang test suites**, and since M1c S1c.1.4 a third
+  corpus root beside `examples/` and `stdlib/`: a `.ein` here with no
+  `corpus.toml` entry fails the same completeness check. Its one subject is
+  [`tests/stdlib/`](tests/README.md) — **45 programs, one per stdlib rule or
+  tight family**, each carrying an `:expect` so `ein test tests/` is the whole
+  suite in 0.03 s. They are deliberately *not* under `examples/`: that
+  directory is things to read, and these are three declarations and two facts
+  apiece that exist to break. Three idioms are worth knowing before writing a
+  new one — **naming a relation closes it** (which is how a rule with no guard
+  gets a negative case at all), **`(open …)` as a probe** at priority 500
+  (the only way to say a rule did *not* derive a negative, since stored
+  negatives are not closed), **a refutation rule gets two files** — one where
+  it fires and one where it is loaded, activated and satisfied — and **where
+  two rules reach one verdict, separate them by activation**, because an
+  expectation made of facts cannot say which one got there. The coverage claim
+  is measured by `utils/stdlib_census.py`, never by reading the directory, and
+  the suite's sensitivity by a 51-mutant sweep it catches 50 of.
 - **`corpus/`** — the **corpus**: `corpus.toml` (one entry per `.ein`, with
   the runs it is exercised under) plus `fuzz_findings/`. A file under
-  `examples/` or `stdlib/` with no entry fails a completeness check. What
+  `examples/`, `stdlib/` or `tests/` with no entry fails a completeness check. What
   runs it is `cargo test`, and [`corpus/README.md`](corpus/README.md) has the
   table of readers. It was `conformance/` until M1a S1a.10.3, and the
   `--events` protocol it also held is now
@@ -182,11 +200,16 @@ constrained-reasoning research.
   produced them left with the engine they measured. The nineteenth,
   **`stdlib_census.py`**, is [M1c](plans/m1c_external_validation/README.md)'s
   and the first check aimed at the *stdlib* rather than the engine: 73 rules
-  parsed out of `stdlib/*.ein`, then 128 corpus entries × 400 inference runs
-  under `--events`, `fire` counted by rule. Its answer —
-  [**38 of 73 rules never fire**](plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md),
-  and `examples/zebra.ein` is the sole activator of 20 more — is what M1c
-  exists to close.
+  parsed out of `stdlib/*.ein`, then every corpus entry × every declared
+  `solve` / `saturate` / `test` run under `--events`, `fire` counted by rule.
+  Its first answer, 2026-08-23 — [**38 of 73 rules never
+  fire**](plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md),
+  and `examples/zebra.ein` the sole activator of 20 more — is what M1c existed
+  to close, and S1c.1.4 closed it: **0 of 73** on the re-take of 2026-08-24,
+  180 entries and 557 runs
+  ([§11](plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md#11-the-re-take--2026-08-24-and-the-zero-set-is-empty)).
+  `--check` exits 1 while any rule is at zero, which is S1c.1.5's gate before
+  it is a test.
 - **`build.sh`** — **everything this repo builds, in one command**: the Rust
   workspace (`--release` by default, into `ein.rs/target/`) and then the three
   C baselines in `c/` (into the gitignored `build/`). `--debug`,

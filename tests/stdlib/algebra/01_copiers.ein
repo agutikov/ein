@@ -1,0 +1,74 @@
+;;; `std.algebra` — the copiers: `converse`, `imply1`, `imply2-fwd`,
+;;; `imply2-reverse`, `includes`.
+;;;
+;;; ── What the rules promise ─────────────────────────────────────────────────
+;;;
+;;;   (converse       R1 R2)   every R1 edge is mirrored into R2, endpoints swapped
+;;;   (imply2-reverse R1 R2)   the same body under a second name — an "ergonomic alias"
+;;;   (imply2-fwd     R1 R2)   every R1 edge is copied into R2, orientation kept
+;;;   (includes       R1 R2)   the same body again, read as "R2 includes R1"
+;;;   (imply1         R1 R2)   the 1-argument reading: a property implies a property
+;;;
+;;; Four of the five are two rules under four names. `converse ≡ imply2-reverse`
+;;; and `imply2-fwd ≡ includes` are alpha-identical bodies — the census's §8 —
+;;; so an expectation made of *facts* cannot tell the members of a pair apart,
+;;; and this file does not pretend to: each alias gets its own target relation,
+;;; and what is checked is that the four targets hold the four extents, not
+;;; which rule name got there.
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;; One authored edge, `(p A B)`, and one authored property, `(marked A)`, are
+;;; the whole input. Five activators fan it into five targets.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; A copier has no guard, so it has no "must not fire" case in the census's
+;;; sense (§7): its only *must not* is **scope** — a rule activated for
+;;; `p → p-fwd` must not touch any other relation. That is a relation-closure
+;;; claim and nothing else can state it, which is why S1c.1.2's rule 3 exists.
+;;; `p-untouched` is how the claim is made checkable: it is an operand of
+;;; nothing, it carries one authored edge, and the expectation closes it there.
+;;; A copier that leaked into it would show up as a surplus `(p-untouched A B)`.
+;;;
+;;; (Closing an *empty* relation is what the form cannot do — Q-M1c.6 — so the
+;;; scope claim is written with one edge rather than with none.)
+
+(import std.algebra :symbols (converse imply1 imply2-fwd imply2-reverse includes))
+
+(relation instance    Thing Type)
+(relation p           Node Node  :why "{?1} points at {?2}")
+(relation p-conv      Node Node)   ; = p°, by `converse`
+(relation p-rev       Node Node)   ; = p°, by `imply2-reverse` — the same body
+(relation p-fwd       Node Node)   ; ⊇ p, by `imply2-fwd`
+(relation p-inc       Node Node)   ; ⊇ p, by `includes` — the same body
+(relation p-untouched Node Node)   ; an operand of nothing: the scope claim
+(relation marked      Node)        ; 1-arg, for `imply1`
+(relation flagged     Node)
+
+(instance A Node) (instance B Node)
+
+(converse       p p-conv)
+(imply2-reverse p p-rev)
+(imply2-fwd     p p-fwd)
+(includes       p p-inc)
+(imply1         marked flagged)
+
+(p A B)
+(marked A)
+(p-untouched B A)          ; authored, and the only edge its relation may hold
+
+(query
+  :goal (p-conv ?x ?y)
+  ;; A saturation program: the model is the saturated root. Without this the
+  ;; search speculates `p` edges and every closed extent below is a claim about
+  ;; a different world.
+  :no-hypothesis (instance p p-conv p-rev p-fwd p-inc p-untouched marked flagged)
+  :expect (model (p           A B)
+                 (p-conv      B A)
+                 (p-rev       B A)
+                 (p-fwd       A B)
+                 (p-inc       A B)
+                 (p-untouched B A)
+                 (marked      A)
+                 (flagged     A)))

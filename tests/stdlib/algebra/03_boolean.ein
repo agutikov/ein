@@ -1,0 +1,65 @@
+;;; `std.algebra` — the Boolean lattice on the *intrinsic* side: `meet`,
+;;; `difference`, and the `join` fan-out `derive-join` / `join-l` / `join-r`.
+;;;
+;;; ── What the rules promise ─────────────────────────────────────────────────
+;;;
+;;;   (meet       R1 R2 R3)   R3 ⊇ R1∩R2 — a pair present in both operands
+;;;   (difference R1 R2 R3)   R3 ⊇ R1∖R2 — in R1 and, under NAF, not in R2
+;;;   (join       R1 R2 R3)   R3 ⊇ R1∪R2, and it is *three* rules:
+;;;                             derive-join  fans the operand fact into
+;;;                             join-l / join-r, the two per-operand copiers
+;;;
+;;; `join` is a fan-out rather than one rule with an `(or …)` because a generic
+;;; rule whose `:match` is a disjunction load-splits into `join__or0` /
+;;; `join__or1`, names its own `(join …)` activator can never reach. The
+;;; three-rule shape is the module's workaround, and this file is where it is
+;;; checked as one mechanism: `derive-join` is only observable *through* the
+;;; two copiers it activates.
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;; Two operands sharing exactly one pair:
+;;;
+;;;   owns   = {(Ann Car), (Ann Bike)}
+;;;   rents  = {(Ann Car), (Bob Bike)}
+;;;
+;;; so the three answers are all different, and all three are wrong in a
+;;; different way if the rule is: ∩ = {(Ann Car)}, ∖ = {(Ann Bike)},
+;;; ∪ = all three.
+;;;
+;;; ── What the expectation means ─────────────────────────────────────────────
+;;;
+;;; `difference` is the one rule here with a guard, and the guard's failing
+;;; case is `(Ann Car)` — present in `rents`, so it must **not** reach
+;;; `owns-only`. Naming `owns-only` closes it, so that "must not" is checked
+;;; rather than assumed: a `difference` that ignored its `absent` would put a
+;;; second edge there and this file would fail.
+;;;
+;;; The closed-world caveat the module attaches to `difference` is real and is
+;;; discharged by construction here — `rents` is authored and no rule concludes
+;;; into it, so its extent is saturation-determined and the NAF reading is
+;;; sound. `04_extensive.ein` is where a program has to say so out loud.
+
+(import std.algebra :symbols (meet difference derive-join join-l join-r))
+
+(relation owns      Person Thing :why "{?1} owns {?2}")
+(relation rents     Person Thing :why "{?1} rents {?2}")
+(relation shares    Person Thing)   ; owns ∩ rents
+(relation owns-only Person Thing)   ; owns ∖ rents
+(relation either    Person Thing)   ; owns ∪ rents
+
+(meet       owns rents shares)
+(difference owns rents owns-only)
+(join       owns rents either)
+
+(owns  Ann Car)  (owns  Ann Bike)
+(rents Ann Car)  (rents Bob Bike)
+
+(query
+  :goal (shares ?who ?what)
+  :no-hypothesis (owns rents shares owns-only either)
+  :expect (model (owns      Ann Car) (owns  Ann Bike)
+                 (rents     Ann Car) (rents Bob Bike)
+                 (shares    Ann Car)
+                 (owns-only Ann Bike)
+                 (either    Ann Car) (either Ann Bike) (either Bob Bike)))

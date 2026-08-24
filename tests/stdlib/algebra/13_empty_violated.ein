@@ -1,0 +1,23 @@
+;;; `std.algebra/empty` — R = 0: any edge at all in a relation declared empty
+;;; is ⊥.
+;;;
+;;; The smallest check in the module — no guard, no types, one premise — and
+;;; the one whose satisfied direction an expectation cannot state, because a
+;;; relation with no facts is a relation `:expect` cannot name
+;;; (Q-M1c.6, in plans/m1c_external_validation/open_questions.md).
+;;; `08_checks_satisfied.ein` carries `(empty nothing)` for exactly that
+;;; reason: there the claim is the *verdict* — a model exists, so `empty` did
+;;; not fire — and here it is the fact.
+
+(import std.algebra :symbols (empty))
+
+(relation forbidden Node Node :why "{?1} is forbidden to {?2}")
+
+(empty forbidden)
+
+(forbidden A B)      ; ⊥
+
+(query
+  :goal (forbidden ?x ?y)
+  :no-hypothesis (forbidden)
+  :expect (false))

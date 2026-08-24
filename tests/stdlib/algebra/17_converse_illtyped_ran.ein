@@ -1,0 +1,27 @@
+;;; `std.algebra/converse-illtyped-ran` — the other side of
+;;; `16_converse_illtyped_dom.ein`: a `(converse R1 R2)` whose `domain(R1)` is
+;;; neither `range(R2)` nor a subtype of it is ⊥.
+;;;
+;;; `owns : Person → Pet` and `owned-by : Pet → Place`. The **range** side is
+;;; now right — `Pet` on both — and the **domain** side is wrong: `Person` is
+;;; not `Place`. Both checks are activated; only this one can fire.
+;;;
+;;; The pair of files is what makes either of them mean anything. Each rule
+;;; refutes on its own error and stays silent on its sibling's, so a check that
+;;; compared the wrong two type positions would pass one file and fail the
+;;; other rather than passing both.
+
+(import std.algebra :symbols (converse-illtyped-dom converse-illtyped-ran))
+
+(relation is-a*    T T :why "{?1} is a subtype of {?2}")
+(relation owns     Person Pet   :why "{?1} owns {?2}")
+(relation owned-by Pet    Place)
+
+(converse owns owned-by)
+(converse-illtyped-dom owns owned-by is-a*)   ; well-typed on its side: silent
+(converse-illtyped-ran owns owned-by is-a*)
+
+(query
+  :goal (owns ?who ?what)
+  :no-hypothesis (is-a* owns owned-by)
+  :expect (false))

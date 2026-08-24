@@ -1,0 +1,38 @@
+;;; `std.elim/typecheck-arg-0` — argument 0 is not an `?isa`-member of the
+;;; declared domain, so ⊥. The **positional** module's copy.
+;;;
+;;; It is byte-identical to `std.bijection`'s, up to alpha-renaming, and it is
+;;; not an alias: the priorities differ, **110 here against 220 there**, and
+;;; the census's §8 records that as a divergence nothing has ever had to
+;;; reconcile, because a puzzle cannot import both — a same-name differing body
+;;; is a load conflict. `std.bijection`'s 220 is documented (so that the NAF
+;;; evaluates after a transitive closure at 200 has saturated) and this one's
+;;; 110 is not. Whether that is a bug is outside this file; that both now run,
+;;; and can be compared, is what it is for.
+;;;
+;;; The activator is declared by hand — the positional module has no
+;;; `typecheck-setup`, so this is the only way in, and it is also what keeps
+;;; the ⊥ attributable: nothing else in the file can refute, and the sibling
+;;; check is not even loaded.
+
+(import std.elim :symbols (typecheck-arg-0))
+
+(relation is-a  T T        :why "{?1} is a {?2}")
+(relation holds Slot Value :why "{?1} holds {?2}")
+
+(is-a S1 Slot)
+(is-a V1 Value)
+
+(typecheck-arg-0 holds is-a Slot)   ; and *not* arg-1 — see below
+
+;; Argument 1 is `S1`, a perfectly good Slot, so a check that read the wrong
+;; argument position would find nothing to complain about and this file would
+;; have a model. That is the whole reason the two checks are activated in
+;; separate files: `(holds Nowhere V1)` refutes under *either* reading, since
+;; a Value is no Slot either, and would have said nothing about which one ran.
+(holds Nowhere S1)   ; ⊥ — Nowhere is not an `is-a` Slot
+
+(query
+  :goal (holds ?slot ?value)
+  :no-hypothesis (is-a holds)
+  :expect (false))

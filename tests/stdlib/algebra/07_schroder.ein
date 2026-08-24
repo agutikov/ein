@@ -1,0 +1,75 @@
+;;; `std.algebra` — the Schröder / cycle law (Tarski B10), as the two rules
+;;; that run it backwards: `compose-negative-s` and `compose-negative-r`.
+;;;
+;;; ── What the rules promise ─────────────────────────────────────────────────
+;;;
+;;;   (compose-negative-s R S T)  (R a b) ∧ ¬(T a c) ⟹ ¬(S b c)
+;;;   (compose-negative-r R S T)  (S b c) ∧ ¬(T a c) ⟹ ¬(R a b)
+;;;
+;;; For a composite T = R;S that is **closed** — composition is the only source
+;;; of T — a missing composite forces a missing factor. This is the generic
+;;; form of the negative propagation a puzzle writes by hand for one clue
+;;; shape, and it is opt-in per triple, separately from `compose`, because the
+;;; closed-T obligation is stricter than composition's.
+;;;
+;;; ── The third state, which is what this file is really about ───────────────
+;;;
+;;; Both rules take a **stored negative as a premise**, not a NAF guard. That
+;;; is the distinction ein's three states exist for: `(not (T a c))` — stated
+;;; to be false — is a premise these rules may read, while "no `(T a c)` fact
+;;; is present" is merely undecided and is *not*. A rule that confused the two
+;;; would propagate exclusions out of ignorance, and every one of them would
+;;; look exactly like a sound one in the model.
+;;;
+;;; Stored negatives are the one thing an `:expect` does **not** close
+;;; (S1c.1.2's rule 3, second clause), so "no spurious exclusion was derived"
+;;; cannot be said by listing the ones that were. It is said here by
+;;; `probe-undecided` instead: a four-line local rule whose whole body is
+;;; `std.macro`'s `(open …)` — true exactly when a fact is neither asserted nor
+;;; denied — turned into an ordinary positive fact the expectation can close.
+;;; `(t A G)` is undecided, so `(s B G)` must stay undecided too; if
+;;; `compose-negative-s` read absence as negation, `undecided` would be empty
+;;; and this file would fail on a missing fact.
+;;;
+;;; Its priority is 500, above elimination's 400 and everything the stdlib
+;;; declares, because a probe that reads the world has to be the last thing to
+;;; read it.
+;;;
+;;; ── What this program does to them ─────────────────────────────────────────
+;;;
+;;; Two disjoint triples over one composite, so each rule fires alone:
+;;;
+;;;   (r A B) + ¬(t A C)  ⟹ ¬(s B C)      compose-negative-s
+;;;   (s E F) + ¬(t D F)  ⟹ ¬(r D E)      compose-negative-r
+;;;
+;;; and one node, `G`, that is in neither.
+
+(import std.algebra :symbols (compose-negative-s compose-negative-r))
+(import std.macro   :symbols (open))
+
+(relation r         Node Node :why "{?1} steps to {?2}")
+(relation s         Node Node)
+(relation t         Node Node)   ; = r;s, and closed — that is the obligation
+(relation undecided Node Node :why "{?1}→{?2} is neither asserted nor denied")
+
+(compose-negative-s r s t)
+(compose-negative-r r s t)
+
+(r A B)  (not (t A C))          ; ⟹ (not (s B C))
+(s E F)  (not (t D F))          ; ⟹ (not (r D E))
+
+;; `(t A G)` is undecided — never asserted, never denied — so nothing may be
+;; concluded about `(s B G)` from it.
+(rule probe-undecided ()
+  :match  (open (s B G))
+  :assert (undecided B G)
+  :priority 500
+  :why    "(s B G) is still open: no exclusion was derived from an absent (t A G)")
+
+(query
+  :goal (undecided ?x ?y)
+  :no-hypothesis (r s t undecided)
+  :expect (model (r A B) (s E F)
+                 (not (s B C))
+                 (not (r D E))
+                 (undecided B G)))
