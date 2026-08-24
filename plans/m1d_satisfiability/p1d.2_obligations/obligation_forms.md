@@ -744,6 +744,14 @@ all, and the verdict word itself moves only when
 [Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
 is decided, never as a side effect.
 
+**Decided 2026-08-24** — the stack above is the phase plan.
+[S1d.2.3](s1d.2.3_the_form.md) records the form decisions (including the
+argument shape: `forall`'s dual triple, settled by the numeral-free
+revision), and the stage files execute the strata in order: report
+([S1d.2.4](s1d.2.4_obligations_in_the_saturator.md)), generator
+([S1d.2.5](s1d.2.5_hypotheses_from_obligations.md)), verdict
+([S1d.2.6](s1d.2.6_verdicts_counters_corpus.md)).
+
 **What that leaves open, deliberately**: `L ≥ 2` and `U` have no clause
 representation, so they stay counters — and by
 [P1c.1](../../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance)'s

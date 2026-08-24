@@ -233,13 +233,18 @@ generator is the one thing that would change that.
 ## How deep this plan is
 
 **P1d.10 is at stage depth** — five stage files, written when it was P1a.12,
-moved unchanged then and renumbered (not rewritten) on 2026-08-23. **P1d.2,
-P1d.3 and P1d.4 are phase READMEs only.** That is on
-purpose: the note they come from opens with *"no code, no changes — here we
-only read and discuss ideas"*, and turning a discussion into fifteen task ids
-would put decisions in the plan that the user has not made. What is written is
-the decomposition, the dependencies and the questions; the stage files are
-written when the milestone starts.
+moved unchanged then and renumbered (not rewritten) on 2026-08-23. **P1d.2
+reached stage depth on 2026-08-24**: six stage files, written *after* the
+user took the decisions the phase README had reserved — the form (G), the
+naming (P3, probe rename executed), numeral-free bounds, the supersession
+ladder — all recorded on
+[`obligation_forms.md`](p1d.2_obligations/obligation_forms.md). **P1d.3 and
+P1d.4 are phase READMEs only**, still on purpose: the note they come from
+opens with *"no code, no changes — here we only read and discuss ideas"*,
+and turning a discussion into task ids would put decisions in the plan that
+the user has not made. What is written there is the decomposition, the
+dependencies and the questions; those stage files are written when their
+phases start.
 
 ## Acceptance for the milestone
 

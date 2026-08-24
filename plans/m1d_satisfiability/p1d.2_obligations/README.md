@@ -8,10 +8,15 @@ measures whether the corpus needs this at all — and
 promise inventory, which is the same audit this phase's first stage would
 otherwise have to run itself.
 
-**Depth: this is a phase README, not a stage plan.** See the milestone's
-[§ How deep this plan is](../README.md#how-deep-this-plan-is) — the stage files
-are written when the phase starts, because the note this phase comes from is a
-discussion note and the decisions below are the user's to make.
+**Depth: at stage depth since 2026-08-24.** The decisions this README said
+were the user's to make were made by the user, in-session, on
+[`obligation_forms.md`](obligation_forms.md): the form is **G** (`:assert
+open`, the per-KB verdict tally), the naming is **P3** with the probe rename
+already executed (`7e1192c` — the third-state macro is `unknown`), bounds are
+**numeral-free** (pairings to reference extents, never `L`/`U` operands), and
+**obligations supersede `:hrules`** when a query carries none. The six stage
+files below are written against those decisions; what each still leaves open
+is stated in the file, not here.
 
 ---
 Ideas
@@ -64,47 +69,52 @@ is the mechanism the milestone README's argument turns on.
 
 | stage | title | est. |
 |---|---|---|
-| S1d.2.1 | What each property enforces today, rule by rule | 3 d |
-| S1d.2.2 | Domains: what a requirement quantifies over, and what closes it | 3 d |
-| S1d.2.3 | The obligation — form, surface, and where it lives | 3 d |
-| S1d.2.4 | Obligations in the saturator | 4 d |
-| S1d.2.5 | Hypotheses from obligations | 3 d |
-| S1d.2.6 | What it changes: verdicts, counters, corpus | 2 d |
+| [S1d.2.1](s1d.2.1_property_audit.md) | What each property enforces today, rule by rule | 3 d |
+| [S1d.2.2](s1d.2.2_domains.md) | Domains: what a requirement quantifies over, and what closes it | 3 d |
+| [S1d.2.3](s1d.2.3_the_form.md) | The obligation — form, surface, and where it lives | 3 d |
+| [S1d.2.4](s1d.2.4_obligations_in_the_saturator.md) | Obligations in the saturator | 4 d |
+| [S1d.2.5](s1d.2.5_hypotheses_from_obligations.md) | Hypotheses from obligations | 3 d |
+| [S1d.2.6](s1d.2.6_verdicts_counters_corpus.md) | What it changes: verdicts, counters, corpus | 2 d |
 
 **S1d.2.1** is an audit, not a design: per stdlib rule, which half of which
 property it implements, in which form, and which corpus entries activate it.
 It exists because the note's premise ("only half of each property is stated")
 is *nearly* right, and the phase's whole shape depends on exactly how nearly.
 
-**S1d.2.2** is the one that can sink the rest. A requirement quantifies over a
-domain, so the engine has to know the domain's extent, whether it is closed,
-and whether new objects may appear. Ein has `is-a` extents and the `unknown`
-macro; the stdlib is deliberately **is-a-free in rule bodies** — the hierarchy
-relation arrives as an activator parameter (`?isa`) — and an obligation has to
-arrive the same way or it drags a type system into the kernel that
-[S1.7.23](../../../docs/history/m1a_rust/README.md) said would not exist.
+**S1d.2.2** was the one that could sink the rest; the decided form drained
+most of that. The witness domain is the obligation's **own guard**,
+`?isa`-parameterised the way every stdlib scan already is — is-a-free, no
+kernel type system ([S1.7.23](../../../docs/history/m1a_rust/README.md)
+holds) — and discharge needs no closure at all. What the stage still owns:
+the refutation division (unreachable stays with the `forall` scans), the
+open-extent regime (`features/04_open`'s 14.3 GB wall), and the
+closed-and-owing corner.
 
-**S1d.2.3** decides whether an obligation is a *fact* (a derived marker the
-rules read), a *kernel object* (tracked by the saturator alongside the fact
-store), or a *rule shape* (something `forall` already almost expresses). Each
-costs somewhere different: a fact costs matcher time, a kernel object costs
-the port's data model, a rule shape costs nothing new and probably cannot
-carry the candidate set.
+**S1d.2.3** was the decision stage; the decision was taken 2026-08-24 —
+**G, a rule shape with a reserved verdict atom**, argument shape `forall`'s
+dual (`(open ?b G B)`, form-bound variable, no numerals) plus the bare
+degenerate. Its file records what was decided against (B's carrier fact, C's
+head, D's numeric sugar, E now, F entirely) and implements what remains:
+reserving `open`, loading and round-tripping the two forms, inert until the
+next stage.
 
-**S1d.2.4** is the engine work: the candidate set per open obligation,
-narrowed as negatives arrive, closed at one, refuted at zero, and reported at
-quiescence. The invalidation problem is the one
-[design/06](../../../docs/history/m1a_rust/design/06_saturation.md)'s boundary already has —
-`_admit_from_boundary`'s re-query cost was 72 % of an exhaustive `zebra2` run
-before P1a.6 — so an obligation index that has to be rebuilt at every
-quiescence is a mechanism that pays for itself in the same coin.
+**S1d.2.4** is the engine work, and *only* the report stratum: obligation
+rules evaluated per quiescence at the boundary — the discipline
+[design/06](../../../docs/history/m1a_rust/design/06_saturation.md)'s
+`absents_still_pass` already applies, and whose re-query cost was 72 % of an
+exhaustive `zebra2` before P1a.6, which is why the stage carries a cost guard
+— tallied, never stored, reported through `--events` / `--json-summary` / the
+trace. Narrowing, closing and refuting stay with the scans; no verdict word
+moves here.
 
-**S1d.2.5** is the payoff and the risk: generating hypotheses from an
-obligation's candidate set instead of from `alive`. Mutually exclusive,
-jointly exhaustive branches — and a different traversal, therefore different
-counters, therefore the decision
-[Q-M1a.18](../../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
-had to take before a fork was allowed to narrate less.
+**S1d.2.5** is the payoff and the risk, now with the decision behind it: the
+**supersession ladder** (`:hrules` override → obligations → blind), branching
+on one obligation's candidates — mutually exclusive, jointly exhaustive — and
+a different traversal, therefore different counters, therefore the
+[Q-M1a.18](../../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)-shaped
+re-baseline its file schedules, plus the fixture the rung needs
+(`zebra2-obligations.ein`, the theory driving the search with no hrule in
+the file).
 
 ## Acceptance for the phase
 

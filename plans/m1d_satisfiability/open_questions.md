@@ -18,11 +18,11 @@ about a word the engine already says.
 | Q | title | status |
 |---|---|---|
 | [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1d.10](p1d.10_exhaustive_search/README.md); `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
-| [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | open — the note says **first-class obligation**; the cost is a kernel concept |
-| [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | open — no answer, no lower bound; `is-a` extents and `unknown` are what exists |
-| [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | open — [Q-M1a.18](../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)-shaped; the answer moves every counter |
+| [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | **decided 2026-08-24** — (c) a rule shape asserting the reserved verdict atom (form G); [S1d.2.3](p1d.2_obligations/s1d.2.3_the_form.md) records it |
+| [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | narrowed 2026-08-24 — the witness domain is the obligation's own guard; [S1d.2.2](p1d.2_obligations/s1d.2.2_domains.md) owns the residue (closure, open extents) |
+| [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **decided in principle 2026-08-24** — the user: obligations supersede `:hrules`; [S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) executes it with the re-baseline |
 | [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | open — [P1d.3](p1d.3_model_sets/README.md); "enumerate, and say so" is an acceptable answer |
-| [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | open — ten corpus entries already say it; arrived from M1a [S1a.9.0](../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced) |
+| [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | open — ten corpus entries already say it; [S1d.2.6](p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md) closes it: the word is decided (`Open`), the partition is measured first |
 | [Q-M1d.7](#q-m1d7--may-a-program-require-its-own-model-count) | May a program require its own model count? | open — [P1d.4](p1d.4_model_set_closure/README.md); arrived from M1c [S1c.1.2](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects) on 2026-08-24 |
 
 ---
@@ -63,6 +63,15 @@ instead of the constant.
 
 ## Q-M1d.2 — Where does a requirement live?
 
+**Decided 2026-08-24 — (c), a rule shape**, with one reserved verdict atom
+(`open`) that rules assert and the engine tallies per quiescent KB: form G on
+[`obligation_forms.md`](p1d.2_obligations/obligation_forms.md), recorded in
+[S1d.2.3](p1d.2_obligations/s1d.2.3_the_form.md). The candidate set is
+neither stored nor narrowed in place — recomputed from the obligation's own
+guard when wanted — which dissolves the (a)/(b) cost trade below rather than
+picking a side of it. The text that follows stands as the record of the
+question as asked.
+
 The note's headline is a design instruction: existence requirements are
 **first-class obligations**, not generators of arrows. Three places that could
 live, and they cost in different currencies:
@@ -89,6 +98,13 @@ The last one is a performance question with a measured precedent —
 P1a.6 — so "recompute it" is not automatically cheap.
 
 ## Q-M1d.3 — What closes a domain?
+
+**Narrowed 2026-08-24**: for obligations, C is the obligation's own guard —
+`(open ?b G B)`, `?isa`-parameterised, `forall`'s dual — so *stating* and
+*discharging* a requirement needs no closed domain at all. What remains is
+what needed closure all along: refutation (which stays with the `forall`
+scans) and the open-extent regime;
+[S1d.2.2](p1d.2_obligations/s1d.2.2_domains.md) banks the contract.
 
 `∀x ∈ D. ∃y ∈ C. R(x,y)` is unanswerable without knowing D and C. The note
 lists the sub-questions: what is in the set, is the set closed, and may new
@@ -119,6 +135,13 @@ hard-codes `is-a` would put a type system in the kernel, which
 [S1.7.23](../../docs/history/m1a_rust/README.md) settled it would not have.
 
 ## Q-M1d.4 — May an obligation-driven generator change the traversal?
+
+**Decided in principle 2026-08-24**, by the user: *"the obligations mechanism
+also has to supersed the hrule and :hrules, so if no :hrules in query — then
+hypothesis must be generated from obligations"* — the generator ladder in
+[`obligation_forms.md` § Superseding](p1d.2_obligations/obligation_forms.md).
+[S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) executes
+it, and the re-baseline discipline below is how.
 
 Generating hypotheses from an obligation's candidate set instead of from
 `alive` produces branches that are mutually exclusive and jointly exhaustive —
@@ -312,6 +335,13 @@ none of them would be lying.
 
 **No recommendation from this stage** — S1a.9.0 measured, and changing a
 verdict word is a semantic decision that moves fixtures across the corpus.
+
+**2026-08-24: [S1d.2.6](p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md)
+owns the close** — candidate (c) with the user's word (`Open — owes n`,
+from the `open` / `false` / `satisfy` triple), and the ten entries
+partitioned by the openness census *before* any word moves: owes-something ⇒
+`Open`, owes-nothing ⇒ the vacuous-completion question, scan-fires ⇒ today's
+word was right.
 
 ### The reproducer
 
