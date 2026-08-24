@@ -1177,7 +1177,10 @@ mod tests {
     fn an_unknown_query_keyword_is_a_load_error() {
         let e = err("(relation p T P)\n(p A H)\n(query :goal (p A ?h) :expct none)");
         assert!(e.contains("unknown keyword :expct"), "{e}");
-        assert!(e.contains(":expect"), "the message lists the allow-list: {e}");
+        assert!(
+            e.contains(":expect"),
+            "the message lists the allow-list: {e}"
+        );
     }
 
     /// `:mode` is in the allow-list and read by nothing. Three corpus files
@@ -1220,9 +1223,15 @@ mod tests {
     fn a_malformed_expect_is_a_load_error() {
         for (src, want) in [
             ("(query :goal (a ?x) :expect all)", "expected `(false)`"),
-            ("(query :goal (a ?x) :expect (models (a b)))", "expected `(false)`"),
+            (
+                "(query :goal (a ?x) :expect (models (a b)))",
+                "expected `(false)`",
+            ),
             ("(query :goal (a ?x) :expect none)", "expected `(false)`"),
-            ("(query :goal (a ?x) :expect (model (a ?x)))", "not a pattern"),
+            (
+                "(query :goal (a ?x) :expect (model (a ?x)))",
+                "not a pattern",
+            ),
         ] {
             let e = err(src);
             assert!(e.contains(want), "{src}: {e}");

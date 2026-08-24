@@ -272,12 +272,19 @@ constrained-reasoning research.
 `./build.sh` builds everything first (see above); this runs it.
 
 ```sh
-cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the whole gate
+./run_tests.sh                                               # fmt, then the whole gate
+cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the tests alone
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 2 slow entries
 EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
 ```
+
+**`./run_tests.sh` runs `cargo fmt --all --check` first** (M1c S1c.1.5, ~1 s;
+`--no-fmt` skips it, a missing `rustfmt` is exit 127 rather than a skip). It
+joined the gate because it had already drifted — three files were unformatted
+when it was first run and nothing would ever have said so. `cargo test
+--workspace` on its own does *not* check formatting.
 
 Everything runs one engine. `cargo test --workspace` is the gate — the corpus
 sweep through the CLI, the shape digests, the goldens, the manifest's own

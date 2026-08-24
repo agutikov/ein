@@ -2,8 +2,9 @@
 #
 # run_tests.sh — the gate.
 #
-#     ./run_tests.sh                 # cargo test --workspace
+#     ./run_tests.sh                 # cargo fmt --check, then cargo test --workspace
 #     ./run_tests.sh --slow          # + the 12 slow corpus cells, + 8 id seeds
+#     ./run_tests.sh --no-fmt        # tests only
 #     ./run_tests.sh -p ein-ir       # anything else is forwarded to cargo test
 #
 # **This was a three-phase runner until M1a S1a.10.5**, and each phase went
@@ -51,6 +52,14 @@
 #   EIN_BLESS=1 ./run_tests.sh          # re-bank every golden
 #   EIN_CORPUS_SLOW=1 ./run_tests.sh    # the 2 slow corpus entries, 12 cells
 #   EIN_ID_SEEDS=8    ./run_tests.sh    # more id-space permutations
+#
+# **Formatting joined the gate at M1c S1c.1.5**, and it joined it because it
+# had already drifted: three files were unformatted when the check was first
+# run, all three from this milestone's own `:expect` work, and nothing
+# anywhere would ever have said so. It costs about a second, it runs first
+# because a formatting failure is the cheapest one to read, and `--no-fmt`
+# turns it off for a targeted iteration. Nothing turns it off silently — a
+# missing `rustfmt` is exit 127 here, the same as a missing `cargo` or `dot`.
 
 set -euo pipefail
 
@@ -58,7 +67,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANIFEST="${SCRIPT_DIR}/ein.rs/Cargo.toml"
 
 if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-    sed -n '3,47p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+    # The header, to its own end — a line number here goes stale the first
+    # time somebody adds a paragraph, and one had: `3,47p` stopped mid-sentence.
+    awk 'NR>2 && !/^#/ {exit} NR>2 {sub(/^# ?/, ""); print}' "${BASH_SOURCE[0]}"
     exit 0
 fi
 
@@ -79,12 +90,29 @@ fi
 # re-priced the tier and 19 until T1a.7.2.0 took `branching/07` out of it —
 # `corpus/corpus.toml` is the authority and `cost_ms` is the measurement.
 ARGS=()
+RUN_FMT=1
 for arg in "$@"; do
     case "${arg}" in
-        --slow) export EIN_CORPUS_SLOW=1 EIN_ID_SEEDS="${EIN_ID_SEEDS:-8}" ;;
-        *)      ARGS+=( "${arg}" ) ;;
+        --slow)   export EIN_CORPUS_SLOW=1 EIN_ID_SEEDS="${EIN_ID_SEEDS:-8}" ;;
+        --no-fmt) RUN_FMT=0 ;;
+        *)        ARGS+=( "${arg}" ) ;;
     esac
 done
+
+if [[ "${RUN_FMT}" == 1 ]]; then
+    if ! cargo fmt --version >/dev/null 2>&1; then
+        echo "error: no rustfmt — the formatting gate did not run." >&2
+        echo "       'rustup component add rustfmt', or pass --no-fmt." >&2
+        exit 127
+    fi
+    echo "── cargo fmt --all --check ────────────────────────────────────" >&2
+    if ! cargo fmt --manifest-path "${MANIFEST}" --all --check; then
+        echo >&2
+        echo "error: formatting drift above — the diff is what rustfmt would do." >&2
+        echo "       Fix with: cargo fmt --manifest-path ein.rs/Cargo.toml --all" >&2
+        exit 1
+    fi
+fi
 
 echo "── cargo test --workspace ─────────────────────────────────────" >&2
 exec cargo test --manifest-path "${MANIFEST}" --workspace \

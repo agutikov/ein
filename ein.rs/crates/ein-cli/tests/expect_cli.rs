@@ -118,9 +118,9 @@ fn the_load_negatives_are_refused_with_their_banked_message() {
         "expect_is_a_pattern",
     ] {
         let ein_path = format!("examples/broken/load/{name}.ein");
-        let want = std::fs::read_to_string(repo_root().join(format!(
-            "examples/broken/load/{name}.expected"
-        )))
+        let want = std::fs::read_to_string(
+            repo_root().join(format!("examples/broken/load/{name}.expected")),
+        )
         .expect("a .expected beside the fixture");
         let r = ein(&["solve", &ein_path]);
         assert_eq!(r.code, 1, "{name}: {}{}", r.out, r.err);

@@ -115,9 +115,9 @@ pub fn parse(ast: &Ast, node: NodeId) -> Result<Expectation, String> {
             "false" => {
                 ":expect false — ⊥ is spelled `(false)`, as it is in every `:assert`".to_string()
             }
-            other => format!(
-                ":expect {other} — expected `(false)`, `(model …)` or `(or (model …) …)`"
-            ),
+            other => {
+                format!(":expect {other} — expected `(false)`, `(model …)` or `(or (model …) …)`")
+            }
         });
     }
     let Node::SForm { head, args } = ast.node(node) else {
@@ -178,19 +178,14 @@ fn model(ast: &Ast, items: &[NodeId]) -> Result<Model, String> {
 /// anything, which is the one outcome this form exists to prevent.
 pub fn fact<'a>(ast: &'a Ast, node: NodeId) -> Result<ExpectFact<'a>, String> {
     let (negated, inner) = match ast.node(node) {
-        Node::SForm { head, args } if ast.atom_name(head) == Some("not") => {
-            match ast.args(args) {
-                [one] => (true, *one),
-                _ => return Err(":expect — `(not …)` takes exactly one fact".into()),
-            }
-        }
+        Node::SForm { head, args } if ast.atom_name(head) == Some("not") => match ast.args(args) {
+            [one] => (true, *one),
+            _ => return Err(":expect — `(not …)` takes exactly one fact".into()),
+        },
         _ => (false, node),
     };
     let Node::SForm { head, args } = ast.node(inner) else {
-        return Err(format!(
-            ":expect — `{}` is not a fact",
-            render(ast, inner)
-        ));
+        return Err(format!(":expect — `{}` is not a fact", render(ast, inner)));
     };
     let Some(relation) = ast.atom_name(head) else {
         return Err(format!(
@@ -220,7 +215,9 @@ fn ground(ast: &Ast, node: NodeId) -> Result<(), String> {
             .into()),
         Node::SForm { head, args } => {
             if ast.atom_name(head).is_none() {
-                return Err(":expect — a nested fact needs a relation name in head position".into());
+                return Err(
+                    ":expect — a nested fact needs a relation name in head position".into(),
+                );
             }
             for &arg in ast.args(args) {
                 ground(ast, arg)?;
@@ -309,8 +306,8 @@ mod tests {
         assert_eq!(one.models()[0].facts.len(), 2);
         assert_eq!(one.verdict_name(), "Solution");
 
-        let any = parsed("(query :goal (p ?x) :expect (or (model (p A)) (model (p B))))")
-            .expect("or");
+        let any =
+            parsed("(query :goal (p ?x) :expect (or (model (p A)) (model (p B))))").expect("or");
         assert_eq!(any.models().len(), 2);
         assert_eq!(any.verdict_name(), "Ambiguity");
     }
@@ -385,7 +382,10 @@ mod tests {
     fn bottom_is_spelled_with_the_kernels_own_word() {
         let e = parsed("(query :goal (p ?x) :expect false)").expect_err("unparenthesised");
         assert!(e.contains("`(false)`"), "{e}");
-        assert!(e.contains(":assert"), "and says where that spelling comes from: {e}");
+        assert!(
+            e.contains(":assert"),
+            "and says where that spelling comes from: {e}"
+        );
         let e = parsed("(query :goal (p ?x) :expect (and (p A)))").expect_err("a connective");
         assert!(e.contains("complete* extent"), "{e}");
     }
@@ -402,7 +402,10 @@ mod tests {
         assert_eq!(pos.rendered, "(p A 3)");
         let neg = fact(&ast, m.facts[1]).expect("a fact");
         assert!(neg.negated);
-        assert_eq!(neg.relation, "q", "a negative is *about* the inner relation");
+        assert_eq!(
+            neg.relation, "q",
+            "a negative is *about* the inner relation"
+        );
         assert_eq!(neg.rendered, "(not (q B))");
     }
 
