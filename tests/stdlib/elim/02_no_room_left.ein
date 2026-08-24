@@ -40,7 +40,7 @@
 ;;; whole suite still passes, because elimination refutes anyway. With one, the
 ;;; same mutant turns this file into a `Solution` and is caught. An expectation
 ;;; is made of facts and cannot say which rule produced them — the `route`
-;;; residue Q-M1c.2 parks (plans/m1c_external_validation/open_questions.md) —
+;;; residue Q-M1c.2 parks (docs/history/m1c_external_validation/open_questions.md) —
 ;;; so where two rules can reach one verdict, a fixture has to separate them by
 ;;; **activation**.
 ;;;

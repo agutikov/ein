@@ -23,7 +23,7 @@ about a word the engine already says.
 | [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | open — [Q-M1a.18](../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)-shaped; the answer moves every counter |
 | [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | open — [P1d.3](p1d.3_model_sets/README.md); "enumerate, and say so" is an acceptable answer |
 | [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | open — ten corpus entries already say it; arrived from M1a [S1a.9.0](../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced) |
-| [Q-M1d.7](#q-m1d7--may-a-program-require-its-own-model-count) | May a program require its own model count? | open — [P1d.4](p1d.4_model_set_closure/README.md); arrived from M1c [S1c.1.2](../m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md) on 2026-08-24 |
+| [Q-M1d.7](#q-m1d7--may-a-program-require-its-own-model-count) | May a program require its own model count? | open — [P1d.4](p1d.4_model_set_closure/README.md); arrived from M1c [S1c.1.2](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects) on 2026-08-24 |
 
 ---
 
@@ -338,7 +338,7 @@ them — so the reproducer above is the record of what those cells did.
 ## Q-M1d.7 — May a program require its own model count?
 
 **Opened 2026-08-24**, from M1c
-[S1c.1.2](../m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md).
+[S1c.1.2](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects).
 [P1d.4](p1d.4_model_set_closure/README.md) is the phase.
 
 `:expect (or M₁ … M_k)` says *the model set is exactly these k*. A **test** may

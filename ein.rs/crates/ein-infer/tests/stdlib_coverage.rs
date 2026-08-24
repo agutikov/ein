@@ -1,10 +1,10 @@
 //! **Every stdlib rule is activated by a program written to activate it** —
-//! M1c [S1c.1.5](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.5_gate.md).
+//! M1c [S1c.1.5](../../../../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate).
 //!
-//! [S1c.1.1](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.1_what_the_stdlib_promises.md)
+//! [S1c.1.1](../../../../docs/history/m1c_external_validation/README.md#s1c11--what-the-stdlib-promises-and-what-is-exercised)
 //! measured the gap this closes: **38 of the stdlib's 73 rules never fired**
 //! in any of 400 corpus runs, and 20 more were activated by `examples/zebra.ein`
-//! and by nothing else. [S1c.1.4](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.4_stdlib_corpus.md)
+//! and by nothing else. [S1c.1.4](../../../../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus)
 //! wrote the 45 programs under [`tests/stdlib/`](../../../../tests/README.md)
 //! that took the zero set to 0. This is what stops it growing back.
 //!

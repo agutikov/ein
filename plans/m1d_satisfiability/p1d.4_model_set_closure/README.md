@@ -8,7 +8,7 @@ and [P1d.10](../p1d.10_exhaustive_search/README.md), which is the measurement
 of what closing a set costs.
 **Created 2026-08-24**, at the user's direction, out of a gap found while
 building M1c
-[S1c.1.2](../../m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md).
+[S1c.1.2](../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects).
 
 **Depth: phase README only**, like its two neighbours. See
 [§ How deep this plan is](../README.md#how-deep-this-plan-is).
@@ -54,7 +54,7 @@ hole was found — a search that did not exhaust yields a third outcome:
 nothing about the *affordability* one. The result is a form that can state the
 answer to `zebra2-minus-15` and cannot verify it on any machine, which is
 precisely the pipeline
-[M1c's thesis](../../m1c_external_validation/README.md#splitting-them-did-not-split-the-pipeline)
+[M1c's thesis](../../../docs/history/m1c_external_validation/README.md#splitting-them-did-not-split-the-pipeline)
 depends on:
 
 > When Clingo enumerates 32 models of `zebra2-minus-15` and Z3's
@@ -143,7 +143,7 @@ pin.
 
 - [`ein-infer/src/expect.rs`](../../../ein.rs/crates/ein-infer/src/expect.rs) —
   the comparison, and `Outcome::NotChecked`, which is this gap as a value
-- [S1c.1.2](../../m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)
+- [S1c.1.2](../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
   — where the form came from, and where the hole was found
 - [`examples/features/11_expect_ambiguity.ein`](../../../examples/features/11_expect_ambiguity.ein)
   — the k>1 fixture, which declares `solve -e` and no plain `solve` for exactly

@@ -39,7 +39,7 @@
 ;;; the *program text* already makes. `domain-elimination`, `functional-negative`
 ;;; and the rest exist only after saturation, so they cannot be named — the
 ;;; same shape as Q-M1c.6's empty-relation gap, and recorded beside it as
-;;; Q-M1c.7 — both in plans/m1c_external_validation/open_questions.md.
+;;; Q-M1c.7 — both in docs/history/m1c_external_validation/open_questions.md.
 ;;; What stands in for the missing clause: `functional-negative` and
 ;;; `injective-negative` have no other activator, so a `bijective-setup` that
 ;;; dropped one of them leaves this file with two negatives instead of four.

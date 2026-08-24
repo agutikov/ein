@@ -2,12 +2,12 @@
 
 **Estimate:** ~2.5 weeks — 5 stages, 12 days of stage estimates.
 **Status:** **promoted to a milestone 2026-08-23** at the user's direction,
-out of [M1c](../m1c_external_validation/README.md)'s P1c.2, where it was
+out of [M1c](../../docs/history/m1c_external_validation/README.md)'s P1c.2, where it was
 created 2026-08-21. Nothing about the work changed: the five stages, their
 estimates and their dependencies are as written, `S1c.2.<n>` became
 `S10.<n>`, and the three questions about *method* moved with it as
 [`Q-M10.1–3`](open_questions.md).
-**Depends on:** [M1c P1c.1](../m1c_external_validation/p1c.1_stdlib_conformance/README.md)
+**Depends on:** [M1c P1c.1](../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance)
 — not to run, but to *keep*: the answers this milestone establishes are
 written back into the `.ein` files as `:expect`, and that form is P1c.1's.
 Also on [M1a](../../docs/history/m1a_rust/README.md) having shipped its
@@ -31,7 +31,7 @@ right?* — and the precedent is specific, recent and expensive:
 five phases of byte-exact parity, and what found it was an **independent
 enumeration** of a puzzle's models written outside the engine on the day.
 
-There are two ways to answer *is this right?* [M1c](../m1c_external_validation/README.md)
+There are two ways to answer *is this right?* [M1c](../../docs/history/m1c_external_validation/README.md)
 owns the first — an expectation written next to a rule and run by the engine.
 This milestone owns the second: the same problem stated for six other systems.
 
@@ -75,7 +75,7 @@ algorithm compares to a CDCL solver on the same puzzle.
    a Z3 blocking-clause loop and a Prolog `findall` each enumerate
    independently, and if they agree, the count is established by three
    systems that share no code with Ein and no code with each other. This is
-   the [`disjunctive-prune`](../m1c_external_validation/p1c.1_stdlib_conformance/README.md) check
+   the [`disjunctive-prune`](../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance) check
    made permanent: that bug survived a year of two engines agreeing and died
    to one independent enumeration.
 2. **Times, and what had to be said to get them.** Wall clock as a process,
@@ -203,8 +203,8 @@ the harness lives.
   happens to hold
 - [`examples/README.md`](../../examples/README.md) — the catalog
   convention the benchmark corpus follows
-- [M1c](../m1c_external_validation/README.md) — the milestone this was a
-  phase of until 2026-08-23; [P1c.1](../m1c_external_validation/p1c.1_stdlib_conformance/README.md)
+- [M1c](../../docs/history/m1c_external_validation/README.md) — the milestone this was a
+  phase of until 2026-08-23; [P1c.1](../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance)
   owns the `:expect` form every answer here is checked back into
 - [M5](../m5_presentation/README.md) Track A/B — the consumer
 - [F13](../followups/f13_puzzles_beyond_zebra/ideas.md) — the *other*

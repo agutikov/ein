@@ -36,7 +36,7 @@
 ;;; difference between them is the guard rather than the fixture.
 ;;;
 ;;; `tr` and `cyc` were this file's whole subject until M1c
-;;; [S1c.1.5](../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.5_gate.md),
+;;; [S1c.1.5](../../../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate),
 ;;; and `transitive` fired **zero** times here — deliberately, because a rule
 ;;; tested only where it fires has had its guard tested nowhere. What changed
 ;;; is who the coverage gate asks: it asks this suite rather than the corpus,

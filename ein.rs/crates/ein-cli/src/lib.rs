@@ -13,7 +13,7 @@
 //! **`test` is the one exception, and it is deliberate**: there 1 means *an
 //! expectation is false* and a load error takes 2, because a test runner that
 //! cannot tell a broken file from a false claim is the failure mode M1c
-//! [S1c.1.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md)
+//! [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test)
 //! T1c.1.3.5 is written against. That subcommand has no ein.py counterpart to
 //! diverge from.
 

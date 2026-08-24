@@ -7,7 +7,7 @@ so the namespaces cannot collide. A closed id is never reused.
 
 **All three arrived 2026-08-23 with the promotion**, where they were
 `Q-M1c.3`, `.4` and `.5` in
-[M1c](../m1c_external_validation/open_questions.md). The text below is theirs,
+[M1c](../../docs/history/m1c_external_validation/open_questions.md). The text below is theirs,
 unchanged apart from ids and paths; M1c's index keeps the old ids as
 redirects, because a sticky id that silently disappears is worse than one that
 points somewhere.

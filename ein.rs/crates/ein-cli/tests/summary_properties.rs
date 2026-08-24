@@ -14,7 +14,7 @@
 //! do not have to be looked up. A regression that moves one number without
 //! moving the others fails here; one that moves them all consistently is a
 //! semantic change and is
-//! [P1c.1](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/README.md)'s
+//! [P1c.1](../../../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance)'s
 //! to catch. That division is deliberate and it is on the ledger.
 //!
 //! Every identity below was **measured over the whole corpus before it was

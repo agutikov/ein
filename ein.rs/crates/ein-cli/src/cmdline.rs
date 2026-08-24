@@ -398,7 +398,7 @@ fn solve_command() -> Command {
 }
 
 /// `ein test` — M1c
-/// [S1c.1.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md).
+/// [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test).
 ///
 /// **Small on purpose.** The only engine knobs here are the three that decide
 /// whether a run *can finish* — the lattice depth cap and the two budgets —

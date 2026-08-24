@@ -7,7 +7,7 @@ invocations each one is exercised under.
   hand thereafter. A completeness check fails on any `.ein` under `examples/`,
   `stdlib/` or `tests/` with no entry, so the corpus cannot silently miss a
   file. The third root arrived with M1c
-  [S1c.1.4](../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.4_stdlib_corpus.md)
+  [S1c.1.4](../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus)
   and [`tests/README.md`](../tests/README.md) says why a stdlib conformance
   program is not an example.
 - **`fuzz_findings/`** — minimised inputs a fuzzer found something on.
@@ -83,7 +83,7 @@ stage: a run is now a thing that must work, not a thing two engines must agree
 about.
 
 **`test` is the one run name that can fail on the file's own account.** M1c
-[S1c.1.3](../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md)
+[S1c.1.3](../docs/history/m1c_external_validation/README.md#s1c13--ein-test)
 added `ein test <path>`, which runs whatever `:expect` the file's queries carry
 and exits 1 when one of them is false — so a `test` cell in the exit golden is
 banking a claim the *program* makes, not one the engine happens to render. It

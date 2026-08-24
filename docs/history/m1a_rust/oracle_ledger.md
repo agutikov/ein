@@ -329,7 +329,7 @@ surviving arm can do.
 > reading — it is a claim that can still be re-run tomorrow.
 *What could now pass unnoticed:* a wrong answer on a program shape nobody wrote
 a fixture for. This is the single largest loss in the phase and it has no
-mitigation other than [P1c.1](../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/README.md)'s
+mitigation other than [P1c.1](../m1c_external_validation/README.md#p1c1--stdlib-conformance)'s
 stated expectations.
 
 **L2 — CPython's value semantics on unreached shapes.** `cpython_parity` and
@@ -362,7 +362,7 @@ is gone in a way no test replaces: a self-golden says "still what it was", never
 "and what it was is right".
 *What could now pass unnoticed:* a misreading of the kernel semantics that
 ein.rs has held consistently since P1a.3. Nothing in this ledger can find one.
-[P1c.1](../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/README.md) exists partly for this and is
+[P1c.1](../m1c_external_validation/README.md#p1c1--stdlib-conformance) exists partly for this and is
 the only row of it that is being built.
 
 **L4 — `crash-parity`.** Eleven cells asserted that both engines die the same

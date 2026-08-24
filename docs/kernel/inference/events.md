@@ -3,7 +3,7 @@
 **Schema version:** `ein-events/1`
 
 `ein solve --events FILE`, `ein saturate --events FILE` and — since M1c
-[S1c.1.3](../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md)
+[S1c.1.3](../../history/m1c_external_validation/README.md#s1c13--ein-test)
 — `ein test --events FILE` make the engine narrate what it did: **one JSON
 object per line**, opt-in, off by default.
 Every compile miss, enqueue, firing, mirror, park/admit/retire, quiescence,

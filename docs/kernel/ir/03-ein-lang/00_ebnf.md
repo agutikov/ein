@@ -195,7 +195,7 @@ different messages, and the corpus has a fixture directory for each
 
 - **Which keywords each form requires** — `:match` / `:assert` in a rule,
   `:goal` in a query, `:rule` / `:using` / `:derives` in a step. Since M1c
-  [S1c.1.2](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)
+  [S1c.1.2](../../../history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
   a `(query …)` also has a keyword **allow-list**, so an unrecognised one is a
   load error rather than an ignored pair — the grammar still admits any
   `KEYWORD Value`.

@@ -81,7 +81,7 @@ generated program that loads, terminates, is deterministic, permutation-
 invariant and job-count-invariant can still derive the wrong facts, and nothing
 here would notice.
 That is L1 stated exactly, and its only mitigation is
-[P1c.1](../plans/m1c_external_validation/p1c.1_stdlib_conformance/README.md)'s
+[P1c.1](../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance)'s
 stated expectations — a stdlib rule whose result is written down.
 
 ## The generator

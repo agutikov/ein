@@ -6,7 +6,7 @@
 ;;; `functional` fires in the corpus and has **never once been productive**:
 ;;; 2 000 redundant firings, no productive ones, and outside
 ;;; `examples/ein-bugs/zebra2-bad.ein` it is never activated at all
-;;; (plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md §5).
+;;; (docs/history/m1c_external_validation/stdlib_census.md §5).
 ;;; It is dominated twice over: `std.bijection`'s `functional-negative` at 240
 ;;; excludes every other partner the moment a positive lands, and the totality
 ;;; checks at 110 reach `(false)` first when a contradiction does occur. So in

@@ -270,7 +270,7 @@ fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
 ///
 /// The list is an **allow-list**, and an unrecognised keyword is a load error
 /// rather than a silent no-op — M1c
-/// [S1c.1.2](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md).
+/// [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects).
 /// Before it, `(query :expct (model …))` parsed, loaded, checked nothing and
 /// said nothing, which is the failure mode `:expect` exists to remove; a form
 /// that carries a *test* cannot also be the place a typo goes to die.

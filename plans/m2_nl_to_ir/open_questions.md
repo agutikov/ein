@@ -243,7 +243,7 @@ instrumentation, not an evolving prototype* — and two kernel milestones are
 queued: [M1d](../m1d_satisfiability/README.md) changes what the engine says
 at a depth cap ([Q-M1d.6](../m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false))
 and may change the traversal ([Q-M1d.4](../m1d_satisfiability/open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal)),
-and [M1c](../m1c_external_validation/README.md) may find a stdlib rule wrong.
+and [M1c](../../docs/history/m1c_external_validation/README.md) may find a stdlib rule wrong.
 An instrument that changes between two rows of a table makes the table
 uninterpretable; an instrument that cannot change for six months blocks two
 milestones.

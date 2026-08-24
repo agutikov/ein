@@ -2,7 +2,7 @@
 //!
 //! The shape is [`ein_ir::expect`]'s and the loader has already validated it;
 //! this is the comparison. M1c
-//! [S1c.1.2](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)
+//! [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
 //! T1c.1.2.4.
 //!
 //! # Relation-closure
@@ -15,7 +15,7 @@
 //! That rule is the design, and it sits between two useless extremes. A
 //! per-fact assertion cannot catch a **surplus** fact: the 23 spurious models
 //! of `zebra2-minus-15` that
-//! [M1c's thesis](../../../../plans/m1c_external_validation/README.md#the-thesis)
+//! [M1c's thesis](../../../../docs/history/m1c_external_validation/README.md#the-thesis)
 //! is written around were surplus — Chesterfields and the Fox in one house —
 //! and a `:derives`-style check passes on every one of them. A whole-state
 //! golden goes the other way and pins 250 facts of `is-a*` and activator noise
@@ -69,7 +69,7 @@
 //! than not having the keyword, and it stops at `-n 1` by default, so a
 //! verdict-shaped claim there routinely comes back [`Outcome::NotChecked`].
 //! `ein test` (M1c
-//! [S1c.1.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md))
+//! [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test))
 //! exhausts, has no flag not to, and never solves a query that carries no
 //! `:expect` — so under it the only thing left that can truncate a run is the
 //! lattice depth cap.
@@ -160,7 +160,7 @@ impl Report {
 struct Actual<'a> {
     /// The model itself, kept for the question a **surplus** fact raises next:
     /// not *that* it is there but *why*. M1c
-    /// [T1c.1.3.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md).
+    /// [T1c.1.3.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test).
     kb: &'a Kb,
     /// Every fact, rendered — what a listed `(not …)` is looked up in.
     all: FxHashSet<String>,
@@ -198,7 +198,7 @@ impl<'a> Actual<'a> {
 /// Why this fact is in the model — one line, because "and where did *that*
 /// come from" is `--trace`'s question and not this report's.
 ///
-/// A surplus fact is the case [S1c.1.2](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)
+/// A surplus fact is the case [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
 /// built relation-closure for, and the *next* thing its reader wants is the
 /// rule that put it there — the `disjunctive-prune` guard bug this milestone
 /// is written around was found exactly one step past "there is an extra fact
@@ -284,7 +284,7 @@ pub fn check(
         // because zero models is a verdict of its own. Calling it a failure
         // would refute a claim on the strength of a search that stopped.
         //
-        // Found by M1c [S1c.1.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md),
+        // Found by M1c [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test),
         // where exhausting is the default and `--max-set-size` is therefore
         // the only thing left that can truncate one.
         if !exhausted {

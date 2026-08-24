@@ -263,7 +263,7 @@ and whether the fixed point is syntactic or semantic
 - [M1d](../m1d_satisfiability/README.md) — the verdict vocabulary
   ([Q-M1d.6](../m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false),
   [Q-M1d.1](../m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted));
-  [M1c](../m1c_external_validation/README.md) — `:expect`, the form a
+  [M1c](../../docs/history/m1c_external_validation/README.md) — `:expect`, the form a
   benchmark instance's gold verdict is written in;
   [M10](../m10_external_benchmarks/README.md) — the hand-written encodings
   P2.8 starts from, and the benchmark direction that is *not* this one

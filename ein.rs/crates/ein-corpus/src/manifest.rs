@@ -182,7 +182,7 @@ mod tests {
     /// removal still owed.
     ///
     /// `tests/` joined them at M1c
-    /// [S1c.1.4](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.4_stdlib_corpus.md):
+    /// [S1c.1.4](../../../../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus):
     /// the stdlib conformance programs are a suite rather than a set of
     /// examples, and they are walked here for the same reason the other two
     /// roots are — a test file with no corpus entry is a file the sweep never

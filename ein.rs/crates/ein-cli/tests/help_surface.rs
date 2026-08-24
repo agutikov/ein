@@ -30,7 +30,7 @@ use ein_corpus::{golden, golden_path};
 /// **39 of them are ein.py's**; the other nine are `solve --jobs`
 /// ([T1a.7.2.1](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)),
 /// `ein test`'s eight (M1c
-/// [S1c.1.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md))
+/// [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test))
 /// and — under the `einb` feature — `ein kb save --saturate`, none of which has
 /// a counterpart there, for the same reason: they are knobs for things ein.py
 /// never had. The split is kept in the sum below rather than folded away,
@@ -53,7 +53,7 @@ const EXPECTED: [(&str, usize); 8] = [
     ("COMMAND ein render lattice\n", 2),
 ];
 
-/// M1c [S1c.1.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md)'s
+/// M1c [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test)'s
 /// parser, the second in the tree with no ein.py counterpart. **Eight**, and
 /// the number is the design: the three that decide whether a run can finish
 /// (`-m`, `-T`, `-E`), the two that decide how much of a passing run to print

@@ -34,7 +34,7 @@
 ;;; `domain-elimination` and `range-elimination` reach the same positive from
 ;;; opposite directions, so a fact-shaped expectation cannot say which one got
 ;;; there — the `route` residue
-;;; Q-M1c.2 parks (plans/m1c_external_validation/open_questions.md). What
+;;; Q-M1c.2 parks (docs/history/m1c_external_validation/open_questions.md). What
 ;;; separates them here is the **premises**, not the conclusion:
 ;;; Ann's row is exhausted and Blue's column is not, so only the domain rule
 ;;; can fire first. `03_range_elimination.ein` is the same puzzle transposed.

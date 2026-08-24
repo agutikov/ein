@@ -860,7 +860,7 @@ without a referent.
   five Python pages are kept whole so that reversing the deferral is cheap.
 - **Three questions that left with their phases** on 2026-08-21, keeping their
   text: Q-M1a.19 and Q-M1a.20 became
-  [Q-M1c.1](../../../plans/m1c_external_validation/open_questions.md) and
+  [Q-M1c.1](../m1c_external_validation/open_questions.md) and
   Q-M1c.2 with P1a.11; Q-M1a.21 became
   [Q-M1d.1](../../../plans/m1d_satisfiability/open_questions.md) with P1a.12.
   The M1a ids stay reserved and redirect.
@@ -883,7 +883,7 @@ without a referent.
 - **The engine's only statement of intent is now `docs/kernel/`.** With one
   implementation, "what the engine does" is whatever ein.rs does — which makes
   that tree more load-bearing, not less, and is why
-  [M1c](../../../plans/m1c_external_validation/README.md) and
+  [M1c](../m1c_external_validation/README.md) and
   [M10](../../../plans/m10_external_benchmarks/README.md) exist.
 
 ## Where the rest is
@@ -920,6 +920,6 @@ Also in git history and not in this record: `design/09` (server mode, deleted
 - [M20 — GUI](../../../plans/m20_gui/README.md) ·
   [M2 — NL → IR](../../../plans/m2_nl_to_ir/README.md) — the consumers this
   engine ships for
-- [M1c](../../../plans/m1c_external_validation/README.md) ·
+- [M1c](../m1c_external_validation/README.md) ·
   [M1d](../../../plans/m1d_satisfiability/README.md) — created 2026-08-21 out
   of this milestone's last two phases

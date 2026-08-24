@@ -15,6 +15,14 @@ what somebody intended to build.
 | milestone | ran | record |
 |---|---|---|
 | **M1a — the Rust port (ein.rs)** | 2026-08-17 → 2026-08-23 | [`m1a_rust/`](m1a_rust/README.md) — eleven phases and 53 stages as one record, plus the eleven design contracts, six measurement documents, the divergence ledger, twenty-three questions and the oracle ledger |
+| **M1c — External validation** | 2026-08-23 → 2026-08-24 | [`m1c_external_validation/`](m1c_external_validation/README.md) — one phase and five stages as one record, plus the stdlib census (the evidence) and seven questions, two still open. **`:expect`, `ein test`, 45 programs, and 38 of 73 unfired stdlib rules → 0** |
+
+The two differ in one way worth knowing before reading either: **M1a's
+instruments are gone and M1c's are not.** Every number under `m1a_rust/` is a
+record — `ein.py`, the conformance tiers and eleven `utils/` scripts left the
+tree with the engine they measured. Every number under
+`m1c_external_validation/` can be re-taken today, and one of them is re-taken
+by `cargo test` on every commit.
 
 **M1** (core graph reasoning, shipped 2026-06-17) predates this directory: what
 survived its plan tree went to [`docs/kernel/inference/`](../kernel/inference/README.md)

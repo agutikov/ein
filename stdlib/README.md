@@ -36,7 +36,7 @@ meaningless — a diff would report "the engines disagree" when in fact the
 
 [**`tests/stdlib/`**](../tests/README.md) — 45 programs, one per rule or tight
 family, each stating what it should and should not derive, added by M1c
-[S1c.1.4](../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.4_stdlib_corpus.md).
+[S1c.1.4](../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus).
 `ein test tests/stdlib/` runs the lot in 0.03 s and exits 1 if a claim is
 false.
 
@@ -44,10 +44,10 @@ Before them, **38 of the 73 rules below had never fired** in any of 400 corpus
 runs — 33 never even loaded — and 20 more were reached by `examples/zebra.ein`
 alone, so a change to that one puzzle's encoding could have untested a whole
 module silently
-([`stdlib_census.md`](../plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md)).
+([`stdlib_census.md`](../docs/history/m1c_external_validation/stdlib_census.md)).
 The claim that every rule is now activated is *measured*, not read off the
 directory, and since M1c
-[S1c.1.5](../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.5_gate.md)
+[S1c.1.5](../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate)
 it is **in the gate**: `ein-infer/tests/stdlib_coverage.rs` solves every
 program under `tests/stdlib/` with `--events` on and fails on any rule none of
 them activated — 0.04 s, and 73 of 73 today. `python3

@@ -1,16 +1,16 @@
 # Open Questions — M1c (External validation)
 
 Milestone-scoped questions. Ids are **sticky** — `Q-M1c.<n>`, in the style
-[M1a](../../docs/history/m1a_rust/open_questions.md) uses for `Q-M1a.<n>` rather than the
-global `Q<n>` sequence in [`plans/open_questions.md`](../open_questions.md),
+[M1a](../m1a_rust/open_questions.md) uses for `Q-M1a.<n>` rather than the
+global `Q<n>` sequence in [`plans/open_questions.md`](../../../plans/open_questions.md),
 so the namespaces cannot collide. A closed id is never reused.
 
-**Q-M1c.1 and Q-M1c.2 arrived with [P1c.1](p1c.1_stdlib_conformance/README.md)
+**Q-M1c.1 and Q-M1c.2 arrived with [P1c.1](README.md#p1c1--stdlib-conformance)
 on 2026-08-21**, where they were Q-M1a.19 and Q-M1a.20. The text below is
 theirs, unchanged apart from ids and paths; the M1a entries stay in place as
 redirects, because a sticky id that silently disappears is worse than one that
 points somewhere. **Q-M1c.3–5 left the same way on 2026-08-23**, with P1c.2
-becoming [M10](../m10_external_benchmarks/README.md): their text lives there
+becoming [M10](../../../plans/m10_external_benchmarks/README.md): their text lives there
 as Q-M10.1–3 and the rows below say so.
 
 ## Index
@@ -21,15 +21,15 @@ as Q-M10.1–3 and the rows below say so.
 | [Q-M1c.2](#q-m1c2--what-may-an-expectation-say) | What may an expectation say? | **closed 2026-08-23** — a `(model …)` of ground facts, relation-closed; `(or …)` a set; `(false)` for ⊥; route parked *(was Q-M1a.20)* |
 | [Q-M1c.6](#q-m1c6--how-does-an-expectation-say-a-relation-is-empty) | How does an expectation say a relation is *empty*? | **open**, and found by building S1c.1.2 |
 | [Q-M1c.7](#q-m1c7--may-an-expectation-name-a-relation-that-only-saturation-creates) | May an expectation name a relation that only saturation creates? | **open**, and found by building S1c.1.4 |
-| ~~Q-M1c.3~~ | What makes a benchmark encoding fair? | **moved 2026-08-23 with P1c.2 → [Q-M10.1](../m10_external_benchmarks/open_questions.md#q-m101--what-makes-an-encoding-fair)** |
-| ~~Q-M1c.4~~ | Does a proof assistant belong in a timing table? | **moved 2026-08-23 with P1c.2 → [Q-M10.2](../m10_external_benchmarks/open_questions.md#q-m102--does-a-proof-assistant-belong-in-a-timing-table)** |
-| ~~Q-M1c.5~~ | Where does the benchmark live, and is any of it a gate? | **moved 2026-08-23 with P1c.2 → [Q-M10.3](../m10_external_benchmarks/open_questions.md#q-m103--where-does-the-benchmark-live-and-is-any-of-it-a-gate)** |
+| ~~Q-M1c.3~~ | What makes a benchmark encoding fair? | **moved 2026-08-23 with P1c.2 → [Q-M10.1](../../../plans/m10_external_benchmarks/open_questions.md#q-m101--what-makes-an-encoding-fair)** |
+| ~~Q-M1c.4~~ | Does a proof assistant belong in a timing table? | **moved 2026-08-23 with P1c.2 → [Q-M10.2](../../../plans/m10_external_benchmarks/open_questions.md#q-m102--does-a-proof-assistant-belong-in-a-timing-table)** |
+| ~~Q-M1c.5~~ | Where does the benchmark live, and is any of it a gate? | **moved 2026-08-23 with P1c.2 → [Q-M10.3](../../../plans/m10_external_benchmarks/open_questions.md#q-m103--where-does-the-benchmark-live-and-is-any-of-it-a-gate)** |
 
 ---
 
 ## Q-M1c.1 — How does a program state what it expects?
 
-[P1c.1](p1c.1_stdlib_conformance/README.md) needs somewhere to say what a
+[P1c.1](README.md#p1c1--stdlib-conformance) needs somewhere to say what a
 stdlib rule should derive. Three shapes; the third is the user's, proposed
 2026-08-20 after the first two, and it is the recommendation.
 
@@ -68,14 +68,14 @@ two want opposite rules.
 
 ### Closed 2026-08-23 — (c), as recommended
 
-Built in [S1c.1.2](p1c.1_stdlib_conformance/s1c.1.2_test_form.md). What the
+Built in [S1c.1.2](README.md#s1c12--how-a-program-states-what-it-expects). What the
 build changed about the recommendation, and what it cost:
 
 - **The value needs a head.** The proposed shape — a bare list of facts,
   `:expect ((p A H1) (q B H2))` — **does not parse**, and the reason is
   structural rather than incidental: `ListHead ::= SYMBOL | VAR | WILDCARD |
   EQ` and never a list
-  ([`00_ebnf.md` §2](../../docs/kernel/ir/03-ein-lang/00_ebnf.md)). Widening
+  ([`00_ebnf.md` §2](../../kernel/ir/03-ein-lang/00_ebnf.md)). Widening
   `ListHead` would change the grammar of *every* form to buy one keyword its
   ergonomics. The shape is therefore `(model <fact>*)`, whose `SYMBOL` head
   costs nothing: it parses, dumps and round-trips today, `(or (model …)
@@ -126,7 +126,7 @@ Two sub-questions the stage has to settle:
 the wrong rule" — has no home in a vocabulary of facts, and it matters for the
 stdlib: `domain-elimination` and `range-elimination` can derive the same
 positive from opposite directions. **Recommendation: leave it out of the first
-cut** and let [S1c.1.1](p1c.1_stdlib_conformance/s1c.1.1_what_the_stdlib_promises.md)'s
+cut** and let [S1c.1.1](README.md#s1c11--what-the-stdlib-promises-and-what-is-exercised)'s
 table say whether a rule needs it. Under (c) it arrives as one more keyword on
 the same query, which is the other way (c) beats (b): the vocabulary grows a
 key at a time instead of arriving whole.
@@ -150,7 +150,7 @@ the residue:
   legal expectation meaning *the empty model*, which is why `()` was never the
   answer; the pair is `(false)` and `(model)`.
 - **Route stays out**, and
-  [`stdlib_census.md` §8](p1c.1_stdlib_conformance/stdlib_census.md#8-four-declarations-are-two-rules)
+  [`stdlib_census.md` §8](stdlib_census.md#8-four-declarations-are-two-rules)
   is why: the pairs that raise the question — `converse` ≡ `imply2-reverse`,
   `imply2-fwd` ≡ `includes` — are alpha-identical bodies under two names, so
   one test covers both and there is nothing a `:fires` would distinguish.
@@ -166,7 +166,7 @@ cannot fail.
 
 ## Q-M1c.6 — How does an expectation say a relation is *empty*?
 
-**Opened 2026-08-23**, by building [S1c.1.2](p1c.1_stdlib_conformance/s1c.1.2_test_form.md).
+**Opened 2026-08-23**, by building [S1c.1.2](README.md#s1c12--how-a-program-states-what-it-expects).
 
 Relation-closure has one state it cannot express. Naming a relation closes it,
 and the only way to name one is to list a fact in it — so **"relation `r` is
@@ -188,7 +188,7 @@ discipline Q-M1c.2 used for route.
 
 ## Q-M1c.7 — May an expectation name a relation that only saturation creates?
 
-**Opened 2026-08-24**, by building [S1c.1.4](p1c.1_stdlib_conformance/s1c.1.4_stdlib_corpus.md).
+**Opened 2026-08-24**, by building [S1c.1.4](README.md#s1c14--the-stdlib-corpus).
 
 `:expect` is validated at **load**, and one of its five refusals is that a
 relation it names must be one `kb.program().relations` already has — a name no
@@ -205,7 +205,7 @@ The stdlib's fan-out rules are exactly that case, and there are seven of them:
 `(typecheck-arg-0 R isa A)` — in relations that exist *only after saturation*.
 So the one thing each of those rules promises is the one thing an expectation
 cannot state, and
-[`stdlib_census.md` §6](p1c.1_stdlib_conformance/stdlib_census.md#6-what-would-activate-a-rule-that-nothing-activates--t1c113)'s
+[`stdlib_census.md` §6](stdlib_census.md#6-what-would-activate-a-rule-that-nothing-activates--t1c113)'s
 prediction that the fan-outs would be the cheapest bucket — *"a claim about
 facts, and so exactly what an `:expect` can say with nothing else in the
 file"* — is false as the loader stands.

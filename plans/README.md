@@ -67,11 +67,13 @@ created from its last phases, two by promotion since:
 - **M20 — GUI** ([m20_gui/](m20_gui/README.md)) after M1a —
   **Tauri 2 + React + Monaco + Cytoscape.js**, linking the ein.rs crates
   directly (stack decided 2026-08-18). Renumbered from M1b 2026-08-23.
-- **M1c — External validation** ([m1c_external_validation/](m1c_external_validation/README.md))
-  after M1a — the check that is *not* relative to Ein's own past: the
-  stdlib's rules get expectations of their own (`:expect` on `query`,
-  `ein test`). Created 2026-08-21 out of M1a's ex-P1a.11 plus a benchmark
-  phase that left for M10 on 2026-08-23.
+- **M1c — External validation** — **shipped 2026-08-24**, and its record is
+  [`docs/history/m1c_external_validation/`](../docs/history/m1c_external_validation/README.md).
+  The check that is *not* relative to Ein's own past: the stdlib's rules got
+  expectations of their own (`:expect` on `query`, `ein test`, 45 programs, and
+  a coverage number in the gate). Created 2026-08-21 out of M1a's ex-P1a.11
+  plus a benchmark phase that left for M10 on 2026-08-23; the plan tree was
+  deleted the day it shipped.
 - **M1d — From saturation to satisfiability** ([m1d_satisfiability/](m1d_satisfiability/README.md))
   after M1a — why an under-determined puzzle does not finish, and what
   saturation lacks to be a decision procedure: existence requirements
@@ -100,7 +102,7 @@ stays a graph-native reasoner with no solver back-end. The plan folder
 is in git history. What stays: [`smt/`](../smt/) as a scratch area with
 its CVC4 submodule, and [`docs/lib/02`](../docs/lib/02-solvers-csp-sat-smt.md)
 as external-tech catalogue and [M5](m5_presentation/README.md) Track A's
-*comparison* axis — which [M1c](m1c_external_validation/README.md)'s
+*comparison* axis — which [M1c](../docs/history/m1c_external_validation/README.md)'s
 [M10](m10_external_benchmarks/README.md) turns
 into a corpus and a harness, scheduled 2026-08-21. Benchmarking Z3 is the
 opposite of integrating it.
@@ -137,10 +139,9 @@ plans/
 ├── m1a_rust/                         (deleted 2026-08-23 — M1a shipped; the record
 │                                     is docs/history/m1a_rust/, the plan tree is
 │                                     in git history)
-├── m1c_external_validation/          the check that is not relative to Ein
-│   ├── README.md
-│   ├── open_questions.md
-│   └── p1c.1_stdlib_conformance/     (was m1a_rust/p1a.11_*)
+├── m1c_external_validation/          (deleted 2026-08-24 — M1c shipped; the record
+│                                     is docs/history/m1c_external_validation/,
+│                                     the plan tree is in git history)
 ├── m1d_satisfiability/               what saturation lacks to decide
 │   ├── README.md
 │   ├── open_questions.md
@@ -207,7 +208,7 @@ Stage files have a stable shape:
 |-----------|--------------|----------|----------------|
 | M1 | *(plans removed at P1.22 — git history)* | **shipped** — done 2026-06-17 (gate green) | ~3 months |
 | [M1a](../docs/history/m1a_rust/README.md)               | *(plans removed 2026-08-23 — the record is `docs/history/m1a_rust/`)* | **shipped** — done 2026-08-23, all eleven phases closed. `ein.rs` is the only implementation: `solve zebra2.ein -e` end-to-end **4.53 s → 29.0 ms (157×)** with peak RSS 223 → 17 MB (the PyPy half frozen — nothing can re-measure it), `--jobs N` a further **3.17–4.40×** on 8 cores with every counter identical over 20 712 cells, and the gate **616 tests in 1 m 51 s** with no Python process in any of them | est. ~7 months; ran 2026-08-17 → 2026-08-23 |
-| [M1c](m1c_external_validation/README.md) | **full** — 1 phase + 5 stage files | queued behind M1a — stdlib expectations (`ein test`); its benchmark phase left for M10 2026-08-23 | ~2.5 weeks |
+| [M1c](../docs/history/m1c_external_validation/README.md) | *(plans removed 2026-08-24 — the record is `docs/history/m1c_external_validation/`)* | **shipped** — done 2026-08-24, one phase and five stages. `:expect` on `query`, `ein test` as the fourth subcommand, 45 programs in `tests/stdlib/`, and **38 of 73 never-firing stdlib rules → 0**, held by `cargo test` in 0.04 s. Its benchmark phase left for M10 on 2026-08-23 | est. ~2.5 weeks; ran 2026-08-23 → 2026-08-24 |
 | [M1d](m1d_satisfiability/README.md)     | mixed — P1d.10 at stage depth, P1d.2 / P1d.3 phase READMEs | queued behind M1a — exhaustive search over many models + existence obligations | ~2 months |
 | [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs | next — **reshaped 2026-08-23** around [`EinAf.md`](m2_nl_to_ir/EinAf.md): the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | ~6 months — Level B at ~8 weeks |
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |

@@ -50,8 +50,8 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | **closed moot 2026-08-23 — no harness.** `utils/feature_matrix.py` writes the knob into a copy of the puzzle's `(config …)` block and drives the binary, so all ten levers are reachable and none needs an import |
 | [Q-M1a.17](#q-m1a17--win-bs--80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — they are 7–16 % | **closed 2026-08-20: the mechanism is declined at a measured 1.4–2.2 % ceiling**, in [S1a.6.12](README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot), which took 38 % off `zebra -e` without it |
 | [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | **resolved 2026-08-19: yes, in ein.rs only** — D3; mechanism shipped in S1a.6.10 / S1a.6.11 |
-| [Q-M1a.19](#q-m1a19--how-does-a-program-state-what-it-expects) | How does a program state what it expects? | **moved 2026-08-21 with P1a.11 → [Q-M1c.1](../../../plans/m1c_external_validation/open_questions.md#q-m1c1--how-does-a-program-state-what-it-expects)** |
-| [Q-M1a.20](#q-m1a20--what-may-an-expectation-say) | What may a `(test …)` expectation say? | **moved 2026-08-21 with P1a.11 → [Q-M1c.2](../../../plans/m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say)** |
+| [Q-M1a.19](#q-m1a19--how-does-a-program-state-what-it-expects) | How does a program state what it expects? | **moved 2026-08-21 with P1a.11 → [Q-M1c.1](../m1c_external_validation/open_questions.md#q-m1c1--how-does-a-program-state-what-it-expects)** |
+| [Q-M1a.20](#q-m1a20--what-may-an-expectation-say) | What may a `(test …)` expectation say? | **moved 2026-08-21 with P1a.11 → [Q-M1c.2](../m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say)** |
 | [Q-M1a.21](#q-m1a21--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | **moved 2026-08-21 with P1a.12 → [Q-M1d.1](../../../plans/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)** |
 | [Q-M1a.22](#q-m1a22--is-einbs-id-remap-order-preserving-enough-for-its-own-gate) | Is `.einb`'s id remap order-preserving enough for its own gate? | **resolved 2026-08-23 — (a)**, the recommendation, as [P1a.8](README.md#p1a8--binary-kb-container) shipped it: byte-identity is promised on the fast path and answer-identity always. `ein solve x.einb` is byte-identical to `ein solve x.ein`, and `id_order_invariance` is the measurement it rests on |
 | [Q-M1a.23](#q-m1a23--when-does-the-engine-need-a-python-binding) | When does the engine need a Python binding? | **deferred 2026-08-21** — no consumer today; three named trip-wires |
@@ -120,12 +120,12 @@ Three things follow, and they are the phase's shape:
    ([Q-M1a.14](#q-m1a14--crash-parity)), which are now a name with no
    referent. Neither is changed; both are checked-in expected output, and
    changing either is a decision this phase had no standing to make.
-3. **[P1c.1](../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/README.md)
+3. **[P1c.1](../m1c_external_validation/README.md#p1c1--stdlib-conformance)
    is the partial answer** to what replaces it — it was P1a.11 until
    2026-08-21 — and the argument is why it left: an expectation written next
    to a rule is an *external* check, the only kind that gets stronger when the
    oracle goes, and that makes it
-   [M1c](../../../plans/m1c_external_validation/README.md)'s subject rather than the
+   [M1c](../m1c_external_validation/README.md)'s subject rather than the
    port's.
 
 ## Q-M1a.3 — Parse-error message parity
@@ -1002,17 +1002,17 @@ the harness — 7 T3 cells, 97 T2 — is the specification of
 
 ## Q-M1a.19 — How does a program state what it expects?
 
-**Moved 2026-08-21 to [Q-M1c.1](../../../plans/m1c_external_validation/open_questions.md#q-m1c1--how-does-a-program-state-what-it-expects)**,
+**Moved 2026-08-21 to [Q-M1c.1](../m1c_external_validation/open_questions.md#q-m1c1--how-does-a-program-state-what-it-expects)**,
 with the phase that raised it: P1a.11 is now
-[P1c.1](../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/README.md) in
-[M1c](../../../plans/m1c_external_validation/README.md). The text went unchanged apart
+[P1c.1](../m1c_external_validation/README.md#p1c1--stdlib-conformance) in
+[M1c](../m1c_external_validation/README.md). The text went unchanged apart
 from ids and paths. **The id stays reserved and is never reused.**
 
 ## Q-M1a.20 — What may an expectation say?
 
-**Moved 2026-08-21 to [Q-M1c.2](../../../plans/m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say)**,
+**Moved 2026-08-21 to [Q-M1c.2](../m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say)**,
 with Q-M1a.19 and for the same reason — the two are one decision and
-[S1c.1.2](../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)
+[S1c.1.2](../m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
 still settles both.
 
 ## Q-M1a.21 — May the search stop before the lattice is exhausted?
@@ -1082,7 +1082,7 @@ so that "later" is a condition rather than a shrug.
 
 The phase justified PyO3 with one consumer and the census does not support it.
 [M20](../../../plans/m20_gui/README.md) links the crates into a Tauri backend.
-[M1c](../../../plans/m1c_external_validation/README.md)'s runner is `ein-bench`, Rust, and
+[M1c](../m1c_external_validation/README.md)'s runner is `ein-bench`, Rust, and
 [S10.2](../../../plans/m10_external_benchmarks/s10.2_systems_and_install.md)
 *requires* it to shell out — "`cargo build` never needs Z3" — because a linked
 rival and a subprocess rival are not comparable measurements. `utils/`'s

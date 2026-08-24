@@ -474,7 +474,7 @@ exists to prevent.
 
 **A file may carry several `(query …)` blocks**, each an independent question
 over the same ontology, rules and facts. Before M1c
-[S1c.1.2](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)
+[S1c.1.2](../../../history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
 the **last** one silently won and the rest were discarded at load. `ein solve`
 now runs every one of them in order, printing `query <i> of <n>` above each;
 the flags that name a single output path — `--events`, `--trace`,
@@ -494,7 +494,7 @@ SOLVE. A `:mode` keyword on the query is **obsolete** (vestigial; the engine
 ignores it) — omit it.
 
 **`:expect` — what the answer should be (M1c
-[S1c.1.2](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)).**
+[S1c.1.2](../../../history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)).**
 A query may state its own answer, and the engine checks it: `ein solve` exits
 **1** when the claim is false, and prints what disagreed. Three shapes, and the
 verdict is *implied* by which one is used rather than asserted beside it:
@@ -531,7 +531,7 @@ a pattern) is a load error. `examples/features/10_expect.ein` is the worked
 fixture and `examples/broken/load/expect_*.ein` are the four refusals.
 
 **`ein test` is the runner** (M1c
-[S1c.1.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md)).
+[S1c.1.3](../../../history/m1c_external_validation/README.md#s1c13--ein-test)).
 `ein solve` checks an `:expect` because ignoring one would be worse than not
 having the keyword; `ein test <file|dir>…` exists so that a corpus of them is a
 **status code** rather than something to read:

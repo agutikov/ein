@@ -29,7 +29,7 @@
 ;;; and the suite still passes. With the activators narrowed, the same mutant
 ;;; turns this file into a `Solution` and is caught. An expectation is made of
 ;;; facts and cannot say which rule produced them — the `route` residue
-;;; Q-M1c.2 parks (plans/m1c_external_validation/open_questions.md) — so where
+;;; Q-M1c.2 parks (docs/history/m1c_external_validation/open_questions.md) — so where
 ;;; two rules reach one verdict, a fixture separates them by **activation**.
 ;;; `slot-partition-setup` itself is exercised by `01`–`04`.
 

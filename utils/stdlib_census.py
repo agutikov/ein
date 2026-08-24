@@ -167,7 +167,7 @@ def alpha(form, seen: dict[str, str]) -> str:
     Two rules with the same `alpha` of `(params, :match, :assert)` are the same
     rule under two names — `includes` and `imply2-fwd`, `imply2-reverse` and
     `converse`, which the module comments call twins and aliases. It matters
-    for [S1c.1.4](../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.4_stdlib_corpus.md):
+    for [S1c.1.4](../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus):
     an expectation made of facts cannot tell two identical bodies apart, so
     they are one test plus whatever says they were reached differently — the
     `route` residue Q-M1c.2 parks.

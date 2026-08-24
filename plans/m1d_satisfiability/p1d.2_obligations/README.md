@@ -4,7 +4,7 @@
 **Estimate:** 3.5 weeks (18 days of stages)
 **Depends on:** [P1d.10](../p1d.10_exhaustive_search/README.md)'s census — which
 measures whether the corpus needs this at all — and
-[S1c.1.1](../../m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.1_what_the_stdlib_promises.md)'s
+[S1c.1.1](../../../docs/history/m1c_external_validation/README.md#s1c11--what-the-stdlib-promises-and-what-is-exercised)'s
 promise inventory, which is the same audit this phase's first stage would
 otherwise have to run itself.
 
@@ -127,7 +127,7 @@ had to take before a fork was allowed to narrate less.
   move; the stage that moves them says which and re-baselines with an
   argument.
 - **A negative case per new mechanism**, in the form
-  [P1c.1](../../m1c_external_validation/p1c.1_stdlib_conformance/README.md)
+  [P1c.1](../../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance)
   builds: not only "the obligation closes" but "it does not close *here*",
   which is where a guard bug lives.
 
@@ -164,5 +164,5 @@ had to take before a fork was allowed to narrate less.
   [`elim.ein`](../../../stdlib/elim.ein)
 - [design/06 — Saturation](../../../docs/history/m1a_rust/design/06_saturation.md) ·
   [design/07 — Search layer](../../../docs/history/m1a_rust/design/07_search_layer.md)
-- [P1c.1](../../m1c_external_validation/p1c.1_stdlib_conformance/README.md) —
+- [P1c.1](../../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance) —
   the expectation form every new mechanism here gets tested through

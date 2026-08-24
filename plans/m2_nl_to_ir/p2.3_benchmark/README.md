@@ -75,7 +75,7 @@ deleted — the old acceptance criterion 3, made an instance rather than a
 manual test) and `unsat` (a contradicting clue added). The gold verdict is
 checked by `ein solve -e` on the canonical program before the instance is
 admitted, and it is written into the program as an `:expect` in
-[M1c](../../m1c_external_validation/README.md)'s form, so that `ein test` —
+[M1c](../../../docs/history/m1c_external_validation/README.md)'s form, so that `ein test` —
 M1c's, not shipped yet — re-checks the benchmark's own ground truth on every
 gate run from the day it exists.
 
@@ -108,7 +108,7 @@ version and a digest; the test split never drives a prompt.
   benchmark's ground truth is **certified by the kernel, exhaustively**,
   before a model sees it.
 - The `:expect` forms on the canonical programs are written in
-  [M1c](../../m1c_external_validation/README.md)'s form now, so the ground
+  [M1c](../../../docs/history/m1c_external_validation/README.md)'s form now, so the ground
   truth is re-checked by the gate the day `ein test` ships; until then
   `einaf bench check` compares `ein solve -e`'s summary to `meta.json`
   ([S2.3.1](s2.3.1_families_and_seed_set.md)).
@@ -151,7 +151,7 @@ version and a digest; the test split never drives a prompt.
   human-puzzle menu; [`docs/lib/12`](../../../docs/lib/12-llm-and-reasoning-benchmarks.md) —
   the catalogue the external sources are drawn from, § 7 *Zebra-style custom
   sets — the class of relevance to Ein*.
-- [M1c](../../m1c_external_validation/README.md) — the `:expect` form;
+- [M1c](../../../docs/history/m1c_external_validation/README.md) — the `:expect` form;
   [`corpus/`](../../../corpus/README.md) — the manifest convention the
   benchmark's own manifest follows (`ein-corpus/2`, one entry per file with
   its runs); `examples/gen_zebra2_variants.py` — the one generator the repo

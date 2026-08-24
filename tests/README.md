@@ -26,7 +26,7 @@ has.
 
 ## `stdlib/` — the stdlib conformance corpus
 
-M1c [S1c.1.4](../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.4_stdlib_corpus.md).
+M1c [S1c.1.4](../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus).
 One program per stdlib rule or tight family, each the smallest thing that
 activates it and each stating what it should and should not derive.
 
@@ -35,7 +35,7 @@ goldens compare ein.rs to its own past, and since
 [P1a.10](../docs/history/m1a_rust/README.md#p1a10--one-implementation) there is
 no second engine to compare it to at all. The stdlib was where that gap was
 widest —
-[the census](../plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md)
+[the census](../docs/history/m1c_external_validation/stdlib_census.md)
 measured **38 of 73 rules never firing** in 400 corpus runs, 33 of them never
 even loaded, and 20 more held up by `examples/zebra.ein` alone.
 
@@ -57,7 +57,7 @@ makes a "must not fire" case checkable at all for the 33 rules that carry no
 guard: their only *must not* is scope, and scope is a claim about a whole
 relation. Where a rule needs a relation to stay untouched, the fixture gives it
 one authored edge and closes it there —
-[Q-M1c.6](../plans/m1c_external_validation/open_questions.md#q-m1c6--how-does-an-expectation-say-a-relation-is-empty)
+[Q-M1c.6](../docs/history/m1c_external_validation/open_questions.md#q-m1c6--how-does-an-expectation-say-a-relation-is-empty)
 is why an *empty* relation cannot be named.
 
 **`(open …)` is how a fixture says a negative was *not* invented.** Stored
@@ -79,7 +79,7 @@ sibling.
 **Where two rules reach one verdict, separate them by activation.** An
 expectation is made of facts and cannot say which rule produced them — the
 `route` residue
-[Q-M1c.2](../plans/m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say)
+[Q-M1c.2](../docs/history/m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say)
 parks. On a fully excluded row `no-room-left` refutes and `domain-elimination`
 forces a value against a stored negative, and both end in ⊥; the fixture picks
 one by declaring only its activator. Five files do this — `elim/02`,
@@ -106,7 +106,7 @@ unnamed survivor is a slogan.
 ### What holds this directory up
 
 Two claims about it are **in `cargo test`**, since M1c
-[S1c.1.5](../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.5_gate.md)
+[S1c.1.5](../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate)
 — `ein-infer/tests/stdlib_coverage.rs`, 0.04 s for the whole sweep:
 
 | the claim | what fails without it |
@@ -118,7 +118,7 @@ The first is deliberately scoped to this directory and not to the corpus. The
 corpus-wide version is weaker in exactly the way that matters: a rule that
 happened to fire somewhere inside `examples/zebra.ein` would pass it with **no
 test written**, which is the state
-[the census](../plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md)
+[the census](../docs/history/m1c_external_validation/stdlib_census.md)
 found 20 rules in. Scoping it also found the one rule this suite did not run —
 `transitive`, whose fixture was a two-cycle where the `(neq ?a ?c)` guard
 refuses every match. `algebra/21_transitive.ein` grew a three-chain, and the

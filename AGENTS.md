@@ -63,8 +63,17 @@ constrained-reasoning research.
   chapters (P1.20 Theme K). User-facing; references `docs/kernel/` +
   `docs/api/`, never explains internals; complements
   `inference/zebra_walkthrough.md`.
-- **`docs/history/`** — **shipped milestones, kept as record.** Its first and
-  only entry is [`m1a_rust/`](docs/history/m1a_rust/README.md), the Rust port
+- **`docs/history/`** — **shipped milestones, kept as record.** Two entries.
+  [`m1c_external_validation/`](docs/history/m1c_external_validation/README.md)
+  is the newer and smaller (2026-08-23 → 2026-08-24): one phase and five stages
+  as one README — `:expect` on `query`, `ein test`, 45 programs in
+  `tests/stdlib/`, the coverage number in `cargo test` — plus
+  [`stdlib_census.md`](docs/history/m1c_external_validation/stdlib_census.md),
+  which is the evidence and is **still re-takable**, and seven `Q-M1c.<n>`
+  questions of which two are open on purpose.
+  **`plans/m1c_external_validation/` is gone** — deleted 2026-08-24, the day it
+  shipped (`git log --diff-filter=D -- plans/m1c_external_validation`).
+  The first and larger is [`m1a_rust/`](docs/history/m1a_rust/README.md), the Rust port
   (2026-08-17 → 2026-08-23): one README carrying all eleven phases and 53
   stages, plus what is still *read* rather than merely intended — the eleven
   [`design/`](docs/history/m1a_rust/design/README.md) contracts the crates cite
@@ -204,16 +213,16 @@ constrained-reasoning research.
   [`scaling.md`](docs/history/m1a_rust/measurements/scaling.md) **the CPython
   and PyPy columns are frozen constants**, because the instruments that
   produced them left with the engine they measured. The nineteenth,
-  **`stdlib_census.py`**, is [M1c](plans/m1c_external_validation/README.md)'s
+  **`stdlib_census.py`**, is [M1c](docs/history/m1c_external_validation/README.md)'s
   and the first check aimed at the *stdlib* rather than the engine: 73 rules
   parsed out of `stdlib/*.ein`, then every corpus entry × every declared
   `solve` / `saturate` / `test` run under `--events`, `fire` counted by rule.
   Its first answer, 2026-08-23 — [**38 of 73 rules never
-  fire**](plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md),
+  fire**](docs/history/m1c_external_validation/stdlib_census.md),
   and `examples/zebra.ein` the sole activator of 20 more — is what M1c existed
   to close, and S1c.1.4 closed it: **0 of 73** on the re-take of 2026-08-24,
   180 entries and 557 runs
-  ([§11](plans/m1c_external_validation/p1c.1_stdlib_conformance/stdlib_census.md#11-the-re-take--2026-08-24-and-the-zero-set-is-empty)).
+  ([§11](docs/history/m1c_external_validation/stdlib_census.md#11-the-re-take--2026-08-24-and-the-zero-set-is-empty)).
   `--check` exits 1 while any rule is at zero and is **not** the gate: S1c.1.5
   made that a cargo test, in-process and scoped to `tests/stdlib/`. What stays
   here is the measurement the gate is a yes/no of.

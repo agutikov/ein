@@ -1,7 +1,7 @@
 //! `:expect` — the comparison, and the three rules it implements.
 //!
 //! M1c
-//! [S1c.1.2](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)
+//! [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
 //! T1c.1.2.4. The *shape* is `ein-ir`'s and is tested there; this is what
 //! happens when the shape meets an answer.
 //!
@@ -132,7 +132,7 @@ fn a_complete_extent_holds() {
 /// The rule's whole point, and the one a per-fact `:derives` cannot state: a
 /// **surplus** fact in a named relation is a failure, and the message says
 /// which fact was unexpected — and, since M1c
-/// [T1c.1.3.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md),
+/// [T1c.1.3.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test),
 /// where it came from on the line under it. `(p B H2)` is authored here, so
 /// the provenance is the program's own text; `a_surplus_fact_names_the_rule_that_derived_it`
 /// is the case that matters.
@@ -267,7 +267,7 @@ fn k_is_implied_by_the_number_of_disjuncts() {
 
 /// …and the count is followed by **what the models were**, projected through
 /// the query's own `:goal` — M1c
-/// [T1c.1.3.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md).
+/// [T1c.1.3.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test).
 /// "You said one and I found two" without saying what the second one was
 /// leaves the reader to go and re-run the search by hand, which is the thing
 /// this whole form is for not having to do.
@@ -482,7 +482,7 @@ fn too_many_models_is_a_failure_not_an_unchecked_one() {
 /// circuited above the shortfall check that says so, so a claim of two models
 /// against a depth-1 search came back `FAILED` — a refutation on the strength
 /// of a search that stopped. Found by M1c
-/// [S1c.1.3](../../../../plans/m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.3_test_subcommand.md),
+/// [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test),
 /// where `ein test` exhausts by default and `--max-set-size` is the only thing
 /// left that can truncate a run.
 #[test]

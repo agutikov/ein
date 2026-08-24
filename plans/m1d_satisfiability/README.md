@@ -4,7 +4,7 @@
 estimates. Only [P1d.10](p1d.10_exhaustive_search/README.md) is written to stage
 depth; see § How deep this plan is.
 **P1d.4 arrived 2026-08-24**, from M1c: building
-[`:expect`](../m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.2_test_form.md)
+[`:expect`](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
 produced a form that can *state* "these are all the models" and can only
 *verify* it by exhausting a search that does not finish — which is this
 milestone's opening measurement, met from the other side.
@@ -265,8 +265,8 @@ actually want.
 - [design/06](../../docs/history/m1a_rust/design/06_saturation.md) ·
   [design/07](../../docs/history/m1a_rust/design/07_search_layer.md) — the loop and the search
   this milestone changes
-- [M1c](../m1c_external_validation/README.md) — the sibling created the same
-  day: [S1c.1.1](../m1c_external_validation/p1c.1_stdlib_conformance/s1c.1.1_what_the_stdlib_promises.md)'s
+- [M1c](../../docs/history/m1c_external_validation/README.md) — the sibling created the same
+  day: [S1c.1.1](../../docs/history/m1c_external_validation/README.md#s1c11--what-the-stdlib-promises-and-what-is-exercised)'s
   promise inventory is P1d.2's first input, and the ASP/Datalog cells of
   [M10](../m10_external_benchmarks/README.md) are
   external evidence for its premise
