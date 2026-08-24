@@ -275,3 +275,4 @@
 {"e": "hyp", "n": 274, "fact": "(color-of H3 Red)", "verdict": "negated_fact"}
 {"e": "hypskip", "n": 275, "relation": "color-of", "reason": "self_edge", "object": "Red"}
 {"e": "hypskip", "n": 276, "relation": "is-a", "reason": "closed_relation"}
+{"e": "layer", "n": 277, "layer": 1, "alive": 4, "frontier": 4, "joined": 4, "dropped_dead": 0, "dropped_nogood": 0, "candidates": 4, "entered": 1, "alive_enterings": 1, "dead_pre": 0, "dead_post": 0, "models": 1, "nogoods_emitted": 0, "nogoods_subsumed": 0, "writebacks": 0, "next": 0}

@@ -3,6 +3,11 @@
 **Estimate:** ~2.5 months focused — 4 phases, 17 stages, ~9.5 weeks of stage
 estimates. Only [P1d.10](p1d.10_exhaustive_search/README.md) is written to stage
 depth; see § How deep this plan is.
+**S1d.10.1 is done and P1d.10 moved to the end** (2026-08-24): the census the
+milestone opened with is [taken](p1d.10_exhaustive_search/layer_census.md), and
+what it found — 96.7 % of the corpus's search work is an *exact* powerset walk —
+is [P1d.2](p1d.2_obligations/README.md)'s input rather than a question P1d.10
+can answer on its own. See [§ Phases](#phases).
 **P1d.4 arrived 2026-08-24**, from M1c: building
 [`:expect`](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
 produced a form that can *state* "these are all the models" and can only
@@ -36,7 +41,25 @@ finish — because depths 4 and 5 exist only to prove there are no more.
 | `-m 1` | 96 | 0 | 24 ms |
 | `-m 2` | 4 656 | 28 | 1.4 s |
 | `-m 3` | 48 745 | **32 — all of them** | 25.3 s |
-| `-m 5` (`-e`) | — | — | **killed at 30 min** |
+| `-m 4` | 205 470 | 32 | — |
+| `-m 5` (`-e`) | **618 076** | **32** | **416 s** — it finishes |
+
+> **It finishes, and the number was predicted before it was run.** S1d.10.1's
+> census row is emitted on every way out of a layer, so `-E` stops a run
+> *after* the next layer is generated and the row still reports what the
+> generation proposed: layers 4 and 5 came back at **156 725** and **412 606**
+> candidates from two budget probes, summing to 618 076 — which is exactly what
+> the full `solve -e` then entered, in **6 min 56 s**
+> ([`layer_census.md` §4](p1d.10_exhaustive_search/layer_census.md#4-zebra2-minus-15-all-five-layers)).
+> The "killed at 30 min" of 2026-08-20 stands as a record of that session and
+> not of this engine.
+>
+> **What it reports is `Ambiguity k=32, exhausted=false`** — the frontier at
+> depth 5 is not empty, so the cap stopped it, not the lattice. Every model was
+> found at depth 3 and **569 331 of the 618 076 enterings — 92.1 % — happen
+> after the last new model.** That gap is the milestone, stated in one run:
+> finding is cheap, *proving there is nothing left* is the whole cost, and
+> `exhausted` is still false at the end of seven minutes.
 
 **Semantically**, from the note: saturation computes what *must follow*; it has
 no vocabulary for what *must exist*. `bijective ≡ functional ∧ injective ∧
@@ -147,6 +170,17 @@ Written down now, so the phases test it rather than assume it:
    the win is much smaller than the arithmetic above suggests.
    [S1d.10.1](p1d.10_exhaustive_search/s1d.10.1_why_it_does_not_finish.md)'s
    census is what measures it.
+
+   **Measured 2026-08-24 — and the answer is no, by a wide margin**
+   ([`layer_census.md`](p1d.10_exhaustive_search/layer_census.md)). The
+   declarations are enough on **4** of the 49 corpus entries that search at
+   all — `zebra`, `zebra2`, `zebra2-hints`, `branching/07`, which are the four
+   the engine was tuned on. On the other **45** layer 1 kills nothing, and on
+   **25** the number of commitments entered is *exactly* `Σₖ C(alive, k)`:
+   `features/01_not_and_absent -e` enters `C(35, 1..5) = 384 167`, term for
+   term. Those 25 cells are **96.7 %** of the corpus's search work. The
+   powerset in § What that means for this engine is not an upper bound or a
+   worst case — it is what 96.7 % of the search *is*.
 2. **Branching on obligations changes the traversal, therefore the counters.**
    [design/08](../../docs/history/m1a_rust/design/08_parallelism.md) §7 rejected parallel
    depth-first on exactly that ground, and
@@ -165,22 +199,36 @@ that is the note's thesis measured in someone else's language.
 
 | phase | title | stages | est. | gate |
 |---|---|---|---|---|
-| [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
 | [P1d.2](p1d.2_obligations/README.md) | Obligations — the half of the vocabulary that says *must* | 6 | 3.5 w | a saturated state can report what it still owes, and a puzzle can state a requirement |
 | [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 | 1.5 w | either a compact representation of the 32 models, or a written argument for why enumeration is the answer |
 | [P1d.4](p1d.4_model_set_closure/README.md) | Closing the model set — the claim nothing can state | 3 | 1.5 w | a written answer to "may a puzzle require its own model count", and `zebra2-minus-15`'s 32 models either verifiable or the pipeline sentence rewritten |
+| [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 (1 done) | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
 
-17 stages, 47 days of stage estimates ≈ 9.5 weeks. **The table is in work
-order, not id order** — the census phase was P1d.1 until 2026-08-23, when it
-was renumbered P1d.10 at the user's direction; the id moved and the sequence
-did not. **That order is deliberate**: P1d.10 measures before P1d.2 designs, for
+17 stages, 47 days of stage estimates ≈ 9.5 weeks — and **the table is now in
+id order, because the work order caught up with it.**
+
+**P1d.10 ran first and now runs last**, moved 2026-08-24 at the user's
+direction, and the two facts are the same fact. It came first for
 [S1a.6.1](../../docs/history/m1a_rust/README.md#s1a61--fresh-profile-and-bench-baseline)'s and
 [S1a.7.0](../../docs/history/m1a_rust/README.md#s1a70--the-speculation-audit)'s
-reason — both phases found that the premise they were built on was wrong, and
-found it in a stage that cost days rather than weeks. P1d.10's stopping-criterion
-stage ([S1d.10.3](p1d.10_exhaustive_search/s1d.10.3_stopping_criterion.md)) may
-well hand its answer forward to P1d.2 rather than finding one itself; that is a
-legitimate outcome and it is why the census comes first.
+reason — measure before designing, because both of those phases found their
+premise wrong in a stage that cost days rather than weeks. **It did exactly
+that and then it was done**:
+[S1d.10.1](p1d.10_exhaustive_search/s1d.10.1_why_it_does_not_finish.md)'s
+census ([`layer_census.md`](p1d.10_exhaustive_search/layer_census.md),
+2026-08-24) is the measurement the rest of the milestone needed, and it is
+taken.
+
+What is left of P1d.10 — the depth accounting, the stopping criterion, conflict
+mining, the `exhausted` contract — is **about the search obligations are going
+to change**, and answering those questions against today's traversal would be
+answering them twice.
+[S1d.10.3](p1d.10_exhaustive_search/s1d.10.3_stopping_criterion.md)'s own text
+already leaned that way ("may well hand its answer forward to P1d.2 rather than
+finding one itself"); the census settled it, because two of its three candidates
+are decided by numbers P1d.2 will move: (b) depends on `alive` shrinking, and
+`alive` shrinks in **3 of 46** multi-layer cells today — an obligation-driven
+generator is the one thing that would change that.
 
 ## How deep this plan is
 

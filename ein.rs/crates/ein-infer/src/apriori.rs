@@ -99,7 +99,36 @@ pub fn apriori_prefix_join(terms: &Terms, a_prev: &[CanonicalSetId]) -> Vec<Cano
     out
 }
 
-/// True iff `candidate` should be explored.
+/// Why the downward-closure filter turned a candidate away — the census's
+/// split ([S1d.10.1](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.1_why_it_does_not_finish.md)).
+///
+/// **Attributed in check order, and that is the reading that makes it
+/// useful.** A candidate can fail both questions at once; this calls that
+/// [`Filter::Dead`], so [`Filter::Nogood`] means *every element is still live
+/// and a learned clause covered the set anyway*. That second count is the
+/// clause store's yield — what the previous layers' deaths bought the next
+/// layer's generation — and summing the two would hide exactly it.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Filter {
+    /// Explore it.
+    Keep,
+    /// An element has left `alive`.
+    Dead,
+    /// Every element is alive; a learned clause is a subset of the set.
+    Nogood,
+}
+
+/// True iff `candidate` should be explored — [`filter_reason`] with the
+/// reason discarded.
+pub fn filter_candidate(
+    candidate: &[FactId],
+    alive: &FxHashSet<FactId>,
+    nogoods: &ein_core::Nogoods,
+) -> bool {
+    filter_reason(candidate, alive, nogoods) == Filter::Keep
+}
+
+/// The filter, and *which* of its two questions rejected the candidate.
 ///
 /// Dropped when any element has left `alive` — which covers the single-element
 /// negatives the singleton-death writeback wrote since `a_prev` was computed —
@@ -108,20 +137,24 @@ pub fn apriori_prefix_join(terms: &Terms, a_prev: &[CanonicalSetId]) -> Vec<Cano
 ///
 /// The "every (k−1)-subset ∈ `a_prev`" condition holds by
 /// [`apriori_prefix_join`]'s construction and is deliberately not re-verified.
-pub fn filter_candidate(
+pub fn filter_reason(
     candidate: &[FactId],
     alive: &FxHashSet<FactId>,
     nogoods: &ein_core::Nogoods,
-) -> bool {
+) -> Filter {
     if !candidate.iter().all(|h| alive.contains(h)) {
-        return false;
+        return Filter::Dead;
     }
     let mut set: Vec<FactId> = candidate.to_vec();
     // determinism-ok: identity order as `is_subset`'s precondition — the
     // predicate is a set question, so the order decides nothing and only has
     // to agree with the one the clauses were normalised under (`nogoods`).
     set.sort_unstable();
-    !nogoods.iter().any(|clause| is_subset(clause, &set))
+    if nogoods.iter().any(|clause| is_subset(clause, &set)) {
+        Filter::Nogood
+    } else {
+        Filter::Keep
+    }
 }
 
 /// `clause ⊆ set`, both sorted by `FactId` — a merge walk rather than a hash

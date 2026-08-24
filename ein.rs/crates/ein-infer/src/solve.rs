@@ -83,6 +83,69 @@ impl MonotonicStats {
     }
 }
 
+/// One layer's **clause-yield row** — the census
+/// [S1d.10.1](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.1_why_it_does_not_finish.md)
+/// exists to take, and the `layer` event's whole payload.
+///
+/// The mechanism the phase opens on is *a layer that kills nothing learns
+/// nothing*: pruning in this engine comes from deaths, and a death's product
+/// is a learned clause (and, at width 1, a `(not h)` writeback). What no
+/// counter said before this struct is the other end of that sentence — **what
+/// the clauses the search already holds did to the next layer's generation**.
+/// [`Self::joined`] is what the prefix-join proposed, [`Self::dropped_nogood`]
+/// is what the clause store removed from it, and their ratio is the phase's
+/// core measurement. On `zebra2-minus-15` layer 1 kills nothing, so layer 2 is
+/// the full `C(96, 2)` with `dropped_nogood = 0`; on `zebra2` layer 1 kills 67
+/// of 101 and the same column is what makes the search tractable.
+///
+/// **Not part of [`MonotonicStats`]**, and for [`JobStats`]'s reason turned
+/// around: these are per *layer*, not per run, and a run's verdict surface
+/// must not grow a field whose value depends on how the traversal was sliced.
+/// The transport is the event stream — one `layer` line per layer, which a
+/// census script reads across the whole corpus.
+#[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
+pub struct LayerCensus {
+    /// `|alive|` when the layer opened — hypothesis facts still unrefuted.
+    pub alive: u64,
+    /// `|A_prev|`, the frontier this layer joins over. **Not the previous
+    /// row's [`Self::next`]**: between the two sits the inter-layer retain,
+    /// which drops every commitment an element left `alive` under, so
+    /// `next − frontier` is what recomputing `alive` at the barrier was worth.
+    pub frontier: u64,
+    /// Candidates [`crate::apriori::apriori_prefix_join`] proposed. At layer 1
+    /// there is no join and this is [`Self::alive`], the singletons.
+    pub joined: u64,
+    /// …rejected because an element had left `alive`
+    /// ([`crate::apriori::Filter::Dead`]).
+    pub dropped_dead: u64,
+    /// …rejected because a learned clause covers the set
+    /// ([`crate::apriori::Filter::Nogood`]). **The column nothing reported
+    /// before.**
+    pub dropped_nogood: u64,
+    /// Survivors — what the layer's loop was handed.
+    pub candidates: u64,
+    /// …and how many of them were actually entered, which is fewer exactly
+    /// when a budget or `stop_after` cut the layer.
+    pub entered: u64,
+    pub alive_enterings: u64,
+    pub dead_pre: u64,
+    pub dead_post: u64,
+    /// Distinct solution nodes recorded *in this layer* — the "found all
+    /// models" column S1d.10.2 keeps apart from "proved there are no more".
+    pub models: u64,
+    pub nogoods_emitted: u64,
+    pub nogoods_subsumed: u64,
+    /// Singleton `(not h)` writebacks emitted **during** this layer — one of
+    /// root's two Phase-2 writes, and the only one that happens inside a
+    /// layer. The other, the forced-positive promotion, runs at the boundary
+    /// *after* the row closes and is counted by
+    /// [`BaseStats::forced_positives`] instead.
+    pub writebacks: u64,
+    /// The frontier handed to the next layer, before the inter-layer
+    /// `alive` retain.
+    pub next: u64,
+}
+
 /// The `store_lattice` proof's counters — the shared base plus three of its
 /// own.
 #[derive(Clone, Copy, Default, PartialEq, Debug)]
@@ -483,6 +546,7 @@ pub fn solve(
         },
         deferred: Vec::new(),
         jobs: JobStats::default(),
+        census: LayerCensus::default(),
         #[cfg(feature = "parallel")]
         pool: (opts.jobs > 1)
             .then(|| {
@@ -573,6 +637,11 @@ struct Run<'o> {
     /// What the fan-out did — see [`JobStats`], and note that it is not part
     /// of [`MonotonicStats`] on purpose.
     jobs: JobStats,
+    /// The layer being counted — reset at every layer's open, emitted at its
+    /// close. Lives here rather than in `phase2`'s frame because the two
+    /// columns nothing else reports are bumped four call frames down, in
+    /// [`Self::handle_dead`] and [`Self::integrate`].
+    census: LayerCensus,
     /// The fan-out's workers, **built once per solve and parked between
     /// batches**.
     ///
@@ -740,13 +809,33 @@ impl Run<'_> {
             self.stats.base.layers_explored = layer as u64;
             dumper.layer_start(layer, root, terms, alive.len());
 
+            // T1d.10.1.1 — the layer's census row opens here and closes at
+            // `layer_end`. The `base` snapshot is the denominator's other
+            // half: every per-layer number below is a difference of two
+            // whole-run counters, so a counter added to `BaseStats` is in the
+            // census without anyone re-deriving it.
+            let base_at_open = self.stats.base;
+            let models_at_open = self.lstate.nodes.len() as u64;
+            self.census = LayerCensus {
+                alive: alive.len() as u64,
+                frontier: a_prev.len() as u64,
+                ..LayerCensus::default()
+            };
+
             let candidates = if layer == 1 {
+                // No join at layer 1: `a_prev` *is* the singletons of `alive`,
+                // already filtered by construction.
+                self.census.joined = a_prev.len() as u64;
                 a_prev.clone()
             } else {
                 let store = root.nogoods().clone();
                 let guard = store.read().expect("the no-good store");
-                self.generate_layer(terms, &a_prev, &alive, &guard)
+                let mut census = std::mem::take(&mut self.census);
+                let out = self.generate_layer(terms, &a_prev, &alive, &guard, &mut census);
+                self.census = census;
+                out
             };
+            self.census.candidates = candidates.len() as u64;
             let mut candidates = order_candidates(root, terms, candidates, &self.cfg.lattice_order)
                 .map_err(|e| SolveError::Compile(CompileError(e.to_string())))?;
             // After `order_candidates`, never instead of it — the shuffle is a
@@ -865,7 +954,16 @@ impl Run<'_> {
 
                     for (k, sp) in speculated.into_iter().enumerate() {
                         let c = &candidates[i + k];
-                        self.before_commit(i + k, root, terms, events, dumper)?;
+                        if let Err(e) = self.before_commit(i + k, root, terms, events, dumper) {
+                            self.close_census(
+                                events,
+                                layer,
+                                base_at_open,
+                                models_at_open,
+                                a_layer.len(),
+                            );
+                            return Err(e);
+                        }
                         let Speculated {
                             entered,
                             region,
@@ -927,6 +1025,13 @@ impl Run<'_> {
                             terms.provs.swap_fork(saved);
                         }
                         if stop? {
+                            self.close_census(
+                                events,
+                                layer,
+                                base_at_open,
+                                models_at_open,
+                                a_layer.len(),
+                            );
                             return Ok(());
                         }
                     }
@@ -938,7 +1043,10 @@ impl Run<'_> {
                 if !fanned_out {
                     self.jobs.sequential += 1;
                 }
-                self.before_commit(i, root, terms, events, dumper)?;
+                if let Err(e) = self.before_commit(i, root, terms, events, dumper) {
+                    self.close_census(events, layer, base_at_open, models_at_open, a_layer.len());
+                    return Err(e);
+                }
                 // T1a.7.1.7 — everything derived from here to `close_fork` is
                 // the *fork's* own, and dies with the fork. The region covers
                 // the whole entering and not just `try_commitment_set`:
@@ -1006,6 +1114,7 @@ impl Run<'_> {
                     entered,
                     &mut a_layer,
                 )? {
+                    self.close_census(events, layer, base_at_open, models_at_open, a_layer.len());
                     return Ok(());
                 }
                 i += 1;
@@ -1025,6 +1134,7 @@ impl Run<'_> {
             // The layer barrier. With `integrate_every = Some(usize::MAX)`
             // this is the *only* one, which is the "one KB per layer" mode.
             self.integrate(root, terms, events);
+            self.close_census(events, layer, base_at_open, models_at_open, a_layer.len());
             dumper.layer_end(layer, root, terms, alive.len(), a_layer.len());
             // T1a.7.2.0 — and after the dumper, so what it renders is the KB
             // it renders today. Coalescing here rather than at the next
@@ -1074,6 +1184,64 @@ impl Run<'_> {
         Ok(())
     }
 
+    /// Close the layer's census row and narrate it — the `layer` event.
+    ///
+    /// Every column but three is a difference of two whole-run counters taken
+    /// at the layer's open and its close, which is what keeps the row honest
+    /// when a budget cuts the layer half-way: `entered < candidates` is then
+    /// the cut, stated rather than inferred.
+    ///
+    /// Called from the layer barrier, **after** [`Self::integrate`], so a
+    /// deferred clause counts in the layer whose entering produced it — and
+    /// from **every** other way out of a layer: the `stop_after` cut and the
+    /// `-T` / `-E` budget, on both the sequential and the fanned-out path. A
+    /// row per layer with no exceptions is what makes `Σ entered =
+    /// enterings_total` an invariant rather than a usual case, and it is what
+    /// turns a budget into a **probe**: `solve -e -m 4 -E <n>` on a search
+    /// nobody can finish reports what layer 4's join actually proposed, which
+    /// is the number [S1d.10.2](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.2_depth_required.md)
+    /// wants and no completed run can supply.
+    fn close_census(
+        &mut self,
+        events: &mut Events,
+        layer: u32,
+        at_open: BaseStats,
+        models_at_open: u64,
+        next: usize,
+    ) {
+        let now = self.stats.base;
+        let c = &mut self.census;
+        c.entered = now.enterings_total - at_open.enterings_total;
+        c.alive_enterings = now.enterings_alive - at_open.enterings_alive;
+        c.dead_pre = now.enterings_dead_pre - at_open.enterings_dead_pre;
+        c.dead_post = now.enterings_dead_post - at_open.enterings_dead_post;
+        c.nogoods_emitted = now.nogoods_emitted - at_open.nogoods_emitted;
+        c.nogoods_subsumed = now.nogoods_subsumed - at_open.nogoods_subsumed;
+        c.models = self.lstate.nodes.len() as u64 - models_at_open;
+        c.next = next as u64;
+        if events.on() {
+            let c = self.census;
+            events.emit("layer", |l| {
+                l.num("layer", layer as i64);
+                l.num("alive", c.alive as i64);
+                l.num("frontier", c.frontier as i64);
+                l.num("joined", c.joined as i64);
+                l.num("dropped_dead", c.dropped_dead as i64);
+                l.num("dropped_nogood", c.dropped_nogood as i64);
+                l.num("candidates", c.candidates as i64);
+                l.num("entered", c.entered as i64);
+                l.num("alive_enterings", c.alive_enterings as i64);
+                l.num("dead_pre", c.dead_pre as i64);
+                l.num("dead_post", c.dead_post as i64);
+                l.num("models", c.models as i64);
+                l.num("nogoods_emitted", c.nogoods_emitted as i64);
+                l.num("nogoods_subsumed", c.nogoods_subsumed as i64);
+                l.num("writebacks", c.writebacks as i64);
+                l.num("next", c.next as i64);
+            });
+        }
+    }
+
     /// Layer *L+1*'s candidates — the prefix join, then the downward-closure
     /// filter, **which is the fan-out's second one**.
     ///
@@ -1092,14 +1260,32 @@ impl Run<'_> {
     /// trusting a filtered collect to be ordered — a layer's candidate order
     /// *is* the traversal, so it is worth spending a `Vec<bool>` to make the
     /// claim structural.
+    /// The **census** is why this returns the reason rather than a `bool`
+    /// (T1d.10.1.1). `filter_reason` asks exactly the questions
+    /// `filter_candidate` already asked and in the same order, so the split
+    /// costs one byte per candidate in the mask that was a `bool` anyway, and
+    /// a fold over it — against a predicate that allocates a `Vec` and walks
+    /// the whole clause store per candidate. Measured on
+    /// `zebra2-minus-15 -m 3`: within the run-to-run noise of the 48 745-
+    /// entering search it counts, which is why it is unconditional rather
+    /// than behind [`ein_core::counters`]'s feature. A counter that has to be
+    /// asked for is a counter no corpus sweep has.
     fn generate_layer(
         &self,
         terms: &Terms,
         a_prev: &[CanonicalSetId],
         alive: &FxHashSet<FactId>,
         nogoods: &ein_core::Nogoods,
+        census: &mut LayerCensus,
     ) -> Vec<CanonicalSetId> {
+        use crate::apriori::Filter;
         let joined = crate::apriori::apriori_prefix_join(terms, a_prev);
+        census.joined = joined.len() as u64;
+        let mut tally = |verdict: Filter| match verdict {
+            Filter::Keep => {}
+            Filter::Dead => census.dropped_dead += 1,
+            Filter::Nogood => census.dropped_nogood += 1,
+        };
         #[cfg(feature = "parallel")]
         if let Some(pool) = self.pool.as_ref()
             && joined.len() > 1
@@ -1109,18 +1295,23 @@ impl Run<'_> {
             pool.install(|| {
                 joined
                     .par_iter()
-                    .map(|c| crate::apriori::filter_candidate(c, alive, nogoods))
+                    .map(|c| crate::apriori::filter_reason(c, alive, nogoods))
                     .collect_into_vec(&mut keep)
             });
+            keep.iter().copied().for_each(&mut tally);
             return joined
                 .into_iter()
                 .zip(keep)
-                .filter_map(|(c, keep)| keep.then_some(c))
+                .filter_map(|(c, verdict)| (verdict == Filter::Keep).then_some(c))
                 .collect();
         }
         joined
             .into_iter()
-            .filter(|c| crate::apriori::filter_candidate(c, alive, nogoods))
+            .filter(|c| {
+                let verdict = crate::apriori::filter_reason(c, alive, nogoods);
+                tally(verdict);
+                verdict == Filter::Keep
+            })
             .collect()
     }
 
@@ -1684,6 +1875,7 @@ impl Run<'_> {
             if deferring {
                 self.deferred.push(Deferred::Writeback(c[0]));
             } else {
+                self.census.writebacks += 1;
                 write_negation(root, terms, events, c[0]);
             }
         }
@@ -1730,7 +1922,10 @@ impl Run<'_> {
                 Deferred::Nogood(c) => {
                     crate::nogoods::emit_nogood(root, terms, events, &c, 1);
                 }
-                Deferred::Writeback(h) => write_negation(root, terms, events, h),
+                Deferred::Writeback(h) => {
+                    self.census.writebacks += 1;
+                    write_negation(root, terms, events, h);
+                }
             }
         }
     }

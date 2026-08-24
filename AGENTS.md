@@ -192,7 +192,7 @@ constrained-reasoning research.
   in the repo — the divergence list, and
   [`docs/kernel/defined_behaviour.md`](docs/kernel/defined_behaviour.md), which
   states what "whatever ein.py did" used to define.
-- **`utils/`** — **nineteen scripts, all of them driving `ein.rs`** since M1a
+- **`utils/`** — **twenty scripts, all of them driving `ein.rs`** since M1a
   [S1a.10.4](docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine),
   which deleted the eleven that compared two engines or measured the Python
   one, plus `corpus_cost.py` from
@@ -226,6 +226,18 @@ constrained-reasoning research.
   `--check` exits 1 while any rule is at zero and is **not** the gate: S1c.1.5
   made that a cargo test, in-process and scoped to `tests/stdlib/`. What stays
   here is the measurement the gate is a yes/no of.
+  The twentieth, **`layer_census.py`**, is
+  [M1d](plans/m1d_satisfiability/README.md) S1d.10.1's and asks what a *layer of
+  the search* kills and what the killing is worth: every entry under `solve -e`
+  twice — bare for the wall and the RSS, narrated for the new **`layer`** event's
+  sixteen counters, of which `dropped_nogood` (what the learned clauses removed
+  from the next layer's join) is the one nothing reported before. Its answer,
+  2026-08-24: of 2 232 330 joined candidates corpus-wide **0** were dropped for a
+  dead element and **31 303 — 1.4 %** by a clause, and for **25 of the 49**
+  entries that search at all the enterings are *exactly* `Σₖ C(alive, k)`
+  ([layer_census.md](plans/m1d_satisfiability/p1d.10_exhaustive_search/layer_census.md)).
+  It writes `--events` to a **FIFO**, because the run it exists to measure
+  narrates 72.6 M events.
 - **`build.sh`** — **everything this repo builds, in one command**: the Rust
   workspace (`--release` by default, into `ein.rs/target/`) and then the three
   C baselines in `c/` (into the gitignored `build/`). `--debug`,

@@ -137,6 +137,7 @@ carrying it makes the heap's pop order checkable rather than inferred.
 | `hyp` | each constructed hypgen candidate | `fact`, `verdict` ∈ {`emitted`, the name of the filter that dropped it} |
 | `hypskip` | a **pre-candidate** skip — *verbose only* | `relation`, `reason`, `object` (for `self_edge`) |
 | `enter` | `try_commitment_set` returns | `layer`, `commitment`, `kind`, `n_firings`, `core` |
+| `layer` | every way out of a layer | the census row — sixteen counters, below |
 | `nogood` | `emit_nogood` | `clause`, `emitted`, `subsumed` |
 | `writeback` | singleton `(not h)` / forced-positive promotion | `fact`, `reason` |
 
@@ -151,6 +152,50 @@ A pre-candidate skip gets its own kind rather than a `hyp` with an invented
 `relation_not_whitelisted` and `no_hypothesis_relation` are decisions about a
 *relation*, and `self_edge` about an (object, relation) pair. They are verbose
 only — `self_edge` alone fires once per (object, filler, relation, slot).
+
+#### `layer` — the clause-yield census
+
+Added by M1d
+[S1d.10.1](../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.1_why_it_does_not_finish.md),
+because the stream said what a layer's deaths *produced* and nothing said what
+the resulting clauses *removed*. One line per layer, carrying
+`ein_infer::LayerCensus` whole:
+
+| field | what it counts |
+|---|---|
+| `layer` | 1-based depth — the cardinality of the commitments this layer entered |
+| `alive` | hypothesis facts still unrefuted when the layer opened |
+| `frontier` | the sets this layer joins over. **Not the previous line's `next`**: between them sits the inter-layer retain, so the difference is what recomputing `alive` at the barrier was worth |
+| `joined` | what the Apriori prefix join proposed. Layer 1 has no join, so it is `alive` |
+| `dropped_dead` | …rejected because an element had left `alive` |
+| `dropped_nogood` | …rejected because a learned clause covers the set. **The column that did not exist** |
+| `candidates` | survivors — what the layer's loop was handed |
+| `entered` | how many it actually entered; fewer exactly when `-n`, `-T` or `-E` cut the layer |
+| `alive_enterings`, `dead_pre`, `dead_post` | the entering split, for this layer |
+| `models` | **distinct** solution nodes added — after the `state_key` dedup, so it is smaller than the number of enterings that reached one |
+| `nogoods_emitted`, `nogoods_subsumed` | clauses learned, and clauses a held one already covered |
+| `writebacks` | singleton `(not h)` writes. A forced positive runs *after* the barrier and is `MonotonicStats::forced_positives` |
+| `next` | the frontier handed on, before the retain |
+
+Every counter but `alive`, `frontier`, `joined` and the two `dropped_*` is a
+difference of two whole-run counters taken at the layer's open and its close, so
+a field added to `BaseStats` reaches this line without anyone re-deriving it.
+
+**The two `dropped_*` are attributed in check order.** A candidate can fail both
+questions; that is `dropped_dead`, so `dropped_nogood` means *every element
+still alive and a learned clause covered the set anyway* — which is the clause
+store's yield, and the reason for the split.
+
+**A layer emits its row however it ends** — the barrier, an `-n` cut, a `-T` or
+`-E` budget — so `Σ entered` is `enterings_total` on any run at all. That is
+what makes a budget a **probe**: `solve -e -m 4 -E <enterings so far + 1>`
+*generates* layer 4 and reports what the join proposed without entering it,
+which is how [S1d.10.1](../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/layer_census.md)
+priced a depth nobody can run.
+
+**No timing here.** A `ms` field would make the stream non-deterministic and the
+goldens unreadable; ground rule 4 says an instrumented run is not a benchmark
+anyway. `utils/layer_census.py` times a **second, bare** child for that reason.
 
 ## Comparison
 

@@ -52,8 +52,8 @@ pub mod spec_audit;
 pub mod verdict;
 
 pub use apriori::{
-    CanonicalSetId, apriori_prefix_join, canonicalise, filter_candidate, generate_layer, layer_1,
-    order_candidates,
+    CanonicalSetId, Filter, apriori_prefix_join, canonicalise, filter_candidate, filter_reason,
+    generate_layer, layer_1, order_candidates,
 };
 pub use canon::{state_digest, state_key};
 pub use closed::{emit_closed, producible_relations};
@@ -92,7 +92,7 @@ pub use shape::{
     plan_shape, plan_shape_with, saturate_events, solve_shape,
 };
 pub use solve::{
-    DeadCommitment, Dumper, EnteringInfo, LatticeProof, LatticeStats, MonotonicStats, NoDumper,
-    OnBudget, SolveError, SolveOptions, Solved, solve,
+    DeadCommitment, Dumper, EnteringInfo, LatticeProof, LatticeStats, LayerCensus, MonotonicStats,
+    NoDumper, OnBudget, SolveError, SolveOptions, Solved, solve,
 };
 pub use verdict::{Answer, Solution, Verdict, goal_bindings, query_value};

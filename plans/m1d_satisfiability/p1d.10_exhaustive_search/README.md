@@ -3,8 +3,14 @@
 **Milestone:** [M1d — From saturation to satisfiability](../README.md)
 **Estimate:** 3 weeks (15 days of stages)
 **Id:** **P1d.10** since 2026-08-23 — P1d.1 before that, and M1a's P1a.12
-before that. Nothing but the number changed either time; it still runs first
-of M1d's three phases ([§ Phases](../README.md#phases)).
+before that.
+**Runs last**, since 2026-08-24, and that is the first time the id and the
+order have agreed ([§ Phases](../README.md#phases)). It ran *first* long enough
+to take its census — [S1d.10.1](s1d.10.1_why_it_does_not_finish.md) is **done**,
+2026-08-24, and § What the census settled is its result — and the four stages
+that remain are all about a search that [P1d.2](../p1d.2_obligations/README.md)
+is going to change. Answering them against today's traversal would be answering
+them twice.
 **Depends on:** [M1a](../../../docs/history/m1a_rust/README.md)'s
 [P1a.7](../../../docs/history/m1a_rust/README.md#p1a7--parallelism) — cores change the
 constant, not the exponent, and this phase is about the exponent. Knowing
@@ -79,20 +85,85 @@ catalogue, and its cluster note is the reason to read it first:
 
 E10 (iterative deepening) is closed as "inapplicable — cardinality layering
 already *is* breadth-first deepening". **Every one of those judgements was
-measured on a puzzle with a unique model.** On zebra2, layer 1 kills 67 of 101
-candidates and the pruning is what makes the search tractable; on
+measured on a puzzle with a unique model.** On zebra2, layer 1 kills **32 of
+its 56** candidates and the pruning is what makes the search tractable; on
 zebra2-minus-15 layer 1 kills nothing at all. Those are different regimes, and
 F9 measured one of them.
+
+> **That line read "67 of 101" until the census took it.** Both numbers are
+> real and neither is layer 1's: an exhaustive `zebra2` is **101 enterings**
+> over two layers, of which **67** die. Layer 1 is 56 of them and kills 32.
+> The correction does not move the argument — 57 % against 66 % is the same
+> regime — and it is here because [S1a.9.4](../../../docs/history/m1a_rust/README.md#s1a94--documentation)'s
+> rule applies to a plan as much as to a page: a re-take that finds an error
+> reports the error.
 
 This is [S1a.6.4](../../../docs/history/m1a_rust/README.md#s1a64--hypgen-and-lattice-hot-paths)'s lesson
 a third time — the phase had been measuring one shape of workload — so the
 first stage here is a census, not a proposal.
 
+## What the census settled — 2026-08-24
+
+[S1d.10.1](s1d.10.1_why_it_does_not_finish.md) is **done**, and
+[`layer_census.md`](layer_census.md) is the measurement. What it changes about
+the phase above:
+
+**The regime is the corpus, not the exception.** Layer 1 kills something in
+**4 of the 49** entries that search at all — `zebra`, `zebra2`,
+`zebra2-hints`, `branching/07`. The other **45** are barren, and they hold
+2 189 278 of the 2 201 027 enterings. So "F9 measured one of two regimes" was
+right and understated: it measured the **smaller** one, four cells wide.
+
+**And "enumerates a powerset" is exact.** For 25 of the 49, `entered` equals
+`Σₖ C(alive, k)` term for term — `features/01_not_and_absent` enters
+`C(35, 1..5) = 384 167` — which is **96.7 %** of the corpus's search work.
+Nothing died, nothing was learned, nothing was filtered.
+
+**Reading 1 of § What is already measured needs a correction**, and it is the
+useful kind. *"Nothing prunes at layer 1, so layer 2 is the full `C(96,2)`"* is
+right, and the 0 % filter rate at layer 2 is **structural rather than
+evidence**: a layer-1 death licenses a width-1 clause, and the singleton
+writeback plus the inter-layer retain have already removed that element. The
+clause store's first *possible* contribution is layer 3 — where it is **26.8 %**
+— and at layer 4 it is **36.2 %**. The store is not inert; it is two layers
+late, and by then the layer is 44 089 enterings.
+
+**Reading 3 survives intact and is now cheap to check at depth.** The census row
+is emitted on every way out of a layer, including a budget cut, so
+`solve -e -m 4 -E 48746` generates layer 4 and reports it without entering it:
+**245 612 joined, 88 887 clause-dropped, 156 725 candidates**, 103 s. Layers
+1–4 are 205 471 enterings together, and the growth is decelerating
+(`47.5× → 13.2× → 4.1×`) while the filter rate rises — which is a different
+diagnosis from *"it never converges"* and is
+[S1d.10.2](s1d.10.2_depth_required.md)'s to act on.
+
+**One mechanism is inert and is now recorded as inert**, with the number F9's
+discipline asks for: **0** of 2 232 330 joined candidates were dropped because
+an element had left `alive`, and that is structural — the retain at the previous
+barrier gets there first. **The clause store is the only thing that can shrink a
+layer.**
+
+**And a whole class of proposal is ruled out before anyone writes it.** The
+profile of `zebra2-minus-15 -m 3` is the determinate mix at a larger count, not
+a different one: match/bind 47.7 %, saturate 40.7 %, and the entire lattice —
+the prefix join plus a filter that walks 11 577 clauses per candidate —
+**1.2 %**. Making the lattice cheaper cannot help, because the lattice is not
+the cost; the only lever with room behind it is **entering fewer commitments**.
+That is the milestone's thesis arriving as a profile rather than as an argument,
+and it is what [S1d.10.3](s1d.10.3_stopping_criterion.md) and
+[S1d.10.4](s1d.10.4_conflict_mining.md) have to be judged against.
+
+**`solve -e` finishes.** 618 076 enterings, **416 s**, all 32 models,
+`exhausted=false` because the depth cap stopped it and not the lattice. The
+phase's first acceptance bullet is met, on this engine, and what remains of it
+is the second half of the same bullet — the *honest verdict*, which is
+[S1d.10.5](s1d.10.5_contract.md)'s.
+
 ## Stages
 
 | stage | title | est. |
 |---|---|---|
-| [S1d.10.1](s1d.10.1_why_it_does_not_finish.md) | Why it does not finish | 3 d |
+| [S1d.10.1](s1d.10.1_why_it_does_not_finish.md) | Why it does not finish — **done 2026-08-24** ([`layer_census.md`](layer_census.md)) | 3 d |
 | [S1d.10.2](s1d.10.2_depth_required.md) | What depth is required, and for what | 2 d |
 | [S1d.10.3](s1d.10.3_stopping_criterion.md) | Is there a stopping criterion? | 4 d |
 | [S1d.10.4](s1d.10.4_conflict_mining.md) | Conflict mining when a layer is barren | 4 d |

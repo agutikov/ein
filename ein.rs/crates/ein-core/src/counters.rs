@@ -425,7 +425,7 @@ impl Counters {
 
     /// `(name, value)` in declaration order, so a printed table and a JSON
     /// artefact cannot drift from the struct or from each other.
-    pub fn rows(&self) -> [(&'static str, u64); 53] {
+    pub fn rows(&self) -> [(&'static str, u64); 55] {
         [
             ("unify_slot", self.unify_slot),
             ("unify", self.unify),
@@ -467,6 +467,8 @@ impl Counters {
             ("watch_stamp_rel", self.watch_stamp_rel),
             ("extent_probe", self.extent_probe),
             ("fork", self.fork),
+            ("flatten", self.flatten),
+            ("flatten_facts", self.flatten_facts),
             ("prov_node", self.prov_node),
             ("hypgen_call", self.hypgen_call),
             ("hypgen_complete", self.hypgen_complete),
@@ -507,65 +509,75 @@ mod tests {
 
     #[test]
     fn rows_covers_every_field() {
-        // A field added without a row would be silently unreportable.
-        let mut c = Counters::new_zero();
-        c.unify_slot = 1;
-        c.unify = 1;
-        c.candidates = 1;
-        c.scan_bucket = 1;
-        c.scan_extent = 1;
-        c.cand_bucket = 1;
-        c.cand_extent = 1;
-        c.scan_bucket_guard = 1;
-        c.scan_extent_guard = 1;
-        c.cand_bucket_guard = 1;
-        c.cand_extent_guard = 1;
-        c.scan_ground = 1;
-        c.scan_ground_guard = 1;
-        c.cand_ground = 1;
-        c.nested_rel_reject = 1;
-        c.nested_rel_hit = 1;
-        c.walk = 1;
-        c.plan_run = 1;
-        c.binding_key = 1;
-        c.plan_compile = 1;
-        c.fact_insert = 1;
-        c.fact_read = 1;
-        c.fact_probe = 1;
-        c.fact_intern = 1;
-        c.fact_new = 1;
-        c.prov_push = 1;
-        c.prov_read = 1;
-        c.entering = 1;
-        c.entering_fact_new = 1;
-        c.entering_prov_new = 1;
-        c.entering_fact_new_max_i = 1;
-        c.prov_push_in_entering = 1;
-        c.enqueue_pass = 1;
-        c.enqueue_task = 1;
-        c.enqueue_task_full = 1;
-        c.guard_query = 1;
-        c.watch_stamp = 1;
-        c.watch_stamp_rel = 1;
-        c.fork = 1;
-        c.prov_node = 1;
-        c.hypgen_call = 1;
-        c.hypgen_complete = 1;
-        c.lookahead_probe = 1;
-        c.plan_key = 1;
-        c.guard_eval = 1;
-        c.guard_eval_monotone = 1;
-        c.parse_call = 1;
-        c.parse_bytes = 1;
-        c.lex_match = 1;
-        c.lex_symbol = 1;
-        c.intern = 1;
-        c.intern_miss = 1;
-        assert_eq!(
-            c,
-            Counters { ..c },
-            "no field left out of the literal above"
+        // **Both halves are checked by the compiler or by the assertion, and
+        // neither used to be.** The literal has no `..` on purpose: adding a
+        // field to `Counters` breaks *this* line until it is listed, which is
+        // the half `assert_eq!(c, Counters { ..c })` only appeared to do. And
+        // with every field at 1, a field missing from `rows()` shows up as a
+        // row count below the field count — which is how `flatten` and
+        // `flatten_facts` were unreportable for the whole of M1a.
+        let c = Counters {
+            unify_slot: 1,
+            unify: 1,
+            candidates: 1,
+            scan_bucket: 1,
+            scan_extent: 1,
+            cand_bucket: 1,
+            cand_extent: 1,
+            scan_bucket_guard: 1,
+            scan_extent_guard: 1,
+            cand_bucket_guard: 1,
+            cand_extent_guard: 1,
+            scan_ground: 1,
+            scan_ground_guard: 1,
+            cand_ground: 1,
+            nested_rel_reject: 1,
+            nested_rel_hit: 1,
+            walk: 1,
+            plan_run: 1,
+            binding_key: 1,
+            plan_compile: 1,
+            fact_insert: 1,
+            fact_read: 1,
+            fact_probe: 1,
+            fact_intern: 1,
+            fact_new: 1,
+            prov_push: 1,
+            prov_read: 1,
+            entering: 1,
+            entering_fact_new: 1,
+            entering_prov_new: 1,
+            entering_fact_new_max_i: 1,
+            prov_push_in_entering: 1,
+            enqueue_pass: 1,
+            enqueue_task: 1,
+            enqueue_task_full: 1,
+            guard_query: 1,
+            watch_stamp: 1,
+            watch_stamp_rel: 1,
+            extent_probe: 1,
+            fork: 1,
+            flatten: 1,
+            flatten_facts: 1,
+            prov_node: 1,
+            hypgen_call: 1,
+            hypgen_complete: 1,
+            lookahead_probe: 1,
+            guard_eval: 1,
+            guard_eval_monotone: 1,
+            parse_call: 1,
+            parse_bytes: 1,
+            lex_match: 1,
+            lex_symbol: 1,
+            intern: 1,
+            intern_miss: 1,
+            plan_key: 1,
+        };
+        let rows = c.rows();
+        assert!(
+            rows.iter().all(|&(_, v)| v == 1),
+            "a field of `Counters` has no row in `rows()`: {:?}",
+            rows.iter().filter(|&&(_, v)| v != 1).collect::<Vec<_>>()
         );
-        assert_eq!(c.rows().iter().filter(|(_, v)| *v == 1).count(), 52);
     }
 }
