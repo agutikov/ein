@@ -21,7 +21,7 @@
 //!    with the wheel's packaged copy.
 //!
 //! `Missing` is a fourth outcome, not an error here: the caller reports
-//! "module not found at <path>", which names the path it looked at — the
+//! "module not found at `<path>`", which names the path it looked at — the
 //! message ein.py produces, and therefore the one to produce.
 
 use include_dir::{Dir, include_dir};
@@ -29,7 +29,7 @@ use std::path::{Path, PathBuf};
 
 /// Identifies a directory as the stdlib. *Presence* is what the walk tests,
 /// because a directory called `stdlib/` proves nothing on its own; the
-/// content is checked by [`tests::the_embedded_copy_matches_the_manifest`],
+/// content is checked by `tests::the_embedded_copy_matches_the_manifest`,
 /// and written by `utils/stdlib_manifest.py --write`, which is the half no
 /// test can do (a test that rewrote the file it checks would check nothing).
 pub const MARKER: &str = "MANIFEST.sha256";

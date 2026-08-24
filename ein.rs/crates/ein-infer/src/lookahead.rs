@@ -19,9 +19,9 @@
 //! optimisations:
 //!
 //! - a disjunct whose guards cannot be judged in the world *with* `h` is
-//!   skipped rather than assumed to pass ([`unjudgeable`]);
+//!   skipped rather than assumed to pass (`unjudgeable`);
 //! - a guard that can be judged is judged against `kb` **and** against the
-//!   one fact `h` adds ([`Lookahead::guards_pass_with`]) — the probe
+//!   one fact `h` adds (`Lookahead::guards_pass_with`) — the probe
 //!   hypothesises `h` into a positive premise but the KB it runs against does
 //!   not contain it, so asking `kb` alone would answer about a different
 //!   world, and a rule whose guard watches the candidate's own relation would

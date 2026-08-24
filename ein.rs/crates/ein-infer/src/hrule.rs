@@ -95,7 +95,7 @@ impl Hrules {
     ///
     /// The two agree exactly whenever the only relation the pipeline writes —
     /// `not` — is not one an hrule's `:match` reads, which is the condition
-    /// [`reads_negation`] checks under `debug_assert`. No corpus hrule reads
+    /// `reads_negation` checks under `debug_assert`. No corpus hrule reads
     /// it (they read `is-a` and the puzzle's own relations), and an hrule that
     /// did would be asking the enumerator to condition on its own kill cache.
     pub fn candidates(

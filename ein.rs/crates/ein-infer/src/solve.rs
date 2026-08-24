@@ -209,7 +209,7 @@ pub struct SolveOptions {
     /// **`--jobs N` is the same computation as `--jobs 1`** — the same
     /// verdict, the same models, the same unsat core and *the same counters* —
     /// because a layer is fanned out only when it cannot write a fact to root
-    /// ([`Run::fan_out_this_layer`]) and because every result is committed in
+    /// (`Run::fan_out_this_layer`) and because every result is committed in
     /// candidate order. What differs is the wall clock, and nothing else.
     ///
     /// An **execution** knob, not a semantics one, which is why it lives here

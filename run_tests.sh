@@ -2,9 +2,10 @@
 #
 # run_tests.sh — the gate.
 #
-#     ./run_tests.sh                 # cargo fmt --check, then cargo test --workspace
+#     ./run_tests.sh                 # fmt, docs, then cargo test --workspace
 #     ./run_tests.sh --slow          # + the 12 slow corpus cells, + 8 id seeds
-#     ./run_tests.sh --no-fmt        # tests only
+#     ./run_tests.sh --no-fmt        # skip the formatting check
+#     ./run_tests.sh --no-doc        # skip the rustdoc check
 #     ./run_tests.sh -p ein-ir       # anything else is forwarded to cargo test
 #
 # **This was a three-phase runner until M1a S1a.10.5**, and each phase went
@@ -53,13 +54,23 @@
 #   EIN_CORPUS_SLOW=1 ./run_tests.sh    # the 2 slow corpus entries, 12 cells
 #   EIN_ID_SEEDS=8    ./run_tests.sh    # more id-space permutations
 #
-# **Formatting joined the gate at M1c S1c.1.5**, and it joined it because it
-# had already drifted: three files were unformatted when the check was first
-# run, all three from this milestone's own `:expect` work, and nothing
-# anywhere would ever have said so. It costs about a second, it runs first
-# because a formatting failure is the cheapest one to read, and `--no-fmt`
-# turns it off for a targeted iteration. Nothing turns it off silently — a
-# missing `rustfmt` is exit 127 here, the same as a missing `cargo` or `dot`.
+# **Two static checks joined the gate at M1c S1c.1.5**, and both joined it
+# because both had already drifted. They cost about a second each, they run
+# before the tests because their failures are the cheapest ones to read, and
+# `--no-fmt` / `--no-doc` turn them off for a targeted iteration. Nothing
+# turns them off silently — a missing `rustfmt` is exit 127 here, the same as
+# a missing `cargo` or `dot`.
+#
+#   `cargo fmt --all --check`  three files were unformatted when it was first
+#                              run, all three from M1c's own `:expect` work.
+#   `cargo doc -D warnings`    twelve **unresolved** intra-doc links and seven
+#                              public items whose docs linked to a private
+#                              one. They accumulated because rustdoc's default
+#                              for both is a *warning* and nothing here ran
+#                              rustdoc at all — the tests do not, and a
+#                              `[\`Trail\`]` naming a type that has never
+#                              existed is invisible to every other check in
+#                              this repository.
 
 set -euo pipefail
 
@@ -91,10 +102,12 @@ fi
 # `corpus/corpus.toml` is the authority and `cost_ms` is the measurement.
 ARGS=()
 RUN_FMT=1
+RUN_DOC=1
 for arg in "$@"; do
     case "${arg}" in
         --slow)   export EIN_CORPUS_SLOW=1 EIN_ID_SEEDS="${EIN_ID_SEEDS:-8}" ;;
         --no-fmt) RUN_FMT=0 ;;
+        --no-doc) RUN_DOC=0 ;;
         *)        ARGS+=( "${arg}" ) ;;
     esac
 done
@@ -110,6 +123,23 @@ if [[ "${RUN_FMT}" == 1 ]]; then
         echo >&2
         echo "error: formatting drift above — the diff is what rustfmt would do." >&2
         echo "       Fix with: cargo fmt --manifest-path ein.rs/Cargo.toml --all" >&2
+        exit 1
+    fi
+fi
+
+# `--no-deps` on purpose: what is being checked is *this* workspace's docs,
+# and a dependency's rustdoc warnings are not ours to fix. `-D warnings`
+# rather than `-D rustdoc::broken_intra_doc_links` alone, because the other
+# lints in that family are the same kind of rot — a private item linked from a
+# public one, an `<path>` read as an HTML tag, a link whose explicit target
+# repeats its label.
+if [[ "${RUN_DOC}" == 1 ]]; then
+    echo "── cargo doc --no-deps, -D warnings ───────────────────────────" >&2
+    if ! RUSTDOCFLAGS="-D warnings" cargo doc -q --manifest-path "${MANIFEST}" \
+            --workspace --no-deps; then
+        echo >&2
+        echo "error: rustdoc above — every link in a public doc comment must resolve." >&2
+        echo "       A reference that cannot be a link is still fine as \`code\`." >&2
         exit 1
     fi
 fi

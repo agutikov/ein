@@ -173,7 +173,7 @@ impl PlanMemo {
         &self.plans[id.0 as usize]
     }
 
-    /// A handle that outlives the borrow — see [`PlanMemo::plans`].
+    /// A handle that outlives the borrow — see `PlanMemo::plans`.
     pub fn get_arc(&self, id: PlanId) -> Arc<Plan> {
         Arc::clone(&self.plans[id.0 as usize])
     }
@@ -237,7 +237,7 @@ impl PlanMemo {
 /// a `RefCell` because `Terms` is asserted `Send + Sync` from the start for
 /// exactly this reason: P1a.7 shares the plans across threads, and retrofitting
 /// that onto an `Rc` would touch every call site. The lock is taken **only on
-/// an engine cache miss**, never on the read path — [`Engine`] holds its own
+/// an engine cache miss**, never on the read path — [`crate::Engine`] holds its own
 /// `Arc<Plan>` per cached pair.
 pub type SharedMemo = Arc<Mutex<PlanMemo>>;
 

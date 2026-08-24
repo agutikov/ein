@@ -74,7 +74,7 @@ pub type Reg = u16;
 /// A fixed-size array is what keeps the inner loop allocation-free, so the
 /// count has to be bounded somewhere. 256 distinct variables in one `:match`
 /// is two orders of magnitude past anything in the corpus (the widest rule in
-/// `stdlib/` binds seven), and overflowing it is a [`CompileError`] rather
+/// `stdlib/` binds seven), and overflowing it is a [`crate::CompileError`] rather
 /// than a panic — ein.py has no such limit, so this is the port's one
 /// compile-time bound and it says so out loud.
 pub const MAX_REGS: usize = 256;
@@ -354,7 +354,7 @@ impl Plan {
     }
 }
 
-/// An index into a [`PlanMemo`].
+/// An index into a [`crate::PlanMemo`].
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct PlanId(pub u32);
 

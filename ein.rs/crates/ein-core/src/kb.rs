@@ -846,7 +846,7 @@ impl Kb {
     }
 
     /// How many rule-application facts the KB holds — the version counter
-    /// `Engine::compile_all` skips its walk on. See [`Layer::rule_apps`].
+    /// `Engine::compile_all` skips its walk on. See `Layer::rule_apps`.
     pub fn n_rule_apps(&self) -> usize {
         self.layers().map(|l| l.rule_apps as usize).sum()
     }

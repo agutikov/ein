@@ -3,7 +3,7 @@
 //! The form M1c
 //! [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
 //! settled, and the one part of it that is *shape* rather than comparison. The
-//! comparison is [`ein_infer::expect`], which needs solutions; this module is
+//! comparison is `ein_infer::expect`, which needs solutions; this module is
 //! what the loader validates against, so a program that checks nothing is
 //! rejected before anything runs.
 //!
@@ -98,7 +98,7 @@ pub struct ExpectFact<'a> {
     /// `(not (r a b))`.
     pub relation: &'a str,
     /// The rendered s-expression, byte-identical to
-    /// [`ein_infer::events::sexpr`] for the same fact.
+    /// `ein_infer::events::sexpr` for the same fact.
     pub rendered: String,
 }
 
@@ -233,7 +233,7 @@ fn ground(ast: &Ast, node: NodeId) -> Result<(), String> {
 
 /// An expectation fact as its canonical s-expression.
 ///
-/// **This must agree with [`ein_infer::events::sexpr`] byte for byte**, since
+/// **This must agree with `ein_infer::events::sexpr` byte for byte**, since
 /// that is what the comparison holds it against — a fact is compared by
 /// *content*, never by `FactId`, because two runs do not share an interner
 /// (`fork_audit`'s reason). `ein-infer`'s `rendering_agrees_with_the_fact_dump`

@@ -16,7 +16,8 @@
 //! So this module exposes **positional matchers**, not a stream: the parser
 //! holds a [`Cursor`], asks for the terminal it wants at that cursor, and
 //! restores the cursor when an alternative fails
-//! ([`crate::parse`]). Each matcher is a pure function of `(&str, Cursor)`, so
+//! ([`crate::parse`](mod@crate::parse)). Each matcher is a pure function of
+//! `(&str, Cursor)`, so
 //! the lexer allocates nothing per token and is trivially fuzzable.
 //!
 //! Terminal definitions are `grammar.lark`'s, verbatim — transcribed to EBNF

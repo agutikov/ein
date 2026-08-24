@@ -25,7 +25,7 @@ pub enum Json {
     Float(f64),
     Str(String),
     Array(Vec<Json>),
-    /// Insertion-ordered; [`dump`] can sort it.
+    /// Insertion-ordered; [`dumps_indent_sorted`] can sort it.
     Object(Vec<(String, Json)>),
 }
 

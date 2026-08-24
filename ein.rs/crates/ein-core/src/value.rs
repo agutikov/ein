@@ -106,7 +106,7 @@ impl Value {
     /// The register file's "nothing bound here yet" sentinel — S1a.3.2.
     ///
     /// It is not a fourth shape: the two tag bits have four states and
-    /// [`Tag`] uses three, so `0b11` is a bit pattern [`Value::pack`] can
+    /// [`Tag`] uses three, so `0b11` is a bit pattern `Value::pack` can
     /// never produce. `regs[r] == Value::UNBOUND` is therefore one integer
     /// compare, and a real value cannot forge it.
     ///

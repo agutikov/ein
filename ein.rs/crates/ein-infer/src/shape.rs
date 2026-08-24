@@ -219,7 +219,7 @@ pub fn saturate_events(
 ///
 /// Three phases, and the split is what keeps the stream readable: saturate
 /// with events off, generate with them on at `verbose`, then ask the two
-/// generator-backed predicates with them off again. Each [`generate`] call
+/// generator-backed predicates with them off again. Each [`crate::generate`] call
 /// builds its own [`crate::Lookahead`], which compiles every plan and emits a
 /// `compile` event per pair, so running the tail with the log open would
 /// triple the file for no signal.

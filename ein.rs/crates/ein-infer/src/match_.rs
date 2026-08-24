@@ -23,7 +23,8 @@
 //!   join reordering is rejected outright ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §6);
 //! - **bindings**, in the order the matcher first bound each variable, because
 //!   `Provenance.bindings` is CPython dict-insertion order and it is printed
-//!   in the trace. The [`Trail`] is that order, by construction;
+//!   in the trace. The trail ([`Env::trail`](crate::Env::trail)) is that order,
+//!   by construction;
 //! - **premises**, in plan-step order — including through `run_seeded`, whose
 //!   contract is that provenance from a semi-naive seed is *identical* to
 //!   provenance from a full run. ein.py splices the seeded fact back into its

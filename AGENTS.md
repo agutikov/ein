@@ -281,7 +281,7 @@ constrained-reasoning research.
 `./build.sh` builds everything first (see above); this runs it.
 
 ```sh
-./run_tests.sh                                               # fmt, then the whole gate
+./run_tests.sh                                               # fmt, docs, then the tests
 cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the tests alone
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 2 slow entries
 EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance
@@ -289,11 +289,20 @@ EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
 ```
 
-**`./run_tests.sh` runs `cargo fmt --all --check` first** (M1c S1c.1.5, ~1 s;
-`--no-fmt` skips it, a missing `rustfmt` is exit 127 rather than a skip). It
-joined the gate because it had already drifted — three files were unformatted
-when it was first run and nothing would ever have said so. `cargo test
---workspace` on its own does *not* check formatting.
+**`./run_tests.sh` runs two static checks before the tests** (M1c S1c.1.5,
+~1 s each; `--no-fmt` / `--no-doc` skip them, a missing `rustfmt` is exit 127
+rather than a skip). Both joined the gate because both had already drifted, and
+`cargo test --workspace` on its own checks neither:
+
+| | what it found the first time it ran |
+|---|---|
+| `cargo fmt --all --check` | **three** unformatted files, all from M1c's own `:expect` work |
+| `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps` | **twelve** unresolved intra-doc links and **seven** public items whose docs linked to a private one — plus a `<path>` rustdoc read as an HTML tag. They accumulated because rustdoc's default for all of it is a *warning* and nothing here ran rustdoc at all |
+
+A reference that cannot be a link is still fine as `` `code` ``, and that is
+the fix for most of them: `ein-ir` cannot link into `ein-infer` (the dependency
+runs the other way), a `#[cfg(test)]` module is not in the documented crate,
+and a private item is a real name that public docs may cite but not hyperlink.
 
 Everything runs one engine. `cargo test --workspace` is the gate — the corpus
 sweep through the CLI, the shape digests, the goldens, the manifest's own

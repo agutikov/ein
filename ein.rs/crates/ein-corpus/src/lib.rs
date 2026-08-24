@@ -58,7 +58,7 @@ pub fn corpus() -> Corpus {
 /// is covered the moment it lands.
 ///
 /// The two views are kept the same set by
-/// [`manifest::tests::every_ein_file_has_an_entry`], which is what lets a
+/// `manifest::tests::every_ein_file_has_an_entry`, which is what lets a
 /// sweep walk the *files* and the CLI sweep walk the *rows* without either one
 /// having to trust the other.
 ///
