@@ -509,13 +509,14 @@ which side.
 [`std.macro`](../../../stdlib/macro.ein)'s, arity-1, match-side — and macros
 expand in `:assert` too (§2). So today `:assert (open)` is an arity error and
 `:assert (open X)` expands into an `absent`-conjunction that is illegal in
-assert position. The ways out are a menu of their own — § The naming menu,
-next, measured against the corpus. One shape question rides along: the
-slot spelling above is positional because assert-side variables come bound
-from the match, so a hole has no spelling there today — relaxing that *for
-the verdict head only* (`(open (?R ?a ?b))`, unbound `?b` as the hole) is
-prettier and bends a rule that is otherwise uniform. Both are S1d.2.3's,
-beside E's fact-or-kernel-object.
+assert position. The ways out were a menu of their own — § The naming menu,
+next, measured against the corpus, and **decided the same day: P3**, so the
+collision dissolves by renaming the probe rather than the atom. One shape
+question stays open: the slot spelling above is positional because
+assert-side variables come bound from the match, so a hole has no spelling
+there today — relaxing that *for the verdict head only* (`(open (?R ?a ?b))`,
+unbound `?b` as the hole) is prettier and bends a rule that is otherwise
+uniform. That one is still S1d.2.3's, beside E's fact-or-kernel-object.
 
 **The naming menu — probe and verdict, measured against the corpus**
 (2026-08-24, the user asked for the variants). Two different things need
@@ -576,7 +577,7 @@ corpus-wide.
 |---|---|---|---|---|
 | **P1** | `open` (keep) | **`owe`** | **zero** — one reserved-name row | fact-states stay the note's; debt words match the ledger/discharge mechanism; the slot argument is natural |
 | **P2** | `open` (keep) | `incomplete` | zero | verdict-adjective symmetry with `(false)`; but instances want a slot and an adjective holds none |
-| **P3** | `unknown` | `open` | 12 programs + macro + manifest + docs | the proposal's original spelling for the KB state; costs the note's fact-word and re-invites the two-opens confusion |
+| **P3 — chosen** | `unknown` | `open` | 12 programs + macro + manifest + docs | the proposal's original spelling for the KB state; costs the note's fact-word and re-invites the two-opens confusion |
 | **P4** | `unknown` or `undetermined` | `incomplete` | the same 12 — and bare `open` becomes a **free userspace name**, the `closed` → `__closed__` precedent ([`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)) | the clean slate: standard words both sides, the overloaded word evacuated |
 | **P5** | `open` | `open`, position-split | zero files, one fragile expander rule | dual positions get dual *words* elsewhere on this page — `forall` (match) / `at-least` (assert) is D's own precedent — and the fact/KB conflation stays; still rejected on sight |
 
@@ -586,6 +587,44 @@ aggregate — `(owe …)` atoms under an `Incomplete (owes 46)` verdict line are
 one design, not two. So `ideas.md`'s outcome word is available downstream of
 *any* pair, which removes the strongest argument for spending the atom on an
 adjective.
+
+**Decided 2026-08-24 — P3**, the user's call: the probe renames to
+`unknown`, the verdict atom is `open`. What the choice settles beyond the
+words: the language ends up with **one `open`, the KB-level one** — the
+two-opens risk in P3's row is dissolved rather than managed, because after
+the rename nothing fact-level answers to the word (`unknown` does, Kleene's
+own name for it), and the KB verdicts read exactly as the proposal wrote
+them: `open` / `false` / `satisfy`. [`ideas.md`](../ideas.md) keeps its
+fact-state `open` untouched — the note is verbatim and stays so; living
+pages say `unknown` for the fact state from here on. The decoupling above
+still applies: the *printed* aggregate may say `Incomplete (owes n)` while
+the atom says `open`.
+
+**The migration bill, accepted with the choice** (the footprint paragraph
+above describes the pre-rename tree; this is the chore, executable ahead of
+the phase since it only frees a name):
+
+- [`stdlib/macro.ein`](../../../stdlib/macro.ein) — `(macro unknown (?P) …)`
+  and its header; `stdlib/MANIFEST.sha256` re-taken
+  (`utils/stdlib_manifest.py`), which rebuilds `ein-ir`'s embedded copy.
+- The **12 programs** — `(open …)` → `(unknown …)` and the
+  `:symbols (… open)` imports.
+  [`examples/features/04_open.ein`](../../../examples/features/04_open.ein)
+  keeps its *file name*: its subject is open **domains**, not the macro.
+- The pages that teach the idiom:
+  [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)
+  § macro sugar, `07_stdlib_api.md`, `tests/README.md`'s idiom list, and
+  AGENTS.md's `tests/` bullet.
+- Goldens: routine. The independent-provenance set
+  (`ein.rs/crates/{ein-ir,ein-render}/tests/golden/from_ein_py/`) was checked
+  2026-08-24 and holds only `zebra.golden`, `zebra2.golden`, one DOT view and
+  one trace — **no file in it mentions the probe or `04_open`**, so nothing
+  the rename touches has provenance to protect; `EIN_BLESS=1` re-banks the
+  engine-made shapes as usual.
+- **Ordering constraint**: the rename lands **before or together with** the
+  reservation of `open` as the verdict head, never after — and between the
+  two, bare `open` is briefly a free userspace name, so the window should
+  stay short.
 
 ## 4. The two axes
 
@@ -731,8 +770,8 @@ is the one form that does not care.
 - **S1d.2.1** — the audit, which decides whether §8's table is true.
 - **S1d.2.2** — the domain: what closes it, and whether `?isa` is enough.
 - **S1d.2.3** — this decision, plus the sub-decisions E raises (is a stored
-  clause a fact or a kernel object?) and G raises (the naming menu — § G,
-  pairs P1–P5; the slot spelling).
+  clause a fact or a kernel object?) and G raises (naming — **decided, P3**:
+  probe `unknown`, verdict `open`; the slot spelling, still open).
 - **S1d.2.4** — the saturator: invalidation, and the per-quiescence cost §1
   warns about.
 - **S1d.2.5** — hypotheses from obligations: the supersession ladder
