@@ -56,7 +56,7 @@ pub struct Trace {
     /// and not because there was nothing to say: a fork re-derived root's
     /// whole closure, so `steps` carried it by accident. A fork that resumes
     /// root's saturation does not, so the givens are told first — which is
-    /// what [`zebra_walkthrough.md`](../../../../docs/kernel/inference/zebra_walkthrough.md)
+    /// what [`zebra_walkthrough.md`](../../../../../docs/kernel/inference/zebra_walkthrough.md)
     /// does and what the accident was standing in for.
     pub root_steps: Vec<TraceStep>,
     pub steps: Vec<TraceStep>,

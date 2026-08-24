@@ -16,7 +16,7 @@ This page covers the **exhaustive** lattice sweep —
 with `store_lattice=True` and an unbounded stop policy (`stop_after=None`)
 — which tests *every* commitment set layer-by-layer and so produces a
 complete per-hypothesis record. The default single-solution
-[`solve`](README.md#set-indexed-search--monotonic-engine-p15b-s15b0-10)
+[`solve`](README.md#set-indexed-search--monotonic-engine-p15b-s15b010)
 (`stop_after=1`) early-terminates on the first solution and uses the
 lighter
 [the `Dumper` hook](../../../ein.rs/crates/ein-render/src/dump/state.rs)
@@ -259,7 +259,7 @@ it's the entry point for "show me every refutation" tooling.
 
 ## Cross-links
 
-- Engine overview: [README § Set-indexed search](README.md#set-indexed-search--monotonic-engine-p15b-s15b0-10).
+- Engine overview: [README § Set-indexed search](README.md#set-indexed-search--monotonic-engine-p15b-s15b010).
 - Implementation: [`ein-render/dump/state.rs`](../../../ein.rs/crates/ein-render/src/dump/state.rs)
   (`LatticeDumper`, `MonotonicDumper`).
 - CLI: [`ein solve`](../../../ein.rs/crates/ein-cli/src/solve.rs)

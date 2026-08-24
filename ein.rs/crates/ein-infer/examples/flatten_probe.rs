@@ -11,7 +11,7 @@
 //! many facts they copied, and the wall clock.
 //!
 //! **Read the entering column first.** This is not
-//! [`defer_probe`](../defer_probe.rs): a deferral buys the same depth collapse
+//! [`defer_probe`](defer_probe.rs): a deferral buys the same depth collapse
 //! by holding a layer's root writes back, and pays for it in prunes that
 //! arrive late — 101 → 521 enterings on `zebra2 -e`. A flatten defers nothing.
 //! Every writeback lands exactly when it does today and only root's

@@ -39,7 +39,7 @@ Is the saturation fixpoint really a colimit? Etc.
 A new milestone `m_followups_categorical/` with phases:
 
 - **PCF.1** — pin a CT reading (A vs B vs C); resolves
-  [Q12](../open_questions.md#q12--ct-reading).
+  [Q12](../open_questions.md#index).
 - **PCF.2** — formalise the rule set as DPO rewrites
   (idea 07 §Where category theory becomes genuinely heavy).
 - **PCF.3** — investigate whether automatic detection of rule-set

@@ -205,7 +205,7 @@ synthesised companion is decidable cheaply — a bounded chase of the existing
 saturator over a 2-atom abstract witness, sound on the monotone (NAF-free)
 fragment where `functional` / `injective` live. Which property implies which
 companion is a column of
-[F4 §Q34](f4_cross_cutting.md#algebraic-properties-beyond-symmetric-transitive--and-the-2-7-cartesian-product-q34)'s
+[F4 §Q34](f4_cross_cutting.md#algebraic-properties-beyond-symmetrictransitive--and-the-27-cartesian-product-q34)'s
 2⁷ cartesian product.
 
 ## Relation to other followups

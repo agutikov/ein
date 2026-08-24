@@ -518,7 +518,7 @@ What stays:
   (`try_commitment_set`).
 - State hash: [`canon.rs`](../../../ein.rs/crates/ein-infer/src/canon.rs).
 - Saturation commutativity premise:
-  [README § Motivation](README.md#motivation) +
+  [README § Set-indexed search](README.md#set-indexed-search--monotonic-engine-p15b-s15b010) +
   [`project-set-search-unified` memory].
 - Mode + verdict trichotomy:
   Q1.5b.7.

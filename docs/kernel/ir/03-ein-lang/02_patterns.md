@@ -14,7 +14,7 @@ documentation split.
 The pattern language is **positive conjunctive** + `:where` filters +
 a registry of **named structural predicates** (the rewrite-DSL +
 named-predicate fallback from
-[Q4](../../../../plans/open_questions.md#q4)).
+[Q4](../../../../plans/open_questions.md#q4--rule-presentation-language)).
 **Kernel meta-primitives** (`and`, `or`, `not`, `neq`, `instance`)
 are shape-pinned in the grammar — wrong arity is a parse error, not
 a validator error. Relation patterns (`(?r ?a ?b)`,

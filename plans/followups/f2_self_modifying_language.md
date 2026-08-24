@@ -46,7 +46,7 @@ ontology, but not user-evolvable. F2 introduces:
 A new milestone `m_followups_self_modifying/` with phases:
 
 - **PSM.1** — version + rollback infrastructure for GBNFs;
-  resolves [Q13](../open_questions.md#q13--self-modifying-constraint-language).
+  resolves [Q13](../open_questions.md#index).
 - **PSM.2** — grammar-update DSL (a small Lisp dialect that emits
   GBNF diff operations).
 - **PSM.3** — semantic firewall: typecheck the proposed grammar

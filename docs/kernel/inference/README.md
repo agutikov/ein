@@ -115,7 +115,7 @@ contributes, locked by S1.21.8:
    [`explain.rs`](../../../ein.rs/crates/ein-infer/src/explain.rs)).
 4. **Lazy branching.** Saturate first with all propagation rules;
    branch only when no rule fires and the puzzle is not yet solved.
-   ([Q19 working answer](../../../plans/open_questions.md#q19).)
+   ([Q19 working answer](../../../plans/open_questions.md#q19--hypothesis-branching-strategy).)
 5. **Encoding-agnostic.** The engine works over both `zebra.ein`
    (one generic `co-located` link, `instance` / `type` membership) and
    `zebra2.ein` (five typed `*-loc` relations, unified `is-a`) —

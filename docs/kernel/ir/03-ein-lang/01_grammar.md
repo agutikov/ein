@@ -332,7 +332,7 @@ same shape headed `hrule`). There is no `(rules …)` block (P1.7c).
 
 Each rule has one `:match` and one `:assert`. The pattern sub-language
 is in [`02_patterns.md`](02_patterns.md). `:priority` resolves
-[Q15](../../../../plans/open_questions.md#q15)
+[Q15](../../../../plans/open_questions.md#q15--rule-ordering)
 (rule ordering): static per-rule, cheap-propagation rules at lower
 numbers.
 
@@ -600,11 +600,11 @@ template renders the *headline result* from the goal bindings.
                        :note <STRING>))
 ```
 
-Per [Q21](../../../../plans/open_questions.md#q21),
+Per [Q21](../../../../plans/open_questions.md#q21--ir--dot-structural-isomorphism),
 `(trace …)` is the **same IR** as input — same parser, same AST,
 same dumper. The engine can reason about its own traces; rules can
 match `(step …)` forms ([TMS/ATMS analogue](../../../lib/09-cognitive-architectures-neurosymbolic.md)).
-Per [Q18](../../../../plans/open_questions.md#q18)
+Per [Q18](../../../../plans/open_questions.md#q18--provenance-granularity)
 each derived edge's provenance tuple `(rule, premise_edges, source)`
 is literally a `(step …)` form — provenance and trace are the same
 data structure under different views.

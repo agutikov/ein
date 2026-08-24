@@ -6,7 +6,7 @@
 > at d=0 once every alternative is excluded, or **(B)** the
 > hypothesis loop forking on each candidate and refuting the wrong
 > ones. This page measures both with the single
-> [`solve`](README.md#set-indexed-search--monotonic-engine-p15b-s15b0-10)
+> [`solve`](README.md#set-indexed-search--monotonic-engine-p15b-s15b010)
 > engine — the verdict read off `k` (0/1/>1 → contradiction / solution /
 > gaps), and the two **views** (`proof.solutions` / `proof.dead_commitments`)
 > read off the `store_lattice` proof of one exhaustive run — and records

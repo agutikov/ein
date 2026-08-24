@@ -4,7 +4,7 @@ Every kernel IR form has a **fixed DOT shape**. Only **graph
 structure** is fixed by this schema; layout (positions, rank,
 unspecified style choices) is free — `random_layout` is permitted.
 
-Per [Q21](../../../../plans/open_questions.md#q21),
+Per [Q21](../../../../plans/open_questions.md#q21--ir--dot-structural-isomorphism),
 render is mandatory (`ein.ir.to_dot`,
 S1.1.4);
 reverse parse (`ein.ir.from_dot`) is a P1.2 deliverable
@@ -39,7 +39,7 @@ DOT has no native hyperedges. Every n-ary relation fact `(name a b c)`
 is encoded **Levi-bipartite**: one `octagon` node for the hyperedge
 itself, with directed edges to each participant labelled by role index
 (or role name when declared). The hyperedge's node identity is what
-[Q18](../../../../plans/open_questions.md#q18)
+[Q18](../../../../plans/open_questions.md#q18--provenance-granularity)
 provenance tuples reference; this anchors
 [Q1](../../../../plans/open_questions.md#q1--what-kind-of-graph-is-the-ir)'s
 typed-hypergraph + equality-class-ID answer visually.

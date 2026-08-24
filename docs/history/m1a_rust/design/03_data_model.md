@@ -219,7 +219,7 @@ pub struct Kb {
 > vectors behind an `Arc`, so the ~450-fact extent the matcher scans is *one*
 > copy read by all 24 live KBs on the search stack, and flattening hands each
 > fork a private copy to fill a cache with. Reverted;
-> [baseline.md § 13](../measurements/baseline.md#t1a625--the-flatten-threshold-was-never-built-and-building-it-costs-76)
+> [baseline.md § 13](../measurements/baseline.md#t1a625--the-flatten-threshold-was-never-built-and-building-it-costs-76-)
 > has the isolation control. The consequence is a *positive* one for
 > [P1a.7](../README.md#p1a7--parallelism): sharing the base index across
 > workers is worth more than shortening the chain.

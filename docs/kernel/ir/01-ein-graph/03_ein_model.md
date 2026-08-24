@@ -44,7 +44,7 @@ This is the project's **homoiconic root**. It pays off in three
 ways:
 
 1. **Rules can match rules** (followup [F5](../../../../plans/followups/f5_rules_as_data.md)).
-2. **Traces can match traces** ([Q21](../../../../plans/open_questions.md#q21)
+2. **Traces can match traces** ([Q21](../../../../plans/open_questions.md#q21--ir--dot-structural-isomorphism)
    — the trace IR is the input IR).
 3. **The grammar can mutate itself** (followup [F2](../../../../plans/followups/f2_self_modifying_language.md))
    without changing what *kind* of object the grammar is.
@@ -369,7 +369,7 @@ Candidates:
 - **Forbidden** — `()` is a parse error and there's no syntactic
   hole notation.
 
-Parked at [M1 Q28](../../../../plans/open_questions.md#q28--empty-parens-node-semantics).
+Parked at [M1 Q28](../../../../plans/open_questions.md#q28--empty-parens--node-semantics).
 The grammar currently parses `()` as a placeholder atom `@empty`
 (see [the grammar](../03-ein-lang/00_ebnf.md));
 no engine semantics are attached.
@@ -454,7 +454,7 @@ view*, not as new work.
 | types are first-class nodes    | types are plain atoms/nodes (no `Type` entity since S1.7.23 — see §6); reachable via `is-a` + the `NameRef` index |
 | rules are first-class nodes    | `Rule` is an entity; `Pattern` lifts `:match`/`:assert`            |
 | property-application is a fact | open-world relation auto-vivification + `_rule_apps_by_rule` index |
-| trace is same IR as input      | `(trace …)` reuses the parser ([Q21](../../../../plans/open_questions.md#q21)) |
+| trace is same IR as input      | `(trace …)` reuses the parser ([Q21](../../../../plans/open_questions.md#q21--ir--dot-structural-isomorphism)) |
 
 What's **not yet** implemented and what *might* warrant a follow-up
 implementation phase (P1.2b):

@@ -319,7 +319,7 @@ Pulls forward:
 - Each kernel form has a fixed DOT shape — §Rendering in `docs/ir.md`
   (S1.1.1 T1.1.1.6).
 - Hyperedges render Levi/bipartite — anchors
-  [Q1](open_questions.md#q1)'s typed-hypergraph + equality-class-ID
+  [Q1](#q1--what-kind-of-graph-is-the-ir)'s typed-hypergraph + equality-class-ID
   answer visually.
 - Rule rendering: 3 modes (side-by-side / DPO span / overlay),
   configurable; `rules.ein` defaults to side-by-side, traces default

@@ -241,7 +241,7 @@ down than to let a reader assume otherwise: `BranchOpen`, `BranchClose`,
 `BranchRef`, `ContradictionDecl` and `SymmetryDecl` appear in no `.ein` file
 in the tree, and nothing in the engine emits them — they are reachable only
 through the parser's own unit tests. They are the trace vocabulary the
-renderer has not needed yet ([Q21](../../../../plans/open_questions.md#q21)),
+renderer has not needed yet ([Q21](../../../../plans/open_questions.md#q21--ir--dot-structural-isomorphism)),
 kept in the grammar so that a `(branch-open …)` never silently misclassifies
 as a fact.
 

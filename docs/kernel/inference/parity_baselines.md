@@ -99,10 +99,11 @@ search tree that tree must traverse but monotonic short-circuits
 via the fork-side `is_solved` check, monotonic can be
 30–50× faster (10, 11).
 
-This is the d!-redundancy point of [Q1.5b.0 / P1.5b README's
-Motivation](README.md#motivation) playing out at small scale —
-monotonic doesn't pay the ordering cost the tree's depth-first
-search pays.
+This is the d!-redundancy point of Q1.5b.0 / P1.5b's motivation — as the
+kernel README now carries it,
+[§ Set-indexed search](README.md#set-indexed-search--monotonic-engine-p15b-s15b010)
+— playing out at small scale: monotonic doesn't pay the ordering cost the
+tree's depth-first search pays.
 
 ## Test surface this baseline locks in
 
@@ -122,4 +123,5 @@ search pays.
 - Equivalence framing:
   Q1.5b.7 / open_questions.md.
 - Per-engine details:
-  [P1.5b README — Acceptance for the phase](README.md#acceptance-for-the-phase).
+  [README § Two engines, two termination criteria](README.md#two-engines-two-termination-criteria)
+  — P1.5b's acceptance list, absorbed there when its plan tree went at P1.22.
