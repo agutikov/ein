@@ -440,20 +440,20 @@ fn matching(
         })
         .collect();
     let mut taken_by: Vec<Option<usize>> = vec![None; actual.len()];
-    for i in 0..n {
+    for (i, want) in wanted.iter().enumerate() {
         let mut seen = vec![false; actual.len()];
         if !augment(i, &fits, &mut taken_by, &mut seen) {
             // Report against whichever model this expectation is closest to,
             // which is the one a reader will have been looking at.
             let best = (0..actual.len())
-                .min_by_key(|&j| explain(ast, wanted[i], &actual[j], None).len())
+                .min_by_key(|&j| explain(ast, want, &actual[j], None).len())
                 .unwrap_or(0);
             let which = if n == 1 {
                 String::new()
             } else {
                 format!("expectation {} of {n}: ", i + 1)
             };
-            for line in explain(ast, wanted[i], &actual[best], Some(terms)) {
+            for line in explain(ast, want, &actual[best], Some(terms)) {
                 lines.push(format!("{which}{line}"));
             }
             if lines.is_empty() {

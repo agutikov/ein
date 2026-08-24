@@ -99,6 +99,15 @@ def type_at(binds: list[tuple[int, str, str]], name: str, line_no: int) -> str |
     return best
 
 
+def comment_block(lines: list[str], line_no: int) -> list[str]:
+    """The run of `//` comment lines directly above 1-based ``line_no``."""
+    out, i = [], line_no - 2          # 0-based index of the preceding line
+    while i >= 0 and lines[i].lstrip().startswith("//"):
+        out.append(lines[i])
+        i -= 1
+    return out
+
+
 def scan(path: Path) -> tuple[list[Finding], list[str]]:
     text = path.read_text(encoding="utf-8")
     binds = bindings(text)
@@ -114,9 +123,14 @@ def scan(path: Path) -> tuple[list[Finding], list[str]]:
             ty = type_at(binds, match.group(1), i)
             if ty is None or ty in ORDERED:
                 continue
-            # An annotation on the preceding line covers this one.
-            prev = lines[i - 2] if i >= 2 else ""
-            if ANNOTATION.search(prev):
+            # An annotation anywhere in the contiguous comment block directly
+            # above covers this line. Only the line immediately above counted
+            # until M1c S1c.1.5, which is a trap rather than a rule: a reason
+            # worth writing rarely fits in one 70-column comment, and the
+            # second line of a two-line reason silently un-annotated the
+            # statement under it. `expect.rs` had exactly that shape and this
+            # check had been failing CI on it.
+            if any(ANNOTATION.search(c) for c in comment_block(lines, i)):
                 continue
             findings.append(Finding(path, i, match.group(1), line))
     return findings, allowed

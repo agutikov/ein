@@ -2,10 +2,9 @@
 #
 # run_tests.sh — the gate.
 #
-#     ./run_tests.sh                 # fmt, docs, then cargo test --workspace
+#     ./run_tests.sh                 # the five static checks, then the tests
 #     ./run_tests.sh --slow          # + the 12 slow corpus cells, + 8 id seeds
-#     ./run_tests.sh --no-fmt        # skip the formatting check
-#     ./run_tests.sh --no-doc        # skip the rustdoc check
+#     ./run_tests.sh --tests-only    # skip the static checks
 #     ./run_tests.sh -p ein-ir       # anything else is forwarded to cargo test
 #
 # **This was a three-phase runner until M1a S1a.10.5**, and each phase went
@@ -54,23 +53,32 @@
 #   EIN_CORPUS_SLOW=1 ./run_tests.sh    # the 2 slow corpus entries, 12 cells
 #   EIN_ID_SEEDS=8    ./run_tests.sh    # more id-space permutations
 #
-# **Two static checks joined the gate at M1c S1c.1.5**, and both joined it
-# because both had already drifted. They cost about a second each, they run
-# before the tests because their failures are the cheapest ones to read, and
-# `--no-fmt` / `--no-doc` turn them off for a targeted iteration. Nothing
-# turns them off silently — a missing `rustfmt` is exit 127 here, the same as
-# a missing `cargo` or `dot`.
+# **This runs what CI runs** — every step of the per-commit tier
+# (`.github/workflows/per-commit.yml`), in its order, so that a green
+# `./run_tests.sh` means a green CI. That was **not** true until M1c S1c.1.5,
+# and it cost three red commits: CI ran `cargo clippy -D warnings` and two
+# Python greps that nothing local ran, so this script reported a pass over two
+# findings it could not see. A local gate that is a subset of the remote one
+# is a local gate that lies.
 #
-#   `cargo fmt --all --check`  three files were unformatted when it was first
-#                              run, all three from M1c's own `:expect` work.
-#   `cargo doc -D warnings`    twelve **unresolved** intra-doc links and seven
-#                              public items whose docs linked to a private
-#                              one. They accumulated because rustdoc's default
-#                              for both is a *warning* and nothing here ran
-#                              rustdoc at all — the tests do not, and a
-#                              `[\`Trail\`]` naming a type that has never
-#                              existed is invisible to every other check in
-#                              this repository.
+#   stdlib_manifest.py            the embedded stdlib against its digest
+#   check_hashmap_iteration.py    no hash-map iteration at an observable site
+#   cargo fmt --all --check       three files were unformatted the first time
+#                                 it ran, all three from M1c's `:expect` work
+#   cargo clippy -D warnings      a `for i in 0..n` indexing a slice, and four
+#                                 `&file` where `file` was already a `&str` —
+#                                 latent, because clippy stopped at the first
+#                                 crate that failed and never reached `ein-cli`
+#   cargo doc -D warnings         twelve **unresolved** intra-doc links and
+#                                 seven public items whose docs linked to a
+#                                 private one. Local-only until S1c.1.5 put it
+#                                 in the workflow too
+#
+# They cost about a second each warm, they run before the tests because their
+# failures are the cheapest ones to read, and `--tests-only` turns all five
+# off for a targeted iteration. Nothing turns them off silently — a missing
+# `rustfmt`, `clippy` or `python3` is exit 127 here, the same as a missing
+# `cargo` or `dot`.
 
 set -euo pipefail
 
@@ -101,40 +109,64 @@ fi
 # re-priced the tier and 19 until T1a.7.2.0 took `branching/07` out of it —
 # `corpus/corpus.toml` is the authority and `cost_ms` is the measurement.
 ARGS=()
-RUN_FMT=1
-RUN_DOC=1
+CHECKS=1
 for arg in "$@"; do
     case "${arg}" in
-        --slow)   export EIN_CORPUS_SLOW=1 EIN_ID_SEEDS="${EIN_ID_SEEDS:-8}" ;;
-        --no-fmt) RUN_FMT=0 ;;
-        --no-doc) RUN_DOC=0 ;;
-        *)        ARGS+=( "${arg}" ) ;;
+        --slow)       export EIN_CORPUS_SLOW=1 EIN_ID_SEEDS="${EIN_ID_SEEDS:-8}" ;;
+        --tests-only) CHECKS=0 ;;
+        *)            ARGS+=( "${arg}" ) ;;
     esac
 done
 
-if [[ "${RUN_FMT}" == 1 ]]; then
-    if ! cargo fmt --version >/dev/null 2>&1; then
-        echo "error: no rustfmt — the formatting gate did not run." >&2
-        echo "       'rustup component add rustfmt', or pass --no-fmt." >&2
+# One banner per step, ruled to a fixed width so the column of them reads as
+# a list rather than as ragged output.
+step() {
+    local label="$*" rule=""
+    local width=$(( 62 - ${#label} ))
+    while (( ${#rule} < width )); do rule="${rule}─"; done
+    echo "── ${label} ${rule}" >&2
+}
+
+if [[ "${CHECKS}" == 1 ]]; then
+    for tool in python3 rustfmt; do
+        if ! command -v "${tool}" >/dev/null 2>&1; then
+            echo "error: no ${tool} on PATH — the static checks did not run." >&2
+            echo "       Install it, or pass --tests-only." >&2
+            exit 127
+        fi
+    done
+    if ! cargo clippy --version >/dev/null 2>&1; then
+        echo "error: no clippy — 'rustup component add clippy', or --tests-only." >&2
         exit 127
     fi
-    echo "── cargo fmt --all --check ────────────────────────────────────" >&2
+
+    step "utils/stdlib_manifest.py"
+    python3 "${SCRIPT_DIR}/utils/stdlib_manifest.py"
+
+    step "utils/check_hashmap_iteration.py"
+    python3 "${SCRIPT_DIR}/utils/check_hashmap_iteration.py"
+
+    step "cargo fmt --all --check"
     if ! cargo fmt --manifest-path "${MANIFEST}" --all --check; then
         echo >&2
         echo "error: formatting drift above — the diff is what rustfmt would do." >&2
         echo "       Fix with: cargo fmt --manifest-path ein.rs/Cargo.toml --all" >&2
         exit 1
     fi
-fi
 
-# `--no-deps` on purpose: what is being checked is *this* workspace's docs,
-# and a dependency's rustdoc warnings are not ours to fix. `-D warnings`
-# rather than `-D rustdoc::broken_intra_doc_links` alone, because the other
-# lints in that family are the same kind of rot — a private item linked from a
-# public one, an `<path>` read as an HTML tag, a link whose explicit target
-# repeats its label.
-if [[ "${RUN_DOC}" == 1 ]]; then
-    echo "── cargo doc --no-deps, -D warnings ───────────────────────────" >&2
+    # `--all-targets`, so the lints see tests and benches too. Four of the six
+    # findings S1c.1.5 fixed were in `ein-cli`, which clippy had never reached
+    # because it stops at the first crate that fails to compile.
+    step "cargo clippy --workspace --all-targets -D warnings"
+    cargo clippy --manifest-path "${MANIFEST}" --workspace --all-targets -- -D warnings
+
+    # `--no-deps` on purpose: what is being checked is *this* workspace's docs,
+    # and a dependency's rustdoc warnings are not ours to fix. `-D warnings`
+    # rather than `-D rustdoc::broken_intra_doc_links` alone, because the other
+    # lints in that family are the same kind of rot — a private item linked
+    # from a public one, an `<path>` read as an HTML tag, a link whose explicit
+    # target repeats its label.
+    step "cargo doc --no-deps, -D warnings"
     if ! RUSTDOCFLAGS="-D warnings" cargo doc -q --manifest-path "${MANIFEST}" \
             --workspace --no-deps; then
         echo >&2
@@ -144,6 +176,14 @@ if [[ "${RUN_DOC}" == 1 ]]; then
     fi
 fi
 
-echo "── cargo test --workspace ─────────────────────────────────────" >&2
-exec cargo test --manifest-path "${MANIFEST}" --workspace \
-     ${ARGS[@]+"${ARGS[@]}"}
+step "cargo test --workspace"
+cargo test --manifest-path "${MANIFEST}" --workspace ${ARGS[@]+"${ARGS[@]}"}
+
+# CI's last step, and it is not a measurement: `--test` runs each bench once
+# to see that it runs. A bench that stopped compiling is invisible to
+# `cargo test`, and `ein-corpus`'s bench set is the only consumer of several
+# `pub` items in the engine.
+if [[ "${CHECKS}" == 1 ]]; then
+    step "cargo bench --bench engine -- --test"
+    cargo bench -q --manifest-path "${MANIFEST}" --bench engine -- --test
+fi

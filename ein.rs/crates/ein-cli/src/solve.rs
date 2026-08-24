@@ -517,7 +517,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
     // Last thing before the solve: the diagnostics above are *about* the run,
     // not part of it, and recording them would make the event stream depend on
     // which other flags were passed.
-    let mut events = events_start(m, &file, &config);
+    let mut events = events_start(m, file, &config);
     events_load(&mut events, &terms, &kb);
 
     let mut dumper = match make_dumper(m) {
@@ -566,7 +566,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
                     &reason,
                     &stats,
                     &config,
-                    &file,
+                    file,
                     &mut events,
                 ) {
                     Ok(s) => {
@@ -607,7 +607,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
         &solved.answer,
         Some(solved.stats.solution_nodes),
         solved.stats.exhausted,
-        Some(&file),
+        Some(file),
     ) {
         Ok(t) => t,
         Err(line) => {
@@ -651,7 +651,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
             &solved.answer,
             &solved.stats,
             &config,
-            &file,
+            file,
             &mut events,
         ) {
             Ok(s) => {

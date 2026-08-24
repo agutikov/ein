@@ -2,6 +2,12 @@
 #
 # Budget: five minutes.
 #
+# **`./run_tests.sh` runs every step of this tier**, in this order, since M1c
+# S1c.1.5 — so a green local gate means a green CI. It had not, and that cost
+# three red commits: clippy and the two Python greps ran only here, and the
+# local script reported a pass over findings it could not see. Keep the two
+# lists the same; `run_tests.sh`'s header names each step and what it found.
+#
 # The `conformance-fast` job that used to close this file ran the parity
 # harness over the corpus, Python against Rust, at T3. It was retired with the
 # harness at M1a S1a.10.3: the corpus is still swept every commit, by
@@ -69,8 +75,15 @@ jobs:
       # been reporting a pass for 5 209 renderings nothing checked. S1a.10.3
       # made it fail instead, and this line is the other half of that.
       - run: sudo apt-get update && sudo apt-get install -y graphviz
-      - run: cargo fmt --check
+      - run: cargo fmt --all --check
       - run: cargo clippy --workspace --all-targets -- -D warnings
+      # M1c S1c.1.5. Nothing had ever run rustdoc here, and its default for
+      # every lint in the family is a *warning*, so twelve unresolved
+      # intra-doc links and seven public-docs-to-private-item references had
+      # accumulated invisibly. `--no-deps`: this workspace's docs are the
+      # subject, a dependency's warnings are not ours.
+      - run: cargo doc --workspace --no-deps
+        env: { RUSTDOCFLAGS: "-D warnings" }
       # The whole gate. Covers the corpus-completeness check, the corpus sweep
       # through the CLI, the embedded-stdlib digest, and since S1a.10.2 every
       # claim the frontend's differential tests carried.

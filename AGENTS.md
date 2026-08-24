@@ -281,7 +281,8 @@ constrained-reasoning research.
 `./build.sh` builds everything first (see above); this runs it.
 
 ```sh
-./run_tests.sh                                               # fmt, docs, then the tests
+./run_tests.sh                                               # the whole per-commit tier
+./run_tests.sh --tests-only                                  # skip the static checks
 cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the tests alone
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 2 slow entries
 EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance
@@ -289,20 +290,27 @@ EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
 ```
 
-**`./run_tests.sh` runs two static checks before the tests** (M1c S1c.1.5,
-~1 s each; `--no-fmt` / `--no-doc` skip them, a missing `rustfmt` is exit 127
-rather than a skip). Both joined the gate because both had already drifted, and
-`cargo test --workspace` on its own checks neither:
+**`./run_tests.sh` runs every step of the per-commit CI tier**, in its order,
+since M1c S1c.1.5 — five static checks (~5 s warm, `--tests-only` skips them
+all), then `cargo test --workspace`, then the bench smoke test. **`cargo test
+--workspace` alone is not the gate**: it checks none of the five, and until
+S1c.1.5 neither did this script, which is why CI was red for three commits on
+findings the local run reported as a pass. A local gate that is a subset of the
+remote one is a local gate that lies — keep the two lists the same.
 
-| | what it found the first time it ran |
+| step | what it found the first time it ran |
 |---|---|
+| `utils/stdlib_manifest.py` | — (it has always run in CI) |
+| `utils/check_hashmap_iteration.py` | one finding, and the finding was the *check*: only the line immediately above a statement counted as `determinism-ok:`, so the second line of a two-line reason silently un-annotated it. It reads the whole comment block now |
 | `cargo fmt --all --check` | **three** unformatted files, all from M1c's own `:expect` work |
-| `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps` | **twelve** unresolved intra-doc links and **seven** public items whose docs linked to a private one — plus a `<path>` rustdoc read as an HTML tag. They accumulated because rustdoc's default for all of it is a *warning* and nothing here ran rustdoc at all |
+| `cargo clippy --workspace --all-targets -D warnings` | a `for i in 0..n` indexing a slice, and **four** `&file` where `file` was already a `&str` — the four latent, because clippy stops at the first crate that fails and had never reached `ein-cli` |
+| `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps` | **twelve** unresolved intra-doc links and **seven** public items whose docs linked to a private one, plus a `<path>` read as an HTML tag. Nothing here had ever run rustdoc, whose default for all of it is a *warning* |
 
 A reference that cannot be a link is still fine as `` `code` ``, and that is
-the fix for most of them: `ein-ir` cannot link into `ein-infer` (the dependency
-runs the other way), a `#[cfg(test)]` module is not in the documented crate,
-and a private item is a real name that public docs may cite but not hyperlink.
+the fix for most of the rustdoc ones: `ein-ir` cannot link into `ein-infer`
+(the dependency runs the other way), a `#[cfg(test)]` module is not in the
+documented crate, and a private item is a real name that public docs may cite
+but not hyperlink.
 
 Everything runs one engine. `cargo test --workspace` is the gate — the corpus
 sweep through the CLI, the shape digests, the goldens, the manifest's own
