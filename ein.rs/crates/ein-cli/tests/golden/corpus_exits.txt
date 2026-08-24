@@ -839,11 +839,11 @@
 0    tests/stdlib/macro/01_forall.ein :: saturate
 0    tests/stdlib/macro/01_forall.ein :: solve
 0    tests/stdlib/macro/01_forall.ein :: test
-0    tests/stdlib/macro/02_open.ein :: render constraints
-0    tests/stdlib/macro/02_open.ein :: render rules
-0    tests/stdlib/macro/02_open.ein :: saturate
-0    tests/stdlib/macro/02_open.ein :: solve
-0    tests/stdlib/macro/02_open.ein :: test
+0    tests/stdlib/macro/02_unknown.ein :: render constraints
+0    tests/stdlib/macro/02_unknown.ein :: render rules
+0    tests/stdlib/macro/02_unknown.ein :: saturate
+0    tests/stdlib/macro/02_unknown.ein :: solve
+0    tests/stdlib/macro/02_unknown.ein :: test
 0    tests/stdlib/slots/01_partition.ein :: render constraints
 0    tests/stdlib/slots/01_partition.ein :: render rules
 0    tests/stdlib/slots/01_partition.ein :: saturate

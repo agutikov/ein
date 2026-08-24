@@ -10,7 +10,7 @@
 //! | `tests/inference/test_saturator_naf.py` | the closure a guard is judged against, including one a rule built |
 //! | `tests/inference/monotonic/test_root_stability_naf.py` | C1 — a NAF-derived fork fact is not a truth of root |
 //! | `tests/inference/test_naf_deps.py` | the advisory stratification map and its one wired flag |
-//! | `tests/inference/test_open.py` | `(open P)`, which is two guards in a trench coat |
+//! | `tests/inference/test_open.py` | `(unknown P)`, which is two guards in a trench coat |
 //!
 //! The one idea underneath all of them: **`absent` is a query about a world,
 //! not an atom**. The closure runs purely positive to a fixpoint; every
@@ -1073,9 +1073,9 @@ fn a_guard_free_rule_parks_nothing() {
     assert_eq!(guarded.naf_admitted, 1);
 }
 
-// ── `(open P)` — the third state ───────────────────────────────────
+// ── `(unknown P)` — the third state ───────────────────────────────────
 
-/// **`(open P)` admits exactly the pairs that are neither asserted nor
+/// **`(unknown P)` admits exactly the pairs that are neither asserted nor
 /// negated.**
 ///
 /// `open` is not a primitive: the macro expands it to `(and (absent P) (absent
@@ -1087,13 +1087,13 @@ fn a_guard_free_rule_parks_nothing() {
 /// which is the state a puzzle starts in and the one a hypothesis generator
 /// enumerates over.
 #[test]
-fn open_admits_exactly_the_undecided_pairs() {
-    let rule = "(import std.macro :symbols (open))\n\
-                (rule find-open ()\n  \
+fn unknown_admits_exactly_the_undecided_pairs() {
+    let rule = "(import std.macro :symbols (unknown))\n\
+                (rule find-unknown ()\n  \
                 :match (and (is-a ?a Person) (is-a ?b Person) (neq ?a ?b)\n              \
-                (open (likes ?a ?b)))\n  :assert (open-likes ?a ?b)\n  \
+                (unknown (likes ?a ?b)))\n  :assert (unknown-likes ?a ?b)\n  \
                 :why \"{?a} to {?b} undecided\" :priority 100)\n\
-                (relation likes T T)\n(relation open-likes T T)\n\
+                (relation likes T T)\n(relation unknown-likes T T)\n\
                 (is-a Person T)\n";
 
     let three = saturate(&format!(
@@ -1101,12 +1101,12 @@ fn open_admits_exactly_the_undecided_pairs() {
          (likes Alice Bob :source \"(1)\")\n(not (likes Alice Carol) :source \"(2)\")\n"
     ));
     assert_eq!(
-        three.extent("open-likes"),
+        three.extent("unknown-likes"),
         [
-            "(open-likes Bob Alice)",
-            "(open-likes Bob Carol)",
-            "(open-likes Carol Alice)",
-            "(open-likes Carol Bob)",
+            "(unknown-likes Bob Alice)",
+            "(unknown-likes Bob Carol)",
+            "(unknown-likes Carol Alice)",
+            "(unknown-likes Carol Bob)",
         ],
         "(Alice Bob) is asserted and (Alice Carol) is denied; every other \
          ordered pair is undecided, and `neq` removes the diagonal"
@@ -1114,8 +1114,8 @@ fn open_admits_exactly_the_undecided_pairs() {
 
     let empty = saturate(&format!("{rule}(is-a Alice Person)\n(is-a Bob Person)\n"));
     assert_eq!(
-        empty.extent("open-likes"),
-        ["(open-likes Alice Bob)", "(open-likes Bob Alice)"],
+        empty.extent("unknown-likes"),
+        ["(unknown-likes Alice Bob)", "(unknown-likes Bob Alice)"],
         "with no `likes` fact of either polarity, both guards pass for every \
          pair — the state a puzzle starts in"
     );

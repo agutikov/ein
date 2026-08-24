@@ -32,7 +32,7 @@
 ;;;   ¬(likes Ann Soup)       stated
 ;;;   (likes Ann Stew)        **undecided** — neither stated nor denied
 ;;;
-;;; So Ann's extent is *half* excluded. `total` must not fire, and the `open`
+;;; So Ann's extent is *half* excluded. `total` must not fire, and the `unknown`
 ;;; probe below is what says so in the model rather than in this comment:
 ;;; `(undecided Ann Stew)` exists exactly when `(likes Ann Stew)` is in neither
 ;;; store. Add `(not (likes Ann Stew))` and this file becomes
@@ -42,7 +42,7 @@
 ;;; excluded and Bob open.
 
 (import std.algebra :symbols (total surjective))
-(import std.macro   :symbols (forall open))
+(import std.macro   :symbols (forall unknown))
 
 (relation is-a      T T          :why "{?1} is a {?2}")
 (relation likes     Person Food  :why "{?1} likes {?2}")
@@ -60,7 +60,7 @@
 ;; Priority 500 — above everything the stdlib declares, so the probe reads the
 ;; world after the rules under test have finished writing to it.
 (rule probe-undecided ()
-  :match  (open (likes Ann Stew))
+  :match  (unknown (likes Ann Stew))
   :assert (undecided Ann Stew)
   :priority 500
   :why    "Ann's extent is only half excluded, so `total` has nothing to refute")

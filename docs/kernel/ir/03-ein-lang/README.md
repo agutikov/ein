@@ -35,7 +35,7 @@ model in [`../02-data-model/`](../02-data-model/).
   where ein-lang diverges.
 - [`06_reserved_names.md`](06_reserved_names.md) — the authoritative
   reserved surface-words reference: declarators, rule-body / ⊥
-  primitives, predicates, `open`/`forall` sugar, `closed`,
+  primitives, predicates, `unknown`/`forall` sugar, `closed`,
   `hypothesis-relations` — plus the author **intent → atom**
   quick-reference card. (Engine-internal strings:
   [`../../inference/reserved_engine_strings.md`](../../inference/reserved_engine_strings.md).)

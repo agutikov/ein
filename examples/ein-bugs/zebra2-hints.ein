@@ -103,8 +103,8 @@
 ;;; imports land.
 
 
-;; stdlib pattern-macro sugar — forall/open from the std.macro module (S1.8.A5).
-(import std.macro :symbols (forall open))
+;; stdlib pattern-macro sugar — forall/unknown from the std.macro module (S1.8.A5).
+(import std.macro :symbols (forall unknown))
 
 (config
   :enable-pre-branch-lookahead true)

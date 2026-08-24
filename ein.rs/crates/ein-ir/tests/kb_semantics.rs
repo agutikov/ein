@@ -265,8 +265,8 @@ fn a_whole_module_import_qualifies_every_name_and_the_qualified_head_still_expan
     let (terms, kb) = kb_of(&whole);
     assert_eq!(
         names(&terms, &kb.program().macros),
-        ["std.macro.forall", "std.macro.open"],
-        "a bare (import M) prefixes every definition, `open` included"
+        ["std.macro.forall", "std.macro.unknown"],
+        "a bare (import M) prefixes every definition, `unknown` included"
     );
     let (flat_terms, flat_kb) = kb_of(&flat);
     assert_eq!(
@@ -672,7 +672,7 @@ fn the_resolved_stdlib_root_is_the_only_one_consulted() {
     let checkout = repo_root().join("stdlib");
     assert_eq!(
         Resolver::with_stdlib(Source::Checkout(checkout.clone())).stdlib_macro_names(),
-        ["forall", "open"],
+        ["forall", "unknown"],
         "…which is not what the checkout says, so the previous line means something"
     );
 
@@ -756,12 +756,12 @@ fn editing_a_module_takes_effect_without_a_rebuild() {
 
     std::fs::write(
         &macro_ein,
-        "(macro forall (?p) (rel ?p))\n(macro open (?p) (rel ?p))\n",
+        "(macro forall (?p) (rel ?p))\n(macro unknown (?p) (rel ?p))\n",
     )
     .expect("writable");
     assert_eq!(
         resolver.stdlib_macro_names(),
-        ["forall", "open"],
+        ["forall", "unknown"],
         "the second call re-read the file the first one read"
     );
 }

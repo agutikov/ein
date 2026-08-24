@@ -336,12 +336,12 @@ A potential fact `P` is at any moment in one of three states:
 |----------------|-------------------------------------|--------------------------------------|
 | **asserted**   | `P` stored as positive              | `(P)` pattern                       |
 | **negated**    | `(not P)` stored as a fact          | `(not P)` pattern (matches the stored neg fact) |
-| **open**       | neither in KB                       | `(open P)` pattern (sugar for `(and (absent P) (absent (not P)))`) |
+| **open**       | neither in KB                       | `(unknown P)` pattern (sugar for `(and (absent P) (absent (not P)))`) |
 
 The three pattern shapes parallel the three storage states.
 `(not P)` in `:match` matches a stored `(not P)` fact, NOT NAF —
 NAF must be written explicitly as `(absent P)` (S1.5.8c K-Δ.1).
-`(open P)` is a `std.macro` expansion to the conjunction of two
+`(unknown P)` is a `std.macro` expansion to the conjunction of two
 absents, giving rules a way to gate on "P is undecided" — useful for
 hypothesis-generation rules that should only propose candidates
 for slots that aren't yet committed either way. "Neither in KB" is
@@ -519,7 +519,7 @@ At each step:
    (§5) instead of dropping it.
 
 A match whose rule branch carries a negative premise (`(absent …)`,
-hence also `(open …)` / `(forall …)`) is **parked** rather than fired:
+hence also `(unknown …)` / `(forall …)`) is **parked** rather than fired:
 those premises are lifted out of the match plan before the closure ever
 runs it, so no negative question is asked of a half-built graph.
 

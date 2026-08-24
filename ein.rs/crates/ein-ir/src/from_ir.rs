@@ -157,7 +157,7 @@ pub fn load_query(
         }
     }
 
-    // The S1.8a.f20 guard: a `(forall …)` / `(open …)` used without importing
+    // The S1.8a.f20 guard: a `(forall …)` / `(unknown …)` used without importing
     // `std.macro` would leave the invocation in place and the rule would
     // silently never fire.
     let mut rule_matches: Vec<(String, NodeId)> = Vec::new();

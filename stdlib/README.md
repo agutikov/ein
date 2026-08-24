@@ -80,7 +80,7 @@ product, from here.
 
 | module | file | provides | stage |
 |--------|------|----------|-------|
-| `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `open` pattern macros | S1.5.9 |
+| `std.macro` | [`macro.ein`](macro.ein) | the `forall` / `unknown` pattern macros | S1.5.9 |
 | `std.elim` | [`elim.ein`](elim.ein) | closed-world `typecheck-arg-{0,1}` + `domain-elimination` + `no-room-left` (generic; the instance-type relation is the `?isa` param, not a hardcoded `is-a` — S1.8.A10; needs `forall`) | S1.8.A8 |
 | `std.closure` | [`closure.ein`](closure.ein) | `infer-closure` — `functional ∧ total ⇒ (__closed__ R)` (parameter-less; **opt-in, not for branching puzzles** — see the file's caveat) | S1.8.A6 |
 | `std.algebra` | [`algebra.ein`](algebra.ein) | the full relation-algebra signature: relative (`converse` / `compose` / `identity`), Boolean (`meet` / `join` / `difference` / `complement` / `top` / `empty`), cardinality checks (`functional` / `injective` / `total` / `surjective` + the `bijective` fan-out — S1.8a.f20; `total`/`surjective` need `forall`), property checks (`irreflexive` / `antisymmetric` / `asymmetric` / `connex` / `difunctional`), property **closures** (`symmetric` (+ its `symmetric-negative` mirror via `symmetric-negative-setup`, S1.9) / `transitive` / `includes` — the universal kernel rules, S1.8.A5), `imply1` / `imply2-fwd` / `imply2-reverse`, the equational lemmas (`symmetric`⟺`converse R R`, Schröder `compose-negative-{r,s}`, contravariance, converse-over-join) + `converse-illtyped-{dom,ran}` signature typecheck (generic; lemmas use reflective rule-implication) | S1.8.A7 + A12 + A5 + f20 |
@@ -149,7 +149,7 @@ the cardinality checks, and `forall` — is one line:
 (import std.bijection :symbols (bijective-properties bijective-setup typecheck-setup))
 ```
 
-(A puzzle invoking a `std.macro` macro — `forall` / `open` — in its *own*
+(A puzzle invoking a `std.macro` macro — `forall` / `unknown` — in its *own*
 inline rule must still import it; the loader flags an unexpanded `(forall …)` as
 a missing import rather than letting the rule silently never fire.)
 
@@ -160,7 +160,7 @@ Three tiers (Python-style — see the A1 decision record):
 ```lisp
 (import std.macro)                        ; → (std.macro.forall …)   fully qualified
 (import std.macro :as m)                  ; → (m.forall …)           aliased
-(import std.macro :symbols (forall open)) ; → (forall …)             flat-selective + auto-closure
+(import std.macro :symbols (forall unknown)) ; → (forall …)             flat-selective + auto-closure
 ```
 
 `:symbols` keeps the listed names **plus their dependency closure** (S1.8a.f20),
@@ -187,7 +187,7 @@ One file per coherent concern (`macro.ein`, future `algebra.ein`,
 tree-shaking dump both reward small, focused modules. A `README.md` here is
 ignored by the resolver (only `*.ein` files are modules).
 
-Each shipped stdlib symbol is exercised by a test (e.g. `forall` / `open` by
-`tests/inference/test_forall.py` / `test_open.py` and
-`tests/kb/test_imports.py`). The full per-symbol API reference is deferred to
+Each shipped stdlib symbol is exercised by a test (e.g. `forall` / `unknown`
+by `tests/stdlib/macro/01_forall.ein` / `02_unknown.ein`, under the
+stdlib-conformance gate). The full per-symbol API reference is deferred to
 S1.20.C.

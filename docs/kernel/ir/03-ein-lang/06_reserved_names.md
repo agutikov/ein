@@ -36,7 +36,7 @@ you can author a puzzle without reading engine source.
 | match a **stored** negative                  | `(not P)` in `:match`                   | §⊥ primitives |
 | require two slots differ / are equal         | `(neq ?a ?b)` / `(eq ?a ?b)`            | §predicates |
 | declare this branch contradictory            | `:assert (false)`                       | §⊥ primitives |
-| say "P is undecided"                          | `(open P)` *(import `std.macro`)*       | §macro sugar |
+| say "P is undecided"                          | `(unknown P)` *(import `std.macro`)*       | §macro sugar |
 | say "∀ b s.t. G, B holds"                    | `(forall ?b G B)` *(import `std.macro`)*| §macro sugar |
 | tag a relation symmetric / transitive / …    | `(symmetric R)` + the rule consuming it | §not-reserved |
 | freeze a relation (no guessing on it)        | `(__closed__ R)` *(usually auto)*       | §hypothesis control |
@@ -84,7 +84,7 @@ structural primitives (`absent` / `false`), the computed predicates
 (`eq` / `neq`), or `relation`. The SYMBOL-excluded keywords
 (`not` / `and` / `or` / `neq` / the declarators) can't be written as a declared
 name at all (parse error). The guard is about *binding* a name; a **fact** may
-still carry a reserved head (a stored `(not X)` octagon). `open` / `forall`
+still carry a reserved head (a stored `(not X)` octagon). `unknown` / `forall`
 are deliberately *not* reserved — they migrated into the `std.macro` module
 ([`stdlib/macro.ein`](../../../../stdlib/macro.ein)).
 
@@ -112,22 +112,24 @@ bindings, not looked up in the KB.
 | `eq` | 2 | `(eq ?a ?b)` true iff the slots resolve equal | matcher `Guard` opcode |
 | `neq` | 2 | `(neq ?a ?b)` true iff the slots resolve unequal | matcher `Guard` opcode |
 
-## Pattern-macro sugar (`forall` / `open`) — NOT reserved
+## Pattern-macro sugar (`forall` / `unknown`) — NOT reserved
 
-`forall` and `open` were compile-time desugars baked into the compiler.
-Since S1.5.9
+`forall` and `unknown` — the latter named `open` until 2026-08-24, renamed
+(M1d P1d.2 naming decision P3) so the obligations phase can reserve bare
+`open` for its KB-level verdict atom — were compile-time desugars baked into
+the compiler. Since S1.5.9
 they are ordinary ein-lang `(macro …)` declarations (the `std.macro` module,
 [`stdlib/macro.ein`](../../../../stdlib/macro.ein))
 expanded at **load** time (`kb.from_ir` → `ir.macros.expand_macros`) — they
 are **no longer kernel vocabulary**, no longer in the `STRUCTURAL` table, and a
 puzzle may even redefine them. A puzzle that wants them imports them
 (S1.8.A1–A5):
-`(import std.macro :symbols (forall open))` (flat surface), or
+`(import std.macro :symbols (forall unknown))` (flat surface), or
 `(import std.macro)` / `:as m` for qualified access.
 
 | macro | form | expands to |
 |-------|------|------------|
-| `open` | `(open P)` | `(and (absent P) (absent (not P)))` — P is neither asserted nor negated |
+| `unknown` | `(unknown P)` | `(and (absent P) (absent (not P)))` — P is neither asserted nor negated |
 | `forall` | `(forall ?b G B)` | `(absent (and G (absent B)))` — guarded universal ∀b. G→B |
 
 Both expand to nested `absent`s, so their meaning is inherited from the

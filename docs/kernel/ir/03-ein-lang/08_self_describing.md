@@ -178,13 +178,13 @@ de-hardcoded `symmetric` (symmetry now lives entirely in the user rule).
 Self-description of these features is not a future deliverable — it is
 the current architecture.
 
-**The quantifier sugar is Ein-in-Ein too.** `forall` and `open` are not
+**The quantifier sugar is Ein-in-Ein too.** `forall` and `unknown` are not
 kernel forms; they are `(macro …)` declarations in
 [`stdlib/macro.ein`](../../../../stdlib/macro.ein):
 
 ```lisp
 (macro forall (?b ?G ?B) (absent (and ?G (absent ?B))))
-(macro open   (?P)       (and (absent ?P) (absent (not ?P))))
+(macro unknown (?P)     (and (absent ?P) (absent (not ?P))))
 ```
 
 ## 4. The abstract syntax of Ein, as Ein relations (descriptive)

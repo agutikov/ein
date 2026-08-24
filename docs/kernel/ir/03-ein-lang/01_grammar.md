@@ -372,14 +372,14 @@ NAF / quantifier-style premises:
 |--------------------|-----------------------------------------------------|-------------|
 | `(not P)`          | matches a STORED `(not P)` fact in the KB           | S1.5.8c.1   |
 | `(absent P)`       | negation-as-failure — holds iff no fact matches P in the world at the closure boundary (see below) | S1.5.8c.1   |
-| `(open P)`         | `std.macro` macro for `(and (absent P) (absent (not P)))` — the third-state match: P is neither asserted nor negated | S1.5.8c.3b |
+| `(unknown P)`      | `std.macro` macro for `(and (absent P) (absent (not P)))` — the third-state match: P is neither asserted nor negated | S1.5.8c.3b |
 | `(forall ?b (G) (B))` | `std.macro` macro for `(absent (and G (absent B)))` — for every binding of `?b` satisfying guard G, body B must hold | S1.5.8c.3a |
 
 The three-state model: at any moment, a potential fact P is
 **asserted** (matched by `(P)`), **negated** (matched by `(not P)`),
-or **open** (matched by `(open P)`). The earlier overloaded
+or **open** (matched by `(unknown P)`). The earlier overloaded
 `(not P)` meaning (default NAF) was dropped in S1.5.8c — NAF must
-now be written explicitly as `(absent P)`. `forall` and `open` are
+now be written explicitly as `(absent P)`. `forall` and `unknown` are
 load-time `(macro …)` expansions in terms of `absent` (the
 [`std.macro`](../../../../stdlib/macro.ein) module since
 S1.5.9 — import them; see

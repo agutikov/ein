@@ -19,7 +19,7 @@ about a word the engine already says.
 |---|---|---|
 | [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1d.10](p1d.10_exhaustive_search/README.md); `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
 | [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | open — the note says **first-class obligation**; the cost is a kernel concept |
-| [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | open — no answer, no lower bound; `is-a` extents and `open` are what exists |
+| [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | open — no answer, no lower bound; `is-a` extents and `unknown` are what exists |
 | [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | open — [Q-M1a.18](../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)-shaped; the answer moves every counter |
 | [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | open — [P1d.3](p1d.3_model_sets/README.md); "enumerate, and say so" is an acceptable answer |
 | [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | open — ten corpus entries already say it; arrived from M1a [S1a.9.0](../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced) |
@@ -93,7 +93,7 @@ P1a.6 — so "recompute it" is not automatically cheap.
 `∀x ∈ D. ∃y ∈ C. R(x,y)` is unanswerable without knowing D and C. The note
 lists the sub-questions: what is in the set, is the set closed, and may new
 objects appear. Ein has `is-a` extents, `is-a*` for the transitive closure,
-the `open` macro, and a corpus entry
+the `unknown` macro, and a corpus entry
 ([`features/04_open.ein`](../../examples/features/04_open.ein)) whose whole
 point is that an open domain makes the search unbounded.
 

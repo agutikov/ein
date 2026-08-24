@@ -901,7 +901,7 @@ group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
-path   = "tests/stdlib/macro/02_open.ein"
+path   = "tests/stdlib/macro/02_unknown.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 

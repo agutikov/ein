@@ -124,7 +124,7 @@ constrained-reasoning research.
   directory is things to read, and these are three declarations and two facts
   apiece that exist to break. Three idioms are worth knowing before writing a
   new one — **naming a relation closes it** (which is how a rule with no guard
-  gets a negative case at all), **`(open …)` as a probe** at priority 500
+  gets a negative case at all), **`(unknown …)` as a probe** at priority 500
   (the only way to say a rule did *not* derive a negative, since stored
   negatives are not closed), **a refutation rule gets two files** — one where
   it fires and one where it is loaded, activated and satisfied — and **where

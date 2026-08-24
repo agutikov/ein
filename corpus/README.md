@@ -153,7 +153,7 @@ each says so in its `note`. Every reason is about the **puzzle**:
 
 - **A demo that closes no domain.** The `saturation/**` demos exist to show ONE
   rule firing; `features/02_star_in_identifiers` is a lexer demo;
-  `features/04_open` demonstrates the `open` macro and
+  `features/04_open` demonstrates the `unknown` macro (named `open` when the file was) and
   `features/05_stdlib_domain_elim` the stdlib's elimination rules. None of them
   states a domain, so `solve` on one is not solving the demo — it is
   enumerating everything that could be built out of the demo's objects, to the

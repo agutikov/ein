@@ -388,7 +388,7 @@ mod tests {
             })
             .expect("a :match");
         let rules = vec![("undefeated".to_string(), match_node)];
-        let stdlib = vec!["forall".to_string(), "open".to_string()];
+        let stdlib = vec!["forall".to_string(), "unknown".to_string()];
         let errs = unimported_macro_errors(&ast, &rules, &declared, &stdlib);
         assert_eq!(errs.len(), 1, "{errs:?}");
         assert!(

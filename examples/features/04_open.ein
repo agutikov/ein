@@ -1,15 +1,15 @@
 ;;; Ein — feature demo
 ;;;
-;;; S1.5.8c T1.5.8c.3b — `(open P)` parser sugar.
+;;; S1.5.8c T1.5.8c.3b — `(unknown P)` parser sugar.
 ;;;
 ;;; The kernel distinguishes THREE storage states for any
 ;;; potential fact P:
 ;;;
 ;;;   - asserted: P is in the KB              → pattern `(P)`
 ;;;   - negated : (not P) is in the KB         → pattern `(not P)`
-;;;   - open    : neither is in the KB         → pattern `(open P)`
+;;;   - open    : neither is in the KB         → pattern `(unknown P)`
 ;;;
-;;; `(open P)` is the third pattern shape. It desugars at compile
+;;; `(unknown P)` is the third pattern shape. It desugars at compile
 ;;; time to:
 ;;;
 ;;;   (and (absent P) (absent (not P)))
@@ -18,9 +18,9 @@
 ;;; in the KB."
 ;;;
 ;;; Use case: gate hypothesis emission on still-undecided slots.
-;;; Without `(open …)`, an hrule would propose hypotheses even
+;;; Without `(unknown …)`, an hrule would propose hypotheses even
 ;;; for already-decided pairs and the engine has to filter them
-;;; out downstream. With `(open …)` the rule writer expresses
+;;; out downstream. With `(unknown …)` the rule writer expresses
 ;;; the gate declaratively.
 ;;;
 ;;; This demo: a small hypgen-style rule that emits a candidate
@@ -31,11 +31,11 @@
 ;; In real puzzles this'd be an `hrule` (hypothesis rule); for
 ;; the demo we use `rule` so the firings land in (reasoning).
 ;; stdlib pattern-macro sugar — forall/open from the std.macro module (S1.8.A5).
-(import std.macro :symbols (forall open))
+(import std.macro :symbols (forall unknown))
 
 (rule open-candidate ()
   :match  (and (is-a ?h House) (is-a ?c Color)
-               (open (house-color ?h ?c)))
+               (unknown (house-color ?h ?c)))
   :assert (open-slot ?h ?c)
   :priority 300
   :why    "({?h}, {?c}) is undecided")
@@ -75,7 +75,7 @@
 ;;   House-2 — Red is negated; Yellow and Blue are open:
 ;;     (open-slot House-2 Yellow)
 ;;     (open-slot House-2 Blue)
-;;     (open-slot House-2 Red) — NO, neg fact blocks (open).
+;;     (open-slot House-2 Red) — NO, neg fact blocks (unknown).
 ;;
 ;;   House-3 — all three open:
 ;;     (open-slot House-3 Yellow)

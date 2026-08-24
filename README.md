@@ -251,7 +251,7 @@ Ein expands it").
 | `std.elim` | closed-world `domain-elimination`, `no-room-left`, positional typecheck |
 | `std.closure` | `functional ∧ total ⇒ (__closed__ R)` — opt-in |
 | `std.typing` | the `type-hierarchy` converse-typecheck driver, `reflexive` |
-| `std.macro` | the `forall` / `open` pattern macros |
+| `std.macro` | the `forall` / `unknown` pattern macros |
 
 ### Known gaps, measured
 

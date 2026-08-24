@@ -94,9 +94,9 @@
 (co-loc Ann Cat)
 (co-loc Ann S1)
 
-(import std.macro :symbols (open))
+(import std.macro :symbols (unknown))
 (rule probe-undecided ()
-  :match  (open (co-loc Bob Dog))
+  :match  (unknown (co-loc Bob Dog))
   :assert (undecided Bob Dog)
   :priority 500
   :why    "Bob and Dog share seat S2, and the anchored closure says so neither way")

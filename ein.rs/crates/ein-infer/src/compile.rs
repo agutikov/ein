@@ -558,7 +558,7 @@ impl<'a> Compiler<'a> {
             return self.absent(node, args[0], top, out);
         }
 
-        // `(forall …)` / `(open …)` are **not** compiler sugar: since S1.5.9
+        // `(forall …)` / `(unknown …)` are **not** compiler sugar: since S1.5.9
         // they are ein-lang `(macro …)` declarations expanded at LOAD time, so
         // by now they are already `(absent (and G (absent B)))` /
         // `(and (absent P) (absent (not P)))`.

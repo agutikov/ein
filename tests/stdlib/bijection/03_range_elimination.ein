@@ -23,7 +23,7 @@
 ;;; other axis: `(wears Ann Green)` is in neither store, so nothing was forced
 ;;; out of a column that still has two candidates.
 
-(import std.macro     :symbols (forall open))
+(import std.macro     :symbols (forall unknown))
 (import std.algebra   :symbols (bijective-properties functional injective total surjective))
 (import std.bijection :symbols (bijective-setup functional-negative injective-negative
                                 domain-elimination range-elimination))
@@ -42,7 +42,7 @@
 (not (wears Bob Red))
 
 (rule probe-undecided ()
-  :match  (open (wears Ann Green))
+  :match  (unknown (wears Ann Green))
   :assert (undecided Ann Green)
   :priority 500
   :why    "Green's column is only one-third excluded, so nothing may be forced into it")

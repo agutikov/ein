@@ -25,7 +25,7 @@
 ;;; (S1c.1.2's rule 3, second clause), so "no spurious exclusion was derived"
 ;;; cannot be said by listing the ones that were. It is said here by
 ;;; `probe-undecided` instead: a four-line local rule whose whole body is
-;;; `std.macro`'s `(open …)` — true exactly when a fact is neither asserted nor
+;;; `std.macro`'s `(unknown …)` — true exactly when a fact is neither asserted nor
 ;;; denied — turned into an ordinary positive fact the expectation can close.
 ;;; `(t A G)` is undecided, so `(s B G)` must stay undecided too; if
 ;;; `compose-negative-s` read absence as negation, `undecided` would be empty
@@ -45,7 +45,7 @@
 ;;; and one node, `G`, that is in neither.
 
 (import std.algebra :symbols (compose-negative-s compose-negative-r))
-(import std.macro   :symbols (open))
+(import std.macro   :symbols (unknown))
 
 (relation r         Node Node :why "{?1} steps to {?2}")
 (relation s         Node Node)
@@ -61,7 +61,7 @@
 ;; `(t A G)` is undecided — never asserted, never denied — so nothing may be
 ;; concluded about `(s B G)` from it.
 (rule probe-undecided ()
-  :match  (open (s B G))
+  :match  (unknown (s B G))
   :assert (undecided B G)
   :priority 500
   :why    "(s B G) is still open: no exclusion was derived from an absent (t A G)")

@@ -78,7 +78,7 @@ is *nearly* right, and the phase's whole shape depends on exactly how nearly.
 
 **S1d.2.2** is the one that can sink the rest. A requirement quantifies over a
 domain, so the engine has to know the domain's extent, whether it is closed,
-and whether new objects may appear. Ein has `is-a` extents and the `open`
+and whether new objects may appear. Ein has `is-a` extents and the `unknown`
 macro; the stdlib is deliberately **is-a-free in rule bodies** — the hierarchy
 relation arrives as an activator parameter (`?isa`) — and an obligation has to
 arrive the same way or it drags a type system into the kernel that

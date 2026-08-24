@@ -89,7 +89,7 @@ A new milestone `m_followups_logical/` with phases:
   works, the rules of inference become *expressible* in ein
   itself; F1b becomes the proof obligation for that expressibility.
 - S1.5.9 macros
-  — the `forall` / `open` macros are the syntactic precursors to
+  — the `forall` / `unknown` macros are the syntactic precursors to
   the FOL fragment F1b would characterise.
 - P1.8 Theme A — stdlib
   — the `converse` rule, the `imply` family, `symmetric ⟺ converse R R`

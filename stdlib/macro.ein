@@ -4,18 +4,21 @@
 ;;; (`kb.imports`) maps the logical name `std.macro` to THIS file under the
 ;;; packaged stdlib root (`ein/stdlib/`).
 ;;;
-;;; `forall` and `open` used to be compile-time desugars baked into
-;;; inference/compile.py; since S1.5.9 they are ordinary ein-lang `(macro …)`
-;;; declarations. Reach them three ways:
+;;; `forall` and `unknown` used to be compile-time desugars baked into
+;;; inference/compile.py (as `forall`/`open`); since S1.5.9 they are ordinary
+;;; ein-lang `(macro …)` declarations. Reach them three ways:
 ;;;     (import std.macro)            → `(std.macro.forall …)`
 ;;;     (import std.macro :as m)      → `(m.forall …)`
-;;;     (import std.macro :symbols (forall open)) → `(forall …)` (flat)
+;;;     (import std.macro :symbols (forall unknown)) → `(forall …)` (flat)
 
 ;; `(forall ?b (G) (B))` — guarded universal ∀b. G(b) → B(b), encoded as the
 ;; classical ¬∃b. G(b) ∧ ¬B(b). The bound var ?b must appear in the guard G.
 (macro forall (?b ?G ?B)
   (absent (and ?G (absent ?B))))
 
-;; `(open P)` — third-state match: P is neither asserted nor negated in the KB.
-(macro open (?P)
+;; `(unknown P)` — third-state match: P is neither asserted nor negated in the
+;; KB. Named `open` until 2026-08-24 — renamed (M1d P1d.2 naming decision P3)
+;; so the obligations phase can reserve bare `open` for the KB-level verdict
+;; atom.
+(macro unknown (?P)
   (and (absent ?P) (absent (not ?P))))

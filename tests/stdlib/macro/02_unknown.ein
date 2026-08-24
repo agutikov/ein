@@ -1,27 +1,27 @@
-;;; `std.macro/open` — the third state: a fact that is neither asserted nor
+;;; `std.macro/unknown` — the third state: a fact that is neither asserted nor
 ;;; negated.
 ;;;
 ;;; ── What the macro promises ────────────────────────────────────────────────
 ;;;
-;;;   (open P)   ≡   (and (absent P) (absent (not P)))
+;;;   (unknown P)   ≡   (and (absent P) (absent (not P)))
 ;;;
 ;;; ein stores positives and negatives separately, so a ground fact is in one
-;;; of **three** states, and `open` is the only way to match the third. It is
+;;; of **three** states, and `unknown` is the only way to match the third. It is
 ;;; what separates "we know this is false" from "we have not decided" — the
 ;;; distinction the stored-negative premises of `std.algebra`'s Schröder rules
 ;;; and every `forall` guard in the library depend on.
 ;;;
 ;;; ── Why the corpus needed this file ────────────────────────────────────────
 ;;;
-;;; `open` appears in **no stdlib rule at all**, and before M1c the whole
+;;; `unknown` appears in **no stdlib rule at all**, and before M1c the whole
 ;;; repository used it once, in `examples/features/04_open.ein` — a fixture
 ;;; with no finite hypothesis space, so the corpus runs it under `saturate`
 ;;; only and no expectation has ever been attached to it. Meanwhile the
-;;; conformance programs beside this one lean on `open` heavily, because it is
+;;; conformance programs beside this one lean on `unknown` heavily, because it is
 ;;; the only instrument that can say "nothing spurious was derived" about a
 ;;; *negative*: stored negatives are the one thing `:expect` does not close, so
 ;;; a rule that invented an exclusion cannot be caught by listing the
-;;; exclusions that exist. `open` turns the absence into a positive fact that
+;;; exclusions that exist. `unknown` turns the absence into a positive fact that
 ;;; can be.
 ;;;
 ;;; This file is that instrument's own test.
@@ -39,7 +39,7 @@
 ;;; macro rather than of one of its halves: drop the `(absent P)` conjunct and
 ;;; Ann×Soup joins them, drop the `(absent (not P))` and Ann×Stew does.
 
-(import std.macro :symbols (open))
+(import std.macro :symbols (unknown))
 
 (relation is-a       T T          :why "{?1} is a {?2}")
 (relation likes      Person Food  :why "{?1} likes {?2}")
@@ -54,7 +54,7 @@
 (rule third-state (?isa)
   :match  (and (?isa ?p Person)
                (?isa ?f Food)
-               (open (likes ?p ?f)))
+               (unknown (likes ?p ?f)))
   :assert (state-open ?p ?f)
   :priority 500
   :why    "{?p} and {?f} are in neither store")

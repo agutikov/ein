@@ -274,7 +274,7 @@ fixes are pinned.
   [README §NAF semantics](README.md#naf-semantics--the-closureworld-boundary-s1218).
 - CS positioning (stratified Datalog / well-founded / stable models):
   [`architecture_and_algorithms.md` §O3](architecture_and_algorithms.md#o3--negation-as-failure).
-- Surface syntax (`(absent P)` in `:match`; `forall`/`open` macros):
+- Surface syntax (`(absent P)` in `:match`; `forall`/`unknown` macros):
   [`01_grammar.md`](../ir/03-ein-lang/01_grammar.md#premise-forms-in-match),
   [`06_reserved_names.md`](../ir/03-ein-lang/06_reserved_names.md).
 - Why root stays stable mid-search (C1/C2 in action):

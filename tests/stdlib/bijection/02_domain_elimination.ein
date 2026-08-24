@@ -39,7 +39,7 @@
 ;;; Ann's row is exhausted and Blue's column is not, so only the domain rule
 ;;; can fire first. `03_range_elimination.ein` is the same puzzle transposed.
 
-(import std.macro     :symbols (forall open))
+(import std.macro     :symbols (forall unknown))
 (import std.algebra   :symbols (bijective-properties functional injective total surjective))
 (import std.bijection :symbols (bijective-setup functional-negative injective-negative
                                 domain-elimination range-elimination))
@@ -58,7 +58,7 @@
 (not (wears Ann Green))
 
 (rule probe-undecided ()
-  :match  (open (wears Bob Red))
+  :match  (unknown (wears Bob Red))
   :assert (undecided Bob Red)
   :priority 500
   :why    "Bob's row is only one-third excluded, so nothing may be forced into it")

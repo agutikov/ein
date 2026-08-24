@@ -147,17 +147,17 @@ fn a_macro_parameter_in_head_position_is_substituted() {
 
 /// `macro-body-invokes-another-macro` — expansion is transitive, not one-shot.
 ///
-/// A single pass would leave `(open (lives-in ?a ?b))` in the pattern, and
+/// A single pass would leave `(unknown (lives-in ?a ?b))` in the pattern, and
 /// since an unexpanded invocation is a perfectly well-formed *pattern* the
 /// rule would compile and then never match. Nothing downstream can notice,
 /// so the property has to be pinned here. `maybe` is declared *before* the
-/// `open` it calls, which also says the registry is collected before any
+/// `unknown` it calls, which also says the registry is collected before any
 /// expansion runs rather than in source order.
 #[test]
 fn a_macro_body_may_invoke_another_macro() {
     let (ast, m) = expanded_match(
-        "(macro maybe (?Q) (open ?Q))\n\
-         (macro open (?P) (and (absent ?P) (absent (not ?P))))",
+        "(macro maybe (?Q) (unknown ?Q))\n\
+         (macro unknown (?P) (and (absent ?P) (absent (not ?P))))",
         "(maybe (lives-in ?a ?b))",
     );
     assert_eq!(
@@ -188,7 +188,7 @@ fn the_kernel_names_a_macro_may_not_shadow() {
             "{name}: {err}"
         );
     }
-    for name in ["forall", "open", "co"] {
+    for name in ["forall", "unknown", "co"] {
         let src = format!("(macro {name} (?p) (rel ?p))");
         let names = load_macro_names(&src).expect("a non-reserved name loads");
         assert_eq!(names, vec![name.to_string()]);
@@ -388,7 +388,7 @@ fn every_syntactic_shape_survives_dump_then_parse() {
         "(instance Norwegian Nationality)",
         "(rule i () :match (instance ?a ?T) :assert ?a :why \"i\")",
         "(macro forall (?b ?G ?B) (absent (and ?G (absent ?B))))",
-        "(macro open (?P) (and (absent ?P) (absent (not ?P))))",
+        "(macro unknown (?P) (and (absent ?P) (absent (not ?P))))",
         "(import std.macro)",
         "(import std.macro :as m)",
         "(import std.macro :symbols (forall open))",
@@ -538,7 +538,7 @@ fn a_keyword_is_never_a_value_nor_a_head() {
 fn the_macro_declarator_needs_one_parameter_and_one_body() {
     for src in [
         "(macro forall (?b ?G ?B) (absent (and ?G (absent ?B))))",
-        "(macro open (?P) (and (absent ?P) (absent (not ?P))))",
+        "(macro unknown (?P) (and (absent ?P) (absent (not ?P))))",
         "(macro id (?x) ?x)",
     ] {
         assert!(accepts(src), "{src} should parse");

@@ -33,13 +33,13 @@
 ;;;
 ;;; The third line is the file's negative direction. Stored negatives are the
 ;;; one thing an expectation does not close, so "no other exclusion was
-;;; invented" cannot be said by listing the ones that exist; the `open` probe
+;;; invented" cannot be said by listing the ones that exist; the `unknown` probe
 ;;; says it instead, by turning "neither asserted nor denied" into an ordinary
 ;;; fact that *can* be closed. A mirror that fired on absence rather than on a
 ;;; stored negative would empty `undecided` and fail this file.
 
 (import std.algebra :symbols (symmetric symmetric-negative-setup symmetric-negative))
-(import std.macro   :symbols (open))
+(import std.macro   :symbols (unknown))
 
 (relation sits-with Guest Guest :why "{?1} sits with {?2}")
 (relation undecided Guest Guest :why "whether {?1} sits with {?2} is still open")
@@ -50,7 +50,7 @@
 (not (sits-with A C))
 
 (rule probe-undecided ()
-  :match  (open (sits-with B C))
+  :match  (unknown (sits-with B C))
   :assert (undecided B C)
   :priority 500
   :why    "B and C were never related either way, and the mirror must not invent it")

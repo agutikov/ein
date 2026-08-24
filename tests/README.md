@@ -47,7 +47,7 @@ even loaded, and 20 more held up by `examples/zebra.ein` alone.
 | [`stdlib/closure/`](stdlib/closure/) | 1 | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from fifty-four models to one |
 | [`stdlib/slots/`](stdlib/slots/) | 18 | a second activating puzzle for the module that had exactly one — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | 4 | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
-| [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `open`'s three states |
+| [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
 
 ### Four things about how they are written
 
@@ -60,10 +60,10 @@ one authored edge and closes it there —
 [Q-M1c.6](../docs/history/m1c_external_validation/open_questions.md#q-m1c6--how-does-an-expectation-say-a-relation-is-empty)
 is why an *empty* relation cannot be named.
 
-**`(open …)` is how a fixture says a negative was *not* invented.** Stored
+**`(unknown …)` is how a fixture says a negative was *not* invented.** Stored
 negatives are deliberately not closed by an expectation, so listing the
 exclusions that exist says nothing about the ones that do not. Ten programs
-carry a four-line `probe-undecided` rule whose body is `std.macro`'s `(open
+carry a four-line `probe-undecided` rule whose body is `std.macro`'s `(unknown
 P)` — true exactly when a fact is in neither store — turning the absence into
 an ordinary positive fact the expectation *can* close. Its priority is 500,
 above everything the stdlib declares, because a probe that reads the world has

@@ -60,7 +60,7 @@ And two facts about the language that decide half the design space:
 - **Macros expand in `:assert`, not only in `:match`.**
   `ein_ir::macros::expand_rule_clauses` expands both clauses of a `rule` /
   `hrule`, so a new obligation *surface* can ship as a `(macro …)` in
-  `std.macro` beside `forall` and `open` — **with no parser change at all.**
+  `std.macro` beside `forall` and `unknown` — **with no parser change at all.**
 
 ## 3. The forms
 
@@ -595,10 +595,13 @@ two-opens risk in P3's row is dissolved rather than managed, because after
 the rename nothing fact-level answers to the word (`unknown` does, Kleene's
 own name for it), and the KB verdicts read exactly as the proposal wrote
 them: `open` / `false` / `satisfy`. [`ideas.md`](../ideas.md) keeps its
-fact-state `open` untouched — the note is verbatim and stays so; living
-pages say `unknown` for the fact state from here on. The decoupling above
-still applies: the *printed* aggregate may say `Incomplete (owes n)` while
-the atom says `open`.
+fact-state `open` untouched — the note is verbatim and stays so — and prose
+may still call a fact's state open (the kernel pages' three-state model
+does, and so does the census's `alive` language): the collision that
+mattered was the **token's**, and after the rename `(unknown P)` matches
+while bare `open` is free for the verdict head to claim. The decoupling
+above still applies: the *printed* aggregate may say `Incomplete (owes n)`
+while the atom says `open`.
 
 **The migration bill, accepted with the choice** (the footprint paragraph
 above describes the pre-rename tree; this is the chore, executable ahead of
@@ -625,6 +628,15 @@ the phase since it only frees a name):
   reservation of `open` as the verdict head, never after — and between the
   two, bare `open` is briefly a free userspace name, so the window should
   stay short.
+
+**Executed 2026-08-24, the same session** — the commit after this
+decision's: the macro (with a rename note) and the re-taken manifest;
+**18 `.ein` files** — the eleven probe programs, `features/04_open.ein`,
+five import-only examples, and `macro/02_open.ein` → `02_unknown.ein` with
+its corpus entry; **six Rust files** (two `//` comments, four test
+fixtures / macro-name lists); **seventeen Markdown pages**, the root README
+and AGENTS.md among them. `docs/history/**` untouched on purpose — records
+keep the name they were written under.
 
 ## 4. The two axes
 

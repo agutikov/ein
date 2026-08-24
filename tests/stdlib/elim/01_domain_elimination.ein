@@ -45,7 +45,7 @@
 ;;; is not excluded, and S2 and S3 have nothing excluded at all.
 ;;; `02_no_room_left.ein` is the state where it is not.
 
-(import std.macro :symbols (forall open))
+(import std.macro :symbols (forall unknown))
 (import std.elim  :symbols (domain-elimination no-room-left))
 
 (relation is-a      T T        :why "{?1} is a {?2}")
@@ -64,7 +64,7 @@
 (not (holds S1 V2))
 
 (rule probe-undecided ()
-  :match  (open (holds S2 V1))
+  :match  (unknown (holds S2 V1))
   :assert (undecided S2 V1)
   :priority 500
   :why    "S2 has nothing excluded, so nothing may be forced into it")

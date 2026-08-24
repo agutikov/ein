@@ -35,7 +35,7 @@
 
 (import std.algebra :symbols (symmetric symmetric-negative-setup))
 (import std.slots   :symbols (slot-partition-setup))
-(import std.macro   :symbols (open))
+(import std.macro   :symbols (unknown))
 
 (relation type      T T :why "{?1} is a subtype of {?2}")
 (relation instance  T T :why "{?1} is an instance of {?2}")
@@ -56,7 +56,7 @@
 (not (co-loc Cat S2))
 
 (rule probe-undecided ()
-  :match  (open (co-loc S1 Dog))
+  :match  (unknown (co-loc S1 Dog))
   :assert (undecided S1 Dog)
   :priority 500
   :why    "S1 has one pet of three excluded — nothing may be filled into it")

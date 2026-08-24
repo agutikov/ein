@@ -15,7 +15,7 @@ see [`06_reserved_names.md`](06_reserved_names.md).
 > references, so you list only the *entry* symbols. Modules self-import
 > their own deps (`forall`, the cardinality checks) idempotently. (One
 > exception, A1 D7: a symbol you invoke in your *own* inline rule —
-> `forall`/`open` — you must import explicitly.)
+> `forall`/`unknown` — you must import explicitly.)
 
 ## Three distinctions that govern soundness
 
@@ -48,7 +48,7 @@ inline rule must import it.
 | form | expands to | meaning |
 |------|------------|---------|
 | `(forall ?b G B)` | `(absent (and G (absent B)))` | guarded universal ∀b. G(b)→B(b) (the bound `?b` must appear in `G`) |
-| `(open P)` | `(and (absent P) (absent (not P)))` | third state: `P` is neither asserted nor negated |
+| `(unknown P)` | `(and (absent P) (absent (not P)))` | third state: `P` is neither asserted nor negated |
 
 ---
 
