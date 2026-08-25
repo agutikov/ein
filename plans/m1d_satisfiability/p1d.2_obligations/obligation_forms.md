@@ -2,10 +2,18 @@
 
 **Phase:** [P1d.2](README.md) — this is [S1d.2.3](README.md#stages)'s input, written
 before its stage file so the decision is the user's and the plan follows it.
-**Status:** **a menu, not a decision.** Seven forms, each stated as syntax +
-mechanism + what it cannot say. Written 2026-08-24; **G arrived the same
-day**, the user's follow-up proposal, quoted verbatim in
-[§ G](#g--a-verdict-atom-assert-open-the-dual-of-false).
+**Status:** **the menu, and the record of what was chosen from it.** Written
+2026-08-24 as seven forms — each stated as syntax + mechanism + what it
+cannot say — and **G arrived the same day**, the user's follow-up proposal,
+quoted verbatim in
+[§ G](#g--a-verdict-atom-assert-open-the-dual-of-false). The decisions
+accreted onto the page rather than replacing it, and they are marked where
+they were taken: **G** as the form and **P3** as the naming (2026-08-24),
+**numeral-free bounds** and the **supersession ladder** the same day, and
+**`(open ?R)`** as the argument plus the **post-fixpoint pass**
+(2026-08-25 — § The slot spelling, resolved, and § When the obligation rules
+run). [S1d.2.3](s1d.2.3_the_form.md) is the executable record; this page is
+where each decision's alternatives and reasons survive.
 **Reads:** [`../ideas.md`](../ideas.md) (authoritative on intent),
 [`../p1d.10_exhaustive_search/layer_census.md`](../p1d.10_exhaustive_search/layer_census.md)
 (what the corpus actually does today).
@@ -319,9 +327,17 @@ scans stored `(not …)`, and say *unfinished* where it says *dead*:
 
 `(open ?R 0 ?a)` borrows B's positional spelling (with B's ugliness) so a
 tally line has an identity and a slot; the proposal's bare `:assert open`
-stays as the anonymous degenerate. Priority is the probe band (500): an
-obligation read before negative-completion (240) and elimination (400) have
-run would report debts the same quiescence was about to pay.
+stays as the anonymous degenerate. **Superseded 2026-08-25 — the shape is
+`(open ?R)`**, the relation alone, everything else projected out of the
+rule's own `absent`; see § The slot spelling, resolved, below, and
+[S1d.2.3](s1d.2.3_the_form.md) item 3, which is the record.
+
+Priority was the probe band (500) here, on the reasoning that an obligation
+read before negative-completion (240) and elimination (400) have run would
+report debts the same quiescence was about to pay — **also superseded
+2026-08-25, by § When the obligation rules run**, which reaches that
+conclusion with a stronger instrument: a band orders selection *inside* the
+loop, and what openness needs is to be read *after* it.
 [`bijective-setup`](../../../stdlib/bijection.ein) fans out two more
 activators (`total-owed` / `surjective-owed`) and no puzzle changes a line.
 
@@ -512,11 +528,83 @@ expand in `:assert` too (§2). So today `:assert (open)` is an arity error and
 assert position. The ways out were a menu of their own — § The naming menu,
 next, measured against the corpus, and **decided the same day: P3**, so the
 collision dissolves by renaming the probe rather than the atom. One shape
-question stays open: the slot spelling above is positional because
-assert-side variables come bound from the match, so a hole has no spelling
-there today — relaxing that *for the verdict head only* (`(open (?R ?a ?b))`,
-unbound `?b` as the hole) is prettier and bends a rule that is otherwise
-uniform. That one is still S1d.2.3's, beside E's fact-or-kernel-object.
+question stayed open after it — the slot spelling — and § The slot spelling,
+resolved, next, is where it was answered; E's fact-or-kernel-object remains
+S1d.2.3's.
+
+**The slot spelling, resolved — 2026-08-25, and the answer was to spell no
+slot.** The question as posed was how a *hole* is written on the assert side,
+since assert-side variables come bound from the match: positionally
+(`(open ?R 0 ?a)`), as a form-bound triple (`(open ?b G B)`, `forall`'s dual
+— the shape this page recommended and S1d.2.3 recorded on 2026-08-24), or by
+relaxing boundness for the verdict head only (`(open (?R ?a ?b))`). The
+user's question that dissolved it: **why does `open` take arguments when
+`(false)` does not?**
+
+Because it was answering the wrong question. `(false)` is nullary and still
+delivers the unsat core — from the derivation DAG, not from operands
+(`contradiction.rs`: for a direct ⊥, "the `(false …)` fact, whose DAG *is*
+the firing chain of the rule that emitted it"). An obligation's firing
+carries the same three things: the rule, its bindings, and its compiled
+`absent`. Everything the triple restated, the guard had already said —
+detection (*the rule fires ⟺ ∄ witness*), discharge (*the guard stops
+matching*, via `absents_still_pass`, where the triple made the engine re-run
+`∃b: G ∧ B`), the report (`:why` renders from the match bindings) and
+identity (`(rule, bindings)`). Only the **branch slot** was content, and a
+head that restates a guard can disagree with it.
+
+So the atom names **the relation whose extent is incomplete** — `(open ?R)`,
+read as *the set of `?R` facts in this KB is incomplete* — and the engine
+projects the rest out of the compiled guard: the witness step is the one
+inside the `absent` whose `rel` is `?R`'s binding, the other conjuncts are
+the domain, and the slots to scan are those unbound at the absent's entry.
+Both duals then use one atom, with the direction falling out of which slot is
+free (`total-owed` scans `?b`, `surjective-owed` scans `?a`) — no position
+index, which is what § Cardinality without numerals demanded and what
+`(open ?R 0 ?a)` violated.
+
+**And the projection is static.** Rules compile per `(rule, activator)` with
+the parameters substituted and concrete relation names baked in
+(`compile.rs`), so `?R` is a `Symbol` before matching begins: the lookup is
+symbol equality inside `Step::Absent { sub }`, resolved once per activator
+and cached with the plan. Zero per-firing cost, and a malformed obligation is
+refused when the rule is activated rather than when the search reaches it.
+What it cannot express is a **compound witness** — two positive `?R` steps
+bearing free variables, "there must exist a 2-chain" — which is refused
+rather than guessed, and which no corpus entry needs.
+
+**When the obligation rules run — 2026-08-25, the user: after saturation is
+complete, not mixed into it.** § G reached for a priority band (500) to keep
+an obligation from reporting a debt that negative-completion and elimination
+were about to pay. That instrument is the wrong one, and the sharpening
+replaces it: **obligation rules are not in the saturation agenda at all.**
+They run as one pass over the quiescent KB, once the fixpoint is reached.
+
+Three reasons, and the third is the one a band cannot give:
+
+- **They derive nothing.** An `open` conclusion is never admitted, so an
+  obligation rule cannot enable another rule, cannot extend the KB, and has
+  no reason to compete for an agenda that exists to order derivation. A rule
+  that reads and a rule that writes are different strata; a band puts them in
+  one queue and orders them politely.
+- **The band's guarantee is weaker than it looks.** Priority orders
+  *selection* within the loop. It does not make a 500-band firing the last
+  word, because the loop continues; what makes it the last word is the
+  fixpoint, and the fixpoint is a different thing to wait for.
+- **The tally must be a property of the fixpoint.** Fired mid-walk, an
+  instance is a fact about a moment — a debt the same saturation may still
+  pay — and only the NAF boundary's re-check would rescue the count. Run
+  after quiescence, the tally is a function of the final KB, and
+  `absents_still_pass` goes back to being about ordinary negative premises
+  rather than load-bearing for the verdict.
+
+Two consequences worth stating with the decision. `:priority` on an
+obligation rule no longer selects against the saturation rules; its residual
+meaning is the **report order among obligation rules**, which is what keeps
+the outstanding-obligations list deterministic. And the separation should be
+enforced rather than assumed: **a rule whose `:assert` contains `open` may
+assert nothing else** — a mixed rule would belong to both passes, and
+refusing it at load is cheaper than deciding which pass owns it.
 
 **The naming menu — probe and verdict, measured against the corpus**
 (2026-08-24, the user asked for the variants). Two different things need
@@ -744,10 +832,12 @@ all, and the verdict word itself moves only when
 [Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
 is decided, never as a side effect.
 
-**Decided 2026-08-24** — the stack above is the phase plan.
-[S1d.2.3](s1d.2.3_the_form.md) records the form decisions (including the
-argument shape: `forall`'s dual triple, settled by the numeral-free
-revision), and the stage files execute the strata in order: report
+**Decided 2026-08-24, argument shape revised 2026-08-25** — the stack above
+is the phase plan. [S1d.2.3](s1d.2.3_the_form.md) records the form decisions
+(the argument is **`(open ?R)`**, the relation alone; the `forall`-dual
+triple that the numeral-free revision had settled on is superseded — § The
+slot spelling, resolved), and the stage files execute the strata in order:
+report
 ([S1d.2.4](s1d.2.4_obligations_in_the_saturator.md)), generator
 ([S1d.2.5](s1d.2.5_hypotheses_from_obligations.md)), verdict
 ([S1d.2.6](s1d.2.6_verdicts_counters_corpus.md)).
@@ -791,7 +881,8 @@ is the one form that does not care.
 - **S1d.2.2** — the domain: what closes it, and whether `?isa` is enough.
 - **S1d.2.3** — this decision, plus the sub-decisions E raises (is a stored
   clause a fact or a kernel object?) and G raises (naming — **decided, P3**:
-  probe `unknown`, verdict `open`; the slot spelling, still open).
+  probe `unknown`, verdict `open`; the slot spelling — **decided
+  2026-08-25**: `(open ?R)`, no slot spelled at all).
 - **S1d.2.4** — the saturator: invalidation, and the per-quiescence cost §1
   warns about.
 - **S1d.2.5** — hypotheses from obligations: the supersession ladder

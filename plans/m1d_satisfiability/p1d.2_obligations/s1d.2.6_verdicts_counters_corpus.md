@@ -22,6 +22,27 @@ outcome; the proposal's supersedes it, and the decoupling note in
 the printed aggregate is free to carry the count. What this stage decides is
 not the word but **which states get it**, measured first.
 
+**The scope rule, decided 2026-08-25 — a program that states no obligation
+keeps today's verdict.** Without it this stage is not two days and not ten
+entries. The read-out "owes = 0 and consistent ⇒ *satisfy*" is vacuously true
+wherever nothing is owed, and after S1d.2.4's duals ship the obligations
+reach only the programs that declare a property carrying a lower bound:
+**23 of the 173 `.ein` files** under `examples/` and `tests/` declare
+`bijective`, `total` or `surjective` (16 / 17 / 11, measured 2026-08-25).
+The other 150 would all flip to *satisfy* by discharge — the engine calling
+a stuck state a model because nobody told it what the state owed.
+
+So the three-state read-out applies **only where the program states at least
+one obligation**; everywhere else `complete(kb)` is untouched and the verdict
+words are exactly today's. The rule is not a hedge but the honest reading of
+what G decides: a state is judged by discharge when it has been told what it
+owes, and by exhaustion when it has not. It is also what keeps the phase
+additive — the property G was chosen for — and it is **re-openable by
+measurement**: an entry that states obligations *and* disagrees with
+generator-exhaustion is a test this stage writes, and if the census finds the
+unobligated majority disagreeing in some way that matters, that finding
+re-opens the rule with a number attached rather than by argument.
+
 ## Tasks
 
 ### Task T1d.2.6.1 — the openness census
@@ -33,7 +54,9 @@ with the engine's own tally (T1d.2.4.5 proved it against the hand count).
 
 ### Task T1d.2.6.2 — the ten entries, partitioned
 
-Q-M1d.6's list, each classified by the census: **owes something reachable**
+Q-M1d.6's list — **and it is the ten and not the corpus because of the
+scope rule above**; an entry among them that states no obligation is out
+of scope by that rule and keeps its word. Each classified by the census: **owes something reachable**
 (⇒ `Open — owes n`), **owes nothing** (⇒ the vacuous edge: a consistent
 quiescent state with no obligations is *satisfy* under closed-world
 completion — `ideas.md` § "Когда fixed point является решением" — where
@@ -69,7 +92,12 @@ deferral is cheap to reverse only while the specification survives it.
 
 ## Acceptance
 
-- `openness_census.md` banked, engine-tallied, all entries.
+- `openness_census.md` banked, engine-tallied, all entries — including the
+  ones the scope rule excludes from the read-out, because the census is what
+  makes the exclusion a measurement rather than an assumption.
+- **The scope rule holds on the corpus**: every entry stating no obligation
+  reports exactly the verdict word it reported before this phase, and the
+  count of such entries is in the census.
 - The ten entries each carry their measured classification and their new
   verdict line; no entry's word moved without its census row.
 - `complete` means **discharged** in the verdict read-out (`false` outranks;

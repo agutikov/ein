@@ -9,12 +9,18 @@
 The phase README called this "the one that can sink the rest". Most of the
 sinking risk is already gone, because the decided form answers the domain
 question the way `forall` always has: **the witness domain is the
-obligation's own guard**, `(open ?b G B)` with `G` naming the
-`?isa`-parameterised membership scan — is-a-free, activator-bound, no
-type-directed quantification in the kernel
+obligation's own guard** — the `?isa`-parameterised membership scan standing
+beside the witness step inside the rule's `absent`, is-a-free,
+activator-bound, no type-directed quantification in the kernel
 ([S1.7.23](../../../docs/history/m1a_rust/README.md) holds). Nothing about
 *stating* or *discharging* an obligation needs a closed domain: discharge is
-"∃b: G ∧ B present", a positive check.
+the guard ceasing to match, a positive check the matcher already performs.
+
+**Sharpened 2026-08-25 with the form**: `(open ?R)` names the incomplete
+relation and nothing else, so the domain is never *restated* — the stage's
+contract is about the conjuncts the guard already holds, and
+[S1d.2.3](s1d.2.3_the_form.md) item 3's three resolution rules are how the
+engine tells the domain scan from the witness step.
 
 What remains is everything that needs the domain's *extent*, and
 [Q-M1d.3](../open_questions.md#q-m1d3--what-closes-a-domain)'s residue:

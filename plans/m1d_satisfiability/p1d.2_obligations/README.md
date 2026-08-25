@@ -11,12 +11,19 @@ otherwise have to run itself.
 **Depth: at stage depth since 2026-08-24.** The decisions this README said
 were the user's to make were made by the user, in-session, on
 [`obligation_forms.md`](obligation_forms.md): the form is **G** (`:assert
-open`, the per-KB verdict tally), the naming is **P3** with the probe rename
-already executed (`7e1192c` — the third-state macro is `unknown`), bounds are
-**numeral-free** (pairings to reference extents, never `L`/`U` operands), and
-**obligations supersede `:hrules`** when a query carries none. The six stage
-files below are written against those decisions; what each still leaves open
-is stated in the file, not here.
+(open …)`, the per-node verdict tally), the naming is **P3** with the probe
+rename already executed (`7e1192c` — the third-state macro is `unknown`),
+bounds are **numeral-free** (pairings to reference extents, never `L`/`U`
+operands), and **obligations supersede `:hrules`** when a query carries none.
+The six stage files below are written against those decisions; what each
+still leaves open is stated in the file, not here.
+
+**Revised 2026-08-25**, one decision: the atom's **argument** is the
+relation — **`(open ?R)`**, with the domain scan and the witness slot
+projected out of the rule's own `absent` — superseding the `forall`-dual
+triple. [S1d.2.3](s1d.2.3_the_form.md) item 3 is the record and
+[`obligation_forms.md` § The slot spelling, resolved](obligation_forms.md)
+is the argument.
 
 ---
 Ideas
@@ -91,21 +98,37 @@ open-extent regime (`features/04_open`'s 14.3 GB wall), and the
 closed-and-owing corner.
 
 **S1d.2.3** was the decision stage; the decision was taken 2026-08-24 —
-**G, a rule shape with a reserved verdict atom**, argument shape `forall`'s
-dual (`(open ?b G B)`, form-bound variable, no numerals) plus the bare
-degenerate. Its file records what was decided against (B's carrier fact, C's
-head, D's numeric sugar, E now, F entirely) and implements what remains:
-reserving `open`, loading and round-tripping the two forms, inert until the
+**G, a rule shape with a reserved verdict atom** — and its *argument* was
+revised 2026-08-25 to **`(open ?R)`**: the atom names the relation whose
+extent is incomplete and nothing else, and the engine projects the domain
+scan and the witness slot out of the rule's own `absent`, statically, per
+activator. That supersedes the `forall`-dual triple `(open ?b G B)`, which
+restated the guard in the head — where it could disagree with it, and where
+its bound variable needed an exception to a normative diagnostic. The bare
+`(open)` stays as the degenerate, and the two now nest: `(open)` counts and
+reports, `(open ?R)` also attributes and branches. Its file records what was
+decided against (B's carrier fact, C's head, D's numeric sugar, E now, F
+entirely, the triple) and implements what remains: reserving `open`, loading
+and round-tripping the two forms, resolving the projection, inert until the
 next stage.
 
 **S1d.2.4** is the engine work, and *only* the report stratum: obligation
-rules evaluated per quiescence at the boundary — the discipline
-[design/06](../../../docs/history/m1a_rust/design/06_saturation.md)'s
-`absents_still_pass` already applies, and whose re-query cost was 72 % of an
-exhaustive `zebra2` before P1a.6, which is why the stage carries a cost guard
-— tallied, never stored, reported through `--events` / `--json-summary` / the
-trace. Narrowing, closing and refuting stay with the scans; no verdict word
-moves here.
+rules run as **one pass over the quiescent KB, after saturation completes**
+(the user, 2026-08-25 — not a priority band inside the loop, since a band
+orders selection within it and openness has to be read after it) — tallied on
+the lattice node, never stored, reported through `--events` /
+`--json-summary` / the trace. The cost is still the shape whose re-query was
+72 % of an exhaustive `zebra2` before P1a.6, which is why the stage carries a
+cost guard. Narrowing, closing and refuting stay with the scans; no verdict
+word moves here, and the fixtures' owe claims are checked by a Rust sibling
+of `stdlib_coverage.rs`, because `:expect` asserts about facts and an `open`
+verdict is not one.
+
+**S1d.2.6** carries a scope rule decided 2026-08-25: **a program that states
+no obligation keeps today's verdict.** Only 23 of the corpus's 173 `.ein`
+files declare a property with a lower bound, so without it the vacuous edge
+("owes 0 and consistent ⇒ *satisfy*") would move the word on 150 programs
+that never asked to be judged by discharge.
 
 **S1d.2.5** is the payoff and the risk, now with the decision behind it: the
 **supersession ladder** (`:hrules` override → obligations → blind), branching

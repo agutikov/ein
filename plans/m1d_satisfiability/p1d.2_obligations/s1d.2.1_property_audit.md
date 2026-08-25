@@ -44,11 +44,24 @@ would paper over silently).
 
 ### Task T1d.2.1.3 — the disturbance list
 
-The duals land at the probe band (500). List every rule whose behaviour
-depends on what has fired *by* 500 — negative-completion (240), violations
-(250), eliminations (400) — and state why a read-only tally at 500 cannot
-change any of them. That argument is what makes S1d.2.4's "every existing
-verdict unchanged" bullet checkable rather than hoped.
+**Reframed 2026-08-25**: the duals do not land in a band at all — they run
+after the fixpoint, in a pass of their own
+([S1d.2.3](s1d.2.3_the_form.md) item 1, *When they run*), so the question is
+no longer "what does a 500-band read disturb" but "what could reach the
+saturation loop from outside it". The list is shorter and the argument is
+stronger, and both are still owed:
+
+- every rule whose behaviour depends on what has fired by the time it runs —
+  negative-completion (240), the violations (250), the eliminations (400) —
+  named with what it depends on, because that is the list S1d.2.4's
+  bit-identity check has to hold across;
+- the ways an obligation rule could still touch the loop despite the
+  separation: shared activators (`bijective-setup` gains two), a
+  `:no-hypothesis` or `__closed__` interaction, and the rule *count* itself,
+  which several counters are keyed on.
+
+That argument is what makes S1d.2.4's "every existing verdict unchanged"
+bullet checkable rather than hoped.
 
 ### Task T1d.2.1.4 — the incomplete-candidates set
 

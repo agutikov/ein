@@ -99,9 +99,11 @@ P1a.6 — so "recompute it" is not automatically cheap.
 
 ## Q-M1d.3 — What closes a domain?
 
-**Narrowed 2026-08-24**: for obligations, C is the obligation's own guard —
-`(open ?b G B)`, `?isa`-parameterised, `forall`'s dual — so *stating* and
-*discharging* a requirement needs no closed domain at all. What remains is
+**Narrowed 2026-08-24, sharpened 2026-08-25**: for obligations, C is the
+obligation's own guard — the `?isa`-parameterised scan standing beside the
+witness step inside the rule's `absent`, which `(open ?R)` names the relation
+of rather than restating — so *stating* and *discharging* a requirement needs
+no closed domain at all. What remains is
 what needed closure all along: refutation (which stays with the `forall`
 scans) and the open-extent regime;
 [S1d.2.2](p1d.2_obligations/s1d.2.2_domains.md) banks the contract.
