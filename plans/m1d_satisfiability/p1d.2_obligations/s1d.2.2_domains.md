@@ -31,6 +31,18 @@ What remains is everything that needs the domain's *extent*, and
    *why* that division is sound: the tally may under-claim (report *open*
    where a scan would prove *false*) but never over-claims, and `(false)`
    outranks the tally in the read-out.
+
+   **One of the six is not extension-safe, and the contract must say so** —
+   [the audit](property_audit.md) F2. Five of the `≥` refutations scan for a
+   *stored negative* per candidate and so fire only on genuine
+   unreachability; `connex` scans for *absence* and fires `(false)` on an
+   empty state where `total` reports `Solution` (measured, same shape, both
+   directions). `std.algebra`'s header already documents it as opt-in — sound
+   only where the operand is saturation-determined — and this contract
+   inherits that caveat verbatim rather than papering over it: against
+   `connex` the "`(false)` outranks the tally" rule outranks a verdict that
+   was itself open-world-naive, so the division is sound only under the same
+   opt-in the module already demands.
 2. **Candidates.** The generator rung (S1d.2.5) enumerates
    `{b : G(b), (B) neither present nor forbidden}` — finite iff `G`'s extent
    is finite *at that quiescence*. G re-evaluates per state, so a late

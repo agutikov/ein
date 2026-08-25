@@ -63,10 +63,21 @@ schema doc move with it.
 
 ### Task T1d.2.4.3 — the stdlib duals
 
-`total-owed` / `surjective-owed` in `std.algebra` (or `std.bijection` — the
-audit says which file owns totality today), fanned out by `bijective-setup`
-gaining two activators; the slots-family dual per S1d.2.1's finding. No
-puzzle changes a line — the fan-out reaches every `(bijective R)` declarer.
+`total-owed` / `surjective-owed` in **`std.algebra`**, beside the
+0-endpoints — [the audit](property_audit.md) §3 found the bijective pair's
+two endpoints living in different modules, and the duals belong with the
+scans they mirror, never with `std.elim`'s positional spelling (F1: its
+markers are premises nothing checks). Fanned out by `bijective-setup` gaining
+two activators, and the slots pair (`slot-owed` domain and range) by
+`slot-partition-setup` gaining two. No puzzle changes a line.
+
+**And the fan-out is not free** — the audit's F4. A rule naming a relation
+through a variable must get it from its activator (`CompileError: unbound
+relation head ?R in a premise`), so the duals cannot be parameter-less
+readers of the existing `(total ?R ?isa)` facts: they need activator facts,
+and an activator fact is a *stored* fact. Two per declaration, over the 13
+entries the two fan-outs reach: **36 facts** across `bijective-setup`'s 18
+declarations and **14** across `slot-partition-setup`'s 7.
 
 ### Task T1d.2.4.4 — the conformance programs
 
@@ -130,7 +141,18 @@ than at every node — not the budget.
   bullet, delivered here.
 - `ein solve examples/zebra2-minus-15.ein` (root) reports owes = 46; the
   conservation audit passes on every `bijective` declarer in the corpus.
-- **Every existing verdict, counter and golden unchanged** — this stage adds
-  a report line and nothing else. New goldens only for the new fixtures.
+- **Every existing verdict unchanged**, and the counter claim in the precise
+  form [the audit](property_audit.md) §4.2 forced, because the blanket one is
+  false: **no saturation rule's firing count or selection order moves** (no
+  new rule enters the agenda), the **fact store grows by exactly two
+  activator facts per declaration** — 50 facts over 13 entries, predicted by
+  the audit's table and diffed as a number in the `layer_census` style — and
+  the goldens, `--events` streams and DOT views of those 13 are **re-blessed
+  once, in this stage's commit**, with the diff shown to be exactly the
+  activator facts. Everything else is untouched. New goldens for the new
+  fixtures as usual.
+- **The new activators sit behind the same hypothesis scoping the six
+  existing ones do** — a fixture, not an argument, since a blind run could
+  otherwise propose them.
 - Timings hold (`zebra -e` 47.5 ms-class, per the F9/P1a.6 discipline);
   the counter instrumentation shows where the tally's time goes.

@@ -4,6 +4,33 @@
 **Estimate:** 3 days
 **Depends on:** [S1c.1.1](../../../docs/history/m1c_external_validation/README.md#s1c11--what-the-stdlib-promises-and-what-is-exercised)'s
 promise inventory and the [layer census](../p1d.10_exhaustive_search/layer_census.md) — both taken.
+**Status: done 2026-08-25** — banked as
+[`property_audit.md`](property_audit.md), 73 rules classified from the parsed
+rule text, joined to two census runs (`tests/` and all 180 entries) and four
+fixtures. What it found:
+
+- **The `≥` half has fifteen rules and no middle.** Five refute at zero
+  candidates, five force at one, four generate a witness that is unique by
+  construction, one refutes open-world-naively — and **none** records
+  anything at two or more. The phase's premise, as a number over all 73.
+- **F1** — `std.elim`'s positional markers `(functional R 0 1)` / `(total R
+  0)` are premises nothing checks: a KB violating functionality solves, and
+  `domain-elimination` forces arrows on that unverified premise. Named, not
+  filled; the duals avoid the positional spelling.
+- **F2** — `connex` is the one `≥` refutation written in the open-world-naive
+  form: it fires `(false)` on an empty state where `total` reports
+  `Solution`. Documented as opt-in in the module header; S1d.2.2's refutation
+  contract inherits the caveat rather than papering over it.
+- **F3** — `std.elim` has no range side, and the bijective pair's two
+  endpoints live in *different modules* joined by one fan-out. The duals
+  therefore belong beside the 0-endpoints in `std.algebra`, plus `std.slots`.
+- **F4, and it moves a downstream acceptance** — an obligation rule cannot be
+  parameter-less, because a variable relation head must come from the
+  activator (`CompileError: unbound relation head ?R in a premise`). So the
+  duals need activator facts, so the fan-outs grow, so **13 entries gain 50
+  stored facts** and S1d.2.4's bit-identity claim is restated: saturation
+  firings unchanged, fact store +2 per declaration and diffed as a predicted
+  number, goldens re-blessed once.
 
 ## Context
 
@@ -77,6 +104,11 @@ ten entries owe anything.
 - `property_audit.md` checked in: every one of the 73 stdlib rules classified
   by property, half, form, band, and activating program.
 - §8's endpoint table confirmed or corrected, slots included.
-- The disturbance argument written — per band, why a 500-band read cannot
-  move it.
+- The disturbance argument written — the order-sensitive set named (27 rules
+  with a NAF premise, 16 matching a stored `(not …)`, 42 pure joins that
+  cannot care), and why a pass after the fixpoint sits after all of them by
+  construction.
+- **Every channel that does reach the loop named with its number**, not
+  argued away — §4.2 of the audit is the one that contradicts a downstream
+  acceptance bullet, which is what an audit is for.
 - Any missing endpoint named as a finding, not silently filled.

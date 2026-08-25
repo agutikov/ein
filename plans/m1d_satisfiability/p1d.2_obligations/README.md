@@ -74,19 +74,30 @@ is the mechanism the milestone README's argument turns on.
 
 ## Stages
 
-| stage | title | est. |
-|---|---|---|
-| [S1d.2.1](s1d.2.1_property_audit.md) | What each property enforces today, rule by rule | 3 d |
-| [S1d.2.2](s1d.2.2_domains.md) | Domains: what a requirement quantifies over, and what closes it | 3 d |
-| [S1d.2.3](s1d.2.3_the_form.md) | The obligation — form, surface, and where it lives | 3 d |
-| [S1d.2.4](s1d.2.4_obligations_in_the_saturator.md) | Obligations in the saturator | 4 d |
-| [S1d.2.5](s1d.2.5_hypotheses_from_obligations.md) | Hypotheses from obligations | 3 d |
-| [S1d.2.6](s1d.2.6_verdicts_counters_corpus.md) | What it changes: verdicts, counters, corpus | 2 d |
+| stage | title | est. | status |
+|---|---|---|---|
+| [S1d.2.1](s1d.2.1_property_audit.md) | What each property enforces today, rule by rule | 3 d | **done 2026-08-25** |
+| [S1d.2.2](s1d.2.2_domains.md) | Domains: what a requirement quantifies over, and what closes it | 3 d | |
+| [S1d.2.3](s1d.2.3_the_form.md) | The obligation — form, surface, and where it lives | 3 d | |
+| [S1d.2.4](s1d.2.4_obligations_in_the_saturator.md) | Obligations in the saturator | 4 d | |
+| [S1d.2.5](s1d.2.5_hypotheses_from_obligations.md) | Hypotheses from obligations | 3 d | |
+| [S1d.2.6](s1d.2.6_verdicts_counters_corpus.md) | What it changes: verdicts, counters, corpus | 2 d | |
 
-**S1d.2.1** is an audit, not a design: per stdlib rule, which half of which
-property it implements, in which form, and which corpus entries activate it.
-It exists because the note's premise ("only half of each property is stated")
-is *nearly* right, and the phase's whole shape depends on exactly how nearly.
+**S1d.2.1 is done** (2026-08-25) — [`property_audit.md`](property_audit.md),
+73 rules classified from the parsed rule text and joined to two census runs.
+Its headline settles the phase's premise as a number: **the `≥` half has
+fifteen rules and no middle** — five refute at zero candidates, five force at
+one, four generate a witness unique by construction, one refutes
+open-world-naively, and **none records anything at two or more**. The note's
+premise was that the lower bounds are missing; the truer statement is that
+every one of them is about a candidate set of size 0 or 1. Four findings, of
+which the last moves a downstream acceptance: `std.elim`'s positional markers
+are premises nothing checks (F1), `connex` is the one `≥` refutation that is
+not extension-safe (F2), `std.elim` has no range side and the bijective
+pair's endpoints live in different modules (F3), and an obligation rule
+**cannot be parameter-less** — a variable relation head must come from the
+activator — so the fan-outs grow by two activator facts per declaration and
+13 entries gain 50 stored facts (F4).
 
 **S1d.2.2** was the one that could sink the rest; the decided form drained
 most of that. The witness domain is the obligation's **own guard**,
