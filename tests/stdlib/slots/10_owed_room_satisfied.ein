@@ -1,0 +1,44 @@
+;;; `std.slots/slot-owed-room` — **loaded, activated, and owing nothing.**
+;;;
+;;; `09_owed_room.ein` with the three missing arrows added. Everybody who is
+;;; not a seat is in a seat, so the requirement has a witness everywhere and
+;;; the rule is silent.
+;;;
+;;; The negative half of the pair: a `slot-owed-room` whose `absent` scanned
+;;; the wrong type — or whose `(neq ?Ta ?index)` guard was dropped — would
+;;; still report here, and `09` alone would not notice. Discharge is the guard,
+;;; so "silent here" is the claim that the guard is right.
+;;;
+;;; Note the seats are deliberately shared: Ann and Cat are both in S1. Nothing
+;;; in this file forbids that — `slot-exclusive` is not imported — and it is
+;;; the point. An obligation is a **lower** bound and says nothing at all about
+;;; how many arrows a seat may hold; the file that would refuse two is the one
+;;; that activates an upper bound, which is a different rule and a different
+;;; test.
+;;;
+;;; The owe count — zero — is asserted in
+;;; `ein-infer/tests/obligation_reports.rs`.
+
+(import std.slots :symbols (slot-owed-room))
+
+(relation type     T T :why "{?1} is a subtype of {?2}")
+(relation instance T T :why "{?1} is an instance of {?2}")
+(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same seat")
+
+(slot-owed-room co-loc instance type Attribute Seat)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat)
+(instance Ann Who) (instance Bob Who)
+(instance Cat Pet) (instance Dog Pet)
+
+(co-loc Ann S1) (co-loc Cat S1)
+(co-loc Bob S2) (co-loc Dog S2)
+
+(query
+  :goal (co-loc ?a ?b)
+  :no-hypothesis (type instance co-loc)
+  :expect (model (co-loc Ann S1) (co-loc Cat S1)
+                 (co-loc Bob S2) (co-loc Dog S2)))

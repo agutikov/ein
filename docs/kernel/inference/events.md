@@ -119,6 +119,31 @@ document the run.
 | `park` / `admit` / `retire` | `_admit_from_boundary` decisions | `tiebreaker`, `round`, `rule`, `watched` (the failing guard's watch set) |
 | `quiesce` | closure quiescence, before the boundary speaks | `round`, `n_facts`, `n_queue`, `n_parked` |
 | `alt` | `store.record_justification` returns True | `fact`, `rule`, `premises` |
+| `owe` | the **post-fixpoint obligation pass**, once per quiescent KB, one line per undischarged instance | `rule`, `activator`, `relation` (the `(open ?R)` argument, `""` for a bare `(open)`), `bindings`, `why` (rendered) |
+
+**`owe` is not a firing** — M1d
+[S1d.2.4](../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.4_obligations_in_the_saturator.md).
+A rule whose `:assert` is the verdict atom `open` derives nothing, so it is
+kept out of the saturation agenda entirely
+([`06_reserved_names.md` § the verdict atom](../ir/03-ein-lang/06_reserved_names.md))
+and runs as one pass over the KB *after* the fixpoint. Three consequences a
+reader of this stream should know:
+
+- **A rule never emits both.** An obligation rule can never produce a `fire`;
+  a saturation rule can never produce an `owe`. That is what makes `owe` the
+  activation evidence for the obligation half of the stdlib, which is how
+  `ein-infer/tests/stdlib_coverage.rs` counts it.
+- **It is emitted per quiescent KB, and only where the KB is consistent.** The
+  read-out is three states in one order — `(false)` first, then the tally — so
+  a node with a contradiction never has its debts consulted and narrates none.
+  Root's lines come first, then one group per alive entering, each before that
+  entering's `enter` line.
+- **Nothing it reports is stored.** An `open` conclusion is a tally on the
+  search-lattice node, never a fact: contradiction survives an extension and
+  openness exists to be destroyed by one, so a stored `open` would outlive its
+  own discharge in a fork that paid it. Re-reading the KB will not find what
+  this line reports; `--json-summary`'s `owes` block is the same tally as a
+  document.
 
 A mirror produces a `mirror` event and **not** a `fire`, so every firing is
 reported exactly once whichever path made it. `alt` is narrower than it looks:

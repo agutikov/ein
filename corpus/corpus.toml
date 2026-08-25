@@ -870,6 +870,26 @@ group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
+path   = "tests/stdlib/algebra/23_total_owed.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/24_total_owed_satisfied.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/25_surjective_owed.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/algebra/26_surjective_owed_satisfied.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
 path   = "tests/stdlib/bijection/01_setup_and_negatives.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
@@ -891,6 +911,11 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
 path   = "tests/stdlib/bijection/05_typecheck_arg1_violated.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/bijection/06_blind_enumeration.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 
@@ -978,6 +1003,26 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
 path   = "tests/stdlib/slots/08_spatial_adjacent.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/slots/09_owed_room.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/slots/10_owed_room_satisfied.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/slots/11_owed_fill.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/slots/12_owed_fill_satisfied.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 

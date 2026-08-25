@@ -988,11 +988,26 @@ impl Kb {
         }
     }
 
+    /// Does a fact with this head **activate** a rule?
+    ///
+    /// Both registries that a fact can activate, and only those. A saturation
+    /// rule and an obligation rule find their activators the same way — by
+    /// name, in this index — because M1d
+    /// [S1d.2.3](../../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.3_the_form.md)
+    /// split them into two registries over **one name-space**: which pass
+    /// walks a rule is not a fact about its activator. `hrules` are absent
+    /// and stay absent — a generic hrule takes its activators from the query's
+    /// `:hrules` keyword and never from the store, because an hrule activator
+    /// steers the search.
+    fn is_rule_app(&self, rel: Symbol) -> bool {
+        self.program.rules.contains(rel) || self.program.obligations.contains(rel)
+    }
+
     /// Append one fact to every reverse index — the incremental half of
     /// [`Kb::rebuild_indexes`], and it must agree with it exactly.
     pub fn index_fact(&mut self, terms: &Terms, id: FactId) {
         let (rel, args) = terms.facts.get(id);
-        let is_rule_app = self.program.rules.contains(rel);
+        let is_rule_app = self.is_rule_app(rel);
         let not = terms.kernel.not;
 
         self.top.by_rel.entry(rel).or_default().push(id);
@@ -1084,7 +1099,7 @@ impl Kb {
         let not = terms.kernel.not;
         for &id in &layer.facts {
             let (rel, args) = terms.facts.get(id);
-            let is_rule_app = self.program.rules.contains(rel);
+            let is_rule_app = self.is_rule_app(rel);
             layer.by_rel.entry(rel).or_default().push(id);
             if is_rule_app {
                 layer.rule_apps_by_rule.entry(rel).or_default().push(id);

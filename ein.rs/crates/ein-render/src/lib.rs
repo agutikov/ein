@@ -25,12 +25,17 @@ pub mod rules;
 pub mod shape;
 pub mod slice;
 pub mod trace;
-pub mod why;
 
 pub use answer::{render_answer, render_solution_table};
 pub use constraints::render_constraints;
 pub use derivation::{derivation_dag_to_dot, fact_dot_id};
 pub use dot_util::{esc, fact_key, fact_label, hashed_id, multiline, quote, value_label};
+/// `:why` substitution — [`ein_core::render_why`], re-exported.
+///
+/// It moved down to `ein-core` at M1d S1d.2.4 so the obligation pass could
+/// render an `owe`'s sentence from `ein-infer`; this crate's three callers and
+/// every `ein_render::render_why` outside it are unchanged.
+pub use ein_core::render_why;
 pub use ir_dot::{DotOpts, TraceView, to_dot as ir_to_dot, to_dot_form};
 pub use kb_dot::{ColourBy, KbDotOpts, to_dot as kb_to_dot};
 pub use lattice_dag::{LatticeSource, LatticeView, render_lattice};
@@ -42,4 +47,3 @@ pub use trace::{
     LinearizeOpts, Mode, Reductio, Trace, TraceStep, linearize, parse_trace_steps, render_markdown,
     trace_to_ir,
 };
-pub use why::render_why;

@@ -32,6 +32,7 @@ pub mod shape;
 pub mod terms;
 pub mod value;
 pub mod walks;
+pub mod why;
 
 pub use bitset::BitSet;
 pub use config::SolverConfig;
@@ -53,3 +54,4 @@ pub use walks::{
     DerivationDag, Justifications, build_derivation_dag, detect_provenance_cycles, unsat_core,
     walk_premises,
 };
+pub use why::render_why;

@@ -274,6 +274,8 @@ fn the_lattice_golden_reproduces() {
             kb: kb.snapshot(),
             firings: Vec::new(),
             layer: 1,
+            // The lattice view does not read a node's tally.
+            owes: Default::default(),
         }],
         // This fixture renders the *lattice*, which does not read root's own
         // saturation.

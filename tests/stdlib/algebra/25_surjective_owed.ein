@@ -1,0 +1,49 @@
+;;; `std.algebra/surjective-owed` — the requirement, outstanding, **from the
+;;; other side**.
+;;;
+;;; `23_total_owed.ein`'s dual, and the pair is what makes the direction a
+;;; test rather than a coincidence. Both rules assert the same atom — `(open
+;;; ?R)`, the relation and nothing else — and the direction is not written
+;;; anywhere in the head: it falls out of **which slot the rule's own `absent`
+;;; leaves free**. `total-owed` scans `?b` and owes each `a` an image;
+;;; `surjective-owed` scans `?a` and owes each `b` a preimage. No position
+;;; index, no numeral, which is what the numeral-free decision demanded and
+;;; what the superseded `(open ?R 0 ?a)` violated
+;;; (plans/m1d_satisfiability/p1d.2_obligations/obligation_forms.md § G).
+;;;
+;;; So a mutant that swapped the two scans would be invisible in `23` and is
+;;; caught here: the count would move from Soup to Ann.
+;;;
+;;; ── What this program does to the rule ─────────────────────────────────────
+;;;
+;;; Two people, two foods, one arrow — the same shape as `23`, read the other
+;;; way:
+;;;
+;;;   (likes Bob Stew)     Stew has a fan; its requirement is discharged
+;;;   Soup                 nobody likes it — one debt
+;;;
+;;; One instance, and it names Soup rather than Ann, which is exactly the
+;;; difference from `23`. `total-owed` is **not** imported: separation by
+;;; activation, `05_no_room.ein`'s rule.
+;;;
+;;; `26_surjective_owed_satisfied.ein` adds the arrow that pays it.
+;;;
+;;; The owe claim is asserted in `ein-infer/tests/obligation_reports.rs` —
+;;; `:expect` speaks only of facts, and an `open` conclusion is never one.
+
+(import std.algebra :symbols (surjective-owed))
+
+(relation is-a  T T         :why "{?1} is a {?2}")
+(relation likes Person Food :why "{?1} likes {?2}")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+
+(surjective-owed likes is-a)
+
+(likes Bob Stew)
+
+(query
+  :goal (likes ?who ?what)
+  :no-hypothesis (is-a likes)
+  :expect (model (likes Bob Stew)))

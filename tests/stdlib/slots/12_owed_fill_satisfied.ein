@@ -1,0 +1,39 @@
+;;; `std.slots/slot-owed-fill` — **loaded, activated, and owing nothing.**
+;;;
+;;; `11_owed_fill.ein` with the three missing arrows added: every seat holds a
+;;; Who and a Pet, so every `seat × non-seat type` pair has its witness and the
+;;; rule is silent.
+;;;
+;;; The negative half, and the guard it protects is the type quantifier. A
+;;; `slot-owed-fill` that asked each seat for *some* occupant rather than one
+;;; of **each** type would be silent on `11` after the first arrow and silent
+;;; here too — so `11` alone cannot see it, and neither can this file alone.
+;;; The pair can: `11` owes three, this one owes none, and only a rule that
+;;; quantifies over the types gets both numbers.
+;;;
+;;; The owe count — zero — is asserted in
+;;; `ein-infer/tests/obligation_reports.rs`.
+
+(import std.slots :symbols (slot-owed-fill))
+
+(relation type     T T :why "{?1} is a subtype of {?2}")
+(relation instance T T :why "{?1} is an instance of {?2}")
+(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same seat")
+
+(slot-owed-fill co-loc instance type Attribute Seat)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat)
+(instance Ann Who) (instance Bob Who)
+(instance Cat Pet) (instance Dog Pet)
+
+(co-loc S1 Ann) (co-loc S1 Cat)
+(co-loc S2 Bob) (co-loc S2 Dog)
+
+(query
+  :goal (co-loc ?a ?b)
+  :no-hypothesis (type instance co-loc)
+  :expect (model (co-loc S1 Ann) (co-loc S1 Cat)
+                 (co-loc S2 Bob) (co-loc S2 Dog)))

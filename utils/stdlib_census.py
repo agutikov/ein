@@ -30,7 +30,9 @@ Two halves, and only the second runs the engine:
 2. **The firing census.** Every corpus entry, under every declared run that
    reaches the engine (`solve …` / `saturate …` / `test` — `render` has no
    `--events`, and `render lattice`'s solve is a subset of `solve -e`'s), with
-   `--events`. `fire` events counted by rule, split productive vs redundant;
+   `--events`. `fire` events counted by rule, split productive vs redundant
+   — plus `owe`, which is the same claim for the rules that assert the verdict
+   atom `open` and therefore never reach the firing stream (M1d S1d.2.4);
    `load` events read for which rules were *available* to a file at all, which
    is what separates "imported and never activated" from "no corpus entry
    imports it".
@@ -288,7 +290,11 @@ def inference_runs(entry: dict) -> list[str]:
 
 def sweep(entries: list[dict], args, imports: dict[str, list[str]],
           by_name: dict[str, list[dict]]) -> dict:
-    """Run the corpus under `--events` and tally `fire` by rule."""
+    """Run the corpus under `--events` and tally activations by rule.
+
+    `fire` for a saturation rule, `owe` for an obligation one — see the branch
+    below. An `owe` is never redundant, so it lands in the productive column.
+    """
     env = dict(os.environ)
     env.pop("EIN_STDLIB", None)          # the checkout's stdlib is the subject
     env["LC_ALL"] = "C"
@@ -325,7 +331,16 @@ def sweep(entries: list[dict], args, imports: dict[str, list[str]],
                             for name in ev.get("rule_names", []):
                                 for r in resolve(name, None, ctx, by_name):
                                     loaded[(r["module"], r["rule"])].add(path)
-                        elif kind == "fire":
+                        elif kind in ("fire", "owe"):
+                            # `owe` is the obligation half's activation
+                            # evidence — M1d S1d.2.4. A rule whose `:assert` is
+                            # the verdict atom `open` derives nothing and is
+                            # kept out of the saturation agenda, so it can
+                            # never emit a `fire`; the post-fixpoint pass emits
+                            # one `owe` per undischarged instance instead, with
+                            # the same `rule` / `activator` fields. Counting
+                            # only `fire` would have put every obligation rule
+                            # permanently in the zero set.
                             cands = resolve(ev["rule"], ev.get("activator"),
                                             ctx, by_name)
                             if not cands:
@@ -400,7 +415,7 @@ def report(rules: list[dict], census: dict, args) -> int:
 
     print(f"\n{len(rules)} rules over "
           f"{len({r['module'] for r in rules})} modules; "
-          f"{len(rules) - len(zero)} activated, {len(zero)} never fire.")
+          f"{len(rules) - len(zero)} activated, {len(zero)} never activate.")
 
     print(f"\n## The zero-firing set — {len(zero)} rules")
     for r in zero:

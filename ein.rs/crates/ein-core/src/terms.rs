@@ -276,6 +276,11 @@ pub struct Kernel {
     pub neq: Symbol,
     pub absent: Symbol,
     pub r#false: Symbol,
+    /// The reserved verdict atom — `(false)`'s dual, and the one kernel name
+    /// that is never a fact. M1d S1d.2.3 reserved it; the obligation pass
+    /// ([`crate::Program::obligations`]) is what reads a plan's `:assert` for
+    /// it.
+    pub open: Symbol,
     /// `=`, which the grammar keeps as a *named* terminal so it survives token
     /// filtering and arrives as an ordinary atom.
     pub equals: Symbol,
@@ -324,6 +329,11 @@ impl Terms {
             symmetric: intern(SYMMETRIC),
             mirror_a: intern(MIRROR_A),
             mirror_b: intern(MIRROR_B),
+            // Interned last on purpose: a kernel name's id is its position in
+            // this list, and appending is the one edit that moves none of the
+            // others. `id_order_invariance` says a permuted id space moves no
+            // answer, so this is about keeping the *renderings* still too.
+            open: intern("open"),
         };
         Terms {
             syms: Table::Own(syms),

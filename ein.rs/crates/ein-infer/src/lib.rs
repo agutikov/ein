@@ -40,6 +40,7 @@ pub mod match_;
 pub mod mt19937;
 pub mod naf_deps;
 pub mod nogoods;
+pub mod obligations;
 pub mod plan;
 pub mod predicates;
 pub mod sanity;
@@ -80,6 +81,7 @@ pub use lookahead::Lookahead;
 pub use match_::{Emit, Match, Matcher};
 pub use naf_deps::{NafDep, compute_naf_map, derived_naf_warnings};
 pub use nogoods::emit_nogood;
+pub use obligations::{Owed, Owes};
 pub use plan::{
     Disjunct, GuardArg, GuardArgKind, MAX_REGS, NafGuard, Plan, PlanId, Probe, ProbeSrc, Reg,
     RelStep, Slot, Span, Step,

@@ -114,17 +114,23 @@ constrained-reasoning research.
   what CI checks for drift; `ein-ir` embeds a copy with `include_dir!`, so the
   manifest is a build dependency and cannot go stale. Resolution: `$EIN_STDLIB`
   → the checkout → the embedded copy. **What tests it is `tests/stdlib/`**
-  (below), and adding a rule here means adding a program there.
+  (below), and adding a rule here means adding a program there. Since M1d
+  S1d.2.4 four of its rules are **obligations** — `total-owed` /
+  `surjective-owed` in `std.algebra`, `slot-owed-room` / `slot-owed-fill` in
+  `std.slots` — which assert `(open ?R)`, derive nothing, are not in the
+  saturation agenda, and are read by one pass over the quiescent KB. No puzzle
+  changes a line: the two setup fan-outs pick them up, at a cost of two stored
+  activator facts per declaration (50 across the corpus's 13 such entries).
 - **`tests/`** — **the ein-lang test suites**, and since M1c S1c.1.4 a third
   corpus root beside `examples/` and `stdlib/`: a `.ein` here with no
   `corpus.toml` entry fails the same completeness check. Its one subject is
-  [`tests/stdlib/`](tests/README.md) — **47 programs, one per stdlib rule or
+  [`tests/stdlib/`](tests/README.md) — **56 programs, one per stdlib rule or
   tight family** plus one pair that is a *corner* rather than a rule
   (`closure/02_closed_and_satisfied` and `03_closed_and_owing`, M1d S1d.2.2:
   the same program with one fact deleted, both reporting `Solution` — a state
   that owes something it can never pay, banked so the stage that fixes it has
   to move the golden), each carrying an `:expect` so `ein test tests/` is the
-  whole suite in 0.03 s. They are deliberately *not* under `examples/`: that
+  whole suite in 0.04 s. They are deliberately *not* under `examples/`: that
   directory is things to read, and these are three declarations and two facts
   apiece that exist to break. Three idioms are worth knowing before writing a
   new one — **naming a relation closes it** (which is how a rule with no guard
@@ -133,13 +139,20 @@ constrained-reasoning research.
   negatives are not closed), **a refutation rule gets two files** — one where
   it fires and one where it is loaded, activated and satisfied — and **where
   two rules reach one verdict, separate them by activation**, because an
-  expectation made of facts cannot say which one got there. The coverage claim
+  expectation made of facts cannot say which one got there. **M1d S1d.2.4
+  added a fifth**: a rule that asserts the verdict atom `open` derives nothing
+  and is never in the saturation agenda, so `:expect` — three forms, all of
+  them assertions about *facts* — cannot state what it reports, and the eight
+  obligation fixtures carry an ordinary `(model …)` claim while their owe
+  counts are asserted in `ein-infer/tests/obligation_reports.rs`. The coverage claim
   is measured by `utils/stdlib_census.py`, never by reading the directory, and
   the suite's sensitivity by a 51-mutant sweep it catches 50 of. **Since M1c
   S1c.1.5 two claims about this directory are in `cargo test`**
   (`ein-infer/tests/stdlib_coverage.rs`, 0.04 s): every stdlib rule is
-  activated by a program *here* — 73 of 73, with no `examples/` entry
-  contributing — and every program here states an expectation. Scoping the
+  activated by a program *here* — **77 of 77**, with no `examples/` entry
+  contributing — and every program here states an expectation. **Activation is
+  two events since S1d.2.4**: `fire` for a saturation rule and `owe` for an
+  obligation one, which can never produce a `fire`. Scoping the
   first to the suite is what found `transitive`, whose fixture was a two-cycle
   the `(neq ?a ?c)` guard refuses every match of; it grew a three-chain.
 - **`corpus/`** — the **corpus**: `corpus.toml` (one entry per `.ein`, with
@@ -218,9 +231,12 @@ constrained-reasoning research.
   and PyPy columns are frozen constants**, because the instruments that
   produced them left with the engine they measured. The nineteenth,
   **`stdlib_census.py`**, is [M1c](docs/history/m1c_external_validation/README.md)'s
-  and the first check aimed at the *stdlib* rather than the engine: 73 rules
+  and the first check aimed at the *stdlib* rather than the engine: 77 rules
   parsed out of `stdlib/*.ein`, then every corpus entry × every declared
-  `solve` / `saturate` / `test` run under `--events`, `fire` counted by rule.
+  `solve` / `saturate` / `test` run under `--events`, `fire` counted by rule
+  — plus `owe` since M1d S1d.2.4, which is the same claim for the four rules
+  that assert the verdict atom `open` and therefore never reach the firing
+  stream.
   Its first answer, 2026-08-23 — [**38 of 73 rules never
   fire**](docs/history/m1c_external_validation/stdlib_census.md),
   and `examples/zebra.ein` the sole activator of 20 more — is what M1c existed
@@ -339,7 +355,7 @@ it.
 what it costs is 0.04 s:
 
 ```sh
-cargo test … -p ein-infer --test stdlib_coverage   # 73 rules, 47 programs, 800 firings
+cargo test … -p ein-infer --test stdlib_coverage   # 77 rules, 56 programs, fires + owes
 ein test tests/                                    # the same suite, as a status code
 ```
 

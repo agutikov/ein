@@ -1,0 +1,35 @@
+;;; `std.algebra/surjective-owed` — **loaded, activated, and owing nothing.**
+;;;
+;;; `25_surjective_owed.ein` with Soup's fan added; the only difference is the
+;;; line `(likes Ann Soup)`. There it is one outstanding obligation, here none.
+;;;
+;;; The negative half of the pair, for `25`'s reason: an inverted guard would
+;;; report on this state too and `25` would still pass. Discharge *is* the
+;;; guard, so "owes nothing here" is the claim that the guard is right.
+;;;
+;;; Worth noting what this file is **not**: it is not a claim that `likes` is
+;;; surjective in general. It is a claim that on this KB every `Food` has a
+;;; stored preimage, which is the only thing an obligation ever asserts — the
+;;; requirement has a witness *here*. `total-owed` is not activated, so nothing
+;;; checks the other direction, and Ann's own image is beside the point.
+;;;
+;;; The owe count — zero — is asserted in
+;;; `ein-infer/tests/obligation_reports.rs`.
+
+(import std.algebra :symbols (surjective-owed))
+
+(relation is-a  T T         :why "{?1} is a {?2}")
+(relation likes Person Food :why "{?1} likes {?2}")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+
+(surjective-owed likes is-a)
+
+(likes Ann Soup)             ; the line `25` does not have
+(likes Bob Stew)
+
+(query
+  :goal (likes ?who ?what)
+  :no-hypothesis (is-a likes)
+  :expect (model (likes Ann Soup) (likes Bob Stew)))

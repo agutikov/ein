@@ -1,0 +1,43 @@
+;;; `std.algebra/total-owed` — **loaded, activated, and owing nothing.**
+;;;
+;;; `23_total_owed.ein` with Ann's arrow added, and the only difference between
+;;; the two files is the line `(likes Ann Soup)`. There it is one outstanding
+;;; obligation; here it is none.
+;;;
+;;; ── Why the negative case is the one that matters ─────────────────────────
+;;;
+;;; The coverage gate is satisfied by `23` alone: it activates the rule and the
+;;; rule reports. What `23` cannot show is that the report ever **stops** — a
+;;; `total-owed` whose guard was inverted, or whose `absent` scanned the wrong
+;;; relation, would fire on this state too and `23` would still pass. Discharge
+;;; is the guard (there is no second `∃b: G ∧ B` query to disagree with it), so
+;;; the claim that the guard is right *is* the claim that this file owes
+;;; nothing.
+;;;
+;;; That is P1c.1's pair, in the form the obligation duals need it: not only
+;;; "the obligation is reported" but "it is not reported *here*", which is
+;;; where a guard bug lives.
+;;;
+;;; ── What the expectation observes ─────────────────────────────────────────
+;;;
+;;; The model, which pins the state; the owe count — zero — is asserted in
+;;; `ein-infer/tests/obligation_reports.rs`, because `:expect` speaks only of
+;;; facts and an `open` conclusion is never one. See `23`'s note.
+
+(import std.algebra :symbols (total-owed))
+
+(relation is-a  T T         :why "{?1} is a {?2}")
+(relation likes Person Food :why "{?1} likes {?2}")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+
+(total-owed likes is-a)
+
+(likes Ann Soup)             ; the line `23` does not have
+(likes Bob Stew)
+
+(query
+  :goal (likes ?who ?what)
+  :no-hypothesis (is-a likes)
+  :expect (model (likes Ann Soup) (likes Bob Stew)))

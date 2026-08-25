@@ -505,6 +505,7 @@ fn check_query(
             &config,
             &file,
             &mut events,
+            &solved.owes,
         ) {
             Ok(s) => {
                 if let Err(e) = crate::summary::write(out, &s) {

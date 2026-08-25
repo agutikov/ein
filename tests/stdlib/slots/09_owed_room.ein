@@ -1,0 +1,58 @@
+;;; `std.slots/slot-owed-room` — a value that is in **no seat yet**.
+;;;
+;;; `05_no_room.ein`'s obligation dual. There the cat is excluded from every
+;;; seat, so there is nowhere left for it and the state is dead; here nothing
+;;; is said about where anybody sits, so every attribute value simply still
+;;; owes a seat. Same axis, one modality down: `(false)` becomes `(open ?R)`,
+;;; *dead* becomes *unfinished*.
+;;;
+;;; ── What this program does to the rule ─────────────────────────────────────
+;;;
+;;; Two seats, two people, two pets, and one arrow:
+;;;
+;;;   (co-loc Ann S1)      Ann is seated; her requirement is discharged
+;;;   Bob, Cat, Dog        nothing at all — three debts
+;;;
+;;; Three instances, and the seats themselves contribute none: the rule's
+;;; `(neq ?Ta ?index)` guard is what keeps a Seat from owing a seat, and
+;;; dropping it would take the count to five.
+;;;
+;;; ── Why the activators are declared by hand ────────────────────────────────
+;;;
+;;; `05_no_room.ein`'s rule, and here it is load-bearing twice over.
+;;; `slot-partition-setup` fans one `(slot-partition …)` fact into **ten**
+;;; activators at once, two of which are `slot-owed-room` and `slot-owed-fill`
+;;; — the pair this file and `11_owed_fill.ein` exist to tell apart. With the
+;;; whole fan-out in place both report on this state and an expectation made of
+;;; facts could not say which; with the activator narrowed to one, a mutant
+;;; that made either scan the other axis is caught by the count.
+;;;
+;;; It also keeps the propagation rules out. Nothing here derives a `co-loc`,
+;;; so the state is exactly what the file says and the debt is exactly what is
+;;; missing from it.
+;;;
+;;; `10_owed_room_satisfied.ein` seats everybody and owes nothing. The owe
+;;; count is asserted in `ein-infer/tests/obligation_reports.rs`: `:expect`
+;;; speaks only of facts, and an `open` conclusion is never one.
+
+(import std.slots :symbols (slot-owed-room))
+
+(relation type     T T :why "{?1} is a subtype of {?2}")
+(relation instance T T :why "{?1} is an instance of {?2}")
+(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same seat")
+
+(slot-owed-room co-loc instance type Attribute Seat)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat)
+(instance Ann Who) (instance Bob Who)
+(instance Cat Pet) (instance Dog Pet)
+
+(co-loc Ann S1)              ; Bob, Cat and Dog are still owed a seat
+
+(query
+  :goal (co-loc ?a ?b)
+  :no-hypothesis (type instance co-loc)
+  :expect (model (co-loc Ann S1)))

@@ -653,6 +653,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
             &config,
             file,
             &mut events,
+            &solved.owes,
         ) {
             Ok(s) => {
                 if let Err(e) = crate::summary::write(path, &s) {

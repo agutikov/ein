@@ -91,7 +91,7 @@ are deliberately *not* reserved — they migrated into the `std.macro` module
 spelled `open` is `unknown` since 2026-08-24, which is what freed the word for
 the section below.
 
-## The verdict atom — `open` (M1d P1d.2 S1d.2.3)
+## The verdict atom — `open` (M1d P1d.2 S1d.2.3, read since S1d.2.4)
 
 Reserved, but **not** a rule-body primitive: it appears only as an `:assert`
 conclusion, the compiler never meets it in a `:match`, and no detector reads
@@ -118,9 +118,53 @@ Five things are refused at load rather than guessed:
 | `(open ?R)` where `?R` is not a parameter | a variable relation head is bound by the activator; the compiler cannot resolve one from a premise |
 | a projection that does not resolve | exactly one `(absent …)` must hold a positive `?R` premise, and exactly one such premise must bind a variable the guard does not already bind. None, two, or a ground body is refused |
 
-**Since S1d.2.3 nothing reads it**: the atom loads, validates and
-round-trips, and a program using it is legal and inert. The pass that reads
-the tally is S1d.2.4.
+### What reads it — the obligation pass (S1d.2.4)
+
+The rules live in `Program::obligations`, which neither the saturator nor
+`hypgen` walks. What walks them is
+[`ein_infer::obligations::tally`](../../../../ein.rs/crates/ein-infer/src/obligations.rs):
+**one pass over the quiescent KB, once the fixpoint is reached** — not a
+priority band inside the loop, because a band orders *selection* within the
+walk and openness has to be read *after* it. `:priority` keeps one residual
+meaning: the report order among obligation rules, which is what makes the
+outstanding list deterministic.
+
+**Firing *is* being undischarged.** The obligation is stated once, in the
+guard: the rule matches while the witness is missing and stops matching once
+it has arrived. So the pass asks no second question, and there is no `∃b: G ∧
+B` restatement that could disagree with the `absent` — which is the whole
+reason the `forall`-dual triple went.
+
+The tally is read only where the KB is **consistent**. The three states are
+checked in one order — `(false)` first, then the count — so a node carrying a
+contradiction never has its debts consulted, and the pass does not run there.
+
+Three surfaces report it, and none of them is the fact store:
+
+| surface | what it carries |
+|---|---|
+| [`--events`](../../inference/events.md) | one `owe` line per undischarged instance per quiescent KB: `rule`, `activator`, `relation`, `bindings`, the rendered `:why` |
+| `--json-summary` | an `owes` block — `root` and one entry per reported model, each with `total`, `by_relation` and the instances |
+| `--trace` | an **Outstanding obligations** section, the `:why`s as a list, rendered only when the state owes something |
+
+`(open ?R)`'s per-relation attribution is what makes `by_relation` possible;
+a bare `(open)` contributes to the count and names no slot.
+
+**What has not moved**: no verdict word. A state that is `consistent ∧
+complete` by the generator's test and still owes a witness reports `Solution`
+today, exactly as it did before —
+[`tests/stdlib/algebra/23_total_owed.ein`](../../../../tests/stdlib/algebra/23_total_owed.ein)
+is that state with a number attached, and S1d.2.6 is where the word is
+decided.
+
+### The stdlib's four
+
+`std.algebra` ships `total-owed` and `surjective-owed` — the obligation duals
+of the totality scans beside them, fanned out by `bijective-setup`. `std.slots`
+ships `slot-owed-room` and `slot-owed-fill`, fanned out by
+`slot-partition-setup`. All four assert `(open ?R)` and nothing else, and the
+*direction* is nowhere in the head: it falls out of which slot the rule's own
+`absent` leaves free.
 
 ## Rule-body / ⊥ primitives (kept M1 kernel vocabulary)
 

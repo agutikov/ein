@@ -321,6 +321,12 @@ fn nothing_in_the_solve_path_reads_the_solution_store() {
             // The *read* — the field access — not the word: `ein kb save`
             // mentions `solutions:` when it declines to store any, and that is
             // the writer, which is not the hazard.
+            //
+            // It is a textual check and therefore a coarse one: any field
+            // named `solutions` on any type trips it. That has cost one
+            // rename already — M1d S1d.2.4's `OwesReport` calls its per-model
+            // tallies `models` for this reason, and its own doc says so — and
+            // a rename is the right price for a guard this cheap.
             if text.contains(".solutions") {
                 offenders.push(path.display().to_string());
             }

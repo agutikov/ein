@@ -1,0 +1,55 @@
+;;; `std.slots/slot-owed-fill` — a seat with **no occupant of some kind yet**.
+;;;
+;;; `06_no_fill.ein`'s obligation dual, and `09_owed_room.ein`'s other axis.
+;;; `slot-owed-room` walks the values and asks each for a seat;
+;;; `slot-owed-fill` walks the seats and asks each for a value **of every
+;;; non-seat type**. So the two count different things on the same state, and
+;;; that is what the pair exists to hold apart — the direction is nowhere in
+;;; the head, which is `(open ?R)` for both, and falls out of which slot the
+;;; rule's own `absent` leaves free.
+;;;
+;;; ── What this program does to the rule ─────────────────────────────────────
+;;;
+;;; Two seats, one Who type and one Pet type, and one arrow:
+;;;
+;;;   (co-loc S1 Ann)      S1 has its Who — that debt is discharged
+;;;   S1 × Pet             no pet in S1        — one debt
+;;;   S2 × Who, S2 × Pet   nothing in S2 at all — two debts
+;;;
+;;; Three instances, over `seats × non-seat types` minus the one filled. Note
+;;; the argument order: this rule reads `(?R ?i ?v)` — seat first — where
+;;; `slot-owed-room` reads `(?R ?a ?i)`. `co-loc` is symmetric in the real
+;;; encoding and the mirror would hide the difference, so `symmetric` is
+;;; deliberately **not** imported here and the one stated arrow is written the
+;;; way this rule reads it.
+;;;
+;;; ── Why the activator is declared by hand ──────────────────────────────────
+;;;
+;;; `05_no_room.ein`'s rule: `slot-partition-setup` would activate
+;;; `slot-owed-room` as well, both would report on this state, and the count
+;;; could not say which rule produced it. `12_owed_fill_satisfied.ein` fills
+;;; every seat with one of each and owes nothing.
+;;;
+;;; The owe count is asserted in `ein-infer/tests/obligation_reports.rs`.
+
+(import std.slots :symbols (slot-owed-fill))
+
+(relation type     T T :why "{?1} is a subtype of {?2}")
+(relation instance T T :why "{?1} is an instance of {?2}")
+(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same seat")
+
+(slot-owed-fill co-loc instance type Attribute Seat)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat)
+(instance Ann Who) (instance Bob Who)
+(instance Cat Pet) (instance Dog Pet)
+
+(co-loc S1 Ann)              ; S1 still owes a Pet; S2 owes both
+
+(query
+  :goal (co-loc ?a ?b)
+  :no-hypothesis (type instance co-loc)
+  :expect (model (co-loc S1 Ann)))

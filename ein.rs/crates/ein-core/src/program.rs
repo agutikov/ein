@@ -101,6 +101,21 @@ impl Program {
     /// they categorise as relations only when a puzzle declares them.
     /// `hrules` are deliberately absent — a name declared only as an hrule
     /// falls through to `"object"`, as it does in ein.py.
+    ///
+    /// **Obligations are not** (M1d S1d.2.4), and the difference from `hrules`
+    /// is the whole reason the line is here. A category says what a name *is*;
+    /// [`Program::obligations`] is a split by which pass **walks** a rule, over
+    /// one name-space, so an obligation rule's name is a rule name in exactly
+    /// the way `total`'s is. Leaving it out made it an `Object` — and
+    /// `hypgen::candidate_objects` keeps every `Object`, so the blind
+    /// enumerator started proposing `(seats total-owed C1)`: the *name of a
+    /// rule* as a puzzle value. `tests/stdlib/bijection/06_blind_enumeration.ein`
+    /// is what found it, and the assertion that catches it lives in
+    /// `ein-infer/tests/obligation_reports.rs`.
+    ///
+    /// `hrules` stay out for their own reason — ein.py's, and a parity
+    /// constraint rather than a judgement — which is why the two cannot share
+    /// a line.
     pub fn categorise(&self, terms: &Terms, name: Symbol) -> NameCategory {
         if name == terms.kernel.relation || name == terms.kernel.rule {
             return NameCategory::Relation;
@@ -108,7 +123,7 @@ impl Program {
         if self.relations.contains(name) {
             return NameCategory::Relation;
         }
-        if self.rules.contains(name) {
+        if self.rules.contains(name) || self.obligations.contains(name) {
             return NameCategory::Rule;
         }
         NameCategory::Object

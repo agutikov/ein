@@ -28,6 +28,7 @@ use ein_ir::Ast;
 use crate::compile::SharedMemo;
 use crate::events::Events;
 use crate::firing::Firing;
+use crate::obligations::Owes;
 use crate::saturator::{SaturateError, Saturator, Session, Snapshot};
 
 /// How a commitment ended.
@@ -66,6 +67,19 @@ pub struct CommitmentSetResult {
     /// The `(h_i)` writes for `h_i ∈ commitment` — **not** the saturator's
     /// additions.
     pub hypothesis_facts: Vec<FactId>,
+    /// What this node's fixpoint still **owes** — M1d S1d.2.4.
+    ///
+    /// The other per-node verdict that is not a fact, and it sits beside
+    /// `kind` for that reason: an `open` conclusion may not be stored, because
+    /// a fork inheriting one would carry the debt after paying it
+    /// ([`crate::obligations`]).
+    ///
+    /// **Empty on a dead node, and that is not an omission.** The read-out is
+    /// three states in one order — `(false)` first, then the tally — so a node
+    /// with a contradiction never has its debts consulted, and computing them
+    /// would be work no surface can observe. On an exhaustive `zebra2` that is
+    /// 67 of 101 enterings.
+    pub owes: Owes,
 }
 
 /// Branch root, write every hypothesis in `commitment`, saturate, detect.
@@ -127,18 +141,20 @@ pub fn try_commitment_set(
         hypothesis_facts.push(added.id());
     }
 
-    let done =
-        |fork: Kb, firings: Vec<Firing>, kind: Kind, core: Vec<FactId>| CommitmentSetResult {
+    let done = |fork: Kb, firings: Vec<Firing>, kind: Kind, core: Vec<FactId>, owes: Owes| {
+        CommitmentSetResult {
             commitment: commitment.to_vec(),
             kb: fork,
             firings,
             kind,
             unsat_core: core,
             hypothesis_facts: hypothesis_facts.clone(),
-        };
+            owes,
+        }
+    };
 
     if let Some(core) = dead(&fork, terms) {
-        let result = done(fork, Vec::new(), Kind::DeadPre, core);
+        let result = done(fork, Vec::new(), Kind::DeadPre, core, Owes::default());
         #[cfg(feature = "fork-delta")]
         crate::fork_audit::record(terms, &result);
         return Ok(result);
@@ -172,9 +188,12 @@ pub fn try_commitment_set(
     };
 
     let result = if let Some(core) = dead(&fork, terms) {
-        done(fork, firings, Kind::DeadPost, core)
+        done(fork, firings, Kind::DeadPost, core, Owes::default())
     } else {
-        done(fork, firings, Kind::Alive, Vec::new())
+        // The fixpoint is reached and the node is consistent, which is the one
+        // state in which what it owes can be read — see `owes`.
+        let owes = crate::obligations::tally(&fork, terms, ast, memo, events)?;
+        done(fork, firings, Kind::Alive, Vec::new(), owes)
     };
     #[cfg(feature = "fork-delta")]
     crate::fork_audit::record(terms, &result);

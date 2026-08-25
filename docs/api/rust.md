@@ -231,7 +231,7 @@ Output, on [`examples/zebra2.ein`](../../examples/zebra2.ein):
 
 ```text
 loaded 84 facts
-model: 434 facts
+model: 444 facts
   h_water = House-1
   who_water = Norwegian
   h_zebra = House-5
@@ -239,6 +239,16 @@ model: 434 facts
 k = 1, exhausted = false
 trace: 244 steps
 ```
+
+> **`model:` moved from 434 to 444 on 2026-08-25**, and the ten are not
+> derivations. M1d
+> [S1d.2.4](../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.4_obligations_in_the_saturator.md)
+> gave `bijective-setup` two more activators to fan out — `(total-owed R
+> is-a)` and `(surjective-owed R is-a)`, the obligation duals of the totality
+> scans — and `zebra2.ein` declares five bijections. An activator is an
+> ordinary stored fact, so the model carries 5 × 2 more of them. Every other
+> number on this page is unchanged, which is the claim that stage made and
+> this is where it is visible.
 
 *The Norwegian drinks water in House-1; the Japanese owns the zebra in
 House-5* — the canonical Zebra answer, and the solve

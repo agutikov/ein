@@ -17,7 +17,8 @@ use ein_core::{Kb, SolverConfig, Terms, Value};
 use ein_infer::SharedMemo;
 use ein_infer::events::{sexpr, sexpr_value};
 use ein_infer::hypgen::{Drop, HypGenStats, Skip};
-use ein_infer::solve::MonotonicStats;
+use ein_infer::obligations::Owes;
+use ein_infer::solve::{MonotonicStats, OwesReport};
 use ein_infer::verdict::{Answer, Verdict, goal_bindings};
 use ein_ir::Ast;
 use ein_render::dump::Json;
@@ -276,6 +277,67 @@ fn root_block(
     ]))
 }
 
+/// One quiescent state's outstanding obligations — M1d S1d.2.4.
+///
+/// `total` is the instance count; `by_relation` attributes it, which only
+/// `(open ?R)` can do — a bare `(open)` counts and names no slot, so the two
+/// numbers agree exactly when every obligation rule in the program names its
+/// relation. `instances` is the report itself, one row per debt in report
+/// order, carrying the rendered `:why` a reader actually wants.
+fn owes_block(terms: &Terms, owes: &Owes) -> Json {
+    let by_relation: Vec<(String, Json)> = owes
+        .by_relation()
+        .into_iter()
+        .map(|(r, n)| (terms.sym(r).to_string(), Json::int(n as i64)))
+        .collect();
+    let instances: Vec<Json> = owes
+        .instances()
+        .iter()
+        .map(|i| {
+            let mut b: Vec<(String, Json)> = i
+                .bindings
+                .iter()
+                .map(|(k, v)| (terms.sym(*k).to_string(), Json::Str(sexpr_value(terms, *v))))
+                .collect();
+            b.sort_by(|a, b| a.0.cmp(&b.0));
+            Json::obj(vec![
+                ("rule", Json::str(terms.sym(i.rule))),
+                (
+                    "relation",
+                    match i.relation {
+                        Some(r) => Json::str(terms.sym(r)),
+                        None => Json::Null,
+                    },
+                ),
+                ("bindings", Json::Object(b)),
+                ("why", Json::str(&i.why)),
+            ])
+        })
+        .collect();
+    Json::obj(vec![
+        ("total", Json::int(owes.total() as i64)),
+        ("by_relation", Json::Object(by_relation)),
+        ("instances", Json::Array(instances)),
+    ])
+}
+
+/// What the run found outstanding, at the two places a reader asks.
+///
+/// `root` is the state the search starts from; `models` is one block per
+/// reported model, in the verdict's branch order. Emitted unconditionally, and
+/// all-zero for the 150 corpus programs that state no obligation — the same
+/// rule the `config` block follows, because a field that appears only
+/// sometimes is a field a consumer has to guess about.
+fn owes_report(terms: &Terms, report: &OwesReport) -> Json {
+    Json::obj(vec![
+        ("root", owes_block(terms, &report.root)),
+        (
+            "models",
+            Json::Array(report.models.iter().map(|o| owes_block(terms, o)).collect()),
+        ),
+    ])
+}
+
 /// The resolved `SolverConfig`, kebab-cased, in declaration order — the same
 /// field order `--dump-config` prints.
 fn config_block(cfg: &SolverConfig) -> Json {
@@ -338,6 +400,7 @@ pub fn build(
     config: &SolverConfig,
     source: &str,
     events: &mut ein_infer::events::Events,
+    owes: &OwesReport,
 ) -> Result<Json, String> {
     let mut verdict = vec![
         ("type".to_string(), Json::str(answer.as_str())),
@@ -350,6 +413,7 @@ pub fn build(
         ("source", Json::str(source)),
         ("verdict", Json::Object(verdict)),
         ("stats", stats_block(stats)),
+        ("owes", owes_report(terms, owes)),
         ("root", root_block(ast, terms, kb, events)?),
         ("config", config_block(config)),
     ]))
@@ -382,6 +446,10 @@ pub fn build_aborted(
             ]),
         ),
         ("stats", stats_block(stats)),
+        // A budget cut is not a fixpoint, so there is no state whose debts
+        // this could be about — the block is present and empty rather than
+        // absent, so a consumer never has to test for the key.
+        ("owes", owes_report(terms, &OwesReport::default())),
         ("root", root_block(ast, terms, kb, events)?),
         ("config", config_block(config)),
     ]))

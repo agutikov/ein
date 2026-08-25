@@ -139,6 +139,7 @@ fn summary(path: &std::path::Path, regime: &str, budget: u64, exhaustive: bool) 
         &config,
         &path.to_string_lossy(),
         &mut events,
+        &solved.owes,
     )
     .ok()?;
     serde_json::from_str(&ein_render::dump::json::dumps_indent(&json)).ok()

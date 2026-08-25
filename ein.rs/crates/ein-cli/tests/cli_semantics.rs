@@ -1045,7 +1045,7 @@ fn events_off_formats_nothing_and_does_not_count() {
 /// answered as well by a cover as by a sweep. What the cover cannot do is
 /// notice a kind that stopped being emitted by a file **not** listed here,
 /// which is why each entry names its reason.
-const EVENT_COVER: [(&str, &str); 5] = [
+const EVENT_COVER: [(&str, &str); 6] = [
     (
         "examples/branching/01_saturate_only.ein",
         "the lifecycle and the deductive layer",
@@ -1065,6 +1065,11 @@ const EVENT_COVER: [(&str, &str); 5] = [
     (
         "examples/features/06_symmetric_native.ein",
         "mirror — the native arg swap",
+    ),
+    (
+        "tests/stdlib/algebra/23_total_owed.ein",
+        "owe — the post-fixpoint obligation pass, which no other cover file \
+         activates",
     ),
 ];
 
@@ -1142,7 +1147,7 @@ fn every_event_kind_the_schema_defines_is_reachable_from_the_corpus() {
     }
     let schema = schema_kinds();
     assert!(
-        schema.len() >= 17,
+        schema.len() >= 18,
         "EVENTS.md parsed to only {} kinds — the table shape moved: {schema:?}",
         schema.len()
     );

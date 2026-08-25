@@ -48,7 +48,8 @@
 ;;; typecheck-setup))` pulls the whole working stack via auto-closure — no
 ;;; transitive-dependency bookkeeping for the importer.
 (import std.macro   :symbols (forall))
-(import std.algebra :symbols (functional injective total surjective bijective-properties))
+(import std.algebra :symbols (functional injective total surjective bijective-properties
+                              total-owed surjective-owed))
 
 ;; ── glue: fan a (bijective R) out into the operational activators ─────────────
 ;; None-activator (generic-by-premise, the `bijective-properties` idiom). ?isa is
@@ -60,9 +61,10 @@
 (rule bijective-setup ()
   :match  (and (bijective ?R) (bijection-hierarchy ?isa))
   :assert (and (total ?R ?isa) (surjective ?R ?isa)
+               (total-owed ?R ?isa) (surjective-owed ?R ?isa)
                (domain-elimination ?R ?isa) (range-elimination ?R ?isa)
                (functional-negative ?R ?isa) (injective-negative ?R ?isa))
-  :why    "(bijective {?R}) + hierarchy {?isa} ⟹ totality / elimination / negative-completion activators."
+  :why    "(bijective {?R}) + hierarchy {?isa} ⟹ totality / obligations / elimination / negative-completion activators."
   :priority 100)
 
 ;; typecheck is bijective-gated (sound once the arg types are direct-parent — see

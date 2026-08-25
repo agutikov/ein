@@ -146,6 +146,25 @@ pub fn render_markdown(trace: &Trace, mode: Mode, diagrams: bool) -> String {
         }
     }
 
+    // Before the refuted branches: what the state this trace reaches still
+    // owes is part of *its* story, where a refuted hypothesis is another
+    // branch's. Rendered only when there is something to say, so a program
+    // that states no obligation gets no empty heading (M1d S1d.2.4).
+    if !trace.owes.is_empty() {
+        lines.push(format!("## Outstanding obligations — {}", trace.owes.len()));
+        lines.push(String::new());
+        lines.push(
+            "This state is **not finished**: every requirement below is still \
+             without a witness."
+                .to_string(),
+        );
+        lines.push(String::new());
+        for why in &trace.owes {
+            lines.push(format!("- {why}"));
+        }
+        lines.push(String::new());
+    }
+
     if !trace.reductios.is_empty() {
         lines.push("## Refuted hypotheses".to_string());
         lines.push(String::new());

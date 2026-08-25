@@ -1,0 +1,65 @@
+;;; `std.algebra/total-owed` — the requirement, **outstanding**.
+;;;
+;;; The other half of `19_total_violated.ein`, and the two are one property
+;;; seen at its two ends. `total` is about a candidate set of size **0** — Ann
+;;; has every Food explicitly excluded, so the requirement can never be met and
+;;; the state is dead. `total-owed` is about a set that is simply still empty:
+;;; nothing says Ann likes anything and nothing says she does not, so the
+;;; requirement is **unmet**, not unmeetable.
+;;;
+;;; `19`'s own comment names this gap — *"it never obliges Ann to like
+;;; anything … a state in which nothing at all is known about Ann is not a
+;;; violation — it is an open world"* — and says that turning totality into a
+;;; first-class obligation is M1d's subject. This file is that subject,
+;;; arrived: the same open world, and now the engine can say what it owes in it.
+;;;
+;;; ── What this program does to the rule ─────────────────────────────────────
+;;;
+;;; Two people, two foods, and one arrow:
+;;;
+;;;   (likes Bob Stew)     stated — Bob's requirement is discharged
+;;;   Ann                  nothing at all — one debt
+;;;
+;;; So `total-owed` fires **once**, for Ann, and does not fire for Bob. That
+;;; asymmetry is the whole test: a rule that reported both would be counting
+;;; people rather than debts, and one that reported neither would be reading
+;;; the guard backwards.
+;;;
+;;; `24_total_owed_satisfied.ein` is the same file with Ann's arrow added, and
+;;; it owes nothing. The pair is this guard's two directions.
+;;;
+;;; ── What the expectation can and cannot observe ────────────────────────────
+;;;
+;;; `:expect` has three forms and all three are assertions about **facts**
+;;; (`01_grammar.md` § Query). An `open` conclusion is by construction never a
+;;; fact — it is a tally on the search-lattice node, because a stored one would
+;;; survive its own discharge in a fork that paid it — so no expectation here
+;;; can say "owes 1". The claim below is therefore about the model, which is
+;;; what pins the *state* the debt is read from; the owe count itself is
+;;; asserted in `ein-infer/tests/obligation_reports.rs`, the in-process sibling
+;;; of `stdlib_coverage.rs`. Growing `:expect` a word for an open verdict is a
+;;; verdict-vocabulary change and is deliberately not taken here — see
+;;; plans/m1d_satisfiability/p1d.2_obligations/s1d.2.4_obligations_in_the_saturator.md.
+;;;
+;;; Note that `total` is **not** imported: where two rules could reach one
+;;; verdict, a fixture separates them by activation (`05_no_room.ein`'s rule).
+;;; Here the separation is sharper than usual — the two rules cannot even agree
+;;; on what this state is — but the activator is still declared alone, so a
+;;; mutant that made `total-owed` behave like `total` has nowhere to hide.
+
+(import std.algebra :symbols (total-owed))
+
+(relation is-a  T T         :why "{?1} is a {?2}")
+(relation likes Person Food :why "{?1} likes {?2}")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+
+(total-owed likes is-a)
+
+(likes Bob Stew)
+
+(query
+  :goal (likes ?who ?what)
+  :no-hypothesis (is-a likes)
+  :expect (model (likes Bob Stew)))

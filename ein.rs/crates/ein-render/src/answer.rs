@@ -3,7 +3,7 @@
 //! **No hardcoded vocabulary.** Every word of English here comes from
 //! *puzzle-authored* templates; there is no relation→verb table. Two template
 //! sources drive the text, both through the rule `:why` engine
-//! ([`crate::why::render_why`]):
+//! ([`ein_core::render_why`]):
 //!
 //! - **per-relation** — `(relation R T1 T2 … :why "<tmpl>")` renders one fact
 //!   of `R`, with `{?1}` / `{?2}` bound to its arguments *positionally*. That
@@ -22,7 +22,7 @@ use ein_infer::verdict::{Answer, Verdict};
 use ein_infer::{canon::state_key, goal_bindings, query_value};
 use ein_ir::{Ast, Node, NodeId};
 
-use crate::why::render_why;
+use ein_core::render_why;
 
 /// One binding row: variable name → its value, rendered.
 type Row = Vec<(String, String)>;

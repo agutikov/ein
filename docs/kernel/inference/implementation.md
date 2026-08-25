@@ -50,6 +50,10 @@ KB ─▶ Engine::compile_all ─▶ Plan ─▶ Saturator::saturate ─▶ reas
                                        (fork + write + saturate)        │
                                     solve.rs drives the BFS ◀───────────┘
                                        └▶ verdict.rs reads k → Solution / Ambiguity / Contradiction
+
+ at every consistent fixpoint (root, and each alive entering):
+   obligations::tally ─▶ Owes ─▶ the lattice node (never the KB)
+                                   └▶ `owe` events · --json-summary · the trace
 ```
 
 ## Saturation core — the deductive (monotone, append-only) layer
@@ -90,7 +94,8 @@ KB ─▶ Engine::compile_all ─▶ Plan ─▶ Saturator::saturate ─▶ reas
 | [`canon.rs`](../../../ein.rs/crates/ein-infer/src/canon.rs) | `state_key` — order-insensitive canonical state identity (the representation is the identity; `state_digest` is display-only) |
 | [`closed.rs`](../../../ein.rs/crates/ein-infer/src/closed.rs) | `__closed__` handling (`CLOSED` constant; suppress guessing) |
 | [`naf_deps.rs`](../../../ein.rs/crates/ein-infer/src/naf_deps.rs) | static NAF-dependency map; the derived-NAF warning — not "this rule leans on the fire-time re-eval" (that re-eval is gone) but "NAF over a derived relation is the shape that can make a rule set non-stratified", the case where the engine reports one model of several. Advisory, off by default; a real stratification checker is future work |
-| **⤳** [`ein-render/src/why.rs`](../../../ein.rs/crates/ein-render/src/why.rs) | `:why` / `:goal-text` template rendering — text, so it moved to the renderer |
+| [`obligations.rs`](../../../ein.rs/crates/ein-infer/src/obligations.rs) | **the obligation pass** (M1d S1d.2.4) — `tally(kb, …) -> Owes`, one sweep over the quiescent KB *after* the fixpoint, over the rules in `Program::obligations` that neither the saturator nor `hypgen` walks. Reads `(open ?R)`'s argument off the compiled `:assert` (a `Slot::Const`, the activator having substituted the parameter), matches, judges the guards, and returns the undischarged instances with their rendered `:why`. **Never writes**: openness is a per-node verdict, not a fact, so the tally lives on `CommitmentSetResult.owes` beside `kind`. `Owes::default()` for a program that states no obligation, and skipped entirely on a dead node, where the read-out never consults it |
+| **⤳** [`ein-core/src/why.rs`](../../../ein.rs/crates/ein-core/src/why.rs) | `:why` / `:goal-text` template rendering — text, so it lived in the renderer until M1d S1d.2.4, when the obligation pass needed it from *below* `ein-render`. `ein_render::render_why` still names it |
 | **⤳** [`ein-core/src/config.rs`](../../../ein.rs/crates/ein-core/src/config.rs) | `SolverConfig` — the live solver flags (`enable_pre_branch_lookahead`, `enable_lookahead_kill_cache`, `record_alternative_justifications`, `hypgen_scoring`, `candidate_order_seed`, `lattice_order`, …). In `ein-core` because the KB reads some of them |
 | [`events.rs`](../../../ein.rs/crates/ein-infer/src/events.rs) | the **event protocol** — `--events FILE`, one JSON object per line narrating every compile miss, enqueue, firing, mirror, park/admit/retire, quiescence, alternative justification, hypothesis verdict, entering, no-good and writeback. Off by default and free when off. Schema: [`events.md`](events.md). It was built for the port's T2 parity tier — "the two engines took the same steps" — which retired with the second engine at M1a S1a.10.3; the format did not, and `ein-parity` is its one consumer |
 

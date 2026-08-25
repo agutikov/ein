@@ -120,7 +120,7 @@ fn the_worked_example_runs() {
     let out = run(&repo_root().join("examples/zebra2.ein")).expect("solve zebra2");
     let want = "\
 loaded 84 facts
-model: 434 facts
+model: 444 facts
   h_water = House-1
   who_water = Norwegian
   h_zebra = House-5

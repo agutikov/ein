@@ -148,8 +148,10 @@
                (slot-elimination ?R ?isa ?sub ?super ?index)
                (slot-fill        ?R ?isa ?sub ?super ?index)
                (slot-no-room     ?R ?isa ?sub ?super ?index)
-               (slot-no-fill     ?R ?isa ?sub ?super ?index))
-  :why    "(slot-partition {?R} …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill activators."
+               (slot-no-fill     ?R ?isa ?sub ?super ?index)
+               (slot-owed-room   ?R ?isa ?sub ?super ?index)
+               (slot-owed-fill   ?R ?isa ?sub ?super ?index))
+  :why    "(slot-partition {?R} …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators."
   :priority 100)
 
 ;; Fan `(slot-spatial R S isa PT)` out into the eight directional consumers:
@@ -316,6 +318,34 @@
   :assert (false)
   :why    "slot {?i} has every {?Tv} excluded — it has no {?Tv} left."
   :priority 250)
+
+;; ── the OBLIGATION duals of the two above (M1d P1d.2 S1d.2.4) ───────────────
+;; Same pair of questions, one modality down. `slot-no-room` / `slot-no-fill`
+;; fire when every candidate carries a stored negative — the requirement has
+;; become unreachable, so the state is dead. These fire while no candidate is
+;; stored *positive* — the requirement is simply not met yet, so the state is
+;; **unfinished**. `(open ?R)` names the relation whose extent is incomplete;
+;; the domain scan and the witness slot are projected out of the `absent`.
+;;
+;; Not in the saturation agenda (they derive nothing) — one pass over the
+;; quiescent KB after the fixpoint, `:priority` ordering the report.
+(rule slot-owed-room (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?a ?Ta)
+               (?sub ?Ta ?super)
+               (neq ?Ta ?index)
+               (absent (and (?isa ?i ?index) (?R ?a ?i))))
+  :assert (open ?R)
+  :why    "{?a} is in no slot yet — some {?index} is still owed."
+  :priority 500)
+
+(rule slot-owed-fill (?R ?isa ?sub ?super ?index)
+  :match  (and (?isa ?i ?index)
+               (?sub ?Tv ?super)
+               (neq ?Tv ?index)
+               (absent (and (?isa ?v ?Tv) (?R ?i ?v))))
+  :assert (open ?R)
+  :why    "slot {?i} has no {?Tv} yet — one is still owed."
+  :priority 500)
 
 
 ;; ══ the spatial rules ═══════════════════════════════════════════════════════

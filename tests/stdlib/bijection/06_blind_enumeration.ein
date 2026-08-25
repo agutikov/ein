@@ -1,0 +1,81 @@
+;;; `std.bijection/bijective-setup` — the fan-out **with the blind enumerator
+;;; left on**, which is what every other program in this directory turns off.
+;;;
+;;; ── Why this file exists ───────────────────────────────────────────────────
+;;;
+;;; M1d S1d.2.4 gave `bijective-setup` two more activators to derive —
+;;; `(total-owed R isa)` and `(surjective-owed R isa)` — and an activator fact
+;;; is a **stored** fact. The blind enumerator builds candidates from every
+;;; relation carrying a `(relation …)` signature, so the question "could a run
+;;; start guessing about the obligation activators themselves" is a real one,
+;;; and the answer must not be an argument about signatures. It is this file:
+;;; the enumerator runs unscoped, and `ein-infer/tests/obligation_reports.rs`
+;;; asserts that no `hyp` event it emits names `total-owed`, `surjective-owed`,
+;;; `slot-owed-room` or `slot-owed-fill`.
+;;;
+;;; The six activators that were already there — `total`, `surjective`,
+;;; `domain-elimination`, `range-elimination`, `functional-negative`,
+;;; `injective-negative` — are in exactly the same position and were never
+;;; checked either. They are covered here too, for free.
+;;;
+;;; ── The puzzle ─────────────────────────────────────────────────────────────
+;;;
+;;; Two guests, two chairs, one seating stated. The bijection machinery closes
+;;; it without a single hypothesis: `functional-negative` and
+;;; `injective-negative` write the two negatives Ann's chair implies, and
+;;; `domain-elimination` then forces Bob into the chair that is left. So the
+;;; verdict is a `Solution` at root — and the enumerator still ran, because
+;;; `complete()` is what asks it whether anything is left to guess.
+;;;
+;;; That is the shape this check needs: a program where the enumerator is
+;;; *consulted* about a KB that holds obligation activators, rather than one
+;;; where a search actually happens. A search would work too and cost more.
+;;;
+;;; ── What `:no-hypothesis` names, and what it deliberately does not ─────────
+;;;
+;;; The two hierarchy relations, and nothing else. A type hierarchy is not a
+;;; thing to guess about — left in, the enumerator proposes `(is-a Ann Bob)`
+;;; and 1.1 million of its relatives, and the file costs 22 s instead of
+;;; milliseconds. Everything else stays in scope, and that is the point:
+;;; **the obligation activators are not named here**, so if the enumerator
+;;; could propose `(total-owed seats is-a)` it would, and the assertion would
+;;; catch it. A file that scoped them out would be testing its own
+;;; `:no-hypothesis` line.
+;;;
+;;; `typecheck-setup` is imported for the same reason and pays for itself: with
+;;; the enumerator loose on `seats`, the kernel imposes no type system
+;;; (S1.7.23) and nothing else would refuse `(seats C1 Ann)` — a chair sitting
+;;; on a guest. The puzzle's own typecheck is what rejects it, which is the
+;;; division of labour the whole is-a-free design rests on.
+;;;
+;;; ── What the expectation observes ──────────────────────────────────────────
+;;;
+;;; Naming `seats` closes it, so the claim is that the extension is exactly the
+;;; two arrows and the two negatives — which is also the claim that
+;;; `domain-elimination` fired rather than a guess landing.
+
+(import std.algebra   :symbols (includes))
+(import std.bijection :symbols (bijective-properties bijective-setup typecheck-setup))
+
+(relation is-a  T T           :why "{?1} is a {?2}")
+(relation is-a* T T           :why "{?1} is a {?2} (transitively)")
+(relation seats Guest Chair   :why "{?1} sits on {?2}")
+
+(is-a Ann Guest) (is-a Bob Guest)
+(is-a C1 Chair)  (is-a C2 Chair)
+
+;; The typecheck quantifies over the transitive hierarchy; there is no
+;; inheritance here, so it is `is-a` copied across.
+(includes is-a is-a*)
+
+(bijection-hierarchy is-a)
+(typecheck-hierarchy is-a*)
+(bijective seats)
+
+(seats Ann C1)
+
+(query
+  :goal (seats ?who ?where)
+  :no-hypothesis (is-a is-a*)
+  :expect (model (seats Ann C1) (seats Bob C2)
+                 (not (seats Ann C2)) (not (seats Bob C1))))

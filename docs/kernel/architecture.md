@@ -74,13 +74,16 @@ nothing above.
 
 - **`ein-core`** depends on nothing (workspace-internally): interning, `Value`
   / `FactId`, the layered COW KB, provenance, the two CPython-compatibility
-  renderers.
+  renderers, and — since M1d S1d.2.4 — `:why` template substitution
+  (`render_why`), which lived in `ein-render` until the obligation pass needed
+  to render a sentence from *below* it.
 - **`ein-ir`** parses, expands macros, resolves imports, and loads — it builds
   the KB directly rather than handing an AST to a separate loader, which is
   why it sits *above* the data model where the Python `ir/` sat beside it.
 - **`ein-infer`** is the only writer of derived facts.
 - **`ein-render`** owns every rendering: the DOT views, the markdown trace, the
-  state and lattice dumps, the JSON summary.
+  state and lattice dumps, the JSON summary. `ein_render::render_why` is a
+  re-export of `ein-core`'s and still the name to use.
 - **`ein-cli`** orchestrates; **`stdlib/`** is `.ein` *data* the loader pulls in.
 
 Two more crates are **dev-only** and no shipped binary links them: `ein-corpus`

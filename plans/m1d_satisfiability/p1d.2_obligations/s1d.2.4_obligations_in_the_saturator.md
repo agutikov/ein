@@ -5,6 +5,48 @@
 **Depends on:** [S1d.2.3](s1d.2.3_the_form.md) (the atom loads),
 [S1d.2.1](s1d.2.1_property_audit.md) (the disturbance list),
 [S1d.2.2](s1d.2.2_domains.md) (the domain contract)
+**Status: done 2026-08-25.** The pass, the three surfaces, the four stdlib
+duals and their nine programs. Every number the stage asked for came back the
+one the plan predicted — see § What it found.
+
+## What it found
+
+| claim | asked for | measured |
+|---|---:|---|
+| `zebra2-minus-15` at root quiescence | 46 | **46**, split 10 / 8 / 8 / 10 / 10 — and the two relations at 8 are exactly the two carrying a stated arrow |
+| the fact-store growth | 50 facts over 13 entries | **50 over 13**: 36 across `bijective-setup`'s 18 declarations, 14 across `slot-partition-setup`'s 7 — the audit's F4 table, term for term |
+| verdicts moved | none | **none** — `corpus_exits.txt` gained 45 rows (the nine new files × five runs) and modified **0** |
+| shapes moved | the 13, and only by the activator facts | **the 13**, plus the three edited stdlib modules, which are the diff's subject rather than its casualty |
+| `zebra -e` / `zebra2 -e` | within the P1a.6 baselines (47.5 / 29.0 ms) | **43.3 / 27.5 ms** best-of-9 release. A/B against a stdlib with the fan-out lines removed: +0.7 ms and +0.6 ms, both inside the run-to-run spread |
+
+**And one thing it found that the plan did not ask for**, which is the stage's
+own finding: the S1d.2.3 registry split had leaked into name *categorisation*.
+`Program::categorise` read `self.rules` alone, so an obligation rule's name
+categorised as an **object**, and `hypgen::candidate_objects` keeps every
+object — so the blind enumerator started proposing `(seats total-owed C1)`,
+the name of a rule as a puzzle value, 3 502 of 6 231 proposals on the one
+fixture that leaves the enumerator on. The acceptance bullet that says *"the
+new activators sit behind the same hypothesis scoping the six existing ones do
+— a fixture, not an argument"* is what caught it, in the only way it could
+have been caught: `tests/stdlib/bijection/06_blind_enumeration.ein` exists
+because the argument was not good enough. A category says what a name *is*;
+the registry split is by which pass **walks** a rule, over one name-space.
+`hrules` stay out for their own reason and could not share the line.
+
+**Two things the stage decided that the plan left open.**
+
+- **The tally is computed only where the KB is consistent.** `ideas.md`'s
+  read-out is three states in one order — `(false)` first, then the count — so
+  a node carrying a contradiction never has its debts consulted, and computing
+  them would be work no surface can observe. On an exhaustive `zebra2` that is
+  67 of 101 enterings. It is a soundness-neutral restriction rather than the
+  cost lever T1d.2.4.6 held in reserve, and the lever was not needed.
+- **`ein_core::render_why` moved down a crate.** It lived in `ein-render`
+  because the only things that rendered a `:why` — the trace, the slice, the
+  answer — are all above the engine. An `owe` event carries the rendered
+  sentence and `--events` is emitted from `ein-infer`, which `ein-render`
+  depends on rather than the other way round. `ein_render::render_why` still
+  names it and no caller changed.
 
 ## Context
 

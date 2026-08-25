@@ -11,8 +11,13 @@
 //!
 //! This is nominally
 //! [S1a.5.2](../../../../docs/history/m1a_rust/README.md#s1a52--trace-and-answer-rendering)
-//! T6, landed here because [`crate::slice`] labels every rule node with a
-//! rendered `:why` and cannot be checked without one.
+//! T6, and it lived in `ein-render` until M1d S1d.2.4, because the only
+//! things that rendered a `:why` were the trace, the slice and the answer —
+//! all of them above the engine. The obligation pass is the first reader
+//! *below* it: an `owe` event carries the rendered sentence, and `--events`
+//! is emitted from `ein-infer`, which `ein-render` depends on rather than the
+//! other way round. So the function moved down to the crate that depends on
+//! nothing; `ein_render::render_why` still names it, and no caller changed.
 
 /// Substitute `{?ref}` references against `bindings`, an association list of
 /// `(name, rendered value)`.

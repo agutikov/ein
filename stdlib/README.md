@@ -32,14 +32,39 @@ meaningless — a diff would report "the engines disagree" when in fact the
 *programs* differ
 ([design/11](../docs/history/m1a_rust/design/11_shared_assets.md)).
 
+## The obligation duals (M1d S1d.2.4)
+
+Four rules that say what a state still **owes**, rather than what is illegal
+in it. `std.algebra`'s `total-owed` / `surjective-owed` sit beside the
+totality scans they mirror and are fanned out by `bijective-setup`;
+`std.slots`' `slot-owed-room` / `slot-owed-fill` sit beside `slot-no-room` /
+`slot-no-fill` and are fanned out by `slot-partition-setup`. **No puzzle
+changes a line** — a `(bijective R)` or a `(slot-partition …)` already in a
+file picks them up, and the only visible difference is two more stored
+activator facts per declaration (50 across the corpus's 13 such entries).
+
+Each pair is one property at its two ends. The scan is about a candidate set
+of size **0** — every partner carries a stored negative, so the requirement
+has become unreachable and the state is dead. The dual is about a set that is
+still empty — nothing is stored either way, so the requirement is **unmet**,
+not unmeetable. `(false)` becomes `(open ?R)`; *dead* becomes *unfinished*.
+
+They derive nothing and are not in the saturation agenda; what reads them is
+one pass over the quiescent KB, reported through `--events`' `owe` lines,
+`--json-summary`'s `owes` block and the trace's *Outstanding obligations*
+section
+([`06_reserved_names.md` § the verdict atom](../docs/kernel/ir/03-ein-lang/06_reserved_names.md)).
+
 ## What tests these modules
 
-[**`tests/stdlib/`**](../tests/README.md) — 47 programs, each stating what it
+[**`tests/stdlib/`**](../tests/README.md) — 56 programs, each stating what it
 should and should not derive: the 45 one-per-rule-or-family added by M1c
 [S1c.1.4](../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus),
-plus the closed-and-owing pair M1d S1d.2.2 banked under `closure/`.
-`ein test tests/stdlib/` runs the lot in 0.03 s and exits 1 if a claim is
-false.
+the closed-and-owing pair M1d S1d.2.2 banked under `closure/`, and the nine
+M1d S1d.2.4 added with the obligation duals — four firing/satisfied pairs plus
+`bijection/06_blind_enumeration.ein`, which is the one program in the
+directory that leaves the blind enumerator on. `ein test tests/stdlib/` runs
+the lot in 0.04 s and exits 1 if a claim is false.
 
 Before them, **38 of the 73 rules below had never fired** in any of 400 corpus
 runs — 33 never even loaded — and 20 more were reached by `examples/zebra.ein`
@@ -51,9 +76,19 @@ directory, and since M1c
 [S1c.1.5](../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate)
 it is **in the gate**: `ein-infer/tests/stdlib_coverage.rs` solves every
 program under `tests/stdlib/` with `--events` on and fails on any rule none of
-them activated — 0.04 s, and 73 of 73 today. `python3
+them activated — 0.04 s, and **77 of 77** today. `python3
 utils/stdlib_census.py --check` is the same census with the numbers, over all
-180 corpus entries rather than the suite.
+189 corpus entries rather than the suite.
+
+**"Activated" is two events since M1d S1d.2.4**, and the second is not an
+optimisation of the first. A saturation rule reaches the agenda and emits
+`fire`. An **obligation** rule — one whose `:assert` is the verdict atom
+`open` — never can: it derives nothing and is deliberately kept out of the
+agenda, so its evidence is the `owe` its post-fixpoint pass emits. Both the
+gate and the census read both kinds. Counting only `fire` would have put the
+four duals below permanently in the zero set, which is why
+[S1d.2.3](../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.3_the_form.md)
+deferred shipping them until the pass existed.
 
 Adding a rule here therefore means adding a program there, and the gate says so
 rather than a README. It is the same discipline as the corpus's growth rule,

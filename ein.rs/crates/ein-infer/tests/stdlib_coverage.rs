@@ -88,8 +88,8 @@ const RULE_FREE_MODULE: &str = "std.macro";
 struct Decl {
     module: String,
     name: String,
-    /// The activator's arity, which is what a `fire` event's `activator` list
-    /// can be compared against — the census's last tiebreak, and the one that
+    /// The activator's arity, which is what a `fire` or `owe` event's
+    /// `activator` list can be compared against — the census's last tiebreak, and the one that
     /// splits `std.elim`'s `(?R ?isa ?OT ?VT)` `domain-elimination` from
     /// `std.bijection`'s `(?R ?isa)`. On today's suite it never has to: the
     /// two modules do not import each other, so the closure has already
@@ -201,7 +201,7 @@ struct Ran {
 }
 
 /// Load and solve one program to exhaustion — the run `ein test` makes — and
-/// record what fired.
+/// record what it activated.
 ///
 /// Exhaustive rather than a bare `saturate`, though on today's suite the two
 /// reach exactly the same 73 rules (measured, 2026-08-24). The difference is
@@ -251,7 +251,7 @@ fn run(path: &Path, imports: &BTreeMap<String, Vec<String>>) -> Ran {
         };
         solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
             .unwrap_or_else(|e| panic!("{}: {e:?}", path.display()));
-        fired.extend(read_firings(path, &buffer.to_string_lossy()));
+        fired.extend(read_activations(path, &buffer.to_string_lossy()));
     }
 
     Ran {
@@ -261,19 +261,30 @@ fn run(path: &Path, imports: &BTreeMap<String, Vec<String>>) -> Ran {
     }
 }
 
-/// The `fire` events of one narration: `(rule, activator arity)`.
-fn read_firings(path: &Path, log: &str) -> Vec<(String, usize)> {
+/// The events that say a program reached a rule: `(rule, activator arity)`.
+///
+/// **Two kinds, and the second is not an optimisation of the first.** A
+/// saturation rule reaches the agenda and emits `fire`. An **obligation** rule
+/// (M1d S1d.2.4) never can — it derives nothing and is deliberately kept out
+/// of the agenda, so its only evidence is the `owe` it emits from the
+/// post-fixpoint pass. Both lines carry `rule` and `activator` and both mean
+/// the same thing here: this program activated that rule and observed what it
+/// concluded. Reading only `fire` would have put every obligation rule
+/// permanently in the zero set — which is why
+/// [S1d.2.3](../../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.3_the_form.md)
+/// deferred shipping the duals until this pass existed.
+fn read_activations(path: &Path, log: &str) -> Vec<(String, usize)> {
     let mut out = Vec::new();
     for line in log.lines() {
         let ev: serde_json::Value = serde_json::from_str(line)
             .unwrap_or_else(|e| panic!("{}: unreadable event line: {e}", path.display()));
-        if ev["e"] != "fire" {
+        if ev["e"] != "fire" && ev["e"] != "owe" {
             continue;
         }
         out.push((
             ev["rule"]
                 .as_str()
-                .expect("a fire names its rule")
+                .expect("a fire or an owe names its rule")
                 .to_string(),
             ev["activator"].as_array().map_or(0, Vec::len),
         ));
@@ -299,7 +310,7 @@ fn closure(seeds: &[String], imports: &BTreeMap<String, Vec<String>>) -> BTreeSe
     seen
 }
 
-/// Which stdlib declarations a fired rule name refers to — `stdlib_census.py`'s
+/// Which stdlib declarations an activated rule name refers to — `stdlib_census.py`'s
 /// `resolve()`, and it must stay the same rule.
 ///
 /// A local declaration wins outright: a file that declares `symmetric` fired

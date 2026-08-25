@@ -18,7 +18,7 @@ use ein_infer::firing::Firing;
 use crate::dot_util::{digraph_open, fact_label, hashed_id, multiline, quote};
 use crate::kb_dot::{KbDotOpts, to_dot};
 use crate::palette::hash_color;
-use crate::why::render_why;
+use ein_core::render_why;
 
 const SEED_COLOUR: &str = "#d62728"; // red — hypothesis / seed facts, ⊥
 const NEG_COLOUR: &str = "#7f7f7f"; // grey — eliminated-alternative facts

@@ -23,6 +23,7 @@
 use ein_core::{FactId, Kb, ProvKind, Terms};
 use ein_infer::apriori::cmp_set;
 use ein_infer::firing::Firing;
+use ein_infer::obligations::Owes;
 use ein_infer::solve::{DeadCommitment, LatticeProof, Solved};
 use ein_infer::verdict::{Answer, Verdict};
 use ein_ir::Ast;
@@ -32,7 +33,7 @@ use super::relevance::relevant_firings;
 use crate::dot_util::fact_label;
 use crate::lattice_dag::{LatticeSource, LatticeView, render_lattice};
 use crate::slice::{render_slice, render_solution, render_state};
-use crate::why::render_why;
+use ein_core::render_why;
 
 /// A refuted hypothesis — rendered as a foldable `<details>`.
 pub struct Reductio {
@@ -69,6 +70,34 @@ pub struct Trace {
     pub lattice_dot: Option<String>,
     pub solution_dot: Option<String>,
     pub full_kb_dot: Option<String>,
+    /// What the state this trace is about still **owes** — one rendered line
+    /// per outstanding obligation, in report order (M1d S1d.2.4).
+    ///
+    /// The state is the primary solution where there is one and root where
+    /// there is not, which is the same state every other section describes.
+    /// Empty for a program that states no obligation, and the section is not
+    /// rendered then.
+    pub owes: Vec<String>,
+}
+
+/// One outstanding obligation as a trace line: its `:why`, or — for a rule
+/// that declares none — the rule and its bindings, so a debt is never a blank
+/// bullet.
+pub fn owe_lines(terms: &Terms, owes: &Owes) -> Vec<String> {
+    owes.instances()
+        .iter()
+        .map(|i| {
+            if !i.why.is_empty() {
+                return i.why.clone();
+            }
+            let b: Vec<String> = i
+                .bindings
+                .iter()
+                .map(|(k, v)| format!("?{}={}", terms.sym(*k), terms.display(*v)))
+                .collect();
+            format!("{} ({})", terms.sym(i.rule), b.join(" "))
+        })
+        .collect()
 }
 
 #[derive(Clone, Copy, Default)]
@@ -294,6 +323,7 @@ pub fn linearize(
             full_kb_dot: opts
                 .full_kb_snapshots
                 .then(|| render_state(&s.kb, terms, None, "state")),
+            owes: primary_owes(terms, solved),
             ..Trace::default()
         };
     }
@@ -325,6 +355,7 @@ pub fn linearize(
                 (true, Some(kb)) => Some(render_solution(kb, terms, "solution")),
                 _ => None,
             },
+            owes: primary_owes(terms, solved),
             ..Trace::default()
         };
     }
@@ -464,5 +495,19 @@ pub fn linearize(
             (true, Some(kb)) => Some(render_state(kb, terms, None, "state")),
             _ => None,
         },
+        // On the proof path the primary is a `SolutionRecord`, which carries
+        // its own tally — no need to index into the run-level report.
+        owes: primary
+            .map(|p| owe_lines(terms, &p.owes))
+            .unwrap_or_else(|| owe_lines(terms, &solved.owes.root)),
+    }
+}
+
+/// The tally of the state a trace is about: the primary model where there is
+/// one, root where there is not.
+fn primary_owes(terms: &Terms, solved: &Solved) -> Vec<String> {
+    match solved.owes.models.first() {
+        Some(o) => owe_lines(terms, o),
+        None => owe_lines(terms, &solved.owes.root),
     }
 }

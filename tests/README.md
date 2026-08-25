@@ -41,13 +41,49 @@ even loaded, and 20 more held up by `examples/zebra.ein` alone.
 
 | dir | rules | what the programs do |
 |---|---:|---|
-| [`stdlib/algebra/`](stdlib/algebra/) | 38 | the copiers and the relative product; the Boolean lattice; the extensive operators and their closed-world caveat; the tag lemmas and the two Tarski equations; Schröder's negative propagation; then the seven property **checks** — once satisfied, once violated apiece — and the totality pair's `forall` in both directions |
-| [`stdlib/bijection/`](stdlib/bijection/) | 8 | the two setup fan-outs and the negative completion; domain- and range-elimination, each productive in its own file and redundant in its sibling's; the two arg typechecks violated |
+| [`stdlib/algebra/`](stdlib/algebra/) | 40 | the copiers and the relative product; the Boolean lattice; the extensive operators and their closed-world caveat; the tag lemmas and the two Tarski equations; Schröder's negative propagation; then the seven property **checks** — once satisfied, once violated apiece — the totality pair's `forall` in both directions, and (M1d S1d.2.4) the totality pair's **obligation** duals, each once owing and once satisfied |
+| [`stdlib/bijection/`](stdlib/bijection/) | 8 | the two setup fan-outs and the negative completion; domain- and range-elimination, each productive in its own file and redundant in its sibling's; the two arg typechecks violated; and `06_blind_enumeration.ein`, the one program here that leaves the enumerator **on** |
 | [`stdlib/elim/`](stdlib/elim/) | 4 | the same inference in its *positional* formulation, plus `no-room-left` — the pair that brackets a quantifier: one exclusion short of full forces a value, exactly full refutes |
 | [`stdlib/closure/`](stdlib/closure/) | 1 | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from fifty-four models to one |
-| [`stdlib/slots/`](stdlib/slots/) | 18 | a second activating puzzle for the module that had exactly one — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
+| [`stdlib/slots/`](stdlib/slots/) | 20 | a second activating puzzle for the module that had exactly one — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | 4 | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
 | [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
+
+### The obligation pairs, and the check that is not an `:expect`
+
+M1d [S1d.2.4](../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.4_obligations_in_the_saturator.md)
+added four rules that assert the verdict atom `open` — `total-owed`,
+`surjective-owed`, `slot-owed-room`, `slot-owed-fill` — and eight programs,
+one firing and one satisfied per rule. They are written the way everything
+else here is, with one exception that is worth knowing before writing a
+ninth.
+
+**`:expect` cannot state an owe claim, and will not learn to.** Its three
+forms are all assertions about *facts*, and an `open` conclusion is by
+construction never a fact: it is a tally on the search-lattice node, because a
+stored one would survive its own discharge in a fork that paid it. So each of
+the eight carries an ordinary `:expect (model …)` — which is what satisfies
+the coverage gate and what pins the *state* the debt is read from — and the
+count itself is asserted in
+[`ein-infer/tests/obligation_reports.rs`](../ein.rs/crates/ein-infer/tests/obligation_reports.rs),
+in-process, the same shape S1c.1.5 used. Growing the grammar a word for an
+open verdict is a verdict-vocabulary change and is S1d.2.6's to take.
+
+**The satisfied half is the half that matters.** The coverage gate is happy
+with the firing file alone. What it cannot show is that the report ever
+*stops*: discharge **is** the guard — there is no second query that could
+disagree with the rule's own `absent` — so "this file reports nothing" is the
+whole claim that the guard is right.
+
+**`06_blind_enumeration.ein` is not a rule's test.** It exists because the two
+new activator facts per declaration are *stored* facts, and the question "can
+a blind run start guessing about them" had to be a fixture rather than an
+argument. It found a bug: an obligation rule's name was categorising as an
+*object*, so the enumerator proposed `(seats total-owed C1)` — the name of a
+rule as a puzzle value. It is the only program in this directory that leaves
+the enumerator on, and it names only the two hierarchy relations in
+`:no-hypothesis`, because a file that scoped the activators out would be
+testing its own scoping line.
 
 ### Four things about how they are written
 

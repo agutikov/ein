@@ -796,6 +796,26 @@
 0    tests/stdlib/algebra/22_symmetric_negative.ein :: saturate
 0    tests/stdlib/algebra/22_symmetric_negative.ein :: solve
 0    tests/stdlib/algebra/22_symmetric_negative.ein :: test
+0    tests/stdlib/algebra/23_total_owed.ein :: render constraints
+1    tests/stdlib/algebra/23_total_owed.ein :: render rules
+0    tests/stdlib/algebra/23_total_owed.ein :: saturate
+0    tests/stdlib/algebra/23_total_owed.ein :: solve
+0    tests/stdlib/algebra/23_total_owed.ein :: test
+0    tests/stdlib/algebra/24_total_owed_satisfied.ein :: render constraints
+1    tests/stdlib/algebra/24_total_owed_satisfied.ein :: render rules
+0    tests/stdlib/algebra/24_total_owed_satisfied.ein :: saturate
+0    tests/stdlib/algebra/24_total_owed_satisfied.ein :: solve
+0    tests/stdlib/algebra/24_total_owed_satisfied.ein :: test
+0    tests/stdlib/algebra/25_surjective_owed.ein :: render constraints
+1    tests/stdlib/algebra/25_surjective_owed.ein :: render rules
+0    tests/stdlib/algebra/25_surjective_owed.ein :: saturate
+0    tests/stdlib/algebra/25_surjective_owed.ein :: solve
+0    tests/stdlib/algebra/25_surjective_owed.ein :: test
+0    tests/stdlib/algebra/26_surjective_owed_satisfied.ein :: render constraints
+1    tests/stdlib/algebra/26_surjective_owed_satisfied.ein :: render rules
+0    tests/stdlib/algebra/26_surjective_owed_satisfied.ein :: saturate
+0    tests/stdlib/algebra/26_surjective_owed_satisfied.ein :: solve
+0    tests/stdlib/algebra/26_surjective_owed_satisfied.ein :: test
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: render constraints
 1    tests/stdlib/bijection/01_setup_and_negatives.ein :: render rules
 0    tests/stdlib/bijection/01_setup_and_negatives.ein :: saturate
@@ -821,6 +841,11 @@
 0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: saturate
 0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: solve
 0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: test
+0    tests/stdlib/bijection/06_blind_enumeration.ein :: render constraints
+1    tests/stdlib/bijection/06_blind_enumeration.ein :: render rules
+0    tests/stdlib/bijection/06_blind_enumeration.ein :: saturate
+0    tests/stdlib/bijection/06_blind_enumeration.ein :: solve
+0    tests/stdlib/bijection/06_blind_enumeration.ein :: test
 0    tests/stdlib/closure/01_infer_closure.ein :: render constraints
 1    tests/stdlib/closure/01_infer_closure.ein :: render rules
 0    tests/stdlib/closure/01_infer_closure.ein :: saturate
@@ -906,6 +931,26 @@
 0    tests/stdlib/slots/08_spatial_adjacent.ein :: saturate
 0    tests/stdlib/slots/08_spatial_adjacent.ein :: solve
 0    tests/stdlib/slots/08_spatial_adjacent.ein :: test
+0    tests/stdlib/slots/09_owed_room.ein :: render constraints
+1    tests/stdlib/slots/09_owed_room.ein :: render rules
+0    tests/stdlib/slots/09_owed_room.ein :: saturate
+0    tests/stdlib/slots/09_owed_room.ein :: solve
+0    tests/stdlib/slots/09_owed_room.ein :: test
+0    tests/stdlib/slots/10_owed_room_satisfied.ein :: render constraints
+1    tests/stdlib/slots/10_owed_room_satisfied.ein :: render rules
+0    tests/stdlib/slots/10_owed_room_satisfied.ein :: saturate
+0    tests/stdlib/slots/10_owed_room_satisfied.ein :: solve
+0    tests/stdlib/slots/10_owed_room_satisfied.ein :: test
+0    tests/stdlib/slots/11_owed_fill.ein :: render constraints
+1    tests/stdlib/slots/11_owed_fill.ein :: render rules
+0    tests/stdlib/slots/11_owed_fill.ein :: saturate
+0    tests/stdlib/slots/11_owed_fill.ein :: solve
+0    tests/stdlib/slots/11_owed_fill.ein :: test
+0    tests/stdlib/slots/12_owed_fill_satisfied.ein :: render constraints
+1    tests/stdlib/slots/12_owed_fill_satisfied.ein :: render rules
+0    tests/stdlib/slots/12_owed_fill_satisfied.ein :: saturate
+0    tests/stdlib/slots/12_owed_fill_satisfied.ein :: solve
+0    tests/stdlib/slots/12_owed_fill_satisfied.ein :: test
 0    tests/stdlib/typing/01_reflexive.ein :: render constraints
 1    tests/stdlib/typing/01_reflexive.ein :: render rules
 0    tests/stdlib/typing/01_reflexive.ein :: saturate

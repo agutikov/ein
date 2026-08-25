@@ -79,7 +79,7 @@ is the mechanism the milestone README's argument turns on.
 | [S1d.2.1](s1d.2.1_property_audit.md) | What each property enforces today, rule by rule | 3 d | **done 2026-08-25** |
 | [S1d.2.2](s1d.2.2_domains.md) | Domains: what a requirement quantifies over, and what closes it | 3 d | **done 2026-08-25** |
 | [S1d.2.3](s1d.2.3_the_form.md) | The obligation — form, surface, and where it lives | 3 d | **done 2026-08-25** |
-| [S1d.2.4](s1d.2.4_obligations_in_the_saturator.md) | Obligations in the saturator | 4 d | |
+| [S1d.2.4](s1d.2.4_obligations_in_the_saturator.md) | Obligations in the saturator | 4 d | **done 2026-08-25** |
 | [S1d.2.5](s1d.2.5_hypotheses_from_obligations.md) | Hypotheses from obligations | 3 d | |
 | [S1d.2.6](s1d.2.6_verdicts_counters_corpus.md) | What it changes: verdicts, counters, corpus | 2 d | |
 
@@ -137,17 +137,41 @@ entirely, the triple) and implements what remains: reserving `open`, loading
 and round-tripping the two forms, resolving the projection, inert until the
 next stage.
 
-**S1d.2.4** is the engine work, and *only* the report stratum: obligation
+**S1d.2.4 is done** (2026-08-25) — the report stratum, whole. Obligation
 rules run as **one pass over the quiescent KB, after saturation completes**
 (the user, 2026-08-25 — not a priority band inside the loop, since a band
-orders selection within it and openness has to be read after it) — tallied on
-the lattice node, never stored, reported through `--events` /
-`--json-summary` / the trace. The cost is still the shape whose re-query was
-72 % of an exhaustive `zebra2` before P1a.6, which is why the stage carries a
-cost guard. Narrowing, closing and refuting stay with the scans; no verdict
-word moves here, and the fixtures' owe claims are checked by a Rust sibling
-of `stdlib_coverage.rs`, because `:expect` asserts about facts and an `open`
-verdict is not one.
+orders selection within it and openness has to be read after it), tallied on
+the lattice node, never stored, reported through `--events`' new `owe` kind,
+`--json-summary`'s `owes` block and the trace's *Outstanding obligations*
+section. `std.algebra` gained `total-owed` / `surjective-owed` and `std.slots`
+`slot-owed-room` / `slot-owed-fill`, fanned out by the two setup rules, and
+nine programs went into `tests/stdlib/` — a firing and a satisfied case per
+rule, plus the one that leaves the blind enumerator on. The fixtures' owe
+claims are checked by a Rust sibling of `stdlib_coverage.rs`, because
+`:expect` asserts about facts and an `open` verdict is not one; no verdict
+word moved.
+
+**Every number the stage was asked for came back the number the plan
+predicted**: `zebra2-minus-15` owes **46** at root (§5's hand census, plus the
+per-relation split 10/8/8/10/10 the hand census did not have), the fact store
+grew by exactly **50 facts over 13 entries** (the audit's F4 table term for
+term), **no verdict moved on any corpus entry** — `corpus_exits.txt` gained 45
+rows and modified none — and `zebra -e` / `zebra2 -e` came in at 43.3 / 27.5
+ms against P1a.6's 47.5 / 29.0, the pass measuring +0.7 / +0.6 ms in an A/B
+against a stdlib with the fan-out lines removed, inside the run-to-run spread.
+The cost lever T1d.2.4.6 held in reserve was not needed; what made it cheap is
+that a **dead node's debts are never consulted** — the read-out checks
+`(false)` first — which is 67 of an exhaustive `zebra2`'s 101 enterings.
+
+**The stage's own finding is a defect it introduced two commits earlier.**
+S1d.2.3's registry split had leaked into `Program::categorise`, which read
+`self.rules` alone — so an obligation rule's *name* categorised as an object,
+`hypgen::candidate_objects` kept it, and the blind enumerator proposed `(seats
+total-owed C1)`: the name of a rule as a puzzle value, 3 502 of 6 231
+proposals on the one fixture that leaves the enumerator on. The acceptance
+bullet demanding *a fixture, not an argument* is what caught it, and
+`tests/stdlib/bijection/06_blind_enumeration.ein` exists because the argument
+was not good enough.
 
 **S1d.2.6** carries a scope rule decided 2026-08-25: **a program that states
 no obligation keeps today's verdict.** Only 23 of the corpus's 173 `.ein`

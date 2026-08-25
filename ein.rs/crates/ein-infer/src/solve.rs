@@ -37,6 +37,7 @@ use crate::commitment::{CommitmentSetResult, Kind, try_commitment_set};
 use crate::compile::{CompileError, SharedMemo};
 use crate::events::Events;
 use crate::firing::Firing;
+use crate::obligations::Owes;
 use crate::saturator::{SaturateError, Saturator, Session, Snapshot};
 use crate::verdict::{Answer, Solution, Verdict, union_dead_cores};
 
@@ -163,6 +164,17 @@ pub struct SolutionRecord {
     pub kb: Kb,
     pub firings: Vec<Firing>,
     pub layer: u32,
+    /// What this model still **owes** — M1d S1d.2.4.
+    ///
+    /// Non-empty is the `closed-and-owing` corner stated as a number: a node
+    /// that is `consistent ∧ complete` by the generator's test and still has
+    /// an undischarged requirement, because `complete` means *the generator
+    /// proposes nothing* and not *every obligation has a witness*
+    /// (`tests/stdlib/closure/03_closed_and_owing.ein`). No verdict word moves
+    /// on it in this stage; [S1d.2.6] is where that is decided.
+    ///
+    /// [S1d.2.6]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md`
+    pub owes: Owes,
 }
 
 pub struct DeadCommitment {
@@ -385,6 +397,10 @@ struct Entered {
     kb: Option<Kb>,
     /// Alive **and** complete: a solution node.
     solved: bool,
+    /// What this node's fixpoint owes — [`crate::obligations`]. Empty on a
+    /// dead node, where the tally is unobservable, and on every program that
+    /// declares no obligation.
+    owes: Owes,
 }
 
 /// What one worker brought back: the entering, its records, its narration.
@@ -504,6 +520,37 @@ pub struct Solved {
     pub proof: Option<LatticeProof>,
     pub stats: MonotonicStats,
     pub jobs: JobStats,
+    /// What the run found outstanding — M1d S1d.2.4. Both halves are empty
+    /// for a program that states no obligation, which is every corpus entry
+    /// that declares no lower bound.
+    pub owes: OwesReport,
+}
+
+/// The outstanding obligations a solve found, at the two places a reader asks.
+///
+/// `root` is the state the search starts from — the number
+/// `obligation_forms.md` §5 counted by hand on `zebra2-minus-15`. `models` is
+/// one tally per recorded model, in the verdict's branch order, and a
+/// non-empty entry there is the `closed-and-owing` corner: a state the
+/// generator calls complete that still owes a witness.
+///
+/// `models` rather than `solutions` on purpose: `ein-einb`'s
+/// `nothing_in_the_solve_path_reads_the_solution_store` is a textual guard on
+/// `.solutions` in the CLI source — F9's hazard, that a solve could read a
+/// *stored* answer — and a second field of that name would make it fire on
+/// something it is not about.
+#[derive(Clone, Default, Debug)]
+pub struct OwesReport {
+    pub root: Owes,
+    pub models: Vec<Owes>,
+}
+
+impl OwesReport {
+    /// Nothing to report — no obligation was stated, or every one is
+    /// discharged everywhere.
+    pub fn is_empty(&self) -> bool {
+        self.root.is_empty() && self.models.iter().all(Owes::is_empty)
+    }
 }
 
 /// The one solver entry.
@@ -535,6 +582,7 @@ pub fn solve(
         memo: SharedMemo::default(),
         root_snapshot: None,
         root_firings: Vec::new(),
+        root_owes: Owes::default(),
         stats: MonotonicStats::new(),
         lstate: LoopState {
             nodes: Vec::new(),
@@ -574,11 +622,23 @@ pub fn solve(
                 dumper.proof_summary(proof, terms);
             }
             dumper.summary(&answer, &run.stats);
+            // The recorded nodes are in the verdict's branch order, which is
+            // `lstate.nodes`' order — the same walk `finalise` made.
+            let owes = OwesReport {
+                root: run.root_owes.clone(),
+                models: run
+                    .lstate
+                    .nodes
+                    .iter()
+                    .map(|(_, n)| n.owes.clone())
+                    .collect(),
+            };
             Ok(Solved {
                 answer,
                 proof,
                 stats: run.stats,
                 jobs: run.jobs,
+                owes,
             })
         }
         Err(SolveError::Budget { reason, stats }) if opts.on_budget == OnBudget::Verdict => {
@@ -587,6 +647,9 @@ pub fn solve(
                 proof: None,
                 stats: *stats,
                 jobs: JobStats::default(),
+                // A budget cut is not a fixpoint, so there is no state whose
+                // debts this could be about.
+                owes: OwesReport::default(),
             })
         }
         Err(e) => Err(e),
@@ -629,6 +692,12 @@ struct Run<'o> {
     root_snapshot: Option<Arc<Snapshot>>,
     /// See [`LatticeProof::root_firings`]. Empty unless `store_lattice`.
     root_firings: Vec<Firing>,
+    /// What root's fixpoint owes — read once Phase 1 has settled root
+    /// (saturation, then the forced-positive cascade), which is the state the
+    /// search starts from and the one `obligation_forms.md` §5 counted by
+    /// hand. Empty when root is contradictory: the read-out consults
+    /// `(false)` first, so a dead root's debts are unobservable.
+    root_owes: Owes,
     stats: MonotonicStats,
     lstate: LoopState,
     /// Root writes waiting for the next integration barrier. Always empty
@@ -778,10 +847,15 @@ impl Run<'_> {
                 return Ok(Phase1::Done);
             }
         }
+        // Root's fixpoint, after the cascade that may still have moved it:
+        // the state the search starts from, and the one a reader means by
+        // "what does this puzzle still owe".
+        self.root_owes = crate::obligations::tally(root, terms, ast, &self.memo, events)?;
         if alive.is_empty() {
             // Empty alive and no contradiction ⇒ root is itself a complete,
             // consistent model — the unique solution.
-            self.record_node(root, terms, Vec::new(), Vec::new(), 0);
+            let owes = self.root_owes.clone();
+            self.record_node(root, terms, Vec::new(), Vec::new(), 0, owes);
             return Ok(Phase1::Done);
         }
         let a_prev = layer_1(terms, &alive);
@@ -1162,8 +1236,12 @@ impl Run<'_> {
                 }
             }
             if alive.is_empty() {
-                // The backbone determines every cell.
-                self.record_node(root, terms, Vec::new(), Vec::new(), 0);
+                // The backbone determines every cell. Root moved since
+                // Phase 1 — the cascade promoted facts into it — so the tally
+                // is re-read rather than reused.
+                let owes = crate::obligations::tally(root, terms, ast, &self.memo, events)?;
+                self.root_owes = owes.clone();
+                self.record_node(root, terms, Vec::new(), Vec::new(), 0, owes);
                 break;
             }
             // Drop the commitments no longer entirely within `alive` — an
@@ -1489,6 +1567,7 @@ impl Run<'_> {
                 firings: result.firings,
                 kb: Some(result.kb),
                 solved: false,
+                owes: result.owes,
             });
         }
         // F-ENG-12 — consistency is already established on an alive branch
@@ -1513,6 +1592,7 @@ impl Run<'_> {
             firings: result.firings,
             kb: Some(result.kb),
             solved,
+            owes: result.owes,
         })
     }
 
@@ -1585,7 +1665,8 @@ impl Run<'_> {
             terms.provs.close_fork();
             let firings = std::mem::take(&mut entered.firings);
             let mut kb = entered.kb.take().expect("a solution keeps its fork");
-            self.record_node(&mut kb, terms, c.clone(), firings, layer);
+            let owes = std::mem::take(&mut entered.owes);
+            self.record_node(&mut kb, terms, c.clone(), firings, layer, owes);
             terms.provs.discard_fork();
             if self
                 .opts
@@ -1761,6 +1842,7 @@ impl Run<'_> {
         commitment: CanonicalSetId,
         firings: Vec<Firing>,
         layer: u32,
+        owes: Owes,
     ) {
         // **The key first, and the promotion only if the node is kept.**
         //
@@ -1803,6 +1885,7 @@ impl Run<'_> {
             kb: node_kb.snapshot(),
             firings,
             layer,
+            owes,
         };
         match at {
             None => {
