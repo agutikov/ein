@@ -159,6 +159,22 @@ phase's first acceptance bullet is met, on this engine, and what remains of it
 is the second half of the same bullet — the *honest verdict*, which is
 [S1d.10.5](s1d.10.5_contract.md)'s.
 
+**And raising the cap buys nothing** — measured 2026-08-25 on the obligations
+twin at `-m 10`: **10 587 736 enterings, 15 minutes, still 32 models**
+([layer census §4.1](layer_census.md#41-the-depth-10-probe--2026-08-25-and-depths-610-add-nothing)).
+Seventeen times the enterings for zero additional models, and the fraction of
+the run spent past the last new model goes **92.1 % → 99.54 %** as the cap
+moves 5 → 10. So the table above extends one row and the row is flat:
+
+| depth cap | enterings | models found | wall |
+|---|---:|---:|---:|
+| `-m 10` | **10 587 736** | **32 — the same 32** | **905 s** |
+
+`d_stop − d_found` is bounded by `-m` and by nothing the search knows, which
+is the difference between an expensive search and a **missing termination
+argument** — and is why [S1d.10.3](s1d.10.3_stopping_criterion.md) has to
+produce a criterion rather than a better default.
+
 ## Stages
 
 | stage | title | est. |

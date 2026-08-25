@@ -17,6 +17,32 @@ Between them sit layers 4 and 5: tens of millions of enterings that find
 nothing and exist only to fail to find anything. If that gap is a general
 property of the under-determined regime, it is where the entire cost is.
 
+**The gap has since been measured at a second cap, and it does not close.** A
+`-m 10` run of the obligations twin, 2026-08-25:
+**10 587 736 enterings, 15 minutes, the same 32 models**
+([layer census §4.1](layer_census.md#41-the-depth-10-probe--2026-08-25-and-depths-610-add-nothing)).
+So `d_found` is still 3, `d_stop` is still whatever `-m` says, and the fraction
+of the run spent past the last new model moves **92.1 % → 99.54 %**. Two
+consequences for this stage:
+
+- **T1d.10.2.4 has both halves now.** The corpus question — *does any entry
+  need depth 4 or 5?* — is **yes**, `saturation/type-exclusivity/*`
+  ([census §7](layer_census.md#7-d_found-against-d_stop--a-down-payment-on-s1d102)),
+  so the default is not dead. For the entry the phase is named after the answer
+  is **no, through depth 10**. Neither is the general rule, which is precisely
+  why a *criterion* is needed rather than a better default.
+- **T1d.10.2.2's cost column is unbounded, not large.** It scales with the cap,
+  so "what the gap costs" has no single number and should be reported as a
+  function of `-m` — two points exist already.
+
+One question the probe raised and could not answer: an entering at depth 10
+costs **0.085 ms** against depth 5's **0.674 ms**, 7.9× cheaper. If the reason
+is that deep enterings die at their first firing where §4's layers were 97 %
+alive, then the barren regime's cost is concentrated shallow and
+[S1d.10.4](s1d.10.4_conflict_mining.md) should be judged there. Settling it
+needs the `layer` event at `-m 10`, which is one flag on
+[S1d.10.1](s1d.10.1_why_it_does_not_finish.md)'s instrument.
+
 ## Acceptance
 
 - Per corpus entry, both depths, measured: **d_found** (last depth that

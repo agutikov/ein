@@ -7,6 +7,11 @@
 corpus entries, one `solve -e` cell each, **360 child processes** (bare, then
 narrated), 6 min wall
 **Re-take:** `utils/bench_env.sh python3 utils/layer_census.py --layers --json census.json`
+**Addendum 2026-08-25** — [§4.1](#41-the-depth-10-probe--2026-08-25-and-depths-610-add-nothing),
+a run of the obligations twin with the cap at **10**: 10 587 736 enterings, 15
+minutes, **zero new models**. Not from the instrument, and it carries no
+per-layer rows; what it settles is the size of `d_stop − d_found`, which the
+default cap was hiding.
 
 | finding | number |
 |---|---|
@@ -18,6 +23,7 @@ narrated), 6 min wall
 | cells where the clause store dropped **nothing** | **41 of 49**, holding **2 128 908** of the 2 201 027 enterings |
 | cells that never learned a clause at all | **35 of 49** |
 | cells whose enterings are **exactly** `Σₖ C(alive, k)` | **25 of 49** — **2 128 512 enterings, 96.7 % of the corpus's search work** |
+| the phase's entry, past its last new model, at `-m 5` / `-m 10` | **92.1 % / 99.54 %** — [§4.1](#41-the-depth-10-probe--2026-08-25-and-depths-610-add-nothing) |
 | cells where layer 1 kills something | **4** — `zebra`, `zebra2`, `zebra2-hints`, `branching/07` |
 | cells where `alive` ever shrinks | **3**, all of them in that four |
 | the clause store's yield where it works | 7.7 % … 47.3 % of a layer's join, and **rising with depth** |
@@ -242,6 +248,71 @@ early. Six readings:
    mechanism [S1d.10.4](s1d.10.4_conflict_mining.md) proposes to attack,
    arriving at depth rather than at the root.
 
+### 4.1 The depth-10 probe — 2026-08-25, and depths 6–10 add nothing
+
+§4 stops at the default cap because that is where the engine stops. **A run at
+`-m 10` says what the next five layers are worth**, and the answer is *nothing*:
+
+| | depth 5 (§4) | depth 10 | |
+|---|---:|---:|---:|
+| `enterings` | 618 076 | **10 587 736** | **17.1×** |
+| `layers_explored` | 5 | **10** | |
+| wall, hypothesis search | 416 374.6 ms | **904 643.6 ms** | **2.17×** |
+| per entering | 0.674 ms | **0.085 ms** | 7.9× *cheaper* |
+| **models** | 32 | **32** | **0 new** |
+
+Provenance and its two caveats, because both matter for what the row can be
+used for. The run is
+[`examples/zebra2-minus-15-obligations.ein`](../../../examples/zebra2-minus-15-obligations.ein)
+— the **obligations twin**, exhaustive, timed, cap raised to 10 — where §4's
+row is the hrule original.
+[S1d.2.5](../p1d.2_obligations/hypotheses_from_obligations.md) proved the two
+identical counter-for-counter through depth 5, so this is the same workload;
+**it is also the first evidence the two paths agree past depth 5**, and it
+agrees on the thing that matters — the 18 distinct goal-binding tuples the run
+reports are exactly the census's.
+
+And the run **does not report `exhausted`**, so this row does not establish it.
+Two things say what it would have been. `layers_explored == -m` is
+[Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)'s
+truncation signature. And the arithmetic is not close: `alive` is 96 at every
+layer (§4 reading 1), so depth 10 covers **0.0001 %** of Σₖ≤₁₀ C(96, k) —
+itself 1.6 × 10⁻¹⁴ of the 2⁹⁶ − 1 commitments the lattice contains. Depth is
+not the axis on which this search terminates.
+
+Three readings, and the first is the phase's headline:
+
+1. **`d_stop − d_found` is now measured at seven layers, not two.**
+   [S1d.10.2](s1d.10.2_depth_required.md) is named after the gap between the
+   depth that finds every model (3) and the depth the search stops at (the
+   cap). §4 put 92.1 % of the run after the last new model at a cap of 5; at a
+   cap of 10 it is **10 538 991 of 10 587 736 — 99.54 %**. The gap is not a
+   property of the default; the default was hiding its size.
+2. **[T1d.10.2.4](s1d.10.2_depth_required.md) gets its second half.** §7
+   answers the corpus question *"does any entry find a model at depth 4 or
+   5?"* with **yes** — `saturation/type-exclusivity/*` needs the fifth layer,
+   so the default is not dead. This answers the other half for the entry the
+   phase is named after: **it finds none at 4, 5, 6, 7, 8, 9 or 10.** The two
+   readings coexist and neither is the general rule — which is why
+   [S1d.10.3](s1d.10.3_stopping_criterion.md) needs a *criterion* rather than a
+   better default.
+3. **An entering got 7.9× cheaper, and this run cannot say why.** 0.674 ms at
+   depth 5 against 0.085 ms at depth 10 is not noise, and the plausible
+   mechanism is that deep enterings die at their first firing
+   (`enable_fail_fast_fork`) where §4's layers were **97 % alive** — 598 955 of
+   618 076 — and an alive entering saturates to a fixpoint. **That is a
+   hypothesis, not a reading**: the log carries no per-layer row, and settling
+   it needs the census's `layer` event at `-m 10`, which is
+   [S1d.10.1](s1d.10.1_why_it_does_not_finish.md)'s instrument pointed one
+   depth further. If it holds, the *cost* of the barren regime is concentrated
+   in the shallow layers and the deep ones are cheap noise, which changes what
+   [S1d.10.4](s1d.10.4_conflict_mining.md) should attack.
+
+**What it does not show.** Nothing about termination: 15 minutes buys five more
+barren layers and leaves the completeness claim exactly where §4 left it. The
+32 models were known at depth 3 in 48 745 enterings; everything after is the
+search failing to find a 33rd, and still not proving there is none.
+
 ## 5. What the clause store is worth
 
 Eight of 49 cells ever have a candidate dropped by a learned clause.
@@ -296,6 +367,14 @@ The census reports both depths for free, and the gap is already visible.
 | `branching/02_one_dead_one_alive.ein` | 3 | 5 | 203 of 621 — 33 % |
 | `zebra.ein` | 1 | 2 | 55 of 111 — 50 % |
 | `zebra2.ein` | 1 | 2 | 45 of 101 — 45 % |
+| `zebra2-minus-15.ein` (§4) | 3 | 5 (cap) | 569 331 of 618 076 — **92.1 %** |
+| …the same file at `-m 10` ([§4.1](#41-the-depth-10-probe--2026-08-25-and-depths-610-add-nothing)) | 3 | 10 (cap) | 10 538 991 of 10 587 736 — **99.5 %** |
+
+The last two rows are the same puzzle and the same `d_found`; only the cap
+moves. **The gap is not bounded by anything the search knows** — it is bounded
+by `-m`, and the fraction of the run spent past the last new model goes to 1 as
+the cap rises. That is the shape of a missing termination argument rather than
+of an expensive one.
 
 **And `-m 5` is not a dead default.**
 `saturation/type-exclusivity/colors.ein` and `nationalities.ein` find **one
