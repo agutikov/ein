@@ -357,6 +357,18 @@ was checked and some are false" would be a false description of the run.
 `test` has no ein.py counterpart to diverge from — it is the second such
 subcommand, after `ein kb`.
 
+**M1d [S1d.2.6](../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md)
+added a fourth verdict word and no exit code.** `Open` — a consistent,
+quiescent state with an obligation the program stated still unwitnessed —
+exits **0**, exactly as `Solution`, `Ambiguity` and `Contradiction` do: the
+verdict channel and the *claim* channel are separate, and the claim channel is
+`:expect`. A program whose expectation holds against an open state exits 0 and
+one whose expectation is false exits 1, both for the reasons they already did.
+`:expect` did not grow a word for the verdict, so no claim can assert openness;
+all three of its forms are assertions about **facts**, and an `open` conclusion
+is by construction never a fact. Twelve corpus entries changed word and **zero**
+changed exit code.
+
 **Free, and different from the Python CLI's:** wrapping, indentation,
 headings, ordering within a section, and the wording of a usage diagnosis.
 `clap` cannot be configured into `argparse`'s layout and hand-rolling one was

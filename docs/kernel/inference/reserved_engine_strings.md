@@ -77,14 +77,31 @@ names the
 verdict; `solve(..., store_lattice=True)` attaches a sound `LatticeProof`
 carrying both the gaps view (`proof.solutions` — every model) and the
 contradictions view (`proof.dead_commitments` + `verdict.unsat_core`).
-The three verdicts are **three answers to one problem**, not three
-commands.
+The verdicts are **answers to one problem**, not separate commands.
 
-| `k` (distinct solution nodes) | verdict | shape |
+| `k` (distinct **models**) | verdict | shape |
 |-------------------------------|---------|-------|
 | `k = 0` | `Contradiction` | unsat core — the smallest contradiction frontier: a minimum-cardinality AND/OR search over every recorded derivation (provenance-based, NAF-safe, budgeted); **not** a subset-minimal MUS |
+| `k = 0` | `Open` | the open state(s), and what they **owe** — M1d S1d.2.6 |
 | `k = 1` | `Solution` | the model |
 | `k > 1` | `Ambiguity` (gaps) | the distinct model states |
+
+**`k` counts models, and since M1d S1d.2.6 that is not the same number as
+`stats.solution_nodes`.** The counter says what the *search* recorded — nodes
+the generator called complete — and `k` says how many of them the read-out
+calls models. They agree on every verdict but `Open`, where a node is complete
+by exhaustion and undischarged by tally; the summary reports both, and the open
+states themselves under `verdict.open_states` rather than `verdict.solutions`.
+
+**`Open` is scoped.** Only a program that *states* an obligation can reach it
+(`owes.declared > 0`): a state is judged by discharge when it has been told
+what it owes and by exhaustion when it has not, so a program declaring none
+reports exactly the words it reported before M1d P1d.2. `false` outranks — a
+state that derived a refutation is `Contradiction` whatever it owes — and a
+recorded model outranks an open state, so `Open` is said only when nothing was
+discharged and something is owed. What it never means is *refuted*: the
+distinction it exists to draw is between **no model** and **not yet a
+model**.
 
 The `k = 0` payload is per **witness**: the smallest set of *given* facts
 (`source` / `hypothesis` / un-provenanced) from which **one** recorded

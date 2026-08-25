@@ -18,6 +18,7 @@
 //! — for each verdict shape. [`render_answer`] is the one-line headline.
 
 use ein_core::{FactId, Kb, Symbol, Terms, Value};
+use ein_infer::obligations::Owes;
 use ein_infer::verdict::{Answer, Verdict};
 use ein_infer::{canon::state_key, goal_bindings, query_value};
 use ein_ir::{Ast, Node, NodeId};
@@ -200,10 +201,49 @@ pub fn render_answer(
             };
             format!("No solution — the constraints are contradictory (unsat core: {core}).")
         }
+        Answer::Verdict(Verdict::Open { owes, .. }) => {
+            // The word the other three cannot say: consistent, quiescent, and
+            // owed. `Contradiction` would claim a refutation nothing derived
+            // and `Solution` would claim a model nothing witnessed — M1d
+            // S1d.2.6, and `ideas.md`'s middle outcome.
+            format!(
+                "Open — {}; the requirement is unmet, not refuted.",
+                owed_phrase(terms, owes)
+            )
+        }
         // ein.py's fall-through prints the *class* name, and `Aborted` is the
         // only shape that reaches it.
         Answer::Aborted { .. } => "Unexpected verdict: Aborted".to_string(),
     }
+}
+
+/// `owes 4 (color-loc: 2, pet-loc: 2)` — the count, and what it is owed on.
+///
+/// The per-relation split is what `(open ?R)` buys over a bare `(open)`: an
+/// unattributed debt contributes to the total and to no parenthesis, so the
+/// two numbers agree exactly when every obligation rule names its relation.
+fn owed_phrase(terms: &Terms, owes: &[Owes]) -> String {
+    let total: usize = owes.iter().map(|o| o.total()).sum();
+    // Merged across the open states, in first-owed order — the same order
+    // `Owes::by_relation` reports within one.
+    let mut split: Vec<(String, usize)> = Vec::new();
+    for o in owes {
+        for (r, n) in o.by_relation() {
+            let r = terms.sym(r).to_string();
+            match split.iter_mut().find(|(s, _)| *s == r) {
+                Some((_, m)) => *m += n,
+                None => split.push((r, n)),
+            }
+        }
+    }
+    if split.is_empty() {
+        return format!("owes {total}");
+    }
+    let split: Vec<String> = split
+        .into_iter()
+        .map(|(r, n)| format!("{r}: {n}"))
+        .collect();
+    format!("owes {total} ({})", split.join(", "))
 }
 
 // ── The five-field table ───────────────────────────────────────────
@@ -392,6 +432,39 @@ pub fn render_solution_table(
                 })
                 .collect();
             lines.extend(two_col(&rows, "    ", None));
+        }
+        Answer::Verdict(Verdict::Open { states, owes }) => {
+            // `solutions (k) 0` because an open state is **not** a model: the
+            // read-out's `complete` means discharged. It is deliberately not
+            // the same number as `stats.solution_nodes`, which counts what the
+            // *search* recorded and which S1d.2.6 left alone — the two
+            // disagree on exactly the eleven entries this stage is about, and
+            // `open states` below is where the difference is printed rather
+            // than hidden.
+            lines.push("  solutions (k)   0".to_string());
+            lines.push(format!("  open states     {}", states.len()));
+            lines.push(format!(
+                "  verdict         Open — {}",
+                owed_phrase(terms, owes)
+            ));
+            let total: usize = owes.iter().map(|o| o.total()).sum();
+            lines.push(String::new());
+            lines.push(format!("  outstanding obligations ({total})"));
+            for o in owes.iter() {
+                for why in crate::trace::linearize::owe_lines(terms, o) {
+                    lines.push(format!("    {why}"));
+                }
+            }
+            for i in 0..states.len() {
+                lines.push(String::new());
+                let header = if states.len() == 1 {
+                    "open state".to_string()
+                } else {
+                    format!("open state {}/{}", i + 1, states.len())
+                };
+                let block = solution_block(ast, terms, &states[i].kb, &header);
+                lines.extend(block);
+            }
         }
         other => {
             let text = render_answer(ast, terms, root, other, exhausted);

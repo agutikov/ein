@@ -199,7 +199,7 @@ that is the note's thesis measured in someone else's language.
 
 | phase | title | stages | est. | gate |
 |---|---|---|---|---|
-| [P1d.2](p1d.2_obligations/README.md) | Obligations — the half of the vocabulary that says *must* | 6 | 3.5 w | a saturated state can report what it still owes, and a puzzle can state a requirement |
+| [P1d.2](p1d.2_obligations/README.md) | Obligations — the half of the vocabulary that says *must* | 6 (**done 2026-08-25**) | 3.5 w | **met**: a puzzle states a requirement, a state says what it owes, the search branches on it, and the verdict reports it — [the phase ledger](p1d.2_obligations/README.md) |
 | [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 | 1.5 w | either a compact representation of the 32 models, or a written argument for why enumeration is the answer |
 | [P1d.4](p1d.4_model_set_closure/README.md) | Closing the model set — the claim nothing can state | 3 | 1.5 w | a written answer to "may a puzzle require its own model count", and `zebra2-minus-15`'s 32 models either verifiable or the pipeline sentence rewritten |
 | [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 (1 done) | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
@@ -324,6 +324,19 @@ does**. [P1d.2](p1d.2_obligations/README.md) may dissolve it — a state that
 knows what it owes can report *incomplete*, which is
 [`ideas.md`](ideas.md)'s middle outcome and the word those ten entries
 actually want.
+
+> **It did dissolve it, 2026-08-25, and one step further along than this
+> paragraph guessed.** The word exists — `Open — owes n`,
+> [S1d.2.6](p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md) — and
+> twelve corpus entries now report it. **The ten are not among them.** Measured
+> before anything moved, all ten declare zero obligation rules, so all ten are
+> out of the read-out's scope and keep `Contradiction`
+> ([the census §5](p1d.2_obligations/openness_census.md)). The word those ten
+> entries "actually want" turns out to be one they have to *ask* for: a
+> requirement is something a program states, and none of them states one.
+> What is left of the question is the depth cap wearing a refutation's word,
+> which is [Q-M1d.1](open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
+> and [P1d.10](p1d.10_exhaustive_search/README.md)'s.
 
 ## Cross-links
 

@@ -1,9 +1,17 @@
 ;;; `std.closure/infer-closure` — closed and **owing**: a state that can never
-;;; meet its requirement, reported as a model.
+;;; meet its requirement, and the word for it.
 ;;;
 ;;; `02_closed_and_satisfied.ein` with one fact deleted — the witness edge
-;;; `(r a1 b1)` — and **the verdict does not move**. Both report `Solution`.
-;;; That is the finding this file exists to hold still.
+;;; `(r a1 b1)`. Until M1d S1d.2.6 **the verdict did not move**: both reported
+;;; `Solution`, and that standstill was the finding this file was banked to
+;;; hold still. It moves now. This half reports
+;;;
+;;;     solutions (k)   0
+;;;     open states     1
+;;;     verdict         Open — owes 1 (r: 1)
+;;;
+;;; and the twin still reports `Solution`. One fact apart, and now one word
+;;; apart.
 ;;;
 ;;; ── Why nothing catches it ─────────────────────────────────────────────────
 ;;;
@@ -41,18 +49,47 @@
 ;;;
 ;;; The corner is their intersection, and it is the closed-and-owing case
 ;;; [S1d.2.2](../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.2_domains.md)
-;;; asks who is allowed to say `(false)` about. The answer this program pins
-;;; is *nobody, today*. It is banked as a golden precisely so that the stage
-;;; that changes it has to move this file and say why.
+;;; asks who is allowed to say `(false)` about.
+;;;
+;;; ── The answer, decided by the user 2026-08-25: nobody, still ──────────────
+;;;
+;;; `(false)` is a **derived** refutation — a rule fired and named a conflict —
+;;; and no rule fires here. Promoting on "the debt is unpayable" instead would
+;;; be a closed-world inference the engine refuses everywhere else, and it
+;;; would erase the one distinction the domain contract called strictly more
+;;; informative than the verdict: *owes, and cannot pay* against *owes, and
+;;; might*. So the word is `Open`, and the unreachability is said where it can
+;;; be said precisely — in the rung report, which for this file is
+;;;
+;;;     rung  mode=stuck  owed=1  branches=0  declined=1
+;;;
+;;; `declined=1` because `r` is `(__closed__ r)` and a closed relation is
+;;; scoped out of hypothesis generation: the debt is owed and unbranchable,
+;;; which is exactly *cannot pay*. A state owing only such debts is **stuck**,
+;;; reported, never silently complete.
+;;;
+;;; ── What changed in the file, and it is one line ───────────────────────────
+;;;
+;;; `(total-owed r is-a)`. Ingredient 3 above was *"`complete(kb)` meaning the
+;;; generator proposes nothing is what the engine has, because it has no
+;;; vocabulary for what a state owes"* — and since S1d.2.4 it has one. The
+;;; vocabulary only reaches a program that **uses** it: S1d.2.6's scope rule
+;;; judges by discharge where an obligation was stated and by exhaustion where
+;;; none was, so declaring the dual is what moves this file and nothing else
+;;; would have.
 ;;;
 ;;; ── What the expectation observes ──────────────────────────────────────────
 ;;;
 ;;; The same lift as the twin: `closed-here` makes the derived closure
 ;;; nameable. The expectation says the closure was derived — it does **not**
-;;; say the state is a model, because `:expect` has no word for a state that
-;;; owes something, which is the other half of the same gap.
+;;; say the state is a model, and it still cannot: all three `:expect` forms
+;;; are assertions about *facts* and an `open` conclusion is never one. What
+;;; S1d.2.6 changed is that the claim below is now checked against an **open
+;;; state** rather than a model, which is why it holds unchanged — the facts a
+;;; state reached are the facts it reached, whatever the verdict calls it.
+;;; Growing `:expect` a word for the verdict is P1d.4's.
 
-(import std.algebra :symbols (functional total))
+(import std.algebra :symbols (functional total total-owed))
 (import std.closure :symbols (infer-closure))
 
 (relation is-a        T T :why "{?1} is a {?2}")
@@ -68,6 +105,10 @@
 ;; … and the activator the unreachability scan needs (arity 2). It is
 ;; activated here and it never fires — see above.
 (total r is-a)
+;; … and the obligation dual, which does not fire either — it *reports*. This
+;; single line is what puts the program in the read-out's scope and moves the
+;; verdict from `Solution` to `Open`.
+(total-owed r is-a)
 
 (rule closed-observed ()
   :match  (__closed__ ?R)

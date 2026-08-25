@@ -81,7 +81,7 @@ is the mechanism the milestone README's argument turns on.
 | [S1d.2.3](s1d.2.3_the_form.md) | The obligation — form, surface, and where it lives | 3 d | **done 2026-08-25** |
 | [S1d.2.4](s1d.2.4_obligations_in_the_saturator.md) | Obligations in the saturator | 4 d | **done 2026-08-25** |
 | [S1d.2.5](s1d.2.5_hypotheses_from_obligations.md) | Hypotheses from obligations | 3 d | **done 2026-08-25** |
-| [S1d.2.6](s1d.2.6_verdicts_counters_corpus.md) | What it changes: verdicts, counters, corpus | 2 d | |
+| [S1d.2.6](s1d.2.6_verdicts_counters_corpus.md) | What it changes: verdicts, counters, corpus | 2 d | **done 2026-08-25** |
 
 **S1d.2.1 is done** (2026-08-25) — [`property_audit.md`](property_audit.md),
 73 rules classified from the parsed rule text and joined to two census runs.
@@ -224,6 +224,80 @@ obligation: under the ladder a program declaring `(bijective …)` no longer
 reaches the blind enumerator at all, and the file's whole check had gone
 vacuous.
 
+## The phase ledger — P1d.2 closed 2026-08-25
+
+Six stages, one day, and the thing it set out to build exists: **a puzzle can
+state a requirement, a state can say what it owes, the search can branch on
+it, and the verdict can report it.** What follows is the record T1d.2.6.5
+asked for — decisions and where they were taken, what landed, what was
+deferred and what would un-defer it.
+
+### The decisions, and who took them
+
+| decision | taken | where |
+|---|---|---|
+| a requirement is a **rule shape** asserting a reserved verdict atom (form G), not a kernel primitive and not a stdlib convention | user, 2026-08-24 | [Q-M1d.2](../open_questions.md#q-m1d2--where-does-a-requirement-live), [S1d.2.3](s1d.2.3_the_form.md) |
+| the atom is **`(open ?R)`** — it names the relation and projects the rest out of the guard; a bare `(open)` counts and attributes nothing | user, 2026-08-25 (*"why does `open` take arguments when `(false)` does not?"*) | [obligation_forms.md § The slot spelling](obligation_forms.md) |
+| obligation rules run **after** the fixpoint, as one pass, never in the saturation agenda | user, 2026-08-25 | [obligation_forms.md § When the obligation rules run](obligation_forms.md) |
+| obligations **supersede** `:hrules` as the generator, as a ladder | user, 2026-08-24 | [Q-M1d.4](../open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal), [S1d.2.5](s1d.2.5_hypotheses_from_obligations.md) |
+| the verdict word is **`Open — owes n`**, from the `open` / `false` / `satisfy` triple | user | [S1d.2.6](s1d.2.6_verdicts_counters_corpus.md) |
+| the read-out is **scoped**: judged by discharge where an obligation was stated, by exhaustion where none was | 2026-08-25 | [S1d.2.6](s1d.2.6_verdicts_counters_corpus.md), [census §3](openness_census.md) |
+| closed-and-owing reports **`Open`, not `(false)`** | user, 2026-08-25 | [census §6](openness_census.md), [domain_contract.md §3](domain_contract.md) |
+| the rung proposes the **union** of owed instances, not one chosen obligation's | 2026-08-25, argued from the traversal | [the record §1](hypotheses_from_obligations.md) |
+| a declined obligation declines the **whole call** | 2026-08-25 | [the record §1](hypotheses_from_obligations.md) |
+
+### What landed
+
+| stage | what it is | the number |
+|---|---|---|
+| [S1d.2.1](s1d.2.1_property_audit.md) | the property audit | the `≥` half has **fifteen rules and no middle** |
+| [S1d.2.2](s1d.2.2_domains.md) | the domain contract, C1–C4 | **12 of 49** searching entries propose `is-a` arrows, which is where C4 declines |
+| [S1d.2.3](s1d.2.3_the_form.md) | `open` reserved — loads, resolves, stays inert | **nine** refusals with no Python counterpart |
+| [S1d.2.4](s1d.2.4_obligations_in_the_saturator.md) | the report stratum | `zebra2-minus-15` owes **46**, split 10/8/8/10/10 — the hand census reproduced |
+| [S1d.2.5](s1d.2.5_hypotheses_from_obligations.md) | the generator rung | **56 against 3 734** at layer 1, and **not one counter moved** against the hrule |
+| [S1d.2.6](s1d.2.6_verdicts_counters_corpus.md) | the verdict | **12** words moved, **0** exits, **0** counters, **92** entries out of scope |
+
+Two censuses are the phase's evidence and both are re-takable:
+[`openness_census.md`](openness_census.md) (what the corpus owes) and
+[`hypotheses_from_obligations.md`](hypotheses_from_obligations.md) (what the
+ladder cost), joined by [`property_audit.md`](property_audit.md) and
+[`domain_contract.md`](domain_contract.md), which are arguments rather than
+measurements.
+
+Three questions closed — [Q-M1d.2](../open_questions.md#q-m1d2--where-does-a-requirement-live),
+[Q-M1d.3](../open_questions.md#q-m1d3--what-closes-a-domain) (for obligations),
+[Q-M1d.4](../open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal),
+[Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
+— which is four.
+
+### What was deferred, and what un-defers it
+
+The milestone's rule: *a deferral is cheap to reverse only while the
+specification survives it.* So each of these has a written form and a
+trip-wire, not just an absence.
+
+| deferred | the specification that survives it | what un-defers it |
+|---|---|---|
+| **form E** — the obligation as a first-class *object* rather than a rule shape | [`obligation_forms.md`](obligation_forms.md)'s full menu, E included | a requirement that must be **named** to be referred to — a rule that reasons about another rule's debt |
+| **form A** — a kernel `(require …)` primitive | same | a requirement no rule shape can express; none has appeared |
+| **numeric bounds** — `L ≤ #{ȳ ∣ R(x̄,ȳ) ∧ φ} ≤ U`, and the `odd` / `same-count-as` / `at-least-one-of` family | [`ideas.md`](../ideas.md) § Положительные обязательства, and the phase's Risks § Expressive creep | **a corpus entry that cannot be stated without it.** Every entry today needs only `≥ 1`, which is what `total` / `surjective` / the slot pair express |
+| **the compound witness** — two positive `?R` steps bearing free variables, *"there must exist a 2-chain"* | [`obligation_forms.md` § the projection is static](obligation_forms.md) | it is *refused* at load rather than mis-compiled, so the trip-wire is a user hitting the refusal |
+| **one chosen obligation per node** (a depth-first branch) | [the record §1](hypotheses_from_obligations.md), with the choice heuristic built and **measured inert** | a depth-first traversal — [P1d.10](../p1d.10_exhaustive_search/README.md)'s, which inherits the interface ready |
+| **`:expect` for an open verdict** | [S1c.1.2](../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)'s three fact-shaped forms, and why an `open` conclusion is not a fact | a fixture that needs to *claim* openness rather than assert its facts; twelve moved word without one, so none has |
+| **promotion of closed-and-owing to `(false)`** | [`domain_contract.md` §3](domain_contract.md) and [census §6](openness_census.md) | closed-world completion, which is [P1d.3](../p1d.3_model_sets/README.md)'s — the inference that would license it |
+| **the per-state leftover-open count** | [the record §6](hypotheses_from_obligations.md), including why the probe would measure a different engine | P1d.3's compact model sets, where it becomes meaningful |
+
+### What the phase did not touch
+
+`exhausted` still means the lattice
+([Q-M1d.1](../open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)),
+the ten Q-M1d.6 entries still report `Contradiction` at `exhausted = false`
+because they state no obligation, and **no counter, cost or traversal moved
+anywhere in the corpus.** `zebra -e` is inside
+[P1a.6](../../../docs/history/m1a_rust/README.md)'s 47.5 ms baseline. The
+phase is additive to every program that did not opt in, which is the property
+form G was chosen for and the one it kept.
+
 ## Acceptance for the phase
 
 - **A puzzle can state a requirement** and the engine treats it as one:
@@ -241,9 +315,16 @@ vacuous.
   empty-yet state"; an unmet lower bound is a *contradiction* only when it has
   become unreachable, and that boundary is the same one
   [S1.21.8](../../../docs/history/m1a_rust/README.md) drew for negation-as-failure.
-- **Every existing verdict is unchanged**, on every corpus entry. Counters may
-  move; the stage that moves them says which and re-baselines with an
-  argument.
+- ~~**Every existing verdict is unchanged**, on every corpus entry.~~ Counters
+  may move; the stage that moves them says which and re-baselines with an
+  argument. **Held through S1d.2.5 and spent at S1d.2.6, as designed** — that
+  stage exists to move a word, and it moved **twelve**, every one from
+  `Solution` to `Open` and every one a program that *states* an obligation.
+  What replaces the bullet is the **scope rule**, which is the same promise
+  made where it can still be kept: *a program that states no obligation keeps
+  today's verdict*, measured at 92 of the 121 entries that reach a fixpoint
+  ([openness_census.md §3](openness_census.md)). Counters did not move at all:
+  the read-out changed and the search did not.
 - **A negative case per new mechanism**, in the form
   [P1c.1](../../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance)
   builds: not only "the obligation closes" but "it does not close *here*",

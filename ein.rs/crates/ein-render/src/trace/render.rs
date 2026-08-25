@@ -100,8 +100,17 @@ fn render_reductio(r: &Reductio, diagrams: bool) -> Vec<String> {
 
 /// Render a [`Trace`] as markdown.
 pub fn render_markdown(trace: &Trace, mode: Mode, diagrams: bool) -> String {
+    // M1d S1d.2.6 — the title follows the verdict. A traced state that owes
+    // is open, and `trace.owes` is non-empty for exactly those: the tally is
+    // the *primary's*, so a puzzle whose root owes and whose model does not
+    // (every zebra file) titles itself `Solution trace` as before.
+    let title = if trace.solved && !trace.owes.is_empty() {
+        "# Open trace"
+    } else {
+        "# Solution trace"
+    };
     let mut lines = vec![
-        "# Solution trace".to_string(),
+        title.to_string(),
         String::new(),
         format!("> {}", trace.summary),
         String::new(),

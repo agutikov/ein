@@ -44,7 +44,7 @@ even loaded, and 20 more held up by `examples/zebra.ein` alone.
 | [`stdlib/algebra/`](stdlib/algebra/) | 40 | the copiers and the relative product; the Boolean lattice; the extensive operators and their closed-world caveat; the tag lemmas and the two Tarski equations; Schröder's negative propagation; then the seven property **checks** — once satisfied, once violated apiece — the totality pair's `forall` in both directions, and (M1d S1d.2.4) the totality pair's **obligation** duals, each once owing and once satisfied |
 | [`stdlib/bijection/`](stdlib/bijection/) | 8 | the two setup fan-outs and the negative completion; domain- and range-elimination, each productive in its own file and redundant in its sibling's; the two arg typechecks violated; and `06_blind_enumeration.ein`, the one program here that leaves the enumerator **on** — since M1d S1d.2.5 by making the obligations rung *decline*, which is the only way to reach it from a program that declares one |
 | [`stdlib/elim/`](stdlib/elim/) | 4 | the same inference in its *positional* formulation, plus `no-room-left` — the pair that brackets a quantifier: one exclusion short of full forces a value, exactly full refutes |
-| [`stdlib/closure/`](stdlib/closure/) | 1 | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from fifty-four models to one |
+| [`stdlib/closure/`](stdlib/closure/) | 1 | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from fifty-four models to one; plus the closed-and-owing pair, which since M1d S1d.2.6 is the only place in the suite where **one fact decides a verdict word** — `02` is `Solution` and `03` is `Open — owes 1`, and what put them in scope to differ at all is one `(total-owed r is-a)` line apiece |
 | [`stdlib/slots/`](stdlib/slots/) | 20 | a second activating puzzle for the module that had exactly one — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
 | [`stdlib/typing/`](stdlib/typing/) | 4 | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
 | [`stdlib/macro/`](stdlib/macro/) | — | `forall` checked against its own expansion written out by hand, and `unknown`'s three states |
@@ -98,7 +98,7 @@ the corpus's one `mode=declined` fixture, and the obligation it added is
 *satisfied* on purpose: the decline is static, per activator, and must not
 depend on the KB happening to owe something.
 
-### Four things about how they are written
+### Five things about how they are written
 
 **Naming a relation closes it.** An expectation lists a relation's *complete*
 extent, so a rule that derived one fact too many fails the file. That is what
@@ -137,6 +137,19 @@ because a reader who does not know why `slot-partition-setup` is absent will
 put it back.
 
 ### What a mutation sweep says about them
+
+**A verdict word is not what an expectation claims.** All three `:expect`
+forms are assertions about **facts** (`01_grammar.md` § Query), so no fixture
+here says `Solution`, `Open` or `Contradiction` — it says what the answer's
+fact set is. M1d S1d.2.6 is the proof that this was the right shape: twelve of
+these programs changed verdict word that day, from `Solution` to `Open`, and
+**not one `(model …)` claim moved**, because the facts an open state reached
+are the facts it reached. What a fixture cannot state it asserts in-process
+instead — the owe counts in
+[`obligation_reports.rs`](../ein.rs/crates/ein-infer/tests/obligation_reports.rs),
+the rung modes in `obligation_rung.rs` — which is S1c.1.5's shape and the
+reason growing `:expect` a word for the verdict was deferred rather than
+needed.
 
 **50 of 51.** One deliberate defect per rule family — a dropped `neq`, an
 exchanged pair of `absent` operands, a `forall` over the wrong type, a fan-out

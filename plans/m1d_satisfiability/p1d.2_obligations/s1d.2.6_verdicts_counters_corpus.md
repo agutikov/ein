@@ -5,6 +5,40 @@
 **Depends on:** [S1d.2.4](s1d.2.4_obligations_in_the_saturator.md); reads
 [S1d.2.5](s1d.2.5_hypotheses_from_obligations.md)'s re-baseline if it has
 landed, and does not wait for it.
+**Status: done 2026-08-25.** The census, the word, the scope rule and the
+ledger — banked in [`openness_census.md`](openness_census.md) and in
+[the phase ledger](README.md). See § What it found.
+
+## What it found
+
+| claim | asked for | measured |
+|---|---|---|
+| the openness census | every entry, engine-tallied | **197 entries**: 92 out-of-scope, 12 discharged, 17 owing, 47 with no fixpoint by design, 29 with no declared `solve` run. 263 outstanding instances |
+| the scope rule holds | every entry stating no obligation keeps its word | **92 of 92**, and 0 `Open` outside the owing class |
+| the ten, partitioned | classified by the census before any word moved | **ten of ten state no obligation** — including `features/05_stdlib_domain_elim`, which declares `total` (the *scan*) and never imports `total-owed`. All keep `Contradiction` |
+| the verdict change | fixtures moved with their census rows | **12 entries**, all `tests/stdlib/`, all `Solution` → `Open`. 143 verdict-bearing digests, **0** exit cells, **0** counters |
+| `complete` means discharged | in the read-out | **yes, and only there** — the search still records the node, so `verdict.k` and `stats.solution_nodes` split on those 12 and both halves are pinned as identities |
+| Q-M1d.6 | closed | **closed** — never of a state that owes something it can still pay; the ten do not owe, so the guarantee holds over them vacuously |
+| the cost | the phase's guard | **nothing moved.** The read-out changed; no traversal, no counter, no wall |
+
+**Two things the stage did not do the way the plan drew them**, both recorded
+with their arguments:
+
+- **`features.md`'s lever tables did not need editing.** T1d.2.6.3 listed them
+  as fixtures written in the old word; the file mentions no `tests/stdlib`
+  entry at all, and the entry it *does* discuss in the old word
+  (`branching/07_lookahead_off`) is out of scope and keeps it. A no-op, and
+  worth saying so rather than leaving the task looking undone.
+- **`docs/api/inference.md` was cited, not edited.** Its parenthetical — *"`0`
+  → `Contradiction` — unsat (when exhausted)"* — is the reading that won, and
+  it is on a 🏛 history page. Rewriting it to describe the current engine
+  would make it neither history nor a specification.
+
+**And one thing it found that nothing asked for**: the ten are not a
+vocabulary problem. They report `Contradiction` at the depth cap because they
+never said what they require — which makes them an *authoring* problem with a
+fix available (declare an obligation) and leaves the depth-cap half squarely
+[Q-M1d.1](../open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s.
 
 ## Context
 

@@ -210,6 +210,13 @@ fn run(path: &Path) -> Result<String, String> {
         Answer::Verdict(Verdict::Contradiction { unsat_core }) => {
             out += &format!("unsat, core of {} facts\n", unsat_core.len());
         }
+        // A state that is consistent and quiescent and still owes an
+        // obligation the program stated (M1d S1d.2.6). Not a model and not a
+        // refutation — a caller that reports `k` alone would call it neither.
+        Answer::Verdict(Verdict::Open { states, owes }) => {
+            let owed: usize = owes.iter().map(|o| o.total()).sum();
+            out += &format!("open: {} state(s), owes {owed}\n", states.len());
+        }
         Answer::Aborted { reason } => out += &format!("aborted: {reason}\n"),
     }
     out += &format!(

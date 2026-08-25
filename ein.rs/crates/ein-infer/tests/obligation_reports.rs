@@ -145,30 +145,104 @@ fn each_obligation_rule_owes_exactly_what_its_fixture_states() {
     }
 }
 
-/// **A state can be a `Solution` and still owe something**, and this stage
-/// does not change that.
+/// **A state that owes is not a `Solution`** — and this is the test S1d.2.4
+/// wrote to be edited here.
 ///
 /// `23_total_owed.ein` is `consistent ∧ complete` by the only completeness
-/// test the engine has — *does the generator propose anything?* — and it owes
-/// Ann a Food. That is the `closed-and-owing` corner
-/// (`tests/stdlib/closure/03_closed_and_owing.ein`) with a number attached at
-/// last: before this stage the state could not be distinguished from a
-/// finished one by any surface at all.
+/// test the engine had — *does the generator propose anything?* — and it owes
+/// Ann a Food. S1d.2.4 asserted `Solution` and said in its own doc comment
+/// that [S1d.2.6] would have to change it. It did: `complete` in the verdict
+/// read-out now means **discharged**, so the state is reported `Open`, the
+/// word is `owes 1`, and the debt is the reason rather than a footnote beside
+/// a model.
 ///
-/// The verdict word deliberately does not move here. `complete` meaning
-/// *discharged* rather than *exhausted* is
-/// [S1d.2.6](../../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md)'s
-/// decision, and this test is what will have to be edited when it is taken —
-/// which is the point of writing it down now.
+/// **The three numbers that must disagree**, because their disagreement is
+/// the whole of what shipped:
+///
+/// | | | |
+/// |---|---:|---|
+/// | `stats.solution_nodes` | 1 | what the *search* recorded — unchanged, and the reason no counter moved |
+/// | `verdict.k()` | 0 | what the *read-out* calls a model |
+/// | `owes.root.total()` | 1 | why |
+///
+/// A regression that reverted the read-out would keep the first and the third
+/// and lose the second, so the second is asserted explicitly rather than via
+/// the word.
+///
+/// [S1d.2.6]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md`
 #[test]
-fn a_solution_may_still_owe_and_the_verdict_does_not_move_yet() {
+fn a_state_that_owes_is_open_and_not_a_solution() {
     let (_, _, _, solved) = run("tests/stdlib/algebra/23_total_owed.ein");
     assert_eq!(
         solved.answer.as_str(),
-        "Solution",
-        "the verdict moved; S1d.2.6 is where that decision is taken"
+        "Open",
+        "a state that owes is not a model — S1d.2.6"
     );
     assert_eq!(solved.owes.root.total(), 1, "and it owes one");
+    assert_eq!(
+        solved.owes.declared, 1,
+        "in scope: it states one obligation"
+    );
+    let ein_infer::verdict::Answer::Verdict(v) = &solved.answer else {
+        panic!("a verdict")
+    };
+    assert_eq!(v.k(), 0, "no model");
+    assert_eq!(v.owed(), 1, "one debt, on the open state");
+    assert_eq!(
+        solved.stats.solution_nodes, 1,
+        "the search still recorded the node — S1d.2.6 moved the read-out, not the traversal"
+    );
+}
+
+/// **The scope rule, as a test**: the same shape with no obligation stated
+/// keeps `Solution`.
+///
+/// `03_closed_and_owing.ein` was in exactly this position until S1d.2.6 — a
+/// state owing something it can never pay, reported as a model — and what
+/// moved it was one declaration, not the verdict change. So the rule needs a
+/// witness on the other side: a program judged by *exhaustion* because it
+/// never said what it owed. `02_closed_and_satisfied.ein` is the discharged
+/// twin, and `01_infer_closure.ein` is the neighbour that states nothing.
+#[test]
+fn a_program_that_states_no_obligation_keeps_its_word() {
+    let (_, _, _, solved) = run("tests/stdlib/closure/01_infer_closure.ein");
+    assert_eq!(solved.owes.declared, 0, "states no obligation");
+    assert!(
+        !solved.owes.in_scope(),
+        "so it is out of the read-out's scope"
+    );
+    assert_eq!(
+        solved.answer.as_str(),
+        "Solution",
+        "and is judged by exhaustion, exactly as before P1d.2"
+    );
+}
+
+/// The pair S1d.2.2 banked, cashed: one fact apart, and now one **word** apart.
+///
+/// Both declare `(total-owed r is-a)` since S1d.2.6 — which is what puts them
+/// in scope at all — and `03` is `02` with the witness edge deleted. The
+/// contract's rule holds: the word is `Open` and **not** `(false)`, because no
+/// rule derived a refutation. That the debt is unpayable is said by the rung
+/// (`mode=stuck`), not by the verdict.
+#[test]
+fn the_closed_and_owing_pair_now_differs_by_a_word() {
+    let (_, _, _, sat) = run("tests/stdlib/closure/02_closed_and_satisfied.ein");
+    assert_eq!(sat.answer.as_str(), "Solution", "the witness discharges it");
+    assert_eq!(sat.owes.declared, 1, "and it is in scope");
+
+    let (_, _, _, owing) = run("tests/stdlib/closure/03_closed_and_owing.ein");
+    assert_eq!(
+        owing.answer.as_str(),
+        "Open",
+        "the same file, one fact fewer"
+    );
+    assert_eq!(owing.owes.root.total(), 1, "a1 owes a B");
+    assert_ne!(
+        sat.answer.as_str(),
+        owing.answer.as_str(),
+        "the corner is what a pair reporting one word for two states was"
+    );
 }
 
 // ── the two numbers ────────────────────────────────────────────────

@@ -205,10 +205,29 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
                 }
             };
 
+            let kind_for_k = s["verdict"]["type"].as_str().unwrap_or("?");
             // ── the verdict block agrees with the stats block ──────────
+            //
+            // **Except on `Open`, and that exception is M1d S1d.2.6's whole
+            // content.** `stats.solution_nodes` counts what the *search*
+            // recorded — nodes the generator called complete — and `verdict.k`
+            // counts what the read-out calls a **model**. The two agreed for
+            // every verdict there was until a state could be complete and
+            // still owe; on the twelve corpus entries that now report `Open`
+            // they differ by exactly the open states, which is why the
+            // identity is conditional rather than deleted. Deleting it would
+            // stop checking the 743 cells where it still holds.
             check(
-                "verdict.k == stats.solution_nodes",
-                u(&s, "verdict.k") == u(&s, "stats.solution_nodes"),
+                "verdict.k == stats.solution_nodes (except Open)",
+                kind_for_k == "Open" || u(&s, "verdict.k") == u(&s, "stats.solution_nodes"),
+            );
+            check(
+                "Open: k == 0 < solution_nodes == len(open_states)",
+                kind_for_k != "Open"
+                    || (u(&s, "verdict.k") == 0
+                        && u(&s, "stats.solution_nodes") > 0
+                        && s["verdict"]["open_states"].as_array().map_or(0, Vec::len) as i64
+                            == u(&s, "stats.solution_nodes")),
             );
             check(
                 "verdict.exhausted == stats.exhausted",
@@ -227,7 +246,9 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
                 match kind {
                     "Solution" => k == 1,
                     "Ambiguity" => k >= 2,
-                    "Contradiction" => k == 0,
+                    // Both report no model; what separates them is *why*, and
+                    // `owes.declared` is where a consumer reads that.
+                    "Contradiction" | "Open" => k == 0,
                     _ => true,
                 },
             );

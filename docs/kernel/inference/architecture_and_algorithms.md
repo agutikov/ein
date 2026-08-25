@@ -113,7 +113,26 @@ monotone/non-monotone seam:
   └─────────────────────────────────────────────────────────┘
         ▼
   Verdict = Solution(k=1) | Ambiguity(k>1) | Contradiction(k=0)
+                                            | Open(k=0, owes>0)
 ```
+
+**`Open` is M1d [S1d.2.6](../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md)'s**,
+and it is a *read-out* rather than a search change: the loop above still
+records a node iff `complete ∧ consistent`, where `complete` still means *the
+generator proposes nothing*. What `verdict_of` does differently is ask each
+recorded node's obligation tally whether it is **discharged**, and decline to
+call an undischarged one a model. So `k` — the models — parts company with
+`solution_nodes` — the recorded nodes — on exactly the states that owe, and no
+counter, cost or traversal moves.
+
+It is **scoped to programs that state an obligation** (`owes.declared > 0`),
+because a state is judged by discharge when it has been told what it owes and
+by exhaustion when it has not; 92 of the 121 corpus entries that reach a
+fixpoint state none and report exactly the words they always did
+([the census](../../../plans/m1d_satisfiability/p1d.2_obligations/openness_census.md)).
+`false` outranks it and a discharged model outranks it, so it is said only when
+nothing was refuted, nothing was discharged, and something is owed — *not yet a
+model*, as against `Contradiction`'s *no model*.
 
 **The deductive inner loop** (one KB → fixpoint). `Engine.compile_all`
 compiles every `(rule, activator)` pair into a `JoinPlan` — a sequence of

@@ -94,6 +94,13 @@ fn run(path: &Path) -> Result<String, String> {
         Answer::Verdict(Verdict::Contradiction { unsat_core }) => {
             out += &format!("unsat, core of {} facts\n", unsat_core.len());
         }
+        // A state that is consistent and quiescent and still owes an
+        // obligation the program stated (M1d S1d.2.6). Not a model and not a
+        // refutation — a caller that reports `k` alone would call it neither.
+        Answer::Verdict(Verdict::Open { states, owes }) => {
+            let owed: usize = owes.iter().map(|o| o.total()).sum();
+            out += &format!("open: {} state(s), owes {owed}\n", states.len());
+        }
         Answer::Aborted { reason } => out += &format!("aborted: {reason}\n"),
     }
     out += &format!(
@@ -131,14 +138,24 @@ trace: 244 steps
     assert_eq!(out, want);
 }
 
-/// A contradiction and an ambiguity take the other two arms, so the `match`
-/// in the page is not three arms of which one has ever executed.
+/// A contradiction, an ambiguity and an **open** state take the other three
+/// arms, so the `match` in the page is not four arms of which one has ever
+/// executed.
+///
+/// The fourth arrived with M1d S1d.2.6 and is the one an embedder is most
+/// likely to get wrong: it is neither a model nor a refutation, so a caller
+/// that branches on `k` alone silently files it under *unsat*.
 #[test]
-fn the_other_two_verdicts_are_reachable() {
+fn the_other_three_verdicts_are_reachable() {
     let bad = run(&repo_root().join("examples/ein-bugs/zebra2-bad.ein")).expect("solve");
     assert!(bad.contains("unsat, core of "), "{bad}");
     let hints = run(&repo_root().join("examples/zebra2-hints.ein")).expect("solve");
     assert!(hints.contains("h_zebra = House-5"), "{hints}");
+    let owing = run(&repo_root().join("tests/stdlib/algebra/23_total_owed.ein")).expect("solve");
+    assert!(owing.contains("open: 1 state(s), owes 1"), "{owing}");
+    // …and `k` beside it is the *search* counter, which S1d.2.6 left alone.
+    // The two disagreeing is the whole reason the arm exists.
+    assert!(owing.contains("k = 1, exhausted = "), "{owing}");
 }
 
 /// **The page quotes this file.** Both texts are the region between the two

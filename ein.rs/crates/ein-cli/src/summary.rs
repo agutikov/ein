@@ -100,7 +100,17 @@ fn verdict_block(ast: &Ast, terms: &mut Terms, answer: &Answer) -> Vec<(String, 
         }
         Answer::Verdict(Verdict::Solution(s)) => vec![s],
         Answer::Verdict(Verdict::Ambiguity(bs)) => bs.iter().collect(),
+        // **Not** `solutions` — M1d S1d.2.6. An open state is a state the run
+        // reached and declined to call a model, and filing it under
+        // `solutions` would be the vocabulary error this stage exists to fix,
+        // as well as breaking `len(solutions) == k` for a consumer that has
+        // every right to rely on it. It gets its own key below.
+        Answer::Verdict(Verdict::Open { .. }) => Vec::new(),
         Answer::Aborted { .. } => Vec::new(),
+    };
+    let open_states: Vec<&ein_infer::Solution> = match answer {
+        Answer::Verdict(Verdict::Open { states, .. }) => states.iter().collect(),
+        _ => Vec::new(),
     };
     // Sorted by model, not left in branch order: which of k models is found
     // first is a *traversal* fact, and `--shuffle` reorders it while proving
@@ -124,6 +134,29 @@ fn verdict_block(ast: &Ast, terms: &mut Terms, answer: &Answer) -> Vec<(String, 
         })
         .collect();
     solutions.sort_by(|a, b| a.0.cmp(&b.0));
+    // The same shape, sorted the same way, under a name that says what it is.
+    // Emitted unconditionally — an empty array for every verdict but `Open`,
+    // because a field that appears only sometimes is a field a consumer has to
+    // guess about (the rule the `owes` and `config` blocks already follow).
+    let mut opens: Vec<(Vec<String>, Json)> = open_states
+        .iter()
+        .map(|b| {
+            let f = facts(terms, &b.kb);
+            let key = match &f {
+                Json::Array(items) => items
+                    .iter()
+                    .map(|i| match i {
+                        Json::Str(s) => s.clone(),
+                        _ => String::new(),
+                    })
+                    .collect(),
+                _ => Vec::new(),
+            };
+            let g = bindings(ast, terms, &b.kb);
+            (key, Json::obj(vec![("facts", f), ("goal_bindings", g)]))
+        })
+        .collect();
+    opens.sort_by(|a, b| a.0.cmp(&b.0));
     vec![
         (
             "unsat_core".to_string(),
@@ -132,6 +165,10 @@ fn verdict_block(ast: &Ast, terms: &mut Terms, answer: &Answer) -> Vec<(String, 
         (
             "solutions".to_string(),
             Json::Array(solutions.into_iter().map(|(_, v)| v).collect()),
+        ),
+        (
+            "open_states".to_string(),
+            Json::Array(opens.into_iter().map(|(_, v)| v).collect()),
         ),
     ]
 }
@@ -330,6 +367,11 @@ fn owes_block(terms: &Terms, owes: &Owes) -> Json {
 /// sometimes is a field a consumer has to guess about.
 fn owes_report(terms: &Terms, report: &OwesReport) -> Json {
     Json::obj(vec![
+        // M1d S1d.2.6 — how many obligation rules the program states, which is
+        // what puts it in or out of the three-state read-out's scope. A
+        // consumer cannot infer it from `root.total`: 0 there is both "paid"
+        // and "never stated", and only one of the two may be called satisfied.
+        ("declared", Json::int(report.declared as i64)),
         ("root", owes_block(terms, &report.root)),
         (
             "models",
@@ -402,9 +444,19 @@ pub fn build(
     events: &mut ein_infer::events::Events,
     owes: &OwesReport,
 ) -> Result<Json, String> {
+    // `k` is the count of **models**, which is `solution_nodes` for every
+    // verdict but `Open`: an open state is a node the search recorded and the
+    // read-out declines to call a model (M1d S1d.2.6). Keeping the counter and
+    // the answer as two numbers is what lets `stats.solution_nodes` stay the
+    // pre-P1d.2 value on the eleven entries whose word moved — nothing about
+    // the search changed there, and a golden that moved both would say it had.
+    let k = match answer {
+        Answer::Verdict(v) => v.k(),
+        Answer::Aborted { .. } => stats.solution_nodes as usize,
+    };
     let mut verdict = vec![
         ("type".to_string(), Json::str(answer.as_str())),
-        ("k".to_string(), Json::int(stats.solution_nodes as i64)),
+        ("k".to_string(), Json::int(k as i64)),
         ("exhausted".to_string(), Json::Bool(stats.exhausted)),
     ];
     verdict.extend(verdict_block(ast, terms, answer));

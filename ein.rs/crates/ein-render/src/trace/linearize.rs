@@ -447,7 +447,21 @@ pub fn linearize(
     } else {
         format!(" after {} unconditional", root_steps.len())
     };
-    let summary = if solved_flag {
+    // M1d S1d.2.6 — a spine whose state still owes is **not** a solved one,
+    // and a trace that says "Solved" above an "Outstanding obligations"
+    // heading is the vocabulary problem this stage closes. The count is the
+    // primary's own tally, so an unscoped program cannot reach this arm: it
+    // has no obligation to owe.
+    let owed = primary.map_or(0, |p| p.owes.total());
+    let summary = if solved_flag && owed > 0 {
+        format!(
+            "Open — owes {owed}; {} steps{unconditional}; commitment \
+             {commitment}; {} refuted{pruned}. The requirement is unmet, \
+             not refuted.",
+            steps.len(),
+            reductios.len()
+        )
+    } else if solved_flag {
         format!(
             "Solved in {} steps{unconditional}; commitment {commitment}; \
              {} solution(s), {} refuted{pruned}.",

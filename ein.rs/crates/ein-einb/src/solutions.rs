@@ -42,6 +42,10 @@ pub enum VerdictKind {
     Contradiction,
     /// A budget was spent. Not a verdict; recorded so a reader is not told one.
     Aborted,
+    /// `k = 0` **models**, and a stated obligation is unwitnessed — M1d
+    /// S1d.2.6. Its `nodes` are the *open* states, stored like models because
+    /// they are what a reader of the cache wants and what `:expect` reads.
+    Open,
 }
 
 /// One solution node.
@@ -101,6 +105,10 @@ impl Solutions {
         let models: Vec<&Kb> = match answer {
             Answer::Verdict(Verdict::Solution(s)) => vec![&s.kb],
             Answer::Verdict(Verdict::Ambiguity(all)) => all.iter().map(|s| &s.kb).collect(),
+            // An open state is stored like a model: the container's job is to
+            // hand back what the solve reached, and the verdict tag beside it
+            // is what says these are owed rather than finished.
+            Answer::Verdict(Verdict::Open { states, .. }) => states.iter().map(|s| &s.kb).collect(),
             _ => Vec::new(),
         };
         let nodes = models
@@ -116,6 +124,7 @@ impl Solutions {
                 Answer::Verdict(Verdict::Solution(_)) => VerdictKind::Solution,
                 Answer::Verdict(Verdict::Ambiguity(_)) => VerdictKind::Ambiguity,
                 Answer::Verdict(Verdict::Contradiction { .. }) => VerdictKind::Contradiction,
+                Answer::Verdict(Verdict::Open { .. }) => VerdictKind::Open,
                 Answer::Aborted { .. } => VerdictKind::Aborted,
             },
             unsat_core: match answer {
@@ -135,6 +144,7 @@ pub fn write(s: &Solutions) -> Vec<u8> {
         VerdictKind::Ambiguity => 1,
         VerdictKind::Contradiction => 2,
         VerdictKind::Aborted => 3,
+        VerdictKind::Open => 4,
     });
     write_ids(&mut w, &s.unsat_core);
     w.u32(s.nodes.len() as u32);
@@ -162,6 +172,7 @@ pub fn read(body: &[u8], maps: &Maps) -> Result<Solutions> {
         1 => VerdictKind::Ambiguity,
         2 => VerdictKind::Contradiction,
         3 => VerdictKind::Aborted,
+        4 => VerdictKind::Open,
         _ => return Err(EinbError::Malformed("unknown verdict")),
     };
     let unsat_core = read_ids(&mut r, maps)?;

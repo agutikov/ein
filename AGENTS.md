@@ -22,6 +22,22 @@ constrained-reasoning research.
   ([`ir/03-ein-lang/01_grammar.md` § Query](docs/kernel/ir/03-ein-lang/01_grammar.md#query)).
   A file may carry several `(query …)` blocks and each is run; the last one no
   longer silently wins, and an unrecognised query keyword is now a load error.
+  **Since M1d S1d.2.6 there is a fourth verdict word, `Open`** — a consistent,
+  quiescent state with an obligation the program stated still unwitnessed,
+  reported as *`Open — owes n (rel: n, …)`* with `k = 0` and the state itself
+  under `open_states`. It is [`ideas.md`](plans/m1d_satisfiability/ideas.md)'s
+  middle outcome and the distinction the other three could not draw: **no
+  model** against **not yet a model**. It is **scoped** — only a program that
+  *states* an obligation can reach it, so a state is judged by discharge when
+  it has been told what it owes and by exhaustion when it has not, and 92 of
+  the 121 corpus entries that reach a fixpoint report exactly the words they
+  did before P1d.2
+  ([openness_census.md](plans/m1d_satisfiability/p1d.2_obligations/openness_census.md)).
+  `false` outranks it, a discharged model outranks it, it exits **0** like the
+  other three, and it moved twelve entries and **no** exit code. It also split
+  two numbers that had always agreed: `verdict.k` counts *models* and
+  `stats.solution_nodes` counts what the *search* recorded — S1d.2.6 changed
+  the read-out and not the traversal, so no counter and no cost moved.
   **S1c.1.3 added the runner**: `ein test <file|dir>…` is the fourth
   subcommand, and it turns a directory of expectations into a status code.
   It **exhausts** (an expectation is a claim about the exhausted answer, so
@@ -143,9 +159,12 @@ constrained-reasoning research.
   [`tests/stdlib/`](tests/README.md) — **56 programs, one per stdlib rule or
   tight family** plus one pair that is a *corner* rather than a rule
   (`closure/02_closed_and_satisfied` and `03_closed_and_owing`, M1d S1d.2.2:
-  the same program with one fact deleted, both reporting `Solution` — a state
-  that owes something it can never pay, banked so the stage that fixes it has
-  to move the golden), each carrying an `:expect` so `ein test tests/` is the
+  the same program with one fact deleted, banked so the stage that fixes it has
+  to move the golden — **cashed at S1d.2.6**, where both grew
+  `(total-owed r is-a)` and the pair went from reporting one word for two
+  states to `Solution` against `Open — owes 1`. What moved it is that one
+  declaration and not the verdict change: the read-out judges by discharge only
+  where a program *states* an obligation), each carrying an `:expect` so `ein test tests/` is the
   whole suite in 0.04 s. They are deliberately *not* under `examples/`: that
   directory is things to read, and these are three declarations and two facts
   apiece that exist to break. Three idioms are worth knowing before writing a
@@ -160,7 +179,11 @@ constrained-reasoning research.
   and is never in the saturation agenda, so `:expect` — three forms, all of
   them assertions about *facts* — cannot state what it reports, and the eight
   obligation fixtures carry an ordinary `(model …)` claim while their owe
-  counts are asserted in `ein-infer/tests/obligation_reports.rs`. The coverage claim
+  counts are asserted in `ein-infer/tests/obligation_reports.rs`. **Since
+  S1d.2.6 twelve of these programs report `Open` rather than `Solution`** and
+  every one of their `(model …)` claims still holds unchanged, which is the
+  same rule read from the other end: an expectation is about a fact set, and
+  the facts an open state reached are the facts it reached. The coverage claim
   is measured by `utils/stdlib_census.py`, never by reading the directory, and
   the suite's sensitivity by a 51-mutant sweep it catches 50 of. **Since M1c
   S1c.1.5 two claims about this directory are in `cargo test`**
@@ -225,7 +248,7 @@ constrained-reasoning research.
   in the repo — the divergence list, and
   [`docs/kernel/defined_behaviour.md`](docs/kernel/defined_behaviour.md), which
   states what "whatever ein.py did" used to define.
-- **`utils/`** — **twenty scripts, all of them driving `ein.rs`** since M1a
+- **`utils/`** — **twenty-one scripts, all of them driving `ein.rs`** since M1a
   [S1a.10.4](docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine),
   which deleted the eleven that compared two engines or measured the Python
   one, plus `corpus_cost.py` from
@@ -274,6 +297,16 @@ constrained-reasoning research.
   ([layer_census.md](plans/m1d_satisfiability/p1d.10_exhaustive_search/layer_census.md)).
   It writes `--events` to a **FIFO**, because the run it exists to measure
   narrates 72.6 M events.
+  The twenty-first, **`openness_census.py`**, is M1d S1d.2.6's and asks a
+  question about *programs* rather than about the search: what does each entry
+  **owe**, and is it judged by discharge or by exhaustion? Its third number is
+  the one that did not exist — **`declared`**, how many obligation rules a
+  program *states* — because `owes = 0` is equally true of a debt paid and of a
+  debt never stated, and only the first may be called satisfied. Its answer,
+  2026-08-25: of the 121 entries that reach a fixpoint **92 state no
+  obligation** and keep exactly the verdict they had, 12 are discharged, 17 owe,
+  and **12 moved to `Open`**
+  ([openness_census.md](plans/m1d_satisfiability/p1d.2_obligations/openness_census.md)).
 - **`build.sh`** — **everything this repo builds, in one command**: the Rust
   workspace (`--release` by default, into `ein.rs/target/`) and then the three
   C baselines in `c/` (into the gitignored `build/`). `--debug`,

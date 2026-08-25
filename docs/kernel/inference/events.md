@@ -102,6 +102,20 @@ difference a port or an optimisation introduces.
 | `load` | after `kb.from_ir` | `relations`, `rules`, `hrules`, `macros`, `facts` counts; `relation_names` and `rule_names` in registry order |
 | `verdict` | end | `type`, `k`, `exhausted`, `counters` (every `MonotonicStats` field), `core` (sorted), `models` (each a sorted fact list, the list itself sorted) |
 
+**`type` gained a fourth value at M1d
+[S1d.2.6](../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md)
+— `Open`** — and `k` changed meaning with it, from *recorded nodes* to
+**models**. The two were the same number until a state could be complete and
+still owe; on an `Open` line `k` is 0 while `counters.solution_nodes` is the
+node count, and the difference is the open states. Both are in the same event
+on purpose: a consumer that saw one could not tell an open state from a model,
+and one that sees both can. `models` carries the open states' fact sets, in the
+same slot and the same sorted form, because a fact set is a fact set and `type`
+is what says they were not called models.
+
+Programs that state no obligation never emit `Open`, so every pre-M1d stream is
+byte-identical.
+
 `impl` and `argv` are **not compared**. `impl` names which implementation ran,
 which is the point of the comparison rather than a finding; `argv` carries the
 artefact paths the *caller* chose, so `--events a.jsonl` against

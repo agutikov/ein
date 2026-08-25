@@ -126,6 +126,14 @@ fn run(rel: &str, tweak: impl FnOnce(&mut SolveOptions, &mut ein_core::SolverCon
             ss.iter().map(|s| facts_of(&s.kb, &terms)).collect(),
             Vec::new(),
         ),
+        // M1d S1d.2.6 — an open state's facts go where a model's facts go, so
+        // the invariants below (the answer does not depend on entering order
+        // or integration time) are asserted about it too. `verdict` above
+        // already distinguishes the words.
+        Answer::Verdict(Verdict::Open { states, .. }) => (
+            states.iter().map(|s| facts_of(&s.kb, &terms)).collect(),
+            Vec::new(),
+        ),
         Answer::Verdict(Verdict::Contradiction { unsat_core }) => {
             let mut c: Vec<String> = unsat_core
                 .iter()

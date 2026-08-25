@@ -22,7 +22,7 @@ about a word the engine already says.
 | [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | **answered for obligations 2026-08-25** — [`domain_contract.md`](p1d.2_obligations/domain_contract.md); open for the general lower-bound form nobody has asked for |
 | [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **closed 2026-08-25** — it may, and on this corpus it does not: [S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) shipped the ladder and **no counter moved** ([the record §2](p1d.2_obligations/hypotheses_from_obligations.md)) |
 | [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | open — [P1d.3](p1d.3_model_sets/README.md); "enumerate, and say so" is an acceptable answer |
-| [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | open — ten corpus entries already say it; [S1d.2.6](p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md) closes it: the word is decided (`Open`), the partition is measured first |
+| [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | **closed 2026-08-25** — never of a state that **owes** something it can still pay; the ten entries owe nothing because they state no obligation, and keep their word ([the census §5](p1d.2_obligations/openness_census.md)) |
 | [Q-M1d.7](#q-m1d7--may-a-program-require-its-own-model-count) | May a program require its own model count? | open — [P1d.4](p1d.4_model_set_closure/README.md); arrived from M1c [S1c.1.2](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects) on 2026-08-24 |
 
 ---
@@ -423,6 +423,56 @@ The ten entries are `branching/07_lookahead_off`, `features/01_not_and_absent`,
 `saturation/square-{bwd,fwd}/*` demos. Seven of them stopped declaring `solve`
 at S1a.9.0 — the fixtures are saturation demos and the run asked nothing of
 them — so the reproducer above is the record of what those cells did.
+
+### Closed 2026-08-25 — candidate (c), and the ten are decided by the scope rule
+
+[S1d.2.6](p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md) took candidate
+**(c)** with the user's word. The engine has a fourth verdict, `Open`, and the
+guarantee is:
+
+> **`Contradiction` is never said of a state that owes something it can still
+> pay.**
+
+A state that is consistent, quiescent, and has an obligation the program stated
+still unwitnessed reports `Open — owes n (…)` — [`ideas.md`](ideas.md)'s middle
+outcome, *нарушений нет, но остаются обязательства*, and the distinction the
+other three words could not draw: **no model** against **not yet a model**.
+Twelve corpus entries moved, all under `tests/stdlib/`, all from `Solution`.
+
+**And the ten this question is about did not move**, which is the part worth
+recording. Measured before any word changed
+([the census §5](p1d.2_obligations/openness_census.md)): all ten declare
+**zero** obligation rules, so all ten are out of the read-out's scope and keep
+`Contradiction` at `exhausted = false`. The guarantee holds over them
+vacuously — they do not owe anything, because nothing ever told them what they
+owe.
+
+`features/05_stdlib_domain_elim` is the one that repays a second look: it
+*does* declare `(total color-of 0)` and `(total color-of 1)`. Those activate
+the **scan**, and the file imports `std.elim` rather than `std.algebra`'s
+`total-owed`. A program can state a lower bound and still state no obligation.
+
+So the question dissolves the way [P1d.2](p1d.2_obligations/README.md) was
+predicted to dissolve it, but one step further along than predicted: not "ten
+corpus entries would then report `Incomplete` instead", but **the ten turn out
+to be an authoring problem rather than a vocabulary one**. A fixture that wants
+to be told *no model within the cap* can now say what it requires and be
+answered; one that says nothing is answered by exhaustion, as it always was.
+
+**What this does not close.** The `Contradiction` those ten report at
+`exhausted = false` is still a depth cap wearing a refutation's word, and that
+is [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) —
+`exhausted` keeps its meaning, untouched here, and candidate **(b)** (qualify
+the rendering of a truncated `k = 0`) is neither taken nor refused.
+[P1d.10](p1d.10_exhaustive_search/README.md) owns it.
+
+**The reading that won** is
+[`docs/api/inference.md`](../../docs/api/inference.md)'s parenthetical — *"`0`
+→ `Contradiction` — unsat (**when exhausted**)"* — the only statement in the
+tree that ever tied the word to more than `k`. It is on a **history** page
+specifying a Python embedding nobody is building, and it was right. It is cited
+here rather than edited, for the reason the 🏛 banner gives: a page rewritten
+to describe the current engine is neither history nor a specification.
 
 
 ## Q-M1d.7 — May a program require its own model count?

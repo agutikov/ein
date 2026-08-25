@@ -543,6 +543,16 @@ pub struct Solved {
 pub struct OwesReport {
     pub root: Owes,
     pub models: Vec<Owes>,
+    /// How many obligation rules the program **states** — M1d S1d.2.6's scope
+    /// rule, and the reason it is a separate number from the two tallies.
+    ///
+    /// `root.total() == 0` cannot answer "is this program judged by
+    /// discharge?": it is equally true of a program that owes nothing because
+    /// every debt is paid and of one that owes nothing because it never said
+    /// what it owed. Only the first may be called *satisfied* by discharge —
+    /// so the read-out asks this, and 0 means the verdict words are exactly
+    /// what they were before P1d.2.
+    pub declared: usize,
 }
 
 impl OwesReport {
@@ -550,6 +560,14 @@ impl OwesReport {
     /// discharged everywhere.
     pub fn is_empty(&self) -> bool {
         self.root.is_empty() && self.models.iter().all(Owes::is_empty)
+    }
+
+    /// Whether the three-state read-out applies at all — S1d.2.6's scope rule.
+    ///
+    /// A state is judged by *discharge* when it has been told what it owes,
+    /// and by *exhaustion* when it has not.
+    pub fn in_scope(&self) -> bool {
+        self.declared > 0
     }
 }
 
@@ -583,6 +601,7 @@ pub fn solve(
         root_snapshot: None,
         root_firings: Vec::new(),
         root_owes: Owes::default(),
+        declares_obligations: false,
         stats: MonotonicStats::new(),
         lstate: LoopState {
             nodes: Vec::new(),
@@ -632,6 +651,7 @@ pub fn solve(
                     .iter()
                     .map(|(_, n)| n.owes.clone())
                     .collect(),
+                declared: root.program().obligations.len(),
             };
             Ok(Solved {
                 answer,
@@ -698,6 +718,12 @@ struct Run<'o> {
     /// hand. Empty when root is contradictory: the read-out consults
     /// `(false)` first, so a dead root's debts are unobservable.
     root_owes: Owes,
+    /// Whether the program **states** an obligation — S1d.2.6's scope rule,
+    /// latched once at root's fixpoint because it is a property of the loaded
+    /// program and not of any state. `false` is 119 of the 146 corpus entries
+    /// that reach a fixpoint, and for those `finalise` is bit-for-bit the
+    /// pre-P1d.2 read-out.
+    declares_obligations: bool,
     stats: MonotonicStats,
     lstate: LoopState,
     /// Root writes waiting for the next integration barrier. Always empty
@@ -851,6 +877,7 @@ impl Run<'_> {
         // the state the search starts from, and the one a reader means by
         // "what does this puzzle still owe".
         self.root_owes = crate::obligations::tally(root, terms, ast, &self.memo, events)?;
+        self.declares_obligations = !root.program().obligations.is_empty();
         if alive.is_empty() {
             // Empty alive and no contradiction ⇒ root is itself a complete,
             // consistent model — the unique solution.
@@ -2095,11 +2122,38 @@ impl Run<'_> {
         // an already-archival KB is what stands in for that sharing here — it
         // is cheap (an `Arc` base plus one delta layer) and it is the only
         // place the two would otherwise fight over ownership.
+        //
+        // **M1d S1d.2.6 — `complete` means discharged, in the read-out.** The
+        // partition is here and nowhere else: the *search* still records every
+        // node it found complete by the generator's test, so no counter, no
+        // cost and no traversal moves. What changes is which of those nodes
+        // the answer is allowed to call a model.
+        let scoped = self.declares_obligations;
         let mut branches: Vec<Solution> = Vec::with_capacity(self.lstate.nodes.len());
+        let mut open_states: Vec<Solution> = Vec::new();
+        let mut open_owes: Vec<Owes> = Vec::new();
         for (_, n) in self.lstate.nodes.iter_mut() {
-            branches.push(Solution {
+            let s = Solution {
                 kb: n.kb.snapshot(),
                 trace: n.firings.clone(),
+            };
+            if scoped && !n.owes.is_empty() {
+                open_owes.push(n.owes.clone());
+                open_states.push(s);
+            } else {
+                branches.push(s);
+            }
+        }
+        // A discharged model outranks an open state: where the search found
+        // both, the answer is the models and the open ones are simply not
+        // among them. No corpus entry is in that regime today — the sixteen
+        // owing entries owe at *root* and their models owe nothing, or every
+        // recorded node owes — so this arm is defined rather than measured,
+        // and `openness_census.md` §4 is where that is said with the number.
+        if branches.is_empty() && !open_states.is_empty() {
+            return Answer::Verdict(Verdict::Open {
+                states: open_states,
+                owes: open_owes,
             });
         }
         if branches.len() == 1 {

@@ -1,8 +1,12 @@
 ;;; `std.closure/infer-closure` — closed **and** the requirement met.
 ;;;
 ;;; The control half of a pair. Its twin, `03_closed_and_owing.ein`, is the
-;;; same program with one fact removed, and the two report the **same
-;;; verdict** — which is the pair's whole point, and why it exists.
+;;; same program with one fact removed, and until M1d S1d.2.6 the two reported
+;;; the **same verdict** — which was the pair's whole point, and why it exists.
+;;; **They no longer do**: this one is `Solution` and the twin is
+;;; `Open — owes 1`, which is the corner cashing out. See the twin's header for
+;;; the argument; what matters here is that this half is the *discharged* one,
+;;; so the pair still differs by exactly one fact and now differs by a word.
 ;;;
 ;;; ── The shape ──────────────────────────────────────────────────────────────
 ;;;
@@ -12,14 +16,22 @@
 ;;; here by the one authored edge, so a closed `r` costs nothing: there was
 ;;; nothing left to guess.
 ;;;
-;;; ── The two arities, and they are different facts ──────────────────────────
+;;; ── The three declarations, and they are different facts ──────────────────
 ;;;
-;;; `(total r)` and `(total r is-a)` are both here and neither is redundant:
+;;; `(total r)`, `(total r is-a)` and `(total-owed r is-a)` are all here and
+;;; none is redundant:
 ;;;
 ;;;   (total r)         arity 1 — the **marker** `infer-closure` reads, and
 ;;;                     the form `bijective-properties` derives
 ;;;   (total r is-a)    arity 2 — the **activator** of `std.algebra/total`,
 ;;;                     the scan that fires (false) on unreachability
+;;;   (total-owed r is-a)
+;;;                     arity 2 — the **obligation** dual of the same scan
+;;;                     (M1d S1d.2.4). It asserts `(open r)`, derives nothing,
+;;;                     and is what puts this program in the three-state
+;;;                     read-out's scope at all: a program that states no
+;;;                     obligation is judged by exhaustion, and that is what
+;;;                     left this pair reporting one word for two states
 ;;;
 ;;; A rule is activated by a fact whose head is the rule's name and whose
 ;;; arity matches its parameter list, so the arity-1 marker does not activate
@@ -35,7 +47,7 @@
 ;;; closure was derived, once, for `r` and nothing else" a claim rather than a
 ;;; hope.
 
-(import std.algebra :symbols (functional total))
+(import std.algebra :symbols (functional total total-owed))
 (import std.closure :symbols (infer-closure))
 
 (relation is-a        T T :why "{?1} is a {?2}")
@@ -50,6 +62,10 @@
 (total      r)
 ;; … and the activator the unreachability scan needs (arity 2).
 (total r is-a)
+;; … and the obligation dual, which is what makes the verdict read `Solution`
+;; here *by discharge* rather than by the generator having nothing to propose.
+;; It is satisfied: `(r a1 b1)` below is the witness.
+(total-owed r is-a)
 
 ;; `(__closed__ …)` is engine vocabulary; this lifts it into userspace so a
 ;; goal can name it.

@@ -21,7 +21,7 @@ pub struct Solution {
     pub trace: Vec<Firing>,
 }
 
-/// The three verdicts. `Aborted` is deliberately **not** one of them — see
+/// The four verdicts. `Aborted` is deliberately **not** one of them — see
 /// [`Answer`].
 ///
 /// A `Solution` carries a whole `Kb`, so the variants differ a lot in size.
@@ -36,6 +36,32 @@ pub enum Verdict {
     /// `k = 0` — unsat, if exhausted. The core is the union of the recorded
     /// dead commitments' cores.
     Contradiction { unsat_core: Vec<FactId> },
+    /// `k = 0` **models**, and the reason is a debt rather than a conflict —
+    /// M1d [S1d.2.6].
+    ///
+    /// [`ideas.md`]'s middle outcome: *нарушений нет, но остаются
+    /// обязательства* — the state is consistent, quiescent and complete by the
+    /// generator's test, and an obligation it stated is still unwitnessed. The
+    /// distinction the other three words cannot draw is between *no model* and
+    /// *not yet a model*, and it is the whole of why `Contradiction` was the
+    /// wrong word for it.
+    ///
+    /// **Scoped**: only a program that states an obligation can reach this,
+    /// which is [`crate::solve::OwesReport::in_scope`]. A state is judged by
+    /// discharge when it has been told what it owes and by exhaustion when it
+    /// has not, so the 119 corpus entries that state none report exactly the
+    /// words they reported before P1d.2.
+    ///
+    /// `states` and `owes` are parallel and both non-empty; `states` is what
+    /// `:expect` reads, because an expectation is an assertion about *facts*
+    /// and the facts of an open state are the facts it reached.
+    ///
+    /// [S1d.2.6]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md`
+    /// [`ideas.md`]: `plans/m1d_satisfiability/ideas.md`
+    Open {
+        states: Vec<Solution>,
+        owes: Vec<crate::obligations::Owes>,
+    },
 }
 
 impl Verdict {
@@ -45,6 +71,29 @@ impl Verdict {
             Verdict::Solution(_) => "Solution",
             Verdict::Ambiguity(_) => "Ambiguity",
             Verdict::Contradiction { .. } => "Contradiction",
+            Verdict::Open { .. } => "Open",
+        }
+    }
+
+    /// How many **models** the verdict reports — `Open` reports none.
+    ///
+    /// Distinct from `MonotonicStats::solution_nodes`, which counts what the
+    /// *search* recorded and is unchanged by S1d.2.6: an open state is a node
+    /// the lattice found and the read-out declines to call a model, so the two
+    /// numbers disagree on exactly the entries this stage is about.
+    pub fn k(&self) -> usize {
+        match self {
+            Verdict::Solution(_) => 1,
+            Verdict::Ambiguity(bs) => bs.len(),
+            Verdict::Contradiction { .. } | Verdict::Open { .. } => 0,
+        }
+    }
+
+    /// The instances an `Open` verdict is owed, summed over its states.
+    pub fn owed(&self) -> usize {
+        match self {
+            Verdict::Open { owes, .. } => owes.iter().map(|o| o.total()).sum(),
+            _ => 0,
         }
     }
 }

@@ -260,6 +260,15 @@ pub fn check(
         Verdict::Contradiction { .. } => Vec::new(),
         Verdict::Solution(s) => vec![s],
         Verdict::Ambiguity(bs) => bs.iter().collect(),
+        // **An open state is still a state, and `:expect` is about facts.**
+        // M1d S1d.2.6 moved the *word* on eleven programs here and moved no
+        // claim: all three `:expect` forms are assertions about a fact set
+        // (`01_grammar.md` § Query), an `open` conclusion is by construction
+        // never a fact, and the facts of an open state are the ones it
+        // reached. So `(model …)` keeps meaning what it meant — which is also
+        // why the grammar does not have to grow a word for the verdict here,
+        // and why growing it is P1d.4's to want.
+        Verdict::Open { states, .. } => states.iter().collect(),
     };
     if matches!(expectation, Expectation::Contradiction) {
         return if matches!(verdict, Verdict::Contradiction { .. }) {

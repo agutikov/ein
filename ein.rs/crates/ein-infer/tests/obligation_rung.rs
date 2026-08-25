@@ -143,10 +143,15 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
 /// beside it says the requirement is unmet. Ten corpus programs are in exactly
 /// that state today, every one of them because `:no-hypothesis` names the
 /// relation they owe, and the `stuck` line is what tells them apart from a
-/// state that is finished.
+/// state that is finished. **That trap is closed**: since S1d.2.6 such a node
+/// is not recorded as a model by the read-out at all.
 ///
-/// No verdict word moves on it here. [S1d.2.6] is where that is decided, and
-/// this is the evidence it will decide on.
+/// **The word moved at [S1d.2.6]**, which is what this stage's evidence bought:
+/// a stuck state reports `Open`, not `Solution`. The two halves stay separate
+/// on purpose — `stuck` is the *generator's* report (it proposed nothing and
+/// says why) and `Open` is the *read-out's* (the state is not discharged) —
+/// and this test asserts both, because a regression in either one alone would
+/// leave the other still true.
 ///
 /// [S1d.2.6]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md`
 #[test]
@@ -161,8 +166,8 @@ fn owing_and_unable_to_branch_is_stuck_and_says_so() {
     let (_, _, _, solved) = run_with(rel, &mut Events::off(), 1);
     assert_eq!(
         solved.answer.as_str(),
-        "Solution",
-        "the verdict must not move"
+        "Open",
+        "a stuck state is not a model — S1d.2.6"
     );
     assert_eq!(
         solved.owes.root.total(),

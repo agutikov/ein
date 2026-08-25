@@ -194,6 +194,11 @@ fn print_final(ast: &Ast, terms: &Terms, kb: &Kb, answer: &Answer, m: &ArgMatche
     let branches: Vec<&ein_infer::verdict::Solution> = match v {
         Verdict::Ambiguity(bs) => bs.iter().collect(),
         Verdict::Solution(s) => vec![s],
+        // An open state has facts to print like any other, and the header
+        // below still says `solution i/n` — the *verdict* line above is where
+        // S1d.2.6 says these are owed, and a second place saying it would be
+        // a second place to disagree.
+        Verdict::Open { states, .. } => states.iter().collect(),
         Verdict::Contradiction { .. } => unreachable!(),
     };
     let n = branches.len();
@@ -360,14 +365,28 @@ pub(crate) fn events_verdict(
             Verdict::Ambiguity(bs) => {
                 models = bs.iter().map(|b| sorted_model(terms, &b.kb)).collect();
             }
+            // The states go in the same slot: a consumer diffing two engines
+            // compares fact sets, and an open state's facts are a fact set.
+            // `type` is what tells it these were not called models.
+            Verdict::Open { states, .. } => {
+                models = states.iter().map(|b| sorted_model(terms, &b.kb)).collect();
+            }
         }
     }
     models.sort();
     let b = &stats.base;
     let ty = answer.as_str();
+    // Models, not recorded nodes — the same split `--json-summary` makes, and
+    // it matters here because `counters.solution_nodes` is in the same event:
+    // a consumer that saw one number could not tell an open state from a
+    // model, and one that sees both can.
+    let k = match answer {
+        Answer::Verdict(v) => v.k(),
+        Answer::Aborted { .. } => stats.solution_nodes as usize,
+    };
     events.emit("verdict", |l| {
         l.str("type", ty);
-        l.num("k", stats.solution_nodes as i64);
+        l.num("k", k as i64);
         l.bool("exhausted", stats.exhausted);
         l.obj_strs(
             "counters",
