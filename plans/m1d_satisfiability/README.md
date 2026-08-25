@@ -200,7 +200,7 @@ that is the note's thesis measured in someone else's language.
 | phase | title | stages | est. | gate |
 |---|---|---|---|---|
 | [P1d.2](p1d.2_obligations/README.md) | Obligations — the half of the vocabulary that says *must* | 6 (**done 2026-08-25**) | 3.5 w | **met**: a puzzle states a requirement, a state says what it owes, the search branches on it, and the verdict reports it — [the phase ledger](p1d.2_obligations/README.md) |
-| [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 (**at stage depth**) | 1.5 w | either a compact representation of the 32 models, or a written argument for why enumeration is the answer |
+| [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 (**1 done**) | 1.5 w | either a compact representation of the 32 models, or a written argument for why enumeration is the answer |
 | [P1d.4](p1d.4_model_set_closure/README.md) | Closing the model set — the claim nothing can state | 3 (**at stage depth**) | 1.5 w | a written answer to "may a puzzle require its own model count", and `zebra2-minus-15`'s 32 models either verifiable or the pipeline sentence rewritten |
 | [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 (1 done) | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
 
@@ -264,6 +264,25 @@ real work instead of a by-product
 ([P1d.3 § Why it is not free](p1d.3_model_sets/README.md)). The decisions the
 stages still reserve for the user are named as such: whether anything ships,
 and whether closed-world completion is adopted.
+
+> **S1d.3.1 landed 2026-08-25 and the shape it predicted held**: the
+> reconnaissance's three granularities became four over 13 entries rather than
+> one, and the extra one is where the answer changed sign. The product form
+> *does* exist — on `saturation/type-exclusivity/{colors,nationalities}`,
+> two-fact demos whose 9 models are 3 × 3 over two independent blocks — and the
+> same program with a third instance has one component and 35 models. So the
+> free-by-product path closes between two objects and three, which is a sharper
+> statement than "it never happens" and a worse one for shipping anything.
+> `zebra2-minus-15`'s coupling graph is K₂₃ minus five edges with a minimum
+> vertex separator of 17, which is what prices a decision diagram
+> ([`model_set_census.md`](p1d.3_model_sets/model_set_census.md)). The stage
+> also **took** the leftover-open probe P1d.2 handed forward rather than
+> declining it again: run on a discarded fork it is a read, and `zebra2`'s
+> unique model leaves **3 678** facts the blind enumerator would still propose
+> — none of them an attribute arrow, and most of them ill-typed, because the
+> kernel imposes no type system. That is
+> [S1d.3.3](p1d.3_model_sets/s1d.3.3_the_verdict.md)'s closed-world question
+> with a number on it.
 
 **P1d.4 reached stage depth on 2026-08-25**, the same day and the same way:
 three stage files, written because a reconnaissance replaced an assumption with

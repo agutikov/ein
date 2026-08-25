@@ -314,6 +314,128 @@ fn root_block(
     ]))
 }
 
+/// What the **blind** enumerator would still propose at one recorded state.
+///
+/// The probe M1d [P1d.2 handed forward] and
+/// [S1d.3.1](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.1_what_the_models_differ_in.md)
+/// takes: `complete` means *the active rung proposes nothing*, and the active
+/// rung is whichever of the three the program earned. A node the hrule rung or
+/// the obligations rung called complete may still have facts the blind
+/// enumerator would guess at, and their number is the difference between "one
+/// model" and "2ⁿ models" when the reading is open-world.
+///
+/// **It is a read, and that is the whole design.** The pass writes — a
+/// lookahead kill stores `(not h)` — so it runs on a fork of the state's KB
+/// and the fork is dropped on the next line. The state's own `state_key`, and
+/// therefore the model dedup that produced `k`, never sees it. P1d.2 declined
+/// this measurement because the pass it had in mind ran against the live node;
+/// the fork is the difference between the two, and it costs one generation
+/// call per *recorded model* rather than per entering.
+///
+/// The event log is silent for the same reason `--events` output is a
+/// contract: a probe nobody asked for must not narrate into a stream somebody
+/// is diffing. [`root_block`] runs on the live log deliberately and for the
+/// opposite reason — it is reproducing what ein.py recorded.
+///
+/// [P1d.2 handed forward]: `plans/m1d_satisfiability/p1d.2_obligations/hypotheses_from_obligations.md`
+fn leftover_at(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+) -> Result<(u64, Vec<(String, Json)>), String> {
+    use ein_infer::hypgen::generate_blind;
+    use ein_infer::saturator::Session;
+    use std::ops::ControlFlow;
+
+    let mut silent = ein_infer::events::Events::off();
+    let mut fork = kb.fork();
+    let mut stats = HypGenStats::new();
+    let mut emitted: Vec<ein_core::FactId> = Vec::new();
+    {
+        let mut s = Session {
+            kb: &mut fork,
+            terms,
+            ast,
+            events: &mut silent,
+            memo: SharedMemo::default(),
+        };
+        generate_blind(&mut s, &mut stats, &mut |f| {
+            emitted.push(f);
+            ControlFlow::Continue(())
+        })
+        .map_err(crate::common::compile_error_line)?;
+    }
+    // Attributed, because a bare count cannot answer the question the count is
+    // *for*: whether the leftover is the program failing to close a domain it
+    // means to close, or a relation it never meant to decide. On `zebra2` the
+    // answer is the second, and only the split says so.
+    let mut by_rel: std::collections::BTreeMap<String, i64> = Default::default();
+    for f in emitted {
+        let rel = terms.facts.get(f).0;
+        *by_rel.entry(terms.sym(rel).to_string()).or_default() += 1;
+    }
+    Ok((
+        stats.emitted,
+        by_rel.into_iter().map(|(k, n)| (k, Json::int(n))).collect(),
+    ))
+}
+
+/// The leftover-open count for every state the verdict recorded — M1d S1d.3.1.
+///
+/// **Off unless `EIN_LEFTOVER=1`**, and an env lever rather than a flag or a
+/// `(config …)` field for the two reasons the milestone has already settled:
+/// `SolverConfig` is rendered into the KB-shape digest, so a knob would
+/// re-bless every shape golden in the corpus, and every `solve` in the corpus
+/// sweep writes a summary, so a probe that ran by default would put a blind
+/// generation pass — ≈40 ms on the zebra family — into `cargo test` per model.
+/// The lever is `EIN_OBLIGATION_CHOICE`'s neighbour and is documented with it.
+///
+/// The block is emitted either way, because a field that appears only
+/// sometimes is a field a consumer has to guess about; `taken` is how it says
+/// which. `models` and `open_states` are index-aligned with the same two keys
+/// under `verdict` — which is why the sort key is rebuilt here rather than
+/// assumed — and `*_by_relation` is index-aligned with them, attributing each
+/// count to the relations the candidates were about.
+fn leftover_block(ast: &Ast, terms: &mut Terms, answer: &mut Answer) -> Result<Json, String> {
+    let taken = matches!(std::env::var("EIN_LEFTOVER").as_deref(), Ok("1"));
+    let mut models: Vec<&mut ein_infer::Solution> = Vec::new();
+    let mut opens: Vec<&mut ein_infer::Solution> = Vec::new();
+    if taken {
+        match answer {
+            Answer::Verdict(Verdict::Solution(s)) => models.push(s),
+            Answer::Verdict(Verdict::Ambiguity(bs)) => models.extend(bs.iter_mut()),
+            Answer::Verdict(Verdict::Open { states, .. }) => opens.extend(states.iter_mut()),
+            Answer::Verdict(Verdict::Contradiction { .. }) | Answer::Aborted { .. } => {}
+        }
+    }
+    type Row = (Vec<String>, u64, Vec<(String, Json)>);
+    let counted = |states: Vec<&mut ein_infer::Solution>,
+                   terms: &mut Terms|
+     -> Result<(Json, Json), String> {
+        let mut rows: Vec<Row> = Vec::new();
+        for st in states {
+            let mut key: Vec<String> = st.kb.facts().map(|f| sexpr(terms, f)).collect();
+            key.sort();
+            let (n, by_rel) = leftover_at(ast, terms, &mut st.kb)?;
+            rows.push((key, n, by_rel));
+        }
+        rows.sort_by(|a, b| a.0.cmp(&b.0));
+        Ok((
+            Json::Array(rows.iter().map(|r| Json::int(r.1 as i64)).collect()),
+            Json::Array(rows.into_iter().map(|r| Json::Object(r.2)).collect()),
+        ))
+    };
+    let (m, m_rel) = counted(models, terms)?;
+    let (o, o_rel) = counted(opens, terms)?;
+    Ok(Json::obj(vec![
+        ("taken", Json::Bool(taken)),
+        ("models", m),
+        ("models_by_relation", m_rel),
+        ("open_states", o),
+        ("open_states_by_relation", o_rel),
+    ]))
+}
+
 /// One quiescent state's outstanding obligations — M1d S1d.2.4.
 ///
 /// `total` is the instance count; `by_relation` attributes it, which only
@@ -437,7 +559,7 @@ pub fn build(
     ast: &Ast,
     terms: &mut Terms,
     kb: &mut Kb,
-    answer: &Answer,
+    answer: &mut Answer,
     stats: &MonotonicStats,
     config: &SolverConfig,
     source: &str,
@@ -460,12 +582,14 @@ pub fn build(
         ("exhausted".to_string(), Json::Bool(stats.exhausted)),
     ];
     verdict.extend(verdict_block(ast, terms, answer));
+    let leftover = leftover_block(ast, terms, answer)?;
     Ok(Json::obj(vec![
         ("schema", Json::str(SCHEMA)),
         ("source", Json::str(source)),
         ("verdict", Json::Object(verdict)),
         ("stats", stats_block(stats)),
         ("owes", owes_report(terms, owes)),
+        ("leftover", leftover),
         ("root", root_block(ast, terms, kb, events)?),
         ("config", config_block(config)),
     ]))

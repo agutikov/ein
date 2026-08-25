@@ -129,12 +129,12 @@ fn summary(path: &std::path::Path, regime: &str, budget: u64, exhaustive: bool) 
         ..SolveOptions::default()
     };
     let mut events = Events::off();
-    let solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts).ok()?;
+    let mut solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts).ok()?;
     let json = ein_cli::summary::build(
         &ast,
         &mut terms,
         &mut kb,
-        &solved.answer,
+        &mut solved.answer,
         &solved.stats,
         &config,
         &path.to_string_lossy(),

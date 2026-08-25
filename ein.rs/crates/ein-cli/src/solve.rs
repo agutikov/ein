@@ -566,7 +566,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
     };
 
     let t0 = Instant::now();
-    let solved = match solve(
+    let mut solved = match solve(
         &mut kb,
         &mut terms,
         &ast,
@@ -667,7 +667,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
             &ast,
             &mut terms,
             &mut kb,
-            &solved.answer,
+            &mut solved.answer,
             &solved.stats,
             &config,
             file,

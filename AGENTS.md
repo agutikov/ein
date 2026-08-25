@@ -248,7 +248,7 @@ constrained-reasoning research.
   in the repo — the divergence list, and
   [`docs/kernel/defined_behaviour.md`](docs/kernel/defined_behaviour.md), which
   states what "whatever ein.py did" used to define.
-- **`utils/`** — **twenty-one scripts, all of them driving `ein.rs`** since M1a
+- **`utils/`** — **twenty-two scripts, all of them driving `ein.rs`** since M1a
   [S1a.10.4](docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine),
   which deleted the eleven that compared two engines or measured the Python
   one, plus `corpus_cost.py` from
@@ -307,6 +307,23 @@ constrained-reasoning research.
   obligation** and keep exactly the verdict they had, 12 are discharged, 17 owe,
   and **12 moved to `Open`**
   ([openness_census.md](plans/m1d_satisfiability/p1d.2_obligations/openness_census.md)).
+  The twenty-second, **`model_set_census.py`**, is M1d S1d.3.1's and is the
+  first whose subject is the **answer**: what is a model set made of, and does
+  it *factor*? It turns `--json-summary`'s `verdict.solutions` into decision
+  variables — every varying positive atom a Boolean, and only a `functional` /
+  `bijective` declaration read off the models' own facts licensing the collapse
+  of `(R a ·)` into one multi-valued variable — then asks independence at three
+  granularities plus a fourth nothing had asked: is the set a **free grid** over
+  a small determining basis? Its answer, 2026-08-25: **13** corpus entries have
+  a model set (four more than a `-m 2` count sees), **2** of them partition and
+  both are two-object demos where the three-object sibling does not, 5 are a
+  free grid and every one has `k ≤ 4`, and `examples/zebra2-minus-15.ein`'s 23
+  varying variables are **one** coupling component whose graph is K₂₃ minus five
+  edges with a minimum vertex separator of **17**
+  ([model_set_census.md](plans/m1d_satisfiability/p1d.3_model_sets/model_set_census.md)).
+  It also carries the probe P1d.2 declined — `EIN_LEFTOVER=1`, above — and its
+  number: `zebra2`'s **unique** model leaves **3 678** facts the blind
+  enumerator would still propose, none of them an attribute arrow.
 - **`build.sh`** — **everything this repo builds, in one command**: the Rust
   workspace (`--release` by default, into `ein.rs/target/`) and then the three
   C baselines in `c/` (into the gitignored `build/`). `--debug`,
@@ -370,6 +387,7 @@ EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
 EIN_OBLIGATION_CHOICE=off|fail-first ein solve …             # the M1d S1d.2.5 rung levers
+EIN_LEFTOVER=1    ein solve … --json-summary out.json        # the M1d S1d.3.1 probe
 ```
 
 **`EIN_OBLIGATION_CHOICE`** is the obligations rung's measurement lever
@@ -380,6 +398,20 @@ engine and the control arm every number in
 is measured against. It is deliberately not a `(config …)` field: `SolverConfig`
 is rendered into the KB-shape digest, so a knob whose settings are being
 compared would re-bless every shape golden in the corpus.
+
+**`EIN_LEFTOVER=1`** is its neighbour and M1d S1d.3.1's probe: it fills
+`--json-summary`'s **`leftover`** block with what the **blind** enumerator
+would still propose at each recorded model or open state. `complete` means
+*the active rung proposes nothing*, so a node the hrule or obligations rung
+called complete can still have facts a guess could be about — and their count
+is what separates *one model* from *2ⁿ models* when the reading is open-world
+(`zebra2`'s **unique** model leaves **3 678**). It runs on a discarded fork,
+which is what makes it a read where
+[P1d.2 declined one](plans/m1d_satisfiability/p1d.2_obligations/hypotheses_from_obligations.md):
+with the lever on and off, every field of every summary outside that block is
+identical on all 121 entries that reach a fixpoint. Off by default because it
+costs a generation pass per recorded state (≈40 ms on the zebra family) and
+every corpus `solve` in `cargo test` writes a summary.
 
 **`./run_tests.sh` runs every step of the per-commit CI tier**, in its order,
 since M1c S1c.1.5 — five static checks (~5 s warm, `--tests-only` skips them

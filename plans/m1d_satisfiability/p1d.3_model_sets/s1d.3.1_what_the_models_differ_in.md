@@ -5,6 +5,52 @@
 **Depends on:** [P1d.2](../p1d.2_obligations/README.md) — a state can say what
 it owes, which is what makes "the candidate sets *are* the answer" a testable
 sentence rather than a hope.
+**Status: done 2026-08-25.** The instrument, the sweep and the probe — banked
+in [`model_set_census.md`](model_set_census.md). See § What it found.
+
+## What it found
+
+| claim | asked for | measured |
+|---|---|---|
+| the instrument | `utils/model_set_census.py`, the two censuses' conventions | **exists**, the twenty-second script; `--json`, `-k`, `$EIN_BIN`, argv mirroring `plan.rs`, ~9 min for the corpus |
+| the factorisation, everywhere | every multi-model entry, not the reconnaissance's one | **13 entries**, not the nine the phase README counted — a `-m 2` count against *the depth that finds every model*. **10 of 13 exhausted** |
+| does anything factor | a number, in the form that can be false | **by relation 0 of 20 independent · by partition 2 of 13 · by basis 5 of 13**, and no entry has `Π dom == k` |
+| the coupling, made of what | components, and for the one interesting entry what relates the variables | `zebra2-minus-15`: **one** component, K₂₃ minus five edges, **minimum vertex separator 17**; within-relation 42/42 by `injective`, across 206/211 by eleven clues |
+| the leftover-open count | measured, or declined in P1d.2's form | **measured.** `hypgen::generate_blind` + `--json-summary`'s `leftover` block under `EIN_LEFTOVER=1`, on a discarded fork. 244 states probed; `zebra2`'s unique model leaves **3 678** |
+| the census, banked | with the size of the thing being described | [`model_set_census.md`](model_set_census.md) — 32 × 435 = **13 920 fact lines** against `solve -e`'s **516** |
+
+**Three things the stage found that nothing asked for.**
+
+- **The product form is real and it dies at three objects.**
+  `saturation/type-exclusivity/{colors,nationalities}` — two instances — split
+  9 models as 3 × 3 over two independent blocks and are the only entries in the
+  corpus that partition. `pets.ein` is the same program with three instances:
+  one component, 35 models. So the free-by-product path is not a fantasy, it is
+  a property of fixtures too small to need it.
+- **Two variables are in every minimum key of `zebra2-minus-15`** —
+  `pet-loc:Horse` and `pet-loc:Zebra` — and `pet-loc:Zebra` is also the
+  variable with *all five* pairwise-independent partners. Pairwise independence
+  is not joint independence, and the variable that looks freest edge by edge is
+  the one no description can omit. It answers
+  [S1d.3.2](s1d.3.2_representations.md)'s objection to form (b) — *why these
+  four* — with something better than "minimality".
+- **The 3 678 leftover facts are not what the phrase suggests.** Not one is an
+  attribute arrow: all five `*-loc` relations are decided to the last well-typed
+  pair, and the whole count sits on `is-a`, `is-a*`, `next-to` and `right-of` —
+  exactly the four the obligations rung calls `uncovered` — where most
+  candidates are ill-typed, because the kernel imposes no type system by
+  design. The literal open-world reading is not merely large, it is unusable,
+  and that is a stronger input to
+  [S1d.3.3](s1d.3.3_the_verdict.md) than the count alone.
+
+**One task did not need doing the way the plan drew it**, recorded rather than
+left looking done: T1d.3.1.2 asked the instrument to *refuse to count* a
+two-model entry's trivial factorisation. It reports `degenerate` for an entry
+with fewer than two varying variables, and **no corpus entry is degenerate** —
+even the `k = 2` toys have 2–8 varying variables, so the two-model factorisation
+the task worried about does not arise. What does arise is the opposite: a
+`k = 2` entry with 8 varying variables and one degree of freedom, which the
+*basis* column catches and the partition column cannot.
 
 ## Context
 

@@ -453,7 +453,7 @@ fn check_query(
     };
 
     let mut dumper = NoDumper;
-    let solved = match solve(kb, terms, ast, &mut events, &mut dumper, &opts) {
+    let mut solved = match solve(kb, terms, ast, &mut events, &mut dumper, &opts) {
         Ok(s) => s,
         Err(SolveError::Budget { reason, .. }) => {
             // Never a pass and never a failure: the claim was neither
@@ -500,7 +500,7 @@ fn check_query(
             ast,
             terms,
             kb,
-            &solved.answer,
+            &mut solved.answer,
             &solved.stats,
             &config,
             &file,

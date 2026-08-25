@@ -21,7 +21,7 @@ about a word the engine already says.
 | [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | **decided 2026-08-24** — (c) a rule shape asserting the reserved verdict atom (form G); [S1d.2.3](p1d.2_obligations/s1d.2.3_the_form.md) records it |
 | [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | **answered for obligations 2026-08-25** — [`domain_contract.md`](p1d.2_obligations/domain_contract.md); open for the general lower-bound form nobody has asked for |
 | [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **closed 2026-08-25** — it may, and on this corpus it does not: [S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) shipped the ladder and **no counter moved** ([the record §2](p1d.2_obligations/hypotheses_from_obligations.md)) |
-| [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | open — [P1d.3](p1d.3_model_sets/README.md); "enumerate, and say so" is an acceptable answer |
+| [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | open — [P1d.3](p1d.3_model_sets/README.md); the factorisation is **measured** ([the census](p1d.3_model_sets/model_set_census.md), 2026-08-25) and the decision is [S1d.3.3](p1d.3_model_sets/s1d.3.3_the_verdict.md)'s. "Enumerate, and say so" is an acceptable answer |
 | [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | **closed 2026-08-25** — never of a state that **owes** something it can still pay; the ten entries owe nothing because they state no obligation, and keep their word ([the census §5](p1d.2_obligations/openness_census.md)) |
 | [Q-M1d.7](#q-m1d7--may-a-program-require-its-own-model-count) | May a program require its own model count? | open — [P1d.4](p1d.4_model_set_closure/README.md); arrived from M1c [S1c.1.2](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects) on 2026-08-24 |
 
@@ -233,6 +233,20 @@ adapters that compare Ein's answer to Clingo's.
 "Enumerate, and say so" is a legitimate answer. So is "report the factorisation
 and enumerate on request". What is not legitimate is a compact form that only
 the engine can read.
+
+**Half of it is now measured** — [`model_set_census.md`](p1d.3_model_sets/model_set_census.md),
+S1d.3.1, 2026-08-25. *"Report the factorisation"* has a price: no corpus entry
+has `Π dom == k`; **2 of 13** model sets partition into independent blocks and
+both are two-object demos whose three-object sibling does not; **5 of 13** are a
+free grid over a small basis and every one has `k ≤ 4`. On the 32-model puzzle
+the 23 varying variables are one coupling component, K₂₃ minus five edges,
+minimum separator 17 — so a decision diagram has no good variable order and
+the certain core over-approximates by 3.11 × 10¹².
+
+What the question still turns on is the fourth column, which is not a number:
+whether the person who reads the trace can read the form. That is
+[S1d.3.2](p1d.3_model_sets/s1d.3.2_representations.md)'s to price and
+[S1d.3.3](p1d.3_model_sets/s1d.3.3_the_verdict.md)'s to decide.
 
 ## Q-M1d.6 — May `Contradiction` be said with `exhausted = False`?
 

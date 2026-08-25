@@ -174,7 +174,7 @@ the deferral and the evidence that would reverse it. The candidate trip-wire —
 ## Acceptance
 
 - The four-column table is filled for (a)–(e), every cell traceable to a
-  measurement in [`model_set_census.md`](s1d.3.1_what_the_models_differ_in.md).
+  measurement in [`model_set_census.md`](model_set_census.md).
 - **(a) and (b) exist as printed output**, on the phase's real case, in the
   record — not as descriptions of what they would look like.
 - The readability test is run and its result recorded, including a negative:

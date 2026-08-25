@@ -222,6 +222,55 @@ pub fn generate(
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<(), CompileError> {
+    generate_rungs(s, stats, f, Rungs::Ladder)
+}
+
+/// [`generate`] with the ladder's two upper rungs skipped — the blind
+/// combinatorial enumerator alone, whatever the program declares.
+///
+/// **Not a search entry point.** The search always walks the ladder; this
+/// answers a question *about* a state that the ladder cannot be asked, because
+/// the rung that is active there stops as soon as its own candidates run out:
+/// *how many facts would the blind enumerator still propose at a node the rung
+/// called complete?* That number is the state's leftover-open count — M1d
+/// [S1d.3.1](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.1_what_the_models_differ_in.md)
+/// — and it is what separates "one model" from "2ⁿ models" when the reading
+/// is open-world.
+///
+/// The caller **must** hand it a KB it is willing to see written to: with
+/// `enable_lookahead_kill_cache` on, the walk writes `(not h)` per lookahead
+/// kill, exactly as the search's own generation does. On a fork that is then
+/// discarded that write is invisible; on the node itself it would move the
+/// `state_key` and therefore the model dedup, which is why P1d.2 declined the
+/// probe rather than taking it against a live node.
+pub fn generate_blind(
+    s: &mut Session<'_>,
+    stats: &mut HypGenStats,
+    f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
+) -> Result<(), CompileError> {
+    generate_rungs(s, stats, f, Rungs::BlindOnly)
+}
+
+/// Which rungs of the generation ladder a call is allowed to use.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Rungs {
+    /// Every rung, in order — what the search runs.
+    Ladder,
+    /// The bottom rung only — [`generate_blind`]'s probe.
+    BlindOnly,
+}
+
+/// The ladder, with the rungs the caller is allowed to use.
+///
+/// One body for both entry points, because the setup — the lookahead, the
+/// `(query …)` relation lists, the per-call `Ctx` — is what every rung shares,
+/// and a second copy of it is a second place for the filter order to drift.
+fn generate_rungs(
+    s: &mut Session<'_>,
+    stats: &mut HypGenStats,
+    f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
+    rungs: Rungs,
+) -> Result<(), CompileError> {
     ein_core::counters::bump(|c| c.hypgen_call += 1);
     let cfg = s.kb.program().config.clone().unwrap_or_default();
     // Built once per call (it compiles the rule plans, emitting `compile`
@@ -241,7 +290,7 @@ pub fn generate(
         seen: FxHashSet::default(),
     };
 
-    if !s.kb.program().hrules.is_empty() {
+    if rungs == Rungs::Ladder && !s.kb.program().hrules.is_empty() {
         // Rung 1 — the user's own generator, an override. `(hrule …)` presence
         // *is* the switch, exactly as design/07 wrote it: a puzzle that says
         // what to guess is never second-guessed by what it owes.
@@ -254,7 +303,7 @@ pub fn generate(
     // Rung 2 — the theory's own generator: branch on what the state owes.
     // `Mode::Declined` is the one answer that falls through, and it falls
     // through having emitted nothing.
-    if !s.kb.program().obligations.is_empty() {
+    if rungs == Rungs::Ladder && !s.kb.program().obligations.is_empty() {
         let closed = closed_relations(s.kb, s.terms);
         let report = crate::oblgen::generate(
             s,
