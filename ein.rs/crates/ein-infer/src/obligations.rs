@@ -226,7 +226,7 @@ struct Hit {
 }
 
 /// One plan per `(obligation rule, activator)`, in report order.
-fn plans_for(
+pub(crate) fn plans_for(
     kb: &Kb,
     terms: &mut Terms,
     ast: &Ast,
@@ -285,7 +285,7 @@ fn narrate(instances: &[Owed], terms: &Terms, events: &mut Events) {
 /// `?R` into a `Slot::Const` naming a relation ([`crate::compile`]: "the
 /// activator fact binds the rule's parameter list **before** matching
 /// begins"). Nothing here re-derives it.
-fn open_argument(plan: &Plan, terms: &Terms) -> Option<Symbol> {
+pub(crate) fn open_argument(plan: &Plan, terms: &Terms) -> Option<Symbol> {
     let Some(Slot::Nested { rel, slots }) = plan.assert_template() else {
         return None;
     };

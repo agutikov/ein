@@ -102,7 +102,15 @@ constrained-reasoning research.
   fixture) plus focused per-feature fixtures (`features/`, `branching/`,
   `saturation/`, `lattice/`, `domain_elim/`, `broken/`).
   [`examples/README.md`](examples/README.md) is a **catalog** — one line
-  per file / sub-dir.
+  per file / sub-dir. **Four of the zebra files are generated**, by
+  `examples/gen_zebra2_variants.py` from `zebra2.ein`, and `--check` is in the
+  gate: `zebra2-minus-15` (clue dropped), `ein-bugs/zebra2-bad` (clue added)
+  and — since M1d S1d.2.5 —
+  [`zebra2-obligations.ein`](examples/zebra2-obligations.ein) and its
+  `-minus-15` twin, which are `zebra2` with the `(hrule guess …)` and the
+  `(query … :hrules …)` clause **deleted and nothing else**. They are what
+  exercises the obligations rung, and they solve to the same models in the same
+  number of enterings as the hrule path they dropped.
 - **`docs/kernel/inference/zebra_walkthrough.md`** — the Wikipedia human
   Zebra walkthrough annotated as ein inference (NL↔ein rule↔branch-depth
   table, hypotheses with their contradictions and no-good clauses; **moved
@@ -121,6 +129,14 @@ constrained-reasoning research.
   saturation agenda, and are read by one pass over the quiescent KB. No puzzle
   changes a line: the two setup fan-outs pick them up, at a cost of two stored
   activator facts per declaration (50 across the corpus's 13 such entries).
+  **Since S1d.2.5 those four rules are also a hypothesis generator.**
+  Generation is a *ladder* — the puzzle's `(hrule …)` if it declares one, else
+  the facts that would discharge what the state owes
+  ([`oblgen.rs`](ein.rs/crates/ein-infer/src/oblgen.rs)), else the blind
+  combinatorial enumerator — so `(bijective color-loc)` now tells the search
+  what to guess and `:hrules` is an override rather than the only way in. A
+  program declaring no obligation rule never consults the middle rung and its
+  streams are byte-identical to before.
 - **`tests/`** — **the ein-lang test suites**, and since M1c S1c.1.4 a third
   corpus root beside `examples/` and `stdlib/`: a `.ein` here with no
   `corpus.toml` entry fails the same completeness check. Its one subject is
@@ -320,7 +336,17 @@ EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 2 slow en
 EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
+EIN_OBLIGATION_CHOICE=off|fail-first ein solve …             # the M1d S1d.2.5 rung levers
 ```
+
+**`EIN_OBLIGATION_CHOICE`** is the obligations rung's measurement lever
+(default `rule-order`): `fail-first` walks the owed instances smallest-set
+first, and **`off` declines the rung altogether**, which is the pre-S1d.2.5
+engine and the control arm every number in
+[`hypotheses_from_obligations.md`](plans/m1d_satisfiability/p1d.2_obligations/hypotheses_from_obligations.md)
+is measured against. It is deliberately not a `(config …)` field: `SolverConfig`
+is rendered into the KB-shape digest, so a knob whose settings are being
+compared would re-bless every shape golden in the corpus.
 
 **`./run_tests.sh` runs every step of the per-commit CI tier**, in its order,
 since M1c S1c.1.5 — five static checks (~5 s warm, `--tests-only` skips them

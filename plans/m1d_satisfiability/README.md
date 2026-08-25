@@ -230,6 +230,22 @@ are decided by numbers P1d.2 will move: (b) depends on `alive` shrinking, and
 `alive` shrinks in **3 of 46** multi-layer cells today — an obligation-driven
 generator is the one thing that would change that.
 
+> **And that prediction now has an answer, which is *not by itself*.**
+> [S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) shipped
+> the obligation-driven generator on 2026-08-25, and on the zebra family its
+> `alive` **is** the hrule path's `alive` — the same 56 at layer 1, the same 23
+> at layer 2, the same 618 076 enterings at depth 5. What it changes is the
+> *floor*: against the blind enumerator on the same file, layer 1 is 56 against
+> 3 734. So the rung buys a search where a puzzle would otherwise have had to
+> hand-write one, and buys nothing where the puzzle already did. What is still
+> unspent is the **traversal** — the rung proposes the union of the owed
+> instances because a breadth-first lattice over a fixed `alive` cannot take a
+> per-node branch, and the choice heuristic that a depth-first one would need
+> is built and
+> [measured inert](p1d.2_obligations/hypotheses_from_obligations.md) waiting
+> for it. That is the shape of what P1d.10 inherits, and it is a smaller
+> inheritance than this paragraph expected.
+
 ## How deep this plan is
 
 **P1d.10 is at stage depth** — five stage files, written when it was P1a.12,

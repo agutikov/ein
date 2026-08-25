@@ -4,6 +4,47 @@
 **Estimate:** 3 days
 **Depends on:** [S1d.2.4](s1d.2.4_obligations_in_the_saturator.md) (the tally
 exists), [S1d.2.2](s1d.2.2_domains.md) (the open-extent inventory)
+**Status: done 2026-08-25.** The ladder, the two fixtures, the completeness
+test, and the enterings comparison — banked in
+[`hypotheses_from_obligations.md`](hypotheses_from_obligations.md). See § What
+it found; the headline is that **no counter moved**.
+
+## What it found
+
+| claim | asked for | measured |
+|---|---|---|
+| `zebra2-obligations` vs `zebra2` | same model, enterings compared | **every counter identical** — 101 enterings, 34 alive, 67 dead-post, 2 layers, 67 no-goods, 56 at layer 1, one model, the same fact set |
+| `zebra2-minus-15-obligations` vs the 618 076 / 416 s baseline | all 32 models, enterings compared, `exhausted` honest | **identical at full depth**: 618 076 enterings, 598 955 alive, 19 121 clauses, 5 layers, 32 models, equal model sets, `exhausted = false` on both — 422.2 s against 429.9 s |
+| the branch, against the blind generator | the milestone's central claim | **56 against 3 734** at layer 1 — 66.7×, and the blind arm does not finish |
+| the choice heuristic | measured before either is defaulted | **inert, 0 difference on every counter**, and the reason is the traversal rather than the fixtures ([§4](hypotheses_from_obligations.md)) |
+| the determinate corpus | identical, verdicts *and* counters | **identical.** 21 new exit cells and one modified (`render rules` on the one file whose text changed); of 8 081 shape digests, 90 are new, 42 are the `--hyp-stats` previews of the 21 programs that reach the rung, 36 are that same file, and **0** are anything else |
+| the cost | `zebra -e` inside the P1a.6 baseline | **45.8 ms** against a `5b6feb8` build's 46.2; the rung is off for every program that declares no obligation rule |
+
+**Two things the stage did not build the way the plan drew them**, both
+recorded with their arguments in
+[the record §1](hypotheses_from_obligations.md):
+
+- **the rung proposes the union of the accepted obligations' candidates**, not
+  one chosen obligation's. "Choose one and branch" is a *depth-first* move; the
+  engine's search is a breadth-first lattice over root's `alive`, where layer 2
+  is pairs drawn from layer 1's set — so one obligation's candidates alone make
+  every model that needs a second requirement's arrow unreachable at every
+  depth. The choice heuristic is built and measured anyway, because it is the
+  interface a depth-first traversal needs on day one.
+- **a declined obligation declines the whole call.** The domain contract's C4
+  allows falling through "to another obligation"; that loses completeness
+  silently, since the declined obligation's witnesses are then proposed by
+  nobody. Declining wholesale — to the blind enumerator, narrated — is what
+  makes the rung's exhaustiveness claim unconditional.
+
+**And one thing it found that nothing asked for**: the pre-existing corpus
+reaches the new rung's *generating* mode **nowhere**. 114 of the 156 loadable
+files declare no obligation rule, 19 override with `:hrules`, 11 are *stuck*
+(they owe, and `:no-hypothesis` names the relation they owe), 9 owe nothing,
+and 1 declines. There was no third case — which is precisely why T1d.2.5.4
+asked for a fixture, and why `06_blind_enumeration.ein` had to grow a second
+obligation to keep exercising the blind enumerator at all: under the ladder, a
+program that declares `(bijective …)` no longer reaches it.
 
 ## Context
 

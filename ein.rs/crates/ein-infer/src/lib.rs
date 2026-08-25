@@ -40,6 +40,7 @@ pub mod match_;
 pub mod mt19937;
 pub mod naf_deps;
 pub mod nogoods;
+pub mod oblgen;
 pub mod obligations;
 pub mod plan;
 pub mod predicates;

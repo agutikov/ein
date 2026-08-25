@@ -583,6 +583,16 @@ re-architecture (O7) would bring.
 > hypothesis-generation pass offers ~125 candidates on the zebra puzzles, not
 > the ~18 k a blind combinatorial enumerator would, because an `(hrule …)`
 > replaces the enumeration outright.
+>
+> **And since M1d [S1d.2.5](../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md)
+> the hrule is not the only thing that can replace it.** Generation is a
+> ladder — the puzzle's hrules if it has any, else the facts that would
+> discharge what the state *owes*, else the blind enumeration — and the middle
+> rung costs the puzzle nothing to declare, because `(bijective R)` already
+> said it. On `examples/zebra2-obligations.ein`, which is `zebra2.ein` with the
+> hrule deleted and nothing else, layer 1 is **56 candidates against the blind
+> enumerator's 3 734**, and the search that follows is the hrule path's
+> entering for entering: 101 enterings, two layers, the same model.
 
 ### O9 — Model canonicalisation
 

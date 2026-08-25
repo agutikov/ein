@@ -637,11 +637,32 @@
 0    examples/zebra2-hints.ein :: saturate --dump
 0    examples/zebra2-hints.ein :: solve
 0    examples/zebra2-hints.ein :: solve -e
+0    examples/zebra2-minus-15-obligations.ein :: render constraints
+0    examples/zebra2-minus-15-obligations.ein :: render rules
+0    examples/zebra2-minus-15-obligations.ein :: saturate
+0    examples/zebra2-minus-15-obligations.ein :: saturate --dump
+0    examples/zebra2-minus-15-obligations.ein :: solve
 0    examples/zebra2-minus-15.ein :: render constraints
 0    examples/zebra2-minus-15.ein :: render rules
 0    examples/zebra2-minus-15.ein :: saturate
 0    examples/zebra2-minus-15.ein :: saturate --dump
 0    examples/zebra2-minus-15.ein :: solve
+0    examples/zebra2-obligations.ein :: render constraints
+0    examples/zebra2-obligations.ein :: render lattice
+0    examples/zebra2-obligations.ein :: render rules
+0    examples/zebra2-obligations.ein :: saturate
+0    examples/zebra2-obligations.ein :: saturate --dump
+0    examples/zebra2-obligations.ein :: solve
+0    examples/zebra2-obligations.ein :: solve --dump-states {out}/states
+0    examples/zebra2-obligations.ein :: solve --trace {out}/trace.md
+0    examples/zebra2-obligations.ein :: solve -K
+0    examples/zebra2-obligations.ein :: solve -L
+0    examples/zebra2-obligations.ein :: solve -e
+0    examples/zebra2-obligations.ein :: solve -m 2
+0    examples/zebra2-obligations.ein :: solve -n 3
+0    examples/zebra2-obligations.ein :: solve -o score-sum
+0    examples/zebra2-obligations.ein :: solve -p -s
+0    examples/zebra2-obligations.ein :: solve -y
 0    examples/zebra2.ein :: render constraints
 0    examples/zebra2.ein :: render lattice
 0    examples/zebra2.ein :: render rules
@@ -842,7 +863,7 @@
 0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: solve
 0    tests/stdlib/bijection/05_typecheck_arg1_violated.ein :: test
 0    tests/stdlib/bijection/06_blind_enumeration.ein :: render constraints
-1    tests/stdlib/bijection/06_blind_enumeration.ein :: render rules
+0    tests/stdlib/bijection/06_blind_enumeration.ein :: render rules
 0    tests/stdlib/bijection/06_blind_enumeration.ein :: saturate
 0    tests/stdlib/bijection/06_blind_enumeration.ein :: solve
 0    tests/stdlib/bijection/06_blind_enumeration.ein :: test

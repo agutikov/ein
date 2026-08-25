@@ -50,7 +50,9 @@ Ambiguity and Contradiction task-class variants below);
 |------|-------------|
 | [`zebra2-hints.ein`](zebra2-hints.ein) | `zebra2` with solution hints injected (S1.5a.11 diagnostic) |
 | [`zebra2-minus-15.ein`](zebra2-minus-15.ein) | `zebra2` with condition (15) removed — a reduced, under-determined variant |
-| [`gen_zebra2_variants.py`](gen_zebra2_variants.py) | generator for `zebra2` clue-dropped variants |
+| [`zebra2-obligations.ein`](zebra2-obligations.ein) | `zebra2` with the `(hrule guess …)` and its `:hrules` clause **removed** — the theory alone drives the search (M1d S1d.2.5's obligations rung) |
+| [`zebra2-minus-15-obligations.ein`](zebra2-minus-15-obligations.ein) | both at once: under-determined *and* hypothesis-rule-free — 32 models, found the way the hrule path finds them |
+| [`gen_zebra2_variants.py`](gen_zebra2_variants.py) | generator for the four `zebra2` variants — clue-dropped, clue-added and hrule-free. `--check` is what makes "nothing else changed" a test |
 
 ## Feature fixtures (per engine capability)
 

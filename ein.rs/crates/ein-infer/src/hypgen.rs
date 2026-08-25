@@ -1,10 +1,13 @@
 //! Hypothesis generation — the enumerator that proposes what to guess.
 //!
-//! Two modes, and hrule presence *is* the switch: rule-driven when the puzzle
-//! declares any `(hrule …)` ([`crate::hrule`]), blind combinatorial otherwise.
-//! Then an eight-stage filter pipeline whose **attribution** — which counter a
-//! drop lands in — is a T1 observable through [`HypGenStats`] and through the
-//! `hyp` / `hypskip` events.
+//! **Three** modes since M1d S1d.2.5, and the switch is a ladder: rule-driven
+//! when the puzzle declares any `(hrule …)` ([`crate::hrule`]), otherwise
+//! obligation-driven while the state owes something it may branch on
+//! ([`crate::oblgen`]), otherwise blind combinatorial. Then an eight-stage
+//! filter pipeline whose **attribution** — which counter a drop lands in — is
+//! a T1 observable through [`HypGenStats`] and through the `hyp` / `hypskip`
+//! events, and every rung feeds it: what changes between them is which
+//! candidates are proposed, never what happens to one afterwards.
 //!
 //! ### What must not change
 //!
@@ -118,6 +121,11 @@ pub struct HypGenStats {
     pub emitted: u64,
     pub filtered: [u64; 4],
     pub pre_candidate: [u64; 4],
+    /// Which rung of the ladder this call took, and what it found owed — M1d
+    /// S1d.2.5. All zeros and [`crate::oblgen::Mode::Blind`] for a program
+    /// that declares no obligation rule, which is the shape every counter
+    /// baseline was taken under.
+    pub rung: crate::oblgen::RungReport,
 }
 
 impl HypGenStats {
@@ -129,7 +137,7 @@ impl HypGenStats {
         self.filtered[d as usize] += 1;
     }
 
-    fn skip(&mut self, s: Skip) {
+    pub(crate) fn skip(&mut self, s: Skip) {
         self.pre_candidate[s as usize] += 1;
     }
 
@@ -157,6 +165,23 @@ impl HypGenStats {
                 let k = SKIPS[i].as_str();
                 out.push(format!("  pre.{k:23} {n}"));
             }
+        }
+        // The ladder's rung, and **only** the rung this stage added: a program
+        // that reaches the blind enumerator or declares an `(hrule …)` prints
+        // what it printed before S1d.2.5, to the byte. A draft that printed it
+        // for the hrule rung too moved **206** of the corpus's 8 081 shape
+        // digests; restricting it to this stage's own rung moves 42, and those
+        // 42 are the programs the ladder is actually about.
+        use crate::oblgen::Mode;
+        let r = &self.rung;
+        if matches!(r.mode, Mode::Obligations | Mode::Stuck | Mode::Declined) {
+            out.push(format!("  rung               {}", r.mode.as_str()));
+            if r.owed > 0 || r.branches > 0 || r.declined > 0 {
+                out.push(format!("  rung.owed          {}", r.owed));
+                out.push(format!("  rung.branches      {}", r.branches));
+                out.push(format!("  rung.declined      {}", r.declined));
+            }
+            out.push(format!("  rung.uncovered     {}", r.uncovered));
         }
         out
     }
@@ -217,9 +242,33 @@ pub fn generate(
     };
 
     if !s.kb.program().hrules.is_empty() {
+        // Rung 1 — the user's own generator, an override. `(hrule …)` presence
+        // *is* the switch, exactly as design/07 wrote it: a puzzle that says
+        // what to guess is never second-guessed by what it owes.
+        stats.rung.mode = crate::oblgen::Mode::Hrules;
         let hrules = Hrules::new(s)?;
         let _ = hrules.candidates(s, &mut |s, fact| emit(s, &mut ctx, stats, fact, f));
         return Ok(());
+    }
+
+    // Rung 2 — the theory's own generator: branch on what the state owes.
+    // `Mode::Declined` is the one answer that falls through, and it falls
+    // through having emitted nothing.
+    if !s.kb.program().obligations.is_empty() {
+        let closed = closed_relations(s.kb, s.terms);
+        let report = crate::oblgen::generate(
+            s,
+            &allowed,
+            &excluded,
+            &closed,
+            crate::oblgen::Choice::from_env(),
+            stats,
+            &mut |s, stats, fact| emit(s, &mut ctx, stats, fact, f),
+        )?;
+        stats.rung = report;
+        if report.mode != crate::oblgen::Mode::Declined {
+            return Ok(());
+        }
     }
 
     // T1a.4.1.1 — hoisted out of `_fill_slot`, which ein.py calls once per

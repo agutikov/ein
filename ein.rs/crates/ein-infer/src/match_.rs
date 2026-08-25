@@ -428,6 +428,60 @@ impl Matcher {
         found
     }
 
+    /// A guard's sub-plan with one step **removed** — the obligation rung's
+    /// candidate scan (M1d [S1d.2.5]).
+    ///
+    /// [`Matcher::holds`] asks whether the guard has a match. This asks what
+    /// it would take to give it one: the witness step is *skipped* rather than
+    /// unified, so the walk enumerates the rest of the sub-plan — the domain
+    /// scan — and the caller reads the witness's slots off the register file.
+    /// Those are the facts the obligation is owed, `{b : G(b)}` with the
+    /// witness step's own slots resolved against each `b`.
+    ///
+    /// Skipping is not the same as satisfying: the step contributes no
+    /// bindings, so a slot of it that no other step binds stays unbound and
+    /// the caller yields no candidate for that match. The stdlib shapes bind
+    /// every witness slot from the scan or from the parent, which is what
+    /// [`ein_ir`]'s load-time projection check guarantees.
+    ///
+    /// [S1d.2.5]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md`
+    #[allow(clippy::too_many_arguments)]
+    pub fn scan_without(
+        &mut self,
+        kb: &Kb,
+        terms: &Terms,
+        ast: &Ast,
+        plan: &Plan,
+        guard: &NafGuard,
+        parent: &[Value],
+        at: usize,
+        f: &mut dyn FnMut(&[Value]) -> ControlFlow<()>,
+    ) {
+        self.reset(guard.n_regs, guard.n_slots as usize, 0, 0);
+        // The scope projection, exactly as `holds` does it and untrailed for
+        // the same reason: a guard produces no provenance.
+        for (r, from) in guard.scope_of.iter().enumerate() {
+            if let Some(p) = from {
+                self.regs[r] = parent[*p as usize];
+            }
+        }
+        let c = Ctx {
+            kb,
+            terms,
+            ast,
+            plan,
+        };
+        let w = Walk {
+            steps: guard.sub,
+            i: 0,
+            ordinal: 0,
+            skip: Some(at),
+        };
+        self.in_guard = true;
+        let _ = self.walk(c, w, &mut |m| f(m.regs()));
+        self.in_guard = false;
+    }
+
     // ── The driver ─────────────────────────────────────────────────
 
     fn run_disjunct(

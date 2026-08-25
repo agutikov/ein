@@ -277,6 +277,16 @@ pub fn print_root_hyp_preview(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Resu
 
     if order.is_empty() {
         println!("root hyps        0 candidates");
+        // …and *why* there are none, when the ladder is what decided it. A
+        // state that owes something it may not branch on prints the same
+        // "0 candidates" as one that is finished, and telling them apart is
+        // the whole of M1d S1d.2.5's stuck report. Nothing prints here for a
+        // program with no obligation rule, so no existing preview moves.
+        if stats.rung.mode != ein_infer::oblgen::Mode::Blind {
+            for line in stats.report_lines() {
+                println!("  {line}");
+            }
+        }
         return Ok(());
     }
     let total: u64 = counts.iter().sum();

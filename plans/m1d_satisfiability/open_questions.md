@@ -20,7 +20,7 @@ about a word the engine already says.
 | [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1d.10](p1d.10_exhaustive_search/README.md); `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
 | [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | **decided 2026-08-24** — (c) a rule shape asserting the reserved verdict atom (form G); [S1d.2.3](p1d.2_obligations/s1d.2.3_the_form.md) records it |
 | [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | **answered for obligations 2026-08-25** — [`domain_contract.md`](p1d.2_obligations/domain_contract.md); open for the general lower-bound form nobody has asked for |
-| [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **decided in principle 2026-08-24** — the user: obligations supersede `:hrules`; [S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) executes it with the re-baseline |
+| [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **closed 2026-08-25** — it may, and on this corpus it does not: [S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) shipped the ladder and **no counter moved** ([the record §2](p1d.2_obligations/hypotheses_from_obligations.md)) |
 | [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | open — [P1d.3](p1d.3_model_sets/README.md); "enumerate, and say so" is an acceptable answer |
 | [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | open — ten corpus entries already say it; [S1d.2.6](p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md) closes it: the word is decided (`Open`), the partition is measured first |
 | [Q-M1d.7](#q-m1d7--may-a-program-require-its-own-model-count) | May a program require its own model count? | open — [P1d.4](p1d.4_model_set_closure/README.md); arrived from M1c [S1c.1.2](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects) on 2026-08-24 |
@@ -187,6 +187,40 @@ The invariants that survive any answer are the ones
 pinned as tests: the *answer* depends on neither the entering order nor the
 integration time. What is negotiable is everything that is not the answer, and
 the phase has to say so explicitly rather than discover it in a golden diff.
+
+### Closed 2026-08-25 — the licence was granted and not spent
+
+[S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) shipped the
+ladder, and the re-baseline it was scheduled to argue for is **empty**. On
+`examples/zebra2-obligations.ein` — `zebra2.ein` with the hrule deleted and
+nothing else — the obligation path and the hrule path agree on every counter
+the JSON summary reports: 101 enterings, 34 alive, 67 dead, 2 layers, 67
+no-goods, one model, and the same 56 candidates at layer 1. On
+`zebra2-minus-15-obligations.ein` they agree at full depth — **618 076
+enterings, 19 121 learned clauses, five layers and the same 32 models** — which
+is the [layer census](p1d.10_exhaustive_search/layer_census.md)'s baseline
+reproduced to the entering. Not one golden was re-blessed for a counter.
+
+Two things make that less surprising than it reads, and both are in
+[the record](p1d.2_obligations/hypotheses_from_obligations.md):
+
+- the hrule and the obligations propose the **same set** by opposite routes —
+  the hrule enumerates every (value, house) pair and negative completion
+  subtracts, the rung never enumerates what the negatives would have removed —
+  so the raw counts differ (125 against 180) and the emitted ones do not;
+- the traversal the question worried about is **not reachable from here**. A
+  branch on one chosen obligation is depth-first, and this engine's search is a
+  breadth-first lattice over root's `alive`; the rung therefore proposes the
+  union over the accepted obligations, which is a *set* change and not an
+  order change. [§1 of the record](p1d.2_obligations/hypotheses_from_obligations.md)
+  is the argument, and it hands the depth-first version to
+  [P1d.10](p1d.10_exhaustive_search/README.md) with the choice heuristic
+  already built and measured inert.
+
+So the licence this question granted — counters may move — was granted and not
+spent. Should the depth-first traversal ever be taken, it is spent then, and
+this section is the precedent that says how: with an argument and a table, not
+a golden diff.
 
 ## Q-M1d.5 — Print or describe?
 

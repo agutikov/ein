@@ -159,6 +159,7 @@ carrying it makes the heap's pop order checkable rather than inferred.
 
 | `e` | emitted at | payload |
 |---|---|---|
+| `rung` | a generation call that **reached** the obligations rung | `mode`, `reason`, `owed`, `branches`, `declined`, `candidates`, `uncovered` |
 | `hyp` | each constructed hypgen candidate | `fact`, `verdict` ∈ {`emitted`, the name of the filter that dropped it} |
 | `hypskip` | a **pre-candidate** skip — *verbose only* | `relation`, `reason`, `object` (for `self_edge`) |
 | `enter` | `try_commitment_set` returns | `layer`, `commitment`, `kind`, `n_firings`, `core` |
@@ -177,6 +178,48 @@ A pre-candidate skip gets its own kind rather than a `hyp` with an invented
 `relation_not_whitelisted` and `no_hypothesis_relation` are decisions about a
 *relation*, and `self_edge` about an (object, relation) pair. They are verbose
 only — `self_edge` alone fires once per (object, filler, relation, slot).
+
+#### `rung` — which generator proposed
+
+Added by M1d
+[S1d.2.5](../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md),
+which turned hypothesis generation from a switch into a **ladder**: the user's
+`(hrule …)` if there is one, else the undischarged obligations, else the blind
+enumerator. One line per generation call, and **only** for a program that
+declares an obligation rule — the other 150 corpus files emit none, which is
+what keeps every pre-M1d stream byte-identical.
+
+**Rung 1 and rung 3 narrate nothing.** A puzzle with an `(hrule …)` and a
+puzzle with no obligation rule both emit exactly the stream they emitted before
+M1d, to the byte; a line appears only where the rung this stage added was
+actually consulted, and its `mode` says how that went:
+
+| `mode` | what it means |
+|---|---|
+| `obligations` | it generated: the candidates are the facts that would discharge what this state owes |
+| `stuck` | it owed something and proposed nothing — every debt scoped out by `:no-hypothesis` / `:hypothesis-relations` / `(__closed__ R)`, or every candidate already refuted. **The state is not silently complete**: this line is the report |
+| `declined` | it refused the whole call and the blind enumerator ran instead — an obligation whose guard scans a relation the rung itself proposes (the [domain contract](../../../plans/m1d_satisfiability/p1d.2_obligations/domain_contract.md)'s C4), or a projection that did not resolve for this activator |
+
+`reason` is the C4 or projection sentence for `declined`, and the walk order
+(`rule-order` / `fail-first`, `EIN_OBLIGATION_CHOICE`) otherwise. `owed` counts
+the undischarged instances at this quiescence, `branches` those branched on,
+`declined` those scoped out — `owed = branches + declined` — and `candidates`
+the facts proposed before the filter pipeline, which is the `hyp` stream's
+`raw` for this call.
+
+`uncovered` is the ladder's **completeness condition as a number**: how many
+hypothesis-eligible relations no obligation names, under the same eligibility
+test the blind enumerator applies. `0` says the rung is exhaustive by
+construction — every relation a hypothesis could be about is one some
+obligation owes. Non-zero does not say it is *in*complete: it says the claim
+now rests on saturation determining those relations, which only a model-set
+comparison settles, and
+[the stage record](../../../plans/m1d_satisfiability/p1d.2_obligations/hypotheses_from_obligations.md)
+is where the zebra family settled it.
+
+A `rung` line is emitted per **generation call**, not per node: `complete`
+asks the generator once per alive entering, so the count tracks
+`enterings_alive` plus the root and inter-layer calls.
 
 #### `layer` — the clause-yield census
 

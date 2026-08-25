@@ -42,7 +42,7 @@ even loaded, and 20 more held up by `examples/zebra.ein` alone.
 | dir | rules | what the programs do |
 |---|---:|---|
 | [`stdlib/algebra/`](stdlib/algebra/) | 40 | the copiers and the relative product; the Boolean lattice; the extensive operators and their closed-world caveat; the tag lemmas and the two Tarski equations; Schröder's negative propagation; then the seven property **checks** — once satisfied, once violated apiece — the totality pair's `forall` in both directions, and (M1d S1d.2.4) the totality pair's **obligation** duals, each once owing and once satisfied |
-| [`stdlib/bijection/`](stdlib/bijection/) | 8 | the two setup fan-outs and the negative completion; domain- and range-elimination, each productive in its own file and redundant in its sibling's; the two arg typechecks violated; and `06_blind_enumeration.ein`, the one program here that leaves the enumerator **on** |
+| [`stdlib/bijection/`](stdlib/bijection/) | 8 | the two setup fan-outs and the negative completion; domain- and range-elimination, each productive in its own file and redundant in its sibling's; the two arg typechecks violated; and `06_blind_enumeration.ein`, the one program here that leaves the enumerator **on** — since M1d S1d.2.5 by making the obligations rung *decline*, which is the only way to reach it from a program that declares one |
 | [`stdlib/elim/`](stdlib/elim/) | 4 | the same inference in its *positional* formulation, plus `no-room-left` — the pair that brackets a quantifier: one exclusion short of full forces a value, exactly full refutes |
 | [`stdlib/closure/`](stdlib/closure/) | 1 | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from fifty-four models to one |
 | [`stdlib/slots/`](stdlib/slots/) | 20 | a second activating puzzle for the module that had exactly one — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
@@ -81,9 +81,22 @@ a blind run start guessing about them" had to be a fixture rather than an
 argument. It found a bug: an obligation rule's name was categorising as an
 *object*, so the enumerator proposed `(seats total-owed C1)` — the name of a
 rule as a puzzle value. It is the only program in this directory that leaves
-the enumerator on, and it names only the two hierarchy relations in
+the enumerator on, and it names only the hierarchy relations in
 `:no-hypothesis`, because a file that scoped the activators out would be
 testing its own scoping line.
+
+**And since M1d S1d.2.5 it has to *earn* the enumerator**, which is worth
+knowing before editing it. Hypothesis generation is a ladder now — the puzzle's
+hrules, else what the state owes, else the blind enumeration — so a program
+declaring `(bijective seats)` no longer reaches the third rung at all, and this
+file's whole check went vacuous the day the ladder landed. It gets it back with
+a second obligation, `sorted-somewhere`, which owes `is-a` — exactly the
+relation `(total-owed seats is-a)`'s guard *scans*. The domain contract's C4
+declines a branch whose candidate set could grow underneath it, and a declined
+obligation hands the whole call to the blind enumerator. So the file is also
+the corpus's one `mode=declined` fixture, and the obligation it added is
+*satisfied* on purpose: the decline is static, per activator, and must not
+depend on the KB happening to owe something.
 
 ### Four things about how they are written
 

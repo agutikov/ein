@@ -31,12 +31,39 @@
 ;;; *consulted* about a KB that holds obligation activators, rather than one
 ;;; where a search actually happens. A search would work too and cost more.
 ;;;
+;;; ── Why there is a second obligation, and it is not decoration ─────────────
+;;;
+;;; M1d S1d.2.5 made hypothesis generation a **ladder**: the puzzle's hrules if
+;;; it has any, else the undischarged obligations, else the blind enumerator.
+;;; A program that declares `(bijective seats)` therefore no longer reaches the
+;;; blind rung at all — `total-owed` / `surjective-owed` are the generator now,
+;;; and here they owe nothing, so nothing is proposed and this file's whole
+;;; check went vacuous. The claim needs the enumerator, so the file has to earn
+;;; it back.
+;;;
+;;; `sorted-somewhere` is what earns it. It is an obligation on `is-a` — every
+;;; Guest must be a member of some declared sort — and `is-a` is exactly the
+;;; relation `(total-owed seats is-a)`'s guard *scans*. The domain contract's
+;;; C4 says a branch is jointly exhaustive only while its candidate set cannot
+;;; grow underneath it, so an obligation whose scan relation the rung itself
+;;; proposes is **declined**, and a declined obligation takes the whole call
+;;; back to the blind enumerator. That is this file's rung: `declined`, by
+;;; construction, in one `rung` event per generation call.
+;;;
+;;; The obligation is *satisfied* — `(is-a Ann Guest)` witnesses it through
+;;; `(sort Guest Sortal)` — because the decline is static, per activator, and
+;;; must not depend on the KB happening to owe something. A fixture that owed
+;;; would be testing the tally instead.
+;;;
 ;;; ── What `:no-hypothesis` names, and what it deliberately does not ─────────
 ;;;
-;;; The two hierarchy relations, and nothing else. A type hierarchy is not a
-;;; thing to guess about — left in, the enumerator proposes `(is-a Ann Bob)`
-;;; and 1.1 million of its relatives, and the file costs 22 s instead of
-;;; milliseconds. Everything else stays in scope, and that is the point:
+;;; The two hierarchy relations and `sort`, and nothing else. A type hierarchy
+;;; is not a thing to guess about — left in, the enumerator proposes
+;;; `(is-a Ann Bob)` and 1.1 million of its relatives, and the file costs 22 s
+;;; instead of milliseconds; `sort` is the same kind of relation and is scoped
+;;; out for the same reason, which is also what keeps this file's counters
+;;; where they were before the second obligation arrived.
+;;; Everything else stays in scope, and that is the point:
 ;;; **the obligation activators are not named here**, so if the enumerator
 ;;; could propose `(total-owed seats is-a)` it would, and the assertion would
 ;;; catch it. A file that scoped them out would be testing its own
@@ -60,9 +87,22 @@
 (relation is-a  T T           :why "{?1} is a {?2}")
 (relation is-a* T T           :why "{?1} is a {?2} (transitively)")
 (relation seats Guest Chair   :why "{?1} sits on {?2}")
+(relation sort  T T           :why "{?1} is a declared sort of {?2}")
 
 (is-a Ann Guest) (is-a Bob Guest)
 (is-a C1 Chair)  (is-a C2 Chair)
+
+(sort Guest Sortal) (sort Chair Sortal)
+
+;; The obligation that declines the rung — see the header. It owes `is-a`, and
+;; `is-a` is what `(total-owed seats is-a)`'s guard scans, so no obligation
+;; here may be branched on and the blind enumerator runs.
+(rule sorted-somewhere ()
+  :match  (and (is-a ?x Guest)
+               (absent (and (sort ?k Sortal) (is-a ?x ?k))))
+  :assert (open is-a)
+  :why    "{?x} belongs to no declared sort."
+  :priority 500)
 
 ;; The typecheck quantifies over the transitive hierarchy; there is no
 ;; inheritance here, so it is `is-a` copied across.
@@ -76,6 +116,6 @@
 
 (query
   :goal (seats ?who ?where)
-  :no-hypothesis (is-a is-a*)
+  :no-hypothesis (is-a is-a* sort)
   :expect (model (seats Ann C1) (seats Bob C2)
                  (not (seats Ann C2)) (not (seats Bob C1))))
