@@ -10,8 +10,11 @@ of what closing a set costs.
 building M1c
 [S1c.1.2](../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects).
 
-**Depth: phase README only**, like its two neighbours. See
-[§ How deep this plan is](../README.md#how-deep-this-plan-is).
+**Depth: stage files, written 2026-08-25** — three of them, and like
+[P1d.3](../p1d.3_model_sets/README.md) the phase changed shape before it
+started, because a reconnaissance measured what it had assumed. See
+[§ How deep this plan is](../README.md#how-deep-this-plan-is) and
+§ What the corpus says, below.
 
 ## The gap, exactly
 
@@ -65,6 +68,44 @@ depends on:
 **Re-checks it how?** By exhausting a search that does not finish. That
 sentence is a debt, and this phase is where it is paid or renegotiated.
 
+## What the corpus says — measured 2026-08-25
+
+Four numbers, from `ein test` over the three roots and the expectation shapes
+of every `.ein` file that carries one:
+
+| | |
+|---|---:|
+| files carrying an `:expect` | **62** — 56 `tests/`, 3 `examples/`, 3 broken-fixture refusals |
+| expectations checked, and their outcome | **59 held**, 0 FAILED, **0 not checked** |
+| shapes | `(model …)` **40** · `(false)` **20** · `(or …)` **2** |
+| the two `(or …)` users | `features/10_expect.ein`, `features/11_expect_ambiguity.ein` |
+
+**The claim this phase exists to make affordable is written twice, and both are
+feature demos.** The only real one — `11_expect_ambiguity` — is `k = 2,
+exhausted = true`, a two-model toy that closes in milliseconds. Set-closure is
+not a form the corpus strains against; it is one the corpus has never used in
+anger, and a vocabulary chosen for it is a vocabulary for two instances.
+
+**The debt is not merely unverifiable — it is unwritten.**
+`examples/zebra2-minus-15.ein` **carries no `:expect` at all**, and neither does
+its obligations twin. M1c's sentence describes a workflow nobody has run, which
+is a different problem from the one § The gap states and a cheaper one to fix.
+
+**And writing it would roughly double the file.** The query's goal names
+`drink-loc`, `nation-loc` and `pet-loc`, and *naming a relation closes it*, so
+an `:expect (or …)` must list all three relations' facts in all 32 models — 15
+positive facts per model × 32 = **480**, about **512 lines of expectation on a
+539-line file** — and then come back `NOT CHECKED`. So the cost of *writing*
+the claim is a second cost the phase README does not mention, and on the one
+entry that motivates the phase it is the larger of the two.
+
+**One gap nothing asked for**: `Outcome::NotChecked` — the value that makes the
+hole honest — **never fires on a corpus entry**. It is exercised only by
+`test_cli.rs` and `expect_semantics.rs` on constructed inputs with a `-m` cap.
+A mechanism whose only witnesses are synthetic is one the corpus cannot notice
+rotting, and [T1d.4.1.4](s1d.4.1_what_closure_costs.md) is where that is
+decided rather than left invisible.
+
 ## The three questions
 
 1. **May a program require its own model count?** Not "can the engine check
@@ -95,17 +136,34 @@ sentence is a debt, and this phase is where it is paid or renegotiated.
 
 | stage | title | est. |
 |---|---|---|
-| S1d.4.1 | What closure costs, per corpus entry — which claims are checkable today | 2 d |
-| S1d.4.2 | May a program state it? The second-order boundary, and where the neighbours put it | 3 d |
-| S1d.4.3 | The vocabulary: what a test says when it can only afford half the claim | 2 d |
+| [S1d.4.1](s1d.4.1_what_closure_costs.md) | What closure costs, per corpus entry — which claims are checkable today | 2 d |
+| [S1d.4.2](s1d.4.2_the_second_order_boundary.md) | May a program state it? The second-order boundary, and where the neighbours put it | 3 d |
+| [S1d.4.3](s1d.4.3_the_vocabulary.md) | The vocabulary: what a test says when it can only afford half the claim | 2 d |
 
-**S1d.4.1 is the cheap measurement that sizes the rest**, and it is a sweep the
-repo can already run: `exhausted` is in every `--json-summary` and every
-`verdict` event, so "which corpus entries could carry a verifiable `:expect`
-today" is one pass over the corpus rather than an argument. The expectation is
-that the answer is *most of them* — the stdlib fixtures S1c.1.4 is about are
-small — and that the exceptions are exactly the puzzles anyone would want to
-pin.
+**S1d.4.1 is the cheap measurement that sizes the rest**, and the
+reconnaissance above is its first hour. Its prediction held — the answer *is*
+most of them, 59 of 59 — and what it adds is the **denominator**: the
+exceptions are not entries whose claim is too expensive to check, they are
+entries that never wrote a claim. So the stage's second half is the
+counterfactual — what a closure claim would cost to *write* and to *verify* on
+the entries that motivate the phase — and its third is the `NOT CHECKED` gap.
+
+**S1d.4.2 has a precedent to apply rather than a question to open.**
+[Q-M1d.2](../open_questions.md#q-m1d2--where-does-a-requirement-live) asked
+where a *requirement* lives and answered *(c) a rule shape asserting a reserved
+verdict atom*, which works because a requirement is a sentence about **one**
+world. The test here is the same one, one level up: is there a rule shape that
+expresses model-set closure? The expected answer is no, and the *reason* — a
+rule that read the search's state would make derivation depend on the
+traversal, which [S1a.7.0's invariant](../../../docs/history/m1a_rust/README.md)
+forbids — is the boundary, and is what settles every second-order keyword
+anyone proposes next rather than only this one.
+
+**S1d.4.3 inherits a third option for the debt** that this README's § The gap
+does not list, because the reconnaissance found it: M1c's sentence can be
+**rewritten**. The phase acceptance already licenses it — *"A plan that keeps
+the sentence and cannot honour it is worse than one that says less"* — and it
+costs one paragraph against a keyword for two instances.
 
 ## Acceptance for the phase
 
