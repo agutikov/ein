@@ -200,7 +200,7 @@ that is the note's thesis measured in someone else's language.
 | phase | title | stages | est. | gate |
 |---|---|---|---|---|
 | [P1d.2](p1d.2_obligations/README.md) | Obligations — the half of the vocabulary that says *must* | 6 (**done 2026-08-25**) | 3.5 w | **met**: a puzzle states a requirement, a state says what it owes, the search branches on it, and the verdict reports it — [the phase ledger](p1d.2_obligations/README.md) |
-| [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 | 1.5 w | either a compact representation of the 32 models, or a written argument for why enumeration is the answer |
+| [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 (**at stage depth**) | 1.5 w | either a compact representation of the 32 models, or a written argument for why enumeration is the answer |
 | [P1d.4](p1d.4_model_set_closure/README.md) | Closing the model set — the claim nothing can state | 3 | 1.5 w | a written answer to "may a puzzle require its own model count", and `zebra2-minus-15`'s 32 models either verifiable or the pipeline sentence rewritten |
 | [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 (1 done) | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
 
@@ -254,13 +254,23 @@ reached stage depth on 2026-08-24**: six stage files, written *after* the
 user took the decisions the phase README had reserved — the form (G), the
 naming (P3, probe rename executed), numeral-free bounds, the supersession
 ladder — all recorded on
-[`obligation_forms.md`](p1d.2_obligations/obligation_forms.md). **P1d.3 and
-P1d.4 are phase READMEs only**, still on purpose: the note they come from
+[`obligation_forms.md`](p1d.2_obligations/obligation_forms.md). **P1d.3 reached stage depth on 2026-08-25**, three stage files, and it did so
+the way this section said a phase should: not by turning a discussion into task
+ids, but because a **measurement** made the decisions concrete. The
+reconnaissance over `zebra2-minus-15`'s 32 models found they do not factor at
+any granularity — one coupling component of all 23 varying decision variables
+— which falsifies the phase README's central hope and leaves the phase with
+real work instead of a by-product
+([P1d.3 § Why it is not free](p1d.3_model_sets/README.md)). The decisions the
+stages still reserve for the user are named as such: whether anything ships,
+and whether closed-world completion is adopted.
+
+**P1d.4 is a phase README only**, still on purpose: the note they come from
 opens with *"no code, no changes — here we only read and discuss ideas"*,
 and turning a discussion into task ids would put decisions in the plan that
 the user has not made. What is written there is the decomposition, the
-dependencies and the questions; those stage files are written when their
-phases start.
+dependencies and the questions; those stage files are written when the phase
+starts.
 
 ## Acceptance for the milestone
 
