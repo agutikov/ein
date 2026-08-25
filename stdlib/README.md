@@ -34,9 +34,10 @@ meaningless — a diff would report "the engines disagree" when in fact the
 
 ## What tests these modules
 
-[**`tests/stdlib/`**](../tests/README.md) — 45 programs, one per rule or tight
-family, each stating what it should and should not derive, added by M1c
-[S1c.1.4](../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus).
+[**`tests/stdlib/`**](../tests/README.md) — 47 programs, each stating what it
+should and should not derive: the 45 one-per-rule-or-family added by M1c
+[S1c.1.4](../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus),
+plus the closed-and-owing pair M1d S1d.2.2 banked under `closure/`.
 `ein test tests/stdlib/` runs the lot in 0.03 s and exits 1 if a claim is
 false.
 

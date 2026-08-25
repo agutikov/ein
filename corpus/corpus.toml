@@ -876,6 +876,18 @@ group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 
 [[entry]]
+path   = "tests/stdlib/closure/02_closed_and_satisfied.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "the control half of the closed-and-owing pair (M1d S1d.2.2). Closed by infer-closure, and the totality requirement met by the one authored edge."
+
+[[entry]]
+path   = "tests/stdlib/closure/03_closed_and_owing.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "its twin with the witness edge deleted: the requirement is unmet AND unreachable — closure forbids the hypothesis, no rule derives one, and `total`'s stored-negative discipline keeps its scan silent — and the verdict does not move. Solution, both. The golden banks today's answer to `who says (false) about a closed and owing state`, which is: nobody. M1d S1d.2.6 is the stage that would move it."
+
+[[entry]]
 path   = "tests/stdlib/elim/01_domain_elimination.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]

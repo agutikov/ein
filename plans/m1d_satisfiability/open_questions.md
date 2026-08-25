@@ -19,7 +19,7 @@ about a word the engine already says.
 |---|---|---|
 | [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1d.10](p1d.10_exhaustive_search/README.md); `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
 | [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | **decided 2026-08-24** — (c) a rule shape asserting the reserved verdict atom (form G); [S1d.2.3](p1d.2_obligations/s1d.2.3_the_form.md) records it |
-| [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | narrowed 2026-08-24 — the witness domain is the obligation's own guard; [S1d.2.2](p1d.2_obligations/s1d.2.2_domains.md) owns the residue (closure, open extents) |
+| [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | **answered for obligations 2026-08-25** — [`domain_contract.md`](p1d.2_obligations/domain_contract.md); open for the general lower-bound form nobody has asked for |
 | [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **decided in principle 2026-08-24** — the user: obligations supersede `:hrules`; [S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) executes it with the re-baseline |
 | [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | open — [P1d.3](p1d.3_model_sets/README.md); "enumerate, and say so" is an acceptable answer |
 | [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | open — ten corpus entries already say it; [S1d.2.6](p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md) closes it: the word is decided (`Open`), the partition is measured first |
@@ -99,14 +99,38 @@ P1a.6 — so "recompute it" is not automatically cheap.
 
 ## Q-M1d.3 — What closes a domain?
 
-**Narrowed 2026-08-24, sharpened 2026-08-25**: for obligations, C is the
-obligation's own guard — the `?isa`-parameterised scan standing beside the
-witness step inside the rule's `absent`, which `(open ?R)` names the relation
-of rather than restating — so *stating* and *discharging* a requirement needs
-no closed domain at all. What remains is
-what needed closure all along: refutation (which stays with the `forall`
-scans) and the open-extent regime;
-[S1d.2.2](p1d.2_obligations/s1d.2.2_domains.md) banks the contract.
+**Answered for obligations 2026-08-25** —
+[`domain_contract.md`](p1d.2_obligations/domain_contract.md), S1d.2.2's
+deliverable, in four clauses. C is the obligation's own guard, the
+`?isa`-parameterised scan standing beside the witness step inside the rule's
+`absent`, which `(open ?R)` names the relation of rather than restating; so
+*stating* needs no closure (C1), and *discharging* needs none either, because
+discharge is a positive check and positive checks are monotone (C2).
+Refutation stays with the `forall` scans, with `connex`'s open-world caveat
+inherited and named (C3).
+
+**And the measured clause, C4**: candidates are recomputed per node, so the
+extent is never frozen — but a *branch* over them is jointly exhaustive only
+where the guard's scanned relation cannot itself be guessed. Every corpus
+entry under `solve -m 1 -e --events`: **49 search, 13 are hrule-driven, and
+12 propose `is-a` arrows — all 12 blind, none hrule-driven.** So the rung may
+branch only on the closed side of that partition, and declines on the other.
+
+Two findings the question did not expect. **Its own sub-question "may new
+objects appear" has a narrower answer than its phrasing**: no corpus entry
+has an infinite or growing domain — every `is-a` extent is authored, and no
+rule in the stdlib or the corpus asserts an `is-a` fact — so what moves is
+not the domain but *memberships*, and only through a committed hypothesis in
+blind mode. What the corpus called "an open domain" (`04_open`'s 14.3 GB) is
+an unbounded **hypothesis space**, and the OOM is the subset lattice over it:
+`C(81, 5)` ≈ 27 M. **And obligations decline that regime rather than
+rescuing it** — `04_open` and the three `square-unique` demos are among the
+twelve, so C4's rule refuses to branch exactly where the blind generator
+explodes.
+
+What stays open is the general lower-bound form — a requirement quantifying
+over a domain no puzzle has yet asked for — which nothing needs and nothing
+therefore closes.
 
 `∀x ∈ D. ∃y ∈ C. R(x,y)` is unanswerable without knowing D and C. The note
 lists the sub-questions: what is in the set, is the set closed, and may new

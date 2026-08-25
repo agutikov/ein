@@ -98,7 +98,7 @@ to a file that grows an `:expect` is the growth rule below, applied.
 | group | what it holds | the sweep expects |
 |---|---|---|
 | `positive` | `examples/**/*.ein` outside `broken/` and `ein-bugs/` | at least one run answers; catalogued in [`examples/README.md`](../examples/README.md) |
-| `stdlib` | the [stdlib](../stdlib/) modules loaded standalone, **and the 45 conformance programs under [`tests/stdlib/`](../tests/) that exercise their rules** (M1c S1c.1.4) | as `positive`. The seven module entries exercise the import + macro machinery on their own terms; the `tests/` entries each carry an `:expect`, so their `test` cell is a claim the program makes |
+| `stdlib` | the [stdlib](../stdlib/) modules loaded standalone, **and the 47 conformance programs under [`tests/stdlib/`](../tests/) that exercise their rules** (M1c S1c.1.4; the closed-and-owing pair is M1d S1d.2.2) | as `positive`. The seven module entries exercise the import + macro machinery on their own terms; the `tests/` entries each carry an `:expect`, so their `test` cell is a claim the program makes |
 | `parse-negative` | `examples/broken/*.ein` | every run refused, `IRParseError` with `file:line:col` |
 | `load-negative` | `examples/broken/load/*.ein` | parse, then fail to load; the exact message is checked in beside each fixture ([README](../examples/broken/load/README.md)) |
 | `compile-negative` | `examples/broken/compile/*.ein` | parse and load, then the compiler refuses; `.expected` beside each ([README](../examples/broken/compile/README.md)). `activator_arity.ein` sits in that directory and is `positive`: its error is unreachable through the engine by design, so the file solves and derives nothing, which is what it pins |

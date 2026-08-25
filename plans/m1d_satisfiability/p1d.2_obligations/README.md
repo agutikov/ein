@@ -77,7 +77,7 @@ is the mechanism the milestone README's argument turns on.
 | stage | title | est. | status |
 |---|---|---|---|
 | [S1d.2.1](s1d.2.1_property_audit.md) | What each property enforces today, rule by rule | 3 d | **done 2026-08-25** |
-| [S1d.2.2](s1d.2.2_domains.md) | Domains: what a requirement quantifies over, and what closes it | 3 d | |
+| [S1d.2.2](s1d.2.2_domains.md) | Domains: what a requirement quantifies over, and what closes it | 3 d | **done 2026-08-25** |
 | [S1d.2.3](s1d.2.3_the_form.md) | The obligation — form, surface, and where it lives | 3 d | |
 | [S1d.2.4](s1d.2.4_obligations_in_the_saturator.md) | Obligations in the saturator | 4 d | |
 | [S1d.2.5](s1d.2.5_hypotheses_from_obligations.md) | Hypotheses from obligations | 3 d | |
@@ -99,14 +99,28 @@ pair's endpoints live in different modules (F3), and an obligation rule
 activator — so the fan-outs grow by two activator facts per declaration and
 13 entries gain 50 stored facts (F4).
 
-**S1d.2.2** was the one that could sink the rest; the decided form drained
-most of that. The witness domain is the obligation's **own guard**,
-`?isa`-parameterised the way every stdlib scan already is — is-a-free, no
-kernel type system ([S1.7.23](../../../docs/history/m1a_rust/README.md)
-holds) — and discharge needs no closure at all. What the stage still owns:
-the refutation division (unreachable stays with the `forall` scans), the
-open-extent regime (`features/04_open`'s 14.3 GB wall), and the
-closed-and-owing corner.
+**S1d.2.2 is done** (2026-08-25) — [`domain_contract.md`](domain_contract.md),
+four clauses. Stating and discharging need no closure at all: the domain is
+the obligation's own guard, `?isa`-parameterised and is-a-free (no kernel
+type system, [S1.7.23](../../../docs/history/m1a_rust/README.md) holds), and
+discharge is a positive check, which is monotone. Refutation keeps the
+`forall` scans, `connex`'s caveat named. **The clause the plan did not
+have is C4**: a *branch* over an obligation's candidates is jointly
+exhaustive only where the guard's scanned relation is not itself guessable —
+measured as **12 of the 49 searching entries propose `is-a` arrows, all 12
+blind, none hrule-driven** — so the rung branches on the closed side and
+declines on the other.
+
+Two findings. **"An open domain" was the wrong name**: no entry has an
+infinite or growing domain, and `04_open`'s 14.3 GB is the subset lattice
+over an unbounded *hypothesis space*, `C(81, 5)`. And **obligations decline
+that regime rather than rescuing it** — `04_open` and the three
+`square-unique` demos are among the twelve. Where the rung does branch, the
+win is the size: 3 candidates against 81 arrows. The closed-and-owing corner
+is two checked-in fixtures where deleting one fact leaves the verdict
+`Solution` either way; "leave it to the scans" turns out not to be
+conservative but wrong, and the rule is to report it with an *unreachable*
+flag and leave the promotion to S1d.2.6.
 
 **S1d.2.3** was the decision stage; the decision was taken 2026-08-24 —
 **G, a rule shape with a reserved verdict atom** — and its *argument* was

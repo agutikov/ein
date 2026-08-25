@@ -814,6 +814,16 @@
 0    tests/stdlib/closure/01_infer_closure.ein :: saturate
 0    tests/stdlib/closure/01_infer_closure.ein :: solve
 0    tests/stdlib/closure/01_infer_closure.ein :: test
+0    tests/stdlib/closure/02_closed_and_satisfied.ein :: render constraints
+0    tests/stdlib/closure/02_closed_and_satisfied.ein :: render rules
+0    tests/stdlib/closure/02_closed_and_satisfied.ein :: saturate
+0    tests/stdlib/closure/02_closed_and_satisfied.ein :: solve
+0    tests/stdlib/closure/02_closed_and_satisfied.ein :: test
+0    tests/stdlib/closure/03_closed_and_owing.ein :: render constraints
+0    tests/stdlib/closure/03_closed_and_owing.ein :: render rules
+0    tests/stdlib/closure/03_closed_and_owing.ein :: saturate
+0    tests/stdlib/closure/03_closed_and_owing.ein :: solve
+0    tests/stdlib/closure/03_closed_and_owing.ein :: test
 0    tests/stdlib/elim/01_domain_elimination.ein :: render constraints
 0    tests/stdlib/elim/01_domain_elimination.ein :: render rules
 0    tests/stdlib/elim/01_domain_elimination.ein :: saturate

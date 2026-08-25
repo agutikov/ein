@@ -3,6 +3,35 @@
 **Phase:** [P1d.2](README.md) (Obligations)
 **Estimate:** 3 days
 **Depends on:** [S1d.2.1](s1d.2.1_property_audit.md)
+**Status: done 2026-08-25** — the contract is
+[`domain_contract.md`](domain_contract.md); the closed-and-owing corner is
+two checked-in fixtures under `tests/stdlib/closure/`;
+[Q-M1d.3](../open_questions.md#q-m1d3--what-closes-a-domain) is answered for
+obligations. What it found:
+
+- **C4, the clause the plan did not have.** Stating and discharging need no
+  closure (C1/C2, structural), refutation keeps the scans (C3) — but a
+  *branch* over an obligation's candidates is jointly exhaustive only where
+  the guard's scanned relation cannot itself be guessed. Measured over every
+  entry: **49 search, 13 hrule-driven, 12 propose `is-a` arrows — all 12
+  blind, none hrule-driven.** The rung branches on the closed side of that
+  partition and declines on the other.
+- **"An open domain" was the wrong name for it.** No corpus entry has an
+  infinite or growing domain: every `is-a` extent is authored and no rule
+  anywhere asserts an `is-a` fact. What is unbounded is the *hypothesis
+  space*, and `04_open`'s 14.3 GB is the subset lattice over it — `C(81, 5)`.
+- **Obligations decline the open regime; they do not rescue it.** `04_open`
+  and the three `square-unique` demos are among the twelve, so C4 refuses to
+  branch exactly where the blind generator explodes. Where it does branch,
+  the win is the size: 3 candidates against 81 arrows and `C(81, k)`.
+- **Closed-and-owing: "leave it to the scans" is not conservative, it is
+  wrong.** `03_closed_and_owing.ein` is `02_closed_and_satisfied.ein` with
+  one fact deleted, and both report `Solution` — a state that owes something
+  it can never pay, called a model. The scans *cannot* reach it: closure
+  forbids the hypothesis and `total`'s stored-negative discipline means no
+  negative ever arrives. The rule written: report it with an **unreachable**
+  flag, promote to `(false)` never in this phase — S1d.2.6 owns that, and
+  this fixture is what it has to move.
 
 ## Context
 

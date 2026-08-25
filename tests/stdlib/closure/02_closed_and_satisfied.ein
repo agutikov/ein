@@ -1,0 +1,70 @@
+;;; `std.closure/infer-closure` — closed **and** the requirement met.
+;;;
+;;; The control half of a pair. Its twin, `03_closed_and_owing.ein`, is the
+;;; same program with one fact removed, and the two report the **same
+;;; verdict** — which is the pair's whole point, and why it exists.
+;;;
+;;; ── The shape ──────────────────────────────────────────────────────────────
+;;;
+;;; `r : A → B` is declared functional and total, so `infer-closure` derives
+;;; `(__closed__ r)` and the hypothesis generator will never speculate an
+;;; `r`-fact. The requirement `total` states — *every A has some B* — is met
+;;; here by the one authored edge, so a closed `r` costs nothing: there was
+;;; nothing left to guess.
+;;;
+;;; ── The two arities, and they are different facts ──────────────────────────
+;;;
+;;; `(total r)` and `(total r is-a)` are both here and neither is redundant:
+;;;
+;;;   (total r)         arity 1 — the **marker** `infer-closure` reads, and
+;;;                     the form `bijective-properties` derives
+;;;   (total r is-a)    arity 2 — the **activator** of `std.algebra/total`,
+;;;                     the scan that fires (false) on unreachability
+;;;
+;;; A rule is activated by a fact whose head is the rule's name and whose
+;;; arity matches its parameter list, so the arity-1 marker does not activate
+;;; the scan and the arity-2 activator does not satisfy `infer-closure`'s
+;;; guard. Both are needed to have both behaviours, and a program with only
+;;; one of them silently has only one.
+;;;
+;;; ── What the expectation observes ──────────────────────────────────────────
+;;;
+;;; `(__closed__ r)` is engine vocabulary and not a thing a `:goal` can ask
+;;; for directly, so `closed-observed` lifts it into an ordinary fact. Naming
+;;; `closed-here` in the expectation closes it, which is what makes "the
+;;; closure was derived, once, for `r` and nothing else" a claim rather than a
+;;; hope.
+
+(import std.algebra :symbols (functional total))
+(import std.closure :symbols (infer-closure))
+
+(relation is-a        T T :why "{?1} is a {?2}")
+(relation r           A B :why "{?1} is assigned {?2}")
+(relation closed-here T   :why "{?1}'s extension was closed by infer-closure")
+
+(is-a a1 A)
+(is-a b1 B) (is-a b2 B)
+
+;; The markers `infer-closure` reads (arity 1) …
+(functional r)
+(total      r)
+;; … and the activator the unreachability scan needs (arity 2).
+(total r is-a)
+
+;; `(__closed__ …)` is engine vocabulary; this lifts it into userspace so a
+;; goal can name it.
+(rule closed-observed ()
+  :match  (__closed__ ?R)
+  :assert (closed-here ?R)
+  :priority 500
+  :why    "{?R}'s extension is closed")
+
+;; The witness. Delete this line and you have `03_closed_and_owing.ein`.
+(r a1 b1)
+
+(query
+  :goal (closed-here ?R)
+  ;; `r` is closed by derivation; the other two are scoped out by hand so the
+  ;; blind generator is quiet and the verdict is about the requirement alone.
+  :no-hypothesis (is-a closed-here)
+  :expect (model (closed-here r)))

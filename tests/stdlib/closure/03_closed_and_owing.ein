@@ -1,0 +1,85 @@
+;;; `std.closure/infer-closure` — closed and **owing**: a state that can never
+;;; meet its requirement, reported as a model.
+;;;
+;;; `02_closed_and_satisfied.ein` with one fact deleted — the witness edge
+;;; `(r a1 b1)` — and **the verdict does not move**. Both report `Solution`.
+;;; That is the finding this file exists to hold still.
+;;;
+;;; ── Why nothing catches it ─────────────────────────────────────────────────
+;;;
+;;; `a1` is an `A`, `r` is declared total, and `r` has no edges. So the
+;;; requirement *every A has some B* is unmet. It is also **unreachable**:
+;;;
+;;;   - no rule derives an `r`-fact — there is no rule here but the observer;
+;;;   - no hypothesis can propose one, because `functional ∧ total` derived
+;;;     `(__closed__ r)` and closure is exactly the instruction never to
+;;;     speculate about `r`.
+;;;
+;;; And `std.algebra/total` — the scan whose job is to say *the requirement
+;;; has become unreachable* — cannot fire, because it is written
+;;; open-world-safe: it demands a **stored negative** for every candidate
+;;; (`(forall ?b (?isa ?b ?B) (not (?R ?a ?b)))`) before it concludes
+;;; anything, and in a program with no negative-completion rule no such
+;;; negative will ever be stored. The scan is activated, correct, and silent.
+;;;
+;;; Nothing is left to check the requirement, so the engine falls back on the
+;;; only completeness test it has — *does the generator propose anything?* —
+;;; and the generator, having been closed, proposes nothing. Complete by
+;;; exhaustion; owing, by discharge.
+;;;
+;;; ── The three ingredients, and each is individually reasonable ─────────────
+;;;
+;;; Worth stating because no one of them is the bug:
+;;;
+;;;   1. `infer-closure`'s operational witness is opt-in and boxed-warned
+;;;      (`01_infer_closure.ein` exhibits its completeness hazard);
+;;;   2. `total`'s stored-negative discipline is what stops it firing `(false)`
+;;;      on every empty-yet state, and is the *right* way to write it —
+;;;      `connex` is what the other way looks like;
+;;;   3. `complete(kb)` meaning "the generator proposes nothing" is what the
+;;;      engine has, because it has no vocabulary for *what a state owes*.
+;;;
+;;; The corner is their intersection, and it is the closed-and-owing case
+;;; [S1d.2.2](../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.2_domains.md)
+;;; asks who is allowed to say `(false)` about. The answer this program pins
+;;; is *nobody, today*. It is banked as a golden precisely so that the stage
+;;; that changes it has to move this file and say why.
+;;;
+;;; ── What the expectation observes ──────────────────────────────────────────
+;;;
+;;; The same lift as the twin: `closed-here` makes the derived closure
+;;; nameable. The expectation says the closure was derived — it does **not**
+;;; say the state is a model, because `:expect` has no word for a state that
+;;; owes something, which is the other half of the same gap.
+
+(import std.algebra :symbols (functional total))
+(import std.closure :symbols (infer-closure))
+
+(relation is-a        T T :why "{?1} is a {?2}")
+(relation r           A B :why "{?1} is assigned {?2}")
+(relation closed-here T   :why "{?1}'s extension was closed by infer-closure")
+
+(is-a a1 A)
+(is-a b1 B) (is-a b2 B)
+
+;; The markers `infer-closure` reads (arity 1) …
+(functional r)
+(total      r)
+;; … and the activator the unreachability scan needs (arity 2). It is
+;; activated here and it never fires — see above.
+(total r is-a)
+
+(rule closed-observed ()
+  :match  (__closed__ ?R)
+  :assert (closed-here ?R)
+  :priority 500
+  :why    "{?R}'s extension is closed")
+
+;; No `(r a1 b1)`. `a1` owes a `B` it can never be given.
+
+(query
+  :goal (closed-here ?R)
+  ;; `r` is closed by derivation; the other two are scoped out by hand so the
+  ;; blind generator is quiet and the verdict is about the requirement alone.
+  :no-hypothesis (is-a closed-here)
+  :expect (model (closed-here r)))

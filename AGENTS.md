@@ -118,9 +118,13 @@ constrained-reasoning research.
 - **`tests/`** — **the ein-lang test suites**, and since M1c S1c.1.4 a third
   corpus root beside `examples/` and `stdlib/`: a `.ein` here with no
   `corpus.toml` entry fails the same completeness check. Its one subject is
-  [`tests/stdlib/`](tests/README.md) — **45 programs, one per stdlib rule or
-  tight family**, each carrying an `:expect` so `ein test tests/` is the whole
-  suite in 0.03 s. They are deliberately *not* under `examples/`: that
+  [`tests/stdlib/`](tests/README.md) — **47 programs, one per stdlib rule or
+  tight family** plus one pair that is a *corner* rather than a rule
+  (`closure/02_closed_and_satisfied` and `03_closed_and_owing`, M1d S1d.2.2:
+  the same program with one fact deleted, both reporting `Solution` — a state
+  that owes something it can never pay, banked so the stage that fixes it has
+  to move the golden), each carrying an `:expect` so `ein test tests/` is the
+  whole suite in 0.03 s. They are deliberately *not* under `examples/`: that
   directory is things to read, and these are three declarations and two facts
   apiece that exist to break. Three idioms are worth knowing before writing a
   new one — **naming a relation closes it** (which is how a rule with no guard
@@ -335,7 +339,7 @@ it.
 what it costs is 0.04 s:
 
 ```sh
-cargo test … -p ein-infer --test stdlib_coverage   # 73 rules, 45 programs, 796 firings
+cargo test … -p ein-infer --test stdlib_coverage   # 73 rules, 47 programs, 800 firings
 ein test tests/                                    # the same suite, as a status code
 ```
 
