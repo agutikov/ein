@@ -15,6 +15,11 @@ reconnaissance is superseded by
 [`model_set_census.md`](model_set_census.md), over every multi-model entry and
 not one, and the leftover-open probe P1d.2 handed forward is **taken** rather
 than declined again.
+**[S1d.3.2](s1d.3.2_representations.md) is done, 2026-08-25** — the five
+candidates priced on four columns and the two the stage insisted be *printed*
+are printed ([`representations.md`](representations.md)). It reverses the
+stage's own prediction: **(a), "the candidate to beat", loses the readability
+veto and (b) wins**, with its exactness verified rather than asserted.
 
 ## Goal
 
@@ -106,7 +111,7 @@ puzzle, and *enumerate, and say so* needs only the measurement.
 | stage | title | est. |
 |---|---|---|
 | [S1d.3.1](s1d.3.1_what_the_models_differ_in.md) | What the 32 models actually differ in | 3 d — **done 2026-08-25** |
-| [S1d.3.2](s1d.3.2_representations.md) | Candidate representations, and what each costs to produce and to read | 2 d |
+| [S1d.3.2](s1d.3.2_representations.md) | Candidate representations, and what each costs to produce and to read | 2 d — **done 2026-08-25** |
 | [S1d.3.3](s1d.3.3_the_verdict.md) | What the verdict says, and whether this ships | 2 d |
 
 **S1d.3.1 is done**, and it is the measurement that decides the rest:
@@ -121,6 +126,17 @@ writes `(not h)` and would move the model dedup; running it on a **discarded
 fork** is the difference, and with the lever on and off every field of every
 summary outside the new `leftover` block is identical on all 121 entries that
 reach a fixpoint.
+
+**S1d.3.2 is done**, and what it hands S1d.3.3 is a recommendation rather than
+a list: **(b), the determining key, if anything ships at all.** It is 2 506
+bytes on the phase's own case — 15 % smaller than (a) and the only form that
+fits 72 columns — it is **exact and verified** (all 32 key rows reconstruct
+their model to the fact, 30 of them without entering a single commitment), and
+it is the only form that answers *what else would determine the Zebra*. (a) is
+the one that loses: it cannot say how many models there are and the arithmetic
+it invites over-states by 3.11 × 10¹². (c) is priced out by `k = 32` rather
+than by the coupling — a reduced MDD is bounded in [24, 737] nodes under any
+order — and (d) is deferred with a three-clause trip-wire no entry trips.
 
 **S1d.3.3 inherits two questions rather than one.** Besides
 [Q-M1d.5](../open_questions.md#q-m1d5--print-or-describe) it owns the

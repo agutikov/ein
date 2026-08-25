@@ -324,6 +324,17 @@ constrained-reasoning research.
   It also carries the probe P1d.2 declined — `EIN_LEFTOVER=1`, above — and its
   number: `zebra2`'s **unique** model leaves **3 678** facts the blind
   enumerator would still propose, none of them an attribute arrow.
+  Since S1d.3.2 it has a second half, **`--form {envelope,key,list,diagram}`**,
+  which renders a model set as one of the candidate *representations* rather
+  than as a census row — because a representation argued about in prose and
+  never printed is one nobody has read. Its answer, priced on four columns
+  (produce · size · exact · read) in
+  [representations.md](plans/m1d_satisfiability/p1d.3_model_sets/representations.md):
+  the **determining key** wins at 2 506 bytes and is *verified* exact — all 32
+  key rows reconstruct their model to the fact, 30 of them without entering a
+  commitment — while the certain core, the form the stage expected to win,
+  cannot say how many models there are and invites arithmetic that over-states
+  by 3.11 × 10¹².
 - **`build.sh`** — **everything this repo builds, in one command**: the Rust
   workspace (`--release` by default, into `ein.rs/target/`) and then the three
   C baselines in `c/` (into the gitignored `build/`). `--debug`,

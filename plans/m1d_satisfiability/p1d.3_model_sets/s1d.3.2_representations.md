@@ -5,6 +5,54 @@
 **Depends on:** [S1d.3.1](s1d.3.1_what_the_models_differ_in.md) — the
 factorisation measurement is what removes candidates from this list rather than
 argument.
+**Status: done 2026-08-25.** The four columns, the two printed forms, the
+readability test and the two deferrals — banked in
+[`representations.md`](representations.md). See § What it found.
+
+## What it found
+
+**The stage's own prediction is the thing that moved.** It called (a) *"the
+candidate to beat"* and doubted (b) on two counts; the pricing reverses both.
+
+| claim | asked for | measured |
+|---|---|---|
+| the four columns | (a)–(e), every cell from a measurement | **filled**, and the sizes are of the *rendered output*: (a) 48 lines / 2 889 B, **(b) 44 / 2 506**, (e) 39 / 13 208 at **396 columns**, `solve -e` 516 lines, the fact set 13 920 |
+| (a) and (b) printed | on the phase's real case, in the record | **printed in full**, `--form envelope\|key`, and printing (a) is what found the flaw in it |
+| the readability test | run, with the negative kept | **run** — (b) answers all three questions, (e) two, **(a) one**. And no reader was available, which §6.1 says rather than hides |
+| (c) priced | a bound conditioned on the measured coupling | **an exact count, not a bound**: 355 nodes / 385 edges best order, and `24 ≤ nodes ≤ 737` under *any* order |
+| (d) deferred | the milestone's form, trip-wire as a corpus property | **deferred**, three clauses, and the two near misses fail *different* ones |
+| no engine change | the stage's last acceptance line | **none.** Every form reads `--json-summary`; the only code is `--form` in the census script |
+
+**Three things the stage did not ask for and got.**
+
+- **(b)'s exactness is verified operationally, not asserted.** *"The other 19
+  slots follow"* is a claim about the engine, so it was run: append each key row
+  to the puzzle and solve. **32 of 32** give `Solution k=1 exhausted=true` with
+  the fact set **identical** to the census's model, in 0.32 s for all of them —
+  and **30 of the 32 enter no commitment at all**. The key table is a lossless
+  compression whose decompressor is, on nearly every row, plain saturation.
+- **(c) is priced out on scale, not on structure.** The stage expected
+  *"unbounded on this shape"* from S1d.3.1's separator of 17. The real answer is
+  smaller and more final: at `k = 32` a reduced MDD is bounded in **[24, 737]
+  nodes under every order**, because a level holds at least one node and at
+  most `k`. A diagram wins when `k` is exponential in `n`; here it is 32. The
+  separator says a diagram would *also* be no good if `k` were large — both
+  halves point the same way and neither is about the variable order.
+- **(a) does not merely fail to say how many models — it invites the wrong
+  number.** The stage's test was *"a form that cannot answer 'how many models'
+  without the reader multiplying something is not compact, it is folded"*.
+  Multiplying (a)'s 23 printed ranges gives **9.95 × 10¹³** against 32. The
+  labelling fix the stage proposed is implemented (`[OVER-APPROXIMATION]`, with
+  the cell count on line 3) and does not repair the second question: *what else
+  would determine the Zebra* is not in the form at all, because an envelope is
+  a projection onto single variables and the answer lives in the pairs.
+
+**One task grew a fourth argument**: T1d.3.2.2 named `--form envelope|key`, and
+the instrument has **`list`** and **`diagram`** too. `list` is (e) rendered in
+the same alphabet, so the readability test compares structures rather than
+formatting — what `solve -e` prints is a different object and is quoted beside
+it. `diagram` is (c)'s price, and it is a count rather than a picture, which is
+the only way to answer *how big would it be* without building one.
 
 ## Context
 

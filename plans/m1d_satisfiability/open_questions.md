@@ -243,10 +243,21 @@ the 23 varying variables are one coupling component, K₂₃ minus five edges,
 minimum separator 17 — so a decision diagram has no good variable order and
 the certain core over-approximates by 3.11 × 10¹².
 
-What the question still turns on is the fourth column, which is not a number:
-whether the person who reads the trace can read the form. That is
-[S1d.3.2](p1d.3_model_sets/s1d.3.2_representations.md)'s to price and
-[S1d.3.3](p1d.3_model_sets/s1d.3.3_the_verdict.md)'s to decide.
+**And the other half is priced** —
+[`representations.md`](p1d.3_model_sets/representations.md), S1d.3.2, the same
+day. *"Report the factorisation"* has a recommendation now: the **determining
+key**, 2 506 bytes against the enumeration's 13 920 fact lines, exact and
+verified (32 of 32 rows reconstruct their model to the fact, 30 without
+entering a commitment), and the only one of the five forms that answers all
+three questions a reader has. The *certain core* — the form the stage expected
+to win — loses the readability veto: it cannot say how many models there are,
+and multiplying the ranges it prints gives 9.95 × 10¹³ against 32.
+
+What is left for [S1d.3.3](p1d.3_model_sets/s1d.3.3_the_verdict.md) is not the
+pricing but the **decision**: whether anything ships at all on a corpus with
+one real multi-model puzzle, whether an over-approximation may ship with a
+label, and how a compact form states its guarantee when `solve -e
+zebra2-minus-15` is still `exhausted = false`.
 
 ## Q-M1d.6 — May `Contradiction` be said with `exhausted = False`?
 

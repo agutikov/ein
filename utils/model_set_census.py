@@ -513,10 +513,279 @@ def analyse(models: list[set[str]]) -> dict:
     return row
 
 
-# ── the report ──────────────────────────────────────────────
+# ── the forms — S1d.3.2 ─────────────────────────────────────
+#
+# `--form` renders a model set as one of the candidate **representations**
+# [S1d.3.2](../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.2_representations.md)
+# prices, because *a representation argued about in prose and never printed is
+# a representation nobody has read*. Nothing here touches the engine — every
+# form is a rendering of the same `verdict.solutions` the census already reads.
+#
+# `envelope` and `key` are the stage's (a) and (b). `list` is (e) rendered in
+# the **same alphabet**, so the readability test compares forms rather than
+# formatting — what `solve -e` actually prints is a different thing and is
+# quoted beside it in the record. `diagram` is (c), and it is a *price* rather
+# than a picture: the exact reduced-MDD node count under several variable
+# orders, which is the only way to answer "how big would the diagram be"
+# without building one.
 
 def fmt_var(v) -> str:
     return f"{v[0]}:{v[1]}" if len(v) == 2 else v[0]
+
+
+def _model_view(states):
+    """The pieces every form needs: assignments, domains, the split, the key."""
+    assignments, domains, unrefined, _gap, core, pos, _neg = variables(states)
+    names = sorted(domains, key=lambda v: (len(v), v))
+    vary = [v for v in names if len(domains[v]) > 1]
+    fixed = [v for v in names if len(domains[v]) == 1]
+    return assignments, domains, vary, fixed, core, pos, unrefined
+
+
+def form_envelope(path, states) -> None:
+    """(a) — the certain core and the varying frontier, **labelled**.
+
+    The label is not decoration. This is the smallest box containing the model
+    set, and printing it without the ratio is the failure mode
+    [S1d.3.2](../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.2_representations.md)
+    names: a reader told each slot's range will read the *product* as the
+    answer.
+    """
+    assignments, domains, vary, fixed, core, _pos, _unref = _model_view(states)
+    k = len(states)
+    cells = math.prod(len(domains[v]) for v in vary)
+    print(f"\n## (a) envelope — {path}   [OVER-APPROXIMATION]\n")
+    print(f"  the box has {cells:,} cells; the set has {k}."
+          f"  over-approximation {cells / k:.3g}×")
+    print(f"  what follows says which facts are settled — never which "
+          f"combinations occur.\n")
+    by_rel = Counter()
+    for f in core:
+        t = sexpr(f)
+        head = t[0] if isinstance(t, list) else t
+        if head == "not" and isinstance(t[1], list):
+            head = f"not {t[1][0]}"
+        by_rel[head] += 1
+    print(f"  certain — {len(core)} facts in all {k} models")
+    cells_line = [f"{rel} {n}"
+                  for rel, n in sorted(by_rel.items(), key=lambda kv: (-kv[1], kv[0]))]
+    line = []
+    for c in cells_line:
+        if line and sum(len(x) + 2 for x in line) + len(c) > 74:
+            print("    " + " · ".join(line))
+            line = []
+        line.append(c)
+    if line:
+        print("    " + " · ".join(line))
+    if fixed:
+        print(f"\n    of which decided slots: {len(fixed)}")
+        for v in fixed:
+            print(f"      {fmt_var(v):24} = {domains[v][0]}")
+    print(f"\n  varying — {len(vary)} slots")
+    for v in vary:
+        print(f"    {fmt_var(v):24} ∈ {{{', '.join(domains[v])}}}")
+
+
+def form_key(path, states) -> None:
+    """(b) — a determining key and its table, exact.
+
+    The key is the minimum determining set with the **smallest domain
+    product**, which is the tightest such table; the count of equally minimal
+    keys is printed beside it, because *"why these four"* is the objection the
+    stage says (b) has to answer.
+    """
+    assignments, domains, vary, _fixed, _core, _pos, _unref = _model_view(states)
+    k = len(states)
+    sep, full = separating(vary, assignments)
+    size = min_key_size(vary, sep, full, min(len(vary), 8))
+    if size is None:
+        print(f"\n## (b) key — {path}\n\n  no determining set up to size 8.")
+        return
+    combos = math.comb(len(vary), size)
+    if combos > KEY_BUDGET:
+        print(f"\n## (b) key — {path}\n\n  minimum key is {size} variables; "
+              f"C({len(vary)}, {size}) = {combos:,} is over the budget, so the "
+              f"table is not enumerable here.")
+        return
+    found, key, prod = all_keys(vary, sep, full, size, domains)
+    # Which variables every minimum key contains — the answer to "why these".
+    always = None
+    seen_all = []
+
+    def collect(start, covered, chosen):
+        need = size - len(chosen)
+        if need == 0:
+            if covered == full:
+                seen_all.append(tuple(chosen))
+            return
+        if len(vary) - start < need:
+            return
+        for i in range(start, len(vary) - need + 1):
+            chosen.append(vary[i])
+            collect(i + 1, covered | sep[vary[i]], chosen)
+            chosen.pop()
+
+    collect(0, 0, [])
+    if seen_all:
+        always = set(seen_all[0]).intersection(*[set(c) for c in seen_all])
+    print(f"\n## (b) key — {path}   [EXACT]\n")
+    print(f"  {size} of {len(vary)} variables determine the model; "
+          f"{found} such {size}-sets exist.")
+    print(f"  This one's domains allow fewest combinations — {prod}, "
+          f"of which {k} occur.")
+    if always:
+        print(f"  Every one of the {found} contains: "
+              f"{', '.join(sorted(fmt_var(v) for v in always))}")
+    print()
+    head = [fmt_var(v) for v in key]
+    w = [max(len(h), max(len(a[v]) for a in assignments)) for h, v in zip(head, key)]
+    print(("    " + "  ".join(f"{h:<{n}}" for h, n in zip(head, w))).rstrip())
+    print("    " + "  ".join("-" * n for n in w))
+    rows = sorted(tuple(a[v] for v in key) for a in assignments)
+    for r in rows:
+        print(("    " + "  ".join(f"{c:<{n}}" for c, n in zip(r, w))).rstrip())
+    print(f"\n  {len(rows)} rows. The other {len(vary) - size} varying slots "
+          f"follow:\n  re-saturate with a row and the model is fixed.")
+
+
+def form_list(path, states) -> None:
+    """(e) — the enumeration, in the same alphabet as (a) and (b).
+
+    Not what `solve -e` prints. This is the control arm rendered so that the
+    three forms differ in *structure* rather than in formatting, which is what
+    the readability test needs; the real output is quoted beside it.
+    """
+    assignments, domains, vary, _fixed, core, _pos, _unref = _model_view(states)
+    print(f"\n## (e) list — {path}   [EXACT]\n")
+    print(f"  {len(states)} models × {len(vary)} varying slots, "
+          f"+ {len(core)} facts shared by all of them.\n")
+    head = [fmt_var(v) for v in vary]
+    w = [max(len(h), max(len(a[v]) for a in assignments)) for h, v in zip(head, vary)]
+    print(("    " + " ".join(f"{h:<{n}}" for h, n in zip(head, w))).rstrip())
+    print("    " + " ".join("-" * n for n in w))
+    for a in sorted(assignments, key=lambda a: tuple(a[v] for v in vary)):
+        print(("    " + " ".join(f"{a[v]:<{n}}" for v, n in zip(vary, w))).rstrip())
+
+
+#: How many random variable orders `--form diagram` tries before reporting the
+#: best it found. A reduced MDD's size is order-dependent and finding the
+#: optimum is NP-hard; the honest report is "the best of N, and the heuristics".
+DIAGRAM_ORDERS = 500
+
+
+def mdd_levels(assignments, order) -> list[int]:
+    """Nodes per level of the **reduced** MDD for this variable order.
+
+    A node at level *i* is a distinct *residual set* — the set of suffixes
+    still reachable after fixing the first *i* variables — because two prefixes
+    share a node exactly when what remains possible after them is the same set.
+    That makes the count exact rather than an estimate, and it is what "how big
+    would the diagram be" means.
+
+    Two bounds fall straight out and are the reason (c) is priced this way: a
+    level has at least one node and at most *k* of them, so the whole diagram
+    is between `n + 1` and `n·k + 1` nodes **whatever the order**. A decision
+    diagram is a win when *k* is exponential in *n*; at `k = 32` it cannot be
+    one, and no variable order changes that.
+    """
+    out = []
+    for i in range(len(order) + 1):
+        groups = defaultdict(set)
+        for a in assignments:
+            groups[tuple(a[v] for v in order[:i])].add(tuple(a[v] for v in order[i:]))
+        out.append(len({frozenset(g) for g in groups.values()}))
+    return out
+
+
+def mdd_edges(assignments, order) -> int:
+    """Outgoing edges of the reduced MDD — one per (node, value it accepts).
+
+    Nodes alone under-state a diagram: what a reader or a consumer has to hold
+    is nodes **plus** the labelled edges between them, and a multi-valued
+    variable contributes up to `|dom|` of them per node.
+    """
+    total = 0
+    for i in range(len(order)):
+        groups = defaultdict(set)
+        for a in assignments:
+            groups[tuple(a[v] for v in order[:i])].add(tuple(a[v] for v in order[i:]))
+        for node in {frozenset(g) for g in groups.values()}:
+            total += len({suffix[0] for suffix in node})
+    return total
+
+
+def form_diagram(path, states, seed: int = 20260825) -> None:
+    """(c) — priced, not built: the exact node count under several orders."""
+    import random
+
+    assignments, domains, vary, _fixed, _core, _pos, _unref = _model_view(states)
+    k = len(states)
+    sep, full = separating(vary, assignments)
+    size = min_key_size(vary, sep, full, min(len(vary), 8))
+    key = []
+    if size is not None and math.comb(len(vary), size) <= KEY_BUDGET:
+        _n, key, _p = all_keys(vary, sep, full, size, domains)
+
+    def edges_of(vs):
+        e = {v: 0 for v in vs}
+        for u, w in itertools.combinations(vs, 2):
+            p = {tuple(a[x] for x in (u, w)) for a in assignments}
+            if len(p) < len(domains[u]) * len(domains[w]):
+                e[u] += 1
+                e[w] += 1
+        return e
+
+    deg = edges_of(vary)
+    orders = {
+        "canonical (the census's)": list(vary),
+        "domain size, ascending": sorted(vary, key=lambda v: (len(domains[v]), str(v))),
+        "coupling degree, descending": sorted(vary, key=lambda v: (-deg[v], str(v))),
+        "key variables first": ([v for v in vary if v in set(key)]
+                                + [v for v in vary if v not in set(key)]),
+    }
+    rng = random.Random(seed)
+    best, best_order = None, None
+    for _ in range(DIAGRAM_ORDERS):
+        o = list(vary)
+        rng.shuffle(o)
+        lv = mdd_levels(assignments, o)
+        n = sum(lv[:-1]) + 1
+        if best is None or n < best:
+            best, best_order = n, o
+    orders[f"best of {DIAGRAM_ORDERS} random"] = best_order
+
+    print(f"\n## (c) decision diagram — {path}   [PRICED, NOT BUILT]\n")
+    print(f"  Exact reduced-MDD node counts over the {len(vary)} varying "
+          f"variables. A node is a\n  distinct residual set, so these are "
+          f"counts and not bounds.\n")
+    print(f"    {'variable order':30} {'nodes':>7} {'edges':>7} {'widest':>7}")
+    print(f"    {'-' * 30} {'-' * 7} {'-' * 7} {'-' * 7}")
+    for name, o in orders.items():
+        lv = mdd_levels(assignments, o)
+        print(f"    {name:30} {sum(lv[:-1]) + 1:>7} "
+              f"{mdd_edges(assignments, o):>7} {max(lv):>7}")
+    if key:
+        lv = mdd_levels(assignments, list(key))
+        print(f"    {'the ' + str(len(key)) + '-variable key alone':30} "
+              f"{sum(lv[:-1]) + 1:>7} {mdd_edges(assignments, list(key)):>7} "
+              f"{max(lv):>7}")
+    n = len(vary)
+    print(f"\n  bounds, for any order at all: {n + 1} ≤ nodes ≤ {n * k + 1} "
+          f"(a level has ≥ 1 node and ≤ k).")
+    print(f"  against the enumeration: {k} rows × {n} columns = {k * n} cells; "
+          f"against the key\n  table: {k} rows × {len(key)} columns "
+          f"= {k * len(key)} cells.")
+    print(f"  A diagram is a win when k is exponential in n. At k = {k} it "
+          f"cannot be one, and\n  no variable order changes that — which is "
+          f"the pricing, not a defeat for this order.")
+
+
+FORMS = {
+    "envelope": form_envelope,
+    "key": form_key,
+    "list": form_list,
+    "diagram": form_diagram,
+}
 
 
 def rows_of(entries, args, env) -> list[dict]:
@@ -545,11 +814,16 @@ def rows_of(entries, args, env) -> list[dict]:
                 leftover_open=(d.get("leftover") or {}).get("open_states") or [],
                 n_open_states=len(opens),
             )
-            if len(models) >= 2:
-                row["set"] = analyse(models)
-            elif len(opens) >= 2:
-                row["set"] = analyse(opens)
-                row["set"]["states"] = "open"
+            states = models if len(models) >= 2 else opens
+            if len(states) >= 2:
+                row["set"] = analyse(states)
+                if states is opens:
+                    row["set"]["states"] = "open"
+                # Kept for `--form`, stripped before the JSON: a machine copy
+                # carrying every fact of every model is the enumeration this
+                # phase is trying to price, not a census row.
+                if args.form:
+                    row["_states"] = states
             out.append(row)
     return out
 
@@ -714,6 +988,9 @@ def main() -> int:
                     help=f"the ein binary (default $EIN_BIN or {EIN})")
     ap.add_argument("--json", type=Path, help="also write the rows as JSON")
     ap.add_argument("-k", "--key", help="only entries whose path contains this")
+    ap.add_argument("--form", choices=sorted(FORMS),
+                    help="render the model set as one of S1d.3.2's candidate "
+                         "representations instead of the census row")
     ap.add_argument("--no-leftover", action="store_true",
                     help="skip the blind-enumerator probe (EIN_LEFTOVER)")
     ap.add_argument("--timeout", type=float, default=90.0,
@@ -741,7 +1018,17 @@ def main() -> int:
         print("no entries matched", file=sys.stderr)
         return 2
 
-    if args.key:
+    if args.form:
+        shown = 0
+        for r in rows:
+            if not r.get("_states"):
+                continue
+            FORMS[args.form](r["path"], r["_states"])
+            shown += 1
+        if not shown:
+            print("no entry matched with a model set to render", file=sys.stderr)
+            return 2
+    elif args.key:
         for r in rows:
             print_entry(r)
     else:
@@ -751,7 +1038,11 @@ def main() -> int:
         if not args.no_leftover:
             print_leftover(rows)
     if args.json:
-        args.json.write_text(json.dumps(rows, indent=1), encoding="utf-8")
+        # `_`-prefixed keys are working state (`--form`'s fact sets), never the
+        # machine copy: a JSON carrying every fact of every model is the
+        # enumeration this phase exists to price.
+        clean = [{k: v for k, v in r.items() if not k.startswith("_")} for r in rows]
+        args.json.write_text(json.dumps(clean, indent=1), encoding="utf-8")
         print(f"\nwrote {args.json}", file=sys.stderr)
     return 0
 

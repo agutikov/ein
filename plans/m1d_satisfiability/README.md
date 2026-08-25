@@ -200,7 +200,7 @@ that is the note's thesis measured in someone else's language.
 | phase | title | stages | est. | gate |
 |---|---|---|---|---|
 | [P1d.2](p1d.2_obligations/README.md) | Obligations — the half of the vocabulary that says *must* | 6 (**done 2026-08-25**) | 3.5 w | **met**: a puzzle states a requirement, a state says what it owes, the search branches on it, and the verdict reports it — [the phase ledger](p1d.2_obligations/README.md) |
-| [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 (**1 done**) | 1.5 w | either a compact representation of the 32 models, or a written argument for why enumeration is the answer |
+| [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 (**2 done**) | 1.5 w | either a compact representation of the 32 models, or a written argument for why enumeration is the answer |
 | [P1d.4](p1d.4_model_set_closure/README.md) | Closing the model set — the claim nothing can state | 3 (**at stage depth**) | 1.5 w | a written answer to "may a puzzle require its own model count", and `zebra2-minus-15`'s 32 models either verifiable or the pipeline sentence rewritten |
 | [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 (1 done) | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
 
@@ -283,6 +283,18 @@ and whether closed-world completion is adopted.
 > kernel imposes no type system. That is
 > [S1d.3.3](p1d.3_model_sets/s1d.3.3_the_verdict.md)'s closed-world question
 > with a number on it.
+>
+> **S1d.3.2 followed the same day and reversed its own prediction.** It called
+> the certain core *"the candidate to beat"*; printed, that core turns out to
+> be 2 facts of answer and 338 of scaffolding, it cannot say how many models
+> there are, and the arithmetic it invites over-states by 3.11 × 10¹². The
+> determining key wins instead — 2 506 bytes, 72 columns, and **exact in the
+> operational sense**: every one of the 32 key rows reconstructs its model to
+> the fact, 30 of them by saturation alone with no commitment entered
+> ([`representations.md`](p1d.3_model_sets/representations.md)). A decision
+> diagram is priced out by `k = 32` rather than by the coupling — bounded in
+> [24, 737] nodes under any variable order — and the disjunctive store is
+> deferred with a three-clause trip-wire the corpus does not trip.
 
 **P1d.4 reached stage depth on 2026-08-25**, the same day and the same way:
 three stage files, written because a reconnaissance replaced an assumption with
