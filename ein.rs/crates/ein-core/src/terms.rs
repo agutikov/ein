@@ -163,7 +163,17 @@ impl Default for Terms {
 ///
 /// `open` / `forall` used to live here as compile-time sugar; since P1.8
 /// S1.5.9 they are ordinary `(macro …)` declarations in `std.macro`, expanded
-/// at load time, so they are no longer kernel vocabulary.
+/// at load time, so they are no longer kernel vocabulary — and the macro that
+/// was spelled `open` is now `unknown` (M1d P1d.2, naming pair P3), because
+/// `open` was wanted for the KB-level verdict atom below.
+///
+/// `open` is **not** here. It is reserved (it may not be bound by a
+/// declarator) but it is not a rule-body primitive: it appears only as an
+/// `:assert` conclusion, the compiler never meets it in a `:match`, and the
+/// contradiction detector does not read it. `(false)` is its dual and lives
+/// here because a stored `(false)` fact *is* read by the detector; an `open`
+/// conclusion is never stored at all
+/// (`plans/m1d_satisfiability/p1d.2_obligations/s1d.2.3_the_form.md`).
 pub const STRUCTURAL: [&str; 5] = ["absent", "and", "false", "not", "or"];
 
 /// The built-in computed predicates.
@@ -178,8 +188,8 @@ pub const PREDICATES: [&str; 2] = ["eq", "neq"];
 /// predicates, and `relation` — kept a plain SYMBOL so `(relation ?R ?A ?B)`
 /// stays a legal pattern. This is about *binding* a name: a fact may still
 /// have a reserved head, such as a stored `(not X)` octagon.
-pub const RESERVED: [&str; 8] = [
-    "absent", "and", "eq", "false", "neq", "not", "or", "relation",
+pub const RESERVED: [&str; 9] = [
+    "absent", "and", "eq", "false", "neq", "not", "open", "or", "relation",
 ];
 
 pub fn is_predicate(name: &str) -> bool {

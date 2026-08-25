@@ -1,0 +1,1 @@
+rule 'bad': `(open …)` is a verdict about the KB and is legal only in :assert — the third-state probe for a fact is `(unknown …)` at None

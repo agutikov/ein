@@ -1,0 +1,10 @@
+;; Two positive `?R` premises each binding a witness variable — "there must
+;; exist a 2-chain". Refused rather than guessed: there is no single slot to
+;; branch on, and no corpus entry needs one.
+
+(relation is-a T T)
+(relation r A B)
+(rule bad (?R ?isa)
+  :match  (and (relation ?R ?A ?B) (?isa ?a ?A)
+               (absent (and (?R ?a ?x) (?R ?x ?b))))
+  :assert (open ?R))

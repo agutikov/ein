@@ -552,6 +552,30 @@ group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 
 [[entry]]
+path   = "examples/broken/load/open_in_match.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1d S1d.2.3 — `open` is a verdict about the KB and is assert-side only. The message names `(unknown …)` because the two were one word until the P3 rename."
+
+[[entry]]
+path   = "examples/broken/load/open_arity.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1d S1d.2.3 — the superseded `forall`-dual triple. The form is `(open)` or `(open ?R)`; anything wider restates the guard in the head."
+
+[[entry]]
+path   = "examples/broken/load/open_mixed_assert.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1d S1d.2.3 — a rule concluding `open` and a fact would belong to the saturation agenda and the post-fixpoint pass at once."
+
+[[entry]]
+path   = "examples/broken/load/open_compound_witness.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1d S1d.2.3 — the projection's hardest refusal: two positive `?R` premises each binding a witness variable, so no single slot to branch on. The other eight shapes are pinned in `ein-ir`'s unit tests."
+
+[[entry]]
 path   = "examples/broken/load/hrule_reserved_name.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]

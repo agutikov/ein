@@ -1,0 +1,6 @@
+;; `(open …)` is a verdict about the KB. The third-state probe for a
+;; *fact* is `(unknown P)` — one word until M1d P1d.2 renamed the macro.
+
+(relation is-a T T)
+(relation r A B)
+(rule bad (?R) :match (and (relation ?R ?A ?B) (open ?R)) :assert (r a b))

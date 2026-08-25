@@ -301,6 +301,35 @@ whole form exists to prevent. Two things reach it — a run that stopped at `-n`
 and a lattice frontier still alive at `--max-set-size`, where `k = 0` means "no
 model within the cap" rather than "no model".
 
+### 4.2 The verdict atom's refusals — M1d S1d.2.3
+
+Nine more with no Python counterpart, and by §4.1's rule they name no
+exception class either. They all concern `open`, the reserved verdict atom
+([`06_reserved_names.md` § the verdict atom](ir/03-ein-lang/06_reserved_names.md)),
+and every one of them is a place the engine would otherwise have had to guess.
+`<k>` is `rule` or `hrule`, `<n>` the rule's name.
+
+| input | message | exit |
+|---|---|---|
+| `(open …)` in a `:match` | ``<k> '<n>': `(open …)` is a verdict about the KB and is legal only in :assert — the third-state probe for a fact is `(unknown …)` at <loc>`` | 1 |
+| `(open …)` with two or more arguments | ``<k> '<n>': `open` takes the incomplete relation and nothing else — `(open)` or `(open ?R)`, not <n> arguments at <loc>`` | 1 |
+| an `:assert` concluding `open` *and* something else | ``<k> '<n>': a rule asserting `open` may assert nothing else — it is read after the fixpoint, where a derivation would be too late at <loc>`` | 1 |
+| `(open …)` nested inside a conclusion | ``<k> '<n>': `(open …)` is a whole conclusion, not a term inside one at <loc>`` | 1 |
+| `open`'s argument is neither a variable nor a name | ``<k> '<n>': `open`'s argument names a relation — a rule parameter or a relation name at <loc>`` | 1 |
+| `(open ?R)` where `?R` is not a parameter | ``<k> '<n>': `(open ?R)` names a relation the activator does not bind — `?R` is not in the parameter list at <loc>`` | 1 |
+| no `(absent …)` holds a positive `?R` premise | ``<k> '<n>': `(open ?R)` needs an `(absent …)` in :match holding a positive `?R` premise — that premise is the witness the obligation owes at <loc>`` | 1 |
+| two or more `(absent …)` do | ``<k> '<n>': <m> `(absent …)` guards hold a positive `?R` premise — which one states the obligation is not decidable at <loc>`` | 1 |
+| the `?R` premise binds no variable of its own | ``<k> '<n>': `(open ?R)`'s `?R` premise binds no variable of its own, so the obligation is ground — that is a plain `absent` check and not something a witness could discharge at <loc>`` | 1 |
+| two positive `?R` premises each bind one | ``<k> '<n>': <m> positive `?R` premises each bind a witness variable — a compound witness has no single slot to branch on at <loc>`` | 1 |
+
+Four are pinned by fixtures in
+[`examples/broken/load/`](../../examples/broken/load/) — `open_in_match`,
+`open_arity`, `open_mixed_assert`, `open_compound_witness` — and all ten by
+`ein-ir`'s `the_verdict_atom_refuses_every_shape_it_cannot_resolve`.
+Binding the name is the eleventh and is not new: `(relation open …)`,
+`(macro open …)` and `(rule open …)` take §1's existing *shadows a reserved
+kernel name* message, because `open` joined `RESERVED`.
+
 ## 5. The CLI surface
 
 Everything a script or a habit can depend on is fixed: the four subcommands

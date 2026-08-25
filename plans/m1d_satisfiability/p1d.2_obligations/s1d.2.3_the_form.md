@@ -6,6 +6,53 @@ directions: the assert-side binder carve-out the triple needed is gone, and
 the projection's well-formedness check (below) is new.
 **Depends on:** [S1d.2.2](s1d.2.2_domains.md) for the domain contract; the
 *decisions* below are already taken and do not wait on it.
+**Status: done 2026-08-25**, with one task deferred and its reason measured.
+
+- **`open` is reserved** — `RESERVED` goes 8 → 9 in `ein-core::terms`, so
+  `(relation open …)`, `(macro open …)` and `(rule open …)` take the existing
+  *shadows a reserved kernel name* diagnostic. It is **not** in `STRUCTURAL`:
+  it is never a premise, the compiler never meets it, and no detector reads
+  it. The P3 ordering window is closed.
+- **Both forms load and round-trip.** `(open)` and `(open ?R)` in `:assert`;
+  the `every_syntactic_shape_survives_dump_then_parse` table goes 47 → 49.
+- **Obligation rules are out of the agenda by construction** — a third
+  registry, `Program::obligations`, beside `rules` and `hrules` and sharing
+  the one name-space. The saturator walks `rules`, `hypgen` walks `hrules`,
+  and **nothing walks `obligations`**, so a program using the atom is legal
+  and inert. `shape.rs` gained an `OBLIGATION` row and the loader's three
+  registry passes gained the third arm, all of them additive.
+- **Ten refusals**, each a load diagnostic: match-side placement, arity ≥ 2,
+  a nested `(open …)`, a mixed `:assert`, an argument that names no relation,
+  an `(open ?R)` whose `?R` is not a parameter, and the projection's four —
+  no `absent` holds a positive `?R` premise, two do, the premise is ground,
+  two premises each bind a witness. Four are pinned as corpus fixtures under
+  `examples/broken/load/`; all ten in `ein-ir`'s unit tests, with the strings
+  in [`defined_behaviour.md` §4.2](../../../docs/kernel/defined_behaviour.md).
+
+**The one refinement worth recording**: the projection is validated at
+**load**, not at compile. Item 3 argued the resolution is static because `?R`
+is a `Symbol` before matching begins — true, and it is what makes the
+*runtime* cost zero — but the four refusals do not need the binding at all:
+which `absent` holds the premise, which premise is the witness and whether it
+binds a variable are **activator-independent**, because the AST is the same
+for every activator. So the refusals are loader diagnostics, the compile-time
+symbol lookup stays S1d.2.4's, and this stage's diff never leaves `ein-ir`
+and `ein-core` — which is the "risk zero" the plan asked for, arrived at more
+cheaply than planned.
+
+**T1d.2.3.3 is deferred to [S1d.2.4](s1d.2.4_obligations_in_the_saturator.md),
+and the reason is a gate.** `stdlib_coverage.rs` reads a module's own
+`(rule …)` heads out of the raw forms and fails on any that no
+`tests/stdlib/` program activates. An obligation rule cannot activate
+anything until the post-fixpoint pass exists, so shipping the duals into
+`stdlib/` now would put two permanently-silent rules behind a gate whose
+whole job is to forbid exactly that — and `utils/stdlib_census.py` would
+report 2 of 75 at zero. What the stage owed was that **the projection
+resolves on the shapes the phase ships**, and that is checkable without
+shipping them: `the_stdlib_duals_resolve_before_the_stage_that_ships_them`
+loads all four — `total-owed`, `surjective-owed`, `slot-owed-room`,
+`slot-owed-fill` — and asserts each resolves and routes. S1d.2.4 adds the
+pass, the rules and their conformance programs together.
 
 ## The decisions, as taken 2026-08-24 and revised 2026-08-25
 
@@ -250,10 +297,14 @@ projection resolves on the shapes the phase actually ships.
 - No assert-side variable is introduced anywhere: `defined_behaviour.md`'s
   unbound-`:assert` row is untouched, which is the check that item 6's first
   bullet stayed true.
-- **No obligation rule is in the saturation agenda**, provable rather than
-  asserted: with the duals of T1d.2.3.3 loaded and activated, the firing
-  counts and the rule-selection order of every corpus entry are bit-identical
-  to the pre-stage run. A mixed `:assert` is refused, with its fixture.
+- **No obligation rule is in the saturation agenda** — structurally, because
+  they are a registry of their own that neither the saturator nor `hypgen`
+  walks. **The corpus half of this claim is vacuous at this stage and says
+  so**: no entry uses the atom, so "every firing count unchanged" is a fact
+  about an empty set. It becomes substantive in
+  [S1d.2.4](s1d.2.4_obligations_in_the_saturator.md), where the duals ship
+  and the check has something to hold across. A mixed `:assert` is refused,
+  with its fixture.
 - Grammar pages updated (`01_grammar.md` § patterns table gains the assert
   row; `06_reserved_names.md`); **M2's GBNF lift is untouched** — no new
   top-level head, no parser change, which is the cost C would have incurred

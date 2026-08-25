@@ -36,6 +36,7 @@ you can author a puzzle without reading engine source.
 | match a **stored** negative                  | `(not P)` in `:match`                   | §⊥ primitives |
 | require two slots differ / are equal         | `(neq ?a ?b)` / `(eq ?a ?b)`            | §predicates |
 | declare this branch contradictory            | `:assert (false)`                       | §⊥ primitives |
+| declare this state unfinished                | `:assert (open)` / `(open ?R)`          | §the verdict atom |
 | say "P is undecided"                          | `(unknown P)` *(import `std.macro`)*       | §macro sugar |
 | say "∀ b s.t. G, B holds"                    | `(forall ?b G B)` *(import `std.macro`)*| §macro sugar |
 | tag a relation symmetric / transitive / …    | `(symmetric R)` + the rule consuming it | §not-reserved |
@@ -80,13 +81,46 @@ former-wrapper head like `(facts …)` therefore parses as a plain fact.
 **Declared names are user-space**, with one guard (`_reserved_names`,
 P1.8 S1.8.A1 D3): a `(rule …)` / `(hrule …)` / `(relation …)` / `(macro …)`
 may not *bind* a name that shadows reserved kernel vocabulary — the
-structural primitives (`absent` / `false`), the computed predicates
-(`eq` / `neq`), or `relation`. The SYMBOL-excluded keywords
+structural primitives (`absent` / `false`), the **verdict atom** `open`, the
+computed predicates (`eq` / `neq`), or `relation`. The SYMBOL-excluded keywords
 (`not` / `and` / `or` / `neq` / the declarators) can't be written as a declared
 name at all (parse error). The guard is about *binding* a name; a **fact** may
 still carry a reserved head (a stored `(not X)` octagon). `unknown` / `forall`
 are deliberately *not* reserved — they migrated into the `std.macro` module
-([`stdlib/macro.ein`](../../../../stdlib/macro.ein)).
+([`stdlib/macro.ein`](../../../../stdlib/macro.ein)). The macro that *was*
+spelled `open` is `unknown` since 2026-08-24, which is what freed the word for
+the section below.
+
+## The verdict atom — `open` (M1d P1d.2 S1d.2.3)
+
+Reserved, but **not** a rule-body primitive: it appears only as an `:assert`
+conclusion, the compiler never meets it in a `:match`, and no detector reads
+it. It is `(false)`'s dual — where `(false)` says *this branch is dead*,
+`open` says *this state is unfinished* — and the asymmetry between them is
+that a contradiction survives any extension while openness exists to be
+destroyed by one, so an `open` conclusion is **never stored**. It is a tally
+on the search-lattice node, read once per quiescent KB *after* the fixpoint.
+
+| form | arity | meaning |
+|------|-------|---------|
+| `(open)` | 0 | this state owes something; the rule's `:why` is the report. Countable, with no slot to name |
+| `(open ?R)` | 1 | the extent of `?R` is **incomplete**. `?R` is a rule parameter (a relation head comes from the activator, never from a premise), and everything else — the witness domain, the slot to fill — is projected out of the rule's own `(absent …)` |
+
+A rule asserting it is an **obligation** and is kept out of the saturation
+agenda entirely (`Program::obligations`), for the reason it derives nothing.
+Five things are refused at load rather than guessed:
+
+| refused | why |
+|---|---|
+| `(open …)` in a `:match` | the atom is a conclusion about the KB. The third-state probe for a *fact* is `(unknown P)`, and the message says so |
+| arity ≥ 2 | the superseded `forall`-dual triple `(open ?b G B)` restated the guard in the head, where it could disagree with it |
+| an `:assert` mixing `open` with anything else | such a rule would belong to the agenda and the post-fixpoint pass at once |
+| `(open ?R)` where `?R` is not a parameter | a variable relation head is bound by the activator; the compiler cannot resolve one from a premise |
+| a projection that does not resolve | exactly one `(absent …)` must hold a positive `?R` premise, and exactly one such premise must bind a variable the guard does not already bind. None, two, or a ground body is refused |
+
+**Since S1d.2.3 nothing reads it**: the atom loads, validates and
+round-trips, and a program using it is legal and inert. The pass that reads
+the tally is S1d.2.4.
 
 ## Rule-body / ⊥ primitives (kept M1 kernel vocabulary)
 

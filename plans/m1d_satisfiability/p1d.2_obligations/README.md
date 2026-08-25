@@ -78,7 +78,7 @@ is the mechanism the milestone README's argument turns on.
 |---|---|---|---|
 | [S1d.2.1](s1d.2.1_property_audit.md) | What each property enforces today, rule by rule | 3 d | **done 2026-08-25** |
 | [S1d.2.2](s1d.2.2_domains.md) | Domains: what a requirement quantifies over, and what closes it | 3 d | **done 2026-08-25** |
-| [S1d.2.3](s1d.2.3_the_form.md) | The obligation — form, surface, and where it lives | 3 d | |
+| [S1d.2.3](s1d.2.3_the_form.md) | The obligation — form, surface, and where it lives | 3 d | **done 2026-08-25** |
 | [S1d.2.4](s1d.2.4_obligations_in_the_saturator.md) | Obligations in the saturator | 4 d | |
 | [S1d.2.5](s1d.2.5_hypotheses_from_obligations.md) | Hypotheses from obligations | 3 d | |
 | [S1d.2.6](s1d.2.6_verdicts_counters_corpus.md) | What it changes: verdicts, counters, corpus | 2 d | |

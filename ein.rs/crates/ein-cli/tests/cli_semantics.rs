@@ -1457,18 +1457,34 @@ fn the_grammars_declarators_are_the_closed_set() {
 /// engine without adding it to the grammar has no symptom a developer would
 /// notice: the new name just fails to colour, in an editor, on someone else's
 /// machine.
+///
+/// **One name is highlighted that `STRUCTURAL` does not hold**: `open`, the
+/// verdict atom (M1d S1d.2.3). It is in `RESERVED` — no declarator may bind
+/// it — but deliberately not in `STRUCTURAL`, because a structural primitive
+/// is rule-*body* vocabulary the compiler, matcher or detector reads, and
+/// `open` is none of those: it appears only as an `:assert` conclusion and is
+/// never stored. An editor still has to colour it like `(false)`, its dual,
+/// so the grammar's set is `STRUCTURAL ∪ {open}` and the assertion says so by
+/// construction rather than by listing — a tenth primitive added to the
+/// engine still fails this test.
 #[test]
 fn the_grammar_tracks_the_primitive_and_predicate_registries() {
     let g = grammar();
     let mut primitives = BTreeSet::new();
     names_for_scope(&g, "keyword.control.primitive.ein", &mut primitives);
+    let expected: BTreeSet<String> = ein_core::STRUCTURAL
+        .iter()
+        .map(|s| s.to_string())
+        .chain(std::iter::once("open".to_string()))
+        .collect();
+    assert!(
+        ein_core::RESERVED.contains(&"open") && !ein_core::STRUCTURAL.contains(&"open"),
+        "`open` is reserved but not a rule-body primitive — if that changed, \
+         this test's exception is the thing to revisit"
+    );
     assert_eq!(
-        primitives,
-        ein_core::STRUCTURAL
-            .iter()
-            .map(|s| s.to_string())
-            .collect::<BTreeSet<String>>(),
-        "the grammar's primitives are not ein_core::STRUCTURAL"
+        primitives, expected,
+        "the grammar's primitives are not ein_core::STRUCTURAL + the verdict atom"
     );
 
     let mut predicates = BTreeSet::new();

@@ -1,0 +1,9 @@
+;; A rule concluding `open` AND a fact would belong to the saturation
+;; agenda and to the post-fixpoint obligation pass at once.
+
+(relation is-a T T)
+(relation r A B)
+(rule bad (?R ?isa)
+  :match  (and (relation ?R ?A ?B) (?isa ?a ?A)
+               (absent (and (?isa ?b ?B) (?R ?a ?b))))
+  :assert (and (open ?R) (r ?a b)))

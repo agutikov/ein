@@ -53,7 +53,11 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
             ))
         ));
     }
-    for (kind, registry) in [("RULE", &program.rules), ("HRULE", &program.hrules)] {
+    for (kind, registry) in [
+        ("RULE", &program.rules),
+        ("HRULE", &program.hrules),
+        ("OBLIGATION", &program.obligations),
+    ] {
         for (name, rule) in registry.iter() {
             let params: Vec<String> = rule.params.iter().map(|&p| terms.sym(p).into()).collect();
             out.push(format!(

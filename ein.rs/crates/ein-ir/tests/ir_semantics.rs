@@ -326,13 +326,15 @@ fn a_wildcard_or_var_head_survives_lowering_and_a_round_trip() {
 /// forty-seven sources ein.py's `ROUNDTRIP_CASES` enumerated, unique — the
 /// original listed `(= (color House-1) Red)` twice.
 ///
+/// (Forty-nine since M1d S1d.2.3 added the two `open` forms.)
+///
 /// The property is stronger than "it prints something readable": `Loc` lives
 /// in a side table specifically so structural equality cannot see a position,
 /// and this is the assertion that makes that design load-bearing rather than
 /// decorative.
 #[test]
 fn every_syntactic_shape_survives_dump_then_parse() {
-    let cases: [&str; 47] = [
+    let cases: [&str; 49] = [
         "(type Person) (type Engineer Person)",
         "(= (color House-1) Red)",
         "(lives-in Norwegian House-1 :source \"condition (10)\")",
@@ -391,8 +393,13 @@ fn every_syntactic_shape_survives_dump_then_parse() {
         "(macro unknown (?P) (and (absent ?P) (absent (not ?P))))",
         "(import std.macro)",
         "(import std.macro :as m)",
-        "(import std.macro :symbols (forall open))",
+        "(import std.macro :symbols (forall unknown))",
         "(rel a.b c.d.e)",
+        // The reserved verdict atom, both forms (M1d S1d.2.3). Nullary like
+        // `(false)`, and the unary one names the incomplete relation.
+        "(rule owes () :match (absent (r a b)) :assert (open) :why \"o\")",
+        "(rule owed (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) \
+         (absent (and (?isa ?b ?B) (?R ?a ?b)))) :assert (open ?R) :why \"w\")",
     ];
 
     for src in cases {
@@ -566,7 +573,7 @@ fn the_import_declarator_needs_a_module_symbol() {
     for src in [
         "(import std.macro)",
         "(import std.macro :as m)",
-        "(import std.macro :symbols (forall open))",
+        "(import std.macro :symbols (forall unknown))",
     ] {
         assert!(accepts(src), "{src} should parse");
     }

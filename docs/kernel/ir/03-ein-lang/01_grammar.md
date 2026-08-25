@@ -383,9 +383,34 @@ now be written explicitly as `(absent P)`. `forall` and `unknown` are
 load-time `(macro …)` expansions in terms of `absent` (the
 [`std.macro`](../../../../stdlib/macro.ein) module since
 S1.5.9 — import them; see
-[`06_reserved_names.md` §macro sugar](06_reserved_names.md#pattern-macro-sugar-forall--open--not-reserved));
+[`06_reserved_names.md` §macro sugar](06_reserved_names.md#pattern-macro-sugar-forall--unknown--not-reserved));
 the compiler itself sees only `absent` + nested patterns, and lifts
 each *top-level* one out of the match plan (below).
+
+#### Conclusion forms in `:assert`
+
+A conclusion is ordinarily a fact pattern, with `(and …)` concluding several
+at once (A13 multi-assert). Two heads are **verdicts about the state** rather
+than facts, and neither is stored as one:
+
+| conclusion | semantics | added in |
+|---|---|---|
+| `(false)` | direct ⊥ — this branch is contradictory | S1.5.8c |
+| `(open)` / `(open ?R)` | this state is **unfinished**: it owes a witness, and `(open ?R)` names the relation whose extent is incomplete | M1d S1d.2.3 |
+
+`(false)` is stored — a contradiction survives any extension, so a dead state
+stays dead — and `open` is not, because openness exists to be *destroyed* by
+an extension and a stored one would survive its own discharge. It is a tally
+on the search-lattice node instead, read once per quiescent KB **after** the
+fixpoint; a rule that asserts it is an *obligation* and never enters the
+saturation agenda. `(open ?R)` names the incomplete relation and nothing
+else: the witness domain and the slot to fill are projected out of the rule's
+own `(absent …)`, and five shapes are refused at load rather than guessed.
+The form, the refusals and their messages are in
+[`06_reserved_names.md` § the verdict atom](06_reserved_names.md#the-verdict-atom--open-m1d-p1d2-s1d23)
+and [`defined_behaviour.md` §4.2](../../defined_behaviour.md).
+**Since S1d.2.3 nothing reads the tally** — the atom loads and round-trips,
+and a program using it is legal and inert.
 
 #### NAF evaluation timing — the closure/world boundary
 

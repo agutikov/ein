@@ -1,0 +1,9 @@
+;; The superseded triple. `(open ?b G B)` restated the guard in the head,
+;; where it could disagree with it; `(open ?R)` points into the guard instead.
+
+(relation is-a T T)
+(relation r A B)
+(rule bad (?R ?isa)
+  :match  (and (relation ?R ?A ?B) (?isa ?a ?A)
+               (absent (and (?isa ?b ?B) (?R ?a ?b))))
+  :assert (open ?b (?isa ?b ?B) (?R ?a ?b)))

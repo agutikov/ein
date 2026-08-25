@@ -1,0 +1,1 @@
+rule 'bad': `open` takes the incomplete relation and nothing else — `(open)` or `(open ?R)`, not 3 arguments at None

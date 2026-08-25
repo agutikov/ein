@@ -203,6 +203,18 @@
 1    examples/broken/load/macro_reserved_name.ein :: render rules
 1    examples/broken/load/macro_reserved_name.ein :: saturate
 1    examples/broken/load/macro_reserved_name.ein :: solve
+0    examples/broken/load/open_arity.ein :: render rules
+1    examples/broken/load/open_arity.ein :: saturate
+1    examples/broken/load/open_arity.ein :: solve
+0    examples/broken/load/open_compound_witness.ein :: render rules
+1    examples/broken/load/open_compound_witness.ein :: saturate
+1    examples/broken/load/open_compound_witness.ein :: solve
+0    examples/broken/load/open_in_match.ein :: render rules
+1    examples/broken/load/open_in_match.ein :: saturate
+1    examples/broken/load/open_in_match.ein :: solve
+0    examples/broken/load/open_mixed_assert.ein :: render rules
+1    examples/broken/load/open_mixed_assert.ein :: saturate
+1    examples/broken/load/open_mixed_assert.ein :: solve
 1    examples/broken/load/relation_duplicate.ein :: render rules
 1    examples/broken/load/relation_duplicate.ein :: saturate
 1    examples/broken/load/relation_duplicate.ein :: solve

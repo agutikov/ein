@@ -1,0 +1,1 @@
+rule 'bad': 2 positive `?R` premises each bind a witness variable — a compound witness has no single slot to branch on at None

@@ -1,0 +1,1 @@
+rule 'bad': a rule asserting `open` may assert nothing else — it is read after the fixpoint, where a derivation would be too late at None

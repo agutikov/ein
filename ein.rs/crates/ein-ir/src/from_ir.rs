@@ -27,7 +27,7 @@ use ein_core::{
     FactId, Kb, Overflow, Program, Prov, ProvId, Symbol, Terms, Value, detect_provenance_cycles,
     is_predicate, is_reserved, python_float, python_int,
 };
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
 /// The accumulated problems, `; `-joined — `KBLoadError`.
@@ -161,7 +161,11 @@ pub fn load_query(
     // `std.macro` would leave the invocation in place and the rule would
     // silently never fire.
     let mut rule_matches: Vec<(String, NodeId)> = Vec::new();
-    for registry in [&kb.program().rules, &kb.program().hrules] {
+    for registry in [
+        &kb.program().rules,
+        &kb.program().hrules,
+        &kb.program().obligations,
+    ] {
         for (name, rule) in registry.iter() {
             if let Some(p) = rule.match_.as_ref() {
                 rule_matches.push((terms.sym(name).to_string(), NodeId(p.expr.0)));
@@ -246,7 +250,7 @@ fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
 
     let program = kb.program();
     let mut roots: Vec<NodeId> = Vec::new();
-    for registry in [&program.rules, &program.hrules] {
+    for registry in [&program.rules, &program.hrules, &program.obligations] {
         for (_, rule) in registry.iter() {
             roots.extend(
                 [rule.match_.as_ref(), rule.assert_.as_ref()]
@@ -660,7 +664,10 @@ fn ingest_rules(
         }
         let name_sym = terms.intern_text(&name)?;
         // `rule` and `hrule` share one name-space.
-        if kb.program().rules.contains(name_sym) || kb.program().hrules.contains(name_sym) {
+        if kb.program().rules.contains(name_sym)
+            || kb.program().hrules.contains(name_sym)
+            || kb.program().obligations.contains(name_sym)
+        {
             errors.push(format!("duplicate rule/hrule name '{name}' at {loc}"));
             continue;
         }
@@ -698,14 +705,33 @@ fn ingest_rules(
             }
             _ => None,
         };
-        let params: Vec<Symbol> = ast
+        let param_names: Vec<String> = ast
             .form_args(params_form)
             .iter()
             .filter_map(|&a| match ast.node(a) {
                 Node::Var(s) => Some(ast.sym(s).to_string()),
                 _ => None,
             })
-            .collect::<Vec<_>>()
+            .collect();
+        // The reserved verdict atom: legal only in `:assert`, only at arity 0
+        // or 1, only as a whole conclusion, and only where its projection
+        // resolves. A rule that asserts it is an **obligation** and is routed
+        // out of the saturation agenda below.
+        let n_errors = errors.len();
+        let is_obligation = validate_open(
+            ast,
+            &head,
+            &name,
+            &param_names,
+            match_node,
+            assert_node,
+            &loc,
+            errors,
+        );
+        if errors.len() != n_errors {
+            continue;
+        }
+        let params: Vec<Symbol> = param_names
             .iter()
             .map(|p| terms.intern_text(p))
             .collect::<Result<_, _>>()?;
@@ -721,13 +747,343 @@ fn ingest_rules(
             priority,
             loc: core_loc(ast, form),
         };
-        if head == "hrule" {
+        if is_obligation {
+            // Never the saturator's: it derives nothing, so it has no place in
+            // a queue that orders derivation, and it is read once per quiescent
+            // KB after the fixpoint instead. An `hrule` asserting `open` is the
+            // same object and goes the same way — `:choose` was never the home
+            // for obligations (`obligation_forms.md` § F).
+            kb.program_mut().add_obligation(rule);
+        } else if head == "hrule" {
             kb.program_mut().add_hrule(rule);
         } else {
             kb.program_mut().add_rule(rule);
         }
     }
     Ok(())
+}
+
+/// Is `node` the reserved verdict atom — `(open)` or `(open ?R)`?
+fn is_open_form(ast: &Ast, node: NodeId) -> bool {
+    matches!(ast.node(node), Node::SForm { .. }) && ast.head_name(node) == Some("open")
+}
+
+/// Every `(open …)` form anywhere under `node`, in source order.
+fn open_forms(ast: &Ast, node: NodeId, out: &mut Vec<NodeId>) {
+    if is_open_form(ast, node) {
+        out.push(node);
+    }
+    if matches!(ast.node(node), Node::SForm { .. }) {
+        for &a in ast.form_args(node) {
+            open_forms(ast, a, out);
+        }
+    }
+    if let Node::KwPair { value, .. } = ast.node(node) {
+        open_forms(ast, value, out);
+    }
+}
+
+/// Positional (non-`KwPair`) arguments of a form.
+fn pos_args(ast: &Ast, node: NodeId) -> Vec<NodeId> {
+    ast.form_args(node)
+        .iter()
+        .copied()
+        .filter(|&a| !matches!(ast.node(a), Node::KwPair { .. }))
+        .collect()
+}
+
+/// The top-level `:assert` conjuncts — `(and c1 … ck)` → the `ci`, else `[expr]`.
+fn top_conjuncts(ast: &Ast, expr: NodeId) -> Vec<NodeId> {
+    if matches!(ast.node(expr), Node::SForm { .. }) && ast.head_name(expr) == Some("and") {
+        return pos_args(ast, expr);
+    }
+    vec![expr]
+}
+
+/// Every variable name occurring under `node`.
+fn vars_under(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
+    match ast.node(node) {
+        Node::Var(s) => {
+            out.insert(ast.sym(s).to_string());
+        }
+        Node::SForm { .. } => {
+            for &a in ast.form_args(node) {
+                vars_under(ast, a, out);
+            }
+        }
+        Node::KwPair { value, .. } => vars_under(ast, value, out),
+        _ => {}
+    }
+}
+
+/// Every `(absent …)` form under `node`, outermost first.
+fn absent_forms(ast: &Ast, node: NodeId, out: &mut Vec<NodeId>) {
+    if matches!(ast.node(node), Node::SForm { .. }) {
+        if ast.head_name(node) == Some("absent") {
+            out.push(node);
+            return;
+        }
+        for &a in ast.form_args(node) {
+            absent_forms(ast, a, out);
+        }
+    }
+}
+
+/// Premises under `node` whose *head* is the obligation's relation — the
+/// variable `?R` or the literal name `R` that `(open …)` names.
+///
+/// `neg` reports whether the premise sits under a `(not …)`, which is never a
+/// commit target.
+fn head_matches(ast: &Ast, node: NodeId, rel: &str, is_var: bool) -> bool {
+    if !matches!(ast.node(node), Node::SForm { .. }) {
+        return false;
+    }
+    let Node::SForm { head, .. } = ast.node(node) else {
+        return false;
+    };
+    match ast.node(head) {
+        Node::Var(s) if is_var => ast.sym(s) == rel,
+        Node::Atom(s) if !is_var => ast.sym(s) == rel,
+        _ => false,
+    }
+}
+
+fn rel_premises(
+    ast: &Ast,
+    node: NodeId,
+    rel: &str,
+    is_var: bool,
+    neg: bool,
+    out: &mut Vec<(NodeId, bool)>,
+) {
+    if !matches!(ast.node(node), Node::SForm { .. }) {
+        return;
+    }
+    if head_matches(ast, node, rel, is_var) {
+        out.push((node, neg));
+        return;
+    }
+    let under_not = neg || ast.head_name(node) == Some("not");
+    for &a in ast.form_args(node) {
+        rel_premises(ast, a, rel, is_var, under_not, out);
+    }
+}
+
+/// Load-time validation of the reserved verdict atom, and the classification
+/// that follows from it.
+///
+/// Returns `true` when the rule is an **obligation** — its `:assert` is
+/// `(open …)` and nothing else — which routes it out of the saturation agenda
+/// (M1d P1d.2 [S1d.2.3]). Errors are pushed rather than returned so one
+/// malformed rule does not hide the next.
+///
+/// The four refusals, and the reason each is a refusal rather than a guess:
+///
+/// 1. **`(open …)` in `:match`** — the atom is a conclusion about the KB, not
+///    a premise. The third-state *fact* probe is `(unknown P)`, and the
+///    message says so because the two were one word until 2026-08-24.
+/// 2. **arity ≥ 2** — the form is `(open)` or `(open ?R)`. Anything else is
+///    the superseded triple `(open ?b G B)` or the positional
+///    `(open ?R 0 ?a)`, both of which restated what the guard already says.
+/// 3. **a mixed `:assert`** — a rule concluding `open` *and* a fact would
+///    belong to both the saturation agenda and the obligation pass, and
+///    refusing it is cheaper than deciding which owns it.
+/// 4. **a projection that does not resolve** — `(open ?R)` names the relation
+///    whose extent is incomplete and the engine reads the rest out of the
+///    rule's own `absent`: exactly one `absent` holding a positive `?R`
+///    premise, and exactly one such premise bearing a variable the guard does
+///    not already bind. None, two, or a ground body is refused rather than
+///    guessed.
+///
+/// [S1d.2.3]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.3_the_form.md`
+#[allow(clippy::too_many_arguments)]
+fn validate_open(
+    ast: &Ast,
+    head: &str,
+    name: &str,
+    params: &[String],
+    match_node: NodeId,
+    assert_node: NodeId,
+    loc: &str,
+    errors: &mut Vec<String>,
+) -> bool {
+    // (1) the atom is assert-side only.
+    let mut in_match = Vec::new();
+    open_forms(ast, match_node, &mut in_match);
+    if !in_match.is_empty() {
+        errors.push(format!(
+            "{head} '{name}': `(open …)` is a verdict about the KB and is legal \
+             only in :assert — the third-state probe for a fact is `(unknown …)` \
+             at {loc}"
+        ));
+    }
+
+    let conjuncts = top_conjuncts(ast, assert_node);
+    let opens: Vec<NodeId> = conjuncts
+        .iter()
+        .copied()
+        .filter(|&c| is_open_form(ast, c))
+        .collect();
+
+    // An `(open …)` buried inside a conclusion — `(not (open))`, `(f (open))` —
+    // is neither a conjunct nor a fact, so it is caught here rather than
+    // silently stored.
+    let mut anywhere = Vec::new();
+    open_forms(ast, assert_node, &mut anywhere);
+    if anywhere.len() > opens.len() {
+        errors.push(format!(
+            "{head} '{name}': `(open …)` is a whole conclusion, not a term inside \
+             one at {loc}"
+        ));
+        return false;
+    }
+    if opens.is_empty() {
+        return false;
+    }
+
+    // (3) nothing else may be concluded alongside it.
+    if conjuncts.len() > opens.len() {
+        errors.push(format!(
+            "{head} '{name}': a rule asserting `open` may assert nothing else — \
+             it is read after the fixpoint, where a derivation would be too late \
+             at {loc}"
+        ));
+    }
+
+    for &o in &opens {
+        let args = pos_args(ast, o);
+        // (2) arity.
+        if args.len() > 1 {
+            errors.push(format!(
+                "{head} '{name}': `open` takes the incomplete relation and nothing \
+                 else — `(open)` or `(open ?R)`, not {} arguments at {loc}",
+                args.len()
+            ));
+            continue;
+        }
+        let Some(&arg) = args.first() else {
+            continue; // bare `(open)` — countable, nothing to project.
+        };
+        let (rel, is_var) = match ast.node(arg) {
+            Node::Var(s) => (ast.sym(s).to_string(), true),
+            Node::Atom(s) => (ast.sym(s).to_string(), false),
+            _ => {
+                errors.push(format!(
+                    "{head} '{name}': `open`'s argument names a relation — a rule \
+                     parameter or a relation name at {loc}"
+                ));
+                continue;
+            }
+        };
+        // A variable relation head is bound by the activator, never by a
+        // premise (`compile.rs`: "M1 matches relations per activator"), so an
+        // `(open ?R)` whose `?R` is not a parameter could never resolve.
+        if is_var && !params.iter().any(|p| p == &rel) {
+            errors.push(format!(
+                "{head} '{name}': `(open ?{rel})` names a relation the activator \
+                 does not bind — `?{rel}` is not in the parameter list at {loc}"
+            ));
+            continue;
+        }
+        validate_projection(ast, head, name, &rel, is_var, match_node, loc, errors);
+    }
+    true
+}
+
+/// (4) — resolve the witness step out of the rule's own `absent`, or refuse.
+#[allow(clippy::too_many_arguments)]
+fn validate_projection(
+    ast: &Ast,
+    head: &str,
+    name: &str,
+    rel: &str,
+    is_var: bool,
+    match_node: NodeId,
+    loc: &str,
+    errors: &mut Vec<String>,
+) {
+    let shown = if is_var {
+        format!("?{rel}")
+    } else {
+        rel.to_string()
+    };
+    let mut absents = Vec::new();
+    absent_forms(ast, match_node, &mut absents);
+    let holders: Vec<NodeId> = absents
+        .iter()
+        .copied()
+        .filter(|&a| {
+            let mut prems = Vec::new();
+            rel_premises(ast, a, rel, is_var, false, &mut prems);
+            prems.iter().any(|&(_, neg)| !neg)
+        })
+        .collect();
+    if holders.is_empty() {
+        errors.push(format!(
+            "{head} '{name}': `(open {shown})` needs an `(absent …)` in :match \
+             holding a positive `{shown}` premise — that premise is the witness \
+             the obligation owes at {loc}"
+        ));
+        return;
+    }
+    if holders.len() > 1 {
+        errors.push(format!(
+            "{head} '{name}': {} `(absent …)` guards hold a positive `{shown}` \
+             premise — which one states the obligation is not decidable at {loc}",
+            holders.len()
+        ));
+        return;
+    }
+    let absent = holders[0];
+
+    // Variables the guard binds from outside this `absent` are not the witness;
+    // the witness slots are the ones the absent introduces.
+    let mut outside = BTreeSet::new();
+    collect_vars_outside(ast, match_node, absent, &mut outside);
+
+    let mut prems = Vec::new();
+    rel_premises(ast, absent, rel, is_var, false, &mut prems);
+    let witnesses: Vec<NodeId> = prems
+        .iter()
+        .filter(|&&(_, neg)| !neg)
+        .map(|&(n, _)| n)
+        .filter(|&n| {
+            let mut vs = BTreeSet::new();
+            vars_under(ast, n, &mut vs);
+            vs.iter().any(|v| !outside.contains(v))
+        })
+        .collect();
+    match witnesses.len() {
+        1 => {}
+        0 => errors.push(format!(
+            "{head} '{name}': `(open {shown})`'s `{shown}` premise binds no \
+             variable of its own, so the obligation is ground — that is a plain \
+             `absent` check and not something a witness could discharge at {loc}"
+        )),
+        n => errors.push(format!(
+            "{head} '{name}': {n} positive `{shown}` premises each bind a witness \
+             variable — a compound witness has no single slot to branch on at {loc}"
+        )),
+    }
+}
+
+/// Variables of `root` that occur anywhere except under `skip`.
+fn collect_vars_outside(ast: &Ast, root: NodeId, skip: NodeId, out: &mut BTreeSet<String>) {
+    if root == skip {
+        return;
+    }
+    match ast.node(root) {
+        Node::Var(s) => {
+            out.insert(ast.sym(s).to_string());
+        }
+        Node::SForm { .. } => {
+            for &a in ast.form_args(root) {
+                collect_vars_outside(ast, a, skip, out);
+            }
+        }
+        Node::KwPair { value, .. } => collect_vars_outside(ast, value, skip, out),
+        _ => {}
+    }
 }
 
 fn expand_pair(
@@ -1046,6 +1402,215 @@ mod tests {
 
     fn facts(terms: &Terms, kb: &Kb) -> Vec<String> {
         kb.facts().map(|f| terms.compact(f)).collect()
+    }
+
+    /// The reserved verdict atom, and the classification it drives — M1d
+    /// [S1d.2.3].
+    ///
+    /// A rule whose `:assert` is `(open …)` and nothing else is an
+    /// **obligation**: it derives nothing, so it never enters the saturator's
+    /// agenda, and it is read once per quiescent KB after the fixpoint. The
+    /// routing is the load-time half of that, and the assertion below is that
+    /// `rules` stays empty while `obligations` gets it.
+    ///
+    /// [S1d.2.3]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.3_the_form.md`
+    #[test]
+    fn an_open_assert_routes_the_rule_out_of_the_saturation_agenda() {
+        let src = "(relation is-a T T)\n(relation r A B)\n\
+                   (rule total-owed (?R ?isa)\n  \
+                     :match (and (relation ?R ?A ?B) (?isa ?a ?A)\n              \
+                                 (absent (and (?isa ?b ?B) (?R ?a ?b))))\n  \
+                     :assert (open ?R))\n";
+        let (terms, kb) = ok(src);
+        let name = terms.syms.get("total-owed").expect("interned");
+        assert!(
+            kb.program().obligations.contains(name),
+            "an `open`-asserting rule belongs to the obligation pass"
+        );
+        assert!(
+            kb.program().rules.is_empty() && kb.program().hrules.is_empty(),
+            "…and to neither of the two that fire during a search"
+        );
+
+        // The bare degenerate is the same object with nothing to project.
+        let (terms, kb) =
+            ok("(relation r A B)\n(rule owes () :match (absent (r a b)) :assert (open))\n");
+        assert!(
+            kb.program()
+                .obligations
+                .contains(terms.syms.get("owes").expect("interned")),
+            "`(open)` is countable and routes the same way"
+        );
+
+        // An ordinary rule is untouched by any of it.
+        let (terms, kb) =
+            ok("(relation r A B)\n(rule copy () :match (r ?a ?b) :assert (r ?b ?a))\n");
+        assert!(
+            kb.program()
+                .rules
+                .contains(terms.syms.get("copy").expect("interned"))
+                && kb.program().obligations.is_empty()
+        );
+    }
+
+    /// The four refusals, each with the shape that provokes it.
+    ///
+    /// They are refusals rather than guesses because every one of them is a
+    /// place where the engine would otherwise have to pick a reading: which
+    /// `absent` states the obligation, which premise is the witness, whether a
+    /// mixed conclusion belongs to the agenda or the pass. A wrong pick is
+    /// silent, and silence is what this phase exists to remove.
+    #[test]
+    fn the_verdict_atom_refuses_every_shape_it_cannot_resolve() {
+        let pre = "(relation is-a T T)\n(relation r A B)\n";
+        let guard = "(and (relation ?R ?A ?B) (?isa ?a ?A) \
+                     (absent (and (?isa ?b ?B) (?R ?a ?b))))";
+        for (want, src) in [
+            // Match-side placement — and the message names the probe, because
+            // the two were one word until 2026-08-24.
+            (
+                "legal only in :assert",
+                format!(
+                    "{pre}(rule bad (?R) :match (and (relation ?R ?A ?B) (open ?R)) :assert (r a b))"
+                ),
+            ),
+            // Arity: the superseded triple, and the positional sketch before it.
+            (
+                "not 3 arguments",
+                format!(
+                    "{pre}(rule bad (?R ?isa) :match {guard} :assert (open ?b (?isa ?b ?B) (?R ?a ?b)))"
+                ),
+            ),
+            // A mixed conclusion would belong to both strata.
+            (
+                "may assert nothing else",
+                format!(
+                    "{pre}(rule bad (?R ?isa) :match {guard} :assert (and (open ?R) (r ?a b)))"
+                ),
+            ),
+            // Nested rather than concluded.
+            (
+                "not a term inside one",
+                format!("{pre}(rule bad (?R ?isa) :match {guard} :assert (not (open ?R)))"),
+            ),
+            // The projection's three ways of not resolving.
+            (
+                "needs an `(absent …)` in :match",
+                format!(
+                    "{pre}(rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A)) :assert (open ?R))"
+                ),
+            ),
+            (
+                "2 `(absent …)` guards",
+                format!(
+                    "{pre}(rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) \
+                     (absent (and (?isa ?b ?B) (?R ?a ?b))) \
+                     (absent (and (?isa ?c ?B) (?R ?a ?c)))) :assert (open ?R))"
+                ),
+            ),
+            (
+                "compound witness",
+                format!(
+                    "{pre}(rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) \
+                     (absent (and (?R ?a ?x) (?R ?x ?b)))) :assert (open ?R))"
+                ),
+            ),
+            (
+                "the obligation is ground",
+                format!(
+                    "{pre}(rule bad (?R ?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) \
+                     (absent (?R ?a b))) :assert (open ?R))"
+                ),
+            ),
+            // A variable relation head comes from the activator, never a premise.
+            (
+                "is not in the parameter list",
+                format!(
+                    "{pre}(rule bad (?isa) :match (and (relation ?R ?A ?B) (?isa ?a ?A) \
+                     (absent (?R ?a ?b))) :assert (open ?R))"
+                ),
+            ),
+            // …and the name itself may not be bound.
+            (
+                "shadows a reserved kernel name",
+                format!("{pre}(relation open A B)"),
+            ),
+            (
+                "shadows a reserved kernel name",
+                format!("{pre}(macro open (?P) (absent ?P))"),
+            ),
+            (
+                "shadows a reserved kernel name",
+                format!("{pre}(rule open () :match (r ?a ?b) :assert (r ?b ?a))"),
+            ),
+        ] {
+            let got = err(&src);
+            assert!(
+                got.contains(want),
+                "expected an error mentioning {want:?}, got {got:?} for {src}"
+            );
+        }
+    }
+
+    /// The four duals the phase actually ships, resolved here before the stage
+    /// that ships them — M1d [S1d.2.3] T1d.2.3.3.
+    ///
+    /// They are **not** in `stdlib/` yet, and that is deliberate rather than
+    /// unfinished. `ein-infer/tests/stdlib_coverage.rs` reads a module's own
+    /// `(rule …)` heads out of the raw forms and fails on any that no
+    /// `tests/stdlib/` program activates; an obligation rule cannot activate
+    /// anything until the post-fixpoint pass exists, so putting them in the
+    /// stdlib now would put two permanently-silent rules behind a gate whose
+    /// whole job is to forbid exactly that. S1d.2.4 adds the pass and the
+    /// rules together, with their conformance programs.
+    ///
+    /// What this stage owes is that the *projection resolves on the shapes the
+    /// phase ships*, and that is checkable without shipping them: the two
+    /// `std.algebra` duals mirror `total` / `surjective`, and the two
+    /// `std.slots` duals mirror `slot-no-room` / `slot-no-fill`, one modality
+    /// down — scanning **absence** where those scan a stored `(not …)`, and
+    /// saying *unfinished* where they say *dead*.
+    ///
+    /// [S1d.2.3]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.3_the_form.md`
+    #[test]
+    fn the_stdlib_duals_resolve_before_the_stage_that_ships_them() {
+        let src = "(relation is-a T T)\n\
+             (rule total-owed (?R ?isa)\n  \
+               :match (and (relation ?R ?A ?B) (?isa ?a ?A)\n              \
+                           (absent (and (?isa ?b ?B) (?R ?a ?b))))\n  \
+               :assert (open ?R)\n  :why \"{?R} owes {?a} a {?B}\")\n\
+             (rule surjective-owed (?R ?isa)\n  \
+               :match (and (relation ?R ?A ?B) (?isa ?b ?B)\n              \
+                           (absent (and (?isa ?a ?A) (?R ?a ?b))))\n  \
+               :assert (open ?R)\n  :why \"{?R} owes {?b} an {?A}\")\n\
+             (rule slot-owed-room (?R ?isa ?sub ?super ?index)\n  \
+               :match (and (?isa ?a ?Ta) (?sub ?Ta ?super) (neq ?Ta ?index)\n              \
+                           (absent (and (?isa ?i ?index) (?R ?a ?i))))\n  \
+               :assert (open ?R)\n  :why \"{?a} owes a slot\")\n\
+             (rule slot-owed-fill (?R ?isa ?sub ?super ?index)\n  \
+               :match (and (?isa ?i ?index) (?sub ?Tv ?super) (neq ?Tv ?index)\n              \
+                           (absent (and (?isa ?v ?Tv) (?R ?i ?v))))\n  \
+               :assert (open ?R)\n  :why \"{?i} owes a value\")\n";
+        let (terms, kb) = ok(src);
+        for name in [
+            "total-owed",
+            "surjective-owed",
+            "slot-owed-room",
+            "slot-owed-fill",
+        ] {
+            let sym = terms
+                .syms
+                .get(name)
+                .unwrap_or_else(|| panic!("{name} interned"));
+            assert!(
+                kb.program().obligations.contains(sym),
+                "{name} must resolve and route to the obligation pass"
+            );
+        }
+        assert!(
+            kb.program().rules.is_empty(),
+            "none of the four belongs to the saturation agenda"
+        );
     }
 
     #[test]

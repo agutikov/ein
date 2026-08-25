@@ -23,6 +23,19 @@ pub struct Program {
     /// the saturator, which walks `rules`, never fires one. `hypgen` is the
     /// only consumer. Rules and hrules share **one** name-space.
     pub hrules: Registry<Rule>,
+    /// Obligation rules (M1d P1d.2 S1d.2.3) — a `Rule` by shape whose
+    /// `:assert` is the reserved verdict atom `(open)` / `(open ?R)` and
+    /// nothing else. Kept out of `rules` for the same reason `hrules` are:
+    /// the saturator walks `rules`, and an obligation rule must never enter
+    /// its agenda. It derives nothing — an `open` conclusion is a per-node
+    /// verdict tally, never a stored fact — so it has no business in a queue
+    /// that exists to order derivation, and it is read once per quiescent KB
+    /// *after* the fixpoint instead.
+    ///
+    /// Since S1d.2.3 it is loaded, validated and round-tripped and **nothing
+    /// reads it**; `s1d.2.4_obligations_in_the_saturator.md` is the stage that
+    /// adds the pass.
+    pub obligations: Registry<Rule>,
     pub macros: Registry<Macro>,
     /// **Every** `(query …)` block, in source order — plural since M1c
     /// [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects).
@@ -75,6 +88,10 @@ impl Program {
 
     pub fn add_hrule(&mut self, rule: Rule) {
         self.hrules.insert_new(rule.name, rule);
+    }
+
+    pub fn add_obligation(&mut self, rule: Rule) {
+        self.obligations.insert_new(rule.name, rule);
     }
 
     /// A name's `NameRef` category.
