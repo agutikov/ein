@@ -969,13 +969,22 @@ impl Run<'_> {
                 &self.memo,
                 &[cand],
                 None,
-                // **No resume snapshot.** The lattice resumes every fork from
-                // *root*'s saturation, which is sound because every fork is a
-                // fork of root; a tree node's base is its parent, so root's
-                // snapshot is the wrong resume point and a stale one would be
-                // worse than none. Resuming from the parent is the obvious
-                // optimisation and is T1d.10.6.5's to price, not correctness.
-                None,
+                // **Root's snapshot, exactly as the lattice passes it.**
+                // Resuming is the shipping path since
+                // [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
+                // — `resume_forks()` is true unless a `fork-delta` build turns
+                // it off — and it is what keeps a fork from re-deriving root's
+                // fixpoint. It stays correct on a tree node whose base is a
+                // *descendant* of root rather than root itself, because
+                // `Snapshot::new_facts_of` computes the delta against the fork
+                // it is handed: a deeper node simply has a larger delta, which
+                // is every ancestor's commitment and what they derived.
+                //
+                // Resuming from the **parent's** snapshot instead would make
+                // that delta one commitment wide. That is a further win and
+                // T1d.10.6.5's to price; passing `None` here was not a
+                // trade-off but a re-introduction of what S1a.6.9 removed.
+                self.root_snapshot.as_deref(),
             )?;
             self.stats.base.enterings_total += 1;
             commit.push(cand);
