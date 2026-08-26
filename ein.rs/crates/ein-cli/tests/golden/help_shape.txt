@@ -33,7 +33,7 @@ COMMAND ein solve
   OPTION --dump-states -D metavar=DIR arity=1 default=None choices=- group=- required=False help=persist the engine dump tree (root snapshot per layer + timeline) to DIR
   OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Schema: docs/kernel/inference/events.md.
   OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume, and what T2 comparisons run at, since a dropped redundant firing is exactly what a port loses.
-  OPTION --exhaustive -e metavar=- arity=0 default=False choices=- group=stop required=False help=exhaust the lattice — certify unique / ambiguous / unsat (slower)
+  OPTION --exhaustive -e metavar=- arity=0 default=False choices=- group=stop required=False help=do not stop at the first model. Certification also needs the lattice to end within --max-set-size, which `exhausted` in --stats reports (slower)
   OPTION --full-kb-snapshots -F metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) append a whole-KB snapshot of the final state
   OPTION --hyp-stats -H metavar=- arity=0 default=False choices=- group=- required=False help=print the root-hypothesis preview (total + per-relation breakdown + hypgen filter report)
   OPTION --jobs -j metavar=JOBS arity=1 default='1' choices=- group=- required=False help=threads for a layer's enterings, or 'auto' (default: 1). Same verdict, same models, same counters

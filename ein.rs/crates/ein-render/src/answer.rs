@@ -214,17 +214,42 @@ pub fn render_answer(
             } else {
                 srcs.join(", ")
             };
-            format!("No solution — the constraints are contradictory (unsat core: {core}).")
+            // **`k = 0` is a claim too, and `exhausted` is what licenses it**
+            // — M1d T1d.10.5.2b, finishing the table
+            // [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)
+            // gave `Solution` and `Ambiguity` and deliberately did not give
+            // this arm. A refutation needs the lattice exhausted; without it
+            // the zero says *no model within the cap*, which is what
+            // `saturation/type-exclusivity/pets.ein` demonstrates by saying
+            // "contradictory" at `-m 5`…`-m 8` and holding **35 models** at
+            // `-m 10`. The core stays in the sentence and changes its name:
+            // those commitments really are refuted, they just do not refute
+            // the program.
+            if exhausted {
+                format!("No solution — the constraints are contradictory (unsat core: {core}).")
+            } else {
+                format!(
+                    "No model found — the search did not exhaust the lattice                      (refuted so far: {core})."
+                )
+            }
         }
         Answer::Verdict(Verdict::Open { owes, .. }) => {
             // The word the other three cannot say: consistent, quiescent, and
             // owed. `Contradiction` would claim a refutation nothing derived
             // and `Solution` would claim a model nothing witnessed — M1d
             // S1d.2.6, and `ideas.md`'s middle outcome.
-            format!(
-                "Open — {}; the requirement is unmet, not refuted.",
-                owed_phrase(terms, owes)
-            )
+            // …and it qualifies itself for the same reason `Contradiction`
+            // does. An open state under a cap has an obligation unwitnessed
+            // *and* a frontier unvisited, and a deeper layer could discharge
+            // it. No corpus cell reaches this arm truncated today — every
+            // `Open` in the corpus is exhausted — so the branch is here to be
+            // right rather than because something moved.
+            let held = if exhausted {
+                "the requirement is unmet, not refuted"
+            } else {
+                "the requirement is unmet and the search did not exhaust"
+            };
+            format!("Open — {}; {held}.", owed_phrase(terms, owes))
         }
         // ein.py's fall-through prints the *class* name, and `Aborted` is the
         // only shape that reaches it.
@@ -462,10 +487,26 @@ pub fn render_solution_table(
             }
         }
         Answer::Verdict(Verdict::Contradiction { unsat_core }) => {
-            lines.push("  solutions (k)   0".to_string());
-            lines.push(
-                "  verdict         No solution — the constraints are contradictory".to_string(),
-            );
+            // The same two rows S1d.3.3 wrote for a *non-empty* model set,
+            // for the empty one — T1d.10.5.2b. `exhausted` is printed by
+            // `--stats` and by nothing else, so without this the reader of a
+            // `k = 0` has no way to know it is "none found".
+            lines.push(format!(
+                "  solutions (k)   0{}",
+                if exhausted {
+                    ""
+                } else {
+                    "   (none found — the search did not exhaust)"
+                }
+            ));
+            lines.push(format!(
+                "  verdict         {}",
+                if exhausted {
+                    "No solution — the constraints are contradictory"
+                } else {
+                    "No model found — the search did not exhaust the lattice"
+                }
+            ));
             let mut core: Vec<FactId> = unsat_core.clone();
             core.sort_by_key(|f| {
                 let (rel, args) = terms.fact(*f);
@@ -482,7 +523,20 @@ pub fn render_solution_table(
                 lines.push(format!("  conflicting sources: {}", srcs.join(", ")));
             }
             lines.push(String::new());
-            lines.push(format!("  unsat core ({} facts)", core.len()));
+            // An *unsat core* is an explanation of why the program has no
+            // model, and a truncated run has not shown that. What it holds is
+            // the commitments it refuted on the way — which is why
+            // `zebra2-minus-15 -m 1` printing `unsat core (0 facts)` read as
+            // "the empty set is contradictory" instead of "nothing died".
+            lines.push(format!(
+                "  {} ({} facts)",
+                if exhausted {
+                    "unsat core"
+                } else {
+                    "refuted so far"
+                },
+                core.len()
+            ));
             let rows: Vec<(String, String)> = core
                 .iter()
                 .map(|f| {
@@ -505,11 +559,23 @@ pub fn render_solution_table(
             // disagree on exactly the eleven entries this stage is about, and
             // `open states` below is where the difference is printed rather
             // than hidden.
-            lines.push("  solutions (k)   0".to_string());
+            lines.push(format!(
+                "  solutions (k)   0{}",
+                if exhausted {
+                    ""
+                } else {
+                    "   (none found — the search did not exhaust)"
+                }
+            ));
             lines.push(format!("  open states     {}", states.len()));
             lines.push(format!(
-                "  verdict         Open — {}",
-                owed_phrase(terms, owes)
+                "  verdict         Open — {}{}",
+                owed_phrase(terms, owes),
+                if exhausted {
+                    ""
+                } else {
+                    "; the search did not exhaust"
+                }
             ));
             let total: usize = owes.iter().map(|o| o.total()).sum();
             lines.push(String::new());

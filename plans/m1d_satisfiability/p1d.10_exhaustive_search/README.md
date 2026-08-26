@@ -563,7 +563,16 @@ own terms.
 | 3rd | [S1d.10.4](s1d.10.4_conflict_mining.md) | Conflict mining when a layer is barren — **closed on its own terms**: 0 deaths in 15 720 759 deep enterings | 0.5 d |
 | 4th | [S1d.10.6](s1d.10.6_the_traversal.md) | **The traversal — one obligation per node** (new) | 5 d |
 | 5th | [S1d.10.3](s1d.10.3_stopping_criterion.md) | Is there a stopping criterion? — re-aimed at what licenses `exhausted` under a tree | 3 d |
-| 6th | [S1d.10.5](s1d.10.5_contract.md) | What `exhausted` means — **`T1d.10.5.0` done 2026-08-26**: a cap of zero is a truncation, 51 entries moved and 99 did not | 2 d |
+| 6th | [S1d.10.5](s1d.10.5_contract.md) | What `exhausted` means — **five of six tasks done 2026-08-26**; all four verdicts qualify themselves now, and what is left is the sentence for a search that is not a lattice | 2 d |
+
+**S1d.10.5 is all but closed, out of order, and its last task is
+[S1d.10.6](s1d.10.6_the_traversal.md)'s to unblock.** Five of its six tasks
+shipped 2026-08-26 — the `-m 0` boundary, the verdict surface,
+[Q-M1d.1](../open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
+word, the docs and the corpus note — and the sixth is *"a search that is not a
+lattice needs the sentence rewritten"*, which needs the tree to exist. So the
+phase's vocabulary is settled for the search it has and open only for the search
+it might build.
 
 **11.5 days remain against the 12 the original four carried**, so the
 reconnaissance moved work between stages rather than adding it: S1d.10.2 loses a

@@ -180,7 +180,9 @@ fn solve_command() -> Command {
         .arg(flag(
             'e',
             "exhaustive",
-            "exhaust the lattice — certify unique / ambiguous / unsat (slower)",
+            "do not stop at the first model. Certification also needs the \
+             lattice to end within --max-set-size, which `exhausted` in \
+             --stats reports (slower)",
         ))
         .group(
             ArgGroup::new("stop")

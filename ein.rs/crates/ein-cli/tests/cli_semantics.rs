@@ -1689,3 +1689,82 @@ fn layer_progress_is_verbose_without_the_enterings() {
         "the two disagree about the layer half"
     );
 }
+
+// ── The `k = 0` verdicts qualify themselves — M1d T1d.10.5.2b ──────
+
+/// **A refutation needs the lattice exhausted, and says so when it did not
+/// get it.**
+///
+/// [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)
+/// made `exhausted = true` ⇒ *these are the models* normative and gave the
+/// qualifier to `Solution` and `Ambiguity`, leaving `Contradiction` — where
+/// the problem is a *word* and not a number — to
+/// [Q-M1d.1](../../../../plans/m1d_satisfiability/open_questions.md). This is
+/// that word.
+///
+/// `saturation/type-exclusivity/pets.ein` is the fixture because it makes the
+/// old sentence flatly false: *the constraints are contradictory* at `-m 5`
+/// and `-m 8`, **35 models** at `-m 10`. `ein-bugs/zebra2-bad.ein` is the
+/// non-vacuity control — an exhausted refutation with a real one-fact core,
+/// which must keep every word it had.
+///
+/// The claim channel needed no change and is asserted next door:
+/// `expect_semantics::a_contradiction_from_a_truncated_search_is_not_checked`
+/// has always answered `NOT CHECKED` here. What this pins is that the *verdict*
+/// channel now agrees with it instead of contradicting it.
+#[test]
+fn a_truncated_k0_is_not_reported_as_a_refutation() {
+    let cut = ein(&[
+        "solve",
+        "-e",
+        "-m",
+        "5",
+        "-s",
+        "examples/saturation/type-exclusivity/pets.ein",
+    ]);
+    assert_eq!(cut.code, 0);
+    assert_eq!(cut.field("exhausted").as_deref(), Some("false"));
+    let verdict = cut
+        .out
+        .lines()
+        .find(|l| l.trim_start().starts_with("verdict"))
+        .unwrap_or_else(|| panic!("no verdict line in:\n{}", cut.out));
+    assert!(
+        !verdict.contains("contradictory"),
+        "a search that stopped at -m 5 called a 35-model program contradictory: {verdict}"
+    );
+    assert!(
+        verdict.contains("did not exhaust"),
+        "the verdict does not say why its zero is a zero: {verdict}"
+    );
+    assert!(
+        cut.out
+            .contains("(none found — the search did not exhaust)"),
+        "the count carries no qualifier:\n{}",
+        cut.out
+    );
+    // An unsat core explains why a program has *no model*, which is exactly
+    // what this run did not show — so the block is named for what it holds.
+    assert!(
+        cut.out.contains("refuted so far") && !cut.out.contains("unsat core"),
+        "a truncated run still calls its deaths an unsat core:\n{}",
+        cut.out
+    );
+
+    // Non-vacuity: an exhausted refutation keeps every word.
+    let done = ein(&["solve", "-e", "-s", "examples/ein-bugs/zebra2-bad.ein"]);
+    assert_eq!(done.code, 0);
+    assert_eq!(done.field("exhausted").as_deref(), Some("true"));
+    assert!(
+        done.out
+            .contains("verdict         No solution — the constraints are contradictory"),
+        "the exhausted arm moved:\n{}",
+        done.out
+    );
+    assert!(done.out.contains("unsat core (1 facts)"));
+    assert!(
+        !done.out.contains("did not exhaust"),
+        "the exhausted arm grew a qualifier it has no use for:\n{}",
+        done.out
+    );
+}

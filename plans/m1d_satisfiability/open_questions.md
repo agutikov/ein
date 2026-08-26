@@ -17,7 +17,7 @@ about a word the engine already says.
 
 | Q | title | status |
 |---|---|---|
-| [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1d.10](p1d.10_exhaustive_search/README.md), **begun 2026-08-26**; the question has acquired a fourth answer — *stop searching a lattice* — and a defect, `-m 0`, where the engine answered **yes** by accident — **fixed 2026-08-26** ([T1d.10.5.0](p1d.10_exhaustive_search/s1d.10.5_contract.md#task-t1d1050--a-cap-of-zero-is-a-truncation--done-2026-08-26): a cap of zero is a truncation), which leaves the question about the *word* and not about a cap. `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
+| [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open, and **halved 2026-08-26** — the *word* is settled by [T1d.10.5.2b](p1d.10_exhaustive_search/s1d.10.5_contract.md#task-t1d1052b--contradiction-and-what-a-cap-may-say) (a refutation under a cap no longer says it is one; 26 cells moved, no exit code did), leaving the *stopping* half. Plus a fourth answer — *stop searching a lattice* — and a defect, `-m 0`, where the engine answered **yes** by accident — **fixed 2026-08-26** ([T1d.10.5.0](p1d.10_exhaustive_search/s1d.10.5_contract.md#task-t1d1050--a-cap-of-zero-is-a-truncation--done-2026-08-26): a cap of zero is a truncation), which leaves the question about the *word* and not about a cap. `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
 | [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | **decided 2026-08-24** — (c) a rule shape asserting the reserved verdict atom (form G); [S1d.2.3](p1d.2_obligations/s1d.2.3_the_form.md) records it |
 | [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | **answered for obligations 2026-08-25** — [`domain_contract.md`](p1d.2_obligations/domain_contract.md); open for the general lower-bound form nobody has asked for |
 | [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **closed 2026-08-25** — it may, and on this corpus it does not: [S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) shipped the ladder and **no counter moved** ([the record §2](p1d.2_obligations/hypotheses_from_obligations.md)) |
@@ -124,14 +124,30 @@ instead of the constant.
 > and the 51 corpus cells that reach the search moved while the 99 that answer
 > without searching did not.
 >
-> **What it leaves this question is sharper for having been separated from it.**
+> **What it left this question was sharper for having been separated from it,
+> and that half is now answered.**
 > The fix restored the *count* rule and deliberately did not touch the *word*:
-> `-m 0` now reports `Contradiction` with `k = 0`, an empty unsat core and
-> `exhausted = false` — which is exactly the pair **12 corpus entries already
-> report under their ordinary `solve` run**, nine of them Q-M1d.6's ten. So the
-> question is not about a cap value; it is about whether *the constraints are
-> contradictory* may be said of a search that stopped, and those twelve are its
-> evidence set.
+> `-m 0` reported `Contradiction` with `k = 0`, an empty unsat core and
+> `exhausted = false` — exactly the pair **12 corpus entries already reported
+> under their ordinary `solve` run**, nine of them Q-M1d.6's ten. So the
+> question was not about a cap value; it was about whether *the constraints are
+> contradictory* may be said of a search that stopped.
+>
+> **It may not**, per
+> [T1d.10.5.2b](p1d.10_exhaustive_search/s1d.10.5_contract.md#task-t1d1052b--contradiction-and-what-a-cap-may-say)
+> (2026-08-26). `exhausted = false` prints *No model found — the search did not
+> exhaust the lattice*, the count carries *(none found …)*, and the core block
+> is *refuted so far* rather than *unsat core* — because a core explains why a
+> program has no model and a stopped search has not shown that. The fixture is
+> `saturation/type-exclusivity/pets.ein`, which called itself contradictory at
+> `-m 5` and `-m 8` and has **35 models** at `-m 10`; the claim channel had been
+> answering `NOT CHECKED` on the same run since M1c, so the two read-outs now
+> agree instead of contradicting each other. 26 cells across 13 files moved, and
+> no exit code, counter, JSON field or `:expect` outcome did.
+>
+> **What is left of this question is the stopping half**, which is the one it
+> was named for: may a search stop *on purpose* before the lattice ends, and
+> what licenses it. The vocabulary is no longer in the way of answering that.
 
 ## Q-M1d.2 — Where does a requirement live?
 

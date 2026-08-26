@@ -388,10 +388,48 @@ The rule beside it is **normative and about what a count may claim**:
 `Solution` has carried the same distinction since ein.py, as *"(not certified —
 pass --exhaustive)"*. `Ambiguity` did not, and the difference matters more
 there: an unqualified `k = 1` is a guess about uniqueness, where an unqualified
-`k = 5` on a file with nine models is **wrong**. `Contradiction` is
-deliberately **not** covered — a refutation said under a depth cap is
-[Q-M1d.1](../../plans/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
-question about a *word*, not this one about a *count*.
+`k = 5` on a file with nine models is **wrong**.
+
+**M1d [T1d.10.5.2b](../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.5_contract.md)
+extended the rule to the empty model set, which is where it was worth most.**
+A `k = 0` is a claim like any other and `exhausted` is what licenses it, so the
+table above now has four rows rather than two:
+
+| verdict | `exhausted = true` | `exhausted = false` |
+|---|---|---|
+| `Solution` | `Solution` | `(not certified — pass --exhaustive)` |
+| `Ambiguity` | *these are the models* | *models **found***, `(a lower bound …)` |
+| `Contradiction` | *No solution — the constraints are contradictory* | *No model found — the search did not exhaust the lattice*, `(none found …)` |
+| `Open` | *the requirement is unmet, not refuted* | *…and the search did not exhaust* |
+
+The fixture is `examples/saturation/type-exclusivity/pets.ein`, and it is why
+this is a defect and not a nicety: it said **the constraints are
+contradictory** at `-m 5` and `-m 8`, and it has **35 models** at `-m 10`. The
+claim channel had refused to be fooled by the same run since M1c —
+`:expect (false)` there comes back `NOT CHECKED`, not `FAILED`, because
+`expect.rs` will not settle a claim on a stopped search — so the two channels
+were saying *refuted* and *nobody knows* about one solve. They agree now.
+
+**The unsat core is renamed with it**, for the same reason and in the same
+breath: an unsat core explains why a program has **no model**, which a
+truncated run has not shown. Its block header is `refuted so far (n facts)`
+when `exhausted = false` — which is also what makes the empty one legible,
+where `unsat core (0 facts)` read as *the empty set is contradictory* rather
+than *nothing died*.
+
+**Words moved; nothing else did.** 26 corpus cells across 13 files change what
+they print, all of them `Contradiction` at `exhausted = false`; the 48
+exhausted `Contradiction` cells keep every word; **no exit code, no counter, no
+`--json-summary` field and no `:expect` outcome moves**, and `verdict.type`
+stays `Contradiction`, which is the same shape S1d.3.3 held to. `Open` at
+`exhausted = false` is unreachable on today's corpus — every `Open` in it is
+exhausted — so that row is written to be right rather than because a cell moved.
+
+What remains of [Q-M1d.1](../../plans/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)
+after this is the *stopping* half, not the vocabulary half: whether a search
+may stop early on purpose, and what would license it. The word it used to be
+about is settled: a refutation said under a depth cap is not a refutation, and
+it no longer says it is.
 
 **M1d [S1d.4.1](../../plans/m1d_satisfiability/p1d.4_model_set_closure/s1d.4.1_what_closure_costs.md)
 added the 50th option and no behaviour at all.** `ein test --json-report

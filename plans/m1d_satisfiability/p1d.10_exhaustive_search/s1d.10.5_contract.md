@@ -3,8 +3,13 @@
 **Phase:** P1d.10 (Exhaustive search over many models)
 **Estimate:** 2 days
 **Depends on:** [S1d.10.3](s1d.10.3_stopping_criterion.md),
-[S1d.10.4](s1d.10.4_conflict_mining.md) — **except T1d.10.5.0**, which depended
-on nothing and is **done 2026-08-26**.
+[S1d.10.4](s1d.10.4_conflict_mining.md) — for what is left, which is **one
+task**. Five of the six are **done 2026-08-26**: `T1d.10.5.0` (the `-m 0`
+boundary), `T1d.10.5.2` and `T1d.10.5.2b` (the verdict surface and
+Q-M1d.1's word), `T1d.10.5.3` (docs and help) and `T1d.10.5.4` (the corpus
+note). What waits is **`T1d.10.5.1`'s second half** — the sentence for a search
+that is not a lattice — and it waits on [S1d.10.6](s1d.10.6_the_traversal.md)
+because there is no tree to write it about yet.
 **Runs 6th of six.**
 
 ---
@@ -24,14 +29,12 @@ normative in
 | `exhausted = false` | *these are models **found*** |
 
 So this stage's second acceptance bullet — *"k = 32, exhausted" and "k = 32, cap
-reached at depth 5" … should not print the same* — **is met for `Solution` and
-`Ambiguity`.** What is left is the half S1d.3.3 deliberately did not take,
-because there the problem is a *word* and not a qualifier on a count:
-`Contradiction` and `Open` still print `solutions (k) 0` with nothing beside it,
-and the fixture is
-[Q-M1d.1](../open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s:
-`examples/saturation/type-exclusivity/pets.ein` says *the constraints are
-contradictory* at `-m 5` through `-m 8` and has **35 models** at `-m 10`.
+reached at depth 5" … should not print the same* — **was met for `Solution` and
+`Ambiguity`**, and [T1d.10.5.2b](#task-t1d1052b--contradiction-and-what-a-cap-may-say)
+has since taken the half S1d.3.3 deliberately left: `Contradiction` and `Open`
+carry the qualifier too, and the table in
+[`defined_behaviour.md` §5](../../../docs/kernel/defined_behaviour.md) has four
+rows rather than two.
 
 **And the stage found a defect in the thing it is about — now fixed.** See
 [T1d.10.5.0](#task-t1d1050--a-cap-of-zero-is-a-truncation--done-2026-08-26),
@@ -207,21 +210,96 @@ interesting one and `corpus_exits.txt` is where the answer shows up.
 > to be about this cap at all. `corpus_exits.txt` is unchanged, which is the
 > form the answer took.
 
-### Task T1d.10.5.1 — The vocabulary
-### Task T1d.10.5.2 — The verdict surface
-### Task T1d.10.5.2b — `Contradiction`, and what a cap may say
+### Task T1d.10.5.1 — The vocabulary — **half done 2026-08-26**
 
-Q-M1d.1's word, with `saturation/type-exclusivity/pets.ein` as the corpus
-fixture and the ten Q-M1d.6 entries as the control group that must *not* move
-([the openness census §5](../p1d.2_obligations/openness_census.md)). The claim
-channel already refuses to be fooled: an `:expect (or …)` on `pets.ein` comes
-back `NOT CHECKED` rather than `FAILED`, because `expect.rs` will not refute a
-claim on the strength of a stopped search. **The verdict channel says *the
-constraints are contradictory* and the claim channel says *nobody knows*, about
-the same run**, and whatever this task settles should leave them agreeing.
+The lattice half is settled and normative: `exhausted` means the lattice was
+exhausted, all four verdicts now say whether they got it, and the four-row table
+is in [`defined_behaviour.md` §5](../../../docs/kernel/defined_behaviour.md)
+rather than in this plan.
 
-### Task T1d.10.5.3 — Docs and help
-### Task T1d.10.5.4 — The corpus note, corrected
+**The other half cannot be written yet**, and that is a dependency rather than a
+deferral: *"a search that is not a lattice needs the sentence rewritten rather
+than reused"* — a tree that terminates by discharge exhausts no lattice and may
+still have proved the model set complete. There is no tree to write it about
+until [S1d.10.6](s1d.10.6_the_traversal.md), and writing it first would be
+inventing a guarantee before the thing that offers it. **This is the whole of
+what is left in this stage.**
+
+### Task T1d.10.5.2 — The verdict surface — **done 2026-08-26**
+
+Folded into T1d.10.5.2b below, because they are one edit: the qualifier the
+acceptance asks for is the same qualifier the word question needs, and giving it
+to `Contradiction` without giving it to `Open` would have left the surface
+inconsistent in the other direction. `Open` gained it with no corpus cell to
+show for it — every `Open` in the corpus is exhausted — which is recorded as
+the branch being right rather than being exercised.
+
+### Task T1d.10.5.2b — `Contradiction`, and what a cap may say — **done 2026-08-26**
+
+**Answered: it may not say it is a refutation.** `exhausted = false` now prints
+*No model found — the search did not exhaust the lattice* and
+`solutions (k) 0   (none found — the search did not exhaust)`, where
+`exhausted = true` keeps every word it had. The fixture is the one this task
+named:
+
+| `saturation/type-exclusivity/pets.ein` | before | after |
+|---|---|---|
+| `-m 5`, `-m 8` | *the constraints are contradictory* | *No model found — the search did not exhaust the lattice* |
+| `-m 10` (**35 models**) | `Ambiguity`, already qualified by S1d.3.3 | unchanged |
+
+**And the two channels agree now**, which is what the task asked for in its own
+words. `:expect (false)` on that file at `-m 5` has always come back
+`NOT CHECKED — Contradiction matches, but the search was not exhausted`; the
+verdict beside it used to say *contradictory*. One solve, two read-outs, and
+they no longer disagree.
+
+**The unsat core is renamed in the same breath.** A core explains why a program
+has *no model*, which a truncated run has not shown, so its header is
+`refuted so far (n facts)` when `exhausted = false`. That is also what makes the
+empty one legible — `unsat core (0 facts)`, which
+[T1d.10.5.0](#task-t1d1050--a-cap-of-zero-is-a-truncation--done-2026-08-26)
+found on 51 entries, read as *the empty set is contradictory* rather than
+*nothing died*.
+
+**The blast radius, measured before the edit**: over `solve` and `solve -e`
+across the corpus, **26 cells in 13 files** report `Contradiction` at
+`exhausted = false` and move; **48** report it exhausted and do not; **0**
+report `Open` unexhausted. Nothing else moved — 37 of 8 171 corpus renderings,
+every one of them `trace[answer]`, and **no exit code, no counter, no
+`--json-summary` field and no `:expect` outcome**. `verdict.type` stays
+`Contradiction`, which is the shape S1d.3.3 held to when it moved twelve
+entries' words and no entry's exit code.
+
+**On "the ten Q-M1d.6 entries as the control group that must not move".** They
+move — nine of the thirteen files above are theirs — and the reading that makes
+that right is the one the openness census left: their `Contradiction` at
+`exhausted = false` *is* what Q-M1d.1 was about, so a change to that word
+reaching them is the change working rather than over-reaching. What must not
+move about them is what did not: their exit code, their counters, and the fact
+that `Open` cannot reach them because they state no obligation. A control group
+for the *obligations* mechanism is not a control group for this one.
+
+What is pinned: `cli_semantics::a_truncated_k0_is_not_reported_as_a_refutation`
+— the truncated arm on `pets.ein`, and `ein-bugs/zebra2-bad.ein` as the
+non-vacuity control that must keep *contradictory*, its `unsat core (1 facts)`
+and no qualifier at all.
+
+### Task T1d.10.5.3 — Docs and help — **done 2026-08-26**
+
+[`defined_behaviour.md` §5](../../../docs/kernel/defined_behaviour.md) carries
+the four-row table, the rename, and the blast radius. `docs/api/inference.md` is
+**not** touched, per § What moved under it.
+
+The help had one inaccuracy and it was on the flag this stage is about:
+`-e/--exhaustive` read *"exhaust the lattice — certify unique / ambiguous /
+unsat"*, and `-e` does no such thing — it clears `stop_after` and leaves
+`--max-set-size` in place, which is exactly how `pets.ein -e -m 5` reached a
+false refutation. It now reads *"do not stop at the first model. Certification
+also needs the lattice to end within --max-set-size, which `exhausted` in
+--stats reports"*. `help_shape.txt` re-blessed for it; no other help string
+names a verdict word.
+
+### Task T1d.10.5.4 — The corpus note, corrected — **done 2026-08-26**
 
 The note has been half-corrected once already and the surviving half is a record
 of a session rather than of this engine. It reads, today:
@@ -242,6 +320,19 @@ measured reason, or it is lifted for the entry's **twin** because
 hrule path is the one that stays out. The same note lives on
 `zebra2-minus-15-obligations.ein`, verbatim and for the same reasons, so
 whatever moves moves twice.
+
+**The second ending is the one that was true: kept, with the measured reason.**
+`solve -e` on this entry is 618 076 enterings — 416 s at `--jobs 1`, 50 s at
+`-j16` — against a `slow` threshold of **1 s**, so the exclusion survives on
+arithmetic rather than on a ceiling nobody had taken. What replaced the killed-at-30-min
+sentence is the number it was standing in for: the lattice ends at **layer 22
+and 17 204 592 enterings**, 24 min 56 s, and buys no model that depth 3 did not
+already have. And the closing sentence is corrected rather than deleted —
+*"These are the exclusions M1d lifts"* became **"M1d did not lift these; it
+priced them"**, with a pointer to what would lift them: a cheaper argument for
+the same claim, measured out of process at 171 nodes, which is
+[S1d.10.6](s1d.10.6_the_traversal.md)'s to ship and not a run list's to assume.
+Both notes moved, as the task said they would.
 
 ## Notes
 
