@@ -40,6 +40,7 @@ COMMAND ein solve
   OPTION --json-summary -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write the structured run summary (verdict, model, every engine counter, the root-saturation shape, the resolved config) to FILE as JSON. Additive: stdout, stderr and the exit code are unchanged.
   OPTION --lattice-order -o metavar=LATTICE_ORDER arity=1 default=None choices=lex|score-sum group=- required=False help=within-layer candidate ordering (S1.5b.26): 'lex' (canonical-tuple sort, the deterministic default) or 'score-sum' (S1.5a.7 hypgen scoring summed per set)
   OPTION --lattice-sanity-check -y metavar=- arity=0 default=False choices=- group=- required=False help=S1.5b.27 regression: for every alive size-k≥2 commitment, verify every (k-1)-subset parent path saturates to the same kb (costs k+1 saturations each)
+  OPTION --layer-progress -- metavar=- arity=0 default=False choices=- group=- required=False help=stream the per-layer census to stderr and nothing per entering: three lines a layer — alive, then what the join proposed and the clauses filtered, then what entering them killed, learned and found
   OPTION --max-enterings -E metavar=MAX_ENTERINGS arity=1 default=None choices=- group=- required=False help=abort after N commitment tries
   OPTION --max-set-size -m metavar=MAX_SET_SIZE arity=1 default='5' choices=- group=- required=False help=commitment-set depth cap (default: 5)
   OPTION --max-time -T metavar=MAX_TIME arity=1 default=None choices=- group=- required=False help=abort after N wall-clock seconds

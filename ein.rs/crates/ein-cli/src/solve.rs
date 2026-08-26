@@ -133,12 +133,16 @@ impl Chosen {
 fn make_dumper(m: &ArgMatches) -> Result<Chosen, String> {
     let out_dir = m.get_one::<String>("dump-states").map(PathBuf::from);
     let every = *m.get_one::<i64>("progress-every").unwrap_or(&100);
-    if m.get_flag("verbose") {
-        let d = ProgressDumper::new(
+    // `--verbose` wins over `--layer-progress`: both build the same dumper and
+    // the louder one is the one the reader asked for last.
+    let verbose = m.get_flag("verbose");
+    if verbose || m.get_flag("layer-progress") {
+        let d = ProgressDumper::with_volume(
             out_dir.as_deref(),
             Box::new(std::io::stderr()),
             every.max(0) as u64,
             "",
+            !verbose,
         )
         .map_err(|e| e.to_string())?;
         return Ok(Chosen::Progress(Box::new(d)));

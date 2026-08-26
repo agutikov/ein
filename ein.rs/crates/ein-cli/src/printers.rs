@@ -154,7 +154,7 @@ pub fn print_timing(
         p.root_facts
     );
     println!(
-        "  hypothesis search  {}    ({enterings} enterings / {} layers / {} saturations)",
+        "  hypothesis search  {}    ({enterings} enterings / {} layers / {} root saturations)",
         f(search_ms),
         stats.base.layers_explored,
         stats.base.saturate_count

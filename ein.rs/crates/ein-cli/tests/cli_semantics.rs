@@ -1534,3 +1534,158 @@ fn the_removed_block_wrappers_are_not_highlighted_as_keywords() {
     names_for_scope(&g, "keyword.control.declarator.ein", &mut declarators);
     assert!(declarators.contains("rule") && !declarators.contains("rules"));
 }
+
+// ── `--layer-progress` — M1d P1d.10 ────────────────────────────────
+
+/// Parse the `layer N gen:` / `layer N test:` / `layer N done:` lines into
+/// `(label, {key: value})`, which is what the two tests below assert on.
+fn layer_lines(err: &str) -> Vec<(String, std::collections::BTreeMap<String, u64>)> {
+    let mut out = Vec::new();
+    for l in err.lines() {
+        let t = l.trim_start();
+        let Some(rest) = t.strip_prefix("layer ") else {
+            continue;
+        };
+        let mut it = rest.split_whitespace();
+        let (Some(n), Some(what)) = (it.next(), it.next()) else {
+            continue;
+        };
+        let mut kv = std::collections::BTreeMap::new();
+        for tok in it {
+            if let Some((k, v)) = tok.split_once('=')
+                && let Ok(v) = v.parse::<u64>()
+            {
+                kv.insert(k.to_string(), v);
+            }
+        }
+        out.push((format!("{n} {what}"), kv));
+    }
+    out
+}
+
+/// **The layer rows' arithmetic closes.**
+///
+/// The flag exists so a reader can watch a search that runs for minutes, and a
+/// progress line nobody can add up is a progress line nobody can trust. Three
+/// identities, per layer, and each names a different half of the loop:
+///
+/// - `joined − dropped_dead − dropped_nogood = candidates` — generation
+/// - `entered = alive + dead` — testing
+/// - `alive = complete + survivors` — where the survivors went, which is the
+///   one the census row could not state on its own: `alive_enterings` counts
+///   every consistent fork and only the incomplete ones reach the next
+///   frontier
+///
+/// `zebra2` is the fixture because it is the corpus's pruning case — layer 1
+/// kills 32 of 56 and completes 13 more, so every term above is non-zero.
+#[test]
+fn the_layer_progress_rows_add_up() {
+    let r = ein(&["solve", "-e", "--layer-progress", "examples/zebra2.ein"]);
+    assert_eq!(r.code, 0, "stderr:\n{}", r.err);
+    let rows = layer_lines(&r.err);
+    let generated: Vec<_> = rows.iter().filter(|(l, _)| l.ends_with("gen:")).collect();
+    let test: Vec<_> = rows.iter().filter(|(l, _)| l.ends_with("test:")).collect();
+    let done: Vec<_> = rows.iter().filter(|(l, _)| l.ends_with("done:")).collect();
+    assert_eq!(
+        generated.len(),
+        2,
+        "two layers, two generation rows:\n{}",
+        r.err
+    );
+    assert_eq!(test.len(), generated.len());
+    assert_eq!(done.len(), generated.len());
+
+    let mut saw_a_death = false;
+    let mut saw_a_completion = false;
+    for i in 0..generated.len() {
+        let (g, t, d) = (&generated[i].1, &test[i].1, &done[i].1);
+        let at = |m: &std::collections::BTreeMap<String, u64>, k: &str| {
+            *m.get(k)
+                .unwrap_or_else(|| panic!("no {k} in layer {i} of:\n{}", r.err))
+        };
+        assert_eq!(
+            at(g, "joined") - at(g, "−dead") - at(g, "−clause"),
+            at(g, "cand"),
+            "layer {i}: the join and the two filters do not reach `cand`"
+        );
+        assert_eq!(
+            at(t, "entered"),
+            at(t, "alive") + at(t, "dead"),
+            "layer {i}: an entering was neither alive nor dead"
+        );
+        assert_eq!(
+            at(t, "alive"),
+            at(t, "complete") + at(d, "survivors"),
+            "layer {i}: a consistent fork was neither complete nor a survivor"
+        );
+        assert_eq!(
+            at(g, "cand"),
+            at(t, "entered"),
+            "layer {i}: a candidate was generated and not entered"
+        );
+        saw_a_death |= at(t, "dead") > 0;
+        saw_a_completion |= at(t, "complete") > 0;
+    }
+    assert!(saw_a_death, "the fixture has to kill something");
+    assert!(saw_a_completion, "…and complete something");
+}
+
+/// **It is additive, and it is the layer half of `--verbose` alone.**
+///
+/// Two claims in one run because they are the same claim from two sides: the
+/// flag changes what goes to *stderr* and nothing else, and what it removes
+/// from `-v` is the per-entering firehose — 6 180 lines on a 618 076-entering
+/// run at the default `--progress-every`, which is what makes `-v` unusable
+/// for watching a layer.
+#[test]
+fn layer_progress_is_verbose_without_the_enterings() {
+    let plain = ein(&["solve", "-e", "-s", "examples/zebra2.ein"]);
+    let lp = ein(&[
+        "solve",
+        "-e",
+        "-s",
+        "--layer-progress",
+        "examples/zebra2.ein",
+    ]);
+    let v = ein(&["solve", "-e", "-s", "-v", "examples/zebra2.ein"]);
+
+    // `wall` is the one volatile row of `--stats`, and it is volatile under
+    // any two runs — the claim is about every other byte.
+    let steady = |o: &str| {
+        o.lines()
+            .filter(|l| !l.trim_start().starts_with("wall"))
+            .collect::<Vec<_>>()
+            .join("\n")
+    };
+    assert_eq!(
+        steady(&plain.out),
+        steady(&lp.out),
+        "--layer-progress moved stdout"
+    );
+    assert_eq!(plain.code, lp.code);
+    assert!(
+        plain.err.is_empty(),
+        "the control wrote stderr: {}",
+        plain.err
+    );
+
+    let entering = |e: &str| {
+        e.lines()
+            .filter(|l| l.trim_start().starts_with("e="))
+            .count()
+    };
+    assert_eq!(
+        entering(&lp.err),
+        0,
+        "--layer-progress narrated an entering"
+    );
+    assert!(
+        entering(&v.err) > 0,
+        "-v narrated none — the contrast is vacuous"
+    );
+    assert_eq!(
+        layer_lines(&lp.err).len(),
+        layer_lines(&v.err).len(),
+        "the two disagree about the layer half"
+    );
+}

@@ -470,6 +470,43 @@ Two things the fix decides rather than assumes:
   and is untouched here — no exit code moved, and `corpus_exits.txt` is
   unchanged.
 
+**M1d P1d.10 added the 51st option, and it moves no byte of stdout.** `ein
+solve --layer-progress` streams the **per-layer census** to stderr and nothing
+per entering — three lines a layer, where `--verbose` had one and a half:
+
+```text
+  layer 3: alive=96 root_facts=339
+  layer 3 gen:  frontier=2911 joined=60260 −dead=0 −clause=16171 (26.8%) cand=44089
+  layer 3 test: entered=44089 alive=33940 complete=7256 models=4 dead=10149 dead_pre=0 …
+  layer 3 done: survivors=26684 enterings=48745 solution-nodes=32
+```
+
+The numbers are the sixteen the `layer` event already carried; what is new is
+that they reach a reader who is *watching a run* rather than parsing a JSONL
+file afterwards. Three identities hold per layer and are a test
+(`cli_semantics::the_layer_progress_rows_add_up`):
+
+| identity | which half of the loop it accounts for |
+|---|---|
+| `joined − dropped_dead − dropped_clause = cand` | generation: what the prefix join proposed and what the learned clauses took off it |
+| `entered = alive + dead` | testing |
+| `alive = complete + survivors` | where the consistent forks went |
+
+The third is the one no counter stated before. `alive_enterings` counts every
+consistent fork, and only the **incomplete** ones reach the next frontier — so
+`complete` is this layer's solution-outcome enterings and `models` is what they
+collapse to under `state_key`. On `examples/zebra2.ein` layer 1 that is
+**13 → 1**: thirteen commitments each complete the puzzle, and all thirteen are
+the same model.
+
+`--verbose` still prints the per-entering line and now prints these rows too;
+`--layer-progress` is the same dumper with the entering firehose silenced,
+which is what makes it usable on a run that enters 618 076 times (6 180 lines
+at the default `--progress-every`). Both cost what `-v` costs — the dumper
+reads each fork for the `state_key` dedup, so neither is free — and both are
+additive: stdout, the exit code and every counter are identical with them and
+without.
+
 **Free, and different from the Python CLI's:** wrapping, indentation,
 headings, ordering within a section, and the wording of a usage diagnosis.
 `clap` cannot be configured into `argparse`'s layout and hand-rolling one was

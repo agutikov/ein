@@ -284,6 +284,17 @@ fn solve_command() -> Command {
             "stream per-layer + per-entering progress to stderr",
         ))
         .arg(
+            Arg::new("layer-progress")
+                .long("layer-progress")
+                .action(ArgAction::SetTrue)
+                .help(
+                    "stream the per-layer census to stderr and nothing per \
+                     entering: three lines a layer — alive, then what the join \
+                     proposed and the clauses filtered, then what entering \
+                     them killed, learned and found",
+                ),
+        )
+        .arg(
             Arg::new("progress-every")
                 .short('g')
                 .long("progress-every")

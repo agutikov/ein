@@ -431,6 +431,14 @@ pub trait Dumper {
     fn root_saturating(&mut self, n_firings: usize) {}
     fn root_initial(&mut self, kb: &Kb, terms: &Terms) {}
     fn layer_start(&mut self, layer: u32, kb: &Kb, terms: &Terms, n_alive: usize) {}
+    /// The layer's candidates exist and nothing has been entered yet — the
+    /// **generation** half of [`LayerCensus`], which is the only moment it is
+    /// observable on its own.
+    ///
+    /// `alive`, `frontier`, `joined`, `dropped_dead`, `dropped_nogood` and
+    /// `candidates` are final here; every other column is still zero. A hook
+    /// that wants the whole row wants [`Dumper::layer_census`] instead.
+    fn layer_generated(&mut self, layer: u32, census: &LayerCensus) {}
     fn entering(
         &mut self,
         layer: u32,
@@ -441,6 +449,14 @@ pub trait Dumper {
     ) {
     }
     fn layer_end(&mut self, layer: u32, kb: &Kb, terms: &Terms, n_alive: usize, n_next: usize) {}
+    /// The layer's census row, complete — the same sixteen counters the
+    /// `layer` event carries, handed to a dumper that has no event stream.
+    ///
+    /// Called from `close_census`, so **every** way out of a layer reaches it,
+    /// a budget cut included: a row where `entered < candidates` is the cut,
+    /// stated rather than inferred. [`Dumper::layer_end`] is the narrower
+    /// hook — it fires only at the ordinary barrier.
+    fn layer_census(&mut self, layer: u32, census: &LayerCensus) {}
     /// Does this dumper read [`EnteringInfo::kb`]?
     ///
     /// `true` by default, because a hook that is handed a fork may look at it
@@ -959,6 +975,7 @@ impl Run<'_> {
                 out
             };
             self.census.candidates = candidates.len() as u64;
+            dumper.layer_generated(layer, &self.census);
             let mut candidates = order_candidates(root, terms, candidates, &self.cfg.lattice_order)
                 .map_err(|e| SolveError::Compile(CompileError(e.to_string())))?;
             // After `order_candidates`, never instead of it — the shuffle is a
@@ -1080,6 +1097,7 @@ impl Run<'_> {
                         if let Err(e) = self.before_commit(i + k, root, terms, events, dumper) {
                             self.close_census(
                                 events,
+                                dumper,
                                 layer,
                                 base_at_open,
                                 models_at_open,
@@ -1150,6 +1168,7 @@ impl Run<'_> {
                         if stop? {
                             self.close_census(
                                 events,
+                                dumper,
                                 layer,
                                 base_at_open,
                                 models_at_open,
@@ -1167,7 +1186,14 @@ impl Run<'_> {
                     self.jobs.sequential += 1;
                 }
                 if let Err(e) = self.before_commit(i, root, terms, events, dumper) {
-                    self.close_census(events, layer, base_at_open, models_at_open, a_layer.len());
+                    self.close_census(
+                        events,
+                        dumper,
+                        layer,
+                        base_at_open,
+                        models_at_open,
+                        a_layer.len(),
+                    );
                     return Err(e);
                 }
                 // T1a.7.1.7 — everything derived from here to `close_fork` is
@@ -1237,7 +1263,14 @@ impl Run<'_> {
                     entered,
                     &mut a_layer,
                 )? {
-                    self.close_census(events, layer, base_at_open, models_at_open, a_layer.len());
+                    self.close_census(
+                        events,
+                        dumper,
+                        layer,
+                        base_at_open,
+                        models_at_open,
+                        a_layer.len(),
+                    );
                     return Ok(());
                 }
                 i += 1;
@@ -1257,7 +1290,14 @@ impl Run<'_> {
             // The layer barrier. With `integrate_every = Some(usize::MAX)`
             // this is the *only* one, which is the "one KB per layer" mode.
             self.integrate(root, terms, events);
-            self.close_census(events, layer, base_at_open, models_at_open, a_layer.len());
+            self.close_census(
+                events,
+                dumper,
+                layer,
+                base_at_open,
+                models_at_open,
+                a_layer.len(),
+            );
             dumper.layer_end(layer, root, terms, alive.len(), a_layer.len());
             // T1a.7.2.0 — and after the dumper, so what it renders is the KB
             // it renders today. Coalescing here rather than at the next
@@ -1331,6 +1371,7 @@ impl Run<'_> {
     fn close_census(
         &mut self,
         events: &mut Events,
+        dumper: &mut dyn Dumper,
         layer: u32,
         at_open: BaseStats,
         models_at_open: u64,
@@ -1367,6 +1408,7 @@ impl Run<'_> {
                 l.num("next", c.next as i64);
             });
         }
+        dumper.layer_census(layer, &self.census);
     }
 
     /// Layer *L+1*'s candidates — the prefix join, then the downward-closure

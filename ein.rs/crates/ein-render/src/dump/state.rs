@@ -23,7 +23,7 @@ use std::io::Write;
 use std::path::Path;
 
 use ein_core::{FactId, Kb, Terms};
-use ein_infer::solve::{Dumper, EnteringInfo, MonotonicStats};
+use ein_infer::solve::{Dumper, EnteringInfo, LayerCensus, MonotonicStats};
 use ein_infer::verdict::Answer;
 
 use super::json::Json;
@@ -203,6 +203,10 @@ pub struct ProgressDumper {
     inner: MonotonicDumper,
     stream: Box<dyn Write>,
     progress_every: u64,
+    /// `--layer-progress`: the three layer lines and nothing per entering.
+    /// A 618 076-entering run logs 6 180 lines at the default
+    /// `--progress-every`, which is a firehose to read a *layer* out of.
+    layers_only: bool,
     label: String,
     enterings: u64,
     /// Distinct solution-node states, deduped by canonical `state_key` — the
@@ -227,11 +231,24 @@ impl ProgressDumper {
         progress_every: u64,
         label: &str,
     ) -> std::io::Result<ProgressDumper> {
+        ProgressDumper::with_volume(out_dir, stream, progress_every, label, false)
+    }
+
+    /// [`ProgressDumper::new`], plus the switch that silences the per-entering
+    /// line. `layers_only` is `--layer-progress`; `false` is `--verbose`.
+    pub fn with_volume(
+        out_dir: Option<&Path>,
+        stream: Box<dyn Write>,
+        progress_every: u64,
+        label: &str,
+        layers_only: bool,
+    ) -> std::io::Result<ProgressDumper> {
         let now = std::time::Instant::now();
         Ok(ProgressDumper {
             inner: MonotonicDumper::new(out_dir)?,
             stream,
             progress_every,
+            layers_only,
             label: label.to_string(),
             enterings: 0,
             node_keys: Vec::new(),
@@ -293,6 +310,45 @@ impl Dumper for ProgressDumper {
         ));
     }
 
+    /// The generation half — what the prefix join proposed and what the
+    /// learned clauses took off it, before a single fork.
+    fn layer_generated(&mut self, layer: u32, c: &LayerCensus) {
+        let el = self.el();
+        let filt = if c.joined == 0 {
+            String::from("—")
+        } else {
+            format!("{:.1}%", 100.0 * c.dropped_nogood as f64 / c.joined as f64)
+        };
+        self.say(&format!(
+            "  layer {layer} gen:  frontier={} joined={} −dead={} −clause={} ({filt}) \
+             cand={}  ({el})",
+            c.frontier, c.joined, c.dropped_dead, c.dropped_nogood, c.candidates
+        ));
+    }
+
+    /// The testing half — the same row the `layer` event carries, for a reader
+    /// who has no event stream.
+    fn layer_census(&mut self, layer: u32, c: &LayerCensus) {
+        let el = self.el();
+        let dead = c.dead_pre + c.dead_post;
+        // `alive_enterings` counts every consistent fork; only the ones that
+        // are *not* already complete reach the next frontier, so the gap is
+        // this layer's solution-outcome enterings — and `models` is what they
+        // collapse to under `state_key`. On `zebra2` layer 1 that is 13 → 1.
+        let complete = c.alive_enterings.saturating_sub(c.next);
+        self.say(&format!(
+            "  layer {layer} test: entered={} alive={} complete={complete} models={} \
+             dead={dead} dead_pre={} clauses={} subsumed={} writebacks={}  ({el})",
+            c.entered,
+            c.alive_enterings,
+            c.models,
+            c.dead_pre,
+            c.nogoods_emitted,
+            c.nogoods_subsumed,
+            c.writebacks
+        ));
+    }
+
     fn entering(
         &mut self,
         layer: u32,
@@ -310,6 +366,9 @@ impl Dumper for ProgressDumper {
             if !self.node_keys.contains(&key) {
                 self.node_keys.push(key);
             }
+        }
+        if self.layers_only {
+            return;
         }
         if outcome == "solution" || self.enterings.is_multiple_of(self.progress_every) {
             let (el, e, n) = (self.el(), self.enterings, self.node_keys.len());

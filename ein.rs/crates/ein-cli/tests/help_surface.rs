@@ -46,8 +46,9 @@ use ein_corpus::{golden, golden_path};
 /// `--events` and `--events-level` on it too.
 const EXPECTED: [(&str, usize); 8] = [
     ("COMMAND ein\n", 0),
-    // 29 of ein.py's, plus P1a.7's `--jobs` and M1d S1d.3.3's `--models`.
-    ("COMMAND ein solve\n", 31),
+    // 29 of ein.py's, plus P1a.7's `--jobs`, M1d S1d.3.3's `--models` and
+    // M1d P1d.10's `--layer-progress`.
+    ("COMMAND ein solve\n", 32),
     ("COMMAND ein saturate\n", 5),
     ("COMMAND ein render\n", 0),
     ("COMMAND ein render rules\n", 1),
@@ -99,12 +100,12 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        39 + 2
+        39 + 3
             + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
         "39 options across ein.py's eight parsers, plus `solve --jobs`, \
-         `solve --models`, `ein test`'s nine and `ein kb save --saturate` \
-         — none of which ein.py has"
+         `solve --models`, `solve --layer-progress`, `ein test`'s nine and \
+         `ein kb save --saturate` — none of which ein.py has"
     );
 }
 
