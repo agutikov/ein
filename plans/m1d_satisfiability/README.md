@@ -1,13 +1,24 @@
 # M1d — From saturation to satisfiability
 
-**Estimate:** ~2.5 months focused — 4 phases, 17 stages, ~9.5 weeks of stage
-estimates. Only [P1d.10](p1d.10_exhaustive_search/README.md) is written to stage
-depth; see § How deep this plan is.
+**Estimate:** ~2.5 months focused — 4 phases, 18 stages, ~9.5 weeks of stage
+estimates. All four are at stage depth; see § How deep this plan is.
+**P1d.10 was begun 2026-08-26** and is the only phase still open. Its
+reconnaissance closed one stage, reversed a reading in another, found a defect
+in a third, and added a sixth: the depth-first branch on one obligation that
+[S1d.2.5 §1](p1d.2_obligations/hypotheses_from_obligations.md) deferred by name
+costs **171 nodes** where the lattice costs **17 204 592 enterings**, for the
+same 32 models
+([the reconnaissance](p1d.10_exhaustive_search/README.md#what-the-reconnaissance-found--2026-08-26)).
 **S1d.10.1 is done and P1d.10 moved to the end** (2026-08-24): the census the
 milestone opened with is [taken](p1d.10_exhaustive_search/layer_census.md), and
 what it found — 96.7 % of the corpus's search work is an *exact* powerset walk —
 is [P1d.2](p1d.2_obligations/README.md)'s input rather than a question P1d.10
-can answer on its own. See [§ Phases](#phases).
+can answer on its own. See [§ Phases](#phases). *(Re-taken 2026-08-26 on the
+engine P1d.2 and P1d.3 left: **94.6 %**, over a denominator two fixtures larger,
+with every per-layer row of the phase's entry identical to the digit — and with
+one number the first census could not report, because `owes.declared` did not
+exist when it ran: of the 25 cells that walk an exact powerset, **0 state an
+obligation**.)*
 **P1d.4 arrived 2026-08-24**, from M1c: building
 [`:expect`](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
 produced a form that can *state* "these are all the models" and can only
@@ -217,9 +228,9 @@ that is the note's thesis measured in someone else's language.
 | [P1d.2](p1d.2_obligations/README.md) | Obligations — the half of the vocabulary that says *must* | 6 (**done 2026-08-25**) | 3.5 w | **met**: a puzzle states a requirement, a state says what it owes, the search branches on it, and the verdict reports it — [the phase ledger](p1d.2_obligations/README.md) |
 | [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 (**done 2026-08-26**) | 1.5 w | **met, and with both**: `ein solve --models key` is the compact representation, and the enumeration now states its own guarantee — [the phase ledger](p1d.3_model_sets/README.md#the-ledger) |
 | [P1d.4](p1d.4_model_set_closure/README.md) | Closing the model set — the claim nothing can state | 3 (**done 2026-08-26**) | 1.5 w | **met, and with no keyword**: the answer is *no* three times over, and M1c's sentence is rewritten — [the phase ledger](p1d.4_model_set_closure/README.md#the-ledger) |
-| [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 (1 done) | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
+| [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 6 (**begun 2026-08-26**; 1 done, 1 closable) | 3 w | **first half met**: `solve -e` finishes with all 32 models and exhausts. What replaces it: the proof costs 17 204 592 enterings and the [reconnaissance](p1d.10_exhaustive_search/README.md#what-the-reconnaissance-found--2026-08-26) priced the alternative at **171 nodes** |
 
-17 stages, 47 days of stage estimates ≈ 9.5 weeks — and **the table is now in
+18 stages, 46.5 days of stage estimates ≈ 9.5 weeks — and **the table is now in
 id order, because the work order caught up with it.**
 
 **P1d.10 ran first and now runs last**, moved 2026-08-24 at the user's
@@ -234,10 +245,10 @@ census ([`layer_census.md`](p1d.10_exhaustive_search/layer_census.md),
 2026-08-24) is the measurement the rest of the milestone needed, and it is
 taken.
 
-What is left of P1d.10 — the depth accounting, the stopping criterion, conflict
-mining, the `exhausted` contract — is **about the search obligations are going
-to change**, and answering those questions against today's traversal would be
-answering them twice.
+What was left of P1d.10 — the depth accounting, the stopping criterion,
+conflict mining, the `exhausted` contract — was **about the search obligations
+were going to change**, and answering those questions against that traversal
+would have been answering them twice.
 [S1d.10.3](p1d.10_exhaustive_search/s1d.10.3_stopping_criterion.md)'s own text
 already leaned that way ("may well hand its answer forward to P1d.2 rather than
 finding one itself"); the census settled it, because two of its three candidates
@@ -264,7 +275,17 @@ generator is the one thing that would change that.
 ## How deep this plan is
 
 **P1d.10 is at stage depth** — five stage files, written when it was P1a.12,
-moved unchanged then and renumbered (not rewritten) on 2026-08-23. **P1d.2
+moved unchanged then and renumbered (not rewritten) on 2026-08-23, and
+**re-aimed on 2026-08-26 when the phase was begun**, which is the first time
+this section has had to describe a phase whose stage files were older than the
+engine they were written against. **All four** of the remaining had a premise
+that had moved, and the reconnaissance that found it also found a sixth stage
+— [S1d.10.6](p1d.10_exhaustive_search/s1d.10.6_the_traversal.md), the
+depth-first branch [S1d.2.5 §1](p1d.2_obligations/hypotheses_from_obligations.md)
+deferred by name, priced out of process at **171 nodes against 17 204 592
+enterings** for the same 32 models. The pattern this section describes held in
+its least comfortable form: the measurement did not confirm the plan, it closed
+one stage, reversed a reading in another, and found a defect in a third. **P1d.2
 reached stage depth on 2026-08-24**: six stage files, written *after* the
 user took the decisions the phase README had reserved — the form (G), the
 naming (P3, probe rename executed), numeral-free bounds, the supersession
@@ -411,8 +432,10 @@ keyword.
   **Met 2026-08-26**, on the obligations twin at `-m 38`: `k = 32`,
   `exhausted = true`, 17 204 592 enterings, 22 layers, 24 min 56 s at `-j16`
   ([§ The two halves of one question](#the-two-halves-of-one-question)). What
-  is *not* settled is the cost — 92 % of the run is proof — which is
-  [P1d.10](p1d.10_exhaustive_search/README.md)'s remaining four stages.
+  is *not* settled is the cost — 99.7 % of that run is proof — which is
+  [P1d.10](p1d.10_exhaustive_search/README.md)'s remaining five stages, and
+  which its 2026-08-26 reconnaissance has already priced at **171 nodes** by a
+  traversal that branches on requirements instead of on subsets.
 - **The engine can state a requirement.** At minimum `total` and `surjective`
   with the force their names claim; the general `L ≤ # ≤ U` form only if a
   corpus entry needs it.

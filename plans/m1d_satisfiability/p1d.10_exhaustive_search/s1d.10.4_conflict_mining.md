@@ -1,8 +1,77 @@
 # S1d.10.4 — Conflict mining when a layer is barren
 
 **Phase:** P1d.10 (Exhaustive search over many models)
-**Estimate:** 4 days
+**Estimate:** 4 days → **0.5 day**: what is left is writing the refutation down
 **Depends on:** [S1d.10.1](s1d.10.1_why_it_does_not_finish.md)
+**Runs 3rd of six**, and it is the stage that closes rather than builds.
+
+---
+
+## The answer, 2026-08-26 — there are no conflicts down there
+
+The stage's premise, in its own words below: *"deaths live **deeper**, where
+enough hypotheses are committed to contradict. A cardinality-BFS reaches that
+depth only by paying for every shallower combination first. A dive reaches it
+directly, and the clause it brings back prunes the breadth-first frontier."*
+
+Measured on `examples/zebra2-minus-15-obligations.ein`, at `-j16`, by reading
+`dead_post` off three runs of the same file:
+
+| layers | enterings | deaths |
+|---|---:|---:|
+| 1–5 | 618 076 | 19 121 |
+| **6** | **865 757** | **8** |
+| **7–22** | **15 720 759** | **0** |
+
+`dead_post` is 19 129 at `-m 6` and 19 129 at `-m 38`, and `dead_pre` is 0 at
+every cap. **Fifteen and a half million commitments are entered below layer 6
+and not one of them is refuted.** A dive whose only product is clauses would
+come back with none — not because the dive is badly aimed, but because the
+region it dives into is consistent.
+
+That is an answer to the question this stage asked, and it is the one
+[T1d.10.4.5](#task-t1d1045--the-decision) named as legitimate: *record as
+inert, with the number*. Three consequences worth stating with it:
+
+1. **The reasoning in § Context is not wrong; the fact it assumed is.** Pruning
+   *does* come from deaths, a barren layer *does* have none, and a dive *would*
+   reach depth directly. What fails is *"deaths live deeper"* — on this puzzle
+   they live at depths 2 and 3 and then stop, and the last one is at layer 6.
+   The mechanism is sound and its fuel is absent.
+2. **It generalises as far as the corpus lets anything generalise here.** Of
+   the 51 cells that reach the search, **35 never learn a clause at all** and
+   **42 never have one drop a candidate**
+   ([layer census §5](layer_census.md#5-what-the-clause-store-is-worth), and the
+   2026-08-26 re-take, where the two counts are 35 of 51 and 42 of 51 against
+   the original's 35 of 49 and 41 of 49). The entry with the most clauses in the
+   corpus — 11 577 on `zebra2-minus-15` at `-m 3` — is the one whose deep half
+   has no deaths to mine.
+3. **The cost side is refuted too, which removes the fallback.** The stage's
+   note anticipated a partial win where the barren regime's cost was
+   concentrated shallow. It is not: the per-entering cost **rises** with depth,
+   0.0812 → 0.0845 → 0.0873 ms at a constant `-j16`
+   ([S1d.10.2](s1d.10.2_depth_required.md)). There is no cheap deep region to
+   harvest and no expensive shallow one to protect.
+
+**What survives, and it is not small.** The stage's obligation (2) —
+*"completeness of the surrounding search is unaffected, because the BFS still
+visits everything the clauses do not exclude"* — is the argument that makes a
+*bounded excursion off the frontier* admissible at all, and
+[S1d.10.6](s1d.10.6_the_traversal.md) needs the same shape of argument for a
+different reason: a per-obligation branch is complete at its node because the
+alternatives are jointly exhaustive. Obligation (4) — *answer F9's E10, do not
+ignore it* — transfers verbatim, and so does the note about clauses subsumed on
+arrival. What does **not** transfer is the trigger, the dive policy and the
+wasted-dive accounting, because there is nothing to trigger on.
+
+**What would re-open it**, stated as a property of a corpus entry rather than as
+a hope: an entry whose deaths per entering *rise* with depth. Every entry
+measured so far falls, and the phase's own goes
+**31.3 % → 23.0 % → 4.2 %** at layers 2–4, **0.0009 %** at layer 6 and **0**
+after it. The census's `deaths` column is where a counter-example would show up
+without anyone having to look for it.
+
+---
 
 ## Context
 

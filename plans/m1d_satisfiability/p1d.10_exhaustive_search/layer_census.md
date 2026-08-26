@@ -7,6 +7,12 @@
 corpus entries, one `solve -e` cell each, **360 child processes** (bare, then
 narrated), 6 min wall
 **Re-take:** `utils/bench_env.sh python3 utils/layer_census.py --layers --json census.json`
+**Addendum 2026-08-26** — [§10](#10-the-re-take--2026-08-26-and-what-p1d2-and-p1d3-moved),
+the re-take on the engine P1d.2 and P1d.3 left: every moved row is the two
+fixtures P1d.2 added, the phase entry's layers reproduce to the digit, and two
+crosses the first census could not take — **5 of 51** searching cells state an
+obligation and **0 of the 25** that walk an exact powerset do, and **18.1 %** of
+the swept enterings happen under a run `corpus.toml` declares.
 **Addendum 2026-08-25** — [§4.1](#41-the-depth-10-probe--2026-08-25-and-depths-610-add-nothing),
 a run of the obligations twin with the cap at **10**: 10 587 736 enterings, 15
 minutes, **zero new models**. Not from the instrument, and it carries no
@@ -470,6 +476,96 @@ gives **byte-identical output** on `branching/02` (68 lines), `zebra2` (128) and
 `branching/07` (116). The digests moved because a new event kind renumbers every
 `n` after it — [events.md](../../../docs/kernel/inference/events.md#comparison)
 says `n` is a position and not a field — and for nothing else.
+
+## 10. The re-take — 2026-08-26, and what P1d.2 and P1d.3 moved
+
+The census above was taken on 2026-08-24, which is **before**
+[S1d.2.4](../p1d.2_obligations/s1d.2.4_obligations_in_the_saturator.md) put an
+obligation tally at every fixpoint, before
+[S1d.2.5](../p1d.2_obligations/hypotheses_from_obligations.md) put a rung in the
+generator, and before [S1d.3.3](../p1d.3_model_sets/the_verdict.md) qualified
+the count. Re-taken with the same instrument and the same command when
+[P1d.10 was begun](README.md#what-the-reconnaissance-found--2026-08-26):
+
+```sh
+utils/layer_census.py --layers --json census.json     # 197 entries, ~9 min
+```
+
+| | 2026-08-24 | 2026-08-26 |
+|---|---:|---:|
+| corpus entries swept | 180 | **197** |
+| …that reach the search | 49 | **51** |
+| enterings | 2 201 027 | **2 249 873** |
+| candidates joined | 2 232 330 | **2 297 347** |
+| dropped because an element left `alive` | **0** | **0** |
+| dropped by a learned clause | 31 303 — 1.4 % | **47 474 — 2.1 %** |
+| cells where layer 1 kills something | 4 | **5** |
+| barren cells | 45 | **46** |
+| cells whose enterings are exactly `Σₖ C(alive, k)` | 25 — 2 128 512 — 96.7 % | 25 — **2 128 512** — **94.6 %** |
+| cells where `alive` ever shrinks | 3 of 46 | **4 of 48** |
+| cells where a clause drops a candidate | 8 | **9** |
+| cells that never learn a clause | 35 | **35** |
+
+**Every moved row is the two fixtures P1d.2 added and nothing else.**
+`examples/zebra2-obligations.ein` and
+`examples/zebra2-minus-15-obligations.ein` are the +2 entries that reach the
+search, the +1 pruning cell, the +1 `alive`-shrinking cell and the +1
+clause-dropping cell; the 25 exact-powerset cells and their 2 128 512 enterings
+are **identical to the row**, so 96.7 % → 94.6 % is a larger denominator and
+not a smaller numerator. The phase's own entry reproduces to the digit:
+
+| L | alive | frontier | joined | −clause | entered | deaths | clauses | models | next |
+|---:|---:|---:|---:|---|---:|---:|---:|---:|---:|
+| 1 | 96 | 96 | 96 | 0 — 0 % | 96 | 0 | 0 | 0 | 96 |
+| 2 | 96 | 96 | 4 560 | 0 — 0 % | 4 560 | 1 428 | 1 428 | 28 | 2 911 |
+| 3 | 96 | 2 911 | 60 260 | 16 171 — 26.8 % | 44 089 | 10 149 | 10 149 | 4 | 26 684 |
+
+— and so does the twin, row for row, which is
+[S1d.2.5 §2](../p1d.2_obligations/hypotheses_from_obligations.md)'s
+counter-for-counter claim seen from the census's side.
+
+**Only the counters are quoted.** The `ms` and `MiB` columns of this re-take
+were taken on a machine that was also running the reconnaissance's other
+probes, so they are not comparable with §4's and are not used anywhere. The
+counters are deterministic and are.
+
+### 10.1 The number the first census could not report
+
+`owes.declared` did not exist on 2026-08-24 — [S1d.2.6](../p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md)
+added it, and it is the field that separates *a debt paid* from *a debt never
+stated*. Crossed against the rows above, by running each searching entry at
+`ein solve -m 0 --json-summary`:
+
+| | cells | declare an obligation |
+|---|---:|---:|
+| reach the search | 51 | **5** — `zebra`, `zebra2`, `zebra2-obligations`, `zebra2-minus-15`, `zebra2-minus-15-obligations` |
+| whose enterings are exactly `Σₖ C(alive, k)` | 25 | **0** |
+| barren | 46 | 2 |
+
+So the vocabulary M1d built reaches five of the fifty-one cells that search, and
+none of the twenty-five that walk a whole powerset. Why that is not a gap is
+[the phase README §3](README.md#3-the-vocabulary-reaches-five-of-fifty-one):
+those twenty-five are rule demos, and a demo has no requirement to state.
+
+### 10.2 The sweep against the manifest
+
+§1 states, correctly, that this instrument runs `solve -e` on entries that do
+not declare it, because *a regime is a property of a puzzle, not of a flag*.
+What that costs the headline is worth having as a number, since a reader will
+otherwise take 2 249 873 for the corpus's search bill:
+
+| | enterings |
+|---|---:|
+| the sweep | 2 249 873 |
+| under a `solve -e` **`corpus.toml` declares** (33 of the 51) | **408 108 — 18.1 %** |
+| …of which `examples/features/01_not_and_absent.ein` | **384 167 — 94.1 %** |
+| …of which `examples/zebra2-minus-15.ein` and its twin | **0** — neither declares `solve -e` |
+
+Both readings are true and they answer different questions. *What shape is this
+corpus's search?* — a powerset, 25 cells wide. *What does this repository
+actually spend?* — 408 108 enterings, of which one feature demo about negation
+is 94 %.
+
 
 ## Cross-links
 

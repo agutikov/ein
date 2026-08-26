@@ -17,7 +17,7 @@ about a word the engine already says.
 
 | Q | title | status |
 |---|---|---|
-| [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1d.10](p1d.10_exhaustive_search/README.md); `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
+| [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1d.10](p1d.10_exhaustive_search/README.md), **begun 2026-08-26**; the question has acquired a fourth answer — *stop searching a lattice* — and a defect, `-m 0`, where the engine already answers **yes** by accident. `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
 | [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | **decided 2026-08-24** — (c) a rule shape asserting the reserved verdict atom (form G); [S1d.2.3](p1d.2_obligations/s1d.2.3_the_form.md) records it |
 | [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | **answered for obligations 2026-08-25** — [`domain_contract.md`](p1d.2_obligations/domain_contract.md); open for the general lower-bound form nobody has asked for |
 | [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **closed 2026-08-25** — it may, and on this corpus it does not: [S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) shipped the ladder and **no counter moved** ([the record §2](p1d.2_obligations/hypotheses_from_obligations.md)) |
@@ -90,6 +90,36 @@ at a depth bounded by the number of requirements rather than by
 [S1d.10.3](p1d.10_exhaustive_search/s1d.10.3_stopping_criterion.md) should say so
 carefully; it is, however, the first candidate that attacks the exponent
 instead of the constant.
+
+> **Measured 2026-08-26, and the paragraph above is right down to the phrase
+> "bounded by the number of requirements".** P1d.10's reconnaissance ran that
+> enumeration out of process on `examples/zebra2-minus-15-obligations.ein`:
+> **171 nodes, maximum depth 6, the same 32 models verified fact for fact**,
+> against the lattice's 17 204 592 enterings and 22 layers for the same
+> exhaustion claim
+> ([the reconnaissance](p1d.10_exhaustive_search/README.md#1-the-proof-costs-83-517-what-the-answer-does)).
+> So the fourth candidate is no longer a shape of argument; it is a number, and
+> it is 83 517×.
+>
+> **It also changes what the question is asking.** The first three candidates
+> ask whether a *lattice* may stop early. This one does not stop a lattice — it
+> terminates a tree by **discharge**, which proves a different proposition:
+> *every obligation is discharged and everything no obligation owes is
+> saturation-determined.* The second clause is a claim per program, and
+> `uncovered` is the field that reports its structural half. Whether that
+> licenses the word `exhausted`, a second word, or a re-worded first one is
+> [S1d.10.5](p1d.10_exhaustive_search/s1d.10.5_contract.md)'s, and is the same
+> question this entry has always been.
+
+> **And the engine already answers *yes* once, by accident.**
+> `ein solve -m 0` reports `Contradiction`, `k = 0`, **`exhausted = true`**, an
+> empty unsat core and exit 0 — on `zebra`, on `zebra2`, on every satisfiable
+> program in the corpus. The layer loop is `1..=max_set_size`, so at zero it
+> never runs and `truncated` is never set. That is not this question's *answer*;
+> it is this question's word being set to true over a frontier that is the
+> entire alive set, which no argument licensed.
+> [T1d.10.5.0](p1d.10_exhaustive_search/s1d.10.5_contract.md) owns it and it
+> waits for nothing.
 
 ## Q-M1d.2 — Where does a requirement live?
 
