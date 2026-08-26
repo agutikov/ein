@@ -702,7 +702,7 @@ fn the_headline_is_the_querys_own_goal_text() {
 }
 
 /// **ambiguity-headline-qualifies-its-own-count.** M1d
-/// [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)
+/// [S1d.3.3](../../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)
 /// T1d.3.3.2, on the two surfaces the CLI does not reach.
 ///
 /// A model count is a **claim about a set**, and `exhausted` is what licenses

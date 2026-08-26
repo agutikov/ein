@@ -51,7 +51,7 @@ even loaded, and 20 more held up by `examples/zebra.ein` alone.
 
 ### The obligation pairs, and the check that is not an `:expect`
 
-M1d [S1d.2.4](../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.4_obligations_in_the_saturator.md)
+M1d [S1d.2.4](../docs/history/m1d_satisfiability/README.md#s1d24--obligations-in-the-saturator)
 added four rules that assert the verdict atom `open` — `total-owed`,
 `surjective-owed`, `slot-owed-room`, `slot-owed-fill` — and eight programs,
 one firing and one satisfied per rule. They are written the way everything
@@ -219,13 +219,13 @@ the failure mode of adding one, not a convention to remember.
 
 Its cost today is **zero entries** — 59 corpus claims, 59 held, all 59 under a
 search that exhausted, and 58 of them entering no commitment at all
-([`closure_census.md`](../plans/m1d_satisfiability/p1d.4_model_set_closure/closure_census.md)).
+([`closure_census.md`](../docs/history/m1d_satisfiability/closure_census.md)).
 Its forward cost is the **ten** corpus entries whose claim *would* come back
 unchecked if one were written — `saturation/type-exclusivity/pets.ein` most
 sharply, which reports `Contradiction k = 0` at `-m 5` and has **35 models** at
 `-m 10`. None of the ten carries a claim, and none gets one until the search
 that would check it is affordable, which is
-[P1d.10](../plans/m1d_satisfiability/p1d.10_exhaustive_search/README.md)'s
+[P1d.10](../docs/history/m1d_satisfiability/README.md#p1d10--exhaustive-search)'s
 subject rather than this directory's.
 
 **The corollary for a new fixture**: keep it small enough that its answer is

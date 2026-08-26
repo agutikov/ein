@@ -370,7 +370,7 @@ run through the **same** `ein solve` — the verdict is read from the result
   under-determined. `ein solve … --exhaustive` reports `Ambiguous — k distinct
   complete models` when the lattice was exhausted and `… k distinct complete
   models found` when the depth cap stopped it first (M1d
-  [S1d.3.3](../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md):
+  [S1d.3.3](../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict):
   a model count is a claim, and `exhausted` is what licenses it).
   `--models key` prints the set as its **determining key** instead of as k
   blocks — 4 of 23 slots and 32 rows here, against 516 printed lines.

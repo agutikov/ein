@@ -138,7 +138,7 @@ consult it. The same file under `-T` or `-E` refuses to answer at all —
 `** aborted: max-time (0.05s) exceeded **`, exit 2, and `Answer::Aborted`
 through the library, which `verdict.rs` glosses as *"unexplored, not proven
 unsatisfiable"*. Three budgets, two vocabularies, one situation. That is
-[Q-M1d.6](../../../../plans/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false),
+[Q-M1d.6](../../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false),
 written into M1d with the `-m` sweep as its reproducer, and **this stage
 changed no verdict word**: doing so would move checked-in fixtures across the
 corpus and it is a semantic decision, not a release chore.
@@ -181,7 +181,7 @@ entries whose notes dropped a run.
 | `zebra2-minus-15 :: solve -e` | killed at the **300 s** ceiling ⁴ |
 | `zebra2-minus-15 :: render lattice` | **27.82 s** ± 29 ms (n=3) |
 
-⁴ [P1d.10](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/README.md) has the
+⁴ [P1d.10](../../../../docs/history/m1d_satisfiability/README.md#p1d10--exhaustive-search) has the
 same cell **killed at 30 minutes**; the ceiling here is the sweep's, not the
 run's.
 
@@ -248,7 +248,7 @@ same one it applies to `solve`: keep it where the *fixture* is about the
 search. **The corpus keeps exactly one entry that pays for an unbounded
 lattice, and it is the one whose subject that is** — `features/04_open`, the
 demo of an open domain, which
-[Q-M1d.3](../../../../plans/m1d_satisfiability/open_questions.md#q-m1d3--what-closes-a-domain)
+[Q-M1d.3](../../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d3--what-closes-a-domain)
 already cites for exactly that. The `square-unique` demos are about one rule
 firing once, and `saturate` shows it in 3.5 ms.
 
@@ -276,8 +276,8 @@ The three numbers next to each other are the milestone's shape in one line:
 | `04_open :: solve` — the same puzzle at `-m 5` | **no answer**, 14.3 GB |
 
 The depth cap is the only thing between the second row and the third.
-[M1d](../../../../plans/m1d_satisfiability/README.md) owns that sentence —
-[Q-M1d.3](../../../../plans/m1d_satisfiability/open_questions.md#q-m1d3--what-closes-a-domain)
+[M1d](../../../../docs/history/m1d_satisfiability/README.md) owns that sentence —
+[Q-M1d.3](../../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d3--what-closes-a-domain)
 already names this fixture as the corpus entry whose whole point is that an
 open domain makes the search unbounded, and now it names the price too.
 

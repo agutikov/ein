@@ -9,7 +9,7 @@
 ;;; A state in which nothing at all is known about Ann is not a violation — it
 ;;; is an open world — and turning "R is total" into a first-class obligation
 ;;; rather than a refutation at the extreme is
-;;; M1d's subject — plans/m1d_satisfiability/p1d.2_obligations/.
+;;; M1d's subject — docs/history/m1d_satisfiability/.
 ;;; That is why both exclusions have to be *stated*.
 
 (import std.algebra :symbols (total))

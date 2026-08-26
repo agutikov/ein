@@ -660,7 +660,7 @@ fn every_file_of_the_selection_has_a_row() {
 /// wrong. That mistake was made — it is what M1d S1d.4.1's first-hour
 /// reconnaissance reported, and correcting it took the corpus's count of
 /// set-closure claims from two to **one**
-/// ([the census](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/closure_census.md)).
+/// ([the census](../../../../docs/history/m1d_satisfiability/closure_census.md)).
 #[test]
 fn the_shape_comes_from_the_program_and_not_from_the_text() {
     let d = Dir::new("report-shape");

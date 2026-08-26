@@ -31,7 +31,7 @@
 ;;; `no-room` is a refutation at the extreme, never an existence requirement —
 ;;; it fires only once the stored negatives happen to cover a pigeon's whole
 ;;; range. Turning `total` into a first-class obligation instead is exactly
-;;; what M1d is for: plans/m1d_satisfiability/p1d.2_obligations/.
+;;; what M1d is for: docs/history/m1d_satisfiability/.
 ;;;
 ;;; The searched version also has **several equally small unsat cores**, and
 ;;; which one the engine reports moves with the id space — the open finding

@@ -25,14 +25,14 @@ constrained-reasoning research.
   **Since M1d S1d.2.6 there is a fourth verdict word, `Open`** — a consistent,
   quiescent state with an obligation the program stated still unwitnessed,
   reported as *`Open — owes n (rel: n, …)`* with `k = 0` and the state itself
-  under `open_states`. It is [`ideas.md`](plans/m1d_satisfiability/ideas.md)'s
+  under `open_states`. It is [`ideas.md`](docs/history/m1d_satisfiability/ideas.md)'s
   middle outcome and the distinction the other three could not draw: **no
   model** against **not yet a model**. It is **scoped** — only a program that
   *states* an obligation can reach it, so a state is judged by discharge when
   it has been told what it owes and by exhaustion when it has not, and 92 of
   the 121 corpus entries that reach a fixpoint report exactly the words they
   did before P1d.2
-  ([openness_census.md](plans/m1d_satisfiability/p1d.2_obligations/openness_census.md)).
+  ([openness_census.md](docs/history/m1d_satisfiability/openness_census.md)).
   `false` outranks it, a discharged model outranks it, it exits **0** like the
   other three, and it moved twelve entries and **no** exit code.
   **Since M1d S1d.3.3 an `Ambiguity` also says whether its `k` is a count or a
@@ -41,7 +41,7 @@ constrained-reasoning research.
   `Solution` had said as *"(not certified — pass --exhaustive)"* since ein.py
   and the verdict that reports a model *set* had not. The same stage shipped
   `ein solve --models key`, the set as its determining key
-  ([the verdict](plans/m1d_satisfiability/p1d.3_model_sets/the_verdict.md)). It also split
+  ([the verdict](docs/history/m1d_satisfiability/the_verdict.md)). It also split
   two numbers that had always agreed: `verdict.k` counts *models* and
   `stats.solution_nodes` counts what the *search* recorded — S1d.2.6 changed
   the read-out and not the traversal, so no counter and no cost moved.
@@ -86,7 +86,26 @@ constrained-reasoning research.
   chapters (P1.20 Theme K). User-facing; references `docs/kernel/` +
   `docs/api/`, never explains internals; complements
   `inference/zebra_walkthrough.md`.
-- **`docs/history/`** — **shipped milestones, kept as record.** Two entries.
+- **`docs/history/`** — **shipped milestones, kept as record.** Three entries.
+  [`m1d_satisfiability/`](docs/history/m1d_satisfiability/README.md) is the
+  newest (2026-08-21 → 2026-08-27): **from saturation to satisfiability** — four
+  phases and eighteen stages as one README, plus **fifteen** documents that are
+  still read. What it shipped: a program can state a requirement (`(open ?R)`
+  asserted by a rule, form G of
+  [`obligation_forms.md`](docs/history/m1d_satisfiability/obligation_forms.md)'s
+  menu A–G), a state can say what it **owes**, the search branches on it, the
+  verdict word `Open` reports it, `--models key` prints a model set compactly,
+  every verdict states whether its count is certified, and `EIN_TRAVERSAL=tree`
+  reaches the same 32 models in **86 enterings** where the lattice needs
+  **17 204 592**. Four of the documents are **re-takable censuses** with a
+  `utils/` script apiece — openness, model sets, closure, layers — and
+  [`ideas.md`](docs/history/m1d_satisfiability/ideas.md) is authoritative on
+  intent, as `plans/ideas/*` is. **P1d.10 was closed as it stood**, three of six
+  stages shipped, and its § Eight measurements with no owner is where the
+  findings it did not act on are kept — read it before re-opening any of them.
+  **`plans/m1d_satisfiability/` is gone** — deleted 2026-08-27, 23 files of
+  phase and stage documents that were intent rather than record
+  (`git log --diff-filter=D -- plans/m1d_satisfiability`).
   [`m1c_external_validation/`](docs/history/m1c_external_validation/README.md)
   is the newer and smaller (2026-08-23 → 2026-08-24): one phase and five stages
   as one README — `:expect` on `query`, `ein test`, 45 programs in
@@ -293,7 +312,7 @@ constrained-reasoning research.
   made that a cargo test, in-process and scoped to `tests/stdlib/`. What stays
   here is the measurement the gate is a yes/no of.
   The twentieth, **`layer_census.py`**, is
-  [M1d](plans/m1d_satisfiability/README.md) S1d.10.1's and asks what a *layer of
+  [M1d](docs/history/m1d_satisfiability/README.md) S1d.10.1's and asks what a *layer of
   the search* kills and what the killing is worth: every entry under `solve -e`
   twice — bare for the wall and the RSS, narrated for the new **`layer`** event's
   sixteen counters, of which `dropped_nogood` (what the learned clauses removed
@@ -301,7 +320,7 @@ constrained-reasoning research.
   2026-08-24: of 2 232 330 joined candidates corpus-wide **0** were dropped for a
   dead element and **31 303 — 1.4 %** by a clause, and for **25 of the 49**
   entries that search at all the enterings are *exactly* `Σₖ C(alive, k)`
-  ([layer_census.md](plans/m1d_satisfiability/p1d.10_exhaustive_search/layer_census.md)).
+  ([layer_census.md](docs/history/m1d_satisfiability/layer_census.md)).
   It writes `--events` to a **FIFO**, because the run it exists to measure
   narrates 72.6 M events.
   The twenty-first, **`openness_census.py`**, is M1d S1d.2.6's and asks a
@@ -313,7 +332,7 @@ constrained-reasoning research.
   2026-08-25: of the 121 entries that reach a fixpoint **92 state no
   obligation** and keep exactly the verdict they had, 12 are discharged, 17 owe,
   and **12 moved to `Open`**
-  ([openness_census.md](plans/m1d_satisfiability/p1d.2_obligations/openness_census.md)).
+  ([openness_census.md](docs/history/m1d_satisfiability/openness_census.md)).
   The twenty-second, **`model_set_census.py`**, is M1d S1d.3.1's and is the
   first whose subject is the **answer**: what is a model set made of, and does
   it *factor*? It turns `--json-summary`'s `verdict.solutions` into decision
@@ -327,7 +346,7 @@ constrained-reasoning research.
   free grid and every one has `k ≤ 4`, and `examples/zebra2-minus-15.ein`'s 23
   varying variables are **one** coupling component whose graph is K₂₃ minus five
   edges with a minimum vertex separator of **17**
-  ([model_set_census.md](plans/m1d_satisfiability/p1d.3_model_sets/model_set_census.md)).
+  ([model_set_census.md](docs/history/m1d_satisfiability/model_set_census.md)).
   It also carries the probe P1d.2 declined — `EIN_LEFTOVER=1`, above — and its
   number: `zebra2`'s **unique** model leaves **3 678** facts the blind
   enumerator would still propose, none of them an attribute arrow.
@@ -336,7 +355,7 @@ constrained-reasoning research.
   than as a census row — because a representation argued about in prose and
   never printed is one nobody has read. Its answer, priced on four columns
   (produce · size · exact · read) in
-  [representations.md](plans/m1d_satisfiability/p1d.3_model_sets/representations.md):
+  [representations.md](docs/history/m1d_satisfiability/representations.md):
   the **determining key** wins at 2 506 bytes and is *verified* exact — all 32
   key rows reconstruct their model to the fact, 30 of them without entering a
   commitment — while the certain core, the form the stage expected to win,
@@ -356,7 +375,7 @@ constrained-reasoning research.
   **counterfactual `NOT CHECKED` set**, which is what an empty outcome column
   means: **10 of the 121** entries that reach a fixpoint do not exhaust at
   `ein test`'s depth, so a claim written on any of them could not be checked
-  ([closure_census.md](plans/m1d_satisfiability/p1d.4_model_set_closure/closure_census.md)).
+  ([closure_census.md](docs/history/m1d_satisfiability/closure_census.md)).
 - **`build.sh`** — **everything this repo builds, in one command**: the Rust
   workspace (`--release` by default, into `ein.rs/target/`) and then the three
   C baselines in `c/` (into the gitignored `build/`). `--debug`,
@@ -430,13 +449,13 @@ ein test examples tests stdlib --json-report r.json          # the M1d S1d.4.1 r
 (default `rule-order`): `fail-first` walks the owed instances smallest-set
 first, and **`off` declines the rung altogether**, which is the pre-S1d.2.5
 engine and the control arm every number in
-[`hypotheses_from_obligations.md`](plans/m1d_satisfiability/p1d.2_obligations/hypotheses_from_obligations.md)
+[`hypotheses_from_obligations.md`](docs/history/m1d_satisfiability/hypotheses_from_obligations.md)
 is measured against. It is deliberately not a `(config …)` field: `SolverConfig`
 is rendered into the KB-shape digest, so a knob whose settings are being
 compared would re-bless every shape golden in the corpus.
 
 **`EIN_TRAVERSAL=tree`** is M1d
-[S1d.10.6](plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md)'s
+[S1d.10.6](docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)'s
 and a **second traversal beside the lattice**, off by default. It branches on
 **one owed instance's alternatives** — jointly exhaustive by the obligation's
 meaning, so committing to one excludes its siblings with nothing to refute —
@@ -450,11 +469,11 @@ deleted — 7 877 enterings against 101 on `zebra2.ein`, measured before the gua
 existed. It reports `exhausted = false` on purpose (a tree terminates by
 *discharge*, and the sentence saying what that licenses is T1d.10.5.1's), and it
 is an environment variable rather than a flag because
-[T1d.10.6.4](plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md)
+[T1d.10.6.4](docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)
 has not decided what a tree reports where a lattice reports layers.
 
 **`--models {list,key}`** is M1d
-[S1d.3.3](plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)'s
+[S1d.3.3](docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)'s
 and the only *lever* in this block that is a flag, because it is presentation
 rather than measurement. `key` prints a model **set** as its determining key —
 the smallest set of slots that tells the models apart, and the table of
@@ -476,7 +495,7 @@ of the case — `ein solve -e examples/saturation/type-exclusivity/colors.ein`
 printed **5** for a file with **9** models, and 5 of the 10 entries that answer
 `Ambiguity` under their declared runs do it unexhausted. `Contradiction` is
 deliberately untouched: a refutation said under a depth cap is
-[Q-M1d.1](plans/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
+[Q-M1d.1](docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
 question about a *word*, and `saturation/type-exclusivity/pets.ein` — `k = 0`
 at `-m 5`…`-m 8`, **35 models** at `-m 10` — is the fixture that now waits for
 it.
@@ -489,14 +508,14 @@ called complete can still have facts a guess could be about — and their count
 is what separates *one model* from *2ⁿ models* when the reading is open-world
 (`zebra2`'s **unique** model leaves **3 678**). It runs on a discarded fork,
 which is what makes it a read where
-[P1d.2 declined one](plans/m1d_satisfiability/p1d.2_obligations/hypotheses_from_obligations.md):
+[P1d.2 declined one](docs/history/m1d_satisfiability/hypotheses_from_obligations.md):
 with the lever on and off, every field of every summary outside that block is
 identical on all 121 entries that reach a fixpoint. Off by default because it
 costs a generation pass per recorded state (≈40 ms on the zebra family) and
 every corpus `solve` in `cargo test` writes a summary.
 
 **A failing `:expect` now says why on stderr too**, M1d
-[S1d.4.3](plans/m1d_satisfiability/p1d.4_model_set_closure/the_vocabulary.md),
+[S1d.4.3](docs/history/m1d_satisfiability/the_vocabulary.md),
 and it is one line: `<file>: :expect NOT CHECKED — expected Ambiguity with k =
 2, got Solution with k = 1`. stdout is **unchanged** — the report block stays
 under the solution table, because a false claim is a *result* and not a refusal
@@ -511,7 +530,7 @@ to check at `ein test`'s `-m 5` stays out of the corpus — which needs no
 mechanism, because `NOT CHECKED` takes a failing exit code inside `cargo test`.
 
 **`ein test --json-report FILE.json`** is M1d
-[S1d.4.1](plans/m1d_satisfiability/p1d.4_model_set_closure/s1d.4.1_what_closure_costs.md)'s
+[S1d.4.1](docs/history/m1d_satisfiability/README.md#s1d41--what-closure-costs)'s
 and the 50th CLI option: **one row per `(query …)` of the whole selection** —
 the claim's shape (`model` / `or` / `false`), how many models it lists, the
 relations its `:goal` closes, the outcome, and what the run found. It exists

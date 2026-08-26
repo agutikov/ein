@@ -317,7 +317,7 @@ fn root_block(
 /// What the **blind** enumerator would still propose at one recorded state.
 ///
 /// The probe M1d [P1d.2 handed forward] and
-/// [S1d.3.1](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.1_what_the_models_differ_in.md)
+/// [S1d.3.1](../../../../docs/history/m1d_satisfiability/README.md#s1d31--what-the-models-differ-in)
 /// takes: `complete` means *the active rung proposes nothing*, and the active
 /// rung is whichever of the three the program earned. A node the hrule rung or
 /// the obligations rung called complete may still have facts the blind
@@ -337,7 +337,7 @@ fn root_block(
 /// is diffing. [`root_block`] runs on the live log deliberately and for the
 /// opposite reason — it is reproducing what ein.py recorded.
 ///
-/// [P1d.2 handed forward]: `plans/m1d_satisfiability/p1d.2_obligations/hypotheses_from_obligations.md`
+/// [P1d.2 handed forward]: `docs/history/m1d_satisfiability/hypotheses_from_obligations.md`
 fn leftover_at(
     ast: &Ast,
     terms: &mut Terms,

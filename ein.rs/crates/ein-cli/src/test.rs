@@ -67,7 +67,7 @@
 //! corpus what fraction of it states a closure claim — `:expect` is a query
 //! keyword, and a grep cannot tell a keyword from a comment about one. That
 //! is M1d
-//! [S1d.4.1](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/s1d.4.1_what_closure_costs.md)'s
+//! [S1d.4.1](../../../../docs/history/m1d_satisfiability/README.md#s1d41--what-closure-costs)'s
 //! transport, and `utils/closure_census.py` is what reads it.
 //!
 //! Additive, in the sense the other artefact flags are: stdout, stderr, the

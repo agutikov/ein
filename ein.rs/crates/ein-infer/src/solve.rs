@@ -85,7 +85,7 @@ impl MonotonicStats {
 }
 
 /// One layer's **clause-yield row** — the census
-/// [S1d.10.1](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.1_why_it_does_not_finish.md)
+/// [S1d.10.1](../../../../docs/history/m1d_satisfiability/README.md#s1d101--why-it-does-not-finish)
 /// exists to take, and the `layer` event's whole payload.
 ///
 /// The mechanism the phase opens on is *a layer that kills nothing learns
@@ -173,7 +173,7 @@ pub struct SolutionRecord {
     /// (`tests/stdlib/closure/03_closed_and_owing.ein`). No verdict word moves
     /// on it in this stage; [S1d.2.6] is where that is decided.
     ///
-    /// [S1d.2.6]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md`
+    /// [S1d.2.6]: `docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus`
     pub owes: Owes,
 }
 
@@ -798,7 +798,7 @@ const BATCH_PER_WORKER: usize = 512;
 /// silently widening. `utils/fork_delta_verify.py` is that fixture, and it
 /// needs both arms out of one binary.
 /// `EIN_TRAVERSAL=tree` — the per-obligation depth-first traversal of M1d
-/// [S1d.10.6](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md),
+/// [S1d.10.6](../../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal),
 /// off by default.
 ///
 /// An environment variable rather than a `(config …)` field, for the reason
@@ -808,7 +808,7 @@ const BATCH_PER_WORKER: usize = 512;
 /// whether it ever becomes the default, which needs
 /// [Q-M1a.18](../../../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)'s
 /// shape of decision because the counters move — is
-/// [T1d.10.6.6](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md)'s.
+/// [T1d.10.6.6](../../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)'s.
 fn tree_traversal() -> bool {
     std::env::var_os("EIN_TRAVERSAL").is_some_and(|v| v == "tree")
 }
@@ -840,7 +840,7 @@ impl Run<'_> {
     // ── Phase 2′ — the per-obligation tree ─────────────────────
 
     /// **One obligation per node** — M1d
-    /// [T1d.10.6.3](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md),
+    /// [T1d.10.6.3](../../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal),
     /// and a *second traversal beside* [`Run::phase2`] rather than a
     /// replacement for it.
     ///
@@ -848,7 +848,7 @@ impl Run<'_> {
     /// through death. This branches on one owed instance's alternatives, which
     /// are **jointly exhaustive by the obligation's meaning**, so committing to
     /// one excludes its siblings with nothing to refute — the argument is
-    /// [`completeness.md`](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/completeness.md)
+    /// [`completeness.md`](../../../../docs/history/m1d_satisfiability/completeness.md)
     /// and it was written before this function.
     ///
     /// Two things it deliberately does not do:
@@ -856,14 +856,14 @@ impl Run<'_> {
     /// - **It does not claim exhaustion.** A tree terminates by *discharge* and
     ///   a lattice by *exhaustion*, and the sentence that says what discharge
     ///   licenses is
-    ///   [T1d.10.5.1](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.5_contract.md)'s
+    ///   [T1d.10.5.1](../../../../docs/history/m1d_satisfiability/README.md#s1d105--what-exhausted-means)'s
     ///   and is not written. So `truncated` is set and the verdict reports
     ///   *models found*. Reporting `exhausted = true` here would be the phase's
     ///   own prohibition — *never a quiet `exhausted = true`*.
     /// - **It does not report layers.** `layers_explored` carries the deepest
     ///   node instead, which is a different quantity wearing the same name;
     ///   what every consumer should do about that is
-    ///   [T1d.10.6.4](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md)'s
+    ///   [T1d.10.6.4](../../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)'s
     ///   and is why this is behind `EIN_TRAVERSAL` and not a flag.
     ///
     /// Returns `false` when the tree **declines** and the lattice must run
@@ -1583,7 +1583,7 @@ impl Run<'_> {
     /// enterings_total` an invariant rather than a usual case, and it is what
     /// turns a budget into a **probe**: `solve -e -m 4 -E <n>` on a search
     /// nobody can finish reports what layer 4's join actually proposed, which
-    /// is the number [S1d.10.2](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.2_depth_required.md)
+    /// is the number [S1d.10.2](../../../../docs/history/m1d_satisfiability/README.md#s1d102--what-depth-is-required)
     /// wants and no completed run can supply.
     fn close_census(
         &mut self,

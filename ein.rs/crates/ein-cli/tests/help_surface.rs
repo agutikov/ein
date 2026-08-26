@@ -30,7 +30,7 @@ use ein_corpus::{golden, golden_path};
 /// **39 of them are ein.py's**; the other eleven are `solve --jobs`
 /// ([T1a.7.2.1](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)),
 /// `solve --models` (M1d
-/// [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)),
+/// [S1d.3.3](../../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)),
 /// `ein test`'s nine (M1c
 /// [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test),
 /// plus M1d S1d.4.1's `--json-report`)

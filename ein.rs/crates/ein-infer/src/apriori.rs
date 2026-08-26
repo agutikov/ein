@@ -100,7 +100,7 @@ pub fn apriori_prefix_join(terms: &Terms, a_prev: &[CanonicalSetId]) -> Vec<Cano
 }
 
 /// Why the downward-closure filter turned a candidate away — the census's
-/// split ([S1d.10.1](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.1_why_it_does_not_finish.md)).
+/// split ([S1d.10.1](../../../../docs/history/m1d_satisfiability/README.md#s1d101--why-it-does-not-finish)).
 ///
 /// **Attributed in check order, and that is the reading that makes it
 /// useful.** A candidate can fail both questions at once; this calls that

@@ -103,7 +103,7 @@ difference a port or an optimisation introduces.
 | `verdict` | end | `type`, `k`, `exhausted`, `counters` (every `MonotonicStats` field), `core` (sorted), `models` (each a sorted fact list, the list itself sorted) |
 
 **`type` gained a fourth value at M1d
-[S1d.2.6](../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md)
+[S1d.2.6](../../../docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus)
 — `Open`** — and `k` changed meaning with it, from *recorded nodes* to
 **models**. The two were the same number until a state could be complete and
 still owe; on an `Open` line `k` is 0 while `counters.solution_nodes` is the
@@ -136,7 +136,7 @@ document the run.
 | `owe` | the **post-fixpoint obligation pass**, once per quiescent KB, one line per undischarged instance | `rule`, `activator`, `relation` (the `(open ?R)` argument, `""` for a bare `(open)`), `bindings`, `why` (rendered) |
 
 **`owe` is not a firing** — M1d
-[S1d.2.4](../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.4_obligations_in_the_saturator.md).
+[S1d.2.4](../../../docs/history/m1d_satisfiability/README.md#s1d24--obligations-in-the-saturator).
 A rule whose `:assert` is the verdict atom `open` derives nothing, so it is
 kept out of the saturation agenda entirely
 ([`06_reserved_names.md` § the verdict atom](../ir/03-ein-lang/06_reserved_names.md))
@@ -196,7 +196,7 @@ only — `self_edge` alone fires once per (object, filler, relation, slot).
 #### `rung` — which generator proposed
 
 Added by M1d
-[S1d.2.5](../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md),
+[S1d.2.5](../../../docs/history/m1d_satisfiability/README.md#s1d25--hypotheses-from-obligations),
 which turned hypothesis generation from a switch into a **ladder**: the user's
 `(hrule …)` if there is one, else the undischarged obligations, else the blind
 enumerator. One line per generation call, and **only** for a program that
@@ -212,7 +212,7 @@ actually consulted, and its `mode` says how that went:
 |---|---|
 | `obligations` | it generated: the candidates are the facts that would discharge what this state owes |
 | `stuck` | it owed something and proposed nothing — every debt scoped out by `:no-hypothesis` / `:hypothesis-relations` / `(__closed__ R)`, or every candidate already refuted. **The state is not silently complete**: this line is the report |
-| `declined` | it refused the whole call and the blind enumerator ran instead — an obligation whose guard scans a relation the rung itself proposes (the [domain contract](../../../plans/m1d_satisfiability/p1d.2_obligations/domain_contract.md)'s C4), or a projection that did not resolve for this activator |
+| `declined` | it refused the whole call and the blind enumerator ran instead — an obligation whose guard scans a relation the rung itself proposes (the [domain contract](../../../docs/history/m1d_satisfiability/domain_contract.md)'s C4), or a projection that did not resolve for this activator |
 
 `reason` is the C4 or projection sentence for `declined`, and the walk order
 (`rule-order` / `fail-first`, `EIN_OBLIGATION_CHOICE`) otherwise. `owed` counts
@@ -228,7 +228,7 @@ construction — every relation a hypothesis could be about is one some
 obligation owes. Non-zero does not say it is *in*complete: it says the claim
 now rests on saturation determining those relations, which only a model-set
 comparison settles, and
-[the stage record](../../../plans/m1d_satisfiability/p1d.2_obligations/hypotheses_from_obligations.md)
+[the stage record](../../../docs/history/m1d_satisfiability/hypotheses_from_obligations.md)
 is where the zebra family settled it.
 
 A `rung` line is emitted per **generation call**, not per node: `complete`
@@ -238,7 +238,7 @@ asks the generator once per alive entering, so the count tracks
 #### `layer` — the clause-yield census
 
 Added by M1d
-[S1d.10.1](../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.1_why_it_does_not_finish.md),
+[S1d.10.1](../../../docs/history/m1d_satisfiability/README.md#s1d101--why-it-does-not-finish),
 because the stream said what a layer's deaths *produced* and nothing said what
 the resulting clauses *removed*. One line per layer, carrying
 `ein_infer::LayerCensus` whole:
@@ -272,7 +272,7 @@ store's yield, and the reason for the split.
 `-E` budget — so `Σ entered` is `enterings_total` on any run at all. That is
 what makes a budget a **probe**: `solve -e -m 4 -E <enterings so far + 1>`
 *generates* layer 4 and reports what the join proposed without entering it,
-which is how [S1d.10.1](../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/layer_census.md)
+which is how [S1d.10.1](../../../docs/history/m1d_satisfiability/layer_census.md)
 priced a depth nobody can run.
 
 **No timing here.** A `ms` field would make the stream non-deterministic and the

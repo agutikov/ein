@@ -43,7 +43,7 @@
 ;;; unplaced is **complete** in an open world: nothing obliges an agent to wear
 ;;; anything, so every partial placement counts. Turning `total` into a
 ;;; first-class obligation is M1d's subject
-;;; (plans/m1d_satisfiability/p1d.2_obligations/), and until it arrives the two
+;;; (docs/history/m1d_satisfiability/), and until it arrives the two
 ;;; numbers measure slightly different things. The comparison survives that:
 ;;; 54 → 1 is not a rounding.)
 ;;;

@@ -48,7 +48,7 @@
 ;;;      engine has, because it has no vocabulary for *what a state owes*.
 ;;;
 ;;; The corner is their intersection, and it is the closed-and-owing case
-;;; [S1d.2.2](../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.2_domains.md)
+;;; [S1d.2.2](../../../docs/history/m1d_satisfiability/README.md#s1d22--the-domain-contract)
 ;;; asks who is allowed to say `(false)` about.
 ;;;
 ;;; ── The answer, decided by the user 2026-08-25: nobody, still ──────────────

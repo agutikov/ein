@@ -9,7 +9,7 @@
 ;;; `surjective-owed` scans `?a` and owes each `b` a preimage. No position
 ;;; index, no numeral, which is what the numeral-free decision demanded and
 ;;; what the superseded `(open ?R 0 ?a)` violated
-;;; (plans/m1d_satisfiability/p1d.2_obligations/obligation_forms.md § G).
+;;; (docs/history/m1d_satisfiability/obligation_forms.md § G).
 ;;;
 ;;; So a mutant that swapped the two scans would be invisible in `23` and is
 ;;; caught here: the count would move from Soup to Ann.

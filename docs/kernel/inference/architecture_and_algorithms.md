@@ -116,7 +116,7 @@ monotone/non-monotone seam:
                                             | Open(k=0, owes>0)
 ```
 
-**`Open` is M1d [S1d.2.6](../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md)'s**,
+**`Open` is M1d [S1d.2.6](../../../docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus)'s**,
 and it is a *read-out* rather than a search change: the loop above still
 records a node iff `complete ∧ consistent`, where `complete` still means *the
 generator proposes nothing*. What `verdict_of` does differently is ask each
@@ -129,7 +129,7 @@ It is **scoped to programs that state an obligation** (`owes.declared > 0`),
 because a state is judged by discharge when it has been told what it owes and
 by exhaustion when it has not; 92 of the 121 corpus entries that reach a
 fixpoint state none and report exactly the words they always did
-([the census](../../../plans/m1d_satisfiability/p1d.2_obligations/openness_census.md)).
+([the census](../../../docs/history/m1d_satisfiability/openness_census.md)).
 `false` outranks it and a discharged model outranks it, so it is said only when
 nothing was refuted, nothing was discharged, and something is owed — *not yet a
 model*, as against `Contradiction`'s *no model*.
@@ -603,7 +603,7 @@ re-architecture (O7) would bring.
 > the ~18 k a blind combinatorial enumerator would, because an `(hrule …)`
 > replaces the enumeration outright.
 >
-> **And since M1d [S1d.2.5](../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md)
+> **And since M1d [S1d.2.5](../../../docs/history/m1d_satisfiability/README.md#s1d25--hypotheses-from-obligations)
 > the hrule is not the only thing that can replace it.** Generation is a
 > ladder — the puzzle's hrules if it has any, else the facts that would
 > discharge what the state *owes*, else the blind enumeration — and the middle

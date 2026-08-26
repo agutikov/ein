@@ -63,7 +63,7 @@ on a machine with no external solver installed at all. **The external tools are
 needed to establish the answer, not to keep it.**
 
 > **Rewritten 2026-08-26 by M1d
-> [S1d.4.3](../../../plans/m1d_satisfiability/p1d.4_model_set_closure/the_vocabulary.md),
+> [S1d.4.3](../../../docs/history/m1d_satisfiability/the_vocabulary.md),
 > because the last clause was a promise this repo could not keep.** The
 > paragraph above stands as what M1c believed; what is true is narrower in one
 > place and wider in another.
@@ -75,7 +75,7 @@ needed to establish the answer, not to keep it.**
 > `Ambiguity k = 32, exhausted = false`, so an `:expect (or …)` written there
 > comes back **`NOT CHECKED`**: honest, and not a re-check. Ein has no
 > program-level way to say *"check me deeper"*, by
-> [design](../../../plans/m1d_satisfiability/p1d.4_model_set_closure/the_boundary.md)
+> [design](../../../docs/history/m1d_satisfiability/the_boundary.md)
 > — a depth is a budget, and budgets live on the command line — so the honest
 > form of the promise is **`ein test <file> -m 38`**, a command somebody runs,
 > not a property of the corpus.
@@ -84,7 +84,7 @@ needed to establish the answer, not to keep it.**
 > The 45 programs of [`tests/stdlib/`](../../../tests/README.md) are what the
 > sentence describes working: **59 corpus claims, 59 held, every one under a
 > search that exhausted**, in 0.04 s with no solver installed
-> ([the closure census](../../../plans/m1d_satisfiability/p1d.4_model_set_closure/closure_census.md)).
+> ([the closure census](../../../docs/history/m1d_satisfiability/closure_census.md)).
 > That is the pipeline, and it runs every commit.
 >
 > So: **the external tools establish an answer, `:expect` keeps it, and `ein
@@ -418,7 +418,7 @@ milestone's own `:expect` work**, and nothing anywhere would have said so.
   still runnable; `--check` is the corpus-wide measurement, not the gate
 - [M10](../../../plans/m10_external_benchmarks/README.md) — the half that needs
   a solver installed, and the campaign that fills this milestone's form
-- [M1d](../../../plans/m1d_satisfiability/README.md) — the sibling created the
+- [M1d](../../../docs/history/m1d_satisfiability/README.md) — the sibling created the
   same day; `zebra2-minus-15`'s 32 models are M10's cross-check and M1d's
   subject
 - [M5](../../../plans/m5_presentation/README.md) Track A — the consumer

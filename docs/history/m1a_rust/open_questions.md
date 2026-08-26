@@ -52,7 +52,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | **resolved 2026-08-19: yes, in ein.rs only** — D3; mechanism shipped in S1a.6.10 / S1a.6.11 |
 | [Q-M1a.19](#q-m1a19--how-does-a-program-state-what-it-expects) | How does a program state what it expects? | **moved 2026-08-21 with P1a.11 → [Q-M1c.1](../m1c_external_validation/open_questions.md#q-m1c1--how-does-a-program-state-what-it-expects)** |
 | [Q-M1a.20](#q-m1a20--what-may-an-expectation-say) | What may a `(test …)` expectation say? | **moved 2026-08-21 with P1a.11 → [Q-M1c.2](../m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say)** |
-| [Q-M1a.21](#q-m1a21--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | **moved 2026-08-21 with P1a.12 → [Q-M1d.1](../../../plans/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)** |
+| [Q-M1a.21](#q-m1a21--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | **moved 2026-08-21 with P1a.12 → [Q-M1d.1](../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)** |
 | [Q-M1a.22](#q-m1a22--is-einbs-id-remap-order-preserving-enough-for-its-own-gate) | Is `.einb`'s id remap order-preserving enough for its own gate? | **resolved 2026-08-23 — (a)**, the recommendation, as [P1a.8](README.md#p1a8--binary-kb-container) shipped it: byte-identity is promised on the fast path and answer-identity always. `ein solve x.einb` is byte-identical to `ein solve x.ein`, and `id_order_invariance` is the measurement it rests on |
 | [Q-M1a.23](#q-m1a23--when-does-the-engine-need-a-python-binding) | When does the engine need a Python binding? | **deferred 2026-08-21** — no consumer today; three named trip-wires |
 
@@ -1017,13 +1017,13 @@ still settles both.
 
 ## Q-M1a.21 — May the search stop before the lattice is exhausted?
 
-**Moved 2026-08-21 to [Q-M1d.1](../../../plans/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)**,
+**Moved 2026-08-21 to [Q-M1d.1](../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)**,
 with P1a.12, which is now
-[P1d.10](../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/README.md) in
-[M1d](../../../plans/m1d_satisfiability/README.md) — the milestone that exists to answer
+[P1d.10](../../../docs/history/m1d_satisfiability/README.md#p1d10--exhaustive-search) in
+[M1d](../../../docs/history/m1d_satisfiability/README.md) — the milestone that exists to answer
 it. What the move adds is a fourth candidate this framing did not have: a
 state that can report what it still *owes*
-([P1d.2](../../../plans/m1d_satisfiability/p1d.2_obligations/README.md)).
+([P1d.2](../../../docs/history/m1d_satisfiability/README.md#p1d2--obligations)).
 
 ## Q-M1a.22 — Is `.einb`'s id remap order-preserving enough for its own gate?
 

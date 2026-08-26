@@ -158,11 +158,11 @@ each says so in its `note`. Every reason is about the **puzzle**:
   states a domain, so `solve` on one is not solving the demo — it is
   enumerating everything that could be built out of the demo's objects, to the
   `-m` cap, and calling the result `Contradiction`
-  ([Q-M1d.6](../plans/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)).
+  ([Q-M1d.6](../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)).
   `saturate` is the run that asks the demo's question and it costs 3.5 ms.
 - **`zebra2-minus-15`** is the honest case: genuinely under-determined at 32
   models, so its exhaustive search is large rather than pathological. Its `-e`
-  is [M1d](../plans/m1d_satisfiability/README.md)'s subject and arrives with
+  is [M1d](../docs/history/m1d_satisfiability/README.md)'s subject and arrives with
   that milestone.
 - **`render lattice` is `solve -e` with a DOT writer** (`-m 3` rather than 5 —
   `render.rs::cmd_lattice`), so it inherits the same question and the same
@@ -172,7 +172,7 @@ each says so in its `note`. Every reason is about the **puzzle**:
   `square-unique/{corner-house,cul-de-sac,terminus}` and `zebra2-minus-15` —
   and **one keeps it**: `features/04_open`, because that fixture's subject *is*
   what an open domain does to a search
-  ([Q-M1d.3](../plans/m1d_satisfiability/open_questions.md#q-m1d3--what-closes-a-domain)).
+  ([Q-M1d.3](../docs/history/m1d_satisfiability/open_questions.md#q-m1d3--what-closes-a-domain)).
   The corpus pays for exactly one unbounded lattice, and it is the one that
   demonstrates something.
 

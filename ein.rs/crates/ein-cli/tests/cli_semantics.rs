@@ -1695,11 +1695,11 @@ fn layer_progress_is_verbose_without_the_enterings() {
 /// **A refutation needs the lattice exhausted, and says so when it did not
 /// get it.**
 ///
-/// [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)
+/// [S1d.3.3](../../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)
 /// made `exhausted = true` ⇒ *these are the models* normative and gave the
 /// qualifier to `Solution` and `Ambiguity`, leaving `Contradiction` — where
 /// the problem is a *word* and not a number — to
-/// [Q-M1d.1](../../../../plans/m1d_satisfiability/open_questions.md). This is
+/// [Q-M1d.1](../../../../docs/history/m1d_satisfiability/open_questions.md). This is
 /// that word.
 ///
 /// `saturation/type-exclusivity/pets.ein` is the fixture because it makes the

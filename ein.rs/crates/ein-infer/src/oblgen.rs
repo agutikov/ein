@@ -1,8 +1,8 @@
 //! The obligations rung — hypotheses from what a state still owes.
 //!
-//! M1d [P1d.2](../../../../plans/m1d_satisfiability/p1d.2_obligations/README.md)
-//! [S1d.2.5](../../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md).
-//! [S1d.2.4](../../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.4_obligations_in_the_saturator.md)
+//! M1d [P1d.2](../../../../docs/history/m1d_satisfiability/README.md#p1d2--obligations)
+//! [S1d.2.5](../../../../docs/history/m1d_satisfiability/README.md#s1d25--hypotheses-from-obligations).
+//! [S1d.2.4](../../../../docs/history/m1d_satisfiability/README.md#s1d24--obligations-in-the-saturator)
 //! made a quiescent state able to say what it owes; this makes the debt a
 //! *choice point*.
 //!
@@ -32,7 +32,7 @@
 //! guard's own sub-plan with the witness step **skipped**
 //! ([`crate::match_::Matcher::scan_without`]). Nothing restates the domain:
 //! the branch set is the guard, evaluated at this quiescence, which is
-//! [`domain_contract.md`](../../../../plans/m1d_satisfiability/p1d.2_obligations/domain_contract.md)
+//! [`domain_contract.md`](../../../../docs/history/m1d_satisfiability/domain_contract.md)
 //! C1 and C4 in one call.
 //!
 //! ### What it proposes, and why it is the union
@@ -48,7 +48,7 @@
 //! single obligation's set is a subset; the per-instance structure survives in
 //! the walk order, the decline rule and the report. Choosing *one* is a
 //! depth-first move, and
-//! [S1d.2.5's record](../../../../plans/m1d_satisfiability/p1d.2_obligations/hypotheses_from_obligations.md)
+//! [S1d.2.5's record](../../../../docs/history/m1d_satisfiability/hypotheses_from_obligations.md)
 //! is where that is measured rather than asserted.
 //!
 //! ### When it declines
@@ -134,7 +134,7 @@ pub struct RungReport {
     /// only a model-set comparison can settle, and the zebra family is where
     /// it was settled.
     ///
-    /// [S1d.2.5]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md`
+    /// [S1d.2.5]: `docs/history/m1d_satisfiability/README.md#s1d25--hypotheses-from-obligations`
     pub uncovered: u64,
 }
 
@@ -148,7 +148,7 @@ pub struct RungReport {
 /// traversal would need on day one, and it costs one `sort_by_key` over the
 /// instance list.
 ///
-/// [the record §4]: `plans/m1d_satisfiability/p1d.2_obligations/hypotheses_from_obligations.md`
+/// [the record §4]: `docs/history/m1d_satisfiability/hypotheses_from_obligations.md`
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Choice {
     /// Report order — priority, then load order, then activator, then match.
@@ -379,7 +379,7 @@ pub(crate) fn generate(
     //
     // Which one is `Choice`'s: `RuleOrder` takes report order and `FailFirst`
     // the smallest set, and that is the heuristic
-    // [S1d.2.5 §4](../../../../plans/m1d_satisfiability/p1d.2_obligations/hypotheses_from_obligations.md)
+    // [S1d.2.5 §4](../../../../docs/history/m1d_satisfiability/hypotheses_from_obligations.md)
     // measured inert under a lattice and kept for this.
     let taken: &[Branch] = if one_branch {
         &branches[..branches.len().min(1)]

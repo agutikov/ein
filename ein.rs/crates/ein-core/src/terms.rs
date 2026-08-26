@@ -173,7 +173,7 @@ impl Default for Terms {
 /// contradiction detector does not read it. `(false)` is its dual and lives
 /// here because a stored `(false)` fact *is* read by the detector; an `open`
 /// conclusion is never stored at all
-/// (`plans/m1d_satisfiability/p1d.2_obligations/s1d.2.3_the_form.md`).
+/// (`docs/history/m1d_satisfiability/README.md#s1d23--the-form`).
 pub const STRUCTURAL: [&str; 5] = ["absent", "and", "false", "not", "or"];
 
 /// The built-in computed predicates.

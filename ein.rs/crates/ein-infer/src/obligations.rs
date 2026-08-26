@@ -1,7 +1,7 @@
 //! The obligation pass — what a quiescent KB still **owes**.
 //!
-//! M1d [P1d.2](../../../../plans/m1d_satisfiability/p1d.2_obligations/README.md)
-//! S1d.2.4. [S1d.2.3](../../../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.3_the_form.md)
+//! M1d [P1d.2](../../../../docs/history/m1d_satisfiability/README.md#p1d2--obligations)
+//! S1d.2.4. [S1d.2.3](../../../../docs/history/m1d_satisfiability/README.md#s1d23--the-form)
 //! reserved the verdict atom and routed the rules that assert it into
 //! [`ein_core::Program::obligations`], where nothing walked them. This is what
 //! walks them.

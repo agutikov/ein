@@ -58,8 +58,8 @@
 //! all — `(or A B)` in a `:match` is a disjunction over premises, and nothing
 //! in the rule language quantifies over models.
 //!
-//! That is [P1d.4](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/README.md)
-//! / [Q-M1d.7](../../../../plans/m1d_satisfiability/open_questions.md#q-m1d7--may-a-program-require-its-own-model-count),
+//! That is [P1d.4](../../../../docs/history/m1d_satisfiability/README.md#p1d4--closing-the-model-set)
+//! / [Q-M1d.7](../../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d7--may-a-program-require-its-own-model-count),
 //! and it is deliberately not decided here.
 //!
 //! # Who calls this

@@ -1,4 +1,4 @@
-//! M1d [T1d.10.6.3](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md)
+//! M1d [T1d.10.6.3](../../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)
 //! — **the per-obligation tree**, in a process of its own.
 //!
 //! `obligation_rung_control.rs`'s idiom, for its reason: `EIN_TRAVERSAL` is
@@ -78,7 +78,7 @@ fn run(rel: &str, cap: u32) -> (BTreeSet<Vec<String>>, u64, u64) {
 ///
 /// The comparison is of **fact sets**, never of `k`. Two searches that agree on
 /// a count and disagree on a model are exactly the failure
-/// [`completeness.md`](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/completeness.md)
+/// [`completeness.md`](../../../../docs/history/m1d_satisfiability/completeness.md)
 /// exists to rule out, and a count would not see it.
 #[test]
 fn the_tree_finds_the_lattices_models_fact_for_fact() {

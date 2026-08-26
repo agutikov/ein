@@ -16,13 +16,21 @@ what somebody intended to build.
 |---|---|---|
 | **M1a — the Rust port (ein.rs)** | 2026-08-17 → 2026-08-23 | [`m1a_rust/`](m1a_rust/README.md) — eleven phases and 53 stages as one record, plus the eleven design contracts, six measurement documents, the divergence ledger, twenty-three questions and the oracle ledger |
 | **M1c — External validation** | 2026-08-23 → 2026-08-24 | [`m1c_external_validation/`](m1c_external_validation/README.md) — one phase and five stages as one record, plus the stdlib census (the evidence) and seven questions, two still open. **`:expect`, `ein test`, 45 programs, and 38 of 73 unfired stdlib rules → 0** |
+| **M1d — From saturation to satisfiability** | 2026-08-21 → 2026-08-27 | [`m1d_satisfiability/`](m1d_satisfiability/README.md) — four phases and eighteen stages as one record, plus fifteen documents: four re-takable censuses, seven arguments and specifications, the intent note and seven questions. **A program can state a requirement, a state can say what it *owes*, and a traversal that branches on requirements reaches the same 32 models in 86 enterings where the lattice needs 17 204 592** |
 
-The two differ in one way worth knowing before reading either: **M1a's
-instruments are gone and M1c's are not.** Every number under `m1a_rust/` is a
-record — `ein.py`, the conformance tiers and eleven `utils/` scripts left the
-tree with the engine they measured. Every number under
-`m1c_external_validation/` can be re-taken today, and one of them is re-taken
-by `cargo test` on every commit.
+They differ in one way worth knowing before reading any of them: **M1a's
+instruments are gone and M1c's and M1d's are not.** Every number under
+`m1a_rust/` is a record — `ein.py`, the conformance tiers and eleven `utils/`
+scripts left the tree with the engine they measured. Every number under
+`m1c_external_validation/` and `m1d_satisfiability/` can be re-taken today; one
+of M1c's is re-taken by `cargo test` on every commit, and M1d ships four census
+scripts under `utils/` for the same reason.
+
+**M1d is also the one that was closed with work left in it**, deliberately and
+at the user's direction, so its record carries a section the other two do not
+need: § Eight measurements with no owner. Read it before re-opening anything
+there — two of the eight are about *shipped* engine behaviour rather than about
+the milestone's plan.
 
 **M1** (core graph reasoning, shipped 2026-06-17) predates this directory: what
 survived its plan tree went to [`docs/kernel/inference/`](../kernel/inference/README.md)

@@ -1,5 +1,5 @@
 //! The `layer` event's arithmetic — M1d
-//! [S1d.10.1](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.1_why_it_does_not_finish.md)
+//! [S1d.10.1](../../../../docs/history/m1d_satisfiability/README.md#s1d101--why-it-does-not-finish)
 //! T1d.10.1.1.
 //!
 //! [`ein_infer::LayerCensus`] is an instrument, and an instrument that can

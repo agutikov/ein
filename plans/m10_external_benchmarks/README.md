@@ -44,7 +44,7 @@ at all. **The external tools are needed to establish the answer, not to keep
 it.**
 
 > **The last clause needs a depth, measured 2026-08-26** by M1d
-> [S1d.4.3](../m1d_satisfiability/p1d.4_model_set_closure/the_vocabulary.md),
+> [S1d.4.3](../../docs/history/m1d_satisfiability/the_vocabulary.md),
 > which rewrote the same sentence in
 > [M1c](../../docs/history/m1c_external_validation/README.md#splitting-them-did-not-split-the-pipeline).
 > `ein test` exhausts, but at `--max-set-size 5`; `zebra2-minus-15`'s lattice
@@ -122,7 +122,7 @@ algorithm compares to a CDCL solver on the same puzzle.
   that reaches it**. `ein test` runs `-m 5`; a claim that needs more is checked
   in with the `-m` that checks it, or it is not checked in at all, because
   `NOT CHECKED` is not a re-check (M1d
-  [S1d.4.3](../m1d_satisfiability/p1d.4_model_set_closure/the_vocabulary.md)).
+  [S1d.4.3](../../docs/history/m1d_satisfiability/the_vocabulary.md)).
 - Timings are **processes, cold**, taken through
   [`utils/bench_env.sh`](../../utils/bench_env.sh) exactly as
   [`e2e_baseline.py`](../../utils/e2e_baseline.py) takes Ein's — "the same
@@ -153,7 +153,7 @@ algorithm compares to a CDCL solver on the same puzzle.
   the finding, and it is the most interesting cell in the table, because
   **Datalog is the closest formal relative of Ein's saturator**. If Soufflé
   needs an extension to express the puzzle, that is direct evidence for
-  [M1d](../m1d_satisfiability/README.md)'s premise.
+  [M1d](../../docs/history/m1d_satisfiability/README.md)'s premise.
 - **Tool availability is real work.** Measured on the dev machine (Manjaro,
   `core`/`extra`/`multilib`, 2026-08-20): `z3` 4.16.0 and `cvc4` 1.8 are
   installed, `swi-prolog` 10.0.2-2 is in the sync db, and `clingo`,
@@ -197,7 +197,7 @@ algorithm compares to a CDCL solver on the same puzzle.
   defect.
 - **New reasoning features.** If a comparison shows that a problem cannot be
   *stated* in ein-lang, that is a finding for
-  [M1d](../m1d_satisfiability/README.md) or a followup, not a stage here.
+  [M1d](../../docs/history/m1d_satisfiability/README.md) or a followup, not a stage here.
 
 ## Open questions
 

@@ -195,7 +195,7 @@ pub fn render_answer(
             // they are the models found, and a deeper layer may hold more —
             // `saturation/type-exclusivity/colors.ein -e` says 5 at the
             // default cap and has 9 at `-m 6`. M1d
-            // [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)
+            // [S1d.3.3](../../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)
             // T1d.3.3.2: a `Solution` has qualified itself since ein.py and
             // the verdict that reports a model *set* did not.
             if exhausted {
@@ -216,7 +216,7 @@ pub fn render_answer(
             };
             // **`k = 0` is a claim too, and `exhausted` is what licenses it**
             // — M1d T1d.10.5.2b, finishing the table
-            // [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)
+            // [S1d.3.3](../../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)
             // gave `Solution` and `Ambiguity` and deliberately did not give
             // this arm. A refutation needs the lattice exhausted; without it
             // the zero says *no model within the cap*, which is what
@@ -378,7 +378,7 @@ fn solution_block(ast: &Ast, terms: &mut Terms, kb: &Kb, header: &str) -> Vec<St
 ///
 /// `exhausted` qualifies **every count it prints**: a `Solution`'s `k` since
 /// ein.py, and — since M1d
-/// [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)
+/// [S1d.3.3](../../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)
 /// — an `Ambiguity`'s, which is the one that needed it most. `models`
 /// chooses the model *set*'s projection ([`crate::models::ModelsForm`]) and
 /// is read by the `Ambiguity` arm alone.

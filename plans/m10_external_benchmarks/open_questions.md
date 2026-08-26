@@ -67,10 +67,10 @@ Z3's is a category error.
 **Recommendation: (b).** And the reason is not diplomacy — a Lean development
 can prove that the model is the *only* model, which is exactly the guarantee
 the word `exhausted` claims in Ein's own verdict
-([Q-M1d.1](../m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)).
+([Q-M1d.1](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)).
 Having one column in the corpus where that guarantee is machine-checked is
 worth more than a number, and it is the corpus's only link to
-[M1d](../m1d_satisfiability/README.md)'s subject.
+[M1d](../../docs/history/m1d_satisfiability/README.md)'s subject.
 
 ## Q-M10.3 — Where does the benchmark live, and is any of it a gate?
 

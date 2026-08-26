@@ -8,8 +8,8 @@ estimates; **Level B at ~8 weeks**, Level C at ~19, Level D at the end plus
 keeps its name — *NL → IR* is Level B of this milestone, and the links into
 `m2_nl_to_ir/` are many.
 **Depends on:** [M1a](../../docs/history/m1a_rust/README.md) — the kernel,
-shipped. [M1d](../m1d_satisfiability/README.md) for one word:
-[Q-M1d.6](../m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
+shipped. [M1d](../../docs/history/m1d_satisfiability/README.md) for one word:
+[Q-M1d.6](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
 is the engine saying *Contradiction* where the research plan's Stage A
 forbids it to (§ A1 — *`unknown` must never silently become `false`,
 `ambiguous`, or `contradiction`*); [P2.1](p2.1_kernel_as_instrumentation/README.md)
@@ -29,7 +29,7 @@ symbolic kernel, shipped and measured; and **EinAf**, the framework around it,
 where a neural component proposes a formalization and the kernel judges it,
 in a loop. This milestone is EinAf. The research plan
 ([`EinAf.md`](EinAf.md), the user's, kept verbatim at the milestone root the
-way [`m1d/ideas.md`](../m1d_satisfiability/ideas.md) is) states the question
+way [`m1d/ideas.md`](../../docs/history/m1d_satisfiability/ideas.md) is) states the question
 the loop exists to answer:
 
 > **Can structured feedback from a symbolic reasoner improve an LLM's ability
@@ -100,7 +100,7 @@ table is the map from the plan to the folder.
 
 | stage | what it asks for | where it lives |
 |---|---|---|
-| **A** kernel as experimental foundation | the semantic boundary frozen (A1), invariants as tests (A2), a versioned machine interface (A3), a diagnostic vocabulary apart from presentation (A4), validation suites (A5) | A1/A2/A5 are the kernel's and exist — [`docs/kernel/`](../../docs/kernel/README.md), the gate, [`defined_behaviour.md`](../../docs/kernel/defined_behaviour.md); what is missing is named in [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_census.md). A3/A4 are **[P2.1](p2.1_kernel_as_instrumentation/README.md)**. A1's sixth outcome, `unknown`, is [M1d Q-M1d.6](../m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)'s |
+| **A** kernel as experimental foundation | the semantic boundary frozen (A1), invariants as tests (A2), a versioned machine interface (A3), a diagnostic vocabulary apart from presentation (A4), validation suites (A5) | A1/A2/A5 are the kernel's and exist — [`docs/kernel/`](../../docs/kernel/README.md), the gate, [`defined_behaviour.md`](../../docs/kernel/defined_behaviour.md); what is missing is named in [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_census.md). A3/A4 are **[P2.1](p2.1_kernel_as_instrumentation/README.md)**. A1's sixth outcome, `unknown`, is [M1d Q-M1d.6](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)'s |
 | **B** autoformalization as an explicit task | the contract (B1), source vs generated (B2), what the model may know (B3), prompt versioning (B4) | **[P2.2](p2.2_formalizer/README.md)** |
 | **C** a heterogeneous benchmark | eight families (C1), external + synthetic (C2), unique / ambiguous / unsat (C3), difficulty knobs (C4), frozen splits (C5) | **[P2.3](p2.3_benchmark/README.md)** |
 | **D** baselines | B0 direct answer … B5 full loop, under a matched inference budget | [S2.5.2](p2.5_harness/s2.5.2_baselines.md) |
@@ -143,7 +143,7 @@ the ones that are new written from the research plan. **P2.6 has one stage
 file**, [S2.6.4](p2.6_ablations/s2.6.4_representation_ablations.md), because
 it carries the old P2.5 link-grammar experiment whole; its other three stages
 are paragraphs in the phase README. **P2.7 – P2.10 are phase READMEs only.**
-That is on purpose and follows [M1d](../m1d_satisfiability/README.md#how-deep-this-plan-is)'s
+That is on purpose and follows [M1d](../../docs/history/m1d_satisfiability/README.md)'s
 precedent: a stage file for G7 written before the first main table exists
 would be a guess about which depth matters, and the plan says what the
 guess-free version is — *plot marginal improvement against cost* — which is
@@ -260,9 +260,9 @@ and whether the fixed point is syntactic or semantic
   [F2](../followups/f2_self_modifying_language.md) — GBNF; the grammar *in*
   the loop is rung 1 and stays a followup, this milestone ships static
   grammars.
-- [M1d](../m1d_satisfiability/README.md) — the verdict vocabulary
-  ([Q-M1d.6](../m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false),
-  [Q-M1d.1](../m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted));
+- [M1d](../../docs/history/m1d_satisfiability/README.md) — the verdict vocabulary
+  ([Q-M1d.6](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false),
+  [Q-M1d.1](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted));
   [M1c](../../docs/history/m1c_external_validation/README.md) — `:expect`, the form a
   benchmark instance's gold verdict is written in;
   [M10](../m10_external_benchmarks/README.md) — the hand-written encodings

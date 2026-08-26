@@ -2,7 +2,7 @@
 """What every corpus entry owes, and whether it is judged by discharge —
 S1d.2.6's instrument.
 
-[S1d.2.4](../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.4_obligations_in_the_saturator.md)
+[S1d.2.4](../docs/history/m1d_satisfiability/README.md#s1d24--obligations-in-the-saturator)
 made a quiescent state able to say what it owes; this asks the same question of
 the **whole corpus**, because S1d.2.6's scope rule is a claim about it: *a
 program that states no obligation keeps today's verdict*. A rule stated that

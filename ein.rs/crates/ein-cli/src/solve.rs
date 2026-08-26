@@ -425,7 +425,7 @@ fn sorted_model(terms: &Terms, kb: &Kb) -> Vec<String> {
 
 /// `--models {list,key}` — which projection of a model **set** goes to stdout.
 ///
-/// M1d [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)
+/// M1d [S1d.3.3](../../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)
 /// T1d.3.3.4: **additional output, never a replacement.** It is read only by
 /// the `Ambiguity` arm of the table, and it reaches nothing else — not the
 /// verdict's model list, not `--json-summary`, not `--events`, not `-p`, not
@@ -732,7 +732,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
 /// the input — but an exit 1 with an empty stderr is a run nobody can diagnose
 /// from a pipeline, which is the one failure shape
 /// `corpus_cli::every_refusal_carries_a_diagnostic` exists to forbid, and
-/// until M1d [S1d.4.3](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/the_vocabulary.md)
+/// until M1d [S1d.4.3](../../../../docs/history/m1d_satisfiability/the_vocabulary.md)
 /// `ein solve` was producing exactly it. That is why
 /// `examples/features/11_expect_ambiguity.ein` could not declare the plain
 /// `solve` run that gives [`ein_infer::expect::Outcome::NotChecked`] its corpus

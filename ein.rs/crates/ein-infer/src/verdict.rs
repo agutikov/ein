@@ -56,8 +56,8 @@ pub enum Verdict {
     /// `:expect` reads, because an expectation is an assertion about *facts*
     /// and the facts of an open state are the facts it reached.
     ///
-    /// [S1d.2.6]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md`
-    /// [`ideas.md`]: `plans/m1d_satisfiability/ideas.md`
+    /// [S1d.2.6]: `docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus`
+    /// [`ideas.md`]: `docs/history/m1d_satisfiability/ideas.md`
     Open {
         states: Vec<Solution>,
         owes: Vec<crate::obligations::Owes>,

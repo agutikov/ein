@@ -18,8 +18,8 @@
 //! puzzle author outside this suite needs to state the claim; until then a
 //! Rust test is the honest channel and costs no grammar.
 //!
-//! [S1d.2.6]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md`
-//! [P1d.4]: `plans/m1d_satisfiability/p1d.4_model_set_closure/README.md`
+//! [S1d.2.6]: `docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus`
+//! [P1d.4]: `docs/history/m1d_satisfiability/README.md#p1d4--closing-the-model-set`
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -169,7 +169,7 @@ fn each_obligation_rule_owes_exactly_what_its_fixture_states() {
 /// and lose the second, so the second is asserted explicitly rather than via
 /// the word.
 ///
-/// [S1d.2.6]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md`
+/// [S1d.2.6]: `docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus`
 #[test]
 fn a_state_that_owes_is_open_and_not_a_solution() {
     let (_, _, _, solved) = run("tests/stdlib/algebra/23_total_owed.ein");
@@ -321,7 +321,7 @@ fn extent(kb: &Kb, terms: &Terms, isa: Symbol, ty: Symbol) -> Vec<Symbol> {
 /// ```
 ///
 /// computed here from the fact store alone, with no reference to the pass. It
-/// is the [`layer_census`](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/layer_census.md)
+/// is the [`layer_census`](../../../../docs/history/m1d_satisfiability/layer_census.md)
 /// style of claim: the engine can predict the ledger from the declarations, and
 /// a mismatch is an encoding bug with a number attached.
 ///

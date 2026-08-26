@@ -12,7 +12,7 @@ sentence a file writes about its own answer.
     utils/closure_census.py --no-solve       # tables 1-2 only (0.05 s, no sweep)
     utils/closure_census.py -k zebra2        # the counterfactual for one entry
 
-[P1d.4](../plans/m1d_satisfiability/p1d.4_model_set_closure/README.md) exists
+[P1d.4](../docs/history/m1d_satisfiability/README.md#p1d4--closing-the-model-set) exists
 because `:expect (or M1 … Mk)` is two claims wearing one coat — *each Mi is a
 model*, which the search finds anyway, and *there is no M(k+1)*, which is
 established only by exhausting a lattice that does not finish. This measures

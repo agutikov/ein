@@ -723,7 +723,7 @@ not fix: **ten entries where `solve` costs exactly what `solve -e` costs**,
 because all ten return `Contradiction` / `exhausted = false` at
 `layers == max_set_size` — the search is running out of commitment depth, not
 proving unsat. That went to
-[M1d Q-M1d.6](../../../plans/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false).
+[M1d Q-M1d.6](../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false).
 
 #### S1a.9.3 — Packaging and release
 **Shipped 2026-08-23.** `ein --version` — engine semver, event protocol,
@@ -862,7 +862,7 @@ without a referent.
   text: Q-M1a.19 and Q-M1a.20 became
   [Q-M1c.1](../m1c_external_validation/open_questions.md) and
   Q-M1c.2 with P1a.11; Q-M1a.21 became
-  [Q-M1d.1](../../../plans/m1d_satisfiability/open_questions.md) with P1a.12.
+  [Q-M1d.1](../../../docs/history/m1d_satisfiability/open_questions.md) with P1a.12.
   The M1a ids stay reserved and redirect.
 - **Three decisions P1a.6 left rather than took**: `lattice_order =
   "score-sum"` (0.6× on `zebra`, 1.2× on `zebra2`, in both engines to the
@@ -921,5 +921,5 @@ Also in git history and not in this record: `design/09` (server mode, deleted
   [M2 — NL → IR](../../../plans/m2_nl_to_ir/README.md) — the consumers this
   engine ships for
 - [M1c](../m1c_external_validation/README.md) ·
-  [M1d](../../../plans/m1d_satisfiability/README.md) — created 2026-08-21 out
+  [M1d](../../../docs/history/m1d_satisfiability/README.md) — created 2026-08-21 out
   of this milestone's last two phases

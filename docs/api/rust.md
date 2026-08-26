@@ -250,7 +250,7 @@ trace: 244 steps
 
 > **`model:` moved from 434 to 444 on 2026-08-25**, and the ten are not
 > derivations. M1d
-> [S1d.2.4](../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.4_obligations_in_the_saturator.md)
+> [S1d.2.4](../../docs/history/m1d_satisfiability/README.md#s1d24--obligations-in-the-saturator)
 > gave `bijective-setup` two more activators to fan out — `(total-owed R
 > is-a)` and `(surjective-owed R is-a)`, the obligation duals of the totality
 > scans — and `zebra2.ein` declares five bijections. An activator is an

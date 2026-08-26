@@ -40,7 +40,7 @@ error, missing constraint, invented constraint, incorrect generic rule, type
 construction error, query construction error, unsupported semantics, solver
 limitation, repair regression, repair hallucination, answer extraction. Each
 then filed under one of five *sides*: **neural**, **representation** (ein-lang
-cannot say it — the finding [M1d](../../m1d_satisfiability/README.md) and
+cannot say it — the finding [M1d](../../../docs/history/m1d_satisfiability/README.md) and
 [F1b](../../followups/f1b_logical_formulation.md) want), **symbolic** (the
 kernel was wrong or ran out — a finding for the kernel milestones, never
 fixed here), **interface** (the feedback object or a renderer misled), and
@@ -62,7 +62,7 @@ latency against difficulty, per family. The boundary the plan asks about —
 *is the limiting factor language understanding or symbolic search?* — is
 where the first two curves cross, if they do, and the phase reports the
 crossing or its absence per family. The solver curve has a known shape
-already on one family: [M1d P1d.10](../../m1d_satisfiability/p1d.10_exhaustive_search/README.md)'s
+already on one family: [M1d P1d.10](../../../docs/history/m1d_satisfiability/README.md#p1d10--exhaustive-search)'s
 table, where `zebra2-minus-15` finds all 32 models by depth 3 and cannot
 finish proving there are no more.
 
@@ -105,7 +105,7 @@ statements inserted at a stated rate).
   most valuable; the sample size is set by what a week can read, stated,
   and not enlarged to reach significance after the fact.
 - **A kernel finding is a temptation to fix the kernel.** A *symbolic*-side
-  failure goes to [M1d](../../m1d_satisfiability/README.md) or a followup as
+  failure goes to [M1d](../../../docs/history/m1d_satisfiability/README.md) or a followup as
   a finding with its instance; [Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen)
   says what happens if it is fixed mid-milestone.
 - **K4 may be where the local model collapses.** That is a result about
@@ -118,7 +118,7 @@ statements inserted at a stated rate).
   [§ Stage K](../EinAf.md#stage-k--generalization-experiments).
 - [F13](../../followups/f13_puzzles_beyond_zebra/ideas.md) — *`logical_deduction_3/5/7`
   is almost a ready-made controlled experiment on generalization / scaling*;
-  [M1d P1d.10](../../m1d_satisfiability/p1d.10_exhaustive_search/README.md) —
+  [M1d P1d.10](../../../docs/history/m1d_satisfiability/README.md#p1d10--exhaustive-search) —
   the solver's curve on under-determined instances, already measured once.
 - [F10 `findings.md`](../../followups/f10_m1_refactor_tail/README.md) — the
   repo's precedent for a review register kept whole; the failure sample is

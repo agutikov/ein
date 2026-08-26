@@ -2,7 +2,7 @@
 
 **Estimate:** 1.5 weeks — 3 stages, 8 days.
 **Depends on:** [M1a](../../../docs/history/m1a_rust/README.md), shipped. Not
-on [M1d](../../m1d_satisfiability/README.md): the one word M2 needs from it
+on [M1d](../../../docs/history/m1d_satisfiability/README.md): the one word M2 needs from it
 (`unknown`) is computed here from fields the engine already emits, and
 replaced by the engine's own the day M1d gives it one
 ([Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen)).
@@ -49,7 +49,7 @@ engine has two caps and they say different things:
 | cap | what the engine reports | exit | what the loop would read |
 |---|---|---:|---|
 | `--max-time`, `--max-enterings` | `** aborted: <reason> **`; with the summary, `verdict.type = "Aborted"`, `reason`, empty core and models | **2** | *unknown* — correctly, if it reads the summary; *usage error*, if it reads the exit code |
-| `--max-set-size` (default 5) with a non-empty frontier | **`Contradiction`**, `k = 0`, `exhausted = false`, **empty unsat core** | 0 | *inconsistent* — wrongly. This is [Q-M1d.6](../../m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false): ten corpus entries end this way, and `Contradiction` with an empty core is the tell |
+| `--max-set-size` (default 5) with a non-empty frontier | **`Contradiction`**, `k = 0`, `exhausted = false`, **empty unsat core** | 0 | *inconsistent* — wrongly. This is [Q-M1d.6](../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false): ten corpus entries end this way, and `Contradiction` with an empty core is the tell |
 
 The rendering makes the asymmetry visible: a truncated `Solution` prints
 *(not certified — pass `--exhaustive`)* and a truncated `Contradiction`
@@ -119,8 +119,8 @@ the function changes and the field does not.
   `ein-events/1`; [`ein-cli/src/summary.rs`](../../../ein.rs/crates/ein-cli/src/summary.rs) —
   `ein-summary/1`; [`docs/api/rust.md`](../../../docs/api/rust.md) — the crate
   surface a Rust loop would link.
-- [M1d Q-M1d.6](../../m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false),
-  [Q-M1d.1](../../m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) —
+- [M1d Q-M1d.6](../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false),
+  [Q-M1d.1](../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) —
   the verdict vocabulary's owner; [M1c](../../../docs/history/m1c_external_validation/README.md) /
   [M10](../../m10_external_benchmarks/README.md) — A5's external check.
 - [F16](../../followups/f16_autoformalization/ideas.md) — the list of

@@ -14,7 +14,7 @@
 //! in [the record], not asserted here — a counter equality pinned as a test
 //! would be a test of the fixtures' arithmetic rather than of the engine.
 //!
-//! [the record]: `plans/m1d_satisfiability/p1d.2_obligations/hypotheses_from_obligations.md`
+//! [the record]: `docs/history/m1d_satisfiability/hypotheses_from_obligations.md`
 
 use std::collections::BTreeSet;
 use std::path::PathBuf;
@@ -153,7 +153,7 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
 /// and this test asserts both, because a regression in either one alone would
 /// leave the other still true.
 ///
-/// [S1d.2.6]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md`
+/// [S1d.2.6]: `docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus`
 #[test]
 fn owing_and_unable_to_branch_is_stuck_and_says_so() {
     let rel = "tests/stdlib/algebra/23_total_owed.ein";
@@ -234,7 +234,7 @@ fn the_candidates_are_what_the_guard_scans() {
 /// comparison of two singleton sets proves much less.
 ///
 /// `zebra2-minus-15` runs to depth 3, which is where all 32 of its models are
-/// ([the layer census](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/layer_census.md)
+/// ([the layer census](../../../../docs/history/m1d_satisfiability/layer_census.md)
 /// §4); depths 4 and 5 exist only to prove there are no more, cost 416 s, and
 /// prove nothing this test is asking about.
 #[test]

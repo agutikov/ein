@@ -1,7 +1,7 @@
 //! M1d S1d.3.3 — **how `ein solve` reports a model *set***: the guarantee
 //! rule, and the determining key that is the set's compact form.
 //!
-//! [P1d.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/README.md)
+//! [P1d.3](../../../../docs/history/m1d_satisfiability/README.md#p1d3--model-sets)
 //! answered *print or describe* with **both**, and the two halves are tested
 //! here because they are one surface: an `Ambiguity` block. The rule first,
 //! since the key inherits it.
@@ -28,7 +28,7 @@
 //! `--models key` is **additional output, never a replacement**: it chooses
 //! the *projection* of the same model set that goes to stdout, and reaches
 //! nothing recorded. The third test is that claim, checked the way
-//! [S1d.2.5](../../../../plans/m1d_satisfiability/p1d.2_obligations/hypotheses_from_obligations.md)
+//! [S1d.2.5](../../../../docs/history/m1d_satisfiability/hypotheses_from_obligations.md)
 //! checked its lever — run the entry both ways and diff everything outside
 //! the cells that are allowed to move.
 

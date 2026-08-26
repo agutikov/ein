@@ -444,7 +444,7 @@ impl Matcher {
     /// every witness slot from the scan or from the parent, which is what
     /// [`ein_ir`]'s load-time projection check guarantees.
     ///
-    /// [S1d.2.5]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md`
+    /// [S1d.2.5]: `docs/history/m1d_satisfiability/README.md#s1d25--hypotheses-from-obligations`
     #[allow(clippy::too_many_arguments)]
     pub fn scan_without(
         &mut self,

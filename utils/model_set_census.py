@@ -4,7 +4,7 @@
 The third census after [`layer_census.py`](layer_census.py) and
 [`openness_census.py`](openness_census.py), and the first one whose subject is
 the **answer** rather than the search or the program.
-[P1d.3](../plans/m1d_satisfiability/p1d.3_model_sets/README.md) exists to decide
+[P1d.3](../docs/history/m1d_satisfiability/README.md#p1d3--model-sets) exists to decide
 whether 32 models should be printed or described, and its central hope was that
 they would not have to be either — that a state with several independent open
 choices *is* the compact answer, because the model count is then the product of
@@ -106,7 +106,7 @@ CAPS_UP = (6, 8, 10)
 #: …and it is tried **only where the run was cheap**. A deeper cap on an entry
 #: that already costs seconds is not a measurement, it is a way to find the OOM
 #: killer: `features/01_not_and_absent -e` enters `Σₖ C(35, k)` term for term
-#: ([layer census](../plans/m1d_satisfiability/p1d.10_exhaustive_search/layer_census.md)),
+#: ([layer census](../docs/history/m1d_satisfiability/layer_census.md)),
 #: which is 23.5 M commitments at `-m 8` alone and 2.7 GB before the clock runs
 #: out. Nothing is lost by declining: the row reports the cap it used and
 #: `exhausted = false` beside it, which is the honest form of "this is what the
@@ -516,7 +516,7 @@ def analyse(models: list[set[str]]) -> dict:
 # ── the forms — S1d.3.2 ─────────────────────────────────────
 #
 # `--form` renders a model set as one of the candidate **representations**
-# [S1d.3.2](../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.2_representations.md)
+# [S1d.3.2](../docs/history/m1d_satisfiability/README.md#s1d32--representations)
 # prices, because *a representation argued about in prose and never printed is
 # a representation nobody has read*. Nothing here touches the engine — every
 # form is a rendering of the same `verdict.solutions` the census already reads.
@@ -547,7 +547,7 @@ def form_envelope(path, states) -> None:
 
     The label is not decoration. This is the smallest box containing the model
     set, and printing it without the ratio is the failure mode
-    [S1d.3.2](../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.2_representations.md)
+    [S1d.3.2](../docs/history/m1d_satisfiability/README.md#s1d32--representations)
     names: a reader told each slot's range will read the *product* as the
     answer.
     """

@@ -7,7 +7,7 @@ Two id forms share this file. **Q7–Q11 and Q23–Q25** are sticky ids from the
 cross-milestone pool, assigned when the milestone was *NL → IR*; they keep
 their numbers. **Q-M2.1–4** arrived with the 2026-08-23 reshape around
 [`EinAf.md`](EinAf.md) and use the milestone-scoped form that
-[M1d](../m1d_satisfiability/open_questions.md) and
+[M1d](../../docs/history/m1d_satisfiability/open_questions.md) and
 [M10](../m10_external_benchmarks/open_questions.md) use. A verdict lands
 **here, beside its question** — the old plan's `docs/decisions/M2-*.md` never
 existed and is not coming.
@@ -240,9 +240,9 @@ server takes a `grammar` field, and ollama's API exposes only JSON-schema
 **Arrived 2026-08-23 with the reshape.** The research plan's Stage A ends
 with the sentence *the symbolic component should be treated as experimental
 instrumentation, not an evolving prototype* — and two kernel milestones are
-queued: [M1d](../m1d_satisfiability/README.md) changes what the engine says
-at a depth cap ([Q-M1d.6](../m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false))
-and may change the traversal ([Q-M1d.4](../m1d_satisfiability/open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal)),
+queued: [M1d](../../docs/history/m1d_satisfiability/README.md) changes what the engine says
+at a depth cap ([Q-M1d.6](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false))
+and may change the traversal ([Q-M1d.4](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal)),
 and [M1c](../../docs/history/m1c_external_validation/README.md) may find a stdlib rule wrong.
 An instrument that changes between two rows of a table makes the table
 uninterpretable; an instrument that cannot change for six months blocks two

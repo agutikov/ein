@@ -533,7 +533,7 @@ fn every_layer_1_singleton_dying_is_a_contradiction() {
 }
 
 /// **a-cap-of-zero-is-a-cap** —
-/// [T1d.10.5.0](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.5_contract.md).
+/// [T1d.10.5.0](../../../../docs/history/m1d_satisfiability/README.md#s1d105--what-exhausted-means).
 /// The twin of the test above, and the reason that one asserts `exhausted`
 /// rather than just reading `k`.
 ///
@@ -580,7 +580,7 @@ fn a_cap_of_zero_is_a_truncation_not_a_refutation() {
 }
 
 /// **a-cap-of-zero-does-not-refuse-a-question-the-root-answers.** The other
-/// half of [T1d.10.5.0](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.5_contract.md),
+/// half of [T1d.10.5.0](../../../../docs/history/m1d_satisfiability/README.md#s1d105--what-exhausted-means),
 /// and the reason `-m 0` is a *truncation* and not the `Aborted` shape `-E 0`
 /// uses.
 ///

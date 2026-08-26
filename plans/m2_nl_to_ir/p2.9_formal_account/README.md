@@ -26,7 +26,7 @@ exists, which is the part that makes it work rather than decoration:
 | `K = (O, R, F, Γ, P)` — objects, relations, facts, rules / constraints, provenance | the typed hypergraph: `Value` / `FactId`, relations with signatures, the layered KB, the AND/OR provenance DAG | [`01-ein-graph/`](../../../docs/kernel/ir/01-ein-graph/), [`02-data-model/`](../../../docs/kernel/ir/02-data-model/) |
 | `T_Γ` monotone, `K* = lfp(T_Γ)` | saturation — semi-naive, to a fixpoint; **with a seam**: `(absent P)` is judged at the closure / world boundary, so `T_Γ` is monotone on the positive fragment and the NAF step is a separate, stratified operator | [`architecture_and_algorithms.md`](../../../docs/kernel/inference/architecture_and_algorithms.md) O2, O3; [`absent_semantics.md`](../../../docs/kernel/inference/absent_semantics.md) — the part the plan's one-line `T_Γ` does not have and the account must |
 | hypotheses / commitments; the model space `{M ⊇ K* : M ⊨ Γ}` | the commitment lattice: layer *k* the size-*k* commitment sets over `alive`, each saturated, killed by `(false)` or a no-good; a model is a complete, consistent leaf, identified by its sorted fact list | [design/07](../../../docs/history/m1a_rust/design/07_search_layer.md); [`defined_behaviour.md` § 2.4](../../../docs/kernel/defined_behaviour.md) |
-| `|𝓜| = 0 / 1 / > 1` → contradiction / unique / ambiguity | the verdict, read off `k` — **with `exhausted`**: `|𝓜|` is known only when the lattice is exhausted, and the engine's fourth state (`Aborted`, and the `-m`-cap case [Q-M1d.6](../../m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false) names) is a lower bound on `|𝓜|`, not a value | [`verdict.rs`](../../../ein.rs/crates/ein-infer/src/verdict.rs); [P2.1 § The sixth outcome](../p2.1_kernel_as_instrumentation/README.md#the-sixth-outcome-today) |
+| `|𝓜| = 0 / 1 / > 1` → contradiction / unique / ambiguity | the verdict, read off `k` — **with `exhausted`**: `|𝓜|` is known only when the lattice is exhausted, and the engine's fourth state (`Aborted`, and the `-m`-cap case [Q-M1d.6](../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false) names) is a lower bound on `|𝓜|`, not a value | [`verdict.rs`](../../../ein.rs/crates/ein-infer/src/verdict.rs); [P2.1 § The sixth outcome](../p2.1_kernel_as_instrumentation/README.md#the-sixth-outcome-today) |
 | `A_θ(x) → T`; `E(T) → (v, d)`; `Tᵢ₊₁ = A_θ(x, Tᵢ, E(Tᵢ))` | the formalizer, the feedback object, the loop | [P2.2](../p2.2_formalizer/README.md), [S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_feedback_object.md), [P2.4](../p2.4_loop/README.md) |
 | `P(faithful(Tₙ) ∧ correct(Tₙ))` as a function of `E` | the milestone's dependent variable, with `E` ranging over F0–F8 | [S2.5.3](../p2.5_harness/s2.5.3_metrics.md), [P2.6](../p2.6_ablations/README.md) |
 
@@ -46,7 +46,7 @@ the kernel does them and a reader who checks will find them:
    An account that draws a DPLL tree describes a different engine.
 3. **Lower bounds are refutations.** `total` / `surjective` are implemented
    as *every candidate excluded ⇒ dead*, never as *one candidate owed* —
-   [M1d § what the note says](../../m1d_satisfiability/README.md#what-the-note-says-the-engine-is-missing).
+   [M1d § what the note says](../../../docs/history/m1d_satisfiability/README.md).
    The account states the constraint fragment the engine decides and the one
    it enumerates, which is [F1b](../../followups/f1b_logical_formulation.md)'s
    question answered for the paper.

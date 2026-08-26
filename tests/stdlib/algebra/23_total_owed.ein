@@ -39,7 +39,7 @@
 ;;; asserted in `ein-infer/tests/obligation_reports.rs`, the in-process sibling
 ;;; of `stdlib_coverage.rs`. Growing `:expect` a word for an open verdict is a
 ;;; verdict-vocabulary change and is deliberately not taken here — see
-;;; plans/m1d_satisfiability/p1d.2_obligations/s1d.2.4_obligations_in_the_saturator.md.
+;;; docs/history/m1d_satisfiability/README.md#s1d24--obligations-in-the-saturator.
 ;;;
 ;;; Note that `total` is **not** imported: where two rules could reach one
 ;;; verdict, a fixture separates them by activation (`05_no_room.ein`'s rule).

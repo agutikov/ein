@@ -894,7 +894,7 @@ fn rel_premises(
 ///    not already bind. None, two, or a ground body is refused rather than
 ///    guessed.
 ///
-/// [S1d.2.3]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.3_the_form.md`
+/// [S1d.2.3]: `docs/history/m1d_satisfiability/README.md#s1d23--the-form`
 #[allow(clippy::too_many_arguments)]
 fn validate_open(
     ast: &Ast,
@@ -1128,7 +1128,7 @@ fn pattern_from_ir(ast: &Ast, terms: &mut Terms, expr: NodeId) -> Result<Pattern
 /// relations an expectation has to list the complete extent of. `ein test
 /// --json-report` publishes the list per query, because the **write cost** of
 /// a closure claim is `relations x models x facts` and the first factor is
-/// this one (M1d [S1d.4.1](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/s1d.4.1_what_closure_costs.md)).
+/// this one (M1d [S1d.4.1](../../../../docs/history/m1d_satisfiability/README.md#s1d41--what-closure-costs)).
 ///
 /// Connectives (`and`, `or`, `not`, `neq`, `eq`, `=`) and the two macro
 /// internals are not relations and do not appear; a `(?rel ?a ?b)` head binds
@@ -1432,7 +1432,7 @@ mod tests {
     /// routing is the load-time half of that, and the assertion below is that
     /// `rules` stays empty while `obligations` gets it.
     ///
-    /// [S1d.2.3]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.3_the_form.md`
+    /// [S1d.2.3]: `docs/history/m1d_satisfiability/README.md#s1d23--the-form`
     #[test]
     fn an_open_assert_routes_the_rule_out_of_the_saturation_agenda() {
         let src = "(relation is-a T T)\n(relation r A B)\n\
@@ -1590,7 +1590,7 @@ mod tests {
     /// down — scanning **absence** where those scan a stored `(not …)`, and
     /// saying *unfinished* where they say *dead*.
     ///
-    /// [S1d.2.3]: `plans/m1d_satisfiability/p1d.2_obligations/s1d.2.3_the_form.md`
+    /// [S1d.2.3]: `docs/history/m1d_satisfiability/README.md#s1d23--the-form`
     #[test]
     fn the_stdlib_duals_resolve_before_the_stage_that_ships_them() {
         let src = "(relation is-a T T)\n\

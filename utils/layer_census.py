@@ -11,7 +11,7 @@ full prefix join.
 That sentence had never been a number. `nogoods_emitted` says what the deaths
 produced; nothing said what the clauses *removed*. This counts both ends, per
 layer, per corpus entry — the column `dropped_nogood` is the one that was
-missing, and [M1d P1d.10](../plans/m1d_satisfiability/p1d.10_exhaustive_search/README.md)
+missing, and [M1d P1d.10](../docs/history/m1d_satisfiability/README.md#p1d10--exhaustive-search)
 is the phase that needs it.
 
     utils/layer_census.py                        # the table, to stdout

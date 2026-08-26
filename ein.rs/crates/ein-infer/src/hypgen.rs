@@ -230,7 +230,7 @@ pub fn generate(
 /// The ladder is walked exactly as [`generate`] walks it and every candidate
 /// goes through the same filters; what differs is that the obligations rung
 /// stops after the instance [`crate::oblgen::Choice`] picks. M1d
-/// [T1d.10.6.3](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md)
+/// [T1d.10.6.3](../../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)
 /// — a depth-first traversal branches on one instance because one instance's
 /// set is jointly exhaustive *by the obligation's meaning*, where the union is
 /// merely a superset of each.
@@ -266,7 +266,7 @@ pub fn generate_one_branch(
 /// the rung that is active there stops as soon as its own candidates run out:
 /// *how many facts would the blind enumerator still propose at a node the rung
 /// called complete?* That number is the state's leftover-open count — M1d
-/// [S1d.3.1](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.1_what_the_models_differ_in.md)
+/// [S1d.3.1](../../../../docs/history/m1d_satisfiability/README.md#s1d31--what-the-models-differ-in)
 /// — and it is what separates "one model" from "2ⁿ models" when the reading
 /// is open-world.
 ///

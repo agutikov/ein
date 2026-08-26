@@ -70,7 +70,7 @@ the next thought is "so call it" — that is M3, it is dropped*.
   it was pre-registered to have, and the caveats where the numbers appear:
   Lean is not a solver; Datalog may be unable to state a choice
   ([M10 § Risks](../../m10_external_benchmarks/README.md#risks) — and that
-  finding, if it recurs here, is direct evidence for [M1d](../../m1d_satisfiability/README.md)'s
+  finding, if it recurs here, is direct evidence for [M1d](../../../docs/history/m1d_satisfiability/README.md)'s
   premise from a second direction).
 
 ## Acceptance

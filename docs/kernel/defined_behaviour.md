@@ -357,7 +357,7 @@ was checked and some are false" would be a false description of the run.
 `test` has no ein.py counterpart to diverge from — it is the second such
 subcommand, after `ein kb`.
 
-**M1d [S1d.2.6](../../plans/m1d_satisfiability/p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md)
+**M1d [S1d.2.6](../../docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus)
 added a fourth verdict word and no exit code.** `Open` — a consistent,
 quiescent state with an obligation the program stated still unwitnessed —
 exits **0**, exactly as `Solution`, `Ambiguity` and `Contradiction` do: the
@@ -369,7 +369,7 @@ all three of its forms are assertions about **facts**, and an `open` conclusion
 is by construction never a fact. Twelve corpus entries changed word and **zero**
 changed exit code.
 
-**M1d [S1d.3.3](../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)
+**M1d [S1d.3.3](../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)
 added the 49th option and one rendering rule.** `solve --models {list,key}`
 chooses the projection of a model **set** that goes to stdout — the blocks, or
 the smallest set of slots that tells the models apart and the table of
@@ -390,7 +390,7 @@ pass --exhaustive)"*. `Ambiguity` did not, and the difference matters more
 there: an unqualified `k = 1` is a guess about uniqueness, where an unqualified
 `k = 5` on a file with nine models is **wrong**.
 
-**M1d [T1d.10.5.2b](../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.5_contract.md)
+**M1d [T1d.10.5.2b](../../docs/history/m1d_satisfiability/README.md#s1d105--what-exhausted-means)
 extended the rule to the empty model set, which is where it was worth most.**
 A `k = 0` is a claim like any other and `exhausted` is what licenses it, so the
 table above now has four rows rather than two:
@@ -425,13 +425,13 @@ stays `Contradiction`, which is the same shape S1d.3.3 held to. `Open` at
 `exhausted = false` is unreachable on today's corpus — every `Open` in it is
 exhausted — so that row is written to be right rather than because a cell moved.
 
-What remains of [Q-M1d.1](../../plans/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)
+What remains of [Q-M1d.1](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)
 after this is the *stopping* half, not the vocabulary half: whether a search
 may stop early on purpose, and what would license it. The word it used to be
 about is settled: a refutation said under a depth cap is not a refutation, and
 it no longer says it is.
 
-**M1d [S1d.4.1](../../plans/m1d_satisfiability/p1d.4_model_set_closure/s1d.4.1_what_closure_costs.md)
+**M1d [S1d.4.1](../../docs/history/m1d_satisfiability/README.md#s1d41--what-closure-costs)
 added the 50th option and no behaviour at all.** `ein test --json-report
 FILE.json` writes **one row per `(query …)` of the whole selection** — the
 claim's shape (`model` / `or` / `false`), how many models it lists, the
@@ -456,7 +456,7 @@ The schema is `ein-test-report/1`, deliberately not `ein-summary/1`: a summary
 is one run's counters, a report is one row per query, and a consumer reading
 the same version marker on both would be right to expect the same fields.
 
-**M1d [S1d.4.3](../../plans/m1d_satisfiability/p1d.4_model_set_closure/the_vocabulary.md)
+**M1d [S1d.4.3](../../docs/history/m1d_satisfiability/the_vocabulary.md)
 moved no byte of stdout and added one line to stderr.** A `:expect` that does
 not hold under `ein solve` now writes
 
@@ -479,7 +479,7 @@ reaches `Outcome::NotChecked` under a declared run — **could not declare plain
 declares it now, and `corpus_exits.txt` banks the 1. `ein test` is unchanged:
 it prints its own per-file report and has always been readable on stdout alone.
 
-**M1d [T1d.10.5.0](../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.5_contract.md)
+**M1d [T1d.10.5.0](../../docs/history/m1d_satisfiability/README.md#s1d105--what-exhausted-means)
 closed the one door in that rule with no guard on it.** `--max-set-size 0` is a
 **truncation**: a run that explores no layer over a non-empty frontier reports
 `exhausted = false`, and the table above then applies to it unchanged — its
@@ -504,7 +504,7 @@ Two things the fix decides rather than assumes:
   this cap's shape to begin with: **12** corpus entries report `Contradiction`
   with a 0-fact core under their ordinary `solve` run, every one of them at
   `exhausted = false`. Whether that pair may keep the *word* is
-  [Q-M1d.1](../../plans/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
+  [Q-M1d.1](../../docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
   and is untouched here — no exit code moved, and `corpus_exits.txt` is
   unchanged.
 

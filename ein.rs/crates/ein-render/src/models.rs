@@ -1,8 +1,8 @@
 //! A model **set** as a determining key — M1d
-//! [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)'s
+//! [S1d.3.3](../../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)'s
 //! answer to *print or describe*.
 //!
-//! [P1d.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/README.md)
+//! [P1d.3](../../../../docs/history/m1d_satisfiability/README.md#p1d3--model-sets)
 //! priced five ways to say *"there are 32 models"* on four columns — produce ·
 //! size · exact · read — and the one that won is **(b)**: the smallest set of
 //! slots that tells every model apart, plus the table of the combinations that
@@ -10,7 +10,7 @@
 //! rows, 2 506 bytes against the model set's 13 920 fact lines, and it is
 //! *exact*: appending a row to the puzzle and re-solving recovers that model
 //! to the fact, on 30 of the 32 rows without entering a single commitment
-//! ([`representations.md` §4.1](../../../../plans/m1d_satisfiability/p1d.3_model_sets/representations.md)).
+//! ([`representations.md` §4.1](../../../../docs/history/m1d_satisfiability/representations.md)).
 //!
 //! **It is a rendering and never a replacement.** `verdict.solutions`,
 //! `--json-summary`, `--events` and `:expect` are untouched by
@@ -25,7 +25,7 @@
 //! A model set varies in *facts*; a key is a claim about *variables*, so
 //! something has to turn one into the other. Two rules, and they are the
 //! census's ([`model_set_census.md`
-//! §1](../../../../plans/m1d_satisfiability/p1d.3_model_sets/model_set_census.md)):
+//! §1](../../../../docs/history/m1d_satisfiability/model_set_census.md)):
 //!
 //! 1. **Every varying positive atom is a Boolean variable.** A fact is in a
 //!    model or it is not; no declaration needed.
@@ -53,7 +53,7 @@ use ein_core::{FactId, Kb, Symbol, Terms, Value};
 /// How `ein solve` prints a model **set** — the `--models` flag.
 ///
 /// `List` is what the engine has always printed: one block per model. `Key`
-/// is [P1d.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/README.md)'s
+/// is [P1d.3](../../../../docs/history/m1d_satisfiability/README.md#p1d3--model-sets)'s
 /// (b). Neither changes what is *recorded*, and every verdict but `Ambiguity`
 /// ignores the choice, because a single model is its own smallest description.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
@@ -85,7 +85,7 @@ const KEY_NODE_BUDGET: u64 = 2_000_000;
 /// A second budget rather than the same one, because the two searches answer
 /// different questions: the first finds *a* size, the second enumerates
 /// **every** key of that size to answer *"why these"*
-/// ([`representations.md` §4.2](../../../../plans/m1d_satisfiability/p1d.3_model_sets/representations.md)).
+/// ([`representations.md` §4.2](../../../../docs/history/m1d_satisfiability/representations.md)).
 /// A form that printed one key without being able to say how many others there
 /// are would be exactly the arbitrary basis S1d.3.2 warned about.
 const KEY_TABLE_BUDGET: u128 = 4_000_000;

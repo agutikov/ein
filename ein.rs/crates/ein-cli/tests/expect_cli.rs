@@ -135,7 +135,7 @@ fn the_load_negatives_are_refused_with_their_banked_message() {
 
 /// **`NOT CHECKED`'s corpus witness, and the stream that unblocked it.**
 ///
-/// M1d [S1d.4.1](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/s1d.4.1_what_closure_costs.md)
+/// M1d [S1d.4.1](../../../../docs/history/m1d_satisfiability/README.md#s1d41--what-closure-costs)
 /// went looking for a real file that reaches [`Outcome::NotChecked`] and found
 /// this one: `examples/features/11_expect_ambiguity.ein` under **plain
 /// `solve`**, which stops at `-n 1`, so the claim about a *set* is neither
@@ -145,7 +145,7 @@ fn the_load_negatives_are_refused_with_their_banked_message() {
 /// It was not a cell of `corpus.toml`, and the blocker was the last assertion
 /// here inverted: `solve` printed the `:expect` verdict on stdout and exited 1
 /// with an **empty stderr**, which is exactly what
-/// `corpus_cli::every_refusal_carries_a_diagnostic` forbids. [S1d.4.3](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/the_vocabulary.md)
+/// `corpus_cli::every_refusal_carries_a_diagnostic` forbids. [S1d.4.3](../../../../docs/history/m1d_satisfiability/the_vocabulary.md)
 /// settled it the way the question deserved rather than by moving the block: a
 /// failing claim is a **result** and its report stays under the solution table,
 /// *and* a one-line diagnosis goes to stderr, because an exit 1 nobody can
