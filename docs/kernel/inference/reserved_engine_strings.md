@@ -86,6 +86,14 @@ The verdicts are **answers to one problem**, not separate commands.
 | `k = 1` | `Solution` | the model |
 | `k > 1` | `Ambiguity` (gaps) | the distinct model states |
 
+**`k` is a claim, and `exhausted` is what licenses it — M1d S1d.3.3.** With
+the lattice exhausted, `k` is *the* model count; without it, `k` is a **lower
+bound**, and the `Ambiguity` rendering says so in two places (`(a lower bound
+— the search did not exhaust)` beside the number, and *models found* in the
+sentence). `Solution` has said the same thing as *"(not certified — pass
+--exhaustive)"* since ein.py. The words themselves do not change: the verdict
+is still read from the result, and `verdict.type` is still `Ambiguity`.
+
 **`k` counts models, and since M1d S1d.2.6 that is not the same number as
 `stats.solution_nodes`.** The counter says what the *search* recorded — nodes
 the generator called complete — and `k` says how many of them the read-out

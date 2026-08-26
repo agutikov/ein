@@ -6,6 +6,63 @@
 and [S1d.2.6](../p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md), whose
 verdict vocabulary anything here has to fit inside rather than beside.
 
+**Status: done 2026-08-26.** Q-M1d.5 closed, the rendering rule shipped with
+three fixtures, `--models key` shipped, the semantics stated and unchanged —
+banked in [`the_verdict.md`](the_verdict.md). See § What it found.
+
+## What it found
+
+**The user's decision was *both*, and the half nobody had asked for was the
+one that was broken.** The stage expected to weigh (b) against *enumerate*;
+what writing down the guarantee rule found is that the enumeration was
+**stating a model count it had no right to state**.
+
+| task | asked for | done |
+|---|---|---|
+| T1d.3.3.1 — Q-M1d.5 | one of (a)–(e), or *enumerate* | **both** — the count, qualified; and **(b)** behind `--models key`, S1d.3.2's recommendation taken |
+| T1d.3.3.2 — the guarantee | one sentence, **two fixtures** | **three fixtures on three entries**, and a live defect: `type-exclusivity/colors.ein -e` printed `k = 5` where the file has **9** |
+| T1d.3.3.3 — the semantics | which reading, and change nothing | **stated**: a reported model is a *state*, `k` counts states, closure is **per relation and opt-in** — and the language already has it twice (`:expect`, the domain contract). Neither of the two places changed |
+| T1d.3.3.4 — additional, never a replacement | `verdict.solutions` byte-identical, the golden diff cell by cell | **five of 8 171 renderings moved**, all `trace[answer]`, all on `Ambiguity` entries, **every line count unchanged** — and the summaries compare equal with the flag on and off |
+| T1d.3.3.5 — the phase ledger | the closing record | [P1d.3 § The ledger](README.md) |
+
+**Four things the stage did not ask for and got.**
+
+- **The defect was on five corpus entries, and the asymmetry was backwards.**
+  `Solution` has hedged its `k = 1` since ein.py — a guess about *uniqueness*.
+  `Ambiguity` hedged nothing, where the claim is a **number** and five of the
+  ten entries that make it are short. `exhausted` was printed by `--stats` and
+  by nothing else.
+- **(b) fails in its margins where (a) fails in its cells.** A key row's
+  values are read off a model that exists, so no row can be falsified — a 33rd
+  model **adds** a row or **shares** one, which withdraws the table's
+  completeness and the key's sufficiency and nothing else. (a)'s core is an
+  intersection, and intersecting a subset gives a **superset** of the truth, so
+  a 33rd model can contradict any of its 312 printed facts. That is the phase
+  acceptance's third bullet with a winner attached, and it is an argument
+  S1d.3.2 could not make because it was pricing forms rather than stating
+  guarantees.
+- **The shipped table is the census's table, on every model set the corpus
+  has.** Two independent implementations of the decision-variable rules and the
+  minimum-hitting-set search: all **32 rows** of `zebra2-minus-15` identical
+  with the same 22 minimum keys and the same two forced columns, and **11 of
+  11** other entries agreeing on `k` and on the key size at the census's own
+  caps. The closest thing the repo still has to an oracle diff.
+- **The fallback had to be built, and the corpus supplied its case.**
+  `branching/06_lookahead_on.ein` needs an 8-variable key over 42 slots —
+  `C(42, 8) = 118 030 185` — so `--models key` declines and prints the models,
+  which is (e), which was a legitimate winner all along. Finding that out costs
+  **42 ms**, against **12.4 s** for the same search in the census's Python —
+  the shipped one precomputes the branch table, because a budget counted in
+  nodes only means something in seconds if a node is cheap.
+
+**And one number the stage hands on rather than keeps.** Three entries answer
+`Contradiction` with `exhausted = false`, and on
+`saturation/type-exclusivity/pets.ein` the word is not merely unproven but
+**wrong**: `k = 0` at `-m 5` through `-m 8`, and **35 models** at `-m 10`. The
+ten entries Q-M1d.6 was opened for had no models at any depth. That one is
+[Q-M1d.1](../open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
+and [P1d.10](../p1d.10_exhaustive_search/README.md)'s.
+
 ## Context
 
 The phase's decision stage:

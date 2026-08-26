@@ -369,6 +369,30 @@ all three of its forms are assertions about **facts**, and an `open` conclusion
 is by construction never a fact. Twelve corpus entries changed word and **zero**
 changed exit code.
 
+**M1d [S1d.3.3](../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)
+added the 49th option and one rendering rule.** `solve --models {list,key}`
+chooses the projection of a model **set** that goes to stdout — the blocks, or
+the smallest set of slots that tells the models apart and the table of
+combinations that occur. It is read by the `Ambiguity` arm alone, defaults to
+`list`, and reaches nothing recorded: the verdict, every counter, the JSON
+summary, the event stream, `-p` and `:expect` are byte-identical under either
+value.
+
+The rule beside it is **normative and about what a count may claim**:
+
+| the search | what a report of the model set may say |
+|---|---|
+| `exhausted = true` | *these are the models* — `solutions (k) 9`, `Ambiguous — distinct complete models` |
+| `exhausted = false` | *these are models **found*** — `solutions (k) 5   (a lower bound — the search did not exhaust)`, `Ambiguous — distinct complete models found` |
+
+`Solution` has carried the same distinction since ein.py, as *"(not certified —
+pass --exhaustive)"*. `Ambiguity` did not, and the difference matters more
+there: an unqualified `k = 1` is a guess about uniqueness, where an unqualified
+`k = 5` on a file with nine models is **wrong**. `Contradiction` is
+deliberately **not** covered — a refutation said under a depth cap is
+[Q-M1d.1](../../plans/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
+question about a *word*, not this one about a *count*.
+
 **Free, and different from the Python CLI's:** wrapping, indentation,
 headings, ordering within a section, and the wording of a usage diagnosis.
 `clap` cannot be configured into `argparse`'s layout and hand-rolling one was

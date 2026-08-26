@@ -34,7 +34,14 @@ constrained-reasoning research.
   did before P1d.2
   ([openness_census.md](plans/m1d_satisfiability/p1d.2_obligations/openness_census.md)).
   `false` outranks it, a discharged model outranks it, it exits **0** like the
-  other three, and it moved twelve entries and **no** exit code. It also split
+  other three, and it moved twelve entries and **no** exit code.
+  **Since M1d S1d.3.3 an `Ambiguity` also says whether its `k` is a count or a
+  floor** — `exhausted = false` prints *`solutions (k) 5   (a lower bound — the
+  search did not exhaust)`* and *"distinct complete models **found**"*, which
+  `Solution` had said as *"(not certified — pass --exhaustive)"* since ein.py
+  and the verdict that reports a model *set* had not. The same stage shipped
+  `ein solve --models key`, the set as its determining key
+  ([the verdict](plans/m1d_satisfiability/p1d.3_model_sets/the_verdict.md)). It also split
   two numbers that had always agreed: `verdict.k` counts *models* and
   `stats.solution_nodes` counts what the *search* recorded — S1d.2.6 changed
   the read-out and not the traversal, so no counter and no cost moved.
@@ -398,6 +405,7 @@ EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
 EIN_OBLIGATION_CHOICE=off|fail-first ein solve …             # the M1d S1d.2.5 rung levers
+ein solve … -e --models key                                  # the M1d S1d.3.3 form
 EIN_LEFTOVER=1    ein solve … --json-summary out.json        # the M1d S1d.3.1 probe
 ```
 
@@ -409,6 +417,34 @@ engine and the control arm every number in
 is measured against. It is deliberately not a `(config …)` field: `SolverConfig`
 is rendered into the KB-shape digest, so a knob whose settings are being
 compared would re-bless every shape golden in the corpus.
+
+**`--models {list,key}`** is M1d
+[S1d.3.3](plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)'s
+and the only one of the three levers in this block that is a *flag*, because it is presentation
+rather than measurement. `key` prints a model **set** as its determining key —
+the smallest set of slots that tells the models apart, and the table of
+combinations that occur — instead of as *k* blocks: on
+`examples/zebra2-minus-15.ein -e -m 3` that is **49 lines against 516**, the
+same 4 columns and 32 rows `utils/model_set_census.py --form key` prints. It is
+read by the `Ambiguity` arm alone and reaches nothing recorded, and where a key
+is unaffordable — `examples/branching/06_lookahead_on.ein` needs 8 of 42 slots,
+`C(42, 8) = 118 030 185` — it says so and **prints the models**, which is the
+form the phase priced as (e). `list` stays the default because it is what
+`ein solve` has always printed, not because the key is expensive — 42 ms to
+decline on `branching/06`, under 1 % of the solve on the zebra family.
+
+Beside it, and not a flag: **an `Ambiguity` now qualifies its own count.**
+`exhausted = true` prints `solutions (k) 9`; `exhausted = false` prints
+`solutions (k) 5   (a lower bound — the search did not exhaust)` and
+*"distinct complete models **found**"*. It matters because the corpus was full
+of the case — `ein solve -e examples/saturation/type-exclusivity/colors.ein`
+printed **5** for a file with **9** models, and 5 of the 10 entries that answer
+`Ambiguity` under their declared runs do it unexhausted. `Contradiction` is
+deliberately untouched: a refutation said under a depth cap is
+[Q-M1d.1](plans/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
+question about a *word*, and `saturation/type-exclusivity/pets.ein` — `k = 0`
+at `-m 5`…`-m 8`, **35 models** at `-m 10` — is the fixture that now waits for
+it.
 
 **`EIN_LEFTOVER=1`** is its neighbour and M1d S1d.3.1's probe: it fills
 `--json-summary`'s **`leftover`** block with what the **blind** enumerator

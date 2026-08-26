@@ -368,7 +368,12 @@ run through the **same** `ein solve` — the verdict is read from the result
 - [`zebra2-minus-15.ein`](../../../examples/zebra2-minus-15.ein) — **GAPS** (`k > 1`): drops
   condition (15) (the only fact pinning Blue at `H_2`), leaving the colours
   under-determined. `ein solve … --exhaustive` reports `Ambiguous — k distinct
-  complete models`.
+  complete models` when the lattice was exhausted and `… k distinct complete
+  models found` when the depth cap stopped it first (M1d
+  [S1d.3.3](../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md):
+  a model count is a claim, and `exhausted` is what licenses it).
+  `--models key` prints the set as its **determining key** instead of as k
+  blocks — 4 of 23 slots and 32 rows here, against 516 printed lines.
 - [`ein-bugs/zebra2-bad.ein`](../../../examples/ein-bugs/zebra2-bad.ein) — **CONTRADICTIONS**
   (`k = 0`): adds an injected `(color-loc Green House-1)` that collides with
   condition (6)'s spatial endpoint (Green is `right-of` Ivory, so it cannot sit

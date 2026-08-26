@@ -21,7 +21,7 @@ about a word the engine already says.
 | [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | **decided 2026-08-24** — (c) a rule shape asserting the reserved verdict atom (form G); [S1d.2.3](p1d.2_obligations/s1d.2.3_the_form.md) records it |
 | [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | **answered for obligations 2026-08-25** — [`domain_contract.md`](p1d.2_obligations/domain_contract.md); open for the general lower-bound form nobody has asked for |
 | [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **closed 2026-08-25** — it may, and on this corpus it does not: [S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) shipped the ladder and **no counter moved** ([the record §2](p1d.2_obligations/hypotheses_from_obligations.md)) |
-| [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | open — [P1d.3](p1d.3_model_sets/README.md); the factorisation is **measured** ([the census](p1d.3_model_sets/model_set_census.md), 2026-08-25) and the decision is [S1d.3.3](p1d.3_model_sets/s1d.3.3_the_verdict.md)'s. "Enumerate, and say so" is an acceptable answer |
+| [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | **closed 2026-08-26 — both**: the count now carries its exhaustion qualifier and **(b) the determining key** ships behind `ein solve --models key` ([the verdict](p1d.3_model_sets/the_verdict.md)). The half that was broken was the *enumeration* |
 | [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | **closed 2026-08-25** — never of a state that **owes** something it can still pay; the ten entries owe nothing because they state no obligation, and keep their word ([the census §5](p1d.2_obligations/openness_census.md)) |
 | [Q-M1d.7](#q-m1d7--may-a-program-require-its-own-model-count) | May a program require its own model count? | open — [P1d.4](p1d.4_model_set_closure/README.md); arrived from M1c [S1c.1.2](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects) on 2026-08-24 |
 
@@ -50,6 +50,27 @@ written refutation is as good an outcome as a proof — that is the discipline
 [F9](../followups/f9_e_catalog.md) established for this exact area, and F9's
 own judgements were all measured on puzzles with a unique model, which is the
 regime this question is not about.
+
+> **A sharper fixture arrived 2026-08-26, from P1d.3.** The question's
+> neighbour Q-M1d.6 was opened over ten entries reporting `Contradiction` with
+> `exhausted = false`, and every one of them had **no models at any depth** —
+> the cap wearing a refutation's word, but a word that happened to be true.
+> `examples/saturation/type-exclusivity/pets.ein` is not like that:
+>
+> | `-m` | verdict | k |
+> |---:|---|---:|
+> | 5 (the declared run) | `No solution — the constraints are contradictory` | 0 |
+> | 6, 7, 8 | the same | 0 |
+> | **10** | `Ambiguous` | **35** |
+>
+> So a corpus entry in the default sweep says *the constraints are
+> contradictory* about a satisfiable program, and the only thing on the surface
+> that disagrees is `exhausted`, which `--stats` prints and nothing else.
+> [S1d.3.3](p1d.3_model_sets/s1d.3.3_the_verdict.md) fixed the same defect on
+> `Ambiguity` — a count is now marked as a floor when the search did not
+> exhaust — and deliberately left `Contradiction` alone, because there the
+> problem is the **word** and not a qualifier on it. That is this question's,
+> and the entry is the case to answer it against.
 
 **Moved 2026-08-21 from Q-M1a.21**, with the phase. The one thing the move
 adds: [P1d.2](p1d.2_obligations/README.md) is a fourth candidate the M1a
@@ -253,11 +274,40 @@ three questions a reader has. The *certain core* — the form the stage expected
 to win — loses the readability veto: it cannot say how many models there are,
 and multiplying the ranges it prints gives 9.95 × 10¹³ against 32.
 
-What is left for [S1d.3.3](p1d.3_model_sets/s1d.3.3_the_verdict.md) is not the
-pricing but the **decision**: whether anything ships at all on a corpus with
-one real multi-model puzzle, whether an over-approximation may ship with a
-label, and how a compact form states its guarantee when `solve -e
-zebra2-minus-15` is still `exhausted = false`.
+**Closed 2026-08-26, and the answer is both** —
+[`the_verdict.md`](p1d.3_model_sets/the_verdict.md), on the user's decision.
+
+- **The count is qualified.** An `Ambiguity` reporting `k` now says whether
+  those are *the* models or the models *found*, on the three surfaces that
+  print it. That half was not on the ballot: writing the rule down found that
+  `ein solve -e examples/saturation/type-exclusivity/colors.ein` printed
+  `solutions (k) 5` for a file with **nine** models, and that **5 of the 10**
+  corpus entries answering `Ambiguity` under their declared runs do it with
+  `exhausted = false`. `Solution` had hedged its `k = 1` since ein.py; the
+  verdict whose `k` is a *number* rather than a uniqueness guess hedged
+  nothing.
+- **The description ships as `--models key`** — S1d.3.2's recommendation, as
+  *additional output*: 49 lines against 516 on `zebra2-minus-15`, the shipped
+  table identical to the census's on all 32 rows, `verdict.solutions`
+  byte-identical, and **5 of 8 171** shape renderings moved, all of them
+  `trace[answer]` on an `Ambiguity` entry with no line added or removed.
+- **(a) does not ship**, on the readability veto it lost in S1d.3.2 — and
+  S1d.3.3 added the reason that decides it under an incomplete search. A key
+  row's values are read off a model that exists, so no row can be falsified: a
+  33rd model **adds** a row or **shares** one, withdrawing the table's
+  completeness and the key's sufficiency. (a)'s core is an intersection over
+  the models found, and intersecting a subset gives a superset of the truth,
+  so a 33rd model can **contradict a printed fact**. (b) fails in its margins;
+  (a) fails in its cells.
+- **Where the key is unaffordable the form is the enumeration.**
+  `branching/06_lookahead_on.ein` needs 8 of 42 slots and `C(42, 8) = 118 030
+  185`, so it declines and prints the models — (e), which the phase README
+  named a legitimate winner all along.
+
+The question's own constraint — *what is not legitimate is a compact form that
+only the engine can read* — is the one the answer is measured against, and the
+readability evidence is [`representations.md` §6](p1d.3_model_sets/representations.md)'s,
+with its own limitation stated there: no independent reader was available.
 
 ## Q-M1d.6 — May `Contradiction` be said with `exhausted = False`?
 

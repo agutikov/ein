@@ -323,6 +323,21 @@ fn solve_command() -> Command {
              compile, root saturation, hypothesis search (enterings, \
              layers, saturations, per-hypothesis avg), and totals",
         ))
+        // ── the model set's projection (M1d S1d.3.3) ──
+        .arg(
+            Arg::new("models")
+                .long("models")
+                .value_name("FORM")
+                .value_parser(PossibleValuesParser::new(["list", "key"]))
+                .default_value("list")
+                .help(
+                    "how to print a model SET: 'list' (a block per model, the \
+                     default) or 'key' (the smallest set of slots that tells \
+                     them apart, and the table of combinations that occur). \
+                     Read by an ambiguous verdict only; changes stdout and \
+                     nothing recorded",
+                ),
+        )
         // ── extra stdout ──
         .arg(flag(
             's',

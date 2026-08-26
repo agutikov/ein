@@ -347,7 +347,17 @@ pub fn linearize(
         };
         return Trace {
             steps,
-            summary: format!("Ambiguous — {} models (showing one).", branches.len()),
+            // The same rule as the answer headline (M1d S1d.3.3): a model
+            // count printed without `exhausted` beside it reads as the whole
+            // set, and here it is a set the trace shows one member of.
+            summary: if solved.stats.exhausted {
+                format!("Ambiguous — {} models (showing one).", branches.len())
+            } else {
+                format!(
+                    "Ambiguous — at least {} models (showing one); the search did not exhaust.",
+                    branches.len()
+                )
+            },
             commitment: "∅ (unconditional)".to_string(),
             solved: false,
             n_solutions: branches.len(),

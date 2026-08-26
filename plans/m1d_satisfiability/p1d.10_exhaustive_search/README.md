@@ -54,7 +54,38 @@ exactly one model, the canonical grid):
 | `-m 1` | 96 | 0 | 24 ms |
 | `-m 2` | 4 656 | 28 | 1.4 s |
 | `-m 3` | 48 745 | **32 — all of them** | 25.3 s |
-| `-m 5` (the default, i.e. `-e`) | — | — | **killed at 30 min** |
+| `-m 5` (the default, i.e. `-e`) | 618 076 | 32 | **416 s** — it finishes, `exhausted = false` |
+| **`-m 38`** | **17 204 592** | **32** | **1 496 s** at `-j16` — and **`exhausted = true`** |
+
+The last two rows are later than the session above — `-m 5` from
+[S1d.10.1](s1d.10.1_why_it_does_not_finish.md)'s census (2026-08-24, and the
+"killed at 30 min" this row used to carry was a record of the 2026-08-20
+session rather than of this engine), and `-m 38` from 2026-08-26, on
+`examples/zebra2-minus-15-obligations.ein`.
+
+> **`-m 38` is the phase's headline question answered, and the answer is that
+> it takes 25 minutes.** The cap was 38 and the search stopped at **22 layers
+> with the frontier empty**, so it is the lattice that ended and not the
+> budget. `k` does not move — all 32 models are still found by depth 3, and the
+> extra **16.6 M** enterings buy nothing but the proof.
+>
+> **And the deaths are eight.** The same file at `-m 5` reproduces this
+> census's counters to the digit — 618 076 enterings, `dead_post` 19 121,
+> `dead_pre` 0 — so with `dead_post` at **19 129** after 22 layers, layers 6
+> through 22 kill **8** of **16 586 516** enterings. `dead_pre` is 0
+> throughout: not one candidate is dropped by the no-good store before
+> entering, at any depth. *A layer that kills nothing learns nothing*, carried
+> to the end of the lattice.
+>
+> (Both runs are `-j16`, and the `--jobs` contract holds at this scale: 44 s
+> against the census's 416 s at `--jobs 1`, with every counter identical.)
+>
+> So [the milestone's first acceptance bullet](../README.md#acceptance-for-the-milestone)
+> is **met**, and what is left for this phase is unchanged and sharper: not
+> *whether* it finishes but *why it costs 17 M enterings to prove what 48 745
+> found*. [S1d.10.2](s1d.10.2_depth_required.md) and
+> [S1d.10.3](s1d.10.3_stopping_criterion.md) are that question, and they now
+> have a terminating run to measure against instead of a truncated one.
 
 Ground truth: **32 models.** Three readings, and the third is the phase:
 
@@ -64,11 +95,13 @@ Ground truth: **32 models.** Three readings, and the third is the phase:
    `-v` header is the count of live hypothesis *facts*, and it never shrinks,
    because nothing is ever refuted.
 2. **Growth is ~11× a layer** and the wall clock with it: 96 → 4 656 → 48 745.
-   Layers 4 and 5 are the run nobody sees finish.
-3. **Every model is found by depth 3. Depths 4 and 5 exist only to certify
-   that there are no more.** The cost is not *finding*, it is *proving there
-   is nothing left* — and the engine's only proof of that is exhausting the
-   lattice.
+   Layers 4 and 5 were the run nobody had seen finish; **layer 22 is where it
+   ends**, and the whole of layers 4–22 is 17.2 M enterings.
+3. **Every model is found by depth 3. Every layer after it exists only to
+   certify that there are no more.** The cost is not *finding*, it is *proving
+   there is nothing left* — and the engine's only proof of that is exhausting
+   the lattice. Both halves are now numbers rather than a prediction:
+   **48 745** enterings find all 32, and **17 204 592** prove it.
 
 That third line is the phase's whole subject, and it was not visible before
 this measurement.

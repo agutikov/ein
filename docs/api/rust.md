@@ -50,7 +50,8 @@ Six crates ship and two are dev-only (`ein-corpus`, `ein-parity`, both
 
 ```text
 ein-core  ← ein-ir ← ein-infer ← ein-einb    (the .einb container)
-                              ← ein-render   (DOT, markdown trace, dumps)
+                              ← ein-render   (DOT, markdown trace, dumps,
+                                              the model-set key)
                                     ← ein-cli
 ```
 

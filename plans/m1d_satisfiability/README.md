@@ -43,6 +43,7 @@ finish — because depths 4 and 5 exist only to prove there are no more.
 | `-m 3` | 48 745 | **32 — all of them** | 25.3 s |
 | `-m 4` | 205 470 | 32 | — |
 | `-m 5` (`-e`) | **618 076** | **32** | **416 s** — it finishes |
+| **`-m 38`** | **17 204 592** | **32** | **1 496 s** at `-j16` — and it **exhausts** |
 
 > **It finishes, and the number was predicted before it was run.** S1d.10.1's
 > census row is emitted on every way out of a layer, so `-E` stops a run
@@ -60,6 +61,20 @@ finish — because depths 4 and 5 exist only to prove there are no more.
 > after the last new model.** That gap is the milestone, stated in one run:
 > finding is cheap, *proving there is nothing left* is the whole cost, and
 > `exhausted` is still false at the end of seven minutes.
+>
+> **And at `-m 38` it is true — measured 2026-08-26.** The obligations twin at
+> a cap deep enough not to bind stops at **22 layers with the frontier empty**,
+> which is the lattice ending rather than the budget: `k = 32`, `exhausted =
+> true`, **17 204 592** enterings (27.8× the depth-5 run) in **24 min 56 s** on
+> sixteen threads. So the milestone's first acceptance bullet is **met** —
+> `solve -e` finishes with all 32 models and a stated exhaustion claim — and
+> the sentence above keeps its point rather than losing it: the extra 16.6 M
+> enterings buy **no new model**, only the proof — and they kill **eight
+> commitments**. `dead_post` is 19 121 at depth 5 and 19 129 at depth 22, with
+> `dead_pre` 0 throughout, so
+> [S1d.10.1](p1d.10_exhaustive_search/s1d.10.1_why_it_does_not_finish.md)'s
+> *a layer that kills nothing learns nothing* holds to the end of the lattice:
+> 16 586 516 enterings, 8 deaths.
 
 **Semantically**, from the note: saturation computes what *must follow*; it has
 no vocabulary for what *must exist*. `bijective ≡ functional ∧ injective ∧
@@ -200,7 +215,7 @@ that is the note's thesis measured in someone else's language.
 | phase | title | stages | est. | gate |
 |---|---|---|---|---|
 | [P1d.2](p1d.2_obligations/README.md) | Obligations — the half of the vocabulary that says *must* | 6 (**done 2026-08-25**) | 3.5 w | **met**: a puzzle states a requirement, a state says what it owes, the search branches on it, and the verdict reports it — [the phase ledger](p1d.2_obligations/README.md) |
-| [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 (**2 done**) | 1.5 w | either a compact representation of the 32 models, or a written argument for why enumeration is the answer |
+| [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 (**done 2026-08-26**) | 1.5 w | **met, and with both**: `ein solve --models key` is the compact representation, and the enumeration now states its own guarantee — [the phase ledger](p1d.3_model_sets/README.md#the-ledger) |
 | [P1d.4](p1d.4_model_set_closure/README.md) | Closing the model set — the claim nothing can state | 3 (**at stage depth**) | 1.5 w | a written answer to "may a puzzle require its own model count", and `zebra2-minus-15`'s 32 models either verifiable or the pipeline sentence rewritten |
 | [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 (1 done) | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
 
@@ -284,6 +299,25 @@ and whether closed-world completion is adopted.
 > [S1d.3.3](p1d.3_model_sets/s1d.3.3_the_verdict.md)'s closed-world question
 > with a number on it.
 >
+> **S1d.3.3 closed the phase on 2026-08-26, and the half that was broken was
+> the one nobody had put on the ballot.** The user's answer to Q-M1d.5 was
+> **both** — ship (b), *and* make the enumeration honest — and writing the
+> guarantee rule down found that it was not: `ein solve -e
+> examples/saturation/type-exclusivity/colors.ein` printed `solutions (k) 5`
+> for a file with **nine** models, and **5 of the 10** corpus entries that
+> answer `Ambiguity` under their declared runs do it with `exhausted = false`.
+> `Solution` has hedged its `k = 1` since ein.py; the verdict whose `k` is a
+> *number* hedged nothing. What ships is that qualifier on three surfaces and
+> `--models key` as additional output — 49 lines against 516 on
+> `zebra2-minus-15`, the shipped table identical to the census's on all 32
+> rows, and a golden diff of **5 of 8 171 renderings**, every one a
+> `trace[answer]` on an `Ambiguity` entry with no line added or removed
+> ([`the_verdict.md`](p1d.3_model_sets/the_verdict.md)). The semantics question
+> P1d.2 handed forward is **stated and not adopted**: a reported model is a
+> *state*, `k` counts states, and closure is per relation and opt-in — which
+> the language already has twice, in `:expect`'s *naming a relation closes it*
+> and in the obligation domain contract.
+>
 > **S1d.3.2 followed the same day and reversed its own prediction.** It called
 > the certain core *"the candidate to beat"*; printed, that core turns out to
 > be 2 facts of answer and 338 of scaffolding, it cannot say how many models
@@ -316,11 +350,25 @@ and name the decisions still reserved: whether P1d.3 ships a representation,
 whether closed-world completion is adopted, and whether P1d.4 grows a
 keyword.
 
+> **Two of the three were taken on 2026-08-26 and the discipline held.**
+> P1d.3 **does** ship a representation — the user chose *both*, so
+> `--models key` is additional output beside a qualified count — and
+> closed-world completion is **not** adopted: S1d.3.3 states what the engine
+> means today (a reported model is a *state*, `k` counts states, closure is
+> per relation and opt-in) so that adopting it later is a diff against a
+> written specification rather than an argument from scratch. The third,
+> whether P1d.4 grows a keyword, is still the user's.
+
 ## Acceptance for the milestone
 
 - **`solve -e examples/zebra2-minus-15.ein` finishes** with all 32 models and
   a stated exhaustion claim — or the milestone records, with numbers, why it
   cannot and what the honest verdict is instead.
+  **Met 2026-08-26**, on the obligations twin at `-m 38`: `k = 32`,
+  `exhausted = true`, 17 204 592 enterings, 22 layers, 24 min 56 s at `-j16`
+  ([§ The two halves of one question](#the-two-halves-of-one-question)). What
+  is *not* settled is the cost — 92 % of the run is proof — which is
+  [P1d.10](p1d.10_exhaustive_search/README.md)'s remaining four stages.
 - **The engine can state a requirement.** At minimum `total` and `surjective`
   with the force their names claim; the general `L ≤ # ≤ U` form only if a
   corpus entry needs it.

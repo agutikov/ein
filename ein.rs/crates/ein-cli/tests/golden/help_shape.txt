@@ -43,6 +43,7 @@ COMMAND ein solve
   OPTION --max-enterings -E metavar=MAX_ENTERINGS arity=1 default=None choices=- group=- required=False help=abort after N commitment tries
   OPTION --max-set-size -m metavar=MAX_SET_SIZE arity=1 default='5' choices=- group=- required=False help=commitment-set depth cap (default: 5)
   OPTION --max-time -T metavar=MAX_TIME arity=1 default=None choices=- group=- required=False help=abort after N wall-clock seconds
+  OPTION --models -- metavar=FORM arity=1 default='list' choices=list|key group=- required=False help=how to print a model SET: 'list' (a block per model, the default) or 'key' (the smallest set of slots that tells them apart, and the table of combinations that occur). Read by an ambiguous verdict only; changes stdout and nothing recorded
   OPTION --no-diagrams -G metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) suppress all inline dot blocks
   OPTION --no-kill-cache -K metavar=- arity=0 default=False choices=- group=- required=False help=disable the lookahead-kill (not h) cache (pairs with --no-lookahead to exercise the raw loop)
   OPTION --no-lookahead -L metavar=- arity=0 default=False choices=- group=- required=False help=disable hypgen's one-step lookahead (forces deaths through the no-good learning path)

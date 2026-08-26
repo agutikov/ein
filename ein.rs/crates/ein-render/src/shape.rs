@@ -420,6 +420,7 @@ pub fn trace_shape(
                 Some(solved.stats.solution_nodes),
                 exhausted,
                 Some("<source>"),
+                crate::models::ModelsForm::List,
             )?);
         }
         // The exhaustive regime's own trace: this is where the unsat and

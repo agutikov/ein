@@ -15,7 +15,7 @@ use ein_infer::solve::{Dumper, MonotonicStats, NoDumper, SolveError, SolveOption
 use ein_infer::verdict::{Answer, Verdict};
 use ein_ir::Ast;
 use ein_render::dump::{MonotonicDumper, ProgressDumper};
-use ein_render::render_solution_table;
+use ein_render::{ModelsForm, render_solution_table};
 
 use crate::common::read_text_or_crash;
 use crate::factdump::{self, hypothesis_target_relations, print_final_state, print_unsat_core};
@@ -419,6 +419,23 @@ fn sorted_model(terms: &Terms, kb: &Kb) -> Vec<String> {
     out
 }
 
+/// `--models {list,key}` — which projection of a model **set** goes to stdout.
+///
+/// M1d [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)
+/// T1d.3.3.4: **additional output, never a replacement.** It is read only by
+/// the `Ambiguity` arm of the table, and it reaches nothing else — not the
+/// verdict's model list, not `--json-summary`, not `--events`, not `-p`, not
+/// `:expect` — so a consumer that reads models reads the same models under
+/// either value. Deliberately not a `SolverConfig` field for
+/// `EIN_OBLIGATION_CHOICE`'s reason: the config is rendered into the KB-shape
+/// digest, and a presentation knob has no business there.
+fn models_form(m: &clap::ArgMatches) -> ModelsForm {
+    match m.get_one::<String>("models").map(String::as_str) {
+        Some("key") => ModelsForm::Key,
+        _ => ModelsForm::List,
+    }
+}
+
 /// `--jobs N`, or `--jobs auto` — which the parser gives us as `0`.
 ///
 /// **The default is 1 and stays 1** ([S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
@@ -627,6 +644,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
         Some(solved.stats.solution_nodes),
         solved.stats.exhausted,
         Some(file),
+        models_form(m),
     ) {
         Ok(t) => t,
         Err(line) => {

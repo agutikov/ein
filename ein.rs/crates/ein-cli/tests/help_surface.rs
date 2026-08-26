@@ -22,13 +22,15 @@
 #[cfg(feature = "einb")]
 use ein_corpus::{golden, golden_path};
 
-/// The surface, counted from the parsers themselves — 48 options across 9
+/// The surface, counted from the parsers themselves — 49 options across 9
 /// parsers, `-h` and `-V` excluded as parser furniture (see `help_shape`'s
 /// skip). An extractor that silently returned nothing would pass an empty
 /// diff; it does not pass this.
 ///
-/// **39 of them are ein.py's**; the other nine are `solve --jobs`
+/// **39 of them are ein.py's**; the other ten are `solve --jobs`
 /// ([T1a.7.2.1](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)),
+/// `solve --models` (M1d
+/// [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)),
 /// `ein test`'s eight (M1c
 /// [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test))
 /// and — under the `einb` feature — `ein kb save --saturate`, none of which has
@@ -43,8 +45,8 @@ use ein_corpus::{golden, golden_path};
 /// `--events` and `--events-level` on it too.
 const EXPECTED: [(&str, usize); 8] = [
     ("COMMAND ein\n", 0),
-    // 29 of ein.py's, plus P1a.7's `--jobs`.
-    ("COMMAND ein solve\n", 30),
+    // 29 of ein.py's, plus P1a.7's `--jobs` and M1d S1d.3.3's `--models`.
+    ("COMMAND ein solve\n", 31),
     ("COMMAND ein saturate\n", 5),
     ("COMMAND ein render\n", 0),
     ("COMMAND ein render rules\n", 1),
@@ -95,18 +97,18 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        39 + 1
+        39 + 2
             + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
         "39 options across ein.py's eight parsers, plus `solve --jobs`, \
-         `ein test`'s eight and `ein kb save --saturate` — none of which \
-         ein.py has"
+         `solve --models`, `ein test`'s eight and `ein kb save --saturate` \
+         — none of which ein.py has"
     );
 }
 
 /// **The whole rendering, checked in.**
 ///
-/// 48 options across 9 parsers, each with its short key, metavar, arity,
+/// 49 options across 9 parsers, each with its short key, metavar, arity,
 /// default, choices, group and help — the same text the diff against
 /// `argparse` consumed, blessed from a tree where that diff was green. A flag
 /// added, removed, renamed or re-defaulted shows up as a line.

@@ -190,7 +190,22 @@ pub fn render_answer(
         }
         Answer::Verdict(Verdict::Ambiguity(branches)) => {
             let k = distinct_models(branches);
-            format!("Ambiguous — {k} distinct complete models; the puzzle is under-determined.")
+            // **The count is a claim, and `exhausted` is what licenses it.**
+            // With the lattice exhausted these *are* the models; without it
+            // they are the models found, and a deeper layer may hold more —
+            // `saturation/type-exclusivity/colors.ein -e` says 5 at the
+            // default cap and has 9 at `-m 6`. M1d
+            // [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)
+            // T1d.3.3.2: a `Solution` has qualified itself since ein.py and
+            // the verdict that reports a model *set* did not.
+            if exhausted {
+                format!("Ambiguous — {k} distinct complete models; the puzzle is under-determined.")
+            } else {
+                format!(
+                    "Ambiguous — at least {k} distinct complete models; \
+                     the search did not exhaust the lattice."
+                )
+            }
         }
         Answer::Verdict(Verdict::Contradiction { unsat_core }) => {
             let srcs = core_sources(root, terms, unsat_core);
@@ -335,6 +350,14 @@ fn solution_block(ast: &Ast, terms: &mut Terms, kb: &Kb, header: &str) -> Vec<St
 ///
 /// All text is rendered from puzzle data; this function contributes the field
 /// labels and the layout, never domain vocabulary.
+///
+/// `exhausted` qualifies **every count it prints**: a `Solution`'s `k` since
+/// ein.py, and — since M1d
+/// [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)
+/// — an `Ambiguity`'s, which is the one that needed it most. `models`
+/// chooses the model *set*'s projection ([`crate::models::ModelsForm`]) and
+/// is read by the `Ambiguity` arm alone.
+#[allow(clippy::too_many_arguments)]
 pub fn render_solution_table(
     ast: &Ast,
     terms: &mut Terms,
@@ -343,6 +366,7 @@ pub fn render_solution_table(
     solution_nodes: Option<u64>,
     exhausted: bool,
     source: Option<&str>,
+    models: crate::models::ModelsForm,
 ) -> Result<String, String> {
     // ein.py compiles the `:goal` pattern inside `_solution_block`, so a goal
     // the compiler rejects — `(query :goal (?R Rex Animal))`, an unbound
@@ -384,17 +408,57 @@ pub fn render_solution_table(
         }
         Answer::Verdict(Verdict::Ambiguity(branches)) => {
             let kk = distinct_models(branches);
-            lines.push(format!("  solutions (k)   {kk}"));
-            lines.push(
-                "  verdict         Ambiguous — distinct complete models; \
-                 the puzzle is under-determined"
-                    .to_string(),
-            );
-            for i in 0..branches.len() {
+            // The qualifier rides on the count, where `Solution`'s already
+            // does — M1d S1d.3.3's rendering rule, one row of its table each.
+            // `exhausted` is printed by `--stats` and by nothing else, so
+            // without this the reader of a `k` has no way to know it is a
+            // lower bound.
+            let bound = if exhausted {
+                ""
+            } else {
+                "   (a lower bound — the search did not exhaust)"
+            };
+            lines.push(format!("  solutions (k)   {kk}{bound}"));
+            // One word, and it is the whole of the rule's second row: *these
+            // are the models* against *these are models found*. The rest of
+            // the sentence is unchanged because it stays true either way —
+            // two models found is under-determined however deep the search
+            // went.
+            lines.push(format!(
+                "  verdict         Ambiguous — distinct complete models{}; \
+                 the puzzle is under-determined",
+                if exhausted { "" } else { " found" }
+            ));
+            // `--models key` — the model *set* as its determining key, M1d
+            // P1d.3's (b). A rendering and never a replacement: the models it
+            // stands in for are still in `verdict.solutions`, in
+            // `--json-summary`, in `--events` and under `-p`, and an
+            // unaffordable key falls back to the enumeration below.
+            let mut listed = true;
+            if models == crate::models::ModelsForm::Key {
+                let kbs: Vec<&Kb> = branches.iter().map(|b| &b.kb).collect();
                 lines.push(String::new());
-                let header = format!("model {}/{}", i + 1, branches.len());
-                let block = solution_block(ast, terms, &branches[i].kb, &header);
-                lines.extend(block);
+                match crate::models::key_table(terms, &kbs, exhausted, "  ") {
+                    crate::models::KeyOutcome::Table(rows) => {
+                        lines.extend(rows);
+                        listed = false;
+                    }
+                    crate::models::KeyOutcome::Unaffordable(why) => {
+                        lines.push("  determining key — none within budget".to_string());
+                        lines.extend(crate::models::wrap(
+                            &format!("{why}, so the models are printed instead."),
+                            "    ",
+                        ));
+                    }
+                }
+            }
+            if listed {
+                for i in 0..branches.len() {
+                    lines.push(String::new());
+                    let header = format!("model {}/{}", i + 1, branches.len());
+                    let block = solution_block(ast, terms, &branches[i].kb, &header);
+                    lines.extend(block);
+                }
             }
         }
         Answer::Verdict(Verdict::Contradiction { unsat_core }) => {

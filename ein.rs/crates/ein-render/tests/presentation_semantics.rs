@@ -38,7 +38,7 @@ use ein_render::lattice_dag::{LatticeSource, LatticeView, render_lattice};
 use ein_render::rules::{RuleMode, render_rule_form, render_rules_forms};
 use ein_render::slice::render_slice;
 use ein_render::trace::{LinearizeOpts, Mode, linearize, render_markdown};
-use ein_render::{render_answer, render_constraints, render_solution_table};
+use ein_render::{ModelsForm, render_answer, render_constraints, render_solution_table};
 use std::path::PathBuf;
 
 fn repo_root() -> PathBuf {
@@ -701,6 +701,61 @@ fn the_headline_is_the_querys_own_goal_text() {
     );
 }
 
+/// **ambiguity-headline-qualifies-its-own-count.** M1d
+/// [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)
+/// T1d.3.3.2, on the two surfaces the CLI does not reach.
+///
+/// A model count is a **claim about a set**, and `exhausted` is what licenses
+/// it. The `Solution` headline has carried that distinction since ein.py; the
+/// verdict that reports a set carried none, which is the wrong way round —
+/// `k = 1` unqualified guesses at uniqueness, `k = 4` unqualified is a wrong
+/// number. `branching/02_one_dead_one_alive.ein` is the corpus's proof: at
+/// depth 3 the search finds 4 models and does not exhaust; the sharper case
+/// is `saturation/type-exclusivity/colors.ein`, which says **5** at the
+/// default cap and has **9** at `-m 6`.
+///
+/// Both proofless surfaces are checked, because they are written in two
+/// places and the trace's summary is the one no corpus digest covers — the
+/// five `Ambiguity` entries all exhaust at the shape sweep's depth, so
+/// `trace[no-proof]` renders the *other* branch of it.
+#[test]
+fn an_unexhausted_ambiguity_says_the_count_is_a_lower_bound() {
+    let run = solve_file("examples/branching/02_one_dead_one_alive.ein", false, None);
+    assert!(!run.solved.stats.exhausted, "depth 3 should not exhaust");
+    let mut terms = run.terms;
+    let answer = &run.solved.answer;
+    assert_eq!(
+        render_answer(&run.ast, &mut terms, &run.kb, answer, false),
+        "Ambiguous — at least 4 distinct complete models; \
+         the search did not exhaust the lattice."
+    );
+    // The same answer rendered as though the lattice had been exhausted: one
+    // sentence, and it is the only one entitled to say *the* models.
+    assert_eq!(
+        render_answer(&run.ast, &mut terms, &run.kb, answer, true),
+        "Ambiguous — 4 distinct complete models; the puzzle is under-determined."
+    );
+
+    let trace = linearize(&run.ast, &terms, &run.kb, &run.solved, LinearizeOpts::new());
+    assert_eq!(
+        trace.summary,
+        "Ambiguous — at least 4 models (showing one); the search did not exhaust."
+    );
+
+    // And the exhausted counterpart, so the assertion above is about the
+    // qualifier and not about the file.
+    let deep = solve_file("examples/lattice/02_genuine_3set_death.ein", false, None);
+    assert!(deep.solved.stats.exhausted);
+    let trace = linearize(
+        &deep.ast,
+        &deep.terms,
+        &deep.kb,
+        &deep.solved,
+        LinearizeOpts::new(),
+    );
+    assert_eq!(trace.summary, "Ambiguous — 3 models (showing one).");
+}
+
 /// **relation-why-positional-table.** Each goal conjunct is rendered through
 /// its relation's `:why`, with `{?1}` / `{?2}` bound *positionally*.
 ///
@@ -715,8 +770,17 @@ fn the_headline_is_the_querys_own_goal_text() {
 fn the_table_renders_each_conjunct_through_its_relations_why() {
     let (ast, mut terms, mut kb) = loaded(ZEBRA_SHAPED);
     let answer = answer_of(&mut kb);
-    let table = render_solution_table(&ast, &mut terms, &kb, &answer, Some(1), true, None)
-        .expect("the goal compiles");
+    let table = render_solution_table(
+        &ast,
+        &mut terms,
+        &kb,
+        &answer,
+        Some(1),
+        true,
+        None,
+        ModelsForm::List,
+    )
+    .expect("the goal compiles");
     for sentence in [
         "Water is drunk in House-1",
         "the Norwegian lives in House-1",
@@ -728,8 +792,17 @@ fn the_table_renders_each_conjunct_through_its_relations_why() {
 
     let (ast, mut terms, mut kb) = loaded(OWNER_SHAPED);
     let answer = answer_of(&mut kb);
-    let table = render_solution_table(&ast, &mut terms, &kb, &answer, Some(1), true, None)
-        .expect("the goal compiles");
+    let table = render_solution_table(
+        &ast,
+        &mut terms,
+        &kb,
+        &answer,
+        Some(1),
+        true,
+        None,
+        ModelsForm::List,
+    )
+    .expect("the goal compiles");
     assert!(table.contains("Water drunk at House-1"), "{table}");
     assert!(
         table.contains("(owner-loc Zaphod House-1)"),
