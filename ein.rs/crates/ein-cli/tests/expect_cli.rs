@@ -133,6 +133,46 @@ fn the_load_negatives_are_refused_with_their_banked_message() {
     }
 }
 
+/// **`NOT CHECKED`'s corpus witness, and why it is not a manifest cell.**
+///
+/// M1d [S1d.4.1](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/s1d.4.1_what_closure_costs.md)
+/// went looking for a real file that reaches [`Outcome::NotChecked`] and found
+/// this one: `examples/features/11_expect_ambiguity.ein` under **plain
+/// `solve`**, which stops at `-n 1`, so the claim about a *set* is neither
+/// confirmed nor refuted. No constructed input and no `-m` cap — this is the
+/// corpus's own fixture, answering the question the phase is about.
+///
+/// What it is *not* is a cell of `corpus.toml`, and the reason is the last
+/// assertion here. `solve` prints the `:expect` verdict on **stdout** and
+/// exits 1 with an empty stderr, and `corpus_cli`'s
+/// `every_refusal_carries_a_diagnostic` requires a non-zero exit to say why on
+/// stderr. So declaring `solve` in that entry's `runs` — one word, and the
+/// exit code is already a golden — turns a green sweep red on an unrelated
+/// invariant. Whether a failing claim is a *refusal* that belongs on stderr or
+/// a *result* that belongs under the solution table is a surface question, and
+/// it is [S1d.4.3](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/s1d.4.3_the_vocabulary.md)'s.
+///
+/// The empty-stderr assertion is therefore a **trip-wire**, not an
+/// endorsement: the day the diagnosis moves, this fails, and the manifest cell
+/// becomes available in the same breath.
+#[test]
+fn not_checked_is_reachable_from_a_corpus_file_with_no_cap() {
+    let r = ein(&["solve", "examples/features/11_expect_ambiguity.ein"]);
+    assert_eq!(r.code, 1, "{}{}", r.out, r.err);
+    assert!(r.out.contains(":expect        NOT CHECKED"), "{}", r.out);
+    assert!(
+        r.out.contains("the search was not exhausted"),
+        "it says which half went unchecked: {}",
+        r.out
+    );
+    assert!(
+        r.err.is_empty(),
+        "the diagnosis has moved off stdout — `examples/features/11_expect_ambiguity.ein` \
+         can now declare a `solve` run, and this trip-wire has done its job: {:?}",
+        r.err
+    );
+}
+
 // ── Several queries in one file ────────────────────────────────────
 
 /// Both queries run, and the second's failure is what sets the exit code —

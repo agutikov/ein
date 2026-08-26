@@ -15,6 +15,13 @@ building M1c
 started, because a reconnaissance measured what it had assumed. See
 [§ How deep this plan is](../README.md#how-deep-this-plan-is) and
 § What the corpus says, below.
+**[S1d.4.1](s1d.4.1_what_closure_costs.md) is done, 2026-08-26** — the
+reconnaissance below is **superseded** by
+[`closure_census.md`](closure_census.md), which is parsed rather than grepped
+and disagrees with it: the closure claim is written **once**, not twice, and
+the write cost's worst case is 4.28× a file rather than the zebra's 0.96×. What
+made the census possible is `ein test --json-report`, a read-out the stage
+added because `:expect` had no machine-readable surface at all.
 
 ## The gap, exactly
 
@@ -68,23 +75,30 @@ depends on:
 **Re-checks it how?** By exhausting a search that does not finish. That
 sentence is a debt, and this phase is where it is paid or renegotiated.
 
-## What the corpus says — measured 2026-08-25
+## What the corpus says — measured 2026-08-25, **re-taken parsed 2026-08-26**
 
 Four numbers, from `ein test` over the three roots and the expectation shapes
 of every `.ein` file that carries one:
 
-| | |
-|---|---:|
-| files carrying an `:expect` | **62** — 56 `tests/`, 3 `examples/`, 3 broken-fixture refusals |
-| expectations checked, and their outcome | **59 held**, 0 FAILED, **0 not checked** |
-| shapes | `(model …)` **40** · `(false)` **20** · `(or …)` **2** |
-| the two `(or …)` users | `features/10_expect.ein`, `features/11_expect_ambiguity.ein` |
+| | grepped, 2026-08-25 | **parsed, 2026-08-26** |
+|---|---:|---:|
+| files carrying an `:expect` | 62 — 56 `tests/`, 3 `examples/`, 3 broken-fixture refusals | **59** programs that load; the three refusals make no claim, because a claim is a property of a *program* |
+| expectations checked, and their outcome | **59 held**, 0 FAILED, **0 not checked** | unchanged, and `exhausted` on 59 of 59 |
+| shapes | `(model …)` **40** · `(false)` **20** · `(or …)` **2** | `(model …)` **38** · `(false)` **20** · **`(or …)` 1** |
+| the `(or …)` users | `features/10_expect.ein`, `features/11_expect_ambiguity.ein` | **`features/11_expect_ambiguity.ein`, alone** |
 
-**The claim this phase exists to make affordable is written twice, and both are
-feature demos.** The only real one — `11_expect_ambiguity` — is `k = 2,
-exhausted = true`, a two-model toy that closes in milliseconds. Set-closure is
-not a form the corpus strains against; it is one the corpus has never used in
-anger, and a vocabulary chosen for it is a vocabulary for two instances.
+**The claim this phase exists to make affordable is written once**, and the
+correction is the phase's own method arriving early: `10_expect.ein`'s
+`:expect` is a `(model …)`, and the `(or …)` a grep finds in it is **line 12 of
+its header comment**, documenting the form. The one real instance —
+`11_expect_ambiguity` — is `k = 2, exhausted = true`, a two-model toy that
+closes in 0.11 ms. Set-closure is not a form the corpus strains against; it is
+one the corpus has never used in anger, and a vocabulary chosen for it is a
+vocabulary for **one** instance.
+
+The denominator the census adds: **59 of 124 queries** state a claim at all,
+and **1 of 124** states one about a set
+([`closure_census.md` §1](closure_census.md)).
 
 **The debt is not merely unverifiable — it is unwritten.**
 `examples/zebra2-minus-15.ein` **carries no `:expect` at all**, and neither does
@@ -94,10 +108,21 @@ is a different problem from the one § The gap states and a cheaper one to fix.
 **And writing it would roughly double the file.** The query's goal names
 `drink-loc`, `nation-loc` and `pet-loc`, and *naming a relation closes it*, so
 an `:expect (or …)` must list all three relations' facts in all 32 models — 15
-positive facts per model × 32 = **480**, about **512 lines of expectation on a
-539-line file** — and then come back `NOT CHECKED`. So the cost of *writing*
-the claim is a second cost the phase README does not mention, and on the one
-entry that motivates the phase it is the larger of the two.
+positive facts per model × 32 = **480**, **513 lines on a 534-line file** — and
+then come back `NOT CHECKED`. So the cost of *writing* the claim is a second
+cost the phase README does not mention, and on the one entry that motivates the
+phase it is the larger of the two.
+
+> **And on the corpus it is not the largest instance of itself.** 0.96× is the
+> *mildest* ratio of any entry with more than four models.
+> `branching/06_lookahead_on` would take **407 lines on a 95-line file —
+> 4.28×** — and `saturation/type-exclusivity/pets.ein`, at the depth that finds
+> its 35 models, **4.33× on 36 lines**. The write cost is `k × |goal extent| /
+> |file|`, so it is worst where a *small demo* has a *large* model set — which
+> is where [S1d.3.2](../p1d.3_model_sets/representations.md) already priced the
+> compact form out. On `branching/06` the enumeration costs 4.28× the file
+> **and** `--models key` declines. Both forms fail on the same entry, for
+> unrelated reasons.
 
 **One gap nothing asked for**: `Outcome::NotChecked` — the value that makes the
 hole honest — **never fires on a corpus entry**. It is exercised only by
@@ -105,6 +130,19 @@ hole honest — **never fires on a corpus entry**. It is exercised only by
 A mechanism whose only witnesses are synthetic is one the corpus cannot notice
 rotting, and [T1d.4.1.4](s1d.4.1_what_closure_costs.md) is where that is
 decided rather than left invisible.
+
+> **Half of that is wrong, and the half that is left is one manifest line.**
+> `test_cli.rs::test_exhausts_where_solve_stops_at_one` runs plain `ein solve`
+> on `examples/features/11_expect_ambiguity.ein` — a corpus file, no
+> constructed input, no `-m` cap — and asserts `NOT CHECKED`. What has no
+> witness is a *manifest cell*, because that entry's `runs` column omits plain
+> `solve` on purpose. Declaring it is one word and **fails a different gate**:
+> `solve` prints the `:expect` verdict on stdout and exits 1 with an empty
+> stderr, and `corpus_cli.rs::every_refusal_carries_a_diagnostic` requires a
+> non-zero exit to say why on stderr. Whether a false claim is a *refusal* or a
+> *result* is a surface question and [S1d.4.3](s1d.4.3_the_vocabulary.md)'s;
+> what S1d.4.1 shipped is the trip-wire that goes red the day it moves
+> ([`closure_census.md` §5](closure_census.md)).
 
 ## The three questions
 
@@ -134,11 +172,11 @@ decided rather than left invisible.
 
 ## Stages
 
-| stage | title | est. |
-|---|---|---|
-| [S1d.4.1](s1d.4.1_what_closure_costs.md) | What closure costs, per corpus entry — which claims are checkable today | 2 d |
-| [S1d.4.2](s1d.4.2_the_second_order_boundary.md) | May a program state it? The second-order boundary, and where the neighbours put it | 3 d |
-| [S1d.4.3](s1d.4.3_the_vocabulary.md) | The vocabulary: what a test says when it can only afford half the claim | 2 d |
+| stage | title | est. | |
+|---|---|---|---|
+| [S1d.4.1](s1d.4.1_what_closure_costs.md) | What closure costs, per corpus entry — which claims are checkable today | 2 d | **done 2026-08-26** — [`closure_census.md`](closure_census.md) |
+| [S1d.4.2](s1d.4.2_the_second_order_boundary.md) | May a program state it? The second-order boundary, and where the neighbours put it | 3 d | |
+| [S1d.4.3](s1d.4.3_the_vocabulary.md) | The vocabulary: what a test says when it can only afford half the claim | 2 d | |
 
 **S1d.4.1 is the cheap measurement that sizes the rest**, and the
 reconnaissance above is its first hour. Its prediction held — the answer *is*
@@ -199,6 +237,11 @@ costs one paragraph against a keyword for two instances.
 
 ## Cross-links
 
+- [`closure_census.md`](closure_census.md) — **S1d.4.1's measurement**: who
+  claims a model set (1 query of 124), whether the claim is checkable (59 of
+  59), what one would cost to write (0.96× the file on the puzzle, 4.28× on a
+  feature demo) and where it could not be checked (10 of 121). Re-taken by
+  [`utils/closure_census.py`](../../../utils/closure_census.py) in 2 min 55 s
 - [`ein-infer/src/expect.rs`](../../../ein.rs/crates/ein-infer/src/expect.rs) —
   the comparison, and `Outcome::NotChecked`, which is this gap as a value
 - [S1c.1.2](../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)

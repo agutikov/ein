@@ -4,6 +4,64 @@
 **Estimate:** 2 days
 **Depends on:** nothing — `exhausted` is already in every `--json-summary` and
 every `verdict` event, which is why this is the stage that sizes the rest.
+**Status: done 2026-08-26.** The read-out, the instrument and the four tables —
+banked in [`closure_census.md`](closure_census.md). See § What it found.
+
+## What it found
+
+| claim | asked for | measured |
+|---|---|---|
+| the usage census, **parsed** | shape and count per file, from the loaded program | **exists** — `ein test --json-report`, one row per `(query …)` of a selection, and `utils/closure_census.py` reading it. 197 files, **124 queries**, 0.04 s |
+| the denominator | what fraction of the corpus claims a model set | **59 of 124** queries claim anything; **1 of 124** claims a *set* |
+| the shapes | `(model …)` / `(or …)` / `(false)` | **38 · 1 · 20** over the 59 programs that load — where the grep said 40 · 2 · 20 |
+| verifiability today | outcome and depth, per claim | **59 held, 0 FAILED, 0 NOT CHECKED**, `exhausted` on 59 of 59, and 58 of them enter no commitment at all |
+| the write cost | goal relations × models × facts, in lines of `.ein` | `zebra2-minus-15` **513 lines on 534** (0.96×); the corpus's worst is `branching/06_lookahead_on` at **4.28×** — 407 lines on 95 |
+| the verify cost | borrowed from P1d.10 | 618 076 enterings / 416 s at depth 5 and still `exhausted = false`; **17 204 592 / 24 min 56 s at `-m 38 -j16`** and true |
+| the `NOT CHECKED` gap | decided, or open with the exit-code consequence | **decided** — §5 of the census: recorded, with the collision named and a trip-wire test |
+| the census, banked | re-takable | [`closure_census.md`](closure_census.md), `utils/closure_census.py`, **2 min 55 s** |
+
+**Four things the stage found that nothing asked for.**
+
+- **The closure claim is written once, not twice**, and the reconnaissance in
+  § Context below is the demonstration of its own warning: it grepped, and
+  `examples/features/10_expect.ein`'s `(or …)` is **line 12 of its header
+  comment**. The file's actual `:expect` is a `(model …)`. So the phase's
+  subject has **one** instance in the repository, and
+  `test_cli.rs::the_shape_comes_from_the_program_and_not_from_the_text` is
+  where that stays true.
+- **"Roughly double the file" is the mildest case, not the worst.** The zebra's
+  claim is 0.96× its file; `branching/06_lookahead_on`'s is **4.28×**, and
+  `saturation/type-exclusivity/pets.ein` at the depth that finds its 35 models
+  is **4.33× on a 36-line file**. The write cost is
+  `k × |goal extent| / |file|`, so it is worst where a *small demo* has a
+  *large* model set — which is exactly where
+  [S1d.3.2](../p1d.3_model_sets/representations.md) priced the compact form
+  out. On `branching/06` the enumeration costs 4.28× the file **and**
+  `--models key` declines, for unrelated reasons.
+- **`Outcome::NotChecked` does fire on a corpus file in the gate**, contrary to
+  the third paragraph of § Context: `test_cli.rs::test_exhausts_where_solve_stops_at_one`
+  drives `examples/features/11_expect_ambiguity.ein` under plain `solve`, with
+  no constructed input and no `-m` cap. What it lacks is a *manifest cell*, and
+  the cell is blocked by `corpus_cli.rs::every_refusal_carries_a_diagnostic` —
+  `solve` prints the `:expect` verdict on stdout and exits 1 with an empty
+  stderr. That collision is new, and it is S1d.4.3's to resolve.
+- **The empty column is not what it looks like.** Ten of the 121 entries that
+  reach a fixpoint do not exhaust at `ein test`'s depth, so a closure claim on
+  any of them would come back `NOT CHECKED` today. One is sharper than the
+  rest: `saturation/type-exclusivity/pets.ein` reports `Contradiction, k = 0`
+  at `-m 5` and has **35 models** at `-m 10`, so `NOT CHECKED` is the only
+  thing standing between the corpus and a claim refuted by a search that
+  stopped.
+
+**One task changed shape.** [T1d.4.1.1](#task-t1d411--the-usage-census) asks for
+the census to be *parsed rather than grepped*, and nothing in the engine could
+parse it: `:expect` is a query keyword with no machine-readable surface at all.
+So the stage added one — `ein test --json-report`, the 50th CLI option,
+additive in the strict sense (stdout, stderr, exit code and *what is solved*
+identical with it and without) and deliberately **not** subject to the
+one-path rule that refuses `--json-summary` over several runs, because a report
+has no run to be more than one of. That is a read-out, not a change to
+`:expect`, and the acceptance bullet below is intact.
 
 ## Context
 

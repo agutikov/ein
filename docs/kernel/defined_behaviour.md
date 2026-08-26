@@ -393,6 +393,31 @@ deliberately **not** covered — a refutation said under a depth cap is
 [Q-M1d.1](../../plans/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
 question about a *word*, not this one about a *count*.
 
+**M1d [S1d.4.1](../../plans/m1d_satisfiability/p1d.4_model_set_closure/s1d.4.1_what_closure_costs.md)
+added the 50th option and no behaviour at all.** `ein test --json-report
+FILE.json` writes **one row per `(query …)` of the whole selection** — the
+claim's shape (`model` / `or` / `false`), how many models it lists, the
+relations its `:goal` closes, the outcome, and what the run found. It is
+additive in the strict sense the other artefact flags are — stdout, stderr, the
+exit code and *what is solved* are identical with it and without it, so a query
+stating no `:expect` is still never solved and its row says so.
+
+Two things about it are contract rather than convenience:
+
+- **It takes any selection**, where `--events` and `--json-summary` are refused
+  over more than one run. Those name one *path* for one *run*; a report has no
+  run to be more than one of, and one invocation over the three corpus roots is
+  what the census reads.
+- **A file that did not load carries no claim.** Its row is `queries = 0`,
+  `outcome = "error"`, `expect = null`. Three `examples/broken/load/` fixtures
+  contain the token `:expect` and exist to be refused; a claim is a property of
+  a *program*, so they are not in the numerator of "what fraction of the corpus
+  claims a model set".
+
+The schema is `ein-test-report/1`, deliberately not `ein-summary/1`: a summary
+is one run's counters, a report is one row per query, and a consumer reading
+the same version marker on both would be right to expect the same fields.
+
 **Free, and different from the Python CLI's:** wrapping, indentation,
 headings, ordering within a section, and the wording of a usage diagnosis.
 `clap` cannot be configured into `argparse`'s layout and hand-rolling one was

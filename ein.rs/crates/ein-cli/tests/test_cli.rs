@@ -614,3 +614,208 @@ fn a_named_container_is_tested_and_a_walk_ignores_one() {
         walked.summary()
     );
 }
+
+// ── The report ─────────────────────────────────────────────────────
+
+/// `--json-report` over a selection, parsed.
+fn report(args: &[&str], out: &std::path::Path) -> serde_json::Value {
+    let mut argv: Vec<&str> = vec!["test"];
+    argv.extend_from_slice(args);
+    let path = out.to_string_lossy().into_owned();
+    argv.extend_from_slice(&["--json-report", &path]);
+    let r = ein(&argv);
+    let text = std::fs::read_to_string(out)
+        .unwrap_or_else(|e| panic!("no report at {path} ({e}): {}{}", r.out, r.err));
+    serde_json::from_str(&text).expect("the report parses")
+}
+
+/// **The row set accounts for the selection, file for file.**
+///
+/// The census this exists for asks a *fraction* — how much of the corpus makes
+/// a claim about its own model set — and a report that listed only the
+/// numerator could not answer it. So a query with no `:expect` gets a row, a
+/// file with no `(query …)` gets a row, and a file that did not load gets a
+/// row saying so.
+#[test]
+fn every_file_of_the_selection_has_a_row() {
+    let d = Dir::new("report-rows");
+    let r = report(&["examples/features"], &d.0.join("r.json"));
+    assert_eq!(r["schema"], "ein-test-report/1");
+    let rows = r["rows"].as_array().expect("rows");
+    let files: std::collections::BTreeSet<&str> =
+        rows.iter().map(|x| x["path"].as_str().unwrap()).collect();
+    assert_eq!(
+        files.len(),
+        r["tally"]["files"].as_u64().unwrap() as usize,
+        "one file per row set"
+    );
+    let claims = rows.iter().filter(|x| !x["expect"].is_null()).count();
+    assert_eq!(claims, r["tally"]["held"].as_u64().unwrap() as usize);
+}
+
+/// **The shape is read off the loaded program, and that is the whole point.**
+///
+/// `10_expect.ein`'s header comment documents the `(or …)` form on line 12 and
+/// its `:expect` is a `(model …)`; a grep for `:expect (or` finds it and is
+/// wrong. That mistake was made — it is what M1d S1d.4.1's first-hour
+/// reconnaissance reported, and correcting it took the corpus's count of
+/// set-closure claims from two to **one**
+/// ([the census](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/closure_census.md)).
+#[test]
+fn the_shape_comes_from_the_program_and_not_from_the_text() {
+    let d = Dir::new("report-shape");
+    let r = report(&["examples/features"], &d.0.join("r.json"));
+    let shape = |name: &str| -> String {
+        r["rows"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|x| x["path"].as_str().unwrap().ends_with(name))
+            .unwrap_or_else(|| panic!("no row for {name}"))["expect"]["shape"]
+            .as_str()
+            .unwrap_or("null")
+            .to_string()
+    };
+    assert_eq!(
+        shape("10_expect.ein"),
+        "model",
+        "the comment is not the claim"
+    );
+    assert_eq!(shape("11_expect_ambiguity.ein"), "or");
+    assert_eq!(shape("12_expect_false.ein"), "false");
+    assert_eq!(shape("04_open.ein"), "null", "no `:expect`, no shape");
+
+    let row = |name: &str| -> serde_json::Value {
+        r["rows"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|x| x["path"].as_str().unwrap().ends_with(name))
+            .cloned()
+            .unwrap()
+    };
+    let amb = row("11_expect_ambiguity.ein");
+    assert_eq!(amb["expect"]["models"], 2, "k is the disjunct count");
+    assert_eq!(amb["ran"]["k"], 2);
+    assert_eq!(amb["ran"]["exhausted"], true);
+    // What an expectation must *close*, and the first factor of the write cost
+    // of a claim a file does not yet carry.
+    assert_eq!(row("10_expect.ein")["goal_relations"][0], "next-to");
+}
+
+/// **Additive**: same stdout, same stderr, same exit code, and — the one that
+/// matters here — the same work. A query stating nothing is still never
+/// solved, so its row carries no run.
+#[test]
+fn the_report_changes_nothing_but_writes_a_file() {
+    let d = Dir::new("report-additive");
+    let out = d.0.join("r.json");
+    let bare = ein(&["test", "examples/features", "-v"]);
+    let with = ein(&[
+        "test",
+        "examples/features",
+        "-v",
+        "--json-report",
+        &out.to_string_lossy(),
+    ]);
+    assert_eq!(bare.code, with.code);
+    assert_eq!(bare.err, with.err);
+    // The summary line carries the wall clock, which is not an observable.
+    let strip = |r: &Run| {
+        r.out
+            .lines()
+            .filter(|l| !l.contains(" held, "))
+            .collect::<Vec<_>>()
+            .join("\n")
+    };
+    assert_eq!(strip(&bare), strip(&with));
+
+    let doc: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&out).unwrap()).unwrap();
+    let open = doc["rows"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|x| x["path"].as_str().unwrap().ends_with("04_open.ein"))
+        .unwrap()
+        .clone();
+    assert_eq!(open["outcome"], "no-expect");
+    assert!(
+        open["ran"].is_null(),
+        "it must not have been solved: {open}"
+    );
+}
+
+/// It is the report of a *run*, not of a query, so it takes any selection —
+/// which is the difference from `--json-summary`, refused over more than one
+/// run three tests above. One invocation over the three corpus roots is the
+/// whole of M1d S1d.4.1's first two tables.
+#[test]
+fn the_report_takes_a_selection_of_many_runs() {
+    let d = Dir::new("report-many");
+    let r = report(
+        &["tests/stdlib/algebra", "examples/features"],
+        &d.0.join("r.json"),
+    );
+    assert!(r["tally"]["files"].as_u64().unwrap() > 30, "{}", r["tally"]);
+    assert!(r["tally"]["held"].as_u64().unwrap() > 20, "{}", r["tally"]);
+}
+
+/// A file that did not load states nothing, **because a claim is a property of
+/// a program**. Three fixtures under `examples/broken/load/` contain the token
+/// `:expect` and are refused by the loader; counting them as claims would put
+/// the loader's own negatives in the numerator of "what fraction of the corpus
+/// claims a model set".
+#[test]
+fn a_refused_file_carries_no_claim() {
+    let d = Dir::new("report-refused");
+    let r = report(
+        &["examples/broken/load/expect_unknown_relation.ein"],
+        &d.0.join("r.json"),
+    );
+    let row = &r["rows"][0];
+    assert_eq!(row["outcome"], "error");
+    assert_eq!(row["queries"], 0);
+    assert!(row["expect"].is_null(), "{row}");
+}
+
+/// **The rows line up with the queries**, which is the one place a row set can
+/// silently go wrong: rows are indexed from the file's base offset, so a
+/// second file in the selection whose *second* query is the one that claims
+/// would land its outcome on the first file's row if the offset were dropped.
+#[test]
+fn a_files_rows_are_indexed_from_its_own_base() {
+    let d = Dir::new("report-offset");
+    d.file("a_quiet.ein", BODY);
+    d.file(
+        "b_two.ein",
+        &format!("{BODY}(query :goal (p A ?h) :no-hypothesis (p))\n{TRUE_CLAIM}"),
+    );
+    let r = report(&[&d.path()], &d.0.join("r.json"));
+    let rows = r["rows"].as_array().unwrap();
+    assert_eq!(rows.len(), 3, "{rows:?}");
+    assert!(rows[0]["path"].as_str().unwrap().contains("a_quiet"));
+    // No `(query …)` at all, which is a different thing from a query that
+    // claims nothing — every `stdlib/*.ein` is one, and the census's
+    // denominator needs to be able to tell them apart.
+    assert_eq!(rows[0]["outcome"], "no-query");
+    assert_eq!(rows[0]["queries"], 0);
+    assert!(rows[0]["ran"].is_null());
+
+    assert_eq!(rows[1]["query"], 1);
+    assert_eq!(rows[1]["queries"], 2);
+    assert_eq!(
+        rows[1]["outcome"], "no-expect",
+        "the query that claims nothing"
+    );
+    assert!(
+        rows[1]["ran"].is_null(),
+        "and it was not solved: {}",
+        rows[1]
+    );
+
+    assert_eq!(rows[2]["query"], 2);
+    assert_eq!(rows[2]["outcome"], "held");
+    assert_eq!(rows[2]["expect"]["shape"], "model");
+    assert_eq!(rows[2]["ran"]["verdict"], "Solution");
+}

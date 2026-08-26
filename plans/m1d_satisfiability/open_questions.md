@@ -71,6 +71,15 @@ regime this question is not about.
 > exhaust — and deliberately left `Contradiction` alone, because there the
 > problem is the **word** and not a qualifier on it. That is this question's,
 > and the entry is the case to answer it against.
+>
+> **And the claim channel already declines to be fooled by it**, which is worth
+> knowing before the word is chosen: an `:expect (or …)` written on that file
+> would be compared against **zero** models and would come back `NOT CHECKED`
+> rather than `FAILED`, because `expect.rs` refuses to refute a claim on the
+> strength of a search that stopped
+> ([S1d.4.1](p1d.4_model_set_closure/closure_census.md) §4). The verdict
+> channel says *the constraints are contradictory*; the claim channel says
+> *nobody knows*. Whatever this question settles should leave them agreeing.
 
 **Moved 2026-08-21 from Q-M1a.21**, with the phase. The one thing the move
 adds: [P1d.2](p1d.2_obligations/README.md) is a fourth candidate the M1a
@@ -592,3 +601,15 @@ who established the count, which is the sidecar Q-M1c.1 rejected arriving by
 another door; or a bound from [P1d.2](p1d.2_obligations/README.md)'s
 obligations, where a state that owes nothing may know its own count without
 enumerating.
+
+> **Sized 2026-08-26**, by
+> [S1d.4.1](p1d.4_model_set_closure/closure_census.md): whatever the answer,
+> it is an answer for **one** existing instance. Parsed rather than grepped,
+> the corpus states 59 claims over 124 queries and exactly **one** about a
+> model set — `examples/features/11_expect_ambiguity.ein`, two models,
+> exhausted, 0.11 ms. The demand side of the question is that small; the supply
+> side is that **10 of the 121** entries reaching a fixpoint could not certify
+> a set at the depth `ein test` runs at. So a keyword here would be a keyword
+> for one user and ten places it could not be honoured — which is an argument
+> about *affordability* and not about the boundary, and the boundary is still
+> [S1d.4.2](p1d.4_model_set_closure/s1d.4.2_the_second_order_boundary.md)'s.

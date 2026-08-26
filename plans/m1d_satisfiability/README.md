@@ -216,7 +216,7 @@ that is the note's thesis measured in someone else's language.
 |---|---|---|---|---|
 | [P1d.2](p1d.2_obligations/README.md) | Obligations — the half of the vocabulary that says *must* | 6 (**done 2026-08-25**) | 3.5 w | **met**: a puzzle states a requirement, a state says what it owes, the search branches on it, and the verdict reports it — [the phase ledger](p1d.2_obligations/README.md) |
 | [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 (**done 2026-08-26**) | 1.5 w | **met, and with both**: `ein solve --models key` is the compact representation, and the enumeration now states its own guarantee — [the phase ledger](p1d.3_model_sets/README.md#the-ledger) |
-| [P1d.4](p1d.4_model_set_closure/README.md) | Closing the model set — the claim nothing can state | 3 (**at stage depth**) | 1.5 w | a written answer to "may a puzzle require its own model count", and `zebra2-minus-15`'s 32 models either verifiable or the pipeline sentence rewritten |
+| [P1d.4](p1d.4_model_set_closure/README.md) | Closing the model set — the claim nothing can state | 3 (**1 done**) | 1.5 w | a written answer to "may a puzzle require its own model count", and `zebra2-minus-15`'s 32 models either verifiable or the pipeline sentence rewritten |
 | [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 (1 done) | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
 
 17 stages, 47 days of stage estimates ≈ 9.5 weeks — and **the table is now in
@@ -340,6 +340,28 @@ names — carries no expectation at all
 ([P1d.4 § What the corpus says](p1d.4_model_set_closure/README.md)). The debt
 is not merely unverifiable; it is unwritten, which is a cheaper problem and a
 different one.
+
+> **S1d.4.1 took that reconnaissance apart on 2026-08-26, and the way it did is
+> the discipline this section is about.** The stage's own T1d.4.1.1 demanded a
+> census *parsed rather than grepped* — "a grep cannot tell a keyword from a
+> comment about one" — and nothing in the engine could parse it, so the stage
+> added `ein test --json-report`, one row per `(query …)` of a selection. The
+> first thing it printed contradicted the paragraph above: the closure claim is
+> written **once**, because `examples/features/10_expect.ein`'s `(or …)` is
+> line 12 of its *header comment* and its `:expect` is a `(model …)`. **59 of
+> 124 queries** state a claim, **1 of 124** states one about a set, and 59 of
+> 59 hold under a search that exhausted
+> ([`closure_census.md`](p1d.4_model_set_closure/closure_census.md)).
+>
+> Two numbers it added that nobody had: the claim's **write** cost, which is
+> `k × |goal extent| / |file|` and is worst not on the puzzle but on a
+> 95-line feature demo — `branching/06_lookahead_on` at **4.28×**, against the
+> zebra's 0.96× — and the **counterfactual `NOT CHECKED` set**, which is what
+> the empty column in the verifiability table actually means: **10 of the 121
+> entries that reach a fixpoint** do not exhaust at `ein test`'s depth, so a
+> closure claim on any of them would come back unchecked. `NOT CHECKED` never
+> fires in the corpus because the entries where it would have have never
+> written a claim.
 
 The caution that kept these two phases at README depth still holds and is
 worth restating: the note they come from opens with *"no code, no changes —

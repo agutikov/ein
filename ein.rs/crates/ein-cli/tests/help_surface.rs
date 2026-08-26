@@ -22,17 +22,18 @@
 #[cfg(feature = "einb")]
 use ein_corpus::{golden, golden_path};
 
-/// The surface, counted from the parsers themselves — 49 options across 9
+/// The surface, counted from the parsers themselves — 50 options across 9
 /// parsers, `-h` and `-V` excluded as parser furniture (see `help_shape`'s
 /// skip). An extractor that silently returned nothing would pass an empty
 /// diff; it does not pass this.
 ///
-/// **39 of them are ein.py's**; the other ten are `solve --jobs`
+/// **39 of them are ein.py's**; the other eleven are `solve --jobs`
 /// ([T1a.7.2.1](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)),
 /// `solve --models` (M1d
 /// [S1d.3.3](../../../../plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)),
-/// `ein test`'s eight (M1c
-/// [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test))
+/// `ein test`'s nine (M1c
+/// [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test),
+/// plus M1d S1d.4.1's `--json-report`)
 /// and — under the `einb` feature — `ein kb save --saturate`, none of which has
 /// a counterpart there, for the same reason: they are knobs for things ein.py
 /// never had. The split is kept in the sum below rather than folded away,
@@ -60,11 +61,12 @@ const EXPECTED: [(&str, usize); 8] = [
 /// the number is the design: the three that decide whether a run can finish
 /// (`-m`, `-T`, `-E`), the two that decide how much of a passing run to print
 /// (`-v`, `-q`), and the three file-only artefact ones the stage asked for by
-/// name (`--events`, `--events-level`, `--json-summary`). There is deliberately
-/// no `-n` and no `--exhaustive`: an expectation is a claim about the exhausted
-/// answer, so exhausting is the behaviour rather than a flag, and a *missing*
-/// option is exactly the kind of thing this count exists to notice.
-const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 8)];
+/// name (`--events`, `--events-level`, `--json-summary`), and M1d S1d.4.1's
+/// `--json-report`. There is deliberately no `-n` and no `--exhaustive`: an
+/// expectation is a claim about the exhausted answer, so exhausting is the
+/// behaviour rather than a flag, and a *missing* option is exactly the kind of
+/// thing this count exists to notice.
+const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 9)];
 
 /// P1a.8's surface, which has no ein.py counterpart at all: `.einb` is a new
 /// format and `ein kb` is a new command, so these two parsers were never in
@@ -101,14 +103,14 @@ fn the_extractor_finds_the_whole_surface() {
             + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
         "39 options across ein.py's eight parsers, plus `solve --jobs`, \
-         `solve --models`, `ein test`'s eight and `ein kb save --saturate` \
+         `solve --models`, `ein test`'s nine and `ein kb save --saturate` \
          — none of which ein.py has"
     );
 }
 
 /// **The whole rendering, checked in.**
 ///
-/// 49 options across 9 parsers, each with its short key, metavar, arity,
+/// 50 options across 9 parsers, each with its short key, metavar, arity,
 /// default, choices, group and help — the same text the diff against
 /// `argparse` consumed, blessed from a tree where that diff was green. A flag
 /// added, removed, renamed or re-defaulted shows up as a line.

@@ -356,8 +356,7 @@ fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>)
         let Some(goal) = query_keyword(ast, query, "goal") else {
             continue;
         };
-        let (mut vars, mut goal_relations) = (Vec::new(), Vec::new());
-        walk_pattern(ast, goal, &mut vars, &mut goal_relations);
+        let goal_relations = pattern_relations(ast, goal);
         for model in expectation.models() {
             let closed: Vec<&str> = model
                 .facts
@@ -1119,6 +1118,26 @@ fn pattern_from_ir(ast: &Ast, terms: &mut Terms, expr: NodeId) -> Result<Pattern
             .collect::<Result<Vec<_>, _>>()?
             .into_boxed_slice(),
     })
+}
+
+/// The relations a pattern **asks about**, in first-seen order.
+///
+/// What the `:expect` rule above needs and the only part of `walk_pattern`
+/// anything outside this module has a use for: a query's `:goal` names some
+/// relations, and *naming a relation closes it*, so those are exactly the
+/// relations an expectation has to list the complete extent of. `ein test
+/// --json-report` publishes the list per query, because the **write cost** of
+/// a closure claim is `relations x models x facts` and the first factor is
+/// this one (M1d [S1d.4.1](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/s1d.4.1_what_closure_costs.md)).
+///
+/// Connectives (`and`, `or`, `not`, `neq`, `eq`, `=`) and the two macro
+/// internals are not relations and do not appear; a `(?rel ?a ?b)` head binds
+/// a variable and contributes nothing here, which is the one case where a
+/// goal asks about a relation this list cannot name.
+pub fn pattern_relations(ast: &Ast, node: NodeId) -> Vec<String> {
+    let (mut vars, mut relations) = (Vec::new(), Vec::new());
+    walk_pattern(ast, node, &mut vars, &mut relations);
+    relations
 }
 
 fn walk_pattern(ast: &Ast, node: NodeId, variables: &mut Vec<String>, relations: &mut Vec<String>) {

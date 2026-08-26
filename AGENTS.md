@@ -255,7 +255,7 @@ constrained-reasoning research.
   in the repo — the divergence list, and
   [`docs/kernel/defined_behaviour.md`](docs/kernel/defined_behaviour.md), which
   states what "whatever ein.py did" used to define.
-- **`utils/`** — **twenty-two scripts, all of them driving `ein.rs`** since M1a
+- **`utils/`** — **twenty-three scripts, all of them driving `ein.rs`** since M1a
   [S1a.10.4](docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine),
   which deleted the eleven that compared two engines or measured the Python
   one, plus `corpus_cost.py` from
@@ -342,6 +342,21 @@ constrained-reasoning research.
   commitment — while the certain core, the form the stage expected to win,
   cannot say how many models there are and invites arithmetic that over-states
   by 3.11 × 10¹².
+  The twenty-third, **`closure_census.py`**, is M1d S1d.4.1's and asks about
+  the **claim** rather than about the search, the program or the answer: who
+  states that a model set is *exactly* these k, and what stating one would
+  cost. Its transport is **`ein test --json-report`**, a read-out the same
+  stage added, and the reason it had to exist is the reason the stage insisted
+  the census be *parsed*: the reconnaissance grepped `:expect (or`, found two
+  users, and one of them was a **header comment documenting the form**. Parsed,
+  the corpus states **59 claims over 124 queries and exactly one about a set**,
+  all 59 hold, and all 59 exhausted. Its two new numbers are the **write** cost
+  — `k × |goal extent| / |file|` under *naming a relation closes it*, worst on
+  a 95-line feature demo at **4.28×** and not on the puzzle at 0.96× — and the
+  **counterfactual `NOT CHECKED` set**, which is what an empty outcome column
+  means: **10 of the 121** entries that reach a fixpoint do not exhaust at
+  `ein test`'s depth, so a claim written on any of them could not be checked
+  ([closure_census.md](plans/m1d_satisfiability/p1d.4_model_set_closure/closure_census.md)).
 - **`build.sh`** — **everything this repo builds, in one command**: the Rust
   workspace (`--release` by default, into `ein.rs/target/`) and then the three
   C baselines in `c/` (into the gitignored `build/`). `--debug`,
@@ -407,6 +422,7 @@ EIN_BLESS=1       cargo test … --workspace                   # re-bank the gol
 EIN_OBLIGATION_CHOICE=off|fail-first ein solve …             # the M1d S1d.2.5 rung levers
 ein solve … -e --models key                                  # the M1d S1d.3.3 form
 EIN_LEFTOVER=1    ein solve … --json-summary out.json        # the M1d S1d.3.1 probe
+ein test examples tests stdlib --json-report r.json          # the M1d S1d.4.1 read-out
 ```
 
 **`EIN_OBLIGATION_CHOICE`** is the obligations rung's measurement lever
@@ -420,7 +436,7 @@ compared would re-bless every shape golden in the corpus.
 
 **`--models {list,key}`** is M1d
 [S1d.3.3](plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)'s
-and the only one of the three levers in this block that is a *flag*, because it is presentation
+and the only *lever* in this block that is a flag, because it is presentation
 rather than measurement. `key` prints a model **set** as its determining key —
 the smallest set of slots that tells the models apart, and the table of
 combinations that occur — instead of as *k* blocks: on
@@ -459,6 +475,23 @@ with the lever on and off, every field of every summary outside that block is
 identical on all 121 entries that reach a fixpoint. Off by default because it
 costs a generation pass per recorded state (≈40 ms on the zebra family) and
 every corpus `solve` in `cargo test` writes a summary.
+
+**`ein test --json-report FILE.json`** is M1d
+[S1d.4.1](plans/m1d_satisfiability/p1d.4_model_set_closure/s1d.4.1_what_closure_costs.md)'s
+and the 50th CLI option: **one row per `(query …)` of the whole selection** —
+the claim's shape (`model` / `or` / `false`), how many models it lists, the
+relations its `:goal` closes, the outcome, and what the run found. It exists
+because `:expect` had **no machine-readable surface at all**, so the only way
+to ask the corpus what fraction of it claims a model set was a grep — and a
+grep cannot tell a keyword from a comment about one, which is not hypothetical:
+the stage's reconnaissance made exactly that mistake, on
+`examples/features/10_expect.ein`. Additive in the strict sense (stdout,
+stderr, exit code and *what is solved* identical with it and without, so a
+query stating nothing is still never solved), and deliberately **not** under
+the one-path rule that refuses `--json-summary` over several runs: a report has
+no run to be more than one of, and one invocation over the three roots is the
+whole census in 0.04 s. A file that did not load carries **no claim** —
+`queries = 0`, `expect = null` — because a claim is a property of a *program*.
 
 **`./run_tests.sh` runs every step of the per-commit CI tier**, in its order,
 since M1c S1c.1.5 — five static checks (~5 s warm, `--tests-only` skips them

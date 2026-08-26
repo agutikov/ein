@@ -493,6 +493,18 @@ fn test_command() -> Command {
                  selection is more than one run.",
             ),
     )
+    .arg(
+        Arg::new("json-report")
+            .long("json-report")
+            .value_name("FILE.json")
+            .help(
+                "write one row per (query …) of the whole selection — the \
+                 claim's shape, the relations its :goal closes, the outcome, \
+                 and whether the search exhausted — to FILE as JSON. \
+                 Additive. Unlike --json-summary it is the report of the run \
+                 rather than of one query, so it takes any selection.",
+            ),
+    )
 }
 
 /// `ein saturate`'s **own** parser, with its own `prog`.
