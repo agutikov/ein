@@ -797,6 +797,22 @@ const BATCH_PER_WORKER: usize = 512;
 /// wants a fixture that demonstrates the divergence and keeps it from
 /// silently widening. `utils/fork_delta_verify.py` is that fixture, and it
 /// needs both arms out of one binary.
+/// `EIN_TRAVERSAL=tree` — the per-obligation depth-first traversal of M1d
+/// [S1d.10.6](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md),
+/// off by default.
+///
+/// An environment variable rather than a `(config …)` field, for the reason
+/// `EIN_OBLIGATION_CHOICE` is one: [`SolverConfig`] is rendered into the
+/// KB-shape digest, so a knob whose settings are being *compared* would
+/// re-bless every shape golden in the corpus. Whether it becomes a flag — and
+/// whether it ever becomes the default, which needs
+/// [Q-M1a.18](../../../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)'s
+/// shape of decision because the counters move — is
+/// [T1d.10.6.6](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md)'s.
+fn tree_traversal() -> bool {
+    std::env::var_os("EIN_TRAVERSAL").is_some_and(|v| v == "tree")
+}
+
 fn resume_forks() -> bool {
     !(cfg!(feature = "fork-delta") && std::env::var_os("EIN_FORK_DELTA").is_some_and(|v| v == "0"))
 }
@@ -813,10 +829,202 @@ impl Run<'_> {
         match self.phase1(root, terms, ast, events, dumper)? {
             Phase1::Done => return Ok(self.finalise()),
             Phase1::Continue { alive, a_prev } => {
-                self.phase2(root, terms, ast, events, dumper, alive, a_prev)?;
+                if !(tree_traversal() && self.tree(root, terms, ast, events, dumper)?) {
+                    self.phase2(root, terms, ast, events, dumper, alive, a_prev)?;
+                }
             }
         }
         Ok(self.finalise())
+    }
+
+    // ── Phase 2′ — the per-obligation tree ─────────────────────
+
+    /// **One obligation per node** — M1d
+    /// [T1d.10.6.3](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md),
+    /// and a *second traversal beside* [`Run::phase2`] rather than a
+    /// replacement for it.
+    ///
+    /// The lattice enumerates subsets of a fixed `alive` set and prunes only
+    /// through death. This branches on one owed instance's alternatives, which
+    /// are **jointly exhaustive by the obligation's meaning**, so committing to
+    /// one excludes its siblings with nothing to refute — the argument is
+    /// [`completeness.md`](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/completeness.md)
+    /// and it was written before this function.
+    ///
+    /// Two things it deliberately does not do:
+    ///
+    /// - **It does not claim exhaustion.** A tree terminates by *discharge* and
+    ///   a lattice by *exhaustion*, and the sentence that says what discharge
+    ///   licenses is
+    ///   [T1d.10.5.1](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.5_contract.md)'s
+    ///   and is not written. So `truncated` is set and the verdict reports
+    ///   *models found*. Reporting `exhausted = true` here would be the phase's
+    ///   own prohibition — *never a quiet `exhausted = true`*.
+    /// - **It does not report layers.** `layers_explored` carries the deepest
+    ///   node instead, which is a different quantity wearing the same name;
+    ///   what every consumer should do about that is
+    ///   [T1d.10.6.4](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md)'s
+    ///   and is why this is behind `EIN_TRAVERSAL` and not a flag.
+    ///
+    /// Returns `false` when the tree **declines** and the lattice must run
+    /// instead, which is the whole of the guard below.
+    fn tree(
+        &mut self,
+        root: &mut Kb,
+        terms: &mut Terms,
+        ast: &Ast,
+        events: &mut Events,
+        dumper: &mut dyn Dumper,
+    ) -> Result<bool, SolveError> {
+        // **The tree runs on the obligations rung and on no other**, and the
+        // cost of getting this wrong is not a wrong answer — it is the engine
+        // ein.rs deleted. An hrule's candidates and the blind enumerator's are
+        // not one owed instance's alternatives: they are not jointly
+        // exhaustive, so branching on them is a depth-first walk over
+        // hypothesis *paths*, which reaches a commitment set of size `d` by
+        // `d!` routes. That is exactly what P1.5b removed the tree solver for
+        // (`8d77b02`, 2026-05-29) and it reappears on contact: measured before
+        // this guard, `examples/zebra2.ein` cost **7 877** enterings against
+        // the lattice's 101 and `examples/zebra.ein` **11 083** against 111,
+        // for the same single model each. Both carry `(hrule guess …)`.
+        //
+        // The probe is one generation call at root, and the mode is a property
+        // of the program rather than of the node, so asking once is asking
+        // enough.
+        let mode = {
+            let mut s = Session {
+                kb: root,
+                terms,
+                ast,
+                events,
+                memo: self.memo.clone(),
+            };
+            let mut hs = crate::hypgen::HypGenStats::new();
+            crate::hypgen::generate_one_branch(&mut s, &mut hs)
+                .map_err(|e| SolveError::Compile(CompileError(e.to_string())))?;
+            hs.rung.mode
+        };
+        if mode != crate::oblgen::Mode::Obligations {
+            events.emit("traversal", |l| {
+                l.str("kind", "tree");
+                l.str("verdict", "declined");
+                l.str("reason", mode.as_str());
+            });
+            return Ok(false);
+        }
+        // Not exhaustion — discharge. See the note above.
+        self.lstate.truncated = true;
+        let mut commit: Vec<FactId> = Vec::new();
+        self.tree_node(root, terms, ast, events, dumper, &mut commit, 0)?;
+        Ok(true)
+    }
+
+    /// One node: ask the state for a branch, enter each alternative.
+    ///
+    /// The caller has already established that `base` is *not* complete — the
+    /// root by Phase 1's non-empty `alive`, a child by the `complete` probe
+    /// below — so a branch that comes back empty is not a model. It is the
+    /// chosen instance being **stuck**: its alternatives are jointly
+    /// exhaustive and every one of them is refuted, so no model extends this
+    /// state. That is a *stronger* reading than the union path's, where stuck
+    /// means every instance is empty, and it is sound for the same reason the
+    /// branch is complete — one undischarged obligation with no live
+    /// alternative is enough.
+    #[allow(clippy::too_many_arguments)]
+    fn tree_node(
+        &mut self,
+        base: &mut Kb,
+        terms: &mut Terms,
+        ast: &Ast,
+        events: &mut Events,
+        dumper: &mut dyn Dumper,
+        commit: &mut Vec<FactId>,
+        depth: u32,
+    ) -> Result<(), SolveError> {
+        self.stats.base.layers_explored = self.stats.base.layers_explored.max(depth as u64);
+        let branch = {
+            let mut s = Session {
+                kb: base,
+                terms,
+                ast,
+                events,
+                memo: self.memo.clone(),
+            };
+            let mut hs = crate::hypgen::HypGenStats::new();
+            crate::hypgen::generate_one_branch(&mut s, &mut hs)
+                .map_err(|e| SolveError::Compile(CompileError(e.to_string())))?
+        };
+        for cand in branch {
+            self.check_budget(dumper)?;
+            // `try_commitment_set` branches from what it is handed, and
+            // `Kb::branch` asserts the top layer is sealed — the lattice seals
+            // root once per layer, and a tree seals each node once before it
+            // fans out. The seal is idempotent, so re-sealing a node between
+            // two of its own children costs nothing.
+            let mut r = crate::commitment::try_commitment_set(
+                base.sealed(),
+                terms,
+                ast,
+                events,
+                &self.memo,
+                &[cand],
+                None,
+                // **No resume snapshot.** The lattice resumes every fork from
+                // *root*'s saturation, which is sound because every fork is a
+                // fork of root; a tree node's base is its parent, so root's
+                // snapshot is the wrong resume point and a stale one would be
+                // worse than none. Resuming from the parent is the obvious
+                // optimisation and is T1d.10.6.5's to price, not correctness.
+                None,
+            )?;
+            self.stats.base.enterings_total += 1;
+            commit.push(cand);
+            if r.kind != Kind::Alive {
+                match r.kind {
+                    Kind::DeadPre => self.stats.base.enterings_dead_pre += 1,
+                    _ => self.stats.base.enterings_dead_post += 1,
+                }
+                let c: CanonicalSetId = commit.clone();
+                dumper.entering(
+                    depth + 1,
+                    &c,
+                    terms,
+                    r.kind.as_str(),
+                    &EnteringInfo {
+                        kind: r.kind,
+                        firings: &r.firings,
+                        unsat_core: &r.unsat_core,
+                        kb: Some(&r.kb),
+                        facts_merged: 0,
+                        nogood_emitted: false,
+                        nogood_subsumed: false,
+                    },
+                );
+                commit.pop();
+                continue;
+            }
+            self.stats.base.enterings_alive += 1;
+            let solved = {
+                let mut s = Session {
+                    kb: &mut r.kb,
+                    terms,
+                    ast,
+                    events,
+                    memo: self.memo.clone(),
+                };
+                crate::hypgen::complete(&mut s)
+                    .map_err(|e| SolveError::Compile(CompileError(e.to_string())))?
+            };
+            if solved {
+                let firings = std::mem::take(&mut r.firings);
+                let owes = std::mem::take(&mut r.owes);
+                self.record_node(&mut r.kb, terms, commit.clone(), firings, depth + 1, owes);
+            } else {
+                self.tree_node(&mut r.kb, terms, ast, events, dumper, commit, depth + 1)?;
+            }
+            commit.pop();
+        }
+        Ok(())
     }
 
     // ── Phase 1 ────────────────────────────────────────────────

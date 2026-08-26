@@ -420,6 +420,7 @@ EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
 EIN_OBLIGATION_CHOICE=off|fail-first ein solve …             # the M1d S1d.2.5 rung levers
+EIN_TRAVERSAL=tree ein solve …                              # the M1d S1d.10.6 traversal
 ein solve … -e --models key                                  # the M1d S1d.3.3 form
 EIN_LEFTOVER=1    ein solve … --json-summary out.json        # the M1d S1d.3.1 probe
 ein test examples tests stdlib --json-report r.json          # the M1d S1d.4.1 read-out
@@ -433,6 +434,24 @@ engine and the control arm every number in
 is measured against. It is deliberately not a `(config …)` field: `SolverConfig`
 is rendered into the KB-shape digest, so a knob whose settings are being
 compared would re-bless every shape golden in the corpus.
+
+**`EIN_TRAVERSAL=tree`** is M1d
+[S1d.10.6](plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md)'s
+and a **second traversal beside the lattice**, off by default. It branches on
+**one owed instance's alternatives** — jointly exhaustive by the obligation's
+meaning, so committing to one excludes its siblings with nothing to refute —
+where the lattice enumerates subsets of a fixed `alive` and prunes only through
+death. On `examples/zebra2-minus-15-obligations.ein` that is **86 enterings and
+0.083 s** against the lattice's **17 204 592 and 1 496 s** for the same 32
+models, verified fact for fact. It **declines** on any other rung, narrating a
+`traversal` event: an hrule's candidates are not an owed instance's
+alternatives, and branching on them is the `d!`-per-set depth-first solver P1.5b
+deleted — 7 877 enterings against 101 on `zebra2.ein`, measured before the guard
+existed. It reports `exhausted = false` on purpose (a tree terminates by
+*discharge*, and the sentence saying what that licenses is T1d.10.5.1's), and it
+is an environment variable rather than a flag because
+[T1d.10.6.4](plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md)
+has not decided what a tree reports where a lattice reports layers.
 
 **`--models {list,key}`** is M1d
 [S1d.3.3](plans/m1d_satisfiability/p1d.3_model_sets/s1d.3.3_the_verdict.md)'s

@@ -587,7 +587,7 @@ own terms.
 | 1st | [S1d.10.1](s1d.10.1_why_it_does_not_finish.md) | Why it does not finish — **done 2026-08-24** ([`layer_census.md`](layer_census.md)) | 3 d |
 | 2nd | [S1d.10.2](s1d.10.2_depth_required.md) | What depth is required, and for what — **mostly taken**; the remainder is the predictors and the re-take | 1 d |
 | 3rd | [S1d.10.4](s1d.10.4_conflict_mining.md) | Conflict mining when a layer is barren — **closed on its own terms**: 0 deaths in 15 720 759 deep enterings | 0.5 d |
-| 4th | [S1d.10.6](s1d.10.6_the_traversal.md) | **The traversal — one obligation per node** — **2 of 6 done 2026-08-26**: the completeness argument ([`completeness.md`](completeness.md)) and the `-H` reconciliation; the branch is unblocked | 5 d |
+| 4th | [S1d.10.6](s1d.10.6_the_traversal.md) | **The traversal — one obligation per node** — **3 of 6 done 2026-08-26**: the argument, the `-H` reconciliation, and **the branch — 86 enterings against 17 204 592, same 32 models** | 5 d |
 | 5th | [S1d.10.3](s1d.10.3_stopping_criterion.md) | Is there a stopping criterion? — re-aimed at what licenses `exhausted` under a tree | 3 d |
 | 6th | [S1d.10.5](s1d.10.5_contract.md) | What `exhausted` means — **five of six tasks done 2026-08-26**; all four verdicts qualify themselves now, and what is left is the sentence for a search that is not a lattice | 2 d |
 

@@ -222,7 +222,40 @@ pub fn generate(
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<(), CompileError> {
-    generate_rungs(s, stats, f, Rungs::Ladder)
+    generate_rungs(s, stats, f, Rungs::Ladder, false)
+}
+
+/// [`generate`], but **one owed instance's alternatives** instead of the union.
+///
+/// The ladder is walked exactly as [`generate`] walks it and every candidate
+/// goes through the same filters; what differs is that the obligations rung
+/// stops after the instance [`crate::oblgen::Choice`] picks. M1d
+/// [T1d.10.6.3](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.6_the_traversal.md)
+/// — a depth-first traversal branches on one instance because one instance's
+/// set is jointly exhaustive *by the obligation's meaning*, where the union is
+/// merely a superset of each.
+///
+/// **Only the obligations rung honours it.** An hrule's candidates and the
+/// blind enumerator's are not an owed instance's alternatives and are not
+/// jointly exhaustive, so those rungs return everything they would have; the
+/// caller checks [`HypGenStats::rung`]'s mode before treating the answer as a
+/// branch.
+pub fn generate_one_branch(
+    s: &mut Session<'_>,
+    stats: &mut HypGenStats,
+) -> Result<Vec<FactId>, CompileError> {
+    let mut out = Vec::new();
+    generate_rungs(
+        s,
+        stats,
+        &mut |fact| {
+            out.push(fact);
+            ControlFlow::Continue(())
+        },
+        Rungs::Ladder,
+        true,
+    )?;
+    Ok(out)
 }
 
 /// [`generate`] with the ladder's two upper rungs skipped — the blind
@@ -248,7 +281,7 @@ pub fn generate_blind(
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<(), CompileError> {
-    generate_rungs(s, stats, f, Rungs::BlindOnly)
+    generate_rungs(s, stats, f, Rungs::BlindOnly, false)
 }
 
 /// Which rungs of the generation ladder a call is allowed to use.
@@ -270,6 +303,7 @@ fn generate_rungs(
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
     rungs: Rungs,
+    one_branch: bool,
 ) -> Result<(), CompileError> {
     ein_core::counters::bump(|c| c.hypgen_call += 1);
     let cfg = s.kb.program().config.clone().unwrap_or_default();
@@ -313,6 +347,7 @@ fn generate_rungs(
             crate::oblgen::Choice::from_env(),
             stats,
             &mut |s, stats, fact| emit(s, &mut ctx, stats, fact, f),
+            one_branch,
         )?;
         stats.rung = report;
         if report.mode != crate::oblgen::Mode::Declined {

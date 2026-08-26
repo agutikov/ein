@@ -230,7 +230,76 @@ closure pass changes nothing the hrule proposes, it agrees exactly (56 and 96).
 Use the `rung` event or the `layer` census row when the search's own view is
 what is wanted.
 
-### Task T1d.10.6.3 — The branch
+### Task T1d.10.6.3 — The branch — **done 2026-08-26**
+
+**Built, behind `EIN_TRAVERSAL=tree`, and it is 86 enterings.**
+
+| `examples/zebra2-minus-15-obligations.ein` | enterings | wall | k | certified |
+|---|---:|---:|---:|---|
+| lattice `-m 3` (finds all 32) | 48 745 | 26.0 s | 32 | no |
+| lattice `-m 5` (`solve -e`) | 618 076 | 432 s | 32 | no |
+| lattice `-m 38` (exhausts) | 17 204 592 | 1 496 s | 32 | yes |
+| **tree**, no cap | **86** | **0.083 s** | **32** | not claimed |
+
+**200 053× the enterings and 18 024× the wall** against the run that certifies,
+and the model set is **identical fact for fact** — verified in `cargo test`, on
+fact sets and never on `k`. The determinate control improves too:
+`zebra2-obligations` is **9** nodes against 101 enterings.
+
+It beats the reconnaissance's own emulator (86 against 171–206) for the reason
+[the note](#notes) predicted: the emulator branched over the witness type's
+whole extent where this takes the rung's guard-scan, which is a subset.
+
+**The seam is one parameter, and where it sits is the design.**
+`oblgen::generate` has always built a per-instance `Vec<Branch>` and flattened
+it at the last step; `one_branch` stops after the instance [`Choice`] picks,
+and `hypgen::generate_one_branch` is the entry point.
+
+The selection is **before** the filter pipeline and not after it, which is why
+this is a parameter rather than a grouping a caller could reconstruct:
+`apply_filters`' `seen_in_call` drops a candidate already offered earlier *in
+the same call*, so under the union a later instance whose alternatives an
+earlier one already proposed comes back short or empty. Harmless when the caller
+wants the union; a silently truncated branch when it wants that instance's, and
+a truncated branch is not jointly exhaustive.
+
+**And building it produced the stage's sharpest finding, which is a guard.**
+
+A tree on a rung that is **not** the obligations one is the solver `ein.rs`
+deleted. An hrule's candidates and the blind enumerator's are not one owed
+instance's alternatives — they are not jointly exhaustive — so branching on them
+walks hypothesis *paths* and reaches a size-`d` commitment by `d!` routes.
+Measured before the guard existed:
+
+| | lattice | tree, unguarded |
+|---|---:|---:|
+| `examples/zebra2.ein` | 101 | **7 877** |
+| `examples/zebra.ein` | 111 | **11 083** |
+| `examples/zebra2-minus-15.ein` | 48 745 | did not finish in 60 s |
+
+Same models, 78× and 100× the cost — which is
+[§ 1](../../../docs/kernel/inference/README.md)'s *"the tree engine's
+depth-first ordering over hypothesis branches prices in d! orderings of the same
+commitment set"*, arriving 88 days after `8d77b02` deleted it. So `tree()` probes
+the rung at root, **declines** if it is not `Obligations`, narrates a
+`traversal` event saying so, and hands the run to the lattice — which then
+reproduces the lattice's numbers to the digit, and that is what the second test
+pins. `examples/zebra.ein`, the entry the emulator could not do at all, is
+answered by the decline: it is an hrule program.
+
+**What it does not claim.** `truncated` is set, so the tree reports
+`exhausted = false` and *models found*. A tree terminates by discharge and a
+lattice by exhaustion; the sentence that says what discharge licenses is
+[T1d.10.5.1](s1d.10.5_contract.md)'s and is not written, and the phase's own
+rule is *never a quiet `exhausted = true`*. `layers_explored` carries the
+deepest node, which is a different quantity wearing the same name — that is
+[T1d.10.6.4](#task-t1d1064--what-a-tree-reports)'s to settle and is why this is
+an environment variable rather than a flag.
+
+**Byte-identical with the variable unset**: `./run_tests.sh` green with no
+golden re-blessed, which is the statement that nothing here reached the lattice.
+
+*The task as written:*
 
 One obligation per node, its candidates from
 [`oblgen`](../../../ein.rs/crates/ein-infer/src/oblgen.rs)'s existing

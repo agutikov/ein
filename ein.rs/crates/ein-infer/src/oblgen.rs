@@ -214,6 +214,7 @@ struct Branch {
 /// Returns the rung it took. `Mode::Declined` means **nothing was emitted and
 /// the caller must fall through to the blind enumerator**; every other mode
 /// means this call is the whole generation.
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn generate(
     s: &mut Session<'_>,
     allowed: &Option<FxHashSet<Symbol>>,
@@ -222,6 +223,7 @@ pub(crate) fn generate(
     choice: Choice,
     stats: &mut HypGenStats,
     emit: &mut dyn FnMut(&mut Session<'_>, &mut HypGenStats, FactId) -> ControlFlow<()>,
+    one_branch: bool,
 ) -> Result<RungReport, CompileError> {
     if choice == Choice::Off {
         return Ok(declined(s, "EIN_OBLIGATION_CHOICE=off"));
@@ -361,7 +363,30 @@ pub(crate) fn generate(
     }
     let before = stats.emitted;
     let mut broke = false;
-    for b in &branches {
+    // T1d.10.6.3 — **one instance's alternatives, or every instance's union.**
+    // `branches` is the per-instance grouping this function has always built
+    // and always flattened here; a depth-first traversal branches on *one* of
+    // them, and one is all it may take, because only one instance's set is
+    // jointly exhaustive on its own.
+    //
+    // The selection happens **before** the filter pipeline and not after it,
+    // which is the whole reason this is a parameter rather than a grouping the
+    // caller could reconstruct. `apply_filters`' `seen_in_call` drops a
+    // candidate already offered *earlier in the same call*, so under the union
+    // a later instance whose alternatives an earlier one had already proposed
+    // comes back short or empty — harmless when the caller wants the union,
+    // and a silently truncated branch when it wants that instance's.
+    //
+    // Which one is `Choice`'s: `RuleOrder` takes report order and `FailFirst`
+    // the smallest set, and that is the heuristic
+    // [S1d.2.5 §4](../../../../plans/m1d_satisfiability/p1d.2_obligations/hypotheses_from_obligations.md)
+    // measured inert under a lattice and kept for this.
+    let taken: &[Branch] = if one_branch {
+        &branches[..branches.len().min(1)]
+    } else {
+        &branches[..]
+    };
+    for b in taken {
         for &fact in &b.candidates {
             if emit(s, stats, fact).is_break() {
                 broke = true;
@@ -650,6 +675,7 @@ mod tests {
                 }
                 ControlFlow::Continue(())
             },
+            false,
         )
         .expect("the rung runs")
     }
