@@ -2,13 +2,18 @@
 
 **Estimate:** ~2.5 months focused — 4 phases, 18 stages, ~9.5 weeks of stage
 estimates. All four are at stage depth; see § How deep this plan is.
-**P1d.10 was begun 2026-08-26** and is the only phase still open. Its
+**P1d.10 was closed 2026-08-27** and with it every phase of this milestone. It was closed *as it stood* — three of six stages shipped, the rest dropped rather than deferred — and its ledger is where what it measured and did not act on is kept. Its
 reconnaissance closed one stage, reversed a reading in another, found a defect
 in a third, and added a sixth: the depth-first branch on one obligation that
 [S1d.2.5 §1](p1d.2_obligations/hypotheses_from_obligations.md) deferred by name
 costs **171 nodes** where the lattice costs **17 204 592 enterings**, for the
 same 32 models
 ([the reconnaissance](p1d.10_exhaustive_search/README.md#what-the-reconnaissance-found--2026-08-26)).
+That branch is **built** and behind `EIN_TRAVERSAL=tree`: 86 enterings and
+0.07 s in the engine, the model set identical fact for fact, and a guard that
+declines on any rung but the obligations one — because a tree over an hrule's
+candidates is the `d!`-per-set solver P1.5b deleted, measured at 7 877
+enterings against 101 before the guard existed.
 **S1d.10.1 is done and P1d.10 moved to the end** (2026-08-24): the census the
 milestone opened with is [taken](p1d.10_exhaustive_search/layer_census.md), and
 what it found — 96.7 % of the corpus's search work is an *exact* powerset walk —
@@ -228,7 +233,7 @@ that is the note's thesis measured in someone else's language.
 | [P1d.2](p1d.2_obligations/README.md) | Obligations — the half of the vocabulary that says *must* | 6 (**done 2026-08-25**) | 3.5 w | **met**: a puzzle states a requirement, a state says what it owes, the search branches on it, and the verdict reports it — [the phase ledger](p1d.2_obligations/README.md) |
 | [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 (**done 2026-08-26**) | 1.5 w | **met, and with both**: `ein solve --models key` is the compact representation, and the enumeration now states its own guarantee — [the phase ledger](p1d.3_model_sets/README.md#the-ledger) |
 | [P1d.4](p1d.4_model_set_closure/README.md) | Closing the model set — the claim nothing can state | 3 (**done 2026-08-26**) | 1.5 w | **met, and with no keyword**: the answer is *no* three times over, and M1c's sentence is rewritten — [the phase ledger](p1d.4_model_set_closure/README.md#the-ledger) |
-| [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 6 (**begun 2026-08-26**; 1 done, 1 closable) | 3 w | **first half met**: `solve -e` finishes with all 32 models and exhausts. What replaces it: the proof costs 17 204 592 enterings and the [reconnaissance](p1d.10_exhaustive_search/README.md#what-the-reconnaissance-found--2026-08-26) priced the alternative at **171 nodes** |
+| [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 6 (**closed 2026-08-27**; 3 shipped, 3 dropped) | 3 w | **met, and by a second traversal**: `solve -e` exhausts at 17 204 592 enterings, and `EIN_TRAVERSAL=tree` reaches the same 32 models fact for fact in **86** — [the phase ledger](p1d.10_exhaustive_search/README.md#the-ledger--closed-2026-08-27), which also carries eight measurements with no owner |
 
 18 stages, 46.5 days of stage estimates ≈ 9.5 weeks — and **the table is now in
 id order, because the work order caught up with it.**
@@ -432,10 +437,14 @@ keyword.
   **Met 2026-08-26**, on the obligations twin at `-m 38`: `k = 32`,
   `exhausted = true`, 17 204 592 enterings, 22 layers, 24 min 56 s at `-j16`
   ([§ The two halves of one question](#the-two-halves-of-one-question)). What
-  is *not* settled is the cost — 99.7 % of that run is proof — which is
-  [P1d.10](p1d.10_exhaustive_search/README.md)'s remaining five stages, and
-  which its 2026-08-26 reconnaissance has already priced at **171 nodes** by a
-  traversal that branches on requirements instead of on subsets.
+  The cost — 99.7 % of that run is proof — is **also settled**, by the
+  traversal that branches on requirements instead of on subsets:
+  `EIN_TRAVERSAL=tree` reaches the same 32 models in **86 enterings and
+  0.07 s**, verified fact for fact
+  ([the phase ledger](p1d.10_exhaustive_search/README.md#the-ledger--closed-2026-08-27)).
+  It reports `exhausted = false` on purpose — a tree terminates by *discharge*
+  and the sentence saying what that licenses was **not** written, which is the
+  largest of the things P1d.10 was closed without.
 - **The engine can state a requirement.** At minimum `total` and `surjective`
   with the force their names claim; the general `L ≤ # ≤ U` form only if a
   corpus entry needs it.

@@ -1,5 +1,9 @@
 # P1d.10 — Exhaustive search over many models
 
+**Status: CLOSED 2026-08-27**, as it stood, at the user's direction — three of
+six stages shipped and the rest dropped rather than deferred.
+[§ The ledger](#the-ledger--closed-2026-08-27) is what it bought and what it
+left, including eight measurements with no owner.
 **Milestone:** [M1d — From saturation to satisfiability](../README.md)
 **Estimate:** 3 weeks — 15 days of stages when it was written, **14.5 across
 six** after the 2026-08-26 reshape, of which 3 are spent
@@ -617,6 +621,85 @@ different question. [S1d.10.3](s1d.10.3_stopping_criterion.md) still asks for a
 stopping criterion; what moved is that the most promising candidate is no
 longer a criterion *over the lattice* but a **termination argument for a tree**,
 and its three original candidates become the ledger F9's discipline asks for.
+
+## The ledger — **closed 2026-08-27**
+
+**Closed as it stands, at the user's direction**, with three stages shipped and
+three left where they were. The phase was estimated at 14.5 days and spent
+about five; what follows is what it bought, what it dropped, and — the part a
+closed phase is most likely to lose — **what it found and did not act on.**
+
+### What shipped
+
+| | |
+|---|---|
+| [S1d.10.1](s1d.10.1_why_it_does_not_finish.md) | **done** — [`layer_census.md`](layer_census.md), the `layer` event and its sixteen counters, 96.7 % of corpus search proved an exact powerset |
+| [T1d.10.5.0](s1d.10.5_contract.md) | `-m 0` is a truncation. 51 of the 150 loading entries stopped claiming a certified refutation over a frontier they had not looked at |
+| [T1d.10.5.2 / .2b](s1d.10.5_contract.md) | **[Q-M1d.1](../open_questions.md)'s word.** `Contradiction` and `Open` carry the exhaustion qualifier; the unsat core is `refuted so far` when truncated. 26 cells, 13 files, no exit code |
+| [T1d.10.5.3 / .4](s1d.10.5_contract.md) | the four-row table in `defined_behaviour.md` §5, `-e`'s help corrected, both corpus notes re-priced |
+| [T1d.10.6.1](completeness.md) | the completeness argument, before the code — two parts hold, the third is false **and not the tree's doing** |
+| [T1d.10.6.2](s1d.10.6_the_traversal.md) | `-H` against the search: the gap is one whole relation, and `emit_closed` runs before saturation |
+| [T1d.10.6.3](s1d.10.6_the_traversal.md) | **the tree.** 86 enterings and 0.07 s against 17 204 592 and 1 496 s, same 32 models fact for fact, behind `EIN_TRAVERSAL=tree` |
+| — | `--layer-progress`, the 51st CLI option, which the phase turned out to need to see its own subject |
+
+### What was dropped, and it is a decision rather than an oversight
+
+`T1d.10.2.3` (predictors at layer *d*), `T1d.10.4.5` (S1d.10.4's disposition —
+the refutation *is* written, only the F9 row is not), `T1d.10.6.4` (what a tree
+reports), `T1d.10.6.5` (measure both regimes), `T1d.10.6.6` (the ship
+decision), all of [S1d.10.3](s1d.10.3_stopping_criterion.md)'s ledger, and
+`T1d.10.5.1`'s second half — the sentence for a search that is not a lattice.
+
+The last five are one question wearing five names: **may a tree say
+`exhausted = true`?** The tree ships answering *no* — `truncated` is set, the
+verdict says *models found* — which is the phase's own rule (*never a quiet
+`exhausted = true`*) taken as the safe default rather than as an answer.
+
+### Acceptance, honestly
+
+| bullet | |
+|---|---|
+| `solve -e` finishes with a stated exhaustion claim | **met** — and replaced by *is there a cheaper argument?*, which is **met**: 200 053× fewer enterings for the same 32 models |
+| the under-determined regime is a named part of the measurement set | **not met, and not meetable here.** Two under-determined searching entries exist and neither declares `solve -e`; 94.1 % of the exhaustive search the repo performs is one negation demo. It needs corpus entries [F13](../../followups/f13_puzzles_beyond_zebra/ideas.md) would supply |
+| nothing changes what the engine proves | **held.** Every change is additive or behind `EIN_TRAVERSAL`; the gate is green with no golden re-blessed by the traversal |
+| every proposal measured against F9's discipline | **held** — S1d.10.4 closed by measurement (0 deaths in 15 720 759 deep enterings), the choice heuristic re-measured live, the tree's own hrule regression measured *before* the guard |
+| the determinate puzzles do not regress | **held** — `zebra`/`zebra2` are 111 and 101 enterings, unchanged, and the tree declines on both |
+
+### What it found and did not act on
+
+Eight things, kept here because a closed phase is where they would otherwise be
+lost. Nothing below is a task; each is a measurement with no owner.
+
+1. **A tree run narrates nothing.** 0 `enter` and 0 `layer` events while
+   `enterings_total` says 86, so `--events` and `utils/layer_census.py` see an
+   empty run. This was `T1d.10.6.4`'s subject and is the first thing anyone
+   resuming the traversal will hit.
+2. **`emit_closed` runs before saturation**, so it closes `nation-loc` on
+   evidence `co-located-fanout` then invalidates. Its stated criterion — *no
+   rule can positively conclude an R-fact* — is not the one it computed.
+3. **…and that closure is worth 40 %.** `(__closed__ nation-loc)` takes
+   `zebra2-minus-15-obligations -e -m 3` from 48 745 enterings and 26.0 s to
+   **29 144 and 15.3 s**, with the model set identical fact for fact. Sound
+   generalisation or ordering bug — undetermined.
+4. **`exhausted = true` over-claims when `uncovered ≠ 0`** and those relations
+   are neither closed nor determined. The 25-line fixture in
+   [`completeness.md` § 3c](completeness.md) reports `k = 3, exhausted = true`
+   where at least 6 models exist. Shipped behaviour, and
+   [T1d.10.5.2b](s1d.10.5_contract.md)'s pattern one level up.
+5. **Two root read-outs disagree in one binary** — `--json-summary`'s
+   `root.hypgen` says `raw 230, emitted 96`; `-H` says `190 / 81`.
+6. **`commitment.rs`'s doc is stale**: *"`resume` is `None` on every shipping
+   path"* is false — `resume_forks()` is true by default and all four lattice
+   call sites pass the snapshot. It misled this phase's own tree into
+   re-deriving root's fixpoint per node (`fe34095`).
+7. **7 256 complete forks collapse to 4 new models** at layer 3 of the phase
+   entry — 99.94 % duplicates. That is the evidence
+   [S1d.10.3](s1d.10.3_stopping_criterion.md)'s candidate (a) and its prose
+   about re-walking known neighbourhoods never had.
+8. **The blind-arm comparison is unaffordable.** `EIN_OBLIGATION_CHOICE=off
+   … -e` on `zebra2-obligations` did not finish in **10 minutes** where the
+   rung arm answers in 0.03 s. Any future rung-vs-blind re-take needs a cap and
+   must say so.
 
 ## Acceptance for the phase
 
