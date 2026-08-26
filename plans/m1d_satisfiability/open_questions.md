@@ -17,7 +17,7 @@ about a word the engine already says.
 
 | Q | title | status |
 |---|---|---|
-| [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1d.10](p1d.10_exhaustive_search/README.md), **begun 2026-08-26**; the question has acquired a fourth answer — *stop searching a lattice* — and a defect, `-m 0`, where the engine already answers **yes** by accident. `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
+| [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open — [P1d.10](p1d.10_exhaustive_search/README.md), **begun 2026-08-26**; the question has acquired a fourth answer — *stop searching a lattice* — and a defect, `-m 0`, where the engine answered **yes** by accident — **fixed 2026-08-26** ([T1d.10.5.0](p1d.10_exhaustive_search/s1d.10.5_contract.md#task-t1d1050--a-cap-of-zero-is-a-truncation--done-2026-08-26): a cap of zero is a truncation), which leaves the question about the *word* and not about a cap. `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
 | [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | **decided 2026-08-24** — (c) a rule shape asserting the reserved verdict atom (form G); [S1d.2.3](p1d.2_obligations/s1d.2.3_the_form.md) records it |
 | [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | **answered for obligations 2026-08-25** — [`domain_contract.md`](p1d.2_obligations/domain_contract.md); open for the general lower-bound form nobody has asked for |
 | [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **closed 2026-08-25** — it may, and on this corpus it does not: [S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) shipped the ladder and **no counter moved** ([the record §2](p1d.2_obligations/hypotheses_from_obligations.md)) |
@@ -111,15 +111,27 @@ instead of the constant.
 > [S1d.10.5](p1d.10_exhaustive_search/s1d.10.5_contract.md)'s, and is the same
 > question this entry has always been.
 
-> **And the engine already answers *yes* once, by accident.**
-> `ein solve -m 0` reports `Contradiction`, `k = 0`, **`exhausted = true`**, an
-> empty unsat core and exit 0 — on `zebra`, on `zebra2`, on every satisfiable
-> program in the corpus. The layer loop is `1..=max_set_size`, so at zero it
-> never runs and `truncated` is never set. That is not this question's *answer*;
-> it is this question's word being set to true over a frontier that is the
-> entire alive set, which no argument licensed.
-> [T1d.10.5.0](p1d.10_exhaustive_search/s1d.10.5_contract.md) owns it and it
-> waits for nothing.
+> **And the engine already answered *yes* once, by accident — fixed the same
+> day.** `ein solve -m 0` reported `Contradiction`, `k = 0`,
+> **`exhausted = true`**, an empty unsat core and exit 0 — on `zebra`, on
+> `zebra2`, on every satisfiable program in the corpus. The layer loop is
+> `1..=max_set_size`, so at zero it never ran and `truncated` was never set.
+> That was never this question's *answer*; it was this question's word being set
+> to true over a frontier that is the entire alive set, which no argument
+> licensed.
+> [T1d.10.5.0](p1d.10_exhaustive_search/s1d.10.5_contract.md#task-t1d1050--a-cap-of-zero-is-a-truncation--done-2026-08-26)
+> closed it 2026-08-26: a cap of zero is a **truncation**, `exhausted = false`,
+> and the 51 corpus cells that reach the search moved while the 99 that answer
+> without searching did not.
+>
+> **What it leaves this question is sharper for having been separated from it.**
+> The fix restored the *count* rule and deliberately did not touch the *word*:
+> `-m 0` now reports `Contradiction` with `k = 0`, an empty unsat core and
+> `exhausted = false` — which is exactly the pair **12 corpus entries already
+> report under their ordinary `solve` run**, nine of them Q-M1d.6's ten. So the
+> question is not about a cap value; it is about whether *the constraints are
+> contradictory* may be said of a search that stopped, and those twelve are its
+> evidence set.
 
 ## Q-M1d.2 — Where does a requirement live?
 

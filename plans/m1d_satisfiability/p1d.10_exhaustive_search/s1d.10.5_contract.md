@@ -3,8 +3,8 @@
 **Phase:** P1d.10 (Exhaustive search over many models)
 **Estimate:** 2 days
 **Depends on:** [S1d.10.3](s1d.10.3_stopping_criterion.md),
-[S1d.10.4](s1d.10.4_conflict_mining.md) — **except T1d.10.5.0**, which depends
-on nothing and is an hour.
+[S1d.10.4](s1d.10.4_conflict_mining.md) — **except T1d.10.5.0**, which depended
+on nothing and is **done 2026-08-26**.
 **Runs 6th of six.**
 
 ---
@@ -33,7 +33,11 @@ and the fixture is
 `examples/saturation/type-exclusivity/pets.ein` says *the constraints are
 contradictory* at `-m 5` through `-m 8` and has **35 models** at `-m 10`.
 
-**And the stage found a defect in the thing it is about.** See T1d.10.5.0.
+**And the stage found a defect in the thing it is about — now fixed.** See
+[T1d.10.5.0](#task-t1d1050--a-cap-of-zero-is-a-truncation--done-2026-08-26),
+which was an hour and did not wait for the rest of the phase: `-m 0` said
+`exhausted = true` over a frontier it had never looked at, on **51 of the 150**
+corpus entries that load, and now says `false`.
 
 **One target in § Acceptance no longer exists and must not be recreated.**
 `docs/api/inference.md` is **history** since M1a S1a.10.5 — a Python embedding
@@ -84,10 +88,86 @@ unknown-many?
 
 ## Tasks
 
-### Task T1d.10.5.0 — `-m 0` refutes every program that has anything to guess
+### Task T1d.10.5.0 — a cap of zero is a truncation — **done 2026-08-26**
 
-**Independent of the rest of the phase, and a defect rather than a design
-question.** The layer loop is `for layer in 1..=max_set_size`, so at a cap of
+**Fixed**, by one guard at the top of
+[`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)'s `phase2`: the cap
+at zero cuts *before* the first layer, so the rule the loop applies at
+`layer == max_set_size` — a non-empty frontier at the cap means the lattice was
+not explored — is now evaluated one step earlier, where the loop that would
+have said it never runs. Phase 1 reaches `phase2` only with `alive` non-empty,
+so at a cap of zero there is always something the run did not look at.
+
+Measured on all 197 manifest entries, before and against after:
+
+| `ein solve -m 0` | before | after |
+|---|---:|---:|
+| entries that load | 150 | 150 |
+| …reporting `exhausted = true` | **150** | 99 |
+| …reporting `exhausted = false` | **0** | **51** |
+| violations of *`exhausted = true` ⇒ the run reported something the search could not have changed* | **51** | **0** |
+
+The 51 are exactly the cells that reach the search, which is what the diagnosis
+below predicted from the code path, and the 99 are unmoved to the field.
+
+**The two questions, answered rather than assumed.**
+
+- **A truncation, not a refusal**, and the deciding argument is not the
+  flag's shape but what a cap of zero is *for*. A program whose root is already
+  complete has no lattice to exhaust and answers exactly at `-m 0` —
+  `branching/01_saturate_only` `Solution`, `tests/stdlib/algebra/23_total_owed`
+  `Open — owes 1`, both `exhausted = true` and both still true after the fix.
+  Ninety-nine of the hundred and fifty are that class. The `Aborted` shape would
+  decline a question the engine answers, and
+  [the reconnaissance](README.md#1-the-proof-costs-83-517-what-the-answer-does)
+  asks it 171 times — once per node, as `ein solve -m 0 --json-summary`. A
+  refusal would have broken the instrument that priced the phase.
+- **An empty `unsat_core` stays constructible for a `Contradiction`**, and the
+  measurement is why: **12 corpus entries already report one under their
+  ordinary `solve` run**, every one at `exhausted = false` —
+  `features/{01,02,05}`, `saturation/square-{fwd,bwd}/{floors,houses,meetings}`
+  and `syntax/{arg-kinds,constraint-scopes,equality}`. Nine of the twelve are
+  Q-M1d.6's ten; the tenth, `branching/07_lookahead_off`, cites a 220-fact core
+  and is not in the set. So the empty core is the *normal* shape of "no model
+  within the cap" on a barren search, not a `-m 0` artefact — a search that
+  entered nothing has no dead commitment to cite, and inventing one would be
+  the worse claim. What is left is the **word**, which is
+  [Q-M1d.1](../open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
+  and [T1d.10.5.2b](#task-t1d1052b--contradiction-and-what-a-cap-may-say)'s;
+  those same twelve are its evidence set. **`corpus_exits.txt` did not move**,
+  which is the answer the task said would show up there: no declared run uses
+  `-m 0`, and a `Contradiction` exits 0 either way.
+
+**One shape difference from the in-loop cut, deliberate.** `alive_at_end` stays
+**empty**: the field is the commitments that were entered and *survived*, and a
+cap of zero enters nothing. That is `stop_after`'s shape — truncated with no
+frontier to hand a deeper run — and claiming ninety-six never-entered singletons
+had survived would be the same overstatement in the other direction. It is why
+`alive_at_end_is_the_frontier_the_depth_cap_cut` now pins **three** shapes
+rather than two, and the pairing of `!exhausted` with a non-empty frontier is
+explicitly not a biconditional.
+
+**What states it**, all three in `cargo test`:
+
+- `monotonic_semantics::a_cap_of_zero_is_a_truncation_not_a_refutation` — the
+  twin of `every_layer_1_singleton_dying_is_a_contradiction`, and the reason
+  that one asserts `exhausted` rather than reading `k`: the same fixture, the
+  same `k = 0`, refutation at `-m 2` and cap at `-m 0`.
+- `monotonic_semantics::a_cap_of_zero_still_answers_a_root_that_needs_no_search`
+  — the boundary, on both verdicts that reach it by different routes.
+- `lattice_semantics::alive_at_end_is_the_frontier_the_depth_cap_cut` — the
+  third shape.
+
+Plus the normative paragraph in
+[`defined_behaviour.md` §5](../../../docs/kernel/defined_behaviour.md), beside
+the S1d.3.3 rule it restores conformance with. **Not** T1d.10.5.3's work: that
+task owns the vocabulary's doc surface, and this is one page recording that a
+stated rule had a door with no guard on it.
+
+---
+
+**The diagnosis, as found.** Independent of the rest of the phase, and a defect
+rather than a design question. The layer loop is `for layer in 1..=max_set_size`, so at a cap of
 zero it never runs, `truncated` is never set, and `exhausted = !truncated` is
 `true` over a frontier that is the whole alive set:
 
@@ -122,6 +202,10 @@ truncation (`exhausted = false`, `Contradiction k = 0`) or a refusal (the
 `Aborted` shape `-E 0` already uses), and whether an empty `unsat_core` should
 be constructible for a `Contradiction` at all. The second is the more
 interesting one and `corpus_exits.txt` is where the answer shows up.
+
+> **Both answered above**: truncation, and yes — and the second turned out not
+> to be about this cap at all. `corpus_exits.txt` is unchanged, which is the
+> form the answer took.
 
 ### Task T1d.10.5.1 — The vocabulary
 ### Task T1d.10.5.2 — The verdict surface

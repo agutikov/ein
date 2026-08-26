@@ -1013,6 +1013,20 @@ fn alive_at_end_is_the_frontier_the_depth_cap_cut() {
             .map(|c| r.set(c))
             .collect::<Vec<_>>()
     );
+
+    // T1d.10.5.0 — and a **third** shape, which is why the two above are not
+    // a biconditional. A cap of zero cuts before layer 1, so `exhausted` is
+    // false like the first case and `alive_at_end` is empty like the second:
+    // the field is what was entered and survived, and nothing was entered.
+    // Reading the emptiness as "the lattice was exhausted" is exactly the
+    // false claim this cap used to make.
+    let r = run("examples/branching/04_two_levels.ein", 0);
+    assert!(!r.stats().exhausted, "a cap of zero explored no layer");
+    assert!(
+        r.proof().alive_at_end.is_empty(),
+        "a cap that entered nothing has no survivors"
+    );
+    assert_eq!(r.stats().base.layers_explored, 0);
 }
 
 /// **a-solution-record-carries-its-commitment-layer-and-firings.** A model is

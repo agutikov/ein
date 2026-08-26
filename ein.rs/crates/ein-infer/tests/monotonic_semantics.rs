@@ -532,6 +532,90 @@ fn every_layer_1_singleton_dying_is_a_contradiction() {
     }
 }
 
+/// **a-cap-of-zero-is-a-cap** —
+/// [T1d.10.5.0](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.5_contract.md).
+/// The twin of the test above, and the reason that one asserts `exhausted`
+/// rather than just reading `k`.
+///
+/// `for layer in 1..=max_set_size` is empty at zero, so before this the cut
+/// had no door to be recorded through: `truncated` stayed false, `exhausted`
+/// stayed at its `true` default, and the run reported *the constraints are
+/// contradictory* with an empty unsat core over a frontier it had not looked
+/// at — on every program with anything to guess. The same fixture, the same
+/// `k = 0`, and the opposite meaning: at `-m 2` the zero is a refutation and
+/// at `-m 0` it is a cap.
+///
+/// `alive_at_end` stays empty here, which is `stop_after`'s shape rather than
+/// the depth cap's — the field is what was entered and *survived*, and a cap
+/// of zero enters nothing.
+#[test]
+fn a_cap_of_zero_is_a_truncation_not_a_refutation() {
+    let (cut, _) = run(ALL_DIE, &opts(0), &mut NoDumper);
+    assert_eq!(cut.answer.as_str(), "Contradiction");
+    assert_eq!(cut.stats.solution_nodes, 0, "k = 0");
+    assert!(
+        !cut.stats.exhausted,
+        "a cap of zero left the whole frontier unexplored — the zero is \
+         \"no model within the cap\", not a refutation"
+    );
+    assert_eq!(cut.stats.base.enterings_total, 0, "nothing was entered");
+    assert_eq!(cut.stats.base.layers_explored, 0, "no layer ran");
+    assert_eq!(
+        cut.stats.base.nogoods_emitted, 0,
+        "nothing died, so nothing was learned — the empty unsat core is the \
+         same emptiness"
+    );
+    assert!(
+        cut.proof.as_ref().is_none_or(|p| p.alive_at_end.is_empty()),
+        "a cap that entered nothing has no survivors to hand a deeper run"
+    );
+
+    // The contrast, and it is the whole point: same program, same `k`.
+    let (done, _) = run(ALL_DIE, &opts(2), &mut NoDumper);
+    assert_eq!(done.stats.solution_nodes, 0, "k = 0 either way");
+    assert!(
+        done.stats.exhausted,
+        "at -m 2 the same zero is a refutation"
+    );
+}
+
+/// **a-cap-of-zero-does-not-refuse-a-question-the-root-answers.** The other
+/// half of [T1d.10.5.0](../../../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.5_contract.md),
+/// and the reason `-m 0` is a *truncation* and not the `Aborted` shape `-E 0`
+/// uses.
+///
+/// A program whose root is already complete has no lattice to exhaust, so
+/// `-m 0` answers it exactly and `exhausted` is honestly `true`. Refusing
+/// these would be refusing a question the engine can answer — and P1d.10's own
+/// reconnaissance asks it 171 times, once per node, as
+/// `ein solve -m 0 --json-summary`.
+///
+/// Both verdicts are covered because they reach `finalise` by different
+/// routes: `Solution` records a node in Phase 1's empty-`alive` arm, `Open`
+/// records the same node and then fails to discharge what it owes.
+#[test]
+fn a_cap_of_zero_still_answers_a_root_that_needs_no_search() {
+    // The file's own `(config …)`, not `opts`' lookahead-off override: what is
+    // being checked is the shipping answer.
+    let bare = SolveOptions {
+        max_set_size: 0,
+        ..SolveOptions::default()
+    };
+    for (rel, want) in [
+        ("examples/branching/01_saturate_only.ein", "Solution"),
+        ("tests/stdlib/algebra/23_total_owed.ein", "Open"),
+    ] {
+        let (r, _) = run_file(rel, &bare, &mut NoDumper);
+        assert_eq!(r.answer.as_str(), want, "{rel}");
+        assert!(
+            r.stats.exhausted,
+            "{rel}: root is complete, so there is no lattice to leave unexplored"
+        );
+        assert_eq!(r.stats.solution_nodes, 1, "{rel}: the root state itself");
+        assert_eq!(r.stats.base.layers_explored, 0, "{rel}");
+    }
+}
+
 // ── 3) `emit_nogood` as a unit ─────────────────────────────────────
 
 /// A clause of hand-made facts. They never enter a `Kb` — `emit_nogood` reads

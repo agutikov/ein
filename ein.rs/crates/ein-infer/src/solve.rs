@@ -902,6 +902,28 @@ impl Run<'_> {
         mut alive: FxHashSet<FactId>,
         mut a_prev: Vec<CanonicalSetId>,
     ) -> Result<(), SolveError> {
+        // T1d.10.5.0 — the cap at **zero** cuts before the first layer, and
+        // the loop below cannot say so because it never runs. Same rule the
+        // cap applies inside it (`layer == max_set_size`: a non-empty frontier
+        // at the cap means the lattice was not explored), evaluated one step
+        // earlier — Phase 1 reaches here only with `alive` non-empty, so
+        // `a_prev` is a set of commitments this run will never look at.
+        //
+        // `alive_at_end` stays **empty** on purpose, and that is the one place
+        // this differs from the in-loop cut: the field is the commitments that
+        // were entered and *survived*, and at a cap of zero nothing was
+        // entered. Truncated with no frontier to hand a deeper run is
+        // `stop_after`'s shape, not the depth cap's, and claiming 96
+        // never-entered singletons had survived would be the same
+        // overstatement in the other direction.
+        if self.opts.max_set_size == 0 {
+            debug_assert!(
+                !a_prev.is_empty(),
+                "Phase 1 continues only with a live frontier"
+            );
+            self.lstate.truncated = true;
+            return Ok(());
+        }
         let mut phase_2_done = false;
         for layer in 1..=self.opts.max_set_size {
             if phase_2_done {

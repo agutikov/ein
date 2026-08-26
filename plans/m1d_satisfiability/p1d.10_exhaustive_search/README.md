@@ -464,7 +464,24 @@ seventeen layers. It does not fall by 87 %. So the barren regime's cost is not
 concentrated anywhere: it is `Σₖ C(alive, k)` enterings at a flat price, which
 is the least interesting and most damning shape it could have had.
 
-### 6. And `exhausted` is already wrong, at one cap
+### 6. And `exhausted` was wrong, at one cap — **fixed 2026-08-26**
+
+> **Closed by [T1d.10.5.0](s1d.10.5_contract.md#task-t1d1050--a-cap-of-zero-is-a-truncation--done-2026-08-26)**,
+> the same day and out of order, because it depended on nothing in the phase
+> and was a defect rather than a design question. A cap of zero is a
+> **truncation**: `exhausted = false`, and the S1d.3.3 rule then applies to it
+> unchanged. Measured over all 197 manifest entries, the 150 that load went
+> **150 / 0** `exhausted true`/`false` to **99 / 51** — the 51 being exactly the
+> cells that reach the search, and the 99 unmoved to the field. The two
+> questions the task refused to assume are answered there: it answers rather
+> than refuses (a refusal would have broken the reconnaissance's own
+> instrument, which asks `ein solve -m 0 --json-summary` once per node), and an
+> empty `unsat_core` stays constructible because **12 corpus entries already
+> report one under their ordinary `solve` run**, all twelve at
+> `exhausted = false`. `corpus_exits.txt` did not move.
+>
+> The read-out below is what it looked like before, kept because the argument
+> is the record.
 
 Found by probing the boundary S1d.10.5 owns:
 
@@ -546,14 +563,16 @@ own terms.
 | 3rd | [S1d.10.4](s1d.10.4_conflict_mining.md) | Conflict mining when a layer is barren — **closed on its own terms**: 0 deaths in 15 720 759 deep enterings | 0.5 d |
 | 4th | [S1d.10.6](s1d.10.6_the_traversal.md) | **The traversal — one obligation per node** (new) | 5 d |
 | 5th | [S1d.10.3](s1d.10.3_stopping_criterion.md) | Is there a stopping criterion? — re-aimed at what licenses `exhausted` under a tree | 3 d |
-| 6th | [S1d.10.5](s1d.10.5_contract.md) | What `exhausted` means | 2 d |
+| 6th | [S1d.10.5](s1d.10.5_contract.md) | What `exhausted` means — **`T1d.10.5.0` done 2026-08-26**: a cap of zero is a truncation, 51 entries moved and 99 did not | 2 d |
 
 **11.5 days remain against the 12 the original four carried**, so the
 reconnaissance moved work between stages rather than adding it: S1d.10.2 loses a
 day to its own predecessor, S1d.10.4 loses three and a half to being closed,
 S1d.10.3 loses one to a dead candidate, and the five that come back are the
-traversal. One task in the last stage does not wait for any of the others: `T1d.10.5.0`, the `-m 0` boundary (§6 above), is a defect in
-today's engine and is an hour's work whenever somebody wants it.
+traversal. One task in the last stage did not wait for any of the others and has been
+taken: **`T1d.10.5.0`, the `-m 0` boundary (§6 above), is done 2026-08-26** —
+an hour, out of order, and the phase's first shipped change. The 11.5 days are
+otherwise untouched: it was costed inside S1d.10.5's two.
 
 **Two ids changed subject rather than title, and the titles are kept because
 the arguments are.** [S1d.10.4](s1d.10.4_conflict_mining.md) still asks whether

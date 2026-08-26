@@ -441,6 +441,35 @@ reaches `Outcome::NotChecked` under a declared run — **could not declare plain
 declares it now, and `corpus_exits.txt` banks the 1. `ein test` is unchanged:
 it prints its own per-file report and has always been readable on stdout alone.
 
+**M1d [T1d.10.5.0](../../plans/m1d_satisfiability/p1d.10_exhaustive_search/s1d.10.5_contract.md)
+closed the one door in that rule with no guard on it.** `--max-set-size 0` is a
+**truncation**: a run that explores no layer over a non-empty frontier reports
+`exhausted = false`, and the table above then applies to it unchanged — its
+`k = 0` means *no model within the cap*, never *no model*. Before it the layer
+loop `1..=max_set_size` never ran at zero, so `truncated` was never set and
+`exhausted` kept its `true` default; **51 of the 150 corpus entries that load —
+every one that reaches the search** — stated a refutation with an empty unsat
+core, a certified exhaustion claim and a success exit code.
+
+Two things the fix decides rather than assumes:
+
+- **A cap of zero answers; it does not refuse.** A program whose root is
+  already complete has no lattice to exhaust and reports its verdict exactly at
+  a cap of zero — `Solution` on `examples/branching/01_saturate_only.ein`,
+  `Open — owes 1` on `tests/stdlib/algebra/23_total_owed.ein`, both
+  `exhausted = true`. The other **99** entries are that class and not one of
+  them moved. The alternative — the `Aborted` shape `--max-enterings 0` uses —
+  would decline a question the engine answers exactly, and P1d.10's own
+  reconnaissance asks it once per node.
+- **An empty `unsat_core` on a `Contradiction` stays constructible.** A search
+  that entered nothing has no dead commitment to cite, and the emptiness is not
+  this cap's shape to begin with: **12** corpus entries report `Contradiction`
+  with a 0-fact core under their ordinary `solve` run, every one of them at
+  `exhausted = false`. Whether that pair may keep the *word* is
+  [Q-M1d.1](../../plans/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
+  and is untouched here — no exit code moved, and `corpus_exits.txt` is
+  unchanged.
+
 **Free, and different from the Python CLI's:** wrapping, indentation,
 headings, ordering within a section, and the wording of a usage diagnosis.
 `clap` cannot be configured into `argparse`'s layout and hand-rolling one was
