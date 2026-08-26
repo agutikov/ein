@@ -476,6 +476,21 @@ identical on all 121 entries that reach a fixpoint. Off by default because it
 costs a generation pass per recorded state (≈40 ms on the zebra family) and
 every corpus `solve` in `cargo test` writes a summary.
 
+**A failing `:expect` now says why on stderr too**, M1d
+[S1d.4.3](plans/m1d_satisfiability/p1d.4_model_set_closure/the_vocabulary.md),
+and it is one line: `<file>: :expect NOT CHECKED — expected Ambiguity with k =
+2, got Solution with k = 1`. stdout is **unchanged** — the report block stays
+under the solution table, because a false claim is a *result* and not a refusal
+of the input — but an exit 1 with an empty stderr is a run nobody can diagnose
+from a pipeline, which is what
+`corpus_cli::every_refusal_carries_a_diagnostic` forbids and what `ein solve`
+was producing. It is why `examples/features/11_expect_ambiguity.ein` could not
+declare plain `solve`; it declares it now, and that cell is the corpus's only
+witness for `Outcome::NotChecked`. **P1d.4 closed with no keyword**: tests stay
+exhaustive by default, `:expect` stays closed by default, and a claim too slow
+to check at `ein test`'s `-m 5` stays out of the corpus — which needs no
+mechanism, because `NOT CHECKED` takes a failing exit code inside `cargo test`.
+
 **`ein test --json-report FILE.json`** is M1d
 [S1d.4.1](plans/m1d_satisfiability/p1d.4_model_set_closure/s1d.4.1_what_closure_costs.md)'s
 and the 50th CLI option: **one row per `(query …)` of the whole selection** —

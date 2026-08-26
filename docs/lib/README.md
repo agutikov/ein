@@ -21,7 +21,7 @@ its most-natural primary file; cross-references point to the others.
    constraint propagation, arc/path consistency, CDCL.
 3. [Theorem Proving & Formal Methods](03-theorem-proving-formal-methods.md) —
    Lean, Coq, Isabelle, Agda, Idris, dependent types, Curry–Howard,
-   automated provers, proof DAGs, tableau, natural deduction.
+   automated provers, proof DAGs, tableau, natural deduction, Alloy.
 4. [Programming Languages](04-programming-languages.md) —
    languages mentioned, organized by paradigm (functional, dependently typed,
    logic, S-expression, scripting/host, low-level).

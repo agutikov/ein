@@ -384,6 +384,7 @@
 0    examples/features/11_expect_ambiguity.ein :: render rules
 0    examples/features/11_expect_ambiguity.ein :: saturate
 0    examples/features/11_expect_ambiguity.ein :: saturate --dump
+1    examples/features/11_expect_ambiguity.ein :: solve
 0    examples/features/11_expect_ambiguity.ein :: solve -e
 0    examples/features/11_expect_ambiguity.ein :: test
 0    examples/features/12_expect_false.ein :: render constraints

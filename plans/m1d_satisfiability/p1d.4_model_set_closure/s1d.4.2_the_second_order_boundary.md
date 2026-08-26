@@ -6,6 +6,49 @@
 which is a language question, but for the *urgency*: a boundary drawn around a
 claim nobody writes is drawn differently from one around a claim everybody
 wants.
+**Status: done 2026-08-26.** [Q-M1d.7](../open_questions.md#q-m1d7--may-a-program-require-its-own-model-count)
+closed **no**; the argument is banked in
+[`the_boundary.md`](the_boundary.md). Nothing was implemented, as planned.
+
+## What it found
+
+| claim | asked for | answered |
+|---|---|---|
+| the rule-shape test | applied, not assumed; the negative argued | **three refusals, independent** — (a) on compilation, (b) on grounds, **(c) on evaluability**, which the plan did not list |
+| the traversal argument | in full, since it is the reason rather than the symptom | **`-m` is a budget**: a rule reading `exhausted` fires at `-m 38` and not at `-m 5` on the same program, so a budget would change what is provable |
+| the neighbour survey | four systems, cited, contradictions recorded | **none contradicts** — and all four put the count at the *meta* level, the two closest putting it on the command line |
+| Alloy | catalogued, or recorded as out | **catalogued** — [`docs/lib/03` § Alloy](../../../docs/lib/03-theorem-proving-formal-methods.md). The knowledge graph is not touched, and § 3 says why |
+| the boundary | stated once, general enough for the next keyword | *a rule is a sentence about the world it fires in* — with three corollaries, one of which is a **licence** rather than a prohibition |
+
+**Three things the stage found that nothing asked for.**
+
+- **The third refusal is the interesting one, and it is about affordability
+  rather than about semantics.** Form G invites `(closed)` as a verdict atom
+  the way `(open ?R)` is one — and the reason it fails is that a verdict atom
+  is only worth having if the engine can *evaluate* it. `(open ?R)` costs one
+  pass over the quiescent KB; `(closed)` costs the whole lattice — 17 204 592
+  enterings on `zebra2-minus-15`. **So the affordability problem is not
+  downstream of the vocabulary; it is why the vocabulary cannot exist.** That
+  is a stronger closing of Q-M1d.7 than "rules cannot see the search", because
+  it survives someone building the mechanism.
+- **Alloy is the nearest miss and ein already has its mechanism.** `run p for
+  5` is a bound on the analyser's search, written in the model file — which is
+  what made it look like a program constraining its own model space. It is a
+  *command*, and **the ein analogue of an Alloy scope is `--max-set-size`**.
+  Ein has Alloy's mechanism, in Alloy's position, spelled as a flag.
+- **The boundary licenses one thing as well as forbidding three.** *How deep to
+  search* is not a second-order claim — it is Alloy's scope — so a future
+  program-level depth declaration is not blocked by this ruling. That matters
+  because it is the shape of the only gap
+  [S1d.4.1](closure_census.md) found that anybody actually wants.
+
+**One task did not need doing the way the plan drew it.** T1d.4.2.2's scope
+discipline said "no encoding is written, nothing is run" and the survey held to
+it; what it did *not* anticipate is that the catalogue's **knowledge graph** is
+a curated subset rather than an index (`Curry–Howard`, `Natural deduction`,
+`Monte Carlo Tree Search` and a dozen more are catalogued without nodes), so
+adding Alloy to `docs/lib/03` correctly means **not** re-rendering the four
+SVGs. AGENTS.md's rule fires when `knowledge-graph.dot` changes; it did not.
 
 ## Context
 

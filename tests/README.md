@@ -206,3 +206,28 @@ every declared `solve` / `saturate` / `test` run with `--events` and counts
 declare that name itself and the module is in its import closure, so a puzzle's
 inline `symmetric` is never credited to `std.algebra`'s. That attribution rule
 is the one the cargo test re-implements, and the two have to stay one rule.
+
+## What may be claimed here — M1d S1d.4.3
+
+**A claim that cannot be checked at the runner's own depth does not go in.**
+`ein test` exhausts and it exhausts at `--max-set-size 5`; where the frontier
+is still non-empty there, `:expect` reports
+[`NOT CHECKED`](../docs/kernel/defined_behaviour.md) — which is honest, is not
+a pass, and **takes a failing exit code**. So the policy needs no mechanism: a
+claim that does not check cannot be added without turning the gate red. It is
+the failure mode of adding one, not a convention to remember.
+
+Its cost today is **zero entries** — 59 corpus claims, 59 held, all 59 under a
+search that exhausted, and 58 of them entering no commitment at all
+([`closure_census.md`](../plans/m1d_satisfiability/p1d.4_model_set_closure/closure_census.md)).
+Its forward cost is the **ten** corpus entries whose claim *would* come back
+unchecked if one were written — `saturation/type-exclusivity/pets.ein` most
+sharply, which reports `Contradiction k = 0` at `-m 5` and has **35 models** at
+`-m 10`. None of the ten carries a claim, and none gets one until the search
+that would check it is affordable, which is
+[P1d.10](../plans/m1d_satisfiability/p1d.10_exhaustive_search/README.md)'s
+subject rather than this directory's.
+
+**The corollary for a new fixture**: keep it small enough that its answer is
+reached by saturation or by a couple of layers. That is what the 56 programs
+here already are, and it is why the whole suite is 0.04 s.

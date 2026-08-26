@@ -123,6 +123,23 @@ human reasoning move that backtracking solvers and CDCL automate.
 
 ## 5. Verified software & formal methods
 
+### Alloy
+Declarative modelling in relational first-order logic with transitive
+closure; the Analyzer compiles a model to SAT (via Kodkod) and finds
+instances or counterexamples. Its analysis is **bounded**: `run p for 5`
+/ `check a for 5 but 3 Node` give a *scope* — a bound on how large the
+universe may be — justified by the "small scope hypothesis" (most
+defects have small counterexamples). Alloy 6 adds linear temporal logic.
+- <https://alloytools.org/>
+
+Catalogued from M1d
+[S1d.4.2](../../plans/m1d_satisfiability/p1d.4_model_set_closure/the_boundary.md),
+which went looking for a language whose *program* can constrain its own
+model count and found that Alloy is the nearest miss: `#r` counts tuples
+**inside** an instance, and `for N` is a **command**, not a sentence in
+the model. The ein analogue of an Alloy scope is `--max-set-size`, not
+`:expect`.
+
 ### K Framework
 Executable semantics framework — describe a language, its states, and
 its rewrite rules; then run, analyse, and prove properties.

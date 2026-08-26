@@ -43,6 +43,18 @@ then on `ein test` re-checks it on a machine with no external solver installed
 at all. **The external tools are needed to establish the answer, not to keep
 it.**
 
+> **The last clause needs a depth, measured 2026-08-26** by M1d
+> [S1d.4.3](../m1d_satisfiability/p1d.4_model_set_closure/the_vocabulary.md),
+> which rewrote the same sentence in
+> [M1c](../../docs/history/m1c_external_validation/README.md#splitting-them-did-not-split-the-pipeline).
+> `ein test` exhausts, but at `--max-set-size 5`; `zebra2-minus-15`'s lattice
+> ends at depth **22**, so at the default the re-check comes back **`NOT
+> CHECKED`** — honest, and not a re-check. The honest promise is `ein test
+> <file> -m 38`, which is a command somebody runs. **What this milestone owes
+> its own acceptance bullet is therefore the depth as well as the answer**: an
+> encoding whose `:expect` cannot be checked at the runner's default is checked
+> in with the `-m` that checks it, or it is not checked in.
+
 ## Goal
 
 **The same problem, stated once for each system, run by one harness, reported
@@ -106,7 +118,11 @@ algorithm compares to a CDCL solver on the same puzzle.
   adapted it.
 - **Every problem's answer is confirmed by a system that is not Ein**, and the
   confirmation is checked back into the `.ein` file as an `:expect`, so it is
-  re-checked by `ein test` on a machine with no solver installed.
+  re-checked by `ein test` on a machine with no solver installed — **at a depth
+  that reaches it**. `ein test` runs `-m 5`; a claim that needs more is checked
+  in with the `-m` that checks it, or it is not checked in at all, because
+  `NOT CHECKED` is not a re-check (M1d
+  [S1d.4.3](../m1d_satisfiability/p1d.4_model_set_closure/the_vocabulary.md)).
 - Timings are **processes, cold**, taken through
   [`utils/bench_env.sh`](../../utils/bench_env.sh) exactly as
   [`e2e_baseline.py`](../../utils/e2e_baseline.py) takes Ein's — "the same

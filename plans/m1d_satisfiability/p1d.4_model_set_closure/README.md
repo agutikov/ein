@@ -10,6 +10,9 @@ of what closing a set costs.
 building M1c
 [S1c.1.2](../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects).
 
+**Status: closed 2026-08-26** — three stages, and **no keyword**. See
+[§ The ledger](#the-ledger).
+
 **Depth: stage files, written 2026-08-25** — three of them, and like
 [P1d.3](../p1d.3_model_sets/README.md) the phase changed shape before it
 started, because a reconnaissance measured what it had assumed. See
@@ -175,8 +178,59 @@ decided rather than left invisible.
 | stage | title | est. | |
 |---|---|---|---|
 | [S1d.4.1](s1d.4.1_what_closure_costs.md) | What closure costs, per corpus entry — which claims are checkable today | 2 d | **done 2026-08-26** — [`closure_census.md`](closure_census.md) |
-| [S1d.4.2](s1d.4.2_the_second_order_boundary.md) | May a program state it? The second-order boundary, and where the neighbours put it | 3 d | |
-| [S1d.4.3](s1d.4.3_the_vocabulary.md) | The vocabulary: what a test says when it can only afford half the claim | 2 d | |
+| [S1d.4.2](s1d.4.2_the_second_order_boundary.md) | May a program state it? The second-order boundary, and where the neighbours put it | 3 d | **done 2026-08-26** — [`the_boundary.md`](the_boundary.md) |
+| [S1d.4.3](s1d.4.3_the_vocabulary.md) | The vocabulary: what a test says when it can only afford half the claim | 2 d | **done 2026-08-26** — [`the_vocabulary.md`](the_vocabulary.md) |
+
+## The ledger
+
+**The phase is closed, 2026-08-26**, three stages in one day, and it shipped
+**no keyword** — which is the outcome its own Risks section argued for and its
+README half expected.
+
+### The decisions, and where
+
+| decision | who | where |
+|---|---|---|
+| **May a puzzle require its own model count? — no**, three independent refusals | the argument | [`the_boundary.md`](the_boundary.md), [Q-M1d.7](../open_questions.md#q-m1d7--may-a-program-require-its-own-model-count) closed |
+| **Does P1d.4 grow a keyword? — no.** Tests stay exhaustive by default, `:expect` stays closed by default, no extra syntax | **the user**, 2026-08-26 | [`the_vocabulary.md` §1](the_vocabulary.md) |
+| **A claim too slow to check at the runner's depth stays out of the corpus** | **the user** | [`tests/README.md`](../../../tests/README.md), and the gate already enforces it |
+| **Deep exhaustive search is the next phase's**, not a vocabulary problem | **the user** | [P1d.10](../p1d.10_exhaustive_search/README.md) |
+| **A false claim is a *result* — stdout keeps the block, stderr gains one line** | S1d.4.3 | [`defined_behaviour.md` §5](../../../docs/kernel/defined_behaviour.md) |
+
+### The stages, with their numbers
+
+| stage | what it measured or argued | the number |
+|---|---|---|
+| S1d.4.1 | who states a closure claim, and what stating one costs | **59 claims over 124 queries, 1 about a set**; write cost **0.96×** the file on the puzzle and **4.28×** on a 95-line demo; **10 of 121** entries could not check one |
+| S1d.4.2 | is there a rule shape for closure | **no**, three times: on compilation, on grounds (**`-m` is a budget**), and on **evaluability** — `(closed)` costs 17 204 592 enterings where `(open ?R)` costs one pass |
+| S1d.4.3 | what the meta level can afford | (a) **0** users · (b) **0** · (c) **1.244 × 10¹⁴ against 32**, and absent on **10 of 12**; the useful half of (c) already ships as `complete(kb)` + discharge |
+
+### What shipped, in full
+
+One line of stderr, one word of manifest, one line of golden, one catalogue
+entry, and four documents' worth of prose. `expect.rs` is **byte-identical**;
+the grammar did not move; `ein test` did not move.
+
+### The deferrals, each with a trip-wire
+
+- **A weaker claim (a)** — declined as inert. It comes back if a corpus entry
+  ever wants to state *at least these* and cannot; the trip-wire is the census's
+  third column, which is **0** today and is re-taken by
+  `utils/closure_census.py`.
+- **A certificate (b)** — declined as documentation. It comes back if an
+  attribution ever needs to be *read* by the check rather than carried by it;
+  until then a comment above the `:expect` does the job.
+- **An obligation bound (c)** — declined, measured, and recorded as inert with
+  the number by [F9](../../followups/f9_e_catalog.md)'s rule. It comes back if
+  a corpus entry with a model set ever *states* an obligation: **2 of 12** do
+  today, and both are the `zebra2-minus-15` twins.
+- **"Expected to be not-checked"** — no fixture can say it, `ein test` will not
+  grow the concept, and under the corpus policy the case has **no instances**.
+- **P1d.3's compact form** — [S1d.3.3](../p1d.3_model_sets/the_verdict.md)
+  shipped `--models key` as *additional output* rather than as something
+  recorded, so `:expect` has no description to compare against and the phase
+  README's third question closes **no**. The paragraph to revisit if a key ever
+  becomes a recorded artefact is [`the_vocabulary.md` §6](the_vocabulary.md).
 
 **S1d.4.1 is the cheap measurement that sizes the rest**, and the
 reconnaissance above is its first hour. Its prediction held — the answer *is*
@@ -203,21 +257,34 @@ does not list, because the reconnaissance found it: M1c's sentence can be
 the sentence and cannot honour it is worse than one that says less"* — and it
 costs one paragraph against a keyword for two instances.
 
-## Acceptance for the phase
+## Acceptance for the phase — **all four met, 2026-08-26**
 
 - **A written answer to "may a puzzle require its own model count"**, with the
   reason, whichever way it goes — this is a language boundary and it should be
   stated once rather than re-litigated per keyword.
+  **Met** — [`the_boundary.md`](the_boundary.md): *no*, three independent
+  refusals, and the statement is general enough that *"exactly one model"*,
+  *"an even number"* and *"the same models as that file"* need no further
+  argument.
 - **The `zebra2-minus-15` debt is discharged**: either its 32 models are
   verifiable by something, or M1c's pipeline sentence is rewritten to say what
   is actually checked. A plan that keeps the sentence and cannot honour it is
   worse than one that says less.
+  **Met, and both halves turned out true**: the 32 *are* verifiable (`-m 38`,
+  25 min at `-j16`), `ein test` at `-m 5` still would not verify them, so the
+  sentence is [rewritten](../../../docs/history/m1c_external_validation/README.md#splitting-them-did-not-split-the-pipeline)
+  and [M10](../../m10_external_benchmarks/README.md) is told.
 - Anything that ships keeps the **guarantee vocabulary** the milestone settles:
   a claim about a model set is marked with what proved it, and `NOT CHECKED`
   stays distinguishable from both pass and fail.
+  **Met vacuously and then reinforced**: no vocabulary shipped, and
+  `NOT CHECKED` gained a stderr line, a manifest cell and a banked exit code —
+  so it is now *more* distinguishable than it was, not less.
 - **No weakening of what S1c.1.2 built.** Relation-closure inside a model is
   local, cheap and decidable by inspection; it is not what this phase is about
   and must not be traded away to make set-closure affordable.
+  **Met** — `ein-infer/src/expect.rs` is byte-identical, and the grammar did
+  not move.
 
 ## Risks
 

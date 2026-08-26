@@ -6,6 +6,52 @@
 [S1d.4.2](s1d.4.2_the_second_order_boundary.md) (whether the claim belongs at
 the meta level at all). Reads [P1d.3](../p1d.3_model_sets/README.md)'s answer
 if it has landed, and does not wait for it.
+**Status: done 2026-08-26.** The decision is the user's and it is **no
+keyword**: [`the_vocabulary.md`](the_vocabulary.md). What shipped is one line
+on stderr, one word in `corpus.toml` and two rewritten sentences.
+
+## What it found
+
+| claim | asked for | answered |
+|---|---|---|
+| (a)/(b)/(c) priced, with **how many entries would use each** | one table | **0 · 0 · 2 of 12** — all three declined, (a) and (b) as inert by F9's rule |
+| the exit code, separated from the keyword | both answered separately | the **code does not move** (`NOT CHECKED` is not a pass); the **stream** does, and that is the whole engine change |
+| (c) measured before judged | a bound against the true count | **1.244 × 10¹⁴ against 32** — over by **3.89 × 10¹²** — and *unavailable* on **10 of the 12** entries with a model set, which declare no obligation at all |
+| (c)'s useful direction | does any state know `k` without searching? | **58 of the 59 claims already do**, with zero enterings. It is `complete(kb)` + S1d.2.6's discharge test, shipped at P1d.2 |
+| the `zebra2-minus-15` debt | discharged by one of three options | **the third** — M1c's sentence rewritten, and [M10](../../m10_external_benchmarks/README.md) told |
+| if a keyword ships | grammar, loader, outcome, two fixtures | **none ships**, so none of it |
+| the phase ledger | in the phase README, P1d.2's form | [§ The ledger](README.md#the-ledger) |
+
+**Three things the stage found that nothing asked for.**
+
+- **(c) fails on availability before it fails on tightness.** The plan expected
+  *"loose beyond use"* and got it — twelve orders of magnitude — but the
+  decisive number is the other one: **10 of the 12 entries with a model set
+  declare no obligation**, so on them the bound does not exist rather than
+  being weak. A mechanism that reads requirements has nothing to read where no
+  requirement is stated, which is the scope rule
+  [S1d.2.6](../p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md) already
+  wrote, seen from the other end.
+- **The stream question had an answer that keeps both halves.** *Is a false
+  claim a refusal or a result?* — a **result**, so the block stays under the
+  solution table; *and* one line goes to stderr, because an exit 1 nobody can
+  diagnose from a pipeline is a defect wherever the detail is. That unblocked
+  [T1d.4.1.4](s1d.4.1_what_closure_costs.md) at a cost of **one word of
+  manifest and one line of golden**: `11_expect_ambiguity` declares plain
+  `solve`, and `Outcome::NotChecked` has its corpus cell.
+- **The corpus policy needs no mechanism because it has one.** *A claim that
+  cannot be checked at the runner's depth stays out* is enforced by
+  `NOT CHECKED`'s failing exit code inside `cargo test` — it is the failure
+  mode of adding such a claim, not a convention. Recorded in
+  [`tests/README.md`](../../../tests/README.md).
+
+**One task was overtaken by its own inputs.** T1d.4.3.5 (*if a keyword ships*)
+has no work, and T1d.4.3.1's third column is why. § Context below still reads
+as it was written on 2026-08-25 and is **superseded on three counts** by
+[S1d.4.1](closure_census.md): the form is used **once** in the corpus, not
+twice; `Outcome::NotChecked` **does** fire on a corpus file in the gate, and
+now on a manifest cell too; and the write cost is **513 lines on 534**, whose
+ratio is the *mildest* of the twelve rather than the worst.
 
 ## Context
 

@@ -418,6 +418,29 @@ The schema is `ein-test-report/1`, deliberately not `ein-summary/1`: a summary
 is one run's counters, a report is one row per query, and a consumer reading
 the same version marker on both would be right to expect the same fields.
 
+**M1d [S1d.4.3](../../plans/m1d_satisfiability/p1d.4_model_set_closure/the_vocabulary.md)
+moved no byte of stdout and added one line to stderr.** A `:expect` that does
+not hold under `ein solve` now writes
+
+```text
+<file>: :expect NOT CHECKED — expected Ambiguity with k = 2, got Solution with k = 1
+```
+
+to **stderr**, beside the unchanged report under the solution table. The rule
+it settles is which stream carries what, and both halves are the answer:
+
+| | stream | why |
+|---|---|---|
+| the `:expect` block — label, disagreements, the derivation that put a surplus fact there, the models projected through the `:goal` | **stdout** | it is what the run *found*. A false claim is a **result**, not a refusal of the input, and its report belongs under the table it is about |
+| one line naming the file, the label and the first disagreement | **stderr** | an exit 1 with an empty stderr is a run nobody can diagnose from a pipeline |
+
+Before it, `solve` produced exactly that undiagnosable shape, which is why
+`examples/features/11_expect_ambiguity.ein` — the corpus's only fixture that
+reaches `Outcome::NotChecked` under a declared run — **could not declare plain
+`solve`**: `corpus_cli::every_refusal_carries_a_diagnostic` forbids it. It
+declares it now, and `corpus_exits.txt` banks the 1. `ein test` is unchanged:
+it prints its own per-file report and has always been readable on stdout alone.
+
 **Free, and different from the Python CLI's:** wrapping, indentation,
 headings, ordering within a section, and the wording of a usage diagnosis.
 `clap` cannot be configured into `argparse`'s layout and hand-rolling one was

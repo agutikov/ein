@@ -23,7 +23,7 @@ about a word the engine already says.
 | [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **closed 2026-08-25** — it may, and on this corpus it does not: [S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) shipped the ladder and **no counter moved** ([the record §2](p1d.2_obligations/hypotheses_from_obligations.md)) |
 | [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | **closed 2026-08-26 — both**: the count now carries its exhaustion qualifier and **(b) the determining key** ships behind `ein solve --models key` ([the verdict](p1d.3_model_sets/the_verdict.md)). The half that was broken was the *enumeration* |
 | [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | **closed 2026-08-25** — never of a state that **owes** something it can still pay; the ten entries owe nothing because they state no obligation, and keep their word ([the census §5](p1d.2_obligations/openness_census.md)) |
-| [Q-M1d.7](#q-m1d7--may-a-program-require-its-own-model-count) | May a program require its own model count? | open — [P1d.4](p1d.4_model_set_closure/README.md); arrived from M1c [S1c.1.2](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects) on 2026-08-24 |
+| [Q-M1d.7](#q-m1d7--may-a-program-require-its-own-model-count) | May a program require its own model count? | **closed 2026-08-26 — no**, and for three reasons rather than one: [the boundary](p1d.4_model_set_closure/the_boundary.md). *A rule is a sentence about the world it fires in* |
 
 ---
 
@@ -601,6 +601,50 @@ who established the count, which is the sidecar Q-M1c.1 rejected arriving by
 another door; or a bound from [P1d.2](p1d.2_obligations/README.md)'s
 obligations, where a state that owes nothing may know its own count without
 enumerating.
+
+**Closed 2026-08-26 — no, and the reason generalises**:
+[`the_boundary.md`](p1d.4_model_set_closure/the_boundary.md), S1d.4.2's
+deliverable. The rule-shape test that answered Q-M1d.2 *yes* one level down
+answers this one **no** three times over, and the three refusals are
+independent:
+
+- **(a) a guard over models** dies on compilation. `absent` compiles to a
+  sub-plan over the fact store, and *"another model exists"* is a fact in no
+  KB — because another model **is** a different KB. `(open ?R)` survives the
+  same test only because incompleteness of `R` *in this KB* is one pass over
+  this KB.
+- **(b) a rule reading the search's own state** dies on grounds, not on
+  feasibility: the engine could expose `k`, and a rule reading it would make
+  derivation depend on the traversal. The decisive form is that **`-m` is a
+  budget** — such a rule would fire at `-m 38` and not at `-m 5` on the same
+  program, so a budget would change what is provable. Three invariance families
+  (`--shuffle`, `id_order_invariance`, `jobs_invariance`'s 20 712 cells) and
+  S1a.7.0's 1 078 154-speculation purity control are what that promise costs
+  today.
+- **(c) a verdict atom `(closed)`** — the reading form G invites, and the one
+  the stage plan did not list — dies on **evaluability**. `(open ?R)` is
+  honoured by one pass over the quiescent KB; `(closed)` is honoured only by
+  exhausting the lattice, which on `zebra2-minus-15` is 17 204 592 enterings
+  and 25 minutes. The affordability problem is not downstream of the
+  vocabulary: it is why the vocabulary cannot exist.
+
+**The neighbours agree, and Alloy is the nearest miss.** ASP's aggregates count
+atoms within an answer set, Z3's blocking-clause loop is a procedure outside
+the formula, #SAT is an operation on a program — and **Alloy's `run … for N` is
+a scope**: a bound on the analyser's search, written in the model file, which
+made it look like a counterexample. It is not. *The ein analogue of an Alloy
+scope is `--max-set-size`, not `:expect`* — ein already has Alloy's mechanism,
+in Alloy's position, spelled as a flag. Alloy was uncatalogued and is now
+[`docs/lib/03` § Alloy](../../docs/lib/03-theorem-proving-formal-methods.md).
+
+So the boundary, stated once and general: **a rule is a sentence about the
+world it fires in; a claim about the *set* of worlds is a sentence about the
+search; the search is not a thing rules may read.** It settles *"exactly one
+model"*, *"an even number of models"* and *"the same models as that file"*
+without any of them being re-litigated — and it leaves two things explicitly
+alone: a **runner knob** naming a depth is Alloy's scope, not a second-order
+claim, and `:expect` keeps its right to state what it cannot verify so long as
+it says `NOT CHECKED`.
 
 > **Sized 2026-08-26**, by
 > [S1d.4.1](p1d.4_model_set_closure/closure_census.md): whatever the answer,

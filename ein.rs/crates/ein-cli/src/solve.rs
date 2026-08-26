@@ -711,6 +711,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
             &kb,
             &solved.answer,
             solved.stats.exhausted,
+            file,
         ),
         n_queries,
     )
@@ -720,12 +721,29 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
 ///
 /// Exit 1 on a failure, which is §4's code for "the engine says no": a false
 /// claim by the program is a result, not a usage error.
+///
+/// **The report is a result and goes to stdout; a one-line diagnosis also goes
+/// to stderr.** Both halves are deliberate. The block belongs under the
+/// solution table it is about — it is what the run *found*, not a refusal of
+/// the input — but an exit 1 with an empty stderr is a run nobody can diagnose
+/// from a pipeline, which is the one failure shape
+/// `corpus_cli::every_refusal_carries_a_diagnostic` exists to forbid, and
+/// until M1d [S1d.4.3](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/the_vocabulary.md)
+/// `ein solve` was producing exactly it. That is why
+/// `examples/features/11_expect_ambiguity.ein` could not declare the plain
+/// `solve` run that gives [`ein_infer::expect::Outcome::NotChecked`] its corpus
+/// cell — and why it can now.
+///
+/// stdout is **unchanged**: the line is additive, and it is one line, because
+/// the detail is already printed and duplicating it would make the two streams
+/// two copies of the same report.
 fn check_expectation(
     ast: &Ast,
     terms: &mut Terms,
     kb: &Kb,
     answer: &Answer,
     exhausted: bool,
+    file: &str,
 ) -> i32 {
     let Some(query) = kb.program().query() else {
         return 0;
@@ -745,16 +763,22 @@ fn check_expectation(
     // stopped search establishes a lower bound on `k` rather than a verdict —
     // so it takes the same exit code a false claim does. A green line for a
     // claim nobody checked is the failure this whole form exists to prevent.
-    println!(
-        "\n  :expect        {}",
-        match report.outcome {
-            ein_infer::expect::Outcome::Held => "holds",
-            ein_infer::expect::Outcome::Failed => "FAILED",
-            ein_infer::expect::Outcome::NotChecked => "NOT CHECKED",
-        }
-    );
+    let label = match report.outcome {
+        ein_infer::expect::Outcome::Held => "holds",
+        ein_infer::expect::Outcome::Failed => "FAILED",
+        ein_infer::expect::Outcome::NotChecked => "NOT CHECKED",
+    };
+    println!("\n  :expect        {label}");
     for line in &report.lines {
         println!("    {line}");
+    }
+    if !report.passed() {
+        // The first line is the disagreement itself; the rest is the evidence
+        // for it, and evidence belongs with the report.
+        match report.lines.first() {
+            Some(why) => eprintln!("{file}: :expect {label} — {why}"),
+            None => eprintln!("{file}: :expect {label}"),
+        }
     }
     i32::from(!report.passed())
 }

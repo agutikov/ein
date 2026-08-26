@@ -216,7 +216,7 @@ that is the note's thesis measured in someone else's language.
 |---|---|---|---|---|
 | [P1d.2](p1d.2_obligations/README.md) | Obligations — the half of the vocabulary that says *must* | 6 (**done 2026-08-25**) | 3.5 w | **met**: a puzzle states a requirement, a state says what it owes, the search branches on it, and the verdict reports it — [the phase ledger](p1d.2_obligations/README.md) |
 | [P1d.3](p1d.3_model_sets/README.md) | Model sets without enumeration — the compact answer | 3 (**done 2026-08-26**) | 1.5 w | **met, and with both**: `ein solve --models key` is the compact representation, and the enumeration now states its own guarantee — [the phase ledger](p1d.3_model_sets/README.md#the-ledger) |
-| [P1d.4](p1d.4_model_set_closure/README.md) | Closing the model set — the claim nothing can state | 3 (**1 done**) | 1.5 w | a written answer to "may a puzzle require its own model count", and `zebra2-minus-15`'s 32 models either verifiable or the pipeline sentence rewritten |
+| [P1d.4](p1d.4_model_set_closure/README.md) | Closing the model set — the claim nothing can state | 3 (**done 2026-08-26**) | 1.5 w | **met, and with no keyword**: the answer is *no* three times over, and M1c's sentence is rewritten — [the phase ledger](p1d.4_model_set_closure/README.md#the-ledger) |
 | [P1d.10](p1d.10_exhaustive_search/README.md) | Exhaustive search over many models — why an under-determined puzzle does not finish | 5 (1 done) | 3 w | `solve -e zebra2-minus-15` finishes with all 32 models, or the reason is measured |
 
 17 stages, 47 days of stage estimates ≈ 9.5 weeks — and **the table is now in
@@ -362,6 +362,23 @@ different one.
 > closure claim on any of them would come back unchecked. `NOT CHECKED` never
 > fires in the corpus because the entries where it would have have never
 > written a claim.
+>
+> **S1d.4.2 and S1d.4.3 closed the phase the same day, and it grew nothing.**
+> The rule-shape test that answered Q-M1d.2 *yes* one level down answers
+> Q-M1d.7 **no** three times over, and the third refusal is the one the plan
+> did not have: a verdict atom `(closed)` fails on **evaluability**, because
+> `(open ?R)` costs one pass over the quiescent KB and `(closed)` costs the
+> whole lattice — so the affordability problem is not downstream of the
+> vocabulary, it is *why the vocabulary cannot exist*
+> ([`the_boundary.md`](p1d.4_model_set_closure/the_boundary.md); Alloy is the
+> nearest miss, and `run … for 5` is ein's `--max-set-size`, not ein's
+> `:expect`). The user then declined all three candidate vocabularies, and
+> S1d.4.3 measured the one that had a number in it: the obligation-derived
+> bound is **1.244 × 10¹⁴ against 32** — and *absent* on **10 of the 12**
+> entries that have a model set, because they state no obligation at all.
+> What shipped is one line of stderr, which is what let
+> `examples/features/11_expect_ambiguity.ein` declare the plain `solve` run
+> that finally gives `Outcome::NotChecked` a corpus cell.
 
 The caution that kept these two phases at README depth still holds and is
 worth restating: the note they come from opens with *"no code, no changes —
@@ -372,14 +389,19 @@ and name the decisions still reserved: whether P1d.3 ships a representation,
 whether closed-world completion is adopted, and whether P1d.4 grows a
 keyword.
 
-> **Two of the three were taken on 2026-08-26 and the discipline held.**
+> **All three were taken on 2026-08-26 and the discipline held.**
 > P1d.3 **does** ship a representation — the user chose *both*, so
 > `--models key` is additional output beside a qualified count — and
 > closed-world completion is **not** adopted: S1d.3.3 states what the engine
 > means today (a reported model is a *state*, `k` counts states, closure is
 > per relation and opt-in) so that adopting it later is a diff against a
-> written specification rather than an argument from scratch. The third,
-> whether P1d.4 grows a keyword, is still the user's.
+> written specification rather than an argument from scratch. And the third:
+> **P1d.4 does not grow a keyword.** Tests stay exhaustive by default,
+> `:expect` stays closed by default, there is no extra syntax, and a claim too
+> slow to check at the runner's depth stays out of the corpus — which the gate
+> already enforces, because `NOT CHECKED` takes a failing exit code. What is
+> left is not a vocabulary problem but a *search* problem, and it is
+> [P1d.10](p1d.10_exhaustive_search/README.md)'s.
 
 ## Acceptance for the milestone
 

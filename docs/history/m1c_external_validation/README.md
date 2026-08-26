@@ -62,6 +62,36 @@ into the `.ein` file as an `:expect`, and from then on `ein test` re-checks it
 on a machine with no external solver installed at all. **The external tools are
 needed to establish the answer, not to keep it.**
 
+> **Rewritten 2026-08-26 by M1d
+> [S1d.4.3](../../../plans/m1d_satisfiability/p1d.4_model_set_closure/the_vocabulary.md),
+> because the last clause was a promise this repo could not keep.** The
+> paragraph above stands as what M1c believed; what is true is narrower in one
+> place and wider in another.
+>
+> **Narrower: `ein test` re-checks a claim at its own depth, and
+> `zebra2-minus-15`'s needs a deeper one.** The runner exhausts, but it
+> exhausts at `--max-set-size 5`, and that file's lattice ends at depth 22 —
+> **17 204 592 enterings, 24 min 56 s at `-j16`**. At the default it answers
+> `Ambiguity k = 32, exhausted = false`, so an `:expect (or …)` written there
+> comes back **`NOT CHECKED`**: honest, and not a re-check. Ein has no
+> program-level way to say *"check me deeper"*, by
+> [design](../../../plans/m1d_satisfiability/p1d.4_model_set_closure/the_boundary.md)
+> — a depth is a budget, and budgets live on the command line — so the honest
+> form of the promise is **`ein test <file> -m 38`**, a command somebody runs,
+> not a property of the corpus.
+>
+> **Wider: the re-check does not need the whole model set to be worth having.**
+> The 45 programs of [`tests/stdlib/`](../../../tests/README.md) are what the
+> sentence describes working: **59 corpus claims, 59 held, every one under a
+> search that exhausted**, in 0.04 s with no solver installed
+> ([the closure census](../../../plans/m1d_satisfiability/p1d.4_model_set_closure/closure_census.md)).
+> That is the pipeline, and it runs every commit.
+>
+> So: **the external tools establish an answer, `:expect` keeps it, and `ein
+> test` re-checks whatever its depth can reach — saying `NOT CHECKED` where it
+> cannot.** [M10](../../../plans/m10_external_benchmarks/README.md) is told:
+> the claim it inherits is the first sentence, not the last clause.
+
 ---
 
 ## What shipped

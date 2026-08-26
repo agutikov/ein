@@ -133,28 +133,24 @@ fn the_load_negatives_are_refused_with_their_banked_message() {
     }
 }
 
-/// **`NOT CHECKED`'s corpus witness, and why it is not a manifest cell.**
+/// **`NOT CHECKED`'s corpus witness, and the stream that unblocked it.**
 ///
 /// M1d [S1d.4.1](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/s1d.4.1_what_closure_costs.md)
 /// went looking for a real file that reaches [`Outcome::NotChecked`] and found
 /// this one: `examples/features/11_expect_ambiguity.ein` under **plain
 /// `solve`**, which stops at `-n 1`, so the claim about a *set* is neither
-/// confirmed nor refuted. No constructed input and no `-m` cap — this is the
-/// corpus's own fixture, answering the question the phase is about.
+/// confirmed nor refuted. No constructed input and no `-m` cap — the corpus's
+/// own fixture, answering the question the phase is about.
 ///
-/// What it is *not* is a cell of `corpus.toml`, and the reason is the last
-/// assertion here. `solve` prints the `:expect` verdict on **stdout** and
-/// exits 1 with an empty stderr, and `corpus_cli`'s
-/// `every_refusal_carries_a_diagnostic` requires a non-zero exit to say why on
-/// stderr. So declaring `solve` in that entry's `runs` — one word, and the
-/// exit code is already a golden — turns a green sweep red on an unrelated
-/// invariant. Whether a failing claim is a *refusal* that belongs on stderr or
-/// a *result* that belongs under the solution table is a surface question, and
-/// it is [S1d.4.3](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/s1d.4.3_the_vocabulary.md)'s.
-///
-/// The empty-stderr assertion is therefore a **trip-wire**, not an
-/// endorsement: the day the diagnosis moves, this fails, and the manifest cell
-/// becomes available in the same breath.
+/// It was not a cell of `corpus.toml`, and the blocker was the last assertion
+/// here inverted: `solve` printed the `:expect` verdict on stdout and exited 1
+/// with an **empty stderr**, which is exactly what
+/// `corpus_cli::every_refusal_carries_a_diagnostic` forbids. [S1d.4.3](../../../../plans/m1d_satisfiability/p1d.4_model_set_closure/the_vocabulary.md)
+/// settled it the way the question deserved rather than by moving the block: a
+/// failing claim is a **result** and its report stays under the solution table,
+/// *and* a one-line diagnosis goes to stderr, because an exit 1 nobody can
+/// diagnose from a pipeline is a defect whichever stream the detail is on. The
+/// entry now declares `solve`, and `corpus_exits.txt` banks the 1.
 #[test]
 fn not_checked_is_reachable_from_a_corpus_file_with_no_cap() {
     let r = ein(&["solve", "examples/features/11_expect_ambiguity.ein"]);
@@ -165,10 +161,16 @@ fn not_checked_is_reachable_from_a_corpus_file_with_no_cap() {
         "it says which half went unchecked: {}",
         r.out
     );
+    // One line, naming the file and the outcome — what a pipeline sees.
     assert!(
-        r.err.is_empty(),
-        "the diagnosis has moved off stdout — `examples/features/11_expect_ambiguity.ein` \
-         can now declare a `solve` run, and this trip-wire has done its job: {:?}",
+        r.err.contains("NOT CHECKED") && r.err.contains("11_expect_ambiguity.ein"),
+        "an exit 1 says why on stderr: {:?}",
+        r.err
+    );
+    assert_eq!(
+        r.err.lines().count(),
+        1,
+        "one line, not a second copy: {:?}",
         r.err
     );
 }
