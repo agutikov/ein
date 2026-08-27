@@ -50,8 +50,9 @@ engine consumes, and the engine's trace renders back into the same
 NL paragraphs the README cites.
 
 Two adjacent secondary milestones surface Ein externally, plus a Rust port
-that came before both and the three milestones that came out of it — one
-created from its last phases, two by promotion since:
+that came before both, the three milestones that came out of it — one created
+from its last phases, two by promotion since — and one created out of a review
+of the tree they left:
 
 - **M1a — Rust port (ein.rs)** — **shipped 2026-08-23**, between M1 and M2; the
   engine that ships from M2 onward. Its plan folder is gone and the record is
@@ -74,12 +75,24 @@ created from its last phases, two by promotion since:
   a coverage number in the gate). Created 2026-08-21 out of M1a's ex-P1a.11
   plus a benchmark phase that left for M10 on 2026-08-23; the plan tree was
   deleted the day it shipped.
-- **M1d — From saturation to satisfiability** ([m1d_satisfiability/](m1d_satisfiability/README.md))
-  after M1a — why an under-determined puzzle does not finish, and what
-  saturation lacks to be a decision procedure: existence requirements
-  (`total` / `surjective` with the force their names claim) as
-  first-class obligations rather than as refutations at the extreme.
-  Created 2026-08-21 out of M1a's ex-P1a.12 plus the F14 note.
+- **M1d — From saturation to satisfiability** — **shipped 2026-08-27**, and
+  its record is
+  [`docs/history/m1d_satisfiability/`](../docs/history/m1d_satisfiability/README.md).
+  Why an under-determined puzzle does not finish, and what saturation lacks to
+  be a decision procedure: existence requirements (`total` / `surjective` with
+  the force their names claim) as first-class obligations rather than as
+  refutations at the extreme — plus the `Open` verdict, `--models key`, and a
+  second traversal that reaches 32 models in **86** enterings where the lattice
+  needs 17 204 592. Created 2026-08-21 out of M1a's ex-P1a.12 plus the F14
+  note; the plan tree was deleted the day it shipped.
+- **M1e — Review processing** ([m1e_review_processing/](m1e_review_processing/README.md))
+  after M1d — the full-tree review of 2026-08-27, processed: **63 findings**
+  in nine topics and **10 open questions**, one phase for the questions and one
+  per severity. Its spine is that a finding is a claim until something holds
+  it — the review's own verification stage was aborted, so sixty of the
+  sixty-three are one reader's reading, and every task ends in a fixture, a
+  test, a measured number or a written decision. The reports are carried
+  verbatim in the milestone folder.
 - **M5 — paper + presentation** ([m5_presentation/](m5_presentation/README.md))
   after M2. Renumbered from M2b 2026-08-23.
 - **M10 — External benchmarks** ([m10_external_benchmarks/](m10_external_benchmarks/README.md))
@@ -142,13 +155,17 @@ plans/
 ├── m1c_external_validation/          (deleted 2026-08-24 — M1c shipped; the record
 │                                     is docs/history/m1c_external_validation/,
 │                                     the plan tree is in git history)
-├── m1d_satisfiability/               what saturation lacks to decide
-│   ├── README.md
-│   ├── open_questions.md
-│   ├── ideas.md                      the user's note (was followups/f14_*)
-│   ├── p1d.10_exhaustive_search/     (was m1a_rust/p1a.12_*, then p1d.1)
-│   ├── p1d.2_obligations/
-│   └── p1d.3_model_sets/
+├── m1d_satisfiability/               (deleted 2026-08-27 — M1d shipped; the record
+│                                     is docs/history/m1d_satisfiability/,
+│                                     the plan tree is in git history)
+├── m1e_review_processing/            the 2026-08-27 review, processed
+│   ├── README.md                     the 63-finding index, and its disposition column
+│   ├── open_questions.md             Q-M1e.1–5 (the review's Q1–Q10 are P1e.1's)
+│   ├── review/                       the reports, verbatim (the m1d/ideas.md precedent)
+│   ├── p1e.1_open_questions/         the ten questions          (6 stage files)
+│   ├── p1e.2_high/                   6 findings, 2 topics       (2)
+│   ├── p1e.3_medium/                 36 findings, 9 topics      (9)
+│   └── p1e.4_low/                    21 findings, 8 topics      (8)
 ├── m2_nl_to_ir/                      EinAf — iterative autoformalization, Levels B → D
 │   ├── README.md                     (the folder keeps its NL → IR name; Level B is that)
 │   ├── open_questions.md             Q7–Q11, Q23–Q25 + Q-M2.1–4
@@ -209,7 +226,8 @@ Stage files have a stable shape:
 | M1 | *(plans removed at P1.22 — git history)* | **shipped** — done 2026-06-17 (gate green) | ~3 months |
 | [M1a](../docs/history/m1a_rust/README.md)               | *(plans removed 2026-08-23 — the record is `docs/history/m1a_rust/`)* | **shipped** — done 2026-08-23, all eleven phases closed. `ein.rs` is the only implementation: `solve zebra2.ein -e` end-to-end **4.53 s → 29.0 ms (157×)** with peak RSS 223 → 17 MB (the PyPy half frozen — nothing can re-measure it), `--jobs N` a further **3.17–4.40×** on 8 cores with every counter identical over 20 712 cells, and the gate **616 tests in 1 m 51 s** with no Python process in any of them | est. ~7 months; ran 2026-08-17 → 2026-08-23 |
 | [M1c](../docs/history/m1c_external_validation/README.md) | *(plans removed 2026-08-24 — the record is `docs/history/m1c_external_validation/`)* | **shipped** — done 2026-08-24, one phase and five stages. `:expect` on `query`, `ein test` as the fourth subcommand, 45 programs in `tests/stdlib/`, and **38 of 73 never-firing stdlib rules → 0**, held by `cargo test` in 0.04 s. Its benchmark phase left for M10 on 2026-08-23 | est. ~2.5 weeks; ran 2026-08-23 → 2026-08-24 |
-| [M1d](m1d_satisfiability/README.md)     | mixed — P1d.10 at stage depth, P1d.2 / P1d.3 phase READMEs | queued behind M1a — exhaustive search over many models + existence obligations | ~2 months |
+| [M1d](../docs/history/m1d_satisfiability/README.md) | *(plans removed 2026-08-27 — the record is `docs/history/m1d_satisfiability/`)* | **shipped** — done 2026-08-27, four phases and eighteen stages. A program can state a requirement, a state can say what it **owes**, the verdict word `Open` reports it, every verdict states whether its count is certified, and `EIN_TRAVERSAL=tree` reaches 32 models in **86** enterings against the lattice's 17 204 592. P1d.10 closed as it stood, three of six stages shipped | est. ~2 months; ran 2026-08-21 → 2026-08-27 |
+| [M1e](m1e_review_processing/README.md)  | **full** — 4 phases, 25 stage files, one per topic per severity | next — the 2026-08-27 review processed: 63 findings + 10 questions, each ending in **fixed / refuted / accepted / deferred** with a test, a probe, a written reason or an owner | ~10 weeks |
 | [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs | next — **reshaped 2026-08-23** around [`EinAf.md`](m2_nl_to_ir/EinAf.md): the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | ~6 months — Level B at ~8 weeks |
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |
 | [M10](m10_external_benchmarks/README.md) | **full** — 5 stage files, no phase level | queued behind M1a — the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean (was M1c's P1c.2) | ~2.5 weeks |

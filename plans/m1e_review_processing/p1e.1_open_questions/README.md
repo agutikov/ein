@@ -1,0 +1,119 @@
+# P1e.1 — The ten questions
+
+**Estimate:** 2 weeks — 6 stages, 10 days.
+**Depends on:** nothing. This phase reads, probes and rules; it changes the
+engine only where a probe's answer *is* a one-line fix.
+**Blocks:** [P1e.2](../p1e.2_high/README.md) in three places and
+[P1e.3](../p1e.3_medium/README.md) in one —
+[Q3](s1e.1.4_defined_behaviour_q_m1a8.md) gates
+[CD-H3](../README.md#the-findings),
+[Q6](s1e.1.1_search_soundness_probes.md) gates
+[CO-H3](../README.md#the-findings)(c),
+[Q5](s1e.1.1_search_soundness_probes.md) can move corpus goldens, and
+[Q4](s1e.1.1_search_soundness_probes.md) decides whether
+[CO-M1](../README.md#the-findings) is a bug.
+**Source:** [`review/open-questions.md`](../review/open-questions.md) — ten
+questions the review could not resolve from repository evidence, none promoted
+to a finding.
+
+---
+
+## Why this phase is first
+
+Because four of the ten decide what a later fix *is*, and because two of them
+are about claims the project puts in its own headline.
+
+The review's ten are not a residue. Read together they are a short list of
+the places where this engine's guarantees rest on an argument nobody has
+written out:
+
+- **Q1** — `--jobs N` is the same computation. Twenty thousand invariance
+  cells say it is; no structural argument says *why* a clause learned
+  mid-layer on another thread cannot prune a candidate this thread would have
+  entered. Evidence without a mechanism.
+- **Q2** — the unsat core is the smallest frontier over recorded derivations.
+  `MAX_ALT_JUSTIFICATIONS = 32` means *recorded* is a lossy word.
+- **Q3** — `defined_behaviour.md`'s one self-declared latent bug did not
+  reproduce. The page exists to replace a deleted Python file as the
+  statement of behaviour.
+- **Q4, Q5, Q6** — three soundness premises, one per search path: the
+  inter-layer alive-∅ shortcut, the lookahead lever that flips two fixtures'
+  verdicts, and the tree's *asking once is asking enough*.
+- **Q7** — `-n 0`.
+- **Q8, Q10** — two claims with no owner: that the two zebra encodings agree,
+  and that the release matrix builds.
+- **Q9** — the review's own hole, and the reason this milestone may not
+  conclude the tree is clean.
+
+Answering them first is not thoroughness for its own sake. It is the same
+argument every measurement phase in this repo has made: **work scheduled
+against an assumed answer is scheduled wrong.**
+
+## What an answer is
+
+Ratified in [S1e.1.1](s1e.1.1_search_soundness_probes.md) T1 as
+[Q-M1e.1](../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted),
+then binding on every stage of the milestone. In short: a question about
+**behaviour** is answered by an executed probe banked as a test; a question
+about **absence** is answered by naming the thing or by adding it; a question
+about **risk** is answered by a check, or by an argument written beside the
+code — never by an argument written only in a plan.
+
+Every stage below ends with the answer written into the tree, not into this
+phase. The phase's own artefact is the disposition column of
+[the milestone's question index](../README.md#the-questions--10) and, for the
+questions that become permanent, a `Q-M1e.<n>` or a new section of
+[`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md).
+
+## Stages
+
+| ID | title | est. | ends with |
+|---|---|---:|---|
+| [S1e.1.1](s1e.1.1_search_soundness_probes.md) | Three soundness probes — Q4, Q5, Q6 | 3 d | one constructed fixture per question; the lookahead flip's true model sets derived by hand and the golden audit done; the standard of proof ratified |
+| [S1e.1.2](s1e.1.2_determinism_under_jobs.md) | Determinism under `--jobs` — Q1 | 2 d | the structural argument written where `Nogoods` lives, or an injected-clause test showing the commit-order replay masks it — and, if neither, the claim narrowed |
+| [S1e.1.3](s1e.1.3_unsat_core_completeness.md) | What the core promises — Q2 | 1.5 d | either a fixture where eviction enlarges the core, or the retention argument written next to `MAX_ALT_JUSTIFICATIONS`; the README's claim matched to whichever holds |
+| [S1e.1.4](s1e.1.4_defined_behaviour_q_m1a8.md) | Q-M1a.8's real trigger — Q3 | 1 d | both probe shapes executed and banked; §3.2 amended to the real trigger or deleted, and Q-M1a.8 closed either way |
+| [S1e.1.5](s1e.1.5_cli_semantics.md) | `-n 0` — Q7 | 0.5 d | a ruling: refuse it with the `jobs_spec` argument, or define it and pin it with a test |
+| [S1e.1.6](s1e.1.6_coverage_gaps.md) | What nothing pins — Q8, Q9, Q10 | 2 d | the two-encodings assertion named or written; the four unswept surfaces of Q9 scoped, with one of them swept here; the release matrix's status stated where a reader would believe it |
+
+## Acceptance
+
+- Each of Q1–Q10 has an answer in the tree — a test, a fixture, a paragraph
+  at a `file:line`, or a recorded ruling — and the milestone's
+  [question index](../README.md#the-questions--10) points at it.
+- **Q3, Q4, Q5 and Q6 are answered before their dependent finding is
+  touched**, and each answer states what the dependent fix now has to be.
+- No question is closed with "could not reproduce" alone: a non-reproduction
+  is banked as the probe that did not reproduce it
+  ([Q-M1e.1](../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)).
+- Any question that cannot be answered here is re-filed as a `Q-M1e.<n>` with
+  an owner, and the stage says which.
+- `./run_tests.sh` green; any golden this phase moves is named in the stage
+  file **before** it moves.
+
+## Risks
+
+- **Q5 moves goldens.** If the current verdicts for `branching/06` and
+  `lattice/02` are the wrong side of the flip, fixing the semantics is a
+  deliberate re-bless of corpus goldens — and a re-bless that was not
+  predicted is a stop. S1e.1.1 does the hand-derivation *before* touching
+  anything, and the two fixtures are small enough for that to be honest work.
+- **Q1 is answerable only in the negative.** A determinism argument is hard
+  to make positively and easy to break with one counterexample. The stage's
+  fallback is explicit: if no argument holds, the *claim* narrows to what the
+  evidence supports, which is a documentation change, not a defeat.
+- **Q9 invites the milestone to grow into a second review.** It does not:
+  the stage scopes the four unswept surfaces and sweeps exactly one, naming
+  owners for the rest. Re-running the aborted pass is not this milestone's
+  work.
+
+## Connections
+
+- [`review/open-questions.md`](../review/open-questions.md) — the ten, with
+  the evidence that created each ambiguity.
+- [`docs/history/m1a_rust/design/02_determinism_and_order.md`](../../../docs/history/m1a_rust/design/02_determinism_and_order.md)
+  — where Q1's argument belongs if it can be made.
+- [`docs/kernel/defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md)
+  — §3.2 is Q3's subject and §4 is Q7's table.
+- [`docs/history/m1a_rust/open_questions.md`](../../../docs/history/m1a_rust/open_questions.md)
+  — Q-M1a.8, which Q3 closes in one direction or the other.
