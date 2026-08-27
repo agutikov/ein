@@ -34,14 +34,40 @@ model whose falsity only a fork would derive. With obligations declared, the
 re-read tally at `:1548` catches the owing case as `Open`; without them,
 nothing does.
 
+**Reconnaissance narrows the path, and the narrowing is most of the answer.**
+Reaching `record_node` at `:1550` needs `a_layer ≠ ∅` at `:1528` *and*
+`alive == ∅` at `:1544` — but `promote_forced_positives` runs between them
+(`:1536`) and **re-saturates root and re-checks `has_contradiction` on every
+iteration** (`:2131`). So the site is reachable un-re-saturated only when
+`compute_alive` returns ∅ **directly**, never passing through a singleton.
+Two routes, and neither is in the review: **(A)** `(config
+:enable-forced-positive false)`, which skips the cascade — reachable, but a
+non-default lever; **(B)** `alive` empties because the **lookahead filter**
+killed the last candidates against a root that grew, which needs no lever and
+means **Q4 and Q5 are the same mechanism seen from two places.** T2's outcome
+table stands; which route the fixture takes decides whether `CO-M1` is a bug
+at shipped defaults or a guard for a shape only a config line reaches.
+
 **Q5 — the lookahead verdict flip.** With `enable_pre_branch_lookahead` off,
 `examples/branching/06_lookahead_on.ein` and `examples/lattice/02_*` change
 from `Solution`/`Ambiguity` to `Contradiction`. The README's Known gaps
 records that *one of the two configurations is wrong today* — which is to say
 a **performance lever currently decides what a complete model is**, in the
-project's own phrasing. Two things are unknown: which side is right, and
-whether the wrong side is pinned by a corpus golden such that fixing the
-semantics is a deliberate re-bless.
+project's own phrasing.
+
+**Reconnaissance, 2026-08-27, against `7731848` — three of this stage's
+premises did not survive it.** Recorded here because the tasks below are
+written against what was found, not against what the review assumed:
+
+| | measured |
+|---|---|
+| `lattice/02` | `-e` → **Ambiguity k=3, `exhausted = true`**, 6 enterings · `-e -L` → **Contradiction k=0, `exhausted = true`**, 7 enterings, 3-fact core. Both sides *complete*, and the OFF side prints *"No solution — the constraints are contradictory"* unhedged |
+| `branching/06` / `07` | `-e` → k=22 · `07 -e` → k=0, and **both report `exhausted = false` at the depth-5 cap**. The pair compares two lower bounds, not two answers |
+| `branching/06`'s model set | `--models key`: **8 of 42 varying slots**, `C(42,8) = 118 030 185`, over budget. 20 of the 22 models bind `?h` to `Color` or `House` — the **G3 blind rung is untyped**, `(is-a Color T)` makes `Color` an object, and model 1 contains `(co-located Blue Color)`. It is **not** "small enough to enumerate on paper" |
+| the kill cache | `-K` keeps k=3 and the verdict on `lattice/02` and **changes the recorded fact sets**: the models lose their `(not (c-prop X))`, which `write_negated` is what writes. Not a defect under Q-M1e.6 — negatives are not part of a model — and the reason [Q-M1e.7](../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) exists |
+
+So the stage's Q5 scope is **`lattice/02` plus one purpose-built fixture**, and
+`branching/06` is evidence rather than subject.
 
 **Q6 — the tree's inner-node rung flip.** `tree()` probes the
 generation-ladder mode **once at root**, on the stated premise that *the mode
@@ -58,6 +84,32 @@ root-asserted, so the corpus never reaches it. The question is whether the
 shape is *constructible at all*, because that is the difference between a
 `debug_assert` and a re-probe per node.
 
+**Two corrections from reconnaissance.** First, **the premise is already
+refuted by this repo's own doc comment**: `activators_for`
+([`compile.rs:54-69`](../../../ein.rs/crates/ein-infer/src/compile.rs)) says a
+parameterised rule *"consults the **fork's** `rule_apps_by_rule`, not the
+load-time KB's, because a fork derives activators of its own during
+saturation"*, and `oblgen::generate` calls `plans_for(s.kb, …)` per node. The
+mode **is** a function of the node. What is open is only whether a *flip* is
+constructible, and the three fact-dependent decline conditions are
+[`oblgen.rs:232-262`](../../../ein.rs/crates/ein-infer/src/oblgen.rs)'s: a
+bare `(open)` plan, a projection that will not resolve for that activator, and
+**C4** — an obligation scanning a relation the rung itself proposes. C4 is the
+likeliest, and the probe is a rule that derives, under a hypothesis, an
+activator for an obligation on a relation an existing obligation's guard
+scans.
+
+Second, **the loss mechanism is not the one the finding states.** The tree
+enters *every* candidate `G3` returns and recurses, so subsets stay reachable;
+what is lost first is the `d!`-per-path explosion, because `one_branch` is a
+parameter the blind rung ignores. The **missed model** comes from `complete`
+changing meaning: a node whose obligations are discharged is a solution under
+`G2` and is *not* complete under `G3` while the blind enumerator still
+proposes anything — and `branching/06` is the standing proof that it proposes
+junk long after any debt is settled (`(co-located Blue Color)`). So the test
+asserts *"the tree's model set ⊇ the lattice's"* **and** *"no node emitted a
+`rung` event with a mode other than `obligations`"*, not a bare count.
+
 ## Acceptance
 
 - The standard of proof is ratified and written into
@@ -68,10 +120,12 @@ shape is *constructible at all*, because that is the difference between a
   if the shape is not constructible — the invariant argument written *beside*
   `solve.rs:1528-1551` naming why. Either way `CO-M1`'s disposition is
   determined by this task, not by the later stage.
-- **Q5**: the true model sets of both fixtures derived **by hand** and
-  recorded in the stage's notes; the correct side named; a golden audit
-  listing every corpus artefact that pins the current verdicts for those two
-  entries.
+- **Q5**: `lattice/02`'s solution set derived **by hand** against
+  [Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
+  and recorded in the stage's notes; the correct side named; **one new
+  fixture** carrying the ON/OFF pair with both sides exhausting, since
+  `branching/06` cannot; a golden audit listing every corpus artefact that
+  pins the current verdicts for both existing entries.
 - **Q6**: a probe program with a rule deriving an obligation activator inside
   a fork, run under `EIN_TRAVERSAL=tree` and diffed against the lattice's
   model set. Constructible or not, the answer is banked as a test.
@@ -128,30 +182,48 @@ The re-check is cheap and the path is rare, so *add it anyway* is a tempting
 shortcut. Resist it until the fixture exists: a check added without a probe
 is a check nobody can ever remove.
 
-### Task T1e.1.1.3 — Q5: derive both fixtures' model sets by hand
+### Task T1e.1.1.3 — Q5: derive `lattice/02` by hand, against the ruling
 
-`examples/branching/06_lookahead_on.ein` and `examples/lattice/02_*` are small
-enough to enumerate on paper — that is the whole reason this question is
-answerable. Do it in that order:
+The definition is no longer open:
+[Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
+is decided, and a hand derivation now has something to derive *against*. A
+solution is a saturated consistent state in which **every remaining hypothesis
+is inconsistent with the state**; a model is the positive part minus the
+positive initial KB.
 
-1. **Enumerate.** For each fixture, write out the complete model set from the
-   program text alone, independent of the engine. Record the derivation in
-   the stage notes; it is the evidence, and it is the only part of this task
-   the engine cannot be asked to confirm.
-2. **Run both configurations.** `ein solve -e` with the lookahead lever on
-   and off, `--json-summary` both times, and diff the `verdict` blocks. Name
-   which side agrees with the hand derivation.
-3. **Audit the goldens.** Grep the corpus manifest and the golden tree for
-   every artefact that pins either entry's verdict, `k`, digest or event
-   stream. The product is a list: *fixing the semantics moves these N
-   goldens.* A re-bless nobody predicted is a stop; a re-bless named in
-   advance in a stage file is a step.
-4. **Rule.** If the lookahead-on side is right, the lever is a correctness
-   requirement wearing a performance name and the README's Known gaps entry
-   says so. If the off side is right, the lever is unsound and the fix is
-   engine work — out of this milestone's scope, filed as a `Q-M1e.<n>` with
-   the hand derivation attached, because a milestone about processing a
-   review should not quietly become a milestone about fixing the search.
+1. **Enumerate `lattice/02`.** Three candidates, one rule asserting `(false)`
+   iff all three hold. Maximal consistent states: `{h₁,h₂}`, `{h₁,h₃}`,
+   `{h₂,h₃}` — **three solutions**, each with one remaining candidate that is
+   inconsistent with it, which is clause 3 satisfied. Write it out anyway,
+   from the program text, outside the engine: the derivation is the evidence.
+2. **Rule.** The default `k=3` agrees; `-L`'s `k=0` does not, and it says so
+   with `exhausted = true`. **The OFF side is wrong**, and the general
+   statement is Q-M1e.6's: `complete` is a *sound but incomplete*
+   approximation of clause 3 with the lookahead on, and a strictly weaker one
+   with it off. Neither is the definition.
+3. **Build the fixture the pair needs.** `branching/06` cannot carry this —
+   42 varying slots, untyped models, neither side exhausting. One new
+   `examples/` fixture: typed, both sides exhausting, its solution set
+   derivable in a paragraph, and its ON/OFF verdicts differing. It goes in the
+   corpus with an `:expect`, and it is what fails if the lever ever moves.
+4. **Audit the goldens.** Every artefact pinning `lattice/02` or
+   `branching/06`: `corpus_exits.txt` (7 + 12 rows), `lattice_semantics.rs`
+   (4 sites), `search_invariants.rs` (3), `model_set_report.rs`,
+   `leftover_probe.rs`, `presentation_semantics.rs`, `corpus_shapes.md5`.
+   Neither fixture carries an `:expect`. The product is a list: *fixing the
+   semantics moves these N goldens.* A re-bless nobody predicted is a stop; a
+   re-bless named in advance in a stage file is a step.
+5. **File the fix, do not take it — and file the right one.** Q-M1e.6's
+   operational form makes a solution a **maximal alive commitment**, and the
+   lattice already computes maximality at layer `n+1` with no extra fork. So
+   the fix is *not* "make the lookahead unconditional" (which is still an
+   approximation, just a better one): it is to record a surviving commitment
+   whose every superset died. Retaining that costs one bitset over `a_prev`
+   per layer. File it as [Q-M1e.8](../open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)'s
+   fix with the derivation attached; rewrite the README's Known gaps entry
+   from *"one of the two is wrong"* to **both under-report, and here is the
+   test that does not**; and re-label `-L`'s corpus lever cells as a
+   strictly-weaker debug mode rather than an A/B of equals.
 
 The precedent for step 1 is exact and recent: `disjunctive-prune`'s wrong
 `(neq ?h_other ?h1)` guard survived a year of byte-exact parity between two
