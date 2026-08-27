@@ -166,6 +166,80 @@ reserved for an e-graph promotion (F4 Q30).
 
 ---
 
+## Search and answers
+
+Defined in full, with the worked example and the places the engine's
+implementation differs from the definition, in
+[`inference/solution_semantics.md`](inference/solution_semantics.md).
+
+### Hypothesis
+A fact the program has not decided and the generator is willing to guess:
+a fact of a hypothesis-eligible relation the state neither asserts nor
+refutes. Which ones exist is the **generation ladder**'s answer — the
+program's own `(hrule …)`, else the facts that would discharge what the
+state owes, else the blind enumerator. Scoping (`:hypothesis-relations`,
+`:no-hypothesis`, `(__closed__ R)`) decides eligibility, so a fact of an
+excluded relation is not a hypothesis at all.
+
+### Hypothesis set (L1, `alive₀`)
+The hypotheses at root's fixpoint — root saturated, the forced-positive
+cascade run, no contradiction. **The space the search quantifies over**:
+every later definition reads *hypothesis* as *member of this set*. Called
+L1 because the search's first layer enters its singletons.
+
+### Commitment (L{n})
+A set of hypotheses assumed together, `{h₁ … h_n} ⊆ alive₀` — the lattice's
+node, and what a [layer](#layer) is a layer of. An L{n} commitment **is**
+n L1 hypotheses.
+
+### Entering
+Forking root, adding a commitment's facts, saturating, and looking for a
+contradiction. The engine's unit of work (`enterings_total`). Three
+outcomes: `alive`, `dead-pre` (contradictory before saturation ran) and
+`dead-post`; **dead** is the union of the last two.
+
+### Integrated
+The hypotheses *true* in a state — the committed ones **plus any saturation
+derived**. Commit three, derive ten of which five are themselves
+hypotheses, and eight are integrated. Every quantifier over "the other
+hypotheses" reads over `alive₀ \ integrated(S)`, never over the committed
+set.
+
+### Complete
+The engine's predicate: *the generator proposes nothing at this state*. It
+is a **sound but incomplete** approximation of the [solution](#solution)
+criterion — it never admits a false model, and it misses real ones whose
+remaining hypotheses need more than one rule firing to die.
+
+### Solution
+A saturated, consistent state in which every hypothesis it has not
+integrated is inconsistent with it — or, where the program states
+obligations, one that owes nothing. Operationally: **a maximal alive
+commitment, one with no live child**, so the search below it ends.
+
+### Model
+The **positive** part of a solution's KB **minus the positive part of the
+initial KB** — the KB as loaded, before the first saturation. So a model
+carries no `(not …)`, nothing the file stated and nothing the loader wrote:
+it is what the puzzle did not say and the solve established. Distinct from
+the solution's KB, which is what the read-out currently prints.
+
+### Obligation
+A rule that asserts the verdict atom `(open ?R)` while a witness is
+missing. What a state **owes** is its undischarged instances; a state
+owing none is **discharged**. Scoped — only a program that *states* an
+obligation is judged by discharge rather than by maximality. See
+[`m1d/domain_contract.md`](../history/m1d_satisfiability/domain_contract.md).
+
+### Exhausted
+That the search did not stop early — no depth cap reached with a live
+frontier, no `--solutions` cut, not the tree traversal. It certifies that
+**the lattice was walked**, which is not the same claim as *every solution
+in it was recognised*; the two are separated in
+[`inference/solution_semantics.md` §6](inference/solution_semantics.md).
+
+---
+
 ## Rule families
 
 ### T1 rule (first-order)
