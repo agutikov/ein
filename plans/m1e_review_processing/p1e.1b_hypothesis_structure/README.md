@@ -8,6 +8,10 @@ ruling, which this phase is the first consumer of. Nothing else.
 **Blocks:** nothing in M1e. It is a *new capability*, and every stage of it is
 answer-preserving by construction — the acceptance is *the same model sets,
 fact for fact*, on every corpus entry.
+**Owns:** [Q-M1e.11](../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
+— *what happens to an obligation derived under a hypothesis*, handed over from
+[S1e.1.1 D2](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/d2_q6_which_decline_to_construct.md)
+on 2026-08-28. See [§ The set that is not fixed](#the-set-that-is-not-fixed).
 **Source:** the user's instruction of 2026-08-28, recorded verbatim in
 [§ The instruction](#the-instruction).
 
@@ -109,6 +113,37 @@ state-independent branch structure is one a tree traversal may cache at root
 **soundly**, and it is the first candidate this repo has for jointly
 exhaustive branches on a program that declares no `(open …)` rule at all.
 
+### The set that is not fixed
+
+The sentence this phase opens with — *the search enumerates subsets of a fixed
+`alive` set* — is the one thing here that the engine does not guarantee, and
+[Q-M1e.11](../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
+is that gap, handed to this phase on 2026-08-28.
+
+An obligation's activator is an ordinary fact, so a rule can derive one
+**inside a fork** — and the facts that would discharge the new obligation are
+new candidates, in a branch that was entered because its alternatives were
+jointly exhaustive. The growth is monotone (the KB is append-only, so nothing
+retracts), and the guard is already decided elsewhere: the rung mode is
+re-read per node, which is [S1e.2.1](../p1e.2_high/s1e.2.1_correctness.md)
+T3's to write. What is *this* phase's is the structural half — **what a group
+means when the set it partitions can grow underneath it.**
+
+Two answers are admissible and the phase must pick one in writing:
+
+- the structure is **relative to the node**, recomputed where the set grew —
+  which makes it a cheaper lookahead rather than a load-time property, and
+  costs the phase its headline claim; or
+- the structure is a **load-time property of programs whose obligation
+  activators are all root-derivable**, and a program outside that class is
+  refused or falls back — which keeps the claim and names its domain.
+
+Either is an answer; what is not admissible is the phase shipping a group
+structure whose validity nobody has stated. [S1e.1b.1](s1e.1b.1_exclusion_census.md)
+is the natural first reader — *does any corpus entry derive an obligation
+activator under a hypothesis?* is one column and today's expected answer is
+**no**, which is what makes the second option affordable.
+
 ### What it does not do
 
 Pairwise exclusion does **not** subsume `complete`, and
@@ -189,6 +224,12 @@ Named here and used by every stage.
   will be wrong on the first bijection it meets, which is the second corpus
   entry it reads. S1e.1b.2 exists to get this stated before S1e.1b.3 depends
   on it.
+- **The set can grow underneath the structure.** Q-M1e.11, above: a group
+  computed at load is a claim about a hypothesis set that a derived obligation
+  can extend mid-search. The phase's exposure is bounded — no corpus entry is
+  known to do it, and the growth is monotone — but a structure whose domain is
+  unstated is the failure mode this repo's own `domain_contract.md` C4 exists
+  to prevent.
 - **The win may already be taken on the entries that matter.** `zebra.ein`
   solves in 111 enterings and `zebra2.ein` in 101; the powerset behaviour
   S1d.10.1 measured is on the *under-determined* entries. The phase should be

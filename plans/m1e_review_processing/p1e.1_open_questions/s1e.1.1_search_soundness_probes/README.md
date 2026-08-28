@@ -80,9 +80,15 @@ falls through to the blind enumerator
 branches are **not** jointly exhaustive, and the tree would then treat a
 non-exhaustive branch set as exhaustive and **miss models** — the failure
 class this project's discipline treats as worst. Today's stdlib activators are
-root-asserted, so the corpus never reaches it. The question is whether the
-shape is *constructible at all*, because that is the difference between a
-`debug_assert` and a re-probe per node.
+root-asserted, so the corpus never reaches it. **The re-probe is no longer in
+question** — decided 2026-08-28: the mode is re-read at every node, and the
+value is already computed per node and discarded
+(`solve.rs:945-956`), so it costs nothing. What is left here is whether the
+shape is *constructible at all*, which is what makes the guard removable later
+instead of inherited; and what the search should **do** with the new
+obligation left with
+[Q-M1e.11](../../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
+for [P1e.1b](../../p1e.1b_hypothesis_structure/README.md).
 
 **Two corrections from reconnaissance.** First, **the premise is already
 refuted by this repo's own doc comment**: `activators_for`
@@ -143,7 +149,7 @@ options with their consequences and a recommendation.
 | | decision | gates | recommended |
 |---|---|---|---|
 | [D1](d1_q4_which_route_reaches_the_site.md) | **Q4: which route reaches the unguarded `record_node`?** The cascade re-checks between the two lines, so only two constructions get there | **T1e.1.1.2** | stock config first, config lever as fallback |
-| [D2](d2_q6_which_decline_to_construct.md) | **Q6: which of `oblgen`'s three decline conditions to construct?** The premise is already refuted; only constructibility is open | **T1e.1.1.4** | the C4 collision, then apply the fix regardless |
+| [D2](d2_q6_which_decline_to_construct.md) | **Q6: which of `oblgen`'s three decline conditions to construct?** The premise is refuted and the re-probe is **decided** (2026-08-28); only constructibility is open | **T1e.1.1.4** | the C4 collision. The structural half left with [Q-M1e.11](../../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) |
 | [D3](d3_q_m1e8_file_or_take.md) | **Q-M1e.8: file the maximality fix, or take it?** One bitset per layer against a shipped false verdict | T1e.1.1.3 step 5 | take it, in P1e.2 |
 | [D4](d4_q_m1e9_upward_closure.md) | **Q-M1e.9 is reproduced: `dead` is not upward-closed under `absent`.** Five of six configurations answer a twenty-line program wrongly. Who owns it, and how far does the fix go? | nothing here — but it qualifies D3 and D9 | a load-time refusal now, the real fix filed |
 | [D5](d5_does_t1_ratify_q_m1e2.md) | Does T1 ratify **Q-M1e.2** as well as Q-M1e.1? Q4's likely `accepted` needs it, and Q-M1e.2 has no owning stage | T1e.1.1.1 | ratify both |
@@ -284,7 +290,7 @@ and the test runs in the gate. Then say what `CO-H3`(c) becomes:
 
 | outcome | what [S1e.2.1](../../p1e.2_high/s1e.2.1_correctness.md) T3 does |
 |---|---|
-| constructible, and the tree misses models | re-probe the mode at **every** node and hard-decline on a flip; the probe is the regression test |
+| constructible, and the tree misses models | the re-probe is decided either way; the probe is its regression test, and **what a flip does** — decline, or re-derive the branch — is Q-M1e.11's, not T3's |
 | constructible, and the tree still agrees | the premise is wrong but harmless — find out why, then either the assert or a written argument |
 | not constructible from any `.ein` program | `debug_assert` plus the argument at `solve.rs:889`, and the reason it is not constructible stated there |
 

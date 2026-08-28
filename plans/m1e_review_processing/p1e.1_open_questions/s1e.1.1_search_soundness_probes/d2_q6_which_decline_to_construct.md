@@ -5,6 +5,21 @@
 about [CO-H3](../../README.md#the-findings)(c) — a `debug_assert`, a re-probe
 per node, or a hard decline.
 
+> **The fix half is decided, 2026-08-28, by the user: the rung mode must be
+> re-read at every node.** *"Does the obligation have to be re-evaluated after
+> each saturation? Yes, has to."* So the choice below is no longer
+> `debug_assert` **versus** re-probe — it is a re-probe, and what is left here
+> is only **which decline condition the probe constructs**, which is what makes
+> the guard removable later rather than permanent.
+>
+> **And the structural half is not this decision's.** What the search should
+> *do* when a hypothesis derives an obligation root did not have is
+> [Q-M1e.11](../../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis),
+> handed to [P1e.1b](../../p1e.1b_hypothesis_structure/README.md) the same
+> day. A guard says *stop*; it does not say what a branch structure means when
+> the set underneath it grows. See
+> [§ What this decision no longer covers](#what-this-decision-no-longer-covers).
+
 ## What is already settled
 
 The tree probes the generation rung **once at root** and keeps the answer
@@ -95,9 +110,17 @@ So the test asserts two things, not one:
 | **C** | condition 1 (bare `(open)`) only | simplest to write, proves constructibility fastest, weakest as a shape anyone would ship |
 | **D** | skip construction; take the fix and a gate test | cheapest and arguably sufficient — the re-probe is a few lines and the tree already pays a full generation call per node, so the marginal cost is near zero. But it closes a **risk** finding by argument, which [Q-M1e.1](../../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted) forbids |
 
-**Recommended: A, then apply D's fix regardless of whether A fires.** The
-fixture is what makes the guard removable by a later milestone; the fix is
-what makes the guard exist.
+**Recommended: A. D's fix is no longer a recommendation — it is the ruling
+above**, and A is what keeps it removable: the fixture is what a later
+milestone can delete the guard against, where a guard with no probe can only
+be inherited.
+
+**The re-probe costs nothing that is not already paid.** The mode is computed
+at every node and discarded — `tree_node` builds a `HypGenStats`, calls
+`generate_one_branch`, keeps the candidate list and drops `hs`
+([`solve.rs:945-956`](../../../../ein.rs/crates/ein-infer/src/solve.rs)) —
+so the change is to stop throwing the value away, not to add a probe. That
+removes the only argument option D had against it.
 
 ## What each outcome means for `CO-H3`(c)
 
@@ -106,3 +129,24 @@ what makes the guard exist.
 | constructible, and the tree misses models | re-probe at every node, hard-decline on a flip; the probe is the regression test |
 | constructible, and the tree still agrees | find out why, then the assert or a written argument |
 | not constructible from any `.ein` program | `debug_assert` at `solve.rs:894` plus the reason, stated there |
+
+## What this decision no longer covers
+
+Three questions came in as one, and only the first two are settled here.
+
+| | question | where it is |
+|---|---|---|
+| is the premise false? | **yes**, and it was already refuted by `activators_for`'s own doc comment | settled above; nothing left to argue |
+| must the mode be re-read per node? | **yes** — the user's ruling of 2026-08-28 | settled; [S1e.2.1](../../p1e.2_high/s1e.2.1_correctness.md) T3 writes it |
+| what should happen to the **new obligation**? | open | [Q-M1e.11](../../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis), owned by [P1e.1b](../../p1e.1b_hypothesis_structure/README.md) |
+
+The third is not a traversal question, which is why it left. A branch entered
+because its alternatives were jointly exhaustive has had the candidate set grow
+underneath it — [`domain_contract.md`](../../../../docs/history/m1d_satisfiability/domain_contract.md)
+C4's condition, failing — and what a *group* means when its set can grow is the
+question P1e.1b's whole ladder rests on. This stage still owes it the witness:
+if [T1e.1.1.4](README.md#task-t1e114--q6-try-to-build-the-inner-node-rung-flip)
+constructs the flip, Q-M1e.11 has a program to reason about; if it cannot,
+P1e.1b may state its structure's domain as *programs whose obligation
+activators are root-derivable* and cite the failed construction as the reason
+that domain is not empty.

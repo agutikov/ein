@@ -26,6 +26,7 @@ records which question became which id.
 | [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness |
 | [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. Owner undecided ([D4](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)) |
 | [Q-M1e.10](#q-m1e10--two-config--flags-are-inert) | Two `(config …)` flags are **inert** — `print-alive`, `candidate-order-seed` | open — raised by [S1e.5.1](p1e.5_documentation_and_other/s1e.5.1_config_reference.md); owner unassigned |
+| [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [P1e.1b](p1e.1b_hypothesis_structure/README.md)** 2026-08-28 by the user; the guard half is decided and is [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3's |
 
 ---
 
@@ -493,3 +494,76 @@ Owner unassigned. The natural readers are
 [S1e.1b.5](p1e.1b_hypothesis_structure/s1e.1b.5_ordering.md), which is already
 holding the other knob that does less than its name says
 (`hypgen-scoring: most-constrained`, a constant `0.0`).
+
+---
+
+## Q-M1e.11 — What happens to an obligation **derived under a hypothesis**?
+
+**Raised by** [D2](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d2_q6_which_decline_to_construct.md)
+on 2026-08-28, which split the review's `Q6` in two.
+**Owner: [P1e.1b](p1e.1b_hypothesis_structure/README.md)**, by the user's
+instruction the same day.
+
+### What is decided, and is *not* this question
+
+**The rung mode must be re-read at every node.** It is probed once at root
+([`solve.rs:889-914`](../../ein.rs/crates/ein-infer/src/solve.rs)) on the
+premise that *"the mode is a property of the program rather than of the node,
+so asking once is asking enough"*, and that premise is false: an activator is
+an ordinary fact, and a rule head can derive one inside a fork
+([`compile.rs:54-69`](../../ein.rs/crates/ein-infer/src/compile.rs)). The
+value is in fact **already computed at every node and thrown away** —
+`tree_node` builds a `HypGenStats`, calls `generate_one_branch`, keeps the
+candidate list and drops `hs.rung.mode` (`solve.rs:945-956`) — so re-reading
+it costs nothing that is not already paid. That is a **guard**; it is decided;
+[S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3 writes it.
+
+### The question the guard does not answer
+
+A guard says *stop*. It does not say what the search should **do** when the
+theory acquires an obligation it did not have at root — and that is a question
+about the **structure of the hypothesis set**, not about a traversal:
+
+- The candidate set **grew underneath a branch** that was entered because its
+  alternatives were jointly exhaustive.
+  [`domain_contract.md`](../../docs/history/m1d_satisfiability/domain_contract.md)
+  C4 states the contract exactly — *a branch is jointly exhaustive only while
+  the candidate set cannot grow underneath it* — and says nothing about what
+  to do when it does.
+- The growth is **monotone**: the KB is append-only, so an obligation can
+  appear under a hypothesis and can never be retracted under a deeper one.
+  Whatever the answer is, it does not have to handle a set that shrinks.
+- **Discharge changes meaning.** M1d S1d.2.6 scoped `Open` so that *a state is
+  judged by discharge when it has been told what it owes*. A node told at
+  depth 3 what root was not owes what its ancestors did not, so `complete` at
+  that node is not the same predicate as `complete` at its parent — which is
+  the mechanism by which a model goes missing, per
+  [D2](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d2_q6_which_decline_to_construct.md)
+  § The loss mechanism.
+
+### Three shapes, which may not have one answer
+
+| | shape | why it may differ |
+|---|---|---|
+| **a** | the new obligation is on a relation the branch structure already covers | the group gains members: the branch taken may still be exhaustive over the old alternatives and not over the new ones |
+| **b** | the new obligation is on a **new** relation | a whole group appears mid-search, and nothing above it ever branched on it |
+| **c** | the activator is derived on one path and not on its sibling | the two paths are then answering different questions, which is what makes their model sets hard to compare at all |
+
+### Candidate answers, none taken
+
+| | what | consequence |
+|---|---|---|
+| **A** | re-derive the branch at the node where the set grew, and continue | the honest one; needs `complete` to be relative to the node's own obligation set, not root's |
+| **B** | decline the traversal at the flip and fall back to the lattice | safe, and it throws away the descent so far. The lattice has no such premise to lose, which is why it is the fallback |
+| **C** | refuse at load: every obligation activator must be root-derivable | a diagnostic instead of a wrong answer — the repo's usual move, and the shape of [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent)'s option B. It forbids a program nobody has yet written |
+| **D** | accept the loss and state it | needs a witness first, which is what `Q6`'s probe is for |
+
+### Why P1e.1b owns it
+
+That phase's founding sentence is *"the search enumerates subsets of a fixed
+`alive` set"*, and its ladder rests on a branch structure that is a property
+of the **program** — *"it cannot flip under a hypothesis, which is the
+property Q6 found the tree's rung probe lacks"*. A derived obligation is
+exactly the case where the set is **not** fixed. So the phase either says what
+its groups mean when the set can grow, or states that its structure is
+computed only for programs where it cannot — and either is an answer.
