@@ -134,9 +134,9 @@ the options with their consequences and a recommendation.
 | [D3](d3_q_m1e8_file_or_take.md) | **decided 2026-08-28 — B**: the stage takes the *check*, not the fix. `record_node`'s four callers against `solution_semantics.md` § 2 | **T1e.1.1.4** | the fix still files to P1e.2, and *which* fix waits on Q-M1e.7 |
 | [D4](d4_q_m1e9_upward_closure.md) | **Q-M1e.9 is reproduced: `dead` is not upward-closed under `absent`.** Five of six configurations answer a twenty-line program wrongly. Who owns it, and how far does the fix go? | nothing here — but it qualifies D3 and D9 | a load-time refusal now, the real fix filed |
 | [D5](d5_does_t1_ratify_q_m1e2.md) | **decided 2026-08-28 — A**: T1 ratifies **both**, and Q-M1e.2 is owned there rather than by nobody | T1e.1.1.1 | ratified together, into `docs/kernel/` prose |
-| [D6](d6_the_new_q5_fixture.md) | Where the **new Q5 fixture** lives, what it pins, and whether its `:expect` states today's answer or the right one | T1e.1.1.3 step 3 | `examples/branching/`, state today's answer, let D3's fix move it |
-| [D7](d7_the_diff_instrument.md) | The **two-config diff** exists three times already. Build a fourth, borrow, or throw one away? | T1e.1.1.3 — and now S1e.1b.6 T3 and S1e.1b.7, two more customers | throwaway here; name it in S1e.3.4's inputs |
-| [D8](d8_branching06_untyped_models.md) | `branching/06` models `(co-located Blue Color)` and prints `?h = Color`. **Evidence, or its own id?** | nothing | its own `Q-M1e.<n>` |
+| [D6](d6_the_new_q5_fixture.md) | **decided 2026-08-28** — a **pair**, `examples/branching/15_lookahead_two_step_on.ein` + `16…_off.ein`, each stating today's answer; both goldens grow, nothing existing moves | T1e.1.1.3 step 3 | as recommended; the pair is forced, since one `:expect` cannot state two configurations' answers |
+| [D7](d7_the_diff_instrument.md) | **decided 2026-08-28 — A**: throwaway here, and S1e.3.4 rules on the fourth copy with **four** customers on the record instead of two | T1e.1.1.3, S1e.1b.6 T3, S1e.1b.7 | the runner already exists; Q-M1e.7's ruling settles *which object* it compares |
+| [D8](d8_branching06_untyped_models.md) | **decided 2026-08-28 — B**: filed as [Q-M1e.12](../../open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object), three readings, no owner | nothing | `branching/06` stays untouched while Q5 is open |
 | [D9](d9_kernel_page_overclaims.md) | **done 2026-08-28** — the row was not qualified but **withdrawn**: `complete ⇒ solution` reads **no**, § 6 gained *What is recorded is `S ∪ K`*, and the premise section says C3 wins | nothing here | — |
 
 **D4 is the one to read first.** It was filed as a question about two pages
@@ -260,13 +260,24 @@ positive initial KB.
    `examples/` fixture: typed, both sides exhausting, its solution set
    derivable in a paragraph, and its ON/OFF verdicts differing. It goes in the
    corpus with an `:expect`, and it is what fails if the lever ever moves.
-4. **Audit the goldens.** Every artefact pinning `lattice/02` or
-   `branching/06`: `corpus_exits.txt` (7 + 12 rows), `lattice_semantics.rs`
-   (4 sites), `search_invariants.rs` (3), `model_set_report.rs`,
-   `leftover_probe.rs`, `presentation_semantics.rs`, `corpus_shapes.md5`.
-   Neither fixture carries an `:expect`. The product is a list: *fixing the
-   semantics moves these N goldens.* A re-bless nobody predicted is a stop; a
-   re-bless named in advance in a stage file is a step.
+4. **Audit the goldens** — **done 2026-08-28,
+   [`golden_audit.md`](golden_audit.md)**. Every artefact pinning `lattice/02`
+   or the `branching/06`+`07` pair, counted rather than recalled, with a
+   *does it move?* column against the fix
+   [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+   selected. Three results worth carrying:
+
+   - **the list this task was given was wrong in three places** — 16
+     `corpus_exits.txt` rows for `lattice/02`, not 7; `leftover_probe.rs` does
+     not mention it at all; `config_reference.rs` does and was not named;
+   - **two of the pins are `src/` comments** (`hypgen.rs`, `models.rs`) citing
+     the fixtures as evidence. `EIN_BLESS=1` cannot reach them and no golden
+     diff will flag them, so a fix that moves what `branching/06` answers makes
+     two sentences false silently;
+   - **neither big golden moves.** `corpus_exits.txt` holds (both sides exit
+     `0`) and `corpus_shapes.md5` holds (the KB shape is not what changes), so
+     the fix is cheaper to land than this stage assumed. What moves is a
+     handful of assertions about the recorded model set.
 5. **File the fix, do not take it — and file the right one.** Q-M1e.6's
    operational form makes a solution a **maximal alive commitment**, and the
    lattice already computes maximality at layer `n+1` with no extra fork. So

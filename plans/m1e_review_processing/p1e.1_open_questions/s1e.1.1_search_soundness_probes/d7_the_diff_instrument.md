@@ -62,9 +62,29 @@ of Q-M1e.6's `model` — which is an argument for putting it somewhere reusable.
 | **B — a real `utils/` script** | `utils/model_diff.py`, catalogued, `$EIN_BIN`, re-takable, and the first thing that computes Q-M1e.6's `model` | fixes the habit instead of citing it, and gives P1e.1b's three model-set comparisons an owner. Costs perhaps half a day and grows the stage's scope |
 | **C — borrow `model_set_census.py`** | add a `--form diff` to the existing script | no new file, but it bends a *census* into a *comparison*, and that script's subject is one program's model set, not two runs of one |
 
-**Recommended: A for this stage, and let
-[S1e.3.4](../../p1e.3_medium/s1e.3.4_architecture.md) decide B.** S1e.3.4 owns
+**Decided 2026-08-28: A for this stage, and
+[S1e.3.4](../../p1e.3_medium/s1e.3.4_architecture.md) decides B.** S1e.3.4 owns
 AR-M1 and is where the unify-or-diff ruling belongs; pre-empting it here means
-the architecture stage inherits a decision it was meant to make. But **name
-the throwaway in S1e.3.4's inputs**, so the fourth copy is on the record as
-one when that stage counts them.
+the architecture stage inherits a decision it was meant to make. **The
+throwaway is named in S1e.3.4's inputs**, so the fourth copy is on the record
+as one when that stage counts them.
+
+### Two things that changed after this file was written
+
+- **The customer count went from two to four**, across three phases: T1e.1.1.3
+  (Q5), [S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)
+  T3 (tree vs lattice on the flip probe),
+  [S1e.1b.7](../../p1e.1b_hypothesis_structure/s1e.1b.7_tree_calibration_and_flag.md)
+  (tree vs lattice on `zebra2-minus-15`), and the record-site check, whose
+  runner [`probes/run_record_sites.sh`](probes/run_record_sites.sh) **already
+  exists** and is the throwaway this decision authorises. Four customers is a
+  stronger case for B than the two this file argued against — which is
+  precisely the evidence S1e.3.4 should be handed rather than a preference.
+- **"Which object does it compare" is no longer open.**
+  [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+  was ruled **A** on 2026-08-28: the recorded object is the *state* and the
+  **model** is the projection — positive part minus the positive initial KB.
+  So a comparison of *models* strips `(not …)` and subtracts the initial KB,
+  and a comparison of *states* does not, and each instrument says which it is
+  doing. The throwaway is the first thing to implement that projection, which
+  is one more argument for B when S1e.3.4 counts.

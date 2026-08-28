@@ -26,6 +26,7 @@ records which question became which id.
 | [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness. The **record-site conformance check** is [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) T4 ([D3](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d3_q_m1e8_file_or_take.md), option B); the fix files to P1e.2 and, since [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) was ruled on 2026-08-28, **is chosen**: re-saturate and re-check before recording |
 | [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. Split the same day: the **engine** half is [D4](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)'s (B now, C filed), the **language** half — *may a refutation rest on an `absent` at all?* — is [S1e.1b.8](p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md)'s |
 | [Q-M1e.10](#q-m1e10--two-config--flags-are-inert) | Two `(config …)` flags are **inert** — `print-alive`, `candidate-order-seed` | open — raised by [S1e.5.1](p1e.5_documentation_and_other/s1e.5.1_config_reference.md); owner unassigned |
+| [Q-M1e.12](#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object) | The blind rung is **untyped**, and a model binds a type as an object | open — raised by [D8](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d8_branching06_untyped_models.md) 2026-08-28; **owner unassigned**, three readings recorded |
 | [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [S1e.1b.6](p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)** 2026-08-28 by the user; the guard half is decided and is [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3's |
 
 ---
@@ -700,3 +701,57 @@ property Q6 found the tree's rung probe lacks"*. A derived obligation is
 exactly the case where the set is **not** fixed. So the phase either says what
 its groups mean when the set can grow, or states that its structure is
 computed only for programs where it cannot — and either is an answer.
+
+---
+
+## Q-M1e.12 — The blind rung is untyped, and a model binds a type as an object
+
+**Raised by** [D8](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d8_branching06_untyped_models.md)
+on 2026-08-28, out of S1e.1.1's reconnaissance. **Owner unassigned** — filed
+because a question the milestone found belongs in the milestone's ledger, not
+because anything is scheduled to answer it.
+
+### What was measured
+
+`examples/branching/06_lookahead_on.ein` answers `Ambiguity k = 22`, and
+**20 of the 22 models bind `?h` to `Color` or `House`** — the types, not the
+houses. Model 1 contains `(co-located Blue Color)`.
+
+The mechanism is not a bug in the search. `candidate_objects` collects every
+object the KB mentions; `(is-a Color T)` makes `Color` an object; the blind
+enumerator (rung 3) is **untyped**, so `(co-located Blue Color)` is a candidate
+like any other, and nothing in the program forbids it —
+`(relation co-located T T)` says both arguments are `T`, and `Color` *is* a
+`T`.
+
+Two consequences that are already load-bearing elsewhere:
+
+- the fixture cannot be the Q5 pair, because *"its solution set is derivable in
+  a paragraph"* is false of it — which is why
+  [D6](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d6_the_new_q5_fixture.md)
+  builds a new one;
+- it is the **standing proof** for
+  [S1e.1b.6](p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)'s
+  loss mechanism — the blind rung keeps proposing long after any real debt is
+  discharged, which is why a tree node that flips to it stops recognising
+  solutions. Without this fixture that argument is hypothetical.
+
+### Three readings, and the question is which one it is
+
+| | reading | what it would mean |
+|---|---|---|
+| **a** | **the program is under-specified** | fix the fixture, not the engine: `(relation co-located T T)` is what admits it, and `examples/branching/12_typed_blind_solve.ein` already shows the typed alternative |
+| **b** | **the enumerator is right and the read-out is wrong** | a query goal should not print a binding its author cannot mean. A presentation question, next to [SE-M1](README.md#the-findings) / `AR-M2` |
+| **c** | **`candidate_objects` should exclude types** | an engine change with corpus-wide reach, and the kind of thing S1.7.23 refused on purpose: *the kernel commits to no type system* |
+
+**(c) is the one that cannot be taken casually.** A type is not a kind in this
+language — it is an object that happens to appear on the right of an `is-a` —
+so "exclude types" has to be spelled as a rule about facts, and every such rule
+is a type system arriving by the back door. (a) is the likely eventual answer;
+(b) is cheap and would make the symptom stop being *read* as a defect without
+deciding whether it is one.
+
+**Not filed as a defect**, deliberately: under every one of the three readings
+the engine does what the program says. What is wrong is that nobody chose which
+reading the repo holds, and a corpus fixture is quietly demonstrating the
+consequence.

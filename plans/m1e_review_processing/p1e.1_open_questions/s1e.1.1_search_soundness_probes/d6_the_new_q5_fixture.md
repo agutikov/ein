@@ -1,8 +1,27 @@
-# D6 — Where the new Q5 fixture lives, and what it pins
+# D6 — Decided: `examples/branching/15` + `16`, stating today's answer
+
+> **Decided 2026-08-28, as recommended.** The fixture is a **pair** —
+> `examples/branching/15_lookahead_two_step_on.ein` and
+> `16_lookahead_two_step_off.ein`, differing in one `(config …)` line the way
+> `06`/`07` do — each carrying an `:expect` that states **what the engine
+> answers today**, so the stage that fixes
+> [Q-M1e.8](../../open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)
+> has to move the golden. Both goldens grow; nothing existing moves.
+>
+> **A pair rather than one file, and that is now forced rather than
+> preferred.** An `:expect` is one claim per `(query …)`, and the point of this
+> fixture is that the two configurations *answer differently* — so one file
+> could state only one of the two answers, and the other side would go
+> unpinned. `06`/`07` split for the same reason.
+>
+> **And the target the moved golden will state is now known.**
+> [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+> was ruled on the same day and selects fix **(ii)**, re-saturate and
+> re-check: under it every record-site probe answers what `-L` answers. So the
+> `:expect` written today is a claim with a dated successor, not an open bet.
 
 **Touches:** [T1e.1.1.3](README.md#task-t1e113--q5-derive-lattice02-by-hand-against-the-ruling)
 step 3.
-**Cheap** — I would decide it the way below unless told otherwise.
 
 ## Why a new fixture at all
 
@@ -49,13 +68,15 @@ whose header explains a semantics question — the same job `06`'s does.
 **not** `examples/broken/` (the program loads and solves fine; what is at
 issue is the answer).
 
-Naming, following the directory's convention: `15_lookahead_two_step.ein` —
+Naming, following the directory's convention:
+**`15_lookahead_two_step_on.ein`** and **`16_lookahead_two_step_off.ein`** —
 `14_lookahead_unjudgeable.ein` is the current last.
 
-Since the pair is the point, it may want to be **two** files the way 06/07
-are, differing in one `(config …)` line, with a header that diffs them. That
-costs a second corpus entry and buys a reader the same one-line diff the
-existing pair gives.
+Two files rather than one, decided: the pair *is* the point, an `:expect` is
+one claim per query, and the two configurations answer differently — so a
+single file leaves one side of the comparison unpinned. Two entries, one
+`(config …)` line apart, with a header that diffs them, exactly as `06`/`07`
+do.
 
 ## What it pins, and what moves
 

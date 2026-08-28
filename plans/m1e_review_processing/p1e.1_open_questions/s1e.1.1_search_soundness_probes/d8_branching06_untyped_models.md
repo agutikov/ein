@@ -76,6 +76,10 @@ Arguably not — three defensible readings:
 | **C — fold into Q5's ruling** | the lookahead ruling states it as a second finding about the same fixture | conflates two things: one is about what `complete` means, the other about what the enumerator proposes |
 | **D — fix the fixture** | add the type guard `06` obviously means, re-measure | changes a corpus fixture and moves goldens **before** any ruling, which the phase's risk section calls a stop |
 
-**Recommended: B.** It is one section, it names the three readings so the next
-reader does not re-derive them, and it keeps `branching/06` untouched while
-Q5 is still open. D is the likely eventual answer but not from this stage.
+**Decided 2026-08-28: B.** Filed as
+[Q-M1e.12](../../open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object),
+with the three readings and **no owner** — a question found by the milestone
+belongs in the milestone's ledger, it costs one section, and it keeps
+`branching/06` untouched while Q5 is open. D is the likely eventual answer and
+not this stage's: changing a corpus fixture before the ruling that would
+justify it is what the phase's risk section calls a stop.
