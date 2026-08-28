@@ -1,13 +1,18 @@
 # P1e.1b — The structure of the hypothesis set
 
-**Estimate:** ~3 weeks — 5 stages, 14 days.
+**Estimate:** ~4 weeks — 7 stages, 20 days.
 **Depends on:** [P1e.1](../p1e.1_open_questions/README.md)
 [S1e.1.1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) only —
 for [Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
-ruling, which this phase is the first consumer of. Nothing else.
-**Blocks:** nothing in M1e. It is a *new capability*, and every stage of it is
-answer-preserving by construction — the acceptance is *the same model sets,
-fact for fact*, on every corpus entry.
+ruling, which this phase is the first consumer of. Nothing else — and since
+2026-08-28 the dependency runs the other way too: this phase answers the
+review's `Q6`, which S1e.1.1 used to.
+**Blocks:** nothing in M1e **until 2026-08-28**, when
+[S1e.1b.6](s1e.1b.6_obligations_under_hypothesis.md) took the review's `Q6`
+and with it `CO-H3`(c)'s regression test — see [§ What cutting it would now
+cost](#what-cutting-it-would-now-cost). Everything else here is a *new
+capability*, answer-preserving by construction: the acceptance is *the same
+model sets, fact for fact*, on every corpus entry.
 **Owns:** [Q-M1e.11](../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
 — *what happens to an obligation derived under a hypothesis*, handed over from
 [S1e.1.1 D2](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/d2_q6_which_decline_to_construct.md)
@@ -28,12 +33,27 @@ be decided?* — that this phase answers structurally.
 
 Two consequences a reader should hold:
 
-- **M1e's acceptance is unchanged.** The 63 dispositions and the ten
-  questions are the milestone; this phase is additive and may be cut whole
-  without touching them.
+- **M1e's acceptance is unchanged in the 63 dispositions**, and *was* unchanged
+  in the ten questions until 2026-08-28. See below.
 - **This phase may not change an answer.** Not one model, not one fact, not
   one verdict word. Every stage's acceptance is a fact-for-fact model-set
   comparison across the corpus, and the win is measured in *enterings*.
+
+### What cutting it would now cost
+
+One question. [S1e.1b.6](s1e.1b.6_obligations_under_hypothesis.md) is the
+answering stage for the review's **`Q6`**, moved here from
+[S1e.1.1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) on
+2026-08-28, and M1e's acceptance says *every one of Q1–Q10 is answered*. So
+cutting this phase whole now means Q6 goes back to P1e.1 or is re-filed as a
+`Q-M1e.<n>` with an owner — which is a two-line edit, not a re-plan, but it is
+no longer free. Everything else here remains additive.
+
+The **guard** Q6 gates is not affected either way: the ruling of 2026-08-28
+(the rung mode is re-read at every node) is
+[S1e.2.1](../p1e.2_high/s1e.2.1_correctness.md) T3's to apply, and it does not
+wait on this phase. What waits is the *probe* that would let a later milestone
+remove it.
 
 ## The instruction
 
@@ -89,6 +109,8 @@ Five stages, and each one is a strictly larger claim about the same object.
 | **the join** | a candidate set containing two members of one group is refused **before** the fork | [S1e.1b.3](s1e.1b.3_the_restricted_join.md) |
 | **bounded groups** | two overlapping group families whose members exhaust each other are a **bijection**, so the space is `n!` and not `2^(n²)` | [S1e.1b.4](s1e.1b.4_bounded_groups.md) |
 | **order** | the traversal order follows the structure — most-constrained group first — instead of the canonical tuple sort | [S1e.1b.5](s1e.1b.5_ordering.md) |
+| **domain** | the four rungs above are valid over a *stated* class of programs, and a derived obligation is what can put a program outside it | [S1e.1b.6](s1e.1b.6_obligations_under_hypothesis.md) |
+| **calibration** | the tree traversal already gets **200 053×** on the phase's hardest instance by branching on structure; how much of that is this ladder's to recover | [S1e.1b.7](s1e.1b.7_tree_calibration_and_flag.md) |
 
 ### The one distinction the whole phase rests on
 
@@ -176,6 +198,8 @@ Named here and used by every stage.
 | [S1e.1b.3](s1e.1b.3_the_restricted_join.md) | The join, restricted | 3 d | `generate_layer` refuses a candidate containing two members of one group; every corpus model set identical fact for fact; the enterings delta measured per entry |
 | [S1e.1b.4](s1e.1b.4_bounded_groups.md) | Bounded groups — rediscovering the bijection | 3 d | a program with no `(bijective …)` and no `(open …)` gets the same branch structure as one that declares it, or the stage says exactly which of the two it cannot recover and why |
 | [S1e.1b.5](s1e.1b.5_ordering.md) | Ordering by structure | 2.5 d | a third `lattice-order` mode, measured against `lex` on the five instances — and `most-constrained`, which has returned `0.0` since it was named, either implemented or deleted |
+| [S1e.1b.6](s1e.1b.6_obligations_under_hypothesis.md) | Obligations derived under a hypothesis — the review's `Q6` | 3 d | the flip constructed or written up as not constructible; a ruling on [Q-M1e.11](../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis); and **this phase's domain sentence** — what a group means when the set it partitions can grow |
+| [S1e.1b.7](s1e.1b.7_tree_calibration_and_flag.md) | Why the tree wins on `zebra2-minus-15`, and the flag | 3 d | the **200 053×** attributed across five hypotheses with a named remainder, the share S1e.1b.3 actually recovers, and `--traversal {lattice,tree}` replacing `EIN_TRAVERSAL` as the surface a reader finds |
 
 ## Acceptance
 
@@ -194,6 +218,13 @@ Named here and used by every stage.
 - **No new hand-maintained parallel copy** ([AR-M1](../README.md#the-findings)).
   The group structure has one owner; if `apriori`, `hypgen` and `oblgen` all
   need it, they read it from that owner.
+- **The domain is stated, not assumed** — S1e.1b.6's sentence about what a
+  group means when the set can grow is written where the structure is
+  *computed*, and S1e.1b.2 and S1e.1b.3 cite it rather than re-deriving it.
+- **The phase's target is audited before it is quoted.** S1e.1b.7 attributes
+  the tree's 200 053×, and if most of it turns out to be work the tree never
+  does (it terminates by discharge and reports `exhausted = false`), every
+  later citation of that number says so in the same sentence.
 - `./run_tests.sh` green at every stage boundary; every golden this phase
   moves is named in its stage file before it moves. **The expectation is that
   it moves none**: enterings counters are not golden, but

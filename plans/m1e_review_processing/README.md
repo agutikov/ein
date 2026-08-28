@@ -1,10 +1,10 @@
 # M1e — Review processing
 
-**Estimate:** ~19 weeks — 6 phases, 34 stages, ~104 days of stage estimates.
+**Estimate:** ~20 weeks — 6 phases, 36 stages, ~109 days of stage estimates.
 Four phases and 25 stages of that are the review; **P1e.1b** and **P1e.5** were
 added 2026-08-28 on the user's instruction and are not review processing (see
 the phase table's footnote). P1e.5 grew from 1 stage to 4 later the same day
-and carries 36 of the 104 days — [S1e.5.20](p1e.5_documentation_and_other/s1e.5.20_docs_refactor.md)
+and carries 36 of the 109 days — [S1e.5.20](p1e.5_documentation_and_other/s1e.5.20_docs_refactor.md)
 alone is 23.
 **Status:** created 2026-08-27, out of the full-tree review taken the same day
 against `master` @ `9aa598a`. The reports are carried in
@@ -64,7 +64,7 @@ guessing:
 | [Q3](p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md) — Q-M1a.8's true trigger | whether [CD-H3](#the-findings) is a doc correction, an engine bug, or a `not-a-bug` closure. All three are different work |
 | [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) — which side of the lookahead verdict flip is right | whether a **performance lever decides what a complete model is** — and whether the wrong verdict is golden-pinned, which turns a semantics fix into a deliberate re-bless |
 | [Q4](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) — the inter-layer alive-∅ path | whether [CO-M1](#the-findings) is a soundness bug or an invariant nobody wrote down |
-| [Q6](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) — the tree's inner-node rung flip | whether [CO-H3](#the-findings)(c) is a `debug_assert` or a re-probe per node |
+| [Q6](p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md) — the tree's inner-node rung flip | **the guard is ruled** (2026-08-28: the rung mode is re-read at every node); what is left is whether the flip is constructible, and what the search does with an obligation a fork derived — [Q-M1e.11](open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) |
 
 The rest of P1e.1 is cheaper and independent, and two of its questions
 ([Q1](p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md),
@@ -84,11 +84,11 @@ absence of evidence.* The milestone may not close claiming the tree is clean.
 
 | ID | title | stages | est. | ends with |
 |---|---|---:|---:|---|
-| [P1e.1](p1e.1_open_questions/README.md) | The ten questions | 6 | 10 d | each of Q1–Q10 answered by a probe, a measurement or a ruling — and banked as a test where the answer is a property; the four that gate a fix answered **first** |
+| [P1e.1](p1e.1_open_questions/README.md) | The ten questions | 6 | 9 d | each of Q1–Q10 answered by a probe, a measurement or a ruling — and banked as a test where the answer is a property; the four that gate a fix answered **first** |
 | [P1e.2](p1e.2_high/README.md) | High — 6 findings | 2 | 11 d | no well-formed program panics the process; one reserved-name list; the tree traversal either honours its contract or refuses to ship the surfaces that lie; `docs/kernel` triaged page by page into current / bannered / history |
 | [P1e.3](p1e.3_medium/README.md) | Medium — 36 findings | 9 | 26 d | the k-vs-`solution_nodes` seams closed at the one place that owns them; the four parallel-copy pairs unified or diffed by a test; the gate's floors derived rather than constant; every prose count either generated or gone |
 | [P1e.4](p1e.4_low/README.md) | Low — 21 findings | 8 | 7 d | the one-line class, batched by topic — each stage one commit, each finding fixed, refuted or accepted with a reason at the site |
-| [P1e.1b](p1e.1b_hypothesis_structure/README.md) † | The structure of the hypothesis set | 5 | 14 d | the exclusion relation measured; groups defined as a **cover**, not a partition; the join refusing a same-group pair before the fork with **not one model moved**; the bijection derived where it is declared nowhere, or a written *no*; and the **domain** of that structure stated, which is [Q-M1e.11](open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) |
+| [P1e.1b](p1e.1b_hypothesis_structure/README.md) † | The structure of the hypothesis set | 7 | 20 d | the exclusion relation measured; groups defined as a **cover**, not a partition; the join refusing a same-group pair before the fork with **not one model moved**; the bijection derived where it is declared nowhere, or a written *no*; the **domain** of that structure stated, which is [Q-M1e.11](open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) and the review's `Q6`; and the tree's **200 053×** attributed, with `--traversal` replacing `EIN_TRAVERSAL` as the surface a reader finds |
 | [P1e.5](p1e.5_documentation_and_other/README.md) † | Documentation, and other | 4 + n | 36 d | the configuration reference — 17 flags, the live `EIN_*` set, the 50 CLI options, with a *does it change the answer* column and a test that fails when the flag list drifts from it; every statement convertible to NL, measured at the **5 %** `zebra2`'s model renders today; `:priority` removed and the schedule derived from the rule graph, on a control sweep where **137 of 139 entries are identical** without it; and `docs/ein/` — the tree a released system would have |
 
 † **Not review processing.** Both were added 2026-08-28 on the user's
@@ -96,9 +96,16 @@ instruction: P1e.1b is engine work on hypothesis-set structure, P1e.5 writes
 pages that do not exist — and, since three further notes the same day, also
 removes a language keyword and rebuilds the doc tree. Neither is required by
 any of the 63 findings, and M1e's
-[acceptance](#acceptance-for-the-milestone) is unchanged by them — they are
-additive and may be cut whole, which for P1e.5 is now 36 days of the
-milestone. P1e.1b runs after [P1e.1](p1e.1_open_questions/README.md), because
+[acceptance](#acceptance-for-the-milestone) is unchanged by them in the 63
+dispositions — they are additive and may be cut whole, which for P1e.5 is now
+36 days of the milestone. **One exception since 2026-08-28**: P1e.1b's
+[S1e.1b.6](p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)
+is now the answering stage for the review's `Q6`, so cutting P1e.1b costs one
+of the ten questions its owner and Q6 goes back to P1e.1 or is re-filed.
+
+P1e.1b runs after [P1e.1](p1e.1_open_questions/README.md) and, for its
+[S1e.1b.7](p1e.1b_hypothesis_structure/s1e.1b.7_tree_calibration_and_flag.md)
+flag task, after [P1e.2](p1e.2_high/README.md) — because
 it is the first consumer of
 [Q-M1e.6](open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
 ruling and because P1e.1's

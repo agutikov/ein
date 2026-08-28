@@ -1,9 +1,13 @@
 # D7 — The two-config diff instrument: build it, or borrow it a fourth time?
 
 **Touches:** [T1e.1.1.3](README.md#task-t1e113--q5-derive-lattice02-by-hand-against-the-ruling)
-(Q5, lookahead on vs off) and
-[T1e.1.1.4](README.md#task-t1e114--q6-try-to-build-the-inner-node-rung-flip)
-(Q6, tree vs lattice).
+(Q5, lookahead on vs off) — and, since Q6 left this stage on 2026-08-28, two
+customers in another phase:
+[S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)
+T3 (tree vs lattice on the flip probe) and
+[S1e.1b.7](../../p1e.1b_hypothesis_structure/s1e.1b.7_tree_calibration_and_flag.md)
+(tree vs lattice on `zebra2-minus-15`). **Three customers across two phases is
+a stronger case for one script than this file was written against.**
 **Cheap** — but it is the one place this stage can commit
 [AR-M1](../../README.md#the-findings) rather than merely cite it.
 

@@ -1,25 +1,29 @@
-# S1e.1.1 — Three soundness probes: Q4, Q5, Q6
+# S1e.1.1 — Two soundness probes: Q4 and Q5
 
 **Phase:** [P1e.1](../README.md) (The ten questions)
-**Estimate:** 3 days
+**Estimate:** 2 days
 **Depends on:** nothing.
-**Blocks:** [CO-M1](../../p1e.3_medium/s1e.3.1_correctness.md) (Q4),
-[CO-H3](../../p1e.2_high/s1e.2.1_correctness.md)(c) (Q6), and any golden the
-lookahead flip pins (Q5).
-**Answers:** [`review/open-questions.md`](../../review/open-questions.md) Q4, Q5,
-Q6.
+**Blocks:** [CO-M1](../../p1e.3_medium/s1e.3.1_correctness.md) (Q4) and any
+golden the lookahead flip pins (Q5).
+**Answers:** [`review/open-questions.md`](../../review/open-questions.md) Q4 and
+Q5. **`Q6` left this stage on 2026-08-28** for
+[S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md);
+the ruling taken here is kept in
+[D2](d2_q6_which_decline_to_construct.md).
 
 ## Context
 
-Three questions, one shape: a search path whose soundness rests on a premise
+Two questions, one shape: a search path whose soundness rests on a premise
 that is argued and not checked. Each is answerable by a **constructed
-program** — none needs new engine machinery to ask, and all three are the kind
+program** — neither needs new engine machinery to ask, and both are the kind
 of probe the review could not run because it had reading budget and no
 verification stage.
 
 They are one stage because the standard of proof has to be settled once,
-here, and because all three end the same way: a fixture in the corpus that
+here, and because both end the same way: a fixture in the corpus that
 would fail if the premise ever broke.
+
+A third, **`Q6`**, was here until 2026-08-28 — see below.
 
 **Q4 — the inter-layer alive-∅ path.** `phase2` calls `record_node(root)`
 when `compute_alive` comes back empty
@@ -69,52 +73,19 @@ written against what was found, not against what the review assumed:
 So the stage's Q5 scope is **`lattice/02` plus one purpose-built fixture**, and
 `branching/06` is evidence rather than subject.
 
-**Q6 — the tree's inner-node rung flip.** `tree()` probes the
-generation-ladder mode **once at root**, on the stated premise that *the mode
-is a property of the program rather than of the node*
-([`solve.rs:889-914`](../../../../ein.rs/crates/ein-infer/src/solve.rs)). But
-oblgen's mode per node is a function of activator **facts**, and an activator
-is an ordinary fact a rule can derive — inside a fork. A flip at an inner node
-falls through to the blind enumerator
-([`hypgen.rs:340-378`](../../../../ein.rs/crates/ein-infer/src/hypgen.rs)), whose
-branches are **not** jointly exhaustive, and the tree would then treat a
-non-exhaustive branch set as exhaustive and **miss models** — the failure
-class this project's discipline treats as worst. Today's stdlib activators are
-root-asserted, so the corpus never reaches it. **The re-probe is no longer in
-question** — decided 2026-08-28: the mode is re-read at every node, and the
-value is already computed per node and discarded
-(`solve.rs:945-956`), so it costs nothing. What is left here is whether the
-shape is *constructible at all*, which is what makes the guard removable later
-instead of inherited; and what the search should **do** with the new
-obligation left with
-[Q-M1e.11](../../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
-for [P1e.1b](../../p1e.1b_hypothesis_structure/README.md).
-
-**Two corrections from reconnaissance.** First, **the premise is already
-refuted by this repo's own doc comment**: `activators_for`
-([`compile.rs:54-69`](../../../../ein.rs/crates/ein-infer/src/compile.rs)) says a
-parameterised rule *"consults the **fork's** `rule_apps_by_rule`, not the
-load-time KB's, because a fork derives activators of its own during
-saturation"*, and `oblgen::generate` calls `plans_for(s.kb, …)` per node. The
-mode **is** a function of the node. What is open is only whether a *flip* is
-constructible, and the three fact-dependent decline conditions are
-[`oblgen.rs:232-262`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs)'s: a
-bare `(open)` plan, a projection that will not resolve for that activator, and
-**C4** — an obligation scanning a relation the rung itself proposes. C4 is the
-likeliest, and the probe is a rule that derives, under a hypothesis, an
-activator for an obligation on a relation an existing obligation's guard
-scans.
-
-Second, **the loss mechanism is not the one the finding states.** The tree
-enters *every* candidate `G3` returns and recurses, so subsets stay reachable;
-what is lost first is the `d!`-per-path explosion, because `one_branch` is a
-parameter the blind rung ignores. The **missed model** comes from `complete`
-changing meaning: a node whose obligations are discharged is a solution under
-`G2` and is *not* complete under `G3` while the blind enumerator still
-proposes anything — and `branching/06` is the standing proof that it proposes
-junk long after any debt is settled (`(co-located Blue Color)`). So the test
-asserts *"the tree's model set ⊇ the lattice's"* **and** *"no node emitted a
-`rung` event with a mode other than `obligations`"*, not a bare count.
+**Q6 left this stage.** The tree's inner-node rung flip — `tree()` probing the
+generation-ladder mode **once at root** on the premise that *the mode is a
+property of the program rather than of the node*
+([`solve.rs:889-914`](../../../../ein.rs/crates/ein-infer/src/solve.rs)) — is
+now [S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md),
+which carries the reconnaissance this section held: the premise is already
+refuted by `activators_for`'s own doc comment, the three fact-dependent decline
+conditions are `oblgen.rs:232-262`'s, and the loss mechanism is `complete`
+changing meaning under the blind rung rather than a non-exhaustive branch set
+being walked as exhaustive. The **ruling** — the mode is re-read at every node,
+2026-08-28 — stays in [D2](d2_q6_which_decline_to_construct.md), and what the
+search should *do* with the new obligation is
+[Q-M1e.11](../../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis).
 
 ## Acceptance
 
@@ -132,29 +103,27 @@ asserts *"the tree's model set ⊇ the lattice's"* **and** *"no node emitted a
   fixture** carrying the ON/OFF pair with both sides exhausting, since
   `branching/06` cannot; a golden audit listing every corpus artefact that
   pins the current verdicts for both existing entries.
-- **Q6**: a probe program with a rule deriving an obligation activator inside
-  a fork, run under `EIN_TRAVERSAL=tree` and diffed against the lattice's
-  model set. Constructible or not, the answer is banked as a test.
 - Nothing in this stage changes a verdict. Where a probe finds a defect, the
   fix is the dependent stage's; this stage's product is the fixture and the
   ruling.
 
 ## Decisions to take before implementation
 
-Nine, one file each, in this folder. **D1 and D2 block a task outright** — the
-task has no shape until they are answered. The rest change what the stage
-delivers or are cheap enough to decide in passing, and each file carries the
-options with their consequences and a recommendation.
+Nine files, and **two of them are now records rather than decisions**: D1 is
+answered by construction and D2 has moved to [P1e.1b](../../p1e.1b_hypothesis_structure/README.md).
+Of the seven that remain, none blocks a task outright — they change what the
+stage delivers or are cheap enough to decide in passing, and each file carries
+the options with their consequences and a recommendation.
 
 | | decision | gates | recommended |
 |---|---|---|---|
-| [D1](d1_q4_which_route_reaches_the_site.md) | **Q4: which route reaches the unguarded `record_node`?** The cascade re-checks between the two lines, so only two constructions get there | **T1e.1.1.2** | stock config first, config lever as fallback |
-| [D2](d2_q6_which_decline_to_construct.md) | **Q6: which of `oblgen`'s three decline conditions to construct?** The premise is refuted and the re-probe is **decided** (2026-08-28); only constructibility is open | **T1e.1.1.4** | the C4 collision. The structural half left with [Q-M1e.11](../../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) |
+| [D1](d1_q4_which_route_reaches_the_site.md) | **answered 2026-08-28** — Route B built at stock config, and a cheaper witness at the phase-1 record site the finding does not name. Open: which fix S1e.3.1 takes, and what the banked fixture claims | **T1e.1.1.2** | the dirty-bit guard; bank the fixture stating today's answer |
+| [D2](d2_q6_which_decline_to_construct.md) | **moved** — Q6 became [S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md) on 2026-08-28. What stays is the ruling taken here: the rung mode is re-read at every node | nothing here | — |
 | [D3](d3_q_m1e8_file_or_take.md) | **Q-M1e.8: file the maximality fix, or take it?** One bitset per layer against a shipped false verdict | T1e.1.1.3 step 5 | take it, in P1e.2 |
 | [D4](d4_q_m1e9_upward_closure.md) | **Q-M1e.9 is reproduced: `dead` is not upward-closed under `absent`.** Five of six configurations answer a twenty-line program wrongly. Who owns it, and how far does the fix go? | nothing here — but it qualifies D3 and D9 | a load-time refusal now, the real fix filed |
 | [D5](d5_does_t1_ratify_q_m1e2.md) | Does T1 ratify **Q-M1e.2** as well as Q-M1e.1? Q4's likely `accepted` needs it, and Q-M1e.2 has no owning stage | T1e.1.1.1 | ratify both |
 | [D6](d6_the_new_q5_fixture.md) | Where the **new Q5 fixture** lives, what it pins, and whether its `:expect` states today's answer or the right one | T1e.1.1.3 step 3 | `examples/branching/`, state today's answer, let D3's fix move it |
-| [D7](d7_the_diff_instrument.md) | The **two-config diff** exists three times already. Build a fourth, borrow, or throw one away? | T1e.1.1.3, T1e.1.1.4 | throwaway here; name it in S1e.3.4's inputs |
+| [D7](d7_the_diff_instrument.md) | The **two-config diff** exists three times already. Build a fourth, borrow, or throw one away? | T1e.1.1.3 — and now S1e.1b.6 T3 and S1e.1b.7, two more customers | throwaway here; name it in S1e.3.4's inputs |
 | [D8](d8_branching06_untyped_models.md) | `branching/06` models `(co-located Blue Color)` and prints `?h = Color`. **Evidence, or its own id?** | nothing | its own `Q-M1e.<n>` |
 | [D9](d9_kernel_page_overclaims.md) | `solution_semantics.md` §6 claims *the engine never records a false model*; it proves the maximality conjunct only, and D4 already dents that | should land **before** T1e.1.1.2 | qualify the row now |
 
@@ -261,50 +230,26 @@ The precedent for step 1 is exact and recent: `disjunctive-prune`'s wrong
 engines and died to **one independent enumeration written outside the engine
 on the day**.
 
-### Task T1e.1.1.4 — Q6: try to build the inner-node rung flip
+### Task T1e.1.1.4 — moved
 
-The probe: a program that declares an obligation rule (so root's mode is
-`Obligations` and the tree accepts the traversal), plus a saturation rule
-that derives a *second* obligation's activator fact only under a hypothesis —
-so the mode at an inner node is computed over a fact set root did not have.
-
-Two questions, in order:
-
-1. **Is the activator derivable at all?** Activators are ordinary facts, so a
-   rule head can produce one; whether the loader and `oblgen` read a
-   *derived* activator the same way they read a declared one is the actual
-   unknown ([`oblgen.rs:241-265`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs)).
-   Check this first with `ein saturate --dump` before building anything on
-   top of it.
-2. **Does the tree then miss a model?** Run the probe under
-   `EIN_TRAVERSAL=tree` and under the default lattice with `-e`, and diff the
-   model sets fact for fact — the same comparison
-   [S1d.10.6](../../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)
-   used to verify the 86-vs-17 204 592 result. A tree set that is a strict
-   subset is the bug.
-
-Whichever way it lands, bank it: a passing test named for the premise
-(*the tree's branch sets stay jointly exhaustive*) is worth more than the
-`debug_assert` it may replace, because the assert only fires in a debug build
-and the test runs in the gate. Then say what `CO-H3`(c) becomes:
-
-| outcome | what [S1e.2.1](../../p1e.2_high/s1e.2.1_correctness.md) T3 does |
-|---|---|
-| constructible, and the tree misses models | the re-probe is decided either way; the probe is its regression test, and **what a flip does** — decline, or re-derive the branch — is Q-M1e.11's, not T3's |
-| constructible, and the tree still agrees | the premise is wrong but harmless — find out why, then either the assert or a written argument |
-| not constructible from any `.ein` program | `debug_assert` plus the argument at `solve.rs:889`, and the reason it is not constructible stated there |
+The Q6 probe — a program deriving an obligation activator inside a fork, run
+under both traversals and diffed fact for fact — is
+[S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)
+T1–T4. Nothing of it remains here; the number the stage carried, 3 days, is now
+2.
 
 ## Notes
 
-The three probes share an instrument — *run the same program two ways and
-diff the model sets* — and it already exists in three places
+These probes share an instrument with S1e.1b.6 and S1e.1b.7 — *run the same
+program two ways and diff the model sets* — and it already exists in three
+places
 (`model_set_census.py`, the S1d.10.6 verification, the `--jobs` sweep). If
 the stage finds itself writing the comparison a fourth time, that is a small
 `utils/` script, not a fourth copy; but it is not the stage's job to build
 one, and the milestone has a finding about exactly this habit
 ([AR-M1](../../README.md#the-findings)).
 
-None of these three questions is M1d's to answer, and this stage does not
+Neither of these questions is M1d's to answer, and this stage does not
 touch `Q-M1d.1` or `Q-M1d.6` — the verdict-vocabulary questions the review's
 findings repeatedly terminate in. Where a probe's answer would require one of
 them, the stage records the dependency and stops.

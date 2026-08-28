@@ -20,13 +20,13 @@ records which question became which id.
 | [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | open — the `accepted` disposition's rule |
 | [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | open — [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) decides per page; the *rule* is here |
 | [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | open — [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md) |
-| [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md), and M1d's `T1d.10.6.4` is the co-owner |
+| [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md), and M1d's `T1d.10.6.4` is the co-owner. [S1e.1b.7](p1e.1b_hypothesis_structure/s1e.1b.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it |
 | [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model) | What is a **solution**, and what is a **model**? | **decided 2026-08-28** by the user; binding on [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) and on [P1e.1b](p1e.1b_hypothesis_structure/README.md) |
 | [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) | The read-out prints the solution **KB** and calls it a model | open — raised by Q-M1e.6; owner unassigned |
 | [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness |
 | [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. Owner undecided ([D4](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)) |
 | [Q-M1e.10](#q-m1e10--two-config--flags-are-inert) | Two `(config …)` flags are **inert** — `print-alive`, `candidate-order-seed` | open — raised by [S1e.5.1](p1e.5_documentation_and_other/s1e.5.1_config_reference.md); owner unassigned |
-| [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [P1e.1b](p1e.1b_hypothesis_structure/README.md)** 2026-08-28 by the user; the guard half is decided and is [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3's |
+| [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [S1e.1b.6](p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)** 2026-08-28 by the user; the guard half is decided and is [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3's |
 
 ---
 
@@ -501,8 +501,10 @@ holding the other knob that does less than its name says
 
 **Raised by** [D2](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d2_q6_which_decline_to_construct.md)
 on 2026-08-28, which split the review's `Q6` in two.
-**Owner: [P1e.1b](p1e.1b_hypothesis_structure/README.md)**, by the user's
-instruction the same day.
+**Owner: [S1e.1b.6](p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)**
+— the stage D2 became the same day, by the user's instruction. Its T4 is what
+rules on this; the ruling is written into this file with the date, and beside
+the code that computes the structure.
 
 ### What is decided, and is *not* this question
 

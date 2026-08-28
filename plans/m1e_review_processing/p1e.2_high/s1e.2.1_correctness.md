@@ -184,14 +184,33 @@ under either eventual answer, and is the exact move S1d.3.3 made for
 [`open_questions.md`](../open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface)
 that learning-on-tree-deaths remains available and unpriced.
 
-**(c) The rung premise.** `tree()` probes the mode once at root
-(`:889-914`) on the premise that the mode is a property of the program.
-[Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) determines
-whether an inner-node flip is constructible, and its answer table says what
-this task does — re-probe per node and hard-decline, or `debug_assert` plus a
-written argument. Do not take this sub-task before Q6 lands; a re-probe per
-node is a per-node generation call, and paying for it against a premise
-nobody tested is the wrong order.
+**(c) The rung premise — and it is now a ruling, not a choice.** `tree()`
+probes the mode once at root (`:889-914`) on the premise that the mode is a
+property of the program. **Decided 2026-08-28 by the user: the mode is re-read
+at every node.** So this sub-task no longer waits on Q6 and no longer chooses
+between a `debug_assert` and a re-probe — it applies the ruling.
+
+Two things that changed with it:
+
+- **The cost argument is void.** A re-probe is *not* a per-node generation
+  call: `tree_node` already builds a `HypGenStats`, calls
+  `generate_one_branch`, keeps the candidate list and **drops `hs.rung.mode`**
+  (`solve.rs:945-956`). The change is to stop discarding the value.
+- **The probe arrives later, in another phase.** Q6's construction moved to
+  [S1e.1b.6](../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md),
+  which runs after this one. So record here that this guard's **regression test
+  is owed** and name that stage — a guard shipped without a probe is a guard
+  nobody can remove
+  ([Q-M1e.1](../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)),
+  and the difference that makes it acceptable is that this is applying a ruling
+  rather than closing a risk by argument.
+
+What the guard *does* on a flip — decline the traversal, or re-derive the
+branch and continue — is **not** this task's: it is
+[Q-M1e.11](../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis),
+ruled on by S1e.1b.6 T4. Until then the conservative arm is the one to write:
+narrate the flip and decline, which is what the root probe already does for
+every other rung.
 
 The one thing the guard *does* enforce — declining on any rung other than
 obligations, with a `traversal` event — is real and pinned by
