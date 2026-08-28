@@ -1,9 +1,11 @@
 # M1e — Review processing
 
-**Estimate:** ~13 weeks — 6 phases, 31 stages, ~71 days of stage estimates.
+**Estimate:** ~19 weeks — 6 phases, 34 stages, ~104 days of stage estimates.
 Four phases and 25 stages of that are the review; **P1e.1b** and **P1e.5** were
 added 2026-08-28 on the user's instruction and are not review processing (see
-the phase table's footnote).
+the phase table's footnote). P1e.5 grew from 1 stage to 4 later the same day
+and carries 36 of the 104 days — [S1e.5.20](p1e.5_documentation_and_other/s1e.5.20_docs_refactor.md)
+alone is 23.
 **Status:** created 2026-08-27, out of the full-tree review taken the same day
 against `master` @ `9aa598a`. The reports are carried in
 [`review/`](review/summary.md), verbatim and unedited — the
@@ -87,18 +89,23 @@ absence of evidence.* The milestone may not close claiming the tree is clean.
 | [P1e.3](p1e.3_medium/README.md) | Medium — 36 findings | 9 | 26 d | the k-vs-`solution_nodes` seams closed at the one place that owns them; the four parallel-copy pairs unified or diffed by a test; the gate's floors derived rather than constant; every prose count either generated or gone |
 | [P1e.4](p1e.4_low/README.md) | Low — 21 findings | 8 | 7 d | the one-line class, batched by topic — each stage one commit, each finding fixed, refuted or accepted with a reason at the site |
 | [P1e.1b](p1e.1b_hypothesis_structure/README.md) † | The structure of the hypothesis set | 5 | 14 d | the exclusion relation measured; groups defined as a **cover**, not a partition; the join refusing a same-group pair before the fork with **not one model moved**; the bijection derived where it is declared nowhere, or a written *no* |
-| [P1e.5](p1e.5_documentation/README.md) † | Documentation ein does not have | 1 + n | 3 d | the configuration reference — 17 flags, the live `EIN_*` set, the 50 CLI options and the precedence between them — with a *does it change the answer* column and a test that fails when the flag list drifts from it |
+| [P1e.5](p1e.5_documentation_and_other/README.md) † | Documentation, and other | 4 + n | 36 d | the configuration reference — 17 flags, the live `EIN_*` set, the 50 CLI options, with a *does it change the answer* column and a test that fails when the flag list drifts from it; every statement convertible to NL, measured at the **5 %** `zebra2`'s model renders today; `:priority` removed and the schedule derived from the rule graph, on a control sweep where **137 of 139 entries are identical** without it; and `docs/ein/` — the tree a released system would have |
 
 † **Not review processing.** Both were added 2026-08-28 on the user's
 instruction: P1e.1b is engine work on hypothesis-set structure, P1e.5 writes
-pages that do not exist. Neither is required by any of the 63 findings, and
-M1e's [acceptance](#acceptance-for-the-milestone) is unchanged by them —
-they are additive and may be cut whole. P1e.1b runs after
-[P1e.1](p1e.1_open_questions/README.md), because it is the first consumer of
+pages that do not exist — and, since three further notes the same day, also
+removes a language keyword and rebuilds the doc tree. Neither is required by
+any of the 63 findings, and M1e's
+[acceptance](#acceptance-for-the-milestone) is unchanged by them — they are
+additive and may be cut whole, which for P1e.5 is now 36 days of the
+milestone. P1e.1b runs after [P1e.1](p1e.1_open_questions/README.md), because
+it is the first consumer of
 [Q-M1e.6](open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
 ruling; P1e.5 runs after [P1e.2](p1e.2_high/README.md), because a reference
 that cites `defined_behaviour.md`'s sections before they are triaged cites the
-old ones.
+old ones — and its S1e.5.20 runs after
+[P1e.3](p1e.3_medium/README.md) as well, because it moves the 38 pages that
+phase is fixing.
 
 Severity is the review's, and the phase split is the user's instruction. The
 one place it cuts across a finding is the **tree traversal**, whose defects

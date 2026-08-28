@@ -1,14 +1,23 @@
-# P1e.5 — Documentation ein does not have
+# P1e.5 — Documentation, and other
 
-**Estimate:** ~1 week for the specified stage; the phase is open-ended by
+**Estimate:** ~1 week for the first two stages; **~7 weeks** with the three
+added on 2026-08-28 ([S1e.5.5](s1e.5.5_nl_required.md) 4 d,
+[S1e.5.6](s1e.5.6_rule_priority.md) 6 d,
+[S1e.5.20](s1e.5.20_docs_refactor.md) 23 d). The phase stays open-ended by
 design (see [§ Scope](#scope)).
 **Depends on:** nothing to start. [S1e.5.2](#stages) depends on
 [Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
-being ratified, which it is.
+being ratified, which it is; S1e.5.6 depends **hard** on
+[S1e.1.3](../p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md) and
+S1e.5.20 **hard** on P1e.2 S1e.2.2 and P1e.3 S1e.3.7 / S1e.3.8.
 **Blocks:** nothing.
 **Source:** the user's instruction of 2026-08-28 — *"we need a comprehensive
 config options reference document in `docs/kernel/` — make it a first stage in
-the new phase p1e.5 for ein documentation only."*
+the new phase p1e.5 for ein documentation only."* Three further notes of the
+same day added S1e.5.5, S1e.5.6 and S1e.5.20, and the directory was renamed
+`p1e.5_documentation_and_other` because **S1e.5.6 is engine work**: it removes
+a language keyword and replaces it with a static analysis. The phase name is
+now literal.
 
 ---
 
@@ -65,9 +74,19 @@ Three facts, checked at `7731848`:
 | [S1e.5.1](s1e.5.1_config_reference.md) | The configuration reference | 3 d | one page in `docs/kernel/` covering the 17 flags, the live `EIN_*` set and the CLI options that shadow them, with a **does it change the answer** column — and a test that fails when the flag list drifts from it |
 | S1e.5.2 | What a solution is, and what a model is | **done 2026-08-28, ahead of the phase** | [`docs/kernel/inference/solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) — hypothesis / L1 / commitment / entering / integrated / solution / model / owes / exhausted, plus §6 on where the engine's `complete()` differs from the definition; ten new [glossary](../../../docs/kernel/glossary.md) entries under *Search and answers*; indexed from `inference/README.md` |
 | *S1e.5.3* | *The read-out reference* | *proposed* | one page for every number `ein solve` prints — `k`, `solution_nodes`, `exhausted`, `owes`, `layers_explored` — and which of them is a count of *models* and which of *what the search did*. [SE-M1](../README.md#the-findings) and [AR-M2](../README.md#the-findings) are findings about exactly this confusion |
+| [S1e.5.5](s1e.5.5_nl_required.md) | Every statement convertible to NL | 4 d | the register census — `zebra2`'s unique model is **444 facts and 25 of them (5 %) have a template**; fact-level rendering from **provenance** rather than from the relation; one page on the four registers; two mechanical checks in `cargo test` |
+| [S1e.5.6](s1e.5.6_rule_priority.md) | Remove `:priority`; derive the order from the rules | 6 d | the control experiment banked (**137 of 139 corpus entries identical** with every `:priority` stripped from the stdlib and the corpus); the rule dependency graph and its strata; the static non-stratifiability diagnostic `01_grammar.md` has called future work since S1.7.4; 353 occurrences gone or a written refusal |
+| [S1e.5.20](s1e.5.20_docs_refactor.md) | `docs/ein/`: the tree a released system would have | 23 d | `docs/history/` dissolved rather than deleted; `docs/ein/{user,reasoning,ein.rs}` as three perspectives; **≈1 989 history-referencing lines** across ~330 files resolved; and the two checks — a link checker and a release-voice check — that make it finishable and keep it finished |
 
 *Proposed* means the stage is named and not specified. Say which you want and
 it gets a file.
+
+**S1e.5.5, S1e.5.6 and S1e.5.20 came from the user's notes of 2026-08-28** and
+were written up on the 28th. Two of them are not *"documentation ein does not
+have"*: S1e.5.6 is engine work, and S1e.5.20 rewrites documentation ein
+already has. S1e.5.20 alone is **a fifth of M1e's whole estimate for work that
+closes no finding**, and its § How to cut it carries the seven-stage split it
+should probably become; taking the split is the user's call.
 
 **S1e.5.2 was taken first and out of order**, on 2026-08-28, because
 [Q-M1e.1](../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)
