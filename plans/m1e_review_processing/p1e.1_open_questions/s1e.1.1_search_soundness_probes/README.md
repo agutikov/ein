@@ -288,7 +288,14 @@ positive initial KB.
      `0`) and `corpus_shapes.md5` holds (the KB shape is not what changes), so
      the fix is cheaper to land than this stage assumed. What moves is a
      handful of assertions about the recorded model set.
-5. **File the fix, do not take it — and file the right one.** Q-M1e.6's
+5. **File the fix, do not take it — and file the right one.** The
+   `Known gaps` rewrite is **done** (2026-08-28): the repo README's bullet read
+   *"one of the two configurations is wrong today"* and now reads *both
+   under-report*, with `branching/15`+`16` as the test that says so and
+   Q-M1e.8's fix named. What is still open here is the `-L` corpus lever
+   re-labelling.
+
+   The original text: Q-M1e.6's
    operational form makes a solution a **maximal alive commitment**, and the
    lattice already computes maximality at layer `n+1` with no extra fork. So
    the fix is *not* "make the lookahead unconditional" (which is still an

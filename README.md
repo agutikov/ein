@@ -279,10 +279,23 @@ were measured, not assumed:
   S1d.2.6 the word.
 - **Ten corpus entries report *Contradiction* when they mean *incomplete*** —
   `exhausted = false` at the depth cap ([Q-M1d.6](docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)).
-- **A performance lever decides a verdict.** With `enable_pre_branch_lookahead`
-  off, `branching/06` and `lattice/02` change from *Solution* / *Ambiguity* to
-  *Contradiction*; one of the two configurations is wrong today
+- **A performance lever decides a verdict, and *both* settings under-report.**
+  With `enable_pre_branch_lookahead` off, `branching/06` and `lattice/02`
+  change from *Solution* / *Ambiguity* to *Contradiction*
   ([F4 Q40](plans/followups/f4_cross_cutting.md#may-a-performance-lever-decide-what-a-complete-model-is-q40)).
+  This was recorded as *one of the two configurations is wrong*; since M1e
+  2026-08-28 the sharper statement has a test.
+  [`branching/15`+`16`](examples/branching/15_lookahead_two_step_on.ein) are
+  three hypotheses, both halves exhausting, and a solution set derivable in a
+  paragraph: the hand-derived answer is **k = 2**, the lookahead-on half says
+  `Solution k=1` and the off half `Contradiction k=0`. **Neither side is the
+  definition** — `complete()` is a sound but incomplete approximation of
+  maximality with the lookahead on and a strictly weaker one with it off, so
+  the lever chooses between two wrong numbers. The fix is to record a
+  surviving commitment whose every superset died
+  ([Q-M1e.8](plans/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)),
+  and the pair's `:expect`s state today's answers so that taking it moves a
+  golden.
 - **The binding key drops non-string activator arguments**, so a puzzle with
   integer rule parameters can lose a firing silently
   ([Q-M1a.8](docs/history/m1a_rust/open_questions.md#q-m1a8--_binding_key-drops-non-string-activator-args)).

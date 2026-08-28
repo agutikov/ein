@@ -118,6 +118,14 @@
 0    examples/branching/14_lookahead_unjudgeable.ein :: solve -K
 0    examples/branching/14_lookahead_unjudgeable.ein :: solve -L
 0    examples/branching/14_lookahead_unjudgeable.ein :: solve -e
+0    examples/branching/15_lookahead_two_step_on.ein :: render rules
+0    examples/branching/15_lookahead_two_step_on.ein :: saturate
+1    examples/branching/15_lookahead_two_step_on.ein :: solve
+0    examples/branching/15_lookahead_two_step_on.ein :: solve -e
+0    examples/branching/16_lookahead_two_step_off.ein :: render rules
+0    examples/branching/16_lookahead_two_step_off.ein :: saturate
+0    examples/branching/16_lookahead_two_step_off.ein :: solve
+0    examples/branching/16_lookahead_two_step_off.ein :: solve -e
 1    examples/broken/bare_top_level_atom.ein :: render rules
 1    examples/broken/bare_top_level_atom.ein :: saturate
 1    examples/broken/bare_top_level_atom.ein :: solve

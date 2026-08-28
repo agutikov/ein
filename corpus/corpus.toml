@@ -113,6 +113,18 @@ levers = ["-L", "-K"]
 # so `solve` alone reads it — but the `-L` row is what says the verdict is the
 # *lookahead's* doing and not the puzzle's.
 [[entry]]
+path   = "examples/branching/15_lookahead_two_step_on.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render rules"]
+note   = "M1e Q5's pair, ENABLED half — the lookahead lever isolated where `06`/`07` cannot isolate it: three hypotheses, both halves exhausting, and a solution set derivable in a paragraph. Answers `Solution k=1`; the hand-derived answer is **k = 2**. Its `:expect` states today's answer and is meant to break when maximality is recorded (Q-M1e.8)."
+
+[[entry]]
+path   = "examples/branching/16_lookahead_two_step_off.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render rules"]
+note   = "The DISABLED half — one `(config …)` line and one `:expect` apart from `15`. Answers `Contradiction k=0` against `15`'s `Solution k=1`, both exhausted, and **both are wrong**: `{(p A)}` is maximal and neither half records it. That is the pair's point — the lever chooses between two under-reports, so neither side is the definition."
+
+[[entry]]
 path   = "examples/branching/14_lookahead_unjudgeable.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]

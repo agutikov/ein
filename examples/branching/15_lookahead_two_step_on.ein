@@ -1,0 +1,100 @@
+;;; M1e Q5 — the lookahead lever, isolated: ENABLED half.
+;;;
+;;; The ENABLED half of an on/off pair. 15_lookahead_two_step_on.ein and
+;;; 16_lookahead_two_step_off.ein are byte-identical except for the single
+;;; `(config …)` line — diff the two files to see it.
+;;;
+;;; `06`/`07` are the same lever on the zebra puzzle, and cannot settle what
+;;; it means: 42 varying slots, models that bind a *type* as an object, and
+;;; neither side exhausting at the depth cap, so their k=22 against k=0 is two
+;;; lower bounds rather than two answers. This pair is the same question with
+;;; three hypotheses, both sides exhausting, and a solution set derivable in a
+;;; paragraph.
+;;;
+;;; ── The program ────────────────────────────────────────────────────────────
+;;;
+;;; Three candidates, `(p A)`, `(p B)`, `(p C)`, and two refutations:
+;;;
+;;;   {(p A), (p B)}  dies in ONE firing   — `pair-fast`
+;;;   {(p A), (p C)}  dies in TWO           — `pair-slow-1` then `pair-slow-2`
+;;;
+;;; and nothing refutes `{(p B), (p C)}`.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────────
+;;;
+;;; A solution is a maximal alive commitment — one with no live child
+;;; (`docs/kernel/inference/solution_semantics.md` § 2). Two sets qualify:
+;;;
+;;;   {(p A)}          — both its children, {A,B} and {A,C}, are dead.
+;;;   {(p B), (p C)}   — its only child, {A,B,C}, is dead.
+;;;
+;;; **k = 2.** Neither configuration reports it.
+;;;
+;;; ── What the two halves report, and why ───────────────────────────────────
+;;;
+;;; This file (lookahead ON) reports `Solution`, k=1, the model {(p B),(p C)}.
+;;; `{(p B),(p C)}` is recognised because the one remaining candidate `(p A)`
+;;; dies against it in one firing, which the pre-branch lookahead can see. But
+;;; `{(p A)}` is **not** recognised: its remaining candidate `(p C)` needs two
+;;; firings, the lookahead simulates one, so the generator still proposes it
+;;; and `complete` is false.
+;;;
+;;; The OFF half reports `Contradiction`, k=0: with no lookahead, `complete` is
+;;; true only when every remaining candidate is already asserted or already
+;;; negated in the KB, and a size-2 death writes no negative (the singleton
+;;; writeback needs |c| = 1), so nothing is ever recognised at all.
+;;;
+;;; **Both halves under-report**, which is the finding this pair exists to
+;;; make visible: `complete` is a sound but incomplete approximation of
+;;; maximality with the lookahead on, and a strictly weaker one with it off.
+;;; Neither is the definition, so neither side of the lever is "the right one"
+;;; — the answer is k=2 and the lever chooses between two wrong numbers.
+;;;
+;;; ── The `:expect` states TODAY's answer, and is meant to break ─────────────
+;;;
+;;; Recording the *right* answer would leave a red fixture in the corpus. This
+;;; states what the engine says now, so that the stage which fixes maximality
+;;; (Q-M1e.8 — record a surviving commitment whose every superset died) has to
+;;; move the golden and declare itself. It is the route
+;;; `tests/stdlib/closure/02|03` took, cashed at M1d S1d.2.6.
+
+(config :enable-pre-branch-lookahead true)
+
+(relation is-a T T :why "{?1} is a {?2}")
+(relation cand T   :why "{?1} may be given p")
+(relation p    T   :why "{?1} has p")
+(relation clash    :why "an (A, C) pairing was proposed")
+
+(is-a A T) (is-a B T) (is-a C T)
+(cand A)   (cand B)   (cand C)
+
+;; The generator, written out so the blind rung never runs: the candidates are
+;; exactly these three and no model can bind a type as an object.
+(hrule guess ()
+  :match  (cand ?x)
+  :assert (p ?x)
+  :why    "guess (p {?x})")
+
+;; A and B are exclusive — ONE firing, which the pre-branch lookahead sees.
+(rule pair-fast ()
+  :match  (and (p A) (p B))
+  :assert (false)
+  :why    "A and B cannot both have p"
+  :priority 200)
+
+;; A and C are exclusive too — but in TWO firings, which it cannot.
+(rule pair-slow-1 ()
+  :match  (and (p A) (p C))
+  :assert (clash)
+  :why    "A and C together are a clash"
+  :priority 200)
+
+(rule pair-slow-2 ()
+  :match  (clash)
+  :assert (false)
+  :why    "a clash is a contradiction"
+  :priority 210)
+
+(query
+  :goal   (p ?x)
+  :expect (model (p B) (p C)))
