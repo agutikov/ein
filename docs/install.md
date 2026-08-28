@@ -133,9 +133,22 @@ EIN_STDLIB=/path/to/stdlib ein solve puzzle.ein
 ```
 
 `$EIN_STDLIB` wins over both other steps, silently — which is why
-`ein --version` names it rather than printing a bare path. The directory must
-contain `MANIFEST.sha256`; a directory without it is not the stdlib, and the
-walk keeps going.
+`ein --version` names it rather than printing a bare path.
+
+**The marker rule applies to the walk, not to the override.** A `stdlib/`
+directory found by walking up from the executable is the stdlib only if it
+contains `MANIFEST.sha256`, and the walk keeps going past one that does not.
+`$EIN_STDLIB` is taken as given, with no check at all: point it at an empty
+directory and `ein --version` reads `stdlib     unreadable  $EIN_STDLIB
+<path>` while the first `(import std.…)` fails at load with *module not
+found*. The asymmetry is
+[EH-M2](../plans/m1e_review_processing/README.md#the-findings) and is not
+fixed here; this page states what the binary does.
+
+`$EIN_STDLIB` is one of **eight** environment variables the shipped binary
+reads, and the only one a normal install needs. The whole set, with the three
+classes of name that are *not* that —
+[`docs/kernel/configuration.md` § The environment](kernel/configuration.md#4-the-environment).
 
 ## There is no Python package
 

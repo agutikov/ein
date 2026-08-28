@@ -71,7 +71,7 @@ Three facts, checked at `7731848`:
 
 | ID | title | est. | ends with |
 |---|---|---:|---|
-| [S1e.5.1](s1e.5.1_config_reference.md) | The configuration reference | 3 d | one page in `docs/kernel/` covering the 17 flags, the live `EIN_*` set and the CLI options that shadow them, with a **does it change the answer** column — and a test that fails when the flag list drifts from it |
+| [S1e.5.1](s1e.5.1_config_reference.md) | The configuration reference | **done 2026-08-28** | [`docs/kernel/configuration.md`](../../../docs/kernel/configuration.md) — the 17 flags with default · what it changes · **answer?** · stability, the **52** CLI options (the golden's count, not the plan's 50) and the **six** that shadow a flag (not eight), the `EIN_*` census in four classes of which the last holds **nine** names that are not environment variables. Pinned by `ein-cli/tests/config_reference.rs`, six tests: the defaults block **is** `--dump-config`'s output, `EIN_BLESS=1` re-banks it. Found and filed: [Q-M1e.10](../open_questions.md#q-m1e10--two-config--flags-are-inert), `print-alive` and `candidate-order-seed` read by **no code path** |
 | S1e.5.2 | What a solution is, and what a model is | **done 2026-08-28, ahead of the phase** | [`docs/kernel/inference/solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) — hypothesis / L1 / commitment / entering / integrated / solution / model / owes / exhausted, plus §6 on where the engine's `complete()` differs from the definition; ten new [glossary](../../../docs/kernel/glossary.md) entries under *Search and answers*; indexed from `inference/README.md` |
 | *S1e.5.3* | *The read-out reference* | *proposed* | one page for every number `ein solve` prints — `k`, `solution_nodes`, `exhausted`, `owes`, `layers_explored` — and which of them is a count of *models* and which of *what the search did*. [SE-M1](../README.md#the-findings) and [AR-M2](../README.md#the-findings) are findings about exactly this confusion |
 | [S1e.5.5](s1e.5.5_nl_required.md) | Every statement convertible to NL | 4 d | the register census — `zebra2`'s unique model is **444 facts and 25 of them (5 %) have a template**; fact-level rendering from **provenance** rather than from the relation; one page on the four registers; two mechanical checks in `cargo test` |
@@ -87,6 +87,16 @@ have"*: S1e.5.6 is engine work, and S1e.5.20 rewrites documentation ein
 already has. S1e.5.20 alone is **a fifth of M1e's whole estimate for work that
 closes no finding**, and its § How to cut it carries the seven-stage split it
 should probably become; taking the split is the user's call.
+
+**S1e.5.1 and S1e.5.2 have shipped**, both on 2026-08-28. S1e.5.1 landed the
+phase's first page and its acceptance held in every line; what it also did was
+correct five of this file's own reconnaissance numbers — see its
+[§ What shipped](s1e.5.1_config_reference.md#what-shipped--2026-08-28-at-4a47aa3).
+The two most consequential are that **`enable-symmetric-mirror` changes the
+answer** (`features.md`'s `1.0×` is a claim about `zebra2`, where the mirror
+has a rule fallback; the one fixture that reaches the mirror derives 0 facts
+instead of 3 without it) and that two of the four flags this file called
+*probes* are not probes but **inert**.
 
 **S1e.5.2 was taken first and out of order**, on 2026-08-28, because
 [Q-M1e.1](../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)

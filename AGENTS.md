@@ -56,7 +56,17 @@ constrained-reasoning research.
   diagnostics, orderings and error strings whose only statement used to be a
   Python source file, now normative; and `inference/implementation.md` +
   `ir/02-data-model/03_implementation.md`, the module maps that were
-  `python_impl.md`. **This tree is now the only statement of intent that is
+  `python_impl.md`. **Since M1e S1e.5.1 there is also a
+  [configuration reference](docs/kernel/configuration.md)** — the 17
+  `(config …)` flags, the 52 CLI options, the eight `EIN_*` names the binary
+  actually reads, the precedence between the three, and on every flag row a
+  *does it change the answer* and a *stability* column. Its defaults block is
+  `ein solve --dump-config`'s own output (`EIN_BLESS=1` re-banks it), and two
+  of the seventeen flags are documented there as **inert**: `print-alive` and
+  `candidate-order-seed` are parsed, validated, dumped, `--json-summary`-echoed
+  and `.einb`-round-tripped, and read by no code path
+  ([Q-M1e.10](plans/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)).
+  **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else.
 - **`docs/api/`** — **how to drive Ein as a library.** Since M1a S1a.9.4 its
@@ -444,6 +454,16 @@ ein solve … -e --models key                                  # the M1d S1d.3.3
 EIN_LEFTOVER=1    ein solve … --json-summary out.json        # the M1d S1d.3.1 probe
 ein test examples tests stdlib --json-report r.json          # the M1d S1d.4.1 read-out
 ```
+
+**The seven `EIN_*` names in that block are the ones an agent needs, not the
+set.** The shipped binary reads **eight** (three of them only in a non-default
+build), the test harness reads ten more, `utils/` and the shell two — and nine
+greppable `EIN_*` names are not environment variables at all, `EIN_RS` and
+`EIN_RENDER_LEVI` among them. The whole census, classified, with the 17
+`(config …)` flags and the 52 CLI options beside it and a *does it change the
+answer* column on every flag row:
+[`docs/kernel/configuration.md`](docs/kernel/configuration.md) (M1e S1e.5.1),
+pinned by `ein-cli/tests/config_reference.rs`.
 
 **`EIN_OBLIGATION_CHOICE`** is the obligations rung's measurement lever
 (default `rule-order`): `fail-first` walks the owed instances smallest-set

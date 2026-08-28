@@ -85,7 +85,7 @@ explicit audience banner.
 | **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`); `ir/02-data-model/{01_entities,02_store}` (the abstract model) |
 | **dev**  | `ir/02-data-model/03_implementation.md`; `inference/implementation.md`; `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md); [`defined_behaviour.md`](defined_behaviour.md) |
 | **embedder** | Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). From **Rust**: link the crates — [`../api/rust.md`](../api/rust.md), whose worked example is a test the gate runs. From anywhere else: the `ein` binary plus `--json-summary` / [`--events`](inference/events.md). The five *Python* pages under [`../api/`](../api/) are **history** — the contract of the engine that was, kept whole because [Q-M1a.23](../history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)'s trip-wires would restore it; there is no module to import. |
-| **both** | this README, [`glossary.md`](glossary.md), the per-subtree READMEs |
+| **both** | this README, [`glossary.md`](glossary.md), the per-subtree READMEs, and [`configuration.md`](configuration.md) — the `(config …)` flags a puzzle may set, the CLI options and the `EIN_*` environment, with *does it change the answer* on every flag row |
 
 - **Newcomer path** (never seen Ein): the [guide](../guide/) end-to-end
   (Ch.1 → Ch.4), then the user path below for depth.
@@ -111,6 +111,12 @@ explicit audience banner.
 - **Architecture**: [`architecture.md`](architecture.md) — the
   structural "where does X live?" map: data-flow, crate
   dependencies, milestone boundaries, and a change cookbook.
+- **Configuration**: [`configuration.md`](configuration.md) — every knob, on
+  all three surfaces: the 17 `(config …)` flags, the 52 CLI options, the
+  `EIN_*` environment, and the precedence between them. Each flag row carries
+  its default, what it changes, **whether it changes the answer**, and how far
+  it may be depended on. The defaults block is `ein solve --dump-config`'s own
+  output; the page is diffed against `FIELDS` by `cargo test`.
 - Plans roadmap: [`plans/README.md`](../../plans/README.md) — what has **not**
   been built yet. Two milestones have shipped and left it: M1 (2026-06-17,
   plan folder removed at P1.22, in git history) and M1a (2026-08-23, whose

@@ -25,6 +25,7 @@ records which question became which id.
 | [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) | The read-out prints the solution **KB** and calls it a model | open — raised by Q-M1e.6; owner unassigned |
 | [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness |
 | [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. Owner undecided ([D4](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)) |
+| [Q-M1e.10](#q-m1e10--two-config--flags-are-inert) | Two `(config …)` flags are **inert** — `print-alive`, `candidate-order-seed` | open — raised by [S1e.5.1](p1e.5_documentation_and_other/s1e.5.1_config_reference.md); owner unassigned |
 
 ---
 
@@ -274,7 +275,7 @@ semantics stands on.
 ### Where it goes
 
 Into `docs/kernel/` as a normative page —
-[P1e.5](p1e.5_documentation/README.md)'s proposed S1e.5.2 — not into this
+[P1e.5](p1e.5_documentation_and_other/README.md)'s proposed S1e.5.2 — not into this
 file. A ruling that lives only in a plan is the shape
 [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) forbids.
 
@@ -407,3 +408,88 @@ relations and every hypothesis-eligible relation — with the real fix filed,
 starting from `Prov::absent`, which has recorded the negative premises since
 S1.21.8 and which *"no walk yet interprets"*.
 
+## Q-M1e.10 — Two `(config …)` flags are inert
+
+**Raised 2026-08-28** by
+[S1e.5.1](p1e.5_documentation_and_other/s1e.5.1_config_reference.md), which
+had to write a *what it changes* column for all seventeen flags and found two
+with nothing to put in it. The stage's own rule — *"anything found gets a
+`Q-M1e.<n>`, not a quiet fix in a doc stage"* — is why this is here rather
+than a patch.
+
+`print-alive` and `candidate-order-seed` are, like the other fifteen:
+
+- in [`FIELDS`](../../ein.rs/crates/ein-core/src/config.rs), so the loader
+  accepts them and **rejects a wrong-typed value with a positioned
+  diagnostic** (`examples/broken/load/config_bad_value.ein` is
+  `:print-alive 7`);
+- printed by `ein solve --dump-config` in declaration order;
+- echoed into `--json-summary`'s `config` block
+  ([`summary.rs`](../../ein.rs/crates/ein-cli/src/summary.rs));
+- part of `rendered_fields`, so they are **rendered into the KB-shape digest**
+  that every corpus shape golden is taken over;
+- read and written by the `.einb` container's meta accessors
+  ([`meta.rs`](../../ein.rs/crates/ein-einb/src/meta.rs)).
+
+And read by **no code path**. `grep -rn 'print_alive\|candidate_order_seed'
+ein.rs --include='*.rs'` returns the loader, the four renderers, the container
+and their tests, and nothing in `ein-infer` or `ein-render`. Probed from the
+outside as well, because a grep is an argument about absence: appending
+`(config :print-alive true)` or `(config :candidate-order-seed 7)` to
+`examples/branching/04_two_levels.ein` and
+`examples/lattice/02_genuine_3set_death.ein` leaves `ein solve -e -p`'s stdout
+**byte-identical**. That probe is banked as
+`ein-cli/tests/config_reference.rs::the_two_inert_flags_are_still_inert`, so
+the claim fails loudly if either flag is ever wired up.
+
+### Why it is a question and not a defect
+
+Because the two are **port gaps whose surface crossed and whose behaviour did
+not**, and the port's own oracle could not have caught it: T0–T3 compared two
+implementations' *observable output*, and a knob that does nothing produces
+identical output in both engines when it does nothing in both — but ein.py's
+did something. [`docs/api/inference.md`](../../docs/api/inference.md) is the
+frozen contract of the engine that was:
+
+| flag | what ein.py did |
+|---|---|
+| `print_alive` | *"Diagnostic — log inherited alive-set size + per-filter prune counts per `_explore`."* |
+| `candidate_order_seed` | *"`< 0` → deterministic content-sort branch order; `≥ 0` → a deterministic per-branch permutation (shuffle-invariance probing)."* |
+
+Neither is a hole in today's engine. `print_alive`'s read-out exists under
+other names — `--verbose`, `--layer-progress`, and `--events`'s `layer`
+counters — and `candidate_order_seed`'s job is done one level up by
+`lattice_order_seed`, which permutes a *layer* rather than a branch and is
+what `id_order_invariance` and the `--shuffle` corpus cells actually drive.
+Which is very likely why nobody missed them.
+
+**`config.rs` still describes the behaviour of one of them.** Its
+`candidate_order_seed` doc comment reads *"Negative means the S1.5a.1a content
+sort; non-negative applies a per-branch deterministic permutation of it"* —
+[MA-M2](README.md#the-findings)'s class (*stale rustdoc contradicting the code
+it documents*) at a third site. S1e.5.1 left the sentence and added the
+inertness beside it rather than deleting it, because deleting it would erase
+the only statement of what the flag was **for**, and that is the input to
+option (a) below.
+
+### The options
+
+| | what | what it costs |
+|---|---|---|
+| **(a)** | wire them up | `candidate_order_seed` is a real second probe axis; `print_alive` is a duplicate of three existing read-outs. Only the first is worth anything |
+| **(b)** | delete them from `FIELDS` | **a surface change.** A program that sets one becomes a load error; the KB-shape digest changes for every entry, so every shape golden in the corpus re-blesses; `.einb`'s meta loses two accessors. Two flags' worth of tidiness for a corpus-wide re-bless |
+| **(c)** | keep, and say so | what S1e.5.1 did: the row reads **inert** in both judgement columns, and a test holds it |
+| **(d)** | keep, and *refuse* them at load | a deprecation diagnostic naming the replacement. Costs a `broken/load/` fixture apiece and is still a surface change, but a *diagnosed* one |
+
+**Recommendation: (c) stands, and (b) is the one to take if any milestone is
+already re-blessing the shape goldens** — the cost is entirely in that
+re-bless, so it is free inside a change that pays it anyway. (a) only if
+something wants a per-branch order probe that `lattice-order-seed` cannot
+give; nothing does today.
+
+Owner unassigned. The natural readers are
+[S1e.3.9](p1e.3_medium/s1e.3.9_maintainability.md) (MA-M2's site is its) and
+[P1e.1b](p1e.1b_hypothesis_structure/README.md)
+[S1e.1b.5](p1e.1b_hypothesis_structure/s1e.1b.5_ordering.md), which is already
+holding the other knob that does less than its name says
+(`hypgen-scoring: most-constrained`, a constant `0.0`).

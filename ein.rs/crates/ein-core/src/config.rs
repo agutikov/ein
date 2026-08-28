@@ -12,8 +12,20 @@
 //! `fork()` carries it over: ein.py keeps the same edge, as a checker-only
 //! `TYPE_CHECKING` import that exists to avoid a runtime cycle.
 //!
-//! Resolution precedence, unchanged: an explicit `solve(config=…)` argument,
-//! then `kb.config` from the IR, then these defaults.
+//! **Resolution precedence**, and it is two orders rather than one. The
+//! engine's is `SolveOptions::config` (an explicit argument), then
+//! `kb.config` from the IR, then these defaults; the binary's is the six CLI
+//! options that shadow a flag, then the program's **last** `(config …)` head
+//! taken whole, then these defaults — `ein-cli`'s `resolved_config` computes
+//! the second and hands the result to the first. Until M1e S1e.5.1 this
+//! sentence named `solve(config=…)`, a Python API with no referent since
+//! [P1a.10](../../../../docs/history/m1a_rust/README.md#p1a10--one-implementation).
+//!
+//! Every flag, with its default, what it changes, whether it changes the
+//! answer and what depending on it commits you to:
+//! [`docs/kernel/configuration.md`](../../../../docs/kernel/configuration.md),
+//! whose defaults block is `--dump-config`'s own output and whose flag list is
+//! diffed against [`FIELDS`] by `ein-cli/tests/config_reference.rs`.
 
 /// What kind of value a flag takes — the type dispatch ein.py reads off
 /// `field.type`, which is a *string* there because the module uses
@@ -58,12 +70,30 @@ pub struct SolverConfig {
     pub hypgen_scoring: String,
     pub hypgen_rel_weight: f64,
     pub hypgen_obj_weight: f64,
+    /// **Inert** — parsed, type-checked, dumped, echoed into
+    /// `--json-summary`, rendered into the KB-shape digest and round-tripped
+    /// through `.einb`, and read by no code path. ein.py logged the inherited
+    /// alive-set size and the per-filter prune counts per `_explore`; here
+    /// `--verbose`, `--layer-progress` and `--events`' `layer` counters are
+    /// what say that. Held by
+    /// `ein-cli/tests/config_reference.rs::the_two_inert_flags_are_still_inert`
+    /// and filed as
+    /// [Q-M1e.10](../../../../plans/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert).
     pub print_alive: bool,
     /// Warn when an `(absent …)` guard watches a rule-derived relation —
     /// since S1.21.8 a *stratification* signal, not a soundness one.
     pub warn_derived_naf: bool,
     /// Negative means the S1.5a.1a content sort; non-negative applies a
-    /// per-branch deterministic permutation of it.
+    /// per-branch deterministic permutation of it — **in ein.py**. Here the
+    /// field is [`print_alive`]'s twin and equally **inert**: nothing outside
+    /// the loader, the four renderers and the container reads it, and the
+    /// per-layer shuffle that *is* wired is [`SolverConfig::lattice_order_seed`].
+    /// The sentence above is kept because it is the only statement of what the
+    /// flag was for, which is the input to
+    /// [Q-M1e.10](../../../../plans/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)'s
+    /// option (a).
+    ///
+    /// [`print_alive`]: SolverConfig::print_alive
     pub candidate_order_seed: i64,
     pub lattice_sanity_check: bool,
     /// `"lex"` (the default, and what the baselines were recorded under) or
