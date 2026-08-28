@@ -137,7 +137,7 @@ the options with their consequences and a recommendation.
 | [D6](d6_the_new_q5_fixture.md) | Where the **new Q5 fixture** lives, what it pins, and whether its `:expect` states today's answer or the right one | T1e.1.1.3 step 3 | `examples/branching/`, state today's answer, let D3's fix move it |
 | [D7](d7_the_diff_instrument.md) | The **two-config diff** exists three times already. Build a fourth, borrow, or throw one away? | T1e.1.1.3 — and now S1e.1b.6 T3 and S1e.1b.7, two more customers | throwaway here; name it in S1e.3.4's inputs |
 | [D8](d8_branching06_untyped_models.md) | `branching/06` models `(co-located Blue Color)` and prints `?h = Color`. **Evidence, or its own id?** | nothing | its own `Q-M1e.<n>` |
-| [D9](d9_kernel_page_overclaims.md) | `solution_semantics.md` §6 claims *the engine never records a false model*; it proves the maximality conjunct only, and D4 already dents that | should land **before** T1e.1.1.2 | qualify the row now |
+| [D9](d9_kernel_page_overclaims.md) | **done 2026-08-28** — the row was not qualified but **withdrawn**: `complete ⇒ solution` reads **no**, § 6 gained *What is recorded is `S ∪ K`*, and the premise section says C3 wins | nothing here | — |
 
 **D4 is the one to read first.** It was filed as a question about two pages
 disagreeing and came back as a reproduced defect in three shipped mechanisms,
@@ -293,8 +293,11 @@ survives it, and the matrix already exists
 3. **Write the conjunct each site owes beside the call**, not only here —
    [Q-M1e.1](../../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
    third rule.
-4. **Rule on [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)** —
-   assigned here on 2026-08-28 **because it blocks**. Three candidate fixes for
+4. **Rule on [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)**
+   — assigned here on 2026-08-28 **because it blocks**, and **ruled the same
+   day: A**, which selects fix (ii) for Q-M1e.8 and CO-M1. What remains of this
+   step is the *writing*: the sentence goes where the object is built, and the
+   four fact-set comparisons each have to say which object they compare. Three candidate fixes for
    Q-M1e.8, one covers all three witnesses, and two give *different `k`* on the
    same program; which is right turns on whether the criteria are evaluated on
    the recorded **state** (`K` included) or on the **model** projected out of

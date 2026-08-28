@@ -198,7 +198,7 @@ before reading it as a certification of the model set.
 Everything above is the definition. The engine tests it with a **different
 predicate**, and the difference is observable today.
 
-### `complete()` is a sound, incomplete approximation of maximality
+### `complete()` approximates maximality — one conjunct of three
 
 [`hypgen::complete`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) asks the
 generator *at the node, now*: a state is complete iff the generator proposes
@@ -208,8 +208,9 @@ against this state (the pre-branch lookahead).
 
 | | holds? | consequence |
 |---|---|---|
-| `complete(S) ⇒ solution(S)` | **yes** | every filter that can make `complete` true is a genuine refutation, so **the engine never records a false model** |
+| `complete(S) ⇒ S is maximal`, as the generator sees `S` | **yes** | every filter that can make `complete` true is a genuine refutation of the candidate it dropped, so a recorded state has no live child the generator knows of |
 | `solution(S) ⇒ complete(S)` | **no** | a remaining hypothesis that needs *two* firings to die is still proposed, so a real solution goes unrecorded |
+| `complete(S) ⇒ solution(S)` | **no** | maximality is **one conjunct of three**, and the state the engine records is not the state `complete` was asked about — see [the next section](#what-is-recorded-is-s--k-and-the-criteria-were-checked-against-s). Until 2026-08-28 this row read *yes*, with the gloss *"so the engine never records a false model"*; that was the maximality argument doing duty for the whole conjunction, and it is withdrawn |
 
 The engine therefore **under-reports**, always. With
 `enable-pre-branch-lookahead` off it under-reports far more: `complete` is
@@ -220,6 +221,56 @@ negated in the KB.
 `S ∪ {h}` at every descendant, so dropping `h` from `alive₀` removes no
 solution. The gap is at the deeper nodes, and it is the *approximation*, not
 the filtering.
+
+### What is recorded is `S ∪ K`, and the criteria were checked against `S`
+
+Every consistency check in the engine happens **before** the last write into
+the KB it guards, and two writers run after it:
+
+- the **singleton writeback** — a commitment `{h}` that died stores `(not h)`
+  at root (`solve.rs` `write_negation`);
+- the **lookahead kill cache** —
+  [`hypgen::write_negated`](../../../ein.rs/crates/ein-infer/src/hypgen.rs)
+  stores `(not h)` for a candidate the one-step probe killed, into the KB the
+  generator was called on. `compute_alive` calls it on **root**; `complete()`
+  calls it on **the fork about to be recorded**.
+
+Neither write can create a contradiction by itself — `h` is neither asserted
+nor negated when it is proposed. But `(not P)` is an ordinary match form
+([`02_patterns.md`](../ir/03-ein-lang/02_patterns.md)), so a rule may read
+these facts, and nothing re-runs saturation after they land. Write `K` for what
+the search wrote: **the engine records `S ∪ K` and checked the criteria against
+`S`.**
+
+`record_node` has four callers, and none of them establishes the *saturated*
+conjunct:
+
+| caller | what it establishes | the last write before it |
+|---|---|---|
+| `solve.rs:1977` — an entered commitment, the path every corpus solve takes | consistency, by `try_commitment_set`, then `complete()` | `complete()` itself, at `:1895` |
+| `solve.rs:1030` — `tree_node` | the same | `complete()`, at `:1024` |
+| `solve.rs:1118` — phase 1, `alive = ∅` | consistency at `:1091` | `compute_alive`, at `:1098` |
+| `solve.rs:1550` — between layers, `alive = ∅` | consistency at phase 1 or in the cascade | the layer's writebacks, and `compute_alive` at `:1534` |
+
+Measured 2026-08-28 against `a3f4e7b`: **three of the four have a witness** — a
+program whose recorded model, fed back as a program, the same engine answers
+`Contradiction` on. The probes and the configuration matrix are
+[`s1e.1.1…/probes/`](../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/probes/);
+the fourth caller is the same two lines and is unwitnessed only because nothing
+has built the program yet.
+
+Two consequences a reader should carry away:
+
+1. **The engine is neither sound nor complete against § 2 as it stands.** It
+   under-reports by the row above, and it can record a state its own rules
+   refute by this one.
+2. **A recorded fact set is a function of a performance lever.** `-K` removes
+   the kill cache's writes, so two runs that agree on every answer can disagree
+   on every recorded fact set — which is
+   [Q-M1e.7](../../../plans/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model),
+   *the read-out prints the solution KB and calls it a model*. Whether `K`
+   belongs to the state decides which fix this section gets, and it is ruled
+   there, not here.
 
 ### `exhausted` certifies the lattice, not the model set
 
@@ -250,8 +301,21 @@ downward-closure filter and the no-good store already assume, and
 [design/08 § The objects](../../history/m1a_rust/design/08_parallelism.md)
 states it as a definition. [C3](absent_semantics.md) states what looks like
 its contrapositive as a live caveat — *removing a fact can flip an absent and
-fabricate a contradiction the full KB never had* — so the two pages are worth
-reading together before anything further leans on it.
+fabricate a contradiction the full KB never had*.
+
+**And C3 wins.** Probed on 2026-08-28, `dead` is **not** upward-closed under
+`absent`: a twenty-line program in which a rule refutes `(p A)` only while
+`(q A)` is missing has `{(p A)}` dead and `{(p A), (q A)}` alive, and five of
+six shipped configurations answer it wrongly — the writeback stores
+`(not (p A))` and layer 2 never sees the pair. Three shipped mechanisms read
+the premise: the kill cache, the singleton writeback, and the no-good store's
+width-1 clause. The probe, the matrix and the dispositions are
+[Q-M1e.9](../../../plans/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent).
+
+So the maximality arm's *"no live child"* is read from the next layer's results
+under a premise that holds for every program whose refutations do not pass
+through an `(absent …)` over a relation the search can still extend — and that
+qualification is stated nowhere else in the engine, which is why it is here.
 
 ---
 

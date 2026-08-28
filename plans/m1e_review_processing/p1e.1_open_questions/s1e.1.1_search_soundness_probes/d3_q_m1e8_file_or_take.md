@@ -153,13 +153,23 @@ as `{(q A)}` — which is what `-K` already prints, and which is *correct* under
 [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
 — *the read-out prints the solution **KB** and calls it a model*. So the
 check's last product is a dependency, stated: **the fix cannot be chosen before
-Q-M1e.7 is.** It was unowned when the check ran; it was assigned on 2026-08-28
-to **T1e.1.1.4 step 4** — this stage, because the two stages the register
-proposed (S1e.3.2, P1e.5's S1e.5.3) both run after the fix that waits on it.
-The register carries the three readings and recommends **A**: the recorded
-object is the *state*, `model` is a projection of it, and the criteria are
-evaluated on the state — which selects **fix (ii)**, and `k = 1` on the
-normal-path probe.
+Q-M1e.7 is.** It was unowned when the check ran, was assigned on 2026-08-28 to **T1e.1.1.4
+step 4**, and was **ruled the same day: A** — the recorded object is the
+*state*, `model` is a projection of it, and § 2 is evaluated on the state.
+
+**So the fix is chosen: (ii), re-saturate and re-check.** What settled it was
+entailment, not cost: a kill-cache negative means *`S ∪ {h}` derives `(false)`
+in one firing* and a writeback negative means *the fork for `{h}` died*, so
+both are **consequences of `S`**. A rule reading one is reading something true,
+and a state its own rules refute is inconsistent — (iii) would hide an entailed
+contradiction, and (i) never reaches the inter-layer site.
+
+That also disposes of the objection this table raised against (ii). `-K`
+reports `k = 2` on `complete_normal_path.ein` where (ii) reports `k = 1`, and
+that is **not** a lever changing the answer: `{(q A)}` entails both negatives
+through `kill-p` and thence `(false)` through `totality`, so `k = 1` is right
+and `-K` is the cache being *less complete*. Under (ii) all three probes answer
+what `-L` answers, which is what the hand derivations support.
 
 ## Options
 
@@ -170,9 +180,10 @@ normal-path probe.
 | **C — take it in P1e.2** | a new stage beside [S1e.2.1](../../p1e.2_high/s1e.2.1_correctness.md) | P1e.2 is already the phase that fixes *"the surface either honours its contract or refuses to ship"* — CO-H3(b) is the same seam, an evidence-free `Contradiction`. Natural home, and the phase is already budgeted for engine work |
 | **D — new milestone** | Q-M1e.8 gets an M-number | honest if the fix turns out to need the layer bookkeeping reshaped, which T1e.1.1.3 cannot know in advance |
 
-**Chosen: B for the check, and C stays the recommendation for the fix** — with
-the qualification the check produced, that *which* fix is right depends on
-[Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model).
+**Chosen: B for the check, and C stays the recommendation for the fix** —
+which fix, decided on 2026-08-28 with
+[Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model),
+is **(ii) re-saturate and re-check**.
 The original argument for C stands and is kept: the defect and CO-H3(b) are one
 seam — a `Contradiction`
 that asserts more than the search established — and P1e.2 is where that seam

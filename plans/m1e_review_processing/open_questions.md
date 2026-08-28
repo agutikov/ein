@@ -22,8 +22,8 @@ records which question became which id.
 | [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | open — [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md) |
 | [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md), and M1d's `T1d.10.6.4` is the co-owner. [S1e.1b.7](p1e.1b_hypothesis_structure/s1e.1b.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it |
 | [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model) | What is a **solution**, and what is a **model**? | **decided 2026-08-28** by the user; binding on [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) and on [P1e.1b](p1e.1b_hypothesis_structure/README.md) |
-| [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) | The read-out prints the solution **KB** and calls it a model | open — **blocking**, and owned since 2026-08-28: the *ruling* is [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) T1e.1.1.4's, because Q-M1e.8's fix waits on it and the two stages first proposed both run later. S1e.3.2 and P1e.5's S1e.5.3 apply it |
-| [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness. The **record-site conformance check** is [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) T4 ([D3](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d3_q_m1e8_file_or_take.md), option B); the fix files to P1e.2 |
+| [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) | The read-out prints the solution **KB** and calls it a model | **decided 2026-08-28 — A**: the recorded object is the *state*, `model` is a projection of it, and § 2 is evaluated on the state. Unblocks Q-M1e.8. S1e.3.2 applies it to the vocabulary, P1e.5's S1e.5.3 to the read-out |
+| [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness. The **record-site conformance check** is [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) T4 ([D3](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d3_q_m1e8_file_or_take.md), option B); the fix files to P1e.2 and, since [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) was ruled on 2026-08-28, **is chosen**: re-saturate and re-check before recording |
 | [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. Split the same day: the **engine** half is [D4](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)'s (B now, C filed), the **language** half — *may a refutation rest on an `absent` at all?* — is [S1e.1b.8](p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md)'s |
 | [Q-M1e.10](#q-m1e10--two-config--flags-are-inert) | Two `(config …)` flags are **inert** — `print-alive`, `candidate-order-seed` | open — raised by [S1e.5.1](p1e.5_documentation_and_other/s1e.5.1_config_reference.md); owner unassigned |
 | [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [S1e.1b.6](p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)** 2026-08-28 by the user; the guard half is decided and is [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3's |
@@ -269,10 +269,12 @@ lookahead only drops a candidate it can **prove** dies in one firing, so:
 
 | | holds? | consequence |
 |---|---|---|
-| `complete(S)` ⟹ `solution(S)` | **yes**, with the lookahead on or off | the engine never records a false model |
+| `complete(S)` ⟹ `S is maximal` | **yes**, with the lookahead on or off | the lookahead only drops a candidate it can **prove** dies in one firing |
 | `solution(S)` ⟹ `complete(S)` | **no** | a remaining candidate that needs two firings to die is still proposed, so a real solution goes unrecorded |
+| `complete(S)` ⟹ `solution(S)` | **no** | ⚠ **this row said *yes* — *"the engine never records a false model"* — until 2026-08-28.** Maximality is one conjunct of three, and what is recorded is not the state `complete` was asked about: the generator's own kill cache writes into it. Three witnesses at three record sites; the row was rewritten on the kernel page the same day ([D9](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d9_kernel_page_overclaims.md), [D3](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d3_q_m1e8_file_or_take.md)'s check) |
 
-So the engine **under-reports**, always, and `-L` under-reports far more —
+So the engine **under-reports**, always — and, separately, can record a state
+its own rules refute. `-L` under-reports far more —
 with the lookahead off, `complete` is true only when every remaining candidate
 is already asserted or already negated in the KB.
 
@@ -369,23 +371,66 @@ h)` and the singleton writeback's.
 | **B** | the **model** is the object: `K` is bookkeeping, never part of what is recorded or compared, and the criteria are evaluated on the projection | **strip `K`** — a read-out change, no search change | **2** |
 | **C** | status quo, made explicit: the state is the object and `K` is part of it | none; `-K` legitimately changes every recorded fact set | 2, with model 1 refutable |
 
-**Recommended: A**, and the reason is a measurement rather than a preference.
-B is not merely cheaper — it is **wrong on the inter-layer probe**, whose
-trigger is the *singleton writeback*, a negative
-[design/08](../../docs/history/m1a_rust/design/08_parallelism.md) holds to be
-entailed rather than bookkeeping. Evaluating the criteria on the projection
-there reports a model of **∅**, which is neither of the two answers the
-hand-derivation admits (`k = 0` if the writeback's negative is part of every
-state, `k = 1` with model `{(p A), (p B)}` if it is not). C keeps a recorded
-state its own rules refute and makes
-[`tree_traversal.rs`](../../ein.rs/crates/ein-infer/tests/tree_traversal.rs)'s
-fact-for-fact comparison lever-sensitive by design, which is the one comparison
-the repo leans on to catch a traversal that agrees on `k` and disagrees on a
-model.
+### Ruled 2026-08-28 — **A**
+
+*The recorded object is the solution **state**. `model` is a projection of it,
+computed at the read-out: the positive part minus the positive initial KB. § 2's
+conjuncts are evaluated on the state, `K` included — so a recorded state must be
+**saturated** and **consistent** with everything in it, whoever wrote it.*
+
+Taken on the recommendation below, at the user's direction, after D3's check
+made the fork visible. What settled it was not cost but **entailment**:
+
+> **`K` is not bookkeeping — it is a set of consequences.** A kill-cache
+> negative `(not h)` means *`S ∪ {h}` derives `(false)` in one firing*, and a
+> writeback negative means *the fork for `{h}` died*. Both are entailed by `S`.
+> A rule that reads one is therefore reading a true consequence of the state,
+> and a state whose own rules refute it **is** inconsistent. Hiding the
+> negatives (B) would hide an entailed contradiction; keeping them unread (C)
+> records the contradiction and calls it a model.
+
+That also settles what looked like A's worst consequence. `-K` reports `k = 2`
+on `complete_normal_path.ein` where A reports `k = 1`, and the earlier reading
+of that was *a lever changes the answer*. It does not: `{(q A)}` entails
+`(not (p A))` and `(not (p B))` through `kill-p`, and those entail `(false)`
+through `totality`, so **`k = 1` is right and `-K`'s `k = 2` is the cache being
+less complete** — the engine simply never noticing an entailment it had no
+reason to materialise. The three probes agree: under A every one of them
+answers what `-L` answers, which is what the hand derivations support.
+
+### What the ruling selects
+
+| | consequence |
+|---|---|
+| [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) / [CO-M1](README.md#the-findings) | **fix (ii)** — re-saturate and re-check before recording, or the equivalent *dirty since its last saturation* guard ([D1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d1_q4_which_route_reaches_the_site.md) option B). Fixes (i) and (iii) are off the table: neither reaches the inter-layer site, and (iii) would hide an entailed contradiction |
+| the read-out | a **projection** has to exist. `model` = positive part − positive initial KB, and `ein solve` / `--json-summary` print it under that name. P1e.5's S1e.5.3 |
+| the vocabulary | two objects, two names, in the four surfaces Q-M1e.7 lists — `SE-M1`'s defect at a second site. [S1e.3.2](p1e.3_medium/s1e.3.2_semantics.md) |
+| every fact-set comparison | [`tree_traversal.rs`](../../ein.rs/crates/ein-infer/tests/tree_traversal.rs), the corpus goldens, `model_set_census.py`'s variables — each has to say **which object** it compares. Comparing states is right for a search-equivalence test and wrong for a model-set one, and today they all compare states without saying so |
+| the corpus | the fix can only move an entry whose program **reads** a fact the search wrote. Expected zero; it is the fix stage's to measure, not to assume |
+
+### The three readings, as they were put
+
+The probes in
+[`s1e.1.1…/probes/`](p1e.1_open_questions/s1e.1.1_search_soundness_probes/probes/)
+make this concrete rather than terminological. Write `S` for the recorded KB
+and `K` for what the search wrote into it — the lookahead kill cache's `(not
+h)` and the singleton writeback's.
+
+| | ruling | the Q-M1e.8 fix it selects | `k` on `complete_normal_path.ein` |
+|---|---|---|---|
+| **A** ✅ | the recorded object is the **solution state**, and `model` is a *projection* of it (positive part minus the initial KB) computed at the read-out. § 2's conjuncts are evaluated on the state, `K` included | **re-saturate and re-check** before recording | **1** |
+| **B** | the **model** is the object: `K` is bookkeeping, never part of what is recorded or compared, and the criteria are evaluated on the projection | **strip `K`** — a read-out change, no search change | 2 |
+| **C** | status quo, made explicit: the state is the object and `K` is part of it | none; `-K` legitimately changes every recorded fact set | 2, with model 1 refutable |
+
+B is also **wrong on the inter-layer probe** independently of the entailment
+argument: its trigger is the *singleton writeback*, and evaluating the criteria
+on the projection there reports a model of **∅**, which is neither answer the
+hand derivation admits. C keeps a recorded state its own rules refute and makes
+`tree_traversal.rs`'s fact-for-fact comparison lever-sensitive by design.
 
 A costs the most: a projection at the read-out, a saturation before recording,
-and a decision about which object every fact-set test compares. It is also the
-only one of the three that leaves § 2 true of the thing the engine records.
+and a decision about which object every fact-set test compares. It is the only
+one of the three that leaves § 2 true of the thing the engine records.
 
 ## Q-M1e.8 — `exhausted` certifies the **lattice**, not the model set
 

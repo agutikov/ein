@@ -171,8 +171,8 @@ Not *whether* — **which fix, and what the fixture claims.**
 | | fix for S1e.3.1 to take | consequence |
 |---|---|---|
 | **A** | re-saturate root at both record sites, then check | correct and the smallest diff; costs a saturation per recorded root, on a path that records **one** node |
-| **B** | a *dirty* bit — root written since its last saturation — and re-saturate only when set | the same answer, and it prices the common case at a branch. Also documents the invariant the sites actually need |
-| **C** | stop writing into root at all: fork-local kill cache, no singleton writeback | this is D4's option C plus more, and it deletes two shipped prunes. Its own stage |
+| **B** ✅ | a *dirty* bit — root written since its last saturation — and re-saturate only when set | the same answer, and it prices the common case at a branch. Also documents the invariant the sites actually need. **Selected 2026-08-28** with [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)'s ruling — A makes the criteria a property of the *state*, so the recorded state must be closed under the rules, and A and B differ only in when the saturation is paid |
+| **C** | stop writing into root at all: fork-local kill cache, no singleton writeback | this is D4's option C plus more, and it deletes two shipped prunes. Its own stage — and Q-M1e.7's ruling argues *against* it: those negatives are consequences of the state, so deleting them makes the engine less complete, which is exactly what `-K` measures |
 | **D** | record the *pre-write* root — snapshot before `compute_alive` | tempting and wrong: that is the state the search *started* from, which in the inter-layer fixture is not maximal under either reading of Q-M1e.6. `-K`'s phase-1 row is what it would print |
 
 | | what the banked fixture claims | consequence |
@@ -180,7 +180,8 @@ Not *whether* — **which fix, and what the fixture claims.**
 | **i** | bank both under `examples/` with `:expect` stating **today's** answer, header naming the defect | [D6](d6_the_new_q5_fixture.md)'s policy, and M1d's precedent — `tests/stdlib/closure/02`+`03` were banked wrong so the fixing stage had to move the golden, and it did at S1d.2.6. The gate stays green and the fix is forced to declare itself |
 | **ii** | leave both in `probes/`, and let S1e.3.1 bank the corpus fixture with the *right* answer when it fixes it | keeps a knowingly-false `:expect` out of the corpus. The cost is that nothing in `cargo test` mentions the defect until the fix lands |
 
-**Recommended: B, and (i).** B because the invariant the two sites need is
+**Chosen: B (2026-08-28, with Q-M1e.7); (i) still recommended and open.** B
+because the invariant the two sites need is
 *"root is at its fixpoint"*, and a dirty bit is that invariant written down
 rather than a saturation bought blind; (i) because the repo has done exactly
 this before and the alternative leaves a confirmed soundness defect with no
