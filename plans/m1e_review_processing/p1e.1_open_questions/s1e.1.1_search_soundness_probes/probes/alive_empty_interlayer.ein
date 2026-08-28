@@ -1,0 +1,46 @@
+;; D1 / Q4 — the alive-∅ record site, reached BETWEEN LAYERS: the review's
+;; own Route B, at shipped defaults.
+;;
+;; Layer 1 enters (p A) and (p B) alive and (p Z) dead; the singleton
+;; writeback puts (not (p Z)) at root; `compute_alive` at solve.rs:1534 then
+;; comes back empty because the grown root makes `mutex` a one-step kill of
+;; every remaining candidate; `promote_forced_positives` at :1535 declines an
+;; empty set without saturating anything, and :1550 records root.
+;;
+;; The trigger is the SINGLETON WRITEBACK, not the kill cache, so `-K` does
+;; not repair it: (not (p Z)) is a fact a fork's death entailed.
+;;
+;; `-L` answers Contradiction k=0 on the same file, both sides exhausted —
+;; which is also the Q5 pair T1e.1.1.3 step 3 asks for.
+
+(relation is-a T T)
+(relation p T)
+(relation bad T)
+
+(is-a A T) (is-a B T) (is-a Z T)
+
+(hrule guess () :match (is-a ?x T) :assert (p ?x) :why "guess (p {?x})")
+
+;; (p Z) dies in TWO steps, so the one-step pre-branch lookahead cannot see it
+;; and it survives into the layer as an entering. Z sorts last, so its
+;; entering is the layer's last and the two survivors are entered against a
+;; root that has not grown yet.
+(rule taint () :match (p Z)   :assert (bad Z) :priority 200)
+(rule kill  () :match (bad Z) :assert (false) :priority 300)
+
+;; Once Z is refuted, nothing may have p — ONE step from any (p ?x), which is
+;; what empties `alive` on the recompute.
+(rule mutex ()
+  :match  (and (not (p Z)) (p ?x))
+  :assert (false)
+  :priority 350)
+
+;; Totality as a saturation refutation: something must have p. Dormant at
+;; phase 1 (no negative yet) and dormant in every fork entered before the
+;; writeback landed — so the two live branches are genuinely alive.
+(rule totality ()
+  :match  (and (not (p Z)) (absent (p A)) (absent (p B)))
+  :assert (false)
+  :priority 400)
+
+(query :goal (p ?x))

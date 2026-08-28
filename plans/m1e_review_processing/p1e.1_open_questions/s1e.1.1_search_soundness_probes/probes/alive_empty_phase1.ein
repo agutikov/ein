@@ -1,0 +1,33 @@
+;; D1 / Q4 — the alive-∅ record site, reached at PHASE 1.
+;;
+;; `phase1` checks `has_contradiction(root)` at solve.rs:1091, then calls
+;; `compute_alive` at :1098 — which writes the lookahead kill cache INTO ROOT
+;; (hypgen.rs `write_negated`) — and then records root at :1118 under the
+;; comment "Empty alive and no contradiction ⇒ root is itself a complete,
+;; consistent model". The check ran before the write.
+;;
+;; Zero enterings, zero layers, one saturation. The state recorded as the
+;; model is one in which `totality` matches and has not fired.
+
+(relation is-a T T)
+(relation p T)
+
+(is-a A T) (is-a B T)
+
+;; One candidate per object — reads only `is-a`, so the kill cache it triggers
+;; is not a fact this generator conditions on.
+(hrule guess () :match (is-a ?x T) :assert (p ?x))
+
+;; One step from any (p ?x), so the pre-branch lookahead kills every candidate
+;; and the cache writes (not (p A)) / (not (p B)) into root.
+(rule no-p () :match (p ?x) :assert (false) :priority 300)
+
+;; Totality, on stored negatives alone — no `absent`, so no NAF boundary is in
+;; the argument. Dormant while root is saturated; refuting once the cache has
+;; written. Root is not re-saturated, so it never fires.
+(rule totality ()
+  :match  (and (not (p A)) (not (p B)))
+  :assert (false)
+  :priority 400)
+
+(query :goal (p ?x))
