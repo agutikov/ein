@@ -89,9 +89,13 @@ search should *do* with the new obligation is
 
 ## Acceptance
 
-- The standard of proof is ratified and written into
+- **Both standard-of-proof rules are ratified** — Q-M1e.1 (*what counts as
+  refuted*) and Q-M1e.2 (*an argument suffices when its premise is itself
+  enforced*) — written into
   [`open_questions.md`](../../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)
-  as decided, and every later stage cites it rather than re-arguing it.
+  as decided **and** into `docs/kernel/` prose, and every later stage cites
+  them rather than re-arguing them. [D5](d5_does_t1_ratify_q_m1e2.md), option
+  A.
 - **Q4**: either a fixture under `examples/` that reaches the alive-∅ path
   with a saturation-encoded totality rule and shows what root records, or —
   if the shape is not constructible — the invariant argument written *beside*
@@ -129,7 +133,7 @@ the options with their consequences and a recommendation.
 | [D2](d2_q6_which_decline_to_construct.md) | **moved** — Q6 became [S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md) on 2026-08-28. What stays is the ruling taken here: the rung mode is re-read at every node | nothing here | — |
 | [D3](d3_q_m1e8_file_or_take.md) | **decided 2026-08-28 — B**: the stage takes the *check*, not the fix. `record_node`'s four callers against `solution_semantics.md` § 2 | **T1e.1.1.4** | the fix still files to P1e.2, and *which* fix waits on Q-M1e.7 |
 | [D4](d4_q_m1e9_upward_closure.md) | **Q-M1e.9 is reproduced: `dead` is not upward-closed under `absent`.** Five of six configurations answer a twenty-line program wrongly. Who owns it, and how far does the fix go? | nothing here — but it qualifies D3 and D9 | a load-time refusal now, the real fix filed |
-| [D5](d5_does_t1_ratify_q_m1e2.md) | Does T1 ratify **Q-M1e.2** as well as Q-M1e.1? Q4's likely `accepted` needs it, and Q-M1e.2 has no owning stage | T1e.1.1.1 | ratify both |
+| [D5](d5_does_t1_ratify_q_m1e2.md) | **decided 2026-08-28 — A**: T1 ratifies **both**, and Q-M1e.2 is owned there rather than by nobody | T1e.1.1.1 | ratified together, into `docs/kernel/` prose |
 | [D6](d6_the_new_q5_fixture.md) | Where the **new Q5 fixture** lives, what it pins, and whether its `:expect` states today's answer or the right one | T1e.1.1.3 step 3 | `examples/branching/`, state today's answer, let D3's fix move it |
 | [D7](d7_the_diff_instrument.md) | The **two-config diff** exists three times already. Build a fourth, borrow, or throw one away? | T1e.1.1.3 — and now S1e.1b.6 T3 and S1e.1b.7, two more customers | throwaway here; name it in S1e.3.4's inputs |
 | [D8](d8_branching06_untyped_models.md) | `branching/06` models `(co-located Blue Color)` and prints `?h = Color`. **Evidence, or its own id?** | nothing | its own `Q-M1e.<n>` |
@@ -141,20 +145,47 @@ which changes what several of the others are about.
 
 ## Tasks
 
-### Task T1e.1.1.1 — Ratify the standard of proof
+### Task T1e.1.1.1 — Ratify the standard of proof — **both rules**
 
-Half a day, and it is first because the other three tasks are its first
-customers. Write
-[Q-M1e.1](../../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
-three rules — behaviour is refuted only by a banked probe; absence is refuted
-by naming the thing; risk is not refutable by argument — into the milestone's
-`open_questions.md` as **decided**, with the date, and add the one-line
-version to the milestone README's disposition table.
+Half a day, and it is first because the other tasks are its first customers.
+[D5](d5_does_t1_ratify_q_m1e2.md) chose **A** on 2026-08-28: this task ratifies
+**two** questions, not one, and Q-M1e.2 — which had no owning stage — is owned
+here.
 
-The rule that matters most in practice is the third, because it is the one
-that will be argued with: *"it cannot happen"* is a written argument and it
-goes **beside the code**, not into a plan file, or the next reader has the
-same question with no answer at the site. The precedent is the repo's own —
+1. **[Q-M1e.1](../../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)
+   — what counts as *refuted*.** Three rules: behaviour is refuted only by a
+   banked probe; absence is refuted by naming the thing; **risk is not
+   refutable by argument** — only `fixed`, `accepted` with the argument written
+   at the site, or `deferred`.
+2. **[Q-M1e.2](../../open_questions.md#q-m1e2--may-a-review-finding-be-closed-by-a-comment)
+   — when an argument is enough.** One rule: **an argument suffices when its
+   premise is itself enforced.** It is the other end of the first — Q-M1e.1
+   says a risk cannot be argued away; Q-M1e.2 says what an acceptable argument
+   looks like when a finding is `accepted` anyway.
+
+Write both into `open_questions.md` as **decided**, with the date; add the
+one-line version of each to the milestone README's disposition table; and put
+the rules themselves in `docs/kernel/` prose, with
+[`defined_behaviour.md`](../../../../docs/kernel/defined_behaviour.md) the
+likelier home now that Q3 is amending it and [D9](d9_kernel_page_overclaims.md)
+is re-drafting its neighbour.
+
+**The calibration table travels with them** — D5's four rows, three of them the
+repo's own precedents and the fourth D4's failure. An argument is only as good
+as what enforces its premise, and that is easier to see as cases than as a
+sentence:
+
+| | premise | enforced? | verdict |
+|---|---|---|---|
+| `design/02`'s determinism argument | canonical ordering everywhere a traversal reads | yes, by the ordering tests | argument is enough |
+| [ST-M1](../../README.md#the-findings)'s alive-set invariant | *rules assert no new objects or relations* | **no** | needs the cheap post-fixpoint check |
+| [ST-L1](../../README.md#the-findings)'s `EqClasses` auto-vivification | *nothing fires equality propagation* | yes, by a named test | a comment is enough |
+| design/08's `dead`-is-monotone | *the KB is append-only, so nothing retracts* | **no** | broken by a twenty-line program ([D4](d4_q_m1e9_upward_closure.md)) |
+
+The rule that matters most in practice is Q-M1e.1's third, because it is the
+one that will be argued with: *"it cannot happen"* is a written argument and it
+goes **beside the code**, not into a plan file, or the next reader has the same
+question with no answer at the site. The precedent is the repo's own —
 `design/02` is an argument that lives where a reader of the determinism rules
 finds it.
 

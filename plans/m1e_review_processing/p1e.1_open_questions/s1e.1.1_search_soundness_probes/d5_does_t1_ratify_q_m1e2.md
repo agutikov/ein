@@ -1,8 +1,21 @@
-# D5 — Does T1 ratify Q-M1e.2 as well as Q-M1e.1?
+# D5 — T1 ratifies **both**
 
-**Touches:** [T1e.1.1.1](README.md#task-t1e111--ratify-the-standard-of-proof).
-**Cheapest to settle up front**, because Q4's likeliest disposition depends on
-it and would otherwise be decided twice.
+> **Decided 2026-08-28 by the user: A — ratify Q-M1e.1 and Q-M1e.2 together.**
+> Both are written as decided, both go into `docs/kernel/` prose rather than
+> only the ledger, and Q-M1e.2 — which had **no owning stage** — gets its owner
+> in the same line:
+> [T1e.1.1.1](README.md#task-t1e111--ratify-the-standard-of-proof).
+>
+> One thing the choice no longer has to carry: this file argued for A partly
+> because Q4's *likeliest* disposition was `accepted`, and Q-M1e.2's test would
+> have overturned it. That scenario did not happen —
+> [D1](d1_q4_which_route_reaches_the_site.md) answered Q4 by construction, so
+> its disposition is `fixed` and needs no argument at all. The rule is ratified
+> for the findings that **will** need it, and the case below stands as the
+> worked example of how to apply it.
+
+**Touches:** [T1e.1.1.1](README.md#task-t1e111--ratify-the-standard-of-proof),
+which grows from a quarter-day to half a day and from one rule to two.
 
 ## The two rules
 
@@ -53,12 +66,15 @@ rather than at S1e.2.2.
 
 | | T1 does | consequence |
 |---|---|---|
-| **A** | ratify Q-M1e.1 **and** Q-M1e.2 together, both as decided, both written into `docs/kernel/` prose rather than only the ledger | half a day instead of a quarter. Every later `accepted` is then mechanical, and Q4 is decided once |
+| **A** ✅ | ratify Q-M1e.1 **and** Q-M1e.2 together, both as decided, both written into `docs/kernel/` prose rather than only the ledger | half a day instead of a quarter. Every later `accepted` is then mechanical. **Chosen 2026-08-28** |
 | **B** | ratify Q-M1e.1 only; leave Q-M1e.2 to whoever reaches it | status quo. Q-M1e.2 has **no owning stage**, so "whoever reaches it" is currently nobody, and the first `accepted` disposition decides it implicitly |
 | **C** | ratify Q-M1e.1, and give Q-M1e.2 an explicit owner ([S1e.2.2](../../p1e.2_high/s1e.2.2_code_doc_consistency.md) or [S1e.3.1](../../p1e.3_medium/s1e.3.1_correctness.md)) without deciding it here | keeps T1 small and stops the drift, at the cost of Q4 possibly being re-opened later |
 
-**Recommended: A.** It is the difference between a quarter-day and a half-day,
-and D4 has just demonstrated the failure mode the rule exists to prevent.
+**Chosen: A.** It is the difference between a quarter-day and a half-day, and
+D4 has just demonstrated the failure mode the rule exists to prevent — a
+premise written down, never enforced, and broken by a twenty-line program.
+B's *"whoever reaches it"* was nobody; C would have bought a smaller T1 at the
+price of the first `accepted` disposition deciding the rule implicitly.
 
 ## Where the ratified rules live
 
@@ -66,5 +82,13 @@ Not in the plan. [Q-M1e.1](../../open_questions.md#q-m1e1--what-is-the-standard-
 own third clause says an argument *"goes beside the code, not into a plan
 file"*, and the same applies to the rule itself. Candidates:
 [`defined_behaviour.md`](../../../../docs/kernel/defined_behaviour.md) (which
-P1e.1 Q3 is amending anyway) or a `design/`-style page. Decide the file when
-T1 runs; the ledger keeps the pointer.
+P1e.1 Q3 is amending anyway) or a `design/`-style page. **Still T1's to pick**,
+and `defined_behaviour.md` is the likelier of the two now that two other stages
+are already opening it — Q3's amendment, and
+[D9](d9_kernel_page_overclaims.md)'s neighbouring re-draft of
+`solution_semantics.md` § 6. The ledger keeps the pointer either way.
+
+**And the calibration table above travels with the rules.** Four rows, three
+of which are the repo's own precedents and the fourth of which is D4's failure
+— an argument is only as good as what enforces its premise, and that is easier
+to see as a table of cases than as a sentence.

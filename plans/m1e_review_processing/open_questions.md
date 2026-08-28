@@ -16,8 +16,8 @@ records which question became which id.
 
 | Q | title | status |
 |---|---|---|
-| [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | open — decided in [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) T1, applied everywhere after |
-| [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | open — the `accepted` disposition's rule |
+| [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | open — ratified in [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof-both-rules) T1 **together with Q-M1e.2** ([D5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d5_does_t1_ratify_q_m1e2.md), option A, 2026-08-28), applied everywhere after |
+| [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | open — the `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof-both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
 | [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | open — [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) decides per page; the *rule* is here |
 | [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | open — [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md) |
 | [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md), and M1d's `T1d.10.6.4` is the co-owner. [S1e.1b.7](p1e.1b_hypothesis_structure/s1e.1b.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it |
@@ -76,6 +76,26 @@ If that rule holds, it decides most of the `accepted` dispositions
 mechanically, and it should be written into
 [`docs/kernel/defined_behaviour.md`](../../docs/kernel/defined_behaviour.md)
 or `design/`-style prose rather than living only here.
+
+### Owner, assigned 2026-08-28 — ratified beside Q-M1e.1
+
+[D5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d5_does_t1_ratify_q_m1e2.md),
+option **A**: this question had **no owning stage**, which meant *"whoever
+reaches it"* was nobody and the first `accepted` disposition would have decided
+it implicitly. It is now
+[S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof-both-rules)
+T1's, ratified in the same half-day as Q-M1e.1 because the two are one rule
+read from two ends — Q-M1e.1 says a **risk** cannot be argued away; this one
+says what an acceptable argument looks like when a finding is `accepted`
+anyway.
+
+**What decided it was a fourth calibration row, supplied while the question was
+still open.** design/08's *`dead` is monotone* is a premise that was written
+down and never enforced, and
+[Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) broke it with a
+twenty-line program. Three of the four rows are the repo's own precedents; the
+fourth is the failure the rule exists to prevent, and it arrived four days
+before the rule would have been needed.
 
 ## Q-M1e.3 — Who owns a page that should be neither fixed nor deleted?
 
