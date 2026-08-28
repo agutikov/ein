@@ -1,9 +1,22 @@
 # D4 — Q-M1e.9 reproduced: `dead` is **not** upward-closed under `absent`
 
-> **This one is no longer a question.** It was filed as *two kernel pages
-> appear to disagree*; the probe was run on 2026-08-28 against `7731848` and
-> the disagreement is real. What is left to decide is **who owns the fix**, not
-> whether there is one.
+> **This one is no longer a question, and since 2026-08-28 it is no longer a
+> decision either.** It was filed as *two kernel pages appear to disagree*; the
+> probe was run against `7731848` and the disagreement is real. **Ruled: B now,
+> C filed.**
+>
+> - **B — the containment — is [S1e.2.3](../../p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md)**,
+>   one day in P1e.2: widen `warn-derived-naf`'s watch to the
+>   hypothesis-eligible case, measure what it would fire on across the corpus,
+>   and say *instead* as well as *don't* — `total`'s stored-negative form for a
+>   refutation, `(open ?R)` for a requirement. A **refusal** is deliberately not
+>   available yet: it would refuse `std.algebra`'s `connex` before anyone has
+>   decided whether that rule should be rewritten, which is S1e.1b.8's.
+> - **C — the real fix — is [F18](../../../followups/f18_world_aware_negatives.md)**,
+>   with `Prov::absent` as its starting point, and it is **closed without being
+>   done** if S1e.1b.8 forbids the shape instead.
+> - The **language** half left earlier the same day for
+>   [S1e.1b.8](../../p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md).
 
 **Probe:** [`probes/naf_upward_closure.ein`](probes/naf_upward_closure.ein)
 **Bears on:** the no-good store, the singleton writeback and the lookahead
@@ -188,11 +201,11 @@ Not *whether* — *who*, and *how far*.
 | | scope | consequence |
 |---|---|---|
 | **A — record and hand on** | Q-M1e.9 becomes a finding with the probe banked as a `broken/`-style fixture; owner is a new milestone | honest, cheap, and leaves three shipped mechanisms unsound on a shape a user can write today |
-| **B — narrow the claim, keep the machinery** | state that the engine's search is sound **only for programs whose `(false)` derivations do not pass an `absent` guard over a hypothesis-eligible relation**, enforce it with a **load-time check** (the compiler already knows every guard's watched relations and every hypothesis-eligible relation), and refuse or warn | the smallest change that makes the tree honest. Turns a silent wrong answer into a diagnostic, which is the repo's usual move |
-| **C — fix the machinery** | make the three consumers world-aware: no kill-cache write for a lookahead whose firing used an `absent`; no singleton writeback for such a death; a no-good clause tagged with its `absent` premises and not applied where they no longer hold | correct, and large. `Prov::absent` already **records** the negative premises (C2, S1.21.8) — *"the dependence is visible … but no walk yet interprets it"*. This would be the first walk that does |
+| **B — narrow the claim, keep the machinery** ✅ | state that the engine's search is sound **only for programs whose `(false)` derivations do not pass an `absent` guard over a hypothesis-eligible relation**, enforce it with a **load-time check** (the compiler already knows every guard's watched relations and every hypothesis-eligible relation), and refuse or warn | the smallest change that makes the tree honest. Turns a silent wrong answer into a diagnostic, which is the repo's usual move |
+| **C — fix the machinery** → [F18](../../../followups/f18_world_aware_negatives.md) | make the three consumers world-aware: no kill-cache write for a lookahead whose firing used an `absent`; no singleton writeback for such a death; a no-good clause tagged with its `absent` premises and not applied where they no longer hold | correct, and large. `Prov::absent` already **records** the negative premises (C2, S1.21.8) — *"the dependence is visible … but no walk yet interprets it"*. This would be the first walk that does |
 | **D — declare it out of scope for M1e** | it is not one of the 63 findings, and M1e processes a review | defensible on scope, and it means the milestone found a soundness defect and shipped without saying what happens to it |
 
-**Recommended: B now, C filed — and the language question to
+**Ruled 2026-08-28: B now, C filed — and the language question to
 [S1e.1b.8](../../p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md).**
 B is a load-time check the compiler has the information for, it converts a
 wrong answer into a refusal, and it does not require reshaping the no-good

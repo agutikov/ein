@@ -1,10 +1,10 @@
 # M1e — Review processing
 
-**Estimate:** ~21 weeks — 6 phases, 37 stages, ~112 days of stage estimates.
+**Estimate:** ~21 weeks — 6 phases, 38 stages, ~113 days of stage estimates.
 Four phases and 25 stages of that are the review; **P1e.1b** and **P1e.5** were
 added 2026-08-28 on the user's instruction and are not review processing (see
 the phase table's footnote). P1e.5 grew from 1 stage to 4 later the same day
-and carries 36 of the 112 days — [S1e.5.20](p1e.5_documentation_and_other/s1e.5.20_docs_refactor.md)
+and carries 36 of the 113 days — [S1e.5.20](p1e.5_documentation_and_other/s1e.5.20_docs_refactor.md)
 alone is 23.
 **Status:** created 2026-08-27, out of the full-tree review taken the same day
 against `master` @ `9aa598a`. The reports are carried in
@@ -99,10 +99,10 @@ absence of evidence.* The milestone may not close claiming the tree is clean.
 | ID | title | stages | est. | ends with |
 |---|---|---:|---:|---|
 | [P1e.1](p1e.1_open_questions/README.md) | The ten questions | 6 | 9 d | each of Q1–Q10 answered by a probe, a measurement or a ruling — and banked as a test where the answer is a property; the four that gate a fix answered **first** |
-| [P1e.2](p1e.2_high/README.md) | High — 6 findings | 2 | 11 d | no well-formed program panics the process; one reserved-name list; the tree traversal either honours its contract or refuses to ship the surfaces that lie; `docs/kernel` triaged page by page into current / bannered / history |
+| [P1e.2](p1e.2_high/README.md) | High — 6 findings | 3 | 12 d | no well-formed program panics the process; one reserved-name list; the tree traversal either honours its contract or refuses to ship the surfaces that lie; `docs/kernel` triaged page by page into current / bannered / history; and — not one of the 63 — a diagnostic where the search's soundness premise fails ([Q-M1e.9](open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), ruled *B now, C filed*) |
 | [P1e.3](p1e.3_medium/README.md) | Medium — 36 findings | 9 | 26 d | the k-vs-`solution_nodes` seams closed at the one place that owns them; the four parallel-copy pairs unified or diffed by a test; the gate's floors derived rather than constant; every prose count either generated or gone |
 | [P1e.4](p1e.4_low/README.md) | Low — 21 findings | 8 | 7 d | the one-line class, batched by topic — each stage one commit, each finding fixed, refuted or accepted with a reason at the site |
-| [P1e.1b](p1e.1b_hypothesis_structure/README.md) † | The structure of the hypothesis set | 8 | 23 d | the exclusion relation measured; groups defined as a **cover**, not a partition; the join refusing a same-group pair before the fork with **not one model moved**; the bijection derived where it is declared nowhere, or a written *no*; the **domain** of that structure stated, which is [Q-M1e.11](open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) and the review's `Q6`; the tree's **200 053×** attributed, with `--traversal` replacing `EIN_TRAVERSAL` as the surface a reader finds; and a ruling on whether a refutation may rest on an `absent` — the precondition the exclusion relation is computed under |
+| [P1e.1b](p1e.1b_hypothesis_structure/README.md) † | The structure of the hypothesis set | 8 | 22.5 d | the exclusion relation measured; groups defined as a **cover**, not a partition; the join refusing a same-group pair before the fork with **not one model moved**; the bijection derived where it is declared nowhere, or a written *no*; the **domain** of that structure stated, which is [Q-M1e.11](open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) and the review's `Q6`; the tree's **200 053×** attributed, with `--traversal` replacing `EIN_TRAVERSAL` as the surface a reader finds; and a ruling on whether a refutation may rest on an `absent` — the precondition the exclusion relation is computed under |
 | [P1e.5](p1e.5_documentation_and_other/README.md) † | Documentation, and other | 4 + n | 36 d | the configuration reference — 17 flags, the live `EIN_*` set, the 50 CLI options, with a *does it change the answer* column and a test that fails when the flag list drifts from it; every statement convertible to NL, measured at the **5 %** `zebra2`'s model renders today; `:priority` removed and the schedule derived from the rule graph, on a control sweep where **137 of 139 entries are identical** without it; and `docs/ein/` — the tree a released system would have |
 
 † **Not review processing.** Both were added 2026-08-28 on the user's

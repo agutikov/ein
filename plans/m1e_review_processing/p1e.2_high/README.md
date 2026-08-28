@@ -1,6 +1,8 @@
 # P1e.2 — High: six findings
 
-**Estimate:** 2 weeks — 2 stages, 11 days.
+**Estimate:** 2 weeks — 3 stages, 12 days. (2 and 11 until 2026-08-28, when
+[D4](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)
+was ruled *B now* and the containment landed here as S1e.2.3.)
 **Depends on:** [P1e.1](../p1e.1_open_questions/README.md) for three answers
 — [Q3](../p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md) decides
 what `CD-H3` is, [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)
@@ -64,6 +66,7 @@ surfaces from saying things that are false under either answer.
 | ID | title | findings | est. | ends with |
 |---|---|---|---:|---|
 | [S1e.2.1](s1e.2.1_correctness.md) | Correctness — the panic, the guard, the traversal | `CO-H1` `CO-H2` `CO-H3` | 5 d | a compile-time arity check with a positioned diagnostic and a `broken/` fixture; one reserved-name constant with a test that the lists are one; the tree honouring `-n`/`-m` and refusing to print evidence it does not have |
+| [S1e.2.3](s1e.2.3_naf_refutation_diagnostic.md) † | Q-M1e.9's containment — a diagnostic for a refutation resting on an `absent` | — | 1 d | the existing `warn-derived-naf` watch widened to the hypothesis-eligible case, the corpus measured for what it would fire on, and a message that names the replacement rather than only the hazard |
 | [S1e.2.2](s1e.2.2_code_doc_consistency.md) | Code ↔ doc — the canonical tree | `CD-H1` `CD-H2` `CD-H3` | 6 d | every page of `docs/kernel` in one of three declared states; the five M1d-stale pages agreeing with the code and each other; §3.2 amended or deleted and `Q-M1a.8` closed |
 
 ## Acceptance

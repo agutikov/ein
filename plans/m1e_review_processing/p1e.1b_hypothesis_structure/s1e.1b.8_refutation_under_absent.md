@@ -1,7 +1,9 @@
 # S1e.1b.8 — May a refutation rest on an `absent`?
 
 **Phase:** [P1e.1b](README.md) (The structure of the hypothesis set)
-**Estimate:** 3 days
+**Estimate:** 2.5 days — 3 until 2026-08-28, when
+[S1e.2.3](../p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md) took the check
+and the census this stage would have built first.
 **Depends on:** [S1e.1b.1](s1e.1b.1_exclusion_census.md) — this stage is that
 census's **soundness precondition**, and the census is what measures it.
 **Blocks:** [S1e.1b.3](s1e.1b.3_the_restricted_join.md), which spends the
@@ -94,7 +96,7 @@ conclude.
 | | ruling | consequence |
 |---|---|---|
 | **A — forbid** | a `(false)` or `(not …)` conclusion may not rest on an `(absent P)` whose relation is still extendable; load error naming the replacement | strongest, and it makes [D4](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)'s option C **unnecessary** — nothing can write a negative whose justification a later fact invalidates, so the no-good store needs no world-awareness. Costs `connex` a rewrite and a `broken/load/` fixture |
-| **B — warn** | extend `warn-derived-naf` to the hypothesis-eligible case, default off | cheapest, changes nothing, and leaves the wrong answer shipping. It is D4's option B with a wider watch list |
+| **B — warn** | extend `warn-derived-naf` to the hypothesis-eligible case | **already shipped** — [S1e.2.3](../p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md), ruled *B now* on 2026-08-28. So B is this stage's **floor**, not one of its options: the question here is whether to go further |
 | **C — scope** | keep it legal, tag the conclusion with its `absent` premises (`Prov::absent` **already records them**) and refuse to store it beyond the world it was derived in | D4's option C. The real fix *if* the pattern must stay legal, and the first walk that interprets what `Prov::absent` has been recording since S1.21.8 |
 | **D — allow, and fix the word** | the shape is legal; the answer to such a program is *your program is ill-formed*, which is **not** *your constraints are unsatisfiable* | the user's own reading taken to its end. It needs `Q-M1d.1`'s verdict vocabulary, which M1e does not own — so it is a companion to A/B/C, not an alternative |
 
@@ -134,8 +136,10 @@ refute from an absence over an extendable relation and cannot be written
 
 ### Task T1e.1b.8.1 — The census, from syntax to exposure
 
-One day. Start from the 60 syntactic sites, then compute per corpus entry
-which of them have an `absent` over a relation that entry's runs can extend.
+Half a day, **not one** — [S1e.2.3](../p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md)
+computed the exposed set when it set the diagnostic's default, so this task
+*reads* that number rather than deriving it. Start from the 60 syntactic sites
+and that stage's per-entry column.
 The two-line answer to look for: *how many rules are exposed, and does any
 program actually reach one?* Today's expectation is **one rule and no
 program** — `connex`, unexercised on a hypothesis-eligible relation — and if
@@ -160,12 +164,15 @@ repo already calls right.*
 Half a day. Pick from A–D, write the corollary into `absent_semantics.md`, and
 say what D4's B becomes. If A, T5 is the code.
 
-### Task T1e.1b.8.5 — The check, if A
+### Task T1e.1b.8.5 — Promote the diagnostic, if A
 
-Half a day. The compiler walks each rule's guards for `absent` heads and its
-asserts for `(false)` / `not`, intersects with the extendable set, and refuses
-with a message naming `total`'s form and `(open ?R)`. One `broken/load/`
-fixture, one corpus entry.
+**A quarter-day, because the check already exists.**
+[S1e.2.3](../p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md) ships the walk —
+guards scanned for `absent` heads, asserts for `(false)` / `not`, intersected
+with the extendable set, with a message naming `total`'s form and `(open ?R)`.
+If this stage rules **A**, the change is warn → refuse plus one `broken/load/`
+fixture and its corpus entry. If it rules anything else, S1e.2.3's diagnostic
+is the whole of the engine change and this task is empty.
 
 ## Notes
 

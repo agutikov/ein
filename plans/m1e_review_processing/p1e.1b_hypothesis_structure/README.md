@@ -1,6 +1,8 @@
 # P1e.1b — The structure of the hypothesis set
 
-**Estimate:** ~5 weeks — 8 stages, 23 days.
+**Estimate:** ~5 weeks — 8 stages, 22.5 days. (23 until 2026-08-28, when
+S1e.1b.8 handed its check and its census to
+[S1e.2.3](../p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md).)
 **Depends on:** [P1e.1](../p1e.1_open_questions/README.md)
 [S1e.1.1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) only —
 for [Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
@@ -200,7 +202,7 @@ Named here and used by every stage.
 | [S1e.1b.4](s1e.1b.4_bounded_groups.md) | Bounded groups — rediscovering the bijection | 3 d | a program with no `(bijective …)` and no `(open …)` gets the same branch structure as one that declares it, or the stage says exactly which of the two it cannot recover and why |
 | [S1e.1b.5](s1e.1b.5_ordering.md) | Ordering by structure | 2.5 d | a third `lattice-order` mode, measured against `lex` on the five instances — and `most-constrained`, which has returned `0.0` since it was named, either implemented or deleted |
 | [S1e.1b.6](s1e.1b.6_obligations_under_hypothesis.md) | Obligations derived under a hypothesis — the review's `Q6` | 3 d | the flip constructed or written up as not constructible; a ruling on [Q-M1e.11](../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis); and **this phase's domain sentence** — what a group means when the set it partitions can grow |
-| [S1e.1b.8](s1e.1b.8_refutation_under_absent.md) | May a refutation rest on an `absent`? — the exclusion relation's soundness precondition | 3 d | the 60 syntactic sites narrowed to the **exposed** set; `connex` disposed of; the ruling written into `absent_semantics.md` as a corollary; and, if it forbids, the load-time check that makes [Q-M1e.9](../open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s option C unnecessary |
+| [S1e.1b.8](s1e.1b.8_refutation_under_absent.md) | May a refutation rest on an `absent`? — the exclusion relation's soundness precondition | 2.5 d | the 60 syntactic sites narrowed to the **exposed** set; `connex` disposed of; the ruling written into `absent_semantics.md` as a corollary; and, if it forbids, the load-time check that makes [Q-M1e.9](../open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s option C unnecessary |
 | [S1e.1b.7](s1e.1b.7_tree_calibration_and_flag.md) | Why the tree wins on `zebra2-minus-15`, and the flag | 3 d | the **200 053×** attributed across five hypotheses with a named remainder, the share S1e.1b.3 actually recovers, and `--traversal {lattice,tree}` replacing `EIN_TRAVERSAL` as the surface a reader finds |
 
 ## Acceptance
