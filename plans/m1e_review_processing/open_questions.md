@@ -16,8 +16,8 @@ records which question became which id.
 
 | Q | title | status |
 |---|---|---|
-| [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | open — ratified in [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof-both-rules) T1 **together with Q-M1e.2** ([D5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d5_does_t1_ratify_q_m1e2.md), option A, 2026-08-28), applied everywhere after |
-| [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | open — the `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof-both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
+| [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | **decided 2026-08-28**, written into [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md); ratified in [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof-both-rules) T1 **together with Q-M1e.2** ([D5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d5_does_t1_ratify_q_m1e2.md), option A, 2026-08-28), applied everywhere after |
+| [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | **decided 2026-08-28** — *an argument suffices when its premise is itself enforced*, written into [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md). The `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof-both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
 | [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | open — [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) decides per page; the *rule* is here |
 | [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | open — [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md) |
 | [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md), and M1d's `T1d.10.6.4` is the co-owner. [S1e.1b.7](p1e.1b_hypothesis_structure/s1e.1b.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it |
@@ -31,6 +31,13 @@ records which question became which id.
 ---
 
 ## Q-M1e.1 — What is the standard of proof for **refuted**?
+
+> **Decided 2026-08-28 and written down.** Both this and
+> [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) are now
+> [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md),
+> which carries the two rules, the four-row calibration table and the worked
+> example. This entry stays as the argument that produced them. Later stages
+> **cite the page**, not this entry.
 
 Sixty of the sixty-three findings are one reader's reading; the review's
 verification stage never ran ([`review/summary.md`](review/summary.md)
@@ -55,6 +62,11 @@ binding on every stage:
   written argument, and it goes beside the code.
 
 ## Q-M1e.2 — May a review finding be closed by a comment?
+
+> **Decided 2026-08-28, beside Q-M1e.1** — *an argument suffices when its
+> premise is itself enforced* — and written into
+> [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md)
+> as Rule 2.
 
 Several findings are of the form *this is stated but not enforced*
 ([ST-M1](README.md#the-findings), [CO-M1](README.md#the-findings),

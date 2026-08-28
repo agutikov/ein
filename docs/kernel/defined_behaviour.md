@@ -582,3 +582,6 @@ so is the point of listing it here:
   — the other kind of thing that is defined only because the engine does it.
 - [`inference/implementation.md`](inference/implementation.md) — where each
   behaviour above is implemented.
+- [`standard_of_proof.md`](standard_of_proof.md) — its opposite number: this
+  page states what the engine **does**, that one states what it takes to know
+  it, and what an argument for leaving a behaviour alone has to rest on.

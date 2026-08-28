@@ -68,7 +68,13 @@ constrained-reasoning research.
   ([Q-M1e.10](plans/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
-  checked by `cargo test --workspace` and by nothing else.
+  checked by `cargo test --workspace` and by nothing else — and since M1e
+  T1e.1.1.1 what it takes to call one *settled* is
+  [`standard_of_proof.md`](docs/kernel/standard_of_proof.md): a behaviour is
+  refuted only by a banked probe, an absence by naming the thing that checks
+  it, a **risk not by argument at all**, and an argument for leaving something
+  alone holds only while its premise is enforced by something that fails when
+  it stops being true.
 - **`docs/api/`** — **how to drive Ein as a library.** Since M1a S1a.9.4 its
   subject is [`rust.md`](docs/api/rust.md): the **crates** — `ein-ir` to load,
   `ein-infer` to solve, `ein-render` to explain, `ein-einb` to cache — which

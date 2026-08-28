@@ -53,6 +53,20 @@ is stated but not enforced*, and for some of them the honest answer is a
 comment at the site rather than a check — but the repo's rule is that the
 argument gets **written down beside the code**, which is work, not a shrug.
 
+**Two rules govern which disposition a finding may take**, ratified 2026-08-28
+and written into
+[`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md)
+rather than left in this plan:
+
+- a **behaviour** is refuted only by an executed probe banked as a test; an
+  **absence** by naming the thing that checks it; and a **risk** not by
+  argument at all — only `fixed`, `accepted` with the reason at the site, or
+  `deferred` to a named owner;
+- an **argument suffices when its premise is itself enforced**, which is what
+  separates `design/02`'s determinism argument (enforced by the ordering tests)
+  from `design/08`'s *`dead` is monotone* (enforced by nothing, and broken by a
+  twenty-line program four days into this milestone).
+
 ## Why the open questions come first
 
 Not by severity. The first phase is the ten questions because **four of them

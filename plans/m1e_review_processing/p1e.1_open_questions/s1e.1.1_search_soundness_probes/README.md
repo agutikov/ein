@@ -145,7 +145,22 @@ which changes what several of the others are about.
 
 ## Tasks
 
-### Task T1e.1.1.1 — Ratify the standard of proof — **both rules**
+### Task T1e.1.1.1 — Ratify the standard of proof — **both rules** ✅
+
+> **Done 2026-08-28.** Both rules are
+> [`docs/kernel/standard_of_proof.md`](../../../../docs/kernel/standard_of_proof.md),
+> the register marks both questions decided, the milestone README carries the
+> one-line version, and `docs/kernel/README.md` points at the page from its
+> load-bearing-claims note and its Conventions.
+>
+> **The file choice, and its reason.** [D5](d5_does_t1_ratify_q_m1e2.md) left
+> it to this task and named `defined_behaviour.md` as the likelier candidate.
+> It is the wrong page: that one states what the **engine** does — diagnostics,
+> orderings, error strings, the CLI surface — and a rule about what it takes to
+> *know* something is not one of the engine's behaviours. A page of its own in
+> the same tree keeps the rule where the load-bearing claims are without
+> miscategorising it, and `defined_behaviour.md` links to it as its opposite
+> number.
 
 Half a day, and it is first because the other tasks are its first customers.
 [D5](d5_does_t1_ratify_q_m1e2.md) chose **A** on 2026-08-28: this task ratifies

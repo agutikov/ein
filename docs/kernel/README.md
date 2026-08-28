@@ -16,7 +16,9 @@ kernel. Below it there is one implementation, [`ein.rs`](../../ein.rs/)
 > that checked they agreed; now a claim here is checked by
 > `cargo test --workspace` and by nothing else. Behaviours that used to be
 > defined by "whatever the Python engine does" are stated in
-> [`defined_behaviour.md`](defined_behaviour.md).
+> [`defined_behaviour.md`](defined_behaviour.md), and what it takes to call a
+> claim here settled is [`standard_of_proof.md`](standard_of_proof.md) — two
+> rules, ratified 2026-08-28.
 
 ## Reading order
 
@@ -147,3 +149,8 @@ explicit audience banner.
   within a directory; they're stable.
 - Cross-references inside the kernel tree use relative paths that
   resolve regardless of repo root.
+- A claim on these pages is subject to
+  [`standard_of_proof.md`](standard_of_proof.md): a behaviour is refuted only
+  by a banked probe, and an argument for leaving something as it is holds only
+  while its premise is enforced by something that fails when it stops being
+  true.
