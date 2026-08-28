@@ -4,7 +4,14 @@
 **Estimate:** 2 days
 **Depends on:** [S1e.3.4](s1e.3.4_architecture.md) for `SE-M1` if the seam
 fix is taken; [CO-H3](../p1e.2_high/s1e.2.1_correctness.md) for `SE-M3`,
-which documents whatever that decides.
+which documents whatever that decides; and
+[Q-M1e.7](../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)'s
+ruling, which this stage **applies** rather than owns — the two objects the
+engine conflates (the solution *state* and the *model* projected out of it)
+need two names in four surfaces, and that is `SE-M1`'s defect at a second
+site. The ruling is
+[S1e.1.1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check)
+T1e.1.1.4's, taken two phases earlier because Q-M1e.8's fix waits on it.
 **Findings:** [`SE-M1`](../review/semantics/medium.md),
 [`SE-M2`](../review/semantics/medium.md),
 [`SE-M3`](../review/semantics/medium.md).

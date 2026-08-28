@@ -22,7 +22,7 @@ records which question became which id.
 | [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | open — [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md) |
 | [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md), and M1d's `T1d.10.6.4` is the co-owner. [S1e.1b.7](p1e.1b_hypothesis_structure/s1e.1b.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it |
 | [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model) | What is a **solution**, and what is a **model**? | **decided 2026-08-28** by the user; binding on [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) and on [P1e.1b](p1e.1b_hypothesis_structure/README.md) |
-| [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) | The read-out prints the solution **KB** and calls it a model | open — raised by Q-M1e.6; owner unassigned, and **now blocking**: D3's check found two candidate fixes for Q-M1e.8 that report different `k` on the same program, and which is right is this question |
+| [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) | The read-out prints the solution **KB** and calls it a model | open — **blocking**, and owned since 2026-08-28: the *ruling* is [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) T1e.1.1.4's, because Q-M1e.8's fix waits on it and the two stages first proposed both run later. S1e.3.2 and P1e.5's S1e.5.3 apply it |
 | [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness. The **record-site conformance check** is [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) T4 ([D3](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d3_q_m1e8_file_or_take.md), option B); the fix files to P1e.2 |
 | [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. Owner undecided ([D4](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)) |
 | [Q-M1e.10](#q-m1e10--two-config--flags-are-inert) | Two `(config …)` flags are **inert** — `print-alive`, `candidate-order-seed` | open — raised by [S1e.5.1](p1e.5_documentation_and_other/s1e.5.1_config_reference.md); owner unassigned |
@@ -309,9 +309,63 @@ Three consequences, and the second is the one that bites:
 
 Not obviously a defect to *fix* — printing the solution KB is defensible and
 `--models key` already projects it. But the two objects need two names, and
-the fact-set comparisons need to say which one they mean. Owner unassigned;
-candidates are [S1e.3.2](p1e.3_medium/s1e.3.2_semantics.md) (the vocabulary
-split) and P1e.5's proposed S1e.5.3 (the read-out reference).
+the fact-set comparisons need to say which one they mean.
+
+### Owner, assigned 2026-08-28 — and why it is not the two candidates first named
+
+This entry used to say *owner unassigned; candidates are
+[S1e.3.2](p1e.3_medium/s1e.3.2_semantics.md) (the vocabulary split) and P1e.5's
+proposed S1e.5.3 (the read-out reference)*. Both still want the **application**
+— the names, the read-out, the reference page — but neither can be the owner of
+the **ruling** any more, because both run after the thing that now waits on it:
+[D3](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d3_q_m1e8_file_or_take.md)'s
+record-site check found that two candidate fixes for
+[Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) report
+**different `k` on the same program**, and which is right is this question. The
+fix's home is P1e.2; S1e.3.2 is P1e.3 and S1e.5.3 is P1e.5.
+
+| | what | who |
+|---|---|---|
+| **the ruling** — which object the criteria are evaluated on | [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) **T1e.1.1.4**, the task that found the dependency, in the phase whose job is to rule | **owner** |
+| the vocabulary — two objects, two names, in four surfaces | [S1e.3.2](p1e.3_medium/s1e.3.2_semantics.md), with `SE-M1` | applies it |
+| the read-out — what `ein solve` and `--json-summary` print | P1e.5's S1e.5.3 | applies it |
+| which object is recorded and compared | the Q-M1e.8 fix stage, in P1e.2 | consumes it |
+
+The precedent is
+[Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted): ruled once in
+S1e.1.1 T1, cited rather than re-argued by every stage after.
+
+### The three readings, and what each does to `k`
+
+The probes in
+[`s1e.1.1…/probes/`](p1e.1_open_questions/s1e.1.1_search_soundness_probes/probes/)
+make this concrete rather than terminological. Write `S` for the recorded KB
+and `K` for what the search wrote into it — the lookahead kill cache's `(not
+h)` and the singleton writeback's.
+
+| | ruling | the Q-M1e.8 fix it selects | `k` on `complete_normal_path.ein` |
+|---|---|---|---|
+| **A** | the recorded object is the **solution state**, and `model` is a *projection* of it (positive part minus the initial KB) computed at the read-out. § 2's conjuncts are evaluated on the state, `K` included | **re-saturate and re-check** before recording | **1** |
+| **B** | the **model** is the object: `K` is bookkeeping, never part of what is recorded or compared, and the criteria are evaluated on the projection | **strip `K`** — a read-out change, no search change | **2** |
+| **C** | status quo, made explicit: the state is the object and `K` is part of it | none; `-K` legitimately changes every recorded fact set | 2, with model 1 refutable |
+
+**Recommended: A**, and the reason is a measurement rather than a preference.
+B is not merely cheaper — it is **wrong on the inter-layer probe**, whose
+trigger is the *singleton writeback*, a negative
+[design/08](../../docs/history/m1a_rust/design/08_parallelism.md) holds to be
+entailed rather than bookkeeping. Evaluating the criteria on the projection
+there reports a model of **∅**, which is neither of the two answers the
+hand-derivation admits (`k = 0` if the writeback's negative is part of every
+state, `k = 1` with model `{(p A), (p B)}` if it is not). C keeps a recorded
+state its own rules refute and makes
+[`tree_traversal.rs`](../../ein.rs/crates/ein-infer/tests/tree_traversal.rs)'s
+fact-for-fact comparison lever-sensitive by design, which is the one comparison
+the repo leans on to catch a traversal that agrees on `k` and disagrees on a
+model.
+
+A costs the most: a projection at the read-out, a saturation before recording,
+and a decision about which object every fact-set test compares. It is also the
+only one of the three that leaves § 2 true of the thing the engine records.
 
 ## Q-M1e.8 — `exhausted` certifies the **lattice**, not the model set
 

@@ -103,6 +103,10 @@ search should *do* with the new obligation is
   fixture** carrying the ON/OFF pair with both sides exhausting, since
   `branching/06` cannot; a golden audit listing every corpus artefact that
   pins the current verdicts for both existing entries.
+- **[Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+  is ruled, dated and written where the recorded object is built** — it blocks
+  Q-M1e.8's fix, and the two stages that will apply the ruling both run after
+  the stage that needs it.
 - **Every `record_node` caller has a written answer to *which of § 2's three
   conjuncts do I establish, and when?*** — beside the call, not only in a plan
   file — and the conjuncts it does not establish are named. This is
@@ -236,8 +240,8 @@ on the day**.
 
 ### Task T1e.1.1.4 — The record-site conformance check
 
-Half a day, and it is [D3](d3_q_m1e8_file_or_take.md)'s option **B**, chosen
-2026-08-28: not the maximality fix — which stays filed for P1e.2 — but a
+A day — half for the matrix, half for the ruling in step 4 — and it is
+[D3](d3_q_m1e8_file_or_take.md)'s option **B**, chosen 2026-08-28: not the maximality fix — which stays filed for P1e.2 — but a
 **double-check that the implementation meets
 [`solution_semantics.md`](../../../../docs/kernel/inference/solution_semantics.md)
 § 2's three conjuncts.** A check changes no verdict, so the stage's acceptance
@@ -258,11 +262,21 @@ survives it, and the matrix already exists
 3. **Write the conjunct each site owes beside the call**, not only here —
    [Q-M1e.1](../../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
    third rule.
-4. **State the fix menu and its dependency.** Three candidate fixes, one of
-   which covers all three witnesses, and two of which give *different `k`* on
-   the same program — so the choice waits on
-   [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model),
-   which is unowned. Naming that is the task's last product.
+4. **Rule on [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)** —
+   assigned here on 2026-08-28 **because it blocks**. Three candidate fixes for
+   Q-M1e.8, one covers all three witnesses, and two give *different `k`* on the
+   same program; which is right turns on whether the criteria are evaluated on
+   the recorded **state** (`K` included) or on the **model** projected out of
+   it. The register carries the three readings and recommends **A** — the state
+   is the object, `model` is a projection, and B is not merely cheaper but
+   *wrong* on the inter-layer probe. Rule it, date it, and write the sentence
+   where the object is built, not only in the register: S1e.3.2 applies it to
+   the vocabulary, P1e.5's S1e.5.3 to the read-out, and the Q-M1e.8 fix stage
+   consumes it.
+
+   The two stages the register first proposed as owners both run **after** the
+   fix, which is why the ruling is here and the applications are there — the
+   same split Q-M1e.1 has.
 
 The Q6 probe that used to be this task — a program deriving an obligation
 activator inside a fork, run under both traversals and diffed fact for fact —

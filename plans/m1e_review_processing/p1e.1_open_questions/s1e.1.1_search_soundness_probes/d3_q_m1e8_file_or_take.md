@@ -151,9 +151,15 @@ and reports `k = 1`; (iii) keeps both and reports `k = 2` with model 1 rendered
 as `{(q A)}` — which is what `-K` already prints, and which is *correct* under
 § 2 read on `S` alone. Whether `K` is part of the state is exactly
 [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
-— *the read-out prints the solution **KB** and calls it a model* — and it is
-**unowned**. So the check's last product is a dependency, stated: **the fix
-cannot be chosen before Q-M1e.7 is.**
+— *the read-out prints the solution **KB** and calls it a model*. So the
+check's last product is a dependency, stated: **the fix cannot be chosen before
+Q-M1e.7 is.** It was unowned when the check ran; it was assigned on 2026-08-28
+to **T1e.1.1.4 step 4** — this stage, because the two stages the register
+proposed (S1e.3.2, P1e.5's S1e.5.3) both run after the fix that waits on it.
+The register carries the three readings and recommends **A**: the recorded
+object is the *state*, `model` is a projection of it, and the criteria are
+evaluated on the state — which selects **fix (ii)**, and `k = 1` on the
+normal-path probe.
 
 ## Options
 
