@@ -103,6 +103,10 @@ search should *do* with the new obligation is
   fixture** carrying the ON/OFF pair with both sides exhausting, since
   `branching/06` cannot; a golden audit listing every corpus artefact that
   pins the current verdicts for both existing entries.
+- **Every `record_node` caller has a written answer to *which of § 2's three
+  conjuncts do I establish, and when?*** — beside the call, not only in a plan
+  file — and the conjuncts it does not establish are named. This is
+  [D3](d3_q_m1e8_file_or_take.md)'s B.
 - Nothing in this stage changes a verdict. Where a probe finds a defect, the
   fix is the dependent stage's; this stage's product is the fixture and the
   ruling.
@@ -119,7 +123,7 @@ the options with their consequences and a recommendation.
 |---|---|---|---|
 | [D1](d1_q4_which_route_reaches_the_site.md) | **answered 2026-08-28** — Route B built at stock config, and a cheaper witness at the phase-1 record site the finding does not name. Open: which fix S1e.3.1 takes, and what the banked fixture claims | **T1e.1.1.2** | the dirty-bit guard; bank the fixture stating today's answer |
 | [D2](d2_q6_which_decline_to_construct.md) | **moved** — Q6 became [S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md) on 2026-08-28. What stays is the ruling taken here: the rung mode is re-read at every node | nothing here | — |
-| [D3](d3_q_m1e8_file_or_take.md) | **Q-M1e.8: file the maximality fix, or take it?** One bitset per layer against a shipped false verdict | T1e.1.1.3 step 5 | take it, in P1e.2 |
+| [D3](d3_q_m1e8_file_or_take.md) | **decided 2026-08-28 — B**: the stage takes the *check*, not the fix. `record_node`'s four callers against `solution_semantics.md` § 2 | **T1e.1.1.4** | the fix still files to P1e.2, and *which* fix waits on Q-M1e.7 |
 | [D4](d4_q_m1e9_upward_closure.md) | **Q-M1e.9 is reproduced: `dead` is not upward-closed under `absent`.** Five of six configurations answer a twenty-line program wrongly. Who owns it, and how far does the fix go? | nothing here — but it qualifies D3 and D9 | a load-time refusal now, the real fix filed |
 | [D5](d5_does_t1_ratify_q_m1e2.md) | Does T1 ratify **Q-M1e.2** as well as Q-M1e.1? Q4's likely `accepted` needs it, and Q-M1e.2 has no owning stage | T1e.1.1.1 | ratify both |
 | [D6](d6_the_new_q5_fixture.md) | Where the **new Q5 fixture** lives, what it pins, and whether its `:expect` states today's answer or the right one | T1e.1.1.3 step 3 | `examples/branching/`, state today's answer, let D3's fix move it |
@@ -230,13 +234,39 @@ The precedent for step 1 is exact and recent: `disjunctive-prune`'s wrong
 engines and died to **one independent enumeration written outside the engine
 on the day**.
 
-### Task T1e.1.1.4 — moved
+### Task T1e.1.1.4 — The record-site conformance check
 
-The Q6 probe — a program deriving an obligation activator inside a fork, run
-under both traversals and diffed fact for fact — is
-[S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)
-T1–T4. Nothing of it remains here; the number the stage carried, 3 days, is now
-2.
+Half a day, and it is [D3](d3_q_m1e8_file_or_take.md)'s option **B**, chosen
+2026-08-28: not the maximality fix — which stays filed for P1e.2 — but a
+**double-check that the implementation meets
+[`solution_semantics.md`](../../../../docs/kernel/inference/solution_semantics.md)
+§ 2's three conjuncts.** A check changes no verdict, so the stage's acceptance
+survives it, and the matrix already exists
+([`probes/run_record_sites.sh`](probes/run_record_sites.sh)).
+
+1. **The matrix.** `record_node` has four callers — `:1030`, `:1118`, `:1550`,
+   `:1977`. For each, which of *saturated* / *consistent* / *maximal or
+   discharged* it establishes, and **when** relative to the last write into the
+   KB it records. D3 carries today's answers: the first conjunct is established
+   at none of them, and the second at every one of them *before* the last
+   write.
+2. **The witnesses.** Three exist and re-saturate to `Contradiction`; the
+   fourth (`tree_node`) is
+   [S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)'s.
+   Decide with [D1](d1_q4_which_route_reaches_the_site.md)'s (i)/(ii) whether
+   they enter the corpus stating today's answer or stay in `probes/`.
+3. **Write the conjunct each site owes beside the call**, not only here —
+   [Q-M1e.1](../../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
+   third rule.
+4. **State the fix menu and its dependency.** Three candidate fixes, one of
+   which covers all three witnesses, and two of which give *different `k`* on
+   the same program — so the choice waits on
+   [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model),
+   which is unowned. Naming that is the task's last product.
+
+The Q6 probe that used to be this task — a program deriving an obligation
+activator inside a fork, run under both traversals and diffed fact for fact —
+is now S1e.1b.6 T1–T4.
 
 ## Notes
 

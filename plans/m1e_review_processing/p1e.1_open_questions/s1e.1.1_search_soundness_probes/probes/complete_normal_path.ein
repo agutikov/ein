@@ -1,0 +1,43 @@
+;; D3 / Q-M1e.8 — the conformance check's third site, and the one every corpus
+;; solve uses: `record_node` at solve.rs:1977, guarded by `complete()` at :1895.
+;;
+;; The comment above that guard says consistency is already established because
+;; `result.kb` is "that unmutated fork". `complete()` then mutates it:
+;; generation runs the full filter pipeline, and the lookahead kill cache
+;; writes `(not h)` into the very KB the next lines record.
+;;
+;; So the engine records `S ∪ K`, where K is what the cache wrote, and checked
+;; the criteria against `S`. Here a rule reads K.
+;;
+;;   default : k=2, model 1 = {(q A), (not (p A)), (not (p B))} — re-saturates
+;;             to Contradiction
+;;   -K      : k=2, models {(q A)} and {(p A),(p B)} — both correct
+;;
+;; `k` is 2 either way, so nothing in the read-out signals the difference.
+
+(relation is-a T T)
+(relation marker)
+(relation p T)
+(relation q T)
+
+(marker)
+(is-a A T) (is-a B T)
+
+(hrule guess-q () :match (marker)    :assert (q A))
+(hrule guess-p () :match (is-a ?x T) :assert (p ?x))
+
+;; One step from any (p ?x) once (q A) holds, so inside the fork that committed
+;; to (q A) the lookahead kills every p candidate and caches both negatives.
+(rule kill-p ()
+  :match  (and (q A) (p ?x))
+  :assert (false)
+  :priority 300)
+
+;; Reads stored negatives only — no `absent`, so no NAF boundary is in the
+;; argument. Dormant at root and in any fork holding a p fact.
+(rule totality ()
+  :match  (and (not (p A)) (not (p B)))
+  :assert (false)
+  :priority 400)
+
+(query :goal (q ?x))
