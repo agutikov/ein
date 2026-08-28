@@ -26,6 +26,7 @@ records which question became which id.
 | [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness. The **record-site conformance check** is [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) T4 ([D3](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d3_q_m1e8_file_or_take.md), option B); the fix files to P1e.2 and, since [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) was ruled on 2026-08-28, **is chosen**: re-saturate and re-check before recording |
 | [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. **Ruled 2026-08-28: B now, C filed.** The containment is [S1e.2.3](p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md) (a diagnostic, 1 d, P1e.2); the real fix is [F18](../followups/f18_world_aware_negatives.md); and the **language** half — *may a refutation rest on an `absent` at all?* — is [S1e.1b.8](p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md)'s |
 | [Q-M1e.10](#q-m1e10--two-config--flags-are-inert) | Two `(config …)` flags are **inert** — `print-alive`, `candidate-order-seed` | open — raised by [S1e.5.1](p1e.5_documentation_and_other/s1e.5.1_config_reference.md); owner unassigned |
+| [Q-M1e.13](#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent) | `:expect` cannot state an answer with an **empty goal extent** — nor detect a shrinking model set | open — found 2026-08-28 while banking [D1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d1_q4_which_route_reaches_the_site.md)'s fixtures; **owner unassigned** |
 | [Q-M1e.12](#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object) | The blind rung is **untyped**, and a model binds a type as an object | open — raised by [D8](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d8_branching06_untyped_models.md) 2026-08-28; **owner unassigned**, three readings recorded |
 | [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [S1e.1b.6](p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)** 2026-08-28 by the user; the guard half is decided and is [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3's |
 
@@ -378,7 +379,7 @@ make this concrete rather than terminological. Write `S` for the recorded KB
 and `K` for what the search wrote into it — the lookahead kill cache's `(not
 h)` and the singleton writeback's.
 
-| | ruling | the Q-M1e.8 fix it selects | `k` on `complete_normal_path.ein` |
+| | ruling | the Q-M1e.8 fix it selects | `k` on `complete-records-stale.ein` |
 |---|---|---|---|
 | **A** | the recorded object is the **solution state**, and `model` is a *projection* of it (positive part minus the initial KB) computed at the read-out. § 2's conjuncts are evaluated on the state, `K` included | **re-saturate and re-check** before recording | **1** |
 | **B** | the **model** is the object: `K` is bookkeeping, never part of what is recorded or compared, and the criteria are evaluated on the projection | **strip `K`** — a read-out change, no search change | **2** |
@@ -403,7 +404,7 @@ made the fork visible. What settled it was not cost but **entailment**:
 > records the contradiction and calls it a model.
 
 That also settles what looked like A's worst consequence. `-K` reports `k = 2`
-on `complete_normal_path.ein` where A reports `k = 1`, and the earlier reading
+on `complete-records-stale.ein` where A reports `k = 1`, and the earlier reading
 of that was *a lever changes the answer*. It does not: `{(q A)}` entails
 `(not (p A))` and `(not (p B))` through `kill-p`, and those entail `(false)`
 through `totality`, so **`k = 1` is right and `-K`'s `k = 2` is the cache being
@@ -429,7 +430,7 @@ make this concrete rather than terminological. Write `S` for the recorded KB
 and `K` for what the search wrote into it — the lookahead kill cache's `(not
 h)` and the singleton writeback's.
 
-| | ruling | the Q-M1e.8 fix it selects | `k` on `complete_normal_path.ein` |
+| | ruling | the Q-M1e.8 fix it selects | `k` on `complete-records-stale.ein` |
 |---|---|---|---|
 | **A** ✅ | the recorded object is the **solution state**, and `model` is a *projection* of it (positive part minus the initial KB) computed at the read-out. § 2's conjuncts are evaluated on the state, `K` included | **re-saturate and re-check** before recording | **1** |
 | **B** | the **model** is the object: `K` is bookkeeping, never part of what is recorded or compared, and the criteria are evaluated on the projection | **strip `K`** — a read-out change, no search change | 2 |
@@ -755,3 +756,75 @@ deciding whether it is one.
 the engine does what the program says. What is wrong is that nobody chose which
 reading the repo holds, and a corpus fixture is quietly demonstrating the
 consequence.
+
+---
+
+## Q-M1e.13 — `:expect` cannot state an answer with an empty goal extent
+
+**Found 2026-08-28** while banking
+[D1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d1_q4_which_route_reaches_the_site.md)'s
+fixtures under option (i) — *bank them stating today's answer*. Two of the
+three could not state it. **Owner unassigned.**
+
+### What happens
+
+The three witnesses answer `Solution` on a model that contains **no fact of the
+relation the query asked about** — that is the defect they exist to show. Given
+
+```lisp
+(query :goal (p ?x) :expect (model (not (p A)) (not (p B))))
+```
+
+the loader refuses:
+
+```
+kb load error: :expect does not name p, which the query's :goal asks about
+```
+
+and so does `(model)`, and so does any list of facts that does not mention `p`.
+The rule is
+[`01_grammar.md` § Query](../../docs/kernel/ir/03-ein-lang/01_grammar.md#query)'s
+first: *the goal's relations are mandatory; an expectation that does not pin
+what the query asked is not an expectation.* Its reasoning is sound. Its
+consequence is that **an answer whose goal extent is empty is unstatable**,
+because the only way to name a relation is to list a fact of it, and there are
+none.
+
+**And every arm is checked separately.** For a two-model answer whose members
+populate *different* relations —
+`examples/ein-bugs/complete-records-stale.ein`'s `{(q A)}` and
+`{(p A), (p B)}` — no `(or (model …) (model …))` loads, whichever relation is
+the goal, because one arm can never name it.
+
+### Why it matters beyond the three fixtures
+
+- **It is the one mechanism that makes a verdict change visible in a golden.**
+  The [golden audit](p1e.1_open_questions/s1e.1.1_search_soundness_probes/golden_audit.md)
+  found that neither `corpus_exits.txt` (both sides exit `0`) nor
+  `corpus_shapes.md5` (the KB shape does not change) moves when a verdict does.
+  Only a failing `:expect` moves an exit code. So a fixture that cannot carry
+  one cannot be banked *against* a fix.
+- **An `(or …)` cannot detect a shrinking model set either.** A `k = 1` answer
+  still matches one arm of a two-arm `or`, so an `Ambiguity` fixture cannot
+  state a claim that fails when the set shrinks — which is exactly what the
+  selected Q-M1e.8 fix does.
+
+### What the workaround costs
+
+The two `alive-empty-*` fixtures moved their `:goal` to `is-a`, a relation the
+model does populate. It works, and it is a lie of omission: the file's question
+is *what does the engine do about `p`*, and its query now asks about something
+else, with a header paragraph explaining why. The third carries no expectation
+at all.
+
+### The options, unowned
+
+| | | consequence |
+|---|---|---|
+| **a** | allow a **closed empty extent** — a spelling for *the goal relation has no facts*, e.g. `(model (closed p))` or bare `(model :closes p)` | the smallest change that makes the answer statable; needs one new keyword and a load-time rule |
+| **b** | check the goal-naming rule against the **`(or …)` as a whole** rather than per arm | fixes the second half only, and weakens the rule's own reasoning: an arm that does not pin the goal is not an expectation of that arm |
+| **c** | grow `:expect` a word for the **verdict** (`Contradiction`, `Ambiguity`, `Open`) | P1d.4 considered and declined it — *"tests stay exhaustive by default, `:expect` stays closed by default"* — but it is what these fixtures actually want to say, and it would make both halves moot |
+| **d** | accept, and say so where the rule is stated | costs a paragraph in `01_grammar.md`; leaves a class of answer no program can claim |
+
+(c) is the most useful and the most decided-against; the honest first move is
+(d) plus a decision on whether (a) is cheap enough to be worth a keyword.

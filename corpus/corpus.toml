@@ -415,6 +415,24 @@ note   = "the flagship, and what a stale flag looks like: `slow = true` on a fil
 # (`ein-cli/tests/golden/corpus_exits.txt`), not this column's.
 
 [[entry]]
+path   = "examples/ein-bugs/alive-empty-phase1.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e D1 — the alive-∅ record site at phase 1. `compute_alive` writes the kill cache into root *after* `:1091`'s consistency check, and `:1118` records what it wrote: the model re-saturates to `Contradiction`. **Its `:expect` states today's answer and is meant to break** when the record sites re-saturate before recording (Q-M1e.7's ruling), the route `tests/stdlib/closure/02|03` took. Goal moved to `is-a` because a model with an empty goal extent is unstatable — Q-M1e.13."
+
+[[entry]]
+path   = "examples/ein-bugs/alive-empty-interlayer.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e D1, the same defect between layers — and the one `-K` does not repair, because its trigger is the singleton writeback rather than the kill cache. `-L` answers `Contradiction k=0` on the same file with both sides exhausted. `:expect` states today's answer and is meant to break."
+
+[[entry]]
+path   = "examples/ein-bugs/complete-records-stale.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e D3 — the record site every corpus solve uses: `complete()` runs the generation pipeline and its kill cache writes into the very fork `:1977` then records. Model 1 re-saturates to `Contradiction`; `-K` prints the same `k = 2` with both models correct. Carries **no** `:expect`: its two models populate different relations, and every arm of an `(or …)` must name the goal's — Q-M1e.13."
+
+[[entry]]
 path   = "examples/ein-bugs/mixed-type-hypothesis.ein"
 group  = "regression"
 runs   = ["solve -e"]

@@ -111,9 +111,9 @@ own program, one model at a time:
 
 | fixture | site | default | that model, re-saturated |
 |---|---|---|---|
-| [`alive_empty_phase1.ein`](probes/alive_empty_phase1.ein) | `:1118` | `Solution` k=1 | **`Contradiction`** |
-| [`alive_empty_interlayer.ein`](probes/alive_empty_interlayer.ein) | `:1550` | `Solution` k=1 | **`Contradiction`** |
-| [`complete_normal_path.ein`](probes/complete_normal_path.ein) | `:1977` | `Ambiguity` k=2 | model 1 **`Contradiction`**, model 2 `Solution` |
+| [`alive-empty-phase1.ein`](../../../../examples/ein-bugs/alive-empty-phase1.ein) | `:1118` | `Solution` k=1 | **`Contradiction`** |
+| [`alive-empty-interlayer.ein`](../../../../examples/ein-bugs/alive-empty-interlayer.ein) | `:1550` | `Solution` k=1 | **`Contradiction`** |
+| [`complete-records-stale.ein`](../../../../examples/ein-bugs/complete-records-stale.ein) | `:1977` | `Ambiguity` k=2 | model 1 **`Contradiction`**, model 2 `Solution` |
 
 The fourth, `tree_node`, is the same two lines and is
 [S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)'s
@@ -146,7 +146,7 @@ writeback**, not the cache, and design/08 holds that a writeback's negative is
 *entailed* — so (i) and (iii) do not reach it.
 
 And (ii) and (iii) **give different answers**, which is the finding that makes
-this more than a bug list. On `complete_normal_path.ein`, (ii) refuses model 1
+this more than a bug list. On `complete-records-stale.ein`, (ii) refuses model 1
 and reports `k = 1`; (iii) keeps both and reports `k = 2` with model 1 rendered
 as `{(q A)}` — which is what `-K` already prints, and which is *correct* under
 § 2 read on `S` alone. Whether `K` is part of the state is exactly
@@ -165,7 +165,7 @@ and a state its own rules refute is inconsistent — (iii) would hide an entaile
 contradiction, and (i) never reaches the inter-layer site.
 
 That also disposes of the objection this table raised against (ii). `-K`
-reports `k = 2` on `complete_normal_path.ein` where (ii) reports `k = 1`, and
+reports `k = 2` on `complete-records-stale.ein` where (ii) reports `k = 1`, and
 that is **not** a lever changing the answer: `{(q A)}` entails both negatives
 through `kill-p` and thence `(false)` through `totality`, so `k = 1` is right
 and `-K` is the cache being *less complete*. Under (ii) all three probes answer

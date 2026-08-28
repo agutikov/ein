@@ -9,9 +9,9 @@
 > banked fixture claims, not whether [CO-M1](../../README.md#the-findings) is
 > real.
 
-**Probes:** [`probes/alive_empty_interlayer.ein`](probes/alive_empty_interlayer.ein)
+**Probes:** [`examples/ein-bugs/alive-empty-interlayer.ein`](../../../../examples/ein-bugs/alive-empty-interlayer.ein)
 — Route B, the site the finding names;
-[`probes/alive_empty_phase1.ein`](probes/alive_empty_phase1.ein) — the same
+[`examples/ein-bugs/alive-empty-phase1.ein`](../../../../examples/ein-bugs/alive-empty-phase1.ein) — the same
 shape at `phase1`'s own site, 10 lines and **zero enterings**;
 [`probes/run_record_sites.sh`](probes/run_record_sites.sh) re-takes the matrix
 below — it grew a third fixture and a per-model re-saturation at
@@ -65,7 +65,7 @@ column. The lever neither opens the path nor closes it.
 
 ## Route B, constructed
 
-[`alive_empty_interlayer.ein`](probes/alive_empty_interlayer.ein), stock
+[`alive-empty-interlayer.ein`](../../../../examples/ein-bugs/alive-empty-interlayer.ein), stock
 config, no flags. `(p Z)` dies in **two** steps so the one-step lookahead
 cannot pre-empt it, and `Z` sorts last so the two survivors are entered
 against a root that has not grown yet:
@@ -92,7 +92,7 @@ answers **`Contradiction`, k = 0**.
 
 ## The same shape at a second site, and it is the cheaper one
 
-[`alive_empty_phase1.ein`](probes/alive_empty_phase1.ein) — 10 lines, **0
+[`alive-empty-phase1.ein`](../../../../examples/ein-bugs/alive-empty-phase1.ein) — 10 lines, **0
 enterings, 0 layers, 1 saturation**. `phase1` checks
 `has_contradiction(root)` at `:1091`, calls `compute_alive` at `:1098` — which
 writes the kill cache **into root** — and records root at `:1118` under
@@ -177,16 +177,40 @@ Not *whether* — **which fix, and what the fixture claims.**
 
 | | what the banked fixture claims | consequence |
 |---|---|---|
-| **i** | bank both under `examples/` with `:expect` stating **today's** answer, header naming the defect | [D6](d6_the_new_q5_fixture.md)'s policy, and M1d's precedent — `tests/stdlib/closure/02`+`03` were banked wrong so the fixing stage had to move the golden, and it did at S1d.2.6. The gate stays green and the fix is forced to declare itself |
+| **i** ✅ | bank both under `examples/` with `:expect` stating **today's** answer, header naming the defect | [D6](d6_the_new_q5_fixture.md)'s policy, and M1d's precedent — `tests/stdlib/closure/02`+`03` were banked wrong so the fixing stage had to move the golden, and it did at S1d.2.6. The gate stays green and the fix is forced to declare itself. **Taken 2026-08-28**, and it cost what D6 predicted: `corpus_exits.txt` +6 rows, `corpus_shapes.md5` +135, **0 deletions** — both goldens grow and nothing existing moves |
 | **ii** | leave both in `probes/`, and let S1e.3.1 bank the corpus fixture with the *right* answer when it fixes it | keeps a knowingly-false `:expect` out of the corpus. The cost is that nothing in `cargo test` mentions the defect until the fix lands |
 
-**Chosen: B (2026-08-28, with Q-M1e.7); (i) still recommended and open.** B
-because the invariant the two sites need is
+**Chosen: B and (i), both 2026-08-28.** B because the invariant the two sites
+need is
 *"root is at its fixpoint"*, and a dirty bit is that invariant written down
-rather than a saturation bought blind; (i) because the repo has done exactly
-this before and the alternative leaves a confirmed soundness defect with no
-presence in the gate. **A** is the honest fallback if the dirty bit turns out
-to want threading through `Kb`.
+rather than a saturation bought blind; (i) because the repo has done exactly this
+before and the alternative leaves a confirmed soundness defect with no presence
+in the gate. **A** is the honest fallback if the dirty bit turns out to want
+threading through `Kb`.
+
+### What banking found — the fixtures are in `examples/ein-bugs/`
+
+All three, moved out of `probes/` so there is one copy:
+`alive-empty-phase1.ein`, `alive-empty-interlayer.ein`,
+`complete-records-stale.ein`, with corpus entries under `group = "regression"`
+— *inputs that once broke an implementation, kept as fixtures* — and
+[`probes/run_record_sites.sh`](probes/run_record_sites.sh) driving them there.
+
+**And (i) turned out to be only two-thirds available.**
+[Q-M1e.13](../../open_questions.md#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent):
+these models contain **no fact of the goal relation** — that is the defect —
+and `:expect` refuses a claim that does not name the goal's relations, so the
+answer is unstatable as written. The two `alive-empty-*` files moved their goal
+to `is-a`, which the model does populate, and say so in their headers;
+`complete-records-stale.ein` carries **no** expectation at all, because its two
+models populate different relations and every arm of an `(or …)` must name the
+goal's.
+
+That matters more than a fixture's convenience. The
+[golden audit](golden_audit.md) found that neither big golden moves on a
+verdict change, so **a failing `:expect` is the only thing that would make the
+fix declare itself** — and a fixture that cannot carry one cannot be banked
+against a fix at all.
 
 ## What this does to the rest of the stage
 
@@ -203,7 +227,7 @@ to want threading through `Kb`.
   `solution_semantics.md` §6's consistency conjunct fails at **stock config**,
   witnessed twice; the row that called this an *exposure* is now a defect with
   a probe.
-- **Q5 / [D6](d6_the_new_q5_fixture.md)**: `alive_empty_interlayer.ein` is
+- **Q5 / [D6](d6_the_new_q5_fixture.md)**: `alive-empty-interlayer.ein` is
   already an ON/OFF pair whose two sides differ (`Solution k=1` / `Contradiction
   k=0`), **both exhausted**, with a solution set derivable in a paragraph —
   which is what [T1e.1.1.3](README.md#task-t1e113--q5-derive-lattice02-by-hand-against-the-ruling)

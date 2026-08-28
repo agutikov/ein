@@ -1,5 +1,7 @@
-;; D3 / Q-M1e.8 — the conformance check's third site, and the one every corpus
-;; solve uses: `record_node` at solve.rs:1977, guarded by `complete()` at :1895.
+;;; `complete()` writes into the fork it is asked about — the record site every
+;;; corpus solve uses. Recorded, not repaired (M1e D3, banked 2026-08-28).
+;;
+;; `record_node` at solve.rs:1977, guarded by `complete()` at :1895.
 ;;
 ;; The comment above that guard says consistency is already established because
 ;; `result.kb` is "that unmutated fork". `complete()` then mutates it:
@@ -14,6 +16,19 @@
 ;;   -K      : k=2, models {(q A)} and {(p A),(p B)} — both correct
 ;;
 ;; `k` is 2 either way, so nothing in the read-out signals the difference.
+;;
+;; ── Why this file carries no `:expect` ────────────────────────────────────
+;;
+;; Because none can be written for it. Its two models populate **different**
+;; relations — `{(q A)}` and `{(p A), (p B)}` — and every arm of an
+;; `(or (model …) …)` must name the goal's relations, so whichever relation is
+;; the goal, one arm cannot name it and the file does not load. Nor would an
+;; `(or …)` detect the fix: a `k = 1` answer still matches one of its arms.
+;;
+;; So this fixture is pinned by its exit code and its KB-shape digest and by
+;; nothing that states an answer, which is Q-M1e.13 — and it is the reason the
+;; two `alive-empty-*` files moved their goal to `is-a` rather than following
+;; this one.
 
 (relation is-a T T)
 (relation marker)

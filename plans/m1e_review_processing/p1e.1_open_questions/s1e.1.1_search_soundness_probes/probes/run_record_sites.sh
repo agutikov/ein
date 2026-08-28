@@ -3,7 +3,8 @@
 #
 #   sh probes/run_record_sites.sh
 #
-# Three fixtures, one defect: `record_node` records a KB that has not been
+# The three fixtures now live in `examples/ein-bugs/` (M1e D1, banked
+# 2026-08-28); this script drives them there. One defect: `record_node` records a KB that has not been
 # re-saturated since the last write into it — by the layer, by `compute_alive`,
 # or by `complete()`'s own kill cache. This is
 # `docs/kernel/inference/solution_semantics.md` § 2's **first** conjunct,
@@ -15,7 +16,9 @@
 # engine called a solution and its own rules refute.
 set -e
 BIN="${EIN_BIN:-ein.rs/target/release/ein}"
-HERE="$(dirname "$0")"
+# The fixtures are corpus entries now; like $EIN_BIN, this path is relative
+# to the repo root, which is where this script is run from.
+HERE="examples/ein-bugs"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
@@ -53,22 +56,22 @@ PY
   done
 }
 
-echo "alive_empty_phase1.ein     — record_node at solve.rs:1118 (phase 1)"
-row "default"                    alive_empty_phase1.ein ""
-row "-K (no kill cache)"         alive_empty_phase1.ein ""                              -K
-row "-L (no lookahead)"          alive_empty_phase1.ein ""                              -L
-row "forced-positive off"        alive_empty_phase1.ein ":enable-forced-positive false"
+echo "alive-empty-phase1.ein     — record_node at solve.rs:1118 (phase 1)"
+row "default"                    alive-empty-phase1.ein ""
+row "-K (no kill cache)"         alive-empty-phase1.ein ""                              -K
+row "-L (no lookahead)"          alive-empty-phase1.ein ""                              -L
+row "forced-positive off"        alive-empty-phase1.ein ":enable-forced-positive false"
 
 echo
-echo "alive_empty_interlayer.ein — record_node at solve.rs:1550 (between layers)"
-row "default"                    alive_empty_interlayer.ein ""
-row "-K (no kill cache)"         alive_empty_interlayer.ein ""                              -K
-row "-L (no lookahead)"          alive_empty_interlayer.ein ""                              -L
-row "forced-positive off"        alive_empty_interlayer.ein ":enable-forced-positive false"
-row "singleton-writeback off"    alive_empty_interlayer.ein ":enable-singleton-writeback false"
+echo "alive-empty-interlayer.ein — record_node at solve.rs:1550 (between layers)"
+row "default"                    alive-empty-interlayer.ein ""
+row "-K (no kill cache)"         alive-empty-interlayer.ein ""                              -K
+row "-L (no lookahead)"          alive-empty-interlayer.ein ""                              -L
+row "forced-positive off"        alive-empty-interlayer.ein ":enable-forced-positive false"
+row "singleton-writeback off"    alive-empty-interlayer.ein ":enable-singleton-writeback false"
 
 echo
-echo "complete_normal_path.ein   — record_node at solve.rs:1977 (every corpus solve)"
-row "default"                    complete_normal_path.ein ""
-row "-K (no kill cache)"         complete_normal_path.ein ""                              -K
-row "-L (no lookahead)"          complete_normal_path.ein ""                              -L
+echo "complete-records-stale.ein   — record_node at solve.rs:1977 (every corpus solve)"
+row "default"                    complete-records-stale.ein ""
+row "-K (no kill cache)"         complete-records-stale.ein ""                              -K
+row "-L (no lookahead)"          complete-records-stale.ein ""                              -L

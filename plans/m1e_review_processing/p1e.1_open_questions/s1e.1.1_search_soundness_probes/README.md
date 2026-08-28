@@ -96,11 +96,12 @@ search should *do* with the new obligation is
   as decided **and** into `docs/kernel/` prose, and every later stage cites
   them rather than re-arguing them. [D5](d5_does_t1_ratify_q_m1e2.md), option
   A.
-- **Q4**: either a fixture under `examples/` that reaches the alive-∅ path
-  with a saturation-encoded totality rule and shows what root records, or —
-  if the shape is not constructible — the invariant argument written *beside*
-  `solve.rs:1528-1551` naming why. Either way `CO-M1`'s disposition is
-  determined by this task, not by the later stage.
+- **Q4** ✅ — three fixtures under `examples/ein-bugs/`, one per reachable
+  `record_node` caller, each answering `Solution`/`Ambiguity` on a state that
+  re-saturates to `Contradiction`; `CO-M1`'s disposition is **fixed**, and the
+  fix is selected (re-saturate before recording). What the acceptance did not
+  anticipate: two of the three could not state their own answer, which is
+  [Q-M1e.13](../../open_questions.md#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent).
 - **Q5**: `lattice/02`'s solution set derived **by hand** against
   [Q-M1e.6](../../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
   and recorded in the stage's notes; the correct side named; **one new
@@ -311,11 +312,13 @@ survives it, and the matrix already exists
    KB it records. D3 carries today's answers: the first conjunct is established
    at none of them, and the second at every one of them *before* the last
    write.
-2. **The witnesses.** Three exist and re-saturate to `Contradiction`; the
-   fourth (`tree_node`) is
+2. **The witnesses** — **banked 2026-08-28**, [D1](d1_q4_which_route_reaches_the_site.md)'s
+   option (i). All three are `examples/ein-bugs/{alive-empty-phase1,
+   alive-empty-interlayer, complete-records-stale}.ein` with corpus entries;
+   the fourth caller (`tree_node`) is
    [S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)'s.
-   Decide with [D1](d1_q4_which_route_reaches_the_site.md)'s (i)/(ii) whether
-   they enter the corpus stating today's answer or stay in `probes/`.
+   Two carry an `:expect` stating today's answer; the third cannot, which is
+   [Q-M1e.13](../../open_questions.md#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent).
 3. **Write the conjunct each site owes beside the call**, not only here —
    [Q-M1e.1](../../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
    third rule.
