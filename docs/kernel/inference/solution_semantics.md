@@ -329,7 +329,7 @@ qualification is stated nowhere else in the engine, which is why it is here.
 | entering, alive/dead | [`commitment.rs`](../../../ein.rs/crates/ein-infer/src/commitment.rs) `try_commitment_set`, `Kind` |
 | complete | `hypgen::complete` |
 | owes, discharged | [`obligations.rs`](../../../ein.rs/crates/ein-infer/src/obligations.rs) `tally` |
-| solution record, model set | `Run::record_node`, `Run::finalise` |
+| solution record, model set | `Run::record_node`, `Run::finalise`. Its doc comment carries § 2's conjuncts and which of them each of its **four** callers establishes — `solve.rs:1030` (tree), `:1118` (phase 1), `:1550` (between layers), `:1977` (an entered commitment) — and each call site repeats its own row |
 | verdict words, `k` | [`verdict.rs`](../../../ein.rs/crates/ein-infer/src/verdict.rs) |
 | `exhausted` | `Run::finalise`, from `lstate.truncated` |
 

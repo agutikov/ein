@@ -109,13 +109,22 @@ search should *do* with the new obligation is
   `branching/06` cannot; a golden audit listing every corpus artefact that
   pins the current verdicts for both existing entries.
 - **[Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
-  is ruled, dated and written where the recorded object is built** — it blocks
-  Q-M1e.8's fix, and the two stages that will apply the ruling both run after
-  the stage that needs it.
+  is ruled, dated and written where the recorded object is built** ✅ — ruled
+  **A** on 2026-08-28, and written into `Run::record_node`'s doc comment: *the
+  object recorded is the solution **state**, not the model*, with what `K` is
+  and why it is a set of consequences rather than bookkeeping. It blocked
+  Q-M1e.8's fix, which is now selected. What is **not** done and is not this
+  stage's: the four fact-set comparisons saying which object each compares
+  (S1e.3.2, P1e.5's S1e.5.3).
 - **Every `record_node` caller has a written answer to *which of § 2's three
-  conjuncts do I establish, and when?*** — beside the call, not only in a plan
-  file — and the conjuncts it does not establish are named. This is
-  [D3](d3_q_m1e8_file_or_take.md)'s B.
+  conjuncts do I establish, and when?*** ✅ — beside the call, not only in a
+  plan file, with the conjuncts it does not establish named and its witness
+  fixture cited. Four sites, `solve.rs:1030 / 1118 / 1550 / 1977`, plus the
+  shared statement on `record_node` itself. This is
+  [D3](d3_q_m1e8_file_or_take.md)'s B, and it corrected two comments that had
+  become false: phase 1's *"empty alive and no contradiction ⇒ root is itself a
+  complete, consistent model"*, and the layer path's *"`result.kb` is that
+  **unmutated** fork"* — which `complete()` mutates on the next line.
 - Nothing in this stage changes a verdict. Where a probe finds a defect, the
   fix is the dependent stage's; this stage's product is the fixture and the
   ruling.
@@ -319,9 +328,14 @@ survives it, and the matrix already exists
    [S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)'s.
    Two carry an `:expect` stating today's answer; the third cannot, which is
    [Q-M1e.13](../../open_questions.md#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent).
-3. **Write the conjunct each site owes beside the call**, not only here —
+3. **Write the conjunct each site owes beside the call** ✅ — done
+   2026-08-28, `solve.rs:1030 / 1118 / 1550 / 1977` and `record_node`'s doc
+   comment, per
    [Q-M1e.1](../../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
-   third rule.
+   third rule. Two existing comments were **false** and are corrected: phase
+   1's claimed the recorded root was a consistent model, and the layer path's
+   called the fork it records *unmutated* one line before `complete()` writes
+   to it.
 4. **Rule on [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)**
    — assigned here on 2026-08-28 **because it blocks**, and **ruled the same
    day: A**, which selects fix (ii) for Q-M1e.8 and CO-M1. What remains of this

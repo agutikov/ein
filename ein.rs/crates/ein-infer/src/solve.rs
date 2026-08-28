@@ -1025,6 +1025,14 @@ impl Run<'_> {
                     .map_err(|e| SolveError::Compile(CompileError(e.to_string())))?
             };
             if solved {
+                // Same shape as the layer path: `complete()` above ran the
+                // generation pipeline over `r.kb`, so its kill cache may have
+                // written into the KB recorded on the next line — saturated,
+                // no; consistent, yes but before that write; maximal, by
+                // `complete`, which here is additionally conditioned on a rung
+                // mode probed once at the root (`Run::tree`). The fourth
+                // record site and the only one with no fixture, because
+                // nothing has built the program yet. See `Run::record_node`.
                 let firings = std::mem::take(&mut r.firings);
                 let owes = std::mem::take(&mut r.owes);
                 self.record_node(&mut r.kb, terms, commit.clone(), firings, depth + 1, owes);
@@ -1112,8 +1120,19 @@ impl Run<'_> {
         self.root_owes = crate::obligations::tally(root, terms, ast, &self.memo, events)?;
         self.declares_obligations = !root.program().obligations.is_empty();
         if alive.is_empty() {
-            // Empty alive and no contradiction ⇒ root is itself a complete,
-            // consistent model — the unique solution.
+            // Empty alive, and root was consistent at the `has_contradiction`
+            // above. That is **not** `solution(root)`: `compute_alive` ran in
+            // between, and its kill cache writes `(not h)` into root, so what
+            // is recorded here was last saturated before those facts existed.
+            //
+            //   saturated  — no; `compute_alive` wrote to root after it.
+            //   consistent — checked above, i.e. before that write.
+            //   maximal    — yes; `alive == ∅` *is* `complete(root)`, both
+            //                being the same generator under the same filters.
+            //
+            // `examples/ein-bugs/alive-empty-phase1.ein` is the witness: ten
+            // lines, zero enterings, and the model it records re-saturates to
+            // `Contradiction`. See `Run::record_node`.
             let owes = self.root_owes.clone();
             self.record_node(root, terms, Vec::new(), Vec::new(), 0, owes);
             return Ok(Phase1::Done);
@@ -1545,6 +1564,17 @@ impl Run<'_> {
                 // The backbone determines every cell. Root moved since
                 // Phase 1 — the cascade promoted facts into it — so the tally
                 // is re-read rather than reused.
+                //
+                //   saturated  — no; this layer's writebacks and
+                //                `compute_alive`'s kill cache both wrote to
+                //                root after its last saturation.
+                //   consistent — last established at Phase 1, or inside the
+                //                cascade above; not since.
+                //   maximal    — yes; `alive == ∅` is `complete(root)`.
+                //
+                // Witness: `examples/ein-bugs/alive-empty-interlayer.ein`, and
+                // `-K` does **not** repair it — the trigger there is the
+                // singleton writeback, not the cache. See `Run::record_node`.
                 let owes = crate::obligations::tally(root, terms, ast, &self.memo, events)?;
                 self.root_owes = owes.clone();
                 self.record_node(root, terms, Vec::new(), Vec::new(), 0, owes);
@@ -1880,10 +1910,23 @@ impl Run<'_> {
         }
         // F-ENG-12 — consistency is already established on an alive branch
         // (`try_commitment_set` returns `alive` only after its post-saturation
-        // detect came back empty, and `result.kb` is that unmutated fork), so
-        // ask completeness directly: `is_solution_node` would re-run a full
-        // `detect()` on a KB already proved consistent, which is both wasted
-        // work and a counter difference.
+        // detect came back empty), so ask completeness directly:
+        // `is_solution_node` would re-run a full `detect()` on a KB already
+        // proved consistent, which is both wasted work and a counter
+        // difference.
+        //
+        // **`complete()` then writes to that fork.** It runs the whole
+        // generation pipeline, and the lookahead kill cache stores `(not h)`
+        // into `result.kb` — the KB `record_node` is handed below. So of § 2's
+        // three conjuncts this path establishes:
+        //
+        //   saturated  — no; `complete()` wrote to the fork after its
+        //                saturation.
+        //   consistent — yes, before that write.
+        //   maximal    — `complete`, a sound but incomplete approximation.
+        //
+        // Witness: `examples/ein-bugs/complete-records-stale.ein`, and this is
+        // the path every corpus solve takes. See `Run::record_node`.
         let solved = {
             let mut s = Session {
                 kb: &mut result.kb,
@@ -2138,6 +2181,38 @@ impl Run<'_> {
 
     /// Record a solution node, deduped by [`state_key`] — exact canonical
     /// equality, so no hash collision can collapse two distinct models.
+    ///
+    /// # What is recorded, and what is not checked
+    ///
+    /// **The object recorded is the solution *state*, not the model.** A model
+    /// is its positive part minus the positive initial KB, and nothing
+    /// computes that object: the read-out prints this KB and calls it a model.
+    /// Ruled 2026-08-28 (M1e Q-M1e.7) — the criteria are evaluated on the
+    /// **state**, including `K`, what the search itself wrote into it: the
+    /// singleton writeback's `(not h)` and the lookahead kill cache's. Those
+    /// are consequences of the state rather than bookkeeping — a kill-cache
+    /// negative means `S ∪ {h}` derives `(false)` in one firing, a writeback
+    /// negative means the fork for `{h}` died — so a rule that reads one is
+    /// reading something true, and a state its own rules refute is
+    /// inconsistent.
+    ///
+    /// `docs/kernel/inference/solution_semantics.md` § 2 states three
+    /// conjuncts:
+    ///
+    /// ```text
+    /// solution(S) ≡ S saturated ∧ S consistent ∧ (owes nothing ∨ maximal)
+    /// ```
+    ///
+    /// **This function checks none of them**, and every one of its four
+    /// callers establishes consistency *before* the last write into the KB it
+    /// hands over — so the **saturated** conjunct holds at no call site. Three
+    /// of the four have a corpus fixture whose recorded model, fed back as a
+    /// program, this engine answers `Contradiction` on:
+    /// `examples/ein-bugs/alive-empty-phase1.ein`, `…/alive-empty-interlayer.ein`
+    /// and `…/complete-records-stale.ein`. The selected fix is to re-saturate
+    /// and re-check before recording — equivalently, to refuse a KB written
+    /// since its last saturation. Until it lands each caller carries a note
+    /// saying which conjuncts it owes.
     ///
     /// When the same model state is reached by two commitment paths — the two
     /// orientations of a symmetric pair, say — the **lex-smallest** commitment
