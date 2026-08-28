@@ -8,7 +8,8 @@ has all 12 256 lines of it).
 This README is the milestone, its four phases and their stages, in one file.
 Beside it are the fifteen documents that are still *read* — as evidence, as a
 specification, or as the reason something is the way it is — which is the rule
-that put them here rather than leaving them in git.
+that put them here rather than leaving them in git, and one raw log that is
+evidence and not a document.
 
 ## What it was for
 
@@ -381,6 +382,24 @@ ladder cost).
 [`representations.md`](representations.md) (five forms priced),
 [`the_verdict.md`](the_verdict.md), [`the_boundary.md`](the_boundary.md),
 [`the_vocabulary.md`](the_vocabulary.md), [`completeness.md`](completeness.md).
+
+**And one raw artefact** — [`lattice_exhaustive_run.log`](lattice_exhaustive_run.log),
+the stdout of the milestone's opening measurement: `ein solve` exhausting the
+lattice on `examples/zebra2-minus-15-obligations.ein`. Twenty-two layers
+narrated one line apiece, the verdict, all 32 models with their goal bindings
+and rendered NL, and the timing block. Every page above cites this run as
+*17 204 592 enterings*; this is the only place its **shape** is written down,
+and the shape is the argument for the tree. **All 32 models are found by layer
+3 — 48 745 enterings, 4 s.** The other **17 155 847 enterings and 1 506 s** are
+the exhaustion proof, and they refute almost nothing while they run: layer 6
+joins 1 090 086 candidates and kills **eight**, and **layers 7 through 22 kill
+zero**, sixteen layers and 1 385 s of the 1 510 without a single death. Filed
+2026-08-28 from the working tree, where it
+had sat untracked since the 27th. It reproduces the recorded enterings and the
+22 layers exactly; its search wall is **1 510 s** against the 1 496 s
+[`the_verdict.md`](the_verdict.md) records, so it is either that run re-taken
+or a 1 % machine difference — the log does not record its own command line or
+its `bench_env.sh` state, and that is its one defect as evidence.
 
 **And the two the milestone began with** — [`ideas.md`](ideas.md), the note that
 is authoritative on intent, and [`open_questions.md`](open_questions.md), seven

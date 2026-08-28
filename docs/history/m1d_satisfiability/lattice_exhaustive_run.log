@@ -1,0 +1,633 @@
+root hyps        81 candidates across 4 relations
+  pet-loc                      24  ( 29.6%)
+  smoke-loc                    23  ( 28.4%)
+  color-loc                    20  ( 24.7%)
+  drink-loc                    14  ( 17.3%)
+root hyp-gen filter breakdown:
+    raw                190
+    emitted            81
+    filtered.negated_fact       28
+    filtered.seen_in_call       81
+    pre.closed_relation         8
+    rung               obligations
+    rung.owed          46
+    rung.branches      38
+    rung.declined      8
+    rung.uncovered     2
+root saturated: 339 facts  (    0s)
+  layer 1: alive=96 root_facts=339  (    0s)
+  layer 1 gen:  frontier=96 joined=96 −dead=0 −clause=0 (0.0%) cand=96  (    0s)
+  layer 1 test: entered=96 alive=96 complete=0 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  (    0s)
+  layer 1 done: survivors=96 enterings=96 solution-nodes=0  (    0s)
+  layer 2: alive=96 root_facts=339  (    0s)
+  layer 2 gen:  frontier=96 joined=4560 −dead=0 −clause=0 (0.0%) cand=4560  (    0s)
+  layer 2 test: entered=4560 alive=3132 complete=221 models=28 dead=1428 dead_pre=0 clauses=1428 subsumed=0 writebacks=0  (    0s)
+  layer 2 done: survivors=2911 enterings=4656 solution-nodes=28  (    0s)
+  layer 3: alive=96 root_facts=339  (    0s)
+  layer 3 gen:  frontier=2911 joined=60260 −dead=0 −clause=16171 (26.8%) cand=44089  (    0s)
+  layer 3 test: entered=44089 alive=33940 complete=7256 models=4 dead=10149 dead_pre=0 clauses=10149 subsumed=0 writebacks=0  (    4s)
+  layer 3 done: survivors=26684 enterings=48745 solution-nodes=32  (    4s)
+  layer 4: alive=96 root_facts=339  (    4s)
+  layer 4 gen:  frontier=26684 joined=245612 −dead=0 −clause=88887 (36.2%) cand=156725  (    5s)
+  layer 4 test: entered=156725 alive=150148 complete=32490 models=0 dead=6577 dead_pre=0 clauses=6577 subsumed=0 writebacks=0  (   17s)
+  layer 4 done: survivors=117658 enterings=205470 solution-nodes=32  (   17s)
+  layer 5: alive=96 root_facts=339  (   17s)
+  layer 5 gen:  frontier=117658 joined=586982 −dead=0 −clause=174376 (29.7%) cand=412606  (   21s)
+  layer 5 test: entered=412606 alive=411639 complete=68097 models=0 dead=967 dead_pre=0 clauses=967 subsumed=0 writebacks=0  (   51s)
+  layer 5 done: survivors=343542 enterings=618076 solution-nodes=32  (   51s)
+  layer 6: alive=96 root_facts=339  (   51s)
+  layer 6 gen:  frontier=343542 joined=1090086 −dead=0 −clause=224329 (20.6%) cand=865757  (   59s)
+  layer 6 test: entered=865757 alive=865749 complete=99436 models=0 dead=8 dead_pre=0 clauses=8 subsumed=0 writebacks=0  (  125s)
+  layer 6 done: survivors=766313 enterings=1483833 solution-nodes=32  (  125s)
+  layer 7: alive=96 root_facts=339  (  125s)
+  layer 7 gen:  frontier=766313 joined=1721985 −dead=0 −clause=225021 (13.1%) cand=1496964  (  141s)
+  layer 7 test: entered=1496964 alive=1496964 complete=116314 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  (  254s)
+  layer 7 done: survivors=1380650 enterings=2980797 solution-nodes=32  (  254s)
+  layer 8: alive=96 root_facts=339  (  254s)
+  layer 8 gen:  frontier=1380650 joined=2355707 −dead=0 −clause=184649 (7.8%) cand=2171058  (  279s)
+  layer 8 test: entered=2171058 alive=2171058 complete=112961 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  (  442s)
+  layer 8 done: survivors=2058097 enterings=5151855 solution-nodes=32  (  442s)
+  layer 9: alive=96 root_facts=339  (  442s)
+  layer 9 gen:  frontier=2058097 joined=2786074 −dead=0 −clause=124184 (4.5%) cand=2661890  (  477s)
+  layer 9 test: entered=2661890 alive=2661890 complete=89495 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  (  675s)
+  layer 9 done: survivors=2572395 enterings=7813745 solution-nodes=32  (  675s)
+  layer 10: alive=96 root_facts=339  (  675s)
+  layer 10 gen:  frontier=2572395 joined=2841710 −dead=0 −clause=67719 (2.4%) cand=2773991  (  713s)
+  layer 10 test: entered=2773991 alive=2773991 complete=55854 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  (  920s)
+  layer 10 done: survivors=2718137 enterings=10587736 solution-nodes=32  (  920s)
+  layer 11: alive=96 root_facts=339  (  920s)
+  layer 11 gen:  frontier=2718137 joined=2494257 −dead=0 −clause=29367 (1.2%) cand=2464890  (  956s)
+  layer 11 test: entered=2464890 alive=2464890 complete=26417 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  ( 1138s)
+  layer 11 done: survivors=2438473 enterings=13052626 solution-nodes=32  ( 1138s)
+  layer 12: alive=96 root_facts=339  ( 1138s)
+  layer 12 gen:  frontier=2438473 joined=1876841 −dead=0 −clause=9751 (0.5%) cand=1867090  ( 1167s)
+  layer 12 test: entered=1867090 alive=1867090 complete=9038 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  ( 1304s)
+  layer 12 done: survivors=1858052 enterings=14919716 solution-nodes=32  ( 1304s)
+  layer 13: alive=96 root_facts=339  ( 1304s)
+  layer 13 gen:  frontier=1858052 joined=1202586 −dead=0 −clause=2330 (0.2%) cand=1200256  ( 1328s)
+  layer 13 test: entered=1200256 alive=1200256 complete=2091 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  ( 1413s)
+  layer 13 done: survivors=1198165 enterings=16119972 solution-nodes=32  ( 1413s)
+  layer 14: alive=96 root_facts=339  ( 1414s)
+  layer 14 gen:  frontier=1198165 joined=649297 −dead=0 −clause=363 (0.1%) cand=648934  ( 1425s)
+  layer 14 test: entered=648934 alive=648934 complete=290 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  ( 1471s)
+  layer 14 done: survivors=648644 enterings=16768906 solution-nodes=32  ( 1471s)
+  layer 15: alive=96 root_facts=339  ( 1471s)
+  layer 15 gen:  frontier=648644 joined=291042 −dead=0 −clause=31 (0.0%) cand=291011  ( 1476s)
+  layer 15 test: entered=291011 alive=291011 complete=18 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  ( 1497s)
+  layer 15 done: survivors=290993 enterings=17059917 solution-nodes=32  ( 1497s)
+  layer 16: alive=96 root_facts=339  ( 1497s)
+  layer 16 gen:  frontier=290993 joined=106146 −dead=0 −clause=1 (0.0%) cand=106145  ( 1499s)
+  layer 16 test: entered=106145 alive=106145 complete=0 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  ( 1507s)
+  layer 16 done: survivors=106145 enterings=17166062 solution-nodes=32  ( 1507s)
+  layer 17: alive=96 root_facts=339  ( 1507s)
+  layer 17 gen:  frontier=106145 joined=30640 −dead=0 −clause=0 (0.0%) cand=30640  ( 1507s)
+  layer 17 test: entered=30640 alive=30640 complete=0 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  ( 1510s)
+  layer 17 done: survivors=30640 enterings=17196702 solution-nodes=32  ( 1510s)
+  layer 18: alive=96 root_facts=339  ( 1510s)
+  layer 18 gen:  frontier=30640 joined=6726 −dead=0 −clause=0 (0.0%) cand=6726  ( 1510s)
+  layer 18 test: entered=6726 alive=6726 complete=0 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  ( 1510s)
+  layer 18 done: survivors=6726 enterings=17203428 solution-nodes=32  ( 1510s)
+  layer 19: alive=96 root_facts=339  ( 1510s)
+  layer 19 gen:  frontier=6726 joined=1054 −dead=0 −clause=0 (0.0%) cand=1054  ( 1510s)
+  layer 19 test: entered=1054 alive=1054 complete=0 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  ( 1510s)
+  layer 19 done: survivors=1054 enterings=17204482 solution-nodes=32  ( 1510s)
+  layer 20: alive=96 root_facts=339  ( 1510s)
+  layer 20 gen:  frontier=1054 joined=105 −dead=0 −clause=0 (0.0%) cand=105  ( 1510s)
+  layer 20 test: entered=105 alive=105 complete=0 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  ( 1510s)
+  layer 20 done: survivors=105 enterings=17204587 solution-nodes=32  ( 1510s)
+  layer 21: alive=96 root_facts=339  ( 1510s)
+  layer 21 gen:  frontier=105 joined=5 −dead=0 −clause=0 (0.0%) cand=5  ( 1510s)
+  layer 21 test: entered=5 alive=5 complete=0 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  ( 1510s)
+  layer 21 done: survivors=5 enterings=17204592 solution-nodes=32  ( 1510s)
+  layer 22: alive=96 root_facts=339  ( 1510s)
+  layer 22 gen:  frontier=5 joined=0 −dead=0 −clause=0 (—) cand=0  ( 1510s)
+  layer 22 test: entered=0 alive=0 complete=0 models=0 dead=0 dead_pre=0 clauses=0 subsumed=0 writebacks=0  ( 1510s)
+  layer 22 done: survivors=0 enterings=17204592 solution-nodes=32  ( 1510s)
+  => Ambiguity  k=32  exhausted=True  enterings=17204592  ( 1510s)
+solve · ./examples/zebra2-minus-15-obligations.ein
+──────────────────────────────────────────────────────────────
+  solutions (k)   32
+  verdict         Ambiguous — distinct complete models; the puzzle is under-determined
+
+  model 1/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-5
+    ?who_water  = Norwegian
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-5)         the Zebra is kept in House-5
+    (nation-loc Ukrainian House-5)  the Ukrainian lives in House-5
+
+  result
+    The Norwegian drinks water in House-1; the Ukrainian owns zebra in House-5
+
+  model 2/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-5
+    ?who_water  = Norwegian
+    ?who_zebra  = Japanese
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-5)         the Zebra is kept in House-5
+    (nation-loc Japanese House-5)   the Japanese lives in House-5
+
+  result
+    The Norwegian drinks water in House-1; the Japanese owns zebra in House-5
+
+  model 3/32
+  query bindings
+    ?h_water    = House-5
+    ?h_zebra    = House-4
+    ?who_water  = Englishman
+    ?who_zebra  = Ukrainian
+
+    query facts                      rendered
+    (drink-loc Water House-5)        Water is drunk in House-5
+    (nation-loc Englishman House-5)  the Englishman lives in House-5
+    (pet-loc Zebra House-4)          the Zebra is kept in House-4
+    (nation-loc Ukrainian House-4)   the Ukrainian lives in House-4
+
+  result
+    The Englishman drinks water in House-5; the Ukrainian owns zebra in House-4
+
+  model 4/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-2
+    ?who_water  = Norwegian
+    ?who_zebra  = Japanese
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-2)         the Zebra is kept in House-2
+    (nation-loc Japanese House-2)   the Japanese lives in House-2
+
+  result
+    The Norwegian drinks water in House-1; the Japanese owns zebra in House-2
+
+  model 5/32
+  query bindings
+    ?h_water    = House-4
+    ?h_zebra    = House-5
+    ?who_water  = Japanese
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-4)       Water is drunk in House-4
+    (nation-loc Japanese House-4)   the Japanese lives in House-4
+    (pet-loc Zebra House-5)         the Zebra is kept in House-5
+    (nation-loc Ukrainian House-5)  the Ukrainian lives in House-5
+
+  result
+    The Japanese drinks water in House-4; the Ukrainian owns zebra in House-5
+
+  model 6/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-4
+    ?who_water  = Norwegian
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-4)         the Zebra is kept in House-4
+    (nation-loc Ukrainian House-4)  the Ukrainian lives in House-4
+
+  result
+    The Norwegian drinks water in House-1; the Ukrainian owns zebra in House-4
+
+  model 7/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-1
+    ?who_water  = Norwegian
+    ?who_zebra  = Norwegian
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-1)         the Zebra is kept in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+
+  result
+    The Norwegian drinks water in House-1; the Norwegian owns zebra in House-1
+
+  model 8/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-1
+    ?who_water  = Norwegian
+    ?who_zebra  = Norwegian
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-1)         the Zebra is kept in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+
+  result
+    The Norwegian drinks water in House-1; the Norwegian owns zebra in House-1
+
+  model 9/32
+  query bindings
+    ?h_water    = House-5
+    ?h_zebra    = House-4
+    ?who_water  = Japanese
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-5)       Water is drunk in House-5
+    (nation-loc Japanese House-5)   the Japanese lives in House-5
+    (pet-loc Zebra House-4)         the Zebra is kept in House-4
+    (nation-loc Ukrainian House-4)  the Ukrainian lives in House-4
+
+  result
+    The Japanese drinks water in House-5; the Ukrainian owns zebra in House-4
+
+  model 10/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-1
+    ?who_water  = Norwegian
+    ?who_zebra  = Norwegian
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-1)         the Zebra is kept in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+
+  result
+    The Norwegian drinks water in House-1; the Norwegian owns zebra in House-1
+
+  model 11/32
+  query bindings
+    ?h_water    = House-4
+    ?h_zebra    = House-1
+    ?who_water  = Spaniard
+    ?who_zebra  = Norwegian
+
+    query facts                     rendered
+    (drink-loc Water House-4)       Water is drunk in House-4
+    (nation-loc Spaniard House-4)   the Spaniard lives in House-4
+    (pet-loc Zebra House-1)         the Zebra is kept in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+
+  result
+    The Spaniard drinks water in House-4; the Norwegian owns zebra in House-1
+
+  model 12/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-2
+    ?who_water  = Norwegian
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-2)         the Zebra is kept in House-2
+    (nation-loc Ukrainian House-2)  the Ukrainian lives in House-2
+
+  result
+    The Norwegian drinks water in House-1; the Ukrainian owns zebra in House-2
+
+  model 13/32
+  query bindings
+    ?h_water    = House-5
+    ?h_zebra    = House-4
+    ?who_water  = Englishman
+    ?who_zebra  = Japanese
+
+    query facts                      rendered
+    (drink-loc Water House-5)        Water is drunk in House-5
+    (nation-loc Englishman House-5)  the Englishman lives in House-5
+    (pet-loc Zebra House-4)          the Zebra is kept in House-4
+    (nation-loc Japanese House-4)    the Japanese lives in House-4
+
+  result
+    The Englishman drinks water in House-5; the Japanese owns zebra in House-4
+
+  model 14/32
+  query bindings
+    ?h_water    = House-4
+    ?h_zebra    = House-2
+    ?who_water  = Japanese
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-4)       Water is drunk in House-4
+    (nation-loc Japanese House-4)   the Japanese lives in House-4
+    (pet-loc Zebra House-2)         the Zebra is kept in House-2
+    (nation-loc Ukrainian House-2)  the Ukrainian lives in House-2
+
+  result
+    The Japanese drinks water in House-4; the Ukrainian owns zebra in House-2
+
+  model 15/32
+  query bindings
+    ?h_water    = House-2
+    ?h_zebra    = House-1
+    ?who_water  = Englishman
+    ?who_zebra  = Norwegian
+
+    query facts                      rendered
+    (drink-loc Water House-2)        Water is drunk in House-2
+    (nation-loc Englishman House-2)  the Englishman lives in House-2
+    (pet-loc Zebra House-1)          the Zebra is kept in House-1
+    (nation-loc Norwegian House-1)   the Norwegian lives in House-1
+
+  result
+    The Englishman drinks water in House-2; the Norwegian owns zebra in House-1
+
+  model 16/32
+  query bindings
+    ?h_water    = House-2
+    ?h_zebra    = House-5
+    ?who_water  = Englishman
+    ?who_zebra  = Japanese
+
+    query facts                      rendered
+    (drink-loc Water House-2)        Water is drunk in House-2
+    (nation-loc Englishman House-2)  the Englishman lives in House-2
+    (pet-loc Zebra House-5)          the Zebra is kept in House-5
+    (nation-loc Japanese House-5)    the Japanese lives in House-5
+
+  result
+    The Englishman drinks water in House-2; the Japanese owns zebra in House-5
+
+  model 17/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-5
+    ?who_water  = Norwegian
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-5)         the Zebra is kept in House-5
+    (nation-loc Ukrainian House-5)  the Ukrainian lives in House-5
+
+  result
+    The Norwegian drinks water in House-1; the Ukrainian owns zebra in House-5
+
+  model 18/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-5
+    ?who_water  = Norwegian
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-5)         the Zebra is kept in House-5
+    (nation-loc Ukrainian House-5)  the Ukrainian lives in House-5
+
+  result
+    The Norwegian drinks water in House-1; the Ukrainian owns zebra in House-5
+
+  model 19/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-5
+    ?who_water  = Norwegian
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-5)         the Zebra is kept in House-5
+    (nation-loc Ukrainian House-5)  the Ukrainian lives in House-5
+
+  result
+    The Norwegian drinks water in House-1; the Ukrainian owns zebra in House-5
+
+  model 20/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-2
+    ?who_water  = Norwegian
+    ?who_zebra  = Japanese
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-2)         the Zebra is kept in House-2
+    (nation-loc Japanese House-2)   the Japanese lives in House-2
+
+  result
+    The Norwegian drinks water in House-1; the Japanese owns zebra in House-2
+
+  model 21/32
+  query bindings
+    ?h_water    = House-5
+    ?h_zebra    = House-2
+    ?who_water  = Englishman
+    ?who_zebra  = Ukrainian
+
+    query facts                      rendered
+    (drink-loc Water House-5)        Water is drunk in House-5
+    (nation-loc Englishman House-5)  the Englishman lives in House-5
+    (pet-loc Zebra House-2)          the Zebra is kept in House-2
+    (nation-loc Ukrainian House-2)   the Ukrainian lives in House-2
+
+  result
+    The Englishman drinks water in House-5; the Ukrainian owns zebra in House-2
+
+  model 22/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-4
+    ?who_water  = Norwegian
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-4)         the Zebra is kept in House-4
+    (nation-loc Ukrainian House-4)  the Ukrainian lives in House-4
+
+  result
+    The Norwegian drinks water in House-1; the Ukrainian owns zebra in House-4
+
+  model 23/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-4
+    ?who_water  = Norwegian
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-4)         the Zebra is kept in House-4
+    (nation-loc Ukrainian House-4)  the Ukrainian lives in House-4
+
+  result
+    The Norwegian drinks water in House-1; the Ukrainian owns zebra in House-4
+
+  model 24/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-5
+    ?who_water  = Norwegian
+    ?who_zebra  = Japanese
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-5)         the Zebra is kept in House-5
+    (nation-loc Japanese House-5)   the Japanese lives in House-5
+
+  result
+    The Norwegian drinks water in House-1; the Japanese owns zebra in House-5
+
+  model 25/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-5
+    ?who_water  = Norwegian
+    ?who_zebra  = Japanese
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-5)         the Zebra is kept in House-5
+    (nation-loc Japanese House-5)   the Japanese lives in House-5
+
+  result
+    The Norwegian drinks water in House-1; the Japanese owns zebra in House-5
+
+  model 26/32
+  query bindings
+    ?h_water    = House-2
+    ?h_zebra    = House-4
+    ?who_water  = Spaniard
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-2)       Water is drunk in House-2
+    (nation-loc Spaniard House-2)   the Spaniard lives in House-2
+    (pet-loc Zebra House-4)         the Zebra is kept in House-4
+    (nation-loc Ukrainian House-4)  the Ukrainian lives in House-4
+
+  result
+    The Spaniard drinks water in House-2; the Ukrainian owns zebra in House-4
+
+  model 27/32
+  query bindings
+    ?h_water    = House-4
+    ?h_zebra    = House-2
+    ?who_water  = Spaniard
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-4)       Water is drunk in House-4
+    (nation-loc Spaniard House-4)   the Spaniard lives in House-4
+    (pet-loc Zebra House-2)         the Zebra is kept in House-2
+    (nation-loc Ukrainian House-2)  the Ukrainian lives in House-2
+
+  result
+    The Spaniard drinks water in House-4; the Ukrainian owns zebra in House-2
+
+  model 28/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-4
+    ?who_water  = Norwegian
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-4)         the Zebra is kept in House-4
+    (nation-loc Ukrainian House-4)  the Ukrainian lives in House-4
+
+  result
+    The Norwegian drinks water in House-1; the Ukrainian owns zebra in House-4
+
+  model 29/32
+  query bindings
+    ?h_water    = House-5
+    ?h_zebra    = House-2
+    ?who_water  = Englishman
+    ?who_zebra  = Ukrainian
+
+    query facts                      rendered
+    (drink-loc Water House-5)        Water is drunk in House-5
+    (nation-loc Englishman House-5)  the Englishman lives in House-5
+    (pet-loc Zebra House-2)          the Zebra is kept in House-2
+    (nation-loc Ukrainian House-2)   the Ukrainian lives in House-2
+
+  result
+    The Englishman drinks water in House-5; the Ukrainian owns zebra in House-2
+
+  model 30/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-2
+    ?who_water  = Norwegian
+    ?who_zebra  = Englishman
+
+    query facts                      rendered
+    (drink-loc Water House-1)        Water is drunk in House-1
+    (nation-loc Norwegian House-1)   the Norwegian lives in House-1
+    (pet-loc Zebra House-2)          the Zebra is kept in House-2
+    (nation-loc Englishman House-2)  the Englishman lives in House-2
+
+  result
+    The Norwegian drinks water in House-1; the Englishman owns zebra in House-2
+
+  model 31/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-2
+    ?who_water  = Norwegian
+    ?who_zebra  = Japanese
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-2)         the Zebra is kept in House-2
+    (nation-loc Japanese House-2)   the Japanese lives in House-2
+
+  result
+    The Norwegian drinks water in House-1; the Japanese owns zebra in House-2
+
+  model 32/32
+  query bindings
+    ?h_water    = House-1
+    ?h_zebra    = House-4
+    ?who_water  = Norwegian
+    ?who_zebra  = Ukrainian
+
+    query facts                     rendered
+    (drink-loc Water House-1)       Water is drunk in House-1
+    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
+    (pet-loc Zebra House-4)         the Zebra is kept in House-4
+    (nation-loc Ukrainian House-4)  the Ukrainian lives in House-4
+
+  result
+    The Norwegian drinks water in House-1; the Ukrainian owns zebra in House-4
+
+timing (ms)
+  parse                   0.71    (92 forms)
+  kb load                 1.17
+  root saturation         2.69    (339 facts after saturation)
+  hypothesis search  1510276.69    (17204592 enterings / 22 layers / 1 root saturations)
+    per hypothesis        0.09    (avg over enterings)
+  ────────────────────────────────────────
+  solve              1510279.38    (root saturation + search)
+  end-to-end         1510281.26    (parse + load + solve)
+  compile                 0.05    (19 plans; isolated — the solve compiles these lazily inside saturation)
