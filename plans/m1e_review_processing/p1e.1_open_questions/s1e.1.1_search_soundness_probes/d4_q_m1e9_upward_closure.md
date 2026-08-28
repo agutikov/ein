@@ -121,6 +121,66 @@ guards read the relation's *extent*, not its absence at a point; and the
 stdlib's `absent` guards read `is-a`-shaped membership, which no generator
 proposes. One program outside that pattern is enough, and this is it.
 
+## The user's reading, 2026-08-28 — the probe is broken **by design**
+
+Recorded because it changes what the fix is for, not whether there is one.
+
+> *not any well-formed ein program is correct. An example with `(rule bad () …)`
+> is broken by design: relations `p` and `q` here could be mutually symmetric,
+> e.g. `(p ?x) ⟹ (q ?x)` and `(q ?x) ⟹ (p ?x)`, plus obligations e.g.
+> `(is-a ?x T) ∧ (absent (q ?x)) ⟹ (open q)`. But it is intentionally broken:
+> there is no definition of `q` and `p` relations, no obligations, only the
+> rule that asserts `(false)`. For now it is correctly detected as
+> contradiction. Maybe contradiction here is not the best name, but it at least
+> says that something is wrong with the program.*
+
+Three things follow, and only the third is new work.
+
+1. **The probe states a requirement as a refutation.** It says *a world with
+   `p` and without `q` is false* and never says *`q` is required* — which is
+   what M1d built `(open ?R)` for, form **G** of
+   [`obligation_forms.md`](../../../../docs/history/m1d_satisfiability/obligation_forms.md)'s
+   menu. So the probe is a **mis-encoded obligation**, and the engine's
+   complaint about it is not wrong. What is wrong is the **word**: a program
+   whose requirement is unstateable this way is ill-formed, and
+   `Contradiction` says *your constraints are unsatisfiable*, which is a
+   different claim — [Q-M1d.1](../../../../docs/history/m1d_satisfiability/open_questions.md)'s
+   vocabulary question arriving from a third direction.
+2. **The mechanism stands, and the user confirms it**: `{(p A)}` dies, the
+   writeback stores `(not (p A))`, and L2 never sees `{(p A), (q A)}`. `dead`
+   is not upward-closed under `absent`. Nothing in § What the engine answers
+   changes.
+3. **And the design question is the real one** — *"maybe emitting `(false)` or
+   `(not …)` under `absent` is not a good idea"*. That is not a patch to the
+   three consumers; it is a question about the **language**, and it is now
+   [S1e.1b.8](../../p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md).
+
+### It is not a hypothetical shape, and the repo has already named it
+
+A syntactic census of `stdlib/`, `examples/` and `tests/` (2026-08-28) finds
+**60 rules** whose `:match` carries an `(absent …)` and whose `:assert` is
+`(false)` or a `(not …)` — 14 of the first kind, 46 of the second. What
+separates the safe from the exposed is one question: **does the `absent` read a
+relation the search can still extend?**
+
+| | rule family | the `absent` reads | exposed? |
+|---|---|---|---|
+| `std.slots` | `slot-prune-*`, `slot-endpoint-*`, `slot-adjacent-*-neg`, and the six inline twins in every `zebra2*` | `?S` — the **given** adjacency structure over positions, which no generator proposes | no, and this is why the corpus is quiet |
+| `std.algebra` | **`connex`** — `:match (and … (absent (?R ?a ?b)) (absent (?R ?b ?a))) :assert (false)` | `?R` — the **subject** relation itself | **yes, by shape**: declare `(connex color-loc)` on a puzzle whose `*-loc` the rung proposes and it is this probe with a stdlib rule in place of `bad` |
+
+And the repo has already written the distinction down, in a fixture header
+rather than in a rule —
+[`tests/stdlib/closure/03_closed_and_owing.ein`](../../../../tests/stdlib/closure/03_closed_and_owing.ein):
+
+> `total`'s stored-negative discipline is what stops it firing `(false)` on
+> every empty-yet state, and is the **right** way to write it — **`connex` is
+> what the other way looks like**.
+
+`total` demands a *stored negative* for every candidate
+(`(forall ?b (?isa ?b ?B) (not (?R ?a ?b)))`) before it concludes anything;
+`connex` concludes from an absence. Two stdlib rules, one idiom apart, and the
+difference has never been stated as a rule anyone must follow.
+
 ## What has to be decided
 
 Not *whether* — *who*, and *how far*.
@@ -132,10 +192,18 @@ Not *whether* — *who*, and *how far*.
 | **C — fix the machinery** | make the three consumers world-aware: no kill-cache write for a lookahead whose firing used an `absent`; no singleton writeback for such a death; a no-good clause tagged with its `absent` premises and not applied where they no longer hold | correct, and large. `Prov::absent` already **records** the negative premises (C2, S1.21.8) — *"the dependence is visible … but no walk yet interprets it"*. This would be the first walk that does |
 | **D — declare it out of scope for M1e** | it is not one of the 63 findings, and M1e processes a review | defensible on scope, and it means the milestone found a soundness defect and shipped without saying what happens to it |
 
-**Recommended: B now, C filed.** B is a load-time check the compiler has the
-information for, it converts a wrong answer into a refusal, and it does not
-require reshaping the no-good store mid-milestone. C is the real fix and
-wants its own stage, with `Prov::absent` as its starting point.
+**Recommended: B now, C filed — and the language question to
+[S1e.1b.8](../../p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md).**
+B is a load-time check the compiler has the information for, it converts a
+wrong answer into a refusal, and it does not require reshaping the no-good
+store mid-milestone. C is the real fix and wants its own stage, with
+`Prov::absent` as its starting point. **What the user's reading adds is that B
+may not need C at all**: if a refutation resting on an `absent` over a
+hypothesis-eligible relation is *disallowed* rather than merely diagnosed,
+there is nothing left for a world-aware no-good store to be careful about —
+and the constructive half is already in the repo, since `total` shows the same
+constraint written as a stored-negative scan. That is S1e.1b.8's to rule; B is
+what makes the wrong answer stop while it does.
 
 ## Related
 

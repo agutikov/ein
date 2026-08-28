@@ -1,6 +1,6 @@
 # P1e.1b — The structure of the hypothesis set
 
-**Estimate:** ~4 weeks — 7 stages, 20 days.
+**Estimate:** ~5 weeks — 8 stages, 23 days.
 **Depends on:** [P1e.1](../p1e.1_open_questions/README.md)
 [S1e.1.1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) only —
 for [Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
@@ -109,6 +109,7 @@ Five stages, and each one is a strictly larger claim about the same object.
 | **the join** | a candidate set containing two members of one group is refused **before** the fork | [S1e.1b.3](s1e.1b.3_the_restricted_join.md) |
 | **bounded groups** | two overlapping group families whose members exhaust each other are a **bijection**, so the space is `n!` and not `2^(n²)` | [S1e.1b.4](s1e.1b.4_bounded_groups.md) |
 | **order** | the traversal order follows the structure — most-constrained group first — instead of the canonical tuple sort | [S1e.1b.5](s1e.1b.5_ordering.md) |
+| **soundness** | `excludes` is a property of the program only if no `(false)` in it rests on an `absent` over a relation the search can still extend | [S1e.1b.8](s1e.1b.8_refutation_under_absent.md) |
 | **domain** | the four rungs above are valid over a *stated* class of programs, and a derived obligation is what can put a program outside it | [S1e.1b.6](s1e.1b.6_obligations_under_hypothesis.md) |
 | **calibration** | the tree traversal already gets **200 053×** on the phase's hardest instance by branching on structure; how much of that is this ladder's to recover | [S1e.1b.7](s1e.1b.7_tree_calibration_and_flag.md) |
 
@@ -199,6 +200,7 @@ Named here and used by every stage.
 | [S1e.1b.4](s1e.1b.4_bounded_groups.md) | Bounded groups — rediscovering the bijection | 3 d | a program with no `(bijective …)` and no `(open …)` gets the same branch structure as one that declares it, or the stage says exactly which of the two it cannot recover and why |
 | [S1e.1b.5](s1e.1b.5_ordering.md) | Ordering by structure | 2.5 d | a third `lattice-order` mode, measured against `lex` on the five instances — and `most-constrained`, which has returned `0.0` since it was named, either implemented or deleted |
 | [S1e.1b.6](s1e.1b.6_obligations_under_hypothesis.md) | Obligations derived under a hypothesis — the review's `Q6` | 3 d | the flip constructed or written up as not constructible; a ruling on [Q-M1e.11](../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis); and **this phase's domain sentence** — what a group means when the set it partitions can grow |
+| [S1e.1b.8](s1e.1b.8_refutation_under_absent.md) | May a refutation rest on an `absent`? — the exclusion relation's soundness precondition | 3 d | the 60 syntactic sites narrowed to the **exposed** set; `connex` disposed of; the ruling written into `absent_semantics.md` as a corollary; and, if it forbids, the load-time check that makes [Q-M1e.9](../open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s option C unnecessary |
 | [S1e.1b.7](s1e.1b.7_tree_calibration_and_flag.md) | Why the tree wins on `zebra2-minus-15`, and the flag | 3 d | the **200 053×** attributed across five hypotheses with a named remainder, the share S1e.1b.3 actually recovers, and `--traversal {lattice,tree}` replacing `EIN_TRAVERSAL` as the surface a reader finds |
 
 ## Acceptance
@@ -218,6 +220,11 @@ Named here and used by every stage.
 - **No new hand-maintained parallel copy** ([AR-M1](../README.md#the-findings)).
   The group structure has one owner; if `apriori`, `hypgen` and `oblgen` all
   need it, they read it from that owner.
+- **The exclusion relation's precondition is ruled, not assumed** —
+  S1e.1b.8 says whether a refutation may rest on an `absent`, because
+  `excludes` is computed on the *minimal* KB and spent on larger ones, and
+  [C3](../../../docs/kernel/inference/absent_semantics.md) is the statement
+  that removing facts can fabricate a contradiction.
 - **The domain is stated, not assumed** — S1e.1b.6's sentence about what a
   group means when the set can grow is written where the structure is
   *computed*, and S1e.1b.2 and S1e.1b.3 cite it rather than re-deriving it.
