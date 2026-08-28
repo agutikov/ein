@@ -1,12 +1,12 @@
 # S1e.1.1 — Three soundness probes: Q4, Q5, Q6
 
-**Phase:** [P1e.1](README.md) (The ten questions)
+**Phase:** [P1e.1](../README.md) (The ten questions)
 **Estimate:** 3 days
 **Depends on:** nothing.
-**Blocks:** [CO-M1](../p1e.3_medium/s1e.3.1_correctness.md) (Q4),
-[CO-H3](../p1e.2_high/s1e.2.1_correctness.md)(c) (Q6), and any golden the
+**Blocks:** [CO-M1](../../p1e.3_medium/s1e.3.1_correctness.md) (Q4),
+[CO-H3](../../p1e.2_high/s1e.2.1_correctness.md)(c) (Q6), and any golden the
 lookahead flip pins (Q5).
-**Answers:** [`review/open-questions.md`](../review/open-questions.md) Q4, Q5,
+**Answers:** [`review/open-questions.md`](../../review/open-questions.md) Q4, Q5,
 Q6.
 
 ## Context
@@ -23,7 +23,7 @@ would fail if the premise ever broke.
 
 **Q4 — the inter-layer alive-∅ path.** `phase2` calls `record_node(root)`
 when `compute_alive` comes back empty
-([`solve.rs:1528-1551`](../../../ein.rs/crates/ein-infer/src/solve.rs)),
+([`solve.rs:1528-1551`](../../../../ein.rs/crates/ein-infer/src/solve.rs)),
 **without** the `has_contradiction` re-check that phase1 (`:1091`) and the
 cascade (`:2131`) both do. The review's argument for why this is currently
 safe is two-part — the writebacks are `(not h)` for `h ∉ root`, and root has
@@ -64,7 +64,7 @@ written against what was found, not against what the review assumed:
 | `lattice/02` | `-e` → **Ambiguity k=3, `exhausted = true`**, 6 enterings · `-e -L` → **Contradiction k=0, `exhausted = true`**, 7 enterings, 3-fact core. Both sides *complete*, and the OFF side prints *"No solution — the constraints are contradictory"* unhedged |
 | `branching/06` / `07` | `-e` → k=22 · `07 -e` → k=0, and **both report `exhausted = false` at the depth-5 cap**. The pair compares two lower bounds, not two answers |
 | `branching/06`'s model set | `--models key`: **8 of 42 varying slots**, `C(42,8) = 118 030 185`, over budget. 20 of the 22 models bind `?h` to `Color` or `House` — the **G3 blind rung is untyped**, `(is-a Color T)` makes `Color` an object, and model 1 contains `(co-located Blue Color)`. It is **not** "small enough to enumerate on paper" |
-| the kill cache | `-K` keeps k=3 and the verdict on `lattice/02` and **changes the recorded fact sets**: the models lose their `(not (c-prop X))`, which `write_negated` is what writes. Not a defect under Q-M1e.6 — negatives are not part of a model — and the reason [Q-M1e.7](../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) exists |
+| the kill cache | `-K` keeps k=3 and the verdict on `lattice/02` and **changes the recorded fact sets**: the models lose their `(not (c-prop X))`, which `write_negated` is what writes. Not a defect under Q-M1e.6 — negatives are not part of a model — and the reason [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) exists |
 
 So the stage's Q5 scope is **`lattice/02` plus one purpose-built fixture**, and
 `branching/06` is evidence rather than subject.
@@ -72,11 +72,11 @@ So the stage's Q5 scope is **`lattice/02` plus one purpose-built fixture**, and
 **Q6 — the tree's inner-node rung flip.** `tree()` probes the
 generation-ladder mode **once at root**, on the stated premise that *the mode
 is a property of the program rather than of the node*
-([`solve.rs:889-914`](../../../ein.rs/crates/ein-infer/src/solve.rs)). But
+([`solve.rs:889-914`](../../../../ein.rs/crates/ein-infer/src/solve.rs)). But
 oblgen's mode per node is a function of activator **facts**, and an activator
 is an ordinary fact a rule can derive — inside a fork. A flip at an inner node
 falls through to the blind enumerator
-([`hypgen.rs:340-378`](../../../ein.rs/crates/ein-infer/src/hypgen.rs)), whose
+([`hypgen.rs:340-378`](../../../../ein.rs/crates/ein-infer/src/hypgen.rs)), whose
 branches are **not** jointly exhaustive, and the tree would then treat a
 non-exhaustive branch set as exhaustive and **miss models** — the failure
 class this project's discipline treats as worst. Today's stdlib activators are
@@ -86,13 +86,13 @@ shape is *constructible at all*, because that is the difference between a
 
 **Two corrections from reconnaissance.** First, **the premise is already
 refuted by this repo's own doc comment**: `activators_for`
-([`compile.rs:54-69`](../../../ein.rs/crates/ein-infer/src/compile.rs)) says a
+([`compile.rs:54-69`](../../../../ein.rs/crates/ein-infer/src/compile.rs)) says a
 parameterised rule *"consults the **fork's** `rule_apps_by_rule`, not the
 load-time KB's, because a fork derives activators of its own during
 saturation"*, and `oblgen::generate` calls `plans_for(s.kb, …)` per node. The
 mode **is** a function of the node. What is open is only whether a *flip* is
 constructible, and the three fact-dependent decline conditions are
-[`oblgen.rs:232-262`](../../../ein.rs/crates/ein-infer/src/oblgen.rs)'s: a
+[`oblgen.rs:232-262`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs)'s: a
 bare `(open)` plan, a projection that will not resolve for that activator, and
 **C4** — an obligation scanning a relation the rung itself proposes. C4 is the
 likeliest, and the probe is a rule that derives, under a hypothesis, an
@@ -113,7 +113,7 @@ asserts *"the tree's model set ⊇ the lattice's"* **and** *"no node emitted a
 ## Acceptance
 
 - The standard of proof is ratified and written into
-  [`open_questions.md`](../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)
+  [`open_questions.md`](../../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)
   as decided, and every later stage cites it rather than re-arguing it.
 - **Q4**: either a fixture under `examples/` that reaches the alive-∅ path
   with a saturation-encoded totality rule and shows what root records, or —
@@ -121,7 +121,7 @@ asserts *"the tree's model set ⊇ the lattice's"* **and** *"no node emitted a
   `solve.rs:1528-1551` naming why. Either way `CO-M1`'s disposition is
   determined by this task, not by the later stage.
 - **Q5**: `lattice/02`'s solution set derived **by hand** against
-  [Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
+  [Q-M1e.6](../../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
   and recorded in the stage's notes; the correct side named; **one new
   fixture** carrying the ON/OFF pair with both sides exhausting, since
   `branching/06` cannot; a golden audit listing every corpus artefact that
@@ -133,13 +133,36 @@ asserts *"the tree's model set ⊇ the lattice's"* **and** *"no node emitted a
   fix is the dependent stage's; this stage's product is the fixture and the
   ruling.
 
+## Decisions to take before implementation
+
+Nine, one file each, in this folder. **D1 and D2 block a task outright** — the
+task has no shape until they are answered. The rest change what the stage
+delivers or are cheap enough to decide in passing, and each file carries the
+options with their consequences and a recommendation.
+
+| | decision | gates | recommended |
+|---|---|---|---|
+| [D1](d1_q4_which_route_reaches_the_site.md) | **Q4: which route reaches the unguarded `record_node`?** The cascade re-checks between the two lines, so only two constructions get there | **T1e.1.1.2** | stock config first, config lever as fallback |
+| [D2](d2_q6_which_decline_to_construct.md) | **Q6: which of `oblgen`'s three decline conditions to construct?** The premise is already refuted; only constructibility is open | **T1e.1.1.4** | the C4 collision, then apply the fix regardless |
+| [D3](d3_q_m1e8_file_or_take.md) | **Q-M1e.8: file the maximality fix, or take it?** One bitset per layer against a shipped false verdict | T1e.1.1.3 step 5 | take it, in P1e.2 |
+| [D4](d4_q_m1e9_upward_closure.md) | **Q-M1e.9 is reproduced: `dead` is not upward-closed under `absent`.** Five of six configurations answer a twenty-line program wrongly. Who owns it, and how far does the fix go? | nothing here — but it qualifies D3 and D9 | a load-time refusal now, the real fix filed |
+| [D5](d5_does_t1_ratify_q_m1e2.md) | Does T1 ratify **Q-M1e.2** as well as Q-M1e.1? Q4's likely `accepted` needs it, and Q-M1e.2 has no owning stage | T1e.1.1.1 | ratify both |
+| [D6](d6_the_new_q5_fixture.md) | Where the **new Q5 fixture** lives, what it pins, and whether its `:expect` states today's answer or the right one | T1e.1.1.3 step 3 | `examples/branching/`, state today's answer, let D3's fix move it |
+| [D7](d7_the_diff_instrument.md) | The **two-config diff** exists three times already. Build a fourth, borrow, or throw one away? | T1e.1.1.3, T1e.1.1.4 | throwaway here; name it in S1e.3.4's inputs |
+| [D8](d8_branching06_untyped_models.md) | `branching/06` models `(co-located Blue Color)` and prints `?h = Color`. **Evidence, or its own id?** | nothing | its own `Q-M1e.<n>` |
+| [D9](d9_kernel_page_overclaims.md) | `solution_semantics.md` §6 claims *the engine never records a false model*; it proves the maximality conjunct only, and D4 already dents that | should land **before** T1e.1.1.2 | qualify the row now |
+
+**D4 is the one to read first.** It was filed as a question about two pages
+disagreeing and came back as a reproduced defect in three shipped mechanisms,
+which changes what several of the others are about.
+
 ## Tasks
 
 ### Task T1e.1.1.1 — Ratify the standard of proof
 
 Half a day, and it is first because the other three tasks are its first
 customers. Write
-[Q-M1e.1](../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
+[Q-M1e.1](../../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
 three rules — behaviour is refuted only by a banked probe; absence is refuted
 by naming the thing; risk is not refutable by argument — into the milestone's
 `open_questions.md` as **decided**, with the date, and add the one-line
@@ -170,6 +193,8 @@ the fixture in two steps rather than guessing:
    `(open …)` declaration anywhere, so the obligations read-out is silent.
    Then drive it onto the alive-∅ path and read what root records.
 
+TODO: Encoding totality as a (false) rule is not an option because it derives contradiction on initial KB.
+
 Expected outcomes and what each means:
 
 | outcome | disposition of `CO-M1` |
@@ -185,7 +210,7 @@ is a check nobody can ever remove.
 ### Task T1e.1.1.3 — Q5: derive `lattice/02` by hand, against the ruling
 
 The definition is no longer open:
-[Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
+[Q-M1e.6](../../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
 is decided, and a hand derivation now has something to derive *against*. A
 solution is a saturated consistent state in which **every remaining hypothesis
 is inconsistent with the state**; a model is the positive part minus the
@@ -219,7 +244,7 @@ positive initial KB.
    the fix is *not* "make the lookahead unconditional" (which is still an
    approximation, just a better one): it is to record a surviving commitment
    whose every superset died. Retaining that costs one bitset over `a_prev`
-   per layer. File it as [Q-M1e.8](../open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)'s
+   per layer. File it as [Q-M1e.8](../../open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)'s
    fix with the derivation attached; rewrite the README's Known gaps entry
    from *"one of the two is wrong"* to **both under-report, and here is the
    test that does not**; and re-label `-L`'s corpus lever cells as a
@@ -242,13 +267,13 @@ Two questions, in order:
 1. **Is the activator derivable at all?** Activators are ordinary facts, so a
    rule head can produce one; whether the loader and `oblgen` read a
    *derived* activator the same way they read a declared one is the actual
-   unknown ([`oblgen.rs:241-265`](../../../ein.rs/crates/ein-infer/src/oblgen.rs)).
+   unknown ([`oblgen.rs:241-265`](../../../../ein.rs/crates/ein-infer/src/oblgen.rs)).
    Check this first with `ein saturate --dump` before building anything on
    top of it.
 2. **Does the tree then miss a model?** Run the probe under
    `EIN_TRAVERSAL=tree` and under the default lattice with `-e`, and diff the
    model sets fact for fact — the same comparison
-   [S1d.10.6](../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)
+   [S1d.10.6](../../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)
    used to verify the 86-vs-17 204 592 result. A tree set that is a strict
    subset is the bug.
 
@@ -257,7 +282,7 @@ Whichever way it lands, bank it: a passing test named for the premise
 `debug_assert` it may replace, because the assert only fires in a debug build
 and the test runs in the gate. Then say what `CO-H3`(c) becomes:
 
-| outcome | what [S1e.2.1](../p1e.2_high/s1e.2.1_correctness.md) T3 does |
+| outcome | what [S1e.2.1](../../p1e.2_high/s1e.2.1_correctness.md) T3 does |
 |---|---|
 | constructible, and the tree misses models | re-probe the mode at **every** node and hard-decline on a flip; the probe is the regression test |
 | constructible, and the tree still agrees | the premise is wrong but harmless — find out why, then either the assert or a written argument |
@@ -271,7 +296,7 @@ diff the model sets* — and it already exists in three places
 the stage finds itself writing the comparison a fourth time, that is a small
 `utils/` script, not a fourth copy; but it is not the stage's job to build
 one, and the milestone has a finding about exactly this habit
-([AR-M1](../README.md#the-findings)).
+([AR-M1](../../README.md#the-findings)).
 
 None of these three questions is M1d's to answer, and this stage does not
 touch `Q-M1d.1` or `Q-M1d.6` — the verdict-vocabulary questions the review's

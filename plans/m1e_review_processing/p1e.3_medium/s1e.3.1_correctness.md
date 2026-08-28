@@ -2,7 +2,7 @@
 
 **Phase:** [P1e.3](README.md) (Medium)
 **Estimate:** 4 days
-**Depends on:** [Q4](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md)
+**Depends on:** [Q4](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)
 for T1; [S1e.3.4](s1e.3.4_architecture.md) for T2 if the seam fix is taken
 there.
 **Findings:** [`CO-M1`](../review/correctness/medium.md) …
@@ -43,7 +43,7 @@ gap between that and what a next caller would reasonably assume.
 **without** the `has_contradiction` re-check that phase1 (`:1091`) and the
 cascade (`:2131`) both perform.
 
-[Q4](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) has already
+[Q4](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) has already
 determined which of three this is — a real gap, a refuted one, or an
 unreachable branch — and its outcome table says what this task does. Execute
 that row; do not re-derive it. If the row is *fixed*, the change is one call

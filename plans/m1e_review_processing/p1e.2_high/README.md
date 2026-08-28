@@ -3,7 +3,7 @@
 **Estimate:** 2 weeks — 2 stages, 11 days.
 **Depends on:** [P1e.1](../p1e.1_open_questions/README.md) for three answers
 — [Q3](../p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md) decides
-what `CD-H3` is, [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md)
+what `CD-H3` is, [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)
 decides what `CO-H3`(c) is, and the class sweep in
 [T1e.1.6.2](../p1e.1_open_questions/s1e.1.6_coverage_gaps.md) is where
 `CO-H1` stops being one instance.
@@ -52,7 +52,7 @@ The tree traversal appears three times in this milestone —
 [CO-H3](../README.md#the-findings) here,
 [SE-M3](../p1e.3_medium/s1e.3.2_semantics.md) and
 [CD-M2](../p1e.3_medium/s1e.3.7_code_doc_consistency.md) in Medium, and
-[Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) in the
+[Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) in the
 questions. [S1e.2.1](s1e.2.1_correctness.md) T3 owns the **decision**; the
 Medium stages render it. That split is deliberate: what a tree *reports*
 where a lattice reports layers is M1d's open `T1d.10.6.4`, and this milestone
@@ -82,7 +82,7 @@ surfaces from saying things that are false under either answer.
   dead branch either learns a no-good or the `Contradiction` arm declines to
   print a core it does not have; the rung premise is enforced or argued at
   the site per
-  [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md).
+  [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md).
 - **`docs/kernel` is triaged page by page**, with each page in exactly one
   declared state — *current*, *superseded with a banner*, *moved to
   `docs/history/`* — and no page left in the fourth state the review found.
@@ -93,7 +93,7 @@ surfaces from saying things that are false under either answer.
 - `./run_tests.sh` green. Any golden this phase moves is named in its stage
   file first — the likely candidates are the `broken/` `.expected` set (new
   files, no move) and, if
-  [Q5](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) landed on
+  [Q5](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) landed on
   the other side, the two lookahead entries.
 
 ## Risks

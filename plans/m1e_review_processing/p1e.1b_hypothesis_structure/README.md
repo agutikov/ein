@@ -2,7 +2,7 @@
 
 **Estimate:** ~3 weeks — 5 stages, 14 days.
 **Depends on:** [P1e.1](../p1e.1_open_questions/README.md)
-[S1e.1.1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) only —
+[S1e.1.1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) only —
 for [Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
 ruling, which this phase is the first consumer of. Nothing else.
 **Blocks:** nothing in M1e. It is a *new capability*, and every stage of it is
@@ -101,7 +101,7 @@ The exclusion this phase computes takes `rules + ontology + {h₁, h₂}` and
 - it is a property of the *program*, computed once at load;
 - it is valid at **every** node of the search, root and depth 7 alike;
 - it cannot flip under a hypothesis — which is the property
-  [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) found the
+  [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) found the
   tree's rung probe *lacks*.
 
 That last line is why this phase is not merely an optimisation. A

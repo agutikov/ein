@@ -125,7 +125,7 @@ information about how much the warrant is load-bearing.
 Three places cite this invariant and one of them is new: `inference/README.md`
 (the statement), `implementation.md` (the pointer), and — since M1d —
 `solve.rs:889`'s *asking once is asking enough*, which is
-[Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md)'s subject.
+[Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)'s subject.
 The tree's premise is a **strictly stronger** claim than the alive-set
 invariant (it needs the *rung mode* to be a program property, not just the
 name universe), so the check landed here does not discharge it — say so at

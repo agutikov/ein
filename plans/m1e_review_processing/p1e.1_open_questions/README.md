@@ -7,10 +7,10 @@ engine only where a probe's answer *is* a one-line fix.
 [P1e.3](../p1e.3_medium/README.md) in one —
 [Q3](s1e.1.4_defined_behaviour_q_m1a8.md) gates
 [CD-H3](../README.md#the-findings),
-[Q6](s1e.1.1_search_soundness_probes.md) gates
+[Q6](s1e.1.1_search_soundness_probes/README.md) gates
 [CO-H3](../README.md#the-findings)(c),
-[Q5](s1e.1.1_search_soundness_probes.md) can move corpus goldens, and
-[Q4](s1e.1.1_search_soundness_probes.md) decides whether
+[Q5](s1e.1.1_search_soundness_probes/README.md) can move corpus goldens, and
+[Q4](s1e.1.1_search_soundness_probes/README.md) decides whether
 [CO-M1](../README.md#the-findings) is a bug.
 **Source:** [`review/open-questions.md`](../review/open-questions.md) — ten
 questions the review could not resolve from repository evidence, none promoted
@@ -51,7 +51,7 @@ against an assumed answer is scheduled wrong.**
 
 ## What an answer is
 
-Ratified in [S1e.1.1](s1e.1.1_search_soundness_probes.md) T1 as
+Ratified in [S1e.1.1](s1e.1.1_search_soundness_probes/README.md) T1 as
 [Q-M1e.1](../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted),
 then binding on every stage of the milestone. In short: a question about
 **behaviour** is answered by an executed probe banked as a test; a question
@@ -69,7 +69,7 @@ questions that become permanent, a `Q-M1e.<n>` or a new section of
 
 | ID | title | est. | ends with |
 |---|---|---:|---|
-| [S1e.1.1](s1e.1.1_search_soundness_probes.md) | Three soundness probes — Q4, Q5, Q6 | 3 d | one constructed fixture per question; the lookahead flip's true model sets derived by hand and the golden audit done; the standard of proof ratified |
+| [S1e.1.1](s1e.1.1_search_soundness_probes/README.md) | Three soundness probes — Q4, Q5, Q6 | 3 d | one constructed fixture per question; the lookahead flip's true model sets derived by hand and the golden audit done; the standard of proof ratified |
 | [S1e.1.2](s1e.1.2_determinism_under_jobs.md) | Determinism under `--jobs` — Q1 | 2 d | the structural argument written where `Nogoods` lives, or an injected-clause test showing the commit-order replay masks it — and, if neither, the claim narrowed |
 | [S1e.1.3](s1e.1.3_unsat_core_completeness.md) | What the core promises — Q2 | 1.5 d | either a fixture where eviction enlarges the core, or the retention argument written next to `MAX_ALT_JUSTIFICATIONS`; the README's claim matched to whichever holds |
 | [S1e.1.4](s1e.1.4_defined_behaviour_q_m1a8.md) | Q-M1a.8's real trigger — Q3 | 1 d | both probe shapes executed and banked; §3.2 amended to the real trigger or deleted, and Q-M1a.8 closed either way |

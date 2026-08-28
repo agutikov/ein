@@ -2,7 +2,7 @@
 
 **Phase:** [P1e.1](README.md) (The ten questions)
 **Estimate:** 1 day
-**Depends on:** [S1e.1.1](s1e.1.1_search_soundness_probes.md) T1 — this stage
+**Depends on:** [S1e.1.1](s1e.1.1_search_soundness_probes/README.md) T1 — this stage
 is the standard of proof's first real customer, because its likely outcome is
 a **refutation** of a page the tree calls normative.
 **Blocks:** [CD-H3](../p1e.2_high/s1e.2.2_code_doc_consistency.md) — the fix

@@ -71,7 +71,7 @@ completeness argument written for it.
   the failure class the project treats as worst.
 - If the derived structure reaches the **tree traversal** — a program with no
   `(open …)` getting jointly exhaustive branches — then
-  [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md)'s answer
+  [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)'s answer
   applies to it too, and the stage says so rather than inheriting the tree's
   root-only probe by accident.
 

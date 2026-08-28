@@ -2,7 +2,7 @@
 
 **Phase:** [P1e.1](README.md) (The ten questions)
 **Estimate:** 1.5 days
-**Depends on:** [S1e.1.1](s1e.1.1_search_soundness_probes.md) T1.
+**Depends on:** [S1e.1.1](s1e.1.1_search_soundness_probes/README.md) T1.
 **Answers:** [`review/open-questions.md`](../review/open-questions.md) Q2.
 **Touches:** [CO-H3](../p1e.2_high/s1e.2.1_correctness.md)(b) — the tree's
 empty core is a different defect, but both are about what the word *core*

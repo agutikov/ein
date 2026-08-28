@@ -2,7 +2,7 @@
 
 **Estimate:** ~5.5 weeks — 9 stages, 26 days.
 **Depends on:** [P1e.1](../p1e.1_open_questions/README.md) for
-[Q4](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) (which
+[Q4](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) (which
 decides `CO-M1`) and
 [Q-M1e.4](../open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all)
 (which decides whether [S1e.3.8](s1e.3.8_documentation.md) is a counting pass
@@ -136,7 +136,7 @@ the doc stages, because every other stage in the phase changes a count.
   re-count numbers the phase then changes. Hence the ordering rule above; it
   is the same mistake `DO-M1` is a finding about.
 - **`CO-M1` may be unreachable.** If
-  [Q4](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) shows the
+  [Q4](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) shows the
   alive-∅ path is unreachable from any `.ein` program, the fix is a comment,
   not a check — and adding the `has_contradiction` call anyway would be a
   check nobody can ever remove, guarding a branch nobody can ever reach.

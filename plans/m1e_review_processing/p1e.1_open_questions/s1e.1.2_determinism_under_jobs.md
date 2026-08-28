@@ -2,7 +2,7 @@
 
 **Phase:** [P1e.1](README.md) (The ten questions)
 **Estimate:** 2 days
-**Depends on:** [S1e.1.1](s1e.1.1_search_soundness_probes.md) T1 — the
+**Depends on:** [S1e.1.1](s1e.1.1_search_soundness_probes/README.md) T1 — the
 standard of proof, because this question's honest answer may be *the claim is
 narrower than it sounds*.
 **Answers:** [`review/open-questions.md`](../review/open-questions.md) Q1.

@@ -141,7 +141,7 @@ Do the same for layer 3, where the effect compounds: a 3-set is removed if
 
 The comparison instrument this stage needs — *run the same program two ways
 and diff* — is now wanted in a fourth place
-([S1e.1.1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md)'s Notes
+([S1e.1.1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)'s Notes
 counted three, and [AR-M1](../README.md#the-findings) is a finding about the
 habit). This stage does **not** build it either; it uses `--json-summary` and
 `--events` like its siblings, and P1e.3 [S1e.3.4](../p1e.3_medium/s1e.3.4_architecture.md)

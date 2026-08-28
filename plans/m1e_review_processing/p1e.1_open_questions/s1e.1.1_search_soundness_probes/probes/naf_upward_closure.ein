@@ -1,0 +1,20 @@
+;;; Q-M1e.9 probe — is `dead` upward-closed under `absent`?
+;;;
+;;;   {(p A)}        should DIE      : bad fires, (q A) absent
+;;;   {(p A), (q A)} should be ALIVE : the guard's witness is present
+;;;
+;;; If dead were upward-closed, the second could not be alive.
+
+(relation is-a T T)
+(relation p T)
+(relation q T)
+
+(is-a A T)
+
+(rule bad ()
+  :match  (and (p ?x) (absent (q ?x)))
+  :assert (false)
+  :why    "{?x} has p without q"
+  :priority 200)
+
+(query :goal (p ?x))

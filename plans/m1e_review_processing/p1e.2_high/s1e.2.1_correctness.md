@@ -2,7 +2,7 @@
 
 **Phase:** [P1e.2](README.md) (High)
 **Estimate:** 5 days
-**Depends on:** [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md)
+**Depends on:** [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)
 for T3(c); [T1e.1.6.2](../p1e.1_open_questions/s1e.1.6_coverage_gaps.md)'s
 sweep for T1's class scope.
 **Findings:** [`CO-H1`](../review/correctness/high.md),
@@ -28,7 +28,7 @@ confidences and different fixes:
 |---|---|---|---|
 | (a) | `stop_after` and `max_set_size` silently ignored | **High** — the code path was read end to end | mechanical, and right under any answer to `T1d.10.6.4` |
 | (b) | dead branches emit no no-good, no writeback, no `lstate.dead` push → `Contradiction` with an **empty** unsat core, `refuted so far (0 facts)`, zero nogood counters | **High** — same | narrow: either learn, or refuse to print evidence that does not exist |
-| (c) | the rung mode is probed **once at root**; a flip at an inner node falls through to the blind enumerator, whose branches are not jointly exhaustive → **silently missing models** | Medium — a fragility argument, not an observed failure | decided by [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) |
+| (c) | the rung mode is probed **once at root**; a flip at an inner node falls through to the blind enumerator, whose branches are not jointly exhaustive → **silently missing models** | Medium — a fragility argument, not an observed failure | decided by [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) |
 
 (b) is the one worth being precise about. The traversal is opt-in and
 explicitly experimental, which bounds exposure — and it is also the headline
@@ -186,7 +186,7 @@ that learning-on-tree-deaths remains available and unpriced.
 
 **(c) The rung premise.** `tree()` probes the mode once at root
 (`:889-914`) on the premise that the mode is a property of the program.
-[Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) determines
+[Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) determines
 whether an inner-node flip is constructible, and its answer table says what
 this task does — re-probe per node and hard-decline, or `debug_assert` plus a
 written argument. Do not take this sub-task before Q6 lands; a re-probe per

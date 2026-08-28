@@ -141,6 +141,6 @@ Four flags carry no doc comment at all in `config.rs`
 (`print-alive`, `hypgen-rel-weight`, `hypgen-obj-weight`,
 `lattice-sanity-check` has one line). Writing their rows means reading their
 call sites, and that is where this stage will find whatever it finds — the
-same way [S1e.1.1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes.md)
+same way [S1e.1.1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)
 found that `most-constrained` returns `0.0`. Anything found gets a
 `Q-M1e.<n>`, not a quiet fix in a doc stage.

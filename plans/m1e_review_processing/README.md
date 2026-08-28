@@ -60,9 +60,9 @@ guessing:
 | question | what it decides |
 |---|---|
 | [Q3](p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md) — Q-M1a.8's true trigger | whether [CD-H3](#the-findings) is a doc correction, an engine bug, or a `not-a-bug` closure. All three are different work |
-| [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) — which side of the lookahead verdict flip is right | whether a **performance lever decides what a complete model is** — and whether the wrong verdict is golden-pinned, which turns a semantics fix into a deliberate re-bless |
-| [Q4](p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) — the inter-layer alive-∅ path | whether [CO-M1](#the-findings) is a soundness bug or an invariant nobody wrote down |
-| [Q6](p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) — the tree's inner-node rung flip | whether [CO-H3](#the-findings)(c) is a `debug_assert` or a re-probe per node |
+| [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) — which side of the lookahead verdict flip is right | whether a **performance lever decides what a complete model is** — and whether the wrong verdict is golden-pinned, which turns a semantics fix into a deliberate re-bless |
+| [Q4](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) — the inter-layer alive-∅ path | whether [CO-M1](#the-findings) is a soundness bug or an invariant nobody wrote down |
+| [Q6](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) — the tree's inner-node rung flip | whether [CO-H3](#the-findings)(c) is a `debug_assert` or a re-probe per node |
 
 The rest of P1e.1 is cheaper and independent, and two of its questions
 ([Q1](p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md),
@@ -104,7 +104,7 @@ Severity is the review's, and the phase split is the user's instruction. The
 one place it cuts across a finding is the **tree traversal**, whose defects
 are High ([CO-H3](#the-findings)), Medium
 ([SE-M3](#the-findings), [CD-M2](#the-findings)) and a question
-([Q6](p1e.1_open_questions/s1e.1.1_search_soundness_probes.md)); the phases
+([Q6](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)); the phases
 cross-reference rather than merge, and
 [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) owns the decision the others
 render.
@@ -260,9 +260,9 @@ the milestone closes when every row has one.
 | `Q1` | Shared no-goods across concurrent workers: is the determinism argument airtight? | [S1e.1.2](p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md) |
 | `Q2` | Does `MAX_ALT_JUSTIFICATIONS = 32` ever change which unsat core is reported? | [S1e.1.3](p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md) |
 | `Q3` | What is the true trigger shape of Q-M1a.8, if any? | [S1e.1.4](p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md) |
-| `Q4` | Can the inter-layer alive-∅ path record a false model? | [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) |
-| `Q5` | Which side of the lookahead verdict flip is correct, and is the wrong one golden-pinned? | [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) |
-| `Q6` | Is the tree traversal's inner-node rung flip actually constructible? | [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) |
+| `Q4` | Can the inter-layer alive-∅ path record a false model? | [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) |
+| `Q5` | Which side of the lookahead verdict flip is correct, and is the wrong one golden-pinned? | [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) |
+| `Q6` | Is the tree traversal's inner-node rung flip actually constructible? | [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) |
 | `Q7` | What does `-n 0` mean? | [S1e.1.5](p1e.1_open_questions/s1e.1.5_cli_semantics.md) |
 | `Q8` | Does anything still pin `zebra.ein` and `zebra2.ein` to the same model? | [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) |
 | `Q9` | Was the unverified remainder of the review surface clean? | [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) |

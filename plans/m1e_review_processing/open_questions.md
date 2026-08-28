@@ -16,15 +16,15 @@ records which question became which id.
 
 | Q | title | status |
 |---|---|---|
-| [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | open — decided in [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) T1, applied everywhere after |
+| [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | open — decided in [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) T1, applied everywhere after |
 | [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | open — the `accepted` disposition's rule |
 | [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | open — [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) decides per page; the *rule* is here |
 | [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | open — [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md) |
 | [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md), and M1d's `T1d.10.6.4` is the co-owner |
-| [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model) | What is a **solution**, and what is a **model**? | **decided 2026-08-28** by the user; binding on [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) and on [P1e.1b](p1e.1b_hypothesis_structure/README.md) |
+| [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model) | What is a **solution**, and what is a **model**? | **decided 2026-08-28** by the user; binding on [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) and on [P1e.1b](p1e.1b_hypothesis_structure/README.md) |
 | [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) | The read-out prints the solution **KB** and calls it a model | open — raised by Q-M1e.6; owner unassigned |
 | [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness |
-| [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | open — two kernel pages appear to disagree; **not** promoted to a finding |
+| [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. Owner undecided ([D4](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)) |
 
 ---
 
@@ -37,7 +37,7 @@ bar, because the cheap version — "I read the code and disagree" — is the sam
 epistemic move that produced the finding.
 
 The proposed bar, to be ratified in
-[S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes.md) T1 and then
+[S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) T1 and then
 binding on every stage:
 
 - A finding claiming a **behaviour** is refuted only by an executed probe —
@@ -139,7 +139,7 @@ resumes.
 ## Q-M1e.6 — What is a **solution**, and what is a **model**?
 
 **Decided 2026-08-28**, by the user, in answer to
-[S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes.md)'s Q5 —
+[S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)'s Q5 —
 which had asked which of two engine configurations is right and was told,
 correctly, that the question is prior to both. Recorded verbatim:
 
@@ -361,58 +361,49 @@ than either, because here `exhausted` is **true**.
 
 ## Q-M1e.9 — Is `dead` really upward-closed under `absent`?
 
-**Not a finding.** It is two pages of this repo that appear to disagree, found
-while writing [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set),
-and it bears on machinery that **already ships** rather than on anything
-proposed here.
+**Answered 2026-08-28: no.** Filed the same day as *two kernel pages appear to
+disagree*, and **not** promoted to a finding pending a probe. The probe was
+run. The full account, the attribution matrix and the four disposition options
+are [D4](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md);
+this entry is the ledger row.
 
-[design/08 § The objects](../../docs/history/m1a_rust/design/08_parallelism.md)
-states the property as a definition:
+The premise, as [design/08 § The objects](../../docs/history/m1a_rust/design/08_parallelism.md)
+states it:
 
 > `dead(X)` — `X` holds a contradiction. **Monotone**: `X ⊆ Y ∧ dead(X) ⇒
 > dead(Y)`, because the KB is append-only and nothing retracts.
 
-[`absent_semantics.md` C3](../../docs/kernel/inference/absent_semantics.md)
-states what looks like its contrapositive as a live caveat:
+*Append-only* makes `sat` **inflationary**, not monotone in its input, and
+`absent` is what separates the two — which
+[C3](../../docs/kernel/inference/absent_semantics.md) already says from the
+other direction.
 
-> Removing a fact can flip an absent and **fabricate** a contradiction the
-> full KB never had.
+**The counterexample is twenty lines**
+([`probes/naf_upward_closure.ein`](p1e.1_open_questions/s1e.1.1_search_soundness_probes/probes/naf_upward_closure.ein),
+re-taken by the `.sh` beside it): one rule `(and (p ?x) (absent (q ?x))) ⇒
+(false)`. `{(p A)}` is dead; `{(p A), (q A)}` is alive; the single solution is
+`{(p A), (q A)}`. **Five of the six shipped configurations do not report it**,
+and every one of them says `exhausted = true`:
 
-Read together: if removing a fact can create a contradiction, then adding one
-can remove it — and `dead(X) ∧ X ⊆ Y ⇒ dead(Y)` fails for any `(false)` whose
-derivation passed through an `absent` guard that `Y` satisfies. design/08's
-stated reason — *append-only, nothing retracts* — establishes that `sat` is
-**inflationary**, which is not the same as monotone in its input, and the
-distinction is exactly what `absent` introduces.
+| configuration | enterings | recorded |
+|---|---:|---|
+| default | 0 | `(q A)`, `(not (p A))` — **wrong** |
+| `-K` | 0 | `(p A)`, `(q A)` — right, and by accident |
+| `-L` / `-L -K` | 2 | `(q A)`, `(not (p A))` — **wrong** |
+| singleton-writeback off | 0 | `(q A)`, `(not (p A))` — **wrong** |
+| singleton-writeback off + `-L` | 2 | **`k = 0`, Contradiction** |
 
-**What it bears on, in order of exposure:**
+Three shipped mechanisms read the premise, each sufficient on its own: the
+**lookahead kill cache** (writes `(not h)` with empty provenance — C6
+violated by a cache), the **singleton writeback** (design/08 claim (1) failing
+on its own terms), and the **no-good store with apriori's filter** (a width-1
+clause subsuming a live superset). `(config :warn-derived-naf true)` emits
+nothing: it watches rule-derived relations, and here the relation is
+hypothesis-eligible.
 
-1. **The no-good store.** A clause `¬(h₁ ∧ … ∧ h_L)` learned in the world
-   `B ∪ c` is applied to every superset. That is a negative result cached
-   across worlds, which is the shape [C6](../../docs/kernel/inference/absent_semantics.md)
-   — *"`absent` is world-relative. Results must not be cached across worlds"* —
-   exists to forbid.
-2. **Apriori's downward-closure filter**
-   ([`apriori.rs`](../../ein.rs/crates/ein-infer/src/apriori.rs)), which
-   declines to generate a superset of a dead set.
-3. The maximality test of Q-M1e.8, last and least, because it is the only one
-   of the three that does not ship.
+**Owner undecided.** D4 sets out four options; its recommendation is a
+load-time refusal now — the compiler already knows every guard's watched
+relations and every hypothesis-eligible relation — with the real fix filed,
+starting from `Prov::absent`, which has recorded the negative premises since
+S1.21.8 and which *"no walk yet interprets"*.
 
-**Why it may be harmless in practice, and why that is not an answer.** The
-corpus's `(false)`-deriving rules are the algebraic scans — `functional`,
-`injective`, `total`, `no-room-left` — and a positive-only `absent` guard is
-*anti-monotone*, so a guard that fails stays failed and the derivation it
-blocked cannot come back. The exposed shape needs a **nested** absent (a
-`forall`), which `absent_semantics.md` says can flip false→true. Whether any
-program can put one on the path to a `(false)` is a probe, not an argument,
-and [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s third rule
-says a risk is not refutable by argument at all.
-
-**Owner unassigned.** It sits squarely in
-[Q9](review/open-questions.md)'s unswept surface — *no dedicated pass over
-algorithmic pathology or invariants* — and it is the kind of thing
-[S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) T4 should be told
-about before it scopes that sweep. Whichever way it resolves, one of the two
-pages needs an edit, which makes it also a
-[CD-H2](README.md#the-findings)-shaped defect: two live pages, one subject,
-opposite claims.
