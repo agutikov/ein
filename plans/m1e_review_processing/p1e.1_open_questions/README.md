@@ -50,7 +50,9 @@ written out:
   on 2026-08-28 (the rung mode is re-read at every node); the probe and the
   semantics are
   [S1e.1b.6](../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)'s.
-- **Q7** — `-n 0`.
+- **Q7** — `-n 0`. **Answered 2026-08-29**: it was `-n 1`, which is neither
+  reading anyone offered, and it is refused now
+  ([S1e.1.5](s1e.1.5_cli_semantics.md)).
 - **Q8, Q10** — two claims with no owner: that the two zebra encodings agree,
   and that the release matrix builds.
 - **Q9** — the review's own hole, and the reason this milestone may not
@@ -84,7 +86,7 @@ questions that become permanent, a `Q-M1e.<n>` or a new section of
 | [S1e.1.2](s1e.1.2_determinism_under_jobs.md) | Determinism under `--jobs` — Q1 | 2 d | the structural argument written where `Nogoods` lives, or an injected-clause test showing the commit-order replay masks it — and, if neither, the claim narrowed |
 | [S1e.1.3](s1e.1.3_unsat_core_completeness.md) | What the core promises — Q2 | 1.5 d | either a fixture where eviction enlarges the core, or the retention argument written next to `MAX_ALT_JUSTIFICATIONS`; the README's claim matched to whichever holds |
 | [S1e.1.4](s1e.1.4_defined_behaviour_q_m1a8.md) | Q-M1a.8's real trigger — Q3 | 1 d | ✅ **2026-08-29** — three probes banked in `rule_semantics.rs`; §3.2 rewritten to the shape that reproduces; `Q-M1a.8` closed as stated and the live half filed as [Q-M1e.16](../open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) |
-| [S1e.1.5](s1e.1.5_cli_semantics.md) | `-n 0` — Q7 | 0.5 d | a ruling: refuse it with the `jobs_spec` argument, or define it and pin it with a test |
+| [S1e.1.5](s1e.1.5_cli_semantics.md) | `-n 0` — Q7 | 0.5 d | ✅ **2026-08-29 — refuse**, with the `jobs_spec` argument: `-n 0` was `-n 1`, and so was every negative. Pinned by `cli_semantics::solutions_takes_a_count_of_one_or_more_and_nothing_else`, stated in `defined_behaviour.md` §5, `EH-L1` **fixed**, and the two flags that still clamp filed as [Q-M1e.17](../open_questions.md#q-m1e17--three-py_int-options-silently-reinterpret-a-negative) |
 | [S1e.1.6](s1e.1.6_coverage_gaps.md) | What nothing pins — Q8, Q9, Q10 | 2 d | the two-encodings assertion named or written; the four unswept surfaces of Q9 scoped, with one of them swept here; the release matrix's status stated where a reader would believe it |
 
 ## Acceptance
@@ -126,7 +128,9 @@ questions that become permanent, a `Q-M1e.<n>` or a new section of
 - [`docs/history/m1a_rust/design/02_determinism_and_order.md`](../../../docs/history/m1a_rust/design/02_determinism_and_order.md)
   — where Q1's argument belongs if it can be made.
 - [`docs/kernel/defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md)
-  — §3.2 is Q3's subject and §4 is Q7's table.
+  — §3.2 is Q3's subject; Q7's ruling went to **§5**, beside
+  `--max-set-size 0`'s, because §4's own text says the CLI-rejects row belongs
+  there.
 - [`docs/history/m1a_rust/open_questions.md`](../../../docs/history/m1a_rust/open_questions.md)
   — Q-M1a.8, which Q3 closed on 2026-08-29 in a third direction: the claim is
   refuted *and* the item stays a bug, under a different trigger.

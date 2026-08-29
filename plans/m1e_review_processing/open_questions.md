@@ -32,6 +32,7 @@ records which question became which id.
 | [Q-M1e.14](#q-m1e14--the-corpus-jobs-sweeps-per-layer-census-coverage-is-vacuous) | The corpus `--jobs` sweep's per-layer census coverage is **vacuous** | open — raised 2026-08-29 by [S1e.1.2](p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md) T3, which closed the unit half; **owner unassigned**, and the corpus half costs a golden |
 | [Q-M1e.15](#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) | The **alternatives cap** decides which unsat core is reported | open — raised 2026-08-29 by [S1e.1.3](p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md), which is the review's `Q2` answered **yes**; witnessed by a fixture pair, **owner unassigned**, and no shipped puzzle is changed by it |
 | [Q-M1e.16](#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | The **binding key** compares two register layouts as one | open — raised 2026-08-29 by [S1e.1.4](p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md), which is the review's `Q3` answered and **`Q-M1a.8` closed as stated**. A well-formed program loses a derivation in a release build and trips a `debug_assert` in a test one; **owner unassigned**, and no corpus program can reach it |
+| [Q-M1e.17](#q-m1e17--three-py_int-options-silently-reinterpret-a-negative) | Three `py_int` options **silently reinterpret a negative** | open — raised 2026-08-29 by [S1e.1.5](p1e.1_open_questions/s1e.1.5_cli_semantics.md), which closed the third of them (`-n`) by refusing it. `-m` and `-E` still clamp, and `-E`'s abort line **prints the clamped number**; **owner unassigned** |
 
 ---
 
@@ -1070,3 +1071,64 @@ the first fix below is free.
 The stage did not choose, because choosing is the fix, and (1) and (2) differ
 in what they promise a program that *does* carry a non-symbol activator
 argument — a question no corpus entry asks.
+
+## Q-M1e.17 — Three `py_int` options silently reinterpret a negative
+
+> **Raised 2026-08-29 by
+> [S1e.1.5](p1e.1_open_questions/s1e.1.5_cli_semantics.md)**, the review's
+> **Q7**, which ruled on one of the three and measured the other two on the way
+> past. Refusing them is a validator apiece; *what* to refuse is the decision,
+> and it is not the same decision as `-n`'s. **Owner unassigned.**
+
+`ein solve` builds its budget fields with `.max(0)`, so a negative becomes
+zero and the zero then means whatever that flag's zero means. Q7 asked the
+question of `-n` and the answer there was *refuse*, because `-n 0` had no
+reading. The other budget flags are not in that position: **their zeros are
+defined**, so the question is only about the negative, and it has a different
+answer available — *honour it*, which is what a fourth option already does.
+
+Measured 2026-08-29, `examples/zebra2.ein`, the `=` spelling throughout (a
+bare `-E -3` is `clap`'s own *unexpected argument*):
+
+| option | `0` | a negative | verdict |
+|---|---|---|---|
+| `-n`/`--solutions` | was `-n 1` | was `-n 1` | **refused since S1e.1.5** |
+| `-m`/`--max-set-size` | a truncation, defined by M1d T1d.10.5.0 | **clamped to 0** — `-m=-3` answers `Contradiction k=0 exhausted=false` on a puzzle with a model | open |
+| `-E`/`--max-enterings` | `** aborted: max-enterings (0) reached **` | **clamped to 0** — and see below | open |
+| `saturate --max-steps` | the limit is hit at once | **honoured**: the message says `max_steps=-3` | fine, and it is the precedent |
+| `-g`/`--progress-every` | documented *0 disables* | disabled, by the same `> 0` guard | fine |
+| `-d`/`--seed` | — | **normative**: `--seed=-7` is `--seed 7`, [`defined_behaviour.md` §3.1](../../docs/kernel/defined_behaviour.md) | fine |
+
+**`-E`'s is the one that is more than untidy.** The abort line is built from
+`self.opts.max_enterings` — the *clamped* value — so a run given `-E=-3`
+prints:
+
+```text
+** aborted: max-enterings (0) reached **
+```
+
+A diagnostic reporting a number the user did not type is a different defect
+from a flag accepting a value it should not: the first is unfalsifiable from
+the output. `saturate --max-steps` shows the alternative costs nothing —
+`saturator hit max_steps=-3` names what was asked and lets the reader see the
+mistake.
+
+**Three candidate rulings, and the stage that files this did not choose:**
+
+1. **Refuse below zero** on `-m` and `-E`, `solutions_spec`-style. Consistent
+   with `-n` and with `--jobs`, and it keeps both defined zeros. It refuses a
+   spelling nobody uses — no corpus entry, `utils/` script or doc passes a
+   negative to either.
+2. **Honour the negative** the way `--max-steps` does: drop the `.max(0)`,
+   carry the number into the message, and let a negative budget be a budget
+   that is already spent. Cheapest, and it makes the diagnostic true; it also
+   leaves `-m=-3` meaning `-m 0`, which is a fact a reader must be told.
+3. **Refuse the negative, keep the clamp for the caller.** A library caller
+   builds `SolveOptions` directly and is not bound by the CLI's validator, so
+   the clamp is a cast guard rather than a policy — which is what
+   `ein-cli/src/solve.rs` now says at `-n`'s site.
+
+(2) and (3) are not exclusive; (1) and (2) are. What decides between them is
+whether a *budget* flag should be strict or forgiving, and that is a question
+about the CLI's manners rather than about the engine — which is why it is a
+question and not a fix.

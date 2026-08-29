@@ -589,6 +589,43 @@ Two things the fix decides rather than assumes:
   and is untouched here — no exit code moved, and `corpus_exits.txt` is
   unchanged.
 
+**M1e [S1e.1.5](../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.5_cli_semantics.md)
+answered the same question for the other budget flag, and answered it the other
+way.** `--solutions 0` is **refused**, exit 2:
+
+```text
+$ ein solve x.ein -n=0
+error: invalid value '0' for '--solutions <N>': invalid solution count: '0' (expected 1 or more, or --exhaustive)
+```
+
+The asymmetry with `--max-set-size 0` above is the point, and it is not a
+preference. A cap of zero *has* an answer the engine gives exactly — explore no
+layer, and say so with `exhausted = false`. A stop-after of zero has none:
+`stop_after` is compared with `>=` **after** a model is recorded, so `Some(0)`
+cuts at the **first** model and `-n 0` was `-n 1` under another name, measured
+byte-identical on stdout and on every `--json-summary` field across a unique
+model, a nine-model ambiguity and a contradiction. Neither reading a user could
+mean was available — *record nothing* is not what it did, and *no limit* is
+already spelled `--exhaustive` — which is the argument `--jobs 0` had been
+refused with since [S1a.7.5](../history/m1a_rust/README.md#s1a75--the---jobs-contract).
+
+Three things it settles that are easy to state loosely:
+
+- **Every negative goes with it.** The CLI clamped `-n` to zero with `max(0)`,
+  so `--solutions=-7` was `-n 1` too. `-n -7` with a space was already `clap`'s
+  *unexpected argument*; the `=` spelling was the open door.
+- **A non-integer keeps its message.** `error: invalid value 'x' for
+  '--solutions <N>': invalid int value: 'x'` is §4's own example row, so the
+  validator refuses the *range* and leaves the *type* alone.
+- **It is a deliberate divergence from ein.py, not a repair of one.** ein.py
+  declared `-n` as `type=int` with no bound and compared
+  `len(lstate.solution_nodes) >= stop_after`, so it accepted zero and behaved
+  the same way. Nothing pins that: no golden under
+  `tests/golden/from_ein_py/` is a `solve` invocation — the nineteen are two
+  canonical parse dumps and seventeen renderings — and every `-n` in the corpus
+  is `-n 3`. Held by
+  `ein-cli/tests/cli_semantics.rs::solutions_takes_a_count_of_one_or_more_and_nothing_else`.
+
 **M1d P1d.10 added the 51st option, and it moves no byte of stdout.** `ein
 solve --layer-progress` streams the **per-layer census** to stderr and nothing
 per entering — three lines a layer, where `--verbose` had one and a half:

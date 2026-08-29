@@ -5,7 +5,10 @@
 **Depends on:** nothing to start. Its *content* is affected by
 [P1e.1](../p1e.1_open_questions/README.md) — Q5 may reclassify
 `enable-pre-branch-lookahead` and Q7 defines or refuses `-n 0` — so the page's
-two most interesting rows are written last.
+two most interesting rows are written last. **Q7 answered 2026-08-29:
+refused**, and § 3.3's budget bullet was updated in
+[S1e.1.5](../p1e.1_open_questions/s1e.1.5_cli_semantics.md) rather than left
+for this stage.
 **Blocks:** nothing.
 
 ## Context

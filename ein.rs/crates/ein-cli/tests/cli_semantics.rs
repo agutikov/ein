@@ -552,6 +552,92 @@ fn the_stop_policy_is_honoured() {
     );
 }
 
+/// **`-n/--solutions` takes a count of one or more, and refuses everything
+/// else** — M1e
+/// [S1e.1.5](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.5_cli_semantics.md),
+/// the review's `Q7`.
+///
+/// `-n 0` used to be accepted, and what it *did* was `-n 1`: `stop_after` is
+/// compared with `>=` after a model is recorded, so `Some(0)` cuts at the
+/// first one, and the CLI clamped every negative onto the same `Some(0)`.
+/// Measured before the refusal, on one fixture per verdict — a unique model, a
+/// nine-model ambiguity, a contradiction — `-n 0`, `-n=-1` and `-n=-7` were
+/// byte-identical to `-n 1` on stdout and on every field of `--json-summary`,
+/// enterings included. Neither reading a user could mean was
+/// available — *record nothing* is not what it did, and *no limit* is
+/// `--exhaustive` — which is the argument `--jobs 0` was already refused with
+/// one screen away.
+///
+/// Two halves, and the second is the one that would rot quietly:
+///
+/// - the refusal, its exit code (**2**, a usage error) and its wording;
+/// - a **non-integer** still gets `py_int`'s message, unchanged, because
+///   [`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)
+///   quotes that message verbatim and uses `--solutions` as its example. A
+///   validator that replaced it would falsify a normative page and no test
+///   would have said so.
+#[test]
+fn solutions_takes_a_count_of_one_or_more_and_nothing_else() {
+    // The positive control: the flag still works, and 1 is still the default.
+    for good in ["1", "2"] {
+        let r = ein(&["solve", TWO_MODELS, "-n", good, "-s"]);
+        r.ok();
+        assert_eq!(
+            r.field("solutions (k)").as_deref(),
+            Some(good),
+            "-n {good} did not reach {good} models"
+        );
+    }
+
+    // A negative needs the `=` spelling to reach the validator at all: `-n -1`
+    // is clap's own *unexpected argument* — also exit 2, and the one door that
+    // was already shut. `0` is written both ways to show the refusal is the
+    // value's and not the spelling's.
+    for bad in ["-n=0", "--solutions=0", "--solutions=-1", "--solutions=-7"] {
+        let r = ein(&["solve", TWO_MODELS, bad]);
+        assert_eq!(r.code, 2, "{bad} was not a usage error:\n{}", r.err);
+        assert!(
+            r.err.contains("solution count"),
+            "{bad} was refused without saying why:\n{}",
+            r.err
+        );
+        assert!(
+            r.err.contains("1 or more") && r.err.contains("--exhaustive"),
+            "{bad}'s message names neither the range nor the other reading:\n{}",
+            r.err
+        );
+        assert!(
+            r.out.is_empty(),
+            "{bad} printed to stdout before refusing:\n{}",
+            r.out
+        );
+    }
+    let spaced = ein(&["solve", TWO_MODELS, "-n", "-1"]);
+    assert_eq!(
+        spaced.code, 2,
+        "`-n -1` reached the engine:\n{}",
+        spaced.err
+    );
+
+    // §4's row, which is about the *value type* and not about the range.
+    for bad in ["x", "1.5"] {
+        let r = ein(&["solve", TWO_MODELS, "-n", bad]);
+        assert_eq!(r.code, 2, "-n {bad} was not a usage error:\n{}", r.err);
+        assert!(
+            r.err
+                .contains(&format!("invalid value '{bad}' for '--solutions <N>'")),
+            "the documented usage-error line moved:\n{}",
+            r.err
+        );
+        assert!(
+            r.err.contains(&format!("invalid int value: '{bad}'")),
+            "a non-integer must keep `py_int`'s message — defined_behaviour.md \
+             §4 quotes it:\n{}",
+            r.err
+        );
+    }
+}
+
 /// **`-j/--jobs` takes a count or the word `auto`, and refuses everything
 /// else** — [S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
 /// T1a.7.5.1.

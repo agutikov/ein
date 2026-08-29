@@ -337,12 +337,16 @@ Five classes. Only the first two touch the answer.
 - **Budget** — `-e`/`--exhaustive`, `-n`/`--solutions`, `-m`/`--max-set-size`,
   `-E`/`--max-enterings`, `-T`/`--max-time`. These change `k` and `exhausted`
   by construction, which is what `Ambiguity`'s *"(a lower bound — the search
-  did not exhaust)"* exists to say. **`-n 0` is accepted and behaves exactly
-  as `-n 1`**: `stop_after` is tested *after* a model is recorded, so `Some(0)`
-  cuts at the first one. What it *should* mean is
-  [Q7](../../plans/m1e_review_processing/review/open-questions.md) /
-  [EH-L1](../../plans/m1e_review_processing/README.md#the-findings), open —
-  `--jobs 0` is refused with a reasoned message and `-n 0` is not.
+  did not exhaust)"* exists to say. **`-n 0` is refused**, exit 2, since M1e
+  [S1e.1.5](../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.5_cli_semantics.md)
+  — and so is every negative, which the CLI used to clamp onto it. It was
+  accepted until 2026-08-29 and behaved exactly as `-n 1`: `stop_after` is
+  tested *after* a model is recorded, so `Some(0)` cuts at the first one.
+  `--jobs 0` had been refused with that argument since S1a.7.5 and `-n 0` was
+  not, which was `Q7` / `EH-L1`. **`-m 0` stays legal** and means a truncation
+  (§ `defined_behaviour.md` 5), and a **negative** `-m` or `-E` is still
+  clamped onto it silently —
+  [Q-M1e.17](../../plans/m1e_review_processing/open_questions.md#q-m1e17--three-py_int-options-silently-reinterpret-a-negative).
 - **The six shadows** — § [3.2](#32-the-six-options-that-shadow-a-flag). Their
   answer column is the flag's.
 - **Execution** — `--jobs N` / `--jobs auto`: same verdict, same models, same

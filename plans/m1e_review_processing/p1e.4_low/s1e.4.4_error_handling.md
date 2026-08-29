@@ -9,6 +9,15 @@
 
 ## Context
 
+> **`EH-L1` is done — 2026-08-29, in
+> [S1e.1.5](../p1e.1_open_questions/s1e.1.5_cli_semantics.md) itself.** The
+> ruling was *refuse*, and T1e.1.5.3 says the ruling stage carries it out: the
+> validator, the test and the doc paragraph were one commit's worth and
+> splitting them from the ruling would have left `configuration.md` stating
+> the old behaviour for the length of two phases. What is left for this stage
+> is `EH-L2` and the confirmation in T1e.4.4.1's last paragraph, which now
+> waits only on [CO-H3](../p1e.2_high/s1e.2.1_correctness.md)(a).
+
 **`EH-L1` — `-n 0`.** Accepted, with `stop_after: Some(0)` and no stated
 meaning, twenty lines from a `--jobs 0` refusal whose message argues that a
 flag with two readings should be refused
@@ -34,10 +43,13 @@ pipeline hits first.
 
 ## Acceptance
 
-- `-n 0` does what
+- ~~`-n 0` does what
   [S1e.1.5](../p1e.1_open_questions/s1e.1.5_cli_semantics.md) ruled, is pinned
   by a test, and is stated in
-  [`defined_behaviour.md` § 4](../../../docs/kernel/defined_behaviour.md).
+  [`defined_behaviour.md` § 4](../../../docs/kernel/defined_behaviour.md).~~
+  ✅ **Done 2026-08-29 in S1e.1.5** — and in **§5**, not §4: §4's own text
+  says the CLI-rejects row belongs there, and §5 is where `--max-set-size 0`
+  was ruled the other way.
 - The two magic-byte literals are **one constant**, so the two feature sets
   cannot diverge again.
 - If the `-n 0` ruling is *refuse*, nothing in the corpus, `utils/` or
@@ -45,7 +57,25 @@ pipeline hits first.
 
 ## Tasks
 
-### Task T1e.4.4.1 — `EH-L1`: carry out the `-n 0` ruling
+### Task T1e.4.4.1 — `EH-L1`: carry out the `-n 0` ruling ✅
+
+**Done 2026-08-29 in
+[S1e.1.5](../p1e.1_open_questions/s1e.1.5_cli_semantics.md).** *Refuse* was
+the ruling: `cmdline::solutions_spec` takes 1 or more, the message names both
+readings (`expected 1 or more, or --exhaustive`), the fixture is
+`cli_semantics::solutions_takes_a_count_of_one_or_more_and_nothing_else` —
+a usage error has no `.ein` file — and the grep was run before it shipped:
+every `-n` in `corpus.toml` and `utils/` is `-n 3`.
+
+**The last paragraph's four cells are measured** (S1e.1.5 T1e.1.5.1): the
+lattice makes `-m 0` a truncation and the tree ignores it, on both `-m 0` and
+`-e -m 0`. So the confirmation this task asks for is *half* available now and
+the other half is [CO-H3](../p1e.2_high/s1e.2.1_correctness.md)(a)'s to
+deliver. What the measurement added is a third column the review did not
+have: a **negative** `-m` is clamped onto 0 silently, and so is a negative
+`-E` — [Q-M1e.17](../open_questions.md#q-m1e17--three-py_int-options-silently-reinterpret-a-negative).
+
+The task as written:
 
 Implement whichever
 [S1e.1.5](../p1e.1_open_questions/s1e.1.5_cli_semantics.md) took:

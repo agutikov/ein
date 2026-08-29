@@ -63,7 +63,9 @@ Three facts, checked at `7731848`:
 - **The one column that matters is missing everywhere.** *Does this knob
   change the answer?* [F4 Q40](../../followups/f4_cross_cutting.md) says at
   least one does — `enable-pre-branch-lookahead` decides a verdict — and
-  [Q7](../review/open-questions.md) says at least one is undefined (`-n 0`).
+  [Q7](../review/open-questions.md) said at least one is undefined (`-n 0`) —
+  **answered 2026-08-29**: it was `-n 1`, and it is refused now
+  ([S1e.1.5](../p1e.1_open_questions/s1e.1.5_cli_semantics.md)).
   A reference that lists flags without that column would be a table, not a
   contract.
 

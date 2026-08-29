@@ -567,6 +567,10 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
             return (1, n_queries);
         }
     };
+    // The `max(0)` can no longer fire: `cmdline::solutions_spec` refuses
+    // anything below 1 (M1e S1e.1.5). It stays as the cast's guard rather than
+    // as a policy — a policy that lives in two places is a policy with two
+    // answers, and the refusal's is the CLI's.
     let stop_after = if m.get_flag("exhaustive") {
         None
     } else {

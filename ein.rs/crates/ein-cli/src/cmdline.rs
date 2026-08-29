@@ -46,6 +46,36 @@ fn jobs_spec(s: &str) -> Result<i64, String> {
     }
 }
 
+/// `-n/--solutions` — a count of **one or more**.
+///
+/// Zero is refused for the reason [`jobs_spec`] refuses `--jobs 0`: it has two
+/// readings and the engine implements a third. `stop_after` is compared with
+/// `>=` *after* a model is recorded (`ein_infer`'s `commit_entering`), so
+/// `Some(0)` — and, before this validator, every negative, which the CLI
+/// clamped onto it — cuts at the **first** model and is `-n 1` under another
+/// name. Neither reading a user could mean is available: *record nothing* is
+/// not what it does, and *no limit* is already spelled `--exhaustive`.
+///
+/// ein.py accepted them too, with `type=int` and the same `>=` (`solver.py`'s
+/// `len(lstate.solution_nodes) >= stop_after`), so this is a **deliberate
+/// divergence from parity** rather than a repair — taken because nothing pins
+/// it: no golden under `tests/golden/from_ein_py/` is a `solve` invocation at
+/// all, and every `-n` in the corpus is `-n 3`. M1e
+/// [S1e.1.5](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.5_cli_semantics.md),
+/// the review's `Q7`.
+///
+/// The non-integer message stays [`py_int`]'s, because
+/// [`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)
+/// quotes it verbatim, with `--solutions` as its example.
+fn solutions_spec(s: &str) -> Result<i64, String> {
+    match py_int(s)? {
+        n if n >= 1 => Ok(n),
+        n => Err(format!(
+            "invalid solution count: '{n}' (expected 1 or more, or --exhaustive)"
+        )),
+    }
+}
+
 /// `type=float`, same argument.
 fn py_float(s: &str) -> Result<f64, String> {
     ein_core::python_float(s).ok_or_else(|| format!("invalid float value: '{s}'"))
@@ -173,7 +203,7 @@ fn solve_command() -> Command {
                 .short('n')
                 .long("solutions")
                 .value_name("N")
-                .value_parser(py_int)
+                .value_parser(solutions_spec)
                 .default_value("1")
                 .help("stop after N distinct solutions (default: 1)"),
         )
