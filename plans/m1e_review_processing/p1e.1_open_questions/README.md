@@ -1,16 +1,16 @@
 # P1e.1 — The ten questions
 
 **Estimate:** 2 weeks — 6 stages, 9 days. (10 until 2026-08-28, when `Q6` left
-S1e.1.1 for [P1e.1b](../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md).)
+S1e.1.1 for [P1f.10](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md).)
 **Depends on:** nothing. This phase reads, probes and rules; it changes the
 engine only where a probe's answer *is* a one-line fix.
 **Blocks:** [P1e.2](../p1e.2_high/README.md) in three places and
 [P1e.3](../p1e.3_medium/README.md) in one —
 [Q3](s1e.1.4_defined_behaviour_q_m1a8.md) gates
 [CD-H3](../README.md#the-findings),
-[Q6](../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)
+[Q6](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)
 gates [CO-H3](../README.md#the-findings)(c) and is **no longer this phase's** —
-the ruling it needed was taken here, the probe moved to P1e.1b,
+the ruling it needed was taken here, the probe moved to P1f.10,
 [Q5](s1e.1.1_search_soundness_probes/README.md) can move corpus goldens, and
 [Q4](s1e.1.1_search_soundness_probes/README.md) decides whether
 [CO-M1](../README.md#the-findings) is a bug.
@@ -49,7 +49,7 @@ written out:
 - **Q6** — the tree's *asking once is asking enough*. The ruling was taken here
   on 2026-08-28 (the rung mode is re-read at every node); the probe and the
   semantics are
-  [S1e.1b.6](../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)'s.
+  [S1f.10.6](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)'s.
 - **Q7** — `-n 0`. **Answered 2026-08-29**: it was `-n 1`, which is neither
   reading anyone offered, and it is refused now
   ([S1e.1.5](s1e.1.5_cli_semantics.md)).

@@ -46,7 +46,7 @@ Three places, in increasing order of consequence:
    binding naming a type where the puzzle means a house is the sort of thing
    [`docs/guide/`](../../../../docs/guide/README.md) would have to explain
    away.
-3. **It is the standing proof for [S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)'s
+3. **It is the standing proof for [S1f.10.6](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)'s
    loss mechanism.** The blind rung keeps proposing long after any real debt
    is discharged, which is exactly why a tree node that flips from the
    obligations rung to the blind one stops recognising solutions. Without this

@@ -1,9 +1,9 @@
-# S1e.1b.5 — Ordering by structure
+# S1f.10.5 — Ordering by structure
 
-**Phase:** [P1e.1b](README.md)
+**Phase:** [P1f.10](README.md)
 **Estimate:** 2.5 days
-**Depends on:** [S1e.1b.2](s1e.1b.2_groups.md) (the cover) and
-[S1e.1b.3](s1e.1b.3_the_restricted_join.md) (so the order is measured against
+**Depends on:** [S1f.10.2](s1f.10.2_groups.md) (the cover) and
+[S1f.10.3](s1f.10.3_the_restricted_join.md) (so the order is measured against
 a join that is already restricted, not against the old one).
 **Blocks:** nothing.
 
@@ -69,7 +69,7 @@ position. The stage should say so before it measures, and then measure.
 - **`most-constrained` is resolved**: implemented with the group cover behind
   it, or deleted from `FIELDS` with a load error naming the two live modes.
   A third state — a documented mode that returns a constant — does not
-  survive this stage. It is [MA-M1](../README.md#the-findings)'s shape (dead
+  survive this stage. It is [MA-M1](../../m1e_review_processing/README.md#the-findings)'s shape (dead
   scaffolding with a suppressor) in a user-facing flag.
 - The default does **not** change unless the corpus sweep says it should, and
   if it does, every baseline that quotes an entering count moves with it and
@@ -77,7 +77,7 @@ position. The stage should say so before it measures, and then measure.
 
 ## Tasks
 
-### Task T1e.1b.5.1 — The order, as a comparator over sets
+### Task T1f.10.5.1 — The order, as a comparator over sets
 
 Group-aware `cmp_set`: order a candidate set by the *smallest live group* any
 of its members belongs to, then by group size, then fall through to `lex` so
@@ -85,7 +85,7 @@ the order stays total and canonical. Determinism is not optional here —
 design/02's rule is that anything reaching a traversal is canonically ordered
 and that a tie is broken by content, never by hash.
 
-### Task T1e.1b.5.2 — Implement `most-constrained`, or remove it
+### Task T1f.10.5.2 — Implement `most-constrained`, or remove it
 
 The mode has been a documented choice returning `0.0` since S1.5a.7. With the
 cover it has an obvious meaning: `score_hypothesis(h)` = the reciprocal of the
@@ -95,7 +95,7 @@ deleted, the error message that replaces it goes in
 diagnostics list, because that page is the one statement of what the loader
 refuses.
 
-### Task T1e.1b.5.3 — Measure, on the two questions separately
+### Task T1f.10.5.3 — Measure, on the two questions separately
 
 `-n 1` and `-e` are different questions and a heuristic can win one and lose
 the other. Report both, per entry, and name every entry where the new order is
@@ -103,7 +103,7 @@ the other. Report both, per entry, and name every entry where the new order is
 programs.
 
 The instrument is `utils/bench_env.sh` plus the existing corpus sweep, and the
-numbers go beside S1e.1b.1's census.
+numbers go beside S1f.10.1's census.
 
 ## Notes
 

@@ -8,7 +8,7 @@
 where B (a diagnostic) was taken now and this was filed as the real fix.
 
 **Trigger:** when a program that needs the shape shows up, or when
-[S1e.1b.8](../m1e_review_processing/p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md)
+[S1f.10.8](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)
 rules that a refutation resting on an `absent` stays **legal**. If that stage
 instead forbids the shape, this theme is **closed without being done** — there
 is nothing left to be careful about — and that is the cheapest outcome

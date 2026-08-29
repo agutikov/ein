@@ -1,10 +1,10 @@
-# S1e.5.5 — Every statement convertible to NL
+# S1f.5.5 — Every statement convertible to NL
 
-**Phase:** [P1e.5](README.md) (Documentation ein does not have)
+**Phase:** [P1f.5](README.md) (Documentation ein does not have)
 **Estimate:** 4 days
 **Depends on:** nothing to start. Its *definition* leans on
-[Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
-and [Q-M1e.7](../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model),
+[Q-M1e.6](../../m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
+and [Q-M1e.7](../../m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model),
 which decide **which fact set** the claim quantifies over — the model or the
 solution KB. Both are ratified.
 **Blocks:** nothing in M1e. It is the IR→NL half of the round trip
@@ -173,15 +173,15 @@ re-derive the meaning of.
   binds: to the roots the repo controls (`stdlib/`, `tests/stdlib/`), never to
   every `.ein` anyone writes. T4 is where that is decided and written down.
 - No number in the page is one this stage counted by hand and nothing
-  re-counts — [Q-M1e.4](../open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all).
+  re-counts — [Q-M1e.4](../../m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all).
 
 ## Tasks
 
-### Task T1e.5.5.1 — The census, and the four registers
+### Task T1f.5.5.1 — The census, and the four registers
 
 Write `utils/nl_census.py`. Per corpus entry under its declared runs: the
 reported answer's fact set (`--json-summary`'s `verdict.solutions[i].facts`,
-which is what [Q-M1e.7](../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+which is what [Q-M1e.7](../../m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
 is about — record which set was counted), each fact's relation, whether that
 relation carries a `:why`, and the register:
 
@@ -197,11 +197,11 @@ actionable, *"27 of 40 relations are stdlib-derived and no puzzle can template
 them"* is.
 
 `--check` exits 1 below a floor — but per
-[TE-L4](../README.md#the-findings), a `--check` wired to no gate is a check
+[TE-L4](../../m1e_review_processing/README.md#the-findings), a `--check` wired to no gate is a check
 nobody runs, so the gate is T5's cargo test and this is the measurement it is
 a yes/no of.
 
-### Task T1e.5.5.2 — Fact-level rendering from provenance
+### Task T1f.5.5.2 — Fact-level rendering from provenance
 
 The change: when rendering a fact for a human, consult its provenance before
 its relation.
@@ -225,10 +225,10 @@ Three things to establish before writing it:
 - **A fact may have up to 32 recorded justifications**
   (`MAX_ALT_JUSTIFICATIONS`, [`kb.rs:49`](../../../ein.rs/crates/ein-core/src/kb.rs)).
   Rendering must pick one **deterministically**, and which one is
-  [Q2](../p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md)'s
+  [Q2](../../m1e_review_processing/p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md)'s
   neighbourhood — a fact whose narration depends on recording order is a
   narration that moves when a rule's `:priority` moves
-  ([S1e.5.6](s1e.5.6_rule_priority.md) is the other end of that thread).
+  ([S1f.5.6](s1f.5.6_rule_priority.md) is the other end of that thread).
   Take *first recorded*, say so, and let S1e.1.3's answer refine it.
 - **Determinism.** The rendered text is output, so it is under the same
   invariance the `id_order_invariance` and `jobs_invariance` suites hold the
@@ -237,7 +237,7 @@ Three things to establish before writing it:
   8 facts and would render 444. Measure it on the zebra family before shipping;
   the answer table is on every `ein solve`.
 
-### Task T1e.5.5.3 — Where a template has nowhere to live
+### Task T1f.5.5.3 — Where a template has nowhere to live
 
 Three forms have no slot. Decide each, and write the decision down:
 
@@ -254,7 +254,7 @@ Three forms have no slot. Decide each, and write the decision down:
   *relations* instead. Whether a per-conjunct template is wanted is a language
   question; if the answer is yes it is a `Q-M1e.<n>`, not a quiet addition.
 
-### Task T1e.5.5.4 — The mandate, and where it binds
+### Task T1f.5.5.4 — The mandate, and where it binds
 
 Four rungs, and the stage picks one *and writes the argument*:
 
@@ -275,7 +275,7 @@ should be a ruling and not a side effect.
 If the user wants (d) anyway, it is a separate stage with a corpus-wide
 migration commit, and this stage's page is its specification.
 
-### Task T1e.5.5.5 — Bank both checks
+### Task T1f.5.5.5 — Bank both checks
 
 - `template_wellformedness` in `ein-ir`'s suite: parse each rule's `:why` for
   `{?x}` refs, assert each names a bound variable or a param; each relation's
@@ -286,7 +286,7 @@ migration commit, and this stage's page is its specification.
   answer, trace or owe list contains `{?`.
 
 Both are cheap and neither is a discovery. Say that in the commit message —
-[Q-M1e.1](../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
+[Q-M1e.1](../../m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
 standard cuts both ways, and a probe that comes back clean is still a result.
 
 ## Risks
@@ -303,10 +303,10 @@ standard cuts both ways, and a probe that comes back clean is still a result.
   on the default `ein solve` path. Measure before shipping; if it costs, the
   full rendering is a flag and the answer table stays as it is.
 - **It touches the read-out three phases are already editing.**
-  [SE-M1](../README.md#the-findings) and [AR-M2](../README.md#the-findings) are
+  [SE-M1](../../m1e_review_processing/README.md#the-findings) and [AR-M2](../../m1e_review_processing/README.md#the-findings) are
   findings about read-out ownership being split across three crates, and T2
   adds a fourth caller unless it lifts the shared function that
-  [S1e.3.4](../p1e.3_medium/s1e.3.4_architecture.md) is already going to want.
+  [S1e.3.4](../../m1e_review_processing/p1e.3_medium/s1e.3.4_architecture.md) is already going to want.
   Sequence after it, or hand it the function.
 
 ## Notes
@@ -333,5 +333,5 @@ the answer, which is backwards.
 - [`EinAf.md` § Stage F](../../m2_nl_to_ir/EinAf.md) — F6 dependency and F7
   provenance are the grades whose usefulness depends on whether a provenance
   can be read as English.
-- [S1e.5.6](s1e.5.6_rule_priority.md) — the other stage that turns on *which*
+- [S1f.5.6](s1f.5.6_rule_priority.md) — the other stage that turns on *which*
   of a fact's ≤ 32 justifications was recorded first.

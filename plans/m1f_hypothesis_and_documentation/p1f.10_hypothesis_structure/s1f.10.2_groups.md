@@ -1,11 +1,11 @@
-# S1e.1b.2 — From the exclusion graph to *pick at most one*
+# S1f.10.2 — From the exclusion graph to *pick at most one*
 
-**Phase:** [P1e.1b](README.md)
+**Phase:** [P1f.10](README.md)
 **Estimate:** 2.5 days
-**Depends on:** [S1e.1b.1](s1e.1b.1_exclusion_census.md) — the graph, and the
+**Depends on:** [S1f.10.1](s1f.10.1_exclusion_census.md) — the graph, and the
 disagreement column being clean.
-**Blocks:** [S1e.1b.3](s1e.1b.3_the_restricted_join.md) (which refuses a
-candidate per group) and [S1e.1b.4](s1e.1b.4_bounded_groups.md) (which asks
+**Blocks:** [S1f.10.3](s1f.10.3_the_restricted_join.md) (which refuses a
+candidate per group) and [S1f.10.4](s1f.10.4_bounded_groups.md) (which asks
 when a group is *exactly* one rather than *at most* one).
 
 ## Context
@@ -14,7 +14,7 @@ The instruction says the hypothesis set *"can be split into groups of
 hypothesis to pick one from (who lives in House2, where is tee drinked,
 etc.)"*. That is the right object. This stage's whole content is that the word
 **split** is the part the corpus will not grant, and getting the definition
-right before S1e.1b.3 depends on it is cheaper than getting it wrong.
+right before S1f.10.3 depends on it is cheaper than getting it wrong.
 
 Three candidate definitions of a group over the exclusion graph `G`:
 
@@ -41,7 +41,7 @@ entry it reads, and would silently drop one of the two constraints.
 
 So a group is a set, a hypothesis belongs to many, and the object the engine
 holds is a **cover**, not a partition. Stating that here is most of the
-stage's value; [S1e.1b.4](s1e.1b.4_bounded_groups.md) is where the two
+stage's value; [S1f.10.4](s1f.10.4_bounded_groups.md) is where the two
 families being *the same grid* becomes a bijection.
 
 ## Acceptance
@@ -49,7 +49,7 @@ families being *the same grid* becomes a bijection.
 - A written definition of **group** in the phase's notes, with the corpus
   entry that falsifies each rejected alternative named — not argued.
 - The group cover computed for every corpus entry that searches, and reported
-  beside S1e.1b.1's census: number of groups, size distribution, how many
+  beside S1f.10.1's census: number of groups, size distribution, how many
   groups a hypothesis is in (max and mean), and the count of hypotheses in
   **no** group.
 - **The in-no-group count is the honest column.** A hypothesis excluded by
@@ -64,7 +64,7 @@ families being *the same grid* becomes a bijection.
 
 ## Tasks
 
-### Task T1e.1b.2.1 — Enumerate, and check the three definitions against the corpus
+### Task T1f.10.2.1 — Enumerate, and check the three definitions against the corpus
 
 Compute components, maximal cliques and declared-key classes for every entry;
 report where they differ. The expected findings, each of which is a row in the
@@ -74,13 +74,13 @@ notes:
   `right-of` link otherwise-independent attributes);
 - **cliques = declared classes** on [I-Z2](README.md#the-instances), which is
   the control — if the discovered cliques disagree with the five declared
-  `(bijective *-loc)` structures, S1e.1b.1's oracle is wrong and this stage
+  `(bijective *-loc)` structures, S1f.10.1's oracle is wrong and this stage
   stops;
 - **cliques exist where nothing is declared** on
   [I-Z1](README.md#the-instances) and [I-B06](README.md#the-instances), which
   is the phase's reason to exist.
 
-### Task T1e.1b.2.2 — Decide *maximal* vs *maximum*, and the determinism of it
+### Task T1f.10.2.2 — Decide *maximal* vs *maximum*, and the determinism of it
 
 Maximal-clique enumeration (Bron–Kerbosch) returns a set of sets whose order
 depends on the pivot choice. Two decisions:
@@ -97,9 +97,9 @@ depends on the pivot choice. Two decisions:
    commitments with ([`apriori.rs`](../../../ein.rs/crates/ein-infer/src/apriori.rs)),
    so that the cover is a function of the program and not of the enumeration.
 
-### Task T1e.1b.2.3 — The cover, as a thing the engine could hold
+### Task T1f.10.2.3 — The cover, as a thing the engine could hold
 
-Sketch — **not** implement — the representation S1e.1b.3 will need:
+Sketch — **not** implement — the representation S1f.10.3 will need:
 group id → sorted member list, plus member → group ids. Two constraints from
 the phase README's acceptance:
 
@@ -108,7 +108,7 @@ the phase README's acceptance:
   object in its per-instance `Branch` list. Three readers, one owner, and the
   stage names which crate holds it.
 - it is computed **once per program**, not per node — that is the whole claim
-  of [S1e.1b.1](s1e.1b.1_exclusion_census.md), and a representation that
+  of [S1f.10.1](s1f.10.1_exclusion_census.md), and a representation that
   takes a `&Kb` invites the next reader to recompute it per fork.
 
 ## Notes
@@ -116,7 +116,7 @@ the phase README's acceptance:
 The overlap structure has a name — the two clique families are the two
 projections of a **bipartite** relation, and *pick exactly one from each row
 and each column* is a perfect matching. That is the vocabulary
-[S1e.1b.4](s1e.1b.4_bounded_groups.md) needs and it is worth writing the notes
+[S1f.10.4](s1f.10.4_bounded_groups.md) needs and it is worth writing the notes
 in it, but this stage should not assume it: a group cover is well-defined
 whether or not the two families happen to be a grid, and
 [I-Z1](README.md#the-instances)'s single `co-located` relation is not

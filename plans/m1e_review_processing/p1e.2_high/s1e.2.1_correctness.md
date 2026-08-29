@@ -197,7 +197,7 @@ Two things that changed with it:
   `generate_one_branch`, keeps the candidate list and **drops `hs.rung.mode`**
   (`solve.rs:945-956`). The change is to stop discarding the value.
 - **The probe arrives later, in another phase.** Q6's construction moved to
-  [S1e.1b.6](../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md),
+  [S1f.10.6](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md),
   which runs after this one. So record here that this guard's **regression test
   is owed** and name that stage — a guard shipped without a probe is a guard
   nobody can remove
@@ -208,7 +208,7 @@ Two things that changed with it:
 What the guard *does* on a flip — decline the traversal, or re-derive the
 branch and continue — is **not** this task's: it is
 [Q-M1e.11](../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis),
-ruled on by S1e.1b.6 T4. Until then the conservative arm is the one to write:
+ruled on by S1f.10.6 T4. Until then the conservative arm is the one to write:
 narrate the flip and decline, which is what the root probe already does for
 every other rung.
 

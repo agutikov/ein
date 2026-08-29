@@ -5,7 +5,7 @@
 **Depends on:** nothing. The compiler already knows both sets this needs — a
 rule's guards' watched relations, and the query's hypothesis-eligible ones.
 **Blocks:** nothing. It is the *containment*;
-[S1e.1b.8](../p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md)
+[S1f.10.8](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)
 later rules whether the diagnostic becomes a **refusal** and whether the shape
 stays legal at all.
 **Answers:** [Q-M1e.9](../open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s
@@ -15,7 +15,7 @@ option **B**, ruled 2026-08-28
 > **Not one of the 63.** This is a hazard the milestone *found*, not a finding
 > it was given, and it is scheduled here rather than deferred because it is the
 > only item in M1e that leaves a **wrong answer** shipping. The same honesty
-> marker P1e.1b and P1e.5 carry applies: M1e's acceptance does not depend on
+> marker P1f.10 and P1e.5 carry applies: M1e's acceptance does not depend on
 > this stage, and cutting it costs a diagnostic, not a disposition.
 
 ## What it contains
@@ -73,12 +73,12 @@ order:
    at risk;
 3. **non-empty** → the entries it names are the finding. The warning stays
    behind `(config :warn-derived-naf true)` until
-   [S1e.1b.8](../p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md)
+   [S1f.10.8](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)
    disposes of them, and this stage's product is the list.
 
 **A refusal is not available today**, and the reason is `connex`: refusing at
 load would refuse a stdlib rule before anyone has decided whether it should be
-rewritten in `total`'s stored-negative style. That decision is S1e.1b.8 T2–T4's,
+rewritten in `total`'s stored-negative style. That decision is S1f.10.8 T2–T4's,
 and promoting warn → refuse afterwards is a one-line change to code this stage
 ships.
 
@@ -89,7 +89,7 @@ ships.
   ([AR-M1](../README.md#the-findings)).
 - **The corpus is measured**, and the exposed set is named per entry — the
   number that decides the default, and the input
-  [S1e.1b.8](../p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md)
+  [S1f.10.8](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)
   T1 starts from rather than re-derives.
 - **The message names the replacement**, not just the hazard: `total`'s
   stored-negative form for a refutation, `(open ?R)` for a requirement. A
@@ -125,7 +125,7 @@ three dispositions; this is a hazard with a measurement and a default that
 depends on it. Folding it in would bury the one item in M1e that is about a
 wrong *answer* rather than a wrong *surface*.
 
-**And why B rather than waiting for S1e.1b.8.** S1e.1b.8 runs in P1e.1b, which
+**And why B rather than waiting for S1f.10.8.** S1f.10.8 runs in P1f.10, which
 is late and cuttable. B is a day, it stops nothing else, and its product — the
-exposed set — is what S1e.1b.8's first task would otherwise have to compute
+exposed set — is what S1f.10.8's first task would otherwise have to compute
 before it could rule.

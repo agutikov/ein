@@ -92,7 +92,7 @@ conjunct does this caller establish, and when?*
 | caller | saturated? | consistent? | third conjunct |
 |---|---|---|---|
 | `:1977` — the normal layer path, **every corpus solve** | **no.** `complete()` at `:1895` runs the whole generation pipeline, and its lookahead kill cache writes `(not h)` into `result.kb` — the fork recorded 80 lines later. The comment above it calls that fork *"unmutated"* | established by `try_commitment_set` **before** that write, never re-checked | `complete()` — § 6's own admitted approximation |
-| `:1030` — `tree_node` | **no**, same shape (`complete()` at `:1024`) | same | `complete()`, on top of the root-only rung premise ([Q6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)) |
+| `:1030` — `tree_node` | **no**, same shape (`complete()` at `:1024`) | same | `complete()`, on top of the root-only rung premise ([Q6](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)) |
 | `:1118` — phase 1, `alive = ∅` | **no.** `compute_alive` at `:1098` writes the kill cache into **root** | checked at `:1091`, **before** that write | `alive = ∅` |
 | `:1550` — between layers, `alive = ∅` | **no.** the layer's writebacks and `compute_alive` at `:1534` | last checked at phase 1, or inside the cascade | `alive = ∅` |
 
@@ -116,7 +116,7 @@ own program, one model at a time:
 | [`complete-records-stale.ein`](../../../../examples/ein-bugs/complete-records-stale.ein) | `:1977` | `Ambiguity` k=2 | model 1 **`Contradiction`**, model 2 `Solution` |
 
 The fourth, `tree_node`, is the same two lines and is
-[S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)'s
+[S1f.10.6](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)'s
 to witness.
 
 ### What that does to § 6's table

@@ -447,7 +447,7 @@ by nine.
 | `EIN_PY` | named in a `run_tests.sh` comment describing the interpreter selection that left with the Python engine. The comment says so; nothing reads it |
 | `EIN_RUN_SLOW` | named in three comments in the past tense — a gate ein.py's suite had. Gone with it |
 | `EIN_MUTANT` | a frozen measurement's variable in `measurements/baseline.md`, read by the `ein-conformance` harness that M1a S1a.10.3 deleted |
-| `EIN_PRIORITY` | *proposed* by [S1e.5.6](../../plans/m1e_review_processing/p1e.5_documentation_and_other/s1e.5.6_rule_priority.md); does not exist |
+| `EIN_PRIORITY` | *proposed* by [S1f.5.6](../../plans/m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/s1f.5.6_rule_priority.md); does not exist |
 | `EIN_NOGOOD_INJECT` | *proposed* by [S1e.1.2](../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md); does not exist |
 
 ---

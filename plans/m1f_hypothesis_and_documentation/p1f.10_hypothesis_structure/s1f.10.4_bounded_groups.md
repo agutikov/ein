@@ -1,8 +1,8 @@
-# S1e.1b.4 — Bounded groups: rediscovering the bijection
+# S1f.10.4 — Bounded groups: rediscovering the bijection
 
-**Phase:** [P1e.1b](README.md)
+**Phase:** [P1f.10](README.md)
 **Estimate:** 3 days
-**Depends on:** [S1e.1b.2](s1e.1b.2_groups.md) — the cover and its overlap.
+**Depends on:** [S1f.10.2](s1f.10.2_groups.md) — the cover and its overlap.
 **Blocks:** nothing. It is the phase's most speculative rung and the one most
 likely to end in a written *no*.
 
@@ -13,7 +13,7 @@ The instruction's second half:
 > Next step is somehow functionally find that there are bounded hyp groups,
 > e.g. permutations of pets, permutations of nationalities.
 
-A group from [S1e.1b.2](s1e.1b.2_groups.md) says *at most one*. A **bounded**
+A group from [S1f.10.2](s1f.10.2_groups.md) says *at most one*. A **bounded**
 group says *exactly one* — and that is a different and much stronger claim,
 because *exactly one* is what makes a branch set **jointly exhaustive**, which
 is what licenses committing to one alternative and discarding its siblings
@@ -63,21 +63,21 @@ completeness argument written for it.
   *"not without a closure declaration"* is a full result.
 - **The closure assumption, if taken, is stated as a premise and checked.**
   It is `(__closed__ R)` under another name, and this repo already has
-  [ST-M1](../README.md#the-findings) — *an invariant that is the warrant for a
+  [ST-M1](../../m1e_review_processing/README.md#the-findings) — *an invariant that is the warrant for a
   dedup and is enforced nowhere*. A second one is not acceptable.
 - Not one model moves. Same acceptance as
-  [S1e.1b.3](s1e.1b.3_the_restricted_join.md), and it matters more here:
+  [S1f.10.3](s1f.10.3_the_restricted_join.md), and it matters more here:
   *exactly one* is a claim that can **remove** models if it is wrong, which is
   the failure class the project treats as worst.
 - If the derived structure reaches the **tree traversal** — a program with no
   `(open …)` getting jointly exhaustive branches — then
-  [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)'s answer
+  [Q6](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)'s answer
   applies to it too, and the stage says so rather than inheriting the tree's
   root-only probe by accident.
 
 ## Tasks
 
-### Task T1e.1b.4.1 — Route (c) first, because it is falsifiable in a day
+### Task T1f.10.4.1 — Route (c) first, because it is falsifiable in a day
 
 Hand-write the `(open …)` rule that the group structure of
 `examples/zebra.ein` would correspond to, add it to a copy of the file, and
@@ -94,24 +94,24 @@ is `zebra2` with the `(hrule guess …)` and the `:hrules` clause deleted and
 nothing else, and it *"solves to the same models in the same number of
 enterings as the hrule path it dropped"*.
 
-### Task T1e.1b.4.2 — Route (a): the counting argument, and its premise
+### Task T1f.10.4.2 — Route (a): the counting argument, and its premise
 
 Two clique families over the same member set, `|rows| = |cols| = n`, every
 member in exactly one of each ⇒ the grid. State the premise this needs
 (**the object list is complete** — no rule may introduce a new `Color`) and
 check it, because it is the same premise
-[ST-M1](../README.md#the-findings) says nothing enforces. The check is cheap
+[ST-M1](../../m1e_review_processing/README.md#the-findings) says nothing enforces. The check is cheap
 and post-fixpoint: did saturation introduce an object the load-time KB did not
 have?
 
-### Task T1e.1b.4.3 — Route (b): what `std.closure` already gives
+### Task T1f.10.4.3 — Route (b): what `std.closure` already gives
 
 `functional ∧ total ⇒ (__closed__ R)` is opt-in and in the stdlib. Measure how
 many corpus entries would satisfy it if imported, and whether `(__closed__ R)`
 is already enough for the group to be *exactly one* — because if it is, this
 stage's answer is *"import `std.closure`"* and the rest is documentation.
 
-### Task T1e.1b.4.4 — Say what it is worth
+### Task T1f.10.4.4 — Say what it is worth
 
 On [I-Z2M](README.md#the-instances) — 32 models, 23 varying variables in one
 coupling component — compare enterings under the lattice, under the tree, and
@@ -122,7 +122,7 @@ it. Name the fraction.
 ## Notes
 
 The stage is deliberately last-but-one and deliberately allowed to fail. The
-phase's shipped value is [S1e.1b.3](s1e.1b.3_the_restricted_join.md) — *at
+phase's shipped value is [S1f.10.3](s1f.10.3_the_restricted_join.md) — *at
 most one*, which is free and answer-preserving. *Exactly one* is a semantic
 claim about the puzzle's intent, and a milestone that processes a review is a
 strange place to make one; if the routes all need a declaration the program

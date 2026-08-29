@@ -1,61 +1,69 @@
-# P1e.1b — The structure of the hypothesis set
+# P1f.10 — The structure of the hypothesis set
 
 **Estimate:** ~5 weeks — 8 stages, 22.5 days. (23 until 2026-08-28, when
-S1e.1b.8 handed its check and its census to
-[S1e.2.3](../p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md).)
-**Depends on:** [P1e.1](../p1e.1_open_questions/README.md)
-[S1e.1.1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) only —
-for [Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
+S1f.10.8 handed its check and its census to
+[S1e.2.3](../../m1e_review_processing/p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md).)
+**Depends on:** [P1e.1](../../m1e_review_processing/p1e.1_open_questions/README.md)
+[S1e.1.1](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) only —
+for [Q-M1e.6](../../m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
 ruling, which this phase is the first consumer of. Nothing else — and since
 2026-08-28 the dependency runs the other way too: this phase answers the
 review's `Q6`, which S1e.1.1 used to.
-**Blocks:** nothing in M1e **until 2026-08-28**, when
-[S1e.1b.6](s1e.1b.6_obligations_under_hypothesis.md) took the review's `Q6`
-and with it `CO-H3`(c)'s regression test — see [§ What cutting it would now
-cost](#what-cutting-it-would-now-cost). Everything else here is a *new
-capability*, answer-preserving by construction: the acceptance is *the same
-model sets, fact for fact*, on every corpus entry.
-**Owns:** [Q-M1e.11](../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
+**Blocks:** nothing. [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md)
+holds the review's `Q6` **probe** and `CO-H3`(c)'s regression test, which is a
+claim M1e would like and does not depend on — see [§ What the move cost, and
+what it did not](#what-the-move-cost-and-what-it-did-not). Everything else here
+is a *new capability*, answer-preserving by construction: the acceptance is
+*the same model sets, fact for fact*, on every corpus entry.
+**Owns:** [Q-M1e.11](../../m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
 — *what happens to an obligation derived under a hypothesis*, handed over from
-[S1e.1.1 D2](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/d2_q6_which_decline_to_construct.md)
+[S1e.1.1 D2](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d2_q6_which_decline_to_construct.md)
 on 2026-08-28. See [§ The set that is not fixed](#the-set-that-is-not-fixed).
 **Source:** the user's instruction of 2026-08-28, recorded verbatim in
 [§ The instruction](#the-instruction).
+**Was P1e.1b**, in [M1e](../../m1e_review_processing/README.md), until 2026-08-29. No stage had run, so
+all eight moved and all eight were renumbered `S1f.10.<n>` from `S1e.1b.<n>`.
 
 ---
 
-## What this phase is, and the honest note about its placement
+## What this phase is, and the note about its placement is now answered
 
-M1e is a milestone that **processes a review**. This phase does not: it is
-engine work, it was not asked for by any of the 63 findings, and it would sit
-as comfortably in an M-number of its own. It is here because the user put it
-here, and because the review's own [Q5](../review/open-questions.md) turned
-out to terminate in the same question — *what does it mean for a hypothesis to
-be decided?* — that this phase answers structurally.
+**It was `P1e.1b` until 2026-08-29**, and the honest note this section used to
+carry has been overtaken: *it is engine work, it was not asked for by any of
+[M1e](../../m1e_review_processing/README.md)'s 63 findings, and it would sit as comfortably in an
+M-number of its own.* It has one. What put it in M1e was that the review's own
+[Q5](../../m1e_review_processing/review/open-questions.md) turned out to terminate in the same question
+— *what does it mean for a hypothesis to be decided?* — that this phase answers
+structurally, and that connection is still the reason to read the two together.
 
 Two consequences a reader should hold:
 
-- **M1e's acceptance is unchanged in the 63 dispositions**, and *was* unchanged
-  in the ten questions until 2026-08-28. See below.
+- **M1e's acceptance is untouched by the move.** The 63 dispositions never
+  depended on this phase, and the one question that came to — `Q6` — was
+  *ruled* inside M1e on 2026-08-28 (the rung mode is re-read at every node).
+  What moved here is the **probe**, not the ruling. See below.
 - **This phase may not change an answer.** Not one model, not one fact, not
   one verdict word. Every stage's acceptance is a fact-for-fact model-set
   comparison across the corpus, and the win is measured in *enterings*.
 
-### What cutting it would now cost
+### What the move cost, and what it did not
 
-One question. [S1e.1b.6](s1e.1b.6_obligations_under_hypothesis.md) is the
-answering stage for the review's **`Q6`**, moved here from
-[S1e.1.1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) on
-2026-08-28, and M1e's acceptance says *every one of Q1–Q10 is answered*. So
-cutting this phase whole now means Q6 goes back to P1e.1 or is re-filed as a
-`Q-M1e.<n>` with an owner — which is a two-line edit, not a re-plan, but it is
-no longer free. Everything else here remains additive.
+One question, and less of it than it looks.
+[S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) is where the review's
+**`Q6`** is *demonstrated* — the flip constructed, or written up as not
+constructible — and it came here from
+[S1e.1.1](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)
+on 2026-08-28, before the milestone split. M1e's acceptance says *every one of
+Q1–Q10 is answered*, and Q6 **is**: the ruling it needed was taken there and is
+recorded there. A probe that would let a later milestone *remove* the guard is
+not the same claim as the ruling that installs it, and only the probe is here.
 
-The **guard** Q6 gates is not affected either way: the ruling of 2026-08-28
-(the rung mode is re-read at every node) is
-[S1e.2.1](../p1e.2_high/s1e.2.1_correctness.md) T3's to apply, and it does not
-wait on this phase. What waits is the *probe* that would let a later milestone
-remove it.
+The **guard** Q6 gates is unaffected either way: applying the ruling is
+[S1e.2.1](../../m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md) T3's, in M1e, and it does not
+wait on this phase.
+
+Cutting this phase whole is therefore free again, which it had not been since
+2026-08-28 — the cost the move removed.
 
 ## The instruction
 
@@ -106,14 +114,14 @@ Five stages, and each one is a strictly larger claim about the same object.
 
 | rung | the claim | who checks it |
 |---|---|---|
-| **exclusion** | `h₁` and `h₂` cannot both hold, and the proof needs **rules + ontology + the two facts** and nothing else | [S1e.1b.1](s1e.1b.1_exclusion_census.md) |
-| **groups** | the exclusion relation partitions — or covers — the hypothesis set into *pick at most one from each* | [S1e.1b.2](s1e.1b.2_groups.md) |
-| **the join** | a candidate set containing two members of one group is refused **before** the fork | [S1e.1b.3](s1e.1b.3_the_restricted_join.md) |
-| **bounded groups** | two overlapping group families whose members exhaust each other are a **bijection**, so the space is `n!` and not `2^(n²)` | [S1e.1b.4](s1e.1b.4_bounded_groups.md) |
-| **order** | the traversal order follows the structure — most-constrained group first — instead of the canonical tuple sort | [S1e.1b.5](s1e.1b.5_ordering.md) |
-| **soundness** | `excludes` is a property of the program only if no `(false)` in it rests on an `absent` over a relation the search can still extend | [S1e.1b.8](s1e.1b.8_refutation_under_absent.md) |
-| **domain** | the four rungs above are valid over a *stated* class of programs, and a derived obligation is what can put a program outside it | [S1e.1b.6](s1e.1b.6_obligations_under_hypothesis.md) |
-| **calibration** | the tree traversal already gets **200 053×** on the phase's hardest instance by branching on structure; how much of that is this ladder's to recover | [S1e.1b.7](s1e.1b.7_tree_calibration_and_flag.md) |
+| **exclusion** | `h₁` and `h₂` cannot both hold, and the proof needs **rules + ontology + the two facts** and nothing else | [S1f.10.1](s1f.10.1_exclusion_census.md) |
+| **groups** | the exclusion relation partitions — or covers — the hypothesis set into *pick at most one from each* | [S1f.10.2](s1f.10.2_groups.md) |
+| **the join** | a candidate set containing two members of one group is refused **before** the fork | [S1f.10.3](s1f.10.3_the_restricted_join.md) |
+| **bounded groups** | two overlapping group families whose members exhaust each other are a **bijection**, so the space is `n!` and not `2^(n²)` | [S1f.10.4](s1f.10.4_bounded_groups.md) |
+| **order** | the traversal order follows the structure — most-constrained group first — instead of the canonical tuple sort | [S1f.10.5](s1f.10.5_ordering.md) |
+| **soundness** | `excludes` is a property of the program only if no `(false)` in it rests on an `absent` over a relation the search can still extend | [S1f.10.8](s1f.10.8_refutation_under_absent.md) |
+| **domain** | the four rungs above are valid over a *stated* class of programs, and a derived obligation is what can put a program outside it | [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) |
+| **calibration** | the tree traversal already gets **200 053×** on the phase's hardest instance by branching on structure; how much of that is this ladder's to recover | [S1f.10.7](s1f.10.7_tree_calibration_and_flag.md) |
 
 ### The one distinction the whole phase rests on
 
@@ -130,7 +138,7 @@ The exclusion this phase computes takes `rules + ontology + {h₁, h₂}` and
 - it is a property of the *program*, computed once at load;
 - it is valid at **every** node of the search, root and depth 7 alike;
 - it cannot flip under a hypothesis — which is the property
-  [Q6](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) found the
+  [Q6](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) found the
   tree's rung probe *lacks*.
 
 That last line is why this phase is not merely an optimisation. A
@@ -142,7 +150,7 @@ exhaustive branches on a program that declares no `(open …)` rule at all.
 
 The sentence this phase opens with — *the search enumerates subsets of a fixed
 `alive` set* — is the one thing here that the engine does not guarantee, and
-[Q-M1e.11](../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
+[Q-M1e.11](../../m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
 is that gap, handed to this phase on 2026-08-28.
 
 An obligation's activator is an ordinary fact, so a rule can derive one
@@ -150,7 +158,7 @@ An obligation's activator is an ordinary fact, so a rule can derive one
 new candidates, in a branch that was entered because its alternatives were
 jointly exhaustive. The growth is monotone (the KB is append-only, so nothing
 retracts), and the guard is already decided elsewhere: the rung mode is
-re-read per node, which is [S1e.2.1](../p1e.2_high/s1e.2.1_correctness.md)
+re-read per node, which is [S1e.2.1](../../m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md)
 T3's to write. What is *this* phase's is the structural half — **what a group
 means when the set it partitions can grow underneath it.**
 
@@ -164,7 +172,7 @@ Two answers are admissible and the phase must pick one in writing:
   refused or falls back — which keeps the claim and names its domain.
 
 Either is an answer; what is not admissible is the phase shipping a group
-structure whose validity nobody has stated. [S1e.1b.1](s1e.1b.1_exclusion_census.md)
+structure whose validity nobody has stated. [S1f.10.1](s1f.10.1_exclusion_census.md)
 is the natural first reader — *does any corpus entry derive an obligation
 activator under a hypothesis?* is one column and today's expected answer is
 **no**, which is what makes the second option affordable.
@@ -187,7 +195,7 @@ Named here and used by every stage.
 | tag | file | why it is the one |
 |---|---|---|
 | **I-Z1** | [`examples/zebra.ein`](../../../examples/zebra.ein) | one `co-located` equivalence relation; the group structure is **implied** by `sibling-exclusive` + `functional` and declared nowhere. The subject |
-| **I-Z2** | [`examples/zebra2.ein`](../../../examples/zebra2.ein) | five `*-loc` projections, each `(bijective …)`. The structure is **declared**, so it is the control: whatever S1e.1b.1 discovers here it must agree with |
+| **I-Z2** | [`examples/zebra2.ein`](../../../examples/zebra2.ein) | five `*-loc` projections, each `(bijective …)`. The structure is **declared**, so it is the control: whatever S1f.10.1 discovers here it must agree with |
 | **I-B06** | [`examples/branching/06_lookahead_on.ein`](../../../examples/branching/06_lookahead_on.ein) | I-Z1 in miniature — five colours, five houses, one `co-located` — and already the corpus's most expensive cell that is not `slow` (377 ms) |
 | **I-L02** | [`examples/lattice/02_genuine_3set_death.ein`](../../../examples/lattice/02_genuine_3set_death.ein) | the negative control: a 3-way conflict with no pairwise exclusion. Every stage asserts it is **unchanged**, which is what keeps the phase honest about its own reach |
 | **I-Z2M** | `examples/zebra2-minus-15.ein` | 32 models, 23 varying variables in **one** coupling component ([model_set_census](../../../docs/history/m1d_satisfiability/model_set_census.md)). The under-determined case, where a group order should matter most |
@@ -196,14 +204,14 @@ Named here and used by every stage.
 
 | ID | title | est. | ends with |
 |---|---|---:|---|
-| [S1e.1b.1](s1e.1b.1_exclusion_census.md) | The exclusion relation, measured before it is used | 3 d | `utils/exclusion_census.py`; per corpus entry, how many L1 pairs exclude, how many of them the **minimal** KB proves without the puzzle's clues, and what fraction of the join they would have removed |
-| [S1e.1b.2](s1e.1b.2_groups.md) | From the exclusion graph to *pick at most one* | 2.5 d | a written definition of a **group** that the corpus does not falsify — cliques, not components — plus the finding that groups **overlap** and why that is the bijection rather than a defect |
-| [S1e.1b.3](s1e.1b.3_the_restricted_join.md) | The join, restricted | 3 d | `generate_layer` refuses a candidate containing two members of one group; every corpus model set identical fact for fact; the enterings delta measured per entry |
-| [S1e.1b.4](s1e.1b.4_bounded_groups.md) | Bounded groups — rediscovering the bijection | 3 d | a program with no `(bijective …)` and no `(open …)` gets the same branch structure as one that declares it, or the stage says exactly which of the two it cannot recover and why |
-| [S1e.1b.5](s1e.1b.5_ordering.md) | Ordering by structure | 2.5 d | a third `lattice-order` mode, measured against `lex` on the five instances — and `most-constrained`, which has returned `0.0` since it was named, either implemented or deleted |
-| [S1e.1b.6](s1e.1b.6_obligations_under_hypothesis.md) | Obligations derived under a hypothesis — the review's `Q6` | 3 d | the flip constructed or written up as not constructible; a ruling on [Q-M1e.11](../open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis); and **this phase's domain sentence** — what a group means when the set it partitions can grow |
-| [S1e.1b.8](s1e.1b.8_refutation_under_absent.md) | May a refutation rest on an `absent`? — the exclusion relation's soundness precondition | 2.5 d | the 60 syntactic sites narrowed to the **exposed** set; `connex` disposed of; the ruling written into `absent_semantics.md` as a corollary; and, if it forbids, the load-time check that makes [Q-M1e.9](../open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s option C unnecessary |
-| [S1e.1b.7](s1e.1b.7_tree_calibration_and_flag.md) | Why the tree wins on `zebra2-minus-15`, and the flag | 3 d | the **200 053×** attributed across five hypotheses with a named remainder, the share S1e.1b.3 actually recovers, and `--traversal {lattice,tree}` replacing `EIN_TRAVERSAL` as the surface a reader finds |
+| [S1f.10.1](s1f.10.1_exclusion_census.md) | The exclusion relation, measured before it is used | 3 d | `utils/exclusion_census.py`; per corpus entry, how many L1 pairs exclude, how many of them the **minimal** KB proves without the puzzle's clues, and what fraction of the join they would have removed |
+| [S1f.10.2](s1f.10.2_groups.md) | From the exclusion graph to *pick at most one* | 2.5 d | a written definition of a **group** that the corpus does not falsify — cliques, not components — plus the finding that groups **overlap** and why that is the bijection rather than a defect |
+| [S1f.10.3](s1f.10.3_the_restricted_join.md) | The join, restricted | 3 d | `generate_layer` refuses a candidate containing two members of one group; every corpus model set identical fact for fact; the enterings delta measured per entry |
+| [S1f.10.4](s1f.10.4_bounded_groups.md) | Bounded groups — rediscovering the bijection | 3 d | a program with no `(bijective …)` and no `(open …)` gets the same branch structure as one that declares it, or the stage says exactly which of the two it cannot recover and why |
+| [S1f.10.5](s1f.10.5_ordering.md) | Ordering by structure | 2.5 d | a third `lattice-order` mode, measured against `lex` on the five instances — and `most-constrained`, which has returned `0.0` since it was named, either implemented or deleted |
+| [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) | Obligations derived under a hypothesis — the review's `Q6` | 3 d | the flip constructed or written up as not constructible; a ruling on [Q-M1e.11](../../m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis); and **this phase's domain sentence** — what a group means when the set it partitions can grow |
+| [S1f.10.8](s1f.10.8_refutation_under_absent.md) | May a refutation rest on an `absent`? — the exclusion relation's soundness precondition | 2.5 d | the 60 syntactic sites narrowed to the **exposed** set; `connex` disposed of; the ruling written into `absent_semantics.md` as a corollary; and, if it forbids, the load-time check that makes [Q-M1e.9](../../m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s option C unnecessary |
+| [S1f.10.7](s1f.10.7_tree_calibration_and_flag.md) | Why the tree wins on `zebra2-minus-15`, and the flag | 3 d | the **200 053×** attributed across five hypotheses with a named remainder, the share S1f.10.3 actually recovers, and `--traversal {lattice,tree}` replacing `EIN_TRAVERSAL` as the surface a reader finds |
 
 ## Acceptance
 
@@ -212,25 +220,25 @@ Named here and used by every stage.
   comparison [`tree_traversal.rs`](../../../ein.rs/crates/ein-infer/tests/tree_traversal.rs)
   already makes — *"never of `k`. Two searches that agree on a count and
   disagree on a model are exactly the failure"*.
-- **Every rung is measured before the next is built.** S1e.1b.1's census is
+- **Every rung is measured before the next is built.** S1f.10.1's census is
   the phase's gate on itself: if the minimal-KB check disagrees with the
   full-KB one on any corpus entry, the structure is state-dependent after all
-  and S1e.1b.3 does not ship as written.
+  and S1f.10.3 does not ship as written.
 - **The cost is stated in enterings, per entry**, and the entries where it is
   **zero** are named — I-L02 is expected to be one of them, and a phase that
   cannot name its own null cases has not measured.
-- **No new hand-maintained parallel copy** ([AR-M1](../README.md#the-findings)).
+- **No new hand-maintained parallel copy** ([AR-M1](../../m1e_review_processing/README.md#the-findings)).
   The group structure has one owner; if `apriori`, `hypgen` and `oblgen` all
   need it, they read it from that owner.
 - **The exclusion relation's precondition is ruled, not assumed** —
-  S1e.1b.8 says whether a refutation may rest on an `absent`, because
+  S1f.10.8 says whether a refutation may rest on an `absent`, because
   `excludes` is computed on the *minimal* KB and spent on larger ones, and
   [C3](../../../docs/kernel/inference/absent_semantics.md) is the statement
   that removing facts can fabricate a contradiction.
-- **The domain is stated, not assumed** — S1e.1b.6's sentence about what a
+- **The domain is stated, not assumed** — S1f.10.6's sentence about what a
   group means when the set can grow is written where the structure is
-  *computed*, and S1e.1b.2 and S1e.1b.3 cite it rather than re-deriving it.
-- **The phase's target is audited before it is quoted.** S1e.1b.7 attributes
+  *computed*, and S1f.10.2 and S1f.10.3 cite it rather than re-deriving it.
+- **The phase's target is audited before it is quoted.** S1f.10.7 attributes
   the tree's 200 053×, and if most of it turns out to be work the tree never
   does (it terminates by discharge and reports `exhausted = false`), every
   later citation of that number says so in the same sentence.
@@ -254,7 +262,7 @@ Named here and used by every stage.
 - **The minimal KB is not obviously well-defined.** *Rules + ontology* is
   clear in `zebra2` — `(relation …)`, `(is-a …)`, the `(bijective …)`
   declarations — and much less clear where a "clue" is itself an `is-a` fact.
-  S1e.1b.1 owns the definition and the corpus is what falsifies it; getting
+  S1f.10.1 owns the definition and the corpus is what falsifies it; getting
   this wrong in the permissive direction produces an exclusion that is really
   a consequence of the clues, and a group that is wrong on a *different*
   puzzle with the same ontology.
@@ -262,7 +270,7 @@ Named here and used by every stage.
   `(color-loc Blue H1)` is excluded by *Blue is elsewhere* and by *H1 is
   another colour*: two groups, one member. A design that assumes a partition
   will be wrong on the first bijection it meets, which is the second corpus
-  entry it reads. S1e.1b.2 exists to get this stated before S1e.1b.3 depends
+  entry it reads. S1f.10.2 exists to get this stated before S1f.10.3 depends
   on it.
 - **The set can grow underneath the structure.** Q-M1e.11, above: a group
   computed at load is a claim about a hypothesis set that a derived obligation
@@ -274,7 +282,7 @@ Named here and used by every stage.
   solves in 111 enterings and `zebra2.ein` in 101; the powerset behaviour
   S1d.10.1 measured is on the *under-determined* entries. The phase should be
   honest that its headline is `zebra2-minus-15`-shaped work, not the solved
-  puzzles, and S1e.1b.1's census is what will say so with a number.
+  puzzles, and S1f.10.1's census is what will say so with a number.
 
 ## Connections
 

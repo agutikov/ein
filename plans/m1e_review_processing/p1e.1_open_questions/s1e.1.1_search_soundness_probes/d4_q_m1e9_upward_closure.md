@@ -11,12 +11,12 @@
 >   and say *instead* as well as *don't* — `total`'s stored-negative form for a
 >   refutation, `(open ?R)` for a requirement. A **refusal** is deliberately not
 >   available yet: it would refuse `std.algebra`'s `connex` before anyone has
->   decided whether that rule should be rewritten, which is S1e.1b.8's.
+>   decided whether that rule should be rewritten, which is S1f.10.8's.
 > - **C — the real fix — is [F18](../../../followups/f18_world_aware_negatives.md)**,
 >   with `Prov::absent` as its starting point, and it is **closed without being
->   done** if S1e.1b.8 forbids the shape instead.
+>   done** if S1f.10.8 forbids the shape instead.
 > - The **language** half left earlier the same day for
->   [S1e.1b.8](../../p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md).
+>   [S1f.10.8](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md).
 
 **Probe:** [`probes/naf_upward_closure.ein`](probes/naf_upward_closure.ein)
 **Bears on:** the no-good store, the singleton writeback and the lookahead
@@ -166,7 +166,7 @@ Three things follow, and only the third is new work.
 3. **And the design question is the real one** — *"maybe emitting `(false)` or
    `(not …)` under `absent` is not a good idea"*. That is not a patch to the
    three consumers; it is a question about the **language**, and it is now
-   [S1e.1b.8](../../p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md).
+   [S1f.10.8](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md).
 
 ### It is not a hypothetical shape, and the repo has already named it
 
@@ -206,7 +206,7 @@ Not *whether* — *who*, and *how far*.
 | **D — declare it out of scope for M1e** | it is not one of the 63 findings, and M1e processes a review | defensible on scope, and it means the milestone found a soundness defect and shipped without saying what happens to it |
 
 **Ruled 2026-08-28: B now, C filed — and the language question to
-[S1e.1b.8](../../p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md).**
+[S1f.10.8](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md).**
 B is a load-time check the compiler has the information for, it converts a
 wrong answer into a refusal, and it does not require reshaping the no-good
 store mid-milestone. C is the real fix and wants its own stage, with
@@ -215,7 +215,7 @@ may not need C at all**: if a refutation resting on an `absent` over a
 hypothesis-eligible relation is *disallowed* rather than merely diagnosed,
 there is nothing left for a world-aware no-good store to be careful about —
 and the constructive half is already in the repo, since `total` shows the same
-constraint written as a stored-negative scan. That is S1e.1b.8's to rule; B is
+constraint written as a stored-negative scan. That is S1f.10.8's to rule; B is
 what makes the wrong answer stop while it does.
 
 ## Related

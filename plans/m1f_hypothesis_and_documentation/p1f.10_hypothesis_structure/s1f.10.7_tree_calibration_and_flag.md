@@ -1,12 +1,12 @@
-# S1e.1b.7 — Why the tree wins on `zebra2-minus-15`, and the flag that replaces `EIN_TRAVERSAL`
+# S1f.10.7 — Why the tree wins on `zebra2-minus-15`, and the flag that replaces `EIN_TRAVERSAL`
 
-**Phase:** [P1e.1b](README.md) (The structure of the hypothesis set)
+**Phase:** [P1f.10](README.md) (The structure of the hypothesis set)
 **Estimate:** 3 days — 2 for the measurement, 1 for the flag.
-**Depends on:** [S1e.1b.3](s1e.1b.3_the_restricted_join.md) for the third task
+**Depends on:** [S1f.10.3](s1f.10.3_the_restricted_join.md) for the third task
 (the comparison arm needs the restricted join landed). T1 and T2 depend on
-nothing and are **most useful before** S1e.1b.3, because what they produce is
+nothing and are **most useful before** S1f.10.3, because what they produce is
 this phase's target number. The flag depends on
-[S1e.2.1](../p1e.2_high/s1e.2.1_correctness.md) T3 — see § The flag may not
+[S1e.2.1](../../m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md) T3 — see § The flag may not
 ship first.
 **Blocks:** nothing. It calibrates the phase and ships one CLI option.
 **Source:** the user's instruction of 2026-08-28 — *investigate why tree search
@@ -39,7 +39,7 @@ Two arithmetic observations, free, and both shape the investigation:
   per-entering work has to clear that bar.
 - **The two published statements of this measurement disagree.**
   `CLAUDE.md` says 0.083 s where the M1d README says 0.07 s. The re-take
-  settles it, and the drift is [MA-M2](../README.md#the-findings)'s class at a
+  settles it, and the drift is [MA-M2](../../m1e_review_processing/README.md#the-findings)'s class at a
   fourth site.
 
 ## The five hypotheses
@@ -51,9 +51,9 @@ measurable, and the last two are the ones that would *reduce* the number.
 |---|---|---|
 | **H1 — powerset against product** | the lattice enumerates `Σₖ C(alive, k)` subsets of a fixed `alive`; the tree walks one owed instance's alternatives and recurses, which is a **product of small sets** | compare `Σₖ C(alive, k)` against `Π nᵢ` from the `rung`/`hyp` streams. S1d.10.1 already found the lattice's enterings are *exactly* `Σₖ C(alive, k)` on 25 of 49 entries — is this one of them? |
 | **H2 — re-generation cadence** | the lattice recomputes `alive` once per **layer barrier**; the tree recomputes it at **every node**, so it sees each commitment's consequences immediately and the lattice pays for stale candidates for a whole layer | count candidates the lattice entered that the tree's post-commitment `alive` would not have proposed |
-| **H3 — intra-group pairs** | most of what the lattice joins is a set holding two alternatives of **one** instance — impossible by construction, forked anyway | the share of joined candidates whose members share a group. **This is the share [S1e.1b.3](s1e.1b.3_the_restricted_join.md) recovers without changing the traversal**, and it is the phase's own number |
+| **H3 — intra-group pairs** | most of what the lattice joins is a set holding two alternatives of **one** instance — impossible by construction, forked anyway | the share of joined candidates whose members share a group. **This is the share [S1f.10.3](s1f.10.3_the_restricted_join.md) recovers without changing the traversal**, and it is the phase's own number |
 | **H4 — the tree answers a weaker question** | it terminates by *discharge* and reports `exhausted = false`; the lattice's 17.2 M includes proving there is nothing else | how many lattice enterings happen **after** the 32nd model is recorded. If it is most of them, the headline compares an answer with a proof |
-| **H5 — not learning** | the tree emits no no-good and no writeback at all ([CO-H3](../README.md#the-findings)(b)), and the lattice's learned clauses removed **1.4 %** corpus-wide ([layer_census](../../../docs/history/m1d_satisfiability/layer_census.md)) | already answered by those two facts; the stage states it so the reader stops looking there |
+| **H5 — not learning** | the tree emits no no-good and no writeback at all ([CO-H3](../../m1e_review_processing/README.md#the-findings)(b)), and the lattice's learned clauses removed **1.4 %** corpus-wide ([layer_census](../../../docs/history/m1d_satisfiability/layer_census.md)) | already answered by those two facts; the stage states it so the reader stops looking there |
 
 **H4 is the one to run first**, because it is the only one that could make the
 headline number smaller rather than explain it — and a phase that adopts a
@@ -66,7 +66,7 @@ Promoting the traversal from an environment variable to a CLI option makes it a
 
 - `--traversal tree` would ignore `-n` — `tree_node` consults only
   `check_budget`, so it records the entire tree while being asked for one
-  model ([CO-H3](../README.md#the-findings)(a));
+  model ([CO-H3](../../m1e_review_processing/README.md#the-findings)(a));
 - its `Contradiction` read-out prints *refuted so far (0 facts)* over an empty
   dead list (CO-H3(b));
 - and what a tree reports where a lattice reports layers is still
@@ -75,10 +75,10 @@ Promoting the traversal from an environment variable to a CLI option makes it a
   quantity wearing the same name.
 
 Shipping the flag before those land is exactly
-[Q-M1e.5](../open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface)
+[Q-M1e.5](../../m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface)
 — *is "experimental" a licence to ship a surface whose read-out is false?* —
 answered in the affirmative by accident. **So T3 of this stage runs after
-[S1e.2.1](../p1e.2_high/s1e.2.1_correctness.md) T3**, and if that stage's
+[S1e.2.1](../../m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md) T3**, and if that stage's
 recommendation holds (*refuse*: the tree's `Contradiction` declines to print a
 core rather than printing an empty one), the flag ships on top of a surface
 that has stopped lying.
@@ -110,15 +110,15 @@ breaking change to documents this milestone does not otherwise touch.
   the lattice's enterings post-date the 32nd model, every later citation of
   the headline says so in the same sentence.
 - **H3's share is stated as this phase's recoverable win**, and
-  [S1e.1b.3](s1e.1b.3_the_restricted_join.md)'s measured delta is compared
+  [S1f.10.3](s1f.10.3_the_restricted_join.md)'s measured delta is compared
   against it. The two agreeing is the phase's best evidence that its structure
   is the tree's structure, derived instead of walked.
 - **The measurement is re-takable and its cost is stated.** The lattice arm is
   **~25 minutes** and narrates tens of millions of events; like
   `layer_census.py` it writes `--events` to a FIFO, and it is not in the gate.
   No fourth copy of the two-config diff — it extends `layer_census.py` or
-  `model_set_census.py` ([AR-M1](../README.md#the-findings), and
-  [D7](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/d7_the_diff_instrument.md)
+  `model_set_census.py` ([AR-M1](../../m1e_review_processing/README.md#the-findings), and
+  [D7](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d7_the_diff_instrument.md)
   is where that was last argued).
 - **`--traversal {lattice,tree}` exists**, is in `--help`, is in
   `configuration.md`'s CLI table with its *does it change the answer* column
@@ -131,30 +131,30 @@ breaking change to documents this milestone does not otherwise touch.
 
 ## Tasks
 
-### Task T1e.1b.7.1 — Re-take the headline, and settle the two numbers
+### Task T1f.10.7.1 — Re-take the headline, and settle the two numbers
 
 Half a day. Re-run both traversals on `zebra2-minus-15-obligations.ein`,
 record enterings, wall, RSS and the model set, and state which of 0.07 s /
 0.083 s was right — or that neither is, on today's machine, with
 `utils/bench_env.sh` output beside it. Fix the loser wherever it is written.
 
-### Task T1e.1b.7.2 — Attribute the difference
+### Task T1f.10.7.2 — Attribute the difference
 
 One day, the five hypotheses above, **H4 first**. The instrument is the event
 stream both traversals already emit; the output is a table with a row per
 hypothesis and a named remainder, filed as
-`plans/m1e_review_processing/p1e.1b_hypothesis_structure/traversal_calibration.md`
+`plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/traversal_calibration.md`
 while M1e is unshipped and moved to `docs/history/` with the milestone.
 
-### Task T1e.1b.7.3 — Compare against the restricted join
+### Task T1f.10.7.3 — Compare against the restricted join
 
-Half a day, **after S1e.1b.3**. Re-run the lattice arm with the restricted
+Half a day, **after S1f.10.3**. Re-run the lattice arm with the restricted
 join on: how much of H3's share did it actually remove, and is what remains
 H1 (the shape of the walk) or H2 (the cadence)? If it is H2, that is a finding
 worth its own id — *the lattice recomputes `alive` once per layer and could
 recompute it per entering* — and it is not this phase's to take.
 
-### Task T1e.1b.7.4 — The flag
+### Task T1f.10.7.4 — The flag
 
 One day, **after S1e.2.1 T3**. Add `--traversal {lattice,tree}` to `ein-cli`,
 default `lattice`, CLI tier above `EIN_TRAVERSAL`; update `--help`,
@@ -166,11 +166,11 @@ surface has a reader in `cargo test` rather than only in a document.
 
 ## Notes
 
-**Why this belongs to P1e.1b and not to P1e.2.** P1e.2 owns the tree's
+**Why this belongs to P1f.10 and not to P1e.2.** P1e.2 owns the tree's
 *defects*; this stage owns the tree as **evidence**. The 200 053× is the best
 existing statement of what structural branching is worth, and this phase's
 claim is that the same structure can be handed to the lattice as a restriction
 rather than walked by a second traversal. Calibrating against the tree is how
 the phase learns whether its ladder is worth climbing — and if H4 eats most of
 the ratio, that is the phase discovering early that its target was smaller
-than advertised, which is cheaper here than at S1e.1b.5.
+than advertised, which is cheaper here than at S1f.10.5.

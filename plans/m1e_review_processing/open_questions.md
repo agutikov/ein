@@ -20,15 +20,15 @@ records which question became which id.
 | [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | **decided 2026-08-28** — *an argument suffices when its premise is itself enforced*, written into [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md). The `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof-both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
 | [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | open — [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) decides per page; the *rule* is here |
 | [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | open — [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md) |
-| [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md), and M1d's `T1d.10.6.4` is the co-owner. [S1e.1b.7](p1e.1b_hypothesis_structure/s1e.1b.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it |
-| [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model) | What is a **solution**, and what is a **model**? | **decided 2026-08-28** by the user; binding on [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) and on [P1e.1b](p1e.1b_hypothesis_structure/README.md) |
+| [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md), and M1d's `T1d.10.6.4` is the co-owner. [S1f.10.7](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it |
+| [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model) | What is a **solution**, and what is a **model**? | **decided 2026-08-28** by the user; binding on [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) and on [P1f.10](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md) |
 | [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) | The read-out prints the solution **KB** and calls it a model | **decided 2026-08-28 — A**: the recorded object is the *state*, `model` is a projection of it, and § 2 is evaluated on the state. Unblocks Q-M1e.8. S1e.3.2 applies it to the vocabulary, P1e.5's S1e.5.3 to the read-out |
 | [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness. The **record-site conformance check** is [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) T4 ([D3](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d3_q_m1e8_file_or_take.md), option B); the fix files to P1e.2 and, since [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) was ruled on 2026-08-28, **is chosen**: re-saturate and re-check before recording |
-| [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. **Ruled 2026-08-28: B now, C filed.** The containment is [S1e.2.3](p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md) (a diagnostic, 1 d, P1e.2); the real fix is [F18](../followups/f18_world_aware_negatives.md); and the **language** half — *may a refutation rest on an `absent` at all?* — is [S1e.1b.8](p1e.1b_hypothesis_structure/s1e.1b.8_refutation_under_absent.md)'s |
+| [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. **Ruled 2026-08-28: B now, C filed.** The containment is [S1e.2.3](p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md) (a diagnostic, 1 d, P1e.2); the real fix is [F18](../followups/f18_world_aware_negatives.md); and the **language** half — *may a refutation rest on an `absent` at all?* — is [S1f.10.8](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s |
 | [Q-M1e.10](#q-m1e10--two-config--flags-are-inert) | Two `(config …)` flags are **inert** — `print-alive`, `candidate-order-seed` | open — raised by [S1e.5.1](p1e.5_documentation_and_other/s1e.5.1_config_reference.md); owner unassigned |
 | [Q-M1e.13](#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent) | `:expect` cannot state an answer with an **empty goal extent** — nor detect a shrinking model set | open — found 2026-08-28 while banking [D1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d1_q4_which_route_reaches_the_site.md)'s fixtures; **owner unassigned** |
 | [Q-M1e.12](#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object) | The blind rung is **untyped**, and a model binds a type as an object | open — raised by [D8](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d8_branching06_untyped_models.md) 2026-08-28; **owner unassigned**, three readings recorded |
-| [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [S1e.1b.6](p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)** 2026-08-28 by the user; the guard half is decided and is [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3's |
+| [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [S1f.10.6](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)** 2026-08-28 by the user; the guard half is decided and is [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3's |
 | [Q-M1e.14](#q-m1e14--the-corpus-jobs-sweeps-per-layer-census-coverage-is-vacuous) | The corpus `--jobs` sweep's per-layer census coverage is **vacuous** | open — raised 2026-08-29 by [S1e.1.2](p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md) T3, which closed the unit half; **owner unassigned**, and the corpus half costs a golden |
 | [Q-M1e.15](#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) | The **alternatives cap** decides which unsat core is reported | open — raised 2026-08-29 by [S1e.1.3](p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md), which is the review's `Q2` answered **yes**; witnessed by a fixture pair, **owner unassigned**, and no shipped puzzle is changed by it |
 | [Q-M1e.16](#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | The **binding key** compares two register layouts as one | open — raised 2026-08-29 by [S1e.1.4](p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md), which is the review's `Q3` answered and **`Q-M1a.8` closed as stated**. A well-formed program loses a derivation in a release build and trips a `debug_assert` in a test one; **owner unassigned**, and no corpus program can reach it |
@@ -629,8 +629,8 @@ give; nothing does today.
 
 Owner unassigned. The natural readers are
 [S1e.3.9](p1e.3_medium/s1e.3.9_maintainability.md) (MA-M2's site is its) and
-[P1e.1b](p1e.1b_hypothesis_structure/README.md)
-[S1e.1b.5](p1e.1b_hypothesis_structure/s1e.1b.5_ordering.md), which is already
+[P1f.10](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md)
+[S1f.10.5](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.5_ordering.md), which is already
 holding the other knob that does less than its name says
 (`hypgen-scoring: most-constrained`, a constant `0.0`).
 
@@ -640,7 +640,7 @@ holding the other knob that does less than its name says
 
 **Raised by** [D2](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d2_q6_which_decline_to_construct.md)
 on 2026-08-28, which split the review's `Q6` in two.
-**Owner: [S1e.1b.6](p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)**
+**Owner: [S1f.10.6](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)**
 — the stage D2 became the same day, by the user's instruction. Its T4 is what
 rules on this; the ruling is written into this file with the date, and beside
 the code that computes the structure.
@@ -699,7 +699,7 @@ about the **structure of the hypothesis set**, not about a traversal:
 | **C** | refuse at load: every obligation activator must be root-derivable | a diagnostic instead of a wrong answer — the repo's usual move, and the shape of [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent)'s option B. It forbids a program nobody has yet written |
 | **D** | accept the loss and state it | needs a witness first, which is what `Q6`'s probe is for |
 
-### Why P1e.1b owns it
+### Why P1f.10 owns it
 
 That phase's founding sentence is *"the search enumerates subsets of a fixed
 `alive` set"*, and its ladder rests on a branch structure that is a property
@@ -738,7 +738,7 @@ Two consequences that are already load-bearing elsewhere:
   [D6](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d6_the_new_q5_fixture.md)
   builds a new one;
 - it is the **standing proof** for
-  [S1e.1b.6](p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)'s
+  [S1f.10.6](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)'s
   loss mechanism — the blind rung keeps proposing long after any real debt is
   discharged, which is why a tree node that flips to it stops recognising
   solutions. Without this fixture that argument is hypothetical.

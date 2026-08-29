@@ -93,6 +93,14 @@ of the tree they left:
   sixty-three are one reader's reading, and every task ends in a fixture, a
   test, a measured number or a written decision. The reports are carried
   verbatim in the milestone folder.
+- **M1f — The structure of the hypothesis set, and the documentation ein does
+  not have** ([m1f_hypothesis_and_documentation/](m1f_hypothesis_and_documentation/README.md))
+  beside M1e — the two phases M1e carried that were **not** review processing,
+  given an M-number on 2026-08-29. `P1f.10` derives a branch structure the
+  theory could state in advance (the exclusion relation, groups, the restricted
+  join) and may not move one model doing it; `P1f.5` writes pages that do not
+  exist, removes `:priority`, and rebuilds the doc tree. Phase numbers 1–4 and
+  6–9 are deliberately free.
 - **M5 — paper + presentation** ([m5_presentation/](m5_presentation/README.md))
   after M2. Renumbered from M2b 2026-08-23.
 - **M10 — External benchmarks** ([m10_external_benchmarks/](m10_external_benchmarks/README.md))
@@ -165,7 +173,13 @@ plans/
 │   ├── p1e.1_open_questions/         the ten questions          (6 stage files)
 │   ├── p1e.2_high/                   6 findings, 2 topics       (2)
 │   ├── p1e.3_medium/                 36 findings, 9 topics      (9)
-│   └── p1e.4_low/                    21 findings, 8 topics      (8)
+│   ├── p1e.4_low/                    21 findings, 8 topics      (8)
+│   └── p1e.5_documentation_and_other/  what it shipped of a phase that left (1)
+├── m1f_hypothesis_and_documentation/ the two phases M1e carried and did not need
+│   ├── README.md                     (created 2026-08-29 out of M1e's P1e.1b + P1e.5)
+│   ├── open_questions.md             Q-M1f.<n> — empty; the Q-M1e ids stayed in M1e
+│   ├── p1f.5_documentation_and_other/  (was p1e.5)   3 stage files + 1 proposed
+│   └── p1f.10_hypothesis_structure/    (was p1e.1b)  8
 ├── m2_nl_to_ir/                      EinAf — iterative autoformalization, Levels B → D
 │   ├── README.md                     (the folder keeps its NL → IR name; Level B is that)
 │   ├── open_questions.md             Q7–Q11, Q23–Q25 + Q-M2.1–4
@@ -227,7 +241,8 @@ Stage files have a stable shape:
 | [M1a](../docs/history/m1a_rust/README.md)               | *(plans removed 2026-08-23 — the record is `docs/history/m1a_rust/`)* | **shipped** — done 2026-08-23, all eleven phases closed. `ein.rs` is the only implementation: `solve zebra2.ein -e` end-to-end **4.53 s → 29.0 ms (157×)** with peak RSS 223 → 17 MB (the PyPy half frozen — nothing can re-measure it), `--jobs N` a further **3.17–4.40×** on 8 cores with every counter identical over 20 712 cells, and the gate **616 tests in 1 m 51 s** with no Python process in any of them | est. ~7 months; ran 2026-08-17 → 2026-08-23 |
 | [M1c](../docs/history/m1c_external_validation/README.md) | *(plans removed 2026-08-24 — the record is `docs/history/m1c_external_validation/`)* | **shipped** — done 2026-08-24, one phase and five stages. `:expect` on `query`, `ein test` as the fourth subcommand, 45 programs in `tests/stdlib/`, and **38 of 73 never-firing stdlib rules → 0**, held by `cargo test` in 0.04 s. Its benchmark phase left for M10 on 2026-08-23 | est. ~2.5 weeks; ran 2026-08-23 → 2026-08-24 |
 | [M1d](../docs/history/m1d_satisfiability/README.md) | *(plans removed 2026-08-27 — the record is `docs/history/m1d_satisfiability/`)* | **shipped** — done 2026-08-27, four phases and eighteen stages. A program can state a requirement, a state can say what it **owes**, the verdict word `Open` reports it, every verdict states whether its count is certified, and `EIN_TRAVERSAL=tree` reaches 32 models in **86** enterings against the lattice's 17 204 592. P1d.10 closed as it stood, three of six stages shipped | est. ~2 months; ran 2026-08-21 → 2026-08-27 |
-| [M1e](m1e_review_processing/README.md)  | **full** — 4 phases, 25 stage files, one per topic per severity | next — the 2026-08-27 review processed: 63 findings + 10 questions, each ending in **fixed / refuted / accepted / deferred** with a test, a probe, a written reason or an owner | ~10 weeks |
+| [M1e](m1e_review_processing/README.md)  | **full** — 5 phases, 26 stage files + 2 shipped | **running** — the 2026-08-27 review processed: 63 findings + 10 questions, each ending in **fixed / refuted / accepted / deferred** with a test, a probe, a written reason or an owner. **P1e.1 closed 2026-08-29**: all ten questions answered | ~11 weeks; began 2026-08-27 |
+| [M1f](m1f_hypothesis_and_documentation/README.md) | **full** — 2 phases, 11 stage files (+1 proposed) | queued — the two phases M1e carried that processed no finding, moved out 2026-08-29. A branch structure derived from the program rather than paid for in deaths, and the pages a released system would have | ~12 weeks |
 | [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs | next — **reshaped 2026-08-23** around [`EinAf.md`](m2_nl_to_ir/EinAf.md): the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | ~6 months — Level B at ~8 weeks |
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |
 | [M10](m10_external_benchmarks/README.md) | **full** — 5 stage files, no phase level | queued behind M1a — the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean (was M1c's P1c.2) | ~2.5 weeks |

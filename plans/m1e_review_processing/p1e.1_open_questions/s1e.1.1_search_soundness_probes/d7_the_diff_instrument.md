@@ -3,9 +3,9 @@
 **Touches:** [T1e.1.1.3](README.md#task-t1e113--q5-derive-lattice02-by-hand-against-the-ruling)
 (Q5, lookahead on vs off) — and, since Q6 left this stage on 2026-08-28, two
 customers in another phase:
-[S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)
+[S1f.10.6](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)
 T3 (tree vs lattice on the flip probe) and
-[S1e.1b.7](../../p1e.1b_hypothesis_structure/s1e.1b.7_tree_calibration_and_flag.md)
+[S1f.10.7](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)
 (tree vs lattice on `zebra2-minus-15`). **Three customers across two phases is
 a stronger case for one script than this file was written against.**
 **Cheap** — but it is the one place this stage can commit
@@ -24,8 +24,8 @@ times**:
 | 3 | the `--jobs` invariance sweep | 20 712 cells, byte-identical verbose streams |
 
 The stage's own Notes already say a fourth copy is not this stage's job, and
-[S1e.1b.1](../../p1e.1b_hypothesis_structure/s1e.1b.1_exclusion_census.md)
-says the same for P1e.1b. Two stages declining the same work is how the fifth
+[S1f.10.1](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.1_exclusion_census.md)
+says the same for P1f.10. Two stages declining the same work is how the fifth
 copy gets written by whoever needs it third.
 
 ## What the probes actually need
@@ -59,7 +59,7 @@ of Q-M1e.6's `model` — which is an argument for putting it somewhere reusable.
 | | what the stage does | consequence |
 |---|---|---|
 | **A — throwaway, in the stage folder** | ~15 lines of Python under `probes/`, used by T3 and T4, not installed in `utils/` | no fourth catalogued copy; the evidence lives with the plan; the next stage that needs it writes a fifth |
-| **B — a real `utils/` script** | `utils/model_diff.py`, catalogued, `$EIN_BIN`, re-takable, and the first thing that computes Q-M1e.6's `model` | fixes the habit instead of citing it, and gives P1e.1b's three model-set comparisons an owner. Costs perhaps half a day and grows the stage's scope |
+| **B — a real `utils/` script** | `utils/model_diff.py`, catalogued, `$EIN_BIN`, re-takable, and the first thing that computes Q-M1e.6's `model` | fixes the habit instead of citing it, and gives P1f.10's three model-set comparisons an owner. Costs perhaps half a day and grows the stage's scope |
 | **C — borrow `model_set_census.py`** | add a `--form diff` to the existing script | no new file, but it bends a *census* into a *comparison*, and that script's subject is one program's model set, not two runs of one |
 
 **Decided 2026-08-28: A for this stage, and
@@ -72,9 +72,9 @@ as one when that stage counts them.
 ### Two things that changed after this file was written
 
 - **The customer count went from two to four**, across three phases: T1e.1.1.3
-  (Q5), [S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)
+  (Q5), [S1f.10.6](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)
   T3 (tree vs lattice on the flip probe),
-  [S1e.1b.7](../../p1e.1b_hypothesis_structure/s1e.1b.7_tree_calibration_and_flag.md)
+  [S1f.10.7](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)
   (tree vs lattice on `zebra2-minus-15`), and the record-site check, whose
   runner [`probes/run_record_sites.sh`](probes/run_record_sites.sh) **already
   exists** and is the throwaway this decision authorises. Four customers is a

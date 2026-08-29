@@ -1,13 +1,13 @@
-# S1e.5.20 — `docs/ein/`: the tree a released system would have
+# S1f.5.20 — `docs/ein/`: the tree a released system would have
 
-**Phase:** [P1e.5](README.md) (Documentation ein does not have)
+**Phase:** [P1f.5](README.md) (Documentation ein does not have)
 **Estimate:** ~23 days — the largest single item in M1e. § How to cut it
 offers the split, and taking the split is the user's call.
-**Depends on:** [P1e.2](../p1e.2_high/README.md)
-[S1e.2.2](../p1e.2_high/s1e.2.2_code_doc_consistency.md) and
-[P1e.3](../p1e.3_medium/README.md)
-[S1e.3.7](../p1e.3_medium/s1e.3.7_code_doc_consistency.md) /
-[S1e.3.8](../p1e.3_medium/s1e.3.8_documentation.md) — **hard**, and § Ordering
+**Depends on:** [P1e.2](../../m1e_review_processing/p1e.2_high/README.md)
+[S1e.2.2](../../m1e_review_processing/p1e.2_high/s1e.2.2_code_doc_consistency.md) and
+[P1e.3](../../m1e_review_processing/p1e.3_medium/README.md)
+[S1e.3.7](../../m1e_review_processing/p1e.3_medium/s1e.3.7_code_doc_consistency.md) /
+[S1e.3.8](../../m1e_review_processing/p1e.3_medium/s1e.3.8_documentation.md) — **hard**, and § Ordering
 says why: those three stages triage and fix 38 pages, and a page fixed and then
 moved is cheap where a move followed by a re-triage of 38 renamed files is not.
 **Blocks:** nothing. Everything downstream of it wants it and nothing waits on
@@ -90,7 +90,7 @@ that produced them was deleted at M1a S1a.10.5.
 
 So: deleting the directory as a directory is right, and deleting its contents
 is not. The rule this stage applies — and it is the repo's own, from
-[Q-M1e.3](../open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)
+[Q-M1e.3](../../m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)
 — is **dissolve, don't delete**: every page is triaged into
 
 - **(a) becomes a `docs/ein/` page**, rewritten as an as-built design document
@@ -149,12 +149,12 @@ docs/
         search.md                 ← inference/algorithm_layer_n.md + history/m1a/design/07
         atms-and-nogoods.md       ← inference/architecture_and_algorithms.md (the ATMS half)
         hypothesis-generation.md  ← history/m1d/hypotheses_from_obligations.md
-                                    + P1e.1b's exclusion / groups results
+                                    + P1f.10's exclusion / groups results
         satisfiability.md         ← history/m1d/{the_boundary,completeness,the_verdict}
         solution-semantics.md     ← inference/solution_semantics.md (linked, not duplicated)
       rule-evolution/
         rules-as-data.md          ← ir/03-ein-lang/08_self_describing.md
-        analysis-of-rules.md      ← new — and S1e.5.6's stratification is its first content
+        analysis-of-rules.md      ← new — and S1f.5.6's stratification is its first content
         transformations.md        ← TBD, a stub with the question in it
     ein.rs/
       api.md                      ← docs/api/rust.md (marker-guarded region intact)
@@ -238,7 +238,7 @@ one.
 
 ## Tasks
 
-### Task T1e.5.20.1 — The link checker, first and out of order
+### Task T1f.5.20.1 — The link checker, first and out of order
 
 `utils/check_links.py`, then a `run_tests.sh` step. Three link classes:
 
@@ -249,11 +249,11 @@ one.
 
 It exits 1 on a target that does not exist, and reports the referrer. Run it
 **before** anything moves and record the baseline: the tree is not known to be
-clean, and [DO-M2](../README.md#the-findings) is *dangling references across
+clean, and [DO-M2](../../m1e_review_processing/README.md#the-findings) is *dangling references across
 the doc tree, incl. anchors that never existed*. A checker that starts red is
 fine; a checker whose starting number nobody wrote down is not.
 
-### Task T1e.5.20.2 — The disposition table
+### Task T1f.5.20.2 — The disposition table
 
 One row per source file — ~55 doc pages plus the 43 under `docs/history/` —
 with: destination path, disposition (*rewritten into* / *evidence* / *deleted*),
@@ -265,7 +265,7 @@ produce the destinations by hand. The table lives at
 `docs/ein/README.md` § Where each page went until the stage closes, and then
 in the commit message.
 
-### Task T1e.5.20.3 — `docs/ein/user/` — the black box
+### Task T1f.5.20.3 — `docs/ein/user/` — the black box
 
 The cheapest and most valuable third. `docs/guide/` moves nearly verbatim (**1**
 history line in 693), and the reference pages are assembly rather than writing.
@@ -277,14 +277,14 @@ doing:
   ein-lang, graph, NL, math — as the user's outline asks. That is a *format*
   decision applied uniformly, and it is the thing no current page does: the
   grammar states the syntax, `01-ein-graph/` states the graph, nothing states
-  the maths, and the NL is [S1e.5.5](s1e.5.5_nl_required.md)'s subject. Pick
+  the maths, and the NL is [S1f.5.5](s1f.5.5_nl_required.md)'s subject. Pick
   the format once, in `objects.md`, and hold it.
 - **`theory.md`** — a rule set as a *theory*, and how rules interact. Nothing
   in the tree says this today, and it is the concept
   [M2](../../m2_nl_to_ir/README.md)'s theory selection and theory synthesis are
   about. It may be the single most load-bearing new page in the stage.
 
-### Task T1e.5.20.4 — `docs/ein/reasoning/` — implementation-agnostic
+### Task T1f.5.20.4 — `docs/ein/reasoning/` — implementation-agnostic
 
 The hard third, because the source material is *not* implementation-agnostic:
 `inference/architecture_and_algorithms.md` (821 lines) and the eleven design
@@ -303,11 +303,11 @@ Three known traps:
   are also milestone documents in voice. De-scaffolding them is most of the
   wordcount and none of the difficulty.
 - `rule-evolution/analysis-of-rules.md` is *empty until something fills it*.
-  [S1e.5.6](s1e.5.6_rule_priority.md) is what fills it — the rule dependency
+  [S1f.5.6](s1f.5.6_rule_priority.md) is what fills it — the rule dependency
   graph, the strata, and what a rule set's structure decides. Sequence the two
   so this page is written once.
 
-### Task T1e.5.20.5 — `docs/ein/ein.rs/` — the concrete implementation
+### Task T1f.5.20.5 — `docs/ein/ein.rs/` — the concrete implementation
 
 Mostly relocation, with one rule: **`docs/api/rust.md`'s marker-guarded region
 moves intact**, and the test that diffs it against
@@ -319,7 +319,7 @@ possible outcome.
 `benchmarks/` collects the six measurements and the five censuses; each keeps
 its date, its commit and its `utils/` re-take script, and gains nothing else.
 
-### Task T1e.5.20.6 — De-historicise the code
+### Task T1f.5.20.6 — De-historicise the code
 
 The largest mechanical piece: **963 id-bearing lines in 175 `.rs` files**, plus
 303 in `.ein` headers and 47 in `corpus.toml`.
@@ -348,7 +348,7 @@ exempt from the release-voice check: they are addressed to someone working
 *on* the repo, not to someone using the released system, and the user's rule
 is explicitly about code, tests and docs.
 
-### Task T1e.5.20.7 — The two empty homes
+### Task T1f.5.20.7 — The two empty homes
 
 `docs/ein/overview/README.md` and `docs/demo/README.md`: an index, the axes,
 and a first line naming the milestone that fills it —
@@ -406,7 +406,7 @@ P1e.2's own edits verifiable.
   `determinism-ok:` — and note that that check's *first finding was the check
   itself*, which is the failure mode to expect here too.
 - **Scope, honestly.** This is a fifth of M1e's entire estimate for work that
-  fixes no finding. M1e's [acceptance](../README.md#acceptance-for-the-milestone)
+  fixes no finding. M1e's [acceptance](../../m1e_review_processing/README.md#acceptance-for-the-milestone)
   does not name it and is unchanged if it is cut whole.
 
 ## Connections
@@ -416,12 +416,12 @@ P1e.2's own edits verifiable.
   that will read most differently afterwards.
 - [`README.md`](../../../README.md) — the root page, which already keeps
   **Ein** and **EinAf** apart and is the natural top of `docs/ein/`.
-- [Q-M1e.3](../open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)
+- [Q-M1e.3](../../m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)
   — *who owns a page that should be neither fixed nor deleted* — the ruling
   this stage's triage is an application of, at scale.
-- [S1e.5.1](s1e.5.1_config_reference.md) and
+- [S1e.5.1](../../m1e_review_processing/p1e.5_documentation_and_other/s1e.5.1_config_reference.md) and
   [S1e.5.2](../../../docs/kernel/inference/solution_semantics.md) — two pages
-  P1e.5 writes into the *old* tree; both are `docs/ein/user/` pages by this
+  P1f.5 writes into the *old* tree; both are `docs/ein/user/` pages by this
   stage's map, and both are cited by anchor text rather than section number so
   the move does not break them.
 - [M5](../../m5_presentation/README.md) Track A and

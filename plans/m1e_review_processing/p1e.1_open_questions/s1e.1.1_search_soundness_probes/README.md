@@ -7,7 +7,7 @@
 golden the lookahead flip pins (Q5).
 **Answers:** [`review/open-questions.md`](../../review/open-questions.md) Q4 and
 Q5. **`Q6` left this stage on 2026-08-28** for
-[S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md);
+[S1f.10.6](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md);
 the ruling taken here is kept in
 [D2](d2_q6_which_decline_to_construct.md).
 
@@ -77,7 +77,7 @@ So the stage's Q5 scope is **`lattice/02` plus one purpose-built fixture**, and
 generation-ladder mode **once at root** on the premise that *the mode is a
 property of the program rather than of the node*
 ([`solve.rs:889-914`](../../../../ein.rs/crates/ein-infer/src/solve.rs)) — is
-now [S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md),
+now [S1f.10.6](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md),
 which carries the reconnaissance this section held: the premise is already
 refuted by `activators_for`'s own doc comment, the three fact-dependent decline
 conditions are `oblgen.rs:232-262`'s, and the loss mechanism is `complete`
@@ -132,7 +132,7 @@ search should *do* with the new obligation is
 ## Decisions to take before implementation
 
 Nine files, and **two of them are now records rather than decisions**: D1 is
-answered by construction and D2 has moved to [P1e.1b](../../p1e.1b_hypothesis_structure/README.md).
+answered by construction and D2 has moved to [P1f.10](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md).
 Of the seven that remain, none blocks a task outright — they change what the
 stage delivers or are cheap enough to decide in passing, and each file carries
 the options with their consequences and a recommendation.
@@ -140,12 +140,12 @@ the options with their consequences and a recommendation.
 | | decision | gates | recommended |
 |---|---|---|---|
 | [D1](d1_q4_which_route_reaches_the_site.md) | **answered 2026-08-28** — Route B built at stock config, and a cheaper witness at the phase-1 record site the finding does not name. Open: which fix S1e.3.1 takes, and what the banked fixture claims | **T1e.1.1.2** | the dirty-bit guard; bank the fixture stating today's answer |
-| [D2](d2_q6_which_decline_to_construct.md) | **moved** — Q6 became [S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md) on 2026-08-28. What stays is the ruling taken here: the rung mode is re-read at every node | nothing here | — |
+| [D2](d2_q6_which_decline_to_construct.md) | **moved** — Q6 became [S1f.10.6](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md) on 2026-08-28. What stays is the ruling taken here: the rung mode is re-read at every node | nothing here | — |
 | [D3](d3_q_m1e8_file_or_take.md) | **decided 2026-08-28 — B**: the stage takes the *check*, not the fix. `record_node`'s four callers against `solution_semantics.md` § 2 | **T1e.1.1.4** | the fix still files to P1e.2, and *which* fix waits on Q-M1e.7 |
 | [D4](d4_q_m1e9_upward_closure.md) | **Q-M1e.9 is reproduced: `dead` is not upward-closed under `absent`.** Five of six configurations answer a twenty-line program wrongly. Who owns it, and how far does the fix go? | nothing here — but it qualifies D3 and D9 | a load-time refusal now, the real fix filed |
 | [D5](d5_does_t1_ratify_q_m1e2.md) | **decided 2026-08-28 — A**: T1 ratifies **both**, and Q-M1e.2 is owned there rather than by nobody | T1e.1.1.1 | ratified together, into `docs/kernel/` prose |
 | [D6](d6_the_new_q5_fixture.md) | **decided 2026-08-28** — a **pair**, `examples/branching/15_lookahead_two_step_on.ein` + `16…_off.ein`, each stating today's answer; both goldens grow, nothing existing moves | T1e.1.1.3 step 3 | as recommended; the pair is forced, since one `:expect` cannot state two configurations' answers |
-| [D7](d7_the_diff_instrument.md) | **decided 2026-08-28 — A**: throwaway here, and S1e.3.4 rules on the fourth copy with **four** customers on the record instead of two | T1e.1.1.3, S1e.1b.6 T3, S1e.1b.7 | the runner already exists; Q-M1e.7's ruling settles *which object* it compares |
+| [D7](d7_the_diff_instrument.md) | **decided 2026-08-28 — A**: throwaway here, and S1e.3.4 rules on the fourth copy with **four** customers on the record instead of two | T1e.1.1.3, S1f.10.6 T3, S1f.10.7 | the runner already exists; Q-M1e.7's ruling settles *which object* it compares |
 | [D8](d8_branching06_untyped_models.md) | **decided 2026-08-28 — B**: filed as [Q-M1e.12](../../open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object), three readings, no owner | nothing | `branching/06` stays untouched while Q5 is open |
 | [D9](d9_kernel_page_overclaims.md) | **done 2026-08-28** — the row was not qualified but **withdrawn**: `complete ⇒ solution` reads **no**, § 6 gained *What is recorded is `S ∪ K`*, and the premise section says C3 wins | nothing here | — |
 
@@ -367,7 +367,7 @@ survives it, and the matrix already exists
    option (i). All three are `examples/ein-bugs/{alive-empty-phase1,
    alive-empty-interlayer, complete-records-stale}.ein` with corpus entries;
    the fourth caller (`tree_node`) is
-   [S1e.1b.6](../../p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)'s.
+   [S1f.10.6](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)'s.
    Two carry an `:expect` stating today's answer; the third cannot, which is
    [Q-M1e.13](../../open_questions.md#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent).
 3. **Write the conjunct each site owes beside the call** ✅ — done
@@ -399,11 +399,11 @@ survives it, and the matrix already exists
 
 The Q6 probe that used to be this task — a program deriving an obligation
 activator inside a fork, run under both traversals and diffed fact for fact —
-is now S1e.1b.6 T1–T4.
+is now S1f.10.6 T1–T4.
 
 ## Notes
 
-These probes share an instrument with S1e.1b.6 and S1e.1b.7 — *run the same
+These probes share an instrument with S1f.10.6 and S1f.10.7 — *run the same
 program two ways and diff the model sets* — and it already exists in three
 places
 (`model_set_census.py`, the S1d.10.6 verification, the `--jobs` sweep). If
