@@ -29,6 +29,7 @@ records which question became which id.
 | [Q-M1e.13](#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent) | `:expect` cannot state an answer with an **empty goal extent** — nor detect a shrinking model set | open — found 2026-08-28 while banking [D1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d1_q4_which_route_reaches_the_site.md)'s fixtures; **owner unassigned** |
 | [Q-M1e.12](#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object) | The blind rung is **untyped**, and a model binds a type as an object | open — raised by [D8](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d8_branching06_untyped_models.md) 2026-08-28; **owner unassigned**, three readings recorded |
 | [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [S1e.1b.6](p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)** 2026-08-28 by the user; the guard half is decided and is [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3's |
+| [Q-M1e.14](#q-m1e14--the-corpus-jobs-sweeps-per-layer-census-coverage-is-vacuous) | The corpus `--jobs` sweep's per-layer census coverage is **vacuous** | open — raised 2026-08-29 by [S1e.1.2](p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md) T3, which closed the unit half; **owner unassigned**, and the corpus half costs a golden |
 
 ---
 
@@ -828,3 +829,59 @@ at all.
 
 (c) is the most useful and the most decided-against; the honest first move is
 (d) plus a decision on whether (a) is cheap enough to be worth a keyword.
+
+---
+
+## Q-M1e.14 — The corpus `--jobs` sweep's per-layer census coverage is vacuous
+
+> **Raised 2026-08-29 by
+> [S1e.1.2](p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md)
+> T1e.1.2.3**, which went looking for where `dropped_nogood` is compared across
+> job counts, found exactly one route, and measured it as a column of zeroes.
+> **Owner unassigned.**
+
+`LayerCensus::dropped_nogood` — how many of the next layer's joined candidates
+a learned clause removed — is the **read** side of the shared no-good store,
+where `nogoods_emitted` / `nogoods_subsumed` are the write side. It is
+deliberately not in `MonotonicStats` (per layer, not per run), so its only
+observable surfaces are the `layer` event and `ein-render`'s progress dumper.
+
+**The corpus-wide sweep reaches it through exactly one op** —
+`Op::Dump("progress")`, whose `layer N gen:` line carries the column — and that
+op runs under `dump_shape`'s budget: `max_set_size = 3`, `max_enterings = 60`.
+Measured 2026-08-29, all **202** corpus entries at that budget:
+
+| | entries with a nonzero column in the progress dump |
+|---|---:|
+| per-layer `nogoods_emitted` (the write side) | **16** |
+| `dropped_nogood` (the read side) | **0** |
+
+So `jobs_invariance` compares the write side for real and the read side as a
+column of zeroes agreeing with itself — 20 712 cells of coverage that is not
+coverage, on the one counter the review's `Q1` names as the first a shared
+clause store would perturb.
+
+S1e.1.2 closed the gap where it could, in the unit sweep: `search_invariants`'s
+three `--jobs` tests now compare **every layer's census row**, with a
+non-vacuity assertion that some candidate somewhere is actually dropped by a
+clause. That is one file's worth —
+`examples/branching/02_one_dead_one_alive.ein`, which drops 65 of 312
+candidates at layer 3 and 16 of 166 at layer 4 — rather than the corpus's.
+
+**What is open** is whether to make the corpus route non-vacuous, and it is a
+cost question rather than a design one:
+
+1. **Raise `dump_shape`'s `max_enterings`.** One line, and it re-blesses every
+   `dump[progress]` cell of `corpus_shapes.md5` — a deliberate golden move,
+   which [P1e.1's acceptance](p1e.1_open_questions/README.md#acceptance) says
+   has to be named in a stage file *before* it happens. S1e.1.2 did not predict
+   it, so S1e.1.2 does not take it.
+2. **A second `Op` at a larger budget**, which costs a sweep column rather
+   than a golden — and is what `Op::Solve` already does with three modes.
+3. **Leave it**, on the argument that the read side is a pure function of
+   `(joined, alive, store)` and all three are pinned. That is an argument whose
+   premise is enforced, so it is admissible under
+   [`standard_of_proof.md`](../../docs/kernel/standard_of_proof.md) Rule 2 —
+   but it should then be *written*, because "we compare that column" and "that
+   column is entailed by three we compare" are different claims and the tree
+   currently makes the first.

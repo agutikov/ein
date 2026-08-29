@@ -27,7 +27,7 @@
 
 use ein_core::{Kb, Terms};
 use ein_infer::Events;
-use ein_infer::solve::{NoDumper, SolveOptions, solve};
+use ein_infer::solve::{SolveOptions, solve};
 use ein_infer::verdict::{Answer, Verdict};
 use ein_ir::{Ast, load_file};
 use std::path::PathBuf;
@@ -71,12 +71,40 @@ struct Ran {
     stats: ein_infer::solve::MonotonicStats,
     /// What the fan-out did — and the one thing that is *allowed* to differ.
     jobs: ein_infer::solve::JobStats,
+    /// **Every layer's census row**, which `stats` does not carry: a
+    /// [`LayerCensus`](ein_infer::solve::LayerCensus) is per *layer*, so it is
+    /// deliberately not in `MonotonicStats` — and `dropped_nogood`, the column
+    /// a shared clause store would perturb first, lives only here (M1e
+    /// S1e.1.2 T1e.1.2.3).
+    census: Vec<(u32, ein_infer::solve::LayerCensus)>,
+    /// How many times the run froze root's clause store — one per fan-out, so
+    /// **0 at `--jobs 1`** (see `a_fanned_out_layer_freezes_the_clause_store`).
+    freezes: u64,
     /// The models as the run recorded them, **before** the sort `Answered`
     /// applies. A model *set* is the right claim for an exhaustive run; a
     /// `stop_after` run answers with a *prefix of a traversal*, and a prefix
     /// that arrived in a different order is a different cut wearing the same
     /// set's clothes (T1a.7.2.4).
     models_in_order: Vec<Vec<String>>,
+}
+
+/// A dumper that keeps every layer's census row and does nothing else.
+///
+/// `reads_forks` answers **`NoDumper`'s `false`** and that is not a detail: a
+/// dumper that reads forks makes a fanned-out layer keep them, and a kept fork
+/// is a `DeadCommitment::state_key` that is not empty — a different run to
+/// compare. The hook is `layer_census` rather than `layer_end` because the
+/// former fires on every way out of a layer, a budget cut included.
+#[derive(Default)]
+struct Census(Vec<(u32, ein_infer::solve::LayerCensus)>);
+
+impl ein_infer::solve::Dumper for Census {
+    fn layer_census(&mut self, layer: u32, census: &ein_infer::solve::LayerCensus) {
+        self.0.push((layer, *census));
+    }
+    fn reads_forks(&self) -> bool {
+        false
+    }
 }
 
 fn facts_of(kb: &Kb, terms: &Terms) -> Vec<String> {
@@ -117,7 +145,8 @@ fn run(rel: &str, tweak: impl FnOnce(&mut SolveOptions, &mut ein_core::SolverCon
     tweak(&mut opts, &mut cfg);
     opts.config = Some(cfg);
     let mut events = Events::off();
-    let solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
+    let mut census = Census::default();
+    let solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut census, &opts)
         .unwrap_or_else(|e| panic!("{rel} solves: {e:?}"));
     let verdict = solved.answer.as_str();
     let (mut models, core) = match &solved.answer {
@@ -157,6 +186,8 @@ fn run(rel: &str, tweak: impl FnOnce(&mut SolveOptions, &mut ein_core::SolverCon
         depth: kb.depth(),
         stats: solved.stats,
         jobs: solved.jobs,
+        census: census.0,
+        freezes: kb.nogoods().read().expect("no writer panicked").freezes(),
     }
 }
 
@@ -570,11 +601,25 @@ fn with_the_writeback_off_no_layer_writes_to_root() {
 /// `ein-parity`'s cut — is `jobs_invariance`; this is the unit form, and it is
 /// here because it is the one that fails *first* and reads clearly when it
 /// does.
+///
+/// **The census is compared too, since M1e S1e.1.2** (T1e.1.2.3). `stats` is
+/// `MonotonicStats`, which holds `nogoods_emitted` / `nogoods_subsumed` but
+/// nothing per-layer — so the column the review's Q1 names first,
+/// `dropped_nogood`, was outside every `--jobs` comparison this file made. It
+/// is the *read* side of the shared clause store where the two counters above
+/// are the write side, and reading it here is what makes the argument beside
+/// `ein_core::Nogoods` cover a counter and not only the answer.
 #[test]
 fn jobs_does_not_move_the_answer_or_a_counter() {
     let mut handed_back = 0u64;
+    let mut clause_drops = 0u64;
     for rel in FILES {
         let one = run(rel, |_, _| {});
+        clause_drops += one
+            .census
+            .iter()
+            .map(|(_, c)| c.dropped_nogood)
+            .sum::<u64>();
         for jobs in [2usize, 4, 8] {
             let many = run(rel, |o, _| o.jobs = jobs);
             assert_eq!(
@@ -586,12 +631,27 @@ fn jobs_does_not_move_the_answer_or_a_counter() {
                 "{rel}: --jobs {jobs} moved a search counter"
             );
             assert_eq!(
+                one.census, many.census,
+                "{rel}: --jobs {jobs} moved a layer census row"
+            );
+            assert_eq!(
                 one.depth, many.depth,
                 "{rel}: --jobs {jobs} changed root's layer stack"
             );
             handed_back += many.jobs.handed_back;
         }
     }
+    // **The clause store is actually read across a fan-out**, or the census
+    // comparison above is a column of zeroes agreeing with itself. This is the
+    // same shape as `handed_back` below and as `the_sweep_is_not_vacuous`.
+    assert!(
+        clause_drops > 0,
+        "no candidate anywhere in this file set was dropped by a learned \
+         clause, so `dropped_nogood` is 0 everywhere and comparing it says \
+         nothing. `branching/02_one_dead_one_alive` is what supplies it today \
+         — 65 of 312 at layer 3, 16 of 166 at layer 4 — so if it left the set, \
+         put back a file whose deaths prune a later layer"
+    );
     // **The hand-back path is exercised, and that is a finding rather than a
     // detail.** [shared_state.md §2a](../../../../docs/history/m1a_rust/measurements/shared_state.md#2a-and-a-total-is-the-wrong-shape-of-number-for-it)
     // measured *zero* enterings appending a fact id on four of six workloads —
@@ -607,6 +667,46 @@ fn jobs_does_not_move_the_answer_or_a_counter() {
          re-run path is untested. If the engine stopped numbering inside a \
          fork that is worth knowing; if these files stopped covering it, \
          pick one that does"
+    );
+}
+
+/// **And the enforcement is taken** — M1e S1e.1.2.
+///
+/// `Run::fan_out` freezes root's clause store for the window in which workers
+/// exist, and that freeze is what turns the argument beside `ein_core::Nogoods`
+/// — *no worker writes a clause, so no worker can see one arrive* — from a
+/// reading of the call graph into a checked premise
+/// (`docs/kernel/standard_of_proof.md` Rule 2). A guard that stopped being
+/// *taken* would break nothing, fail nothing, and quietly return the claim to
+/// the unenforced state the review found it in, so the count is asserted in
+/// both directions: a fanned-out run freezes, and `--jobs 1` — which never
+/// calls `fan_out` at all — freezes not once.
+#[test]
+fn a_fanned_out_layer_freezes_the_clause_store() {
+    let rel = "examples/zebra2.ein";
+    let one = run(rel, |_, _| {});
+    let many = run(rel, |o, _| o.jobs = 8);
+    assert_eq!(
+        one.freezes, 0,
+        "{rel}: --jobs 1 froze the clause store {} times, and it has no \
+         fan-out to freeze it for — the guard has moved off the window it \
+         exists to cover",
+        one.freezes
+    );
+    assert!(
+        many.freezes > 0,
+        "{rel}: --jobs 8 ran {} fanned-out batches and froze the clause store \
+         none of them — `Kb::freeze_nogoods` is no longer taken in \
+         `Run::fan_out`, so nothing enforces the premise `Nogoods` argues \
+         from",
+        many.jobs.speculated
+    );
+    // And the guard did not cost the run its answer — a freeze that fired
+    // would be a panic, but one taken over the wrong window would not, so the
+    // fanned-out run still has to agree.
+    assert_eq!(
+        one.answered, many.answered,
+        "{rel}: --jobs 8 changed the answer"
     );
 }
 
@@ -627,6 +727,10 @@ fn a_deep_search_is_counter_identical_under_jobs() {
         assert_eq!(
             one.stats, many.stats,
             "{rel}: --jobs 8 moved a search counter"
+        );
+        assert_eq!(
+            one.census, many.census,
+            "{rel}: --jobs 8 moved a layer census row"
         );
         assert!(
             many.jobs.speculated > 1_000,
@@ -667,6 +771,10 @@ fn with_the_writeback_off_jobs_still_does_not_move_a_counter() {
             assert_eq!(
                 one.stats, many.stats,
                 "{rel} (writeback off): --jobs {jobs} moved a search counter"
+            );
+            assert_eq!(
+                one.census, many.census,
+                "{rel} (writeback off): --jobs {jobs} moved a layer census row"
             );
             assert_eq!(
                 many.jobs.sequential, 0,
@@ -725,6 +833,12 @@ fn an_early_stop_cuts_at_the_same_candidate() {
                     one.stats, many.stats,
                     "{rel} -n {n}: --jobs {jobs} moved a search counter — and \
                      `enterings_total` moving is the cut landing elsewhere"
+                );
+                assert_eq!(
+                    one.census, many.census,
+                    "{rel} -n {n}: --jobs {jobs} moved a layer census row — \
+                     the cut closes the row it stopped in, so this is the \
+                     entering count again, per layer"
                 );
             }
         }

@@ -395,6 +395,17 @@ separately by flattening root at the barrier.
 at any depth. The predicate is about *writing*, not about layer 1, and
 S1a.7.2's debug assertion is what would notice.
 
+> **And one thing the predicate never covered — closed 2026-08-29.** It is
+> about a **fact**, and the learned no-good clause is not one: every dead
+> entering of every fanned-out layer emits one into a store `Kb::branch` shares
+> with every worker by `Arc`. That the sharing is harmless was true, and was
+> written nowhere — which is what M1e's review asked as
+> [Q1](../../../plans/m1e_review_processing/review/open-questions.md). The
+> argument is now [02](design/02_determinism_and_order.md) §6a and the premise
+> it rests on is enforced by a freeze the fan-out takes; the answer to this
+> question does not change, and the reason it is right is one layer deeper than
+> "no counter moved".
+
 ## Q-M1a.8 — `_binding_key` drops non-string activator args
 
 > **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §3.2](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--the-docs-after-the-oracle)). This entry is the *decision*; that page is what the engine now promises.

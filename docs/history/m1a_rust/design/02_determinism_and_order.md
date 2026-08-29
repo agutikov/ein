@@ -262,6 +262,139 @@ Worth stating explicitly so the port does not over-constrain itself:
 
 ---
 
+## 6a. The no-good store under `--jobs N` — the timing half of §6
+
+> **Added 2026-08-29 by
+> [M1e S1e.1.2](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md),
+> answering the
+> [review](../../../../plans/m1e_review_processing/review/open-questions.md)'s
+> Q1.** Everything below describes the engine as shipped; the section is new,
+> the behaviour is not.
+
+§6's third bullet says the store's **content** is order-free: emitting *c*
+removes every stored superset and inserts *c*, so the minimal set is a function
+of the clauses and not of their arrival order. That is a claim about a *set*.
+What it does not say — and what `--jobs N` needs — is that the store's **state
+at every read** is a function of the candidate order.
+
+The gap is real and not hypothetical. `Kb::branch` hands every worker of a
+fanned-out layer the same `Arc<RwLock<Nogoods>>`
+(`ein-core/src/kb.rs:664`), and [08](08_parallelism.md) §2's fan-out predicate
+is about facts — *a layer is fanned out iff it cannot write a **fact** to
+root* — while a clause is not a fact and every dead entering of every fanned-out
+layer produces one. So a clause learned mid-layer is *reachable* by a worker
+mid-entering, and until this section nothing said why that cannot decide
+whether the worker's candidate lives.
+
+### Every access to the store, and this is all of them
+
+| | site | lock | thread, and when |
+|---|---|---|---|
+| **W1** | `nogoods::emit_nogood` — `ein-infer/src/nogoods.rs:74` | write | from `Run::handle_dead` (`solve.rs:2341`) and `Run::integrate` (`solve.rs:2398`) |
+| **W2** | `ein_einb::sections::read_nogoods` — `ein-einb/src/sections.rs:689` | write | loading a `.einb`, before any search |
+| **R1** | `nogoods::subsumed` — `nogoods.rs:127` | read | the deferred-integration half of that same `handle_dead` (`solve.rs:2337`) |
+| **R2** | `Run::generate_layer` — `solve.rs:1206` | read | **one** guard, held across the whole of layer *L+1*'s candidate generation |
+| **R3** | `Run::proof` — `solve.rs:2534` | read | once, after the search |
+| **R4** | `Kb::snapshot` — `kb.rs` | read (clone) | the archival copy `Run::record_node` keeps for a model |
+
+Plus four that are not the engine: `ein-infer/src/shape.rs:445` and `:685`
+(the `lattice` and `hyp` shape instruments, single-threaded by construction),
+`ein_einb::sections::write_nogoods`, and `Kb::diff`'s round-trip comparison.
+
+W1's two callers are the whole write side. `handle_dead` is called only from
+`Run::commit_entering` (`solve.rs:1984`), which is *"called in candidate order,
+always, whether the entering was computed here or on a worker"*; `integrate` is
+called only at the batch barrier and the layer barrier. Neither is reachable
+from `Run::speculate` (`solve.rs:1854`), which is what a worker runs:
+`commitment::try_commitment_set` and `hypgen::complete` reach no row of the
+table. R2's `apriori::filter_reason` (`apriori.rs:140`) *does* run on worker
+threads — `generate_layer` fans its predicate out with `par_iter` — but it is
+handed the `&Nogoods` behind the single read guard the committing thread holds
+for that whole pass, and takes no lock of its own.
+
+### The argument
+
+1. **Every write is on the committing thread**, at a point the candidate order
+   fixes.
+2. **`Run::fan_out` (`solve.rs:1776`) is a barrier.** The committing thread is
+   inside `pool.install` for exactly as long as a worker of that batch exists,
+   and it is the only writer. **So a worker cannot observe a clause arriving:
+   while it lives there is no writer.**
+3. Every read is therefore of a store whose contents are a function of the
+   candidate order — at the layer's open, at a commit, or at the end of the
+   run.
+
+Note what this does **not** rest on. The review's guess was that commits
+replaying in candidate order would mask a mid-flight difference; that is true
+of the *result* but would not have been enough, because a candidate pruned by
+`filter_candidate` is never entered and so has no result to replay. The
+mechanism is one step earlier: the store is not read during an entering at all,
+and it is not written during a fan-out at all.
+
+### The premise, and what enforces it
+
+The argument's whole weight is on *no worker-reachable path touches the store*,
+and until 2026-08-29 that was one sentence in `Run::fan_out_this_layer`'s doc
+comment — *"a store no fork reads while it saturates"* — enforced by nothing.
+`emit_nogood` takes `&Kb` and locks internally, so the type system does not
+stop a worker from writing the way `Interner::intern`'s `&mut self` stops one
+from interning ([08](08_parallelism.md) §6). By
+[`standard_of_proof.md`](../../../kernel/standard_of_proof.md) Rule 2 that is
+not yet enough: *an argument suffices when its premise is itself enforced.*
+
+So it is now checked. `Kb::freeze_nogoods` (`kb.rs:1066`) returns a `Drop`
+guard that marks the store **frozen**, `Run::fan_out` takes one across the
+window in which workers exist (`solve.rs:1827`), and `Nogoods::insert` /
+`Nogoods::remove` panic on a write while it is set (`kb.rs:489`). It is
+`assert!` rather than `debug_assert!` for `Kb::branch`'s reason — a predictable
+branch on a path taken hundreds of times per run, against a failure that is
+silent everywhere else. Three tests hold the mechanism itself: the store
+refuses a frozen write and lifts the freeze on the way out
+(`ein-core/src/kb.rs`, two unit tests), and a fanned-out run is asserted to
+have *taken* the guard while `--jobs 1` is asserted never to
+(`ein-infer/tests/search_invariants.rs::a_fanned_out_layer_freezes_the_clause_store`)
+— because a guard that stopped being taken would break nothing and fail
+nothing.
+
+### And the counters, not only the answer
+
+`LatticeStats` is compared in full corpus-wide, and its `elapsed_seconds` is
+the one field legitimately allowed to differ: `Op::Dump("lattice")` writes
+`proof_summary.json` into the tree `render_tree` inlines byte for byte, and
+the normalisation blanks `elapsed_seconds` and `ts_ms` to `<ts>` because they
+are wall clock.
+
+The store itself has a write side and a read side in the counters, and only one
+of them was compared. `BaseStats::nogoods_emitted` / `nogoods_subsumed` are in
+`MonotonicStats`, which `jobs_does_not_move_the_answer_or_a_counter` compares
+exactly, and in `solve_shape`'s `STATS` line, which `jobs_invariance` compares
+byte-for-byte over the whole corpus along with the store's own clause list.
+**`LayerCensus::dropped_nogood` — what the clauses took off the next layer's
+join, which is the read side — was in the unit comparison not at all, and in
+the corpus one only nominally**: the census is per *layer*, so it is
+deliberately not in `MonotonicStats`, and its transport is the `layer` event
+and the progress dumper. S1e.1.2 put it in the unit comparison
+(`Ran::census`, collected through a `Dumper` that answers `reads_forks` false),
+with a non-vacuity assertion that some candidate somewhere in the file set is
+actually dropped by a clause.
+
+The corpus sweep *does* reach the column, through `Op::Dump("progress")` — and
+reaches it empty. `dump_shape` runs that op at `max_enterings = 60`, and at
+that budget **0 of the 202 corpus entries** have a nonzero `dropped_nogood`
+while **16** have a nonzero per-layer `nogoods_emitted` (measured 2026-08-29).
+So the write side is compared for real corpus-wide and the read side is a
+column of zeroes agreeing with itself; the unit sweep above is the only place
+it is compared at all. Raising the budget re-blesses every `dump[progress]`
+cell of `corpus_shapes.md5`, which is why S1e.1.2 recorded it as
+[Q-M1e.14](../../../../plans/m1e_review_processing/open_questions.md#q-m1e14--the-corpus-jobs-sweeps-per-layer-census-coverage-is-vacuous)
+rather than taking an unpredicted golden move.
+
+**What would re-open this**: any path reachable from `Run::speculate` that
+takes `Kb::nogoods()`, and any fan-out that does not freeze. The first panics;
+the second fails the freeze-count test.
+
+---
+
 ## 7. `python_repr` — a small compatibility module
 
 A handful of T3 sites sort or print `repr()` of Python values. ein.rs

@@ -365,9 +365,79 @@ fn diff_map<K: Eq + std::hash::Hash + std::fmt::Debug>(
 /// A clause is a sorted `Box<[FactId]>`; the meaning is "any branch whose path
 /// condition is a superset of this clause is dead". Emission and subsumption
 /// live with the search layer.
-#[derive(Clone, Default, Debug)]
+///
+/// # Why sharing this across `--jobs N` workers cannot move an observable
+///
+/// **M1e S1e.1.2**, answering the review's Q1. [`Kb::branch`] hands every
+/// worker of a fanned-out layer the *same* `Arc<RwLock<Nogoods>>`, so a clause
+/// learned while the layer is in flight is visible to a worker mid-entering —
+/// in principle. The reason it is not is neither the lock nor the ordered
+/// commit "replaying" the result: it is that **nothing touches this store
+/// while a worker exists**. Every access in the shipping engine, and this is
+/// all of them:
+///
+/// | site | lock | when |
+/// |---|---|---|
+/// | `nogoods::emit_nogood` | write | from `Run::handle_dead` and `Run::integrate`, the ordered commit and the batch barrier |
+/// | `nogoods::subsumed` | read | the deferred-integration half of that same `handle_dead` |
+/// | `Run::generate_layer` | read | **one** guard, held across the whole of the next layer's candidate generation |
+/// | `Run::proof` | read | once, after the search |
+/// | [`Kb::snapshot`] | read | the archival copy a recorded model keeps |
+///
+/// Every one of those runs on the thread that runs the layer loop. (Outside
+/// the search: `.einb` load writes the store before anything forks, and
+/// `ein-infer`'s two shape instruments are single-threaded by construction.)
+/// So:
+///
+/// 1. **Every write is on the committing thread**, at a point the candidate
+///    order fixes — and `Run::fan_out` is a barrier, so that thread is blocked
+///    inside it for exactly as long as a worker exists. A worker cannot
+///    observe a clause arriving, because while it lives there is no writer.
+/// 2. **Every read is at such a point too.** The one read that genuinely runs
+///    on worker threads is `apriori::filter_reason` under `generate_layer`'s
+///    `par_iter` — and it borrows the single read guard the committing thread
+///    holds for that whole pass, the committing thread being the one blocked
+///    in the pass.
+///
+/// A worker's entering therefore never consults the store at all:
+/// `commitment::try_commitment_set` and `hypgen::complete` reach no row above.
+/// **That premise is the whole argument**, so it is checked rather than
+/// believed ([`standard_of_proof.md`] Rule 2, and its worked example is a
+/// premise exactly like this one that was written down, believed, and wrong
+/// for a year): the store is [frozen](Kb::freeze_nogoods) for the duration of
+/// every fan-out, and a write from any thread panics.
+///
+/// The evidence sits beside the argument rather than inside it —
+/// `jobs_invariance`'s 20 712 cells and
+/// `search_invariants::jobs_does_not_move_the_answer_or_a_counter`, which
+/// compares `nogoods_emitted` / `nogoods_subsumed` and every layer's
+/// `dropped_nogood`. What a sweep cannot say is *why*, and this is that.
+///
+/// [`standard_of_proof.md`]: ../../../../docs/kernel/standard_of_proof.md
+#[derive(Default, Debug)]
 pub struct Nogoods {
     clauses: FxHashSet<Box<[FactId]>>,
+    /// Set for the duration of a fan-out — see the type's docs. Not content:
+    /// the `Clone` below drops it, and [`Kb::diff`] never looks.
+    frozen: bool,
+    /// How many times this store has been frozen — **the enforcement's own
+    /// enforcement.** A guard that stopped being taken would break nothing and
+    /// fail nothing, so a run asserts it was taken: `ein-infer`'s
+    /// `search_invariants::a_fanned_out_layer_freezes_the_clause_store`.
+    freezes: u64,
+}
+
+/// Content only. A copy of the clause set is a *new* store, and a new store is
+/// not inside anybody's fan-out, so the freeze does not travel with it — which
+/// matters because [`Kb::snapshot`] clones one per recorded model.
+impl Clone for Nogoods {
+    fn clone(&self) -> Nogoods {
+        Nogoods {
+            clauses: self.clauses.clone(),
+            frozen: false,
+            freezes: 0,
+        }
+    }
 }
 
 impl Nogoods {
@@ -386,11 +456,47 @@ impl Nogoods {
     /// Drop one clause — `set.discard`, which subsumption needs when a new
     /// clause makes a stored superset redundant.
     pub fn remove(&mut self, clause: &[FactId]) -> bool {
+        self.writable("remove");
         self.clauses.remove(clause)
     }
 
     pub fn insert(&mut self, clause: Box<[FactId]>) -> bool {
+        self.writable("insert");
         self.clauses.insert(clause)
+    }
+
+    /// Refuse writes until [`Nogoods::thaw`] — [`Kb::freeze_nogoods`]'s half
+    /// of the guard, and the enforcement of this type's determinism argument.
+    pub fn freeze(&mut self) {
+        self.frozen = true;
+        self.freezes += 1;
+    }
+
+    pub fn thaw(&mut self) {
+        self.frozen = false;
+    }
+
+    /// How many fan-outs this store has been frozen for — see the field.
+    pub fn freezes(&self) -> u64 {
+        self.freezes
+    }
+
+    /// **A write while a layer is fanned out is the one way `--jobs N` could
+    /// stop being the same computation**, so it fails rather than being
+    /// diagnosed later from a moved counter.
+    ///
+    /// `assert!` and not `debug_assert!`, for [`Kb::branch`]'s reason: what it
+    /// costs is a predictable branch on a path taken *hundreds* of times per
+    /// run — 354 clauses on an exhaustive `zebra2` with the singleton
+    /// writeback off, against 3 831 enterings — and what it catches is silent
+    /// everywhere else.
+    fn writable(&self, what: &str) {
+        assert!(
+            !self.frozen,
+            "no-good store: {what} while a layer is fanned out. Only the \
+             committing thread may write this store, and only between \
+             fan-outs — see `Nogoods`, and design/02 §6a"
+        );
     }
 
     /// The clauses, in no particular order — see the annotation below before
@@ -404,6 +510,28 @@ impl Nogoods {
         // order-insensitive, or sort at the point of output.
         // determinism-ok: every consumer of a no-good clause set is order-insensitive.
         self.clauses.iter().map(|c| &**c)
+    }
+}
+
+/// The guard [`Kb::freeze_nogoods`] returns.
+///
+/// `Drop` rather than a matching `thaw` call, so an early `?` or a worker
+/// panic inside the fan-out cannot leave the store frozen for the rest of the
+/// run — which would turn one finding into every subsequent commit's panic.
+pub struct NogoodFreeze<'a> {
+    store: &'a Arc<RwLock<Nogoods>>,
+}
+
+impl Drop for NogoodFreeze<'_> {
+    fn drop(&mut self) {
+        // Poison-tolerant on purpose, and it is the only place in this file
+        // that is: the one thing that panics while this guard is alive is
+        // `Nogoods::writable`'s own assertion, and aborting during the unwind
+        // would replace the finding with a stack the reader cannot use.
+        match self.store.write() {
+            Ok(mut store) => store.thaw(),
+            Err(poisoned) => poisoned.into_inner().thaw(),
+        }
     }
 }
 
@@ -528,9 +656,15 @@ pub struct Kb {
     /// delta that is already kilobytes.
     n_by_rel: FxHashMap<Symbol, u32>,
     classes: EqClasses,
-    /// Shared by reference across forks (live branches read each other's
-    /// learned clauses) and **copied** for a snapshot, which is archival and
-    /// wants isolation.
+    /// Shared by reference across forks and **copied** for a snapshot, which
+    /// is archival and wants isolation.
+    ///
+    /// The sharing is what [`Kb::branch`] does with an `Arc` field and not a
+    /// requirement: **no branch ever reads this store**, and every access in
+    /// the engine is through the run's root on the committing thread. That is
+    /// the whole of why `--jobs N` is the same computation, and [`Nogoods`] is
+    /// where it is argued and enforced. (The comment here used to say live
+    /// branches read each other's clauses. They do not — M1e S1e.1.2.)
     nogoods: Arc<RwLock<Nogoods>>,
 }
 
@@ -923,6 +1057,21 @@ impl Kb {
 
     pub fn nogoods(&self) -> &Arc<RwLock<Nogoods>> {
         &self.nogoods
+    }
+
+    /// Refuse every write to the no-good store until the guard drops — the
+    /// enforcement of [`Nogoods`]'s determinism argument.
+    ///
+    /// Taken across `Run::fan_out`, which is the only window in this engine in
+    /// which a thread other than the committing one exists. It is deliberately
+    /// *not* a held write lock: a lock would turn a worker's read into a
+    /// deadlock, and this has to turn a worker's **write** into a failure that
+    /// names itself.
+    pub fn freeze_nogoods(&self) -> NogoodFreeze<'_> {
+        self.nogoods.write().expect("no reader panicked").freeze();
+        NogoodFreeze {
+            store: &self.nogoods,
+        }
     }
 
     // ── Writes ─────────────────────────────────────────────────────
@@ -1897,13 +2046,70 @@ mod tests {
             .write()
             .expect("no writer panicked")
             .insert(Box::new([a]));
-        // Live branches read each other's learned clauses…
+        // A branch is handed the same store, so it *could* read a clause the
+        // parent learned after the branch was taken. Nothing in the engine
+        // does — see `Nogoods` — but this is the sharing the argument there is
+        // about, and it is real.
         assert_eq!(fork.nogoods().read().expect("ok").len(), 1);
-        // …but the archival copy is isolated.
+        // …while the archival copy is isolated.
         assert_eq!(snapshot.nogoods().read().expect("ok").len(), 0);
         // And a fork of a fork keeps sharing.
         let grandchild = fork.fork();
         assert_eq!(grandchild.nogoods().read().expect("ok").len(), 1);
+    }
+
+    /// **The freeze refuses, and says so.**
+    ///
+    /// The one thing that makes [`Nogoods`]'s determinism argument an argument
+    /// rather than a reading of the call graph, so it is tested rather than
+    /// assumed — `docs/kernel/standard_of_proof.md` Rule 2.
+    #[test]
+    #[should_panic(expected = "while a layer is fanned out")]
+    fn a_frozen_store_refuses_a_write() {
+        let (mut terms, mut kb) = fixture();
+        let a = add(&mut kb, &mut terms, "co-located", &["Norwegian", "House-1"]);
+        let _frozen = kb.freeze_nogoods();
+        kb.nogoods()
+            .write()
+            .expect("no writer panicked")
+            .insert(Box::new([a]));
+    }
+
+    /// …and thaws on the way out, even out of a panic — otherwise one finding
+    /// would become every later commit's.
+    #[test]
+    fn the_freeze_lifts_when_the_guard_drops() {
+        let (mut terms, mut kb) = fixture();
+        let a = add(&mut kb, &mut terms, "co-located", &["Norwegian", "House-1"]);
+        let branch = kb.fork();
+        {
+            let _frozen = kb.freeze_nogoods();
+            // The *branch* is frozen too: it is the same store, which is the
+            // whole reason the guard is on the store and not on the `Run` —
+            // a worker holds a branch and nothing else.
+            assert!(
+                std::panic::catch_unwind(|| {
+                    let mut store = branch.nogoods().write().expect("no writer panicked");
+                    store.insert(Box::new([a]));
+                })
+                .is_err()
+            );
+        }
+        kb.nogoods()
+            .write()
+            .unwrap_or_else(|p| p.into_inner())
+            .insert(Box::new([a]));
+        assert_eq!(
+            kb.nogoods().read().unwrap_or_else(|p| p.into_inner()).len(),
+            1
+        );
+        assert_eq!(
+            kb.nogoods()
+                .read()
+                .unwrap_or_else(|p| p.into_inner())
+                .freezes(),
+            1
+        );
     }
 
     #[test]

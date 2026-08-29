@@ -31,6 +31,17 @@
 //!   that is a deliberate edit to this file and not something a run can do
 //!   quietly.
 //!
+//! ## What it cannot say, and where that is said
+//!
+//! *These runs agreed*, not *all runs agree* — and the distance between the
+//! two is where a scheduling-dependent bug lives. The **mechanism** is written
+//! beside `ein_core::Nogoods` and as
+//! [design/02 §6a](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md)
+//! (M1e S1e.1.2, the review's Q1): the shared clause store is never read
+//! during an entering and never written during a fan-out, so a worker cannot
+//! observe one arriving — and the store is **frozen** for that window so the
+//! premise fails loudly rather than being read off the call graph.
+//!
 //! ## Why it is cheap enough to be in `cargo test`
 //!
 //! `ein-conformance --tier T3` cost 738 s for a full sweep because it ran two

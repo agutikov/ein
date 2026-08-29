@@ -40,7 +40,7 @@ pub use counters::Counters;
 pub use entities::{ExprRef, Loc, Macro, NameCategory, Pattern, Query, Registry, Relation, Rule};
 pub use facts::{FactId, FactStore, Row};
 pub use intern::{CAPACITY, Interner, Overflow, Symbol};
-pub use kb::{Added, EqClasses, FactView, Kb, Layer, NameEntry, Nogoods, SlotKey};
+pub use kb::{Added, EqClasses, FactView, Kb, Layer, NameEntry, NogoodFreeze, Nogoods, SlotKey};
 pub use program::Program;
 pub use prov::{NafArg, NafRef, Prov, ProvArena, ProvId, ProvKind, Region};
 pub use pynum::{python_float, python_int};

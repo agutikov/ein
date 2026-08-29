@@ -1816,6 +1816,15 @@ impl Run<'_> {
                 narration,
             }
         };
+        // **The clause store is frozen for exactly this window** (M1e
+        // S1e.1.2, the review's Q1). Every write to it is on this thread —
+        // `Run::handle_dead` and `Run::integrate` — and this thread is about
+        // to block until every worker is done, so no worker can observe a
+        // clause arriving mid-entering. Freezing is what makes that a
+        // *checked* premise rather than a reading of the call graph, which is
+        // `docs/kernel/standard_of_proof.md` Rule 2 applied to the argument
+        // written beside `ein_core::Nogoods`.
+        let _frozen = root.freeze_nogoods();
         let mut out = Vec::with_capacity(batch.len());
         // `collect_into_vec` on an **indexed** parallel iterator, never an
         // unordered reduce: the vector is in candidate order whatever order the
