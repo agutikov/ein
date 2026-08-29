@@ -24,9 +24,22 @@ saturation demos); see [`docs/api/`](../docs/api/) to drive them from Python.
 *same* Zebra puzzle over deliberately different vocabularies, both solve to the
 same model, and the pair is kept because the comparison is the only way to see
 which of the engine's reasoning power is general and which is an artefact of one
-encoding. `acceptance/test_zebra_two_ontologies.py` pins that they agree cell by
-cell; the design comparison and its measurements are in
-C2.
+encoding.
+
+**What pins that they agree cell by cell** — M1e
+[S1e.1.6](../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.6_coverage_gaps.md),
+the review's `Q8`; it was `acceptance/test_zebra_two_ontologies.py` until that
+directory was deleted with `ein.py/`, and the pointer outlived it by six days:
+
+| test | what it holds |
+|---|---|
+| `ein-infer/tests/acceptance.rs::the_generic_link_encoding_is_the_unique_solution` | `zebra.ein`'s model places all 25 `GRID` cells through `co-located`, at `k = 1` and `exhausted` |
+| `…::both_ontologies_reach_the_same_model` | `zebra2.ein`'s model is **exactly** those 25 cells, read through the five `*-loc` projections |
+
+`GRID` is the *published* answer, vocabulary-independent, and both encodings
+are compared against **it** rather than against each other — which is the
+stronger claim of the two, because two encodings can agree on a wrong model.
+The design comparison and its measurements are in C2.
 
 | | [`zebra.ein`](zebra.ein) | [`zebra2.ein`](zebra2.ein) |
 |---|---|---|

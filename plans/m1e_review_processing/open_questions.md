@@ -33,6 +33,8 @@ records which question became which id.
 | [Q-M1e.15](#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) | The **alternatives cap** decides which unsat core is reported | open — raised 2026-08-29 by [S1e.1.3](p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md), which is the review's `Q2` answered **yes**; witnessed by a fixture pair, **owner unassigned**, and no shipped puzzle is changed by it |
 | [Q-M1e.16](#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | The **binding key** compares two register layouts as one | open — raised 2026-08-29 by [S1e.1.4](p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md), which is the review's `Q3` answered and **`Q-M1a.8` closed as stated**. A well-formed program loses a derivation in a release build and trips a `debug_assert` in a test one; **owner unassigned**, and no corpus program can reach it |
 | [Q-M1e.17](#q-m1e17--three-py_int-options-silently-reinterpret-a-negative) | Three `py_int` options **silently reinterpret a negative** | open — raised 2026-08-29 by [S1e.1.5](p1e.1_open_questions/s1e.1.5_cli_semantics.md), which closed the third of them (`-n`) by refusing it. `-m` and `-E` still clamp, and `-E`'s abort line **prints the clamped number**; **owner unassigned** |
+| [Q-M1e.18](#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments) | Three kernel primitives are **not shape-pinned**, and drop their extra arguments | open — raised 2026-08-29 by [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md)'s sweep, which is the review's `Q9` half-answered. `eq` · `absent` · `false` are ordinary lists where `not` · `and` · `or` · `neq` are productions; `(eq a b c)` and `(absent a b)` fire a guard weaker than the one written. **Owner unassigned**; the panic half is `CO-H1` |
+| [Q-M1e.19](#q-m1e19--algorithmic-pathology-has-no-owner) | **Algorithmic pathology** has no owner | open — the one of `Q9`'s four unswept surfaces with no home. The other three have one: this stage swept the parser/CLI edges, `cast.rs` goes with `ein-einb`'s next change, and micro-CSP ground truth is [M10](../m10_external_benchmarks/README.md)'s thesis |
 
 ---
 
@@ -1132,3 +1134,98 @@ mistake.
 whether a *budget* flag should be strict or forgiving, and that is a question
 about the CLI's manners rather than about the engine — which is why it is a
 question and not a fix.
+
+## Q-M1e.18 — Three kernel primitives are not shape-pinned, and drop their extra arguments
+
+> **Raised 2026-08-29 by
+> [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md)** T1e.1.6.2 — the
+> parser/CLI edge sweep the review's `Q9` says never happened. The panic half
+> is [`CO-H1`](README.md#the-findings) and belongs to
+> [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md); **this is the other half**, and
+> it is the half with no diagnostic at all. **Owner unassigned.**
+
+[`00_ebnf.md` §2](../../docs/kernel/ir/03-ein-lang/00_ebnf.md) has a block
+headed *Kernel meta-primitives (shape-pinned)* with **four** productions —
+`NotForm`, `NeqForm`, `AndForm`, `OrForm`. The engine has **seven** such
+primitives. `eq`, `absent` and `false` are ordinary `GenericList`s, so their
+arity is checked by whatever happens to read them, and what happens to read
+them is not the same in the three cases:
+
+| written | a reader expects | today |
+|---|---|---|
+| `(eq)` · `(eq ?x)` | a diagnostic | **panic**, exit 101 — `match_.rs`'s `assert!(args.len() >= 2)`. This is `CO-H1` |
+| `(eq ?x A B)` with `A ≠ B` | a diagnostic, or a guard that fails | **fires** — `guard_holds` reads `args[0]` and `args[1]` and drops the rest |
+| `(absent)` | a diagnostic — `(absent ?x)` gets a *CompileError* saying the guard can never pass | **silence**: the rule is retired for the run and nothing says so |
+| `(absent (q ?x) (p ?x))`, `p` non-empty | a diagnostic, or a guard that fails | **fires** — everything past the first argument is dropped |
+
+**The two dropped-argument rows are worse than the panic**, and that is the
+finding. A panic is loud and stops the run; a guard that silently evaluates a
+weaker condition than the one written is a **wrong answer with a success exit
+code**. A three-way equality reads as a two-way one; a two-subject `absent`
+reads as a one-subject one.
+
+**The sweep that found it is a rule, not a list.** Every cell of the pinned
+four is a positioned parse error; every cell that panics or misbehaves is one
+of the unpinned three. Both halves are banked as
+`ein-cli/tests/primitive_arity.rs`'s two tests, which pin today's behaviour
+*including the defects*, so a fix has to move them.
+
+**Three candidate fixes:**
+
+1. **Pin the other three in the grammar** — `EqForm ::= '(' 'eq' Value Value
+   ')'`, an `AbsentForm` with one `Value`, a `FalseForm` with none. It makes
+   every cell a positioned parse error, which is the cheapest diagnostic the
+   engine has and the one a *generated* program most needs (M2 is the
+   generator). It also moves `eq`, `absent` and `false` into `RESERVED`, which
+   changes what lexes as a `SYMBOL` — the one thing on this list that could
+   break a program that works today.
+2. **Check the arity where it is read**, leaving the grammar alone: a
+   `CompileError` from the compiler for `eq`/`absent`, the way `(absent ?x)`
+   already gets one. Narrower, no lexical change, and it puts the message
+   where the rule author is looking — but it leaves three primitives whose
+   shape is checked in three different places.
+3. **Refuse only what is unambiguous, and define the rest.** `(eq a b c)` could
+   *mean* an n-ary equality and `(absent a b)` an n-ary conjunction; both are
+   defensible languages, and either is a feature rather than a repair.
+
+(1) and (2) are the repair; (3) is a language decision and would need
+[`00_ebnf.md`](../../docs/kernel/ir/03-ein-lang/00_ebnf.md) and
+`defined_behaviour.md` to move together. What none of them may do is nothing:
+the current state is that two of the seven primitives read fewer arguments
+than they are given, in silence.
+
+## Q-M1e.19 — Algorithmic pathology has no owner
+
+> **Raised 2026-08-29 by
+> [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md)** T1e.1.6.2. Of the
+> four surfaces the review's aborted stage never reached, three now have a
+> home and this one does not. **Owner unassigned.**
+
+*Where does the search degrade, and is there an input class that makes it
+degrade catastrophically?* Nothing in the tree asks. What exists is adjacent
+and is not the same question:
+
+- [`corpus_cost.md`](../../docs/history/m1a_rust/measurements/corpus_cost.md)
+  prices the corpus as it is, and `slow = true` is a measured claim about
+  **these** files.
+- [`scaling.md`](../../docs/history/m1a_rust/measurements/scaling.md) measures
+  `--jobs` on four workloads.
+- [`layer_census.md`](../../docs/history/m1d_satisfiability/layer_census.md)
+  measures what a layer costs and what a clause removes, again on the corpus.
+
+All three measure the corpus. **A pathology pass measures what is *not* in the
+corpus** — a family parameterised by n, run until it stops finishing, with the
+exponent read off. The lattice is `Σₖ C(alive, k)` on 25 of the 49 entries that
+search at all (`layer_census.md`), so the shape of the answer is already known;
+what is not known is which programs put `alive` where nobody expects it.
+
+There is one number in the tree that is already this question's: the tree
+traversal reaches the same 32 models in **86** enterings where the lattice
+needs **17 204 592** on `zebra2-minus-15-obligations.ein`. That is a 200 053×
+gap on one input, and nothing says which inputs have it.
+
+**Why it is not a task here.** A pathology pass is a measurement phase — a
+family of generated inputs, a harness, a fitted exponent and a written
+conclusion — and this stage's budget is one surface, which went to the
+parser/CLI edges because that is the one with a demonstrated hit rate. Filed so
+that the milestone cannot close claiming the tree was swept.

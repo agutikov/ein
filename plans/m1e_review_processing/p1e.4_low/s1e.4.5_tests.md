@@ -69,6 +69,32 @@ test that has been deleted without anyone noticing.
 
 ### Task T1e.4.5.2 — `TE-L2`: one anchor list
 
+> **The list, measured 2026-08-29 in
+> [S1e.1.6](../p1e.1_open_questions/s1e.1.6_coverage_gaps.md) T1e.1.6.1** — and
+> the finding **understates** it. It is not four crates, it is **six**, and 26
+> test files:
+>
+> | crate | test files naming `examples/zebra*` |
+> |---|---|
+> | `ein-infer` | **12** — `acceptance` · `explain_semantics` · `layer_census` · `naf_semantics` · `obligation_reports` · `obligation_rung` · `obligation_rung_control` · `search_invariants` · `search_semantics` · `stdlib_coverage` · `tree_traversal` · `worker_view` |
+> | `ein-cli` | **6** — `acceptance_cli` · `cli_semantics` · `corpus_cli` · `einb_cli` · `embedding` · `leftover_probe` |
+> | `ein-render` | **3** — `golden_dot` · `idea08_acceptance` · `presentation_semantics` |
+> | `ein-einb` | **2** — `invalidation` · `roundtrip` |
+> | `ein-ir` | **2** — `dump_goldens` · `kb_semantics` |
+> | `ein-corpus` | **1** — `benches/engine.rs` |
+>
+> Plus, outside the crates: `docs/api/rust.md` (through `embedding.rs`'s marked
+> region), **seven** `utils/` scripts (`e2e_baseline` · `feature_matrix` ·
+> `fork_split` · `layer_census` · `profile_ein_rs` · `render_examples.sh` ·
+> `zebra2_trace.sh`), `corpus/corpus.toml`, `examples/gen_zebra2_variants.py`
+> **and its four generated files** — whose `--check` is in the gate, so an edit
+> to `zebra2.ein` that is not regenerated fails there — and four goldens, two
+> of which are `from_ein_py/zebra{,2}.golden` and **may never be re-blessed**.
+>
+> That last row is the one the header comment must carry: an edit to
+> `zebra.ein` or `zebra2.ein` that changes the *parse* spends the repo's last
+> independent provenance, and no test says so at the moment it happens.
+
 Four crates' tests hard-code facts about `zebra.ein` and `zebra2.ein` —
 [`embedding.rs:126-139`](../../../ein.rs/crates/ein-cli/tests/embedding.rs),
 [`kb_semantics.rs:1101`](../../../ein.rs/crates/ein-ir/tests/kb_semantics.rs),
@@ -123,7 +149,25 @@ already written, so wiring it costs a YAML block.
 Whichever, the sentence goes in `utils/README.md` beside the script's line, so
 a reader knows whether the number they are reading is current.
 
-### Task T1e.4.5.5 — `TE-L5`: resolve the release matrix
+### Task T1e.4.5.5 — `TE-L5`: resolve the release matrix ✅ — decided, and mostly done
+
+**Decided 2026-08-29 in
+[S1e.1.6](../p1e.1_open_questions/s1e.1.6_coverage_gaps.md): accept.** The
+`publish` job creates a **public GitHub release**, so pushing a tag is a
+statement about what this project has shipped and not a check a stage may run
+on the maintainer's behalf. What that stage did instead:
+
+- recorded the decision, dated, with the one command that reverses it, in
+  [`docs/install.md`](../../../docs/install.md)'s existing caveat block;
+- fixed `release.yml`'s pointer, which named *§ What CI has not yet proved* —
+  a section of the M1a README that **has never existed**. The content is
+  there, under *S1a.9.3 — Packaging and release*; the pointer was not, which
+  is a failure a reader of a workflow header cannot detect.
+
+Three places now say the same thing and agree. What is left for this stage is
+the *accept* branch below.
+
+The task as written:
 
 [Q10](../p1e.1_open_questions/s1e.1.6_coverage_gaps.md) took the decision —
 run the matrix once on a pre-release tag, or accept until the first real tag.

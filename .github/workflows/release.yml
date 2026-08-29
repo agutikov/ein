@@ -20,9 +20,14 @@
 # `no-default-features` exercises a platform this repository has never built
 # on: the workspace is developed on x86_64 Linux and the first tag is what
 # runs macOS, Windows and aarch64 for the first time. The plan record
-# (docs/history/m1a_rust/README.md § What CI has not yet
-# proved) says so in as many words, so that a green badge here is read as
-# "the first tag passed" rather than as "this was always going to pass".
+# (docs/history/m1a_rust/README.md § S1a.9.3 — Packaging and release) says so
+# in as many words, so that a green badge here is read as "the first tag
+# passed" rather than as "this was always going to pass".
+#
+# That cross-reference named "§ What CI has not yet proved" until 2026-08-29,
+# and no such section has ever existed — M1e S1e.1.6, the review's Q10. The
+# *content* was always there; the pointer was not, which is the failure mode
+# a reader of a workflow header cannot detect.
 
 name: release
 

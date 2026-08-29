@@ -54,9 +54,15 @@ written out:
   reading anyone offered, and it is refused now
   ([S1e.1.5](s1e.1.5_cli_semantics.md)).
 - **Q8, Q10** — two claims with no owner: that the two zebra encodings agree,
-  and that the release matrix builds.
+  and that the release matrix builds. **Both answered 2026-08-29**: the first
+  has an owner and always did (`acceptance.rs`, against the published grid);
+  the second is **accepted** rather than run, because a tag publishes a
+  release.
 - **Q9** — the review's own hole, and the reason this milestone may not
-  conclude the tree is clean.
+  conclude the tree is clean. **One of its four surfaces swept 2026-08-29**,
+  and the sweep returned five silent wrong-answer cells on top of the one
+  panic the review had already found there — which is the argument that the aborted pass
+  would pay.
 
 Answering them first is not thoroughness for its own sake. It is the same
 argument every measurement phase in this repo has made: **work scheduled
@@ -87,7 +93,7 @@ questions that become permanent, a `Q-M1e.<n>` or a new section of
 | [S1e.1.3](s1e.1.3_unsat_core_completeness.md) | What the core promises — Q2 | 1.5 d | either a fixture where eviction enlarges the core, or the retention argument written next to `MAX_ALT_JUSTIFICATIONS`; the README's claim matched to whichever holds |
 | [S1e.1.4](s1e.1.4_defined_behaviour_q_m1a8.md) | Q-M1a.8's real trigger — Q3 | 1 d | ✅ **2026-08-29** — three probes banked in `rule_semantics.rs`; §3.2 rewritten to the shape that reproduces; `Q-M1a.8` closed as stated and the live half filed as [Q-M1e.16](../open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) |
 | [S1e.1.5](s1e.1.5_cli_semantics.md) | `-n 0` — Q7 | 0.5 d | ✅ **2026-08-29 — refuse**, with the `jobs_spec` argument: `-n 0` was `-n 1`, and so was every negative. Pinned by `cli_semantics::solutions_takes_a_count_of_one_or_more_and_nothing_else`, stated in `defined_behaviour.md` §5, `EH-L1` **fixed**, and the two flags that still clamp filed as [Q-M1e.17](../open_questions.md#q-m1e17--three-py_int-options-silently-reinterpret-a-negative) |
-| [S1e.1.6](s1e.1.6_coverage_gaps.md) | What nothing pins — Q8, Q9, Q10 | 2 d | the two-encodings assertion named or written; the four unswept surfaces of Q9 scoped, with one of them swept here; the release matrix's status stated where a reader would believe it |
+| [S1e.1.6](s1e.1.6_coverage_gaps.md) | What nothing pins — Q8, Q9, Q10 | 2 d | ✅ **2026-08-29** — the two-encodings assertion **named** (it exists, and pins both to the published grid rather than to each other); the parser/CLI surface swept in `ein-cli/tests/primitive_arity.rs`, **seven of 21 cells wrong** and a rule that predicts them ([Q-M1e.18](../open_questions.md#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments)); the other three surfaces scoped, one filed as [Q-M1e.19](../open_questions.md#q-m1e19--algorithmic-pathology-has-no-owner); the release matrix **accepted** with a dated reason; and the milestone's closing claim drafted |
 
 ## Acceptance
 

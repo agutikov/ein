@@ -215,7 +215,7 @@ the milestone closes when every row has one.
 
 | id | finding | stage | disp. |
 |---|---|---|---|
-| `CO-H1` | `(eq ?x)` panics the process at match time (binary-verified) | [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) | |
+| `CO-H1` | `(eq ?x)` panics the process at match time (binary-verified) | [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) | **its class is swept** — [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) T2, `ein-cli/tests/primitive_arity.rs`: the panic is one of **seven** wrong cells and every one is in the three primitives the grammar does not shape-pin. The fix is still this stage's, and it now has a rule to fix rather than a case |
 | `CO-H2` | reserved-name guard bypassed by import qualification; `(macro open …)` silently renamed (binary-verified) | [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) | |
 | `CO-H3` | tree traversal: stop policy ignored · dead branches learn nothing · root-only rung probe | [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) | |
 | `CD-H1` | `docs/kernel` presents removed or never-built machinery as current, ≥ 6 pages | [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) | |
@@ -238,7 +238,7 @@ the milestone closes when every row has one.
 | `ST-M1` | the M1 alive-set invariant — the warrant for state-key dedup — is enforced nowhere | [S1e.3.3](p1e.3_medium/s1e.3.3_state_model.md) | |
 | `AR-M1` | hand-maintained parallel copies as the recurring drift mechanism — four pairs, one already bit | [S1e.3.4](p1e.3_medium/s1e.3.4_architecture.md) | |
 | `AR-M2` | verdict read-out ownership split across three crates | [S1e.3.4](p1e.3_medium/s1e.3.4_architecture.md) | |
-| `EH-M1` | artefact-write failures never affect the exit code | [S1e.3.5](p1e.3_medium/s1e.3.5_error_handling.md) | |
+| `EH-M1` | artefact-write failures never affect the exit code | [S1e.3.5](p1e.3_medium/s1e.3.5_error_handling.md) | **reproduced** 2026-08-29 by [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md)'s sweep — `--events` / `--json-summary` / `--trace` print *No such file or directory* and exit **0**, on an empty path and on an unwritable one; `--dump-states` exits 1 on the second and is silent on the first. Reading-pass → binary-verified; the ruling is still S1e.3.5's |
 | `EH-M2` | `$EIN_STDLIB` accepted with no validation while the checkout walk requires the marker | [S1e.3.5](p1e.3_medium/s1e.3.5_error_handling.md) | |
 | `TE-M1` | the zebra2-variant byte check silently skips when python3 is absent | [S1e.3.6](p1e.3_medium/s1e.3.6_tests.md) | |
 | `TE-M2` | non-vacuity floors have drifted far below the corpus they guard | [S1e.3.6](p1e.3_medium/s1e.3.6_tests.md) | |
@@ -274,10 +274,10 @@ the milestone closes when every row has one.
 | `EH-L1` | `-n 0` is accepted while `--jobs 0` is refused with a reasoned message | [S1e.1.5](p1e.1_open_questions/s1e.1.5_cli_semantics.md) | **fixed** 2026-08-29 — refused with a message in the `jobs_spec` form, pinned by `cli_semantics::solutions_takes_a_count_of_one_or_more_and_nothing_else`; taken in the ruling stage, not S1e.4.4 |
 | `EH-L2` | non-`einb` builds sniff 5 magic bytes where `is_einb` requires 8 | [S1e.4.4](p1e.4_low/s1e.4.4_error_handling.md) | |
 | `TE-L1` | wall-clock-sensitive assertions inside the deterministic gate | [S1e.4.5](p1e.4_low/s1e.4.5_tests.md) | |
-| `TE-L2` | hard-coded world anchors couple four crates' tests to two puzzle files | [S1e.4.5](p1e.4_low/s1e.4.5_tests.md) | |
+| `TE-L2` | hard-coded world anchors couple four crates' tests to two puzzle files | [S1e.4.5](p1e.4_low/s1e.4.5_tests.md) | the list is measured — **six** crates and 26 test files, not four ([S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) T1, handed over) |
 | `TE-L3` | `run_tests.sh --tests-only` also skips the bench smoke, contradicting its header | [S1e.4.5](p1e.4_low/s1e.4.5_tests.md) | |
 | `TE-L4` | `stdlib_census.py --check` is wired to no gate or workflow | [S1e.4.5](p1e.4_low/s1e.4.5_tests.md) | |
-| `TE-L5` | the release workflow's cross-platform legs have never run | [S1e.4.5](p1e.4_low/s1e.4.5_tests.md) | |
+| `TE-L5` | the release workflow's cross-platform legs have never run | [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) | **accepted** 2026-08-29 — the status is stated in three places and one of the three cross-references was broken, which is fixed. Not run: `publish` creates a **public GitHub release**, so a tag is the maintainer's decision, not a stage's ([Q10](#the-questions--10)) |
 | `CD-L1` | the five history-page banners omit `ein test` from the CLI enumeration | [S1e.4.6](p1e.4_low/s1e.4.6_code_doc_consistency.md) | |
 | `CD-L2` | guide chapter 4's transcript does not match actual output | [S1e.4.6](p1e.4_low/s1e.4.6_code_doc_consistency.md) | |
 | `CD-L3` | `render_lattice`'s fallback comment states a wrong reason at the one site that triggers it | [S1e.4.6](p1e.4_low/s1e.4.6_code_doc_consistency.md) | |
@@ -300,9 +300,9 @@ the milestone closes when every row has one.
 | `Q5` | Which side of the lookahead verdict flip is correct, and is the wrong one golden-pinned? | [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) |
 | `Q6` | Is the tree traversal's inner-node rung flip actually constructible? | [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) |
 | `Q7` | What does `-n 0` mean? | [S1e.1.5](p1e.1_open_questions/s1e.1.5_cli_semantics.md) — **answered 2026-08-29**: it meant `-n 1`, on every arm, and so did every negative. **Refused** now, exit 2; ein.py did the same and no golden pinned it, so it is a deliberate divergence |
-| `Q8` | Does anything still pin `zebra.ein` and `zebra2.ein` to the same model? | [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) |
-| `Q9` | Was the unverified remainder of the review surface clean? | [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) |
-| `Q10` | The release matrix — the cross-platform legs have never executed | [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) |
+| `Q8` | Does anything still pin `zebra.ein` and `zebra2.ein` to the same model? | [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) — **answered 2026-08-29: yes, and by something stronger.** `ein-infer/tests/acceptance.rs`'s two tests pin each encoding to `GRID`, the *published* 25 cells, rather than to each other. `examples/README.md`'s pointer at the deleted Python file is replaced by their names |
+| `Q9` | Was the unverified remainder of the review surface clean? | [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) — **partly answered, and the answer is no.** One of the four surfaces swept: 21 cells, **seven** wrong (two panics, five silent), a rule that predicts all of them, [Q-M1e.18](open_questions.md#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments) filed and `EH-M1` reproduced. The other three are scoped with owners; the milestone's closing claim is drafted [above](#what-this-milestone-may-claim-at-its-close) |
+| `Q10` | The release matrix — the cross-platform legs have never executed | [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) — **accepted 2026-08-29**, with the reason and the one command that changes it recorded in [`docs/install.md`](../../docs/install.md). The status was already stated in three places; `release.yml` pointed at a section that has never existed, and now points at the one that says it |
 
 Questions this milestone *raises* get `Q-M1e.<n>` ids in
 [`open_questions.md`](open_questions.md); the review's `Q1`–`Q10` keep the
@@ -332,6 +332,40 @@ review's numbering and are answered, not re-filed.
 - **`./run_tests.sh` is green** at every phase boundary, and the two counts
   the milestone changes — the test total and the corpus size — are quoted
   from a run, not from memory.
+
+### What this milestone may claim at its close
+
+**Drafted 2026-08-29 by
+[S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) T1e.1.6.4, before the
+work it describes was done** — because a closing claim written at the end is
+written by someone who wants to be finished. Edit it at the close; do not
+compose it then.
+
+> This milestone processed a review whose **verification stage never ran**
+> ([`review/summary.md`](review/summary.md) § Method). Three of its 63 findings
+> were reproduced against the binary before it aborted; the other sixty carried
+> a reading-pass confidence label and nothing more, and this milestone's
+> dispositions are what happened when each was probed.
+>
+> **Four surfaces had no dedicated pass in that review**, and this milestone
+> swept **one** of them:
+>
+> | surface | status |
+> |---|---|
+> | parser / CLI edges | **swept**, S1e.1.6 T2 — `ein-cli/tests/primitive_arity.rs`, 21 cells; it found `CO-H1`'s class and [Q-M1e.18](open_questions.md#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments) |
+> | `ein-einb/src/cast.rs`'s `unsafe` | **not swept** — owned by whoever next changes `ein-einb`, against [design/12](../../docs/history/m1a_rust/design/12_toolchain_and_layout.md) §2 |
+> | micro-CSP ground truth | **not swept** — it is [M10](../m10_external_benchmarks/README.md)'s thesis and is named there, not duplicated here |
+> | algorithmic complexity / pathology | **not swept, and has no owner** — [Q-M1e.19](open_questions.md#q-m1e19--algorithmic-pathology-has-no-owner) |
+>
+> So: the tree's cleanliness **outside** those three surfaces rests on a
+> reading pass, a green gate, and the fixtures and tests this milestone added
+> — and on nothing else. Absence of findings in the three is absence of
+> evidence. **This milestone may not be read as saying the tree is clean**, and
+> the review it processed should eventually be re-run: a thirteen-finder pass
+> is a milestone's worth of compute, not a stage's, and S1e.1.6's own sweep is
+> the argument that it would pay — one probe of one surface returned five
+> silent wrong-answer cells, on top of the one panic the review had already
+> found there.
 
 ## Risks
 

@@ -16,6 +16,17 @@ reads, and `ein --version` answers that in one line.
 > ([`.github/workflows/release.yml`](../.github/workflows/release.yml)) is
 > written and reviewed; **the first tag is what runs it**. Until one is
 > pushed, § Build from source is the channel that has been exercised.
+>
+> **Still true on 2026-08-29, and now a decision rather than a status.** M1e
+> [S1e.1.6](../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.6_coverage_gaps.md)
+> (the review's `Q10`) weighed running the matrix on a throw-away pre-release
+> tag against waiting, and **accepted**: the workflow's `publish` job creates
+> a **public GitHub release**, so pushing a tag is a decision about what this
+> project has shipped and not a test anyone may run on its behalf. Four
+> platform legs, the `--jobs` cross-diff and the `--no-default-features` leg
+> are therefore still unexercised, and this paragraph is the whole of the
+> evidence for the table below. One command changes that — `git tag v0.0.0-rc1
+> && git push origin v0.0.0-rc1` — and it is the maintainer's to run.
 
 ---
 
