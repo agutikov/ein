@@ -275,21 +275,36 @@ solution is a saturated consistent state in which **every remaining hypothesis
 is inconsistent with the state**; a model is the positive part minus the
 positive initial KB.
 
-1. **Enumerate `lattice/02`.** Three candidates, one rule asserting `(false)`
-   iff all three hold. Maximal consistent states: `{h₁,h₂}`, `{h₁,h₃}`,
-   `{h₂,h₃}` — **three solutions**, each with one remaining candidate that is
-   inconsistent with it, which is clause 3 satisfied. Write it out anyway,
-   from the program text, outside the engine: the derivation is the evidence.
-2. **Rule.** The default `k=3` agrees; `-L`'s `k=0` does not, and it says so
-   with `exhausted = true`. **The OFF side is wrong**, and the general
-   statement is Q-M1e.6's: `complete` is a *sound but incomplete*
-   approximation of clause 3 with the lookahead on, and a strictly weaker one
-   with it off. Neither is the definition.
-3. **Build the fixture the pair needs.** `branching/06` cannot carry this —
-   42 varying slots, untyped models, neither side exhausting. One new
-   `examples/` fixture: typed, both sides exhausting, its solution set
-   derivable in a paragraph, and its ON/OFF verdicts differing. It goes in the
-   corpus with an `:expect`, and it is what fails if the lever ever moves.
+1. **Enumerate `lattice/02`** ✅ — three candidates, one rule asserting
+   `(false)` iff all three hold. Maximal consistent states: `{h₁,h₂}`,
+   `{h₁,h₃}`, `{h₂,h₃}` — **three solutions**, each with one remaining
+   candidate that is inconsistent with it, which is clause 3 satisfied.
+   Written out from the program text, outside the engine, and it is **not in
+   this stage's notes**: it is
+   [`solution_semantics.md` § 2 *Worked*](../../../../docs/kernel/inference/solution_semantics.md),
+   as a six-row table with a *live child?* column, which is a better home —
+   the derivation is what the definition is for, and a reader of the
+   definition finds it there.
+2. **Rule** ✅ — on `lattice/02` the default `k=3` agrees and `-L`'s `k=0`
+   does not, saying so with `exhausted = true`, so **the OFF side is wrong
+   there**. The general statement is Q-M1e.6's: `complete` is a *sound but
+   incomplete* approximation of clause 3 with the lookahead on, and a
+   **strictly weaker** one with it off — neither is the definition, and the
+   corpus's `-L` cells are re-labelled accordingly in
+   [`corpus/README.md` § Levers](../../../../corpus/README.md). What
+   `lattice/02` cannot show is the case where **both** sides are wrong, because
+   its ON side happens to be right; step 3's fixture is that case.
+3. **Build the fixture the pair needs** ✅ — built 2026-08-28 as
+   `examples/branching/15_lookahead_two_step_on.ein` +
+   `16_lookahead_two_step_off.ein` ([D6](d6_the_new_q5_fixture.md)), one
+   `(config …)` line and one `:expect` apart. `branching/06` could not carry it
+   — 42 varying slots, untyped models, neither side exhausting. This pair is
+   typed by construction (an `(hrule …)` emits exactly three candidates, so the
+   blind rung never runs), **both halves exhaust** in six enterings, and the
+   derivation is four lines of its header. Measured: ON `Solution k=1`, OFF
+   `Contradiction k=0`, **hand-derived k=2** — so the lever chooses between two
+   under-reports. Both `:expect`s state today's answer, so the maximality fix
+   has to move them.
 4. **Audit the goldens** — **done 2026-08-28,
    [`golden_audit.md`](golden_audit.md)**. Every artefact pinning `lattice/02`
    or the `branching/06`+`07` pair, counted rather than recalled, with a
