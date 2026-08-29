@@ -264,6 +264,22 @@ drives are reachable only through the library API or a puzzle's own
 `(config …)` block, so the sweep — which runs a process — cannot flip them.
 Tracked as [Q-M1a.16](../docs/history/m1a_rust/open_questions.md#q-m1a16--how-does-the-harness-drive-the-lever-matrix).
 
+**`-L` is not one side of an A/B — it is a strictly weaker debug mode**, and
+since M1e (2026-08-28) that is measured rather than assumed. `complete()` is a
+*sound but incomplete* approximation of maximality with the lookahead on and a
+**strictly weaker** one with it off: with `-L` a state is complete only when
+every remaining candidate is already asserted or already negated in the KB, so
+the OFF side recognises a subset of what the ON side does, never more. Its
+cells are therefore a **regression check on the weaker mode**, not a second
+opinion — where the two disagree, the ON side is the one to read, and where
+both are wrong the fixture that shows it is
+[`examples/branching/15`+`16`](../examples/branching/15_lookahead_two_step_on.ein):
+`Solution k=1` against `Contradiction k=0`, both exhausted, on a program whose
+hand-derived answer is **k=2**. `-K` is a different animal — it removes writes
+the search makes into the KB it records, so it changes recorded *fact sets*
+without changing `k`
+([Q-M1e.7](../plans/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)).
+
 ## Growth rule
 
 Any defect found outside the corpus becomes a corpus entry in the same commit

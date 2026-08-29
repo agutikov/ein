@@ -219,12 +219,32 @@ finds it.
 The path is reached when `compute_alive` returns empty *between layers*. Build
 the fixture in two steps rather than guessing:
 
-1. **Find the path.** Instrument or trace which corpus entries reach
-   `solve.rs:1528-1551` at all — the enterings counters plus a temporary
-   `eprintln!`, or an `--events` reading if the path already narrates. If no
-   corpus entry reaches it, that is itself the finding, and it changes the
-   fix: an unreachable branch with an unchecked premise is dead code with a
-   comment, not a soundness risk.
+1. **Find the path** — reframed by [D1](d1_q4_which_route_reaches_the_site.md)
+   and **half-answered 2026-08-29**. Reachability is settled by construction,
+   so what was left was *frequency*, and the phase-1 site's is measurable from
+   `--json-summary` alone: `k ≥ 1 ∧ enterings_total = 0` is exactly a record at
+   `solve.rs:1118`, because phase 1 returns `Done` there.
+
+   **51 of the 125** corpus entries that declare a `solve` run and are not
+   `slow` record root at that site under `solve -e`. It is not an exotic
+   branch — it is the ordinary path for any program whose root saturation
+   settles everything, which is every `stdlib/*.ein` file solved alone, most of
+   `tests/stdlib/`, and the `domain_elim/` and `saturation/symmetric/`
+   families. So the honest statement is **not** *the site is rarely reached*
+   but **the site is reached constantly and the defect is rare**: what is
+   uncommon is a program whose rules *read* the negatives the search wrote
+   there, which is what the three banked witnesses do and what no other corpus
+   entry does.
+
+   **The `:1550` half is still owed one number.** It needs the per-layer
+   `models` counters — a record between layers belongs to no layer's census row,
+   so `solution_nodes > Σ layer.models` is its signature — and therefore a
+   streaming transport: `--events` materialised per entry fills a 16 GB tmpfs,
+   which is why [`utils/layer_census.py`](../../../../utils/layer_census.py)
+   reads through a **FIFO**. That script already sums `models` per entry, so
+   the measurement is one column on it and not a fourth instrument
+   ([AR-M1](../../README.md#the-findings), and
+   [D7](d7_the_diff_instrument.md)'s argument applies unchanged).
 2. **Encode totality as a `(false)` rule.** The corpus's totality is
    `std.algebra`'s `total-owed` — an obligation, which the tally at `:1548`
    catches. The probe wants the *other* encoding: a saturation rule that
