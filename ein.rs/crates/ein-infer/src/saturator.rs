@@ -1170,10 +1170,18 @@ impl Saturator {
     /// set, since `seen` dedups the pair. That needs either one plan whose
     /// disjuncts ask different negative questions, or two plans sharing a
     /// `(rule, activator)` binding-key space — the Q-M1a.8 asymmetry, where an
-    /// activator's `int` arguments do not reach the key. **Neither holds
-    /// anywhere in the corpus**: the branch is taken 0 times across every
-    /// `.ein` under `examples/` and `stdlib/`, and where a program does put it
-    /// in reach the round walks with the check, exactly as before.
+    /// activator's **nested-`Fact`** arguments reach neither half of the key.
+    /// (Not its `int` arguments: an int binds a parameter and so seeds a
+    /// register — M1e [S1e.1.4](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md),
+    /// which corrected this comment along with the page it came from.)
+    ///
+    /// **Neither holds anywhere in the corpus**: the branch is taken 0 times
+    /// across every `.ein` under `examples/` and `stdlib/`, and where a
+    /// program does put it in reach the round walks with the check, exactly as
+    /// before. The second disjunct is out of reach for a blunter reason than
+    /// the first — of the **153 143** activator arguments every plan compiled
+    /// over the whole corpus binds against, **every one is a symbol**
+    /// (2026-08-29), so no two plans can share a space at all.
     ///
     /// Sticky once true, because a plan that exists cannot stop existing — and
     /// a candidate parked while it was false could not have collided with

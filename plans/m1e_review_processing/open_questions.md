@@ -31,6 +31,7 @@ records which question became which id.
 | [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [S1e.1b.6](p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)** 2026-08-28 by the user; the guard half is decided and is [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3's |
 | [Q-M1e.14](#q-m1e14--the-corpus-jobs-sweeps-per-layer-census-coverage-is-vacuous) | The corpus `--jobs` sweep's per-layer census coverage is **vacuous** | open — raised 2026-08-29 by [S1e.1.2](p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md) T3, which closed the unit half; **owner unassigned**, and the corpus half costs a golden |
 | [Q-M1e.15](#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) | The **alternatives cap** decides which unsat core is reported | open — raised 2026-08-29 by [S1e.1.3](p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md), which is the review's `Q2` answered **yes**; witnessed by a fixture pair, **owner unassigned**, and no shipped puzzle is changed by it |
+| [Q-M1e.16](#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | The **binding key** compares two register layouts as one | open — raised 2026-08-29 by [S1e.1.4](p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md), which is the review's `Q3` answered and **`Q-M1a.8` closed as stated**. A well-formed program loses a derivation in a release build and trips a `debug_assert` in a test one; **owner unassigned**, and no corpus program can reach it |
 
 ---
 
@@ -964,3 +965,108 @@ costs it nothing.
 
 The stage did not choose, because choosing is the fix and the fix has to be
 measured on something that is not one synthetic fixture.
+
+## Q-M1e.16 — The binding key compares two register layouts as one
+
+> **Raised 2026-08-29 by
+> [S1e.1.4](p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)**, which
+> is the review's **Q3** answered and
+> [`Q-M1a.8`](../../docs/history/m1a_rust/open_questions.md#q-m1a8--_binding_key-drops-non-string-activator-args)
+> closed *as stated*. This is what was left when the probe came back: not the
+> bug that entry described, but a neighbour of it. The stage states the
+> behaviour; the fix is engine work and is **not** taken there.
+> **Owner unassigned.**
+
+`BindingKey` is `(rule, activator, values)`. `activator` is an interned
+`plan.activator_args` — the **symbol** arguments — and `values` is the plan's
+register file, which the activator seeds for every argument that **binds a
+parameter**: symbols and integers, but not a nested `Fact`. So an `int` and a
+nested `Fact` in the same activator position produce two plans that share an
+`activator` and disagree on their **register layout**:
+
+| activator | `activator_args` | `reg_names` |
+|---|---|---|
+| `(note edge 1)` | `[edge]` | `[?R, ?f, ?a, ?b]` |
+| `(note edge (src Y))` | `[edge]` | `[?R, ?a, ?b, ?f]` |
+
+The identity then compares `(?R ?f ?a ?b)` against `(?R ?a ?b ?f)` position by
+position. A vector that is a legitimate match of both — `(edge 1 2 3)` below —
+makes the second application look like a repeat of the first, and it is
+dropped before it is enqueued.
+
+**Witnessed, not argued.** Thirteen lines, and the losing application is the
+only one that would have derived `(noted 1 3)`:
+
+```lisp
+(relation edge  Node Node)
+(relation holds Node)
+(relation noted Node Node)
+
+(rule note (?R ?f)
+  :match  (and (?R ?a ?b) (holds ?f))
+  :assert (noted ?a ?f))
+
+(edge 1 2) (edge 2 3)
+(holds 1)  (holds 3)
+
+(note edge 1)
+(note edge (src Y))
+```
+
+| the program | derived |
+|---|---|
+| the nested-`Fact` activator alone | `(noted 1 1)` `(noted 1 3)` `(noted 2 1)` `(noted 2 3)` |
+| the `int` activator alone | `(noted 1 1)` `(noted 2 1)` |
+| **both** | `(noted 1 1)` `(noted 2 1)` `(noted 2 3)` |
+
+**Adding an activator removed a conclusion**, and swapping the two lines puts
+it back — the plan that fires first wins, and plan order is source order. It
+is deterministic and it is not a
+[design/02](../../docs/history/m1a_rust/design/02_determinism_and_order.md)
+violation, since the order two facts were written is part of the input; it is
+the same *shape* as the unsorted goal row in
+[`defined_behaviour.md` §6](../../docs/kernel/defined_behaviour.md#6-what-is-not-defined-and-is-filed),
+one severity up, because here the answer is wrong rather than arbitrary.
+
+**Two profiles, and only one of them is quiet.** `Engine::check_layout`
+asserts exactly this invariant where the plan list is built — under
+`debug_assertions`, so the program above **panics** `cargo test` and answers
+wrongly in a release build. The assertion's own doc comment called the shape
+*"a shape no rule application has"*. That is why the reproducer is **not** a
+corpus fixture: the corpus runs through a debug binary. Both halves are banked
+in `ein-infer/tests/rule_semantics.rs` as
+`an_int_beside_a_nested_fact_in_one_position_loses_a_derivation`, which expects
+the panic in one profile and the missing fact in the other.
+
+**No corpus program can reach it**, which is why it has never been seen. Every
+plan compiled by `ein solve -m 2` over all **204** `.ein` files under
+`examples/`, `stdlib/` and `tests/` — forks' plans included — binds against
+**153 143** activator arguments, and **every one is a symbol**: not one
+integer, not one nested `Fact`, and **0** `(rule, activator)` spaces holding
+more than one plan (measured 2026-08-29, M1e S1e.1.4). The same number is why
+the first fix below is free.
+
+**The three fixes, and none is obviously right.**
+
+1. **Give `ActivatorId` every argument**, not the symbol-filtered list — the
+   compile-cache key already computes exactly that string, so the two keys
+   would agree and each plan would get its own space. It is the smallest
+   change and, on today's corpus, **provably golden-neutral**: with every
+   activator argument a symbol, filtered and unfiltered lists are the same
+   list. What it also changes is what `fire` / `enqueue` / `compile` print in
+   their `activator` field, and what `naf_deps.rs` and `obligations.rs` key
+   on, for any program that does have a non-symbol argument.
+2. **Put the layout in the key** — an interned `reg_names` beside the
+   activator id. Narrower: it makes the comparison sound without touching what
+   any event prints, and it deliberately leaves the harmless `Fact`/`Fact`
+   collapse collapsed. It costs one more word per key on the engine's hottest
+   path.
+3. **Refuse the program.** Promote `check_layout` to a load-time or
+   compile-time error in every profile: *two activators of `note` bind
+   different parameters and would share an identity*. Cheapest, and it turns a
+   wrong answer into a diagnostic — but it refuses a well-formed program,
+   which is a language decision and not a repair.
+
+The stage did not choose, because choosing is the fix, and (1) and (2) differ
+in what they promise a program that *does* carry a non-symbol activator
+argument — a question no corpus entry asks.

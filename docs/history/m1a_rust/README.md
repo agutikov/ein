@@ -845,15 +845,25 @@ without a referent.
 
 ## What outlived the milestone
 
-- **Two questions that are open on purpose.**
+- **Two questions that were open on purpose** — one of them still is.
   [Q-M1a.6](open_questions.md#q-m1a6--at-none-in-loader-messages) (a loader
   message that says `at None`) and
   [Q-M1a.8](open_questions.md#q-m1a8--_binding_key-drops-non-string-activator-args)
-  (**a bug** — a puzzle with integer rule parameters can lose a firing,
-  silently). Both are things I1 forbade fixing: they are what ein.py did, and
-  while an oracle existed "improve it" and "diverge from it" were the same act.
-  With one implementation that constraint is gone and only the cost of
-  re-blessing the corpus goldens remains.
+  (**a bug** — as this milestone stated it, *a puzzle with integer rule
+  parameters can lose a firing, silently*). Both are things I1 forbade fixing:
+  they are what ein.py did, and while an oracle existed "improve it" and
+  "diverge from it" were the same act. With one implementation that constraint
+  is gone and only the cost of re-blessing the corpus goldens remains.
+
+  **Q-M1a.8 closed 2026-08-29**, and not the way it expected: the trigger it
+  names is not a trigger at all — an `int` activator argument binds its
+  parameter and so reaches the key — while an `int` beside a nested `Fact` in
+  one position does lose a derivation. The probe is M1e
+  [S1e.1.4](../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)'s
+  and the live half is
+  [Q-M1e.16](../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
+  Nothing above is rewritten: it is what the milestone believed, and the
+  ledger entry carries the correction.
 - **A deferral with three trip-wires.**
   [Q-M1a.23](open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
   holds the conditions that would revive the PyO3 binding, and `docs/api/`'s

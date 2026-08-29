@@ -17,16 +17,19 @@ the two namespaces cannot collide. A closed id is never reused.
 > **deferral with three trip-wires**, which is a decision about when to
 > decide.
 >
-> **Two are still open and are meant to be**, so the milestone does not close
-> over them silently: [Q-M1a.6](#q-m1a6--at-none-in-loader-messages) (a
-> loader message that says `at None`) and
-> [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) (the
-> binding key that drops non-string activator args — **a bug**). Both are
-> things invariant **I1** forbade fixing: they are what ein.py did, and while
-> an oracle existed "improve it" and "diverge from it" were the same act.
-> With one implementation that constraint is gone and only the cost of
-> re-blessing the corpus goldens remains, which is a decision for whoever
-> next has a reason.
+> **One is still open and is meant to be**, so the milestone does not close
+> over it silently: [Q-M1a.6](#q-m1a6--at-none-in-loader-messages), a loader
+> message that says `at None`. It was two until 2026-08-29, when
+> [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) was
+> **closed as stated and refiled as its real self**: the probe M1e S1e.1.4 ran
+> found that the collision it named does not exist and a neighbouring one
+> does. Both were things invariant **I1** forbade fixing: they are what ein.py
+> did, and while an oracle existed "improve it" and "diverge from it" were the
+> same act. With one implementation that constraint is gone and only the cost
+> of re-blessing the corpus goldens remains, which is a decision for whoever
+> next has a reason — and for Q-M1a.8 there is now
+> [Q-M1e.16](../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one)
+> to make it.
 
 ## Index
 
@@ -39,7 +42,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.5](#q-m1a5--reproducing-cpythons-shuffle) | Reproducing CPython's `random.shuffle` for `--shuffle` | **resolved 2026-08-18 — (a), ported** |
 | [Q-M1a.6](#q-m1a6--at-none-in-loader-messages) | `at None` in loader messages (top-level forms carry no `loc`) | **open, and outlives the milestone** — a diagnostic-quality fix that I1 forbade while there was an oracle. Owner: whoever needs it; [M2 Q25](../../../plans/m2_nl_to_ir/open_questions.md#q25--what-language-is-the-frontend-written-in)'s validator is the likeliest |
 | [Q-M1a.7](#q-m1a7--may---jobs--1-move-counters) | May `--jobs > 1` move counters? | **decided 2026-08-22 — no, and validation is not what buys it.** Held by `jobs_invariance` at 20 712 cells, byte equality, 0 moved |
-| [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) | `_binding_key` drops non-string activator args | **open, and outlives the milestone — it is a bug, not a quirk.** A puzzle with integer rule parameters can lose a firing, silently. Ported as-is under I1; with no oracle left, the reason to keep it is gone and only the corpus-golden churn remains |
+| [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) | `_binding_key` drops non-string activator args | **closed 2026-08-29 as stated — the collision it named does not exist.** Two probes (M1e [S1e.1.4](../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md), `rule_semantics::activators_differing_only_by_{an_int_argument_both_fire, a_nested_fact_argument_share_one_binding_key}`): an `int` argument seeds a register and reaches the key, a nested `Fact` does not — and the pair that *does* lose a firing is one of each, refiled as [Q-M1e.16](../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) |
 | [Q-M1a.9](#q-m1a9--where-do-goldens-live) | Where do goldens live? | **answered 2026-08-21 — `ein.rs/crates/<crate>/tests/golden/`** |
 | [Q-M1a.10](#q-m1a10--does-f11-d1-beta-memories-land-inside-m1a) | Does F11 D1 (beta-memories) land inside M1a? | **answered no** 2026-08-19 — an index key was the lever, not a memory |
 | [Q-M1a.11](#q-m1a11--server-wire-protocol) | Server wire protocol — JSON-RPC vs gRPC vs bespoke | **closed moot 2026-08-18 — no server** |
@@ -419,6 +422,38 @@ binding key and can suppress each other's firings.
 Almost certainly unintended. **Port as-is** (it is current behaviour and
 T2 would flag any change), and open an ein.py issue with a fixture that
 demonstrates it. Fix both together, after parity.
+
+> **Closed 2026-08-29 — the inference above is wrong, and was wrong in ein.py
+> too.** M1e
+> [S1e.1.4](../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)
+> (the review's `Q3`) ran the probe this entry asked for and it came back the
+> other way.
+>
+> `_binding_key` has **three** components, not two. `plan.activator_args` is
+> the second; the third is `frozenset(bindings.items())` in ein.py and the
+> register file in ein.rs, and an `int` activator argument **binds its
+> parameter** — `isinstance(a, (str, int))` in `compile_rule`'s bind loop — so
+> it is in the third. The entry read the second alone and concluded from it.
+> Two activators differing only in an `int` argument have different keys and
+> **both fire**
+> (`ein-infer/tests/rule_semantics.rs::activators_differing_only_by_an_int_argument_both_fire`).
+>
+> What genuinely reaches neither component is a **nested `Fact`**, which binds
+> nothing. Two activators differing only there do share a key — and lose
+> nothing, because a `Fact` argument reaches the compiler nowhere but the bind
+> loop that skips it, so the two plans are equal in every field
+> (`…::activators_differing_only_by_a_nested_fact_argument_share_one_binding_key`).
+>
+> The shape that costs a derivation is an `int` in the position another
+> activator gives a nested `Fact`: same key space, **different register
+> layouts**, and the identity then compares different variables by position.
+> That is a live bug, it is stated in
+> [`defined_behaviour.md` §3.2](../../kernel/defined_behaviour.md#32-a-rule-applications-identity-ignores-nested-fact-activator-arguments),
+> and it is owned by
+> [Q-M1e.16](../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
+> No corpus program can reach any of the three shapes: every plan compiled by
+> `ein solve -m 2` over all 204 corpus `.ein` files binds against 153 143
+> activator arguments, and every one is a symbol.
 
 ## Q-M1a.9 — Where do goldens live?
 

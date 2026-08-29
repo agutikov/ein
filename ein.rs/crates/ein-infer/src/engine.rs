@@ -229,13 +229,24 @@ impl Engine {
     /// The invariant [`BindingKey`] leans on, checked where the plan list is
     /// built.
     ///
-    /// It holds because a register layout is a function of the rule and of
-    /// *which* parameters the activator bound, and two activators with the
-    /// same string arguments bind the same parameters — unless one carries a
-    /// nested fact where the other carries a name, which is a shape no rule
-    /// application has. Debug-only, because it is an argument about the data
-    /// rather than about the code, and an argument is what a debug assertion
-    /// is for.
+    /// A register layout is a function of the rule and of *which* parameters
+    /// the activator bound. Two activators with the same string arguments do
+    /// **not** therefore bind the same parameters: an `int` binds its
+    /// parameter and a nested `Fact` does not, and neither of them is a string
+    /// argument, so `(r a 1)` and `(r a (f X))` share this key and disagree
+    /// here. The doc comment this replaces called that *"a shape no rule
+    /// application has"*; M1e
+    /// [S1e.1.4](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)
+    /// wrote it in thirteen lines, and in a **release** build — where this
+    /// assertion is compiled out — it costs a derivation with no diagnostic
+    /// ([Q-M1e.16](../../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one),
+    /// `rule_semantics::an_int_beside_a_nested_fact_in_one_position_loses_a_derivation`).
+    ///
+    /// So this stays debug-only for now, and it is the *only* thing enforcing
+    /// [`BindingKey`]'s stated invariant. No corpus program can reach the
+    /// shape — all 153 143 activator arguments every plan compiled under
+    /// `examples/`, `stdlib/` and `tests/` binds against are symbols — which
+    /// is why it has never fired.
     fn check_layout(&self, rule: Symbol, activator: ActivatorId, reg_names: &[Symbol]) {
         if cfg!(debug_assertions) {
             for (i, other) in self.arcs.iter().enumerate() {

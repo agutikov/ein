@@ -55,10 +55,13 @@ tables did not get the same audit.
 Three are edits. The fourth needs a check first:
 
 - **`defined_behaviour.md`** — *"Nine more"* / 10 rows / *"all ten"*. Count
-  the rows, fix the two words, and note that this is the same page whose §3.2
-  may have been deleted by
-  [T1e.2.2.4](../p1e.2_high/s1e.2.2_code_doc_consistency.md) — so do this
-  **after** that lands, or the count moves twice.
+  the rows, fix the two words. ~~This is the same page whose §3.2 may have been
+  deleted by [T1e.2.2.4](../p1e.2_high/s1e.2.2_code_doc_consistency.md) — so do
+  this **after** that lands, or the count moves twice.~~ **Unblocked
+  2026-08-29**: §3.2 was rewritten rather than deleted
+  ([S1e.1.4](../p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)), so
+  the page still states thirteen behaviours and this count is free to move on
+  its own.
 - **`06_reserved_names.md`** — reconstruct the 7-keyword allow-list from the
   parser and write the arithmetic so it adds up. This page also carries a
   [CD-H2](../p1e.2_high/s1e.2.2_code_doc_consistency.md) defect on adjacent

@@ -674,3 +674,210 @@ fn a_parametrised_rule_with_no_activator_is_dormant() {
          derive — so the two silences above are the activator's doing"
     );
 }
+
+// ── the activator's identity — Q-M1a.8 ─────────────────────────────────────
+//
+// `BindingKey` is `(rule, activator, values)` and there are **three** keys
+// over one activator, not two:
+//
+// | key | what it keeps of the activator |
+// |---|---|
+// | [`PlanKey`] — the compile cache | every argument, stringified |
+// | `BindingKey.activator` — an interned `plan.activator_args` | the **symbol** arguments |
+// | `BindingKey.values` — the register file | every argument that **binds a parameter**: symbols *and* ints |
+//
+// `defined_behaviour.md` §3.2 read the middle row alone and concluded that two
+// activators differing only in an `int` argument share an identity. They do
+// not: `bind_activator` seeds a register for every argument that is not a
+// nested `Fact` (`compile.rs`, `if a.as_fact().is_some() { continue; }`), so
+// the int is in `values`. The arguments that reach **neither** half are
+// exactly the nested `Fact`s. The three tests below are that correction, and
+// they are three because the third shape is the one that costs a derivation.
+
+/// **Two activators differing only in an `int` argument both fire** — which is
+/// what `defined_behaviour.md` §3.2 said they could not do, and the probe that
+/// refutes it (M1e [S1e.1.4](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md),
+/// the review's `Q3`).
+///
+/// The conclusions carry the int, so a suppressed firing is visible as a
+/// missing *fact* rather than only as a missing event: `(tag edge 1)` and
+/// `(tag edge 2)` authorise the same rule over the same edge and must derive
+/// two different tags. Under §3.2 as written, one of them would be gone with
+/// no diagnostic.
+#[test]
+fn activators_differing_only_by_an_int_argument_both_fire() {
+    let run = saturate(
+        r#"
+        (relation edge   Node Node)
+        (relation tagged Node Label)
+        (rule tag (?R ?n)
+          :match  (?R ?a ?b)
+          :assert (tagged ?a ?n)
+          :why    "tag {?n}")
+        (edge A B)
+        (tag edge 1)
+        (tag edge 2)
+        "#,
+    );
+    assert_eq!(
+        run.derived(),
+        BTreeSet::from(["(tagged A 1)".to_string(), "(tagged A 2)".to_string()]),
+        "an int activator argument seeds a register and so reaches \
+         `BindingKey.values`; the two applications have different keys and \
+         neither suppresses the other"
+    );
+    let bound: Vec<Vec<(String, String)>> = run
+        .productive()
+        .iter()
+        .map(|f| run.bindings_of(f))
+        .collect();
+    assert_eq!(bound.len(), 2, "two applications, not one: {bound:?}");
+    for (i, want) in ["1", "2"].iter().enumerate() {
+        assert!(
+            bound[i].contains(&("n".to_string(), want.to_string())),
+            "firing {i} should bind ?n to {want}: {bound:?}"
+        );
+    }
+}
+
+/// **Two activators differing only in a nested `Fact` argument share one
+/// binding key** — the collision §3.2 was reaching for, at the argument kind
+/// that actually has it.
+///
+/// A nested `Fact` binds no parameter, so it reaches neither half of the key.
+/// The same fixture is run four ways and only the *kind* of the second
+/// argument varies:
+///
+/// | second argument | plans | firings |
+/// |---|---:|---:|
+/// | one nested `Fact` | 1 | 1 |
+/// | two nested `Fact`s | 2 | **1** |
+/// | two symbols | 2 | 2 |
+/// | two ints | 2 | 2 |
+///
+/// **And nothing is lost by it.** `activator` reaches the compiler at exactly
+/// one site — `Compiler::run` passes it to `bind_activator` and nowhere else —
+/// and `bind_activator` skips a `Fact` argument outright, so the two plans are
+/// equal in every field of [`Plan`]. The suppressed application is a
+/// *duplicate*: it would have derived what the survivor derived, which is why
+/// the derived set is the same in all four cells. The shape that does cost a
+/// derivation is the next test.
+#[test]
+fn activators_differing_only_by_a_nested_fact_argument_share_one_binding_key() {
+    let program = |activators: &str| {
+        format!(
+            r#"
+            (relation edge  Node Node)
+            (relation noted Node)
+            (rule note (?R ?f)
+              :match  (?R ?a ?b)
+              :assert (noted ?a)
+              :why    "note")
+            (edge A B)
+            {activators}
+            "#
+        )
+    };
+    let cells = [
+        ("one nested fact", "(note edge (src X))", 1),
+        (
+            "two nested facts",
+            "(note edge (src X)) (note edge (src Y))",
+            1,
+        ),
+        ("two symbols", "(note edge sx) (note edge sy)", 2),
+        ("two ints", "(note edge 1) (note edge 2)", 2),
+    ];
+    for (what, activators, firings) in cells {
+        let run = saturate(&program(activators));
+        assert_eq!(
+            run.firings.len(),
+            firings,
+            "{what}: expected {firings} rule application(s), redundant ones \
+             included — a second plan whose binding key equals the first's is \
+             never enqueued at all"
+        );
+        assert_eq!(
+            run.derived(),
+            BTreeSet::from(["(noted A)".to_string()]),
+            "{what}: the conclusion cannot depend on an argument that binds \
+             nothing, so every cell derives the same one fact and the \
+             collision costs a duplicate"
+        );
+    }
+}
+
+/// **An `int` in the position another activator gives a nested `Fact` loses a
+/// derivation, silently** — the real latent bug behind `Q-M1a.8`, and the one
+/// `defined_behaviour.md` §3.2 now states.
+///
+/// Both activators drop their second argument from `plan.activator_args`, so
+/// the two plans share a `(rule, activator)` binding-key space — but the int
+/// seeds a register and the `Fact` does not, so they disagree on their
+/// *register layout*: `?f` is register 1 in one plan and register 3 in the
+/// other. `BindingKey` then compares `(?R ?f ?a ?b)` against `(?R ?a ?b ?f)`
+/// position by position, and `(edge 1 2 3)` is a legitimate match of both.
+/// Whichever fires first suppresses the other, and here the losing
+/// application is the only one that would have derived `(noted 1 3)`.
+///
+/// **Two profiles, one claim.** `Engine::check_layout` asserts exactly this
+/// invariant — and only under `debug_assertions`, which is why the test
+/// expects the assertion in a `cargo test` build and the wrong answer in a
+/// release one. The premise its doc comment rested on (*"a shape no rule
+/// application has"*) is this seventeen-line program.
+///
+/// The fix is filed, not taken here:
+/// [Q-M1e.16](../../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
+#[test]
+#[cfg_attr(
+    debug_assertions,
+    should_panic(expected = "disagree on their register layout")
+)]
+fn an_int_beside_a_nested_fact_in_one_position_loses_a_derivation() {
+    let program = |activators: &str| {
+        format!(
+            r#"
+            (relation edge  Node Node)
+            (relation holds Node)
+            (relation noted Node Node)
+            (rule note (?R ?f)
+              :match  (and (?R ?a ?b) (holds ?f))
+              :assert (noted ?a ?f)
+              :why    "note")
+            (edge 1 2) (edge 2 3)
+            (holds 1)  (holds 3)
+            {activators}
+            "#
+        )
+    };
+    // The control runs in both profiles: one plan, no layout to disagree with,
+    // and the four conclusions the rule has.
+    let whole = BTreeSet::from([
+        "(noted 1 1)".to_string(),
+        "(noted 1 3)".to_string(),
+        "(noted 2 1)".to_string(),
+        "(noted 2 3)".to_string(),
+    ]);
+    assert_eq!(
+        saturate(&program("(note edge (src Y))")).derived(),
+        whole,
+        "the nested-fact activator alone derives every (noted ?a ?f)"
+    );
+
+    // Debug: `check_layout` fires here and the test ends at this line.
+    let both = saturate(&program("(note edge 1) (note edge (src Y))"));
+
+    // Release: adding an activator *removed* a conclusion.
+    assert!(
+        !both.derived().contains("(noted 1 3)"),
+        "the collision is what this test is about — if (noted 1 3) is back, \
+         Q-M1e.16 was fixed and this test should be turned into its regression"
+    );
+    assert_eq!(
+        both.derived(),
+        &whole - &BTreeSet::from(["(noted 1 3)".to_string()]),
+        "the int activator's own two conclusions are a subset of the nested \
+         one's, so the union of the two programs is `whole` — and running \
+         them together derives one fact fewer than running either alone"
+    );
+}

@@ -220,21 +220,102 @@ unshuffled one. Reproducing the exact generator is what lets a shuffled run be
 compared against a recorded one at all, and `--shuffle` runs are precisely the
 ones where a silent ordering difference would be easiest to dismiss.
 
-### 3.2 A rule application's identity ignores non-string activator arguments
+### 3.2 A rule application's identity ignores nested-`Fact` activator arguments
 
-The identity of a firing is `(rule, activator, bindings)`, and the activator
-half keeps only the activator's **string** arguments — while the *compile*
-cache key stringifies all of them. Two activators differing only in an integer
-argument therefore share an identity, and can suppress each other's firings.
+> **Corrected 2026-08-29** — M1e
+> [S1e.1.4](../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md),
+> the review's `Q3`. Until then this section said *integer*, and the engine has
+> never done what it described. The claim was written from one of the key's
+> three components; the probe that refuted it is
+> `ein-infer/tests/rule_semantics.rs::activators_differing_only_by_an_int_argument_both_fire`.
+
+The identity of a firing is `(rule, activator, bindings)`, and there are
+**three** keys over one activator, each keeping a different part of it:
+
+| key | what it keeps of the activator |
+|---|---|
+| the compile cache key | **every** argument, stringified |
+| the identity's activator half (`plan.activator_args`) | the **symbol** arguments |
+| the identity's bindings half (the plan's register file) | every argument that **binds a parameter** — symbols *and* integers |
+
+An **integer** argument binds its parameter, so it is absent from the second
+key and present in the third: two activators differing only in an integer
+argument have **different** identities and both fire. A nested **`Fact`** binds
+nothing, so it reaches neither: two activators differing only there share one
+identity, and the second application is dropped before it is enqueued.
+
+That collision is by itself harmless, and the reason is worth stating because
+it is what makes the *next* paragraph the whole of the defect: the activator
+reaches the compiler at one site, which skips a `Fact` argument outright, so
+two activators differing only in a nested `Fact` compile to plans that are
+equal in **every** field. The dropped application is a duplicate.
+
+**Where it is not harmless is a mixed pair.** An integer in the position
+another activator gives a nested `Fact` puts two plans in one identity space
+with two *different register layouts* — `?f` is register 1 in one and register
+3 in the other — so the identity compares `(?R ?f ?a ?b)` against `(?R ?a ?b
+?f)` position by position. A vector that is a legitimate match of both then
+suppresses a firing whose conclusion nothing else derives:
+
+```lisp
+(relation edge  Node Node)
+(relation holds Node)
+(relation noted Node Node)
+
+(rule note (?R ?f)
+  :match  (and (?R ?a ?b) (holds ?f))
+  :assert (noted ?a ?f))
+
+(edge 1 2) (edge 2 3)
+(holds 1)  (holds 3)
+
+(note edge 1)                     ; an int  in the second position
+(note edge (src Y))               ; a Fact  in the second position
+```
+
+```text
+$ ein saturate q_m1a8.ein --dump          # both activators
+;; ── DERIVED (3 facts) ──
+  (noted 1 1 :rule note)
+  (noted 2 1 :rule note)
+  (noted 2 3 :rule note)
+
+$ ein saturate q_m1a8.ein --dump          # with the `(note edge 1)` line deleted
+;; ── DERIVED (4 facts) ──
+  (noted 1 1 :rule note)
+  (noted 1 3 :rule note)          ← lost above, silently
+  (noted 2 1 :rule note)
+  (noted 2 3 :rule note)
+```
+
+Adding an activator **removed** a conclusion, and swapping the two lines puts
+it back. `Engine::check_layout` asserts against exactly this shape — under
+`debug_assertions` only, so a release build is where the wrong answer lives.
+Its doc comment called the shape *"a shape no rule application has"*; the
+program above is thirteen lines.
 
 *Why it is here rather than fixed.* This is
 [Q-M1a.8](../history/m1a_rust/open_questions.md#q-m1a8--_binding_key-drops-non-string-activator-args),
-and it is almost certainly unintended. It was reproduced because it was
-current behaviour and the byte gate would have flagged any change; it stays
-because nothing in the corpus reaches it and changing it moves firing counts
-everywhere. **It is the one item on this page that is a latent bug rather than
-a quirk**: a puzzle whose rule parameters are integers can lose a firing, with
-no diagnostic.
+closed 2026-08-29 as stated and refiled as its real self:
+[Q-M1e.16](../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
+It was reproduced from ein.py because it was current behaviour and the byte
+gate would have flagged any change — and the misreading is ein.py's too:
+`_binding_key`'s third component is `frozenset(bindings.items())`, and
+`bindings` held the integer. It stays because **no corpus program can reach
+it**: of the **153 143** activator arguments every plan compiled by `ein
+solve -m 2` over all 204 `.ein` files under `examples/`, `stdlib/` and
+`tests/` binds against — forks' plans included — **every one is a symbol**,
+not one integer and not one nested `Fact`, and **no** `(rule, activator)`
+space holds more than one plan (measured 2026-08-29). **It is the one item on this page that
+is a latent bug rather than a quirk** — a program that puts an integer and a
+nested `Fact` in one activator position loses a derivation, with no
+diagnostic.
+
+The program above is deliberately **not** a corpus fixture: `cargo test` builds
+with `debug_assertions`, where it trips the assertion instead of answering.
+Both halves are banked in `ein-infer/tests/rule_semantics.rs` instead, as
+`an_int_beside_a_nested_fact_in_one_position_loses_a_derivation` — which
+expects the panic in a debug build and the missing fact in a release one.
 
 ## 4. Errors and exit codes
 

@@ -217,16 +217,31 @@ pub fn new_prov(
 /// is fixed by the plan rather than by the match.
 ///
 /// `activator` is an id the engine interns for `plan.activator_args`, which
-/// keeps a key two words plus one small vector. Note that `activator_args`
-/// holds the activator's **string** arguments only, while the *compile* cache
-/// key stringifies all of them — so two activators differing only in an `int`
-/// argument share a binding key. That is Q-M1a.8, reproduced rather than fixed.
+/// keeps a key two words plus one small vector. `activator_args` holds the
+/// activator's **string** arguments only, while the *compile* cache key
+/// stringifies all of them — but that difference does **not** reach an `int`
+/// argument. An int binds its parameter, so it seeds a register and arrives in
+/// `values`: the key has three components and the arguments that reach none of
+/// them are exactly the nested `Fact`s, which bind nothing.
 ///
-/// **The invariant this leans on:** all plans sharing `(rule, activator)` have
-/// the same register layout, so their value vectors are comparable. It holds
-/// because the layout is a function of the rule and of *which* parameters the
-/// activator bound, and it is asserted in debug builds where the plan list is
-/// built (`Engine::register`).
+/// That is Q-M1a.8, restated. The original claim named the `int`, and M1e
+/// [S1e.1.4](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)
+/// refuted it with a probe — `rule_semantics::activators_differing_only_by_an_int_argument_both_fire`.
+/// Two activators differing only in a nested `Fact` *do* share a key, and the
+/// application that loses is a duplicate: `Compiler::run` hands the activator
+/// to `bind_activator` and to nothing else, and `bind_activator` skips a
+/// `Fact`, so the two plans are equal in every field.
+///
+/// **The invariant this leans on, and it does not hold:** all plans sharing
+/// `(rule, activator)` must have the same register layout, or their value
+/// vectors are not comparable. The layout is a function of the rule and of
+/// *which* parameters the activator bound — and an `int` in the position
+/// another activator gives a nested `Fact` binds a parameter where the other
+/// does not. `Engine::check_layout` asserts the invariant where the plan list
+/// is built, **under `debug_assertions` only**; a release build compares two
+/// layouts as one and can lose a derivation with no diagnostic. That is
+/// [Q-M1e.16](../../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one),
+/// witnessed by `rule_semantics::an_int_beside_a_nested_fact_in_one_position_loses_a_derivation`.
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct BindingKey {
     pub rule: Symbol,

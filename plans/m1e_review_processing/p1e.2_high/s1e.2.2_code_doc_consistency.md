@@ -3,7 +3,7 @@
 **Phase:** [P1e.2](README.md) (High)
 **Estimate:** 6 days
 **Depends on:** [Q3](../p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)
-for T3;
+for T4 — **answered 2026-08-29, and it took T4 with it**;
 [Q-M1e.3](../open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)
 for T1, which this stage takes first and then applies.
 **Findings:** [`CD-H1`](../review/code-doc-consistency/high.md),
@@ -95,10 +95,11 @@ and the code agrees with them.
 - **One answer per question, tree-wide**: how many verdict words; who reads
   the obligation tally; what `:expect`'s third form is; whether a tree
   traversal exists in the module map.
-- **§3.2 is amended or deleted** per
+- ~~**§3.2 is amended or deleted** per
   [Q3](../p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md), and
   `Q-M1a.8` is closed in the M1a ledger with a date and the probe's name;
-  README's Known gaps moves in the same commit.
+  README's Known gaps moves in the same commit.~~ ✅ **Done 2026-08-29 in
+  S1e.1.4** — see T1e.2.2.4.
 - A **doc-pass checklist** exists for the next milestone that has to do this,
   naming the pages S1a.10.6 missed and why they were missable.
 
@@ -184,7 +185,22 @@ While in `06_reserved_names.md`, note that
 same lines (the keyword arithmetic does not reconstruct the 7-keyword
 allow-list). One visit, both fixes.
 
-### Task T1e.2.2.4 — `CD-H3`: settle §3.2 and close `Q-M1a.8`
+### Task T1e.2.2.4 — `CD-H3`: settle §3.2 and close `Q-M1a.8` ✅
+
+**Done 2026-08-29, in
+[S1e.1.4](../p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)
+itself** — the probes ran there and the paperwork was one commit's worth, so
+splitting it across two stages would have left the ledger disagreeing with the
+page for the length of a phase. §3.2 is rewritten to the shape that
+reproduces, `Q-M1a.8` is closed as stated, the live half is
+[Q-M1e.16](../open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one),
+and the README's Known gaps entry, the capability table's cell and **five
+source comments** moved with it. §3.2 was **not** deleted, so
+`defined_behaviour.md`'s *thirteen* and the sentence in `CLAUDE.md` that
+quotes it are unchanged — the paragraph below is left as it was written, and
+it is the half this stage no longer has to do.
+
+The task as written:
 
 The probes are
 [S1e.1.4](../p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)'s; the

@@ -284,8 +284,11 @@ pub struct Plan {
     pub rule: Symbol,
     /// `plan.activator_args` — the activator's **string** arguments only.
     /// The cache key stringifies *all* of them, and that asymmetry is
-    /// Q-M1a.8: two activators differing only in an `int` argument share a
-    /// binding key. Reproduced, not fixed.
+    /// Q-M1a.8. It is **not** enough to make two activators differing only in
+    /// an `int` argument share a binding key — the int seeds a register and
+    /// reaches the key's third component — but it is what makes two differing
+    /// only in a nested `Fact` share one. Reproduced, not fixed; see
+    /// [`crate::firing::BindingKey`].
     pub activator_args: Box<[Symbol]>,
     /// The activator binding, materialised: register `i` holds `seed[i].1`
     /// at match start, and the name is what provenance renders.

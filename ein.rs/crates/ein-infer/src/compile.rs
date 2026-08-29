@@ -94,9 +94,14 @@ pub fn activators_into(kb: &Kb, terms: &Terms, rule: &Rule, out: &mut Vec<Option
 /// `(rule_name, tuple(str(a) for a in activator.args))` — ein.py's cache key.
 ///
 /// It stringifies **all** the activator's arguments while
-/// [`Plan::activator_args`] keeps only the string ones, so two activators
-/// differing only in an `int` argument share a binding key. That asymmetry is
-/// Q-M1a.8; it is reproduced exactly and deliberately not fixed here.
+/// [`Plan::activator_args`] keeps only the string ones. That asymmetry is
+/// Q-M1a.8; it is reproduced exactly and deliberately not fixed here. What it
+/// does **not** cause is the collision the question used to claim: an `int`
+/// argument binds its parameter, so it seeds a register and reaches
+/// [`crate::firing::BindingKey`]'s third component even though it is missing
+/// from the second. A nested `Fact` binds nothing and reaches neither —
+/// M1e [S1e.1.4](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md),
+/// and see `BindingKey` for what that costs and where.
 ///
 /// Interning `str(a)` reproduces the collision Python already has: the integer
 /// `7` and the atom `7` both stringify to `"7"` and therefore share a key.
