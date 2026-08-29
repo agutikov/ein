@@ -293,6 +293,12 @@
 0    examples/ein-bugs/alive-empty-interlayer.ein :: solve -e
 0    examples/ein-bugs/alive-empty-phase1.ein :: solve
 0    examples/ein-bugs/alive-empty-phase1.ein :: solve -e
+0    examples/ein-bugs/alt-cap-core-reordered.ein :: solve
+0    examples/ein-bugs/alt-cap-core-reordered.ein :: solve -e
+0    examples/ein-bugs/alt-cap-core-reordered.ein :: test
+0    examples/ein-bugs/alt-cap-core.ein :: solve
+0    examples/ein-bugs/alt-cap-core.ein :: solve -e
+0    examples/ein-bugs/alt-cap-core.ein :: test
 0    examples/ein-bugs/complete-records-stale.ein :: solve
 0    examples/ein-bugs/complete-records-stale.ein :: solve -e
 1    examples/ein-bugs/fact-goal-binding.ein :: render rules

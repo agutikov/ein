@@ -496,10 +496,12 @@ least fixpoint from the frontier upward, which is what makes the routinely
 construction, and why `detect_provenance_cycles` stays a load-time check on
 user-authored provenance rather than something run over a saturated KB.
 `frontier.smallest_contradiction_frontier` is that search over the detector's
-witnesses: **a minimum-cardinality AND/OR search over every recorded derivation
-(provenance-based, NAF-safe, budgeted); not a subset-minimal MUS** — and,
-because it *chooses* a justification per fact by search instead of following
-whichever one fired first, **independent of rule-firing order**. It is what the
+witnesses: **a minimum-cardinality AND/OR search over every derivation the
+store retained (provenance-based, NAF-safe, budgeted); not a subset-minimal
+MUS** — and, because it *chooses* a justification per fact by search instead of
+following whichever one fired first, **independent of rule-firing order over
+the derivations it is given** (which is not the same as independent of rule
+firing order: see the Gap's (2) below). It is what the
 k = 0 verdict and each dead commitment report: on `zebra2-bad` it names exactly
 1 fact, the injected `:source "injected contradiction"`, where the union core
 names 38. (The verdict still *unions* across dead commitments — with an
@@ -522,9 +524,21 @@ minimiser is **NAF-unsound here** (S1.9.E19; corollary C3 of
 `absent_premises` make a *sound* variant conceivable, since a candidate
 subset would have to preserve every negative query as well, but nothing
 implements that and until something does the caveat stands).
-(2) **Recorded, not all, derivations** — the alternatives searched are the
+(2) **Retained, not all, derivations** — the alternatives searched are the
 firings the saturator attempted, capped per fact, so minimality stays relative
-to the rule set and the saturation strategy. (3) **Budgeted** — the
+to the rule set and the saturation strategy. **And the cap is not neutral**
+(M1e S1e.1.3, the review's Q2): `MAX_ALT_JUSTIFICATIONS = 32` retains by
+*premise count* while this search minimises *frontier size*, two metrics that
+disagree whenever a short step's premise unfolds into a long chain — so a full
+list can refuse the derivation with the smaller frontier, and the reported core
+becomes firing-order dependent after all. `examples/ein-bugs/alt-cap-core.ein`
+reports a 3-fact core where a 2-fact one exists and its `-reordered` twin,
+one `:priority` apart, reports the 2-fact one; at a cap of 10⁶ both report 2.
+Corpus-wide **one** entry reaches the cap (`zebra2-bad`, 1 017 of 2 425
+arrivals refused, longest uncapped list 1 049) — and only an entry that reaches
+it can be changed by it: that one's core is a single fact at either cap. So
+this is a promise to state rather than a bug to chase —
+[Q-M1e.15](../../../plans/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported). (3) **Budgeted** — the
 minimum-axiom-set / ATMS-label problem is worst-case exponential, so the search
 runs under an `ExplanationBudget` and `Explanation.exhausted` reports whether it
 completed; a truncated search is still sound. Provenance is also not yet a

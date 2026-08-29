@@ -328,8 +328,20 @@ premises_raw)`. `bindings` is display metadata the trace reads off the
 primary, so it is not part of that key — and an alternative recorded
 on the saturator's redundant path carries none at all. The per-fact
 list is capped at `store.MAX_ALT_JUSTIFICATIONS` (32) and kept sorted
-by premise count, so the cap retains the **shortest** derivations —
-the ones a minimum-cardinality explanation can use.
+by premise count, so the cap retains the derivations with the fewest
+**premises**.
+
+That is *not* the same as the ones a minimum-cardinality explanation
+can use, and the difference is measurable: premise count is local,
+frontier size is transitive, and a one-premise step whose premise
+unfolds into a long chain is retained ahead of a two-premise step over
+givens whose frontier is smaller. A full list can therefore refuse the
+derivation the explanation search would have chosen —
+`examples/ein-bugs/alt-cap-core.ein` reports a 3-fact unsat core where
+a 2-fact one exists (M1e S1e.1.3, the review's Q2;
+[Q-M1e.15](../../../../plans/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)).
+Corpus-wide exactly one entry reaches the cap and no answer moves
+without it.
 
 Recording is engine-side. The saturator's share of it — a redundant
 firing (the bulk: ~194k of them on an exhaustive `zebra2` solve,

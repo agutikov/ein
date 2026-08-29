@@ -8,6 +8,17 @@ Q2 asks whether `MAX_ALT_JUSTIFICATIONS = 32` ever changes which unsat core is
 reported; § The one place it still decides an answer shows it doing so, and a
 removal taken before that question is answered is a semantics change dressed as
 a cleanup.
+
+> **Answered 2026-08-29 — yes, and it splits this stage's consumer 6 in two.**
+> The cap *can* decide the core, and S1e.1.3 built the pair that shows it
+> (`examples/ein-bugs/alt-cap-core{,-reordered}.ein`, 3 facts against 2, one
+> `:priority` apart). **But it is not what moved `branching/07` below.** That
+> entry's longest alternatives list is **1** and it refuses nothing at the cap —
+> measured over all 202 entries, where exactly one, `zebra2-bad`, reaches 32 at
+> all. So the corpus has *two* order-dependencies of the core and this stage's
+> § 2 is the other one: which derivations get **recorded at all**, not which of
+> the recorded ones survive the cap. A removal has to hold both, and only the
+> second has a fixture ([Q-M1e.15](../open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)).
 **Blocks:** nothing. It writes the first content of
 [S1e.5.20](s1e.5.20_docs_refactor.md)'s
 `docs/ein/reasoning/rule-evolution/analysis-of-rules.md`, which is otherwise an
@@ -137,11 +148,14 @@ Every one is a disposition this stage owes an answer for.
 | 3 | obligation **report order** — `(:priority, load order, activator order)` | [`obligations.rs:88`](../../../ein.rs/crates/ein-infer/src/obligations.rs) | the `owes (rel: n, …)` line reorders |
 | 4 | the **KB-shape digest** — `RULE … priority={} why={}` | [`shape.rs:64`](../../../ein.rs/crates/ein-core/src/shape.rs) | `corpus_shapes.md5` re-blesses, all 197 entries |
 | 5 | `ein saturate --dump`'s rule listing — `:priority N (band)` | `saturate.rs` `band_label` | a column disappears from a user-visible read-out |
-| 6 | which ≤ 32 justifications a fact keeps → the reported **unsat core** | `kb.rs` + `explain.rs` | measured above: −8 facts on `branching/07` |
+| 6a | which derivations are **recorded at all** → the reported **unsat core** | `saturator.rs` `record_alternative` + `explain.rs` | measured above: −8 facts on `branching/07`. **This is what § 2 measured**, and the cap is not in it: that entry's longest alternatives list is 1 (S1e.1.3, 2026-08-29) |
+| 6b | which ≤ 32 of them a full list **keeps** → the same core | `kb.rs` + `explain.rs` | reachable, and reached by exactly one corpus entry (`zebra2-bad`), where it costs nothing. Fixture: `examples/ein-bugs/alt-cap-core{,-reordered}.ein`, 3 facts against 2 — S1e.1.3 / [Q-M1e.15](../open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) |
 
 Consumers 1, 4 and 5 are presentation and bookkeeping. Consumer 3 is a
-read-out. **Consumers 2 and 6 are the only two that can change an answer**,
-and both are about programs the engine already treats as edge cases.
+read-out. **Consumers 2, 6a and 6b are the only three that can change an
+answer**, and all are about programs the engine already treats as edge cases —
+6b needs a fact derived more than 32 ways, which one corpus entry manages and
+no puzzle depends on.
 
 ## What "analyze rules structure instead" would produce
 

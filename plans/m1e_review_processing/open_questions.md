@@ -30,6 +30,7 @@ records which question became which id.
 | [Q-M1e.12](#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object) | The blind rung is **untyped**, and a model binds a type as an object | open — raised by [D8](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d8_branching06_untyped_models.md) 2026-08-28; **owner unassigned**, three readings recorded |
 | [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [S1e.1b.6](p1e.1b_hypothesis_structure/s1e.1b.6_obligations_under_hypothesis.md)** 2026-08-28 by the user; the guard half is decided and is [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3's |
 | [Q-M1e.14](#q-m1e14--the-corpus-jobs-sweeps-per-layer-census-coverage-is-vacuous) | The corpus `--jobs` sweep's per-layer census coverage is **vacuous** | open — raised 2026-08-29 by [S1e.1.2](p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md) T3, which closed the unit half; **owner unassigned**, and the corpus half costs a golden |
+| [Q-M1e.15](#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) | The **alternatives cap** decides which unsat core is reported | open — raised 2026-08-29 by [S1e.1.3](p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md), which is the review's `Q2` answered **yes**; witnessed by a fixture pair, **owner unassigned**, and no shipped puzzle is changed by it |
 
 ---
 
@@ -885,3 +886,81 @@ cost question rather than a design one:
    but it should then be *written*, because "we compare that column" and "that
    column is entailed by three we compare" are different claims and the tree
    currently makes the first.
+
+---
+
+## Q-M1e.15 — The alternatives cap decides which unsat core is reported
+
+> **Raised 2026-08-29 by
+> [S1e.1.3](p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md)**, which
+> is the review's **Q2** answered *yes*. The stage establishes the promise; the
+> fix is engine work and is **not** taken there. **Owner unassigned.**
+
+`Kb::record_justification` keeps at most `MAX_ALT_JUSTIFICATIONS = 32`
+alternatives per fact, sorted by **premise count**, refusing an arrival no
+shorter than the longest kept. `explain.rs` minimises **frontier size** over
+what survived. The two metrics disagree — premise count is local, frontier size
+is transitive — so a derivation whose frontier is *smaller* can be refused
+because it has *more* premises, and the search never sees it.
+
+**Witnessed, not argued.** `examples/ein-bugs/alt-cap-core.ein` and
+`examples/ein-bugs/alt-cap-core-reordered.ein` differ in one `:priority` and
+nothing else:
+
+| | `(false)`'s primary | reported core |
+|---|---|---:|
+| `alt-cap-core.ein` | `narrow` — one premise, three givens deep | **3** |
+| `alt-cap-core-reordered.ein` | `wide` — two premises over givens | **2** |
+
+Both files hold `(w1 X)` and `(w2 X)`, and `wide` fires in both. Verified
+against the cause rather than inferred: at `MAX_ALT_JUSTIFICATIONS = 1_000_000`
+the first file reports the same 2-fact core as the second. Banked as
+`ein-infer/tests/explain_semantics.rs::the_alternatives_cap_can_enlarge_the_reported_core`.
+
+**The sharper half is not the size, it is the order.** `explain.rs` exists
+because walking one justification per fact made the core depend on `:priority`;
+this pair shows the cap giving that back one level up. The search is
+order-independent over what the store *kept*, and what the store keeps depends
+on firing order — so `glossary.md`'s *"Independent of the order in which the
+rules fired"* was true of the search and not of the pipeline, and S1e.1.3
+re-worded it along with the five other statements of the promise —
+`README.md`, `explain.rs`, `reserved_engine_strings.md`,
+`architecture_and_algorithms.md` §O6 and `ir/02-data-model/01_entities.md`
+§3.1, the last of which said the cap *"retains the shortest derivations — the
+ones a minimum-cardinality explanation can use"* and was simply false.
+
+**It is not urgent, and the measurement says why.** All 202 corpus entries,
+2026-08-29:
+
+| | |
+|---|---:|
+| entries recording any alternative | 50 |
+| entries that reach the cap | **1** — `examples/ein-bugs/zebra2-bad.ein` |
+| arrivals refused there | 1 017 of 2 425 |
+| longest list without the cap | 1 049 (next-longest entry anywhere: **8**) |
+| evictions corpus-wide | **0** |
+
+**The cap can only change an answer on an entry that reaches it.** One does,
+and its core is `(color-loc Green House-1)` — one fact — at 32 and at 10⁶
+alike; every corpus file's *root* explanation, alternatives on and off over an
+unbudgeted saturation, is byte-identical between the two caps. So the cap is
+live on exactly the program the README names as the unsat-core fixture and
+costs it nothing.
+
+**The three fixes, and none is obviously right.**
+
+1. **Retain by a frontier estimate** rather than premise count — e.g. the sum
+   of the premises' recorded depths. Right metric, and it makes retention
+   depend on a quantity that changes as the KB grows, so the list would have to
+   be re-sorted rather than inserted into.
+2. **Raise the cap.** The measurement bounds the cost: the worst list would be
+   1 049 and the second-worst 8. Cheap, and it converts a wrong answer into a
+   less likely wrong answer rather than into a right one.
+3. **Record the minimum separately** — keep, beside the capped list, the single
+   arrival with the smallest premise closure seen so far, so the search always
+   has the best candidate whatever the cap did. Bounded, exact for the one
+   thing the search asks, and it needs a closure size the recorder does not
+   have.
+
+The stage did not choose, because choosing is the fix and the fix has to be
+measured on something that is not one synthetic fixture.

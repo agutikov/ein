@@ -122,16 +122,30 @@ answer see **Smallest contradiction frontier**. See
 ### Smallest contradiction frontier
 The smallest set of given facts from which **one** recorded
 contradiction follows — a minimum-cardinality AND/OR search over every
-recorded derivation (provenance-based, NAF-safe, budgeted); **not** a
-subset-minimal MUS. Independent of the order in which the rules
-fired, and what the `k = 0` verdict reports as its unsat core (unioned
-across dead commitments when no single dead one explains the unsat).
+derivation the store **retained** (provenance-based, NAF-safe,
+budgeted); **not** a subset-minimal MUS. It is what the `k = 0` verdict
+reports as its unsat core (unioned across dead commitments when no
+single dead one explains the unsat).
 Three caveats: no proper subset is checked for satisfiability; the
 alternatives searched are only the firings the saturator attempted,
-capped per fact (`store.MAX_ALT_JUSTIFICATIONS`), so minimality is
+**capped at 32 per fact and retained shortest-premises-first**
+(`store.MAX_ALT_JUSTIFICATIONS`), so minimality is
 relative to the rule set and the saturation strategy; and the search
 is budgeted — `Explanation.exhausted` reports whether it completed,
-and a truncated search is still sound. Computed by
+and a truncated search is still sound.
+
+The **search** is independent of the order in which the rules fired;
+the **store in front of it is not**, and that is the second caveat read
+from the other end. Retention is by premise count and the search
+minimises frontier size, so a full list can refuse the derivation with
+the smaller frontier: `examples/ein-bugs/alt-cap-core.ein` reports a
+3-fact core where a 2-fact one exists, and its `-reordered` twin — one
+`:priority` apart — reports the 2-fact one (M1e S1e.1.3, the review's
+Q2; the fix is
+[Q-M1e.15](../../plans/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)).
+Corpus-wide exactly one entry reaches the cap, and only an entry that
+reaches it can be changed by it — that one's core is a single fact
+whether the cap is 32 or 10⁶. Computed by
 [`explain::smallest_contradiction_frontier`](../../ein.rs/crates/ein-infer/src/explain.rs)
 over the **ATMS label** search in
 [`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs). See

@@ -46,6 +46,52 @@ use std::sync::{Arc, RwLock};
 /// environments that repeat. The list is kept sorted by premise count, so the
 /// cap retains the shortest — the ones a minimum-cardinality explanation
 /// search can actually use.
+///
+/// # What it costs
+///
+/// **M1e S1e.1.3, answering the review's Q2 — and the answer is that the cap
+/// can change which unsat core is reported.** Retention is by **premise
+/// count**, which is local; `ein-infer`'s label search minimises **frontier
+/// size**, which is transitive. A one-premise step whose premise unfolds into
+/// a deep chain wins the first metric and loses the second, so a derivation
+/// with the *smaller frontier* can be refused at the cap and the search never
+/// sees it. Witness: `examples/ein-bugs/alt-cap-core.ein` reports a 3-fact
+/// core where a 2-fact one exists, and its `-reordered` twin — one `:priority`
+/// apart, same facts, same rules — reports the 2-fact one. Held by
+/// `ein-infer/tests/explain_semantics.rs`'s
+/// `the_alternatives_cap_can_enlarge_the_reported_core`; the fix is
+/// `Q-M1e.15`.
+///
+/// So the promise is *smallest over the derivations the store **retained***,
+/// and this is what retention means. It also means the reported core is
+/// order-independent only over what was kept, and what is kept depends on
+/// firing order — which is the guarantee `crate::kb` gives back one level
+/// above where `explain.rs` established it.
+///
+/// **Measured 2026-08-29, all 202 corpus entries** (bounded exhaustive solve,
+/// alternatives on):
+///
+/// | | |
+/// |---|---:|
+/// | entries recording any alternative | 50 |
+/// | alternatives recorded | 12 337 500 |
+/// | entries that **reach** the cap | **1** — `examples/ein-bugs/zebra2-bad.ein` |
+/// | arrivals it refused there | 1 017 of 2 425 |
+/// | longest list without the cap | 1 049 |
+/// | evictions (an arrival displacing a longer one) corpus-wide | **0** |
+/// | next-longest list anywhere | **8** |
+///
+/// **The cap can only change an answer on an entry that reaches it**, and one
+/// does. Its core is `(color-loc Green House-1)`, one fact, at 32 and at 10⁶
+/// alike; and every corpus file's *root* explanation — the `explain` shape
+/// with alternatives on and off, over an unbudgeted saturation — is
+/// byte-identical between the two caps, all 202 of them. So the cap is live on
+/// exactly the program the README names as the unsat-core fixture and costs it
+/// nothing.
+///
+/// The sorted-by-premise-count retention, meanwhile, has never actually
+/// re-ordered a list: **0 evictions** means every over-cap arrival was simply
+/// refused, and the sort has only ever meant *the first 32 win*.
 pub const MAX_ALT_JUSTIFICATIONS: usize = 32;
 
 /// A key of the participation index (S1.8.B-idx): relation, argument

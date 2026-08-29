@@ -1,0 +1,69 @@
+;;; **The same program with `wide` firing first — and a smaller unsat core.**
+;;;
+;;; M1e S1e.1.3, the second half of the review's Q2. Below the header this file
+;;; is [`alt-cap-core.ein`](alt-cap-core.ein) byte for byte except for the
+;;; `:priority` of `wide` — `50` here, `300` there, one line:
+;;;
+;;;   diff <(sed -n '/^(relation p1/,$p' alt-cap-core.ein) \
+;;;        <(sed -n '/^(relation p1/,$p' alt-cap-core-reordered.ein)
+;;;
+;;;   alt-cap-core.ein             unsat core (3)   (p1 Y01) (p2 Y01) (p3 Y01)
+;;;   alt-cap-core-reordered.ein   unsat core (2)   (w1 X) (w2 X)
+;;;
+;;; Here `wide` fires before anything derives `(q ?y)`, so its two-premise
+;;; derivation becomes `(false)`'s **primary** — and a primary is never
+;;; evicted. The 33 `narrow` derivations then arrive as alternatives, fill the
+;;; 32-slot list, and change nothing: the smallest frontier is still
+;;; `{(w1 X), (w2 X)}` and `explain.rs` reports it.
+;;;
+;;; Same facts, same rules, same verdict, same `k`. Only the core moves — which
+;;; is what `explain.rs`'s AND/OR search was built to make impossible, and is
+;;; possible again because the *store* in front of it is order-sensitive.
+;;;
+;;; Read this file with its twin; neither says anything on its own.
+
+(relation p1 T :why "{?1} has p1")
+(relation p2 T :why "{?1} has p2")
+(relation p3 T :why "{?1} has p3")
+(relation q  T :why "{?1} is a witness")
+(relation w1 T :why "{?1} has w1")
+(relation w2 T :why "{?1} has w2")
+
+;; 33 witnesses, each three givens deep.
+(p1 Y01) (p2 Y01) (p3 Y01) (p1 Y02) (p2 Y02) (p3 Y02) (p1 Y03) (p2 Y03) (p3 Y03)
+(p1 Y04) (p2 Y04) (p3 Y04) (p1 Y05) (p2 Y05) (p3 Y05) (p1 Y06) (p2 Y06) (p3 Y06)
+(p1 Y07) (p2 Y07) (p3 Y07) (p1 Y08) (p2 Y08) (p3 Y08) (p1 Y09) (p2 Y09) (p3 Y09)
+(p1 Y10) (p2 Y10) (p3 Y10) (p1 Y11) (p2 Y11) (p3 Y11) (p1 Y12) (p2 Y12) (p3 Y12)
+(p1 Y13) (p2 Y13) (p3 Y13) (p1 Y14) (p2 Y14) (p3 Y14) (p1 Y15) (p2 Y15) (p3 Y15)
+(p1 Y16) (p2 Y16) (p3 Y16) (p1 Y17) (p2 Y17) (p3 Y17) (p1 Y18) (p2 Y18) (p3 Y18)
+(p1 Y19) (p2 Y19) (p3 Y19) (p1 Y20) (p2 Y20) (p3 Y20) (p1 Y21) (p2 Y21) (p3 Y21)
+(p1 Y22) (p2 Y22) (p3 Y22) (p1 Y23) (p2 Y23) (p3 Y23) (p1 Y24) (p2 Y24) (p3 Y24)
+(p1 Y25) (p2 Y25) (p3 Y25) (p1 Y26) (p2 Y26) (p3 Y26) (p1 Y27) (p2 Y27) (p3 Y27)
+(p1 Y28) (p2 Y28) (p3 Y28) (p1 Y29) (p2 Y29) (p3 Y29) (p1 Y30) (p2 Y30) (p3 Y30)
+(p1 Y31) (p2 Y31) (p3 Y31) (p1 Y32) (p2 Y32) (p3 Y32) (p1 Y33) (p2 Y33) (p3 Y33)
+
+;; …and one two-given pair, which is the smaller explanation.
+(w1 X) (w2 X)
+
+(rule mk-q ()
+  :match  (and (p1 ?y) (p2 ?y) (p3 ?y))
+  :assert (q ?y)
+  :priority 100
+  :why    "{?y} has all three")
+
+;; One premise, and that premise is three givens deep. Fires 33 times, which
+;; is one primary plus a full list of 32 alternatives.
+(rule narrow ()
+  :match  (q ?y)
+  :assert (false)
+  :priority 200
+  :why    "{?y} is a witness")
+
+;; Two premises, both givens: the smallest frontier there is.
+(rule wide ()
+  :match  (and (w1 ?x) (w2 ?x))
+  :assert (false)
+  :priority 50
+  :why    "{?x} has both")
+
+(query :goal (q ?y) :expect (false))

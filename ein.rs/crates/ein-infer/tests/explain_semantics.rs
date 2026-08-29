@@ -121,6 +121,18 @@ struct Fixture {
     kb: Kb,
 }
 
+/// A fixture from a checked-in file — for the two whose *point* is that they
+/// are one `:priority` apart, so an inline copy of either would be a second
+/// opinion about what the pair says.
+fn load_path(rel: &str) -> Fixture {
+    let path = repo_root().join(rel);
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let kb = ein_ir::load_file(&mut ast, &mut terms, &path)
+        .unwrap_or_else(|e| panic!("{rel} loads: {e:?}"));
+    Fixture { ast, terms, kb }
+}
+
 fn load_text(text: &str) -> Fixture {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -278,6 +290,110 @@ impl Fixture {
     fn explain_contradiction(&self, budget: &ExplanationBudget) -> Explanation {
         minimal_contradiction_frontier(&self.kb, &self.terms, None, budget)
     }
+}
+
+// ── The cap on recorded alternatives — M1e S1e.1.3, the review's Q2 ────────
+
+/// Every fact of a saturated KB, as sorted s-expressions — comparable across
+/// two arenas, which two separate loads necessarily are.
+fn fact_set(f: &Fixture) -> Vec<String> {
+    let mut out: Vec<String> =
+        f.kb.facts()
+            .map(|id| ein_infer::events::sexpr(&f.terms, id))
+            .collect();
+    out.sort();
+    out
+}
+
+/// **`MAX_ALT_JUSTIFICATIONS` decides which unsat core is reported.**
+///
+/// The review's Q2, answered **yes** (M1e S1e.1.3). `Kb::record_justification`
+/// retains by **premise count**, which is local; `explain` minimises **frontier
+/// size**, which is transitive. Where the two disagree, a derivation with the
+/// smaller frontier can be refused at the cap and the search never sees it.
+///
+/// The two files are one `:priority` apart and nothing else — same facts, same
+/// rules, same verdict — and they report cores of different sizes:
+///
+/// | | `(false)`'s primary | core |
+/// |---|---|---|
+/// | `alt-cap-core.ein` | `narrow`, one premise three givens deep | **3** — `(p1 Y01) (p2 Y01) (p3 Y01)` |
+/// | `alt-cap-core-reordered.ein` | `wide`, two premises over givens | **2** — `(w1 X) (w2 X)` |
+///
+/// The 2-fact explanation is available in *both*: `(w1 X)` and `(w2 X)` are
+/// stated facts and `wide` fires in both. What differs is whether the store
+/// still holds its derivation when the search runs. Verified against the cause
+/// rather than inferred: at `MAX_ALT_JUSTIFICATIONS = 1_000_000` the first
+/// file reports the same 2-fact core as the second.
+///
+/// This is *not* a soundness bug — a larger core is still a real explanation —
+/// and no shipped puzzle is changed by it: corpus-wide the cap is reached by
+/// one entry, `examples/ein-bugs/zebra2-bad.ein`, whose core is a single fact
+/// at either cap — and only an entry that reaches it can be changed by it. The
+/// fix is [Q-M1e.15]; what is banked here is the shape, so the fix has
+/// something to move.
+///
+/// [Q-M1e.15]: `plans/m1e_review_processing/open_questions.md`
+#[test]
+fn the_alternatives_cap_can_enlarge_the_reported_core() {
+    let mut capped = load_path("examples/ein-bugs/alt-cap-core.ein");
+    let mut reordered = load_path("examples/ein-bugs/alt-cap-core-reordered.ein");
+    capped.saturate();
+    reordered.saturate();
+
+    // One program, two priorities: if the fact sets ever diverge the pair is
+    // comparing two puzzles and says nothing about the cap.
+    assert_eq!(
+        fact_set(&capped),
+        fact_set(&reordered),
+        "the two fixtures saturate to different fact sets — they are supposed \
+         to differ in one `:priority` and nothing else"
+    );
+
+    let budget = ExplanationBudget::default();
+    let a = capped.explain_contradiction(&budget);
+    let b = reordered.explain_contradiction(&budget);
+    assert!(
+        a.exhausted && b.exhausted,
+        "a budget was hit, so neither core is a claim about the cap"
+    );
+    assert_eq!(
+        capped.names(&a.frontier),
+        ["p1", "p2", "p3"].map(String::from).into_iter().collect(),
+        "the capped file should report the three-given chain"
+    );
+    assert_eq!(
+        reordered.names(&b.frontier),
+        ["w1", "w2"].map(String::from).into_iter().collect(),
+        "the reordered file should report the two-given pair"
+    );
+    assert_eq!((a.len(), b.len()), (3, 2), "the sizes are the finding");
+
+    // …and the mechanism, so a failure says which half moved. `(false)` takes
+    // 33 justifications in both — one primary and a full list of 32 — and the
+    // only difference is whether `wide`'s is among them.
+    let f_capped = capped.fact("false", &[]);
+    let f_reordered = reordered.fact("false", &[]);
+    assert_eq!(
+        (
+            capped.kb.justifications(f_capped).len(),
+            reordered.kb.justifications(f_reordered).len()
+        ),
+        (33, 33),
+        "one primary plus MAX_ALT_JUSTIFICATIONS alternatives"
+    );
+    assert_eq!(
+        capped.rules_deriving(f_capped),
+        ["narrow"].map(String::from).into_iter().collect(),
+        "`wide` fired, and the full list refused its derivation — 2 premises \
+         against a longest-kept 1, and the refusal is by premise count"
+    );
+    assert_eq!(
+        reordered.rules_deriving(f_reordered),
+        ["narrow", "wide"].map(String::from).into_iter().collect(),
+        "`wide` fired first here, so its derivation is the primary — and a \
+         primary is never evicted"
+    );
 }
 
 // ── The label search ───────────────────────────────────────────────

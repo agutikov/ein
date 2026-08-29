@@ -292,7 +292,7 @@ the milestone closes when every row has one.
 | id | question | stage |
 |---|---|---|
 | `Q1` | Shared no-goods across concurrent workers: is the determinism argument airtight? | [S1e.1.2](p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md) — **answered 2026-08-29**, acceptance (1): the argument, written at [`Nogoods`](../../ein.rs/crates/ein-core/src/kb.rs) and [design/02 §6a](../../docs/history/m1a_rust/design/02_determinism_and_order.md), with its premise **enforced** by a freeze the fan-out takes |
-| `Q2` | Does `MAX_ALT_JUSTIFICATIONS = 32` ever change which unsat core is reported? | [S1e.1.3](p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md) |
+| `Q2` | Does `MAX_ALT_JUSTIFICATIONS = 32` ever change which unsat core is reported? | [S1e.1.3](p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md) — **answered 2026-08-29: yes**, acceptance (1). The fixture pair [`alt-cap-core{,-reordered}.ein`](../../examples/ein-bugs/alt-cap-core.ein) reports a 3-fact and a 2-fact core one `:priority` apart; the fix is [Q-M1e.15](open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported), and **no shipped puzzle is changed by it** |
 | `Q3` | What is the true trigger shape of Q-M1a.8, if any? | [S1e.1.4](p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md) |
 | `Q4` | Can the inter-layer alive-∅ path record a false model? | [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) |
 | `Q5` | Which side of the lookahead verdict flip is correct, and is the wrong one golden-pinned? | [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) |

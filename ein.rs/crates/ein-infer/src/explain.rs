@@ -16,6 +16,25 @@
 //! *combination* of justifications is the minimum-axiom-set problem,
 //! worst-case exponential, so it needs a real search and an explicit budget.
 //!
+//! ### …and what the cap in front of it costs
+//!
+//! **M1e S1e.1.3, the review's Q2.** The search is over
+//! [`ein_core::Kb::justifications`], which is the primary plus at most
+//! [`ein_core::kb::MAX_ALT_JUSTIFICATIONS`] alternatives — and the store retains
+//! those by **premise count** while this module minimises **frontier size**.
+//! The two metrics disagree: a one-premise step whose premise unfolds into a
+//! deep chain is retained ahead of a two-premise step over givens whose
+//! frontier is smaller. So a full list can refuse the derivation this search
+//! would have chosen, and the order-independence established above is
+//! order-independence *over what the store kept*.
+//!
+//! `examples/ein-bugs/alt-cap-core.ein` and its `-reordered` twin are that,
+//! one `:priority` apart: 3-fact core against 2-fact, same facts, same rules,
+//! same verdict. It is not a soundness failure — a larger frontier is still a
+//! real explanation — and no shipped puzzle reaches it, but it is why every
+//! statement of this module's promise has to say *retained* and not
+//! *recorded*.
+//!
 //! ### The algorithm
 //!
 //! A least fixpoint from the frontier upward. A `source` / `hypothesis` /
@@ -96,8 +115,14 @@ pub struct Explanation {
     /// The fact explained; for a contradiction search, the witness that won.
     pub target: Option<FactId>,
     /// True iff no cap was hit anywhere: `frontier` is a true minimum **over
-    /// the recorded derivations**. False means "sound, but possibly not
-    /// smallest".
+    /// the derivations the store retained**. False means "sound, but possibly
+    /// not smallest".
+    ///
+    /// It reports [`ExplanationBudget`] and nothing else. The *other* cap —
+    /// [`ein_core::kb::MAX_ALT_JUSTIFICATIONS`], which decides which derivations
+    /// this search is offered at all — is upstream of the graph and invisible
+    /// here, so `exhausted = true` is not a claim that no smaller explanation
+    /// exists (M1e S1e.1.3; see the module note).
     pub exhausted: bool,
     pub rounds: usize,
     pub facts_considered: usize,

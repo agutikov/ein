@@ -445,6 +445,18 @@ runs   = ["solve", "solve -e"]
 note   = "M1e D3 — the record site every corpus solve uses: `complete()` runs the generation pipeline and its kill cache writes into the very fork `:1977` then records. Model 1 re-saturates to `Contradiction`; `-K` prints the same `k = 2` with both models correct. Carries **no** `:expect`: its two models populate different relations, and every arm of an `(or …)` must name the goal's — Q-M1e.13."
 
 [[entry]]
+path   = "examples/ein-bugs/alt-cap-core.ein"
+group  = "regression"
+runs   = ["solve", "solve -e", "test"]
+note   = "M1e S1e.1.3 / Q2 — the `MAX_ALT_JUSTIFICATIONS = 32` cap **changes which unsat core is reported**. `(false)` has 33 one-premise derivations three givens deep and one two-premise derivation over givens; the 33 fill the list first and the two-premise one is refused, so the core is the 3-fact chain and not the 2-fact pair. At a cap of 10^6 the same file reports the 2-fact core. Read with its `-reordered` twin, which differs in one `:priority`."
+
+[[entry]]
+path   = "examples/ein-bugs/alt-cap-core-reordered.ein"
+group  = "regression"
+runs   = ["solve", "solve -e", "test"]
+note   = "M1e S1e.1.3 / Q2 — `alt-cap-core.ein` with `wide` at priority 50 instead of 300 and nothing else changed. Its two-premise derivation becomes the primary, which is never evicted, and the core is 2 facts. The pair is what makes the cap's cost order-dependence rather than only size: `glossary.md`'s *independent of the order in which the rules fired* is true of the search and not of the store in front of it."
+
+[[entry]]
 path   = "examples/ein-bugs/mixed-type-hypothesis.ein"
 group  = "regression"
 runs   = ["solve -e"]
