@@ -447,10 +447,12 @@ fn a_symbols_import_pulls_the_name_reference_closure() {
 /// negation model. A guard written as a prefix test would reject `eq-elim` and
 /// `absent-of`, which are just names that begin with kernel words.
 ///
-/// The names that can *reach* the guard are `absent`, `eq`, `false` and
-/// `relation` — the other four in [`ein_core::RESERVED`] (`and`, `neq`, `not`,
-/// `or`) are among the eleven words `SYMBOL`'s negative lookahead rejects, so
-/// `(hrule not …)` is a parse error and never becomes a load error at all.
+/// The names that can *reach* the guard are `absent`, `eq`, `false`, `open`
+/// and `relation` — the other four in [`ein_core::RESERVED`] (`and`, `neq`,
+/// `not`, `or`) are among the eleven words `SYMBOL`'s negative lookahead
+/// rejects, so `(hrule not …)` is a parse error and never becomes a load error
+/// at all. `open` joined the list at M1d S1d.2.3 and joined this sentence at
+/// M1e S1e.2.1, which is the same eight-against-nine drift `CO-H2` was.
 #[test]
 fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
     let (terms, kb) = kb_of("(not (likes A B) :source \"(1)\") (relation likes T T)");

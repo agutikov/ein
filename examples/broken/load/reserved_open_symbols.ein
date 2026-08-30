@@ -1,0 +1,7 @@
+; M1e S1e.2.1 — `CO-H2` route 2 of 4: the flat `:symbols` import.
+;
+; A listed symbol is merged **unrenamed**, so it reaches the loader spelled
+; `open` and is refused. The control that was already right, and the one that
+; made the defect visible: the same module, the same declaration, refused here
+; and accepted one line of syntax away.
+(import reserved_open_direct :symbols (open))

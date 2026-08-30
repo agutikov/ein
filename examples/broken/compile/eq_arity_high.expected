@@ -1,0 +1,1 @@
+`(eq …)` takes exactly 2 arguments and was given 3: SForm(head=Atom(name='eq'), args=(Var(name='x'), Atom(name='A'), Atom(name='B'))) at Loc(file='{FILE}', line=16, col=24) — a built-in predicate compares exactly two values, so write one guard per pair.

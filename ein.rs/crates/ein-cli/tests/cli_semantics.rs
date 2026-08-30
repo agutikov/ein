@@ -1854,3 +1854,91 @@ fn a_truncated_k0_is_not_reported_as_a_refutation() {
         done.out
     );
 }
+
+// ── M1e S1e.2.1 — CO-H3(a): the tree and the stop policy ───────────
+
+/// `ein solve`, with `EIN_TRAVERSAL` set for the child process only.
+fn ein_traversal(traversal: &str, args: &[&str]) -> Run {
+    let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+        .args(args)
+        .env("EIN_TRAVERSAL", traversal)
+        .current_dir(repo_root())
+        .output()
+        .expect("the `ein` binary runs");
+    Run {
+        code: out.status.code().unwrap_or(-1),
+        out: String::from_utf8_lossy(&out.stdout).into_owned(),
+        err: String::from_utf8_lossy(&out.stderr).into_owned(),
+    }
+}
+
+/// **`--max-set-size` is refused under `EIN_TRAVERSAL=tree`, and `-n` is
+/// honoured** — M1e S1e.2.1, `CO-H3`(a).
+///
+/// The traversal used to consult `check_budget` and nothing else, so
+/// `EIN_TRAVERSAL=tree ein solve file` explored and recorded the entire tree
+/// while `-n 1` — the default — asked for one model, and `-m` was dropped in
+/// silence. The two flags get different answers because they are different
+/// questions:
+///
+/// - `-n` names *how many models to stop after*, which any traversal can
+///   answer. It is honoured, and cuts the search rather than the read-out.
+/// - `-m` bounds the size of the commitment **sets** the lattice enumerates.
+///   The tree enumerates none; its depth is what the program owes, and on this
+///   very file the deepest model sits one past the flag's own default of 5. So
+///   it is refused — exit 2 with a stderr `error:`, the shape a flag-
+///   combination refusal already takes — rather than honoured (which would
+///   read a lattice layer index as a tree depth, `T1d.10.6.4`'s question) or
+///   ignored (which is what shipped).
+///
+/// The refusal is checked on **all three** subcommands that take the flag, not
+/// just the one the finding was written about: `solve`, `test` and `render
+/// lattice` all solve, so all three meet the traversal. The lattice arm of
+/// each pair is the control — nothing here changed for it.
+#[test]
+fn the_tree_traversal_honours_n_and_refuses_m() {
+    const FILE: &str = "examples/zebra2-minus-15-obligations.ein";
+
+    // **All three subcommands that take the flag**, because all three solve
+    // and fixing one of them is how the defect reappears next door.
+    for args in [
+        vec!["solve", FILE, "-m", "3"],
+        vec!["test", "tests/stdlib", "-m", "3"],
+        vec!["render", "lattice", FILE, "--max-set-size", "3"],
+    ] {
+        let refused = ein_traversal("tree", &args);
+        assert_eq!(refused.code, 2, "{args:?}: {}{}", refused.err, refused.out);
+        assert!(
+            refused.err.contains("--max-set-size bounds the lattice's")
+                && refused.err.contains("EIN_TRAVERSAL=tree"),
+            "{args:?}: the refusal does not say which two things conflict:\n{}",
+            refused.err
+        );
+        assert!(
+            refused.out.is_empty(),
+            "{args:?}: a refused run still printed its output:\n{}",
+            refused.out
+        );
+        // The same flag under the lattice is ordinary.
+        let lattice = ein(&args);
+        assert_eq!(lattice.code, 0, "{args:?}: {}", lattice.err);
+    }
+
+    // …and with no `-m`, the tree runs and answers the question `-n` asked.
+    let one = ein_traversal("tree", &["solve", FILE, "--stats"]);
+    assert_eq!(one.code, 0, "{}", one.err);
+    assert_eq!(
+        one.field("solutions (k)").as_deref(),
+        Some("1"),
+        "the default -n 1 did not stop the tree:\n{}",
+        one.out
+    );
+    let all = ein_traversal("tree", &["solve", FILE, "-e", "--stats"]);
+    assert_eq!(all.field("solutions (k)").as_deref(), Some("32"));
+    assert_eq!(
+        all.field("enterings").as_deref(),
+        Some("86"),
+        "the S1d.10.6 headline moved:\n{}",
+        all.out
+    );
+}

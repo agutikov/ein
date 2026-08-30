@@ -787,16 +787,6 @@ fn batch_per_worker() -> usize {
 #[cfg(feature = "parallel")]
 const BATCH_PER_WORKER: usize = 512;
 
-/// Does a fork **resume** root's saturation? Yes, since
-/// [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
-/// — this is the shipping path, and
-/// [D3](../../../../docs/history/m1a_rust/divergences.md) is what it costs.
-///
-/// The one way to get the old fresh-saturator path back is a `fork-delta`
-/// build with `EIN_FORK_DELTA=0`, and that exists for one reason: D3's rule 2
-/// wants a fixture that demonstrates the divergence and keeps it from
-/// silently widening. `utils/fork_delta_verify.py` is that fixture, and it
-/// needs both arms out of one binary.
 /// `EIN_TRAVERSAL=tree` — the per-obligation depth-first traversal of M1d
 /// [S1d.10.6](../../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal),
 /// off by default.
@@ -809,10 +799,25 @@ const BATCH_PER_WORKER: usize = 512;
 /// [Q-M1a.18](../../../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)'s
 /// shape of decision because the counters move — is
 /// [T1d.10.6.6](../../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)'s.
-fn tree_traversal() -> bool {
+///
+/// `pub` since M1e S1e.2.1 so `ein solve` can read the same answer this module
+/// does rather than keep a second copy of the environment lookup: the CLI
+/// refuses an explicit `--max-set-size` under this traversal, which is a
+/// question about the traversal and not about the flag.
+pub fn tree_traversal() -> bool {
     std::env::var_os("EIN_TRAVERSAL").is_some_and(|v| v == "tree")
 }
 
+/// Does a fork **resume** root's saturation? Yes, since
+/// [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
+/// — this is the shipping path, and
+/// [D3](../../../../docs/history/m1a_rust/divergences.md) is what it costs.
+///
+/// The one way to get the old fresh-saturator path back is a `fork-delta`
+/// build with `EIN_FORK_DELTA=0`, and that exists for one reason: D3's rule 2
+/// wants a fixture that demonstrates the divergence and keeps it from
+/// silently widening. `utils/fork_delta_verify.py` is that fixture, and it
+/// needs both arms out of one binary.
 fn resume_forks() -> bool {
     !(cfg!(feature = "fork-delta") && std::env::var_os("EIN_FORK_DELTA").is_some_and(|v| v == "0"))
 }
@@ -888,9 +893,16 @@ impl Run<'_> {
         // the lattice's 101 and `examples/zebra.ein` **11 083** against 111,
         // for the same single model each. Both carry `(hrule guess …)`.
         //
-        // The probe is one generation call at root, and the mode is a property
-        // of the program rather than of the node, so asking once is asking
-        // enough.
+        // The probe is one generation call at root. It used to carry a second
+        // claim — *the mode is a property of the program rather than of the
+        // node, so asking once is asking enough* — and M1e S1e.2.1 removed it:
+        // oblgen's mode per node depends on activator **facts**, which a fork
+        // can derive, and a flip at an inner node fell through to the blind
+        // enumerator, whose branches are not jointly exhaustive. What root's
+        // probe decides now is only whether the tree runs *at all*, because
+        // root is the one node that can still hand the run back to the
+        // lattice. `Run::tree_node` re-reads the mode at every node it
+        // expands.
         let mode = {
             let mut s = Session {
                 kb: root,
@@ -912,6 +924,35 @@ impl Run<'_> {
             });
             return Ok(false);
         }
+        // **What the tree takes of the stop policy, said out loud** — M1e
+        // S1e.2.1, `CO-H3`(a). `stop_after` it honours, in `tree_node`.
+        // `max_set_size` it does not, and cannot: the flag bounds the
+        // *lattice's* commitment-set enumeration, and a tree path of length
+        // `d` is only accidentally the same shape as a set of size `d`. Its
+        // depth is bounded by discharge — by how many instances root owes —
+        // and the two numbers are not close: `zebra2-minus-15-obligations`
+        // reaches its 32 models at depth **6** and `--max-set-size` defaults
+        // to **5**, so honouring the default as a depth cap would silently
+        // delete the result the traversal exists for. Mapping one onto the
+        // other is the input side of exactly the conflation `layers_explored`
+        // already carries on the output side, which is
+        // [T1d.10.6.4](../../../../docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)'s
+        // and not this milestone's. `ein solve` refuses an explicit `-m`
+        // under `EIN_TRAVERSAL=tree` rather than ignoring it; a library caller
+        // reads this event.
+        events.emit("traversal", |l| {
+            l.str("kind", "tree");
+            l.str("verdict", "accepted");
+            l.str("reason", mode.as_str());
+            l.str(
+                "max_set_size",
+                "not applicable — depth is bounded by discharge",
+            );
+            l.num(
+                "stop_after",
+                self.opts.stop_after.map(|n| n as i64).unwrap_or(-1),
+            );
+        });
         // Not exhaustion — discharge. See the note above.
         self.lstate.truncated = true;
         let mut commit: Vec<FactId> = Vec::new();
@@ -930,6 +971,12 @@ impl Run<'_> {
     /// means every instance is empty, and it is sound for the same reason the
     /// branch is complete — one undischarged obligation with no live
     /// alternative is enough.
+    ///
+    /// Returns `true` when `stop_after` has been met and the caller must stop
+    /// too — M1e S1e.2.1, `CO-H3`(a). `ein solve` defaults to `-n 1`, and this
+    /// traversal used to explore and record the **entire** tree while being
+    /// asked for one model: 32 where the lattice said 1, on the same file and
+    /// the same flags.
     #[allow(clippy::too_many_arguments)]
     fn tree_node(
         &mut self,
@@ -940,9 +987,9 @@ impl Run<'_> {
         dumper: &mut dyn Dumper,
         commit: &mut Vec<FactId>,
         depth: u32,
-    ) -> Result<(), SolveError> {
+    ) -> Result<bool, SolveError> {
         self.stats.base.layers_explored = self.stats.base.layers_explored.max(depth as u64);
-        let branch = {
+        let (branch, mode) = {
             let mut s = Session {
                 kb: base,
                 terms,
@@ -951,9 +998,53 @@ impl Run<'_> {
                 memo: self.memo.clone(),
             };
             let mut hs = crate::hypgen::HypGenStats::new();
-            crate::hypgen::generate_one_branch(&mut s, &mut hs)
-                .map_err(|e| SolveError::Compile(CompileError(e.to_string())))?
+            let branch = crate::hypgen::generate_one_branch(&mut s, &mut hs)
+                .map_err(|e| SolveError::Compile(CompileError(e.to_string())))?;
+            (branch, hs.rung.mode)
         };
+        // **The rung is re-read here, not assumed from root** — M1e S1e.2.1,
+        // `CO-H3`(c), applying the user's ruling of 2026-08-28. `Run::tree`
+        // used to probe once on the premise that the mode is a property of the
+        // program; oblgen's mode per node depends on activator **facts**, and a
+        // fork derives facts. A flip falls through to the blind enumerator
+        // (`Mode::Declined`), whose candidates are *not* one owed instance's
+        // jointly-exhaustive alternatives — so the tree would have treated a
+        // non-exhaustive branch set as exhaustive and **missed models**, in
+        // silence, which is the one failure class this project's own
+        // discipline treats as worst.
+        //
+        // The cost is nothing: the node already built a `HypGenStats`, already
+        // called `generate_one_branch`, and already threw `hs.rung.mode` away.
+        //
+        // What the guard *does* on a flip is the conservative arm and not a
+        // ruling: narrate and stop descending, which is what root already does
+        // for every other rung — root can hand the run back to the lattice and
+        // an inner node cannot, so here "decline" is "expand no further". The
+        // run is `truncated` either way, so the count it reports is already a
+        // lower bound and stays sound.
+        //
+        // `Mode::Stuck` reaches this too, and there it is not a flip but the
+        // designed empty branch: the chosen instance is refuted on every
+        // alternative, `generate_one_branch` emitted nothing, and the loop
+        // below would do nothing anyway. Narrating it costs one event and
+        // distinguishes, in the stream, a node that pruned from a node that
+        // gave up — which nothing could tell apart before.
+        //
+        // **The regression test is owed**, and its owner is
+        // [S1f.10.6](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md),
+        // which constructs the flip. Today's stdlib activators are all
+        // root-asserted, so no corpus program reaches this line with a mode
+        // other than `Obligations`; a guard shipped without a probe is a guard
+        // nobody can remove.
+        if mode != crate::oblgen::Mode::Obligations {
+            events.emit("traversal", |l| {
+                l.str("kind", "tree");
+                l.str("verdict", "declined");
+                l.str("reason", mode.as_str());
+                l.num("depth", depth as i64);
+            });
+            return Ok(false);
+        }
         for cand in branch {
             self.check_budget(dumper)?;
             // `try_commitment_set` branches from what it is handed, and
@@ -1009,6 +1100,54 @@ impl Run<'_> {
                         nogood_subsumed: false,
                     },
                 );
+                // **The refutation is recorded, and only recorded** — M1e
+                // S1e.2.1, `CO-H3`(b). The lattice's `handle_dead` does three
+                // things with a dead commitment: emit the no-good, write back
+                // `(not h)` for a singleton, and push it here. The first two
+                // change what the *search* does next; the third changes only
+                // what the *answer* may say, and this arm did none of them.
+                //
+                // What that cost was a false surface rather than a wrong
+                // answer, which is worse in one specific way: a tree run
+                // finding no model returned `Contradiction` and `finalise`
+                // unioned over an empty list, so the table printed *refuted so
+                // far (0 facts)* for a run that had refuted real commitments,
+                // a `--trace` proof had empty `dead_commitments`, and the
+                // nogood counters read 0. Measured on the smallest program
+                // that reaches the arm, the lattice printed a two-fact core
+                // where the tree printed none.
+                //
+                // The stage that fixed it offered two options — *learn* (emit
+                // the clause and the writeback, as the lattice does) and
+                // *refuse* (print no core at all under tree mode) — and this
+                // is neither. Learning is a search change inside a traversal
+                // whose reporting contract is M1d's open `T1d.10.6.4`, and it
+                // would move the published **86 enterings**; refusing throws
+                // away evidence the run has in hand. Recording keeps the
+                // search byte-identical — the number is still 86 — and makes
+                // the core true, which is the same move S1d.3.3 made for
+                // `Ambiguity`'s `k` taken one step further: not *qualify the
+                // claim*, but *state the one the run can support*. The
+                // counters stay honest at `emitted=0` because nothing was
+                // learned, and `learned_clause` is empty for the same reason —
+                // this traversal prunes by exhausting a branch, not by
+                // remembering it.
+                self.lstate.dead.push(DeadCommitment {
+                    commitment: c,
+                    unsat_core: r.unsat_core.clone(),
+                    learned_clause: Vec::new(),
+                    layer: depth + 1,
+                    kind: r.kind,
+                    // `store_lattice` is the only reader of a state key, and
+                    // the lattice leaves it empty when nothing keeps the fork.
+                    // A tree node always holds its fork, so the condition has
+                    // to be written rather than inherited.
+                    state_key: if self.opts.store_lattice {
+                        state_key(&r.kb)
+                    } else {
+                        Default::default()
+                    },
+                });
                 commit.pop();
                 continue;
             }
@@ -1029,19 +1168,36 @@ impl Run<'_> {
                 // generation pipeline over `r.kb`, so its kill cache may have
                 // written into the KB recorded on the next line — saturated,
                 // no; consistent, yes but before that write; maximal, by
-                // `complete`, which here is additionally conditioned on a rung
-                // mode probed once at the root (`Run::tree`). The fourth
-                // record site and the only one with no fixture, because
-                // nothing has built the program yet. See `Run::record_node`.
+                // `complete`, which here is additionally conditioned on the
+                // rung mode re-read at the top of this call. The fourth record
+                // site and the only one with no fixture, because nothing has
+                // built the program yet. See `Run::record_node`.
                 let firings = std::mem::take(&mut r.firings);
                 let owes = std::mem::take(&mut r.owes);
                 self.record_node(&mut r.kb, terms, commit.clone(), firings, depth + 1, owes);
-            } else {
-                self.tree_node(&mut r.kb, terms, ast, events, dumper, commit, depth + 1)?;
+                // **The stop policy, honoured** — M1e S1e.2.1, `CO-H3`(a),
+                // and the same test `commit_entering` applies at a layer.
+                // `truncated` is already set unconditionally by `Run::tree`
+                // (not exhaustion — discharge), so an early return needs no
+                // second bookkeeping: the read-out is right for it already.
+                // `record_node` dedups by state key, so the count that gates
+                // is the number of *distinct* models, which is what `-n`
+                // names.
+                if self
+                    .opts
+                    .stop_after
+                    .is_some_and(|n| self.lstate.nodes.len() as u64 >= n)
+                {
+                    commit.pop();
+                    return Ok(true);
+                }
+            } else if self.tree_node(&mut r.kb, terms, ast, events, dumper, commit, depth + 1)? {
+                commit.pop();
+                return Ok(true);
             }
             commit.pop();
         }
-        Ok(())
+        Ok(false)
     }
 
     // ── Phase 1 ────────────────────────────────────────────────

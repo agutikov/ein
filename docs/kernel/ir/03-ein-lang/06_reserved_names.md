@@ -91,6 +91,24 @@ are deliberately *not* reserved — they migrated into the `std.macro` module
 spelled `open` is `unknown` since 2026-08-24, which is what freed the word for
 the section below.
 
+**And the guard holds through every import route** — which since M1e S1e.2.1
+is a checked claim rather than a stated one. `(import M)` and `(import M :as A)`
+prefix every name the module defines, and a reserved name must survive that
+prefixing *unrenamed* so the loader still sees it. Between M1d S1d.2.3 and
+S1e.2.1 it did not: the resolver filtered against a second, hand-maintained
+copy of the reserved list which had eight names where the kernel's had nine,
+and a module declaring `open` under any of the four declarators was silently
+renamed to `M.open` and loaded with **exit 0** — while the same declaration
+written directly, or imported flat via `:symbols (open)`, was refused. `absent`
+was in both copies and behaved correctly, which is what made it a drift rather
+than a design. There is one list now
+([`ein_core::RESERVED`](../../../../ein.rs/crates/ein-core/src/terms.rs)); the
+thirty-two cells of *four declarators × {`open`, `absent`} × four routes* are
+`ein-ir`'s `reserved_names_are_reserved_through_every_import_route`, and the
+four routes are pinned as fixtures in
+[`examples/broken/load/`](../../../../examples/broken/load/) —
+`reserved_open_direct`, `_symbols`, `_qualified`, `_aliased`.
+
 ## The verdict atom — `open` (M1d P1d.2 S1d.2.3, read since S1d.2.4)
 
 Reserved, but **not** a rule-body primitive: it appears only as an `:assert`

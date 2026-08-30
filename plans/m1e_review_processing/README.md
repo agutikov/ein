@@ -219,9 +219,9 @@ the milestone closes when every row has one.
 
 | id | finding | stage | disp. |
 |---|---|---|---|
-| `CO-H1` | `(eq ?x)` panics the process at match time (binary-verified) | [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) | **its class is swept** — [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) T2, `ein-cli/tests/primitive_arity.rs`: the panic is one of **seven** wrong cells and every one is in the three primitives the grammar does not shape-pin. The fix is still this stage's, and it now has a rule to fix rather than a case |
-| `CO-H2` | reserved-name guard bypassed by import qualification; `(macro open …)` silently renamed (binary-verified) | [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) | |
-| `CO-H3` | tree traversal: stop policy ignored · dead branches learn nothing · root-only rung probe | [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) | |
+| `CO-H1` | `(eq ?x)` panics the process at match time (binary-verified) | [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) | **fixed 2026-08-29 — as the class, not the case.** Its class was swept first ([S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md) T2: the panic is one of **seven** wrong cells, all three of them in the primitives the grammar does not shape-pin), so T1 refused all seven at compile time with a positioned `CompileError` and answered [Q-M1e.18](open_questions.md#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments) with its candidate (2). Four fixtures under `examples/broken/compile/`, the matcher's `assert!` now a `debug_assert_eq!` against `Pred::arity` |
+| `CO-H2` | reserved-name guard bypassed by import qualification; `(macro open …)` silently renamed (binary-verified) | [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) | **fixed 2026-08-29**, and it was wider than reported: **four** declarators, not `macro` alone, and **four** routes, not three — `:as` is a fourth and was equally broken. One list now (`ein_core::RESERVED`), the 32-cell matrix in `ein-ir`'s `reserved_names_are_reserved_through_every_import_route`, four fixtures under `examples/broken/load/`. `MA-L5`'s comment went with the duplication it explained |
+| `CO-H3` | tree traversal: stop policy ignored · dead branches learn nothing · root-only rung probe | [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) | **fixed 2026-08-29, all three.** `-n` honoured; `-m` **refused** at exit 2 with a reason (6 of the 32 models sit at commitment size 6, past its default of 5, so the obvious depth-cap reading would have deleted a fifth of the headline); a dead branch **records** its refutation — a third option the stage's table did not have, and the only one that is both true and free; the rung re-read per node, per the 2026-08-28 ruling, its regression test owed to [S1f.10.6](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md). Headline re-measured: **86 enterings, 32 models, fact for fact** |
 | `CD-H1` | `docs/kernel` presents removed or never-built machinery as current, ≥ 6 pages | [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) | |
 | `CD-H2` | M1d landed unevenly: live pages contradict each other on the `Open` verdict | [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) | |
 | `CD-H3` | `defined_behaviour.md` §3.2's "preserved bug" does not reproduce | [S1e.1.4](p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md) | **fixed** 2026-08-29 — three probes banked, §3.2 rewritten to the shape that reproduces, and the same claim corrected in **nine** other places (the README twice, five source comments, two history pages) |
@@ -291,7 +291,7 @@ the milestone closes when every row has one.
 | `MA-L2` | a literal ~22-space run inside the non-exhausted `Contradiction` headline | [S1e.4.8](p1e.4_low/s1e.4.8_maintainability.md) | |
 | `MA-L3` | `summary.rs`'s `write()` doc comment contradicts the JSON writer's tested behavior | [S1e.4.8](p1e.4_low/s1e.4.8_maintainability.md) | |
 | `MA-L4` | `sanity -y` re-saturates parents with a fresh memo, polluting the live event stream | [S1e.4.8](p1e.4_low/s1e.4.8_maintainability.md) | |
-| `MA-L5` | `imports.rs` predicts a refactor that never happened, above the list that then drifted | [S1e.4.8](p1e.4_low/s1e.4.8_maintainability.md) | |
+| `MA-L5` | `imports.rs` predicts a refactor that never happened, above the list that then drifted | [S1e.4.8](p1e.4_low/s1e.4.8_maintainability.md) | **fixed 2026-08-29 by [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md)** T2, as its own stage predicted (*"the comment goes when the duplication it explains goes"*). The list and the comment were deleted together; `qualify()`'s doc now says what `CO-H2` was instead of what P1a.3 was going to do |
 
 ### The questions — 10
 
@@ -389,7 +389,11 @@ compose it then.
   a tree *reports* where a lattice reports layers is an open M1d design
   question, and [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) fixes the
   contract violations without answering it — or, where it cannot, makes the
-  surface refuse rather than lie.
+  surface refuse rather than lie. *(Outcome, 2026-08-29: all three were fixed.
+  The third stopped being a risk on 2026-08-28, when the user ruled that the
+  mode is re-read at every node; of the other two, one refuses — `-m` — and the
+  other turned out not to need to, because the evidence the read-out was
+  missing was already in hand.)*
 - **Scope.** 63 findings is a milestone-sized backlog and P1e.4's 21 are
   mostly one-line. The phase is deliberately last and deliberately batched;
   if the milestone has to end early, it ends after

@@ -169,18 +169,27 @@ fn a_macro_body_may_invoke_another_macro() {
 /// `reserved-macro-names-beyond-absent` — the loader's shadowing check covers
 /// the whole kernel vocabulary, not just `absent`.
 ///
-/// `RESERVED` is eight names, and four of them (`not` / `and` / `or` / `neq`)
-/// cannot even be *written* as a macro name — the grammar stops them first
-/// (see `a_reserved_keyword_cannot_be_written_as_a_macro_name`). The other
-/// four are ordinary SYMBOLs, so nothing but this check stands between a
-/// puzzle and a macro called `eq` silently shadowing the equality predicate
-/// in every rule that mentions it. The second half of the test is what makes
-/// the claim "exactly": `forall` and `open` are kernel *sugar* and look just
-/// as reserved, but they are stdlib macros — a puzzle must be free to define
-/// its own.
+/// [`ein_core::RESERVED`] is **nine** names, and four of them (`not` / `and` /
+/// `or` / `neq`) cannot even be *written* as a macro name — the grammar stops
+/// them first (see `a_reserved_keyword_cannot_be_written_as_a_macro_name`).
+/// The other five are ordinary SYMBOLs, so nothing but this check stands
+/// between a puzzle and a macro called `eq` silently shadowing the equality
+/// predicate in every rule that mentions it. The second half of the test is
+/// what makes the claim "exactly": `forall` and `unknown` are kernel *sugar*
+/// and look just as reserved, but they are stdlib macros — a puzzle must be
+/// free to define its own.
+///
+/// **`open` is the fifth, and it was missing here until M1e S1e.2.1.** M1d
+/// S1d.2.3 made it the verdict atom and added it to `RESERVED`; this list, the
+/// sentence above it (which still called `open` a stdlib macro) and
+/// `imports.rs`'s second copy of `RESERVED` all stayed at eight. The last of
+/// those three was [`CO-H2`], a shipped defect; the first two were only ever
+/// this comment being wrong, which is the same drift one layer out.
+///
+/// [`CO-H2`]: ../../../../plans/m1e_review_processing/review/correctness/high.md
 #[test]
 fn the_kernel_names_a_macro_may_not_shadow() {
-    for name in ["absent", "eq", "false", "relation"] {
+    for name in ["absent", "eq", "false", "open", "relation"] {
         let src = format!("(macro {name} (?p) (rel ?p))");
         let err = load_macro_names(&src).expect_err("reserved names are rejected at load");
         assert!(

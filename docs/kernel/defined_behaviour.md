@@ -411,6 +411,45 @@ Binding the name is the eleventh and is not new: `(relation open …)`,
 `(macro open …)` and `(rule open …)` take §1's existing *shadows a reserved
 kernel name* message, because `open` joined `RESERVED`.
 
+### 4.3 Kernel meta-primitive arity — M1e S1e.2.1
+
+Two more, and they are the first on this page whose *predecessor was not a
+message at all*. `(eq ?x)` used to reach the matcher and take the process down
+with a `panicked at … assertion failed` and exit **101** — a refusal carrying a
+stack trace, which is the one thing
+`corpus_cli::every_refusal_carries_a_diagnostic` forbids — and `(eq ?x A B)` /
+`(absent A B)` used to *fire*, having dropped every argument past the ones they
+read. Both are `CompileError`s now, refused before a `Step::Guard` exists.
+
+| input | message | exit |
+|---|---|---|
+| `eq` or `neq` at any arity but 2 | ``` `(eq …)` takes exactly 2 arguments and was given <n>: <repr> at <loc> — a built-in predicate compares exactly two values, so write one guard per pair. ``` | 1 |
+| `absent` at any arity but 1 | ``` `(absent …)` takes exactly 1 argument and was given <n>: <repr> at <loc> — negation-as-failure is over a single premise, so wrap several in an `(and …)`. ``` | 1 |
+
+They travel as `ein.inference.compile.CompileError: <message>` — §4's second
+row — because that is the layer they are raised at, and by §4.1's rule the
+messages themselves name no exception class. **`<loc>` is real**: unlike the
+loader messages of §1.5, which end in `at None` because a top-level form
+carries no position, a premise is a `generic_list` and the parser hands one a
+`Loc`. So these two read `at Loc(file='…', line=…, col=…)`.
+
+**Why only two rows for seven wrong cells.** The
+[S1e.1.6 sweep](../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.6_coverage_gaps.md) found
+the rule behind them:
+[`00_ebnf.md` §2](ir/03-ein-lang/00_ebnf.md)'s *Kernel meta-primitives
+(shape-pinned)* block names **four** productions and the engine has **seven**
+primitives, so `eq`, `absent` and `false` are ordinary `GenericList`s whose
+arity is checked by whatever reads them. `neq` is pinned and its wrong arities
+have always been a positioned **parse** error; `false` is unpinned and needs no
+row, being silent in a `:match` at every arity, which is what a reader expects.
+That leaves `eq` and `absent`, one row each, at every arity but their own.
+
+Four fixtures pin them in
+[`examples/broken/compile/`](../../examples/broken/compile/README.md) —
+`eq_arity_low`, `eq_arity_high`, `absent_arity_zero`, `absent_arity_high` —
+and all 21 cells of the sweep, the fourteen that were right included, are
+`ein-cli/tests/primitive_arity.rs`.
+
 ## 5. The CLI surface
 
 Everything a script or a habit can depend on is fixed: the four subcommands

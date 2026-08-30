@@ -250,3 +250,174 @@ fn module_paths_are_mangled_the_way_pathlib_mangles_them() {
         panic!("{msg}");
     }
 }
+
+// ── M1e S1e.2.1 — CO-H2: one reserved-name list ────────────────────
+
+/// A scratch module directory one test owns and deletes.
+///
+/// Tagged per test for `primitive_arity.rs`'s reason: these run as threads of
+/// one binary, and an untagged directory means the second `new()` deletes the
+/// first test's modules out from under it — which reads as *"module not
+/// found"* in a test whose whole subject is what a module may declare.
+struct Modules(PathBuf);
+
+impl Modules {
+    fn new(tag: &str) -> Modules {
+        let dir = std::env::temp_dir().join(format!("ein-reserved-{}-{tag}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).expect("a scratch directory");
+        Modules(dir)
+    }
+
+    /// Write `m.ein` and load `src` against it — `Ok(())`, or the message.
+    fn load(&self, module: &str, src: &str) -> Result<(), String> {
+        std::fs::write(self.0.join("m.ein"), module).expect("the module is written");
+        let mut ast = Ast::new();
+        let mut terms = ein_core::Terms::new();
+        let forms = parse(&mut ast, src, Some("<probe>")).map_err(|e| format!("parse: {e}"))?;
+        ein_ir::load(&mut ast, &mut terms, &forms, Some(&self.0))
+            .map(|_| ())
+            .map_err(|e| e.0)
+    }
+}
+
+impl Drop for Modules {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.0);
+    }
+}
+
+/// One declaration of `name` under `decl`, as a module body.
+fn declaration(decl: &str, name: &str) -> String {
+    let body = match decl {
+        "rule" | "hrule" => {
+            format!("({decl} {name} ()\n  :match (p ?x)\n  :assert (q ?x)\n  :why \"d\")")
+        }
+        "relation" => format!("(relation {name} T)"),
+        "macro" => format!("(macro {name} (?x) (p ?x))"),
+        other => unreachable!("{other}"),
+    };
+    format!("(relation p T)\n(relation q T)\n{body}\n")
+}
+
+/// **A declarator may not bind a reserved name, by whichever route it
+/// arrives** — M1e S1e.2.1, `CO-H2`.
+///
+/// Thirty-two cells: four declarators × two names × four import routes. The
+/// names are `open`, which is `ein-core`'s ninth and was the drift, and
+/// `absent`, which is in every copy of the list there has ever been and is the
+/// control — the finding is precisely that the two behaved differently.
+///
+/// **Eight of the thirty-two used to load with exit 0.** `imports.rs` carried
+/// its own `RESERVED_NAMES: [&str; 8]` and `qualify()` filtered against it, so
+/// a name it did not know was prefixed — `m.open` — before the loader could
+/// object, and `qualify()`'s own doc comment stated the opposite intent. Two
+/// of the four routes go through `qualify()`, hence 4 declarators × 2 routes.
+/// The comment beside the list even predicted the fix (*"P1a.3 brings the
+/// registries over and this becomes a query against them"*); it never
+/// happened, and what closed it is one `ein_core::is_reserved` call.
+///
+/// **The fourth route is this test's own finding.** The review named three —
+/// direct, flat `:symbols`, qualified — and `:as` is a fourth, taking the same
+/// `qualify()` path with a different prefix. It was equally broken.
+#[test]
+fn reserved_names_are_reserved_through_every_import_route() {
+    let m = Modules::new("routes");
+    let mut loaded: Vec<String> = Vec::new();
+    for decl in ["rule", "hrule", "relation", "macro"] {
+        for name in ["open", "absent"] {
+            let module = declaration(decl, name);
+            for (route, src) in [
+                ("direct", format!("{module}(p A)\n")),
+                ("symbols", format!("(import m :symbols ({name}))\n(p A)\n")),
+                ("qualified", "(import m)\n(p A)\n".to_string()),
+                ("aliased", "(import m :as z)\n(p A)\n".to_string()),
+            ] {
+                let cell = format!("{decl} {name} via {route}");
+                match m.load(&module, &src) {
+                    Ok(()) => loaded.push(cell),
+                    Err(e) => assert!(
+                        e.contains("shadows a reserved kernel name"),
+                        "{cell}: refused, but not as a reserved name: {e}"
+                    ),
+                }
+            }
+        }
+    }
+    assert!(
+        loaded.is_empty(),
+        "{} of 32 cells bound a reserved name:\n  {}",
+        loaded.len(),
+        loaded.join("\n  ")
+    );
+}
+
+/// The same four routes over a name that is **not** reserved, so the test
+/// above is a guard and not a blanket refusal.
+///
+/// It also pins what qualification does with the name it is allowed to touch:
+/// flat and direct keep it, `(import m)` prefixes it with the module name and
+/// `:as z` with the alias. A fix that refused everything, or renamed nothing,
+/// passes the previous test and fails this one.
+#[test]
+fn an_unreserved_name_still_qualifies_through_all_four_routes() {
+    let m = Modules::new("control");
+    let module = declaration("macro", "opennnn");
+    for (route, src) in [
+        ("direct", format!("{module}(p A)\n")),
+        (
+            "symbols",
+            "(import m :symbols (opennnn))\n(p A)\n".to_string(),
+        ),
+        ("qualified", "(import m)\n(p A)\n".to_string()),
+        ("aliased", "(import m :as z)\n(p A)\n".to_string()),
+    ] {
+        m.load(&module, &src)
+            .unwrap_or_else(|e| panic!("{route}: an unreserved name must load: {e}"));
+    }
+}
+
+/// **There is one reserved-name list, and it is [`ein_core::RESERVED`]** —
+/// M1e S1e.2.1's other half.
+///
+/// The test the finding asked for is *"assert the two lists are one"*, which a
+/// shared constant makes trivial and therefore worth stating as a behaviour
+/// instead: every name in `ein_core::RESERVED` is unbindable, checked one name
+/// at a time through the route that used to leak. A re-forked list fails here
+/// the moment the two disagree, and it fails naming the name.
+///
+/// Two outcomes count as reserved, and the split is the grammar's rather than
+/// the loader's: `and`, `neq`, `not` and `or` are SYMBOL-excluded by the lexer
+/// ([`crate::lex`]'s own list, which genuinely differs and is
+/// [`SE-L2`](../../../../plans/m1e_review_processing/p1e.4_low/s1e.4.2_semantics.md)),
+/// so a module declaring one never parses; the rest reach the loader and are
+/// refused there. What no name may do is **load**.
+#[test]
+fn every_ein_core_reserved_name_is_unbindable_through_a_qualified_import() {
+    let m = Modules::new("all-names");
+    let mut bound: Vec<&str> = Vec::new();
+    let mut refused_at_parse: Vec<&str> = Vec::new();
+    for name in ein_core::RESERVED {
+        let module = declaration("macro", name);
+        match m.load(&module, "(import m)\n") {
+            Ok(()) => bound.push(name),
+            // The module's own parse error, surfaced through `resolve_imports`
+            // as a `LoadError` — the lexer refused the name a `SYMBOL` before
+            // any declaration existed to check.
+            Err(e) if e.contains("unexpected input") => refused_at_parse.push(name),
+            Err(e) => assert!(
+                e.contains("shadows a reserved kernel name"),
+                "{name}: refused, but not as a reserved name: {e}"
+            ),
+        }
+    }
+    assert!(
+        bound.is_empty(),
+        "reserved names a qualified import still binds: {bound:?}"
+    );
+    assert_eq!(
+        refused_at_parse,
+        ["and", "neq", "not", "or"],
+        "the lexer's SYMBOL exclusions are not the four SE-L2 names"
+    );
+}

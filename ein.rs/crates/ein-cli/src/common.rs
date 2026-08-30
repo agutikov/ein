@@ -6,8 +6,52 @@
 
 use std::path::Path;
 
+use clap::ArgMatches;
 use ein_core::{Kb, Terms};
 use ein_ir::{Ast, NodeId};
+
+/// **`--max-set-size` is refused under `EIN_TRAVERSAL=tree`** — M1e S1e.2.1,
+/// [`CO-H3`](../../../../plans/m1e_review_processing/review/correctness/high.md)(a).
+/// Returns `true` when it printed the refusal and the caller must exit **2**.
+///
+/// The flag bounds the size of the commitment *sets* `Run::phase2` enumerates.
+/// The tree enumerates none: it walks one owed instance's alternatives and
+/// stops on discharge, so its depth is a property of the program — how many
+/// instances root owes — rather than a search parameter. Reading one as the
+/// other is not a harmless approximation: 6 of
+/// `examples/zebra2-minus-15-obligations.ein`'s 32 models sit at commitment
+/// size **6**, one past this flag's own default of 5, so the obvious repair
+/// would delete a fifth of the traversal's headline result at stock settings.
+/// It is also the input side of exactly the conflation `layers_explored`
+/// carries on the output side, which is `T1d.10.6.4`'s question and not a
+/// review stage's.
+///
+/// So it is refused rather than honoured — and rather than *ignored*, which is
+/// what the traversal shipped doing, and which is the worst of the three: a
+/// flag one traversal honours and the other silently drops.
+///
+/// Only an **explicit** `-m` is refused. All three subcommands that take it
+/// declare a `default_value`, so `get_one` always answers and the question
+/// *"did the user say this?"* is `value_source`; the default is the lattice's,
+/// not a statement about the tree.
+///
+/// It lives here rather than in `solve.rs` because three subcommands take the
+/// flag and all three solve — `solve`, `test` and `render lattice` — and
+/// fixing one of the three is how the defect gets reintroduced next door.
+pub fn refuse_max_set_size_under_tree(m: &ArgMatches) -> bool {
+    if !ein_infer::solve::tree_traversal()
+        || m.value_source("max-set-size") != Some(clap::parser::ValueSource::CommandLine)
+    {
+        return false;
+    }
+    eprintln!(
+        "error: --max-set-size bounds the lattice's commitment-set enumeration, \
+         and EIN_TRAVERSAL=tree enumerates no sets — it walks one owed \
+         instance's alternatives and stops on discharge, so its depth is what \
+         the program owes. Drop the flag, or drop EIN_TRAVERSAL=tree."
+    );
+    true
+}
 
 /// `Path.read_text(encoding="utf-8")` — including how it *fails*.
 ///

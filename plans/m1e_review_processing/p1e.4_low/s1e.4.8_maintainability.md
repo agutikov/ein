@@ -48,12 +48,20 @@ every checked commitment recompiles all plans per parent — a cost — and the
 recompiles narrate `compile` events into the run's **live stream**, so a `-y`
 run's stream differs from a plain run's by more than the check itself.
 
-**`MA-L5` — a comment predicting a refactor that never happened.**
-[`imports.rs:42-51`](../../../ein.rs/crates/ein-ir/src/imports.rs): *"P1a.3
-brings the registries over and this becomes a query against them"* — it never
-did, and the hand copy below it is the one that missed `open`. The comment now
-actively misleads: it explains why the duplication is temporary, and it is
-not.
+**`MA-L5` — a comment predicting a refactor that never happened.** ✅ **Done
+2026-08-29 by [S1e.2.1](../p1e.2_high/s1e.2.1_correctness.md) T2**, which is
+what this stage's *Depends on* line said would happen: the comment went with
+the duplication it explained. Nothing is left for this stage to do — the
+`RESERVED_NAMES` array and its four-line prediction are deleted, `qualify()`
+filters against `ein_core::is_reserved`, and that function's own doc comment
+now records what the drift *was* rather than what P1a.3 was going to do about
+it. The finding as reported:
+
+> [`imports.rs:42-51`](../../../ein.rs/crates/ein-ir/src/imports.rs): *"P1a.3
+> brings the registries over and this becomes a query against them"* — it never
+> did, and the hand copy below it is the one that missed `open`. The comment now
+> actively misleads: it explains why the duplication is temporary, and it is
+> not.
 
 ## Acceptance
 

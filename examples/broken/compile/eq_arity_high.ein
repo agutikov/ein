@@ -1,0 +1,17 @@
+; M1e S1e.2.1 — a built-in predicate above its arity.
+;
+; The half of `CO-H1`'s class that is worse than the panic, and the half the
+; review could not have guessed from the one instance it had: this file used
+; to **load, compile, fire and exit 0**. `guard_holds` read `args[0]` and
+; `args[1]` and dropped the rest, so a three-way equality was silently
+; evaluated as a two-way one — a wrong answer with a success exit code, where
+; the panic is at least loud.
+;
+; `A` and `B` are distinct, so a reader of this rule expects it not to fire.
+; Before S1e.2.1 it fired.
+(relation p T)
+(relation q T)
+
+(rule three-way-equality ()
+  :match  (and (p ?x) (eq ?x A B))
+  :assert (q ?x))

@@ -559,7 +559,26 @@ impl<'a> Compiler<'a> {
         let args = self.ast.form_args(node).to_vec();
 
         // `(absent P)` — explicit negation-as-failure (S1.5.8c K-Δ.2).
-        if head_name.as_deref() == Some("absent") && !args.is_empty() {
+        //
+        // **Exactly one argument, checked here since M1e S1e.2.1.** `absent`
+        // is one of the three kernel meta-primitives the grammar does not
+        // shape-pin ([`00_ebnf.md` §2] names four of seven), so what its arity
+        // is checked by is whatever reads it — and until this line nothing
+        // did: `(absent)` fell through to the ordinary relation path and
+        // retired the rule in silence, while `(absent A B)` read `args[0]` and
+        // dropped the rest, firing a guard weaker than the one written.
+        //
+        // [`00_ebnf.md` §2]: ../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md
+        if head_name.as_deref() == Some("absent") {
+            if args.len() != 1 {
+                return Err(self.bad_arity(
+                    node,
+                    "absent",
+                    1,
+                    args.len(),
+                    "negation-as-failure is over a single premise, so wrap several in an `(and …)`",
+                ));
+            }
             return self.absent(node, args[0], top, out);
         }
 
@@ -596,7 +615,25 @@ impl<'a> Compiler<'a> {
 
         // A registered built-in predicate — `eq` / `neq`. Its args stay **raw
         // IR nodes**: see [`GuardArg`].
+        //
+        // The arity is the predicate's own ([`predicates::Pred::arity`]) and
+        // is checked **here**, at compile time, since M1e S1e.2.1. It used to
+        // be checked by a runtime `assert!` in the matcher and only from
+        // below: `(eq ?x)` reached `guard_holds` and panicked the process with
+        // a parity note for a message, and `(eq ?x A B)` reached it and passed
+        // on `args[0..2]` with the tail dropped. `neq` never showed either,
+        // because the grammar shape-pins `NeqForm` and `eq` is an ordinary
+        // `GenericList` — which is the rule, not the coincidence.
         if let Some(pred) = head_name.as_deref().and_then(predicates::get) {
+            if args.len() != pred.arity() {
+                return Err(self.bad_arity(
+                    node,
+                    pred.as_str(),
+                    pred.arity(),
+                    args.len(),
+                    "a built-in predicate compares exactly two values, so write one guard per pair",
+                ));
+            }
             let start = self.guard_args.len() as u32;
             for arg in args {
                 let ga = self.guard_arg(arg)?;
@@ -695,6 +732,32 @@ impl<'a> Compiler<'a> {
             monotone,
         });
         Ok(())
+    }
+
+    /// A kernel meta-primitive written at an arity it does not have — M1e
+    /// S1e.2.1, `CO-H1` and its class.
+    ///
+    /// Same shape as the refusals beside it: name the form, quote it as the IR
+    /// `repr` two implementations could be compared on, and say what to write
+    /// instead. It carries one thing they do not — the **position**. A
+    /// premise is a `generic_list`, which is the one production the parser
+    /// hands a `Loc`, so unlike a top-level declaration this can say where;
+    /// the sibling messages end in nothing rather than in `at None` only
+    /// because they predate anyone asking.
+    fn bad_arity(
+        &self,
+        node: NodeId,
+        name: &str,
+        want: usize,
+        got: usize,
+        advice: &str,
+    ) -> CompileError {
+        CompileError(format!(
+            "`({name} …)` takes exactly {want} argument{} and was given {got}: {} at {} — {advice}.",
+            if want == 1 { "" } else { "s" },
+            node_repr(self.ast, node),
+            ein_ir::loc_repr(self.ast, self.ast.loc(node)),
+        ))
     }
 
     fn empty_sub_plan(&self, node: NodeId) -> CompileError {

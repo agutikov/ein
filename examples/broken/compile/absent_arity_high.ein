@@ -1,0 +1,18 @@
+; M1e S1e.2.1 — `(absent …)` over two premises.
+;
+; `(absent P)` is negation as failure over **one** premise; everything past
+; the first argument was dropped. This rule reads as "no q and no p", and
+; `(p A)` is stated below, so a reader expects it not to fire. Before S1e.2.1
+; it fired — the second conjunct was never compiled, never matched and never
+; mentioned.
+;
+; The fix for a program that means the conjunction is to write it: wrap the
+; two in an `(and …)`, which is what `std.macro`'s `forall` expands to.
+(relation p T)
+(relation q T)
+
+(rule two-subject-naf ()
+  :match  (and (p ?x) (absent (q ?x) (p ?x)))
+  :assert (q ?x))
+
+(p A)

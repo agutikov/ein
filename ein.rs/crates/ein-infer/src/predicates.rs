@@ -35,6 +35,22 @@ impl Pred {
             Pred::Neq => terms.kernel.neq,
         }
     }
+
+    /// How many arguments the predicate reads — **and therefore how many it
+    /// may be written with**, M1e S1e.2.1.
+    ///
+    /// It lives on the predicate rather than in the compiler because that is
+    /// what makes the check a property of the registry: a third predicate
+    /// registered here declares its arity in the same line that declares its
+    /// name, and cannot be lowered without one. Both of M1's read exactly two
+    /// — `Matcher::guard_holds` resolves `args[0]` against
+    /// `args[1]` — and until S1e.2.1 nothing checked it: below two the matcher
+    /// panicked, above two the tail was dropped in silence.
+    pub fn arity(self) -> usize {
+        match self {
+            Pred::Eq | Pred::Neq => 2,
+        }
+    }
 }
 
 /// `predicates.get(name)` — the predicate for a head name, or `None`.
@@ -70,6 +86,16 @@ mod tests {
         // compiler leans on when it decides between a `Guard` and a `Scan`.
         assert!(!is_predicate("not"));
         assert!(!is_predicate("absent"));
+    }
+
+    /// Every registered predicate declares an arity, and the compiler refuses
+    /// anything else — M1e S1e.2.1, `CO-H1`'s class.
+    #[test]
+    fn every_registered_predicate_declares_its_arity() {
+        for name in names() {
+            let p = get(name).expect("names() is the registry");
+            assert_eq!(p.arity(), 2, "{name}: M1's two predicates are binary");
+        }
     }
 
     #[test]

@@ -217,6 +217,13 @@ struct Census {
     unloadable: usize,
     /// A rule the compiler refuses — `examples/broken/compile/` and the two
     /// `ein-bugs` fixtures. `solve` returns `Err`, so there is no proof.
+    ///
+    /// **Nine since M1e S1e.2.1**, where it was five: seven of the eight
+    /// `broken/compile/` fixtures (`activator_arity` is the exception — the
+    /// S1.22.0 arity filter drops its rule before the compiler sees it, so it
+    /// is an ordinary `positive`) plus the two `ein-bugs`. The four that
+    /// arrived are `CO-H1`'s class, `eq` and `absent` each below and above
+    /// their arity.
     uncompilable: usize,
     /// The entering budget cut before the lattice was exhausted, so `solve`
     /// answered `Aborted` and attached no proof.
@@ -276,8 +283,11 @@ fn assert_census(c: &Census) {
         c.checked
     );
     assert!(
-        c.uncompilable <= 6,
-        "{} corpus files no longer compile",
+        c.uncompilable <= 9,
+        "{} corpus files no longer compile — nine is the whole of \
+         `examples/broken/compile/` bar `activator_arity`, plus the two \
+         `ein-bugs` fixtures, and a tenth is a regression unless a fixture \
+         was added on purpose",
         c.uncompilable
     );
     assert!(

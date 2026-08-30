@@ -775,10 +775,20 @@ impl Matcher {
     /// not a curiosity: `(eq ?a ?b)` on two unbound variables passes in ein.py.
     fn guard_holds(&self, terms: &Terms, ast: &Ast, plan: &Plan, pred: Pred, args: Span) -> bool {
         let args = plan.guard_args(args);
-        assert!(
-            args.len() >= 2,
-            "`{}` needs two arguments; ein.py raises IndexError here",
-            pred.as_str()
+        // **Unreachable by construction since M1e S1e.2.1** — `Compiler::premise`
+        // refuses any arity but [`Pred::arity`] before a `Step::Guard` is ever
+        // pushed, so this span is exactly two wide. Kept as a `debug_assert!`
+        // rather than deleted, because it is now a claim about the compiler
+        // and not a check on the program: it was the *only* check until
+        // S1e.2.1, and what it did when it fired was take the process down at
+        // exit 101 with a parity note for a message
+        // ([`CO-H1`](../../../../plans/m1e_review_processing/review/correctness/high.md)).
+        debug_assert_eq!(
+            args.len(),
+            pred.arity(),
+            "`{}` reached the matcher at arity {}; the compiler must have refused it",
+            pred.as_str(),
+            args.len()
         );
         let equal = self.resolved_eq(ast, &args[0], &args[1]);
         let _ = terms;

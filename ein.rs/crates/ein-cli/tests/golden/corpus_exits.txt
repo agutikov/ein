@@ -129,12 +129,20 @@
 1    examples/broken/bare_top_level_atom.ein :: render rules
 1    examples/broken/bare_top_level_atom.ein :: saturate
 1    examples/broken/bare_top_level_atom.ein :: solve
+1    examples/broken/compile/absent_arity_high.ein :: saturate
+1    examples/broken/compile/absent_arity_high.ein :: solve
+1    examples/broken/compile/absent_arity_zero.ein :: saturate
+1    examples/broken/compile/absent_arity_zero.ein :: solve
 0    examples/broken/compile/activator_arity.ein :: render rules
 0    examples/broken/compile/activator_arity.ein :: saturate
 0    examples/broken/compile/activator_arity.ein :: saturate --dump
 0    examples/broken/compile/activator_arity.ein :: solve
 1    examples/broken/compile/empty_absent.ein :: saturate
 1    examples/broken/compile/empty_absent.ein :: solve
+1    examples/broken/compile/eq_arity_high.ein :: saturate
+1    examples/broken/compile/eq_arity_high.ein :: solve
+1    examples/broken/compile/eq_arity_low.ein :: saturate
+1    examples/broken/compile/eq_arity_low.ein :: solve
 1    examples/broken/compile/nested_or.ein :: saturate
 1    examples/broken/compile/nested_or.ein :: solve
 1    examples/broken/compile/unbound_head.ein :: saturate
@@ -235,6 +243,15 @@
 1    examples/broken/load/relation_reserved_name.ein :: render rules
 1    examples/broken/load/relation_reserved_name.ein :: saturate
 1    examples/broken/load/relation_reserved_name.ein :: solve
+1    examples/broken/load/reserved_open_aliased.ein :: render rules
+1    examples/broken/load/reserved_open_aliased.ein :: solve
+1    examples/broken/load/reserved_open_direct.ein :: render rules
+1    examples/broken/load/reserved_open_direct.ein :: saturate
+1    examples/broken/load/reserved_open_direct.ein :: solve
+1    examples/broken/load/reserved_open_qualified.ein :: render rules
+1    examples/broken/load/reserved_open_qualified.ein :: solve
+1    examples/broken/load/reserved_open_symbols.ein :: render rules
+1    examples/broken/load/reserved_open_symbols.ein :: solve
 0    examples/broken/load/rule_duplicate_name.ein :: render rules
 1    examples/broken/load/rule_duplicate_name.ein :: saturate
 1    examples/broken/load/rule_duplicate_name.ein :: solve

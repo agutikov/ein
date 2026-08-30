@@ -421,6 +421,15 @@ fn collect(arg: &Path, out: &mut Vec<PathBuf>) -> Result<(), String> {
 }
 
 pub fn run(m: &ArgMatches) -> i32 {
+    // `--max-set-size` and `EIN_TRAVERSAL=tree` are mutually exclusive — M1e
+    // S1e.2.1, `CO-H3`(a). The reason is `common::refuse_max_set_size_under_tree`'s.
+    // A tree run is doubly wrong here: it reports `exhausted = false` by
+    // construction, and an expectation is a claim about the *exhausted*
+    // answer, so every `:expect` in the selection would come back
+    // `NOT CHECKED`.
+    if crate::common::refuse_max_set_size_under_tree(m) {
+        return 2;
+    }
     let volume = if m.get_flag("quiet") {
         Volume::Quiet
     } else if m.get_flag("verbose") {

@@ -468,6 +468,11 @@ fn resolve_jobs(n: i64) -> usize {
 const ONE_PATH_FLAGS: [&str; 4] = ["events", "trace", "json-summary", "dump-states"];
 
 pub fn run(m: &ArgMatches) -> i32 {
+    // `--max-set-size` and `EIN_TRAVERSAL=tree` are mutually exclusive — M1e
+    // S1e.2.1, `CO-H3`(a). The reason is `common::refuse_max_set_size_under_tree`'s.
+    if crate::common::refuse_max_set_size_under_tree(m) {
+        return 2;
+    }
     let file = m.get_one::<String>("file").expect("required").clone();
     let (mut rc, mut index) = (0, 0usize);
     loop {

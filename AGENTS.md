@@ -498,6 +498,27 @@ is an environment variable rather than a flag because
 [T1d.10.6.4](docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)
 has not decided what a tree reports where a lattice reports layers.
 
+**What it does with the stop policy is settled since M1e S1e.2.1** ([CO-H3](plans/m1e_review_processing/review/correctness/high.md)),
+and the two flags get different answers because they are different questions.
+**`-n` is honoured**: `ein solve` defaults to `-n 1` and the tree used to
+explore and record the *entire* tree while being asked for one model — 32 where
+the lattice, same file, same flags, said 1. **`-m` is refused**, exit 2 with a
+stderr `error:`, because `--max-set-size` bounds the size of the commitment
+*sets* the lattice enumerates and a tree enumerates none: its depth is what the
+program owes. Not a stylistic call — 6 of `zebra2-minus-15-obligations`'s 32
+models sit at commitment size **6**, one past that flag's own default, so
+reading it as a depth cap would have deleted a fifth of the headline at stock
+settings. The same stage made a dead branch **record** its refutation (without
+learning from it, so the search is byte-identical and the 86 holds) where the
+`Contradiction` arm used to print *refuted so far (0 facts)* for a run that had
+refuted real commitments, and made `tree_node` **re-read the rung mode at every
+node** rather than trusting root's probe — the user's ruling of 2026-08-28,
+whose regression test is owed to
+[S1f.10.6](plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)
+because no corpus program can flip the mode. The headline was re-measured on
+the way out: **86 enterings, 32 models, identical fact for fact** to the
+lattice's 48 745.
+
 **`--models {list,key}`** is M1d
 [S1d.3.3](docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)'s
 and the only *lever* in this block that is a flag, because it is presentation

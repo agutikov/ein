@@ -1,0 +1,1 @@
+`(absent …)` takes exactly 1 argument and was given 0: SForm(head=Atom(name='absent'), args=()) at Loc(file='{FILE}', line=17, col=24) — negation-as-failure is over a single premise, so wrap several in an `(and …)`.

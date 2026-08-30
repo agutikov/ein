@@ -1,0 +1,16 @@
+; M1e S1e.2.1 — a declarator binding the reserved verdict atom, written
+; directly. `CO-H2`'s **control**: this route was always refused.
+;
+; It is also the *module* the three import fixtures beside it pull in —
+; `reserved_open_symbols`, `reserved_open_qualified`, `reserved_open_aliased`
+; — so the four files are one declaration reached four ways. Before S1e.2.1
+; the last two of the four loaded with exit 0, because `imports.rs` filtered
+; its qualification against a hand-maintained copy of the reserved list that
+; M1d S1d.2.3 never added `open` to, and a name the copy did not know was
+; renamed to `reserved_open_direct.open` before the loader could object.
+;
+; `absent` is in both lists and was refused through all four routes, which is
+; what made this a drift rather than a design.
+(relation p T)
+
+(macro open (?x) (p ?x))

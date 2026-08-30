@@ -1,0 +1,20 @@
+; M1e S1e.2.1 — a built-in predicate below its arity.
+;
+; `CO-H1`, and the only finding in the review that took the process down: the
+; compiler lowered `(eq …)` with no arity check at all, and the check that
+; existed was a runtime `assert!` in the matcher whose message — "`eq` needs
+; two arguments; ein.py raises IndexError here" — was a parity note rather
+; than a diagnostic. `ein saturate` on this file exited **101** with a stack
+; trace where every sibling malformation exits 1 with a message.
+;
+; Why `eq` and not `neq`: the grammar shape-pins `NeqForm`, so `(neq ?x)` is a
+; positioned *parse* error and always was. `eq` is an ordinary `GenericList`.
+; That is the rule the S1e.1.6 sweep found — four of the seven kernel
+; meta-primitives are pinned, and every cell that misbehaves is one of the
+; other three.
+(relation p T)
+(relation q T)
+
+(rule one-armed-guard ()
+  :match  (and (p ?x) (eq ?x))
+  :assert (q ?x))

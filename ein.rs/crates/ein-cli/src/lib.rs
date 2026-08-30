@@ -81,6 +81,11 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                     mode(a),
                 ),
                 Some(("constraints", a)) => render::cmd_constraints(&file(a)),
+                // The third taker of `--max-set-size`, and the third place it
+                // is refused under `EIN_TRAVERSAL=tree` — M1e S1e.2.1,
+                // `CO-H3`(a). `cmd_lattice` solves, so the traversal reaches
+                // it like any other.
+                Some(("lattice", a)) if common::refuse_max_set_size_under_tree(a) => 2,
                 Some(("lattice", a)) => render::cmd_lattice(
                     &file(a),
                     match a.get_one::<String>("view").map(String::as_str) {

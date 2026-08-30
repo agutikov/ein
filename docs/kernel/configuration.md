@@ -347,6 +347,17 @@ Five classes. Only the first two touch the answer.
   (§ `defined_behaviour.md` 5), and a **negative** `-m` or `-E` is still
   clamped onto it silently —
   [Q-M1e.17](../../plans/m1e_review_processing/open_questions.md#q-m1e17--three-py_int-options-silently-reinterpret-a-negative).
+  **`-m` is refused under `EIN_TRAVERSAL=tree`** — in all three subcommands
+  that take it (`solve`, `test`, `render lattice`) — exit 2, since M1e
+  [S1e.2.1](../../plans/m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md):
+  the flag bounds the size of the commitment *sets* the lattice enumerates and
+  the tree enumerates none, its depth being what the program owes. It was
+  ignored in silence until 2026-08-29, and the reason it is refused rather than
+  read as a depth cap is measurable: 6 of `zebra2-minus-15-obligations`'s 32
+  models sit at commitment size **6**, one past this flag's own default, so the
+  obvious reading would have deleted them at stock settings. `-n`, by contrast,
+  is now **honoured** by the tree, which used to record the whole tree while
+  being asked for one model.
 - **The six shadows** — § [3.2](#32-the-six-options-that-shadow-a-flag). Their
   answer column is the flag's.
 - **Execution** — `--jobs N` / `--jobs auto`: same verdict, same models, same
@@ -392,7 +403,7 @@ Read from the process environment by a crate that ships. None of them reaches
 | name | value | what it does | read at |
 |---|---|---|---|
 | `EIN_STDLIB` | a directory | overrides `std.*` resolution, ahead of the checkout walk and the embedded copy. **Unvalidated** — [`docs/install.md`](../install.md#point-it-at-a-different-stdlib) and [EH-M2](../../plans/m1e_review_processing/README.md#the-findings) | `ein-ir/src/stdlib.rs` `resolve` |
-| `EIN_TRAVERSAL` | `tree` | the per-obligation depth-first traversal beside the lattice (M1d S1d.10.6). The one **experimental** surface in the system | `ein-infer/src/solve.rs` `tree_traversal` |
+| `EIN_TRAVERSAL` | `tree` | the per-obligation depth-first traversal beside the lattice (M1d S1d.10.6). The one **experimental** surface in the system. Honours `-n`; **refuses `-m`** (§ 3.3) | `ein-infer/src/solve.rs` `tree_traversal` |
 | `EIN_OBLIGATION_CHOICE` | `off` \| `fail-first` \| *(default)* `rule-order` | the obligations rung's measurement lever; `off` is the pre-S1d.2.5 engine and the control arm of every number in `hypotheses_from_obligations.md` | `ein-infer/src/oblgen.rs` |
 | `EIN_LEFTOVER` | `1` | fills `--json-summary`'s `leftover` block — what the blind enumerator would still propose at each recorded state. Runs on a discarded fork, so nothing else in the summary moves | `ein-cli/src/summary.rs` |
 | `EIN_BATCH_PER_WORKER` | a positive integer, default 512 | enterings in flight per worker. Needs the `parallel` feature, which is **on** by default | `ein-infer/src/solve.rs` `batch_per_worker` |

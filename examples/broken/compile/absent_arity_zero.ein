@@ -1,0 +1,18 @@
+; M1e S1e.2.1 — `(absent)` with nothing to be absent.
+;
+; The sibling `empty_absent.ein` is `(absent ?x)`, whose sub-plan compiles to
+; no steps and which has had a *CompileError* naming that exact hazard since
+; S1.22.0 — "the guard would fail against every KB and its candidates would be
+; retired permanently". With no argument at all the same thing happened and
+; nothing said so: `absent` fell through to the ordinary relation path, matched
+; the empty extent of a relation nobody declared, and retired the rule for the
+; run in silence.
+;
+; So the two files are one hazard at two arities, and only one of them was
+; refused.
+(relation p T)
+(relation q T)
+
+(rule guard-of-nothing ()
+  :match  (and (p ?x) (absent))
+  :assert (q ?x))

@@ -304,6 +304,44 @@ is the kernel README's own sentence about the tree solver P1.5b removed in
 `8d77b02` (2026-05-29), arriving 89 days later. `tree()` now probes the rung at
 root and declines on anything but the obligations one.
 
+**Re-taken 2026-08-29 at M1e S1e.2.1, and the number held.** The milestone's
+review found three defects in this traversal — it ignored `stop_after` and
+`max_set_size`, it recorded nothing from a dead branch, and it probed the rung
+only at root — and two of the three fixes touch what happens *around* the
+search rather than the search. So the headline is a regression target for that
+stage and was re-measured at commit `63ed30e`+, release build, one P-core:
+
+| | enterings | wall | models |
+|---|---:|---:|---:|
+| `EIN_TRAVERSAL=tree … -e` | **86** | 0.053 s | 32 |
+| lattice `… -e -m 3` | 48 745 | 25.9 s | 32 |
+
+**567× fewer enterings, 492× faster, and the two model sets are equal as sets
+of facts** — 32 models of 435 facts each, symmetric difference empty, compared
+through `--json-summary` rather than by count. The three fixes and what each
+did to the number:
+
+- **`-n` is honoured now**, so `ein solve` without `-e` answers 1 model in 4
+  enterings where it used to record all 32. The `-e` arm above is untouched.
+- **A dead branch is recorded**, which is neither of the two options S1e.2.1's
+  own table offered (*learn* would have moved this number; *refuse* would have
+  printed nothing). Pushing the refutation onto `lstate.dead` without emitting
+  the clause or the writeback leaves the search byte-identical — the 14
+  `dead_post` above are the same 14 — and makes the `Contradiction` arm's
+  *refuted so far* true instead of empty.
+- **The rung is re-read at every node**, by the user's ruling of 2026-08-28,
+  and costs nothing: `tree_node` already generated the branch and threw the
+  mode away. No corpus program flips it, so no entering moved.
+
+And one measurement that decided a design question. The 32 models' commitment
+sizes are **3:3, 4:9, 5:14, 6:6** — six of them past `--max-set-size`'s default
+of 5. Reading that flag as a tree depth cap, which is the obvious repair for
+*"the tree ignores `-m`"*, would have deleted a fifth of this result at stock
+settings. `ein solve` refuses an explicit `-m` under `EIN_TRAVERSAL=tree`
+instead, because mapping a lattice layer index onto a tree depth is the input
+side of the same conflation `layers_explored` carries on the output side, and
+that is `T1d.10.6.4`'s.
+
 ### What P1d.10 was closed without
 
 `T1d.10.2.3` (predictors at layer *d*), `T1d.10.4.5` (the F9 disposition row —
@@ -322,7 +360,9 @@ Kept because a closed phase is where a finding gets lost.
 
 1. **A tree run narrates nothing** — 0 `enter` and 0 `layer` events while
    `enterings_total` says 86, so `--events` and `utils/layer_census.py` see an
-   empty run.
+   empty run. *(Still true of `enter` and `layer` at M1e S1e.2.1, which added
+   one `traversal` line saying the tree accepted the run and what it takes of
+   the stop policy. A stream of one is not a narration.)*
 2. **`emit_closed` runs before saturation**, so it closes `nation-loc` on
    evidence `co-located-fanout` then invalidates. Its stated criterion — *no rule
    can positively conclude an R-fact* — is not the one it computed.

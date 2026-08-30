@@ -81,9 +81,19 @@ fn layering_holds_after_every_load() {
     assert!(loaded >= 60, "only {loaded} corpus files loaded");
 }
 
-/// The loader's own eighteen fixtures, against the committed `.expected`
-/// files — the same text `ein.py/tests/kb/test_load_negative.py` holds ein.py
-/// to. The eleven import ones landed with S1a.1.3.
+/// The loader's own fixtures, against the committed `.expected` files — the
+/// same text `ein.py/tests/kb/test_load_negative.py` holds ein.py to. The
+/// eleven import ones landed with S1a.1.3.
+///
+/// **The four `reserved_open_*` are M1e S1e.2.1's**, and they are one
+/// declaration reached four ways: written directly, imported flat via
+/// `:symbols`, imported qualified, imported under `:as`. `CO-H2` is that the
+/// last two used to **load with exit 0** — `imports.rs` filtered its
+/// qualification against a hand-maintained copy of the reserved list, eight
+/// names where `ein-core` had nine, and M1d S1d.2.3 added `open` to one of
+/// them. Four files rather than one because the route is what differed, and a
+/// fixture that only ever took the route that worked is the fixture that let
+/// this ship.
 #[test]
 fn the_load_negative_fixtures_are_byte_identical() {
     let root = repo_root();
@@ -106,6 +116,10 @@ fn the_load_negative_fixtures_are_byte_identical() {
         "relation_malformed",
         "relation_needs_a_name",
         "relation_reserved_name",
+        "reserved_open_aliased",
+        "reserved_open_direct",
+        "reserved_open_qualified",
+        "reserved_open_symbols",
         "rule_duplicate_name",
         "rule_half_declarators",
         "rule_missing_assert",

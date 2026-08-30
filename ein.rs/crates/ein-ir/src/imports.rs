@@ -35,21 +35,6 @@ const STDLIB_ALIAS: &str = "std";
 /// The four heads that *bind* a name.
 const DECLARATORS: [&str; 4] = ["rule", "hrule", "relation", "macro"];
 
-/// Names a declaration may not bind — kernel vocabulary
-/// (`from_ir._reserved_names()`: the structural primitives `absent`/`and`/
-/// `false`/`not`/`or`, the computed predicates `eq`/`neq`, and `relation`,
-/// which stays a plain `SYMBOL` so rules can match `(relation ?R ?A ?B)`).
-/// `open` / `forall` are deliberately **not** here — they migrated into
-/// `std.macro` (S1.5.9).
-///
-/// A literal list because the registries it mirrors are Python objects;
-/// [P1a.3](../../../../docs/history/m1a_rust/README.md#p1a3--deductive-core) brings
-/// the primitive and predicate registries over and this becomes a query
-/// against them.
-const RESERVED_NAMES: [&str; 8] = [
-    "absent", "and", "eq", "false", "neq", "not", "or", "relation",
-];
-
 /// A load-time failure. The message is `KBLoadError`'s, byte for byte — the
 /// `examples/broken/load/*.expected` fixtures are the gate.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -547,10 +532,25 @@ fn defined_names(ast: &Ast, forms: &[NodeId]) -> BTreeSet<String> {
 /// Prefix every defined name — and every reference to it — leaving reserved
 /// kernel vocabulary alone, so a module that illegally defines `absent` keeps
 /// the name and is rejected by the loader rather than silently renamed.
+///
+/// **What "reserved" means here is [`ein_core::RESERVED`], and that is the fix
+/// for `CO-H2`** (M1e S1e.2.1). This function used to filter against a
+/// hand-maintained copy of the list, eight names where `ein-core` had nine:
+/// M1d S1d.2.3 added the verdict atom `open` to one of the two and not to the
+/// other, and the sentence above stopped being true for it. A module declaring
+/// `open` — under any of `rule` / `hrule` / `relation` / `macro` — was
+/// silently renamed to `mod.open` and the program loaded with exit 0, while
+/// the same declaration written directly, or imported flat via
+/// `:symbols (open)`, was refused. Same name, different guard, depending on
+/// the import tier — and `:as` was a fourth route with the same hole, which
+/// the finding did not name because it takes this same path with a different
+/// prefix. Thirty-two cells of that matrix are
+/// `reserved_names_are_reserved_through_every_import_route` in
+/// `tests/imports_semantics.rs`.
 fn qualify(ast: &mut Ast, forms: &[NodeId], prefix: &str) -> Vec<NodeId> {
     let mapping: BTreeMap<String, String> = defined_names(ast, forms)
         .into_iter()
-        .filter(|n| !RESERVED_NAMES.contains(&n.as_str()))
+        .filter(|n| !ein_core::is_reserved(n))
         .map(|n| (format!("{prefix}{n}"), n))
         .map(|(v, k)| (k, v))
         .collect();

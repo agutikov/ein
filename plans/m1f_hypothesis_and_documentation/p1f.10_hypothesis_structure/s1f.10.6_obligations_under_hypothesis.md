@@ -232,6 +232,23 @@ phase order does not otherwise require), or T3 records that its test is owed
 and names this stage. **The second is recommended**, because the guard is free
 and the probe is not.
 
+**Taken, 2026-08-29 — and the guard has shipped.**
+[S1e.2.1](../../m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md) T3
+wrote it into `tree_node`
+([`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)): the mode is
+re-read on every node the tree expands, and any mode but `Obligations` narrates
+a `traversal` event with the mode as its reason and stops descending. It cost
+what the stage predicted — nothing, since `tree_node` already built the
+`HypGenStats` and dropped `hs.rung.mode` — and it moved no number: the headline
+re-take is 86 enterings and the same 32 models, and **0** declined events on
+that run, which is the corpus saying it cannot flip the mode rather than the
+guard saying nothing happened. The comment at the site names this stage as the
+owner of the missing probe, in those words. What this stage still owes is
+therefore exactly one thing: a program that reaches that line with a mode other
+than `Obligations`. If T1f.10.6.1 cannot build one, that is C's case above and
+the sentence to write is that the guard's trigger is not constructible — which
+is a finding, not a licence to remove it.
+
 **Why this left S1e.1.1.** The stage that held it is *three soundness probes*,
 and two of them — Q4 and Q5 — are about a search path that exists. This one is
 about what a hypothesis set *is* when the theory can extend it mid-search,

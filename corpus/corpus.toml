@@ -528,6 +528,37 @@ path   = "examples/broken/compile/unbound_head.ein"
 group  = "compile-negative"
 runs   = ["solve", "saturate"]
 
+# M1e S1e.2.1 — `CO-H1`'s class. The grammar shape-pins four of the seven
+# kernel meta-primitives (`00_ebnf.md` §2's *Kernel meta-primitives*
+# block: `NotForm`, `NeqForm`, `AndForm`, `OrForm`); `eq`, `absent` and
+# `false` are ordinary `GenericList`s, so their arity is checked by
+# whatever reads them. Until S1e.2.1 that was a runtime `assert!` for
+# `eq` from below and nothing at all from above. The four cells:
+
+[[entry]]
+path   = "examples/broken/compile/eq_arity_low.ein"
+group  = "compile-negative"
+runs   = ["solve", "saturate"]
+note   = "`CO-H1` itself — `(eq ?x)` panicked the process, exit 101, with a parity note for a message. The only finding in the review reproduced against the release binary whose fix is a refusal."
+
+[[entry]]
+path   = "examples/broken/compile/eq_arity_high.ein"
+group  = "compile-negative"
+runs   = ["solve", "saturate"]
+note   = "The worse half: `(eq ?x A B)` loaded, compiled, **fired** and exited 0, because `guard_holds` read `args[0..2]` and dropped the tail. A three-way equality silently evaluated as a two-way one."
+
+[[entry]]
+path   = "examples/broken/compile/absent_arity_zero.ein"
+group  = "compile-negative"
+runs   = ["solve", "saturate"]
+note   = "`(absent)` fell through to the ordinary relation path and retired the rule in silence, where its sibling `empty_absent.ein` — `(absent ?x)` — has named that exact hazard in a CompileError since S1.22.0."
+
+[[entry]]
+path   = "examples/broken/compile/absent_arity_high.ein"
+group  = "compile-negative"
+runs   = ["solve", "saturate"]
+note   = "`(absent A B)` dropped everything past the first argument, so a two-subject negation fired as a one-subject one. The pair with `eq_arity_high.ein`: two of the twenty-one cells the S1e.1.6 sweep found answering wrongly with a success exit code."
+
 
 [[entry]]
 path   = "examples/broken/compile/activator_arity.ein"
@@ -705,6 +736,36 @@ runs   = ["solve", "saturate", "render rules"]
 path   = "examples/broken/load/macro_reserved_name.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
+
+# M1e S1e.2.1 — `CO-H2`, one declaration reached four ways. Two of the four
+# used to load with exit 0: `imports.rs` filtered its qualification against a
+# hand-maintained copy of the reserved list that M1d S1d.2.3 never added
+# `open` to. `reserved_open_direct.ein` is both the control and the module the
+# other three import.
+
+[[entry]]
+path   = "examples/broken/load/reserved_open_direct.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "The control route, always refused — and the module the other three pull in, so the four are one declaration and not four."
+
+[[entry]]
+path   = "examples/broken/load/reserved_open_symbols.ein"
+group  = "load-negative"
+runs   = ["solve", "render rules"]
+note   = "Flat `:symbols` — merged unrenamed, so it reached the loader spelled `open` and was refused. `saturate` is not among the runs: it loads with no base directory, so a file-relative import fails there for an unrelated reason and the cell would not ask this fixture's question."
+
+[[entry]]
+path   = "examples/broken/load/reserved_open_qualified.ein"
+group  = "load-negative"
+runs   = ["solve", "render rules"]
+note   = "The route the finding was reported on: silently renamed to `reserved_open_direct.open` and loaded with exit 0, against `qualify()`'s own stated intent."
+
+[[entry]]
+path   = "examples/broken/load/reserved_open_aliased.ein"
+group  = "load-negative"
+runs   = ["solve", "render rules"]
+note   = "The fourth route, which the finding did not name — `:as` takes the same `qualify()` path with a different prefix, so a fixture set covering only the three named routes would have left it unpinned."
 
 [[entry]]
 path   = "examples/broken/load/relation_duplicate.ein"

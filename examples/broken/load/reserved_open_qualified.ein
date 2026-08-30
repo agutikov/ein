@@ -1,0 +1,8 @@
+; M1e S1e.2.1 — `CO-H2` route 3 of 4: the plain qualified import, and the
+; route the finding was reported on.
+;
+; `qualify()`'s own doc comment states the intent this used to violate — a
+; module illegally defining a reserved name must *keep* it so the loader
+; rejects it, never be silently renamed. Until S1e.2.1 this file loaded with
+; exit 0 and carried a macro named `reserved_open_direct.open`.
+(import reserved_open_direct)

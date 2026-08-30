@@ -53,9 +53,19 @@ struct Loaded {
 }
 
 fn load_text(text: &str) -> Loaded {
+    load_named(text, "<fixture>")
+}
+
+/// [`load_text`], under the file name the parser should stamp on every `Loc`.
+///
+/// Which matters since M1e S1e.2.1: a `CompileError` may now carry the
+/// position of the form it refuses, and a position is only as real as the file
+/// name it names. The `.expected` fixtures write it as `{FILE}` — the same
+/// placeholder `examples/broken/load/` has used since S1a.0.1.
+fn load_named(text: &str, file: &str) -> Loaded {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let forms = parse(&mut ast, text, Some("<fixture>")).expect("the fixture parses");
+    let forms = parse(&mut ast, text, Some(file)).expect("the fixture parses");
     let kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("the fixture loads");
     Loaded { ast, terms, kb }
 }
@@ -186,18 +196,28 @@ fn a_where_keyword_pair_in_a_match_is_dropped_and_the_rule_still_compiles() {
     );
 }
 
-// ── S1.22.0 — the four refusals ────────────────────────────────────
+// ── S1.22.0's four refusals, and M1e's four ────────────────────────
 
 /// Each fixture under `examples/broken/compile/` is refused with exactly the
 /// message in its `.expected` file — work-list
 /// `the-four-compile-errors-say-what-their-expected-file-says`.
 ///
-/// These messages are a **surface**: a rule author reads them, and three of the
-/// four name the offending IR form in Python's `repr`, which is the only reason
-/// two implementations could ever be compared on them. Checking the directory
+/// These messages are a **surface**: a rule author reads them, and all but one
+/// name the offending IR form in Python's `repr`, which is the only reason two
+/// implementations could ever be compared on them. Checking the directory
 /// listing as well is not tidiness — a fixture renamed away from its
-/// `.expected`, or a fifth refusal added without one, would leave a branch of
-/// the compiler with nobody asserting its text.
+/// `.expected`, or a refusal added without one, would leave a branch of the
+/// compiler with nobody asserting its text.
+///
+/// **Eight since M1e [S1e.2.1], not four.** `CO-H1` was one process panic from
+/// a well-formed program, `(eq ?x)`; the S1e.1.6 sweep turned it into a rule —
+/// the grammar shape-pins four of the seven kernel meta-primitives, and every
+/// cell that panicked or silently misbehaved was one of the other three. The
+/// four new fixtures are that rule's whole surface: `eq` and `absent`, each
+/// below and above its arity. Two of the four used to **fire and exit 0**,
+/// which is why they are here rather than in a note.
+///
+/// [S1e.2.1]: ../../../../plans/m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md
 ///
 /// The walk runs with the arity filter **off**, because `activator_arity`'s
 /// error is unreachable with it on — see the next test but one.
@@ -222,8 +242,12 @@ fn every_compile_error_says_what_its_expected_file_says() {
     assert_eq!(
         stems,
         [
+            "absent_arity_high",
+            "absent_arity_zero",
             "activator_arity",
             "empty_absent",
+            "eq_arity_high",
+            "eq_arity_low",
             "nested_or",
             "unbound_head"
         ],
@@ -234,8 +258,9 @@ fn every_compile_error_says_what_its_expected_file_says() {
         let name = path.file_name().expect("a file").to_string_lossy();
         let text = std::fs::read_to_string(path).unwrap_or_else(|e| panic!("{name}: {e}"));
         let expected = std::fs::read_to_string(path.with_extension("expected"))
-            .unwrap_or_else(|e| panic!("{name}.expected: {e}"));
-        let mut l = load_text(&text);
+            .unwrap_or_else(|e| panic!("{name}.expected: {e}"))
+            .replace("{FILE}", path.to_str().expect("utf-8"));
+        let mut l = load_named(&text, path.to_str().expect("utf-8"));
         assert_eq!(
             l.compile_error(false).trim_end(),
             expected.trim_end(),
