@@ -35,6 +35,7 @@ records which question became which id.
 | [Q-M1e.17](#q-m1e17--three-py_int-options-silently-reinterpret-a-negative) | Three `py_int` options **silently reinterpret a negative** | open — raised 2026-08-29 by [S1e.1.5](p1e.1_open_questions/s1e.1.5_cli_semantics.md), which closed the third of them (`-n`) by refusing it. `-m` and `-E` still clamp, and `-E`'s abort line **prints the clamped number**; **owner unassigned** |
 | [Q-M1e.18](#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments) | Three kernel primitives are **not shape-pinned**, and drop their extra arguments | **answered 2026-08-29 — candidate (2)**, by [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T1, which took the whole class rather than `CO-H1`'s one cell: `eq` and `absent` are checked at compile time and refused with a positioned `CompileError`. The grammar and the lexer's `SYMBOL` set are untouched, so no program that worked still works differently. `false` needed nothing |
 | [Q-M1e.19](#q-m1e19--algorithmic-pathology-has-no-owner) | **Algorithmic pathology** has no owner | open — the one of `Q9`'s four unswept surfaces with no home. The other three have one: this stage swept the parser/CLI edges, `cast.rs` goes with `ein-einb`'s next change, and micro-CSP ground truth is [M10](../m10_external_benchmarks/README.md)'s thesis |
+| [Q-M1e.20](#q-m1e20--two-renderers-are-produced-tested-and-unreachable) | **Two renderers are produced, tested and unreachable** — the per-hypothesis lattice dump and the unified KB DOT view | open — raised 2026-08-30 by [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) T3, which was told to route the decision rather than take it in a doc pass; **owner unassigned**, and both are `pub` and golden-pinned today |
 
 ---
 
@@ -1333,3 +1334,57 @@ family of generated inputs, a harness, a fitted exponent and a written
 conclusion — and this stage's budget is one surface, which went to the
 parser/CLI edges because that is the one with a demonstrated hit rate. Filed so
 that the milestone cannot close claiming the tree was swept.
+
+## Q-M1e.20 — Two renderers are produced, tested and unreachable
+
+[S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) T3 was asked whether the
+per-hypothesis lattice dump *should* be reachable, and told to route the
+decision through the render crate rather than settle it while fixing prose.
+Routing it here, with what the stage measured.
+
+**It is not one artifact, it is two, and they are in the same state.**
+
+| artifact | what it is | who can ask for it |
+|---|---|---|
+| the `LatticeDumper` tree | every commitment tested at every layer with the firings each emitted — `enterings/`, `proof_summary.json` ([`lattice_dump.md`](../../docs/kernel/inference/lattice_dump.md)) | Rust only: `LatticeDumper::new(Some(dir))` into `solve`'s `dumper`. No CLI flag; `--dump-states` builds the *other* dumper |
+| `ein_render::kb_dot` | the unified KB DOT view — the whole fact graph on one page ([`04_dot_rendering.md`](../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)) | Rust only. `ein render` offers `rules` / `rule` / `constraints` / `lattice` and no `kb`; `ein kb dot` was removed in P1.11 |
+
+Both are `pub`, both are exercised by the gate — `golden_dump.rs` +
+`dump_parity.rs` for the first, `dot_wellformed.rs` over the whole corpus for
+the second — and neither is documented anywhere a caller would look:
+[`docs/api/rust.md`](../../docs/api/rust.md)'s worked example stops at
+solve-and-render. So the failure is not that the code rotted; it is that the
+**surface** never grew a door, and two pages spent a milestone describing
+rooms behind it.
+
+[`utils/render_examples.sh`](../../utils/render_examples.sh) reached the same
+fork at M1a S1a.10.4 and wrote the reason for declining, which is still the
+right reason: *"Making them browsable again means putting them back on the CLI
+(`ein render ir|kb`), which is a decision about the shipping surface and not
+one a `utils/` clean-up should take."* A doc pass has even less standing.
+
+Three options, and the third is the cheapest and is not obviously wrong:
+
+- **(a) a flag each** — `ein solve --dump-lattice DIR` and `ein render kb`.
+  Two CLI options against `configuration.md`'s 52, both wired to code that
+  already exists and is already tested. Costs: the option census, a
+  `--help` golden, and the standing question of whether a private debugging
+  artifact belongs on the shipped surface at all.
+- **(b) a documented library call** — a section in
+  [`docs/api/rust.md`](../../docs/api/rust.md). Its worked example is a marked
+  region of `ein-cli/tests/embedding.rs` that a test diffs, so this is a real
+  test to write and it would keep working, which is the page's whole method.
+- **(c) leave both unreachable and say so.** Done, as of S1e.2.2 —
+  [`lattice_dump.md` § Reachability](../../docs/kernel/inference/lattice_dump.md)
+  and `04_dot_rendering.md` § How to ask for this view both state plainly what
+  can and cannot ask. Under that reading the *documentation* defect is closed
+  and only the capability question is open, which is what this entry now is.
+
+What tips it is a question this milestone has not asked: **who wants the
+per-hypothesis dump?** It was built for debugging rule sets, `utils/` no longer
+drives it, and [M20](../m20_gui/README.md) is the plausible consumer of the KB
+view. If the answer is *the GUI*, (a) is premature and the feed is
+[`--events`](../../docs/kernel/inference/events.md); if the answer is *a
+puzzle author chasing a rule that will not fire*, (a) is the answer and the
+flag is small.
+

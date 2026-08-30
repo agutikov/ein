@@ -312,14 +312,20 @@ rendering tooling, same colour vocabulary.
   — the channel-isolation rewrite that makes per-set
   `BranchResult` + `integrate` the universal up/down channel
   the lattice orchestrator sits on.
-- **Reproducible examples** (S1.5b.28) — the diagrams above
-  are illustrative; the actual on-disk
-  ``proof_summary.json`` + ``kb_index/`` audit folders for
-  the same phenomena live under
-  ``examples/lattice/``. Run
-  ``ein solve examples/lattice/<N>_*.ein --exhaustive --dump-states <dir>``
-  to produce the rendered version (the `demo/bench_lattice.py` runner this
-  line used to name went with the Python engine at M1a S1a.10.5):
+- **Reproducible examples** (S1.5b.28) — the diagrams above are
+  illustrative; four fixtures under ``examples/lattice/`` exhibit the same
+  phenomena in a real solve, and each is a corpus entry.
+
+  > **The invocation this line used to give was never true.**
+  > ``ein solve … --exhaustive --dump-states <dir>`` writes a
+  > **`MonotonicDumper`** tree — `00_root_initial.ein`, `00_timeline.jsonl`,
+  > `layers/layer_NN_{pre,post}.ein`, `summary.json` — and neither
+  > ``proof_summary.json`` nor ``kb_index/``. The first belongs to the other
+  > dumper, which no flag builds; the second is never written by either
+  > (`lattice_dump.md` § `kb_index/`). Measured on `01_subset_pruned.ein`,
+  > M1e S1e.2.2. What to run instead, and how to reach the per-hypothesis
+  > tree at all, is
+  > [`lattice_dump.md` § Reachability](lattice_dump.md#reachability--what-can-ask-for-this-dump).
 
   | Fixture | Phenomenon | Stage |
   |---------|------------|-------|

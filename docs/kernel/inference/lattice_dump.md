@@ -274,6 +274,27 @@ it's the entry point for "show me every refutation" tooling.
 
 ---
 
+## Reachability — what can ask for this dump
+
+Three questions, and the honest answers as of M1e S1e.2.2:
+
+| | |
+|---|---|
+| **From the CLI?** | **No.** `--dump-states DIR` builds a `MonotonicDumper` — `00_root_initial.ein`, `00_timeline.jsonl`, `layers/layer_NN_{pre,post}.ein`, `summary.json`, and no `enterings/` or `proof_summary.json`. `make_dumper` in [`ein-cli/src/solve.rs`](../../../ein.rs/crates/ein-cli/src/solve.rs) chooses between `ProgressDumper`, a timing dumper, `MonotonicDumper` and none; `LatticeDumper` is not among them |
+| **From Rust?** | **Yes.** `LatticeDumper::new(Some(dir))` passed as `solve`'s `dumper` argument, with `SolveOptions { stop_after: None, store_lattice: true, .. }` — both types are `pub` and the shape is [`golden_dump.rs`'s `run_dump`](../../../ein.rs/crates/ein-render/tests/golden_dump.rs). It is not in [`docs/api/rust.md`](../../api/rust.md), whose worked example stops at solve-and-render |
+| **Is the format pinned?** | **Yes**, which is why this page is *current* rather than superseded: `golden_dump.rs` banks the timeline and every file under `enterings/`, and `dump_parity.rs` banked the rest byte for byte against ein.py |
+
+So the artifact is real, produced and tested, and the only thing missing is a
+**documented way to ask for it** — which is a decision about the shipping
+surface, not one a doc pass takes.
+[`ein_render::kb_dot`](../../../ein.rs/crates/ein-render/src/kb_dot.rs) is in
+exactly the same position for exactly the same reason
+([`utils/render_examples.sh`](../../../utils/render_examples.sh) says so at its
+own head, and declines it too), so it is **one** question with two instances:
+[Q-M1e.20](../../../plans/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable).
+
+---
+
 ## Cross-links
 
 - Engine overview: [README § Set-indexed search](README.md#set-indexed-search--monotonic-engine-p15b-s15b010).
