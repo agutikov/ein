@@ -79,7 +79,7 @@ The distinction is **presentation only** — the engine treats every fact
 alike, and fact identity is `(relation_name, args)` regardless. There is no
 way to override it, and no need for one: write the annotation that is true —
 a numbered condition gets `:source`, a property tag gets nothing. See
-[`../02-data-model/01_entities.md` §1.5](../02-data-model/01_entities.md)
+[`../02-data-model/01_entities.md` §4](../02-data-model/01_entities.md)
 and [`plans/ideas/04-nlp-to-graph-to-solver-pipeline.md` §Ontology
 deduction by common sense](../../../../plans/ideas/04-nlp-to-graph-to-solver-pipeline.md)
 for how the NL frontend recovers the ONTOLOGY-vs-FACT split from context.

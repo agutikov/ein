@@ -17,7 +17,8 @@ derivation DAGs).
 > the sub-tree, and the implementation is Rust. Every name in them resolves in
 > [`ein-core`](../../../../ein.rs/crates/ein-core/src/) up to spelling
 > (`kb.derivation_dag(f)` is `build_derivation_dag(kb, terms, f, …)`,
-> `DerivationDAG` is `DerivationDag`); the code-level map, with the real
+> `DerivationDAG` is `DerivationDag`, the `all_justifications=` keyword is the
+> `Justifications::{Primary, All}` argument); the code-level map, with the real
 > signatures and complexities, is
 > [`03_implementation.md`](03_implementation.md). There is no module to
 > import: `ein.py` was deleted at M1a

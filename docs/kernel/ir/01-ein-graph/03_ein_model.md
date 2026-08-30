@@ -82,7 +82,7 @@ The Python data model encodes this in `Fact.__eq__` (by `(rel,
 args)` tuple) and in name-identity for named objects — the `NameRef`
 index keyed by the atom (the former `Instance.__eq__`-by-name was
 removed with the type/instance entity-view, S1.7.23); see
-[`../02-data-model/01_entities.md` §1.5](../02-data-model/01_entities.md).
+[`../02-data-model/01_entities.md` §1.4](../02-data-model/01_entities.md).
 
 ## 3. Two flavours of node
 

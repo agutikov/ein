@@ -1,8 +1,9 @@
 # `utils/` — the scripts that are not the engine
 
-**Twenty-three scripts, 7 903 lines, all of them driving `ein.rs`.** Nothing here
-is built, shipped or imported by the engine; everything here *runs* it, *reads*
-it, or *renders* what it produced. If a check belongs in the gate it belongs in
+**Twenty-four scripts, 8 228 lines, all of them driving `ein.rs`** — bar one,
+[`doc_audit.py`](doc_audit.py), whose subject is `docs/kernel/` and which reads
+the crates as text. Nothing here is built, shipped or imported by the engine;
+everything here *runs* it, *reads* it, or *renders* what it produced. If a check belongs in the gate it belongs in
 `cargo test`, and several things that used to live here moved there —
 [§ The census](#the-census) says which.
 
@@ -40,9 +41,10 @@ are.
 
 ## Checks
 
-Four things the gate cannot do from inside `cargo test` — **write** a file
-it also checks, **grep** the source tree, **search unboundedly**, and **sweep
-the whole corpus under `--events`** — and one generator.
+Five things the gate cannot do from inside `cargo test` — **write** a file
+it also checks, **grep** the source tree, **search unboundedly**, **sweep
+the whole corpus under `--events`**, and **read the documentation tree** — and
+one generator.
 
 | | | |
 |---|---|---|
@@ -54,6 +56,7 @@ the whole corpus under `--events`** — and one generator.
 | [`stdlib_manifest.py`](stdlib_manifest.py) | **writes** `stdlib/MANIFEST.sha256`, and verifies it per module without a toolchain. The writing is the half no test can do — a test that rewrote the file it checks would check nothing. What *is* a test: `ein-ir`'s `the_embedded_copy_matches_the_manifest`, which is not stale-able because `include_dir!` makes each module a build dependency | per-commit CI |
 | [`check_hashmap_iteration.py`](check_hashmap_iteration.py) | the determinism grep — no iteration over a hash map at a site whose order could reach an output, `// determinism-ok: <reason>` the only escape. 152 files, 21 annotated | per-commit CI |
 | [`fuzz_ein.py`](fuzz_ein.py) | the engine fuzzer: generate or mutate ein programs, then check the **six** properties one engine can check — `no-crash`, `diagnosed`, `terminates`, `deterministic`, `id-order` and, since M1a T1a.7.2.6, `jobs` (the same program at `--jobs 8` answers as at `--jobs 1`; `--jobs 1` turns it off). Findings land in [`corpus/fuzz_findings/`](../corpus/fuzz_findings/README.md) | `ein`, and `cargo` for `id-order` |
+| [`doc_audit.py`](doc_audit.py) | does a page in `docs/kernel/` still describe the engine that ships? — M1e [S1e.2.2](../plans/m1e_review_processing/p1e.2_high/s1e.2.2_code_doc_consistency.md)'s instrument, and the only script here whose subject is the documentation. Three questions, none of which needs to know what a milestone changed, which is the point: **identifiers** (every backticked `EIN_*` / `foo.rs` / `fn()` / `Type` / `snake_case` resolved against `ein.rs/crates/**` — a *report*, since `Human` and DOT node ids are not identifiers and no rule tells them apart), **links** (file and `#anchor`, GitHub-slugified) and **states** (which pages carry a superseded banner). The one it exists for is a fourth thing links cannot be: a **prose `§x.y`** written after a link or in its label is not part of the link, so no anchor checker sees one — and S1e.2.2 found six such citations naming four sections that `algorithm_layer_n.md` has never had, plus two into a `§1.5` that does not exist. `--check` exits 1 on the link half only. **Not a gate** — whether it becomes one is `DO-M2`'s question; the fifth check on [`docs/kernel/README.md` § Keeping this true](../docs/kernel/README.md), *run the commands a page shows*, has no instrument and found the most | — |
 | [`gen_unicode_printable.py`](gen_unicode_printable.py) | regenerates `ein-core/src/printable.rs` — CPython's `Py_UNICODE_ISPRINTABLE` as a binary-searchable table. Run it after a CPython upgrade | — |
 
 > `fuzz_ein.py`'s strongest property is not its own: `id-order` runs

@@ -89,9 +89,10 @@ visible from the page itself. Triaged page by page at M1e
 
 - **current** — every claim holds of the engine that ships. No banner; this is
   the default and 37 of the 40 pages are here. What makes it checkable rather
-  than aspirational is the test in § *Keeping this true* below: every code
-  identifier the page names resolves in `ein.rs/crates/`, and every environment
-  variable and CLI invocation it shows runs.
+  than aspirational is the test in [§ Keeping this
+  true](#keeping-this-true) below: every code identifier the page names
+  resolves in `ein.rs/crates/`, and every environment variable and CLI
+  invocation it shows runs.
 - **superseded** — the page describes something that was true and is not. It
   keeps a banner at the top saying **what** it described, **when** it stopped
   being true, and **where** the current statement is. Three pages, all of them
@@ -124,6 +125,55 @@ marks which of its four levels are operational and which are design, and
 their removed-machinery sections the same way. A page may be current and still
 contain a section that is not, provided the section says so where a reader will
 meet it.
+
+## Keeping this true
+
+**The failure mode this section exists to prevent has a name.** M1a
+[S1a.10.6](../history/m1a_rust/README.md#s1a106--the-docs-after-the-oracle) was
+a doc pass over this tree, and it missed **every** page M1e's review later
+found — `algorithm_layer_n.md`, `lattice_dump.md`, `02_store.md`,
+`02_patterns.md`, `04_dot_rendering.md`, `inference/README.md`, this README —
+plus four more the review itself did not name (`reserved_engine_strings.md`,
+`02_rules.md`, `01_entities.md`, `features.md`). The reason is structural, not
+carelessness: **a doc pass driven by what the milestone changed cannot catch a
+page describing machinery removed two milestones ago**, because nothing in the
+milestone touched it. S1a.10.6 audited what the oracle's departure invalidated,
+and it did that well.
+
+So the checks below are deliberately **milestone-independent**. None of them
+needs to know what changed; each asks a question of a page in isolation.
+
+| | the check | what it caught, M1e S1e.2.2 |
+|---|---|---|
+| 1 | **Every code identifier resolves.** Every backticked `EIN_*` / `foo.rs` / `fn()` / `Type` / `snake_case` / `a::b` is findable in `ein.rs/crates/`. Report, not gate — `Human` and DOT node ids are not identifiers and nothing tells them apart — so a human skims for a name that *looks* like the engine's | a `Mode` enum with three members that no crate has; `add_type` / `add_instance`; `from_dot`; a `_kb` back-pointer a page's own §5 says is gone. **Four of the eleven pages that needed work were found only this way** |
+| 2 | **Every environment variable greps non-empty.** A special case of (1), worth naming because it is the cheapest and the most often wrong | `EIN_RENDER_LEVI`, claimed by `04_dot_rendering.md` and read by no code path, ever |
+| 3 | **Every link and anchor resolves** — file *and* `#fragment`, GitHub-slugified | 4 broken anchors, all from a heading that grew words and a link that did not follow |
+| 4 | **Every prose `§x.y` names a heading that exists.** A section number written *after* a link, or inside its label, is **not part of the link**, so no link checker sees it | **six** citations naming **four** sections `algorithm_layer_n.md` has never had, plus two into a `§1.5` that does not exist. This class had survived every previous pass |
+| 5 | **Every command a page shows runs, and produces what the page says.** No script does this; it is a shell and ten minutes | a CLI line promising two artifacts it has never written; a claim that `(instnce ?a ?T)` is caught at parse time, which the parser accepts and the engine happily solves |
+| 6 | **Every page is in one declared state** — § Which pages to trust above, with the state visible from the page rather than from a plan | three P1.5b design pages reading as live specification |
+
+Checks 1–4 and 6 are [`utils/doc_audit.py`](../../utils/doc_audit.py):
+
+```sh
+python3 utils/doc_audit.py                      # all of it, as a report
+python3 utils/doc_audit.py --links --check      # exit 1 on 3 or 4
+python3 utils/doc_audit.py --identifiers -k inference/
+```
+
+It is **not in the gate**, and whether any of it should be is
+[DO-M2](../../plans/m1e_review_processing/p1e.3_medium/s1e.3.8_documentation.md)'s
+question. Check 5 has no instrument and is the one that found the most, which
+is worth remembering when the temptation is to automate the cheap half and
+call the pass done.
+
+**One thing the checks cannot see**, and the reason `02_patterns.md` was the
+hardest page in the triage: they find machinery that was **removed**, because
+the identifier used to resolve and stopped. Machinery that was **planned and
+never built** resolves at no point in the repo's history, reads exactly like a
+description of something real, and is caught only by check 1 — by a reader
+noticing that a name which *ought* to be there is not. `unique-remaining`,
+`no-remaining-option`, `forbidden-by-exclusion` and five siblings sat in this
+tree from P1.2 to M1e, described as *"the M1 starter set"*.
 
 ## Audience & reading paths
 

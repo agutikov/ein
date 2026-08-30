@@ -75,6 +75,23 @@ constrained-reasoning research.
   it, a **risk not by argument at all**, and an argument for leaving something
   alone holds only while its premise is enforced by something that fails when
   it stops being true.
+  **Since M1e S1e.2.2 every one of the 40 pages is in exactly one of three
+  declared states, visible from the page rather than from a plan** —
+  [README § Which pages to trust](docs/kernel/README.md): *current* (37, no
+  banner), *superseded with a banner* (**3**, all of them M1 P1.5b's design —
+  `inference/algorithm_layer_n.md`, `inference/lattice_diagrams.md`,
+  `inference/parity_baselines.md`), and *moved to `docs/history/`* (**0**).
+  Zero, because of the rule the stage took for
+  [Q-M1e.3](plans/m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted):
+  **a page is moved *into* an existing milestone record, never made into
+  one** — and M1 is the one shipped milestone with no `docs/history/` entry,
+  by the decision `docs/history/README.md` records. **Do not rewrite a
+  superseded page to match today's engine**: it is neither a record nor a
+  specification afterwards, and `docs/history/m1a_rust/design/07` cites the
+  first of the three as the contract the port had to reproduce. The pass that
+  keeps the other 37 honest is [README § Keeping this
+  true](docs/kernel/README.md) — six checks, five of them `utils/doc_audit.py`
+  and the sixth a shell, and the sixth is the one that found the most.
 - **`docs/api/`** — **how to drive Ein as a library.** Since M1a S1a.9.4 its
   subject is [`rust.md`](docs/api/rust.md): the **crates** — `ein-ir` to load,
   `ein-infer` to solve, `ein-render` to explain, `ein-einb` to cache — which
@@ -290,7 +307,7 @@ constrained-reasoning research.
   in the repo — the divergence list, and
   [`docs/kernel/defined_behaviour.md`](docs/kernel/defined_behaviour.md), which
   states what "whatever ein.py did" used to define.
-- **`utils/`** — **twenty-three scripts, all of them driving `ein.rs`** since M1a
+- **`utils/`** — **twenty-four scripts, all but one driving `ein.rs`** since M1a
   [S1a.10.4](docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine),
   which deleted the eleven that compared two engines or measured the Python
   one, plus `corpus_cost.py` from
@@ -392,6 +409,18 @@ constrained-reasoning research.
   means: **10 of the 121** entries that reach a fixpoint do not exhaust at
   `ein test`'s depth, so a claim written on any of them could not be checked
   ([closure_census.md](docs/history/m1d_satisfiability/closure_census.md)).
+  The twenty-fourth, **`doc_audit.py`**, is M1e S1e.2.2's and the only one
+  whose subject is **the documentation** rather than the engine: does a page in
+  `docs/kernel/` still describe the engine that ships? Three questions, none of
+  which needs to know what a milestone changed — identifiers resolved against
+  `ein.rs/crates/**` (a report, not a gate: `Human` and DOT node ids are not
+  identifiers), links and anchors, and which pages carry a banner. The fourth
+  is the one it exists for: a **prose `§x.y`** after a link is not part of the
+  link, so no anchor checker sees one, and the stage found six such citations
+  naming four sections `algorithm_layer_n.md` has never had. `--check` exits 1
+  on the link half. Its fifth check has no instrument and found the most —
+  *run the commands a page shows*
+  ([`docs/kernel/README.md` § Keeping this true](docs/kernel/README.md)).
 - **`build.sh`** — **everything this repo builds, in one command**: the Rust
   workspace (`--release` by default, into `ein.rs/target/`) and then the three
   C baselines in `c/` (into the gitignored `build/`). `--debug`,
