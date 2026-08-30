@@ -2,8 +2,8 @@
 
 The **kernel** is the part of Ein that's locked down by M1: the
 graph it reasons over, the data structures that hold the graph in
-memory, the surface language users write, and (placeholder, P1.3)
-the inference engine that fires rules.
+memory, the surface language users write, and the inference engine
+that fires rules.
 
 Everything above the kernel — NL → IR (M2), the GUI (M20), the
 self-modifying constraint language (followup F2) — *consumes* the
@@ -38,16 +38,21 @@ The four sub-trees layer on each other:
 
 3. **[`ir/03-ein-lang/`](ir/03-ein-lang/)** — the **surface
    syntax**. The S-expression IR that users author and the engine
-   dumps. Lexical rules, six top-level forms (`ontology`, `facts`,
-   `reasoning`, `rules`, `query`, `trace`), the pattern sub-language,
-   worked examples, and DOT rendering. Most of the historical
-   `docs/ir.md` lives here.
+   dumps. Lexical rules, the **flat sequence of forms** classified by
+   head (P1.7c removed the `(ontology …)` / `(facts …)` /
+   `(reasoning …)` / `(rules …)` block wrappers, and the closed
+   declarator set is `relation` · `rule` · `hrule` · `query` ·
+   `config` · `macro` · `import`, plus the engine-emitted `trace`;
+   **any other head is a fact**), the pattern sub-language, worked
+   examples, and DOT rendering. Most of the historical `docs/ir.md`
+   lives here.
 
-4. **[`inference/`](inference/)** — the **rule firing engine**.
-   Stub before P1.3. Becomes the pattern matcher, saturation loop,
-   hypothesis branching, contradiction analysis, and trace
-   generation. The substrate is the data model (2); the language to
-   define rules is (3); the engine is described here.
+4. **[`inference/`](inference/)** — the **rule firing engine**: the
+   pattern matcher, the saturation loop and its NAF boundary,
+   hypothesis generation and the commitment-lattice search,
+   contradiction analysis, the obligation pass, and trace generation.
+   It shipped across P1.3–P1.6. The substrate is the data model (2);
+   the language to define rules is (3); the engine is described here.
 
 The order is also the order of **conceptual precedence**: the graph is
 canonical — the data model and the syntax are *views* of it, the engine
@@ -74,6 +79,51 @@ Zebra-acceptance milestone.
   + [`absent_semantics.md`](inference/absent_semantics.md) (the normative
   `(absent P)` / NAF semantics — worlds, fire-time evaluation, corollaries;
   P1.21 R4). The engine shipped P1.3–P1.5b.
+
+## Which pages to trust — the three states
+
+Every page in this tree is in exactly **one** of three states, and the state is
+visible from the page itself. Triaged page by page at M1e
+[S1e.2.2](../../plans/m1e_review_processing/p1e.2_high/s1e.2.2_code_doc_consistency.md)
+(2026-08-30), 40 pages:
+
+- **current** — every claim holds of the engine that ships. No banner; this is
+  the default and 37 of the 40 pages are here. What makes it checkable rather
+  than aspirational is the test in § *Keeping this true* below: every code
+  identifier the page names resolves in `ein.rs/crates/`, and every environment
+  variable and CLI invocation it shows runs.
+- **superseded** — the page describes something that was true and is not. It
+  keeps a banner at the top saying **what** it described, **when** it stopped
+  being true, and **where** the current statement is. Three pages, all of them
+  M1 P1.5b's design record:
+
+  | page | describes | current statement |
+  |---|---|---|
+  | [`inference/algorithm_layer_n.md`](inference/algorithm_layer_n.md) | the three sibling solve entries and the per-candidate flow of the 2026-05 design | [`architecture_and_algorithms.md`](inference/architecture_and_algorithms.md) §2, [`implementation.md`](inference/implementation.md) |
+  | [`inference/lattice_diagrams.md`](inference/lattice_diagrams.md) | the same design's search-lattice data model, as diagrams | same, plus [`lattice_dump.md`](inference/lattice_dump.md) for the artifact the search writes |
+  | [`inference/parity_baselines.md`](inference/parity_baselines.md) | the tree-vs-monotonic wall-clock table of 2026-05-28 | the `branching` corpus group, swept by `corpus_cli.rs` |
+
+  A superseded page is **not** rewritten to match today's engine. A page
+  rewritten that way is neither a record nor a specification, and the design it
+  held stops being recoverable — which matters here, because
+  [`docs/history/m1a_rust/design/07_search_layer.md`](../history/m1a_rust/design/07_search_layer.md)
+  cites the first of the three as the contract the Rust port had to reproduce.
+- **moved to [`docs/history/`](../history/README.md)** — for a page that belongs
+  to a shipped milestone's record. **A page is moved *into* an existing
+  milestone record; it is never made into one.** That is why the three above are
+  bannered in place rather than moved: they are M1's, and M1 is the milestone
+  `docs/history/README.md` records as having no entry — *"what survived its plan
+  tree went to `docs/kernel/inference/` and `plans/followups/` at P1.22"*.
+
+Two pages also carry a *partial* banner, which is the same rule applied below
+page granularity: [`ir/03-ein-lang/08_self_describing.md`](ir/03-ein-lang/08_self_describing.md)
+marks which of its four levels are operational and which are design, and
+[`inference/domain_elim_vs_hypothesis.md`](inference/domain_elim_vs_hypothesis.md),
+[`inference/features.md`](inference/features.md) and
+[`inference/README.md`](inference/README.md) scope their frozen measurements and
+their removed-machinery sections the same way. A page may be current and still
+contain a section that is not, provided the section says so where a reader will
+meet it.
 
 ## Audience & reading paths
 

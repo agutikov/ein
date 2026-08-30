@@ -18,7 +18,7 @@ records which question became which id.
 |---|---|---|
 | [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | **decided 2026-08-28**, written into [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md); ratified in [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof-both-rules) T1 **together with Q-M1e.2** ([D5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d5_does_t1_ratify_q_m1e2.md), option A, 2026-08-28), applied everywhere after |
 | [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | **decided 2026-08-28** — *an argument suffices when its premise is itself enforced*, written into [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md). The `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof-both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
-| [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | open — [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) decides per page; the *rule* is here |
+| [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | **answered 2026-08-30 — (c)**, by [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) T1. The destination was already written into [`docs/history/README.md`](../../docs/history/README.md): M1's survivors went to `docs/kernel/inference/` at P1.22, so `m1_core/` is a directory the tree **declined**, and what a superseded page needed was the banner. The general rule — *a page is moved into an existing milestone record, never made into one* — plus the triage of all 40 pages |
 | [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | open — [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md) |
 | [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — **but its instance is gone**: [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) fixed all three of `CO-H3` on 2026-08-29 and the tree's read-out is now true rather than merely refused. The *rule* is still unwritten, and M1d's `T1d.10.6.4` is the co-owner. [S1f.10.7](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it |
 | [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model) | What is a **solution**, and what is a **model**? | **decided 2026-08-28** by the user; binding on [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) and on [P1f.10](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md) |
@@ -118,6 +118,42 @@ fourth is the failure the rule exists to prevent, and it arrived four days
 before the rule would have been needed.
 
 ## Q-M1e.3 — Who owns a page that should be neither fixed nor deleted?
+
+> **Answered 2026-08-30 — (c), and the answer was already written down.**
+> [`docs/history/README.md`](../../docs/history/README.md) says where M1's
+> surviving documents live: *"**M1** (core graph reasoning, shipped
+> 2026-06-17) predates this directory: what survived its plan tree went to
+> `docs/kernel/inference/` and `plans/followups/` at P1.22, and the rest is in
+> git history."* So candidate (a) is not a directory that has not been created
+> — it is a directory the tree has already **declined** to create, and the page
+> is where P1.22 put it. What was missing was not the destination but the
+> **banner**.
+>
+> The rule, generalised from that and applied to all 40 pages in
+> [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) T1:
+>
+> 1. Does every claim on the page hold of the engine that ships? → **current**.
+> 2. Otherwise, is the page still *read* — cited by another page, or the record
+>    of a measurement nothing can re-take? If **no**, and nothing links to it →
+>    **delete**; git holds it.
+> 3. If **yes** it is superseded, and *where* it goes is decided by one
+>    question: **does a `docs/history/` entry for its milestone already
+>    exist?** If it does → **move** into that record. If it does not →
+>    **banner in place**. A page is moved *into* a milestone record; it is
+>    never made *into* one.
+>
+> Rule 3 is what makes the answer mechanical rather than a judgment call, and
+> it is the shape `docs/history/README.md` already has: the directory is
+> indexed **by milestone**, its three entries are milestone records, and
+> creating `m1_core/` to hold one page would assert a record nobody wrote.
+>
+> On `algorithm_layer_n.md` specifically, step 2 also answers "half a reason"
+> the other way: the page has **five** referrers, and one of them is
+> [`docs/history/m1a_rust/design/07_search_layer.md`](../../docs/history/m1a_rust/design/07_search_layer.md),
+> which cites it as *"the per-step contract"* — a shipped milestone record
+> naming it as the specification the port had to reproduce. Deleting a page a
+> history record cites as its specification falsifies the record. So deletion
+> was never available, and the count settles it without weighing halves.
 
 [CD-H1](README.md#the-findings) covers pages in three states, and the review
 names the triage: *current* (fix), *superseded with a banner*, *moved to

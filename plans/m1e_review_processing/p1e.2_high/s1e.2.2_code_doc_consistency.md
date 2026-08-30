@@ -247,3 +247,134 @@ failure from the rest of `CD-H1` — those pages describe machinery that was
 other never-built descriptions in the tree, they will be found by the same
 identifier-resolution filter, and they belong in the triage table with their
 own reason column.
+
+---
+
+# Record
+
+## T1e.2.2.1 — the rule, and all 40 pages
+
+**The tree is 40 pages, not 37**, and both numbers are right: the stage was
+written against `7731848` (2026-08-27, the review's base) and three pages
+landed the next day, inside M1e itself —
+[`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md) (T1e.1.1.1),
+[`configuration.md`](../../../docs/kernel/configuration.md) (S1e.5.1) and
+[`inference/solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)
+(S1e.3.2's predecessor). All three are *current* and all three are the kind of
+page the checklist in T1e.2.2.5 exists to keep that way.
+
+### The rule ([Q-M1e.3](../open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted), answered 2026-08-30)
+
+The awkward case had an answer already written down, one directory over.
+[`docs/history/README.md`](../../../docs/history/README.md): *"**M1** (core
+graph reasoning, shipped 2026-06-17) predates this directory: what survived its
+plan tree went to `docs/kernel/inference/` and `plans/followups/` at P1.22, and
+the rest is in git history."* Candidate (a) — `docs/history/m1_core/` — is not a
+directory nobody has created; it is one the tree **declined** to create, and
+`algorithm_layer_n.md` is already where P1.22 put it. What it lacked was the
+banner, not the destination.
+
+Generalised, and applied below:
+
+1. Does every claim on the page hold of the engine that ships? → **current**.
+2. Otherwise, is the page still *read* — cited by another page, or the record of
+   a measurement nothing can re-take? If **no**, and nothing links to it →
+   **delete**. If **yes** → it is superseded, and:
+3. **Does a `docs/history/` entry for its milestone already exist?** If it does
+   → **move** into that record. If it does not → **banner in place**. *A page is
+   moved into a milestone record; it is never made into one.*
+
+Rule 3 is what makes the disposition mechanical. `docs/history/` is indexed by
+milestone and its three entries are milestone records; a `m1_core/` holding one
+page would assert a record nobody wrote. And step 2 disposes of "half a reason"
+without weighing halves: `algorithm_layer_n.md` has **five** referrers, one of
+them
+[`docs/history/m1a_rust/design/07_search_layer.md:301`](../../../docs/history/m1a_rust/design/07_search_layer.md),
+which cites it as *"the per-step contract"* — a shipped milestone record naming
+it as the specification the port had to reproduce. Deleting a page a history
+record cites as its specification falsifies the record, so deletion was never
+on the table.
+
+**The rule's output on this tree is three banners and zero moves**, and the zero
+is the rule working rather than dodging: all three superseded pages are M1
+P1.5b's, and M1 is the one shipped milestone with no `docs/history/` entry — by
+the decision `docs/history/README.md` records.
+
+### How the twenty-eight unnamed pages were checked
+
+The review's method was a reading pass and it says so, so the other pages got
+the cheap filter the task names, mechanised — two scripts, both throwaway:
+
+- **identifier resolution** — every backticked token on every page classified
+  (`EIN_*` · `*.rs` · `fn()` · `Type` · `snake_case` · `a::b`) and resolved
+  against `ein.rs/crates/**`. 39 pages produced a candidate list; most
+  candidates are prose (`Human`, `rel_can`, DOT node ids), and the residue is
+  what the table below cites.
+- **links and anchors** — every relative markdown link in the tree, file and
+  fragment, GitHub-slugified. **2 broken anchors** in 40 pages, both inside
+  pages this stage was already opening.
+
+Plus the empirical half, because three claims were about what the parser
+*refuses* and only a run can say: `(instnce ?a ?T)` **loads and solves**
+(exit 0), `(neq ?a)` and `(not ?a ?b)` are parse errors, `(eq ?a)` and
+`(absent P Q)` are **compile** errors since S1e.2.1, and `(and X)` is accepted
+at arity 1.
+
+### The triage — 40 rows
+
+Legend: **current** = every claim holds, fix any that do not · **banner** =
+superseded, kept in place with a banner saying what it described and where the
+current statement is · **move** = into an existing `docs/history/` record
+(nothing qualified).
+
+| page | state | why | action |
+|---|---|---|---|
+| **root** | | | |
+| [`README.md`](../../../docs/kernel/README.md) | current | the tree's entry point, and one of the pages that misleads: *(placeholder, P1.3)* / *Stub before P1.3* against its own § What's-M1, plus the P1.7c-removed six-block-forms surface — `CD-H1` | fix; and carry the triage section |
+| [`architecture.md`](../../../docs/kernel/architecture.md) | current | sweep clean; `unconditional_facts` appears only inside the note recording its retirement. One token does not resolve: `StateKey` in the SMT-analogy paragraph (the identity is `canon::state_key`) | one-word fix |
+| [`configuration.md`](../../../docs/kernel/configuration.md) | current | M1e S1e.5.1, pinned by `config_reference.rs`; it is already where `EIN_RENDER_LEVI` is recorded as never implemented | — |
+| [`defined_behaviour.md`](../../../docs/kernel/defined_behaviour.md) | current | normative; §3.2 rewritten to the shape that reproduces and `Q-M1a.8` closed, 2026-08-29 in S1e.1.4 | — (`DO-L1`'s *"Nine more"* / *"all ten"* is [S1e.4.7](../p1e.4_low/s1e.4.7_documentation.md)'s) |
+| [`glossary.md`](../../../docs/kernel/glossary.md) | current | sweep clean. **`CD-H1`'s `glossary.md:194-198` does not reproduce**: `git log -S"unique-remaining" -- docs/kernel/glossary.md` is empty — the page has never named a predicate registry. Its T3 entry is the graph model's rule taxonomy, which is `02_rules.md`'s subject | — |
+| [`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md) | current | M1e T1e.1.1.1, 2026-08-28 | — |
+| **inference/** | | | |
+| [`README.md`](../../../docs/kernel/inference/README.md) | current | four sections are bannered and correct; four are not — the verdict row's three words, *Two engines, two termination criteria*, the Budget section's Python exception, and the closing *when P1.3 work begins*. The header banner names two removed-machinery sections where there are four | fix |
+| [`absent_semantics.md`](../../../docs/kernel/inference/absent_semantics.md) | current | every claim pinned by `naf_semantics.rs`; the page says so and it is true | — |
+| [`algorithm_layer_n.md`](../../../docs/kernel/inference/algorithm_layer_n.md) | **banner** | P1.5b design presented as live spec: `monotonic_solve` / `gaps_solve` / `contradictions_solve` against one `pub fn solve`; flat root-merge (retired P1.21 R2 as NAF-unsound); state-hash dedup as identity; multi-parent integrate. Read by five referrers, one a history record | banner |
+| [`architecture_and_algorithms.md`](../../../docs/kernel/inference/architecture_and_algorithms.md) | current | §2 states the four-word verdict correctly and §3's `Verdict` row lists three — the tree's own two answers, in one file. `gaps_solve` / `_closure_step()` / `premises_raw` appear only in historical or ein.py-module contexts | fix the row |
+| [`domain_elim_vs_hypothesis.md`](../../../docs/kernel/inference/domain_elim_vs_hypothesis.md) | current | its *Historical numbers* banner names the removed sibling entries and the removed harness, and scopes exactly what is still true. The model | — |
+| [`events.md`](../../../docs/kernel/inference/events.md) | current | states `Open` and the `k`/`solution_nodes` split correctly | — |
+| [`features.md`](../../../docs/kernel/inference/features.md) | current | frozen-constant banners are complete. **Not in the review**: twice routes to `docs/api/inference.md` for *what each knob does*, which `README.md:89` calls history; the live definitional table is `configuration.md` | fix the pointer ×2 |
+| [`implementation.md`](../../../docs/kernel/inference/implementation.md) | current | the module map's verdict reads `Solution / Ambiguity / Contradiction` in two places and the tree traversal is in no row, though it is `solve.rs`'s | fix |
+| [`lattice_diagrams.md`](../../../docs/kernel/inference/lattice_diagrams.md) | **banner** | (9)'s data-model companion and in the same state: multi-parent integrate, `try_branch`, `BranchResult`, *the future* `try_commitment_set`, state-hash dedup as identity — plus a CLI line that produces neither artifact it names | banner; and the CLI line separately (it was never true, banner or not) |
+| [`lattice_dump.md`](../../../docs/kernel/inference/lattice_dump.md) | current | the dump format is live and golden-pinned (`golden_dump.rs` + `dump_parity.rs`). Three defects: `kb_index/` is empty **by construction** and the crate's own module doc says so, the *Programmatically* recipe imports the deleted Python engine, and `LatticeDumper` is attributed to `state.rs` | fix + banner the Python block |
+| [`parity_baselines.md`](../../../docs/kernel/inference/parity_baselines.md) | **banner** | already, since S1a.10.6 — the shape the other two copy | — (its `§3d.vii` citation goes with (9)) |
+| [`reserved_engine_strings.md`](../../../docs/kernel/inference/reserved_engine_strings.md) | current | **not in the review, found by the identifier sweep**: a whole section documents a `Mode` enum in `verdict.rs` with `SOLVE` / `GAPS` / `CONTRADICTIONS` members and a three-row table. There is no such enum anywhere in the crates, and `is_solved` with it | fix |
+| [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) | current | M1e, normative, and its §6 states its own approximation before the definitions | — |
+| [`zebra_walkthrough.md`](../../../docs/kernel/inference/zebra_walkthrough.md) | current | routes embedders to `docs/api/ein.md` *"whose contract lands in P1a.9"* — history, per `README.md:89` | fix the pointer |
+| **ir/01-ein-graph/** | | | |
+| [`README.md`](../../../docs/kernel/ir/01-ein-graph/README.md) | current | — | — |
+| [`01_kb.md`](../../../docs/kernel/ir/01-ein-graph/01_kb.md) | current | *"the Python dataclasses that hold it"* in the header banner and *"(P1.3 stub)"* in See-also | fix (2 lines); `DO-L1`'s hexagon row is [S1e.4.7](../p1e.4_low/s1e.4.7_documentation.md)'s |
+| [`02_rules.md`](../../../docs/kernel/ir/01-ein-graph/02_rules.md) | current | **not in the review**: §2.3 says the matcher consults a *structural predicate registry*'s **Python implementation**, and §5 lists `unique-remaining` / `no-remaining-option` among the predicates `:where` allows. All eight T3 names in the file resolve nowhere in the repo | fix |
+| [`03_ein_model.md`](../../../docs/kernel/ir/01-ein-graph/03_ein_model.md) | current | *"`store.is_symmetric` / `symmetric_relations` survive only as unprivileged property queries"* — neither survives | fix |
+| [`04_jack_drinks_coffee.md`](../../../docs/kernel/ir/01-ein-graph/04_jack_drinks_coffee.md) | current | the sweep's unresolved tokens are DOT node ids in the worked example | — |
+| [`05_four_level_kb.md`](../../../docs/kernel/ir/01-ein-graph/05_four_level_kb.md) | current | — | — |
+| **ir/02-data-model/** | | | |
+| [`README.md`](../../../docs/kernel/ir/02-data-model/README.md) | current | — | — |
+| [`01_entities.md`](../../../docs/kernel/ir/02-data-model/01_entities.md) | current | **not in the review**: the page opens *"Frozen Python dataclasses … attached to the owning `KnowledgeBase` via a `_kb` back-pointer"* and its own §5 is titled *"the back-pointer, and why it is gone"*. One of the two broken anchors (`#3-provenance`) is here | fix |
+| [`02_store.md`](../../../docs/kernel/ir/02-data-model/02_store.md) | current | `CD-H1`'s four — singular last-wins `query`, the deleted `add_type`/`add_instance`, the `_kb` caveat as current against §6 and two sibling pages, `kb.rs` twice under Sources of truth — plus the closing *P1.3 stub* | fix |
+| [`03_implementation.md`](../../../docs/kernel/ir/02-data-model/03_implementation.md) | current | — | — |
+| **ir/03-ein-lang/** | | | |
+| [`README.md`](../../../docs/kernel/ir/03-ein-lang/README.md) | current | — | — |
+| [`00_ebnf.md`](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md) | current | honest about its own five unexercised productions. Names *"the named structural-predicate registry"* once, in the list of what §3 does not check — the one phrase that outlives the registry | fix that phrase |
+| [`01_grammar.md`](../../../docs/kernel/ir/03-ein-lang/01_grammar.md) | current | *"Since S1d.2.3 nothing reads the tally … legal and inert"* — `CD-H2`. Its § Query's keyword arithmetic is the **correct** one and is what `06_reserved_names.md`'s converges on. The second broken anchor is here | fix |
+| [`02_patterns.md`](../../../docs/kernel/ir/03-ein-lang/02_patterns.md) | current | the different failure: machinery **planned**, not removed. A *Predicate registry (initial)* presented as the shipped M1 starter set; `instance` as a kernel meta-primitive; and a parse-time claim the probe refutes | fix |
+| [`03_examples.md`](../../../docs/kernel/ir/03-ein-lang/03_examples.md) | current | — | — (`DO-L1`'s garbled sentence is [S1e.4.7](../p1e.4_low/s1e.4.7_documentation.md)'s) |
+| [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md) | current | a runnable-looking Python section against the deleted engine, `EIN_RENDER_LEVI` (which `configuration.md` already records as never implemented), and `from_dot` *"when implemented in P1.2"* — P1.2 closed 2026-05 | banner the Python block + fix |
+| [`05_inspirations.md`](../../../docs/kernel/ir/03-ein-lang/05_inspirations.md) | current | — | — |
+| [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md) | current | *"no verdict word … S1d.2.6 is where the word is decided"*; `:expect`'s third form as `none`; and `DO-L1`'s keyword arithmetic on the same page | fix (three) |
+| [`07_stdlib_api.md`](../../../docs/kernel/ir/03-ein-lang/07_stdlib_api.md) | current | `b_other` is a rule parameter in an example, not an identifier | — |
+| [`08_self_describing.md`](../../../docs/kernel/ir/03-ein-lang/08_self_describing.md) | current | carries a *part operational, part design* banner and is scrupulous about which half is which | — |
+
+**Totals: 37 current · 3 banner · 0 move.** Nine pages needed no edit at all;
+four of the ones that did are **not** in `CD-H1`'s list, and every one of the
+four was found by the identifier sweep rather than by reading.
