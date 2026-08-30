@@ -24,7 +24,7 @@ records which question became which id.
 | [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model) | What is a **solution**, and what is a **model**? | **decided 2026-08-28** by the user; binding on [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) and on [P1f.10](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md) |
 | [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) | The read-out prints the solution **KB** and calls it a model | **decided 2026-08-28 — A**: the recorded object is the *state*, `model` is a projection of it, and § 2 is evaluated on the state. Unblocks Q-M1e.8. S1e.3.2 applies it to the vocabulary, P1e.5's S1e.5.3 to the read-out |
 | [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness. The **record-site conformance check** is [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) T4 ([D3](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d3_q_m1e8_file_or_take.md), option B); the fix files to P1e.2 and, since [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) was ruled on 2026-08-28, **is chosen**: re-saturate and re-check before recording |
-| [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. **Ruled 2026-08-28: B now, C filed.** The containment is [S1e.2.3](p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md) (a diagnostic, 1 d, P1e.2); the real fix is [F18](../followups/f18_world_aware_negatives.md); and the **language** half — *may a refutation rest on an `absent` at all?* — is [S1f.10.8](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s |
+| [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. **Ruled 2026-08-28: B now, C filed.** B **shipped 2026-08-30** in [S1e.2.3](p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md): a `RefutationUnderAbsentWarning` from the same walk `warn-derived-naf` already made, the probe banked as `examples/ein-bugs/naf-upward-closure.ein`, and the corpus measured — **9 rules over 7 entries**, which **corrects D4's prediction**: `connex` is activated twice and exposed neither time (both fixtures write `:no-hypothesis`), and what is exposed is `std.elim`'s membership scans. Gated, because the corpus is not silent. The real fix is [F18](../followups/f18_world_aware_negatives.md); the **language** half — *may a refutation rest on an `absent` at all?* — is [S1f.10.8](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s, and it starts from the banked set |
 | [Q-M1e.10](#q-m1e10--two-config--flags-are-inert) | Two `(config …)` flags are **inert** — `print-alive`, `candidate-order-seed` | open — raised by [S1e.5.1](p1e.5_documentation_and_other/s1e.5.1_config_reference.md); owner unassigned |
 | [Q-M1e.13](#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent) | `:expect` cannot state an answer with an **empty goal extent** — nor detect a shrinking model set | open — found 2026-08-28 while banking [D1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d1_q4_which_route_reaches_the_site.md)'s fixtures; **owner unassigned** |
 | [Q-M1e.12](#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object) | The blind rung is **untyped**, and a model binds a type as an object | open — raised by [D8](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d8_branching06_untyped_models.md) 2026-08-28; **owner unassigned**, three readings recorded |
@@ -618,6 +618,18 @@ load-time refusal now — the compiler already knows every guard's watched
 relations and every hypothesis-eligible relation — with the real fix filed,
 starting from `Prov::absent`, which has recorded the negative premises since
 S1.21.8 and which *"no walk yet interprets"*.
+
+> **B shipped 2026-08-30** ([S1e.2.3](p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md)),
+> as a warning rather than a refusal and **after root saturation** rather than
+> at load — because the compile cache is only complete once the saturator has
+> run, and six of the nine exposed rows are rules activated by *derived* facts,
+> so a load-time check would have found three. The census corrects this
+> entry's own last paragraph in one place: `warn-derived-naf` **does** cover
+> the shape now, sharing its flag, and the two questions are one walk apart.
+> `connex` — the rule D4 named — turns out to be exposed **nowhere**: both of
+> its corpus activations exclude the subject relation from generation with
+> `:no-hypothesis`, which is the discipline D4 says the rule lacks, applied at
+> the query instead.
 
 ## Q-M1e.10 — Two `(config …)` flags are inert
 

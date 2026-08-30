@@ -9,7 +9,10 @@ where B (a diagnostic) was taken now and this was filed as the real fix.
 
 **Trigger:** when a program that needs the shape shows up, or when
 [S1f.10.8](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)
-rules that a refutation resting on an `absent` stays **legal**. If that stage
+rules that a refutation resting on an `absent` stays **legal**. There is now a
+third: `ein-infer/tests/refutation_under_absent.rs` fails the moment the
+corpus's exposed set moves in either direction, so a program written with the
+shape announces itself rather than waiting to be noticed. If that stage
 instead forbids the shape, this theme is **closed without being done** — there
 is nothing left to be careful about — and that is the cheapest outcome
 available.
@@ -56,15 +59,33 @@ does.
   constraint written the other way, demanding a **stored negative** for every
   candidate before it concludes — so the constructive half of the alternative
   is in the tree already.
-- The exposure is bounded and measured: of 60 syntactically matching rules
-  across `stdlib/`, `examples/` and `tests/`, the safe ones read a **given**
-  structure, and the one stdlib rule with the exposed shape is `connex`.
+- The exposure is bounded and **measured for real** at M1e
+  [S1e.2.3](../m1e_review_processing/p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md),
+  which is where this bullet's earlier estimate was checked and half of it
+  turned out to be wrong. Of the 60 syntactically matching rules across
+  `stdlib/`, `examples/` and `tests/`, **nine rules over seven entries** are
+  actually exposed — the set is banked in
+  [`refutation_under_absent.rs`](../../ein.rs/crates/ein-infer/tests/refutation_under_absent.rs).
+  The `std.slots` half of the estimate holds: not one of those rules is
+  exposed, because their `absent` reads a given position structure. The
+  `connex` half does not: `connex` is activated **twice** in the corpus and
+  exposed **neither** time, because both fixtures write
+  `:no-hypothesis (instance lt)`. What is exposed instead is `std.elim`'s
+  `typecheck-arg-0` / `typecheck-arg-1` / `no-room-left` / `no-room`, whose
+  guards read a **membership** relation nothing in their files closes. The
+  lesson for this theme: exposure is a property of the *program*, not of the
+  rule, so a fix scoped to "the rules with the shape" would be scoped to the
+  wrong thing.
 
 ## Read before proposing it
 
 - [D4](../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)
   — the probe, the six-configuration matrix, and the three consumers separated
-  so that each is shown sufficient on its own.
+  so that each is shown sufficient on its own. The probe itself is banked as
+  [`examples/ein-bugs/naf-upward-closure.ein`](../../examples/ein-bugs/naf-upward-closure.ein),
+  because D4 goes with M1e's plan tree and the fixture does not: its `:expect`
+  states today's wrong answer and **breaks when this theme lands**, which is
+  the acceptance test a proposal here does not have to write.
 - [`docs/kernel/inference/absent_semantics.md`](../../docs/kernel/inference/absent_semantics.md)
   — C1–C6, and C3 in particular.
 - [design/08 § The objects](../../docs/history/m1a_rust/design/08_parallelism.md)
