@@ -54,7 +54,9 @@ pytest ran both engines for all 11 fixtures in ~3.5 s on the laptop reference
 By design, per
 Q1.5b.7 — monotonic-vs-lattice equivalence
 and the algorithm spec
-[`algorithm_layer_n.md` §3d.vii](algorithm_layer_n.md):
+[`algorithm_layer_n.md` §3c.ii](algorithm_layer_n.md) (a **historical
+record** since M1e S1e.2.2 — read its banner first; the §3d.vii this line
+cited until then is a section that file has never had):
 
 - The fixture has two satisfying branches (Blue↔H3 or Green↔H3).
 - Tree depth-first search at the depth cap leaves both branches

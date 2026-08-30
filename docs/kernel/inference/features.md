@@ -3,10 +3,14 @@
 Which `SolverConfig` knobs are load-bearing for solving `zebra2`, with
 measured impact, **in both implementations**. The companion to the
 *definitional* config table in
-[`docs/api/inference.md`](../../api/inference.md) (what each knob does) and
-the engine narrative in
+[`configuration.md`](../configuration.md) (what each knob does, whether it
+changes the answer, and how far it may be depended on) and the engine
+narrative in
 [`architecture_and_algorithms.md`](architecture_and_algorithms.md) (how
-each feature works).
+each feature works). *(Until M1e S1e.2.2 this line pointed at
+`docs/api/inference.md`, which is one of the five Python API pages
+[`docs/kernel/README.md` § Audience](../README.md) files as history;
+`configuration.md` is where the definitional table lives since S1e.5.1.)*
 
 > **Audience: engine contributors / advanced authors.** Most puzzle
 > authors only need the takeaway below.
@@ -409,8 +413,10 @@ and update the provenance line. `--puzzle P` runs the matrix on another
 puzzle, `--cells SUBSTR` on a subset (the `baseline` and `control` rows always
 run), `$EIN_BIN` names a build other than `ein.rs/target/release/ein`. The
 *definitional* knob list lives in
-[`docs/api/inference.md`](../../api/inference.md); add a row there for any new
-flag.
+[`configuration.md`](../configuration.md); add a row there for any new flag —
+and note that you must, because
+[`config_reference.rs`](../../../ein.rs/crates/ein-cli/tests/config_reference.rs)
+diffs that page against `FIELDS` and fails on a flag it does not name.
 
 > **Only the ein.rs column can be refreshed.** The runner drove both engines
 > as processes and cross-checked them cell by cell until

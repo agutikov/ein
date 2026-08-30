@@ -1,5 +1,39 @@
 # P1.5b — Per-candidate processing in layer N (unified engine)
 
+> **Status: historical record — M1 P1.5b's design, 2026-05-28.** This page
+> describes the engine as it was **designed** at P1.5b, not as it shipped.
+> Four of the things it specifies were retired between 2026-06-15 and
+> 2026-08-17, and its source links were mechanically re-aimed at
+> `ein.rs/crates/ein-infer/src/solve.rs` when the port landed, which is what
+> makes it *read* current:
+>
+> | what this page specifies | when it went, and why | what holds today |
+> |---|---|---|
+> | **three sibling public entries** — `monotonic_solve` / `gaps_solve` / `contradictions_solve` | **removed 2026-06-16**: they fixed the verdict by *which function was called*, so they returned mutually contradictory verdicts on one KB | one `pub fn solve`; the verdict is read off the model count `k` — [`architecture_and_algorithms.md` §1](architecture_and_algorithms.md), which records this row as a removed **soundness bug** |
+> | **flat root-merge of unconditional facts** (§3c.iii, §3d) | **retired P1.21 R2** as NAF-unsound: an `(absent P)` premise leaves no provenance edge, so the walk called a fork fact root-true when a sibling commitment refutes it | root stays stable mid-search; two sound writes remain — [README § Unconditional facts — retired](README.md#unconditional-facts--retired-s157--p121-r2) |
+> | **state-*hash* dedup as node identity** (§3b) | **P1.21 R1** | [`canon::state_key`](../../../ein.rs/crates/ein-infer/src/canon.rs) — the canonical fact set, compared exactly. `state_digest` is a display id and never identity |
+> | **`find_parents` / multi-parent integrate** | dropped before this draft, and § *What this algorithm no longer does* below already says so — but [`lattice_diagrams.md`](lattice_diagrams.md) still documents it as current, which is how you can tell that page is older than this one | the BFS layer loop; a dead set is learned whole as a no-good and Apriori suppresses its supersets |
+>
+> **It is kept, and kept in place, on purpose.** Five pages cite it, one of
+> them a shipped milestone record —
+> [`docs/history/m1a_rust/design/07_search_layer.md`](../../history/m1a_rust/design/07_search_layer.md)
+> calls it *"the per-step contract"* the Rust port had to reproduce — and the
+> first row above is a refutation that needs its subject. It stays here rather
+> than moving under `docs/history/` because **M1 has no `docs/history/`
+> entry**: [`docs/history/README.md`](../../history/README.md) records that
+> M1's survivors went to `docs/kernel/inference/` at P1.22, and a page is moved
+> *into* a milestone record, never made into one. The rule is
+> [Q-M1e.3](../../../plans/m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted),
+> answered 2026-08-30.
+>
+> **Do not rewrite it to match today's engine.** A page rewritten that way is
+> neither a record nor a specification, and the design the refutation is
+> *about* stops being recoverable.
+>
+> For what the engine does now: [`architecture_and_algorithms.md`](architecture_and_algorithms.md)
+> (as-built, O1–O9) · [`implementation.md`](implementation.md) (the module map)
+> · [README § Set-indexed search](README.md#set-indexed-search--monotonic-engine-p15b-s15b010).
+
 Companion to [`diagrams/algorithm_layer_n.dot`](diagrams/algorithm_layer_n.dot).
 Renders the per-candidate flow inside one BFS layer of the
 **unified set-search engine**'s shared private

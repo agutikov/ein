@@ -60,21 +60,26 @@ the exhaustive solve is now seconds.)
 
 ### Programmatically
 
-```python
-from pathlib import Path
-from ein.inference.monotonic import LatticeDumper, solve
-from ein.ir import parse
-from ein.kb.store import KnowledgeBase
+> **Superseded — this recipe was the Python engine's.** It imported
+> `ein.inference.monotonic`, `ein.ir` and `ein.kb.store` from `ein.py`, which
+> was deleted at M1a
+> [S1a.10.5](../../history/m1a_rust/README.md#s1a105--the-removal);
+> there is no module to import, and `pip install` is not a channel
+> ([`docs/install.md`](../../install.md)). The **dump format below is not
+> superseded** — it is what `LatticeDumper` writes today, banked by
+> [`golden_dump.rs`](../../../ein.rs/crates/ein-render/tests/golden_dump.rs)
+> (the timeline and the whole `enterings/` subtree) and byte-compared for the
+> rest by `dump_parity.rs`. What changed is only how you ask for it.
 
-kb = KnowledgeBase.from_ir(parse(Path("examples/branching/04_two_levels.ein").read_text()))
-dumper = LatticeDumper(out_dir=Path("./dump"))
-# stop_after=None ⇒ exhaustive sweep; store_lattice ⇒ sound LatticeProof + kb_index/.
-verdict, stats = solve(kb, max_set_size=3, stop_after=None,
-                       store_lattice=True, dumper=dumper)
-```
+The dumper is a Rust type,
+[`ein_render::dump::LatticeDumper`](../../../ein.rs/crates/ein-render/src/dump/lattice.rs),
+handed to [`ein_infer::solve::solve`](../../../ein.rs/crates/ein-infer/src/solve.rs)
+as its `dumper` argument — the shape
+[`golden_dump.rs`'s `run_dump`](../../../ein.rs/crates/ein-render/tests/golden_dump.rs)
+uses. **No CLI flag reaches it**, and that is § *How to run it*'s subject.
 
-`out_dir=None` makes every hook a no-op (the call sites stay
-uniform, nothing hits disk) — useful for subclasses that stream the
+`LatticeDumper::new(None)` makes every hook a no-op (the call sites stay
+uniform, nothing hits disk) — useful for a wrapper that streams the
 lifecycle events somewhere else.
 
 ---

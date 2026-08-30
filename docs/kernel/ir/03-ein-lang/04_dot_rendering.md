@@ -321,26 +321,26 @@ digraph reasoning_edge_example {
 }
 ```
 
-### From Python
+### How to ask for this view
 
-The `kb dot` CLI subcommand was removed; render the unified KB graph via
-`KnowledgeBase.to_dot` (the same renderer), which takes
-`colour_by=`, `include_instances=`, … as keyword arguments:
+> **Superseded — the recipe here was the Python engine's.** It read
+> `KnowledgeBase.to_dot(colour_by=…, include_instances=…)` out of
+> `ein.kb`, through a `python3 -c` in `utils/render_examples.sh`, because
+> `ein kb dot` had been removed in P1.11. `ein.py` was deleted at M1a
+> [S1a.10.5](../../../history/m1a_rust/README.md#s1a105--the-removal)
+> and the workaround went with it. **The schema this chapter specifies is not
+> superseded** — it is what the live renderer emits.
 
-```python
-from pathlib import Path
-from ein.ir import parse
-from ein.kb import KnowledgeBase
-p = Path("examples/zebra2.ein")
-kb = KnowledgeBase.from_ir(parse(p.read_text()), base_dir=p.parent)
-print(kb.to_dot())                     # every fact
-print(kb.to_dot(colour_by="origin"))   # background / given / derived colours
-print(kb.to_dot(include_instances=False))            # types-only
-```
-
-`utils/render_examples.sh` produces `_unified.dot` + `_unified.svg`
-per example, rendered with `fdp` (force-directed) for the 2021
-prototype's spread-out aesthetic.
+The renderer is [`ein_render::kb_dot`](../../../../ein.rs/crates/ein-render/src/kb_dot.rs)
+(`to_dot(kb, terms, &KbDotOpts)`, with `ColourBy` and the `include_*` fields
+the keyword arguments used to be). It is exercised over the whole corpus by
+[`dot_wellformed.rs`](../../../../ein.rs/crates/ein-render/tests/dot_wellformed.rs)
+and digested in six views by `shape.rs`. **No CLI subcommand reaches it**:
+`ein render` offers `rules` / `rule` / `constraints` / `lattice` and no `kb`,
+so outside a test nothing can ask for this view.
+[`utils/render_examples.sh`](../../../../utils/render_examples.sh) says the
+same thing at its own head and declines to decide it, because putting
+`ein render kb` back is a decision about the shipping surface.
 
 ### No head is special-cased
 

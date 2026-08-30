@@ -1,5 +1,29 @@
 # P1.5b — Lattice / DAG state-search diagrams
 
+> **Status: historical record — M1 P1.5b's design, 2026-05.** The diagrams and
+> the sections that read them describe the search lattice as it was
+> **designed**, and this page is older than its own companion
+> [`algorithm_layer_n.md`](algorithm_layer_n.md), whose § *What this algorithm
+> no longer does* already retires two of the things documented here as
+> current:
+>
+> | what this page presents as current | what holds today |
+> |---|---|
+> | **multi-parent integrate** — every layer-`k` set stores its `k` parents and the bubble runs through all of them (§ *Multi-parent intrinsic to BFS-by-size*) | dropped: under monotone saturation the nogood bubble is N-way idempotent and the unconditional bubble is always-true. Flat writes, and a learned no-good filtered by Apriori |
+> | **`try_branch(parent_kb, h)` once per hypothesis**, with `try_commitment_set` as *"the future commitment-set primitive"* parked in F9 (§ *Saturation arc as a first-class step*) | [`commitment::try_commitment_set`](../../../ein.rs/crates/ein-infer/src/commitment.rs) shipped and is the only entry; `try_branch` and `BranchResult` are the removed tree solver's and exist nowhere |
+> | **state-*hash* dedup as primary structure** (§ *Dedup as primary structure, not optimisation*) | [`canon::state_key`](../../../ein.rs/crates/ein-infer/src/canon.rs) — the canonical fact set compared exactly, P1.21 R1. The 16-hex digest is a display id within one dump and never identity |
+>
+> Kept in place, for the reason and by the rule stated in
+> [`algorithm_layer_n.md`](algorithm_layer_n.md)'s banner, and **not rewritten
+> to match today's engine**. What the search does now:
+> [`architecture_and_algorithms.md` §2](architecture_and_algorithms.md) and
+> [`implementation.md`](implementation.md); what it *writes*,
+> [`lattice_dump.md`](lattice_dump.md), which is current and golden-pinned.
+>
+> The **fixture table** at the foot of this page is live — those four
+> `examples/lattice/` files are corpus entries — but the invocation beside it
+> was never true; see the note there.
+
 Visualises the moving parts of the search-lattice machinery
 across four fully-explored examples. Each diagram pairs a
 DOT source + a pre-rendered SVG; the markdown here gives the
@@ -212,8 +236,14 @@ parent-choice-independent), but stores all `k` parents in the
 `k` parents — idempotent under subsumption, so the
 multi-parent fan-out costs nothing extra in writes.
 
-Documented in
-[`algorithm_layer_n.md`](algorithm_layer_n.md) § 3a + § 3d.iv.
+Documented in [`algorithm_layer_n.md`](algorithm_layer_n.md) § 3a — and
+**retired** there, in its § *What this algorithm no longer does*: under
+monotone saturation the parent bubble is idempotent for nogoods and
+always-true for unconditional facts, so flat root-writes are equivalent and
+cheaper. (This page's § 3d.iv was one of **four** sub-section numbers — cited
+six times across three pages — that `algorithm_layer_n.md` has never had.
+Repaired at M1e S1e.2.2, and the reason they survived a doc pass is that a
+prose `§x.y` is not a link: no anchor checker sees it.)
 
 ### Saturation arc as a first-class step
 
@@ -248,8 +278,9 @@ State-hash dedup (secondary) catches *cross-set state
 convergence* — short-circuits after saturation. Both are
 mandatory; Diagram 2 shows the secondary one fire.
 
-Documented in [`algorithm_layer_n.md`](algorithm_layer_n.md)
-§ 3d.iii + § 3e.
+Documented in [`algorithm_layer_n.md`](algorithm_layer_n.md) § 3b — and
+superseded with it: the identity is `canon::state_key`, the canonical fact set
+compared exactly, not a hash (P1.21 R1).
 
 ## Rendering
 

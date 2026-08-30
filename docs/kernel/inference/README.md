@@ -916,8 +916,9 @@ view (`proof.dead_commitments` + `verdict.unsat_core`).
    context the goal needs when it references hypothesis facts
    directly (e.g. `examples/branching/05_mini_zebra.ein`).
    Returns `Solution(kb=result.kb)` so the caller sees the
-   hypothesis context the goal depended on. **Algorithm spec
-   §3d.vii.**
+   hypothesis context the goal depended on. (The design's own
+   statement of this arm is [`algorithm_layer_n.md`](algorithm_layer_n.md)
+   §3c.ii — a **historical record**; read its banner first.)
 2. **Solution at root.** The forced-positive cascade
    ([`promote_forced_positives`](../../../ein.rs/crates/ein-infer/src/solve.rs),
    the sound inter-layer prune) promotes each singleton-alive

@@ -15,10 +15,11 @@ hands off to.
 To reproduce this solve, run
 `ein solve examples/zebra2.ein --trace out.md`. Driving it
 **programmatically** — load, solve, read the answer and a rendered trace — is
-the embedding contract in [`docs/api/ein.md`](../../api/ein.md), whose worked
-example produces exactly the answer this trace derives; that contract's
-implementation lands in
-[P1a.9](../../history/m1a_rust/README.md#p1a9--release).
+[`docs/api/rust.md`](../../api/rust.md), whose worked example is a test the
+gate runs and produces exactly the answer this trace derives. (The five
+*Python* pages beside it, `docs/api/ein.md` among them, are **history** — the
+contract of the engine that was; there is no module to import. See
+[`docs/kernel/README.md` § Audience](../README.md).)
 
 > **The other encoding.** [`zebra.ein`](../../../examples/zebra.ein) solves
 > the same puzzle over one generic `co-located` equivalence instead of five
