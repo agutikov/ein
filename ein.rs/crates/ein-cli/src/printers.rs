@@ -60,11 +60,19 @@ pub struct Phases {
 }
 
 /// `-s/--stats` — the engine counters.
+///
+/// **Every row is a counter, named after itself.** The first row read
+/// `solutions (k)` until M1e S1e.3.4 and printed `solution_nodes` under it —
+/// so `ein solve tests/stdlib/slots/03_fill.ein --stats` put `solutions (k) 0`
+/// in the table and `solutions (k) 1` in this block, one screen apart, on a
+/// shipped corpus entry. The count of *models* is the table's and the
+/// verdict's ([`ein_infer::verdict::ReadOut`]); what belongs here is what the
+/// search recorded, under the name the rest of the tool calls it.
 pub fn print_stats(stats: &MonotonicStats, elapsed_ms: f64) {
     let b = &stats.base;
     println!();
     println!("stats");
-    println!("  solutions (k)    {}", stats.solution_nodes);
+    println!("  solution_nodes   {}", stats.solution_nodes);
     println!(
         "  exhausted        {}",
         if stats.exhausted { "true" } else { "false" }

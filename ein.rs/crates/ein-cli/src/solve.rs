@@ -195,16 +195,12 @@ fn print_final(ast: &Ast, terms: &Terms, kb: &Kb, answer: &Answer, m: &ArgMatche
         return;
     }
     let targets = hypothesis_target_relations(ast, terms, kb);
-    let branches: Vec<&ein_infer::verdict::Solution> = match v {
-        Verdict::Ambiguity(bs) => bs.iter().collect(),
-        Verdict::Solution(s) => vec![s],
-        // An open state has facts to print like any other, and the header
-        // below still says `solution i/n` — the *verdict* line above is where
-        // S1d.2.6 says these are owed, and a second place saying it would be
-        // a second place to disagree.
-        Verdict::Open { states, .. } => states.iter().collect(),
-        Verdict::Contradiction { .. } => unreachable!(),
-    };
+    // An open state has facts to print like any other, and the header below
+    // still says `solution i/n` — the *verdict* line above is where S1d.2.6
+    // says these are owed, and a second place saying it would be a second
+    // place to disagree. Which is why this asks for the states rather than
+    // matching the four arms again.
+    let branches: Vec<&ein_infer::verdict::Solution> = v.states();
     let n = branches.len();
     for (i, branch) in branches.iter().enumerate() {
         if n > 1 {
@@ -360,22 +356,19 @@ pub(crate) fn events_verdict(
     let mut core: Vec<String> = Vec::new();
     let mut models: Vec<Vec<String>> = Vec::new();
     if let Answer::Verdict(v) = answer {
-        match v {
-            Verdict::Contradiction { unsat_core } => {
-                core = ein_infer::events::sexpr_facts(terms, unsat_core);
-                core.sort();
-            }
-            Verdict::Solution(s) => models.push(sorted_model(terms, &s.kb)),
-            Verdict::Ambiguity(bs) => {
-                models = bs.iter().map(|b| sorted_model(terms, &b.kb)).collect();
-            }
-            // The states go in the same slot: a consumer diffing two engines
-            // compares fact sets, and an open state's facts are a fact set.
-            // `type` is what tells it these were not called models.
-            Verdict::Open { states, .. } => {
-                models = states.iter().map(|b| sorted_model(terms, &b.kb)).collect();
-            }
+        if let Verdict::Contradiction { unsat_core } = v {
+            core = ein_infer::events::sexpr_facts(terms, unsat_core);
+            core.sort();
         }
+        // An open state's facts go in the same slot as a model's: a consumer
+        // diffing two engines compares fact sets, and an open state has one.
+        // `type` is what tells it these were not called models — which is
+        // exactly [`Verdict::states`]'s contract.
+        models = v
+            .states()
+            .iter()
+            .map(|b| sorted_model(terms, &b.kb))
+            .collect();
     }
     models.sort();
     let b = &stats.base;
@@ -384,10 +377,7 @@ pub(crate) fn events_verdict(
     // it matters here because `counters.solution_nodes` is in the same event:
     // a consumer that saw one number could not tell an open state from a
     // model, and one that sees both can.
-    let k = match answer {
-        Answer::Verdict(v) => v.k(),
-        Answer::Aborted { .. } => stats.solution_nodes as usize,
-    };
+    let k = answer.k(stats.solution_nodes);
     events.emit("verdict", |l| {
         l.str("type", ty);
         l.num("k", k as i64);
@@ -654,7 +644,6 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
         &mut terms,
         &kb,
         &solved.answer,
-        Some(solved.stats.solution_nodes),
         solved.stats.exhausted,
         Some(file),
         models_form(m),

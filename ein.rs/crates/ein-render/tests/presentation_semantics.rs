@@ -770,17 +770,8 @@ fn an_unexhausted_ambiguity_says_the_count_is_a_lower_bound() {
 fn the_table_renders_each_conjunct_through_its_relations_why() {
     let (ast, mut terms, mut kb) = loaded(ZEBRA_SHAPED);
     let answer = answer_of(&mut kb);
-    let table = render_solution_table(
-        &ast,
-        &mut terms,
-        &kb,
-        &answer,
-        Some(1),
-        true,
-        None,
-        ModelsForm::List,
-    )
-    .expect("the goal compiles");
+    let table = render_solution_table(&ast, &mut terms, &kb, &answer, true, None, ModelsForm::List)
+        .expect("the goal compiles");
     for sentence in [
         "Water is drunk in House-1",
         "the Norwegian lives in House-1",
@@ -792,17 +783,8 @@ fn the_table_renders_each_conjunct_through_its_relations_why() {
 
     let (ast, mut terms, mut kb) = loaded(OWNER_SHAPED);
     let answer = answer_of(&mut kb);
-    let table = render_solution_table(
-        &ast,
-        &mut terms,
-        &kb,
-        &answer,
-        Some(1),
-        true,
-        None,
-        ModelsForm::List,
-    )
-    .expect("the goal compiles");
+    let table = render_solution_table(&ast, &mut terms, &kb, &answer, true, None, ModelsForm::List)
+        .expect("the goal compiles");
     assert!(table.contains("Water drunk at House-1"), "{table}");
     assert!(
         table.contains("(owner-loc Zaphod House-1)"),

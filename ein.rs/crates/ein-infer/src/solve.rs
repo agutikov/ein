@@ -2644,6 +2644,18 @@ impl Run<'_> {
         })
     }
 
+    /// The **one** constructor of a verdict, and since M1e S1e.3.4 the one
+    /// place a read-out's count and qualifier come from too.
+    ///
+    /// What is *printed* used to be assembled downstream: `answer.rs` chose a
+    /// number per arm, `ein test`'s header chose another, `--stats` printed a
+    /// third under the first one's label. Adding a verdict word therefore
+    /// meant a coherent change in three crates — S1d.2.6 and S1d.3.3 each
+    /// added one and each missed a site, which is `AR-M2`. A new word or
+    /// qualifier now goes in [`Verdict::read_out`], next door, and the
+    /// renderers get it for free; a new *counter* still belongs in
+    /// [`MonotonicStats`], which is what the search recorded and not what the
+    /// answer is.
     fn finalise(&mut self) -> Answer {
         self.stats.solution_nodes = self.lstate.nodes.len() as u64;
         self.stats.exhausted = !self.lstate.truncated;

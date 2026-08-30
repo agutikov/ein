@@ -788,14 +788,12 @@ fn check_query(
     );
     // **`k` here is the verdict's, not `solution_nodes`** — the two parted on
     // twelve corpus entries at M1d S1d.2.6, and a claim is a claim about
-    // models. Both go in the row; the verbose header below still prints the
-    // search's count, which is what it has printed since S1c.1.3.
+    // models. Both go in the row, and since M1e S1e.3.4 both go in the verbose
+    // header too: it printed the *search's* count under the label `k =` until
+    // then, which is `SE-M1`.
     let ran = Ran {
         verdict: solved.answer.as_str().to_string(),
-        k: match &solved.answer {
-            ein_infer::verdict::Answer::Verdict(v) => v.k(),
-            ein_infer::verdict::Answer::Aborted { .. } => solved.stats.solution_nodes as usize,
-        },
+        k: solved.answer.k(solved.stats.solution_nodes),
         solution_nodes: solved.stats.solution_nodes,
         exhausted: solved.stats.exhausted,
         layers: solved.stats.base.layers_explored,
@@ -839,11 +837,20 @@ fn check_query(
         }
     };
     let header = match volume {
+        // **Both numbers, under their own names.** `k` is the verdict's — how
+        // many *models* — and `recorded` is what the search kept, which is the
+        // same thing for every verdict but `Open`. Printing one of them under
+        // the other's label is `SE-M1`; printing only one of them would make a
+        // reader who saw `k = 0` on an `Open` entry wonder where the state
+        // went. Unconditional, because a field that appears only sometimes is
+        // a field a consumer has to guess about — `summary.rs`'s rule, and the
+        // twelve entries where they differ are exactly the interesting ones.
         Volume::Verbose => format!(
-            "{where_} — {} ({}, k = {})",
+            "{where_} — {} ({}, k = {}, recorded = {})",
             came.verb(),
             solved.answer.as_str(),
-            solved.stats.solution_nodes
+            ran.k,
+            ran.solution_nodes
         ),
         _ => format!("{where_} — {}", came.verb()),
     };

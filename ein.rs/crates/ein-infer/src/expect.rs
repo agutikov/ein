@@ -256,20 +256,16 @@ pub fn check(
         }
     };
     let want = expectation.verdict_name();
-    let models: Vec<&Solution> = match verdict {
-        Verdict::Contradiction { .. } => Vec::new(),
-        Verdict::Solution(s) => vec![s],
-        Verdict::Ambiguity(bs) => bs.iter().collect(),
-        // **An open state is still a state, and `:expect` is about facts.**
-        // M1d S1d.2.6 moved the *word* on eleven programs here and moved no
-        // claim: all three `:expect` forms are assertions about a fact set
-        // (`01_grammar.md` § Query), an `open` conclusion is by construction
-        // never a fact, and the facts of an open state are the ones it
-        // reached. So `(model …)` keeps meaning what it meant — which is also
-        // why the grammar does not have to grow a word for the verdict here,
-        // and why growing it is P1d.4's to want.
-        Verdict::Open { states, .. } => states.iter().collect(),
-    };
+    // **An open state is still a state, and `:expect` is about facts.** M1d
+    // S1d.2.6 moved the *word* on twelve programs here and moved no claim: all
+    // three `:expect` forms are assertions about a fact set (`01_grammar.md` §
+    // Query), an `open` conclusion is by construction never a fact, and the
+    // facts of an open state are the ones it reached. So `(model …)` keeps
+    // meaning what it meant — which is also why the grammar does not have to
+    // grow a word for the verdict here, and why growing it is P1d.4's to want.
+    // That is [`Verdict::states`] rather than `Verdict::models`, and saying so
+    // by calling it is what M1e `AR-M1` asks of a rule stated in three places.
+    let models: Vec<&Solution> = verdict.states();
     if matches!(expectation, Expectation::Contradiction) {
         return if matches!(verdict, Verdict::Contradiction { .. }) {
             // A `Contradiction` from a stopped search is Q-M1d.6's open
@@ -397,22 +393,20 @@ fn goal_row(ast: &Ast, terms: &mut Terms, kb: &Kb) -> String {
     shown.join("; ")
 }
 
-/// The distinct models among the branches, keyed the way `answer.rs` counts
-/// `k` — by canonical state, so two branches that reached the same model are
-/// one model here too.
+/// The distinct models among the branches, projected for comparison.
+///
+/// *Which* branches are distinct is [`crate::verdict::distinct`]'s to say —
+/// the same function `Verdict::k` counts with, so a claim about `k` models and
+/// a verdict reporting `k` are comparing the same set. This used to be a
+/// second implementation whose doc comment said *keyed the way `answer.rs`
+/// counts `k`*: a parallel copy that named the copy it was parallel to, which
+/// is M1e `AR-M1`'s shape at its most legible.
 fn distinct_models<'a>(terms: &Terms, models: &[&'a Solution]) -> Vec<Actual<'a>> {
     let not = terms.kernel.not;
-    let mut keys: Vec<Box<[FactId]>> = Vec::new();
-    let mut out = Vec::new();
-    for s in models {
-        let key = crate::canon::state_key(&s.kb);
-        if keys.contains(&key) {
-            continue;
-        }
-        keys.push(key);
-        out.push(Actual::of(terms, &s.kb, not));
-    }
-    out
+    crate::verdict::distinct(models.iter().copied())
+        .into_iter()
+        .map(|s| Actual::of(terms, &s.kb, not))
+        .collect()
 }
 
 /// Is there a perfect matching between expectations and models?

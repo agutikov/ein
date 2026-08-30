@@ -91,10 +91,7 @@ impl Dumper for MonotonicDumper {
         if let Some(dir) = self.timeline.out_dir.clone() {
             let _ = std::fs::write(dir.join("00_root_initial.ein"), kb_to_ein_text(kb, terms));
         }
-        self.timeline.emit(
-            "root_initial",
-            vec![("facts", Json::int(kb.n_facts() as i64))],
-        );
+        self.timeline.root_initial(kb);
     }
 
     /// The beginning of a layer's candidate loop.
@@ -109,13 +106,7 @@ impl Dumper for MonotonicDumper {
                 kb_to_ein_text(kb, terms),
             );
         }
-        self.timeline.emit(
-            "layer_start",
-            vec![
-                ("layer", Json::int(layer as i64)),
-                ("alive_size", Json::int(n_alive as i64)),
-            ],
-        );
+        self.timeline.layer_start(layer, n_alive);
     }
 
     fn entering(
@@ -126,20 +117,8 @@ impl Dumper for MonotonicDumper {
         outcome: &str,
         info: &EnteringInfo<'_>,
     ) {
-        self.timeline.emit(
-            "entering",
-            vec![
-                ("layer", Json::int(layer as i64)),
-                ("outcome", Json::str(outcome)),
-                ("commitment", commitment_json(terms, commitment)),
-                ("kind", Json::str(info.kind.as_str())),
-                ("firings", Json::int(info.firings.len() as i64)),
-                ("facts_merged", Json::int(info.facts_merged as i64)),
-                ("unsat_core_size", Json::int(info.unsat_core.len() as i64)),
-                ("nogood_emitted", Json::Bool(info.nogood_emitted)),
-                ("nogood_subsumed", Json::Bool(info.nogood_subsumed)),
-            ],
-        );
+        self.timeline
+            .entering(layer, commitment, terms, outcome, info);
     }
 
     fn layer_end(&mut self, layer: u32, kb: &Kb, terms: &Terms, n_alive: usize, n_next: usize) {
@@ -150,15 +129,7 @@ impl Dumper for MonotonicDumper {
                 kb_to_ein_text(kb, terms),
             );
         }
-        self.timeline.emit(
-            "layer_end",
-            vec![
-                ("layer", Json::int(layer as i64)),
-                ("facts", Json::int(kb.n_facts() as i64)),
-                ("alive_size", Json::int(n_alive as i64)),
-                ("survived_count", Json::int(n_next as i64)),
-            ],
-        );
+        self.timeline.layer_end(layer, kb, n_alive, n_next);
     }
 
     fn summary(&mut self, verdict: &Answer, stats: &MonotonicStats) {

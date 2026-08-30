@@ -5,8 +5,15 @@
 # **`./run_tests.sh` runs every step of this tier**, in this order, since M1c
 # S1c.1.5 — so a green local gate means a green CI. It had not, and that cost
 # three red commits: clippy and the two Python greps ran only here, and the
-# local script reported a pass over findings it could not see. Keep the two
-# lists the same; `run_tests.sh`'s header names each step and what it found.
+# local script reported a pass over findings it could not see.
+#
+# **Since M1e S1e.3.4 a test diffs the two lists** rather than a convention
+# asking for them to be kept the same — `ein-cli/tests/gate_steps.rs`, which
+# reads this file and `run_tests.sh` and compares the commands after
+# normalising away the path spellings. A `# gate-step` marker is what makes a
+# `run:` here part of that list: the provisioning steps (checkout, toolchain,
+# cache, Python, Graphviz) are not gate steps and are excluded by name in the
+# test, so an *unmarked* new step fails it rather than being ignored.
 #
 # The `conformance-fast` job that used to close this file ran the parity
 # harness over the corpus, Python against Rust, at T3. It was retired with the
@@ -41,8 +48,10 @@ jobs:
         with: { python-version: "3.14" }
       # The stdlib is the one input whose divergence no parity tier can
       # diagnose: both engines would be *correct* about different programs.
+      # gate-step
       - run: python3 utils/stdlib_manifest.py
       # No iteration over a hash map at an observable site (design/02 §9).
+      # gate-step
       - run: python3 utils/check_hashmap_iteration.py
 
   rust:
@@ -75,17 +84,22 @@ jobs:
       # been reporting a pass for 5 209 renderings nothing checked. S1a.10.3
       # made it fail instead, and this line is the other half of that.
       - run: sudo apt-get update && sudo apt-get install -y graphviz
+      # gate-step
       - run: cargo fmt --all --check
+      # gate-step
       - run: cargo clippy --workspace --all-targets -- -D warnings
       # M1c S1c.1.5. Nothing had ever run rustdoc here, and its default for
       # every lint in the family is a *warning*, so twelve unresolved
       # intra-doc links and seven public-docs-to-private-item references had
       # accumulated invisibly. `--no-deps`: this workspace's docs are the
       # subject, a dependency's warnings are not ours.
+      # gate-step
       - run: cargo doc --workspace --no-deps
         env: { RUSTDOCFLAGS: "-D warnings" }
       # The whole gate. Covers the corpus-completeness check, the corpus sweep
       # through the CLI, the embedded-stdlib digest, and since S1a.10.2 every
       # claim the frontend's differential tests carried.
+      # gate-step
       - run: cargo test --workspace
+      # gate-step
       - run: cargo bench --bench engine -- --test

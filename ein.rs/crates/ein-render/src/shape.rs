@@ -417,7 +417,6 @@ pub fn trace_shape(
                 terms,
                 &kb,
                 &solved.answer,
-                Some(solved.stats.solution_nodes),
                 exhausted,
                 Some("<source>"),
                 crate::models::ModelsForm::List,

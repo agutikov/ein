@@ -61,6 +61,14 @@
 # findings it could not see. A local gate that is a subset of the remote one
 # is a local gate that lies.
 #
+# **Since M1e S1e.3.4 a test says so** — `ein-cli/tests/gate_steps.rs`, which
+# reads both files and diffs the commands. What it takes to be a step here is
+# a `step "…"` banner: the command it announces is the next statement, so
+# adding a step to this script is adding it to the list. On the workflow side
+# it is a `# gate-step` marker, and an unmarked `run:` the test does not
+# recognise fails it — the drift that matters is CI gaining a step this script
+# does not have.
+#
 #   stdlib_manifest.py            the embedded stdlib against its digest
 #   check_hashmap_iteration.py    no hash-map iteration at an observable site
 #   cargo fmt --all --check       three files were unformatted the first time

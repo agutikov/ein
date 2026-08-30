@@ -90,3 +90,80 @@ fn a_budget_abort_leaves_a_timeline_and_no_summary() {
 fn the_produced_marker_is_the_one_the_contract_expects() {
     assert_eq!(ein_parity::NARRATED, "<narrated>");
 }
+
+/// The top-level keys of one JSON object line, in order.
+///
+/// Depth-aware, because a timeline record nests: `commitment` is a list of
+/// `{relation, args}` and those keys are not the record's. Fifteen lines of
+/// scanner rather than a JSON dependency `ein-render` does not otherwise
+/// carry — and what is being compared is the *order*, which a parsed map
+/// would lose.
+fn top_level_keys(line: &str) -> Vec<String> {
+    let (mut out, mut depth, mut in_str, mut esc) = (Vec::new(), 0i32, false, false);
+    let (mut start, mut key) = (0usize, String::new());
+    for (i, c) in line.char_indices() {
+        if in_str {
+            match c {
+                _ if esc => esc = false,
+                '\\' => esc = true,
+                '"' => {
+                    in_str = false;
+                    if depth == 1 {
+                        key = line[start + 1..i].to_string();
+                    }
+                }
+                _ => {}
+            }
+            continue;
+        }
+        match c {
+            '"' => {
+                in_str = true;
+                start = i;
+            }
+            '{' | '[' => depth += 1,
+            '}' | ']' => depth -= 1,
+            ':' if depth == 1 && !key.is_empty() => {
+                out.push(std::mem::take(&mut key));
+            }
+            _ => {}
+        }
+    }
+    out
+}
+
+/// **The two dumpers write one event, not two events with the same name.**
+///
+/// M1e `SE-L1` / `AR-M1`'s third pair: `MonotonicDumper` and `LatticeDumper`
+/// each emitted `entering` by hand, with the same nine fields in two key
+/// orders — on `Timeline`, whose insertion-order preservation is its whole
+/// reason to exist. They share one emitter since S1e.3.4, so the divergence is
+/// now a compile-time impossibility for those four events; this is the check
+/// that a fifth dumper, or a hand-rolled `emit` added back to one of these two,
+/// does not reintroduce it.
+///
+/// Compared as **key order**, not as bytes: the two trees legitimately differ
+/// in what else they contain, and it was never the values that diverged.
+#[test]
+fn both_file_dumpers_write_one_entering_shape() {
+    let path = repo_root().join("examples/lattice/01_subset_pruned.ein");
+    let mut shapes: Vec<(&str, Vec<Vec<String>>)> = Vec::new();
+    for mode in ["monotonic", "lattice"] {
+        let text = rendered(&path, mode).expect("the fixture renders");
+        let keys: Vec<Vec<String>> = text
+            .lines()
+            .filter(|l| l.contains("\"event\": \"entering\""))
+            .map(top_level_keys)
+            .collect();
+        assert!(
+            keys.len() >= 4,
+            "{mode}: {} entering records — this test would assert nothing",
+            keys.len()
+        );
+        shapes.push((mode, keys));
+    }
+    assert_eq!(
+        shapes[0].1, shapes[1].1,
+        "the two dumpers disagree on the `entering` record's key order"
+    );
+}

@@ -42,6 +42,16 @@ seam named by [AR-M2](s1e.3.4_architecture.md): `Verdict` is computed once in
 `ein-infer` and *rendered* by two crates that each choose a count. Fixing the
 seam fixes the class; fixing the two arms fixes the instances.
 
+> **Closed 2026-08-30 at the seam, and it was three surfaces and nine copies.**
+> The third is the one a reader could see: `--stats` printed the label
+> `solutions (k)` above `stats.solution_nodes`, so on the twelve `Open` entries
+> a single invocation printed `solutions (k) 0` in the table and `solutions (k)
+> 1` in the stats block. Not in the review, and not findable by the test that
+> names that block either — `the_stats_block_reports_the_same_counters_as_the_json_summary`
+> resolves a row by label prefix and takes the first match, which is the
+> table's, so its first assertion had never once read the block it is named
+> for.
+
 **3 — A claim nothing runs.** [DO-M1](s1e.3.8_documentation.md) is eight
 drifted counts and [MA-M4](s1e.3.9_maintainability.md) is the same rot inside
 in-code comments; [CD-M1](s1e.3.7_code_doc_consistency.md) through
@@ -78,10 +88,10 @@ milestone's most load-bearing claim.
 
 | ID | title | findings | est. |
 |---|---|---|---:|
-| [S1e.3.1](s1e.3.1_correctness.md) | Correctness | `CO-M1` `CO-M2` `CO-M3` `CO-M4` `CO-M5` `CO-M6` | 4 d |
-| [S1e.3.2](s1e.3.2_semantics.md) | Semantics | `SE-M1` `SE-M2` `SE-M3` | 2 d |
+| [S1e.3.1](s1e.3.1_correctness.md) | Correctness | `CO-M1` ~~`CO-M2`~~ `CO-M3` `CO-M4` `CO-M5` `CO-M6` | 4 d |
+| [S1e.3.2](s1e.3.2_semantics.md) | Semantics | ~~`SE-M1`~~ `SE-M2` `SE-M3` | 2 d |
 | [S1e.3.3](s1e.3.3_state_model.md) | State model | `ST-M1` | 2 d |
-| [S1e.3.4](s1e.3.4_architecture.md) | Architecture | `AR-M1` `AR-M2` | 3 d |
+| [S1e.3.4](s1e.3.4_architecture.md) | Architecture | `AR-M1` `AR-M2` ✅ **2026-08-30**, +`CO-M2` `SE-M1` `SE-L1` `TE-M8` | 3 d |
 | [S1e.3.5](s1e.3.5_error_handling.md) | Error handling | `EH-M1` `EH-M2` | 1.5 d |
 | [S1e.3.6](s1e.3.6_tests.md) | Tests | `TE-M1` … `TE-M8` | 5 d |
 | [S1e.3.7](s1e.3.7_code_doc_consistency.md) | Code ↔ doc consistency | `CD-M1` … `CD-M8` | 4 d |
@@ -93,6 +103,17 @@ milestone's most load-bearing claim.
 `AR-M2` seam fix is taken, since it subsumes `CO-M2` and `SE-M1`; the other
 way round if it is not. [S1e.3.8](s1e.3.8_documentation.md) **last** among
 the doc stages, because every other stage in the phase changes a count.
+
+> **Taken 2026-08-30: the seam fix, so S1e.3.4 ran first.** The deciding
+> evidence was a measurement rather than a judgment — the count the table
+> prints already equals `verdict.k` on **all 230** corpus `solve` runs that
+> render a table, so the refactor's stated risk (*"every golden that contains
+> a rendered verdict line"*) is empty and the whole change set moves **110 of
+> 8 835** renderings, all of them by an unrelated JSON key permutation. So
+> `CO-M2` and `SE-M1` are **fixed**, and what remains of them in
+> [S1e.3.1](s1e.3.1_correctness.md) and [S1e.3.2](s1e.3.2_semantics.md) is the
+> half each stage's own notes called the more valuable one: a fixture for the
+> mixed `Solution`/`Open` regime, and the cross-surface consistency test.
 
 ## Acceptance
 

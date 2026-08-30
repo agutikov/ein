@@ -572,10 +572,7 @@ pub fn build(
     // the answer as two numbers is what lets `stats.solution_nodes` stay the
     // pre-P1d.2 value on the eleven entries whose word moved — nothing about
     // the search changed there, and a golden that moved both would say it had.
-    let k = match answer {
-        Answer::Verdict(v) => v.k(),
-        Answer::Aborted { .. } => stats.solution_nodes as usize,
-    };
+    let k = answer.k(stats.solution_nodes);
     let mut verdict = vec![
         ("type".to_string(), Json::str(answer.as_str())),
         ("k".to_string(), Json::int(k as i64)),

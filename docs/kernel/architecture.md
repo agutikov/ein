@@ -332,6 +332,46 @@ in the saturation order. That is what makes the engine's negation
 explainable at all, whatever consumes it. The edge-by-edge table is in
 `r6_seam.md` §3 (and the dropped milestone's Q30 in git history).
 
+## One artifact, one owner
+
+**A semantic artifact that exists twice is unified, compared by a test, or
+annotated at both sites with the reason it must differ.** Silence is not one of
+the three.
+
+The rule is written here because M1e's review found the same mechanism five
+times and it had already produced three failures — it is not a style
+preference, it is the tree's most productive defect shape. The evidence, and
+what each pair became:
+
+| one artifact, two copies | what it cost | how it ends |
+|---|---|---|
+| reserved names — [`imports.rs`](../../ein.rs/crates/ein-ir/src/imports.rs) against [`terms.rs`](../../ein.rs/crates/ein-core/src/terms.rs) | **a behavioural bug**: `(macro open …)` loaded through two of four import routes, exit 0 | **unified** — `ein_core::RESERVED` is the list; M1e S1e.2.1 |
+| the entering event — `dump/state.rs` against `dump/lattice.rs` | the same nine fields in two key orders, on a writer whose insertion-order preservation is its whole purpose | **unified** — one `Timeline::entering`; a test diffs the two dumpers' key order; M1e S1e.3.4 |
+| the gate's step list — [`run_tests.sh`](../../run_tests.sh) against [`per-commit.yml`](../../.github/workflows/per-commit.yml) | **three red CI commits**, recorded in both files' headers | **compared by a test** — `ein-cli/tests/gate_steps.rs`; M1e S1e.3.4 |
+| the model count — `Verdict::k` against three renderers that each chose one | two surfaces printing the wrong number, and one printing the right number under the wrong label | **unified** — `Verdict::read_out`; M1e S1e.3.4 |
+| the macro pipeline — `macros.rs` against `from_ir.rs` | divergent duplicate and reserved-name semantics, and a doc comment naming the wrong one | M1e S1e.3.1 |
+
+Two things the table is worth reading for. First, **a comment predicting the
+unification is not the unification**: two of the five carried one, and in one
+case it named the phase that would do it — which shipped without doing it, and
+the list drifted underneath the prediction. Second, **the copies do not have to
+disagree to cost something**. The count pairs agreed on all 230 corpus solve
+runs; what they cost was that a fifth verdict word would have to be taught to
+three crates, and the two that already exist each missed a site.
+
+### The legitimate case
+
+There is one, and a rule that cannot express it will be ignored the first time
+someone meets it. `ein-ir`'s lexer and `ein-core`'s loader both have a set
+called `RESERVED` and they are **genuinely different sets** — one is what the
+lexer refuses as an atom, the other what a declaration may not name. That is
+not a copy to unify; the fix is a **rename**, so that two names stop looking
+like one artifact.
+
+The test: ask whether an edit to one side would be *wrong* not to make to the
+other. If yes, it is one artifact — unify it, or make a test say so. If no, the
+two need distinct names and a line at each saying what the other is.
+
 ## "Where do I look?" — change cookbook
 
 | I want to…                          | files to touch |
@@ -342,6 +382,7 @@ explainable at all, whatever consumes it. The edge-by-edge table is in
 | add a **top-level IR form**         | `ein-ir/src/{lex,parse,ast}.rs` + `from_ir.rs` (routing) + tests; update [`ir/03-ein-lang/00_ebnf.md`](ir/03-ein-lang/00_ebnf.md) and [`06_reserved_names.md`](ir/03-ein-lang/06_reserved_names.md) |
 | change **saturation order**         | `ein-infer/src/saturator.rs` (priority bands) |
 | change **search / verdict**         | `ein-infer/src/solve.rs` + `verdict.rs` |
+| add a **verdict word or count qualifier** | `ein-infer/src/verdict.rs` alone — `Verdict::read_out` is what every surface prints (M1e S1e.3.4); the renderers need no arm |
 | add a **config knob**               | `ein-core/src/config.rs` (`SolverConfig`) + its read site + the CLI flag in `ein-cli/src/cmdline.rs` |
 | add a **contradiction shape**       | `ein-infer/src/contradiction.rs` |
 | add a **render target**             | `ein-render/src/` + wire into `ein-cli/src/render.rs` |

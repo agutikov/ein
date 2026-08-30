@@ -21,6 +21,65 @@ pub struct Solution {
     pub trace: Vec<Firing>,
 }
 
+/// The distinct branches among `branches`, by canonical state — first
+/// occurrence kept.
+///
+/// **One implementation of "same model".** It had three: the table counted
+/// `k` this way, `expect` compared claims this way with a doc comment saying
+/// *keyed the way `answer.rs` counts `k`*, and the key table's `variables`
+/// filtered this way inline. Three copies of a rule is M1e `AR-M1`'s shape,
+/// and one of the three deciding differently is how `k` would have parted
+/// from `k`.
+///
+/// The comparison is [`crate::canon::state_key`] — the sorted fact list
+/// itself, never a hash of it, so two branches are the same model exactly
+/// when they hold the same facts. Quadratic in the number of models, which is
+/// a `k`: the corpus's largest is 32.
+pub fn distinct<'a, I>(branches: I) -> Vec<&'a Solution>
+where
+    I: IntoIterator<Item = &'a Solution>,
+{
+    crate::canon::distinct_by_state(branches, |s| &s.kb)
+}
+
+/// What a read-out prints above a verdict: the count, and the parenthetical
+/// that qualifies it.
+///
+/// **M1e `AR-M2`.** `Verdict` was computed once and *read out* three times —
+/// `answer.rs`'s table, `ein test`'s header, `--stats` — and each of the three
+/// chose its own number and its own qualifier. Two of them chose wrong
+/// ([`CO-M2`], [`SE-M1`]) and a third printed the search's counter under this
+/// one's label. The fix is not three corrections: it is that a surface is
+/// *handed* the count instead of picking one, so adding the next verdict word
+/// is a change in this crate. S1d.2.6 and S1d.3.3 each added a word and each
+/// missed a site, which is the evidence that the seam was the finding.
+///
+/// [`CO-M2`]: `plans/m1e_review_processing/p1e.3_medium/s1e.3.1_correctness.md`
+/// [`SE-M1`]: `plans/m1e_review_processing/p1e.3_medium/s1e.3.2_semantics.md`
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct ReadOut {
+    /// The number to print. Always the verdict's own `k` — never
+    /// `MonotonicStats::solution_nodes`, which counts what the *search*
+    /// recorded and parts from this on every `Open`.
+    pub k: usize,
+    /// The parenthetical that qualifies `k`, **without** the spaces that
+    /// separate the two; `""` when the count needs none. A renderer that
+    /// wants a suffix asks [`ReadOut::suffix`] rather than re-deciding the
+    /// spacing.
+    pub qualifier: &'static str,
+}
+
+impl ReadOut {
+    /// `""`, or the qualifier with the three spaces that set it off from `k`.
+    pub fn suffix(&self) -> String {
+        if self.qualifier.is_empty() {
+            String::new()
+        } else {
+            format!("   {}", self.qualifier)
+        }
+    }
+}
+
 /// The four verdicts. `Aborted` is deliberately **not** one of them — see
 /// [`Answer`].
 ///
@@ -77,6 +136,43 @@ impl Verdict {
         }
     }
 
+    /// The **models** this verdict reports, deduplicated by canonical state.
+    ///
+    /// The one owner of *which branches are distinct models*, and the reason
+    /// it is here rather than in a renderer: M1e `AR-M2` found the count being
+    /// chosen again at every surface that prints it, with three of the choices
+    /// disagreeing. An `Open` verdict reports **no** models — its states are
+    /// [`Verdict::Open::states`], and the read-out declining to call them
+    /// models is the whole of M1d S1d.2.6.
+    pub fn models(&self) -> Vec<&Solution> {
+        match self {
+            Verdict::Solution(s) => vec![s],
+            Verdict::Ambiguity(bs) => distinct(bs),
+            Verdict::Contradiction { .. } | Verdict::Open { .. } => Vec::new(),
+        }
+    }
+
+    /// Every state the verdict carries, model or not, in the search's order.
+    ///
+    /// The distinction from [`Verdict::models`] is M1d S1d.2.6's, and three
+    /// surfaces want *this* one: the `:expect` comparison, `--print-final-*`
+    /// and the `verdict` event's fact sets. All three are about a **fact
+    /// set**, and an open state has one — *"the facts an open state reached
+    /// are the facts it reached"*. Each of the three used to write the
+    /// four-arm match by hand, which is three chances to disagree about what
+    /// `Open` contributes.
+    ///
+    /// Not deduplicated: these are the nodes the search recorded, and a
+    /// consumer that wants the models asks for the models.
+    pub fn states(&self) -> Vec<&Solution> {
+        match self {
+            Verdict::Solution(s) => vec![s],
+            Verdict::Ambiguity(bs) => bs.iter().collect(),
+            Verdict::Open { states, .. } => states.iter().collect(),
+            Verdict::Contradiction { .. } => Vec::new(),
+        }
+    }
+
     /// How many **models** the verdict reports — `Open` reports none.
     ///
     /// Distinct from `MonotonicStats::solution_nodes`, which counts what the
@@ -84,10 +180,35 @@ impl Verdict {
     /// the lattice found and the read-out declines to call a model, so the two
     /// numbers disagree on exactly the entries this stage is about.
     pub fn k(&self) -> usize {
-        match self {
-            Verdict::Solution(_) => 1,
-            Verdict::Ambiguity(bs) => bs.len(),
-            Verdict::Contradiction { .. } | Verdict::Open { .. } => 0,
+        self.models().len()
+    }
+
+    /// What a read-out prints above this verdict — [`ReadOut`].
+    ///
+    /// `exhausted` is not a property of the verdict, so it is passed in: the
+    /// same four models are *the* models or *models found* depending on
+    /// whether the lattice was exhausted, and that is the qualifier's whole
+    /// subject.
+    pub fn read_out(&self, exhausted: bool) -> ReadOut {
+        ReadOut {
+            k: self.k(),
+            qualifier: if exhausted {
+                ""
+            } else {
+                match self {
+                    // A `k = 1` under a cap is *a* model, not *the* model.
+                    Verdict::Solution(_) => "(not certified — pass --exhaustive)",
+                    // A `k > 1` under a cap is a floor — M1d S1d.3.3.
+                    Verdict::Ambiguity(_) => "(a lower bound — the search did not exhaust)",
+                    // A `k = 0` under a cap is *none within the cap* — M1d
+                    // T1d.10.5.2b. `Open` takes the same words for the same
+                    // reason: an unwitnessed obligation under a truncated
+                    // search could still be discharged a layer down.
+                    Verdict::Contradiction { .. } | Verdict::Open { .. } => {
+                        "(none found — the search did not exhaust)"
+                    }
+                }
+            },
         }
     }
 
@@ -117,6 +238,20 @@ impl Answer {
         match self {
             Answer::Verdict(v) => v.as_str(),
             Answer::Aborted { .. } => "Aborted",
+        }
+    }
+
+    /// The count a read-out prints, for an answer that may not be a verdict.
+    ///
+    /// `Aborted` has no verdict and therefore no models — what it can report
+    /// is what the search recorded before the budget cut, which is why the
+    /// counter is a parameter rather than a field. Three surfaces wrote this
+    /// same two-arm match by hand (`--json-summary`, the `verdict` event,
+    /// `ein test`'s row); it is one function now, for M1e `AR-M2`'s reason.
+    pub fn k(&self, solution_nodes: u64) -> usize {
+        match self {
+            Answer::Verdict(v) => v.k(),
+            Answer::Aborted { .. } => solution_nodes as usize,
         }
     }
 }
@@ -259,4 +394,118 @@ pub fn goal_plan_error(
         loc: None,
     };
     crate::compile::compile_rule(ast, terms, &rule, None).err()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use ein_core::Program;
+
+    fn empty() -> Solution {
+        Solution {
+            kb: Kb::new(Program::new()),
+            trace: Vec::new(),
+        }
+    }
+
+    /// The four verdicts, times exhausted and not — the whole qualifier table
+    /// in one place, which is what M1e `AR-M2` bought.
+    ///
+    /// **Two of these eight cells no `.ein` program reaches.** Every `Open` in
+    /// the corpus is exhausted (`openness_census.py`; the arm's own comment in
+    /// `render_answer` says so), so the truncated `Open` qualifier is here or
+    /// it is nowhere — and a qualifier that ships untested is how
+    /// `Contradiction`'s stayed missing until T1d.10.5.2b.
+    #[test]
+    fn every_verdict_qualifies_its_own_count() {
+        let table: [(Verdict, &str); 4] = [
+            (
+                Verdict::Solution(empty()),
+                "(not certified — pass --exhaustive)",
+            ),
+            (
+                Verdict::Ambiguity(vec![empty()]),
+                "(a lower bound — the search did not exhaust)",
+            ),
+            (
+                Verdict::Contradiction {
+                    unsat_core: Vec::new(),
+                },
+                "(none found — the search did not exhaust)",
+            ),
+            (
+                Verdict::Open {
+                    states: vec![empty()],
+                    owes: Vec::new(),
+                },
+                "(none found — the search did not exhaust)",
+            ),
+        ];
+        for (v, want) in table.iter() {
+            assert_eq!(
+                v.read_out(true).qualifier,
+                "",
+                "{}: an exhausted count needs no qualifier",
+                v.as_str()
+            );
+            assert_eq!(v.read_out(true).suffix(), "", "{}", v.as_str());
+            assert_eq!(v.read_out(false).qualifier, *want, "{}", v.as_str());
+            assert_eq!(
+                v.read_out(false).suffix(),
+                format!("   {want}"),
+                "{}: three spaces set the qualifier off from k",
+                v.as_str()
+            );
+        }
+    }
+
+    /// `k` is the count of **models**, and `read_out` prints that number and
+    /// no other. `Open` is the verdict the two numbers part on.
+    #[test]
+    fn the_read_outs_count_is_the_verdicts_own() {
+        let cases: [(Verdict, usize); 4] = [
+            (Verdict::Solution(empty()), 1),
+            (Verdict::Ambiguity(vec![empty(), empty()]), 1),
+            (
+                Verdict::Contradiction {
+                    unsat_core: Vec::new(),
+                },
+                0,
+            ),
+            (
+                Verdict::Open {
+                    states: vec![empty()],
+                    owes: Vec::new(),
+                },
+                0,
+            ),
+        ];
+        for (v, k) in cases.iter() {
+            assert_eq!(v.k(), *k, "{}", v.as_str());
+            assert_eq!(v.models().len(), *k, "{}: k is models().len()", v.as_str());
+            assert_eq!(v.read_out(true).k, *k, "{}", v.as_str());
+        }
+    }
+
+    /// Two branches that reached the same facts are **one** model — the rule
+    /// `Verdict::k`, `expect` and the key table now share. The `Ambiguity`
+    /// case above is the same claim from the other side: two identical empty
+    /// KBs are `k = 1`, not `k = 2`.
+    #[test]
+    fn distinct_keys_branches_by_their_facts() {
+        let bs = vec![empty(), empty(), empty()];
+        assert_eq!(distinct(&bs).len(), 1);
+        assert_eq!(distinct(std::iter::empty()).len(), 0);
+    }
+
+    /// `Aborted` has no verdict, so its count is what the search recorded —
+    /// the one arm that reads the counter, in the one place that reads it.
+    #[test]
+    fn an_aborted_answer_reports_what_the_search_recorded() {
+        let a = Answer::Aborted {
+            reason: "budget".to_string(),
+        };
+        assert_eq!(a.k(7), 7);
+        assert_eq!(Answer::Verdict(Verdict::Solution(empty())).k(7), 1);
+    }
 }

@@ -110,23 +110,14 @@ impl Dumper for LatticeDumper {
         if let Some(dir) = self.timeline.out_dir.clone() {
             let _ = std::fs::write(dir.join("00_root_initial.ein"), kb_to_ein_text(kb, terms));
         }
-        self.timeline.emit(
-            "root_initial",
-            vec![("facts", Json::int(kb.n_facts() as i64))],
-        );
+        self.timeline.root_initial(kb);
     }
 
     fn layer_start(&mut self, layer: u32, kb: &Kb, terms: &Terms, n_alive: usize) {
         if let Some(dir) = self.layer_dir(layer) {
             let _ = std::fs::write(dir.join("pre.ein"), kb_to_ein_text(kb, terms));
         }
-        self.timeline.emit(
-            "layer_start",
-            vec![
-                ("layer", Json::int(layer as i64)),
-                ("alive_size", Json::int(n_alive as i64)),
-            ],
-        );
+        self.timeline.layer_start(layer, n_alive);
     }
 
     fn entering(
@@ -137,20 +128,8 @@ impl Dumper for LatticeDumper {
         outcome: &str,
         info: &EnteringInfo<'_>,
     ) {
-        self.timeline.emit(
-            "entering",
-            vec![
-                ("layer", Json::int(layer as i64)),
-                ("outcome", Json::str(outcome)),
-                ("commitment", commitment_json(terms, commitment)),
-                ("facts_merged", Json::int(info.facts_merged as i64)),
-                ("nogood_emitted", Json::Bool(info.nogood_emitted)),
-                ("nogood_subsumed", Json::Bool(info.nogood_subsumed)),
-                ("kind", Json::str(info.kind.as_str())),
-                ("firings", Json::int(info.firings.len() as i64)),
-                ("unsat_core_size", Json::int(info.unsat_core.len() as i64)),
-            ],
-        );
+        self.timeline
+            .entering(layer, commitment, terms, outcome, info);
 
         let Some(folder) = self.entering_dir(layer, terms, commitment) else {
             return;
@@ -216,15 +195,7 @@ impl Dumper for LatticeDumper {
         if let Some(dir) = self.layer_dir(layer) {
             let _ = std::fs::write(dir.join("post.ein"), kb_to_ein_text(kb, terms));
         }
-        self.timeline.emit(
-            "layer_end",
-            vec![
-                ("layer", Json::int(layer as i64)),
-                ("facts", Json::int(kb.n_facts() as i64)),
-                ("alive_size", Json::int(n_alive as i64)),
-                ("survived_count", Json::int(n_next as i64)),
-            ],
-        );
+        self.timeline.layer_end(layer, kb, n_alive, n_next);
     }
 
     fn proof_summary(&mut self, proof: &LatticeProof, terms: &Terms) {

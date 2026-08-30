@@ -20,7 +20,7 @@
 use ein_core::{FactId, Kb, Symbol, Terms, Value};
 use ein_infer::obligations::Owes;
 use ein_infer::verdict::{Answer, Verdict};
-use ein_infer::{canon::state_key, goal_bindings, query_value};
+use ein_infer::{goal_bindings, query_value};
 use ein_ir::{Ast, Node, NodeId};
 
 use ein_core::render_why;
@@ -121,22 +121,6 @@ fn query_goal(ast: &Ast, kb: Option<&Kb>) -> Option<NodeId> {
     query_value(ast, query, "goal")
 }
 
-/// The number of *distinct* models among the branches — ein.py's
-/// `len({state_key(b.kb) for b in branches}) or len(branches)`, whose `or`
-/// makes an empty branch list report its own length.
-fn distinct_models(branches: &[ein_infer::Solution]) -> usize {
-    let mut keys: Vec<Box<[FactId]>> = branches.iter().map(|b| state_key(&b.kb)).collect();
-    // determinism-ok: the sort is `dedup`'s precondition and nothing else —
-    // what leaves this function is a *count*, which no order can move.
-    keys.sort();
-    keys.dedup();
-    if keys.is_empty() {
-        branches.len()
-    } else {
-        keys.len()
-    }
-}
-
 /// The `:source` sentences of an unsat core, sorted and deduplicated.
 fn core_sources(kb: &Kb, terms: &Terms, core: &[FactId]) -> Vec<String> {
     let mut out: Vec<String> = core
@@ -188,8 +172,8 @@ pub fn render_answer(
                 }
             }
         }
-        Answer::Verdict(Verdict::Ambiguity(branches)) => {
-            let k = distinct_models(branches);
+        Answer::Verdict(v @ Verdict::Ambiguity(_)) => {
+            let k = v.read_out(exhausted).k;
             // **The count is a claim, and `exhausted` is what licenses it.**
             // With the lattice exhausted these *are* the models; without it
             // they are the models found, and a deeper layer may hold more —
@@ -388,7 +372,6 @@ pub fn render_solution_table(
     terms: &mut Terms,
     root: &Kb,
     answer: &Answer,
-    solution_nodes: Option<u64>,
     exhausted: bool,
     source: Option<&str>,
     models: crate::models::ModelsForm,
@@ -415,35 +398,27 @@ pub fn render_solution_table(
         rule(62),
     ];
 
+    // **The count and its qualifier are read off the verdict, once.** Each arm
+    // below used to choose both for itself: `Solution` printed the *search's*
+    // node count, `Ambiguity` re-derived the distinct count, and the two `k =
+    // 0` arms wrote the same literal twice. That is the seam M1e `AR-M2` is
+    // about — `finalise` constructs a verdict once and three crates render it
+    // — and the structural half of the fix is that there is now nothing in an
+    // arm to choose *with*: [`ReadOut`] arrives made, and `solution_nodes` is
+    // no longer a parameter of this function.
+    if let Answer::Verdict(v) = answer {
+        let ro = v.read_out(exhausted);
+        lines.push(format!("  solutions (k)   {}{}", ro.k, ro.suffix()));
+    }
+
     match answer {
         Answer::Verdict(Verdict::Solution(s)) => {
-            let cert = if exhausted {
-                ""
-            } else {
-                "   (not certified — pass --exhaustive)"
-            };
-            lines.push(format!(
-                "  solutions (k)   {}{cert}",
-                solution_nodes.map_or("1".to_string(), |k| k.to_string())
-            ));
             lines.push("  verdict         Solution".to_string());
             lines.push(String::new());
             let block = solution_block(ast, terms, &s.kb, "");
             lines.extend(block);
         }
         Answer::Verdict(Verdict::Ambiguity(branches)) => {
-            let kk = distinct_models(branches);
-            // The qualifier rides on the count, where `Solution`'s already
-            // does — M1d S1d.3.3's rendering rule, one row of its table each.
-            // `exhausted` is printed by `--stats` and by nothing else, so
-            // without this the reader of a `k` has no way to know it is a
-            // lower bound.
-            let bound = if exhausted {
-                ""
-            } else {
-                "   (a lower bound — the search did not exhaust)"
-            };
-            lines.push(format!("  solutions (k)   {kk}{bound}"));
             // One word, and it is the whole of the rule's second row: *these
             // are the models* against *these are models found*. The rest of
             // the sentence is unchanged because it stays true either way —
@@ -487,18 +462,6 @@ pub fn render_solution_table(
             }
         }
         Answer::Verdict(Verdict::Contradiction { unsat_core }) => {
-            // The same two rows S1d.3.3 wrote for a *non-empty* model set,
-            // for the empty one — T1d.10.5.2b. `exhausted` is printed by
-            // `--stats` and by nothing else, so without this the reader of a
-            // `k = 0` has no way to know it is "none found".
-            lines.push(format!(
-                "  solutions (k)   0{}",
-                if exhausted {
-                    ""
-                } else {
-                    "   (none found — the search did not exhaust)"
-                }
-            ));
             lines.push(format!(
                 "  verdict         {}",
                 if exhausted {
@@ -552,21 +515,13 @@ pub fn render_solution_table(
             lines.extend(two_col(&rows, "    ", None));
         }
         Answer::Verdict(Verdict::Open { states, owes }) => {
-            // `solutions (k) 0` because an open state is **not** a model: the
-            // read-out's `complete` means discharged. It is deliberately not
-            // the same number as `stats.solution_nodes`, which counts what the
-            // *search* recorded and which S1d.2.6 left alone — the two
-            // disagree on exactly the eleven entries this stage is about, and
-            // `open states` below is where the difference is printed rather
-            // than hidden.
-            lines.push(format!(
-                "  solutions (k)   0{}",
-                if exhausted {
-                    ""
-                } else {
-                    "   (none found — the search did not exhaust)"
-                }
-            ));
+            // `solutions (k)` is 0 above because an open state is **not** a
+            // model: the read-out's `complete` means discharged. It is
+            // deliberately not the same number as `stats.solution_nodes`,
+            // which counts what the *search* recorded and which S1d.2.6 left
+            // alone — the two disagree on exactly the twelve corpus entries
+            // that reach this word, and this row is where the difference is
+            // printed rather than hidden.
             lines.push(format!("  open states     {}", states.len()));
             lines.push(format!(
                 "  verdict         Open — {}{}",

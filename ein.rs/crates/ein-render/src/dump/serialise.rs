@@ -11,6 +11,7 @@ use std::path::{Path, PathBuf};
 
 use ein_core::{FactId, Kb, ProvKind, Tag, Terms, Value};
 use ein_infer::firing::Firing;
+use ein_infer::solve::EnteringInfo;
 use ein_ir::{Ast, Node, NodeId, dump_canonical};
 
 use super::json::{Json, dumps, dumps_indent_sorted};
@@ -257,6 +258,85 @@ impl Timeline {
         let _ = writeln!(file, "{}", dumps(&Json::Object(rec)));
         let _ = file.flush();
         self.seq += 1;
+    }
+
+    // ── The four lifecycle events, one shape each ──────────────────
+    //
+    // **The event's *shape* has one owner; its filesystem layout has two.**
+    // The two dumpers write different trees on purpose — per-layer files
+    // against per-commitment folders — and wrote the same four records twice,
+    // by hand. Three of the four agreed. `entering` did not: the same nine
+    // fields in two key orders, on a writer whose insertion-order preservation
+    // is its whole reason to exist (M1e `SE-L1`, and `AR-M1`'s third pair).
+    //
+    // **The divergence is a fossil, not a choice.** In ein.py, `LatticeDumper`
+    // built the six always-present fields as a dict and then
+    // `rec.update({kind, firings, unsat_core_size})` *only if `result is not
+    // None`* — so the three result-derived keys landed last because they were
+    // conditional. `MonotonicDumper` passed all nine as keyword arguments in
+    // one call and got the natural order. Here `EnteringInfo` is not optional,
+    // so the `if` that produced the order is gone and the order it produced
+    // was ported anyway. What survives is the order ein.py used when it did
+    // not have to append.
+
+    /// `root_initial` — root before any entering.
+    pub fn root_initial(&mut self, kb: &Kb) {
+        self.emit(
+            "root_initial",
+            vec![("facts", Json::int(kb.n_facts() as i64))],
+        );
+    }
+
+    /// `layer_start` — the beginning of a layer's candidate loop.
+    pub fn layer_start(&mut self, layer: u32, n_alive: usize) {
+        self.emit(
+            "layer_start",
+            vec![
+                ("layer", Json::int(layer as i64)),
+                ("alive_size", Json::int(n_alive as i64)),
+            ],
+        );
+    }
+
+    /// `entering` — one `try_commitment_set` outcome, alive or dead.
+    pub fn entering(
+        &mut self,
+        layer: u32,
+        commitment: &[FactId],
+        terms: &Terms,
+        outcome: &str,
+        info: &EnteringInfo<'_>,
+    ) {
+        self.emit(
+            "entering",
+            vec![
+                ("layer", Json::int(layer as i64)),
+                ("outcome", Json::str(outcome)),
+                (
+                    "commitment",
+                    super::state::commitment_json(terms, commitment),
+                ),
+                ("kind", Json::str(info.kind.as_str())),
+                ("firings", Json::int(info.firings.len() as i64)),
+                ("facts_merged", Json::int(info.facts_merged as i64)),
+                ("unsat_core_size", Json::int(info.unsat_core.len() as i64)),
+                ("nogood_emitted", Json::Bool(info.nogood_emitted)),
+                ("nogood_subsumed", Json::Bool(info.nogood_subsumed)),
+            ],
+        );
+    }
+
+    /// `layer_end` — the layer's boundary, with what survived it.
+    pub fn layer_end(&mut self, layer: u32, kb: &Kb, n_alive: usize, n_next: usize) {
+        self.emit(
+            "layer_end",
+            vec![
+                ("layer", Json::int(layer as i64)),
+                ("facts", Json::int(kb.n_facts() as i64)),
+                ("alive_size", Json::int(n_alive as i64)),
+                ("survived_count", Json::int(n_next as i64)),
+            ],
+        );
     }
 
     /// Write `summary.json` and close the timeline.

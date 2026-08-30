@@ -314,13 +314,32 @@ fn quiet_keeps_the_failures_and_drops_the_passes() {
     assert!(r.out.contains("b_bad.ein"), "{}", r.out);
 }
 
-/// `-v` says what held, with the verdict and k — the line that turns a green
-/// run into evidence rather than an absence of red.
+/// `-v` says what held, with the verdict and both counts — the line that turns
+/// a green run into evidence rather than an absence of red.
+///
+/// **Both counts, since M1e S1e.3.4.** It printed `stats.solution_nodes` under
+/// the label `k =` from S1c.1.3 to then, which is `SE-M1`: the human-facing
+/// `k` and the machine-facing `ran.k` in `--json-report` disagreed *by name*
+/// on every `Open` entry. The second case is one of those twelve — `k = 0`
+/// beside `recorded = 1` — and it is the whole reason the header prints two
+/// numbers rather than a renamed one.
 #[test]
 fn verbose_reports_the_verdict_of_a_passing_query() {
     let r = ein(&["test", "examples/features/11_expect_ambiguity.ein", "-v"]);
     assert_eq!(r.code, 0, "{}{}", r.out, r.err);
-    assert!(r.out.contains("holds (Ambiguity, k = 2)"), "{}", r.out);
+    assert!(
+        r.out.contains("holds (Ambiguity, k = 2, recorded = 2)"),
+        "{}",
+        r.out
+    );
+
+    let open = ein(&["test", "tests/stdlib/slots/03_fill.ein", "-v"]);
+    assert_eq!(open.code, 0, "{}{}", open.out, open.err);
+    assert!(
+        open.out.contains("holds (Open, k = 0, recorded = 1)"),
+        "the two counts part on an Open entry, and the header says which is which:\n{}",
+        open.out
+    );
 }
 
 // ── The three ways a run produces no verdict ───────────────────────

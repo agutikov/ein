@@ -161,22 +161,18 @@ struct Vars {
 /// that differ in no *positive* fact. Handled rather than asserted, because a
 /// rendering must not panic on a shape the engine can reach.
 ///
-/// **Deduplicated by state key first**, the way `distinct_models` counts them.
-/// Two identical models are a pair no variable separates, so the hitting set
-/// would be unsatisfiable and the search would spend its whole budget proving
-/// it — a wrong answer arrived at expensively, which is the worst of both.
+/// **Deduplicated by state key first**, through the one function that decides
+/// what *the same model* means (`ein_infer::canon::distinct_by_state`). Two
+/// identical models are a pair no variable separates, so the hitting set would
+/// be unsatisfiable and the search would spend its whole budget proving it — a
+/// wrong answer arrived at expensively, which is the worst of both.
+///
+/// `key_table` is public, so this cannot assume its caller deduplicated:
+/// `answer.rs` hands it `Verdict::models`, which is distinct by construction,
+/// and an embedder may hand it anything.
 fn variables(terms: &Terms, models: &[&Kb]) -> Option<Vars> {
-    let mut seen: Vec<Box<[FactId]>> = Vec::new();
-    let models: Vec<&Kb> = models
-        .iter()
-        .filter(|m| {
-            let key = ein_infer::state_key(m);
-            let fresh = !seen.contains(&key);
-            if fresh {
-                seen.push(key);
-            }
-            fresh
-        })
+    let models: Vec<&Kb> = ein_infer::canon::distinct_by_state(models, |m| *m)
+        .into_iter()
         .copied()
         .collect();
     let models = &models[..];

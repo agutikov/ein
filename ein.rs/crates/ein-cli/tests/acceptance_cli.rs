@@ -83,7 +83,10 @@ fn must_contain(out: &str, needles: &[&str], what: &str) {
 fn solve_zebra2_prints_the_answer_the_puzzle_asked_for() {
     // The Python original's argv, kept: `--print-final-state` and
     // `--print-final-hfacts` are two surfaces nothing else in the suite runs
-    // end to end, and `--stats` is where `k` and `exhausted` are reported.
+    // end to end, and `--stats` is where `exhausted` is reported. `k` is the
+    // *table*'s row, which is what `field` finds first and what the assertion
+    // below means — the two are different numbers on an `Open` verdict, and
+    // since M1e S1e.3.4 they are under different labels (`AR-M2`).
     let (code, out) = ein(&[
         "solve",
         "examples/zebra2.ein",

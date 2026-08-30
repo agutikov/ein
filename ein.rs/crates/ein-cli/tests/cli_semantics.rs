@@ -703,6 +703,15 @@ fn jobs_takes_a_count_or_auto_and_nothing_else() {
 /// that reads a stale copy, or a summary assembled from a different snapshot,
 /// is invisible in either alone. What is compared is the *values*, by label —
 /// the block's column layout belongs to `corpus_shapes.md5`.
+///
+/// **The first row was `solutions (k)` until M1e S1e.3.4**, and that is the
+/// label the *table* prints two dozen lines earlier — `field` takes the first
+/// match, so this assertion had **never once** read the `--stats` block. It
+/// passed because `TWO_MODELS -e` is an `Ambiguity` whose two numbers agree;
+/// on any of the twelve `Open` entries it would have compared 0 against 1. A
+/// test that cannot tell the two surfaces apart is the same defect as a reader
+/// who cannot, which is the whole of `AR-M2`, and the row is named after its
+/// counter now.
 #[test]
 fn the_stats_block_reports_the_same_counters_as_the_json_summary() {
     let scratch = Scratch::new("stats");
@@ -712,7 +721,7 @@ fn the_stats_block_reports_the_same_counters_as_the_json_summary() {
     let j = json_at(&path);
 
     assert_eq!(
-        r.field("solutions (k)").as_deref(),
+        r.field("solution_nodes").as_deref(),
         Some(j["stats"]["solution_nodes"].as_i64().unwrap().to_string()).as_deref()
     );
     assert_eq!(
