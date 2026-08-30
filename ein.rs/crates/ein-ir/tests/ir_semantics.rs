@@ -97,7 +97,7 @@ fn expanded_match(decls: &str, clause: &str) -> (Ast, NodeId) {
     let src = format!("{decls}\n(rule r () :match {clause} :assert (done))");
     let mut ast = Ast::new();
     let forms = parse_ok(&mut ast, &src);
-    let macros = collect_macros(&ast, &forms);
+    let macros = collect_macros(&ast, &forms).expect("the fixture declares no bad macro");
     let expanded = expand_rule_clauses(&mut ast, &forms, &macros).expect("expands");
     let rule = *expanded.last().expect("the rule is the last form");
     let m = kw_value(&ast, rule, "match").expect("the rule has a :match");

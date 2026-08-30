@@ -88,7 +88,7 @@ milestone's most load-bearing claim.
 
 | ID | title | findings | est. |
 |---|---|---|---:|
-| [S1e.3.1](s1e.3.1_correctness.md) | Correctness | `CO-M1` ~~`CO-M2`~~ `CO-M3` `CO-M4` `CO-M5` `CO-M6` | 4 d |
+| [S1e.3.1](s1e.3.1_correctness.md) | Correctness | `CO-M1` ~~`CO-M2`~~ `CO-M3` `CO-M4` `CO-M5` `CO-M6` ✅ **2026-08-30** | 4 d |
 | [S1e.3.2](s1e.3.2_semantics.md) | Semantics | ~~`SE-M1`~~ `SE-M2` `SE-M3` | 2 d |
 | [S1e.3.3](s1e.3.3_state_model.md) | State model | `ST-M1` | 2 d |
 | [S1e.3.4](s1e.3.4_architecture.md) | Architecture | `AR-M1` `AR-M2` ✅ **2026-08-30**, +`CO-M2` `SE-M1` `SE-L1` `TE-M8` | 3 d |
@@ -113,7 +113,12 @@ the doc stages, because every other stage in the phase changes a count.
 > `CO-M2` and `SE-M1` are **fixed**, and what remains of them in
 > [S1e.3.1](s1e.3.1_correctness.md) and [S1e.3.2](s1e.3.2_semantics.md) is the
 > half each stage's own notes called the more valuable one: a fixture for the
-> mixed `Solution`/`Open` regime, and the cross-surface consistency test.
+> mixed `Solution`/`Open` regime, and the cross-surface consistency test. The
+> first landed with S1e.3.1 —
+> [`examples/features/13_mixed_solution_and_open.ein`](../../../examples/features/13_mixed_solution_and_open.ein),
+> and it broke a counter identity in `summary_properties` within a minute of
+> being added, because that property's exception was written as *except
+> `Open`* when the real one is *unless the program owes*.
 
 ## Acceptance
 

@@ -105,6 +105,16 @@ deductive closure *without* the hypothesis search — what the monotonic rules
 alone derive. It runs inside a `Session`, which is the `(kb, terms, ast,
 events, memo)` bundle the engine's phases share.
 
+> **`Saturator::is_stalled` is not a read.** It asks a question and changes
+> the answer to later ones: a full enqueue pass runs first — a caller may have
+> written facts to the KB outside `step`'s flow, and a stale queue would be a
+> wrong answer rather than a cheap one — and that pass **advances the
+> tiebreaker**, which is the FIFO position of every candidate enqueued after
+> it. So a drive that probes quiescence can fire the same rules in a different
+> order from one that does not. Nothing in the engine calls it; if you drive
+> `step` yourself, probe at a boundary you are willing to have observed
+> (M1e `CO-M6`).
+
 ### 4 — Solve
 
 One entry, and **the verdict is read from the result rather than chosen**:

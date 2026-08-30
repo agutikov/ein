@@ -62,7 +62,18 @@ impl Value {
         Value((tag as u32) << PAYLOAD_BITS | (payload & PAYLOAD_MASK))
     }
 
+    /// The shape this value names.
+    ///
+    /// **Not defined on `UNBOUND`**, which is why the sentinel is checked
+    /// rather than named: [`Tag`] has three members and the sentinel is the
+    /// fourth bit pattern, so any answer here would be a lie. Ask
+    /// [`Value::is_unbound`] first — every caller that can see a register
+    /// value does, and the assertion is what keeps that true (M1e `CO-M3`).
     pub fn tag(self) -> Tag {
+        debug_assert!(
+            !self.is_unbound(),
+            "Value::tag on the UNBOUND sentinel — ask is_unbound() first"
+        );
         match self.0 >> PAYLOAD_BITS {
             0 => Tag::Sym,
             1 => Tag::Int,
@@ -92,15 +103,35 @@ impl Value {
     }
 
     pub fn as_sym(self) -> Option<Symbol> {
-        (self.tag() == Tag::Sym).then(|| Symbol(self.payload()))
+        (!self.is_unbound() && self.tag() == Tag::Sym).then(|| Symbol(self.payload()))
     }
 
     pub fn as_int(self) -> Option<IntId> {
-        (self.tag() == Tag::Int).then(|| IntId(self.payload()))
+        (!self.is_unbound() && self.tag() == Tag::Int).then(|| IntId(self.payload()))
     }
 
+    /// The `FactId` this value names — **`None` for the sentinel**.
+    ///
+    /// M1e `CO-M3`. `UNBOUND` is `u32::MAX`, whose two tag bits are `0b11` and
+    /// whose payload is `CAPACITY - 1` — an id [`crate::facts`] will
+    /// legitimately assign, since it refuses only at `>= CAPACITY`. So
+    /// `tag()`'s `_ => Tag::Fact` fallthrough made this hand back a **phantom
+    /// fact**, and the type's own test proved only that `pack` cannot
+    /// *produce* the sentinel, which is a different claim: the safety rested
+    /// on every caller asking `is_unbound()` first.
+    ///
+    /// They all did — 29 `as_fact` sites at the audit, and the three that can
+    /// see a register value (`match_.rs`'s two guard readers and
+    /// `saturator.rs`'s boundary scan) test it explicitly. That is the reason
+    /// this is a hardening and not a bug fix, and the reason it is worth
+    /// doing anyway: the discipline was a convention, and the next caller is
+    /// the one it fails.
+    ///
+    /// `as_sym` and `as_int` are guarded for the same reason, though the
+    /// sentinel could never have passed their tag test: they would have asked
+    /// [`Value::tag`], which is not defined on it.
     pub fn as_fact(self) -> Option<FactId> {
-        (self.tag() == Tag::Fact).then(|| FactId(self.payload()))
+        (!self.is_unbound() && self.tag() == Tag::Fact).then(|| FactId(self.payload()))
     }
 
     /// The register file's "nothing bound here yet" sentinel — S1a.3.2.
@@ -275,6 +306,26 @@ mod tests {
         }
         assert!(Value::UNBOUND.is_unbound());
         assert!(!Value::sym(Symbol(0)).is_unbound());
+    }
+
+    /// **The sentinel names no fact** — M1e `CO-M3`.
+    ///
+    /// The test above proves `pack` cannot *produce* `UNBOUND`, which is a
+    /// weaker claim than it reads as: the sentinel's payload is
+    /// `CAPACITY - 1`, an id the fact store will assign, and `tag()`'s
+    /// `_ => Tag::Fact` fallthrough used to hand it back as
+    /// `Some(FactId(CAPACITY - 1))`. So a consumer that called `as_fact()`
+    /// without asking `is_unbound()` first got a **phantom fact** — a real id
+    /// naming somebody else's row. This assertion failed before S1e.3.1.
+    #[test]
+    fn the_sentinel_names_no_fact() {
+        assert_eq!(Value::UNBOUND.as_fact(), None);
+        assert_eq!(Value::UNBOUND.as_sym(), None);
+        assert_eq!(Value::UNBOUND.as_int(), None);
+        // …and the real value with that payload still does.
+        let top = FactId(CAPACITY - 1);
+        assert_eq!(Value::fact(top).as_fact(), Some(top));
+        assert_ne!(Value::fact(top), Value::UNBOUND);
     }
 
     #[test]

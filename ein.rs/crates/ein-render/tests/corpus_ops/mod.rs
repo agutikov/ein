@@ -253,7 +253,11 @@ fn ir_op(ast: &mut Ast, forms: &[ein_ir::NodeId], base: Option<&Path>, mode: &st
             .resolve_imports(ast, forms, base)
             .map_err(|e| e.0)
             .and_then(|f| {
-                let macros = collect_macros(ast, &f);
+                // One macro reading, the loader's, since M1e S1e.3.1 —
+                // `CO-M4`. A program the loader refuses is refused here too,
+                // with the same sentences, where the dump used to render the
+                // expansion of whichever duplicate came first.
+                let macros = collect_macros(ast, &f).map_err(|problems| problems.join("; "))?;
                 expand_rule_clauses(ast, &f, &macros)
                     .map(|x| dump_canonical(ast, &x))
                     .map_err(|e| e.0)

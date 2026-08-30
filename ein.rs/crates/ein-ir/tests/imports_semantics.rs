@@ -136,7 +136,7 @@ fn the_import_and_macro_failures_are_byte_identical() {
     let resolved = Resolver::new()
         .resolve_imports(&mut ast, &forms, Some(&dir))
         .expect("resolves");
-    let macros = collect_macros(&ast, &resolved);
+    let macros = collect_macros(&ast, &resolved).expect("the fixture declares no bad macro");
     let err = expand_rule_clauses(&mut ast, &resolved, &macros).expect_err("arity mismatch");
     assert_eq!(format!("(rule x): {}", err.0), expected);
 }
@@ -419,5 +419,95 @@ fn every_ein_core_reserved_name_is_unbindable_through_a_qualified_import() {
         refused_at_parse,
         ["and", "neq", "not", "or"],
         "the lexer's SYMBOL exclusions are not the four SE-L2 names"
+    );
+}
+
+// ── The third resolution tier — M1e `CO-M5` ────────────────────────
+
+/// **A `std.*` module may import only `std.*` modules**, and the refusal is
+/// the same in all three tiers.
+///
+/// `Resolver::locate` derives a module's identity — and the `base_dir` for its
+/// *own* imports — from `std::fs::canonicalize(&display)`. Under the embedded
+/// root `display` is `<embedded>/x.ein`, which is not a path, so the
+/// canonicalisation fails silently and `base_dir` comes back `None`. A stdlib
+/// module with a file-relative import therefore resolves under a checkout and
+/// under `$EIN_STDLIB`, and fails **only** under the embedded copy — that is,
+/// only in an installed binary, and never in this harness, which always sets
+/// the override.
+///
+/// Refusing the shape is what makes the three tiers agree. The stdlib does not
+/// contain one today; this builds one, because a check nothing can trip is not
+/// a check.
+#[test]
+fn a_stdlib_module_may_not_import_a_file_relative_one() {
+    let dir = std::env::temp_dir().join(format!("ein-stdlib-rel-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).expect("a scratch stdlib");
+    std::fs::write(dir.join("MANIFEST.sha256"), "").expect("the marker");
+    std::fs::write(dir.join("sibling.ein"), "(relation s T)\n").expect("the sibling");
+    std::fs::write(dir.join("hasrel.ein"), "(import sibling)\n(relation h T)\n")
+        .expect("the offender");
+
+    let resolver = Resolver::with_stdlib(ein_ir::stdlib::Source::Override(dir.clone()));
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, "(import std.hasrel)\n", Some("<probe>")).expect("parses");
+    let err = resolver
+        .resolve_imports(&mut ast, &forms, None)
+        .expect_err("a std module importing a file-relative one is refused");
+    assert!(
+        err.0.contains("may import only std.* modules"),
+        "the refusal has to say what is wrong: {}",
+        err.0
+    );
+    // The control: the same shape one level out is *fine*, because a puzzle
+    // importing a file-relative module is the ordinary case.
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, "(import sibling)\n", Some("<probe>")).expect("parses");
+    resolver
+        .resolve_imports(&mut ast, &forms, Some(&dir))
+        .expect("a file-relative import from a file is not a stdlib import");
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+/// **The embedded stdlib resolves**, which nothing here had ever asked.
+///
+/// Three tiers — `$EIN_STDLIB`, the checkout walk, the `include_dir!` copy —
+/// and the third is the one a release binary uses and the one the harness can
+/// never reach, because it always sets the override
+/// (`ein-ir/src/stdlib.rs`'s own note). So the tier with no coverage was the
+/// tier that ships. This is the smallest thing that exercises it end to end: a
+/// program importing a stdlib module, resolved against `Source::Embedded`, and
+/// the declaration it brings in has to arrive.
+#[test]
+fn the_embedded_stdlib_is_a_resolution_tier_that_works() {
+    let resolver = Resolver::with_stdlib(ein_ir::stdlib::Source::Embedded);
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, "(import std.algebra)\n", Some("<probe>")).expect("parses");
+    let resolved = resolver
+        .resolve_imports(&mut ast, &forms, None)
+        .expect("std.algebra resolves from the embedded copy");
+    assert!(
+        !resolved.is_empty(),
+        "the embedded module resolved to nothing"
+    );
+    // Qualified, the way an unaliased import is — so this also pins that the
+    // embedded path goes through `qualify` like the other two tiers.
+    let names: Vec<String> = resolved
+        .iter()
+        .filter_map(|&f| {
+            let ein_ir::Node::SForm { head, args } = ast.node(f) else {
+                return None;
+            };
+            let _ = head;
+            ast.args(args)
+                .first()
+                .and_then(|&a| ast.atom_name(a))
+                .map(str::to_string)
+        })
+        .collect();
+    assert!(
+        names.iter().any(|n| n.starts_with("std.algebra.")),
+        "nothing arrived under the module's prefix: {names:?}"
     );
 }

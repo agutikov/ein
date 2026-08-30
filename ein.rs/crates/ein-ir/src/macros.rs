@@ -40,39 +40,94 @@ pub struct Macro {
     /// The body's substitution variables, in declaration order.
     pub params: Vec<String>,
     pub body: NodeId,
+    /// The declaring form, for the `Loc` the loader stores on the program.
+    pub form: NodeId,
 }
 
-/// The `{name: Macro}` registry a form list declares.
+/// The `{name: Macro}` registry a form list declares, and what is wrong with
+/// it.
 ///
-/// First declaration wins. ein.py's loader *rejects* a duplicate (and a name
-/// that shadows kernel vocabulary) in `_ingest_macros`; both are loader
-/// checks and land with the loader.
-pub fn collect_macros(ast: &Ast, forms: &[NodeId]) -> BTreeMap<String, Macro> {
+/// **One reading, and this is it** — M1e `CO-M4`, `AR-M1`'s fourth pair. There
+/// were two: this one took the first declaration of a duplicate name and
+/// silently skipped a malformed form, `from_ir::ingest_macros` errored on
+/// both, and this one's doc comment claimed to be *"what the loader does, and
+/// therefore the shape the parity gate compares"* — wrong about the loader,
+/// and about a parity gate that no longer exists.
+///
+/// The lenient reading had one argument for it, that a *dump* should render
+/// something even where a load would refuse. It does not survive contact with
+/// what the dump then shows: a program with two `(macro m …)` renders the
+/// expansion of whichever came first, which is a rendering of a program that
+/// cannot be run. The strict reading is the loader's, so the four non-loader
+/// consumers now refuse exactly what a load refuses and say the same sentence.
+///
+/// Errors are **accumulated**, not returned at the first: a load reports every
+/// problem it found, and this is the half of one.
+pub fn collect_macros(ast: &Ast, forms: &[NodeId]) -> Result<BTreeMap<String, Macro>, Vec<String>> {
+    match read_macros(ast, forms) {
+        (out, problems) if problems.is_empty() => Ok(out),
+        (_, problems) => Err(problems),
+    }
+}
+
+/// [`collect_macros`] without the verdict — every declaration it could read,
+/// beside everything wrong with the ones it could not.
+///
+/// The loader's shape: a load reports **all** of its problems rather than the
+/// first, and the passes after this one still want the well-formed
+/// declarations while it does. `collect_macros` is the same reading with the
+/// two halves turned into a `Result`, for the callers that only want to know
+/// whether the program is loadable.
+pub fn read_macros(ast: &Ast, forms: &[NodeId]) -> (BTreeMap<String, Macro>, Vec<String>) {
     let mut out: BTreeMap<String, Macro> = BTreeMap::new();
+    let mut errors: Vec<String> = Vec::new();
     for &form in forms {
         if ast.head_name(form) != Some("macro") {
             continue;
         }
+        let loc = loc_repr(ast, ast.loc(form));
         let args = ast.form_args(form);
-        let [name, params, body] = args else { continue };
-        let Some(name) = ast.atom_name(*name) else {
+        if args.len() < 3 {
+            errors.push(format!("(macro) needs name + params + body at {loc}"));
+            continue;
+        }
+        let (name, params, body) = (args[0], args[1], args[2]);
+        let Some(name) = ast
+            .atom_name(name)
+            .filter(|_| matches!(ast.node(params), Node::SForm { .. }))
+        else {
+            errors.push(format!("malformed (macro …) at {loc}"));
             continue;
         };
+        if ein_core::is_reserved(name) {
+            errors.push(format!(
+                "macro '{name}' shadows a reserved kernel name at {loc}"
+            ));
+            continue;
+        }
+        if out.contains_key(name) {
+            errors.push(format!("duplicate macro '{name}' at {loc}"));
+            continue;
+        }
         let params: Vec<String> = ast
-            .form_args(*params)
+            .form_args(params)
             .iter()
             .filter_map(|p| match ast.node(*p) {
                 Node::Var(s) => Some(ast.sym(s).to_string()),
                 _ => None,
             })
             .collect();
-        out.entry(name.to_string()).or_insert(Macro {
-            name: name.to_string(),
-            params,
-            body: *body,
-        });
+        out.insert(
+            name.to_string(),
+            Macro {
+                name: name.to_string(),
+                params,
+                body,
+                form,
+            },
+        );
     }
-    out
+    (out, errors)
 }
 
 /// Rewrite every macro invocation reachable from `node`.
@@ -189,8 +244,9 @@ fn substitute(ast: &mut Ast, template: NodeId, subst: &BTreeMap<&str, NodeId>) -
 }
 
 /// Expand the `:match` and `:assert` clauses of every `(rule …)` / `(hrule …)`
-/// in `forms`, leaving everything else alone — what the loader does, and
-/// therefore the shape the parity gate compares.
+/// in `forms`, leaving everything else alone — the same clauses
+/// [`crate::from_ir`] expands, one rule at a time, through the same
+/// [`expand_macros`].
 ///
 /// Note what is *not* expanded: a `(forall …)` appearing as a **fact** stays
 /// as it is, because the loader only ever runs the expander over rule clauses.
@@ -305,7 +361,7 @@ mod tests {
     fn expand_src(src: &str) -> Result<String, MacroError> {
         let mut ast = Ast::new();
         let forms = parse(&mut ast, src, None).expect("parses");
-        let macros = collect_macros(&ast, &forms);
+        let macros = collect_macros(&ast, &forms).expect("the fixture is well-formed");
         let out = expand_rule_clauses(&mut ast, &forms, &macros)?;
         Ok(out
             .iter()
@@ -375,7 +431,7 @@ mod tests {
             None,
         )
         .expect("parses");
-        let declared = collect_macros(&ast, &forms);
+        let declared = collect_macros(&ast, &forms).expect("the fixture is well-formed");
         let match_node = ast
             .form_args(forms[0])
             .iter()

@@ -712,6 +712,22 @@ pub struct Kb {
     /// where it is argued and enforced. (The comment here used to say live
     /// branches read each other's clauses. They do not — M1e S1e.1.2.)
     nogoods: Arc<RwLock<Nogoods>>,
+    /// [`Kb::n_facts`] as of this KB's last saturation — the *clean* mark.
+    ///
+    /// M1e `CO-M1`. A state the search records is supposed to be a fixpoint,
+    /// and three of the four sites that record one hand over a KB written
+    /// **after** its last saturation: the lookahead kill cache and the
+    /// singleton writeback both put `(not h)` into a KB nobody re-runs the
+    /// rules over, and a rule reading a stored negative then has a match
+    /// nothing fires. `examples/ein-bugs/alive-empty-phase1.ein` records a
+    /// state that, fed back as a program, this engine answers `Contradiction`
+    /// on — in ten lines and zero enterings.
+    ///
+    /// A count rather than a flag, and it works because a KB's fact list only
+    /// ever grows: `push_fact` appends, nothing retracts, and `materialise`
+    /// is content-neutral. A fork inherits the mark with the facts, so a
+    /// branch of a saturated root starts clean and its commitment dirties it.
+    saturated_facts: usize,
 }
 
 /// `<KnowledgeBase relations=17 rules=30 facts=84>` — what ein.py's
@@ -739,6 +755,7 @@ impl Kb {
             n_by_rel: FxHashMap::default(),
             classes: EqClasses::new(),
             nogoods: Arc::new(RwLock::new(Nogoods::default())),
+            saturated_facts: 0,
         }
     }
 
@@ -759,6 +776,7 @@ impl Kb {
             n_by_rel: FxHashMap::default(),
             classes: EqClasses::new(),
             nogoods: Arc::new(RwLock::new(Nogoods::default())),
+            saturated_facts: 0,
         }
     }
 
@@ -798,6 +816,28 @@ impl Kb {
         if !self.top.is_empty() {
             self.sealed.push(Arc::new(std::mem::take(&mut self.top)));
         }
+    }
+
+    /// Has this KB been written since its last saturation?
+    ///
+    /// The question the four [record sites] have to ask, and the reason
+    /// `Kb::saturated_facts` exists: a state recorded dirty is not a
+    /// fixpoint, and *saturated* is the first conjunct of what a solution is.
+    /// `true` for a KB nothing has saturated yet, which is the honest answer
+    /// — a loaded, unsaturated KB owes exactly the same re-run.
+    ///
+    /// [record sites]: `docs/kernel/inference/solution_semantics.md`
+    pub fn written_since_saturation(&self) -> bool {
+        self.n_facts() != self.saturated_facts
+    }
+
+    /// Mark this KB clean — its rules have just been run to a fixpoint.
+    ///
+    /// Called by the saturator and by nothing else; a caller that marks
+    /// without saturating is asserting the thing [`Kb::written_since_saturation`]
+    /// exists to check.
+    pub fn mark_saturated(&mut self) {
+        self.saturated_facts = self.n_facts();
     }
 
     /// Branch for hypothesis exploration.
@@ -855,6 +895,7 @@ impl Kb {
             n_by_rel: self.n_by_rel.clone(),
             classes: self.classes.clone(),
             nogoods: Arc::clone(&self.nogoods),
+            saturated_facts: self.saturated_facts,
         }
     }
 

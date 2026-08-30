@@ -208,18 +208,27 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
             let kind_for_k = s["verdict"]["type"].as_str().unwrap_or("?");
             // ── the verdict block agrees with the stats block ──────────
             //
-            // **Except on `Open`, and that exception is M1d S1d.2.6's whole
-            // content.** `stats.solution_nodes` counts what the *search*
-            // recorded — nodes the generator called complete — and `verdict.k`
-            // counts what the read-out calls a **model**. The two agreed for
-            // every verdict there was until a state could be complete and
-            // still owe; on the twelve corpus entries that now report `Open`
-            // they differ by exactly the open states, which is why the
-            // identity is conditional rather than deleted. Deleting it would
-            // stop checking the 743 cells where it still holds.
+            // **Except where the program states an obligation, and that
+            // exception is M1d S1d.2.6's whole content.**
+            // `stats.solution_nodes` counts what the *search* recorded — nodes
+            // the generator called complete — and `verdict.k` counts what the
+            // read-out calls a **model**. The two agreed for every verdict
+            // there was until a state could be complete and still owe.
+            //
+            // The exception was written as *"except `Open`"* and that is one
+            // regime too few: `finalise` partitions the recorded nodes and
+            // answers `Open` only when **every** one of them owes. Where one
+            // discharges and another does not, the verdict is `Solution` and
+            // the two counts differ just the same —
+            // `examples/features/13_mixed_solution_and_open.ein`, added at M1e
+            // S1e.3.1 because `finalise`'s own comment said no corpus entry
+            // reached that arm. So the condition is *the program declared an
+            // obligation*, which is `owes.declared`, and the 743 cells that
+            // declare none are checked exactly as before.
+            let scoped = u(&s, "owes.declared") > 0;
             check(
-                "verdict.k == stats.solution_nodes (except Open)",
-                kind_for_k == "Open" || u(&s, "verdict.k") == u(&s, "stats.solution_nodes"),
+                "verdict.k == stats.solution_nodes (unless the program owes)",
+                scoped || u(&s, "verdict.k") == u(&s, "stats.solution_nodes"),
             );
             check(
                 "Open: k == 0 < solution_nodes == len(open_states)",

@@ -561,6 +561,15 @@ impl Saturator {
             let admitted = self.admit_from_boundary(s)?;
             self.boundary_nanos += start.elapsed().as_nanos() as u64;
             if admitted == 0 {
+                // **The fixpoint, and the only place that says so.** M1e
+                // `CO-M1`'s clean mark, which the record sites read to find
+                // out whether the state they are about to call a solution has
+                // had its rules run over its current facts. It is set here
+                // rather than in `saturate` because the fail-fast fork loop
+                // drives `step` itself — marking one level up would have made
+                // every fork it saturates look dirty forever, which is a check
+                // that always fires and therefore checks nothing.
+                s.kb.mark_saturated();
                 return Ok(None);
             }
         }
@@ -588,6 +597,7 @@ impl Saturator {
                 )));
             }
             match self.step(s)? {
+                // `step` marks the KB clean when it reaches the fixpoint.
                 None => return Ok(i),
                 Some(firing) => {
                     f(&firing);
@@ -620,11 +630,31 @@ impl Saturator {
     /// True iff no firing is available — at the **two-phase** fixpoint, not
     /// merely at closure quiescence.
     ///
-    /// Forces a fresh enqueue pass first, because callers may have written
-    /// facts straight to the KB outside `step`'s flow. That pass is a
-    /// deliberate side effect: it advances the tiebreaker and therefore later
-    /// ordering, and ein.py's does too.
+    /// **Asking costs something, and the cost is ordering.** A fresh FULL
+    /// enqueue pass runs first, because a caller may have written facts
+    /// straight to the KB outside `step`'s flow and a stalled-looking queue
+    /// would then be a wrong answer rather than a cheap one. That pass
+    /// **advances the tiebreaker**, which is the FIFO position of every
+    /// candidate enqueued after it — so a run that asks and a run that does
+    /// not can fire the same rules in a different order. ein.py's does the
+    /// same, and the divergence would be a parity one; that is the reason it
+    /// stays, not an argument that it is free.
+    ///
+    /// So an embedder probing quiescence mid-drive is perturbing the drive.
+    /// [`docs/api/rust.md`] says so where a reader of the crate boundary will
+    /// meet it, because a hazard whose only statement is a comment inside the
+    /// crate is a hazard for everyone outside it (M1e `CO-M6`).
+    ///
+    /// It is at least **idempotent with respect to the queue** since S1e.3.1:
+    /// the pending `delta` is consumed here rather than left for a later
+    /// `closure_step` to re-seed. Re-seeding was harmless — `seen` dedups it —
+    /// and it was work done twice for a question that asked nothing.
+    ///
+    /// [`docs/api/rust.md`]: `docs/api/rust.md`
     pub fn is_stalled(&mut self, s: &mut Session<'_>) -> Result<bool, SaturateError> {
+        // The FULL pass subsumes whatever the delta would have seeded, so
+        // taking it loses nothing and leaves no stale seed behind.
+        let _ = self.delta.take();
         self.enqueue_pass(s, None)?;
         self.needs_enqueue = false;
         if self.mirror_enabled && self.has_pending_mirror(s) {

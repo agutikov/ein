@@ -185,16 +185,26 @@ impl Resolver {
             ast,
             forms,
             base_dir,
+            false,
             &mut Vec::new(),
             &mut ModuleCache::new(),
         )
     }
 
+    /// `within_stdlib` is what makes the three resolution tiers agree — M1e
+    /// `CO-M5`. A `std.*` module's own `base_dir` is its directory under a
+    /// checkout or an override and **`None`** under the embedded root, because
+    /// `<embedded>/std/x.ein` is not a path `canonicalize` can resolve. So a
+    /// stdlib module with a file-relative import would resolve in a checkout
+    /// and fail only in an installed binary — the one configuration no test
+    /// exercised. It is refused at load instead, in every tier, with a message
+    /// that says why.
     fn resolve(
         &self,
         ast: &mut Ast,
         forms: &[NodeId],
         base_dir: Option<&Path>,
+        within_stdlib: bool,
         loading: &mut Vec<String>,
         cache: &mut ModuleCache,
     ) -> Result<Vec<NodeId>, LoadError> {
@@ -208,6 +218,15 @@ impl Resolver {
             had_import = true;
             let spec = import_spec(ast, form)?;
             let loc = loc_repr(ast, ast.loc(form));
+            let is_std = spec.module.split(MODULE_SEP).next() == Some(STDLIB_ALIAS);
+            if within_stdlib && !is_std {
+                return Err(LoadError(format!(
+                    "(import {}) — a std.* module may import only std.* modules; \
+                     a file-relative import there resolves under a checkout and \
+                     not under the embedded copy an installed binary carries, at {loc}",
+                    spec.module
+                )));
+            }
             let (key, text, dir) = self.locate(&spec.module, base_dir, &loc)?;
             if loading.contains(&key) {
                 let mut chain = loading.clone();
@@ -227,7 +246,14 @@ impl Resolver {
                 }
             };
             loading.push(key);
-            let resolved = self.resolve(ast, &sub, dir.as_deref(), loading, cache)?;
+            let resolved = self.resolve(
+                ast,
+                &sub,
+                dir.as_deref(),
+                within_stdlib || is_std,
+                loading,
+                cache,
+            )?;
             loading.pop();
             match &spec.symbols {
                 Some(symbols) => out.extend(select(ast, &resolved, symbols, &spec.module, &loc)?),
@@ -321,7 +347,8 @@ impl Resolver {
         let mut cache = ModuleCache::new();
         for &form in forms {
             if ast.head_name(form) == Some("import") {
-                let resolved = self.resolve(ast, &[form], base_dir, &mut Vec::new(), &mut cache)?;
+                let resolved =
+                    self.resolve(ast, &[form], base_dir, false, &mut Vec::new(), &mut cache)?;
                 for f in resolved {
                     tagged.push((f, true));
                 }

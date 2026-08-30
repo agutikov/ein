@@ -1,34 +1,37 @@
 ;;; `complete()` writes into the fork it is asked about — the record site every
-;;; corpus solve uses. Recorded, not repaired (M1e D3, banked 2026-08-28).
+;;; corpus solve uses. **Fixed** at M1e S1e.3.1 (`CO-M1`); this is the
+;;; regression. Found and banked 2026-08-28 as M1e D3.
 ;;
-;; `record_node` at solve.rs:1977, guarded by `complete()` at :1895.
-;;
-;; The comment above that guard says consistency is already established because
-;; `result.kb` is "that unmutated fork". `complete()` then mutates it:
+;; The comment above that guard said consistency was already established
+;; because `result.kb` is "that unmutated fork". `complete()` then mutates it:
 ;; generation runs the full filter pipeline, and the lookahead kill cache
 ;; writes `(not h)` into the very KB the next lines record.
 ;;
-;; So the engine records `S ∪ K`, where K is what the cache wrote, and checked
-;; the criteria against `S`. Here a rule reads K.
+;; So the engine recorded `S ∪ K`, where K is what the cache wrote, and had
+;; checked the criteria against `S`. Here a rule reads K:
 ;;
-;;   default : k=2, model 1 = {(q A), (not (p A)), (not (p B))} — re-saturates
-;;             to Contradiction
-;;   -K      : k=2, models {(q A)} and {(p A),(p B)} — both correct
+;;   before : k=2, model 1 = {(q A), (not (p A)), (not (p B))} — re-saturates
+;;            to Contradiction. `k` was 2 either way, so nothing in the
+;;            read-out signalled it
+;;   -K     : k=2, models {(q A)} and {(p A),(p B)} — both correct
+;;   now    : k=1, {(p A), (p B), (not (q A))} — the refutable one is not
+;;            recorded, because `record_node` re-saturates a KB written since
+;;            its last saturation and declines to record one its own rules
+;;            refute
 ;;
-;; `k` is 2 either way, so nothing in the read-out signals the difference.
+;; This is the path **every** corpus solve takes, and it is the reason the fix
+;; is priced in wall clock rather than in fixtures: 2 067 of the corpus's 2 149
+;; recorded states are written since their last saturation, and 6 of them —
+;; all in this directory — refute.
 ;;
-;; ── Why this file carries no `:expect` ────────────────────────────────────
+;; ── Why this file now carries an `:expect` ────────────────────────────────
 ;;
-;; Because none can be written for it. Its two models populate **different**
-;; relations — `{(q A)}` and `{(p A), (p B)}` — and every arm of an
-;; `(or (model …) …)` must name the goal's relations, so whichever relation is
-;; the goal, one arm cannot name it and the file does not load. Nor would an
-;; `(or …)` detect the fix: a `k = 1` answer still matches one of its arms.
-;;
-;; So this fixture is pinned by its exit code and its KB-shape digest and by
-;; nothing that states an answer, which is Q-M1e.13 — and it is the reason the
-;; two `alive-empty-*` files moved their goal to `is-a` rather than following
-;; this one.
+;; It could not before. Its two models populated **different** relations —
+;; `{(q A)}` and `{(p A), (p B)}` — and every arm of an `(or (model …) …)`
+;; must name the goal's relations, so whichever relation was the goal, one arm
+;; could not name it and the file would not load (Q-M1e.13). With one model
+;; left there is one relation to ask about, and the goal moves to it. Remove
+;; the guard and this answers `Ambiguity` with k = 2, and the claim fails.
 
 (relation is-a T T)
 (relation marker)
@@ -55,4 +58,6 @@
   :assert (false)
   :priority 400)
 
-(query :goal (q ?x))
+(query
+  :goal   (p ?x)
+  :expect (model (p A) (p B)))

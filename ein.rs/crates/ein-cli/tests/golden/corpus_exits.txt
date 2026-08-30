@@ -316,7 +316,7 @@
 0    examples/ein-bugs/alt-cap-core.ein :: solve
 0    examples/ein-bugs/alt-cap-core.ein :: solve -e
 0    examples/ein-bugs/alt-cap-core.ein :: test
-0    examples/ein-bugs/complete-records-stale.ein :: solve
+1    examples/ein-bugs/complete-records-stale.ein :: solve
 0    examples/ein-bugs/complete-records-stale.ein :: solve -e
 1    examples/ein-bugs/fact-goal-binding.ein :: render rules
 0    examples/ein-bugs/fact-goal-binding.ein :: saturate
@@ -435,6 +435,14 @@
 0    examples/features/12_expect_false.ein :: solve
 0    examples/features/12_expect_false.ein :: solve -e
 0    examples/features/12_expect_false.ein :: test
+0    examples/features/13_mixed_solution_and_open.ein :: render constraints
+0    examples/features/13_mixed_solution_and_open.ein :: render lattice
+0    examples/features/13_mixed_solution_and_open.ein :: render rules
+0    examples/features/13_mixed_solution_and_open.ein :: saturate
+0    examples/features/13_mixed_solution_and_open.ein :: saturate --dump
+1    examples/features/13_mixed_solution_and_open.ein :: solve
+0    examples/features/13_mixed_solution_and_open.ein :: solve -e
+0    examples/features/13_mixed_solution_and_open.ein :: test
 0    examples/lattice/01_subset_pruned.ein :: render constraints
 0    examples/lattice/01_subset_pruned.ein :: render lattice
 0    examples/lattice/01_subset_pruned.ein :: render rules

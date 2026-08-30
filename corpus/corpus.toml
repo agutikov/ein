@@ -232,6 +232,12 @@ runs   = ["solve", "solve -e", "test", "saturate", "saturate --dump", "render ru
 note   = "M1c S1c.1.2 — `:expect (false)`, the k=0 verdict, spelled with the kernel's own ⊥ rather than an invented word. Three pigeons, two holes, and the chain forced rather than searched, for two reasons its header carries: the blind version is Ambiguity k=6 rather than a contradiction, because a state leaving one pigeon nowhere is *complete* in an open world (M1d's subject), and it also has several equally small unsat cores, which is corpus/fuzz_findings/unsat-core-id-space.md reached from the corpus for the first time."
 
 [[entry]]
+path   = "examples/features/13_mixed_solution_and_open.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "test", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "M1e S1e.3.1 — the `Solution` arm's **mixed regime**, measured: one discharged model beside one open state, so `verdict.k` is 1 and `stats.solution_nodes` is 2. `finalise` defined that partition and its own comment said no corpus entry reached it; this one does. It is `CO-M2`'s witness — the table printed the search's node count in that arm until S1e.3.4, so this file would have read `solutions (k) 2` beside `verdict Solution`."
+
+[[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]

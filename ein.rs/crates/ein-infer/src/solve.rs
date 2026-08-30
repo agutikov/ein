@@ -1168,15 +1168,30 @@ impl Run<'_> {
             if solved {
                 // Same shape as the layer path: `complete()` above ran the
                 // generation pipeline over `r.kb`, so its kill cache may have
-                // written into the KB recorded on the next line — saturated,
-                // no; consistent, yes but before that write; maximal, by
-                // `complete`, which here is additionally conditioned on the
-                // rung mode re-read at the top of this call. The fourth record
-                // site and the only one with no fixture, because nothing has
-                // built the program yet. See `Run::record_node`.
+                // written into the KB recorded on the next line — saturated
+                // and consistent are `record_node`'s since M1e S1e.3.1;
+                // maximal is `complete`'s, which here is additionally
+                // conditioned on the rung mode re-read at the top of this
+                // call. The fourth record site and the only one with no
+                // fixture, because nothing has built the program yet — the
+                // tree reaches it and no tree program has the shape.
+                // See `Run::record_node`.
                 let firings = std::mem::take(&mut r.firings);
                 let owes = std::mem::take(&mut r.owes);
-                self.record_node(&mut r.kb, terms, commit.clone(), firings, depth + 1, owes);
+                // A branch whose own rules refute it is not a model — the
+                // guard inside `record_node`, M1e `CO-M1`. It is also not
+                // worth branching on: `complete` said the generator proposes
+                // nothing here, so there is nothing below it to try.
+                self.record_node(
+                    &mut r.kb,
+                    terms,
+                    ast,
+                    events,
+                    commit.clone(),
+                    firings,
+                    depth + 1,
+                    owes,
+                )?;
                 // **The stop policy, honoured** — M1e S1e.2.1, `CO-H3`(a),
                 // and the same test `commit_entering` applies at a layer.
                 // `truncated` is already set unconditionally by `Run::tree`
@@ -1298,20 +1313,27 @@ impl Run<'_> {
         self.declares_obligations = !root.program().obligations.is_empty();
         if alive.is_empty() {
             // Empty alive, and root was consistent at the `has_contradiction`
-            // above. That is **not** `solution(root)`: `compute_alive` ran in
-            // between, and its kill cache writes `(not h)` into root, so what
-            // is recorded here was last saturated before those facts existed.
+            // above. That is **not** `solution(root)` on its own:
+            // `compute_alive` ran in between, and its kill cache writes
+            // `(not h)` into root, so what arrives here was last saturated
+            // before those facts existed.
             //
-            //   saturated  — no; `compute_alive` wrote to root after it.
-            //   consistent — checked above, i.e. before that write.
-            //   maximal    — yes; `alive == ∅` *is* `complete(root)`, both
-            //                being the same generator under the same filters.
+            //   saturated  — `record_node`'s, since M1e S1e.3.1.
+            //   consistent — checked above, and again after that re-saturation.
+            //   maximal    — **here**: `alive == ∅` *is* `complete(root)`,
+            //                both being the same generator under the same
+            //                filters.
             //
             // `examples/ein-bugs/alive-empty-phase1.ein` is the witness: ten
-            // lines, zero enterings, and the model it records re-saturates to
+            // lines, zero enterings, and the model it recorded re-saturated to
             // `Contradiction`. See `Run::record_node`.
             let owes = self.root_owes.clone();
-            self.record_node(root, terms, Vec::new(), Vec::new(), 0, owes);
+            if !self.record_node(root, terms, ast, events, Vec::new(), Vec::new(), 0, owes)? {
+                // Root re-saturated to a contradiction — the fixture's answer
+                // since M1e S1e.3.1, and `root_dead` is what gives the `k = 0`
+                // a source frontier to print instead of an empty core.
+                self.root_dead(root, terms);
+            }
             return Ok(Phase1::Done);
         }
         let a_prev = layer_1(terms, &alive);
@@ -1742,19 +1764,21 @@ impl Run<'_> {
                 // Phase 1 — the cascade promoted facts into it — so the tally
                 // is re-read rather than reused.
                 //
-                //   saturated  — no; this layer's writebacks and
-                //                `compute_alive`'s kill cache both wrote to
-                //                root after its last saturation.
-                //   consistent — last established at Phase 1, or inside the
-                //                cascade above; not since.
-                //   maximal    — yes; `alive == ∅` is `complete(root)`.
+                //   saturated  — `record_node`'s, since M1e S1e.3.1; this
+                //                layer's writebacks and `compute_alive`'s kill
+                //                cache both wrote to root after its last one.
+                //   consistent — with it, and not before: at Phase 1 or in the
+                //                cascade above, which is prior to those writes.
+                //   maximal    — **here**: `alive == ∅` is `complete(root)`.
                 //
                 // Witness: `examples/ein-bugs/alive-empty-interlayer.ein`, and
-                // `-K` does **not** repair it — the trigger there is the
+                // `-K` did **not** repair it — the trigger there is the
                 // singleton writeback, not the cache. See `Run::record_node`.
                 let owes = crate::obligations::tally(root, terms, ast, &self.memo, events)?;
                 self.root_owes = owes.clone();
-                self.record_node(root, terms, Vec::new(), Vec::new(), 0, owes);
+                if !self.record_node(root, terms, ast, events, Vec::new(), Vec::new(), 0, owes)? {
+                    self.root_dead(root, terms);
+                }
                 break;
             }
             // Drop the commitments no longer entirely within `alive` — an
@@ -2106,13 +2130,16 @@ impl Run<'_> {
         // into `result.kb` — the KB `record_node` is handed below. So of § 2's
         // three conjuncts this path establishes:
         //
-        //   saturated  — no; `complete()` wrote to the fork after its
-        //                saturation.
-        //   consistent — yes, before that write.
-        //   maximal    — `complete`, a sound but incomplete approximation.
+        //   saturated  — `record_node`'s, since M1e S1e.3.1; `complete()`
+        //                writes to the fork after its saturation.
+        //   consistent — with it, and not only before that write.
+        //   maximal    — **here**: `complete`, a sound but incomplete
+        //                approximation.
         //
         // Witness: `examples/ein-bugs/complete-records-stale.ein`, and this is
-        // the path every corpus solve takes. See `Run::record_node`.
+        // the path every corpus solve takes — 2 067 of the corpus's 2 149
+        // recorded states arrive at `record_node` dirty, almost all of them
+        // through here. See `Run::record_node`.
         let solved = {
             let mut s = Session {
                 kb: &mut result.kb,
@@ -2203,8 +2230,19 @@ impl Run<'_> {
             let firings = std::mem::take(&mut entered.firings);
             let mut kb = entered.kb.take().expect("a solution keeps its fork");
             let owes = std::mem::take(&mut entered.owes);
-            self.record_node(&mut kb, terms, c.clone(), firings, layer, owes);
+            let kept =
+                self.record_node(&mut kb, terms, ast, events, c.clone(), firings, layer, owes)?;
             terms.provs.discard_fork();
+            if !kept {
+                // The fork's own rules refute it once its post-saturation
+                // writes are closed over — M1e `CO-M1`. It was narrated as a
+                // solution above, which is what the search believed at that
+                // point; nothing is recorded and nothing is learned from it,
+                // so the traversal is unchanged for every entry that does not
+                // reach this arm — and `examples/ein-bugs/complete-records-stale.ein`
+                // is the one that does.
+                return Ok(false);
+            }
             if self
                 .opts
                 .stop_after
@@ -2389,31 +2427,128 @@ impl Run<'_> {
     /// solution(S) ≡ S saturated ∧ S consistent ∧ (owes nothing ∨ maximal)
     /// ```
     ///
-    /// **This function checks none of them**, and every one of its four
-    /// callers establishes consistency *before* the last write into the KB it
-    /// hands over — so the **saturated** conjunct holds at no call site. Three
-    /// of the four have a corpus fixture whose recorded model, fed back as a
-    /// program, this engine answers `Contradiction` on:
+    /// **Since M1e S1e.3.1 this function establishes the first two**, and
+    /// returns `false` when it cannot. Every one of its four callers
+    /// establishes consistency *before* the last write into the KB it hands
+    /// over — the lookahead kill cache and the singleton writeback both put
+    /// `(not h)` into it — so the **saturated** conjunct held at no call site,
+    /// and three of the four had a corpus fixture whose recorded model, fed
+    /// back as a program, this engine answered `Contradiction` on:
     /// `examples/ein-bugs/alive-empty-phase1.ein`, `…/alive-empty-interlayer.ein`
-    /// and `…/complete-records-stale.ein`. The selected fix is to re-saturate
-    /// and re-check before recording — equivalently, to refuse a KB written
-    /// since its last saturation. Until it lands each caller carries a note
-    /// saying which conjuncts it owes.
+    /// and `…/complete-records-stale.ein`. So a KB written since its last
+    /// saturation is re-saturated here and refused if its own rules refute it;
+    /// **maximal** is still each caller's, and each says which one it
+    /// establishes and how.
+    ///
+    /// **What it costs, measured** (`CO-M1`, 2026-08-30): this is called
+    /// **2 153** times across the corpus's declared `solve` runs and **1 846**
+    /// of those KBs are written since their last saturation — but the dedup
+    /// below discards all but **233**, of which **86** reach the guard. That
+    /// ordering is the whole of the cost: 1 846 re-saturations against 86, and
+    /// **0.98–1.03 ×** the wall clock instead of 1.26–1.67 ×. Six of the 86
+    /// refute, every one in `examples/ein-bugs/`, so no corpus answer moves
+    /// but those fixtures'.
+    ///
+    /// The cheap version of the guard itself is a **resumed** saturation
+    /// seeded from the facts written since the mark, which needs the saturator
+    /// snapshot that produced the fixpoint; root has one
+    /// (`Run::root_snapshot`) and a fork does not. Not worth it at 86.
     ///
     /// When the same model state is reached by two commitment paths — the two
     /// orientations of a symmetric pair, say — the **lex-smallest** commitment
     /// wins, so the recorded representative is deterministic regardless of
     /// traversal order.
+    #[allow(clippy::too_many_arguments)]
     fn record_node(
         &mut self,
         node_kb: &mut Kb,
         terms: &mut Terms,
+        ast: &Ast,
+        events: &mut Events,
         commitment: CanonicalSetId,
         firings: Vec<Firing>,
         layer: u32,
         owes: Owes,
-    ) {
-        // **The key first, and the promotion only if the node is kept.**
+    ) -> Result<bool, SolveError> {
+        // **The saturated conjunct, established here rather than assumed.**
+        //
+        // M1e `CO-M1`. Three of the four callers hand over a KB written since
+        // its last saturation — the lookahead kill cache and the singleton
+        // writeback both put `(not h)` into it — so a rule reading a stored
+        // negative has a match nothing fired, and the state recorded is not a
+        // fixpoint. `examples/ein-bugs/alive-empty-phase1.ein` is that in ten
+        // lines: the model it recorded, fed back as a program, this engine
+        // answers `Contradiction` on.
+        //
+        // `has_contradiction` alone does **not** catch it — on these paths the
+        // `(false)` was never derived, which is why Q4's outcome table changed
+        // its own prescription from *re-check* to *re-saturate*.
+        //
+        // **The dedup goes first, and that is where the cost went.** A node
+        // the dedup throws away needs no fixpoint: the representative it loses
+        // to holds the same facts, so it has the same closure, and it was put
+        // through this guard when *it* was recorded. `branching/06 -e` calls
+        // this 1 221 times to keep 22 nodes, so ordering the two turns 1 221
+        // re-saturations into 22.
+        let mut key = state_key(node_kb);
+        if self.loses_to_stored(&key, &commitment, terms) {
+            // The stored representative wins; this path's derivation is not
+            // kept, so neither are its records. Recorded, from the caller's
+            // side: the model is in the set, under the other path's
+            // commitment.
+            return Ok(true);
+        }
+        let mut firings = firings;
+        let mut owes = owes;
+        if node_kb.written_since_saturation() {
+            let before = node_kb.n_facts();
+            let mut again: Vec<Firing> = Vec::new();
+            {
+                // **Silent.** The guard is a check, not a step of the search,
+                // and its firings are re-derivations the dedup absorbs.
+                // Narrating them would advance the stream's `n` for every
+                // later event and
+                // make a `fire` mean *a rule matched again*, which is
+                // `MA-L4`'s complaint about `sanity -y` arriving by a second
+                // route. What the re-saturation does derive still reaches the
+                // reader: the facts are in the recorded state and the firings
+                // are appended to its trace below.
+                let mut quiet = Events::off();
+                let mut s = Session {
+                    kb: node_kb,
+                    terms,
+                    ast,
+                    events: &mut quiet,
+                    memo: self.memo.clone(),
+                };
+                let mut sat = Saturator::new(&mut s)?;
+                sat.saturate(&mut s, None, &mut |f| again.push(f.clone()))?;
+            }
+            self.stats.base.saturate_count += 1;
+            if crate::contradiction::has_contradiction(node_kb, terms) {
+                // Not a model: its own rules refute it. The caller decides
+                // what a run with nothing recorded reports — for root that is
+                // `root_dead`, which has a frontier core to print.
+                return Ok(false);
+            }
+            if node_kb.n_facts() != before {
+                // **The trace grows only when the state does.** This is a
+                // fresh saturator over a KB that is already at a fixpoint but
+                // for the writes since the mark, so it re-offers every match
+                // and the dedup absorbs almost all of them. Appending the
+                // re-derivations would have doubled `branching/03`'s trace to
+                // say nothing, and the trace is the derivation of the model.
+                firings.extend(again);
+                // The state moved, so both things read off it move: the key
+                // the dedup compares, and the tally, which is about the state.
+                key = state_key(node_kb);
+                if self.loses_to_stored(&key, &commitment, terms) {
+                    return Ok(true);
+                }
+                owes = crate::obligations::tally(node_kb, terms, ast, &self.memo, events)?;
+            }
+        }
+        // **The promotion only if the node is kept.**
         //
         // `state_key` reads the fact list and `Kb::promote_provenance` rewrites
         // justification tables, so the key is the same whichever runs first —
@@ -2424,29 +2559,8 @@ impl Run<'_> {
         // region's lifetime through the decision. The region now travels with
         // the entering (T1a.7.2.1), so there is nothing to thread — and the
         // measurement says the ordering was worth 10 ms of `branching/06 -e`'s
-        // 64 ms at `--jobs 8`, because that file calls this **1 221 times to
-        // keep 22 nodes**.
-        let key = state_key(node_kb);
-        let at = match self.lstate.node_at.get(&key).copied() {
-            None => None,
-            Some(at) => {
-                // `tuple(sorted(commitment)) < tuple(sorted(cur.commitment))`
-                // — sorted and compared by **content**, not by `FactId`.
-                // Interning order is an artefact of what the loader saw
-                // first, and using it here picks a different representative
-                // for a model two commitment paths both reach.
-                let mut mine = commitment.clone();
-                mine.sort_by(|&a, &b| terms.cmp_fact_semantic(a, b));
-                let mut theirs = self.lstate.nodes[at].1.commitment.clone();
-                theirs.sort_by(|&a, &b| terms.cmp_fact_semantic(a, b));
-                if crate::apriori::cmp_set(terms, &mine, &theirs) != std::cmp::Ordering::Less {
-                    // The stored representative wins; this path's derivation
-                    // is not kept, so neither are its records.
-                    return;
-                }
-                Some(at)
-            }
-        };
+        // 64 ms at `--jobs 8`.
+        let at = self.lstate.node_at.get(&key).copied();
         node_kb.promote_provenance(terms);
         let r = SolutionRecord {
             commitment,
@@ -2468,6 +2582,25 @@ impl Run<'_> {
             // order.
             Some(at) => self.lstate.nodes[at].1 = r,
         }
+        Ok(true)
+    }
+
+    /// Is there already a node under `key` whose commitment outranks this
+    /// one's?
+    ///
+    /// `tuple(sorted(commitment)) < tuple(sorted(cur.commitment))` — sorted
+    /// and compared by **content**, not by `FactId`. Interning order is an
+    /// artefact of what the loader saw first, and using it here would pick a
+    /// different representative for a model two commitment paths both reach.
+    fn loses_to_stored(&self, key: &[FactId], commitment: &[FactId], terms: &Terms) -> bool {
+        let Some(at) = self.lstate.node_at.get(key).copied() else {
+            return false;
+        };
+        let mut mine = commitment.to_vec();
+        mine.sort_by(|&a, &b| terms.cmp_fact_semantic(a, b));
+        let mut theirs = self.lstate.nodes[at].1.commitment.clone();
+        theirs.sort_by(|&a, &b| terms.cmp_fact_semantic(a, b));
+        crate::apriori::cmp_set(terms, &mine, &theirs) != std::cmp::Ordering::Less
     }
 
     fn root_dead(&mut self, root: &Kb, terms: &Terms) {

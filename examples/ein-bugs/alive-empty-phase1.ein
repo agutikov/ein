@@ -1,34 +1,35 @@
-;;; The alive-∅ record site at PHASE 1 — a state the engine calls a model and
-;;; its own rules refute. Recorded, not repaired (M1e D1, banked 2026-08-28).
+;;; The alive-∅ record site at PHASE 1 — a state the engine called a model and
+;;; its own rules refute. **Fixed** at M1e S1e.3.1 (`CO-M1`); this is the
+;;; regression. Found and banked 2026-08-28 as M1e D1.
 ;;
-;; `phase1` checks `has_contradiction(root)` at solve.rs:1091, then calls
-;; `compute_alive` at :1098 — which writes the lookahead kill cache INTO ROOT
-;; (hypgen.rs `write_negated`) — and then records root at :1118 under the
-;; comment "Empty alive and no contradiction ⇒ root is itself a complete,
-;; consistent model". The check ran before the write.
+;; `phase1` checked `has_contradiction(root)` at solve.rs:1091, then called
+;; `compute_alive` — which writes the lookahead kill cache INTO ROOT
+;; (hypgen.rs `write_negated`) — and then recorded root under the comment
+;; "Empty alive and no contradiction ⇒ root is itself a complete, consistent
+;; model". **The check ran before the write.**
 ;;
-;; Zero enterings, zero layers, one saturation. The state recorded as the
-;; model is one in which `totality` matches and has not fired — feed the model
-;; back in as a program and this engine answers `Contradiction`.
+;; Zero enterings, zero layers, one saturation, and the state it recorded as
+;; the model was one in which `totality` matched and had not fired: feed that
+;; model back in as a program and this engine answers `Contradiction`.
 ;;
-;; `-K` is the discriminator: with the kill cache off, root keeps no negatives,
-;; `totality` has nothing to read, and the recorded state is a solution. So a
-;; performance lever decides whether the recorded model is refutable, and
-;; nothing in the read-out says so.
+;; `record_node` now re-saturates a KB written since its last saturation and
+;; declines to record one its own rules refute, so this file answers
+;; `Contradiction` — which is also what `-L` said all along, and what a hand
+;; derivation says.
 ;;
-;; ── Why the goal is `is-a` and not `p` ────────────────────────────────────
+;; `-K` is the discriminator on the **old** behaviour and is kept because it
+;; still shows the mechanism: with the kill cache off, root keeps no negatives,
+;; `totality` has nothing to read, and the state is a genuine solution. So the
+;; two configurations answer differently, and that is a fact about the program
+;; rather than about the read-out.
 ;;
-;; Because `:expect` cannot say what this file's answer is. The model contains
-;; **no `p` fact at all**, and an expectation must name the goal's relations —
-;; `:expect does not name p, which the query's :goal asks about` — so a claim
-;; about a model with an empty goal extent does not load. The goal is moved to
-;; a relation the model does populate so the file can state today's answer at
-;; all, and the limitation is filed as Q-M1e.13.
+;; ── The `:expect`, and Q-M1e.13 ───────────────────────────────────────────
 ;;
-;; The claim below therefore holds **today** and is expected to break: when the
-;; record sites re-saturate before recording (Q-M1e.7's ruling selects that
-;; fix), this file answers `Contradiction` and the claim fails. That is the
-;; point of banking it — the same route `tests/stdlib/closure/02|03` took.
+;; The banked claim was `(model (is-a A T) (is-a B T))` with the goal moved off
+;; `p`, because an expectation must name the goal's relations and the recorded
+;; model contained no `p` fact at all — Q-M1e.13. `(false)` names nothing, so
+;; the fix removes the need for the workaround and the goal goes back to the
+;; question the file is about. Q-M1e.13 itself is still open.
 
 (relation is-a T T)
 (relation p T)
@@ -52,5 +53,5 @@
   :priority 400)
 
 (query
-  :goal   (is-a ?x T)
-  :expect (model (is-a A T) (is-a B T)))
+  :goal   (p ?x)
+  :expect (false))

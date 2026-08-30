@@ -104,7 +104,8 @@ fn frontend(c: &mut Criterion) {
             let resolved = ein_ir::imports::Resolver::new()
                 .resolve_imports(&mut ast, &forms, Some(&base))
                 .expect("resolves");
-            let macros = ein_ir::macros::collect_macros(&ast, &resolved);
+            let macros =
+                ein_ir::macros::collect_macros(&ast, &resolved).expect("the bench set loads");
             let expanded =
                 ein_ir::macros::expand_rule_clauses(&mut ast, &resolved, &macros).expect("expands");
             std::hint::black_box(expanded.len());

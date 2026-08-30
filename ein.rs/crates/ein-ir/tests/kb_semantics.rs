@@ -226,7 +226,7 @@ fn expanded_rule(text: &str) -> String {
     let resolved = Resolver::new()
         .resolve_imports(&mut ast, &forms, None)
         .expect("resolves");
-    let macros = collect_macros(&ast, &resolved);
+    let macros = collect_macros(&ast, &resolved).expect("the fixture declares no bad macro");
     let expanded = expand_rule_clauses(&mut ast, &resolved, &macros).expect("expands");
     let rule = expanded
         .iter()
@@ -325,7 +325,7 @@ fn importing_a_module_whole_requalifies_what_it_imported_flat() {
     let resolved = Resolver::new()
         .resolve_imports(&mut ast, &forms, main.parent())
         .expect("resolves");
-    let macros = collect_macros(&ast, &resolved);
+    let macros = collect_macros(&ast, &resolved).expect("the fixture declares no bad macro");
     let expanded = expand_rule_clauses(&mut ast, &resolved, &macros).expect("expands");
     let rule = expanded
         .iter()

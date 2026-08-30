@@ -26,17 +26,26 @@ gap between that and what a next caller would reasonably assume.
 
 ## Acceptance
 
-- Each of the six has a disposition, and each `accepted` has its reason at a
-  `file:line` — not in this plan
-  ([Q-M1e.1](../open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)).
-- `UNBOUND` cannot be mistaken for a real `FactId` through the public
-  accessors, or a test asserts today's behaviour so the gap is visible.
-- One macro-ingestion path, or two with the difference stated at both.
-- No behaviour change reaches a golden without being named here first.
+- ✅ Each of the six has a disposition, and **all six are `fixed`** — four of
+  them here, `CO-M2` at [S1e.3.4](s1e.3.4_architecture.md) with its witness
+  fixture here, and none `accepted`, so no reason had to be written in place of
+  a change.
+- ✅ **`UNBOUND` cannot be mistaken for a real `FactId` through the public
+  accessors.** `as_fact` rejects the sentinel, `tag` refuses to answer about it
+  in a debug build, and `value.rs`'s `the_sentinel_names_no_fact` is the
+  assertion that failed before.
+- ✅ **One macro-ingestion path.** `macros::read_macros` is the reading and
+  `from_ir::ingest_macros` is the interning; the four non-loader consumers
+  refuse exactly what a load refuses, with the same sentences.
+- ✅ **No behaviour change reaches a golden without being named here first** —
+  the [outcome](#outcome) names all three: five verdict rows (the three
+  `ein-bugs` fixtures), seven `ir[expand]` renderings (`CO-M4`, the dump path
+  agreeing with the loader), and `saturate_count` on 191 more (`CO-M1`, a
+  saturation the engine really performs).
 
 ## Tasks
 
-### Task T1e.3.1.1 — `CO-M1`: the inter-layer alive-∅ path
+### Task T1e.3.1.1 — `CO-M1`: the inter-layer alive-∅ path ✅
 
 `phase2` calls `record_node(root)` when `compute_alive` comes back empty
 ([`solve.rs:1528-1551`](../../../ein.rs/crates/ein-infer/src/solve.rs)),
@@ -53,7 +62,7 @@ writebacks are `(not h)` for `h ∉ root`, and root has not been re-saturated
 on this path — with the second one's limit named, since that limit is the
 finding.
 
-### Task T1e.3.1.2 — `CO-M2`: the `Solution` arm's count
+### Task T1e.3.1.2 — `CO-M2`: the `Solution` arm's count ✅
 
 `finalise` admits a state where one node is a discharged model and others are
 open: `branches.len() == 1` with `open_states` non-empty →
@@ -79,7 +88,7 @@ expressible.
 If [S1e.3.4](s1e.3.4_architecture.md) takes the seam fix, this task is
 subsumed by it and becomes the fixture alone.
 
-### Task T1e.3.1.3 — `CO-M3`: `UNBOUND` through the accessors
+### Task T1e.3.1.3 — `CO-M3`: `UNBOUND` through the accessors ✅
 
 `UNBOUND.tag()` returns `Tag::Fact` via the `>> 30 == 3` fallthrough, and
 `UNBOUND.as_fact()` returns `Some(FactId(0x3FFF_FFFF))` — a `FactId` the
@@ -110,7 +119,7 @@ If rejecting changes a hot path's codegen measurably, that is a real
 trade-off — measure it with the bench set before deciding, and record the
 number either way.
 
-### Task T1e.3.1.4 — `CO-M4`: two macro pipelines
+### Task T1e.3.1.4 — `CO-M4`: two macro pipelines ✅
 
 [`macros.rs:50-76, 197-240`](../../../ein.rs/crates/ein-ir/src/macros.rs)'s
 `collect_macros` (first-declaration-wins, silently skips malformed forms) +
@@ -137,7 +146,7 @@ Fix, in order of preference:
 A fixture is worth having regardless: a program with a duplicate macro
 declaration, dumped and loaded, showing the two behaviours or the one.
 
-### Task T1e.3.1.5 — `CO-M5`: module identity from the display string
+### Task T1e.3.1.5 — `CO-M5`: module identity from the display string ✅
 
 `Resolver::locate` canonicalizes the **display** string
 (`std::fs::canonicalize(&display)`,
@@ -165,7 +174,7 @@ The second is worth more than this finding: it is the only tier of the
 three-tier resolution with no coverage at all, and
 [EH-M2](s1e.3.5_error_handling.md) is another finding in the same tier.
 
-### Task T1e.3.1.6 — `CO-M6`: `is_stalled` is not read-only
+### Task T1e.3.1.6 — `CO-M6`: `is_stalled` is not read-only ✅
 
 [`saturator.rs:627-641`](../../../ein.rs/crates/ein-infer/src/saturator.rs)
 runs a full `enqueue_pass(s, None)` without taking `self.delta` — so stale
@@ -199,3 +208,103 @@ fixture and `CO-M3`'s audit are the two that can run long. If the phase is
 under pressure, `CO-M6` option 3 and `CO-M4` option 2 are the honest cheap
 paths — both leave the code alone and fix the statement, which is what the
 findings are actually about.
+
+---
+
+## Outcome
+
+Taken 2026-08-30, after [S1e.3.4](s1e.3.4_architecture.md), which the phase's
+ordering rule put first once the seam fix was chosen.
+
+| | |
+|---|---|
+| **`CO-M1`** | **fixed** — `record_node` re-saturates a KB **written since its last saturation** and refuses to record one its own rules then refute. `Kb::written_since_saturation` is the invariant; the four record sites' comments say which conjuncts each establishes and which is now this function's. [D1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/d1_q4_which_route_reaches_the_site.md)'s **B** in effect and **A** in shape: the dirty bit is the *invariant*, not the optimisation it was selected as |
+| **`CO-M2`** | **fixed** at S1e.3.4; the **witness** is this stage's — [`examples/features/13_mixed_solution_and_open.ein`](../../../examples/features/13_mixed_solution_and_open.ein), one discharged model beside one open state, `verdict.k = 1` where `stats.solution_nodes = 2`. `finalise` had defined that arm and said no corpus entry reached it |
+| **`CO-M3`** | **fixed**, the review's preferred option: `as_fact` rejects the sentinel and `tag` refuses to answer about it in a debug build. The audit is **29** `as_fact` sites and **30** `tag` sites, and the assertion **did not fire once** across the suite — the discipline was real, and it was a convention |
+| **`CO-M4`** | **fixed**, option 1: `macros::read_macros` is the one reading and `from_ir::ingest_macros` is the interning around it. The four non-loader consumers refuse what a load refuses, with the same sentences |
+| **`CO-M5`** | **fixed**, both halves: a `std.*` module may import only `std.*` modules, refused at load in every tier; and the **embedded** tier has its first test, which is the tier a release binary uses and the one the harness could never reach |
+| **`CO-M6`** | **fixed**, options 1 and 3: `is_stalled` takes the pending delta, so it is idempotent with respect to the queue, and the tiebreaker advance is stated as a **cost of asking** at the function and in [`docs/api/rust.md`](../../../docs/api/rust.md) § 3 — where an embedder meets it, which is the half a comment inside the crate cannot do |
+| measured | `record_node` is called **2 153** times across the corpus's declared `solve` runs and **1 846 — 86 %** of those KBs are written since their last saturation; the dedup discards all but **233**, of which **86** reach the guard. **6** of the 86 refute, every one in `examples/ein-bugs/` |
+| verdicts | **5 rows move**, all three fixtures: both `alive-empty-*` go `Solution k=1` → `Contradiction k=0` (the `-L` column, and the hand derivation), and `complete-records-stale -e` goes `Ambiguity k=2` → `Solution k=1` |
+| cost | **0.98–1.03 ×** — `branching/06 -e` 0.98, `zebra -e` 1.03, `zebra2 -e` 0.98, i.e. inside the noise. It was 1.26–1.67 × before the two corrections below. No corpus entry crosses the `slow` threshold; `utils/corpus_cost.py` re-taken |
+| goldens | `corpus_exits.txt` — the new fixture's cells, and `complete-records-stale :: solve` 0 → **1**. `corpus_shapes.md5` — the three rewritten fixtures, the new one, **7** `ir[expand]` refusals (`CO-M4`), and `saturate_count` wherever the guard actually saturates |
+| gate | `./run_tests.sh` green — **780 tests**, exit 0, bench smoke unmoved |
+
+### Five things the tasks did not predict
+
+**1. The chosen fix's premise was false, and what saved the cost was a
+different reordering.** [D1](../p1e.1_open_questions/s1e.1.1_search_soundness_probes/d1_q4_which_route_reaches_the_site.md)
+picks **B** — a dirty bit — over **A** because it *"prices the common case at a
+branch"*. Measured, the common case **is** dirty: **1 846 of the 2 153** KBs
+that arrive at `record_node`, because the lookahead kill cache writes into
+every fork `complete()` is asked about. So B and A cost the same, and the
+naive fix was 1.26–1.67 ×. What made it free was putting the **dedup** before
+the saturation: a node the dedup throws away has the same facts as the
+representative it loses to, so it has the same closure, and that one was
+already put through the guard. `branching/06 -e` calls `record_node` **1 221
+times to keep 22** — a number already written at that function, for a
+different reason. Corpus-wide the ordering is **1 846 re-saturations against
+86**, and 1.27 × against 0.98 ×.
+
+**2. The guard has three observable side channels and two had to be closed.**
+A check that re-runs the rules is not free of narration:
+
+- its **firings** would join the recorded trace, and they are re-derivations
+  the dedup absorbs — `branching/03`'s `trace[answer]` went from 1 236 lines to
+  2 360 before the trace was made to grow only when the *state* does;
+- its **events** would advance the stream's `n` for every later event, which is
+  [`MA-L4`](../p1e.4_low/s1e.4.8_maintainability.md)'s complaint about
+  `sanity -y` arriving by a second route. The guard runs silent;
+- its **`saturate_count`** stays, and moves goldens, because the engine really
+  does saturate more and a counter that hid it would be S1e.3.4's finding
+  again.
+
+Which of the three to keep is not a style question, and the split was found by
+running the goldens rather than by reasoning about them.
+
+**2b. And the clean mark was in the wrong function.** `Saturator::saturate`
+looked like where a fixpoint is reached; the fail-fast fork loop drives
+`Saturator::step` directly, so a mark in `saturate` was never set for the forks
+that loop saturates and **every** one of them looked dirty forever — a check
+that always fires, which is a check that checks nothing. What found it is
+`lattice_semantics::the_fail_fast_fork_is_verdict_and_proof_neutral`, which
+compares the whole `MonotonicStats` between the flag's two settings and saw
+`saturate_count` 2 against 1. The mark is in `step`'s fixpoint arm now, which
+took the dirty share from an artefactual 96 % to a real 86 % before the dedup
+and 37 % after it — and the cost from 1.08 × to 1.00 ×.
+
+**3. A property was one regime too narrow, and the new fixture is what showed
+it.** `summary_properties`' counter identity read *`verdict.k ==
+stats.solution_nodes` (except `Open`)*. The real exception is *the program
+declared an obligation*: `finalise` answers `Open` only when **every** recorded
+node owes, and where one discharges and another does not the verdict is
+`Solution` with the two counts still apart. Written against the regimes that
+existed, and the mixed-regime fixture — built for `CO-M2` — failed it within a
+minute of being added.
+
+**4. The lenient macro reading had one argument and it does not survive.** The
+case for `collect_macros` staying lenient is that a *dump* should render
+something where a *load* would refuse. What it renders for a program with two
+`(macro m …)` is the expansion of whichever came first — a rendering of a
+program that cannot be run, offered without a word saying so. Seven
+`ir[expand]` renderings now say `<refused>` instead, on the six
+`examples/broken/load/` files that declare a duplicate or a reserved macro
+name, and the dump path and the loader give the same sentence.
+
+### What this stage did **not** do
+
+- **The cheap re-saturation.** The guard runs a *fresh* saturator, which
+  re-offers every match and lets the dedup absorb it; the incremental form is
+  `Saturator::resume` seeded from the facts written since the mark, which needs
+  the saturator snapshot that produced the fixpoint. Root has one
+  (`Run::root_snapshot`); a fork does not, and giving every alive fork one is a
+  `Snapshot` clone per entering. Not taken, because the dedup ordering already
+  put the cost under 1.1 × — the note is at `record_node` so the next reader
+  does not re-derive it.
+- **An unsat core for `alive-empty-phase1`.** It reports `Contradiction` with
+  **0** facts, and honestly: the refutation's premises are the kill cache's
+  `(not h)`, whose provenance is `<lookahead-dies-immediately>` and cites no
+  premises, so the source frontier really is empty. What a reader wants there —
+  *the lookahead killed every candidate and totality then refuted* — is not a
+  fact set, and saying it would be a read-out change rather than a core.
+

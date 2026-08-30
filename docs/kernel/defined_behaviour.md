@@ -593,10 +593,12 @@ it settles is which stream carries what, and both halves are the answer:
 | one line naming the file, the label and the first disagreement | **stderr** | an exit 1 with an empty stderr is a run nobody can diagnose from a pipeline |
 
 Before it, `solve` produced exactly that undiagnosable shape, which is why
-`examples/features/11_expect_ambiguity.ein` — the corpus's only fixture that
-reaches `Outcome::NotChecked` under a declared run — **could not declare plain
-`solve`**: `corpus_cli::every_refusal_carries_a_diagnostic` forbids it. It
-declares it now, and `corpus_exits.txt` banks the 1. `ein test` is unchanged:
+`examples/features/11_expect_ambiguity.ein` — then the corpus's only fixture
+that reached `Outcome::NotChecked` under a declared run, joined at M1e S1e.3.1
+by `examples/ein-bugs/complete-records-stale.ein`, whose claim is a `Solution`
+and so is checkable only when the search exhausts — **could not declare plain
+`solve`**: `corpus_cli::every_refusal_carries_a_diagnostic` forbids it. Both
+declare it now, and `corpus_exits.txt` banks the 1. `ein test` is unchanged:
 it prints its own per-file report and has always been readable on stdout alone.
 
 **M1d [T1d.10.5.0](../../docs/history/m1d_satisfiability/README.md#s1d105--what-exhausted-means)

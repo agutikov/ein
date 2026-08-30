@@ -1,26 +1,32 @@
-;;; The alive-∅ record site BETWEEN LAYERS — the same defect one site over,
-;;; and the one whose trigger is not the kill cache. Recorded, not repaired
-;;; (M1e D1, banked 2026-08-28).
+;;; The alive-∅ record site BETWEEN LAYERS — the site `CO-M1` names, reached at
+;;; stock config with no flags. **Fixed** at M1e S1e.3.1; this is the
+;;; regression. Found and banked 2026-08-28 as M1e D1.
 ;;
-;; Layer 1 enters (p A) and (p B) alive and (p Z) dead; the singleton
-;; writeback puts (not (p Z)) at root; `compute_alive` at solve.rs:1534 then
-;; comes back empty because the grown root makes `mutex` a one-step kill of
-;; every remaining candidate; `promote_forced_positives` at :1535 declines an
-;; empty set without saturating anything, and :1550 records root.
+;; `phase2` recomputed `alive` after a layer, found it empty, and recorded root
+;; — which by then held this layer's singleton writeback `(not (p Z))` and the
+;; kill cache's `(not (p A))` / `(not (p B))`, all written after root's last
+;; saturation. `totality` matched that state and had not fired.
 ;;
-;; The trigger is the SINGLETON WRITEBACK, not the kill cache, so `-K` does
-;; not repair it: (not (p Z)) is a fact a fork's death entailed.
+;; Three enterings, one layer. The recorded state was
+;; `(is-a A T) (is-a B T) (is-a Z T) (not (p A)) (not (p B)) (not (p Z))`; feed
+;; it back as a program and this engine answered `Contradiction` on it.
 ;;
-;; `-L` answers `Contradiction k=0` on the same file, both sides exhausted.
+;; `record_node` now re-saturates a KB written since its last saturation and
+;; declines to record one its own rules refute, so this file answers
+;; `Contradiction` — the `-L` column, and the hand derivation: `{(p Z)}` dies,
+;; so `(not (p Z))` is entailed; `mutex` then refutes every state holding any
+;; `(p ?x)` and `totality` refutes the state holding none.
 ;;
-;; ── Why the goal is `is-a` and not `p`, and why the claim will break ──────
+;; **`-K` does not repair the old behaviour here** — the trigger is the
+;; singleton writeback, not the cache — which is what made this the harder of
+;; the two witnesses and why both were banked.
 ;;
-;; Same reason as `alive-empty-phase1.ein`: the recorded model contains no `p`
-;; fact, and `:expect` refuses a claim that does not name the goal's relations,
-;; so an empty goal extent is unstatable (Q-M1e.13). The claim below holds
-;; today and fails once the record sites re-saturate before recording — which
-;; is the fix Q-M1e.7's ruling selects, and the reason this file is banked
-;; stating an answer known to be wrong.
+;; ── The `:expect`, and Q-M1e.13 ───────────────────────────────────────────
+;;
+;; The banked claim named `is-a` because the recorded model contained no `p`
+;; fact and an expectation must name the goal's relations (Q-M1e.13).
+;; `(false)` names nothing, so the goal goes back to the question the file is
+;; about. Q-M1e.13 itself is still open.
 
 (relation is-a T T)
 (relation p T)
@@ -53,5 +59,5 @@
   :priority 400)
 
 (query
-  :goal   (is-a ?x T)
-  :expect (model (is-a A T) (is-a B T) (is-a Z T)))
+  :goal   (p ?x)
+  :expect (false))

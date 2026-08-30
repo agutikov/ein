@@ -471,6 +471,13 @@ fn fact_args(ast: &Ast, terms: &mut Terms, args: &[NodeId]) -> Result<Vec<Value>
 
 // ── Pass 0 — macros ────────────────────────────────────────────────
 
+/// Read the `(macro …)` declarations, then intern them into the program.
+///
+/// The **reading** is [`macros::collect_macros`]'s since M1e S1e.3.1 — one
+/// implementation, so the dump path and the loader refuse the same programs
+/// with the same sentences (`CO-M4`). What stays here is the half that needs a
+/// `Terms` and a `Kb`: interning the name and the parameters, and storing the
+/// macro on the program.
 fn ingest_macros(
     ast: &Ast,
     terms: &mut Terms,
@@ -478,50 +485,12 @@ fn ingest_macros(
     forms: &[NodeId],
     errors: &mut Vec<String>,
 ) -> Result<BTreeMap<String, IrMacro>, Overflow> {
-    let mut declared: BTreeMap<String, IrMacro> = BTreeMap::new();
-    for &form in forms {
-        let loc = loc_repr(ast, ast.loc(form));
-        let args = ast.form_args(form).to_vec();
-        if args.len() < 3 {
-            errors.push(format!("(macro) needs name + params + body at {loc}"));
-            continue;
-        }
-        let name = ast.atom_name(args[0]).map(str::to_string);
-        let params_form = args[1];
-        let body = args[2];
-        let Some(name) = name.filter(|_| matches!(ast.node(params_form), Node::SForm { .. }))
-        else {
-            errors.push(format!("malformed (macro …) at {loc}"));
-            continue;
-        };
-        if is_reserved(&name) {
-            errors.push(format!(
-                "macro '{name}' shadows a reserved kernel name at {loc}"
-            ));
-            continue;
-        }
-        if declared.contains_key(&name) {
-            errors.push(format!("duplicate macro '{name}' at {loc}"));
-            continue;
-        }
-        let params: Vec<String> = ast
-            .form_args(params_form)
-            .iter()
-            .filter_map(|&a| match ast.node(a) {
-                Node::Var(s) => Some(ast.sym(s).to_string()),
-                _ => None,
-            })
-            .collect();
-        declared.insert(
-            name.clone(),
-            IrMacro {
-                name: name.clone(),
-                params: params.clone(),
-                body,
-            },
-        );
-        let name = terms.intern_text(&name)?;
-        let params: Vec<Symbol> = params
+    let (declared, problems) = macros::read_macros(ast, forms);
+    errors.extend(problems);
+    for m in declared.values() {
+        let name = terms.intern_text(&m.name)?;
+        let params: Vec<Symbol> = m
+            .params
             .iter()
             .map(|p| terms.intern_text(p))
             .collect::<Result<_, _>>()?;
@@ -530,8 +499,8 @@ fn ingest_macros(
             Macro {
                 name,
                 params: params.into_boxed_slice(),
-                body: ExprRef(body.0),
-                loc: core_loc(ast, form),
+                body: ExprRef(m.body.0),
+                loc: core_loc(ast, m.form),
             },
         );
     }

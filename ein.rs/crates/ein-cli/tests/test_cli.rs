@@ -87,12 +87,14 @@ const TRUE_CLAIM: &str =
 const FALSE_CLAIM: &str =
     "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A H1) (p B H3)))\n";
 
-// ── The three corpus fixtures, which must hold ─────────────────────
+// ── The corpus fixtures that state their own answer, which must hold ──
 
-/// One per verdict: `10_expect` is k = 1, `11_expect_ambiguity` is k = 2 and
-/// `12_expect_false` is k = 0. `11` has no plain `solve` run in the corpus
-/// because `-n 1` cannot check a k > 1 claim — under `test` it needs no flag,
-/// which is the point of exhausting by default.
+/// One per verdict: `10_expect` is k = 1, `11_expect_ambiguity` is k = 2,
+/// `12_expect_false` is k = 0, and since M1e S1e.3.1
+/// `13_mixed_solution_and_open` is a k = 1 the *search* recorded two nodes for.
+/// `11` has no plain `solve` run in the corpus because `-n 1` cannot check a
+/// k > 1 claim — under `test` it needs no flag, which is the point of
+/// exhausting by default.
 #[test]
 fn the_three_feature_fixtures_hold() {
     for name in [
@@ -199,7 +201,8 @@ fn a_count_mismatch_names_the_models_it_found() {
 /// finish is not coverage" — the entry whose lattice view blindly enumerates
 /// an unbounded domain and which the sweep marks `slow` for it. It carries no
 /// `:expect`, so `ein test` must never solve it, and the whole directory has
-/// to come back in the time the three fixtures take.
+/// to come back in the time the four fixtures take. (Three until M1e S1e.3.1
+/// added `13_mixed_solution_and_open.ein`, whose claim is `CO-M2`'s witness.)
 #[test]
 fn a_query_with_no_expectation_is_never_solved() {
     let started = std::time::Instant::now();
@@ -212,7 +215,7 @@ fn a_query_with_no_expectation_is_never_solved() {
         r.out
     );
     assert!(
-        r.summary().contains("3 held") && r.summary().contains("9 files state no expectations"),
+        r.summary().contains("4 held") && r.summary().contains("9 files state no expectations"),
         "{}",
         r.summary()
     );

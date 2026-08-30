@@ -1,0 +1,81 @@
+;;; One discharged model beside one open state — the `Solution` arm's mixed
+;;; regime, which `finalise` **defined** and nothing had ever reached.
+;;
+;; `finalise` partitions the recorded nodes: a node that owes goes to
+;; `open_states`, one that does not goes to `branches`, and the verdict is read
+;; off `branches` alone —
+;;
+;;     a discharged model outranks an open state: where the search found
+;;     both, the answer is the models and the open ones are simply not
+;;     among them
+;;
+;; — with its own comment saying *"no corpus entry is in that regime today …
+;; defined rather than measured"*. This file is the measurement (M1e S1e.3.1,
+;; `CO-M2`). It reports
+;;
+;;     solutions (k)   1
+;;     verdict         Solution
+;;
+;; with `stats.solution_nodes` **2**, because the search recorded two complete
+;; states and the read-out calls one of them a model.
+;;
+;; ── Why it is worth a fixture ──────────────────────────────────────────────
+;;
+;; Because until M1e S1e.3.4 the table's `Solution` arm printed the *search's*
+;; node count, so this file would have printed `solutions (k) 2` next to
+;; `verdict Solution` — one number saying two models and the word beside it
+;; saying one. It was invisible because no program reached the regime; the
+;; review found it by reading, and this is what reading it needs to stay found.
+;; `read_out::an_open_state_is_recorded_and_not_counted` is the assertion.
+;;
+;; ── How the two states are built ───────────────────────────────────────────
+;;
+;; `total-owed likes is-a` puts the program in the read-out's scope: every
+;; `Person` owes a `Food`. `Bob` has one outright. `Ann` gets one only in the
+;; branch that chose her.
+;;
+;; `mutex` is what makes each single choice **complete** rather than a stop on
+;; the way to `{Ann, Bob}`: with one choice committed the one-step lookahead
+;; kills the other candidate, `alive` empties, and the state is recorded.
+;;
+;;   {(choice Ann)} — `feeds` fires, both people are fed, owes 0 → the model
+;;   {(choice Bob)} — nothing feeds Ann, owes 1          → the open state
+;;
+;; Two nodes, one verdict, and `--json-summary`'s `owes.models` is where both
+;; are visible: two entries, `total: 0` and `total: 1`.
+
+(import std.algebra :symbols (total-owed))
+
+(relation is-a   T T          :why "{?1} is a {?2}")
+(relation likes  Person Food  :why "{?1} likes {?2}")
+(relation choice Person       :why "{?1} was the one chosen")
+
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)
+
+(likes Bob Soup)
+
+;; The obligation. Without this line the program states nothing it owes, the
+;; scope rule judges by exhaustion, and both nodes are models — `Ambiguity`.
+(total-owed likes is-a)
+
+(hrule pick () :match (is-a ?p Person) :assert (choice ?p))
+
+(rule feeds ()
+  :match  (choice Ann)
+  :assert (likes Ann Soup)
+  :priority 200
+  :why    "the one chosen is fed")
+
+;; Exactly one choice, so a single commitment is already complete.
+(rule mutex ()
+  :match  (and (choice Ann) (choice Bob))
+  :assert (false)
+  :priority 300)
+
+(query
+  :goal   (likes ?who ?what)
+  ;; The blind rung would propose `is-a` and `likes` facts of its own; the
+  ;; subject here is the partition, not the generator.
+  :no-hypothesis (is-a likes)
+  :expect (model (likes Ann Soup) (likes Bob Soup)))

@@ -599,8 +599,10 @@ of the input — but an exit 1 with an empty stderr is a run nobody can diagnose
 from a pipeline, which is what
 `corpus_cli::every_refusal_carries_a_diagnostic` forbids and what `ein solve`
 was producing. It is why `examples/features/11_expect_ambiguity.ein` could not
-declare plain `solve`; it declares it now, and that cell is the corpus's only
-witness for `Outcome::NotChecked`. **P1d.4 closed with no keyword**: tests stay
+declare plain `solve`; it declares it now, and that cell was the corpus's only
+witness for `Outcome::NotChecked` until M1e S1e.3.1 gave
+`examples/ein-bugs/complete-records-stale.ein` a claim a truncated search
+cannot check. **P1d.4 closed with no keyword**: tests stay
 exhaustive by default, `:expect` stays closed by default, and a claim too slow
 to check at `ein test`'s `-m 5` stays out of the corpus — which needs no
 mechanism, because `NOT CHECKED` takes a failing exit code inside `cargo test`.

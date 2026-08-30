@@ -156,7 +156,8 @@ fn cell(root: &Path, rel: &str, rounds: u32) {
         let resolved = Resolver::new()
             .resolve_imports(&mut ast, &forms, base.as_deref())
             .expect("resolves");
-        let macros = ein_ir::macros::collect_macros(&ast, &resolved);
+        let macros =
+            ein_ir::macros::collect_macros(&ast, &resolved).expect("the measured file loads");
         ein_ir::macros::expand_rule_clauses(&mut ast, &resolved, &macros)
             .expect("expands")
             .len()

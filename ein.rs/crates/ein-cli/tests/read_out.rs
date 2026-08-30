@@ -183,6 +183,43 @@ fn stats_prints_what_the_search_recorded_under_its_own_name() {
     }
 }
 
+/// **The mixed regime, measured** — one discharged model beside one open
+/// state.
+///
+/// `finalise` partitions the recorded nodes and reads the verdict off the
+/// discharged ones alone, with its own comment saying *"no corpus entry is in
+/// that regime today … defined rather than measured"*. The `Solution` arm
+/// printed `stats.solution_nodes` until M1e S1e.3.4, so a program in that
+/// regime would have printed **`solutions (k) 2` beside `verdict Solution`**:
+/// the count saying two models and the word beside it saying one.
+///
+/// `examples/features/13_mixed_solution_and_open.ein` is that program — the
+/// fixture `CO-M2` asked for, because a regime nobody has seen a read-out from
+/// is one nobody can check. It is the whole of why the count is the verdict's
+/// now: with the two numbers separated, this run says 1 and 2 in the two
+/// places they belong.
+#[test]
+fn an_open_state_is_recorded_and_not_counted() {
+    let run = solve(&["examples/features/13_mixed_solution_and_open.ein", "-e"]);
+    assert_eq!(run.summary["verdict"]["type"], "Solution");
+    assert_eq!(run.summary["verdict"]["k"], 1, "one *model*");
+    assert_eq!(
+        run.summary["stats"]["solution_nodes"], 2,
+        "two complete states were recorded — the regime this fixture exists for"
+    );
+    assert_eq!(rows(&run, "solutions (k)"), vec!["1"]);
+    assert_eq!(rows(&run, "solution_nodes"), vec!["2"]);
+    // `owes.models` is where both nodes are still visible: the discharged one
+    // and the one the verdict declined to call a model.
+    let owed: Vec<u64> = run.summary["owes"]["models"]
+        .as_array()
+        .expect("a per-model tally")
+        .iter()
+        .map(|m| m["total"].as_u64().expect("a total"))
+        .collect();
+    assert_eq!(owed, vec![0, 1], "one model owes nothing and one owes one");
+}
+
 /// The entry where the two numbers really differ, printed side by side.
 ///
 /// Twelve corpus entries answer `Open`, and every one of them has
