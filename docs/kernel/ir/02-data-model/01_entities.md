@@ -1,14 +1,15 @@
 # Data model — entities
 
 How the graph from [`../01-ein-graph/`](../01-ein-graph/) is held in
-memory. Frozen Python dataclasses with identity by name, attached to
-the owning :class:`KnowledgeBase` via a `_kb` back-pointer for
-cross-reference lookups.
+memory: **immutable records with identity by name**, and no pointer back to
+the KB that owns them — which is what makes sharing them across a fork sound
+(§5 is why there is no back-pointer, and §6 is the identity table).
 
 **Source of truth:**
 [`ein-core/entities.rs`](../../../../ein.rs/crates/ein-core/src/entities.rs).
-This document explains the mapping graph-node ↔ Python class; the
-code is authoritative for field shapes.
+This document explains the mapping graph-node ↔ record; the code is
+authoritative for field shapes, and the Python-shaped notation is
+[`02_store.md`](02_store.md)'s § Notation.
 
 ---
 
@@ -19,8 +20,8 @@ Each kind of graph node from
 engine reasons over has a corresponding frozen dataclass. Identity
 follows the table:
 
-| graph node kind | Python class | identity (`__eq__` / `__hash__`) |
-|-----------------|--------------|----------------------------------|
+| graph node kind | record | identity |
+|-----------------|--------|----------|
 | Relation        | `Relation`   | `name` + `signature`              |
 | Rule            | `Rule`       | `name`                           |
 | Fact            | `Fact`       | `(relation_name, args)`           |
@@ -179,7 +180,8 @@ Cross-references:
 - `f.applied_rule` → `Rule | None` — the rule it activates.
 - `f.source` / `f.rule_name` / `f.using` — backward-compat shorthand
   read through to the **primary** `provenance`. See
-  [§3 below](#3-provenance) and [`02_store.md`](02_store.md).
+  [§3 below](#3-provenance--where-each-fact-came-from) and
+  [`02_store.md`](02_store.md).
 - `f.premises` → `tuple[Fact, ...]` — for rule-kind provenance, the
   premise facts of that **primary** justification, resolved via the
   owning KB. A fact the engine derived a second way keeps that other
@@ -268,6 +270,10 @@ Provenance(
     # rule-kind:
     rule:          str | None,
     premises_raw:  tuple[FactId, ...],         # (rel, args) tuples
+    #  ^ `Prov::premises` in ein-core, a Box<[FactId]> in plan-step order.
+    #    `premises_raw` is this tree's name for it and is used on every page
+    #    that talks about the proof graph; `absent` is its S1.21.8 negative
+    #    counterpart, recorded and not yet interpreted.
     bindings:      tuple[tuple[str, str], ...], # (var, name) pairs
     # hypothesis-kind:
     branch:        int | None,
@@ -437,5 +443,5 @@ rule over the same premises collapse however they were bound.
   conceptual model these dataclasses implement.
 - [`../03-ein-lang/`](../03-ein-lang/) — the surface syntax that
   produces these entities at load.
-- [`../../inference/`](../../inference/) — P1.3 engine that *adds*
-  derived facts via rule firings.
+- [`../../inference/`](../../inference/) — the engine that *adds* derived
+  facts via rule firings.

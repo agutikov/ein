@@ -7,9 +7,21 @@ derivation DAGs).
 
 **Sources of truth:**
 [`ein-core/kb.rs`](../../../../ein.rs/crates/ein-core/src/kb.rs),
-[`ein-core/kb.rs`](../../../../ein.rs/crates/ein-core/src/kb.rs),
+[`ein-core/program.rs`](../../../../ein.rs/crates/ein-core/src/program.rs),
 [`ein-core/prov.rs`](../../../../ein.rs/crates/ein-core/src/prov.rs),
 [`ein-ir/from_ir.rs`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs).
+
+> **Notation.** The code blocks on this page and on
+> [`01_entities.md`](01_entities.md) are **Python-shaped pseudo-code for the
+> abstract shape**, not a callable API — this is the *abstract model* half of
+> the sub-tree, and the implementation is Rust. Every name in them resolves in
+> [`ein-core`](../../../../ein.rs/crates/ein-core/src/) up to spelling
+> (`kb.derivation_dag(f)` is `build_derivation_dag(kb, terms, f, …)`,
+> `DerivationDAG` is `DerivationDag`); the code-level map, with the real
+> signatures and complexities, is
+> [`03_implementation.md`](03_implementation.md). There is no module to
+> import: `ein.py` was deleted at M1a
+> [S1a.10.5](../../../history/m1a_rust/README.md#s1a105--the-removal).
 
 ---
 
@@ -24,7 +36,7 @@ class KnowledgeBase:
     hrules:    dict[str, Rule]        # hypothesis-generation rules
     facts:     list[Fact]             # every fact; origin is per-fact provenance
     names:     dict[str, NameRef]     # every distinct name + participation
-    query:     Query | None           # optional, from (query …)
+    queries:   list[Query]            # EVERY (query …) block, in source order
     classes:   EqClasses              # union-find placeholder
 ```
 
@@ -66,7 +78,12 @@ routing each by its **head**:
    - `(relation …)` → `Relation` entity (`declared=True`).
    - `(rule …)` / `(hrule …)` → `Rule` entity with `match` / `assert_`
      `Pattern` objects.
-   - `(query …)` → the `Query` (last one wins).
+   - `(query …)` → **appended** to `queries`. Plural since M1c
+     [S1c.1.2](../../../history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects):
+     it was an `Option<Query>` filled by *the last block, silently*, and
+     `ein solve` now runs every one of them in order. `(config …)` keeps
+     last-wins — a config is a setting, a query is content
+     ([`../03-ein-lang/01_grammar.md` § Query](../03-ein-lang/01_grammar.md#query)).
 2. **Facts** (any other head — `=`, `not`, or a generic `(NAME …)`):
    - membership facts are ordinary `Fact`s (no
      `Type` / `Instance` entities; they are plain facts on user-space
@@ -109,8 +126,11 @@ supports the sequence protocol (`__iter__` / `__len__` /
   annotation.
 - `view.by_rule(rule_name)` — facts with the given rule provenance.
 
-A `view.matching(pattern)` stub exists as a P1.3 seam (raises
-`NotImplementedError` until the matcher arrives).
+There is no `view.matching(pattern)`: the matcher arrived at P1.3 and it does
+not run over the fact view. Pattern matching goes through a **compiled plan** —
+`compile.rs` lowers each (rule, activator) to a register program and `match_.rs`
+executes it against the KB's indexes
+([`../../inference/implementation.md`](../../inference/implementation.md)).
 
 ## 5. Fork — `kb.fork()`
 
@@ -147,13 +167,17 @@ def fork(self) -> KnowledgeBase:
 scale at ~50-200 facts. If hypothesis branching becomes a hot path
 (P1.5 profiling), revisit with a copy-on-write index wrapper.
 
-**Caveat about entity back-pointers:** shared entities keep their
-`_kb` pointing at the **original** KB, not the fork. So a shared
-`Relation`'s `.facts` (entity API) returns the root KB's facts, *not*
-the fork's view. Fork-scoped queries go through the explicit view
-API: `fork.all_facts().about(name)`. This is intentional —
-the entity API tells you *root* state, the view API tells you
-*branch* state.
+> **The back-pointer caveat is historical.** The Python implementation wired a
+> `_kb` pointer onto each entity, so a shared `Relation`'s `.facts` answered
+> *for the root* when asked on a fork, and this section had to warn about it.
+> ein.rs passes the KB explicitly — `to_dot(kb, …)`, `justifications(kb, f)` —
+> so there is nothing to attach, nothing to point at the wrong KB, and the
+> caveat has no subject. Said the same way by
+> [`01_entities.md` §5](01_entities.md#5-entity-attachment--the-back-pointer-and-why-it-is-gone)
+> and [`03_implementation.md` §2](03_implementation.md).
+
+A fork-scoped read is therefore just a read against the fork:
+`fork.all_facts().about(name)`.
 
 ## 6. Type / instance views — removed (S1.7.23)
 
@@ -324,10 +348,8 @@ saturation can slot in without rework on the rest of the KB.
 
 ## 9. Mutation API
 
-Loaders (and the inference engine, P1.3) mutate the KB through:
+Loaders and the inference engine mutate the KB through:
 
-- `kb.add_type(t)` — idempotent by name.
-- `kb.add_instance(inst)` — idempotent by name.
 - `kb.add_relation(r)` — idempotent by name; *declared* upgrades
   beat *open-world* placeholders.
 - `kb.add_rule(rule)` — idempotent by name.
@@ -336,6 +358,10 @@ Loaders (and the inference engine, P1.3) mutate the KB through:
 - `kb._index_fact(f)` — incremental index update; call after a
   single-fact `add_fact` to avoid a full `rebuild_indexes`.
 - `kb.rebuild_indexes()` — full rebuild from registries + fact list.
+
+(There is no `add_type` / `add_instance`: S1.7.23 removed the type-system
+entity-view, so a membership fact is an ordinary fact and goes in through
+`add_fact` like any other — §6.)
 
 The engine doesn't *remove* facts (the graph is monotonic — see
 [`../01-ein-graph/02_rules.md` §1](../01-ein-graph/02_rules.md));
@@ -349,6 +375,6 @@ discarded) rather than mutation.
 - [`../01-ein-graph/`](../01-ein-graph/) — the conceptual model.
 - [`../03-ein-lang/`](../03-ein-lang/) — the surface syntax the
   loader parses.
-- [`../../inference/`](../../inference/) — the P1.3 stub that will
-  produce derived facts via rule firings.
+- [`../../inference/`](../../inference/) — the engine that produces derived
+  facts via rule firings. It shipped across P1.3–P1.6.
 - Plan: `M1 P1.2`.

@@ -5,10 +5,13 @@ structure** is fixed by this schema; layout (positions, rank,
 unspecified style choices) is free — `random_layout` is permitted.
 
 Per [Q21](../../../../plans/open_questions.md#q21--ir--dot-structural-isomorphism),
-render is mandatory (`ein.ir.to_dot`,
-S1.1.4);
-reverse parse (`ein.ir.from_dot`) is a P1.2 deliverable
-alongside the typed-hypergraph data model.
+render is mandatory and shipped (S1.1.4) — today
+[`ein_render::ir_dot`](../../../../ein.rs/crates/ein-render/src/ir_dot.rs) for
+the IR-form view and
+[`ein_render::kb_dot`](../../../../ein.rs/crates/ein-render/src/kb_dot.rs) for
+the unified KB view. **Reverse parse was not built**: `from_dot` was a P1.2
+deliverable, P1.2 closed in May 2026 without it, and no such function exists
+in any crate. § Reverse parse below is the design it would have followed.
 
 This was [`docs/ir.md` §6](../../README.md) before the kernel-
 documentation split. The conceptual content overlaps with the
@@ -52,8 +55,8 @@ also permitted; see
 
 **Default = compact (S1.6.0).** Faithful as it is, the
 list-node-per-relation Levi view is unreadable as a default. So
-`ein.ir.to_dot` renders **compact** by
-default: a binary fact `(rel a b)` collapses to one labelled,
+[`ir_dot::to_dot`](../../../../ein.rs/crates/ein-render/src/ir_dot.rs)
+renders **compact** by default: a binary fact `(rel a b)` collapses to one labelled,
 relation-coloured arrow `a → b [label="rel"]` (the colour is the
 shared per-relation palette — see §Unified KB view), and a **unary**
 fact `(rel a)` to a labelled self-loop `a → a [label="rel"]` — the same
@@ -63,8 +66,14 @@ convention for the predicate-as-subset idiom `(symmetric R)` /
 (derived → dashed, transition highlight → `penwidth`) that an octagon
 would scatter over two DOT elements. `not`-headed facts keep their own
 encoding. Remaining arities stay Levi-bipartite (no native hyperedge to
-collapse). The canonical Levi-bipartite view of *every* relation is
-opt-in via `to_dot(…, levi=True)` / `EIN_RENDER_LEVI=1`.
+collapse). The canonical Levi-bipartite view of *every* relation is opt-in
+via the library-level
+[`DotOpts.levi`](../../../../ein.rs/crates/ein-render/src/ir_dot.rs).
+(**There is no `EIN_RENDER_LEVI`.** This line claimed one until M1e S1e.2.2;
+no code path has ever read it —
+[`configuration.md` §4](../../configuration.md) files it among the greppable
+`EIN_*` names that are not environment variables, and `config_reference.rs`
+pins that.)
 
 ## Ontology — UML-ish
 
@@ -345,8 +354,8 @@ same thing at its own head and declines to decide it, because putting
 ### No head is special-cased
 
 The renderer derives node shapes by reading the puzzle's `is-a` facts
-directly (`render._schema_nodes`; there is no `logical_types` /
-`kb.types` entity-view to consult). `is-a` facts get the type-edge
+directly (there is no `logical_types` / `kb.types` entity-view to consult —
+S1.7.23). `is-a` facts get the type-edge
 styling — box parent, oval leaf, dashed empty arrow — rather than the
 regular coloured-arrow styling.
 
@@ -383,15 +392,20 @@ does not embed the whole KB per step — it embeds a **provenance cone**:
   facts a step added — the transition highlight.
 - `render_solution(kb)` — the solved-state view for the closing section.
 
-All three emit inline `dot` (the Python layer emits DOT; rasterising
-stays in shell).
+All three emit inline `dot`: **`ein` emits DOT and never rasterises** —
+turning it into SVG is a shell job, which is what
+[`utils/render_examples.sh`](../../../../utils/render_examples.sh) is for.
 
-## Reverse parse (`from_dot`)
+## Reverse parse (`from_dot`) — designed, never built
 
-Required by Q21 but not blocking on P1.1. The schema fixed by this
-chapter is the contract `from_dot` will follow when implemented in
-P1.2. Generic DOT files outside this schema are NOT round-trippable;
-the API will reject non-conforming inputs rather than guess.
+Required by Q21 but not blocking on P1.1, and **it did not land**: P1.2 closed
+in May 2026 with the typed-hypergraph data model and without a reverse parser,
+and `from_dot` resolves nowhere in the crates (checked M1e S1e.2.2). The
+schema fixed by this chapter is the contract such a function *would* follow —
+generic DOT outside this schema is not round-trippable, and the API would
+reject a non-conforming input rather than guess. What round-trips today is
+`.ein` text; the `.einb` container is a private cache, never an interchange
+format.
 
 ## See also
 

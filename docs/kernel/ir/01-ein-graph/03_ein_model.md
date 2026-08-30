@@ -310,9 +310,10 @@ canonicalisation (`solution.open_hypotheses`). Correct model counting
 undecided pair saturate (via the user's rule) to the same KB and
 collapse at the `canon.state_key` solution-node dedup; result-level
 lattice records (gaps solutions, contradictions deads, the shuffle
-snapshot) key on that state, not the commitment path. `store.is_symmetric`
-/ `symmetric_relations` survive only as unprivileged property queries (no
-search code calls them). This makes the kernel sound for a user-defined
+snapshot) key on that state, not the commitment path. The two unprivileged
+property queries that survived the deletion in ein.py — `store.is_symmetric`
+and `symmetric_relations` — did **not** survive the port: nothing in the
+crates carries either name, which is the same claim one step stronger. This makes the kernel sound for a user-defined
 or differently-named symmetric rule, and a precondition for sound rule
 *induction* ([F7](../../../../plans/followups/f7_rule_induction.md)) — a
 symmetric-aware kernel would presuppose the very property induction must

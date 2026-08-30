@@ -125,5 +125,5 @@ tree's depth-first search pays.
 - Equivalence framing:
   Q1.5b.7 / open_questions.md.
 - Per-engine details:
-  [README § Two engines, two termination criteria](README.md#two-engines-two-termination-criteria)
+  [README § Two engines, two termination criteria](README.md#two-engines-two-termination-criteria--removed-2026-06-16)
   — P1.5b's acceptance list, absorbed there when its plan tree went at P1.22.

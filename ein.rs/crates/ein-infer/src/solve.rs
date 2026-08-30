@@ -651,8 +651,10 @@ pub fn solve(
                 None
             };
             // The single exit hook, in ein.py's two-step order: the proof
-            // index first, so a `LatticeDumper` materialises `kb_index/` and
-            // `proof_summary.json` before the cumulative summary lands.
+            // index first, so a `LatticeDumper` writes `proof_summary.json`
+            // before the cumulative summary lands. (Not `kb_index/`, which
+            // this comment used to claim and which never materialises in
+            // either engine — `dump/lattice.rs`'s module docs say why.)
             if let Some(proof) = proof.as_ref() {
                 dumper.proof_summary(proof, terms);
             }

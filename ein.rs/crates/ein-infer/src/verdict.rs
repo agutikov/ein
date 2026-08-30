@@ -49,8 +49,10 @@ pub enum Verdict {
     /// **Scoped**: only a program that states an obligation can reach this,
     /// which is [`crate::solve::OwesReport::in_scope`]. A state is judged by
     /// discharge when it has been told what it owes and by exhaustion when it
-    /// has not, so the 119 corpus entries that state none report exactly the
-    /// words they reported before P1d.2.
+    /// has not, so every corpus entry that states none reports exactly the
+    /// words it reported before P1d.2 — 92 of the 121 that reach a fixpoint,
+    /// counted by `utils/openness_census.py` (this comment said 119 until M1e
+    /// S1e.2.2; the census is the number's owner).
     ///
     /// `states` and `owes` are parallel and both non-empty; `states` is what
     /// `:expect` reads, because an expectation is an assertion about *facts*

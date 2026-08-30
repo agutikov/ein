@@ -10,9 +10,15 @@
 > implemented" sections were reconciled by
 > P1.20 S1.20.A0;
 > the module-level walkthrough is
-> [`implementation.md`](implementation.md); the "Determinism" and
-> "Superseded tree-solver" sections lower down describe a solver that was
-> removed, and say so in their own banners.
+> [`implementation.md`](implementation.md).
+>
+> **Five sections lower down describe machinery that is gone, and each says
+> so in its own banner**: *Mid-sweep saturation + per-sibling apriori
+> re-check* and *Determinism* (the removed tree solver), *Unconditional facts
+> — retired* (P1.21 R2), *Measured performance* (frozen constants), and
+> *Two engines, two termination criteria* (the engine split removed
+> 2026-06-16). The count was **two** until M1e S1e.2.2, which is why the last
+> of them read as current.
 
 The inference engine is what takes a populated
 [`KnowledgeBase`](../ir/02-data-model/02_store.md) and produces
@@ -910,8 +916,11 @@ view (`proof.dead_commitments` + `verdict.unsat_core`).
 
 ### Termination conditions, in order of precedence
 
-1. **Solution at a fork.** `is_solved(result.kb, Mode.SOLVE)` on an
-   alive entering — the fork's saturated kb carries the
+1. **Solution at a fork.**
+   [`hypgen::complete`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) on an
+   alive entering (`is_solved(kb, Mode.SOLVE)` in the design and in ein.py;
+   there is no `Mode` in the crates and the check is unconditional) — the
+   fork's saturated kb carries the
    committed hypotheses + their derivations, which is the
    context the goal needs when it references hypothesis facts
    directly (e.g. `examples/branching/05_mini_zebra.ein`).
@@ -1020,12 +1029,18 @@ rules.
 
 ### Budget — `max_time` / `max_enterings`
 
-`solve(..., max_time=N, max_enterings=K)` checks the
-caps before every `try_commitment_set` call; on exhaust raises
-`BudgetExceededError(reason, stats)` with the partial counters.
-The dumper's timeline is flushed via `MonotonicDumper.close()`
-on the abort path (no `summary.json` then — the events up to
-the abort suffice for diagnostic).
+`solve(..., max_time=N, max_enterings=K)` checks the caps before every
+`try_commitment_set` call. On exhaust the run returns
+[`Answer::Aborted { reason }`](../../../ein.rs/crates/ein-infer/src/verdict.rs)
+with the partial counters — a **verdict-shaped** result, not a raised error:
+`Answer` is the two-armed sum `Verdict(..) | Aborted { .. }`, and
+`SolveOptions::on_budget` chooses between reporting the abort and answering
+with what the walk has (`OnBudget::Verdict`). It was ein.py's
+`BudgetExceededError` exception until the port; the string it prints is
+`defined_behaviour.md` §4's, and nothing in the crates names that class.
+
+The dumper's timeline is flushed on the abort path (no `summary.json` then —
+the events up to the abort suffice for diagnostic).
 
 ### Measured performance
 
@@ -1042,7 +1057,19 @@ the abort suffice for diagnostic).
   tree-side bindings; combined parity-test wall ~3.5 s. See
   [`parity_baselines.md`](parity_baselines.md).
 
-### Two engines, two termination criteria
+### Two engines, two termination criteria — removed (2026-06-16)
+
+> **Superseded.** There has been **one** engine and one entry since the
+> sibling `gaps_solve` / `contradictions_solve` were removed on 2026-06-16:
+> `solve()` walks the lattice under a **stop policy** (`stop_after` = 1 / N /
+> exhaustive), and the verdict is *read off* `k` rather than decided by which
+> termination fired — which is what the paragraph above this one says, and
+> what [`architecture_and_algorithms.md` §1](architecture_and_algorithms.md)
+> records the split as a **soundness bug** for. The table below is the
+> superseded design; "monotonic" is its early-terminating mode and "lattice"
+> its exhaustive one, and `SOLVE / GAPS / CONTRADICTIONS` are three *views* of
+> one answer, not three modes to serve. Kept for the distinction it draws,
+> which survives as the stop policy.
 
 The monotonic and lattice engines are **not** interchangeable
 implementations of one search — they terminate differently on purpose,
@@ -1061,8 +1088,11 @@ from the accumulated alive/dead frontier plus per-set `is_solved`:
 **Solution** iff exactly one SetNode satisfies the goal and nothing alive
 remains unexplored above the cap; **Ambiguity** if several satisfy it, or
 one is still alive at the cap without satisfying;
-**Contradiction** otherwise. See
-[`algorithm_layer_n.md`](algorithm_layer_n.md) §3d.vii.
+**Contradiction** otherwise. (The design's statement of that arm is
+[`algorithm_layer_n.md`](algorithm_layer_n.md) §3c.ii, itself a historical
+record. Today `verdict_of` reads `k` and adds a fourth word, `Open`, for a
+state that is complete and owing — [`architecture_and_algorithms.md`
+§2](architecture_and_algorithms.md).)
 
 ### Cross-links
 
@@ -1073,13 +1103,21 @@ one is still alive at the cap without satisfying;
 
 ## Where the design lives today
 
-The complete plan, including task breakdown and acceptance criteria:
+The engine shipped across P1.3 (inference rules), P1.5–P1.5b (the hypothesis
+loop) and P1.6 (rendering + trace); M1's plan tree was removed at P1.22 and is
+in git history. What is *read* today:
 
-- Plan phase P1.3 — Inference rules.
-- Plan phase P1.5 — Hypothesis loop.
-- Plan phase P1.6 — Rendering + trace.
-- Idea: [`docs/ideas/06-inference-rules-completeness.md`](../../../plans/ideas/06-inference-rules-completeness.md).
-- Idea: [`docs/ideas/08-human-style-deductive-trace.md`](../../../plans/ideas/08-human-style-deductive-trace.md).
+- the as-built architecture — [`architecture_and_algorithms.md`](architecture_and_algorithms.md);
+- the module map — [`implementation.md`](implementation.md);
+- the normative pages — [`absent_semantics.md`](absent_semantics.md),
+  [`solution_semantics.md`](solution_semantics.md),
+  [`../defined_behaviour.md`](../defined_behaviour.md);
+- the milestones that changed it since — [`docs/history/`](../../history/README.md);
+- and the intent it answers to — idea
+  [06](../../../plans/ideas/06-inference-rules-completeness.md) (inference-rule
+  completeness) and
+  [08](../../../plans/ideas/08-human-style-deductive-trace.md) (human-style
+  deductive trace).
 
-When P1.3 work begins, this stub becomes a hub for the
-implementation reality.
+This file is the design principles, the M1 invariant, NAF semantics and
+determinism; it is not a stub and has not been one since P1.3 closed.

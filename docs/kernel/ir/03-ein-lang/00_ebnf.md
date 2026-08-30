@@ -214,7 +214,8 @@ different messages, and the corpus has a fixture directory for each
 - **Unbound variables**: a `:assert` variable that no `:match` premise binds.
 - **`(relation R (T1 T2))`** — the wrapped-signature form, which parses as a
   `GenericFact` because `relation` is a `SYMBOL`.
-- **The named structural-predicate registry**, and the `__closed__` /
+- **The computed-predicate registry** (`eq` / `neq` — and their *arity*,
+  which for `eq` is the compiler's since M1e S1e.2.1), and the `__closed__` /
   `__symmetric__` dunder triggers, which are ordinary atoms here and kernel
   meaning at load
   ([`06_reserved_names.md`](06_reserved_names.md)).

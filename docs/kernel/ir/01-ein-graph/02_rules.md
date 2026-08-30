@@ -1,9 +1,9 @@
 # Rules — graph rewriting
 
-> **No language, no Python here.** This document describes rules in
+> **No language, no code here.** This document describes rules in
 > graph-rewriting terms. The S-expression syntax that declares rules
-> is in [`../03-ein-lang/`](../03-ein-lang/); the Python `Rule` /
-> `Pattern` dataclasses are in [`../02-data-model/`](../02-data-model/).
+> is in [`../03-ein-lang/`](../03-ein-lang/); the `Rule` / `Pattern`
+> records are in [`../02-data-model/`](../02-data-model/).
 
 A **rule** is a graph rewriting rule over the knowledge base. The
 engine fires rules when their **left-hand-side pattern** matches a
@@ -277,19 +277,32 @@ The trace records: *"By exclusion of Red, Green, Yellow, Blue from
 House-3's Color slot, only Ivory remains — therefore
 co-located(House-3, Ivory)."*
 
-**Examples in the project (planned for P1.3):**
-`elimination-by-exhaustion`, `arc-consistency-propagate`,
-`global-cardinality`, `forced-by-unique-position`.
-
-**When the matcher uses T3:** the aggregate is a registered named
-predicate in the matcher's library (the **structural predicate
-registry**). The matcher consults the predicate's Python
-implementation — but the rule itself stays declarative: the trace
-sees a named firing of the aggregate, not a raw Python call.
+> **T3 is a family the graph model defines and the M1 engine does not
+> implement, and this section is a sketch of the design rather than a
+> description of code.** There is no aggregate-predicate registry: the built-in
+> registry is `eq` and `neq` and
+> [`predicates.rs`](../../../../ein.rs/crates/ein-infer/src/predicates.rs)
+> says so in its first line. `unique-remaining`, `no-remaining-option`,
+> `forbidden-by-exclusion`, `in-domain`, and the four names this section used
+> to list as *"examples in the project (planned for P1.3)"* —
+> `elimination-by-exhaustion`, `arc-consistency-propagate`,
+> `global-cardinality`, `forced-by-unique-position` — appear **nowhere** in the
+> crates, in `stdlib/`, or in any `.ein` file (checked M1e S1e.2.2). Q33 caps
+> the registry at two for a stated reason: a predicate's truth is *computed*
+> from the bindings, where a relation's truth is *data*.
+>
+> The reasoning power is reached a different way, and reached: "only one
+> candidate remains" is an ordinary rule with a `forall` macro over nested
+> `absent`s, decided once at the closure/world boundary — `std.bijection`'s
+> `domain-elimination` / `range-elimination`, `std.slots`' `slot-elimination`
+> / `slot-fill`. So the aggregate is expressed in the pattern language rather
+> than beneath it, which is what keeps the trace able to name the firing.
+> [`../03-ein-lang/02_patterns.md` § Predicate registry](../03-ein-lang/02_patterns.md)
+> is the surface-language statement of the same thing.
 
 T3 is the bridge between graph rewriting and classical CSP /
-arc-consistency reasoning. It's also where Ein's engine gains
-search-pruning power that pure T1/T2 wouldn't reach.
+arc-consistency reasoning. It is where an engine that *did* implement it
+would gain search-pruning power that pure T1/T2 does not reach.
 
 ---
 
@@ -379,12 +392,14 @@ Predicates allowed in `:where`:
 
 - **Distinctness** — `(neq ?a ?b)`: bindings must refer to distinct
   graph nodes.
-- **Type/structural** — `(transitive ?R)`, `(symmetric ?R)`,
-  `(in-domain ?rel ?T)`: properties of the *bindings themselves*,
-  often by consulting the ontology.
-- **Aggregates** — `(unique-remaining ?x ?T)`,
-  `(no-remaining-option ?x)`: same as the T3 family but used as
-  guards (not conclusions).
+- **Relation-property tags** — `(transitive ?R)`, `(symmetric ?R)`,
+  `(functional ?R)`: these are not computed at all. Each is an ordinary
+  premise matching a **stored property fact** the ontology asserted, so
+  writing one in `:where` is a join and not a test.
+- **Aggregates** — none. The T3 family above is a design sketch and no
+  aggregate predicate is registered (§2.3); a cardinality guard is written as
+  a `forall` over nested `absent`s instead, which is not a `:where` predicate
+  at all (below).
 
 Guards are evaluated *after* the LHS pattern matches but *before*
 the RHS is asserted. They filter spurious matches; they don't

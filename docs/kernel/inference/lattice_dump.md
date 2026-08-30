@@ -5,7 +5,7 @@
 > survivors and casualties alike* — run the exhaustive
 > [`solve`](../../../ein.rs/crates/ein-infer/src/solve.rs) sweep
 > with a
-> [the `Dumper` hook](../../../ein.rs/crates/ein-render/src/dump/state.rs)
+> [`LatticeDumper`](../../../ein.rs/crates/ein-render/src/dump/lattice.rs)
 > attached. The on-disk dump is the audit trail for debugging
 > **problem statements** (is the puzzle even consistent? which
 > committed pair kills it?) and **rules** (did the rule I expected
@@ -17,11 +17,11 @@ with `store_lattice=True` and an unbounded stop policy (`stop_after=None`)
 — which tests *every* commitment set layer-by-layer and so produces a
 complete per-hypothesis record. The default single-solution
 [`solve`](README.md#set-indexed-search--monotonic-engine-p15b-s15b010)
-(`stop_after=1`) early-terminates on the first solution and uses the
-lighter
-[the `Dumper` hook](../../../ein.rs/crates/ein-render/src/dump/state.rs)
-(timeline + per-layer root snapshots only — no per-hypothesis
-folders, since most hypotheses are never reached).
+(`stop_after=1`) early-terminates on the first solution and uses the lighter
+[`MonotonicDumper`](../../../ein.rs/crates/ein-render/src/dump/state.rs)
+(timeline + per-layer root snapshots only — no per-hypothesis folders, since
+most hypotheses are never reached), which **is** on the CLI:
+`ein solve --dump-states DIR`.
 
 ---
 
@@ -48,9 +48,9 @@ and the dead ones with their refutations — because the proof carries
 between.
 
 The CLI does **not** surface the on-disk `LatticeDumper` tree
-(`enterings/`, `kb_index/`, …) — that per-hypothesis dump is driven
-**programmatically** (below). Use the programmatic path when you need
-the full per-commitment folder layout this page documents.
+(`enterings/`, `proof_summary.json`, …): `--dump-states` builds a
+`MonotonicDumper`, and no flag builds the other one. That per-hypothesis dump
+is reachable from Rust only — see *Programmatically* below.
 
 An exhaustive `zebra2` lattice sweep is large — bound it with
 `--max-set-size N`, `--max-time S`, or `--max-enterings K` so the dump stays a
@@ -108,16 +108,13 @@ dump/
 │           ├── kb.ein                   ← the fork's full saturated KB    (solution only)
 │           ├── unsat_core.jsonl         ← smallest given-fact explanation (dead-* only)
 │           └── learned_clause.json      ← the learned no-good emitted     (dead-* only)
-├── kb_index/                    ← only under store_lattice=True
-│   └── layer_NN/
-│       └── kb_<i>/              ← ordered ids (kb_0 … kb_n), sorted by repr(state_key) within layer
-│           ├── state_hash.txt           ← 16-hex display digest of the post-saturation state key
-│           ├── canonical_set.json       ← the SetNode's canonical commitment
-│           ├── labels.json              ← every commitment that mapped to this node
-│           └── verdict.txt              ← alive | dead | solution
-├── proof_summary.json           ← top-level index (solutions, deads, kb_index, stats)
+├── proof_summary.json           ← top-level index (solutions, deads, alive_at_end, stats)
 └── summary.json                 ← cumulative stats + verdict kind + wall time
 ```
+
+**There is no `kb_index/`.** It is specified below anyway, because
+`proof_summary.json` carries an (always empty) `kb_index` list and a reader of
+that file needs to know why — § `kb_index/` — never materialises.
 
 ### `<C-slug>` — the commitment slug
 
@@ -190,23 +187,39 @@ on which bindings, in the context of each tested hypothesis.
 
 ---
 
-## `kb_index/` — ordered ids, grouped by layer
+## `kb_index/` — never materialises
 
-Under `store_lattice=True` the engine keeps a per-SetNode index
-(state-**key** dedup, P1.21 R1 — exact canonical-representation
-equality drives the merge where distinct dead commitments with
-identical post-saturation KBs collapse into one refutation node). The
-dump folders use **per-layer ordered ids** — `kb_index/layer_NN/kb_<i>/`
-— rather than hash-named folders: within each layer the nodes are
-sorted by `repr(state_key)` (deterministic) and numbered `kb_0 … kb_n`.
-`state_hash.txt` and `proof_summary.json`'s `state_hash_hex` carry a
-16-hex **display digest** ([`canon::state_digest`](../../../ein.rs/crates/ein-infer/src/canon.rs)
-of the key) — an eyeball id for nodes *within one dump*. It is **not
-identity**: distinct states may share one, and the digest is taken over
-interned fact ids, so it moves whenever the ids do. Never compare it across
-runs; the identity the engine actually used is the key itself. `labels.json` lists every
-commitment that mapped onto the node (>1 means a state-key merge
-happened).
+> **This folder has never been written, by either engine.** The design is kept
+> below because `proof_summary.json` carries a `kb_index` list, and an empty
+> one is not a lost dump.
+> [`dump/lattice.rs`](../../../ein.rs/crates/ein-render/src/dump/lattice.rs)
+> emits `("kb_index", Json::Array(Vec::new()))` under the comment *"Empty by
+> construction — see the module docs"*, and those docs give the reason: the
+> per-`SetNode` DAG is built only by a builder that nothing on the shipping
+> path calls — the same fact that makes `ein render lattice --view full`
+> always take its fallback
+> ([S1a.5.1](../../history/m1a_rust/README.md#s1a51--dot-renderers)). It is
+> ein.py's behaviour too, not a port gap, and
+> [`lattice_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/lattice_semantics.rs)
+> pins it: `kb_index` empty, `state_key_merges` 0.
+
+**The dedup itself is real** — state-**key** dedup, P1.21 R1: exact
+canonical-representation equality, so two commitments whose post-saturation
+KBs are identical are one node. What is absent is only the *stored index of
+those nodes*, which is what this folder would have held. The identity is
+[`canon::state_key`](../../../ein.rs/crates/ein-infer/src/canon.rs); how often
+it merged is **`proof_summary.json`'s `stats.state_key_merges`** (the field
+`summary.json`'s cumulative stats do not carry — the two blocks are
+`lattice_stats_json` and `stats_json`, and only the first is per-proof).
+
+The design, for the record: per-layer ordered ids `kb_index/layer_NN/kb_<i>/`
+rather than hash-named folders, nodes sorted within a layer and numbered
+`kb_0 … kb_n`; `state_hash.txt` and `proof_summary.json`'s `state_hash_hex`
+carrying a 16-hex **display digest** (`canon::state_digest` of the key) — an
+eyeball id for nodes *within one dump*, and **never identity**, since distinct
+states may share one and the digest is taken over interned fact ids, so it
+moves whenever the ids do; `labels.json` listing every commitment that mapped
+onto the node.
 
 ---
 
@@ -251,24 +264,29 @@ it's the entry point for "show me every refutation" tooling.
   you expected it means a `:match` premise (often an
   [`(absent …)` NAF guard](README.md#naf-semantics--the-closureworld-boundary-s1218))
   didn't hold in that fork.
-- **"Two commitments should reach the same state but don't"** — under
-  `store_lattice=True`, two commitments that reached the same state share
-  one `kb_index/layer_NN/kb_<i>/` folder (both appear in its
-  `labels.json`); two separate folders with the same intended meaning
-  point at a non-confluent rule set. Ground truth is the state itself —
-  `diff` the two forks' `kb.ein` under `enterings/`. The
-  `state_hash.txt` digests are display ids for *this* dump only
-  (process-local — never diff them across runs).
+- **"Two commitments should reach the same state but don't"** — ground truth
+  is the state itself: `diff` the two forks' `kb.ein` under `enterings/`. If
+  they are identical the engine merged them, and `proof_summary.json`'s
+  `stats.state_key_merges` counts it; if they differ where you expected, the
+  rule set is non-confluent. There is **no per-node folder to compare** —
+  `kb_index/` never materialises (above), so this workflow reads the two forks
+  and the counter.
 
 ---
 
 ## Cross-links
 
 - Engine overview: [README § Set-indexed search](README.md#set-indexed-search--monotonic-engine-p15b-s15b010).
-- Implementation: [`ein-render/dump/state.rs`](../../../ein.rs/crates/ein-render/src/dump/state.rs)
-  (`LatticeDumper`, `MonotonicDumper`).
+- Implementation: [`ein-render/dump/lattice.rs`](../../../ein.rs/crates/ein-render/src/dump/lattice.rs)
+  (`LatticeDumper` — this page's subject) and
+  [`ein-render/dump/state.rs`](../../../ein.rs/crates/ein-render/src/dump/state.rs)
+  (`MonotonicDumper`, `ProgressDumper`).
+- Goldens: [`golden_dump.rs`](../../../ein.rs/crates/ein-render/tests/golden_dump.rs)
+  (the timeline's per-entering `firings` count and every file under
+  `enterings/`) and `dump_parity.rs` (the rest of the tree, byte for byte).
 - CLI: [`ein solve`](../../../ein.rs/crates/ein-cli/src/solve.rs)
-  (`--exhaustive`; `--trace` for the reductio markdown). The on-disk
-  `LatticeDumper` tree is programmatic-only (see *How to run it*).
+  (`--exhaustive`; `--trace` for the reductio markdown; `--dump-states DIR`
+  for the *lighter* `MonotonicDumper` tree). The on-disk `LatticeDumper` tree
+  is reachable from Rust only (see *How to run it*).
 - Tests: [`lattice_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/lattice_semantics.rs).
 - Algorithm spec: [`algorithm_layer_n.md`](algorithm_layer_n.md).

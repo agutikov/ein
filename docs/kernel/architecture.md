@@ -316,7 +316,8 @@ absent-flip full-match split more than pays for the boundary evaluations
 Written when M3 (SMT integration) was scheduled: each seam side has an
 obvious SMT counterpart (closure → quantified Horn axioms /
 pre-grounding; worlds lattice → assumption literals +
-`check-sat-assuming`, nogoods → learned clauses; `StateKey` → blocking
+`check-sat-assuming`, nogoods → learned clauses;
+[`canon::state_key`](../../ein.rs/crates/ein-infer/src/canon.rs) → blocking
 clauses for model enumeration), and the NAF boundary was *the* reason the
 seam had to be explicit before any such translation: classical logic has
 no NAF, and `(absent P)` is sound only under a Clark-completion axiom

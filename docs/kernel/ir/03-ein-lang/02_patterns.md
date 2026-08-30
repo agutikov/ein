@@ -11,15 +11,29 @@ documentation split.
 
 ## Closure
 
-The pattern language is **positive conjunctive** + `:where` filters +
-a registry of **named structural predicates** (the rewrite-DSL +
-named-predicate fallback from
-[Q4](../../../../plans/open_questions.md#q4--rule-presentation-language)).
-**Kernel meta-primitives** (`and`, `or`, `not`, `neq`, `instance`)
-are shape-pinned in the grammar — wrong arity is a parse error, not
-a validator error. Relation patterns (`(?r ?a ?b)`,
-`(co-located ?a ?b)`) stay generic at the grammar level; the
-validator (S1.1.2) enforces well-formedness against the rules below.
+The pattern language is **positive conjunctive** + `:where` filters + two
+computed predicates. (The rewrite-DSL + named-predicate fallback of
+[Q4](../../../../plans/open_questions.md#q4--rule-presentation-language)
+chose the first half; the *named structural predicate* registry the second
+half proposed was never built — § Predicate registry below.)
+
+**Where a malformed primitive is caught** is one of two places, and the split
+is not stylistic:
+
+| primitive | arity | refused by |
+|---|---|---|
+| `not` | 1 | the **grammar** — `NotForm ::= '(' 'not' Value KwPair* ')'` |
+| `neq` | 2 | the **grammar** — `NeqForm ::= '(' 'neq' Value Value ')'` |
+| `and` / `or` | 1+ | the **grammar** — `Value+`, so `(and)` is a parse error and `(and X)` is legal, if degenerate |
+| `eq` | 2 | the **compiler**, with a positioned `CompileError` — M1e [S1e.2.1](../../../../plans/m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md), which is where the whole class was checked ([Q-M1e.18](../../../../plans/m1e_review_processing/open_questions.md#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments)) |
+| `absent` | 1 | same |
+| `false` | 0+ | nothing — extra args are ignored by design, `(false)` being a verdict and not a query |
+
+`eq` and `absent` are plain `SYMBOL`s so a rule can pattern-match on them;
+that is why the grammar has no production to pin, and why the check moved to
+the one place that reads the form. Relation patterns (`(?r ?a ?b)`,
+`(co-located ?a ?b)`) stay generic at the grammar level; the loader and
+compiler enforce well-formedness against the rules below.
 
 | construct                | example                                | reserved? | meaning                                         |
 |--------------------------|----------------------------------------|-----------|-------------------------------------------------|
@@ -35,10 +49,21 @@ validator (S1.1.2) enforces well-formedness against the rules below.
 | **computed equality**    | `(eq ?a ?b)` / `(neq ?a ?b)`            | —         | the two registered predicates: compare the bindings |
 | **membership check**     | `(is-a ?a ?T)`                          | ✓ RELATION | ordinary relation pattern                      |
 | `:where` filter          | `:where (transitive ?r) (neq ?a ?b)`    | NEQ inside | type / inequality / structural-predicate filters |
-| named structural pred.   | `(unique-remaining ?slot ?type)`        | —         | aggregate-style premise; see §Predicate registry  |
+| relation-property tag    | `:where (transitive ?r)`                | —         | an ordinary premise matching a stored property fact |
 
-The ✓-marked heads have dedicated grammar rules with fixed arities;
-typos like `(instnce ?a ?T)` or `(neq ?a)` are caught at parse time.
+The ✓-marked heads have dedicated grammar rules with fixed arities, so
+`(neq ?a)` is a parse error. **A misspelled relation is not**: `instance` has
+not been a grammar-reserved head since S1.7.6, so `(instnce ?a ?T)` is a
+perfectly good generic pattern over a relation that auto-vivifies, and a rule
+containing it loads, compiles and never fires. Measured, M1e S1e.2.2: exit 0,
+`solutions (k) 1`. Nothing refuses it, because the loader is deliberately
+**open-world tolerant** — an undeclared head auto-vivifies a
+`Relation(declared=false)`
+([`../02-data-model/02_store.md` §3](../02-data-model/02_store.md)). What
+catches a typo'd head is the *symptom*: a rule that never fires. Ask
+[`--events`](../../inference/events.md) for the `fire` stream, the way
+[`utils/stdlib_census.py`](../../../../utils/stdlib_census.py) does for the
+whole stdlib.
 
 ### `=` is a fact head, not a unifier
 
@@ -67,35 +92,63 @@ exists at all — no puzzle in the corpus writes one.
 
 ## What is NOT in the pattern language
 
-- **Negation-as-failure outside `:where`** — at premise level, use a
-  named structural predicate (`no-remaining-option`,
-  `forbidden-by-exclusion`) so the trace planner can name the firing.
-  `(not <p>)` is permitted as an *assertion* (rule conclusion) but
-  acts as a positive negative fact, not as failure-to-prove.
-- **Universal quantifiers / aggregates as expressions** — lift to
-  named structural predicates.
+- **Negation-as-failure spelled as `(not …)`** — `(not <p>)` in a `:match`
+  matches a **stored** `(not p)` fact, uniform with every other pattern; it is
+  not failure-to-prove. The NAF operator is `(absent <p>)`, which is a *query*
+  answered once at the closure/world boundary
+  ([`../../inference/absent_semantics.md`](../../inference/absent_semantics.md)).
+- **Universal quantifiers / aggregates as expressions** — `forall` is
+  available as a **macro** over nested `absent`s
+  ([`std.macro`](../../../../stdlib/macro.ein)), not as a primitive. A
+  counting or cardinality aggregate has no spelling at all; § Predicate
+  registry is where that lands.
 
-The line is governed by trace fidelity: anything the matcher can see,
-the trace planner can name. Opaque Python fallbacks would render as
-black-box firings, failing the
-M1 acceptance §3
-explanation-completeness criterion.
+The line is governed by trace fidelity: anything the matcher can see, the
+trace planner can name. An opaque host-language fallback would render as a
+black-box firing, failing the M1 acceptance §3 explanation-completeness
+criterion — which is the argument that kept the registry below at two
+computed predicates rather than opening it.
 
-## Predicate registry (initial)
+## Predicate registry — **two**, and why
 
-Names and Python implementations are registered in P1.3 S1.3.1. The
-M1 starter set (T3 structural / aggregate predicates from
-[`../01-ein-graph/02_rules.md` §2.3](../01-ein-graph/02_rules.md)):
+[`predicates.rs`](../../../../ein.rs/crates/ein-infer/src/predicates.rs) is
+the whole registry, and its first line says so: *"the built-in predicate
+registry — `eq` and `neq`, and nothing else."*
 
-| predicate                       | meaning                                       |
-|---------------------------------|-----------------------------------------------|
-| `(transitive ?r)`               | the named relation is transitive              |
-| `(symmetric ?r)`                | the named relation is symmetric               |
-| `(eq ?a ?b)`                    | the bindings refer to the same entity         |
-| `(neq ?a ?b)`                   | the bindings refer to distinct entities       |
-| `(unique-remaining ?slot ?type)` | only one slot of `?type` is unassigned        |
-| `(no-remaining-option ?x)`      | every candidate value for `?x` is excluded    |
-| `(forbidden-by-exclusion ?a ?b ?r)` | `?r(?a, ?b)` is excluded by an `allDifferent`-style constraint |
+| predicate       | arity | meaning                                | engine site |
+|-----------------|:-----:|----------------------------------------|-------------|
+| `(eq ?a ?b)`    | 2     | the bindings resolve to the same value | matcher `Guard` opcode |
+| `(neq ?a ?b)`   | 2     | the bindings resolve to distinct values | matcher `Guard` opcode |
+
+Q33 caps it there for a stated reason: *a predicate's truth is **computed**
+from the bindings, where a relation's truth is **data***. Numeric, set,
+cardinality and aggregation primitives are deferred to followups.
+
+`(transitive ?r)` and `(symmetric ?r)` are **not** predicates and never
+were — they are ordinary relation patterns matching a stored property fact
+that the puzzle or the stdlib asserted. Writing one in `:where` works, and
+what it does is a join, not a computation.
+
+> **The aggregate registry was designed and never built.** An earlier draft of
+> this page listed `unique-remaining`, `no-remaining-option` and
+> `forbidden-by-exclusion` as *"the M1 starter set"*, and
+> [`../01-ein-graph/02_rules.md` §2.3](../01-ein-graph/02_rules.md) sketches
+> four more (`elimination-by-exhaustion`, `arc-consistency-propagate`,
+> `global-cardinality`, `forced-by-unique-position`) plus `in-domain`. **None
+> of the eight exists** — not in the crates, not in `stdlib/`, not in any
+> `.ein` file in the tree (checked M1e S1e.2.2). This is a different failure
+> from the rest of the tree's stale pages: those describe machinery that was
+> **removed**, this described machinery that was **planned**, and a reader was
+> being credited with aggregate reasoning the engine does not have.
+>
+> What ships instead is *elimination as ordinary rules*:
+> [`std.bijection`](../../../../stdlib/bijection.ein)'s `domain-elimination` /
+> `range-elimination` and [`std.slots`](../../../../stdlib/slots.ein)'
+> `slot-elimination` / `slot-fill` express "only one candidate remains" with a
+> `forall` macro over nested `absent`s, decided at the closure boundary — no
+> aggregate primitive required
+> ([`07_stdlib_api.md`](07_stdlib_api.md),
+> [`../../inference/README.md` § d=0 negative-completion](../../inference/README.md#d0-negative-completion-s15a19)).
 
 ## Triangle rule — two forms
 
@@ -147,5 +200,5 @@ a human trace? — and is per-puzzle.
   grammar.
 - [`../01-ein-graph/02_rules.md`](../01-ein-graph/02_rules.md) —
   what a rule *is* in graph-rewriting terms.
-- [`../../inference/`](../../inference/) — the P1.3 pattern matcher
-  + saturation loop.
+- [`../../inference/`](../../inference/) — the pattern matcher and the
+  saturation loop that run these patterns.

@@ -32,9 +32,12 @@ pub struct Program {
     /// that exists to order derivation, and it is read once per quiescent KB
     /// *after* the fixpoint instead.
     ///
-    /// Since S1d.2.3 it is loaded, validated and round-tripped and **nothing
-    /// reads it**; `s1d.2.4_obligations_in_the_saturator.md` is the stage that
-    /// adds the pass.
+    /// Three things read it, none of them the saturator: `obligations::tally`
+    /// reports the undischarged instances once per quiescent KB (S1d.2.4),
+    /// `oblgen` branches on the facts that would discharge them — the
+    /// hypothesis ladder's middle rung (S1d.2.5) — and `verdict_of` declines
+    /// to call an undischarged state a model, which is the `Open` word
+    /// (S1d.2.6). This comment said *nothing reads it* until M1e S1e.2.2.
     pub obligations: Registry<Rule>,
     pub macros: Registry<Macro>,
     /// **Every** `(query …)` block, in source order — plural since M1c

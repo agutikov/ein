@@ -137,18 +137,23 @@ itself the smallest explanation of that dead.
 `contradictions_solve` — which fixed the verdict by *which function was
 called* and so disagreed on the same input — were removed 2026-06-16.)
 
-The `Mode` enum still exists as **engine-internal** vocabulary — not a
-caller-facing task switch. Single source: the `Mode` enum in
-[`verdict.rs`](../../../ein.rs/crates/ein-infer/src/verdict.rs).
-Only `Mode.SOLVE` reaches the live `solve` path (`is_solved` uses it for
-the fork-side exactly-one-binding goal check); `GAPS` / `CONTRADICTIONS`
-survive as the enum's other members but no longer name an entry.
+**And the `Mode` enum went with them.** ein.py kept `SOLVE` / `GAPS` /
+`CONTRADICTIONS` as engine-internal vocabulary after the entries were removed
+— `SOLVE` reaching the live path and the other two surviving as unreferenced
+members — and this section documented all three as reserved strings. **The
+port did not carry it**: there is no `Mode` in
+[`verdict.rs`](../../../ein.rs/crates/ein-infer/src/verdict.rs), nor anywhere
+else in `ein-infer`, and no goal-check string is branched on. The
+exactly-one-binding test is
+[`hypgen::complete`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) —
+*the generator proposes nothing at this state* — taken unconditionally, and
+the verdict is read off `k` afterwards.
 
-| string | `Mode` | role |
-|--------|--------|------|
-| `solve` | `Mode.SOLVE` | goal check: exactly one binding (used by `solve` / `is_solved`) |
-| `gaps` | `Mode.GAPS` | goal check: ≥ 1 binding (enum member; no live entry) |
-| `contradictions` | `Mode.CONTRADICTIONS` | goal check: never solved (enum member; no live entry) |
+*(Three `Mode` enums do exist in the workspace and none of them is this one:
+`ein_render::trace::Mode` — `Engine` / `Reorder`, the trace layout;
+`ein_cli::factdump::Mode`; and `ein_infer::oblgen::Mode`, the hypothesis
+ladder's rung. Recorded M1e S1e.2.2, which found this section by resolving
+every identifier on the page.)*
 
 ## Protocol enums
 
