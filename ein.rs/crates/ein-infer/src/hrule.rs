@@ -76,6 +76,19 @@ impl Hrules {
         Ok(Hrules { plans })
     }
 
+    /// The relations these plans conclude — what an hrule-driven search can
+    /// still propose, for M1e S1e.2.3's eligibility
+    /// ([`crate::hypgen::eligible_relations`]).
+    pub(crate) fn asserted_relations(
+        &self,
+        terms: &ein_core::Terms,
+    ) -> rustc_hash::FxHashSet<ein_core::Symbol> {
+        self.plans
+            .iter()
+            .filter_map(|p| crate::compile::asserted_relation(p, terms))
+            .collect()
+    }
+
     /// One candidate per hrule match against the KB.
     ///
     /// The fact is *not* written — it is a hypothesis, handed back to hypgen

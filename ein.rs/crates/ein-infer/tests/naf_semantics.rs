@@ -1242,8 +1242,12 @@ fn the_naf_map_is_incomplete_before_saturation() {
 }
 
 /// The rules whose `(absent …)` watches a rule-derived relation, by name.
+///
+/// The empty eligible set asks the *stratification* question only, which is
+/// this file's subject; M1e S1e.2.3's refutation question is
+/// `refutation_under_absent.rs`'s.
 fn flagged(engine: &Engine, terms: &Terms) -> BTreeSet<String> {
-    compute_naf_map(engine, terms)
+    compute_naf_map(engine, terms, &Default::default())
         .into_iter()
         .filter(|d| !d.derived.is_empty())
         .map(|d| terms.sym(d.rule).to_string())

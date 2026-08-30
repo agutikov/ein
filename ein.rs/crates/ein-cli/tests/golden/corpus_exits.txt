@@ -327,6 +327,9 @@
 0    examples/ein-bugs/int-goal-binding.ein :: solve
 0    examples/ein-bugs/int-goal-binding.ein :: solve -e
 0    examples/ein-bugs/mixed-type-hypothesis.ein :: solve -e
+0    examples/ein-bugs/naf-upward-closure.ein :: saturate
+0    examples/ein-bugs/naf-upward-closure.ein :: solve
+0    examples/ein-bugs/naf-upward-closure.ein :: solve -e
 0    examples/ein-bugs/nested-fact-hypothesis.ein :: solve -e
 0    examples/ein-bugs/query-goal-free-head-unsat.ein :: render rules
 0    examples/ein-bugs/query-goal-free-head-unsat.ein :: saturate

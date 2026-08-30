@@ -1243,10 +1243,29 @@ impl Run<'_> {
                 // Post-saturation, so the cache holds the plans of rules with
                 // rule-derived activators. The warnings reuse this
                 // saturator's populated engine rather than recompiling.
-                for w in crate::naf_deps::derived_naf_warnings(&sat.engine, s.terms) {
+                //
+                // **Two questions behind one flag** (M1e S1e.2.3). The
+                // stratification advice is `warn_derived_naf`'s and always
+                // was; the refutation-under-`absent` warning — Q-M1e.9's
+                // containment — rides it because the census says the corpus is
+                // **not** silent: eight rules over six entries carry the
+                // shape, four of them stdlib type-check scans over `is-a`,
+                // and a warning that fires on a working example is one that
+                // gets turned off. The set is named in
+                // `tests/refutation_under_absent.rs`, and S1f.10.8 disposes of
+                // it. A flag of its own was refused for a reason that is not
+                // taste: `SolverConfig` is rendered into the KB-shape digest,
+                // so an eighteenth field would re-bless every shape golden in
+                // the corpus for a warning that is going to be replaced.
+                //
+                // The eligible set is computed here rather than at the top of
+                // the block so that a default run — the flag off — pays
+                // exactly what it paid before this stage: nothing.
+                let eligible = crate::hypgen::eligible_relations(&mut s)?;
+                for w in crate::naf_deps::naf_warnings(&sat.engine, s.terms, &eligible) {
                     s.events.emit("warn", |l| {
-                        l.str("category", "DerivedNafWarning");
-                        l.str("message", &w);
+                        l.str("category", w.category);
+                        l.str("message", &w.text);
                     });
                 }
             }

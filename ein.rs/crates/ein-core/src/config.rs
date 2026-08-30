@@ -80,8 +80,28 @@ pub struct SolverConfig {
     /// and filed as
     /// [Q-M1e.10](../../../../plans/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert).
     pub print_alive: bool,
-    /// Warn when an `(absent …)` guard watches a rule-derived relation —
-    /// since S1.21.8 a *stratification* signal, not a soundness one.
+    /// Warn about an `(absent …)` guard — **two questions behind one flag**,
+    /// emitted once each after root's saturation.
+    ///
+    /// - `DerivedNafWarning`, ein.py's: the guard watches a **rule-derived**
+    ///   relation. Since S1.21.8 a *stratification* signal, not a soundness
+    ///   one — the guard is judged at a fixpoint either way.
+    /// - `RefutationUnderAbsentWarning`, M1e S1e.2.3's: the rule concludes
+    ///   `(false)` or a `(not …)` from a guard over a relation the program's
+    ///   **hypothesis generator can still propose**. That one *is* a
+    ///   soundness signal — `dead` is not upward-closed under `absent`
+    ///   ([Q-M1e.9]) — and it rides this flag rather than an eighteenth
+    ///   field because `SolverConfig` is rendered into the KB-shape digest,
+    ///   so a new field re-blesses every shape golden in the corpus.
+    ///
+    /// Off by default, and the second is why that is a decision rather than
+    /// an inheritance: the corpus is **not** silent — nine rules over seven
+    /// entries carry the shape, four of them stdlib scans over a membership
+    /// relation, and a warning that fires on a working example is one that
+    /// gets turned off. The set is named and pinned in
+    /// `ein-infer/tests/refutation_under_absent.rs`.
+    ///
+    /// [Q-M1e.9]: ../../../../plans/m1e_review_processing/open_questions.md
     pub warn_derived_naf: bool,
     /// Negative means the S1.5a.1a content sort; non-negative applies a
     /// per-branch deterministic permutation of it — **in ein.py**. Here the

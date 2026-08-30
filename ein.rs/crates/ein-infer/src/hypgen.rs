@@ -740,6 +740,75 @@ fn closed_relations(kb: &Kb, terms: &Terms) -> FxHashSet<Symbol> {
     out
 }
 
+/// Which relations **this program's generator can still propose** — the
+/// eligibility M1e S1e.2.3's refutation warning is stated over.
+///
+/// It reads the ladder rather than one rung, because the hazard is *the search
+/// can still add a fact of R*, and which rung would add it does not matter:
+///
+/// - **hrules** are an override, so the eligible set is exactly what they
+///   conclude. `closed` / `:hypothesis-relations` / `:no-hypothesis` are not
+///   applied — `apply_filters` does not consult them and neither does
+///   [`Hrules`], so a puzzle that declares a generator gets what it asked for.
+/// - **obligations** propose the facts that would discharge what the state
+///   owes, so the set is the `(open ?R)` arguments, scoped by all three.
+/// - otherwise the **blind** set: every declared relation with a signature,
+///   less the three scopings — `relation_plan`'s filter, read off the same
+///   helpers so the two cannot drift.
+///
+/// Note the closed set is the one **in the KB**, not `emit_closed`'s: that
+/// pass runs on a fork for `--hyp-stats` and the summary, so a solve sees only
+/// authored and `std.closure`-derived markers ([`crate::closed`]).
+///
+/// **One residual, written down rather than papered over.** The obligations
+/// rung can *decline* — a bare `(open)`, a projection that will not resolve
+/// per activator, or [`crate::oblgen`]'s C4 — and fall through to the blind
+/// enumerator, which proposes far more. Whether it declines is a property of
+/// the state, not of the program, so this is the rung the program *means* and
+/// not provably the rung it takes. Answering it exactly would mean running
+/// `oblgen`'s prologue before root has a hypothesis, and the cost of being
+/// wrong here is an under-warning on an advisory. Taking the union instead was
+/// tried and rejected: on `zebra2-obligations.ein` it makes every declared
+/// relation eligible and the warning fires 40 times on a puzzle that solves
+/// correctly — which is a warning nobody would leave on.
+///
+/// It is also **not** the stratification question, and the two do not overlap:
+/// a watched relation a *rule* derives can flip a guard during saturation,
+/// which `warn_derived_naf` is about and which is sound since S1.21.8 because
+/// the guard is judged at a fixpoint. This one is about a *commitment*
+/// discharging the guard in a world the search never enters.
+pub fn eligible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, CompileError> {
+    if !s.kb.program().hrules.is_empty() {
+        let hrules = Hrules::new(s)?;
+        return Ok(hrules.asserted_relations(s.terms));
+    }
+    let allowed = query_relations(s, HYPOTHESIS_RELATIONS);
+    let excluded = query_relations(s, NO_HYPOTHESIS).unwrap_or_default();
+    let closed = closed_relations(s.kb, s.terms);
+    let scoped = |r: Symbol| {
+        !closed.contains(&r)
+            && !excluded.contains(&r)
+            && allowed.as_ref().is_none_or(|a| a.contains(&r))
+    };
+    if !s.kb.program().obligations.is_empty() {
+        let memo = s.memo.clone();
+        let plans = crate::obligations::plans_for(s.kb, s.terms, s.ast, &memo)?;
+        return Ok(plans
+            .iter()
+            .filter_map(|p| crate::obligations::open_argument(p, s.terms))
+            .filter(|&r| scoped(r))
+            .collect());
+    }
+    Ok(s.kb
+        .program()
+        .relations
+        .values()
+        .filter(|r| !r.signature.is_empty())
+        .map(|r| r.name)
+        .filter(|&r| scoped(r))
+        .collect())
+}
+
 // ── Query-scoped relation sets ─────────────────────────────────────
 
 /// The relation-name set under a `(query … :KEYWORD …)` keyword.

@@ -1,0 +1,82 @@
+;;; `dead` is NOT upward-closed under `absent` — M1e Q-M1e.9, reproduced
+;;; 2026-08-28 and banked here at S1e.2.3.
+;;;
+;;; ── The premise this refutes ───────────────────────────────────────────
+;;;
+;;; design/08 § The objects:
+;;;
+;;;   dead(X) — X holds a contradiction. Monotone: X ⊆ Y ∧ dead(X) ⇒ dead(Y),
+;;;   because the KB is append-only and nothing retracts.
+;;;
+;;; *Append-only, nothing retracts* makes saturation **inflationary**. It does
+;;; not make it **monotone in its input**, and `(absent P)` is exactly what
+;;; separates the two — which `absent_semantics.md` C3 already says from the
+;;; other direction: removing a fact can flip an absent and *fabricate* a
+;;; contradiction the full KB never had.
+;;;
+;;; Here `bad` fires only while `q` is missing:
+;;;
+;;;   alive₀          = {(p A), (q A)}
+;;;   {(p A)}         is DEAD   — bad fires, (q A) absent
+;;;   {(p A), (q A)}  is ALIVE  — the guard's witness is present
+;;;
+;;; so the single maximal state is {(p A), (q A)} and dead is not upward-
+;;; closed. Three shipped mechanisms read the false premise, each sufficient
+;;; alone: the lookahead kill cache (writes `(not (p A))` with no premises),
+;;; the singleton writeback (design/08 claim (1) on its own terms), and the
+;;; width-1 no-good clause (subsumes the live superset, so it is never
+;;; generated). Five of the six shipped configurations answer wrongly, and
+;;; every one of them reports `exhausted = true`.
+;;;
+;;; ── What this file is for ──────────────────────────────────────────────
+;;;
+;;; `(config :warn-derived-naf true)` turns on the S1e.2.3 diagnostic, so the
+;;; **warning is part of this file's recorded output** — that is what makes
+;;; the containment a fixture rather than a claim. The rule `bad` is reported
+;;; as concluding `(false)` from an `(absent …)` over `q`, which this
+;;; program's generator can still propose.
+;;;
+;;; **Its `:expect` states today's answer and is meant to break.** When
+;;; F18 makes the three consumers world-aware — or S1f.10.8 forbids the shape
+;;; outright — the model here changes and this file has to be revisited. That
+;;; is the same tripwire `alive-empty-{phase1,interlayer}.ein` carry, and the
+;;; same reason.
+;;;
+;;; The goal is `is-a` rather than `p`, because the model the engine reaches
+;;; contains no `p` fact at all and an expectation cannot state an answer with
+;;; an empty goal extent — Q-M1e.13, the same reason `alive-empty-phase1.ein`
+;;; moved its goal.
+;;;
+;;; ── The user's reading, 2026-08-28 ─────────────────────────────────────
+;;;
+;;; > not any well-formed ein program is correct. An example with
+;;; > `(rule bad () …)` is broken by design … there is no definition of `q`
+;;; > and `p` relations, no obligations, only the rule that asserts `(false)`.
+;;;
+;;; It is a **mis-encoded obligation**: it says *a world with p and without q
+;;; is false* and never says *q is required*, which is what M1d built
+;;; `(open ?R)` for. The engine's complaint is not wrong; the word is. That
+;;; reading is why the diagnostic names `(open ?R)` as one of its two
+;;; replacements — the other being `total`'s stored-negative discipline.
+
+(config :warn-derived-naf true)
+
+(relation is-a T T)
+(relation p T)
+(relation q T)
+
+(is-a A T)
+
+(rule bad ()
+  :match  (and (p ?x) (absent (q ?x)))
+  :assert (false)
+  :why    "{?x} has p without q"
+  :priority 200)
+
+(query
+  :goal   (is-a ?x T)
+  ;; Today's answer, and the tripwire: the search records `(q A)` and the
+  ;; cached `(not (p A))` and calls that a model. The maximal state is
+  ;; `{(p A), (q A)}`, so a world-aware fix drops `(not (p A))` and adds
+  ;; `(p A)` — and this line stops holding, which is the point of writing it.
+  :expect (model (is-a A T) (q A) (not (p A))))

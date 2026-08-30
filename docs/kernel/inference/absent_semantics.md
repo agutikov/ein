@@ -190,6 +190,35 @@ Each is already enforced locally; this page is the shared reason.
   the search layer — "this assumption led to ⊥, fork without it" — which
   makes the whole system ATMS-shaped, not stratified-Datalog
   ([architecture §O3](architecture_and_algorithms.md#o3--negation-as-failure)).
+- **A sound search over a program that *refutes* under an `absent`.** This is
+  the narrowed claim, and it is new at M1e
+  [S1e.2.3](../../../plans/m1e_review_processing/p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md).
+  The search layer's `dead` is documented as **monotone** —
+  [design/08 § The objects](../../history/m1a_rust/design/08_parallelism.md):
+  *`X ⊆ Y ∧ dead(X) ⇒ dead(Y)`, because the KB is append-only and nothing
+  retracts.* Append-only makes saturation **inflationary**; it does not make
+  it monotone *in its input*, and `absent` is exactly what separates the two —
+  which C3 above already says from the other direction. So the property fails
+  on any program whose `(false)` or `(not …)` derivation passes an
+  `(absent P)` over a relation the hypothesis generator can still propose:
+  `{(p A)}` dies, `{(p A), (q A)}` would live, and three shipped mechanisms
+  make sure the second is never reached — the lookahead kill cache, the
+  singleton writeback, and the width-1 no-good clause. Reproduced
+  ([Q-M1e.9](../../../plans/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)),
+  banked as
+  [`examples/ein-bugs/naf-upward-closure.ein`](../../../examples/ein-bugs/naf-upward-closure.ein),
+  and **diagnosed rather than fixed**: `warn_derived_naf` emits a
+  `RefutationUnderAbsentWarning` naming the rule, the relation and the two
+  replacements — a stored-negative scan in `total`'s style, or `(open ?R)` if
+  the constraint is a requirement rather than a refutation. Making the three
+  consumers world-aware is
+  [F18](../../../plans/followups/f18_world_aware_negatives.md), starting from
+  `Prov::absent`; whether the shape stays legal at all is
+  [S1f.10.8](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s.
+  Note this is **not** the stratification hazard and the two do not overlap: a
+  guard over a *rule-derived* relation can flip during saturation, and S1.21.8
+  made that sound by judging it at a fixpoint. This one is a *commitment*
+  discharging the guard in a world the search never enters.
 
 On **stratified** inputs the result no longer depends on operational order
 at all — that is what S1.21.8 bought, and P1/P2 pin it: the same program

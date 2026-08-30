@@ -351,12 +351,22 @@ pub fn naf_map(
     };
     let mut sat = crate::saturator::Saturator::new(&mut s)?;
     sat.saturate(&mut s, None, &mut |_| {})?;
-    let deps = crate::naf_deps::compute_naf_map(&sat.engine, s.terms);
+    // S1e.2.3's third classification needs the program, not just the cache.
+    let eligible = crate::hypgen::eligible_relations(&mut s)?;
+    let deps = crate::naf_deps::compute_naf_map(&sat.engine, s.terms, &eligible);
     let mut out: Vec<String> = deps
         .iter()
         .map(|d| {
+            // The `refutes=` field is emitted **only when there is one**, so a
+            // digest over a program with no exposed rule is byte-identical to
+            // the one taken before S1e.2.3. The shape golden is then the
+            // corpus census, and its diff is the finding.
+            let exposed = match &d.refutation {
+                None => String::new(),
+                Some(r) => format!(" refutes={} watching={}", r.concludes, py_list(&r.watching)),
+            };
             format!(
-                "NAF {} {} derived={} declared={}",
+                "NAF {} {} derived={} declared={}{exposed}",
                 repr_str(s.terms.sym(d.rule)),
                 repr(&PyValue::Tuple(
                     d.activator
@@ -369,11 +379,11 @@ pub fn naf_map(
             )
         })
         .collect();
-    let warnings = crate::naf_deps::derived_naf_warnings(&sat.engine, s.terms);
+    let warnings = crate::naf_deps::naf_warnings(&sat.engine, s.terms, &eligible);
     out.extend(
         warnings
             .iter()
-            .map(|w| format!("WARN DerivedNafWarning {w}")),
+            .map(|w| format!("WARN {} {}", w.category, w.text)),
     );
     out.push(format!(
         "SUMMARY plans={} deps={} warnings={}",

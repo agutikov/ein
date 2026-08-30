@@ -439,6 +439,12 @@ runs   = ["solve", "solve -e"]
 note   = "M1e D1, the same defect between layers — and the one `-K` does not repair, because its trigger is the singleton writeback rather than the kill cache. `-L` answers `Contradiction k=0` on the same file with both sides exhausted. `:expect` states today's answer and is meant to break."
 
 [[entry]]
+path   = "examples/ein-bugs/naf-upward-closure.ein"
+group  = "regression"
+runs   = ["solve", "solve -e", "saturate"]
+note   = "M1e Q-M1e.9 / S1e.2.3 — `dead` is **not** upward-closed under `absent`: `{(p A)}` dies while `{(p A), (q A)}` is alive, so the maximal state is never generated. Five of six shipped configurations answer it wrongly and all six report `exhausted = true`. It carries `(config :warn-derived-naf true)`, so the S1e.2.3 diagnostic is part of its recorded output — the containment as a fixture rather than a claim. `:expect` states today's answer (`(q A)` plus the cached `(not (p A))`) and is **meant to break** when F18 makes the three consumers world-aware or S1f.10.8 forbids the shape. Goal on `is-a` because the model has no `p` fact — Q-M1e.13."
+
+[[entry]]
 path   = "examples/ein-bugs/complete-records-stale.ein"
 group  = "regression"
 runs   = ["solve", "solve -e"]

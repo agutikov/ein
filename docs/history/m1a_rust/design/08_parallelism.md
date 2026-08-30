@@ -266,8 +266,34 @@ argument.
 | `B` | root's fact set when the layer opens; already a fixpoint, `sat(B) = B` |
 | `C = (c_1 … c_m)` | the layer's candidates, in canonical order; `c_i` a set of hypothesis facts |
 | `sat(X)` | the engine's rule fixpoint over `X` — **monotone**, **inflationary** (`X ⊆ sat(X)`), **idempotent** |
-| `dead(X)` | `X` holds a contradiction. **Monotone**: `X ⊆ Y ∧ dead(X) ⇒ dead(Y)`, because the KB is append-only and nothing retracts |
+| `dead(X)` | `X` holds a contradiction. **Monotone**: `X ⊆ Y ∧ dead(X) ⇒ dead(Y)`, because the KB is append-only and nothing retracts — **but see the note below: this row is false in the presence of `absent`** |
 | `W_i` | `{ ¬h : c_j = {h} for some j < i that died }` — the writebacks a candidate can see |
+
+> **`dead` is not monotone under `absent`** — M1e
+> [Q-M1e.9](../../../../plans/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent),
+> reproduced 2026-08-28, and this table is where the premise was written down.
+> *Append-only, nothing retracts* establishes that `sat` is **inflationary**;
+> it does not establish that `sat` is **monotone in its input**, and
+> `(absent P)` is exactly what separates the two —
+> [`absent_semantics.md` C3](../../../kernel/inference/absent_semantics.md)
+> already says so from the other direction. On
+> `(and (p ?x) (absent (q ?x))) ⇒ (false)`, `{(p A)}` is dead and
+> `{(p A), (q A)}` is alive, so **claim (1) below fails on its own terms**,
+> and so do the width-1 no-good clause and the lookahead kill cache. Five of
+> the six shipped configurations answer the twenty-line probe wrongly, every
+> one of them reporting `exhausted = true`.
+>
+> **The claim is narrowed rather than withdrawn**, because the counterexample
+> needs a `(false)` / `(not …)` derivation passing an `(absent P)` over a
+> relation the hypothesis generator can still propose — nine rules over seven
+> corpus entries, pinned in
+> [`refutation_under_absent.rs`](../../../../ein.rs/crates/ein-infer/tests/refutation_under_absent.rs).
+> Every claim in this section holds as written on a program without that
+> shape, which is every puzzle the port was measured on. The containment is a
+> diagnostic (M1e S1e.2.3); the fix is
+> [F18](../../../../plans/followups/f18_world_aware_negatives.md); whether the
+> shape stays legal is
+> [S1f.10.8](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s.
 
 Under **immediate** integration candidate *i* is entered against `B ∪ W_i`.
 Under **deferred** integration with barriers at `β`, it is entered against

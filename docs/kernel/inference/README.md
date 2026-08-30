@@ -433,6 +433,33 @@ promotes to load-bearing under S1.7.7,
 and stays the only diagnostic for non-stratifiability until a real
 checker lands.
 
+**The same flag now carries a second, non-advisory warning** (M1e
+[S1e.2.3](../../../plans/m1e_review_processing/p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md)),
+and it is deliberately the *other* NAF hazard rather than a refinement of
+this one. `RefutationUnderAbsentWarning` fires when a rule concludes
+`(false)` or a `(not …)` from a guard over a relation the program's
+**hypothesis generator can still propose** — the shape on which `dead` is
+**not** upward-closed
+([Q-M1e.9](../../../plans/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent):
+`{(p A)}` dies while `{(p A), (q A)}` would live, and the kill cache, the
+singleton writeback and the width-1 clause each make sure the second is
+never reached). The two questions share one walk of the guards and differ
+only in what the watched relation is classified against — rule-derived, or
+generator-proposable — and they do not overlap: a guard over a *derived*
+relation flips during saturation, which S1.21.8 made sound by judging it at
+a fixpoint, where this one is a *commitment* discharging the guard in a
+world the search never enters. The message names two replacements, because
+a diagnostic that says *don't* and not *instead* is one people work around:
+`total`'s stored-negative scan for a refutation, `(open ?R)` for a
+requirement. It shares `warn_derived_naf` rather than taking an eighteenth
+`(config …)` field because `SolverConfig` is rendered into the KB-shape
+digest, so a new field re-blesses every shape golden in the corpus. Nine
+rules over seven corpus entries carry the shape, named in
+[`refutation_under_absent.rs`](../../../ein.rs/crates/ein-infer/tests/refutation_under_absent.rs);
+the fix is [F18](../../../plans/followups/f18_world_aware_negatives.md) and
+whether the shape stays legal is
+[S1f.10.8](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s.
+
 **Open follow-ups.**
 
 - Q-S1.5a.1.B
