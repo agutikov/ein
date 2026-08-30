@@ -83,29 +83,35 @@ and the code agrees with them.
 
 ## Acceptance
 
-- **Every page under `docs/kernel/` is in exactly one declared state** —
+- ✅ **Every page under `docs/kernel/` is in exactly one declared state** —
   *current*, *superseded with a banner*, or *moved to `docs/history/`* — with
-  the state visible from the page itself, not only from this plan. 37 pages;
-  the triage table is the deliverable and it covers all of them, not only the
-  nine the review named.
-- **No page describes machinery that does not exist without saying so.** The
+  the state visible from the page itself, not only from this plan. ~~37~~
+  **40** pages (three landed 2026-08-28, inside M1e); the triage table is
+  [below](#the-triage--40-rows) and covers all of them, not only the nine the
+  review named. **37 current · 3 banner · 0 move.**
+- ✅ **No page describes machinery that does not exist without saying so.** The
   test a reader can apply: every code identifier a *current* page names
   resolves in `ein.rs/crates/`, and every env var and CLI invocation it shows
-  runs.
-- **One answer per question, tree-wide**: how many verdict words; who reads
-  the obligation tally; what `:expect`'s third form is; whether a tree
-  traversal exists in the module map.
+  runs. It is now check 1 of
+  [`docs/kernel/README.md` § Keeping this true](../../../docs/kernel/README.md),
+  five-sixths of it in `utils/doc_audit.py`.
+- ✅ **One answer per question, tree-wide**: how many verdict words (**four**);
+  who reads the obligation tally (**three things**, none of them the
+  saturator); what `:expect`'s third form is (**`(false)`**); whether a tree
+  traversal exists in the module map (**it does now**).
 - ~~**§3.2 is amended or deleted** per
   [Q3](../p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md), and
   `Q-M1a.8` is closed in the M1a ledger with a date and the probe's name;
   README's Known gaps moves in the same commit.~~ ✅ **Done 2026-08-29 in
   S1e.1.4** — see T1e.2.2.4.
-- A **doc-pass checklist** exists for the next milestone that has to do this,
-  naming the pages S1a.10.6 missed and why they were missable.
+- ✅ A **doc-pass checklist** exists for the next milestone that has to do
+  this, naming the pages S1a.10.6 missed and why they were missable —
+  [`docs/kernel/README.md` § Keeping this true](../../../docs/kernel/README.md),
+  six checks, and the *why* is structural rather than a lapse.
 
 ## Tasks
 
-### Task T1e.2.2.1 — Take the rule, then triage all 37 pages
+### Task T1e.2.2.1 — Take the rule, then triage all 37 pages ✅
 
 The rule first, because applying it page by page without it produces 37
 independent judgment calls. That rule is
@@ -130,7 +136,7 @@ twenty-eight need at least a glance, since the review's method was a reading
 pass and it says so. The cheap filter for a page nobody has checked: grep it
 for identifiers and env vars, and resolve them.
 
-### Task T1e.2.2.2 — Execute the triage
+### Task T1e.2.2.2 — Execute the triage ✅
 
 Three buckets, three kinds of work, and they are deliberately not one commit:
 
@@ -160,7 +166,7 @@ flag, or a documented library call) or whether the documentation of it should
 go. Route the decision through the render crate's owner rather than deciding
 it in a doc pass.
 
-### Task T1e.2.2.3 — The M1d pass over the five stale pages
+### Task T1e.2.2.3 — The M1d pass over the five stale pages ✅
 
 `CD-H2` is smaller and entirely mechanical, and the correct text already
 exists to copy from — the census documents under
@@ -215,7 +221,7 @@ If §3.2 is deleted, `defined_behaviour.md`'s self-description — *the thirteen
 diagnostics, orderings and error strings* — changes, and so does the sentence
 in `CLAUDE.md` that quotes it. Two copies again; edit both.
 
-### Task T1e.2.2.5 — A checklist the next doc pass can run
+### Task T1e.2.2.5 — A checklist the next doc pass can run ✅
 
 S1a.10.6 was a doc pass and it **missed every page in `CD-H1`**. That is the
 useful finding inside the finding: a doc pass driven by *what the milestone
@@ -378,3 +384,206 @@ current statement is · **move** = into an existing `docs/history/` record
 **Totals: 37 current · 3 banner · 0 move.** Nine pages needed no edit at all;
 four of the ones that did are **not** in `CD-H1`'s list, and every one of the
 four was found by the identifier sweep rather than by reading.
+
+## T1e.2.2.3 — CD-H2, in one commit
+
+Five pages, one commit, converging on the wording of the three that were
+already right rather than inventing a fourth. `01_grammar.md`'s *"nothing
+reads the tally"* became *the tally is read three ways* — reported since
+S1d.2.4, **branched on** since S1d.2.5 (the ladder's middle rung, which the
+finding did not name), and the verdict since S1d.2.6. `06_reserved_names.md`'s
+*"no verdict word"* became the word, with the scope rule and the reason
+`:expect` did not grow one. The two verdict rows and the module map took the
+fourth word; `implementation.md`'s `solve.rs` row grew the tree traversal,
+which was in **no** row at all.
+
+Two extras on the same visits. `:expect`'s third form was given as `none`,
+which is not the keyword — it is `(false)`. And `DO-L1`'s keyword arithmetic,
+which T1e.2.2.3 said to take while there: *"the six above plus `:goal`,
+`:goal-text`, `:hrules` and `:mode`"* reconstructs **ten** from a table
+carrying **three** query keywords, where `from_ir.rs`'s `QUERY_KEYWORDS` is
+`[&str; 7]`. `01_grammar.md` § Query already had it right, so that is the
+sentence the other now agrees with.
+
+The M1d pass also fixed the first of the two broken anchors: the heading
+`06_reserved_names.md` § the verdict atom gained *"read since S1d.2.4"* at
+S1d.2.4 and the link in `01_grammar.md` did not follow it.
+
+## T1e.2.2.2 — the three buckets
+
+### (a) Banner or move — three banners, zero moves
+
+Both P1.5b pages take the `parity_baselines.md` shape: a table of what the
+page specifies, when each row went and why, and what holds today.
+
+`lattice_diagrams.md`'s banner records something the review did not: **it is
+older than its own companion**. Its § *Multi-parent intrinsic to BFS-by-size*
+documents as current a mechanism that `algorithm_layer_n.md`'s own § *What
+this algorithm no longer does* already retires — and cites that file for it.
+
+The two Python recipes were bannered rather than deleted, because in both
+cases the **format** is live and only the way to ask for it is gone: the dump
+tree is banked by `golden_dump.rs`, and the KB DOT schema is what
+`ein_render::kb_dot` emits. That turned out to be one question with two
+instances rather than two problems — see (c).
+
+Two pages routed readers into `docs/api/`'s Python history as though it were
+the live contract. `zebra_walkthrough.md` for embedding (`CD-H1` named it) and
+**`features.md`, twice**, for the definitional knob table (it did not). Both
+now point at `rust.md` and `configuration.md` — the two pages a test keeps
+true.
+
+**And six citations named four sections `algorithm_layer_n.md` has never
+had**: §3d.vii (×3), §3d.iv, §3d.iii, §3e. Repaired against the sections that
+exist (§3c.ii for the early-terminate arm, §3b for the dedup, § *What this
+algorithm no longer does* for multi-parent). They survived every previous pass
+for a mechanical reason worth keeping: **a prose `§x.y` is not a link**, so no
+anchor checker sees one. That became check 4 of T1e.2.2.5's checklist, and
+turning it on found two more.
+
+### (b) Content fix — twelve pages, four of them not on the list
+
+`CD-H1`'s own items went as written, with one correction and one addition.
+The correction: **`glossary.md` does not reproduce.** `CD-H1` pairs it with
+`02_patterns.md` as describing the phantom predicate registry;
+`git log -S"unique-remaining" -- docs/kernel/glossary.md` is **empty** — the
+page has never named one. Its T3 entry is the graph model's rule taxonomy,
+which is `02_rules.md`'s subject, and `02_rules.md` is the addition.
+
+The four the review does not list, every one of them found by resolving
+identifiers rather than by reading:
+
+| page | what was there |
+|---|---|
+| `reserved_engine_strings.md` | a whole section documenting a `Mode` enum in `verdict.rs` with `SOLVE` / `GAPS` / `CONTRADICTIONS` members and a three-row table. **There is no such enum anywhere in the crates** — ein.py kept it after the sibling entries were removed and the port did not carry it. Three other `Mode`s exist and none is this one |
+| `01_entities.md` | opens *"Frozen Python dataclasses … attached to the owning `KnowledgeBase` via a `_kb` back-pointer"*; its own §5 is titled *"the back-pointer, and why it is gone"*. Also held the second broken anchor |
+| `02_rules.md` | §2.3: *"the matcher consults the predicate's **Python implementation**"*; §5 offers two of the never-built names as `:where` guards |
+| `features.md` | the `docs/api/inference.md` pointer, twice — taken in (a) |
+
+`02_patterns.md` is the page the stage's Notes flagged, and it is a different
+failure from every other page here: **machinery planned, not removed**. Its
+*"Predicate registry (initial)"* was presented as *the M1 starter set*. All
+eight names in it and in `02_rules.md` — `unique-remaining`,
+`no-remaining-option`, `forbidden-by-exclusion`, `in-domain`,
+`elimination-by-exhaustion`, `arc-consistency-propagate`,
+`global-cardinality`, `forced-by-unique-position` — resolve **nowhere**: not
+in the crates, not in `stdlib/`, not in any `.ein` file. Recorded as
+designed-and-not-built rather than deleted, with where the reasoning power
+actually went (a `forall` over nested `absent`s, decided at the boundary),
+because a reader who searches for one of those names deserves the answer.
+
+The page also carried a claim only a run could settle, and the run refutes it:
+*"typos like `(instnce ?a ?T)` … are caught at parse time"*. Measured — exit
+**0**, `solutions (k) 1`. `instance` has not been a grammar-reserved head
+since S1.7.6, so it is an ordinary generic pattern over a relation that
+auto-vivifies, and the rule loads, compiles and never fires. The same probe
+run over the whole primitive set produced the arity table that replaced the
+page's *"wrong arity is a parse error"*: `not` / `neq` / `and` / `or` are the
+grammar's, `eq` and `absent` are the **compiler's** since S1e.2.1, and
+`(and X)` at arity 1 is legal.
+
+Three **source** comments carried the same claims their pages did, and went in
+the same commit: `program.rs` still said nothing reads `obligations` (three
+things do), `verdict.rs` said **119** corpus entries where the census it cites
+says **92**, and `solve.rs` said a `LatticeDumper` materialises `kb_index/`.
+
+### (c) Reachability — filed, not decided
+
+The finding is right and slightly narrower than stated. The `LatticeDumper`
+tree is unreachable **from the CLI** and perfectly reachable **from Rust** —
+`LatticeDumper::new(Some(dir))` into `solve`'s `dumper`, both types `pub`, the
+shape `golden_dump.rs::run_dump` uses. What is missing is the door, not the
+room; and the format is golden-pinned, which is why `lattice_dump.md` is
+*current* rather than superseded.
+
+`lattice_diagrams.md`'s invocation was measured and **was never true**:
+`ein solve … --exhaustive --dump-states <dir>` writes `00_root_initial.ein`,
+`00_timeline.jsonl`, `layers/layer_NN_{pre,post}.ein` and `summary.json` — a
+`MonotonicDumper` tree — and neither `proof_summary.json` nor `kb_index/`. The
+first belongs to the other dumper; the second is written by **neither engine**,
+which `dump/lattice.rs`'s module doc states and `lattice_semantics.rs` pins.
+
+Routed, per the task, rather than decided in a doc pass — and it is **one**
+question with two instances, because `ein_render::kb_dot` is in exactly the
+same position: `pub`, swept over the whole corpus by `dot_wellformed.rs`, and
+behind no CLI since `ein kb dot` went at P1.11.
+[Q-M1e.20](../open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable),
+three options, owner unassigned. `utils/render_examples.sh` reached this same
+fork at M1a S1a.10.4 and declined it in writing, for a reason that still
+holds.
+
+## T1e.2.2.5 — the checklist
+
+[`docs/kernel/README.md` § Keeping this
+true](../../../docs/kernel/README.md), six checks, deliberately **not**
+milestone-scoped — which is the finding inside the finding, stated there:
+S1a.10.6 audited what the oracle's departure invalidated and did that well; a
+page describing machinery removed two milestones ago is invisible to that
+method.
+
+Five of the six are [`utils/doc_audit.py`](../../../utils/doc_audit.py), the
+twenty-fourth script and the only one whose subject is the documentation.
+`--check` exits 1 on the link half alone; **it is not in the gate**, and
+whether it should be is [DO-M2](../p1e.3_medium/s1e.3.8_documentation.md)'s.
+
+Two things about it are worth the stage's ink:
+
+- **Check 4 is new and it earned its place twice.** A section number written
+  after a link, or inside its label, is not part of the link. It caught the
+  six dead citations above, and when it was turned on it found **two more** —
+  `01_grammar.md` and `03_ein_model.md` both citing an `01_entities.md §1.5`
+  that does not exist. The tree is at zero.
+- **Check 5 has no instrument and found the most.** *Run the commands a page
+  shows* is a shell and ten minutes, and it produced the `--dump-states`
+  measurement, the `(instnce …)` refutation and the whole arity table. Worth
+  remembering when the temptation is to automate the cheap half and call the
+  pass done.
+
+And the class the script **cannot** see, which is why `02_patterns.md` was the
+hardest page: the checks find machinery that was *removed*, because an
+identifier used to resolve and stopped. Machinery *planned and never built*
+resolves at no point in the repo's history and reads exactly like a
+description of something real. Eight such names sat in this tree from P1.2 to
+M1e under the heading *"the M1 starter set"*.
+
+## Outcome
+
+| | |
+|---|---|
+| **`CD-H1`** | **fixed**, and the list was neither complete nor exactly right: **four** more pages in the same state (`reserved_engine_strings.md`, `02_rules.md`, `01_entities.md`, `features.md`), and **one** item refuted — `glossary.md` has never named a predicate registry |
+| **`CD-H2`** | **fixed**, one commit, five pages, plus `:expect`'s third form and `DO-L1`'s keyword arithmetic |
+| **`CD-H3`** | already done, 2026-08-29, in [S1e.1.4](../p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md) |
+| answered | [Q-M1e.3](../open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) — **(c)**, and the destination was already written in `docs/history/README.md`. The general rule: *a page is moved into an existing milestone record, never made into one* |
+| raised | [Q-M1e.20](../open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable) — two renderers produced, tested and unreachable; owner unassigned |
+| states | **37 current · 3 banner · 0 move**, every one visible from the page |
+| links | **0** broken links, anchors or prose `§x.y` in 40 pages, from 2 + 6 |
+| new | `utils/doc_audit.py` (24th script), `docs/kernel/README.md` §§ *Which pages to trust* + *Keeping this true* |
+| source | 3 comments corrected — `program.rs`, `verdict.rs`, `solve.rs` |
+| dispositioned | `DO-L1`'s second item (`06_reserved_names.md`'s keyword arithmetic) **fixed here**, as T1e.2.2.3 said to; its other three stay with [S1e.4.7](../p1e.4_low/s1e.4.7_documentation.md) |
+| gate | `./run_tests.sh` green; no golden moved, because no page is read by a test but `configuration.md`, which this stage did not touch |
+
+### Three things the tasks did not predict
+
+**1. The rule was already written down, and candidate (a) was already
+declined.** `Q-M1e.3` offers `docs/history/m1_core/` as *"a directory that
+does not exist"*. `docs/history/README.md` says why it does not: *"**M1**
+(core graph reasoning, shipped 2026-06-17) predates this directory: what
+survived its plan tree went to `docs/kernel/inference/` … at P1.22."* The
+question was answerable by reading one paragraph in the tree it is about,
+which is a small instance of this stage's whole subject.
+
+**2. "Half a reason" never had to be weighed.** The question turns on whether
+`algorithm_layer_n.md` being *the reason* another page records a soundness bug
+is enough to keep it. It has **five** referrers, and one is
+`docs/history/m1a_rust/design/07_search_layer.md`, citing it as *"the per-step
+contract"* the Rust port had to reproduce. Deleting a page that a **shipped
+milestone record** names as its specification falsifies the record. The count
+settles it before the judgment call arrives.
+
+**3. The identifier sweep out-performed the reading pass, and the shell
+out-performed both.** The review's method was a reading pass over nine pages;
+resolving identifiers over all forty found four more, and running the commands
+found three claims that no amount of reading refutes — a CLI line producing
+neither artifact it names, a parse error that is not one, and an arity table
+that was wrong in three of six rows. That ordering is the checklist's argument
+for existing, and it is why check 5 is on it despite having no script.

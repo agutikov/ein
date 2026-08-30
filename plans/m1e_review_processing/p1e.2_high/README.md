@@ -67,7 +67,7 @@ surfaces from saying things that are false under either answer.
 |---|---|---|---:|---|
 | [S1e.2.1](s1e.2.1_correctness.md) | Correctness — the panic, the guard, the traversal | `CO-H1` `CO-H2` `CO-H3` | 5 d | a compile-time arity check with a positioned diagnostic and a `broken/` fixture; one reserved-name constant with a test that the lists are one; the tree honouring `-n`/`-m` and refusing to print evidence it does not have |
 | [S1e.2.3](s1e.2.3_naf_refutation_diagnostic.md) † | Q-M1e.9's containment — a diagnostic for a refutation resting on an `absent` | — | 1 d | the existing `warn-derived-naf` watch widened to the hypothesis-eligible case, the corpus measured for what it would fire on, and a message that names the replacement rather than only the hazard |
-| [S1e.2.2](s1e.2.2_code_doc_consistency.md) | Code ↔ doc — the canonical tree | `CD-H1` `CD-H2` ~~`CD-H3`~~ | 6 d | every page of `docs/kernel` in one of three declared states; the five M1d-stale pages agreeing with the code and each other. **`CD-H3` is done** — §3.2 rewritten and `Q-M1a.8` closed 2026-08-29 in [S1e.1.4](../p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md), where the probes were |
+| [S1e.2.2](s1e.2.2_code_doc_consistency.md) | Code ↔ doc — the canonical tree | ~~`CD-H1`~~ ~~`CD-H2`~~ ~~`CD-H3`~~ | 6 d | ✅ **done 2026-08-30.** 40 pages triaged — **37 current · 3 banner · 0 move** — and four of the eleven that needed work are not in `CD-H1`, all four found by the identifier sweep. `CD-H2` in one commit. `Q-M1e.3` answered **(c)**, and its candidate (a) turned out to be a directory `docs/history/README.md` had already declined. `Q-M1e.20` raised. New: `utils/doc_audit.py` and the tree's two new README sections. **`CD-H3` was done** 2026-08-29 in [S1e.1.4](../p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md), where the probes were |
 
 ## Acceptance
 
@@ -114,6 +114,10 @@ surfaces from saying things that are false under either answer.
   specification — the failure mode `docs/api/`'s 🏛 banner exists to prevent.
   The rule is [Q-M1e.3](../open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)
   and it is taken before the page is touched.
+  *(Held. Answered **(c)** 2026-08-30 and applied first: three banners, zero
+  rewrites, zero moves. The risk had a second edge the entry did not name —
+  `docs/history/m1a_rust/design/07` cites that page as the contract the port
+  had to reproduce, so **deleting** it was as unavailable as rewriting it.)*
 - **The arity check is wider than one predicate.** `eq`/`neq` are the two
   built-ins, but the compiler's tolerance is the pattern, not the predicate.
   Scoping the fix to `(eq ?x)` closes the instance and leaves the class —
