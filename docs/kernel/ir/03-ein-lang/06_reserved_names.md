@@ -168,12 +168,24 @@ Three surfaces report it, and none of them is the fact store:
 `(open ?R)`'s per-relation attribution is what makes `by_relation` possible;
 a bare `(open)` contributes to the count and names no slot.
 
-**What has not moved**: no verdict word. A state that is `consistent ∧
-complete` by the generator's test and still owes a witness reports `Solution`
-today, exactly as it did before —
+**And since S1d.2.6 it decides a word.** A state that is `consistent ∧
+complete` by the generator's test and still owes a witness is **`Open`** — the
+fourth verdict word, reported as *`Open — owes n (rel: n, …)`* with `k = 0`,
+where it read `Solution` before.
 [`tests/stdlib/algebra/23_total_owed.ein`](../../../../tests/stdlib/algebra/23_total_owed.ein)
-is that state with a number attached, and S1d.2.6 is where the word is
-decided.
+is that state with a number attached, and it is one of the twelve corpus
+entries the word moved. The distinction it draws is *no model* against *not yet
+a model*, so `false` outranks it and a discharged model outranks it; it exits
+**0** like the other three. It is **scoped** — only a program that *states* an
+obligation can reach it, which is why the 92 corpus entries that declare none
+report exactly the words they did before P1d.2
+([`defined_behaviour.md` §5](../../defined_behaviour.md),
+[the census](../../../history/m1d_satisfiability/openness_census.md)).
+
+`:expect` did **not** grow a word for it, and could not: all three of its forms
+are assertions about *facts*, and an `open` conclusion is by construction never
+a fact. An open state's `(model …)` claim is checked against the facts it
+reached, and every one of the twelve still holds unchanged.
 
 ### The stdlib's four
 
@@ -243,12 +255,17 @@ candidate stays parked and is re-judged at every later quiescence
 | `__symmetric__` | `(__symmetric__ R)` | close R's extension under arg-swap natively in the saturator (`(R a b)` ⇒ `(R b a)`) — a **dunder** kernel perf-opt counterpart of the stdlib `symmetric` rule (identical closure, skips the matcher per mirror) | `ein-infer/saturator.rs` (`SYMMETRIC`) |
 | `hypothesis-relations` | `(query … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator to the listed relations | `hypgen` (`HYPOTHESIS_RELATIONS`) |
 | `no-hypothesis` | `(query … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire) | `hypgen` (`NO_HYPOTHESIS`) |
-| `expect` | `(query … :expect (model …) \| (or (model …) …) \| none)` | what the answer should be — the query's own claim, checked by the engine (M1c S1c.1.2). `ein solve` exits 1 when it is false | `ein-ir/expect.rs` (shape, at load) + `ein-infer/expect.rs` (the comparison) |
+| `expect` | `(query … :expect (model …) \| (or (model …) …) \| (false))` | what the answer should be — the query's own claim, checked by the engine (M1c S1c.1.2). `ein solve` exits 1 when it is false | `ein-ir/expect.rs` (shape, at load) + `ein-infer/expect.rs` (the comparison) |
 
-**A `(query …)` keyword outside this set is a load error** since M1c S1c.1.2 —
-the six above plus `:goal`, `:goal-text`, `:hrules` and the obsolete, ignored
-`:mode`. It was a silent no-op, which stopped being survivable when a keyword
-could carry a *test*.
+**A `(query …)` keyword outside the allow-list is a load error** since M1c
+S1c.1.2. The list is **seven**: the three query keywords above
+(`:hypothesis-relations`, `:no-hypothesis`, `:expect` — the two dunder triggers
+in the same table are facts, not keywords), plus `:goal`, `:goal-text`,
+`:hrules` and the obsolete, ignored `:mode`
+([`from_ir.rs`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs)'s
+`QUERY_KEYWORDS`; the same seven are named in the diagnostic,
+[`defined_behaviour.md` §4.1](../../defined_behaviour.md)). It was a silent
+no-op, which stopped being survivable when a keyword could carry a *test*.
 
 ## Not reserved (removed)
 

@@ -197,7 +197,7 @@ and the normative reading of a boundary query is
 | `CanonicalSetId` (`apriori`) | a sorted tuple of FactIds = one **commitment set** | a CSP partial assignment / an ATMS environment / an itemset |
 | no-good `Clause = frozenset[FactId]` (`nogoods`) | a learned "this combination is dead" clause, kept subsumption-minimal | CDCL conflict clause / CSP no-good |
 | `SolutionRecord` / `DeadCommitment` (`monotonic/lattice`) | a recorded model / refutation with its `state_key` and core | model / unsat certificate |
-| `Verdict` (`verdict`) | `Solution \| Ambiguity \| Contradiction` + optional `LatticeProof` | SAT/UNSAT/MULTIPLE + certificate |
+| `Verdict` (`verdict`) | `Solution \| Ambiguity \| Contradiction \| Open` (§2 — the fourth is *owing*, not *unsat*) + optional `LatticeProof` | SAT/UNSAT/MULTIPLE + certificate |
 
 ---
 

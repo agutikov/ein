@@ -407,10 +407,17 @@ saturation agenda. `(open ?R)` names the incomplete relation and nothing
 else: the witness domain and the slot to fill are projected out of the rule's
 own `(absent …)`, and five shapes are refused at load rather than guessed.
 The form, the refusals and their messages are in
-[`06_reserved_names.md` § the verdict atom](06_reserved_names.md#the-verdict-atom--open-m1d-p1d2-s1d23)
+[`06_reserved_names.md` § the verdict atom](06_reserved_names.md#the-verdict-atom--open-m1d-p1d2-s1d23-read-since-s1d24)
 and [`defined_behaviour.md` §4.2](../../defined_behaviour.md).
-**Since S1d.2.3 nothing reads the tally** — the atom loads and round-trips,
-and a program using it is legal and inert.
+**The tally is read twice.** Since S1d.2.4
+[`obligations::tally`](../../../../ein.rs/crates/ein-infer/src/obligations.rs)
+reports it — on `--events` as one `owe` line per undischarged instance, in
+`--json-summary`'s `owes` block, and as the trace's *Outstanding obligations*
+section — and since S1d.2.6 the **verdict** reads it: a state that is
+consistent, quiescent and complete by the generator's test while still owing a
+witness is `Open`, not `Solution`. Since S1d.2.5 the search reads it a third
+way, as the middle rung of the hypothesis ladder: the facts that would
+discharge what the state owes are what it branches on.
 
 #### NAF evaluation timing — the closure/world boundary
 
