@@ -20,7 +20,7 @@ records which question became which id.
 | [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | **decided 2026-08-28** — *an argument suffices when its premise is itself enforced*, written into [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md). The `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
 | [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | **answered 2026-08-30 — (c)**, by [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) T1. The destination was already written into [`docs/history/README.md`](../../docs/history/README.md): M1's survivors went to `docs/kernel/inference/` at P1.22, so `m1_core/` is a directory the tree **declined**, and what a superseded page needed was the banner. The general rule — *a page is moved into an existing milestone record, never made into one* — plus the triage of all 40 pages |
 | [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | open — [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md) |
-| [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — **but its instance is gone**: [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) fixed all three of `CO-H3` on 2026-08-29 and the tree's read-out is now true rather than merely refused. The *rule* is still unwritten, and M1d's `T1d.10.6.4` is the co-owner. [S1f.10.7](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it |
+| [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — **and it has an instance again**: [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) closed all three of `CO-H3` on 2026-08-29, and [S1e.3.2](p1e.3_medium/s1e.3.2_semantics.md) found a fourth on 2026-08-31 — `ein test`'s `NOT CHECKED` line names two causes and under `EIN_TRAVERSAL=tree` neither applies. Documented, not fixed: the honest fix is a reason type in `ein-infer`, which is `T1d.10.6.4` again. [S1f.10.7](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it |
 | [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model) | What is a **solution**, and what is a **model**? | **decided 2026-08-28** by the user; binding on [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) and on [P1f.10](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md) |
 | [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) | The read-out prints the solution **KB** and calls it a model | **decided 2026-08-28 — A**: the recorded object is the *state*, `model` is a projection of it, and § 2 is evaluated on the state. Unblocks Q-M1e.8. S1e.3.2 applies it to the vocabulary, P1e.5's S1e.5.3 to the read-out |
 | [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness. The **record-site conformance check** is [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) T4 ([D3](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d3_q_m1e8_file_or_take.md), option B); the fix files to P1e.2 and, since [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) was ruled on 2026-08-28, **is chosen**: re-saturate and re-check before recording |
@@ -248,6 +248,24 @@ question is still the right home for:
    that word licenses is undecided. What S1e.2.1 establishes is only a lower
    bound on the answer: on this occasion the true read-out was **cheaper** than
    the refusal, so the question was not tested.
+3. *A fourth instance, found 2026-08-31 by
+   [S1e.3.2](p1e.3_medium/s1e.3.2_semantics.md) while documenting the shipped
+   subset.* `ein test`'s `NOT CHECKED` line reads **"Either the run stopped at
+   `-n`, or the frontier is still alive at `--max-set-size`"**
+   ([`expect.rs`](../../ein.rs/crates/ein-infer/src/expect.rs) `ok_if_exhausted`,
+   and again in the too-few-models arm). Under this traversal **neither cause
+   applies**: the tree exhausted its own search and `-m` is refused at exit 2.
+   It is the same shape as (b) one layer out — a surface naming evidence it
+   does not have — and it is *reached on the first attempt*, because a tree run
+   reports `exhausted = false` by design and therefore can never mark a claim
+   `held`.
+
+   Not fixed there, and the reason is the shape of the fix rather than its
+   size: `expect::check` is handed a `bool` and cannot know **why** a search
+   did not exhaust, so making the sentence true means giving `ein-infer` a
+   reason type — which is the same question as *what does a tree report where a
+   lattice reports layers*, i.e. `T1d.10.6.4` again. Documented meanwhile in
+   [`configuration.md` § What `EIN_TRAVERSAL=tree` reports](../../docs/kernel/configuration.md).
 
 ## Q-M1e.6 — What is a **solution**, and what is a **model**?
 

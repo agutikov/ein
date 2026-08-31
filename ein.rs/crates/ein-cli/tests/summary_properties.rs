@@ -21,6 +21,13 @@
 //! written down** — 176 solve cells, every entry including the `slow` ones,
 //! under `ein solve --json-summary`. Two of them are not identities but
 //! *reasons*, and they are the interesting ones: see [`STRUCTURAL_ZEROS`].
+//!
+//! The file's **second** test is not about the numbers but about the frame
+//! they arrive in: [`the_summary_has_one_shape_on_every_arm`] holds every
+//! verdict word — and the budget abort, which is not one — to a single key
+//! set. That is `summary.rs`'s own thrice-stated rule (*a field that appears
+//! only sometimes is a field a consumer has to guess about*) applied to the
+//! producer, and M1e S1e.3.2's `SE-M2` is the arm that had broken it.
 
 use ein_core::{Kb, SolverConfig, Terms};
 use ein_corpus::{corpus_files, repo_root};
@@ -143,6 +150,162 @@ fn summary(path: &std::path::Path, regime: &str, budget: u64, exhaustive: bool) 
     )
     .ok()?;
     serde_json::from_str(&ein_render::dump::json::dumps_indent(&json)).ok()
+}
+
+// ── The schema's shape, on every arm ────────────────────────────────
+
+/// One cell per **verdict word**, plus the reason it is the one named.
+///
+/// A cover rather than a sweep, for [`cli_semantics::EVENT_COVER`]'s reason:
+/// the question — *does the schema's shape depend on the answer?* — is
+/// answered as well by five arms as by nine hundred cells, and this way the
+/// test costs five solves. What a cover cannot do is notice that a file
+/// stopped producing the word it is here for, so each row's word is asserted
+/// before the shape is.
+///
+/// [`cli_semantics::EVENT_COVER`]: ../cli_semantics.rs
+const SHAPE_COVER: [(&str, &str); 4] = [
+    ("examples/features/10_expect.ein", "Solution"),
+    ("examples/features/11_expect_ambiguity.ein", "Ambiguity"),
+    ("examples/features/12_expect_false.ein", "Contradiction"),
+    ("tests/stdlib/slots/03_fill.ein", "Open"),
+];
+
+/// The blocks whose keys come from the **data** and not from the schema: a
+/// relation name, a filter's name, a pre-candidate skip's name. Their key sets
+/// differ per program by construction and are not part of the shape.
+const SPARSE_BLOCKS: [&str; 4] = [
+    "by_relation",
+    "facts_by_relation",
+    "filtered",
+    "pre_candidate",
+];
+
+/// A summary's **shape**: every object's key list, at its path.
+///
+/// Arrays are opaque — `verdict.solutions` is empty on three of the five arms
+/// and descending into it would make the shape differ for the one reason that
+/// is not a defect. What is compared is the frame a consumer switches on.
+fn shape(v: &J) -> String {
+    fn walk(v: &J, path: &str, out: &mut Vec<String>) {
+        let J::Object(map) = v else { return };
+        let keys: Vec<&str> = map.keys().map(String::as_str).collect();
+        out.push(format!("{path}{{{}}}", keys.join(",")));
+        for (k, child) in map {
+            if SPARSE_BLOCKS.contains(&k.as_str()) {
+                continue;
+            }
+            walk(child, &format!("{path}.{k}"), out);
+        }
+    }
+    let mut out = Vec::new();
+    walk(v, "", &mut out);
+    out.join("\n")
+}
+
+/// **`ein-summary/1` has one shape, and the `Aborted` arm has it too.**
+///
+/// `summary.rs` states the rule three times — *a field that appears only
+/// sometimes is a field a consumer has to guess about* — and until M1e
+/// S1e.3.2 the arm that broke it was its own: `build_aborted` assembled a
+/// second object by hand, and that copy had lost `verdict.open_states` and the
+/// whole `leftover` block. A consumer switching on the schema version saw two
+/// keys only on runs that finished (`SE-M2`).
+///
+/// The fix is that there is no second assembly — `build_aborted` is `build`
+/// with an `Answer::Aborted` — so this test is the guard on the property
+/// rather than the thing that establishes it. It would also have caught the
+/// original, which is what makes it worth having: the defect was found by
+/// reading, and a shape nothing compares is a shape that drifts again.
+#[test]
+fn the_summary_has_one_shape_on_every_arm() {
+    let mut shapes: std::collections::BTreeMap<String, Vec<String>> = Default::default();
+    for (rel, word) in SHAPE_COVER {
+        let path = repo_root().join(rel);
+        let s = summary(&path, "exhaustive", 300, true)
+            .unwrap_or_else(|| panic!("{rel} did not produce a summary"));
+        assert_eq!(
+            s["verdict"]["type"].as_str(),
+            Some(word),
+            "{rel} is in the cover for {word} and answered {}",
+            s["verdict"]["type"]
+        );
+        shapes.entry(shape(&s)).or_default().push(rel.to_string());
+    }
+
+    // The fifth arm. A budget cut is the one answer no program states, so it
+    // is produced rather than named: `OnBudget::Raise` with a one-entering cap
+    // on a file that searches.
+    let rel = "examples/zebra2.ein";
+    let path = repo_root().join(rel);
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let mut kb = load_file(&mut ast, &mut terms, &path).expect(rel);
+    let config = kb.program().config.clone().unwrap_or_default();
+    let opts = SolveOptions {
+        stop_after: None,
+        max_set_size: 5,
+        config: Some(config.clone()),
+        max_enterings: Some(1),
+        on_budget: OnBudget::Raise,
+        store_lattice: false,
+        ..SolveOptions::default()
+    };
+    let mut events = Events::off();
+    let err = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
+        .err()
+        .expect("a one-entering cap aborts the zebra");
+    let ein_infer::solve::SolveError::Budget { reason, stats } = err else {
+        panic!("the cap did not raise a budget error: {err:?}");
+    };
+    let aborted = ein_cli::summary::build_aborted(
+        &ast,
+        &mut terms,
+        &mut kb,
+        &reason,
+        &stats,
+        &config,
+        rel,
+        &mut events,
+    )
+    .expect("the aborted summary builds");
+    let aborted: J = serde_json::from_str(&ein_render::dump::json::dumps_indent(&aborted))
+        .expect("the aborted summary is JSON");
+    assert_eq!(aborted["verdict"]["type"], "Aborted");
+    assert_eq!(
+        aborted["verdict"]["reason"], reason,
+        "the arm that has a reason does not carry it"
+    );
+    shapes
+        .entry(shape(&aborted))
+        .or_default()
+        .push(format!("{rel} [aborted]"));
+
+    // …and the four that do not have one say so, rather than omitting the key.
+    for (rel, _) in SHAPE_COVER {
+        let s = summary(&repo_root().join(rel), "exhaustive", 300, true).expect(rel);
+        assert_eq!(
+            s["verdict"]["reason"],
+            J::Null,
+            "{rel} is not an abort and carries a reason"
+        );
+    }
+
+    assert_eq!(
+        shapes.len(),
+        1,
+        "the schema has {} shapes, not one:\n{}",
+        shapes.len(),
+        shapes
+            .iter()
+            .map(|(shape, who)| format!("  {} →\n{shape}", who.join(", ")))
+            .collect::<Vec<_>>()
+            .join("\n")
+    );
+    eprintln!(
+        "summary shape: one frame over {} arms",
+        SHAPE_COVER.len() + 1
+    );
 }
 
 fn u(v: &J, path: &str) -> i64 {

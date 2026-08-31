@@ -841,3 +841,222 @@ fn a_files_rows_are_indexed_from_its_own_base() {
     assert_eq!(rows[2]["expect"]["shape"], "model");
     assert_eq!(rows[2]["ran"]["verdict"], "Solution");
 }
+
+// ── The two surfaces that report one run ───────────────────────────
+
+/// The header line [`check_query`] prints for a query, **rebuilt from that
+/// query's report row**.
+///
+/// The direction is the whole point: every number comes from the row, under
+/// the row's names, so a header that printed one of them under the other's
+/// label fails here. That is exactly what `SE-M1` was — `k = {}` carried
+/// `stats.solution_nodes`, which parts from `Verdict::k` on every `Open`
+/// entry, so the human-facing and the machine-facing surfaces of one run
+/// disagreed by name on twelve of the corpus's programs.
+fn header_for(row: &serde_json::Value) -> String {
+    let goal = row["goal"].as_str().unwrap_or("?");
+    let (q, n) = (
+        row["query"].as_u64().expect("a query index"),
+        row["queries"].as_u64().expect("a query count"),
+    );
+    let where_ = if n == 1 {
+        format!(":goal {goal}")
+    } else {
+        format!("query {q} of {n} · :goal {goal}")
+    };
+    let verb = match row["outcome"].as_str().expect("an outcome") {
+        "held" => "holds",
+        "failed" => "FAILED",
+        "not-checked" => "NOT CHECKED",
+        other => panic!("a row carrying a run came out {other}: {row}"),
+    };
+    let ran = &row["ran"];
+    format!(
+        "  {where_} — {verb} ({}, k = {}, recorded = {})",
+        ran["verdict"].as_str().expect("a verdict"),
+        ran["k"],
+        ran["solution_nodes"],
+    )
+}
+
+/// The query headers of a `-v` run: two leading spaces, where a file's status
+/// line has none and a disagreement's detail line has four.
+fn headers(out: &str) -> Vec<String> {
+    out.lines()
+        .filter(|l| l.starts_with("  ") && !l.starts_with("    "))
+        .map(str::to_string)
+        .collect()
+}
+
+/// **The verbose header and the report row are one run, said twice** — M1e
+/// S1e.3.2, `SE-M1`.
+///
+/// The finding was one label and [S1e.3.4] fixed it; this is the half that
+/// makes the *class* closed rather than the instance. `ein test` publishes
+/// what a run found through two surfaces — a line a human reads and a row a
+/// census parses — and nothing compared them, which is how the header came to
+/// print the search's count under the verdict's name and stay that way from
+/// S1c.1.3 to M1e.
+///
+/// The whole corpus in one invocation, because it costs 0.04 s and because the
+/// interesting cells are the ones a hand-picked cover would not have thought
+/// to include: **13 of the 68 checked queries have `k != solution_nodes`**,
+/// and every one of them is a program that states an obligation.
+///
+/// [S1e.3.4]: ../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.4_architecture.md
+#[test]
+fn the_verbose_header_and_the_report_row_agree_field_for_field() {
+    let d = Dir::new("cross-surface");
+    let out = d.0.join("r.json");
+    let r = ein(&[
+        "test",
+        "examples",
+        "tests",
+        "stdlib",
+        "-v",
+        "--json-report",
+        &out.to_string_lossy(),
+    ]);
+    let doc: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
+
+    // Every row that carries a run, in walk order — which is print order, so
+    // the two sequences are comparable position for position.
+    let ran: Vec<&serde_json::Value> = doc["rows"]
+        .as_array()
+        .expect("rows")
+        .iter()
+        .filter(|x| !x["ran"].is_null())
+        .collect();
+    // A query-level error prints a header and carries no run; the selection
+    // must have none, or the two sequences are not the same length for a
+    // reason that is not a defect. (`examples/broken/` errors at *file* level
+    // and prints no header.)
+    assert!(
+        doc["rows"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|x| x["outcome"] != "error" || x["query"] == 0),
+        "a query-level error is in the selection; the correspondence below is \
+         about queries that ran"
+    );
+
+    let observed = headers(&r.out);
+    let expected: Vec<String> = ran.iter().map(|row| header_for(row)).collect();
+    assert_eq!(
+        observed.len(),
+        expected.len(),
+        "the run printed {} query headers and the report carries {} runs",
+        observed.len(),
+        expected.len()
+    );
+    // The **first** disagreement, not all of them: 68 lines of context bury
+    // the one line that is the finding, which is `events.md`'s rule for the
+    // stream differ and the same rule here.
+    if let Some((i, (got, want))) = observed
+        .iter()
+        .zip(&expected)
+        .enumerate()
+        .find(|(_, (a, b))| a != b)
+    {
+        let row = ran[i];
+        panic!(
+            "query {i} of the selection reports two different runs\n  \
+             header: {got}\n  row:    {want}\n  from:   {}",
+            row["path"]
+        );
+    }
+
+    // …and it is not vacuous. The cell that matters is the one where the two
+    // numbers differ: if none did, the header could still be printing either
+    // of them.
+    assert!(
+        expected.len() >= 60,
+        "only {} queries ran — the selection stopped covering the corpus",
+        expected.len()
+    );
+    let split = ran
+        .iter()
+        .filter(|x| x["ran"]["k"] != x["ran"]["solution_nodes"])
+        .count();
+    assert!(
+        split >= 12,
+        "only {split} of {} checked queries have k != solution_nodes — the \
+         regime this test exists for is not in the selection",
+        expected.len()
+    );
+    let words: std::collections::BTreeSet<&str> = ran
+        .iter()
+        .filter_map(|x| x["ran"]["verdict"].as_str())
+        .collect();
+    assert!(
+        words.len() >= 4,
+        "the selection reached only {words:?}; the header is per-verdict"
+    );
+}
+
+/// The same correspondence on the two outcomes the corpus does not contain,
+/// and on the multi-query header form — a claim that is **false** and one
+/// nobody could **check**, in one file, at a cap that truncates the second.
+///
+/// `held` is 68 of 68 in the sweep above by construction: the gate is green.
+/// A test that only ever saw `holds` would not notice a verb that stopped
+/// being rendered, and the row's `outcome` is the field with the most words.
+#[test]
+fn the_two_surfaces_agree_on_a_failure_and_on_an_unchecked_claim() {
+    let d = Dir::new("cross-surface-red");
+    let searched = "(relation instance Thing Type)\n\
+         (instance Ann Person) (instance Bob Person)\n\
+         (relation seat Person Slot)\n\
+         (rule one-slot (?R) :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c)) \
+          :assert (false) :priority 250)\n\
+         (rule one-person (?R) :match (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b)) \
+          :assert (false) :priority 250)\n\
+         (one-slot seat) (one-person seat)\n\
+         (hrule guess (?x ?y) :match (instance ?x Person) :assert (seat ?x ?y))\n";
+    let f = d.file(
+        "mixed.ein",
+        &format!(
+            "{BODY}{searched}{FALSE_CLAIM}\
+             (query :goal (seat ?w ?s) :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
+              :expect (or (model (seat Ann S1) (seat Bob S2)) \
+                          (model (seat Ann S2) (seat Bob S1))))\n"
+        ),
+    );
+    let out = d.0.join("r.json");
+    let r = ein(&[
+        "test",
+        &f,
+        "-m",
+        "1",
+        "-v",
+        "--json-report",
+        &out.to_string_lossy(),
+    ]);
+    assert_eq!(r.code, 1, "{}{}", r.out, r.err);
+    let doc: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
+    let ran: Vec<&serde_json::Value> = doc["rows"]
+        .as_array()
+        .expect("rows")
+        .iter()
+        .filter(|x| !x["ran"].is_null())
+        .collect();
+    let outcomes: Vec<&str> = ran.iter().filter_map(|x| x["outcome"].as_str()).collect();
+    assert_eq!(
+        outcomes,
+        vec!["failed", "not-checked"],
+        "the fixture no longer produces one of each: {}",
+        r.out
+    );
+    let expected: Vec<String> = ran.iter().map(|row| header_for(row)).collect();
+    assert_eq!(headers(&r.out), expected, "{}{}", r.out, r.err);
+    // The multi-query form, spelled out once: a file with two queries names
+    // which of them the line is about, and the row is where that number comes
+    // from.
+    assert!(
+        expected[1].starts_with("  query 2 of 2 · :goal "),
+        "{expected:?}"
+    );
+}

@@ -461,6 +461,70 @@ by nine.
 | `EIN_PRIORITY` | *proposed* by [S1f.5.6](../../plans/m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/s1f.5.6_rule_priority.md); does not exist |
 | `EIN_NOGOOD_INJECT` | *proposed* by [S1e.1.2](../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md); does not exist |
 
+### What `EIN_TRAVERSAL=tree` reports
+
+The one **experimental** surface in the system (§ 2.3), and the only knob whose
+effect a reader cannot infer from the tables above: it does not change a
+setting, it runs a **second traversal**. What that traversal *reports* has been
+observable since M1d S1d.10.6 and stated nowhere, which is M1e
+[S1e.3.2](../../plans/m1e_review_processing/p1e.3_medium/s1e.3.2_semantics.md)'s
+`SE-M3`. This is the shipped subset — not
+[T1d.10.6.4](../history/m1d_satisfiability/README.md#s1d106--the-traversal),
+which is still the open question of what a tree *should* report where a lattice
+reports layers.
+
+It applies only where the tree **accepts**: the traversal runs on the
+obligations rung and declines on every other. A **declined** run answers
+exactly as the lattice does — every field of `--json-summary` is identical on
+`examples/zebra2.ein`, counters included — but its `--events` stream is not:
+root's probe is a real generation call, so a declined run carries one extra
+pass of it (125 further `hyp` and 125 further `compile` lines on that file)
+plus the `traversal` line that says it declined.
+
+**1 — `exhausted` is `false`, always.** A tree terminates by *discharge* and a
+lattice by *exhaustion*, and the sentence saying what discharge licenses is
+T1d.10.5.1's and is not written. Until it is, `Run::tree` sets `truncated`
+unconditionally, so every count a tree reports is a **lower bound** and every
+read-out says so. Three surfaces carry it:
+
+- an `Ambiguity` prints `solutions (k)   3   (a lower bound — the search did
+  not exhaust)` and *"distinct complete models **found**"*, the qualifier
+  S1d.3.3 added;
+- a `Contradiction` reads *No model found — the search did not exhaust the
+  lattice* over *refuted so far (n facts)*, where the same program under the
+  lattice reads *No solution — the constraints are contradictory* over *unsat
+  core (n facts)* — the same n, the same facts, a weaker claim;
+- **`ein test` cannot mark such a program's claim `held`.** An expectation is a
+  claim about the *exhausted* answer, so every `:expect` on a program the tree
+  accepts comes back `NOT CHECKED` and the runner exits **1**. That is not a
+  defect in either component and it is not visible from either: it is what
+  running a non-certifying traversal under a command that exhausts by
+  definition comes to.
+
+**2 — a dead branch is recorded, and nothing is learned from it.** M1e
+[S1e.2.1](../../plans/m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md),
+`CO-H3`(b): the refuted commitment and its core reach the answer — so a
+`Contradiction` states what it refuted and `--trace` lists the branches — while
+the clause store and the singleton `(not h)` writeback stay untouched. So
+`nogoods_emitted` and `nogoods_subsumed` are **0** on any tree run, `emitted=0`
+is honest rather than lost, and the search is unchanged: the published **86
+enterings** on `examples/zebra2-minus-15-obligations.ein` were re-measured
+after the recording landed.
+
+**3 — `layers_explored` is the deepest node.** A tree has no layers; the
+counter carries its depth instead, which is a different quantity under the same
+name. That conflation is precisely `T1d.10.6.4`'s question, and it is why this
+is an environment variable and not a flag.
+
+**4 — the event stream is missing four kinds.** One `traversal` line says
+whether the tree ran and what it took of the stop policy; `enter`, `layer`,
+`nogood` and `writeback` are **not emitted at all**, so the enterings are
+invisible in a stream that still counts them. The row and the reasons are
+[`inference/events.md` § `traversal`](inference/events.md#traversal--the-second-traversal-and-the-four-kinds-it-does-not-emit).
+
+**5 — the stop policy** is § [3.3](#33-what-an-option-can-do-to-the-answer):
+`-n` honoured, `-m` refused at exit 2 in all three subcommands.
+
 ---
 
 ## 5. What is deliberately *not* configuration

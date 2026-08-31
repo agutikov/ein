@@ -74,11 +74,20 @@ impl Run {
 }
 
 fn ein(args: &[&str]) -> Run {
-    let out = Command::new(env!("CARGO_BIN_EXE_ein"))
-        .args(args)
-        .current_dir(repo_root())
-        .output()
-        .expect("the `ein` binary runs");
+    ein_env(&[], args)
+}
+
+/// The same, with process environment. A **child** process is the only way to
+/// set an `EIN_*` name in this file: cargo runs these tests as threads of one
+/// binary, and a `set_var` here would be read by whatever else is mid-solve.
+/// Two callers — [`EVENT_COVER`]'s traversal row and [`ein_traversal`].
+fn ein_env(env: &[(&str, &str)], args: &[&str]) -> Run {
+    let mut cmd = Command::new(env!("CARGO_BIN_EXE_ein"));
+    cmd.args(args).current_dir(repo_root());
+    for (k, v) in env {
+        cmd.env(k, v);
+    }
+    let out = cmd.output().expect("the `ein` binary runs");
     Run {
         code: out.status.code().unwrap_or(-1),
         out: String::from_utf8_lossy(&out.stdout).into_owned(),
@@ -1135,36 +1144,56 @@ fn events_off_formats_nothing_and_does_not_count() {
 /// [`events.md`](../../../../docs/kernel/inference/events.md) defines, and the
 /// kind each is here for.
 ///
-/// A five-file cover rather than the whole corpus: the sweep is 0.06 s this
+/// A six-file cover rather than the whole corpus: the sweep is 0.06 s this
 /// way and 40 s the other, and the question — *is any kind unreachable?* — is
 /// answered as well by a cover as by a sweep. What the cover cannot do is
 /// notice a kind that stopped being emitted by a file **not** listed here,
 /// which is why each entry names its reason.
-const EVENT_COVER: [(&str, &str); 6] = [
+///
+/// The third column is the **environment** the row needs, `NAME=value` or
+/// empty. Exactly one row has one, and it is the reason the column exists: a
+/// kind reachable only under an environment variable is a kind no
+/// default-environment sweep can see, which is how `traversal` shipped at M1d
+/// S1d.10.6 and reached M1e undocumented (`SE-M3`).
+const EVENT_COVER: [(&str, &str, &str); 7] = [
     (
         "examples/branching/01_saturate_only.ein",
         "the lifecycle and the deductive layer",
+        "",
     ),
     (
         "examples/branching/02_one_dead_one_alive.ein",
         "enter / nogood / alt",
+        "",
     ),
     (
         "examples/branching/07_lookahead_off.ein",
         "writeback — the singleton (not h)",
+        "",
     ),
     (
         "examples/branching/12_typed_blind_solve.ein",
         "park / admit / retire — the NAF boundary",
+        "",
     ),
     (
         "examples/features/06_symmetric_native.ein",
         "mirror — the native arg swap",
+        "",
     ),
     (
         "tests/stdlib/algebra/23_total_owed.ein",
         "owe — the post-fixpoint obligation pass, which no other cover file \
          activates",
+        "",
+    ),
+    (
+        "examples/zebra2-obligations.ein",
+        "traversal — and the *accepted* arm of it, which needs a program whose \
+         root probe comes back `obligations`: the five other rungs decline, \
+         and a decline narrates the same kind for none of the reasons the \
+         kind exists for",
+        "EIN_TRAVERSAL=tree",
     ),
 ];
 
@@ -1219,21 +1248,28 @@ fn schema_kinds() -> BTreeSet<String> {
 fn every_event_kind_the_schema_defines_is_reachable_from_the_corpus() {
     let scratch = Scratch::new("cover");
     let mut seen: BTreeMap<String, usize> = BTreeMap::new();
-    for (i, (file, _why)) in EVENT_COVER.iter().enumerate() {
+    for (i, (file, _why, env)) in EVENT_COVER.iter().enumerate() {
         let path = scratch.at(&format!("cover-{i}.jsonl"));
+        let env: Vec<(&str, &str)> = env
+            .split_once('=')
+            .map(|(k, v)| vec![(k, v)])
+            .unwrap_or_default();
         // A budget, so the two large fixtures stay fast; the kinds they are
         // here for are all emitted well before it.
-        ein(&[
-            "solve",
-            file,
-            "-e",
-            "-E",
-            "60",
-            "--events",
-            &path,
-            "--events-level",
-            "verbose",
-        ]);
+        ein_env(
+            &env,
+            &[
+                "solve",
+                file,
+                "-e",
+                "-E",
+                "60",
+                "--events",
+                &path,
+                "--events-level",
+                "verbose",
+            ],
+        );
         for e in events_of(&path) {
             *seen
                 .entry(e["e"].as_str().unwrap_or("?").to_string())
@@ -1241,8 +1277,11 @@ fn every_event_kind_the_schema_defines_is_reachable_from_the_corpus() {
         }
     }
     let schema = schema_kinds();
+    // The row count, not a floor with slack: the three payload tables have 21
+    // kind cells and a removed kind is a schema version bump (§ Versioning),
+    // so it should have to be typed here too.
     assert!(
-        schema.len() >= 18,
+        schema.len() >= 21,
         "EVENTS.md parsed to only {} kinds — the table shape moved: {schema:?}",
         schema.len()
     );
@@ -1868,17 +1907,7 @@ fn a_truncated_k0_is_not_reported_as_a_refutation() {
 
 /// `ein solve`, with `EIN_TRAVERSAL` set for the child process only.
 fn ein_traversal(traversal: &str, args: &[&str]) -> Run {
-    let out = Command::new(env!("CARGO_BIN_EXE_ein"))
-        .args(args)
-        .env("EIN_TRAVERSAL", traversal)
-        .current_dir(repo_root())
-        .output()
-        .expect("the `ein` binary runs");
-    Run {
-        code: out.status.code().unwrap_or(-1),
-        out: String::from_utf8_lossy(&out.stdout).into_owned(),
-        err: String::from_utf8_lossy(&out.stderr).into_owned(),
-    }
+    ein_env(&[("EIN_TRAVERSAL", traversal)], args)
 }
 
 /// **`--max-set-size` is refused under `EIN_TRAVERSAL=tree`, and `-n` is

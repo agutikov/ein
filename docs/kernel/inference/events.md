@@ -8,7 +8,9 @@
 object per line**, opt-in, off by default.
 Every compile miss, enqueue, firing, mirror, park/admit/retire, quiescence,
 alternative justification, hypothesis verdict, entering, no-good and writeback,
-in the order the engine performed them.
+in the order the engine performed them — with one exception, and it is
+declared: under `EIN_TRAVERSAL=tree` four of those kinds are not emitted at
+all, which is [§ `traversal`](#traversal--the-second-traversal-and-the-four-kinds-it-does-not-emit).
 
 It is specified as a schema rather than as debug output, so every observer — a
 trace viewer, a benchmark harness, an embedder,
@@ -180,6 +182,7 @@ carrying it makes the heap's pop order checkable rather than inferred.
 | `layer` | every way out of a layer | the census row — sixteen counters, below |
 | `nogood` | `emit_nogood` | `clause`, `emitted`, `subsumed` |
 | `writeback` | singleton `(not h)` / forced-positive promotion | `fact`, `reason` |
+| `traversal` | the **second traversal** deciding whether to run — once at root, and again at any node that changes its mind. `EIN_TRAVERSAL=tree` only | `kind` (always `tree`), `verdict` ∈ {`accepted`, `declined`}, `reason` (the rung `mode`), then `max_set_size` + `stop_after` on `accepted` and `depth` on a node's `declined` |
 
 `hyp`'s `verdict` is the *name of the thing that dropped the candidate*, not a
 boolean: `raw == emitted + Σ filtered` is the invariant `HypGenStats` already
@@ -269,15 +272,86 @@ still alive and a learned clause covered the set anyway* — which is the clause
 store's yield, and the reason for the split.
 
 **A layer emits its row however it ends** — the barrier, an `-n` cut, a `-T` or
-`-E` budget — so `Σ entered` is `enterings_total` on any run at all. That is
-what makes a budget a **probe**: `solve -e -m 4 -E <enterings so far + 1>`
-*generates* layer 4 and reports what the join proposed without entering it,
+`-E` budget — so `Σ entered` is `enterings_total` on any lattice run at all.
+That is what makes a budget a **probe**: `solve -e -m 4 -E <enterings so far +
+1>` *generates* layer 4 and reports what the join proposed without entering it,
 which is how [S1d.10.1](../../../docs/history/m1d_satisfiability/layer_census.md)
-priced a depth nobody can run.
+priced a depth nobody can run. Under `EIN_TRAVERSAL=tree` there are no layers
+and the sum is `0` against a non-zero `enterings_total` — see
+[§ `traversal`](#traversal--the-second-traversal-and-the-four-kinds-it-does-not-emit).
 
 **No timing here.** A `ms` field would make the stream non-deterministic and the
 goldens unreadable; ground rule 4 says an instrumented run is not a benchmark
 anyway. `utils/layer_census.py` times a **second, bare** child for that reason.
+
+#### `traversal` — the second traversal, and the four kinds it does not emit
+
+Added by M1e
+[S1e.3.2](../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.2_semantics.md)
+for a line M1d
+[S1d.10.6](../../history/m1d_satisfiability/README.md#s1d106--the-traversal)
+had been emitting since it shipped. **`EIN_TRAVERSAL=tree` only** — every
+stream taken without it is byte-identical to the streams taken before the
+traversal existed, which is the same promise `rung` makes.
+
+The tree branches on **one owed instance's alternatives** instead of
+enumerating subsets of a fixed `alive`, and it runs on the obligations rung and
+on no other: an hrule's candidates are not jointly exhaustive, and branching on
+them is the `d!`-per-set depth-first solver P1.5b deleted. So the first thing
+it does is ask the rung, and this line is the answer.
+
+| `verdict` | when | the rest of the payload |
+|---|---|---|
+| `accepted` | root's probe came back `obligations` — the tree runs and the lattice does not | `max_set_size`, the **sentence** *not applicable — depth is bounded by discharge*, and `stop_after` (`-1` when the run is unbounded) |
+| `declined` | root's probe came back anything else — the run is handed straight back to the lattice | — |
+| `declined` **with `depth`** | an inner node re-read the rung and it was no longer `obligations` | `depth` |
+
+`reason` is the rung `mode` verbatim (`obligations`, `hrules`, `blind`,
+`stuck`, `declined`), so a decline says *which* generator answered.
+
+**A declined run is the lattice's answer and not the lattice's stream.** Root's
+probe is a real generation call, not a lookup, so the stream carries one extra
+pass of it: on `examples/zebra2.ein` that is 125 further `hyp` lines, 125
+further `compile` lines and the `traversal` line, 16 435 events against 16 184.
+Every field of `--json-summary` is identical — counters, enterings and all —
+because the probe's `HypGenStats` is local and dropped. So a stream diff across
+this variable is a difference and a *verdict* diff is not.
+
+The third row is the one worth knowing about. Root's probe used to be the only
+one, on the premise that the rung is a property of the program; oblgen's mode
+per node depends on activator **facts** and a fork derives facts, so
+`Run::tree_node` re-reads it at every node it expands (M1e
+[S1e.2.1](../../../plans/m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md)).
+An inner node cannot hand the run back to the lattice, so *decline* there means
+*expand no further*, and this line is the only report of it. No corpus program
+reaches it — today's stdlib activators are all root-asserted — and the
+regression test is owed to
+[S1f.10.6](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md).
+
+**What an accepted tree does not narrate.** Four kinds this page lists are
+absent from a tree stream, and none of them is a bug:
+
+| kind | why |
+|---|---|
+| `enter` | it is emitted by `Run::finish_entering`, the lattice's wrapper; `tree_node` calls `commitment::try_commitment_set` directly and handles the result itself. **The enterings are invisible in the stream** — `stats.enterings_total` still counts them |
+| `layer` | there are no layers. `stats.layers_explored` carries the **deepest node** instead, which is a different quantity under the same name — [T1d.10.6.4](../../history/m1d_satisfiability/README.md#s1d106--the-traversal)'s question and the reason this is behind an environment variable |
+| `nogood` | a dead branch is **recorded and not learned from**. Its commitment and unsat core reach the answer, so a `Contradiction` states what it refuted; nothing is added to the clause store, so `nogoods_emitted` and `nogoods_subsumed` are `0` and the search stays byte-identical to the published **86 enterings** |
+| `writeback` | the singleton `(not h)` write is the other half of the same decision |
+
+Measured on the smallest program that reaches the dead arm — one person, two
+foods, a rule that refutes every choice — the lattice emits `enter` ×2,
+`layer`, `nogood` ×2 and `writeback` ×2 where the tree emits one `traversal`
+and none of those seven lines. Both enter twice and both report
+`enterings_total = 2`.
+
+**And the verdict is qualified.** A tree terminates by *discharge* and a
+lattice by *exhaustion*, so `Run::tree` sets `truncated` unconditionally: the
+`verdict` event's `exhausted` is `false` on every tree run, whatever it found.
+On the fixture above that is the difference between the lattice's *No solution
+— the constraints are contradictory* and the tree's *No model found — the
+search did not exhaust the lattice*, over the same two-fact core. What
+discharge would license instead is T1d.10.5.1's sentence and it is not written;
+until it is, a consumer reads `exhausted` as it reads it everywhere else.
 
 ## Comparison
 

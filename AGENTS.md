@@ -548,6 +548,20 @@ because no corpus program can flip the mode. The headline was re-measured on
 the way out: **86 enterings, 32 models, identical fact for fact** to the
 lattice's 48 745.
 
+**What it *reports* is written down since M1e S1e.3.2** (`SE-M3`), independent
+of `T1d.10.6.4` and in two places: the shipped subset is
+[`configuration.md` § What `EIN_TRAVERSAL=tree` reports](docs/kernel/configuration.md)
+and the stream half is
+[`events.md` § `traversal`](docs/kernel/inference/events.md). Three things an
+agent should know before running one. **`exhausted` is `false` on every tree
+run**, so `ein test` can never mark a claim `held` on a program the tree
+accepts — every `:expect` comes back `NOT CHECKED` and the runner exits 1,
+where the lattice holds the same claim. **`layers_explored` carries the deepest
+node**, not a layer count. And **four event kinds are not emitted at all** —
+`enter`, `layer`, `nogood`, `writeback` — so the enterings are invisible in a
+stream that still counts them, and `Σ entered = enterings_total` holds for a
+lattice run only.
+
 **`--models {list,key}`** is M1d
 [S1d.3.3](docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)'s
 and the only *lever* in this block that is a flag, because it is presentation

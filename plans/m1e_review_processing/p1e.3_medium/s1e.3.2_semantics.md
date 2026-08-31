@@ -67,7 +67,7 @@ pieces that already **ship** have no statement anywhere.
 
 ## Tasks
 
-### Task T1e.3.2.1 — `SE-M1`: two things called `k`
+### Task T1e.3.2.1 — `SE-M1`: two things called `k` ✅
 
 The finding is one label. The fix is a choice between two, and the second is
 better:
@@ -88,7 +88,7 @@ The `Solution` table arm has the same inheritance and is
 [CO-M2](s1e.3.1_correctness.md); the seam both live on is
 [AR-M2](s1e.3.4_architecture.md).
 
-### Task T1e.3.2.2 — `SE-M2`: the `Aborted` shape
+### Task T1e.3.2.2 — `SE-M2`: the `Aborted` shape ✅
 
 Emit `verdict.open_states` and `leftover` present-and-empty on aborts, the
 way `owes` already is. That is the schema's own rule applied to the one arm
@@ -108,7 +108,7 @@ While in `build_aborted`, check the rest of its shape against the normal
 build's: the review found two omissions by reading, and the property test
 will find any others by construction.
 
-### Task T1e.3.2.3 — `SE-M3`: document the shipped subset
+### Task T1e.3.2.3 — `SE-M3`: document the shipped subset ✅
 
 Not the design question — the shipped facts. Four of them, and each has a
 home:
@@ -136,3 +136,87 @@ reason there are two. If [S1e.3.4](s1e.3.4_architecture.md) takes the seam
 fix, both collapse into it and this stage keeps only the consistency test —
 which is the more valuable half anyway, since it is what keeps the class
 closed after the next verdict word arrives.
+
+---
+
+## Outcome
+
+Taken 2026-08-31, after [S1e.3.4](s1e.3.4_architecture.md) had already fixed
+`SE-M1`'s label and [S1e.3.1](s1e.3.1_correctness.md) had banked its witness.
+
+| | |
+|---|---|
+| **`SE-M1`** | **closed** — the label was S1e.3.4's; this stage added the half its own notes called the more valuable one. `the_verbose_header_and_the_report_row_agree_field_for_field` rebuilds every `-v` header **from the report row** and compares, over `ein test examples tests stdlib` — 68 checked queries in 0.06 s, of which **13** have `k != solution_nodes`. Its control: printing `solution_nodes` under `k =` again fails it on `examples/features/13_mixed_solution_and_open.ein`, by name |
+| **`SE-M2`** | **fixed at the seam, not the arm.** `build_aborted` is now `build` with an `Answer::Aborted`, so *every arm emits the same key set* is true by construction; the two omissions the review found (`verdict.open_states`, the whole `leftover` block) and one it did not (`verdict.reason`, which existed only on the aborted arm) are all consequences of that one line. Pinned by `the_summary_has_one_shape_on_every_arm` |
+| **`SE-M3`** | **documented** — [`events.md` § `traversal`](../../../docs/kernel/inference/events.md) and [`configuration.md` § What `EIN_TRAVERSAL=tree` reports](../../../docs/kernel/configuration.md). Five facts, not the four the task listed: the fifth is below |
+| `CD-M2` | its **third item** — *the `traversal` event has no row* — is closed by this commit, as the task's own instruction says. The other two ( `watched` on `admit`, `n_guards` naming a disjunct count) stay [S1e.3.7](s1e.3.7_code_doc_consistency.md)'s |
+| gate | `./run_tests.sh` green — **783 tests**, exit 0, five static checks and the bench smoke unmoved. No golden moved, no corpus cell moved, no counter moved |
+
+### The shipped subset was five facts, and the fifth is the one that bites
+
+The task named four. Measuring them turned up a fifth that nothing in the repo
+says and that a user meets on their first attempt:
+
+**Under `EIN_TRAVERSAL=tree`, `ein test` can never mark a claim `held`.** An
+expectation is a claim about the *exhausted* answer, and a tree reports
+`exhausted = false` by design. So every `:expect` on a program the tree
+**accepts** comes back `NOT CHECKED` and the runner exits **1** — measured on a
+five-line obligations program with an `(or …)` claim the lattice holds: `1
+held` under the lattice, `0 held, 1 not checked` under the tree, same two
+models. Neither component is wrong; it is what running a non-certifying
+traversal under a command that exhausts by definition comes to, and it is now
+the third bullet under *`exhausted` is `false`, always* in
+[`configuration.md` § What `EIN_TRAVERSAL=tree` reports](../../../docs/kernel/configuration.md).
+
+### Three things the review's four did not include
+
+**The four kinds a tree does not emit.** `SE-M3` says the `traversal` event has
+no row, which was true; what nothing said is that `enter`, `layer`, `nogood`
+and `writeback` are **not emitted at all** under this traversal. `tree_node`
+calls `commitment::try_commitment_set` directly rather than through
+`Run::finish_entering`, which is where `enter` is emitted, so **the enterings
+are invisible in a stream that still counts them**; there are no layers to
+census; and a dead branch is recorded without being learned from, which is
+`CO-H3`(b)'s decision seen from the stream side. Measured on the smallest
+program that reaches the dead arm — the lattice emits seven lines across those
+four kinds where the tree emits one `traversal` and none of them. It also
+falsifies one sentence `events.md` already had: *"`Σ entered` is
+`enterings_total` on any run at all"* is now qualified to *any lattice run*.
+
+**A declined tree run is the lattice's answer and not the lattice's stream.**
+`the_tree_declines_on_a_rung_that_is_not_the_obligations_one` pins the entering
+count to the digit, and every field of `--json-summary` matches too — measured,
+0 of them differ on `examples/zebra2.ein`. The **stream** does not: root's probe
+is a real generation call, so a declined run carries one extra pass of it — 125
+further `hyp` lines, 125 further `compile` lines and the `traversal` line, 16
+435 events against 16 184. Worth writing down because it is the shape a
+consumer would get wrong in exactly one direction: a verdict diff across this
+variable is a finding and a stream diff is not.
+
+**A kind reachable only under an environment variable is a kind no sweep can
+see.** `every_event_kind_the_schema_defines_is_reachable_from_the_corpus`
+parses the kinds out of the page and requires a fixture for each, which is
+exactly the check that should have caught a missing `traversal` row — and
+could not, because it also requires the row to *exist*, and because every
+cover file ran in the default environment. `EVENT_COVER` grew a third column
+(the environment a row needs, empty for six of the seven) and its
+`ein_traversal` twin was folded into one helper. The floor on the kind count
+went from `>= 18` to `>= 21`, which is the number of rows.
+
+### What this stage did **not** do
+
+- **Fix the `NOT CHECKED` diagnostic.** It reads *"Either the run stopped at
+  `-n`, or the frontier is still alive at `--max-set-size`"* — and under
+  `EIN_TRAVERSAL=tree` **neither is true**: the run exhausted its tree and `-m`
+  is refused outright. That is the same shape as `CO-H3`(b) — a surface stating
+  evidence it does not have — one layer further out, and it is recorded on
+  [Q-M1e.5](../open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface)
+  rather than fixed here: `expect::check` is handed a `bool` and has no way to
+  know *why* a search did not exhaust, so the honest fix is a signature change
+  in `ein-infer` and not a string edit in a documentation task.
+- **Rename anything on the `Aborted` arm.** `verdict.k` there is still
+  `stats.solution_nodes`, which is what `Answer::k` returns for an answer that
+  is not a verdict, and that is right: an abort has no models, so what it can
+  report is what the search recorded.
+- **Touch `T1d.10.6.4`.** Both pages say what ships and name the open question;
+  neither answers it.

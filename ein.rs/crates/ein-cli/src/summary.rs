@@ -7,11 +7,18 @@
 //! `ein-cli/tests/summary_properties.rs`, which holds the same fields to
 //! thirteen arithmetic identities instead of to a second engine.
 //!
-//! Three properties, all still worth having: **additive** (writes a file,
+//! Four properties, all still worth having: **additive** (writes a file,
 //! never stdout/stderr/the exit code), **order-free** (every set-shaped
 //! observable sorted, so a difference reports semantics rather than order),
-//! and **self-describing** (field order fixed by construction, `schema`
-//! versioned).
+//! **self-describing** (field order fixed by construction, `schema`
+//! versioned), and — since M1e S1e.3.2, `SE-M2` — **one shape on every arm**:
+//! the key set does not depend on the verdict, so a consumer switching on
+//! `schema` never tests for a key. That is the sentence repeated three times
+//! below (*a field that appears only sometimes is a field a consumer has to
+//! guess about*), and it is true by construction rather than by discipline:
+//! there is one assembly, [`build`], and [`build_aborted`] is it with an
+//! `Aborted` answer. `summary_properties::the_summary_has_one_shape_on_every_arm`
+//! is the guard.
 
 use ein_core::{Kb, SolverConfig, Terms, Value};
 use ein_infer::SharedMemo;
@@ -553,7 +560,10 @@ fn config_block(cfg: &SolverConfig) -> Json {
     ])
 }
 
-/// The summary object for a completed solve.
+/// The summary object for one solve — every arm of it.
+///
+/// [`build_aborted`] is this function with an `Aborted` answer, so the shape
+/// below is the whole schema and there is no second assembly to keep in step.
 #[allow(clippy::too_many_arguments)]
 pub fn build(
     ast: &Ast,
@@ -577,6 +587,19 @@ pub fn build(
         ("type".to_string(), Json::str(answer.as_str())),
         ("k".to_string(), Json::int(k as i64)),
         ("exhausted".to_string(), Json::Bool(stats.exhausted)),
+        // Present on every arm and `null` on all but one — M1e S1e.3.2,
+        // `SE-M2`. It is the budget cut's own sentence and only an `Aborted`
+        // has one, which is exactly the case the rule this file states three
+        // times is about: a field that appears only sometimes is a field a
+        // consumer has to guess about. The `type` is what says whether to read
+        // it; a missing key is not.
+        (
+            "reason".to_string(),
+            match answer {
+                Answer::Aborted { reason } => Json::str(reason.as_str()),
+                Answer::Verdict(_) => Json::Null,
+            },
+        ),
     ];
     verdict.extend(verdict_block(ast, terms, answer));
     let leftover = leftover_block(ast, terms, answer)?;
@@ -593,6 +616,20 @@ pub fn build(
 }
 
 /// The summary for a run cut short by `--max-time` / `--max-enterings`.
+///
+/// **[`build`] with an `Aborted` answer, and nothing else** — M1e S1e.3.2,
+/// `SE-M2`. It used to assemble its own object, and a hand-written second copy
+/// of a shape is a copy that drifts: it omitted `verdict.open_states` and the
+/// whole `leftover` block, both of which the other arm emits unconditionally,
+/// so a consumer switching on schema `ein-summary/1` saw two keys only on runs
+/// that finished. Delegating makes *every arm emits the same key set* true by
+/// construction rather than by inspection, which is what
+/// `summary_properties::the_summary_has_one_shape_on_every_arm` then pins.
+///
+/// The one thing the caller cannot supply is `owes`: a budget cut is not a
+/// fixpoint, so there is no quiescent state whose debts this could be about.
+/// The block is present and all-zero rather than absent, for the same reason
+/// as everything else here.
 #[allow(clippy::too_many_arguments)]
 pub fn build_aborted(
     ast: &Ast,
@@ -604,28 +641,20 @@ pub fn build_aborted(
     source: &str,
     events: &mut ein_infer::events::Events,
 ) -> Result<Json, String> {
-    Ok(Json::obj(vec![
-        ("schema", Json::str(SCHEMA)),
-        ("source", Json::str(source)),
-        (
-            "verdict",
-            Json::obj(vec![
-                ("type", Json::str("Aborted")),
-                ("k", Json::int(stats.solution_nodes as i64)),
-                ("exhausted", Json::Bool(stats.exhausted)),
-                ("reason", Json::str(reason)),
-                ("unsat_core", Json::Array(Vec::new())),
-                ("solutions", Json::Array(Vec::new())),
-            ]),
-        ),
-        ("stats", stats_block(stats)),
-        // A budget cut is not a fixpoint, so there is no state whose debts
-        // this could be about — the block is present and empty rather than
-        // absent, so a consumer never has to test for the key.
-        ("owes", owes_report(terms, &OwesReport::default())),
-        ("root", root_block(ast, terms, kb, events)?),
-        ("config", config_block(config)),
-    ]))
+    let mut answer = Answer::Aborted {
+        reason: reason.to_string(),
+    };
+    build(
+        ast,
+        terms,
+        kb,
+        &mut answer,
+        stats,
+        config,
+        source,
+        events,
+        &OwesReport::default(),
+    )
 }
 
 /// `json.dumps(summary, indent=2, ensure_ascii=False)` with a trailing

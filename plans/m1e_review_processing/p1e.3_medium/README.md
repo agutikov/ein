@@ -89,7 +89,7 @@ milestone's most load-bearing claim.
 | ID | title | findings | est. |
 |---|---|---|---:|
 | [S1e.3.1](s1e.3.1_correctness.md) | Correctness | `CO-M1` ~~`CO-M2`~~ `CO-M3` `CO-M4` `CO-M5` `CO-M6` ✅ **2026-08-30** | 4 d |
-| [S1e.3.2](s1e.3.2_semantics.md) | Semantics | ~~`SE-M1`~~ `SE-M2` `SE-M3` | 2 d |
+| [S1e.3.2](s1e.3.2_semantics.md) | Semantics | ~~`SE-M1`~~ `SE-M2` `SE-M3`, +`CD-M2`'s third item ✅ **2026-08-31** | 2 d |
 | [S1e.3.3](s1e.3.3_state_model.md) | State model | `ST-M1` | 2 d |
 | [S1e.3.4](s1e.3.4_architecture.md) | Architecture | `AR-M1` `AR-M2` ✅ **2026-08-30**, +`CO-M2` `SE-M1` `SE-L1` `TE-M8` | 3 d |
 | [S1e.3.5](s1e.3.5_error_handling.md) | Error handling | `EH-M1` `EH-M2` | 1.5 d |
@@ -119,6 +119,16 @@ the doc stages, because every other stage in the phase changes a count.
 > and it broke a counter identity in `summary_properties` within a minute of
 > being added, because that property's exception was written as *except
 > `Open`* when the real one is *unless the program owes*.
+
+> **And the second landed with S1e.3.2, 2026-08-31.** The cross-surface test
+> rebuilds every `ein test -v` header **from its `--json-report` row** and
+> compares, over the whole corpus in 0.06 s; **13 of the 68** checked queries
+> are cells where the two numbers differ, and the control — printing
+> `solution_nodes` under `k =` again — fails it by file name. The same stage
+> closed `SE-M2` at the seam rather than at the arm (`build_aborted` is now
+> `build` with an `Answer::Aborted`, which is mechanism **1** again) and found
+> the `Aborted` arm's *third* asymmetry, `verdict.reason`, which the review had
+> not named.
 
 ## Acceptance
 
