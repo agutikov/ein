@@ -125,7 +125,25 @@ pub const LITERALS: &[&str] = &[
 
 /// The eleven words `SYMBOL`'s negative lookahead rejects. `relation` is
 /// deliberately absent; see [`LITERALS`].
-const RESERVED: &[&str] = &[
+///
+/// **Not `ein_core::RESERVED`, which is a different set with a different job**
+/// — it was called `RESERVED` here too until M1e S1e.4.2 (`SE-L2`), and a
+/// reader of both concluded the lexer's eleven had grown to twelve when `open`
+/// joined the other one. They answer different questions:
+///
+/// | | question | membership | how it fails |
+/// |---|---|---|---|
+/// | this | what may not **lex** as a `SYMBOL`? | 11 grammar words | a parse error, wherever the word appears |
+/// | [`ein_core::RESERVED`] | what may a declarator not **bind**? | 9 kernel names, `open` among them | a load error, at the declaration |
+///
+/// Four names are in both (`and`, `neq`, `not`, `or`) and neither set is a
+/// subset of the other. **`open` must stay out of this one**: `(open ?R)` is
+/// an ordinary fact head that the loader routes, so it has to lex as a
+/// `SYMBOL` — and it is not merely undocumented that it does, it is
+/// unbuildable that it should not, because
+/// `imports_semantics::every_ein_core_reserved_name_is_unbindable_through_a_qualified_import`
+/// asserts the intersection is exactly those four.
+const LEXER_KEYWORDS: &[&str] = &[
     "not", "and", "or", "neq", "rule", "hrule", "query", "config", "trace", "macro", "import",
 ];
 
@@ -333,7 +351,7 @@ fn match_wildcard(rest: &str) -> Option<usize> {
 /// instead, and the `.x` that follows scans as nothing — which is how
 /// `(rule.x A)` becomes a parse error).
 fn match_symbol(rest: &str) -> Option<usize> {
-    for word in RESERVED {
+    for word in LEXER_KEYWORDS {
         if let Some(after) = rest.strip_prefix(*word) {
             // `\b` — a boundary, i.e. the next character is not a word
             // character (end of input counts).
@@ -565,5 +583,45 @@ mod tests {
         let l = match_literal(src, Cursor::START, "rule").expect("literal");
         assert_eq!(l.text(src), "rule");
         assert_eq!(&src[l.next.pos..], "x");
+    }
+
+    /// **The lexer's eleven are eleven, and they are not `ein-core`'s nine.**
+    ///
+    /// Both sets were called `RESERVED` until M1e S1e.4.2 (`SE-L2`), and the
+    /// docs' arithmetic then read as twelve. This holds the three claims the
+    /// rename is worth: the list itself — which is what keeps
+    /// [`00_ebnf.md`](../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md)'s
+    /// `LEXER_KEYWORDS` production honest, since nothing parses that page —
+    /// the intersection, and the one name whose membership is load-bearing.
+    #[test]
+    fn the_lexer_keywords_are_eleven_and_are_not_ein_cores_nine() {
+        assert_eq!(
+            LEXER_KEYWORDS,
+            [
+                "not", "and", "or", "neq", "rule", "hrule", "query", "config", "trace", "macro",
+                "import"
+            ],
+            "the eleven are also written out in 00_ebnf.md § Atoms, which nothing parses"
+        );
+        let both: Vec<&str> = LEXER_KEYWORDS
+            .iter()
+            .copied()
+            .filter(|w| ein_core::RESERVED.contains(w))
+            .collect();
+        assert_eq!(
+            both,
+            ["not", "and", "or", "neq"],
+            "the two sets overlap in four names and neither contains the other"
+        );
+        // The one that decides it: `(open ?R)` is an ordinary fact head, so
+        // `open` is in `ein_core::RESERVED` and must never be here.
+        assert!(ein_core::RESERVED.contains(&"open"));
+        assert_eq!(lex("open", Term::Symbol), Some("open"));
+        assert_eq!(lex("open-slot", Term::Symbol), Some("open-slot"));
+        // …and `relation`, for the same reason one modality up.
+        assert!(ein_core::RESERVED.contains(&"relation"));
+        assert_eq!(lex("relation", Term::Symbol), Some("relation"));
+        // A word that *is* here does not lex as a SYMBOL at all.
+        assert_eq!(lex("rule", Term::Symbol), None);
     }
 }

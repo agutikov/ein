@@ -188,6 +188,12 @@ pub const PREDICATES: [&str; 2] = ["eq", "neq"];
 /// predicates, and `relation` — kept a plain SYMBOL so `(relation ?R ?A ?B)`
 /// stays a legal pattern. This is about *binding* a name: a fact may still
 /// have a reserved head, such as a stored `(not X)` octagon.
+///
+/// **The set the sentence above refers to is `ein-ir`'s `LEXER_KEYWORDS`, and
+/// it is not this one.** It was also called `RESERVED` until M1e S1e.4.2
+/// (`SE-L2`); the two overlap in four names and neither contains the other.
+/// The one that matters is `open`: it is **here** and it must never be there,
+/// because `(open ?R)` is an ordinary fact head and has to lex as a `SYMBOL`.
 pub const RESERVED: [&str; 9] = [
     "absent", "and", "eq", "false", "neq", "not", "open", "or", "relation",
 ];

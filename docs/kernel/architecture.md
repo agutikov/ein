@@ -362,11 +362,24 @@ three crates, and the two that already exist each missed a site.
 ### The legitimate case
 
 There is one, and a rule that cannot express it will be ignored the first time
-someone meets it. `ein-ir`'s lexer and `ein-core`'s loader both have a set
+someone meets it. `ein-ir`'s lexer and `ein-core`'s loader both had a set
 called `RESERVED` and they are **genuinely different sets** — one is what the
-lexer refuses as an atom, the other what a declaration may not name. That is
-not a copy to unify; the fix is a **rename**, so that two names stop looking
+lexer refuses as an atom, the other what a declaration may not name. That was
+not a copy to unify; the fix was a **rename**, so that two names stop looking
 like one artifact.
+
+**Taken at M1e S1e.4.2** (`SE-L2`), and it is the row above's mirror image: the
+same surface symptom — one name, two arrays — with the opposite fix. The
+lexer's is `LEXER_KEYWORDS` now, `ein_core::RESERVED` keeps the word the
+*language* uses for it (the loader's message says *shadows a reserved kernel
+name*, six `examples/broken/load/` fixtures are named for it, and a whole
+kernel page is `06_reserved_names.md`), and each doc comment carries a table
+saying what the other set is. What made the pair worth a rename rather than a
+shrug: the two docs were individually accurate and a reader of both concluded
+the lexer's eleven had become **twelve** when `open` joined the other one —
+which it must never do, because `(open ?R)` is an ordinary fact head.
+`lex::tests::the_lexer_keywords_are_eleven_and_are_not_ein_cores_nine` holds
+the list, the four-name intersection, and that `open` lexes as a `SYMBOL`.
 
 The test: ask whether an edit to one side would be *wrong* not to make to the
 other. If yes, it is one artifact — unify it, or make a test say so. If no, the

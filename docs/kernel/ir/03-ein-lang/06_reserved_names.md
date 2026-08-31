@@ -109,6 +109,24 @@ four routes are pinned as fixtures in
 [`examples/broken/load/`](../../../../examples/broken/load/) —
 `reserved_open_direct`, `_symbols`, `_qualified`, `_aliased`.
 
+### Two sets, and the one that is not this page's — M1e S1e.4.2
+
+The list above is **`ein_core::RESERVED`**, and until M1e S1e.4.2 (`SE-L2`) the
+lexer had a different set under the same name. Both pages describing them were
+individually accurate and a reader of both concluded the lexer's eleven had
+grown to twelve when `open` joined this one. It did not, and it must not:
+
+| | the question it answers | membership | how it fails |
+|---|---|---|---|
+| `ein_core::RESERVED` — **this page** | what may a declarator **bind**? | `absent` `and` `eq` `false` `neq` `not` `open` `or` `relation` | a **load** error, at the declaration |
+| `ein-ir`'s `LEXER_KEYWORDS` — [`00_ebnf.md`](00_ebnf.md) | what may not **lex** as a `SYMBOL`? | `not` `and` `or` `neq` `rule` `hrule` `query` `config` `trace` `macro` `import` | a **parse** error, wherever the word appears |
+
+Four names are in both and neither set contains the other. **`open` and
+`relation` are the two that decide it**: both must lex as ordinary `SYMBOL`s,
+because `(open ?R)` is a fact head the loader routes and `(relation ?R ?A ?B)`
+is a pattern rules match. `lex::tests::the_lexer_keywords_are_eleven_and_are_not_ein_cores_nine`
+holds the eleven, the four-name intersection, and both of those.
+
 ## The verdict atom — `open` (M1d P1d.2 S1d.2.3, read since S1d.2.4)
 
 Reserved, but **not** a rule-body primitive: it appears only as an `:assert`

@@ -93,3 +93,83 @@ dropped, because they are the two instances that make
 [AR-M1](../p1e.3_medium/s1e.3.4_architecture.md)'s rule complete: one pair
 that must be unified, one pair that must be renamed. A rule with only the
 first kind of example teaches the wrong lesson.
+
+---
+
+## ✅ Done 2026-09-01 — one name became two, and the docs' twelve became eleven again
+
+**`SE-L1` was closed on the way past**, by
+[S1e.3.4](../p1e.3_medium/s1e.3.4_architecture.md) as `AR-M1`'s third pair —
+one `Timeline::entering`, two goldens moved, 110 of 8 835 renderings, every one
+by the key permutation and nothing else. Nothing was left here for it.
+
+**`SE-L2`: fixed**, by renaming the **lexer's** constant.
+
+### Which one moves, and why it is not arbitrary
+
+`ein-ir`'s private `RESERVED` is now `LEXER_KEYWORDS`; `ein_core::RESERVED`
+keeps the word. *Reserved* is the word the **language** uses for that set: the
+loader's message is *shadows a reserved kernel name*, six fixtures under
+`examples/broken/load/` are named for it, and a whole kernel page is
+`06_reserved_names.md`. Renaming that side would have moved goldens, fixture
+filenames, corpus paths and a page title to spare a private constant with two
+references. The lexer's set is a *grammar* artifact — "the words `SYMBOL`
+refuses" — and it says so now.
+
+### What the confusion actually was
+
+Both docs were individually accurate, which is what made it survive: a reader
+of `00_ebnf.md`'s *eleven RESERVED words* plus `defined_behaviour.md`'s
+*`open` joined RESERVED* concludes the lexer set grew to **twelve**. It did
+not, and it must not — `(open ?R)` is an ordinary fact head and has to lex as
+a `SYMBOL`.
+
+| | question | membership | how it fails |
+|---|---|---|---|
+| `ein-ir::LEXER_KEYWORDS` | what may not **lex** as a `SYMBOL`? | 11 grammar words | a parse error, wherever the word appears |
+| `ein_core::RESERVED` | what may a declarator not **bind**? | 9 kernel names, `open` among them | a load error, at the declaration |
+
+Four names are in both (`and` `neq` `not` `or`) and neither set contains the
+other.
+
+### The three claims the rename is worth, in a test
+
+`lex::tests::the_lexer_keywords_are_eleven_and_are_not_ein_cores_nine`: the
+eleven verbatim — which is what keeps `00_ebnf.md`'s production honest, since
+nothing parses that page — the four-name intersection, and that `open`,
+`open-slot` and `relation` all lex as `SYMBOL`s while `rule` does not.
+
+**The misreading was already unbuildable and nothing said so at either site.**
+`imports_semantics::every_ein_core_reserved_name_is_unbindable_through_a_qualified_import`
+asserts the parse-refused subset is exactly those four names, so adding `open`
+to the lexer list fails a test in a different crate, phrased as a claim about
+imports. That is the finding's real content: not *prevent a bug*, but *put the
+reason where the reader is*.
+
+### Five sites, and one of them was a false causal claim
+
+| page | what it said | what it says |
+|---|---|---|
+| [`00_ebnf.md`](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md) | production `RESERVED` | production `LEXER_KEYWORDS`, with the other set named in the comment |
+| [`defined_behaviour.md` § 4.2](../../../docs/kernel/defined_behaviour.md) | *"`open` joined `RESERVED`"* | which `RESERVED`, and why `open` must stay out of the other |
+| [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md) | the shadow list, with no mention of the lexer's | § *Two sets, and the one that is not this page's* — the table above, on the page a puzzle author actually reads |
+| [`02-data-model/03_implementation.md`](../../../docs/kernel/ir/02-data-model/03_implementation.md) | *"`STRUCTURAL` / `RESERVED` / `PREDICATES` are here because **the lexer** needs them"* | **false** — `lex.rs` reads nothing from `ein-core` but its counters. The readers are the **loader** (`macros.rs`, `imports.rs`) and the engine |
+| [`architecture.md` § The legitimate case](../../../docs/kernel/architecture.md) | prescribed this rename in the **future tense** | records it as taken, as `AR-M1`'s mirror image — the same symptom as the unified pairs, the opposite fix |
+
+That last row is why the stage said both fixes were worth doing even if the
+phase were dropped: `AR-M1`'s rule needs one pair that must be *unified* and
+one that must be *renamed*, and a rule with only the first kind teaches the
+wrong lesson.
+
+### One claim of the review's not taken
+
+The review's *"three copies total (imports.rs carries a third, drifted one)"*
+is **spent**: `CO-H2` deleted it at S1e.2.1, `qualify()` calls
+`ein_core::is_reserved`, and the confirmation this stage's T2 asked for as
+*"the cheapest possible check that the High fix landed completely"* is that
+`grep -rn RESERVED ein.rs/crates --include='*.rs'` now finds exactly two
+arrays with two different names.
+
+**Gate:** `cargo test --workspace` — **807 tests, 0 failures**. No golden
+moved: the renamed constant is private, reaches no rendered output and no error
+message.

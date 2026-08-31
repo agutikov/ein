@@ -50,16 +50,27 @@ BlockComment  ::= '#|' ( Char* - ( Char* '|#' Char* ) ) '|#'   /* non-nesting */
 /* Atoms. */
 SYMBOL        ::= ( '__' )? [A-Za-z] [A-Za-z0-9_*.-]*
                   /* …and the match is rejected outright when the input at
-                     this position begins with one of the eleven RESERVED
-                     words followed by a non-word character (or by end of
-                     input). The lookahead is START-anchored, so `std.rule`
-                     is one SYMBOL and `rule.x` is not a SYMBOL at all. */
-RESERVED      ::= 'not' | 'and' | 'or' | 'neq' | 'rule' | 'hrule'
-                | 'query' | 'config' | 'trace' | 'macro' | 'import'
-                  /* `relation` is deliberately NOT here: rules match
+                     this position begins with one of the eleven
+                     LEXER_KEYWORDS followed by a non-word character (or by
+                     end of input). The lookahead is START-anchored, so
+                     `std.rule` is one SYMBOL and `rule.x` is not a SYMBOL at
+                     all. */
+LEXER_KEYWORDS ::= 'not' | 'and' | 'or' | 'neq' | 'rule' | 'hrule'
+                 | 'query' | 'config' | 'trace' | 'macro' | 'import'
+                  /* This production was called RESERVED until M1e S1e.4.2,
+                     and so was a DIFFERENT set in ein-core — the nine names a
+                     declarator may not BIND, which is where `open` lives.
+                     Reading the two together said the lexer's eleven had
+                     become twelve. They overlap in four (`not` `and` `or`
+                     `neq`) and neither contains the other:
+                     06_reserved_names.md § What is reserved, and by which
+                     set has the table.
+
+                     `relation` is deliberately NOT here: rules match
                      `(relation ?R ?A ?B)` patterns, so it must lex as an
                      ordinary SYMBOL. `(relation R (T1 T2))` therefore parses
-                     — as a fact — and the LOADER rejects it. */
+                     — as a fact — and the LOADER rejects it. Same for
+                     `open`, whose `(open ?R)` is an ordinary fact head. */
 WordChar      ::= [A-Za-z0-9_]                    /* Python's `\w`, as `\b` uses it */
 
 VAR           ::= '?' [A-Za-z] [A-Za-z0-9_*-]*    /* no '.', unlike SYMBOL */

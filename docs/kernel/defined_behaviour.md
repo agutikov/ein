@@ -501,7 +501,10 @@ Four are pinned by fixtures in
 `ein-ir`'s `the_verdict_atom_refuses_every_shape_it_cannot_resolve`.
 Binding the name is the eleventh and is not new: `(relation open …)`,
 `(macro open …)` and `(rule open …)` take §1's existing *shadows a reserved
-kernel name* message, because `open` joined `RESERVED`.
+kernel name* message, because `open` joined `ein_core::RESERVED` — the nine
+names a declarator may not **bind**, and *not* `ein-ir`'s eleven-word
+`LEXER_KEYWORDS`, which `open` must stay out of because `(open ?R)` is an
+ordinary fact head. Both sets were called `RESERVED` until M1e S1e.4.2.
 
 ### 4.3 Kernel meta-primitive arity — M1e S1e.2.1
 
