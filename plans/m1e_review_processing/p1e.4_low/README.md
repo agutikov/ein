@@ -84,6 +84,74 @@ table. Architecture has no Low findings.
 rather than as fifteen unrelated touches. Where a finding needs a test
 (`CO-L1`, `ST-L1`, `TE-L5`), it gets its own commit.
 
+> ## ✅ Closed 2026-09-01 — eight stages, 21 findings, and *Low* was not the size of the work
+>
+> `./run_tests.sh` green at the boundary: **821 tests**, six static checks, the
+> bench smoke. All 21 dispositioned in the
+> [milestone index](../README.md#the-findings) — and with them **all 63**, so
+> the ledger this milestone opened is full.
+>
+> **Twelve of the seventeen live findings were larger, smaller or different
+> from what the review said**, and the direction was not uniform — which is
+> what makes them worth listing rather than counting:
+>
+> | | as reported | as found |
+> |---|---|---|
+> | `CO-L1` | an unreachable wrap that contradicts a stated principle | **a reachable process panic on the next line** — a three-line program, exit 101, the shape `CO-H1` closed one phase earlier |
+> | `ST-L1` | inert, and Q-M1e.2's clean case for *a comment is enough* | the cited test **does not enforce** the premise; a probe left it green |
+> | `EH-L2` | two sniffs disagree by three bytes | **three** sniffs, and the third had no `not(einb)` arm at all |
+> | `TE-L1` | two load-sensitive tests, alike | opposite margins (~1 300× and 2.9×), a **third** site, and a `-T` hazard that reaches a *golden* |
+> | `TE-L2` | four crates | **28** files, and the list moved 26 → 28 while the phase ran |
+> | `TE-L3` | run the bench smoke under `--tests-only` | **refuted by measurement**; the header meanwhile contradicted *itself* |
+> | `TE-L4` | one census with a `--check` | two, and `--check` **could not fail** for its most likely failure |
+> | `CD-L1` | five banners | **six** sites |
+> | `CD-L2` | a transcript that drifted | one that was **fabricated** — no engine ever printed it |
+> | `CD-L3` | a comment states a wrong reason | a **false** sentence, on three surfaces, costing a 338-line re-bless |
+> | `DO-L2` | stale numbers, moved by S1d.2.4's activator facts | the **mechanism is refuted**; one site is 3 % off and the other cites a deleted engine |
+> | `MA-L2` | reaches output on every non-exhausted `k = 0` run | reaches **no CLI output at all** — the one finding that shrank |
+>
+> **The phase's own mechanism, found three times.** A claim that names a test
+> is harder to check than one that names nothing, because the citation is what
+> stops anybody looking. `standard_of_proof.md` cited a test that enforces
+> something adjacent ([S1e.4.3](s1e.4.3_state_model.md)); `stdlib/README.md`
+> and `tests/README.md` cite a **function that does not exist**
+> ([S1e.4.5](s1e.4.5_tests.md)); `defined_behaviour.md` § 4.2 says *all ten* of
+> a test that covers nine ([S1e.4.7](s1e.4.7_documentation.md)). Rule 2 has a
+> second question now: *does the named test enforce the premise, or something
+> adjacent to it?*
+>
+> **Two goldens moved where the phase expected one.** `MA-L2`'s 31
+> `trace[answer]` digests were the expected one; `CD-L3`'s **337 of 9 015**
+> plus a text line were not, and `MA-L4` added one `help_shape.txt` line.
+> Every one was priced before it was taken, and in all three the check that
+> nothing else moved is the same: **no line count changed**.
+>
+> **What the phase left running.** **Seventeen** new checks — which is the
+> whole of the gate's 804 → 821 — one extended, and one corrected:
+> `a_fact_wider_than_the_arity_field_is_refused_and_one_narrower_is_not`,
+> `the_arena_bound_is_the_byte_bound_and_not_the_id_bound`,
+> `the_lexer_keywords_are_eleven_and_are_not_ein_cores_nine`,
+> `asking_a_question_does_not_move_the_answer`,
+> `the_two_magic_constants_agree` + `a_file_that_starts_like_a_container_but_is_not_one_is_text_in_either_build`,
+> `no_declared_run_budgets_by_wall_clock`, `world_anchors.rs` (2),
+> `api_banner.rs` (2), `guide_transcripts.rs`,
+> `the_full_lattice_view_is_the_solution_view_plus_one_honest_note` +
+> `the_full_view_fallback_agrees_with_the_help_text`,
+> `the_default_priority_is_1000_and_fires_last`,
+> `a_truncated_contradiction_headline_is_one_sentence`,
+> `the_summary_escapes_non_ascii_where_the_event_stream_does_not`, and
+> `what_tests_only_skips_is_what_the_script_guards` extended to the header it
+> could not see. Plus **two nightly steps** for the two censuses that ran when
+> somebody remembered them.
+>
+> **And the phase was droppable.** It was planned as *~1.5 weeks of one-line
+> fixes* whose whole value was tidiness, with a documented fallback of turning
+> into one followup issue carrying 21 rows. Had that been taken, the panic, the
+> unenforced premise, the light build's `UnicodeDecodeError`, the fabricated
+> transcript and the false `--view full` note would all still be there — every
+> one of them found by *reading the code the finding pointed at*, not by the
+> finding.
+
 ## Acceptance
 
 - All 21 dispositioned in the
