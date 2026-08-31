@@ -127,11 +127,18 @@ def sweep(entries: list[dict], args) -> list[dict]:
             if args.key and args.key not in e["path"]:
                 continue
             # **A run the manifest does not declare is not run here either.**
-            # Four entries drop `solve` because it does not terminate on them
-            # (`features/04_open` and the three `square-unique` demos: an open
-            # hypothesis space, and the run ends in the OOM killer rather than
-            # a verdict). Timing them out would put four rows in the census
-            # that say nothing about openness and one thing about patience.
+            # 29 entries declare no `solve`, and only **four** of them are
+            # about cost: `features/04_open` and the three `square-unique`
+            # demos have an open hypothesis space, so the run ends in the OOM
+            # killer rather than a verdict, and timing them out would put four
+            # rows in the census that say nothing about openness and one thing
+            # about patience. The other 25 are not slow — 17 `syntax/` node
+            # probes, the six `square-{fwd,bwd}` per-rule demos,
+            # `features/02` and `features/05` — and drop `solve` because a
+            # solve does not ask their question, which is corpus/README.md
+            # § Dropped runs' rule. `utils/README.md` attributed all 29 to
+            # non-termination until M1e `CD-M7`, so the split is spelled out
+            # here, where the guard is.
             if "solve" not in all_runs(e):
                 row = {"path": e["path"], "note": "no solve run declared"}
             else:
