@@ -317,6 +317,97 @@ Both halves are banked in `ein-infer/tests/rule_semantics.rs` instead, as
 `an_int_beside_a_nested_fact_in_one_position_loses_a_derivation` — which
 expects the panic in a debug build and the missing fact in a release one.
 
+### 3.3 The M1 alive-set invariant, operationally
+
+> **New 2026-08-31** — M1e
+> [S1e.3.3](../../plans/m1e_review_processing/p1e.3_medium/s1e.3.3_state_model.md),
+> the review's `ST-M1`. The invariant is stated in
+> [`inference/README.md` § M1 invariant](inference/README.md); until this
+> stage nothing evaluated it, and the three mechanisms that cite it as their
+> warrant — the per-KB `alive` recompute, the `state_key` dedup that produces
+> `k`, and M1d's tree exhaustiveness-by-discharge — rested on the stdlib's
+> conventions alone.
+
+The prose form is three clauses about a rule library. The evaluable form has
+to name the sets and the moment, and there are **three readings**, ordered by
+strength:
+
+| | claim | how it is checked |
+|---|---|---|
+| **R0** | no rule's `:assert` names a **constant** the loaded program's ontology and facts did not | statically, at load, over the registered rules — [`ein_infer::invariant::Universe::rule_breaches`](../../ein.rs/crates/ein-infer/src/invariant.rs) |
+| **R1** | nothing a run *derives* names what the loaded program did not | a post-fixpoint scan, `Universe::breaches` |
+| **R2** | nothing the **search** reaches names what **root's fixpoint** did not | the same scan, against a baseline taken at `alive₀` |
+
+R0 ⇒ R1 ⇒ R2. **R2 is the one the engine's soundness rests on** and R0 is the
+one worth checking, and both halves of that are measurements rather than
+preferences:
+
+- **R2, because `alive₀` is taken once.** `Run::phase1` computes it at root's
+  fixpoint and `Run::phase2` enumerates *subsets of it*. A name that arrives
+  later extends the blind enumerator's candidate-object pool — which is
+  `kb.names()`, a function of the KB's facts — into a region nothing will
+  revisit. A name that arrives during root saturation costs nothing, because
+  `alive₀` has not been taken yet.
+- **R0, because it is free and total.** It reads the rules' `:assert`
+  constants once, so it answers for *every run the program could have* rather
+  than for the one that happened, and it costs **7 µs** on `examples/zebra2.ein`
+  (84 facts, 30 rules) against a solve three orders of magnitude larger. A
+  *variable* leaf contributes nothing, because a variable can only carry a
+  value the match already found in the KB — and that induction is confirmed
+  rather than assumed: swept over the corpus, the dynamic scan finds **no name
+  R0 did not predict** (`ein-infer/tests/alive_invariant.rs`).
+
+**The baseline.** *Everything the loaded program reaches*, not the interner's
+length — and the difference is the whole finding. `Ann` in
+`examples/ein-bugs/mixed-type-hypothesis.ein` is interned at **load** by
+`from_ir::intern_program_names`, so the interner never grows during the search
+(`ein-infer/tests/interning.rs` measures exactly that) and the invariant is
+broken all the same, because the KB gained a name its ontology never had. So
+the baseline is: every symbol the loaded facts mention at any depth, plus the
+relation registry's names and the symbols in their signatures.
+
+**What counts as a new relation.** The registry — *declared ∪ auto-vivified* —
+**∪ every constant head a rule can `:assert`**, and the widening is not a
+convenience. `from_ir` vivifies an undeclared **fact** head at load and does
+not vivify an undeclared **rule-`:assert`** head, so **49** relation names over
+33 corpus files have facts and no registry entry — all but one a stdlib
+activator (`total` derived from `(bijective …)`, `slot-endpoint-fwd`,
+`converse-illtyped-dom`, …; the exception is a puzzle's own
+`explicitly-dislikes`). Reading the registry as the whole answer would make the
+check fire on the standard library on its first run. Nothing can add
+a relation *during* a run in any case: `Program` is an `Arc` every fork shares
+and `program_mut` panics once it is shared, so clause 2 is closed by the type
+system and this check is about the *facts*, not about the registry.
+
+**What a breach costs.** Nothing on either corpus program that has one, and an
+**answer** on the pair banked for it.
+[`examples/ein-bugs/alive-set-fresh-name.ein`](../../examples/ein-bugs/alive-set-fresh-name.ein)
+reports
+
+```
+  solutions (k)   0            exhausted = true
+  verdict         No solution — the constraints are contradictory
+```
+
+where `{(q A Z), (q B Z)}` is a model — a refutation, not a lower bound, and
+false. Its twin `…-declared.ein` is the same file plus the single fact
+`(seen Z)`, which changes no rule and no constraint and does nothing but put
+the invented name in the ontology; it answers `Solution k = 1` over exactly
+that model. The same one fact makes the program *conform*, since naming the
+object is what clause 1 asks for.
+
+**What is reported, and what is not.** A `warn` event, category
+`alive-set-invariant`, emitted at root under `--events` and nowhere else. Not a
+refusal and not a `debug_assert!`: two corpus programs break R0 —
+`mixed-type-hypothesis.ein` (`Ann`, from an `hrule`) and
+`tests/stdlib/algebra/07_schroder.ein` (`G`, from a probe rule) — and the
+second is a working stdlib test whose rule is doing nothing wrong. A
+diagnostic that fires on a working example is one that gets turned off, which
+is the argument `warn_derived_naf` already carries for
+`refutation-under-absent` and the same disposition: the *set* is named by a
+test, and the line is available to anyone who asks for the stream. The F5
+typed form is what would make a violation unrepresentable rather than detected.
+
 ## 4. Errors and exit codes
 
 The engine reports a failure it cannot diagnose by printing a Python

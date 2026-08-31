@@ -191,10 +191,38 @@ produces nested-Fact hypotheses), "alive is a pure function of the
 closed KB" no longer holds, and both the per-KB recompute and the
 state-key dedup lose their soundness warrant.
 
+**And it costs an answer — measured, M1e S1e.3.3.**
+[`examples/ein-bugs/alive-set-fresh-name.ein`](../../../examples/ein-bugs/alive-set-fresh-name.ein)
+is eleven lines in which one rule asserts a constant no fact names. The name
+enters only inside a fork, while the lattice enumerates subsets of the `alive`
+set taken at root, so the candidates built from it are unreachable — and the
+engine answers `solutions (k) 0, exhausted = true`, *No solution — the
+constraints are contradictory*, where a model exists. A **refutation**, not a
+lower bound, and false. Its twin `…-declared.ein` is the same file plus the
+single fact `(seen Z)`, which changes no rule and no constraint and does
+nothing but put the name in the ontology; it answers `Solution k = 1` over
+exactly that model. This section used to explain the rule without exhibiting
+the consequence; the consequence is one fact wide.
+
+**It is checked since M1e
+[S1e.3.3](../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.3_state_model.md)**
+(the review's `ST-M1`), and the operational form — which three readings there
+are, which one the soundness rests on, what the baseline is and what a breach
+is reported as — is
+[`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally).
+In short: [`ein_infer::invariant`](../../../ein.rs/crates/ein-infer/src/invariant.rs)
+reads the rules' `:assert` constants at load, in 7 µs on `zebra2`, and narrates
+a `warn` line per breach under `--events`;
+`ein-infer/tests/alive_invariant.rs` holds the corpus's whole breach set —
+**two** programs, `mixed-type-hypothesis.ein` and
+`tests/stdlib/algebra/07_schroder.ein`, neither of which pays for it — and
+confirms that no run reaches a name the static check did not predict.
+
 Tracked at
 M1 Q-S1.5.4.D
-as a long-term design seam; promote to a typed invariant check
-when F5 lands.
+as a long-term design seam. What F5's **typed** form would still add is the
+difference between *detected* and *unrepresentable*: this check tells you a
+rule can introduce a name, and a type would stop it being written.
 
 ## NAF semantics — the closure/world boundary (S1.21.8)
 

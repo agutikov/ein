@@ -1,0 +1,107 @@
+;;; The **M1 alive-set invariant**, broken on purpose — M1e S1e.3.3, `ST-M1`.
+;;;
+;;; ── The premise this refutes ───────────────────────────────────────────
+;;;
+;;; `docs/kernel/inference/README.md` § M1 invariant:
+;;;
+;;;   1. No new objects. Rules don't `:assert` facts whose args introduce
+;;;      names that weren't already in the ontology / facts.
+;;;   … Under these clauses, every admissible hypothesis is enumerable from
+;;;   the current KB state; deeper branches **eliminate** candidates, never
+;;;   extend the space.
+;;;
+;;; The blind enumerator builds its candidate objects out of `kb.names()`,
+;;; which is a function of the KB's **facts**. So a rule asserting a constant
+;;; no fact mentions grows that pool inside a fork — while the lattice
+;;; enumerates subsets of the `alive` set computed at *root*, where the name
+;;; did not exist. The extended candidates are unreachable and nothing says so.
+;;;
+;;; ── What this program does ─────────────────────────────────────────────
+;;;
+;;;   objects at root : A, B          (from `(p A B)`)
+;;;   alive₀          : (q A B), (q B A)
+;;;
+;;;   `spawn` turns any committed `q` into `(p ?b Z)` — and **Z is a name no
+;;;           fact has**, so it enters the KB only inside a fork.
+;;;   `no-a` / `no-b` refute every `q` that points at A or at B, which is both
+;;;           elements of alive₀ and nothing else.
+;;;
+;;; Every subset of alive₀ therefore dies, and the engine answers
+;;;
+;;;   solutions (k)   0     exhausted = true
+;;;   verdict         No solution — the constraints are contradictory
+;;;
+;;; **which is false.** `{(q A Z), (q B Z)}` saturates to a consistent,
+;;; quiescent, complete state — a model — and the search cannot reach it,
+;;; because neither element was ever in `alive₀`. The refutation is not
+;;; qualified by a cap: `exhausted = true` is the strong claim, and it is
+;;; wrong.
+;;;
+;;; ── Why the lookahead is off ───────────────────────────────────────────
+;;;
+;;; The flag chooses **which** wrong answer this file gives, and the sharper
+;;; one is worth banking. With pre-branch lookahead on, the kill cache refutes
+;;; both candidates before layer 1 and empties `alive`, so root itself is
+;;; recorded and the run says `Solution k = 1` over a model with no `q` at all
+;;; — a wrong *count* (1 where there are 2) rather than a wrong verdict. With
+;;; it off, each singleton is entered and dies, and `k = 0, exhausted = true`
+;;; is a **refutation**: a positive claim that no model exists.
+;;;
+;;; Deliberately **no `(absent …)` anywhere.** The obvious encoding of "Z must
+;;; be reached" is a NAF guard, and it works — but it would also give this
+;;; file the shape of M1e [Q-M1e.9](../../plans/m1e_review_processing/open_questions.md),
+;;; where `dead` is not upward-closed under `absent`, and a reader could not
+;;; then tell which of the two mechanisms cost the answer. Two positive
+;;; refutation rules confound nothing.
+;;;
+;;; ── The control ────────────────────────────────────────────────────────
+;;;
+;;; [`alive-set-fresh-name-declared.ein`](alive-set-fresh-name-declared.ein)
+;;; is this file plus **one fact**, `(seen Z)`, which changes no rule and no
+;;; constraint and does nothing but put `Z` in the name universe at root. It
+;;; answers `Solution k = 1` over the model above. One fact is the whole
+;;; difference between a puzzle and a false refutation — and the same fact is
+;;; what makes the program *conform*, since putting the name in the ontology
+;;; is exactly what clause 1 asks for.
+;;;
+;;; ── Status ─────────────────────────────────────────────────────────────
+;;;
+;;; **Not fixed, detected.** `ein_infer::invariant::Universe::rule_breaches`
+;;; reports `new-object: 'Z', asserted by rule 'spawn'` — at load, over the
+;;; program rather than over a run, so it answers for every run the program
+;;; could have. `ein-infer/tests/alive_invariant.rs` holds the corpus's whole
+;;; breach set, this file included; `--events` narrates it as a `warn` line.
+;;; What would make a violation *unrepresentable* is the docs' F5 typed form,
+;;; which has no schedule.
+;;;
+;;; `:expect` states **today's answer** and is meant to break, the same
+;;; tripwire `naf-upward-closure.ein` and `alive-empty-*.ein` carry.
+
+(config :enable-pre-branch-lookahead false)
+
+(relation p T T)
+(relation q T T)
+
+(p A B)
+
+(rule spawn ()
+  :match  (q ?a ?b)
+  :assert (p ?b Z)
+  :why    "committing to (q {?a} {?b}) names Z, which no fact does")
+
+(rule no-a ()
+  :match  (q ?x A)
+  :assert (false)
+  :why    "nothing may reach A")
+
+(rule no-b ()
+  :match  (q ?x B)
+  :assert (false)
+  :why    "nothing may reach B")
+
+(query
+  :goal   (q ?x ?y)
+  :no-hypothesis (p)
+  ;; Today's answer. The truth is `(model (q A Z) (q B Z))`, which the
+  ;; control reaches and this file's lattice cannot enumerate.
+  :expect (false))

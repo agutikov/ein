@@ -42,11 +42,15 @@ rests on is checked by something that fails when it stops being true.
 |---|---|---|---|
 | [design/02](../history/m1a_rust/design/02_determinism_and_order.md)'s determinism argument | canonical ordering everywhere a traversal reads | yes, by the ordering tests | the argument is enough |
 | `EqClasses` auto-vivification | *nothing fires equality propagation* | yes, by `naf_semantics::matching_does_not_resolve_equality_classes` | a comment at the site is enough |
-| the alive-set invariant | *rules assert no new objects or relations* | **no** | needs the cheap post-fixpoint check |
+| the alive-set invariant | *rules assert no new objects or relations* | **checked since 2026-08-31, and it fails** | the check was built (M1e [S1e.3.3](../../plans/m1e_review_processing/p1e.3_medium/s1e.3.3_state_model.md)) and found the premise **false on two corpus programs**. So the argument was never available: what stands in its place is a named breach set, a measurement that neither breach costs anything, and an eleven-line fixture on which one does — `k = 0, exhausted = true` where a model exists. § 3.3 of [`defined_behaviour.md`](defined_behaviour.md#33-the-m1-alive-set-invariant-operationally) |
 | [design/08](../history/m1a_rust/design/08_parallelism.md)'s `dead` is monotone | *the KB is append-only, so nothing retracts* | **no** | broken by a twenty-line program — see below |
 
 Two of the four are the pattern working; two are the pattern's absence, and one
-of those is what settled the rule.
+of those is what settled the rule. **Both of the absent two have since been
+probed and both premises were false** — `dead` is monotone by a twenty-line
+program (Q-M1e.9, 2026-08-28) and the alive-set invariant by an eleven-line one
+(Q-M1e.21, 2026-08-31). Two for two is not a sample, but it is the only
+evidence there is about what an unenforced premise is worth.
 
 ## Where an argument goes
 

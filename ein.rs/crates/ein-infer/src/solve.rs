@@ -905,6 +905,19 @@ impl Run<'_> {
         // root is the one node that can still hand the run back to the
         // lattice. `Run::tree_node` re-reads the mode at every node it
         // expands.
+        //
+        // **And the M1 alive-set invariant does not discharge this** — M1e
+        // S1e.3.3, said here because the next reader will assume it does.
+        // `crate::invariant` now evaluates *no rule introduces a name the
+        // loaded program did not have*, which is what the lattice needs: it
+        // keeps the candidate space from **extending** below root. The tree's
+        // premise is strictly stronger. It needs the *rung mode* to be a
+        // property of the program rather than of the node, and the mode is
+        // read off activator **facts**, which a fork derives out of names the
+        // invariant is perfectly happy with. A program can satisfy every
+        // clause of the invariant and still flip the mode at depth 3.
+        // Constructing that flip is S1f.10.6's; until then this re-read is
+        // the guard and the invariant check is not a substitute for it.
         let mode = {
             let mut s = Session {
                 kb: root,
@@ -1227,6 +1240,44 @@ impl Run<'_> {
         events: &mut Events,
         dumper: &mut dyn Dumper,
     ) -> Result<Phase1, SolveError> {
+        // **The M1 alive-set invariant, evaluated** — M1e S1e.3.3, `ST-M1`.
+        //
+        // Before saturation, because the baseline is what the *loaded*
+        // program names and a fixpoint would have folded the answer into the
+        // question. Static: it reads the rules' `:assert` constants, so it
+        // answers for every run this program could have rather than for the
+        // one about to happen, and it is the whole of what the invariant
+        // says — *rules don't assert facts whose args introduce names that
+        // weren't already in the ontology / facts*.
+        //
+        // A `warn` event and not a refusal, and not a `debug_assert!` either.
+        // Two corpus programs break it —
+        // `examples/ein-bugs/mixed-type-hypothesis.ein` and
+        // `tests/stdlib/algebra/07_schroder.ein`, both by naming a constant in
+        // a rule body — and one of them is a working stdlib test whose probe
+        // rule is doing nothing wrong. A diagnostic that fires on a working
+        // example is one that gets turned off, which is the same argument
+        // `warn_derived_naf` carries for `refutation-under-absent` and the
+        // same disposition: the *set* is named by a test
+        // (`ein-infer/tests/alive_invariant.rs`) and the line is available to
+        // anyone who asks for the stream. What would make a violation
+        // unrepresentable is the F5 typed form, which has no schedule.
+        //
+        // It is not decoration. `examples/ein-bugs/alive-set-fresh-name.ein`
+        // is eleven lines on which a violation costs an **answer**:
+        // `k = 0, exhausted = true` — a refutation, not a lower bound — where
+        // a model exists, and its `-declared` twin is the same file plus one
+        // fact naming the invented constant and answers `Solution k = 1`.
+        if events.on() {
+            let u = crate::invariant::Universe::of(root, terms);
+            for b in u.rule_breaches(root, terms, ast) {
+                let line = b.render(terms);
+                events.emit("warn", |l| {
+                    l.str("category", "alive-set-invariant");
+                    l.str("message", &line);
+                });
+            }
+        }
         {
             let mut s = Session {
                 kb: root,

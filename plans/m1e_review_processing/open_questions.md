@@ -36,6 +36,7 @@ records which question became which id.
 | [Q-M1e.18](#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments) | Three kernel primitives are **not shape-pinned**, and drop their extra arguments | **answered 2026-08-29 — candidate (2)**, by [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T1, which took the whole class rather than `CO-H1`'s one cell: `eq` and `absent` are checked at compile time and refused with a positioned `CompileError`. The grammar and the lexer's `SYMBOL` set are untouched, so no program that worked still works differently. `false` needed nothing |
 | [Q-M1e.19](#q-m1e19--algorithmic-pathology-has-no-owner) | **Algorithmic pathology** has no owner | open — the one of `Q9`'s four unswept surfaces with no home. The other three have one: this stage swept the parser/CLI edges, `cast.rs` goes with `ein-einb`'s next change, and micro-CSP ground truth is [M10](../m10_external_benchmarks/README.md)'s thesis |
 | [Q-M1e.20](#q-m1e20--two-renderers-are-produced-tested-and-unreachable) | **Two renderers are produced, tested and unreachable** — the per-hypothesis lattice dump and the unified KB DOT view | open — raised 2026-08-30 by [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) T3, which was told to route the decision rather than take it in a doc pass; **owner unassigned**, and both are `pub` and golden-pinned today |
+| [Q-M1e.21](#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about) | A rule may **name an object the search can never hypothesise about** | open — raised 2026-08-31 by [S1e.3.3](p1e.3_medium/s1e.3.3_state_model.md), which built the check `ST-M1` asked for and found the check has a live defect behind it: `k = 0, exhausted = true` on an eleven-line program with a model. **Owner unassigned**; three candidate fixes priced, and two corpus programs already break the invariant harmlessly |
 
 ---
 
@@ -88,6 +89,13 @@ argument suffices when its **premise is itself enforced**. The alive-set
 invariant's argument rests on *rules assert no new objects or relations* —
 which nothing checks, so the argument is not sufficient and
 [ST-M1](README.md#the-findings) needs the cheap post-fixpoint check.
+
+> **And when the check was built, the premise turned out to be false** —
+> 2026-08-31, [S1e.3.3](p1e.3_medium/s1e.3.3_state_model.md): two corpus
+> programs assert a constant no fact names, and an eleven-line fixture shows
+> what one costs. The rule's second calibration row is therefore the rule
+> working twice: *unenforced* did not mean *probably true*, in either of the
+> two cases anyone has looked at ([Q-M1e.21](#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about)).
 Contrast [ST-L1](README.md#the-findings) (`EqClasses` auto-vivification),
 whose premise is *nothing fires equality propagation* — enforced by
 `naf_semantics::matching_does_not_resolve_equality_classes`, an existing
@@ -1417,4 +1425,62 @@ view. If the answer is *the GUI*, (a) is premature and the feed is
 [`--events`](../../docs/kernel/inference/events.md); if the answer is *a
 puzzle author chasing a rule that will not fire*, (a) is the answer and the
 flag is small.
+
+## Q-M1e.21 — A rule may name an object the search can never hypothesise about
+
+> **Raised 2026-08-31** by
+> [S1e.3.3](p1e.3_medium/s1e.3.3_state_model.md), which was asked to *check*
+> the M1 alive-set invariant and found, in the course of checking it, that
+> breaking it costs an answer. The check shipped; this is the defect it
+> detects and does not repair.
+
+The blind enumerator builds its candidate objects from `kb.names()` — a
+function of the KB's **facts**. `alive₀` is computed once, at root's fixpoint,
+and `Run::phase2` enumerates subsets of it. So a rule that `:assert`s a
+constant no fact mentions grows the candidate pool *inside a fork*, into a
+region the lattice will not revisit:
+
+```
+$ ein solve examples/ein-bugs/alive-set-fresh-name.ein -e
+  solutions (k)   0            exhausted = true
+  verdict         No solution — the constraints are contradictory
+```
+
+`{(q A Z), (q B Z)}` is a model of that program. The claim is a **refutation**
+— `exhausted = true`, not a lower bound — and it is false. Its twin
+`alive-set-fresh-name-declared.ein` is the same file plus the single fact
+`(seen Z)`, which changes no rule and no constraint and does nothing but put
+`Z` in the ontology; it answers `Solution k = 1` over exactly that model. The
+same fact is what makes the program satisfy clause 1 of the invariant, so
+*conforming* and *being answered correctly* are the same condition here.
+
+**Two corpus programs break the invariant and neither pays for it** —
+`examples/ein-bugs/mixed-type-hypothesis.ein` (`Ann`, from an `hrule`, which
+drives the hrule rung and so never consults `kb.names()`) and
+`tests/stdlib/algebra/07_schroder.ein` (`G`, from a probe rule, which fires
+during **root** saturation, before `alive₀` is taken). That is why this is a
+question and not a fix: the shape is live, the corpus is unharmed, and the
+right disposition is a judgement about the language rather than a patch.
+
+### The three candidates, priced
+
+| | what it does | cost |
+|---|---|---|
+| **(a) refuse at load** | a rule whose `:assert` names a constant no fact does is a load error | refuses both corpus programs, one of them a working stdlib test whose probe rule is doing nothing wrong. Decides *may a rule name a fresh object?* in the negative before M2 has asked, which is the argument [ST-M1](README.md#the-findings)'s own stage gave for not taking it |
+| **(b) seed the pool** | `hypgen::candidate_objects` unions the rules' `:assert` constants into `kb.names()` | the smallest change and it answers the fixture correctly — `alive₀` would hold `(q A Z)` from the start. It also widens the blind enumerator on every program that has such a constant, which is a search change and a golden change, and it is only correct if the constant set is the *whole* of what a rule can introduce |
+| **(c) leave it, and say so** | the check narrates it and the docs state the consequence | what shipped. The invariant becomes a **stated precondition on the rule library** rather than a property of the engine, which is honest and is what `docs/kernel/defined_behaviour.md` § 3.3 now says |
+
+**(b) is the interesting one** and it is not obviously right: it assumes the
+static constant set is complete, which is the same induction the dynamic sweep
+confirms today (`ein-infer/tests/alive_invariant.rs` finds no name the static
+check did not predict) but which a `(?R ?a ?b)` head binding an integer would
+break — the residue `interning.rs` already names and nothing in the corpus has.
+
+### Where it belongs
+
+Beside [F5](../followups/f5_rules_as_data.md), whose typed form is what would
+make the violation *unrepresentable* rather than detected, and beside
+[Q-M1e.12](#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object):
+both are questions about what the blind rung's candidate universe *is*, and
+answering either one alone risks answering the other by accident.
 

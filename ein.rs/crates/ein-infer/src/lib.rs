@@ -35,6 +35,7 @@ pub mod firing;
 pub mod fork_audit;
 pub mod hrule;
 pub mod hypgen;
+pub mod invariant;
 pub mod lookahead;
 pub mod match_;
 pub mod mt19937;

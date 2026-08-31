@@ -87,6 +87,7 @@ KB ─▶ Engine::compile_all ─▶ Plan ─▶ Saturator::saturate ─▶ reas
 | [`nogoods.rs`](../../../ein.rs/crates/ein-infer/src/nogoods.rs) | no-good learning: dead set → the root KB's no-good store; singletons → negated facts |
 | **⤳** [`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs) | **the main loop**: BFS over the commitment lattice; the root phase, the layer phase, dedup by canonical `state_key`; `LatticeProof`, `SolutionRecord`, `DeadCommitment`, `LatticeStats`; `compute_alive` / `promote_forced_positives` / `record_node` / the dead-handling path. This is ein.py's whole `monotonic/` package — solver, lattice, `_state`, `_helpers` — in one module, minus the dumps. It also holds the **second traversal** (M1d S1d.10.6): `tree_traversal()` reads `EIN_TRAVERSAL`, `tree_node` branches on one owed instance's jointly-exhaustive alternatives instead of enumerating subsets of `alive`, and it **declines** on any other rung. Off by default, `-n` honoured and `-m` refused ([`configuration.md`](../configuration.md)) |
 | [`sanity.rs`](../../../ein.rs/crates/ein-infer/src/sanity.rs) | the commutativity sanity check (`monotonic/sanity.py`) |
+| [`invariant.rs`](../../../ein.rs/crates/ein-infer/src/invariant.rs) | **the M1 alive-set invariant, evaluated** (M1e S1e.3.3, `ST-M1`) — `Universe::of` is the baseline the *loaded* program reaches, `rule_breaches` the static read of the rules' `:assert` constants that runs at root under `--events`, and `breaches` the post-fixpoint scan the corpus sweep uses to confirm the induction the static one assumes. No ein.py counterpart: nothing evaluated this until M1e |
 | **⤳** [`ein-render/src/dump/`](../../../ein.rs/crates/ein-render/src/dump/) | `state.rs` · `lattice.rs` · `serialise.rs` · `snapshot.rs` · `json.rs` — the lattice and state dumps, which are **rendering** and live with the other renderers rather than inside the solver |
 
 ## Contradiction, verdict, provenance, config
@@ -190,7 +191,12 @@ committing thread. `ein --version` is what says which build you have.
   [`README.md` § NAF semantics](README.md).
 - **Alive-set soundness** (the M1 invariant) — rules assert no new objects /
   relations / nested-fact hypotheses, so `alive = f(closed KB)`; see
-  [`README.md` § M1 invariant](README.md).
+  [`README.md` § M1 invariant](README.md). **Evaluated since M1e S1e.3.3** by
+  [`invariant.rs`](../../../ein.rs/crates/ein-infer/src/invariant.rs), whose
+  operational form is
+  [`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally):
+  a static read of the rules' `:assert` constants at load, a `warn` line per
+  breach under `--events`, and two corpus programs that break it.
 - **Provenance is per derivation, not per fact** — a fact's `Prov` is the
   primary justification and the KB's justification index returns every recorded
   one, so a fact is an OR-node over AND-nodes and the proof structure is an

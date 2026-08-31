@@ -1,0 +1,61 @@
+;;; The **control** for [`alive-set-fresh-name.ein`](alive-set-fresh-name.ein)
+;;; — that file plus **one fact** — M1e S1e.3.3, `ST-M1`.
+;;;
+;;; The added fact is `(seen Z)`, over a relation nothing else mentions. It
+;;; changes no rule, no constraint, no goal and no config; all it does is put
+;;; `Z` in the KB's name universe at **root**, where `alive₀` is computed.
+;;; That is enough for the blind enumerator to propose `(q A Z)` and
+;;; `(q B Z)`, and the answer goes from
+;;;
+;;;   solutions (k)   0     exhausted = true     No solution
+;;;
+;;; to `Solution k = 1` over exactly that model, in seven enterings.
+;;;
+;;; One fact is the whole difference, which is what makes this pair a
+;;; measurement of `ST-M1` rather than an illustration of it: the twin's
+;;; refutation is not a property of its constraints — its constraints are
+;;; these, to the character — and the M1 alive-set invariant, which the docs
+;;; state and nothing checked until S1e.3.3, is the only thing standing
+;;; between the two files.
+;;;
+;;; And this file does **not** break the invariant, for the same one line:
+;;; `(seen Z)` puts `Z` in the ontology, which is precisely what clause 1
+;;; asks for. `invariant::Universe::rule_breaches` reports `spawn` on the twin
+;;; and nothing here. So the fact does two things and they are the same thing
+;;; — it makes the program conform, and it makes the answer right. That is
+;;; the tightest statement of what `ST-M1` is worth.
+;;;
+;;; Read the twin for the mechanism, for why the lookahead is off, and for why
+;;; neither file contains an `(absent …)`.
+
+(config :enable-pre-branch-lookahead false)
+
+(relation p T T)
+(relation q T T)
+(relation seen T)
+
+(p A B)
+(seen Z)
+
+(rule spawn ()
+  :match  (q ?a ?b)
+  :assert (p ?b Z)
+  :why    "committing to (q {?a} {?b}) names Z, which no fact does")
+
+(rule no-a ()
+  :match  (q ?x A)
+  :assert (false)
+  :why    "nothing may reach A")
+
+(rule no-b ()
+  :match  (q ?x B)
+  :assert (false)
+  :why    "nothing may reach B")
+
+(query
+  :goal   (q ?x ?y)
+  :no-hypothesis (p seen)
+  ;; The model its twin cannot reach. `q` is named, so this closes `q`:
+  ;; exactly these two positive `q` facts, both built out of the name the
+  ;; other file's rule invents.
+  :expect (model (q A Z) (q B Z)))

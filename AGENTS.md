@@ -283,7 +283,13 @@ constrained-reasoning research.
   `EIN_PARITY_STRICT=1` turns it off). The six that ship are `ein-core`
   (interning, `Value`/`FactId`, the layered COW KB, provenance), `ein-ir`
   (lex → parse → macros → imports → load), `ein-infer` (compile → match →
-  saturate → the NAF boundary → the hypothesis loop), **`ein-einb`** (the
+  saturate → the NAF boundary → the hypothesis loop; and since M1e S1e.3.3
+  `invariant.rs`, which evaluates the **M1 alive-set invariant** — *no rule
+  asserts a constant the ontology lacks* — at load and narrates a `warn` line
+  per breach. Two corpus programs break it harmlessly, and
+  [`examples/ein-bugs/alive-set-fresh-name.ein`](examples/ein-bugs/alive-set-fresh-name.ein)
+  is eleven lines on which a breach costs a **verdict**: `k = 0, exhausted =
+  true` where a model exists), **`ein-einb`** (the
   `.einb` binary KB container — [P1a.8](docs/history/m1a_rust/README.md#p1a8--binary-kb-container),
   and the **only crate that is not `#![forbid(unsafe_code)]`**: its `cast.rs`
   is the one audited module design/12 §2 permits `unsafe` in, which is why it

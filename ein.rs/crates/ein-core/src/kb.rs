@@ -993,6 +993,28 @@ impl Kb {
         self.layers().flat_map(|l| l.facts.iter().copied())
     }
 
+    /// Every believed fact from insertion ordinal `n` on — the **delta** a
+    /// caller that has already read a prefix owes.
+    ///
+    /// Whole layers below `n` are skipped rather than walked, which is what
+    /// makes a per-fork check cost the fork's own writes and not root's
+    /// fixpoint. Sound because a KB's fact list only ever grows: `push_fact`
+    /// appends, nothing retracts, and `materialise` is content-neutral — the
+    /// same property [`Kb::written_since_saturation`] rests on.
+    pub fn facts_from(&self, n: usize) -> impl Iterator<Item = FactId> + '_ {
+        let mut seen = 0usize;
+        self.layers()
+            .filter_map(move |l| {
+                let start = seen;
+                seen += l.facts.len();
+                if seen <= n {
+                    return None;
+                }
+                Some(&l.facts[n.saturating_sub(start)..])
+            })
+            .flat_map(|s| s.iter().copied())
+    }
+
     pub fn n_facts(&self) -> usize {
         self.layers().map(|l| l.facts.len()).sum()
     }

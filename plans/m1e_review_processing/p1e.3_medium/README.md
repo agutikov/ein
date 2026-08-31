@@ -84,13 +84,25 @@ It is Medium in the review because nothing violates it today. It gets its own
 stage here because the check is cheap and the thing it protects is the
 milestone's most load-bearing claim.
 
+> **Built 2026-08-31, and "nothing violates it today" was wrong.** Two corpus
+> programs assert a constant no fact names — `examples/ein-bugs/mixed-type-hypothesis.ein`
+> and `tests/stdlib/algebra/07_schroder.ein` — and neither pays for it, for two
+> different reasons. What a breach costs is **an answer**, shown by the eleven
+> lines the stage added: `k = 0, exhausted = true`, *No solution*, where a
+> model exists, against a control that is the same file plus one fact naming
+> the invented object and answers `Solution k = 1` over exactly that model.
+> The check is **static** rather than post-fixpoint — the rules' `:assert`
+> constants, 7 µs at load — because that form is free, total, and finds every
+> breach the scan finds. The defect it detects is
+> [Q-M1e.21](../open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about).
+
 ## Stages
 
 | ID | title | findings | est. |
 |---|---|---|---:|
 | [S1e.3.1](s1e.3.1_correctness.md) | Correctness | `CO-M1` ~~`CO-M2`~~ `CO-M3` `CO-M4` `CO-M5` `CO-M6` ✅ **2026-08-30** | 4 d |
 | [S1e.3.2](s1e.3.2_semantics.md) | Semantics | ~~`SE-M1`~~ `SE-M2` `SE-M3`, +`CD-M2`'s third item ✅ **2026-08-31** | 2 d |
-| [S1e.3.3](s1e.3.3_state_model.md) | State model | `ST-M1` | 2 d |
+| [S1e.3.3](s1e.3.3_state_model.md) | State model | `ST-M1` ✅ **2026-08-31** | 2 d |
 | [S1e.3.4](s1e.3.4_architecture.md) | Architecture | `AR-M1` `AR-M2` ✅ **2026-08-30**, +`CO-M2` `SE-M1` `SE-L1` `TE-M8` | 3 d |
 | [S1e.3.5](s1e.3.5_error_handling.md) | Error handling | `EH-M1` `EH-M2` | 1.5 d |
 | [S1e.3.6](s1e.3.6_tests.md) | Tests | `TE-M1` … `TE-M8` | 5 d |

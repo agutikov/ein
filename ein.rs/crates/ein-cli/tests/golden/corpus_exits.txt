@@ -310,6 +310,12 @@
 0    examples/ein-bugs/alive-empty-interlayer.ein :: solve -e
 0    examples/ein-bugs/alive-empty-phase1.ein :: solve
 0    examples/ein-bugs/alive-empty-phase1.ein :: solve -e
+1    examples/ein-bugs/alive-set-fresh-name-declared.ein :: solve
+0    examples/ein-bugs/alive-set-fresh-name-declared.ein :: solve -e
+0    examples/ein-bugs/alive-set-fresh-name-declared.ein :: test
+0    examples/ein-bugs/alive-set-fresh-name.ein :: solve
+0    examples/ein-bugs/alive-set-fresh-name.ein :: solve -e
+0    examples/ein-bugs/alive-set-fresh-name.ein :: test
 0    examples/ein-bugs/alt-cap-core-reordered.ein :: solve
 0    examples/ein-bugs/alt-cap-core-reordered.ein :: solve -e
 0    examples/ein-bugs/alt-cap-core-reordered.ein :: test
