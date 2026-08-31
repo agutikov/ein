@@ -101,7 +101,7 @@ added `ein test <path>`, which runs whatever `:expect` the file's queries carry
 and exits 1 when one of them is false — so a `test` cell in the exit golden is
 banking a claim the *program* makes, not one the engine happens to render. It
 is declared on every entry that carries an `:expect` — the three
-`examples/features/1{0,1,2}_expect*.ein` fixtures and all 45 of
+`examples/features/1{0,1,2}_expect*.ein` fixtures and every program under
 [`tests/stdlib/`](../tests/) — and on anything else it would exit 2 with
 "nothing to check", which is the right answer and not a useful cell. Adding one
 to a file that grows an `:expect` is the growth rule below, applied.
@@ -111,7 +111,7 @@ to a file that grows an `:expect` is the growth rule below, applied.
 | group | what it holds | the sweep expects |
 |---|---|---|
 | `positive` | `examples/**/*.ein` outside `broken/` and `ein-bugs/` | at least one run answers; catalogued in [`examples/README.md`](../examples/README.md) |
-| `stdlib` | the [stdlib](../stdlib/) modules loaded standalone, **and the 47 conformance programs under [`tests/stdlib/`](../tests/) that exercise their rules** (M1c S1c.1.4; the closed-and-owing pair is M1d S1d.2.2) | as `positive`. The seven module entries exercise the import + macro machinery on their own terms; the `tests/` entries each carry an `:expect`, so their `test` cell is a claim the program makes |
+| `stdlib` | the [stdlib](../stdlib/) modules loaded standalone, **and the conformance programs under [`tests/stdlib/`](../tests/) that exercise their rules** — one per rule or tight family, `find tests/stdlib -name '*.ein' \| wc -l` (M1c S1c.1.4; the closed-and-owing pair is M1d S1d.2.2) | as `positive`. The seven module entries exercise the import + macro machinery on their own terms; the `tests/` entries each carry an `:expect`, so their `test` cell is a claim the program makes |
 | `parse-negative` | `examples/broken/*.ein` | every run refused, `IRParseError` with `file:line:col` |
 | `load-negative` | `examples/broken/load/*.ein` | parse, then fail to load; the exact message is checked in beside each fixture ([README](../examples/broken/load/README.md)) |
 | `compile-negative` | `examples/broken/compile/*.ein` | parse and load, then the compiler refuses; `.expected` beside each ([README](../examples/broken/compile/README.md)). `activator_arity.ein` sits in that directory and is `positive`: its error is unreachable through the engine by design, so the file solves and derives nothing, which is what it pins |
@@ -220,9 +220,17 @@ the build and machine
 the sweep it has just run, at a 4× tolerance).
 
 **Two** entries are slow — `features/01_not_and_absent` and
-`features/04_open` — 12 cells and 13.2 s of engine. The default selection is
-**889 cells** and 5.3 s of `cargo test`; with `EIN_CORPUS_SLOW=1` the whole 901
-take **22.2 s**, where before S1a.9.0 they took **307 s**.
+`features/04_open`, named in `ein-corpus` and pinned per commit by
+`the_slow_set_is_exactly_these_two` (M1e S1e.3.6) — and they are 12 cells and
+**13.2 s** of engine.
+
+The **cell count** is `wc -l ein.rs/crates/ein-cli/tests/golden/corpus_exits.txt`:
+the exit golden is one line per cell of the full selection, so it is the number
+and it cannot drift from the sweep that writes it. The default selection is
+that minus the two slow entries' twelve. What the sweep costs is a
+measurement — **5.3 s** of `cargo test` by default and **22.2 s** with
+`EIN_CORPUS_SLOW=1`, where before S1a.9.0 they took **307 s** (2026-08-22, and
+`utils/corpus_cost.py` re-takes it).
 
 > It was 629 / 641 cells at S1a.9.0 and the wall clock has not moved: M1c
 > S1c.1.2 added five fixtures and S1c.1.4 added 45 with 225 cells between

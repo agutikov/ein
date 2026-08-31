@@ -76,9 +76,11 @@ directory, and since M1c
 [S1c.1.5](../docs/history/m1c_external_validation/README.md#s1c15--in-the-gate)
 it is **in the gate**: `ein-infer/tests/stdlib_coverage.rs` solves every
 program under `tests/stdlib/` with `--events` on and fails on any rule none of
-them activated — 0.04 s, and **77 of 77** today. `python3
-utils/stdlib_census.py --check` is the same census with the numbers, over all
-189 corpus entries rather than the suite.
+them activated — 0.04 s, and **77 of 77**, which is a number this page may
+state exactly because `every_stdlib_rule_is_activated_by_a_program_here` fails
+the day it stops being true (`grep -hc '^(rule ' stdlib/*.ein` is the
+denominator). `python3 utils/stdlib_census.py --check` is the same census with
+the numbers, over every corpus entry rather than the suite.
 
 **"Activated" is two events since M1d S1d.2.4**, and the second is not an
 optimisation of the first. A saturation rule reaches the agenda and emits

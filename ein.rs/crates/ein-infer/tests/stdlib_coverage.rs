@@ -3,10 +3,14 @@
 //!
 //! [S1c.1.1](../../../../docs/history/m1c_external_validation/README.md#s1c11--what-the-stdlib-promises-and-what-is-exercised)
 //! measured the gap this closes: **38 of the stdlib's 73 rules never fired**
-//! in any of 400 corpus runs, and 20 more were activated by `examples/zebra.ein`
-//! and by nothing else. [S1c.1.4](../../../../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus)
-//! wrote the 45 programs under [`tests/stdlib/`](../../../../tests/README.md)
-//! that took the zero set to 0. This is what stops it growing back.
+//! in any of 400 corpus runs (2026-08-23), and 20 more were activated by
+//! `examples/zebra.ein` and by nothing else.
+//! [S1c.1.4](../../../../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus)
+//! wrote the programs under [`tests/stdlib/`](../../../../tests/README.md)
+//! that took the zero set to 0. This is what stops it growing back — and the
+//! count of rules and of programs is deliberately not repeated here, because
+//! **this file computes both**: whatever `stdlib/*.ein` declares and whatever
+//! is under the suite directory is what it asserts about (M1e `DO-M1`).
 //!
 //! ## The claim is about the *suite*, not about the corpus
 //!
@@ -27,10 +31,10 @@
 //!
 //! ## Why this is a test and not the script
 //!
-//! The script shells out to a release binary 557 times and takes 37 s; a check
-//! shaped like that runs when somebody remembers it. This one runs in
-//! `cargo test`, needs no binary, and costs **0.04 s** — 45 programs of three
-//! declarations and two facts exhaust in microseconds. **It fails the
+//! The script shells out to a release binary hundreds of times and takes 37 s;
+//! a check shaped like that runs when somebody remembers it. This one runs in
+//! `cargo test`, needs no binary, and costs **0.04 s** — a program of three
+//! declarations and two facts exhausts in microseconds. **It fails the
 //! moment a rule is added without a program**, which is the only moment anyone
 //! will read it.
 //!
@@ -203,12 +207,12 @@ struct Ran {
 /// Load and solve one program to exhaustion — the run `ein test` makes — and
 /// record what it activated.
 ///
-/// Exhaustive rather than a bare `saturate`, though on today's suite the two
-/// reach exactly the same 73 rules (measured, 2026-08-24). The difference is
-/// what happens to a rule whose only firing is *inside* a hypothesis: under
-/// saturation the gate would report it untested and the fixture's author would
-/// have to find out why. It costs nothing to be right about that: 45 programs
-/// of this size exhaust in 0.04 s, all told.
+/// Exhaustive rather than a bare `saturate`, though on the suite as it stood
+/// at S1c.1.5 the two reached exactly the same rules (measured, 2026-08-24).
+/// The difference is what happens to a rule whose only firing is *inside* a
+/// hypothesis: under saturation the gate would report it untested and the
+/// fixture's author would have to find out why. It costs nothing to be right
+/// about that — programs of this size exhaust in 0.04 s, all told.
 fn run(path: &Path, imports: &BTreeMap<String, Vec<String>>) -> Ran {
     let text = std::fs::read_to_string(path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
     let load = |index: usize| {

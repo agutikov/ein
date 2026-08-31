@@ -132,12 +132,13 @@ Every error the loader raises interpolates the form's source location, and a
 unknown relation `foo` at None
 ```
 
-**23 of the 30 `examples/broken/load/` fixtures** have a message that ends
-this way. The seven that do not are the ones whose error is raised somewhere
-that *has* a location, or nowhere that has one at all:
+**Most `examples/broken/load/` fixtures** have a message that ends this way —
+`grep -L 'at None' examples/broken/load/*.expected` names the ones that do
+not, and on 2026-08-31 that was **11 of 41**. They are the ones whose error is
+raised somewhere that *has* a location, or nowhere that has one at all:
 `macro_arity_mismatch` (inside macro expansion, on a nested node — it prints a
 real `Loc(file=…, line=6, col=20)`), the two `config_*`, the two `import_*`,
-`unimported_std_macro`, and `derivation_cycle`.
+`unimported_std_macro`, `derivation_cycle`, and the four `expect_*` M1c added.
 
 *Why.* [Q-M1a.6](../history/m1a_rust/open_questions.md#q-m1a6--at-none-in-loader-messages)
 — a genuine usability bug, reproduced deliberately so that fixing it would be

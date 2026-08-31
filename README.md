@@ -70,10 +70,20 @@ of their properties; after that, formal inference is cheap.*
 ## The thirteen components — built, scheduled, open
 
 **Built** means in [`ein.rs/`](ein.rs/), asserted by `cargo test --workspace`
-(**703 tests over 77 targets, 0 failures**, 2026-08-25) and, where a number is
-given, recorded in a measurement document under
+(**802 tests over 90 targets, 0 failures** — `./run_tests.sh`, 2026-08-31) and,
+where a number is given, recorded in a measurement document under
 [`docs/history/m1a_rust/`](docs/history/m1a_rust/README.md) that names the machine state it
-was taken under. **Scheduled** means a milestone with phase and stage files.
+was taken under.
+
+> **Every exact number in this tree carries its warrant** — M1e
+> [Q-M1e.4](plans/m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all),
+> after a review found that *every* count no test pinned had drifted at least
+> one milestone while *every* count a test pinned was exact. A number is
+> followed by the **command** that re-takes it, or by the **date** it was
+> taken, or by the **test** that pins it; a number that can carry none of the
+> three is not written down, and what prints it is named instead. So the line
+> above is dated rather than checked: it is right for the 31st and a reader
+> who needs today's runs `./run_tests.sh`. **Scheduled** means a milestone with phase and stage files.
 **Open** means a research note in [`plans/followups/`](plans/followups/README.md)
 or [`plans/ideas/`](plans/ideas/README.md) — the author's own, unimplemented,
 authoritative on intent.
@@ -356,10 +366,11 @@ and — for the default build — `cmake` and a C++ compiler, because `ein` link
 zebra2.ein -e`**, along with `ein kb` and `--jobs`
 ([feature_cost.md](docs/history/m1a_rust/measurements/feature_cost.md)).
 
-`ein --version` names the build: engine version, `--events` protocol, the
-features compiled in, and the SHA-256 of the `std.*` manifest **this binary
-will load** — the one input that can differ between a binary and the checkout
-beside it. Release binaries for Linux (x86_64 + aarch64), macOS (universal2)
+`ein --version` names the build in **five** lines: engine version, `--events`
+protocol, `.einb` container format, the features compiled in, and the SHA-256
+of the `std.*` manifest **this binary will load** — the last being the one
+input that can differ between a binary and the checkout beside it. The five
+are what [`docs/install.md`](docs/install.md) walks through. Release binaries for Linux (x86_64 + aarch64), macOS (universal2)
 and Windows are [S1a.9.3](docs/history/m1a_rust/README.md#s1a93--packaging-and-release)'s
 matrix, written and reviewed; the first tag is what runs it. **`pip install`
 is not a channel** — the Python binding was deferred on 2026-08-21 for want of
@@ -624,12 +635,12 @@ reopen them named).
 | [`docs/guide/`](docs/guide/) | **start here** — *Learn Ein by solving the Zebra puzzle* |
 | [`docs/kernel/`](docs/kernel/README.md) | the kernel specification: graph semantics, data model, ein-lang, the inference engine, defined behaviour, the event protocol, the Zebra walkthrough |
 | [`docs/api/`](docs/api/ein.md) | the Python embedding contract — **a record held in reserve**; nothing implements it and nothing is scheduled to |
-| [`docs/history/`](docs/history/README.md) | shipped milestones kept as record — [M1a, the Rust port](docs/history/m1a_rust/README.md): eleven phases, the design contracts the crates cite, the measurements nothing can re-take; [M1c, external validation](docs/history/m1c_external_validation/README.md): one phase, and a stdlib census that *can* be re-taken |
+| [`docs/history/`](docs/history/README.md) | shipped milestones kept as record — [M1a, the Rust port](docs/history/m1a_rust/README.md): eleven phases, the design contracts the crates cite, the measurements nothing can re-take; [M1c, external validation](docs/history/m1c_external_validation/README.md): one phase, and a stdlib census that *can* be re-taken; [M1d, from saturation to satisfiability](docs/history/m1d_satisfiability/README.md): four phases, the `Open` verdict, and four re-takable censuses with a `utils/` script apiece |
 | [`docs/lib/`](docs/lib/README.md) | the catalogue of external tech across 12 topic files — constrained generation, solvers, provers, category theory, graph rewriting, neuro-symbolic stacks, benchmarks — plus a knowledge graph |
-| [`plans/`](plans/README.md) | the roadmap: milestones M1d, M2, M5, M10, M20, plus `followups/`, `ideas/`, open questions — M1a and M1c shipped and moved to `docs/history/` |
+| [`plans/`](plans/README.md) | the roadmap: milestones M1e, M1f, M2, M5, M10, M20, plus `followups/`, `ideas/`, open questions — M1a, M1c and M1d shipped and moved to `docs/history/` |
 | [`plans/ideas/`](plans/ideas/README.md) | the author's ten founding notes — authoritative on intent |
-| [`plans/followups/`](plans/followups/README.md) | F1–F17 — parked research threads, closed ledgers, the raw notes behind EinAf |
-| [`utils/`](utils/README.md) | eighteen scripts driving `ein.rs`: renderers, checks (the manifest, the six-property fuzzer), the measurement set (`bench_env.sh` first) |
+| [`plans/followups/`](plans/followups/README.md) | the parked research threads (`ls plans/followups/`), closed ledgers, and the raw notes behind EinAf |
+| [`utils/`](utils/README.md) | the scripts driving `ein.rs` (`ls utils/*.py utils/*.sh`): renderers, checks (the manifest, the six-property fuzzer), the measurement set (`bench_env.sh` first) |
 | `nlp/`, `smt/` | scratch from the 2021 prototype — dependency-parsing scripts and three hand-written `.smt` encodings; each README names the submodule that restores its tool |
 | [`AGENTS.md`](AGENTS.md) | orientation for AI coding agents (`CLAUDE.md` is a symlink to it) |
 

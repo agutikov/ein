@@ -19,7 +19,7 @@ records which question became which id.
 | [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | **decided 2026-08-28**, written into [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md); ratified in [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1 **together with Q-M1e.2** ([D5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d5_does_t1_ratify_q_m1e2.md), option A, 2026-08-28), applied everywhere after |
 | [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | **decided 2026-08-28** — *an argument suffices when its premise is itself enforced*, written into [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md). The `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
 | [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | **answered 2026-08-30 — (c)**, by [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) T1. The destination was already written into [`docs/history/README.md`](../../docs/history/README.md): M1's survivors went to `docs/kernel/inference/` at P1.22, so `m1_core/` is a directory the tree **declined**, and what a superseded page needed was the banner. The general rule — *a page is moved into an existing milestone record, never made into one* — plus the triage of all 40 pages |
-| [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | open — [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md) |
+| [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | **answered 2026-08-31 — yes, if the sentence carries the warrant**, and there are three: a **command** that re-takes it, a **date**, or a **test** that pins it. A count that can carry none is deleted. Which warrant fits follows from what the number *is* — a **size** takes the command (and all nine drifted counts are sizes), a **measurement** takes the date, a **test-pinned** count takes the test's name. The fourth shape the question lists — a checker asserting prose against a command — is **refused**: the counts that are right are the ones behind an instrument that is *run*, not one that exists |
 | [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — **and it has an instance again**: [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) closed all three of `CO-H3` on 2026-08-29, and [S1e.3.2](p1e.3_medium/s1e.3.2_semantics.md) found a fourth on 2026-08-31 — `ein test`'s `NOT CHECKED` line names two causes and under `EIN_TRAVERSAL=tree` neither applies. Documented, not fixed: the honest fix is a reason type in `ein-infer`, which is `T1d.10.6.4` again. [S1f.10.7](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it |
 | [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model) | What is a **solution**, and what is a **model**? | **decided 2026-08-28** by the user; binding on [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) and on [P1f.10](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md) |
 | [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) | The read-out prints the solution **KB** and calls it a model | **decided 2026-08-28 — A**: the recorded object is the *state*, `model` is a projection of it, and § 2 is evaluated on the state. Unblocks Q-M1e.8. S1e.3.2 applies it to the vocabulary, P1e.5's S1e.5.3 to the read-out |
@@ -184,6 +184,47 @@ strong as `parity_baselines.md`'s. This question is the *rule*;
 and records which pages the rule sent where.
 
 ## Q-M1e.4 — Does the repo want an exact count in prose at all?
+
+> **Answered 2026-08-31 — yes, and the warrant is the price.** A count may
+> stand in prose when the sentence carries the thing that makes it checkable,
+> and there are exactly three such things: a **command** that re-takes it, a
+> **date**, or a **test** that pins it. A count that can carry none of the
+> three is deleted, and what prints it is named instead. That is
+> [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md)'s own acceptance — *no
+> prose count survives that nothing generates, dates or owns* — turned into a
+> rule an author applies without deciding anything.
+>
+> **Which warrant fits is decided by what the number is**, and the nine
+> drifted instances turn out to be one kind:
+>
+> | the number is | its warrant | why that one |
+> |---|---|---|
+> | **a size** — how many files, rules, entries, cells, scripts are in a place | the **command** | it has no interesting history, so a date says nothing about it; and it moves on a milestone that was not thinking about it, which is exactly the mechanism the review measured. **All nine drifted counts are sizes.** |
+> | **a measurement or a result** — 802 tests, 157 of 217 mutants killed, 3 557 enterings | the **date** | it is a *finding*, and a finding without a date is not one |
+> | **a count a test pins** — 77 of 77 rules, every program states an expectation | the **test's name** | it is the only class `CLAUDE.md`'s *checked by `cargo test`* was ever true of, and naming the test is what lets a reader tell which class a number is in — the second-order problem `DO-M1` names |
+>
+> **A date does not stop drift. It makes drift legible, which is the whole
+> ask.** `README.md:73` is the proof, and it is the one site of the nine that
+> already carried a warrant: *"703 tests over 77 targets, 0 failures,
+> 2026-08-25"* is **wrong** on 2026-08-31 — the gate passes 802 over 90 — and
+> it is not *misleading*, because a reader who cares can see the date and
+> re-run the gate in one command. The other eight were indistinguishable from
+> current.
+>
+> **And no new machinery**, which refuses the fourth shape the question lists.
+> No `doc_counts.py`, no markdown-level checker asserting a stated number
+> against a command's output. The evidence is in the question's own framing:
+> the counts that are right are the ones behind an instrument *that is run* —
+> `cargo test`, `stdlib_census`, `corpus_cost` — not the ones behind an
+> instrument that exists. A script written to keep a README honest and run by
+> nobody is this same failure one level up, and it would be the second thing
+> in the tree claiming the docs are checked.
+>
+> So [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md) is **a de-counting pass
+> with a re-counting minority**: most sites lose their digit and gain a
+> one-liner, `README.md`'s gate line keeps its digit and gains today's date,
+> and the handful a test already pins gain the test's name.
+
 
 [DO-M1](README.md#the-findings) is not a list of typos: it is one mechanism,
 observed eight times, and the repo already knows the mechanism — *a page

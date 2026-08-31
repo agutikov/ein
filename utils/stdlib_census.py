@@ -23,10 +23,11 @@ Two halves, and only the second runs the engine:
    module, parameters, priority, whether the head asserts `(false)`, and the
    *guard shapes* in its `:match` — every `neq`, `absent`, `not` and `forall`,
    because each one is a case where firing would be wrong and so is a negative
-   test S1c.1.4 owes. Seventy-three rules over seven modules, three of the
-   names declared twice (`std.elim` and `std.bijection` both ship
-   `domain-elimination` and `typecheck-arg-{0,1}` — the positional and the
-   signature-driven formulations).
+   test S1c.1.4 owes. Seven modules, and three of the names are declared twice
+   (`std.elim` and `std.bijection` both ship `domain-elimination` and
+   `typecheck-arg-{0,1}` — the positional and the signature-driven
+   formulations). How many rules is what this half **prints**; it read
+   "seventy-three" until M1e `DO-M1`, four behind.
 2. **The firing census.** Every corpus entry, under every declared run that
    reaches the engine (`solve …` / `saturate …` / `test` — `render` has no
    `--events`, and `render lattice`'s solve is a subset of `solve -e`'s), with

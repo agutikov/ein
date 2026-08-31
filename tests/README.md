@@ -36,8 +36,9 @@ goldens compare ein.rs to its own past, and since
 no second engine to compare it to at all. The stdlib was where that gap was
 widest —
 [the census](../docs/history/m1c_external_validation/stdlib_census.md)
-measured **38 of 73 rules never firing** in 400 corpus runs, 33 of them never
-even loaded, and 20 more held up by `examples/zebra.ein` alone.
+measured **38 of 73 rules never firing** on 2026-08-23 over 400 corpus runs,
+33 of them never even loaded, and 20 more held up by `examples/zebra.ein`
+alone.
 
 | dir | rules | what the programs do |
 |---|---:|---|
@@ -151,7 +152,7 @@ the rung modes in `obligation_rung.rs` — which is S1c.1.5's shape and the
 reason growing `:expect` a word for the verdict was deferred rather than
 needed.
 
-**157 of 217, and it is an instrument now** —
+**157 of 217 on 2026-08-31, and it is an instrument now** —
 [`utils/stdlib_mutants.py`](../utils/stdlib_mutants.py), M1e S1e.3.6 T6, the
 review's `TE-M6`. The sweep began as **50 of 51**, hand-taken: one deliberate
 defect per rule family — a dropped `neq`, an exchanged pair of `absent`
@@ -203,10 +204,18 @@ test written**, which is the state
 found 20 rules in. Scoping it also found the one rule this suite did not run —
 `transitive`, whose fixture was a two-cycle where the `(neq ?a ?c)` guard
 refuses every match. `algebra/21_transitive.ein` grew a three-chain, and the
-suite now stands on its own: **73 of 73, no `examples/` entry contributing.**
+suite has stood on its own since — **73 of 73 with no `examples/` entry
+contributing** when S1c.1.4 closed on 2026-08-24, and *all of them* today,
+which is not a number this page has to keep because
+`stdlib_coverage.rs::every_stdlib_rule_is_activated_by_a_program_here` fails
+the moment it stops being true.
 
-The third file every entry here is swept by is `corpus/corpus.toml` — five
-runs each, 225 of the sweep's 889 cells, **0.72 s** of its 5.1 s.
+The third file every entry here is swept by is `corpus/corpus.toml` — five runs
+each but one, so this directory's share of the sweep is
+`grep -c 'path *= *"tests/stdlib' corpus/corpus.toml` entries out of
+`grep -c '^\[\[entry\]\]' corpus/corpus.toml`, and `wc -l
+ein.rs/crates/ein-cli/tests/golden/corpus_exits.txt` is the whole cell count.
+It cost **0.72 s** of the sweep's 5.1 s on 2026-08-24.
 
 ### Re-measuring the coverage
 
@@ -214,7 +223,7 @@ The gate is a yes/no. The *numbers* — firings per rule, productive vs
 redundant, who the sole activator is — stay with the instrument:
 
 ```sh
-python3 utils/stdlib_census.py                     # the table, all 180 entries
+python3 utils/stdlib_census.py                     # the table, every corpus entry
 python3 utils/stdlib_census.py -k tests/stdlib     # this directory's own contribution
 python3 utils/stdlib_census.py --check             # exit 1 while any rule is at zero
 ```
@@ -248,5 +257,5 @@ that would check it is affordable, which is
 subject rather than this directory's.
 
 **The corollary for a new fixture**: keep it small enough that its answer is
-reached by saturation or by a couple of layers. That is what the 56 programs
-here already are, and it is why the whole suite is 0.04 s.
+reached by saturation or by a couple of layers. That is what every program here
+already is, and it is why the whole suite is 0.04 s.

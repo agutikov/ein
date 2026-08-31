@@ -5,16 +5,18 @@
 //! both implementations, and diffed everything the two processes produced.
 //! [S1a.10.3](../../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine)
 //! retires the second operand. What replaces the harness is not a diff, it is
-//! a **sweep**: the same cells, one engine, run to see that they run — 641 of
-//! them since [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)
+//! a **sweep**: the same cells, one engine, run to see that they run. How many
+//! is `wc -l` on this file's own golden, `golden/corpus_exits.txt`, which is
+//! one line per cell of the full selection —
+//! [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)
 //! re-priced the tail and sixteen runs turned out to be asking their fixtures
 //! nothing.
 //!
 //! ## Why a sweep is not nothing
 //!
 //! Almost everything else in this workspace tests the engine as a *library*.
-//! `corpus_shapes.md5` digests 4 228 renderings without starting a process;
-//! `summary_properties.rs` solves 176 cells in-process. They are a superset of
+//! `corpus_shapes.md5` digests every rendering without starting a process;
+//! `summary_properties.rs` solves the positive entries in-process. They are a superset of
 //! this file on *content* and they cannot see any of what it sees:
 //!
 //! - that the manifest's `runs` column still names invocations the CLI
@@ -41,10 +43,14 @@
 //! correct engine and do not have to be looked up.
 //!
 //! ```text
-//! cargo test -p ein-cli --test corpus_cli                    # 622 cells, ~3.5 s
-//! EIN_CORPUS_SLOW=1 cargo test -p ein-cli --test corpus_cli  # 641 cells, ~24 s
+//! cargo test -p ein-cli --test corpus_cli                    # every cell but the slow, ~3.5 s
+//! EIN_CORPUS_SLOW=1 cargo test -p ein-cli --test corpus_cli  # all of them, ~24 s
 //! EIN_BLESS=1       cargo test -p ein-cli --test corpus_cli  # re-bank (implies SLOW)
 //! ```
+//!
+//! The two wall clocks are 2026-08-22 readings; the cell counts are not
+//! written here at all, because the golden beside this file is the count and
+//! a second copy of it is the thing that drifts (M1e `DO-M1`).
 //!
 //! ## The timeout is not decoration
 //!
@@ -95,16 +101,17 @@ impl Cell {
 }
 
 /// `EIN_CORPUS_SLOW=1` — the entries whose declared runs cost
-/// `ein_corpus::manifest::SLOW_MS` or more together. **Three** of them since
-/// [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced);
-/// there were seventeen, flagged under CPython at T1a.0.1.1 against a budget
-/// two engines out of date, and one of them was `zebra2.ein` at 16 ms. Those
-/// three add 16 s to a default selection that costs 3.5, so they are still
-/// nightly's.
+/// `ein_corpus::manifest::SLOW_MS` or more together. **Two** of them, named in
+/// `ein-corpus` and pinned by `the_slow_set_is_exactly_these_two` (M1e
+/// S1e.3.6), where there were seventeen at
+/// [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced):
+/// flagged under CPython at T1a.0.1.1 against a budget two engines out of
+/// date, one of them `zebra2.ein` at 16 ms. They add ~16 s to a default
+/// selection that costs 3.5, so they are still nightly's.
 ///
-/// `EIN_BLESS=1` implies it: a golden blessed from the default selection
-/// would silently *shrink* by 19 lines, which is the one way a table like
-/// this can be wrong without anyone noticing.
+/// `EIN_BLESS=1` implies it: a golden blessed from the default selection would
+/// silently *shrink* by the slow entries' lines, which is the one way a table
+/// like this can be wrong without anyone noticing.
 fn include_slow() -> bool {
     let on = |k: &str| std::env::var(k).as_deref() == Ok("1");
     on("EIN_CORPUS_SLOW") || on("EIN_BLESS")
@@ -209,8 +216,8 @@ fn sweep() -> Vec<Cell> {
 }
 
 /// The sweep, run once for the whole file. `OnceLock` rather than one sweep
-/// per test: five tests × 542 processes would be five times the cost for the
-/// same 542 answers.
+/// per test: five tests over one selection would be five times the cost for
+/// the same answers.
 fn cells() -> &'static [Cell] {
     static CELLS: std::sync::OnceLock<Vec<Cell>> = std::sync::OnceLock::new();
     CELLS.get_or_init(sweep)

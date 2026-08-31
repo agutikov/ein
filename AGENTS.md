@@ -68,8 +68,13 @@ constrained-reasoning research.
   ([Q-M1e.10](plans/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
-  checked by `cargo test --workspace` and by nothing else — and since M1e
-  T1e.1.1.1 what it takes to call one *settled* is
+  checked by `cargo test --workspace` and by nothing else — though **not every
+  sentence on a page is such a claim**, and since M1e
+  [Q-M1e.4](plans/m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all)
+  a reader can tell which are: an exact number carries the **command** that
+  re-takes it, the **date** it was taken, or the **test** that pins it, and a
+  number that can carry none is not written down.
+  Since M1e T1e.1.1.1 what it takes to call a claim *settled* is
   [`standard_of_proof.md`](docs/kernel/standard_of_proof.md): a behaviour is
   refuted only by a banked probe, an absence by naming the thing that checks
   it, a **risk not by argument at all**, and an argument for leaving something
@@ -215,8 +220,9 @@ constrained-reasoning research.
 - **`tests/`** — **the ein-lang test suites**, and since M1c S1c.1.4 a third
   corpus root beside `examples/` and `stdlib/`: a `.ein` here with no
   `corpus.toml` entry fails the same completeness check. Its one subject is
-  [`tests/stdlib/`](tests/README.md) — **56 programs, one per stdlib rule or
-  tight family** plus one pair that is a *corner* rather than a rule
+  [`tests/stdlib/`](tests/README.md) — **one program per stdlib rule or tight
+  family** (`find tests/stdlib -name '*.ein' | wc -l`) plus one pair that is a
+  *corner* rather than a rule
   (`closure/02_closed_and_satisfied` and `03_closed_and_owing`, M1d S1d.2.2:
   the same program with one fact deleted, banked so the stage that fixes it has
   to move the golden — **cashed at S1d.2.6**, where both grew
@@ -687,7 +693,7 @@ it.
 what it costs is 0.04 s:
 
 ```sh
-cargo test … -p ein-infer --test stdlib_coverage   # 77 rules, 56 programs, fires + owes
+cargo test … -p ein-infer --test stdlib_coverage   # every rule, every program: fires + owes
 ein test tests/                                    # the same suite, as a status code
 ```
 
