@@ -248,6 +248,7 @@ fn what_tests_only_skips_is_what_the_script_guards() {
         [
             "utils/stdlib_manifest.py",
             "utils/check_hashmap_iteration.py",
+            "utils/doc_audit.py --links --check",
             "cargo fmt --all --check",
             "cargo clippy --workspace --all-targets -D warnings",
             "cargo doc --no-deps, -D warnings",

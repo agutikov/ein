@@ -53,6 +53,11 @@ jobs:
       # No iteration over a hash map at an observable site (design/02 §9).
       # gate-step
       - run: python3 utils/check_hashmap_iteration.py
+      # Every relative link and anchor in the doc tree resolves (M1e S1e.3.8
+      # `DO-M2`). Whole tree, not `docs/kernel/`: 251 of the 264 this first
+      # found were in a milestone record that had moved out of `plans/`.
+      # gate-step
+      - run: python3 utils/doc_audit.py --links --check docs plans README.md AGENTS.md corpus/README.md tests/README.md examples/README.md stdlib/README.md utils/README.md c/README.md
 
   rust:
     name: ein.rs — build, lint, test

@@ -71,6 +71,11 @@
 #
 #   stdlib_manifest.py            the embedded stdlib against its digest
 #   check_hashmap_iteration.py    no hash-map iteration at an observable site
+#   doc_audit.py --links --check  **264** dangling links and nonexistent
+#                                 anchors the first time it ran over the whole
+#                                 tree rather than over `docs/kernel/` — 251 of
+#                                 them in one milestone record that had moved
+#                                 out of `plans/` (M1e S1e.3.8, `DO-M2`)
 #   cargo fmt --all --check       three files were unformatted the first time
 #                                 it ran, all three from M1c's `:expect` work
 #   cargo clippy -D warnings      a `for i in 0..n` indexing a slice, and four
@@ -83,8 +88,10 @@
 #                                 in the workflow too
 #
 # They cost about a second each warm, they run before the tests because their
-# failures are the cheapest ones to read, and `--tests-only` turns all five
-# off for a targeted iteration. Nothing turns them off silently — a missing
+# failures are the cheapest ones to read, and `--tests-only` turns all six off
+# — and the bench smoke below with them, which is what
+# `gate_steps::what_tests_only_skips_is_what_the_script_guards` reads out of
+# this script rather than out of this sentence. Nothing turns them off silently — a missing
 # `rustfmt`, `clippy` or `python3` is exit 127 here, the same as a missing
 # `cargo` or `dot`.
 
@@ -153,6 +160,17 @@ if [[ "${CHECKS}" == 1 ]]; then
 
     step "utils/check_hashmap_iteration.py"
     python3 "${SCRIPT_DIR}/utils/check_hashmap_iteration.py"
+
+    # M1e S1e.3.8, `DO-M2`. Not scoped to `docs/kernel/`, which `doc_audit.py`
+    # defaults to and S1e.2.2 had already swept: a relative link resolves or it
+    # does not wherever it is written, and 251 of the 264 broken ones this
+    # first found were in `docs/history/m1d_satisfiability/` — a milestone
+    # record moved out of `plans/` with its links still pointing at the tree it
+    # left. 280 pages, 0.29 s.
+    step "utils/doc_audit.py --links --check"
+    python3 "${SCRIPT_DIR}/utils/doc_audit.py" --links --check \
+        docs plans README.md AGENTS.md corpus/README.md tests/README.md \
+        examples/README.md stdlib/README.md utils/README.md c/README.md
 
     step "cargo fmt --all --check"
     if ! cargo fmt --manifest-path "${MANIFEST}" --all --check; then

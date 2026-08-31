@@ -661,8 +661,8 @@ whole census in 0.04 s. A file that did not load carries **no claim** —
 `queries = 0`, `expect = null` — because a claim is a property of a *program*.
 
 **`./run_tests.sh` runs every step of the per-commit CI tier**, in its order,
-since M1c S1c.1.5 — five static checks (~5 s warm, `--tests-only` skips them
-all), then `cargo test --workspace`, then the bench smoke test. **`cargo test
+since M1c S1c.1.5 — **six** static checks (~5 s warm; `--tests-only` skips them
+and the bench smoke), then `cargo test --workspace`, then the bench smoke test. **`cargo test
 --workspace` alone is not the gate**: it checks none of the five, and until
 S1c.1.5 neither did this script, which is why CI was red for three commits on
 findings the local run reported as a pass. A local gate that is a subset of the
@@ -672,6 +672,7 @@ remote one is a local gate that lies — keep the two lists the same.
 |---|---|
 | `utils/stdlib_manifest.py` | — (it has always run in CI) |
 | `utils/check_hashmap_iteration.py` | one finding, and the finding was the *check*: only the line immediately above a statement counted as `determinism-ok:`, so the second line of a two-line reason silently un-annotated it. It reads the whole comment block now |
+| `utils/doc_audit.py --links --check` | **264** — and 251 of them in `docs/history/m1d_satisfiability/`, a milestone record moved out of `plans/` with its links still aimed at the tree it left. Added M1e S1e.3.8 (`DO-M2`); the whole tree, not `docs/kernel/`, in 0.29 s |
 | `cargo fmt --all --check` | **three** unformatted files, all from M1c's own `:expect` work |
 | `cargo clippy --workspace --all-targets -D warnings` | a `for i in 0..n` indexing a slice, and **four** `&file` where `file` was already a `&str` — the four latent, because clippy stops at the first crate that fails and had never reached `ein-cli` |
 | `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps` | **twelve** unresolved intra-doc links and **seven** public items whose docs linked to a private one, plus a `<path>` read as an HTML tag. Nothing here had ever run rustdoc, whose default for all of it is a *warning* |

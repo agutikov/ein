@@ -147,8 +147,8 @@ needs to know what changed; each asks a question of a page in isolation.
 |---|---|---|
 | 1 | **Every code identifier resolves.** Every backticked `EIN_*` / `foo.rs` / `fn()` / `Type` / `snake_case` / `a::b` is findable in `ein.rs/crates/`. Report, not gate, and it can never be one: `Human` and DOT node ids are not identifiers, and — the sharper reason — **a page that correctly says a name is gone still names it**, so the count *rises* as the tree gets more honest. It went 86 → 92 across S1e.2.2's own fixes. Skim it for a name that looks like the engine's and is not accounted for; never count it | a `Mode` enum with three members that no crate has; `add_type` / `add_instance`; `from_dot`; a `_kb` back-pointer a page's own §5 says is gone. **Four of the eleven pages that needed work were found only this way** |
 | 2 | **Every environment variable greps non-empty.** A special case of (1), worth naming because it is the cheapest and the most often wrong | `EIN_RENDER_LEVI`, claimed by `04_dot_rendering.md` and read by no code path, ever |
-| 3 | **Every link and anchor resolves** — file *and* `#fragment`, GitHub-slugified | 4 broken anchors, all from a heading that grew words and a link that did not follow |
-| 4 | **Every prose `§x.y` names a heading that exists.** A section number written *after* a link, or inside its label, is **not part of the link**, so no link checker sees it | **six** citations naming **four** sections `algorithm_layer_n.md` has never had, plus two into a `§1.5` that does not exist. This class had survived every previous pass |
+| 3 | **Every link and anchor resolves** — file *and* `#fragment`, GitHub-slugified. **In the gate since S1e.3.8**, over the whole tree | 4 broken anchors here, all from a heading that grew words and a link that did not follow — and **264** once it was pointed at the rest of the repo |
+| 4 | **Every prose `§x.y` names a heading that exists.** A section number written *after* a link, or inside its label, is **not part of the link**, so no link checker sees it. In the gate with (3) | **six** citations naming **four** sections `algorithm_layer_n.md` has never had, plus two into a `§1.5` that does not exist. This class had survived every previous pass |
 | 5 | **Every command a page shows runs, and produces what the page says.** No script does this; it is a shell and ten minutes | a CLI line promising two artifacts it has never written; a claim that `(instnce ?a ?T)` is caught at parse time, which the parser accepts and the engine happily solves |
 | 6 | **Every page is in one declared state** — § Which pages to trust above, with the state visible from the page rather than from a plan | three P1.5b design pages reading as live specification |
 
@@ -160,11 +160,27 @@ python3 utils/doc_audit.py --links --check      # exit 1 on 3 or 4
 python3 utils/doc_audit.py --identifiers -k inference/
 ```
 
-It is **not in the gate**, and whether any of it should be is
-[DO-M2](../../plans/m1e_review_processing/p1e.3_medium/s1e.3.8_documentation.md)'s
-question. Check 5 has no instrument and is the one that found the most, which
-is worth remembering when the temptation is to automate the cheap half and
-call the pass done.
+**Checks 3 and 4 are in the gate since M1e S1e.3.8**, which is `DO-M2`'s
+answer, and they are scoped to the **whole tree** rather than to this one — a
+relative link resolves or it does not wherever it is written:
+
+```sh
+python3 utils/doc_audit.py --links --check docs plans README.md AGENTS.md \
+    corpus/README.md tests/README.md examples/README.md stdlib/README.md \
+    utils/README.md c/README.md
+```
+
+That is a step of `./run_tests.sh` and of `per-commit.yml`, diffed by
+`gate_steps.rs` like every other. Pointing it outside `docs/kernel/` is what
+earned it the place: **264** findings the first time, **251** of them in
+`docs/history/m1d_satisfiability/` — a milestone record moved out of `plans/`
+on 2026-08-27 with its links still aimed at the tree it left. 280 pages,
+0.29 s.
+
+Checks 1, 2 and 6 stay reports and check 1 can never be a gate, for the reason
+its row gives. Check 5 has no instrument and is the one that found the most,
+which is worth remembering when the temptation is to automate the cheap half
+and call the pass done.
 
 **One thing the checks cannot see**, and the reason `02_patterns.md` was the
 hardest page in the triage: they find machinery that was **removed**, because
