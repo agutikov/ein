@@ -123,7 +123,7 @@ milestone's most load-bearing claim.
 | [S1e.3.6](s1e.3.6_tests.md) | Tests | `TE-M1` … `TE-M8` ✅ **2026-08-31** | 5 d |
 | [S1e.3.7](s1e.3.7_code_doc_consistency.md) | Code ↔ doc consistency | `CD-M1` … `CD-M8` ✅ **2026-08-31** | 4 d |
 | [S1e.3.8](s1e.3.8_documentation.md) | Documentation | `DO-M1` `DO-M2` ✅ **2026-08-31** | 3 d |
-| [S1e.3.9](s1e.3.9_maintainability.md) | Maintainability | `MA-M1` `MA-M2` `MA-M3` `MA-M4` | 2 d |
+| [S1e.3.9](s1e.3.9_maintainability.md) | Maintainability | `MA-M1` `MA-M2` `MA-M3` `MA-M4` ✅ **2026-08-31** | 2 d |
 
 **Order.** [S1e.3.4](s1e.3.4_architecture.md) before
 [S1e.3.1](s1e.3.1_correctness.md) and [S1e.3.2](s1e.3.2_semantics.md) if the

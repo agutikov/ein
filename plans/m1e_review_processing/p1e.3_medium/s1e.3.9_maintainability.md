@@ -5,6 +5,9 @@
 **Depends on:** nothing.
 **Findings:** [`MA-M1`](../review/maintainability/medium.md) …
 [`MA-M4`](../review/maintainability/medium.md).
+**Status:** ✅ **done 2026-08-31** — four findings, one commit, and the slack
+the estimate reserved was spent on the two investigations it was reserved for.
+See [§ Outcome](#outcome).
 
 ## Context
 
@@ -142,3 +145,86 @@ into a question about what else in the proof summary is inert. If the second
 happens, sweep the whole emitted proof for fields that are constant across the
 corpus — that is a twenty-minute check with `--json-summary` over the manifest
 and it would find any sibling of `state_key_merges` in one pass.
+
+---
+
+## Outcome
+
+**Done 2026-08-31.** All four, plus the sweep § Notes reserved slack for.
+
+### The two investigations the estimate was for, and what they found
+
+**T1e.3.9.1 asked for ten minutes of `git log -S phase_2_done`, and the answer
+was neither of the two outcomes it offered.** The variable was not the residue
+of a removed early exit *in this port* — it was **already dead in `ein.py`**:
+`False` at `solver.py:285`, tested at `:287` and `:413`, assigned nowhere. So
+the port reproduced dead scaffolding faithfully, which is what a byte-parity
+port is for and exactly wrong to keep once there is one implementation. That
+makes it the first outcome (*removed deliberately*) at one remove, and the
+removal has a name: `phase_2_done = True` was set by `_merge_and_recheck`
+returning `stop`, deleted at P1.7a (`8439fc9`, *"PURE PER-BRANCH search; keep
+root STABLE"*) — which is
+[`absent_semantics.md`](../../../docs/kernel/inference/absent_semantics.md)'s
+corollary **C1 — no root-merge**.
+
+The site keeps one comment, against the task's default, and the reason is the
+one the task allows: a reader was previously told there were **three**
+termination paths, so *there is one* is worth saying, and C1 is why the other
+two went.
+
+**T1e.3.9.3 turned into the question § Notes anticipated**, and the sweep it
+asks for was run — every corpus entry that declares a `solve`, at `-m 3`, its
+`--json-summary` fields collected and asked which never vary. **133 entries,
+243 numeric fields, and no sibling.** Excluding the per-relation buckets, which
+are per-file by construction, exactly three engine counters are constant:
+
+| | | |
+|---|---|---|
+| `root.saturator.naf_dropped` | 0, and **no increment exists** | documented as *structurally 0* since S1.21.8 — `absent_semantics.md` E2: a guard is judged once, at a fixpoint, so there is no verdict to go stale. The field is a **retired** observable that says so |
+| `stats.enterings_dead_pre` | 0, two live increment sites | no corpus program prunes a commitment before entering it at this depth. A coverage fact, not a dead counter |
+| `stats.nogoods_subsumed` | 0, one live increment site | same |
+
+That is the distinction the acceptance draws, and it is worth stating because
+it is what makes `MA-M3` a finding rather than a preference: a field that reads
+0 **because the machinery is gone**, and says so where it is declared, is
+honest. A field that reads 0 while the engine does the thing on most files that
+search is an invitation to a wrong conclusion from a machine-readable artefact.
+
+### What each finding was
+
+| | as reported | as found |
+|---|---|---|
+| `MA-M1` | residue of a removed early exit | dead in `ein.py` too; the exit belonged to the root-merge C1 forbids |
+| `MA-M2` | two comments state the opposite of the code | as reported — and **both had a correct copy elsewhere** (`solve::resume_forks`'s doc comment, and the `--trace`-only line in `ein-cli`), which is `AR-M1`'s pattern in prose |
+| `MA-M3` | a counter that never counts | as reported; **three** increment sites, not one, and the corpus merges **482** times over 15 files |
+| `MA-M4` | numeric drift in comments | as reported, and the `zebra2-bad` pair had **three** snapshots across three files and **no owner**; measured, all three were wrong |
+
+### Two numbers that are now tests rather than prose
+
+`MA-M3` and `MA-M4` both ended in a test, and for the same reason: the number
+*is* the argument.
+
+- `the_state_key_merge_counter_is_not_a_constant_zero` — a **non-vacuity**
+  floor at roughly a third of today's 15 files / 482 merges, deliberately not
+  an identity. What a merge count should equal is `record_node` calls minus
+  nodes kept, and nothing counts the calls; what can silently regress is the
+  increment vanishing in a refactor of `record_node`'s three exits, and a
+  corpus floor is what notices that. Same shape as `TE-M2`'s derived floors.
+- `the_injected_contradiction_fans_out_and_the_union_overstates_it` — **126
+  witnesses, union 36, single frontiers 1–4**, where the three comments said
+  123/38/1–5 and 126/39. This is a test rather than a date because the pair is
+  the whole argument for `source_frontier_core` — *do not union, the smallest
+  single witness is the culprit* — and the argument stops holding if the two
+  converge.
+
+The rest of `MA-M4` is [`DO-M1`](s1e.3.8_documentation.md)'s rule applied to
+code: `solve.rs`'s *119 of 146* cites `openness_census.md` for the 92 of 121
+`verdict.rs` already carried, and `summary.rs`'s *eleven* becomes the twelve
+that `expect.rs` and `answer.rs` both said.
+
+### What it cost the goldens
+
+Eleven of 9 015 shape renderings, every one a `dump[lattice]` or `dump[abort]`
+and every one with an **unchanged byte count** — one digit in
+`proof_summary.json`, the only reader of the field. That equality is the check
+that nothing else moved.
