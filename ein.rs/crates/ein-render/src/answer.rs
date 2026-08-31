@@ -519,9 +519,10 @@ pub fn render_solution_table(
             // model: the read-out's `complete` means discharged. It is
             // deliberately not the same number as `stats.solution_nodes`,
             // which counts what the *search* recorded and which S1d.2.6 left
-            // alone — the two disagree on exactly the twelve corpus entries
-            // that reach this word, and this row is where the difference is
-            // printed rather than hidden.
+            // alone — the two disagree on exactly the corpus entries that
+            // reach this word (twelve when `utils/openness_census.py` last
+            // ran, which owns the count), and this row is where the difference
+            // is printed rather than hidden.
             lines.push(format!("  open states     {}", states.len()));
             lines.push(format!(
                 "  verdict         Open — {}{}",

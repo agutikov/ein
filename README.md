@@ -70,7 +70,7 @@ of their properties; after that, formal inference is cheap.*
 ## The thirteen components — built, scheduled, open
 
 **Built** means in [`ein.rs/`](ein.rs/), asserted by `cargo test --workspace`
-(**802 tests over 90 targets, 0 failures** — `./run_tests.sh`, 2026-08-31) and,
+(**804 tests over 90 targets, 0 failures** — `./run_tests.sh`, 2026-08-31) and,
 where a number is given, recorded in a measurement document under
 [`docs/history/m1a_rust/`](docs/history/m1a_rust/README.md) that names the machine state it
 was taken under.

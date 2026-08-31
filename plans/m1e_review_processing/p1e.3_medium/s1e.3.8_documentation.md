@@ -223,7 +223,7 @@ Every number quoted from a run, as the task's first rule requires:
 | `tests/stdlib`'s cells | 225 | **282** |
 | sweep cells | 622 / 641 / 889 / 901 | **1 047**, 1 035 default |
 | renderables | 84 | **100** |
-| gate tests | 703 over 77 | **802 over 90** |
+| gate tests | 703 over 77 | **802 over 90** — 804 once S1e.3.9 added two |
 | `utils/` scripts | eighteen | **25** |
 | `broken/load` ending `at None` | *23 of the 30* | **30 of 41** |
 

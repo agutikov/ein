@@ -26,8 +26,13 @@
 //! `_record_setnode`'s MERGE path, `SetNode`'s multilabel invariant,
 //! `LatticeStats.state_key_merges`, `proof.kb_index`, the `(verdict, stats)`
 //! return tuple and half a dozen `isinstance` checks. ein.rs does not build the
-//! per-`SetNode` DAG at all — `kb_index` is empty and `state_key_merges` is 0
-//! by construction — so a port of those would assert a constant. What the DAG
+//! per-`SetNode` DAG at all — `kb_index` is empty — so a port of those would
+//! assert a constant. *This paragraph said the same of `state_key_merges`
+//! until M1e `MA-M3`, and that was the reason it read 0: the port dropped the
+//! DAG and the counter's increments went with it, though the **dedup** the DAG
+//! stood for is exactly what `record_node` still does. It counts now, and
+//! [`the_state_key_merge_counter_is_not_a_constant_zero`] is what keeps it
+//! counting.* What the DAG
 //! *stood for* is the solution-node dedup, and that is asserted here as an
 //! answer: [`a_state_hash_collision_is_one_model_not_two`] and
 //! [`two_orientations_of_one_puzzle_collapse_to_a_single_model`].
@@ -647,7 +652,51 @@ fn the_proofs_counters_track_its_contents_on_every_corpus_file() {
                 "commitments were entered outside any layer"
             );
         }
+        // A merge happens only where a node is already stored under the key,
+        // so it implies a record. M1e `MA-M3`.
+        if p.stats.state_key_merges > 0 {
+            assert!(
+                !p.solutions.is_empty(),
+                "a state-key merge with nothing recorded to merge into"
+            );
+        }
     });
+    assert_census(&checked);
+}
+
+/// **`state_key_merges` is not a constant zero**, which it was from the port
+/// until M1e `MA-M3` — declared, zeroed, copied into the proof and serialised
+/// into `proof_summary.json`, while the engine merged on most corpus files
+/// that search.
+///
+/// A **non-vacuity** claim rather than an identity, and deliberately: the
+/// number a merge count should equal is *record_node calls minus nodes kept*,
+/// and nothing counts the calls. What can silently regress is the increment
+/// disappearing in a refactor of `record_node`'s three exits, and a corpus-wide
+/// floor is what notices that — the same shape as `TE-M2`'s derived floors.
+///
+/// The floor is roughly a **third** of what this sweep measures today —
+/// **15 files, 482 merges, 256 on one file** at the harness's `-m 3` and
+/// 1 000-entering cap — so adding fixtures cannot make it fail and removing
+/// the increment cannot make it pass.
+#[test]
+fn the_state_key_merge_counter_is_not_a_constant_zero() {
+    let mut files_merging = 0usize;
+    let mut merges = 0u64;
+    let mut most = 0u64;
+    let checked = each_solved_corpus_file(|r| {
+        let n = r.proof().stats.state_key_merges;
+        if n > 0 {
+            files_merging += 1;
+            merges += n;
+            most = most.max(n);
+        }
+    });
+    assert!(
+        files_merging >= 10 && merges >= 100,
+        "{files_merging} corpus files merged, {merges} merges in total, \
+         {most} at the most on one file — the counter has gone quiet"
+    );
     assert_census(&checked);
 }
 

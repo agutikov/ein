@@ -257,7 +257,8 @@ pub fn check(
     };
     let want = expectation.verdict_name();
     // **An open state is still a state, and `:expect` is about facts.** M1d
-    // S1d.2.6 moved the *word* on twelve programs here and moved no claim: all
+    // S1d.2.6 moved the *word* on twelve programs here — `openness_census.py`
+    // owns that count — and moved no claim: all
     // three `:expect` forms are assertions about a fact set (`01_grammar.md` §
     // Query), an `open` conclusion is by construction never a fact, and the
     // facts of an open state are the ones it reached. So `(model …)` keeps

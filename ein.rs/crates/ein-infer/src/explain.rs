@@ -568,9 +568,12 @@ pub fn minimal_contradiction_frontier(
 ///
 /// Why not the union: `unsat_core` unions the frontier of *every* witness, and
 /// when one cause propagates it fans out into many. `zebra2-bad`'s single
-/// injected fact produces 123 witnesses whose frontiers union to **38** facts,
-/// while each witness is a complete contradiction on its own with a 1–5 fact
-/// frontier — the smallest being exactly the culprit.
+/// injected fact is the worked case — a large witness set, each witness a
+/// complete contradiction on its own with a handful of givens behind it, and
+/// the smallest of them exactly the culprit. The four numbers are
+/// `explain_semantics::the_injected_contradiction_fans_out_and_the_union_overstates_it`'s
+/// since M1e `MA-M4`, because this comment and `solve.rs`'s said two different
+/// things and neither was current.
 pub fn smallest_contradiction_frontier(
     kb: &Kb,
     terms: &Terms,

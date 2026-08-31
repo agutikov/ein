@@ -105,12 +105,25 @@ pub struct CommitmentSetResult {
 /// § Win A). The *order* plans enter an engine's list stays per-engine, which
 /// is the part the trace can see.
 ///
-/// `resume` is `None` on every shipping path: with it the fork **continues**
-/// root's saturation from the delta instead of re-deriving root's fixpoint
-/// ([`Snapshot`], S1a.6.9). It is reachable only from a `fork-delta` build,
-/// because dropping those re-derivations changes what the engine narrates and
-/// that is [Q-M1a.18](../../../../docs/history/m1a_rust/open_questions.md)'s to
-/// decide, not this function's.
+/// `resume` is `Some` on every shipping path, and it is what keeps a fork from
+/// re-deriving root's fixpoint: with it the fork **continues** root's
+/// saturation from the delta ([`Snapshot`],
+/// [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)).
+/// All four lattice call sites in `solve.rs` pass root's snapshot, and
+/// `solve::resume_forks` is false only in a `fork-delta` build with
+/// `EIN_FORK_DELTA=0` — which exists so `utils/fork_delta_verify.py` can get
+/// both arms out of one binary and keep
+/// [D3](../../../../docs/history/m1a_rust/divergences.md) from widening in
+/// silence.
+///
+/// *This paragraph said `None` on every shipping path until M1e `MA-M2`.* It
+/// was true before S1a.6.9 and became the older of two statements of one fact:
+/// `solve::resume_forks`'s own doc comment has said the opposite since, and
+/// `solve.rs`'s note at the lattice call site records that passing `None`
+/// there "was not a trade-off but a re-introduction of what S1a.6.9 removed".
+/// What remains open is [Q-M1a.18](../../../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
+/// — whether a fork may stop *narrating* root's fixpoint — which is about the
+/// event stream, not about whether the parameter is used.
 // The eighth argument is `resume`, and bundling it with `memo` into a "run
 // state" struct would be the tidy fix for a parameter that may not survive
 // Q-M1a.18. It stays a parameter until that is decided.

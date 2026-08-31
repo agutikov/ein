@@ -1237,3 +1237,46 @@ fn counts_by_relation(kb: &Kb, terms: &Terms) -> BTreeMap<String, usize> {
     }
     out
 }
+
+/// **`zebra2-bad`'s witness count and its union, measured rather than quoted.**
+///
+/// M1e `MA-M4`. Three doc comments carried this pair and two of them
+/// disagreed — `explain.rs`'s *123 witnesses / 38 facts, each 1–5* against
+/// `solve.rs`'s and `shape.rs`'s *126 / 39*. Neither had an owner, so neither
+/// could be checked, and a reader cross-checking the union argument could not
+/// tell which snapshot was current. Measured, all three had drifted: **126
+/// witnesses, union 36, single frontiers 1–4**.
+///
+/// The pair is what the argument for `source_frontier_core` rests on — *do not
+/// union the frontiers, because when one cause propagates it fans out* — so it
+/// is worth a test rather than a date: the claim is that the union is an order
+/// of magnitude larger than the smallest single witness, and it stops being an
+/// argument if the two ever converge.
+#[test]
+fn the_injected_contradiction_fans_out_and_the_union_overstates_it() {
+    let mut f = load_path("examples/ein-bugs/zebra2-bad.ein");
+    f.saturate();
+    let witnesses: Vec<FactId> = ein_infer::detect(&f.kb, &f.terms)
+        .iter()
+        .map(|c| c.witness())
+        .collect();
+    let budget = ExplanationBudget::default();
+    let one =
+        |w: FactId| minimal_contradiction_frontier(&f.kb, &f.terms, Some(&[w]), &budget).frontier;
+    let union: BTreeSet<FactId> = witnesses.iter().flat_map(|&w| one(w)).collect();
+    let smallest = witnesses
+        .iter()
+        .map(|&w| one(w).len())
+        .min()
+        .expect("a witness");
+    let largest = witnesses
+        .iter()
+        .map(|&w| one(w).len())
+        .max()
+        .expect("a witness");
+    assert_eq!(
+        (witnesses.len(), union.len(), smallest, largest),
+        (126, 36, 1, 4),
+        "witnesses / union / smallest / largest single frontier"
+    );
+}

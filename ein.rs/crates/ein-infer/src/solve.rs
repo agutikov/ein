@@ -153,6 +153,15 @@ pub struct LayerCensus {
 pub struct LatticeStats {
     pub base: BaseStats,
     pub solutions_found: u64,
+    /// How many times two commitment paths reached **one state** and one
+    /// record survived — counted at all three sites in
+    /// `Run::record_node`, whichever record won.
+    ///
+    /// Declared, zeroed, copied into the proof, serialised into
+    /// `proof_summary.json` — and **never incremented** until M1e `MA-M3`,
+    /// while the engine did the thing on every corpus run that searches. A
+    /// counter that is present and always 0 is worse than an absent one: it
+    /// invites a conclusion from a machine-readable artefact.
     pub state_key_merges: u64,
     pub elapsed_seconds: f64,
 }
@@ -193,8 +202,13 @@ pub struct LatticeProof {
     /// Root's own saturation — the derivations that hold before any
     /// hypothesis, in order, plus any a forced positive added later.
     ///
-    /// Collected only under `store_lattice`, which is what `--trace` and
-    /// `--dump-states` set. Before
+    /// Collected only under `store_lattice`, which `ein solve --trace` sets and
+    /// `ein render lattice` sets. **`--dump-states` does not**, and that is not
+    /// an oversight: its `MonotonicDumper` writes the per-node state dump as
+    /// the search goes and reads no proof at all — `proof_summary.json` is
+    /// `LatticeDumper`'s file, and `MonotonicDumper` takes [`Dumper`]'s empty
+    /// default for that hook. *This comment named `--dump-states` until M1e
+    /// `MA-M2`.* Before
     /// [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
     /// a trace did not need this: every fork re-derived root's fixpoint, so
     /// the solution node's own firing list happened to contain root's whole
@@ -738,9 +752,14 @@ struct Run<'o> {
     root_owes: Owes,
     /// Whether the program **states** an obligation — S1d.2.6's scope rule,
     /// latched once at root's fixpoint because it is a property of the loaded
-    /// program and not of any state. `false` is 119 of the 146 corpus entries
-    /// that reach a fixpoint, and for those `finalise` is bit-for-bit the
-    /// pre-P1d.2 read-out.
+    /// program and not of any state. Most corpus entries that reach a fixpoint
+    /// have it `false`, and for those `finalise` is bit-for-bit the pre-P1d.2
+    /// read-out — **92 of 121** when `utils/openness_census.py` last ran, which
+    /// is the number's owner ([`openness_census.md`]). *This comment said 119
+    /// of 146 until M1e `MA-M4`, disagreeing with [`crate::verdict::Verdict`]'s
+    /// copy of the same fact.*
+    ///
+    /// [`openness_census.md`]: ../../../../docs/history/m1d_satisfiability/openness_census.md
     declares_obligations: bool,
     stats: MonotonicStats,
     lstate: LoopState,
@@ -1426,11 +1445,19 @@ impl Run<'_> {
             self.lstate.truncated = true;
             return Ok(());
         }
-        let mut phase_2_done = false;
+        // **There is one termination path out of this loop, and it is the
+        // frontier emptying.** A `phase_2_done` flag guarded two more `break`s
+        // here until M1e `MA-M1`: it was `false` at its declaration, tested
+        // twice, assigned nowhere, and needed `let _ = &mut phase_2_done;` at
+        // the loop's end to stay warning-free. Not a lost refactor — it was
+        // already dead in `ein.py`, which the port reproduced faithfully.
+        // What set it was `_merge_and_recheck` returning `stop`, and that path
+        // went at P1.7a (`8439fc9`, *"PURE PER-BRANCH search; keep root
+        // STABLE"*), which is `absent_semantics.md`'s corollary **C1 — no
+        // root-merge**: an alive fork's derived facts may depend on an absence
+        // that holds in `KB_C` and not in root's future, so they are never
+        // merged mid-search. The exit went with the merge it belonged to.
         for layer in 1..=self.opts.max_set_size {
-            if phase_2_done {
-                break;
-            }
             self.stats.base.layers_explored = layer as u64;
             dumper.layer_start(layer, root, terms, alive.len());
 
@@ -1791,9 +1818,6 @@ impl Run<'_> {
             // forks root and `promote_forced_positives` re-*saturates* it, and
             // both run below on whatever stack this layer left behind.
             self.coalesce_root(root);
-            if phase_2_done {
-                break;
-            }
             if a_layer.is_empty() {
                 break;
             }
@@ -1845,7 +1869,6 @@ impl Run<'_> {
                 self.lstate.truncated = true;
             }
             a_prev = a_layer;
-            let _ = &mut phase_2_done;
         }
         Ok(())
     }
@@ -2547,6 +2570,14 @@ impl Run<'_> {
             // kept, so neither are its records. Recorded, from the caller's
             // side: the model is in the set, under the other path's
             // commitment.
+            //
+            // **A state-key merge**, and one of the three places one happens
+            // (M1e `MA-M3`): two commitment paths reached one state and one
+            // record survives. The counter is agnostic about *which* — the
+            // incoming node losing here, the same after re-saturation moved
+            // its key, and the incoming node **replacing** the stored one
+            // below are the same event seen from three sides.
+            self.lstate.state_key_merges += 1;
             return Ok(true);
         }
         let mut firings = firings;
@@ -2594,6 +2625,7 @@ impl Run<'_> {
                 // the dedup compares, and the tally, which is about the state.
                 key = state_key(node_kb);
                 if self.loses_to_stored(&key, &commitment, terms) {
+                    self.lstate.state_key_merges += 1;
                     return Ok(true);
                 }
                 owes = crate::obligations::tally(node_kb, terms, ast, &self.memo, events)?;
@@ -2630,8 +2662,12 @@ impl Run<'_> {
             }
             // In place: ein.py assigns into the dict, which keeps the original
             // insertion position, and that position is an `Ambiguity`'s branch
-            // order.
-            Some(at) => self.lstate.nodes[at].1 = r,
+            // order. The third merge site: this path outranks the stored one,
+            // so the record moves and the node count does not.
+            Some(at) => {
+                self.lstate.state_key_merges += 1;
+                self.lstate.nodes[at].1 = r;
+            }
         }
         Ok(true)
     }
@@ -2953,8 +2989,11 @@ pub const MONOTONIC_UNCONDITIONAL: &str = ein_core::terms::MONOTONIC_UNCONDITION
 /// The **smallest** explanation of one witness, not the union over every
 /// witness: when one cause propagates it fans out, so unioning over-states the
 /// conflict. On `zebra2-bad` a single injected fact produces 126 witnesses
-/// whose frontiers union to 39 facts, while the smallest single witness is
-/// exactly the culprit.
+/// whose frontiers union to an order of magnitude more facts, while the
+/// smallest single witness is exactly the culprit. The numbers are
+/// `explain_semantics::the_injected_contradiction_fans_out_and_the_union_overstates_it`'s,
+/// which owns them since M1e `MA-M4` — this comment and two others carried
+/// three different snapshots of the pair.
 fn source_frontier_core(kb: &Kb, terms: &Terms) -> Vec<FactId> {
     let witnesses: Vec<FactId> = crate::contradiction::detect(kb, terms)
         .iter()

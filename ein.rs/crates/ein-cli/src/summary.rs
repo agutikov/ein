@@ -580,7 +580,9 @@ pub fn build(
     // verdict but `Open`: an open state is a node the search recorded and the
     // read-out declines to call a model (M1d S1d.2.6). Keeping the counter and
     // the answer as two numbers is what lets `stats.solution_nodes` stay the
-    // pre-P1d.2 value on the eleven entries whose word moved — nothing about
+    // pre-P1d.2 value on the twelve entries whose word moved (M1e `MA-M4`:
+    // this read *eleven* and `expect.rs` read *twelve*;
+    // `utils/openness_census.py` owns the number) — nothing about
     // the search changed there, and a golden that moved both would say it had.
     let k = answer.k(stats.solution_nodes);
     let mut verdict = vec![

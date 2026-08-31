@@ -597,7 +597,9 @@ pub fn explain_shape(
         line("CONTRA", &explain(kb, terms, &witnesses, &budget)),
         // The **multi-target** budget cut, which is the only way to reach
         // `recorded_fallback`'s tie-break: with one target its key never has
-        // to break a tie, and `zebra2-bad` offers 126 witnesses.
+        // to break a tie, and `zebra2-bad` offers many
+        // (`explain_semantics::the_injected_contradiction_fans_out_and_the_union_overstates_it`
+        // is the count's owner — M1e `MA-M4`).
         line("CONTRA-TIGHT", &explain(kb, terms, &witnesses, &tight)),
         // The fallback's tie-break, reached on purpose. It only decides when
         // two targets tie on core *size*, and on this corpus the smallest tie
