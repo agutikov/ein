@@ -17,6 +17,28 @@
 > [`README.md`](README.md); this file is the architecture + algorithms
 > overview those chapters sit under.
 
+> **Two vocabularies, and this is which is which** (M1e `CD-M8`). The page is
+> the *language-independent* view and it is written in the register the design
+> was worked out in, which is `ein.py`'s: `JoinPlan`, `World`, `_phase1_root`,
+> `kb/store`. Those are **as-was** names, kept because the arguments around
+> them are quoted in stage records that used them, and because renaming a
+> design discussion to match a port makes it neither. Everything else on the
+> page is as-built. The map, which is the thing that was missing —
+> [`implementation.md`](implementation.md) is the as-built reference and wins
+> wherever the two disagree:
+>
+> | as-was (`ein.py`, used here) | as-built (`ein.rs`) |
+> |---|---|
+> | `JoinPlan`, `.naf_guards`, `.disjuncts()` | `Plan`, its per-`Disjunct` guard span, `Plan::guards` — [`plan.rs`](../../../ein.rs/crates/ein-infer/src/plan.rs) |
+> | `Scan` / `Join` / `Guard` opcodes | `Step::Rel` (a `RelStep` is both `Scan` and `Join`, split for the trace), `Step::Guard`, `Step::Absent` |
+> | `compile.split_naf` | the guard lift in [`compile.rs`](../../../ein.rs/crates/ein-infer/src/compile.rs); no function carries the name, the lift is inline |
+> | **`World`** | **gone.** The boundary asks the KB directly — `Matcher::holds`, `Saturator::first_failing`, `Saturator::negative_premises` — because the boundary phase is the only code that runs there and a read-only wrapper bought nothing the borrow checker was not already giving. Marked at [`implementation.md`](implementation.md)'s boundary row, which is the precedent this note generalises |
+> | `Engine.compile_all` / `.compile_for` | the same, `::`-spelled. **There is no `Engine::step`** — `CD-M1` |
+> | `_closure_step`, `_admit_from_boundary`, `_enqueue_binding`, `_enqueue_pass` | the same names on `Saturator`, without the leading underscore |
+> | `match.run_seeded_guarded` | `Matcher::run_seeded` |
+> | `_phase1_root` / `_phase2_layers` | `Run::phase1` / `Run::phase2` — [`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs) |
+> | module paths `kb/entities`, `kb/store`, `compile`, `world`, `monotonic/lattice` | `ein-core/entities.rs`, `ein-core/kb.rs`, `ein-infer/compile.rs`, — , `ein-infer/solve.rs` |
+
 ---
 
 ## 1. What the engine solves, and the three paradigms it fuses
@@ -63,14 +85,19 @@ monotone/non-monotone seam:
   quiescence, never retract. Since S1.21.8 it is itself two-phase — a
   **purely positive closure** that consults no negation, and a **boundary**
   at each closure quiescence where the `(absent …)` guards are judged
-  against that fixpoint (§O3). `saturator.rs`, `match_.rs`, `compile.rs`,
-  `engine.rs`, `firing.rs`, `saturator.rs`, `contradiction.rs`, `firing.rs`,
-  `predicates.rs`.
+  against that fixpoint (§O3). `engine.rs`, `compile.rs`, `plan.rs`,
+  `match_.rs`, `saturator.rs`, `firing.rs`, `predicates.rs`,
+  `contradiction.rs`.
 - **Search layer (non-monotone).** Branch: enumerate candidate
   *commitments*, fork-and-saturate each, learn from deaths, dedup models,
-  read a verdict. `solve.rs`, `commitment.rs`, `hypgen.rs`,
-  `apriori.rs`, `nogoods.rs`, `lookahead.rs`,
-  `hypgen.rs`, `verdict.rs`.
+  read a verdict. `solve.rs`, `hypgen.rs`, `hrule.rs`, `oblgen.rs`,
+  `lookahead.rs`, `apriori.rs`, `commitment.rs`, `nogoods.rs`, `verdict.rs`.
+
+Both lists are the layer split of
+[`implementation.md`](implementation.md)'s module map, which is the full one —
+they named `saturator.rs`, `firing.rs` and `hypgen.rs` **twice each** and
+`plan.rs` not at all until M1e `CD-M8`, which is what a hand-maintained second
+copy does.
 
 ---
 
@@ -185,15 +212,19 @@ and the normative reading of a boundary query is
 
 ## 3. Data types
 
+*The **`type (module)`** column is as-was — `ein.py`'s type names and package
+paths. The note at the top of this page maps them to what ships; three rows
+below say so inline, because those three are not renames.*
+
 | type (`module`) | what it is | analog |
 |---|---|---|
 | `Fact` (`kb/entities`) | `(relation_name, args)` identity; `args ∈ str \| int \| Fact` (nested = a relational node); carries `provenance` | a ground atom / tuple / labelled hyperedge |
 | `Relation` (`kb/entities`) | a named relation + `signature` (type atoms) | a database relation schema / predicate symbol |
 | `Rule` (`kb/entities`) | `params`, `match` pattern, `assert`, `priority`, activator | a Datalog/production rule (Horn-ish clause) |
-| `JoinPlan` = `Scan`/`Join`/`Guard` steps + `NafGuard`s (`compile`) | a rule's `:match` compiled to a join program over relations; its `(absent …)` premises split off (`split_naf`) into a per-disjunct guard tuple, paired back by `disjuncts()` | a query plan / RETE network / WAM-ish opcode list, plus its negation side-conditions |
-| `World` (`world`) | a read-only view of a saturated KB taken at a quiescence point (not a snapshot), plus the commitment it assumes; the only thing an `(absent …)` is ever asked of (`holds` / `absent` / `admits` / `negative_premises`) | a possible world / an ATMS environment; the `W` of `W ⊭ ∃x̄.Pθ` |
+| `JoinPlan` = `Scan`/`Join`/`Guard` steps + `NafGuard`s (`compile`) — **as-built: `Plan` + `Step` + `Disjunct`, `plan.rs`** | a rule's `:match` compiled to a join program over relations; its `(absent …)` premises split off (`split_naf`) into a per-disjunct guard tuple, paired back by `disjuncts()` | a query plan / RETE network / WAM-ish opcode list, plus its negation side-conditions |
+| `World` (`world`) — **as-built: there is no such type.** The boundary asks the KB directly (`Matcher::holds`, `Saturator::{first_failing, negative_premises}`), the same three questions with no wrapper | a read-only view of a saturated KB taken at a quiescence point (not a snapshot), plus the commitment it assumes; the only thing an `(absent …)` is ever asked of (`holds` / `absent` / `admits` / `negative_premises`) | a possible world / an ATMS environment; the `W` of `W ⊭ ∃x̄.Pθ` |
 | 7 KB indexes (`kb/store`) | `_facts_by_relation`, **`_facts_by_rel_slot_val`** (the participation index, `(rel,slot,val)→facts`), `_negated_facts`, `_rule_apps_*`, `names`, … | database join indexes; RETE alpha-memories |
-| `EqClasses` (`kb/store`) | union-find over names (a *placeholder* — no propagation yet) | disjoint-set / congruence classes / e-graph |
+| `EqClasses` (`kb/store`) — as-built `ein-core/kb.rs`, and **no engine code calls it** (§O4) | union-find over names (a *placeholder* — no propagation, and matching does not consult it) | disjoint-set / congruence classes / e-graph |
 | `Provenance` + `DerivationDAG` (`kb/provenance`) | per-**derivation** justification (`source`/`rule`/`hypothesis`) — a fact is an OR-node over the ones recorded for it (`kb.justifications`); `absent_premises` records the queries that had to *fail* (recorded, not yet interpreted); the derivation AND/OR graph, source frontier | TMS justifications; database why-provenance; proof terms |
 | `CanonicalSetId` (`apriori`) | a sorted tuple of FactIds = one **commitment set** | a CSP partial assignment / an ATMS environment / an itemset |
 | no-good `Clause = frozenset[FactId]` (`nogoods`) | a learned "this combination is dead" clause, kept subsumption-minimal | CDCL conflict clause / CSP no-good |
@@ -432,11 +463,22 @@ function application and is the heart of SMT equality reasoning. **E-graphs +
 equality saturation** (egg, Willsey et al. 2021) maintain *all* equivalent
 forms compactly and are the modern engine for rewrite-driven optimisation.
 
-**Ein today.** A **union-find stub** (`EqClasses`) wired into the API so
-`firing` can call `kb.classes.union` — but with **no propagation** yet (the
-glossary reserves *e-graph promotion* for F4). Equality in the puzzles is
-currently carried as ordinary relation facts, not congruence. **Gap:** the
-whole of O4 — if equality reasoning ever becomes load-bearing, the path is
+**Ein today.** A **union-find stub** (`EqClasses`, in
+[`ein-core/kb.rs`](../../../ein.rs/crates/ein-core/src/kb.rs)) — reachable
+through `Kb::classes`, with `union` / `equivalent` / `classes`, forked with a
+copy, and **called by no engine code at all**: its only callers are two tests.
+It does not propagate, and matching does not consult it. *This paragraph said
+it was "wired into the API so `firing` can call `kb.classes.union`" until M1e
+`CD-M8`; `firing.rs` contains no such call, and neither does anything else that
+ships.* The strongest statement available is a test that pins the **second**
+half — `naf_semantics::matching_does_not_resolve_equality_classes` unions two
+names and asserts a scan for one does not match the other — and it is load-bearing
+rather than pedantic: the NAF boundary skips re-judging a parked candidate when
+no watched relation has *grown*, and that shortcut is valid only while a
+query's match set is a function of the stored tuples. A matcher that resolved
+classes would move a guard's verdict without changing any extent size. Equality
+in the puzzles is carried as ordinary relation facts, not congruence (the
+glossary reserves *e-graph promotion* for F4). **Gap:** the whole of O4 — if equality reasoning ever becomes load-bearing, the path is
 union-find → congruence closure → e-graph, in that order of ambition.
 
 ### O5 — Contradiction detection
