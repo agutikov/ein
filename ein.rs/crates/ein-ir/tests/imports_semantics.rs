@@ -511,3 +511,52 @@ fn the_embedded_stdlib_is_a_resolution_tier_that_works() {
         "nothing arrived under the module's prefix: {names:?}"
     );
 }
+
+/// **A `$EIN_STDLIB` that cannot prove itself is refused at the first
+/// `std.*` import** — M1e S1e.3.5, `EH-M2`.
+///
+/// The override was the only one of the three tiers taken on faith: the
+/// checkout walk requires `MANIFEST.sha256` because *a directory called
+/// `stdlib/` proves nothing*, and the highest-precedence source skipped that
+/// test. What a typo'd or stale override produced was *"module not found at
+/// &lt;path&gt;/algebra.ein"* — true, and it names the module rather than the
+/// variable that chose the directory, so the cost of the mistake was the
+/// diagnosis and not the wrong answer.
+///
+/// Driven through `with_stdlib` rather than the environment: a `#[test]` is a
+/// thread of a shared binary, and a `set_var` there is a write every other
+/// test can see.
+#[test]
+fn an_override_without_the_marker_is_refused_by_name() {
+    let dir = std::env::temp_dir().join(format!("ein-bad-stdlib-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).expect("mkdir");
+    // A module is *there*, so this is a refusal on the marker and not a
+    // "module not found" wearing a new coat.
+    std::fs::write(dir.join("algebra.ein"), "(relation q T)\n").expect("write");
+
+    let resolver = Resolver::with_stdlib(ein_ir::stdlib::Source::Override(dir.clone()));
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, "(import std.algebra)\n", Some("<probe>")).expect("parses");
+    let err = resolver
+        .resolve_imports(&mut ast, &forms, None)
+        .expect_err("a markerless override is refused");
+    assert!(
+        err.0.contains("$EIN_STDLIB") && err.0.contains("MANIFEST.sha256"),
+        "the refusal names neither the variable nor what is missing: {}",
+        err.0
+    );
+    assert!(
+        !err.0.contains("module not found"),
+        "still the old message: {}",
+        err.0
+    );
+
+    // …and a program that imports nothing from the stdlib is not refused for
+    // the shape of a variable it never reads.
+    let mut ast = Ast::new();
+    let forms = parse(&mut ast, "(relation p T)\n(p A)\n", Some("<probe>")).expect("parses");
+    assert!(resolver.resolve_imports(&mut ast, &forms, None).is_ok());
+
+    let _ = std::fs::remove_dir_all(&dir);
+}

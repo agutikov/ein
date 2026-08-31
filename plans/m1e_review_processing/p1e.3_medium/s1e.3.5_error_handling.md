@@ -54,7 +54,7 @@ silently prefers that tree.
 
 ## Tasks
 
-### Task T1e.3.5.1 — `EH-M1`: rule on artefact-write failure
+### Task T1e.3.5.1 — `EH-M1`: rule on artefact-write failure ✅
 
 Two coherent contracts, and the stage picks one:
 
@@ -80,7 +80,7 @@ Whichever is chosen, add the test: an unwritable path (a directory, or a path
 under a read-only dir) for each of the three artefacts, asserting the exit
 code and the stderr shape.
 
-### Task T1e.3.5.2 — `EH-M2`: make the override prove itself
+### Task T1e.3.5.2 — `EH-M2`: make the override prove itself ✅
 
 Require the marker on the `$EIN_STDLIB` path, with one refusal that names the
 variable, the path, and what was missing. The message matters more than the
@@ -97,7 +97,7 @@ of parent levels; or require the manifest's SHA to match the binary's
 embedded one, warning on mismatch. The third is the strongest and
 `ein --version` already prints both halves, so the comparison exists.
 
-### Task T1e.3.5.3 — A test per resolution tier
+### Task T1e.3.5.3 — A test per resolution tier ✅
 
 The harness sets `$EIN_STDLIB` unconditionally (`stdlib.rs:183`), so the
 checkout walk and the embedded copy are exercised by **no test** — while the
@@ -121,3 +121,63 @@ non-`einb` build sniffs 5 magic bytes and `is_einb` requires 8. All three are
 about **what the CLI does when the world is not as expected**, and all three
 are cheap. If the stage runs short, pulling `EH-L2` forward costs an hour and
 saves a context switch.
+
+---
+
+## Outcome
+
+Taken 2026-08-31.
+
+| | |
+|---|---|
+| **`EH-M1`** | **ruled**, the additive way the stage recommended, and written into [`defined_behaviour.md` § 4.4](../../../docs/kernel/defined_behaviour.md) with the reasoning. A failed artefact write leaves the exit code alone; `--dump-states` is the exception and says why at its call site. Pinned by `ein-cli/tests/artefact_contract.rs`, three tests over all **six** flag × subcommand pairs |
+| the message | **one shape**, `error: --<flag> <path>: <os error>`. There were four: three bare OS errors (*Is a directory (os error 21)* — on a run that may carry three artefact flags), one that named the path and not the flag, and one that carried its failure only in the exit code |
+| **the defect the finding did not name** | an **empty path** reached all five options, and `--dump-states ""` *succeeded*: `create_dir_all("")` is `Ok`, so the run dropped `00_root_initial.ein`, `00_timeline.jsonl`, `summary.json` and `layers/` into the caller's working directory. Refused now at the value parser, exit 2, for `--solutions 0`'s reason |
+| **`EH-M2`** | **fixed**: `$EIN_STDLIB` must carry `MANIFEST.sha256`, the same marker the checkout walk requires, and the refusal names the variable, the path and what is missing. Asked at the **first `std.*` import**, so a program that imports nothing from the stdlib is not refused for the shape of a variable it never reads |
+| the `current_exe()` walk | **kept, with a written reason** — [`docs/install.md`](../../../docs/install.md). The stage's own preferred guard (warn when the resolved manifest differs from the embedded copy) is **refused**, and the reason is that the mismatch is the *normal* state of stdlib development: the checkout tier exists so an edited module takes effect with no rebuild, so the warning would fire on the working case |
+| **the three tiers** | one test each, and none of them skips. `resolve` is now `resolve_with(from, override)` plus one line that reads the environment, so a test drives every tier as a pure function |
+| filed | [Q-M1e.22](../open_questions.md#q-m1e22--should-a-failed-artefact-write-have-an-exit-code-of-its-own) — should the additive arm have an exit code of its own — with `TE-M4`'s exit-2 overload attached, as the stage instructed |
+| gate | `./run_tests.sh` green — **792 tests**. No golden moved: nothing in the corpus reaches an unwritable artefact path or a markerless override |
+
+### Three things the tasks did not predict
+
+**1. The stage's premise about the harness was false, and it mattered.**
+T1e.3.5.3 says *"the harness sets `$EIN_STDLIB` unconditionally
+(`stdlib.rs:183`), so the checkout walk and the embedded copy are exercised by
+no test."* Line 183 is not a setter — it is a **guard inside a test**, `if
+std::env::var_os("EIN_STDLIB").is_some() { return; }`, and the variable is
+unset in the gate. So tier 2 was running all along. What is true, and is the
+worse version of the same finding, is that two tier tests were written to
+*answer nothing* under a configuration somebody believed was the normal one:
+[TE-M1](s1e.3.6_tests.md)'s shape, in the file the review was reading. Both are
+unconditional now, driven through `resolve_with`.
+
+**2. The four diagnostics were the finding, not the exit code.** `EH-M1` is
+written as *the exit code does not change*, and the exit code turns out to be
+the part with a defensible answer on both sides — which is why it is filed
+rather than settled. What had no defence was that a run carrying `--events`,
+`--trace` and `--json-summary` printed `Is a directory (os error 21)` and left
+the reader to guess which of the three it was about.
+
+**3. `an_override_is_honoured_whatever_it_points_at` argued against itself.**
+The test that had to move for `EH-M2` opened with *"a directory called
+`stdlib/` proves nothing — `MANIFEST.sha256` is what identifies the checkout
+during the walk"* and concluded from it that the **highest-precedence** source
+need not carry the marker. The first clause is the reason the marker exists.
+The test now asserts the refusal, and keeps the half that was always right:
+the resolved root is the only one consulted, with no quiet fall-back.
+
+### What this stage did **not** do
+
+- **Take `EH-L2`.** The Notes offer it — *"if the stage runs short, pulling it
+  forward costs an hour"* — and the stage did not run short. It stays
+  [P1e.4](../p1e.4_low/s1e.4.4_error_handling.md)'s.
+- **Give `--dump-states` the additive contract.** Making it exit 0 for
+  consistency would have thrown away the one exit-code signal the family has,
+  on the one flag whose failure is discovered *before* the run and whose
+  `--help` claims no additivity. Two arms with a stated reason beat one arm
+  that loses a signal.
+- **Refuse an unprovable `$EIN_STDLIB` at `ein --version`.** That line reports
+  the manifest as `unreadable` and keeps printing, which is how a user finds
+  out what their binary will load; a version line that refused to render would
+  be a worse way to learn the same thing.

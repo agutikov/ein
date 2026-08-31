@@ -699,18 +699,31 @@ fn the_resolved_stdlib_root_is_the_only_one_consulted() {
     }
 }
 
-/// An override is honoured whatever it points at, and a miss is reported
-/// rather than papered over.
+/// **An override has to prove itself, and the refusal is the root cause** —
+/// M1e [S1e.3.5](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.5_error_handling.md),
+/// `EH-M2`.
 ///
-/// A directory called `stdlib/` proves nothing — `MANIFEST.sha256` is what
-/// identifies the checkout during the *walk*, and an explicit source skips the
-/// walk entirely, so an empty directory is a perfectly good (and empty)
-/// standard library. The consequence is the part worth pinning: a puzzle
-/// loaded through it fails naming the path it looked at, instead of quietly
-/// falling back to the checkout or to the embedded copy and reporting success
-/// for a program the operator never pointed at.
+/// This test used to assert the opposite, and its own reason was the argument
+/// against it: *"a directory called `stdlib/` proves nothing —
+/// `MANIFEST.sha256` is what identifies the checkout during the walk, and an
+/// explicit source skips the walk entirely, so an empty directory is a
+/// perfectly good (and empty) standard library."* The first clause is why the
+/// marker exists; the conclusion drawn from it was that the
+/// **highest-precedence** source is the one that need not carry it.
+///
+/// What that cost was the diagnosis rather than the answer: an empty or
+/// typo'd override failed at the first `std.*` import with *module not found
+/// at &lt;path&gt;/algebra.ein* — a true sentence naming the module, and never
+/// the variable that chose the directory. It now names the variable, the path
+/// and what is missing, and it says so **before** trying to read, so a
+/// directory that happens to contain an `algebra.ein` is refused just the
+/// same.
+///
+/// What has not changed: the resolved root is still the *only* one consulted
+/// — no quiet fall-back to the checkout or the embedded copy, which is the
+/// half of this test that was always right and is asserted above.
 #[test]
-fn an_override_is_honoured_whatever_it_points_at() {
+fn an_override_without_the_marker_is_refused_and_names_the_variable() {
     let empty = scratch("empty-stdlib");
     assert!(!empty.join(MARKER).is_file(), "no marker, on purpose");
     assert!(
@@ -724,14 +737,20 @@ fn an_override_is_honoured_whatever_it_points_at() {
     let forms = parse(&mut ast, &text, zebra2.to_str()).expect("parses");
     let err = Resolver::with_stdlib(Source::Override(empty.clone()))
         .resolve_imports(&mut ast, &forms, zebra2.parent())
-        .expect_err("an empty stdlib cannot answer zebra2's imports");
-    assert_eq!(
-        err.0,
-        format!(
-            "(import std.algebra) — module not found at {}/algebra.ein (None)",
-            empty.display()
-        )
+        .expect_err("an unprovable override is refused");
+    assert!(
+        err.0.contains("$EIN_STDLIB")
+            && err.0.contains(&empty.display().to_string())
+            && err.0.contains(MARKER),
+        "the refusal does not name the variable, the path and what is missing: {}",
+        err.0
     );
+    assert!(
+        !err.0.contains("module not found"),
+        "still the message that named the module instead of the cause: {}",
+        err.0
+    );
+
     // The same file through the ordinary resolver loads, so the failure above
     // is the override's and not the puzzle's.
     let mut terms = Terms::new();

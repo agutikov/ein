@@ -146,15 +146,41 @@ EIN_STDLIB=/path/to/stdlib ein solve puzzle.ein
 `$EIN_STDLIB` wins over both other steps, silently — which is why
 `ein --version` names it rather than printing a bare path.
 
-**The marker rule applies to the walk, not to the override.** A `stdlib/`
-directory found by walking up from the executable is the stdlib only if it
-contains `MANIFEST.sha256`, and the walk keeps going past one that does not.
-`$EIN_STDLIB` is taken as given, with no check at all: point it at an empty
-directory and `ein --version` reads `stdlib     unreadable  $EIN_STDLIB
-<path>` while the first `(import std.…)` fails at load with *module not
-found*. The asymmetry is
-[EH-M2](../plans/m1e_review_processing/README.md#the-findings) and is not
-fixed here; this page states what the binary does.
+**The marker rule applies to the override too, since M1e S1e.3.5.** A
+`stdlib/` directory is the stdlib only if it contains `MANIFEST.sha256` — for
+the walk, which keeps going past one that does not, and now for
+`$EIN_STDLIB`, which used to be taken as given with no check at all. Point it
+somewhere that cannot prove itself and the first `(import std.…)` says so, by
+name:
+
+```
+kb load error: (import std.algebra) — $EIN_STDLIB names /tmp/x, which has no
+MANIFEST.sha256 — a directory is the stdlib only if it carries the marker …
+```
+
+where it used to say *module not found at /tmp/x/algebra.ein* — true, and a
+sentence that names the module rather than the variable that chose the
+directory. That was
+[EH-M2](../plans/m1e_review_processing/README.md#the-findings), and what it
+cost was the diagnosis rather than the answer.
+
+Two things the check deliberately does not do. It is asked at the **first
+`std.*` import**, so a program that imports nothing from the stdlib is not
+refused for the shape of a variable it never reads. And `ein --version` does
+**not** consult it: that line still prints `stdlib     unreadable  $EIN_STDLIB
+<path>` and keeps going, because a version line that refused to render would
+be a worse way to learn the same thing.
+
+**The walk still prefers whatever checkout it lands under**, and that is a
+decision rather than an oversight. A binary copied under an unrelated tree
+containing `stdlib/MANIFEST.sha256` will read *that* stdlib. The obvious
+guard — warn when the resolved manifest differs from the copy compiled into
+the binary — was considered at S1e.3.5 and **refused**, because that mismatch
+is the *normal* state of stdlib development: the checkout tier exists so an
+edited module takes effect with no rebuild, so the warning would fire on the
+working case, which is how a warning gets turned off. The instrument for the
+hazard is the one above: `ein --version` names the step and the path, in one
+command.
 
 `$EIN_STDLIB` is one of **eight** environment variables the shipped binary
 reads, and the only one a normal install needs. The whole set, with the three

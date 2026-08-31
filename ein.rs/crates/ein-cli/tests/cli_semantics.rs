@@ -1903,6 +1903,35 @@ fn a_truncated_k0_is_not_reported_as_a_refutation() {
     );
 }
 
+// ── M1e S1e.3.5 — EH-M2: the override proves itself ────────────────
+
+/// **The refusal reaches a user through the environment**, which is the half
+/// an in-process test cannot show.
+///
+/// `ein-ir`'s `an_override_without_the_marker_is_refused_by_name` drives
+/// `Resolver::with_stdlib` directly; this is the wiring — `$EIN_STDLIB` is
+/// read, the message names it, and the exit code is the loader's 1.
+#[test]
+fn a_stdlib_override_without_the_marker_is_refused_through_the_environment() {
+    let scratch = Scratch::new("bad-stdlib");
+    let dir = scratch.at("not-a-stdlib");
+    std::fs::create_dir_all(&dir).expect("mkdir");
+    let r = ein_env(&[("EIN_STDLIB", &dir)], &["solve", "examples/zebra2.ein"]);
+    assert_eq!(r.code, 1, "{}{}", r.out, r.err);
+    assert!(
+        r.err.contains("$EIN_STDLIB") && r.err.contains("MANIFEST.sha256"),
+        "{}",
+        r.err
+    );
+    // The control: the repo's own stdlib, through the same variable.
+    let real = repo_root().join("stdlib");
+    let ok = ein_env(
+        &[("EIN_STDLIB", &real.to_string_lossy())],
+        &["solve", "examples/features/10_expect.ein"],
+    );
+    assert_eq!(ok.code, 0, "{}{}", ok.out, ok.err);
+}
+
 // ── M1e S1e.2.1 — CO-H3(a): the tree and the stop policy ───────────
 
 /// `ein solve`, with `EIN_TRAVERSAL` set for the child process only.

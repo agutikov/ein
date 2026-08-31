@@ -67,6 +67,48 @@ impl Source {
         format!("{}/{rel}", self.describe())
     }
 
+    /// Why this source cannot be a stdlib — `None` when it can.
+    ///
+    /// **Only `$EIN_STDLIB` can answer anything but `None`**, and that
+    /// asymmetry is the finding (M1e
+    /// [S1e.3.5](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.5_error_handling.md),
+    /// `EH-M2`). The checkout walk *requires* [`MARKER`] — the marker exists
+    /// precisely because a directory called `stdlib/` proves nothing — and the
+    /// embedded copy is checked against the manifest at build time by
+    /// `tests::the_embedded_copy_matches_the_manifest`. The
+    /// highest-precedence source was the one that skipped the proof: an
+    /// override was taken on faith, and a typo or a stale tree surfaced as
+    /// *"module not found at &lt;path&gt;/algebra.ein"* — a true sentence that
+    /// names the module and never mentions the variable that chose the
+    /// directory.
+    ///
+    /// So the override has to prove itself the way the walk does, and the
+    /// message is the fix rather than the check: what it costs a reader is
+    /// the diagnosis, not the wrong answer.
+    ///
+    /// `ein --version` deliberately does **not** consult this — it reports the
+    /// manifest as `unreadable` and keeps printing, because a version line
+    /// that refused to render would be a worse way to learn the same thing.
+    pub fn problem(&self) -> Option<String> {
+        let Source::Override(path) = self else {
+            return None;
+        };
+        let at = path.display();
+        if !path.is_dir() {
+            return Some(format!("$EIN_STDLIB names {at}, which is not a directory"));
+        }
+        if !path.join(MARKER).is_file() {
+            return Some(format!(
+                "$EIN_STDLIB names {at}, which has no {MARKER} — a directory is \
+                 the stdlib only if it carries the marker, which is the same \
+                 test the checkout walk applies (unset $EIN_STDLIB to use the \
+                 checkout or the embedded copy, or run \
+                 `utils/stdlib_manifest.py --write` in that tree)"
+            ));
+        }
+        None
+    }
+
     /// Read one module, by its path relative to the stdlib root
     /// (`"algebra.ein"`, `"sub/mod.ein"`).
     pub fn read(&self, rel: &str) -> Option<String> {
@@ -123,8 +165,22 @@ pub fn resolve_default() -> Source {
 /// `from` is where to start the checkout walk — the running executable's
 /// directory in the binary, the crate directory in a test.
 pub fn resolve(from: &Path) -> Source {
-    if let Some(over) = std::env::var_os("EIN_STDLIB") {
-        return Source::Override(PathBuf::from(over));
+    resolve_with(from, std::env::var_os("EIN_STDLIB").map(PathBuf::from))
+}
+
+/// [`resolve`] with the override supplied rather than read.
+///
+/// The three tiers as a **pure function**, so a test can drive each of them
+/// without writing to the process environment — which, in a `#[test]` running
+/// as one thread of a shared binary, is a write every other test can see. The
+/// tier tests used to be guarded on `EIN_STDLIB` being unset and returned
+/// early when it was not; a check that answers *nothing* when the harness is
+/// configured one way is [TE-M1](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.6_tests.md)'s
+/// shape, and M1e S1e.3.5 removed it here rather than leave two of the three
+/// tiers conditionally unchecked.
+pub fn resolve_with(from: &Path, over: Option<PathBuf>) -> Source {
+    if let Some(over) = over {
+        return Source::Override(over);
     }
     for parent in from.ancestors() {
         let candidate = parent.join("stdlib");
@@ -181,32 +237,81 @@ mod tests {
         assert_eq!(Source::Embedded.modules(), listed);
     }
 
+    /// **Tier 2 — the checkout walk**, driven with the override absent.
+    ///
+    /// Unconditional since M1e S1e.3.5: it used to `return` when
+    /// `EIN_STDLIB` was set, which made it a test that answered nothing under
+    /// exactly the configuration the review believed the harness used.
     #[test]
     fn a_checkout_wins_over_the_embedded_copy() {
-        // Guarded on the env var being unset: `resolve` honours an override
-        // first, and the harness sets one.
-        if std::env::var_os("EIN_STDLIB").is_some() {
-            return;
-        }
-        match resolve(&crate_dir()) {
+        match resolve_with(&crate_dir(), None) {
             Source::Checkout(p) => assert!(p.join(MARKER).is_file(), "{}", p.display()),
             other => panic!("expected the checkout, got {other:?}"),
         }
     }
 
+    /// **Tier 3 — the embedded copy**, which is what an installed binary uses:
+    /// no override, and a walk that finds no marker.
     #[test]
     fn a_directory_without_the_marker_is_not_the_stdlib() {
-        // Walking up from a temp dir finds no marker, so the embedded copy is
-        // the answer — which is exactly what an installed binary should get.
         let tmp = std::env::temp_dir().join("ein-stdlib-none");
         std::fs::create_dir_all(tmp.join("stdlib")).expect("mkdir");
-        if std::env::var_os("EIN_STDLIB").is_some() {
-            return;
+        // A bare `stdlib/` with no marker, and every ancestor of `temp_dir`
+        // above it — on a machine where `/tmp` sits inside a checkout the walk
+        // would find *that* marker, so the claim is asserted as the rule
+        // rather than as the outcome.
+        match resolve_with(&tmp, None) {
+            Source::Embedded => {}
+            Source::Checkout(p) => assert!(
+                p.join(MARKER).is_file() && p != tmp.join("stdlib"),
+                "the markerless {} was taken for the stdlib",
+                tmp.join("stdlib").display()
+            ),
+            other => panic!("an absent override resolved to {other:?}"),
         }
-        // `temp_dir` may itself sit under a checkout on some systems; only
-        // assert the marker rule, which is the claim being made.
-        if let Source::Checkout(p) = resolve(&tmp) {
-            assert!(p.join(MARKER).is_file());
-        }
+    }
+
+    /// **Tier 1 — the override**, and the three answers it can give.
+    ///
+    /// M1e S1e.3.5, `EH-M2`. The override was taken on faith: the *checkout*
+    /// walk requires the marker and the highest-precedence source did not, so
+    /// a typo surfaced as "module not found at <typo>/algebra.ein" — a
+    /// sentence that names the module and never the variable that chose the
+    /// directory.
+    #[test]
+    fn an_override_has_to_prove_itself() {
+        let root = crate_dir().join("../../../stdlib");
+        assert!(
+            resolve_with(&crate_dir(), Some(root.clone()))
+                .problem()
+                .is_none(),
+            "the repo's own stdlib does not satisfy the check"
+        );
+
+        let missing = std::env::temp_dir().join("ein-stdlib-does-not-exist");
+        let _ = std::fs::remove_dir_all(&missing);
+        let why = resolve_with(&crate_dir(), Some(missing))
+            .problem()
+            .expect("a path that is not a directory is refused");
+        assert!(
+            why.contains("$EIN_STDLIB") && why.contains("not a directory"),
+            "{why}"
+        );
+
+        let markerless = std::env::temp_dir().join("ein-stdlib-markerless");
+        std::fs::create_dir_all(&markerless).expect("mkdir");
+        let why = resolve_with(&crate_dir(), Some(markerless))
+            .problem()
+            .expect("a directory without the marker is refused");
+        assert!(
+            why.contains("$EIN_STDLIB") && why.contains(MARKER),
+            "the refusal names neither the variable nor what is missing: {why}"
+        );
+
+        // The other two tiers can never answer anything but `None`: the walk
+        // already tested the marker, and the embedded copy is checked against
+        // the manifest by `the_embedded_copy_matches_the_manifest`.
+        assert!(Source::Embedded.problem().is_none());
+        assert!(Source::Checkout(crate_dir()).problem().is_none());
     }
 }

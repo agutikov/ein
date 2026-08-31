@@ -76,6 +76,26 @@ fn solutions_spec(s: &str) -> Result<i64, String> {
     }
 }
 
+/// An artefact flag's path — **not empty**.
+///
+/// M1e [S1e.3.5](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.5_error_handling.md),
+/// `EH-M1`'s neighbour and found by its probe. Five options name a file or a
+/// directory the run will write, and an empty string reached all five: three
+/// of them then failed with a bare `No such file or directory` and exit 0,
+/// and **`--dump-states ""` succeeded** — `create_dir_all("")` is `Ok` on
+/// Linux, so `""/00_timeline.jsonl` resolved to the *current directory* and
+/// the run silently dropped four files into the caller's cwd.
+///
+/// Refused here rather than at the write, for `solutions_spec`'s reason: an
+/// empty path is a usage error, the CLI is where usage errors are answered,
+/// and a policy that lives in two places is a policy with two answers.
+fn artefact_path(s: &str) -> Result<String, String> {
+    if s.is_empty() {
+        return Err("expected a path, got an empty string".to_string());
+    }
+    Ok(s.to_string())
+}
+
 /// `type=float`, same argument.
 fn py_float(s: &str) -> Result<f64, String> {
     ein_core::python_float(s).ok_or_else(|| format!("invalid float value: '{s}'"))
@@ -110,6 +130,7 @@ fn event_args(cmd: Command) -> Command {
         Arg::new("events")
             .long("events")
             .value_name("FILE.jsonl")
+            .value_parser(artefact_path)
             .help(
                 "record the engine's step-by-step event log to FILE \
                  (one JSON object per line). Off by default and \
@@ -343,6 +364,7 @@ fn solve_command() -> Command {
                 .short('D')
                 .long("dump-states")
                 .value_name("DIR")
+                .value_parser(artefact_path)
                 .help(
                     "persist the engine dump tree (root snapshot per layer + \
                      timeline) to DIR",
@@ -414,6 +436,7 @@ fn solve_command() -> Command {
             Arg::new("json-summary")
                 .long("json-summary")
                 .value_name("FILE.json")
+                .value_parser(artefact_path)
                 .help(
                     "write the structured run summary (verdict, model, \
                      every engine counter, the root-saturation shape, the \
@@ -427,6 +450,7 @@ fn solve_command() -> Command {
                 .short('r')
                 .long("trace")
                 .value_name("FILE.md")
+                .value_parser(artefact_path)
                 .help(
                     "write the self-contained markdown derivation trace to \
                      FILE (a file, not stdout)",
@@ -529,6 +553,7 @@ fn test_command() -> Command {
         Arg::new("json-summary")
             .long("json-summary")
             .value_name("FILE.json")
+            .value_parser(artefact_path)
             .help(
                 "write the structured run summary (verdict, model, every \
                  engine counter, the root-saturation shape, the resolved \
@@ -540,6 +565,7 @@ fn test_command() -> Command {
         Arg::new("json-report")
             .long("json-report")
             .value_name("FILE.json")
+            .value_parser(artefact_path)
             .help(
                 "write one row per (query …) of the whole selection — the \
                  claim's shape, the relations its :goal closes, the outcome, \

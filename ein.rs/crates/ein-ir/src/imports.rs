@@ -294,6 +294,15 @@ impl Resolver {
                     "(import {module}) — bare '{STDLIB_ALIAS}' is not a module at {loc}"
                 )));
             }
+            // **The override proves itself here** — M1e S1e.3.5, `EH-M2`.
+            // Checked at the first `std.*` import rather than at
+            // `Resolver::new`, because a program that imports nothing from the
+            // stdlib has no business being refused for the shape of a variable
+            // it never reads. One error, naming the variable and what is
+            // missing, in place of a *module not found* that named neither.
+            if let Some(why) = self.stdlib.problem() {
+                return Err(LoadError(format!("(import {module}) — {why} ({loc})")));
+            }
             (self.stdlib_root(), rel.to_vec())
         } else {
             let Some(dir) = base_dir else {

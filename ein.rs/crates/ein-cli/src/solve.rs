@@ -237,7 +237,7 @@ fn write_trace(ast: &Ast, terms: &Terms, root: &Kb, solved: &Solved, path: &str,
         diagrams,
     );
     if let Err(e) = std::fs::write(path, md) {
-        eprintln!("{e}");
+        artefact_failed("trace", path, e);
         return;
     }
     eprintln!(
@@ -310,7 +310,7 @@ pub(crate) fn events_start(m: &ArgMatches, file: &str, cfg: &SolverConfig) -> Ev
     let sink: Box<dyn Write + Send> = match std::fs::File::create(path) {
         Ok(f) => Box::new(std::io::BufWriter::new(f)),
         Err(e) => {
-            eprintln!("{e}");
+            artefact_failed("events", path, e);
             return Events::off();
         }
     };
@@ -322,6 +322,32 @@ pub(crate) fn events_start(m: &ArgMatches, file: &str, cfg: &SolverConfig) -> Ev
         l.owned_strs("argv", argv);
         l.obj_strs("config", &cfg_json);
     })
+}
+
+/// **The one shape an artefact flag's failure takes** — M1e
+/// [S1e.3.5](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.5_error_handling.md),
+/// `EH-M1`.
+///
+/// Five options write a file the caller asked for, and before this stage they
+/// failed in four different ways: `--events`, `--json-summary` and `--trace`
+/// printed a bare OS error (*Is a directory (os error 21)* — no flag, no
+/// path, on a run with three artefact flags), `--json-report` named the path
+/// and not the flag, and `--dump-states` was the only one whose failure the
+/// exit code carried. A consumer that reads stderr — which is the whole of
+/// what the contract gives it — has to be able to tell *which* artefact was
+/// lost and *where* it was going.
+///
+/// **The exit code is deliberately not this function's business.** The four
+/// options whose `--help` says *additive: stdout, stderr and the exit code are
+/// unchanged* keep saying it: a failed write leaves the run's answer standing,
+/// because the answer on stdout is correct and complete and the artefact is
+/// paperwork. `--dump-states` is the exception and states why at its call
+/// site. The ruling and the reasoning are
+/// [`defined_behaviour.md` § 4.4](../../../../docs/kernel/defined_behaviour.md),
+/// and whether the additive arm should have an exit code of its own is
+/// [Q-M1e.22](../../../../plans/m1e_review_processing/open_questions.md).
+pub(crate) fn artefact_failed(flag: &str, path: &str, e: impl std::fmt::Display) {
+    eprintln!("error: --{flag} {path}: {e}");
 }
 
 /// `_events.load` — what the loader built, in registry order.
@@ -555,10 +581,23 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
     let mut events = events_start(m, file, &config);
     events_load(&mut events, &terms, &kb);
 
+    // **The one artefact flag whose failure the exit code carries**, and the
+    // exception `artefact_failed`'s note names. Its sink is a *directory*,
+    // opened before the search rather than written after it, so a failure here
+    // means the run cannot do what it was asked — where a failed
+    // `--json-summary` means it did the work and could not file the paperwork.
+    // Its `--help` claims no additivity for the same reason. `EH-M1` left this
+    // arm alone on purpose (M1e S1e.3.5): making it 0 for consistency would
+    // have thrown away the one exit-code signal the family has.
     let mut dumper = match make_dumper(m) {
         Ok(d) => d,
         Err(e) => {
-            eprintln!("{e}");
+            artefact_failed(
+                "dump-states",
+                m.get_one::<String>("dump-states")
+                    .map_or("", String::as_str),
+                e,
+            );
             return (1, n_queries);
         }
     };
@@ -610,10 +649,10 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
                 ) {
                     Ok(s) => {
                         if let Err(e) = crate::summary::write(path, &s) {
-                            eprintln!("{e}");
+                            artefact_failed("json-summary", path, e);
                         }
                     }
-                    Err(e) => eprintln!("{e}"),
+                    Err(e) => artefact_failed("json-summary", path, e),
                 }
             }
             return (2, n_queries);
@@ -696,10 +735,10 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
         ) {
             Ok(s) => {
                 if let Err(e) = crate::summary::write(path, &s) {
-                    eprintln!("{e}");
+                    artefact_failed("json-summary", path, e);
                 }
             }
-            Err(e) => eprintln!("{e}"),
+            Err(e) => artefact_failed("json-summary", path, e),
         }
     }
     // Last of all, because a failing expectation is exactly when someone wants

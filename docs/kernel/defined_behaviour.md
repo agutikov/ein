@@ -541,6 +541,42 @@ Four fixtures pin them in
 and all 21 cells of the sweep, the fourteen that were right included, are
 `ein-cli/tests/primitive_arity.rs`.
 
+### 4.4 An artefact flag's failure — M1e S1e.3.5
+
+> **New 2026-08-31** —
+> [S1e.3.5](../../plans/m1e_review_processing/p1e.3_medium/s1e.3.5_error_handling.md),
+> the review's `EH-M1`. The behaviour is older; what is new is that it is a
+> ruling with a test rather than an accident with five spellings.
+
+Five options name a file or a directory the run will write: `solve --events`,
+`--json-summary`, `--trace`, `--dump-states`, and `test --json-report` (plus
+`test`'s own `--events` / `--json-summary`). What happens when the write fails:
+
+| | |
+|---|---|
+| **the message** | `error: --<flag> <path>: <os error>`, on stderr, for every one of them. The flag because a run may carry three; the path because a shell that expanded a variable to the wrong place can then see it; the OS error because that is the only part that was ever there |
+| **the exit code** | **unchanged** — 0 on a run that answered. The four flags whose `--help` says *additive: stdout, stderr and the exit code are unchanged* keep saying it: the answer on stdout is correct and complete, and the artefact is paperwork |
+| **the exception** | **`--dump-states`** exits 1. It claims no additivity, and its sink is a *directory opened before the search* rather than a file written after it, so a failure there means the run cannot do what it was asked |
+| **an empty path** | a **usage error**: exit 2, refused by the value parser before anything runs, for all five |
+
+**The empty path is the one that was a defect rather than a policy.** It
+reached all five options; three then failed with a bare *No such file or
+directory*; and `--dump-states ""` **succeeded** — `create_dir_all("")` is
+`Ok`, `""/00_timeline.jsonl` is a relative path, and the run dropped four
+artefacts into whatever directory the caller happened to be in.
+
+**What a consumer gets, said plainly.** A pipeline that asks for
+`--json-summary` and gets exit 0 with no file has to read stderr to find out.
+That is the cost of the additive reading and it is the reason this is a ruling
+rather than a note: the alternative is a distinct exit code, and exit 2
+already means *usage error* and *budget abort* in this tool
+([TE-M4](../../plans/m1e_review_processing/p1e.3_medium/s1e.3.6_tests.md)).
+A third meaning is a CLI-vocabulary change and belongs with that overload
+rather than beside it —
+[Q-M1e.22](../../plans/m1e_review_processing/open_questions.md#q-m1e22--should-a-failed-artefact-write-have-an-exit-code-of-its-own).
+Pinned by `ein-cli/tests/artefact_contract.rs`, three tests over all five
+options.
+
 ## 5. The CLI surface
 
 Everything a script or a habit can depend on is fixed: the four subcommands

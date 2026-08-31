@@ -402,7 +402,7 @@ Read from the process environment by a crate that ships. None of them reaches
 
 | name | value | what it does | read at |
 |---|---|---|---|
-| `EIN_STDLIB` | a directory | overrides `std.*` resolution, ahead of the checkout walk and the embedded copy. **Unvalidated** — [`docs/install.md`](../install.md#point-it-at-a-different-stdlib) and [EH-M2](../../plans/m1e_review_processing/README.md#the-findings) | `ein-ir/src/stdlib.rs` `resolve` |
+| `EIN_STDLIB` | a directory | overrides `std.*` resolution, ahead of the checkout walk and the embedded copy. Since M1e S1e.3.5 it **must carry `MANIFEST.sha256`**, the same marker the walk requires, and the refusal names the variable at the first `std.*` import — [`docs/install.md`](../install.md#point-it-at-a-different-stdlib). `ein --version` still reports an unprovable one as `unreadable` rather than refusing | `ein-ir/src/stdlib.rs` `resolve` |
 | `EIN_TRAVERSAL` | `tree` | the per-obligation depth-first traversal beside the lattice (M1d S1d.10.6). The one **experimental** surface in the system. Honours `-n`; **refuses `-m`** (§ 3.3) | `ein-infer/src/solve.rs` `tree_traversal` |
 | `EIN_OBLIGATION_CHOICE` | `off` \| `fail-first` \| *(default)* `rule-order` | the obligations rung's measurement lever; `off` is the pre-S1d.2.5 engine and the control arm of every number in `hypotheses_from_obligations.md` | `ein-infer/src/oblgen.rs` |
 | `EIN_LEFTOVER` | `1` | fills `--json-summary`'s `leftover` block — what the blind enumerator would still propose at each recorded state. Runs on a discarded fork, so nothing else in the summary moves | `ein-cli/src/summary.rs` |

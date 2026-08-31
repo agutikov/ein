@@ -498,7 +498,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     if let Some(out) = m.get_one::<String>("json-report")
         && let Err(e) = write_report(out, &tally, &rows)
     {
-        eprintln!("{e}");
+        crate::solve::artefact_failed("json-report", out, e);
     }
     println!("{}", tally.line(t0.elapsed().as_secs_f64()));
     // **Reported, never skipped past** — M1c's acceptance, in the shape this
@@ -520,7 +520,7 @@ pub fn run(m: &ArgMatches) -> i32 {
 /// (field order fixed by construction, `schema` versioned). The third —
 /// order-free — it does not need: rows are in walk order, and the walk is
 /// sorted at every level, so a report diffs against yesterday's.
-fn write_report(path: &str, tally: &Tally, rows: &[Row]) -> Result<(), String> {
+fn write_report(path: &str, tally: &Tally, rows: &[Row]) -> std::io::Result<()> {
     let doc = Json::obj(vec![
         ("schema", Json::str(REPORT_SCHEMA)),
         (
@@ -537,7 +537,6 @@ fn write_report(path: &str, tally: &Tally, rows: &[Row]) -> Result<(), String> {
         ("rows", Json::Array(rows.iter().map(Row::json).collect())),
     ]);
     std::fs::write(path, dumps_indent(&doc) + "\n")
-        .map_err(|e| format!("could not write {path}: {e}"))
 }
 
 /// One file: load it once to find out what it claims, then check each claim.
@@ -815,10 +814,10 @@ fn check_query(
         ) {
             Ok(s) => {
                 if let Err(e) = crate::summary::write(out, &s) {
-                    eprintln!("{e}");
+                    crate::solve::artefact_failed("json-summary", out, e);
                 }
             }
-            Err(e) => eprintln!("{e}"),
+            Err(e) => crate::solve::artefact_failed("json-summary", out, e),
         }
     }
 

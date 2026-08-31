@@ -37,6 +37,7 @@ records which question became which id.
 | [Q-M1e.19](#q-m1e19--algorithmic-pathology-has-no-owner) | **Algorithmic pathology** has no owner | open — the one of `Q9`'s four unswept surfaces with no home. The other three have one: this stage swept the parser/CLI edges, `cast.rs` goes with `ein-einb`'s next change, and micro-CSP ground truth is [M10](../m10_external_benchmarks/README.md)'s thesis |
 | [Q-M1e.20](#q-m1e20--two-renderers-are-produced-tested-and-unreachable) | **Two renderers are produced, tested and unreachable** — the per-hypothesis lattice dump and the unified KB DOT view | open — raised 2026-08-30 by [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) T3, which was told to route the decision rather than take it in a doc pass; **owner unassigned**, and both are `pub` and golden-pinned today |
 | [Q-M1e.21](#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about) | A rule may **name an object the search can never hypothesise about** | open — raised 2026-08-31 by [S1e.3.3](p1e.3_medium/s1e.3.3_state_model.md), which built the check `ST-M1` asked for and found the check has a live defect behind it: `k = 0, exhausted = true` on an eleven-line program with a model. **Owner unassigned**; three candidate fixes priced, and two corpus programs already break the invariant harmlessly |
+| [Q-M1e.22](#q-m1e22--should-a-failed-artefact-write-have-an-exit-code-of-its-own) | Should a **failed artefact write** have an exit code of its own? | open — raised 2026-08-31 by [S1e.3.5](p1e.3_medium/s1e.3.5_error_handling.md), which ruled `EH-M1` the additive way and wrote it into `defined_behaviour.md` § 4.4. The residue is a **CLI-vocabulary** question and is one conversation with [TE-M4](README.md#the-findings)'s exit-2 overload; **owner unassigned**, and neither should be settled alone |
 
 ---
 
@@ -1483,4 +1484,53 @@ make the violation *unrepresentable* rather than detected, and beside
 [Q-M1e.12](#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object):
 both are questions about what the blind rung's candidate universe *is*, and
 answering either one alone risks answering the other by accident.
+
+## Q-M1e.22 — Should a failed artefact write have an exit code of its own?
+
+> **Raised 2026-08-31** by
+> [S1e.3.5](p1e.3_medium/s1e.3.5_error_handling.md), which ruled `EH-M1` and
+> filed what the ruling does not settle. The stage was explicit that this is
+> the shape of the residue: *"file the exit-code question as a `Q-M1e.<n>` for
+> whoever owns the CLI vocabulary next, with `TE-M4`'s exit-2 overload
+> attached — the two are one conversation and neither should be settled
+> alone."*
+
+**What was ruled.** A failed artefact write leaves the exit code alone —
+[`defined_behaviour.md` § 4.4](../../docs/kernel/defined_behaviour.md), pinned
+by `ein-cli/tests/artefact_contract.rs`. Four of the five options say
+*additive: stdout, stderr and the exit code are unchanged* in their own
+`--help`, and a failed write does not make that false: the answer on stdout is
+correct and complete. `--dump-states` is the exception and exits 1, because
+its sink is a directory opened before the search rather than a file written
+after it.
+
+**What was not.** A pipeline that asks for `--json-summary` and gets **exit 0
+with no file** learns that from stderr or not at all, and a JSON-consuming
+pipeline is exactly the consumer that does not read stderr. The honest fix is
+a distinct code, and it collides with a real constraint: exit **2** already
+means *usage error* **and** *budget abort*, which is
+[TE-M4](README.md#the-findings)'s finding read from the other end. A third
+meaning added to the same integer is not an improvement, and a fourth code is
+a CLI-vocabulary change with its own blast radius —
+[`defined_behaviour.md` § 4](../../docs/kernel/defined_behaviour.md) is the
+table it would have to move.
+
+### The three shapes, and why none of them is obviously right
+
+| | what it does | what it costs |
+|---|---|---|
+| **(a) keep 0** | today, documented | the consumer the surfaces were built for cannot see the failure without reading a second stream |
+| **(b) a fourth code** | e.g. 3 — *the run answered and an artefact was lost* | a new number in a vocabulary two of whose three values already carry two meanings, and every script that tests `!= 0` starts failing on a lost artefact |
+| **(c) split 2 first** | give the budget abort its own code, then reuse 2 for *the run could not do all of what was asked* | the largest change and the only one that leaves the vocabulary better than it found it. It is `TE-M4`'s question with this one attached |
+
+**A middle option that was considered and rejected outright**: fail only when
+the artefact is the run's *evident purpose*. Evident purpose is not a property
+the CLI can compute, and a rule nobody can evaluate is not a rule.
+
+### Where it belongs
+
+With whoever takes `TE-M4` — [S1e.3.6](p1e.3_medium/s1e.3.6_tests.md) reports
+it and does not own the vocabulary either. Nothing in the corpus reaches an
+unwritable artefact path, so there is no fixture pressure and no deadline; what
+there is, is a documented contract and a test that fails the day it changes.
 
