@@ -1,18 +1,18 @@
 # The openness census — what the corpus owes, and who is judged by discharge
 
-**Stage:** [S1d.2.6](s1d.2.6_verdicts_counters_corpus.md) · **Phase:** [P1d.2](README.md)
+**Stage:** [S1d.2.6](README.md#s1d26--verdicts-counters-corpus) · **Phase:** [P1d.2](README.md)
 **Taken:** 2026-08-25, over all 197 `corpus.toml` entries.
 **Instrument:** [`utils/openness_census.py`](../../../utils/openness_census.py), reading
 `--json-summary`'s `owes` block — the engine's own tally, which
-[T1d.2.4.5](s1d.2.4_obligations_in_the_saturator.md) proved against a hand
+[T1d.2.4.5](README.md#s1d24--obligations-in-the-saturator) proved against a hand
 count. Nothing here re-derives a debt from the event stream.
 **Re-take:** `utils/openness_census.py --json c.json`.
 
-The [scope rule](s1d.2.6_verdicts_counters_corpus.md) is a claim about the
+The [scope rule](README.md#s1d26--verdicts-counters-corpus) is a claim about the
 corpus — *a program that states no obligation keeps today's verdict* — and a
 rule stated that way is worth what the count behind it is worth. This is the
 count. It is also the evidence
-[Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
+[Q-M1d.6](open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
 closes on, because the ten entries that question is about turn out to be
 decided by it rather than by the new word.
 
@@ -66,7 +66,7 @@ The acceptance bullet, as a table — verdict words by scope:
 **Zero `Open` outside the owing class, and zero words moved outside it.** All
 92 out-of-scope entries report exactly what they reported before P1d.2, which
 is the claim; the 26 `Contradiction`s there include the ten
-[Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
+[Q-M1d.6](open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
 is about, and §5 is why.
 
 Two rows are worth reading twice.
@@ -146,7 +146,7 @@ in `finalise` and nowhere else.
 
 ## 5. The ten, partitioned — and the answer is the scope rule
 
-[T1d.2.6.2](s1d.2.6_verdicts_counters_corpus.md) asked for Q-M1d.6's ten
+[T1d.2.6.2](README.md#s1d26--verdicts-counters-corpus) asked for Q-M1d.6's ten
 entries classified by this census before any word moved. Measured under
 `solve -e`:
 
@@ -175,7 +175,7 @@ So Q-M1d.6 is not answered by the new word, it is answered by the rule that
 scopes it: **the engine now never says `Contradiction` of a state that owes
 something it can still pay, and these ten do not owe anything, because they
 never said so.** Their `Contradiction` at `exhausted = false` remains what
-[Q-M1d.1](../open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)
+[Q-M1d.1](open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)
 is about — a depth cap, not a refutation — which is a different question and
 still open.
 
@@ -185,7 +185,7 @@ within the cap" rather than "no model" can say so by declaring what it
 requires, and the four `std` obligation rules are how. Whether the engine
 should also grow a word for a truncated `k = 0` — candidate (b) of the
 original three — is untouched here and belongs to
-[P1d.10](../p1d.10_exhaustive_search/README.md).
+[P1d.10](README.md#p1d10--exhaustive-search).
 
 ---
 
@@ -259,9 +259,9 @@ reached whatever the verdict calls it.
 | | |
 |---|---|
 | **the scope rule** | **holds, measured**: 92 out-of-scope entries, 0 words moved, and `declared` is why it is checkable at all |
-| **[Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)** | **closed** — `Contradiction` is never again said of a state that owes something it can still pay; the ten are out of scope and §5 is the reason |
+| **[Q-M1d.6](open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)** | **closed** — `Contradiction` is never again said of a state that owes something it can still pay; the ten are out of scope and §5 is the reason |
 | the closed-and-owing corner | **cashed**: the pair differs by a word, and the word is `Open` |
 | `verdict.k` vs `stats.solution_nodes` | **split on purpose**, on 12 entries, with both halves pinned as identities |
 | the mixed regime | **defined, unexercised** — no entry has both a discharged and an owing node |
-| a truncated `k = 0` | **untouched.** `exhausted` still means the lattice ([Q-M1d.1](../open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)), and the ten still report `Contradiction` at `exhausted = false` |
-| `:expect` for an open verdict | **not grown**, deliberately — [P1d.4](../p1d.4_model_set_closure/README.md)'s if anyone wants it |
+| a truncated `k = 0` | **untouched.** `exhausted` still means the lattice ([Q-M1d.1](open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)), and the ten still report `Contradiction` at `exhausted = false` |
+| `:expect` for an open verdict | **not grown**, deliberately — [P1d.4](README.md#p1d4--closing-the-model-set)'s if anyone wants it |

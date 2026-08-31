@@ -4,7 +4,7 @@
 > Both are written as decided, both go into `docs/kernel/` prose rather than
 > only the ledger, and Q-M1e.2 — which had **no owning stage** — gets its owner
 > in the same line:
-> [T1e.1.1.1](README.md#task-t1e111--ratify-the-standard-of-proof).
+> [T1e.1.1.1](README.md#task-t1e111--ratify-the-standard-of-proof--both-rules).
 >
 > One thing the choice no longer has to carry: this file argued for A partly
 > because Q4's *likeliest* disposition was `accepted`, and Q-M1e.2's test would
@@ -14,7 +14,7 @@
 > for the findings that **will** need it, and the case below stands as the
 > worked example of how to apply it.
 
-**Touches:** [T1e.1.1.1](README.md#task-t1e111--ratify-the-standard-of-proof),
+**Touches:** [T1e.1.1.1](README.md#task-t1e111--ratify-the-standard-of-proof--both-rules),
 which grows from a quarter-day to half a day and from one rule to two.
 
 ## The two rules

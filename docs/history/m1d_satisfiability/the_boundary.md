@@ -1,11 +1,11 @@
 # The second-order boundary — a rule is a sentence about the world it fires in
 
-**Stage:** [S1d.4.2](s1d.4.2_the_second_order_boundary.md) · **Phase:** [P1d.4](README.md)
+**Stage:** [S1d.4.2](README.md#s1d42--the-second-order-boundary) · **Phase:** [P1d.4](README.md)
 **Written:** 2026-08-26. **Closes**
-[Q-M1d.7](../open_questions.md#q-m1d7--may-a-program-require-its-own-model-count)
+[Q-M1d.7](open_questions.md#q-m1d7--may-a-program-require-its-own-model-count)
 — **no, a program may not require its own model count**, and the reason
 generalises to every second-order claim anyone proposes next.
-**Method:** the rule-shape test [Q-M1d.2](../open_questions.md#q-m1d2--where-does-a-requirement-live)
+**Method:** the rule-shape test [Q-M1d.2](open_questions.md#q-m1d2--where-does-a-requirement-live)
 used one level down, applied honestly rather than assumed; plus a survey of the
 four neighbouring systems, cited from [`docs/lib/`](../../../docs/lib/README.md).
 **Nothing was implemented.** This stage's whole output is prose, one catalogue
@@ -35,10 +35,10 @@ It is a boundary. Three readings were tested and all three fail, for three
 
 ## 2. The rule-shape test, applied
 
-[Q-M1d.2](../open_questions.md#q-m1d2--where-does-a-requirement-live) asked
+[Q-M1d.2](open_questions.md#q-m1d2--where-does-a-requirement-live) asked
 where a *requirement* lives and answered **(c) a rule shape asserting a
 reserved verdict atom** — form G,
-[`(open ?R)`](../p1d.2_obligations/s1d.2.3_the_form.md). That worked because a requirement *is* a
+[`(open ?R)`](README.md#s1d23--the-form). That worked because a requirement *is* a
 sentence about one world: `(open ?R)` says **this KB's `R`-extent is
 incomplete**. The precedent is a warning as much as a template — it looked
 impossible right up until the atom made it local — so the analogous question
@@ -62,7 +62,7 @@ The contrast with `(open ?R)` is exact and is what makes this a test rather
 than an assertion. Incompleteness of `R` *in this KB* is decidable by one pass
 over this KB — the obligation rule's own `?isa`-parameterised scan, standing
 beside the witness step inside its `absent`
-([`domain_contract.md`](../p1d.2_obligations/domain_contract.md) C1–C2). Closure
+([`domain_contract.md`](domain_contract.md) C1–C2). Closure
 of the **model set** is not a property of any KB at all. It is a property of
 the lattice of KBs, and no single node of that lattice carries it.
 
@@ -114,7 +114,7 @@ claim it makes**, and the two differ exactly there:
 | atom | what the engine must do to honour it | cost |
 |---|---|---|
 | `(open ?R)` | one pass over the quiescent KB, per obligation instance | **46 instances** on `zebra2-minus-15`, read after the fixpoint |
-| `(closed)` | exhaust the lattice | **17 204 592 enterings, 24 min 56 s at `-j16`** on the same file ([the milestone's opening measurement](../README.md#the-two-halves-of-one-question)) |
+| `(closed)` | exhaust the lattice | **17 204 592 enterings, 24 min 56 s at `-j16`** on the same file ([the milestone's opening measurement](README.md#acceptance-for-the-milestone)) |
 
 So even in the shape that worked one level down, the atom would be an assertion
 the engine cannot afford to evaluate — and one whose evaluation is the very
@@ -134,7 +134,7 @@ claim about a literature and the repo has most of that literature catalogued.
 |---|---|---|
 | **ASP** / clingo | `#count`, `#sum` aggregates; `#minimize` | aggregates count atoms **within** an answer set; optimisation *ranks* answer sets from outside the program's logic. `1 { p(X) : q(X) } 1` — the note's own `L ≤ # ≤ U` — is a cardinality bound on atoms in **one** answer set ([`docs/lib/02` § ASP, § Clingo](../../../docs/lib/02-solvers-csp-sat-smt.md)) |
 | **Alloy** | `run p for 5` / `check a for 5 but 3 Node` | a **scope** — a bound on how large a universe the analyser searches — and a *command*, not a sentence in the model. `#r` counts tuples **inside** an instance ([`docs/lib/03` § Alloy](../../../docs/lib/03-theorem-proving-formal-methods.md), added by this stage) |
-| **SMT** / Z3 | the blocking-clause enumeration loop | a **procedure outside the formula**; the formula never mentions how many models it has. [M10](../../m10_external_benchmarks/README.md) owns the encoding that would run it |
+| **SMT** / Z3 | the blocking-clause enumeration loop | a **procedure outside the formula**; the formula never mentions how many models it has. [M10](README.md) owns the encoding that would run it |
 | **#SAT** / projected model counting | the count itself | an operation **on** a program, which is the meta level the question is asking about |
 
 **Alloy is the nearest counterexample and it is not one.** It is the only one of
@@ -194,7 +194,7 @@ keyword:
 
 ## 5. What it hands forward
 
-[S1d.4.3](s1d.4.3_the_vocabulary.md) inherits a question that is now smaller
+[S1d.4.3](README.md#s1d43--the-vocabulary) inherits a question that is now smaller
 and better posed. It is not *"where does the closure claim live"* — it lives at
 the meta level and `:expect` is the meta level. It is:
 

@@ -1,15 +1,15 @@
 # The verdict — enumerate *and* describe, and the qualifier that makes either honest
 
-**Stage:** [S1d.3.3](s1d.3.3_the_verdict.md) · **Phase:** [P1d.3](README.md)
+**Stage:** [S1d.3.3](README.md#s1d33--the-verdict) · **Phase:** [P1d.3](README.md)
 **Decided:** 2026-08-26, by the user, on
-[S1d.3.2](s1d.3.2_representations.md)'s pricing.
+[S1d.3.2](README.md#s1d32--representations)'s pricing.
 **What ships:** a rendering rule on the `Ambiguity` verdict, and `ein solve
 --models key`. No engine change: the search, the counters, `verdict.solutions`,
 `--json-summary`, `--events` and `:expect` are byte-identical.
 **Re-take:** `cargo test … -p ein-cli --test model_set_report` (6 tests, 0.9 s)
 and `-p ein-render --test presentation_semantics`.
 
-[Q-M1d.5](../open_questions.md#q-m1d5--print-or-describe) asked whether 32
+[Q-M1d.5](open_questions.md#q-m1d5--print-or-describe) asked whether 32
 models should be **printed or described**. The answer is *both* — and the half
 that was missing turned out to be neither: the engine was printing a model
 count it had no right to state.
@@ -270,7 +270,7 @@ expensive — on the phase's own case it is under 1 % of the solve.
 Everything above hedges `zebra2-minus-15` because `solve -e` had never proved
 32 was all of them: the depth-5 frontier is non-empty, so the cap stopped the
 search and not the lattice ([layer census
-§4](../p1d.10_exhaustive_search/layer_census.md#4-zebra2-minus-15-all-five-layers)).
+§4](layer_census.md#4-zebra2-minus-15-all-five-layers)).
 **A deep run taken the same day proves it.** The user ran
 `examples/zebra2-minus-15-obligations.ein` at `-m 38`; re-taken here with
 `-s` so the claim is asserted rather than inferred:
@@ -323,9 +323,9 @@ the layer census's counters exactly — 618 076 enterings, `dead_post` **19 121*
 **16 586 516 enterings**, produce **eight** deaths, and `dead_pre` stays 0
 throughout: not one candidate dropped by the no-good store before entering.
 That is
-[S1d.10.1](../p1d.10_exhaustive_search/s1d.10.1_why_it_does_not_finish.md)'s
+[S1d.10.1](README.md#s1d101--why-it-does-not-finish)'s
 *a layer that kills nothing learns nothing* at full scale, and it belongs to
-[P1d.10](../p1d.10_exhaustive_search/README.md), where the run is recorded.
+[P1d.10](README.md#p1d10--exhaustive-search), where the run is recorded.
 
 ### 3.5 Additional output, never a replacement — checked three ways
 
@@ -343,7 +343,7 @@ That is
 **`:expect` did not grow a word**, for the reason it did not grow one for
 `Open`: its three forms are assertions about **facts**, and *"these are all the
 models"* is a claim about a model **set**, which is
-[P1d.4](../p1d.4_model_set_closure/README.md)'s subject. `ein test` never
+[P1d.4](README.md#p1d4--closing-the-model-set)'s subject. `ein test` never
 reaches this rendering at all — it reports pass/fail, not a verdict table — so
 the flag has no effect there either.
 
@@ -358,7 +358,7 @@ CLI behaviour claim lives.
 
 ## 4. The semantics (T1d.3.3.3) — what a reported model set is a set *of*
 
-[`ideas.md`](../ideas.md) § *Когда fixed point является решением*:
+[`ideas.md`](ideas.md) § *Когда fixed point является решением*:
 
 > Но здесь возникает важный вопрос: обязательно ли назначать значение каждому
 > возможному факту?
@@ -372,7 +372,7 @@ CLI behaviour claim lives.
 > **A reported model is a saturated *state*, not an interpretation, and `k`
 > counts states.** What `solve` records at a solution node is a KB: a set of
 > believed positive facts, a set of believed negatives, and — for every other
-> atom — no belief at all. That is [`ideas.md`](../ideas.md)'s own three-valued
+> atom — no belief at all. That is [`ideas.md`](ideas.md)'s own three-valued
 > `present` / `forbidden` / `open`, and `k` is the number of distinct such
 > states, deduped by `state_key`. It is **not** the number of two-valued
 > completions, and the engine does not claim it is.
@@ -406,7 +406,7 @@ it has is a program saying which of *its* relations it means to close:
   to the positives on purpose: *stored negatives are not closed*, so the
   device is "this relation is decided", not "everything is decided".
 - **`(__closed__ R)` — the generator may not speculate an `R`-fact**
-  ([`domain_contract.md` §3](../p1d.2_obligations/domain_contract.md), M1d
+  ([`domain_contract.md` §3](domain_contract.md), M1d
   S1d.2.2). The same closure said to the *search* rather than to a claim,
   and `std.closure`'s `infer-closure` derives it from `functional ∧ total`.
 
@@ -480,11 +480,11 @@ much worse than the ten M1a found.** Three corpus entries answer
 | 6, 7, 8 | the same | 0 |
 | **10** | `Ambiguous` | **35** |
 
-The ten entries [Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
+The ten entries [Q-M1d.6](open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
 was opened for had *no* models at any depth — the cap wearing a refutation's
 word, but a word that happened to be true. This one has thirty-five. That is
-[Q-M1d.1](../open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
-and [P1d.10](../p1d.10_exhaustive_search/README.md)'s, by the split the
+[Q-M1d.1](open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
+and [P1d.10](README.md#p1d10--exhaustive-search)'s, by the split the
 milestone README already made, and it is a sharper fixture than anything that
 question currently has.
 
@@ -507,5 +507,5 @@ run is the phase's own case exhausted: 17 204 592 enterings for the 32 models
 48 745 already found, 0.11 % of them dying, `dead_pre = 0`. The compact form
 saves 467 printed lines; it saves nothing of the 16.6 M enterings that produced
 the guarantee those lines carry. That gap is
-[P1d.10](../p1d.10_exhaustive_search/README.md)'s whole subject, and this stage
+[P1d.10](README.md#p1d10--exhaustive-search)'s whole subject, and this stage
 leaves it exactly where it found it — with one more number on it.

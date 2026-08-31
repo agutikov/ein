@@ -118,7 +118,7 @@ Three things follow, and they are the phase's shape:
    [`docs/kernel/defined_behaviour.md`](../../kernel/defined_behaviour.md)
    is thirteen of them, and enumerating them found two that are *bugs* rather
    than quirks — the binding key that drops non-string activator args
-   ([Q-M1a.8](#q-m1a8--binding_key-drops-non-string-activator-args)) and the
+   ([Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args)) and the
    Python exception classes the CLI prints
    ([Q-M1a.14](#q-m1a14--crash-parity)), which are now a name with no
    referent. Neither is changed; both are checked-in expected output, and

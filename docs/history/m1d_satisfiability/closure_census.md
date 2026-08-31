@@ -1,6 +1,6 @@
 # The closure census — who claims a model set, and what claiming one costs
 
-**Stage:** [S1d.4.1](s1d.4.1_what_closure_costs.md) · **Phase:** [P1d.4](README.md)
+**Stage:** [S1d.4.1](README.md#s1d41--what-closure-costs) · **Phase:** [P1d.4](README.md)
 **Taken:** 2026-08-26, over the three corpus roots (197 files, 124 queries) and
 all 197 `corpus.toml` entries.
 **Instrument:** [`utils/closure_census.py`](../../../utils/closure_census.py),
@@ -15,9 +15,9 @@ this stage's tree — the read-out is part of what is measured
 (`utils/bench_env.sh`).
 
 The fourth census after
-[`layer_census.md`](../p1d.10_exhaustive_search/layer_census.md),
-[`openness_census.md`](../p1d.2_obligations/openness_census.md) and
-[`model_set_census.md`](../p1d.3_model_sets/model_set_census.md), and the first
+[`layer_census.md`](layer_census.md),
+[`openness_census.md`](openness_census.md) and
+[`model_set_census.md`](model_set_census.md), and the first
 whose subject is the **claim**: not the search, not the program, not the
 answer, but the sentence a file writes about its own answer.
 
@@ -25,7 +25,7 @@ answer, but the sentence a file writes about its own answer.
 
 ## 0. The reconnaissance was wrong, and how it was wrong is the method
 
-[T1d.4.1.1](s1d.4.1_what_closure_costs.md) asked for a census *parsed from the
+[T1d.4.1.1](README.md#s1d41--what-closure-costs) asked for a census *parsed from the
 loaded program rather than grepped*, "because `:expect` is a query keyword and
 a grep cannot tell a keyword from a comment about one", and added — in
 parentheses — *"this file's own reconnaissance grepped, and says so"*.
@@ -105,7 +105,7 @@ never written one — not because writing one would have worked.
 Two details of the 59 worth having:
 
 - **Twelve claims hold against a verdict whose `k` is 0.** They are the twelve
-  [S1d.2.6](../p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md) moved to
+  [S1d.2.6](README.md#s1d26--verdicts-counters-corpus) moved to
   `Open`, and their `(model …)` claims are unchanged, because all three
   `:expect` forms are assertions about **facts** and the facts an open state
   reached are the facts it reached. The report carries `verdict`, `k` and
@@ -161,7 +161,7 @@ wrong about the corpus.** 513 lines on 534 is 0.96× — the *mildest* ratio of
 any multi-model entry above 4 models. The worst is `branching/06_lookahead_on`
 at **4.28×**: 407 lines of expectation on a 95-line file. Widen the depth to
 where the model sets are complete
-([`model_set_census.md` §2](../p1d.3_model_sets/model_set_census.md)) and the
+([`model_set_census.md` §2](model_set_census.md)) and the
 worst is worse still — `saturation/type-exclusivity/pets.ein` at `-m 10` has 35
 models and 120 facts, **156 lines on a 36-line file, 4.33×**, and is *still*
 not exhausted.
@@ -170,7 +170,7 @@ So the write cost is not a property of the puzzle's difficulty. It is
 `k × |goal extent| / |file|`, and it is worst where a **small demo has a large
 model set** — which is exactly where a compact representation would help and
 exactly where P1d.3 measured that one is unavailable:
-[`representations.md`](../p1d.3_model_sets/representations.md) prices
+[`representations.md`](representations.md) prices
 `branching/06`'s determining key out at `C(42, 8) = 118 030 185` candidate
 keys, so `ein solve --models key` declines on it and **prints the models**.
 **On the corpus's worst write-cost entry both forms fail, and they fail for
@@ -194,8 +194,8 @@ real expectation tends to pin more than the goal demands.
 
 ### 3c. What it would cost to **verify** — borrowed, not re-taken
 
-[P1d.10](../p1d.10_exhaustive_search/README.md)'s numbers, per
-[T1d.4.1.3](s1d.4.1_what_closure_costs.md):
+[P1d.10](README.md#p1d10--exhaustive-search)'s numbers, per
+[T1d.4.1.3](README.md#s1d41--what-closure-costs):
 
 | run | enterings | wall | `exhausted` |
 |---|---:|---:|---|
@@ -229,7 +229,7 @@ written a claim"* — and this is that set, taken under the same regime.
 | **total** | **197** | |
 
 121 entries reach a fixpoint, which is
-[`openness_census.md`](../p1d.2_obligations/openness_census.md)'s 121, and
+[`openness_census.md`](openness_census.md)'s 121, and
 **eight of them cannot certify a model set at the depth `ein test` runs at**:
 
 | entry | verdict | *k* | wall |
@@ -248,13 +248,13 @@ does not measure them.** Their regime run outlives the 60 s budget, so the
 ladder drops to `-m 3` and finds all 32 models in 25.7 s — and a ladder row
 proves nothing about the regime, because `exhausted = false` at `-m 3` is
 consistent with `true` at `-m 5`. Only exhaustion travels upward. What settles
-them is [P1d.10](../p1d.10_exhaustive_search/layer_census.md), which measured
+them is [P1d.10](layer_census.md), which measured
 depth 5 directly: 618 076 enterings, 416 s, **`exhausted = false`**. So the
 honest total is **ten**, eight of them measured here and two borrowed.
 
 **Eight of the ten are cheap.** Seven cost under a third of a second and report
 a `k` that is simply short — `colors` says 5 where the file has 9
-([S1d.3.3](../p1d.3_model_sets/s1d.3.3_the_verdict.md)'s finding, which is why
+([S1d.3.3](README.md#s1d33--the-verdict)'s finding, which is why
 that count now prints its own qualifier); `features/01` is 1.7 s. The
 affordability problem the phase is named after is one entry's, and its twin's.
 
@@ -266,7 +266,7 @@ rather than `FAILED`, because
 [`expect.rs`](../../../ein.rs/crates/ein-infer/src/expect.rs) declines to
 refute a claim on the strength of a search that stopped. The one thing standing
 between the corpus and a false red on that file is `exhausted`. It is also
-[Q-M1d.1](../open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
+[Q-M1d.1](open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
 fixture, which is the same fact from the other end.
 
 ---
@@ -309,7 +309,7 @@ The fourth is the cheapest by an order of magnitude and is blocked on a
 question this stage may not answer: is a false claim a **refusal**, which
 belongs on stderr, or a **result**, which belongs under the solution table?
 That is a surface decision about `:expect`, and
-[S1d.4.3](s1d.4.3_the_vocabulary.md) is the only stage in this phase licensed
+[S1d.4.3](README.md#s1d43--the-vocabulary) is the only stage in this phase licensed
 to make one — S1d.4.1's own acceptance says *nothing about `:expect` changes in
 this stage*.
 
@@ -323,10 +323,10 @@ and the manifest cell becomes available in the same breath.
 
 ## 6. What this leaves the rest of the phase
 
-- **[S1d.4.2](s1d.4.2_the_second_order_boundary.md)** — untouched by these
+- **[S1d.4.2](README.md#s1d42--the-second-order-boundary)** — untouched by these
   numbers. Whether a *puzzle* may require its own model count is a language
   question, and it is asked of a language whose tests ask it once.
-- **[S1d.4.3](s1d.4.3_the_vocabulary.md)** — priced. A vocabulary for
+- **[S1d.4.3](README.md#s1d43--the-vocabulary)** — priced. A vocabulary for
   set-closure would be a vocabulary for **one** existing instance and, at
   today's depth cap, **ten** places where it could not be checked. Against
   that: the write cost is 4.3× the file at its worst and 0.05× at its

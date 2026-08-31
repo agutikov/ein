@@ -16,6 +16,17 @@ every page, none of which needs to know what changed:
     python3 utils/doc_audit.py --links --check  # exit 1 on a broken link
     python3 utils/doc_audit.py --identifiers -k inference/lattice_dump.md
 
+The default tree is `docs/kernel`, which is what the three questions are
+*about*. The **links** half is not — a relative link resolves or it does not
+wherever it is written — so it takes any number of directories and files:
+
+    python3 utils/doc_audit.py --links --check docs plans \
+        README.md AGENTS.md corpus/README.md tests/README.md \
+        examples/README.md stdlib/README.md utils/README.md c/README.md
+
+That is the `DO-M2` sweep (M1e S1e.3.8), and it is one line rather than a
+second script.
+
 **links** — every relative markdown link resolves, file *and* `#anchor`, with
 GitHub's slugification. Plus the check this script exists because nothing had:
 a **prose section reference** — ``[`page.md`](page.md) §3d.vii`` — is not a
@@ -64,7 +75,8 @@ DEFAULT_TREE = REPO / "docs" / "kernel"
 TICK = re.compile(r"`([^`\n]+)`")
 LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 #: ``[`page.md`](page.md) §3d.vii`` and ``… § 3a + § 3d.iv`` — a section
-#: reference in prose, immediately after a link to the page it is about.
+#: reference in prose, immediately after a link to the page it is about, and
+#: before the next link, whose own label may carry one for a different page.
 PROSE_SECTION = re.compile(r"§\s*([0-9][0-9a-z.]*)")
 #: A banner that puts the page in a state other than *current*.
 STATE_BANNER = re.compile(
@@ -181,6 +193,15 @@ def check_links(pages: list[Path]) -> list[tuple[Path, int, str, str]]:
             target = m.group(2)
             if target.startswith(("http://", "https://", "mailto:")):
                 continue
+            # Two shapes that are `[...](...)` and are not links, both found by
+            # M1e S1e.3.8's sweep over `plans/`: a **placeholder** in the stage
+            # skeleton (`[<idea>](../../ideas/<file>.md)`) and **notation** that
+            # happens to be bracketed — `F_r[R,S,T](x)`. A real relative link
+            # names a file, so it carries a `.` or a `/`; nothing else does.
+            if "<" in target or ">" in target:
+                continue
+            if not target.startswith("#") and "/" not in target and "." not in target:
+                continue
             line = text[: m.start()].count("\n") + 1
             if target.startswith("#"):
                 if unquote(target[1:]) not in anchors_of(page):
@@ -205,7 +226,11 @@ def check_links(pages: list[Path]) -> list[tuple[Path, int, str, str]]:
                     continue
                 label = m.group(1)
                 scope = label if "§" in label else text[m.end() : m.end() + 100]
-                scope = scope.split("|")[0].split("\n\n")[0]
+                # Cut at the first `|` so a table row's next cell cannot claim
+                # the reference — and at the first `[`, because the next
+                # *link's* own label can (`[design/07](…); [`x.md` § 2.4](…)`
+                # gave design/07 a §2.4 it never had: M1e S1e.3.8).
+                scope = scope.split("|")[0].split("\n\n")[0].split("[")[0]
                 for sec in PROSE_SECTION.findall(scope):
                     sec = sec.rstrip(".")
                     if sec not in have:
@@ -220,7 +245,12 @@ def check_links(pages: list[Path]) -> list[tuple[Path, int, str, str]]:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("tree", nargs="?", default=str(DEFAULT_TREE))
+    ap.add_argument(
+        "tree",
+        nargs="*",
+        default=[str(DEFAULT_TREE)],
+        help="directories to walk and/or single .md files; default docs/kernel",
+    )
     ap.add_argument("--links", action="store_true")
     ap.add_argument("--identifiers", action="store_true")
     ap.add_argument("--states", action="store_true")
@@ -230,11 +260,18 @@ def main() -> int:
     if not (args.links or args.identifiers or args.states):
         args.links = args.identifiers = args.states = True
 
-    pages = sorted(Path(args.tree).rglob("*.md"))
+    # `resolve()`, because `rel()` below subtracts REPO and a relative argv
+    # would not be under it — the reason this script could only ever be run
+    # with its own default until M1e S1e.3.8.
+    pages: list[Path] = []
+    for arg in args.tree:
+        root = Path(arg).resolve()
+        pages.extend([root] if root.is_file() else root.rglob("*.md"))
+    pages = sorted(set(pages))
     if args.only:
         pages = [p for p in pages if args.only in str(p)]
     if not pages:
-        print(f"no pages under {args.tree}", file=sys.stderr)
+        print(f"no pages under {' '.join(args.tree)}", file=sys.stderr)
         return 2
     rel = lambda p: p.relative_to(REPO)  # noqa: E731
 

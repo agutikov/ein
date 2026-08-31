@@ -386,7 +386,7 @@ So the write side is compared for real corpus-wide and the read side is a
 column of zeroes agreeing with itself; the unit sweep above is the only place
 it is compared at all. Raising the budget re-blesses every `dump[progress]`
 cell of `corpus_shapes.md5`, which is why S1e.1.2 recorded it as
-[Q-M1e.14](../../../../plans/m1e_review_processing/open_questions.md#q-m1e14--the-corpus-jobs-sweeps-per-layer-census-coverage-is-vacuous)
+[Q-M1e.14](../../../../plans/m1e_review_processing/open_questions.md#q-m1e14--the-corpus---jobs-sweeps-per-layer-census-coverage-is-vacuous)
 rather than taking an unpredicted golden move.
 
 **What would re-open this**: any path reachable from `Run::speculate` that

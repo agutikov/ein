@@ -1,35 +1,35 @@
 # Open Questions — M1d (From saturation to satisfiability)
 
 Milestone-scoped questions. Ids are **sticky** — `Q-M1d.<n>`, in the style
-[M1a](../../docs/history/m1a_rust/open_questions.md) uses for `Q-M1a.<n>` rather than the
-global `Q<n>` sequence in [`plans/open_questions.md`](../open_questions.md).
+[M1a](open_questions.md) uses for `Q-M1a.<n>` rather than the
+global `Q<n>` sequence in [`plans/open_questions.md`](open_questions.md).
 A closed id is never reused.
 
-**Q-M1d.1 arrived with [P1d.10](p1d.10_exhaustive_search/README.md)** on
+**Q-M1d.1 arrived with [P1d.10](README.md#p1d10--exhaustive-search)** on
 2026-08-21, where it was Q-M1a.21; the M1a entry stays as a redirect. Q-M1d.2
 to Q-M1d.5 come from [`ideas.md`](ideas.md), the note that is the milestone's
 other half, and they are the questions the note leaves open rather than the
 ones it answers. **Q-M1d.6 came from neither**: it was found by measuring, in
-M1a [S1a.9.0](../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced), and it is
+M1a [S1a.9.0](../m1a_rust/README.md#s1a90--the-slow-corpus-re-priced), and it is
 about a word the engine already says.
 
 ## Index
 
 | Q | title | status |
 |---|---|---|
-| [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open, and **halved 2026-08-26** — the *word* is settled by [T1d.10.5.2b](p1d.10_exhaustive_search/s1d.10.5_contract.md#task-t1d1052b--contradiction-and-what-a-cap-may-say) (a refutation under a cap no longer says it is one; 26 cells moved, no exit code did), leaving the *stopping* half. Plus a fourth answer — *stop searching a lattice* — and a defect, `-m 0`, where the engine answered **yes** by accident — **fixed 2026-08-26** ([T1d.10.5.0](p1d.10_exhaustive_search/s1d.10.5_contract.md#task-t1d1050--a-cap-of-zero-is-a-truncation--done-2026-08-26): a cap of zero is a truncation), which leaves the question about the *word* and not about a cap. `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
-| [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | **decided 2026-08-24** — (c) a rule shape asserting the reserved verdict atom (form G); [S1d.2.3](p1d.2_obligations/s1d.2.3_the_form.md) records it |
-| [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | **answered for obligations 2026-08-25** — [`domain_contract.md`](p1d.2_obligations/domain_contract.md); open for the general lower-bound form nobody has asked for |
-| [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **closed 2026-08-25** — it may, and on this corpus it does not: [S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) shipped the ladder and **no counter moved** ([the record §2](p1d.2_obligations/hypotheses_from_obligations.md)) |
-| [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | **closed 2026-08-26 — both**: the count now carries its exhaustion qualifier and **(b) the determining key** ships behind `ein solve --models key` ([the verdict](p1d.3_model_sets/the_verdict.md)). The half that was broken was the *enumeration* |
-| [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | **closed 2026-08-25** — never of a state that **owes** something it can still pay; the ten entries owe nothing because they state no obligation, and keep their word ([the census §5](p1d.2_obligations/openness_census.md)) |
-| [Q-M1d.7](#q-m1d7--may-a-program-require-its-own-model-count) | May a program require its own model count? | **closed 2026-08-26 — no**, and for three reasons rather than one: [the boundary](p1d.4_model_set_closure/the_boundary.md). *A rule is a sentence about the world it fires in* |
+| [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | open, and **halved 2026-08-26** — the *word* is settled by [T1d.10.5.2b](README.md#s1d105--what-exhausted-means) (a refutation under a cap no longer says it is one; 26 cells moved, no exit code did), leaving the *stopping* half. Plus a fourth answer — *stop searching a lattice* — and a defect, `-m 0`, where the engine answered **yes** by accident — **fixed 2026-08-26** ([T1d.10.5.0](README.md#s1d105--what-exhausted-means): a cap of zero is a truncation), which leaves the question about the *word* and not about a cap. `exhausted` keeps its meaning either way *(was Q-M1a.21)* |
+| [Q-M1d.2](#q-m1d2--where-does-a-requirement-live) | Where does a requirement live — kernel, stdlib, or rule shape? | **decided 2026-08-24** — (c) a rule shape asserting the reserved verdict atom (form G); [S1d.2.3](README.md#s1d23--the-form) records it |
+| [Q-M1d.3](#q-m1d3--what-closes-a-domain) | What closes a domain? | **answered for obligations 2026-08-25** — [`domain_contract.md`](domain_contract.md); open for the general lower-bound form nobody has asked for |
+| [Q-M1d.4](#q-m1d4--may-an-obligation-driven-generator-change-the-traversal) | May an obligation-driven generator change the traversal? | **closed 2026-08-25** — it may, and on this corpus it does not: [S1d.2.5](README.md#s1d25--hypotheses-from-obligations) shipped the ladder and **no counter moved** ([the record §2](hypotheses_from_obligations.md)) |
+| [Q-M1d.5](#q-m1d5--print-or-describe) | 32 models: print or describe? | **closed 2026-08-26 — both**: the count now carries its exhaustion qualifier and **(b) the determining key** ships behind `ein solve --models key` ([the verdict](the_verdict.md)). The half that was broken was the *enumeration* |
+| [Q-M1d.6](#q-m1d6--may-contradiction-be-said-with-exhausted--false) | May `Contradiction` be said with `exhausted = False`? | **closed 2026-08-25** — never of a state that **owes** something it can still pay; the ten entries owe nothing because they state no obligation, and keep their word ([the census §5](openness_census.md)) |
+| [Q-M1d.7](#q-m1d7--may-a-program-require-its-own-model-count) | May a program require its own model count? | **closed 2026-08-26 — no**, and for three reasons rather than one: [the boundary](the_boundary.md). *A rule is a sentence about the world it fires in* |
 
 ---
 
 ## Q-M1d.1 — May the search stop before the lattice is exhausted?
 
-[P1d.10](p1d.10_exhaustive_search/README.md)'s question, and the measurement
+[P1d.10](README.md#p1d10--exhaustive-search)'s question, and the measurement
 that raises it: on `examples/zebra2-minus-15.ein` **every one of the 32 models
 is found by depth 3, and depths 4–5 exist only to prove there are no more** —
 which is where the run stops finishing.
@@ -45,9 +45,9 @@ So: is there an argument that lets the search stop early?
   a second guarantee needs a second word.
 
 The candidates and their obligations are in
-[S1d.10.3](p1d.10_exhaustive_search/s1d.10.3_stopping_criterion.md), and a
+[S1d.10.3](README.md#what-p1d10-was-closed-without), and a
 written refutation is as good an outcome as a proof — that is the discipline
-[F9](../followups/f9_e_catalog.md) established for this exact area, and F9's
+[F9](../../../plans/followups/f9_e_catalog.md) established for this exact area, and F9's
 own judgements were all measured on puzzles with a unique model, which is the
 regime this question is not about.
 
@@ -66,7 +66,7 @@ regime this question is not about.
 > So a corpus entry in the default sweep says *the constraints are
 > contradictory* about a satisfiable program, and the only thing on the surface
 > that disagrees is `exhausted`, which `--stats` prints and nothing else.
-> [S1d.3.3](p1d.3_model_sets/s1d.3.3_the_verdict.md) fixed the same defect on
+> [S1d.3.3](README.md#s1d33--the-verdict) fixed the same defect on
 > `Ambiguity` — a count is now marked as a floor when the search did not
 > exhaust — and deliberately left `Contradiction` alone, because there the
 > problem is the **word** and not a qualifier on it. That is this question's,
@@ -77,17 +77,17 @@ regime this question is not about.
 > would be compared against **zero** models and would come back `NOT CHECKED`
 > rather than `FAILED`, because `expect.rs` refuses to refute a claim on the
 > strength of a search that stopped
-> ([S1d.4.1](p1d.4_model_set_closure/closure_census.md) §4). The verdict
+> ([S1d.4.1](closure_census.md) §4). The verdict
 > channel says *the constraints are contradictory*; the claim channel says
 > *nobody knows*. Whatever this question settles should leave them agreeing.
 
 **Moved 2026-08-21 from Q-M1a.21**, with the phase. The one thing the move
-adds: [P1d.2](p1d.2_obligations/README.md) is a fourth candidate the M1a
+adds: [P1d.2](README.md#p1d2--obligations) is a fourth candidate the M1a
 framing did not have — a state that knows what it still owes can recognise a
 model *locally*, and an enumeration that branches on requirements is complete
 at a depth bounded by the number of requirements rather than by
 `max_set_size`. That is not yet a stopping criterion for the *model set*, and
-[S1d.10.3](p1d.10_exhaustive_search/s1d.10.3_stopping_criterion.md) should say so
+[S1d.10.3](README.md#what-p1d10-was-closed-without) should say so
 carefully; it is, however, the first candidate that attacks the exponent
 instead of the constant.
 
@@ -97,7 +97,7 @@ instead of the constant.
 > **171 nodes, maximum depth 6, the same 32 models verified fact for fact**,
 > against the lattice's 17 204 592 enterings and 22 layers for the same
 > exhaustion claim
-> ([the reconnaissance](p1d.10_exhaustive_search/README.md#1-the-proof-costs-83-517-what-the-answer-does)).
+> ([the reconnaissance](README.md#p1d10--exhaustive-search)).
 > So the fourth candidate is no longer a shape of argument; it is a number, and
 > it is 83 517×.
 >
@@ -108,7 +108,7 @@ instead of the constant.
 > saturation-determined.* The second clause is a claim per program, and
 > `uncovered` is the field that reports its structural half. Whether that
 > licenses the word `exhausted`, a second word, or a re-worded first one is
-> [S1d.10.5](p1d.10_exhaustive_search/s1d.10.5_contract.md)'s, and is the same
+> [S1d.10.5](README.md#s1d105--what-exhausted-means)'s, and is the same
 > question this entry has always been.
 
 > **And the engine already answered *yes* once, by accident — fixed the same
@@ -119,7 +119,7 @@ instead of the constant.
 > That was never this question's *answer*; it was this question's word being set
 > to true over a frontier that is the entire alive set, which no argument
 > licensed.
-> [T1d.10.5.0](p1d.10_exhaustive_search/s1d.10.5_contract.md#task-t1d1050--a-cap-of-zero-is-a-truncation--done-2026-08-26)
+> [T1d.10.5.0](README.md#s1d105--what-exhausted-means)
 > closed it 2026-08-26: a cap of zero is a **truncation**, `exhausted = false`,
 > and the 51 corpus cells that reach the search moved while the 99 that answer
 > without searching did not.
@@ -134,7 +134,7 @@ instead of the constant.
 > contradictory* may be said of a search that stopped.
 >
 > **It may not**, per
-> [T1d.10.5.2b](p1d.10_exhaustive_search/s1d.10.5_contract.md#task-t1d1052b--contradiction-and-what-a-cap-may-say)
+> [T1d.10.5.2b](README.md#s1d105--what-exhausted-means)
 > (2026-08-26). `exhausted = false` prints *No model found — the search did not
 > exhaust the lattice*, the count carries *(none found …)*, and the core block
 > is *refuted so far* rather than *unsat core* — because a core explains why a
@@ -153,8 +153,8 @@ instead of the constant.
 
 **Decided 2026-08-24 — (c), a rule shape**, with one reserved verdict atom
 (`open`) that rules assert and the engine tallies per quiescent KB: form G on
-[`obligation_forms.md`](p1d.2_obligations/obligation_forms.md), recorded in
-[S1d.2.3](p1d.2_obligations/s1d.2.3_the_form.md). The candidate set is
+[`obligation_forms.md`](obligation_forms.md), recorded in
+[S1d.2.3](README.md#s1d23--the-form). The candidate set is
 neither stored nor narrowed in place — recomputed from the obligation's own
 guard when wanted — which dissolves the (a)/(b) cost trade below rather than
 picking a side of it. The text that follows stands as the record of the
@@ -179,7 +179,7 @@ live, and they cost in different currencies:
   smaller than it looks.
 
 **No recommendation yet**, and that is deliberate: the choice depends on
-[S1d.2.1](p1d.2_obligations/README.md)'s audit of what the rules already do
+[S1d.2.1](README.md#p1d2--obligations)'s audit of what the rules already do
 and on whether the candidate set has to be *stored* or can be *recomputed*.
 The last one is a performance question with a measured precedent —
 `_admit_from_boundary`'s re-query was 72 % of an exhaustive `zebra2` before
@@ -188,7 +188,7 @@ P1a.6 — so "recompute it" is not automatically cheap.
 ## Q-M1d.3 — What closes a domain?
 
 **Answered for obligations 2026-08-25** —
-[`domain_contract.md`](p1d.2_obligations/domain_contract.md), S1d.2.2's
+[`domain_contract.md`](domain_contract.md), S1d.2.2's
 deliverable, in four clauses. C is the obligation's own guard, the
 `?isa`-parameterised scan standing beside the witness step inside the rule's
 `absent`, which `(open ?R)` names the relation of rather than restating; so
@@ -224,11 +224,11 @@ therefore closes.
 lists the sub-questions: what is in the set, is the set closed, and may new
 objects appear. Ein has `is-a` extents, `is-a*` for the transitive closure,
 the `unknown` macro, and a corpus entry
-([`features/04_open.ein`](../../examples/features/04_open.ein)) whose whole
+([`features/04_open.ein`](../../../examples/features/04_open.ein)) whose whole
 point is that an open domain makes the search unbounded.
 
 **What that costs, measured** (M1a
-[S1a.9.0](../../docs/history/m1a_rust/measurements/corpus_cost.md)): `render lattice` on that
+[S1a.9.0](../../history/m1a_rust/measurements/corpus_cost.md)): `render lattice` on that
 one file — an exhaustive solve at `-m 3` with the lattice stored — is **10.2 s,
 the slowest cell in the corpus and 640× `zebra2`'s entire `solve`**. At the
 `solve` default of `-m 5` the same file has no answer at all: it reaches
@@ -246,15 +246,15 @@ engine has to say which at load time rather than at quiescence.
 Related: the stdlib is deliberately **is-a-free in rule bodies** — the
 hierarchy relation arrives as an activator parameter. An obligation that
 hard-codes `is-a` would put a type system in the kernel, which
-[S1.7.23](../../docs/history/m1a_rust/README.md) settled it would not have.
+[S1.7.23](README.md) settled it would not have.
 
 ## Q-M1d.4 — May an obligation-driven generator change the traversal?
 
 **Decided in principle 2026-08-24**, by the user: *"the obligations mechanism
 also has to supersed the hrule and :hrules, so if no :hrules in query — then
 hypothesis must be generated from obligations"* — the generator ladder in
-[`obligation_forms.md` § Superseding](p1d.2_obligations/obligation_forms.md).
-[S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) executes
+[`obligation_forms.md` § Superseding](obligation_forms.md).
+[S1d.2.5](README.md#s1d25--hypotheses-from-obligations) executes
 it, and the re-baseline discipline below is how.
 
 Generating hypotheses from an obligation's candidate set instead of from
@@ -264,21 +264,21 @@ different `layers_explored`, and a different order of discovery for the models
 themselves.
 
 This is exactly the shape of
-[Q-M1a.18](../../docs/history/m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint),
+[Q-M1a.18](../m1a_rust/open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint),
 which had to be decided before a fork was allowed to narrate less, and of
-[design/08](../../docs/history/m1a_rust/design/08_parallelism.md) §7, which rejected parallel
+[design/08](../../history/m1a_rust/design/08_parallelism.md) §7, which rejected parallel
 depth-first because "going depth-first changes which no-goods exist when, i.e.
 the pruning, i.e. the counters".
 
 The invariants that survive any answer are the ones
-[S1a.7.0](../../docs/history/m1a_rust/README.md#s1a70--the-speculation-audit) already
+[S1a.7.0](../m1a_rust/README.md#s1a70--the-speculation-audit) already
 pinned as tests: the *answer* depends on neither the entering order nor the
 integration time. What is negotiable is everything that is not the answer, and
 the phase has to say so explicitly rather than discover it in a golden diff.
 
 ### Closed 2026-08-25 — the licence was granted and not spent
 
-[S1d.2.5](p1d.2_obligations/s1d.2.5_hypotheses_from_obligations.md) shipped the
+[S1d.2.5](README.md#s1d25--hypotheses-from-obligations) shipped the
 ladder, and the re-baseline it was scheduled to argue for is **empty**. On
 `examples/zebra2-obligations.ein` — `zebra2.ein` with the hrule deleted and
 nothing else — the obligation path and the hrule path agree on every counter
@@ -286,11 +286,11 @@ the JSON summary reports: 101 enterings, 34 alive, 67 dead, 2 layers, 67
 no-goods, one model, and the same 56 candidates at layer 1. On
 `zebra2-minus-15-obligations.ein` they agree at full depth — **618 076
 enterings, 19 121 learned clauses, five layers and the same 32 models** — which
-is the [layer census](p1d.10_exhaustive_search/layer_census.md)'s baseline
+is the [layer census](layer_census.md)'s baseline
 reproduced to the entering. Not one golden was re-blessed for a counter.
 
 Two things make that less surprising than it reads, and both are in
-[the record](p1d.2_obligations/hypotheses_from_obligations.md):
+[the record](hypotheses_from_obligations.md):
 
 - the hrule and the obligations propose the **same set** by opposite routes —
   the hrule enumerates every (value, house) pair and negative completion
@@ -300,9 +300,9 @@ Two things make that less surprising than it reads, and both are in
   branch on one chosen obligation is depth-first, and this engine's search is a
   breadth-first lattice over root's `alive`; the rung therefore proposes the
   union over the accepted obligations, which is a *set* change and not an
-  order change. [§1 of the record](p1d.2_obligations/hypotheses_from_obligations.md)
+  order change. [§1 of the record](hypotheses_from_obligations.md)
   is the argument, and it hands the depth-first version to
-  [P1d.10](p1d.10_exhaustive_search/README.md) with the choice heuristic
+  [P1d.10](README.md#p1d10--exhaustive-search) with the choice heuristic
   already built and measured inert.
 
 So the licence this question granted — counters may move — was granted and not
@@ -313,16 +313,16 @@ a golden diff.
 ## Q-M1d.5 — Print or describe?
 
 If a puzzle has 32 models, is the answer 32 models or a description of them?
-[P1d.3](p1d.3_model_sets/README.md) owns it, and the reason it is a question
+[P1d.3](README.md#p1d3--model-sets) owns it, and the reason it is a question
 rather than an obvious yes is that every consumer downstream reads *models*:
-the trace, `:expect`, [M20](../m20_gui/README.md)'s views, and the benchmark
+the trace, `:expect`, [M20](README.md)'s views, and the benchmark
 adapters that compare Ein's answer to Clingo's.
 
 "Enumerate, and say so" is a legitimate answer. So is "report the factorisation
 and enumerate on request". What is not legitimate is a compact form that only
 the engine can read.
 
-**Half of it is now measured** — [`model_set_census.md`](p1d.3_model_sets/model_set_census.md),
+**Half of it is now measured** — [`model_set_census.md`](model_set_census.md),
 S1d.3.1, 2026-08-25. *"Report the factorisation"* has a price: no corpus entry
 has `Π dom == k`; **2 of 13** model sets partition into independent blocks and
 both are two-object demos whose three-object sibling does not; **5 of 13** are a
@@ -332,7 +332,7 @@ minimum separator 17 — so a decision diagram has no good variable order and
 the certain core over-approximates by 3.11 × 10¹².
 
 **And the other half is priced** —
-[`representations.md`](p1d.3_model_sets/representations.md), S1d.3.2, the same
+[`representations.md`](representations.md), S1d.3.2, the same
 day. *"Report the factorisation"* has a recommendation now: the **determining
 key**, 2 506 bytes against the enumeration's 13 920 fact lines, exact and
 verified (32 of 32 rows reconstruct their model to the fact, 30 without
@@ -342,7 +342,7 @@ to win — loses the readability veto: it cannot say how many models there are,
 and multiplying the ranges it prints gives 9.95 × 10¹³ against 32.
 
 **Closed 2026-08-26, and the answer is both** —
-[`the_verdict.md`](p1d.3_model_sets/the_verdict.md), on the user's decision.
+[`the_verdict.md`](the_verdict.md), on the user's decision.
 
 - **The count is qualified.** An `Ambiguity` reporting `k` now says whether
   those are *the* models or the models *found*, on the three surfaces that
@@ -373,18 +373,18 @@ and multiplying the ranges it prints gives 9.95 × 10¹³ against 32.
 
 The question's own constraint — *what is not legitimate is a compact form that
 only the engine can read* — is the one the answer is measured against, and the
-readability evidence is [`representations.md` §6](p1d.3_model_sets/representations.md)'s,
+readability evidence is [`representations.md` §6](representations.md)'s,
 with its own limitation stated there: no independent reader was available.
 
 ## Q-M1d.6 — May `Contradiction` be said with `exhausted = False`?
 
 **Arrived 2026-08-22 from M1a
-[S1a.9.0](../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)**, which re-priced
+[S1a.9.0](../m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)**, which re-priced
 the corpus's slow tail and found ten entries costing the *same* exhaustively as
 on the fast path — `solve` and `solve -e` within 2 % of each other on nine of
 them and 1.24× on the tenth, where the two paths should differ by the whole of
 the search
-([corpus_cost.md § 2B](../../docs/history/m1a_rust/measurements/corpus_cost.md)). Every one of
+([corpus_cost.md § 2B](../../history/m1a_rust/measurements/corpus_cost.md)). Every one of
 them ends the same way:
 
 ```text
@@ -410,7 +410,7 @@ what is happening:
 layer. Wall is one cold process each, so the first two rows are mostly
 start-up (1.3 ms of it). **No depth changes the verdict, and the reason is
 structural**: `complete(kb)` asks whether the generator proposes anything
-([design/07](../../docs/history/m1a_rust/design/07_search_layer.md)), and on a fixture that
+([design/07](../../history/m1a_rust/design/07_search_layer.md)), and on a fixture that
 closes no domain it always does — so no node is ever a solution node, at any
 cap, and `k` is 0 all the way down.
 
@@ -441,7 +441,7 @@ no node is ever *complete*, so `stop_after = 1` never has anything to stop at.
 ### Where the word comes from
 
 Two functions, and only one of them looks at the cap
-([`solve.rs`](../../ein.rs/crates/ein-infer/src/solve.rs)):
+([`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)):
 
 ```rust
 if layer == self.opts.max_set_size {
@@ -460,7 +460,7 @@ fn finalise(&mut self) -> Answer {
 ```
 
 The verdict is read from `k` alone, which is exactly what
-[`verdict.rs`](../../ein.rs/crates/ein-infer/src/verdict.rs) promises — *"the
+[`verdict.rs`](../../../ein.rs/crates/ein-infer/src/verdict.rs) promises — *"the
 verdict is **read from the result**, never chosen up front"*. Both facts land
 in the same struct and only one of them reaches the word.
 
@@ -489,15 +489,15 @@ prints *"(a solution — pass `--exhaustive` to certify uniqueness)"*, and a
 
 - The **kernel** pages define the verdict by `k` and never mention exhaustion:
   `k = 0 → Contradiction` in
-  [`reserved_engine_strings.md`](../../docs/kernel/inference/reserved_engine_strings.md),
+  [`reserved_engine_strings.md`](../../kernel/inference/reserved_engine_strings.md),
   `Verdict = Solution(k=1) | Ambiguity(k>1) | Contradiction(k=0)` in
-  [`architecture_and_algorithms.md`](../../docs/kernel/inference/architecture_and_algorithms.md).
+  [`architecture_and_algorithms.md`](../../kernel/inference/architecture_and_algorithms.md).
   By those, the engine is correct as written.
-- [`docs/api/inference.md`](../../docs/api/inference.md) says
+- [`docs/api/inference.md`](../../api/inference.md) says
   *"`0` → `Contradiction` — unsat (**when exhausted**)"*. That parenthetical is
   the only statement in the tree that ties the word to the cap — and it is on a
   page specifying a Python embedding API that
-  [Q-M1a.23](../../docs/history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
+  [Q-M1a.23](../m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
   deferred and nobody is building.
 
 So this is not a doc-versus-code defect anybody can just fix. It is a
@@ -512,7 +512,7 @@ adjacent question — **what the engine says when it stops without an answer** �
 and the two share a constraint: `exhausted` means the lattice was exhausted,
 and a second guarantee needs a second word.
 
-[P1d.2](p1d.2_obligations/README.md) may dissolve it rather than answer it. A
+[P1d.2](README.md#p1d2--obligations) may dissolve it rather than answer it. A
 state that knows what it still *owes* can tell "no model below depth k" from
 "no model": an unsatisfied obligation with a non-empty candidate set is a state
 that is **incomplete**, which is [`ideas.md`](ideas.md)'s middle outcome and a
@@ -525,7 +525,7 @@ none of them would be lying.
   `k = 0` is a budget cut. Sound, and the honest reading of the api page. It
   moves every checked-in fixture that reports one — the corpus exit golden
   (`Contradiction` exits 0, an abort exits 2), `corpus_shapes.md5`, the trace
-  goldens, and [`features.md`](../../docs/kernel/inference/features.md)'s lever
+  goldens, and [`features.md`](../../kernel/inference/features.md)'s lever
   tables, which are *written in* the current word.
 - **(b) Keep the verdict, qualify the rendering.** One clause — "no solution
   **found**; the lattice was not exhausted (`-m 5`)" — and `summary.json`
@@ -538,7 +538,7 @@ none of them would be lying.
 **No recommendation from this stage** — S1a.9.0 measured, and changing a
 verdict word is a semantic decision that moves fixtures across the corpus.
 
-**2026-08-24: [S1d.2.6](p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md)
+**2026-08-24: [S1d.2.6](README.md#s1d26--verdicts-counters-corpus)
 owns the close** — candidate (c) with the user's word (`Open — owes n`,
 from the `open` / `false` / `satisfy` triple), and the ten entries
 partitioned by the openness census *before* any word moves: owes-something ⇒
@@ -568,7 +568,7 @@ them — so the reproducer above is the record of what those cells did.
 
 ### Closed 2026-08-25 — candidate (c), and the ten are decided by the scope rule
 
-[S1d.2.6](p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md) took candidate
+[S1d.2.6](README.md#s1d26--verdicts-counters-corpus) took candidate
 **(c)** with the user's word. The engine has a fourth verdict, `Open`, and the
 guarantee is:
 
@@ -583,7 +583,7 @@ Twelve corpus entries moved, all under `tests/stdlib/`, all from `Solution`.
 
 **And the ten this question is about did not move**, which is the part worth
 recording. Measured before any word changed
-([the census §5](p1d.2_obligations/openness_census.md)): all ten declare
+([the census §5](openness_census.md)): all ten declare
 **zero** obligation rules, so all ten are out of the read-out's scope and keep
 `Contradiction` at `exhausted = false`. The guarantee holds over them
 vacuously — they do not owe anything, because nothing ever told them what they
@@ -594,7 +594,7 @@ owe.
 the **scan**, and the file imports `std.elim` rather than `std.algebra`'s
 `total-owed`. A program can state a lower bound and still state no obligation.
 
-So the question dissolves the way [P1d.2](p1d.2_obligations/README.md) was
+So the question dissolves the way [P1d.2](README.md#p1d2--obligations) was
 predicted to dissolve it, but one step further along than predicted: not "ten
 corpus entries would then report `Incomplete` instead", but **the ten turn out
 to be an authoring problem rather than a vocabulary one**. A fixture that wants
@@ -606,10 +606,10 @@ answered; one that says nothing is answered by exhaustion, as it always was.
 is [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) —
 `exhausted` keeps its meaning, untouched here, and candidate **(b)** (qualify
 the rendering of a truncated `k = 0`) is neither taken nor refused.
-[P1d.10](p1d.10_exhaustive_search/README.md) owns it.
+[P1d.10](README.md#p1d10--exhaustive-search) owns it.
 
 **The reading that won** is
-[`docs/api/inference.md`](../../docs/api/inference.md)'s parenthetical — *"`0`
+[`docs/api/inference.md`](../../api/inference.md)'s parenthetical — *"`0`
 → `Contradiction` — unsat (**when exhausted**)"* — the only statement in the
 tree that ever tied the word to more than `k`. It is on a **history** page
 specifying a Python embedding nobody is building, and it was right. It is cited
@@ -620,8 +620,8 @@ to describe the current engine is neither history nor a specification.
 ## Q-M1d.7 — May a program require its own model count?
 
 **Opened 2026-08-24**, from M1c
-[S1c.1.2](../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects).
-[P1d.4](p1d.4_model_set_closure/README.md) is the phase.
+[S1c.1.2](../m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects).
+[P1d.4](README.md#p1d4--closing-the-model-set) is the phase.
 
 `:expect (or M₁ … M_k)` says *the model set is exactly these k*. A **test** may
 say that. May a **puzzle**?
@@ -644,7 +644,7 @@ once rather than rediscovered per keyword, which is the same treatment
 
 **What makes it urgent rather than academic** is affordability, not taste.
 Closure is verified by exhausting the lattice, and
-[the milestone's opening measurement](README.md#the-two-halves-of-one-question)
+[the milestone's opening measurement](README.md#acceptance-for-the-milestone)
 is that `zebra2-minus-15`'s 32 models are all found by depth 3 while depths 4
 and 5 exist only to prove there are no more. So the one puzzle M1c's pipeline
 names — *Clingo establishes 32, the answer is checked in as an `:expect`, and
@@ -656,12 +656,12 @@ Three shapes if the answer is "no, a program may not, and here is what a test
 does instead", none of them free and all of them P1d.4's to weigh: a vocabulary
 that separates *at least these* from *exactly these*; a **certificate** naming
 who established the count, which is the sidecar Q-M1c.1 rejected arriving by
-another door; or a bound from [P1d.2](p1d.2_obligations/README.md)'s
+another door; or a bound from [P1d.2](README.md#p1d2--obligations)'s
 obligations, where a state that owes nothing may know its own count without
 enumerating.
 
 **Closed 2026-08-26 — no, and the reason generalises**:
-[`the_boundary.md`](p1d.4_model_set_closure/the_boundary.md), S1d.4.2's
+[`the_boundary.md`](the_boundary.md), S1d.4.2's
 deliverable. The rule-shape test that answered Q-M1d.2 *yes* one level down
 answers this one **no** three times over, and the three refusals are
 independent:
@@ -693,7 +693,7 @@ a scope**: a bound on the analyser's search, written in the model file, which
 made it look like a counterexample. It is not. *The ein analogue of an Alloy
 scope is `--max-set-size`, not `:expect`* — ein already has Alloy's mechanism,
 in Alloy's position, spelled as a flag. Alloy was uncatalogued and is now
-[`docs/lib/03` § Alloy](../../docs/lib/03-theorem-proving-formal-methods.md).
+[`docs/lib/03` § Alloy](../../lib/03-theorem-proving-formal-methods.md).
 
 So the boundary, stated once and general: **a rule is a sentence about the
 world it fires in; a claim about the *set* of worlds is a sentence about the
@@ -705,7 +705,7 @@ claim, and `:expect` keeps its right to state what it cannot verify so long as
 it says `NOT CHECKED`.
 
 > **Sized 2026-08-26**, by
-> [S1d.4.1](p1d.4_model_set_closure/closure_census.md): whatever the answer,
+> [S1d.4.1](closure_census.md): whatever the answer,
 > it is an answer for **one** existing instance. Parsed rather than grepped,
 > the corpus states 59 claims over 124 queries and exactly **one** about a
 > model set — `examples/features/11_expect_ambiguity.ein`, two models,
@@ -714,4 +714,4 @@ it says `NOT CHECKED`.
 > a set at the depth `ein test` runs at. So a keyword here would be a keyword
 > for one user and ten places it could not be honoured — which is an argument
 > about *affordability* and not about the boundary, and the boundary is still
-> [S1d.4.2](p1d.4_model_set_closure/s1d.4.2_the_second_order_boundary.md)'s.
+> [S1d.4.2](README.md#s1d42--the-second-order-boundary)'s.

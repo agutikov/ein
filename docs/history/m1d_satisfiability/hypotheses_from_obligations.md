@@ -1,6 +1,6 @@
 # Hypotheses from obligations — what the ladder cost, measured
 
-**Stage:** [S1d.2.5](s1d.2.5_hypotheses_from_obligations.md) · **Phase:** [P1d.2](README.md)
+**Stage:** [S1d.2.5](README.md#s1d25--hypotheses-from-obligations) · **Phase:** [P1d.2](README.md)
 **Taken:** 2026-08-25, against the corpus at `5b6feb8` + this stage.
 **Machine:** `utils/bench_env.sh` — i9-14900HX, pinned to a P-core, governor
 `powersave`/`balance_performance`, turbo on. Release build, `snmalloc`.
@@ -16,7 +16,7 @@ two halves: how much narrower the branch is than the blind enumerator's
 
 ## 1. What shipped, and the one place it is not what the plan drew
 
-The ladder, as [S1d.2.5](s1d.2.5_hypotheses_from_obligations.md) specified it:
+The ladder, as [S1d.2.5](README.md#s1d25--hypotheses-from-obligations) specified it:
 
 | the program has | hypotheses come from | narrates |
 |---|---|---|
@@ -28,7 +28,7 @@ The candidate set of one obligation instance is read by running that
 obligation's own `absent` guard **with the witness step skipped**
 (`Matcher::scan_without`), so the branch is the guard rather than a
 restatement of it — the [domain contract](domain_contract.md)'s C1, made
-structural by [S1d.2.3](s1d.2.3_the_form.md)'s `(open ?R)`.
+structural by [S1d.2.3](README.md#s1d23--the-form)'s `(open ?R)`.
 
 **The deviation: the rung proposes the union of every accepted obligation's
 candidates, where the plan said "one chosen obligation's".** Not a
@@ -46,7 +46,7 @@ engine can take is structural:
 
 "Choose one obligation, branch, recurse *at that node*" is a **depth-first**
 move, and the traversal that could take it is
-[P1d.10](../p1d.10_exhaustive_search/README.md)'s subject, not this stage's.
+[P1d.10](README.md#p1d10--exhaustive-search)'s subject, not this stage's.
 What survives of the per-instance structure is everything except the
 partition: the walk order (§4), the decline rule, the `owed` / `branches` /
 `declined` split the `rung` event reports, and the stuck report. Any single
@@ -131,7 +131,7 @@ The interesting case, because 32 models can disagree where one cannot.
 | every other counter | identical | identical |
 
 `-m 3` is where all 32 models are ([layer census
-§4](../p1d.10_exhaustive_search/layer_census.md#4-zebra2-minus-15-all-five-layers));
+§4](layer_census.md#4-zebra2-minus-15-all-five-layers));
 depths 4 and 5 exist only to prove there are no more. **The full-depth
 re-take is §2.3.**
 
@@ -145,7 +145,7 @@ pinned the counters would be testing the fixtures' arithmetic.
 ### 2.3 The full-depth re-take
 
 T1d.2.5.5 asked for the twin against [the 618 076 / 416 s
-baseline](../p1d.10_exhaustive_search/layer_census.md#4-zebra2-minus-15-all-five-layers).
+baseline](layer_census.md#4-zebra2-minus-15-all-five-layers).
 Both arms were run to the depth cap, back to back, on the same machine:
 
 | `solve -e` (depth 5) | `zebra2-minus-15` | `zebra2-minus-15-obligations` |
@@ -164,8 +164,8 @@ The census's 618 076 reproduces exactly, which is the other half of the
 claim — the baseline is a *baseline* and not a number that drifted. `exhausted
 = false` on both arms is the depth cap with a non-empty frontier, unchanged by
 this stage and still
-[Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)'s
-and [S1d.10](../p1d.10_exhaustive_search/README.md)'s to answer. The 1.8 %
+[Q-M1d.6](open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)'s
+and [S1d.10](README.md#p1d10--exhaustive-search)'s to answer. The 1.8 %
 wall difference is the two runs' background load — the first had the second's
 compile behind it — and is not a claim.
 
@@ -234,7 +234,7 @@ deleted because it is the *interface* a depth-first traversal would need on
 day one, and because it costs one `sort_by_key` on a list whose length is the
 instance count. What would make it live is the deviation in §1 being closed —
 a per-node branch on one obligation — at which point "which one" is the whole
-question. That is [P1d.10](../p1d.10_exhaustive_search/README.md)'s to answer,
+question. That is [P1d.10](README.md#p1d10--exhaustive-search)'s to answer,
 and this row is the note it inherits.
 
 ---
@@ -310,7 +310,7 @@ and its nine relatives); the eleventh regime — closed *and* owing — is
 whose relation is `__closed__` and which the domain contract §3 already banked.
 
 **No verdict word moves on any of them here.**
-[S1d.2.6](s1d.2.6_verdicts_counters_corpus.md) is where that is decided, and
+[S1d.2.6](README.md#s1d26--verdicts-counters-corpus) is where that is decided, and
 this is the evidence it decides on.
 
 ---
@@ -343,7 +343,7 @@ a read. `enable_lookahead_kill_cache` writes `(not h)` into the KB it walks,
 which would change the node's `state_key` and therefore the model dedup. A
 probe that had to disable a config flag to avoid changing the answer is a
 probe that is measuring a different engine. The number belongs to
-[P1d.3](../p1d.3_model_sets/README.md)'s compact-model-set work, where
+[P1d.3](README.md#p1d3--model-sets)'s compact-model-set work, where
 the closed-world completion that makes it meaningful also lives.
 
 ---
@@ -379,7 +379,7 @@ enterings**, inside the spread.
 
 | | |
 |---|---|
-| **[Q-M1d.4](../open_questions.md)** | **closed.** The generator may change the traversal; on this corpus it does not — 101 enterings and 48 745 enterings, both paths, counter for counter |
+| **[Q-M1d.4](open_questions.md)** | **closed.** The generator may change the traversal; on this corpus it does not — 101 enterings and 48 745 enterings, both paths, counter for counter |
 | the idea note's `:hrules` complaint | **closed as a fixture.** `zebra2-obligations.ein` solves with no hypothesis rule in the file, and the thing that replaced it is `(bijective color-loc)` |
 | T1d.2.5.3's completeness test | **passing**, on one determinate puzzle and one 32-model one, pinned in `cargo test` |
 | the choice heuristic | **inert, with the number** — and the reason is the traversal, not the fixtures |

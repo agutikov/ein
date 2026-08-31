@@ -229,7 +229,7 @@ read side as a column of zeroes agreeing with itself. Raising the budget
 re-blesses every `dump[progress]` cell of `corpus_shapes.md5`, which P1e.1's
 acceptance says must be named in a stage file *before* it moves and this stage
 did not predict — so it is filed as
-[Q-M1e.14](../open_questions.md#q-m1e14--the-corpus-jobs-sweeps-per-layer-census-coverage-is-vacuous)
+[Q-M1e.14](../open_questions.md#q-m1e14--the-corpus---jobs-sweeps-per-layer-census-coverage-is-vacuous)
 with the three options priced, and not taken here.
 
 The task as written:
@@ -261,5 +261,5 @@ is the argument for asking for a mechanism.
 | the argument | `ein-core/src/kb.rs` (`Nogoods`, and the `nogoods` field comment it corrects); [design/02 §6a](../../../docs/history/m1a_rust/design/02_determinism_and_order.md); [design/08 §6](../../../docs/history/m1a_rust/design/08_parallelism.md)'s row; [Q-M1a.7](../../../docs/history/m1a_rust/open_questions.md#q-m1a7--may---jobs--1-move-counters)'s *what would re-open this* |
 | the enforcement | `Kb::freeze_nogoods` + `NogoodFreeze` (`kb.rs`), taken at `Run::fan_out` (`solve.rs:1827`); `Nogoods::insert` / `remove` assert |
 | the tests | `ein-core` `a_frozen_store_refuses_a_write`, `the_freeze_lifts_when_the_guard_drops`; `ein-infer` `a_fanned_out_layer_freezes_the_clause_store`, plus `Ran::census` in the four `--jobs` tests |
-| filed | [Q-M1e.14](../open_questions.md#q-m1e14--the-corpus-jobs-sweeps-per-layer-census-coverage-is-vacuous) — the corpus census coverage, owner unassigned |
+| filed | [Q-M1e.14](../open_questions.md#q-m1e14--the-corpus---jobs-sweeps-per-layer-census-coverage-is-vacuous) — the corpus census coverage, owner unassigned |
 | not changed | any behaviour, any golden, any counter |

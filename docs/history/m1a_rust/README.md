@@ -820,7 +820,9 @@ prints.
 #### S1a.10.5 — The removal
 **Shipped 2026-08-21.** 183 files. The Lark grammar became EBNF *first* — the
 user's own precondition, promoted to the stage's first task and now
-[§3 of `01_grammar.md`](../../kernel/ir/03-ein-lang/01_grammar.md) — and one
+[`00_ebnf.md`](../../kernel/ir/03-ein-lang/00_ebnf.md), which
+[`01_grammar.md`](../../kernel/ir/03-ein-lang/01_grammar.md) names in its
+first line as the source of truth for syntax — and one
 acceptance line was **amended on evidence**: "`nlp/` and `smt/` gone" is true
 of the active tree and the wrong test, because every file in them has a named
 dependent in a scheduled milestone. The two *submodules* are what actually cost

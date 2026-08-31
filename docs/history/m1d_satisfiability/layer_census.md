@@ -1,6 +1,6 @@
 # The layer census — what a layer kills, and what the killing is worth
 
-**Stage:** [S1d.10.1](s1d.10.1_why_it_does_not_finish.md) — T1d.10.1.1 … T1d.10.1.4
+**Stage:** [S1d.10.1](README.md#s1d101--why-it-does-not-finish) — T1d.10.1.1 … T1d.10.1.4
 **Taken:** 2026-08-24, commit `87f88f6` + this stage, `ein 0.1.0`
 (`ein-events/1`), i9-14900HX P-core, `powersave`/turbo on
 **Instrument:** [`utils/layer_census.py`](../../../utils/layer_census.py) — 180
@@ -130,7 +130,7 @@ put to a new puzzle in 24 ms — `solve -e -m 1` *is* layer 1.
 | `zebra2.ein` | 56 | 32 — 57 % | 11 |
 | `zebra.ein` | 56 | 31 — 55 % | 13 |
 
-That is the point of the split. [F9](../../followups/f9_e_catalog.md)'s cluster
+That is the point of the split. [F9](../../../plans/followups/f9_e_catalog.md)'s cluster
 note rejected the search-optimisation catalogue on the grounds that *"a complete
 cardinality-BFS over a connected corpus leaves no purchase for any of them"* —
 and every one of those judgements was taken on a puzzle in the left-hand
@@ -214,13 +214,13 @@ So P1d.10's opening line — *"killed at 30 min"*, 2026-08-20 — is a record of
 that session and not of this engine. What it reports is **`Ambiguity k=32,
 exhausted=false`**: the depth-5 frontier is not empty, so the cap stopped the
 search, not the lattice. Seven minutes of work and the completeness claim is
-still unproven, which is [S1d.10.5](s1d.10.5_contract.md)'s subject arriving
+still unproven, which is [S1d.10.5](README.md#s1d105--what-exhausted-means)'s subject arriving
 early. Six readings:
 
 1. **`alive` never shrinks — 96 at every one of the five layers.** Not one of
    the 96 hypothesis facts is ever refuted outright, because a refutation needs
    a *singleton* death and this puzzle has none.
-   [S1d.10.3](s1d.10.3_stopping_criterion.md)'s candidate (b) — an exhaustion
+   [S1d.10.3](README.md#what-p1d10-was-closed-without)'s candidate (b) — an exhaustion
    argument over the alive set — is therefore **dead before it is designed**,
    and its own text predicted this: *"a criterion that depends on `alive`
    shrinking is inert in exactly the regime that needs it"*. Corpus-wide,
@@ -244,14 +244,14 @@ early. Six readings:
    commitments and added **zero** distinct models. 32 490 of its alive
    enterings reached a state already recorded — 20.7 % of the layer rediscovering
    what depth 3 knew. That is the cost
-   [S1d.10.2](s1d.10.2_depth_required.md) is named after, with a number:
+   [S1d.10.2](README.md#s1d102--what-depth-is-required) is named after, with a number:
    **569 331 of 618 076 enterings — 92.1 % — happen after the last new model**,
    which on the measured run is 6 min 24 s of its 6 min 56 s.
 6. **And the deaths dry up as the clauses accumulate.** Deaths per entering
    fall `31.3 % → 23.0 % → 4.2 %` while the store grows `1 428 → 11 577 →
    18 154`. The clauses that filter layer *k* were bought at layer *k−1*, and
    layer 4 buys almost nothing for layer 5 — which is exactly the barren-layer
-   mechanism [S1d.10.4](s1d.10.4_conflict_mining.md) proposes to attack,
+   mechanism [S1d.10.4](README.md#s1d104--conflict-mining-when-a-layer-is-barren) proposes to attack,
    arriving at depth rather than at the root.
 
 ### 4.1 The depth-10 probe — 2026-08-25, and depths 6–10 add nothing
@@ -272,7 +272,7 @@ used for. The run is
 [`examples/zebra2-minus-15-obligations.ein`](../../../examples/zebra2-minus-15-obligations.ein)
 — the **obligations twin**, exhaustive, timed, cap raised to 10 — where §4's
 row is the hrule original.
-[S1d.2.5](../p1d.2_obligations/hypotheses_from_obligations.md) proved the two
+[S1d.2.5](hypotheses_from_obligations.md) proved the two
 identical counter-for-counter through depth 5, so this is the same workload;
 **it is also the first evidence the two paths agree past depth 5**, and it
 agrees on the thing that matters — the 18 distinct goal-binding tuples the run
@@ -280,7 +280,7 @@ reports are exactly the census's.
 
 And the run **does not report `exhausted`**, so this row does not establish it.
 Two things say what it would have been. `layers_explored == -m` is
-[Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)'s
+[Q-M1d.6](open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)'s
 truncation signature. And the arithmetic is not close: `alive` is 96 at every
 layer (§4 reading 1), so depth 10 covers **0.0001 %** of Σₖ≤₁₀ C(96, k) —
 itself 1.6 × 10⁻¹⁴ of the 2⁹⁶ − 1 commitments the lattice contains. Depth is
@@ -289,18 +289,18 @@ not the axis on which this search terminates.
 Three readings, and the first is the phase's headline:
 
 1. **`d_stop − d_found` is now measured at seven layers, not two.**
-   [S1d.10.2](s1d.10.2_depth_required.md) is named after the gap between the
+   [S1d.10.2](README.md#s1d102--what-depth-is-required) is named after the gap between the
    depth that finds every model (3) and the depth the search stops at (the
    cap). §4 put 92.1 % of the run after the last new model at a cap of 5; at a
    cap of 10 it is **10 538 991 of 10 587 736 — 99.54 %**. The gap is not a
    property of the default; the default was hiding its size.
-2. **[T1d.10.2.4](s1d.10.2_depth_required.md) gets its second half.** §7
+2. **[T1d.10.2.4](README.md#s1d102--what-depth-is-required) gets its second half.** §7
    answers the corpus question *"does any entry find a model at depth 4 or
    5?"* with **yes** — `saturation/type-exclusivity/*` needs the fifth layer,
    so the default is not dead. This answers the other half for the entry the
    phase is named after: **it finds none at 4, 5, 6, 7, 8, 9 or 10.** The two
    readings coexist and neither is the general rule — which is why
-   [S1d.10.3](s1d.10.3_stopping_criterion.md) needs a *criterion* rather than a
+   [S1d.10.3](README.md#what-p1d10-was-closed-without) needs a *criterion* rather than a
    better default.
 3. **An entering got 7.9× cheaper, and this run cannot say why.** 0.674 ms at
    depth 5 against 0.085 ms at depth 10 is not noise, and the plausible
@@ -309,10 +309,10 @@ Three readings, and the first is the phase's headline:
    618 076 — and an alive entering saturates to a fixpoint. **That is a
    hypothesis, not a reading**: the log carries no per-layer row, and settling
    it needs the census's `layer` event at `-m 10`, which is
-   [S1d.10.1](s1d.10.1_why_it_does_not_finish.md)'s instrument pointed one
+   [S1d.10.1](README.md#s1d101--why-it-does-not-finish)'s instrument pointed one
    depth further. If it holds, the *cost* of the barren regime is concentrated
    in the shallow layers and the deep ones are cheap noise, which changes what
-   [S1d.10.4](s1d.10.4_conflict_mining.md) should attack.
+   [S1d.10.4](README.md#s1d104--conflict-mining-when-a-layer-is-barren) should attack.
 
 **What it does not show.** Nothing about termination: 15 minutes buys five more
 barren layers and leaves the completeness claim exactly where §4 left it. The
@@ -428,7 +428,7 @@ hundred times over. `hypgen/branch`'s **cumulative** share is 94.8 %: almost
 nothing in this run happens outside a hypothesis.
 
 **That is a result with teeth, and it is a negative one.** Under
-[F9](../../followups/f9_e_catalog.md)'s discipline it rules out a whole class of
+[F9](../../../plans/followups/f9_e_catalog.md)'s discipline it rules out a whole class of
 proposal before anyone writes it: **you cannot optimise your way out of the
 barren regime by making the lattice cheaper, because the lattice is not the
 cost.** A faster prefix join, a smarter clause index, a better subsumption
@@ -480,12 +480,12 @@ says `n` is a position and not a field — and for nothing else.
 ## 10. The re-take — 2026-08-26, and what P1d.2 and P1d.3 moved
 
 The census above was taken on 2026-08-24, which is **before**
-[S1d.2.4](../p1d.2_obligations/s1d.2.4_obligations_in_the_saturator.md) put an
+[S1d.2.4](README.md#s1d24--obligations-in-the-saturator) put an
 obligation tally at every fixpoint, before
-[S1d.2.5](../p1d.2_obligations/hypotheses_from_obligations.md) put a rung in the
-generator, and before [S1d.3.3](../p1d.3_model_sets/the_verdict.md) qualified
+[S1d.2.5](hypotheses_from_obligations.md) put a rung in the
+generator, and before [S1d.3.3](the_verdict.md) qualified
 the count. Re-taken with the same instrument and the same command when
-[P1d.10 was begun](README.md#what-the-reconnaissance-found--2026-08-26):
+[P1d.10 was begun](README.md#p1d10--exhaustive-search):
 
 ```sh
 utils/layer_census.py --layers --json census.json     # 197 entries, ~9 min
@@ -521,7 +521,7 @@ not a smaller numerator. The phase's own entry reproduces to the digit:
 | 3 | 96 | 2 911 | 60 260 | 16 171 — 26.8 % | 44 089 | 10 149 | 10 149 | 4 | 26 684 |
 
 — and so does the twin, row for row, which is
-[S1d.2.5 §2](../p1d.2_obligations/hypotheses_from_obligations.md)'s
+[S1d.2.5 §2](hypotheses_from_obligations.md)'s
 counter-for-counter claim seen from the census's side.
 
 **Only the counters are quoted.** The `ms` and `MiB` columns of this re-take
@@ -531,7 +531,7 @@ counters are deterministic and are.
 
 ### 10.1 The number the first census could not report
 
-`owes.declared` did not exist on 2026-08-24 — [S1d.2.6](../p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md)
+`owes.declared` did not exist on 2026-08-24 — [S1d.2.6](README.md#s1d26--verdicts-counters-corpus)
 added it, and it is the field that separates *a debt paid* from *a debt never
 stated*. Crossed against the rows above, by running each searching entry at
 `ein solve -m 0 --json-summary`:
@@ -543,9 +543,8 @@ stated*. Crossed against the rows above, by running each searching entry at
 | barren | 46 | 2 |
 
 So the vocabulary M1d built reaches five of the fifty-one cells that search, and
-none of the twenty-five that walk a whole powerset. Why that is not a gap is
-[the phase README §3](README.md#3-the-vocabulary-reaches-five-of-fifty-one):
-those twenty-five are rule demos, and a demo has no requirement to state.
+none of the twenty-five that walk a whole powerset. That is not a gap: those
+twenty-five are rule demos, and a demo has no requirement to state.
 
 ### 10.2 The sweep against the manifest
 
@@ -569,12 +568,12 @@ is 94 %.
 
 ## Cross-links
 
-- [S1d.10.1](s1d.10.1_why_it_does_not_finish.md) — the stage
+- [S1d.10.1](README.md#s1d101--why-it-does-not-finish) — the stage
 - [`utils/layer_census.py`](../../../utils/layer_census.py) — the instrument
 - [events.md § `layer`](../../../docs/kernel/inference/events.md#layer--the-clause-yield-census)
   — the transport
 - [`ein-infer/tests/layer_census.rs`](../../../ein.rs/crates/ein-infer/tests/layer_census.rs)
   — the arithmetic, and the inert filter arm
-- [F9](../../followups/f9_e_catalog.md) — the rejected search optimisations,
+- [F9](../../../plans/followups/f9_e_catalog.md) — the rejected search optimisations,
   every one of them judged on a puzzle from §2's left-hand column
-- [`ideas.md`](../ideas.md) — the note whose fifth point §3 is a measurement of
+- [`ideas.md`](ideas.md) — the note whose fifth point §3 is a measurement of

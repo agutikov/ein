@@ -1,6 +1,6 @@
 # The candidate representations, priced and printed
 
-**Stage:** [S1d.3.2](s1d.3.2_representations.md) · **Phase:** [P1d.3](README.md)
+**Stage:** [S1d.3.2](README.md#s1d32--representations) · **Phase:** [P1d.3](README.md)
 **Taken:** 2026-08-25, on `examples/zebra2-minus-15.ein` at `-m 3` — the depth
 that finds all 32 models.
 **Instrument:** [`utils/model_set_census.py --form
@@ -11,7 +11,7 @@ already reads.
 **Re-take:** `utils/model_set_census.py --form key -k zebra2-minus-15.ein`
 (each form ≈ 27 s, of which 26.5 s is the solve).
 
-[S1d.3.2](s1d.3.2_representations.md) prices five ways to answer *"there are
+[S1d.3.2](README.md#s1d32--representations) prices five ways to answer *"there are
 32 models"* on four columns — **produce · size · exact · read** — of which the
 fourth is a **veto** rather than a weight. This is the pricing, and the two
 forms the stage said had to be *printed rather than argued about* are printed
@@ -66,7 +66,7 @@ a *k* this corpus does not have.
 
 ## 2. What was dropped before pricing
 
-[`ideas.md`](../ideas.md)'s seventh form — *частичная модель с `open`-фактами,
+[`ideas.md`](ideas.md)'s seventh form — *частичная модель с `open`-фактами,
 если они независимы* — is not in the table because
 [the census](model_set_census.md) killed it: the 23 varying decision variables
 of `zebra2-minus-15` are **one** coupling component, so there are no
@@ -270,7 +270,7 @@ columns, and it is already a summary — per model, the `(query :goal …)`
 bindings and the rendered query facts, four of the 435. So the enumeration
 arm's real question is not *"32 lines or a compact form"* but *"which
 projection of each model"*, which is a decision
-[S1d.3.3](s1d.3.3_the_verdict.md) can take without any of (a)–(d).
+[S1d.3.3](README.md#s1d33--the-verdict) can take without any of (a)–(d).
 
 ---
 
@@ -319,7 +319,7 @@ single variables and the answer lives in the pairs.
 
 **(e) answers two of three and loses on the page.** Recorded as a pass on
 content and a fail on presentation — which is exactly the split
-[S1d.3.3](s1d.3.3_the_verdict.md) needs, because the fix for (e) is a better
+[S1d.3.3](README.md#s1d33--the-verdict) needs, because the fix for (e) is a better
 projection and not a better representation.
 
 ### 6.3 What a real reader test would add
@@ -383,7 +383,7 @@ possible 32, instead of letting the shallow levels share.
 
 ## 8. (d) the disjunctive constraint store, deferred
 
-[`ideas.md`](../ideas.md)'s own formulation of the compact answer, and the one
+[`ideas.md`](ideas.md)'s own formulation of the compact answer, and the one
 that is not a rendering:
 
 > **symbolic solution saturation** — fixed point над ограничениями,
@@ -396,7 +396,7 @@ cheap: a second inference mode beside the one M1d has, whose objects are
 *constraints over model sets* rather than facts, whose fixpoint is over those
 constraints, and whose answer is a saturated description of a family of graphs
 rather than a member of it. It subsumes (a), (b) and (c) as read-outs. It
-interacts with everything [P1d.2](../p1d.2_obligations/README.md) built —
+interacts with everything [P1d.2](README.md#p1d2--obligations) built —
 obligations are constraints of exactly the shape it would store — and pricing
 it needs a **design**, not a measurement, which is why a two-day stage may not
 start it.
@@ -436,5 +436,5 @@ watch, because it is the one whose *k* grows with the fixture.
 | **(c)** | **priced out on scale, not on structure**: 355 nodes for 32 models, bounded in [24, 737] under every order |
 | **(d)** | **deferred with a three-clause trip-wire**, no corpus entry trips it, and the near misses fail different clauses |
 | **(e)** | exact and unusable at 396 columns *in this alphabet* — but what `solve -e` prints is a projection, and choosing a better projection needs no representation at all |
-| **the exhaustion caveat, undischarged** | `solve -e zebra2-minus-15` is `exhausted = false`. Every form above describes **the 32 models the search recorded**, and (b)'s "32 rows" is a claim about that set. A 33rd model would add a row — and would silently invalidate (a)'s core, which is the asymmetry [S1d.3.3](s1d.3.3_the_verdict.md) has to phrase |
+| **the exhaustion caveat, undischarged** | `solve -e zebra2-minus-15` is `exhausted = false`. Every form above describes **the 32 models the search recorded**, and (b)'s "32 rows" is a claim about that set. A 33rd model would add a row — and would silently invalidate (a)'s core, which is the asymmetry [S1d.3.3](README.md#s1d33--the-verdict) has to phrase |
 | **not settled here** | whether a person who did not build these forms can read them (§6.3), and whether a label is enough to ship an over-approximation |

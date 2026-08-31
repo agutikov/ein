@@ -1,6 +1,6 @@
 # The model-set census — what 32 models are made of, and whether they factor
 
-**Stage:** [S1d.3.1](s1d.3.1_what_the_models_differ_in.md) · **Phase:** [P1d.3](README.md)
+**Stage:** [S1d.3.1](README.md#s1d31--what-the-models-differ-in) · **Phase:** [P1d.3](README.md)
 **Taken:** 2026-08-25, over all 168 `corpus.toml` entries that declare a `solve` run.
 **Instrument:** [`utils/model_set_census.py`](../../../utils/model_set_census.py),
 reading `--json-summary`'s `verdict.solutions` as *k* fact sets and its
@@ -192,7 +192,7 @@ models over 15 varying variables in **one** component — and does not exhaust a
 puzzle is too small to need it.** Going from two objects to three loses the
 partition and multiplies the answer by four. That is a sharper result than "it
 never happens", and it is the one to quote at
-[S1d.3.2](s1d.3.2_representations.md): a representation justified by
+[S1d.3.2](README.md#s1d32--representations): a representation justified by
 independence would be justified by a two-object fixture and inapplicable to
 every entry anyone runs.
 
@@ -202,7 +202,7 @@ every entry anyone runs.
 
 The phase's own case, at `-m 3`, the depth that finds all 32 models
 (26.5 s; the run does not exhaust — [layer census
-§4](../p1d.10_exhaustive_search/layer_census.md#4-zebra2-minus-15-all-five-layers)).
+§4](layer_census.md#4-zebra2-minus-15-all-five-layers)).
 
 ### 5.1 The shape of a model
 
@@ -224,7 +224,7 @@ else.
 **25 decision variables, of which 2 are fixed** — and the two are the puzzle's
 two stated arrows, `(drink-loc Milk House-3)` and `(nation-loc Norwegian
 House-1)`. That is
-[S1d.2.4](../p1d.2_obligations/s1d.2.4_obligations_in_the_saturator.md)'s
+[S1d.2.4](README.md#s1d24--obligations-in-the-saturator)'s
 asymmetry seen from the far end: there `nation-loc` and `drink-loc` owe 8 at
 root where the other three owe 10, which is the same two clues counted before
 the search instead of after it.
@@ -263,7 +263,7 @@ whole of that comes from **eleven clues** — eight `co-located` activators
 (16 facts, both directions) and three `adjacent-via` (`zebra2-minus-15` is
 `zebra2` with clue 15 removed).
 
-**This is the structural answer [S1d.3.2](s1d.3.2_representations.md) needed
+**This is the structural answer [S1d.3.2](README.md#s1d32--representations) needed
 about decision diagrams.** A BDD/ZDD is small when the variable order has small
 separators; here the smallest separator between any two variables is 17 of 23,
 so no order helps. [`c/README.md` § Circular dependencies between
@@ -309,8 +309,8 @@ a key can only get bigger.
 
 ## 6. The leftover-open count — the probe P1d.2 handed forward
 
-[T1d.3.1.4](s1d.3.1_what_the_models_differ_in.md), and
-[P1d.2 §6](../p1d.2_obligations/hypotheses_from_obligations.md) is where the
+[T1d.3.1.4](README.md#s1d31--what-the-models-differ-in), and
+[P1d.2 §6](hypotheses_from_obligations.md) is where the
 question was parked:
 
 > how many facts would the blind enumerator still propose at a node the rung
@@ -368,8 +368,8 @@ on the zebra family, under 1 ms elsewhere.
 **The zebra puzzle's unique model leaves 3 678 facts open.** Under an
 open-world reading that model is 2³⁶⁷⁸ models; the puzzle means the
 closed-world one, and **nothing in the file says so**. That is the question
-[S1d.3.3](s1d.3.3_the_verdict.md) owns —
-[`ideas.md`](../ideas.md)'s *обязательно ли назначать значение каждому
+[S1d.3.3](README.md#s1d33--the-verdict) owns —
+[`ideas.md`](ideas.md)'s *обязательно ли назначать значение каждому
 возможному факту?* — now with a number attached instead of a hypothetical.
 
 ### 6.3 What the 3 678 are
@@ -390,7 +390,7 @@ pair — 25 positives and 100 negatives, which is exactly the five relations'
 5 × 5 well-typed atoms, 20 negatives apiece — and the entire 3 678 sits on the
 four relations `zebra2` never closes.
 Those four are precisely the ones the obligations rung reports as
-**`uncovered`** ([S1d.2.5 §6](../p1d.2_obligations/hypotheses_from_obligations.md)):
+**`uncovered`** ([S1d.2.5 §6](hypotheses_from_obligations.md)):
 `is-a`, `is-a*`, `right-of`, `next-to`, named by no obligation and left to
 saturation. Saturation does determine them — which is why the hrule and
 obligation paths agree on the model set — but determining is not **closing**,
@@ -427,7 +427,7 @@ no surface says which it is.
 - **All twelve `Open` states leave 0.** Owing and openness are orthogonal, and
   the corpus shows it in the strongest form: a state can owe a witness it will
   never get while the enumerator has nothing left to propose.
-  [S1d.2.6](../p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md)'s word is
+  [S1d.2.6](README.md#s1d26--verdicts-counters-corpus)'s word is
   about **discharge**; this count is about **coverage**; neither implies the
   other.
 
@@ -449,7 +449,7 @@ the enumeration is not a compact form.
 **What a reader gets today is already a summary**, and by a factor of 27:
 `solve -e` prints each model's *query bindings and query facts*, not its 435
 facts. Which summary to print is a decision available with no new
-representation at all, and it is [S1d.3.2](s1d.3.2_representations.md)'s
+representation at all, and it is [S1d.3.2](README.md#s1d32--representations)'s
 control arm.
 
 ---
@@ -461,11 +461,11 @@ control arm.
 | **the phase's central hope** | **false where it matters.** No entry has `Π dom == k`; the two that partition have two objects each, and the same program with three does not |
 | **`ideas.md`'s seventh form** — *частичная модель с `open`-фактами, если они независимы* | **inapplicable on the phase's case**, with the number: one component of 23, minimum separator 17 |
 | **what an open fact even is** | **measured, and it is not what the phrase suggests**: `zebra2`'s model leaves 3 678, none of them an attribute arrow and most of them ill-typed (§6.3) |
-| **a decision diagram** ([S1d.3.2](s1d.3.2_representations.md) (c)) | **priced and unattractive** — no variable order has a small separator, because there is no small separator |
-| **the certain core** ([S1d.3.2](s1d.3.2_representations.md) (a)) | **free and lossy**, quantified: 78.2 % of a model, and an over-approximation by 3.11 × 10¹² |
-| **the determining key** ([S1d.3.2](s1d.3.2_representations.md) (b)) | **exact, 4 columns, still 32 rows** — and the *"why these four"* objection has an answer now: two of the four are in every minimum key |
+| **a decision diagram** ([S1d.3.2](README.md#s1d32--representations) (c)) | **priced and unattractive** — no variable order has a small separator, because there is no small separator |
+| **the certain core** ([S1d.3.2](README.md#s1d32--representations) (a)) | **free and lossy**, quantified: 78.2 % of a model, and an over-approximation by 3.11 × 10¹² |
+| **the determining key** ([S1d.3.2](README.md#s1d32--representations) (b)) | **exact, 4 columns, still 32 rows** — and the *"why these four"* objection has an answer now: two of the four are in every minimum key |
 | **the leftover-open count** | **measured**, 244 states, and the probe is a read |
-| **closed-world completion** | **still [S1d.3.3](s1d.3.3_the_verdict.md)'s**, now with 3 678 as the size of what the decision is about |
+| **closed-world completion** | **still [S1d.3.3](README.md#s1d33--the-verdict)'s**, now with 3 678 as the size of what the decision is about |
 | **the exhaustion caveat** | **three of the thirteen sets are what the cap reached**, including both `zebra2-minus-15` twins — so every claim above about *their* core is a claim about a superset |
 
 **The burden of proof has not moved and the measurement did not move it.** The

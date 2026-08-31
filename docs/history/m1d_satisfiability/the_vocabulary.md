@@ -1,11 +1,11 @@
 # The vocabulary — nothing ships, and the reason is a denominator
 
-**Stage:** [S1d.4.3](s1d.4.3_the_vocabulary.md) · **Phase:** [P1d.4](README.md)
+**Stage:** [S1d.4.3](README.md#s1d43--the-vocabulary) · **Phase:** [P1d.4](README.md)
 **Decided:** 2026-08-26, by the user. **No keyword.** All tests stay
 exhaustive by default, every `:expect` stays closed by default, and there is
 **no extra syntax** — not a weaker claim, not a certificate, not a bound.
 A claim too slow to check at the runner's depth stays out of the corpus, and
-deep exhaustive search is [P1d.10](../p1d.10_exhaustive_search/README.md)'s.
+deep exhaustive search is [P1d.10](README.md#p1d10--exhaustive-search)'s.
 **What shipped instead** is one line on stderr, one word in `corpus.toml`, and
 two sentences rewritten in other people's documents.
 **Inputs:** [`closure_census.md`](closure_census.md) (the denominator),
@@ -79,14 +79,14 @@ generation at `solve -m 1 -e --events`:
 Which is the same order as the two independent over-statements P1d.3 already
 measured — `Π \|dom\|` over the models' varying variables, and the arithmetic the
 certain core invites, at 3.11 × 10¹²
-([`representations.md`](../p1d.3_model_sets/representations.md)). Three
+([`representations.md`](representations.md)). Three
 different ways of multiplying candidate sets, three answers within a factor of
 two of each other, all of them **twelve orders of magnitude** past the truth.
 
 **And the 23 are the same 23**, which is what makes the comparison a
 cross-check rather than a coincidence: five attribute relations over five
 objects is 25 slots, the clues fix two, and
-[`model_set_census.md` §2](../p1d.3_model_sets/model_set_census.md) reports
+[`model_set_census.md` §2](model_set_census.md) reports
 exactly `vars 23, fixed 2` for this file. The coupling it measured is why the
 product is hopeless: those 23 are **one** component, K₂₃ minus five edges, so
 multiplying candidate-set sizes assumes an independence that is absent on every
@@ -122,7 +122,7 @@ and it is not a new mechanism. They enter **zero commitments**: saturation
 reaches a state the generator calls complete and the tally calls discharged,
 and the verdict is read off it. The engine's `complete(kb)` plus S1d.2.6's
 discharge test *is* (c)'s useful half, shipped at
-[S1d.2.4](../p1d.2_obligations/s1d.2.4_obligations_in_the_saturator.md)–[S1d.2.6](../p1d.2_obligations/s1d.2.6_verdicts_counters_corpus.md).
+[S1d.2.4](README.md#s1d24--obligations-in-the-saturator)–[S1d.2.6](README.md#s1d26--verdicts-counters-corpus).
 The one claim that needs a search is the one claim about a *set*.
 
 ---
@@ -155,7 +155,7 @@ the reason `NOT CHECKED` had no manifest cell. The question it posed —
 `examples/features/11_expect_ambiguity.ein` now declares plain `solve` in its
 `runs`, `corpus_exits.txt` gains **one line — `1 … :: solve`** — and
 `Outcome::NotChecked` has the corpus witness
-[T1d.4.1.4](s1d.4.1_what_closure_costs.md) went looking for. One word of
+[T1d.4.1.4](README.md#s1d41--what-closure-costs) went looking for. One word of
 manifest, one line of golden, one line of stderr.
 
 **The "expected to be not-checked" gap is recorded, not closed.** A fixture that
@@ -185,7 +185,7 @@ is `saturation/type-exclusivity/pets.ein`, `Contradiction k = 0` at `-m 5` and
 **35 models** at `-m 10`. None of the ten carries a claim, and under this policy
 none of them gets one until the search that would check it is affordable.
 
-Which is the hand-off: **[P1d.10](../p1d.10_exhaustive_search/README.md) is
+Which is the hand-off: **[P1d.10](README.md#p1d10--exhaustive-search) is
 what would move the policy**, by making the deep exhaustive search cheap enough
 that the depth stops being the constraint. That is the phase boundary the user
 drew, and it is the right one — the vocabulary was never the thing standing in
@@ -204,7 +204,7 @@ first half is not what the sentence claimed:
 
 | | |
 |---|---|
-| **are the 32 verifiable?** | **yes**, and measured: `-m 38 -j16` ends the lattice at depth 22 — 17 204 592 enterings, `k = 32`, `exhausted = true`, 24 min 56 s ([the milestone's opening measurement](../README.md#the-two-halves-of-one-question)) |
+| **are the 32 verifiable?** | **yes**, and measured: `-m 38 -j16` ends the lattice at depth 22 — 17 204 592 enterings, `k = 32`, `exhausted = true`, 24 min 56 s ([the milestone's opening measurement](README.md#acceptance-for-the-milestone)) |
 | **does `ein test` verify them?** | **no.** It exhausts at `-m 5`, where the answer is `Ambiguity k = 32, exhausted = false` → `NOT CHECKED` |
 | **can the file ask for the depth?** | **no, by design** — a depth is a budget and budgets are not sentences in a program ([the boundary](the_boundary.md) § 4 corollary 2) |
 
@@ -217,7 +217,7 @@ somebody runs; and the pipeline the sentence describes *does* run every commit,
 on the 59 claims that `tests/stdlib/` states, in 0.04 s with no solver
 installed.
 
-**And [M10](../../m10_external_benchmarks/README.md) is told**, because the
+**And [M10](README.md) is told**, because the
 pipeline is its claim as much as M1c's: its acceptance bullet now reads *"…at a
 depth that reaches it"* — an encoding whose `:expect` cannot be checked at
 `-m 5` is checked in with the `-m` that checks it, or it is not checked in.
@@ -236,7 +236,7 @@ would be the debt written down rather than paid.
 - **`NOT CHECKED` stays distinguishable from both pass and fail** — on stdout as
   a third label, in `ein test`'s tally as a third counter, in `Came`'s dominance
   order, and now on stderr as its own line.
-- **The P1d.3 hand-off, and it is short.** [S1d.3.3](../p1d.3_model_sets/the_verdict.md)
+- **The P1d.3 hand-off, and it is short.** [S1d.3.3](the_verdict.md)
   shipped `--models key` as *additional output* rather than as a change to what
   is recorded, so there is no compact form for `:expect` to compare *against*:
   the key is a rendering of a model set the engine already has, and a claim is

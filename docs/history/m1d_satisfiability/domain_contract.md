@@ -1,10 +1,10 @@
 # The domain contract — what an obligation quantifies over
 
-**Stage:** [S1d.2.2](s1d.2.2_domains.md) · **Phase:** [P1d.2](README.md)
+**Stage:** [S1d.2.2](README.md#s1d22--the-domain-contract) · **Phase:** [P1d.2](README.md)
 **Taken:** 2026-08-25, against the corpus at `04b7fe2` (180 entries).
-**Cites:** [S1d.2.3](s1d.2.3_the_form.md) item 3 for the form `(open ?R)` and
+**Cites:** [S1d.2.3](README.md#s1d23--the-form) item 3 for the form `(open ?R)` and
 its three resolution rules; [`property_audit.md`](property_audit.md) for what
-the existing scans do. **[S1d.2.4](s1d.2.4_obligations_in_the_saturator.md)
+the existing scans do. **[S1d.2.4](README.md#s1d24--obligations-in-the-saturator)
 lifts §1 into the kernel pages.**
 
 ---
@@ -16,7 +16,7 @@ lifts §1 into the kernel pages.**
 An obligation is a rule that asserts `(open ?R)` while a witness is missing.
 Its domain is not written anywhere: it is the `?isa`-parameterised membership
 scan standing beside the witness step **inside the rule's own `absent`**, and
-[S1d.2.3](s1d.2.3_the_form.md) item 3's resolution rules are how the engine
+[S1d.2.3](README.md#s1d23--the-form) item 3's resolution rules are how the engine
 tells the two apart. Nothing about *stating* an obligation asks whether that
 extent is closed, complete, or final.
 
@@ -31,7 +31,7 @@ An obligation is discharged when its rule stops matching, which happens
 exactly when `∃b: G(b) ∧ B(b)` is present. That is a **positive** check, and
 a positive check is monotone: a discharged obligation stays discharged under
 any extension of the KB. So the report stratum
-([S1d.2.4](s1d.2.4_obligations_in_the_saturator.md)) makes **no closure
+([S1d.2.4](README.md#s1d24--obligations-in-the-saturator)) makes **no closure
 assumption at all** — not about the domain, not about the relation, not about
 the search.
 
@@ -90,7 +90,7 @@ all of which the engine already consults before proposing anything.
 
 Every corpus entry under `solve -m 1 -e --events`, layer-1 enterings counted
 and grouped by the relation each commitment names. **49 of the 180 entries
-search** — the same 49 the [layer census](../p1d.10_exhaustive_search/layer_census.md)
+search** — the same 49 the [layer census](layer_census.md)
 found — of which **13 are hrule-driven** and 36 run the blind generator.
 
 **Twelve entries propose `is-a` arrows**, and they are the entries where C4's
@@ -197,7 +197,7 @@ reach this case, and leaving it to them leaves it wrong.
 > `__closed__` and whose candidate set is empty is `open` and **unreachable**,
 > and the unreachable flag is part of the instance's report. Promotion to
 > `(false)` is a verdict change, it belongs to
-> [S1d.2.6](s1d.2.6_verdicts_counters_corpus.md), and
+> [S1d.2.6](README.md#s1d26--verdicts-counters-corpus), and
 > `03_closed_and_owing.ein` is the fixture that stage must move.
 
 Two reasons for the split rather than fixing it here. The phase is additive
@@ -216,4 +216,4 @@ might* , which is a distinction `(false)` erases.
 | **C4** | **new** — the stability rule, with the 12/49 partition behind it |
 | the open-extent regime | **measured, and the answer is a decline**: obligations are bounded where the puzzle is, and refuse where it is not |
 | closed-and-owing | **fixtures banked, rule written**: report with an unreachable flag, promote never (this phase) |
-| [Q-M1d.3](../open_questions.md#q-m1d3--what-closes-a-domain) | **answered for obligations.** "May new objects appear" resolves to: no new objects, new memberships only, only in blind mode, in 12 of 49 searching entries. The general lower-bound form nobody has asked for yet keeps the question open |
+| [Q-M1d.3](open_questions.md#q-m1d3--what-closes-a-domain) | **answered for obligations.** "May new objects appear" resolves to: no new objects, new memberships only, only in blind mode, in 12 of 49 searching entries. The general lower-bound form nobody has asked for yet keeps the question open |

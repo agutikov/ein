@@ -16,7 +16,7 @@ shape at `phase1`'s own site, 10 lines and **zero enterings**;
 [`probes/run_record_sites.sh`](probes/run_record_sites.sh) re-takes the matrix
 below — it grew a third fixture and a per-model re-saturation at
 [D3](d3_q_m1e8_file_or_take.md).
-**Blocks:** [T1e.1.1.2](README.md#task-t1e112--q4-construct-the-alive-path),
+**Blocks:** [T1e.1.1.2](README.md#task-t1e112--q4-construct-the-alive--path),
 which now has a shape.
 **Bears on:** `record_node`'s two callers, the singleton writeback and the
 lookahead kill cache.

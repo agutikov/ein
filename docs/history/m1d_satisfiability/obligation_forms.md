@@ -1,6 +1,6 @@
 # Obligation expression forms — the menu S1d.2.3 chooses from
 
-**Phase:** [P1d.2](README.md) — this is [S1d.2.3](README.md#stages)'s input, written
+**Phase:** [P1d.2](README.md) — this is [S1d.2.3](README.md#s1d23--the-form)'s input, written
 before its stage file so the decision is the user's and the plan follows it.
 **Status:** **the menu, and the record of what was chosen from it.** Written
 2026-08-24 as seven forms — each stated as syntax + mechanism + what it
@@ -12,17 +12,17 @@ they were taken: **G** as the form and **P3** as the naming (2026-08-24),
 **numeral-free bounds** and the **supersession ladder** the same day, and
 **`(open ?R)`** as the argument plus the **post-fixpoint pass**
 (2026-08-25 — § The slot spelling, resolved, and § When the obligation rules
-run). [S1d.2.3](s1d.2.3_the_form.md) is the executable record; this page is
+run). [S1d.2.3](README.md#s1d23--the-form) is the executable record; this page is
 where each decision's alternatives and reasons survive.
-**Reads:** [`../ideas.md`](../ideas.md) (authoritative on intent),
-[`../p1d.10_exhaustive_search/layer_census.md`](../p1d.10_exhaustive_search/layer_census.md)
+**Reads:** [`../ideas.md`](ideas.md) (authoritative on intent),
+[`../p1d.10_exhaustive_search/layer_census.md`](layer_census.md)
 (what the corpus actually does today).
 
 ---
 
 ## 1. What the form has to carry
 
-The note's shape ([`ideas.md`](../ideas.md) § "Удобная общая форма"):
+The note's shape ([`ideas.md`](ideas.md) § "Удобная общая форма"):
 
 ```
 L ≤ #{ ȳ | R(x̄, ȳ) ∧ φ(x̄, ȳ) } ≤ U
@@ -142,7 +142,7 @@ argument: a reader who knows the mathematics can read the puzzle.
 **Costs.** A new reserved head is the most expensive change on this page. It
 touches the recursive-descent parser, `00_ebnf.md`, the loader's classifier, the
 dumper (and therefore the round-trip property), `06_reserved_names.md`, the
-TextMate grammar in `utils/vscode-ein/` — **and [M2](../../m2_nl_to_ir/README.md)'s
+TextMate grammar in `utils/vscode-ein/` — **and [M2](README.md)'s
 GBNF lift, which reads the grammar to constrain a model's output.** P1d.2's
 README lists that as the phase's first risk, and this is the form that incurs it.
 
@@ -208,7 +208,7 @@ watched literals, which has a forty-year literature.
 **And the census supports it specifically.** `alive` never shrinks in the barren
 regime — 3 of 46 multi-layer cells, all three in the pruning four — so **the
 clause store is the only thing that can shrink a layer**
-([layer_census.md §6](../p1d.10_exhaustive_search/layer_census.md#6-one-of-the-two-filter-arms-cannot-fire)).
+([layer_census.md §6](layer_census.md#6-one-of-the-two-filter-arms-cannot-fire)).
 A positive clause is the one object that shrinks it *by construction* rather
 than by waiting for a death.
 
@@ -330,7 +330,7 @@ tally line has an identity and a slot; the proposal's bare `:assert open`
 stays as the anonymous degenerate. **Superseded 2026-08-25 — the shape is
 `(open ?R)`**, the relation alone, everything else projected out of the
 rule's own `absent`; see § The slot spelling, resolved, below, and
-[S1d.2.3](s1d.2.3_the_form.md) item 3, which is the record.
+[S1d.2.3](README.md#s1d23--the-form) item 3, which is the record.
 
 Priority was the probe band (500) here, on the reasoning that an obligation
 read before negative-completion (240) and elimination (400) have run would
@@ -369,7 +369,7 @@ the exact "obligations they imply" row of
 true at root discharge 2 × 2 = 4 of them: tally **46 = §5's 23 forward + 23
 backward**, measured by hand before this form had a name. The equality is a
 **conservation audit** in the
-[`layer_census`](../p1d.10_exhaustive_search/layer_census.md) style: the
+[`layer_census`](layer_census.md) style: the
 engine can predict the ledger from the declarations and diff what the rules
 emit, and a mismatch is an encoding bug with a number attached.
 
@@ -446,7 +446,7 @@ Three consequences, one of them the settling of an old complaint:
   never formed, and the milestone README's sentence — *a requirement is a
   choice point* — is this line of the table.
 - **It is
-  [Q-M1d.4](../open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal),
+  [Q-M1d.4](open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal),
   spent deliberately.** Branching from obligations changes the traversal, the
   counters, the no-goods and the discovery order. So the strata ship
   separately: the tally line first (nothing moves), the generator rung behind
@@ -461,30 +461,30 @@ exhaustive branch source **iff obligations + saturation determine every
 remaining open fact** — true on the zebra family, where the obligated arrows
 are the decision variables and everything else propagates. Where it fails,
 the leftover open facts at a discharged, consistent state are the model
-family's free arrows: [`ideas.md`](../ideas.md)'s closed-world sentence ("все
+family's free arrows: [`ideas.md`](ideas.md)'s closed-world sentence ("все
 оставшиеся open считаются отсутствующими") is one legal reading, and
-[P1d.3](../p1d.3_model_sets/README.md)'s compact model set is the other —
+[P1d.3](README.md#p1d3--model-sets)'s compact model set is the other —
 arriving early, as a *state* rather than a data structure. The stage that
 flips the generator owes the corpus a measured answer to which entries sit on
 which side.
 
 **What it buys, that A–F do not.**
 
-- **[Q-M1d.2](../open_questions.md#q-m1d2--where-does-a-requirement-live)
+- **[Q-M1d.2](open_questions.md#q-m1d2--where-does-a-requirement-live)
   answered at (c)** — a rule shape, the answer under which "the phase is much
   smaller than it looks": one reserved atom, a tally per KB, rows in
   [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md);
   no data-model object, nothing in `.einb`, nothing in the renderers' types.
 - **The verdict is the content.** G is the only form whose primary output is
   the three-state read-out —
-  [Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)'s
+  [Q-M1d.6](open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)'s
   candidate (c) mechanised. The ten `Contradiction, exhausted=False` entries
   partition measurably: owes-something ⇒ *incomplete*; owes-nothing ⇒ the
   vacuous edge below.
 - **Additive and reversible — in the report stratum.** §8's six scans stay
   untouched and gain two duals; the tally ships as a report line (`--events`,
   `--json-summary`, the trace) with hypotheses still from `alive`, so **no
-  [Q-M1d.4](../open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal)
+  [Q-M1d.4](open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal)
   exposure, every counter standing, no verdict word moved** — the phase's
   "every existing verdict is unchanged" acceptance holds until Q-M1d.6 is
   *deliberately* spent. The generator rung (§ Superseding `hrule` /
@@ -515,10 +515,10 @@ which side.
 - **The vacuous edge.** An entry stating no obligations has tally ≡ 0, so its
   consistent quiescent states read *satisfy* — where today's `complete(kb)`
   ("does the generator propose anything") says otherwise.
-  [`ideas.md`](../ideas.md) § "Когда fixed point является решением" endorses
+  [`ideas.md`](ideas.md) § "Когда fixed point является решением" endorses
   exactly this under closed-world completion; the entries where the two
   definitions disagree become tests, as the
-  [phase acceptance](README.md#acceptance-for-the-phase) already requires. G
+  [phase acceptance](README.md#acceptance-for-the-milestone) already requires. G
   forces that question early, because G's content *is* the model criterion.
 
 **The sub-decision, and it is mechanical, not aesthetic.** `open` is
@@ -611,14 +611,14 @@ refusing it at load is cheaper than deciding which pass owns it.
 names, and the collision hides that they are different:
 
 - **the probe** — match-side, *fact*-level, exists: `(open P)` ⟺ P is
-  neither asserted nor negated. This is [`ideas.md`](../ideas.md)'s third
+  neither asserted nor negated. This is [`ideas.md`](ideas.md)'s third
   fact-state (`present` / `forbidden` / `open`) — the note owns that word
   *for facts*.
 - **the verdict** — assert-side, *KB*-level, proposed: this state has an
   unmet obligation. **Not the same notion one level up**: a KB with tally 0
   and a hundred open *facts* is *satisfy* (the vacuous edge above), so a KB
   is not "open" because its facts are — one word for both would rebuild
-  [Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)'s
+  [Q-M1d.6](open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)'s
   confusion (`alive ≠ ∅` versus "owes something") inside the language itself.
 
 The measured footprint, before choosing. The probe is used by **12
@@ -653,7 +653,7 @@ corpus-wide.
 |---|---|
 | `owe` | the phase's own prose ("what it still owes"); a verb that takes the slot — `(owe co-loc House_1)`; `due` / `debt` are its siblings |
 | `must` | the obligation said as itself, deontic; free since B dissolved into G's tally |
-| `incomplete` | [`ideas.md`](../ideas.md)'s outcome word and Q-M1d.6 candidate (c); maximal `(false)` symmetry — but an adjective that carries no slot |
+| `incomplete` | [`ideas.md`](ideas.md)'s outcome word and Q-M1d.6 candidate (c); maximal `(false)` symmetry — but an adjective that carries no slot |
 | ~~`open`~~ | the two-notions point above — though pair P3 keeps it by paying elsewhere |
 | ~~`unknown`~~ | SMT's word for *gave up*; this state is not unknown, it is known-unfinished |
 | ~~`goal`~~ | the query keyword |
@@ -682,7 +682,7 @@ words: the language ends up with **one `open`, the KB-level one** — the
 two-opens risk in P3's row is dissolved rather than managed, because after
 the rename nothing fact-level answers to the word (`unknown` does, Kleene's
 own name for it), and the KB verdicts read exactly as the proposal wrote
-them: `open` / `false` / `satisfy`. [`ideas.md`](../ideas.md) keeps its
+them: `open` / `false` / `satisfy`. [`ideas.md`](ideas.md) keeps its
 fact-state `open` untouched — the note is verbatim and stays so — and prose
 may still call a fact's state open (the kernel pages' three-state model
 does, and so does the census's `alive` language): the collision that
@@ -764,7 +764,7 @@ stream):
 kills none; layer 2 enters all `C(96, 2) = 4 560` pairs; the whole exhaustive
 run is **618 076 enterings and 416 s**, of which **92.1 % happen after the last
 new model is found**
-([layer_census.md §4](../p1d.10_exhaustive_search/layer_census.md#4-zebra2-minus-15-all-five-layers)).
+([layer_census.md §4](layer_census.md#4-zebra2-minus-15-all-five-layers)).
 
 **What a choice point is instead**: one obligation with 5 candidates is a
 5-way branch that is complete at that node by construction. Nothing has to
@@ -823,24 +823,24 @@ without numerals) and decomposes into pairing relations if a corpus entry
 ever asks. The composed shape becomes **G-report first** (the three-state
 read-out and the outstanding-obligations report, as an `--events` / summary
 line, no verdict word moved), then **G-generate behind the
-[Q-M1d.4](../open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal)
+[Q-M1d.4](open_questions.md#q-m1d4--may-an-obligation-driven-generator-change-the-traversal)
 decision** — the supersession ladder, `:hrules` as override, obligations as
 the default hypothesis source — with **E as the branch representation when
 S1d.2.5 wants it materialised**, **D as the surface**, A as sugar. G's
 openness census is the number that says whether E's machinery is needed at
 all, and the verdict word itself moves only when
-[Q-M1d.6](../open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
+[Q-M1d.6](open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)
 is decided, never as a side effect.
 
 **Decided 2026-08-24, argument shape revised 2026-08-25** — the stack above
-is the phase plan. [S1d.2.3](s1d.2.3_the_form.md) records the form decisions
+is the phase plan. [S1d.2.3](README.md#s1d23--the-form) records the form decisions
 (the argument is **`(open ?R)`**, the relation alone; the `forall`-dual
 triple that the numeral-free revision had settled on is superseded — § The
 slot spelling, resolved), and the stage files execute the strata in order:
 report
-([S1d.2.4](s1d.2.4_obligations_in_the_saturator.md)), generator
-([S1d.2.5](s1d.2.5_hypotheses_from_obligations.md)), verdict
-([S1d.2.6](s1d.2.6_verdicts_counters_corpus.md)).
+([S1d.2.4](README.md#s1d24--obligations-in-the-saturator)), generator
+([S1d.2.5](README.md#s1d25--hypotheses-from-obligations)), verdict
+([S1d.2.6](README.md#s1d26--verdicts-counters-corpus)).
 
 **What that leaves open, deliberately**: `L ≥ 2` and `U` have no clause
 representation, so they stay counters — and by

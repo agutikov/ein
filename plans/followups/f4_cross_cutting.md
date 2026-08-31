@@ -453,7 +453,7 @@ would be the natural shape.
 **Why interesting:** complements F2 (self-modifying language) —
 the LLM proposes; the induction engine validates against a corpus
 of facts. The induced rule library is then a measurement target
-for [Q34's "minimal rule set"](#algebraic-properties-beyond-symmetric-transitive--and-the-2-7-cartesian-product-q34).
+for [Q34's "minimal rule set"](#algebraic-properties-beyond-symmetrictransitive--and-the-27-cartesian-product-q34).
 
 Connection: [docs/ideas/01](../ideas/01-self-modifying-constraint-language.md),
 [Q14](#rule-learning-from-human-walkthroughs-q14).
