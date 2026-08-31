@@ -4,7 +4,9 @@
 //! the engine from another Rust program. Its worked example is not a code
 //! block someone typed into a markdown file: it is the region of *this* file
 //! between the two `// ─── page ───` markers, and
-//! [`the_page_quotes_this_file`] compares the two texts.
+//! [`the_page_quotes_this_file`] compares the two texts. Since M1e a second
+//! pair of markers, `// ─── prose ───`, does the same for the *paragraph* that
+//! names these tests; on the page it is delimited by `<!-- prose -->`.
 //!
 //! That is the whole mechanism, and it is deliberately the cheapest one that
 //! cannot rot. `docs/api/`'s five Python pages were a *good* contract — five
@@ -16,11 +18,29 @@
 //!
 //! [S1a.9.2]: ../../../../docs/history/m1a_rust/README.md#p1a9--release
 //!
-//! Three tests, three different failures:
+//! Five tests, five different failures:
 //!
 //! - the example does not compile → this file does not build;
 //! - the example's numbers move → [`the_worked_example_runs`];
-//! - the page and the example drift apart → [`the_page_quotes_this_file`].
+//! - a verdict arm the page shows is never taken →
+//!   [`the_other_three_verdicts_are_reachable`];
+//! - the page and the example drift apart → [`the_page_quotes_this_file`];
+//! - the page's **prose about this file** drifts →
+//!   [`the_page_quotes_this_files_prose_too`] and
+//!   [`the_page_and_the_file_name_the_same_tests`].
+//!
+//! The last two are M1e `CD-M4`, and the finding was on this mechanism's own
+//! page: the sentence naming the tests said
+//! `the_other_two_verdicts_are_reachable` — a name from before `Open` arrived
+//! — and sat **outside** the marked region, which is the one class of drift a
+//! quote-this-file check structurally cannot catch. Widening the region is
+//! only half a fix, and it is worth being explicit about which half:
+//! a second marker makes the page and this file **one text**, so editing one
+//! and not the other is loud; it does **not** make that text *true*, because
+//! renaming a test and leaving the comment alone keeps the two in agreement
+//! about a name neither of them still has. That is what
+//! [`the_page_and_the_file_name_the_same_tests`] is for, and it is the one
+//! that would have failed on the day of the rename.
 //!
 //! **`cargo fmt` is one of the things that can make them drift**, since the
 //! marked region is ordinary code and the formatter has an opinion about it.
@@ -28,7 +48,20 @@
 //! paste. The rule, and it is in `AGENTS.md` too — **edit the test, run it,
 //! paste. Never edit the page's code block by hand.**
 
+use std::collections::BTreeSet;
+use std::path::PathBuf;
+
 use ein_corpus::repo_root;
+
+/// This test file, which three of the tests below read as text.
+fn this_file() -> PathBuf {
+    repo_root().join("ein.rs/crates/ein-cli/tests/embedding.rs")
+}
+
+/// The page these markers are quoted into.
+fn page() -> String {
+    std::fs::read_to_string(repo_root().join("docs/api/rust.md")).expect("the page")
+}
 
 // ─── page ───────────────────────────────────────────────────────────
 use std::path::Path;
@@ -138,6 +171,15 @@ trace: 244 steps
     assert_eq!(out, want);
 }
 
+// ─── prose ──────────────────────────────────────────────────────────
+// The three counts above are asserted by `the_worked_example_runs`, which takes
+// the `Solution` arm; `the_other_three_verdicts_are_reachable` takes
+// `Contradiction`, `Ambiguity` and `Open`, on three other files. So the `match`
+// is five arms of which **four** have run. The fifth, `Answer::Aborted`, needs a
+// budget no example here sets, and it is in the page because a caller that never
+// sets one still has to name it.
+// ─── prose ──────────────────────────────────────────────────────────
+
 /// A contradiction, an ambiguity and an **open** state take the other three
 /// arms, so the `match` in the page is not four arms of which one has ever
 /// executed.
@@ -168,8 +210,7 @@ fn the_page_quotes_this_file() {
     // and a substring split would cut there first.
     const MARK: &str =
         "\n// ─── page ───────────────────────────────────────────────────────────\n";
-    let src = std::fs::read_to_string(repo_root().join("ein.rs/crates/ein-cli/tests/embedding.rs"))
-        .expect("this file");
+    let src = std::fs::read_to_string(this_file()).expect("this file");
     let mut parts = src.split(MARK);
     parts.next().expect("preamble");
     let example = parts.next().expect("an opening marker");
@@ -179,7 +220,7 @@ fn the_page_quotes_this_file() {
         "the marked region is not the example"
     );
 
-    let page = std::fs::read_to_string(repo_root().join("docs/api/rust.md")).expect("the page");
+    let page = page();
     let block = page
         .split("```rust\n")
         .nth(1)
@@ -192,5 +233,106 @@ fn the_page_quotes_this_file() {
         block, example,
         "docs/api/rust.md's first ```rust block and this file's marked region \
          have diverged. They are one text: edit the test, run it, paste."
+    );
+}
+/// **The page quotes this file's prose too.** The paragraph that names these
+/// tests is the region between the two `// ─── prose ───` markers with its
+/// `// ` prefixes stripped, and the page carries it between `<!-- prose -->`
+/// comments.
+///
+/// A separate test rather than a wider `page` region: that one exists to quote
+/// a **code block**, and stretching it over prose would put a paragraph diff
+/// and a compile-checked example behind the same failure message.
+#[test]
+fn the_page_quotes_this_files_prose_too() {
+    const MARK: &str =
+        "\n// ─── prose ──────────────────────────────────────────────────────────\n";
+    let src = std::fs::read_to_string(this_file()).expect("this file");
+    let mut parts = src.split(MARK);
+    parts.next().expect("preamble");
+    let region = parts.next().expect("an opening prose marker");
+    assert!(
+        parts.next().is_some(),
+        "the closing prose marker is missing"
+    );
+
+    let prose: String = region
+        .lines()
+        .map(|l| l.strip_prefix("// ").unwrap_or(l.trim_end_matches("//")))
+        .collect::<Vec<_>>()
+        .join("\n");
+    assert!(
+        prose.contains("the_worked_example_runs"),
+        "the marked region is not the paragraph"
+    );
+
+    let page = page();
+    let quoted = page
+        .split("<!-- prose -->")
+        .nth(1)
+        .expect("a <!-- prose --> region in docs/api/rust.md");
+    assert_eq!(
+        quoted.trim_matches('\n'),
+        prose.trim_matches('\n'),
+        "docs/api/rust.md's <!-- prose --> region and this file's `// ─── prose ───` \
+         region have diverged. They are one text: edit the comment, paste."
+    );
+}
+
+/// **Every test name the page prints exists, and every test here is named.**
+///
+/// This is the check that would have caught `CD-M4` on the day it was made.
+/// `the_other_two_verdicts_are_reachable` became
+/// `the_other_three_verdicts_are_reachable` when the `Open` arm arrived, and
+/// nothing anywhere resolved the old name against anything — not rustdoc (a
+/// backtick is not an intra-doc link), not the quote-this-file diff (the
+/// sentence was outside the region), and not the compiler (it is a string in a
+/// markdown file).
+///
+/// Both directions, because a marker only makes the two texts *agree*:
+///
+/// - a name the page prints that is not a `fn` here — the page cites a test
+///   that does not exist;
+/// - a `#[test] fn` here that the page never names — a test was renamed and
+///   the page still names it by the old name, which is the same failure read
+///   from the other end, and it catches a rename whatever the new name looks
+///   like.
+///
+/// The second direction is why the file's naming convention is not load-bearing:
+/// this file's tests all begin `the_`, and the first direction reads the page
+/// for that shape, but nothing would notice a test renamed *out* of the
+/// convention if the closure were not checked from both sides.
+#[test]
+fn the_page_and_the_file_name_the_same_tests() {
+    let src = std::fs::read_to_string(this_file()).expect("this file");
+    let declared: BTreeSet<String> = src
+        .lines()
+        .filter_map(|l| l.trim().strip_prefix("fn "))
+        .filter_map(|l| l.split_once('('))
+        .map(|(name, _)| name.to_string())
+        .filter(|n| n.starts_with("the_"))
+        .collect();
+    assert_eq!(declared.len(), 5, "{declared:?}");
+
+    let page = page();
+    let cited: BTreeSet<String> = page
+        .split('`')
+        .skip(1)
+        .step_by(2)
+        .filter(|t| t.starts_with("the_") && t.chars().all(|c| c.is_ascii_lowercase() || c == '_'))
+        .map(str::to_string)
+        .collect();
+
+    let phantom: Vec<_> = cited.difference(&declared).collect();
+    assert!(
+        phantom.is_empty(),
+        "docs/api/rust.md names {phantom:?}, which is not a test in \
+         ein-cli/tests/embedding.rs"
+    );
+    let unnamed: Vec<_> = declared.difference(&cited).collect();
+    assert!(
+        unnamed.is_empty(),
+        "{unnamed:?} is a test here that docs/api/rust.md never names — if it \
+         was renamed, the page still names the old one"
     );
 }

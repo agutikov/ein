@@ -14,9 +14,15 @@ How to drive the engine **as a library from another Rust program**: load a
 
 **This page's example is a test.** The code below is the region of
 [`ein.rs/crates/ein-cli/tests/embedding.rs`](../../ein.rs/crates/ein-cli/tests/embedding.rs)
-between its two `page` markers, and one of that file's three tests compares
-the two texts. So the example compiles, runs, and produces the output printed
-here — checked by `cargo test --workspace`, which is the gate. It is the
+between its two `page` markers. **Three** of that file's tests hold this page
+to it — `the_page_quotes_this_file` diffs the code block,
+`the_page_quotes_this_files_prose_too` diffs the paragraph below that names
+the tests, and `the_page_and_the_file_name_the_same_tests` resolves every test
+name printed here against a `fn` that exists, in both directions. The second
+and third are M1e `CD-M4`: the naming paragraph sat *outside* the marked
+region and had rotted there, which is the one class of drift a quote-this-file
+check cannot catch. So the example compiles, runs, and produces the output
+printed here — checked by `cargo test --workspace`, which is the gate. It is the
 substitute for the contract suite the deferred
 [S1a.9.2](../history/m1a_rust/README.md#p1a9--release) would have been, and it
 is stronger on the one axis that matters: it cannot rot without the gate going
@@ -118,8 +124,15 @@ events, memo)` bundle the engine's phases share.
 ### 4 — Solve
 
 One entry, and **the verdict is read from the result rather than chosen**:
-`k` distinct solution nodes → `Solution` (k = 1) / `Ambiguity` (k > 1) /
-`Contradiction` (k = 0). There is no `mode` argument.
+`Solution` (one model) / `Ambiguity` (several) / `Contradiction` (none) /
+**`Open`** — consistent, quiescent, and still owing an obligation the program
+stated (M1d
+[S1d.2.6](../history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus)).
+There is no `mode` argument.
+
+`Open` is the arm an embedder is most likely to mis-file, because its `k` is
+**0** exactly as a `Contradiction`'s is, and it means *not yet a model* where
+`Contradiction` means *no model*. Branch on the variant, never on `k` alone.
 
 `SolveOptions` is a plain struct with a `Default`, so `..Default::default()`
 is the idiom. The fields an embedder actually sets:
@@ -271,10 +284,16 @@ trace: 244 steps
 *The Norwegian drinks water in House-1; the Japanese owns the zebra in
 House-5* — the canonical Zebra answer, and the solve
 [the walkthrough](../kernel/inference/zebra_walkthrough.md) annotates as the M1
-target trace. The three counts are asserted by
-`the_worked_example_runs`; the other two verdict arms are exercised by
-`the_other_two_verdicts_are_reachable`, so the `match` is not three arms of
-which one has ever run.
+target trace.
+
+<!-- prose -->
+The three counts above are asserted by `the_worked_example_runs`, which takes
+the `Solution` arm; `the_other_three_verdicts_are_reachable` takes
+`Contradiction`, `Ambiguity` and `Open`, on three other files. So the `match`
+is five arms of which **four** have run. The fifth, `Answer::Aborted`, needs a
+budget no example here sets, and it is in the page because a caller that never
+sets one still has to name it.
+<!-- prose -->
 
 ## Caching a loaded KB — `.einb`
 
