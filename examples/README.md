@@ -2,7 +2,12 @@
 
 Encoded puzzles and focused fixtures, in [ein-lang](../docs/kernel/ir/03-ein-lang/).
 Run any with `ein solve <file>` (or `ein saturate <file>` for the
-saturation demos); see [`docs/api/`](../docs/api/) to drive them from Python.
+saturation demos); see [`docs/api/rust.md`](../docs/api/rust.md) to drive them
+from another **Rust** program. *This line said "from Python" until M1e
+`CD-M6`, and `import ein` has not worked since M1a
+[S1a.10.5](../docs/history/m1a_rust/README.md#s1a105--the-removal) —
+[`docs/api/README.md` § There is no Python module](../docs/api/README.md) is
+the standing statement.*
 
 > The step-by-step **human Zebra walkthrough** (the M1 target trace) used to
 > live here; it moved to
@@ -39,7 +44,33 @@ directory was deleted with `ein.py/`, and the pointer outlived it by six days:
 `GRID` is the *published* answer, vocabulary-independent, and both encodings
 are compared against **it** rather than against each other — which is the
 stronger claim of the two, because two encodings can agree on a wrong model.
-The design comparison and its measurements are in C2.
+**The design comparison is `C2`, and it is in git history** — the S1.22.1a
+report `c2_zebra_ein_gap.md`, which lived under `plans/m1_core_graph_reasoning/`
+and went when that tree was deleted at P1.22. Read it with
+
+```sh
+git show ff1d6c5^:plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeout/reports/c2_zebra_ein_gap.md
+```
+
+> **Why not `docs/history/`** (M1e `CD-M6`, and the decision
+> [`DO-M2`](../plans/m1e_review_processing/p1e.3_medium/s1e.3.8_documentation.md)
+> cites for the dangling class): putting it there would mean creating
+> `docs/history/m1_core/`, and
+> [Q-M1e.3](../plans/m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)'s
+> rule is that *a page is moved **into** a milestone record, never made into
+> one* — M1 is the one shipped milestone with no entry, by the decision
+> [`docs/history/README.md`](../docs/history/README.md) records: *"what
+> survived its plan tree went to `docs/kernel/inference/` and
+> `plans/followups/` at P1.22, and the rest is in git history."* So the two
+> halves of C2 that are still read went where they are read — its §5(ii)
+> anchoring argument into
+> [`stdlib/README.md`](../stdlib/README.md), and its §0 measurements are
+> superseded by the table above, whose footnote already carries C2's own
+> ~21 s / ~9 s as the PyPy figures they were. What is left in git is the
+> *reasoning*: §3 weighs the four ways the property could have been stated and
+> says why three were rejected, §5 prices the four things that made the
+> encoding fast. A bare **C2** with no link and no location was the third
+> state, and it is the one this replaces.
 
 | | [`zebra.ein`](zebra.ein) | [`zebra2.ein`](zebra2.ein) |
 |---|---|---|

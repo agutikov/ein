@@ -135,10 +135,22 @@ type **family** (`Super`'s direct children) plus the type that names a slot
 per pair would need one declaration per ordered pair of attribute types. The two
 Zebra encodings are the worked comparison: [`examples/zebra2.ein`](../examples/zebra2.ein)
 uses `std.bijection`, [`examples/zebra.ein`](../examples/zebra.ein)
-uses `std.slots`, and they reach the same model. See
-C2
-for the measurements, including why `std.slots` anchors its conclusions at the
-`Index` type instead of enumerating the equivalence closure.
+uses `std.slots`, and they reach the same model
+([`examples/README.md` § Zebra puzzle](../examples/README.md), which also has
+the two encodings side by side and where to read the full design report).
+
+**Why `std.slots` anchors its conclusions at the `Index` type** instead of
+enumerating the equivalence closure is a cost, and it is the argument the
+deleted `C2` report carried: `(transitive co-located)` materialises every pair
+inside a class — 6 members × 5 ordered partners × 5 slots = **150** positive
+edges, where the typed encoding holds the same information in **25** — and the
+negative side is the complement of a 30-element square, **900** ordered pairs
+against 125. The negative rules join positives *against* negatives, so the cost
+is the **product** of the two. `slot-locate` is transitivity with its
+conclusion pinned to the slot's index, and `slot-negative` likewise, which puts
+every derived fact on the same Attribute × House rectangle the typed relations
+occupy. Transitivity still *holds* — it is what justifies both rules — it is
+simply not enumerated off the rectangle.
 
 `std.algebra`'s ops split **intrinsic** (read existing edges: `compose` / `meet`
 / `difference` / `converse` / `join` / `difunctional`) vs **extensive** (range
