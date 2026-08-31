@@ -358,9 +358,30 @@ fn one_wrong_disjunct_fails() {
          :expect (or (model (seat Ann S1) (seat Bob S2)) \
                      (model (seat Ann S2) (seat Bob S2))))",
     );
+    // **The decisive content, not "some line exists"** — M1e S1e.3.6 T5, the
+    // review's `TE-M5`. This asserted only that a line started with
+    // `"expectation "` *after* the failure was already established, so any
+    // failure text passed and a regression to the greedy report would have
+    // been green.
+    let report = lines.join("\n");
     assert!(
-        lines.iter().any(|l| l.starts_with("expectation ")),
-        "the report says which of the two: {lines:?}"
+        report.contains("expectation 2 of 2")
+            && report.contains("expected (seat Ann S2), and the model has no such fact"),
+        "the report does not name the wrong disjunct and what it wanted:\n{report}"
+    );
+    // …and it says which *fact* the model has instead, with why that is a
+    // failure at all — naming a relation closes it.
+    assert!(
+        report.contains("(seat Ann S1), which the expectation does not list")
+            && report.contains("naming a relation closes it"),
+        "the surplus half is gone:\n{report}"
+    );
+    // The other failure's sentence must **not** appear: one wrong disjunct is
+    // a *fit* problem, not a *distinctness* one, and telling them apart is the
+    // whole of what the augmenting-path search buys.
+    assert!(
+        !report.contains("not distinct"),
+        "a fact-level mismatch was reported as a matching failure:\n{report}"
     );
 }
 
@@ -376,7 +397,26 @@ fn two_identical_disjuncts_do_not_cover_two_models() {
          :expect (or (model (seat Ann S1) (seat Bob S2)) \
                      (model (seat Ann S1) (seat Bob S2))))",
     );
-    assert!(!lines.is_empty(), "a failure with something to say");
+    // **The augmenting-path report, in its own words.** This asserted
+    // `!lines.is_empty()` — true of any failure whatever, including the
+    // confusing greedy one the doc comment above says this test exists to rule
+    // out (M1e S1e.3.6 T5, `TE-M5`).
+    //
+    // Greedy would pair disjunct 1 with a model, fail on disjunct 2, and
+    // report it as a *fact* mismatch against whichever model was left — a true
+    // sentence about the wrong problem. The distinguishing phrase is
+    // *distinct*: the failure is that no perfect matching exists, and it is
+    // reported as that.
+    let report = lines.join("\n");
+    assert!(
+        report.contains("matches a model that another expectation also claims")
+            && report.contains("the 2 expectations are not distinct"),
+        "not the augmenting-path report:\n{report}"
+    );
+    assert!(
+        !report.contains("the model has no such fact"),
+        "reported as a fact mismatch, which is the greedy diagnosis:\n{report}"
+    );
 }
 
 // ── The rendering agreement ────────────────────────────────────────

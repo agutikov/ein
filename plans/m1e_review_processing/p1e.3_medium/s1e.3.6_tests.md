@@ -64,7 +64,7 @@ boundary's invalidation machinery with no direct unit test (`TE-M7`).
 
 ## Tasks
 
-### Task T1e.3.6.1 — `TE-M1`: fail, don't skip
+### Task T1e.3.6.1 — `TE-M1`: fail, don't skip ✅
 
 Convert the `python3`-absent path in
 [`cli_semantics.rs:269-293`](../../../ein.rs/crates/ein-cli/tests/cli_semantics.rs)
@@ -81,7 +81,7 @@ CI installs Python. The exposure is a **local** gate on a machine without
 `python3` reporting a pass on a rule-body drift in a generated variant — which
 is the same local-gate-lies failure `run_tests.sh`'s own header warns about.
 
-### Task T1e.3.6.2 — `TE-M2`: derive the floors
+### Task T1e.3.6.2 — `TE-M2`: derive the floors ✅
 
 Two assertions, two constants:
 
@@ -100,7 +100,7 @@ actual count for both assertions over today's corpus, and look at the gap. If
 the gap is large, something is not being swept that should be, and that is a
 finding to report before it is a constant to change.
 
-### Task T1e.3.6.3 — `TE-M3`: assert the slow entries still exist
+### Task T1e.3.6.3 — `TE-M3`: assert the slow entries still exist ✅
 
 Keep the timing direction nightly — the review agrees, and a wall-clock
 assertion in the per-commit tier is [TE-L1](../p1e.4_low/s1e.4.5_tests.md)'s
@@ -117,7 +117,7 @@ stays where it is, and
 [`corpus_cost.md`](../../../docs/history/m1a_rust/measurements/corpus_cost.md)
 stays the instrument that re-prices.
 
-### Task T1e.3.6.4 — `TE-M4`: exit 2 means more than one thing
+### Task T1e.3.6.4 — `TE-M4`: exit 2 means more than one thing ✅
 
 `no_cell_crashes`
 ([`corpus_cli.rs:303-333`](../../../ein.rs/crates/ein-cli/tests/corpus_cli.rs))
@@ -142,7 +142,7 @@ This is also half of [EH-M1](s1e.3.5_error_handling.md)'s exit-code
 conversation; the `Q-M1e.<n>` filed there should carry this finding's
 evidence.
 
-### Task T1e.3.6.5 — `TE-M5`: make the or-matcher tests assert something
+### Task T1e.3.6.5 — `TE-M5`: make the or-matcher tests assert something ✅
 
 [`expect_semantics.rs:354-380`](../../../ein.rs/crates/ein-infer/tests/expect_semantics.rs):
 `two_identical_disjuncts_do_not_cover_two_models` asserts only
@@ -159,7 +159,7 @@ output first and pick the phrase that distinguishes the augmenting-path
 report from the greedy one; if no such phrase exists, that is the more
 interesting finding and the report needs it before the test can name it.
 
-### Task T1e.3.6.6 — `TE-M6`: bank the mutation sweep
+### Task T1e.3.6.6 — `TE-M6`: bank the mutation sweep ✅
 
 `tests/README.md:154-166` records a 51-mutant sweep the suite catches 50 of,
 and the survivor — `slot-adjacent-bwd-neg`
@@ -186,7 +186,7 @@ The second matters more than the number: the recorded 50/51 will rot silently
 as rules are added, and a real defect of that exact shape passes `ein test
 tests/`, `stdlib_coverage`, the corpus sweep and every golden.
 
-### Task T1e.3.6.7 — `TE-M7`: two tests for the NAF fast path
+### Task T1e.3.6.7 — `TE-M7`: two tests for the NAF fast path ✅
 
 The invalidation machinery that replaced a per-candidate stamp
 ([`saturator.rs:1112-1116, 1230-1252`](../../../ein.rs/crates/ein-infer/src/saturator.rs))
@@ -212,7 +212,7 @@ Both are assertions about the epoch counters, so they can be written against
 `--events` or against the saturator's own stats — prefer whichever the sibling
 NAF tests already use, so the file stays one idiom.
 
-### Task T1e.3.6.8 — `TE-M8`: diff the two step lists
+### Task T1e.3.6.8 — `TE-M8`: diff the two step lists ✅
 
 Owned jointly with [S1e.3.4](s1e.3.4_architecture.md) T1, since it is one of
 `AR-M1`'s four pairs. What this stage adds is the *test's* content: the
@@ -231,3 +231,78 @@ delays — report them rather than absorbing them.
 Nothing here loosens a check. If a derived floor or a converted skip makes the
 gate red, the red is the information; the fix is upstream of the assertion,
 never the assertion.
+
+---
+
+## Outcome
+
+Taken 2026-08-31. Every finding closed; `TE-M8` was S1e.3.4's and this stage
+added the flag's half.
+
+| | |
+|---|---|
+| **`TE-M1`** | **fails now**, with `require_python3()` written the way `dot_wellformed::require_graphviz` is and for its sentence — *a missing gate, not a missing convenience*. Control: `PATH=<a python3 that exits 127>` fails the test by name. The workspace sweep for siblings found **none**: the `skipped` counters in `interning.rs` / `provenance.rs` are per-file sweep skips under a non-vacuity floor, which is `TE-M2`'s class, and the four early `return`s are control flow in helpers |
+| **`TE-M2`** | **derived**, and two of the three caps are read off the manifest. `assert_census`'s `checked >= 55` over 216 entries became `total − (parse/load negatives + compile-negatives + 2 + 20)`; `every_positive_entry_answers`'s `>= 60` became `manifest.select(positive, stdlib, include_slow).len()`, which is **exact** — the same `select` the sweep itself uses, so the two cannot disagree about what is in play |
+| **`TE-M3`** | the `slow` **set** is asserted by name in `ein-corpus`, per commit and with no wall clock: `the_slow_set_is_exactly_these_two`. An entry *gaining* the flag leaves the default sweep silently, which is the direction nothing watched |
+| **`TE-M4`** | `no_cell_crashes` reads the run, not the bare code: a `2` is allowed exactly where the run names `-E` / `-T`. **`examples/zebra2.ein` declares `solve -E 1`**, because a relaxation nothing exercises is a hole rather than a decision — and with the guard removed that one cell fails the crash check, which is the control. Stated in [`corpus/README.md`](../../../corpus/README.md) § The run vocabulary, where a person adding a run meets it |
+| **`TE-M5`** | both or-matcher tests assert the **decisive** content, read off the current output first. The distinguishing phrase is *"matches a model that another expectation also claims — the 2 expectations are not distinct"*, and each test now also asserts the **other** failure's sentence is **absent**: telling a fit problem from a distinctness one is the whole of what the augmenting-path search buys over greedy |
+| **`TE-M6`** | [`utils/stdlib_mutants.py`](../../../utils/stdlib_mutants.py), the fifth re-takable census, **157 of 217 in 7 s** — and the recorded survivor is **dead**, killed by [`tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein`](../../../tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein), which killed two of its siblings on the way |
+| **`TE-M7`** | two tests, both controlled: with the epoch fast path disabled, one reports the parked candidate judged **3** times where it must be 1, and the other reports a fork that grew an *unwatched* relation re-judging an inherited candidate |
+| **`TE-M8`** | closed by [S1e.3.4](s1e.3.4_architecture.md); this stage added `what_tests_only_skips_is_what_the_script_guards`, which reads the flag's list out of the script. `TE-L3`'s header wording stays [P1e.4](../p1e.4_low/s1e.4.5_tests.md)'s, and now has a check behind it |
+| gate | `./run_tests.sh` green — **796 tests**. Two new corpus cells and one new budgeted one; no other golden moved |
+
+### Four things the tasks did not predict
+
+**1. The mutation sweep is 217 mutants, not 51, and the number is not
+comparable.** `tests/README.md`'s **50 of 51** was one deliberate defect per
+rule *family*, hand-taken. An instrument has to be exhaustive to be
+re-takable, so this applies four mechanical families to every `(rule …)` in
+`stdlib/*.ein` and gets **157 of 217**. Both numbers are true and they measure
+different things; the README now says so rather than replacing one with the
+other.
+
+**And the distribution is the finding, not the score: 48 of the 60 survivors
+are in `slots.ein`** — the module with the most parameterised,
+direction-sensitive rules and the fewest programs per rule. A score never said
+that. The set is banked in
+[`tests/mutation_survivors.txt`](../../../tests/mutation_survivors.txt) and
+`--check` fails on a new survivor **and** on a banked one that has since been
+killed, because the second is an improvement worth banking rather than losing —
+which is `TE-M2`'s lesson applied to this instrument on the way in.
+
+**2. The recorded survivor is sound and strictly weaker, which is why nothing
+caught it.** `slot-adjacent-bwd-neg` with its structure premise exchanged
+demands that `?p2`'s only predecessor be its own successor: impossible on a
+row, and vacuously true exactly where `?p2` has no predecessor — where the
+conclusion is already true for a different reason and `slot-endpoint-fwd`
+says so. **No contradiction fixture could ever have killed it**; only a program
+that *needs* the derivation it stops making. That is why the four-seat row
+works and the three-seat one does not, and it is a better statement of the
+finding than *"a bigger puzzle than the acceptance allows"*.
+
+**3. `--tests-only`'s guarded set needed a shell parser, and the obvious one
+was wrong.** The first `if [[ "${CHECKS}" == 1 ]]` block contains nested `if`s,
+so *closed by the next `fi`* found one guarded step where there are six. The
+test tracks the depth the guard opened at and asserts the parse is balanced,
+which is the sort of thing a check about a script has to do to be worth having.
+
+**4. `TE-M1`'s justification had a stale number in it.** The comment being
+deleted read *"`PATH=<a python3 that exits 127> cargo test --workspace` is 566
+passed, and this line is why the count does not drop by one"* — 566 against
+today's 796. The skip outlived the count that argued for it, which is
+`DO-M1`'s mechanism inside the very test `TE-M1` is about.
+
+### What this stage did **not** do
+
+- **Triage the 60 survivors.** They are enumerated, banked and attributed by
+  module; deciding which are holes and which are insensitivities a rule is
+  entitled to is a stdlib question with 60 instances, not a test stage's. The
+  instrument exists so the next person starts from a list.
+- **Fix `run_tests.sh`'s header.** It says `--tests-only` skips the static
+  checks and it also skips the bench smoke. That is `TE-L3`, filed to P1e.4,
+  and the check that will hold the corrected wording is here already.
+- **Tighten `uncompilable`'s and `over_budget`'s caps to the measured value.**
+  Nine is exact — it is the manifest's `compile-negative` count plus the two
+  `ein-bugs` fixtures — but the budget's 20 keeps three of slack over the
+  measured 17, because a search that got slower on a big fixture is a finding
+  the wall clock reports and not something this sweep should fail on first.

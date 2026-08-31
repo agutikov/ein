@@ -1,0 +1,107 @@
+;;; `std.slots` — `slot-adjacent-bwd-neg`, and the **direction** of its
+;;; structure premise. M1e S1e.3.6 T6, and the fixture that kills the survivor
+;;; `tests/README.md` had recorded since M1c.
+;;;
+;;; ── What this is for ───────────────────────────────────────────────────────
+;;;
+;;; The mutation sweep (`utils/stdlib_mutants.py`) exchanges the two arguments
+;;; of one premise at a time and asks whether `ein test tests/` notices. On
+;;;
+;;;   (rule slot-adjacent-bwd-neg (?R ?S ?isa ?PT)
+;;;     :match  (and (?S ?a ?b)
+;;;                  (not (?R ?b ?p1)) (?isa ?p1 ?PT)
+;;;                  (?S ?p2 ?p1) …            ←  this one
+;;;
+;;; the exchange `(?S ?p1 ?p2)` **survived**: `08_spatial_adjacent.ein` needs
+;;; the rule, but on a three-seat row the exclusion it should derive is
+;;; reachable from the other clue's chain a pass later, so the suite still
+;;; passed. A mutation score with an unnamed survivor is a slogan, and one with
+;;; a *named* survivor is a debt.
+;;;
+;;; ── Why the exchanged rule is not merely wrong but silent ──────────────────
+;;;
+;;; It is worth knowing that this mutant derives nothing **false** — which is
+;;; why no ordinary contradiction fixture could ever have caught it. The guard
+;;;
+;;;   (absent (and (?S ?p2 ?p_o) (?isa ?p_o ?PT) (neq ?p_o ?p1)))
+;;;
+;;; asks that `?p1` be the only `?S`-source of `?p2`. With the premise
+;;; exchanged, `?p1` is `?p2`'s *successor*, so the guard demands that `?p2`'s
+;;; only predecessor be its own successor — impossible on a row, and vacuously
+;;; true exactly when `?p2` has no predecessor at all. There the conclusion
+;;; *`?a` is not at `?p2`* is already true for a different reason (`?a` is
+;;; right of `?b`, so it is never at the leftmost seat), and `slot-endpoint-fwd`
+;;; says so. The exchanged rule is therefore **sound and strictly weaker**: it
+;;; can only be caught by a program that *needs* the derivation it stops
+;;; making.
+;;;
+;;; ── What this program does ─────────────────────────────────────────────────
+;;;
+;;;   right-of:  S1 ← S2 ← S3 ← S4
+;;;   the clue:  (right-of Ann Cat)   — Ann's seat is immediately right of Cat's
+;;;   the input: ¬(co-loc Cat S3)
+;;;
+;;; `slot-adjacent-bwd-neg` fires with `?b = Cat`, `?p1 = S3`, `?p2 = S4` —
+;;; S4's only `right-of`-source is S3, so the guard holds — and concludes
+;;; **¬(co-loc Ann S4)**: Ann at S4 would put Cat at S3, which is excluded.
+;;;
+;;; **A fourth seat is what makes it isolable.** On three seats the same
+;;; conclusion is one elimination step away; here Ann still has S2 and S3, so
+;;; nothing else has decided her domain when the rule fires, and the exchanged
+;;; rule's silence shows.
+;;;
+;;; ── How the expectation sees a negative ────────────────────────────────────
+;;;
+;;; Stored negatives are the one thing an `:expect` does not close (S1c.1.2's
+;;; rule 3), so *"the exclusion was derived"* cannot be said by listing the
+;;; exclusions that were. `probe-excluded` turns the one that matters into an
+;;; ordinary positive the expectation can close — `07_schroder.ein`'s idiom
+;;; with the polarity reversed: there `(unknown …)` proves a negative was
+;;; **not** derived, here a `(not …)` premise proves one **was**. Reading a
+;;; stored negative as a premise is legitimate and is the distinction ein's
+;;; three states exist for; reading its *absence* would not be.
+;;;
+;;; Priority 500 for the same reason the probe there has it: something that
+;;; reads the world has to be the last thing to read it.
+;;;
+;;; The verdict is `Open` — the seating is not determined and `co-loc` owes
+;;; sixteen placements — and that is deliberate. What is being tested is one
+;;; derivation, not a puzzle, and the claim is about the fact set the state
+;;; reached, which is what an `:expect` is about however the read-out words it.
+
+(import std.algebra :symbols (symmetric symmetric-negative-setup))
+(import std.slots   :symbols (slot-partition-setup slot-spatial-setup))
+
+(relation type     T T :why "{?1} is a subtype of {?2}")
+(relation instance T T :why "{?1} is an instance of {?2}")
+(relation co-loc   Attribute Attribute :why "{?1} and {?2} are in the same seat")
+(relation right-of Attribute Attribute :why "{?1}'s seat is immediately right of {?2}'s")
+(relation excluded Attribute Attribute :why "{?1} was ruled out of {?2}")
+
+(symmetric co-loc)
+(slot-partition co-loc instance type Attribute Seat)
+(slot-spatial   co-loc right-of instance Seat)
+
+(type Attribute T)
+(type Seat Attribute) (type Who Attribute) (type Pet Attribute)
+
+(instance S1 Seat) (instance S2 Seat) (instance S3 Seat) (instance S4 Seat)
+(instance Ann Who) (instance Bob Who) (instance Cid Who) (instance Dee Who)
+(instance Cat Pet) (instance Dog Pet) (instance Rat Pet) (instance Owl Pet)
+
+;; Four seats in a row.
+(right-of S2 S1) (right-of S3 S2) (right-of S4 S3)
+
+;; One clue, started by an exclusion rather than a placement.
+(right-of Ann Cat) (not (co-loc Cat S3))
+
+(rule probe-excluded ()
+  :match  (not (co-loc Ann S4))
+  :assert (excluded Ann S4)
+  :priority 500
+  :why    "slot-adjacent-bwd-neg reached ¬(co-loc Ann S4) from ¬(co-loc Cat S3)")
+
+(query
+  :goal (excluded ?x ?y)
+  :no-hypothesis (type instance co-loc right-of excluded)
+  :expect (model (excluded Ann S4)))

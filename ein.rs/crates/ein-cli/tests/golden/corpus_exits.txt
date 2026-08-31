@@ -726,6 +726,7 @@
 0    examples/zebra2.ein :: solve
 0    examples/zebra2.ein :: solve --dump-states {out}/states
 0    examples/zebra2.ein :: solve --trace {out}/trace.md
+2    examples/zebra2.ein :: solve -E 1
 0    examples/zebra2.ein :: solve -K
 0    examples/zebra2.ein :: solve -L
 0    examples/zebra2.ein :: solve -e
@@ -1027,6 +1028,8 @@
 0    tests/stdlib/slots/12_owed_fill_satisfied.ein :: saturate
 0    tests/stdlib/slots/12_owed_fill_satisfied.ein :: solve
 0    tests/stdlib/slots/12_owed_fill_satisfied.ein :: test
+0    tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein :: solve
+0    tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein :: test
 0    tests/stdlib/typing/01_reflexive.ein :: render constraints
 1    tests/stdlib/typing/01_reflexive.ein :: render rules
 0    tests/stdlib/typing/01_reflexive.ein :: saturate

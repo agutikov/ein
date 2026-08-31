@@ -300,20 +300,41 @@ fn moved(got: &[String], path: &Path) -> String {
     out.iter().take(25).cloned().collect::<Vec<_>>().join("\n")
 }
 
+/// Does this run ask for a budget that can cut it short?
+///
+/// M1e S1e.3.6 T4, the review's `TE-M4`. Exit **2** means two things in this
+/// tool — *the CLI refused the argv* and *a budget abort* — and
+/// [`no_cell_crashes`] read it as the first, unconditionally. That was safe
+/// only by accident: no `runs` column named `-E` or `-T`, so the second could
+/// not arise. One budgeted cell would have failed the crash check with a
+/// message about an argv the CLI refuses, which is a wrong diagnosis of a
+/// working run.
+///
+/// So the coupling is read off the run rather than assumed away, and
+/// [`corpus/README.md`](../../../../corpus/README.md) § The run vocabulary
+/// states it where a person adding a run will meet it. `examples/zebra2.ein`
+/// declares `solve -E 1` for the other half of the rule: a relaxation nothing
+/// exercises is a hole rather than a decision.
+fn budgeted(run: &str) -> bool {
+    run.split_whitespace()
+        .any(|t| matches!(t, "-E" | "--max-enterings" | "-T" | "--max-time"))
+}
+
 /// **Nothing in the corpus crashes the binary.** The rule the golden cannot
 /// state, because a crash would be banked as an exit code like any other.
 ///
 /// The three codes `ein` is allowed to produce are 0 (it answered), 1 (it
-/// refused, with a diagnostic) and 2 (a usage error). A usage error over a
-/// manifest run means the `runs` column names an invocation the CLI no longer
-/// accepts, which is a corpus defect rather than an engine one — and exactly
-/// what nothing else in the workspace can see, since every other test builds
-/// its own argv. Anything else is a panic (101) or a signal (-1).
+/// refused, with a diagnostic) and 2, which means *a usage error* **or** *a
+/// budget abort* — see [`budgeted`]. Over a manifest run the first is a corpus
+/// defect rather than an engine one, because the `runs` column names an
+/// invocation the CLI no longer accepts, and that is exactly what nothing else
+/// in the workspace can see: every other test builds its own argv. Anything
+/// else is a panic (101) or a signal (-1).
 #[test]
 fn no_cell_crashes() {
     let bad: Vec<String> = cells()
         .iter()
-        .filter(|c| !(0..=1).contains(&c.code))
+        .filter(|c| !(0..=1).contains(&c.code) && !(c.code == 2 && budgeted(&c.run)))
         .map(|c| {
             format!(
                 "  {} :: {} -> {}\n{}",
@@ -322,7 +343,17 @@ fn no_cell_crashes() {
                 match c.code {
                     -2 => format!("killed after {}s (EIN_CORPUS_TIMEOUT)", timeout().as_secs()),
                     -1 => "killed by a signal".to_string(),
-                    2 => "usage error — the manifest names an argv the CLI refuses".to_string(),
+                    // Not *a* usage error: exit 2 also covers a budget abort
+                    // and `ein test`'s load error / nothing-to-check. The
+                    // message names all three, because a cell that reaches
+                    // here has declared none of them and the reader's next
+                    // question is which one they meant.
+                    2 => "exit 2 on a run that declares no budget — either the \
+                          manifest names an argv the CLI refuses, or a `test` \
+                          cell was added to a file that does not load or \
+                          claims nothing (`corpus/README.md` § The run \
+                          vocabulary)"
+                        .to_string(),
                     n => format!("exit {n}"),
                 },
                 c.stderr.lines().take(4).collect::<Vec<_>>().join("\n"),
@@ -448,12 +479,28 @@ fn every_positive_entry_answers_under_at_least_one_run() {
         dead.is_empty(),
         "entries that never exited 0 under any run: {dead:?}"
     );
-    // 65 in the default selection, 82 with the slow entries: 75 `positive`
-    // plus 7 `stdlib`, of which 17 are `slow`. A floor rather than either
-    // number, because a corpus that grows must not have to edit a test.
+    // **Derived from the manifest** — M1e S1e.3.6 T2, the review's `TE-M2`.
+    // It read `>= 60` against an inline comment claiming "65 in the default
+    // selection, 82 with the slow entries: 75 `positive` plus 7 `stdlib`, of
+    // which 17 are `slow`" — three numbers, all of them stale, against a
+    // manifest that now holds 83 `positive` and 63 `stdlib` with **2** slow.
+    // The floor was written to let the corpus grow and the corpus grew past
+    // it: a third of the selection could have stopped being swept in silence.
+    //
+    // The eligible set is not a number to keep in step; it is a query the
+    // manifest answers. `select` is the same function the sweep itself uses,
+    // so the two cannot disagree about which entries are in play.
+    let eligible = manifest
+        .select(
+            &["positive".to_string(), "stdlib".to_string()],
+            None,
+            include_slow(),
+        )
+        .len();
     assert!(
-        answered.len() >= 60,
-        "only {} positive/stdlib entries were swept — the selection stopped looking",
+        answered.len() >= eligible,
+        "{} of the manifest's {eligible} positive/stdlib entries were swept — \
+         the selection stopped looking",
         answered.len()
     );
 }

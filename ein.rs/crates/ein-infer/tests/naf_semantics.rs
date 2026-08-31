@@ -1253,3 +1253,203 @@ fn flagged(engine: &Engine, terms: &Terms) -> BTreeSet<String> {
         .map(|d| terms.sym(d.rule).to_string())
         .collect()
 }
+
+// ── M1e S1e.3.6 T7 — the boundary's invalidation, directly ─────────
+
+/// A program with **one parked candidate and a chain of unrelated
+/// admissions**, the chain's length supplied by the caller.
+///
+/// `undefeated` is the `forall` shape, and it is the only one that can park:
+/// its guard holds a nested `absent`, so a rejection is *waiting* rather than
+/// dead and the candidate is kept (`compile.rs`'s
+/// `a_nested_absent_stays_in_the_query_and_costs_monotonicity`). It watches
+/// `beats` and `player`, and nothing below touches either.
+///
+/// `step` supplies the rounds. The boundary admits **at most one** candidate
+/// per round and resumes the closure, so `n` links are `n` further rounds in
+/// which the parked candidate could be re-judged and must not be.
+fn parked_with_chain(n: usize) -> String {
+    let links = ["(link A B)", "(link B C)", "(link C D)", "(link D E)"];
+    format!(
+        "(relation player Thing)\n\
+         (relation beats  Thing Thing)\n\
+         (relation champ  Thing)\n\
+         (relation link   Thing Thing)\n\
+         (relation seen   Thing)\n\
+         (relation blocked Thing)\n\
+         (player P1) (player P2)\n\
+         (beats P2 P1)\n\
+         (rule undefeated ()\n\
+        \x20 :match  (and (player ?p)\n\
+        \x20               (absent (and (player ?q) (neq ?p ?q) (absent (beats ?p ?q)))))\n\
+        \x20 :assert (champ ?p))\n\
+         {}\n\
+         (rule step ()\n\
+        \x20 :match  (and (link ?a ?b) (absent (blocked ?a)))\n\
+        \x20 :assert (seen ?b))\n",
+        links[..n].join(" ")
+    )
+}
+
+/// The boundary's own narration of one saturation: `(rounds, park lines, admit
+/// lines)`.
+///
+/// Read from `--events` rather than from a counter, because the claim is about
+/// a *decision that was not taken*: `guard_evals` is a total over every
+/// candidate, and a skipped re-judgement is invisible in a sum. A `park` line
+/// is emitted every time a candidate is judged and still fails, so counting
+/// them counts the judgements the fast path did **not** skip.
+fn boundary_lines(src: &str) -> (u32, usize, usize) {
+    let (ast, mut terms, mut kb) = load_src(src);
+    let buffer = Buffer::new();
+    let mut ev = Events::to(Box::new(buffer.clone()), Level::Verbose);
+    let rounds = {
+        let mut s = Session {
+            kb: &mut kb,
+            terms: &mut terms,
+            ast: &ast,
+            events: &mut ev,
+            memo: SharedMemo::default(),
+        };
+        let mut sat = Saturator::new(&mut s).expect("the rules compile");
+        sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+        sat.naf_rounds
+    };
+    let log = buffer.to_string_lossy();
+    let count = |kind: &str| {
+        log.lines()
+            .filter(|l| l.contains(&format!("\"e\": \"{kind}\"")))
+            .count()
+    };
+    (rounds, count("park"), count("admit"))
+}
+
+/// **A parked candidate is not re-judged when an unrelated relation grows** —
+/// M1e S1e.3.6 T7, the review's `TE-M7`.
+///
+/// [S1a.3.4](../../../../docs/history/m1a_rust/README.md#s1a34--the-saturator)'s
+/// per-candidate watch stamp became a per-round epoch: `refresh_epochs` takes
+/// the watched extents once and stamps the guard *sets* whose world moved, and
+/// a candidate is stale exactly when its set's epoch is past the epoch it was
+/// judged at. That is two integer loads where the honest version is two extent
+/// probes and a vector compare, and the honest version was asked 248 043 times
+/// on `zebra -e` to reach 29 865 judgements.
+///
+/// Nothing asserted it. The guarantee rode on corpus event goldens and counter
+/// totals — a weaker localisation than the rest of this boundary enjoys, and
+/// on the quiet side of the failure: a **missed** re-judgement under-derives,
+/// so a `forall` that should have flipped simply never does.
+///
+/// The claim is stated as an invariance rather than as a number. The chain
+/// grows from one link to four, so the boundary runs three further rounds; the
+/// parked candidate must be judged the same number of times in both, because
+/// none of those rounds touched `beats` or `player`.
+#[test]
+fn a_parked_candidate_is_not_rejudged_when_an_unrelated_relation_grows() {
+    let (short_rounds, short_parks, short_admits) = boundary_lines(&parked_with_chain(1));
+    let (long_rounds, long_parks, long_admits) = boundary_lines(&parked_with_chain(4));
+
+    // The chain did what it is here for: more rounds, and more admissions.
+    assert_eq!(
+        (short_rounds, long_rounds),
+        (3, 6),
+        "the chain no longer supplies one round per link (the last round of \
+         each is the one that admits nothing and ends the boundary)"
+    );
+    assert_eq!(long_admits - short_admits, 3, "three further admissions");
+
+    // And the parked candidate was judged once in both — the whole claim.
+    assert_eq!(
+        short_parks, 1,
+        "the fixture parks nothing, so the skip below is vacuous"
+    );
+    assert_eq!(
+        long_parks, short_parks,
+        "the parked candidate was re-judged {} time(s) over {long_rounds} rounds \
+         that grew neither of the relations it watches — the guard-set epoch is \
+         not filtering",
+        long_parks
+    );
+}
+
+/// **A fork-inherited candidate is re-judged exactly when its watched extent
+/// grew in the fork** — the second half of `TE-M7`.
+///
+/// `Saturator::resume` carries the parked set with its stamps across the fork
+/// boundary, and `resume`'s own doc gives the argument: *the KB only grows, so
+/// an equal extent size is an equal extent*. What it did not have is a probe.
+/// The two forks below differ only in **which relation the hypothesis is
+/// about** — one the parked candidate watches, one it does not — and the
+/// boundary has to tell them apart.
+///
+/// `watched_sizes` is the field under test: it is snapshotted at the parent's
+/// fixpoint and compared against the fork's own extents, so a fork that grows
+/// `beats` must re-judge and a fork that grows `seen` must not.
+#[test]
+fn a_forked_candidate_is_rejudged_exactly_when_its_watched_extent_grew() {
+    let (ast, mut terms, mut kb) = load_src(&parked_with_chain(1));
+    let memo = SharedMemo::default();
+    let mut off = Events::off();
+    let snapshot = {
+        let mut s = Session {
+            kb: &mut kb,
+            terms: &mut terms,
+            ast: &ast,
+            events: &mut off,
+            memo: memo.clone(),
+        };
+        let mut sat = Saturator::new(&mut s).expect("compiles");
+        sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+        assert_eq!(sat.naf_rounds, 3, "the parent no longer parks anything");
+        sat.snapshot(s.kb)
+    };
+
+    // One fork per relation, each adding a single fact the parent did not have.
+    let resume_with = |terms: &mut Terms, kb: &mut Kb, rel: &str, args: &[&str]| -> usize {
+        let mut fork = kb.fork();
+        let rel = terms.syms.get(rel).expect("interned by the fixture");
+        let args: Vec<ein_core::Value> = args
+            .iter()
+            .map(|a| ein_core::Value::sym(terms.intern_text(a).expect("room")))
+            .collect();
+        fork.add_and_index_fact(terms, rel, &args, None)
+            .expect("room");
+        let delta = snapshot.new_facts_of(&fork);
+        assert_eq!(delta.len(), 1, "the fork is one fact wide");
+        let buffer = Buffer::new();
+        let mut ev = Events::to(Box::new(buffer.clone()), Level::Verbose);
+        {
+            let mut s = Session {
+                kb: &mut fork,
+                terms,
+                ast: &ast,
+                events: &mut ev,
+                memo: memo.clone(),
+            };
+            let mut sat = Saturator::resume(&mut s, &snapshot, delta).expect("resumes");
+            sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+        }
+        let log = buffer.to_string_lossy();
+        log.lines()
+            .filter(|l| l.contains("\"e\": \"park\"") || l.contains("\"e\": \"admit\""))
+            .filter(|l| l.contains("\"rule\": \"undefeated\""))
+            .count()
+    };
+
+    // `seen` is in no guard's `watched` set, so the inherited candidate must be
+    // skipped: the fork's boundary never asks about it at all.
+    assert_eq!(
+        resume_with(&mut terms, &mut kb, "seen", &["Z"]),
+        0,
+        "a fork that grew an unwatched relation re-judged the inherited candidate"
+    );
+    // `beats` is watched, so it must be asked — and the answer changes: with
+    // `(beats P1 P2)` the nested guard finds no undefeated rival for P1 and the
+    // candidate is admitted.
+    assert_eq!(
+        resume_with(&mut terms, &mut kb, "beats", &["P1", "P2"]),
+        1,
+        "a fork that grew a watched relation did not re-judge the inherited \
+         candidate — `watched_sizes` is not surviving the fork boundary"
+    );
+}

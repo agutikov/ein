@@ -31,10 +31,16 @@
 //!
 //! A step whose *flags* drift within one command is caught; a step that
 //! differs only in the environment it runs under is not, beyond the one `env:`
-//! block the workflow uses. And `--tests-only` is out of scope: it skips the
-//! five static checks **and** the bench smoke, where the script's header says
-//! only the first — that is `TE-L3`, and it is a claim about the header rather
-//! than about these two lists.
+//! block the workflow uses.
+//!
+//! `--tests-only` **is** in scope since M1e S1e.3.6 T8, which asked for it:
+//! [`what_tests_only_skips_is_what_the_script_guards`] reads the set out of the
+//! script rather than restating it, so the flag's own list cannot drift from
+//! the two above. What that test does *not* do is fix the header — the script
+//! says the flag skips *the static checks* and it also skips the bench smoke,
+//! which is [TE-L3](../../../../plans/m1e_review_processing/p1e.4_low/s1e.4.5_tests.md)'s
+//! one-line wording change. The check is here first on purpose: a header
+//! nobody verifies is how the divergence arose.
 
 use ein_corpus::repo_root;
 
@@ -190,5 +196,66 @@ fn every_ci_command_is_a_gate_step_or_says_why_not() {
         "the workflow's `run:` lines are {} and the two lists account for {}",
         all.len(),
         steps.len() + NOT_GATE_STEPS.len()
+    );
+}
+
+/// **What `--tests-only` skips is what the script guards** — M1e S1e.3.6 T8.
+///
+/// `TE-M8` is about two *lists* — the gate's and CI's — and `TE-L3` is the
+/// same divergence one flag down: `--tests-only` sets `CHECKS=0`, and every
+/// step inside an `if [[ "${CHECKS}" == 1 ]]` block is skipped with it. The
+/// script's header says the flag skips "the static checks"; the **bench
+/// smoke** is inside such a block too.
+///
+/// Read from the script rather than restated, for this file's own reason: a
+/// second copy of a list is the thing that drifts. What is asserted is the
+/// *set*, so a step that gains or loses the guard fails here — including, when
+/// `TE-L3` lands, the header line that has to be corrected with it.
+#[test]
+fn what_tests_only_skips_is_what_the_script_guards() {
+    let text = std::fs::read_to_string(repo_root().join("run_tests.sh")).expect("run_tests.sh");
+    let mut guarded: Vec<String> = Vec::new();
+    let mut depth = 0usize;
+    // The depth the `CHECKS` guard opened at — the first block has nested
+    // `if`s in it, so "closed by the next `fi`" is the wrong rule and was the
+    // first thing this test got wrong.
+    let mut checks_at: Option<usize> = None;
+    for line in text.lines() {
+        let t = line.trim();
+        if t.starts_with("if ") {
+            depth += 1;
+            if checks_at.is_none() && t.contains("${CHECKS}") && t.contains("== 1") {
+                checks_at = Some(depth);
+            }
+        } else if t == "fi" {
+            if checks_at == Some(depth) {
+                checks_at = None;
+            }
+            depth = depth.saturating_sub(1);
+        } else if checks_at.is_some()
+            && let Some(rest) = t.strip_prefix("step \"")
+            && let Some(name) = rest.strip_suffix('"')
+        {
+            guarded.push(name.to_string());
+        }
+    }
+    assert!(
+        depth == 0,
+        "the shell parse is unbalanced — {depth} unclosed `if`"
+    );
+    assert_eq!(
+        guarded,
+        [
+            "utils/stdlib_manifest.py",
+            "utils/check_hashmap_iteration.py",
+            "cargo fmt --all --check",
+            "cargo clippy --workspace --all-targets -D warnings",
+            "cargo doc --no-deps, -D warnings",
+            "cargo bench --bench engine -- --test",
+        ],
+        "the set `--tests-only` skips moved. Note the sixth: the flag skips the \
+         **bench smoke** as well as the five static checks, and `run_tests.sh`'s \
+         header says only the first — TE-L3, whose fix is that line and whose \
+         check is this one"
     );
 }

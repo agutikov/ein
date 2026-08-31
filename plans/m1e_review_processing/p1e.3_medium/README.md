@@ -105,7 +105,7 @@ milestone's most load-bearing claim.
 | [S1e.3.3](s1e.3.3_state_model.md) | State model | `ST-M1` ✅ **2026-08-31** | 2 d |
 | [S1e.3.4](s1e.3.4_architecture.md) | Architecture | `AR-M1` `AR-M2` ✅ **2026-08-30**, +`CO-M2` `SE-M1` `SE-L1` `TE-M8` | 3 d |
 | [S1e.3.5](s1e.3.5_error_handling.md) | Error handling | `EH-M1` `EH-M2` ✅ **2026-08-31** | 1.5 d |
-| [S1e.3.6](s1e.3.6_tests.md) | Tests | `TE-M1` … `TE-M8` | 5 d |
+| [S1e.3.6](s1e.3.6_tests.md) | Tests | `TE-M1` … `TE-M8` ✅ **2026-08-31** | 5 d |
 | [S1e.3.7](s1e.3.7_code_doc_consistency.md) | Code ↔ doc consistency | `CD-M1` … `CD-M8` | 4 d |
 | [S1e.3.8](s1e.3.8_documentation.md) | Documentation | `DO-M1` `DO-M2` | 3 d |
 | [S1e.3.9](s1e.3.9_maintainability.md) | Maintainability | `MA-M1` `MA-M2` `MA-M3` `MA-M4` | 2 d |

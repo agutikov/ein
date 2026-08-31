@@ -270,6 +270,49 @@ mod tests {
     /// which compares it against the sweep it has just run. Two checks, one
     /// claim: this one is exact and always runs, that one measures and needs
     /// a tolerance.
+    /// **The two `slow` entries, by name, and there are two** — M1e S1e.3.6
+    /// T3, the review's `TE-M3`.
+    ///
+    /// The flag's *timing* half only runs under `EIN_CORPUS_SLOW=1`, because
+    /// the default sweep contains no slow entries to time: a `slow = true`
+    /// that stopped being true was visible to nightly and to a reader of
+    /// nightly, which is S1a.9.0's own finding one turn later. The direction
+    /// that genuinely needs a stopwatch stays nightly; what a per-commit run
+    /// can assert for nothing is the **set**.
+    ///
+    /// Two things it catches that nothing else did. An entry *gaining* the
+    /// flag — which silently removes it from the default sweep, so every
+    /// assertion about it keeps passing on a cell that no longer runs — and
+    /// an entry *losing* it, which is S1a.9.0's mechanism working
+    /// (`branching/07_lookahead_off` came off the list when T1a.7.2.0 made it
+    /// 2.8× cheaper) and is worth a line rather than a silent diff.
+    ///
+    /// It is `assert_eq!` on the names rather than a floor on the count for
+    /// the reason [TE-M2](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.6_tests.md)
+    /// is a finding: a floor over a growing corpus decays.
+    #[test]
+    fn the_slow_set_is_exactly_these_two() {
+        let manifest = corpus();
+        let slow: Vec<&str> = manifest
+            .entry
+            .iter()
+            .filter(|e| e.slow)
+            .map(|e| e.path.as_str())
+            .collect();
+        assert_eq!(
+            slow,
+            [
+                "examples/features/01_not_and_absent.ein",
+                "examples/features/04_open.ein",
+            ],
+            "the `slow` set moved. An entry that gained the flag has left the \
+             default sweep — check that the cost is real (`utils/bench_env.sh \
+             python3 utils/corpus_cost.py`) before banking it here; one that \
+             lost it is the S1a.9.0 mechanism working and wants a line in \
+             measurements/corpus_cost.md"
+        );
+    }
+
     #[test]
     fn slow_matches_the_recorded_cost() {
         let mut bad: Vec<String> = Vec::new();

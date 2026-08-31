@@ -418,10 +418,10 @@ note   = "M1d S1d.2.5 — the fixture the obligations rung needed, because every
 [[entry]]
 path   = "examples/zebra2.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
+runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states", "solve -E 1"]
 levers = ["-L", "-K", "-y", "-o score-sum"]
 cost_ms = 260
-note   = "the flagship, and what a stale flag looks like: `slow = true` on a file that solves in 16 ms and whose sixteen cells cost 260 ms together. Removed at S1a.9.0."
+note   = "the flagship, and what a stale flag looks like: `slow = true` on a file that solves in 16 ms and whose sixteen cells cost 260 ms together. Removed at S1a.9.0. **`solve -E 1` is the corpus's only budgeted run** and is here for M1e S1e.3.6 T4 (`TE-M4`): it exits **2**, the same code a usage error takes, and `no_cell_crashes` used to read that code as *the manifest names an argv the CLI refuses*. The cell is what makes the distinction exercised rather than merely written down."
 
 
 # ── regression: examples/ein-bugs/ ──────────────────────────
@@ -1165,6 +1165,12 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 path   = "tests/stdlib/slots/12_owed_fill_satisfied.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+
+[[entry]]
+path   = "tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein"
+group  = "stdlib"
+runs   = ["solve", "test"]
+note   = "M1e S1e.3.6 T6 (`TE-M6`) — the fixture that kills the mutation survivor `tests/README.md` had recorded since M1c: `slot-adjacent-bwd-neg` with its structure premise exchanged. A four-seat row is what makes the derivation isolable, and the exchanged rule is **sound and strictly weaker**, so only a program that *needs* the exclusion can catch it. `probe-excluded` turns the stored negative into a positive the expectation can close — `07_schroder.ein`'s idiom with the polarity reversed."
 
 [[entry]]
 path   = "tests/stdlib/typing/01_reflexive.ein"

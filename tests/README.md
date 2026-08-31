@@ -151,19 +151,38 @@ the rung modes in `obligation_rung.rs` — which is S1c.1.5's shape and the
 reason growing `:expect` a word for the verdict was deferred rather than
 needed.
 
-**50 of 51.** One deliberate defect per rule family — a dropped `neq`, an
-exchanged pair of `absent` operands, a `forall` over the wrong type, a fan-out
-missing an activator — injected into a copy of `stdlib/` and run past
-`ein test tests/`. Every one of the five separations above was added *because*
-a mutant survived without it.
+**157 of 217, and it is an instrument now** —
+[`utils/stdlib_mutants.py`](../utils/stdlib_mutants.py), M1e S1e.3.6 T6, the
+review's `TE-M6`. The sweep began as **50 of 51**, hand-taken: one deliberate
+defect per rule family — a dropped `neq`, an exchanged pair of `absent`
+operands, a `forall` over the wrong type, a fan-out missing an activator —
+injected into a copy of `stdlib/` and run past `ein test tests/`. Every one of
+the five separations above was added *because* a mutant survived without it,
+so the sweep is not decoration: it is what built this directory.
 
-The survivor is `slot-adjacent-bwd-neg` with its two structure operands
-exchanged: on the three-seat row of `slots/08_spatial_adjacent.ein` the
-exclusion it should derive is reachable from the *other* clue's chain, and
-isolating it needs a fourth seat and enough slack to keep the two chains from
-meeting — a bigger puzzle than the acceptance allows a fixture to be. It is
-recorded here rather than papered over, because a mutation score with an
-unnamed survivor is a slogan.
+The two numbers are different measurements. The script is **exhaustive** over
+four mechanical families where the hand sweep was one per family, and it runs
+in 7 s, so it can be re-taken rather than remembered. The survivors are banked
+as a *set* in [`mutation_survivors.txt`](mutation_survivors.txt) — a score
+decays while the thing it guards grows, which is the same finding as `TE-M2`'s
+floors — and `--check` fails on a new one **and** on a banked one that has since
+been killed.
+
+**The recorded survivor is dead.** `slot-adjacent-bwd-neg` with its two
+structure operands exchanged survived from M1c to M1e: on the three-seat row of
+`slots/08_spatial_adjacent.ein` the exclusion it should derive is reachable
+from the other clue's chain a pass later.
+[`slots/13_adjacent_bwd_neg_direction.ein`](stdlib/slots/13_adjacent_bwd_neg_direction.ein)
+is the four-seat row that isolates it, and it killed two of its siblings on the
+way. What it needed was the observation that the exchanged rule is **sound and
+strictly weaker** — its guard becomes satisfiable only where the conclusion is
+already true for another reason — so no contradiction fixture could ever have
+caught it, and only a program that *needs* the derivation can.
+
+**Where the remaining 60 are.** Forty-eight in `slots.ein`, which has the most
+parameterised, direction-sensitive rules and the fewest programs per rule; the
+rest split between `algebra`, `bijection` and `elim`. That distribution is the
+useful part of the number, and it is what a score alone never said.
 
 ### What holds this directory up
 

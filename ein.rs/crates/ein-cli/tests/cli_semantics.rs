@@ -35,7 +35,7 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::PathBuf;
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 use ein_core::{Kb, ProvKind, Symbol, Terms};
 use ein_corpus::repo_root;
@@ -273,32 +273,71 @@ fn the_zebra2_variants_are_zebra2_plus_or_minus_one_condition() {
         "bad must not drop a condition"
     );
 
-    // The byte-level half. A checkout with no `python3` still runs everything
-    // above; one that has it also learns whether a rule *body* drifted.
-    let check = Command::new("python3")
+    // The byte-level half — **required, not opportunistic**, since M1e
+    // S1e.3.3's neighbour
+    // [S1e.3.6](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.6_tests.md)
+    // T1, the review's `TE-M1`.
+    //
+    // It used to `eprintln!` and pass when `python3` was absent or exited 127.
+    // That is the shape the repo has already been bitten by twice — the
+    // oracle ledger § 2 records *41 tests passing on a SKIP line nobody read*,
+    // and `dot_wellformed` was converted for the same reason — and here it was
+    // worse than a lost assertion: the structural diff above compares rule
+    // *names*, so a drifted rule **body** in a generated variant is caught by
+    // nothing else. A local gate on a machine without `python3` reported a
+    // pass on exactly that, while `AGENTS.md` said flatly *`--check` is in the
+    // gate*.
+    //
+    // 127 stays distinguished from a real failure, because a missing
+    // interpreter and a stale fixture are different things to be told — but
+    // both are now failures, and the message says which.
+    require_python3();
+    let out = Command::new("python3")
         .arg("examples/gen_zebra2_variants.py")
         .arg("--check")
         .current_dir(repo_root())
-        .output();
-    match check {
-        // 127 is "the interpreter could not run the script at all" — the same
-        // situation as no `python3`, and it must not be reported as a stale
-        // fixture. This is the one place in the workspace where a Python
-        // process still runs, and after
-        // [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
-        // it is the *only* one: `PATH=<a python3 that exits 127> cargo test
-        // --workspace` is 566 passed, and this line is why the count does not
-        // drop by one.
-        Ok(out) if out.status.code() == Some(127) => {
-            eprintln!("skipped the generator's byte check: python3 exited 127")
-        }
-        Ok(out) => assert!(
-            out.status.success(),
-            "the on-disk variants are stale — run `python3 examples/gen_zebra2_variants.py`\n{}{}",
-            String::from_utf8_lossy(&out.stdout),
-            String::from_utf8_lossy(&out.stderr),
+        .output()
+        .expect("python3 ran a moment ago");
+    assert!(
+        out.status.success(),
+        "the on-disk variants are stale — run `python3 examples/gen_zebra2_variants.py`\n{}{}",
+        String::from_utf8_lossy(&out.stdout),
+        String::from_utf8_lossy(&out.stderr),
+    );
+}
+
+/// The one external tool the workspace still needs besides Graphviz, required
+/// the way `dot_wellformed::require_graphviz` requires that one.
+///
+/// Four `examples/` files are **generated** from `zebra2.ein` and
+/// `gen_zebra2_variants.py --check` is what compares the bytes; without it the
+/// only thing standing between a hand-edited variant and the gate is a
+/// structural diff over rule *names*. So it is a missing gate rather than a
+/// missing convenience, which is `require_graphviz`'s own sentence and is the
+/// rule M1e S1e.3.6 T1 applied here.
+fn require_python3() {
+    let run = Command::new("python3")
+        .arg("-c")
+        .arg("pass")
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status();
+    match run {
+        Ok(s) if s.success() => {}
+        Ok(s) => panic!(
+            "`python3 -c pass` exited {:?}: the interpreter on PATH cannot run \
+             a script, so `examples/gen_zebra2_variants.py --check` cannot \
+             either. Four examples/ files are generated and this is the only \
+             check that compares their bytes — a missing gate, not a missing \
+             convenience.",
+            s.code()
         ),
-        Err(e) => eprintln!("skipped the generator's byte check: python3 did not run ({e})"),
+        Err(e) => panic!(
+            "`python3` does not run ({e}): four examples/ files are generated \
+             from zebra2.ein and `gen_zebra2_variants.py --check` is the only \
+             check that compares their bytes. Install a python3 — a missing \
+             gate, not a missing convenience."
+        ),
     }
 }
 

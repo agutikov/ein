@@ -313,7 +313,7 @@ constrained-reasoning research.
   in the repo — the divergence list, and
   [`docs/kernel/defined_behaviour.md`](docs/kernel/defined_behaviour.md), which
   states what "whatever ein.py did" used to define.
-- **`utils/`** — **twenty-four scripts, all but one driving `ein.rs`** since M1a
+- **`utils/`** — **twenty-five scripts, all but one driving `ein.rs`** since M1a
   [S1a.10.4](docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine),
   which deleted the eleven that compared two engines or measured the Python
   one, plus `corpus_cost.py` from
@@ -415,6 +415,16 @@ constrained-reasoning research.
   means: **10 of the 121** entries that reach a fixpoint do not exhaust at
   `ein test`'s depth, so a claim written on any of them could not be checked
   ([closure_census.md](docs/history/m1d_satisfiability/closure_census.md)).
+  The twenty-fifth, **`stdlib_mutants.py`**, is M1e S1e.3.6's and asks whether
+  `tests/stdlib/` would **notice a defect** in the rule it tests: four
+  mechanical mutation families over every `(rule …)` in `stdlib/*.ein`, each
+  spliced into a copy the run points `$EIN_STDLIB` at, killed when `ein test
+  tests/` exits non-zero. `tests/README.md` had carried a **hand-taken** 50 of
+  51 since M1c with one named survivor; the script is exhaustive where that was
+  one-per-family — **157 of 217**, 7 s — and banks the survivors as a *set* in
+  `tests/mutation_survivors.txt`, because a score decays while the thing it
+  guards grows. **48 of the 60 are in `slots.ein`.** The recorded survivor is
+  dead: `tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein`.
   The twenty-fourth, **`doc_audit.py`**, is M1e S1e.2.2's and the only one
   whose subject is **the documentation** rather than the engine: does a page in
   `docs/kernel/` still describe the engine that ships? Three questions, none of

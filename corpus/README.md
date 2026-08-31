@@ -82,6 +82,19 @@ S1a.10.3 it read "…*compared* under", and the difference is the whole of that
 stage: a run is now a thing that must work, not a thing two engines must agree
 about.
 
+**Exit 2 means two things, and a run has to say which.** It is the CLI's
+usage-error code *and* the code a **budget abort** takes (`ein solve -E` /
+`-T`), plus `ein test`'s load error and nothing-to-check. `no_cell_crashes`
+read it as the first, unconditionally, and was safe only because nothing here
+declared a budget — so the first budgeted run added would have failed the crash
+check with a message about an argv the CLI refuses. Since M1e S1e.3.6 the check
+reads the run: **a `2` is allowed exactly where the run names `-E` / `-T` /
+`--max-enterings` / `--max-time`**, and `examples/zebra2.ein`'s `solve -E 1` is
+the cell that exercises it. A `test` cell on a file that does not load, or that
+claims nothing, would exit 2 for a third reason and is **not** in the
+allowance: add the cell and the rule together, or the check cannot tell it from
+a stale argv.
+
 **`test` is the one run name that can fail on the file's own account.** M1c
 [S1c.1.3](../docs/history/m1c_external_validation/README.md#s1c13--ein-test)
 added `ein test <path>`, which runs whatever `:expect` the file's queries carry

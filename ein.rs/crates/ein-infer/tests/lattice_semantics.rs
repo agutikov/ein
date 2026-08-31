@@ -274,16 +274,78 @@ fn each_solved_corpus_file(mut f: impl FnMut(&Run)) -> Census {
     census
 }
 
+/// How many entries the manifest puts in `group`.
+fn in_group(group: &str) -> usize {
+    ein_corpus::corpus()
+        .entry
+        .iter()
+        .filter(|e| e.group == group)
+        .count()
+}
+
+/// The three reasons a corpus file is not swept, as caps — **two of them read
+/// off the manifest** — and the reason the floor on what *is* swept needs no
+/// number of its own.
+///
+/// M1e S1e.3.6 T2, the review's `TE-M2`: the floor here read `checked >= 55`
+/// over what is now 216 entries, so roughly half the corpus could stop being
+/// swept before it fired, and the gap grew with every file added. A floor that
+/// decays monotonically while the thing it guards grows is the shape of the
+/// finding, and the fix is not a bigger constant.
+///
+/// Measured 2026-08-31: **145** checked, **45** unloadable, **9**
+/// uncompilable, **17** over budget, 216 total. Two of the three come from the
+/// manifest and move when the corpus does; only the budget's slack is a
+/// number, and it is a property of the *search* rather than of the corpus.
+fn allowances() -> (usize, usize, usize) {
+    // Every `parse-negative` and `load-negative` entry, and nothing else: a
+    // negative fixture is a file that exists to be refused, so the cap is the
+    // manifest's own count and adding one moves it.
+    let unloadable = in_group("parse-negative") + in_group("load-negative");
+    // `compile-negative` plus the two `ein-bugs` fixtures whose rules the
+    // compiler refuses — see [`Census`]. `activator_arity` is filed
+    // `positive`, so the group count is already the right seven.
+    let uncompilable = in_group("compile-negative") + 2;
+    // The 1 000-entering budget, and the only one with slack: 17 measured, and
+    // three more because a search that gets slower on a big fixture is a
+    // *finding* the wall clock reports, not something this sweep should fail on
+    // first.
+    (unloadable, uncompilable, 20)
+}
+
 /// What [`each_solved_corpus_file`] must find, so that a shrinking sweep fails
 /// rather than passing on fewer files.
 fn assert_census(c: &Census) {
+    // **Derived, not a constant** — M1e S1e.3.6 T2, the review's `TE-M2`. It
+    // read `>= 55` over what is now 216 corpus entries, so roughly half the
+    // corpus could stop being swept before it fired, and the gap grew every
+    // time a file was added. The three buckets below are *caps*, and the
+    // identity at the bottom of this function is exact, so the floor on
+    // `checked` is arithmetic rather than a fourth number to keep in step:
+    // everything the sweep did not reach is one of the three, and each of them
+    // is bounded by a reason.
+    let (load_negatives, uncompilable_cap, over_budget_cap) = allowances();
+    let total = ein_corpus::corpus_files().len();
+    let allowance = load_negatives + uncompilable_cap + over_budget_cap;
+    let floor = total.saturating_sub(allowance);
     assert!(
-        c.checked >= 55,
-        "the sweep reached only {} files",
-        c.checked
+        c.checked >= floor,
+        "the sweep reached {} of {total} corpus files; {allowance} at most are \
+         allowed not to ({load_negatives} parse/load negatives + \
+         {uncompilable_cap} uncompilable + {over_budget_cap} over budget), so \
+         the floor is {floor}",
+        c.checked,
     );
     assert!(
-        c.uncompilable <= 9,
+        c.unloadable <= load_negatives,
+        "{} corpus files did not load, and the manifest declares only \
+         {load_negatives} parse/load negatives — every one of those is meant to \
+         be refused, and a further one is a regression unless a negative \
+         fixture was added without an entry",
+        c.unloadable
+    );
+    assert!(
+        c.uncompilable <= uncompilable_cap,
         "{} corpus files no longer compile — nine is the whole of \
          `examples/broken/compile/` bar `activator_arity`, plus the two \
          `ein-bugs` fixtures, and a tenth is a regression unless a fixture \
@@ -291,7 +353,7 @@ fn assert_census(c: &Census) {
         c.uncompilable
     );
     assert!(
-        c.over_budget <= 20,
+        c.over_budget <= over_budget_cap,
         "{} files ran out of enterings — the search got slower or the corpus grew",
         c.over_budget
     );
