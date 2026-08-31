@@ -103,3 +103,84 @@ The `01_kb.md` shape defect is the one worth not batching: it is a
 wrong there propagates into how a reader reads every other DOT view in the
 tree. Fix it against the renderer and say in the commit which authority
 settled it.
+
+---
+
+## ✅ Done 2026-09-01 — one was already fixed, one was worse, and the mechanism was wrong
+
+### `DO-L1` — the four
+
+| | disposition | |
+|---|---|---|
+| (a) `defined_behaviour.md` § 4.2 | **fixed**, and **larger** | *"Nine more"* over a ten-row table — and the *next* sentence was false too |
+| (b) `06_reserved_names.md` | **already fixed** | T1e.2.2.3 (2026-08-30) rewrote the arithmetic *and* the adjacent `CD-H2` `none` → `(false)`, in one visit, exactly as both stages' tasks said it would |
+| (c) `01_kb.md` shapes | **fixed**, and it is four blocks on three pages | settled against the renderer, which settles it **negatively** |
+| (d) `03_examples.md` | **fixed** | git recovered the intended claim |
+
+**(a) is the one worth reading.** The count was wrong — *nine* over ten rows —
+and so was the sentence directly under the table: *"and all ten by `ein-ir`'s
+`the_verdict_atom_refuses_every_shape_it_cannot_resolve`"*. That test covered
+**nine**. The missing row is an `open` whose argument is neither a variable nor
+a name; the refusal is real and live
+(`:assert (open (r ?a ?b))` → *"`open`'s argument names a relation — a rule
+parameter or a relation name"*, exit 1) and had no case anywhere in the repo.
+So the page understated its table by one and simultaneously claimed the
+shortfall was pinned — and the citation is what stopped anybody counting, which
+is the same failure mode [S1e.4.3](s1e.4.3_state_model.md) found in
+`standard_of_proof.md` and [S1e.4.5](s1e.4.5_tests.md) found in
+`stdlib/README.md`. Three in one phase. The case is added; the test's own doc
+comment said *"the four refusals"* over a twelve-entry loop and says what it
+holds now.
+
+**(c) is settled by the renderer saying no.** The table calls a relation node a
+round-rect; **four** DOT blocks on three current pages drew it as a
+**hexagon**, which is the shape the same table gives `Rule` — so a reader
+learning the vocabulary here learned `Relation` as `Rule`. The renderer picks
+neither: `ein-render`'s whole shape set is `box` / `oval` / `rectangle` /
+`octagon` / `doublecircle` / `diamond`, and
+[`04_dot_rendering.md` § Node-shape legend](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
+— which *is* normative and *is* the renderer's — says a **relation schema is a
+dashed labelled edge**. The two Levi-shaped views that would draw a relation
+node at all are library-only ([Q-M1e.20](../open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable)).
+So the examples move to the table's round-rect, and the page gains the sentence
+that stops the next reader mistaking a teaching diagram for output: **these
+diagrams are the encoding, not `ein render`'s**.
+
+### `DO-L2` — the mechanism the review names is refuted, and the two halves are unequal
+
+**S1d.2.4's activator facts moved neither site.** The enterings measured today
+(101, 3 557) are identical to `features.md`'s 2026-08-23 re-take, which
+*predates* S1d.2.4 by two days; the ten activator facts touch a model's fact
+count, which is why `docs/api/rust.md`'s 434 → 444 was the one page that had to
+move and no other did. Recorded here so nobody re-audits for it.
+
+**Site 1 is smaller than reported.** `examples/README.md`'s 46.9 / 31.1 ms are
+3–9 % stale — re-taken 2026-09-01 through `utils/bench_env.sh` on the same
+pinned P-core, median of five: **44.1** and **28.2 ms**, with verdict, `k` and
+`exhausted` unchanged. The stage's escape clause (*"if it is now materially
+different, the date alone is not enough"*) does not fire, so the banked digits
+**keep their date** and gain the re-take beside them, which is
+[Q-M1e.4](../open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all)'s
+warrant for a measurement. The same table's *12 rules defined in the file* is a
+**size** and was wrong (14), so it becomes the command.
+
+**Site 2 is worse than reported.** `docs/guide/03_rule_families.md`'s *≥23×,
+101 → 3336+, and it does not finish* is not a stale measurement, it is a
+**misattributed** one: those are 2026-08-17 `ein.py`/PyPy figures whose ceiling
+was a **90 s budget**, on an engine that left the tree — and `features.md`, the
+page the sentence names as the measurer, had already retired both digits. Today
+it is 101 → **3 557** and **54×**, and *"does not finish"* is false: it finishes
+in 1.5 s.
+
+**And the page that owns the number was wrong about it too.**
+`features.md`'s own † footnote said *"ein.rs runs the same search to the end at
+3 557"*. It does not — that run reports `exhausted = false` and stops at the
+default `--max-set-size 5`; lifting the cap gives **5 405** at `-m 6` and
+**6 989** at `-m 7`, still unexhausted. Both numbers in that row are floors, for
+different reasons — a clock and a depth cap — and the footnote now says so,
+which is a stronger statement of the row's actual content: with the lever off,
+nothing anybody has run has finished this search.
+
+**Gate:** `cargo test --workspace` — **818 tests, 0 failures**. No golden moved
+(no test reads any of these pages; the one gate step that sees them is the link
+check, and it is green over 280 pages).

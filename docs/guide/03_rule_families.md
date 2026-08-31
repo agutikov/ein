@@ -71,8 +71,12 @@ digraph { rankdir=LR; node [shape=box];
 
 This is the single **load-bearing** lever for proving the solution unique —
 [`features.md`](../kernel/inference/features.md) measures that disabling its
-backing (`enable_singleton_writeback`) blows the exhaustive search up ≥23×
-(101 → 3336+ commitments, and it does not finish).
+backing (`enable_singleton_writeback`) blows the exhaustive search up **54×**
+— 101 → **3 557** commitments, and it still has not exhausted when the default
+depth cap stops it. (Those were `≥23×` and `3336+` here until M1e S1e.4.7:
+2026-08-17 numbers from `ein.py`, whose 90 s budget cut the search, on an
+engine that left the tree. `features.md` is the page that owns them and it
+retired both digits; this one now quotes what it says.)
 Domain-elimination needs negatives to eat, which is where the next family
 comes in.
 

@@ -207,9 +207,9 @@ digraph jack_levi {
   rankdir=BT;
 
   // Relations (declarations) — shared across all facts of that name
-  rel_isa   [shape=hexagon, label="is-a (rel)"];
-  rel_can   [shape=hexagon, label="can-drink (rel)"];
-  rel_drink [shape=hexagon, label="drinks (rel)"];
+  rel_isa   [shape=box, style=rounded, label="is-a (rel)"];
+  rel_can   [shape=box, style=rounded, label="can-drink (rel)"];
+  rel_drink [shape=box, style=rounded, label="drinks (rel)"];
 
   // Types
   Human [shape=box];

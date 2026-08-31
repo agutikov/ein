@@ -194,7 +194,7 @@ digraph t2_activation {
     style=filled;
     fillcolor="#fffbea";
     rule_trans [shape=hexagon, label="Rule:\ntransitive"];
-    rel_coloc  [shape=hexagon, label="co-located (rel)"];
+    rel_coloc  [shape=box, style=rounded, label="co-located (rel)"];
     prop_fact  [shape=octagon, label="property fact:\ntransitive(co-located)"];
     prop_fact -> rule_trans [label="relation-of (slot #1)"];
     prop_fact -> rel_coloc  [label="relation-of (slot #2)"];

@@ -1441,13 +1441,20 @@ mod tests {
         );
     }
 
-    /// The four refusals, each with the shape that provokes it.
+    /// **The ten refusals plus the three shadow cases**, each with the shape
+    /// that provokes it — `defined_behaviour.md` § 4.2's table, and this is
+    /// the test that page names as pinning all ten.
     ///
     /// They are refusals rather than guesses because every one of them is a
     /// place where the engine would otherwise have to pick a reading: which
     /// `absent` states the obligation, which premise is the witness, whether a
     /// mixed conclusion belongs to the agenda or the pass. A wrong pick is
     /// silent, and silence is what this phase exists to remove.
+    ///
+    /// It said *the four refusals* and covered **nine** of ten until M1e
+    /// S1e.4.7 (`DO-L1`): the one with no case was an `open` whose argument is
+    /// neither a variable nor a name, and the page claiming the coverage is
+    /// what stopped anybody counting.
     #[test]
     fn the_verdict_atom_refuses_every_shape_it_cannot_resolve() {
         let pre = "(relation is-a T T)\n(relation r A B)\n";
@@ -1480,6 +1487,12 @@ mod tests {
             (
                 "not a term inside one",
                 format!("{pre}(rule bad (?R ?isa) :match {guard} :assert (not (open ?R)))"),
+            ),
+            // The argument is a term rather than a name — the tenth row of
+            // § 4.2's table, and the one this loop did not have.
+            (
+                "names a relation — a rule",
+                format!("{pre}(rule bad (?R ?isa) :match {guard} :assert (open (r ?a ?b)))"),
             ),
             // The projection's three ways of not resolving.
             (

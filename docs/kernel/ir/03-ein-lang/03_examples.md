@@ -17,8 +17,8 @@ documentation split.
 (lives-in Norwegian House-1 :source "condition (10)")
 ```
 
-The shortest meaningful IR — one fact whose `:source` derives the
-a given (`:source`-carrying) fact.
+The shortest meaningful IR — one fact whose `:source` annotation makes it a
+**given** rather than background ([`01_kb.md` §3](../01-ein-graph/01_kb.md)).
 
 ## A larger Zebra fragment
 

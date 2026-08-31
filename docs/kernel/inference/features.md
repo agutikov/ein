@@ -158,9 +158,15 @@ Baseline: Solution, k=1, **101 enterings (67 dead)** — 3.18 s (ein.py) /
 | `enable_pre_branch_lookahead` | Solution | **111** | 3.14 | 1.0× | 26.2 | 1.0× |
 | *(control — the baseline again, last)* | Solution | 101 | 3.85 | **1.2×** | 26.9 | 1.0× |
 
-† ein.py's 3 358 is where its 90 s budget cut the search, not a total; ein.rs
-runs the same search to the end at **3 557**, which is what the 2026-08-17
-table could only record as `3336+`.
+† ein.py's 3 358 is where its 90 s budget cut the search, not a total — and
+**neither is ein.rs's 3 557**, which this footnote said was the search run to
+the end until M1e S1e.4.7 (`DO-L2`) re-took it: the run reports `exhausted =
+false` and stops at the default `--max-set-size 5`, and lifting the cap gives
+5 405 at `-m 6` and 6 989 at `-m 7`, still unexhausted (2026-09-01). Both
+numbers are floors, for different reasons — a clock and a depth cap — which is
+the whole content of the row: with the lever off, nothing anybody has run has
+finished this search. `3336+` is what the 2026-08-17 table could record; 3 557
+is what ein.rs reaches before the cap.
 
 ‡ **Corrected 2026-08-23, and it was wrong rather than stale** — see
 [§ Two corrections](#two-corrections-2026-08-23).

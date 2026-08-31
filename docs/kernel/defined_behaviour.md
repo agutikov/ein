@@ -476,7 +476,7 @@ model within the cap" rather than "no model".
 
 ### 4.2 The verdict atom's refusals — M1d S1d.2.3
 
-Nine more with no Python counterpart, and by §4.1's rule they name no
+Ten more with no Python counterpart, and by §4.1's rule they name no
 exception class either. They all concern `open`, the reserved verdict atom
 ([`06_reserved_names.md` § the verdict atom](ir/03-ein-lang/06_reserved_names.md)),
 and every one of them is a place the engine would otherwise have had to guess.
@@ -498,7 +498,12 @@ and every one of them is a place the engine would otherwise have had to guess.
 Four are pinned by fixtures in
 [`examples/broken/load/`](../../examples/broken/load/) — `open_in_match`,
 `open_arity`, `open_mixed_assert`, `open_compound_witness` — and all ten by
-`ein-ir`'s `the_verdict_atom_refuses_every_shape_it_cannot_resolve`.
+`ein-ir`'s `the_verdict_atom_refuses_every_shape_it_cannot_resolve`. **Nine of
+the ten until M1e S1e.4.7**: row 5, an `open` whose argument is neither a
+variable nor a name, had no case anywhere in the repo, so the sentence that
+said *all ten* was the second false thing in this paragraph and the harder one
+to see — the count above said *nine* while the table held ten, and the
+citation said the shortfall was covered.
 Binding the name is the eleventh and is not new: `(relation open …)`,
 `(macro open …)` and `(rule open …)` take §1's existing *shadows a reserved
 kernel name* message, because `open` joined `ein_core::RESERVED` — the nine

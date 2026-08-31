@@ -79,12 +79,15 @@ git show ff1d6c5^:plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeo
 | a cross-attribute clue | an ordinary fact: `(co-located Englishman Red)` | a 4-ary activator: `(co-located nation-loc Englishman color-loc Red)` |
 | a spatial clue | an ordinary fact: `(right-of Green Ivory)` | a 5-ary activator: `(adjacent-via right-of color-loc Ivory color-loc Green)` |
 | the property that drives it | type-scoped: `(slot-partition co-located instance type Attribute House)` + one `(slot-spatial …)` per spatial relation — `std.slots` | per-relation: `(bijective color-loc)` ×5 — `std.bijection` |
-| rules defined in the file | 0 (all imported) | 12 |
+| rules defined in the file | 0 (all imported) | `grep -c '^(rule ' <file>` |
 | `solve --exhaustive` | Solution, k=1, exhausted — **46.9 ms** | Solution, k=1, exhausted — **31.1 ms** |
 
 *(End-to-end, release build, one pinned P-core —
-[scaling.md §1](../docs/history/m1a_rust/measurements/scaling.md). These were
-~21 s and ~9 s under PyPy before the port.)*
+[scaling.md §1](../docs/history/m1a_rust/measurements/scaling.md), taken
+2026-08-20. **Re-taken 2026-09-01** on the same box with
+`utils/bench_env.sh` and `ein solve <file> -e -t`, median of five: **44.1 ms**
+and **28.2 ms**, verdict, `k` and `exhausted` unchanged. These were ~21 s and
+~9 s under PyPy before the port.)*
 
 `zebra2.ein` remains the **primary M1 acceptance target** (it also carries the
 Ambiguity and Contradiction task-class variants below);
