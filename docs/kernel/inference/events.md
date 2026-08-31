@@ -111,7 +111,7 @@ difference a port or an optimisation introduces.
 | `run` | process start | `version`, `level`, `impl`, `file`, `argv`, `config` (every resolved `SolverConfig` field, kebab-cased) |
 | `load` | after `kb.from_ir` | `relations`, `rules`, `hrules`, `macros`, `facts` counts; `relation_names` and `rule_names` in registry order |
 | `verdict` | end | `type`, `k`, `exhausted`, `counters` (every `MonotonicStats` field), `core` (sorted), `models` (each a sorted fact list, the list itself sorted) |
-| `warn` | after root saturation, before the search — one line per breach, in the checker's own order | `category`, `message` (rendered, one line) |
+| `warn` | **at root, before the search** — the alive-set check right after `load`, the `(absent …)` audit at root's first `quiesce`; one line per breach, in the checker's own order | `category`, `message` (rendered, one line) |
 
 **`type` gained a fourth value at M1d
 [S1d.2.6](../../../docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus)
