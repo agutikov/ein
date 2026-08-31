@@ -120,3 +120,83 @@ Half a day covers both because the decisions are made elsewhere. If
 [S1e.1.5](../p1e.1_open_questions/s1e.1.5_cli_semantics.md) has not run, this
 stage does `EH-L2` and waits — implementing a ruling that has not been taken
 is how a Low finding becomes a behaviour change nobody agreed to.
+
+---
+
+## ✅ Done 2026-09-01 — three sniffs, not two, and the third had no second arm
+
+**`EH-L1` was done at [S1e.1.5](../p1e.1_open_questions/s1e.1.5_cli_semantics.md)**,
+as this stage's Context already recorded. **`EH-L2`: fixed**, and it is larger
+than reported.
+
+### The finding, and the half it did not see
+
+`common.rs` sniffed **five** magic bytes where `ein_einb::is_einb` requires
+**eight**, so `EINB\0xyz` was *"a `.einb` container and this build has no
+`einb` feature"* in a `--no-default-features` build and a parse error in the
+default one. As reported.
+
+**There is a third sniff**, at
+[`solve.rs`](../../../ein.rs/crates/ein-cli/src/solve.rs), and it was
+`#[cfg(feature = "einb")]` with **no `not(einb)` counterpart** — so a light
+build's `ein solve` never reached the container refusal at all:
+
+```
+$ ein solve real.einb          # --no-default-features, before
+UnicodeDecodeError: 'utf-8' codec can't decode bytes in '…/real.einb'
+exit=1
+$ ein solve real.einb          # after
+kb load error: …/real.einb is a .einb container and this build has no `einb` feature
+```
+
+That is the promise `ein-cli/Cargo.toml`'s own feature comment makes — *"a
+`.einb` argument is refused by the loader that would have opened it, which is
+what a build with no container in it should say"* — and `ein solve` is the
+subcommand most likely to be handed one.
+
+### One predicate, one constant
+
+`common::looks_like_einb` is the only sniff in the crate now, and
+`common::EINB_MAGIC` the only literal. It is a **second copy** of
+`ein_einb::header::MAGIC` on purpose: `ein-einb` is an optional dependency and
+the light build must still recognise a container in order to refuse it, which
+is exactly the state [`AR-M1`](../p1e.3_medium/s1e.3.4_architecture.md)'s rule
+permits for a pair too small to share a crate — *compared by a test*.
+
+Two more five-byte literals were in the **test** file
+(`einb_cli.rs`), and its helper was called `ein_is_text` while returning *is
+einb*. Both fixed; the helper is `looks_like_einb`.
+
+### What holds it, and the asymmetry that is worth stating
+
+| | where | which build |
+|---|---|---|
+| the constants agree | `einb_cli::the_two_magic_constants_agree` | the default one — it is the only build where both exist |
+| the **behaviour** agrees | `cli_semantics::a_file_that_starts_like_a_container_but_is_not_one_is_text_in_either_build` | both — which is why it is not in `einb_cli.rs`, whose whole file is `#![cfg(feature = "einb")]` |
+
+The fixture uses a **five-byte** prefix deliberately. A file with the full
+eight-byte magic legitimately parts ways between the builds — one opens it, the
+other says it cannot — and that divergence is the feature, not the defect.
+
+**The acceptance line *"the two feature sets cannot diverge again"* is met by
+construction, not by a test**, and saying so is part of the disposition: no
+local runner and no per-commit CI step builds `--no-default-features`
+([TE-L5](s1e.4.5_tests.md) is the same absence one level up). What stands in
+its place is a run, dated: `cargo test --workspace --no-default-features`
+against a scratch `CARGO_TARGET_DIR`, 2026-09-01 — **676 tests, 2 failures,
+both artifacts of the out-of-tree target directory** (`imports_semantics`
+records the stdlib's resolved path, which moves with the target dir). Both fail
+identically with **default** features in the same directory, which is the
+control. That out-of-tree requirement is itself why nothing runs this leg
+locally: in-tree it clobbers the default build's artifacts.
+
+### T1e.4.4.1's last paragraph — the four cells
+
+`-n 0` and `-m 0`, lattice and tree, is what the task asked to confirm after
+both stages landed. It is confirmed: `-n 0` is **refused** on every arm
+(S1e.1.5, exit 2), `-m 0` is a truncation the lattice honours and the tree
+**refuses** (S1e.2.1's `CO-H3`, exit 2 with a stderr `error:`) — so neither
+flag has two readings any more, which is the argument `--jobs 0`'s message
+made and the reason the review paired them.
+
+**Gate:** `cargo test --workspace` — **810 tests, 0 failures**. No golden moved.

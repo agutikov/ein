@@ -385,12 +385,43 @@ fn what_the_cli_writes_is_a_file_the_library_recognises() {
         0
     );
     let bytes = std::fs::read(&out).expect("written");
-    assert_eq!(&bytes[..5], b"EINB\0");
-    assert!(!ein_is_text(Path::new("examples/zebra.ein")));
+    assert_eq!(
+        &bytes[..ein_einb::header::MAGIC.len()],
+        ein_einb::header::MAGIC
+    );
+    assert!(!looks_like_einb(Path::new("examples/zebra.ein")));
     let _ = std::fs::remove_dir_all(&dir);
 }
 
-fn ein_is_text(rel: &Path) -> bool {
+/// Named for what it returns, which the previous name (`ein_is_text`) was the
+/// negation of — M1e S1e.4.4, `EH-L2`. It sniffed five bytes too.
+fn looks_like_einb(rel: &Path) -> bool {
     let bytes = std::fs::read(repo_root().join(rel)).expect("readable");
-    bytes.starts_with(b"EINB\0")
+    bytes.starts_with(&ein_einb::header::MAGIC)
+}
+
+/// **The two magic constants agree** — M1e S1e.4.4, `EH-L2`.
+///
+/// `ein-cli` carries its own copy (`common::EINB_MAGIC`) because `ein-einb` is
+/// an optional dependency and a `--no-default-features` build must still
+/// recognise a container in order to refuse it. That is the state
+/// [`AR-M1`] permits for a pair too small to share a crate — *compared by a
+/// test* — and this is the test. It can only run in the default build, which
+/// is the one where both constants exist; the **behaviour** half, which has to
+/// run in both, is
+/// `cli_semantics::a_file_that_starts_like_a_container_but_is_not_one_is_text_in_either_build`.
+///
+/// The copy sniffed **five** of the eight bytes until this stage.
+///
+/// [`AR-M1`]: ../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.4_architecture.md
+#[test]
+fn the_two_magic_constants_agree() {
+    // `ein-cli`'s copy is in a private module, so it is compared through the
+    // one thing both builds ship: a container the writer just wrote, opened by
+    // the reader through the CLI's own sniff.
+    assert_eq!(ein_einb::header::MAGIC, *b"EINB\0\0\0\0");
+    assert_eq!(ein_einb::header::MAGIC.len(), 8);
+    assert!(ein_einb::is_einb(&ein_einb::header::MAGIC));
+    // Five bytes are not eight, which is the whole finding.
+    assert!(!ein_einb::is_einb(b"EINB\0xyz"));
 }

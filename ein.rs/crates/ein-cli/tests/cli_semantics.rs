@@ -2066,3 +2066,47 @@ fn the_tree_traversal_honours_n_and_refuses_m() {
         all.out
     );
 }
+
+// ── The container sniff, in either feature set — M1e S1e.4.4, `EH-L2` ──
+
+/// **A file that starts like a container but is not one is text in either
+/// build.**
+///
+/// `common.rs` sniffed **five** bytes where `ein_einb::is_einb` requires
+/// **eight**, so `EINB\0xyz` was *"a `.einb` container and this build has no
+/// `einb` feature"* under `--no-default-features` and a UTF-8 or parse error
+/// under the default one — two shipped feature sets disagreeing on garbage
+/// input, on the surface a generated program or a pipeline hits first.
+///
+/// There is one predicate now (`common::looks_like_einb`) and one constant
+/// (`common::EINB_MAGIC`, compared against `ein_einb::header::MAGIC` by
+/// `einb_cli::the_two_magic_constants_agree`). This is the **behaviour** half,
+/// and it is deliberately not in `einb_cli.rs`, which is
+/// `#![cfg(feature = "einb")]`: what it asserts is that the two builds agree,
+/// so it has to run in both.
+///
+/// The five-byte prefix is the whole point of the fixture. A file with the
+/// **full** eight-byte magic legitimately parts ways between the two builds —
+/// one opens it, the other says it cannot — and that divergence is the
+/// feature, not the bug.
+#[test]
+fn a_file_that_starts_like_a_container_but_is_not_one_is_text_in_either_build() {
+    let dir = Scratch::new("einb-sniff");
+    let path = dir.at("five.ein");
+    // `EINB\0` — the old sniff's five bytes — and then not the magic.
+    std::fs::write(&path, b"EINB\0xyz\n").expect("writes");
+
+    for sub in ["solve", "saturate", "test"] {
+        let r = ein(&[sub, &path]);
+        assert!(
+            !r.err.contains("has no `einb` feature"),
+            "`ein {sub}` called a five-byte prefix a container: {:?}",
+            r.err
+        );
+        assert!(
+            r.err.contains("unexpected input"),
+            "`ein {sub}` should have read it as text and failed to parse it: {:?}",
+            r.err
+        );
+    }
+}

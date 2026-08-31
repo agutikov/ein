@@ -34,8 +34,13 @@ fn timed_load(
 ) -> Option<(Kb, f64, f64, usize)> {
     // A `.einb` has no parse phase to time and no top-level forms to count:
     // its whole open is the load, which is the point of it (T1a.8.1.7).
-    #[cfg(feature = "einb")]
-    if ein_einb::is_einb(&crate::common::read_bytes_or_crash(path)) {
+    //
+    // **Not `#[cfg]`-gated**, since M1e S1e.4.4 (`EH-L2`): it was, with no
+    // `not(einb)` counterpart, so a light build's `ein solve` never reached
+    // the container refusal at all and answered a real `.einb` with
+    // `UnicodeDecodeError`. `load_any_query_or_exit` owns both arms, and this
+    // is a timing fork rather than a format one.
+    if crate::common::looks_like_einb(&crate::common::read_bytes_or_crash(path)) {
         let t = Instant::now();
         let kb = crate::common::load_any_query_or_exit(ast, terms, path, query)?;
         return Some((kb, 0.0, t.elapsed().as_secs_f64() * 1000.0, 0));

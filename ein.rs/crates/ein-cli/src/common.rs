@@ -114,6 +114,31 @@ pub fn parse_or_exit(ast: &mut Ast, path: &Path) -> Option<Vec<NodeId>> {
     }
 }
 
+/// `EINB\0` plus three pad bytes — the container's magic, and the **only**
+/// sniff in this crate.
+///
+/// A second copy of `ein_einb::header::MAGIC`, because `ein-einb` is an
+/// optional dependency and a `--no-default-features` build must still
+/// recognise a container in order to refuse it. That is the case
+/// [`AR-M1`](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.4_architecture.md)'s
+/// rule covers explicitly — *compared by a test, since a shared crate for
+/// eight bytes is worse than the problem* — and the test is
+/// `einb_cli::the_two_magic_constants_agree`.
+///
+/// It sniffed **five** bytes until M1e S1e.4.2's sibling stage (`EH-L2`), so
+/// `EINB\0xyz` was *"a `.einb` container and this build has no `einb`
+/// feature"* in the light build and a UTF-8 error in the default one — two
+/// shipped feature sets disagreeing on garbage input.
+pub const EINB_MAGIC: [u8; 8] = *b"EINB\0\0\0\0";
+
+/// Whether these bytes open a `.einb` container, in **either** build.
+///
+/// The one predicate, so the two feature arms below cannot answer it
+/// differently.
+pub fn looks_like_einb(bytes: &[u8]) -> bool {
+    bytes.len() >= EINB_MAGIC.len() && bytes[..EINB_MAGIC.len()] == EINB_MAGIC
+}
+
 /// `_load_kb_or_exit` — a `Kb` from a path, in **either** format.
 ///
 /// `base_dir` is the puzzle's own directory, so file-relative `(import …)`
@@ -143,17 +168,17 @@ pub fn load_any_query_or_exit(
     query: usize,
 ) -> Option<Kb> {
     let bytes = read_bytes_or_crash(path);
-    #[cfg(feature = "einb")]
-    if ein_einb::is_einb(&bytes) {
+    if looks_like_einb(&bytes) {
+        #[cfg(feature = "einb")]
         return open_einb(ast, terms, path, &bytes, query);
-    }
-    #[cfg(not(feature = "einb"))]
-    if bytes.starts_with(b"EINB\0") {
-        eprintln!(
-            "kb load error: {} is a .einb container and this build has no `einb` feature",
-            path.display()
-        );
-        return None;
+        #[cfg(not(feature = "einb"))]
+        {
+            eprintln!(
+                "kb load error: {} is a .einb container and this build has no `einb` feature",
+                path.display()
+            );
+            return None;
+        }
     }
     let text = match String::from_utf8(bytes) {
         Ok(t) => t,
