@@ -7,10 +7,18 @@
 — `ein test --events FILE` make the engine narrate what it did: **one JSON
 object per line**, opt-in, off by default.
 Every compile miss, enqueue, firing, mirror, park/admit/retire, quiescence,
-alternative justification, hypothesis verdict, entering, no-good and writeback,
-in the order the engine performed them — with one exception, and it is
-declared: under `EIN_TRAVERSAL=tree` four of those kinds are not emitted at
-all, which is [§ `traversal`](#traversal--the-second-traversal-and-the-four-kinds-it-does-not-emit).
+alternative justification, obligation, load-time warning, generation rung,
+hypothesis verdict, entering, layer, no-good and writeback, in the order the
+engine performed them — with one exception, and it is declared: under
+`EIN_TRAVERSAL=tree` four of those kinds are not emitted at all, which is
+[§ `traversal`](#traversal--the-second-traversal-and-the-four-kinds-it-does-not-emit).
+
+**[§ Events](#events) is the enumeration; that sentence is a summary of it.**
+The two were parallel copies until M1e `CD-M2`, and the sentence was the one
+that had gone stale — a `warn` line had been in the stream since S1e.2.3 with
+no row on this page.
+[`events_reference.rs`](../../../ein.rs/crates/ein-cli/tests/events_reference.rs)
+now fails on a kind the emitters produce and § Events does not name.
 
 It is specified as a schema rather than as debug output, so every observer — a
 trace viewer, a benchmark harness, an embedder,
@@ -103,6 +111,7 @@ difference a port or an optimisation introduces.
 | `run` | process start | `version`, `level`, `impl`, `file`, `argv`, `config` (every resolved `SolverConfig` field, kebab-cased) |
 | `load` | after `kb.from_ir` | `relations`, `rules`, `hrules`, `macros`, `facts` counts; `relation_names` and `rule_names` in registry order |
 | `verdict` | end | `type`, `k`, `exhausted`, `counters` (every `MonotonicStats` field), `core` (sorted), `models` (each a sorted fact list, the list itself sorted) |
+| `warn` | after root saturation, before the search — one line per breach, in the checker's own order | `category`, `message` (rendered, one line) |
 
 **`type` gained a fourth value at M1d
 [S1d.2.6](../../../docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus)
@@ -118,6 +127,24 @@ is what says they were not called models.
 Programs that state no obligation never emit `Open`, so every pre-M1d stream is
 byte-identical.
 
+**`warn` is the only kind that is about the *program* rather than about a step
+the engine took**, which is why it is here and not in either layer below. Three
+categories ship, and the spelling is not uniform because two of them are class
+names and one is not:
+
+| `category` | what it says | where |
+|---|---|---|
+| `DerivedNafWarning` | a rule's `(absent …)` reads a relation some rule *derives*, so its verdict depends on when it is asked | [`naf_deps.rs`](../../../ein.rs/crates/ein-infer/src/naf_deps.rs) |
+| `RefutationUnderAbsentWarning` | …and the reading is a **refutation**, which is [Q-M1e.9](../../../plans/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s shape | ⤳ |
+| `alive-set-invariant` | a rule asserts a constant the ontology does not name — M1e [`ST-M1`](../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.3_state_model.md), where a breach costs a **verdict** | [`invariant.rs`](../../../ein.rs/crates/ein-infer/src/invariant.rs) |
+
+The first two are **opt-in** behind `(config :warn-derived-naf true)` — one
+flag, two questions, because `SolverConfig` is rendered into the KB-shape
+digest and an eighteenth field would re-bless every shape golden in the corpus.
+The third is unconditional; like every other kind here it costs nothing while
+`--events` is off. A consumer should match on `category` and treat an unknown
+one as informational: this list grows whenever a static check does.
+
 `impl` and `argv` are **not compared**. `impl` names which implementation ran,
 which is the point of the comparison rather than a finding; `argv` carries the
 artefact paths the *caller* chose, so `--events a.jsonl` against
@@ -128,14 +155,33 @@ document the run.
 
 | `e` | emitted at | payload |
 |---|---|---|
-| `compile` | `Engine.compile_for` — **miss only** | `rule`, `activator`, `n_steps`, `n_disjuncts`, `n_guards`, `asserts` |
-| `enqueue` | `Saturator._enqueue_binding`, after the dedup check | `rule`, `activator`, `bindings` (in binding order), `priority`, `tiebreaker`, `parked` |
-| `fire` | every `Firing` yielded by `_closure_step` | `rule`, `activator`, `bindings`, `premises`, `derived`, `redundant` |
+| `compile` | `Engine::compile_for` — **miss only** | `rule`, `activator`, `n_steps`, `n_disjuncts`, `n_guards`, `asserts` |
+| `enqueue` | `Saturator::enqueue_binding`, after the dedup check | `rule`, `activator`, `bindings` (in binding order), `priority`, `tiebreaker`, `parked` |
+| `fire` | every `Firing` yielded by `Saturator::closure_step` | `rule`, `activator`, `bindings`, `premises`, `derived`, `redundant` |
 | `mirror` | the native `__symmetric__` arg-swap write | `relation`, `src`, `derived` |
-| `park` / `admit` / `retire` | `_admit_from_boundary` decisions | `tiebreaker`, `round`, `rule`, `watched` (the failing guard's watch set) |
+| `park` / `retire` | `Saturator::admit_from_boundary` — the candidate waits for a later round, or is dead | `tiebreaker`, `round`, `rule`, `watched` (**the failing guard's** watch set, sorted) |
+| `admit` | `Saturator::admit_from_boundary` — the one candidate a round admits | `tiebreaker`, `round`, `rule`. **No `watched`** — nothing failed, so there is no failing guard to read a watch set off |
 | `quiesce` | closure quiescence, before the boundary speaks | `round`, `n_facts`, `n_queue`, `n_parked` |
-| `alt` | `store.record_justification` returns True | `fact`, `rule`, `premises` |
+| `alt` | `Kb::record_justification` returns true | `fact`, `rule`, `premises` |
 | `owe` | the **post-fixpoint obligation pass**, once per quiescent KB, one line per undischarged instance | `rule`, `activator`, `relation` (the `(open ?R)` argument, `""` for a bare `(open)`), `bindings`, `why` (rendered) |
+
+**Three of `compile`'s six numbers are not what they are named**, and they are
+reproduced rather than corrected because the event is a comparison surface —
+`ein.py` printed these and a renamed field would silence a diff instead of
+resolving one ([`engine.rs`](../../../ein.rs/crates/ein-infer/src/engine.rs)).
+On a plan with *d* disjuncts:
+
+- **`n_guards` is *d*** — `len(plan.naf_guards)`, one guard *tuple* per
+  disjunct, whether or not the disjunct has a guard in it. It is the disjunct
+  count and not the guard count, and it is the field a consumer is most likely
+  to sum;
+- **`n_disjuncts` is *d* − 1** — the *extra* disjuncts, so a rule with no
+  `(or …)` reports `n_disjuncts 0` and `n_guards 1`;
+- **`n_steps` is the first disjunct's** step count alone, not the plan's.
+
+`asserts` and `rule` mean what they say. This is the whole of the divergence:
+the truth used to live in an `engine.rs` comment and nowhere a consumer of the
+protocol would read it (M1e `CD-M2`).
 
 **`owe` is not a firing** — M1d
 [S1d.2.4](../../../docs/history/m1d_satisfiability/README.md#s1d24--obligations-in-the-saturator).
@@ -163,10 +209,10 @@ reader of this stream should know:
 
 A mirror produces a `mirror` event and **not** a `fire`, so every firing is
 reported exactly once whichever path made it. `alt` is narrower than it looks:
-`record_justification` returns True only for rule-kind provenance with at least
+`record_justification` returns true only for rule-kind provenance with at least
 one premise, so a re-derived *source* fact records nothing and emits nothing.
 
-`enqueue`'s `tiebreaker` is the value `Saturator._tiebreaker` took for that
+`enqueue`'s `tiebreaker` is the value `Saturator::tiebreaker` took for that
 entry. It is the engine's own total order over queue entries
 ([design/02](../../history/m1a_rust/design/02_determinism_and_order.md) §2), so
 carrying it makes the heap's pop order checkable rather than inferred.
@@ -187,7 +233,7 @@ carrying it makes the heap's pop order checkable rather than inferred.
 `hyp`'s `verdict` is the *name of the thing that dropped the candidate*, not a
 boolean: `raw == emitted + Σ filtered` is the invariant `HypGenStats` already
 asserts, and naming the filter makes a counter difference locate itself.
-(`hypgen._apply_filters` returns that name rather than a bool for exactly this
+(`hypgen::apply_filters` returns that name rather than a bool for exactly this
 reason.)
 
 A pre-candidate skip gets its own kind rather than a `hyp` with an invented
