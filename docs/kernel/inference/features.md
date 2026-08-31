@@ -179,8 +179,12 @@ commitments rather than a price per branch.
 - **`enable_singleton_writeback`** — caching a refuted singleton's `(not h)`
   at root lets later layers drop `h` in O(1). Without it the exhaustive
   search re-derives those refutations and the commitment count explodes,
-  **101 → 3 831 enterings (38×)**. ein.rs pays 56.6× for those; ein.py does
+  **101 → 3 557 enterings (35×)**. ein.rs pays 54.5× for those; ein.py does
   not finish. The single knob a uniqueness-proving author must keep on.
+  *This bullet read "3 831 (38×) … 56.6×" until 2026-08-31 —
+  [§ Two corrections](#two-corrections-2026-08-23) established the digits on
+  2026-08-23 and this is one of the two places it said it had amended and had
+  not (M1e `CD-M3`).*
 - **`enable_fail_fast_fork`** — stops a fork's saturation at the firing that
   makes it inconsistent instead of running to quiescence and only then
   scanning. Unique among these levers in changing *nothing* about the
@@ -200,11 +204,18 @@ commitments rather than a price per branch.
   with it on, so the puzzle never triggers a forced-positive cascade;
   disabling it is a no-op here. Expected to matter on puzzles with
   backbone singletons.
-- **`lattice_order="score-sum"`** — the only lever that changes *what is
-  explored* without changing the answer: 134 commitments instead of 101, and
-  in ein.rs exactly the 1.2× that implies. The default `lex` order is a
+- **`lattice_order="score-sum"`** — the lever that changes *which* commitments
+  are explored without changing the answer, and on `zebra2` it does not change
+  *how many*: the same **101** enterings, **64 dead against the baseline's
+  67**, and 1.1× for the scoring itself. The default `lex` order is a
   canonical-tuple sort; `score-sum` orders by the hypothesis scores, which on
-  this puzzle finds the same model after 33 more dead ends.
+  this puzzle reaches the same model through three fewer dead ends and pays
+  more per branch than they were worth.
+  *This bullet read "134 commitments instead of 101 … exactly the 1.2× that
+  implies … 33 more dead ends" until 2026-08-31; 134 was a transcription of
+  ein.py's 2026-08-17 cell, corrected on 2026-08-23 in
+  [§ Two corrections](#two-corrections-2026-08-23) and left standing here
+  (M1e `CD-M3`).*
 
 ## The same matrix on `zebra` — where two levers change sign
 
@@ -378,6 +389,19 @@ of which no longer runs.
 
 The corrected cells are in the tables above, and the two conclusions that
 rested on them are amended where they stand.
+
+> **That sentence was false for eight days, and it is the third wrong
+> statement this correction produced.** It was written as though the amendment
+> had been made: the § Takeaway bullets were amended, the § Per-lever notes
+> were not, and
+> [`architecture_and_algorithms.md`](architecture_and_algorithms.md) went on
+> quoting 3 831 / 56.6× from a page that had retracted them. Found by the
+> M1e review as `CD-M3`, fixed 2026-08-31, and both cells re-measured on the
+> way — 3 557 enterings and 101 / 64 dead, reproducing the 2026-08-23 re-take
+> to the digit. **Do not write a correction in the past tense until the last
+> site is edited**: a correction section that claims completion is harder to
+> catch than an uncorrected number, because it answers the question a reader
+> would otherwise go and check.
 
 Two things follow that are worth more than the corrected digits:
 

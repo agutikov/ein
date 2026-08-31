@@ -605,7 +605,10 @@ re-architecture (O7) would bring.
 > **Measured in the Rust port, 2026-08-19: the clause store is not where the
 > time is, in the one regime that was supposed to prove it was.** The port's
 > design named `enable-singleton-writeback false` on zebra2 — where the search
-> explodes from 101 enterings to 3 831 — as the case for a `u64` bitmask
+> explodes from 101 enterings to 3 831 (the reading that day; **3 557** on
+> today's engine and on a rebuild of the commit this was published from —
+> [`features.md` § Two corrections](features.md#two-corrections-2026-08-23))
+> — as the case for a `u64` bitmask
 > clause representation. It explodes as predicted and learns **354** clauses,
 > because subsumption-minimality is what keeps those two numbers apart, and
 > the whole no-good/Apriori path is **0.3 %** of that 2.4-second run against
@@ -695,8 +698,8 @@ different one.
 **The levers, re-measured in both engines**
 ([`features.md`](features.md), 2026-08-20, with a control row that states each
 column's resolution): `enable_singleton_writeback` is the largest by far —
-without it an exhaustive `zebra2` explores **3 831** commitments instead of
-101, which ein.py cannot finish in 90 s and ein.rs pays 56.6× for — and
+without it an exhaustive `zebra2` explores **3 557** commitments instead of
+101, which ein.py cannot finish in 90 s and ein.rs pays 54.5× for — and
 `enable_fail_fast_fork` is the one whose whole effect is price per branch, now
 **2.4× (ein.py) / 7.0–7.1× (ein.rs)** where the 2026-08-17 Python-only table
 read 1.9×. Its ratio *grew* as the engine got faster, which is the profile
