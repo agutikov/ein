@@ -8,6 +8,10 @@ High stage did not name.
 [CO-H3](../p1e.2_high/s1e.2.1_correctness.md) for `CD-M2`'s `traversal` row.
 **Findings:** [`CD-M1`](../review/code-doc-consistency/medium.md) …
 [`CD-M8`](../review/code-doc-consistency/medium.md).
+**Status:** ✅ **done 2026-08-31** — eight findings, eight commits, one per
+page group. What the stage is worth beyond the eight is in
+[§ Outcome](#outcome): three of the eight became a **check**, and two of the
+three found a defect the review had not.
 
 ## Context
 
@@ -231,3 +235,101 @@ that no execution touches. `CD-M4` is the interesting one precisely because
 the page **has** a mechanism and the claim slipped past its boundary — which
 is the argument for [DO-M2](s1e.3.8_documentation.md)'s link checker and
 against believing that a partial mechanism covers a page.
+
+---
+
+## Outcome
+
+**Done 2026-08-31.** Eight findings, eight commits. The table is what each one
+turned out to be, and the column that matters is the last: a doc fix that
+leaves nothing running is the same fix again in six months.
+
+| | what it was | what it left behind |
+|---|---|---|
+| `CD-M1` | **five** pages, not three — the grep found `inference/README.md` and `architecture.md` | nothing mechanical; the symbol is gone from the tree |
+| `CD-M2` | **four** items, not three: `warn` had no row at all | [`events_reference.rs`](../../../ein.rs/crates/ein-cli/tests/events_reference.rs) — every `.emit("…")` against every documented kind, **both directions**, 22 kinds, 0.01 s |
+| `CD-M3` | as reported, in four places | the second-order rule, written into § Two corrections itself |
+| `CD-M4` | as reported, plus § 4 naming three verdicts | a second marker **and** `the_page_and_the_file_name_the_same_tests`, because the marker alone would not have caught it |
+| `CD-M5` | as reported; both removal dates reconciled to one commit | `the_inlining_route_the_stdlib_readme_documents_round_trips` — the README's snippet is a test |
+| `CD-M6` | as reported; the `C2` disposition decided | the decision, for [`DO-M2`](s1e.3.8_documentation.md) to cite |
+| `CD-M7` | as reported, and fixed at the origin too | the split, in the guard's own comment |
+| `CD-M8` | O4 was worse than reported: `EqClasses` has **no** engine caller | a nine-row as-was → as-built map, and the two lists point at `implementation.md` |
+
+### The three things this stage found that the review did not
+
+**1 — `events.md` was missing a whole event kind.** `warn` has been in the
+stream since [S1e.2.3](../p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md) and
+gained a third category at
+[S1e.3.3](s1e.3.3_state_model.md); the page named it only inside § Comparison's
+parity spine, which is a list of what is *diffed*. The review found two wrong
+payload fields on a page whose bigger problem was a missing row — which is the
+argument for the check rather than for the three fixes, and is why
+`T1e.3.7.2`'s "worth an hour's investigation" was the right instruction. It
+also found that **three** of `compile`'s six numbers are misnamed, not one:
+`n_disjuncts` is *d* − 1 and `n_steps` is the first disjunct's alone.
+
+**2 — a second marker does not close `CD-M4`.** The acceptance asked for the
+sentence to be inside a diffed region, and it is. But a marker makes the page
+and the file **one text**; it does not make that text **true**. Rename a test
+and leave the comment alone and the two agree perfectly about a name neither of
+them has. The check that would have failed on the day of the rename resolves
+the names in both directions, and it is 40 lines. *A partial mechanism is worse
+than none where it is mistaken for coverage* — the stage's own § Notes says
+this, and the fix had to be built to the sentence rather than to the task list.
+
+**3 — `EqClasses` has no caller at all.** The review said `firing.rs` contains
+no `kb.classes.union` call. Nothing does: the union-find's only two callers in
+the workspace are tests. The difference matters for `O4`'s status — *a stub
+with an unused API* is a different claim from *a stub with a wrong caller
+named* — and it is the kind of thing only a grep settles.
+
+### What the eight had in common, and the one that did not
+
+Seven of the eight are a claim no execution touches. `CD-M4` is the exception
+and the interesting one: the page **had** a mechanism, and the claim slipped
+past its boundary. Both of this stage's other new tests are the same shape as
+its fix — take the thing a page asserts about the tree, and make the tree
+answer. `events_reference.rs` asks the emitters; `the_inlining_route_…` runs the
+snippet; `the_page_and_the_file_name_the_same_tests` resolves the names. None
+of the three is more than fifty lines.
+
+### The gate found the fourth thing
+
+Adding the `warn` row broke
+`cli_semantics::every_event_kind_the_schema_defines_is_reachable_from_the_corpus`,
+which parses the same three tables and requires **a corpus fixture** behind
+every kind — so the page and the corpus are held together from the other end,
+and the two checks are complementary rather than redundant:
+`events_reference.rs` asks *does an emitter exist*, that one asks *does a
+program reach it*. Two rows added to `EVENT_COVER`, one per category a corpus
+entry can reach — `naf-upward-closure.ein` for
+`RefutationUnderAbsentWarning` (the only entry carrying `(config
+:warn-derived-naf true)`, so the only one from which the gated half is
+reachable at all) and `alive-set-fresh-name.ein` for `alive-set-invariant`,
+which is a different call site in `solve.rs`. One kind, two rows, because a
+cover reaching `warn` through the gated category alone would stay green if the
+static check stopped narrating. Its `>= 21` floor is `>= 22`.
+
+It also broke the parse in a way worth recording: the category table's first
+column is `` `category` ``, and `schema_kinds()` reads every `| \`x\` |` line in
+a payload section as a kind cell. The fix is the page's own idiom — a `####`
+subsection, as `rung`, `layer` and `traversal` already have — so a kind that
+needs elaboration gets it *outside* the tables that are parsed.
+
+### Left for later, deliberately
+
+- **The `emitted at` and payload columns are still hand-written.** The check
+  covers the *kind set*, because the conditional payload fields live inside the
+  emit closure — `traversal` carries `depth` only when a node declines — and a
+  payload checker would have to model `EventLine`'s builder. The kind set is
+  the axis the page was actually wrong on: a missing row is invisible to every
+  reader, where a wrong field at least appears beside a right one.
+- **`docs/history/` was not touched.** `baseline.md` still records 3 831 /
+  56.6× and `design/07` still records 3 831 enterings; those are the readings of
+  their days and rewriting them would falsify the record. The one *current*
+  page that quotes a dated profile keeps the reading and gains today's beside
+  it.
+- **A superseded-number register.** `CD-M3` would have been caught by a check
+  that no retracted figure appears outside the section retracting it. It is
+  [`DO-M1`](s1e.3.8_documentation.md)'s shape, not this stage's, and the rule
+  it needs is now written where the next reader of a correction will be.

@@ -62,6 +62,21 @@ because nothing re-tightens them. The project's own thesis states the
 mechanism — *a page nothing runs goes stale* — and this phase's job is to act
 on it rather than restate it: **generate the number, or stop stating it.**
 
+> **The eight closed 2026-08-31, and three of them left a check behind.**
+> `events.md`'s emitters against its schema table
+> ([`events_reference.rs`](../../../ein.rs/crates/ein-cli/tests/events_reference.rs),
+> both directions, 22 kinds), `stdlib/README`'s inlining snippet as a
+> round-trip test, and `docs/api/rust.md`'s test names resolved in both
+> directions. Two of the three found a defect the review had not: `warn` had
+> been an emitted event kind with **no row on the page** since S1e.2.3, and
+> `EqClasses` is called by no engine code at all rather than merely not by
+> `firing`. The one worth carrying into
+> [S1e.3.8](s1e.3.8_documentation.md): `CD-M4`'s page **had** a mechanism and
+> the claim slipped past its boundary, and the second marker the acceptance
+> asked for does not close it — a marker makes two texts *agree*, and a rename
+> leaves them agreeing about a name neither has. What closes it is resolving
+> the name.
+
 Nine findings sit outside all three, and they are the ones to read
 individually: [CO-M1](s1e.3.1_correctness.md), [CO-M3](s1e.3.1_correctness.md),
 [CO-M5](s1e.3.1_correctness.md), [CO-M6](s1e.3.1_correctness.md),
@@ -106,7 +121,7 @@ milestone's most load-bearing claim.
 | [S1e.3.4](s1e.3.4_architecture.md) | Architecture | `AR-M1` `AR-M2` ✅ **2026-08-30**, +`CO-M2` `SE-M1` `SE-L1` `TE-M8` | 3 d |
 | [S1e.3.5](s1e.3.5_error_handling.md) | Error handling | `EH-M1` `EH-M2` ✅ **2026-08-31** | 1.5 d |
 | [S1e.3.6](s1e.3.6_tests.md) | Tests | `TE-M1` … `TE-M8` ✅ **2026-08-31** | 5 d |
-| [S1e.3.7](s1e.3.7_code_doc_consistency.md) | Code ↔ doc consistency | `CD-M1` … `CD-M8` | 4 d |
+| [S1e.3.7](s1e.3.7_code_doc_consistency.md) | Code ↔ doc consistency | `CD-M1` … `CD-M8` ✅ **2026-08-31** | 4 d |
 | [S1e.3.8](s1e.3.8_documentation.md) | Documentation | `DO-M1` `DO-M2` | 3 d |
 | [S1e.3.9](s1e.3.9_maintainability.md) | Maintainability | `MA-M1` `MA-M2` `MA-M3` `MA-M4` | 2 d |
 

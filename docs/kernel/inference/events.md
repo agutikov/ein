@@ -127,10 +127,18 @@ is what says they were not called models.
 Programs that state no obligation never emit `Open`, so every pre-M1d stream is
 byte-identical.
 
-**`warn` is the only kind that is about the *program* rather than about a step
-the engine took**, which is why it is here and not in either layer below. Three
-categories ship, and the spelling is not uniform because two of them are class
-names and one is not:
+`impl` and `argv` are **not compared**. `impl` names which implementation ran,
+which is the point of the comparison rather than a finding; `argv` carries the
+artefact paths the *caller* chose, so `--events a.jsonl` against
+`--events b.jsonl` is not a divergence. Both stay in the file, where they
+document the run.
+
+#### `warn` — the three static checks, and what a category means
+
+`warn` is the only kind that is about the **program** rather than about a step
+the engine took, which is why its row is in the lifecycle and not in either
+layer below. Three categories ship, and the spelling is not uniform because two
+of them are class names and one is not:
 
 | `category` | what it says | where |
 |---|---|---|
@@ -145,11 +153,11 @@ The third is unconditional; like every other kind here it costs nothing while
 `--events` is off. A consumer should match on `category` and treat an unknown
 one as informational: this list grows whenever a static check does.
 
-`impl` and `argv` are **not compared**. `impl` names which implementation ran,
-which is the point of the comparison rather than a finding; `argv` carries the
-artefact paths the *caller* chose, so `--events a.jsonl` against
-`--events b.jsonl` is not a divergence. Both stay in the file, where they
-document the run.
+Two corpus entries reach this kind, and they are the cover rows for it:
+`examples/ein-bugs/naf-upward-closure.ein` (which carries the `(config …)`
+itself) for the second category, and `examples/ein-bugs/alive-set-fresh-name.ein`
+for the third. `DerivedNafWarning` has no corpus witness — its witness is
+`ein-infer/tests/naf_semantics.rs`, on a program written in the test.
 
 ### Deductive layer
 

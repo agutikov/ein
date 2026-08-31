@@ -1194,7 +1194,7 @@ fn events_off_formats_nothing_and_does_not_count() {
 /// kind reachable only under an environment variable is a kind no
 /// default-environment sweep can see, which is how `traversal` shipped at M1d
 /// S1d.10.6 and reached M1e undocumented (`SE-M3`).
-const EVENT_COVER: [(&str, &str, &str); 7] = [
+const EVENT_COVER: [(&str, &str, &str); 9] = [
     (
         "examples/branching/01_saturate_only.ein",
         "the lifecycle and the deductive layer",
@@ -1233,6 +1233,22 @@ const EVENT_COVER: [(&str, &str, &str); 7] = [
          and a decline narrates the same kind for none of the reasons the \
          kind exists for",
         "EIN_TRAVERSAL=tree",
+    ),
+    (
+        "examples/ein-bugs/naf-upward-closure.ein",
+        "warn — the `RefutationUnderAbsentWarning` category, and the only \
+         corpus entry that carries `(config :warn-derived-naf true)`, so it \
+         is the only one from which the flag-gated half of the kind is \
+         reachable at all",
+        "",
+    ),
+    (
+        "examples/ein-bugs/alive-set-fresh-name.ein",
+        "warn — the `alive-set-invariant` category, the unconditional one, \
+         from a different call site in `solve.rs`. A second row for one kind \
+         because a cover that reached `warn` through the gated category alone \
+         would stay green if the static check stopped narrating",
+        "",
     ),
 ];
 
@@ -1316,11 +1332,13 @@ fn every_event_kind_the_schema_defines_is_reachable_from_the_corpus() {
         }
     }
     let schema = schema_kinds();
-    // The row count, not a floor with slack: the three payload tables have 21
+    // The row count, not a floor with slack: the three payload tables have 22
     // kind cells and a removed kind is a schema version bump (§ Versioning),
-    // so it should have to be typed here too.
+    // so it should have to be typed here too. It was 21 until M1e `CD-M2`
+    // added the `warn` row — the kind had been emitted since S1e.2.3 with no
+    // row for this parse to find.
     assert!(
-        schema.len() >= 21,
+        schema.len() >= 22,
         "EVENTS.md parsed to only {} kinds — the table shape moved: {schema:?}",
         schema.len()
     );
