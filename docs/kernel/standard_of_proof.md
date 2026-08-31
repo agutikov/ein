@@ -41,16 +41,35 @@ rests on is checked by something that fails when it stops being true.
 | | premise | enforced? | verdict |
 |---|---|---|---|
 | [design/02](../history/m1a_rust/design/02_determinism_and_order.md)'s determinism argument | canonical ordering everywhere a traversal reads | yes, by the ordering tests | the argument is enough |
-| `EqClasses` auto-vivification | *nothing fires equality propagation* | yes, by `naf_semantics::matching_does_not_resolve_equality_classes` | a comment at the site is enough |
+| `EqClasses` auto-vivification | *nothing fires equality propagation* | **the named test does not enforce it — 2026-09-01** | the row was **misattributed**, and the hazard was removed instead (M1e [S1e.4.3](../../plans/m1e_review_processing/p1e.4_low/s1e.4.3_state_model.md)) |
 | the alive-set invariant | *rules assert no new objects or relations* | **checked since 2026-08-31, and it fails** | the check was built (M1e [S1e.3.3](../../plans/m1e_review_processing/p1e.3_medium/s1e.3.3_state_model.md)) and found the premise **false on two corpus programs**. So the argument was never available: what stands in its place is a named breach set, a measurement that neither breach costs anything, and an eleven-line fixture on which one does — `k = 0, exhausted = true` where a model exists. § 3.3 of [`defined_behaviour.md`](defined_behaviour.md#33-the-m1-alive-set-invariant-operationally) |
 | [design/08](../history/m1a_rust/design/08_parallelism.md)'s `dead` is monotone | *the KB is append-only, so nothing retracts* | **no** | broken by a twenty-line program — see below |
 
-Two of the four are the pattern working; two are the pattern's absence, and one
-of those is what settled the rule. **Both of the absent two have since been
-probed and both premises were false** — `dead` is monotone by a twenty-line
-program (Q-M1e.9, 2026-08-28) and the alive-set invariant by an eleven-line one
-(Q-M1e.21, 2026-08-31). Two for two is not a sample, but it is the only
+One of the four is the pattern working; three are the pattern's absence, and
+one of those is what settled the rule. **All three of the absent rows have
+since been probed and all three premises failed** — `dead` is monotone by a
+twenty-line program (Q-M1e.9, 2026-08-28), the alive-set invariant by an
+eleven-line one (Q-M1e.21, 2026-08-31), and `EqClasses` by a mutation
+(S1e.4.3, 2026-09-01). Three for three is not a sample, but it is the only
 evidence there is about what an unenforced premise is worth.
+
+**And the third failed in a way the first two did not, which is why it is worth
+its own sentence.** The `EqClasses` row's premise may well have been *true*;
+what was false was the **citation**. `naf_semantics::matching_does_not_resolve_equality_classes`
+unions by hand and then asserts the *matcher* ignores the class — a different
+claim, and a probe that made the engine union on every stored fact left it
+green. The test that would actually have caught that probe is
+[`fork_cost.rs`](../../ein.rs/crates/ein-core/tests/fork_cost.rs), and only
+because a growing map breaks an O(1) fork, so what the tree really enforced was
+the weaker *propagation does not scale with the fact count* — a bounded
+propagation would have passed both.
+
+So Rule 2 has a second question, and it is the one that is easy to skip:
+**does the named test enforce the premise, or something adjacent to it?** An
+argument citing a real, green, well-named test can still be unsupported, and
+that failure mode is harder to see than an uncited one — the citation is what
+stops anybody looking. When the answer is *adjacent*, the row is not evidence
+that the argument is enough; it is evidence that nobody has checked.
 
 ## Where an argument goes
 

@@ -586,6 +586,37 @@ impl Drop for NogoodFreeze<'_> {
 /// The engine fires no equality propagation, so this stays inert; it is
 /// ported because `fork()` / `snapshot()` copy it and the copy is observable
 /// through [`EqClasses::classes`].
+///
+/// # Reading it does not write it — M1e S1e.4.3
+///
+/// [`EqClasses::find`] auto-vivified until then, faithfully to `ein.py`'s
+/// `dict`-backed one, so `equivalent(a, c)` on an unrecorded `c` **inserted**
+/// it and `classes()` reported a different order depending on what had been
+/// asked earlier. Two things make that worth ten lines rather than a comment,
+/// and neither is the one the plan expected:
+///
+/// - **The premise the *comment* route rested on was misattributed.**
+///   [`standard_of_proof.md`] cited
+///   `naf_semantics::matching_does_not_resolve_equality_classes` as enforcing
+///   *nothing fires equality propagation*. It does not: it unions by hand and
+///   then asserts the **matcher** ignores the class, which is a different
+///   claim, and a probe that made the engine union on every stored fact left
+///   it green. What would have caught that probe is
+///   [`fork_cost.rs`][fc] — and only because a growing map breaks an O(1)
+///   fork, so it enforces the weaker *propagation does not scale with the
+///   fact count*.
+/// - **It is a fork-cost hazard, not only a determinism one.** [`Kb::branch`]
+///   deep-copies this map, so every name ever merely *asked about* became
+///   permanent per-fork bytes on the path P1a.7 wants hundreds of live copies
+///   of.
+///
+/// `fork()` copies, so the asymmetry a future consumer is least likely to work
+/// out for itself still holds for `union`: a merge in a parent is inherited by
+/// every fork made afterwards, and a merge in a fork is invisible to its
+/// siblings. What no longer holds is that a *question* can do it.
+///
+/// [`standard_of_proof.md`]: ../../../../docs/kernel/standard_of_proof.md
+/// [fc]: ../../../../ein.rs/crates/ein-core/tests/fork_cost.rs
 #[derive(Clone, Default, Debug)]
 pub struct EqClasses {
     /// Insertion-ordered, because ein.py's is a `dict` and `classes()`
@@ -598,11 +629,21 @@ impl EqClasses {
         Self::default()
     }
 
-    /// The class root, auto-vivifying and path-compressing exactly as ein.py
-    /// does.
+    /// The class root — a **lookup**. An element the map has never seen is
+    /// its own root and is *not* inserted.
+    ///
+    /// It auto-vivified until M1e S1e.4.3 (`ST-L1`), as `ein.py`'s did:
+    /// merely asking `equivalent(a, c)` inserted `c`, so [`Self::classes`]'s
+    /// output was a function of **query history** and [`Kb::branch`] copied
+    /// whatever the questions had left behind. Path compression stays, and so
+    /// does union-by-first-argument — those are the two behaviours
+    /// [design/03 §8] names as ported. Vivification is in no contract, and it
+    /// is the shape `design/02`'s determinism rules exist to keep away from
+    /// observables.
+    ///
+    /// [design/03 §8]: ../../../../docs/history/m1a_rust/design/03_data_model.md
     pub fn find(&mut self, x: Symbol) -> Symbol {
         if self.parent.get(x).is_none() {
-            self.parent.insert_new(x, x);
             return x;
         }
         let mut root = x;
@@ -618,9 +659,20 @@ impl EqClasses {
         root
     }
 
+    /// The class root, inserting `x` as its own root if the map has not seen
+    /// it. The vivifying half of what [`Self::find`] used to be, kept where it
+    /// belongs: a *write* is the only operation entitled to grow the map.
+    fn record(&mut self, x: Symbol) -> Symbol {
+        if self.parent.get(x).is_none() {
+            self.parent.insert_new(x, x);
+            return x;
+        }
+        self.find(x)
+    }
+
     /// Union by *first argument* — `a`'s root wins, as ein.py's does.
     pub fn union(&mut self, a: Symbol, b: Symbol) -> Symbol {
-        let (ra, rb) = (self.find(a), self.find(b));
+        let (ra, rb) = (self.record(a), self.record(b));
         if ra != rb {
             *self.parent.get_mut(rb).expect("present") = ra;
         }
@@ -1160,6 +1212,15 @@ impl Kb {
         self.rules_by_relation.get(rel).map_or(&[], |v| v)
     }
 
+    /// The equality classes — **the F4 e-graph seam, and the place to read
+    /// [`EqClasses`]'s own docs before wiring a consumer.**
+    ///
+    /// Nothing in the engine calls this; the only caller in the tree is a
+    /// test. The day one arrives, `classes()`'s output becomes an observable,
+    /// and two properties of it are worth knowing first: a fork copies the
+    /// map, so a parent's merges are inherited and a fork's are invisible to
+    /// its siblings; and reading no longer writes, which is what M1e S1e.4.3
+    /// changed and what `asking_a_question_does_not_move_the_answer` holds.
     pub fn classes(&mut self) -> &mut EqClasses {
         &mut self.classes
     }
@@ -2231,10 +2292,50 @@ mod tests {
         fork.classes().union(b, c);
         assert!(fork.classes().equivalent(a, c));
         assert_eq!(kb.classes().classes(), vec![(a, vec![a, b])]);
-        // `find` auto-vivifies, as ein.py's does — so *asking* the root adds
-        // `c` to the root's map, without joining it to anything.
+        // The fork's union is the fork's own — which is the asymmetry a
+        // future consumer inherits and is least likely to work out for
+        // itself: a merge in a parent is seen by every fork made afterwards,
+        // a merge in a fork by no sibling.
         assert!(!kb.classes().equivalent(a, c), "the copy is the fork's own");
-        assert_eq!(kb.classes().classes(), vec![(a, vec![a, b]), (c, vec![c])]);
+        // …and *asking* left nothing behind. `find` auto-vivified until M1e
+        // S1e.4.3, so this line used to read `[(a, [a, b]), (c, [c])]`.
+        assert_eq!(kb.classes().classes(), vec![(a, vec![a, b])]);
+    }
+
+    /// **Asking a question does not move the answer** — M1e S1e.4.3,
+    /// `ST-L1`.
+    ///
+    /// The property, not the example: the same unions produce the same
+    /// `classes()` whether or not anything was asked first. It fails on the
+    /// pre-S1e.4.3 engine, where the two vectors differ both in length and in
+    /// order, because `equivalent` inserted what it was asked about and
+    /// `classes()` walks the parent map in insertion order.
+    #[test]
+    fn asking_a_question_does_not_move_the_answer() {
+        let (mut terms, _) = fixture();
+        let (a, b, c, d) = (
+            sym(&mut terms, "a"),
+            sym(&mut terms, "b"),
+            sym(&mut terms, "c"),
+            sym(&mut terms, "d"),
+        );
+
+        let mut quiet = EqClasses::new();
+        quiet.union(a, b);
+        quiet.union(c, d);
+
+        let mut asked = EqClasses::new();
+        assert!(!asked.equivalent(c, d), "nothing is merged yet");
+        assert_eq!(asked.find(d), d, "an unrecorded name is its own root");
+        asked.union(a, b);
+        assert!(!asked.equivalent(b, c));
+        asked.union(c, d);
+
+        assert_eq!(
+            asked.classes(),
+            quiet.classes(),
+            "the questions changed the answer"
+        );
     }
 
     #[test]

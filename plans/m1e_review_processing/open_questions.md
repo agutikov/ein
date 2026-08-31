@@ -102,6 +102,21 @@ whose premise is *nothing fires equality propagation* — enforced by
 `naf_semantics::matching_does_not_resolve_equality_classes`, an existing
 named test — so a comment at the future wiring point is enough.
 
+> **That contrast was wrong, and finding out why sharpened the rule** —
+> 2026-09-01, [S1e.4.3](p1e.4_low/s1e.4.3_state_model.md). The named test does
+> **not** enforce that premise: it unions by hand and then asserts the
+> *matcher* ignores the class, and a probe that made the engine union on every
+> stored fact left it green. So this question's own worked example of *an
+> argument is enough* had a citation that pointed at the wrong test, which is
+> a failure mode neither Q-M1e.1 nor this question had named — an argument
+> citing a real, green, well-named test can still be unsupported, and it is
+> **harder** to see than an uncited one, because the citation is what stops
+> anybody looking. The hazard was removed instead of documented (a
+> non-vivifying `find`, ten lines), and
+> [`standard_of_proof.md`](../../docs/kernel/standard_of_proof.md) Rule 2 now
+> carries the second question: *does the named test enforce the premise, or
+> something adjacent to it?*
+
 If that rule holds, it decides most of the `accepted` dispositions
 mechanically, and it should be written into
 [`docs/kernel/defined_behaviour.md`](../../docs/kernel/defined_behaviour.md)
