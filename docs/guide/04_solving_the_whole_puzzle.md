@@ -57,15 +57,19 @@ KB, and a `:goal-text` template that renders the headline answer.
 
 ## Solve it
 
+<!-- transcript: ein solve examples/zebra2.ein -->
 ```sh
 $ ein solve examples/zebra2.ein
 solve · examples/zebra2.ein
+──────────────────────────────────────────────────────────────
   solutions (k)   1   (not certified — pass --exhaustive)
   verdict         Solution
 
   query bindings
-    ?h_water    = House-1        ?who_water  = Norwegian
-    ?h_zebra    = House-5        ?who_zebra  = Japanese
+    ?h_water    = House-1
+    ?h_zebra    = House-5
+    ?who_water  = Norwegian
+    ?who_zebra  = Japanese
 
     query facts                     rendered
     (drink-loc Water House-1)       Water is drunk in House-1
@@ -76,6 +80,7 @@ solve · examples/zebra2.ein
   result
     The Norwegian drinks water in House-1; the Japanese owns zebra in House-5
 ```
+<!-- /transcript -->
 
 Every word of that answer came from the puzzle's own `:why` / `:goal-text`
 templates — Ein has no built-in vocabulary. The verdict is **read from the

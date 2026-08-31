@@ -54,4 +54,24 @@ ein render rule --name <R> <file>   # draw a rule as a graph (DOT)
 The build needs `cmake` and a C++ compiler for the bundled allocator; add
 `--no-default-features` to build against the system one instead.
 
-Each chapter ends with the exact command to reproduce what it shows.
+## Which blocks are generated, and which are not
+
+**Chapters 2 and 4 show real output; nothing else on these pages is a
+transcript.** Chapters 1 and 3 carry no command at all, so the sentence that
+used to stand here — *"each chapter ends with the exact command to reproduce
+what it shows"* — was true of half the guide (M1e `CD-L2`).
+
+Of the four blocks that do show output, one is **generated** and three are
+hand-maintained **excerpts**, and the difference is worth knowing before you
+edit either kind:
+
+| where | kind | what keeps it true |
+|---|---|---|
+| [ch. 4](04_solving_the_whole_puzzle.md) § Solve it | **generated** — the whole of what the binary prints | `ein-cli/tests/guide_transcripts.rs`, which runs the command in the marker and diffs. *Edit the test, run it, paste; never edit the block by hand* — or `EIN_BLESS=1` writes it |
+| [ch. 2](02_first_rules.md) ×3 | **excerpt** — the two or three lines the section is about, with the header, the rule and the empty `query bindings` elided | nothing, deliberately: an exact diff cannot express an elision, and pinning them would push seven lines of `(query has no :goal-text template)` into a tutorial to satisfy a test. Their lines are byte-correct as excerpts |
+
+Chapter 4's block was **fabricated rather than drifted** — it packed four
+sorted bindings two-per-line and dropped the rule under the title, and no
+engine in this repo's history has printed that. A pin catches drift; only
+taking the bytes from a run catches fabrication, which is why the block is
+generated now and why this table says which kind each one is.

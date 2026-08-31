@@ -953,3 +953,67 @@ fn each_trace_shaping_flag_changes_the_document() {
         "the KB snapshot is not opt-in"
     );
 }
+
+/// **The full lattice view is the solution view plus one honest note** — M1e
+/// S1e.4.6, `CD-L3`.
+///
+/// The note said *"no stored lattice (store_lattice=False) — showing the
+/// solution frontier instead"*, byte-for-byte what ein.py emitted, and it was
+/// false twice: every caller that can reach it sets `store_lattice = true`,
+/// and `LatticeProof` has no `kb_index` field for any value of that flag to
+/// populate. `--view`'s own help text gave the real reason, so a user running
+/// one command met two explanations of the same thing.
+///
+/// Three assertions, each holding a different half:
+///
+/// 1. the note is the clause the help carries, so the two surfaces say one
+///    sentence (`ein-cli`'s
+///    `help_surface::the_full_view_fallback_agrees_with_the_help_text` is the
+///    other end of that);
+/// 2. `store_lattice` is not in it, so restoring the old string fails loudly
+///    rather than passing a re-blessed digest;
+/// 3. the two views differ by **exactly** that line — the fact nobody had
+///    written down. If `full` ever starts drawing something, this fails and
+///    tells the next author the note itself has become wrong the other way.
+///
+/// Nothing asserted this before: `LatticeView::Full` appeared in no test in
+/// the workspace, and the 271 digest rows that banked the sentence could only
+/// say *that* it moved.
+#[test]
+fn the_full_lattice_view_is_the_solution_view_plus_one_honest_note() {
+    let run = solve_file("examples/branching/04_two_levels.ein", true, None);
+    let proof = run
+        .solved
+        .proof
+        .as_ref()
+        .expect("store_lattice was asked for");
+    let full = render_lattice(
+        &run.terms,
+        LatticeSource::Proof(proof),
+        LatticeView::Full,
+        "lattice",
+    );
+    let solution = render_lattice(
+        &run.terms,
+        LatticeSource::Proof(proof),
+        LatticeView::Solution,
+        "lattice",
+    );
+
+    let note = format!("  // {}", ein_render::FULL_VIEW_FALLBACK);
+    assert!(
+        full.contains(&note),
+        "the `full` view does not carry the fallback note:\n{full}"
+    );
+    assert!(
+        !full.contains("store_lattice"),
+        "the fallback note names a flag that decides nothing again (CD-L3)"
+    );
+    assert_eq!(
+        full.replacen(&format!("{note}\n"), "", 1),
+        solution,
+        "`full` and `solution` differ by more than the note — the fallback is \
+         no longer the whole of what `full` does, so the note is now wrong in \
+         the other direction (CD-L3)"
+    );
+}

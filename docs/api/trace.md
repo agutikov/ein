@@ -1,5 +1,6 @@
 # `ein.trace` — explanation rendering
 
+<!-- api-history-banner -->
 > ### 🏛 History — the embedding contract of the engine that was
 >
 > **This page describes a Python package that no longer exists**, and it is
@@ -19,8 +20,9 @@
 > **The embedding surface that exists is Rust**, and it is
 > [`rust.md`](rust.md) — the crates, whose worked example is a test the gate
 > runs. The other surface that runs is the CLI: `ein solve <file>` ·
-> `ein saturate` · `ein render` · `ein kb` (`ein --help`,
+> `ein test` · `ein saturate` · `ein render` · `ein kb` (`ein --help`,
 > [`docs/install.md`](../install.md)).
+<!-- /api-history-banner -->
 
 Turn a solver [`Verdict`](inference.md) into a human-readable markdown
 narrative — the project's main human-facing output (idea 08). The engine

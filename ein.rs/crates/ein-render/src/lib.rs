@@ -39,7 +39,7 @@ pub use dot_util::{esc, fact_key, fact_label, hashed_id, multiline, quote, value
 pub use ein_core::render_why;
 pub use ir_dot::{DotOpts, TraceView, to_dot as ir_to_dot, to_dot_form};
 pub use kb_dot::{ColourBy, KbDotOpts, to_dot as kb_to_dot};
-pub use lattice_dag::{LatticeSource, LatticeView, render_lattice};
+pub use lattice_dag::{FULL_VIEW_FALLBACK, LatticeSource, LatticeView, render_lattice};
 pub use models::{KeyOutcome, ModelsForm, key_table};
 pub use palette::{PALETTE, hash_color};
 pub use rules::{RuleMode, render_rule_form, render_rules_forms};

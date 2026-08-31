@@ -24,6 +24,26 @@ use ein_infer::solve::LatticeProof;
 use crate::dot_util::{digraph_open, fact_label, hashed_id, multiline, quote};
 use crate::dump::snapshot::LatticeSnapshot;
 
+/// Why `--view full` draws the solution frontier — the note the DOT carries,
+/// and the clause `ein render lattice --view full`'s help text carries.
+///
+/// It read *"no stored lattice (store_lattice=False) — showing the solution
+/// frontier instead"* until M1e S1e.4.6 (`CD-L3`), byte-for-byte what ein.py
+/// emitted. That sentence is **false twice over**, not merely stale in an
+/// alien spelling: every caller that can reach this line sets `store_lattice =
+/// true` (`ein-cli`'s `cmd_lattice`, and both of `shape.rs`'s), and
+/// `LatticeProof` has no `kb_index` field for any setting of that flag to
+/// populate — so no value of `store_lattice` changes the outcome. The real
+/// reason is the one `--view`'s own help gives, and the two surfaces a user
+/// meets in one session now say the same thing.
+///
+/// Keeping ein.py's bytes was an argument whose premise left with the oracle
+/// at S1a.10.5. What it cost to stop is a **named re-bless**, priced before it
+/// was taken: 271 digest rows of `corpus_shapes.md5` and one line of
+/// `dump_snapshot_subset-pruned.txt`, every one of them this single line.
+pub const FULL_VIEW_FALLBACK: &str =
+    "solve stores no per-commitment SetNode DAG — showing the solution frontier instead";
+
 /// `verdict → (border, fill)`.
 fn verdict_style(verdict: Verdict) -> (&'static str, &'static str) {
     match verdict {
@@ -286,10 +306,7 @@ pub fn render_lattice(
 
     let mut lines = digraph_open(name, Some("LR"), Some("fontname=\"Inter\", shape=box"));
     if view == LatticeView::Full && !full_ok {
-        lines.push(
-            "  // no stored lattice (store_lattice=False) — showing the solution frontier instead"
-                .to_string(),
-        );
+        lines.push(format!("  // {FULL_VIEW_FALLBACK}"));
     }
 
     let root_cell = cells.iter().find(|c| c.rep.is_empty());

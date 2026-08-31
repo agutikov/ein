@@ -139,3 +139,37 @@ fn a_renamed_short_key_fails() {
     let mutated = shape.replacen("--solutions -n ", "--solutions -N ", 1);
     assert_ne!(shape, mutated, "the short key must be in the rendering");
 }
+
+/// **The `--view full` fallback says the same thing in the DOT and in the
+/// help** — M1e S1e.4.6, `CD-L3`.
+///
+/// The two surfaces a user meets in one session disagreed: `--view`'s help
+/// gave the real reason (*solve doesn't store the per-commitment SetNode
+/// DAG*), while the DOT the same command printed said *"no stored lattice
+/// (store_lattice=False)"* — false twice over, since every caller that can
+/// reach that line sets the flag `true` and `LatticeProof` has no `kb_index`
+/// for any setting of it to fill.
+///
+/// The stage's acceptance is *"the fallback message states the real reason,
+/// and agrees with `--view`'s help text"*, and agreement by inspection is what
+/// let them part in the first place. `ein-render` cannot see `cmdline.rs`, so
+/// the check lives here, where the constant and the golden are both in scope.
+#[test]
+fn the_full_view_fallback_agrees_with_the_help_text() {
+    let note = ein_render::FULL_VIEW_FALLBACK;
+    assert!(
+        note.contains("per-commitment SetNode DAG"),
+        "the DOT note no longer names what is missing: {note:?}"
+    );
+    assert!(
+        !note.contains("store_lattice"),
+        "the DOT note is back to naming a flag that decides nothing: {note:?}"
+    );
+    let shape = std::fs::read_to_string(golden_path("ein-cli", "help_shape.txt"))
+        .expect("golden/help_shape.txt");
+    assert!(
+        shape.contains("per-commitment SetNode DAG"),
+        "`ein render lattice --view`'s help no longer names the per-commitment \
+         SetNode DAG, so the two surfaces have parted again (CD-L3)"
+    );
+}

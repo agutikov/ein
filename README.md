@@ -156,6 +156,7 @@ relation per attribute, `std.bijection`) and
 [`examples/zebra.ein`](examples/zebra.ein) (one generic `co-located` relation,
 `std.slots`):
 
+<!-- transcript: ein solve examples/zebra2.ein -->
 ```sh
 $ ein solve examples/zebra2.ein
 solve · examples/zebra2.ein
@@ -178,6 +179,7 @@ solve · examples/zebra2.ein
   result
     The Norwegian drinks water in House-1; the Japanese owns zebra in House-5
 ```
+<!-- /transcript -->
 
 Every word of that answer comes from the **puzzle**, not the engine: each
 `(relation … :why "{?1} … {?2}")` template renders a fact, and the
@@ -625,7 +627,7 @@ reopen them named).
 | `ein.rs/crates/ein-infer/` | the engine: compile → match → saturate → the NAF boundary → the hypothesis loop; no-goods, contradiction, verdict |
 | `ein.rs/crates/ein-einb/` | the `.einb` binary KB container — the one crate whose `cast.rs` is permitted `unsafe`, audited |
 | `ein.rs/crates/ein-render/` | the DOT views, the markdown trace, the state / lattice dumps, the JSON summary |
-| `ein.rs/crates/ein-cli/` | the `ein` binary — `solve` · `saturate` · `render` · `kb` |
+| `ein.rs/crates/ein-cli/` | the `ein` binary — `solve` · `test` · `saturate` · `render` · `kb` |
 | `ein.rs/crates/{ein-corpus,ein-parity}/` | dev-only: the corpus manifest, fixture helpers and the bench set; the one definition of narration-vs-content |
 | [`stdlib/`](stdlib/README.md) | the ein-lang standard library, seven `std.*` modules; `MANIFEST.sha256` keeps the embedded copy honest |
 | [`corpus/`](corpus/README.md) | `corpus.toml` — one entry per `.ein` with the runs it is exercised under and a measured `cost_ms`; `fuzz_findings/` |

@@ -58,6 +58,18 @@ between two markers, compared text-to-text by a test in that same file, so
 `cargo test --workspace` is what keeps it true. **Do not edit `rust.md`'s code
 block by hand** — edit the test, run it, paste.
 
+The **one part of those five pages that describes the present** is the 🏛
+banner at the top of each, and it is the same text five times. It went stale
+the day after it was written — added 2026-08-23, and `ein test` landed
+2026-08-24 — so the maintained part of five history pages named four of five
+subcommands for a milestone (M1e `CD-L1`). It is delimited by
+`<!-- api-history-banner -->` so the next edit finds all five, and
+[`ein-cli/tests/api_banner.rs`](../../ein.rs/crates/ein-cli/tests/api_banner.rs)
+holds them to each other and to `golden/help_shape.txt`'s subcommand list. The
+markers sit **outside** the banner, and outside the contract below it that the
+banner calls *kept whole and unedited* — the same lesson as the paragraph
+above, one level up.
+
 ## The pipeline, either way
 
 Both surfaces are faces of the same flow

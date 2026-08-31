@@ -199,9 +199,15 @@ renders it as a DAG (`render_lattice(proof | snapshot, view=)`):
 - Colour by verdict — **alive** grey, **dead** red, **solution** green.
   Dead nodes carry their `unsat_core` in the tooltip and a dashed
   back-edge labelled with the lifted `learned_clause` (no-good).
-- Two views: `full` (every commitment; needs `store_lattice=True`) and
-  `solution` (survivors + pruned siblings — the small sub-DAG the trace
-  embeds).
+- Two views: `full` (every commitment) and `solution` (survivors + pruned
+  siblings — the small sub-DAG the trace embeds). **`full` always falls back
+  to `solution`**, and not for want of `store_lattice`: `solve` stores no
+  per-commitment `SetNode` DAG at all, under any flag, so the view emits one
+  DOT comment saying so and is otherwise the `solution` view. That is what
+  `ein render lattice --view full`'s help says, and since M1e S1e.4.6
+  (`CD-L3`) what the DOT says too —
+  `presentation_semantics::the_full_lattice_view_is_the_solution_view_plus_one_honest_note`
+  holds the two to each other, and the note to the help text.
 
 Fed a `LatticeSnapshotV1`
 ([`dump/snapshot.rs`](../../../../ein.rs/crates/ein-render/src/dump/snapshot.rs))
