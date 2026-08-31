@@ -157,6 +157,41 @@ the doc stages, because every other stage in the phase changes a count.
 > the `Aborted` arm's *third* asymmetry, `verdict.reason`, which the review had
 > not named.
 
+> ## ✅ Closed 2026-08-31 — nine stages, 36 findings, every acceptance line met
+>
+> `./run_tests.sh` green at the boundary: **804 tests over 90 targets**, and
+> that is the number `README.md` quotes, dated, from this run. All 36
+> dispositioned in the [milestone index](../README.md#the-findings), none
+> empty.
+>
+> **The three mechanisms held, and each cost more than its findings.** The
+> `k`-vs-`solution_nodes` seam was **nine** copies over three surfaces, one of
+> which no test could see. `AR-M1`'s four parallel-copy pairs kept producing
+> the same shape after they were named — `MA-M2`'s two comments each had a
+> correct copy elsewhere, and `CD-M2`'s page had a whole missing event kind. And
+> *a claim nothing runs* was the biggest by an order of magnitude: `DO-M2` was
+> six dangling references in the review and **264** once the instrument that
+> already existed was pointed past the one tree it had ever been run on.
+>
+> **Five findings turned out to be larger than reported**, all in the same
+> direction — the review sampled and the sample understated:
+> `CD-M1` three pages → five, `CD-M2` three items → four (`warn` had no row at
+> all), `MA-M3` one increment site → three, `MA-M4` two disagreeing snapshots →
+> three with no owner, `DO-M2` six links → 264.
+>
+> **What the phase left running.** Six new checks, none over fifty lines:
+> `events_reference.rs` (emitters ↔ schema, both directions),
+> `the_page_and_the_file_name_the_same_tests`,
+> `the_inlining_route_the_stdlib_readme_documents_round_trips`,
+> `the_state_key_merge_counter_is_not_a_constant_zero`,
+> `the_injected_contradiction_fans_out_and_the_union_overstates_it`, and the
+> whole-tree link sweep, which is now the gate's **seventh** static step.
+>
+> **And one rule.** [Q-M1e.4](../open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all):
+> an exact number carries the **command** that re-takes it, the **date** it was
+> taken, or the **test** that pins it — and a number that can carry none is not
+> written down. Applied to prose in S1e.3.8 and to code comments in S1e.3.9.
+
 ## Acceptance
 
 - All 36 findings dispositioned in the
