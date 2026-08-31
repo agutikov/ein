@@ -310,7 +310,9 @@ fn solve_command() -> Command {
             "lattice-sanity-check",
             "S1.5b.27 regression: for every alive size-k≥2 \
              commitment, verify every (k-1)-subset parent path \
-             saturates to the same kb (costs k+1 saturations each)",
+             saturates to the same kb (1 + k + one per alive parent, \
+             so up to 2k+1 each; adds compile/enqueue/fire/quiesce \
+             events to --events)",
         ))
         // ── search order (shuffle invariance — S1.5b.31) ──
         .arg(flag(

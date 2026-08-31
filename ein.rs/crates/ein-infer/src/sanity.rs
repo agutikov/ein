@@ -1,9 +1,9 @@
 //! S1.5b.27 — the saturation-commutativity sanity check.
 //!
 //! Deferred out of [S1a.4.5](../../../../docs/history/m1a_rust/README.md#s1a45--the-solve-loop-and-verdict-synthesis)
-//! ("moves to P1a.5") and landed here: it is off by default, costs `k+1`
-//! saturations per checked commitment, and has no bearing on a shipping
-//! verdict — but `ein solve -y` turns it on, and a flag whose *effect* is
+//! ("moves to P1a.5") and landed here: it is off by default, costs up to
+//! `2k+1` saturations per checked commitment, and has no bearing on a
+//! shipping verdict — but `ein solve -y` turns it on, and a flag whose *effect* is
 //! absent is not a drop-in replacement. It is invisible at T0/T1/T3, which is
 //! why the T2 event trace is what found it missing.
 //!
@@ -145,7 +145,22 @@ pub fn check_commutativity(
                 terms,
                 ast,
                 events,
-                memo: SharedMemo::default(),
+                // **The run's memo, not a fresh one** — M1e S1e.4.8, `MA-L4`.
+                // A plan is a pure function of `(ast, rule, activator)`, the
+                // order stays per-engine, and the direct path six lines up
+                // already shares it, so the fresh memo was a threading miss
+                // rather than a decision: it made every checked commitment
+                // recompile every plan per parent — 2 500 `compile_rule` calls
+                // on `zebra2 -e -y` against the run's 125 distinct plans.
+                //
+                // **It does not change the event stream, and the finding said
+                // it would.** `compile` fires on an *engine* miss, never a
+                // memo miss (`engine.rs`, which says so at the site), so a
+                // shared memo removes exactly zero events. What `-y` does to
+                // the stream is real and is documented where `-y` is — it is
+                // inherent to running the extra saturations through a
+                // narrating `Events`, not to this line.
+                memo: memo.clone(),
             };
             let mut sat = Saturator::new(&mut s)?;
             sat.saturate(&mut s, None, &mut |_| {})?;

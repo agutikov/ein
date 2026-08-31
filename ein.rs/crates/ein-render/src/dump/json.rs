@@ -217,7 +217,12 @@ mod tests {
 
     #[test]
     fn non_ascii_is_escaped_as_cpython_escapes_it() {
-        // `ensure_ascii=True` is CPython's default and no caller overrides it.
+        // `ensure_ascii=True` is CPython's default, and the two `ein.py` call
+        // sites that overrode it are accounted for: `_events.py` did, and
+        // `ein-infer`'s event writer reproduces that (`events.rs`); `_summary.py`
+        // did, and `ein-cli`'s `summary::write` deliberately does not — M1e
+        // S1e.4.8, `MA-L3`, where the reason is written. Everything else took
+        // the default, and this writer is what those callers get.
         assert_eq!(dumps(&Json::str("é")), r#""\u00e9""#);
         assert_eq!(dumps(&Json::str("⊥")), r#""\u22a5""#);
         assert_eq!(dumps(&Json::str("𝄞")), r#""\ud834\udd1e""#);

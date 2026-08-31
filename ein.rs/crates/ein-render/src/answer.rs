@@ -213,7 +213,8 @@ pub fn render_answer(
                 format!("No solution — the constraints are contradictory (unsat core: {core}).")
             } else {
                 format!(
-                    "No model found — the search did not exhaust the lattice                      (refuted so far: {core})."
+                    "No model found — the search did not exhaust the lattice \
+                     (refuted so far: {core})."
                 )
             }
         }

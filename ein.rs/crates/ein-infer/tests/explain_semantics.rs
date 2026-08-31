@@ -1280,3 +1280,36 @@ fn the_injected_contradiction_fans_out_and_the_union_overstates_it() {
         "witnesses / union / smallest / largest single frontier"
     );
 }
+
+/// **`DEFAULT_PRIORITY` is 1000 and fires last** — M1e S1e.4.8, `MA-L1`.
+///
+/// [`priority_bands_order_the_firing_sequence`] pins the *direction* (lower
+/// first) on a 100 / 200 / 300 fixture. It cannot pin the constant's **value**,
+/// and nothing else can either: 36 corpus rules carry no `:priority` and not
+/// one of them shares a file with a banded rule, so every golden and every
+/// digest is identical for any default above 900 — which is how the comment at
+/// the site came to describe a mid-band that does not exist and stay there for
+/// a milestone.
+///
+/// So the rules sandwich it. `lo` at 999 must fire before the undeclared rule
+/// and `hi` at 1001 after it, which fails for **every** change to the number,
+/// and `hyp` at 900 is there because the review claimed that band does not
+/// exist and three corpus rules declare it.
+#[test]
+fn the_default_priority_is_1000_and_fires_last() {
+    let mut f = load_text(
+        "(relation a T) (relation b T) (relation c T) (relation d T) (relation e T)\n\
+         (a X)\n\
+         (rule unbanded () :match (a ?x) :assert (d ?x) :why \"none\")\n\
+         (rule hi () :match (a ?x) :assert (e ?x) :why \"1001\" :priority 1001)\n\
+         (rule hyp () :match (a ?x) :assert (c ?x) :why \"900\" :priority 900)\n\
+         (rule lo () :match (a ?x) :assert (b ?x) :why \"999\" :priority 999)\n",
+    );
+    let run = f.saturate();
+    assert_eq!(
+        run.productive_rules(&f.terms),
+        ["hyp", "lo", "unbanded", "hi"],
+        "declared in a different order, the four must fire by ascending \
+         priority with the undeclared rule between 999 and 1001"
+    );
+}

@@ -39,9 +39,46 @@ use crate::firing::{BindingKey, Env, FireError, Firing, build_fact, fire};
 use crate::match_::Matcher;
 use crate::plan::{NafGuard, Plan, Reg, Slot, Span, Step};
 
-/// Rules with no `:priority` sit between the eliminate band (300) and the
-/// hypothesis band (900) — well-defined, and rarely hit because every shipping
-/// rule declares one.
+/// The priority a rule with no `:priority` runs at — **above every band any
+/// program declares, so an undeclared rule fires last.**
+///
+/// The agenda is a min-heap on `(priority, tiebreaker)` (`Ranked` below,
+/// popped in the closure step) and the parked set a `BTreeSet` walked
+/// ascending, so a *lower* number fires *earlier* — `01_grammar.md`'s "rule
+/// ordering — lower = earlier". 1000 is past the last boundary `ein-cli`'s
+/// `band_label` knows (`hypothesis`, ≥ 900), which is why `ein saturate
+/// --dump` prints such a rule `unbanded` rather than putting it in a band.
+///
+/// This said *"sit between the eliminate band (300) and the hypothesis band
+/// (900)"* until M1e S1e.4.8 (`MA-L1`) — wrong in the direction that matters,
+/// and inherited: it is a verbatim port of `ein.py`'s own comment, whose
+/// `heapq` was a min-heap too, so it was wrong there as well.
+///
+/// The bands that exist are fifteen values over 374 occurrences,
+///
+/// ```text
+/// grep -rhoE ':priority +-?[0-9]+' stdlib examples tests --include='*.ein'
+/// ```
+///
+/// 2026-09-01 — of which the stdlib spans **90–500** and declares one on all
+/// 77 of its rules. The 900 band the old wording named as a ceiling **does
+/// exist**, contrary to the review: three `hypothesis-contradiction` rules
+/// under `examples/saturation/` carry it, continuously since `d94b7d9`. Only
+/// the stdlib stops at 500. So this constant is *above* the hypothesis band,
+/// not between it and 300.
+///
+/// Firing last is the intent rather than an artefact of the number: a rule
+/// nobody banded should not preempt one somebody did. **Nothing in the corpus
+/// can show it** — 36 rules carry no `:priority`, 23 of them under
+/// `examples/broken/`, and no program mixes a banded rule with an unbanded
+/// one, so every golden and every digest is identical for any default above
+/// 900. That is why the value is pinned by
+/// `explain_semantics::the_default_priority_is_1000_and_fires_last` instead,
+/// which sandwiches it between a 999 and a 1001.
+///
+/// `obligations::priority_of` returns this too, where it orders the **report**
+/// of what a state owes rather than the agenda — a second consumer neither the
+/// review nor this comment had.
 pub const DEFAULT_PRIORITY: i64 = 1000;
 
 /// The kernel-native symmetric mirror trigger. A relation marked
@@ -1757,7 +1794,8 @@ mod tests {
         assert_eq!(key(&fresh), key(&resumed), "the fixpoints differ");
         assert!(
             n_resumed < n_fresh,
-            "the resumed run narrated {n_resumed} firings and the fresh one              {n_fresh} — the point is that it narrates fewer"
+            "the resumed run narrated {n_resumed} firings and the fresh one \
+             {n_fresh} — the point is that it narrates fewer"
         );
     }
 

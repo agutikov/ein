@@ -1017,3 +1017,51 @@ fn the_full_lattice_view_is_the_solution_view_plus_one_honest_note() {
          the other direction (CD-L3)"
     );
 }
+
+/// **A truncated `Contradiction` headline is one sentence** — M1e S1e.4.8,
+/// `MA-L2`.
+///
+/// It was not: `answer.rs` carried a run of **22 literal spaces** between
+/// `lattice` and `(refuted so far: …)`, and the arithmetic says what happened
+/// — the sibling `Ambiguity` arm 26 lines above continues at 21 spaces of
+/// indent, and 1 (the space before the `\`) + 21 = 22. A reflow lost a
+/// line-continuation.
+///
+/// It survived because **nothing asserted either `Contradiction` headline**.
+/// `corpus_shapes.md5` banked it on 31 entries and a digest can say only
+/// *that* a rendering moved. This is the `k = 0` counterpart of
+/// [`an_unexhausted_ambiguity_says_the_count_is_a_lower_bound`] directly above
+/// — the two verdicts whose headline qualifies its own count — and it sits
+/// here for the reason this file's module doc gives: a golden refreshed for a
+/// good reason loses the claim behind it, and these are the claims.
+#[test]
+fn a_truncated_contradiction_headline_is_one_sentence() {
+    let run = solve_file("examples/saturation/type-exclusivity/pets.ein", false, None);
+    let mut terms = run.terms;
+    let answer = &run.solved.answer;
+    assert!(
+        matches!(
+            answer,
+            ein_infer::verdict::Answer::Verdict(Verdict::Contradiction { .. })
+        ),
+        "the fixture stopped being a k = 0 run"
+    );
+    let truncated = render_answer(&run.ast, &mut terms, &run.kb, answer, false);
+    assert!(
+        !truncated.contains("  "),
+        "the truncated headline has a run of spaces in it again: {truncated:?}"
+    );
+    assert!(
+        truncated.starts_with(
+            "No model found — the search did not exhaust the lattice (refuted so far: "
+        ),
+        "{truncated:?}"
+    );
+    // …and the exhausted counterpart, so the assertion above is about the
+    // qualifier and not about the file.
+    let exhausted = render_answer(&run.ast, &mut terms, &run.kb, answer, true);
+    assert!(
+        exhausted.starts_with("No solution — the constraints are contradictory (unsat core: "),
+        "{exhausted:?}"
+    );
+}

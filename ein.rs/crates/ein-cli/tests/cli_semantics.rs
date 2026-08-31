@@ -2110,3 +2110,50 @@ fn a_file_that_starts_like_a_container_but_is_not_one_is_text_in_either_build() 
         );
     }
 }
+
+/// **The summary escapes non-ASCII where the event stream does not** — M1e
+/// S1e.4.8, `MA-L3`.
+///
+/// `ein.py` passed `ensure_ascii=False` at **two** call sites, and this port
+/// reproduced one of them: `--events` emits literal UTF-8, `--json-summary`
+/// emits `\uXXXX`. That is a real, live divergence from the stated parity
+/// target, **accepted** with the reason at `summary::write` — and this is what
+/// holds the premise the acceptance rests on, since the argument is *every
+/// consumer parses the summary, so the encoding is invisible to all of them*.
+///
+/// The carrier is an obligation `:why`, which is where a template string
+/// reaches both artefacts of one run. The assertions are about **encoding**
+/// and not about wording, so `stdlib/slots.ein`'s sentence can change freely.
+#[test]
+fn the_summary_escapes_non_ascii_where_the_event_stream_does_not() {
+    let dir = Scratch::new("ensure-ascii");
+    let summary = dir.at("s.json");
+    let events = dir.at("e.jsonl");
+    let r = ein(&[
+        "solve",
+        "tests/stdlib/slots/09_owed_room.ein",
+        "--json-summary",
+        &summary,
+        "--events",
+        &events,
+    ]);
+    assert_eq!(r.code, 0, "{}{}", r.out, r.err);
+
+    let s = read(&summary);
+    let e = read(&events);
+    assert!(
+        s.is_ascii(),
+        "the summary is no longer ASCII-only — if that is intended, \
+         `summary::write`'s doc comment is the thing to change first"
+    );
+    assert!(
+        s.contains("\\u"),
+        "nothing in the summary was escaped, so this test is vacuous: the \
+         fixture stopped carrying a non-ASCII `:why`"
+    );
+    assert!(
+        !e.is_ascii(),
+        "the event stream stopped emitting literal UTF-8, which is the half \
+         that *is* ein.py-faithful (`events::strings_escape_the_way_ensure_ascii_false_does`)"
+    );
+}

@@ -210,11 +210,22 @@ that, and three things become derivable that a typed integer never was:
   pre-refactor equivalent — states the graph, the strata, the derived bands and
   the diagnostic. That page is [S1f.5.20](s1f.5.20_docs_refactor.md)'s only
   otherwise-empty file.
-- [`MA-L1`](../../m1e_review_processing/README.md#the-findings) — *`DEFAULT_PRIORITY`'s doc comment is
-  arithmetically self-contradicting* (`1000`, described as sitting *"between
-  the eliminate band (300) and the hypothesis band (900)"*) — is dispositioned
-  **fixed by removal**, and [S1e.4.8](../../m1e_review_processing/p1e.4_low/s1e.4.8_maintainability.md)
-  is told so rather than fixing a comment on a constant that is leaving.
+- ~~[`MA-L1`](../../m1e_review_processing/README.md#the-findings) — is
+  dispositioned **fixed by removal**, and
+  [S1e.4.8](../../m1e_review_processing/p1e.4_low/s1e.4.8_maintainability.md)
+  is told so rather than fixing a comment on a constant that is leaving.~~
+  **Overtaken 2026-09-01**: S1e.4.8 fixed it. Under
+  [`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md) Rule 2 the
+  premise *the constant is leaving* is enforced by nothing that fails when it
+  stops being true — this stage may end in a written refusal, and it has not
+  started — and a deferral would have needed a note **at the site** anyway,
+  which costs the same edit as the truth. What is there now is the sort
+  direction, the measured bands with their command and date, the second
+  consumer (`obligations::priority_of`, which nothing had written down), and
+  `explain_semantics::the_default_priority_is_1000_and_fires_last`. **If this
+  stage removes `:priority`, all of it goes with the constant** — which is the
+  normal cost of a pin, and cheaper than a wrong comment standing for an
+  unscheduled milestone.
 
 ## Tasks
 

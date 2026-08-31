@@ -659,8 +659,49 @@ pub fn build_aborted(
     )
 }
 
-/// `json.dumps(summary, indent=2, ensure_ascii=False)` with a trailing
+/// The summary as JSON, two-space indented, **ASCII-only**, with a trailing
 /// newline.
+///
+/// # The one place this diverges from `ein.py`, deliberately — M1e S1e.4.8
+///
+/// This said `json.dumps(summary, indent=2, ensure_ascii=False)` until then,
+/// which was a **true statement about the parity target and a false one about
+/// this function**: `dumps_indent` escapes every non-ASCII character. `MA-L3`
+/// reported it as comment-against-comment and it is not — the question is
+/// settleable, and not from the goldens (neither `from_ein_py/` directory
+/// holds a summary; none exists anywhere in the tree). It is settleable from
+/// git: `git show 4c1a5b3^:ein.py/src/ein/cli/_summary.py` line 208 is
+/// literally that call, `ensure_ascii=False` and all.
+///
+/// So the divergence is real and live — `ein solve examples/zebra.ein
+/// --json-summary` emits `\u2014` where the *same run*'s `--events` emits a
+/// literal em dash, because `ein-infer`'s event writer reproduced `ein.py`'s
+/// **other** override exactly (`events.rs`, pinned by
+/// `strings_escape_the_way_ensure_ascii_false_does`). The port knew what the
+/// flag meant, implemented it once, and missed it once.
+///
+/// **Accepted rather than fixed**, and the reasons are not "it is only a
+/// comment":
+///
+/// - there is nothing left to be byte-identical *to* — `ein.py` left at
+///   S1a.10.5 and the T3 gate that would have compared this went with it, so
+///   "match `_summary.py:208`" means reproducing a call signature from git
+///   history rather than a checked output;
+/// - the summary is documented as a **parsed**, self-describing artefact and
+///   every reader in the tree parses it, so `json.loads` and `serde_json` give
+///   identical values from either encoding — the divergence is invisible to
+///   every consumer that exists;
+/// - an ASCII-only artefact survives a pipeline, a locale and a terminal that
+///   an em dash does not, which is a real virtue for the surface an embedder
+///   is pointed at.
+///
+/// What holds the premise is
+/// `cli_semantics::the_summary_escapes_non_ascii_where_the_event_stream_does_not`.
+/// The alternative, if a consumer ever wants the bytes: thread `ensure_ascii`
+/// through `dump/json.rs`'s writer and point **this function alone** at the
+/// non-escaping variant — `--dump-states` and `test --json-report` must keep
+/// the default, since `_lattice_dump.py` and `_serialise.py` took CPython's,
+/// and a blanket change would introduce a divergence while closing one.
 pub fn write(path: &str, summary: &Json) -> std::io::Result<()> {
     std::fs::write(path, dumps_indent(summary) + "\n")
 }

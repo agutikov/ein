@@ -154,3 +154,147 @@ after they are both fixed.
 cannot know*. The other three are edits. If the phase is compressed, `MA-L1`,
 `MA-L4` and `MA-L5` are one commit and half an hour; `MA-L2` needs the
 re-bless named; `MA-L3` needs the golden hunt or the honest non-answer.
+
+---
+
+## ✅ Done 2026-09-01 — four comments, and two of them were wrong about ein.py rather than about the code
+
+`MA-L5` was closed at S1e.2.1, as this stage's *Depends on* line said it would
+be. The other four, and **three of them are larger or different than reported**.
+
+### `MA-L1` — fixed, and the review's sub-claim is refuted
+
+The direction is settled by the comparator, not by reading: the agenda is a
+min-heap on `(priority, tiebreaker)` and the parked set a `BTreeSet` walked
+ascending, so **lower fires earlier** and 1000 fires **last**. Confirmed
+empirically — a four-rule program declared 1001 / 900 / 999 / none fires
+`hyp, lo, unbanded, hi`.
+
+Three things the review did not have:
+
+- **The 900 band exists.** It says *"no 900 band exists"*; three
+  `hypothesis-contradiction` rules under `examples/saturation/` declare it,
+  continuously since `d94b7d9`. Only the **stdlib** stops at 500 — a fix
+  written from the review's text would have put a second false claim at the
+  site.
+- **The comment is a verbatim port of `ein.py`'s**, whose `heapq` was also a
+  min-heap. The defect predates the port.
+- **A second consumer**: `obligations::priority_of` returns this constant to
+  order the **report** of what a state owes, which nothing had written down.
+
+**The value is not merely unpinned, it is unobservable**: 36 corpus rules carry
+no `:priority` and not one shares a file with a banded rule, so every golden
+and digest is identical for any default above 900 — which is how the comment
+drifted for a milestone. `explain_semantics::the_default_priority_is_1000_and_fires_last`
+**sandwiches** it between 999 and 1001, so it fails for any change to the
+number rather than merely to the band.
+
+**A cross-plan disagreement, resolved.** M1f's
+[S1f.5.6](../../m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/s1f.5.6_rule_priority.md)
+claimed `MA-L1` as *"fixed by removal, and S1e.4.8 is told so"*. Under
+`standard_of_proof.md` Rule 2 the premise *the constant is leaving* is enforced
+by nothing — that stage may end in a written refusal and has not started — and
+a deferral needs a note **at the site** anyway, which costs the same edit as
+the truth. M1f's line is corrected rather than left false.
+
+### `MA-L2` — fixed and pinned, and **smaller** than reported
+
+22 literal spaces, and the arithmetic confirms the reflow story: the sibling
+`Ambiguity` arm continues at 21 spaces of indent, and 1 + 21 = 22.
+
+But *"it reaches output through `render_answer` on every non-exhausted `k = 0`
+run"* is **false**: `ein-cli` never calls `render_answer`. Every CLI `k = 0`
+run renders `render_solution_table`, whose Contradiction arm is the untouched
+single-spaced wording. Where it lands is the `corpus_shapes.md5` digest on
+**31** entries, and the `ein-render` public API — which `docs/api/rust.md`
+documents as the *explain* crate, so it is a surface an embedder is pointed at.
+That correction is written here because a reader who believes the finding will
+look for the spaces in `ein solve` output and not find them.
+
+The pinning gap is exactly as reported and is the finding's real content:
+**nothing asserted either `Contradiction` headline.**
+`a_truncated_contradiction_headline_is_one_sentence` sits beside
+`an_unexhausted_ambiguity_says_the_count_is_a_lower_bound` — the `k = 0` and
+`k > 1` counterparts of the same claim, in one file, in one style.
+
+**The re-bless, predicted and then measured: 31 of 9 015, all `trace[answer]`,
+no line count changed.** That equality is the check that the substitution is
+intra-line.
+
+**And the sibling sweep is not empty.** Every string literal in `ein.rs/crates`
+with a run of 3+ spaces between two non-space characters: 35 sites, all but one
+deliberate column alignment (`printers.rs`, `saturate.rs`, `hypgen.rs`,
+`shape.rs`). The one that is prose is `saturator.rs`'s
+`the_resumed_run_narrated…` assertion message — **14 spaces**, the same lost
+continuation, in text only a failing test prints. Fixed with it.
+
+### `MA-L3` — accepted, and the question **is** settleable — from git, not from the goldens
+
+T1e.4.8.3 predicted the answer might be *we cannot know*, because neither
+`from_ein_py/` directory holds a summary golden. It does not — and the evidence
+was never the goldens. `git show 4c1a5b3^:ein.py/src/ein/cli/_summary.py` line
+208 is literally `json.dumps(summary, indent=2, ensure_ascii=False)`.
+
+So the review's disjunction — *"one of the two is wrong about the parity
+target"* — is **false**. Both are wrong, differently, and only one was
+reported:
+
+| comment | wrong about |
+|---|---|
+| `summary.rs`'s `write()` | **the code it documents** — `dumps_indent` escapes everything non-ASCII. It is a *true* statement about ein.py |
+| `dump/json.rs`'s *"no caller overrides it"* | **ein.py** — two call sites did, and this port implements one of them |
+
+**The port knew what the flag meant, implemented it once, and missed it once**:
+`ein-infer`'s event writer reproduces `_events.py`'s override exactly, so the
+*same run* emits `—` in `--json-summary` and a literal em dash in
+`--events` — verified on `tests/stdlib/slots/09_owed_room.ein`. A latent parity
+bug that went live at M1d S1d.2.4, four days after the thing it diverged from
+was deleted.
+
+**Accepted**, because there is nothing left to be byte-identical to, every
+reader in the tree parses the summary (so the two encodings give identical
+values), and an ASCII-only artefact survives a pipeline and a locale that an em
+dash does not. The premise the acceptance rests on is what
+`cli_semantics::the_summary_escapes_non_ascii_where_the_event_stream_does_not`
+holds, asserting **encoding** and not wording. The alternative, and its one
+trap — a blanket change to the writer would move `--dump-states` and
+`--json-report`, whose CPython default is *correct* — is named at the site.
+
+### `MA-L4` — split: the memo is fixed, the **cause** is refuted, and the documented cost was wrong
+
+- **The memo: fixed.** A plan is a pure function of `(ast, rule, activator)`,
+  the direct path six lines up already shares it, and there is no design
+  statement anywhere for the fresh one — a threading miss. Measured on
+  `zebra2 -e -y`: **66.9 → 63.1 ms**.
+- **"…polluting the live event stream": refuted as to cause, and the
+  refutation is at the site.** The `compile` event fires on an **engine** miss,
+  never a memo miss — `engine.rs` says so in a comment three lines above the
+  emitter — so sharing the memo removes **zero** events. The stage's own
+  instruction (*"pass the run's shared memo and both go away"*) is false on its
+  second half, and a reader who is not told will re-file this finding.
+- **What `-y` does to the stream is real, and it is four kinds, not one.**
+  Measured on `examples/branching/04_two_levels.ein -e`: `compile` 96 → 336,
+  `enqueue` 168 → 1 296, `fire` 87 → 143, `quiesce` 21 → 81. `fire` is the one
+  that matters — derivation lines no entering produced. It is inherent to
+  running the extra saturations through a narrating `Events`, so it is a
+  **documented property of the flag**, stated where `-y` is documented.
+- **NEW — the cost is wrong in three places.** `k+1` is inherited from ein.py's
+  docstring, which counted the direct path and each parent's
+  `try_commitment_set` and forgot each *alive* parent's re-saturation. The code
+  says `1 + k + (alive parents)` — up to **`2k+1`**, five per size-2
+  commitment where all three documents said three. Corrected in `sanity.rs`,
+  in `--help` (one `help_shape.txt` line, blessed) and in `configuration.md`.
+  It is a `MA-L1` sibling: a number wrong in the direction that matters, on the
+  one flag whose whole documented justification is its cost.
+
+### One defect found on the way
+
+`events_reference.rs` banked a **file:line** — `saturator.rs:1586` — for the
+single `emit` whose kind is not a literal, and `MA-L1`'s doc comment moved it
+to :1623 thirty lines earlier in the file. A test failing for a reason
+unrelated to what it checks. It banks the **file** now, which is what the check
+actually needs: *there is exactly one, and it is the known one*.
+
+**Gate:** `./run_tests.sh` — exit 0, **821 tests**. Two goldens moved, both
+named in advance: 31 `trace[answer]` digests (`MA-L2`) and one `help_shape.txt`
+line (`MA-L4`).

@@ -75,7 +75,7 @@ fn emitted_kinds() -> BTreeSet<String> {
     let mut non_literal = Vec::new();
     for path in &files {
         let src = std::fs::read_to_string(path).expect("a source file");
-        for (n, line) in src.lines().enumerate() {
+        for line in src.lines() {
             // A comment is not a call site, and `events.rs`'s own module doc
             // spells `events.emit(...)` to explain the guard around it.
             if line.trim_start().starts_with("//") {
@@ -101,11 +101,18 @@ fn emitted_kinds() -> BTreeSet<String> {
                     // callers are matched above — and a second would make this
                     // check quietly incomplete, so it is an error rather than
                     // a skip.
-                    None if !rest.starts_with(')') => non_literal.push(format!(
-                        "{}:{}",
-                        path.strip_prefix(repo_root()).unwrap_or(path).display(),
-                        n + 1
-                    )),
+                    // The **file**, not the line: this used to bank
+                    // `saturator.rs:1586` and broke on any edit above it —
+                    // M1e S1e.4.8 moved it to :1623 by growing a doc comment
+                    // thirty lines earlier, which is a test failing for a
+                    // reason unrelated to what it checks. What the check needs
+                    // is *there is exactly one, and it is the known one*.
+                    None if !rest.starts_with(')') => non_literal.push(
+                        path.strip_prefix(repo_root())
+                            .unwrap_or(path)
+                            .display()
+                            .to_string(),
+                    ),
                     None => {}
                 }
             }
@@ -113,7 +120,7 @@ fn emitted_kinds() -> BTreeSet<String> {
     }
     assert_eq!(
         non_literal,
-        ["ein.rs/crates/ein-infer/src/saturator.rs:1586"],
+        ["ein.rs/crates/ein-infer/src/saturator.rs"],
         "an `emit` with a non-literal kind that this scan cannot read. Either \
          pass a literal, or route it through a helper whose call sites do — as \
          `emit_boundary` does for park/retire."
