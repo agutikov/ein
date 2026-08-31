@@ -407,6 +407,7 @@ fn the_slow_flag_still_describes_the_sweep() {
     let ceiling = (ein_corpus::manifest::SLOW_MS * COST_FACTOR as u64) as u128;
     let floor = (ein_corpus::manifest::SLOW_MS / COST_FACTOR as u64) as u128;
     let mut bad: Vec<String> = Vec::new();
+    let mut drift: Vec<String> = Vec::new();
     for e in &manifest.entry {
         let Some(took) = total.get(e.path.as_str()) else {
             continue; // not in this selection.
@@ -414,7 +415,8 @@ fn the_slow_flag_still_describes_the_sweep() {
         let ms = took.as_millis();
         if !e.slow && ms >= ceiling {
             bad.push(format!(
-                "  {}: {ms} ms of cells and no `slow` flag (threshold {} ms)",
+                "  {}: {ms} ms of cells and no `slow` flag (threshold {} ms; \
+                 machine load?)",
                 e.path,
                 ein_corpus::manifest::SLOW_MS
             ));
@@ -429,14 +431,47 @@ fn the_slow_flag_still_describes_the_sweep() {
         // The recorded number, where it is near enough to the threshold to be
         // deciding anything. Below that it is documentation: a 40 ms entry
         // reading 120 ms says the machine is busy, not that the corpus moved.
+        //
+        // **Reported per commit, asserted only under `EIN_CORPUS_SLOW`** —
+        // M1e S1e.4.5, `TE-L1`. This is the tightest wall clock in the
+        // workspace: measured 2026-09-01, the three entries it judges come in
+        // at 2.45×, 3.02× and 2.96× of their recorded `cost_ms` against a 4×
+        // band, so a runner three times slower than idle reddens it — and a
+        // red corpus test reads as an engine regression, because everything
+        // else here is deterministic by construction. The two flag directions
+        // above keep their per-commit assertion: their headroom is the
+        // threshold itself (3.9× on the worst entry), and they are what
+        // notices an entry crossing it.
+        //
+        // Nightly runs this file with `EIN_CORPUS_SLOW=1` **and** `--release`
+        // (`.github/workflows/nightly.yml`), which is the profile `cost_ms`
+        // was measured on — so gating it does not weaken the band, it moves
+        // it to where it is truer. If that env line ever loses
+        // `EIN_CORPUS_SLOW`, this assertion stops existing and nothing says
+        // so: `gate_steps.rs` diffs the **per-commit** workflow only.
         if let Some(c) = e.cost_ms.filter(|c| *c as u128 >= floor) {
             let (c, f) = (c as u128, COST_FACTOR as u128);
             if ms > c * f || ms * f < c {
-                bad.push(format!(
-                    "  {}: recorded cost_ms = {c}, swept in {ms} ms — outside {f}×",
+                drift.push(format!(
+                    "  {}: recorded cost_ms = {c}, swept in {ms} ms — outside {f}× \
+                     (machine load? this sweep is the `dev` profile)",
                     e.path
                 ));
             }
+        }
+    }
+    if !drift.is_empty() {
+        if include_slow() {
+            bad.extend(drift);
+        } else {
+            // Visible with `-- --nocapture` and on a failing run, and that is
+            // all it is: a report, not a check. The check is the nightly's.
+            eprintln!(
+                "corpus cost drift ({} entry(s)), reported not asserted at this \
+                 tier:\n{}",
+                drift.len(),
+                drift.join("\n")
+            );
         }
     }
     assert!(

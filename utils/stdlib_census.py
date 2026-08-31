@@ -471,7 +471,14 @@ def report(rules: list[dict], census: dict, args) -> int:
               f"{by_module[module] - covered[module]:>6}")
 
     if args.check:
-        return 1 if zero else 0
+        # Sweep failures count — M1e S1e.4.5, `TE-L4`. A cell that exits 0 and
+        # narrates nothing has not been censused, and a `--check` that walked
+        # past one would be green over a *partial* sweep whose surviving runs
+        # happened to cover all 77 rules. (A *total* failure already exits 1
+        # through `zero`.) Empty on 2026-09-01 over 217 entries and 663 runs,
+        # so this changes no result today; it is what makes the nightly step
+        # able to fail for the reason the sweep most plausibly breaks.
+        return 1 if zero or census["failures"] else 0
     return 0
 
 
@@ -486,7 +493,8 @@ def main() -> int:
     ap.add_argument("--timeout", type=float, default=300.0, metavar="SEC")
     ap.add_argument("--json", type=Path, default=None, metavar="FILE")
     ap.add_argument("--check", action="store_true",
-                    help="exit 1 if any stdlib rule is never activated")
+                    help="exit 1 if any stdlib rule is never activated, or if "
+                         "any declared run exited 0 and narrated nothing")
     args = ap.parse_args()
 
     if not args.bin.exists():

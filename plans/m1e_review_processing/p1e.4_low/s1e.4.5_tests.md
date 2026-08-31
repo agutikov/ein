@@ -189,3 +189,173 @@ actually run and actually breaks. That is a good use of the time and it is
 also a reason to sequence it last in the stage: the other four are bounded,
 and a broken Windows build is a finding for a followup, not a reason to hold
 the phase.
+
+---
+
+## ✅ Done 2026-09-01 — four findings, and one of the four refuted the stage's own preference
+
+`TE-L5` was **accepted** at S1e.1.6 and needed nothing here. The other four:
+
+| | disposition | the short version |
+|---|---|---|
+| `TE-L1` | **fixed**, and the finding named the wrong site as dangerous | the 20 s ceiling has a ~1 300× margin; the 4× recorded-cost band trips at 2.9× |
+| `TE-L2` | **fixed** — generated, because a hand-written list was stale before the phase closed | 26 → **28** files in the two days since S1e.1.6 measured it |
+| `TE-L3` | **fixed by amending the header** — its own recommendation is **refuted**, on a measurement | 5.3 s against 1.6 s |
+| `TE-L4` | **fixed** — wired to the nightly that already existed | and `--check` could not fail for the thing most likely to break |
+
+### `TE-L1` — the load-sensitive assertions, and there were three
+
+The finding says the two sites are alike (*"both are deliberately generous"*).
+Measured 2026-09-01, they are opposites:
+
+| site | budget | actual | margin |
+|---|---:|---:|---:|
+| `test_cli.rs` — `ein test examples/features` | 20 s | **15 ms** | ~1 300× |
+| `corpus_cli.rs` — recorded `cost_ms`, 4× band | 4× | 2.45×, 3.02×, **2.96×** on the three entries it judges | ~1.3× |
+| `einb/roundtrip.rs` — cold `.einb` open (**not in the finding**) | 5.0 ms dev | **0.96 ms** | 5.2× |
+
+So the site the finding leads with **cannot** fail on load, and its comment
+priced the margin against `04_open`'s ~10 s *in the sweep* — a different
+operation. The tight one is the recorded-cost band, and the finding's claim
+that these are *"the only tests in the workspace that can fail on machine
+load"* is false: `roundtrip.rs` sits between them and above both in
+undiagnosability, since its message named neither the budget nor the profile.
+
+**What changed.** The `cost_ms` band is asserted only under `EIN_CORPUS_SLOW`
+and **reported** per commit; the two flag-threshold directions keep their
+per-commit assertion, because their headroom is the threshold itself (3.9× on
+the worst entry) and they are what notices an entry crossing it. Nightly runs
+this file with `EIN_CORPUS_SLOW=1` **and** `--release` — the profile `cost_ms`
+was measured on — so gating does not weaken the band, it moves it to where it
+is truer. Every remaining wall-clock message names the budget, the profile and
+*machine load?*.
+
+**The control**, run and not banked: `cost_ms = 252` on
+`branching/07_lookahead_off` (the window is `[250, 253]`, boxed in by the
+band's own 250 ms floor below and `slow_matches_the_recorded_cost`'s 1 000 ms
+ceiling above) →
+
+- `cargo test -p ein-cli --test corpus_cli` — **green**, and `--nocapture`
+  prints `corpus cost drift (1 entry(s)), reported not asserted at this tier`;
+- `EIN_CORPUS_SLOW=1 …` — **red**, on that entry, *"outside 4× (machine load?
+  this sweep is the `dev` profile)"*.
+
+**And the worst wall-clock hazard in the corpus is not an assertion at all.**
+`corpus/README.md` blessed `-T` / `--max-time` in the run vocabulary as the
+equal of `-E`, and `no_cell_crashes` allows an exit 2 wherever a run names one
+— but `-E` counts enterings and `-T` counts seconds, so a `-T` cell's **exit
+code is a stopwatch** and `corpus_exits.txt` banks it line by line (measured:
+the same argv exits 2 at `-T 0.001` and 0 at `-T 60`). That is the one door in
+the repo through which a clock could reach a *golden*; everywhere else it is
+scrubbed first. Closed by a check, not a sentence:
+`manifest::no_declared_run_budgets_by_wall_clock`.
+
+One more thing found on the way, in the file S1e.3.6 edited: `manifest.rs`'s
+S1a.9.0 paragraph — *"no engine run, no wall clock, no flake"* — had been
+pasted **above** the wrong test, so it documented one that compares two string
+arrays, and a reader chasing `TE-L1` through the code was sent to the wrong
+function. Nothing detects a mis-attached doc comment; `cargo doc -D warnings`
+is green over it.
+
+### `TE-L2` — the anchor list, generated
+
+The stage says to put the list *in the puzzle files*. Two measured facts say
+not to: it moved **26 → 28** in the two days since
+[S1e.1.6](../p1e.1_open_questions/s1e.1.6_coverage_gaps.md) measured it — both
+additions from this milestone's own commits — and whatever goes into
+`zebra2.ein` is copied verbatim into **four** generated files, so a
+hand-written table becomes five that go stale together.
+
+So: the registry is
+[`examples/README.md` § What an edit to these two files fans out into](../../../examples/README.md),
+its file list is a **generated block** that
+`world_anchors::the_anchor_list_is_the_greps_own_answer` diffs (`EIN_BLESS=1`
+re-banks it), and both puzzles carry a nine-line header pointing at it —
+`world_anchors::both_puzzles_name_the_registry`.
+
+Four rings, and the fourth is the sentence the section exists for: **three
+`from_ein_py/` goldens, not two** (`zebra.golden`, `zebra2.golden`,
+`kb_zebra_unified.dot`), and an edit that changes the *parse* spends the repo's
+last independent provenance with nothing failing at the moment it happens.
+
+**A `;`-comment is free everywhere except the generator**, and that exception
+is real: `python3 examples/gen_zebra2_variants.py` was re-run and its four
+outputs are in this commit, because `--check` runs inside `cargo test` and a
+comment on `zebra2.ein` is the one comment in this repo that can redden the
+local gate.
+
+### `TE-L3` — the header, and why the bench smoke stays where it is
+
+The stage prefers *running the bench smoke under `--tests-only`*. **Refuted**,
+on three grounds:
+
+1. **The rationale does not survive.** The review argues a green `--tests-only`
+   is *"a strict subset of CI — the precise property the script's own header
+   warns about"*. The header's warning is about the **default** run; the flag
+   is a subset by construction, and adding the bench leaves it a subset by six
+   steps. The change cannot buy the property it is argued for.
+2. **It restores half a pair.** The bench's *type* check is `cargo clippy
+   --workspace --all-targets`, which the same flag skips. `--tests-only` drops
+   the bench's compile check and its codegen together, which is coherent.
+3. **Measured**, 2026-09-01: the bench builds the **release** profile, which
+   `cargo test`'s dev profile shares no artifacts with, so the first
+   `--tests-only` after an engine edit pays **5.3 s** of codegen against the
+   **1.6 s** the flag saves. Three times the whole saving, on the iteration
+   loop the flag exists for.
+
+The stage's fallback names one condition — *"the step-list diff from S1e.3.4 T1
+must compare the flag's list too"* — and it has since S1e.3.6. What it did
+**not** compare is the header, which is the copy that drifts, and it drifted
+while that test watched: T1e.3.8.4 corrected the paragraph at `:91` when the
+link check joined the gate and left `:5` saying *five*, so the same header said
+five and six about the same guard. The same stale *five* was in `AGENTS.md` and
+in `gate_steps.rs`'s own assertion message, which also called the bench smoke
+*the sixth* of a seven-element array.
+
+`what_tests_only_skips_is_what_the_script_guards` now holds the header to the
+set it already parses — both assertions derived, so this file cannot restate
+the count wrongly either. Controls run by hand: reverting `:5` fails *"the
+header does not say `six static check…` anywhere"*; reverting `:7` fails *"the
+header's `--tests-only` line reads … — the flag skips the bench smoke too"*.
+
+### `TE-L4` — the census, and a nightly that already existed
+
+Nothing in `.github/workflows/`, `run_tests.sh` or `build.sh` named
+`stdlib_census`. Three corrections to the task before it was carried out:
+
+- **A nightly already exists**, and its `deep-corpus` job already leaves
+  `target/release/ein` on disk — which is the script's own default binary. Two
+  `run:` steps, not a job.
+- **The task's reason for preferring the nightly is false.** *"Only this one
+  has a `--check` mode already written"* — `utils/stdlib_mutants.py` has had
+  one since S1e.3.6, **this milestone, one phase earlier**, with a stage
+  document that asked for exactly this cadence and never got it. Both are
+  wired, and the real reason only these two are is cost: 38 s and 7 s.
+- **`--check` could not fail for the thing most likely to break it.**
+  `census["failures"]` — a declared run that exits 0 and narrates nothing — was
+  printed under its own heading and never returned, so a *partial* sweep whose
+  survivors still covered all 77 rules was green. Fixed in the same commit;
+  empty today, so it moves no result.
+
+Re-taken 2026-09-01: **77 of 77, zero set empty, 217 entries, 38 s** — where
+three shipped sites said *180 entries* and *37 s*, and one said *73 of 73*
+without its date. The cadence is stated in `utils/README.md`'s third column,
+beside the numbers.
+
+**And the warrant for two exact counts pointed at nothing.**
+`stdlib/README.md` and `tests/README.md` both cite
+`every_stdlib_rule_is_activated_by_a_program_here` as the test that lets them
+state a number exactly. There is no such function — it is
+`every_stdlib_rule_is_activated_by_a_program`. Under
+[Q-M1e.4](../open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all)
+that is worse than a stale count: the citation is what stops anybody checking.
+Both fixed; `README.md`'s and `stdlib/README.md`'s *56 programs* became the
+command that counts them (it is 57).
+
+**Nothing reads `nightly.yml`** — `gate_steps.rs` diffs the per-commit workflow
+only — so the two steps are unpinned, and that is **accepted with the reason at
+the site** rather than unnoticed: teaching that test a second marker convention
+is more than a Low finding is worth.
+
+**Gate:** `./run_tests.sh` — **exit 0**, six static checks, **813 tests**, the
+bench smoke. No golden moved.

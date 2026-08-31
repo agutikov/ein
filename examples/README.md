@@ -98,6 +98,76 @@ Ambiguity and Contradiction task-class variants below);
 | [`zebra2-minus-15-obligations.ein`](zebra2-minus-15-obligations.ein) | both at once: under-determined *and* hypothesis-rule-free — 32 models, found the way the hrule path finds them |
 | [`gen_zebra2_variants.py`](gen_zebra2_variants.py) | generator for the four `zebra2` variants — clue-dropped, clue-added and hrule-free. `--check` is what makes "nothing else changed" a test |
 
+### What an edit to these two files fans out into
+
+`zebra.ein` and `zebra2.ein` are **world anchors**: tests across the workspace
+hard-code facts about them — counts, model cells, `k`, `enterings` — and their
+docs say so, but only `embedding.rs` said what it costs. This is the list a
+reviewer changing either file needs, and it is here rather than in the puzzle
+headers because it moved twice in the two days after M1e S1e.1.6 first measured
+it. **Both puzzle files point at this section**; nothing else has to be kept in
+sync by hand.
+
+Four rings, outermost first:
+
+1. **Four generated files.** `zebra2.ein` is copied whole by
+   [`gen_zebra2_variants.py`](gen_zebra2_variants.py) into
+   `zebra2-minus-15.ein`, `ein-bugs/zebra2-bad.ein`, `zebra2-obligations.ein`
+   and `zebra2-minus-15-obligations.ein`. Its `--check` runs inside `cargo
+   test` (`cli_semantics`), so **an edit to `zebra2.ein` that is not
+   regenerated turns the local gate red** — including an edit that is only a
+   comment.
+2. **Test files that name one of these paths**, re-derived by
+   `world_anchors::the_anchor_list_is_the_greps_own_answer` and banked below.
+   Edit the test, run it, paste — or `EIN_BLESS=1` writes it.
+
+<!-- generated: grep -rl 'examples/zebra' ein.rs/crates/*/tests/*.rs ein.rs/crates/*/benches/*.rs -->
+```text
+ein-cli/tests/acceptance_cli.rs
+ein-cli/tests/cli_semantics.rs
+ein-cli/tests/corpus_cli.rs
+ein-cli/tests/einb_cli.rs
+ein-cli/tests/embedding.rs
+ein-cli/tests/leftover_probe.rs
+ein-cli/tests/summary_properties.rs
+ein-corpus/benches/engine.rs
+ein-einb/tests/corruption.rs
+ein-einb/tests/invalidation.rs
+ein-einb/tests/roundtrip.rs
+ein-infer/tests/acceptance.rs
+ein-infer/tests/explain_semantics.rs
+ein-infer/tests/layer_census.rs
+ein-infer/tests/naf_semantics.rs
+ein-infer/tests/obligation_reports.rs
+ein-infer/tests/obligation_rung.rs
+ein-infer/tests/obligation_rung_control.rs
+ein-infer/tests/search_invariants.rs
+ein-infer/tests/search_semantics.rs
+ein-infer/tests/stdlib_coverage.rs
+ein-infer/tests/tree_traversal.rs
+ein-infer/tests/worker_view.rs
+ein-ir/tests/dump_goldens.rs
+ein-ir/tests/imports_semantics.rs
+ein-ir/tests/kb_semantics.rs
+ein-render/tests/golden_dot.rs
+ein-render/tests/idea08_acceptance.rs
+ein-render/tests/presentation_semantics.rs
+```
+<!-- /generated -->
+
+3. **Outside the crates**, which no test can re-derive: `docs/api/rust.md`
+   (through `embedding.rs`'s marked region), the `utils/` scripts that name a
+   zebra path (`grep -l 'examples/zebra' utils/*`), and `corpus/corpus.toml`.
+4. **Goldens — and three of them may never be re-blessed.**
+   `ein-ir/tests/golden/from_ein_py/zebra.golden` and `zebra2.golden`, and
+   `ein-render/tests/golden/from_ein_py/kb_zebra_unified.dot`, are the last
+   independent provenance in the repo: bytes `ein.py` signed off on before it
+   was deleted. **An edit to `zebra.ein` or `zebra2.ein` that changes the
+   *parse* spends them**, and no test says so at the moment it happens — which
+   is the sentence this section exists for. A `;`-comment does not: comments
+   are lexer trivia and reach no golden, which is why the headers those two
+   files gained at M1e S1e.4.5 moved nothing.
+
 ## Feature fixtures (per engine capability)
 
 | dir | what it exercises |

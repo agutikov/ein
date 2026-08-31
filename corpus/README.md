@@ -90,7 +90,18 @@ declared a budget — so the first budgeted run added would have failed the cras
 check with a message about an argv the CLI refuses. Since M1e S1e.3.6 the check
 reads the run: **a `2` is allowed exactly where the run names `-E` / `-T` /
 `--max-enterings` / `--max-time`**, and `examples/zebra2.ein`'s `solve -E 1` is
-the cell that exercises it. A `test` cell on a file that does not load, or that
+the cell that exercises it.
+
+**`-E` is the one to use; `-T` is refused** — M1e S1e.4.5, `TE-L1`. The two
+are not equals: `-E` counts enterings and `-T` counts seconds, so a `-T` cell's
+**exit code is a stopwatch** and `corpus_exits.txt` banks it line by line.
+Measured 2026-09-01, the same argv exits 2 at `-T 0.001` and 0 at `-T 60`.
+That would be the only place in this repo where a wall clock reaches a banked
+artefact — everywhere else the clock is scrubbed before a comparison — so it is
+a check rather than a sentence: `ein-corpus`'s
+`no_declared_run_budgets_by_wall_clock` fails on a `runs` or `levers` entry
+naming `-T` or `--max-time`. The allowance above stays as it is, because the
+*CLI* still takes both. A `test` cell on a file that does not load, or that
 claims nothing, would exit 2 for a third reason and is **not** in the
 allowance: add the cell and the rule together, or the check cannot tell it from
 a stale argv.

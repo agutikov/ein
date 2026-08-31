@@ -67,6 +67,34 @@ jobs:
       # ordering accident — asked of the one engine that is left.
       - run: cargo test -p ein-render --release --test id_order_invariance
         env: { EIN_ID_SEEDS: "8" }
+      # ── The two `--check` censuses — M1e S1e.4.5, `TE-L4` ──
+      #
+      # Both read the release `ein` the steps above have already built
+      # (`CARGO_BIN_EXE_ein` is `target/release/ein` under `--release`), so
+      # this is two runs and not a job. Neither is the gate and neither should
+      # be: the per-commit claim is `ein-infer/tests/stdlib_coverage.rs`,
+      # 0.04 s and scoped to `tests/stdlib/`, because a rule that fires only
+      # inside `examples/zebra.ein` has no test. These are the weaker
+      # corpus-wide claim and the sensitivity claim — the two that were, in the
+      # coverage test's own words, shaped like something that "runs when
+      # somebody remembers it".
+      #
+      # `working-directory` overrides the job's `ein.rs`: both scripts resolve
+      # the repo from `__file__` and run the engine with `cwd=REPO`, but the
+      # `python3 utils/...` path is root-relative.
+      #
+      # **Nothing in the workspace reads this file**, so deleting these two
+      # steps fails no test: `ein-cli/tests/gate_steps.rs` diffs `run_tests.sh`
+      # against the *per-commit* workflow only. That is accepted rather than
+      # unnoticed — teaching that test a second marker convention is more than
+      # a Low finding is worth, and the cadence is stated in `utils/README.md`
+      # where a reader of the numbers will find it.
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.14" }
+      - run: python3 utils/stdlib_census.py --check
+        working-directory: ${{ github.workspace }}
+      - run: python3 utils/stdlib_mutants.py --check
+        working-directory: ${{ github.workspace }}
 
   frontend-fuzz:
     name: ein.rs — the frontend fuzzer, at budget

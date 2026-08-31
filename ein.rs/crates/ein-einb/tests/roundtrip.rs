@@ -252,7 +252,21 @@ fn a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond() {
         breakdown.join(" "),
         kb.n_facts()
     );
-    assert!(median < budget, "cold open took {median:.3} ms");
+    // The message names the budget, the profile and the suspect — M1e
+    // S1e.4.5, `TE-L1`, which found this site while auditing two others and
+    // did not list it. It is the workspace's second-tightest wall clock
+    // (measured 0.96 ms against the 5.0 ms dev budget, 2026-09-01, so 5.2×)
+    // and its failure said only what it took.
+    assert!(
+        median < budget,
+        "cold open took {median:.3} ms against a {budget} ms {} budget \
+         — a real regression, or machine load?",
+        if cfg!(debug_assertions) {
+            "dev"
+        } else {
+            "release"
+        }
+    );
 }
 
 /// A solved KB, its models stored as deltas, and a model put back together.

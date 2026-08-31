@@ -1,5 +1,14 @@
 ;;; Ein — Zebra puzzle, B1 encoding (S1.5.8c.5, 2026-05-24).
 ;;;
+;;; ── Editing this file ────────────────────────────────────────
+;;;
+;;; It is a **world anchor**: tests in six crates hard-code facts about it,
+;;; and three goldens that may never be re-blessed are taken from it. The list
+;;; of what an edit fans out into is examples/README.md § What an edit to these
+;;; two files fans out into — generated, and diffed by
+;;; ein-cli/tests/world_anchors.rs, so it cannot go stale here.
+;;;
+;;;
 ;;; ── Background ───────────────────────────────────────────────
 ;;;
 ;;; The pre-B1 zebra2 used a single symmetric+transitive

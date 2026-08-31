@@ -2,9 +2,9 @@
 #
 # run_tests.sh — the gate.
 #
-#     ./run_tests.sh                 # the five static checks, then the tests
+#     ./run_tests.sh                 # six static checks, the tests, the bench smoke
 #     ./run_tests.sh --slow          # + the 12 slow corpus cells, + 8 id seeds
-#     ./run_tests.sh --tests-only    # skip the static checks
+#     ./run_tests.sh --tests-only    # only cargo test — no checks, no bench smoke
 #     ./run_tests.sh -p ein-ir       # anything else is forwarded to cargo test
 #
 # **This was a three-phase runner until M1a S1a.10.5**, and each phase went
@@ -91,9 +91,9 @@
 # failures are the cheapest ones to read, and `--tests-only` turns all six off
 # — and the bench smoke below with them, which is what
 # `gate_steps::what_tests_only_skips_is_what_the_script_guards` reads out of
-# this script rather than out of this sentence. Nothing turns them off silently — a missing
-# `rustfmt`, `clippy` or `python3` is exit 127 here, the same as a missing
-# `cargo` or `dot`.
+# this script rather than out of this sentence. Nothing turns them off
+# silently — a missing `rustfmt`, `clippy` or `python3` is exit 127 here, the
+# same as a missing `cargo` or `dot`.
 
 set -euo pipefail
 
@@ -207,8 +207,26 @@ cargo test --manifest-path "${MANIFEST}" --workspace ${ARGS[@]+"${ARGS[@]}"}
 
 # CI's last step, and it is not a measurement: `--test` runs each bench once
 # to see that it runs. A bench that stopped compiling is invisible to
-# `cargo test`, and `ein-corpus`'s bench set is the only consumer of several
-# `pub` items in the engine.
+# `cargo test` — `cargo test -p ein-corpus --no-run -v` builds no `engine`
+# target — and `ein-corpus`'s bench set is the only consumer of several `pub`
+# items in the engine.
+#
+# **It is inside the `CHECKS` guard on purpose**, which is M1e S1e.4.5 asking
+# `TE-L3` the opposite of what it recommended. Not because it is slow — 0.21 s
+# warm — but because it is the other half of a pair the flag drops whole: the
+# bench is *type-checked* by `cargo clippy --workspace --all-targets` above,
+# which emits its `.rmeta`, and codegen'd and run here. Running only this half
+# would restore the expensive one while leaving the cheap, stricter one
+# skipped. Nor can it buy the property the finding argues for: `--tests-only`
+# would still skip six CI steps, so it is a subset either way, and the
+# header's job is to say so rather than to stop being true. What it would cost
+# is the number that decided it — the bench builds the **release** profile,
+# which `cargo test`'s dev profile shares no artifacts with, so the first
+# `--tests-only` after an engine edit pays a release codegen: **5.3 s**
+# against **1.6 s** for all six static checks warm (measured 2026-09-01,
+# `touch ein-infer/src/lib.rs` then `cargo bench --bench engine --no-run`),
+# three times the flag's whole saving, on the iteration loop the flag exists
+# for.
 if [[ "${CHECKS}" == 1 ]]; then
     step "cargo bench --bench engine -- --test"
     cargo bench -q --manifest-path "${MANIFEST}" --bench engine -- --test

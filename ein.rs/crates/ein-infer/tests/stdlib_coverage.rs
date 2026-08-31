@@ -15,13 +15,15 @@
 //! ## The claim is about the *suite*, not about the corpus
 //!
 //! [`utils/stdlib_census.py --check`](../../../../utils/stdlib_census.py)
-//! sweeps all 180 corpus entries and exits 1 while any rule is at zero. That
-//! is the weaker claim, and it is weak in the way that matters here: a rule
-//! added tomorrow that happens to fire somewhere inside `examples/zebra.ein`
-//! would pass it **with no test written**. So the sweep below is scoped to
-//! `tests/stdlib/` — the directory whose whole job is to activate rules — and
-//! the claim is that the suite stands on its own. It does, as of S1c.1.5:
-//! 73 of 73, with no `examples/` entry contributing.
+//! sweeps every corpus entry (`grep -c '^\[\[entry\]\]' corpus/corpus.toml`)
+//! and exits 1 while any rule is at zero. That is the weaker claim, and it is
+//! weak in the way that matters here: a rule added tomorrow that happens to
+//! fire somewhere inside `examples/zebra.ein` would pass it **with no test
+//! written**. So the sweep below is scoped to `tests/stdlib/` — the directory
+//! whose whole job is to activate rules — and the claim is that the suite
+//! stands on its own. It does, and the count is deliberately not repeated
+//! here: [`every_stdlib_rule_is_activated_by_a_program`] computes both sides
+//! and fails the day they part.
 //!
 //! Scoping it also found the one rule the suite did not run. `transitive`'s
 //! fixture was a two-cycle, where the `(neq ?a ?c)` guard refuses every match
@@ -31,8 +33,10 @@
 //!
 //! ## Why this is a test and not the script
 //!
-//! The script shells out to a release binary hundreds of times and takes 37 s;
-//! a check shaped like that runs when somebody remembers it. This one runs in
+//! The script shells out to a release binary hundreds of times and takes
+//! ~38 s (2026-09-01); a check shaped like that runs when somebody remembers
+//! it — which since M1e S1e.4.5 (`TE-L4`) is a **nightly**
+//! (`.github/workflows/nightly.yml`) rather than nobody. This one runs in
 //! `cargo test`, needs no binary, and costs **0.04 s** — a program of three
 //! declarations and two facts exhausts in microseconds. **It fails the
 //! moment a rule is added without a program**, which is the only moment anyone

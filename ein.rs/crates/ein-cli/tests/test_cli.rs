@@ -219,11 +219,21 @@ fn a_query_with_no_expectation_is_never_solved() {
         "{}",
         r.summary()
     );
-    // Generous by two orders of magnitude against the ~10 s `04_open` costs
-    // the sweep, so this fails on the behaviour and not on the machine.
+    // **The margin, measured** — M1e S1e.4.5, `TE-L1`. The comment here used
+    // to price it against `04_open`'s ~10 s in the *sweep*, which is a
+    // different operation: what this runs is `ein test examples/features`,
+    // and it is **15 ms** on this box (2026-09-01, three runs, dev binary).
+    // So the ceiling is ~1 300× rather than the two orders of magnitude
+    // claimed, and this assertion cannot fail on machine load — it fires only
+    // if something entered a search it was not asked to, which is the
+    // behaviour it exists for. It is the one wall-clock assertion in the
+    // workspace whose margin makes gating pointless; the tight one is
+    // `corpus_cli`'s recorded-cost band, which is behind `EIN_CORPUS_SLOW`.
     assert!(
         took < std::time::Duration::from_secs(20),
-        "the directory took {took:?} — something entered a search it was not asked to"
+        "the directory took {took:?} against ~15 ms — something entered a \
+         search it was not asked to (or, at 1 300× the measured cost, the \
+         machine is in trouble)"
     );
 }
 

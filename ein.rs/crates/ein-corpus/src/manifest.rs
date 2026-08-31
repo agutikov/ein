@@ -269,9 +269,17 @@ mod tests {
     /// that half is `corpus_cli::the_slow_flag_still_describes_the_sweep`,
     /// which compares it against the sweep it has just run. Two checks, one
     /// claim: this one is exact and always runs, that one measures and needs
-    /// a tolerance.
-    /// **The two `slow` entries, by name, and there are two** — M1e S1e.3.6
-    /// T3, the review's `TE-M3`.
+    /// a tolerance — and since M1e S1e.4.5 (`TE-L1`) only under
+    /// `EIN_CORPUS_SLOW`, because the tolerance was tighter than the machine.
+    ///
+    /// (Everything above documents [`slow_matches_the_recorded_cost`], which
+    /// is further down this file. It sat here from M1e S1e.3.6 until S1e.4.5:
+    /// the new test's paragraph was pasted into the existing block with no
+    /// separator, so the S1a.9.0 sentence — *no engine run, no wall clock, no
+    /// flake* — documented a test that compares two string arrays, and a
+    /// reader chasing `TE-L1` through the code was sent to the wrong
+    /// function. Nothing in the workspace detects a mis-attached doc comment;
+    /// `cargo doc -D warnings` is green over it.)
     ///
     /// The flag's *timing* half only runs under `EIN_CORPUS_SLOW=1`, because
     /// the default sweep contains no slow entries to time: a `slow = true`
@@ -290,6 +298,44 @@ mod tests {
     /// It is `assert_eq!` on the names rather than a floor on the count for
     /// the reason [TE-M2](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.6_tests.md)
     /// is a finding: a floor over a growing corpus decays.
+    ///
+    /// **No declared run may carry a wall-clock budget** — M1e S1e.4.5,
+    /// `TE-L1`, and it is the one hazard in that finding's class that reaches
+    /// a **golden** rather than a test.
+    ///
+    /// [`corpus/README.md`](../../../../corpus/README.md) blesses `-T` /
+    /// `--max-time` in the run vocabulary as the equal of `-E`, and
+    /// `no_cell_crashes` allows an exit 2 wherever a run names one. But `-E`
+    /// counts enterings and `-T` counts seconds: measured 2026-09-01, the
+    /// same argv exits **2** at `-T 0.001` and **0** at `-T 60`, and
+    /// `ein-cli/tests/golden/corpus_exits.txt` is compared line by line. So a
+    /// `-T` cell would put a stopwatch inside a banked artefact — which is
+    /// the one place in this repo the clock is otherwise always scrubbed
+    /// before a comparison (`golden_dump.rs`, `shape.rs`). Nothing forbade
+    /// adding one; four lines do.
+    #[test]
+    fn no_declared_run_budgets_by_wall_clock() {
+        let bad: Vec<String> = corpus()
+            .entry
+            .iter()
+            .flat_map(|e| {
+                e.runs
+                    .iter()
+                    .chain(e.levers.iter())
+                    .filter(|r| r.split_whitespace().any(|w| w == "-T" || w == "--max-time"))
+                    .map(move |r| format!("  {}: `{r}`", e.path))
+            })
+            .collect();
+        assert!(
+            bad.is_empty(),
+            "a declared run budgets by wall clock, so its exit code is a \
+             stopwatch and `corpus_exits.txt` banks it (TE-L1). Use `-E` / \
+             `--max-enterings`, which counts enterings and is \
+             deterministic:\n{}",
+            bad.join("\n")
+        );
+    }
+
     #[test]
     fn the_slow_set_is_exactly_these_two() {
         let manifest = corpus();

@@ -57,7 +57,8 @@ section
 
 ## What tests these modules
 
-[**`tests/stdlib/`**](../tests/README.md) — 56 programs, each stating what it
+[**`tests/stdlib/`**](../tests/README.md) — one program per rule or tight
+family (`find tests/stdlib -name '*.ein' | wc -l`), each stating what it
 should and should not derive: the 45 one-per-rule-or-family added by M1c
 [S1c.1.4](../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus),
 the closed-and-owing pair M1d S1d.2.2 banked under `closure/`, and the nine
@@ -77,7 +78,7 @@ directory, and since M1c
 it is **in the gate**: `ein-infer/tests/stdlib_coverage.rs` solves every
 program under `tests/stdlib/` with `--events` on and fails on any rule none of
 them activated — 0.04 s, and **77 of 77**, which is a number this page may
-state exactly because `every_stdlib_rule_is_activated_by_a_program_here` fails
+state exactly because `every_stdlib_rule_is_activated_by_a_program` fails
 the day it stops being true (`grep -hc '^(rule ' stdlib/*.ein` is the
 denominator). `python3 utils/stdlib_census.py --check` is the same census with
 the numbers, over every corpus entry rather than the suite.

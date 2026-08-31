@@ -36,11 +36,14 @@
 //! `--tests-only` **is** in scope since M1e S1e.3.6 T8, which asked for it:
 //! [`what_tests_only_skips_is_what_the_script_guards`] reads the set out of the
 //! script rather than restating it, so the flag's own list cannot drift from
-//! the two above. What that test does *not* do is fix the header — the script
-//! says the flag skips *the static checks* and it also skips the bench smoke,
-//! which is [TE-L3](../../../../plans/m1e_review_processing/p1e.4_low/s1e.4.5_tests.md)'s
-//! one-line wording change. The check is here first on purpose: a header
-//! nobody verifies is how the divergence arose.
+//! the two above. Since M1e S1e.4.5
+//! ([TE-L3](../../../../plans/m1e_review_processing/p1e.4_low/s1e.4.5_tests.md))
+//! it holds the script's **header** to that set as well — the count and the
+//! bench smoke — because the header is the copy that drifts, and it drifted
+//! while this test watched: T1e.3.8.4 corrected the paragraph at
+//! `run_tests.sh:91` when the link check joined the gate and left the usage
+//! line at `:5` saying *five*, so one header said five and the other six about
+//! the same guard.
 
 use ein_corpus::repo_root;
 
@@ -254,9 +257,40 @@ fn what_tests_only_skips_is_what_the_script_guards() {
             "cargo doc --no-deps, -D warnings",
             "cargo bench --bench engine -- --test",
         ],
-        "the set `--tests-only` skips moved. Note the sixth: the flag skips the \
-         **bench smoke** as well as the five static checks, and `run_tests.sh`'s \
-         header says only the first — TE-L3, whose fix is that line and whose \
-         check is this one"
+        "the set `--tests-only` skips moved. Note the last one: the flag skips \
+         the **bench smoke** as well as the six static checks, which is what \
+         `run_tests.sh`'s header says since M1e S1e.4.5 (`TE-L3`) and what the \
+         assertions below hold it to"
+    );
+
+    // **The header is the other copy of this set**, and it is the copy that
+    // drifts — see the module doc. Both assertions read the parse above rather
+    // than a literal, so this file cannot restate the count wrongly either.
+    const WORDS: [&str; 10] = [
+        "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+    ];
+    let statics = guarded.len() - 1; // every guarded step but the bench smoke
+    let header: String = text
+        .lines()
+        .take_while(|l| l.is_empty() || l.starts_with('#'))
+        .collect::<Vec<_>>()
+        .join("\n");
+    let usage = header
+        .lines()
+        .find(|l| l.contains("--tests-only"))
+        .expect("run_tests.sh's header lists `--tests-only`");
+    assert!(
+        usage.contains("bench"),
+        "the header's `--tests-only` line reads `{usage}` — the flag skips the \
+         bench smoke too, which is the {}th of the {statics} + 1 steps this test \
+         just read out of the guard (TE-L3)",
+        guarded.len()
+    );
+    let word = WORDS[statics];
+    assert!(
+        header.contains(&format!("{word} static check")),
+        "the header does not say `{word} static check…` anywhere, and the guard \
+         holds {statics} of them plus the bench smoke. A count in this header is \
+         the one copy of this set that no other test reads (TE-L3)"
     );
 }

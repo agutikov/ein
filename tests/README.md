@@ -207,7 +207,7 @@ refuses every match. `algebra/21_transitive.ein` grew a three-chain, and the
 suite has stood on its own since — **73 of 73 with no `examples/` entry
 contributing** when S1c.1.4 closed on 2026-08-24, and *all of them* today,
 which is not a number this page has to keep because
-`stdlib_coverage.rs::every_stdlib_rule_is_activated_by_a_program_here` fails
+`stdlib_coverage.rs::every_stdlib_rule_is_activated_by_a_program` fails
 the moment it stops being true.
 
 The third file every entry here is swept by is `corpus/corpus.toml` — five runs

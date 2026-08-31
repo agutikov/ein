@@ -350,12 +350,14 @@ constrained-reasoning research.
   Its first answer, 2026-08-23 — [**38 of 73 rules never
   fire**](docs/history/m1c_external_validation/stdlib_census.md),
   and `examples/zebra.ein` the sole activator of 20 more — is what M1c existed
-  to close, and S1c.1.4 closed it: **0 of 73** on the re-take of 2026-08-24,
-  180 entries and 557 runs
-  ([§11](docs/history/m1c_external_validation/stdlib_census.md#11-the-re-take--2026-08-24-and-the-zero-set-is-empty)).
-  `--check` exits 1 while any rule is at zero and is **not** the gate: S1c.1.5
-  made that a cargo test, in-process and scoped to `tests/stdlib/`. What stays
-  here is the measurement the gate is a yes/no of.
+  to close, and S1c.1.4 closed it: **0 of 73** on the re-take of 2026-08-24
+  ([§11](docs/history/m1c_external_validation/stdlib_census.md#11-the-re-take--2026-08-24-and-the-zero-set-is-empty)),
+  and 77 of 77 over 217 entries in 38 s when M1e S1e.4.5 re-took it on
+  2026-09-01. `--check` exits 1 while any rule is at zero, or while a declared
+  run exits 0 and narrates nothing, and is **not** the gate: S1c.1.5 made that
+  a cargo test, in-process and scoped to `tests/stdlib/`. It **runs nightly**
+  since S1e.4.5, beside `stdlib_mutants.py --check`. What stays here is the
+  measurement the gate is a yes/no of.
   The twentieth, **`layer_census.py`**, is
   [M1d](docs/history/m1d_satisfiability/README.md) S1d.10.1's and asks what a *layer of
   the search* kills and what the killing is worth: every entry under `solve -e`
@@ -663,7 +665,7 @@ whole census in 0.04 s. A file that did not load carries **no claim** —
 **`./run_tests.sh` runs every step of the per-commit CI tier**, in its order,
 since M1c S1c.1.5 — **six** static checks (~5 s warm; `--tests-only` skips them
 and the bench smoke), then `cargo test --workspace`, then the bench smoke test. **`cargo test
---workspace` alone is not the gate**: it checks none of the five, and until
+--workspace` alone is not the gate**: it checks none of the six, and until
 S1c.1.5 neither did this script, which is why CI was red for three commits on
 findings the local run reported as a pass. A local gate that is a subset of the
 remote one is a local gate that lies — keep the two lists the same.

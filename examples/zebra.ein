@@ -7,6 +7,15 @@
 ;;; Question: Who drinks water? Who owns the zebra?
 ;;; Answer:   Norwegian drinks Water; Japanese owns Zebra.
 ;;;
+;;; ── Editing this file ────────────────────────────────────────
+;;;
+;;; It is a **world anchor**: tests in six crates hard-code facts about it,
+;;; and three goldens that may never be re-blessed are taken from it. The list
+;;; of what an edit fans out into is examples/README.md § What an edit to these
+;;; two files fans out into — generated, and diffed by
+;;; ein-cli/tests/world_anchors.rs, so it cannot go stale here.
+;;;
+;;;
 ;;; ── What makes this file different from examples/zebra2.ein ──────────
 ;;;
 ;;; The two are TWO ONTOLOGIES FOR ONE PUZZLE, not "classic vs modern".
