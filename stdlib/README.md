@@ -209,12 +209,32 @@ create) is idempotent — identical collapses, a same-name conflict errors.
 file-relative import (a non-`std` name) resolves against the importing file's
 directory.
 
-To inline a puzzle's imports into a single standalone file (resolving + 
-tree-shaking unused library symbols):
+To inline a puzzle's imports into a single standalone file (resolving +
+tree-shaking unused library symbols) — **there is no CLI for this.** `ein ir
+parse --resolve` did it from P1.8 until **P1.11** (2026-06-16, `8378ad7`),
+which dropped the whole `ein ir` / `ein kb` inspection family; what survived is
+the library call, and it is three functions:
 
-```sh
-ein ir parse --resolve path/to/puzzle.ein
+```rust
+let forms = ein_ir::parse(&mut ast, &text, Some(path))?;
+let inlined = ein_ir::resolve_and_minimize(&mut ast, &forms, path.parent())?;
+print!("{}", ein_ir::dump_canonical(&ast, &inlined));
 ```
+
+`resolve_and_minimize` keeps an imported declaration that a live name reaches
+*or* that a live match pattern activates — the `*-setup` glue rules are fired
+by their pattern and never by name, so keeping only what is named would drop a
+whole activator-driven module and leave a file that no longer solves.
+`dump_canonical` is the canonical `.ein` printer, and the parser's unescape is
+its inverse, so the text re-parses.
+
+That the three compose into the **same program** is
+[`the_inlining_route_the_stdlib_readme_documents_round_trips`](../ein.rs/crates/ein-ir/tests/imports_semantics.rs):
+`zebra2.ein` inlined, re-parsed with **no** base directory to resolve against,
+and the same relations, rules and facts. Putting the command back is a decision
+about the shipping surface — the same one
+[`utils/README.md`](../utils/README.md) records for `ein ir dot` / `ein kb dot`,
+whose renderers are likewise alive and unreachable — not a `stdlib/` cleanup.
 
 ## One layout-detail per concern
 

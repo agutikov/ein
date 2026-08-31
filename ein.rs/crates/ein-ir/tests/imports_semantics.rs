@@ -560,3 +560,55 @@ fn an_override_without_the_marker_is_refused_by_name() {
 
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// **The route that inlines a puzzle's imports into a standalone program.**
+///
+/// `stdlib/README.md` offered `ein ir parse --resolve` for this until M1e
+/// `CD-M5`; the whole `ein ir` subcommand went at P1.11 (2026-06-16,
+/// `8378ad7`), and what replaced it is a library call with no CLI in front of
+/// it. So the README now shows three functions, and this is the test that says
+/// they compose — because a documented route nothing runs is what `CD-M5` was.
+///
+/// The claim is not just that the dump has no `(import …)` left in it: it is
+/// that the standalone text is the **same program**. Minimisation drops
+/// imported declarations nothing reaches, and the surviving set is observable
+/// through the plan cache and firing order, so "one declaration too few" is a
+/// failure several phases away on a fixture that will look unrelated. Loading
+/// both and comparing the KBs is the cheap way to say it here.
+#[test]
+fn the_inlining_route_the_stdlib_readme_documents_round_trips() {
+    let puzzle = repo_root().join("examples/zebra2.ein");
+    let base = puzzle.parent();
+
+    // The three calls, in the order the README prints them.
+    let mut ast = Ast::new();
+    let forms = parse_file(&mut ast, &puzzle);
+    let inlined = ein_ir::resolve_and_minimize(&mut ast, &forms, base).expect("resolves");
+    let standalone = dump_canonical(&ast, &inlined);
+
+    assert!(
+        !standalone.contains("(import "),
+        "the dump still imports something"
+    );
+    // A `:why` template only `std.algebra` writes — the rule's *name* is no
+    // evidence, since the dump line-breaks a form wider than 80 columns and
+    // `(rule\n  symmetric` is what it actually prints.
+    assert!(
+        standalone.contains(r#":why "{?rel} is symmetric"#),
+        "std.algebra's rules were not inlined"
+    );
+
+    // …and it is the same program. `base_dir` is `None` on the reload, which
+    // is the point of a standalone file: nothing left to resolve against.
+    let mut terms = ein_core::Terms::new();
+    let want = ein_ir::load(&mut ast, &mut terms, &forms, base).expect("the original loads");
+
+    let mut ast2 = Ast::new();
+    let forms2 = parse(&mut ast2, &standalone, Some("<inlined>")).expect("the dump re-parses");
+    let mut terms2 = ein_core::Terms::new();
+    let got = ein_ir::load(&mut ast2, &mut terms2, &forms2, None).expect("the dump loads");
+
+    // `<KnowledgeBase relations=N rules=N facts=N>` — the three counts
+    // minimisation can get wrong, in one comparison.
+    assert_eq!(format!("{got:?}"), format!("{want:?}"));
+}

@@ -34,7 +34,9 @@ are.
 > **`render_examples.sh` renders less than it used to**, and its header says
 > why. Half of it called the Python API directly for the **IR-graph** and
 > **unified-KB** views, because `ein ir dot` and `ein kb dot` were removed from
-> the CLI in P1.7c. Both renderers are ported and alive — `ein_render::ir_dot`
+> the CLI in **P1.11** (2026-06-16, `8378ad7`, which dropped `ein ir`'s
+> `parse`/`lint`/`dot` and `ein kb dot` in one commit — this line read *P1.7c*
+> until M1e `CD-M5`, a date before `ein ir parse --resolve` was written). Both renderers are ported and alive — `ein_render::ir_dot`
 > and `ein_render::kb_dot`, seventeen views between them, swept by
 > `dot_wellformed.rs` — and nothing outside a test can ask for one. Putting
 > them back is a decision about the shipping surface, not a `utils/` cleanup.
