@@ -578,6 +578,47 @@ rather than beside it —
 Pinned by `ein-cli/tests/artefact_contract.rs`, three tests over all five
 options.
 
+### 4.5 The store's own limits — M1e S1e.4.1
+
+> **New 2026-09-01** —
+> [S1e.4.1](../../plans/m1e_review_processing/p1e.4_low/s1e.4.1_correctness.md),
+> the review's `CO-L1`. Three refusals with no Python counterpart, because
+> `ein.py` had no such limits: a `str` and a `tuple` are bounded by memory and
+> nothing else. Here they are bounded by a `u32` and a `u16`, and two of the
+> three were unchecked.
+
+`ein-core` interns into three id spaces of 2³⁰ (`Value` packs a 2-bit tag
+beside a 30-bit payload) and two arenas addressed by a `u32` start. Every one
+of the five is a `Result` at the site that grows it, so hitting one is a load
+error a reader can act on:
+
+| input | message | exit |
+|---|---|---|
+| more than 2³⁰ distinct symbols / integer literals / facts | ``too many distinct {symbols,integer literals,facts} — the limit is 1073741824`` | 1 |
+| more than 2³² bytes of symbol text | ``too much symbol text — the limit is 4294967296 bytes`` | 1 |
+| more than 2³² stored fact arguments | ``too many stored fact arguments — the limit is 4294967296`` | 1 |
+| a fact with more than 65 535 arguments | ``a fact takes at most 65535 arguments`` | 1 |
+
+**The last one was reachable, and it was a panic.** `(p A0 … A65535)` is a
+three-line program and 447 KB of source; before this stage it reached
+`u16::try_from(args.len()).expect("a fact's arity fits u16")` and took the
+process down with a stack trace and exit **101** — the failure shape
+[§4.3](#43-kernel-meta-primitive-arity--m1e-s1e21) ruled out for `(eq ?x)`
+one phase earlier, and the one
+`corpus_cli::every_refusal_carries_a_diagnostic` forbids. 65 535 arguments
+solve; 65 536 are refused. Pinned by
+`ein_core::facts::tests::a_fact_wider_than_the_arity_field_is_refused_and_one_narrower_is_not`.
+
+**The two arena bounds are unreachable and guarded anyway**, because what they
+prevent is not a crash but a *wrong answer*: a wrapped span start is another
+value's identity, which is the silent failure the interner's own doc comment
+says the module exists to rule out. Which limit binds first is measurable and
+is not the one the comment used to name — at the corpus's own mean symbol
+length (7.55–21.00 bytes, `ein kb save`'s symbol-table header, 2026-09-01) the
+**byte** arena fills at 19–53 % of the id ceiling, not the other way round.
+`ein_core::intern::tests::the_arena_bound_is_the_byte_bound_and_not_the_id_bound`
+is what holds that.
+
 ## 5. The CLI surface
 
 Everything a script or a habit can depend on is fixed: the four subcommands

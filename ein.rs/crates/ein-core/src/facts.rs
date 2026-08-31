@@ -19,7 +19,7 @@
 //! parent ever seeing the proposition — and what makes an O(1) fork correct
 //! rather than merely cheap.
 
-use crate::intern::{CAPACITY, Overflow, Symbol};
+use crate::intern::{CAPACITY, Overflow, Symbol, arena_room};
 use crate::value::Value;
 use rustc_hash::FxHasher;
 use std::hash::Hasher;
@@ -122,12 +122,22 @@ impl FactStore {
         if self.rows.len() as u32 >= CAPACITY {
             return Err(Overflow::Facts);
         }
+        // Two bounds beside the id count, both of them promised by
+        // `Overflow`'s own doc comment and neither of them checked until M1e
+        // S1e.4.1 (`CO-L1`). The arity was an `expect`, and it was reachable:
+        // a 65 536-argument fact is a three-line program and it took the
+        // process down with exit 101 — the shape `defined_behaviour.md` § 4.3
+        // ruled out for `(eq ?x)` one phase earlier.
+        let arity = u16::try_from(args.len()).map_err(|_| Overflow::FactArity)?;
+        if args.len() > INLINE_ARGS {
+            arena_room(self.args.len(), args.len(), Overflow::FactArgs)?;
+        }
         crate::counters::bump(|c| c.fact_new += 1);
         let id = FactId(self.rows.len() as u32);
         let mut row = Row {
             rel,
             args_at: self.args.len() as u32,
-            arity: u16::try_from(args.len()).expect("a fact's arity fits u16"),
+            arity,
             _pad: 0,
             inline: [Value::UNBOUND; INLINE_ARGS],
         };
@@ -384,5 +394,28 @@ mod tests {
             "381 facts + args took {} bytes",
             s.footprint()
         );
+    }
+
+    /// **A fact wider than the arity field is refused, and one that fits is
+    /// not.**
+    ///
+    /// The threshold is exact and it was a **panic** until M1e S1e.4.1
+    /// (`CO-L1`): `u16::try_from(args.len()).expect(…)` took the process down
+    /// with exit 101 on a three-line program, which is the shape
+    /// `defined_behaviour.md` § 4.3 had already ruled out for `(eq ?x)` one
+    /// phase earlier and which [`Overflow`]'s own doc comment says this crate
+    /// does not do.
+    #[test]
+    fn a_fact_wider_than_the_arity_field_is_refused_and_one_narrower_is_not() {
+        let mut s = FactStore::new();
+        let mut interner = Interner::new();
+        let rel = interner.intern("wide").expect("room");
+        let wide: Vec<Value> = (0..=u16::MAX as u32).map(v).collect();
+        assert_eq!(wide.len(), u16::MAX as usize + 1);
+        assert_eq!(s.intern(rel, &wide), Err(Overflow::FactArity));
+        // …and the store is unchanged: the refusal is before the push.
+        assert_eq!(s.len(), 0);
+        assert!(s.intern(rel, &wide[..u16::MAX as usize]).is_ok());
+        assert_eq!(s.len(), 1);
     }
 }

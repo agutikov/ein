@@ -26,21 +26,70 @@ use std::sync::OnceLock;
 /// How many distinct ids one interned space can hold.
 ///
 /// [`crate::Value`] packs a 2-bit tag beside a 30-bit payload, so a symbol, an
-/// int-pool entry and a fact all share the same ceiling. Reaching it needs
-/// ≥ 4 GB of symbol text; the check exists so that hitting it is an error
-/// somebody can read rather than a silent wrap into another value's identity.
+/// int-pool entry and a fact all share the same ceiling. The check exists so
+/// that hitting it is an error somebody can read rather than a silent wrap
+/// into another value's identity.
+///
+/// **This is one of two limits, and it is not the one that binds first.** A
+/// symbol's text and a fact's overflow arguments live in arenas addressed by
+/// `u32`, so [`ARENA_CAPACITY`] caps the *bytes* where this caps the *count* —
+/// and they are independent, because nothing bounds a symbol's length. This
+/// comment used to say reaching the id ceiling "needs ≥ 4 GB of symbol text",
+/// which holds only at a mean symbol length of exactly 4 bytes; measured
+/// through the `.einb` symbol-table header
+/// (`ein kb save <file> x.einb`, 2026-09-01) the corpus runs 7.55 B/symbol on
+/// `examples/branching/06_lookahead_on.ein` and 18.93 on `examples/zebra2.ein`,
+/// where the arena fills at **21 %** of this ceiling. Both are guarded, at the
+/// one site each arena can grow (M1e S1e.4.1, `CO-L1`).
 pub const CAPACITY: u32 = 1 << 30;
+
+/// How many slots one arena addressed by a `u32` offset can hold.
+///
+/// The [`Interner`]'s text (slots are **bytes**) and the
+/// [`crate::facts::FactStore`]'s overflow argument vector (slots are
+/// **[`crate::Value`]s**) are both indexed by a `u32` start, so an arena that
+/// passed this would wrap a start into another value's identity — the silent
+/// failure [`CAPACITY`]'s own comment says this module exists to prevent, in
+/// the exact shape it warns about. Unreachable at corpus scale (`zebra2`'s
+/// text arena is 3 692 bytes) and guarded anyway, because the alternative to a
+/// readable error here is not a crash, it is a wrong answer.
+pub const ARENA_CAPACITY: usize = 1 << 32;
+
+/// Room in an arena for `more` slots, or the overflow that says which arena.
+///
+/// One helper for the two growth sites, so the bound is stated once. The
+/// `checked_add` matters as much as the comparison: `len + more` is itself a
+/// wrap on a host whose `usize` is 32 bits.
+pub(crate) fn arena_room(len: usize, more: usize, which: Overflow) -> Result<(), Overflow> {
+    match len.checked_add(more) {
+        Some(end) if end <= ARENA_CAPACITY => Ok(()),
+        _ => Err(which),
+    }
+}
 
 /// Why an id could not be assigned.
 ///
-/// Three of the four are the 30-bit payload filling up. A puzzle that reaches
-/// one is a research finding, not a crash — so it is a [`Result`] at the three
-/// sites that assign ids, and not a panic.
+/// Three of the seven are the 30-bit payload filling up and three more are an
+/// arena or a field beside it. A puzzle that reaches one is a research
+/// finding, not a crash — so it is a [`Result`] at every site that assigns an
+/// id or writes an offset, and not a panic. **That was a claim rather than a
+/// fact until M1e S1e.4.1** (`CO-L1`): [`SymbolText`](Overflow::SymbolText),
+/// [`FactArgs`](Overflow::FactArgs) and [`FactArity`](Overflow::FactArity)
+/// are the three the sentence above was already promising, and the last of
+/// them was a live `expect` that took the process down with exit 101 on a
+/// 65 536-argument fact.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Overflow {
     Symbols,
     Ints,
     Facts,
+    /// The text arena passed [`ARENA_CAPACITY`], so a span start would wrap.
+    SymbolText,
+    /// The fact store's overflow argument arena passed [`ARENA_CAPACITY`].
+    FactArgs,
+    /// A fact had more arguments than [`crate::facts::Row`]'s `u16` arity
+    /// field can count.
+    FactArity,
     /// **Not a capacity condition.** The intern tables are shared with a
     /// worker, so nobody may grow them — [`crate::Terms::share`].
     ///
@@ -61,6 +110,21 @@ impl std::fmt::Display for Overflow {
             Overflow::Symbols => "distinct symbols",
             Overflow::Ints => "distinct integer literals",
             Overflow::Facts => "distinct facts",
+            Overflow::SymbolText => {
+                return write!(
+                    f,
+                    "too much symbol text — the limit is {ARENA_CAPACITY} bytes"
+                );
+            }
+            Overflow::FactArgs => {
+                return write!(
+                    f,
+                    "too many stored fact arguments — the limit is {ARENA_CAPACITY}"
+                );
+            }
+            Overflow::FactArity => {
+                return write!(f, "a fact takes at most {} arguments", u16::MAX);
+            }
             Overflow::Shared => {
                 return f.write_str(
                     "the intern tables are shared with a worker and cannot \
@@ -116,6 +180,11 @@ impl Interner {
         if self.spans.len() as u32 >= CAPACITY {
             return Err(Overflow::Symbols);
         }
+        // The arena bound, and it is the one that binds first — see
+        // [`CAPACITY`]. On the miss path only: the hit above returns before
+        // it, and the symbol table is effectively frozen after load, so this
+        // runs ~195 times on `zebra2` and never during a search.
+        arena_room(self.arena.len(), s.len(), Overflow::SymbolText)?;
         let start = self.arena.len() as u32;
         self.arena.push_str(s);
         let id = Symbol(self.spans.len() as u32);
@@ -246,5 +315,38 @@ mod tests {
         let mut by_text: Vec<_> = syms.iter().map(|&(s, _)| s).collect();
         by_text.sort();
         assert_eq!(by_rank.iter().map(|&(s, _)| s).collect::<Vec<_>>(), by_text);
+    }
+
+    /// **The arena bound is the byte bound, and it is not the id bound.**
+    ///
+    /// A 4 GiB arena is not allocatable in a unit test, so the boundary is
+    /// asserted where it is *computed* rather than where it is reached. The
+    /// last assertion is the one that holds [`CAPACITY`]'s corrected comment:
+    /// at the corpus's own mean symbol length the byte bound arrives first, so
+    /// a future edit restoring *"reaching the id ceiling needs ≥ 4 GB of
+    /// symbol text"* fails here rather than merely reading oddly. M1e
+    /// S1e.4.1, `CO-L1`.
+    #[test]
+    fn the_arena_bound_is_the_byte_bound_and_not_the_id_bound() {
+        assert_eq!(
+            arena_room(ARENA_CAPACITY - 4, 4, Overflow::SymbolText),
+            Ok(())
+        );
+        assert_eq!(
+            arena_room(ARENA_CAPACITY - 4, 5, Overflow::SymbolText),
+            Err(Overflow::SymbolText)
+        );
+        // The add itself, not only the comparison: a 32-bit `usize` wraps here.
+        assert_eq!(
+            arena_room(usize::MAX, 1, Overflow::FactArgs),
+            Err(Overflow::FactArgs)
+        );
+        // 7.55 B/symbol is the corpus's *shortest* mean (`branching/06`), so
+        // even there the arena fills at 53 % of the id ceiling — measured
+        // 2026-09-01 through `ein kb save`'s symbol-table header.
+        assert!(
+            ARENA_CAPACITY / 7 < CAPACITY as usize,
+            "the id ceiling would bind first, and the doc comment says it does not"
+        );
     }
 }

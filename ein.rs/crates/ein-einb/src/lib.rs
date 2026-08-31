@@ -55,6 +55,32 @@
 //! are a **cache miss**, not an error, and a differing *engine* keeps
 //! `PROGRAM` — re-loading it is exactly what reading the `.ein` would have
 //! done — and drops everything derived. See [`meta`].
+//!
+//! ### The `u32`-offset sweep — M1e S1e.4.1
+//!
+//! `CO-L1` found `ein-core` narrowing a `len()` into a `u32` arena offset with
+//! only an *id-count* guard behind it, and asked whether this container has
+//! the same shape. It is the crate worth asking about, because it is the one
+//! [`cast`] permits `unsafe` in and the one that reads bytes it did not write.
+//! The answer, swept 2026-09-01:
+//!
+//! - **The reader is covered, and not by the digest.** A string table's
+//!   offsets must *close* (`offsets[count] == blob.len()`) and be *sorted*,
+//!   and every slice is taken with `get(..)` rather than indexed — three
+//!   named refusals in [`sections`], on the path a forged file takes after
+//!   the digest has already been made to match.
+//! - **The writer is not**, and does not need to be while every offset it
+//!   writes comes from a `Terms` that now refuses to exceed
+//!   [`ein_core::intern::ARENA_CAPACITY`]. The bound moved one crate down,
+//!   which is where it belongs: a container cannot serialise a store that
+//!   cannot exist.
+//! - **The one hole was not an offset.** It was `FactStore::intern`'s arity
+//!   `expect`, two crates below this one and reachable from *both* directions
+//!   — a 65 536-argument fact in a `.ein`, or a forged `Facts` row here. It is
+//!   a refusal now, so this reader's `?` carries it, and the fuzzers in
+//!   `tests/corruption.rs` could never have found it: they mutate bytes of a
+//!   20 KB seed whose widest row has 147 arguments, and a byte flip cannot
+//!   manufacture 65 536.
 
 #![deny(unsafe_code)]
 
