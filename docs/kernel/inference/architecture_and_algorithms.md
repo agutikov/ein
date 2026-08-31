@@ -154,9 +154,10 @@ a quiescence admits nothing. Since S1.8.B2v the closure's re-enqueue is
 **delta-driven**: only plans whose premises touch the just-derived fact's
 relation are re-matched, and they are **seeded** at the new fact rather than
 re-scanned (`saturator._enqueue_pass`, `match.run_seeded_guarded`).
-`Engine.step()` — the queue-less loop the `Saturator` wraps — implements the
-same two phases directly: positive matches first, the boundary only once none
-remain.
+There was a second, queue-less loop — `Engine.step()`, which the `Saturator`
+wrapped and which did the same two phases directly — and **it did not survive
+the port**: `ein.rs`'s `Engine` is the compile cache, and `Saturator::step` is
+the only implementation of this paragraph (M1e `CD-M1`).
 
 **The search outer loop** (many KBs → a verdict). `_phase1_root` saturates
 the root and runs the *forced-positive cascade* (while the alive set is a

@@ -323,10 +323,10 @@ Observables on the saturator: `naf_rounds`, `naf_admitted`, `naf_retired`,
 and `naf_dropped` — kept, and now **structurally 0**. `is_stalled()`
 consults the boundary too: a parked candidate whose guards now pass is an
 available firing, and answering from the positive queue alone would report
-"stalled" one round before a `forall` admits. The queue-less
-[`Engine::step`](../../../ein.rs/crates/ein-infer/src/engine.rs) implements
-the same two phases directly — every positive match first, the boundary
-only once none remain.
+"stalled" one round before a `forall` admits. Both phases are
+[`Saturator::step`](../../../ein.rs/crates/ein-infer/src/saturator.rs) —
+`closure_step` drains the positive queue, and only at its quiescence does
+`admit_from_boundary` speak.
 
 **The race, retired.** The old design evaluated guards *inside* the
 closure, three times over: at enqueue-time matching, again at fire time to

@@ -121,10 +121,13 @@ Monotonicity within one run, and what each case costs:
   (`saturator._absent_relations`) is gone. Guards do not participate in
   matching at all, so no delta can force a re-match (C5, retired).
 
-The queue-less
-[`Engine::step`](../../../ein.rs/crates/ein-infer/src/engine.rs) implements
-the same two phases directly: it fires purely positive matches first and
-consults the boundary only once none remain.
+The two phases are
+[`Saturator::step`](../../../ein.rs/crates/ein-infer/src/saturator.rs), and it
+is one loop rather than two: `closure_step` fires purely positive matches from
+a priority-banded queue until it is empty, and only then does
+`admit_from_boundary` speak. *This paragraph named a queue-less `Engine::step`
+until 2026-08-31; that was `ein.py`'s second, simpler loop — `ein.rs`'s
+`Engine` is the compile cache and has no `step` (M1e `CD-M1`).*
 
 ## Corollaries the engine relies on
 
