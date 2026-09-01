@@ -1137,8 +1137,8 @@ seventeen scripts name their binary on purpose. That leaves
 
 - **llama.cpp does not pull CPython.**
   [P2.2](../../../plans/m2_nl_to_ir/p2.2_formalizer/README.md) is a `llama-server` container
-  plus a thin HTTP client, mirroring [acva](../../../../acva) — whose client is
-  **C++**. P2.2's own README says "same pattern, Python client *this time*
+  plus a thin HTTP client, mirroring the out-of-tree `acva` — whose client
+  is **C++**. P2.2's own README says "same pattern, Python client *this time*
   instead of C++"; the *this time* was that ein was Python.
 - **The one thing that wanted the binding argues against it.** M2's
   validator/repair loop needs *why* a load failed, as data. The CLI cannot

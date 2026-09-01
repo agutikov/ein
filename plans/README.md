@@ -130,7 +130,7 @@ opposite of integrating it.
 
 ## Schema
 
-Four-level hierarchy, mirroring [`/home/user/work/acva/plans/`](../../acva/plans/):
+Four-level hierarchy, mirroring `/home/user/work/acva/plans/` (out of tree):
 
 ```
 Milestone  →  Phase  →  Stage  →  Task

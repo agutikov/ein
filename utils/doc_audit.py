@@ -28,7 +28,11 @@ That is the `DO-M2` sweep (M1e S1e.3.8), and it is one line rather than a
 second script.
 
 **links** — every relative markdown link resolves, file *and* `#anchor`, with
-GitHub's slugification. Plus the check this script exists because nothing had:
+GitHub's slugification, **and stays inside the repository**: a target that
+escapes it is a finding on its own, because `exists()` on one would answer for
+the machine and not for the tree (three `../../acva/…` links passed this check
+on the author's workstation and failed CI, 2026-09-01). Plus the check this
+script exists because nothing had:
 a **prose section reference** — ``[`page.md`](page.md) §3d.vii`` — is not a
 link, so no anchor checker sees it, and S1e.2.2 found four such numbers cited
 six times into a file that has never had any of them.
@@ -209,6 +213,20 @@ def check_links(pages: list[Path]) -> list[tuple[Path, int, str, str]]:
                 continue
             fpart, _, frag = target.partition("#")
             dest = (page.parent / unquote(fpart)).resolve()
+            # A target outside the repository is a finding wherever it points
+            # and whatever this machine happens to have beside the checkout:
+            # `exists()` would otherwise be an answer about the machine rather
+            # than about the tree, so the same commit passes here and fails in
+            # CI. Three `../../acva/…` links did exactly that on 2026-09-01 —
+            # they resolve on the author's workstation, where the sibling repo
+            # sits next to this one, and nowhere else. The fix at those sites
+            # is the repo's standing one: a reference that cannot be a link is
+            # still fine as `code`.
+            try:
+                dest.relative_to(REPO)
+            except ValueError:
+                bad.append((page, line, target, "outside the repo"))
+                continue
             if not dest.exists():
                 bad.append((page, line, target, "file missing"))
                 continue
