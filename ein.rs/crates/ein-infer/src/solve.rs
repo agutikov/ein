@@ -216,6 +216,20 @@ pub struct LatticeProof {
     /// unconditional half of the proof has to be carried deliberately — which
     /// is also how a human walkthrough tells it, givens first.
     pub root_firings: Vec<Firing>,
+    /// Root's facts at the moment its saturation reached a fixpoint — the
+    /// state the [`Dumper::root_initial`] hook is handed — **before** any
+    /// hypothesis and before the search's own root writes: the kill cache's
+    /// `(not h)`, the singleton writeback, a forced positive. Collected only
+    /// under `store_lattice`, and read-only: the ids are copied out of the
+    /// KB, which is not forked or touched.
+    ///
+    /// M1e2 S1e2.1.2. `ein solve --dump-answer` needed it twice: as `root.ein`,
+    /// the state a reviewer reads first, and as the baseline of each model's
+    /// `added` — *what this commitment made true that root did not*. The final
+    /// root cannot be that baseline, because a fact the search wrote into root
+    /// after it started (W2's `<forced-positive>`, a writeback) is exactly the
+    /// kind of thing the reviewer is looking for.
+    pub root_initial: Vec<FactId>,
     pub dead_commitments: Vec<DeadCommitment>,
     pub alive_at_end: Vec<CanonicalSetId>,
     pub learned_nogoods: Vec<Box<[FactId]>>,
@@ -630,6 +644,7 @@ pub fn solve(
         memo: SharedMemo::default(),
         root_snapshot: None,
         root_firings: Vec::new(),
+        root_initial: Vec::new(),
         root_owes: Owes::default(),
         declares_obligations: false,
         stats: MonotonicStats::new(),
@@ -659,6 +674,26 @@ pub fn solve(
     };
     match run.go(root, terms, ast, events, dumper) {
         Ok(answer) => {
+            // The recorded nodes are in the verdict's branch order, which is
+            // `lstate.nodes`' order — the same walk `finalise` made.
+            //
+            // **Before the proof is taken**, because `proof()` moves the nodes
+            // out of `lstate`. Until M1e2 S1e2.1.2 this ran after it, so every
+            // run that kept a proof — `--trace`, and now `--dump-answer` —
+            // reported `owes.models = []` in `--json-summary` while the same
+            // run without the flag reported each model's tally: an artefact
+            // flag moving another artefact. `answer_dump::the_flag_moves_no_answer`
+            // is what found it, and what holds it.
+            let owes = OwesReport {
+                root: run.root_owes.clone(),
+                models: run
+                    .lstate
+                    .nodes
+                    .iter()
+                    .map(|(_, n)| n.owes.clone())
+                    .collect(),
+                declared: root.program().obligations.len(),
+            };
             let proof = if opts.store_lattice {
                 Some(run.proof(root))
             } else {
@@ -673,18 +708,6 @@ pub fn solve(
                 dumper.proof_summary(proof, terms);
             }
             dumper.summary(&answer, &run.stats);
-            // The recorded nodes are in the verdict's branch order, which is
-            // `lstate.nodes`' order — the same walk `finalise` made.
-            let owes = OwesReport {
-                root: run.root_owes.clone(),
-                models: run
-                    .lstate
-                    .nodes
-                    .iter()
-                    .map(|(_, n)| n.owes.clone())
-                    .collect(),
-                declared: root.program().obligations.len(),
-            };
             Ok(Solved {
                 answer,
                 proof,
@@ -744,6 +767,8 @@ struct Run<'o> {
     root_snapshot: Option<Arc<Snapshot>>,
     /// See [`LatticeProof::root_firings`]. Empty unless `store_lattice`.
     root_firings: Vec<Firing>,
+    /// See [`LatticeProof::root_initial`]. Empty unless `store_lattice`.
+    root_initial: Vec<FactId>,
     /// What root's fixpoint owes — read once Phase 1 has settled root
     /// (saturation, then the forced-positive cascade), which is the state the
     /// search starts from and the one `obligation_forms.md` §5 counted by
@@ -1355,6 +1380,9 @@ impl Run<'_> {
                 }
             }
             self.snapshot_root(&sat, s.kb);
+        }
+        if self.opts.store_lattice {
+            self.root_initial = root.facts().collect();
         }
         dumper.root_initial(root, terms);
 
@@ -2952,6 +2980,7 @@ impl Run<'_> {
         LatticeProof {
             solutions: solutions.into_iter().map(|(_, r)| r).collect(),
             root_firings: std::mem::take(&mut self.root_firings),
+            root_initial: std::mem::take(&mut self.root_initial),
             dead_commitments: std::mem::take(&mut self.lstate.dead),
             alive_at_end: std::mem::take(&mut self.lstate.alive_at_end),
             learned_nogoods: learned,

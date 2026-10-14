@@ -113,6 +113,23 @@ pub fn kb_to_ein_text(kb: &Kb, terms: &Terms) -> String {
     dump_canonical(&scratch, &ont)
 }
 
+/// Some of a KB's facts as top-level ein forms, in the order given, each with
+/// the provenance keyword [`kb_to_ein_text`] gives it — so `:rule`, `:source`
+/// and `:hypothesis` read back as the origin they record.
+///
+/// M1e2 S1e2.1.2's: a `--dump-answer` state file chooses its facts (the
+/// program's schema is not repeated, so the file loads) and their order
+/// (sorted, so two model files diff line by line), which the whole-KB writer
+/// above does not let a caller do.
+pub fn facts_to_ein_text(kb: &Kb, terms: &Terms, facts: &[FactId]) -> String {
+    let mut scratch = Ast::new();
+    let nodes: Vec<NodeId> = facts
+        .iter()
+        .map(|&f| fact_to_sform(&mut scratch, terms, Some(kb), f))
+        .collect();
+    dump_canonical(&scratch, &nodes)
+}
+
 /// A firing for JSONL output — rule, activator, bindings, the primary derived
 /// fact, and the premises.
 pub fn firing_to_json(terms: &Terms, firing: &Firing) -> Json {

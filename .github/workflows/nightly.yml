@@ -67,6 +67,11 @@ jobs:
       # ordering accident — asked of the one engine that is left.
       - run: cargo test -p ein-render --release --test id_order_invariance
         env: { EIN_ID_SEEDS: "8" }
+      # M1e2 S1e2.1.2 — every `--dump-answer` state file a fixpoint of its own
+      # program, with the one run the per-commit tier skips: `zebra2-minus-15
+      # -e -m 3`, 32 models, ~25 s of solve (`docs/kernel/inference/answer_dump.md`).
+      - run: cargo test -p ein-cli --release --test answer_dump
+        env: { EIN_CORPUS_SLOW: "1" }
       # ── The two `--check` censuses — M1e S1e.4.5, `TE-L4` ──
       #
       # Both read the release `ein` the steps above have already built

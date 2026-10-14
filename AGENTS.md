@@ -58,7 +58,7 @@ constrained-reasoning research.
   `ir/02-data-model/03_implementation.md`, the module maps that were
   `python_impl.md`. **Since M1e S1e.5.1 there is also a
   [configuration reference](docs/kernel/configuration.md)** — the 17
-  `(config …)` flags, the 52 CLI options, the eight `EIN_*` names the binary
+  `(config …)` flags, the 53 CLI options, the eight `EIN_*` names the binary
   actually reads, the precedence between the three, and on every flag row a
   *does it change the answer* and a *stability* column. Its defaults block is
   `ein solve --dump-config`'s own output (`EIN_BLESS=1` re-banks it), and two
@@ -80,9 +80,10 @@ constrained-reasoning research.
   it, a **risk not by argument at all**, and an argument for leaving something
   alone holds only while its premise is enforced by something that fails when
   it stops being true.
-  **Since M1e S1e.2.2 every one of the 40 pages is in exactly one of three
+  **Since M1e S1e.2.2 every one of the pages — 41 since M1e2 S1e2.1.2 added
+  `inference/answer_dump.md` — is in exactly one of three
   declared states, visible from the page rather than from a plan** —
-  [README § Which pages to trust](docs/kernel/README.md): *current* (37, no
+  [README § Which pages to trust](docs/kernel/README.md): *current* (38, no
   banner), *superseded with a banner* (**3**, all of them M1 P1.5b's design —
   `inference/algorithm_layer_n.md`, `inference/lattice_diagrams.md`,
   `inference/parity_baselines.md`), and *moved to `docs/history/`* (**0**).
@@ -94,7 +95,7 @@ constrained-reasoning research.
   superseded page to match today's engine**: it is neither a record nor a
   specification afterwards, and `docs/history/m1a_rust/design/07` cites the
   first of the three as the contract the port had to reproduce. The pass that
-  keeps the other 37 honest is [README § Keeping this
+  keeps the other 38 honest is [README § Keeping this
   true](docs/kernel/README.md) — six checks, five of them `utils/doc_audit.py`
   and the sixth a shell, and the sixth is the one that found the most.
 - **`docs/api/`** — **how to drive Ein as a library.** Since M1a S1a.9.4 its
@@ -533,7 +534,7 @@ set.** The shipped binary reads **eight** (three of them only in a non-default
 build), the test harness reads ten more, `utils/` and the shell two — and nine
 greppable `EIN_*` names are not environment variables at all, `EIN_RS` and
 `EIN_RENDER_LEVI` among them. The whole census, classified, with the 17
-`(config …)` flags and the 52 CLI options beside it and a *does it change the
+`(config …)` flags and the 53 CLI options beside it and a *does it change the
 answer* column on every flag row:
 [`docs/kernel/configuration.md`](docs/kernel/configuration.md) (M1e S1e.5.1),
 pinned by `ein-cli/tests/config_reference.rs`.

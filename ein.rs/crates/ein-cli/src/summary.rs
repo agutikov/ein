@@ -20,81 +20,18 @@
 //! `Aborted` answer. `summary_properties::the_summary_has_one_shape_on_every_arm`
 //! is the guard.
 
-use ein_core::{Kb, SolverConfig, Terms, Value};
+use ein_core::{Kb, SolverConfig, Terms};
 use ein_infer::SharedMemo;
-use ein_infer::events::{sexpr, sexpr_value};
+use ein_infer::events::sexpr;
 use ein_infer::hypgen::{Drop, HypGenStats, Skip};
-use ein_infer::obligations::Owes;
 use ein_infer::solve::{MonotonicStats, OwesReport};
-use ein_infer::verdict::{Answer, Verdict, goal_bindings};
+use ein_infer::verdict::{Answer, Verdict};
 use ein_ir::Ast;
 use ein_render::dump::Json;
+use ein_render::dump::answer::{bindings_json, facts_json, owes_json};
 use ein_render::dump::json::dumps_indent;
 
 const SCHEMA: &str = "ein-summary/1";
-
-/// A KB's facts as sorted s-expressions — the model, as a set.
-fn facts(terms: &Terms, kb: &Kb) -> Json {
-    let mut out: Vec<String> = kb.facts().map(|f| sexpr(terms, f)).collect();
-    out.sort();
-    Json::Array(out.into_iter().map(Json::Str).collect())
-}
-
-/// One goal binding, as `json.dumps` writes ein.py's.
-///
-/// `goal_bindings` returns the **stored** argument, and ein.py stores an IR
-/// `INT` as a Python `int` — so `json.dumps` writes it as a *number*. Every
-/// binding used to go through `sexpr_value`, which made it a string, and
-/// `summary.json` is T0: `(query :goal (r1 ?x ?y))` over `(r1 o3 8)` was a
-/// verdict-level difference on a two-line program. Found by
-/// [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-differential-fuzzer)'s
-/// fuzzer, 2026-08-20; `examples/ein-bugs/int-goal-binding.ein` is the
-/// fixture. A symbol stays a string and a nested fact its s-expression.
-fn binding_value(terms: &Terms, v: Value) -> Json {
-    match v.as_int() {
-        Some(id) => {
-            let text = terms.int_text(id);
-            text.parse::<i64>()
-                .map_or_else(|_| Json::BigInt(text.to_string()), Json::Int)
-        }
-        None => Json::Str(sexpr_value(terms, v)),
-    }
-}
-
-/// `(query :goal …)` binding rows, sorted; each row's keys sorted too.
-fn bindings(ast: &Ast, terms: &mut Terms, kb: &Kb) -> Json {
-    let rows = goal_bindings(ast, terms, kb, None);
-    let mut shown: Vec<Vec<(String, Value)>> = rows
-        .iter()
-        .map(|row| {
-            let mut r: Vec<(String, Value)> = row
-                .iter()
-                .map(|(k, v)| (terms.sym(*k).to_string(), *v))
-                .collect();
-            r.sort_by(|a, b| a.0.cmp(&b.0));
-            r
-        })
-        .collect();
-    // Rows are ordered by their rendered form, which is what ein.py's
-    // `sorted(rows, key=…)` compares.
-    shown.sort_by_key(|r| {
-        r.iter()
-            .map(|(k, v)| (k.clone(), sexpr_value(terms, *v)))
-            .collect::<Vec<_>>()
-    });
-    Json::Array(
-        shown
-            .into_iter()
-            .map(|r| {
-                Json::Object(
-                    r.into_iter()
-                        .map(|(k, v)| (k, binding_value(terms, v)))
-                        .collect(),
-                )
-            })
-            .collect(),
-    )
-}
 
 /// The T0 observables: what was proved, and the model(s) that prove it.
 fn verdict_block(ast: &Ast, terms: &mut Terms, answer: &Answer) -> Vec<(String, Json)> {
@@ -125,7 +62,7 @@ fn verdict_block(ast: &Ast, terms: &mut Terms, answer: &Answer) -> Vec<(String, 
     let mut solutions: Vec<(Vec<String>, Json)> = branches
         .iter()
         .map(|b| {
-            let f = facts(terms, &b.kb);
+            let f = facts_json(terms, &b.kb);
             let key = match &f {
                 Json::Array(items) => items
                     .iter()
@@ -136,7 +73,7 @@ fn verdict_block(ast: &Ast, terms: &mut Terms, answer: &Answer) -> Vec<(String, 
                     .collect(),
                 _ => Vec::new(),
             };
-            let g = bindings(ast, terms, &b.kb);
+            let g = bindings_json(ast, terms, &b.kb);
             (key, Json::obj(vec![("facts", f), ("goal_bindings", g)]))
         })
         .collect();
@@ -148,7 +85,7 @@ fn verdict_block(ast: &Ast, terms: &mut Terms, answer: &Answer) -> Vec<(String, 
     let mut opens: Vec<(Vec<String>, Json)> = open_states
         .iter()
         .map(|b| {
-            let f = facts(terms, &b.kb);
+            let f = facts_json(terms, &b.kb);
             let key = match &f {
                 Json::Array(items) => items
                     .iter()
@@ -159,7 +96,7 @@ fn verdict_block(ast: &Ast, terms: &mut Terms, answer: &Answer) -> Vec<(String, 
                     .collect(),
                 _ => Vec::new(),
             };
-            let g = bindings(ast, terms, &b.kb);
+            let g = bindings_json(ast, terms, &b.kb);
             (key, Json::obj(vec![("facts", f), ("goal_bindings", g)]))
         })
         .collect();
@@ -445,48 +382,6 @@ fn leftover_block(ast: &Ast, terms: &mut Terms, answer: &mut Answer) -> Result<J
 
 /// One quiescent state's outstanding obligations — M1d S1d.2.4.
 ///
-/// `total` is the instance count; `by_relation` attributes it, which only
-/// `(open ?R)` can do — a bare `(open)` counts and names no slot, so the two
-/// numbers agree exactly when every obligation rule in the program names its
-/// relation. `instances` is the report itself, one row per debt in report
-/// order, carrying the rendered `:why` a reader actually wants.
-fn owes_block(terms: &Terms, owes: &Owes) -> Json {
-    let by_relation: Vec<(String, Json)> = owes
-        .by_relation()
-        .into_iter()
-        .map(|(r, n)| (terms.sym(r).to_string(), Json::int(n as i64)))
-        .collect();
-    let instances: Vec<Json> = owes
-        .instances()
-        .iter()
-        .map(|i| {
-            let mut b: Vec<(String, Json)> = i
-                .bindings
-                .iter()
-                .map(|(k, v)| (terms.sym(*k).to_string(), Json::Str(sexpr_value(terms, *v))))
-                .collect();
-            b.sort_by(|a, b| a.0.cmp(&b.0));
-            Json::obj(vec![
-                ("rule", Json::str(terms.sym(i.rule))),
-                (
-                    "relation",
-                    match i.relation {
-                        Some(r) => Json::str(terms.sym(r)),
-                        None => Json::Null,
-                    },
-                ),
-                ("bindings", Json::Object(b)),
-                ("why", Json::str(&i.why)),
-            ])
-        })
-        .collect();
-    Json::obj(vec![
-        ("total", Json::int(owes.total() as i64)),
-        ("by_relation", Json::Object(by_relation)),
-        ("instances", Json::Array(instances)),
-    ])
-}
-
 /// What the run found outstanding, at the two places a reader asks.
 ///
 /// `root` is the state the search starts from; `models` is one block per
@@ -501,10 +396,10 @@ fn owes_report(terms: &Terms, report: &OwesReport) -> Json {
         // consumer cannot infer it from `root.total`: 0 there is both "paid"
         // and "never stated", and only one of the two may be called satisfied.
         ("declared", Json::int(report.declared as i64)),
-        ("root", owes_block(terms, &report.root)),
+        ("root", owes_json(terms, &report.root)),
         (
             "models",
-            Json::Array(report.models.iter().map(|o| owes_block(terms, o)).collect()),
+            Json::Array(report.models.iter().map(|o| owes_json(terms, o)).collect()),
         ),
     ])
 }
@@ -703,5 +598,11 @@ pub fn build_aborted(
 /// the default, since `_lattice_dump.py` and `_serialise.py` took CPython's,
 /// and a blanket change would introduce a divergence while closing one.
 pub fn write(path: &str, summary: &Json) -> std::io::Result<()> {
-    std::fs::write(path, dumps_indent(summary) + "\n")
+    std::fs::write(path, text(summary))
+}
+
+/// The bytes [`write()`] writes — which `ein solve --dump-answer`'s
+/// `answer.json` also is, so the two are one spelling rather than two.
+pub fn text(summary: &Json) -> String {
+    dumps_indent(summary) + "\n"
 }

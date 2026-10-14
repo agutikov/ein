@@ -13,12 +13,14 @@
 //! sites, so they have to agree about what happened, which is a property this
 //! stage can check and no earlier one could.
 
+pub mod answer;
 pub mod json;
 pub mod lattice;
 pub mod serialise;
 pub mod snapshot;
 pub mod state;
 
+pub use answer::{AnswerInputs, clear_previous, write_aborted_answer_dir, write_answer_dir};
 pub use json::Json;
 pub use lattice::LatticeDumper;
 pub use serialise::kb_to_ein_text;

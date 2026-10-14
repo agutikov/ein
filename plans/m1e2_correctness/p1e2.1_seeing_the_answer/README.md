@@ -2,7 +2,9 @@
 
 **Estimate:** ~2.5 weeks: 7 stages, 12 days.
 **Status:** started 2026-10-14. S1e2.1.1 done 2026-10-14: the register, 26
-rows over 13 cases, held by `ein-cli/tests/wrong_answers.rs`.
+rows over 13 cases, held by `ein-cli/tests/wrong_answers.rs`. S1e2.1.2 done
+2026-10-14: `ein solve --dump-answer`, every recorded state a loadable
+fixpoint.
 **Depends on:** nothing. Every renderer this phase needs is already written,
 and three of them are already tested. What is missing is the way to reach them
 from the CLI, a file per answer, and one page that puts a wrong run beside its

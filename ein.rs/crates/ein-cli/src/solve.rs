@@ -486,7 +486,13 @@ fn resolve_jobs(n: i64) -> usize {
 
 /// The artefact flags: each names **one** path, so each is incompatible with a
 /// file that asks more than one question.
-const ONE_PATH_FLAGS: [&str; 4] = ["events", "trace", "json-summary", "dump-states"];
+const ONE_PATH_FLAGS: [&str; 5] = [
+    "events",
+    "trace",
+    "json-summary",
+    "dump-states",
+    "dump-answer",
+];
 
 pub fn run(m: &ArgMatches) -> i32 {
     // `--max-set-size` and `EIN_TRAVERSAL=tree` are mutually exclusive — M1e
@@ -606,6 +612,33 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
             return (1, n_queries);
         }
     };
+    // `--dump-answer` takes `--dump-states`' arm of the contract, for its
+    // reason: the sink is a directory, made before the search, and a run that
+    // cannot make it cannot do what it was asked. Everything after this — the
+    // files themselves — is written once the answer exists, and a failure
+    // there leaves the exit code alone like the additive four.
+    let answer_dir = m.get_one::<String>("dump-answer").cloned();
+    let answer_program = match answer_dir.as_deref() {
+        None => None,
+        Some(dir) => {
+            if crate::common::looks_like_einb(&crate::common::read_bytes_or_crash(Path::new(file)))
+            {
+                eprintln!(
+                    "error: --dump-answer {dir}: a .einb container carries no program \
+                     source, and every file the answer directory holds starts with it \
+                     — run it on the .ein"
+                );
+                return (2, n_queries);
+            }
+            let made = std::fs::create_dir_all(dir)
+                .and_then(|()| ein_render::dump::clear_previous(Path::new(dir)));
+            if let Err(e) = made {
+                artefact_failed("dump-answer", dir, e);
+                return (1, n_queries);
+            }
+            Some(inlined_program(file))
+        }
+    };
     // The `max(0)` can no longer fire: `cmdline::solutions_spec` refuses
     // anything below 1 (M1e S1e.1.5). It stays as the cast's guard rather than
     // as a policy — a policy that lives in two places is a policy with two
@@ -624,7 +657,9 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
         max_enterings: m
             .get_one::<i64>("max-enterings")
             .map(|n| (*n).max(0) as u64),
-        store_lattice: trace_path.is_some(),
+        // `--dump-answer` reads the proof `--trace` does, and asks for it the
+        // same way; the search is the one every corpus `--trace` cell runs.
+        store_lattice: trace_path.is_some() || answer_dir.is_some(),
         jobs: resolve_jobs(*m.get_one::<i64>("jobs").unwrap_or(&1)),
         ..SolveOptions::default()
     };
@@ -641,8 +676,10 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
         Ok(s) => s,
         Err(SolveError::Budget { reason, stats }) => {
             eprintln!("** aborted: {reason} **");
-            if let Some(path) = m.get_one::<String>("json-summary") {
-                match crate::summary::build_aborted(
+            let summary_path = m.get_one::<String>("json-summary");
+            if summary_path.is_some() || answer_dir.is_some() {
+                let mut off = Events::off();
+                let built = crate::summary::build_aborted(
                     &ast,
                     &mut terms,
                     &mut kb,
@@ -650,15 +687,22 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
                     &stats,
                     &config,
                     file,
-                    &mut events,
-                ) {
-                    Ok(s) => {
-                        if let Err(e) = crate::summary::write(path, &s) {
-                            artefact_failed("json-summary", path, e);
-                        }
-                    }
-                    Err(e) => artefact_failed("json-summary", path, e),
-                }
+                    // The summary narrates into the stream only when it was
+                    // asked for, so `--dump-answer` alone moves no event.
+                    if summary_path.is_some() {
+                        &mut events
+                    } else {
+                        &mut off
+                    },
+                );
+                write_summaries(built, summary_path, answer_dir.as_deref(), |dir, text| {
+                    let inputs = ein_render::dump::AnswerInputs {
+                        source: file,
+                        program: answer_program.as_deref().unwrap_or(""),
+                        summary: text,
+                    };
+                    ein_render::dump::write_aborted_answer_dir(Path::new(dir), &inputs, &reason)
+                });
             }
             return (2, n_queries);
         }
@@ -726,8 +770,10 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
     // Last: the summary re-saturates a fork of root to fill its `root` block,
     // so it runs after every stdout-producing step rather than between two.
     events_verdict(&mut events, &terms, &solved.answer, &solved.stats);
-    if let Some(path) = m.get_one::<String>("json-summary") {
-        match crate::summary::build(
+    let summary_path = m.get_one::<String>("json-summary");
+    if summary_path.is_some() || answer_dir.is_some() {
+        let mut off = Events::off();
+        let built = crate::summary::build(
             &ast,
             &mut terms,
             &mut kb,
@@ -735,16 +781,30 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
             &solved.stats,
             &config,
             file,
-            &mut events,
+            // As in the abort arm: the stream hears the summary only when the
+            // summary was asked for.
+            if summary_path.is_some() {
+                &mut events
+            } else {
+                &mut off
+            },
             &solved.owes,
-        ) {
-            Ok(s) => {
-                if let Err(e) = crate::summary::write(path, &s) {
-                    artefact_failed("json-summary", path, e);
-                }
-            }
-            Err(e) => artefact_failed("json-summary", path, e),
-        }
+        );
+        write_summaries(built, summary_path, answer_dir.as_deref(), |dir, text| {
+            let inputs = ein_render::dump::AnswerInputs {
+                source: file,
+                program: answer_program.as_deref().unwrap_or(""),
+                summary: text,
+            };
+            ein_render::dump::write_answer_dir(
+                Path::new(dir),
+                &ast,
+                &mut terms,
+                &kb,
+                &solved,
+                &inputs,
+            )
+        });
     }
     // Last of all, because a failing expectation is exactly when someone wants
     // the trace above it: the query's own claim about its answer, checked. A
@@ -761,6 +821,58 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
         ),
         n_queries,
     )
+}
+
+/// One summary, built once, to the two places that can want it:
+/// `--json-summary`'s file and `--dump-answer`'s `answer.json` — so the two are
+/// the same bytes by construction, which `answer_dump.rs` then checks.
+fn write_summaries(
+    built: Result<ein_render::dump::Json, String>,
+    summary_path: Option<&String>,
+    answer_dir: Option<&str>,
+    mut answer: impl FnMut(&str, &str) -> std::io::Result<()>,
+) {
+    let text = match built {
+        Ok(s) => crate::summary::text(&s),
+        Err(e) => {
+            if let Some(path) = summary_path {
+                artefact_failed("json-summary", path, &e);
+            }
+            if let Some(dir) = answer_dir {
+                artefact_failed("dump-answer", dir, &e);
+            }
+            return;
+        }
+    };
+    if let Some(path) = summary_path
+        && let Err(e) = std::fs::write(path, &text)
+    {
+        artefact_failed("json-summary", path, e);
+    }
+    if let Some(dir) = answer_dir
+        && let Err(e) = answer(dir, &text)
+    {
+        artefact_failed("dump-answer", dir, e);
+    }
+}
+
+/// The program `--dump-answer` writes at the head of every file: the source
+/// with its imports inlined, by the three calls `stdlib/README.md` documents
+/// and `imports_semantics::the_inlining_route_the_stdlib_readme_documents_round_trips`
+/// holds to the same program. The file has already loaded, so a failure here
+/// is a defect, and it is written into the file rather than swallowed.
+fn inlined_program(file: &str) -> String {
+    let path = Path::new(file);
+    let text = read_text_or_crash(path);
+    let mut ast = Ast::new();
+    let forms = match ein_ir::parse(&mut ast, &text, path.to_str()) {
+        Ok(f) => f,
+        Err(e) => return format!(";; (the source did not parse for inlining: {e})\n{text}"),
+    };
+    match ein_ir::resolve_and_minimize(&mut ast, &forms, path.parent()) {
+        Ok(inlined) => ein_ir::dump_canonical(&ast, &inlined),
+        Err(e) => format!(";; (imports could not be inlined: {e})\n{text}"),
+    }
 }
 
 /// Evaluate the active query's `:expect`, printing what disagreed.

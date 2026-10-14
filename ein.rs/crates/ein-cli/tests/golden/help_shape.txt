@@ -29,6 +29,7 @@ COMMAND ein render rules
   SUBCOMMAND saturate (delegated)
 COMMAND ein solve
   ABOUT solve a puzzle: print the solution(s) or the unsat core
+  OPTION --dump-answer -- metavar=DIR arity=1 default=None choices=- group=- required=False help=write the answer as files to DIR: the program, root, one loadable file per model and open state with the commitment that reached it, every refuted commitment, and answer.json (= --json-summary). DIR is made before the search; past that, stdout, stderr and the exit code are unchanged.
   OPTION --dump-config -c metavar=- arity=0 default=False choices=- group=- required=False help=print the resolved SolverConfig before solving
   OPTION --dump-states -D metavar=DIR arity=1 default=None choices=- group=- required=False help=persist the engine dump tree (root snapshot per layer + timeline) to DIR
   OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Schema: docs/kernel/inference/events.md.

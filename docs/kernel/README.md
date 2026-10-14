@@ -85,10 +85,11 @@ Zebra-acceptance milestone.
 Every page in this tree is in exactly **one** of three states, and the state is
 visible from the page itself. Triaged page by page at M1e
 [S1e.2.2](../history/m1e_review_processing/README.md#s1e22--code--doc-the-canonical-tree)
-(2026-08-30), 40 pages:
+(2026-08-30), 40 pages; 41 since M1e2 S1e2.1.2 added
+[`inference/answer_dump.md`](inference/answer_dump.md), current:
 
 - **current** — every claim holds of the engine that ships. No banner; this is
-  the default and 37 of the 40 pages are here. What makes it checkable rather
+  the default and 38 of the 41 pages are here. What makes it checkable rather
   than aspirational is the test in [§ Keeping this
   true](#keeping-this-true) below: every code identifier the page names
   resolves in `ein.rs/crates/`, and every environment variable and CLI
@@ -230,7 +231,7 @@ explicit audience banner.
   structural "where does X live?" map: data-flow, crate
   dependencies, milestone boundaries, and a change cookbook.
 - **Configuration**: [`configuration.md`](configuration.md) — every knob, on
-  all three surfaces: the 17 `(config …)` flags, the 52 CLI options, the
+  all three surfaces: the 17 `(config …)` flags, the 53 CLI options, the
   `EIN_*` environment, and the precedence between them. Each flag row carries
   its default, what it changes, **whether it changes the answer**, and how far
   it may be depended on. The defaults block is `ein solve --dump-config`'s own

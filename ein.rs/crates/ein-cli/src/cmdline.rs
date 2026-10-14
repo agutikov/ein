@@ -372,6 +372,20 @@ fn solve_command() -> Command {
                      timeline) to DIR",
                 ),
         )
+        .arg(
+            Arg::new("dump-answer")
+                .long("dump-answer")
+                .value_name("DIR")
+                .value_parser(artefact_path)
+                .help(
+                    "write the answer as files to DIR: the program, root, one \
+                     loadable file per model and open state with the \
+                     commitment that reached it, every refuted commitment, \
+                     and answer.json (= --json-summary). DIR is made before \
+                     the search; past that, stdout, stderr and the exit code \
+                     are unchanged.",
+                ),
+        )
         .arg(flag(
             'c',
             "dump-config",

@@ -55,6 +55,8 @@ docs/kernel/inference/
 │                                     re-grounded by S1.21.8)
 ├── domain_elim_vs_hypothesis.md   ← the domain-elimination vs guess duals
 ├── lattice_dump.md                ← the commitment-lattice dump format
+├── answer_dump.md                 ← `ein solve --dump-answer`: the answer as
+│                                     files, every state loadable (M1e2)
 ├── events.md                      ← the `--events` protocol: one JSON object
 │                                     per line, every step the engine took
 │                                     (schema `ein-events/1`; M1a S1a.0.2,
@@ -1081,6 +1083,12 @@ see [`lattice_dump.md`](lattice_dump.md). That dump groups
 `outcome.txt` + `firings.jsonl` + `unsat_core.jsonl` per
 commitment — the audit trail for debugging problem statements and
 rules.
+
+Both of those record the **search**. For the **answer** — every recorded
+model and open state as a file that loads and re-saturates to itself, the
+commitment that reached it, and every refuted commitment's core and clause —
+`ein solve --dump-answer DIR`: see [`answer_dump.md`](answer_dump.md)
+(M1e2 S1e2.1.2).
 
 ### Budget — `max_time` / `max_enterings`
 

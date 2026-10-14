@@ -29,7 +29,7 @@
 | surface | how many | who owns the list |
 |---|---:|---|
 | `(config …)` flags | **17** | `FIELDS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs); the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **52** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| CLI options | **53** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **8** read by the shipped binary, of 29 greppable names | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -292,12 +292,12 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**52** options across eleven parsers, in the default build (`einb`,
+**53** options across eleven parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 32 |
+| `ein solve` | 33 |
 | `ein test` | 9 |
 | `ein saturate` | 5 |
 | `ein render rule` | 2 |
@@ -307,7 +307,7 @@ parallel copy. What this page states is the *shape*, read off that golden:
 
 `ein`, `ein kb`, `ein render` and `ein render constraints` take none — they are
 dispatchers. `ein kb save` exists only under the `einb` feature; a
-`--no-default-features` build has 51 and no `ein kb` at all.
+`--no-default-features` build has 52 and no `ein kb` at all.
 
 ### 3.2 The six options that shadow a flag
 
@@ -370,12 +370,15 @@ Five classes. Only the first two touch the answer.
   model list, not `--json-summary`, not `--events`, not `:expect`.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary`,
   `--json-report`, `--trace` with its four modifiers (`-F`, `-G`, `-l`, `-R`),
-  and `-D`/`--dump-states`. **Additive** in the strict sense: stdout, stderr
-  and the exit code are identical with them and without. Four of them name
-  **one** path — `events`, `trace`, `json-summary`, `dump-states` — so each is
-  refused when the selection asks more than one question; `ein test
-  --json-report` deliberately is not, because a report has no run to be more
-  than one of.
+  `-D`/`--dump-states`, and `--dump-answer` (M1e2 S1e2.1.2,
+  [`answer_dump.md`](inference/answer_dump.md)). **Additive** in the strict
+  sense: stdout, stderr and the exit code are identical with them and
+  without — and for `--dump-answer` so are the summary and the event stream,
+  which `answer_dump::the_flag_moves_no_answer` holds. Five of them name
+  **one** path — `events`, `trace`, `json-summary`, `dump-states`,
+  `dump-answer` — so each is refused when the selection asks more than one
+  question; `ein test --json-report` deliberately is not, because a report has
+  no run to be more than one of.
 
 ---
 

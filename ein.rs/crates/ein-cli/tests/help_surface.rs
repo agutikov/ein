@@ -46,9 +46,9 @@ use ein_corpus::{golden, golden_path};
 /// `--events` and `--events-level` on it too.
 const EXPECTED: [(&str, usize); 8] = [
     ("COMMAND ein\n", 0),
-    // 29 of ein.py's, plus P1a.7's `--jobs`, M1d S1d.3.3's `--models` and
-    // M1d P1d.10's `--layer-progress`.
-    ("COMMAND ein solve\n", 32),
+    // 29 of ein.py's, plus P1a.7's `--jobs`, M1d S1d.3.3's `--models`,
+    // M1d P1d.10's `--layer-progress` and M1e2 S1e2.1.2's `--dump-answer`.
+    ("COMMAND ein solve\n", 33),
     ("COMMAND ein saturate\n", 5),
     ("COMMAND ein render\n", 0),
     ("COMMAND ein render rules\n", 1),
@@ -100,18 +100,20 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        39 + 3
+        39 + 4
             + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
         "39 options across ein.py's eight parsers, plus `solve --jobs`, \
-         `solve --models`, `solve --layer-progress`, `ein test`'s nine and \
-         `ein kb save --saturate` — none of which ein.py has"
+         `solve --models`, `solve --layer-progress`, `solve --dump-answer`, \
+         `ein test`'s nine and `ein kb save --saturate` — none of which \
+         ein.py has"
     );
 }
 
 /// **The whole rendering, checked in.**
 ///
-/// 50 options across 9 parsers, each with its short key, metavar, arity,
+/// Every option of every parser — 53 across eleven at M1e2 S1e2.1.2, the count
+/// [`the_extractor_finds_the_whole_surface`] holds — each with its short key, metavar, arity,
 /// default, choices, group and help — the same text the diff against
 /// `argparse` consumed, blessed from a tree where that diff was green. A flag
 /// added, removed, renamed or re-defaulted shows up as a line.
