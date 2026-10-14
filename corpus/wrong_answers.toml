@@ -10,6 +10,11 @@
 # `a44273e` (whose engine sources are `71dd237`'s, where the inventory was
 # taken), release build, stdlib = the checkout. Every one reproduced.
 #
+# **The review (S1e2.1.7) reads the bundle built at `029ef6f`** on 2026-10-15
+# (`python3 utils/review_bundle.py` → build/review/, 26 cases, 6 788 pages,
+# 0 dangling links). Rebuilding at that commit gives the same pages, apart from
+# wall-clock fields.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs the

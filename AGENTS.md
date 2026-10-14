@@ -275,7 +275,12 @@ constrained-reasoning research.
   first to the suite is what found `transitive`, whose fixture was a two-cycle
   the `(neq ?a ?c)` guard refuses every match of; it grew a three-chain.
 - **`corpus/`** — the **corpus**: `corpus.toml` (one entry per `.ein`, with
-  the runs it is exercised under) plus `fuzz_findings/`. A file under
+  the runs it is exercised under) plus `fuzz_findings/`. **Since M1e2
+  S1e2.1.1 also `wrong_answers.toml`**, the register of every known wrong
+  answer. It has one row per witness, with today's answer and the right one as
+  data, and `ein-cli/tests/wrong_answers.rs` holds an `open` row to its wrong
+  answer and a `fixed` one to its right one. A fix flips its rows in the same
+  commit as any `:expect` that stated the wrong answer. A file under
   `examples/`, `stdlib/` or `tests/` with no entry fails a completeness check. What
   runs it is `cargo test`, and [`corpus/README.md`](corpus/README.md) has the
   table of readers. It was `conformance/` until M1a S1a.10.3, and the
@@ -527,6 +532,9 @@ EIN_TRAVERSAL=tree ein solve …                              # the M1d S1d.10.6
 ein solve … -e --models key                                  # the M1d S1d.3.3 form
 EIN_LEFTOVER=1    ein solve … --json-summary out.json        # the M1d S1d.3.1 probe
 ein test examples tests stdlib --json-report r.json          # the M1d S1d.4.1 read-out
+ein solve … --dump-answer DIR                                # M1e2: the answer as files, each state loadable
+ein render program|kb FILE                                   # M1e2: the program as written; a KB (or a dumped model)
+python3 utils/review_bundle.py                               # M1e2: build/review/, one page per register row
 ```
 
 **The seven `EIN_*` names in that block are the ones an agent needs, not the
