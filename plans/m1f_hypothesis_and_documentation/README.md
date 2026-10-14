@@ -9,8 +9,12 @@ them.
 2026-08-28 and had said in its own phase table that they were **† not review
 processing** and *"additive and may be cut whole"*. This is that sentence taken
 up: they were not cut, they were given an M-number.
-**Depends on:** M1e in three places, all of them soft except one —
-[§ What it inherits from M1e](#what-it-inherits-from-m1e).
+**Depends on:** M1e in three places, all satisfied since 2026-08-31
+([§ What it inherits from M1e](#what-it-inherits-from-m1e)). And **it follows
+[M1e2](../m1e2_correctness/README.md)** (2026-10-14): S1f.10.3's acceptance is
+*not one model moved*, which means something only against a lattice that
+records the right models, and M1e2 also takes S1f.10.8's ruling if the user
+agrees ([Q-M1e2.5](../m1e2_correctness/open_questions.md#q-m1e25--does-s1f108s-ruling-move-here)).
 **Blocks:** nothing.
 
 ---
@@ -50,12 +54,12 @@ learned about deriving an order nobody wrote down.
 
 ## What it inherits from M1e
 
-**Three dependencies, and only one of them blocks.**
+**Three dependencies, and all three are satisfied** (since 2026-08-31).
 
 | | on | kind |
 |---|---|---|
 | `S1f.5.6` | [`S1e.1.3`](../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2) — the unsat core's retention rule | **satisfied** 2026-08-29 |
-| `S1f.5.20` | M1e's `S1e.2.2`, `S1e.3.7`, `S1e.3.8` — the `docs/kernel` triage and the drift repairs | **hard, and unrun.** A refactor that moves 38 pages before they are triaged moves the wrong ones |
+| `S1f.5.20` | M1e's `S1e.2.2`, `S1e.3.7`, `S1e.3.8` — the `docs/kernel` triage and the drift repairs | **satisfied** 2026-08-31 (S1e.2.2 closed 2026-08-30, S1e.3.7 and S1e.3.8 on 2026-08-31). It was hard: a refactor that moves 38 pages before they are triaged moves the wrong ones |
 | `P1f.10` | [`S1e.1.1`](../../docs/history/m1e_review_processing/search_soundness_probes/README.md), for [Q-M1e.6](../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s ruling | **satisfied** 2026-08-28 |
 
 **The question ids stay where they were raised.** `Q-M1e.6`, `Q-M1e.9`,
@@ -90,10 +94,11 @@ is now the one-stage record of what that phase delivered.
 
 ## Risks
 
-- **S1f.5.20 is 23 days and blocked.** It is the largest single stage in
-  either milestone, it closes no finding, and it cannot start until three M1e
-  stages that have not run do. Its own § How to cut it carries a seven-stage
-  split; taking that split is the first decision this milestone should make.
+- **S1f.5.20 is 23 days.** It is the largest single stage in either
+  milestone, and it closes no finding. It was blocked on three M1e stages
+  until they ran on 2026-08-30/31, and nothing blocks it now. Its own § How to
+  cut it carries a seven-stage split; taking that split is the first decision
+  this milestone should make.
 - **P1f.10 is a CSP in disguise**, and the risk is not that the idea is wrong
   but that a stage writes a solver instead of a *structure* and the engine
   acquires a second search. The phase's own risk list is where this is argued;
@@ -105,7 +110,8 @@ is now the one-stage record of what that phase delivered.
 ## Connections
 
 - [M1e](../../docs/history/m1e_review_processing/README.md) — where both phases were written,
-  and the milestone whose `S1e.2.2` / `S1e.3.7` / `S1e.3.8` gate `S1f.5.20`.
+  and the milestone whose `S1e.2.2` / `S1e.3.7` / `S1e.3.8` gated `S1f.5.20`
+  until 2026-08-31.
 - [`docs/history/m1d_satisfiability/layer_census.md`](../../docs/history/m1d_satisfiability/layer_census.md)
   — the `Σₖ C(alive, k)` finding, P1f.10's motivating number.
 - [`c/README.md`](../../c/README.md) — the **3 668 465×** between three C

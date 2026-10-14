@@ -271,6 +271,16 @@ Ein expands it").
 The milestones in [§ Scheduled](#scheduled--the-roadmap) exist because these
 were measured, not assumed:
 
+- **The engine gives wrong answers on well-formed programs, at default
+  settings.** Twelve cases and one contested reading, every one re-run on
+  2026-10-14 ([`inventory.md`](plans/m1e2_correctness/inventory.md)). All but
+  one are reachable without a flag, and three get the verdict word itself
+  wrong. The
+  smallest is seven lines: one object, one hypothesis that leads to `(false)`.
+  `ein solve` calls it *contradictory*, with `exhausted = true` and a 0-fact
+  core, although the program with no hypothesis is consistent.
+  [M1e2](plans/m1e2_correctness/README.md) makes each case visible and then
+  fixes it, one stage per case.
 - **An under-determined puzzle does not finish exhaustively.**
   `zebra2-minus-15.ein` has 32 models; all 32 are found by depth 3 in 25 s,
   and depths 4–5 exist only to prove there are no more — `-e` was killed at
@@ -290,8 +300,13 @@ were measured, not assumed:
   force: no verdict word changed, and the search still branches on subsets of
   `alive` rather than on an obligation's alternatives. S1d.2.5 is the branch,
   S1d.2.6 the word.
-- **Ten corpus entries report *Contradiction* when they mean *incomplete*** —
-  `exhausted = false` at the depth cap ([Q-M1d.6](docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false)).
+- **A run cut off by the depth cap is still *typed* `Contradiction`.** The
+  CLI has said *No model found — the search did not exhaust the lattice* since
+  M1d T1d.10.5.2b, but the `--trace` headline still says *No solution* and
+  `--json-summary`'s `verdict.type` still says `Contradiction`, on
+  `pets.ein`'s 39-model program at `-m 5`
+  ([Q-M1d.6](docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false);
+  S2 and S3 of [M1e2](plans/m1e2_correctness/README.md)'s proposed P1e2.3).
 - **A performance lever decides a verdict, and *both* settings under-report.**
   With `enable_pre_branch_lookahead` off, `branching/06` and `lattice/02`
   change from *Solution* / *Ambiguity* to *Contradiction*
@@ -308,14 +323,18 @@ were measured, not assumed:
   surviving commitment whose every superset died
   ([Q-M1e.8](docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)),
   and the pair's `:expect`s state today's answers so that taking it moves a
-  golden.
+  golden. The same defect has a **default-settings** witness and a layer-0
+  form, where every singleton dies and root is never recorded:
+  [M1e2](plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.1_maximal_not_recorded.md)'s
+  W1.
 - **The binding key compares two register layouts as one**, so a program that
   puts an integer and a nested fact in one activator position loses a
   derivation silently — and a debug build asserts where a release build
   answers
   ([Q-M1e.16](docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one),
   which is `Q-M1a.8` after its probe: the *integer* trigger that entry named
-  does not exist).
+  does not exist; [M1e2](plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md)'s
+  W7).
 - **`--jobs` is 1.5× short of its target**, and the shortfall is named
   ([scaling.md](docs/history/m1a_rust/measurements/scaling.md#where-the-other-15-is)).
 - **Every check is still relative** — to the engine's own past — until
@@ -467,18 +486,21 @@ seeds and a two-million-mutation frontend fuzz nightly
 
 The full roadmap, with its four-level schema (milestone → phase → stage →
 task) and its open-question indexes, is [`plans/`](plans/README.md). Status as
-of 2026-08-23:
+of 2026-10-14:
 
 | milestone | what | status |
 |---|---|---|
 | **M1** — core graph reasoning | the IR, the KB, saturation, contradiction, the hypothesis loop, the trace, the Zebra solve | **shipped 2026-06-17**; its plan folder is in git history |
 | [**M1a**](docs/history/m1a_rust/README.md) — the Rust port | a 1:1 observable surface outside, a free hand inside; parity first, speed second, scale third | **shipped 2026-08-23** — all eleven phases closed, `ein.rs` the only implementation. The plan folder was deleted with it; the record is [`docs/history/m1a_rust/`](docs/history/m1a_rust/README.md) — the eleven phases and 53 stages as one document, plus the design contracts, the measurements, the divergence ledger and twenty-three questions |
 | [**M1c**](docs/history/m1c_external_validation/README.md) — external validation | the check that is not relative to Ein's own past: `:expect` on `query` + `ein test` for every stdlib rule | **shipped 2026-08-24** — one phase, five stages, and **38 of 73 never-firing stdlib rules → 0**, held by `cargo test`. The plan folder was deleted with it; the record is [`docs/history/m1c_external_validation/`](docs/history/m1c_external_validation/README.md) — the phase and its stages as one document, plus the census and seven questions. Its benchmark phase left for M10 on 2026-08-23 |
-| [**M1d**](docs/history/m1d_satisfiability/README.md) — from saturation to satisfiability | why an under-determined puzzle does not finish; existence requirements as first-class **obligations**; model sets without enumeration | queued behind M1a; 3 phases, 14 stages, P1d.10 at stage depth |
-| [**M2**](plans/m2_nl_to_ir/README.md) — EinAf: iterative autoformalization, through Level D | the research plan [`EinAf.md`](plans/m2_nl_to_ir/EinAf.md) as a schedule: the kernel as instrumentation (`ein-feedback/1`), the one-shot formalizer, a heterogeneous benchmark with ambiguous and unsatisfiable instances, the loop with nine feedback levels, baselines B0–B5 at matched budget, ablations G1–G9, failure taxonomy, scaling and generalization, representations compared, the formal account, the result and the demo — Level B at ~8 weeks, C at ~19, D with M5 | **next**; **reshaped 2026-08-23** — 10 phases, P2.1–P2.5 at stage depth (21 files), **nothing started**; the old six-phase *NL → IR* plan is Level B's half, re-targeted to the crates |
+| [**M1d**](docs/history/m1d_satisfiability/README.md) — from saturation to satisfiability | why an under-determined puzzle does not finish; existence requirements as first-class **obligations**; model sets without enumeration | **shipped 2026-08-27** — four phases, eighteen stages: a program can state a requirement, a state says what it **owes**, the verdict word `Open`, every count says whether it is certified, and a second traversal reaching 32 models in 86 enterings where the lattice needs 17 204 592. The record is [`docs/history/m1d_satisfiability/`](docs/history/m1d_satisfiability/README.md) |
+| [**M1e**](docs/history/m1e_review_processing/README.md) — review processing | the full-tree review of 2026-08-27, finding by finding, under a standard of proof written into [`standard_of_proof.md`](docs/kernel/standard_of_proof.md) | **closed 2026-10-14** — all 63 findings dispositioned, all ten questions answered, the gate 738 → 821 tests. The record is [`docs/history/m1e_review_processing/`](docs/history/m1e_review_processing/README.md); its probes found wrong answers the review never listed |
+| [**M1e2**](plans/m1e2_correctness/README.md) — correctness | every known wrong answer: first made visible (every artefact of a run rendered to markdown with graphs, a case register, the user's review), then fixed one stage each | **next**; created 2026-10-14 — 2 phases, 20 stages, from a survey that re-ran every case ([`inventory.md`](plans/m1e2_correctness/inventory.md)) |
+| [**M1f**](plans/m1f_hypothesis_and_documentation/README.md) — the structure of the hypothesis set, and the documentation ein does not have | a branch structure derived from the program rather than paid for in deaths; `:priority` removed; the doc tree a released system would have | queued after M1e2 — 2 phases, 11 stages |
+| [**M2**](plans/m2_nl_to_ir/README.md) — EinAf: iterative autoformalization, through Level D | the research plan [`EinAf.md`](plans/m2_nl_to_ir/EinAf.md) as a schedule: the kernel as instrumentation (`ein-feedback/1`), the one-shot formalizer, a heterogeneous benchmark with ambiguous and unsatisfiable instances, the loop with nine feedback levels, baselines B0–B5 at matched budget, ablations G1–G9, failure taxonomy, scaling and generalization, representations compared, the formal account, the result and the demo — Level B at ~8 weeks, C at ~19, D with M5 | after M1e2; **reshaped 2026-08-23** — 10 phases, P2.1–P2.5 at stage depth (21 files), **nothing started**; the old six-phase *NL → IR* plan is Level B's half, re-targeted to the crates |
 | **M2+** — ontology and rule induction | induce the theory a puzzle's text *assumes* ([F4](plans/followups/f4_cross_cutting.md) / [F7](plans/followups/f7_rule_induction.md)) | beyond M2; [F7 B](plans/followups/f7_rule_induction.md#connection-to-m2) says it is on M2's critical path |
 | [**M5**](plans/m5_presentation/README.md) — paper + presentation | *From the Zebra puzzle to autoformalization*: comparison against the field, benchmarks, the growth directions as future work | parked; placeholder with the outline (was M2b) |
-| [**M10**](plans/m10_external_benchmarks/README.md) — external benchmarks | the same problems stated for Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean, run by one harness, compared on the *answer* first and the clock second; every answer checked back in as an `:expect` | queued behind M1a; 5 stages, promoted from M1c's P1c.2 on 2026-08-23 |
+| [**M10**](plans/m10_external_benchmarks/README.md) — external benchmarks | the same problems stated for Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean, run by one harness, compared on the *answer* first and the clock second; every answer checked back in as an `:expect` | queued — M1a shipped, so nothing blocks it; 5 stages, promoted from M1c's P1c.2 on 2026-08-23 |
 | [**M20**](plans/m20_gui/README.md) — GUI | Tauri 2 + React + Monaco + Cytoscape, linking the crates in-process; three views (code, graph, branches) joined by one `StateId`; the Rust `Session` owns the semantics | parked; stack decided 2026-08-18 (was M1b) |
 | ~~M3~~ — SMT integration | a `(hard-slice …)` hand-off to Z3 / CVC5 | **dropped 2026-08-18** — the idea, not just the schedule; Ein stays graph-native with no solver back-end ([Q2](plans/open_questions.md#q2--when-does-the-graph-engine-hand-off)); comparing against solvers is M1c's, integrating one is nobody's |
 

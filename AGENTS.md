@@ -621,12 +621,18 @@ Beside it, and not a flag: **an `Ambiguity` now qualifies its own count.**
 *"distinct complete models **found**"*. It matters because the corpus was full
 of the case — `ein solve -e examples/saturation/type-exclusivity/colors.ein`
 printed **5** for a file with **9** models, and 5 of the 10 entries that answer
-`Ambiguity` under their declared runs do it unexhausted. `Contradiction` is
-deliberately untouched: a refutation said under a depth cap is
+`Ambiguity` under their declared runs do it unexhausted. `Contradiction` was
+left alone by that stage and changed by another. Since M1d T1d.10.5.2b a
+`k = 0` run that did not exhaust says *No model found — the search did not
+exhaust the lattice*, not *the constraints are contradictory*.
+`saturation/type-exclusivity/pets.ein` is the fixture: `k = 0` at
+`-m 5`…`-m 8`, **35 models** at `-m 10`, and **39**, exhausted, at `-m 12`
+(re-taken 2026-10-14). Two surfaces still say the old word, the `--trace`
+headline and `--json-summary`'s `verdict.type`. They are S2 and S3 of
+[M1e2](plans/m1e2_correctness/README.md)'s proposed P1e2.3. And whether a
+truncated refutation may be called anything stronger is still
 [Q-M1d.1](docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
-question about a *word*, and `saturation/type-exclusivity/pets.ein` — `k = 0`
-at `-m 5`…`-m 8`, **35 models** at `-m 10` — is the fixture that now waits for
-it.
+question about a *word*.
 
 **`EIN_LEFTOVER=1`** is its neighbour and M1d S1d.3.1's probe: it fills
 `--json-summary`'s **`leftover`** block with what the **blind** enumerator

@@ -29,8 +29,9 @@ the kernel to let *`unknown` silently become `false`, `ambiguous`, or
 A **well-formed** program, a run the CLI accepts, and an answer that is false
 under the definitions the user has ruled on. That means the verdict word, the
 count, the model set, the certification or the core. The survey of
-2026-10-14 found twelve such cases and one contested reading, and four of them
-happen at **default settings**. Two are seven-line programs:
+2026-10-14 found twelve such cases and one contested reading. **All but one
+are reachable at default settings** (W9 needs `-K`), and three of them get the
+verdict word itself wrong (W1, W2, W5). Two are seven-line programs:
 
 ```
 $ ein solve -e plans/m1e2_correctness/probes/forced-2.ein      # one object, one hypothesis that leads to (false)

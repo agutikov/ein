@@ -238,9 +238,20 @@ the KB it guards, and two writers run after it:
 Neither write can create a contradiction by itself — `h` is neither asserted
 nor negated when it is proposed. But `(not P)` is an ordinary match form
 ([`02_patterns.md`](../ir/03-ein-lang/02_patterns.md)), so a rule may read
-these facts, and nothing re-runs saturation after they land. Write `K` for what
-the search wrote: **the engine records `S ∪ K` and checked the criteria against
-`S`.**
+these facts, and until M1e S1e.3.1 nothing re-ran saturation after they landed.
+Write `K` for what the search wrote: **the engine recorded `S ∪ K` and had
+checked the criteria against `S`.**
+
+> **Since 2026-08-30 (M1e `CO-M1`)** `record_node` re-saturates a KB written
+> since its last saturation and refuses one its rules then refute, at all four
+> callers. Measured 2026-08-30: of the corpus's 2 149 recorded states, 2 067
+> were dirty and 6 refuted, all three witnesses below among them. The table
+> describes the engine before that fix and is kept as the reason for it. Of the
+> two consequences after it, *records a state its own rules refute* no longer
+> holds at default settings. *Under-reports* still does: a maximal state that
+> never reaches `record_node` (M1e2's W1), and `-K` leaving `K` unwritten so
+> the re-saturation has nothing to read (W9). Both are
+> [M1e2](../../../plans/m1e2_correctness/README.md)'s.
 
 `record_node` has four callers, and none of them establishes the *saturated*
 conjunct:

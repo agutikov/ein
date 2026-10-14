@@ -97,8 +97,9 @@ the tree they left, and one out of that review's close:
 - **M1e2 — Correctness: every known wrong answer** ([m1e2_correctness/](m1e2_correctness/README.md))
   after M1e, and **next**. Created 2026-10-14 out of M1e's close and a survey
   taken the same day ([`inventory.md`](m1e2_correctness/inventory.md)): twelve
-  wrong answers and one contested reading, four of them at default settings,
-  among them a seven-line program the engine calls *contradictory* with
+  wrong answers and one contested reading, all but one reachable at default
+  settings and three of them a wrong verdict word, among them a seven-line
+  program the engine calls *contradictory* with
   `exhausted = true`. The first phase builds the means to **see** an answer
   (every artefact of a run rendered to markdown with SVG graphs, a case
   register, the user's review). The second fixes them, one stage per wrong

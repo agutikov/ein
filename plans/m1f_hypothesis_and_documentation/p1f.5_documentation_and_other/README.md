@@ -7,9 +7,9 @@
 design (see [§ Scope](#scope)).
 **Depends on:** nothing to start. S1f.5.6 depends **hard** on
 [S1e.1.3](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2), which
-is **done** (2026-08-29); S1f.5.20 depends **hard** on M1e's P1e.2 S1e.2.2 and
-P1e.3 S1e.3.7 / S1e.3.8, none of which has run — so this phase's largest stage
-waits on a milestone it is no longer part of.
+is **done** (2026-08-29); S1f.5.20 depended **hard** on M1e's P1e.2 S1e.2.2 and
+P1e.3 S1e.3.7 / S1e.3.8, and all three ran by 2026-08-31, so nothing in this
+phase waits.
 **Blocks:** nothing.
 **Was P1e.5**, in [M1e](../../../docs/history/m1e_review_processing/README.md), until 2026-08-29. Two of its six stages
 had already shipped and **stayed there** with the ids they shipped under; what

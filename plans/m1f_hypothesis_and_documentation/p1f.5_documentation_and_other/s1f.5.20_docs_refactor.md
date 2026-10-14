@@ -1,7 +1,7 @@
 # S1f.5.20 — `docs/ein/`: the tree a released system would have
 
 **Phase:** [P1f.5](README.md) (Documentation ein does not have)
-**Estimate:** ~23 days — the largest single item in M1e. § How to cut it
+**Estimate:** ~23 days — the largest single item in M1f (it was in M1e when written). § How to cut it
 offers the split, and taking the split is the user's call.
 **Depends on:** [P1e.2](../../../docs/history/m1e_review_processing/README.md#p1e2--high-six-findings)
 [S1e.2.2](../../../docs/history/m1e_review_processing/README.md#s1e22--code--doc-the-canonical-tree) and
@@ -10,6 +10,7 @@ offers the split, and taking the split is the user's call.
 [S1e.3.8](../../../docs/history/m1e_review_processing/README.md#s1e38--documentation-medium) — **hard**, and § Ordering
 says why: those three stages triage and fix 38 pages, and a page fixed and then
 moved is cheap where a move followed by a re-triage of 38 renamed files is not.
+**Satisfied 2026-08-31**: all three ran.
 **Blocks:** nothing. Everything downstream of it wants it and nothing waits on
 it.
 **Source:** the user's note of 2026-08-28, reproduced in full in
@@ -382,6 +383,12 @@ Taking it as one stage is defensible only if it is taken as one *commit
 series* with the checks in from the start. **Recommendation: split it**, and
 run the first two rows early — during P1e.2 — because they are what makes
 P1e.2's own edits verifiable.
+
+> **2026-10-14:** P1e.2 has run, so *early* is moot. Half of the first row
+> exists, too. The whole-tree link sweep is `utils/doc_audit.py --links
+> --check`, a gate step since M1e S1e.3.8 (`DO-M2`), over every page this
+> stage would move. So `check_links.py` should be that script's scope, not a
+> second link checker. What is still unbuilt is the release-voice check.
 
 ## Risks
 

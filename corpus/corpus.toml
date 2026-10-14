@@ -436,13 +436,13 @@ note   = "the flagship, and what a stale flag looks like: `slow = true` on a fil
 path   = "examples/ein-bugs/alive-empty-phase1.ein"
 group  = "regression"
 runs   = ["solve", "solve -e"]
-note   = "M1e D1 — the alive-∅ record site at phase 1. `compute_alive` writes the kill cache into root *after* `:1091`'s consistency check, and `:1118` records what it wrote: the model re-saturates to `Contradiction`. **Its `:expect` states today's answer and is meant to break** when the record sites re-saturate before recording (Q-M1e.7's ruling), the route `tests/stdlib/closure/02|03` took. Goal moved to `is-a` because a model with an empty goal extent is unstatable — Q-M1e.13."
+note   = "M1e D1 — the alive-∅ record site at phase 1. `compute_alive` writes the kill cache into root *after* `:1091`'s consistency check, and `:1118` recorded what it wrote: the model re-saturated to `Contradiction`. **Fixed by M1e S1e.3.1 (`CO-M1`)**: `record_node` re-saturates before recording, the file answers `Contradiction k = 0`, and its `:expect (false)` states that. Under `-K` it still answers `Solution`, which is M1e2's W9. Goal moved to `is-a` because a model with an empty goal extent is unstatable — Q-M1e.13."
 
 [[entry]]
 path   = "examples/ein-bugs/alive-empty-interlayer.ein"
 group  = "regression"
 runs   = ["solve", "solve -e"]
-note   = "M1e D1, the same defect between layers — and the one `-K` does not repair, because its trigger is the singleton writeback rather than the kill cache. `-L` answers `Contradiction k=0` on the same file with both sides exhausted. `:expect` states today's answer and is meant to break."
+note   = "M1e D1, the same defect between layers, whose trigger is the singleton writeback rather than the kill cache. **Fixed by M1e S1e.3.1 (`CO-M1`)**: the file answers `Contradiction k = 0`, and `:expect (false)` states that."
 
 [[entry]]
 path   = "examples/ein-bugs/naf-upward-closure.ein"
@@ -466,7 +466,7 @@ note   = "M1e S1e.3.3 — the control for the entry above: the same rules and co
 path   = "examples/ein-bugs/complete-records-stale.ein"
 group  = "regression"
 runs   = ["solve", "solve -e"]
-note   = "M1e D3 — the record site every corpus solve uses: `complete()` runs the generation pipeline and its kill cache writes into the very fork `:1977` then records. Model 1 re-saturates to `Contradiction`; `-K` prints the same `k = 2` with both models correct. Carries **no** `:expect`: its two models populate different relations, and every arm of an `(or …)` must name the goal's — Q-M1e.13."
+note   = "M1e D3 — the record site every corpus solve uses: `complete()` runs the generation pipeline and its kill cache writes into the very fork `:1977` then records. Model 1 re-saturated to `Contradiction`. **Fixed by M1e S1e.3.1 (`CO-M1`)**: `Solution k = 1`, `{(p A), (p B)}`, stated by its `:expect (model (p A) (p B))`. Under `-K` it still answers `k = 2`, which is M1e2's W9."
 
 [[entry]]
 path   = "examples/ein-bugs/alt-cap-core.ein"
@@ -1074,7 +1074,7 @@ note   = "the control half of the closed-and-owing pair (M1d S1d.2.2). Closed by
 path   = "tests/stdlib/closure/03_closed_and_owing.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
-note   = "its twin with the witness edge deleted: the requirement is unmet AND unreachable — closure forbids the hypothesis, no rule derives one, and `total`'s stored-negative discipline keeps its scan silent — and the verdict does not move. Solution, both. The golden banks today's answer to `who says (false) about a closed and owing state`, which is: nobody. M1d S1d.2.6 is the stage that would move it."
+note   = "its twin with the witness edge deleted: the requirement is unmet AND unreachable — closure forbids the hypothesis, no rule derives one, and `total`'s stored-negative discipline keeps its scan silent — and until M1d S1d.2.6 the verdict did not move: `Solution`, both. S1d.2.6 moved it. Nobody says `(false)` about a closed and owing state, and the read-out says `Open — owes 1 (r: 1)`, against the twin's `Solution`."
 
 [[entry]]
 path   = "tests/stdlib/elim/01_domain_elimination.ein"
