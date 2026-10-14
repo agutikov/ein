@@ -28,7 +28,7 @@ and is not re-filed.
 
 ## Q-M1e2.1 — Is a discharged superset of a discharged state a new model?
 
-`probes/owed-seats.ein` (two guests, two chairs, `total-owed` +
+`examples/ein-bugs/wrong-answers/owed-seats.ein` (two guests, two chairs, `total-owed` +
 `surjective-owed`) has two matchings. Is a state that seats Ann on **both**
 chairs and Bob on one, owing nothing, a third model? *No* (**minimal**): k = 2,
 the lattice's own design, where a complete node leaves the frontier. *Yes*

@@ -15,6 +15,8 @@ Binary: `ein.rs/target/release/ein` (`ein 0.1.0`, features `einb, parallel, snma
 `probes/scan.py` / `verify.py` / `cascade_scan.py` / `lever_scan.py` are the corpus sweeps quoted in § Reach.
 `$S` below = [`probes/`](probes/).
 
+> **Banked 2026-10-14 at [S1e2.1.1](p1e2.1_seeing_the_answer/s1e2.1.1_the_case_register.md).** Every probe a register row names moved out of `probes/`: `$S/<name>.ein` below is now [`examples/ein-bugs/wrong-answers/<name>.ein`](../../examples/ein-bugs/wrong-answers/), and `$S/binding-key-{both,swapped}.ein` are [`corpus/fuzz_findings/binding-key-layout{,-swapped}.ein`](../../corpus/fuzz_findings/binding-key-layout.md). The text is left as taken; `probes/capture.sh` follows the move, and [`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml) is where each case's witnesses, wrong runs and right answers now live as data.
+
 Reference semantics used for "correct": the user's ruling **Q-M1e.6** (solution = saturated ∧ consistent ∧
 (owes nothing | every remaining L1 hypothesis makes it dead); quantified over `alive₀`), **Q-M1e.7 ruling A**
 (the recorded object is the state, `K` = engine-written negatives are entailed consequences), and the

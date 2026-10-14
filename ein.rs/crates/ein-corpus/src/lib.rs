@@ -8,6 +8,7 @@
 //! |---|---|
 //! | [`manifest`] | `corpus/corpus.toml` — one entry per `.ein` file, the runs it is exercised under, and the completeness check that fails on a file with no entry |
 //! | [`plan`] | a run name → an `ein` argv, which is what makes a manifest row executable |
+//! | [`mod@register`] | `corpus/wrong_answers.toml` — one row per witness of every known wrong answer, with today's answer and the right one (M1e2 S1e2.1.1) |
 //! | this module | [`repo_root`], [`corpus_files`], [`golden`], [`golden_path`] — found from the compiling crate, so a test runs the same from anywhere |
 //!
 //! # What used to be here
@@ -32,10 +33,12 @@
 
 pub mod manifest;
 pub mod plan;
+pub mod register;
 
 use std::path::{Path, PathBuf};
 
 pub use manifest::{Corpus, Entry};
+pub use register::{Register, Row};
 
 /// The repo root, found from the compiling crate rather than the working
 /// directory, so a test runs the same from anywhere.
@@ -51,6 +54,12 @@ pub fn repo_root() -> PathBuf {
 pub fn corpus() -> Corpus {
     let path = repo_root().join(manifest::MANIFEST);
     Corpus::load(&path).unwrap_or_else(|e| panic!("{e}"))
+}
+
+/// The wrong-answer register, loaded from its one location.
+pub fn register() -> Register {
+    let path = repo_root().join(register::REGISTER);
+    Register::load(&path).unwrap_or_else(|e| panic!("{e}"))
 }
 
 /// Every `.ein` under `examples/`, `stdlib/` and `tests/`, sorted — the file

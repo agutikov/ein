@@ -1,0 +1,52 @@
+;;; `naf-upward-closure.ein` with the singleton writeback OFF — M1e2 **W3**'s
+;;; lever row, where `dead` not being upward-closed under `absent` turns into a
+;;; certified `Contradiction`. Register row `W3/naf-nowb-L`
+;;; (`corpus/wrong_answers.toml`).
+;;;
+;;; Below this header the program is `../naf-upward-closure.ein` with
+;;; `:enable-singleton-writeback false` added to its `(config …)` line and
+;;; nothing else; that file's header is the argument (Q-M1e.9, D4).
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────────
+;;;
+;;;   alive₀          = {(p A), (q A)}
+;;;   {(p A)}         is dead   — `bad` fires, (q A) absent
+;;;   {(p A), (q A)}  is alive  — the guard's witness is present
+;;;
+;;; so the one maximal state is **`{(p A), (q A)}`: `Solution`, k = 1.**
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;;   default  Solution k = 1, `{(q A)}` — the same wrong model as the banked
+;;;            file: the kill cache writes `(not (p A))` with no premises.
+;;;   -L       `No solution — the constraints are contradictory`, unsat core
+;;;            `(p A)`, `exhausted = true`. With neither the cache nor the
+;;;            writeback, `{(p A)}` dies at layer 1 and its width-1 no-good
+;;;            prunes the live superset as if it were dead. `{(q A)}` survives
+;;;            and is not recorded either — `(p A)` is still proposed, so it is
+;;;            not `complete` — and the empty layer 2 ends the run with the
+;;;            dead core as the program's. Two mechanisms, then: W3's clause,
+;;;            and W1's unrecorded survivor; a W1 fix alone would make this
+;;;            answer the default run's wrong `{(q A)}`.
+;;;
+;;; No `:expect`: the two declared runs answer differently, and the register
+;;; states both.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+
+(config :warn-derived-naf true :enable-singleton-writeback false)
+
+(relation is-a T T)
+(relation p T)
+(relation q T)
+
+(is-a A T)
+
+(rule bad ()
+  :match  (and (p ?x) (absent (q ?x)))
+  :assert (false)
+  :why    "{?x} has p without q"
+  :priority 200)
+
+(query
+  :goal   (is-a ?x T))

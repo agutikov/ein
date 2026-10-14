@@ -1,6 +1,0 @@
-;; probe: the blind rung never proposes an arity-3 fact
-(relation is-a T T)
-(relation r3 T T T)
-(relation r2 T T)
-(is-a A T) (is-a B T)
-(query :goal (r3 ?x ?y ?z) :no-hypothesis (is-a))

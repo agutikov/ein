@@ -26,6 +26,10 @@
   refused <string>:1:2: unexpected input
 ()
  ^
+=== ";;; `binding-key-layout.ein` with its two activator lines swapped, and nothing\n;;; else — the twin that answers right in release (four `noted` facts).\n;;; Register row `W7/binding-key-layout`, as a twin; the note is\n;;; `binding-key-layout.md`. Debug builds abort here too.\n(relation edge  Node Node)\n(relation holds Node)\n(relation noted Node Node)\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f))\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds 3)\n\n(note edge (src Y))\n(note edge 1)\n"
+  ok 10 form(s)
+=== ";;; Two activators of one rule share a binding key and a derivation is lost —\n;;; M1e2 W7, Q-M1e.16. Register row `W7/binding-key-layout`\n;;; (`corpus/wrong_answers.toml`); the note is `binding-key-layout.md`.\n;;;\n;;; Release: `(noted 1 3)` is never derived. Debug: `check_layout` aborts.\n(relation edge  Node Node)\n(relation holds Node)\n(relation noted Node Node)\n\n(rule note (?R ?f)\n  :match  (and (?R ?a ?b) (holds ?f))\n  :assert (noted ?a ?f))\n\n(edge 1 2) (edge 2 3)\n(holds 1)  (holds 3)\n\n(note edge 1)\n(note edge (src Y))\n"
+  ok 10 form(s)
 === "(relation ok      T)\n(relation blessed T)\n(relation cand    T)\n(rule promote ()\n  :match  (and (ok ?x) (blessed ?x))\n  :assert (cand ?x))\n(ok      B)\n(blessed A)\n(query\n  :goal (cand ?x))\n"
   ok 7 form(s)
 === ";;; case 6710 (seed 20260820) — utils/fuzz_ein.py\n(relation r0 T T)\n(relation r1 T T)\n(relation is-a T T)\n(is-a o2 T)\n(is-a o3 T)\n(r0 o2 o3)\n(rule fire-0 (?P)\n  :match  (and (r1 ?v0 ?v1) (r0 ?v1 ?v0))\n  :assert (not (r1 ?v0 ?v0)))\n(fire-0 T)\n(rule fire-1 ()\n  :match  (and (is-a ?v0 T) (r0 ?v0 ?v1) (r1 ?v2 ?v3) (absent (not (r1 o3 ?v1))))\n  :assert (r1 ?v2 ?v2))\n"

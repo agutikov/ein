@@ -62,7 +62,7 @@ mod corpus_ops;
 
 use std::path::PathBuf;
 
-use corpus_ops::{ops, run};
+use corpus_ops::{Op, ops, run};
 use ein_core::{FactId, IntId, Symbol, Tag, Terms, Value};
 use ein_corpus::{corpus_files, ein_files_under, repo_root};
 use ein_infer::mt19937::Mt19937;
@@ -262,45 +262,27 @@ fn no_observable_depends_on_the_order_ids_were_assigned_in() {
                     ));
                     continue;
                 };
-                if got == base {
-                    continue;
+                match moved_by_the_cut(*op, &base, &got) {
+                    Moved::No => continue,
+                    Moved::StoppingPoint => moved_stopping_point += 1,
+                    Moved::Proof => {
+                        assert!(
+                            !got.trim().is_empty(),
+                            "{} [{op}] rendered nothing",
+                            rel.display()
+                        );
+                        moved_proof += 1;
+                    }
+                    Moved::Answer(x, y) => {
+                        *tally.entry(op.to_string()).or_insert(0) += 1;
+                        bad.push(format!(
+                            "{} [{op}] seed {seed}\n{}",
+                            rel.display(),
+                            first_difference(&x, &y)
+                        ));
+                    }
                 }
-                // Something moved. Whether it is the *answer* or the
-                // *narration of the proof* is what the cut decides — and the
-                // cut is `ein-parity`'s, applied here between two runs of one
-                // engine rather than between two engines. See the module note.
                 moved_at_all += 1;
-                if !ein_parity::strict() && ein_parity::blank(&base) == ein_parity::blank(&got) {
-                    // Only the line-level values moved: a firing count, an
-                    // event ordinal, a dying fork's core — where
-                    // `enable_fail_fast_fork` stopped a fork it was about to
-                    // discard.
-                    moved_stopping_point += 1;
-                    continue;
-                }
-                let (Some(x), Some(y)) = (op.narrow(&base), op.narrow(&got)) else {
-                    // Presence only: both runs answered, which is all a
-                    // `slice` view is compared for.
-                    assert!(
-                        !got.trim().is_empty(),
-                        "{} [{op}] rendered nothing",
-                        rel.display()
-                    );
-                    moved_proof += 1;
-                    continue;
-                };
-                if x == y {
-                    // The body of a rendered derivation moved: a fact with two
-                    // equally valid justifications recorded the other one first.
-                    moved_proof += 1;
-                    continue;
-                }
-                *tally.entry(op.to_string()).or_insert(0) += 1;
-                bad.push(format!(
-                    "{} [{op}] seed {seed}\n{}",
-                    rel.display(),
-                    first_difference(&x, &y)
-                ));
             }
             compared += 1;
             if !tested {
@@ -367,6 +349,94 @@ fn no_observable_depends_on_the_order_ids_were_assigned_in() {
         ops.len(),
         seeds.len()
     );
+}
+
+/// What a difference between two runs of one op amounts to.
+enum Moved {
+    /// The two renderings are byte-identical.
+    No,
+    /// Only line-level values moved: a firing count, an event ordinal, a dying
+    /// fork's core — where `enable_fail_fast_fork` stopped a fork it was about
+    /// to discard.
+    StoppingPoint,
+    /// The narration of the proof moved and the answer did not: a fact with
+    /// two equally valid justifications recorded the other one first, or a
+    /// `slice` view compared for presence only.
+    Proof,
+    /// The answer moved — the two narrowed renderings, plain and permuted.
+    Answer(String, String),
+}
+
+/// Whether the *answer* or the *narration of the proof* moved, which is what
+/// the cut decides — and the cut is `ein-parity`'s, applied here between two
+/// runs of one engine rather than between two engines. See the module note.
+///
+/// One function because two tests ask it: the sweep, and the register's
+/// id-order rows, which must count as moved exactly what the sweep would
+/// report.
+fn moved_by_the_cut(op: Op, base: &str, got: &str) -> Moved {
+    if got == base {
+        return Moved::No;
+    }
+    if !ein_parity::strict() && ein_parity::blank(base) == ein_parity::blank(got) {
+        return Moved::StoppingPoint;
+    }
+    match (op.narrow(base), op.narrow(got)) {
+        (Some(x), Some(y)) if x != y => Moved::Answer(x, y),
+        _ => Moved::Proof,
+    }
+}
+
+/// M1e2 S1e2.1.1 — **the register's id-order rows**, whose wrong answer is
+/// visible only under a permuted interner (W11).
+///
+/// `corpus/wrong_answers.toml` is otherwise held by
+/// `ein-cli/tests/wrong_answers.rs`, through the binary; a permutation is not
+/// something the binary can be asked for, so a row carrying `wrong.id_order`
+/// has its second half here, where the permutation is. An **open** row's op
+/// must still move at its seed by the same cut the sweep applies — which is
+/// why the cut is a function — and a **fixed** one must not. The witnesses are
+/// under `corpus/fuzz_findings/` for the reason this file is: as corpus
+/// entries they would fail the sweep above.
+#[test]
+fn the_register_s_id_order_rows_answer_what_they_record() {
+    let ops = ops();
+    let mut checked = 0usize;
+    let mut bad = Vec::new();
+    for row in ein_corpus::register().case {
+        let Some(id) = &row.wrong.id_order else {
+            continue;
+        };
+        let op = *ops
+            .iter()
+            .find(|o| o.to_string() == id.op)
+            .unwrap_or_else(|| panic!("{}: no op named {:?}", row.id, id.op));
+        let path = repo_root().join(&row.witness);
+        let mut base_terms = Terms::new();
+        let base = run(&mut base_terms, &path, op)
+            .unwrap_or_else(|| panic!("{}: [{op}] refused the plain run", row.id));
+        let mut terms = permuted(&base_terms, id.seed);
+        let got = run(&mut terms, &path, op)
+            .unwrap_or_else(|| panic!("{}: [{op}] refused the permuted run", row.id));
+        let moved = matches!(moved_by_the_cut(op, &base, &got), Moved::Answer(..));
+        checked += 1;
+        match (row.status.as_str(), moved) {
+            ("open" | "not-wrong", false) => bad.push(format!(
+                "{}: [{op}] seed {} no longer moves — an OPEN case changed answer; \
+                 the row moves in the same commit",
+                row.id, id.seed
+            )),
+            ("fixed", true) => bad.push(format!(
+                "{}: [{op}] seed {} is FIXED and moves:\n{}",
+                row.id,
+                id.seed,
+                first_difference(&base, &got)
+            )),
+            _ => {}
+        }
+    }
+    assert!(checked > 0, "the register has no id-order rows to check");
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
 fn first_difference(a: &str, b: &str) -> String {

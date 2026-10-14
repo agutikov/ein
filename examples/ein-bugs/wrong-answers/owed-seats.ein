@@ -1,0 +1,49 @@
+;;; Two owed families on one relation — M1e2 **W5**: the obligations rung
+;;; records a strict superset of a model, chosen by name order, at **default
+;;; flags**. Register row `W5/owed-seats` (`corpus/wrong_answers.toml`).
+;;;
+;;; ── The program ────────────────────────────────────────────────────────────
+;;;
+;;; Two guests, two chairs. `total-owed` says every guest has a chair;
+;;; `surjective-owed` says every chair has a guest. Nothing else.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────────
+;;;
+;;; The two matchings, `{(seats Ann C1), (seats Bob C2)}` and `{(seats Ann
+;;; C2), (seats Bob C1)}`, discharge both families. Whether a state that seats
+;;; Ann on **both** chairs and Bob on one — owing nothing — is a third model is
+;;; Q-M1e2.1's reading:
+;;;
+;;;   minimal  k = 2 — a requirement is discharged by a witness, a complete
+;;;            node leaves the frontier (`lattice_semantics::a_layer_that_
+;;;            yields_complete_models_stops_descending`), and a second witness
+;;;            is `functional`'s question, not `total`'s. Recommended.
+;;;   literal  k = 7 — every seating that owes nothing: the two matchings,
+;;;            the four triples and all four facts.
+;;;
+;;; **Never 3**, and never a set that changes when a constant is renamed.
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;;   lattice  Ambiguity k = 3, `exhausted = true`: the two matchings and
+;;;            `{(seats Ann C1), (seats Ann C2), (seats Bob C1)}` — a superset
+;;;            of a recorded model. `apriori.rs` says every (k−1)-subset of a
+;;;            joined candidate is in `a_prev` *by construction*; the prefix
+;;;            join guarantees only the two parents, so a superset of a node
+;;;            that left the frontier as complete is joined anyway — and only
+;;;            the supersets the name-sorted join happens to build.
+;;;   tree     (`EIN_TRAVERSAL=tree`) k = 6, a lower bound: the matchings and
+;;;            all four triples.
+;;;
+;;; `owed-seats-renamed.ein` is this file with Ann renamed Zed and nothing
+;;; else; its third model is a *different* triple.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+(import std.algebra :symbols (total-owed surjective-owed))
+(relation is-a   T T)
+(relation seats  Guest Chair)
+(is-a Ann Guest) (is-a Bob Guest)
+(is-a C1 Chair)  (is-a C2 Chair)
+(total-owed      seats is-a)
+(surjective-owed seats is-a)
+(query :goal (seats ?g ?c))

@@ -1,0 +1,25 @@
+;;; The blind rung never proposes an arity-3 fact, and the run is certified
+;;; anyway — M1e2 **W6**'s second witness, contested. Register row
+;;; `W6/arity3` (`corpus/wrong_answers.toml`).
+;;;
+;;; The goal is `(r3 ?x ?y ?z)`. `hypgen`'s `fill_slot` documents that arity ≥ 3
+;;; is unenumerated, so the rung proposes the two `r2` facts it can build and
+;;; nothing over `r3`:
+;;;
+;;;   Solution k = 1, `{(r2 A B), (r2 B A)}`, `exhausted = true`
+;;;
+;;; — certified, over a goal relation no commitment ever touched. (`-H` says
+;;; *0 candidates* while the run enters three; that disagreement is the
+;;; inventory's S4, a surface, not this case.)
+;;;
+;;; The right answer is Q-M1e2.3's reading, as for `uncovered.ein`: relative
+;;; to `alive₀` the certification holds by definition, as a claim about the
+;;; program it does not. Recommended: the certification names its scope —
+;;; here, that `r3` was never hypothesised.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+(relation is-a T T)
+(relation r3 T T T)
+(relation r2 T T)
+(is-a A T) (is-a B T)
+(query :goal (r3 ?x ?y ?z) :no-hypothesis (is-a))

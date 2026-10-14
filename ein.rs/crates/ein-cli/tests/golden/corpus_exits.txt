@@ -346,6 +346,44 @@
 1    examples/ein-bugs/unbound-assert-var.ein :: saturate
 1    examples/ein-bugs/unbound-assert-var.ein :: solve
 1    examples/ein-bugs/unbound-relation-head.ein :: solve
+0    examples/ein-bugs/wrong-answers/arity3.ein :: solve
+0    examples/ein-bugs/wrong-answers/arity3.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/f07-fpoff.ein :: solve
+0    examples/ein-bugs/wrong-answers/f07-fpoff.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/forced-1-two.ein :: solve
+0    examples/ein-bugs/wrong-answers/forced-1-two.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/forced-1.ein :: solve
+0    examples/ein-bugs/wrong-answers/forced-1.ein :: solve -L
+0    examples/ein-bugs/wrong-answers/forced-1.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/forced-2-off.ein :: solve
+0    examples/ein-bugs/wrong-answers/forced-2-off.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/forced-2-two.ein :: solve
+0    examples/ein-bugs/wrong-answers/forced-2-two.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/forced-2.ein :: solve
+0    examples/ein-bugs/wrong-answers/forced-2.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/fresh-name-default.ein :: solve
+0    examples/ein-bugs/wrong-answers/fresh-name-default.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein :: solve
+0    examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/naf-nowb.ein :: solve
+0    examples/ein-bugs/wrong-answers/naf-nowb.ein :: solve -L
+0    examples/ein-bugs/wrong-answers/naf-nowb.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/owed-seats-renamed.ein :: solve
+0    examples/ein-bugs/wrong-answers/owed-seats-renamed.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/owed-seats.ein :: solve
+0    examples/ein-bugs/wrong-answers/owed-seats.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/owed-two-step.ein :: solve
+0    examples/ein-bugs/wrong-answers/owed-two-step.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein :: solve
+0    examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/stale-naf-fork.ein :: solve
+0    examples/ein-bugs/wrong-answers/stale-naf-fork.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/tree-dead.ein :: solve
+0    examples/ein-bugs/wrong-answers/tree-dead.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/uncovered-knows.ein :: solve
+0    examples/ein-bugs/wrong-answers/uncovered-knows.ein :: solve -e
+0    examples/ein-bugs/wrong-answers/uncovered.ein :: solve
+0    examples/ein-bugs/wrong-answers/uncovered.ein :: solve -e
 0    examples/ein-bugs/zebra2-bad.ein :: render constraints
 0    examples/ein-bugs/zebra2-bad.ein :: render lattice
 0    examples/ein-bugs/zebra2-bad.ein :: render rules

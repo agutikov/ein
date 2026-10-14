@@ -1,0 +1,40 @@
+;;; Two candidates, each refuted in TWO firings — M1e2 **W1** at layer 0, at
+;;; **default flags**. Register row `W1/forced-2-two`
+;;; (`corpus/wrong_answers.toml`).
+;;;
+;;; ── The program ────────────────────────────────────────────────────────────
+;;;
+;;; Two objects; `(q ?x)` taints its object and a taint is a contradiction, so
+;;; every `(q ?x)` dies — in two firings, past the one-step lookahead. With two
+;;; candidates `alive` is never a singleton, so the forced-positive cascade
+;;; (W2) never runs: this is W1 alone.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────────
+;;;
+;;; Root is consistent and every hypothesis dies with it, so root is the one
+;;; solution (Q-M1e.6, clause 3): **`Solution`, k = 1, a model with no `q`.**
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;;   verdict         No solution — the constraints are contradictory
+;;;   unsat core (2 facts)   (q one)  (q two)
+;;;   exhausted        true
+;;;   enterings        2 (dead_post=2)
+;;;
+;;; Both singletons are entered and die; `phase2` breaks on the empty layer
+;;; without asking whether root is now complete; `finalise` reports the union
+;;; of the hypotheses' cores as the program's.
+;;;
+;;; ── The control ───────────────────────────────────────────────────────────
+;;;
+;;; `forced-1-two.ein` has the same content with each death ONE firing deep and
+;;; answers `Solution` k = 1. Same logical content, opposite verdicts.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+(relation thing T)
+(relation q T)
+(relation bad T)
+(thing one) (thing two)
+(rule taint () :match (q ?x)   :assert (bad ?x) :priority 200)
+(rule kill  () :match (bad ?x) :assert (false)  :priority 300)
+(query :goal (thing ?x) :no-hypothesis (bad))

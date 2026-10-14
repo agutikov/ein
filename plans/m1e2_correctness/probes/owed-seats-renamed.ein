@@ -1,9 +1,0 @@
-;; probe: two owed families on one relation, lattice traversal, obligations rung
-(import std.algebra :symbols (total-owed surjective-owed))
-(relation is-a   T T)
-(relation seats  Guest Chair)
-(is-a Zed Guest) (is-a Bob Guest)
-(is-a C1 Chair)  (is-a C2 Chair)
-(total-owed      seats is-a)
-(surjective-owed seats is-a)
-(query :goal (seats ?g ?c))

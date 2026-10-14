@@ -528,6 +528,127 @@ group  = "regression"
 runs   = ["solve", "solve -e", "saturate", "render rules"]
 note   = "S1a.6.6 regression — a *nested fact* goal binding. ein.py raised inside `json.dumps` and wrote no summary at all; it now renders the fact as an s-expression, which is what ein.rs already did."
 
+# ── regression: examples/ein-bugs/wrong-answers/ ────────────
+#
+# M1e2 S1e2.1.1 — witnesses of known wrong answers that existed only as
+# probes under `plans/m1e2_correctness/probes/`, banked because a register row
+# cannot point into a plan directory. **What each one answers, and what it
+# should answer, is `corpus/wrong_answers.toml`'s**, held by
+# `ein-cli/tests/wrong_answers.rs`; these rows only put the files in the sweep.
+# One carries an `:expect` (`fresh-name-nospawn.ein`'s `(false)`, today's
+# answer). The two that copy a fixture with one dropped it on purpose: today's
+# answer has an empty goal extent (Q-M1e.13), or the declared runs differ.
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/forced-1.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+levers = ["-L"]
+note   = "M1e2 W2 under -L (`W2/forced-1-L`): one candidate refuted in one firing. Right at default flags; with the lookahead off the forced-positive cascade writes the singleton into root and the run is a certified Contradiction with a 0-fact core."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/forced-1-two.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W1's control (`W1/forced-2-two`): two candidates, each refuted in one firing, and the right `Solution` k = 1."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/forced-2.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W2 (`W2/forced-2`): one candidate refuted in two firings; the cascade promotes it into root and refutes a consistent program at default flags — `exhausted = true`, unsat core 0 facts, 0 enterings."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/forced-2-off.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W1 at layer 0 (`W1/forced-2-off`): forced-2.ein with the cascade off, which falls through into W1 — the reason S1e2.2.1 runs before S1e2.2.2."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/forced-2-two.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W1 at layer 0 (`W1/forced-2-two`): two candidates, each refuted in two firings; every singleton dies, phase2 breaks without asking whether root is complete, and a consistent program is a certified Contradiction. Its one-firing control answers Solution."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/owed-two-step.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W1 (`W1/owed-two-step`): an owed instance whose alternatives die in two firings answers Contradiction where the 2026-08-25 ruling says Open — owes 1."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/tree-dead.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W1's control (`W1/owed-two-step`): the same obligation with one-firing deaths, and the right `Open — owes 1`. Named for the tree traversal it was first written for."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/fresh-name-default.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W4 in isolation (`W4/fresh-name-default`): alive-set-fresh-name.ein without its lookahead-off line — Solution k = 1 over a model with no q, where {(q A Z), (q B Z)} is the model. A second breach of the M1 alive-set invariant."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W1 (`W1/fresh-name-nospawn`): alive-set-fresh-name.ein without its spawn rule still answers a certified Contradiction — the banked file's k = 0 is W1 at layer 0, not the fresh name. `:expect (false)` states today's answer."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/naf-nowb.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+levers = ["-L"]
+note   = "M1e2 W3's lever row (`W3/naf-nowb-L`): naf-upward-closure.ein with the singleton writeback off. Under -L the width-1 no-good and W1 together make a certified Contradiction of a program whose one model is {(p A), (q A)}."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/owed-seats.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W5 (`W5/owed-seats`): two guests, two chairs, `total-owed` + `surjective-owed`. The lattice records the two matchings and a strict superset of one, k = 3 exhausted — under no reading of Q-M1e2.1 is it 3."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/owed-seats-renamed.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W5's twin: owed-seats.ein with Ann renamed Zed, and a different third model — the model set moves under a renaming."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/uncovered.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W6, contested (`W6/uncovered`): completeness.md § 3c's fixture. `exhausted = true` while `knows` is never hypothesised — exhaustive over alive₀, not over the program (Q-M1e2.3)."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/uncovered-knows.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W6's twin: uncovered.ein plus (knows Ann Bob) — three consistent states the original's rung never proposes."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/arity3.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W6, contested (`W6/arity3`): the blind rung never proposes an arity-3 fact, and a run whose goal is one is certified."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/stale-naf-fork.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W8, contested (`W8/stale-naf-fork`): (p one), derived under (absent (q one)), survives the commitment of (q one) and kills it — Q-M1e2.2."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W8's twin: stale-naf-fork.ein with :warn-derived-naf on, the same answer and no warn event — the S1e.2.3 diagnostic does not contain this shape."
+
+[[entry]]
+path   = "examples/ein-bugs/wrong-answers/f07-fpoff.ein"
+group  = "regression"
+runs   = ["solve", "solve -e"]
+note   = "M1e2 W8's twin: features/07 with the forced-positive cascade off, and the same {(p one), (q one)} reached by a fork — so the cascade is not the cause."
+
 # ── compile-negative: examples/broken/compile/ ──────────────
 #
 # The three `CompileError` fixtures (S1a.3.1) — files that parse and load and

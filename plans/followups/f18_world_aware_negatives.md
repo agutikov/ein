@@ -64,7 +64,8 @@ does.
   which is where this bullet's earlier estimate was checked and half of it
   turned out to be wrong. Of the 60 syntactically matching rules across
   `stdlib/`, `examples/` and `tests/`, **nine rules over seven entries** are
-  actually exposed — the set is banked in
+  actually exposed (ten over eight since M1e2 S1e2.1.1 banked
+  `ein-bugs/wrong-answers/naf-nowb.ein`, the probe's own twin) — the set is banked in
   [`refutation_under_absent.rs`](../../ein.rs/crates/ein-infer/tests/refutation_under_absent.rs).
   The `std.slots` half of the estimate holds: not one of those rules is
   exposed, because their `absent` reads a given position structure. The

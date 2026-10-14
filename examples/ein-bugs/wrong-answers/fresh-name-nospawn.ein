@@ -1,0 +1,54 @@
+;;; `alive-set-fresh-name.ein` without its `spawn` rule — M1e2 **W1** at layer
+;;; 0 under `lookahead false`, and the proof that the banked file's refutation
+;;; is not W4's alone. Register row `W1/fresh-name-nospawn`
+;;; (`corpus/wrong_answers.toml`).
+;;;
+;;; Below this header the program is `../alive-set-fresh-name.ein` with the
+;;; `spawn` rule deleted: no rule asserts a fresh name, so the M1 alive-set
+;;; invariant holds and Q-M1e.21 has nothing to say about this file.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────────
+;;;
+;;; Every `q` the rung proposes points at A or at B and is refuted in one
+;;; firing. Root is consistent and every hypothesis dies with it, so root is
+;;; the one solution (Q-M1e.6, clause 3): **`Solution`, k = 1, a model with no
+;;; `q` fact.**
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;;   verdict         No solution — the constraints are contradictory
+;;;   unsat core (2 facts)   (q A B)  (q B A)
+;;;   exhausted        true
+;;;
+;;; — the banked file's answer, with no fresh name in sight. With the lookahead
+;;; off each singleton is entered and dies at layer 1, and `phase2` breaks on
+;;; the empty layer without asking whether root is now complete.
+;;;
+;;; `:expect` states **today's** answer and is meant to break when S1e2.2.1
+;;; records root.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+
+(config :enable-pre-branch-lookahead false)
+
+(relation p T T)
+(relation q T T)
+
+(p A B)
+
+(rule no-a ()
+  :match  (q ?x A)
+  :assert (false)
+  :why    "nothing may reach A")
+
+(rule no-b ()
+  :match  (q ?x B)
+  :assert (false)
+  :why    "nothing may reach B")
+
+(query
+  :goal   (q ?x ?y)
+  :no-hypothesis (p)
+  ;; Today's answer. The truth is root itself, which has no `q` row — so it
+  ;; is also an answer `:expect` cannot state (Q-M1e.13).
+  :expect (false))

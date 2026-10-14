@@ -1,0 +1,41 @@
+;;; `examples/features/07_unstratifiable.ein` with the forced-positive cascade
+;;; OFF — M1e2 **W8**'s twin, contested. Register row `W8/features-07`, as a
+;;; twin.
+;;;
+;;; Below this header the program is `features/07` plus `(config
+;;; :enable-forced-positive false)` and nothing else; that file's header is the
+;;; argument. It says `{p, q}` *"is not a model of this program under any
+;;; reading"* — and the engine records exactly `{(p one), (q one)}`:
+;;;
+;;;   features/07   Solution k = 1, `{(p one), (q one)}` — root derives
+;;;                 `(p one)`, the rung's one candidate `(q one)` is a
+;;;                 singleton, and the cascade writes it into root.
+;;;   this file     the same state, reached by entering `(q one)` in a fork
+;;;                 instead: `(p one)`, derived under `(absent (q one))`,
+;;;                 survives the commitment that falsifies its guard.
+;;;
+;;; So the cascade is not the cause, and the case is not W2's. Which answer is
+;;; right is Q-M1e2.2's reading: under *guards are premises* the commitment
+;;; withdraws `(p one)` and the one model is `{(q one)}`; under *refuse what
+;;; cannot be stratified* this program — `p ← ¬q, q ← ¬p` — is a load error;
+;;; under *append-only* today's answer qualifies.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+(config :enable-forced-positive false)
+(relation thing Thing)
+(relation p Thing)
+(relation q Thing)
+
+(rule derive-p ()
+  :match  (and (thing ?x) (absent (q ?x)))
+  :assert (p ?x)
+  :priority 200
+  :why    "no q for {?x}, so p")
+
+(rule derive-q ()
+  :match  (and (thing ?x) (absent (p ?x)))
+  :assert (q ?x)
+  :priority 200
+  :why    "no p for {?x}, so q")
+
+(thing one :source "the only object")

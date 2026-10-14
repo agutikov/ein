@@ -1,0 +1,53 @@
+;;; `exhausted = true` over a relation the rung never hypothesises — M1e2
+;;; **W6**, contested. Register row `W6/uncovered`
+;;; (`corpus/wrong_answers.toml`).
+;;;
+;;; Below this header the program is the fixture of
+;;; `docs/history/m1d_satisfiability/completeness.md` § 3c, verbatim, and it
+;;; is M1d's *eight measurements with no owner*, #4.
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;;   Ambiguity k = 3, `exhausted = true`; none of the three mentions `knows`.
+;;;
+;;; The obligations rung proposes what discharges `seats`'s two families and
+;;; nothing else, so `knows` — owed by nobody and not closed, because a rule
+;;; concludes it — is never a hypothesis, and the `rung` event says
+;;; `uncovered = 2`. Adding `(knows Ann Bob)` (the twin `uncovered-knows.ein`)
+;;; gives three further consistent states, each with `(knows Bob Ann)`.
+;;; (The third of the three models is W5's superset; that is `owed-seats.ein`'s
+;;; case, not this one.)
+;;;
+;;; ── The answer, by hand: a reading ─────────────────────────────────────────
+;;;
+;;; Q-M1e2.3. Relative to `alive₀` — Q-M1e.6's second clarification — the
+;;; certification is right by definition; as a claim about the *program* it
+;;; is not, and the M1d record calls it *"a claim stated without the qualifier
+;;; that licenses it"*. Three answers: **scoped, and the read-out names the
+;;; scope** (recommended), **uncertified unless covered**, or **open-world,
+;;; not wrong**.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+(import std.algebra :symbols (total-owed surjective-owed))
+
+(relation is-a   T T         :why "{?1} is a {?2}")
+(relation seats  Guest Chair :why "{?1} sits on {?2}")
+(relation knows  Guest Guest :why "{?1} knows {?2}")
+
+(is-a Ann Guest) (is-a Bob Guest)
+(is-a C1 Chair)  (is-a C2 Chair)
+
+;; `seats` is owed from both ends — every guest a chair, every chair a guest.
+(total-owed      seats is-a)
+(surjective-owed seats is-a)
+
+;; `knows` is owed by nobody, and is NOT closed: this rule positively concludes
+;; it, so the closure pass cannot rule it out. Nothing determines whether
+;; anyone knows anyone.
+(rule knows-is-mutual ()
+  :match  (knows ?a ?b)
+  :assert (knows ?b ?a)
+  :why    "{?1} knows {?2}, so {?2} knows {?1}."
+  :priority 100)
+
+(query :goal (seats ?g ?c))

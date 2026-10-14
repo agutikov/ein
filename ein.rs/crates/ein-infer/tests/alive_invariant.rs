@@ -10,24 +10,36 @@
 //!
 //! | | claim | corpus |
 //! |---|---|---|
-//! | **R0** | statically, no rule's `:assert` names a constant the loaded program did not | **2** programs break it |
+//! | **R0** | statically, no rule's `:assert` names a constant the loaded program did not | **3** programs break it (2 until M1e2 S1e2.1.1 banked the third) |
 //! | **R1** | nothing a run derives names what the loaded program did not | the same 2, at 3 sites |
 //! | **R2** | nothing the **search** reaches names what **root's fixpoint** did not | **1** program breaks it |
 //!
-//! R0 ⇒ R1 ⇒ R2, and R2 is the one that can cost an answer: `alive₀` is taken
-//! at root's fixpoint and the lattice enumerates subsets of it, so a name that
-//! arrives later extends a candidate space nothing will revisit. R0 is the one
-//! worth *checking*, because it is free, it runs at load, and it answers for
-//! every run the program could have rather than for the one that happened —
-//! and, measured here, it finds every breach the dynamic sweep finds.
+//! R0 ⇒ R1 ⇒ R2, and an R2 breach is one that can cost an answer: `alive₀` is
+//! taken at root's fixpoint and the lattice enumerates subsets of it, so a
+//! name that arrives later extends a candidate space nothing will revisit.
+//! **It is not the only one.** M1e2's `wrong-answers/fresh-name-default.ein`
+//! breaks R0 and no run reaches the breach — the lookahead kills every
+//! candidate that would fire `spawn` before the search enters it — and it
+//! costs a model all the same, because what the breach costs is the state
+//! that would have named `Z`, and that is the state nobody entered. So an R2
+//! breach is sufficient for a cost and not necessary.
+//!
+//! R0 is the one worth *checking*, because it is free, it runs at load, and it
+//! answers for every run the program could have rather than for the one that
+//! happened — which the file above makes a requirement rather than a
+//! convenience — and, measured here, it finds every breach the dynamic sweep
+//! finds.
 //!
 //! # What a breach costs
 //!
-//! Nothing, on both corpus programs, and an **answer** on the pair this stage
-//! added: `examples/ein-bugs/alive-set-fresh-name.ein` reports `k = 0,
-//! exhausted = true` — a refutation, not a lower bound — where a model exists,
-//! and `…-declared.ein` is the same file plus one fact naming the invented
-//! constant and answers `Solution k = 1` over exactly that model.
+//! Nothing, on the two corpus programs this stage found, and an **answer** on
+//! the pair it added: `examples/ein-bugs/alive-set-fresh-name.ein` reports
+//! `k = 0, exhausted = true` — a refutation, not a lower bound — where a model
+//! exists, and `…-declared.ein` is the same file plus one fact naming the
+//! invented constant and answers `Solution k = 1` over exactly that model.
+//! (M1e2 found that refutation confounded with its W1 and banked the pair's
+//! default-lookahead twin as the fresh-name case alone: `Solution k = 1` over
+//! a model with no `q`. Both are rows of `corpus/wrong_answers.toml`.)
 
 use ein_core::Terms;
 use ein_corpus::{corpus_files, repo_root};
@@ -40,8 +52,8 @@ use ein_ir::{Ast, load_file};
 /// **The whole of what the corpus does wrong**, as `(path, rendered breach)`.
 ///
 /// Banked as a set rather than asserted empty, for `refutation_under_absent`'s
-/// reason: the two entries are real and neither is a mistake to fix here. A
-/// program that joins them fails this test, which is the point.
+/// reason: the entries are real and none is a mistake to fix here. A program
+/// that joins them fails this test, which is the point.
 ///
 /// - `mixed-type-hypothesis.ein` — `Ann` appears in an `hrule`'s `:assert` and
 ///   in no fact. It is also the only corpus program that breaks **R2**: the
@@ -51,10 +63,22 @@ use ein_ir::{Ast, load_file};
 /// - `07_schroder.ein` — `G` appears in the probe rule `probe-undecided`'s
 ///   `:assert` and in no fact. It arrives during **root** saturation, which is
 ///   before `alive₀` is taken, so it cannot cost anything either.
-const KNOWN: [(&str, &str); 2] = [
+/// - `wrong-answers/fresh-name-default.ein` — the pair's first file with its
+///   lookahead-off line deleted, banked by M1e2 S1e2.1.1 as W4's isolated
+///   witness (`corpus/wrong_answers.toml`, `W4/fresh-name-default`). It breaks
+///   R0 and **no run reaches the breach**: the kill cache refutes both `q`
+///   candidates before layer 1, so `spawn` never fires — and that is the cost,
+///   `Solution k = 1` over a model with no `q` where `{(q A Z), (q B Z)}` is
+///   the model. A breach R1 and R2 cannot see, because what it costs is the
+///   state the search never entered.
+const KNOWN: [(&str, &str); 3] = [
     (
         "examples/ein-bugs/mixed-type-hypothesis.ein",
         "new-object: `Ann`, asserted by hrule `guess`",
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/fresh-name-default.ein",
+        "new-object: `Z`, asserted by rule `spawn`",
     ),
     (
         "tests/stdlib/algebra/07_schroder.ein",

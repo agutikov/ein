@@ -1,0 +1,57 @@
+;;; `alive-set-fresh-name.ein` at **default flags** — M1e2 **W4** in isolation:
+;;; a rule's fresh constant never becomes a hypothesis. Register row
+;;; `W4/fresh-name-default` (`corpus/wrong_answers.toml`).
+;;;
+;;; Below this header the program is `../alive-set-fresh-name.ein` with its
+;;; `(config :enable-pre-branch-lookahead false)` line deleted and nothing
+;;; else; that file's header is the argument and is not repeated here.
+;;;
+;;; ── Why this twin exists ───────────────────────────────────────────────────
+;;;
+;;; The banked file's `k = 0, exhausted = true` is **confounded**: delete its
+;;; `spawn` rule — so no fresh name exists at all — and it still answers
+;;; `Contradiction` (`fresh-name-nospawn.ein`), which is W1 at layer 0 under
+;;; the file's lookahead-off line, not W4. With the lookahead on, the kill
+;;; cache refutes both candidates before layer 1, `alive` is empty, root is
+;;; recorded, and what is left is the fresh-name defect alone:
+;;;
+;;;   solutions (k)   1
+;;;   verdict         Solution        — a model with no `q` fact at all
+;;;   exhausted        true
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────────
+;;;
+;;; `{(q A Z), (q B Z)}` saturates to a consistent, quiescent state — `spawn`
+;;; adds `(p Z Z)`, neither refutation fires — and every further `q` is
+;;; refuted, so it is the model: **`Solution`, k = 1, `{(q A Z), (q B Z)}`**,
+;;; which `../alive-set-fresh-name-declared.ein` (one fact, `(seen Z)`, more)
+;;; reaches. The model the engine records is root, which a `q` can still extend.
+;;;
+;;; **No `:expect`**: today's answer has an empty goal extent, and an
+;;; expectation cannot state one — Q-M1e.13. The register states it instead.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+
+(relation p T T)
+(relation q T T)
+
+(p A B)
+
+(rule spawn ()
+  :match  (q ?a ?b)
+  :assert (p ?b Z)
+  :why    "committing to (q {?a} {?b}) names Z, which no fact does")
+
+(rule no-a ()
+  :match  (q ?x A)
+  :assert (false)
+  :why    "nothing may reach A")
+
+(rule no-b ()
+  :match  (q ?x B)
+  :assert (false)
+  :why    "nothing may reach B")
+
+(query
+  :goal   (q ?x ?y)
+  :no-hypothesis (p))

@@ -95,10 +95,11 @@ pub struct SolverConfig {
     ///   so a new field re-blesses every shape golden in the corpus.
     ///
     /// Off by default, and the second is why that is a decision rather than
-    /// an inheritance: the corpus is **not** silent — nine rules over seven
-    /// entries carry the shape, four of them stdlib scans over a membership
-    /// relation, and a warning that fires on a working example is one that
-    /// gets turned off. The set is named and pinned in
+    /// an inheritance: the corpus is **not** silent — ten rules over eight
+    /// entries carry the shape (nine over seven when S1e.2.3 measured it; the
+    /// tenth is M1e2's banked twin of the probe), four of them stdlib scans
+    /// over a membership relation, and a warning that fires on a working
+    /// example is one that gets turned off. The set is named and pinned in
     /// `ein-infer/tests/refutation_under_absent.rs`.
     ///
     /// [Q-M1e.9]: ../../../../docs/history/m1e_review_processing/open_questions.md

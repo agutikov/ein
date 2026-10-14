@@ -1,0 +1,1049 @@
+# The wrong-answer register — M1e2 S1e2.1.1.
+#
+# One row per **witness** of every known wrong answer: a well-formed program,
+# a run the CLI accepts, and an answer that is false under the definitions the
+# user has ruled on (Q-M1e.6, Q-M1e.7 ruling A, the 2026-08-25 `Open` ruling).
+# A case (W1–W12, C1 — `plans/m1e2_correctness/inventory.md`'s ids) has one row
+# per witness, and a fix is done when **every** row of its case answers right.
+#
+# Every `wrong` block was **re-run**, not copied, on 2026-10-14 against
+# `a44273e` (whose engine sources are `71dd237`'s, where the inventory was
+# taken), release build, stdlib = the checkout. Every one reproduced.
+#
+# ── What holds it ─────────────────────────────────────────────────────────────
+#
+# `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs the
+# recorded runs through the `ein` binary, as a process, and compares the
+# `--json-summary` it writes:
+#
+#   open       the wrong run still answers `wrong`, and every `control` and
+#              `twin` still answers what it records. An open case that changes
+#              answer is a fix nobody intended or a new wrong answer, and
+#              either one is news.
+#   fixed      the wrong run answers `right` (every field `right` states), and
+#              the controls and twins still answer what they record.
+#   not-wrong  the wrong run still answers `wrong` — which the review ruled is
+#              the right answer — and the row carries the review's reason.
+#
+# Rows whose wrong answer is visible only under a permuted interner (W11) carry
+# `wrong.id_order`; that half is held by `ein-render/tests/id_order_invariance.rs`,
+# which owns the permutation, and the plain half here.
+#
+# ── Fields ────────────────────────────────────────────────────────────────────
+#
+#   id        `<case>/<witness>`, stable — the review bundle's directory name
+#   case      the inventory's id;  title / class / settings: the case's, per row
+#   owner     the P1e2.2 stage that fixes it;  question: the ids that carried it
+#   witness   a `corpus/corpus.toml` entry, or a file under `corpus/fuzz_findings/`
+#             with `not_in_corpus` saying why it cannot be one
+#   status    open | fixed | not-wrong | merged:<id>
+#
+#   [case.wrong] / [case.control] / [[case.twin]]   an answer the engine gives
+#     witness   (control, twin) another file; default: the row's witness
+#     run       a corpus run name — `ein <run>` with the file elided, so
+#               `"solve -e -L"` is `ein solve <witness> -e -L`
+#     env       ["NAME=value", …] set for the run
+#     why       (control, twin) what differs from the wrong run, in one line
+#     exit      default 0 — a failed `:expect` is 1
+#     verdict   Solution | Ambiguity | Contradiction | Open   (summary `verdict.type`)
+#     k, exhausted
+#     core      the unsat core, as a set; required on every `Contradiction`
+#     closes    the relations a model is compared on — naming a relation
+#               closes it, `:expect`'s rule, so `models = [[]]` with
+#               `closes = ["q"]` is *one model with no q fact*, which
+#               `:expect` cannot say (Q-M1e.13)
+#     models    every recorded model's facts over `closes`, as a multiset
+#     open      the same, per open state;  owes: each recorded state's owed total
+#     debug_panic   in a build with debug assertions the run aborts (exit 101)
+#                   and stderr carries this text; the other fields are release's
+#     id_order  { op, seed } — the `id_order_invariance` op and seed under which
+#               the answer moves (W11)
+#
+#   [case.right] — the answer the definitions give; any field it omits is not
+#     claimed. `derived` says from what; `reading` names the ruling it assumes
+#     when the case is contested, and `[[case.right.alternative]]` gives the
+#     answer under each other reading. A `qualifier` is a sentence the right
+#     read-out would add (W6).
+#
+# ── What `:expect` keeps (T1e2.1.1.3) ─────────────────────────────────────────
+#
+# A witness that also carries an `:expect` keeps it stating **today's** answer
+# until the fixing stage moves it — the rule `branching/15`+`16` already
+# follow — so the expectation and the register cannot disagree while the case
+# is open. The fixing stage moves both, and the row's status, in one commit.
+
+schema = "ein-wrong-answers/1"
+
+# ══ W1 — a maximal alive commitment is never recorded ════════════════════════
+
+[[case]]
+id       = "W1/branching-15"
+case     = "W1"
+title    = "a maximal alive commitment is never recorded"
+class    = "verdict + certification"
+settings = "default"
+owner    = "S1e2.2.1"
+question = ["Q-M1e.8"]
+witness  = "examples/branching/15_lookahead_two_step_on.ein"
+status   = "open"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p"]
+models    = [["(p B)", "(p C)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["p"]
+models    = [["(p A)"], ["(p B)", "(p C)"]]
+derived   = "the file's header; solution_semantics.md § 2 — {(p A)} has both children dead, {(p B),(p C)} its only child"
+
+[[case]]
+id       = "W1/branching-16"
+case     = "W1"
+title    = "a maximal alive commitment is never recorded"
+class    = "verdict + certification"
+settings = "default"
+owner    = "S1e2.2.1"
+question = ["Q-M1e.8"]
+witness  = "examples/branching/16_lookahead_two_step_off.ein"
+status   = "open"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(p A)", "(p B)", "(p C)"]
+
+[case.control]
+witness   = "examples/branching/15_lookahead_two_step_on.ein"
+run       = "solve -e"
+why       = "the same file with the lookahead on — one maximal set recognised instead of none"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p"]
+models    = [["(p B)", "(p C)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["p"]
+models    = [["(p A)"], ["(p B)", "(p C)"]]
+derived   = "the file's header; solution_semantics.md § 2"
+
+[[case]]
+id       = "W1/lattice-02-L"
+case     = "W1"
+title    = "a maximal alive commitment is never recorded"
+class    = "verdict + certification"
+settings = "lever: -L"
+owner    = "S1e2.2.1"
+question = ["Q-M1e.8"]
+witness  = "examples/lattice/02_genuine_3set_death.ein"
+status   = "open"
+note     = "one of the 9 corpus entries that go from models to a certified Contradiction under -L (inventory § 4); the header's 'Expected verdict: Contradiction' is P1.5b's mode contract, superseded by the 2026-08-28 ruling"
+
+[case.wrong]
+run       = "solve -e -L"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(a-prop X)", "(b-prop X)", "(c-prop X)"]
+
+[case.control]
+run       = "solve -e"
+why       = "the lookahead on"
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+closes    = ["a-prop", "b-prop", "c-prop"]
+models    = [["(a-prop X)", "(b-prop X)"], ["(a-prop X)", "(c-prop X)"], ["(b-prop X)", "(c-prop X)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+closes    = ["a-prop", "b-prop", "c-prop"]
+models    = [["(a-prop X)", "(b-prop X)"], ["(a-prop X)", "(c-prop X)"], ["(b-prop X)", "(c-prop X)"]]
+derived   = "every pair is alive and the triple dies, so the three pairs are maximal; the default run says so"
+
+[[case]]
+id       = "W1/forced-2-two"
+case     = "W1"
+title    = "a maximal alive commitment is never recorded"
+class    = "verdict + certification"
+settings = "default"
+owner    = "S1e2.2.1"
+question = ["Q-M1e.8"]
+witness  = "examples/ein-bugs/wrong-answers/forced-2-two.ein"
+status   = "open"
+note     = "layer 0: every singleton dies and phase2 breaks without asking whether root is complete"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(q one)", "(q two)"]
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/forced-1-two.ein"
+run       = "solve -e"
+why       = "each death one firing deep instead of two"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [[]]
+derived   = "Q-M1e.6 clause 3: root is consistent and every remaining hypothesis makes it dead"
+
+[[case]]
+id       = "W1/forced-2-off"
+case     = "W1"
+title    = "a maximal alive commitment is never recorded"
+class    = "verdict + certification"
+settings = "lever: (config :enable-forced-positive false) in the file"
+owner    = "S1e2.2.1"
+question = ["Q-M1e.8"]
+witness  = "examples/ein-bugs/wrong-answers/forced-2-off.ein"
+status   = "open"
+note     = "W2's witness with the cascade off falls through into W1 at layer 0 — why S1e2.2.1 runs before S1e2.2.2"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(q one)"]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [[]]
+derived   = "Q-M1e.6 clause 3, as for forced-2.ein"
+
+[[case]]
+id       = "W1/owed-two-step"
+case     = "W1"
+title    = "a maximal alive commitment is never recorded"
+class    = "verdict + certification"
+settings = "default"
+owner    = "S1e2.2.1"
+question = ["Q-M1e.8"]
+witness  = "examples/ein-bugs/wrong-answers/owed-two-step.ein"
+status   = "open"
+note     = "in an obligations program W1 at layer 0 turns the ruled Open into a certified Contradiction"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(likes Ann Soup)", "(likes Ann Stew)"]
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/tree-dead.ein"
+run       = "solve -e"
+why       = "the same obligation, each alternative refuted in one firing"
+verdict   = "Open"
+k         = 0
+exhausted = true
+closes    = ["likes"]
+models    = []
+open      = [[]]
+owes      = [1]
+
+[case.right]
+verdict   = "Open"
+k         = 0
+exhausted = true
+closes    = ["likes"]
+models    = []
+open      = [[]]
+owes      = [1]
+derived   = "the user's ruling of 2026-08-25 (tests/stdlib/closure/03_closed_and_owing.ein): a consistent state that owes what it cannot pay is Open"
+
+[[case]]
+id       = "W1/fresh-name-nospawn"
+case     = "W1"
+title    = "a maximal alive commitment is never recorded"
+class    = "verdict + certification"
+settings = "lever: (config :enable-pre-branch-lookahead false) in the file"
+owner    = "S1e2.2.1"
+question = ["Q-M1e.8"]
+witness  = "examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein"
+status   = "open"
+note     = "alive-set-fresh-name.ein minus its spawn rule: the banked W4 file's k = 0 is this, not the fresh name"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(q A B)", "(q B A)"]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [[]]
+derived   = "Q-M1e.6 clause 3: every q is refuted and root is consistent"
+
+# ══ W2 — the forced-positive cascade refutes a consistent program ═════════════
+
+[[case]]
+id       = "W2/forced-2"
+case     = "W2"
+title    = "the forced-positive cascade refutes a consistent program"
+class    = "verdict + certification + core"
+settings = "default"
+owner    = "S1e2.2.2"
+witness  = "examples/ein-bugs/wrong-answers/forced-2.ein"
+status   = "open"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = []
+
+[[case.twin]]
+witness   = "examples/ein-bugs/wrong-answers/forced-2-off.ein"
+run       = "solve -e"
+why       = "+ (config :enable-forced-positive false): the cascade off, and W1 answers instead"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(q one)"]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [[]]
+derived   = "Q-M1e.6 clause 3: the program without hypotheses is consistent and its one hypothesis dies — promotion is valid only when root ∪ {h} is consistent"
+
+[[case]]
+id       = "W2/forced-1-L"
+case     = "W2"
+title    = "the forced-positive cascade refutes a consistent program"
+class    = "verdict + certification + core"
+settings = "lever: -L"
+owner    = "S1e2.2.2"
+witness  = "examples/ein-bugs/wrong-answers/forced-1.ein"
+status   = "open"
+
+[case.wrong]
+run       = "solve -e -L"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = []
+
+[case.control]
+run       = "solve -e"
+why       = "the lookahead on: it kills (q one) first, so alive is empty and the cascade never runs"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [[]]
+derived   = "Q-M1e.6 clause 3; the default run says so"
+
+# ══ W3 — `dead` is not upward-closed under `absent` ════════════════════════════
+
+[[case]]
+id       = "W3/naf-upward-closure"
+case     = "W3"
+title    = "dead is not upward-closed under absent"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.5"
+question = ["Q-M1e.9", "F18", "S1f.10.8"]
+witness  = "examples/ein-bugs/naf-upward-closure.ein"
+status   = "open"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(q A)"]]
+
+[case.control]
+run       = "solve -e -K"
+why       = "the kill cache off — right by accident (D4), and the file's :expect, stating today's answer, fails"
+exit      = 1
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p A)", "(q A)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p A)", "(q A)"]]
+derived   = "the file's header: {(p A)} is dead, {(p A),(q A)} is alive, so the one maximal state is {(p A),(q A)}"
+
+[[case]]
+id       = "W3/naf-nowb-L"
+case     = "W3"
+title    = "dead is not upward-closed under absent"
+class    = "model set; verdict + certification under the lever"
+settings = "lever: -L, with (config :enable-singleton-writeback false) in the file"
+owner    = "S1e2.2.5"
+question = ["Q-M1e.9", "F18", "S1f.10.8"]
+witness  = "examples/ein-bugs/wrong-answers/naf-nowb.ein"
+status   = "open"
+note     = "two mechanisms: W3's width-1 no-good prunes the live superset, and W1 leaves the surviving {(q A)} unrecorded"
+
+[case.wrong]
+run       = "solve -e -L"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(p A)"]
+
+[case.control]
+run       = "solve -e"
+why       = "the lookahead on: the default run's wrong model, not a refutation"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(q A)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p A)", "(q A)"]]
+derived   = "as W3/naf-upward-closure — the program is the same"
+
+# ══ W4 — a rule's fresh constant never becomes a hypothesis ═══════════════════
+
+[[case]]
+id       = "W4/fresh-name-default"
+case     = "W4"
+title    = "a rule's fresh constant never becomes a hypothesis"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.4"
+question = ["Q-M1e.21", "ST-M1"]
+witness  = "examples/ein-bugs/wrong-answers/fresh-name-default.ein"
+status   = "open"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [[]]
+
+[case.control]
+witness   = "examples/ein-bugs/alive-set-fresh-name-declared.ein"
+run       = "solve -e"
+why       = "+ (seen Z) and the lookahead off: Z is a name at root, so its hypotheses are in alive₀"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [["(q A Z)", "(q B Z)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [["(q A Z)", "(q B Z)"]]
+derived   = "alive-set-fresh-name.ein's header: {(q A Z),(q B Z)} saturates to a consistent, quiescent, complete state; the -declared control reaches it"
+
+[[case]]
+id       = "W4/alive-set-fresh-name"
+case     = "W4"
+title    = "a rule's fresh constant never becomes a hypothesis"
+class    = "model set; verdict + certification as banked"
+settings = "lever: (config :enable-pre-branch-lookahead false) in the file"
+owner    = "S1e2.2.4"
+question = ["Q-M1e.21", "ST-M1"]
+witness  = "examples/ein-bugs/alive-set-fresh-name.ein"
+status   = "open"
+note     = "confounded with W1 at layer 0 (W1/fresh-name-nospawn): fixing W1 alone moves this to W4/fresh-name-default's wrong answer"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(q A B)", "(q B A)"]
+
+[case.control]
+witness   = "examples/ein-bugs/alive-set-fresh-name-declared.ein"
+run       = "solve -e"
+why       = "+ (seen Z): one fact over a relation nothing else mentions"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [["(q A Z)", "(q B Z)"]]
+
+[[case.twin]]
+witness   = "examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein"
+run       = "solve -e"
+why       = "− the spawn rule: no fresh name at all, and the same refutation"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(q A B)", "(q B A)"]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [["(q A Z)", "(q B Z)"]]
+derived   = "the file's header; the -declared control reaches it"
+
+# ══ W5 — the obligations rung records a superset of a model ═══════════════════
+
+[[case]]
+id       = "W5/owed-seats"
+case     = "W5"
+title    = "the obligations rung records a superset of a model, chosen by name order"
+class    = "verdict + model set + certification"
+settings = "default"
+owner    = "S1e2.2.3"
+question = ["Q-M1e2.1"]
+witness  = "examples/ein-bugs/wrong-answers/owed-seats.ein"
+status   = "open"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+closes    = ["seats"]
+models    = [["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)"], ["(seats Ann C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)"]]
+
+[[case.twin]]
+witness   = "examples/ein-bugs/wrong-answers/owed-seats-renamed.ein"
+run       = "solve -e"
+why       = "Ann renamed Zed, nothing else — a different third model"
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+closes    = ["seats"]
+models    = [["(seats Bob C1)", "(seats Bob C2)", "(seats Zed C1)"], ["(seats Bob C1)", "(seats Zed C2)"], ["(seats Bob C2)", "(seats Zed C1)"]]
+
+[[case.twin]]
+run       = "solve -e"
+env       = ["EIN_TRAVERSAL=tree"]
+why       = "the tree traversal: the matchings and all four triples, uncertified"
+verdict   = "Ambiguity"
+k         = 6
+exhausted = false
+closes    = ["seats"]
+models    = [["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)"], ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C2)"], ["(seats Ann C1)", "(seats Bob C1)", "(seats Bob C2)"], ["(seats Ann C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)"], ["(seats Ann C2)", "(seats Bob C1)", "(seats Bob C2)"]]
+
+[case.right]
+reading   = "Q-M1e2.1 minimal (recommended in S1e2.2.3): a requirement is discharged by a witness, and a complete node leaves the frontier"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["seats"]
+models    = [["(seats Ann C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)"]]
+derived   = "the two matchings discharge both families; lattice_semantics::a_layer_that_yields_complete_models_stops_descending"
+
+[[case.right.alternative]]
+reading   = "Q-M1e2.1 literal: every state that owes nothing"
+verdict   = "Ambiguity"
+k         = 7
+exhausted = true
+closes    = ["seats"]
+models    = [["(seats Ann C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)"], ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)"], ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C2)"], ["(seats Ann C1)", "(seats Bob C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)", "(seats Bob C2)"], ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)", "(seats Bob C2)"]]
+derived   = "every subset of the four seats facts that gives each guest and each chair one"
+
+# ══ W6 — `exhausted = true` over relations the rung never hypothesises ═════════
+
+[[case]]
+id       = "W6/uncovered"
+case     = "W6"
+title    = "exhausted = true over relations the rung never hypothesises"
+class    = "certification, contested"
+settings = "default"
+owner    = "S1e2.2.8"
+question = ["Q-M1e2.3", "M1d eight measurements #4"]
+witness  = "examples/ein-bugs/wrong-answers/uncovered.ein"
+status   = "open"
+note     = "the third model is W5's superset; this case is only the certification"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+closes    = ["seats", "knows"]
+models    = [["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)"], ["(seats Ann C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)"]]
+
+[[case.twin]]
+witness   = "examples/ein-bugs/wrong-answers/uncovered-knows.ein"
+run       = "solve -e"
+why       = "+ (knows Ann Bob): three consistent states the original file's rung never proposes"
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+closes    = ["seats", "knows"]
+models    = [["(knows Ann Bob)", "(knows Bob Ann)", "(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)"], ["(knows Ann Bob)", "(knows Bob Ann)", "(seats Ann C1)", "(seats Bob C2)"], ["(knows Ann Bob)", "(knows Bob Ann)", "(seats Ann C2)", "(seats Bob C1)"]]
+
+[case.right]
+reading   = "Q-M1e2.3 scoped (recommended): the certification holds relative to alive₀ and the read-out names the scope"
+verdict   = "Ambiguity"
+exhausted = true
+qualifier = "exhaustive over the hypotheses the obligations rung proposes; knows is never hypothesised"
+derived   = "Q-M1e.6's second clarification (alive₀ is the rung's L1 set); completeness.md § 3c. k is W5's to settle"
+
+[[case.right.alternative]]
+reading   = "Q-M1e2.3 uncertified unless covered"
+verdict   = "Ambiguity"
+exhausted = false
+derived   = "a relation the rung does not cover makes the run a lower bound"
+
+[[case.right.alternative]]
+reading   = "Q-M1e2.3 open-world, not wrong"
+verdict   = "Ambiguity"
+exhausted = true
+derived   = "today's answer"
+
+[[case]]
+id       = "W6/arity3"
+case     = "W6"
+title    = "exhausted = true over relations the rung never hypothesises"
+class    = "certification, contested"
+settings = "default"
+owner    = "S1e2.2.8"
+question = ["Q-M1e2.3"]
+witness  = "examples/ein-bugs/wrong-answers/arity3.ein"
+status   = "open"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["r2", "r3"]
+models    = [["(r2 A B)", "(r2 B A)"]]
+
+[case.right]
+reading   = "Q-M1e2.3 scoped (recommended)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["r2", "r3"]
+models    = [["(r2 A B)", "(r2 B A)"]]
+qualifier = "exhaustive over the hypotheses the blind rung proposes; r3 (arity 3, the goal) is never hypothesised"
+derived   = "hypgen's fill_slot: arity ≥ 3 is unenumerated"
+
+[[case.right.alternative]]
+reading   = "Q-M1e2.3 uncertified unless covered"
+verdict   = "Solution"
+exhausted = false
+derived   = "the goal relation is uncovered, so the run is a lower bound"
+
+# ══ W7 — two activator layouts share a binding key ════════════════════════════
+
+[[case]]
+id       = "W7/binding-key-layout"
+case     = "W7"
+title    = "two activator layouts share a binding key, and a derivation is lost"
+class    = "model set"
+settings = "default (release); a debug build aborts"
+owner    = "S1e2.2.7"
+question = ["Q-M1e.16"]
+witness  = "corpus/fuzz_findings/binding-key-layout.ein"
+not_in_corpus = "a debug build aborts on it (check_layout), and every in-process corpus sweep saturates every corpus file inside a debug test binary"
+status   = "open"
+
+[case.wrong]
+run         = "solve -e"
+verdict     = "Solution"
+k           = 1
+exhausted   = true
+closes      = ["noted"]
+models      = [["(noted 1 1)", "(noted 2 1)", "(noted 2 3)"]]
+debug_panic = "two plans share (rule, activator) and disagree on their register layout"
+
+[[case.twin]]
+witness     = "corpus/fuzz_findings/binding-key-layout-swapped.ein"
+run         = "solve -e"
+why         = "the two activator lines swapped: release derives all four"
+verdict     = "Solution"
+k           = 1
+exhausted   = true
+closes      = ["noted"]
+models      = [["(noted 1 1)", "(noted 1 3)", "(noted 2 1)", "(noted 2 3)"]]
+debug_panic = "two plans share (rule, activator) and disagree on their register layout"
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["noted"]
+models    = [["(noted 1 1)", "(noted 1 3)", "(noted 2 1)", "(noted 2 3)"]]
+derived   = "rule_semantics.rs's control: the nested-fact activator alone derives every (noted ?a ?f); adding an activator cannot remove a conclusion"
+
+# ══ W8 — a positive derived under `absent` survives the commitment ════════════
+
+[[case]]
+id       = "W8/features-07"
+case     = "W8"
+title    = "a positive derived under absent survives the commitment that falsifies its guard"
+class    = "model set, contested"
+settings = "default"
+owner    = "S1e2.2.6"
+question = ["Q-M1e2.2"]
+witness  = "examples/features/07_unstratifiable.ein"
+status   = "open"
+note     = "the file's own header: {p, q} is not a model of this program under any reading"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p one)", "(q one)"]]
+
+[[case.twin]]
+witness   = "examples/ein-bugs/wrong-answers/f07-fpoff.ein"
+run       = "solve -e"
+why       = "+ (config :enable-forced-positive false): the same state, reached by a fork instead of the cascade"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p one)", "(q one)"]]
+
+[case.right]
+reading   = "Q-M1e2.2 guards are premises: committing (q one) withdraws (p one)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(q one)"]]
+derived   = "hand derivation: {(q one)} is alive once p's guard binds it, so root {(p one)} is not maximal"
+
+[[case.right.alternative]]
+reading   = "Q-M1e2.2 refuse what cannot be stratified: p ← ¬q, q ← ¬p is a load error"
+derived   = "no verdict — the program is refused, exit 1"
+
+[[case.right.alternative]]
+reading   = "Q-M1e2.2 append-only is the semantics: not wrong"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p one)", "(q one)"]]
+derived   = "today's answer, against the file's own header"
+
+[[case]]
+id       = "W8/stale-naf-fork"
+case     = "W8"
+title    = "a positive derived under absent survives the commitment that falsifies its guard"
+class    = "model set, contested"
+settings = "default"
+owner    = "S1e2.2.6"
+question = ["Q-M1e2.2"]
+witness  = "examples/ein-bugs/wrong-answers/stale-naf-fork.ein"
+status   = "open"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p one)"]]
+
+[[case.twin]]
+witness   = "examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein"
+run       = "solve -e"
+why       = "+ (config :warn-derived-naf true): the same answer, and no warn event"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p one)"]]
+
+[case.right]
+reading   = "Q-M1e2.2 guards are premises"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(q one)"]]
+derived   = "hand derivation: committing (q one) withdraws (p one), the clash never fires, and {(q one)} is alive"
+
+[[case.right.alternative]]
+reading   = "Q-M1e2.2 append-only is the semantics: not wrong"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p one)"]]
+derived   = "today's answer: the fork holding both is dead, so root is the solution"
+
+# ══ W9 — with the kill cache off, an unnoticed entailment makes a model ═══════
+
+[[case]]
+id       = "W9/complete-records-stale-K"
+case     = "W9"
+title    = "with the kill cache off, an unnoticed entailment makes a state a model"
+class    = "verdict"
+settings = "lever: -K"
+owner    = "S1e2.2.9"
+question = ["Q-M1e.7"]
+witness  = "examples/ein-bugs/complete-records-stale.ein"
+status   = "open"
+
+[case.wrong]
+run       = "solve -e -K"
+exit      = 1
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p A)", "(p B)"], ["(q A)"]]
+
+[case.control]
+run       = "solve -e"
+why       = "the kill cache on"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p A)", "(p B)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p A)", "(p B)"]]
+derived   = "Q-M1e.7 ruling A: engine-written negatives are entailed consequences, so {(q A)} entails (not (p A)), (not (p B)) and totality refutes it"
+
+[[case]]
+id       = "W9/alive-empty-phase1-K"
+case     = "W9"
+title    = "with the kill cache off, an unnoticed entailment makes a state a model"
+class    = "verdict"
+settings = "lever: -K"
+owner    = "S1e2.2.9"
+question = ["Q-M1e.7"]
+witness  = "examples/ein-bugs/alive-empty-phase1.ein"
+status   = "open"
+
+[case.wrong]
+run       = "solve -e -K"
+exit      = 1
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p"]
+models    = [[]]
+
+[case.control]
+run       = "solve -e"
+why       = "the kill cache on"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = []
+
+[case.right]
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+derived   = "Q-M1e.7 ruling A: both p candidates die in one firing, so root entails (not (p A)), (not (p B)) and totality refutes it. Which core is W12's question"
+
+# ══ W10 — the alternatives cap decides which core is reported ═════════════════
+
+[[case]]
+id       = "W10/alt-cap-core"
+case     = "W10"
+title    = "the alternatives cap decides which core is reported"
+class    = "core"
+settings = "default"
+owner    = "S1e2.2.11"
+question = ["Q-M1e.15"]
+witness  = "examples/ein-bugs/alt-cap-core.ein"
+status   = "open"
+
+[case.wrong]
+run       = "solve"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(p1 Y01)", "(p2 Y01)", "(p3 Y01)"]
+
+[[case.twin]]
+witness   = "examples/ein-bugs/alt-cap-core-reordered.ein"
+run       = "solve"
+why       = "wide at :priority 50 instead of 300, nothing else"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(w1 X)", "(w2 X)"]
+
+[case.right]
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(w1 X)", "(w2 X)"]
+derived   = "the file's header: the smallest frontier over the derivations is {(w1 X),(w2 X)}, and explain.rs promises the smallest"
+
+# ══ W11 — which core is reported depends on interner id order ═════════════════
+
+[[case]]
+id       = "W11/unsat-core-id-space"
+case     = "W11"
+title    = "which core is reported depends on interner id order"
+class    = "core"
+settings = "default (under a permuted interner)"
+owner    = "S1e2.2.12"
+witness  = "corpus/fuzz_findings/unsat-core-id-space.ein"
+not_in_corpus = "it moves under a permuted interner, which id_order_invariance asserts of every corpus file"
+status   = "open"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(r1 o4 o5)"]
+id_order  = { op = "solve[default]", seed = 1 }
+
+[case.right]
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+derived   = "design/02: no observable depends on the order ids were assigned in — one core, chosen canonically, under every permutation (S1e2.2.12 picks the rule)"
+
+[[case]]
+id       = "W11/d3-unsat-core"
+case     = "W11"
+title    = "which core is reported depends on interner id order"
+class    = "core"
+settings = "default (under a permuted interner, seed 15839)"
+owner    = "S1e2.2.12"
+witness  = "corpus/fuzz_findings/d3-unsat-core.ein"
+not_in_corpus = "it moves under a permuted interner at the third seed, which the nightly's EIN_ID_SEEDS=8 would assert"
+status   = "open"
+note     = "corpus/fuzz_findings/README.md says this file is green under a permuted id space; that is true at seed 1 only"
+
+[case.wrong]
+run       = "solve -m 2"
+verdict   = "Contradiction"
+k         = 0
+exhausted = false
+core      = ["(is-a o3 T)", "(r0 o3 o2)", "(r1 o2 o3)", "(r1 o3 o2)"]
+id_order  = { op = "trace[answer]", seed = 15839 }
+
+[case.right]
+verdict   = "Contradiction"
+k         = 0
+exhausted = false
+derived   = "as W11/unsat-core-id-space"
+
+# ══ W12 — an exhausted `Contradiction` reports a 0-fact core ══════════════════
+
+[[case]]
+id       = "W12/alive-empty-phase1"
+case     = "W12"
+title    = "an exhausted Contradiction reports a 0-fact core"
+class    = "core, contested"
+settings = "default"
+owner    = "S1e2.2.13"
+question = ["Q-M1e2.4"]
+witness  = "examples/ein-bugs/alive-empty-phase1.ein"
+status   = "open"
+note     = "W2/forced-2's 0-fact core is the same class; it is W2's row"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = []
+
+[case.right]
+reading   = "Q-M1e2.4: an empty unsat core is not a core"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(is-a A T)", "(is-a B T)"]
+derived   = "∅ with this program's rules is consistent, and {(is-a A T),(is-a B T)} is not: each is-a proposes a p that dies, and totality reads the two negatives"
+
+[[case.right.alternative]]
+reading   = "S1e.3.1: honest — the refutation rests on premise-less engine writes"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = []
+derived   = "today's answer"
+
+# ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
+
+[[case]]
+id       = "C1/branching-06"
+case     = "C1"
+title    = "the untyped blind rung binds a type as an object"
+class    = "model set, contested"
+settings = "default"
+owner    = "S1e2.2.10"
+question = ["Q-M1e.12"]
+witness  = "examples/branching/06_lookahead_on.ein"
+status   = "open"
+note     = "all 22 recorded models contain a co-located fact over a type (Color / House); 10 of 22 have a goal row binding ?h to one, 6 print it"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Ambiguity"
+k         = 22
+exhausted = false
+
+[case.right]
+reading   = "Q-M1e.12 — not yet read; each reading gives a different answer"
+derived   = "(a) the program is under-specified: fix the fixture, not the engine; (b) the read-out is wrong: same models, no binding to a type printed; (c) candidate_objects excludes types: a different model set, uncounted"

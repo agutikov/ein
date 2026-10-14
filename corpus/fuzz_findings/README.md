@@ -51,6 +51,25 @@ them. What the session found was one thing, and it is about the DOT renderer:
 |---|---|---|
 | [`kwpair-below-the-filter.ein`](kwpair-below-the-filter.md) | `no-crash` | `render constraints` panics on a keyword pair *below* the top level of an undeclared form — `constraints.rs` filters `KwPair` out of a declaration's arguments, and `value_label` then recurses into an `SForm` and reaches the ones inside. The loader accepts the program; `saturate` answers it. Two defensible fixes and nothing has chosen one, so it is a defined-behaviour question rather than a crash to paper over |
 
+### 2026-10-14 — M1e2's register, and two files that are not a fuzzer's
+
+[`corpus/wrong_answers.toml`](../wrong_answers.toml) is M1e2's register of
+known wrong answers, one row per witness, and a row may point here when its
+witness violates a property the corpus sweeps assert — which is the reason
+this directory exists. Four files here are now witnesses, and a witness is
+**owned**: the stage that fixes its case promotes it to `examples/` in the same
+commit, which is the steady-state rule above with a name on it.
+
+| file | row | why it is here and not in `examples/` |
+|---|---|---|
+| [`binding-key-layout.ein`](binding-key-layout.md) and `-swapped` | `W7/binding-key-layout` | **not a fuzzer's find**: M1e S1e.1.4 wrote it by hand, as `defined_behaviour.md` § 3.2's thirteen lines. A debug build aborts on both files (`check_layout`), and every in-process corpus sweep is a debug test binary |
+| [`unsat-core-id-space.ein`](unsat-core-id-space.md) | `W11/unsat-core-id-space` | moves under a permuted interner, which `id_order_invariance` asserts of every corpus file |
+| `d3-unsat-core.ein` | `W11/d3-unsat-core` | the same, at the third seed — so the nightly's `EIN_ID_SEEDS=8` would fail on it |
+
+The id-order half of a W11 row is held by
+`id_order_invariance::the_register_s_id_order_rows_answer_what_they_record`,
+and the plain half, with every other row, by `ein-cli/tests/wrong_answers.rs`.
+
 ### `d3-*.ein` — 2026-08-20, S1a.6.6's first session
 
 Both were filed as
@@ -62,7 +81,7 @@ minimum from a different seed and then failing it under a permuted id space:
 
 | file | what differs | what is identical |
 |---|---|---|
-| `d3-unsat-core.ein` | the printed **unsat core**: 6 facts in ein.py, 4 in ein.rs — a strict subset | the verdict, `k`, every counter. `EIN_FORK_DELTA=0` reproduces ein.py's six exactly, so it **is** the resumed fork saturator, and the id-space sweep is green on it |
+| `d3-unsat-core.ein` | the printed **unsat core**: 6 facts in ein.py, 4 in ein.rs — a strict subset | the verdict, `k`, every counter. `EIN_FORK_DELTA=0` reproduces ein.py's six exactly, so it **is** the resumed fork saturator, and the id-space sweep is green on it — **at seed 1 only**: at the third seed, 15839, `trace[answer]` moves 4 → 6 facts inside one engine (M1e2 W11, re-taken 2026-10-14) |
 | `d3-goal-row-order.ein` | which **binding row** the solve table shows, when one model satisfies the goal more than once | `summary.json`'s `goal_bindings`, which carries every row and sorts them. **Not D3's, though D3 reaches it**: the row moves inside one engine under `EIN_ID_FILES` too, so the defect is the unsorted `rows[0]` and the two engines were each printing a legitimate row — the filename is kept for the links, the note corrects the attribution |
 
 Neither is reachable from a corpus entry: T3 was green corpus-wide apart from

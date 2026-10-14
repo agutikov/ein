@@ -1,0 +1,47 @@
+;;; A positive derived under `(absent (q one))` survives into a world that
+;;; commits `(q one)` — M1e2 **W8**, contested. Register row
+;;; `W8/stale-naf-fork` (`corpus/wrong_answers.toml`).
+;;;
+;;; ── The program ────────────────────────────────────────────────────────────
+;;;
+;;; `(p one)` is derived at root because `(q one)` is absent. `p` and `q`
+;;; together are a contradiction. The goal is `q`, so the rung proposes
+;;; `(q one)`.
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;;   Solution k = 1, `{(p one)}` plus `(not (q one))`, `exhausted = true`
+;;;
+;;; Committing `(q one)` falsifies `derive-p`'s guard, but nothing retracts
+;;; (`absent_semantics.md`: *retraction / truth maintenance: not provided*), so
+;;; the fork holds the stale `(p one)` beside `(q one)`, the clash fires, and
+;;; the lookahead kills the candidate. The state `{(q one)}` is unreachable.
+;;;
+;;; ── The answer, by hand: a reading ─────────────────────────────────────────
+;;;
+;;; Q-M1e2.2 — does a guard's `absent` premise bind the state the search ends
+;;; in?
+;;;
+;;;   guards are premises   committing `(q one)` withdraws `(p one)`, the
+;;;                         clash never fires, `{(q one)}` is alive, and root
+;;;                         is not maximal: **`Solution`, k = 1, `{(q one)}`**.
+;;;   append-only           today's answer is right: the fork with both is
+;;;                         dead, and root is the solution.
+;;;
+;;; The program is stratified (`q` is no rule's conclusion), so the third
+;;; reading — refuse what cannot be stratified — does not reach it.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+(relation thing T)
+(relation p T)
+(relation q T)
+(thing one)
+(rule derive-p ()
+  :match  (and (thing ?x) (absent (q ?x)))
+  :assert (p ?x)
+  :priority 200)
+(rule p-and-q-clash ()
+  :match  (and (p ?x) (q ?x))
+  :assert (false)
+  :priority 300)
+(query :goal (q ?x))

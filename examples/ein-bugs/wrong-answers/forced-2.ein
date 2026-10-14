@@ -1,0 +1,46 @@
+;;; One candidate, refuted in TWO firings — M1e2 **W2**, the forced-positive
+;;; cascade refuting a consistent program, at **default flags**. Register row
+;;; `W2/forced-2` (`corpus/wrong_answers.toml`).
+;;;
+;;; ── The program ────────────────────────────────────────────────────────────
+;;;
+;;; One object. `(q one)` taints it, a taint is a contradiction, so `(q one)`
+;;; dies — in two firings, one past what the pre-branch lookahead simulates.
+;;; `:no-hypothesis (bad)` keeps the rung off the taint itself.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────────
+;;;
+;;; Without any hypothesis the program is consistent, and the one hypothesis
+;;; there is dies. Root is the solution (Q-M1e.6, clause 3): **`Solution`,
+;;; k = 1, a model with no `q` fact.**
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;;   solutions (k)   0
+;;;   verdict         No solution — the constraints are contradictory
+;;;   unsat core (0 facts)
+;;;   exhausted        true
+;;;   enterings        0
+;;;
+;;; The lookahead cannot see a two-firing death, so `alive = {(q one)}`, a
+;;; singleton, and `promote_forced_positives` writes `(q one)` into **root**
+;;; with a premise-less `<forced-positive>` provenance. Root is then
+;;; contradictory, `root_dead` refutes the run, and the refutation is
+;;; certified with no fact behind it. No commitment was ever entered.
+;;;
+;;; ── Twins ─────────────────────────────────────────────────────────────────
+;;;
+;;; `forced-2-off.ein` is this file plus `(config :enable-forced-positive
+;;; false)`: the cascade off, it still answers `Contradiction` — now through
+;;; W1 at layer 0, with a 1-fact core. Fixing W2 alone falls through into W1,
+;;; which is why P1e2.2 orders S1e2.2.1 first. `forced-1.ein` is the
+;;; one-firing twin, right at default flags and wrong the same way under `-L`.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+(relation thing T)
+(relation q T)
+(relation bad T)
+(thing one)
+(rule taint () :match (q ?x)   :assert (bad ?x) :priority 200)
+(rule kill  () :match (bad ?x) :assert (false)  :priority 300)
+(query :goal (thing ?x) :no-hypothesis (bad))

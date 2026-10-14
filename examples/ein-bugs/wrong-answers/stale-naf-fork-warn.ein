@@ -1,0 +1,27 @@
+;;; `stale-naf-fork.ein` with `(config :warn-derived-naf true)` — the twin that
+;;; shows M1e2 **W8** is *not* contained by the S1e.2.3 diagnostic. Register
+;;; row `W8/stale-naf-fork`, as a twin.
+;;;
+;;; Below this header the program is `stale-naf-fork.ein` plus the one
+;;; `(config …)` line. The answer is the same — `Solution` k = 1, `{(p one)}` —
+;;; and the run narrates **no `warn` event of either category**: the
+;;; diagnostic names a rule that concludes `(false)` from an `(absent …)`
+;;; (`naf-upward-closure.ein`'s shape), and here the `absent` is in a rule that
+;;; concludes a positive, and the contradiction is reached by a different rule
+;;; reading what it left behind.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+(config :warn-derived-naf true)
+(relation thing T)
+(relation p T)
+(relation q T)
+(thing one)
+(rule derive-p ()
+  :match  (and (thing ?x) (absent (q ?x)))
+  :assert (p ?x)
+  :priority 200)
+(rule p-and-q-clash ()
+  :match  (and (p ?x) (q ?x))
+  :assert (false)
+  :priority 300)
+(query :goal (q ?x))

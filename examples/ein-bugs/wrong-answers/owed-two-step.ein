@@ -1,0 +1,41 @@
+;;; An owed instance whose alternatives each die in TWO firings — M1e2 **W1**
+;;; turning a ruled `Open` into a certified `Contradiction`, at **default
+;;; flags**. Register row `W1/owed-two-step` (`corpus/wrong_answers.toml`).
+;;;
+;;; ── The program ────────────────────────────────────────────────────────────
+;;;
+;;; `(total-owed likes is-a)`: Ann owes a Food. Both foods taint her and a
+;;; taint is a contradiction, two firings deep, so neither alternative can pay.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────────
+;;;
+;;; A consistent, quiescent state that owes what it cannot pay is **`Open —
+;;; owes 1`**, not `Contradiction` — the user's ruling of 2026-08-25, banked as
+;;; `tests/stdlib/closure/03_closed_and_owing.ein`. Root is that state.
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;;   verdict         No solution — the constraints are contradictory
+;;;   unsat core (2 facts)   (likes Ann Soup)  (likes Ann Stew)
+;;;   exhausted        true
+;;;
+;;; Both alternatives are entered at layer 1 and die; the layer is empty, the
+;;; loop breaks, and the dead hypotheses' cores become the program's.
+;;;
+;;; ── The control ───────────────────────────────────────────────────────────
+;;;
+;;; `tree-dead.ein` is the same obligation with each alternative refuted in
+;;; ONE firing, and answers `Open — owes 1` (the name is the probe's: it was
+;;; written for the tree traversal, and the lattice answers it the same way).
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+(import std.algebra :symbols (total-owed))
+(relation is-a  T T)
+(relation likes Person Food)
+(relation bad   Person)
+(is-a Ann Person)
+(is-a Soup Food)  (is-a Stew Food)
+(total-owed likes is-a)
+(rule taint () :match (likes ?p ?f) :assert (bad ?p) :priority 200)
+(rule kill  () :match (bad ?p)      :assert (false)  :priority 300)
+(query :goal (likes ?who ?what) :no-hypothesis (is-a bad))

@@ -118,11 +118,14 @@ fn exposure(path: &Path) -> Vec<String> {
 }
 
 /// **The corpus's exposed set, exactly** — nine rules over seven entries,
-/// measured 2026-08-30 over all 213 corpus files.
+/// measured 2026-08-30 over all 213 corpus files; ten over eight since M1e2
+/// S1e2.1.1 banked `ein-bugs/wrong-answers/naf-nowb.ein`, which is
+/// `naf-upward-closure.ein` with the singleton writeback off and W3's lever
+/// row in `corpus/wrong_answers.toml`.
 ///
-/// Three of the seven are **probes**: `branching/13` and `14` are S1e.1.1's
-/// own lookahead-NAF fixtures, and `ein-bugs/naf-upward-closure.ein` is
-/// [D4]'s probe itself, banked here. `ein-bugs/alive-empty-interlayer.ein`
+/// Four of the eight are **probes**: `branching/13` and `14` are S1e.1.1's
+/// own lookahead-NAF fixtures, `ein-bugs/naf-upward-closure.ein` is
+/// [D4]'s probe itself, banked here, and `naf-nowb.ein` is its twin. `ein-bugs/alive-empty-interlayer.ein`
 /// is a recorded bug fixture whose `totality` rule has the probe's exact
 /// shape over a relation its own `(hrule guess …)` proposes.
 /// `syntax/rule-forall-and-not.ein` is the one `(not …)` row, and it is there
@@ -159,6 +162,7 @@ examples/branching/13_lookahead_naf_world.ein::self-block[] (false) \u{2190} can
 examples/branching/14_lookahead_unjudgeable.ein::premature-signoff[] (false) \u{2190} needs-review, pending, signed
 examples/ein-bugs/alive-empty-interlayer.ein::totality[] (false) \u{2190} p
 examples/ein-bugs/naf-upward-closure.ein::bad[] (false) \u{2190} q
+examples/ein-bugs/wrong-answers/naf-nowb.ein::bad[] (false) \u{2190} q
 examples/features/05_stdlib_domain_elim.ein::no-room-left[color-of is-a House Color] (false) \u{2190} is-a
 examples/features/05_stdlib_domain_elim.ein::typecheck-arg-0[color-of is-a House] (false) \u{2190} is-a
 examples/features/05_stdlib_domain_elim.ein::typecheck-arg-1[color-of is-a Color] (false) \u{2190} is-a

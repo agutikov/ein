@@ -34,7 +34,7 @@ are reachable at default settings** (W9 needs `-K`), and three of them get the
 verdict word itself wrong (W1, W2, W5). Two are seven-line programs:
 
 ```
-$ ein solve -e plans/m1e2_correctness/probes/forced-2.ein      # one object, one hypothesis that leads to (false)
+$ ein solve -e examples/ein-bugs/wrong-answers/forced-2.ein   # one object, one hypothesis that leads to (false)
   solutions (k)   0
   verdict         No solution — the constraints are contradictory
   unsat core (0 facts)
@@ -185,7 +185,13 @@ milestone cites them across the boundary, as M1f does.
 ## Connections
 
 - [`inventory.md`](inventory.md): the evidence, with [`probes/`](probes/)
-  (31 programs, `capture.sh`, four sweep scripts).
+  (`capture.sh`, four sweep scripts, and the eleven programs no register row
+  names). The twenty that are witnesses were banked at S1e2.1.1, eighteen
+  under [`examples/ein-bugs/wrong-answers/`](../../examples/ein-bugs/wrong-answers/)
+  and two under `corpus/fuzz_findings/`.
+- [`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml): the
+  register — every case's witnesses, wrong runs and right answers as data,
+  held by `ein-cli/tests/wrong_answers.rs`.
 - [M1e](../../docs/history/m1e_review_processing/README.md): where most of these were found
   and filed.
 - [`docs/kernel/inference/solution_semantics.md`](../../docs/kernel/inference/solution_semantics.md):

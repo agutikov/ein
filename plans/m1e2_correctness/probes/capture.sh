@@ -5,6 +5,8 @@ set -u
 R="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 E="${EIN_BIN:-$R/ein.rs/target/release/ein}"
 S="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# The witnesses were banked at S1e2.1.1 — corpus/wrong_answers.toml is their register.
+B="$R/examples/ein-bugs/wrong-answers"
 O="${OUT:-$R/build/m1e2_probes}"   # build/ is gitignored
 mkdir -p $O
 cd $R
@@ -34,47 +36,47 @@ run W1 $E solve -e -s examples/branching/15_lookahead_two_step_on.ein
 run W1 $E solve -e -s examples/branching/16_lookahead_two_step_off.ein
 run W1 $E solve -e -s -L examples/lattice/02_genuine_3set_death.ein
 run W1 $E solve -e -s examples/lattice/02_genuine_3set_death.ein
-run W1 $E solve -e -s -p $S/forced-2-two.ein
-run W1 $E solve -e -s -p $S/forced-1-two.ein
-run W1 $E solve -e -s $S/owed-two-step.ein
-run W1 $E solve -e -s $S/tree-dead.ein
+run W1 $E solve -e -s -p $B/forced-2-two.ein
+run W1 $E solve -e -s -p $B/forced-1-two.ein
+run W1 $E solve -e -s $B/owed-two-step.ein
+run W1 $E solve -e -s $B/tree-dead.ein
 
 # W2 — forced-positive cascade asserts a refutable singleton
-run W2 $E solve -e -s -p $S/forced-2.ein
-run W2 $E solve -e -s -p $S/forced-2-off.ein
-run W2 $E solve -e -s -p -L $S/forced-1.ein
-run W2 $E solve -e -s -p $S/forced-1.ein
+run W2 $E solve -e -s -p $B/forced-2.ein
+run W2 $E solve -e -s -p $B/forced-2-off.ein
+run W2 $E solve -e -s -p -L $B/forced-1.ein
+run W2 $E solve -e -s -p $B/forced-1.ein
 
 # W3 — dead not upward-closed under absent (Q-M1e.9)
 run W3 $E solve -e -s -P examples/ein-bugs/naf-upward-closure.ein
 run W3 $E solve -e -s -P -K examples/ein-bugs/naf-upward-closure.ein
-run W3 $E solve -e -s -P -L $S/naf-nowb.ein
+run W3 $E solve -e -s -P -L $B/naf-nowb.ein
 
 # W4 — fresh name unreachable (Q-M1e.21)
-run W4 $E solve -e -s -P $S/fresh-name-default.ein
+run W4 $E solve -e -s -P $B/fresh-name-default.ein
 run W4 $E solve -e -s -P examples/ein-bugs/alive-set-fresh-name.ein
 run W4 $E solve -e -s -P examples/ein-bugs/alive-set-fresh-name-declared.ein
-run W4 $E solve -e -s -P $S/fresh-name-nospawn.ein
+run W4 $E solve -e -s -P $B/fresh-name-nospawn.ein
 
 # W5 — obligations rung + lattice: superset of a recorded model recorded, order-dependent
-run W5 $E solve -e -s -P $S/owed-seats.ein
-envrun W5 EIN_TRAVERSAL=tree $E solve -e -s -P $S/owed-seats.ein
-run W5 $E solve -e -s -P $S/owed-seats-renamed.ein
+run W5 $E solve -e -s -P $B/owed-seats.ein
+envrun W5 EIN_TRAVERSAL=tree $E solve -e -s -P $B/owed-seats.ein
+run W5 $E solve -e -s -P $B/owed-seats-renamed.ein
 
 # W6 — uncovered relation (M1d #4)
-run W6 $E solve -e -s -P $S/uncovered.ein
-run W6 $E solve -e -s -P $S/uncovered-knows.ein
-run W6 $E solve -e -s -H $S/arity3.ein
+run W6 $E solve -e -s -P $B/uncovered.ein
+run W6 $E solve -e -s -P $B/uncovered-knows.ein
+run W6 $E solve -e -s -H $B/arity3.ein
 
 # W7 — binding key (Q-M1e.16)
-run W7 $E saturate --dump $S/binding-key-both.ein
-run W7 $E saturate --dump $S/binding-key-swapped.ein
+run W7 $E saturate --dump corpus/fuzz_findings/binding-key-layout.ein
+run W7 $E saturate --dump corpus/fuzz_findings/binding-key-layout-swapped.ein
 run W7 $E saturate --dump $S/binding-key-nested-only.ein
 
 # W8 — a NAF-derived positive survives the commitment that falsifies its guard
 run W8 $E solve -e -s -P examples/features/07_unstratifiable.ein
-run W8 $E solve -e -s -P $S/f07-fpoff.ein
-run W8 $E solve -e -s -p $S/stale-naf-fork-warn.ein
+run W8 $E solve -e -s -P $B/f07-fpoff.ein
+run W8 $E solve -e -s -p $B/stale-naf-fork-warn.ein
 
 # W9 — -K
 run W9 $E solve -e -s -P -K examples/ein-bugs/complete-records-stale.ein

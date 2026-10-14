@@ -1,0 +1,20 @@
+;;; `owed-seats.ein` with **Ann renamed Zed**, and nothing else — the twin that
+;;; makes M1e2 **W5** an order dependence rather than only a wrong count.
+;;; Register row `W5/owed-seats`, as a twin.
+;;;
+;;; The lattice answers k = 3 here too, but its third model is
+;;; `{(seats Bob C1), (seats Bob C2), (seats Zed C1)}` — mapped back, Bob on
+;;; both chairs and Ann on C1, where the original file's third model put **Ann**
+;;; on both chairs. Renaming a constant changes which superset the name-sorted
+;;; prefix join builds, so it changes the model set. A model set that moves
+;;; under a renaming is wrong under every reading of Q-M1e2.1.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+(import std.algebra :symbols (total-owed surjective-owed))
+(relation is-a   T T)
+(relation seats  Guest Chair)
+(is-a Zed Guest) (is-a Bob Guest)
+(is-a C1 Chair)  (is-a C2 Chair)
+(total-owed      seats is-a)
+(surjective-owed seats is-a)
+(query :goal (seats ?g ?c))

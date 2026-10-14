@@ -1,0 +1,25 @@
+;;; Two candidates, each refuted in ONE firing — the control for
+;;; `forced-2-two.ein` (M1e2 **W1**, register row `W1/forced-2-two`).
+;;;
+;;; The two files have the same objects, the same candidates and the same
+;;; logical content: every `(q ?x)` is refuted. They differ only in how many
+;;; firings the refutation takes — one here, two there — and that is the whole
+;;; difference between the right answer and a certified false refutation.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────────
+;;;
+;;; Root is consistent and every hypothesis dies with it, so root is the one
+;;; solution (Q-M1e.6, clause 3): **`Solution`, k = 1, a model with no `q`.**
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;; `Solution` k = 1 — right. The pre-branch lookahead sees each death (one
+;;; firing is what it simulates), caches `(not (q one))` and `(not (q two))`,
+;;; `alive` is empty, and root is recorded.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+(relation thing T)
+(relation q T)
+(thing one) (thing two)
+(rule no-q () :match (q ?x) :assert (false) :priority 300)
+(query :goal (thing ?x))

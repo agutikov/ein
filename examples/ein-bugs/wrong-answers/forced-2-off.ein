@@ -1,0 +1,29 @@
+;;; `forced-2.ein` with the forced-positive cascade OFF — M1e2 **W1** at layer
+;;; 0, reached once W2's mechanism is out of the way. Register row
+;;; `W1/forced-2-off` (`corpus/wrong_answers.toml`).
+;;;
+;;; Below this header the file is `forced-2.ein` plus the one `(config …)`
+;;; line. The answer by hand is the same: **`Solution`, k = 1, a model with no
+;;; `q` fact** — root is consistent and its one hypothesis dies.
+;;;
+;;; ── What the engine says ───────────────────────────────────────────────────
+;;;
+;;;   verdict         No solution — the constraints are contradictory
+;;;   unsat core (1 facts)   (q one)
+;;;   exhausted        true
+;;;   enterings        1 (dead_post=1)
+;;;
+;;; With no cascade, `(q one)` is entered at layer 1 and dies. Every layer-1
+;;; singleton is dead, so `phase2` breaks on an empty `a_layer` without asking
+;;; whether root is now complete, and `finalise` unions the dead cores into a
+;;; `Contradiction` — the core is a *hypothesis*, not a program fact.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
+(config :enable-forced-positive false)
+(relation thing T)
+(relation q T)
+(relation bad T)
+(thing one)
+(rule taint () :match (q ?x)   :assert (bad ?x) :priority 200)
+(rule kill  () :match (bad ?x) :assert (false)  :priority 300)
+(query :goal (thing ?x) :no-hypothesis (bad))

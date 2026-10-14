@@ -11,6 +11,10 @@ invocations each one is exercised under.
   and [`tests/README.md`](../tests/README.md) says why a stdlib conformance
   program is not an example.
 - **`fuzz_findings/`** — minimised inputs a fuzzer found something on.
+- **`wrong_answers.toml`** — the register of known wrong answers
+  ([M1e2](../plans/m1e2_correctness/README.md) S1e2.1.1): one row per witness,
+  with the engine's answer today and the right one, as data. Its header is the
+  format.
 
 This directory was `conformance/` until M1a
 [S1a.10.3](../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine).
@@ -33,6 +37,7 @@ Everything is `cargo test`; nothing shells out to a second engine.
 | [`ein-render/tests/id_order_invariance.rs`](../ein.rs/crates/ein-render/tests/id_order_invariance.rs) | runs the same sweep twice under a permuted id space |
 | [`ein-render/tests/jobs_invariance.rs`](../ein.rs/crates/ein-render/tests/jobs_invariance.rs) | runs the same sweep again at `--jobs N` — M1a T1a.7.5.3, `EIN_JOBS_SWEEP` for the job counts |
 | [`ein-cli/tests/summary_properties.rs`](../ein.rs/crates/ein-cli/tests/summary_properties.rs) | the counter identities, over every `solve` cell |
+| [`ein-cli/tests/wrong_answers.rs`](../ein.rs/crates/ein-cli/tests/wrong_answers.rs) | **the wrong-answer register**, [`wrong_answers.toml`](wrong_answers.toml) (M1e2 S1e2.1.1): one row per witness of every known wrong answer, holding each to the answer it gives today — the wrong one while `open`, the right one once `fixed`. Every witness is a manifest entry or a file under `fuzz_findings/`, which `ein-corpus`'s `register` module checks without a run |
 
 The last four walk the *files* (`ein_corpus::corpus_files`) rather than the
 manifest's rows, because their subject is a surface rather than an invocation.

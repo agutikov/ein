@@ -1,3 +1,14 @@
+;;; `uncovered.ein` plus one fact, `(knows Ann Bob)` — the twin that shows what
+;;; M1e2 **W6**'s certification leaves out. Register row `W6/uncovered`, as a
+;;; twin.
+;;;
+;;; The engine answers k = 3, `exhausted = true` here as well, and each of the
+;;; three states carries `(knows Ann Bob)` and the derived `(knows Bob Ann)`.
+;;; Those three are consistent states of `uncovered.ein` too — a `knows` fact
+;;; is something its rung never proposes — so the original file's exhausted
+;;; `k = 3` is exhaustive over `alive₀`, not over the program.
+;;;
+;;; Banked from M1e2's probes at S1e2.1.1.
 (import std.algebra :symbols (total-owed surjective-owed))
 
 (relation is-a   T T         :why "{?1} is a {?2}")
@@ -21,3 +32,4 @@
   :priority 100)
 
 (query :goal (seats ?g ?c))
+(knows Ann Bob)
