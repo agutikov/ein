@@ -123,6 +123,12 @@ def drive(spec: RunSpec, out: Path, bin: str) -> list[Invocation]:
             invs.append(run(f"render-{stem.replace('/', '-')}",
                             [bin, "render", "kb", str(answer / f"{stem}.ein"),
                              "--since", str(answer / "root.ein")]))
+    # Every layer's root after it, with what the layer added in bold — the
+    # snapshots load as programs since M1e2 S1e2.1.7.
+    for post in sorted((raw / "states" / "layers").glob("layer_*_post.ein")):
+        pre = post.with_name(post.name.replace("_post", "_pre"))
+        argv = [bin, "render", "kb", str(post)] + (["--since", str(pre)] if pre.exists() else [])
+        invs.append(run(f"render-{post.stem}", argv, timeout=120))
     version = run("version", [bin, "--version"])
     commit = run("git", ["git", "rev-parse", "HEAD"])
     dirty = run("git-status", ["git", "status", "--porcelain"])
@@ -486,10 +492,16 @@ def states_pages(p: Pages, lat: dict[str, Path]) -> list[dict]:
                 for r, fs in by_relation(facts).items():
                     lines += [f"- `{r}` ({len(fs)}): " + ", ".join(f"`{f}`" for f in fs)]
                 lines.append("")
-        lines += ["## The snapshots", "",
-                  "Not drawn: `--dump-states` writes both of a relation's schema facts and no rules, and the "
-                  "loader refuses the file (*duplicate relation* — M1e2 S1e2.1.1). The graphs of the states the "
-                  "answer holds are on the [answer page](../answer.md).", ""]
+        lines += ["## The snapshots", ""]
+        inv = p.inv.get(f"render-layer_{n:02d}_post")
+        if inv and inv.code == 0:
+            for name, svg in p.dot_stream(inv.stdout, f"layer_{n:02d}"):
+                lines += ["**Root after the layer, what the layer added in bold**, "
+                          "`ein render kb layer_NN_post.ein --since layer_NN_pre.ein`:", "",
+                          *image(svg, page, f"layer {n}")]
+        elif inv:
+            lines += [f"`ein render kb` exited {inv.code} on the post snapshot: "
+                      f"`{(inv.stderr.strip().splitlines() or [''])[0]}`", ""]
         for title, path in (("pre", pre), ("post", post)):
             facts = snapshot_facts(path)
             lines += details(f"{title}: {len(facts)} facts",

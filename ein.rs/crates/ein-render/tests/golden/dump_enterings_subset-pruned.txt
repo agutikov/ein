@@ -221,15 +221,9 @@ alive
 === enterings/layer_03/proposed_a+proposed_c+proposed_d/kb.ein
 (relation is-a T T)
 
-(relation is-a)
-
 (relation proposed T)
 
-(relation proposed)
-
 (relation incompat T T)
-
-(relation incompat)
 
 (symmetric incompat)
 
@@ -281,15 +275,9 @@ solution
 === enterings/layer_03/proposed_b+proposed_c+proposed_d/kb.ein
 (relation is-a T T)
 
-(relation is-a)
-
 (relation proposed T)
 
-(relation proposed)
-
 (relation incompat T T)
-
-(relation incompat)
 
 (symmetric incompat)
 

@@ -1054,6 +1054,10 @@ dump/<puzzle>-<ts>/
    summary.json                  ← final stats + verdict
 ```
 
+Each `.ein` snapshot is the state's facts and loads as a program
+(`ein-render/tests/dump_states_load.rs`), so `ein render kb
+layer_NN_post.ein --since layer_NN_pre.ein` draws what a layer wrote to root.
+
 Six lifecycle hooks (`root_initial`, `layer_start`, `entering`,
 `layer_end`, `early_terminate`, `summary`) fire from the
 backbone; `dumper=None` is a no-op for every hook site. The

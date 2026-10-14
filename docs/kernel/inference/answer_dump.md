@@ -85,6 +85,9 @@ each with the provenance keyword it carries (`:rule`, `:source`,
 repeated, because the loader refuses a second one. So the file **loads as a
 program**, and saturating it **derives no fact and no `(false)`**. It holds
 exactly the recorded state and is a fixpoint of the rules that produced it.
+The keywords are for the reader: the loader reads `:source "…"` back, but
+takes `:rule` only as an atom and has no `:hypothesis`, so a reloaded fact
+keeps its identity and reads as given.
 
 That is the check for the class M1e's
 [`CO-M1`](../../history/m1e_review_processing/README.md#the-findings) fixed: a
@@ -104,11 +107,14 @@ verdict and `k` for **42 of 42**. It is a measurement and not a test, because
 the generator proposes again on a loaded state.
 `plans/m1e2_correctness/probes/answer_resolve.py` takes it again.
 
-**`--dump-states`' snapshots are not this.** Its `00_root_initial.ein` and
-`layers/layer_NN_{pre,post}.ein` write both of a relation's schema facts
-(`(relation R T…)` and `(relation R)`) and no rules, and the loader refuses
-them: *duplicate relation*. Found at S1e2.1.1. They are snapshots to read,
-not programs to load.
+**`--dump-states`' and `--dump-lattice`'s snapshots are a lesser thing.**
+`00_root_initial.ein`, `layers/layer_NN_{pre,post}.ein` and each entering's
+`kb.ein` carry the state's facts and no rules. They load, and reload to the
+same facts (`ein-render/tests/dump_states_load.rs`, since S1e2.1.7; before it
+they wrote a typed declaration's arity-1 companion `(relation R)` too, and the
+loader refused it as a second declaration), so `ein render kb` draws them. With
+no rules, saturating one derives nothing whether or not it is a fixpoint of
+the program.
 
 ## The contract
 

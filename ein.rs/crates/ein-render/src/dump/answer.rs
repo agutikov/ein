@@ -178,9 +178,8 @@ pub struct AnswerInputs<'a> {
 /// Is `f` one of a relation's schema facts, `(relation R …)`?
 ///
 /// The program text at the head of a state file declares every relation, and
-/// the loader refuses a second declaration — which is why `--dump-states`'
-/// snapshots, which write both `(relation R T…)` and `(relation R)`, do not
-/// load (found at S1e2.1.1). A state file leaves them to the program.
+/// the loader refuses a second declaration, so a state file leaves them to the
+/// program.
 fn is_schema(terms: &Terms, f: FactId) -> bool {
     let (rel, _) = terms.fact(f);
     terms.sym(rel) == "relation"

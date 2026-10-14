@@ -79,22 +79,41 @@ fn fact_to_sform(scratch: &mut Ast, terms: &Terms, kb: Option<&Kb>, f: FactId) -
             ProvKind::Rejected => {}
         }
     }
-    // The provenance *is* the origin, so the dump → reload round trip is
-    // exact by construction rather than by patching.
+    // The keyword records the origin for a reader. A reload keeps the fact and
+    // not always the origin: the loader reads `:source "…"`, takes `:rule` only
+    // as an atom, and has no `:hypothesis` (`dump_states_load.rs`).
     let name = scratch.intern(terms.sym(rel));
     let head = scratch.push(Node::Atom(name), None);
     scratch.sform(head, &children, None)
 }
 
-/// A KB as a **flat** sequence of ein forms.
+/// A KB as a **flat** sequence of ein forms, which loads as a program.
 ///
 /// The block wrappers are gone: each fact is a top-level form and where it
 /// came from rides on its provenance. Un-annotated facts are emitted first
 /// purely for readability; the round trip is order-independent.
+///
+/// A typed declaration `(relation R T…)` is stored with an arity-1 companion
+/// `(relation R)`, which the loader adds itself on reading the declaration
+/// and refuses as a second one if the file states it. So the companion is left
+/// out wherever its declaration is written, and the file loads back to the
+/// same facts (`dump_states_load.rs`).
 pub fn kb_to_ein_text(kb: &Kb, terms: &Terms) -> String {
+    let relation = terms.kernel.relation;
+    let typed: rustc_hash::FxHashSet<Value> = kb
+        .facts()
+        .filter_map(|f| {
+            let (rel, args) = terms.fact(f);
+            (rel == relation && args.len() > 1).then(|| args[0])
+        })
+        .collect();
+    let companion = |f: FactId| {
+        let (rel, args) = terms.fact(f);
+        rel == relation && args.len() == 1 && typed.contains(&args[0])
+    };
     let mut scratch = Ast::new();
     let (mut ont, mut rest): (Vec<NodeId>, Vec<NodeId>) = (Vec::new(), Vec::new());
-    for f in kb.facts() {
+    for f in kb.facts().filter(|&f| !companion(f)) {
         let node = fact_to_sform(&mut scratch, terms, Some(kb), f);
         // Given is a `:source`-kind with a source; derived is any non-source
         // kind. Everything else is ontology and goes first.
