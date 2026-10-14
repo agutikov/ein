@@ -365,8 +365,9 @@ fn solution_block(ast: &Ast, terms: &mut Terms, kb: &Kb, header: &str) -> Vec<St
 /// ein.py, and — since M1d
 /// [S1d.3.3](../../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)
 /// — an `Ambiguity`'s, which is the one that needed it most. `models`
-/// chooses the model *set*'s projection ([`crate::models::ModelsForm`]) and
-/// is read by the `Ambiguity` arm alone.
+/// chooses the model *set*'s projection ([`crate::models::ModelsForm`]):
+/// `Key` is read by the `Ambiguity` arm alone, and `Grid` (M1e2 S1e2.1.4) by
+/// every arm that prints a state.
 #[allow(clippy::too_many_arguments)]
 pub fn render_solution_table(
     ast: &Ast,
@@ -418,6 +419,10 @@ pub fn render_solution_table(
             lines.push(String::new());
             let block = solution_block(ast, terms, &s.kb, "");
             lines.extend(block);
+            if models == crate::models::ModelsForm::Grid {
+                lines.push(String::new());
+                lines.extend(crate::grid::grid_or_reason(terms, &s.kb, "  "));
+            }
         }
         Answer::Verdict(Verdict::Ambiguity(branches)) => {
             // One word, and it is the whole of the rule's second row: *these
@@ -459,6 +464,10 @@ pub fn render_solution_table(
                     let header = format!("model {}/{}", i + 1, branches.len());
                     let block = solution_block(ast, terms, &branches[i].kb, &header);
                     lines.extend(block);
+                    if models == crate::models::ModelsForm::Grid {
+                        lines.push(String::new());
+                        lines.extend(crate::grid::grid_or_reason(terms, &branches[i].kb, "  "));
+                    }
                 }
             }
         }
@@ -551,6 +560,12 @@ pub fn render_solution_table(
                 };
                 let block = solution_block(ast, terms, &states[i].kb, &header);
                 lines.extend(block);
+                // An open state's grid is the clearest picture `Open` has: the
+                // empty cell is the debt the owes line above names.
+                if models == crate::models::ModelsForm::Grid {
+                    lines.push(String::new());
+                    lines.extend(crate::grid::grid_or_reason(terms, &states[i].kb, "  "));
+                }
             }
         }
         other => {

@@ -231,7 +231,7 @@ explicit audience banner.
   structural "where does X live?" map: data-flow, crate
   dependencies, milestone boundaries, and a change cookbook.
 - **Configuration**: [`configuration.md`](configuration.md) — every knob, on
-  all three surfaces: the 17 `(config …)` flags, the 60 CLI options, the
+  all three surfaces: the 17 `(config …)` flags, the 61 CLI options, the
   `EIN_*` environment, and the precedence between them. Each flag row carries
   its default, what it changes, **whether it changes the answer**, and how far
   it may be depended on. The defaults block is `ein solve --dump-config`'s own

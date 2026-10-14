@@ -95,27 +95,12 @@ fn model(solved: &Solved) -> &Kb {
     }
 }
 
-/// The Wikipedia answer, as the 25 `(attribute, house)` cells — vocabulary
-/// independent, which is the whole point of checking two encodings against it.
-const GRID: [(&str, [&str; 5]); 5] = [
-    ("House-1", ["Yellow", "Norwegian", "Kools", "Water", "Fox"]),
-    (
-        "House-2",
-        ["Blue", "Ukrainian", "Chesterfields", "Tea", "Horse"],
-    ),
-    (
-        "House-3",
-        ["Red", "Englishman", "Old_Gold", "Milk", "Snail"],
-    ),
-    (
-        "House-4",
-        ["Ivory", "Spaniard", "Lucky_Strike", "Juice", "Dog"],
-    ),
-    (
-        "House-5",
-        ["Green", "Japanese", "Parliament", "Coffee", "Zebra"],
-    ),
-];
+// The Wikipedia answer, as the 25 `(attribute, house)` cells — vocabulary
+// independent, which is the whole point of checking two encodings against it.
+// Lives in `ein-corpus` since M1e2 S1e2.1.4, because `ein solve --models grid`
+// is held to the same 25 cells (`ein-cli/tests/models_grid.rs`): the solver
+// and the renderer checked against one independent source.
+use ein_corpus::ZEBRA_GRID as GRID;
 
 /// `co-located` is symmetric, so either argument order counts.
 fn co_located(kb: &Kb, terms: &Terms, a: &str, b: &str) -> bool {

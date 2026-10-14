@@ -15,6 +15,15 @@ are written against.
 **Source:** the user's note of 2026-08-28 — *"make `:why` or other →NL
 conversion string/template mandatory, so every fact, match, every Ein statement
 can be converted to NL."*
+**The non-NL half exists** since M1e2
+[S1e2.1.4](../../m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.4_a_model_you_can_read.md):
+`ein solve --models grid` renders a model as the table a person would draw,
+and **the rule that picks the row type is written once**, in
+[`ein-render/src/grid.rs`](../../../ein.rs/crates/ein-render/src/grid.rs)'s
+module note (a `slot-partition`, or the type the most `functional` /
+`injective` columns give one value to, never `T`). A sentence per row of that
+grid is the shape this stage's NL read-out of a model would take, and it should
+cite that rule rather than choose a second anchor.
 
 ---
 

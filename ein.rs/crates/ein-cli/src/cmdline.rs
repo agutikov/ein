@@ -479,13 +479,27 @@ fn solve_command() -> Command {
             Arg::new("models")
                 .long("models")
                 .value_name("FORM")
-                .value_parser(PossibleValuesParser::new(["list", "key"]))
+                .value_parser(PossibleValuesParser::new(["list", "key", "grid"]))
                 .default_value("list")
                 .help(
-                    "how to print a model SET: 'list' (a block per model, the \
-                     default) or 'key' (the smallest set of slots that tells \
-                     them apart, and the table of combinations that occur). \
-                     Read by an ambiguous verdict only; changes stdout and \
+                    "how to print the models: 'list' (a block per model, the \
+                     default); 'key' (the smallest set of slots that tells \
+                     them apart, and the table of combinations that occur — an \
+                     ambiguous verdict only); 'grid' (each model and open \
+                     state as a table, the anchor type's objects down the \
+                     side, where the program's declarations license one). \
+                     Changes stdout and nothing recorded",
+                ),
+        )
+        .arg(
+            Arg::new("diff-models")
+                .long("diff-models")
+                .value_name("FILE")
+                .help(
+                    "after the answer, compare its models with the ones FILE \
+                     lists ('closes R …', then 'model' and one fact per line) \
+                     and print what matches, what is missing, what is \
+                     spurious and what is one fact off. Changes stdout and \
                      nothing recorded",
                 ),
         )

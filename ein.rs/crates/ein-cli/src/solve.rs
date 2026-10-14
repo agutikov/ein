@@ -486,6 +486,7 @@ fn sorted_model(terms: &Terms, kb: &Kb) -> Vec<String> {
 fn models_form(m: &clap::ArgMatches) -> ModelsForm {
     match m.get_one::<String>("models").map(String::as_str) {
         Some("key") => ModelsForm::Key,
+        Some("grid") => ModelsForm::Grid,
         _ => ModelsForm::List,
     }
 }
@@ -646,6 +647,21 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
     // cannot make it cannot do what it was asked. Everything after this — the
     // files themselves — is written once the answer exists, and a failure
     // there leaves the exit code alone like the additive four.
+    // `--diff-models FILE` is read before the search, so a file it cannot
+    // read is a usage error and nothing runs.
+    let expected = match m.get_one::<String>("diff-models") {
+        None => None,
+        Some(path) => match std::fs::read_to_string(path)
+            .map_err(|e| e.to_string())
+            .and_then(|t| ein_render::models::parse_expected(&t))
+        {
+            Ok(e) => Some((path.clone(), e)),
+            Err(e) => {
+                eprintln!("error: --diff-models {path}: {e}");
+                return (2, n_queries);
+            }
+        },
+    };
     let answer_dir = m.get_one::<String>("dump-answer").cloned();
     let answer_program = match answer_dir.as_deref() {
         None => None,
@@ -776,6 +792,9 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
     };
     println!("{table}");
     print_final(&ast, &terms, &kb, &solved.answer, m);
+    if let Some((path, want)) = &expected {
+        print_model_diff(&terms, &solved.answer, path, want);
+    }
     if m.get_flag("stats") {
         printers::print_stats(&solved.stats, elapsed_ms);
         // Only when a fan-out was possible. At the default `--jobs 1` the
@@ -853,6 +872,55 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
         ),
         n_queries,
     )
+}
+
+/// `--diff-models` — the answer's states against the ones a file lists
+/// (M1e2 S1e2.1.4). The comparison is `ein_render::models::diff_model_sets`;
+/// what is compared is said on the block's first line, because "the model"
+/// has two definitions and a reader has to know which one matched.
+fn print_model_diff(
+    terms: &Terms,
+    answer: &Answer,
+    path: &str,
+    want: &ein_render::models::Expected,
+) {
+    use ein_render::models::{comparable_facts, diff_lines, diff_model_sets};
+    let (kind, states): (&str, Vec<&Kb>) = match answer {
+        Answer::Verdict(Verdict::Solution(s)) => ("model", vec![&s.kb]),
+        Answer::Verdict(Verdict::Ambiguity(bs)) => ("model", bs.iter().map(|b| &b.kb).collect()),
+        Answer::Verdict(Verdict::Open { states, .. }) => {
+            ("open state", states.iter().map(|b| &b.kb).collect())
+        }
+        _ => ("model", Vec::new()),
+    };
+    let closes = want.closes.as_deref();
+    let got: Vec<Vec<String>> = states
+        .iter()
+        .map(|kb| comparable_facts(terms, kb, closes))
+        .collect();
+    let diff = diff_model_sets(&got, &want.models);
+    let what = match closes {
+        Some(c) => format!("models against {path}, compared over {}", c.join(" ")),
+        None => format!("models against {path}, compared as positive facts minus the given ones"),
+    };
+    let n = got.len();
+    let got_label = |i: usize| format!("{kind} {}/{n}", i + 1);
+    let want_label = |j: usize| {
+        let facts = &want.models[j];
+        format!(
+            "model {} of the file [{}]",
+            j + 1,
+            if facts.is_empty() {
+                "no facts".to_string()
+            } else {
+                facts.join(" ")
+            }
+        )
+    };
+    println!();
+    for line in diff_lines(&diff, &what, &got_label, &want_label, "") {
+        println!("{line}");
+    }
 }
 
 /// One summary, built once, to the two places that can want it:

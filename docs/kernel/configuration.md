@@ -29,7 +29,7 @@
 | surface | how many | who owns the list |
 |---|---:|---|
 | `(config …)` flags | **17** | `FIELDS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs); the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **60** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| CLI options | **61** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **8** read by the shipped binary, of 29 greppable names | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -292,12 +292,12 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**60** options across thirteen parsers, in the default build (`einb`,
+**61** options across thirteen parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 34 |
+| `ein solve` | 35 |
 | `ein test` | 9 |
 | `ein saturate` | 5 |
 | `ein render kb` | 4 |
@@ -309,7 +309,7 @@ parallel copy. What this page states is the *shape*, read off that golden:
 
 `ein`, `ein kb`, `ein render` and `ein render constraints` take none — they are
 dispatchers. `ein kb save` exists only under the `einb` feature; a
-`--no-default-features` build has 59 and no `ein kb` at all.
+`--no-default-features` build has 60 and no `ein kb` at all.
 
 ### 3.2 The six options that shadow a flag
 
@@ -367,9 +367,14 @@ Five classes. Only the first two touch the answer.
   contract, and pinned by `ein-render/tests/jobs_invariance.rs`. The default is
   1 and stays 1.
 - **Presentation** — `-p`, `-P`, `-f`, `-s`, `-t`, `-v`, `-H`, `-c`, `-g`,
-  `--layer-progress`, `--models`, and `ein render program`'s / `ein render
-  kb`'s six (M1e2 S1e2.1.3), which draw a file and solve nothing. stdout and
-  stderr only. `--models key` is
+  `--layer-progress`, `--models` (`list`, `key`, and since M1e2 S1e2.1.4
+  `grid` — each model as the table a person would draw, where `slot-partition`
+  or a `functional` / `injective` declaration licenses one, and one line
+  saying why not where nothing does), `--diff-models FILE` (S1e2.1.4: the
+  models against a listed set — matched, missing, spurious, one fact off), and
+  `ein render program`'s / `ein render kb`'s six (S1e2.1.3), which draw a file
+  and solve nothing. stdout and stderr only; a `--diff-models` file that does
+  not parse is a usage error, exit 2, before the search. `--models key` is
   read by the `Ambiguity` arm alone and reaches nothing recorded — not the
   model list, not `--json-summary`, not `--events`, not `:expect`.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary`,

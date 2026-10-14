@@ -47,9 +47,9 @@ use ein_corpus::{golden, golden_path};
 const EXPECTED: [(&str, usize); 10] = [
     ("COMMAND ein\n", 0),
     // 29 of ein.py's, plus P1a.7's `--jobs`, M1d S1d.3.3's `--models`,
-    // M1d P1d.10's `--layer-progress` and M1e2's `--dump-answer` (S1e2.1.2)
-    // and `--dump-lattice` (S1e2.1.3).
-    ("COMMAND ein solve\n", 34),
+    // M1d P1d.10's `--layer-progress` and M1e2's `--dump-answer` (S1e2.1.2),
+    // `--dump-lattice` (S1e2.1.3) and `--diff-models` (S1e2.1.4).
+    ("COMMAND ein solve\n", 35),
     ("COMMAND ein saturate\n", 5),
     ("COMMAND ein render\n", 0),
     ("COMMAND ein render rules\n", 1),
@@ -106,13 +106,13 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        39 + 5
+        39 + 6
             + 6
             + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "39 options across ein.py's eight parsers, plus five later `solve` \
+        "39 options across ein.py's eight parsers, plus six later `solve` \
          options (`--jobs`, `--models`, `--layer-progress`, `--dump-answer`, \
-         `--dump-lattice`), `render program`'s two and `render kb`'s four, \
+         `--dump-lattice`, `--diff-models`), `render program`'s two and `render kb`'s four, \
          `ein test`'s nine and `ein kb save --saturate` — none of which \
          ein.py has"
     );
@@ -120,7 +120,7 @@ fn the_extractor_finds_the_whole_surface() {
 
 /// **The whole rendering, checked in.**
 ///
-/// Every option of every parser — 60 across thirteen at M1e2 S1e2.1.3, the count
+/// Every option of every parser — 61 across thirteen at M1e2 S1e2.1.4, the count
 /// [`the_extractor_finds_the_whole_surface`] holds — each with its short key, metavar, arity,
 /// default, choices, group and help — the same text the diff against
 /// `argparse` consumed, blessed from a tree where that diff was green. A flag

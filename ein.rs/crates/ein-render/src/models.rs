@@ -61,6 +61,10 @@ pub enum ModelsForm {
     #[default]
     List,
     Key,
+    /// Each model as the grid a person would draw, where the program licenses
+    /// one — M1e2 S1e2.1.4, [`crate::grid`]. Read by every arm that prints a
+    /// state, `Solution` and `Open` included.
+    Grid,
 }
 
 /// **The search budget, in recursion nodes** — the whole of what stands
@@ -744,4 +748,308 @@ fn group(n: u128) -> String {
         out.push(c);
     }
     out
+}
+
+// ── two model sets, compared — M1e2 S1e2.1.4 ─────────────────────────
+
+/// One recorded model that nearly matches an expected one: paired because they
+/// share most of their facts, and printed as the facts that differ — so a
+/// wrong model that is one fact off reads as *one wrong fact* rather than as a
+/// missing model beside an unrelated spurious one.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Near {
+    pub got: usize,
+    pub want: usize,
+    /// In the recorded model and not the expected one.
+    pub extra: Vec<String>,
+    /// In the expected model and not the recorded one.
+    pub lacking: Vec<String>,
+}
+
+/// How a recorded model set differs from an expected one.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct SetDiff {
+    /// `(got, want)` — equal as fact sets.
+    pub matched: Vec<(usize, usize)>,
+    pub near: Vec<Near>,
+    /// Expected models nothing recorded.
+    pub missing: Vec<usize>,
+    /// Recorded models nothing expected.
+    pub spurious: Vec<usize>,
+}
+
+impl SetDiff {
+    pub fn agrees(&self) -> bool {
+        self.near.is_empty() && self.missing.is_empty() && self.spurious.is_empty()
+    }
+}
+
+/// Compare two model sets, each model a list of facts.
+///
+/// **Equality first**, as a multiset: a model recorded twice against one
+/// expected once is one match and one spurious. **Then nearest** among what
+/// is left, by symmetric difference, greedily and smallest first, ties to the
+/// lower indices — paired only while the difference is at most half the
+/// larger model (and at least one fact), so two unrelated models stay a
+/// *missing* and a *spurious* rather than becoming a misleading pair.
+pub fn diff_model_sets(got: &[Vec<String>], want: &[Vec<String>]) -> SetDiff {
+    use std::collections::BTreeSet;
+    let g: Vec<BTreeSet<&str>> = got
+        .iter()
+        .map(|m| m.iter().map(String::as_str).collect())
+        .collect();
+    let w: Vec<BTreeSet<&str>> = want
+        .iter()
+        .map(|m| m.iter().map(String::as_str).collect())
+        .collect();
+    let mut out = SetDiff::default();
+    let mut g_free: Vec<bool> = vec![true; g.len()];
+    let mut w_free: Vec<bool> = vec![true; w.len()];
+    for (i, gi) in g.iter().enumerate() {
+        if let Some(j) = (0..w.len()).find(|&j| w_free[j] && w[j] == *gi) {
+            out.matched.push((i, j));
+            g_free[i] = false;
+            w_free[j] = false;
+        }
+    }
+    let mut pairs: Vec<(usize, usize, usize)> = Vec::new();
+    for i in (0..g.len()).filter(|&i| g_free[i]) {
+        for j in (0..w.len()).filter(|&j| w_free[j]) {
+            let d = g[i].symmetric_difference(&w[j]).count();
+            let bound = (g[i].len().max(w[j].len()) / 2).max(1);
+            if d <= bound {
+                pairs.push((d, i, j));
+            }
+        }
+    }
+    pairs.sort();
+    for (_, i, j) in pairs {
+        if g_free[i] && w_free[j] {
+            g_free[i] = false;
+            w_free[j] = false;
+            out.near.push(Near {
+                got: i,
+                want: j,
+                extra: g[i].difference(&w[j]).map(|s| s.to_string()).collect(),
+                lacking: w[j].difference(&g[i]).map(|s| s.to_string()).collect(),
+            });
+        }
+    }
+    out.near.sort_by_key(|n| n.got);
+    out.missing = (0..w.len()).filter(|&j| w_free[j]).collect();
+    out.spurious = (0..g.len()).filter(|&i| g_free[i]).collect();
+    out
+}
+
+/// An expected model set, as `--diff-models FILE` reads it.
+///
+/// ```text
+/// ;; a comment
+/// closes p q          compare over these relations only (optional)
+/// model
+/// (p A)
+/// (q A)
+/// model               a model with no fact over the closed relations
+/// ```
+///
+/// `closes` is `corpus/wrong_answers.toml`'s rule — naming a relation closes
+/// it — and is what lets a file say *one model with no `q`*. Without it a
+/// model is compared as its positive facts minus the program's given ones
+/// ([`solution_semantics.md` § 3](../../../../docs/kernel/inference/solution_semantics.md)).
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct Expected {
+    pub closes: Option<Vec<String>>,
+    pub models: Vec<Vec<String>>,
+}
+
+pub fn parse_expected(text: &str) -> Result<Expected, String> {
+    let mut out = Expected::default();
+    let mut current: Option<Vec<String>> = None;
+    for (n, raw) in text.lines().enumerate() {
+        let line = raw.trim();
+        if line.is_empty() || line.starts_with(';') {
+            continue;
+        }
+        if let Some(rest) = line.strip_prefix("closes") {
+            if out.closes.is_some() {
+                return Err(format!("line {}: a second `closes` line", n + 1));
+            }
+            out.closes = Some(rest.split_whitespace().map(str::to_string).collect());
+        } else if line == "model" {
+            if let Some(m) = current.take() {
+                out.models.push(m);
+            }
+            current = Some(Vec::new());
+        } else if line.starts_with('(') {
+            match current.as_mut() {
+                Some(m) => m.push(line.to_string()),
+                None => return Err(format!("line {}: a fact before the first `model`", n + 1)),
+            }
+        } else {
+            return Err(format!(
+                "line {}: expected `closes …`, `model` or a fact, got {line:?}",
+                n + 1
+            ));
+        }
+    }
+    if let Some(m) = current {
+        out.models.push(m);
+    }
+    for m in &mut out.models {
+        m.sort();
+    }
+    Ok(out)
+}
+
+/// A recorded state's facts the way an [`Expected`] compares them: over
+/// `closes` when it names relations, otherwise every positive fact that is not
+/// a given (`:source`) one and not a relation declaration.
+pub fn comparable_facts(terms: &Terms, kb: &Kb, closes: Option<&[String]>) -> Vec<String> {
+    let mut out: Vec<String> = kb
+        .facts()
+        .filter(|&f| {
+            let rel = terms.sym(terms.fact(f).0);
+            match closes {
+                Some(c) => c.iter().any(|r| r == rel),
+                None => {
+                    rel != "not"
+                        && rel != "relation"
+                        && kb
+                            .primary(f)
+                            .is_none_or(|p| terms.provs.get(p).kind != ein_core::ProvKind::Source)
+                }
+            }
+        })
+        .map(|f| ein_infer::events::sexpr(terms, f))
+        .collect();
+    out.sort();
+    out
+}
+
+/// The diff as lines: what it compared, then every disagreement by name.
+/// `got_label(i)` and `want_label(j)` say what each index is called.
+pub fn diff_lines(
+    diff: &SetDiff,
+    what: &str,
+    got_label: &dyn Fn(usize) -> String,
+    want_label: &dyn Fn(usize) -> String,
+    indent: &str,
+) -> Vec<String> {
+    let mut out = vec![format!("{indent}{what}")];
+    out.push(format!(
+        "{indent}  {} matched, {} near, {} missing, {} spurious — {}",
+        diff.matched.len(),
+        diff.near.len(),
+        diff.missing.len(),
+        diff.spurious.len(),
+        if diff.agrees() {
+            "the sets agree"
+        } else {
+            "the sets differ"
+        }
+    ));
+    for (i, j) in &diff.matched {
+        out.push(format!(
+            "{indent}  = {} is {}",
+            got_label(*i),
+            want_label(*j)
+        ));
+    }
+    for n in &diff.near {
+        out.push(format!(
+            "{indent}  ~ {} is nearly {}",
+            got_label(n.got),
+            want_label(n.want)
+        ));
+        for f in &n.lacking {
+            out.push(format!("{indent}      lacks {f}"));
+        }
+        for f in &n.extra {
+            out.push(format!("{indent}      has   {f}"));
+        }
+    }
+    for j in &diff.missing {
+        out.push(format!("{indent}  - missing: {}", want_label(*j)));
+    }
+    for i in &diff.spurious {
+        out.push(format!("{indent}  + spurious: {}", got_label(*i)));
+    }
+    out
+}
+
+#[cfg(test)]
+mod diff_tests {
+    use super::*;
+
+    fn s(v: &[&[&str]]) -> Vec<Vec<String>> {
+        v.iter()
+            .map(|m| m.iter().map(|f| f.to_string()).collect())
+            .collect()
+    }
+
+    #[test]
+    fn a_missing_model_is_named() {
+        let d = diff_model_sets(
+            &s(&[&["(p B)", "(p C)"]]),
+            &s(&[&["(p A)"], &["(p B)", "(p C)"]]),
+        );
+        assert_eq!(d.matched, [(0, 1)]);
+        assert_eq!(d.missing, [0]);
+        assert!(d.spurious.is_empty() && d.near.is_empty());
+    }
+
+    #[test]
+    fn a_spurious_model_is_named() {
+        let got = s(&[
+            &["(s A 1)", "(s B 2)"],
+            &["(s A 2)", "(s B 1)"],
+            &["(s A 1)", "(s A 2)", "(s B 1)"],
+        ]);
+        let want = s(&[&["(s A 1)", "(s B 2)"], &["(s A 2)", "(s B 1)"]]);
+        let d = diff_model_sets(&got, &want);
+        assert_eq!(d.matched.len(), 2);
+        assert_eq!(d.spurious, [2]);
+        assert!(d.missing.is_empty() && d.near.is_empty());
+    }
+
+    #[test]
+    fn a_model_one_fact_off_reads_as_one_wrong_fact() {
+        let d = diff_model_sets(&s(&[&["(q A)"]]), &s(&[&["(p A)", "(q A)"]]));
+        assert_eq!(
+            d.near,
+            [Near {
+                got: 0,
+                want: 0,
+                extra: vec![],
+                lacking: vec!["(p A)".to_string()],
+            }]
+        );
+        assert!(d.missing.is_empty() && d.spurious.is_empty());
+    }
+
+    #[test]
+    fn unrelated_models_are_not_paired() {
+        let d = diff_model_sets(&s(&[&["(p one)"]]), &s(&[&["(q one)"]]));
+        assert!(d.near.is_empty());
+        assert_eq!(
+            (d.missing.as_slice(), d.spurious.as_slice()),
+            (&[0][..], &[0][..])
+        );
+    }
+
+    #[test]
+    fn the_empty_model_is_a_model() {
+        let e = parse_expected("closes q\nmodel\n").expect("parses");
+        assert_eq!(e.closes.as_deref(), Some(&["q".to_string()][..]));
+        assert_eq!(e.models, vec![Vec::<String>::new()]);
+        assert!(diff_model_sets(&s(&[&[]]), &e.models).agrees());
+        assert_eq!(diff_model_sets(&[], &e.models).missing, [0]);
+    }
+
+    #[test]
+    fn the_file_format_refuses_what_it_cannot_read() {
+        assert!(parse_expected("(p A)\n").is_err());
+        assert!(parse_expected("model\np A\n").is_err());
+        assert!(parse_expected("closes p\ncloses q\n").is_err());
+    }
 }

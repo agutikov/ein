@@ -41,6 +41,7 @@ COMMAND ein render rules
   SUBCOMMAND saturate (delegated)
 COMMAND ein solve
   ABOUT solve a puzzle: print the solution(s) or the unsat core
+  OPTION --diff-models -- metavar=FILE arity=1 default=None choices=- group=- required=False help=after the answer, compare its models with the ones FILE lists ('closes R …', then 'model' and one fact per line) and print what matches, what is missing, what is spurious and what is one fact off. Changes stdout and nothing recorded
   OPTION --dump-answer -- metavar=DIR arity=1 default=None choices=- group=- required=False help=write the answer as files to DIR: the program, root, one loadable file per model and open state with the commitment that reached it, every refuted commitment, and answer.json (= --json-summary). DIR is made before the search; past that, stdout, stderr and the exit code are unchanged.
   OPTION --dump-config -c metavar=- arity=0 default=False choices=- group=- required=False help=print the resolved SolverConfig before solving
   OPTION --dump-lattice -- metavar=DIR arity=1 default=None choices=- group=- required=False help=persist every commitment the search tested, with its firings and outcome, to DIR (enterings/, proof_summary.json — docs/kernel/inference/lattice_dump.md). One dumper per solve, so not with --dump-states, -v, --layer-progress or -t
@@ -58,7 +59,7 @@ COMMAND ein solve
   OPTION --max-enterings -E metavar=MAX_ENTERINGS arity=1 default=None choices=- group=- required=False help=abort after N commitment tries
   OPTION --max-set-size -m metavar=MAX_SET_SIZE arity=1 default='5' choices=- group=- required=False help=commitment-set depth cap (default: 5)
   OPTION --max-time -T metavar=MAX_TIME arity=1 default=None choices=- group=- required=False help=abort after N wall-clock seconds
-  OPTION --models -- metavar=FORM arity=1 default='list' choices=list|key group=- required=False help=how to print a model SET: 'list' (a block per model, the default) or 'key' (the smallest set of slots that tells them apart, and the table of combinations that occur). Read by an ambiguous verdict only; changes stdout and nothing recorded
+  OPTION --models -- metavar=FORM arity=1 default='list' choices=list|key|grid group=- required=False help=how to print the models: 'list' (a block per model, the default); 'key' (the smallest set of slots that tells them apart, and the table of combinations that occur — an ambiguous verdict only); 'grid' (each model and open state as a table, the anchor type's objects down the side, where the program's declarations license one). Changes stdout and nothing recorded
   OPTION --no-diagrams -G metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) suppress all inline dot blocks
   OPTION --no-kill-cache -K metavar=- arity=0 default=False choices=- group=- required=False help=disable the lookahead-kill (not h) cache (pairs with --no-lookahead to exercise the raw loop)
   OPTION --no-lookahead -L metavar=- arity=0 default=False choices=- group=- required=False help=disable hypgen's one-step lookahead (forces deaths through the no-good learning path)

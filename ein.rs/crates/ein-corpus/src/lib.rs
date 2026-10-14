@@ -56,6 +56,32 @@ pub fn corpus() -> Corpus {
     Corpus::load(&path).unwrap_or_else(|e| panic!("{e}"))
 }
 
+/// **The Zebra puzzle's published answer** — the Wikipedia grid, as the 25
+/// `(house, values)` cells in the order Color, Nationality, Cigarette, Drink,
+/// Pet. Vocabulary independent, which is the point: `ein-infer`'s
+/// `acceptance.rs` checks both encodings' *solver* against it, and
+/// `ein-cli/tests/models_grid.rs` checks `ein solve --models grid`'s
+/// *renderer* against it (M1e2 S1e2.1.4). One independent source for both.
+pub const ZEBRA_GRID: [(&str, [&str; 5]); 5] = [
+    ("House-1", ["Yellow", "Norwegian", "Kools", "Water", "Fox"]),
+    (
+        "House-2",
+        ["Blue", "Ukrainian", "Chesterfields", "Tea", "Horse"],
+    ),
+    (
+        "House-3",
+        ["Red", "Englishman", "Old_Gold", "Milk", "Snail"],
+    ),
+    (
+        "House-4",
+        ["Ivory", "Spaniard", "Lucky_Strike", "Juice", "Dog"],
+    ),
+    (
+        "House-5",
+        ["Green", "Japanese", "Parliament", "Coffee", "Zebra"],
+    ),
+];
+
 /// The wrong-answer register, loaded from its one location.
 pub fn register() -> Register {
     let path = repo_root().join(register::REGISTER);

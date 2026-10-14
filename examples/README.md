@@ -133,6 +133,7 @@ ein-cli/tests/corpus_cli.rs
 ein-cli/tests/einb_cli.rs
 ein-cli/tests/embedding.rs
 ein-cli/tests/leftover_probe.rs
+ein-cli/tests/models_grid.rs
 ein-cli/tests/render_doors.rs
 ein-cli/tests/summary_properties.rs
 ein-corpus/benches/engine.rs
