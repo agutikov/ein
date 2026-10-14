@@ -10,7 +10,7 @@
 #
 # Output:
 #   build/zebra2/zebra2.md         — the trace (inline fenced `dot` blocks)
-#   build/zebra2/img/stepNNN.svg   — with --svg: each dot block rasterised
+#   build/zebra2/img/blockNNNN.svg — with --svg: each dot block rasterised
 #   build/zebra2/zebra2.view.md    — with --svg: the trace with the dot
 #                                    blocks replaced by ![](img/…svg) refs,
 #                                    viewable in any markdown viewer
@@ -86,8 +86,8 @@ if ! command -v "${EIN[0]}" >/dev/null 2>&1 && [[ ! -x "${EIN[0]}" ]]; then
     echo "       cargo build --release --manifest-path ein.rs/Cargo.toml" >&2
     exit 1
 fi
-# The --svg post-processing is plain Python: it shells out to `dot` and
-# rewrites markdown, and imports nothing from this repo.
+# The --svg post-processing is plain Python (`utils/review/rasterise.py`): it
+# shells out to `dot` and rewrites markdown.
 PYBIN="python3"
 
 if [[ ! -f "${ZEBRA2}" ]]; then
@@ -110,26 +110,10 @@ if (( WANT_SVG )); then
     if ! command -v dot >/dev/null 2>&1; then
         echo "warn: graphviz 'dot' not in PATH; skipping --svg render" >&2
     else
-        "${PYBIN}" - "${MD}" "${OUT_DIR}" <<'PY'
-import pathlib, re, subprocess, sys
-md_path, out_dir = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
-img = out_dir / "img"; img.mkdir(exist_ok=True)
-md = md_path.read_text(encoding="utf-8")
-n = 0
-def render(m):
-    global n
-    n += 1
-    svg = img / f"step{n:03d}.svg"
-    r = subprocess.run(["dot", "-Tsvg", "-o", str(svg)],
-                       input=m.group(1), capture_output=True, text=True)
-    if r.returncode:
-        sys.stderr.write(f"warn: dot failed on block {n}\n")
-        return m.group(0)
-    return f"![diagram {n}](img/{svg.name})"
-view = re.sub(r"```dot\n(.*?)\n```", render, md, flags=re.DOTALL)
-(out_dir / "zebra2.view.md").write_text(view, encoding="utf-8")
-print(f"rendered {n} dot blocks → {img}/ ; viewable: {out_dir/'zebra2.view.md'}")
-PY
+        # The rasteriser is `utils/review/rasterise.py`, shared with the M1e2
+        # review bundle's trace pages — one copy, where this used to inline it.
+        "${PYBIN}" "${SCRIPT_DIR}/review/rasterise.py" "${MD}" "${OUT_DIR}" \
+            --name zebra2.view.md
     fi
 fi
 

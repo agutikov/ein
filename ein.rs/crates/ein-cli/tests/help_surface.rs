@@ -183,3 +183,52 @@ fn the_full_view_fallback_agrees_with_the_help_text() {
          SetNode DAG, so the two surfaces have parted again (CD-L3)"
     );
 }
+
+/// **Every artefact `ein solve` can write, the review bundle drives** — M1e2
+/// S1e2.1.5.
+///
+/// The bundle's promise is *every artefact the engine can write for a run*,
+/// rendered, so that a reviewer never meets one they were not shown. A new
+/// artefact flag is the way that promise breaks silently, so the flags are
+/// read off the checked-in surface rather than listed: every `ein solve`
+/// option whose value is a path (`metavar=FILE…` or `DIR`) has to appear in
+/// `utils/review/run.py`, the module that runs the invocations.
+#[test]
+#[cfg(feature = "einb")]
+fn every_artefact_flag_of_solve_is_driven_by_the_review_bundle() {
+    let golden = std::fs::read_to_string(ein_corpus::golden_path("ein-cli", "help_shape.txt"))
+        .expect("help_shape.txt");
+    let solve = golden
+        .split("COMMAND ein solve\n")
+        .nth(1)
+        .and_then(|s| s.split("\nCOMMAND ").next())
+        .expect("the solve parser");
+    let driver = std::fs::read_to_string(ein_corpus::repo_root().join("utils/review/run.py"))
+        .expect("utils/review/run.py");
+    let mut flags = Vec::new();
+    let mut missing = Vec::new();
+    for line in solve
+        .lines()
+        .filter(|l| l.trim_start().starts_with("OPTION "))
+    {
+        let mut words = line.split_whitespace().skip(1);
+        let Some(flag) = words.next() else { continue };
+        let path_valued = line.contains("metavar=DIR") || line.contains("metavar=FILE");
+        if !path_valued {
+            continue;
+        }
+        flags.push(flag.to_string());
+        if !driver.contains(&format!("\"{flag}\"")) {
+            missing.push(flag.to_string());
+        }
+    }
+    assert!(
+        flags.len() >= 6,
+        "found only {flags:?} — the extractor stopped looking"
+    );
+    assert!(
+        missing.is_empty(),
+        "`ein solve` writes artefacts the review bundle never asks for: {missing:?}. Drive them in \
+         utils/review/run.py, or the bundle is no longer every artefact"
+    );
+}

@@ -189,10 +189,20 @@ def section_numbers_of(path: Path, _cache: dict[Path, set[str]] = {}) -> set[str
     return out
 
 
-def check_links(pages: list[Path]) -> list[tuple[Path, int, str, str]]:
+def check_links(pages: list[Path], roots: tuple[Path, ...] = ()) -> list[tuple[Path, int, str, str]]:
     bad = []
     for page in pages:
+        # A page outside the repository — M1e2's review bundle, built into a
+        # temporary directory by the gate's smoke step — may also link inside
+        # the tree it was checked as part of. Its links into the repo are held
+        # to the rule below like any other.
+        own = next((r for r in roots if page.is_relative_to(r) and not r.is_relative_to(REPO)), None)
         text = page.read_text(errors="replace")
+        # A `[x](y)` inside a fenced code block is text, not a link — no viewer
+        # renders it as one. Blanked line for line, so a finding's line number
+        # is still the page's. M1e2's review bundle quotes whole programs in
+        # fences, and a program's comments may carry links of their own.
+        text = re.sub(r"(?ms)^```.*?^```", lambda m: re.sub(r"[^\n]", " ", m.group(0)), text)
         for m in LINK.finditer(text):
             target = m.group(2)
             if target.startswith(("http://", "https://", "mailto:")):
@@ -222,9 +232,7 @@ def check_links(pages: list[Path]) -> list[tuple[Path, int, str, str]]:
             # sits next to this one, and nowhere else. The fix at those sites
             # is the repo's standing one: a reference that cannot be a link is
             # still fine as `code`.
-            try:
-                dest.relative_to(REPO)
-            except ValueError:
+            if not dest.is_relative_to(REPO) and not (own and dest.is_relative_to(own)):
                 bad.append((page, line, target, "outside the repo"))
                 continue
             if not dest.exists():
@@ -282,6 +290,7 @@ def main() -> int:
     # would not be under it — the reason this script could only ever be run
     # with its own default until M1e S1e.3.8.
     pages: list[Path] = []
+    roots = tuple(Path(a).resolve() for a in args.tree)
     for arg in args.tree:
         root = Path(arg).resolve()
         pages.extend([root] if root.is_file() else root.rglob("*.md"))
@@ -291,12 +300,12 @@ def main() -> int:
     if not pages:
         print(f"no pages under {' '.join(args.tree)}", file=sys.stderr)
         return 2
-    rel = lambda p: p.relative_to(REPO)  # noqa: E731
+    rel = lambda p: p.relative_to(REPO) if p.is_relative_to(REPO) else p  # noqa: E731
 
     failures = 0
 
     if args.links:
-        bad = check_links(pages)
+        bad = check_links(pages, roots)
         print(f"── links ── {len(pages)} pages, {len(bad)} finding(s)")
         cur = None
         for page, line, target, why in bad:

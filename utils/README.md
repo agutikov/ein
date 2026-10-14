@@ -1,6 +1,6 @@
 # `utils/` — the scripts that are not the engine
 
-**Twenty-five scripts, all but one driving `ein.rs`** — bar one,
+**Twenty-six scripts, all but one driving `ein.rs`** — bar one,
 [`doc_audit.py`](doc_audit.py), whose subject is `docs/kernel/` and which reads
 the crates as text. Nothing here is built, shipped or imported by the engine;
 everything here *runs* it, *reads* it, or *renders* what it produced. If a check belongs in the gate it belongs in
@@ -26,7 +26,8 @@ are.
 | | | needs |
 |---|---|---|
 | [`render_examples.sh`](render_examples.sh) | every `.ein` under `examples/` → per-rule DOT, the program as written, the root KB, and the constraint-scope and commitment-lattice views, + SVG. The input set is `find examples -path examples/broken -prune -o -name '*.ein' -print \| wc -l`; how many DOTs and lattices come out is what the run prints | `ein`, Graphviz |
-| [`zebra2_trace.sh`](zebra2_trace.sh) | solve `zebra2.ein`, write its markdown derivation trace; `--svg` rasterises the inline `dot` blocks and rewrites the markdown to reference them | `ein`, Graphviz for `--svg` |
+| [`review_bundle.py`](review_bundle.py) | **M1e2's review bundle** ([P1e2.1](../plans/m1e2_correctness/p1e2.1_seeing_the_answer/README.md)). `run FILE [FLAGS…] --out DIR` writes **one run, fully explicit**: every artefact `ein solve` can write for it, kept verbatim under `raw/`, and rendered under `pages/`. That is the program, root, the trace split by section and step range with every graph an SVG, the state dump's timeline and per-layer diffs, one page per commitment `--dump-lattice` tested, the answer (grid, root + added, commitment), the summary with every counter's defined meaning, the event stream by kind, and five cross-checks of the artefacts against each other. The modules are [`review/`](review/__init__.py). A test fails when `ein solve` gains a path-valued flag the bundle does not drive (`help_surface.rs`). `zebra2 -e` is 286 pages, 645 SVGs, 44 MB, 4.5 s | `ein`, Graphviz |
+| [`zebra2_trace.sh`](zebra2_trace.sh) | solve `zebra2.ein`, write its markdown derivation trace; `--svg` rasterises the inline `dot` blocks through `review/rasterise.py` (the bundle's rasteriser, one copy) and rewrites the markdown to reference them | `ein`, Graphviz for `--svg` |
 | [`render_knowledge_graph.sh`](render_knowledge_graph.sh) | `docs/lib/knowledge-graph.dot` → SVG/PNG, choosing among `dot` / `fdp` / `sfdp` / `osage` | Graphviz |
 | [`render_knowledge_graph_cy.py`](render_knowledge_graph_cy.py) | the same graph as an interactive Cytoscape.js page (`docs/lib/knowledge-graph.cy/`) | — |
 | [`package_vscode_ein.sh`](package_vscode_ein.sh) | [`vscode-ein/`](vscode-ein/) → an installable `.vsix` | `@vscode/vsce` |

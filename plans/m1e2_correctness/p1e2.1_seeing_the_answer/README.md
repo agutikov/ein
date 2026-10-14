@@ -7,7 +7,8 @@ rows over 13 cases, held by `ein-cli/tests/wrong_answers.rs`. S1e2.1.2 done
 fixpoint. S1e2.1.3 done 2026-10-14: `ein render program`, `ein render kb`,
 `ein solve --dump-lattice`; Q-M1e.20 answered. S1e2.1.4 done 2026-10-15:
 `--models grid` (the published table in both Zebra encodings) and
-`--diff-models`.
+`--diff-models`. S1e2.1.5 done 2026-10-15: `utils/review_bundle.py run`,
+every artefact of a run rendered, five cross-checks (which found S2 unaided).
 **Depends on:** nothing. Every renderer this phase needs is already written,
 and three of them are already tested. What is missing is the way to reach them
 from the CLI, a file per answer, and one page that puts a wrong run beside its

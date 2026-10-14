@@ -140,6 +140,31 @@ not programs to load.
   cleared before writing. A directory holding anything else is written beside
   and nothing in it is deleted.
 
+## The run summary
+
+`answer.json` is `--json-summary`'s object (`ein-summary/1`): `verdict`,
+`stats`, `owes`, `leftover`, `root`, `config`. The `stats` block is what a
+reader asks *how did the search go* of. Each counter is defined here, because
+until M1e2 S1e2.1.5 no page did. The review bundle quotes these rows beside
+the numbers rather than paraphrasing them, and
+`answer_dump::every_summary_counter_is_defined_on_this_page` fails when a
+counter appears in a summary without a row.
+
+| counter | what it counts |
+|---|---|
+| `enterings_total` | commitments the search entered: a fork made, the commitment's facts written, the fork saturated. Under `EIN_TRAVERSAL=tree` the tree's nodes, which narrate no `enter` event |
+| `enterings_alive` | …of which the fork was consistent after saturation |
+| `enterings_dead_pre` | …of which the fork was contradictory before saturation, from the commitment's own facts. Zero on every corpus run (`summary_properties.rs` says why) |
+| `enterings_dead_post` | …of which the fork was contradictory after saturation |
+| `facts_merged` | facts the search wrote into root by promotion. Today only the forced-positive cascade does, so it equals `forced_positives`. The singleton `(not h)` writeback is the `layer` event's `writebacks` |
+| `forced_positives` | singletons the cascade promoted into root (`<forced-positive>` in `root_writes.json`) |
+| `saturate_count` | saturations run *outside* an entering: root's own, one after each promotion, and one per state about to be recorded that something wrote into since its last saturation (`record_node` re-saturates it first; `zebra2 -e` records one model and counts 1, `lattice/02 -e` records three and counts 4). An entering's fork saturation is not counted here |
+| `layers_explored` | the deepest layer the lattice entered. Under `EIN_TRAVERSAL=tree`, the deepest node: a different quantity under the same name |
+| `nogoods_emitted` | learned clauses added to the store, one per dead commitment whose clause the store did not already imply |
+| `nogoods_subsumed` | …dead commitments whose clause a held one already covered |
+| `solution_nodes` | states the search **recorded**, models and open states together, after the `state_key` dedup. Not `k`: `k` counts models (`verdict.k`) |
+| `exhausted` | the search finished the lattice. `false` means it stopped at `-n`, at `--max-set-size` with a live frontier, or under the tree traversal, and `k` is then a lower bound |
+
 ## What it costs
 
 Nothing on the search beyond `store_lattice`. On `zebra2-minus-15 -e -m 3`

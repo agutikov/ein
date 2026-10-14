@@ -334,7 +334,7 @@ constrained-reasoning research.
   in the repo — the divergence list, and
   [`docs/kernel/defined_behaviour.md`](docs/kernel/defined_behaviour.md), which
   states what "whatever ein.py did" used to define.
-- **`utils/`** — **twenty-five scripts, all but one driving `ein.rs`** since M1a
+- **`utils/`** — **twenty-six scripts, all but one driving `ein.rs`** since M1a
   [S1a.10.4](docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine),
   which deleted the eleven that compared two engines or measured the Python
   one, plus `corpus_cost.py` from

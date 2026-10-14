@@ -399,3 +399,39 @@ fn a_container_is_refused_because_it_carries_no_program() {
     assert!(r.out.is_empty(), "it ran anyway:\n{}", r.out);
     let _ = std::fs::remove_dir_all(&root);
 }
+
+/// **Every `stats` counter a summary carries is defined on the page.** The
+/// review bundle quotes `answer_dump.md` § The run summary beside each number,
+/// so a counter without a row would be printed with no meaning — and a row
+/// for a counter no summary carries is a definition of nothing.
+#[test]
+fn every_summary_counter_is_defined_on_this_page() {
+    let page = std::fs::read_to_string(repo_root().join("docs/kernel/inference/answer_dump.md"))
+        .expect("the page");
+    let section = page
+        .split("## The run summary")
+        .nth(1)
+        .and_then(|s| s.split("\n## ").next())
+        .expect("§ The run summary");
+    let rows: std::collections::BTreeSet<String> = section
+        .lines()
+        .filter_map(|l| l.strip_prefix("| `"))
+        .filter_map(|l| l.split('`').next())
+        .map(str::to_string)
+        .collect();
+    let dir = scratch("counters").join("d");
+    let r = dump("examples/zebra2.ein", &["-e"], &[], &dir);
+    assert_eq!(r.code, 0, "{}", r.err);
+    let summary = json(&dir.with_extension("json"));
+    let keys: std::collections::BTreeSet<String> = summary["stats"]
+        .as_object()
+        .expect("stats")
+        .keys()
+        .cloned()
+        .collect();
+    assert_eq!(
+        keys, rows,
+        "the summary's counters and the page's rows differ"
+    );
+    let _ = std::fs::remove_dir_all(dir.parent().unwrap());
+}
