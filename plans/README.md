@@ -93,6 +93,16 @@ of the tree they left:
   sixty-three are one reader's reading, and every task ends in a fixture, a
   test, a measured number or a written decision. The reports are carried
   verbatim in the milestone folder.
+- **M1e2 — Correctness: every known wrong answer** ([m1e2_correctness/](m1e2_correctness/README.md))
+  after M1e, and **next**. Created 2026-10-14 out of M1e's close and a survey
+  taken the same day ([`inventory.md`](m1e2_correctness/inventory.md)): twelve
+  wrong answers and one contested reading, four of them at default settings,
+  among them a seven-line program the engine calls *contradictory* with
+  `exhausted = true`. The first phase builds the means to **see** an answer
+  (every artefact of a run rendered to markdown with SVG graphs, a case
+  register, the user's review). The second fixes them, one stage per wrong
+  answer. It goes before M1f, whose acceptance is stated relative to the
+  answers this milestone corrects.
 - **M1f — The structure of the hypothesis set, and the documentation ein does
   not have** ([m1f_hypothesis_and_documentation/](m1f_hypothesis_and_documentation/README.md))
   beside M1e — the two phases M1e carried that were **not** review processing,
@@ -175,6 +185,13 @@ plans/
 │   ├── p1e.3_medium/                 36 findings, 9 topics      (9)
 │   ├── p1e.4_low/                    21 findings, 8 topics      (8)
 │   └── p1e.5_documentation_and_other/  what it shipped of a phase that left (1)
+├── m1e2_correctness/                 every known wrong answer, seen and then fixed
+│   ├── README.md                     (created 2026-10-14 out of M1e's close)
+│   ├── open_questions.md             Q-M1e2.1–6, the readings the contested cases need
+│   ├── inventory.md                  the 2026-10-14 survey, carried as evidence
+│   ├── probes/                       its 31 probe programs, capture.sh and four sweeps
+│   ├── p1e2.1_seeing_the_answer/     dumps + every artefact rendered + the review (7)
+│   └── p1e2.2_wrong_answers/         one stage per wrong answer               (13)
 ├── m1f_hypothesis_and_documentation/ the two phases M1e carried and did not need
 │   ├── README.md                     (created 2026-08-29 out of M1e's P1e.1b + P1e.5)
 │   ├── open_questions.md             Q-M1f.<n> — empty; the Q-M1e ids stayed in M1e
@@ -242,8 +259,9 @@ Stage files have a stable shape:
 | [M1c](../docs/history/m1c_external_validation/README.md) | *(plans removed 2026-08-24 — the record is `docs/history/m1c_external_validation/`)* | **shipped** — done 2026-08-24, one phase and five stages. `:expect` on `query`, `ein test` as the fourth subcommand, 45 programs in `tests/stdlib/`, and **38 of 73 never-firing stdlib rules → 0**, held by `cargo test` in 0.04 s. Its benchmark phase left for M10 on 2026-08-23 | est. ~2.5 weeks; ran 2026-08-23 → 2026-08-24 |
 | [M1d](../docs/history/m1d_satisfiability/README.md) | *(plans removed 2026-08-27 — the record is `docs/history/m1d_satisfiability/`)* | **shipped** — done 2026-08-27, four phases and eighteen stages. A program can state a requirement, a state can say what it **owes**, the verdict word `Open` reports it, every verdict states whether its count is certified, and `EIN_TRAVERSAL=tree` reaches 32 models in **86** enterings against the lattice's 17 204 592. P1d.10 closed as it stood, three of six stages shipped | est. ~2 months; ran 2026-08-21 → 2026-08-27 |
 | [M1e](m1e_review_processing/README.md)  | **full** — 5 phases, 26 stage files + 2 shipped | **running** — the 2026-08-27 review processed: 63 findings + 10 questions, each ending in **fixed / refuted / accepted / deferred** with a test, a probe, a written reason or an owner. **P1e.1 closed 2026-08-29**: all ten questions answered | ~11 weeks; began 2026-08-27 |
+| [M1e2](m1e2_correctness/README.md) | **full** — 2 phases, 20 stage files (+1 phase proposed) | **next** — created 2026-10-14. Every known wrong answer: P1e2.1 makes each one visible (dumps, every artefact of a run rendered to markdown with graphs, a case register that is a cargo test, the user's review); P1e2.2 fixes them, one stage each — W1–W12 and C1 of [`inventory.md`](m1e2_correctness/inventory.md) | ~8 weeks |
 | [M1f](m1f_hypothesis_and_documentation/README.md) | **full** — 2 phases, 11 stage files (+1 proposed) | queued — the two phases M1e carried that processed no finding, moved out 2026-08-29. A branch structure derived from the program rather than paid for in deaths, and the pages a released system would have | ~12 weeks |
-| [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs | next — **reshaped 2026-08-23** around [`EinAf.md`](m2_nl_to_ir/EinAf.md): the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | ~6 months — Level B at ~8 weeks |
+| [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs | after M1e2 — **reshaped 2026-08-23** around [`EinAf.md`](m2_nl_to_ir/EinAf.md): the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | ~6 months — Level B at ~8 weeks |
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |
 | [M10](m10_external_benchmarks/README.md) | **full** — 5 stage files, no phase level | queued behind M1a — the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean (was M1c's P1c.2) | ~2.5 weeks |
 | [M20](m20_gui/README.md)                | README + stack decision | parked — depends on M1a, blocks nothing; Tauri stack settled 2026-08-18 (was M1b) | TBD |

@@ -1,0 +1,6 @@
+;; probe: one candidate, and it is refuted in one firing
+(relation thing T)
+(relation q T)
+(thing one) (thing two)
+(rule no-q () :match (q ?x) :assert (false) :priority 300)
+(query :goal (thing ?x))

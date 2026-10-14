@@ -1,0 +1,8 @@
+;; probe: one candidate, and it is refuted in TWO firings (past the one-step lookahead)
+(relation thing T)
+(relation q T)
+(relation bad T)
+(thing one)
+(rule taint () :match (q ?x)   :assert (bad ?x) :priority 200)
+(rule kill  () :match (bad ?x) :assert (false)  :priority 300)
+(query :goal (thing ?x) :no-hypothesis (bad))

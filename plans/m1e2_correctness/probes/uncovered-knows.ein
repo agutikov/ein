@@ -1,0 +1,24 @@
+(import std.algebra :symbols (total-owed surjective-owed))
+
+(relation is-a   T T         :why "{?1} is a {?2}")
+(relation seats  Guest Chair :why "{?1} sits on {?2}")
+(relation knows  Guest Guest :why "{?1} knows {?2}")
+
+(is-a Ann Guest) (is-a Bob Guest)
+(is-a C1 Chair)  (is-a C2 Chair)
+
+;; `seats` is owed from both ends — every guest a chair, every chair a guest.
+(total-owed      seats is-a)
+(surjective-owed seats is-a)
+
+;; `knows` is owed by nobody, and is NOT closed: this rule positively concludes
+;; it, so the closure pass cannot rule it out. Nothing determines whether
+;; anyone knows anyone.
+(rule knows-is-mutual ()
+  :match  (knows ?a ?b)
+  :assert (knows ?b ?a)
+  :why    "{?1} knows {?2}, so {?2} knows {?1}."
+  :priority 100)
+
+(query :goal (seats ?g ?c))
+(knows Ann Bob)

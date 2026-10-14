@@ -1,0 +1,6 @@
+;; probe: the unsat core contains a given negative fact
+(relation p T)
+(relation q T)
+(not (p A))
+(q A)
+(rule boom () :match (and (not (p ?x)) (q ?x)) :assert (false))

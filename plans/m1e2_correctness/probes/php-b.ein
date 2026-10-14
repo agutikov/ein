@@ -1,0 +1,47 @@
+(relation instance Thing Type)
+(relation in       Pigeon Hole :why "{1} is in {2}")
+(instance H2 Hole)   (instance H1 Hole)
+(instance P3 Pigeon) (instance P2 Pigeon) (instance P1 Pigeon)
+(import std.macro :symbols (forall))
+
+;; A hole with an occupant admits no other pigeon.
+(rule occupied (?R ?isa)
+  :match  (and (?R ?a ?h) (?isa ?b Pigeon) (neq ?b ?a))
+  :assert (not (?R ?b ?h))
+  :priority 240
+  :why    "{?h} is taken by {?a}, so not by {?b}")
+
+;; A pigeon in one hole is in no other.
+(rule elsewhere (?R ?isa)
+  :match  (and (?R ?a ?h) (?isa ?h_other Hole) (neq ?h_other ?h))
+  :assert (not (?R ?a ?h_other))
+  :priority 240
+  :why    "{?a} is in {?h}, so not in {?h_other}")
+
+;; Survivor forcing: every hole but one excluded for a pigeon ⟹ it is in that
+;; one. This is what makes the chain deterministic — without it the puzzle
+;; needs the hypothesis search, and then it is not a contradiction at all.
+(rule forced (?R ?isa)
+  :match  (and (?isa ?a Pigeon)
+               (?isa ?h Hole)
+               (forall ?h_other
+                 (and (?isa ?h_other Hole) (neq ?h_other ?h))
+                 (not (?R ?a ?h_other))))
+  :assert (?R ?a ?h)
+  :priority 400
+  :why    "every hole but {?h} is excluded for {?a}")
+
+;; …and a pigeon with every hole excluded has nowhere to go.
+(rule no-room (?R ?isa)
+  :match  (and (?isa ?a Pigeon)
+               (forall ?h (?isa ?h Hole) (not (?R ?a ?h))))
+  :assert (false)
+  :priority 250
+  :why    "{?a} has every hole excluded")
+
+(occupied  in instance)
+(elsewhere in instance)
+(forced    in instance)
+(no-room   in instance)
+(hrule guess () :match (and (instance ?p Pigeon) (instance ?h Hole)) :assert (in ?p ?h) :why "guess {?p} in {?h}")
+(query :goal (in ?who ?hole))

@@ -1,0 +1,10 @@
+(import std.algebra :symbols (total-owed))
+(relation is-a  T T)
+(relation likes Person Food)
+(is-a Ann Person)
+(is-a Soup Food)  (is-a Stew Food)
+(total-owed likes is-a)
+(query
+  :goal (likes ?who ?what)
+  :no-hypothesis (is-a)
+  :expect (or (model (likes Ann Soup)) (model (likes Ann Stew))))
