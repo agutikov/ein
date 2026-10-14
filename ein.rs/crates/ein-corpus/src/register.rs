@@ -39,6 +39,24 @@ pub const STATUSES: [&str; 3] = ["open", "fixed", "not-wrong"];
 /// The verdict words, as `--json-summary`'s `verdict.type` spells them.
 pub const VERDICTS: [&str; 4] = ["Solution", "Ambiguity", "Contradiction", "Open"];
 
+/// What a `look_at` pointer may name — the pages of a review-bundle run
+/// directory. A pointer is one of these words, optionally followed by an
+/// argument: `layer 2`, `entering p(A)`, `model 3`, `events writeback`,
+/// `trace step 12`.
+pub const LOOK_AT: [&str; 11] = [
+    "root",
+    "root-writes",
+    "timeline",
+    "layer",
+    "entering",
+    "refuted",
+    "trace",
+    "answer",
+    "model",
+    "summary",
+    "events",
+];
+
 /// The one directory outside the corpus a witness may live in: minimised inputs
 /// that violate a property the corpus sweeps assert, and so cannot be corpus
 /// entries until they are fixed (`corpus/fuzz_findings/README.md`).
@@ -78,6 +96,12 @@ pub struct Row {
     pub status: String,
     #[serde(default)]
     pub note: Option<String>,
+    /// Where in a run the case goes wrong — the review bundle's links into
+    /// the run directories (M1e2 S1e2.1.6). Written once, here, so the fixing
+    /// stage reads the same pointers the reviewer followed. The vocabulary is
+    /// [`LOOK_AT`].
+    #[serde(default)]
+    pub look_at: Vec<String>,
     /// What the engine answers today. For a `fixed` row, what it *used* to
     /// answer.
     pub wrong: Answer,
@@ -228,6 +252,12 @@ impl Register {
                 out.push(at(format!(
                     "`not_in_corpus` is required exactly for a witness under {OUTSIDE_THE_CORPUS}"
                 )));
+            }
+            for p in &r.look_at {
+                let word = p.split_whitespace().next().unwrap_or("");
+                if !LOOK_AT.contains(&word) {
+                    out.push(at(format!("look_at {p:?} is not one of {LOOK_AT:?}")));
+                }
             }
             if r.status == "fixed" && (r.right.verdict.is_none() || r.right.k.is_none()) {
                 out.push(at("a fixed row states the right verdict and k".to_string()));

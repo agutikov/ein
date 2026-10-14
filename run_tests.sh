@@ -2,9 +2,9 @@
 #
 # run_tests.sh — the gate.
 #
-#     ./run_tests.sh                 # six static checks, the tests, the bench smoke
+#     ./run_tests.sh                 # six static checks, the tests, the review-bundle smoke, the bench smoke
 #     ./run_tests.sh --slow          # + the 12 slow corpus cells, + 8 id seeds
-#     ./run_tests.sh --tests-only    # only cargo test — no checks, no bench smoke
+#     ./run_tests.sh --tests-only    # cargo test and the review-bundle smoke — no checks, no bench smoke
 #     ./run_tests.sh -p ein-ir       # anything else is forwarded to cargo test
 #
 # **This was a three-phase runner until M1a S1a.10.5**, and each phase went
@@ -204,6 +204,15 @@ fi
 
 step "cargo test --workspace"
 cargo test --manifest-path "${MANIFEST}" --workspace ${ARGS[@]+"${ARGS[@]}"}
+
+# M1e2 S1e2.1.6 — the review bundle for one small register case, built into a
+# temporary directory with the debug `ein` the step above just tested, every
+# SVG non-empty and every link and image reference resolving. The bundle is
+# generated and gitignored, so nothing else would notice it break until the
+# review that needed it. Not behind the `--tests-only` guard: it is a test of
+# what the engine writes, not a static check. The whole bundle is nightly's.
+step "utils/review_bundle.py --smoke"
+python3 "${SCRIPT_DIR}/utils/review_bundle.py" --smoke
 
 # CI's last step, and it is not a measurement: `--test` runs each bench once
 # to see that it runs. A bench that stopped compiling is invisible to

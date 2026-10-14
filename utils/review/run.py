@@ -33,6 +33,12 @@ from review.rasterise import rasterise_text
 STEPS_PER_PAGE = 50
 ROWS_PER_PAGE = 500
 REFUTED_PER_PAGE = 100
+# Event rows rendered per kind. `branching/06 -e` narrates 2.2 million verbose
+# events, nearly all of one kind; thousands of pages of `fire` rows are not a
+# thing a reviewer reads, and building them took longer than the run. Past
+# this, a kind's page says how many rows there are, which it shows (the first
+# and the last), and that `raw/events.jsonl` holds every one.
+EVENT_ROWS_PER_KIND = 10_000
 
 
 @dataclass
@@ -710,7 +716,10 @@ def events_pages(p: Pages) -> list[dict]:
         by_kind[e.get("e", "?")].append(e)
     index = edir / "index.md"
     rows = []
-    for kind, es in sorted(by_kind.items(), key=lambda kv: -len(kv[1])):
+    for kind, all_es in sorted(by_kind.items(), key=lambda kv: -len(kv[1])):
+        capped = len(all_es) > EVENT_ROWS_PER_KIND
+        half = EVENT_ROWS_PER_KIND // 2
+        es = all_es[:half] + all_es[-half:] if capped else all_es
         keys: list[str] = []
         for e in es:
             keys += [k for k in e if k not in keys and k != "e"]
@@ -728,11 +737,13 @@ def events_pages(p: Pages) -> list[dict]:
                            "`--events FILE --events-level verbose`",
                            [("events.md" + (f" § {sec}" if sec else " (no schema row)"), "docs/kernel/inference/events.md")],
                            [raw], page, f"rows {pi * ROWS_PER_PAGE + 1}–{pi * ROWS_PER_PAGE + len(chunk)} of {len(es)} · "
-                           f"[schema row]({schema}) · [all kinds]({rel(index, page)})")
+                           f"[schema row]({schema}) · [all kinds]({rel(index, page)})"
+                           + (f"  \n> **{len(all_es)} `{kind}` lines; these pages show the first {half} and the last "
+                              f"{half}** — every one is in the raw file, and `n` is each line's place in it" if capped else ""))
             lines += table(keys, [[json.dumps(e.get(k), ensure_ascii=False) if isinstance(e.get(k), (list, dict))
                                    else e.get(k, "") for k in keys] for e in chunk])
             p.add(f"Events: {kind}" + (f" {pi + 1}" if pages_n > 1 else ""), page, lines)
-        rows.append([f"[`{kind}`]({rel(first, index)})", len(es), pages_n,
+        rows.append([f"[`{kind}`]({rel(first, index)})", len(all_es) if not capped else f"{len(all_es)} (first and last {half} rendered)", pages_n,
                      rebase(docs.get(kind, ("", "—"))[1], "docs/kernel/inference/events.md", index)])
     lines = header("The event stream", "the engine's *record* of the run — every step, by kind",
                    "`--events FILE --events-level verbose`", [("events.md", "docs/kernel/inference/events.md")],

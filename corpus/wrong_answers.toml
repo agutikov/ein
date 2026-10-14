@@ -37,6 +37,11 @@
 #   witness   a `corpus/corpus.toml` entry, or a file under `corpus/fuzz_findings/`
 #             with `not_in_corpus` saying why it cannot be one
 #   status    open | fixed | not-wrong | merged:<id>
+#   look_at   where the case goes wrong, as pages of a review-bundle run:
+#             `root`, `root-writes`, `timeline`, `layer N`, `entering <facts>`,
+#             `refuted`, `trace [step N]`, `answer`, `model N`, `summary`,
+#             `events <kind>` — links on the case page, and the pointers the
+#             fixing stage starts from (S1e2.1.6)
 #
 #   [case.wrong] / [case.control] / [[case.twin]]   an answer the engine gives
 #     witness   (control, twin) another file; default: the row's witness
@@ -86,6 +91,7 @@ owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/branching/15_lookahead_two_step_on.ein"
 status   = "open"
+look_at  = ["entering p(A)", "layer 2", "answer"]
 
 [case.wrong]
 run       = "solve -e"
@@ -113,6 +119,7 @@ owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/branching/16_lookahead_two_step_off.ein"
 status   = "open"
+look_at  = ["entering p(A)", "layer 2", "refuted", "summary"]
 
 [case.wrong]
 run       = "solve -e"
@@ -149,6 +156,7 @@ owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/lattice/02_genuine_3set_death.ein"
 status   = "open"
+look_at  = ["layer 2", "layer 3", "refuted", "summary"]
 note     = "one of the 9 corpus entries that go from models to a certified Contradiction under -L (inventory § 4); the header's 'Expected verdict: Contradiction' is P1.5b's mode contract, superseded by the 2026-08-28 ruling"
 
 [case.wrong]
@@ -185,6 +193,7 @@ owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/wrong-answers/forced-2-two.ein"
 status   = "open"
+look_at  = ["layer 1", "refuted", "summary"]
 note     = "layer 0: every singleton dies and phase2 breaks without asking whether root is complete"
 
 [case.wrong]
@@ -222,6 +231,7 @@ owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/wrong-answers/forced-2-off.ein"
 status   = "open"
+look_at  = ["layer 1", "refuted", "summary"]
 note     = "W2's witness with the cascade off falls through into W1 at layer 0 — why S1e2.2.1 runs before S1e2.2.2"
 
 [case.wrong]
@@ -249,6 +259,7 @@ owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/wrong-answers/owed-two-step.ein"
 status   = "open"
+look_at  = ["root", "layer 1", "refuted", "summary"]
 note     = "in an obligations program W1 at layer 0 turns the ruled Open into a certified Contradiction"
 
 [case.wrong]
@@ -290,6 +301,7 @@ owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein"
 status   = "open"
+look_at  = ["layer 1", "refuted", "summary"]
 note     = "alive-set-fresh-name.ein minus its spawn rule: the banked W4 file's k = 0 is this, not the fresh name"
 
 [case.wrong]
@@ -318,6 +330,7 @@ settings = "default"
 owner    = "S1e2.2.2"
 witness  = "examples/ein-bugs/wrong-answers/forced-2.ein"
 status   = "open"
+look_at  = ["root-writes", "events writeback", "summary"]
 
 [case.wrong]
 run       = "solve -e"
@@ -352,6 +365,7 @@ settings = "lever: -L"
 owner    = "S1e2.2.2"
 witness  = "examples/ein-bugs/wrong-answers/forced-1.ein"
 status   = "open"
+look_at  = ["root-writes", "events writeback", "summary"]
 
 [case.wrong]
 run       = "solve -e -L"
@@ -389,6 +403,7 @@ owner    = "S1e2.2.5"
 question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/ein-bugs/naf-upward-closure.ein"
 status   = "open"
+look_at  = ["root-writes", "entering p(A)", "model 1"]
 
 [case.wrong]
 run       = "solve -e"
@@ -426,6 +441,7 @@ owner    = "S1e2.2.5"
 question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/ein-bugs/wrong-answers/naf-nowb.ein"
 status   = "open"
+look_at  = ["entering p(A)", "events nogood", "layer 2", "summary"]
 note     = "two mechanisms: W3's width-1 no-good prunes the live superset, and W1 leaves the surviving {(q A)} unrecorded"
 
 [case.wrong]
@@ -464,6 +480,7 @@ owner    = "S1e2.2.4"
 question = ["Q-M1e.21", "ST-M1"]
 witness  = "examples/ein-bugs/wrong-answers/fresh-name-default.ein"
 status   = "open"
+look_at  = ["root-writes", "model 1", "events warn"]
 
 [case.wrong]
 run       = "solve -e"
@@ -501,6 +518,7 @@ owner    = "S1e2.2.4"
 question = ["Q-M1e.21", "ST-M1"]
 witness  = "examples/ein-bugs/alive-set-fresh-name.ein"
 status   = "open"
+look_at  = ["layer 1", "refuted", "events warn"]
 note     = "confounded with W1 at layer 0 (W1/fresh-name-nospawn): fixing W1 alone moves this to W4/fresh-name-default's wrong answer"
 
 [case.wrong]
@@ -549,6 +567,7 @@ owner    = "S1e2.2.3"
 question = ["Q-M1e2.1"]
 witness  = "examples/ein-bugs/wrong-answers/owed-seats.ein"
 status   = "open"
+look_at  = ["layer 3", "model 3", "events rung"]
 
 [case.wrong]
 run       = "solve -e"
@@ -608,6 +627,7 @@ owner    = "S1e2.2.8"
 question = ["Q-M1e2.3", "M1d eight measurements #4"]
 witness  = "examples/ein-bugs/wrong-answers/uncovered.ein"
 status   = "open"
+look_at  = ["events rung", "answer"]
 note     = "the third model is W5's superset; this case is only the certification"
 
 [case.wrong]
@@ -657,6 +677,7 @@ owner    = "S1e2.2.8"
 question = ["Q-M1e2.3"]
 witness  = "examples/ein-bugs/wrong-answers/arity3.ein"
 status   = "open"
+look_at  = ["events hyp", "answer"]
 
 [case.wrong]
 run       = "solve -e"
@@ -695,6 +716,7 @@ question = ["Q-M1e.16"]
 witness  = "corpus/fuzz_findings/binding-key-layout.ein"
 not_in_corpus = "a debug build aborts on it (check_layout), and every in-process corpus sweep saturates every corpus file inside a debug test binary"
 status   = "open"
+look_at  = ["events fire", "model 1"]
 
 [case.wrong]
 run         = "solve -e"
@@ -736,6 +758,7 @@ owner    = "S1e2.2.6"
 question = ["Q-M1e2.2"]
 witness  = "examples/features/07_unstratifiable.ein"
 status   = "open"
+look_at  = ["root", "events writeback", "model 1"]
 note     = "the file's own header: {p, q} is not a model of this program under any reading"
 
 [case.wrong]
@@ -788,6 +811,7 @@ owner    = "S1e2.2.6"
 question = ["Q-M1e2.2"]
 witness  = "examples/ein-bugs/wrong-answers/stale-naf-fork.ein"
 status   = "open"
+look_at  = ["root", "root-writes", "events hyp", "model 1"]
 
 [case.wrong]
 run       = "solve -e"
@@ -837,6 +861,7 @@ owner    = "S1e2.2.9"
 question = ["Q-M1e.7"]
 witness  = "examples/ein-bugs/complete-records-stale.ein"
 status   = "open"
+look_at  = ["layer 1", "answer"]
 
 [case.wrong]
 run       = "solve -e -K"
@@ -874,6 +899,7 @@ owner    = "S1e2.2.9"
 question = ["Q-M1e.7"]
 witness  = "examples/ein-bugs/alive-empty-phase1.ein"
 status   = "open"
+look_at  = ["root", "answer"]
 
 [case.wrong]
 run       = "solve -e -K"
@@ -910,6 +936,7 @@ owner    = "S1e2.2.11"
 question = ["Q-M1e.15"]
 witness  = "examples/ein-bugs/alt-cap-core.ein"
 status   = "open"
+look_at  = ["summary", "events alt"]
 
 [case.wrong]
 run       = "solve"
@@ -946,6 +973,7 @@ owner    = "S1e2.2.12"
 witness  = "corpus/fuzz_findings/unsat-core-id-space.ein"
 not_in_corpus = "it moves under a permuted interner, which id_order_invariance asserts of every corpus file"
 status   = "open"
+look_at  = ["refuted", "summary"]
 
 [case.wrong]
 run       = "solve -e"
@@ -971,6 +999,7 @@ owner    = "S1e2.2.12"
 witness  = "corpus/fuzz_findings/d3-unsat-core.ein"
 not_in_corpus = "it moves under a permuted interner at the third seed, which the nightly's EIN_ID_SEEDS=8 would assert"
 status   = "open"
+look_at  = ["refuted", "summary"]
 note     = "corpus/fuzz_findings/README.md says this file is green under a permuted id space; that is true at seed 1 only"
 
 [case.wrong]
@@ -999,6 +1028,7 @@ owner    = "S1e2.2.13"
 question = ["Q-M1e2.4"]
 witness  = "examples/ein-bugs/alive-empty-phase1.ein"
 status   = "open"
+look_at  = ["root-writes", "summary"]
 note     = "W2/forced-2's 0-fact core is the same class; it is W2's row"
 
 [case.wrong]
@@ -1036,6 +1066,7 @@ owner    = "S1e2.2.10"
 question = ["Q-M1e.12"]
 witness  = "examples/branching/06_lookahead_on.ein"
 status   = "open"
+look_at  = ["answer", "events hyp"]
 note     = "all 22 recorded models contain a co-located fact over a type (Color / House); 10 of 22 have a goal row binding ?h to one, 6 print it"
 
 [case.wrong]

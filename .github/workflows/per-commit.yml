@@ -106,5 +106,10 @@ jobs:
       # claim the frontend's differential tests carried.
       # gate-step
       - run: cargo test --workspace
+      # M1e2 S1e2.1.6 — the review bundle for one small case, with the debug
+      # `ein` the step above built, link-checked in a temporary directory.
+      # gate-step
+      - run: python3 utils/review_bundle.py --smoke
+        working-directory: ${{ github.workspace }}
       # gate-step
       - run: cargo bench --bench engine -- --test

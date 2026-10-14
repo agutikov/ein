@@ -9,6 +9,8 @@ fixpoint. S1e2.1.3 done 2026-10-14: `ein render program`, `ein render kb`,
 `--models grid` (the published table in both Zebra encodings) and
 `--diff-models`. S1e2.1.5 done 2026-10-15: `utils/review_bundle.py run`,
 every artefact of a run rendered, five cross-checks (which found S2 unaided).
+S1e2.1.6 done 2026-10-15: `utils/review_bundle.py` — 26 case pages, the
+smoke step in the gate, the whole bundle in the nightly.
 **Depends on:** nothing. Every renderer this phase needs is already written,
 and three of them are already tested. What is missing is the way to reach them
 from the CLI, a file per answer, and one page that puts a wrong run beside its

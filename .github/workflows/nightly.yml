@@ -98,6 +98,11 @@ jobs:
         with: { python-version: "3.14" }
       - run: python3 utils/stdlib_census.py --check
         working-directory: ${{ github.workspace }}
+      # M1e2 S1e2.1.6 — the whole review bundle, every register case, with the
+      # release `ein` the corpus step above built; a case whose page fails to
+      # build exits 1, and so does a dangling link or image in it.
+      - run: python3 utils/review_bundle.py && python3 utils/doc_audit.py --links --check build/review
+        working-directory: ${{ github.workspace }}
       - run: python3 utils/stdlib_mutants.py --check
         working-directory: ${{ github.workspace }}
 
