@@ -345,7 +345,7 @@ givens whose frontier is smaller. A full list can therefore refuse the
 derivation the explanation search would have chosen —
 `examples/ein-bugs/alt-cap-core.ein` reports a 3-fact unsat core where
 a 2-fact one exists (M1e S1e.1.3, the review's Q2;
-[Q-M1e.15](../../../../plans/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)).
+[Q-M1e.15](../../../history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)).
 Corpus-wide exactly one entry reaches the cap and no answer moves
 without it.
 

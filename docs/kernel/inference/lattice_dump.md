@@ -291,7 +291,7 @@ surface, not one a doc pass takes.
 exactly the same position for exactly the same reason
 ([`utils/render_examples.sh`](../../../utils/render_examples.sh) says so at its
 own head, and declines it too), so it is **one** question with two instances:
-[Q-M1e.20](../../../plans/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable).
+[Q-M1e.20](../../history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable).
 
 ---
 

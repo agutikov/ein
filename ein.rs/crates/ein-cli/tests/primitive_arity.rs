@@ -1,5 +1,5 @@
 //! **Every kernel meta-primitive, at every arity** — M1e
-//! [S1e.1.6](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.6_coverage_gaps.md)
+//! [S1e.1.6](../../../../docs/history/m1e_review_processing/README.md#s1e16--what-nothing-pins-q8-q9-q10)
 //! T1e.1.6.2, the review's `Q9`.
 //!
 //! The review found one process panic from a well-formed program —
@@ -29,7 +29,7 @@
 //! shapes have `.expected` fixtures under
 //! [`examples/broken/compile/`](../../../../examples/broken/compile/README.md).
 //!
-//! [`CO-H1`]: ../../../../plans/m1e_review_processing/README.md
+//! [`CO-H1`]: ../../../../docs/history/m1e_review_processing/README.md
 //!
 //! It is a subprocess sweep rather than an in-process one because two of the
 //! outcomes are **process** outcomes: an exit code of 101 and a panic message

@@ -65,7 +65,7 @@ too.
 
 ## What the fix would move
 
-Under [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)'s
+Under [Q-M1e.7](../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)'s
 ruling the Q-M1e.8 fix is **(ii) re-saturate and re-check before recording**,
 and separately [D3](d3_q_m1e8_file_or_take.md)'s maximality fix would record a
 surviving commitment whose every superset died. Predicted, before it moves:

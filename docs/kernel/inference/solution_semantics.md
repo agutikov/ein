@@ -255,7 +255,7 @@ conjunct:
 Measured 2026-08-28 against `a3f4e7b`: **three of the four have a witness** — a
 program whose recorded model, fed back as a program, the same engine answers
 `Contradiction` on. The probes and the configuration matrix are
-[`s1e.1.1…/probes/`](../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/probes/);
+[`s1e.1.1…/probes/`](../../history/m1e_review_processing/search_soundness_probes/probes/);
 the fourth caller is the same two lines and is unwitnessed only because nothing
 has built the program yet.
 
@@ -267,7 +267,7 @@ Two consequences a reader should carry away:
 2. **A recorded fact set is a function of a performance lever.** `-K` removes
    the kill cache's writes, so two runs that agree on every answer can disagree
    on every recorded fact set — which is
-   [Q-M1e.7](../../../plans/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model),
+   [Q-M1e.7](../../history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model),
    *the read-out prints the solution KB and calls it a model*. Whether `K`
    belongs to the state decides which fix this section gets, and it is ruled
    there, not here.
@@ -310,7 +310,7 @@ six shipped configurations answer it wrongly — the writeback stores
 `(not (p A))` and layer 2 never sees the pair. Three shipped mechanisms read
 the premise: the kill cache, the singleton writeback, and the no-good store's
 width-1 clause. The probe, the matrix and the dispositions are
-[Q-M1e.9](../../../plans/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent).
+[Q-M1e.9](../../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent).
 
 So the maximality arm's *"no live child"* is read from the next layer's results
 under a premise that holds for every program whose refutations do not pass

@@ -581,7 +581,7 @@ Corpus-wide **one** entry reaches the cap (`zebra2-bad`, 1 017 of 2 425
 arrivals refused, longest uncapped list 1 049) — and only an entry that reaches
 it can be changed by it: that one's core is a single fact at either cap. So
 this is a promise to state rather than a bug to chase —
-[Q-M1e.15](../../../plans/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported). (3) **Budgeted** — the
+[Q-M1e.15](../../history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported). (3) **Budgeted** — the
 minimum-axiom-set / ATMS-label problem is worst-case exponential, so the search
 runs under an `ExplanationBudget` and `Explanation.exhausted` reports whether it
 completed; a truncated search is still sound. Provenance is also not yet a

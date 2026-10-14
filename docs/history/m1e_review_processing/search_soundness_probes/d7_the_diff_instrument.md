@@ -3,13 +3,13 @@
 **Touches:** [T1e.1.1.3](README.md#task-t1e113--q5-derive-lattice02-by-hand-against-the-ruling)
 (Q5, lookahead on vs off) — and, since Q6 left this stage on 2026-08-28, two
 customers in another phase:
-[S1f.10.6](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)
+[S1f.10.6](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)
 T3 (tree vs lattice on the flip probe) and
-[S1f.10.7](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)
+[S1f.10.7](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)
 (tree vs lattice on `zebra2-minus-15`). **Three customers across two phases is
 a stronger case for one script than this file was written against.**
 **Cheap** — but it is the one place this stage can commit
-[AR-M1](../../README.md#the-findings) rather than merely cite it.
+[AR-M1](../README.md#the-findings) rather than merely cite it.
 
 ## The instrument
 
@@ -24,7 +24,7 @@ times**:
 | 3 | the `--jobs` invariance sweep | 20 712 cells, byte-identical verbose streams |
 
 The stage's own Notes already say a fourth copy is not this stage's job, and
-[S1f.10.1](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.1_exclusion_census.md)
+[S1f.10.1](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.1_exclusion_census.md)
 says the same for P1f.10. Two stages declining the same work is how the fifth
 copy gets written by whoever needs it third.
 
@@ -45,9 +45,9 @@ Neither needs decision variables, determining keys, or in-process running.
 [D4](d4_q_m1e9_upward_closure.md) showed that a comparison of **recorded fact
 sets** is sensitive to levers that do not change the model:
 `-K` alters `lattice/02`'s recorded facts while `k` and the verdict hold, and
-under [Q-M1e.6](../../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
+under [Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
 the *model* is the positive part minus the positive initial KB — which nothing
-computes ([Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)).
+computes ([Q-M1e.7](../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)).
 
 So whatever this stage writes has to say **which object it compares**. For
 these two probes the right one is the model: strip `(not …)` and subtract the
@@ -63,7 +63,7 @@ of Q-M1e.6's `model` — which is an argument for putting it somewhere reusable.
 | **C — borrow `model_set_census.py`** | add a `--form diff` to the existing script | no new file, but it bends a *census* into a *comparison*, and that script's subject is one program's model set, not two runs of one |
 
 **Decided 2026-08-28: A for this stage, and
-[S1e.3.4](../../p1e.3_medium/s1e.3.4_architecture.md) decides B.** S1e.3.4 owns
+[S1e.3.4](../README.md#s1e34--architecture-medium) decides B.** S1e.3.4 owns
 AR-M1 and is where the unify-or-diff ruling belongs; pre-empting it here means
 the architecture stage inherits a decision it was meant to make. **The
 throwaway is named in S1e.3.4's inputs**, so the fourth copy is on the record
@@ -72,16 +72,16 @@ as one when that stage counts them.
 ### Two things that changed after this file was written
 
 - **The customer count went from two to four**, across three phases: T1e.1.1.3
-  (Q5), [S1f.10.6](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)
+  (Q5), [S1f.10.6](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)
   T3 (tree vs lattice on the flip probe),
-  [S1f.10.7](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)
+  [S1f.10.7](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)
   (tree vs lattice on `zebra2-minus-15`), and the record-site check, whose
   runner [`probes/run_record_sites.sh`](probes/run_record_sites.sh) **already
   exists** and is the throwaway this decision authorises. Four customers is a
   stronger case for B than the two this file argued against — which is
   precisely the evidence S1e.3.4 should be handed rather than a preference.
 - **"Which object does it compare" is no longer open.**
-  [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+  [Q-M1e.7](../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
   was ruled **A** on 2026-08-28: the recorded object is the *state* and the
   **model** is the projection — positive part minus the positive initial KB.
   So a comparison of *models* strips `(not …)` and subtracts the initial KB,

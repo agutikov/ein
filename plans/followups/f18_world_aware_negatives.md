@@ -1,10 +1,10 @@
 # F18 — World-aware negatives
 
 **Filed 2026-08-28**, from
-[M1e](../m1e_review_processing/README.md)'s
-[Q-M1e.9](../m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)
+[M1e](../../docs/history/m1e_review_processing/README.md)'s
+[Q-M1e.9](../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)
 — option **C** of
-[D4](../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md),
+[D4](../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md),
 where B (a diagnostic) was taken now and this was filed as the real fix.
 
 **Trigger:** when a program that needs the shape shows up, or when
@@ -60,7 +60,7 @@ does.
   candidate before it concludes — so the constructive half of the alternative
   is in the tree already.
 - The exposure is bounded and **measured for real** at M1e
-  [S1e.2.3](../m1e_review_processing/p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md),
+  [S1e.2.3](../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent),
   which is where this bullet's earlier estimate was checked and half of it
   turned out to be wrong. Of the 60 syntactically matching rules across
   `stdlib/`, `examples/` and `tests/`, **nine rules over seven entries** are
@@ -79,7 +79,7 @@ does.
 
 ## Read before proposing it
 
-- [D4](../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)
+- [D4](../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md)
   — the probe, the six-configuration matrix, and the three consumers separated
   so that each is shown sufficient on its own. The probe itself is banked as
   [`examples/ein-bugs/naf-upward-closure.ein`](../../examples/ein-bugs/naf-upward-closure.ein),

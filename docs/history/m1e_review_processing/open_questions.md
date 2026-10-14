@@ -4,7 +4,7 @@ Questions **this milestone raises**, with sticky `Q-M1e.<n>` ids. Do not
 reuse a closed id.
 
 The review's own ten questions are **not** here: they are the subject of
-[P1e.1](p1e.1_open_questions/README.md), they keep the review's `Q1`–`Q10`
+[P1e.1](README.md#p1e1--the-ten-questions), they keep the review's `Q1`–`Q10`
 numbering, and they live in
 [`review/open-questions.md`](review/open-questions.md) with their answers
 recorded in the stage that answers them. A review question that turns out
@@ -16,28 +16,28 @@ records which question became which id.
 
 | Q | title | status |
 |---|---|---|
-| [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | **decided 2026-08-28**, written into [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md); ratified in [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1 **together with Q-M1e.2** ([D5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d5_does_t1_ratify_q_m1e2.md), option A, 2026-08-28), applied everywhere after |
-| [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | **decided 2026-08-28** — *an argument suffices when its premise is itself enforced*, written into [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md). The `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
-| [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | **answered 2026-08-30 — (c)**, by [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) T1. The destination was already written into [`docs/history/README.md`](../../docs/history/README.md): M1's survivors went to `docs/kernel/inference/` at P1.22, so `m1_core/` is a directory the tree **declined**, and what a superseded page needed was the banner. The general rule — *a page is moved into an existing milestone record, never made into one* — plus the triage of all 40 pages |
+| [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) | What is the standard of proof for **refuted**? | **decided 2026-08-28**, written into [`docs/kernel/standard_of_proof.md`](../../kernel/standard_of_proof.md); ratified in [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1 **together with Q-M1e.2** ([D5](search_soundness_probes/d5_does_t1_ratify_q_m1e2.md), option A, 2026-08-28), applied everywhere after |
+| [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | **decided 2026-08-28** — *an argument suffices when its premise is itself enforced*, written into [`docs/kernel/standard_of_proof.md`](../../kernel/standard_of_proof.md). The `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
+| [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | **answered 2026-08-30 — (c)**, by [S1e.2.2](README.md#s1e22--code--doc-the-canonical-tree) T1. The destination was already written into [`docs/history/README.md`](../README.md): M1's survivors went to `docs/kernel/inference/` at P1.22, so `m1_core/` is a directory the tree **declined**, and what a superseded page needed was the banner. The general rule — *a page is moved into an existing milestone record, never made into one* — plus the triage of all 40 pages |
 | [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | **answered 2026-08-31 — yes, if the sentence carries the warrant**, and there are three: a **command** that re-takes it, a **date**, or a **test** that pins it. A count that can carry none is deleted. Which warrant fits follows from what the number *is* — a **size** takes the command (and all nine drifted counts are sizes), a **measurement** takes the date, a **test-pinned** count takes the test's name. The fourth shape the question lists — a checker asserting prose against a command — is **refused**: the counts that are right are the ones behind an instrument that is *run*, not one that exists |
-| [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — **and it has an instance again**: [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) closed all three of `CO-H3` on 2026-08-29, and [S1e.3.2](p1e.3_medium/s1e.3.2_semantics.md) found a fourth on 2026-08-31 — `ein test`'s `NOT CHECKED` line names two causes and under `EIN_TRAVERSAL=tree` neither applies. Documented, not fixed: the honest fix is a reason type in `ein-infer`, which is `T1d.10.6.4` again. [S1f.10.7](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it |
-| [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model) | What is a **solution**, and what is a **model**? | **decided 2026-08-28** by the user; binding on [Q5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) and on [P1f.10](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md) |
+| [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — **and it has an instance again**: [S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) closed all three of `CO-H3` on 2026-08-29, and [S1e.3.2](README.md#s1e32--semantics-medium) found a fourth on 2026-08-31 — `ein test`'s `NOT CHECKED` line names two causes and under `EIN_TRAVERSAL=tree` neither applies. Documented, not fixed: the honest fix is a reason type in `ein-infer`, which is `T1d.10.6.4` again. [S1f.10.7](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it. Its fourth instance is also S1 of [M1e2's proposed P1e2.3](../../../plans/m1e2_correctness/README.md#p1e23--surfaces-that-misreport-the-answer-proposed) |
+| [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model) | What is a **solution**, and what is a **model**? | **decided 2026-08-28** by the user; binding on [Q5](search_soundness_probes/README.md) and on [P1f.10](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md) |
 | [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) | The read-out prints the solution **KB** and calls it a model | **decided 2026-08-28 — A**: the recorded object is the *state*, `model` is a projection of it, and § 2 is evaluated on the state. Unblocks Q-M1e.8. S1e.3.2 applies it to the vocabulary, P1e.5's S1e.5.3 to the read-out |
-| [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness. The **record-site conformance check** is [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) T4 ([D3](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d3_q_m1e8_file_or_take.md), option B); the fix files to P1e.2 and, since [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) was ruled on 2026-08-28, **is chosen**: re-saturate and re-check before recording |
-| [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. **Ruled 2026-08-28: B now, C filed.** B **shipped 2026-08-30** in [S1e.2.3](p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md): a `RefutationUnderAbsentWarning` from the same walk `warn-derived-naf` already made, the probe banked as `examples/ein-bugs/naf-upward-closure.ein`, and the corpus measured — **9 rules over 7 entries**, which **corrects D4's prediction**: `connex` is activated twice and exposed neither time (both fixtures write `:no-hypothesis`), and what is exposed is `std.elim`'s membership scans. Gated, because the corpus is not silent. The real fix is [F18](../followups/f18_world_aware_negatives.md); the **language** half — *may a refutation rest on an `absent` at all?* — is [S1f.10.8](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s, and it starts from the banked set |
-| [Q-M1e.10](#q-m1e10--two-config--flags-are-inert) | Two `(config …)` flags are **inert** — `print-alive`, `candidate-order-seed` | open — raised by [S1e.5.1](p1e.5_documentation_and_other/s1e.5.1_config_reference.md); owner unassigned |
-| [Q-M1e.13](#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent) | `:expect` cannot state an answer with an **empty goal extent** — nor detect a shrinking model set | open — found 2026-08-28 while banking [D1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d1_q4_which_route_reaches_the_site.md)'s fixtures; **owner unassigned** |
-| [Q-M1e.12](#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object) | The blind rung is **untyped**, and a model binds a type as an object | open — raised by [D8](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d8_branching06_untyped_models.md) 2026-08-28; **owner unassigned**, three readings recorded |
-| [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [S1f.10.6](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)** 2026-08-28 by the user. The guard **shipped** 2026-08-29 in [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3 — the mode is re-read at every node the tree expands — and its regression test is owed to that stage, because no corpus program can flip the mode |
-| [Q-M1e.14](#q-m1e14--the-corpus---jobs-sweeps-per-layer-census-coverage-is-vacuous) | The corpus `--jobs` sweep's per-layer census coverage is **vacuous** | open — raised 2026-08-29 by [S1e.1.2](p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md) T3, which closed the unit half; **owner unassigned**, and the corpus half costs a golden |
-| [Q-M1e.15](#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) | The **alternatives cap** decides which unsat core is reported | open — raised 2026-08-29 by [S1e.1.3](p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md), which is the review's `Q2` answered **yes**; witnessed by a fixture pair, **owner unassigned**, and no shipped puzzle is changed by it |
-| [Q-M1e.16](#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | The **binding key** compares two register layouts as one | open — raised 2026-08-29 by [S1e.1.4](p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md), which is the review's `Q3` answered and **`Q-M1a.8` closed as stated**. A well-formed program loses a derivation in a release build and trips a `debug_assert` in a test one; **owner unassigned**, and no corpus program can reach it |
-| [Q-M1e.17](#q-m1e17--three-py_int-options-silently-reinterpret-a-negative) | Three `py_int` options **silently reinterpret a negative** | open — raised 2026-08-29 by [S1e.1.5](p1e.1_open_questions/s1e.1.5_cli_semantics.md), which closed the third of them (`-n`) by refusing it. `-m` and `-E` still clamp, and `-E`'s abort line **prints the clamped number**; **owner unassigned** |
-| [Q-M1e.18](#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments) | Three kernel primitives are **not shape-pinned**, and drop their extra arguments | **answered 2026-08-29 — candidate (2)**, by [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T1, which took the whole class rather than `CO-H1`'s one cell: `eq` and `absent` are checked at compile time and refused with a positioned `CompileError`. The grammar and the lexer's `SYMBOL` set are untouched, so no program that worked still works differently. `false` needed nothing |
-| [Q-M1e.19](#q-m1e19--algorithmic-pathology-has-no-owner) | **Algorithmic pathology** has no owner | open — the one of `Q9`'s four unswept surfaces with no home. The other three have one: this stage swept the parser/CLI edges, `cast.rs` goes with `ein-einb`'s next change, and micro-CSP ground truth is [M10](../m10_external_benchmarks/README.md)'s thesis |
-| [Q-M1e.20](#q-m1e20--two-renderers-are-produced-tested-and-unreachable) | **Two renderers are produced, tested and unreachable** — the per-hypothesis lattice dump and the unified KB DOT view | open — raised 2026-08-30 by [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) T3, which was told to route the decision rather than take it in a doc pass; **owner unassigned**, and both are `pub` and golden-pinned today |
-| [Q-M1e.21](#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about) | A rule may **name an object the search can never hypothesise about** | open — raised 2026-08-31 by [S1e.3.3](p1e.3_medium/s1e.3.3_state_model.md), which built the check `ST-M1` asked for and found the check has a live defect behind it: `k = 0, exhausted = true` on an eleven-line program with a model. **Owner unassigned**; three candidate fixes priced, and two corpus programs already break the invariant harmlessly |
-| [Q-M1e.22](#q-m1e22--should-a-failed-artefact-write-have-an-exit-code-of-its-own) | Should a **failed artefact write** have an exit code of its own? | open — raised 2026-08-31 by [S1e.3.5](p1e.3_medium/s1e.3.5_error_handling.md), which ruled `EH-M1` the additive way and wrote it into `defined_behaviour.md` § 4.4. The residue is a **CLI-vocabulary** question and is one conversation with [TE-M4](README.md#the-findings)'s exit-2 overload; **owner unassigned**, and neither should be settled alone |
+| [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness. The **record-site conformance check** is [S1e.1.1](search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) T4 ([D3](search_soundness_probes/d3_q_m1e8_file_or_take.md), option B); the fix files to P1e.2 and, since [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) was ruled on 2026-08-28, **is chosen**: re-saturate and re-check before recording. **Owned 2026-10-14** by [M1e2 S1e2.2.1](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.1_maximal_not_recorded.md) (W1), which also owns the layer-0 form the M1e2 survey found |
+| [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) | Is `dead` really upward-closed under `absent`? | **answered 2026-08-28 — no.** Reproduced; three shipped mechanisms read the premise. **Ruled 2026-08-28: B now, C filed.** B **shipped 2026-08-30** in [S1e.2.3](README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent): a `RefutationUnderAbsentWarning` from the same walk `warn-derived-naf` already made, the probe banked as `examples/ein-bugs/naf-upward-closure.ein`, and the corpus measured — **9 rules over 7 entries**, which **corrects D4's prediction**: `connex` is activated twice and exposed neither time (both fixtures write `:no-hypothesis`), and what is exposed is `std.elim`'s membership scans. Gated, because the corpus is not silent. The real fix is [F18](../../../plans/followups/f18_world_aware_negatives.md); the **language** half — *may a refutation rest on an `absent` at all?* — is [S1f.10.8](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s, and it starts from the banked set. **The fix owned 2026-10-14** by [M1e2 S1e2.2.5](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) |
+| [Q-M1e.10](#q-m1e10--two-config--flags-are-inert) | Two `(config …)` flags are **inert** — `print-alive`, `candidate-order-seed` | open — raised by [S1e.5.1](README.md#s1e51--the-configuration-reference); owner unassigned. **Open, unowned on purpose** at the close: the next change to `ein-core/src/config.rs` decides |
+| [Q-M1e.13](#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent) | `:expect` cannot state an answer with an **empty goal extent** — nor detect a shrinking model set | open — found 2026-08-28 while banking [D1](search_soundness_probes/d1_q4_which_route_reaches_the_site.md)'s fixtures; **owner unassigned**. **Worked around 2026-10-14** by [M1e2's case register](../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.1_the_case_register.md); the language gap stays open, unowned |
+| [Q-M1e.12](#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object) | The blind rung is **untyped**, and a model binds a type as an object | open — raised by [D8](search_soundness_probes/d8_branching06_untyped_models.md) 2026-08-28; **owner unassigned**, three readings recorded. **Owned 2026-10-14** by [M1e2 S1e2.2.10](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.10_types_as_objects.md) (C1) |
+| [Q-M1e.11](#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis) | What happens to an obligation **derived under a hypothesis**? | open — **handed to [S1f.10.6](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)** 2026-08-28 by the user. The guard **shipped** 2026-08-29 in [S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3 — the mode is re-read at every node the tree expands — and its regression test is owed to that stage, because no corpus program can flip the mode |
+| [Q-M1e.14](#q-m1e14--the-corpus---jobs-sweeps-per-layer-census-coverage-is-vacuous) | The corpus `--jobs` sweep's per-layer census coverage is **vacuous** | open — raised 2026-08-29 by [S1e.1.2](README.md#s1e12--determinism-under---jobs-q1) T3, which closed the unit half; **owner unassigned**, and the corpus half costs a golden. **Open, unowned on purpose** at the close: the next change to the parallel fan-out owns it |
+| [Q-M1e.15](#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) | The **alternatives cap** decides which unsat core is reported | open — raised 2026-08-29 by [S1e.1.3](README.md#s1e13--what-the-core-promises-q2), which is the review's `Q2` answered **yes**; witnessed by a fixture pair, **owner unassigned**, and no shipped puzzle is changed by it. **Owned 2026-10-14** by [M1e2 S1e2.2.11](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md) (W10) |
+| [Q-M1e.16](#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | The **binding key** compares two register layouts as one | open — raised 2026-08-29 by [S1e.1.4](README.md#s1e14--q-m1a8s-real-trigger-q3), which is the review's `Q3` answered and **`Q-M1a.8` closed as stated**. A well-formed program loses a derivation in a release build and trips a `debug_assert` in a test one; **owner unassigned**, and no corpus program can reach it. **Owned 2026-10-14** by [M1e2 S1e2.2.7](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md) (W7) |
+| [Q-M1e.17](#q-m1e17--three-py_int-options-silently-reinterpret-a-negative) | Three `py_int` options **silently reinterpret a negative** | open — raised 2026-08-29 by [S1e.1.5](README.md#s1e15---n-0-q7), which closed the third of them (`-n`) by refusing it. `-m` and `-E` still clamp, and `-E`'s abort line **prints the clamped number**; **owner unassigned**. **Owned 2026-10-14** by S5 of [M1e2's proposed P1e2.3](../../../plans/m1e2_correctness/README.md#p1e23--surfaces-that-misreport-the-answer-proposed) |
+| [Q-M1e.18](#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments) | Three kernel primitives are **not shape-pinned**, and drop their extra arguments | **answered 2026-08-29 — candidate (2)**, by [S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T1, which took the whole class rather than `CO-H1`'s one cell: `eq` and `absent` are checked at compile time and refused with a positioned `CompileError`. The grammar and the lexer's `SYMBOL` set are untouched, so no program that worked still works differently. `false` needed nothing |
+| [Q-M1e.19](#q-m1e19--algorithmic-pathology-has-no-owner) | **Algorithmic pathology** has no owner | open — the one of `Q9`'s four unswept surfaces with no home. The other three have one: this stage swept the parser/CLI edges, `cast.rs` goes with `ein-einb`'s next change, and micro-CSP ground truth is [M10](../../../plans/m10_external_benchmarks/README.md)'s thesis. **Open, no owner** at the close, and the closing claim says so |
+| [Q-M1e.20](#q-m1e20--two-renderers-are-produced-tested-and-unreachable) | **Two renderers are produced, tested and unreachable** — the per-hypothesis lattice dump and the unified KB DOT view | open — raised 2026-08-30 by [S1e.2.2](README.md#s1e22--code--doc-the-canonical-tree) T3, which was told to route the decision rather than take it in a doc pass; **owner unassigned**, and both are `pub` and golden-pinned today. **Owned 2026-10-14** by [M1e2 S1e2.1.3](../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.3_the_doors.md), option (a) |
+| [Q-M1e.21](#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about) | A rule may **name an object the search can never hypothesise about** | open — raised 2026-08-31 by [S1e.3.3](README.md#s1e33--state-model-medium), which built the check `ST-M1` asked for and found the check has a live defect behind it: `k = 0, exhausted = true` on an eleven-line program with a model. **Owner unassigned**; three candidate fixes priced, and two corpus programs already break the invariant harmlessly. **Owned 2026-10-14** by [M1e2 S1e2.2.4](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.4_fresh_name_unreachable.md) (W4) |
+| [Q-M1e.22](#q-m1e22--should-a-failed-artefact-write-have-an-exit-code-of-its-own) | Should a **failed artefact write** have an exit code of its own? | open — raised 2026-08-31 by [S1e.3.5](README.md#s1e35--error-handling-medium), which ruled `EH-M1` the additive way and wrote it into `defined_behaviour.md` § 4.4. The residue is a **CLI-vocabulary** question and is one conversation with [TE-M4](README.md#the-findings)'s exit-2 overload; **owner unassigned**, and neither should be settled alone. **Owned 2026-10-14** by [M2 S2.1.2](../../../plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation/s2.1.2_feedback_object.md), whose feedback object already names the exit-2 overload |
 
 ---
 
@@ -45,7 +45,7 @@ records which question became which id.
 
 > **Decided 2026-08-28 and written down.** Both this and
 > [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) are now
-> [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md),
+> [`docs/kernel/standard_of_proof.md`](../../kernel/standard_of_proof.md),
 > which carries the two rules, the four-row calibration table and the worked
 > example. This entry stays as the argument that produced them. Later stages
 > **cite the page**, not this entry.
@@ -57,7 +57,7 @@ bar, because the cheap version — "I read the code and disagree" — is the sam
 epistemic move that produced the finding.
 
 The proposed bar, to be ratified in
-[S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) T1 and then
+[S1e.1.1](search_soundness_probes/README.md) T1 and then
 binding on every stage:
 
 - A finding claiming a **behaviour** is refuted only by an executed probe —
@@ -76,7 +76,7 @@ binding on every stage:
 
 > **Decided 2026-08-28, beside Q-M1e.1** — *an argument suffices when its
 > premise is itself enforced* — and written into
-> [`docs/kernel/standard_of_proof.md`](../../docs/kernel/standard_of_proof.md)
+> [`docs/kernel/standard_of_proof.md`](../../kernel/standard_of_proof.md)
 > as Rule 2.
 
 Several findings are of the form *this is stated but not enforced*
@@ -92,7 +92,7 @@ which nothing checks, so the argument is not sufficient and
 [ST-M1](README.md#the-findings) needs the cheap post-fixpoint check.
 
 > **And when the check was built, the premise turned out to be false** —
-> 2026-08-31, [S1e.3.3](p1e.3_medium/s1e.3.3_state_model.md): two corpus
+> 2026-08-31, [S1e.3.3](README.md#s1e33--state-model-medium): two corpus
 > programs assert a constant no fact names, and an eleven-line fixture shows
 > what one costs. The rule's second calibration row is therefore the rule
 > working twice: *unenforced* did not mean *probably true*, in either of the
@@ -103,7 +103,7 @@ whose premise is *nothing fires equality propagation* — enforced by
 named test — so a comment at the future wiring point is enough.
 
 > **That contrast was wrong, and finding out why sharpened the rule** —
-> 2026-09-01, [S1e.4.3](p1e.4_low/s1e.4.3_state_model.md). The named test does
+> 2026-09-01, [S1e.4.3](README.md#s1e43--state-model-low). The named test does
 > **not** enforce that premise: it unions by hand and then asserts the
 > *matcher* ignores the class, and a probe that made the engine union on every
 > stored fact left it green. So this question's own worked example of *an
@@ -113,22 +113,22 @@ named test — so a comment at the future wiring point is enough.
 > **harder** to see than an uncited one, because the citation is what stops
 > anybody looking. The hazard was removed instead of documented (a
 > non-vivifying `find`, ten lines), and
-> [`standard_of_proof.md`](../../docs/kernel/standard_of_proof.md) Rule 2 now
+> [`standard_of_proof.md`](../../kernel/standard_of_proof.md) Rule 2 now
 > carries the second question: *does the named test enforce the premise, or
 > something adjacent to it?*
 
 If that rule holds, it decides most of the `accepted` dispositions
 mechanically, and it should be written into
-[`docs/kernel/defined_behaviour.md`](../../docs/kernel/defined_behaviour.md)
+[`docs/kernel/defined_behaviour.md`](../../kernel/defined_behaviour.md)
 or `design/`-style prose rather than living only here.
 
 ### Owner, assigned 2026-08-28 — ratified beside Q-M1e.1
 
-[D5](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d5_does_t1_ratify_q_m1e2.md),
+[D5](search_soundness_probes/d5_does_t1_ratify_q_m1e2.md),
 option **A**: this question had **no owning stage**, which meant *"whoever
 reaches it"* was nobody and the first `accepted` disposition would have decided
 it implicitly. It is now
-[S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules)
+[S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules)
 T1's, ratified in the same half-day as Q-M1e.1 because the two are one rule
 read from two ends — Q-M1e.1 says a **risk** cannot be argued away; this one
 says what an acceptable argument looks like when a finding is `accepted`
@@ -145,7 +145,7 @@ before the rule would have been needed.
 ## Q-M1e.3 — Who owns a page that should be neither fixed nor deleted?
 
 > **Answered 2026-08-30 — (c), and the answer was already written down.**
-> [`docs/history/README.md`](../../docs/history/README.md) says where M1's
+> [`docs/history/README.md`](../README.md) says where M1's
 > surviving documents live: *"**M1** (core graph reasoning, shipped
 > 2026-06-17) predates this directory: what survived its plan tree went to
 > `docs/kernel/inference/` and `plans/followups/` at P1.22, and the rest is in
@@ -155,7 +155,7 @@ before the rule would have been needed.
 > **banner**.
 >
 > The rule, generalised from that and applied to all 40 pages in
-> [S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) T1:
+> [S1e.2.2](README.md#s1e22--code--doc-the-canonical-tree) T1:
 >
 > 1. Does every claim on the page hold of the engine that ships? → **current**.
 > 2. Otherwise, is the page still *read* — cited by another page, or the record
@@ -174,7 +174,7 @@ before the rule would have been needed.
 >
 > On `algorithm_layer_n.md` specifically, step 2 also answers "half a reason"
 > the other way: the page has **five** referrers, and one of them is
-> [`docs/history/m1a_rust/design/07_search_layer.md`](../../docs/history/m1a_rust/design/07_search_layer.md),
+> [`docs/history/m1a_rust/design/07_search_layer.md`](../m1a_rust/design/07_search_layer.md),
 > which cites it as *"the per-step contract"* — a shipped milestone record
 > naming it as the specification the port had to reproduce. Deleting a page a
 > history record cites as its specification falsifies the record. So deletion
@@ -195,7 +195,7 @@ a directory that does not exist, for the milestone whose plans were deleted
 at P1.22; (b) delete, since git history holds it and the surviving reason is
 already stated where the refutation is; (c) keep in place with a banner as
 strong as `parity_baselines.md`'s. This question is the *rule*;
-[S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) T1 applies it per page
+[S1e.2.2](README.md#s1e22--code--doc-the-canonical-tree) T1 applies it per page
 and records which pages the rule sent where.
 
 ## Q-M1e.4 — Does the repo want an exact count in prose at all?
@@ -205,7 +205,7 @@ and records which pages the rule sent where.
 > and there are exactly three such things: a **command** that re-takes it, a
 > **date**, or a **test** that pins it. A count that can carry none of the
 > three is deleted, and what prints it is named instead. That is
-> [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md)'s own acceptance — *no
+> [S1e.3.8](README.md#s1e38--documentation-medium)'s own acceptance — *no
 > prose count survives that nothing generates, dates or owns* — turned into a
 > rule an author applies without deciding anything.
 >
@@ -235,7 +235,7 @@ and records which pages the rule sent where.
 > nobody is this same failure one level up, and it would be the second thing
 > in the tree claiming the docs are checked.
 >
-> So [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md) is **a de-counting pass
+> So [S1e.3.8](README.md#s1e38--documentation-medium) is **a de-counting pass
 > with a re-counting minority**: most sites lose their digit and gain a
 > one-liner, `README.md`'s gate line keeps its digit and gains today's date,
 > and the handful a test already pins gain the test's name.
@@ -254,7 +254,7 @@ prints it* and link, as `corpus_cost.md` does), and the **dated** count (*as
 of the M1a close, 616*). A fourth — a markdown-level check that a stated
 number matches a script's output — does not exist and would be new machinery.
 
-The answer decides whether [S1e.3.8](p1e.3_medium/s1e.3.8_documentation.md)
+The answer decides whether [S1e.3.8](README.md#s1e38--documentation-medium)
 is a counting pass or a de-counting pass, and it is worth taking before the
 pass rather than during it.
 
@@ -276,7 +276,7 @@ flag does not license it.
 
 The narrow fix — make the arm refuse to print evidence it does not have — is
 available without answering the design question, and
-[S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3 was to take it. The general
+[S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3 was to take it. The general
 rule is this question, and it belongs with `T1d.10.6.4` when M1d's traversal
 work resumes.
 
@@ -305,19 +305,19 @@ question is still the right home for:
 1. *Learning on tree deaths remains available and unpriced.* It is the option
    that would make the tree prune, and it is a search change: it belongs with
    `T1d.10.6.4` and with
-   [S1f.10.7](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md),
+   [S1f.10.7](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md),
    not with a review-processing stage.
 2. *The general rule.* `EIN_TRAVERSAL=tree` is still the only surface in the
    system the word **experimental** applies to
-   ([`configuration.md` § 2.3](../../docs/kernel/configuration.md)), and what
+   ([`configuration.md` § 2.3](../../kernel/configuration.md)), and what
    that word licenses is undecided. What S1e.2.1 establishes is only a lower
    bound on the answer: on this occasion the true read-out was **cheaper** than
    the refusal, so the question was not tested.
 3. *A fourth instance, found 2026-08-31 by
-   [S1e.3.2](p1e.3_medium/s1e.3.2_semantics.md) while documenting the shipped
+   [S1e.3.2](README.md#s1e32--semantics-medium) while documenting the shipped
    subset.* `ein test`'s `NOT CHECKED` line reads **"Either the run stopped at
    `-n`, or the frontier is still alive at `--max-set-size`"**
-   ([`expect.rs`](../../ein.rs/crates/ein-infer/src/expect.rs) `ok_if_exhausted`,
+   ([`expect.rs`](../../../ein.rs/crates/ein-infer/src/expect.rs) `ok_if_exhausted`,
    and again in the too-few-models arm). Under this traversal **neither cause
    applies**: the tree exhausted its own search and `-m` is refused at exit 2.
    It is the same shape as (b) one layer out — a surface naming evidence it
@@ -330,12 +330,12 @@ question is still the right home for:
    did not exhaust, so making the sentence true means giving `ein-infer` a
    reason type — which is the same question as *what does a tree report where a
    lattice reports layers*, i.e. `T1d.10.6.4` again. Documented meanwhile in
-   [`configuration.md` § What `EIN_TRAVERSAL=tree` reports](../../docs/kernel/configuration.md).
+   [`configuration.md` § What `EIN_TRAVERSAL=tree` reports](../../kernel/configuration.md).
 
 ## Q-M1e.6 — What is a **solution**, and what is a **model**?
 
 **Decided 2026-08-28**, by the user, in answer to
-[S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)'s Q5 —
+[S1e.1.1](search_soundness_probes/README.md)'s Q5 —
 which had asked which of two engine configurations is right and was told,
 correctly, that the question is prior to both. Recorded verbatim:
 
@@ -382,7 +382,7 @@ down: it is *what the puzzle did not say and the solve established*.
   default's `k=3` is right.
 - **`complete` is an approximation, and the definition says in which
   direction.** `complete(S) ≡ the generator proposes nothing`
-  ([`hypgen.rs:902`](../../ein.rs/crates/ein-infer/src/hypgen.rs)) is
+  ([`hypgen.rs:902`](../../../ein.rs/crates/ein-infer/src/hypgen.rs)) is
   generator-relative; clause 3 is not. The one-step lookahead only drops a
   candidate it can **prove** dies, so using it inside `complete` is *sound* —
   every state it calls complete is a solution — and *incomplete*: a candidate
@@ -429,7 +429,7 @@ and is never asked which of its members had a live child.
 That step **inherits a premise rather than adding one**: it needs `dead` to be
 upward-closed, which is exactly what apriori's pruning and the no-good store
 already need. The repo asserts it —
-[design/08](../../docs/history/m1a_rust/design/08_parallelism.md) § The
+[design/08](../m1a_rust/design/08_parallelism.md) § The
 objects: *"`dead(X)` … **Monotone**: `X ⊆ Y ∧ dead(X) ⇒ dead(Y)`, because the
 KB is append-only and nothing retracts"* — and
 [Q-M1e.9](#q-m1e9--is-dead-really-upward-closed-under-absent) is why that
@@ -438,14 +438,14 @@ sentence is worth re-reading before anything new leans on it.
 **2. `complete()` is an approximation of that lattice property, and it is
 sound in one direction only.** `hypgen::complete` asks the generator *at the
 node, now*, and its answer is filtered by the pipeline
-([`hypgen.rs:422`](../../ein.rs/crates/ein-infer/src/hypgen.rs)). The
+([`hypgen.rs:422`](../../../ein.rs/crates/ein-infer/src/hypgen.rs)). The
 lookahead only drops a candidate it can **prove** dies in one firing, so:
 
 | | holds? | consequence |
 |---|---|---|
 | `complete(S)` ⟹ `S is maximal` | **yes**, with the lookahead on or off | the lookahead only drops a candidate it can **prove** dies in one firing |
 | `solution(S)` ⟹ `complete(S)` | **no** | a remaining candidate that needs two firings to die is still proposed, so a real solution goes unrecorded |
-| `complete(S)` ⟹ `solution(S)` | **no** | ⚠ **this row said *yes* — *"the engine never records a false model"* — until 2026-08-28.** Maximality is one conjunct of three, and what is recorded is not the state `complete` was asked about: the generator's own kill cache writes into it. Three witnesses at three record sites; the row was rewritten on the kernel page the same day ([D9](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d9_kernel_page_overclaims.md), [D3](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d3_q_m1e8_file_or_take.md)'s check) |
+| `complete(S)` ⟹ `solution(S)` | **no** | ⚠ **this row said *yes* — *"the engine never records a false model"* — until 2026-08-28.** Maximality is one conjunct of three, and what is recorded is not the state `complete` was asked about: the generator's own kill cache writes into it. Three witnesses at three record sites; the row was rewritten on the kernel page the same day ([D9](search_soundness_probes/d9_kernel_page_overclaims.md), [D3](search_soundness_probes/d3_q_m1e8_file_or_take.md)'s check) |
 
 So the engine **under-reports**, always — and, separately, can record a state
 its own rules refute. `-L` under-reports far more —
@@ -472,7 +472,7 @@ semantics stands on.
 ### Where it goes
 
 Into `docs/kernel/` as a normative page —
-[P1e.5](p1e.5_documentation_and_other/README.md)'s proposed S1e.5.2 — not into this
+[P1e.5](README.md#p1e5--documentation-and-other)'s proposed S1e.5.2 — not into this
 file. A ruling that lives only in a plan is the shape
 [Q-M1e.1](#q-m1e1--what-is-the-standard-of-proof-for-refuted) forbids.
 
@@ -485,9 +485,9 @@ initial KB. Nothing in the engine computes that object.
 What is printed and stored instead is the whole fact list of the solution
 state: `verdict.solutions[i].facts` in `--json-summary`, the `model n/k`
 blocks in `ein solve`, the `BTreeSet<Vec<String>>` that
-[`tree_traversal.rs`](../../ein.rs/crates/ein-infer/tests/tree_traversal.rs)
+[`tree_traversal.rs`](../../../ein.rs/crates/ein-infer/tests/tree_traversal.rs)
 compares fact for fact, and the variables
-[`model_set_census.py`](../../utils/model_set_census.py) derives. All four
+[`model_set_census.py`](../../../utils/model_set_census.py) derives. All four
 include the negatives, the ontology and the rule markers —
 `lattice/02`'s "model" is nine facts of which **six** are `(relation …)`.
 
@@ -510,11 +510,11 @@ the fact-set comparisons need to say which one they mean.
 ### Owner, assigned 2026-08-28 — and why it is not the two candidates first named
 
 This entry used to say *owner unassigned; candidates are
-[S1e.3.2](p1e.3_medium/s1e.3.2_semantics.md) (the vocabulary split) and P1e.5's
+[S1e.3.2](README.md#s1e32--semantics-medium) (the vocabulary split) and P1e.5's
 proposed S1e.5.3 (the read-out reference)*. Both still want the **application**
 — the names, the read-out, the reference page — but neither can be the owner of
 the **ruling** any more, because both run after the thing that now waits on it:
-[D3](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d3_q_m1e8_file_or_take.md)'s
+[D3](search_soundness_probes/d3_q_m1e8_file_or_take.md)'s
 record-site check found that two candidate fixes for
 [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) report
 **different `k` on the same program**, and which is right is this question. The
@@ -522,8 +522,8 @@ fix's home is P1e.2; S1e.3.2 is P1e.3 and S1e.5.3 is P1e.5.
 
 | | what | who |
 |---|---|---|
-| **the ruling** — which object the criteria are evaluated on | [S1e.1.1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) **T1e.1.1.4**, the task that found the dependency, in the phase whose job is to rule | **owner** |
-| the vocabulary — two objects, two names, in four surfaces | [S1e.3.2](p1e.3_medium/s1e.3.2_semantics.md), with `SE-M1` | applies it |
+| **the ruling** — which object the criteria are evaluated on | [S1e.1.1](search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) **T1e.1.1.4**, the task that found the dependency, in the phase whose job is to rule | **owner** |
+| the vocabulary — two objects, two names, in four surfaces | [S1e.3.2](README.md#s1e32--semantics-medium), with `SE-M1` | applies it |
 | the read-out — what `ein solve` and `--json-summary` print | P1e.5's S1e.5.3 | applies it |
 | which object is recorded and compared | the Q-M1e.8 fix stage, in P1e.2 | consumes it |
 
@@ -534,7 +534,7 @@ S1e.1.1 T1, cited rather than re-argued by every stage after.
 ### The three readings, and what each does to `k`
 
 The probes in
-[`s1e.1.1…/probes/`](p1e.1_open_questions/s1e.1.1_search_soundness_probes/probes/)
+[`s1e.1.1…/probes/`](search_soundness_probes/probes/)
 make this concrete rather than terminological. Write `S` for the recorded KB
 and `K` for what the search wrote into it — the lookahead kill cache's `(not
 h)` and the singleton writeback's.
@@ -576,16 +576,16 @@ answers what `-L` answers, which is what the hand derivations support.
 
 | | consequence |
 |---|---|
-| [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) / [CO-M1](README.md#the-findings) | **fix (ii)** — re-saturate and re-check before recording, or the equivalent *dirty since its last saturation* guard ([D1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d1_q4_which_route_reaches_the_site.md) option B). Fixes (i) and (iii) are off the table: neither reaches the inter-layer site, and (iii) would hide an entailed contradiction |
+| [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) / [CO-M1](README.md#the-findings) | **fix (ii)** — re-saturate and re-check before recording, or the equivalent *dirty since its last saturation* guard ([D1](search_soundness_probes/d1_q4_which_route_reaches_the_site.md) option B). Fixes (i) and (iii) are off the table: neither reaches the inter-layer site, and (iii) would hide an entailed contradiction. **Owned 2026-10-14** by [M1e2 S1e2.2.1](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.1_maximal_not_recorded.md) (W1), which also owns the layer-0 form the M1e2 survey found |
 | the read-out | a **projection** has to exist. `model` = positive part − positive initial KB, and `ein solve` / `--json-summary` print it under that name. P1e.5's S1e.5.3 |
-| the vocabulary | two objects, two names, in the four surfaces Q-M1e.7 lists — `SE-M1`'s defect at a second site. [S1e.3.2](p1e.3_medium/s1e.3.2_semantics.md) |
-| every fact-set comparison | [`tree_traversal.rs`](../../ein.rs/crates/ein-infer/tests/tree_traversal.rs), the corpus goldens, `model_set_census.py`'s variables — each has to say **which object** it compares. Comparing states is right for a search-equivalence test and wrong for a model-set one, and today they all compare states without saying so |
+| the vocabulary | two objects, two names, in the four surfaces Q-M1e.7 lists — `SE-M1`'s defect at a second site. [S1e.3.2](README.md#s1e32--semantics-medium) |
+| every fact-set comparison | [`tree_traversal.rs`](../../../ein.rs/crates/ein-infer/tests/tree_traversal.rs), the corpus goldens, `model_set_census.py`'s variables — each has to say **which object** it compares. Comparing states is right for a search-equivalence test and wrong for a model-set one, and today they all compare states without saying so |
 | the corpus | the fix can only move an entry whose program **reads** a fact the search wrote. Expected zero; it is the fix stage's to measure, not to assume |
 
 ### The three readings, as they were put
 
 The probes in
-[`s1e.1.1…/probes/`](p1e.1_open_questions/s1e.1.1_search_soundness_probes/probes/)
+[`s1e.1.1…/probes/`](search_soundness_probes/probes/)
 make this concrete rather than terminological. Write `S` for the recorded KB
 and `K` for what the search wrote into it — the lookahead kill cache's `(not
 h)` and the singleton writeback's.
@@ -611,7 +611,7 @@ one of the three that leaves § 2 true of the thing the engine records.
 Raised by [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
 operational form, and it has a witness in the corpus today.
 
-`exhausted = !truncated` ([`solve.rs:2388`](../../ein.rs/crates/ein-infer/src/solve.rs))
+`exhausted = !truncated` ([`solve.rs:2388`](../../../ein.rs/crates/ein-infer/src/solve.rs))
 is set when the search did not stop early — no depth cap hit with a live
 frontier, no `stop_after` cut, not the tree. It is read by the verdict as a
 **certification**: `Ambiguity` prints a bare `k` rather than *"(a lower
@@ -650,7 +650,7 @@ trade-off to measure rather than assume.
 
 Owner unassigned. It is the same seam as
 [CO-H3](README.md#the-findings)(b) (a `Contradiction` whose evidence is empty)
-and [Q-M1d.6](../../docs/history/m1d_satisfiability/open_questions.md)
+and [Q-M1d.6](../m1d_satisfiability/open_questions.md)
 (may `Contradiction` be said with `exhausted = false`) — but strictly worse
 than either, because here `exhausted` is **true**.
 
@@ -659,10 +659,10 @@ than either, because here `exhausted` is **true**.
 **Answered 2026-08-28: no.** Filed the same day as *two kernel pages appear to
 disagree*, and **not** promoted to a finding pending a probe. The probe was
 run. The full account, the attribution matrix and the four disposition options
-are [D4](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md);
+are [D4](search_soundness_probes/d4_q_m1e9_upward_closure.md);
 this entry is the ledger row.
 
-The premise, as [design/08 § The objects](../../docs/history/m1a_rust/design/08_parallelism.md)
+The premise, as [design/08 § The objects](../m1a_rust/design/08_parallelism.md)
 states it:
 
 > `dead(X)` — `X` holds a contradiction. **Monotone**: `X ⊆ Y ∧ dead(X) ⇒
@@ -670,11 +670,11 @@ states it:
 
 *Append-only* makes `sat` **inflationary**, not monotone in its input, and
 `absent` is what separates the two — which
-[C3](../../docs/kernel/inference/absent_semantics.md) already says from the
+[C3](../../kernel/inference/absent_semantics.md) already says from the
 other direction.
 
 **The counterexample is twenty lines**
-([`probes/naf_upward_closure.ein`](p1e.1_open_questions/s1e.1.1_search_soundness_probes/probes/naf_upward_closure.ein),
+([`probes/naf_upward_closure.ein`](search_soundness_probes/probes/naf_upward_closure.ein),
 re-taken by the `.sh` beside it): one rule `(and (p ?x) (absent (q ?x))) ⇒
 (false)`. `{(p A)}` is dead; `{(p A), (q A)}` is alive; the single solution is
 `{(p A), (q A)}`. **Five of the six shipped configurations do not report it**,
@@ -702,7 +702,7 @@ relations and every hypothesis-eligible relation — with the real fix filed,
 starting from `Prov::absent`, which has recorded the negative premises since
 S1.21.8 and which *"no walk yet interprets"*.
 
-> **B shipped 2026-08-30** ([S1e.2.3](p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md)),
+> **B shipped 2026-08-30** ([S1e.2.3](README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)),
 > as a warning rather than a refusal and **after root saturation** rather than
 > at load — because the compile cache is only complete once the saturator has
 > run, and six of the nine exposed rows are rules activated by *derived* facts,
@@ -717,7 +717,7 @@ S1.21.8 and which *"no walk yet interprets"*.
 ## Q-M1e.10 — Two `(config …)` flags are inert
 
 **Raised 2026-08-28** by
-[S1e.5.1](p1e.5_documentation_and_other/s1e.5.1_config_reference.md), which
+[S1e.5.1](README.md#s1e51--the-configuration-reference), which
 had to write a *what it changes* column for all seventeen flags and found two
 with nothing to put in it. The stage's own rule — *"anything found gets a
 `Q-M1e.<n>`, not a quiet fix in a doc stage"* — is why this is here rather
@@ -725,17 +725,17 @@ than a patch.
 
 `print-alive` and `candidate-order-seed` are, like the other fifteen:
 
-- in [`FIELDS`](../../ein.rs/crates/ein-core/src/config.rs), so the loader
+- in [`FIELDS`](../../../ein.rs/crates/ein-core/src/config.rs), so the loader
   accepts them and **rejects a wrong-typed value with a positioned
   diagnostic** (`examples/broken/load/config_bad_value.ein` is
   `:print-alive 7`);
 - printed by `ein solve --dump-config` in declaration order;
 - echoed into `--json-summary`'s `config` block
-  ([`summary.rs`](../../ein.rs/crates/ein-cli/src/summary.rs));
+  ([`summary.rs`](../../../ein.rs/crates/ein-cli/src/summary.rs));
 - part of `rendered_fields`, so they are **rendered into the KB-shape digest**
   that every corpus shape golden is taken over;
 - read and written by the `.einb` container's meta accessors
-  ([`meta.rs`](../../ein.rs/crates/ein-einb/src/meta.rs)).
+  ([`meta.rs`](../../../ein.rs/crates/ein-einb/src/meta.rs)).
 
 And read by **no code path**. `grep -rn 'print_alive\|candidate_order_seed'
 ein.rs --include='*.rs'` returns the loader, the four renderers, the container
@@ -754,7 +754,7 @@ Because the two are **port gaps whose surface crossed and whose behaviour did
 not**, and the port's own oracle could not have caught it: T0–T3 compared two
 implementations' *observable output*, and a knob that does nothing produces
 identical output in both engines when it does nothing in both — but ein.py's
-did something. [`docs/api/inference.md`](../../docs/api/inference.md) is the
+did something. [`docs/api/inference.md`](../../api/inference.md) is the
 frozen contract of the engine that was:
 
 | flag | what ein.py did |
@@ -794,9 +794,9 @@ something wants a per-branch order probe that `lattice-order-seed` cannot
 give; nothing does today.
 
 Owner unassigned. The natural readers are
-[S1e.3.9](p1e.3_medium/s1e.3.9_maintainability.md) (MA-M2's site is its) and
-[P1f.10](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md)
-[S1f.10.5](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.5_ordering.md), which is already
+[S1e.3.9](README.md#s1e39--maintainability-medium) (MA-M2's site is its) and
+[P1f.10](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md)
+[S1f.10.5](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.5_ordering.md), which is already
 holding the other knob that does less than its name says
 (`hypgen-scoring: most-constrained`, a constant `0.0`).
 
@@ -804,9 +804,9 @@ holding the other knob that does less than its name says
 
 ## Q-M1e.11 — What happens to an obligation **derived under a hypothesis**?
 
-**Raised by** [D2](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d2_q6_which_decline_to_construct.md)
+**Raised by** [D2](search_soundness_probes/d2_q6_which_decline_to_construct.md)
 on 2026-08-28, which split the review's `Q6` in two.
-**Owner: [S1f.10.6](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)**
+**Owner: [S1f.10.6](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)**
 — the stage D2 became the same day, by the user's instruction. Its T4 is what
 rules on this; the ruling is written into this file with the date, and beside
 the code that computes the structure.
@@ -814,16 +814,16 @@ the code that computes the structure.
 ### What is decided, and is *not* this question
 
 **The rung mode must be re-read at every node.** It is probed once at root
-([`solve.rs:889-914`](../../ein.rs/crates/ein-infer/src/solve.rs)) on the
+([`solve.rs:889-914`](../../../ein.rs/crates/ein-infer/src/solve.rs)) on the
 premise that *"the mode is a property of the program rather than of the node,
 so asking once is asking enough"*, and that premise is false: an activator is
 an ordinary fact, and a rule head can derive one inside a fork
-([`compile.rs:54-69`](../../ein.rs/crates/ein-infer/src/compile.rs)). The
+([`compile.rs:54-69`](../../../ein.rs/crates/ein-infer/src/compile.rs)). The
 value is in fact **already computed at every node and thrown away** —
 `tree_node` builds a `HypGenStats`, calls `generate_one_branch`, keeps the
 candidate list and drops `hs.rung.mode` (`solve.rs:945-956`) — so re-reading
 it costs nothing that is not already paid. That is a **guard**; it is decided;
-[S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T3 writes it.
+[S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3 writes it.
 
 ### The question the guard does not answer
 
@@ -833,7 +833,7 @@ about the **structure of the hypothesis set**, not about a traversal:
 
 - The candidate set **grew underneath a branch** that was entered because its
   alternatives were jointly exhaustive.
-  [`domain_contract.md`](../../docs/history/m1d_satisfiability/domain_contract.md)
+  [`domain_contract.md`](../m1d_satisfiability/domain_contract.md)
   C4 states the contract exactly — *a branch is jointly exhaustive only while
   the candidate set cannot grow underneath it* — and says nothing about what
   to do when it does.
@@ -845,7 +845,7 @@ about the **structure of the hypothesis set**, not about a traversal:
   depth 3 what root was not owes what its ancestors did not, so `complete` at
   that node is not the same predicate as `complete` at its parent — which is
   the mechanism by which a model goes missing, per
-  [D2](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d2_q6_which_decline_to_construct.md)
+  [D2](search_soundness_probes/d2_q6_which_decline_to_construct.md)
   § The loss mechanism.
 
 ### Three shapes, which may not have one answer
@@ -879,7 +879,7 @@ computed only for programs where it cannot — and either is an answer.
 
 ## Q-M1e.12 — The blind rung is untyped, and a model binds a type as an object
 
-**Raised by** [D8](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d8_branching06_untyped_models.md)
+**Raised by** [D8](search_soundness_probes/d8_branching06_untyped_models.md)
 on 2026-08-28, out of S1e.1.1's reconnaissance. **Owner unassigned** — filed
 because a question the milestone found belongs in the milestone's ledger, not
 because anything is scheduled to answer it.
@@ -901,10 +901,10 @@ Two consequences that are already load-bearing elsewhere:
 
 - the fixture cannot be the Q5 pair, because *"its solution set is derivable in
   a paragraph"* is false of it — which is why
-  [D6](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d6_the_new_q5_fixture.md)
+  [D6](search_soundness_probes/d6_the_new_q5_fixture.md)
   builds a new one;
 - it is the **standing proof** for
-  [S1f.10.6](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)'s
+  [S1f.10.6](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)'s
   loss mechanism — the blind rung keeps proposing long after any real debt is
   discharged, which is why a tree node that flips to it stops recognising
   solutions. Without this fixture that argument is hypothetical.
@@ -934,7 +934,7 @@ consequence.
 ## Q-M1e.13 — `:expect` cannot state an answer with an empty goal extent
 
 **Found 2026-08-28** while banking
-[D1](p1e.1_open_questions/s1e.1.1_search_soundness_probes/d1_q4_which_route_reaches_the_site.md)'s
+[D1](search_soundness_probes/d1_q4_which_route_reaches_the_site.md)'s
 fixtures under option (i) — *bank them stating today's answer*. Two of the
 three could not state it. **Owner unassigned.**
 
@@ -955,7 +955,7 @@ kb load error: :expect does not name p, which the query's :goal asks about
 
 and so does `(model)`, and so does any list of facts that does not mention `p`.
 The rule is
-[`01_grammar.md` § Query](../../docs/kernel/ir/03-ein-lang/01_grammar.md#query)'s
+[`01_grammar.md` § Query](../../kernel/ir/03-ein-lang/01_grammar.md#query)'s
 first: *the goal's relations are mandatory; an expectation that does not pin
 what the query asked is not an expectation.* Its reasoning is sound. Its
 consequence is that **an answer whose goal extent is empty is unstatable**,
@@ -971,7 +971,7 @@ the goal, because one arm can never name it.
 ### Why it matters beyond the three fixtures
 
 - **It is the one mechanism that makes a verdict change visible in a golden.**
-  The [golden audit](p1e.1_open_questions/s1e.1.1_search_soundness_probes/golden_audit.md)
+  The [golden audit](search_soundness_probes/golden_audit.md)
   found that neither `corpus_exits.txt` (both sides exit `0`) nor
   `corpus_shapes.md5` (the KB shape does not change) moves when a verdict does.
   Only a failing `:expect` moves an exit code. So a fixture that cannot carry
@@ -1006,7 +1006,7 @@ at all.
 ## Q-M1e.14 — The corpus `--jobs` sweep's per-layer census coverage is vacuous
 
 > **Raised 2026-08-29 by
-> [S1e.1.2](p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md)
+> [S1e.1.2](README.md#s1e12--determinism-under---jobs-q1)
 > T1e.1.2.3**, which went looking for where `dropped_nogood` is compared across
 > job counts, found exactly one route, and measured it as a column of zeroes.
 > **Owner unassigned.**
@@ -1044,7 +1044,7 @@ cost question rather than a design one:
 
 1. **Raise `dump_shape`'s `max_enterings`.** One line, and it re-blesses every
    `dump[progress]` cell of `corpus_shapes.md5` — a deliberate golden move,
-   which [P1e.1's acceptance](p1e.1_open_questions/README.md#acceptance) says
+   which [P1e.1's acceptance](README.md#p1e1--the-ten-questions) says
    has to be named in a stage file *before* it happens. S1e.1.2 did not predict
    it, so S1e.1.2 does not take it.
 2. **A second `Op` at a larger budget**, which costs a sweep column rather
@@ -1052,7 +1052,7 @@ cost question rather than a design one:
 3. **Leave it**, on the argument that the read side is a pure function of
    `(joined, alive, store)` and all three are pinned. That is an argument whose
    premise is enforced, so it is admissible under
-   [`standard_of_proof.md`](../../docs/kernel/standard_of_proof.md) Rule 2 —
+   [`standard_of_proof.md`](../../kernel/standard_of_proof.md) Rule 2 —
    but it should then be *written*, because "we compare that column" and "that
    column is entailed by three we compare" are different claims and the tree
    currently makes the first.
@@ -1062,7 +1062,7 @@ cost question rather than a design one:
 ## Q-M1e.15 — The alternatives cap decides which unsat core is reported
 
 > **Raised 2026-08-29 by
-> [S1e.1.3](p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md)**, which
+> [S1e.1.3](README.md#s1e13--what-the-core-promises-q2)**, which
 > is the review's **Q2** answered *yes*. The stage establishes the promise; the
 > fix is engine work and is **not** taken there. **Owner unassigned.**
 
@@ -1138,9 +1138,9 @@ measured on something that is not one synthetic fixture.
 ## Q-M1e.16 — The binding key compares two register layouts as one
 
 > **Raised 2026-08-29 by
-> [S1e.1.4](p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)**, which
+> [S1e.1.4](README.md#s1e14--q-m1a8s-real-trigger-q3)**, which
 > is the review's **Q3** answered and
-> [`Q-M1a.8`](../../docs/history/m1a_rust/open_questions.md#q-m1a8--_binding_key-drops-non-string-activator-args)
+> [`Q-M1a.8`](../m1a_rust/open_questions.md#q-m1a8--_binding_key-drops-non-string-activator-args)
 > closed *as stated*. This is what was left when the probe came back: not the
 > bug that entry described, but a neighbour of it. The stage states the
 > behaviour; the fix is engine work and is **not** taken there.
@@ -1191,10 +1191,10 @@ only one that would have derived `(noted 1 3)`:
 **Adding an activator removed a conclusion**, and swapping the two lines puts
 it back — the plan that fires first wins, and plan order is source order. It
 is deterministic and it is not a
-[design/02](../../docs/history/m1a_rust/design/02_determinism_and_order.md)
+[design/02](../m1a_rust/design/02_determinism_and_order.md)
 violation, since the order two facts were written is part of the input; it is
 the same *shape* as the unsorted goal row in
-[`defined_behaviour.md` §6](../../docs/kernel/defined_behaviour.md#6-what-is-not-defined-and-is-filed),
+[`defined_behaviour.md` §6](../../kernel/defined_behaviour.md#6-what-is-not-defined-and-is-filed),
 one severity up, because here the answer is wrong rather than arbitrary.
 
 **Two profiles, and only one of them is quiet.** `Engine::check_layout`
@@ -1243,7 +1243,7 @@ argument — a question no corpus entry asks.
 ## Q-M1e.17 — Three `py_int` options silently reinterpret a negative
 
 > **Raised 2026-08-29 by
-> [S1e.1.5](p1e.1_open_questions/s1e.1.5_cli_semantics.md)**, the review's
+> [S1e.1.5](README.md#s1e15---n-0-q7)**, the review's
 > **Q7**, which ruled on one of the three and measured the other two on the way
 > past. Refusing them is a validator apiece; *what* to refuse is the decision,
 > and it is not the same decision as `-n`'s. **Owner unassigned.**
@@ -1265,7 +1265,7 @@ bare `-E -3` is `clap`'s own *unexpected argument*):
 | `-E`/`--max-enterings` | `** aborted: max-enterings (0) reached **` | **clamped to 0** — and see below | open |
 | `saturate --max-steps` | the limit is hit at once | **honoured**: the message says `max_steps=-3` | fine, and it is the precedent |
 | `-g`/`--progress-every` | documented *0 disables* | disabled, by the same `> 0` guard | fine |
-| `-d`/`--seed` | — | **normative**: `--seed=-7` is `--seed 7`, [`defined_behaviour.md` §3.1](../../docs/kernel/defined_behaviour.md) | fine |
+| `-d`/`--seed` | — | **normative**: `--seed=-7` is `--seed 7`, [`defined_behaviour.md` §3.1](../../kernel/defined_behaviour.md) | fine |
 
 **`-E`'s is the one that is more than untidy.** The abort line is built from
 `self.opts.max_enterings` — the *clamped* value — so a run given `-E=-3`
@@ -1304,10 +1304,10 @@ question and not a fix.
 ## Q-M1e.18 — Three kernel primitives are not shape-pinned, and drop their extra arguments
 
 > **Raised 2026-08-29 by
-> [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md)** T1e.1.6.2 — the
+> [S1e.1.6](README.md#s1e16--what-nothing-pins-q8-q9-q10)** T1e.1.6.2 — the
 > parser/CLI edge sweep the review's `Q9` says never happened. The panic half
 > is [`CO-H1`](README.md#the-findings) and belongs to
-> [S1e.2.1](p1e.2_high/s1e.2.1_correctness.md); **this is the other half**, and
+> [S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal); **this is the other half**, and
 > it is the half with no diagnostic at all.
 >
 > **Answered 2026-08-29 — candidate (2)**, by that same stage, on the day this
@@ -1315,7 +1315,7 @@ question and not a fix.
 > rule, so fixing the cell alone would have left five worse ones standing; T1
 > took the rule. See § The answer at the end.
 
-[`00_ebnf.md` §2](../../docs/kernel/ir/03-ein-lang/00_ebnf.md) has a block
+[`00_ebnf.md` §2](../../kernel/ir/03-ein-lang/00_ebnf.md) has a block
 headed *Kernel meta-primitives (shape-pinned)* with **four** productions —
 `NotForm`, `NeqForm`, `AndForm`, `OrForm`. The engine has **seven** such
 primitives. `eq`, `absent` and `false` are ordinary `GenericList`s, so their
@@ -1360,14 +1360,14 @@ of the unpinned three. Both halves are banked as
    defensible languages, and either is a feature rather than a repair.
 
 (1) and (2) are the repair; (3) is a language decision and would need
-[`00_ebnf.md`](../../docs/kernel/ir/03-ein-lang/00_ebnf.md) and
+[`00_ebnf.md`](../../kernel/ir/03-ein-lang/00_ebnf.md) and
 `defined_behaviour.md` to move together. What none of them may do is nothing:
 the current state is that two of the seven primitives read fewer arguments
 than they are given, in silence.
 
 ### The answer — (2), 2026-08-29
 
-[S1e.2.1](p1e.2_high/s1e.2.1_correctness.md) T1 checks the arity **where the
+[S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T1 checks the arity **where the
 form is read**: `Compiler::premise` refuses any `eq`/`neq` that is not binary
 and any `absent` that is not unary, with a `CompileError` naming the form and
 its position. All seven wrong cells of the sweep are now `Refused`, exit 1, and
@@ -1397,7 +1397,7 @@ title — *three* kernel primitives — over-counts by one on the repair side.
 ## Q-M1e.19 — Algorithmic pathology has no owner
 
 > **Raised 2026-08-29 by
-> [S1e.1.6](p1e.1_open_questions/s1e.1.6_coverage_gaps.md)** T1e.1.6.2. Of the
+> [S1e.1.6](README.md#s1e16--what-nothing-pins-q8-q9-q10)** T1e.1.6.2. Of the
 > four surfaces the review's aborted stage never reached, three now have a
 > home and this one does not. **Owner unassigned.**
 
@@ -1405,12 +1405,12 @@ title — *three* kernel primitives — over-counts by one on the repair side.
 degrade catastrophically?* Nothing in the tree asks. What exists is adjacent
 and is not the same question:
 
-- [`corpus_cost.md`](../../docs/history/m1a_rust/measurements/corpus_cost.md)
+- [`corpus_cost.md`](../m1a_rust/measurements/corpus_cost.md)
   prices the corpus as it is, and `slow = true` is a measured claim about
   **these** files.
-- [`scaling.md`](../../docs/history/m1a_rust/measurements/scaling.md) measures
+- [`scaling.md`](../m1a_rust/measurements/scaling.md) measures
   `--jobs` on four workloads.
-- [`layer_census.md`](../../docs/history/m1d_satisfiability/layer_census.md)
+- [`layer_census.md`](../m1d_satisfiability/layer_census.md)
   measures what a layer costs and what a clause removes, again on the corpus.
 
 All three measure the corpus. **A pathology pass measures what is *not* in the
@@ -1432,7 +1432,7 @@ that the milestone cannot close claiming the tree was swept.
 
 ## Q-M1e.20 — Two renderers are produced, tested and unreachable
 
-[S1e.2.2](p1e.2_high/s1e.2.2_code_doc_consistency.md) T3 was asked whether the
+[S1e.2.2](README.md#s1e22--code--doc-the-canonical-tree) T3 was asked whether the
 per-hypothesis lattice dump *should* be reachable, and told to route the
 decision through the render crate rather than settle it while fixing prose.
 Routing it here, with what the stage measured.
@@ -1441,18 +1441,18 @@ Routing it here, with what the stage measured.
 
 | artifact | what it is | who can ask for it |
 |---|---|---|
-| the `LatticeDumper` tree | every commitment tested at every layer with the firings each emitted — `enterings/`, `proof_summary.json` ([`lattice_dump.md`](../../docs/kernel/inference/lattice_dump.md)) | Rust only: `LatticeDumper::new(Some(dir))` into `solve`'s `dumper`. No CLI flag; `--dump-states` builds the *other* dumper |
-| `ein_render::kb_dot` | the unified KB DOT view — the whole fact graph on one page ([`04_dot_rendering.md`](../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)) | Rust only. `ein render` offers `rules` / `rule` / `constraints` / `lattice` and no `kb`; `ein kb dot` was removed in P1.11 |
+| the `LatticeDumper` tree | every commitment tested at every layer with the firings each emitted — `enterings/`, `proof_summary.json` ([`lattice_dump.md`](../../kernel/inference/lattice_dump.md)) | Rust only: `LatticeDumper::new(Some(dir))` into `solve`'s `dumper`. No CLI flag; `--dump-states` builds the *other* dumper |
+| `ein_render::kb_dot` | the unified KB DOT view — the whole fact graph on one page ([`04_dot_rendering.md`](../../kernel/ir/03-ein-lang/04_dot_rendering.md)) | Rust only. `ein render` offers `rules` / `rule` / `constraints` / `lattice` and no `kb`; `ein kb dot` was removed in P1.11 |
 
 Both are `pub`, both are exercised by the gate — `golden_dump.rs` +
 `dump_parity.rs` for the first, `dot_wellformed.rs` over the whole corpus for
 the second — and neither is documented anywhere a caller would look:
-[`docs/api/rust.md`](../../docs/api/rust.md)'s worked example stops at
+[`docs/api/rust.md`](../../api/rust.md)'s worked example stops at
 solve-and-render. So the failure is not that the code rotted; it is that the
 **surface** never grew a door, and two pages spent a milestone describing
 rooms behind it.
 
-[`utils/render_examples.sh`](../../utils/render_examples.sh) reached the same
+[`utils/render_examples.sh`](../../../utils/render_examples.sh) reached the same
 fork at M1a S1a.10.4 and wrote the reason for declining, which is still the
 right reason: *"Making them browsable again means putting them back on the CLI
 (`ein render ir|kb`), which is a decision about the shipping surface and not
@@ -1466,27 +1466,27 @@ Three options, and the third is the cheapest and is not obviously wrong:
   `--help` golden, and the standing question of whether a private debugging
   artifact belongs on the shipped surface at all.
 - **(b) a documented library call** — a section in
-  [`docs/api/rust.md`](../../docs/api/rust.md). Its worked example is a marked
+  [`docs/api/rust.md`](../../api/rust.md). Its worked example is a marked
   region of `ein-cli/tests/embedding.rs` that a test diffs, so this is a real
   test to write and it would keep working, which is the page's whole method.
 - **(c) leave both unreachable and say so.** Done, as of S1e.2.2 —
-  [`lattice_dump.md` § Reachability](../../docs/kernel/inference/lattice_dump.md)
+  [`lattice_dump.md` § Reachability](../../kernel/inference/lattice_dump.md)
   and `04_dot_rendering.md` § How to ask for this view both state plainly what
   can and cannot ask. Under that reading the *documentation* defect is closed
   and only the capability question is open, which is what this entry now is.
 
 What tips it is a question this milestone has not asked: **who wants the
 per-hypothesis dump?** It was built for debugging rule sets, `utils/` no longer
-drives it, and [M20](../m20_gui/README.md) is the plausible consumer of the KB
+drives it, and [M20](../../../plans/m20_gui/README.md) is the plausible consumer of the KB
 view. If the answer is *the GUI*, (a) is premature and the feed is
-[`--events`](../../docs/kernel/inference/events.md); if the answer is *a
+[`--events`](../../kernel/inference/events.md); if the answer is *a
 puzzle author chasing a rule that will not fire*, (a) is the answer and the
 flag is small.
 
 ## Q-M1e.21 — A rule may name an object the search can never hypothesise about
 
 > **Raised 2026-08-31** by
-> [S1e.3.3](p1e.3_medium/s1e.3.3_state_model.md), which was asked to *check*
+> [S1e.3.3](README.md#s1e33--state-model-medium), which was asked to *check*
 > the M1 alive-set invariant and found, in the course of checking it, that
 > breaking it costs an answer. The check shipped; this is the defect it
 > detects and does not repair.
@@ -1535,7 +1535,7 @@ break — the residue `interning.rs` already names and nothing in the corpus has
 
 ### Where it belongs
 
-Beside [F5](../followups/f5_rules_as_data.md), whose typed form is what would
+Beside [F5](../../../plans/followups/f5_rules_as_data.md), whose typed form is what would
 make the violation *unrepresentable* rather than detected, and beside
 [Q-M1e.12](#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object):
 both are questions about what the blind rung's candidate universe *is*, and
@@ -1544,7 +1544,7 @@ answering either one alone risks answering the other by accident.
 ## Q-M1e.22 — Should a failed artefact write have an exit code of its own?
 
 > **Raised 2026-08-31** by
-> [S1e.3.5](p1e.3_medium/s1e.3.5_error_handling.md), which ruled `EH-M1` and
+> [S1e.3.5](README.md#s1e35--error-handling-medium), which ruled `EH-M1` and
 > filed what the ruling does not settle. The stage was explicit that this is
 > the shape of the residue: *"file the exit-code question as a `Q-M1e.<n>` for
 > whoever owns the CLI vocabulary next, with `TE-M4`'s exit-2 overload
@@ -1552,7 +1552,7 @@ answering either one alone risks answering the other by accident.
 > alone."*
 
 **What was ruled.** A failed artefact write leaves the exit code alone —
-[`defined_behaviour.md` § 4.4](../../docs/kernel/defined_behaviour.md), pinned
+[`defined_behaviour.md` § 4.4](../../kernel/defined_behaviour.md), pinned
 by `ein-cli/tests/artefact_contract.rs`. Four of the five options say
 *additive: stdout, stderr and the exit code are unchanged* in their own
 `--help`, and a failed write does not make that false: the answer on stdout is
@@ -1568,7 +1568,7 @@ means *usage error* **and** *budget abort*, which is
 [TE-M4](README.md#the-findings)'s finding read from the other end. A third
 meaning added to the same integer is not an improvement, and a fourth code is
 a CLI-vocabulary change with its own blast radius —
-[`defined_behaviour.md` § 4](../../docs/kernel/defined_behaviour.md) is the
+[`defined_behaviour.md` § 4](../../kernel/defined_behaviour.md) is the
 table it would have to move.
 
 ### The three shapes, and why none of them is obviously right
@@ -1585,7 +1585,7 @@ the CLI can compute, and a rule nobody can evaluate is not a rule.
 
 ### Where it belongs
 
-With whoever takes `TE-M4` — [S1e.3.6](p1e.3_medium/s1e.3.6_tests.md) reports
+With whoever takes `TE-M4` — [S1e.3.6](README.md#s1e36--tests-medium) reports
 it and does not own the vocabulary either. Nothing in the corpus reaches an
 unwritable artefact path, so there is no fixture pressure and no deadline; what
 there is, is a documented contract and a test that fails the day it changes.

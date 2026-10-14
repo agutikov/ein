@@ -913,7 +913,7 @@ fn headers(out: &str) -> Vec<String> {
 /// to include: **13 of the 68 checked queries have `k != solution_nodes`**,
 /// and every one of them is a program that states an obligation.
 ///
-/// [S1e.3.4]: ../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.4_architecture.md
+/// [S1e.3.4]: ../../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium
 #[test]
 fn the_verbose_header_and_the_report_row_agree_field_for_field() {
     let d = Dir::new("cross-surface");

@@ -9,7 +9,7 @@
 //! spent a milestone naming four subcommands.
 //!
 //! Five verbatim copies of one text is
-//! [`AR-M1`](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.4_architecture.md)'s
+//! [`AR-M1`](../../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium)'s
 //! shape, and markdown has no include mechanism, so the state it can reach is
 //! the third one that rule allows: **mechanically compared by a test**. The
 //! `<!-- api-history-banner -->` markers serve both halves — `grep -rn

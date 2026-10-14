@@ -142,7 +142,7 @@ the smaller frontier: `examples/ein-bugs/alt-cap-core.ein` reports a
 3-fact core where a 2-fact one exists, and its `-reordered` twin — one
 `:priority` apart — reports the 2-fact one (M1e S1e.1.3, the review's
 Q2; the fix is
-[Q-M1e.15](../../plans/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)).
+[Q-M1e.15](../history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)).
 Corpus-wide exactly one entry reaches the cap, and only an entry that
 reaches it can be changed by it — that one's core is a single fact
 whether the cap is 32 or 10⁶. Computed by

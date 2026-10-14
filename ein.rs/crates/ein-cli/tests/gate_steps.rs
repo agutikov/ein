@@ -37,7 +37,7 @@
 //! [`what_tests_only_skips_is_what_the_script_guards`] reads the set out of the
 //! script rather than restating it, so the flag's own list cannot drift from
 //! the two above. Since M1e S1e.4.5
-//! ([TE-L3](../../../../plans/m1e_review_processing/p1e.4_low/s1e.4.5_tests.md))
+//! ([TE-L3](../../../../docs/history/m1e_review_processing/README.md#s1e45--tests-low))
 //! it holds the script's **header** to that set as well — the count and the
 //! bench smoke — because the header is the copy that drifts, and it drifted
 //! while this test watched: T1e.3.8.4 corrected the paragraph at

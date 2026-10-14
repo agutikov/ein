@@ -195,7 +195,7 @@ Each is already enforced locally; this page is the shared reason.
   ([architecture §O3](architecture_and_algorithms.md#o3--negation-as-failure)).
 - **A sound search over a program that *refutes* under an `absent`.** This is
   the narrowed claim, and it is new at M1e
-  [S1e.2.3](../../../plans/m1e_review_processing/p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md).
+  [S1e.2.3](../../history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent).
   The search layer's `dead` is documented as **monotone** —
   [design/08 § The objects](../../history/m1a_rust/design/08_parallelism.md):
   *`X ⊆ Y ∧ dead(X) ⇒ dead(Y)`, because the KB is append-only and nothing
@@ -207,7 +207,7 @@ Each is already enforced locally; this page is the shared reason.
   `{(p A)}` dies, `{(p A), (q A)}` would live, and three shipped mechanisms
   make sure the second is never reached — the lookahead kill cache, the
   singleton writeback, and the width-1 no-good clause. Reproduced
-  ([Q-M1e.9](../../../plans/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)),
+  ([Q-M1e.9](../../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)),
   banked as
   [`examples/ein-bugs/naf-upward-closure.ein`](../../../examples/ein-bugs/naf-upward-closure.ein),
   and **diagnosed rather than fixed**: `warn_derived_naf` emits a

@@ -69,7 +69,7 @@ position. The stage should say so before it measures, and then measure.
 - **`most-constrained` is resolved**: implemented with the group cover behind
   it, or deleted from `FIELDS` with a load error naming the two live modes.
   A third state — a documented mode that returns a constant — does not
-  survive this stage. It is [MA-M1](../../m1e_review_processing/README.md#the-findings)'s shape (dead
+  survive this stage. It is [MA-M1](../../../docs/history/m1e_review_processing/README.md#the-findings)'s shape (dead
   scaffolding with a suppressor) in a user-facing flag.
 - The default does **not** change unless the corpus sweep says it should, and
   if it does, every baseline that quotes an entering count moves with it and

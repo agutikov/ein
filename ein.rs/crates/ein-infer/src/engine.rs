@@ -236,10 +236,10 @@ impl Engine {
     /// argument, so `(r a 1)` and `(r a (f X))` share this key and disagree
     /// here. The doc comment this replaces called that *"a shape no rule
     /// application has"*; M1e
-    /// [S1e.1.4](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)
+    /// [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3)
     /// wrote it in thirteen lines, and in a **release** build — where this
     /// assertion is compiled out — it costs a derivation with no diagnostic
-    /// ([Q-M1e.16](../../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one),
+    /// ([Q-M1e.16](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one),
     /// `rule_semantics::an_int_beside_a_nested_fact_in_one_position_loses_a_derivation`).
     ///
     /// So this stays debug-only for now, and it is the *only* thing enforcing

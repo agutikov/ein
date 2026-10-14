@@ -5,7 +5,7 @@ estimates. One stage,
 [S1f.5.20](p1f.5_documentation_and_other/s1f.5.20_docs_refactor.md), is 23 of
 them.
 **Status:** created 2026-08-29, out of
-[M1e](../m1e_review_processing/README.md) — which had carried both phases since
+[M1e](../../docs/history/m1e_review_processing/README.md) — which had carried both phases since
 2026-08-28 and had said in its own phase table that they were **† not review
 processing** and *"additive and may be cut whole"*. This is that sentence taken
 up: they were not cut, they were given an M-number.
@@ -54,9 +54,9 @@ learned about deriving an order nobody wrote down.
 
 | | on | kind |
 |---|---|---|
-| `S1f.5.6` | [`S1e.1.3`](../m1e_review_processing/p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md) — the unsat core's retention rule | **satisfied** 2026-08-29 |
+| `S1f.5.6` | [`S1e.1.3`](../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2) — the unsat core's retention rule | **satisfied** 2026-08-29 |
 | `S1f.5.20` | M1e's `S1e.2.2`, `S1e.3.7`, `S1e.3.8` — the `docs/kernel` triage and the drift repairs | **hard, and unrun.** A refactor that moves 38 pages before they are triaged moves the wrong ones |
-| `P1f.10` | [`S1e.1.1`](../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md), for [Q-M1e.6](../m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s ruling | **satisfied** 2026-08-28 |
+| `P1f.10` | [`S1e.1.1`](../../docs/history/m1e_review_processing/search_soundness_probes/README.md), for [Q-M1e.6](../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s ruling | **satisfied** 2026-08-28 |
 
 **The question ids stay where they were raised.** `Q-M1e.6`, `Q-M1e.9`,
 `Q-M1e.11` and the rest are M1e's, they keep their ids, and the stages here
@@ -70,7 +70,7 @@ stage that owns it moved, would make every earlier citation of it false.
 `S1e.5.2` (what a solution is, and what a model is) had already shipped under
 M1e's numbering, and five places in the tree cite `S1e.5.1` as the stage that
 shipped [`configuration.md`](../../docs/kernel/configuration.md). They stayed,
-and [M1e's P1e.5](../m1e_review_processing/p1e.5_documentation_and_other/README.md)
+and [M1e's P1e.5](../../docs/history/m1e_review_processing/README.md#p1e5--documentation-and-other)
 is now the one-stage record of what that phase delivered.
 
 ## Acceptance for the milestone
@@ -79,7 +79,7 @@ is now the one-stage record of what that phase delivered.
   word, on any corpus entry, at any `-m` — the phase's own first acceptance
   line, and the reason it may ship an optimisation at all.
 - **P1f.5 pins every page it adds by something that runs.** M1e's
-  [Q-M1e.4](../m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all)
+  [Q-M1e.4](../../docs/history/m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all)
   is the rule and it is inherited unchanged: *every count a test pins is
   exactly right; every count only prose states has drifted.*
 - **Every rung of P1f.10 is measured before the next is built**, and the
@@ -104,7 +104,7 @@ is now the one-stage record of what that phase delivered.
 
 ## Connections
 
-- [M1e](../m1e_review_processing/README.md) — where both phases were written,
+- [M1e](../../docs/history/m1e_review_processing/README.md) — where both phases were written,
   and the milestone whose `S1e.2.2` / `S1e.3.7` / `S1e.3.8` gate `S1f.5.20`.
 - [`docs/history/m1d_satisfiability/layer_census.md`](../../docs/history/m1d_satisfiability/layer_census.md)
   — the `Σₖ C(alive, k)` finding, P1f.10's motivating number.

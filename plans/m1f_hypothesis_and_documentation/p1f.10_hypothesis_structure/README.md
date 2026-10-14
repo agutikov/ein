@@ -2,10 +2,10 @@
 
 **Estimate:** ~5 weeks — 8 stages, 22.5 days. (23 until 2026-08-28, when
 S1f.10.8 handed its check and its census to
-[S1e.2.3](../../m1e_review_processing/p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md).)
-**Depends on:** [P1e.1](../../m1e_review_processing/p1e.1_open_questions/README.md)
-[S1e.1.1](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) only —
-for [Q-M1e.6](../../m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
+[S1e.2.3](../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent).)
+**Depends on:** [P1e.1](../../../docs/history/m1e_review_processing/README.md#p1e1--the-ten-questions)
+[S1e.1.1](../../../docs/history/m1e_review_processing/search_soundness_probes/README.md) only —
+for [Q-M1e.6](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
 ruling, which this phase is the first consumer of. Nothing else — and since
 2026-08-28 the dependency runs the other way too: this phase answers the
 review's `Q6`, which S1e.1.1 used to.
@@ -15,13 +15,13 @@ claim M1e would like and does not depend on — see [§ What the move cost, and
 what it did not](#what-the-move-cost-and-what-it-did-not). Everything else here
 is a *new capability*, answer-preserving by construction: the acceptance is
 *the same model sets, fact for fact*, on every corpus entry.
-**Owns:** [Q-M1e.11](../../m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
+**Owns:** [Q-M1e.11](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
 — *what happens to an obligation derived under a hypothesis*, handed over from
-[S1e.1.1 D2](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d2_q6_which_decline_to_construct.md)
+[S1e.1.1 D2](../../../docs/history/m1e_review_processing/search_soundness_probes/d2_q6_which_decline_to_construct.md)
 on 2026-08-28. See [§ The set that is not fixed](#the-set-that-is-not-fixed).
 **Source:** the user's instruction of 2026-08-28, recorded verbatim in
 [§ The instruction](#the-instruction).
-**Was P1e.1b**, in [M1e](../../m1e_review_processing/README.md), until 2026-08-29. No stage had run, so
+**Was P1e.1b**, in [M1e](../../../docs/history/m1e_review_processing/README.md), until 2026-08-29. No stage had run, so
 all eight moved and all eight were renumbered `S1f.10.<n>` from `S1e.1b.<n>`.
 
 ---
@@ -30,9 +30,9 @@ all eight moved and all eight were renumbered `S1f.10.<n>` from `S1e.1b.<n>`.
 
 **It was `P1e.1b` until 2026-08-29**, and the honest note this section used to
 carry has been overtaken: *it is engine work, it was not asked for by any of
-[M1e](../../m1e_review_processing/README.md)'s 63 findings, and it would sit as comfortably in an
+[M1e](../../../docs/history/m1e_review_processing/README.md)'s 63 findings, and it would sit as comfortably in an
 M-number of its own.* It has one. What put it in M1e was that the review's own
-[Q5](../../m1e_review_processing/review/open-questions.md) turned out to terminate in the same question
+[Q5](../../../docs/history/m1e_review_processing/review/open-questions.md) turned out to terminate in the same question
 — *what does it mean for a hypothesis to be decided?* — that this phase answers
 structurally, and that connection is still the reason to read the two together.
 
@@ -52,14 +52,14 @@ One question, and less of it than it looks.
 [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) is where the review's
 **`Q6`** is *demonstrated* — the flip constructed, or written up as not
 constructible — and it came here from
-[S1e.1.1](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)
+[S1e.1.1](../../../docs/history/m1e_review_processing/search_soundness_probes/README.md)
 on 2026-08-28, before the milestone split. M1e's acceptance says *every one of
 Q1–Q10 is answered*, and Q6 **is**: the ruling it needed was taken there and is
 recorded there. A probe that would let a later milestone *remove* the guard is
 not the same claim as the ruling that installs it, and only the probe is here.
 
 The **guard** Q6 gates is unaffected either way: applying the ruling is
-[S1e.2.1](../../m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md) T3's, in M1e, and it does not
+[S1e.2.1](../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3's, in M1e, and it does not
 wait on this phase.
 
 Cutting this phase whole is therefore free again, which it had not been since
@@ -138,7 +138,7 @@ The exclusion this phase computes takes `rules + ontology + {h₁, h₂}` and
 - it is a property of the *program*, computed once at load;
 - it is valid at **every** node of the search, root and depth 7 alike;
 - it cannot flip under a hypothesis — which is the property
-  [Q6](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md) found the
+  [Q6](../../../docs/history/m1e_review_processing/search_soundness_probes/README.md) found the
   tree's rung probe *lacks*.
 
 That last line is why this phase is not merely an optimisation. A
@@ -150,7 +150,7 @@ exhaustive branches on a program that declares no `(open …)` rule at all.
 
 The sentence this phase opens with — *the search enumerates subsets of a fixed
 `alive` set* — is the one thing here that the engine does not guarantee, and
-[Q-M1e.11](../../m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
+[Q-M1e.11](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
 is that gap, handed to this phase on 2026-08-28.
 
 An obligation's activator is an ordinary fact, so a rule can derive one
@@ -158,7 +158,7 @@ An obligation's activator is an ordinary fact, so a rule can derive one
 new candidates, in a branch that was entered because its alternatives were
 jointly exhaustive. The growth is monotone (the KB is append-only, so nothing
 retracts), and the guard is already decided elsewhere: the rung mode is
-re-read per node, which is [S1e.2.1](../../m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md)
+re-read per node, which is [S1e.2.1](../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal)
 T3's to write. What is *this* phase's is the structural half — **what a group
 means when the set it partitions can grow underneath it.**
 
@@ -209,8 +209,8 @@ Named here and used by every stage.
 | [S1f.10.3](s1f.10.3_the_restricted_join.md) | The join, restricted | 3 d | `generate_layer` refuses a candidate containing two members of one group; every corpus model set identical fact for fact; the enterings delta measured per entry |
 | [S1f.10.4](s1f.10.4_bounded_groups.md) | Bounded groups — rediscovering the bijection | 3 d | a program with no `(bijective …)` and no `(open …)` gets the same branch structure as one that declares it, or the stage says exactly which of the two it cannot recover and why |
 | [S1f.10.5](s1f.10.5_ordering.md) | Ordering by structure | 2.5 d | a third `lattice-order` mode, measured against `lex` on the five instances — and `most-constrained`, which has returned `0.0` since it was named, either implemented or deleted |
-| [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) | Obligations derived under a hypothesis — the review's `Q6` | 3 d | the flip constructed or written up as not constructible; a ruling on [Q-M1e.11](../../m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis); and **this phase's domain sentence** — what a group means when the set it partitions can grow |
-| [S1f.10.8](s1f.10.8_refutation_under_absent.md) | May a refutation rest on an `absent`? — the exclusion relation's soundness precondition | 2.5 d | the 60 syntactic sites narrowed to the **exposed** set; `connex` disposed of; the ruling written into `absent_semantics.md` as a corollary; and, if it forbids, the load-time check that makes [Q-M1e.9](../../m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s option C unnecessary |
+| [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md) | Obligations derived under a hypothesis — the review's `Q6` | 3 d | the flip constructed or written up as not constructible; a ruling on [Q-M1e.11](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis); and **this phase's domain sentence** — what a group means when the set it partitions can grow |
+| [S1f.10.8](s1f.10.8_refutation_under_absent.md) | May a refutation rest on an `absent`? — the exclusion relation's soundness precondition | 2.5 d | the 60 syntactic sites narrowed to the **exposed** set; `connex` disposed of; the ruling written into `absent_semantics.md` as a corollary; and, if it forbids, the load-time check that makes [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s option C unnecessary |
 | [S1f.10.7](s1f.10.7_tree_calibration_and_flag.md) | Why the tree wins on `zebra2-minus-15`, and the flag | 3 d | the **200 053×** attributed across five hypotheses with a named remainder, the share S1f.10.3 actually recovers, and `--traversal {lattice,tree}` replacing `EIN_TRAVERSAL` as the surface a reader finds |
 
 ## Acceptance
@@ -227,7 +227,7 @@ Named here and used by every stage.
 - **The cost is stated in enterings, per entry**, and the entries where it is
   **zero** are named — I-L02 is expected to be one of them, and a phase that
   cannot name its own null cases has not measured.
-- **No new hand-maintained parallel copy** ([AR-M1](../../m1e_review_processing/README.md#the-findings)).
+- **No new hand-maintained parallel copy** ([AR-M1](../../../docs/history/m1e_review_processing/README.md#the-findings)).
   The group structure has one owner; if `apriori`, `hypgen` and `oblgen` all
   need it, they read it from that owner.
 - **The exclusion relation's precondition is ruled, not assumed** —

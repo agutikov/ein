@@ -296,7 +296,7 @@ mod tests {
     /// 2.8× cheaper) and is worth a line rather than a silent diff.
     ///
     /// It is `assert_eq!` on the names rather than a floor on the count for
-    /// the reason [TE-M2](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.6_tests.md)
+    /// the reason [TE-M2](../../../../docs/history/m1e_review_processing/README.md#s1e36--tests-medium)
     /// is a finding: a floor over a growing corpus decays.
     ///
     /// **No declared run may carry a wall-clock budget** — M1e S1e.4.5,

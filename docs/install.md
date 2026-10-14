@@ -18,7 +18,7 @@ reads, and `ein --version` answers that in one line.
 > pushed, § Build from source is the channel that has been exercised.
 >
 > **Still true on 2026-08-29, and now a decision rather than a status.** M1e
-> [S1e.1.6](../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.6_coverage_gaps.md)
+> [S1e.1.6](history/m1e_review_processing/README.md#s1e16--what-nothing-pins-q8-q9-q10)
 > (the review's `Q10`) weighed running the matrix on a throw-away pre-release
 > tag against waiting, and **accepted**: the workflow's `publish` job creates
 > a **public GitHub release**, so pushing a tag is a decision about what this
@@ -161,7 +161,7 @@ MANIFEST.sha256 — a directory is the stdlib only if it carries the marker …
 where it used to say *module not found at /tmp/x/algebra.ein* — true, and a
 sentence that names the module rather than the variable that chose the
 directory. That was
-[EH-M2](../plans/m1e_review_processing/README.md#the-findings), and what it
+[EH-M2](history/m1e_review_processing/README.md#the-findings), and what it
 cost was the diagnosis rather than the answer.
 
 Two things the check deliberately does not do. It is asked at the **first

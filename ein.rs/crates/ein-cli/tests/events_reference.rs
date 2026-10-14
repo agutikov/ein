@@ -1,7 +1,7 @@
 //! [`docs/kernel/inference/events.md`] — the `--events` schema, pinned to its
 //! emitters.
 //!
-//! M1e [S1e.3.7](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.7_code_doc_consistency.md)
+//! M1e [S1e.3.7](../../../../docs/history/m1e_review_processing/README.md#s1e37--code--doc-consistency-medium)
 //! `CD-M2`. The page sells itself as the schema an external observer codes to
 //! — [M20](../../../../plans/m20_gui/README.md)'s likely feed — and it had **no
 //! mechanical check against the emitters at all**. What that cost, in one

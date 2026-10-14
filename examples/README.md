@@ -32,7 +32,7 @@ which of the engine's reasoning power is general and which is an artefact of one
 encoding.
 
 **What pins that they agree cell by cell** — M1e
-[S1e.1.6](../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.6_coverage_gaps.md),
+[S1e.1.6](../docs/history/m1e_review_processing/README.md#s1e16--what-nothing-pins-q8-q9-q10),
 the review's `Q8`; it was `acceptance/test_zebra_two_ontologies.py` until that
 directory was deleted with `ein.py/`, and the pointer outlived it by six days:
 
@@ -53,10 +53,10 @@ git show ff1d6c5^:plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeo
 ```
 
 > **Why not `docs/history/`** (M1e `CD-M6`, and the decision
-> [`DO-M2`](../plans/m1e_review_processing/p1e.3_medium/s1e.3.8_documentation.md)
+> [`DO-M2`](../docs/history/m1e_review_processing/README.md#s1e38--documentation-medium)
 > cites for the dangling class): putting it there would mean creating
 > `docs/history/m1_core/`, and
-> [Q-M1e.3](../plans/m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)'s
+> [Q-M1e.3](../docs/history/m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)'s
 > rule is that *a page is moved **into** a milestone record, never made into
 > one* — M1 is the one shipped milestone with no entry, by the decision
 > [`docs/history/README.md`](../docs/history/README.md) records: *"what
@@ -175,7 +175,7 @@ ein-render/tests/presentation_semantics.rs
 
 | dir | what it exercises |
 |-----|-------------------|
-| [`features/`](features/) | language features: `not`/`absent`, `*` in identifiers, `forall`, `open`, stdlib domain-elimination, the `__symmetric__` kernel mirror, the unstratifiable `p ← absent q; q ← absent p` (which pins that the NAF boundary admits **one** candidate per round — a batch would derive both), two `(or …)` disjuncts with different guards and one binding key (the only fixture where a parked candidate is already fired when the boundary reaches it), and an `adjacent-via` constraint satisfied from the *same* house — the 2026-08-20 `disjunctive-prune` regression. **`10_expect.ein` and its two siblings are the ones that are not like the others**: each carries an `:expect` and so states its own answer, which makes `ein solve` on it a test rather than a demonstration (M1c [S1c.1.2](../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)) — one per verdict, `10` being `k = 1`, `11_expect_ambiguity.ein` `k > 1` and `12_expect_false.ein` `k = 0`. A fourth joined them at M1e [S1e.3.1](../plans/m1e_review_processing/p1e.3_medium/s1e.3.1_correctness.md): **`13_mixed_solution_and_open.ein`** is the `Solution` arm's *mixed* regime — one discharged model beside one open state, so `verdict.k` is 1 where `stats.solution_nodes` is 2 — which `finalise` defined and no program had reached, and which the table used to render as `solutions (k) 2` beside `verdict Solution`. **`ein test examples/features/` runs exactly those four** and never enters the search on the other nine, `04_open.ein` included ([S1c.1.3](../docs/history/m1c_external_validation/README.md#s1c13--ein-test)) |
+| [`features/`](features/) | language features: `not`/`absent`, `*` in identifiers, `forall`, `open`, stdlib domain-elimination, the `__symmetric__` kernel mirror, the unstratifiable `p ← absent q; q ← absent p` (which pins that the NAF boundary admits **one** candidate per round — a batch would derive both), two `(or …)` disjuncts with different guards and one binding key (the only fixture where a parked candidate is already fired when the boundary reaches it), and an `adjacent-via` constraint satisfied from the *same* house — the 2026-08-20 `disjunctive-prune` regression. **`10_expect.ein` and its two siblings are the ones that are not like the others**: each carries an `:expect` and so states its own answer, which makes `ein solve` on it a test rather than a demonstration (M1c [S1c.1.2](../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)) — one per verdict, `10` being `k = 1`, `11_expect_ambiguity.ein` `k > 1` and `12_expect_false.ein` `k = 0`. A fourth joined them at M1e [S1e.3.1](../docs/history/m1e_review_processing/README.md#s1e31--correctness-medium): **`13_mixed_solution_and_open.ein`** is the `Solution` arm's *mixed* regime — one discharged model beside one open state, so `verdict.k` is 1 where `stats.solution_nodes` is 2 — which `finalise` defined and no program had reached, and which the table used to render as `solutions (k) 2` beside `verdict Solution`. **`ein test examples/features/` runs exactly those four** and never enters the search on the other nine, `04_open.ein` included ([S1c.1.3](../docs/history/m1c_external_validation/README.md#s1c13--ein-test)) |
 | [`branching/`](branching/) | the hypothesis loop: saturate-only, dead/alive branches, multi-level, lookahead on/off, kill-cache on/off, `hrule`, hypothesis-relation whitelist, typed blind solve, the lookahead's NAF world and its unjudgeable guard (P1.21 R4 / S1.21.8 D3); and `15`+`16`, M1e's on/off pair where **both halves under-report** — `Solution k=1` against `Contradiction k=0`, both exhausted, and the hand-derived answer is k=2 |
 | [`saturation/`](saturation/) | per-rule saturation demos by family — symmetric, transitive, `implies`, square fwd/bwd/unique, type-exclusivity, hypothesis-contradiction (see [`saturation/README.md`](saturation/README.md)) |
 | [`lattice/`](lattice/) | commitment-lattice search: subset-pruned, genuine 3-set death, state-hash collision |

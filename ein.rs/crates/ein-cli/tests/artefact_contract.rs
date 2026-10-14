@@ -1,4 +1,4 @@
-//! M1e [S1e.3.5](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.5_error_handling.md)
+//! M1e [S1e.3.5](../../../../docs/history/m1e_review_processing/README.md#s1e35--error-handling-medium)
 //! — **what the five artefact flags do when the file cannot be written.**
 //!
 //! `EH-M1` is one sentence: a failed `--events` open, a failed
@@ -144,7 +144,7 @@ fn every_artefact_failure_names_its_flag_and_its_path() {
 /// — which is worth an exit code, and is the one signal the family has.
 ///
 /// Whether the additive arm should have a code of its own is
-/// [Q-M1e.22](../../../../plans/m1e_review_processing/open_questions.md),
+/// [Q-M1e.22](../../../../docs/history/m1e_review_processing/open_questions.md),
 /// filed with `TE-M4`'s exit-2 overload because the two are one conversation.
 #[test]
 fn a_failed_artefact_write_leaves_the_exit_code_alone_except_for_dump_states() {

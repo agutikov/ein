@@ -143,8 +143,8 @@ of them are class names and one is not:
 | `category` | what it says | where |
 |---|---|---|
 | `DerivedNafWarning` | a rule's `(absent …)` reads a relation some rule *derives*, so its verdict depends on when it is asked | [`naf_deps.rs`](../../../ein.rs/crates/ein-infer/src/naf_deps.rs) |
-| `RefutationUnderAbsentWarning` | …and the reading is a **refutation**, which is [Q-M1e.9](../../../plans/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s shape | ⤳ |
-| `alive-set-invariant` | a rule asserts a constant the ontology does not name — M1e [`ST-M1`](../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.3_state_model.md), where a breach costs a **verdict** | [`invariant.rs`](../../../ein.rs/crates/ein-infer/src/invariant.rs) |
+| `RefutationUnderAbsentWarning` | …and the reading is a **refutation**, which is [Q-M1e.9](../../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s shape | ⤳ |
+| `alive-set-invariant` | a rule asserts a constant the ontology does not name — M1e [`ST-M1`](../../history/m1e_review_processing/README.md#s1e33--state-model-medium), where a breach costs a **verdict** | [`invariant.rs`](../../../ein.rs/crates/ein-infer/src/invariant.rs) |
 
 The first two are **opt-in** behind `(config :warn-derived-naf true)` — one
 flag, two questions, because `SolverConfig` is rendered into the KB-shape
@@ -341,7 +341,7 @@ anyway. `utils/layer_census.py` times a **second, bare** child for that reason.
 #### `traversal` — the second traversal, and the four kinds it does not emit
 
 Added by M1e
-[S1e.3.2](../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.2_semantics.md)
+[S1e.3.2](../../history/m1e_review_processing/README.md#s1e32--semantics-medium)
 for a line M1d
 [S1d.10.6](../../history/m1d_satisfiability/README.md#s1d106--the-traversal)
 had been emitting since it shipped. **`EIN_TRAVERSAL=tree` only** — every
@@ -375,7 +375,7 @@ The third row is the one worth knowing about. Root's probe used to be the only
 one, on the premise that the rung is a property of the program; oblgen's mode
 per node depends on activator **facts** and a fork derives facts, so
 `Run::tree_node` re-reads it at every node it expands (M1e
-[S1e.2.1](../../../plans/m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md)).
+[S1e.2.1](../../history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal)).
 An inner node cannot hand the run back to the lattice, so *decline* there means
 *expand no further*, and this line is the only report of it. No corpus program
 reaches it — today's stdlib activators are all root-asserted — and the

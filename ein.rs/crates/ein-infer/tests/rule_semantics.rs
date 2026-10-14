@@ -696,7 +696,7 @@ fn a_parametrised_rule_with_no_activator_is_dormant() {
 
 /// **Two activators differing only in an `int` argument both fire** — which is
 /// what `defined_behaviour.md` §3.2 said they could not do, and the probe that
-/// refutes it (M1e [S1e.1.4](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md),
+/// refutes it (M1e [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
 /// the review's `Q3`).
 ///
 /// The conclusions carry the int, so a suppressed firing is visible as a
@@ -827,7 +827,7 @@ fn activators_differing_only_by_a_nested_fact_argument_share_one_binding_key() {
 /// application has"*) is this seventeen-line program.
 ///
 /// The fix is filed, not taken here:
-/// [Q-M1e.16](../../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
+/// [Q-M1e.16](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
 #[test]
 #[cfg_attr(
     debug_assertions,

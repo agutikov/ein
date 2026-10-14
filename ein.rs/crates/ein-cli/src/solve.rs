@@ -330,7 +330,7 @@ pub(crate) fn events_start(m: &ArgMatches, file: &str, cfg: &SolverConfig) -> Ev
 }
 
 /// **The one shape an artefact flag's failure takes** — M1e
-/// [S1e.3.5](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.5_error_handling.md),
+/// [S1e.3.5](../../../../docs/history/m1e_review_processing/README.md#s1e35--error-handling-medium),
 /// `EH-M1`.
 ///
 /// Five options write a file the caller asked for, and before this stage they
@@ -350,7 +350,7 @@ pub(crate) fn events_start(m: &ArgMatches, file: &str, cfg: &SolverConfig) -> Ev
 /// site. The ruling and the reasoning are
 /// [`defined_behaviour.md` § 4.4](../../../../docs/kernel/defined_behaviour.md),
 /// and whether the additive arm should have an exit code of its own is
-/// [Q-M1e.22](../../../../plans/m1e_review_processing/open_questions.md).
+/// [Q-M1e.22](../../../../docs/history/m1e_review_processing/open_questions.md).
 pub(crate) fn artefact_failed(flag: &str, path: &str, e: impl std::fmt::Display) {
     eprintln!("error: --{flag} {path}: {e}");
 }

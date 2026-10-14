@@ -270,7 +270,7 @@ argument.
 | `W_i` | `{ ¬h : c_j = {h} for some j < i that died }` — the writebacks a candidate can see |
 
 > **`dead` is not monotone under `absent`** — M1e
-> [Q-M1e.9](../../../../plans/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent),
+> [Q-M1e.9](../../m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent),
 > reproduced 2026-08-28, and this table is where the premise was written down.
 > *Append-only, nothing retracts* establishes that `sat` is **inflationary**;
 > it does not establish that `sat` is **monotone in its input**, and

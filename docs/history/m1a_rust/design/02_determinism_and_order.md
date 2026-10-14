@@ -265,9 +265,9 @@ Worth stating explicitly so the port does not over-constrain itself:
 ## 6a. The no-good store under `--jobs N` — the timing half of §6
 
 > **Added 2026-08-29 by
-> [M1e S1e.1.2](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md),
+> [M1e S1e.1.2](../../m1e_review_processing/README.md#s1e12--determinism-under---jobs-q1),
 > answering the
-> [review](../../../../plans/m1e_review_processing/review/open-questions.md)'s
+> [review](../../m1e_review_processing/review/open-questions.md)'s
 > Q1.** Everything below describes the engine as shipped; the section is new,
 > the behaviour is not.
 
@@ -386,7 +386,7 @@ So the write side is compared for real corpus-wide and the read side is a
 column of zeroes agreeing with itself; the unit sweep above is the only place
 it is compared at all. Raising the budget re-blesses every `dump[progress]`
 cell of `corpus_shapes.md5`, which is why S1e.1.2 recorded it as
-[Q-M1e.14](../../../../plans/m1e_review_processing/open_questions.md#q-m1e14--the-corpus---jobs-sweeps-per-layer-census-coverage-is-vacuous)
+[Q-M1e.14](../../m1e_review_processing/open_questions.md#q-m1e14--the-corpus---jobs-sweeps-per-layer-census-coverage-is-vacuous)
 rather than taking an unpredicted golden move.
 
 **What would re-open this**: any path reachable from `Run::speculate` that

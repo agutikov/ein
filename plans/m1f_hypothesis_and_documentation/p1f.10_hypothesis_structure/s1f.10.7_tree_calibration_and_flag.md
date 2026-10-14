@@ -6,7 +6,7 @@
 (the comparison arm needs the restricted join landed). T1 and T2 depend on
 nothing and are **most useful before** S1f.10.3, because what they produce is
 this phase's target number. The flag depends on
-[S1e.2.1](../../m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md) T3 — see § The flag may not
+[S1e.2.1](../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3 — see § The flag may not
 ship first.
 **Blocks:** nothing. It calibrates the phase and ships one CLI option.
 **Source:** the user's instruction of 2026-08-28 — *investigate why tree search
@@ -39,7 +39,7 @@ Two arithmetic observations, free, and both shape the investigation:
   per-entering work has to clear that bar.
 - **The two published statements of this measurement disagree.**
   `CLAUDE.md` says 0.083 s where the M1d README says 0.07 s. The re-take
-  settles it, and the drift is [MA-M2](../../m1e_review_processing/README.md#the-findings)'s class at a
+  settles it, and the drift is [MA-M2](../../../docs/history/m1e_review_processing/README.md#the-findings)'s class at a
   fourth site.
 
 ## The five hypotheses
@@ -53,7 +53,7 @@ measurable, and the last two are the ones that would *reduce* the number.
 | **H2 — re-generation cadence** | the lattice recomputes `alive` once per **layer barrier**; the tree recomputes it at **every node**, so it sees each commitment's consequences immediately and the lattice pays for stale candidates for a whole layer | count candidates the lattice entered that the tree's post-commitment `alive` would not have proposed |
 | **H3 — intra-group pairs** | most of what the lattice joins is a set holding two alternatives of **one** instance — impossible by construction, forked anyway | the share of joined candidates whose members share a group. **This is the share [S1f.10.3](s1f.10.3_the_restricted_join.md) recovers without changing the traversal**, and it is the phase's own number |
 | **H4 — the tree answers a weaker question** | it terminates by *discharge* and reports `exhausted = false`; the lattice's 17.2 M includes proving there is nothing else | how many lattice enterings happen **after** the 32nd model is recorded. If it is most of them, the headline compares an answer with a proof |
-| **H5 — not learning** | the tree emits no no-good and no writeback at all ([CO-H3](../../m1e_review_processing/README.md#the-findings)(b)), and the lattice's learned clauses removed **1.4 %** corpus-wide ([layer_census](../../../docs/history/m1d_satisfiability/layer_census.md)) | already answered by those two facts; the stage states it so the reader stops looking there |
+| **H5 — not learning** | the tree emits no no-good and no writeback at all ([CO-H3](../../../docs/history/m1e_review_processing/README.md#the-findings)(b)), and the lattice's learned clauses removed **1.4 %** corpus-wide ([layer_census](../../../docs/history/m1d_satisfiability/layer_census.md)) | already answered by those two facts; the stage states it so the reader stops looking there |
 
 **H4 is the one to run first**, because it is the only one that could make the
 headline number smaller rather than explain it — and a phase that adopts a
@@ -66,7 +66,7 @@ Promoting the traversal from an environment variable to a CLI option makes it a
 
 - `--traversal tree` would ignore `-n` — `tree_node` consults only
   `check_budget`, so it records the entire tree while being asked for one
-  model ([CO-H3](../../m1e_review_processing/README.md#the-findings)(a));
+  model ([CO-H3](../../../docs/history/m1e_review_processing/README.md#the-findings)(a));
 - its `Contradiction` read-out prints *refuted so far (0 facts)* over an empty
   dead list (CO-H3(b));
 - and what a tree reports where a lattice reports layers is still
@@ -75,10 +75,10 @@ Promoting the traversal from an environment variable to a CLI option makes it a
   quantity wearing the same name.
 
 Shipping the flag before those land is exactly
-[Q-M1e.5](../../m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface)
+[Q-M1e.5](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface)
 — *is "experimental" a licence to ship a surface whose read-out is false?* —
 answered in the affirmative by accident. **So T3 of this stage runs after
-[S1e.2.1](../../m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md) T3**, and if that stage's
+[S1e.2.1](../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3**, and if that stage's
 recommendation holds (*refuse*: the tree's `Contradiction` declines to print a
 core rather than printing an empty one), the flag ships on top of a surface
 that has stopped lying.
@@ -117,8 +117,8 @@ breaking change to documents this milestone does not otherwise touch.
   **~25 minutes** and narrates tens of millions of events; like
   `layer_census.py` it writes `--events` to a FIFO, and it is not in the gate.
   No fourth copy of the two-config diff — it extends `layer_census.py` or
-  `model_set_census.py` ([AR-M1](../../m1e_review_processing/README.md#the-findings), and
-  [D7](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d7_the_diff_instrument.md)
+  `model_set_census.py` ([AR-M1](../../../docs/history/m1e_review_processing/README.md#the-findings), and
+  [D7](../../../docs/history/m1e_review_processing/search_soundness_probes/d7_the_diff_instrument.md)
   is where that was last argued).
 - **`--traversal {lattice,tree}` exists**, is in `--help`, is in
   `configuration.md`'s CLI table with its *does it change the answer* column

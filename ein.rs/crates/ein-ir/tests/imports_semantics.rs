@@ -389,7 +389,7 @@ fn an_unreserved_name_still_qualifies_through_all_four_routes() {
 /// Two outcomes count as reserved, and the split is the grammar's rather than
 /// the loader's: `and`, `neq`, `not` and `or` are SYMBOL-excluded by the lexer
 /// ([`crate::lex`]'s own list, which genuinely differs and is
-/// [`SE-L2`](../../../../plans/m1e_review_processing/p1e.4_low/s1e.4.2_semantics.md)),
+/// [`SE-L2`](../../../../docs/history/m1e_review_processing/README.md#s1e42--semantics-low)),
 /// so a module declaring one never parses; the rest reach the loader and are
 /// refused there. What no name may do is **load**.
 #[test]

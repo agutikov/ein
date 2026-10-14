@@ -217,7 +217,7 @@ fn a_where_keyword_pair_in_a_match_is_dropped_and_the_rule_still_compiles() {
 /// below and above its arity. Two of the four used to **fire and exit 0**,
 /// which is why they are here rather than in a note.
 ///
-/// [S1e.2.1]: ../../../../plans/m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md
+/// [S1e.2.1]: ../../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal
 ///
 /// The walk runs with the arity filter **off**, because `activator_arity`'s
 /// error is unreachable with it on — see the next test but one.

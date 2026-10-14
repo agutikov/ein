@@ -44,9 +44,9 @@ Three places, in increasing order of consequence:
 2. **`?h = Color` is a read-out nobody would defend.** It is not wrong by the
    engine's semantics — `co-located` really is unconstrained — but a query
    binding naming a type where the puzzle means a house is the sort of thing
-   [`docs/guide/`](../../../../docs/guide/README.md) would have to explain
+   [`docs/guide/`](../../../guide/README.md) would have to explain
    away.
-3. **It is the standing proof for [S1f.10.6](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)'s
+3. **It is the standing proof for [S1f.10.6](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)'s
    loss mechanism.** The blind rung keeps proposing long after any real debt
    is discharged, which is exactly why a tree node that flips from the
    obligations rung to the blind one stops recognising solutions. Without this
@@ -62,7 +62,7 @@ Arguably not — three defensible readings:
   typed alternative.
 - **The enumerator is right and the read-out is wrong.** A query goal should
   not print bindings the puzzle's author cannot mean; that is a presentation
-  question and belongs with [SE-M1](../../README.md#the-findings) / AR-M2.
+  question and belongs with [SE-M1](../README.md#the-findings) / AR-M2.
 - **`candidate_objects` should exclude types.** That would be an engine
   change with corpus-wide reach and is the kind of thing S1.7.23 (*"the kernel
   commits to no type system"*) deliberately refused.
@@ -77,7 +77,7 @@ Arguably not — three defensible readings:
 | **D — fix the fixture** | add the type guard `06` obviously means, re-measure | changes a corpus fixture and moves goldens **before** any ruling, which the phase's risk section calls a stop |
 
 **Decided 2026-08-28: B.** Filed as
-[Q-M1e.12](../../open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object),
+[Q-M1e.12](../open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object),
 with the three readings and **no owner** — a question found by the milestone
 belongs in the milestone's ledger, it costs one section, and it keeps
 `branching/06` untouched while Q5 is open. D is the likely eventual answer and

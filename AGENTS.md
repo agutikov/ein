@@ -65,12 +65,12 @@ constrained-reasoning research.
   of the seventeen flags are documented there as **inert**: `print-alive` and
   `candidate-order-seed` are parsed, validated, dumped, `--json-summary`-echoed
   and `.einb`-round-tripped, and read by no code path
-  ([Q-M1e.10](plans/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)).
+  ([Q-M1e.10](docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
   sentence on a page is such a claim**, and since M1e
-  [Q-M1e.4](plans/m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all)
+  [Q-M1e.4](docs/history/m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all)
   a reader can tell which are: an exact number carries the **command** that
   re-takes it, the **date** it was taken, or the **test** that pins it, and a
   number that can carry none is not written down.
@@ -87,7 +87,7 @@ constrained-reasoning research.
   `inference/algorithm_layer_n.md`, `inference/lattice_diagrams.md`,
   `inference/parity_baselines.md`), and *moved to `docs/history/`* (**0**).
   Zero, because of the rule the stage took for
-  [Q-M1e.3](plans/m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted):
+  [Q-M1e.3](docs/history/m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted):
   **a page is moved *into* an existing milestone record, never made into
   one** — and M1 is the one shipped milestone with no `docs/history/` entry,
   by the decision `docs/history/README.md` records. **Do not rewrite a
@@ -124,9 +124,23 @@ constrained-reasoning research.
   chapters (P1.20 Theme K). User-facing; references `docs/kernel/` +
   `docs/api/`, never explains internals; complements
   `inference/zebra_walkthrough.md`.
-- **`docs/history/`** — **shipped milestones, kept as record.** Three entries.
+- **`docs/history/`** — **shipped milestones, kept as record.** Four entries.
+  [`m1e_review_processing/`](docs/history/m1e_review_processing/README.md) is
+  the newest (2026-08-27 → 2026-09-01, **closed 2026-10-14**): the full-tree
+  review of 2026-08-27 processed finding by finding. Five phases and 28 stages
+  as one README carrying the **63-finding ledger**, plus the review's reports
+  verbatim (`review/`), Q-M1e.1–22 (`open_questions.md`, fourteen open at the
+  close, each row naming its owner or why it has none) and S1e.1.1's soundness
+  probes (`search_soundness_probes/`, D1–D9 and the golden audit), kept whole
+  because they are the evidence behind M1e2's cases. **Read its § What this
+  milestone may claim before citing it**: it swept one of four unswept
+  surfaces, and it did not check the engine's answers, which is why M1e2
+  exists. **`plans/m1e_review_processing/` is gone**, deleted 2026-10-14. Its 31
+  phase and stage files, 8 008 lines, are in
+  `git log --diff-filter=D -- plans/m1e_review_processing`, and the other 37
+  files moved into the record.
   [`m1d_satisfiability/`](docs/history/m1d_satisfiability/README.md) is the
-  newest (2026-08-21 → 2026-08-27): **from saturation to satisfiability** — four
+  one before (2026-08-21 → 2026-08-27): **from saturation to satisfiability** — four
   phases and eighteen stages as one README, plus **fifteen** documents that are
   still read. What it shipped: a program can state a requirement (`(open ?R)`
   asserted by a rule, form G of
@@ -551,7 +565,7 @@ is an environment variable rather than a flag because
 [T1d.10.6.4](docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)
 has not decided what a tree reports where a lattice reports layers.
 
-**What it does with the stop policy is settled since M1e S1e.2.1** ([CO-H3](plans/m1e_review_processing/review/correctness/high.md)),
+**What it does with the stop policy is settled since M1e S1e.2.1** ([CO-H3](docs/history/m1e_review_processing/review/correctness/high.md)),
 and the two flags get different answers because they are different questions.
 **`-n` is honoured**: `ein solve` defaults to `-n 1` and the tree used to
 explore and record the *entire* tree while being asked for one model — 32 where

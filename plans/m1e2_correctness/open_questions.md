@@ -2,7 +2,7 @@
 
 Questions this milestone **raises**, as `Q-M1e2.<n>`. The M1e questions it
 carries keep their `Q-M1e.<n>` ids and live in
-[M1e's register](../m1e_review_processing/open_questions.md). An id is sticky
+[M1e's register](../../docs/history/m1e_review_processing/open_questions.md). An id is sticky
 and is never reused.
 
 Each of the first five is a **reading** a contested stage needs before it can
@@ -21,7 +21,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) | open |
 | [Q-M1e2.6](#q-m1e26--does-p1e23-become-a-phase) | Does P1e2.3 become a phase? | the milestone's scope | open |
 
-C1's reading is [Q-M1e.12](../m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
+C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed.
 
 ---

@@ -10,7 +10,7 @@
 //! classified against, and two passes would be two places for the
 //! classification to drift ([`AR-M1`]).
 //!
-//! [`AR-M1`]: ../../../../plans/m1e_review_processing/review/architecture/medium.md
+//! [`AR-M1`]: ../../../../docs/history/m1e_review_processing/review/architecture/medium.md
 //!
 //! **What this means changed with S1.21.8.** It used to be a soundness signal:
 //! the fire-time NAF re-check was what made a derived-NAF rule sound, and this
@@ -65,13 +65,13 @@
 //! itself.
 //!
 //! The **containment** is a warning, not a refusal
-//! ([D4](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)
+//! ([D4](../../../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md)
 //! option B): refusing at load would refuse `connex` before anyone has decided
 //! whether that rule should be rewritten, which is
 //! [S1f.10.8](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s.
 //! Promoting warn → refuse afterwards is a one-line change here.
 //!
-//! [`Q-M1e.9`]: ../../../../plans/m1e_review_processing/open_questions.md
+//! [`Q-M1e.9`]: ../../../../docs/history/m1e_review_processing/open_questions.md
 
 use ein_core::{Symbol, Terms};
 use rustc_hash::FxHashSet;
@@ -99,7 +99,7 @@ pub struct NafDep {
     /// propose. The field's presence is the finding, so a caller never has to
     /// re-derive the conjunction.
     ///
-    /// [`Q-M1e.9`]: ../../../../plans/m1e_review_processing/open_questions.md
+    /// [`Q-M1e.9`]: ../../../../docs/history/m1e_review_processing/open_questions.md
     pub refutation: Option<Refutation>,
 }
 

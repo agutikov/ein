@@ -23,7 +23,7 @@
 > entry**: [`docs/history/README.md`](../../history/README.md) records that
 > M1's survivors went to `docs/kernel/inference/` at P1.22, and a page is moved
 > *into* a milestone record, never made into one. The rule is
-> [Q-M1e.3](../../../plans/m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted),
+> [Q-M1e.3](../../history/m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted),
 > answered 2026-08-30.
 >
 > **Do not rewrite it to match today's engine.** A page rewritten that way is

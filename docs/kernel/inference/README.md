@@ -205,7 +205,7 @@ exactly that model. This section used to explain the rule without exhibiting
 the consequence; the consequence is one fact wide.
 
 **It is checked since M1e
-[S1e.3.3](../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.3_state_model.md)**
+[S1e.3.3](../../history/m1e_review_processing/README.md#s1e33--state-model-medium)**
 (the review's `ST-M1`), and the operational form — which three readings there
 are, which one the soundness rests on, what the baseline is and what a breach
 is reported as — is
@@ -462,13 +462,13 @@ and stays the only diagnostic for non-stratifiability until a real
 checker lands.
 
 **The same flag now carries a second, non-advisory warning** (M1e
-[S1e.2.3](../../../plans/m1e_review_processing/p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md)),
+[S1e.2.3](../../history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)),
 and it is deliberately the *other* NAF hazard rather than a refinement of
 this one. `RefutationUnderAbsentWarning` fires when a rule concludes
 `(false)` or a `(not …)` from a guard over a relation the program's
 **hypothesis generator can still propose** — the shape on which `dead` is
 **not** upward-closed
-([Q-M1e.9](../../../plans/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent):
+([Q-M1e.9](../../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent):
 `{(p A)}` dies while `{(p A), (q A)}` would live, and the kill cache, the
 singleton writeback and the width-1 clause each make sure the second is
 never reached). The two questions share one walk of the guards and differ

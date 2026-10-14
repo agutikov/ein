@@ -224,7 +224,7 @@ ones where a silent ordering difference would be easiest to dismiss.
 ### 3.2 A rule application's identity ignores nested-`Fact` activator arguments
 
 > **Corrected 2026-08-29** — M1e
-> [S1e.1.4](../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md),
+> [S1e.1.4](../history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
 > the review's `Q3`. Until then this section said *integer*, and the engine has
 > never done what it described. The claim was written from one of the key's
 > three components; the probe that refuted it is
@@ -298,7 +298,7 @@ program above is thirteen lines.
 *Why it is here rather than fixed.* This is
 [Q-M1a.8](../history/m1a_rust/open_questions.md#q-m1a8--_binding_key-drops-non-string-activator-args),
 closed 2026-08-29 as stated and refiled as its real self:
-[Q-M1e.16](../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
+[Q-M1e.16](../history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
 It was reproduced from ein.py because it was current behaviour and the byte
 gate would have flagged any change — and the misreading is ein.py's too:
 `_binding_key`'s third component is `frozenset(bindings.items())`, and
@@ -321,7 +321,7 @@ expects the panic in a debug build and the missing fact in a release one.
 ### 3.3 The M1 alive-set invariant, operationally
 
 > **New 2026-08-31** — M1e
-> [S1e.3.3](../../plans/m1e_review_processing/p1e.3_medium/s1e.3.3_state_model.md),
+> [S1e.3.3](../history/m1e_review_processing/README.md#s1e33--state-model-medium),
 > the review's `ST-M1`. The invariant is stated in
 > [`inference/README.md` § M1 invariant](inference/README.md); until this
 > stage nothing evaluated it, and the three mechanisms that cite it as their
@@ -534,7 +534,7 @@ carries no position, a premise is a `generic_list` and the parser hands one a
 `Loc`. So these two read `at Loc(file='…', line=…, col=…)`.
 
 **Why only two rows for seven wrong cells.** The
-[S1e.1.6 sweep](../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.6_coverage_gaps.md) found
+[S1e.1.6 sweep](../history/m1e_review_processing/README.md#s1e16--what-nothing-pins-q8-q9-q10) found
 the rule behind them:
 [`00_ebnf.md` §2](ir/03-ein-lang/00_ebnf.md)'s *Kernel meta-primitives
 (shape-pinned)* block names **four** productions and the engine has **seven**
@@ -553,7 +553,7 @@ and all 21 cells of the sweep, the fourteen that were right included, are
 ### 4.4 An artefact flag's failure — M1e S1e.3.5
 
 > **New 2026-08-31** —
-> [S1e.3.5](../../plans/m1e_review_processing/p1e.3_medium/s1e.3.5_error_handling.md),
+> [S1e.3.5](../history/m1e_review_processing/README.md#s1e35--error-handling-medium),
 > the review's `EH-M1`. The behaviour is older; what is new is that it is a
 > ruling with a test rather than an accident with five spellings.
 
@@ -579,17 +579,17 @@ artefacts into whatever directory the caller happened to be in.
 That is the cost of the additive reading and it is the reason this is a ruling
 rather than a note: the alternative is a distinct exit code, and exit 2
 already means *usage error* and *budget abort* in this tool
-([TE-M4](../../plans/m1e_review_processing/p1e.3_medium/s1e.3.6_tests.md)).
+([TE-M4](../history/m1e_review_processing/README.md#s1e36--tests-medium)).
 A third meaning is a CLI-vocabulary change and belongs with that overload
 rather than beside it —
-[Q-M1e.22](../../plans/m1e_review_processing/open_questions.md#q-m1e22--should-a-failed-artefact-write-have-an-exit-code-of-its-own).
+[Q-M1e.22](../history/m1e_review_processing/open_questions.md#q-m1e22--should-a-failed-artefact-write-have-an-exit-code-of-its-own).
 Pinned by `ein-cli/tests/artefact_contract.rs`, three tests over all five
 options.
 
 ### 4.5 The store's own limits — M1e S1e.4.1
 
 > **New 2026-09-01** —
-> [S1e.4.1](../../plans/m1e_review_processing/p1e.4_low/s1e.4.1_correctness.md),
+> [S1e.4.1](../history/m1e_review_processing/README.md#s1e41--correctness-low),
 > the review's `CO-L1`. Three refusals with no Python counterpart, because
 > `ein.py` had no such limits: a `str` and a `tuple` are bounded by memory and
 > nothing else. Here they are bounded by a `u32` and a `u16`, and two of the
@@ -807,7 +807,7 @@ Two things the fix decides rather than assumes:
   and is untouched here — no exit code moved, and `corpus_exits.txt` is
   unchanged.
 
-**M1e [S1e.1.5](../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.5_cli_semantics.md)
+**M1e [S1e.1.5](../history/m1e_review_processing/README.md#s1e15---n-0-q7)
 answered the same question for the other budget flag, and answered it the other
 way.** `--solutions 0` is **refused**, exit 2:
 

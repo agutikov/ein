@@ -186,7 +186,7 @@ fn a_macro_body_may_invoke_another_macro() {
 /// those three was [`CO-H2`], a shipped defect; the first two were only ever
 /// this comment being wrong, which is the same drift one layer out.
 ///
-/// [`CO-H2`]: ../../../../plans/m1e_review_processing/review/correctness/high.md
+/// [`CO-H2`]: ../../../../docs/history/m1e_review_processing/review/correctness/high.md
 #[test]
 fn the_kernel_names_a_macro_may_not_shadow() {
     for name in ["absent", "eq", "false", "open", "relation"] {

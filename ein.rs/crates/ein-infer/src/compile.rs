@@ -100,7 +100,7 @@ pub fn activators_into(kb: &Kb, terms: &Terms, rule: &Rule, out: &mut Vec<Option
 /// argument binds its parameter, so it seeds a register and reaches
 /// [`crate::firing::BindingKey`]'s third component even though it is missing
 /// from the second. A nested `Fact` binds nothing and reaches neither —
-/// M1e [S1e.1.4](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md),
+/// M1e [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
 /// and see `BindingKey` for what that costs and where.
 ///
 /// Interning `str(a)` reproduces the collision Python already has: the integer

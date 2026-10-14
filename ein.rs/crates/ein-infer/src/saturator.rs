@@ -1239,7 +1239,7 @@ impl Saturator {
     /// `(rule, activator)` binding-key space — the Q-M1a.8 asymmetry, where an
     /// activator's **nested-`Fact`** arguments reach neither half of the key.
     /// (Not its `int` arguments: an int binds a parameter and so seeds a
-    /// register — M1e [S1e.1.4](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md),
+    /// register — M1e [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
     /// which corrected this comment along with the page it came from.)
     ///
     /// **Neither holds anywhere in the corpus**: the branch is taken 0 times

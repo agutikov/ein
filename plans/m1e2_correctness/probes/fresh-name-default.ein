@@ -49,7 +49,7 @@
 ;;;
 ;;; Deliberately **no `(absent …)` anywhere.** The obvious encoding of "Z must
 ;;; be reached" is a NAF guard, and it works — but it would also give this
-;;; file the shape of M1e [Q-M1e.9](../../plans/m1e_review_processing/open_questions.md),
+;;; file the shape of M1e [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md),
 ;;; where `dead` is not upward-closed under `absent`, and a reader could not
 ;;; then tell which of the two mechanisms cost the answer. Two positive
 ;;; refutation rules confound nothing.

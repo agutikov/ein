@@ -38,7 +38,7 @@
 //!
 //! Its blind spot is [`CD-M4`]'s: prose outside the marker is unguarded.
 //!
-//! [`CD-M4`]: ../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.7_code_doc_consistency.md
+//! [`CD-M4`]: ../../../../docs/history/m1e_review_processing/README.md#s1e37--code--doc-consistency-medium
 
 use std::path::PathBuf;
 use std::process::Command;

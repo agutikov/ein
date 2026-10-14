@@ -1,7 +1,7 @@
 //! **A refutation resting on an `absent` the search can still fill** — M1e
-//! [S1e.2.3](../../../../plans/m1e_review_processing/p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md),
+//! [S1e.2.3](../../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent),
 //! the containment for
-//! [Q-M1e.9](../../../../plans/m1e_review_processing/open_questions.md).
+//! [Q-M1e.9](../../../../docs/history/m1e_review_processing/open_questions.md).
 //!
 //! ## What is unsound, and why a warning is the right size of answer
 //!
@@ -16,7 +16,7 @@
 //! and each is sufficient alone: the lookahead kill cache, the singleton
 //! writeback, and the width-1 no-good clause.
 //!
-//! [D4](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)
+//! [D4](../../../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md)
 //! ruled **B**: narrow the claim and diagnose it, rather than make the three
 //! consumers world-aware (that is `F18`) or refuse the shape at load (that is
 //! S1f.10.8's, and a refusal today would refuse `std.algebra`'s `connex`
@@ -48,11 +48,13 @@ use ein_ir::{Ast, load, parse};
 
 /// D4's probe, as a **corpus** fixture.
 ///
-/// The original is `plans/m1e_review_processing/…/probes/naf_upward_closure.ein`
-/// and it will be deleted with the milestone's plan tree, the way M1a's, M1c's
-/// and M1d's were. A probe that decides a soundness question belongs where the
-/// gate sweeps, so it is banked under `examples/ein-bugs/` with the three
-/// sibling fixtures that also state today's answer and are meant to break.
+/// The original was `plans/m1e_review_processing/…/probes/naf_upward_closure.ein`,
+/// and since M1e closed it is kept with S1e.1.1's other evidence at
+/// `docs/history/m1e_review_processing/search_soundness_probes/probes/`. That
+/// copy is a record and nothing runs it. A probe that decides a soundness
+/// question belongs where the gate sweeps, so it is banked under
+/// `examples/ein-bugs/` with the three sibling fixtures that also state today's
+/// answer and are meant to break.
 const PROBE: &str = "examples/ein-bugs/naf-upward-closure.ein";
 
 /// One exposed `(rule, activator)`, rendered for the golden set below.
@@ -151,7 +153,7 @@ fn exposure(path: &Path) -> Vec<String> {
 /// same tree finds **60** rules with an `absent` and a refuting conclusion,
 /// and nine of them matter.
 ///
-/// [D4]: ../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md
+/// [D4]: ../../../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md
 const EXPOSED: &str = "\
 examples/branching/13_lookahead_naf_world.ein::self-block[] (false) \u{2190} cand
 examples/branching/14_lookahead_unjudgeable.ein::premature-signoff[] (false) \u{2190} needs-review, pending, signed

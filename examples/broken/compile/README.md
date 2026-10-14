@@ -6,7 +6,7 @@ raises `CompileError` for. Each `<name>.ein` sits beside a `<name>.expected`
 holding the exact message.
 
 **Eight, in two batches.** S1.22.0's four are below; M1e
-[S1e.2.1](../../../plans/m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md)
+[S1e.2.1](../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal)
 added four more — `eq` and `absent`, each below and above its arity — which is
 [§ The second batch](#the-second-batch-m1e-arity).
 
@@ -79,7 +79,7 @@ answer with a success exit code. All 21 cells of the sweep, defects included,
 are
 [`ein-cli/tests/primitive_arity.rs`](../../../ein.rs/crates/ein-cli/tests/primitive_arity.rs);
 the three-candidate menu the fix was chosen from is
-[Q-M1e.18](../../../plans/m1e_review_processing/open_questions.md#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments),
+[Q-M1e.18](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments),
 and S1e.2.1 took its (2) — check the arity where the form is read, leaving the
 grammar and the lexer's `SYMBOL` set alone.
 

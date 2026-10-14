@@ -2,7 +2,7 @@
 
 **Phase:** [P1f.10](README.md) (The structure of the hypothesis set)
 **Estimate:** 3 days
-**Depends on:** [Q-M1e.6](../../m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
+**Depends on:** [Q-M1e.6](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
 — the ruling on what a solution is, which makes *"h is excluded"* a statement
 about the answer rather than about the search.
 **Blocks:** every other stage of this phase. Nothing is built on the exclusion
@@ -141,10 +141,10 @@ Do the same for layer 3, where the effect compounds: a 3-set is removed if
 
 The comparison instrument this stage needs — *run the same program two ways
 and diff* — is now wanted in a fourth place
-([S1e.1.1](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)'s Notes
-counted three, and [AR-M1](../../m1e_review_processing/README.md#the-findings) is a finding about the
+([S1e.1.1](../../../docs/history/m1e_review_processing/search_soundness_probes/README.md)'s Notes
+counted three, and [AR-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) is a finding about the
 habit). This stage does **not** build it either; it uses `--json-summary` and
-`--events` like its siblings, and P1e.3 [S1e.3.4](../../m1e_review_processing/p1e.3_medium/s1e.3.4_architecture.md)
+`--events` like its siblings, and P1e.3 [S1e.3.4](../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium)
 is where the fifth copy gets refused.
 
 The predicate has a shorter name in the literature — it is a binary constraint

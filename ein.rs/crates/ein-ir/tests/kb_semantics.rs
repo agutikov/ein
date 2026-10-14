@@ -700,7 +700,7 @@ fn the_resolved_stdlib_root_is_the_only_one_consulted() {
 }
 
 /// **An override has to prove itself, and the refusal is the root cause** —
-/// M1e [S1e.3.5](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.5_error_handling.md),
+/// M1e [S1e.3.5](../../../../docs/history/m1e_review_processing/README.md#s1e35--error-handling-medium),
 /// `EH-M2`.
 ///
 /// This test used to assert the opposite, and its own reason was the argument

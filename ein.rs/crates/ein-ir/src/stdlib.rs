@@ -71,7 +71,7 @@ impl Source {
     ///
     /// **Only `$EIN_STDLIB` can answer anything but `None`**, and that
     /// asymmetry is the finding (M1e
-    /// [S1e.3.5](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.5_error_handling.md),
+    /// [S1e.3.5](../../../../docs/history/m1e_review_processing/README.md#s1e35--error-handling-medium),
     /// `EH-M2`). The checkout walk *requires* [`MARKER`] — the marker exists
     /// precisely because a directory called `stdlib/` proves nothing — and the
     /// embedded copy is checked against the manifest at build time by
@@ -175,7 +175,7 @@ pub fn resolve(from: &Path) -> Source {
 /// as one thread of a shared binary, is a write every other test can see. The
 /// tier tests used to be guarded on `EIN_STDLIB` being unset and returned
 /// early when it was not; a check that answers *nothing* when the harness is
-/// configured one way is [TE-M1](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.6_tests.md)'s
+/// configured one way is [TE-M1](../../../../docs/history/m1e_review_processing/README.md#s1e36--tests-medium)'s
 /// shape, and M1e S1e.3.5 removed it here rather than leave two of the three
 /// tiers conditionally unchecked.
 pub fn resolve_with(from: &Path, over: Option<PathBuf>) -> Source {

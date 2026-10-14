@@ -7,7 +7,7 @@ specified.
 milestone for correctness issues. … first phase is for solution dumps and
 rendering to markdown with graphs, so I can review all existing wrong
 solutions and initial problems."* It comes out of
-[M1e](../m1e_review_processing/README.md)'s close, whose probes found wrong
+[M1e](../../docs/history/m1e_review_processing/README.md)'s close, whose probes found wrong
 answers that the review never listed and that M1e's own rule filed rather than
 fixed, and out of a survey taken the same day,
 [`inventory.md`](inventory.md), which re-ran every known case and found
@@ -73,7 +73,7 @@ by looking at what the engine answered, and the engine makes that hard.
 A model is a block of facts on stdout, a refutation is a ` ```dot ` fence no
 viewer draws, and the program has no picture at all. Its two graph renderers
 are built, tested and reachable from no command
-([Q-M1e.20](../m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable)).
+([Q-M1e.20](../../docs/history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable)).
 And the right answers were also derived by reading. A fix stage that starts
 from a misread case fixes the wrong thing in a way no test can catch, because
 the test was written from the same misreading.
@@ -123,14 +123,14 @@ user to say whether they become a phase:
 
 | question | here |
 |---|---|
-| [Q-M1e.8](../m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set): `exhausted` certifies the lattice, not the model set | W1, S1e2.2.1 |
-| [Q-M1e.9](../m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent): `dead` and `absent` | W3, S1e2.2.5, with the language ruling proposed to move here from M1f's S1f.10.8 |
-| [Q-M1e.12](../m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object): the untyped blind rung | C1, S1e2.2.10 |
-| [Q-M1e.15](../m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported): the alternatives cap | W10, S1e2.2.11 |
-| [Q-M1e.16](../m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one): the binding key | W7, S1e2.2.7 |
-| [Q-M1e.21](../m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about): fresh constants | W4, S1e2.2.4 |
-| [Q-M1e.20](../m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable): two renderers unreachable | S1e2.1.3, answered (a) |
-| [Q-M1e.5](../m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) and [Q-M1e.17](../m1e_review_processing/open_questions.md#q-m1e17--three-py_int-options-silently-reinterpret-a-negative) | S1 and S5 of the proposed P1e2.3 |
+| [Q-M1e.8](../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set): `exhausted` certifies the lattice, not the model set | W1, S1e2.2.1 |
+| [Q-M1e.9](../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent): `dead` and `absent` | W3, S1e2.2.5, with the language ruling proposed to move here from M1f's S1f.10.8 |
+| [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object): the untyped blind rung | C1, S1e2.2.10 |
+| [Q-M1e.15](../../docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported): the alternatives cap | W10, S1e2.2.11 |
+| [Q-M1e.16](../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one): the binding key | W7, S1e2.2.7 |
+| [Q-M1e.21](../../docs/history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about): fresh constants | W4, S1e2.2.4 |
+| [Q-M1e.20](../../docs/history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable): two renderers unreachable | S1e2.1.3, answered (a) |
+| [Q-M1e.5](../../docs/history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) and [Q-M1e.17](../../docs/history/m1e_review_processing/open_questions.md#q-m1e17--three-py_int-options-silently-reinterpret-a-negative) | S1 and S5 of the proposed P1e2.3 |
 
 The ids stay `Q-M1e.<n>`. An id is sticky and is never reused, so this
 milestone cites them across the boundary, as M1f does.
@@ -185,7 +185,7 @@ milestone cites them across the boundary, as M1f does.
 
 - [`inventory.md`](inventory.md): the evidence, with [`probes/`](probes/)
   (31 programs, `capture.sh`, four sweep scripts).
-- [M1e](../m1e_review_processing/README.md): where most of these were found
+- [M1e](../../docs/history/m1e_review_processing/README.md): where most of these were found
   and filed.
 - [`docs/kernel/inference/solution_semantics.md`](../../docs/kernel/inference/solution_semantics.md):
   the definition every right answer is derived against.

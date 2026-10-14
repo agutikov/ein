@@ -84,7 +84,7 @@ Zebra-acceptance milestone.
 
 Every page in this tree is in exactly **one** of three states, and the state is
 visible from the page itself. Triaged page by page at M1e
-[S1e.2.2](../../plans/m1e_review_processing/p1e.2_high/s1e.2.2_code_doc_consistency.md)
+[S1e.2.2](../history/m1e_review_processing/README.md#s1e22--code--doc-the-canonical-tree)
 (2026-08-30), 40 pages:
 
 - **current** — every claim holds of the engine that ships. No banner; this is

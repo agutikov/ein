@@ -2,7 +2,7 @@
 
 **Phase:** [P1f.10](README.md) (The structure of the hypothesis set)
 **Estimate:** 2.5 days — 3 until 2026-08-28, when
-[S1e.2.3](../../m1e_review_processing/p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md) took the check
+[S1e.2.3](../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent) took the check
 and the census this stage would have built first.
 **Depends on:** [S1f.10.1](s1f.10.1_exclusion_census.md) — this stage is that
 census's **soundness precondition**, and the census is what measures it.
@@ -10,11 +10,11 @@ census's **soundness precondition**, and the census is what measures it.
 exclusion relation, and [S1f.10.6](s1f.10.6_obligations_under_hypothesis.md),
 whose domain sentence has to say whether this shape is inside it.
 **Answers:** the **language** half of
-[Q-M1e.9](../../m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)
+[Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)
 — the engine half stays
-[D4](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)'s.
+[D4](../../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md)'s.
 **Source:** the user's note of 2026-08-28, recorded in
-[D4 § The user's reading](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md):
+[D4 § The user's reading](../../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md):
 *"maybe emitting `(false)` or `(not …)` under `absent` is not a good idea. It
 also worth investigation stage."*
 
@@ -95,8 +95,8 @@ conclude.
 
 | | ruling | consequence |
 |---|---|---|
-| **A — forbid** | a `(false)` or `(not …)` conclusion may not rest on an `(absent P)` whose relation is still extendable; load error naming the replacement | strongest, and it makes [D4](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)'s option C **unnecessary** — nothing can write a negative whose justification a later fact invalidates, so the no-good store needs no world-awareness. Costs `connex` a rewrite and a `broken/load/` fixture |
-| **B — warn** | extend `warn-derived-naf` to the hypothesis-eligible case | **already shipped** — [S1e.2.3](../../m1e_review_processing/p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md), ruled *B now* on 2026-08-28. So B is this stage's **floor**, not one of its options: the question here is whether to go further |
+| **A — forbid** | a `(false)` or `(not …)` conclusion may not rest on an `(absent P)` whose relation is still extendable; load error naming the replacement | strongest, and it makes [D4](../../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md)'s option C **unnecessary** — nothing can write a negative whose justification a later fact invalidates, so the no-good store needs no world-awareness. Costs `connex` a rewrite and a `broken/load/` fixture |
+| **B — warn** | extend `warn-derived-naf` to the hypothesis-eligible case | **already shipped** — [S1e.2.3](../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent), ruled *B now* on 2026-08-28. So B is this stage's **floor**, not one of its options: the question here is whether to go further |
 | **C — scope** | keep it legal, tag the conclusion with its `absent` premises (`Prov::absent` **already records them**) and refuse to store it beyond the world it was derived in | D4's option C. The real fix *if* the pattern must stay legal, and the first walk that interprets what `Prov::absent` has been recording since S1.21.8 |
 | **D — allow, and fix the word** | the shape is legal; the answer to such a program is *your program is ill-formed*, which is **not** *your constraints are unsatisfiable* | the user's own reading taken to its end. It needs `Q-M1d.1`'s verdict vocabulary, which M1e does not own — so it is a companion to A/B/C, not an alternative |
 
@@ -114,7 +114,7 @@ refute from an absence over an extendable relation and cannot be written
   entry** — not the 60 syntactic sites but the subset whose `absent` reads an
   extendable relation under that entry's declared runs. It is a column of
   [S1f.10.1](s1f.10.1_exclusion_census.md)'s script if it fits there and a
-  small one of its own if it does not ([AR-M1](../../m1e_review_processing/README.md#the-findings): no
+  small one of its own if it does not ([AR-M1](../../../docs/history/m1e_review_processing/README.md#the-findings): no
   fourth copy).
 - **`connex` has a disposition** — rewritten, restricted to closed relations,
   or kept with the reason written at the rule. It is the stdlib's only exposure
@@ -123,7 +123,7 @@ refute from an absence over an extendable relation and cannot be written
   [`absent_semantics.md`](../../../docs/kernel/inference/absent_semantics.md)
   as a numbered corollary**, beside C3 and C6, which are what it follows from —
   not in a plan file
-  ([Q-M1e.1](../../m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
+  ([Q-M1e.1](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
   third rule).
 - **If A: the diagnostic names the replacement**, has a `broken/load/` fixture
   with a positioned message, and D4's option B is the same code rather than a
@@ -136,7 +136,7 @@ refute from an absence over an extendable relation and cannot be written
 
 ### Task T1f.10.8.1 — The census, from syntax to exposure
 
-Half a day, **not one** — [S1e.2.3](../../m1e_review_processing/p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md)
+Half a day, **not one** — [S1e.2.3](../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)
 computed the exposed set when it set the diagnostic's default, so this task
 *reads* that number rather than deriving it. Start from the 60 syntactic sites
 and that stage's per-entry column.
@@ -167,7 +167,7 @@ say what D4's B becomes. If A, T5 is the code.
 ### Task T1f.10.8.5 — Promote the diagnostic, if A
 
 **A quarter-day, because the check already exists.**
-[S1e.2.3](../../m1e_review_processing/p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md) ships the walk —
+[S1e.2.3](../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent) ships the walk —
 guards scanned for `absent` heads, asserts for `(false)` / `not`, intersected
 with the extendable set, with a message naming `total`'s form and `(open ?R)`.
 If this stage rules **A**, the change is warn → refuse plus one `broken/load/`

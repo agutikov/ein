@@ -7,10 +7,10 @@ load-bearing: since M1a [P1a.10](../history/m1a_rust/README.md#p1a10--one-implem
 implementation, so a claim here is checked by `cargo test --workspace` and by
 nothing else.
 
-They were written as [M1e](../../plans/m1e_review_processing/README.md)'s
-[Q-M1e.1](../../plans/m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)
+They were written as [M1e](../history/m1e_review_processing/README.md)'s
+[Q-M1e.1](../history/m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)
 and
-[Q-M1e.2](../../plans/m1e_review_processing/open_questions.md#q-m1e2--may-a-review-finding-be-closed-by-a-comment)
+[Q-M1e.2](../history/m1e_review_processing/open_questions.md#q-m1e2--may-a-review-finding-be-closed-by-a-comment)
 — *what counts as refuted*, and *when an argument is enough* — and ratified
 together because they are one rule read from two ends. They apply to any claim
 about the engine, whether it comes from a review, a probe, or a page like this
@@ -41,8 +41,8 @@ rests on is checked by something that fails when it stops being true.
 | | premise | enforced? | verdict |
 |---|---|---|---|
 | [design/02](../history/m1a_rust/design/02_determinism_and_order.md)'s determinism argument | canonical ordering everywhere a traversal reads | yes, by the ordering tests | the argument is enough |
-| `EqClasses` auto-vivification | *nothing fires equality propagation* | **the named test does not enforce it — 2026-09-01** | the row was **misattributed**, and the hazard was removed instead (M1e [S1e.4.3](../../plans/m1e_review_processing/p1e.4_low/s1e.4.3_state_model.md)) |
-| the alive-set invariant | *rules assert no new objects or relations* | **checked since 2026-08-31, and it fails** | the check was built (M1e [S1e.3.3](../../plans/m1e_review_processing/p1e.3_medium/s1e.3.3_state_model.md)) and found the premise **false on two corpus programs**. So the argument was never available: what stands in its place is a named breach set, a measurement that neither breach costs anything, and an eleven-line fixture on which one does — `k = 0, exhausted = true` where a model exists. § 3.3 of [`defined_behaviour.md`](defined_behaviour.md#33-the-m1-alive-set-invariant-operationally) |
+| `EqClasses` auto-vivification | *nothing fires equality propagation* | **the named test does not enforce it — 2026-09-01** | the row was **misattributed**, and the hazard was removed instead (M1e [S1e.4.3](../history/m1e_review_processing/README.md#s1e43--state-model-low)) |
+| the alive-set invariant | *rules assert no new objects or relations* | **checked since 2026-08-31, and it fails** | the check was built (M1e [S1e.3.3](../history/m1e_review_processing/README.md#s1e33--state-model-medium)) and found the premise **false on two corpus programs**. So the argument was never available: what stands in its place is a named breach set, a measurement that neither breach costs anything, and an eleven-line fixture on which one does — `k = 0, exhausted = true` where a model exists. § 3.3 of [`defined_behaviour.md`](defined_behaviour.md#33-the-m1-alive-set-invariant-operationally) |
 | [design/08](../history/m1a_rust/design/08_parallelism.md)'s `dead` is monotone | *the KB is append-only, so nothing retracts* | **no** | broken by a twenty-line program — see below |
 
 One of the four is the pattern working; three are the pattern's absence, and
@@ -95,7 +95,7 @@ cache, the singleton writeback, and the no-good store's width-1 clause — and o
 2026-08-28 a twenty-line program broke it: with a rule that refutes `(p A)`
 only while `(q A)` is missing, `{(p A)}` is dead and `{(p A), (q A)}` is alive,
 so `dead` is not upward-closed under `absent`
-([Q-M1e.9](../../plans/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent);
+([Q-M1e.9](../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent);
 [`absent_semantics.md`](inference/absent_semantics.md) C3 had stated the
 caveat, unreconciled, the whole time).
 
@@ -112,6 +112,6 @@ a year. That is what Rule 2 is for.
   way.
 - [`inference/absent_semantics.md`](inference/absent_semantics.md) — C1–C6,
   the corollaries the `dead`-monotonicity premise has to be read beside.
-- [M1e's open questions](../../plans/m1e_review_processing/open_questions.md)
+- [M1e's open questions](../history/m1e_review_processing/open_questions.md)
   — where the two rules were argued, and the ledger that records what each
   finding's disposition was.

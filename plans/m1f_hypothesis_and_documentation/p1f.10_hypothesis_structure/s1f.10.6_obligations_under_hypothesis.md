@@ -9,12 +9,12 @@ empty one.
 **Blocks:** [S1f.10.3](s1f.10.3_the_restricted_join.md) may not ship its
 restricted join before this stage has stated the **domain** the group structure
 is valid over.
-**Answers:** [Q-M1e.11](../../m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
+**Answers:** [Q-M1e.11](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)
 and the review's
-[`Q6`](../../m1e_review_processing/review/open-questions.md), and hands
-[S1e.2.1](../../m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md) T3 the probe its guard is
+[`Q6`](../../../docs/history/m1e_review_processing/review/open-questions.md), and hands
+[S1e.2.1](../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3 the probe its guard is
 missing.
-**Source:** [D2](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d2_q6_which_decline_to_construct.md),
+**Source:** [D2](../../../docs/history/m1e_review_processing/search_soundness_probes/d2_q6_which_decline_to_construct.md),
 converted to a stage on 2026-08-28 on the user's instruction. Everything below
 the ruling was D2's; the parts about what the search should *do* are new.
 
@@ -43,7 +43,7 @@ refutes it — `activators_for`
 
 **And the guard is decided**, 2026-08-28, by the user: *the obligation has to
 be re-evaluated after each saturation* — the mode is re-read at every node.
-[S1e.2.1](../../m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md) T3 writes it, and it costs
+[S1e.2.1](../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3 writes it, and it costs
 nothing that is not already paid: `tree_node` builds a `HypGenStats`, calls
 `generate_one_branch`, keeps the candidate list and **drops `hs.rung.mode`**
 (`solve.rs:945-956`). The change is to stop discarding a value, not to add a
@@ -119,7 +119,7 @@ node whose obligations are all discharged is a solution under rung 2 and is
 *not* complete under rung 3 while the blind enumerator still proposes anything
 — and `branching/06` is the standing proof that it proposes junk long after any
 real debt is settled
-([D8](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d8_branching06_untyped_models.md)).
+([D8](../../../docs/history/m1e_review_processing/search_soundness_probes/d8_branching06_untyped_models.md)).
 
 So the assertion is two things, not one:
 
@@ -138,7 +138,7 @@ Q-M1e.11's table, which this stage picks from and writes down:
 |---|---|---|
 | **A** | re-derive the branch at the node where the set grew, and continue | the honest one; needs `complete` to be relative to the node's own obligation set, not root's |
 | **B** | decline the traversal at the flip and fall back to the lattice | safe, and it throws away the descent so far. The lattice has no such premise to lose, which is why it is the fallback |
-| **C** | refuse at load — every obligation activator must be root-derivable | a diagnostic instead of a wrong answer, the shape of [Q-M1e.9](../../m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s option B. It forbids a program nobody has yet written |
+| **C** | refuse at load — every obligation activator must be root-derivable | a diagnostic instead of a wrong answer, the shape of [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s option B. It forbids a program nobody has yet written |
 | **D** | accept the loss and state it | needs a witness first, which is what T1 and T2 are for |
 
 **The recommendation is A if the flip is constructible and C if it is not**,
@@ -151,10 +151,10 @@ validity nobody wrote down.
 ## Acceptance
 
 - **A ruling on Q-M1e.11 written into
-  [`open_questions.md`](../../m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)**,
+  [`open_questions.md`](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e11--what-happens-to-an-obligation-derived-under-a-hypothesis)**,
   with the date, naming which of A–D and why — and the same sentence written
   where the structure is *computed*, not only in a plan file
-  ([Q-M1e.1](../../m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
+  ([Q-M1e.1](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
   third rule).
 - **The probe is banked either way.** Constructible: a fixture under
   `examples/` or `tests/` whose `rung` events show the flip, with a corpus
@@ -194,7 +194,7 @@ proves constructibility fastest, weakest as a shape anyone would ship — and
 record condition 2 as untried with the reason.
 
 Timebox: one day. *Not constructible* is a result, and under
-[Q-M1e.1](../../m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)
+[Q-M1e.1](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)
 it is one only if the attempt is banked.
 
 ### Task T1f.10.6.3 — Does the tree then miss a model?
@@ -210,7 +210,7 @@ is the bug; a tree set that agrees while a `rung` event shows a flip is the
 
 Pick from A–D, write it into `open_questions.md` and beside the code, and write
 P1f.10's domain sentence. Then say what
-[S1e.2.1](../../m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md) T3's guard becomes:
+[S1e.2.1](../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3's guard becomes:
 
 | outcome | what the guard becomes |
 |---|---|
@@ -221,10 +221,10 @@ P1f.10's domain sentence. Then say what
 ## Notes
 
 **The ordering wrinkle, stated rather than hidden.** S1e.2.1 T3 ships the guard
-in [P1e.2](../../m1e_review_processing/p1e.2_high/README.md); this stage builds the probe in P1f.10,
+in [P1e.2](../../../docs/history/m1e_review_processing/README.md#p1e2--high-six-findings); this stage builds the probe in P1f.10,
 which runs later. So `CO-H3`(c) is `fixed` before its regression test exists,
 which is the exact shape
-[Q-M1e.1](../../m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)
+[Q-M1e.1](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)
 warns about — with the difference that the fix here is *applying a ruling*
 rather than closing a risk by argument. Two ways out, and the milestone should
 pick one deliberately: this stage runs early (P1f.10 before P1e.2, which the
@@ -233,7 +233,7 @@ and names this stage. **The second is recommended**, because the guard is free
 and the probe is not.
 
 **Taken, 2026-08-29 — and the guard has shipped.**
-[S1e.2.1](../../m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md) T3
+[S1e.2.1](../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3
 wrote it into `tree_node`
 ([`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)): the mode is
 re-read on every node the tree expands, and any mode but `Obligations` narrates
@@ -254,5 +254,5 @@ and two of them — Q4 and Q5 — are about a search path that exists. This one 
 about what a hypothesis set *is* when the theory can extend it mid-search,
 which is the subject of this phase and of nothing else in the milestone. The
 handover is recorded at both ends: a stub in
-[S1e.1.1](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d2_q6_which_decline_to_construct.md)
+[S1e.1.1](../../../docs/history/m1e_review_processing/search_soundness_probes/d2_q6_which_decline_to_construct.md)
 and Q-M1e.11's owner line.

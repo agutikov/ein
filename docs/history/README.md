@@ -16,6 +16,7 @@ what somebody intended to build.
 |---|---|---|
 | **M1a — the Rust port (ein.rs)** | 2026-08-17 → 2026-08-23 | [`m1a_rust/`](m1a_rust/README.md) — eleven phases and 53 stages as one record, plus the eleven design contracts, six measurement documents, the divergence ledger, twenty-three questions and the oracle ledger |
 | **M1c — External validation** | 2026-08-23 → 2026-08-24 | [`m1c_external_validation/`](m1c_external_validation/README.md) — one phase and five stages as one record, plus the stdlib census (the evidence) and seven questions, two still open. **`:expect`, `ein test`, 45 programs, and 38 of 73 unfired stdlib rules → 0** |
+| **M1e — Review processing** | 2026-08-27 → 2026-09-01, closed 2026-10-14 | [`m1e_review_processing/`](m1e_review_processing/README.md) — five phases and 28 stages as one record, the 63-finding ledger, the review's reports verbatim, twenty-two questions (fourteen open at the close, each with an owner or a reason it has none) and S1e.1.1's soundness probes. **Every finding dispositioned, and the wrong answers its probes found handed to [M1e2](../../plans/m1e2_correctness/README.md)** |
 | **M1d — From saturation to satisfiability** | 2026-08-21 → 2026-08-27 | [`m1d_satisfiability/`](m1d_satisfiability/README.md) — four phases and eighteen stages as one record, plus fifteen documents: four re-takable censuses, seven arguments and specifications, the intent note and seven questions. **A program can state a requirement, a state can say what it *owes*, and a traversal that branches on requirements reaches the same 32 models in 86 enterings where the lattice needs 17 204 592** |
 
 They differ in one way worth knowing before reading any of them: **M1a's
@@ -25,6 +26,13 @@ scripts left the tree with the engine they measured. Every number under
 `m1c_external_validation/` and `m1d_satisfiability/` can be re-taken today; one
 of M1c's is re-taken by `cargo test` on every commit, and M1d ships four census
 scripts under `utils/` for the same reason.
+
+**M1e is the one whose subject was the tree itself** rather than a feature:
+a full review, processed finding by finding, under a standard of proof it
+wrote into [`docs/kernel/standard_of_proof.md`](../kernel/standard_of_proof.md).
+Read its § What this milestone may claim before citing it as evidence that
+anything is clean. It says what was not swept, and that the engine's answers
+were not what it checked.
 
 **M1d is also the one that was closed with work left in it**, deliberately and
 at the user's direction, so its record carries a section the other two do not

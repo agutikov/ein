@@ -5,18 +5,18 @@
 > probe was run against `7731848` and the disagreement is real. **Ruled: B now,
 > C filed.**
 >
-> - **B — the containment — is [S1e.2.3](../../p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md)**,
+> - **B — the containment — is [S1e.2.3](../README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)**,
 >   one day in P1e.2: widen `warn-derived-naf`'s watch to the
 >   hypothesis-eligible case, measure what it would fire on across the corpus,
 >   and say *instead* as well as *don't* — `total`'s stored-negative form for a
 >   refutation, `(open ?R)` for a requirement. A **refusal** is deliberately not
 >   available yet: it would refuse `std.algebra`'s `connex` before anyone has
 >   decided whether that rule should be rewritten, which is S1f.10.8's.
-> - **C — the real fix — is [F18](../../../followups/f18_world_aware_negatives.md)**,
+> - **C — the real fix — is [F18](../../../../plans/followups/f18_world_aware_negatives.md)**,
 >   with `Prov::absent` as its starting point, and it is **closed without being
 >   done** if S1f.10.8 forbids the shape instead.
 > - The **language** half left earlier the same day for
->   [S1f.10.8](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md).
+>   [S1f.10.8](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md).
 
 **Probe:** [`probes/naf_upward_closure.ein`](probes/naf_upward_closure.ein)
 **Bears on:** the no-good store, the singleton writeback and the lookahead
@@ -24,7 +24,7 @@ kill cache — all three **ship**, and all three read the same premise.
 
 ## The premise, as the repo states it
 
-[design/08 § The objects](../../../../docs/history/m1a_rust/design/08_parallelism.md):
+[design/08 § The objects](../../m1a_rust/design/08_parallelism.md):
 
 > `dead(X)` — `X` holds a contradiction. **Monotone**: `X ⊆ Y ∧ dead(X) ⇒
 > dead(Y)`, because the KB is append-only and nothing retracts.
@@ -35,7 +35,7 @@ and its claim (1):
 > for every `c ⊇ {h}`, `sat(B ∪ c) ⊇ sat(B ∪ {h})` by monotonicity, so `c`
 > dies whether or not `¬h` is at root.
 
-Against [`absent_semantics.md` C3](../../../../docs/kernel/inference/absent_semantics.md):
+Against [`absent_semantics.md` C3](../../../kernel/inference/absent_semantics.md):
 
 > Removing a fact can flip an absent and **fabricate** a contradiction the
 > full KB never had.
@@ -64,7 +64,7 @@ Twenty lines. `bad` fires only while `q` is missing:
 (query :goal (p ?x))
 ```
 
-By hand, under [Q-M1e.6](../../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model):
+By hand, under [Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model):
 
 - `alive₀ = {(p A), (q A)}`
 - `{(p A)}` is **dead** — `bad` fires
@@ -76,7 +76,7 @@ By hand, under [Q-M1e.6](../../open_questions.md#q-m1e6--what-is-a-solution-and-
 
 Every run below is `-e`, and **every one reports `k = 1` (or 0) with
 `exhausted = true`**. Nothing in the read-out signals a disagreement; only the
-recorded fact set differs, which is [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)'s
+recorded fact set differs, which is [Q-M1e.7](../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)'s
 point arriving as a diagnostic.
 
 | configuration | enterings | recorded | verdict |
@@ -100,7 +100,7 @@ The matrix separates them, and each is sufficient on its own:
    ([`hypgen.rs:464`](../../../../ein.rs/crates/ein-infer/src/hypgen.rs)). The
    forced-positive cascade then promotes `(q A)` into root — and the cached
    negative, whose justification no longer holds, is never revisited. This is
-   [C6](../../../../docs/kernel/inference/absent_semantics.md) — *"an `absent`
+   [C6](../../../kernel/inference/absent_semantics.md) — *"an `absent`
    query answered in one world is meaningless in every other"* — violated by a
    cache.
 2. **The singleton writeback** — the `-L` route. `{(p A)}` is entered, dies,
@@ -152,12 +152,12 @@ Three things follow, and only the third is new work.
 1. **The probe states a requirement as a refutation.** It says *a world with
    `p` and without `q` is false* and never says *`q` is required* — which is
    what M1d built `(open ?R)` for, form **G** of
-   [`obligation_forms.md`](../../../../docs/history/m1d_satisfiability/obligation_forms.md)'s
+   [`obligation_forms.md`](../../m1d_satisfiability/obligation_forms.md)'s
    menu. So the probe is a **mis-encoded obligation**, and the engine's
    complaint about it is not wrong. What is wrong is the **word**: a program
    whose requirement is unstateable this way is ill-formed, and
    `Contradiction` says *your constraints are unsatisfiable*, which is a
-   different claim — [Q-M1d.1](../../../../docs/history/m1d_satisfiability/open_questions.md)'s
+   different claim — [Q-M1d.1](../../m1d_satisfiability/open_questions.md)'s
    vocabulary question arriving from a third direction.
 2. **The mechanism stands, and the user confirms it**: `{(p A)}` dies, the
    writeback stores `(not (p A))`, and L2 never sees `{(p A), (q A)}`. `dead`
@@ -166,7 +166,7 @@ Three things follow, and only the third is new work.
 3. **And the design question is the real one** — *"maybe emitting `(false)` or
    `(not …)` under `absent` is not a good idea"*. That is not a patch to the
    three consumers; it is a question about the **language**, and it is now
-   [S1f.10.8](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md).
+   [S1f.10.8](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md).
 
 ### It is not a hypothetical shape, and the repo has already named it
 
@@ -202,11 +202,11 @@ Not *whether* — *who*, and *how far*.
 |---|---|---|
 | **A — record and hand on** | Q-M1e.9 becomes a finding with the probe banked as a `broken/`-style fixture; owner is a new milestone | honest, cheap, and leaves three shipped mechanisms unsound on a shape a user can write today |
 | **B — narrow the claim, keep the machinery** ✅ | state that the engine's search is sound **only for programs whose `(false)` derivations do not pass an `absent` guard over a hypothesis-eligible relation**, enforce it with a **load-time check** (the compiler already knows every guard's watched relations and every hypothesis-eligible relation), and refuse or warn | the smallest change that makes the tree honest. Turns a silent wrong answer into a diagnostic, which is the repo's usual move |
-| **C — fix the machinery** → [F18](../../../followups/f18_world_aware_negatives.md) | make the three consumers world-aware: no kill-cache write for a lookahead whose firing used an `absent`; no singleton writeback for such a death; a no-good clause tagged with its `absent` premises and not applied where they no longer hold | correct, and large. `Prov::absent` already **records** the negative premises (C2, S1.21.8) — *"the dependence is visible … but no walk yet interprets it"*. This would be the first walk that does |
+| **C — fix the machinery** → [F18](../../../../plans/followups/f18_world_aware_negatives.md) | make the three consumers world-aware: no kill-cache write for a lookahead whose firing used an `absent`; no singleton writeback for such a death; a no-good clause tagged with its `absent` premises and not applied where they no longer hold | correct, and large. `Prov::absent` already **records** the negative premises (C2, S1.21.8) — *"the dependence is visible … but no walk yet interprets it"*. This would be the first walk that does |
 | **D — declare it out of scope for M1e** | it is not one of the 63 findings, and M1e processes a review | defensible on scope, and it means the milestone found a soundness defect and shipped without saying what happens to it |
 
 **Ruled 2026-08-28: B now, C filed — and the language question to
-[S1f.10.8](../../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md).**
+[S1f.10.8](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md).**
 B is a load-time check the compiler has the information for, it converts a
 wrong answer into a refusal, and it does not require reshaping the no-good
 store mid-milestone. C is the real fix and wants its own stage, with
@@ -226,6 +226,6 @@ what makes the wrong answer stop while it does.
   records a false model*. Under this probe the default configuration records
   `(q A)` and calls it the model, which is a **non-maximal** state, so the
   claim needs the same qualification for a second reason.
-- [S1e.1.6](../s1e.1.6_coverage_gaps.md) — Q9's unswept surface is *no
+- [S1e.1.6](../README.md#s1e16--what-nothing-pins-q8-q9-q10) — Q9's unswept surface is *no
   dedicated pass over algorithmic pathology or invariants*. This is what one
   hour of that pass found.

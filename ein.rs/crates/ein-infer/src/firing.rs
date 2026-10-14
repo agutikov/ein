@@ -225,7 +225,7 @@ pub fn new_prov(
 /// them are exactly the nested `Fact`s, which bind nothing.
 ///
 /// That is Q-M1a.8, restated. The original claim named the `int`, and M1e
-/// [S1e.1.4](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)
+/// [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3)
 /// refuted it with a probe — `rule_semantics::activators_differing_only_by_an_int_argument_both_fire`.
 /// Two activators differing only in a nested `Fact` *do* share a key, and the
 /// application that loses is a duplicate: `Compiler::run` hands the activator
@@ -240,7 +240,7 @@ pub fn new_prov(
 /// does not. `Engine::check_layout` asserts the invariant where the plan list
 /// is built, **under `debug_assertions` only**; a release build compares two
 /// layouts as one and can lose a derivation with no diagnostic. That is
-/// [Q-M1e.16](../../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one),
+/// [Q-M1e.16](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one),
 /// witnessed by `rule_semantics::an_int_beside_a_nested_fact_in_one_position_loses_a_derivation`.
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct BindingKey {

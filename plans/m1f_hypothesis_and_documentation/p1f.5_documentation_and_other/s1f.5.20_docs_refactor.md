@@ -3,11 +3,11 @@
 **Phase:** [P1f.5](README.md) (Documentation ein does not have)
 **Estimate:** ~23 days — the largest single item in M1e. § How to cut it
 offers the split, and taking the split is the user's call.
-**Depends on:** [P1e.2](../../m1e_review_processing/p1e.2_high/README.md)
-[S1e.2.2](../../m1e_review_processing/p1e.2_high/s1e.2.2_code_doc_consistency.md) and
-[P1e.3](../../m1e_review_processing/p1e.3_medium/README.md)
-[S1e.3.7](../../m1e_review_processing/p1e.3_medium/s1e.3.7_code_doc_consistency.md) /
-[S1e.3.8](../../m1e_review_processing/p1e.3_medium/s1e.3.8_documentation.md) — **hard**, and § Ordering
+**Depends on:** [P1e.2](../../../docs/history/m1e_review_processing/README.md#p1e2--high-six-findings)
+[S1e.2.2](../../../docs/history/m1e_review_processing/README.md#s1e22--code--doc-the-canonical-tree) and
+[P1e.3](../../../docs/history/m1e_review_processing/README.md#p1e3--medium-36-findings)
+[S1e.3.7](../../../docs/history/m1e_review_processing/README.md#s1e37--code--doc-consistency-medium) /
+[S1e.3.8](../../../docs/history/m1e_review_processing/README.md#s1e38--documentation-medium) — **hard**, and § Ordering
 says why: those three stages triage and fix 38 pages, and a page fixed and then
 moved is cheap where a move followed by a re-triage of 38 renamed files is not.
 **Blocks:** nothing. Everything downstream of it wants it and nothing waits on
@@ -90,7 +90,7 @@ that produced them was deleted at M1a S1a.10.5.
 
 So: deleting the directory as a directory is right, and deleting its contents
 is not. The rule this stage applies — and it is the repo's own, from
-[Q-M1e.3](../../m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)
+[Q-M1e.3](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)
 — is **dissolve, don't delete**: every page is triaged into
 
 - **(a) becomes a `docs/ein/` page**, rewritten as an as-built design document
@@ -249,7 +249,7 @@ one.
 
 It exits 1 on a target that does not exist, and reports the referrer. Run it
 **before** anything moves and record the baseline: the tree is not known to be
-clean, and [DO-M2](../../m1e_review_processing/README.md#the-findings) is *dangling references across
+clean, and [DO-M2](../../../docs/history/m1e_review_processing/README.md#the-findings) is *dangling references across
 the doc tree, incl. anchors that never existed*. A checker that starts red is
 fine; a checker whose starting number nobody wrote down is not.
 
@@ -406,7 +406,7 @@ P1e.2's own edits verifiable.
   `determinism-ok:` — and note that that check's *first finding was the check
   itself*, which is the failure mode to expect here too.
 - **Scope, honestly.** This is a fifth of M1e's entire estimate for work that
-  fixes no finding. M1e's [acceptance](../../m1e_review_processing/README.md#acceptance-for-the-milestone)
+  fixes no finding. M1e's [acceptance](../../../docs/history/m1e_review_processing/README.md#acceptance-for-the-milestone)
   does not name it and is unchanged if it is cut whole.
 
 ## Connections
@@ -416,10 +416,10 @@ P1e.2's own edits verifiable.
   that will read most differently afterwards.
 - [`README.md`](../../../README.md) — the root page, which already keeps
   **Ein** and **EinAf** apart and is the natural top of `docs/ein/`.
-- [Q-M1e.3](../../m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)
+- [Q-M1e.3](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted)
   — *who owns a page that should be neither fixed nor deleted* — the ruling
   this stage's triage is an application of, at scale.
-- [S1e.5.1](../../m1e_review_processing/p1e.5_documentation_and_other/s1e.5.1_config_reference.md) and
+- [S1e.5.1](../../../docs/history/m1e_review_processing/README.md#s1e51--the-configuration-reference) and
   [S1e.5.2](../../../docs/kernel/inference/solution_semantics.md) — two pages
   P1f.5 writes into the *old* tree; both are `docs/ein/user/` pages by this
   stage's map, and both are cited by anchor text rather than section number so

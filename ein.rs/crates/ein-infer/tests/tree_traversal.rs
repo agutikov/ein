@@ -31,7 +31,7 @@
 //! [S1f.10.6](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md)'s,
 //! and the guard is written down here as an owed regression test.
 //!
-//! [S1e.2.1]: ../../../../plans/m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md
+//! [S1e.2.1]: ../../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal
 
 use std::collections::BTreeSet;
 

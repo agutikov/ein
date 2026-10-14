@@ -25,7 +25,7 @@ is not stylistic:
 | `not` | 1 | the **grammar** — `NotForm ::= '(' 'not' Value KwPair* ')'` |
 | `neq` | 2 | the **grammar** — `NeqForm ::= '(' 'neq' Value Value ')'` |
 | `and` / `or` | 1+ | the **grammar** — `Value+`, so `(and)` is a parse error and `(and X)` is legal, if degenerate |
-| `eq` | 2 | the **compiler**, with a positioned `CompileError` — M1e [S1e.2.1](../../../../plans/m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md), which is where the whole class was checked ([Q-M1e.18](../../../../plans/m1e_review_processing/open_questions.md#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments)) |
+| `eq` | 2 | the **compiler**, with a positioned `CompileError` — M1e [S1e.2.1](../../../history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal), which is where the whole class was checked ([Q-M1e.18](../../../history/m1e_review_processing/open_questions.md#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments)) |
 | `absent` | 1 | same |
 | `false` | 0+ | nothing — extra args are ignored by design, `(false)` being a verdict and not a query |
 

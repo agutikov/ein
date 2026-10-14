@@ -861,9 +861,9 @@ without a referent.
   names is not a trigger at all — an `int` activator argument binds its
   parameter and so reaches the key — while an `int` beside a nested `Fact` in
   one position does lose a derivation. The probe is M1e
-  [S1e.1.4](../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)'s
+  [S1e.1.4](../m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3)'s
   and the live half is
-  [Q-M1e.16](../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
+  [Q-M1e.16](../m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
   Nothing above is rewritten: it is what the milestone believed, and the
   ledger entry carries the correction.
 - **A deferral with three trip-wires.**

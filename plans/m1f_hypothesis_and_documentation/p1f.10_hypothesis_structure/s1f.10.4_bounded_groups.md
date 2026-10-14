@@ -63,7 +63,7 @@ completeness argument written for it.
   *"not without a closure declaration"* is a full result.
 - **The closure assumption, if taken, is stated as a premise and checked.**
   It is `(__closed__ R)` under another name, and this repo already has
-  [ST-M1](../../m1e_review_processing/README.md#the-findings) — *an invariant that is the warrant for a
+  [ST-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) — *an invariant that is the warrant for a
   dedup and is enforced nowhere*. A second one is not acceptable.
 - Not one model moves. Same acceptance as
   [S1f.10.3](s1f.10.3_the_restricted_join.md), and it matters more here:
@@ -71,7 +71,7 @@ completeness argument written for it.
   the failure class the project treats as worst.
 - If the derived structure reaches the **tree traversal** — a program with no
   `(open …)` getting jointly exhaustive branches — then
-  [Q6](../../m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/README.md)'s answer
+  [Q6](../../../docs/history/m1e_review_processing/search_soundness_probes/README.md)'s answer
   applies to it too, and the stage says so rather than inheriting the tree's
   root-only probe by accident.
 
@@ -100,7 +100,7 @@ Two clique families over the same member set, `|rows| = |cols| = n`, every
 member in exactly one of each ⇒ the grid. State the premise this needs
 (**the object list is complete** — no rule may introduce a new `Color`) and
 check it, because it is the same premise
-[ST-M1](../../m1e_review_processing/README.md#the-findings) says nothing enforces. The check is cheap
+[ST-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) says nothing enforces. The check is cheap
 and post-fixpoint: did saturation introduce an object the load-time KB did not
 have?
 

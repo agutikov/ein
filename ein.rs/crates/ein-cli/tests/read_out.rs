@@ -25,7 +25,7 @@
 //! — a truncated `Open` — no program reaches, and it is pinned in
 //! `verdict.rs`'s own unit test instead.
 //!
-//! [`AR-M2`]: `plans/m1e_review_processing/p1e.3_medium/s1e.3.4_architecture.md`
+//! [`AR-M2`]: `docs/history/m1e_review_processing/README.md#s1e34--architecture-medium`
 
 use std::process::Command;
 
@@ -126,7 +126,7 @@ const CELLS: &[(&str, &[&str], &str, &str)] = &[
 /// no longer an argument of `render_solution_table`, so an arm has nothing to
 /// choose with.
 ///
-/// [`CO-M2`]: `plans/m1e_review_processing/p1e.3_medium/s1e.3.1_correctness.md`
+/// [`CO-M2`]: `docs/history/m1e_review_processing/README.md#s1e31--correctness-medium`
 #[test]
 fn the_table_prints_the_verdicts_own_count() {
     for (file, flags, word, qualifier) in CELLS {

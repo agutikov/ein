@@ -28,7 +28,7 @@ the two namespaces cannot collide. A closed id is never reused.
 > same act. With one implementation that constraint is gone and only the cost
 > of re-blessing the corpus goldens remains, which is a decision for whoever
 > next has a reason — and for Q-M1a.8 there is now
-> [Q-M1e.16](../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one)
+> [Q-M1e.16](../m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one)
 > to make it.
 
 ## Index
@@ -42,7 +42,7 @@ the two namespaces cannot collide. A closed id is never reused.
 | [Q-M1a.5](#q-m1a5--reproducing-cpythons-shuffle) | Reproducing CPython's `random.shuffle` for `--shuffle` | **resolved 2026-08-18 — (a), ported** |
 | [Q-M1a.6](#q-m1a6--at-none-in-loader-messages) | `at None` in loader messages (top-level forms carry no `loc`) | **open, and outlives the milestone** — a diagnostic-quality fix that I1 forbade while there was an oracle. Owner: whoever needs it; [M2 Q25](../../../plans/m2_nl_to_ir/open_questions.md#q25--what-language-is-the-frontend-written-in)'s validator is the likeliest |
 | [Q-M1a.7](#q-m1a7--may---jobs--1-move-counters) | May `--jobs > 1` move counters? | **decided 2026-08-22 — no, and validation is not what buys it.** Held by `jobs_invariance` at 20 712 cells, byte equality, 0 moved |
-| [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) | `_binding_key` drops non-string activator args | **closed 2026-08-29 as stated — the collision it named does not exist.** Two probes (M1e [S1e.1.4](../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md), `rule_semantics::activators_differing_only_by_{an_int_argument_both_fire, a_nested_fact_argument_share_one_binding_key}`): an `int` argument seeds a register and reaches the key, a nested `Fact` does not — and the pair that *does* lose a firing is one of each, refiled as [Q-M1e.16](../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) |
+| [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) | `_binding_key` drops non-string activator args | **closed 2026-08-29 as stated — the collision it named does not exist.** Two probes (M1e [S1e.1.4](../m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3), `rule_semantics::activators_differing_only_by_{an_int_argument_both_fire, a_nested_fact_argument_share_one_binding_key}`): an `int` argument seeds a register and reaches the key, a nested `Fact` does not — and the pair that *does* lose a firing is one of each, refiled as [Q-M1e.16](../m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) |
 | [Q-M1a.9](#q-m1a9--where-do-goldens-live) | Where do goldens live? | **answered 2026-08-21 — `ein.rs/crates/<crate>/tests/golden/`** |
 | [Q-M1a.10](#q-m1a10--does-f11-d1-beta-memories-land-inside-m1a) | Does F11 D1 (beta-memories) land inside M1a? | **answered no** 2026-08-19 — an index key was the lever, not a memory |
 | [Q-M1a.11](#q-m1a11--server-wire-protocol) | Server wire protocol — JSON-RPC vs gRPC vs bespoke | **closed moot 2026-08-18 — no server** |
@@ -403,7 +403,7 @@ S1a.7.2's debug assertion is what would notice.
 > entering of every fanned-out layer emits one into a store `Kb::branch` shares
 > with every worker by `Arc`. That the sharing is harmless was true, and was
 > written nowhere — which is what M1e's review asked as
-> [Q1](../../../plans/m1e_review_processing/review/open-questions.md). The
+> [Q1](../m1e_review_processing/review/open-questions.md). The
 > argument is now [02](design/02_determinism_and_order.md) §6a and the premise
 > it rests on is enforced by a freeze the fan-out takes; the answer to this
 > question does not change, and the reason it is right is one layer deeper than
@@ -425,7 +425,7 @@ demonstrates it. Fix both together, after parity.
 
 > **Closed 2026-08-29 — the inference above is wrong, and was wrong in ein.py
 > too.** M1e
-> [S1e.1.4](../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)
+> [S1e.1.4](../m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3)
 > (the review's `Q3`) ran the probe this entry asked for and it came back the
 > other way.
 >
@@ -450,7 +450,7 @@ demonstrates it. Fix both together, after parity.
 > That is a live bug, it is stated in
 > [`defined_behaviour.md` §3.2](../../kernel/defined_behaviour.md#32-a-rule-applications-identity-ignores-nested-fact-activator-arguments),
 > and it is owned by
-> [Q-M1e.16](../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
+> [Q-M1e.16](../m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
 > No corpus program can reach any of the three shapes: every plan compiled by
 > `ein solve -m 2` over all 204 corpus `.ein` files binds against 153 143
 > activator arguments, and every one is a symbol.

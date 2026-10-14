@@ -11,7 +11,7 @@ use ein_core::{Kb, Terms};
 use ein_ir::{Ast, NodeId};
 
 /// **`--max-set-size` is refused under `EIN_TRAVERSAL=tree`** — M1e S1e.2.1,
-/// [`CO-H3`](../../../../plans/m1e_review_processing/review/correctness/high.md)(a).
+/// [`CO-H3`](../../../../docs/history/m1e_review_processing/review/correctness/high.md)(a).
 /// Returns `true` when it printed the refusal and the caller must exit **2**.
 ///
 /// The flag bounds the size of the commitment *sets* `Run::phase2` enumerates.
@@ -120,7 +120,7 @@ pub fn parse_or_exit(ast: &mut Ast, path: &Path) -> Option<Vec<NodeId>> {
 /// A second copy of `ein_einb::header::MAGIC`, because `ein-einb` is an
 /// optional dependency and a `--no-default-features` build must still
 /// recognise a container in order to refuse it. That is the case
-/// [`AR-M1`](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.4_architecture.md)'s
+/// [`AR-M1`](../../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium)'s
 /// rule covers explicitly — *compared by a test, since a shared crate for
 /// eight bytes is worse than the problem* — and the test is
 /// `einb_cli::the_two_magic_constants_agree`.

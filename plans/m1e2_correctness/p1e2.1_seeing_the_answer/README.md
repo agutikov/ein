@@ -25,7 +25,7 @@ model is a block of facts on stdout, a refutation is a fenced `dot` block that
 no markdown viewer draws, and the **program**, which is the thing a reviewer
 checks first, has no picture at all. Its two graph renderers are `pub`, pinned
 by tests, and reachable from no command
-([Q-M1e.20](../../m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable)).
+([Q-M1e.20](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable)).
 
 The second reason is that the inventory is a reading, too. The cases in
 [P1e2.2](../p1e2.2_wrong_answers/README.md) were collected from questions,
@@ -132,7 +132,7 @@ when they do.
 
 ## Connections
 
-- [Q-M1e.20](../../m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable)
+- [Q-M1e.20](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable)
   is answered by S1e2.1.3.
 - [`docs/kernel/ir/03-ein-lang/04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
   covers the views and their legend. § How to ask for this view is rewritten

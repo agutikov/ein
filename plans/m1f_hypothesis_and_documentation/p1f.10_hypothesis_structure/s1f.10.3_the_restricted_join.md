@@ -37,7 +37,7 @@ layer is group-refused, the layer is empty for a *structural* reason rather
 than through death, and `finalise`'s Contradiction arm unions over a dead list
 that is now shorter. On an unsatisfiable puzzle this could produce a smaller
 — or an empty — core, which is
-[CO-H3](../../m1e_review_processing/README.md#the-findings)(b)'s defect arriving by a second route.
+[CO-H3](../../../docs/history/m1e_review_processing/README.md#the-findings)(b)'s defect arriving by a second route.
 The stage owns this, and the safe shape is: **a group refusal is recorded**,
 with its own kind, so the core can cite it.
 
@@ -72,7 +72,7 @@ precedent is every lever in
 not re-bless the shape goldens while the comparison is running.
 
 **Then flip the default in the same stage, deliberately, once the sweep is
-clean** — a lever nobody turns on is [DO-M1](../../m1e_review_processing/README.md#the-findings)'s
+clean** — a lever nobody turns on is [DO-M1](../../../docs/history/m1e_review_processing/README.md#the-findings)'s
 shape in the config table.
 
 ### Task T1f.10.3.2 — The sweep
@@ -100,7 +100,7 @@ Decide and implement one of:
 (a) is more work and keeps every downstream surface honest; (b) is one
 sentence and makes the core weaker on exactly the puzzles where structure did
 the most work. **(a) is required, not preferred**, and the reason is
-[Q-M1e.6](../../m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
+[Q-M1e.6](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
 operational form: a solution is a surviving commitment **whose every superset
 died**, so a superset that is *refused* rather than entered has to count as
 dead or the maximality test reads a refusal as an unexplored child and stops
@@ -108,7 +108,7 @@ recognising solutions. It is dead — the two group members exclude — but the
 refusal must say so where the test looks.
 
 That coupling is worth stating in the stage rather than discovering: this
-phase and [Q-M1e.8](../../m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)'s
+phase and [Q-M1e.8](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)'s
 fix touch the same layer bookkeeping, and whichever lands second has to know
 about the first.
 

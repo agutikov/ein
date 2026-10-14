@@ -61,7 +61,7 @@ fn jobs_spec(s: &str) -> Result<i64, String> {
 /// divergence from parity** rather than a repair — taken because nothing pins
 /// it: no golden under `tests/golden/from_ein_py/` is a `solve` invocation at
 /// all, and every `-n` in the corpus is `-n 3`. M1e
-/// [S1e.1.5](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.5_cli_semantics.md),
+/// [S1e.1.5](../../../../docs/history/m1e_review_processing/README.md#s1e15---n-0-q7),
 /// the review's `Q7`.
 ///
 /// The non-integer message stays [`py_int`]'s, because
@@ -78,7 +78,7 @@ fn solutions_spec(s: &str) -> Result<i64, String> {
 
 /// An artefact flag's path — **not empty**.
 ///
-/// M1e [S1e.3.5](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.5_error_handling.md),
+/// M1e [S1e.3.5](../../../../docs/history/m1e_review_processing/README.md#s1e35--error-handling-medium),
 /// `EH-M1`'s neighbour and found by its probe. Five options name a file or a
 /// directory the run will write, and an empty string reached all five: three
 /// of them then failed with a bare `No such file or directory` and exit 0,

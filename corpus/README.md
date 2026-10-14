@@ -310,7 +310,7 @@ both are wrong the fixture that shows it is
 hand-derived answer is **k=2**. `-K` is a different animal — it removes writes
 the search makes into the KB it records, so it changes recorded *fact sets*
 without changing `k`
-([Q-M1e.7](../plans/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)).
+([Q-M1e.7](../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)).
 
 ## Growth rule
 

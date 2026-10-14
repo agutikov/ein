@@ -5,8 +5,8 @@
 > `a3f4e7b`, and the answer is **Route B, at shipped defaults, in 16 lines of
 > program** — plus a cheaper witness at a **second site the finding does not
 > mention**. What is left to decide is which fix
-> [S1e.3.1](../../p1e.3_medium/s1e.3.1_correctness.md) takes and what the
-> banked fixture claims, not whether [CO-M1](../../README.md#the-findings) is
+> [S1e.3.1](../README.md#s1e31--correctness-medium) takes and what the
+> banked fixture claims, not whether [CO-M1](../README.md#the-findings) is
 > real.
 
 **Probes:** [`examples/ein-bugs/alive-empty-interlayer.ein`](../../../../examples/ein-bugs/alive-empty-interlayer.ein)
@@ -132,8 +132,8 @@ can match on. Two statements, in increasing strength:
 
 1. **The recorded state is not a fixpoint.** A rule of the program matches it
    and has not fired, and what it would derive is `(false)`. This is
-   independent of [Q-M1e.6](../../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
-   and [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model):
+   independent of [Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
+   and [Q-M1e.7](../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model):
    whatever a model is, a *solution* is a saturated state, and this one is not
    saturated. The re-saturation column is the proof, run rather than argued.
 2. **The verdict is wrong too.** By hand on the inter-layer fixture:
@@ -171,7 +171,7 @@ Not *whether* — **which fix, and what the fixture claims.**
 | | fix for S1e.3.1 to take | consequence |
 |---|---|---|
 | **A** | re-saturate root at both record sites, then check | correct and the smallest diff; costs a saturation per recorded root, on a path that records **one** node |
-| **B** ✅ | a *dirty* bit — root written since its last saturation — and re-saturate only when set | the same answer, and it prices the common case at a branch. Also documents the invariant the sites actually need. **Selected 2026-08-28** with [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)'s ruling — A makes the criteria a property of the *state*, so the recorded state must be closed under the rules, and A and B differ only in when the saturation is paid |
+| **B** ✅ | a *dirty* bit — root written since its last saturation — and re-saturate only when set | the same answer, and it prices the common case at a branch. Also documents the invariant the sites actually need. **Selected 2026-08-28** with [Q-M1e.7](../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)'s ruling — A makes the criteria a property of the *state*, so the recorded state must be closed under the rules, and A and B differ only in when the saturation is paid |
 | **C** | stop writing into root at all: fork-local kill cache, no singleton writeback | this is D4's option C plus more, and it deletes two shipped prunes. Its own stage — and Q-M1e.7's ruling argues *against* it: those negatives are consequences of the state, so deleting them makes the engine less complete, which is exactly what `-K` measures |
 | **D** | record the *pre-write* root — snapshot before `compute_alive` | tempting and wrong: that is the state the search *started* from, which in the inter-layer fixture is not maximal under either reading of Q-M1e.6. `-K`'s phase-1 row is what it would print |
 
@@ -197,7 +197,7 @@ All three, moved out of `probes/` so there is one copy:
 [`probes/run_record_sites.sh`](probes/run_record_sites.sh) driving them there.
 
 **And (i) turned out to be only two-thirds available.**
-[Q-M1e.13](../../open_questions.md#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent):
+[Q-M1e.13](../open_questions.md#q-m1e13--expect-cannot-state-an-answer-with-an-empty-goal-extent):
 these models contain **no fact of the goal relation** — that is the defect —
 and `:expect` refuses a claim that does not name the goal's relations, so the
 answer is unstatable as written. The two `alive-empty-*` files moved their goal
@@ -245,7 +245,7 @@ against a fix at all.
   derivation, so Q-M1e.9's fix leaves both standing. What the two decisions
   share is the *writers*, which is why `-K` moves the recorded fact set in
   both files and in D4's.
-- [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+- [Q-M1e.7](../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
   — the recorded fact set is a function of a **performance lever**: `-K` drops
   both negatives from the phase-1 model and two of the three from the
   inter-layer one, without changing `k` or the verdict. Same observation as D4's `-K` row, reached from the

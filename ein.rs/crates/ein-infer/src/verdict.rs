@@ -54,8 +54,8 @@ where
 /// is a change in this crate. S1d.2.6 and S1d.3.3 each added a word and each
 /// missed a site, which is the evidence that the seam was the finding.
 ///
-/// [`CO-M2`]: `plans/m1e_review_processing/p1e.3_medium/s1e.3.1_correctness.md`
-/// [`SE-M1`]: `plans/m1e_review_processing/p1e.3_medium/s1e.3.2_semantics.md`
+/// [`CO-M2`]: `docs/history/m1e_review_processing/README.md#s1e31--correctness-medium`
+/// [`SE-M1`]: `docs/history/m1e_review_processing/README.md#s1e32--semantics-medium`
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct ReadOut {
     /// The number to print. Always the verdict's own `k` — never

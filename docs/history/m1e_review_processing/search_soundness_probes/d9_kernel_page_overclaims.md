@@ -5,17 +5,17 @@
 > probe edited it. § 6's first table now carries **three** rows, the
 > `complete(S) ⇒ solution(S)` direction reads **no**, and the sentence *"so the
 > engine never records a false model"* is gone from
-> [`docs/kernel/inference/solution_semantics.md`](../../../../docs/kernel/inference/solution_semantics.md)
+> [`docs/kernel/inference/solution_semantics.md`](../../../kernel/inference/solution_semantics.md)
 > and named in its place as withdrawn, with the date. § 6 also gained a section
 > the options below did not anticipate — **What is recorded is `S ∪ K`** — and
 > § 6's closing premise now says C3 **wins**.
 >
 > The same claim was repeated inside
-> [Q-M1e.6](../../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
+> [Q-M1e.6](../open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
 > own § 2 table, decided by the user on the same page; that copy is corrected
 > too, with a ⚠ marking what it used to say.
 
-**Touches:** [`docs/kernel/inference/solution_semantics.md`](../../../../docs/kernel/inference/solution_semantics.md)
+**Touches:** [`docs/kernel/inference/solution_semantics.md`](../../../kernel/inference/solution_semantics.md)
 §6, committed 2026-08-28 in `429777f` and rewritten the same day.
 
 ## The claim as written
@@ -70,7 +70,7 @@ too, for a different mechanism.
 > `cargo test --workspace` and by nothing else.
 
 An unqualified soundness claim that a scheduled probe may refute is precisely
-[CD-H1](../../README.md#the-findings)'s defect — a kernel page asserting
+[CD-H1](../README.md#the-findings)'s defect — a kernel page asserting
 something about an engine that may not be true — committed by the milestone
 that exists to fix it.
 
@@ -91,7 +91,7 @@ into the conjunct that holds and the implication that does not.
 
 The proposal as written, kept for the record:
 
-> | `complete(S) ⇒ S is maximal` | **yes** | every filter that can make `complete` true is a genuine refutation of the candidate it dropped — so a recorded state has no live child it knows of, and the engine does not manufacture models the search did not reach. **Two exposures qualify this**: the kill cache can write a negative whose `absent` justification a later promotion invalidates ([Q-M1e.9](../../open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)), and the inter-layer path records root without re-establishing consistency ([CO-M1](../../README.md#the-findings), open) |
+> | `complete(S) ⇒ S is maximal` | **yes** | every filter that can make `complete` true is a genuine refutation of the candidate it dropped — so a recorded state has no live child it knows of, and the engine does not manufacture models the search did not reach. **Two exposures qualify this**: the kill cache can write a negative whose `absent` justification a later promotion invalidates ([Q-M1e.9](../open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)), and the inter-layer path records root without re-establishing consistency ([CO-M1](../README.md#the-findings), open) |
 > | `S is a solution ⇒ complete(S)` | **no** | a remaining hypothesis that needs *two* firings to die is still proposed, so a real solution goes unrecorded |
 
 and delete the sentence *"so the engine never records a false model"*, which
@@ -109,7 +109,7 @@ Three things, none of which existed when this file was written:
    checked against `S`*.** The two writers that run after the last consistency
    check (the singleton writeback, the kill cache), the four `record_node`
    callers and what each establishes, the three witnesses, and the pointer to
-   [Q-M1e.7](../../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+   [Q-M1e.7](../open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
    for which fix follows.
 3. **§ 6's closing premise says C3 wins.** *"That premise is not new here"* now
    continues with the twenty-line program that breaks it, the three mechanisms

@@ -78,7 +78,7 @@ pub struct SolverConfig {
     /// what say that. Held by
     /// `ein-cli/tests/config_reference.rs::the_two_inert_flags_are_still_inert`
     /// and filed as
-    /// [Q-M1e.10](../../../../plans/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert).
+    /// [Q-M1e.10](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert).
     pub print_alive: bool,
     /// Warn about an `(absent …)` guard — **two questions behind one flag**,
     /// emitted once each after root's saturation.
@@ -101,7 +101,7 @@ pub struct SolverConfig {
     /// gets turned off. The set is named and pinned in
     /// `ein-infer/tests/refutation_under_absent.rs`.
     ///
-    /// [Q-M1e.9]: ../../../../plans/m1e_review_processing/open_questions.md
+    /// [Q-M1e.9]: ../../../../docs/history/m1e_review_processing/open_questions.md
     pub warn_derived_naf: bool,
     /// Negative means the S1.5a.1a content sort; non-negative applies a
     /// per-branch deterministic permutation of it — **in ein.py**. Here the
@@ -110,7 +110,7 @@ pub struct SolverConfig {
     /// per-layer shuffle that *is* wired is [`SolverConfig::lattice_order_seed`].
     /// The sentence above is kept because it is the only statement of what the
     /// flag was for, which is the input to
-    /// [Q-M1e.10](../../../../plans/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)'s
+    /// [Q-M1e.10](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)'s
     /// option (a).
     ///
     /// [`print_alive`]: SolverConfig::print_alive

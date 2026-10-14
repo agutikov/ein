@@ -333,7 +333,7 @@ fn fact_set(f: &Fixture) -> Vec<String> {
 /// fix is [Q-M1e.15]; what is banked here is the shape, so the fix has
 /// something to move.
 ///
-/// [Q-M1e.15]: `plans/m1e_review_processing/open_questions.md`
+/// [Q-M1e.15]: `docs/history/m1e_review_processing/open_questions.md`
 #[test]
 fn the_alternatives_cap_can_enlarge_the_reported_core() {
     let mut capped = load_path("examples/ein-bugs/alt-cap-core.ein");

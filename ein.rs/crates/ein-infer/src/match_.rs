@@ -782,7 +782,7 @@ impl Matcher {
         // and not a check on the program: it was the *only* check until
         // S1e.2.1, and what it did when it fired was take the process down at
         // exit 101 with a parity note for a message
-        // ([`CO-H1`](../../../../plans/m1e_review_processing/review/correctness/high.md)).
+        // ([`CO-H1`](../../../../docs/history/m1e_review_processing/review/correctness/high.md)).
         debug_assert_eq!(
             args.len(),
             pred.arity(),

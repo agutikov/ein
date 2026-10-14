@@ -1,6 +1,6 @@
 //! [`docs/kernel/configuration.md`] — the configuration reference, pinned.
 //!
-//! M1e [S1e.5.1](../../../../plans/m1e_review_processing/p1e.5_documentation_and_other/s1e.5.1_config_reference.md).
+//! M1e [S1e.5.1](../../../../docs/history/m1e_review_processing/README.md#s1e51--the-configuration-reference).
 //! The page enumerates three surfaces — the 17 `(config …)` flags, the CLI
 //! options, and the `EIN_*` environment — and a reference page is the most
 //! drift-prone shape there is: a list of names and defaults that nothing runs.
@@ -313,7 +313,7 @@ fn golden_option_counts() -> Vec<(String, usize)> {
 /// states is a *shape* — how many options each subcommand has — and that is a
 /// number, so it is read off the owner rather than typed.
 ///
-/// [AR-M1]: ../../../../plans/m1e_review_processing/README.md
+/// [AR-M1]: ../../../../docs/history/m1e_review_processing/README.md
 #[test]
 fn the_cli_counts_come_from_the_golden() {
     let text = page();
@@ -530,7 +530,7 @@ fn the_two_inert_flags_are_still_inert() {
 /// file. The CLI row is [`the_cli_counts_come_from_the_golden`]'s; these are
 /// the other two.
 ///
-/// [AR-M1]: ../../../../plans/m1e_review_processing/README.md
+/// [AR-M1]: ../../../../docs/history/m1e_review_processing/README.md
 #[test]
 fn the_surface_table_agrees_with_the_sections_it_summarises() {
     let text = page();

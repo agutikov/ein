@@ -413,7 +413,7 @@ fn looks_like_einb(rel: &Path) -> bool {
 ///
 /// The copy sniffed **five** of the eight bytes until this stage.
 ///
-/// [`AR-M1`]: ../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.4_architecture.md
+/// [`AR-M1`]: ../../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium
 #[test]
 fn the_two_magic_constants_agree() {
     // `ein-cli`'s copy is in a private module, so it is compared through the

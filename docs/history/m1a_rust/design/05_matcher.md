@@ -251,7 +251,7 @@ the same filtered tuple. Flagged as Q-M1a.8.
 
 > **The last sentence of that inference is wrong, and was wrong of ein.py**
 > (2026-08-29, M1e
-> [S1e.1.4](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.4_defined_behaviour_q_m1a8.md)).
+> [S1e.1.4](../../m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3)).
 > The key's *third* component carries the parameter bindings, and
 > `compile_rule` binds a parameter for every argument that is
 > `isinstance(a, (str, int))` — so an `int` is in the key after all and two
@@ -260,7 +260,7 @@ the same filtered tuple. Flagged as Q-M1a.8.
 > tuple is still the same key. What changed is what the asymmetry costs, which
 > is [`defined_behaviour.md` §3.2](../../../kernel/defined_behaviour.md#32-a-rule-applications-identity-ignores-nested-fact-activator-arguments)
 > and
-> [Q-M1e.16](../../../../plans/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
+> [Q-M1e.16](../../m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
 
 `engine._hashable` — a defensive shim for `list`/`dict` binding values —
 has no reachable caller (bindings hold `str | int | Fact`). ein.rs drops

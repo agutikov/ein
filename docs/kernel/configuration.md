@@ -1,7 +1,7 @@
 # Ein — configuration reference
 
 > **Normative, and new (2026-08-28).** Read at `4a47aa3`, M1e
-> [S1e.5.1](../../plans/m1e_review_processing/p1e.5_documentation_and_other/s1e.5.1_config_reference.md).
+> [S1e.5.1](../history/m1e_review_processing/README.md#s1e51--the-configuration-reference).
 > It supersedes no page: before it the seventeen `(config …)` flags were stated
 > only in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs)'s `FIELDS`
 > and the nine field doc comments that had one, the CLI options only in
@@ -119,7 +119,7 @@ config (resolved)
 | `hypgen-rel-weight` | `float` | `1.0` | the coefficient on the relation's extent size in the popularity score | order only | contract |
 | `hypgen-obj-weight` | `float` | `1.0` | the coefficient on each named argument's appearances as an argument | order only | contract |
 | `print-alive` | `bool` | `false` | **nothing** | **inert** | inert |
-| `warn-derived-naf` | `bool` | `false` | **two questions, one flag**, both emitted once after root's saturation. `DerivedNafWarning` — the `(absent …)` guard watches a **rule-derived** relation: a *stratification* signal since S1.21.8, not a soundness one. `RefutationUnderAbsentWarning` (M1e [S1e.2.3](../../plans/m1e_review_processing/p1e.2_high/s1e.2.3_naf_refutation_diagnostic.md)) — the rule concludes `(false)` or a `(not …)` from a guard over a relation the program's **generator can still propose**, which *is* a soundness signal: [`dead` is not upward-closed under `absent`](../../plans/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent). The second shares the flag because a `SolverConfig` field is rendered into the KB-shape digest, so an eighteenth would re-bless every shape golden in the corpus | no | contract |
+| `warn-derived-naf` | `bool` | `false` | **two questions, one flag**, both emitted once after root's saturation. `DerivedNafWarning` — the `(absent …)` guard watches a **rule-derived** relation: a *stratification* signal since S1.21.8, not a soundness one. `RefutationUnderAbsentWarning` (M1e [S1e.2.3](../history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)) — the rule concludes `(false)` or a `(not …)` from a guard over a relation the program's **generator can still propose**, which *is* a soundness signal: [`dead` is not upward-closed under `absent`](../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent). The second shares the flag because a `SolverConfig` field is rendered into the KB-shape digest, so an eighteenth would re-bless every shape golden in the corpus | no | contract |
 | `candidate-order-seed` | `int` | `-1` | **nothing** | **inert** | inert |
 | `lattice-sanity-check` | `bool` | `false` | for every alive commitment of size ≥ 2, re-saturates each `(k−1)`-subset parent path and compares the KBs — **1 + k + one per alive parent**, so up to `2k+1` each (it was documented as `k+1` in three places until M1e S1e.4.8, inherited from ein.py's docstring, which counted the parents' `try_commitment_set` and forgot their re-saturation). It also **adds `compile` / `enqueue` / `fire` / `quiesce` events to `--events`**, which is inherent to running the extra saturations through a narrating stream. A mismatch aborts the run with `SolveError::Sanity` | no — but it can **fail** the run | probe |
 | `lattice-order` | `str` | `lex` | the within-layer candidate order: `lex` is the canonical-tuple sort, `score-sum` sums `hypgen-scoring` over each set, descending, tie-broken by the tuple | order only | measurement lever |
@@ -147,10 +147,10 @@ the whole reason the distinction is load-bearing here.
 | **order only** | same model *set*; a different order of discovery. Under a stop rule — and `-n 1` is the default — that is a different model on stdout, and where the search does not exhaust it can be a different *subset* of them | `-o score-sum` on `examples/saturation/type-exclusivity/colors.ein -e`: the same `k = 5` and the same facts, in a different order of `solution n/k` blocks |
 | **explanation only** | same verdict, same models; a different unsat core or proof shape | `examples/zebra.ein`'s own `(config …)` comment, which turns `record-alternative-justifications` off and says what that costs and what it buys |
 | **no** | same verdict, same `k`, same models, same recorded KBs. Counters and wall clock may move, sometimes by a lot | § [2.4](#24-what-the-answer-column-was-read-from) |
-| **inert** | read by no code path at all | [Q-M1e.10](../../plans/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert) |
+| **inert** | read by no code path at all | [Q-M1e.10](../history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert) |
 
 **† Two rows are scoped to programs where the alive-set premise holds.**
-[Q-M1e.9](../../plans/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)
+[Q-M1e.9](../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)
 was answered *no* on 2026-08-28: `dead` is **not** upward-closed under
 `absent`, and its twenty-line counterexample is a program on which five of the
 engine's six shipped configurations report the wrong model with
@@ -168,7 +168,7 @@ have a flag here, but only two of them *move* that program:
 So those two rows read *KB only* and *no* against the corpus, where the
 premise holds, and would read *yes* against a program where it does not. That
 is a property of the premise, not of the flags;
-[D4](../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.1_search_soundness_probes/d4_q_m1e9_upward_closure.md)
+[D4](../history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md)
 owns it.
 
 **Stability** — what depending on a flag commits you to.
@@ -179,11 +179,11 @@ owns it.
 | **measurement lever** | exists for an A/B. The default is the shipped path and the other arm is for measuring; `corpus.toml`'s `levers` runs four of them both ways on every entry that declares them, and [`features.md`](inference/features.md) is where the numbers are |
 | **probe** | exists to test an *invariance*, not to be used. Turning it on asserts something about the engine, not about the puzzle |
 | **partly wired** | the value set is larger than the behaviour. Only `hypgen-scoring`, whose four values are one real scorer, one constant and two that raise |
-| **inert** | read by nothing — [Q-M1e.10](../../plans/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert) |
+| **inert** | read by nothing — [Q-M1e.10](../history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert) |
 
 There is no **experimental** flag. The word applies to exactly one knob in the
 system, `EIN_TRAVERSAL=tree`, and what it licenses is
-[Q-M1e.5](../../plans/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface)'s
+[Q-M1e.5](../history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface)'s
 open question.
 
 ### 2.4 What the answer column was read from
@@ -276,7 +276,7 @@ noticed, because a knob that does nothing produces identical output in both
 engines. The claim is held from outside by
 `config_reference.rs::the_two_inert_flags_are_still_inert`, and the four
 options — wire, delete, document, deprecate — are
-[Q-M1e.10](../../plans/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)'s.
+[Q-M1e.10](../history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)'s.
 
 ---
 
@@ -290,7 +290,7 @@ is its checked-in rendering — every option's long name, short key, metavar,
 arity, default, choices, group and help string, diffed by
 `ein-cli/tests/help_surface.rs`, and normative under
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
-A third enumeration would be [AR-M1](../../plans/m1e_review_processing/README.md#the-findings)'s
+A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
 **52** options across eleven parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
@@ -338,7 +338,7 @@ Five classes. Only the first two touch the answer.
   `-E`/`--max-enterings`, `-T`/`--max-time`. These change `k` and `exhausted`
   by construction, which is what `Ambiguity`'s *"(a lower bound — the search
   did not exhaust)"* exists to say. **`-n 0` is refused**, exit 2, since M1e
-  [S1e.1.5](../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.5_cli_semantics.md)
+  [S1e.1.5](../history/m1e_review_processing/README.md#s1e15---n-0-q7)
   — and so is every negative, which the CLI used to clamp onto it. It was
   accepted until 2026-08-29 and behaved exactly as `-n 1`: `stop_after` is
   tested *after* a model is recorded, so `Some(0)` cuts at the first one.
@@ -346,10 +346,10 @@ Five classes. Only the first two touch the answer.
   not, which was `Q7` / `EH-L1`. **`-m 0` stays legal** and means a truncation
   (§ `defined_behaviour.md` 5), and a **negative** `-m` or `-E` is still
   clamped onto it silently —
-  [Q-M1e.17](../../plans/m1e_review_processing/open_questions.md#q-m1e17--three-py_int-options-silently-reinterpret-a-negative).
+  [Q-M1e.17](../history/m1e_review_processing/open_questions.md#q-m1e17--three-py_int-options-silently-reinterpret-a-negative).
   **`-m` is refused under `EIN_TRAVERSAL=tree`** — in all three subcommands
   that take it (`solve`, `test`, `render lattice`) — exit 2, since M1e
-  [S1e.2.1](../../plans/m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md):
+  [S1e.2.1](../history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal):
   the flag bounds the size of the commitment *sets* the lattice enumerates and
   the tree enumerates none, its depth being what the program owes. It was
   ignored in silence until 2026-08-29, and the reason it is refused rather than
@@ -454,12 +454,12 @@ by nine.
 | `EIN_RS` | a Python module-level constant — `EIN_RS = Path(os.environ.get("EIN_BIN", …))` in `utils/e2e_baseline.py` and `utils/feature_matrix.py`, and a path constant in `utils/profile_ein_rs.py`. It reads `$EIN_BIN`; nothing reads it |
 | `EIN_CMD` | a shell array in `utils/render_examples.sh`, assigned from `$EIN_BIN` |
 | `EIN_C_PROBLEM_H` | an include guard in `c/problem.h` |
-| `EIN_RENDER_LEVI` | **documented and never implemented.** `ir/03-ein-lang/04_dot_rendering.md` claims it; the only Levi switch is the library-level `DotOpts.levi`. It is one of [CD-H1](../../plans/m1e_review_processing/README.md#the-findings)'s items |
+| `EIN_RENDER_LEVI` | **documented and never implemented.** `ir/03-ein-lang/04_dot_rendering.md` claims it; the only Levi switch is the library-level `DotOpts.levi`. It is one of [CD-H1](../history/m1e_review_processing/README.md#the-findings)'s items |
 | `EIN_PY` | named in a `run_tests.sh` comment describing the interpreter selection that left with the Python engine. The comment says so; nothing reads it |
 | `EIN_RUN_SLOW` | named in three comments in the past tense — a gate ein.py's suite had. Gone with it |
 | `EIN_MUTANT` | a frozen measurement's variable in `measurements/baseline.md`, read by the `ein-conformance` harness that M1a S1a.10.3 deleted |
 | `EIN_PRIORITY` | *proposed* by [S1f.5.6](../../plans/m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/s1f.5.6_rule_priority.md); does not exist |
-| `EIN_NOGOOD_INJECT` | *proposed* by [S1e.1.2](../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.2_determinism_under_jobs.md); does not exist |
+| `EIN_NOGOOD_INJECT` | *proposed* by [S1e.1.2](../history/m1e_review_processing/README.md#s1e12--determinism-under---jobs-q1); does not exist |
 
 ### What `EIN_TRAVERSAL=tree` reports
 
@@ -467,7 +467,7 @@ The one **experimental** surface in the system (§ 2.3), and the only knob whose
 effect a reader cannot infer from the tables above: it does not change a
 setting, it runs a **second traversal**. What that traversal *reports* has been
 observable since M1d S1d.10.6 and stated nowhere, which is M1e
-[S1e.3.2](../../plans/m1e_review_processing/p1e.3_medium/s1e.3.2_semantics.md)'s
+[S1e.3.2](../history/m1e_review_processing/README.md#s1e32--semantics-medium)'s
 `SE-M3`. This is the shipped subset — not
 [T1d.10.6.4](../history/m1d_satisfiability/README.md#s1d106--the-traversal),
 which is still the open question of what a tree *should* report where a lattice
@@ -502,7 +502,7 @@ read-out says so. Three surfaces carry it:
   definition comes to.
 
 **2 — a dead branch is recorded, and nothing is learned from it.** M1e
-[S1e.2.1](../../plans/m1e_review_processing/p1e.2_high/s1e.2.1_correctness.md),
+[S1e.2.1](../history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal),
 `CO-H3`(b): the refuted commitment and its core reach the answer — so a
 `Contradiction` states what it refuted and `--trace` lists the branches — while
 the clause store and the singleton `(not h)` writeback stay untouched. So

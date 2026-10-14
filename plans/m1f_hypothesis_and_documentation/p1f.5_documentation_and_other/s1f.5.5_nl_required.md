@@ -3,8 +3,8 @@
 **Phase:** [P1f.5](README.md) (Documentation ein does not have)
 **Estimate:** 4 days
 **Depends on:** nothing to start. Its *definition* leans on
-[Q-M1e.6](../../m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
-and [Q-M1e.7](../../m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model),
+[Q-M1e.6](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
+and [Q-M1e.7](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model),
 which decide **which fact set** the claim quantifies over — the model or the
 solution KB. Both are ratified.
 **Blocks:** nothing in M1e. It is the IR→NL half of the round trip
@@ -173,7 +173,7 @@ re-derive the meaning of.
   binds: to the roots the repo controls (`stdlib/`, `tests/stdlib/`), never to
   every `.ein` anyone writes. T4 is where that is decided and written down.
 - No number in the page is one this stage counted by hand and nothing
-  re-counts — [Q-M1e.4](../../m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all).
+  re-counts — [Q-M1e.4](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all).
 
 ## Tasks
 
@@ -181,7 +181,7 @@ re-derive the meaning of.
 
 Write `utils/nl_census.py`. Per corpus entry under its declared runs: the
 reported answer's fact set (`--json-summary`'s `verdict.solutions[i].facts`,
-which is what [Q-M1e.7](../../m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
+which is what [Q-M1e.7](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)
 is about — record which set was counted), each fact's relation, whether that
 relation carries a `:why`, and the register:
 
@@ -197,7 +197,7 @@ actionable, *"27 of 40 relations are stdlib-derived and no puzzle can template
 them"* is.
 
 `--check` exits 1 below a floor — but per
-[TE-L4](../../m1e_review_processing/README.md#the-findings), a `--check` wired to no gate is a check
+[TE-L4](../../../docs/history/m1e_review_processing/README.md#the-findings), a `--check` wired to no gate is a check
 nobody runs, so the gate is T5's cargo test and this is the measurement it is
 a yes/no of.
 
@@ -225,7 +225,7 @@ Three things to establish before writing it:
 - **A fact may have up to 32 recorded justifications**
   (`MAX_ALT_JUSTIFICATIONS`, [`kb.rs:49`](../../../ein.rs/crates/ein-core/src/kb.rs)).
   Rendering must pick one **deterministically**, and which one is
-  [Q2](../../m1e_review_processing/p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md)'s
+  [Q2](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2)'s
   neighbourhood — a fact whose narration depends on recording order is a
   narration that moves when a rule's `:priority` moves
   ([S1f.5.6](s1f.5.6_rule_priority.md) is the other end of that thread).
@@ -286,7 +286,7 @@ migration commit, and this stage's page is its specification.
   answer, trace or owe list contains `{?`.
 
 Both are cheap and neither is a discovery. Say that in the commit message —
-[Q-M1e.1](../../m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
+[Q-M1e.1](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e1--what-is-the-standard-of-proof-for-refuted)'s
 standard cuts both ways, and a probe that comes back clean is still a result.
 
 ## Risks
@@ -303,10 +303,10 @@ standard cuts both ways, and a probe that comes back clean is still a result.
   on the default `ein solve` path. Measure before shipping; if it costs, the
   full rendering is a flag and the answer table stays as it is.
 - **It touches the read-out three phases are already editing.**
-  [SE-M1](../../m1e_review_processing/README.md#the-findings) and [AR-M2](../../m1e_review_processing/README.md#the-findings) are
+  [SE-M1](../../../docs/history/m1e_review_processing/README.md#the-findings) and [AR-M2](../../../docs/history/m1e_review_processing/README.md#the-findings) are
   findings about read-out ownership being split across three crates, and T2
   adds a fourth caller unless it lifts the shared function that
-  [S1e.3.4](../../m1e_review_processing/p1e.3_medium/s1e.3.4_architecture.md) is already going to want.
+  [S1e.3.4](../../../docs/history/m1e_review_processing/README.md#s1e34--architecture-medium) is already going to want.
   Sequence after it, or hand it the function.
 
 ## Notes

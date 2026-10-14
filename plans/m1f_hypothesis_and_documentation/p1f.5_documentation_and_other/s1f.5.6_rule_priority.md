@@ -2,8 +2,8 @@
 
 **Phase:** [P1f.5](README.md) (Documentation ein does not have)
 **Estimate:** 6 days — 3 to measure and decide, 3 to remove.
-**Depends on:** [P1e.1](../../m1e_review_processing/p1e.1_open_questions/README.md)
-[S1e.1.3](../../m1e_review_processing/p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md) — **hard.**
+**Depends on:** [P1e.1](../../../docs/history/m1e_review_processing/README.md#p1e1--the-ten-questions)
+[S1e.1.3](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2) — **hard.**
 Q2 asks whether `MAX_ALT_JUSTIFICATIONS = 32` ever changes which unsat core is
 reported; § The one place it still decides an answer shows it doing so, and a
 removal taken before that question is answered is a semantics change dressed as
@@ -18,7 +18,7 @@ a cleanup.
 > all. So the corpus has *two* order-dependencies of the core and this stage's
 > § 2 is the other one: which derivations get **recorded at all**, not which of
 > the recorded ones survive the cap. A removal has to hold both, and only the
-> second has a fixture ([Q-M1e.15](../../m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)).
+> second has a fixture ([Q-M1e.15](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported)).
 **Blocks:** nothing. It writes the first content of
 [S1f.5.20](s1f.5.20_docs_refactor.md)'s
 `docs/ein/reasoning/rule-evolution/analysis-of-rules.md`, which is otherwise an
@@ -126,7 +126,7 @@ construction* — over **the justifications that were recorded**. A fact keeps a
 most `MAX_ALT_JUSTIFICATIONS = 32`
 ([`kb.rs:49`](../../../ein.rs/crates/ein-core/src/kb.rs)), and which 32 those
 are is firing order, which is priority. **That is
-[Q2](../../m1e_review_processing/p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md) with a witness
+[Q2](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2) with a witness
 attached**, and it is why this stage depends on S1e.1.3 rather than merely
 citing it.
 
@@ -149,7 +149,7 @@ Every one is a disposition this stage owes an answer for.
 | 4 | the **KB-shape digest** — `RULE … priority={} why={}` | [`shape.rs:64`](../../../ein.rs/crates/ein-core/src/shape.rs) | `corpus_shapes.md5` re-blesses, all 197 entries |
 | 5 | `ein saturate --dump`'s rule listing — `:priority N (band)` | `saturate.rs` `band_label` | a column disappears from a user-visible read-out |
 | 6a | which derivations are **recorded at all** → the reported **unsat core** | `saturator.rs` `record_alternative` + `explain.rs` | measured above: −8 facts on `branching/07`. **This is what § 2 measured**, and the cap is not in it: that entry's longest alternatives list is 1 (S1e.1.3, 2026-08-29) |
-| 6b | which ≤ 32 of them a full list **keeps** → the same core | `kb.rs` + `explain.rs` | reachable, and reached by exactly one corpus entry (`zebra2-bad`), where it costs nothing. Fixture: `examples/ein-bugs/alt-cap-core{,-reordered}.ein`, 3 facts against 2 — S1e.1.3 / [Q-M1e.15](../../m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) |
+| 6b | which ≤ 32 of them a full list **keeps** → the same core | `kb.rs` + `explain.rs` | reachable, and reached by exactly one corpus entry (`zebra2-bad`), where it costs nothing. Fixture: `examples/ein-bugs/alt-cap-core{,-reordered}.ein`, 3 facts against 2 — S1e.1.3 / [Q-M1e.15](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) |
 
 Consumers 1, 4 and 5 are presentation and bookkeeping. Consumer 3 is a
 read-out. **Consumers 2, 6a and 6b are the only three that can change an
@@ -210,9 +210,9 @@ that, and three things become derivable that a typed integer never was:
   pre-refactor equivalent — states the graph, the strata, the derived bands and
   the diagnostic. That page is [S1f.5.20](s1f.5.20_docs_refactor.md)'s only
   otherwise-empty file.
-- ~~[`MA-L1`](../../m1e_review_processing/README.md#the-findings) — is
+- ~~[`MA-L1`](../../../docs/history/m1e_review_processing/README.md#the-findings) — is
   dispositioned **fixed by removal**, and
-  [S1e.4.8](../../m1e_review_processing/p1e.4_low/s1e.4.8_maintainability.md)
+  [S1e.4.8](../../../docs/history/m1e_review_processing/README.md#s1e48--maintainability-low)
   is told so rather than fixing a comment on a constant that is leaving.~~
   **Overtaken 2026-09-01**: S1e.4.8 fixed it. Under
   [`standard_of_proof.md`](../../../docs/kernel/standard_of_proof.md) Rule 2 the
@@ -267,7 +267,7 @@ The two that matter:
   a program whose answer depends on admission order should be *told so*, which
   is T4, rather than silently steered by an integer.
 - **The unsat core (6).** Blocked on
-  [S1e.1.3](../../m1e_review_processing/p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md). Hand
+  [S1e.1.3](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2). Hand
   it the `branching/07` witness — 220 → 212, strict subset, reproducible — as
   input; it is a concrete instance of the question and the stage should not
   have had to find it.
@@ -349,7 +349,7 @@ bands; each is checked, not assumed.
 - **The graph is not free.** A dependency graph over the compile cache, built
   per run, on programs whose plan count is in the hundreds. Measure it; if it
   costs, it is a read-out and a check, not something every `ein solve` builds.
-- **Doing it before [Q2](../../m1e_review_processing/p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md).**
+- **Doing it before [Q2](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2).**
   The `branching/07` witness shows priority changing a printed core by eight
   facts. Removing the input to a truncation nobody has characterised means the
   next core change has no baseline to be compared against. Hence the hard
@@ -382,9 +382,9 @@ has promised since S1.7.4.
 - [`docs/kernel/inference/absent_semantics.md`](../../../docs/kernel/inference/absent_semantics.md)
   — P1/P2, the normative statement that the guard is judged at the closure
   boundary, which is *why* priority stopped deciding derivability.
-- [S1e.1.3](../../m1e_review_processing/p1e.1_open_questions/s1e.1.3_unsat_core_completeness.md) — Q2,
+- [S1e.1.3](../../../docs/history/m1e_review_processing/README.md#s1e13--what-the-core-promises-q2) — Q2,
   the blocking question, now with a witness.
-- [S1e.4.8](../../m1e_review_processing/p1e.4_low/s1e.4.8_maintainability.md) — [MA-L1](../../m1e_review_processing/README.md#the-findings),
+- [S1e.4.8](../../../docs/history/m1e_review_processing/README.md#s1e48--maintainability-low) — [MA-L1](../../../docs/history/m1e_review_processing/README.md#the-findings),
   which this stage closes by deleting the constant.
 - [S1f.5.20](s1f.5.20_docs_refactor.md) T4 — `rule-evolution/analysis-of-rules.md`,
   the page this stage writes the content of.

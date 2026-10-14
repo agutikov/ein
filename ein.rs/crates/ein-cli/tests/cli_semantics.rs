@@ -275,7 +275,7 @@ fn the_zebra2_variants_are_zebra2_plus_or_minus_one_condition() {
 
     // The byte-level half — **required, not opportunistic**, since M1e
     // S1e.3.3's neighbour
-    // [S1e.3.6](../../../../plans/m1e_review_processing/p1e.3_medium/s1e.3.6_tests.md)
+    // [S1e.3.6](../../../../docs/history/m1e_review_processing/README.md#s1e36--tests-medium)
     // T1, the review's `TE-M1`.
     //
     // It used to `eprintln!` and pass when `python3` was absent or exited 127.
@@ -602,7 +602,7 @@ fn the_stop_policy_is_honoured() {
 
 /// **`-n/--solutions` takes a count of one or more, and refuses everything
 /// else** — M1e
-/// [S1e.1.5](../../../../plans/m1e_review_processing/p1e.1_open_questions/s1e.1.5_cli_semantics.md),
+/// [S1e.1.5](../../../../docs/history/m1e_review_processing/README.md#s1e15---n-0-q7),
 /// the review's `Q7`.
 ///
 /// `-n 0` used to be accepted, and what it *did* was `-n 1`: `stop_after` is

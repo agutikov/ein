@@ -254,7 +254,7 @@ def run_suite(binary: Path, stdlib: Path, targets: list[str]) -> tuple[int, str]
 #: The banked survivor set — one `module::rule::family::detail` per line.
 #:
 #: A **set**, not a score, for the reason a floor over a growing corpus is
-#: [TE-M2](../plans/m1e_review_processing/p1e.3_medium/s1e.3.6_tests.md): a
+#: [TE-M2](../docs/history/m1e_review_processing/README.md#s1e36--tests-medium): a
 #: number decays while the thing it guards grows, and a set says *which*. A new
 #: survivor fails `--check`; a banked one that has since been killed also
 #: fails, because that is an improvement worth banking rather than losing.
