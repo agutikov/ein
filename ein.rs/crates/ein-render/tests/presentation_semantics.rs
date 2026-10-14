@@ -2,30 +2,28 @@
 //!
 //! The bytes of every renderer are already pinned twice over: `corpus_shapes.rs`
 //! digests all seventeen DOT views of every corpus entry, and `golden_dot.rs` /
-//! `golden_trace.rs` / `golden_slice.rs` reproduce ein.py's committed goldens.
+//! `golden_trace.rs` / `golden_slice.rs` reproduce checked-in goldens.
 //! What none of those say is *what the picture means* — a golden that changed
 //! for a good reason is refreshed and the claim behind it is lost. These are
 //! the claims: the ones a reader of the DOT would state in a sentence, each
 //! written so that the wrong picture fails rather than a different one.
 //!
-//! Replaces the semantic half of five Python files, all deleted with ein.py at
-//! [P1a.10](../../../../docs/history/m1a_rust/README.md#p1a10--one-implementation):
+//! The subjects:
 //!
-//! | Python | subject kept here |
-//! |---|---|
-//! | `ein.py/tests/render/test_lattice_dag.py` | the lattice under a shuffled traversal, the no-good back-edge, the derivation-DAG trace view |
-//! | `ein.py/tests/render/test_rules_dot.py` | `render rules` / `render rule --name` as *static file views* |
-//! | `ein.py/tests/render/test_slice_dot.py` | the `→ ⊥` edge order (hazard H4) |
-//! | `ein.py/tests/test_ir_to_dot.py` | the per-form dispatch's own shapes, and mode/view name resolution |
-//! | `ein.py/tests/trace/test_answer.py`, `tests/trace/test_render.py` | where the English comes from, and what the four `--trace` flags do |
+//! - the lattice under a shuffled traversal, the no-good back-edge, the
+//!   derivation-DAG trace view;
+//! - `render rules` / `render rule --name` as *static file views*;
+//! - the `→ ⊥` edge order (hazard H4);
+//! - the per-form dispatch's own shapes, and mode/view name resolution;
+//! - where the English comes from, and what the four `--trace` flags do.
 //!
-//! **On the five entries the work-list called `cli-…`.** `ein-render` cannot
+//! **On the subcommands.** `ein-render` cannot
 //! depend on `ein-cli` — that is the dependency edge, backwards — so what is
 //! asserted here is the body each subcommand is a five-line wrapper around
 //! (`ein-cli/src/render.rs`, `ein-cli/src/solve.rs::write_trace`): the
 //! renderer call, its input, and the condition the subcommand turns into its
 //! exit code. The exit codes and the two stderr sentences themselves are
-//! surface, and `ein-cli/tests/help_parity.rs` is where that surface lives.
+//! surface, and `ein-cli/tests/help_surface.rs` is where that surface lives.
 
 use ein_core::{FactId, Kb, SolverConfig, Terms, Value};
 use ein_infer::events::{Buffer, Level};
@@ -555,7 +553,7 @@ fn a_rule_renders_by_name_and_the_overlay_drops_the_panels() {
 /// set's iteration order made one puzzle produce two different trace files
 /// across runs. `repr` rather than a native comparison because a core can hold
 /// facts with mixed argument types, which have no total order otherwise
-/// (Q-M1a.4). Six facts, fed in scrambled order, so a collection order that
+/// (`defined_behaviour.md` §2.1). Six facts, fed in scrambled order, so a collection order that
 /// happens to match sorted order is 1-in-720 rather than a coin flip.
 #[test]
 fn the_bottom_edges_of_a_refutation_are_sorted_not_collection_ordered() {
@@ -706,7 +704,7 @@ fn the_headline_is_the_querys_own_goal_text() {
 /// T1d.3.3.2, on the two surfaces the CLI does not reach.
 ///
 /// A model count is a **claim about a set**, and `exhausted` is what licenses
-/// it. The `Solution` headline has carried that distinction since ein.py; the
+/// it. The `Solution` headline had always carried that distinction; the
 /// verdict that reports a set carried none, which is the wrong way round —
 /// `k = 1` unqualified guesses at uniqueness, `k = 4` unqualified is a wrong
 /// number. `branching/02_one_dead_one_alive.ein` is the corpus's proof: at
@@ -958,8 +956,8 @@ fn each_trace_shaping_flag_changes_the_document() {
 /// S1e.4.6, `CD-L3`.
 ///
 /// The note said *"no stored lattice (store_lattice=False) — showing the
-/// solution frontier instead"*, byte-for-byte what ein.py emitted, and it was
-/// false twice: every caller that can reach it sets `store_lattice = true`,
+/// solution frontier instead"*, and it was false twice: every caller that can
+/// reach it sets `store_lattice = true`,
 /// and `LatticeProof` has no `kb_index` field for any value of that flag to
 /// populate. `--view`'s own help text gave the real reason, so a user running
 /// one command met two explanations of the same thing.

@@ -1,5 +1,4 @@
-# ein.rs — the Rust port of the ein engine (M1a), and since P1a.10 the only
-# implementation (docs/history/m1a_rust/README.md#p1a10--one-implementation).
+# ein.rs — the ein engine (M1a).
 #
 # Six engine crates and two dev-only ones. Five of the six were in place and
 # empty at P1a.0 and filled in over P1a.1–P1a.5, so that a stage added code
@@ -12,19 +11,16 @@
 #
 #   ein-corpus  the corpus manifest (`corpus/corpus.toml`), the fixture helpers
 #               every crate's tests share, and the eight-bench M1a measurement
-#               set. It is `ein-oracle` with its subject removed plus the
-#               surviving half of `ein-conformance`; the parity harness itself,
-#               which shelled out to two implementations and linked neither,
-#               was retired at S1a.10.3 with the second implementation.
-#   ein-parity  the D3 normalisation list, executable — what counts as a
-#               derivation's *narration* rather than its content. It outlived
-#               the harness that motivated it: the same three observables move
-#               inside one engine under a permuted id space.
+#               set.
+#   ein-narration  what counts as a derivation's *narration* rather than its
+#               content, executable. A fork *resumes* root's saturation rather
+#               than re-deriving it, so two runs of one program can narrate
+#               different amounts of one derivation — a firing count, a
+#               rendered derivation, a dying fork's stopping point — while the
+#               answer and the search stay exact.
 #
-# `ein-py` (P1a.9) is NOT here: PyO3/maturin is a heavy dependency whose cost
-# the dependency policy says to defer until something needs it. (`ein-server`
-# used to be named here for the same reason; the server was dropped outright
-# on 2026-08-18 — the engine ships as a library plus this CLI.)
+# `ein-server` is NOT here: the server was dropped outright on 2026-08-18 —
+# the engine ships as a library plus this CLI.
 #
 # Layout and the dependency policy:
 # docs/history/m1a_rust/design/12_toolchain_and_layout.md.
@@ -34,7 +30,7 @@ resolver = "3"
 members = [
     "crates/ein-core",
     "crates/ein-corpus",
-    "crates/ein-parity",
+    "crates/ein-narration",
     "crates/ein-ir",
     "crates/ein-infer",
     "crates/ein-einb",
@@ -71,8 +67,8 @@ sha2        = "0.10"
 # The `.einb` header digest (design/10 §2, §4) — content addressing, so the
 # question it answers is "are these the bytes that were written", which is what
 # a fast tree hash is for. `ein-einb` only; the engine crates stay
-# dependency-light, and the two digests already here are parity fixtures rather
-# than integrity checks (`md-5` is a DOT node id, `sha1` a colour index).
+# dependency-light, and the two digests already here are rendering fixtures
+# rather than integrity checks (`md-5` is a DOT node id, `sha1` a colour index).
 blake3      = { version = "1", default-features = false, features = ["std"] }
 # P1a.7's work-stealing pool, `ein-infer` only and behind its `parallel`
 # feature (design/12 §2). What it buys over `std::thread::scope` is that the
@@ -95,11 +91,11 @@ criterion   = { version = "0.7", default-features = false, features = ["cargo_be
 # rather not have a vendored C++ one.
 # docs/history/m1a_rust/measurements/baseline.md § 13.
 snmalloc-rs = "0.7"
-# The CLI's argument parser. Q-M1a.13 (resolved 2026-08-18) put `--help`
-# layout and usage-error text on the normalisation list, so this does not have
-# to reproduce `argparse`'s formatter — only its *surface*: same options, same
-# short keys, same defaults, same exclusions, same exit codes. `cli` only; the
-# engine crates stay dependency-light.
+# The CLI's argument parser. `--help` layout and usage-error text are clap's;
+# what is fixed is the *surface* — every option's name, short key, default,
+# exclusions and help string, and every exit code
+# (`docs/kernel/defined_behaviour.md` § 5). `cli` only; the engine crates stay
+# dependency-light.
 clap        = { version = "4", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions"] }
 
 # Optimised even in dev: `cargo test` spawns hundreds of engine processes —

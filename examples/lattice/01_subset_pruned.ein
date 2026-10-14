@@ -2,7 +2,7 @@
 ;;;
 ;;; Demonstrates: a layer-3 candidate {h1, h2, X} is filtered at
 ;;; generation because its 2-subset {h1, h2} dies at layer 2. The
-;;; Apriori prefix-join in inference/apriori.py drops the (h1, h2)
+;;; Apriori prefix-join in `apriori.rs` drops the (h1, h2)
 ;;; pair from a_prev when it dies; the (k+1)-join therefore never
 ;;; emits a 3-superset containing both — the pruning is structural,
 ;;; happening BEFORE the expensive try_commitment_set fork+saturate.
@@ -32,7 +32,7 @@
 ;;;   dead_commitments 1   (the {a,b} death; the 3-set deaths
 ;;;                         we'd see WITHOUT the pruning never
 ;;;                         materialise)
-;;;   nogoods_emitted  1   (frozenset({(proposed,(a,)), (proposed,(b,))}))
+;;;   nogoods_emitted  1   ({(proposed a), (proposed b)})
 ;;;
 ;;; This is the F1 / F3 path from idea-08's "subset elimination"
 ;;; observation: nogood subsumption + Apriori prefix-join =

@@ -1,18 +1,17 @@
 //! S1a.5.1 acceptance — the checked-in DOT goldens, byte for byte.
 //!
-//! `ein.py/tests/render/test_golden_dot.py` locked the current bytes of every
-//! DOT emitter onto fifteen files under `ein.rs/crates/ein-render/tests/golden/from_ein_py/dot/`, plus
-//! `kb_zebra_unified.dot` beside them. Those *committed* files are the
-//! fixture here: a port that shipped its own copy of the expected bytes would
-//! prove only that it agrees with itself.
+//! Fifteen files under `ein.rs/crates/ein-render/tests/golden/dot/`, plus
+//! `kb_zebra_unified.dot` beside them, lock the bytes of every DOT emitter.
+//! Each case builds a deterministic input and renders it. One is covered
+//! elsewhere and is not repeated: `kb_provenance_dag` by `derivation_dot.rs`,
+//! which landed with the provenance walk it renders.
 //!
-//! Each case rebuilds ein.py's deterministic input against the port's data
-//! model and renders it. Two are already covered elsewhere and are not
-//! repeated: `kb_provenance_dag` by `derivation_dot.rs`, which landed with
-//! the provenance walk it renders.
+//! ```text
+//! EIN_BLESS=1 cargo test -p ein-render --test golden_dot   # regenerate them
+//! ```
 
 use ein_core::{FactId, Kb, Symbol, Terms, Value};
-use ein_corpus::repo_root;
+use ein_corpus::{golden, golden_path, repo_root};
 use ein_infer::commitment::Kind;
 use ein_infer::firing::Firing;
 use ein_infer::solve::{DeadCommitment, LatticeProof, LatticeStats, SolutionRecord};
@@ -22,13 +21,18 @@ use ein_render::kb_dot::KbDotOpts;
 use ein_render::lattice_dag::{LatticeSource, LatticeView, render_lattice};
 use ein_render::rules::{RuleMode, render_rule_form, render_rules_forms};
 use ein_render::slice::{render_slice, render_solution, render_state};
-use std::path::PathBuf;
 
-fn golden(name: &str) -> String {
-    let path: PathBuf = repo_root()
-        .join("ein.rs/crates/ein-render/tests/golden/from_ein_py/dot")
-        .join(format!("{name}.dot"));
-    std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()))
+/// Compare `got` against `tests/golden/<rel>`, or rewrite it under
+/// `EIN_BLESS=1`.
+fn check(rel: &str, got: &str) {
+    if let Some(e) = golden(&golden_path("ein-render", rel), got) {
+        panic!("{e}");
+    }
+}
+
+/// [`check`] for one of the goldens under `dot/`.
+fn check_dot(name: &str, got: &str) {
+    check(&format!("dot/{name}.dot"), got);
 }
 
 // ── deterministic input builders ───────────────────────────────────
@@ -92,65 +96,61 @@ fn the_per_form_ir_goldens_reproduce() {
         ),
     ] {
         let (ast, forms) = parsed(text);
-        assert_eq!(
-            to_dot(&ast, &forms, DotOpts::default()),
-            golden(name),
-            "{name}"
-        );
+        check_dot(name, &to_dot(&ast, &forms, DotOpts::default()));
     }
 }
 
 #[test]
 fn the_query_and_trace_goldens_reproduce() {
     let (ast, forms) = parsed("(query :goal (drinks Water ?h))");
-    assert_eq!(render_query(&ast, forms[0]), golden("ir_render_query"));
+    check_dot("ir_render_query", &render_query(&ast, forms[0]));
 
     let (ast, forms) = parsed(TRACE);
-    assert_eq!(
-        render_trace(&ast, forms[0], TraceView::PerStep),
-        golden("ir_render_trace_a")
+    check_dot(
+        "ir_render_trace_a",
+        &render_trace(&ast, forms[0], TraceView::PerStep),
     );
-    assert_eq!(
-        render_trace(&ast, forms[0], TraceView::Dag),
-        golden("ir_render_trace_dag")
+    check_dot(
+        "ir_render_trace_dag",
+        &render_trace(&ast, forms[0], TraceView::Dag),
     );
 }
 
 #[test]
 fn the_rule_and_constraint_goldens_reproduce() {
     let (ast, forms) = parsed(RULE);
-    assert_eq!(
-        render_rule_form(&ast, forms[0], RuleMode::SideBySide),
-        golden("render_rule")
+    check_dot(
+        "render_rule",
+        &render_rule_form(&ast, forms[0], RuleMode::SideBySide),
     );
 
     let (ast, forms) = parsed(&format!("{RULE}\n{SYMM}"));
-    assert_eq!(
-        render_rules_forms(&ast, &forms, RuleMode::SideBySide),
-        golden("render_rules")
+    check_dot(
+        "render_rules",
+        &render_rules_forms(&ast, &forms, RuleMode::SideBySide),
     );
 
     let (ast, forms) = parsed(CONSTRAINTS);
-    assert_eq!(
-        ein_render::render_constraints(&ast, &forms, "constraints"),
-        golden("render_constraints")
+    check_dot(
+        "render_constraints",
+        &ein_render::render_constraints(&ast, &forms, "constraints"),
     );
 }
 
 #[test]
 fn the_kb_goldens_reproduce() {
     let (_ast, terms, kb) = loaded(SMALL_KB);
-    assert_eq!(
-        ein_render::kb_to_dot(&kb, &terms, &KbDotOpts::default()),
-        golden("kb_render_to_dot")
+    check_dot(
+        "kb_render_to_dot",
+        &ein_render::kb_to_dot(&kb, &terms, &KbDotOpts::default()),
     );
-    assert_eq!(
-        render_state(&kb, &terms, None, "snap"),
-        golden("slice_render_state")
+    check_dot(
+        "slice_render_state",
+        &render_state(&kb, &terms, None, "snap"),
     );
-    assert_eq!(
-        render_solution(&kb, &terms, "solution"),
-        golden("slice_render_solution")
+    check_dot(
+        "slice_render_solution",
+        &render_solution(&kb, &terms, "solution"),
     );
 }
 
@@ -161,16 +161,12 @@ fn the_kb_goldens_reproduce() {
 fn the_zebra_unified_golden_reproduces() {
     let path = repo_root().join("examples/zebra.ein");
     let text = std::fs::read_to_string(&path).expect("the puzzle is checked in");
-    // `base_dir = None`, as ein.py's fixture does: `std.*` imports resolve
-    // regardless, and nothing the renderer prints carries a file name.
+    // `base_dir = None`: `std.*` imports resolve regardless, and nothing the
+    // renderer prints carries a file name.
     let (_ast, terms, kb) = loaded(&text);
-    let want = std::fs::read_to_string(
-        repo_root().join("ein.rs/crates/ein-render/tests/golden/from_ein_py/kb_zebra_unified.dot"),
-    )
-    .expect("the golden is checked in");
-    assert_eq!(
-        ein_render::kb_to_dot(&kb, &terms, &KbDotOpts::default()),
-        want
+    check(
+        "kb_zebra_unified.dot",
+        &ein_render::kb_to_dot(&kb, &terms, &KbDotOpts::default()),
     );
 }
 
@@ -233,9 +229,9 @@ fn the_slice_golden_reproduces() {
             yellow_h1,
         ),
     ];
-    assert_eq!(
-        render_slice(&terms, &[seed], &firings, None, "slice", None, None),
-        golden("slice_render_slice")
+    check_dot(
+        "slice_render_slice",
+        &render_slice(&terms, &[seed], &firings, None, "slice", None, None),
     );
 }
 
@@ -289,13 +285,13 @@ fn the_lattice_golden_reproduces() {
         learned_nogoods: Vec::new(),
         stats: LatticeStats::default(),
     };
-    assert_eq!(
-        render_lattice(
+    check_dot(
+        "lattice_render",
+        &render_lattice(
             &terms,
             LatticeSource::Proof(&proof),
             LatticeView::Solution,
             "lattice",
         ),
-        golden("lattice_render")
     );
 }

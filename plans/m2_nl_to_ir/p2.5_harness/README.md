@@ -23,8 +23,8 @@ metric without a record is a number nobody can re-take — and because all
 three are **defined before the first table and not changed after it**. The
 plan puts reproducibility at N, near the end; this milestone puts the record
 format first, because M1a's whole measurement discipline
-([`bench_env.sh`](../../../utils/bench_env.sh), the frozen PyPy columns,
-`cost_ms` as a measured claim) was that a number without its instrument and
+([`bench_env.sh`](../../../utils/bench_env.sh), `cost_ms` as a measured
+claim) was that a number without its instrument and
 machine state is not a number.
 
 ### Order

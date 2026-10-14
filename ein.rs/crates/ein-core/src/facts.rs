@@ -1,17 +1,15 @@
 //! The fact store — interned rows, and the number every proposition gets.
 //!
-//! ein.py's `Fact` is `(relation_name: str, args: tuple[str | int | Fact,
-//! ...])` with identity on exactly those two fields, which makes every
-//! identity comparison a tuple compare recursing into `str.__eq__` and every
-//! hash a tuple hash over string hashes. Here a proposition is a `u32`
+//! A fact's identity is its relation name and its argument tuple — names, ints
+//! and nested facts — and nothing else. Here a proposition is a `u32`
 //! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §4):
 //!
-//! | ein.py | ein.rs |
+//! | question | answer |
 //! |---|---|
-//! | `Fact.__eq__` → tuple compare → per-arg `str.__eq__` | `FactId == FactId` |
-//! | `Fact.__hash__` → tuple hash | the `FactId` *is* the hash |
-//! | `kb._fact_by_id(rel, args)` — an O(deg) scan of the extent | [`FactStore::probe`], O(1) |
-//! | a nested `Fact` arg is an unregistered object | a nested arg is a `FactId` like any other |
+//! | are two facts the same? | `FactId == FactId`, never a tuple compare |
+//! | its hash | the `FactId` *is* the hash |
+//! | which id has `(rel, args)`? | [`FactStore::probe`], O(1), never a scan of the extent |
+//! | a nested fact argument | a `FactId` like any other |
 //!
 //! **Interning is not belief.** [`FactStore::intern`] says "this proposition
 //! has this number"; it does not say the proposition holds. Belief is a
@@ -326,13 +324,13 @@ mod tests {
     }
 
     #[test]
-    fn nested_identity_cascades_the_way_fact_eq_does() {
+    fn nested_identity_cascades_through_the_inner_fact() {
         let mut s = FactStore::new();
         let (co_located, not) = (Symbol(0), Symbol(1));
         let inner = s.intern(co_located, &[v(10), v(11)]).expect("room");
         let outer = s.intern(not, &[Value::fact(inner)]).expect("room");
         // Re-deriving the inner proposition from scratch must reach the same
-        // outer fact — this is `Fact.__eq__` recursing into nested facts.
+        // outer fact — identity recurses into nested facts.
         let inner_again = s.intern(co_located, &[v(10), v(11)]).expect("room");
         assert_eq!(inner_again, inner);
         assert_eq!(s.probe(not, &[Value::fact(inner_again)]), Some(outer));
@@ -343,10 +341,9 @@ mod tests {
 
     #[test]
     fn interning_a_nested_fact_says_nothing_about_belief() {
-        // ein.py's nested `Fact` args are "unregistered" objects — they are
-        // not in `kb.facts`. Here they get an id like any other proposition,
-        // and the store holds no belief state at all to distinguish them:
-        // that bit lives in the KB, which is what makes an O(1) fork sound.
+        // A nested fact arg gets an id like any other proposition, and the
+        // store holds no belief state at all to distinguish it: that bit
+        // lives in the KB, which is what makes an O(1) fork sound.
         let mut s = FactStore::new();
         let inner = s.intern(Symbol(0), &[v(1)]).expect("room");
         let outer = s.intern(Symbol(1), &[Value::fact(inner)]).expect("room");
@@ -372,8 +369,7 @@ mod tests {
 
     #[test]
     fn a_zebra_sized_store_fits_the_memory_budget() {
-        // design/03 §4: 381 facts of mean arity ≈ 2.2 is ~8 KB, contiguous,
-        // against ~60–80 KB of scattered Python object graph.
+        // design/03 §4: 381 facts of mean arity ≈ 2.2 is ~8 KB, contiguous.
         let mut interner = Interner::new();
         let mut ints = IntPool::new();
         let mut s = FactStore::new();

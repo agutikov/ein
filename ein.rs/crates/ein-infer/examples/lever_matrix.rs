@@ -1,11 +1,10 @@
-//! The `features.md` lever matrix, regenerated against ein.rs — **in process**.
+//! The `features.md` lever matrix, regenerated — **in process**.
 //!
 //! **Superseded as the instrument of record by
 //! [`utils/feature_matrix.py`](../../../../utils/feature_matrix.py)**, which
-//! since S1a.6.7 drives *both* engines as processes, delivers each lever
-//! through a generated `(config …)` block, cross-checks the two verdicts and
-//! twelve counters before comparing a millisecond, and carries a `control`
-//! row that states the column's resolution. That is what `features.md` is
+//! since S1a.6.7 drives the engine as a process, delivers each lever through
+//! a generated `(config …)` block, checks that every cell flipped the lever it
+//! names, and carries a `control` row that states the column's resolution. That is what `features.md` is
 //! measured with now. This example stays because it is what P1a.4 measured
 //! with, because an in-process reading is a useful second opinion on a
 //! process-level one, and because it costs 100 lines.
@@ -19,13 +18,12 @@
 //! cargo run --release -p ein-infer --example lever_matrix
 //! ```
 //!
-//! **The wall-clock column is not comparable to ein.py's and the entering
-//! column is.** The Python matrix aborts a runaway cell on a *wall-clock*
-//! budget, which is machine-dependent and turns "too slow here" into a verdict;
-//! this one caps `max_enterings`, so a cell that ein.py could only report as
-//! `Aborted (≥90 s)` gets an actual number. What the acceptance asks is that
-//! the verdicts and entering counts agree wherever ein.py produced one, and
-//! that `enable_singleton_writeback` is still the single load-bearing lever.
+//! **The entering column is the one to read.** The process matrix aborts a
+//! runaway cell on a *wall-clock* budget, which is machine-dependent and turns
+//! "too slow here" into a verdict; this one caps `max_enterings`, so a cell
+//! that could only be reported as `Aborted (≥90 s)` gets an actual number.
+//! What the acceptance asks is that `enable_singleton_writeback` is still the
+//! single load-bearing lever.
 
 use std::time::Instant;
 

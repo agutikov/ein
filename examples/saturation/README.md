@@ -68,17 +68,7 @@ them directly to exercise the rule independently.
 ## Running a single demo
 
 ```sh
-python -c "
-from ein.ir import parse
-from ein.kb.store import KnowledgeBase
-from ein.inference.engine import Engine
-
-kb = KnowledgeBase.from_ir(parse(
-    open('examples/zebra/demos/symmetric/couple.ein').read()))
-eng = Engine(kb); eng.compile_all()
-for f in eng.saturate():
-    print(f.rule, '→', f.derived.relation_name, f.derived.args)
-"
+ein saturate examples/saturation/symmetric/couple.ein --dump
 ```
 
 ## Rendering to DOT/SVG

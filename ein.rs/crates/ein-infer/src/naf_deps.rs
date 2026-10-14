@@ -119,8 +119,8 @@ pub struct Refutation {
 /// Every conclusion is inspected, not only the first: `(and …)` multi-assert
 /// (A13) means a rule can derive a fact *and* refute, and the refuting arm is
 /// what matters here. `asserted_relation` / `negated_relation` read
-/// `assert_template()` alone because they reproduce ein.py's `S1.7.4` map;
-/// this is a new question and has no parity to keep.
+/// `assert_template()` alone because they are the `S1.7.4` map, which reads
+/// the first conclusion; this is a new question and reads every one.
 fn refuting_conclusion(plan: &Plan, terms: &Terms) -> Option<&'static str> {
     let mut found = None;
     for slot in plan.asserts.iter() {
@@ -154,7 +154,7 @@ fn label(terms: &Terms, rel: Symbol, negated: bool) -> String {
 /// against the *same* cache, so the producible set reflects exactly the
 /// activators that actually exist. Records are sorted by
 /// `(rule_name, activator_args)`, **by text**: the ids the interner assigned
-/// are not the order ein.py sorts strings in.
+/// are not text order.
 ///
 /// `eligible` is the program's hypothesis-eligible relation set
 /// ([`crate::hypgen::eligible_relations`]) and drives [`NafDep::refutation`]
@@ -183,8 +183,8 @@ pub fn compute_naf_map(
         if refs.is_empty() {
             continue;
         }
-        // ein.py buckets into `set`s and sorts, so a relation watched twice is
-        // one entry — and a relation watched both ways is two.
+        // Each bucket is a set, sorted on the way out, so a relation watched
+        // twice is one entry — and a relation watched both ways is two.
         let (mut derived, mut declared) = (FxHashSet::default(), FxHashSet::default());
         // S1e.2.3's third bucket, filled from the *same* walk. A negated watch
         // `(absent (not (R …)))` is deliberately **not** exposure: what the
@@ -228,8 +228,7 @@ pub fn compute_naf_map(
 }
 
 fn sorted(set: FxHashSet<String>) -> Box<[String]> {
-    // ein.py buckets into a `set` and hands `tuple(sorted(...))` out, so the
-    // set is a dedup and the sort is what anyone reads. Labels are distinct
+    // The set is a dedup and the sort is what anyone reads. Labels are distinct
     // strings, so the sort has no ties for the iteration order to break.
     // determinism-ok: sorted on the next line, before it can reach a caller.
     let mut v: Vec<String> = set.into_iter().collect();
@@ -237,7 +236,7 @@ fn sorted(set: FxHashSet<String>) -> Box<[String]> {
     v.into_boxed_slice()
 }
 
-/// `tuple[str, ...]` ordering: element-wise by text, and a prefix sorts first.
+/// Ordering of string sequences: element-wise by text, and a prefix sorts first.
 fn cmp_args(terms: &Terms, a: &[Symbol], b: &[Symbol]) -> std::cmp::Ordering {
     for (x, y) in a.iter().zip(b.iter()) {
         let o = terms.syms.cmp_text(*x, *y);
@@ -251,7 +250,7 @@ fn cmp_args(terms: &Terms, a: &[Symbol], b: &[Symbol]) -> std::cmp::Ordering {
 /// One advisory line, and which kind it is.
 ///
 /// `category` is the `warn` event's, and it is what tells the two apart in a
-/// stream: `DerivedNafWarning` is ein.py's stratification advice,
+/// stream: `DerivedNafWarning` is the S1.7.4 stratification advice,
 /// `RefutationUnderAbsentWarning` is M1e S1e.2.3's soundness one.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct NafWarning {
@@ -272,16 +271,15 @@ fn activator_suffix(terms: &Terms, activator: &[Symbol]) -> String {
 
 /// Every advisory line the NAF map yields, in map order.
 ///
-/// **One walk, two questions** — the stratification one ein.py shipped and the
+/// **One walk, two questions** — the stratification one (S1.7.4) and the
 /// refutation-exposure one M1e S1e.2.3 added. There is no second switch:
 /// `eligible` **is** the switch, because a refutation line needs a relation
 /// the generator can propose and an empty set has none. So
 /// [`derived_naf_warnings`] is this function over an empty set, and a caller
 /// that wants both computes the set.
 ///
-/// A "warning" in ein.py is a `DerivedNafWarning` raised through the
-/// `warnings` module; here it is a string the caller decides what to do with —
-/// the CLI turns it into a `warn` event and a stderr line.
+/// A warning is a string the caller decides what to do with — the CLI turns
+/// it into a `warn` event and a stderr line.
 pub fn naf_warnings(
     engine: &Engine,
     terms: &Terms,
@@ -290,7 +288,7 @@ pub fn naf_warnings(
     let mut out = Vec::new();
     for d in compute_naf_map(engine, terms, eligible) {
         let act = activator_suffix(terms, &d.activator);
-        let rule = ein_core::pyrepr::repr_str(terms.sym(d.rule));
+        let rule = ein_core::repr::repr_str(terms.sym(d.rule));
         if !d.derived.is_empty() {
             out.push(NafWarning {
                 category: DERIVED_NAF,
@@ -326,7 +324,7 @@ pub fn naf_warnings(
     out
 }
 
-/// The stratification lines alone — ein.py's `DerivedNafWarning` set.
+/// The stratification lines alone — the `DerivedNafWarning` set.
 ///
 /// Kept as a name because two pages and a test cite it. It is
 /// [`naf_warnings`] over an **empty** eligible set, which is the same scan

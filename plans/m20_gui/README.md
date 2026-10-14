@@ -8,7 +8,7 @@ wants it rather than at a fixed point in the sequence. The views below are
 the 2026-05 sketch; § Stack is the 2026-08-18 decision (merged from this
 directory's `tauri.md`, now folded in here).
 **Depends on:** [M1a](../../docs/history/m1a_rust/README.md) — the GUI binds to *the
-engine that ships*, and after the port that engine is a set of Rust
+engine that ships*, and that engine is a set of Rust
 crates. M1's kernel, IR parser, search-tree artefact and DOT rendering
 hooks are the semantics it displays.
 **Blocks:** nothing on the critical path; M2 (NL → IR) can proceed in
@@ -342,7 +342,7 @@ Stack-specific:
 
 ## Cross-links
 
-- [M1a — Rust port](../../docs/history/m1a_rust/README.md) — the engine this binds to;
+- [M1a — the Rust engine](../../docs/history/m1a_rust/README.md) — the engine this binds to;
   [design/12 § workspace](../../docs/history/m1a_rust/design/12_toolchain_and_layout.md)
   for the crate layout, [P1a.8](../../docs/history/m1a_rust/README.md#p1a8--binary-kb-container)
   for `.einb` saved sessions.

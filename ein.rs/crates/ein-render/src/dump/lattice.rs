@@ -1,4 +1,4 @@
-//! `LatticeDumper` — `ein.py`'s `inference/monotonic/_lattice_dump.py`.
+//! `LatticeDumper` — the per-commitment `--dump-states` tree.
 //!
 //! Every commitment tested at every layer, with the firings each one emitted,
 //! survivors and casualties alike: the exhaustive audit trail. Sibling of
@@ -21,13 +21,11 @@
 //! Sub-folders are created lazily on first write, so the layout reflects what
 //! actually happened rather than what could have.
 //!
-//! **`kb_index/` never materialises**, and that is ein.py's behaviour, not a
-//! gap: `LatticeProof.kb_index` is written only by a DAG builder via
-//! `_record_setnode`, and nothing on the shipping path calls one — the same
-//! fact that makes `render lattice --view full` always take its fallback
+//! **`kb_index/` never materialises**, and that is not a gap: `solve`
+//! records no per-commitment `SetNode` DAG for it to index — the same fact
+//! that makes `render lattice --view full` always take its fallback
 //! ([S1a.5.1](../../../../../docs/history/m1a_rust/README.md#s1a51--dot-renderers)).
-//! So `proof_summary.json` carries an empty `kb_index` list, which is exactly
-//! what ein.py writes.
+//! So `proof_summary.json` carries an empty `kb_index` list.
 
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -158,22 +156,21 @@ impl Dumper for LatticeDumper {
 
         if outcome == "dead-pre" || outcome == "dead-post" {
             if let Ok(mut fp) = std::fs::File::create(folder.join("unsat_core.jsonl")) {
-                // `sorted`: the core is a set, and its raw iteration order
-                // would put these lines in a `PYTHONHASHSEED`-dependent order
-                // (hazard H4 — the same bug as `render/slice`'s `⊥` edges, in
-                // the other artefact).
+                // `sorted`: the core is a set, and its raw iteration order is
+                // not a property of the data (hazard H4 — the same bug as
+                // `slice`'s `⊥` edges, in the other artefact).
                 let mut core: Vec<(String, FactId)> = info
                     .unsat_core
                     .iter()
-                    .map(|f| (ein_core::pyrepr::repr(&terms.py_fact(*f)), *f))
+                    .map(|f| (ein_core::repr::repr(&terms.repr_fact(*f)), *f))
                     .collect();
                 core.sort();
                 for (_, f) in core {
                     let _ = writeln!(fp, "{}", dumps(&fact_summary(terms, f)));
                 }
             }
-            // The learned clause is the commitment, sorted by
-            // `(relation_name, tuple(map(str, args)))`.
+            // The learned clause is the commitment, sorted by relation name
+            // and then by each argument's text.
             let mut clause: Vec<FactId> = commitment.to_vec();
             clause.sort_by_key(|f| {
                 let (rel, args) = terms.fact(*f);
@@ -298,9 +295,9 @@ impl Dumper for LatticeDumper {
 
 /// `LatticeStats`'s fields, in declaration order.
 ///
-/// ein.py's `LatticeStats` *inherits* `MonotonicStats`, so `dataclasses.fields`
-/// yields the base's ten first and its own three after; the port composes
-/// rather than inherits, so the flattening is written out.
+/// `LatticeStats` composes `MonotonicStats` as `base`, and the record is flat
+/// — the base's ten fields first and its own three after — so the flattening
+/// is written out.
 fn lattice_stats_json(proof: &LatticeProof) -> Json {
     let s = &proof.stats;
     let b = &s.base;

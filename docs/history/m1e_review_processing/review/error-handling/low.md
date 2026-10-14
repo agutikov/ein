@@ -13,7 +13,7 @@
 
 ### Finding
 
-`solve` accepts `-n 0` (`py_int` allows 0; `stop_after` becomes `Some(0)`), even though `--jobs 0` is refused with a message arguing exactly that a flag with two readings should be refused. Stop-after-zero has no obvious meaning; the engine's treatment is whatever `SolveOptions{stop_after: Some(0)}` does. Likely ein.py parity, but unstated anywhere.
+`solve` accepts `-n 0` (`int_arg` allows 0; `stop_after` becomes `Some(0)`), even though `--jobs 0` is refused with a message arguing exactly that a flag with two readings should be refused. Stop-after-zero has no obvious meaning; the engine's treatment is whatever `SolveOptions{stop_after: Some(0)}` does, and it is stated nowhere.
 
 ### Recommendation
 

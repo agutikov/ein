@@ -36,8 +36,8 @@ system can *prove*.
 
 ### Rung 3 — harness (procedural) self-modification
 
-The system mutates **its own Python source code** under
-`src/ein/`. The most distant rung; only meaningful with F2 + F5
+The system mutates **its own source code** under
+`ein.rs/crates/`. The most distant rung; only meaningful with F2 + F5
 already in place to confine the feedback loop to a known formal
 substrate.
 
@@ -51,7 +51,7 @@ This is the **procedural** rung. It changes what the system can *do*.
 
 Each rung has its own:
 
-- Substrate (GBNF / IR-rules / Python-AST).
+- Substrate (GBNF / IR-rules / source AST).
 - Audit-trail mechanism (grammar versions / rule provenance / git
   commits).
 - Failure mode (private-dialect drift / non-termination / bricked
@@ -83,7 +83,7 @@ the harness to remain *under human control*.
 That ordering — grammar before rules before harness — is also the
 order in which the substrate matures: M2 builds the GBNF infra (F2
 substrate), P1.3 builds the rule engine (F5 substrate), and the
-existing Python package (already shipped) is the F6 substrate.
+engine's own source (already shipped) is the F6 substrate.
 
 ## What Ein M1 contributes
 
@@ -93,7 +93,7 @@ M1 doesn't implement *any* self-modification. It builds the
 - M1 ships the IR + KB + (planned) inference engine, providing the
   pieces F5 will operate over.
 - M2 ships GBNF infra + NL→IR, providing the grammar F2 will mutate.
-- Both build on a Python package F6 might one day modify.
+- Both build on an engine whose source F6 might one day modify.
 
 The followups are *not* implementation milestones for M1's scope;
 they're the *answer to "why is M1 worth building this way?"* — the

@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""`stdlib/MANIFEST.sha256` — generate or verify (M1a S1a.0.3, narrowed
-at [S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)).
+"""`stdlib/MANIFEST.sha256` — generate or verify (M1a S1a.0.3).
 
 The stdlib is 1 231 lines of ein-lang across seven modules, three of which
 `zebra2.ein` imports. It is *not* test data: it is program text the engine
 reads at run time, and it is checked in **once**, at repo-root `stdlib/`.
 
-The manifest had three readers, and has two.
+The manifest has two readers.
 
 - **the checkout** — a directory is the stdlib because it carries this file.
   `ein_ir::stdlib::MARKER` is the constant, and the walk-up in
@@ -19,11 +18,6 @@ The manifest had three readers, and has two.
   dependency, so editing a module rebuilds the crate and the test compares the
   *new* bytes. (Verified by breaking it: append a comment to `algebra.ein` and
   `cargo test -p ein-ir --lib stdlib` goes red without any other change.)
-- ~~**the wheel**~~ — a build-time copy landed in `ein/src/ein/stdlib/`, and
-  CI compared it against the manifest so a stale copy could not ship. There is
-  no Python package and therefore no second copy; `--against DIR` went with
-  it, along with the fallback that let `stdlib_dir()` answer with
-  `ein.py/src/ein/stdlib`.
 
 So what is left here is the half `cargo test` cannot do: **writing** the
 manifest. Nothing in the workspace regenerates it — a test that rewrote the
@@ -57,8 +51,7 @@ MANIFEST_NAME = "MANIFEST.sha256"
 def stdlib_dir() -> Path:
     """The stdlib root. One location, named rather than searched for.
 
-    It was a search — repo-root `stdlib/`, else `ein.py/src/ein/stdlib` — and
-    a fallback like that turns "the stdlib is not where it should be" into
+    A search with a fallback turns "the stdlib is not where it should be" into
     "checked a different directory, all fine", which is the same defect
     S1a.10.3 took out of the corpus completeness check.
     """

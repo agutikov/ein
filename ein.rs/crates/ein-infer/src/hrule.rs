@@ -57,9 +57,8 @@ impl Hrules {
                     continue;
                 }
                 let args: Vec<Value> = argtuple.iter().map(|&a| Value::sym(a)).collect();
-                // The activator is a synthetic `Fact(h.name, argtuple)` that
-                // is deliberately **not** written to the KB — ein.py builds
-                // the same throwaway.
+                // The activator is a synthetic `(h.name argtuple…)` fact that
+                // is deliberately **not** written to the KB — a throwaway.
                 // A lent table cannot number a synthetic activator it has
                 // not seen; `Terms::refused` sends the entering back.
                 let Ok(act) = s.terms.intern_fact(h.name, &args) else {
@@ -93,20 +92,17 @@ impl Hrules {
     ///
     /// The fact is *not* written — it is a hypothesis, handed back to hypgen
     /// for filtering. A malformed `:assert` template yields no candidate
-    /// rather than failing the generation, which is ein.py's
-    /// `except (KeyError, TypeError): continue`.
+    /// rather than failing the generation.
     ///
     /// ### Why the matches are collected before any is emitted
     ///
-    /// ein.py runs this as a generator and hypgen's filter pipeline mutates
-    /// the KB — the lookahead kill cache writes `(not h)` — *while* the
-    /// matcher is suspended mid-enumeration. ein.py's `_candidates` returns
-    /// the live `_facts_by_relation` list, so such a write is visible to the
-    /// rest of that enumeration. Here the matcher borrows the KB immutably
-    /// for the whole walk and the callback needs it mutably, so the walk
-    /// finishes first.
+    /// Hypgen's filter pipeline mutates the KB — the lookahead kill cache
+    /// writes `(not h)` — between one candidate and the next. The matcher
+    /// borrows the KB immutably for the whole walk and the callback needs it
+    /// mutably, so the walk finishes first, and no write the pipeline makes is
+    /// visible to the rest of the enumeration.
     ///
-    /// The two agree exactly whenever the only relation the pipeline writes —
+    /// Collecting first and interleaving agree exactly whenever the only relation the pipeline writes —
     /// `not` — is not one an hrule's `:match` reads, which is the condition
     /// `reads_negation` checks under `debug_assert`. No corpus hrule reads
     /// it (they read `is-a` and the puzzle's own relations), and an hrule that
@@ -142,7 +138,7 @@ impl Hrules {
                 };
                 match build_fact(s.terms, plan, env, template) {
                     Ok(fact) => f(s, fact)?,
-                    // `KeyError` / `TypeError` — a malformed template yields
+                    // `UnboundVar` / `NotAFact` — a malformed template yields
                     // no candidate. An `Overflow` is not that, but it is
                     // unreachable here for the same reason it is elsewhere:
                     // the interner holds 2^30 rows.
@@ -181,7 +177,7 @@ fn reads_negation(plan: &Plan, terms: &ein_core::Terms) -> bool {
 /// A `:hrules` value is `(NAME (args…) (args…) …)`: its head is the hrule
 /// name, and each remaining item is one argument tuple binding that hrule's
 /// parameters once. Unlike the relation-set keywords, **every** `:hrules` pair
-/// contributes — ein.py accumulates rather than returning at the first.
+/// contributes — they accumulate rather than the first one winning.
 fn hrule_activators(s: &Session<'_>) -> FxHashMap<Symbol, Vec<Vec<Symbol>>> {
     let mut out: FxHashMap<Symbol, Vec<Vec<Symbol>>> = FxHashMap::default();
     let Some(query) = s.kb.program().query() else {

@@ -1,4 +1,4 @@
-//! What the engine *did* — the ein.rs half of the T1a.6.1.3 comparison.
+//! What the engine *did* — the work counters of T1a.6.1.3.
 //!
 //! ```sh
 //! cargo run --release --features counters -p ein-infer --example counter_cost
@@ -11,17 +11,12 @@
 //! and a measurement instrument that changes the measurement is worth less than
 //! no instrument at all.
 //!
-//! The comparable Python numbers came from `utils/count_work.py`, which wrapped
-//! the same call sites in ein.py and printed the same field names. Two engines
-//! that agree on a verdict but disagree on `candidates` by 3× are not the same
-//! search, and that was worth knowing before any speed claim was made about
-//! either — it is the argument this example was built for. The script left with
-//! its subject at
-//! [S1a.10.4](../../../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine);
-//! its column is frozen in
+//! The T1a.6.1.3 numbers are in
 //! [baseline.md §4](../../../../docs/history/m1a_rust/measurements/baseline.md#4-what-the-engine-did--the-work-counters).
-//! What this half is for now is the same question asked across *commits*:
-//! whether an optimisation moved the work or only the clock.
+//! What this is for is the question asked across *commits*: two runs that
+//! agree on a verdict but disagree on `candidates` by 3× are not the same
+//! search, so a counter says whether an optimisation moved the work or only
+//! the clock.
 
 use ein_core::{Terms, counters};
 use ein_infer::Events;

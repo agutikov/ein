@@ -1,17 +1,16 @@
-//! The `slice` provenance cone, against ein.rs's own goldens —
-//! [T1a.6.11.3](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing).
+//! The `slice` provenance cone, against checked-in goldens — T1a.6.11.3.
 //!
-//! `dot_parity.rs` compares seventeen DOT views of every corpus entry byte for
-//! byte against ein.py. One of them — `slice` — renders a **derivation**, so
-//! it moved with
-//! [D3](../../../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
-//! on sixteen entries and is on `ein-parity`'s narration list: still run on
-//! both sides, both still have to answer, no longer byte-compared. This is
-//! what replaces the byte check.
+//! `corpus_shapes.rs` digests seventeen DOT views of every corpus entry. One
+//! of them — `slice` — renders a **derivation**, so it is on
+//! `ein-narration`'s narration list: where two runs are compared it is still
+//! run and still has to answer, but is not byte-compared, because a fork
+//! resumes root's saturation rather than re-deriving it and two runs can
+//! narrate different amounts of one derivation. A digest says only *that* a
+//! cone moved; this is what says *what*.
 //!
-//! Two entries, both from that sixteen, chosen for size: the cone is
-//! `render_slice` over a solution's commitment and firings, so a puzzle with a
-//! long proof makes a golden nobody reads.
+//! Two entries, chosen for size: the cone is `render_slice` over a solution's
+//! commitment and firings, so a puzzle with a long proof makes a golden nobody
+//! reads.
 //!
 //! ```text
 //! EIN_BLESS=1 cargo test -p ein-render
@@ -22,9 +21,8 @@ use ein_corpus::{golden, golden_path, repo_root};
 use ein_ir::{Ast, parse};
 use ein_render::shape::dot_shape;
 
-/// `(golden name, corpus entry)`. Both are on `dot_parity`'s
-/// `NARRATED_SLICES`, which is the asserted list of entries whose cone D3
-/// actually moves — so these two are pinning bytes nothing else looks at.
+/// `(golden name, corpus entry)`. `corpus_shapes.md5` digests every entry's
+/// cone, which says that one moved; these two are the cones a reviewer reads.
 const SLICES: [(&str, &str); 2] = [
     ("forall", "examples/features/03_forall.ein"),
     ("two-level", "examples/branching/04_two_levels.ein"),

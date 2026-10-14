@@ -1,24 +1,18 @@
-//! The grammar's decisions — S1a.1.1's acceptance, without `lark`.
+//! The grammar's decisions — S1a.1.1's acceptance.
 //!
-//! Accept/reject was the weaker half of the comparison; the *message* was the
-//! one that pinned the port, because the harness diffs stderr and a "better"
-//! diagnostic is a T3 failure (design/04 §4, Q-M1a.3).
+//! Accept/reject is the weaker half; the *message* is the half a puzzle author
+//! reads, and every `examples/broken/` fixture is baselined against it, so a
+//! "better" diagnostic is a re-baseline rather than an improvement in passing
+//! (design/04 §4, Q-M1a.3).
 //!
-//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
-//! keeps both halves and loses the second parser:
-//!
-//! | was | now |
+//! | claim | where |
 //! |---|---|
-//! | the corpus-wide accept/reject diff | `corpus_shapes.md5`'s 111 `ir[parse]` lines, which carry the *message* of a refusal as well as the dump of an acceptance |
-//! | the four `examples/broken/*.ein` messages | `.expected` files beside them, written **from ein.py** — see [`the_parse_negative_fixtures_reproduce_larks_message`] |
+//! | the corpus-wide accept/reject surface | `corpus_shapes.md5`'s 111 `ir[parse]` lines, which carry the *message* of a refusal as well as the dump of an acceptance |
+//! | the four `examples/broken/*.ein` messages | `.expected` files beside them — see [`the_parse_negative_fixtures_reproduce_their_message`] |
 //! | the 78 hand-written ambiguity cases | a checked-in decision table |
 //!
-//! The `.expected` files are the interesting one. The ledger's row for this
-//! test said the four fixtures were "owned today only as a digest" and
-//! recommended writing the files out of ein.py before it goes; that is what
-//! S1a.10.2 did, with `utils/ir_oracle.py`'s own `accept` answers, machine
-//! paths replaced by `{FILE}` the way `examples/broken/load/` already does it.
-//! They are lark's text, checked in, and nothing regenerates them from ein.rs.
+//! The `.expected` files carry machine paths replaced by `{FILE}`, the way
+//! `examples/broken/load/` already does it.
 
 use ein_corpus::{golden, golden_path, repo_root};
 use ein_ir::{Ast, parse};
@@ -32,18 +26,18 @@ fn answer(text: &str, filename: Option<&str>) -> String {
     }
 }
 
-/// **The four parse-negative fixtures reproduce lark's message.**
+/// **The four parse-negative fixtures reproduce their message.**
 ///
-/// `examples/broken/` is the parse-negative group, and each fixture now has an
-/// `.expected` beside it holding the message **ein.py produced**, with the
-/// absolute path replaced by `{FILE}` — the same placeholder convention
+/// `examples/broken/` is the parse-negative group, and each fixture has an
+/// `.expected` beside it holding its message, with the absolute path replaced
+/// by `{FILE}` — the same placeholder convention
 /// `examples/broken/load/` uses, and for the same reason: a message captured
 /// verbatim passes on the machine that blessed it and fails everywhere else.
 ///
 /// The digest in `corpus_shapes.md5` covers these four too, but as sixteen hex
 /// digits. This is the half a reader can review.
 #[test]
-fn the_parse_negative_fixtures_reproduce_larks_message() {
+fn the_parse_negative_fixtures_reproduce_their_message() {
     let dir = repo_root().join("examples/broken");
     let mut fixtures: Vec<_> = std::fs::read_dir(&dir)
         .expect("examples/broken")
@@ -90,7 +84,7 @@ fn the_parse_negative_fixtures_reproduce_larks_message() {
     );
 }
 
-/// **The 78 cases that make the port non-obvious**, each one a decision in
+/// **The 78 cases that make the parser non-obvious**, each one a decision in
 /// `lex.rs` or `parse.rs`.
 ///
 /// A reserved word is a legal SYMBOL *prefix* and the split reading wins
@@ -102,13 +96,10 @@ fn the_parse_negative_fixtures_reproduce_larks_message() {
 /// Checked in as a table rather than diffed, and the table is the *answer* —
 /// the form count on an acceptance, the whole diagnostic on a refusal — so a
 /// case that started parsing differently rather than merely failing shows up.
-/// Blessed from a tree where the diff against `lark` was green, with one
-/// honest caveat: what that diff compared was accept/reject **and the
-/// message**, so those two are lark's answers; the *form count* is new here
-/// and is a self-golden. The structure of an accepted parse is compared
-/// against ein.py wherever the corpus reaches it, through
-/// `corpus_shapes.md5`'s `ir[parse]` (which digests `dump_canonical`), and
-/// these seventy-eight one-liners are not in the corpus.
+/// The structure of an accepted parse is pinned wherever the corpus reaches
+/// it, through `corpus_shapes.md5`'s `ir[parse]` (which digests
+/// `dump_canonical`), and these seventy-eight one-liners are not in the
+/// corpus.
 #[test]
 fn the_documented_ambiguities_keep_their_decisions() {
     let cases = [

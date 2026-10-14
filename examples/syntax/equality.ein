@@ -9,7 +9,7 @@
 ;;;
 ;;; It has **no engine semantics in M1**. The loader ingests it as an ordinary
 ;;; fact and auto-vivifies `=` as an open-world relation; nothing in `ein-infer`
-;;; reads it, and the `EqClasses` union-find both engines carry is never driven
+;;; reads it, and the `EqClasses` union-find the store carries is never driven
 ;;; by one — the seam is deliberate, for a future e-graph promotion
 ;;; ([02_store.md § 8](../../docs/kernel/ir/02-data-model/02_store.md), F4 Q30).
 ;;; The *computed* equality is `eq` / `neq`, which are predicates inside a
@@ -20,11 +20,11 @@
 ;;; (`ein-render/src/rules.rs` draws the `eq` predicate with the `=` glyph,
 ;;; which is presentation and adds to the confusion rather than to the model.)
 ;;;
-;;; One of the eighteen node-kind fixtures S1a.10.2 moved out of
-;;; `ein-render/tests/dot_parity.rs`, where they were rendered under all
-;;; eight parse views and diffed against ein.py. As corpus entries they are
-;;; digested by `corpus_shapes.md5` instead — every view, every op, no
-;;; second engine. They exist because no *puzzle* contains these shapes.
+;;; One of the eighteen node-kind fixtures. As corpus entries they are
+;;; rendered under every parse view and every op, and each rendering is
+;;; digested by `corpus_shapes.md5`, so a change to how any of these
+;;; shapes is drawn moves a digest. They exist because no *puzzle*
+;;; contains these shapes.
 
 (relation r T T)
 (= a b)

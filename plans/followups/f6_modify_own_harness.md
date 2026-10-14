@@ -8,9 +8,9 @@ on any near-term horizon.
 
 The most ambitious self-modification rung. F2 modifies the *grammar*
 (syntactic); F5 modifies the *rule library* (semantic, declarative);
-**F6 modifies the engine itself** — the Python code under
-`src/ein/`. A rule's RHS can produce a *patch* to a Python file;
-the harness applies it, reloads the module, and continues running.
+**F6 modifies the engine itself** — its own source under
+`ein.rs/crates/`. A rule's RHS can produce a *patch* to a source file;
+the harness applies it, rebuilds, and continues running.
 
 Variants this could take:
 
@@ -24,21 +24,21 @@ Variants this could take:
   some measurable property — speed, trace length — improved). If so,
   the patch is offered to the human; if not, discarded.
 - **Online self-patching** — the engine modifies its own running
-  process via Python hot-reloading or via writing files + spawning a
+  process via hot-reloading or via writing files + spawning a
   new instance. This is the maximal-risk form and is *not* on any
   realistic Ein timeline.
 
 ## Why deferred indefinitely
 
-The mechanism (Python AST manipulation, importlib reloading,
+The mechanism (AST manipulation, rebuild-and-restart,
 sandboxing) is well-understood. The *unsolved* parts are:
 
 - **The bridge from the IR to source-code patches.** A rule's RHS
-  currently produces *facts*; producing a Python AST patch needs an
+  currently produces *facts*; producing a source-AST patch needs an
   intermediate "IR-as-AST" mapping that doesn't exist.
 - **The test-or-revert harness.** Sandboxed self-patching needs a
-  trusted oracle (the existing pytest suite, plus regression
-  benchmarks). M1 ships 300+ tests, which is enough for a
+  trusted oracle (the existing `cargo test` gate, plus regression
+  benchmarks). The gate is enough for a
   *correctness preserved* check; the *improvement* check needs
   property metrics not yet defined.
 - **Audit trail.** Every self-applied patch needs a recoverable
@@ -57,14 +57,14 @@ Only as part of the shared `m_followups_self_modifying/` milestone
 F6 is the *outermost ring* — implemented last, gated by F2 + F5
 working, with an explicit research bound:
 
-- **PF6.1** — IR → Python patch bridge. A small DSL for "add this
-  method to this class", "rename this parameter", "insert this
-  decorator" — *not* arbitrary Python edits.
+- **PF6.1** — IR → source patch bridge. A small DSL for "add this
+  method to this type", "rename this parameter", "insert this
+  attribute" — *not* arbitrary edits.
 - **PF6.2** — sandbox runner. Take a patch, apply to a worktree,
   run the test suite, gather property metrics, return a verdict.
 - **PF6.3** — code-suggestion mode (the *non-risky* form): emit
   patches to stdout, never apply automatically. Useful as a
-  refactoring suggester for `ein/` itself.
+  refactoring suggester for the engine itself.
 - **PF6.4** — gated self-application. Apply only with explicit
   human approval per patch; commit to a sandbox branch.
 - **PF6.5** — research bound: *not* online self-modification within
@@ -82,7 +82,7 @@ working, with an explicit research bound:
 - **Scope creep into general code synthesis.** The line between
   "engine modifies itself" and "engine writes new programs" blurs
   fast. F6 explicitly does *not* aim at the latter; the codebase
-  under modification is `src/ein/` only.
+  under modification is `ein.rs/crates/` only.
 
 ## Prior art / connections
 

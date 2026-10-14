@@ -182,7 +182,7 @@
 
 ;; join — (join R1 R2 R3) ⟺ R3 ⊇ R1∪R2. A GENERIC `(rule join … :match (or …))`
 ;; would load-split into `join__or0` / `join__or1`, which the `(join …)` activator
-;; can never reach (store.py registers activators by exact rule name) — the dual
+;; can never reach (activators are registered by exact rule name) — the dual
 ;; of A11. So `join` uses the NON-generic fan-out idiom (`bijective-properties` /
 ;; `reflexive`): a None-activator rule reads the `(join …)` operand fact and
 ;; multi-asserts both per-operand activators, which then (A9 reflective) light up

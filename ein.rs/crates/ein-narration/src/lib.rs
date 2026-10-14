@@ -1,51 +1,39 @@
-//! What a derivation's **narration** is, executable —
-//! [design/01 §5](../../../../docs/history/m1a_rust/design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list).
+//! What a derivation's **narration** is, executable.
 //!
 //! **Not part of the engine.** `publish = false`, and nothing outside a test
 //! depends on it. It exists because
 //! [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
-//! left the same decision implemented six times — in the parity harness, in
-//! three `tests/` files, in `ein-render`'s `shape.rs` and in its
-//! `utils/ir_oracle.py` twin (gone since S1a.10.4) — each cut made one at a
-//! time as the next test
-//! went red. A relaxation that has to be discovered by running the tests is
-//! not a contract, so this crate is where the decision lives and the call
-//! sites only say *what they are handing over*.
+//! left the same decision implemented in several places — three `tests/`
+//! files and `ein-render`'s `shape.rs` among them — each cut made one at a
+//! time as the next test went red. A relaxation that has to be discovered by
+//! running the tests is not a contract, so this crate is where the decision
+//! lives and the call sites only say *what they are handing over*.
 //!
 //! # The rule
 //!
 //! > **A fork's derivation, and anything keyed on a dying fork's stopping
 //! > point, is narration.**
 //!
-//! Since S1a.6.9 a fork *resumes* root's saturation rather than re-deriving it
-//! ([D3](../../../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)),
-//! so two runs can reach the same answer while narrating different amounts of
-//! the same derivation: a quarter of the firings, a different one of each
-//! fact's equally valid justifications recorded first, and — with
+//! A fork *resumes* root's saturation rather than re-deriving it, so two runs
+//! of one program can reach the same answer while narrating different amounts
+//! of the same derivation: a different number of firings, a different one of
+//! each fact's equally valid justifications recorded first, and — with
 //! `enable_fail_fast_fork` on — a different stopping point for a fork that
-//! dies. What is *not* relaxed in any direction is the **answer** and the
-//! **search**: the verdict, the model, the unsat core, every counter.
+//! dies. Run the corpus twice with the id space permuted and 66 renderings
+//! move, every one of them a dying fork's stopping point, a firing count, or
+//! which of a fact's equally valid justifications was recorded first. What is
+//! *not* relaxed in any direction is the **answer** and the **search**: the
+//! verdict, the model, the unsat core, every counter. So the rule is a
+//! statement about what a derivation *is*, which is why it is a normalisation
+//! between two runs of the same program.
 //!
-//! # Why it outlived the harness
-//!
-//! The rule was written for two engines, and
-//! [S1a.10.3](../../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine)
-//! retired the harness that compared them. This crate survived, because
-//! [S1a.10.1 §5](../../../../docs/history/m1a_rust/oracle_ledger.md#5-what-the-successor-found)
-//! showed the same three observables move **inside one engine**: run the
-//! corpus twice with the id space permuted and 66 renderings move, all of them
-//! a dying fork's stopping point, a firing count, or which of a fact's equally
-//! valid justifications was recorded first. Nothing had to be added to
-//! [`is_narration`] for that. So the rule stopped being a statement about two
-//! implementations and became one about what a derivation *is*, which is why
-//! it is a normalisation the engine's own goldens apply to themselves.
-//!
-//! Who applies it now:
+//! Who applies it:
 //!
 //! | call site | to what |
 //! |---|---|
-//! | `ein-render/tests/corpus_ops/mod.rs` | every op of every corpus file, before digesting it into `corpus_shapes.md5` |
-//! | `ein-render/tests/id_order_invariance.rs` | the same, twice, under a permuted id space — and it is what says the 66 are the narrated 66 |
+//! | `ein-render/tests/corpus_ops/mod.rs` | every op of every corpus file — `Op::narrow`, which both invariance sweeps compare through |
+//! | `ein-render/tests/id_order_invariance.rs` | every op, twice, under a permuted id space — and it is what says the 66 are the narrated 66 |
+//! | `ein-render/tests/jobs_invariance.rs` | every op, at `--jobs 1` and again at `--jobs N` |
 //! | `ein-render/src/shape.rs` | [`NARRATED`], so a shape and a golden agree on the word |
 //! | `ein-infer/tests/event_cut_control.rs` | [`events`], through a deliberately mutated stream |
 //!
@@ -57,10 +45,9 @@
 //!    still fails. [`blank_line`].
 //! 2. **A rendered derivation is narration** — the markdown trace, the
 //!    `slice` provenance cone, a fork's own `enterings/` dump, and the lattice
-//!    DOT a snapshot draws from dead state keys. Compared for presence; the
-//!    regression coverage that replaces the byte diff is the ein.rs goldens of
-//!    [S1a.6.11](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing).
-//!    [`is_narration`], [`blank_blocks`].
+//!    DOT a snapshot draws from dead state keys. Compared for presence; what
+//!    pins their bytes is `ein-render`'s goldens — `golden_trace.rs`,
+//!    `golden_slice.rs`, `golden_dump.rs`. [`is_narration`], [`blank_blocks`].
 //! 3. **A dying fork's stopping point is narration** — a `dead-post`
 //!    entering's unsat core and the state keys derived from it. The run's own
 //!    answer — the *printed* core, `union_dead_cores`, every `summary.json`
@@ -68,15 +55,15 @@
 //!
 //! The event stream gets its own module, [`events`], because eliding it line
 //! by line would throw away the one thing worth comparing: **what each fork
-//! derived**. §2 of that module is the measurement that chose the cut.
+//! derived**. §1 of that module is where the cut falls and why.
 //!
 //! # Turning it off
 //!
-//! [`strict()`] — `EIN_PARITY_STRICT=1` — restores the byte-identical contract
-//! P1a.1–P1a.5 was built against. It is not a configuration the suite passes:
-//! it is how the relaxation gets *measured*, by running a sweep under it and
-//! reading off what the cut was covering. `id_order_invariance` prints the 66
-//! by op under it; relaxed, it asserts they are zero.
+//! [`strict()`] — `EIN_NARRATION_STRICT=1` — compares every byte, narration
+//! included. It is not a configuration the suite passes: it is how the
+//! relaxation gets *measured*, by running a sweep under it and reading off
+//! what the cut was covering. `id_order_invariance` prints the 66 by op under
+//! it; relaxed, it asserts they are zero.
 
 pub mod events;
 
@@ -84,7 +71,7 @@ pub mod events;
 /// still fails, which is the point of substituting rather than dropping.
 pub const NARRATED: &str = "<narrated>";
 
-/// Is the D3 relaxation off? `EIN_PARITY_STRICT=1`.
+/// Is the relaxation off? `EIN_NARRATION_STRICT=1`.
 ///
 /// Everything else in this crate *is* the relaxation and applies it
 /// unconditionally; a strict call site does not call it. That is deliberate —
@@ -93,7 +80,7 @@ pub const NARRATED: &str = "<narrated>";
 /// tests in one process, in threads.
 pub fn strict() -> bool {
     matches!(
-        std::env::var("EIN_PARITY_STRICT").as_deref(),
+        std::env::var("EIN_NARRATION_STRICT").as_deref(),
         Ok("1" | "true" | "yes")
     )
 }
@@ -101,7 +88,7 @@ pub fn strict() -> bool {
 /// The closed list of **rendered derivations** — consequence 2 of the rule.
 ///
 /// The name is whatever the call site calls the thing it is handing over: a
-/// DOT view name (`dot_parity`), a shape block head (`trace_parity`,
+/// DOT view name (`dot_shape`), a shape block head (`trace_shape`,
 /// `dump_shape`'s `=== …` tree), or a path inside a `--dump-states` tree. They
 /// do not collide, and keeping them in one list is the difference between a
 /// contract and six tolerances.
@@ -109,8 +96,8 @@ pub fn strict() -> bool {
 /// | name | what it renders | why it moved |
 /// |---|---|---|
 /// | `slice` | the solution's provenance cone | it *is* the firing list, drawn |
-/// | `markdown`, `ir`, `ir-reparsed`, `no-proof` | `trace_shape`'s rendered trace and its IR | ein.rs's has a *Before any assumption* section ein.py has no counterpart for, and a spine a quarter the length |
-/// | `dot solution`, `dot full` | the lattice DAG drawn **from a snapshot** | it keys dead nodes on the dead commitment's `state_key`, so even the node count moves. The renderer itself is still byte-compared through `dot_parity`'s `lattice` / `lattice-full`, which read a `LatticeProof` and label dead nodes by *commitment* |
+/// | `markdown`, `ir`, `ir-reparsed`, `no-proof` | `trace_shape`'s rendered trace and its IR | its steps are the firings that justified each fact, so it moves with which justification was recorded first |
+/// | `dot solution`, `dot full` | the lattice DAG drawn **from a snapshot** | it keys dead nodes on the dead commitment's `state_key`, so even the node count moves. The renderer itself is still byte-compared through the `lattice` / `lattice-full` DOT views, which read a `LatticeProof` and label dead nodes by *commitment* |
 /// | `enterings/…` | a fork's own firing list and state dump | the fork's derivation, in full |
 /// | `*.md` written by `--trace` | the CLI's markdown trace | as `markdown` |
 ///
@@ -137,9 +124,9 @@ pub fn is_narration(name: &str) -> bool {
 /// Values, never keys: `"firings": 18` becomes `"firings": #`, so a record
 /// that stopped carrying a firing count is still a difference. The `core`
 /// rule is conditional on the same line naming a `dead-post` entering, which
-/// is how both the JSON timeline (`"kind": "dead-post"`) and `hypgen_parity`'s
-/// text shape (`kind=dead-post`) carry it — an **alive** entering's core is
-/// the answer and is compared exactly.
+/// is how both the JSON timeline (`"kind": "dead-post"`) and a text shape
+/// (`kind=dead-post`) carry it — an **alive** entering's core is the answer
+/// and is compared exactly.
 pub fn blank_line(line: &str) -> String {
     let mut out = blank_counts(line);
     if line.contains("kind=dead-post") || line.contains("\"kind\": \"dead-post\"") {
@@ -161,11 +148,11 @@ pub fn blank_line(line: &str) -> String {
 
 /// Every firing counter on a line, by value.
 ///
-/// The four sites, each named: `hypgen_parity`'s `firings=` shape,
-/// `state_dump.py`'s `"firings"` timeline record, the `enter` event's
-/// `"n_firings"`, and `cli/solve.py`'s `wrote <path> (N steps, M refuted)`.
+/// The four sites, each named: a text shape's `firings=`, the
+/// `--dump-states` timeline record's `"firings"`, the `enter` event's
+/// `"n_firings"`, and `ein solve --trace`'s `wrote <path> (N steps, M refuted)`.
 /// `M refuted` is **not** a firing count — it is how many commitments died,
-/// which is T1 — so it stays.
+/// which is part of the answer — so it stays.
 ///
 /// An event line carries a fifth: its ordinal `"n"`, which counts **every**
 /// event including the firings a shape filters out, so it moves with them.
@@ -346,7 +333,7 @@ mod tests {
             blank_line("wrote /o/trace.md (20 steps, 2 refuted)"),
             "wrote /o/trace.md (# steps, 2 refuted)"
         );
-        // `refuted` is how many commitments died — T1, not narration.
+        // `refuted` is how many commitments died — the answer, not narration.
         assert_ne!(
             blank_line("wrote /o/trace.md (20 steps, 2 refuted)"),
             blank_line("wrote /o/trace.md (20 steps, 3 refuted)")

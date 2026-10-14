@@ -18,15 +18,15 @@ ratio moves under the phase's own work.
 `--events-level verbose` stream at its `enter` events and the root prefix and
 the per-entering suffixes separate exactly.
 
-`commitment::try_commitment_set` forks the *saturated* root. ein.py built a
-fresh `Saturator` there — empty `seen` / `fired` / `parked` and `delta = None`,
-a FULL enqueue pass — so a fork's first act was to re-derive the parent's whole
+`commitment::try_commitment_set` forks the *saturated* root. A fresh
+`Saturator` there — empty `seen` / `fired` / `parked` and `delta = None`, a
+FULL enqueue pass — makes a fork's first act re-deriving the parent's whole
 deductive closure as `redundant` firings, 94.6 % of them on `zebra -e`. Since
 [S1a.6.9](../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
-ein.rs **resumes** root's saturation instead
-([D3](../docs/history/m1a_rust/divergences.md)), and this is the instrument that says
-by how much: point `--bin` at a `--features fork-delta` build and set
-`EIN_FORK_DELTA=0` for the old shape.
+the engine **resumes** root's saturation instead, so a fork narrates less of
+one derivation, and this is the instrument that says by how much: point
+`--bin` at a `--features fork-delta` build and set `EIN_FORK_DELTA=0` for the
+fresh shape.
 
 **Two attributions the inline script got wrong**, which is why this is a
 script and not a `grep`:

@@ -5,12 +5,10 @@
 //! tables to read, and rendering or ordering one needs all three
 //! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §§2–4).
 //!
-//! ein.py reaches the same information through a `_kb` back-pointer on every
-//! entity. This port has none: an accessor takes `&Terms` (and, where belief
-//! matters, `&Kb`) explicitly, which is what makes the caveat ein.py
-//! documents — that a shared entity's back-pointer sees the *root*'s facts, so
-//! `Relation.facts` on a fork answers for the wrong KB — evaporate rather than
-//! need reproducing.
+//! No entity carries a back-pointer to these tables: an accessor takes
+//! `&Terms` (and, where belief matters, `&Kb`) explicitly, so an entity shared
+//! between a root and its forks cannot answer a question about one KB with
+//! the other's facts.
 //!
 //! Interning is `&mut`, reading is `&`. Nothing here knows about belief: a
 //! `FactId` exists whether or not any KB holds the proposition true.
@@ -18,7 +16,7 @@
 use crate::facts::{FactId, FactStore};
 use crate::intern::{Interner, Overflow, Symbol};
 use crate::prov::ProvArena;
-use crate::pyrepr::{self, PyValue};
+use crate::repr::{self, ReprValue};
 use crate::value::{IntId, IntPool, Tag, Value};
 use std::cmp::Ordering;
 use std::sync::Arc;
@@ -476,7 +474,7 @@ impl Terms {
         }
     }
 
-    /// A textual argument — what ein.py's `_atomic_value` produces for an
+    /// A textual argument — what the loader's `atomic_value` produces for an
     /// `Atom` (its `name`) and for a `String` (its `value`).
     ///
     /// That both collapse to one shape is a **semantic** fact about ein-lang,
@@ -486,7 +484,7 @@ impl Terms {
         Ok(Value::sym(self.intern_text(s)?))
     }
 
-    /// A `Var` in argument position — `?name`, as `_atomic_value` renders it.
+    /// A `Var` in argument position — `?name`, as `atomic_value` renders it.
     pub fn value_var(&mut self, name: &str) -> Result<Value, Overflow> {
         self.value_text(&format!("?{name}"))
     }
@@ -554,15 +552,10 @@ impl Terms {
 
     // ── Ordering ───────────────────────────────────────────────────
 
-    /// Order two values the way ein.py's `sorted()` would — where ein.py can
-    /// sort them at all.
-    ///
-    /// Python compares `str` to `str` and `int` to `int`; a mixed pair raises
-    /// `TypeError`, and a `Fact` has no `__lt__` at all. `Value` is totally
-    /// ordered by construction, so ein.rs answers where ein.py raises — the
-    /// accepted divergence in
-    /// [design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §5 H2,
-    /// which fixes the cross-tag order as `Int < Sym < Fact`.
+    /// Order two values by content: a name by its text ([`Interner::rank`]),
+    /// an int numerically, a fact as [`Self::cmp_fact_semantic`] orders it,
+    /// and a mixed pair by tag, `Int < Sym < Fact`
+    /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §5 H2).
     pub fn cmp_semantic(&self, a: Value, b: Value) -> Ordering {
         match (a.tag(), b.tag()) {
             (Tag::Sym, Tag::Sym) => self
@@ -581,12 +574,11 @@ impl Terms {
         }
     }
 
-    /// Order two facts as `sorted()` orders their `(relation_name, args)`
-    /// identity tuples: relation name first, then arguments element-wise,
-    /// then — a shorter tuple that is a prefix of a longer one sorting first —
-    /// by arity.
+    /// Order two facts by their `(relation_name, args)` identity tuples:
+    /// relation name first, then arguments element-wise, then — a shorter
+    /// tuple that is a prefix of a longer one sorting first — by arity.
     ///
-    /// This is the comparator `apriori.layer_1`'s `sorted(alive)` needs
+    /// This is the comparator the lattice's first layer sorts the alive set by
     /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §3b).
     pub fn cmp_fact_semantic(&self, a: FactId, b: FactId) -> Ordering {
         let (a_rel, a_args) = self.facts.get(a);
@@ -607,24 +599,22 @@ impl Terms {
 
     // ── Rendering ──────────────────────────────────────────────────
 
-    /// The value as CPython would hold it, for the `repr()`-shaped output
-    /// sites ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §7).
-    pub fn py_value(&self, v: Value) -> PyValue {
+    /// The value as a [`ReprValue`], for the `repr`-shaped output sites ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §7).
+    pub fn repr_value(&self, v: Value) -> ReprValue {
         match v.tag() {
-            Tag::Sym => PyValue::Str(self.sym(v.as_sym().expect("tagged Sym")).to_string()),
-            Tag::Int => PyValue::Int(self.int_text(v.as_int().expect("tagged Int")).to_string()),
-            Tag::Fact => self.py_fact(v.as_fact().expect("tagged Fact")),
+            Tag::Sym => ReprValue::Str(self.sym(v.as_sym().expect("tagged Sym")).to_string()),
+            Tag::Int => ReprValue::Int(self.int_text(v.as_int().expect("tagged Int")).to_string()),
+            Tag::Fact => self.repr_fact(v.as_fact().expect("tagged Fact")),
         }
     }
 
-    /// A whole fact as CPython would hold it — `Fact(relation_name=…,
-    /// args=(…))`, whose `provenance` / `raw` / `loc` / `_kb` fields are
-    /// `repr=False` and so never appear.
-    pub fn py_fact(&self, id: FactId) -> PyValue {
+    /// A whole fact as a [`ReprValue`] — `Fact(relation_name=…, args=(…))`:
+    /// the relation name and the arguments, and nothing else about the fact.
+    pub fn repr_fact(&self, id: FactId) -> ReprValue {
         let (rel, args) = self.facts.get(id);
-        PyValue::Fact {
+        ReprValue::Fact {
             relation_name: self.sym(rel).to_string(),
-            args: args.iter().map(|a| self.py_value(*a)).collect(),
+            args: args.iter().map(|a| self.repr_value(*a)).collect(),
         }
     }
 
@@ -632,22 +622,21 @@ impl Terms {
     /// message and the derivation DAG's labels both build.
     ///
     /// The space after the relation name is unconditional, so a nullary fact
-    /// renders as `(q )`; both ein.py sites build it with the same f-string.
+    /// renders as `(q )`; both sites build it the same way.
     pub fn compact(&self, id: FactId) -> String {
         let (rel, args) = self.facts.get(id);
         let args: Vec<String> = args.iter().map(|a| self.display(*a)).collect();
         format!("({} {})", self.sym(rel), args.join(" "))
     }
 
-    /// `str(value)` — what provenance bindings and the dumper's `_compact`
-    /// print. A `str` prints as itself, an `int` as its canonical decimal
-    /// text, and a `Fact` as its dataclass `repr` (a frozen dataclass has no
-    /// `__str__` of its own).
+    /// The plain text of a value — what provenance bindings and the dumper's
+    /// compact form print. A name prints as itself, an int as its canonical
+    /// decimal text, and a `Fact` as its `repr`.
     pub fn display(&self, v: Value) -> String {
         match v.tag() {
             Tag::Sym => self.sym(v.as_sym().expect("tagged Sym")).to_string(),
             Tag::Int => self.int_text(v.as_int().expect("tagged Int")).to_string(),
-            Tag::Fact => pyrepr::repr(&self.py_fact(v.as_fact().expect("tagged Fact"))),
+            Tag::Fact => repr::repr(&self.repr_fact(v.as_fact().expect("tagged Fact"))),
         }
     }
 }
@@ -713,17 +702,15 @@ mod tests {
     }
 
     #[test]
-    fn atom_string_and_var_flatten_the_way_atomic_value_does() {
+    fn atom_string_and_var_flatten_to_one_text_value() {
         let mut t = Terms::new();
-        // `_atomic_value(Atom("foo"))` and `_atomic_value(String("foo"))` are
-        // both the str "foo" — so `(likes A foo)` and `(likes A "foo")` are
-        // one fact.
+        // `Atom("foo")` and `String("foo")` both become the text "foo" — so
+        // `(likes A foo)` and `(likes A "foo")` are one fact.
         let from_atom = t.value_text("foo").expect("room");
         let from_string = t.value_text("foo").expect("room");
         assert_eq!(from_atom, from_string);
         // A Var arg is its `?name` spelling, and is therefore an ordinary
-        // symbol that collides with a literal atom of that name — as it does
-        // in ein.py.
+        // symbol that collides with a literal atom of that name.
         assert_eq!(
             t.value_var("x").expect("room"),
             t.value_text("?x").expect("room")
@@ -744,7 +731,7 @@ mod tests {
     }
 
     #[test]
-    fn semantic_order_sorts_names_and_numbers_the_way_python_does() {
+    fn semantic_order_sorts_names_by_text_and_numbers_numerically() {
         let mut t = Terms::new();
         let zebra = t.value_text("zebra").expect("room");
         let apple = t.value_text("apple").expect("room");
@@ -753,7 +740,7 @@ mod tests {
         assert_eq!(t.cmp_semantic(apple, zebra), Ordering::Less);
         // Numeric, not lexicographic — "10" < "2" as text.
         assert_eq!(t.cmp_semantic(two, ten), Ordering::Less);
-        // Mixed: ein.py raises; ein.rs answers Int < Sym (design/02 §5 H2).
+        // Mixed: Int < Sym (design/02 §5 H2).
         assert_eq!(t.cmp_semantic(ten, apple), Ordering::Less);
         // Identity order would have put `zebra` first — it was interned first.
         assert_eq!(zebra.cmp_identity(apple), Ordering::Less);
@@ -776,7 +763,7 @@ mod tests {
     }
 
     #[test]
-    fn display_matches_str_for_each_of_the_three_shapes() {
+    fn display_of_each_of_the_three_shapes() {
         let mut t = Terms::new();
         let s = t.value_text("House-1").expect("room");
         let i = t.value_int("007").expect("room");

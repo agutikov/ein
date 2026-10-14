@@ -2,33 +2,23 @@
 
 **Settles:** how atoms, values, facts, indexes and forks are represented.
 **Phase:** [P1a.2](../README.md#p1a2--kb-core).
-**Replaces:** `ein/kb/entities.py`, `ein/kb/store.py`, `ein/kb/views.py`,
-`ein/kb/provenance.py` (storage half).
 
 ---
 
-## 1. What ein.py stores, and what it costs
+## 1. Identity, and what it costs
 
-A `Fact` is `(relation_name: str, args: tuple[str | int | Fact, ...])`
-with identity on exactly those two fields
-(`kb/entities.py`). Everything
-else — `provenance`, `raw`, `loc`, `_kb` — is `compare=False`.
+A `Fact` is a relation name and an argument tuple, each argument a
+symbol, an integer or a nested `Fact`, with identity on exactly those two
+fields. Everything else — provenance, source text, location — takes no
+part in it.
 
-Per fact, CPython holds: a `Fact` instance (frozen dataclass, ~56 B +
-`__dict__`-free slots), a `tuple` for `args` (~56 B + 8 B/elem), and a
-pointer per arg into a `str` object (~50 B each, shared only when
-CPython happens to have interned it — which for `"House-1"` read from a
-file it has **not**). Every identity comparison is a tuple compare that
-recurses into `str.__eq__`; every hash is a tuple hash over string
-hashes.
+Held as objects, every identity comparison is a tuple compare that
+recurses into string equality, every hash is a tuple hash over string
+hashes, and unification needs a type dispatch per slot *because* a slot
+may be `Var | Atom | Int | NestedPattern` and an arg may be a symbol, an
+integer or a `Fact`.
 
-The profile in the [milestone README](../README.md#what-shipped)
-is the bill: 46 % of an exhaustive solve is `_bind_arg`/`_bind_args`, and
-31.9 M `isinstance` calls are the type dispatch that unification needs
-*because* a slot may be `Var | Atom | Int | NestedPattern` and an arg may
-be `str | int | Fact`.
-
-The port's answer is uniform: **every one of those becomes a `u32`.**
+The answer is uniform: **every one of those becomes a `u32`.**
 
 ---
 
@@ -52,11 +42,11 @@ pub struct Interner {
 
 Interned: relation names, object names, rule names, variable names,
 keyword names, and every `String`/`Range`/`Var` literal that reaches a
-fact argument. That last group matters — ein.py's `_atomic_value`
-already flattens `Atom("foo")`, `String("foo")`, `Var("x") → "?x"` and
-`Range(1,5) → "1..5"` **into plain `str`** before they become fact args,
-so a `(likes A "foo")` and `(likes A foo)` are *the same fact* today.
-The port must preserve that collapse, and interning does so naturally.
+fact argument. That last group matters — `Atom("foo")`,
+`String("foo")`, `Var("x") → "?x"` and `Range(1,5) → "1..5"` all flatten
+**into one symbol** before they become fact args, so `(likes A "foo")`
+and `(likes A foo)` are *the same fact*. Interning gives that collapse
+for free.
 
 ### The rank table
 
@@ -88,20 +78,18 @@ const TAG_FACT: u32 = 2;  // payload = FactId (a nested relational node)
 
 - **Symbols** cover every textual arg (§2).
 - **Ints** go through a small pool rather than being inlined, for one
-  reason: Python integers are unbounded and `INT: /-?[0-9]+/` accepts any
-  width. The pool stores the *canonical decimal form* (parse, then
-  re-render — so `007` and `7` and `-0`/`0` collapse exactly as
-  `Int(value=int(tok))` does) plus an `Option<i64>` fast field for the
-  overwhelmingly common case. Two ints are equal iff their pool ids are.
+  reason: `INT: /-?[0-9]+/` accepts any width, and an ein-lang integer
+  is unbounded. The pool stores the *canonical decimal form* (parse, then
+  re-render — so `007` and `7` collapse, and so do `-0` and `0`) plus an
+  `Option<i64>` fast field for the overwhelmingly common case. Two ints are equal iff their pool ids are.
 - **Nested facts** are just `FactId`s. This is the design's quiet win:
   `(not (color-loc Red House-1))` is a fact whose single arg is a
   `Value` tagged `FACT`, so the negation index becomes a **bitset over
-  `FactId`** and `contradiction.contradicts()` becomes one bit test
-  instead of a tuple lookup in a `set`.
+  `FactId`** and contradiction detection becomes one bit test.
 
 **Ordering trap.** `Value`'s derived `Ord` (tag, then payload) is
-identity order, not semantic order. Anywhere ein.py's behaviour depends
-on sorting by name, ein.rs must sort by `(tag, rank[sym] | int_value)`.
+identity order, not semantic order. Anywhere an observable depends on
+sorting by name, the engine sorts by `(tag, rank[sym] | int_value)`.
 Two comparators, two names, and a lint that the raw one never appears in
 a `sort` at an observable site. See [02](02_determinism_and_order.md) §3.
 
@@ -130,17 +118,16 @@ intern freely without the parent ever seeing the proposition.
 
 Consequences:
 
-| ein.py | ein.rs |
+| operation | cost |
 |---|---|
-| `Fact.__eq__` → tuple compare → per-arg `str.__eq__` | `FactId == FactId` → `u32` compare |
-| `Fact.__hash__` → tuple hash | `FactId` is the hash |
-| `kb._fact_by_id(rel, args)` — O(deg(rel)) linear scan over `_facts_by_relation` | intern lookup + presence bit — O(1) |
-| `(rel, args)` tuples as dict keys (`_alt_justifications`, `_negated_facts`, `FactId` in nogoods/apriori) | `FactId` — dense `u32`, usable as a `Vec` index |
-| a nested `Fact` arg is an unregistered object | a nested arg is a `FactId` like any other |
+| fact equality | `FactId == FactId` → `u32` compare |
+| fact hash | `FactId` is the hash |
+| "is `(rel, args)` believed here?" | intern lookup + presence bit — O(1) |
+| keys of the justification map, the negated set, no-goods, apriori | `FactId` — dense `u32`, usable as a `Vec` index |
+| a nested `Fact` arg | a `FactId` like any other |
 
 Memory, zebra2 post-saturation (381 facts, mean arity ≈ 2.2):
-~381 × 12 B rows + ~840 × 4 B args ≈ **8 KB**, contiguous. The
-equivalent Python object graph is ~60–80 KB scattered across the heap.
+~381 × 12 B rows + ~840 × 4 B args ≈ **8 KB**, contiguous.
 
 > **The row is 20 bytes since T1a.6.2.6 (2026-08-19), and bigger on purpose.**
 > A whole exhaustive `zebra` interns 1 104 facts — the store is **22 KB** and
@@ -167,11 +154,9 @@ the alive set is ≤ 64 — a fast path worth measuring in
 
 ## 5. The KB — a base and a stack of deltas
 
-ein.py's `fork()` shallow-copies the fact list and six index dicts;
-`snapshot()` does the same plus a `_nogoods` copy. Measured cost today is
-negligible (0.003 s / 206 calls on exhaustive zebra2) *because there are
-only 101 enterings*. The port needs forks to be free for two reasons
-that do not exist yet: [P1a.7](../README.md#p1a7--parallelism) wants
+A fork that copies the fact list and every index is cheap only while
+there are few of them — an exhaustive zebra2 has only 101 enterings.
+Forks have to be free for two reasons that do not exist yet: [P1a.7](../README.md#p1a7--parallelism) wants
 hundreds live at once, and [05](05_matcher.md)'s beta-memories are only
 affordable if a fork does not copy them — the exact objection
 [F11](../../../../plans/followups/f11_deductive_layer_perf.md) parks D1 on.
@@ -196,14 +181,14 @@ pub struct Kb {
 ```
 
 - **Read** = check `delta`, then `base`. For the ordered lists that means
-  *concatenated iteration*, base first — which is exactly the order
-  ein.py produces (copy the list, then append).
+  *concatenated iteration*, base first — the order a copy-then-append
+  fork would produce.
 - **Write** = append to `delta` only. `base` is never mutated, so it can
   be shared by `Arc` across threads with no lock.
 - **`fork()`** = clone the `Arc` + an empty `Delta`. O(1).
-- **`snapshot()`** = the same, plus copying `_nogoods` (which ein.py
-  copies for snapshots and shares for forks — preserve the distinction;
-  the reason is documented in `store.py` and is about archival isolation).
+- **`snapshot()`** = the same, plus copying the no-good store, which a
+  snapshot copies and a fork shares — the distinction is about archival
+  isolation.
 - **Flatten** = when a delta grows past a threshold (or when a fork
   becomes a new root, e.g. a forced-positive promotion), materialise
   `base + delta` into a fresh `KbCore`. Bounded work, amortised.
@@ -227,8 +212,8 @@ pub struct Kb {
 > **What this section did not ask, and S1a.6.1 measured (2026-08-18).** A
 > read that *aggregates* over layers is O(depth), not O(1), and one of them is
 > hot: `Kb::n_facts_of` — a relation's extent **size**, which the NAF boundary
-> asks 644 166 times on an exhaustive `zebra2` and ein.py answers with one
-> `len()` on a flat dict. An exhaustive search reaches **35 layers**, and the
+> asks 644 166 times on an exhaustive `zebra2`, and which a flat store
+> answers with one length. An exhaustive search reaches **35 layers**, and the
 > count is **9.5 % of the run**
 > ([baseline.md §7](../measurements/baseline.md#7-the-top-five-costs)
 > item 2). The fork is O(1) as designed — a delta is 3.6 KB mean over 101
@@ -240,11 +225,9 @@ pub struct Kb {
 
 The registries (`relations`, `rules`, `hrules`, `macros`, `query`,
 `config`) are immutable after load and live in an `Arc<Program>` shared
-by every KB — matching ein.py's share-by-reference exactly, including its
-documented caveat that a shared entity's back-pointer sees the *root*'s
-facts. ein.rs has no back-pointers (accessors take `&Kb` explicitly), so
-that caveat evaporates without changing any behaviour that depended on
-it: no engine path uses `Relation.facts` on a fork.
+by every KB. There are no back-pointers from a registry entry to a KB
+(accessors take `&Kb` explicitly), so a shared entity cannot see the
+*root*'s facts from a fork.
 
 ### Why this is trivially correct
 
@@ -252,22 +235,21 @@ The KB is **append-only within a run** — the property S1.9.E23's
 fail-fast and S1.21.8's monotone-growth argument already lean on. A
 layer that only adds, over a base that never changes, cannot disagree
 with a copy that was mutated in place. The invariant is checked in
-debug builds by a `flatten()`-and-compare assertion in the conformance
-runs.
+debug builds by a `flatten()`-and-compare assertion.
 
 ---
 
 ## 6. The seven indexes, one by one
 
-| ein.py index | purpose | ein.rs |
+| index | purpose | structure |
 |---|---|---|
-| `_facts_by_relation` | relation extent; match candidates; `_watch_stamp` sizes | `Vec<FactId>` per `Symbol`; size = `base.len + delta.len` |
-| `_facts_by_rel_slot_val` | the participation index (RETE alpha-memory, S1.8.B-idx) | `Vec<FactId>` per `SlotKey` — and since T1a.6.3.0 the key reaches one level *inside* a nested argument, which ein.py's does not (see note) |
-| `_negated_facts` | `(not X)` membership → hypgen Tier-A filter, `contradicts` | **`BitSet` over `FactId`** |
-| `_rule_apps_by_rule` | activators for a rule | `Vec<FactId>` per `Symbol` |
-| `_rule_apps_on_relation` | property facts targeting a relation | `Vec<FactId>` per `Symbol` |
+| `by_rel` | relation extent; match candidates; watch-stamp sizes | `Vec<FactId>` per `Symbol`; size = `base.len + delta.len` |
+| `by_rel_slot_val` | the participation index (RETE alpha-memory, S1.8.B-idx) | `Vec<FactId>` per `SlotKey` — and since T1a.6.3.0 the key reaches one level *inside* a nested argument (see note) |
+| `negated` | `(not X)` membership → hypgen Tier-A filter, `contradicts` | **`BitSet` over `FactId`** |
+| `rule_apps_by_rule` | activators for a rule | `Vec<FactId>` per `Symbol` |
+| `rule_apps_on_rel` | property facts targeting a relation | `Vec<FactId>` per `Symbol` |
 | `names` (`NameRef`) | participation (`as_head` / `as_arg`) → hypgen candidate objects + popularity scoring | `FxHashMap<Symbol, NameRef>` with `Vec<FactId>` lists |
-| `_alt_justifications` | alternative derivations, capped at 32, sorted by premise count | `FxHashMap<FactId, SmallVec<[ProvId; 4]>>` |
+| alternative justifications | alternative derivations, capped at 32, sorted by premise count | `FxHashMap<FactId, SmallVec<[ProvId; 4]>>` |
 
 Note on the participation key: `(Symbol, u8, Value)` is 4+1+4 = 9 bytes
 padded to 12. Packing to a `u64` needs the `Value`'s 32 bits and the
@@ -279,14 +261,14 @@ with the former; measure in [P1a.6](../README.md#p1a6--performance).
 > **Measured, and the key grew a level instead of shrinking
 > ([T1a.6.3.0](../README.md#s1a63--beta-memories-f11-d1), 2026-08-19).**
 > The 12-byte key's *hashing* was never the cost; what it did not index was.
-> ein.py keys the join types only — a `Fact`-valued argument is not keyed — so
-> a `(not (R ?b ?i))` premise, which is `stdlib/slots.ein`'s and **99.1 %** of
+> The key covered the join types only — a `Fact`-valued argument was not
+> keyed — so a `(not (R ?b ?i))` premise, which is `stdlib/slots.ein`'s and **99.1 %** of
 > an exhaustive `zebra`'s candidates, walked the whole `not` extent. The key is
 > now `(Symbol, slot: u16, inner: u16, Value)` — still 12 bytes, `inner` living
 > in the padding — where `inner` names a position *inside* the nested fact or
 > is `DIRECT`. Candidates 25.16 M → **1.17 M**, `solve zebra -e` 349 → 78 ms,
-> and the whole firing sequence unchanged (T2 239/240) because a narrowing
-> changes which facts are *offered*, not which ones match.
+> and the whole firing sequence unchanged, because a narrowing changes which
+> facts are *offered*, not which ones match.
 >
 > Two consequences worth carrying: each layer also holds a **2048-bit Bloom
 > filter** over its keys, because with the lookup now the common case a fork 24
@@ -295,8 +277,8 @@ with the former; measure in [P1a.6](../README.md#p1a6--performance).
 > snapshot keeps describing the *knowledge base* rather than ein.rs's indexing
 > of it.
 
-`NameRef.category` (`object` / `relation` / `rule`) is computed exactly
-as `_categorise_name` does — including the S1.7.6 rule that `type` /
+`NameRef.category` (`object` / `relation` / `rule`) is computed by
+`Program::categorise` — including the S1.7.6 rule that `type` /
 `instance` are ordinary names unless declared.
 
 ---
@@ -322,28 +304,26 @@ pub struct Prov {
 
 - Primary provenance: a dense `Vec<Option<ProvId>>` indexed by `FactId`
   (per KB, in the delta/base split).
-- `bindings` is stringified in ein.py (`(k, str(v))`) and lands in the
-  trace. ein.rs keeps `Symbol` pairs and renders at display time — the
-  rendering must match `str(v)` for each of `str`/`int`/`Fact` (a
-  nested `Fact`'s `str()` is its dataclass `repr`; see
+- `bindings` lands in the trace. The engine keeps `Symbol` pairs and
+  renders at display time — a symbol as its text, an integer in decimal,
+  a nested `Fact` as its `repr` (see
   [02](02_determinism_and_order.md) §7).
 - The `MAX_ALT_JUSTIFICATIONS = 32` cap, the sorted-by-premise-count
   invariant, and the O(1) rejection fast path in
-  `store.accepts_justification` port verbatim — they are semantics
-  (which explanation the minimality search can find), not tuning.
+  `accepts_justification` are semantics (which explanation the
+  minimality search can find), not tuning.
 - `record_justification`'s rules — rule-kind only, non-empty premises,
-  terminal primaries take no alternatives — port verbatim.
+  terminal primaries take no alternatives — are semantics too.
 
 ---
 
 ## 8. `EqClasses`
 
-A placeholder union-find over names in ein.py (no propagation fires;
-reserved for [F4](../../../../plans/followups/f4_cross_cutting.md)'s e-graph). ein.rs
-ports it as a `Vec<u32>` union-find over `Symbol` with the *same*
-path-compression and union-by-first-argument behaviour, because
-`fork()`/`snapshot()` copy its parent map and the copy is observable
-through `classes()`. It stays inert.
+A placeholder union-find over names (no propagation fires; reserved for
+[F4](../../../../plans/followups/f4_cross_cutting.md)'s e-graph): a
+`Vec<u32>` union-find over `Symbol` with path compression and
+union-by-first-argument, because `fork()`/`snapshot()` copy its parent
+map and the copy is observable through `classes()`. It stays inert.
 
 ---
 
@@ -356,15 +336,15 @@ Stated because the temptation is real:
   storage. Deduplicating them would save little and complicate the
   interner.
 - **No hash-consing of provenance.** Two firings with the same premises
-  produce two `Prov` records; ein.py's dedup is by
-  `(rule, premises_raw)` inside `record_justification` and is preserved
-  there, not moved into the store.
+  produce two `Prov` records; the dedup is by
+  `(rule, premises)` inside `record_justification` and stays there, not
+  in the store.
 - **No fact deletion, ever.** The append-only model is load-bearing for
   §5, for fail-fast (S1.9.E23), and for the monotone-growth argument
-  behind `_watch_stamp`. Retraction stays modelled as "fork a fresh KB".
+  behind the watch stamp. Retraction stays modelled as "fork a fresh KB".
 - **No change to fact identity.** `(relation, args)`, provenance
-  excluded — the same rule as `Fact.__eq__`, `add_fact`'s dedup,
-  `state_key`, and `_is_new_relative_to`.
+  excluded — the same rule for fact equality, insertion dedup,
+  `state_key`, and "is this fact new relative to that KB".
 
 ---
 
@@ -375,10 +355,9 @@ Stated because the temptation is real:
 - `intern` is bijective on the corpus: no two distinct
   `(rel, args)` share a `FactId`, and re-interning is stable across a
   fork.
-- Memory: exhaustive zebra2 peak RSS ≤ 1/5 of ein.py's.
-- T1 parity on KB shape: per-relation fact counts, `names` categories,
-  negated-set size, alternative-justification counts — all identical
-  after root saturation on every corpus entry.
+- KB shape — per-relation fact counts, `names` categories, negated-set
+  size, alternative-justification counts — pinned after root saturation
+  on every corpus entry.
 
 ## Cross-links
 

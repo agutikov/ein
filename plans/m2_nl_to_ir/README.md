@@ -156,22 +156,22 @@ ended where Level B begins.
 
 ## The old plan, and where each piece went
 
-The 2026-05 plan was *NL → IR*: six phases, two months, written when ein was
-Python. It was right about more than it was wrong about, and the reshape
+The 2026-05 plan was *NL → IR*: six phases, two months. It was right about
+more than it was wrong about, and the reshape
 keeps what it got right in the stage that now needs it. The census:
 
 | old | what it was | where it went |
 |---|---|---|
 | P2.1 investigations + decisions (S2.1.1 survey; S2.1.2–6 the six verdicts under `docs/decisions/M2-*.md`) | a fortnight of deciding before building | **Each decision moves to the stage that needs it**: Q25 → [S2.1.3](p2.1_kernel_as_instrumentation/s2.1.3_boundary.md); Q8 → [S2.4.5](p2.4_loop/s2.4.5_alternatives_as_hypotheses.md); Q9 → [S2.2.4](p2.2_formalizer/s2.2.4_passes.md), where "library of ontologies + override" becomes theory *selection* from the stdlib catalogue; Q23 / Q24 → [S2.2.2](p2.2_formalizer/s2.2.2_llama_server_and_client.md) / [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md); Q10 → [P2.8](p2.8_representations/README.md), which is that question asked properly; Q7 stays a question and leaves the research question (§ Open questions). **`docs/decisions/` is dropped** — it never existed, and a verdict lands beside its question in [`open_questions.md`](open_questions.md), as M1a's did. The reading list is [S2.2.1](p2.2_formalizer/s2.2.1_contract.md)'s |
 | P2.2 LLM infra (S2.2.1 compose service + model pin; S2.2.2 Python client) | a `llama-server` container and a thin client | [S2.2.2](p2.2_formalizer/s2.2.2_llama_server_and_client.md), the same stage in the language Q25 picks; the reproducibility envelope becomes the first field of the experiment record ([S2.5.1](p2.5_harness/s2.5.1_experiment_record.md)) |
-| P2.3 GBNF for IR (S2.3.1 generator; S2.3.2 task grammars) | the IR lifted into GBNF so the LLM can only emit valid IR | [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md) — generated from [`00_ebnf.md`](../../docs/kernel/ir/03-ein-lang/00_ebnf.md) rather than from a Python parser; one grammar per pass, the facts grammar parameterised on the ontology's instance lists, kept whole |
+| P2.3 GBNF for IR (S2.3.1 generator; S2.3.2 task grammars) | the IR lifted into GBNF so the LLM can only emit valid IR | [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md) — generated from [`00_ebnf.md`](../../docs/kernel/ir/03-ein-lang/00_ebnf.md) rather than from the parser's keyword inventory; one grammar per pass, the facts grammar parameterised on the ontology's instance lists, kept whole |
 | P2.4 pipeline (S2.4.1 two-stage extraction; S2.4.2 validator + re-prompt; S2.4.3 ambiguity as hypotheses; S2.4.4 `ein from-text`) | the pipeline, with one repair loop inside it | **Split along the plan's seam between Stage B and Stage E.** The passes → [S2.2.4](p2.2_formalizer/s2.2.4_passes.md), plus the *theory* pass the old plan lacked; the CLI → [S2.2.5](p2.2_formalizer/s2.2.5_from_text.md), one-shot only and renamed `einaf from-text`; the validator → [S2.4.2](p2.4_loop/s2.4.2_repair.md), where it is feedback level **F1** of nine and "≤ 3 attempts" becomes Stage E's termination policy; ambiguity as hypotheses → [S2.4.5](p2.4_loop/s2.4.5_alternatives_as_hypotheses.md) |
 | P2.5 link-grammar experiment (S2.5.1 runner; S2.5.2 A/B with a pre-registered rule) | the user's question Q11, measured | [S2.6.4](p2.6_ablations/s2.6.4_representation_ablations.md) — one arm of the representation ablation, same rule, same submodule note |
 | P2.6 evaluation harness (S2.6.1 five puzzles + gold IR + a gold trace; S2.6.2 harness + CI) | five puzzles, three metrics | the five puzzles are the **seed set** of [S2.3.1](p2.3_benchmark/s2.3.1_families_and_seed_set.md); the harness is [S2.5.1](p2.5_harness/s2.5.1_experiment_record.md); IR-F1 becomes constraint precision / recall against a canonical theory ([S2.5.3](p2.5_harness/s2.5.3_metrics.md)), which synthetic instances make exact; the gold trace and trace coverage stay as the Zebra smoke test |
 
-What the old plan assumed and this one does not: that the frontend is
-Python calling the engine in-process (gone with `ein.py/`;
-[Q25](open_questions.md#q25--what-language-is-the-frontend-written-in)); that
+What the old plan assumed and this one does not: that the frontend calls the
+engine in-process
+([Q25](open_questions.md#q25--what-language-is-the-frontend-written-in)); that
 "valid IR" was the hard part (it is the easy part — GBNF makes it free, and
 the plan's § Stage B says *syntax is the relatively easy part*); that one
 repair loop with three attempts was the loop (it is F1 of a ladder, and the

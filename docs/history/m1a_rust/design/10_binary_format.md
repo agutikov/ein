@@ -5,16 +5,15 @@ it, are stored on disk.
 **Phase:** [P1a.8](../README.md#p1a8--binary-kb-container).
 **Scope note 2026-08-18:** the server (`design/09`) was dropped; this
 doc lost its second consumer and kept the other three.
-**New surface** — no ein.py counterpart. The `.ein` text format remains
-the only *authoring* format and the only thing anyone edits.
+**New surface.** The `.ein` text format remains the only *authoring*
+format and the only thing anyone edits.
 
 ---
 
 ## 1. What it is for
 
-- **Skip the front end.** Parse + load is 0.63 s of a 5.7 s CPython
-  zebra2 run and will still be the dominant fixed cost once the engine is
-  fast. `kb.open` on a saturated `.einb` should be a `mmap` plus a symbol
+- **Skip the front end.** Parse + load is the dominant fixed cost of a
+  run once the engine is fast. `kb.open` on a saturated `.einb` should be a `mmap` plus a symbol
   remap — microseconds.
 - **Store results.** A solved puzzle's models, stats and unsat core are
   worth keeping next to the KB that produced them.
@@ -127,7 +126,7 @@ load and no search.
 
 ## 6. Acceptance for this design
 
-- **Round-trip**: `save(kb) → open()` yields a KB that is T1-identical
+- **Round-trip**: `save(kb) → open()` yields a KB that is identical
   (fact set and order, provenance, indexes, counters) for every corpus
   entry, in both the empty-interner and shared-interner cases.
 - **Cold open** of a saturated `zebra2.einb` < 1 ms.

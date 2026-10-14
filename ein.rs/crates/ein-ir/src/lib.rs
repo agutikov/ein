@@ -5,10 +5,10 @@
 //! read a single seam.
 //!
 //! The frontend is a **pure function** (source → forms) with no engine state,
-//! which is why it is the first phase of the port
+//! which is why it was M1a's first phase
 //! ([P1a.1](../../../../docs/history/m1a_rust/README.md#p1a1--ir-frontend)): every
-//! artefact it produces is text a golden file already pins, so it can be
-//! brought to byte parity in isolation.
+//! artefact it produces is text a golden file pins, so it can be checked byte
+//! for byte in isolation.
 //!
 //! [`stdlib`] landed at
 //! [S1a.0.3](../../../../docs/history/m1a_rust/README.md#s1a03--shared-stdlib-and-examples).

@@ -4,10 +4,9 @@
 > grammar, in EBNF. This document explains intent and structure; that one is
 > what parses.
 >
-> It was `ein.py/src/ein/ir/grammar.lark` until M1a
-> [S1a.10.5](../../../history/m1a_rust/README.md#s1a105--the-removal),
-> and the engine that is left parses by recursive descent — an implementation,
-> not a specification — so the grammar was transcribed before the file went.
+> The engine parses by recursive descent — an implementation, not a
+> specification — so the grammar is stated there rather than left to the
+> parser.
 
 This was [`docs/ir.md` §1 + §2](../../README.md) before the kernel-
 documentation split.

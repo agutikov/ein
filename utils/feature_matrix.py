@@ -4,15 +4,8 @@
 Which `SolverConfig` knobs are load-bearing, measured by flipping exactly one
 lever off the puzzle's own all-on configuration and re-solving. Recorded per
 cell: the verdict, every `MonotonicStats` counter, the goal bindings, the
-engine's own solve time, the whole process's wall clock and its peak RSS.
-
-Was S1.20.I3, which drove ein.py in-process. S1a.6.7 made it drive both engines
-as **processes**, so that the ein.rs column of `features.md` was measured the
-way the ein.py column had been and the two could be cross-checked cell by cell.
-[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
-takes the second column out: the cross-check went with the engine it compared,
-the ein.py numbers in `features.md` are frozen where they stand, and what is
-left is the measurement itself — one engine, one lever at a time.
+engine's own solve time, the whole process's wall clock and its peak RSS —
+one lever at a time, each cell a **process**.
 
     utils/bench_env.sh python3 utils/feature_matrix.py
     utils/bench_env.sh python3 utils/feature_matrix.py --runs 5
@@ -39,39 +32,27 @@ one.
 ## What `wall_s` means
 
 The engine's own **solve** — root saturation + hypothesis search — read from
-the `--timing` table, which is the same quantity the in-process harness timed
-around `solve()` and therefore comparable to the 2026-08-17 column in
-`features.md`. `proc_s` is the whole process (start-up, parse, load, solve,
-print); under ein.rs those front phases are ~2 ms, where under PyPy they were
-~0.6 s of constant that compressed every ratio.
+the `--timing` table. `proc_s` is the whole process (start-up, parse, load,
+solve, print); those front phases are ~2 ms.
 
 Best-of-`--runs`, the **process** spread reported next to it (`samples_ms` and
 `solve_samples_ms` in the artifact carry both series), one fresh process per
 run, and
 the runs go **round-robin over the cells** rather than finishing one cell
 before starting the next. That is not fastidiousness: measured cell-by-cell on
-this machine, PyPy's baseline — which ran first, on the coolest core — read
+this machine, the baseline — which ran first, on the coolest core — read
 20 % faster than it did mid-run, and since every ratio in the table is
 divided by the baseline, eight inert levers came out as a uniform 1.2x tax.
-ein.rs measured the same eight at exactly 1.0x with the same entering counts,
-which is what identified the bias as the harness's rather than the engine's.
 Round-robin is what remains of that finding, and it is why the `control` cell
-exists: with one column and no second engine to disagree with it, the control
-is the only thing that prices the method.
+exists: the control is the only thing that prices the method.
 
 A cell that *aborts* is run once, because an abort is a budget, not a timing.
 
-## What went with the second engine
+## What keeps it honest
 
-`--impl`, `--python` and `--check`. The last was a T1 parity check dressed as a
-benchmark — every cell's verdict, `k`, exhaustion, counters and goal bindings,
-engine against engine — and it had a real job: a *timing* comparison between
-two engines that explored different numbers of commitments would have been
-meaningless. There is one engine, so the cross-check is the row it would have
-compared, and `config_ok` (did this cell actually flip its lever?) is the only
-self-check left. What still makes the table falsifiable across time is the
-counters: an optimisation that moves `enterings_total` moved the search, not
-the clock.
+`config_ok` (did this cell actually flip its lever?) is the self-check. What
+makes the table falsifiable across time is the counters: an optimisation that
+moves `enterings_total` moved the search, not the clock.
 """
 from __future__ import annotations
 
@@ -117,9 +98,8 @@ CELLS: dict[str, dict] = {
 # mode -> (exhaustive?, wall budget for the solve, in seconds)
 MODES: dict[str, tuple[bool, float]] = {"fast": (False, 30.0), "exhaustive": (True, 90.0)}
 
-# The counters a cell is judged by. Every one is in `summary.json`, which is
-# what T0/T1 used to compare — so a cell's row is still the shape a comparison
-# would have read, across commits rather than across engines.
+# The counters a cell is judged by. Every one is in `summary.json`, so a
+# cell's row can be compared across commits.
 COUNTERS = (
     "enterings_total", "enterings_alive", "enterings_dead_pre",
     "enterings_dead_post", "facts_merged", "forced_positives",

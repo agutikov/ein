@@ -39,12 +39,12 @@ Issues that could not be resolved from repository evidence within this review. N
 
 ## Q7 — What does `-n 0` mean?
 
-- **Unclear:** `SolveOptions{stop_after: Some(0)}` semantics (see `review/error-handling/low.md`); likely ein.py parity, but no test, doc, or comment states it.
+- **Unclear:** `SolveOptions{stop_after: Some(0)}` semantics (see `review/error-handling/low.md`); no test, doc, or comment states it.
 - **Resolves it:** A ruling: refuse or define + pin.
 
 ## Q8 — Does anything still pin zebra.ein and zebra2.ein to the same model?
 
-- **Unclear:** The claim's named owner was a deleted Python acceptance file (`examples/README.md:27`). The acceptance_cli tests solve both files, but whether any current test compares the two *models to each other* was not established.
+- **Unclear:** The claim's named owner was a file that does not exist (`examples/README.md:27`). The acceptance_cli tests solve both files, but whether any current test compares the two *models to each other* was not established.
 - **Resolves it:** Grep/read of acceptance tests; if absent, one cross-encoding assertion.
 
 ## Q9 — Was the unverified remainder of the review surface clean?

@@ -1,18 +1,10 @@
-//! The register matcher — S1a.3.2.
+//! The register matcher — S1a.3.2,
+//! [design/05](../../../../docs/history/m1a_rust/design/05_matcher.md).
 //!
-//! ein.py's `match.py` is a recursive generator over a `dict` of bindings, and
-//! [design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §1 attributes
-//! **46 %** of an exhaustive `zebra2` solve's self time to it. Three costs, all
-//! structural: `_bind_arg` returns `{**bindings, name: arg}` — an allocation
-//! and a rehash of the whole binding set *per bound variable, per candidate
-//! fact, at every level of the join*; slot dispatch is six `isinstance` calls
-//! on a good path, and 31.9 M of the run's calls come from here; and every
-//! step allocates a generator frame plus a fresh `rest` tuple.
-//!
-//! This is the same enumeration with none of that: variables live in a
-//! register file, binding is `regs[r] = v` plus a push onto a **trail**,
-//! unification is a `u32` compare, and a match is handed to a callback instead
-//! of being materialised.
+//! Variables live in a register file, binding is `regs[r] = v` plus a push
+//! onto a **trail**, unification is a `u32` compare, and a match is handed to
+//! a callback instead of being materialised — no allocation per bound
+//! variable, per candidate fact or per level of the join.
 //!
 //! ### What must not change
 //!
@@ -22,20 +14,20 @@
 //! - **matches**, in the order the nested loops produce them — which is why
 //!   join reordering is rejected outright ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §6);
 //! - **bindings**, in the order the matcher first bound each variable, because
-//!   `Provenance.bindings` is CPython dict-insertion order and it is printed
+//!   `Provenance.bindings` is in that order and it is printed
 //!   in the trace. The trail ([`Env::trail`](crate::Env::trail)) is that order,
 //!   by construction;
 //! - **premises**, in plan-step order — including through `run_seeded`, whose
 //!   contract is that provenance from a semi-naive seed is *identical* to
-//!   provenance from a full run. ein.py splices the seeded fact back into its
-//!   step's position; writing `prems[ordinal]` gets there without the splice.
+//!   provenance from a full run. Writing `prems[ordinal]` puts the seeded fact
+//!   at its step's position without a splice.
 //!
 //! ### Recursion, and why the cursor loop is not here
 //!
-//! design/05 §3 sketches an explicit cursor loop over a step index. What that
-//! buys in Python is the *removal of generator frames and per-step tuple
-//! rebuilds*; in Rust a recursive walk over a step slice allocates neither —
-//! the candidate iterator is a stack value and the step slice is borrowed. So
+//! design/05 §3 sketches an explicit cursor loop over a step index, to avoid
+//! a frame and a fresh step tuple per level; a recursive walk over a step
+//! slice allocates neither — the candidate iterator is a stack value and the
+//! step slice is borrowed. So
 //! the recursion stays, the allocation claim is tested rather than argued
 //! (`tests/match_alloc.rs`), and flattening the loop is left to
 //! [P1a.6](../../../../docs/history/m1a_rust/README.md#p1a6--performance) to *measure*
@@ -54,10 +46,9 @@ use crate::predicates::Pred;
 
 /// One match, handed to the caller's callback.
 ///
-/// Borrowed, not owned: the saturator's `_enqueue_binding` runs *inside* the
+/// Borrowed, not owned: the saturator's `enqueue_binding` runs *inside* the
 /// callback, so a match that turns out to be a duplicate costs nothing beyond
-/// the key hash. ein.py gets the same effect by consuming the generator
-/// lazily; the callback just removes the generator.
+/// the key hash.
 pub struct Match<'a> {
     pub plan: &'a Plan,
     /// Which `(or …)` branch produced this — the index into `plan.disjuncts`.
@@ -68,10 +59,9 @@ pub struct Match<'a> {
 }
 
 impl<'a> Match<'a> {
-    /// The bound variables **in bind order** — the order `Provenance.bindings`
-    /// records and the trace prints. Seed bindings come first, because the
-    /// activator binding is pushed onto the trail before any step runs, which
-    /// is where `dict(plan.bindings_seed)` puts them.
+    /// The bound variables **in bind order** — the order a firing's bindings
+    /// are recorded in and the trace prints. Seed bindings come first, because
+    /// the activator binding is pushed onto the trail before any step runs.
     pub fn bindings(&self) -> impl Iterator<Item = (Symbol, Value)> + '_ {
         self.trail
             .iter()
@@ -190,7 +180,7 @@ impl Matcher {
 
     // ── Entry points ───────────────────────────────────────────────
 
-    /// `match.run` — every match of every disjunct, seeds merged in.
+    /// Every match of every disjunct, seeds merged in.
     ///
     /// A rule whose `:match` is a top-level `(or …)` carries its extra
     /// disjuncts in the same plan, and each runs from a fresh seed, so every
@@ -229,14 +219,14 @@ impl Matcher {
         let _ = self.run_disjunct(c, disjunct, None, f);
     }
 
-    /// `match.run_guarded` — identical, and the callback can read
-    /// [`Match::guards`]. Kept as a named entry point because ein.py has one:
-    /// the distinction is the *caller's* contract, not the matcher's.
+    /// Identical to [`Matcher::run`], and the callback can read
+    /// [`Match::guards`]. Kept as a named entry point because the distinction
+    /// is the *caller's* contract, not the matcher's.
     pub fn run_guarded(&mut self, kb: &Kb, terms: &Terms, ast: &Ast, plan: &Plan, f: Emit<'_>) {
         self.run(kb, terms, ast, plan, f)
     }
 
-    /// `match.run_seeded` — the semi-naive delta match (S1.8.B2v D5).
+    /// The semi-naive delta match (S1.8.B2v D5).
     ///
     /// Every match in which the newly-derived `fact` plays a *positive*
     /// premise. For each top-level `Scan`/`Join` on the fact's relation, that
@@ -279,9 +269,9 @@ impl Matcher {
 
     /// One disjunct, seeded at **one** named step — the lookahead's probe.
     ///
-    /// ein.py builds a throwaway `JoinPlan(steps=rest)` and full-`run`s it;
-    /// this is the same enumeration through the seed machinery `run_seeded`
-    /// already has, which matters for more than tidiness: the injected fact
+    /// The enumeration runs through the seed machinery `run_seeded` already
+    /// has rather than through a throwaway plan of the remaining steps, which
+    /// matters for more than tidiness: the injected fact
     /// need not be in the KB, and here it is not — the lookahead is asking
     /// what *would* follow from adding it.
     ///
@@ -369,7 +359,8 @@ impl Matcher {
         false
     }
 
-    /// `match.run_seeded_guarded` — see [`Matcher::run_guarded`].
+    /// [`Matcher::run_seeded`] for a guarded caller — see
+    /// [`Matcher::run_guarded`].
     pub fn run_seeded_guarded(
         &mut self,
         kb: &Kb,
@@ -382,7 +373,7 @@ impl Matcher {
         self.run_seeded(kb, terms, ast, plan, fact, f)
     }
 
-    /// `match.run_steps` — the boundary's `World.holds` query.
+    /// The boundary's `holds` query.
     ///
     /// Runs a guard's sub-plan in **its own** register space, seeded from the
     /// parent's registers through the guard's scope projection. Returns `true`
@@ -499,8 +490,8 @@ impl Matcher {
             d.n_premises as usize,
             index,
         );
-        // `dict(plan.bindings_seed)` — inserted first, so they are the first
-        // entries of every `Provenance.bindings` this plan produces.
+        // The plan's seed bindings, inserted first, so they are the first
+        // entries of every firing's bindings this plan produces.
         for (r, (_, value)) in plan.seed.iter().enumerate() {
             self.regs[r] = *value;
             self.trail.push(r as Reg);
@@ -514,8 +505,7 @@ impl Matcher {
                 let mark = self.trail.len();
                 let args = terms.facts.args(fact);
                 if !self.unify(terms, plan, step.slots, args) {
-                    // The one new fact does not fit that premise; ein.py's
-                    // `_bind_args` returning None, and the same non-answer.
+                    // The one new fact does not fit that premise: no match.
                     self.unwind(mark);
                     return ControlFlow::Continue(());
                 }
@@ -570,8 +560,8 @@ impl Matcher {
             Step::Absent { sub } => {
                 // Negation as failure *inside a negative query* — a `forall`'s
                 // `(absent (and G (absent B)))`. It runs in this same binding
-                // environment (ein.py hands it the same dict) and its own
-                // bindings do not escape, which the trail mark enforces.
+                // environment and its own bindings do not escape, which the
+                // trail mark enforces.
                 let mark = self.trail.len();
                 let mut any = false;
                 let _ = self.walk(c, w.nested(sub), &mut |_| {
@@ -693,9 +683,9 @@ impl Matcher {
         let mark = self.trail.len();
         // **Every** slot is re-checked, even the one the probe narrowed on.
         // That re-check is what makes the narrowing behaviour-preserving
-        // rather than merely equivalent-if-the-index-agrees, and it is what
-        // ein.py's `_bind_args` does; design/05 §6 lists dropping it as an
-        // optimisation to measure before taking, not to assume.
+        // rather than merely equivalent-if-the-index-agrees; design/05 §6
+        // lists dropping it as an optimisation to measure before taking, not
+        // to assume.
         let ok = self.unify(terms, plan, step.slots, terms.facts.args(fact));
         let out = if ok {
             self.prems[w.ordinal] = fact;
@@ -759,8 +749,8 @@ impl Matcher {
                     self.unify(terms, plan, slots, terms.facts.args_of(row))
                 }
             },
-            // `slot == arg` in ein.py, where `slot` is an IR node and `arg` is
-            // a `str` / `int` / `Fact`. No IR node is equal to any of them.
+            // An IR node compared to a name, an integer or a `Fact`: no IR
+            // node is equal to any of them.
             Slot::Opaque(_) => false,
         }
     }
@@ -770,9 +760,9 @@ impl Matcher {
     /// Evaluate `eq` / `neq` against the current bindings.
     ///
     /// The arguments are raw IR nodes resolved at *runtime* — see
-    /// [`crate::plan::GuardArg`] — and an unbound variable resolves to Python's
-    /// `None`, which is equal to another `None` and to nothing else. That is
-    /// not a curiosity: `(eq ?a ?b)` on two unbound variables passes in ein.py.
+    /// [`crate::plan::GuardArg`] — and an unbound variable resolves to a null
+    /// that is equal to another unbound one and to nothing else. That is not a
+    /// curiosity: `(eq ?a ?b)` on two unbound variables passes.
     fn guard_holds(&self, terms: &Terms, ast: &Ast, plan: &Plan, pred: Pred, args: Span) -> bool {
         let args = plan.guard_args(args);
         // **Unreachable by construction since M1e S1e.2.1** — `Compiler::premise`
@@ -781,7 +771,7 @@ impl Matcher {
         // rather than deleted, because it is now a claim about the compiler
         // and not a check on the program: it was the *only* check until
         // S1e.2.1, and what it did when it fired was take the process down at
-        // exit 101 with a parity note for a message
+        // exit 101 with a panic for a message
         // ([`CO-H1`](../../../../docs/history/m1e_review_processing/review/correctness/high.md)).
         debug_assert_eq!(
             args.len(),
@@ -809,9 +799,9 @@ impl Matcher {
             Node => None,
         };
         match (a.kind, b.kind) {
-            // Two raw nodes compare structurally, as two frozen dataclasses do.
+            // Two raw nodes compare structurally.
             (Node, Node) => ast.eq_nodes(a.node, b.node),
-            // A node is never equal to a `str` / `int` / `Fact`…
+            // A node is never equal to a name, an integer or a `Fact`…
             (Node, _) | (_, Node) => false,
             _ => match (value(a), value(b)) {
                 (Some(x), Some(y)) => x == y,
@@ -885,7 +875,7 @@ impl Matcher {
                 ProbeSrc::Reg(r) => {
                     let v = self.regs[r as usize];
                     // Unbound: nothing to key on yet. A nested fact: the index
-                    // does not hold one, so ein.py keeps scanning.
+                    // does not hold one, so the scan moves on.
                     if v.is_unbound() || v.tag() == Tag::Fact {
                         continue;
                     }
@@ -933,7 +923,7 @@ impl Matcher {
 }
 
 /// The premise-slot index of the `Rel` step at `at` — the count of `Rel` steps
-/// before it, which is `_seed_steps`' `prem_pos`.
+/// before it: the seeded fact's `prem_pos`.
 fn rel_ordinal(plan: &Plan, steps: Span, at: usize) -> usize {
     plan.steps(steps)[..at]
         .iter()
@@ -1168,8 +1158,9 @@ mod tests {
         );
     }
 
-    /// A `neq` on two variables neither premise bound resolves both to Python's
-    /// `None`, and `None == None`, so the guard *fails*. Surprising, ported.
+    /// A `neq` on two variables neither premise bound resolves both to the
+    /// same null, and two nulls are equal, so the guard *fails*. Surprising,
+    /// and kept.
     #[test]
     fn two_unbound_guard_arguments_compare_equal() {
         let (ast, terms, kb, plan) = setup(
@@ -1188,7 +1179,7 @@ mod tests {
 
     /// `run_seeded` puts the seeded fact at *its* step's position, so a
     /// semi-naive match's provenance reads identically to a full run's — the
-    /// contract `_seed_steps`' splice exists for.
+    /// contract `rel_ordinal` exists for.
     #[test]
     fn a_seeded_match_reports_the_same_premise_order() {
         let src = "(relation edge A B)\n(relation path A B)\n\

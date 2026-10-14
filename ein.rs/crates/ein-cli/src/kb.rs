@@ -5,9 +5,6 @@
 //! [`crate::common::load_any_or_exit`], which sniffs the magic bytes. There is
 //! deliberately no `ein kb load`, and no `.einb → .ein` exporter — the stage's
 //! own note says why, and `--dump-states` already prints a KB as text.
-//!
-//! This is a **new surface**: `.einb` has no ein.py counterpart, so nothing
-//! here is reproducing an `argparse` parser.
 
 use std::path::{Path, PathBuf};
 

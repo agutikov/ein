@@ -1,13 +1,8 @@
 //! The M1a benchmark set (T1a.0.4.5) —
 //! [design/12](../../../../docs/history/m1a_rust/design/12_toolchain_and_layout.md) §4.
 //!
-//! Eight benches. They match `utils/bench_baseline.py` name for name, so that
-//! `design/README.md` § Measured could put the two implementations in adjacent
-//! columns and have the comparison mean something. That script left with its
-//! engine at
-//! [S1a.10.4](../../../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
-//! and this is the whole set now; the names are kept because every table in
-//! `baseline.md` is written against them.
+//! Eight benches, named as every table in `baseline.md` is written against
+//! them.
 //!
 //! The set was fixed at P1a.0, before there was any result to be tempted by —
 //! a benchmark set chosen after seeing the numbers measures what the
@@ -15,18 +10,7 @@
 //! landed. **As of S1a.4.5 none is pending**: the last two, `solve_fast` and
 //! `solve_exhaustive`, are the two the whole set exists for.
 //!
-//! The Python column, **frozen** at the day it was taken and no longer
-//! re-measurable (CPython 3.14, dev machine, 2026-08-17):
-//!
-//! | bench | ein.py |
-//! |---|---:|
-//! | `solve_exhaustive` (zebra2) | 5 630 ms |
-//! | `solve_fast` (zebra2) | 1 870 ms |
-//! | parse | 200 ms |
-//! | load | 430 ms |
-//! | `saturate_root` | 90 ms |
-//!
-//! Refresh the live half with `cargo bench`.
+//! Refresh with `cargo bench`.
 
 use std::path::PathBuf;
 
@@ -49,8 +33,7 @@ fn repo_root() -> PathBuf {
 }
 
 /// `parse` — zebra2.ein, zebra.ein and the seven stdlib modules, in one
-/// measurement, because that is the unit `utils/bench_baseline.py` timed on
-/// the Python side (S1a.1.1).
+/// measurement (S1a.1.1).
 fn frontend(c: &mut Criterion) {
     let root = repo_root();
     let mut sources: Vec<(String, String)> = Vec::new();
@@ -148,12 +131,11 @@ fn zebra2_root() -> (ein_ir::Ast, ein_core::Terms, ein_core::Kb) {
 }
 
 fn deductive(c: &mut Criterion) {
-    // Root saturation from a freshly loaded KB — ein.py: 90 ms (S1a.3.3).
+    // Root saturation from a freshly loaded KB (S1a.3.3).
     let mut group = c.benchmark_group("saturate_root");
     group.bench_function("zebra2", |b| {
         let path = repo_root().join("examples/zebra2.ein");
-        // Batched, so the load is setup and only the saturation is timed —
-        // the same split `utils/bench_baseline.py` reported on the Python side.
+        // Batched, so the load is setup and only the saturation is timed.
         b.iter_batched(
             || {
                 let mut ast = ein_ir::Ast::new();
@@ -179,11 +161,8 @@ fn deductive(c: &mut Criterion) {
     });
     group.finish();
 
-    // `match::run` over the saturated root, every plan. 46 % of ein.py's self
-    // time, and the bench the register matcher (design/05) has to move. The
-    // comparable *work* is the call counts, not the wall clock: ein.py makes
-    // 6.0 M `_bind_arg` and 4.6 M `_bind_args` calls on the exhaustive solve
-    // this root feeds.
+    // `match::run` over the saturated root, every plan — the bench the
+    // register matcher (design/05) has to move.
     let (ast, terms, kb) = zebra2_root();
     let rules: Vec<_> = kb.program().rules.values().cloned().collect();
     let mut terms_mut = terms;
@@ -212,18 +191,14 @@ fn deductive(c: &mut Criterion) {
     });
     group.finish();
 
-    // The boundary. 72 % of ein.py's exhaustive profile sits under
-    // `_admit_from_boundary` (design/06 § Boundary), and **80 % of a `zebra`
-    // root saturation** in ein.rs — which is why the workload is that
-    // saturation rather than a single round: a round is not repeatable
-    // without rebuilding the state that produced it, and the state is the
-    // saturation. `examples/engine_cost.rs` reports the split, so the share
-    // this bench measures is a number rather than an assumption.
-    // **Both puzzles**, because `utils/bench_baseline.py::boundary` times
-    // *zebra2* and this group timed only *zebra*: the two `boundary` rows were
-    // put side by side in a comparison table at S1a.6.1 and are not the same
-    // workload. Adding the missing case is cheaper than remembering the
-    // asymmetry, and `zebra` stays because design/README quotes its 80 % split.
+    // The boundary (design/06 § Boundary) — **80 % of a `zebra` root
+    // saturation**, which is why the workload is that saturation rather than
+    // a single round: a round is not repeatable without rebuilding the state
+    // that produced it, and the state is the saturation.
+    // `examples/engine_cost.rs` reports the split, so the share this bench
+    // measures is a number rather than an assumption. **Both puzzles**:
+    // *zebra2* is the workload the other rows time, and `zebra` stays because
+    // design/README quotes its 80 % split.
     let mut group = c.benchmark_group("boundary");
     for rel in ["examples/zebra.ein", "examples/zebra2.ein"] {
         let name = rel.trim_start_matches("examples/").trim_end_matches(".ein");
@@ -254,9 +229,9 @@ fn deductive(c: &mut Criterion) {
         });
     }
     group.finish();
-    // Fork + first delta write. Already free in ein.py (0.003 s / 206 calls)
-    // — it is measured because P1a.7 needs hundreds of thousands of them,
-    // which is a different question from "is one fork fast" (S1a.2.2).
+    // Fork + first delta write. One fork is cheap; it is measured because
+    // P1a.7 needs hundreds of thousands of them, which is a different
+    // question from "is one fork fast" (S1a.2.2).
     let root = repo_root();
     let mut ast = ein_ir::Ast::new();
     let mut terms = ein_core::Terms::new();
@@ -270,9 +245,8 @@ fn deductive(c: &mut Criterion) {
     let mut group = c.benchmark_group("fork");
     group.bench_function("zebra2", |b| {
         b.iter(|| {
-            // Each fork is fresh, so the same fact is new every time — the
-            // shape `utils/bench_baseline.py::_fork_thunk` measures. Its root
-            // is *saturated*; this one is merely loaded, until P1a.3.
+            // Each fork is fresh, so the same fact is new every time. The
+            // root is merely loaded, not saturated.
             let mut child = kb.fork();
             child
                 .add_and_index_fact(&mut terms, rel, &args, None)
@@ -286,12 +260,10 @@ fn deductive(c: &mut Criterion) {
 /// The two the whole set exists for: `solve zebra2.ein` on the default
 /// `stop_after = 1` path and exhaustively.
 ///
-/// **These measure the search, not the run.** The Python column above is
-/// end-to-end, and its own attribution puts parse at 200 ms and load at 430 ms
-/// of `solve_fast`'s 1 870; parse and load have their own benches here and are
-/// 1 003× and 607× respectively, so folding them in would flatter this row
-/// with two others' results. What is timed is what P1a.4 wrote: root
-/// saturation plus the hypothesis search.
+/// **These measure the search, not the run.** Parse and load have their own
+/// benches, so folding them in would credit this row with two others'
+/// results. What is timed is what P1a.4 wrote: root saturation plus the
+/// hypothesis search.
 ///
 /// The batch reloads the KB every iteration, because a solve mutates root —
 /// the singleton `(not h)` writeback and the forced-positive promotions are

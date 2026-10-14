@@ -8,7 +8,7 @@ the KB that owns them — which is what makes sharing them across a fork sound
 **Source of truth:**
 [`ein-core/entities.rs`](../../../../ein.rs/crates/ein-core/src/entities.rs).
 This document explains the mapping graph-node ↔ record; the code is
-authoritative for field shapes, and the Python-shaped notation is
+authoritative for field shapes, and the pseudo-code notation is
 [`02_store.md`](02_store.md)'s § Notation.
 
 ---
@@ -17,7 +17,7 @@ authoritative for field shapes, and the Python-shaped notation is
 
 Each kind of graph node from
 [`../01-ein-graph/01_kb.md` §1](../01-ein-graph/01_kb.md) that the
-engine reasons over has a corresponding frozen dataclass. Identity
+engine reasons over has a corresponding immutable record. Identity
 follows the table:
 
 | graph node kind | record | identity |
@@ -37,7 +37,7 @@ follows the table:
 > over its own inheritance relation. See
 > S1.7.23.
 
-Metadata fields (`loc`, `provenance`, `_kb`, `raw`) are
+Metadata fields (`loc`, `provenance`, `raw`) are
 **excluded** from identity — two facts with the same `(rel, args)`
 but different provenance are *the same fact* for dedup
 purposes (see [`../01-ein-graph/01_kb.md` §4](../01-ein-graph/01_kb.md)).
@@ -48,14 +48,13 @@ A relation declaration. Note: relations are **first-class nodes**
 in the graph — they participate in facts (`(symmetric co-located)`)
 as themselves, not as edge labels.
 
-```python
+```text
 Relation(
     name:       str,
     signature:  tuple[str, ...],   # argument-position type names
     declared:   bool,               # True for explicit `(relation …)` decls;
                                     # False for open-world auto-vivified relations
     loc:        Loc | None,
-    _kb:        KnowledgeBase | None,
 )
 ```
 
@@ -111,16 +110,15 @@ A graph rewriting rule. See
 [`../01-ein-graph/02_rules.md`](../01-ein-graph/02_rules.md) for
 the three types.
 
-```python
+```text
 Rule(
     name:     str,
     params:   tuple[str, ...],     # ?vars in the parameter list
     match:    Pattern | None,      # LHS
-    assert_:  Pattern | None,      # RHS  (underscore avoids `assert` kw)
+    assert_:  Pattern | None,      # RHS
     why:      str,                 # trace-message template
     priority: int | None,
     loc:      Loc | None,
-    _kb:      KnowledgeBase | None,
 )
 ```
 
@@ -141,14 +139,13 @@ Cross-references:
 A hyperedge — an instance of a relation applied to specific
 arguments. The proposition.
 
-```python
+```text
 Fact(
     relation_name: str,
     args:          tuple[str | int | Fact, ...],   # argument identities (admits relational-node args)
     provenance:    Provenance | None,              # PRIMARY justification (§3.1)
     raw:           IRNode | None,                  # original IR node (metadata)
     loc:           Loc | None,
-    _kb:           KnowledgeBase | None,
 )
 ```
 
@@ -162,8 +159,8 @@ Arguments admit three shapes, matching the kernel ein model's
   (e.g. `(hypothesis (co-located Norwegian House-2))`). The nested
   `Fact` participates in identity recursively: two outer facts are
   equal iff their `(relation_name, args)` tuples compare equal
-  element-wise, with nested `Fact` instances cascading via their
-  own `__eq__`.
+  element-wise, with nested `Fact` args compared the same way,
+  recursively.
 
 Resolution to typed entities happens on demand via
 `fact.arg_entities`; nested `Fact` args are returned as-is.
@@ -195,7 +192,7 @@ encoding-agnostic record of "every distinct name and where it
 participates" is a lightweight `NameRef` (one per name in `kb.names`),
 not a typed entity:
 
-```python
+```text
 NameRef(
     name:     str,
     category: "object" | "relation" | "rule",  # the discriminator
@@ -206,7 +203,7 @@ NameRef(
 
 `category` is `"relation"` for declared relations + the kernel-meta
 heads (`relation` / `rule`), `"rule"` for rule names, and `"object"`
-for everything else. `hypgen._candidate_objects` reads it (minus
+for everything else. `hypgen::candidate_objects` reads it (minus
 signature-type names and the reserved primitives) to pick the blind
 enumerator's guessable objects — replacing the old `is-a`-leaf /
 `kb.instances` selection.
@@ -219,7 +216,7 @@ A `Pattern` lifts a rule's `:match` or `:assert` IR clause into a
 typed object that knows three things about it without performing
 matching:
 
-```python
+```text
 Pattern(
     expr:                  IRNode,           # the raw IR clause
     variables:             tuple[str, ...],  # ?vars bound by this pattern
@@ -260,9 +257,9 @@ Contrast with `type-exclusivity`'s LHS `(and (is-a ?a ?T) (is-a ?b ?T))`:
 
 Per [`../01-ein-graph/01_kb.md` §5](../01-ein-graph/01_kb.md), every
 fact carries a `Provenance` record of one of four kinds. The
-dataclass:
+record:
 
-```python
+```text
 Provenance(
     kind:          str,        # 'source' | 'rule' | 'hypothesis' | 'rejected'
     # source-kind:
@@ -311,8 +308,8 @@ A `Fact` is one canonical object per `(relation_name, args)` identity
 - `kb.justifications(fact) -> tuple[Provenance, ...]` — the whole
   OR-node, primary first, each entry an AND-node over its
   `premises_raw`. The alternatives live in a KB side table
-  (`kb._alt_justifications`, keyed by fact-id), never on the entity:
-  `Fact` is frozen and its one canonical object is shared by every
+  (the per-layer `alts`, keyed by fact-id), never on the entity:
+  `Fact` is immutable and its one canonical object is shared by every
   index and every fork, so it cannot grow a field per re-derivation.
   See [`02_store.md` §7](02_store.md).
 
@@ -333,7 +330,7 @@ justification: the table dedups on the AND-node `(rule,
 premises_raw)`. `bindings` is display metadata the trace reads off the
 primary, so it is not part of that key — and an alternative recorded
 on the saturator's redundant path carries none at all. The per-fact
-list is capped at `store.MAX_ALT_JUSTIFICATIONS` (32) and kept sorted
+list is capped at `MAX_ALT_JUSTIFICATIONS` (32) and kept sorted
 by premise count, so the cap retains the derivations with the fewest
 **premises**.
 
@@ -373,7 +370,7 @@ the derivations the saturator actually recorded.
 
 ## 4. Origin predicates — `Fact.is_given` / `Fact.is_derived`
 
-```python
+```text
 f.is_given    # provenance.kind == 'source' and provenance.source is not None
 f.is_derived  # provenance is not None and provenance.kind != 'source'
 # neither → a background assumption (schema, is-a enumeration, tag)
@@ -389,7 +386,7 @@ records where it came from, and these two read that. They are for
 
 ---
 
-## 5. Entity attachment — the back-pointer, and why it is gone
+## 5. Entity attachment — why there is no back-pointer
 
 Entities are **immutable**, which is what makes them hashable and their
 identity stable. Nothing about the KB that owns them is part of that identity:
@@ -397,13 +394,10 @@ two entities of the same kind with the same name (or `(rel, args)` for facts)
 are equal across KBs, which is what makes sharing them by reference across a
 fork sound.
 
-> **Historical.** The Python implementation reached the owning KB through a
-> `_kb` back-pointer wired onto each frozen dataclass after construction and
-> excluded from equality, so `Relation.facts` could answer with no argument —
-> and answered *for the root* when asked on a fork, a caveat the store page
-> had to document. ein.rs passes the KB explicitly instead, so there is
-> nothing to attach, detach, or exclude, and the caveat has no subject. See
-> [`03_implementation.md` §2](03_implementation.md).
+No entity carries a pointer to the KB that owns it: every accessor takes the
+KB explicitly, so a shared `Relation` asked on a fork answers for the fork, and
+there is nothing to attach, detach, or exclude from equality. See
+[`03_implementation.md` §2](03_implementation.md).
 
 ## 6. Identity rules — summary
 
@@ -416,8 +410,8 @@ fork sound.
 ```
 (S1.7.23 — no `Type` / `Instance` entities.)
 
-Two entities are equal iff their identity tuples are equal — `loc`,
-provenance, and any owning-KB reference never affect equality. **Facts are
+Two entities are equal iff their identity tuples are equal — `loc` and
+provenance never affect equality. **Facts are
 also totally *ordered*** wherever the engine has to sort them, by a rule that
 is stated rather than inherited:
 [`defined_behaviour.md` §2.1](../../defined_behaviour.md). For
@@ -429,7 +423,7 @@ A fact's identity ignoring provenance is what makes the OR-node of
 [§3.1](#31-one-record-per-derivation--the-andor-proof-graph) possible:
 the same proposition derived twice is one `Fact` carrying two
 justifications, not two facts. Note the two different notions of
-"same justification" — `Provenance.__eq__` compares every data field
+"same justification" — provenance equality compares every data field
 (`bindings` included), while the alternatives table dedups on the
 coarser AND-node key `(rule, premises_raw)`, so two firings of one
 rule over the same premises collapse however they were bound.
@@ -440,7 +434,7 @@ rule over the same premises collapse however they were bound.
   indexes, fork(), the fact view, the justification table, derivation
   DAG.
 - [`../01-ein-graph/01_kb.md`](../01-ein-graph/01_kb.md) — the
-  conceptual model these dataclasses implement.
+  conceptual model these records implement.
 - [`../03-ein-lang/`](../03-ein-lang/) — the surface syntax that
   produces these entities at load.
 - [`../../inference/`](../../inference/) — the engine that *adds* derived

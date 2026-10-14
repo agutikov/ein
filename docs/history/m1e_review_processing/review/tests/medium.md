@@ -12,7 +12,7 @@
 
 ### Finding
 
-`gen_zebra2_variants.py --check` is invoked from a cargo test, but when python3 is absent or exits 127 the test eprintlns and passes — the exact skip-on-stderr pattern the repo's own history denounces (oracle ledger §2: "41 tests passing on a SKIP line nobody read"; `dot_wellformed` was converted to fail for the same reason). CLAUDE.md flatly says "`--check` is in the gate". The structural diff still runs, and CI installs python — but a rule-body drift in a generated variant would pass a local gate on a machine without python3.
+`gen_zebra2_variants.py --check` is invoked from a cargo test, but when python3 is absent or exits 127 the test eprintlns and passes — the exact skip-on-stderr pattern the repo's own history denounces (`dot_wellformed` was converted to fail for that reason). CLAUDE.md flatly says "`--check` is in the gate". The structural diff still runs, and CI installs python — but a rule-body drift in a generated variant would pass a local gate on a machine without python3.
 
 ### Recommendation
 

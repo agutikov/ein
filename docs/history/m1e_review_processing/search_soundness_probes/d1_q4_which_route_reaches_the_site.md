@@ -251,7 +251,7 @@ against a fix at all.
   inter-layer one, without changing `k` or the verdict. Same observation as D4's `-K` row, reached from the
   other site.
 - Noticed while probing, **not** one of the 63 and not this decision's: the
-  unsat core renders a nested fact with the ein.py value repr —
-  `(not Fact(relation_name='p', args=('Z',)))` — where the model table prints
+  unsat core renders a nested fact as
+  `(not Fact(relation_name='p', args=('Z',)))` where the model table prints
   `(not (p Z))`. If it is kept it wants its own `Q-M1e.<n>`, the way
   [D8](d8_branching06_untyped_models.md) argues for `branching/06`.

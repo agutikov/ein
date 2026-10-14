@@ -1,29 +1,23 @@
 //! The justification graph and the saturator's own contract — T1a.10.2.2.
 //!
-//! Replaces five Python files, whose common subject is *what a derivation is*:
+//! The common subject is *what a derivation is*:
 //!
-//! | Python | what it owned |
-//! |---|---|
-//! | `tests/inference/test_explain.py` | the AND/OR label search over recorded justifications |
-//! | `tests/inference/test_infer_closure.py` | `std.closure`'s derived `(__closed__ R)` and its hand-off to hypgen |
-//! | `tests/inference/test_saturator.py` | the fixpoint contract: idempotence, stalling, priority bands |
-//! | `tests/inference/test_saturator_fork_parity.py` | a fork saturates to what the same program saturates to directly |
-//! | `tests/inference/test_why.py` | the `:why` reference character class |
+//! - the AND/OR label search over recorded justifications;
+//! - `std.closure`'s derived `(__closed__ R)` and its hand-off to hypgen;
+//! - the fixpoint contract: idempotence, stalling, priority bands;
+//! - a fork saturates to what the same program saturates to directly;
+//! - the `:why` reference character class.
 //!
-//! Two things had to be re-aimed rather than translated.
+//! **The alternative-justification table is private**, so what is asserted
+//! here is the observable it exists to serve — [`Kb::justifications`], the
+//! fact's OR-node, and what the search makes of it.
 //!
-//! **The Python tests read `kb._alt_justifications` directly.** The table is a
-//! Rust private too, so what is asserted here is the observable it exists to
-//! serve — [`Kb::justifications`], the fact's OR-node, and what the search
-//! makes of it.
-//!
-//! **A fork means two different things.** [D3](../../../../docs/history/m1a_rust/divergences.md)
-//! is about `try_commitment_set` forking a *saturated* root, where ein.rs
-//! **resumes** the parent's saturation instead of re-deriving its closure — so
-//! "the fork derived everything root did" is deliberately false there, and the
-//! firing counts differ by design. Every fork below is a fork of an
-//! **unsaturated** KB driven by a fresh [`Saturator`], which is the shape the
-//! Python parity tests used and the one where the two arms must agree
+//! **A fork means two different things.** `try_commitment_set` forks a
+//! *saturated* root, and there ein.rs **resumes** the parent's saturation
+//! instead of re-deriving its closure — so "the fork derived everything root
+//! did" is deliberately false there, and the firing counts differ by design.
+//! Every fork below is a fork of an **unsaturated** KB driven by a fresh
+//! [`Saturator`], which is the shape where the two arms must agree
 //! firing-for-firing. Nothing here resumes a snapshot.
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -45,8 +39,7 @@ use ein_ir::{Ast, dump_canonical, parse};
 ///
 /// The per-fact best picks are `X ← C` at size 1 and `Z ← {A,B}` (or `{D,E}`)
 /// at size 2 — union 3 — but sharing `{A, B}` across **both** derivations
-/// costs 2. Verbatim from `test_explain.py`, because the numbers are the
-/// point.
+/// costs 2. The numbers are the point.
 const SHARED_OPTIMUM: &str = r#"
 (relation A T) (relation B T) (relation C T) (relation D T) (relation E T)
 (relation X T) (relation Z T)
@@ -144,10 +137,9 @@ fn load_text(text: &str) -> Fixture {
 /// What a saturation looks like from outside the saturator.
 ///
 /// Everything here is either a public observable of [`Saturator`] or a field
-/// of the `--events` protocol — deliberately, because the Python originals
-/// reached into `sat._parked` and `sat._park_stamp`, and a Rust test that
-/// reached into the Rust equivalents would pin this build rather than the
-/// language.
+/// of the `--events` protocol — deliberately, because a test that reached
+/// into the saturator's parked set and park stamps would pin this build rather
+/// than the language.
 #[derive(Debug, Default, PartialEq, Eq)]
 struct Run {
     /// `(rule, redundant, derived)` per firing, in order.
@@ -261,8 +253,7 @@ impl Fixture {
         self.terms.intern_fact(rel, &args).expect("room")
     }
 
-    /// The relation names of a fact set, as a multiset-free set — what the
-    /// Python `_names` helper returned.
+    /// The relation names of a fact set, as a multiset-free set.
     fn names(&self, facts: &[FactId]) -> BTreeSet<String> {
         facts
             .iter()
@@ -1040,10 +1031,10 @@ fn priority_bands_order_the_firing_sequence() {
 /// zebra2 is the fixture because its `adjacent-via-fwd` / `disjunctive-prune`
 /// activators are exactly that shape.
 ///
-/// The fork here is of an **unsaturated** KB with a fresh saturator, so
-/// [D3](../../../../docs/history/m1a_rust/divergences.md) — a fork *resuming* a
-/// saturated root's snapshot, where the re-derivation is deliberately skipped —
-/// does not apply, and the firing counts are required to match exactly.
+/// The fork here is of an **unsaturated** KB with a fresh saturator, so the
+/// case of a fork *resuming* a saturated root's snapshot, where the
+/// re-derivation is deliberately skipped, does not apply, and the firing
+/// counts are required to match exactly.
 #[test]
 fn fork_and_direct_saturation_agree() {
     let path = repo_root().join("examples/zebra2.ein");
@@ -1083,7 +1074,7 @@ fn fork_and_direct_saturation_agree() {
     );
 }
 
-/// **fork-parity-extends-to-the-naf-boundary.**
+/// **fork-and-direct-agree-at-the-naf-boundary.**
 ///
 /// The fact set is not all a saturation carries: since S1.21.8 there is a
 /// second phase with state of its own — the parked candidates, their watch
@@ -1094,7 +1085,7 @@ fn fork_and_direct_saturation_agree() {
 /// never retired. The non-vacuity assertions are load-bearing — on a fixture
 /// that never reaches the boundary, this test passes while asserting nothing.
 #[test]
-fn fork_parity_extends_to_the_naf_boundary() {
+fn fork_and_direct_agree_at_the_naf_boundary() {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = parse(&mut ast, FORALL, Some("<forall>")).expect("parses");

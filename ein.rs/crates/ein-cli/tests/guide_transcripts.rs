@@ -8,8 +8,7 @@
 //!
 //! It was not drift. `git show b4d5158` adds that text on 2026-06-17, and the
 //! engine shipping that day already printed one binding per line under a rule
-//! (`ein.py`'s `_two_col` and `_rule`, and `ein-render`'s `answer.rs` does the
-//! same today). **No engine in this repo's history has printed what the page
+//! (`ein-render`'s `answer.rs` does the same today). **No engine in this repo's history has printed what the page
 //! printed** — which is why the fix is *take the bytes from a run*, and the
 //! pin is *keep taking them*.
 //!

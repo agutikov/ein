@@ -564,9 +564,8 @@ milestone folder under `plans/m_followups_<topic>/`.
 
 **Found by measurement, 2026-08-20, M1a
 [S1a.6.7](../../docs/history/m1a_rust/README.md#s1a67--re-measure-the-lever-matrix)** — the
-stage that re-measured the lever matrix in both implementations. Both engines
-agree to the digit on every number below; this is a *kernel semantics*
-question, not a port question.
+stage that re-measured the lever matrix. This is a *kernel semantics*
+question, not an implementation one.
 
 `enable_pre_branch_lookahead` is documented, and priced, as a **prune**: a
 one-step rule simulation that kills a hypothesis candidate before the fork.
@@ -577,16 +576,20 @@ Turning a prune off should cost time and change nothing else. It does not:
 | `examples/branching/06_lookahead_on.ein` | Solution k=1 (fast) / **Ambiguity k=22** (`-e`) | **Contradiction k=0**, both modes |
 | `examples/lattice/02_genuine_3set_death.ein` | **Ambiguity k=3**, 6 enterings | **Contradiction k=0**, 7 enterings |
 
-The mechanism is one line of
-`inference/solution.py` (the Python engine's; the predicates are `hypgen.rs`'s now):
+The mechanism is a few lines of
+`ein-infer`'s `hypgen.rs` (`complete`, through `complete_counted`):
 
-```python
-def complete(kb) -> bool:
-    """No open hypothesis — the generator proposes nothing undecided."""
-    return next(generate_hypotheses(kb), None) is None
+```rust
+/// No open hypothesis — the generator proposes nothing undecided.
+let mut any = false;
+generate(s, stats, &mut |_| {
+    any = true;
+    ControlFlow::Break(())
+})?;
+Ok(!any)
 ```
 
-`generate_hypotheses` yields the candidates that are "neither asserted nor
+`generate` yields the candidates that are "neither asserted nor
 refuted **nor immediately doomed (lookahead)**". So the lever decides which
 candidates count as *decided*, and therefore which commitment sets are
 solution nodes. With it off, a KB whose only survivors are doomed candidates
@@ -606,7 +609,7 @@ models.
   the doomed candidates must be decided the honest way — by forking and dying
   — and `06`'s k=22 with the lever on is the wrong answer rather than `07`'s
   k=0 with it off. Note this reading costs 448× on that fixture's fast path
-  (2 ms → 896 ms in ein.rs).
+  (2 ms → 896 ms).
 
 Either way **one of the two configurations is reporting the wrong verdict
 today**, and the corpus contains both as fixtures with a checked-in

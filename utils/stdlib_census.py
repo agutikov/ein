@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 """What the stdlib declares, and what the corpus actually activates — S1c.1.1's instrument.
 
-Every check this repo has is *relative*: the goldens compare ein.rs to its own
-past, and after
-[P1a.10](../docs/history/m1a_rust/README.md#p1a10--one-implementation) there is
-no second engine to compare it to at all. The stdlib is where that gap is
-widest — `std.algebra`, `std.bijection`, `std.elim`, `std.closure`,
+Every check this repo has is *relative*: the goldens compare the engine to its
+own past. The stdlib is where that gap is widest — `std.algebra`, `std.bijection`, `std.elim`, `std.closure`,
 `std.slots`, `std.typing` and `std.macro` are exercised only as a side effect
 of whatever the zebra corpus happens to need, and **a rule no corpus entry
 activates is not tested, it is merely not contradicted**.

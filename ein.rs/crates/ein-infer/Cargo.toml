@@ -15,11 +15,13 @@ parallel = ["dep:rayon"]
 # Forwards to `ein-core/counters`, so `--features counters` on either crate
 # means the same build.
 counters = ["ein-core/counters"]
-# S1a.6.9 — D3's fixture, not a feature of the engine. The resumed fork
-# saturator is the *shipping* path since Q-M1a.18 was answered; what this
-# compiles in is the way back to the old one (`EIN_FORK_DELTA=0`) plus the
-# per-entering audit record, so `utils/fork_delta_verify.py` can produce both
-# arms of the divergence out of one binary and prove it has not widened.
+# S1a.6.9 — a fixture, not a feature of the engine. A fork *resumes* root's
+# saturation rather than re-deriving it, so two runs can narrate different
+# amounts of one derivation; the resumed fork saturator is the *shipping* path
+# since Q-M1a.18 was answered, and what this compiles in is the way back to
+# the re-deriving one (`EIN_FORK_DELTA=0`) plus the per-entering audit record,
+# so `utils/fork_delta_verify.py` can produce both arms out of one binary and
+# prove the difference has not widened.
 fork-delta = []
 # S1a.7.0 — the speculation audit. Runs every entering a second time
 # against root as of layer start, which is what a P1a.7 worker would have
@@ -43,8 +45,8 @@ ein-corpus = { path = "../ein-corpus" }
 # renderer's side would test the writer; asserting it here tests the search's
 # use of the hook. See `tests/lattice_semantics.rs`.
 ein-render = { path = "../ein-render" }
-# The one implementation of "what the parity contract stopped comparing",
-# one implementation of what counts as narration, shared by every test that
-# has to know.
-ein-parity = { path = "../ein-parity" }
+# The one implementation of what counts as a derivation's narration rather
+# than its content — a fork's derivation, and anything keyed on a dying fork's
+# stopping point — shared by every test that has to know.
+ein-narration = { path = "../ein-narration" }
 serde_json.workspace = true

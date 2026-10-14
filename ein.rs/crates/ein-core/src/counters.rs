@@ -1,16 +1,13 @@
 //! Work counters — what the engine *did*, not how long it took (T1a.6.1.3).
 //!
-//! Wall-clock is machine-dependent; work is not. A "26× faster" claim splits
-//! into two very different statements — *did less* and *did the same, faster* —
-//! and only the second is a port result. The first would mean the two engines
-//! are solving different problems, which is a parity bug the harness should have
-//! caught, so the split is worth having as a number even when it is boring.
+//! Wall-clock is machine-dependent; work is not. A speed-up splits into two
+//! very different statements — *did less* and *did the same, faster* — and
+//! only a count can tell them apart, so the split is worth having as a number
+//! even when it is boring.
 //!
-//! ein.py gets these for free: every one of these counters is the `ncalls`
-//! column of a cProfile row (`match._bind_arg`, `match._bind_args`,
-//! `saturator._binding_key`, …). ein.rs has no profiler that counts calls, and
-//! the functions concerned are inlined into their callers anyway, so it counts
-//! them explicitly — and only when asked:
+//! A sampling profiler does not count calls, and the functions concerned are
+//! inlined into their callers anyway, so the engine counts them explicitly —
+//! and only when asked:
 //!
 //! ```sh
 //! cargo run --release --features counters -p ein-infer --example counter_cost
@@ -29,30 +26,24 @@
 //! serialise. [`snapshot`] reads the calling thread's; a parallel run sums them
 //! at the join.
 
-/// One field per countable unit of engine work. The comment on each names the
-/// ein.py row it is comparable to, or says that there is none.
+/// One field per countable unit of engine work.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Counters {
     // ── the matcher ────────────────────────────────────────────────
-    /// One argument bound or compared — ein.py `match._bind_arg` (6.0 M calls
-    /// on an exhaustive `zebra2`, 20 % of its self time).
+    /// One argument bound or compared — 6.0 M on an exhaustive `zebra2`.
     pub unify_slot: u64,
-    /// One premise's whole argument list. **No ein.py counterpart**: its
-    /// `_bind_args` is per-candidate only, because `_bind_arg` walks a nested
-    /// pattern inline where this recurses back through `unify`. So `unify` is
-    /// `candidates` plus the nested descents — 5.57 M against 4.61 M candidates
-    /// on an exhaustive `zebra2` — and the comparable pair is `unify_slot`.
+    /// One premise's whole argument list — and one per nested descent too,
+    /// because a nested pattern recurses back through `unify`. So `unify` is
+    /// `candidates` plus the nested descents: 5.57 M against 4.61 M candidates
+    /// on an exhaustive `zebra2`.
     pub unify: u64,
     /// Candidates *tried*: one per fact offered to a premise and unified
-    /// against — ein.py `match._bind_args`. What an index narrows and a
-    /// beta-memory would avoid re-deriving. ein.py additionally materialises
-    /// each bucket as a tuple, so its `_candidates` sum is ~1.5× this even
-    /// where the two try the same facts.
+    /// against. What an index narrows and a beta-memory would avoid
+    /// re-deriving.
     pub candidates: u64,
     /// How a premise reached its candidates: through a participation-index
-    /// bucket, or by walking the relation's whole extent. **No ein.py
-    /// counterpart** — this is a question about *this* implementation's data
-    /// layout, and it is the one that chose
+    /// bucket, or by walking the relation's whole extent. This is a question
+    /// about the data layout, and it is the one that chose
     /// [S1a.6.2](../../../../docs/history/m1a_rust/README.md#s1a62--memory-layout)'s
     /// remaining tasks: on an exhaustive `zebra` **99.1 %** of candidates come
     /// from an extent scan and only 0.9 % from a bucket, because the index does
@@ -92,10 +83,9 @@ pub struct Counters {
     /// found their fact; `scan_bucket + scan_extent + scan_ground` is every
     /// premise the matcher resolved.
     ///
-    /// **No ein.py counterpart, and this is where the two engines stop doing
-    /// the same work**: ein.py fetches the participation bucket and unifies
-    /// every fact in it, so its `candidates` is larger here by construction —
-    /// 71.8 % of `zebra -e`'s *guard* premises are ground, and each was a
+    /// Each is a bucket walk not taken — fetching the participation bucket
+    /// and unifying every fact in it would answer the same question: 71.8 %
+    /// of `zebra -e`'s *guard* premises are ground, and each would be a
     /// ~10-fact bucket walk.
     pub scan_ground: u64,
     pub scan_ground_guard: u64,
@@ -110,34 +100,31 @@ pub struct Counters {
     /// immediately.
     pub nested_rel_reject: u64,
     pub nested_rel_hit: u64,
-    /// Plan steps entered — ein.py `match._run_steps` (1.0 M).
+    /// Plan steps entered.
     pub walk: u64,
     /// Matcher entry points: one per `run` / `run_seeded` / `holds` call.
     pub plan_run: u64,
 
     // ── saturation ─────────────────────────────────────────────────
-    /// Firing binding keys built — ein.py `saturator._binding_key` (445 k,
-    /// 7 % of its self time).
+    /// Firing binding keys built.
     pub binding_key: u64,
-    /// Rule plans compiled. ein.py caches per `Engine` and builds one engine
-    /// per saturation, so it compiles the same plan many times over — **17 430**
-    /// on an exhaustive `zebra2`, which is what ein.rs did too until
+    /// Rule plans compiled. A cache per `Engine`, with one engine per
+    /// saturation, compiles the same plan many times over — **17 430** on an
+    /// exhaustive `zebra2`, which is what the engine did until
     /// [S1a.6.8](../../../../docs/history/m1a_rust/README.md#s1a68--the-compile-cache-and-the-extent-counts)
-    /// built design/06 § Win A's per-run memo. **This is the one counter the
-    /// two implementations are expected to disagree on**: 305 here against
-    /// 17 430 in the oracle on that run, and 305 is the number of distinct
-    /// `(rule, activator)` pairs rather than a target — design/06 guessed ~170,
-    /// and the forks derive activators the root never had. The parity item next
-    /// to it is the `compile` **event** count (17 250, identical), because that
-    /// fires on an *engine* miss and not a memo miss.
+    /// built design/06 § Win A's per-run memo. It is **305** on that run now,
+    /// and 305 is the number of distinct `(rule, activator)` pairs rather than
+    /// a target — design/06 guessed ~170, and the forks derive activators the
+    /// root never had. The `compile` **event** count (17 250) is a different
+    /// number, because that fires on an *engine* miss and not a memo miss.
     pub plan_compile: u64,
-    /// Facts written and indexed — ein.py `store.add_and_index_fact`.
+    /// Facts written and indexed.
     pub fact_insert: u64,
 
     // ── the intern tables, as *shared* state ───────────────────────
     /// The four reads on [`crate::facts::FactStore`] that hand out a borrow —
-    /// `rel`, `args`, `row`, `get`. **No ein.py counterpart**: this counts the
-    /// thing that decides whether the store can be shared at all, because a
+    /// `rel`, `args`, `row`, `get`. This counts the thing that decides
+    /// whether the store can be shared at all, because a
     /// `&[Value]` into the argument arena is what no lock can return
     /// (T1a.7.1.0).
     pub fact_read: u64,
@@ -193,7 +180,7 @@ pub struct Counters {
 
     // ── the enqueue pass ───────────────────────────────────────────
     /// Enqueue passes run — one full pass at saturation start, then one delta
-    /// pass per firing. **No ein.py counterpart**; it exists because
+    /// pass per firing. It exists because
     /// [S1a.7.4](../../../../docs/history/m1a_rust/README.md#s1a74--level-2-the-parallel-enqueue-pass)
     /// proposes to fan a pass out and the question that decides it is not how
     /// much the passes cost in total but how much *one* of them has to hand out.
@@ -212,29 +199,27 @@ pub struct Counters {
     pub enqueue_task_full: u64,
 
     // ── negation at the boundary ───────────────────────────────────
-    /// Guard sub-plan evaluations — one per guard, so ein.py's comparable site
-    /// is `World.absent` and not the `first_failing` that loops over it. 33 113
-    /// on an exhaustive `zebra2`, in **both** implementations.
+    /// Guard sub-plan evaluations — one per guard, not one per guard list.
+    /// 33 113 on an exhaustive `zebra2`.
     pub guard_query: u64,
     /// Boundary invalidation stamps taken, and the per-relation extent counts
     /// they add up. `watch_stamp_rel / watch_stamp` is the average number of
     /// relations a parked entry watches; the *product* is what
     /// [`crate::kb::Kb::n_facts_of`] is called for — 644 166 times on an
-    /// exhaustive `zebra2`, in both implementations, and 9.5 % of the run here
-    /// because a layered KB answers it in O(depth) where ein.py's flat index
-    /// answers it in O(1).
+    /// exhaustive `zebra2`, and 9.5 % of the run because a layered KB answers
+    /// it in O(depth) where a flat index answers it in O(1).
     pub watch_stamp: u64,
     pub watch_stamp_rel: u64,
     /// Map probes performed by [`crate::kb::Kb::n_facts_of`] — the instrument
     /// for its O(1)-in-depth claim, and the only counter here that measures
-    /// *this* implementation rather than the work both do. It equals
+    /// the KB's layout rather than the work. It equals
     /// `watch_stamp_rel` plus the engine's other extent questions; a fold over
     /// the layer stack would multiply it by `Kb::depth()`.
     pub extent_probe: u64,
 
     // ── the search layer ───────────────────────────────────────────
-    /// KB forks — ein.py `store.fork` (101 on an exhaustive `zebra2`, against
-    /// 104 here: the three extra are the root previews).
+    /// KB forks — 104 on an exhaustive `zebra2`, three of them the root
+    /// previews.
     pub fork: u64,
     /// [`crate::kb::Kb::flatten`] calls and the facts each one copied — the
     /// **cost** column of the layer-barrier coalesce
@@ -242,24 +227,21 @@ pub struct Counters {
     /// `materialise` is O(facts) per layer and a fork's saving is one stack
     /// walk, so the pair is what says whether the threshold is right: a search
     /// with a large root and cheap layers pays `flatten_facts` to save
-    /// `fork × depth`, and only the ratio decides. **No ein.py counterpart** —
-    /// it never had a layer stack.
+    /// `fork × depth`, and only the ratio decides.
     pub flatten: u64,
     pub flatten_facts: u64,
-    /// Provenance nodes visited by a justification walk — no single ein.py row,
-    /// because `walk_premises` is a generator and cProfile attributes its work
-    /// to whoever drains it.
+    /// Provenance nodes visited by a justification walk.
     pub prov_node: u64,
     /// Hypothesis-generation passes, and how many of them were the
     /// short-circuiting `complete()` question rather than `open_hypotheses()`
-    /// — ein.py `hypgen.generate_hypotheses` calls, split by caller. The two
+    /// — split by caller. The two
     /// have very different costs per call and the same cost per *candidate*,
     /// which is the split
     /// [S1a.6.4](../../../../docs/history/m1a_rust/README.md#s1a64--hypgen-and-lattice-hot-paths)
     /// exists to measure.
     pub hypgen_call: u64,
     pub hypgen_complete: u64,
-    /// One-step lookahead simulations — ein.py `lookahead.dies_immediately`.
+    /// One-step lookahead simulations — `Lookahead::dies_immediately`.
     /// The costliest candidate filter, and the reason a pass costs 14x more
     /// with the lever on than off.
     pub lookahead_probe: u64,
@@ -287,8 +269,7 @@ pub struct Counters {
     /// `parse()` calls and the source bytes they were handed — one per
     /// *module text*, so the pair prices the import diamond: `zebra2` pulls
     /// `std.algebra` and `std.bijection`, and `std.bijection` pulls
-    /// `std.algebra` again. **No ein.py counterpart** — its loader re-parses
-    /// the same way, but nothing there counts it either.
+    /// `std.algebra` again.
     pub parse_call: u64,
     pub parse_bytes: u64,
     /// Terminal match *attempts* — the denominator a backtracking parser
@@ -304,10 +285,9 @@ pub struct Counters {
     pub intern: u64,
     pub intern_miss: u64,
 
-    /// Compile-cache keys built — [`crate::terms::Terms`]-level bookkeeping
-    /// with **no ein.py counterpart**, like [`Self::extent_probe`]: ein.py's
-    /// key is a tuple of the strings it already has, while a `PlanKey` has to
-    /// intern them. It counts the *engine walk*, not the compiler:
+    /// Compile-cache keys built — [`crate::terms::Terms`]-level bookkeeping,
+    /// like [`Self::extent_probe`]: a `PlanKey` has to intern the strings it
+    /// is made of. It counts the *engine walk*, not the compiler:
     /// `plan_compile` is what a key that missed the memo cost.
     pub plan_key: u64,
 }

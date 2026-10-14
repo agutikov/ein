@@ -3,9 +3,8 @@
 
 `corpus/corpus.toml` marks entries `slow = true`, and until
 [S1a.9.0](../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced) that flag had
-no threshold and no measurement behind it: it was set from a CPython probe in
-2026-08-17 and never re-taken. This is what re-takes it, and what a reader runs
-when they doubt a flag.
+no threshold and no measurement behind it. This is what takes one, and what a
+reader runs when they doubt a flag.
 
     utils/bench_env.sh python3 utils/corpus_cost.py                 # every declared cell
     utils/bench_env.sh python3 utils/corpus_cost.py --slow-only --runs 3

@@ -5,7 +5,7 @@
 //! facts from it (A13 multi-assert) and they **share one** [`Prov`]: one rule
 //! application fanning out to N derived nodes, not N applications.
 
-use ein_core::pyrepr::{PyValue, repr, repr_str};
+use ein_core::repr::{ReprValue, repr, repr_str};
 use ein_core::{FactId, Kb, NafRef, Overflow, Prov, ProvId, Symbol, Terms, Value};
 
 use crate::plan::{Plan, Reg, Slot};
@@ -15,7 +15,7 @@ use crate::plan::{Plan, Reg, Slot};
 ///
 /// Borrowed rather than owned because both producers have it already: the
 /// matcher hands out a live view, and the saturator's queue entry holds a
-/// snapshot it took at enqueue time (ein.py's `dict(bindings)`).
+/// snapshot it took at enqueue time.
 #[derive(Clone, Copy)]
 pub struct Env<'a> {
     pub regs: &'a [Value],
@@ -32,7 +32,8 @@ impl<'a> Env<'a> {
             .map(move |&r| (plan.reg_names[r as usize], regs[r as usize]))
     }
 
-    /// `str(bindings)` — the dict repr the unbound-`:assert`-var error quotes.
+    /// `{'name': value, …}` in bind order — what the unbound-`:assert`-var
+    /// error quotes.
     fn dict_repr(&self, terms: &Terms, plan: &Plan) -> String {
         let items: Vec<String> = self
             .bindings(plan)
@@ -40,7 +41,7 @@ impl<'a> Env<'a> {
                 format!(
                     "{}: {}",
                     repr_str(terms.sym(name)),
-                    repr(&terms.py_value(value))
+                    repr(&terms.repr_value(value))
                 )
             })
             .collect();
@@ -66,12 +67,11 @@ pub struct Firing {
 /// What stops a firing that should never have been attempted.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum FireError {
-    /// ein.py raises `KeyError(f"unbound var ?{name} in :assert — bindings: …")`.
-    /// The matcher guarantees no unbound var reaches an `:assert` template, so
-    /// this is an invariant violation rather than a rejected input — which is
-    /// why it is loud in both implementations.
+    /// `unbound var ?{name} in :assert — bindings: …`. The matcher guarantees
+    /// no unbound var reaches an `:assert` template, so this is an invariant
+    /// violation rather than a rejected input — which is why it is loud.
     UnboundVar(String),
-    /// `TypeError(f"expected NestedPattern at :assert top-level, got …")`.
+    /// `expected NestedPattern at :assert top-level, got …`.
     NotAFact(String),
     /// The interner filled up. Structurally possible, never seen.
     Overflow(Overflow),
@@ -131,10 +131,9 @@ fn resolve(terms: &mut Terms, plan: &Plan, env: Env<'_>, slot: Slot) -> Result<V
             Ok(v)
         }
         Slot::Nested { .. } => Ok(Value::fact(build_fact(terms, plan, env, slot)?)),
-        // ein.py's `resolve_leaf` returns the node itself, which lands in
-        // `Fact.args` as an IR node — a shape nothing downstream can read.
-        // Refusing is the difference, and it is one the loader's validator
-        // already makes unreachable.
+        // Storing the node itself would put an IR node in a fact's args — a
+        // shape nothing downstream can read — so this refuses, and the
+        // loader's validator already makes it unreachable.
         Slot::Opaque(_) => Err(FireError::NotAFact(
             "an unrecognised `:assert` slot has no value to store".to_string(),
         )),
@@ -143,8 +142,7 @@ fn resolve(terms: &mut Terms, plan: &Plan, env: Env<'_>, slot: Slot) -> Result<V
 
 fn slot_type_name(slot: Slot) -> &'static str {
     match slot {
-        // The name Python's `type(template).__name__` gives, for the shapes a
-        // template can actually be.
+        // The IR node kind's name, for the shapes a template can actually be.
         Slot::Reg(_) => "Var",
         Slot::Const(_) => "Atom",
         Slot::Nested { .. } => "NestedPattern",
@@ -208,11 +206,9 @@ pub fn new_prov(
 
 /// The identity of a rule application: `(rule, activator, bindings)`.
 ///
-/// ein.py's `_binding_key` is
-/// `(rule_name, plan.activator_args, frozenset(bindings.items()))`, and it
-/// costs 2.7 s over 445 k calls on an exhaustive `zebra2` — a frozenset of
-/// tuples, built per match. Here it is the **register file**, which is the same
-/// information: registers are a bijection with variable names within a plan, an
+/// Keyed on the set of `(name, value)` bindings, it would be a hashed set of
+/// pairs built per match — 445 k of them on an exhaustive `zebra2`. Here it is
+/// the **register file**, which is the same information: registers are a bijection with variable names within a plan, an
 /// unbound one carries a sentinel no `Value` can forge, and the vector's order
 /// is fixed by the plan rather than by the match.
 ///
@@ -264,8 +260,7 @@ impl BindingKey {
     }
 }
 
-/// `str(v)` for each binding — what `Provenance.bindings` stores in ein.py and
-/// what the trace prints. Kept as a function rather than done at record time,
+/// Each binding's display text — what the trace prints. Kept as a function rather than done at record time,
 /// because not doing it is the whole point: the redundant-firing path is the
 /// hottest in the engine and stringifying there is the most expensive part of
 /// recording ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §7).
@@ -276,12 +271,12 @@ pub fn rendered_bindings(terms: &Terms, bindings: &[(Symbol, Value)]) -> Vec<(St
         .collect()
 }
 
-/// The `PyValue` rendering of a whole binding environment — for the error
+/// The `ReprValue` rendering of a whole binding environment — for the error
 /// paths and the event log.
-pub fn bindings_py(terms: &Terms, bindings: &[(Symbol, Value)]) -> Vec<(String, PyValue)> {
+pub fn bindings_repr(terms: &Terms, bindings: &[(Symbol, Value)]) -> Vec<(String, ReprValue)> {
     bindings
         .iter()
-        .map(|(k, v)| (terms.sym(*k).to_string(), terms.py_value(*v)))
+        .map(|(k, v)| (terms.sym(*k).to_string(), terms.repr_value(*v)))
         .collect()
 }
 
@@ -345,8 +340,7 @@ mod tests {
     }
 
     /// The matcher guarantees no unbound var reaches an `:assert`, so one that
-    /// does is an invariant violation — and it says so with ein.py's text,
-    /// bindings dict included.
+    /// does is an invariant violation — and it says so, bindings included.
     #[test]
     fn an_unbound_assert_var_quotes_the_bindings() {
         let (_ast, mut terms, _kb, plan) = setup(
@@ -372,11 +366,11 @@ mod tests {
         );
     }
 
-    /// The key is the register file, and it is the frozenset ein.py builds:
-    /// same bindings collide, a different value does not, and an *unbound*
-    /// register is distinct from every bound one.
+    /// The key is the register file, and it is the set of bindings by another
+    /// name: same bindings collide, a different value does not, and an
+    /// *unbound* register is distinct from every bound one.
     #[test]
-    fn a_binding_key_is_the_frozenset_by_another_name() {
+    fn a_binding_key_is_the_binding_set_by_another_name() {
         let (_ast, mut terms, _kb, plan) = setup(
             "(relation a Thing)\n(relation b A B)\n\
              (rule r ()\n  :match (a ?x)\n  :assert (b ?x ?x))\n",

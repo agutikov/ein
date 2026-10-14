@@ -3,10 +3,9 @@
 //! [P1a.2](../../../../docs/history/m1a_rust/README.md#p1a2--kb-core)'s gate was
 //! "every corpus file loads to the same KB", and a KB has no CLI surface of
 //! its own: the registries, the seven indexes and the participation counts
-//! were exactly the things a harness comparing two `ein` *processes* could not
-//! see. This renders all of them as one deterministic text, which was diffed
-//! against `utils/ir_oracle.py`'s `kb-shape` op until S1a.10.2 and is
-//! `corpus_shapes.md5`'s `load` op since.
+//! are exactly the things the output of an `ein` *process* does not show.
+//! This renders all of them as one deterministic text, which is
+//! `corpus_shapes.md5`'s `load` op.
 //!
 //! Two rules make the text comparable:
 //!
@@ -14,18 +13,17 @@
 //!   disagreement a diff can show is a fact-order one.
 //! - **Values are rendered with `repr`**, so `7` the integer and `7` the atom
 //!   cannot collide, and every map is emitted in a sorted order rather than
-//!   its own — ein.py's `names` dict is built over a *set* union, and its
-//!   order is not reproducible even run to run.
+//!   its own, so the text does not move when an insertion order does.
 
 use crate::entities::NameCategory;
 use crate::facts::FactId;
 use crate::kb::{Kb, SlotKey};
 use crate::prov::ProvKind;
-use crate::pyrepr::{PyValue, repr};
+use crate::repr::{ReprValue, repr};
 use crate::terms::Terms;
 use crate::value::Value;
 
-/// Render `kb` as the parity text.
+/// Render `kb` as the shape text.
 pub fn shape(kb: &Kb, terms: &Terms) -> String {
     let facts: Vec<FactId> = kb.facts().collect();
     let index = |id: FactId| {
@@ -47,8 +45,8 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
             "REL {} sig=({}) declared={} why={}",
             terms.sym(name),
             sig.join(" "),
-            py_bool(rel.declared),
-            repr(&PyValue::Str(
+            bool_word(rel.declared),
+            repr(&ReprValue::Str(
                 rel.why.map_or("", |w| terms.sym(w)).to_string()
             ))
         ));
@@ -66,7 +64,7 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
                 params.join(" "),
                 rule.priority
                     .map_or("None".to_string(), |p| terms.int_text(p).to_string()),
-                repr(&PyValue::Str(
+                repr(&ReprValue::Str(
                     rule.why.map_or("", |w| terms.sym(w)).to_string()
                 )),
                 pattern_names(terms, rule.match_.as_ref().map(|p| &*p.variables)),
@@ -118,9 +116,9 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
         let (rel, args) = terms.facts.get(f);
         for (slot, value) in args.iter().enumerate() {
             if value.tag() != crate::value::Tag::Fact {
-                // `DIRECT` on purpose: this dump is a parity artefact and
-                // enumerates the keys ein.py's index has, not the ones
-                // T1a.6.3.0 added underneath it.
+                // `DIRECT` on purpose: this dump enumerates the index's
+                // direct keys, not the nested-argument ones T1a.6.3.0 added
+                // underneath them.
                 let key = SlotKey::direct(rel, slot as u16, *value);
                 slots.push((
                     format!("{} {} {}", terms.sym(rel), slot, render(terms, *value)),
@@ -177,7 +175,7 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
                 ProvKind::Source => format!(
                     "source={}",
                     prov.source
-                        .map_or("None".to_string(), |s| repr(&PyValue::Str(
+                        .map_or("None".to_string(), |s| repr(&ReprValue::Str(
                             terms.sym(s).to_string()
                         )))
                 ),
@@ -206,18 +204,18 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
     out.join("\n")
 }
 
-/// `repr((relation_name, args))` — a fact's identity tuple as CPython prints
-/// it, which is unambiguous across the three value shapes.
+/// `repr((relation_name, args))` — a fact's identity tuple, which is
+/// unambiguous across the three value shapes.
 fn identity(terms: &Terms, f: FactId) -> String {
     let (rel, args) = terms.facts.get(f);
-    repr(&PyValue::Tuple(vec![
-        PyValue::Str(terms.sym(rel).to_string()),
-        PyValue::Tuple(args.iter().map(|&a| terms.py_value(a)).collect()),
+    repr(&ReprValue::Tuple(vec![
+        ReprValue::Str(terms.sym(rel).to_string()),
+        ReprValue::Tuple(args.iter().map(|&a| terms.repr_value(a)).collect()),
     ]))
 }
 
 fn render(terms: &Terms, v: Value) -> String {
-    repr(&terms.py_value(v))
+    repr(&terms.repr_value(v))
 }
 
 fn pattern_names(terms: &Terms, names: Option<&[crate::intern::Symbol]>) -> String {
@@ -233,6 +231,6 @@ fn category(c: NameCategory) -> &'static str {
     c.as_str()
 }
 
-fn py_bool(b: bool) -> &'static str {
+fn bool_word(b: bool) -> &'static str {
     if b { "True" } else { "False" }
 }

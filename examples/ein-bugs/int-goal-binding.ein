@@ -1,20 +1,20 @@
 ;;; M1a S1a.6.6 — an INTEGER in a goal binding.
 ;;;
-;;; Found by the differential fuzzer (`utils/fuzz_ein.py`) in its first two
-;;; minutes, minimised to these two forms, and it was a **T0** difference —
-;;; the tier that is never relaxed:
+;;; Found by the engine fuzzer (`utils/fuzz_engine.py`) in its first two
+;;; minutes and minimised to these two forms. A goal binding is the *stored*
+;;; argument, and an int argument must reach `--json-summary` as a number:
 ;;;
-;;;     ein.py  "y": 8       ← the stored arg is a Python int, so json.dumps
-;;;                            writes a NUMBER
-;;;     ein.rs  "y": "8"     ← every binding went through `sexpr_value`
+;;;     "y": 8       ← right: the stored arg is an INT, so the summary
+;;;                    writes a NUMBER
+;;;     "y": "8"     ← what every binding was while it went through `sexpr_value`
 ;;;
-;;; stdout was identical on both sides, which is why five phases of byte
-;;; parity never saw it: no corpus puzzle binds a query variable to an int.
+;;; stdout is the same either way, which is why no stdout golden saw it: no
+;;; corpus puzzle binds a query variable to an int.
 ;;; The IR's INT is unbounded, so the fix carries arbitrary precision
 ;;; (`Json::BigInt`) rather than clamping to i64 — `-2` and
 ;;; `99999999999999999999999` both round-trip.
 ;;;
-;;; Fixed 2026-08-20 in ein.rs (`ein-cli/src/summary.rs::binding_value`).
+;;; Fixed 2026-08-20 in ein.rs (`ein-render/src/dump/answer.rs::binding_value`).
 ;;; This file is the regression: `solve --json-summary` must agree.
 
 (r1 o3 8)

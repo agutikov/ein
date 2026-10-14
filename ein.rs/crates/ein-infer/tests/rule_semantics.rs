@@ -1,23 +1,17 @@
 //! What a rule *means* when it fires — S1a.10.2 **T1a.10.2.2**.
 //!
-//! Replaces the semantics half of five files under `ein.py/tests/inference/`:
-//! `test_forall.py`, `test_match.py`, `test_multi_assert.py`,
-//! `test_predicates.py` and `test_rules.py`. The common subject is what one
-//! rule application *is*: which bindings a premise admits (repeated variables,
-//! nested patterns, stored `not`), which bindings a guard keeps (`eq` / `neq`,
-//! over variables and over literals), how many facts one match concludes
-//! (`:assert (and …)` × `:match (or …)`), what `forall` expands to, and when a
-//! parametrised rule is allowed to run at all.
+//! The common subject is what one rule application *is*: which bindings a
+//! premise admits (repeated variables, nested patterns, stored `not`), which
+//! bindings a guard keeps (`eq` / `neq`, over variables and over literals), how
+//! many facts one match concludes (`:assert (and …)` × `:match (or …)`), what
+//! `forall` expands to, and when a parametrised rule is allowed to run at all.
 //!
-//! **Every claim here is asserted as a derivation.** The Python originals
-//! mostly could not be: they called `compile_rule` and `match.run` directly and
-//! inspected plan opcodes (`isinstance(s, AbsentGuard)`, `plan.naf_guards`,
-//! `outer.scope`) and raw binding dicts. Those are the *encoding* of a rule,
-//! and the encoding is exactly what the port was free to change — ein.rs
-//! resolves variables to registers and lifts `(absent …)` to a boundary guard,
-//! so a translated opcode assertion would pin this build rather than the
-//! language. What the language fixes is which facts a program derives, so each
-//! test below saturates a fixture and reads the firings and the KB.
+//! **Every claim here is asserted as a derivation.** Plan opcodes and raw
+//! bindings are the *encoding* of a rule — ein.rs resolves variables to
+//! registers and lifts `(absent …)` to a boundary guard — so an opcode
+//! assertion would pin this build rather than the language. What the language
+//! fixes is which facts a program derives, so each test below saturates a
+//! fixture and reads the firings and the KB.
 
 use ein_core::{Kb, Terms};
 use ein_infer::events::{binding_pairs, sexpr};
@@ -132,8 +126,6 @@ impl Run {
 /// The `examples/features/03_forall.ein` trailing comment describes exactly
 /// this variation ("delete ALL beats facts AND remove Bob and Carol"); it is
 /// built inline here because the corpus copy would need a `corpus.toml` entry.
-///
-/// From `test_forall_empty_domain_is_vacuously_true`.
 #[test]
 fn a_forall_over_an_empty_domain_is_vacuously_true() {
     let tournament = |roster: &str| {
@@ -179,8 +171,6 @@ fn a_forall_over_an_empty_domain_is_vacuously_true() {
 /// else; and a rule that puts `?q` in its head is refused at fire time with a
 /// message that names `?q` as unbound *while showing `?p` bound*. A leaked
 /// binding would satisfy that head instead of failing.
-///
-/// From `test_forall_bound_does_not_escape`.
 #[test]
 fn the_forall_bound_variable_does_not_escape_the_guard() {
     let tournament = |head: &str| {
@@ -232,9 +222,9 @@ fn the_forall_bound_variable_does_not_escape_the_guard() {
 /// **A `forall` whose bound variable never appears in its guard still
 /// compiles** — and this is a deliberate loss, not an oversight.
 ///
-/// Before P1.8 S1.5.9 the desugaring lived in `compile.py` and refused such a
-/// rule (`_var_in_ast`: "?bound must appear in the guard", because there is no
-/// domain to enumerate). `forall` is now an ordinary `(macro …)`, and macro
+/// Before P1.8 S1.5.9 the compiler desugared `forall` itself and refused such
+/// a rule ("?bound must appear in the guard", because there is no domain to
+/// enumerate). `forall` is now an ordinary `(macro …)`, and macro
 /// expansion does no per-macro validation, so the rejection left with the
 /// desugar. What is left is a rule that means something other than what its
 /// author wrote, and the two cells below show it *runs*: with no `(whatever …)`
@@ -242,8 +232,6 @@ fn the_forall_bound_variable_does_not_escape_the_guard() {
 /// is false and nothing fires; add one and it fires. A test that only checked
 /// "no error" would pass just as well against a rule silently dropped on the
 /// floor, which is why both cells are here.
-///
-/// From `test_forall_bound_not_in_guard_no_longer_rejected`.
 #[test]
 fn a_forall_whose_bound_var_is_absent_from_its_guard_still_compiles() {
     let bad_rule = |extra: &str| {
@@ -288,9 +276,6 @@ fn a_forall_whose_bound_var_is_absent_from_its_guard_still_compiles() {
 /// matches and `(r Y Z)` does not, and the fixture holds both facts so that a
 /// matcher which forgot the constraint would visibly derive `(self-loop Y)`
 /// as well.
-///
-/// From `test_neq_guard_prunes_self_loops` (whose name is a leftover — the
-/// rule it exercises carries no `neq`).
 #[test]
 fn a_repeated_variable_is_an_equality_constraint() {
     let run = saturate(
@@ -332,9 +317,6 @@ fn a_repeated_variable_is_an_equality_constraint() {
 /// match there too, but so would this — and the pair together only admits the
 /// stored reading. `(absent P)` is the explicit NAF operator, and it is a
 /// different premise.
-///
-/// From `test_not_premise_matches_stored_neg_fact` and
-/// `test_not_premise_does_not_match_without_stored_neg`.
 #[test]
 fn not_in_a_premise_is_stored_negation_not_negation_as_failure() {
     let see_neg = |evidence: &str| {
@@ -380,9 +362,7 @@ fn not_in_a_premise_is_stored_negation_not_negation_as_failure() {
 /// that flattened the argument to a name would let the rule match for the
 /// wrong reason.
 ///
-/// From `test_nested_fact_pattern_unifies_against_relational_arg` (Q40), which
-/// had to synthesise the nested `Fact` in Python; the surface language writes
-/// it directly.
+/// Q40; the surface language writes the nested fact directly.
 #[test]
 fn a_nested_pattern_binds_inside_the_nested_fact() {
     let run = saturate(
@@ -424,8 +404,6 @@ fn a_nested_pattern_binds_inside_the_nested_fact() {
 /// is not "two facts appeared" but "two facts appeared *from a rule the
 /// activator could reach*" — hence the firing's own rule name is checked
 /// against the name in the source, which is what `--events` and a trace print.
-///
-/// From `test_generic_multi_assert_now_works`.
 #[test]
 fn a_parameterised_rule_may_multi_assert() {
     let run = saturate(
@@ -472,8 +450,6 @@ fn a_parameterised_rule_may_multi_assert() {
 /// firings, reads each one's rule name, and checks that the two conclusions of
 /// an application **share a provenance**: one justification is what makes them
 /// one derivation step for the explainer and the trace.
-///
-/// From `test_or_match_and_assert_one_rule`.
 #[test]
 fn every_disjunct_emits_every_template() {
     let run = saturate(
@@ -532,9 +508,6 @@ fn every_disjunct_emits_every_template() {
 /// a partition: the two derived sets are disjoint and together cover every
 /// candidate binding. An `eq` that always failed, or one that ignored an
 /// argument, breaks that identity rather than merely shrinking a set.
-///
-/// From `test_eq_resolves_vars` and `test_neq_resolves_vars`, which called the
-/// registry's callable with a hand-built binding dict.
 #[test]
 fn eq_admits_exactly_the_bindings_neq_rejects() {
     let run = saturate(
@@ -587,8 +560,6 @@ fn eq_admits_exactly_the_bindings_neq_rejects() {
 /// `Atom` and an `Int` land as — a name and a number — and each rule is given a
 /// non-matching companion fact so that "fires for the right one" and "fires for
 /// everything" are distinguishable.
-///
-/// From `test_eq_resolves_literal_atom_and_int`.
 #[test]
 fn a_guard_argument_may_be_a_literal() {
     let run = saturate(
@@ -630,10 +601,6 @@ fn a_guard_argument_may_be_a_literal() {
 /// nothing at all; the third cell supplies the matching activator and shows the
 /// rule is otherwise perfectly able to fire, which is what stops the first two
 /// from passing for some unrelated reason.
-///
-/// From `test_symmetric_negative_no_activator`,
-/// `test_square_bwd_negative_no_activator` (the same claim) and
-/// `test_implies_negative_wrong_relation`.
 #[test]
 fn a_parametrised_rule_with_no_activator_is_dormant() {
     let program = |activator: &str| {

@@ -122,8 +122,8 @@ impl Lookahead {
                                 trail,
                                 premises: &[],
                             };
-                            // Defensive, as in ein.py: a malformed assert
-                            // template never kills a candidate.
+                            // Defensive: a malformed assert template never
+                            // kills a candidate.
                             let Ok(f) = build_fact(s.terms, plan, env, template) else {
                                 continue;
                             };

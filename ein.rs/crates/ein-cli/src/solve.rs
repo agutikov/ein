@@ -1,6 +1,6 @@
 //! `ein solve` — the one solver command.
 //!
-//! The Rust half of `ein/cli/solve.py`. The verdict is *read from the result*
+//! The verdict is *read from the result*
 //! (`k = 0 / 1 / >1`), never chosen by a flag, and every diagnostic is opt-in
 //! so the default output stays the answer and nothing else.
 
@@ -21,7 +21,7 @@ use crate::common::read_text_or_crash;
 use crate::factdump::{self, hypothesis_target_relations, print_final_state, print_unsat_core};
 use crate::printers::{self, Phases, TimingDumper};
 
-/// `_timed_load` — parse + build the KB, timing each phase.
+/// Parse + build the KB, timing each phase.
 ///
 /// Replaces the shared loader so `--timing` can split parse from kb-load
 /// without re-doing the work. `n_forms` counts the *parsed* top-level forms,
@@ -68,7 +68,7 @@ fn timed_load(
     }
 }
 
-/// `_resolved_config` — `kb.config` (or defaults) plus the CLI overrides.
+/// `kb.config` (or defaults) plus the CLI overrides.
 fn resolved_config(kb: &Kb, m: &ArgMatches, seed: Option<i64>) -> SolverConfig {
     let mut cfg = kb.program().config.clone().unwrap_or_default();
     if m.get_flag("no-lookahead") {
@@ -89,7 +89,7 @@ fn resolved_config(kb: &Kb, m: &ArgMatches, seed: Option<i64>) -> SolverConfig {
     cfg
 }
 
-/// The lifecycle dumper, chosen the way `_make_dumper` chooses it.
+/// The lifecycle dumper, chosen from the flags.
 ///
 /// `--verbose` wins and streams the live view — and because `ProgressDumper`
 /// captures `t0/t_root/t_end/root_facts` it *also* feeds `--timing`, so
@@ -191,12 +191,13 @@ fn make_dumper(m: &ArgMatches) -> Result<Chosen, (&'static str, String)> {
     Ok(Chosen::None(NoDumper))
 }
 
-/// `--shuffle` without `--seed`: `random.randrange(1, 2**31)`.
+/// `--shuffle` without `--seed`: a seed in `[1, 2³¹)`.
 ///
 /// A fresh seed each run, echoed on stderr — the value only permutes the
-/// traversal, and the verdict is shuffle-invariant, so the entropy source does
-/// not have to be CPython's. What *does* have to be CPython's is the
-/// permutation the seed drives, and that is `mt19937` (Q-M1a.5).
+/// traversal, and the verdict is shuffle-invariant, so the entropy source is
+/// not part of the contract. What *is* is the permutation the seed drives:
+/// MT19937 seeded from the seed's absolute value
+/// ([`defined_behaviour.md` §3.1](../../../../docs/kernel/defined_behaviour.md)).
 fn fresh_seed() -> i64 {
     use std::time::{SystemTime, UNIX_EPOCH};
     let nanos = SystemTime::now()
@@ -329,7 +330,7 @@ pub(crate) fn config_json(cfg: &SolverConfig) -> Vec<(&'static str, String)> {
     ]
 }
 
-/// `_events.start` — open the log and emit `run`.
+/// Open the log and emit `run`.
 ///
 /// Shared with `test`, which takes the same two flags for the same reason: a
 /// failing expectation is exactly when someone wants the stream.
@@ -384,7 +385,7 @@ pub(crate) fn artefact_failed(flag: &str, path: &str, e: impl std::fmt::Display)
     eprintln!("error: --{flag} {path}: {e}");
 }
 
-/// `_events.load` — what the loader built, in registry order.
+/// The `load` event — what the loader built, in registry order.
 pub(crate) fn events_load(events: &mut Events, terms: &Terms, kb: &Kb) {
     if !events.on() {
         return;
@@ -403,7 +404,7 @@ pub(crate) fn events_load(events: &mut Events, terms: &Terms, kb: &Kb) {
     });
 }
 
-/// `_events.verdict` — the answer plus every counter.
+/// The `verdict` event — the answer plus every counter.
 pub(crate) fn events_verdict(
     events: &mut Events,
     terms: &Terms,
@@ -421,7 +422,7 @@ pub(crate) fn events_verdict(
             core.sort();
         }
         // An open state's facts go in the same slot as a model's: a consumer
-        // diffing two engines compares fact sets, and an open state has one.
+        // diffing two runs compares fact sets, and an open state has one.
         // `type` is what tells it these were not called models — which is
         // exactly [`Verdict::states`]'s contract.
         models = v
@@ -505,7 +506,7 @@ fn models_form(m: &clap::ArgMatches) -> ModelsForm {
 /// T1a.7.5.1 owed: every `SolverConfig` field is printed by `--dump-config`
 /// and parsed from `(config …)`, so putting a thread count there would let a
 /// *puzzle file* set it — a `.ein` that reads differently on an 8-core machine
-/// than on a 4-core one, through a field the parity contract compares. Jobs is
+/// than on a 4-core one, through a field the KB-shape digest renders. Jobs is
 /// an execution knob; `SolverConfig` is the semantics.
 fn resolve_jobs(n: i64) -> usize {
     if n == 0 {
@@ -772,8 +773,8 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
     // Result-driven: the table reports k / verdict / query bindings / rendered
     // query facts / NL result — all text from puzzle templates, nothing
     // hardcoded here.
-    // `render_solution_table` is fallible for one reason: ein.py compiles the
-    // `:goal` pattern inside it, so a goal the compiler rejects ends the run
+    // `render_solution_table` is fallible for one reason: the `:goal` pattern
+    // is compiled inside it, so a goal the compiler rejects ends the run
     // *after* a successful solve — and only when there is a model to render.
     let table = match render_solution_table(
         &ast,

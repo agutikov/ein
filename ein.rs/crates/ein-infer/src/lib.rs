@@ -6,14 +6,12 @@
 //! [P1a.4](../../../../docs/history/m1a_rust/README.md#p1a4--search-layer) (the
 //! hypothesis loop above it).
 //!
-//! Everything here is a **port**, not a redesign: `ein.py` is the oracle, so
-//! the shape of a plan, the order of a firing sequence and the text of an
-//! error are all fixed by what the Python implementation does
-//! ([design/01](../../../../docs/history/m1a_rust/design/01_parity_contract.md)). What
-//! is free is the encoding, and that is where the whole win lives —
+//! The shape of a plan, the order of a firing sequence and the text of an
+//! error are all observable, and fixed: where no other page states one, it is
+//! [`docs/kernel/defined_behaviour.md`](../../../../docs/kernel/defined_behaviour.md)'s.
+//! What is free is the encoding, and that is where the cost lives —
 //! [design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §1 attributes 46 %
-//! of an exhaustive solve's self time to unification the data model made
-//! impossible to do quickly.
+//! of an exhaustive solve's self time to unification.
 
 #![forbid(unsafe_code)]
 

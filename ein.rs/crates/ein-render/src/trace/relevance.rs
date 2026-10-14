@@ -1,4 +1,4 @@
-//! Goal-relevant trace pruning — `ein.py`'s `trace/relevance.py`.
+//! Goal-relevant trace pruning.
 //!
 //! The full firing log is the engine's *complete saturation*: for zebra2, 560
 //! firings of which 517 merely re-derive facts already present and most of the

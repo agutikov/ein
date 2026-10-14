@@ -1,11 +1,11 @@
 ;;; Ein stdlib — `std.macro`: pattern-macro sugar (P1.8 S1.5.9 / A3).
 ;;;
-;;; **Canonical, package-shipped** module: the import resolver
-;;; (`kb.imports`) maps the logical name `std.macro` to THIS file under the
-;;; packaged stdlib root (`ein/stdlib/`).
+;;; **Canonical** module: the import resolver (`ein-ir`'s
+;;; `stdlib::resolve`) maps the logical name `std.macro` to THIS file under the
+;;; stdlib root (`stdlib/README.md` has the three steps).
 ;;;
-;;; `forall` and `unknown` used to be compile-time desugars baked into
-;;; inference/compile.py (as `forall`/`open`); since S1.5.9 they are ordinary
+;;; `forall` and `unknown` used to be compile-time desugars baked into the
+;;; compiler (as `forall`/`open`); since S1.5.9 they are ordinary
 ;;; ein-lang `(macro …)` declarations. Reach them three ways:
 ;;;     (import std.macro)            → `(std.macro.forall …)`
 ;;;     (import std.macro :as m)      → `(m.forall …)`

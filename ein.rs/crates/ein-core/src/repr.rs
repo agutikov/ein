@@ -1,50 +1,59 @@
-//! Python's `repr()`, for the four shapes ein.py's observable output leans on.
+//! `repr` — the textual form of a value, for the four shapes a fact argument
+//! can take: `str`, `int`, `tuple` and `Fact`.
 //!
-//! Several T3 sites sort or print `repr()` of a Python value —
-//! `canon.state_key`'s `key=repr`, the explanation tie-breaks, the DOT
-//! labels. ein.rs has no Python, so it needs a faithful renderer for exactly
-//! `str`, `int`, `tuple` and `Fact`
-//! ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §7).
+//! The canonical state key sorts by it, the explanation tie-breaks order by
+//! it and the DOT labels print it
+//! ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §7),
+//! so its bytes are observable. The format:
 //!
-//! The alternative — rewriting those `key=repr` sorts in ein.py as explicit
-//! comparators — was considered and rejected: it re-baselines existing goldens
-//! and edits M1 code for the port's convenience, which the milestone's
-//! non-goals forbid.
+//! - **str** — quoted in `'`, unless the body contains a `'` and no `"`, in
+//!   which case in `"` so that nothing needs escaping. The chosen quote and
+//!   `\` are backslash-escaped; tab, newline and carriage return are `\t`
+//!   `\n` `\r`; any other C0 control and DEL is `\xNN`; any other
+//!   non-printable code point — general category `Cc` `Cf` `Cs` `Co` `Cn`
+//!   `Zl` `Zp` `Zs`, ASCII space excepted (`printable.rs`) — is `\xNN` below
+//!   U+0100, `\uNNNN` below U+10000 and `\UNNNNNNNN` above, lower-case hex;
+//!   every other character is written as itself.
+//! - **int** — canonical decimal text ([`canonical_int`]).
+//! - **tuple** — `(a, b)`, items separated by `, `; one item is `(a,)` and
+//!   none is `()`.
+//! - **Fact** — `Fact(relation_name='p', args=('A',))`: the relation name as
+//!   a `str` and the args as a tuple, a nested fact recursively.
 //!
 //! Ints are carried as their **canonical decimal text**, not as an `i64`:
-//! Python's integers are unbounded and `INT: /-?[0-9]+/` accepts any width, so
-//! a fixed-width parse would reject values ein.py prints fine.
+//! `INT: /-?[0-9]+/` accepts any width, so a fixed-width parse would reject
+//! literals that load.
 
 use crate::printable::is_printable;
 
 /// The value shapes reachable from a fact argument. `Fact` is spelled out
 /// rather than referenced because [`crate`]'s fact store lands in
 /// [P1a.2](../../../../docs/history/m1a_rust/README.md#p1a2--kb-core); the renderer
-/// only ever needed the two fields that survive `repr=False`.
+/// only ever needed the relation name and the args.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum PyValue {
+pub enum ReprValue {
     Str(String),
     /// Canonical decimal text, sign included.
     Int(String),
-    Tuple(Vec<PyValue>),
+    Tuple(Vec<ReprValue>),
     Fact {
         relation_name: String,
-        args: Vec<PyValue>,
+        args: Vec<ReprValue>,
     },
 }
 
-/// `repr(value)`.
-pub fn repr(value: &PyValue) -> String {
+/// The `repr` of `value`.
+pub fn repr(value: &ReprValue) -> String {
     let mut out = String::new();
     write_repr(&mut out, value);
     out
 }
 
-fn write_repr(out: &mut String, value: &PyValue) {
+fn write_repr(out: &mut String, value: &ReprValue) {
     match value {
-        PyValue::Str(s) => out.push_str(&repr_str(s)),
-        PyValue::Int(i) => out.push_str(i),
-        PyValue::Tuple(items) => {
+        ReprValue::Str(s) => out.push_str(&repr_str(s)),
+        ReprValue::Int(i) => out.push_str(i),
+        ReprValue::Tuple(items) => {
             out.push('(');
             for (i, item) in items.iter().enumerate() {
                 if i > 0 {
@@ -59,24 +68,24 @@ fn write_repr(out: &mut String, value: &PyValue) {
             }
             out.push(')');
         }
-        PyValue::Fact {
+        ReprValue::Fact {
             relation_name,
             args,
         } => {
             out.push_str("Fact(relation_name=");
             out.push_str(&repr_str(relation_name));
             out.push_str(", args=");
-            write_repr(out, &PyValue::Tuple(args.clone()));
+            write_repr(out, &ReprValue::Tuple(args.clone()));
             out.push(')');
         }
     }
 }
 
-/// `repr(s)` for a `str`, following CPython's `unicode_repr`.
+/// The `repr` of a `str`.
 ///
 /// The quote is `'` unless the body contains a `'` and no `"`, in which case
-/// CPython switches to `"` to avoid escaping — so `"it's"` reprs as `"it's"`
-/// but a string with both quotes reprs as `'both \' and "'`.
+/// it switches to `"` to avoid escaping — so `"it's"` reprs as `"it's"` but a
+/// string with both quotes reprs as `'both \' and "'`.
 pub fn repr_str(s: &str) -> String {
     let quote = if s.contains('\'') && !s.contains('"') {
         '"'
@@ -115,15 +124,15 @@ pub fn repr_str(s: &str) -> String {
     out
 }
 
-/// Canonical decimal text for an integer — `str(int(text))`.
+/// Canonical decimal text for an integer literal: leading zeros dropped, and
+/// a `-` only in front of a non-zero value.
 ///
 /// `007` → `7`, `-007` → `-7`, `-0` → `0`. Done on the digits rather than
-/// through an integer type because `INT: /-?[0-9]+/` accepts any width and
-/// Python's `int` is unbounded; an `i64` parse would reject inputs ein.py
-/// accepts.
+/// through an integer type because `INT: /-?[0-9]+/` accepts any width; an
+/// `i64` parse would reject literals that load.
 ///
-/// Lives here rather than beside the lexer because it is the same question
-/// [`PyValue::Int`] answers — what Python would have printed — and because
+/// Lives here rather than beside the lexer because it is the text
+/// [`ReprValue::Int`] carries, and because
 /// [P1a.2](../../../../docs/history/m1a_rust/README.md#p1a2--kb-core)'s int pool
 /// stores exactly this form
 /// ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §3).
@@ -145,8 +154,8 @@ pub fn canonical_int(text: &str) -> String {
 mod tests {
     use super::*;
 
-    fn s(x: &str) -> PyValue {
-        PyValue::Str(x.to_string())
+    fn s(x: &str) -> ReprValue {
+        ReprValue::Str(x.to_string())
     }
 
     #[test]
@@ -158,7 +167,7 @@ mod tests {
     }
 
     #[test]
-    fn escapes_follow_cpython_not_rust() {
+    fn escapes_follow_the_repr_table_not_rusts_debug() {
         assert_eq!(repr_str("a\tb\nc\rd"), "'a\\tb\\nc\\rd'");
         assert_eq!(repr_str("\u{0}\u{1f}\u{7f}"), "'\\x00\\x1f\\x7f'");
         assert_eq!(repr_str("\u{a0}"), "'\\xa0'");
@@ -169,7 +178,7 @@ mod tests {
     }
 
     #[test]
-    fn canonical_int_matches_python_int_then_str() {
+    fn canonical_int_drops_leading_zeros_and_the_sign_of_zero() {
         for (input, want) in [
             ("0", "0"),
             ("007", "7"),
@@ -194,18 +203,18 @@ mod tests {
 
     #[test]
     fn a_one_tuple_keeps_its_comma() {
-        assert_eq!(repr(&PyValue::Tuple(vec![])), "()");
-        assert_eq!(repr(&PyValue::Tuple(vec![s("a")])), "('a',)");
-        assert_eq!(repr(&PyValue::Tuple(vec![s("a"), s("b")])), "('a', 'b')");
+        assert_eq!(repr(&ReprValue::Tuple(vec![])), "()");
+        assert_eq!(repr(&ReprValue::Tuple(vec![s("a")])), "('a',)");
+        assert_eq!(repr(&ReprValue::Tuple(vec![s("a"), s("b")])), "('a', 'b')");
         assert_eq!(
-            repr(&PyValue::Tuple(vec![PyValue::Int("-7".into()), s("b")])),
+            repr(&ReprValue::Tuple(vec![ReprValue::Int("-7".into()), s("b")])),
             "(-7, 'b')"
         );
     }
 
     #[test]
-    fn a_fact_reprs_as_its_dataclass_does() {
-        let inner = PyValue::Fact {
+    fn a_fact_reprs_as_its_relation_name_and_args() {
+        let inner = ReprValue::Fact {
             relation_name: "co-located".into(),
             args: vec![s("Norwegian"), s("House-2")],
         };
@@ -214,7 +223,7 @@ mod tests {
             "Fact(relation_name='co-located', args=('Norwegian', 'House-2'))"
         );
         // A nested fact is an ordinary arg — the relational-node duality.
-        let outer = PyValue::Fact {
+        let outer = ReprValue::Fact {
             relation_name: "hypothesis".into(),
             args: vec![inner],
         };

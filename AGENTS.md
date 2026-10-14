@@ -38,8 +38,8 @@ constrained-reasoning research.
   **Since M1d S1d.3.3 an `Ambiguity` also says whether its `k` is a count or a
   floor** — `exhausted = false` prints *`solutions (k) 5   (a lower bound — the
   search did not exhaust)`* and *"distinct complete models **found**"*, which
-  `Solution` had said as *"(not certified — pass --exhaustive)"* since ein.py
-  and the verdict that reports a model *set* had not. The same stage shipped
+  `Solution` already said as *"(not certified — pass --exhaustive)"* and the
+  verdict that reports a model *set* had not. The same stage shipped
   `ein solve --models key`, the set as its determining key
   ([the verdict](docs/history/m1d_satisfiability/the_verdict.md)). It also split
   two numbers that had always agreed: `verdict.k` counts *models* and
@@ -51,12 +51,11 @@ constrained-reasoning research.
   there is no `-n`), it **never solves a query that carries no `:expect`**, and
   its exit **1 means a claim is false** — which is why a load error there takes
   2, where `solve` gives it 1.
-  Since M1a S1a.10.6 two pages are new or renamed and worth knowing:
+  Two pages are worth knowing:
   [`defined_behaviour.md`](docs/kernel/defined_behaviour.md) — the thirteen
-  diagnostics, orderings and error strings whose only statement used to be a
-  Python source file, now normative; and `inference/implementation.md` +
-  `ir/02-data-model/03_implementation.md`, the module maps that were
-  `python_impl.md`. **Since M1e S1e.5.1 there is also a
+  diagnostics, orderings and error strings the engine defines normatively;
+  and `inference/implementation.md` + `ir/02-data-model/03_implementation.md`,
+  the module maps. **Since M1e S1e.5.1 there is also a
   [configuration reference](docs/kernel/configuration.md)** — the 17
   `(config …)` flags, the 61 CLI options, the eight `EIN_*` names the binary
   actually reads, the precedence between the three, and on every flag row a
@@ -94,7 +93,7 @@ constrained-reasoning research.
   by the decision `docs/history/README.md` records. **Do not rewrite a
   superseded page to match today's engine**: it is neither a record nor a
   specification afterwards, and `docs/history/m1a_rust/design/07` cites the
-  first of the three as the contract the port had to reproduce. The pass that
+  first of the three as the search layer's contract. The pass that
   keeps the other 38 honest is [README § Keeping this
   true](docs/kernel/README.md) — six checks, five of them `utils/doc_audit.py`
   and the sixth a shell, and the sixth is the one that found the most.
@@ -107,14 +106,7 @@ constrained-reasoning research.
   [`ein-cli/tests/embedding.rs`](ein.rs/crates/ein-cli/tests/embedding.rs) and
   a test in that file diffs the two, so `cargo test --workspace` keeps the
   page true — *edit the test, run it, paste; never edit the block by hand*.
-  The other five pages (`ein`/`ir`/`kb`/`inference`/`trace`, 1 019 lines) are
-  the **Python** embedding contract, filed as **history** with a 🏛 banner:
-  kept whole because a deferral is cheap to reverse only while the
-  specification survives it
-  ([Q-M1a.23](docs/history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
-  holds the three trip-wires). Do not "fix" them to match ein.rs — a page
-  rewritten to describe the current engine is neither history nor a
-  specification. Distinct from `docs/kernel/` (the IR *language*) and from the
+  Distinct from `docs/kernel/` (the IR *language*) and from the
   engine internals.
 - **`docs/install.md`** — the install page (M1a S1a.9.3): the two channels
   (a release binary, `cargo install --path`), what `ein --version`'s five
@@ -168,17 +160,13 @@ constrained-reasoning research.
   questions of which two are open on purpose.
   **`plans/m1c_external_validation/` is gone** — deleted 2026-08-24, the day it
   shipped (`git log --diff-filter=D -- plans/m1c_external_validation`).
-  The first and larger is [`m1a_rust/`](docs/history/m1a_rust/README.md), the Rust port
+  The first and larger is [`m1a_rust/`](docs/history/m1a_rust/README.md), the Rust engine
   (2026-08-17 → 2026-08-23): one README carrying all eleven phases and 53
-  stages, plus what is still *read* rather than merely intended — the eleven
+  stages, plus what is still *read* rather than merely intended — the
   [`design/`](docs/history/m1a_rust/design/README.md) contracts the crates cite
   as their specification, six
-  [`measurements/`](docs/history/m1a_rust/measurements/) documents whose
-  CPython and PyPy columns nothing can re-take, the
-  [divergence ledger](docs/history/m1a_rust/divergences.md), twenty-three
-  [questions](docs/history/m1a_rust/open_questions.md) (two still open on
-  purpose), the [oracle ledger](docs/history/m1a_rust/oracle_ledger.md) and the
-  [suite dispositions](docs/history/m1a_rust/suite_dispositions.md).
+  [`measurements/`](docs/history/m1a_rust/measurements/) documents, and the
+  [questions](docs/history/m1a_rust/open_questions.md).
   **`plans/m1a_rust/` is gone** — deleted 2026-08-23, 65 files and 13 950 lines
   of milestone, phase and stage documents, and it is in git history
   (`git log --diff-filter=D -- plans/m1a_rust`). The rule that put a document here rather than leaving it in
@@ -298,15 +286,13 @@ constrained-reasoning research.
   `EIN_CORPUS_SLOW=1` is 20 s of `cargo test` rather than four minutes;
   and **a run is dropped from a `runs` column only when it does not ask the
   fixture's question**, never for costing too much.
-- **`ein.rs/`** — the Rust port ([M1a](docs/history/m1a_rust/README.md)), a
-  drop-in replacement for `ein`, and since
-  [P1a.10](docs/history/m1a_rust/README.md#p1a10--one-implementation) the only
-  implementation. Two of its eight crates are dev-only: `ein-corpus` (the
-  manifest, the fixture helpers, the bench set) and `ein-parity` (the one
-  implementation of what counts as a derivation's *narration* rather than
-  its content — [design/01
-  §5](docs/history/m1a_rust/design/01_parity_contract.md#5-legitimate-divergences-the-normalisation-list);
-  `EIN_PARITY_STRICT=1` turns it off). The six that ship are `ein-core`
+- **`ein.rs/`** — the engine ([M1a](docs/history/m1a_rust/README.md)). Two of
+  its eight crates are dev-only: `ein-corpus` (the manifest, the fixture
+  helpers, the bench set) and `ein-narration` (the one definition of what
+  counts as a derivation's *narration* rather than its content: a fork resumes
+  root's saturation, so two runs can narrate different amounts of one
+  derivation and reach the same answer; `EIN_NARRATION_STRICT=1` turns the cut
+  off). The six that ship are `ein-core`
   (interning, `Value`/`FactId`, the layered COW KB, provenance), `ein-ir`
   (lex → parse → macros → imports → load), `ein-infer` (compile → match →
   saturate → the NAF boundary → the hypothesis loop; and since M1e S1e.3.3
@@ -332,34 +318,17 @@ constrained-reasoning research.
   extension; `ein solve x.einb` is byte-identical to `ein solve x.ein` apart
   from the path it echoes. Anything crossing a tool boundary is still `.ein`
   text or the event protocol's JSON.
-
-  **`ein.py/` was the oracle** until S1a.10.2 banked what only it proved, and
-  was deleted at S1a.10.5; what remains of that argument is the ledger, the
-  goldens under `tests/golden/from_ein_py/` — the last independent provenance
-  in the repo — the divergence list, and
-  [`docs/kernel/defined_behaviour.md`](docs/kernel/defined_behaviour.md), which
-  states what "whatever ein.py did" used to define.
-- **`utils/`** — **twenty-six scripts, all but one driving `ein.rs`** since M1a
-  [S1a.10.4](docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine),
-  which deleted the eleven that compared two engines or measured the Python
-  one, plus `corpus_cost.py` from
-  [S1a.9.0](docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced).
+- **`utils/`** — **twenty-six scripts, all but one driving `ein.rs`**.
   Every script that runs the engine names the binary — **`$EIN_BIN`** or
   `--bin` — defaulting to `ein.rs/target/release/ein`, except the three that
   want a build of their own (`fork_delta_verify.py` → `target-fd`,
   `spec_audit.py` → `target-sa`, `profile_ein_rs.py` → `--profile profiling`,
-  which it builds). **None takes an `--impl`**: a flag with one value invites
-  a reader to look for the operand that is gone.
+  which it builds).
   [`utils/README.md`](utils/README.md) is the catalogue — one line per script
-  in three groups (*renderers*, *checks*, **the M1a measurement set**), plus
-  the census of the eleven that went and what answers each one's question now.
-  Two things worth knowing without opening it: run every measurement through
+  in three groups (*renderers*, *checks*, **the M1a measurement set**). One
+  thing worth knowing without opening it: run every measurement through
   **`bench_env.sh`**, which prints the machine state the numbers were taken
-  under; and in
-  [`baseline.md`](docs/history/m1a_rust/measurements/baseline.md) /
-  [`scaling.md`](docs/history/m1a_rust/measurements/scaling.md) **the CPython
-  and PyPy columns are frozen constants**, because the instruments that
-  produced them left with the engine they measured. The nineteenth,
+  under. The nineteenth,
   **`stdlib_census.py`**, is [M1c](docs/history/m1c_external_validation/README.md)'s
   and the first check aimed at the *stdlib* rather than the engine: 77 rules
   parsed out of `stdlib/*.ein`, then every corpus entry × every declared
@@ -539,7 +508,7 @@ python3 utils/review_bundle.py                               # M1e2: build/revie
 
 **The seven `EIN_*` names in that block are the ones an agent needs, not the
 set.** The shipped binary reads **eight** (three of them only in a non-default
-build), the test harness reads ten more, `utils/` and the shell two — and nine
+build), the test harness reads ten more, `utils/` and the shell two — and six
 greppable `EIN_*` names are not environment variables at all, `EIN_RS` and
 `EIN_RENDER_LEVI` among them. The whole census, classified, with the 17
 `(config …)` flags and the 61 CLI options beside it and a *does it change the
@@ -743,11 +712,6 @@ The `ein` binary links `snmalloc` by default since S1a.6.2 (worth 8–16 % of a
 solve), so the build needs **`cmake` and a C++ compiler**;
 `cargo build --release -p ein-cli --no-default-features` builds against the
 system allocator and needs neither.
-
-**The parity harness is gone** (M1a S1a.10.3). `ein-conformance run --impl-a …
---impl-b … --tier T0…T3` ran two implementations over the corpus and diffed
-them; there is no second operand. What each tier proved and who owns it now is
-[the oracle ledger](docs/history/m1a_rust/oracle_ledger.md).
 
 ## Regenerating the knowledge graph
 

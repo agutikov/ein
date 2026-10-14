@@ -29,11 +29,9 @@ library right?*
 
 ## The thesis
 
-**Every check this repo had was relative.** The conformance tiers compared two
-engines; the goldens compare ein.rs to its own past; after
-[P1a.10](../m1a_rust/README.md#p1a10--one-implementation) the second engine is
-gone, so what was left compared ein.rs to yesterday's ein.rs. All of it answers
-*did this change?* None of it answers *is this right?*
+**Every check this repo had was relative.** The goldens compare ein.rs to its
+own past, so what there was compared ein.rs to yesterday's ein.rs. All of it
+answers *did this change?* None of it answers *is this right?*
 
 There are exactly two ways to answer the second question, and this milestone
 owned the first:
@@ -48,9 +46,9 @@ owned the first:
 
 The precedent was specific, recent and expensive. `disjunctive-prune`'s
 `(neq ?h_other ?h1)` guard was wrong for a year — through five phases of
-byte-exact parity — and what found it was an **independent enumeration** of a
-puzzle's models, written outside the engine on the day. Both engines agreed
-with each other the whole time, and agreement was all anything checked. P1c.1
+byte-exact goldens — and what found it was an **independent enumeration** of a
+puzzle's models, written outside the engine on the day. The goldens agreed
+with themselves the whole time, and agreement was all anything checked. P1c.1
 made that kind of check cheap for a *rule*; M10 makes it permanent for a
 *puzzle*.
 
@@ -119,7 +117,7 @@ duration is not.
 ### Three things the milestone found that it was not looking for
 
 - **The last-query-wins trap had never been sprung.** `from_ir.rs` silently
-  discarded every `(query …)` but the last, pinned in both engines by a named
+  discarded every `(query …)` but the last, pinned by a named
   test. S1c.1.2 made `Program.query` plural across 14 call sites — and **0 of
   128** corpus files had a second query to discard. A real trap, never hit.
 - **A stopped search cannot confirm a verdict.** The checker S1c.1.2 shipped
@@ -225,7 +223,7 @@ false, so a file carrying one is a test with no harness around it.
 | corpus files that relied on the last-query-wins discard | **0 of 128** |
 | goldens that moved | **0** — 188 golden lines added, all cells for new fixtures, none changed |
 | load-time refusals added | **5**, each with a `broken/load/` fixture: unknown keyword, malformed shape, unknown relation, omits the goal, not ground |
-| …and they are the **first ein.rs-only diagnostics** | which decided what [`defined_behaviour.md` §4](../../kernel/defined_behaviour.md) had left open: a message with no Python counterpart names **no exception class** |
+| …and they **name no exception class** | which decided what [`defined_behaviour.md` §4](../../kernel/defined_behaviour.md) had left open: a new message carries none |
 | the cost nobody predicted | an artefact flag names **one** path, so `--events` / `--trace` / `--json-summary` / `--dump-states` are refused (exit 2) on a file that asks more than one question |
 | tests added | **31** |
 
@@ -243,8 +241,7 @@ Expectations are **ground**: a `?var` or `_` in one is a load error, because an
 expectation is an answer and a pattern there would match whatever the engine
 happened to derive — a test that cannot fail.
 
-**Where the spec of record went.** The stage was written against
-`grammar.lark`, which left with `ein.py` at M1a S1a.10.5. Its successor is
+**Where the spec of record is.** The grammar of record is
 [`00_ebnf.md`](../../kernel/ir/03-ein-lang/00_ebnf.md), and it carries the form
 as **§4, what the grammar deliberately does not enforce**, because
 `KwPair ::= KEYWORD Value` already admits every shape `:expect` uses. The
@@ -273,7 +270,7 @@ Three things about it are decisions rather than implementation:
   checks 3 of 12 files and never enters `04_open.ein`, the entry the corpus
   marks as "a run nobody can finish is not coverage".
 - **1 means a claim is false, so a load error takes 2.** `solve` gives a load
-  error 1, because that is ein.py's; here 1 is taken, and a runner that cannot
+  error 1; here 1 is taken, and a runner that cannot
   tell a broken file from a false claim is the failure T1c.1.3.5 was written
   against. A selection that checked *nothing* is 2 as well — which is M1c's "a
   missing tool is reported, never skipped past" in the shape a test runner can
@@ -397,10 +394,8 @@ milestone's own `:expect` work**, and nothing anywhere would have said so.
 - The expectations are **checked in as `:expect`**, so an answer established
   anywhere survives the absence of whatever produced it. `ein test` needs
   nothing installed to re-check one.
-- **A missing tool is reported, never skipped past.**
-  [S1a.10.1](../m1a_rust/README.md#s1a101--bank-what-only-the-oracle-proves)
-  found 42 tests that started a Python process and skipped invisibly when one
-  would not start. A selection that checked nothing exits 2 and says so, and
+- **A missing tool is reported, never skipped past.** A selection that
+  checked nothing exits 2 and says so, and
   the gate's second assertion is the same rule applied to the directory.
 - The milestone's other half — every benchmark problem's answer confirmed by a
   system that is not Ein — is

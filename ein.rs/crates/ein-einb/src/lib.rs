@@ -4,9 +4,8 @@
 //!
 //! A loaded — and optionally saturated — KB on disk, in a form the engine
 //! opens with no import resolution, no macro expansion and no filesystem walk.
-//! Parse + load is 0.63 s of a 5.7 s CPython `zebra2` and stays the dominant
-//! fixed cost once the engine is fast; this is the section of that cost the
-//! container removes.
+//! Parse + load is a fixed cost every run pays before it saturates or
+//! searches; this is the section of that cost the container removes.
 //!
 //! **It is a private, versioned cache format, not an interchange format.**
 //! `.ein` text is still the only authoring format and the only thing anyone

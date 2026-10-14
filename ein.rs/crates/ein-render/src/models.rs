@@ -74,7 +74,7 @@ pub enum ModelsForm {
 /// pairs, which is NP-hard, and the corpus already holds the entry that shows
 /// it: `examples/branching/06_lookahead_on.ein` has 42 varying slots and 22
 /// models, its minimum key is **8**, and proving that no 7-set works costs
-/// 12 s in the census's Python — forty times its own solve. A representation
+/// 12 s in `utils/model_set_census.py` — forty times its own solve. A representation
 /// may not cost more than the answer it describes, so the search is bounded
 /// and the over-budget outcome is *the enumeration*.
 ///

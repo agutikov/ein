@@ -706,12 +706,7 @@ the phase since it only frees a name):
   [`06_reserved_names.md`](../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)
   § macro sugar, `07_stdlib_api.md`, `tests/README.md`'s idiom list, and
   AGENTS.md's `tests/` bullet.
-- Goldens: routine. The independent-provenance set
-  (`ein.rs/crates/{ein-ir,ein-render}/tests/golden/from_ein_py/`) was checked
-  2026-08-24 and holds only `zebra.golden`, `zebra2.golden`, one DOT view and
-  one trace — **no file in it mentions the probe or `04_open`**, so nothing
-  the rename touches has provenance to protect; `EIN_BLESS=1` re-banks the
-  engine-made shapes as usual.
+- Goldens: routine — `EIN_BLESS=1` re-banks them as usual.
 - **Ordering constraint**: the rename lands **before or together with** the
   reservation of `open` as the verdict head, never after — and between the
   two, bare `open` is briefly a free userspace name, so the window should

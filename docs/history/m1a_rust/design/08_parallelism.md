@@ -2,8 +2,8 @@
 
 **Settles:** where ein.rs uses multiple cores, and how each site keeps
 the sequential engine's observable behaviour.
-**Phase:** [P1a.7](../README.md#p1a7--parallelism) (after parity, after
-the single-threaded optimisation programme).
+**Phase:** [P1a.7](../README.md#p1a7--parallelism) (after the
+single-threaded optimisation programme).
 
 > **Two of the four levels are built. 2026-08-23.** Level 1 is `--jobs N` and
 > is **3.16–4.30× on 8 P-cores** with every counter and every rendered byte
@@ -20,15 +20,15 @@ the single-threaded optimisation programme).
 
 ## 1. The contract first
 
-Parallelism is the one part of the port that can break
-[01](01_parity_contract.md) by accident, because "same answer" and "same
-counters" are different promises. So the contract is explicit and
+Parallelism is the one part of the engine that can change its observable
+behaviour by accident, because "same answer" and "same counters" are
+different promises. So the contract is explicit and
 user-visible:
 
 | mode | flag | guarantees |
 |---|---|---|
-| **sequential** | `--jobs 1` (**default**) | T3 — byte-identical to ein.py. This is what the conformance harness runs. |
-| **deterministic parallel** | `--jobs N` | T3 as well: same verdict, same models, same dead set, **same counters**, same stdout. Only wall-clock differs. |
+| **sequential** | `--jobs 1` (**default**) | the computation every golden is taken under. |
+| **deterministic parallel** | `--jobs N` | byte-identical to `--jobs 1`: same verdict, same models, same dead set, **same counters**, same stdout. Only wall-clock differs. |
 | ~~**unordered parallel**~~ | ~~`--jobs N --unordered`~~ | **Declined 2026-08-23** — see below. |
 
 The default being `--jobs 1` is deliberate: a benchmark or a golden run
@@ -66,7 +66,7 @@ must never silently become a different computation.
 `Symbol` and `FactId` ids are assigned in first-seen order, and under
 parallelism that order is nondeterministic. Every observable sort must
 therefore be **content-based** — by name rank, by `Value` semantics, by
-`python_repr` — never by raw id. Identity uses (hash keys, set
+the rendered `repr` — never by raw id. Identity uses (hash keys, set
 membership, `state_key` equality) may use ids freely, because they never
 leak an order. This is the same rule [02](02_determinism_and_order.md)
 §3 and [03](03_data_model.md) §3 already state; parallelism is what makes
@@ -84,14 +84,13 @@ Root is never mutated by the entering itself (P1.21 R2), so the work is
 embarrassingly parallel.
 
 Except for one thing. The sequential loop **does** write to root
-mid-layer: `_handle_dead` calls `_emit_negated_fact_writeback`, which
-adds `(not h)` to root when a dead commitment's learned clause is a
+mid-layer: `handle_dead` adds `(not h)` to root when a dead commitment's learned clause is a
 singleton. A later entering in the same layer forks a root that now
 contains that negative — and can therefore die *pre*-saturation instead
 of *post*, or die at all.
 
 So a naive parallel layer changes `enterings_dead_pre` /
-`enterings_dead_post` — a T1 failure.
+`enterings_dead_post` — the counters move.
 
 > **Not built — decided 2026-08-22 at
 > [S1a.7.2](../README.md#s1a72--level-1-parallel-enterings) § The
@@ -166,12 +165,11 @@ store, where it prunes later candidate *generation*.
 
 At *L = 1*, and only there, that clause is a **unit**: `¬h_1`, which *is*
 a fact, and root gains `(not h_1)`. That is the writeback, and it is why
-both engines guard it on the **commitment's length** rather than on
-anything about the clause — `c.len() == 1` in `solve.rs`'s `handle_dead`,
-`len(c) == 1` in `_helpers.py`'s `_handle_dead`. Neither minimises a
-learned clause below the commitment (`learned_clause = frozenset(c)`), so
-"the learned clause is a singleton" and "the commitment is a singleton"
-are the same condition.
+the engine guards it on the **commitment's length** rather than on
+anything about the clause — `c.len() == 1` in `solve.rs`'s `handle_dead`.
+A learned clause is never minimised below the commitment (the clause *is*
+the commitment's set), so "the learned clause is a singleton" and "the
+commitment is a singleton" are the same condition.
 
 Nothing else adds a **fact** to root inside a layer: `try_commitment_set`
 is pure with respect to root (P1.21 R2) and only forks it; `complete`,
@@ -222,7 +220,8 @@ continuation recovers `kind` — a fork inconsistent at firing *n* is
 inconsistent at the fixpoint, and `W` only adds facts — but recovers
 `core` only where the fork ran to quiescence.
 [S1a.7.2](../README.md#s1a72--level-1-parallel-enterings) has to
-settle that interaction before `--jobs N` can claim T1.
+settle that interaction before `--jobs N` can claim the sequential run's
+counters.
 
 Case 3 is exact because the KB is append-only and saturation is a least
 fixpoint: `sat(base ∪ W ∪ c) = sat(sat(base ∪ c) ∪ W)`. The engine
@@ -289,7 +288,7 @@ argument.
 > corpus entries, pinned in
 > [`refutation_under_absent.rs`](../../../../ein.rs/crates/ein-infer/tests/refutation_under_absent.rs).
 > Every claim in this section holds as written on a program without that
-> shape, which is every puzzle the port was measured on. The containment is a
+> shape, which is every puzzle the engine was measured on. The containment is a
 > diagnostic (M1e S1e.2.3); the fix is
 > [F18](../../../../plans/followups/f18_world_aware_negatives.md); whether the
 > shape stays legal is
@@ -442,10 +441,8 @@ Three readings, and the third was not expected:
 
 The other half of what a parallel layer needs is that the *order* of the
 candidates does not reach the answer. That is not new — it is what `--shuffle`
-has always claimed (Q-M1a.5) — but the claim was only ever exercised through
-the traversal-parity sweep, which compares two runs of the *same* engine
-against ein.py. `the_answer_does_not_depend_on_the_entering_order` asserts the
-invariant directly: `lex`, `score-sum` and two seeded shuffles, same verdict
+has always claimed ([defined_behaviour.md §3.1](../../../kernel/defined_behaviour.md#31---shuffle-is-the-mersenne-twister-exactly)) — but nothing asserted it directly until
+`the_answer_does_not_depend_on_the_entering_order`: `lex`, `score-sum` and two seeded shuffles, same verdict
 and same model set.
 
 Order-invariance and integration-invariance **compose**, which is the property
@@ -469,7 +466,7 @@ finish and integrates at the barrier.
 > it is `tasks per pass ≥ jobs` — the two zebras reach 10.9 and 45.7 — not a
 > share threshold.
 
-`_enqueue_pass` is **read-only over the KB**: it runs matchers and pushes
+`enqueue_pass` is **read-only over the KB**: it runs matchers and pushes
 onto the queue. Two parallel shapes:
 
 - **full pass** (cold start, `is_stalled`) — one task per plan;
@@ -480,7 +477,7 @@ Determinism comes from the merge, not the execution: each task collects
 its matches into its own buffer, buffers are concatenated in the
 canonical order (`cache` order for a full pass; delta-fact order then
 plan order for a delta pass), and **tiebreakers are assigned during the
-merge**. Since `_tiebreaker` is just a monotone counter, assigning it
+merge**. Since the tiebreaker is just a monotone counter, assigning it
 after the fact reproduces the sequential sequence exactly.
 
 Worth doing only above a work threshold (root saturation of a large KB);
@@ -490,8 +487,8 @@ a threshold changes nothing observable, so it can be tuned freely.
 
 > **Declined 2026-08-23** ([S1a.7.3](../README.md#s1a73--level-3-the-parallel-boundary-round),
 > [scaling.md §9](../measurements/scaling.md#9-levels-2-and-3-measured-before-they-are-built)).
-> The "72 % of an exhaustive solve" below is ein.py's number and is the part
-> that did not survive: `admit_from_boundary` is **0.0 %** of three of the four
+> The premise below — that the round is the bulk of an exhaustive solve — is
+> the part that did not survive: `admit_from_boundary` is **0.0 %** of three of the four
 > workloads in P1a.7's measurement set, which never park a single candidate at
 > all, and **3.2 %** of the fourth, where a round judges a **median of one**.
 > The chunk of `jobs` this section's last paragraph describes would hold one
@@ -500,9 +497,8 @@ a threshold changes nothing observable, so it can be tuned freely.
 > watched relations moved. The predicate that would re-open it is "a round has
 > `jobs` candidates to judge", not "the boundary is expensive".
 
-`_admit_from_boundary` evaluates parked candidates' guards against a
-quiesced world — read-only, and 72 % of an exhaustive solve's time
-([06](06_saturation.md) §2). Parallel shape: evaluate the guards of all
+`admit_from_boundary` evaluates parked candidates' guards against a
+quiesced world — read-only ([06](06_saturation.md) §2). Parallel shape: evaluate the guards of all
 *dirty* parked candidates concurrently, then scan the results in
 priority/FIFO order and admit the first whose guards pass.
 
@@ -521,7 +517,7 @@ the first chunk that contains a pass.
 
 ## 5. Level 4 — process level
 
-Independent work with no shared mutable state: the conformance corpus
+Independent work with no shared mutable state: the corpus
 runner, the fuzzer, `feature_matrix`, and any embedder that drives
 several engines at once — [M20](../../../../plans/m20_gui/README.md)'s GUI holding
 one session per open puzzle is the concrete one. Level 4 needs nothing
@@ -547,11 +543,11 @@ from the engine beyond `Send + Sync` on the shared `Arc<KbCore>` /
 | `FactStore` | ~~append-only; a lock-free segmented vec (`boxcar`-style) plus a sharded `RwLock` on the lookup map~~ | **`&FactStore`, and workers do not append.** A search assigns 41 to 417 fact ids against 5.8–26 M borrow-returning reads — and counted *per entering*, which is what a worker runs, **four of six workloads have none at all**, the worst has 7 of 111, and every one is in the head of its layer. `intern` takes `&mut self`, so a worker holding `&FactStore` cannot call it and the type system is the enforcement; an entering that would have appended is re-run on the committing thread. Fact-id assignment therefore stays deterministic under `--jobs N`, which the segmented vec would not have been ([T1a.7.1.2](../README.md#s1a71--making-the-shared-state-sync)) |
 | **`ProvArena`** — *missing from this table until 2026-08-22* | — | **per-worker; nothing shared — and built the same day.** It is the one with a real write rate — 100 % of enterings push a record, `features/01 -e` **2 135 093 of them / 205 MB** — and it is barely read (15 reads against those 2.1 M), so a second arena costs nothing. **Almost none of it survives**: an alive entering's fork is dropped after the `complete()` probe and the dumper hook, a dying one keeps only `FactId`s, and the sole retainer is `record_node`'s snapshot of a solution — so `features/01 -e` ends with **nothing** referencing any of the 2 135 093. What shipped is a **fork region** the search opens per entering and discards when the fork dies, with `Kb::promote_provenance` copying out what a solution keeps; a worker's arena is that region, so nothing is shared and there is no protocol to model. Sequentially it is already worth **684–708 MB → 85–91 MB** of peak RSS on `features/01 -e`, and 1.97 s → 1.68 s. Asserted in both directions: the region's base is monotone, so a stale id panics in *every* build rather than aliasing a live record (`ProvArena::get`), and `ein-infer/tests/provenance.rs` asks the holding-side question of root **and of every recorded solution**, which is where promotion could be incomplete. [T1a.7.1.7](../README.md#s1a71--making-the-shared-state-sync) |
 | `PlanMemo` | append-only, keyed by `(rule, activator)`; `RwLock` with double-checked insert (compiles are rare — see [06](06_saturation.md) § Win A) | ✅ shipped as `Arc<Mutex<PlanMemo>>` at [S1a.6.8](../README.md#s1a68--the-compile-cache-and-the-extent-counts), for an unrelated reason |
-| `_nogoods` on root | written only at commit time, on the committing thread — ~~no sharing needed~~ | **shipped shared** (`Arc<RwLock<Nogoods>>`), because it is a `Kb` field and `Kb::branch` clones the `Arc`. The strategy column is right — every access is on the committing thread and **no branch ever reads the store** — and that was the trouble: it had never been written down, so a reader of `kb.rs` saw shared mutable state under a fan-out and nothing saying why it is safe. That is the review's **Q1**. Written out and, per [`standard_of_proof.md`](../../../kernel/standard_of_proof.md) Rule 2, *enforced*: the store is **frozen** for the window in which workers exist and a write from any thread panics — [02](02_determinism_and_order.md) §6a, M1e S1e.1.2 |
+| the no-good store on root | written only at commit time, on the committing thread — ~~no sharing needed~~ | **shipped shared** (`Arc<RwLock<Nogoods>>`), because it is a `Kb` field and `Kb::branch` clones the `Arc`. The strategy column is right — every access is on the committing thread and **no branch ever reads the store** — and that was the trouble: it had never been written down, so a reader of `kb.rs` saw shared mutable state under a fan-out and nothing saying why it is safe. That is the review's **Q1**. Written out and, per [`standard_of_proof.md`](../../../kernel/standard_of_proof.md) Rule 2, *enforced*: the store is **frozen** for the window in which workers exist and a write from any thread panics — [02](02_determinism_and_order.md) §6a, M1e S1e.1.2 |
 | stats | accumulated at commit time — no atomics, no contention | — |
 
 Note what is *not* on this list: no shared mutable KB, no shared queue,
-no shared `_seen`/`_fired`. Each fork owns its saturator state
+no shared `seen`/`fired`. Each fork owns its saturator state
 outright. That is what makes the design safe rather than merely fast.
 
 **And one thing that was on it and should not have been.** The event sink was
@@ -586,7 +582,7 @@ refuses, and `ein-infer/tests/shareable.rs` asserts both halves.
 
 ## 8. Acceptance for this design
 
-- `--jobs {1,2,4,8,16}` on the whole corpus: T3-identical output for
+- `--jobs {1,2,4,8,16}` on the whole corpus: byte-identical output for
   every N (with `--timing`/wall-clock normalised).
 - A stress test: 10 000 randomised `--jobs 8` runs of the corpus, diffed
   against the `--jobs 1` run, with no divergence.

@@ -1,11 +1,9 @@
 //! The typed views over the graph: relations, rules, macros, and the
 //! insertion-ordered registry they live in.
 //!
-//! ein.py's entities carry a `_kb` back-pointer so that `Relation.facts` and
-//! friends can answer without an argument. This port has none — an accessor
-//! takes `&Kb` — which is why the caveat `store.py` documents (a shared
-//! entity's back-pointer sees the *root*'s facts, so `Relation.facts` on a
-//! fork answers for the wrong KB) has nothing to reproduce.
+//! An entity carries no back-pointer to its KB — an accessor takes `&Kb` — so
+//! an entity shared between a root and its forks cannot answer a question
+//! about one with the other's facts.
 //!
 //! Since S1.7.23 there are no `Type` / `Instance` entities: the kernel imposes
 //! no type system, so a puzzle's inheritance forest is just `is-a` facts.
@@ -22,9 +20,9 @@ use rustc_hash::FxHashMap;
 /// ([design/12](../../../../docs/history/m1a_rust/design/12_toolchain_and_layout.md) §1
 /// — everything depends on `ein-core`, and `ein-core` depends on nothing).
 ///
-/// In practice almost every one of these is `None`: ein.py's `_topform` builds
-/// its `SForm` without a `loc`, so a loader error that interpolates
-/// `at {form.loc}` prints `at None` — Q-M1a.6, reproduced rather than fixed.
+/// In practice almost every one of these is `None`: the frontend builds a
+/// top-level form without a position, so a loader error that interpolates the
+/// form's location prints `at None` (`defined_behaviour.md` § 1.5).
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Loc {
     pub file: u32,
@@ -51,7 +49,7 @@ pub enum NameCategory {
 }
 
 impl NameCategory {
-    /// The spelling ein.py uses — a `Literal["object", "relation", "rule"]`.
+    /// The spelling messages and dumps use — `object`, `relation` or `rule`.
     pub fn as_str(self) -> &'static str {
         match self {
             NameCategory::Object => "object",
@@ -78,12 +76,12 @@ pub struct Relation {
     pub name: Symbol,
     pub signature: Box<[Symbol]>,
     pub declared: bool,
-    /// The `:why` render template. `None` is ein.py's `""`.
+    /// The `:why` render template. `None` is the empty template.
     pub why: Option<Symbol>,
     pub loc: Option<Loc>,
 }
 
-/// The structural view of a `:match` / `:assert` clause — `kb/pattern.py`.
+/// The structural view of a `:match` / `:assert` clause.
 ///
 /// No matching semantics: `expr` is the clause as parsed, and the two lists
 /// are the pre-computed views the KB itself needs (`relation_names` feeds
@@ -132,9 +130,8 @@ pub struct Query {
     pub kw_pairs: Box<[ExprRef]>,
 }
 
-/// An insertion-ordered map from [`Symbol`] to `V` — a Python `dict`, whose
-/// order is a language guarantee and is observable through
-/// `hypgen._raw_candidates` and `Engine.compile_all`
+/// An insertion-ordered map from [`Symbol`] to `V`, whose order is observable
+/// through hypgen's `raw_candidates` and `Engine::compile_all`
 /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §2).
 #[derive(Clone, Debug)]
 pub struct Registry<V> {

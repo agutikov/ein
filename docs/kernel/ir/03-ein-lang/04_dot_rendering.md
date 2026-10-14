@@ -338,16 +338,9 @@ digraph reasoning_edge_example {
 
 ### How to ask for this view
 
-> The recipe this section held until M1e2 was the Python engine's —
-> `KnowledgeBase.to_dot(…)` through a `python3 -c`, because `ein kb dot` had
-> been removed in P1.11 — and it left with `ein.py` at M1a
-> [S1a.10.5](../../../history/m1a_rust/README.md#s1a105--the-removal). The
-> schema this chapter specifies was never superseded: it is what the live
-> renderer emits, and below is how to ask for it.
-
 The renderer is [`ein_render::kb_dot`](../../../../ein.rs/crates/ein-render/src/kb_dot.rs)
-(`to_dot(kb, terms, &KbDotOpts)`, with `ColourBy` and the `include_*` fields
-the keyword arguments used to be). It is exercised over the whole corpus by
+(`to_dot(kb, terms, &KbDotOpts)`, with `ColourBy` and the `include_*`
+fields). It is exercised over the whole corpus by
 [`dot_wellformed.rs`](../../../../ein.rs/crates/ein-render/tests/dot_wellformed.rs)
 and digested in six views by `shape.rs`. **Since M1e2 S1e2.1.3 it has a
 door again**, the one `ein kb dot` was until P1.11:

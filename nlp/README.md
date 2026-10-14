@@ -12,7 +12,7 @@ made it one arm of the representation ablation; nothing about the experiment
 changed.
 
 > **The `link-grammar` submodule was deinitialised at M1a
-> [S1a.10.5](../docs/history/m1a_rust/README.md#s1a105--the-removal).**
+> [S1a.10.5](../docs/history/m1a_rust/README.md#s1a105--the-grammar-as-ebnf).**
 > It pointed at `opencog/link-grammar` and was never checked out, so what it
 > cost was a `git clone --recurse-submodules` fetching it for an experiment
 > that has not run. S2.6.4 re-adds it in one command when it does — and its

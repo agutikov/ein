@@ -1,4 +1,4 @@
-//! Import resolution — `kb/imports.py`, flatten-then-load (A1 D8).
+//! Import resolution — flatten-then-load (A1 D8).
 //!
 //! `(import M [:as A | :symbols (S…)])` is resolved at the **form** level,
 //! *before* the loader runs: each import is replaced in place by the module's
@@ -35,7 +35,7 @@ const STDLIB_ALIAS: &str = "std";
 /// The four heads that *bind* a name.
 const DECLARATORS: [&str; 4] = ["rule", "hrule", "relation", "macro"];
 
-/// A load-time failure. The message is `KBLoadError`'s, byte for byte — the
+/// A load-time failure. The message is output, byte for byte — the
 /// `examples/broken/load/*.expected` fixtures are the gate.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LoadError(pub String);
@@ -50,7 +50,7 @@ impl std::error::Error for LoadError {}
 
 impl From<ParseError> for LoadError {
     /// A module that does not parse surfaces as its own parse error; the
-    /// loader lets `IRParseError` through rather than wrapping it.
+    /// loader lets it through rather than wrapping it.
     fn from(e: ParseError) -> Self {
         LoadError(e.to_string())
     }
@@ -120,8 +120,7 @@ impl Resolver {
     /// from the module through the resolution chain rather than hardcoded —
     /// so the S1.8a.f20 guard consults the library that is actually loaded.
     ///
-    /// Empty when `std.macro` is unreadable: degrade to no check, as ein.py
-    /// does.
+    /// Empty when `std.macro` is unreadable: degrade to no check.
     pub fn stdlib_macro_names(&self) -> Vec<String> {
         let Some(text) = self.read(&self.stdlib_root(), &["macro"]).1 else {
             return Vec::new();
@@ -141,11 +140,11 @@ impl Resolver {
         out
     }
 
-    /// `(root.joinpath(*rel).with_suffix(".ein"), its text if it is a file)`.
+    /// `(root/rel….ein, its text if it is a file)`.
     ///
-    /// The display path is what "module not found at …" names, so it is built
-    /// the way `pathlib` builds it: empty segments dropped, then the final
-    /// component's extension replaced.
+    /// The display path is what "module not found at …" names, so how it is
+    /// built is observable: empty segments dropped, then the final component's
+    /// extension replaced with `.ein`.
     fn read(&self, root: &Root, rel: &[&str]) -> (String, Option<String>) {
         match root {
             Root::Dir(dir) => {
@@ -164,8 +163,6 @@ impl Resolver {
             Root::Embedded => {
                 let joined: Vec<&str> = rel.iter().copied().filter(|s| !s.is_empty()).collect();
                 let name = format!("{}.ein", joined.join("/"));
-                // ein.py has no embedded case, so this path's *message* has no
-                // oracle; the harness always sets `$EIN_STDLIB`.
                 (format!("<embedded>/{name}"), self.stdlib.read(&name))
             }
         }
@@ -342,8 +339,9 @@ impl Resolver {
     ///
     /// Without the activation pass this would silently drop an entire
     /// activator-driven library and leave a file that no longer solves. The
-    /// surviving set is observable through `len(engine.cache)` and through
-    /// firing order, so it is a T1/T2 surface, not a cosmetic one.
+    /// surviving set is observable through the compile cache's size and
+    /// through firing order, so it is an observable surface, not a cosmetic
+    /// one.
     pub fn resolve_and_minimize(
         &self,
         ast: &mut Ast,
@@ -366,8 +364,7 @@ impl Resolver {
             }
         }
 
-        // Imported declarations, first position wins, last body wins — a
-        // Python dict comprehension's assignment semantics.
+        // Imported declarations: first position wins, last body wins.
         let mut imported_decls: Vec<(String, NodeId)> = Vec::new();
         let mut index: BTreeMap<String, usize> = BTreeMap::new();
         for &(f, imp) in &tagged {
@@ -475,7 +472,7 @@ fn import_spec(ast: &Ast, form: NodeId) -> Result<ImportSpec, LoadError> {
             "malformed (import …) — missing module name at {loc}"
         )));
     };
-    // Last wins on a repeated key — a Python dict comprehension's semantics.
+    // Last wins on a repeated key.
     let mut kws: BTreeMap<String, NodeId> = BTreeMap::new();
     for &a in &args {
         if let Node::KwPair { key, value } = ast.node(a)
@@ -665,8 +662,8 @@ fn select(
     }
     let mut keep: BTreeSet<String> = BTreeSet::new();
     let mut work: Vec<String> = symbols.to_vec();
-    // `wanted` is a set in ein.py, so a repeated symbol is one item; the
-    // closure makes that immaterial, but the stack starts the same way.
+    // A repeated symbol is one item; the closure makes that immaterial, but
+    // the stack starts deduplicated.
     work.sort();
     work.dedup();
     while let Some(n) = work.pop() {

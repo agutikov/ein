@@ -1,5 +1,4 @@
-//! The commitment-lattice / proof-DAG renderer — `ein.py`'s
-//! `render/lattice_dag.py`.
+//! The commitment-lattice / proof-DAG renderer.
 //!
 //! The engine produces no ordered search tree; it produces a **set-indexed
 //! commitment lattice**. Each visited commitment is a set of hypothesis facts;
@@ -8,16 +7,15 @@
 //! DAG — the analogue of the old tree view, but a partial order. Verdict
 //! colours: alive grey, dead red, solution green.
 //!
-//! **On `view = "full"`.** ein.py's full view reads `LatticeProof.kb_index` —
-//! the per-commitment `SetNode` DAG — and falls back to the solution frontier,
-//! with a note, when it is empty. It is *always* empty: `solve`'s own proof
-//! packaging never writes it (only a DAG builder would, via `_record_setnode`,
-//! and nothing in the shipping path calls one), which is what the `render
-//! lattice --view full` help text tells the user. So the fallback is not an
-//! edge case here, it is the behaviour; this port has no `kb_index` and emits
-//! the note, which is byte-for-byte what ein.py emits.
+//! **On `view = "full"`.** The full view draws the per-commitment `SetNode`
+//! DAG, and falls back to the solution frontier, with a note, when there is
+//! none. There is *never* one: `solve`'s proof packaging records no
+//! per-commitment DAG — `LatticeProof` has no field to hold it — which is what
+//! the `render lattice --view full` help text tells the user. So the fallback
+//! is not an edge case here, it is the behaviour, and the view emits the
+//! note.
 
-use ein_core::pyrepr::{PyValue, repr};
+use ein_core::repr::{ReprValue, repr};
 use ein_core::{FactId, Terms};
 use ein_infer::solve::LatticeProof;
 
@@ -28,18 +26,16 @@ use crate::dump::snapshot::LatticeSnapshot;
 /// and the clause `ein render lattice --view full`'s help text carries.
 ///
 /// It read *"no stored lattice (store_lattice=False) — showing the solution
-/// frontier instead"* until M1e S1e.4.6 (`CD-L3`), byte-for-byte what ein.py
-/// emitted. That sentence is **false twice over**, not merely stale in an
-/// alien spelling: every caller that can reach this line sets `store_lattice =
+/// frontier instead"* until M1e S1e.4.6 (`CD-L3`). That sentence was **false
+/// twice over**: every caller that can reach this line sets `store_lattice =
 /// true` (`ein-cli`'s `cmd_lattice`, and both of `shape.rs`'s), and
 /// `LatticeProof` has no `kb_index` field for any setting of that flag to
 /// populate — so no value of `store_lattice` changes the outcome. The real
 /// reason is the one `--view`'s own help gives, and the two surfaces a user
 /// meets in one session now say the same thing.
 ///
-/// Keeping ein.py's bytes was an argument whose premise left with the oracle
-/// at S1a.10.5. What it cost to stop is a **named re-bless**, priced before it
-/// was taken: 271 digest rows of `corpus_shapes.md5` and one line of
+/// What the fix cost is a **named re-bless**, priced before it was taken:
+/// 271 digest rows of `corpus_shapes.md5` and one line of
 /// `dump_snapshot_subset-pruned.txt`, every one of them this single line.
 pub const FULL_VIEW_FALLBACK: &str =
     "solve stores no per-commitment SetNode DAG — showing the solution frontier instead";
@@ -99,9 +95,9 @@ struct Cell {
     rep: Vec<FactId>,
     /// `repr(rep)`, computed **by the caller**, because the two sources spell
     /// it differently and the difference is load-bearing: a proof's
-    /// commitments carry raw `Fact.args`, where a nested fact reprs as
-    /// `Fact(relation_name=…)`; a snapshot's state keys carry
-    /// `canon._hashable_args`, where the same fact reprs as a tuple. The order
+    /// commitments carry raw fact arguments, where a nested fact reprs as
+    /// `Fact(relation_name=…)`; a snapshot's state keys carry canonical
+    /// arguments, where the same fact reprs as a tuple. The order
     /// of the whole diagram follows this string.
     rep_repr: String,
     commitments: Vec<Vec<FactId>>,
@@ -118,8 +114,8 @@ fn make_cell(
     unsat_core: Vec<FactId>,
     learned_clause: Vec<FactId>,
 ) -> Cell {
-    // `min(commits, key=lambda c: (len(c), c))` — every construction site
-    // passes exactly one commitment, so the representative is that one.
+    // The representative is the shortest commitment, ties by order — every
+    // construction site passes exactly one, so it is that one.
     let rep = commitments.first().cloned().unwrap_or_default();
     let layer = rep.len();
     Cell {
@@ -138,17 +134,17 @@ fn make_cell(
 /// `repr`, not the raw tuple, because a representative can hold mixed-argument
 /// facts, which have no native total order (P1.21 R1).
 pub fn commitment_repr(terms: &Terms, commitment: &[FactId]) -> String {
-    let items: Vec<PyValue> = commitment
+    let items: Vec<ReprValue> = commitment
         .iter()
         .map(|f| {
             let (rel, args) = terms.fact(*f);
-            PyValue::Tuple(vec![
-                PyValue::Str(terms.sym(rel).to_string()),
-                PyValue::Tuple(args.iter().map(|a| terms.py_value(*a)).collect()),
+            ReprValue::Tuple(vec![
+                ReprValue::Str(terms.sym(rel).to_string()),
+                ReprValue::Tuple(args.iter().map(|a| terms.repr_value(*a)).collect()),
             ])
         })
         .collect();
-    repr(&PyValue::Tuple(items))
+    repr(&ReprValue::Tuple(items))
 }
 
 fn snapshot_cells(terms: &Terms, snap: &LatticeSnapshot, view: LatticeView) -> (Vec<Cell>, bool) {
@@ -235,7 +231,7 @@ fn dedup(cells: Vec<Cell>) -> Vec<Cell> {
                         commitments.push(cm.clone());
                     }
                 }
-                // `prev.x or c.x` — an empty set is falsy, so it falls through.
+                // The earlier core wins unless it is empty.
                 let unsat_core = if prev.unsat_core.is_empty() {
                     c.unsat_core.clone()
                 } else {

@@ -160,8 +160,8 @@ fn documented_kinds() -> BTreeSet<String> {
 /// Every kind the emitters produce has a row on the page.
 ///
 /// This is the direction that failed in M1e: `warn` had been emitted since
-/// S1e.2.3 and named only in § Comparison's parity spine, which is a list of
-/// what is *diffed*, not a schema.
+/// S1e.2.3 and named only in § Comparison, which is a list of what is
+/// *diffed*, not a schema.
 #[test]
 fn every_emitted_kind_has_a_row() {
     let missing: Vec<_> = emitted_kinds()

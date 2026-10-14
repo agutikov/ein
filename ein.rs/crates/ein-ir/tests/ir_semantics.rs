@@ -1,21 +1,13 @@
-//! The IR contract — what ein-lang *is*, asserted without an oracle.
+//! The IR contract — what ein-lang *is*, written down as answers.
 //!
 //! Stage **T1a.10.2.2** of
-//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite).
-//! This file replaces the semantics half of three Python test files, which are
-//! deleted with `ein.py`:
+//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--the-behaviour-suite).
+//! Three surfaces: the grammar (what is accepted and what is rejected),
+//! lowering (the node a text becomes, and the `dump ∘ parse` round trip), and
+//! macros (expansion, and the names a macro may not take).
 //!
-//! | Python original | what it owned |
-//! |---|---|
-//! | `ein.py/tests/test_ir_parser.py` | the grammar's accept/reject surface |
-//! | `ein.py/tests/test_ir_ast.py` | lowering + the `dump ∘ parse` round trip |
-//! | `ein.py/tests/ir/test_macros.py` | expansion, and the names a macro may not take |
-//!
-//! Its sibling `parse_parity.rs` / `dump_parity.rs` asked ein.py the same
-//! questions and diffed the answers; those go when the oracle goes. What is
-//! written down here is the *answer*, blessed against ein.py while it was
-//! still there — so the language survives the deletion of the implementation
-//! that defined it.
+//! What is written down here is the *answer*, so the language is stated as
+//! data rather than as whatever the parser happens to do.
 //!
 //! Nothing here reaches into a parser internal. Everything is stated as
 //! "this text parses / does not", "the node at this position is *this* kind",
@@ -327,15 +319,12 @@ fn a_wildcard_or_var_head_survives_lowering_and_a_round_trip() {
 /// `roundtrip-over-unreached-syntax` — `parse ∘ dump ∘ parse == parse`, and
 /// `dump ∘ parse` is a text fixed point, over every shape the language admits.
 ///
-/// `dump_parity.rs` already runs this property over the corpus, but the corpus
+/// `dump_goldens.rs` already runs this property over the corpus, but the corpus
 /// is a *puzzle collection*: it never writes `(= a b)`, never nests `(not …)`
 /// twice, never uses a `0..0` cardinality or a negative `:priority`, and has
 /// no reason to. Those are precisely the shapes where a dumper regression
-/// hides, because nothing else would ever print one. The table below is the
-/// forty-seven sources ein.py's `ROUNDTRIP_CASES` enumerated, unique — the
-/// original listed `(= (color House-1) Red)` twice.
-///
-/// (Forty-nine since M1d S1d.2.3 added the two `open` forms.)
+/// hides, because nothing else would ever print one. The table below is
+/// forty-nine sources, the last two the `open` forms M1d S1d.2.3 added.
 ///
 /// The property is stronger than "it prints something readable": `Loc` lives
 /// in a side table specifically so structural equality cannot see a position,
@@ -704,16 +693,15 @@ fn any_head_outside_the_declarator_set_is_a_generic_fact() {
     );
 }
 
-// ── The ambiguities Lark resolved implicitly ───────────────────────
+// ── The ambiguities the grammar resolves implicitly ────────────────
 
-/// `the-documented-lark-ambiguities` — the seventy-eight cases where the
-/// reading is not obvious, with the reading itself written down.
+/// `the-documented-ambiguities` — the seventy-eight cases where the reading
+/// is not obvious, with the reading itself written down.
 ///
-/// ein.py parsed ein-lang with Earley plus a dynamic lexer, which never
-/// produced a token stream: at every position it offered every terminal that
-/// matched and let the parser explore. `parse.rs` reproduces that with
-/// backtracking, and this table is the difference between the two approaches
-/// made visible — `(rulex (?a) :match X :assert Y)` is a rule named `x`
+/// ein-lang's lexical grammar never produces a token stream: at every
+/// position every terminal that matches is on offer, and the parse decides.
+/// `parse.rs` does that with backtracking, and this table makes the
+/// consequence visible — `(rulex (?a) :match X :assert Y)` is a rule named `x`
 /// because the split reading is the only one that parses, while `(rulex A)` is
 /// a fact named `rulex` because it is not. Eight more literals behave the same
 /// way, and the boundary cases either side (`(rule-x A)`, `(rule_x …)`,
@@ -722,12 +710,8 @@ fn any_head_outside_the_declarator_set_is_a_generic_fact() {
 /// Asserting the **compact dump** rather than mere acceptance is what makes
 /// this a test of the *reading*: a parser that accepted `(notx)` as a fact
 /// named `notx` would pass an accept/reject table and fail here.
-///
-/// Every expectation below was produced by ein.py through
-/// `utils/ir_oracle.py` while it still existed; `parse_parity.rs` compared
-/// them live and goes when the oracle goes.
 #[test]
-fn the_documented_ambiguities_resolve_the_way_lark_did() {
+fn the_documented_ambiguities_resolve_as_recorded() {
     // `None` = a parse error. `Some(s)` = accepted, dumping to `s`.
     let cases: [(&str, Option<&str>); 78] = [
         // A reserved word is a legal *prefix* of a SYMBOL, and the split

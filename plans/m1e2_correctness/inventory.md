@@ -60,7 +60,7 @@ Class: 1 verdict/k · 2 model set · 3 false certification · 4 secondary answer
 | **S5** `clamped-budget` | Q-M1e.17 | lever (negative budget) | unassigned | `ein solve -E=-3 examples/zebra2.ein`; `-m=-3` | prints `max-enterings (0)`; `-m=-3` silently is `-m 0` |
 | **S6** `no-query-goal-to-project` | **none (new)** | **default** | none | `ein solve -e examples/lattice/02_genuine_3set_death.ein` (model 3/3) | prints *"(no query goal to project)"* for a model in which the program's goal simply has no row (`answer.rs:316-317`) |
 | **S7** `goal-row-unsorted` | `defined_behaviour.md` §6, `corpus/fuzz_findings/d3-goal-row-order.md` | **default** | none (filed) | `corpus/fuzz_findings/d3-goal-row-order.ein` under a permuted interner | the one binding row the table shows is `rows[0]` of an unsorted match: `?x = A` vs `?x = B` |
-| **S8** `pyrepr-in-core` | D1 § Related (unfiled aside) | **default** | none | `$S/nested-core.ein` | core prints `(not Fact(relation_name='p', args=('A',)))` |
+| **S8** `repr-in-core` | D1 § Related (unfiled aside) | **default** | none | `$S/nested-core.ein` | core prints `(not Fact(relation_name='p', args=('A',)))` |
 | **S9** `tree-layers-explored` | SE-M3 (documented) | lever (tree) | T1d.10.6.4 | any tree run | `layers_explored` carries the deepest node |
 
 ### Panics reachable on a well-formed program, still present
@@ -539,7 +539,7 @@ no-goal sentence for an empty row set. Also on `$S/fresh-name-default.ein`, `hru
     permuted:     ?x  = B
 ```
 
-### S8 — `pyrepr-in-core`
+### S8 — `repr-in-core`
 ```
 $ ein solve $S/nested-core.ein          # (not (p A)) (q A); (not (p ?x)) ∧ (q ?x) → ⊥
   unsat core (2 facts)
@@ -562,7 +562,7 @@ $ ein saturate corpus/fuzz_findings/kwpair-below-the-filter.ein
 ## 4. Reach — corpus sweeps run for this inventory
 
 Scope: the 135 non-slow `positive`/`stdlib`/`regression` entries that declare a `solve` run (5 error out by design
-or time out: `zebra2-minus-15{,-obligations}` > 60 s under `-e`; three `regression` crash-parity files).
+or time out: `zebra2-minus-15{,-obligations}` > 60 s under `-e`; three `regression` crash fixtures).
 
 | sweep | result |
 |---|---|

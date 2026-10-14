@@ -68,8 +68,8 @@ docs/kernel/inference/
 ├── reserved_engine_strings.md     ← engine-internal reserved atoms
 │                                     (__closed__, __symmetric__, false, …)
 ├── implementation.md              ← the module-by-module engine map
-├── ../defined_behaviour.md        ← the behaviours the Python source used to
-│                                     be the only statement of (M1a S1a.10.6)
+├── ../defined_behaviour.md        ← the diagnostics, orderings and error
+│                                     strings the engine defines (M1a S1a.10.6)
 └── features.md                    ← measured feature×config matrix: which
                                       SolverConfig knobs are load-bearing (S1.20.I)
 ```
@@ -98,7 +98,7 @@ derivation trace. Where each piece lives (`ein-infer/src/` unless noted):
 | `(forall ?b (G) (B))` / `(unknown P)` | S1.5.8c.3a/b sugars (now in `std.macro`): `forall` ⇒ `(absent (and G (absent B)))`, `unknown` ⇒ `(and (absent P) (absent (not P)))`. Compile to the `AbsentGuard` machinery; a `forall`'s **nested** absent is not lifted — it stays part of the negative query and the boundary evaluates the whole guard as one unit. |
 | `(absent …)` evaluated at the closure/world boundary | **shipped** S1.21.8 — guards are lifted out of the closure plan and judged against the positive fixpoint by [the boundary phase](../../../ein.rs/crates/ein-infer/src/saturator.rs), never mid-saturation. The fire-time re-check (`match.absents_still_pass`) and the absent-flip full-match split (`saturator._absent_relations`) are **deleted**, not bypassed; `Saturator.naf_dropped` is structurally 0. See § "NAF semantics" below. |
 | Negative (NAF) provenance       | **shipped** S1.21.8 — [`Prov::absent`](../../../ein.rs/crates/ein-core/src/prov.rs) records the `(absent …)` queries that had to fail for a firing to be admitted (`World.negative_premises`), one `(relation, args)` pattern each with `None` where the query ranged free. This is the missing half of `Deps(Y)` = `PositiveDeps(Y)` ∪ `NegativeDeps(Y)`; it makes negative dependence **visible**, and nothing interprets it yet — `unsat_core` and the trace's "using" line still read positive premises only. |
-| Hypothesis-branch order is deterministic | content-based sort, not hash-based (`PYTHONHASHSEED` does not reach iteration order); the score key is an M1 stub. See § "Determinism" below. |
+| Hypothesis-branch order is deterministic | content-based sort, not hash-based (no hash iteration order reaches it); the score key is an M1 stub. See § "Determinism" below. |
 
 The data substrate (KB, entities, layer views, fork, provenance,
 derivation DAG) was complete at P1.2; the engine that *operates* on it
@@ -360,24 +360,18 @@ fires, so it is parked once and admitted at most once; an anti-monotone
 rejection retires it outright. The outer loop stops at the first quiescence
 that admits nothing.
 
-The retracting flow that *does* exist (hypothesis branching's `kb.fork()`)
-takes a fresh saturator over the branch KB, so `_queue`, `_parked`, `_seen`
-and the park stamps all start empty and no boundary verdict crosses a
-world — corollary C6 made structural.
-
-> **ein.rs does this differently, on purpose** (M1a
-> [S1a.6.9](../../history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator),
-> ledgered as [D3](../../history/m1a_rust/divergences.md)). A fork there
-> *resumes* the parent's saturation — the plan list, `fired`, `seen` and the
-> parked set with their stamps are inherited, and the delta is the commitment
-> — because a fresh saturator's first pass re-derives the parent's entire
-> closure, 94.6 % of a fork's firings on `zebra -e`. C6 still holds: the
-> parked set is carried *with* its watch stamps, and an inherited candidate is
-> re-judged against the fork's own world before it can be admitted, so no
-> boundary verdict crosses a world. What differs between the two engines is
-> how much of the derivation each narrates, not what either derives — the
-> verdict, `k`, the models, the unsat core and every published counter are
-> compared exactly and do not move.
+The retracting flow that *does* exist (hypothesis branching's fork)
+*resumes* the parent's saturation (M1a
+[S1a.6.9](../../history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator))
+— the plan list, `fired`, `seen` and the parked set with their stamps are
+inherited, and the delta is the commitment — because a fresh saturator's first
+pass would re-derive the parent's entire closure, 94.6 % of a fork's firings on
+`zebra -e`. Corollary C6 still holds: the parked set is carried *with* its
+watch stamps, and an inherited candidate is re-judged against the fork's own
+world before it can be admitted, so no boundary verdict crosses a world.
+Resuming changes how much of the derivation a fork narrates, not what it
+derives — the verdict, `k`, the models, the unsat core and every published
+counter do not move.
 
 **Negative provenance.** A firing admitted through the boundary records
 what had to *not* hold:
@@ -385,8 +379,8 @@ what had to *not* hold:
 a tuple of `(relation, args)` patterns — `None` marking a position the
 query left free — built by `World.negative_premises` (nested guards
 contribute their patterns too: the whole query is what had to fail) and
-handed to [`fire`](../../../ein.rs/crates/ein-infer/src/firing.rs) as a
-kwarg. This is the missing half of `Deps(Y)` = `PositiveDeps(Y)` ∪
+handed to [`fire`](../../../ein.rs/crates/ein-infer/src/firing.rs) as an
+argument. This is the missing half of `Deps(Y)` = `PositiveDeps(Y)` ∪
 `NegativeDeps(Y)` (REVIEW_M1-01 §2) — the object whose absence sank the
 `unconditional_facts` extraction (below) and keeps deletion-based core
 minimisation unsound. **It makes negative dependence visible; no walk
@@ -398,11 +392,11 @@ trace's "using" line still read positive premises only, so
 **The one guard evaluation outside the saturator.**
 [`Lookahead::dies_immediately`](../../../ein.rs/crates/ein-infer/src/lookahead.rs)
 judges a rule's guards in the world **with** the probed candidate `h`: the
-guard must find no match in `kb` *and* `h` must not create one (divergence
-D3, fixed with this stage). A guard containing a nested absent is
-non-monotone and cannot be decided that cheaply, so the lookahead **skips
-that disjunct** rather than guessing — which only loses a kill, keeping the
-"never reports a live hypothesis as dead" contract.
+guard must find no match in `kb` *and* `h` must not create one
+([`absent_semantics.md`](absent_semantics.md)'s D3, fixed with this stage). A
+guard containing a nested absent is non-monotone and cannot be decided that
+cheaply, so the lookahead **skips that disjunct** rather than guessing — which
+only loses a kill, keeping the "never reports a live hypothesis as dead" contract.
 
 **What changed semantically**, all pinned in
 [`naf_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/naf_semantics.rs):
@@ -415,10 +409,9 @@ order — now boundary-admission order rather than priority-then-FIFO — with
 the engine reporting one model where several exist and not saying so. A
 static stratification checker is the proper remedy and remains future work.
 
-**Measured** (S1.21.8): acceptance 17/17 with verdicts unchanged, 1342 unit
-tests, **zero** xfails (D5's `xfail(strict=True)` now passes). Faster, not
-slower — exhaustive `zebra2` solve ~10.4 s → ~8.5 s, acceptance gate 130 s
-→ 91 s: removing the absent-flip full-match split more than pays for the
+**Measured** (S1.21.8): acceptance 17/17 with verdicts unchanged, and D5's
+expected-failure test now passes. Faster, not slower — exhaustive `zebra2`
+solve ~10.4 s → ~8.5 s, acceptance gate 130 s → 91 s: removing the absent-flip full-match split more than pays for the
 boundary evaluations.
 
 **Static NAF dependency map (S1.7.4) — re-grounded, not retired.** The map
@@ -573,30 +566,29 @@ direction's NAF explicit in its own match clause.
 > [`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs);
 > [`hypgen::score_hypothesis`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) is the
 > score key. The *principle* below — sort candidates by a content key, never by
-> `frozenset` / hash iteration order — is unchanged.
+> hash iteration order — is unchanged.
 
 `solve()` visits hypothesis branches in the order `_candidates_for`
 returns them. Pre-S1.5a.1a that list was the iteration order of a **hash
 set** of facts, and every invocation explored branches in a different one.
 
-> The *cause* was CPython's per-process string-hash randomisation; ein.rs's
-> hash maps are seeded identically on every run, so the same code would look
-> deterministic here and would still be wrong — the order would depend on
-> insertion history and on which ids the interner happened to assign. That is
-> exactly what
+> The engine's hash maps are seeded identically on every run, so the same
+> code would look deterministic here and would still be wrong — the order
+> would depend on insertion history and on which ids the interner happened to
+> assign. That is exactly what
 > [`id_order_invariance.rs`](../../../ein.rs/crates/ein-render/tests/id_order_invariance.rs)
 > perturbs on purpose, and it is why the rule below is stated over *any* hash
-> iteration rather than over a randomised one.
+> iteration.
 
 The fix sorts the result of `_candidates_for` by
 `_candidate_sort_key`:
 
-```python
+```text
 (-score_hypothesis(fact, kb), fact.args, fact.relation_name)
 ```
 
-All three components are content-derived; `hash(str)` never
-reaches the tuple. With the M1 stub
+All three components are content-derived; no hash reaches the
+key. With the M1 stub
 [`score_hypothesis`](../../../ein.rs/crates/ein-infer/src/hypgen.rs)
 returning `0` for every fact, the effective order is
 ``(args, relation_name)`` — alphabetic on first arg, then
@@ -605,7 +597,7 @@ S1.5a.7
 fills in (fact-popularity sum, weighted relation/object
 coefficients); when it lands, the solver doesn't move.
 
-**Determinism rule for new code.** Any `set` / `frozenset`
+**Determinism rule for new code.** Any hash set or map
 whose iteration order influences user-visible output (branch
 IDs, trace ordering, log lines, fixture-dependent test
 assertions) must be sorted at the iteration boundary. Membership-only
@@ -616,16 +608,16 @@ mechanically checked by
 which fails on any hash-map iteration at a site whose order could reach an
 output unless it carries a `// determinism-ok:` reason.
 
-The subprocess pin this paragraph used to cite,
-`tests/inference/tree/test_branch_determinism.py` (two
-`PYTHONHASHSEED`s, byte-identical solve output), went with the tree
-solver in `8d77b02`. The surviving order-leak guard is
-[`lattice_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/lattice_semantics.rs),
-which shuffles each layer's candidate order and asserts the resulting
-`LatticeSnapshotV1` still compares equal to the unshuffled run's — a
-stronger statement about the lattice, but no longer a hash-seed test.
-Restoring an explicit `PYTHONHASHSEED` pin for the lattice engine is
-open work.
+Three tests guard against an order leak.
+[`lattice_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/lattice_semantics.rs)
+shuffles each layer's candidate order and asserts the resulting
+`LatticeSnapshotV1` still compares equal to the unshuffled run's;
+[`id_order_invariance.rs`](../../../ein.rs/crates/ein-render/tests/id_order_invariance.rs)
+runs the whole corpus a second time with every interned name and integer
+assigned in a shuffled order and the `FactId` space offset, and requires the
+same answer; and
+[`jobs_invariance.rs`](../../../ein.rs/crates/ein-render/tests/jobs_invariance.rs)
+requires the same bytes at one job count and at several.
 
 ## d=0 negative-completion (S1.5a.19)
 
@@ -758,7 +750,7 @@ C2.
 > **Superseded — describes the removed tree solver** (tree engine removed in
 > `8d77b02`; its last dead residue deleted in S1.9.E6a). The `_consume` loop,
 > `try_branch`, `back_propagate`, and `is_unconditional_death` named below no
-> longer exist, in either engine. The live engine is the
+> longer exist. The live engine is the
 > set-indexed **lattice** (see *Set-indexed search — monotonic engine* below),
 > which bakes the per-set saturate-from-root pattern in from the start. (The
 > transitive "unconditional" walk that briefly survived the tree solver in
@@ -778,9 +770,9 @@ fork.
 
 S1.5a.19 fixes this with two cheap pre-fork checks plus a
 mid-sweep saturator pass (in the removed tree solver; the listing below is
-its Python, kept because the *shape* is what the section explains):
+the shape of its loop, kept because the *shape* is what the section explains):
 
-```python
+```text
 for h in to_check:
     key = (h.relation_name, h.args)
     # (a) Apriori Tier-A re-check: earlier sibling's back-prop
@@ -846,7 +838,7 @@ set-indexed engines (monotonic + lattice) bake the per-set
 saturate-from-root pattern in from the start, so the mid-sweep
 pass becomes the default control flow rather than an opt-in.
 The tree-side `_consume` keeps the explicit mid-sweep until
-P1.5b reaches parity; then the per-sibling re-check moves to
+P1.5b matches its answers; then the per-sibling re-check moves to
 whichever engine inherits the responsibility.
 
 ## Unconditional facts — retired (S1.5.7 → P1.21 R2)
@@ -975,8 +967,8 @@ view (`proof.dead_commitments` + `verdict.unsat_core`).
 
 1. **Solution at a fork.**
    [`hypgen::complete`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) on an
-   alive entering (`is_solved(kb, Mode.SOLVE)` in the design and in ein.py;
-   there is no `Mode` in the crates and the check is unconditional) — the
+   alive entering (`is_solved(kb, Mode.SOLVE)` in the design; there is no
+   `Mode` in the crates and the check is unconditional) — the
    fork's saturated kb carries the
    committed hypotheses + their derivations, which is the
    context the goal needs when it references hypothesis facts
@@ -1098,27 +1090,23 @@ commitment that reached it, and every refuted commitment's core and clause —
 with the partial counters — a **verdict-shaped** result, not a raised error:
 `Answer` is the two-armed sum `Verdict(..) | Aborted { .. }`, and
 `SolveOptions::on_budget` chooses between reporting the abort and answering
-with what the walk has (`OnBudget::Verdict`). It was ein.py's
-`BudgetExceededError` exception until the port; the string it prints is
-`defined_behaviour.md` §4's, and nothing in the crates names that class.
+with what the walk has (`OnBudget::Verdict`). The string it prints is
+`defined_behaviour.md` §4's.
 
 The dumper's timeline is flushed on the abort path (no `summary.json` then —
 the events up to the abort suffice for diagnostic).
 
 ### Measured performance
 
-> **Frozen constants.** Both figures below were taken on the Python engine
-> against the removed tree solver; neither instrument exists. What is live is
-> the same solve on ein.rs — milliseconds, re-measurable through
+> **Frozen constants.** Both rows below are P1.5b's; neither instrument
+> exists. What is live is the same solve on ein.rs — milliseconds, re-measurable through
 > [`e2e_baseline.py`](../../../utils/e2e_baseline.py) and recorded in
 > [`baseline.md`](../../history/m1a_rust/measurements/baseline.md).
 
-- `examples/zebra2.ein`: Solution in ~1.9 s under PyPy (CPython ~2.8 s),
-  1 alive entering, 0 nogoods — single-shot solve via fork-side
-  `is_solved`. ~18× faster than tree on CPython; ~4× on PyPy.
+- `examples/zebra2.ein`: Solution with 1 alive entering, 0 nogoods —
+  single-shot solve via fork-side `is_solved`.
 - `examples/branching/*` (11 fixtures): all 11 reach the
-  tree-side bindings; combined parity-test wall ~3.5 s. See
-  [`parity_baselines.md`](parity_baselines.md).
+  tree-side bindings. See [`parity_baselines.md`](parity_baselines.md).
 
 ### Two engines, two termination criteria — removed (2026-06-16)
 

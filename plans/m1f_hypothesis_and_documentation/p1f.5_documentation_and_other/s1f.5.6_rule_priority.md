@@ -321,7 +321,7 @@ Three decisions, in order:
    change.
 3. **Re-bless, predicted in advance.** The goldens this moves, named now:
    `corpus_shapes.md5` (the digest prints `priority=`);
-   `trace_*.md` and `from_ein_py/{trace_3step.md,zebra.golden,zebra2.golden}`
+   `trace_*.md`, `zebra.golden` and `zebra2.golden`
    (firing order); `events_*.jsonl`; `dump_*` (the band column). Anything
    *else* that moves is a finding, not a re-bless.
 

@@ -1,23 +1,19 @@
 //! `help-shape` — the argument surface as one comparable text.
 //!
-//! What [Q-M1a.13](../../../../docs/history/m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity)
-//! owes. `--help` *layout* is on the normalisation list, so a byte diff of it
-//! is gone — and a byte diff was the only thing checking that ein.rs had not
-//! silently lost an option. It is replaced, not dropped: both parsers are
-//! rendered as `{command → {option → short, metavar, arity, default, choices,
-//! group, help}}` and the texts are diffed.
+//! `--help` *layout* is `clap`'s business and is not pinned, so a byte diff of
+//! it is the wrong check — and something still has to notice an option
+//! silently lost. Every parser is rendered as `{command → {option → short,
+//! metavar, arity, default, choices, group, help}}` and the text is diffed
+//! against `tests/golden/help_shape.txt`.
 //!
-//! Stronger than the byte diff where it matters: a renamed short key or a
+//! Stronger than a byte diff where it matters: a renamed short key or a
 //! changed default fails on its own line instead of somewhere inside an
-//! 89-line blob. Blind where the resolution gave it up: wrapping, indentation,
+//! 89-line blob. Blind where layout is exempt: wrapping, indentation,
 //! headings, and the order options appear in — which is why the options are
-//! sorted here rather than emitted in declaration order.
-//!
-//! `utils/ir_oracle.py`'s `help-shape` op was the other half until
-//! S1a.10.4 removed it with the second engine, and it walked `argparse`'s
-//! parser objects rather than re-parsing its formatted output: the parser
-//! *is* the structure, and scraping it back out of the text would only
-//! re-import the layout this stage exempts.
+//! sorted here rather than emitted in declaration order. It walks the parser
+//! objects rather than re-parsing the formatted help: the parser *is* the
+//! structure, and scraping it back out of the text would only re-import the
+//! layout this exempts.
 
 use clap::Command;
 
@@ -41,13 +37,13 @@ fn render(out: &mut String, path: &str, cmd: &Command) {
 
     let mut rows: Vec<String> = Vec::new();
     for arg in cmd.get_arguments() {
-        // Parser furniture, not surface. `help` is `clap`'s own, matching the
-        // `-h` `argparse` also generated; `version` was `clap`'s too until
-        // S1a.9.3 T1a.9.3.4 registered one by hand — registered for the help
-        // listing only, since `run` answers it before the parser. The skip
-        // means the golden did not move when `-V` was added, which is right:
-        // what the golden is for is the *ported* surface, and `--version`'s
-        // content has ten tests of its own (`tests/version.rs`).
+        // Parser furniture, not surface. `help` is `clap`'s own; `version`
+        // was `clap`'s too until S1a.9.3 T1a.9.3.4 registered one by hand —
+        // registered for the help listing only, since `run` answers it before
+        // the parser. The skip means the golden did not move when `-V` was
+        // added, which is right: what the golden is for is the *option*
+        // surface, and `--version`'s content has ten tests of its own
+        // (`tests/version.rs`).
         if arg.get_id() == "help" || arg.get_id() == "version" {
             continue;
         }
@@ -74,8 +70,8 @@ fn render(out: &mut String, path: &str, cmd: &Command) {
                 .and_then(|n| n.first())
                 .map(|n| n.as_str().to_string())
                 .unwrap_or_else(|| id.to_string());
-            // `clap` reports the id when no value name was set, which is
-            // `argparse`'s `dest.upper()` case; an *explicit* one travels
+            // `clap` reports the id when no value name was set, rendered
+            // upper-cased with `-` as `_`; an *explicit* one travels
             // verbatim, so `FILE.jsonl` stays `FILE.jsonl`.
             if name == id {
                 name.to_uppercase().replace('-', "_")
@@ -87,7 +83,7 @@ fn render(out: &mut String, path: &str, cmd: &Command) {
             "False".to_string()
         } else {
             match arg.get_default_values().first() {
-                Some(v) => ein_core::pyrepr::repr_str(&v.to_string_lossy()),
+                Some(v) => ein_core::repr::repr_str(&v.to_string_lossy()),
                 None => "None".to_string(),
             }
         };
@@ -109,14 +105,14 @@ fn render(out: &mut String, path: &str, cmd: &Command) {
         match arg.get_long() {
             None => rows.push(format!(
                 "  POSITIONAL {id} required={} help={help}",
-                py_bool(arg.is_required_set())
+                bool_word(arg.is_required_set())
             )),
             Some(long) => rows.push(format!(
                 "  OPTION --{long} -{} metavar={metavar} arity={arity} \
                  default={default} choices={choices} group={group} \
                  required={} help={help}",
                 arg.get_short().map_or("-".to_string(), |c| c.to_string()),
-                py_bool(arg.is_required_set()),
+                bool_word(arg.is_required_set()),
             )),
         }
     }
@@ -139,12 +135,12 @@ fn render(out: &mut String, path: &str, cmd: &Command) {
     }
 }
 
-fn py_bool(b: bool) -> &'static str {
+fn bool_word(b: bool) -> &'static str {
     if b { "True" } else { "False" }
 }
 
-/// Help strings are authored as wrapped source literals on both sides; the
-/// content is the joined text, so runs of whitespace collapse before compare.
+/// Help strings are authored as wrapped source literals; the content is the
+/// joined text, so runs of whitespace collapse before compare.
 fn squeeze(s: &str) -> String {
     s.split_whitespace().collect::<Vec<_>>().join(" ")
 }

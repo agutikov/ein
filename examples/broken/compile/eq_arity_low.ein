@@ -2,9 +2,9 @@
 ;
 ; `CO-H1`, and the only finding in the review that took the process down: the
 ; compiler lowered `(eq …)` with no arity check at all, and the check that
-; existed was a runtime `assert!` in the matcher whose message — "`eq` needs
-; two arguments; ein.py raises IndexError here" — was a parity note rather
-; than a diagnostic. `ein saturate` on this file exited **101** with a stack
+; existed was a runtime `assert!` in the matcher — "`eq` needs two
+; arguments" — an invariant of the matcher's own rather than a diagnostic
+; for the user. `ein saturate` on this file exited **101** with a stack
 ; trace where every sibling malformation exits 1 with a message.
 ;
 ; Why `eq` and not `neq`: the grammar shape-pins `NeqForm`, so `(neq ?x)` is a

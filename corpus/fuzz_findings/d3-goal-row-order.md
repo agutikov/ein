@@ -1,10 +1,9 @@
 # d3-goal-row-order
 
-- found: 2026-08-20, `utils/fuzz_ein.py --seed 20260820`, mode `mixed`, as a
-  cross-engine **diff** at T3 — `?x = B` in ein.py, `?x = A` in ein.rs
+- found: 2026-08-20, `utils/fuzz_engine.py --seed 20260820`, mode `mixed`
 - property: **id-order** — the same answer under a permuted interner
 - re-found: 2026-08-21, by the rewritten fuzzer
-  ([S1a.10.4](../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)),
+  ([S1a.10.4](../../docs/history/m1a_rust/README.md#s1a104--utils-and-the-fuzzer)),
   from a different seed and a different mutation source
   (`examples/branching/13_lookahead_naf_world.ein`), minimised to **the same
   seven forms**
@@ -37,14 +36,13 @@ is not determined by the data:
 
 ## The re-find narrows what this file means
 
-It was filed as a
-**[D3](../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)**
-consequence, and that reading was too narrow. The cross-engine difference was
-real and D3 did cause it — a resumed fork puts facts into the KB in a
-different order, and the row is `rows[0]` of an unsorted match. But **D3 is
-one thing that perturbs the row, not what makes it perturbable.** With D3 held
-fixed — one engine, one build, `fork-delta` off in both runs — the row still
-moves when the interner assigns ids in a different order:
+It was filed as a consequence of the resumed fork saturator — a fork
+*resumes* root's saturation rather than re-deriving it, so it puts facts into
+the KB in a different order, and the row is `rows[0]` of an unsorted match —
+and that reading was too narrow. **The resumed fork is one thing that perturbs
+the row, not what makes it perturbable.** With the fork path held fixed — one
+build, `fork-delta` off in both runs — the row still moves when the interner
+assigns ids in a different order:
 
 ```sh
 mkdir -p /tmp/goal-row && cp corpus/fuzz_findings/d3-goal-row-order.ein /tmp/goal-row/
@@ -60,17 +58,12 @@ EIN_ID_FILES=/tmp/goal-row cargo test --manifest-path ein.rs/Cargo.toml \
       permuted:     ?x  = B
 ```
 
-So the cross-engine difference was a *symptom* of an under-determined
-rendering, and the two engines were each reporting a legitimate row. Filed
-against D3 the finding is a divergence to accept; filed against the renderer
-it is the class
+So the moving row is a *symptom* of an under-determined rendering, and
+either row is a legitimate one. Filed against the renderer the finding is the
+class
 [design/02](../../docs/history/m1a_rust/design/02_determinism_and_order.md) forbids —
 an observable that depends on the order ids were assigned in — and one of the
-first two the id-space sweep has found that the corpus does not reach. The
-second framing is the one that survives losing the second engine, which is
-the practical difference: after
-[P1a.10](../../docs/history/m1a_rust/README.md#p1a10--one-implementation) nothing
-can re-run the first.
+first two the id-space sweep has found that the corpus does not reach.
 
 `summary.json` is already right: `goal_bindings` carries **both** rows,
 sorted. The table is the surface that picks one. Nobody has decided whether it

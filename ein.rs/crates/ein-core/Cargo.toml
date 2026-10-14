@@ -1,6 +1,6 @@
 [package]
 name        = "ein-core"
-description = "Values, interner, KB, indexes, provenance, python-repr compatibility"
+description = "Values, interner, KB, indexes, provenance, value rendering"
 version.workspace    = true
 edition.workspace    = true
 license.workspace    = true
@@ -17,7 +17,7 @@ counters = []
 rustc-hash.workspace = true
 
 [dev-dependencies]
-# `pyrepr` and `pyfmt` are re-implementations of CPython's rendering; the
-# tables they were checked against are frozen beside them in `tests/golden/`.
+# The goldens and their helpers: `repr` and `numfmt` are specified by the
+# tables in `tests/golden/`.
 ein-corpus = { path = "../ein-corpus" }
 serde_json.workspace = true

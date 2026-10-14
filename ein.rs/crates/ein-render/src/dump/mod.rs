@@ -1,8 +1,8 @@
-//! The `--dump-states` tree — `ein.py`'s `inference/monotonic/` dumpers.
+//! The `--dump-states` tree.
 //!
 //! Three dumper implementations behind the engine's lifecycle hooks:
 //! [`MonotonicDumper`] writes files, [`ProgressDumper`] streams the live
-//! `-v` view (and subclasses it, so `-v` and `--dump-states` compose), and
+//! `-v` view (and wraps it, so `-v` and `--dump-states` compose), and
 //! [`LatticeDumper`] writes the richer
 //! per-commitment tree with its proof summary.
 //!

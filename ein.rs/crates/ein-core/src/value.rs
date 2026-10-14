@@ -1,9 +1,8 @@
 //! `Value` — a fact argument in 4 bytes, and the integer pool behind one of
 //! its three shapes.
 //!
-//! ein.py's fact arguments are `str | int | Fact`, and 31.9 M `isinstance`
-//! calls in an exhaustive `zebra2` solve are the type dispatch that unifying
-//! them needs. Here the discriminant is two bits
+//! A fact argument is a name, an int or a nested fact, and unifying two of
+//! them starts by asking which. Here the discriminant is two bits
 //! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §3):
 //!
 //! ```text
@@ -22,7 +21,7 @@
 
 use crate::facts::FactId;
 use crate::intern::{CAPACITY, Overflow, Symbol};
-use crate::pyrepr::canonical_int;
+use crate::repr::canonical_int;
 use rustc_hash::FxHashMap;
 use std::cmp::Ordering;
 
@@ -141,9 +140,9 @@ impl Value {
     /// never produce. `regs[r] == Value::UNBOUND` is therefore one integer
     /// compare, and a real value cannot forge it.
     ///
-    /// It is also what `resolve_leaf`'s lenient policy calls Python's `None`:
-    /// an unbound `Var` in a predicate guard resolves to it, and two of them
-    /// compare equal, exactly as `None == None`.
+    /// It is also what a predicate guard's lenient policy treats as a null:
+    /// an unbound `Var` in a guard resolves to it, and two of them compare
+    /// equal to each other and to nothing else.
     pub const UNBOUND: Value = Value(u32::MAX);
 
     pub fn is_unbound(self) -> bool {
@@ -173,12 +172,11 @@ pub struct IntId(pub u32);
 
 /// Integer literals, canonicalised and pooled.
 ///
-/// Python's `int` is unbounded and the grammar's `INT: /-?[0-9]+/` accepts any
-/// width, so an integer cannot be inlined into a 30-bit payload and cannot be
-/// parsed into an `i64` without rejecting inputs ein.py handles fine. The pool
-/// stores the **canonical decimal form** — parse, then re-render, so `007` and
-/// `7` and `-0`/`0` collapse exactly as `Int(value=int(tok))` does — plus an
-/// `Option<i64>` fast field for the overwhelmingly common case.
+/// The grammar's `INT: /-?[0-9]+/` accepts any width, so an integer cannot be
+/// inlined into a 30-bit payload and cannot be parsed into an `i64` without
+/// rejecting literals that load. The pool stores the **canonical decimal
+/// form** ([`canonical_int`]), so `007` and `7` and `-0`/`0` collapse into one
+/// entry, plus an `Option<i64>` fast field for the overwhelmingly common case.
 ///
 /// Two integers are equal iff their pool ids are.
 #[derive(Default, Debug)]

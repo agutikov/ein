@@ -51,24 +51,24 @@
 //! `(R b a)` justify each other through the symmetric mirror in any ordinary
 //! puzzle.
 //!
-//! ### What the port had to be careful about
+//! ### Where a rewrite can change the answer
 //!
 //! **This is the part of the engine where a "cleaner" rewrite most easily
 //! changes the answer**, so the loop structure, the wave ordering and the
-//! domination test are ported shape-for-shape. Two things carry the
+//! domination test are load-bearing as they stand. Two things carry the
 //! determinism:
 //!
-//! - **`rank`** — ein.py assigns it once, in `repr` order over the graph's
-//!   `FactId` *tuples*, because a `FactId` is not orderable (an argument may
-//!   be a nested `Fact`, which has no `__lt__`) and `repr` in an inner loop is
-//!   far too slow. Every tie-break and every deterministic iteration goes
-//!   through it. Here an environment **is** a sorted vector of ranks, so
-//!   `_minimise`'s sort key is the vector itself and union is a merge.
-//! - **`_recorded_fallback`'s key** is `repr` of the *`Fact` dataclass*, not
-//!   of the id tuple — a different rendering of the same thing, and both are
+//! - **`rank`** — assigned once, in `repr` order over the graph's
+//!   `(relation_name, args)` id *tuples*, because `repr` is a total order over
+//!   any fact, nested ones included, and computing it in an inner loop is far
+//!   too slow. Every tie-break and every deterministic iteration goes through
+//!   it. An environment **is** a sorted vector of ranks, so `minimise`'s sort
+//!   key is the vector itself and union is a merge.
+//! - **`recorded_fallback`'s key** is `repr` of the *whole fact*, not of the
+//!   id tuple — a different rendering of the same thing, and both are
 //!   observable.
 
-use ein_core::pyrepr::{PyValue, repr};
+use ein_core::repr::{ReprValue, repr};
 use ein_core::{FactId, Kb, Terms};
 use rustc_hash::{FxHashMap, FxHashSet};
 
@@ -147,10 +147,9 @@ impl Explanation {
 
 /// An environment: frontier facts, as **ranks**, sorted ascending.
 ///
-/// ein.py keeps a `frozenset` and sorts its ranks whenever it needs an order
-/// (`_Graph.key`). Keeping the sorted rank vector *as* the representation
-/// makes that key the vector itself, union a merge and the subset test a merge
-/// — and, because ranks are unique per fact, loses nothing.
+/// Keeping the sorted rank vector *as* the representation makes the sort key
+/// the vector itself, union a merge and the subset test a merge — and,
+/// because ranks are unique per fact, loses nothing a set would keep.
 type Env = Vec<u32>;
 
 /// The AND/OR premise closure of a set of targets.
@@ -169,21 +168,21 @@ struct Graph {
 }
 
 impl Graph {
-    /// `(len(env), sorted ranks)` — and since an [`Env`] *is* the sorted
+    /// `(env.len(), sorted ranks)` — and since an [`Env`] *is* the sorted
     /// ranks, comparing `(len, env)` is that key.
     fn cmp_env(a: &Env, b: &Env) -> std::cmp::Ordering {
         a.len().cmp(&b.len()).then_with(|| a.cmp(b))
     }
 }
 
-/// `repr((relation_name, args))` — the id **tuple**, which is what ein.py
-/// ranks by. Not `repr` of the `Fact` dataclass; that one is
-/// [`_recorded_fallback`]'s key and they are different strings.
+/// `repr` of the `(relation_name, args)` id **tuple** — what the ranks are
+/// ordered by. Not `repr` of the whole fact; that one is
+/// [`recorded_fallback`]'s key and they are different strings.
 fn fact_id_repr(terms: &Terms, id: FactId) -> String {
     let (rel, args) = terms.facts.get(id);
-    repr(&PyValue::Tuple(vec![
-        PyValue::Str(terms.sym(rel).to_string()),
-        PyValue::Tuple(args.iter().map(|a| terms.py_value(*a)).collect()),
+    repr(&ReprValue::Tuple(vec![
+        ReprValue::Str(terms.sym(rel).to_string()),
+        ReprValue::Tuple(args.iter().map(|a| terms.repr_value(*a)).collect()),
     ]))
 }
 
@@ -196,9 +195,9 @@ fn build_graph(kb: &Kb, terms: &Terms, targets: &[FactId], budget: &ExplanationB
         by_rank: Vec::new(),
         truncated: false,
     };
-    // ein.py pushes the targets in order and pops from the end, so the last
+    // The targets are pushed in order and popped from the end, so the last
     // target is expanded first. Only `max_facts` truncation can see that, but
-    // it can, so the order is kept.
+    // it can, so the order is fixed.
     let mut stack: Vec<FactId> = Vec::new();
     for &t in targets {
         if !g.just.contains_key(&t) && !g.seed.contains_key(&t) {
@@ -210,7 +209,7 @@ fn build_graph(kb: &Kb, terms: &Terms, targets: &[FactId], budget: &ExplanationB
         if !kb.contains(fid) {
             // A dangling premise id — the case `walk_premises` skips. Ground
             // it out rather than killing the justification that named it, so
-            // parity with the recorded walk is preserved.
+            // the closure agrees with the recorded walk.
             g.seed.insert(fid, vec![Vec::new()]);
             g.just.remove(&fid);
             continue;
@@ -255,7 +254,7 @@ fn build_graph(kb: &Kb, terms: &Terms, targets: &[FactId], budget: &ExplanationB
         }
     }
 
-    // `sorted({*g.just, *g.seed}, key=repr)` — over the id tuples.
+    // Every node of `just` and `seed`, sorted by its id tuple's `repr`.
     // determinism-ok: collected and sorted by `repr` before anything reads it.
     let mut nodes: Vec<FactId> = g.just.keys().chain(g.seed.keys()).copied().collect();
     nodes.sort_unstable();
@@ -487,7 +486,7 @@ pub fn explain(
 /// The pre-S1.21.7 answer: the smallest single-target recorded-**primary**
 /// frontier.
 ///
-/// `pub` because the parity instrument calls it directly: it is only reachable
+/// `pub` because `shape::explain_shape` calls it directly: it is only reachable
 /// through [`explain`] when the closure blows `max_facts` *and* no target gets
 /// a label, and even then its tie-break only decides when two targets tie on
 /// core size — which no corpus input separates from plain first-wins.
@@ -511,9 +510,9 @@ pub fn recorded_fallback(
         if core.is_empty() {
             continue;
         }
-        // `" ".join(sorted(repr(f) for f in core))` — the `Fact` dataclass
-        // repr, not the id tuple's.
-        let mut reprs: Vec<String> = core.iter().map(|&f| repr(&terms.py_fact(f))).collect();
+        // The sorted whole-fact `repr`s joined by a space — not the id
+        // tuple's.
+        let mut reprs: Vec<String> = core.iter().map(|&f| repr(&terms.repr_fact(f))).collect();
         reprs.sort();
         let key = (core.len(), reprs.join(" "));
         if best.as_ref().is_none_or(|(b, _, _)| key < *b) {

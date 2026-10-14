@@ -32,7 +32,7 @@ records which question became which id.
 | [Q-M1e.14](#q-m1e14--the-corpus---jobs-sweeps-per-layer-census-coverage-is-vacuous) | The corpus `--jobs` sweep's per-layer census coverage is **vacuous** | open — raised 2026-08-29 by [S1e.1.2](README.md#s1e12--determinism-under---jobs-q1) T3, which closed the unit half; **owner unassigned**, and the corpus half costs a golden. **Open, unowned on purpose** at the close: the next change to the parallel fan-out owns it |
 | [Q-M1e.15](#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) | The **alternatives cap** decides which unsat core is reported | open — raised 2026-08-29 by [S1e.1.3](README.md#s1e13--what-the-core-promises-q2), which is the review's `Q2` answered **yes**; witnessed by a fixture pair, **owner unassigned**, and no shipped puzzle is changed by it. **Owned 2026-10-14** by [M1e2 S1e2.2.11](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md) (W10) |
 | [Q-M1e.16](#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | The **binding key** compares two register layouts as one | open — raised 2026-08-29 by [S1e.1.4](README.md#s1e14--q-m1a8s-real-trigger-q3), which is the review's `Q3` answered and **`Q-M1a.8` closed as stated**. A well-formed program loses a derivation in a release build and trips a `debug_assert` in a test one; **owner unassigned**, and no corpus program can reach it. **Owned 2026-10-14** by [M1e2 S1e2.2.7](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md) (W7) |
-| [Q-M1e.17](#q-m1e17--three-py_int-options-silently-reinterpret-a-negative) | Three `py_int` options **silently reinterpret a negative** | open — raised 2026-08-29 by [S1e.1.5](README.md#s1e15---n-0-q7), which closed the third of them (`-n`) by refusing it. `-m` and `-E` still clamp, and `-E`'s abort line **prints the clamped number**; **owner unassigned**. **Owned 2026-10-14** by S5 of [M1e2's proposed P1e2.3](../../../plans/m1e2_correctness/README.md#p1e23--surfaces-that-misreport-the-answer-proposed) |
+| [Q-M1e.17](#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative) | Three `int_arg` options **silently reinterpret a negative** | open — raised 2026-08-29 by [S1e.1.5](README.md#s1e15---n-0-q7), which closed the third of them (`-n`) by refusing it. `-m` and `-E` still clamp, and `-E`'s abort line **prints the clamped number**; **owner unassigned**. **Owned 2026-10-14** by S5 of [M1e2's proposed P1e2.3](../../../plans/m1e2_correctness/README.md#p1e23--surfaces-that-misreport-the-answer-proposed) |
 | [Q-M1e.18](#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments) | Three kernel primitives are **not shape-pinned**, and drop their extra arguments | **answered 2026-08-29 — candidate (2)**, by [S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T1, which took the whole class rather than `CO-H1`'s one cell: `eq` and `absent` are checked at compile time and refused with a positioned `CompileError`. The grammar and the lexer's `SYMBOL` set are untouched, so no program that worked still works differently. `false` needed nothing |
 | [Q-M1e.19](#q-m1e19--algorithmic-pathology-has-no-owner) | **Algorithmic pathology** has no owner | open — the one of `Q9`'s four unswept surfaces with no home. The other three have one: this stage swept the parser/CLI edges, `cast.rs` goes with `ein-einb`'s next change, and micro-CSP ground truth is [M10](../../../plans/m10_external_benchmarks/README.md)'s thesis. **Open, no owner** at the close, and the closing claim says so |
 | [Q-M1e.20](#q-m1e20--two-renderers-are-produced-tested-and-unreachable) | **Two renderers are produced, tested and unreachable** — the per-hypothesis lattice dump and the unified KB DOT view | open — raised 2026-08-30 by [S1e.2.2](README.md#s1e22--code--doc-the-canonical-tree) T3, which was told to route the decision rather than take it in a doc pass; **owner unassigned**, and both are `pub` and golden-pinned today. **Owned 2026-10-14** by [M1e2 S1e2.1.3](../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.3_the_doors.md), option (a). **Answered 2026-10-14, (a)**: `ein render program`, `ein render kb` and `ein solve --dump-lattice` |
@@ -176,7 +176,7 @@ before the rule would have been needed.
 > the other way: the page has **five** referrers, and one of them is
 > [`docs/history/m1a_rust/design/07_search_layer.md`](../m1a_rust/design/07_search_layer.md),
 > which cites it as *"the per-step contract"* — a shipped milestone record
-> naming it as the specification the port had to reproduce. Deleting a page a
+> naming it as its specification. Deleting a page a
 > history record cites as its specification falsifies the record. So deletion
 > was never available, and the count settles it without weighing halves.
 
@@ -750,21 +750,10 @@ the claim fails loudly if either flag is ever wired up.
 
 ### Why it is a question and not a defect
 
-Because the two are **port gaps whose surface crossed and whose behaviour did
-not**, and the port's own oracle could not have caught it: T0–T3 compared two
-implementations' *observable output*, and a knob that does nothing produces
-identical output in both engines when it does nothing in both — but ein.py's
-did something. [`docs/api/inference.md`](../../api/inference.md) is the
-frozen contract of the engine that was:
-
-| flag | what ein.py did |
-|---|---|
-| `print_alive` | *"Diagnostic — log inherited alive-set size + per-filter prune counts per `_explore`."* |
-| `candidate_order_seed` | *"`< 0` → deterministic content-sort branch order; `≥ 0` → a deterministic per-branch permutation (shuffle-invariance probing)."* |
-
-Neither is a hole in today's engine. `print_alive`'s read-out exists under
-other names — `--verbose`, `--layer-progress`, and `--events`'s `layer`
-counters — and `candidate_order_seed`'s job is done one level up by
+Because the two are **gaps whose surface shipped and whose behaviour did
+not**, and neither is a hole in today's engine. `print_alive`'s read-out
+exists under other names — `--verbose`, `--layer-progress`, and `--events`'s
+`layer` counters — and `candidate_order_seed`'s job is done one level up by
 `lattice_order_seed`, which permutes a *layer* rather than a branch and is
 what `id_order_invariance` and the `--shuffle` corpus cells actually drive.
 Which is very likely why nobody missed them.
@@ -1240,7 +1229,7 @@ The stage did not choose, because choosing is the fix, and (1) and (2) differ
 in what they promise a program that *does* carry a non-symbol activator
 argument — a question no corpus entry asks.
 
-## Q-M1e.17 — Three `py_int` options silently reinterpret a negative
+## Q-M1e.17 — Three `int_arg` options silently reinterpret a negative
 
 > **Raised 2026-08-29 by
 > [S1e.1.5](README.md#s1e15---n-0-q7)**, the review's
@@ -1444,8 +1433,7 @@ Routing it here, with what the stage measured.
 | the `LatticeDumper` tree | every commitment tested at every layer with the firings each emitted — `enterings/`, `proof_summary.json` ([`lattice_dump.md`](../../kernel/inference/lattice_dump.md)) | Rust only: `LatticeDumper::new(Some(dir))` into `solve`'s `dumper`. No CLI flag; `--dump-states` builds the *other* dumper |
 | `ein_render::kb_dot` | the unified KB DOT view — the whole fact graph on one page ([`04_dot_rendering.md`](../../kernel/ir/03-ein-lang/04_dot_rendering.md)) | Rust only. `ein render` offers `rules` / `rule` / `constraints` / `lattice` and no `kb`; `ein kb dot` was removed in P1.11 |
 
-Both are `pub`, both are exercised by the gate — `golden_dump.rs` +
-`dump_parity.rs` for the first, `dot_wellformed.rs` over the whole corpus for
+Both are `pub`, both are exercised by the gate — `golden_dump.rs` for the first, `dot_wellformed.rs` over the whole corpus for
 the second — and neither is documented anywhere a caller would look:
 [`docs/api/rust.md`](../../api/rust.md)'s worked example stops at
 solve-and-render. So the failure is not that the code rotted; it is that the

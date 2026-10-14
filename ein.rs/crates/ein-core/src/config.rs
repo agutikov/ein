@@ -9,17 +9,14 @@
 //! parses through it.
 //!
 //! It lives here rather than beside the engine because the KB holds one and
-//! `fork()` carries it over: ein.py keeps the same edge, as a checker-only
-//! `TYPE_CHECKING` import that exists to avoid a runtime cycle.
+//! `fork()` carries it over.
 //!
 //! **Resolution precedence**, and it is two orders rather than one. The
 //! engine's is `SolveOptions::config` (an explicit argument), then
 //! `kb.config` from the IR, then these defaults; the binary's is the six CLI
 //! options that shadow a flag, then the program's **last** `(config …)` head
 //! taken whole, then these defaults — `ein-cli`'s `resolved_config` computes
-//! the second and hands the result to the first. Until M1e S1e.5.1 this
-//! sentence named `solve(config=…)`, a Python API with no referent since
-//! [P1a.10](../../../../docs/history/m1a_rust/README.md#p1a10--one-implementation).
+//! the second and hands the result to the first.
 //!
 //! Every flag, with its default, what it changes, whether it changes the
 //! answer and what depending on it commits you to:
@@ -27,9 +24,7 @@
 //! whose defaults block is `--dump-config`'s own output and whose flag list is
 //! diffed against [`FIELDS`] by `ein-cli/tests/config_reference.rs`.
 
-/// What kind of value a flag takes — the type dispatch ein.py reads off
-/// `field.type`, which is a *string* there because the module uses
-/// `from __future__ import annotations`.
+/// What kind of value a flag takes — the type the loader coerces it to.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum FieldKind {
     Bool,
@@ -61,7 +56,7 @@ pub const FIELDS: &[(&str, FieldKind)] = &[
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct SolverConfig {
-    /// Topic B Tier B — the one-step rule simulator `_dies_immediately`.
+    /// Topic B Tier B — the one-step rule simulator, `Lookahead::dies_immediately`.
     pub enable_pre_branch_lookahead: bool,
     /// Cache a lookahead kill as a `(not h)` fact, so later enumerations skip
     /// `h` through the O(1) negated index instead of re-running the match.
@@ -72,10 +67,10 @@ pub struct SolverConfig {
     pub hypgen_obj_weight: f64,
     /// **Inert** — parsed, type-checked, dumped, echoed into
     /// `--json-summary`, rendered into the KB-shape digest and round-tripped
-    /// through `.einb`, and read by no code path. ein.py logged the inherited
-    /// alive-set size and the per-filter prune counts per `_explore`; here
-    /// `--verbose`, `--layer-progress` and `--events`' `layer` counters are
-    /// what say that. Held by
+    /// through `.einb`, and read by no code path. What it names — the inherited
+    /// alive-set size and the per-filter prune counts of each layer — is
+    /// what `--verbose`, `--layer-progress` and `--events`' `layer` counters
+    /// say. Held by
     /// `ein-cli/tests/config_reference.rs::the_two_inert_flags_are_still_inert`
     /// and filed as
     /// [Q-M1e.10](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert).
@@ -83,7 +78,7 @@ pub struct SolverConfig {
     /// Warn about an `(absent …)` guard — **two questions behind one flag**,
     /// emitted once each after root's saturation.
     ///
-    /// - `DerivedNafWarning`, ein.py's: the guard watches a **rule-derived**
+    /// - `DerivedNafWarning`: the guard watches a **rule-derived**
     ///   relation. Since S1.21.8 a *stratification* signal, not a soundness
     ///   one — the guard is judged at a fixpoint either way.
     /// - `RefutationUnderAbsentWarning`, M1e S1e.2.3's: the rule concludes
@@ -104,13 +99,13 @@ pub struct SolverConfig {
     ///
     /// [Q-M1e.9]: ../../../../docs/history/m1e_review_processing/open_questions.md
     pub warn_derived_naf: bool,
-    /// Negative means the S1.5a.1a content sort; non-negative applies a
-    /// per-branch deterministic permutation of it — **in ein.py**. Here the
-    /// field is [`print_alive`]'s twin and equally **inert**: nothing outside
-    /// the loader, the four renderers and the container reads it, and the
-    /// per-layer shuffle that *is* wired is [`SolverConfig::lattice_order_seed`].
-    /// The sentence above is kept because it is the only statement of what the
-    /// flag was for, which is the input to
+    /// Meant as: negative means the S1.5a.1a content sort; non-negative
+    /// applies a per-branch deterministic permutation of it. Nothing
+    /// implements that — the field is [`print_alive`]'s twin and equally
+    /// **inert**: nothing outside the loader, the four renderers and the
+    /// container reads it, and the per-layer shuffle that *is* wired is
+    /// [`SolverConfig::lattice_order_seed`]. The first sentence is kept because
+    /// it is the only statement of what the flag was for, which is the input to
     /// [Q-M1e.10](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)'s
     /// option (a).
     ///
@@ -162,9 +157,9 @@ impl Default for SolverConfig {
 /// Every field as `(kebab-name, repr(value))`, in declaration order — what
 /// `--dump-config` walks and what the KB-shape dump prints.
 ///
-/// Floats go through Rust's shortest round-trip formatting, which agrees with
-/// CPython's `repr(float)` on everything a weight or a seed can be; the two
-/// part company only at magnitudes that need exponent notation.
+/// Booleans print as `True` / `False`, an unset seed as `None`, a string
+/// through [`crate::repr::repr_str`], and a float through Rust's shortest
+/// round-trip formatting (`{:?}`), so a weight prints as `1.0` or `0.5`.
 pub fn rendered_fields(c: &SolverConfig) -> Vec<(&'static str, String)> {
     let b = |v: bool| {
         if v {
@@ -173,7 +168,7 @@ pub fn rendered_fields(c: &SolverConfig) -> Vec<(&'static str, String)> {
             "False".to_string()
         }
     };
-    let s = |v: &str| crate::pyrepr::repr_str(v);
+    let s = |v: &str| crate::repr::repr_str(v);
     vec![
         (
             "enable-pre-branch-lookahead",

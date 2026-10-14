@@ -1,25 +1,20 @@
 //! The stdlib as **semantics** — S1a.10.2 T1a.10.2.2.
 //!
-//! `stdlib/*.ein` is shared source: both engines load the same text, so a rule
-//! there is not "ein.rs behaviour" that a port could quietly drop — it is the
-//! language's own library, and it outlives the implementation that used to be
-//! tested against it. What was only ever asserted in Python is what those
-//! rules *mean*: that `(bijective R)` fans out into the operational
-//! activators, that elimination forces a survivor and stays silent when there
-//! are two, that a typecheck fires on the mistyped fact and on nothing else,
-//! and that the kernel's `__symmetric__` fast path computes the same closure
-//! as the userspace rule it replaces.
+//! `stdlib/*.ein` is the language's own library, not "ein.rs behaviour", and
+//! what is asserted here is what those rules *mean*: that `(bijective R)` fans
+//! out into the operational activators, that elimination forces a survivor and
+//! stays silent when there are two, that a typecheck fires on the mistyped
+//! fact and on nothing else, and that the kernel's `__symmetric__` fast path
+//! computes the same closure as the userspace rule it replaces.
 //!
-//! Replaces, in whole or in part:
-//!
-//! | Python | subject |
-//! |---|---|
-//! | `ein.py/tests/inference/test_stdlib_bijection.py` | `std.bijection` — the signature-driven, is-a-free bijection family |
-//! | `ein.py/tests/inference/test_stdlib_domain_elim.py` | `std.elim` — the positional variant of the same family |
-//! | `ein.py/tests/inference/test_symmetric_native.py` | `__symmetric__` vs `std.algebra`'s `symmetric` |
-//! | `ein.py/tests/inference/test_symmetric_hypothesis.py` | a branched-on symmetric relation counts models once |
-//! | `ein.py/tests/inference/test_reflective_rule.py` | a rule that derives its own activator still terminates |
-//! | `ein.py/tests/inference/test_rule_library.py` | `sibling-exclusive` with both parameters bound to one relation |
+//! | subject |
+//! |---|
+//! | `std.bijection` — the signature-driven, is-a-free bijection family |
+//! | `std.elim` — the positional variant of the same family |
+//! | `__symmetric__` vs `std.algebra`'s `symmetric` |
+//! | a branched-on symmetric relation counts models once |
+//! | a rule that derives its own activator still terminates |
+//! | `sibling-exclusive` with both parameters bound to one relation |
 //!
 //! Everything here asserts *derived facts* and *which rule derived them*.
 //! Neither is an internal: a firing's rule name is in `--events`, its derived
@@ -50,10 +45,10 @@ fn repo_root() -> PathBuf {
 /// What one saturation of a fixture produced, in the vocabulary the trace
 /// uses: rule names and s-expressions.
 struct Sat {
-    /// `(rule, derived)` for every **productive** firing — the ein.py
-    /// `not f.redundant` filter every one of these tests was written against.
-    /// A firing that re-derives a fact the KB already holds is not a
-    /// conclusion, and counting it would make "fires exactly once" meaningless.
+    /// `(rule, derived)` for every **productive** firing — the `!redundant`
+    /// filter every one of these tests is written against. A firing that
+    /// re-derives a fact the KB already holds is not a conclusion, and counting
+    /// it would make "fires exactly once" meaningless.
     productive: Vec<(String, String)>,
     /// Every firing's rule, redundant ones included.
     all_rules: Vec<String>,
@@ -65,7 +60,7 @@ impl Sat {
         self.productive.iter().any(|(_, d)| d == fact)
     }
 
-    /// Productive firings of one rule — ein.py's `_fired`.
+    /// Productive firings of one rule.
     fn fired(&self, rule: &str) -> usize {
         self.productive.iter().filter(|(r, _)| r == rule).count()
     }
@@ -135,8 +130,8 @@ fn saturate(src: &str) -> Sat {
 
 /// The `knows` extension after saturating `src`, as sorted s-expressions.
 ///
-/// Rendered rather than compared by `FactId`, because the two runs of the
-/// parity test intern into two different arenas: an id comparison there would
+/// Rendered rather than compared by `FactId`, because the native and the
+/// userspace runs intern into two different arenas: an id comparison there would
 /// report a difference where there is only a different interning order.
 fn knows_extension(src: &str) -> Vec<String> {
     let mut ast = Ast::new();
@@ -163,7 +158,7 @@ fn knows_extension(src: &str) -> Vec<String> {
     out
 }
 
-// ── the preambles the Python fixtures shared ───────────────────────
+// ── the shared preambles ───────────────────────────────────────────
 
 /// Only the entry rules are listed; `:symbols` auto-closure pulls the rest of
 /// the family in behind them.
@@ -371,10 +366,8 @@ fn an_injective_positive_excludes_every_other_object() {
     );
 }
 
-/// **`typecheck-arg-fires-only-on-a-mistyped-argument`** — merges
-/// `test_typecheck_arg0_fires_on_mistyped` and
-/// `test_typecheck_silent_when_well_typed`, which are one claim seen from its
-/// two sides.
+/// **`typecheck-arg-fires-only-on-a-mistyped-argument`** — one claim seen
+/// from its two sides.
 ///
 /// The rule is negation-as-failure over a hierarchy relation supplied as a
 /// parameter, so both halves have to be pinned together: a typecheck that
@@ -504,8 +497,8 @@ fn no_room_left_reports_the_object_with_nowhere_to_go() {
 /// against `std.elim`'s own copy of the rule, and deliberately not merged into
 /// it: the two modules ship two definitions of `typecheck-arg-0`, and
 /// `MANIFEST.sha256` notices that one of them *changed*, never that it stopped
-/// working. The fixture is the zebra-flavoured one the Python test used — a
-/// Person handed to a relation declared over Houses, which is the mistake a
+/// working. The fixture is zebra-flavoured — a Person handed to a relation
+/// declared over Houses, which is the mistake a
 /// hand-written puzzle actually makes.
 #[test]
 fn the_elim_typecheck_also_fires_only_on_the_mistyped_argument() {

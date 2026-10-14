@@ -1,17 +1,16 @@
 //! Peak RSS of a load — the memory half of P1a.2's acceptance.
 //!
-//! design/03 §10 asks for "peak RSS ≤ 1/5 of ein.py's", and there is no CLI
-//! yet to measure it through, so this is the smallest program that answers the
-//! question: load a `.ein` and report what the kernel says it cost.
+//! design/03 §10 puts a ceiling on a load's peak RSS, and this is the smallest
+//! program that answers the question: load a `.ein` and report what the
+//! kernel says it cost.
 //!
 //! ```sh
 //! cargo run --release --example load_rss -- examples/zebra2.ein
 //! ```
 //!
-//! Both numbers are worth having. `peak` is what a user's machine sees, and it
-//! flatters the port by the size of a Python interpreter; `delta` is the RSS
-//! the load itself added, which is the data-model comparison and is the one
-//! design/03 is really making a claim about.
+//! Both numbers are worth having. `peak` is what a user's machine sees; `delta`
+//! is the RSS the load itself added, which is the data model's cost and is the
+//! one design/03 is really making a claim about.
 
 use ein_core::Terms;
 use ein_ir::{Ast, load_file};

@@ -80,8 +80,8 @@ interchangeable and are not:
   fact at all, because it compares the bindings.
 
 Equality has no *semantics* in M1 beyond that: a stored `(= a b)` licenses no
-substitution and joins no congruence closure. Both engines carry an
-`EqClasses` union-find and neither drives it —
+substitution and joins no congruence closure. The engine carries an
+`EqClasses` union-find and does not drive it —
 [`../02-data-model/02_store.md` §8](../02-data-model/02_store.md) records the
 seam as deliberate, for a future e-graph promotion (F4 Q30). What `=` *does*
 have is a rendering: an arity-2 equality fact draws as a `doublecircle`

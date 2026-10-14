@@ -16,18 +16,9 @@ invocations each one is exercised under.
   with the engine's answer today and the right one, as data. Its header is the
   format.
 
-This directory was `conformance/` until M1a
-[S1a.10.3](../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine).
-The name went with the thing it named: `conformance/` meant *two
-implementations agreeing*, and the manifest is what survived the second engine
-leaving the tree ([P1a.10](../docs/history/m1a_rust/README.md#p1a10--one-implementation)).
-The `--tier T0…T3` vocabulary, the `ein-conformance` runner and the
-`--impl-a` / `--impl-b` pair went with it too; nothing below defines a tier,
-and a document that mentions one is describing 2026.
-
 ## Who reads it
 
-Everything is `cargo test`; nothing shells out to a second engine.
+Everything is `cargo test`.
 
 | reader | what it does with the manifest |
 |---|---|
@@ -82,10 +73,8 @@ substitutions happen in the sweep:
   artefacts — `"solve --trace {out}/trace.md"`, `"solve --dump-states {out}/states"`;
 - every `solve` run silently gains `--json-summary {out}/summary.json`.
 
-`runs` is **the invocations this entry is exercised under**. Until
-S1a.10.3 it read "…*compared* under", and the difference is the whole of that
-stage: a run is now a thing that must work, not a thing two engines must agree
-about.
+`runs` is **the invocations this entry is exercised under**, and each one is
+a thing that must work.
 
 **Exit 2 means two things, and a run has to say which.** It is the CLI's
 usage-error code *and* the code a **budget abort** takes (`ein solve -E` /
@@ -142,14 +131,12 @@ load-negatives render their rules and exit 0. That is not a hole, it is where
 the pass boundary is; the exit golden records it per cell.
 
 `regression` is the group with no rule, and deliberately. It holds the inputs
-that once broke an implementation — a `sorted()` over mixed types
-([D2](../docs/history/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)),
-a goal binding that was a JSON number, an `(or …)` whose arms bind different
-variables — and what "correct" means for one of them is whatever it does now.
+that once broke the engine — an uncompilable query goal, a goal binding that
+was a JSON number, an `(or …)` whose arms bind different variables — and what
+"correct" means for one of them is whatever it does now.
 Seven of its ten entries answer on every run, one answers under `saturate` and
 is refused under `solve`, two are refused outright — and the exit golden is the
-only statement of which. It was called `crash-parity` until S1a.10.3, when the
-claim it encoded (*ein.py raises here*) lost its subject.
+only statement of which.
 
 **A group is a directory, with one deliberate widening.** `tests/stdlib/`'s
 entries are `stdlib` rather than a seventh group, because there the group names
@@ -162,10 +149,10 @@ vocabulary entry that means "the directory it is named after".
 [Q-M1a.9](../docs/history/m1a_rust/open_questions.md#q-m1a9--where-do-goldens-live)
 was answered (goldens live in `ein.rs/crates/<crate>/tests/golden/`), and
 `generated` until
-[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine).
-`generated` named the throwaway manifest `utils/fuzz_ein.py` wrote to hand a
-batch to the parity harness; the rewritten fuzzer drives the `ein` binary
-directly and writes no manifest, so the name has no referent. **A corpus entry
+[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-and-the-fuzzer).
+`generated` named a throwaway manifest of fuzzer cases; `utils/fuzz_engine.py`
+drives the `ein` binary directly and writes no manifest, so the name has no
+referent. **A corpus entry
 is a file the engine is *permanently* exercised over**, and a generated case
 lives for milliseconds — which is why the group could never have held one
 anyway. A fuzz find that is worth keeping goes to
@@ -213,17 +200,13 @@ costs 0.32 s per run — 0.92 s until T1a.7.2.0 — and keeps both, because on t
 fixture the cost **is** the finding. And where a run is dropped the note says which and why: a `runs`
 column that shrinks without a reason is how coverage disappears.
 
-**These notes used to blame CPython** — *"outlives a 150 s budget under
-CPython, and a run nobody can finish is not coverage"*, on six entries. That
-reason was wrong even where its conclusion was right, and
-[S1a.9.0](../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced) re-priced
-every one of them against ein.rs. Three of the excluded runs finish —
+[S1a.9.0](../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced) priced
+every excluded run against the engine. Three of them finish —
 `features/05_stdlib_domain_elim`'s two at 3.0 s and `zebra2-minus-15 :: render
 lattice` at 27.8 s — and the eight `solve` / `solve -e` cells that do not are
 not waiting on a budget at all: at the default `-m 5` they are killed by the
 **OOM killer**, at 14 GB and between one and three minutes. An unbounded
-hypothesis space is unbounded in memory first, and that would have been true of
-any engine.
+hypothesis space is unbounded in memory first.
 
 ## `slow`
 
@@ -283,14 +266,6 @@ Three decisions are worth knowing before editing the column:
   swallows it and it would be a number nobody verifies — which is exactly what
   the flag was between 2026-08-17 and S1a.9.0.
 
-Before that stage the flag meant *"one of its runs took 3 s or more under
-CPython in the T1a.0.1.1 probe"* and covered 17 entries and 118 cells, four
-minutes of sweep. Measured against the engine that ships, **twelve of the
-seventeen cost under a second all told** — `zebra2.ein`, the corpus's
-flagship, at 16 ms — and two more were flagged only for the 94 and 125 seconds
-they spent drawing a commitment lattice for a demo of one rule firing. The
-three that stay are slow for reasons their fixtures are about.
-
 ## Levers
 
 `levers` is the `SolverConfig` on/off matrix from
@@ -299,7 +274,7 @@ CLI can express: `-L` (no lookahead), `-K` (no kill cache), `-y` (lattice
 sanity check), `-o score-sum` (lattice order). The other six levers that matrix
 drives are reachable only through the library API or a puzzle's own
 `(config …)` block, so the sweep — which runs a process — cannot flip them.
-Tracked as [Q-M1a.16](../docs/history/m1a_rust/open_questions.md#q-m1a16--how-does-the-harness-drive-the-lever-matrix).
+Tracked as [Q-M1a.16](../docs/history/m1a_rust/open_questions.md#q-m1a16--how-does-the-corpus-drive-the-lever-matrix).
 
 **`-L` is not one side of an A/B — it is a strictly weaker debug mode**, and
 since M1e (2026-08-28) that is measured rather than assumed. `complete()` is a

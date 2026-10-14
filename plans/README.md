@@ -1,8 +1,7 @@
 # Plans
 
 Forward-looking roadmap for Ein. The 2021 prototype informs the
-design; the cleaned-up package skeleton (`src/ein/`) just unblocks
-the work — the actual *implementation* of the design lives here.
+design; the actual *implementation* of the design lives here.
 
 The companion research notes (no implementation steps, no schedule)
 stay in [`docs/ideas/`](ideas). Plans cross-link to those
@@ -39,7 +38,7 @@ framing 2026-05-24):
 
 The end-to-end target the milestone stack converges on is the
 worked solution in [`examples/README.md`](../docs/kernel/inference/zebra_walkthrough.md): the
-human Wikipedia walkthrough of the Zebra puzzle annotated as ein.py
+human Wikipedia walkthrough of the Zebra puzzle annotated as ein
 inference (NL ↔ ein rule ↔ branch-depth, plus learnt no-goods). M1
 must reproduce the *inference* column — the rule firings, branches,
 and contradictions that take the encoded `zebra2.ein` to the final
@@ -49,19 +48,16 @@ i.e. NL parses into the same `(facts …)` / `(ontology …)` blocks the
 engine consumes, and the engine's trace renders back into the same
 NL paragraphs the README cites.
 
-Two adjacent secondary milestones surface Ein externally, plus a Rust port
+Two adjacent secondary milestones surface Ein externally, plus the Rust engine
 that came before both, the three milestones that came out of it — one created
 from its last phases, two by promotion since — one created out of a review of
 the tree they left, and one out of that review's close:
 
-- **M1a — Rust port (ein.rs)** — **shipped 2026-08-23**, between M1 and M2; the
+- **M1a — the Rust engine (ein.rs)** — **shipped 2026-08-23**, between M1 and M2; the
   engine that ships from M2 onward. Its plan folder is gone and the record is
-  [`docs/history/m1a_rust/`](../docs/history/m1a_rust/README.md). Two invariants
-  held the whole way: a **1:1 observable surface**
-  (same language, same CLI, same bytes, with `ein.py` as the parity oracle
-  until it had banked everything it could prove) and a **free hand inside**
-  (integer-encoded atoms and facts, a register matcher, copy-on-write forks,
-  multi-core search). All four landed. It ships a **library and a CLI**;
+  [`docs/history/m1a_rust/`](../docs/history/m1a_rust/README.md). Inside it:
+  integer-encoded atoms and facts, a register matcher, copy-on-write forks,
+  multi-core search. All four landed. It ships a **library and a CLI**;
   server mode was dropped 2026-08-18 and the PyO3 binding deferred 2026-08-21
   for want of a consumer
   ([Q-M1a.23](../docs/history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
@@ -251,7 +247,7 @@ Stage files have a stable shape:
 | milestone | depth        | status   | rough estimate |
 |-----------|--------------|----------|----------------|
 | M1 | *(plans removed at P1.22 — git history)* | **shipped** — done 2026-06-17 (gate green) | ~3 months |
-| [M1a](../docs/history/m1a_rust/README.md)               | *(plans removed 2026-08-23 — the record is `docs/history/m1a_rust/`)* | **shipped** — done 2026-08-23, all eleven phases closed. `ein.rs` is the only implementation: `solve zebra2.ein -e` end-to-end **4.53 s → 29.0 ms (157×)** with peak RSS 223 → 17 MB (the PyPy half frozen — nothing can re-measure it), `--jobs N` a further **3.17–4.40×** on 8 cores with every counter identical over 20 712 cells, and the gate **616 tests in 1 m 51 s** with no Python process in any of them | est. ~7 months; ran 2026-08-17 → 2026-08-23 |
+| [M1a](../docs/history/m1a_rust/README.md)               | *(plans removed 2026-08-23 — the record is `docs/history/m1a_rust/`)* | **shipped** — done 2026-08-23, all eleven phases closed. `solve zebra2.ein -e` end-to-end in **29.0 ms** with peak RSS 17 MB, `--jobs N` a further **3.17–4.40×** on 8 cores with every counter identical over 20 712 cells, and the gate **616 tests in 1 m 51 s** | est. ~7 months; ran 2026-08-17 → 2026-08-23 |
 | [M1c](../docs/history/m1c_external_validation/README.md) | *(plans removed 2026-08-24 — the record is `docs/history/m1c_external_validation/`)* | **shipped** — done 2026-08-24, one phase and five stages. `:expect` on `query`, `ein test` as the fourth subcommand, 45 programs in `tests/stdlib/`, and **38 of 73 never-firing stdlib rules → 0**, held by `cargo test` in 0.04 s. Its benchmark phase left for M10 on 2026-08-23 | est. ~2.5 weeks; ran 2026-08-23 → 2026-08-24 |
 | [M1d](../docs/history/m1d_satisfiability/README.md) | *(plans removed 2026-08-27 — the record is `docs/history/m1d_satisfiability/`)* | **shipped** — done 2026-08-27, four phases and eighteen stages. A program can state a requirement, a state can say what it **owes**, the verdict word `Open` reports it, every verdict states whether its count is certified, and `EIN_TRAVERSAL=tree` reaches 32 models in **86** enterings against the lattice's 17 204 592. P1d.10 closed as it stood, three of six stages shipped | est. ~2 months; ran 2026-08-21 → 2026-08-27 |
 | [M1e](../docs/history/m1e_review_processing/README.md) | *(plans removed 2026-10-14 — the record is `docs/history/m1e_review_processing/`)* | **closed** 2026-10-14; the work ran 2026-08-27 → 09-01. The 2026-08-27 review processed: all **63 findings** dispositioned and all **10 questions** answered, the gate 738 → **821 tests**. Its probes found wrong answers the review never listed; they are [M1e2](m1e2_correctness/README.md)'s | est. ~11 weeks; ran six days |

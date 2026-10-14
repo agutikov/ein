@@ -1,21 +1,18 @@
 //! The dumper's two checked-in goldens, and `parse ∘ dump` as a fixed point —
-//! S1a.1.2's acceptance, without the oracle.
+//! S1a.1.2's acceptance.
 //!
-//! `ein.rs/crates/ein-ir/tests/golden/from_ein_py/zebra2.golden` *is* `dump_canonical(parse(zebra2.ein))`
-//! as **ein.py wrote it**, checked in years before the port: 293 lines of deep
-//! nesting, long `:why` templates and non-ASCII. That makes it the last
-//! independent provenance the repo has, which is why
-//! [the ledger §4](../../../../docs/history/m1a_rust/oracle_ledger.md#4-what-the-removal-must-relocate)
-//! lists it among the files [S1a.10.5](../../../../docs/history/m1a_rust/README.md#s1a105--the-removal)
-//! must `git mv` rather than re-bless — a golden regenerated from ein.rs would
-//! say "ein.rs reproduces itself".
+//! `ein.rs/crates/ein-ir/tests/golden/zebra2.golden` *is*
+//! `dump_canonical(parse(zebra2.ein))`: 293 lines of deep nesting, long `:why`
+//! templates and non-ASCII, which makes it the dumper's hardest fixture;
+//! `zebra.golden` is the same for the classic encoding. The corpus-wide
+//! `dump_canonical` / `dump_compact` checks are `corpus_shapes.md5`'s 111
+//! `ir[parse]` and 107 `ir[dump-compact]` lines.
 //!
-//! What S1a.10.2 removed from this file is the corpus-wide `dump_canonical` /
-//! `dump_compact` diffs, now `corpus_shapes.md5`'s 111 `ir[parse]` and 107
-//! `ir[dump-compact]` lines, and ein.py's own fixed-point check — a test that
-//! ran no ein.rs code at all, whose subject was `ein/ir/dump.py`.
+//! ```text
+//! EIN_BLESS=1 cargo test -p ein-ir --test dump_goldens
+//! ```
 
-use ein_corpus::{corpus_files, repo_root};
+use ein_corpus::{corpus_files, golden, golden_path, repo_root};
 use ein_ir::dump::{dump_canonical, dump_compact};
 use ein_ir::{Ast, parse};
 
@@ -27,21 +24,16 @@ fn parse_file(ast: &mut Ast, path: &std::path::Path) -> Vec<ein_ir::NodeId> {
 #[test]
 fn the_goldens_are_reproduced() {
     let root = repo_root();
-    for (source, golden) in [
-        (
-            "examples/zebra2.ein",
-            "ein.rs/crates/ein-ir/tests/golden/from_ein_py/zebra2.golden",
-        ),
-        (
-            "examples/zebra.ein",
-            "ein.rs/crates/ein-ir/tests/golden/from_ein_py/zebra.golden",
-        ),
+    for (source, name) in [
+        ("examples/zebra2.ein", "zebra2.golden"),
+        ("examples/zebra.ein", "zebra.golden"),
     ] {
         let mut ast = Ast::new();
         let forms = parse_file(&mut ast, &root.join(source));
         let got = dump_canonical(&ast, &forms);
-        let want = std::fs::read_to_string(root.join(golden)).expect("golden");
-        assert_eq!(got, want, "{golden}\n{}", first_difference(&got, &want));
+        if let Some(msg) = golden(&golden_path("ein-ir", name), &got) {
+            panic!("{msg}");
+        }
     }
 }
 
@@ -75,20 +67,4 @@ fn dump_then_parse_is_a_fixed_point() {
         // And the text is a fixed point too, which is the observable half.
         assert_eq!(text, dump_canonical(&ast, &twice), "{}", path.display());
     }
-}
-
-/// Name the first line that differs — a 293-line diff reported as "not equal"
-/// is not a report.
-fn first_difference(got: &str, want: &str) -> String {
-    for (i, (a, b)) in got.lines().zip(want.lines()).enumerate() {
-        if a != b {
-            return format!("  line {}\n    ein.py: {b:?}\n    ein.rs: {a:?}", i + 1);
-        }
-    }
-    format!(
-        "  same {} line(s), then ein.py has {} and ein.rs {}",
-        got.lines().count().min(want.lines().count()),
-        want.lines().count(),
-        got.lines().count()
-    )
 }

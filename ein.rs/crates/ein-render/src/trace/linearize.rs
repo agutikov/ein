@@ -1,5 +1,4 @@
-//! Linearise a lattice solve into a depth-ordered story — `ein.py`'s
-//! `trace/linearize.py`.
+//! Linearise a lattice solve into a depth-ordered story.
 //!
 //! The engine emits an *unordered* commitment lattice; the narrative needs a
 //! linear sequence. [`linearize`] turns a solve result into a [`Trace`]:
@@ -12,13 +11,12 @@
 //!   by its lifted no-good;
 //! - the closing lattice DAG and solution grid.
 //!
-//! **One shape departure.** ein.py reads a fact's provenance off the `Fact`
-//! object, which travels with it out of a fork that no longer exists. Here
-//! provenance lives in the KB, so `linearize` takes a `root` to resolve
-//! against when there is no spine KB — the `Contradiction`-without-a-solution
-//! case. It cannot change what is printed: the only provenance field read is
-//! `:source`, which none but a load-time fact carries, and a load-time fact is
-//! in every fork's layer stack.
+//! **Why a `root`.** Provenance lives in the KB, not on the fact, so it does
+//! not travel out of a fork that no longer exists: `linearize` takes a `root`
+//! to resolve against when there is no spine KB — the
+//! `Contradiction`-without-a-solution case. It cannot change what is printed:
+//! the only provenance field read is `:source`, which none but a load-time
+//! fact carries, and a load-time fact is in every fork's layer stack.
 
 use ein_core::{FactId, Kb, ProvKind, Terms};
 use ein_infer::apriori::cmp_set;
@@ -108,7 +106,7 @@ pub struct LinearizeOpts {
 }
 
 impl LinearizeOpts {
-    /// ein.py's defaults: `diagrams=True`, the other two off.
+    /// The defaults: `diagrams` on, the other two off.
     pub fn new() -> LinearizeOpts {
         LinearizeOpts {
             diagrams: true,
@@ -134,14 +132,14 @@ fn target_entity(derived: &FactRef) -> Option<String> {
     })
 }
 
-/// A fact's `:source` sentence, or `None` — `Fact.source`, which is the raw
-/// field guarded by `kind == "source"`.
+/// A fact's `:source` sentence, or `None` — the provenance's raw `source`
+/// field, read only when its kind is `Source`.
 fn source_of<'a>(kb: &Kb, terms: &'a Terms, f: FactId) -> Option<&'a str> {
     let prov = terms.provs.get(kb.primary(f)?);
     if prov.kind != ProvKind::Source {
         return None;
     }
-    // `if p.source` — Python's truthiness, so an empty sentence is dropped.
+    // An empty sentence is dropped.
     prov.source.map(|s| terms.sym(s)).filter(|s| !s.is_empty())
 }
 
@@ -218,7 +216,7 @@ fn build_steps(
     if relevant {
         // `relevant_firings` needs a KB to read the query goal from; with no
         // spine KB there is no goal, so the seed set is empty and nothing is
-        // kept — which is what ein.py's `getattr(kb, "query", None)` does.
+        // kept.
         let Some(kb) = kb else { return Vec::new() };
         let kept = relevant_firings(ast, terms, firings, kb, commitment);
         return kept

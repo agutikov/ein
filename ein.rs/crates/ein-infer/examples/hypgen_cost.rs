@@ -2,9 +2,8 @@
 //!
 //! The companion to `engine_cost`, and measured the same way: the numbers
 //! printed alongside the wall clock say what work was done, because a ratio
-//! against ein.py is only meaningful if both sides build the same candidates
-//! and drop them at the same filters — which `tests/hypgen_parity.rs` proves
-//! and this prints.
+//! between two runs is only meaningful if both build the same candidates and
+//! drop them at the same filters — which this prints.
 //!
 //! ```sh
 //! cargo run --release -p ein-infer --example hypgen_cost

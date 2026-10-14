@@ -1,4 +1,4 @@
-//! The markdown trace renderer — `ein.py`'s `trace/render.py`.
+//! The markdown trace renderer.
 //!
 //! Threads a linearised [`Trace`] into one self-contained markdown narrative:
 //! a numbered step per rule firing (name, English `:why`, premises with their

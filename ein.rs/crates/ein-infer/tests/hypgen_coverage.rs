@@ -1,21 +1,15 @@
-//! The enumerator's **coverage floors** — S1a.4.1's acceptance, without the
-//! oracle.
+//! The enumerator's **coverage floors** — S1a.4.1's acceptance.
 //!
-//! `hypgen_parity` was eleven whole-corpus sweeps: hypothesis generation in
-//! both closure regimes, the lattice join, the solve in three regimes,
-//! commitment entry in both fail-fast regimes, explanation with and without
-//! alternatives, and the static NAF map. Every one of those bytes is now
-//! `corpus_shapes.md5`'s — 78 files each for `hyp`, `hyp+closed`, `lattice`,
-//! `solve[default|exhaustive|shuffled]`, `commit`, `commit-nofailfast`,
-//! `explain`, `explain-noalts` and `naf`, digested *unnarrowed*, which is
-//! strictly more than the sweeps compared.
+//! The enumerator's bytes are `corpus_shapes.md5`'s — 78 files each for `hyp`,
+//! `hyp+closed`, `lattice`, `solve[default|exhaustive|shuffled]`, `commit`,
+//! `commit-nofailfast`, `explain`, `explain-noalts` and `naf`, digested
+//! *unnarrowed*.
 //!
-//! What a digest cannot inherit is the pair of tests below, and they are the
-//! reason this file still exists. Both answer the question a comparison
-//! cannot ask of itself: **was there anything to compare?** A counter that is
-//! zero on both sides agrees for the wrong reason, and two ordering modes that
-//! are secretly the same comparison agree perfectly. Those were floors under a
-//! diff; they are floors under a digest for exactly the same reason.
+//! What a digest cannot do is the pair of tests below, and they are the
+//! reason this file exists. Both answer the question a digest cannot ask of
+//! itself: **was there anything to pin?** A counter that is zero everywhere
+//! is stable for the wrong reason, and two ordering modes that are secretly
+//! the same mode digest identically. They are floors under the digest.
 
 use ein_core::Terms;
 use ein_corpus::corpus_files;

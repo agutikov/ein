@@ -1,35 +1,32 @@
-//! P1a.4's acceptance gate — the three fixtures `ein.py/acceptance/` runs,
-//! against ein.rs.
+//! P1a.4's acceptance gate — the three zebra fixtures, solved and checked
+//! against the published answer.
 //!
-//! `hypgen_parity.rs` proves the two implementations *agree*; these prove the
-//! answer is the **right** one. That distinction matters at exactly one point:
-//! a port can agree with an oracle about a wrong model, and the corpus diff
-//! would be green. So these assert the Zebra puzzle's published answer, read
-//! through each encoding's own vocabulary.
+//! These prove the answer is the **right** one. That distinction matters at
+//! exactly one point: a self-golden can pin a wrong model, and the corpus
+//! digest would be green. So these assert the Zebra puzzle's published answer,
+//! read through each encoding's own vocabulary.
 //!
-//! The Python originals live outside `ein.py/tests/` because an exhaustive
-//! `zebra.ein` solve is ~21 s under PyPy and much worse under CPython. Here it
-//! is 0.6 s, so they run with the ordinary suite.
+//! An exhaustive `zebra.ein` solve is 0.6 s, so they run with the ordinary
+//! suite.
 //!
-//! **T1a.10.2.3 — this is now the whole acceptance gate.** `ein.py/acceptance/`
-//! is 21 tests in four files and ~40 s under PyPy; what P1a.4 ported was the
-//! three-class core, and this stage ports the rest. What arrived here:
+//! **T1a.10.2.3 — this is the whole acceptance gate.** It covers four
+//! questions:
 //!
-//! | Python | what it asserts | here |
-//! |---|---|---|
-//! | `test_zebra_three_classes.py` | the k = 1 / k ≥ 2 / k = 0 matrix | `the_three_readings_agree_with_the_input`, extended below with **exhaustion**, **distinctness** and the injected fact's **provenance** |
-//! | `test_mode_consistency.py` | the gaps view and the contradictions view are *readings of one result*, not second opinions | `the_gaps_view_is_the_verdict_counted` / `the_contradictions_view_is_the_verdict_explained` |
-//! | `test_zebra_two_ontologies.py` | two encodings, one model | `the_generic_link_encoding_is_the_unique_solution`, `both_ontologies_reach_the_same_model` |
-//! | `test_bench_solve_mode.py` | the CLI prints the answer, `k`, `exhausted` | the CLI's surface, not the engine's — `ein-cli/tests/` |
+//! | what it asserts | here |
+//! |---|---|
+//! | the k = 1 / k ≥ 2 / k = 0 matrix | `the_three_readings_agree_with_the_input`, extended below with **exhaustion**, **distinctness** and the injected fact's **provenance** |
+//! | the gaps view and the contradictions view are *readings of one result*, not second opinions | `the_gaps_view_is_the_verdict_counted` / `the_contradictions_view_is_the_verdict_explained` |
+//! | two encodings, one model | `the_generic_link_encoding_is_the_unique_solution`, `both_ontologies_reach_the_same_model` |
+//! | the CLI prints the answer, `k`, `exhausted` | the CLI's surface, not the engine's — `ein-cli/tests/` |
 //!
-//! The history worth keeping is `test_mode_consistency.py`'s: on 2026-06-16
+//! The history worth keeping is the second row's: on 2026-06-16
 //! three *separate* entry points disagreed about the same input — `ein search`
 //! said `Solution` while `ein lattice --gaps` fabricated a second model and
 //! `ein lattice --contradictions` produced an 81-fact "core" for a satisfiable
 //! puzzle — because the verdict tracked **the function called** rather than the
-//! input. The buggy entries were deleted and one engine kept. These are the
-//! guard on that, and they are the reason a single-implementation repo still
-//! has something that is not a self-golden: they assert the *answer*.
+//! input. The buggy entries were deleted and one entry point kept. These are
+//! the guard on that, and they are the reason the repo has something that is
+//! not a self-golden: they assert the *answer*.
 
 use ein_core::{Kb, Terms, Value};
 use ein_infer::solve::{NoDumper, SolveOptions, solve};
@@ -77,7 +74,7 @@ fn run_with_proof(rel: &str, stop_after: Option<u64>) -> (Solved, Terms) {
 }
 
 /// The three fixtures and the class each one is supposed to land in — the
-/// matrix `test_mode_consistency.py` pins, as data.
+/// matrix, as data.
 ///
 /// `stop_after` exhausts the lattice for the unique and unsat cases, because
 /// only an exhausted search *certifies* them; two distinct nodes already prove
@@ -213,16 +210,15 @@ fn the_three_readings_agree_with_the_input() {
     );
 }
 
-// ── T1a.10.2.3 — the rest of `ein.py/acceptance/` ──────────────────
+// ── T1a.10.2.3 — the rest of the acceptance gate ──────────────────
 
 /// **Uniqueness is a claim about the *search*, not only about `k`.**
 ///
 /// `both_ontologies_reach_the_same_model` above runs `zebra2` with
 /// `stop_after = 1`, which finds *a* model and says nothing about whether
-/// there is another. The Python gate ran the same puzzle exhaustively and
-/// asserted `exhausted`, and that is the assertion that turns "one model was
-/// found" into "one model exists". It costs 29 ms here and ~21 s there, which
-/// is the whole reason it lived in a separate phase.
+/// there is another. This runs the same puzzle exhaustively and asserts
+/// `exhausted`, and that is the assertion that turns "one model was found"
+/// into "one model exists". It costs 29 ms.
 #[test]
 fn the_typed_encoding_is_unique_and_the_search_that_says_so_was_exhausted() {
     let (solved, terms) = run("examples/zebra2.ein", None);
@@ -343,8 +339,7 @@ fn the_contradictions_view_is_the_verdict_explained() {
 /// `(color-loc Green House-1 :source "injected contradiction")` — and the
 /// point of the fixture is that the engine blames *that line*. A core naming
 /// the right fact with the wrong provenance would still be useless to a
-/// reader, which is why the Python gate asserted the `:source` and not only
-/// the fact.
+/// reader, which is why this asserts the `:source` and not only the fact.
 #[test]
 fn the_injected_clash_carries_the_source_that_names_it() {
     let (solved, terms) = run("examples/ein-bugs/zebra2-bad.ein", None);

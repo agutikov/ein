@@ -1,4 +1,4 @@
-//! The per-form IR → DOT renderer — `ein.py`'s `ir/to_dot.py`.
+//! The per-form IR → DOT renderer.
 //!
 //! Implements `docs/kernel/ir/03-ein-lang/04_dot_rendering.md`. The default
 //! view is **compact**: a binary fact `(rel a b)` collapses to one labelled,
@@ -7,14 +7,13 @@
 //! Levi-bipartite octagon for both; every other arity renders bipartite in
 //! either mode, because DOT has no native hyperedge.
 //!
-//! **Where this port departs in shape, not in bytes.** ein.py's `to_dot`
-//! re-groups a flat program by synthesising wrapper `SForm`s — `SForm(head=
-//! Atom("facts"), args=…)` — and recursing. Synthesising a node here would
-//! mean a `&mut Ast` in a renderer, so the wrappers are *slices* instead:
-//! [`render_facts_forms`] and friends take the children directly and the
-//! public per-form entry points unwrap their argument into one. The emitted
-//! bytes are the wrapper's, because the wrapper only ever contributed the
-//! digraph name.
+//! **A wrapper form is a slice, not a node.** A flat program is re-grouped
+//! as if each group were a wrapper form — `(facts …)` and its siblings —
+//! rendered recursively. Synthesising a node would mean a `&mut Ast` in a
+//! renderer, so the wrappers are *slices* instead: [`render_facts_forms`] and
+//! friends take the children directly and the public per-form entry points
+//! unwrap their argument into one. The emitted bytes are a wrapper form's,
+//! because a wrapper only ever contributes the digraph name.
 
 use ein_ir::{Ast, Node, NodeId};
 
@@ -44,8 +43,8 @@ impl Default for DotOpts {
     }
 }
 
-/// `render_trace`'s view, with ein.py's friendly names alongside the legacy
-/// letters (`a`/`per-step`, `b`/`aggregate`, `c`/`dag`).
+/// `render_trace`'s view, with friendly names alongside the legacy letters
+/// (`a`/`per-step`, `b`/`aggregate`, `c`/`dag`).
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum TraceView {
     PerStep,
@@ -72,8 +71,8 @@ fn atom_id(ast: &Ast, id: NodeId) -> String {
         Node::Var(s) => quote(&format!("?{}", ast.sym(s))),
         Node::Wildcard => quote("_"),
         Node::Atom(s) => quote(ast.sym(s)),
-        // ein.py reads `node.name` unconditionally on the fall-through, so
-        // anything else is an `AttributeError` there and unreachable here.
+        // Every caller hands over an atom-like node, so anything else is
+        // unreachable.
         _ => panic!("not an atom-like node"),
     }
 }

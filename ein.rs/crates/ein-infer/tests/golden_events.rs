@@ -1,17 +1,14 @@
-//! The `--events` stream at `verbose`, against ein.rs's own goldens —
-//! [T1a.6.11.4](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing).
+//! The `--events` stream at `verbose`, against goldens — T1a.6.11.4.
 //!
-//! **What these are for is the half T2 stopped reading.** Since
-//! [S1a.6.10](../../../../docs/history/m1a_rust/README.md#s1a610--the-parity-contract-relaxes-answers-not-narration)
-//! the cross-engine comparison reads a segment's *derivation* — the facts its
+//! **What these are for is the half the derivation comparison elides.**
+//! `ein_narration::events` compares a segment's *derivation* — the facts its
 //! non-redundant firings produced and the rules that produced them — and
 //! elides the scheduling traffic that got it there: `enqueue`, `park`,
 //! `admit`, `retire`, `quiesce`, `alt`, `compile`, and every redundant firing.
-//! That is the right cut between two engines that deliberately narrate
-//! differently
-//! ([D3](../../../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)),
-//! and it means nothing else would notice ein.rs's own scheduling changing.
-//! These goldens are what notices.
+//! That is the right cut because a fork resumes root's saturation rather than
+//! re-deriving it, so two runs can narrate different amounts of one
+//! derivation, and it means nothing else would notice the engine's own
+//! scheduling changing. These goldens are what notices.
 //!
 //! Kept **small on purpose**: a fixture whose stream is thousands of lines is
 //! a golden nobody reads and everybody regenerates. Three from
@@ -64,7 +61,7 @@ fn stream(rel: &str, exhaustive: bool) -> String {
         ein_ir::load(&mut ast, &mut terms, &forms, path.parent()).expect("the fixture loads");
     let buf = Buffer::new();
     // No `impl` / `file` / `argv` on the `run` event: those are the CLI's, and
-    // two of the three are what `ein_parity::events::comparable` drops
+    // two of the three are what `ein_narration::events::comparable` drops
     // anyway. A golden that carried an absolute path would fail in every
     // other checkout.
     let mut events = Events::to(Box::new(buf.clone()), Level::Verbose);
@@ -110,7 +107,7 @@ fn every_event_stream_reproduces_its_golden() {
 }
 
 /// The goldens have to *contain* the elided classes, or they are not covering
-/// the half the parity contract stopped reading — they are just three more
+/// the half the derivation comparison elides — they are just three more
 /// files that happen to be stable.
 #[test]
 fn between_them_the_goldens_cover_every_elided_class() {
@@ -126,7 +123,7 @@ fn between_them_the_goldens_cover_every_elided_class() {
             .filter(|l| l.contains("\"e\": \"fire\"") && l.contains("\"redundant\": true"))
             .count();
     }
-    for kind in ein_parity::events::SCHEDULING {
+    for kind in ein_narration::events::SCHEDULING {
         assert!(
             seen.contains_key(kind),
             "no golden emits a `{kind}` event, so nothing pins it: {seen:?}"

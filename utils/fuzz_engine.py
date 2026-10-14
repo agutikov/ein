@@ -1,25 +1,10 @@
 #!/usr/bin/env python3
-"""The engine fuzzer — generate ein programs, check what one engine can check.
+"""The engine fuzzer — generate ein programs, check what every run must satisfy.
 
-    utils/fuzz_ein.py --iters 200                     # one pass
-    utils/fuzz_ein.py --minutes 60 --mode mixed       # a session
-    utils/fuzz_ein.py --seed 7 --iters 50             # replay a session
-    utils/fuzz_ein.py --replay corpus/fuzz_findings/hrule-reads-not.ein
-
-S1a.6.6 built this as a **differential** fuzzer: generate a program, run it on
-both engines, and let `ein-conformance` decide whether the two outputs
-differed. It found four real parity bugs in its first twenty minutes, on a
-surface five phases had signed off. **None of the four was a crash — all four
-were wrong answers** — so the arm that found them is the one that cannot be
-kept, and this header does not get to claim its predecessor's headline.
-It is [accepted loss L1](../docs/history/m1a_rust/oracle_ledger.md#6-accepted-loss),
-the single largest in [P1a.10](../docs/history/m1a_rust/README.md#p1a10--one-implementation),
-and the rewrite is
-[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
-T1a.10.4.2.
-
-The generator and the minimiser are untouched. What changed is what a case is
-*asked*.
+    utils/fuzz_engine.py --iters 200                     # one pass
+    utils/fuzz_engine.py --minutes 60 --mode mixed       # a session
+    utils/fuzz_engine.py --seed 7 --iters 50             # replay a session
+    utils/fuzz_engine.py --replay corpus/fuzz_findings/hrule-reads-not.ein
 
 ## The properties
 
@@ -40,18 +25,17 @@ rather than "the fuzzer failed".
 *could* reach an output, and two identical runs find one that *does* — along
 with an address or a clock reading that leaked into a rendering. It needs one
 normalisation and exactly one: `saturate` prints a phase table, so a `0.05 ms`
-is masked before the bytes are compared. That is not a parity cut — it is the
-one quantity that is nondeterministic **by construction** — and the fuzzer
+is masked before the bytes are compared. That is the one quantity that is
+nondeterministic **by construction**, and the fuzzer
 deliberately owns no other, because a private idea of "what two outputs are
 allowed to differ in" is how a checker drifts away from the gate.
 
-`id-order` is the ledger's property 3 and the strongest of the six: it is the
-successor to the `PYTHONHASHSEED` sweep, asked of generated input rather than
-of the corpus, and it compares **45 rendering ops** per file rather than what
-a CLI prints. It is also the only one that needs `cargo`, so `--no-id-order`
-turns it off — explicitly, because a property that skips itself when a tool is
-missing is how the workspace ended up reporting 41 passing tests that asserted
-nothing ([the ledger §2](../docs/history/m1a_rust/oracle_ledger.md#2-the-finding--46--of-einrss-own-integration-tests-are-differential)).
+`id-order` is the strongest of the six: it is `id_order_invariance`'s sweep
+asked of generated input rather than of the corpus, and it compares **45
+rendering ops** per file rather than what a CLI prints. It is also the only one
+that needs `cargo`, so `--no-id-order` turns it off — explicitly, because a
+property that skips itself when a tool is missing passes while asserting
+nothing.
 
 `jobs` is [M1a P1a.7](../docs/history/m1a_rust/README.md#p1a7--parallelism)'s, and it
 is the one property whose *subject* is the engine's execution rather than its
@@ -80,7 +64,7 @@ All six properties are things a **correct-looking wrong answer satisfies**. A
 generated program that loads, terminates, is deterministic, permutation-
 invariant and job-count-invariant can still derive the wrong facts, and nothing
 here would notice.
-That is L1 stated exactly, and its only mitigation is
+Its only mitigation is
 [P1c.1](../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance)'s
 stated expectations — a stdlib rule whose result is written down.
 
@@ -89,7 +73,7 @@ stated expectations — a stdlib rule whose result is written down.
 Grammar-directed against [the grammar](../docs/kernel/ir/03-ein-lang/00_ebnf.md),
 over a small universe (3–5 objects,
 2–4 relations), biased toward the shapes that stress the ordering-sensitive
-paths this port has actually broken on:
+paths the engine has actually broken on:
 
 | bias | why |
 |---|---|
@@ -97,7 +81,7 @@ paths this port has actually broken on:
 | `(absent …)` guards, nested via `forall` / `open` | the NAF boundary's admission order |
 | `(__symmetric__ R)` markers | hazard H1 — the native mirror's insertion order |
 | `(not (R …))` facts *and* `(absent (R …))` premises | the two negations that look alike |
-| mixed `str` / `int` fact arguments | Q-M1a.4 |
+| mixed `str` / `int` fact arguments | `defined_behaviour.md` §2.1's total order |
 | a `(config …)` lever | the flags the corpus exercises only on `solve` |
 
 Asserted heads never construct a nested term, so the derivable set is finite
@@ -105,13 +89,7 @@ and a generated program terminates; the per-case `--max-enterings` /
 `--max-set-size 2` budgets bound the *search* on top of that. A case that
 outlives `--timeout` anyway is the `terminates` finding.
 
-**The D2 exclusion is gone.** The generator used to avoid negative `:assert`
-heads and int hypothesis arguments, and the two D2 fixtures were kept out of
-the mutation seed set, because those shapes are the divergence ledger's own
-accepted entry and four findings in five would have been the answer we already
-knew. With one engine there is no divergence to re-find, so the generator's
-own restriction is lifted and every corpus file under the size limit is a
-mutation seed.
+Every corpus file under the size limit is a mutation seed.
 
 ## Modes
 
@@ -129,7 +107,7 @@ written to `corpus/fuzz_findings/` with the property, the run, the seed and
 the engine's own output. A 400-line generated program is not a bug report; an
 8-line one is. Nothing is added to `corpus/corpus.toml` automatically: that is
 the growth rule's step, and it happens in the commit that fixes the find or
-records it in the ledger, as a `regression` entry with a name.
+records it, as a `regression` entry with a name.
 
 **One report per distinct cause, across sessions.** A grammar-directed
 generator reaches the same shapes over and over: an unfiltered session writes
@@ -144,15 +122,7 @@ The first sessions after the rewrite found three, all of them questions rather
 than fixes and all of them in `fuzz_findings/`: an `(hrule …)` reading `not`
 aborts a debug build on a `debug_assert!`; the **unsat core**'s contents move
 under a permuted id space; and the goal-binding row the solve table prints
-does too — which re-derived, from a different seed, the exact seven forms of a
-find that had been filed as a cross-engine divergence in August, and showed it
-was never one.
-
-**No manifest is written any more.** The batch used to be handed to the
-harness as a throwaway corpus, which is why the group vocabulary had a
-`generated` name in it; S1a.10.4 removed the group with the manifest, because
-a corpus entry is a file the engine is *permanently* exercised over and these
-live for milliseconds.
+does too.
 """
 from __future__ import annotations
 
@@ -209,17 +179,10 @@ class Gen:
         self.bins = [f"r{i}" for i in range(rng.randint(2, 4))]
         self.unis = [f"u{i}" for i in range(rng.randint(0, 2))]
         # An `(hrule …)` switches generation from the blind enumerator to the
-        # rule-driven path, so both get exercised.
-        #
-        # It used to decide whether integer arguments were allowed as well: a
-        # hypothesis whose argument is an int (or a nested fact — see `head`)
-        # is **D2**, the ledger's accepted divergence, and while there were two
-        # engines a generator that kept producing it reported the known answer
-        # instead of a new one. There is one engine, so there is nothing to
-        # diverge from and the restriction is lifted (S1a.10.4): int arguments
-        # are drawn independently of the hypothesis path.
+        # rule-driven path, so both get exercised. Int arguments are drawn
+        # independently of it.
         self.hrule = rng.random() < 0.4
-        self.ints = rng.random() < 0.25                      # Q-M1a.4: int args
+        self.ints = rng.random() < 0.25                      # int args: §2.1's mixed order
         self.macros = rng.random() < 0.4         # forall / open
         self.algebra = rng.random() < 0.3        # symmetric / transitive rules
         self.forms: list[str] = []
@@ -313,9 +276,7 @@ class Gen:
     def head(self, bound: list[str], positive: bool = False) -> str:
         """`:assert`. `positive` forbids a negative head.
 
-        Kept as a parameter but no longer passed: it existed to keep `(hrule
-        …)` off D2's shape, and with one engine there is no divergence to
-        avoid. A caller that wants only positive heads still has it.
+        No caller passes it; a caller that wants only positive heads has it.
         """
         roll = self.r.random()
         if roll < 0.12 and not positive:
@@ -352,7 +313,7 @@ class Gen:
 
     def program(self, tag: str) -> str:
         f = self.forms
-        f.append(f";;; {tag} — utils/fuzz_ein.py")
+        f.append(f";;; {tag} — utils/fuzz_engine.py")
         if self.macros:
             f.append("(import std.macro :symbols (forall open))")
         if self.algebra:
@@ -470,14 +431,7 @@ def mutate(text: str, rng: random.Random) -> str:
 
 
 def seed_corpus(limit_bytes: int = 6000) -> list[Path]:
-    """The small corpus files worth mutating — big ones are slow, not clever.
-
-    Every one of them, since S1a.10.4. Two were excluded — the D2 fixtures
-    `examples/ein-bugs/{mixed-type,nested-fact}-hypothesis.ein` — because a
-    mutant of one is still a D2 reproducer and seeding from them meant finding
-    the ledger's own entry over and over. There is no second engine to diverge
-    from, so they are ordinary seeds again.
-    """
+    """The small corpus files worth mutating — big ones are slow, not clever."""
     out = []
     for root in ("examples", "stdlib"):
         for p in sorted((REPO / root).rglob("*.ein")):
@@ -631,9 +585,8 @@ def id_order(directory: Path, seeds: int) -> tuple[str | None, str]:
 def minimise(text: str, case: Path, fails) -> str:
     """Delete forms, then kw-pairs, then conjuncts, while `fails(text)` holds.
 
-    Unchanged from the differential version except for the predicate, which
-    was "the harness reports this cell" and is now "the same property on the
-    same run still fails". The caller writes the file; `fails` reads it.
+    The predicate is "the same property on the same run still fails". The
+    caller writes the file; `fails` reads it.
     """
     best = text
     changed = True

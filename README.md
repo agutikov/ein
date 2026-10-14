@@ -95,7 +95,7 @@ authoritative on intent.
 | **Theory Selection** | Identifies and retrieves existing theories, rules and reasoning patterns relevant to a given problem and its current formalization. | By hand: `(import std.bijection)` and `(bijective pet-loc)`; the compile unit is *rule × activator*. Two selections for one puzzle — [`zebra.ein`](examples/zebra.ein) via `std.slots`, [`zebra2.ein`](examples/zebra2.ein) via `std.bijection` — reach the same model. | [M2 S2.2.4](plans/m2_nl_to_ir/p2.2_formalizer/s2.2.4_passes.md) — the theory pass: the formalizer asserts `(bijective pet-loc)` from the stdlib catalogue and writes a rule only when no module has the property; [Q9](plans/m2_nl_to_ir/open_questions.md#q9--ontology-provenance), reframed from ontologies to theories. | [F12 `ideas.md`](plans/followups/f12_rules_and_relations/ideas.md) *select* a theory, do not invent properties — the LLM writes rules only as the last fallback · [F7 C](plans/followups/f7_rule_induction.md#sub-track-c--rule-set-sufficiency) rule-set sufficiency · [F16](plans/followups/f16_autoformalization/ideas.md) queens → knights keeps `T_placement + T_board` |
 | **Theory Synthesis** | Constructs new relations, constraints, rules and theories when existing knowledge is insufficient, including specialization and composition of existing theories. | — | [M2 S2.2.4](plans/m2_nl_to_ir/p2.2_formalizer/s2.2.4_passes.md) — synthesis as the formalizer's third action, permitted only when the pass names the property the catalogue lacks, and logged as such; two benchmark families (object tracking, temporal) have no stdlib theory on purpose, so the action is exercised ([P2.3](plans/m2_nl_to_ir/p2.3_benchmark/README.md)). [F7 B](plans/followups/f7_rule_induction.md#connection-to-m2)'s critical-path flag, taken up 2026-08-23. | [F7](plans/followups/f7_rule_induction.md) rule induction from relations and facts, companion-rule synthesis · [F5](plans/followups/f5_rules_as_data.md) rules as data — induce `(transitive R)` from `(R a b) (R b c) (R a c)` · [F4 Q37](plans/followups/f4_cross_cutting.md#induction--rules-from-facts-q37) · [F12](plans/followups/f12_rules_and_relations/) predicate invention (every match pattern is an unnamed relation), law discovery in a higher-order relation algebra · [F13](plans/followups/f13_puzzles_beyond_zebra/ideas.md) synthesis to a semantic fixed point |
 | **Theory Transformation and Specialization** | Adapts general theories to a particular problem context, derives specialized subtheories, and transforms representations into forms better suited for reasoning. | The mechanical half: macro expansion and imports ([`ein-ir`](ein.rs/crates/ein-ir/)), activator binding of generic rules to relations, and [`.einb`](docs/history/m1a_rust/README.md#p1a8--binary-kb-container) — a loaded, optionally saturated, KB as a file. | — | [F12 `ideas3`/`ideas4`](plans/followups/f12_rules_and_relations/) `Specialize(T, C, O)`: chess → queen placement → independent set → permutation CSP, eleven transformations, partial deduction / supercompilation / theory morphisms as prior art · [F15](plans/followups/f15_math_formulae/ideas.md) theory projection into formulae · [F7 A](plans/followups/f7_rule_induction.md#sub-track-a--generalisation-automation) · [F1](plans/followups/f1_categorical_formulation.md) / [F1b](plans/followups/f1b_logical_formulation.md) the categorical and FOL readings |
-| **Symbolic Reasoning Kernel** | Executes formal reasoning over Ein representations, including saturation, deduction, rule application, constraint propagation and fixed-point computation. | [`ein-core`](ein.rs/crates/ein-core/) + [`ein-ir`](ein.rs/crates/ein-ir/) + [`ein-infer`](ein.rs/crates/ein-infer/): a register matcher (O1), semi-naive saturation (O2), NAF at the closure/world boundary (O3), contradiction (O5), provenance (O6). Parse + load `zebra2` **0.67 ms**; `solve zebra2 -e` **29 ms**, 157× the PyPy engine; all four P1a.6 targets met, the tightest with 88 % headroom. | [M1a P1a.9](docs/history/m1a_rust/README.md#p1a9--release) — packaging shipped 2026-08-23 (`ein --version`, a release that cannot ship a red gate, a four-platform matrix awaiting its first tag); the Rust embedding page closes the port. | [F11](plans/followups/f11_deductive_layer_perf.md) beta-memories and WCOJ — measured, declined · [F5](plans/followups/f5_rules_as_data.md#kernel-minimisation--which-inference-features-belong-in-ein-lang-vs-kernel-code) kernel minimisation · [Q-M1e.16](docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) the binding key compares two register layouts as one — a known bug |
+| **Symbolic Reasoning Kernel** | Executes formal reasoning over Ein representations, including saturation, deduction, rule application, constraint propagation and fixed-point computation. | [`ein-core`](ein.rs/crates/ein-core/) + [`ein-ir`](ein.rs/crates/ein-ir/) + [`ein-infer`](ein.rs/crates/ein-infer/): a register matcher (O1), semi-naive saturation (O2), NAF at the closure/world boundary (O3), contradiction (O5), provenance (O6). Parse + load `zebra2` **0.67 ms**; `solve zebra2 -e` **29 ms**; all four P1a.6 targets met, the tightest with 88 % headroom. | [M1a P1a.9](docs/history/m1a_rust/README.md#p1a9--release) — packaging shipped 2026-08-23 (`ein --version`, a release that cannot ship a red gate, a four-platform matrix awaiting its first tag); the Rust embedding page closes M1a. | [F11](plans/followups/f11_deductive_layer_perf.md) beta-memories and WCOJ — measured, declined · [F5](plans/followups/f5_rules_as_data.md#kernel-minimisation--which-inference-features-belong-in-ein-lang-vs-kernel-code) kernel minimisation · [Q-M1e.16](docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) the binding key compares two register layouts as one — a known bug |
 | **Hypothesis Search** | Explores alternative assumptions and candidate models through structured backtracking over the hypothesis lattice. | The commitment lattice (O7/O8): layer *k* holds the size-*k* commitment sets, generated by Apriori prefix-join, pruned by lookahead, no-goods and downward closure. `--jobs N` fans a layer out over threads — **same verdict, same models, same counters** on 20 712 corpus cells; **3.17–4.40×** on 8 cores. | [M1d P1d.10](docs/history/m1d_satisfiability/README.md#p1d10--exhaustive-search) — why `zebra2-minus-15` does not finish: 32 models, all found by depth 3, `-e` killed at 30 min. | [F9](plans/followups/f9_e_catalog.md#what-the-catalog-taught) the closed ledger — every branch-count optimisation measured inert · [F4 Q31](plans/followups/f4_cross_cutting.md#llm-as-policy-in-search-tree-q31) the LLM as search policy · [Q-M1d.1](docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) may the search stop early |
 | **Constraint and Satisfiability Reasoning** | Enforces structural and semantic constraints, detects incompatible assignments, and searches for models satisfying the formalized theory. | Upper bounds with force — `functional` / `injective` as `(false)` rules, domain and range elimination, negative completion. Lower bounds (`total` / `surjective`) in refutation form, **plus, since M1d [S1d.2.4](docs/history/m1d_satisfiability/README.md#s1d24--obligations-in-the-saturator) (2026-08-25), in obligation form**: a rule may assert the reserved verdict atom `(open ?R)`, and a quiescent state reports what it still owes — `zebra2-minus-15` owes 46 at root, the hand census reproduced. The report is real; the **force** is not yet, and no verdict word moved. Models are found by search, not by a decision procedure. | [M1d P1d.2](docs/history/m1d_satisfiability/README.md#p1d2--obligations) obligations `L ≤ #{…} ≤ U` and three fixpoint outcomes — **S1d.2.1–.4 done**, S1d.2.5 (branch on an obligation's alternatives) and S1d.2.6 (the verdict word) next; [P1d.3](docs/history/m1d_satisfiability/README.md#p1d3--model-sets) model sets without enumeration · [M10](plans/m10_external_benchmarks/README.md) the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean | [`m1d/ideas.md`](docs/history/m1d_satisfiability/ideas.md) what saturation lacks to be satisfiability · [F12 `ideas3`](plans/followups/f12_rules_and_relations/ideas3.md) choice → saturation → conflict → backtrack · [F4 Q40](plans/followups/f4_cross_cutting.md#may-a-performance-lever-decide-what-a-complete-model-is-q40) a performance lever currently decides the verdict on two fixtures — unresolved |
 | **Contradiction Detection and Analysis** | Identifies inconsistent states and traces contradictions back to the rules, facts and hypotheses responsible for them. | `(X, ¬X)` / `(false)` detection; an AND/OR provenance DAG; the **unsat core** — the smallest set of given facts from which one recorded contradiction follows (over the derivations the store retained, at most 32 per fact; not a subset-minimal MUS); one learned no-good per dead commitment. Fixture: [`ein-bugs/zebra2-bad.ein`](examples/ein-bugs/zebra2-bad.ein). | [Q-M1d.6](docs/history/m1d_satisfiability/open_questions.md#q-m1d6--may-contradiction-be-said-with-exhausted--false) — ten corpus entries say *Contradiction* at the depth cap with `exhausted = false`; *incomplete* is the word they want. [Q-M1e.15](docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) — the 32-alternative cap retains by premise count and the search minimises frontier size, so it can hide the smaller explanation ([`ein-bugs/alt-cap-core.ein`](examples/ein-bugs/alt-cap-core.ein)); no shipped puzzle is changed by it. | [F3](plans/followups/f3_three_task_classes_first_class.md) `ein why-not` / `explain` · [F12 `ideas5`](plans/followups/f12_rules_and_relations/ideas5.md) `emit false` as a forbidden pattern, `T⁺ ∩ T⁻ = ∅` · [F9](plans/followups/f9_e_catalog.md) E7 / E19: MUS minimisation is unsound under NAF |
@@ -206,41 +206,34 @@ the monotone / non-monotone seam
 | O8 conflict-driven pruning | no-goods, downward-closure pruning, lookahead kills cached as `(not h)` | CDCL, backjumping, forward checking |
 | O9 model canonicalisation | the sorted fact list is the state identity | symmetry breaking, SBDS / SBDD |
 
-The thirteen behaviours that used to be defined by "whatever the Python engine
-did" — diagnostics, orderings, error strings — are normative in
+Thirteen behaviours — diagnostics, orderings, error strings — are normative in
 [`defined_behaviour.md`](docs/kernel/defined_behaviour.md); the full kernel
 specification is [`docs/kernel/`](docs/kernel/README.md).
 
 ### The engine in numbers
 
-**M1** (shipped 2026-06-17) built the engine in Python and solved the Zebra
-puzzle end-to-end. **M1a** rewrote it in Rust behind a byte-exact parity gate
-and then, with the gate watching, made it fast; since
-[S1a.10.5](docs/history/m1a_rust/README.md#s1a105--the-removal)
-`ein.rs/` is the only implementation. Every number below is on the record,
-with its instrument and its machine state, under
-[`docs/history/m1a_rust/`](docs/history/m1a_rust/README.md); the CPython / PyPy denominators
-are **frozen constants**, because the engine they measured left the tree.
+**M1** (shipped 2026-06-17) solved the Zebra puzzle end-to-end. **M1a**
+(shipped 2026-08-23) built `ein.rs/` and made it fast. Every number below is
+on the record, with its instrument and its machine state, under
+[`docs/history/m1a_rust/`](docs/history/m1a_rust/README.md).
 
 | measurement | value | record |
 |---|---:|---|
-| `solve zebra2.ein -e` end-to-end, PyPy → ein.rs | 4.53 s → **29.0 ms** (157×); peak RSS 223 MB → 17 MB | [baseline.md § the close](docs/history/m1a_rust/measurements/baseline.md#the-four-targets-at-the-close), [P1a.6 § Targets](docs/history/m1a_rust/README.md#p1a6--performance) |
-| `solve zebra.ein -e` | 8.33 s → **47.2 ms** (175×) | same |
-| parse + load `zebra2.ein` · the three-fixture acceptance gate | 0.43 s → **0.67 ms** · 36.0 s → **0.127 s** | same |
+| `solve zebra2.ein -e` end-to-end | **29.0 ms**; peak RSS **17 MB** | [baseline.md § the close](docs/history/m1a_rust/measurements/baseline.md#the-four-targets-at-the-close), [P1a.6 § Targets](docs/history/m1a_rust/README.md#p1a6--performance) |
+| `solve zebra.ein -e` | **47.2 ms** | same |
+| parse + load `zebra2.ein` · the three-fixture acceptance gate | **0.67 ms** · **0.127 s** | same |
 | the P1a.6 optimisation programme on `zebra -e` | 585.8 → 47.5 ms across the phase; matcher candidates 25 160 149 → 238 567 | [baseline.md](docs/history/m1a_rust/measurements/baseline.md) |
 | `--jobs 8` on 8 P-cores, the four workloads that fan out | **3.17–4.40×** (`branching/06 -e` 194 → 44 ms); the ≥ 6× target **not met**, the remaining 1.5× named as allocation, not contention | [scaling.md](docs/history/m1a_rust/measurements/scaling.md#8-t1a721--the-fan-out-and-the-three-things-it-costs), [P1a.7](docs/history/m1a_rust/README.md#p1a7--parallelism) |
 | `--jobs N` is the same computation | 20 712 (file, op, jobs) cells, **0 moved**, 30 s; the verbose event stream byte-identical at both job counts, 2 200 561 lines included; 10 000 paired fuzz runs, zero findings | [P1a.7 § acceptance](docs/history/m1a_rust/README.md#p1a7--parallelism) |
 | memory under parallelism | per-worker provenance: `features/01 -e` 684–708 MB → **85–91 MB**; peak RSS 79.8 / 90.3 MB at `--jobs 1 / 16` | [design/README § Measured](docs/history/m1a_rust/design/README.md#measured) |
 | `.einb`, the binary KB container | a saturated `zebra2` is 57 688 bytes and opens cold in **0.614 ms**; `solve x.einb` byte-identical to `solve x.ein`; 20 000 fuzzed inputs and 3 348 bit-flips rejected by the digest | [P1a.8](docs/history/m1a_rust/README.md#p1a8--binary-kb-container) |
-| the gate | 312 tests in 9 m 13 s with a Python process in 42 of them → **619 tests, 0 failures, 1 m 51 s**, no Python | [oracle ledger](docs/history/m1a_rust/oracle_ledger.md), [`run_tests.sh`](run_tests.sh) |
-| what replaced the two-engine oracle | 4 228 renderings banked as digests, 13 counter identities over every solve cell, an id-space permutation sweep: **0 answers moved**, 66 renderings (all narration); four accepted losses, named | [oracle ledger § 5–6](docs/history/m1a_rust/oracle_ledger.md#5-what-the-successor-found) |
+| the gate | **619 tests, 0 failures, 1 m 51 s** | [`run_tests.sh`](run_tests.sh) |
 | the corpus | 128 entries in six groups, 629 cells as processes in 5.3 s; the slow tier 641 cells in **19.4 s** where it was 660 in 242.6 s; **two** entries are slow and `cost_ms` says so | [corpus_cost.md](docs/history/m1a_rust/measurements/corpus_cost.md#7-the-first-re-take--2026-08-22-and-it-moved-an-entry), [`corpus/`](corpus/README.md#slow) |
-| determinism | every order-sensitive site reproduces ein.py's; `--shuffle` is MT19937 exactly; a permuted id space moves 51 of 3 160 renderings and 0 answers | [design/02](docs/history/m1a_rust/design/02_determinism_and_order.md), [ledger](docs/history/m1a_rust/oracle_ledger.md#5-what-the-successor-found) |
+| determinism | every order-sensitive site specified; `--shuffle` is MT19937 exactly | [design/02](docs/history/m1a_rust/design/02_determinism_and_order.md) |
 
 Two of the phase histories are worth reading as method rather than as
 results. P1a.6 closed on a lever matrix with a **control row** pricing each
-column and a differential fuzzer that found four parity bugs in its first
-twenty minutes. P1a.7 **declined six things by a number** — a validator, two
+column. P1a.7 **declined six things by a number** — a validator, two
 locks, `loom`, two of its four parallel levels and `--unordered` — and recorded
 that a parallel run is an instrument that finds sequential waste
 ([P1a.7](docs/history/m1a_rust/README.md#p1a7--parallelism)); [F9](plans/followups/f9_e_catalog.md)
@@ -340,8 +333,8 @@ were measured, not assumed:
 - **Every check is still relative** — to the engine's own past — until
   [M1c](docs/history/m1c_external_validation/README.md#the-thesis) and
   [M10](plans/m10_external_benchmarks/README.md) land an independent one. The precedent is specific: a stdlib guard was wrong for a
-  year through five phases of byte-exact parity, and what found it was an
-  independent enumeration written outside the engine.
+  year, and what found it was an independent enumeration written outside the
+  engine.
 
 ### What the kernel is not — three C baselines
 
@@ -396,11 +389,6 @@ and Windows are [S1a.9.3](docs/history/m1a_rust/README.md#s1a93--packaging-and-r
 matrix, written and reviewed; the first tag is what runs it. **`pip install`
 is not a channel** — the Python binding was deferred on 2026-08-21 for want of
 a consumer ([Q-M1a.23](docs/history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)).
-
-> **There was a Python implementation** — `ein.py/` — and it was the reference
-> for five phases of the port. It left the tree at M1a
-> [S1a.10.5](docs/history/m1a_rust/README.md#s1a105--the-removal),
-> commit `4c1a5b3`; its parent is the last revision that had both engines.
 
 ### Solve
 
@@ -491,7 +479,7 @@ of 2026-10-14:
 | milestone | what | status |
 |---|---|---|
 | **M1** — core graph reasoning | the IR, the KB, saturation, contradiction, the hypothesis loop, the trace, the Zebra solve | **shipped 2026-06-17**; its plan folder is in git history |
-| [**M1a**](docs/history/m1a_rust/README.md) — the Rust port | a 1:1 observable surface outside, a free hand inside; parity first, speed second, scale third | **shipped 2026-08-23** — all eleven phases closed, `ein.rs` the only implementation. The plan folder was deleted with it; the record is [`docs/history/m1a_rust/`](docs/history/m1a_rust/README.md) — the eleven phases and 53 stages as one document, plus the design contracts, the measurements, the divergence ledger and twenty-three questions |
+| [**M1a**](docs/history/m1a_rust/README.md) — the Rust engine | `ein.rs`: the crates first, speed second, scale third | **shipped 2026-08-23** — all eleven phases closed. The plan folder was deleted with it; the record is [`docs/history/m1a_rust/`](docs/history/m1a_rust/README.md) — the eleven phases and 53 stages as one document, plus the design contracts, the measurements and twenty-three questions |
 | [**M1c**](docs/history/m1c_external_validation/README.md) — external validation | the check that is not relative to Ein's own past: `:expect` on `query` + `ein test` for every stdlib rule | **shipped 2026-08-24** — one phase, five stages, and **38 of 73 never-firing stdlib rules → 0**, held by `cargo test`. The plan folder was deleted with it; the record is [`docs/history/m1c_external_validation/`](docs/history/m1c_external_validation/README.md) — the phase and its stages as one document, plus the census and seven questions. Its benchmark phase left for M10 on 2026-08-23 |
 | [**M1d**](docs/history/m1d_satisfiability/README.md) — from saturation to satisfiability | why an under-determined puzzle does not finish; existence requirements as first-class **obligations**; model sets without enumeration | **shipped 2026-08-27** — four phases, eighteen stages: a program can state a requirement, a state says what it **owes**, the verdict word `Open`, every count says whether it is certified, and a second traversal reaching 32 models in 86 enterings where the lattice needs 17 204 592. The record is [`docs/history/m1d_satisfiability/`](docs/history/m1d_satisfiability/README.md) |
 | [**M1e**](docs/history/m1e_review_processing/README.md) — review processing | the full-tree review of 2026-08-27, finding by finding, under a standard of proof written into [`standard_of_proof.md`](docs/kernel/standard_of_proof.md) | **closed 2026-10-14** — all 63 findings dispositioned, all ten questions answered, the gate 738 → 821 tests. The record is [`docs/history/m1e_review_processing/`](docs/history/m1e_review_processing/README.md); its probes found wrong answers the review never listed |
@@ -624,12 +612,9 @@ components.
 **Closed ledgers — read before proposing.** [F9](plans/followups/f9_e_catalog.md)
 (28 search-layer entries, all settled; the lesson: *every branch-count
 optimisation failed, the one cost optimisation worked*, because the search is
-a complete cardinality-BFS, not a DPLL tree),
-[F10](plans/followups/f10_m1_refactor_tail/README.md) (the M1 refactor tail,
-kept for its 40-finding review register) and
+a complete cardinality-BFS, not a DPLL tree) and
 [F11](plans/followups/f11_deductive_layer_perf.md) (beta-memories and WCOJ,
-both measured against the port and declined, with the workload that would
-reopen them named).
+both measured and declined, with the workload that would reopen them named).
 
 **Open-question indexes**: [`plans/open_questions.md`](plans/open_questions.md)
 (cross-milestone; Q26 compound node kinds and Q28 `()` semantics still open),
@@ -650,7 +635,7 @@ reopen them named).
 | `ein.rs/crates/ein-einb/` | the `.einb` binary KB container — the one crate whose `cast.rs` is permitted `unsafe`, audited |
 | `ein.rs/crates/ein-render/` | the DOT views, the markdown trace, the state / lattice dumps, the JSON summary |
 | `ein.rs/crates/ein-cli/` | the `ein` binary — `solve` · `test` · `saturate` · `render` · `kb` |
-| `ein.rs/crates/{ein-corpus,ein-parity}/` | dev-only: the corpus manifest, fixture helpers and the bench set; the one definition of narration-vs-content |
+| `ein.rs/crates/{ein-corpus,ein-narration}/` | dev-only: the corpus manifest, fixture helpers and the bench set; the one definition of narration-vs-content |
 | [`stdlib/`](stdlib/README.md) | the ein-lang standard library, seven `std.*` modules; `MANIFEST.sha256` keeps the embedded copy honest |
 | [`corpus/`](corpus/README.md) | `corpus.toml` — one entry per `.ein` with the runs it is exercised under and a measured `cost_ms`; `fuzz_findings/` |
 | [`examples/`](examples/README.md) | `zebra.ein` / `zebra2.ein` (the puzzle, two encodings), `zebra2-minus-15.ein` (32 models), `zebra2-hints.ein`; per-feature fixtures in `features/`, `branching/`, `saturation/`, `lattice/`, `domain_elim/`, `syntax/`; `ein-bugs/` regressions; `broken/` parse / load / compile negatives with expected messages |
@@ -658,8 +643,8 @@ reopen them named).
 | [`build.sh`](build.sh) · [`run_tests.sh`](run_tests.sh) | everything that builds, in one command · the gate |
 | [`docs/guide/`](docs/guide/) | **start here** — *Learn Ein by solving the Zebra puzzle* |
 | [`docs/kernel/`](docs/kernel/README.md) | the kernel specification: graph semantics, data model, ein-lang, the inference engine, defined behaviour, the event protocol, the Zebra walkthrough |
-| [`docs/api/`](docs/api/ein.md) | the Python embedding contract — **a record held in reserve**; nothing implements it and nothing is scheduled to |
-| [`docs/history/`](docs/history/README.md) | shipped milestones kept as record — [M1a, the Rust port](docs/history/m1a_rust/README.md): eleven phases, the design contracts the crates cite, the measurements nothing can re-take; [M1c, external validation](docs/history/m1c_external_validation/README.md): one phase, and a stdlib census that *can* be re-taken; [M1d, from saturation to satisfiability](docs/history/m1d_satisfiability/README.md): four phases, the `Open` verdict, and four re-takable censuses with a `utils/` script apiece; [M1e, review processing](docs/history/m1e_review_processing/README.md): a 63-finding review processed finding by finding, the ledger and the reports verbatim |
+| [`docs/api/`](docs/api/rust.md) | how to drive Ein as a library — the crates `ein-ir`, `ein-infer`, `ein-render`, `ein-einb`; the worked example is a test |
+| [`docs/history/`](docs/history/README.md) | shipped milestones kept as record — [M1a, the Rust engine](docs/history/m1a_rust/README.md): eleven phases, the design contracts the crates cite, the measurements; [M1c, external validation](docs/history/m1c_external_validation/README.md): one phase, and a stdlib census that *can* be re-taken; [M1d, from saturation to satisfiability](docs/history/m1d_satisfiability/README.md): four phases, the `Open` verdict, and four re-takable censuses with a `utils/` script apiece; [M1e, review processing](docs/history/m1e_review_processing/README.md): a 63-finding review processed finding by finding, the ledger and the reports verbatim |
 | [`docs/lib/`](docs/lib/README.md) | the catalogue of external tech across 12 topic files — constrained generation, solvers, provers, category theory, graph rewriting, neuro-symbolic stacks, benchmarks — plus a knowledge graph |
 | [`plans/`](plans/README.md) | the roadmap: milestones M1e2, M1f, M2, M5, M10, M20, plus `followups/`, `ideas/`, open questions — M1a, M1c and M1d shipped and M1e closed, and all four moved to `docs/history/` |
 | [`plans/ideas/`](plans/ideas/README.md) | the author's ten founding notes — authoritative on intent |
@@ -685,9 +670,8 @@ inference and multilevel hypothesis branching
 ([idea 05](plans/ideas/05-zebra-puzzle-graph-reasoner.md)), and a link-grammar
 + SMT front end that `nlp/` and `smt/` still hold. The modernisation started
 in May 2026 with the founding notes and the external-tech catalogue; **M1**
-shipped the engine on 2026-06-17; **M1a** began the Rust port on 2026-08-17,
-reached byte parity on 2026-08-18, met its speed targets on 2026-08-19,
-retired the Python engine on 2026-08-21 and closed its parallelism phase on
+shipped the engine on 2026-06-17; **M1a** began `ein.rs` on 2026-08-17,
+met its speed targets on 2026-08-19 and closed its parallelism phase on
 2026-08-23. M3 was dropped on 2026-08-18, M1c and M1d were created on
 2026-08-21 out of M1a's last two phases and the user's saturation note, and
 on 2026-08-23 the project took the name **EinAf**, as the framing above became

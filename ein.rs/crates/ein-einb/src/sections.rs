@@ -552,7 +552,7 @@ fn read_naf_arg(r: &mut Reader<'_>, maps: &Maps, depth: u32) -> Result<NafArg> {
 /// past 60 KB before a fact is stored, against a design budget of 64 KB for
 /// the whole file — while the canonical dump of the same forms is 11 KB. The
 /// other is the stage's own note: `dump_canonical` is already the frontend's
-/// serialiser, and a second one is a second thing to keep in parity.
+/// serialiser, and a second one is a second thing to keep in step.
 ///
 /// What it costs is a parse of already-resolved text on open — no imports, no
 /// filesystem, no macro invocations left to chase — and what it buys, beyond

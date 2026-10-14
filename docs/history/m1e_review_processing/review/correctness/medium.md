@@ -104,7 +104,7 @@ Make `as_fact()` (and `tag()`) reject the sentinel, or at minimum add a test ass
 
 ### Finding
 
-`collect_macros` (first-declaration-wins, silently skips malformed forms) + `expand_rule_clauses` carry a doc comment claiming "what the loader does, and therefore the shape the parity gate compares" — while the actual loader path is `from_ir::ingest_macros` (duplicate = error, reserved = error) + `expand_pair` per rule. A reader trusting the comment models the wrong duplicate/reserved semantics; a non-loader caller (the dump/golden path) gets different macro registration than a load does.
+`collect_macros` (first-declaration-wins, silently skips malformed forms) + `expand_rule_clauses` carry a doc comment claiming to be "what the loader does" — while the actual loader path is `from_ir::ingest_macros` (duplicate = error, reserved = error) + `expand_pair` per rule. A reader trusting the comment models the wrong duplicate/reserved semantics; a non-loader caller (the dump/golden path) gets different macro registration than a load does.
 
 ### Impact
 

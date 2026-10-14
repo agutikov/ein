@@ -1,7 +1,6 @@
 //! Recursive descent over the grammar
-//! ([`00_ebnf.md`](../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md),
-//! `grammar.lark` until S1a.10.5), with the two ambiguities Earley
-//! resolves implicitly resolved explicitly.
+//! ([`00_ebnf.md`](../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md)), with
+//! its two ambiguities resolved explicitly.
 //!
 //! **Backtracking, not lookahead.** Every production begins `"(" LITERAL`, and
 //! the literal can also be the prefix of a longer `SYMBOL` (§[`crate::lex`]),
@@ -9,30 +8,29 @@
 //! `rule_decl` named `x` when the rest of the form fits one, and an ordinary
 //! fact named `rulex` when it does not. The parser therefore tries the
 //! alternatives **in grammar order** and takes the first that consumes the
-//! whole `( … )` — which is what Lark's ambiguity resolution does, and is
-//! sound here because every alternative ends at the same closing paren, so a
-//! choice never changes what the *rest* of the file sees.
+//! whole `( … )` (`defined_behaviour.md` § 1.4), which is sound because every
+//! alternative ends at the same closing paren, so a choice never changes what
+//! the *rest* of the file sees.
 //!
-//! **Error position.** ein.py reports Lark's, and Lark reports the furthest
-//! point its Earley columns reached — so the parser tracks the furthest
-//! cursor at which an expected terminal failed to match and reports that, not
-//! the failure of the last alternative tried. Reaching the end of the input
-//! is `UnexpectedEOF`, which Lark stamps `-1:-1` with `pos_in_stream = -1`;
-//! [`get_context`] reproduces the caret that quirk produces
+//! **Error position.** The error is reported at the furthest point any
+//! alternative reached — so the parser tracks the furthest cursor at which an
+//! expected terminal failed to match and reports that, not the failure of the
+//! last alternative tried. Reaching the end of the input reports `-1:-1`, and
+//! [`get_context`] renders the caret that produces
 //! ([design/04](../../../../docs/history/m1a_rust/design/04_ir_frontend.md) §4,
-//! Q-M1a.3).
+//! `defined_behaviour.md` § 1.1–1.3, Q-M1a.3).
 
 use crate::ast::{Ast, FileId, Loc, Node, NodeId, canonical_int};
 use crate::lex::{
     Cursor, Lexeme, Term, match_literal, match_term, skip_trivia, unescape_string_body,
 };
 
-/// A syntax error, rendered exactly as `ir/parser.py` renders Lark's:
-/// `{file}:{line}:{col}: unexpected input` and then `get_context`'s two lines.
+/// A syntax error, rendered as `{file}:{line}:{col}: unexpected input` and
+/// then `get_context`'s two lines.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ParseError {
     pub file: String,
-    /// `-1` at end of input — Lark's `UnexpectedEOF`.
+    /// `-1` at end of input.
     pub line: i64,
     pub col: i64,
     pub context: String,
@@ -53,7 +51,7 @@ impl std::error::Error for ParseError {}
 /// Parse `text` into top-level forms, appending to `ast`.
 ///
 /// `filename` is recorded in every `Loc` and in the error message; `None`
-/// becomes `<string>`, as `parse(text)` does in ein.py.
+/// becomes `<string>`.
 pub fn parse(ast: &mut Ast, text: &str, filename: Option<&str>) -> Result<Vec<NodeId>, ParseError> {
     ein_core::counters::bump(|k| {
         k.parse_call += 1;
@@ -81,7 +79,7 @@ pub fn parse(ast: &mut Ast, text: &str, filename: Option<&str>) -> Result<Vec<No
             }
             None => {
                 // Not `c`: an inner alternative may have got further before it
-                // died, and that further point is what Lark names.
+                // died, and that further point is what is reported.
                 p.note_fail(c);
                 return Err(p.error(filename));
             }
@@ -89,12 +87,15 @@ pub fn parse(ast: &mut Ast, text: &str, filename: Option<&str>) -> Result<Vec<No
     }
 }
 
-/// Lark's `UnexpectedInput.get_context`, character-for-character.
+/// The context block under a parse error: the source line around the error,
+/// then a caret under its column.
 ///
-/// Two details are load-bearing and neither is incidental: the window is
-/// **40 characters** either side, so a long line is *truncated* around the
-/// caret; and `pos` is `-1` for an EOF error, where Python's negative slicing
-/// then renders the last line of the file with the caret one past its end.
+/// Two details are load-bearing and neither is incidental
+/// (`defined_behaviour.md` § 1.1–1.2): the window is **40 characters** either
+/// side, taken before the line is cut, so a long line is *truncated* around
+/// the caret; and an EOF error (`pos` is `None`) is placed on the file's last
+/// character, which renders the last line of the file with the caret one past
+/// its end.
 pub fn get_context(text: &str, pos: Option<usize>) -> String {
     let chars: Vec<char> = text.chars().collect();
     let n = chars.len();
@@ -108,7 +109,8 @@ pub fn get_context(text: &str, pos: Option<usize>) -> String {
             )
         }
         None => {
-            // `text[0:-1]` and `text[-1:39]`, exactly.
+            // Before: every character but the last. After: the last
+            // character, if it is one of the first 39.
             let before = if n == 0 {
                 Vec::new()
             } else {
@@ -140,7 +142,7 @@ pub fn get_context(text: &str, pos: Option<usize>) -> String {
     format!("{before}{after}\n{pad}^\n")
 }
 
-/// `len(s.expandtabs())` — tab stops every 8 columns.
+/// The width of `s` with its tabs expanded — tab stops every 8 columns.
 fn expandtabs_len(s: &str) -> usize {
     let mut col = 0;
     for ch in s.chars() {
@@ -171,9 +173,9 @@ fn line_col(chars: &[char], i: usize) -> (u32, u32) {
 /// `;[^\n]*`, or `#\|[\s\S]*?\|#` (non-greedy, so the *first* `|#`).
 fn trivia_end(chars: &[char], i: usize) -> Option<usize> {
     match chars[i] {
-        ch if is_py_space(ch) => {
+        ch if is_space(ch) => {
             let mut e = i;
-            while e < chars.len() && is_py_space(chars[e]) {
+            while e < chars.len() && is_space(chars[e]) {
                 e += 1;
             }
             Some(e)
@@ -199,23 +201,20 @@ fn trivia_end(chars: &[char], i: usize) -> Option<usize> {
     }
 }
 
-fn is_py_space(ch: char) -> bool {
+fn is_space(ch: char) -> bool {
     ch.is_whitespace() || ('\u{1c}'..='\u{1f}').contains(&ch)
 }
 
-/// Where Lark *reports* the failure, given the position `p` at which the parse
+/// Where the failure is *reported*, given the position `p` at which the parse
 /// actually ran out of viable items. Usually `p` — but not always, and the
-/// difference is neither cosmetic nor rare enough to ignore.
+/// difference is neither cosmetic nor rare enough to ignore
+/// (`defined_behaviour.md` § 1.3).
 ///
-/// `xearley.py`'s scanner advances one **character** at a time and raises
-/// `UnexpectedCharacters(i)` only when the Earley set, the scan buffer *and*
-/// the `delayed_matches` dict are all empty. `delayed_matches` is a
-/// `defaultdict(list)` keyed by a match's end position, and the `%ignore`
-/// pass writes `delayed_matches[m.end()].extend(to_scan)` for **every**
-/// position at which whitespace or a comment matches — including positions
-/// no live item is looking at, and including an empty `to_scan`, which still
-/// *creates* the key. A dict holding one empty list is truthy, so those
-/// phantom keys hold the error back until the scanner walks past them:
+/// Whitespace and comments are matched at **every** character position the
+/// scan passes — including inside a string, and including positions no
+/// grammar rule is looking at — and each match stays *pending*, keyed by its
+/// end, until the scan walks past that end. A pending match holds the error
+/// back:
 ///
 /// ```text
 /// (y";"{      → 1:6   ·  the `{`
@@ -223,13 +222,13 @@ fn is_py_space(ch: char) -> bool {
 ///                        end is one character further along
 /// ```
 ///
-/// So the reported position is the first `i >= p` at which no pending key
-/// remains — and since keys are deleted in increasing order, "no pending key"
-/// is just "the furthest end seen so far is at most `i + 1`". Running off the
-/// end without dying is `UnexpectedEOF`, which is `None` here.
+/// So the reported position is the first `i >= p` at which no pending match
+/// remains — and since matches retire in increasing order of end, "no pending
+/// match" is just "the furthest end seen so far is at most `i + 1`". Running
+/// off the end without dying is the EOF error, which is `None` here.
 ///
-/// Copied rather than corrected: the harness diffs stderr, so a better message
-/// is a T3 failure (Q-M1a.3 — reproduce exactly, then improve both together).
+/// Kept rather than corrected: every `examples/broken/` fixture is baselined
+/// against it, and a better message is Q-M1a.3's open option (c).
 fn death_position(chars: &[char], p: usize) -> Option<usize> {
     let mut furthest_key = 0usize;
     for i in 0..chars.len() {
@@ -383,7 +382,7 @@ impl<'a> Parser<'a> {
         let name = self.ast.intern(&l.text(self.src)[1..]);
         let key = self.ast.push(Node::Keyword(name), loc);
         let (value, next) = self.value(l.next)?;
-        // `KwPair.loc` is the *key's* loc — `ast.py::kw_pair`.
+        // A `KwPair`'s loc is the *key's* loc.
         Some((self.ast.push(Node::KwPair { key, value }, loc), next))
     }
 

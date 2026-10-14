@@ -24,19 +24,16 @@ engine and the corpus's median cell is mostly `execve`.
 ## Why there is a file here at all
 
 `corpus/corpus.toml` marked **17 of 128** entries `slow = true`, and six
-carried a note dropping `solve` / `solve -e` / `render lattice` for a reason
-given verbatim as *"outlives a 150 s budget under CPython, and a run nobody
-can finish is not coverage."*
+carried a note dropping `solve` / `solve -e` / `render lattice` as outliving a
+150 s budget — *"a run nobody can finish is not coverage."*
 
-The flag and the exclusions were priced in the T1a.0.1.1 probe of 2026-08-17,
-against an engine that left the tree at
-[S1a.10.5](../README.md#s1a105--the-removal), on a budget
-set for it. Nothing had re-taken them since, and nothing could: there was no
+The flag and the exclusions were priced in the T1a.0.1.1 probe of 2026-08-17.
+Nothing had re-taken them since, and nothing could: there was no
 threshold to check the flag against and no instrument that would have.
 
-This file is what re-takes them. Its tables are the first ein.rs-native
-pricing of the corpus, and they outlive the decisions made on them: whatever
-happens to the flag next, these are the numbers it moved from.
+This file is what re-takes them. Its tables are the first pricing of the
+corpus on the shipping build, and they outlive the decisions made on them:
+whatever happens to the flag next, these are the numbers it moved from.
 
 ## 1. The seventeen, measured
 
@@ -69,7 +66,7 @@ manifest does not declare; § 3 prices those separately.
 column is the flag after that.
 ² sixteen cells — the manifest's widest column, which four other entries also
 have — and still a quarter of a second.
-³ not flagged, but it carried the same CPython note and is re-priced with its
+³ not flagged, but it carried the same budget note and is re-priced with its
 two siblings.
 
 **Spread.** Above 10 ms the measurement is quiet: of the 655 repeated cells,
@@ -143,7 +140,7 @@ written into M1d with the `-m` sweep as its reproducer, and **this stage
 changed no verdict word**: doing so would move checked-in fixtures across the
 corpus and it is a semantic decision, not a release chore.
 
-### C — the ones that cannot finish, and CPython was never why
+### C — the ones that cannot finish, and the budget was never why
 
 Eight cells across four entries do not end in a verdict at the default `-m 5`.
 They do not end in a timeout either. They end in the **OOM killer**:
@@ -154,10 +151,10 @@ anon-rss:14271536kB, … oom_score_adj:200
 ```
 
 That is `ein solve examples/features/04_open.ein`, 78 s in, having reached
-**14.3 GB** of anonymous memory. The exclusion note blamed a 150 s CPython
-budget; the truth is that an unbounded hypothesis space is unbounded in
-**memory** first, and it would have been true of any engine. The note's reason
-was wrong even where its conclusion was right.
+**14.3 GB** of anonymous memory. The exclusion note blamed a 150 s budget;
+the truth is that an unbounded hypothesis space is unbounded in **memory**
+first, however fast the engine. The note's reason was wrong even where its
+conclusion was right.
 
 ## 3. The runs the manifest does not declare, priced
 
@@ -360,6 +357,4 @@ EIN_CORPUS_SLOW=1 cargo test --manifest-path ein.rs/Cargo.toml -p ein-cli --test
 
 An OOM-killed cell reads `exit -9` in the table and is a **machine-dependent**
 reading: this box has 31 GB, of which ~9 GB were free. What is not machine
-dependent is that the run has no fixed point to reach — the planning probe on
-another machine recorded `04_open :: solve` at 136 s *without* the kill, and
-that is the same finding with more RAM under it.
+dependent is that the run has no fixed point to reach.

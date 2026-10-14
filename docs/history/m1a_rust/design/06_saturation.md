@@ -3,14 +3,12 @@
 **Settles:** the fixpoint driver, the delta discipline, and how NAF is
 evaluated — §O2, §O3, §O5.
 **Phase:** [P1a.3](../README.md#p1a3--deductive-core).
-**Replaces:** `ein/inference/{saturator,engine,world,contradiction,
-nogoods}.py` (saturation half).
 
 ---
 
 ## 1. The algorithm, unchanged
 
-S1.21.8 made saturation **two-phase**, and that shape is the port's
+S1.21.8 made saturation **two-phase**, and that shape is the
 contract:
 
 ```
@@ -30,38 +28,26 @@ step():
   fixpoint. **At most one is admitted per round**, and that is a
   soundness requirement, not a throttle: admitting a batch lets one
   admission invalidate another's guard *after* its verdict was taken,
-  which on `p ← absent q; q ← absent p` derives both. The port keeps
-  one-at-a-time and keeps the docstring's argument with it.
+  which on `p ← absent q; q ← absent p` derives both. One-at-a-time
+  stays, and so does the argument for it.
 - Failures **stay parked** (a `forall`'s nested `(absent (and G (absent
   B)))` can flip from failing to passing as the KB grows); an
   anti-monotone guard that fails is **retired** (`naf_retired`).
 
-Everything else ports verbatim: priority bands (advisory since S1.21.8),
-FIFO within a band via the monotone tiebreaker, `_seen` keyed on
+Everything else stands as it is: priority bands (advisory since S1.21.8),
+FIFO within a band via the monotone tiebreaker, `seen` keyed on
 `(binding_key, guards)` (the S1.22.0 or-disjunct fix), `naf_dropped`
-structurally 0, `SaturatorStepLimitError` on `max_steps`.
+structurally 0, `SaturateError::StepLimit` on `max_steps`.
 
 ---
 
 ## 2. Where the time actually goes
 
-Exhaustive zebra2, CPython profile:
-
-| | cum | share |
-|---|---:|---:|
-| `saturate` (all of it) | 19.1 s | 94 % |
-| ├─ `_admit_from_boundary` | **14.7 s** | **72 %** |
-| │  └─ `World.first_failing → absent → holds → _run_steps` | 11.3 s | 55 % |
-| └─ `_closure_step` | 4.4 s | 22 % |
-| &nbsp;&nbsp;&nbsp;├─ `_enqueue_pass` | 2.9 s | 14 % |
-| &nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;└─ `compile_all` | 1.7 s | 8 % |
-| &nbsp;&nbsp;&nbsp;└─ `_apply` (incl. `fire`, `_record_alternative`) | 1.1 s | 6 % |
-
-The headline is worth restating because it is not what the engine
-narrative predicts: **negation costs more than deduction.** 3 178
-boundary rounds issue 33 113 guard queries, and each query is a full
-re-run of a negative sub-plan against the whole KB, gated only by the
-`_watch_stamp` size check.
+The headline is worth stating because it is not what the engine
+narrative predicts: **negation costs more than deduction.** On an
+exhaustive zebra2, 3 178 boundary rounds issue 33 113 guard queries, and
+each query is a full re-run of a negative sub-plan against the whole KB,
+gated only by the watch stamp's size check.
 
 Two structural wins follow, both exact.
 
@@ -69,14 +55,13 @@ Two structural wins follow, both exact.
 
 ## 3. Win A — compile once, ever
 
-`_enqueue_pass` starts with `self.engine.compile_all()`, which walks
-`kb.rules.values() × _activators_for(rule)` and calls `compile_for` for
-each. Measured: **253 440 `compile_for` calls, 1.45 s**, of which all but
-19 are cache hits, plus 102 `Saturator.__init__` calls that each build a
-fresh `Engine` and compile from scratch (0.84 s).
+The enqueue pass starts with `compile_all()`, which walks
+`rules × activators(rule)` and compiles each pair — nearly always a cache
+hit, except that every fresh `Saturator` builds a fresh `Engine` and
+compiles from scratch, 102 of them on an exhaustive zebra2.
 
 A `JoinPlan` is a **pure function of `(rule, activator_args)`** — that is
-exactly its cache key. So ein.rs keeps a **process-wide plan memo**:
+exactly its cache key. So the engine keeps a **process-wide plan memo**:
 
 ```rust
 struct PlanMemo { plans: Vec<Plan>, by_key: FxHashMap<(Symbol, ArgsKey), PlanId> }
@@ -86,18 +71,18 @@ shared by `Arc` across every fork. A fork that derives a new activator
 compiles one new plan; every other fork reuses it. Compilation happens
 once per distinct pair for the whole process.
 
-**Order caveat (important).** The *iteration order* of `Engine._cache` is
-observable — `_enqueue_pass`'s full pass iterates `cache.values()`. A
-fork's Python cache is built by iterating `rules` × the *fork's*
-`_rule_apps_by_rule`, so a fork-derived activator for an early rule sorts
-before a root activator of a later rule. A naive "share the root cache
-and append" would produce a different order. So the memo holds the
-*plans*; each `Engine` keeps its own `Vec<PlanId>` built in exactly
-Python's order — cheap, since building it is now hash lookups, not
-compiles. And the recompute is skipped entirely unless
-`_rule_apps_by_rule` grew, tracked with a per-relation version counter.
+**Order caveat (important).** The *iteration order* of an engine's plan
+list is observable — the enqueue pass's full pass iterates it. A fork's
+list is built by iterating `rules` × the *fork's* rule applications, so
+a fork-derived activator for an early rule sorts before a root activator
+of a later rule. A naive "share the root list and append" would produce
+a different order. So the memo holds the *plans*; each `Engine` keeps its
+own `Vec<PlanId>`, built rule by rule and activator by activator — cheap,
+since building it is now hash lookups, not compiles. And the recompute
+is skipped entirely unless the rule applications grew, tracked with a
+per-relation version counter.
 
-Expected: ~2.5 s of 20 s (12 %) removed, exactly, with no behaviour
+Expected: ~12 % of the run removed, exactly, with no behaviour
 change — and `compile_rule` invocations drop from **17 430** to one per
 distinct `(rule, activator)` pair, which on exhaustive zebra2 is ~170
 (each of the 102 engines compiles the same ~170 pairs from scratch
@@ -127,14 +112,13 @@ than assumed.
 > this section predicted, and **21.1 % of the run is inside
 > `ein_infer::compile`** with 19.7 % of it under `PlanMemo::intern`
 > ([baseline.md §7](../measurements/baseline.md#7-the-top-five-costs)
-> item 1). ein.py compiles exactly as many times, so this is not a parity
-> defect — it is an unclaimed 21 %, which is nearly twice the 12 % this
-> section expected.
+> item 1) — an unclaimed 21 %, which is nearly twice the 12 % this section
+> expected.
 >
-> The order caveat below is why it is safe to claim now: the `compile` **event**
-> fires on an *engine* miss and not a memo miss, and both implementations emit
-> **17 250** of them on that run (identical `--events` streams, 183 231 lines
-> each), so a memo underneath the engine is invisible to T2 by construction.
+> The order caveat is why it is safe to claim now: the `compile` **event**
+> fires on an *engine* miss and not a memo miss — **17 250** of them on that
+> run — so a memo underneath the engine is invisible to the event stream by
+> construction.
 > [S1a.6.8](../README.md#s1a68--the-compile-cache-and-the-extent-counts) landed it.
 
 ---
@@ -171,20 +155,20 @@ Three further exact refinements:
    `(guard_id, projected_env) → verdict` for the duration of one boundary
    round; the KB cannot change mid-round (at most one admission, and it
    ends the round).
-2. **Version counters instead of size tuples.** `_watch_stamp` builds a
-   tuple of extent *sizes* over `sorted(g.watched)` — 324 492 calls,
-   0.77 s. A per-relation `u32` version bumped on append gives the same
+2. **Version counters instead of size tuples.** A watch stamp built as a
+   tuple of extent *sizes* over the sorted watched relations is 324 492
+   builds on an exhaustive zebra2. A per-relation `u32` version bumped on append gives the same
    answer (sizes are monotone, so equal sizes ⇔ equal extents) in one
    comparison; store the last-seen version vector per parked candidate.
-3. **Dirty set instead of heap churn.** Today every parked entry is
-   popped and re-pushed each round. Keep the ordered structure, but
+3. **Dirty set instead of heap churn.** Rather than pop and re-push every
+   parked entry each round, keep the ordered structure, but
    maintain `watched_relation → parked candidates` and only *evaluate*
    the candidates whose watched relations changed — walking the parked
    set in the same priority/FIFO order, so "the first candidate whose
    guards pass" is the same candidate.
 
 All four are verdict- and order-identical by construction; each ships
-behind a T2 diff on the whole corpus.
+behind an unchanged event stream on the whole corpus.
 
 **Not allowed:** batch admission (§1), or skipping the boundary when the
 queue is non-empty (the phases are ordered for a reason).
@@ -233,47 +217,42 @@ fetching a ten-deep participation bucket and unifying all of it
 
 ## 5. Queues, delta, and the mirror
 
-| ein.py | ein.rs |
+| state | structure |
 |---|---|
-| `_queue`, `_parked`: `heapq` of 6-tuples | `BinaryHeap<Reverse<(u32 priority, u64 tiebreak)>>` + a side arena of entries ([02](02_determinism_and_order.md) §2) |
-| `_seen: set[(binding_key, guards)]` | `FxHashSet<(BindingKey, GuardSetId)>`; `GuardSetId` interns the per-disjunct guard tuple |
-| `engine._fired: set[key]` | `FxHashSet<BindingKey>` |
-| `_delta_facts: list[Fact] \| None` | `Option<SmallVec<[FactId; 8]>>`; `None` ⇒ full pass |
-| `_matched_plan_ids: set[id(plan)]` | a bitset over the engine's plan-list index |
-| `_pos_index: rel → [plan]`, rebuilt when the cache grows | same, rebuilt on the plan-list version |
-| `_mirror_queue: list[Fact]`, consumed with `.pop()` | a `Vec<FactId>` used as a **stack** — LIFO, not FIFO, despite the name |
+| the queue, the parked set | `BinaryHeap<Reverse<(u32 priority, u64 tiebreak)>>` + a side arena of entries ([02](02_determinism_and_order.md) §2) |
+| `seen`, keyed on `(binding_key, guards)` | `FxHashSet<(BindingKey, GuardSetId)>`; `GuardSetId` interns the per-disjunct guard tuple |
+| `fired` | `FxHashSet<BindingKey>` |
+| the delta, or none | `Option<SmallVec<[FactId; 8]>>`; `None` ⇒ full pass |
+| the matched plans | a bitset over the engine's plan-list index |
+| `pos_index: rel → [plan]` | rebuilt on the plan-list version |
+| the mirror queue | a `Vec<FactId>` used as a **stack** — LIFO, not FIFO, despite the name |
 
 ### `__symmetric__` native mirror
 
 A relation marked `(__symmetric__ R)` has its extent closed under
-arg-swap directly by the saturator — no plan, no matcher. Port notes:
+arg-swap directly by the saturator — no plan, no matcher. Notes:
 
-- The cold seed iterates `_symmetric_rels()`, a **`frozenset`** — the one
-  place set-iteration order leaks into firing order
-  ([02](02_determinism_and_order.md) §5 H1). Confirm the hazard on
-  ein.py under differing `PYTHONHASHSEED`; if it reproduces, fix ein.py
-  with a `sorted(...)` first, then port the sorted version.
+- The cold seed iterates the marked relations **sorted by name** — a
+  hash-ordered set here is the one place set-iteration order would leak
+  into firing order ([02](02_determinism_and_order.md) §5 H1).
 - The re-derivation path (mirror already exists → record an *alternative*
   justification rather than dropping it) is what makes the justification
   graph genuinely cyclic; the explanation search handles it by taking a
-  least fixpoint from the sources up. Port both halves or the explanation
-  minimality changes.
+  least fixpoint from the sources up. Both halves are needed, or the
+  explanation minimality changes.
 - Gated by `enable_symmetric_mirror`; when off, the stdlib `symmetric`
   rule covers it transparently.
 
 ---
 
-## 5b. Win C — the fork boundary (added 2026-08-18, **landed in ein.rs 2026-08-19**)
+## 5b. Win C — the fork boundary (added 2026-08-18, **landed 2026-08-19**)
 
 > **Settled.** [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
-> was answered **ein.rs-only**: `Saturator::resume` is the shipping path in
-> ein.rs, ein.py keeps the fresh saturator, and
-> [D3](../divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
-> records the difference. Fork firings −74 % / −77 %, fork compiles → 0,
+> was answered **yes**: `Saturator::resume` is the shipping path, and the
+> fresh saturator stays behind the `fork-delta` feature (`EIN_FORK_DELTA=0`)
+> as the control arm. Fork firings −74 % / −77 %, fork compiles → 0,
 > `solve zebra.ein -e` 525.6 → 394.2 ms — the milestone's last unmet target.
-> The two paragraphs below about "both implementations together" are what was
-> expected before the evidence; what actually decided it is that the
-> **answers** are identical — every verdict, model, unsat core and
+> What decided it is that the **answers** are identical — every verdict, model, unsat core and
 > `summary.json` counter, over 3.2 M enterings — while the narration is not.
 > One prediction was wrong: the alternative-justification set does *not*
 > survive. 267 529 facts record a different, equally valid derivation first,
@@ -303,17 +282,17 @@ cumulatively. Win A's 17 430 compiles are a *symptom* of the same fresh
 saturator: 12 625 of them happen inside forks, and another 4 375 in hypgen.
 
 Unlike Wins A and B this one is **not order-identical by construction**. A
-`Firing` is narrated — T2 emits one `fire` line per firing at `verbose`,
-and T3 compares `--trace`'s `n_firings`, `--dump-states`' per-node
-`firings` counts and the first five firings `render/shape.rs` prints. What
+`Firing` is narrated — the event stream carries one `fire` line per
+firing at `verbose`, and `--trace`'s `n_firings`, `--dump-states`' per-node
+`firings` counts and the first five firings `render/shape.rs` prints all
+show it. What
 the fixpoint, the models, the verdict and the alternative-justification
 set do is *unchanged*, and the argument for each is in
 [S1a.6.9](../README.md#s1a69--the-fork-entry-delta-the-resumed-saturator) § What is not
-at risk. So this is a decision about what the engine says it did, taken
-by both implementations together or by neither:
+at risk. So this is a decision about what the engine says it did:
 [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint).
 
-The parity-preserving half of it is §5's own table read at the fork
+The narration-preserving half of it is §5's own table read at the fork
 boundary: the *root* beta-memories of
 [05 §7](05_matcher.md) reproduce the same match sequence from a table, so
 the firings still happen — they are just no longer re-discovered.
@@ -322,40 +301,38 @@ the firings still happen — they are just no longer re-discovered.
 
 ## 6. Firing, redundancy, alternatives
 
-`_apply` builds every conclusion (`assert_templates` — A13 multi-assert),
-looks each up, and:
+Applying a match builds every conclusion (`assert_templates` — A13
+multi-assert), looks each up, and:
 
 - **all present** → a `redundant` Firing, no insertion, and — the
   high-volume path, ~194 k redundant firings on an exhaustive zebra2 —
-  `_record_alternative` records the derivation as an alternative
-  justification if any conclusion still accepts one. The O(1)
-  `accepts_justification` pre-check exists to avoid building a
-  `Provenance` (and stringifying bindings) on that path; ein.rs keeps the
-  same shape, and gets the stringification for free by *not* doing it
-  (Provenance holds `Symbol`s — [03](03_data_model.md) §7).
+  the derivation is recorded as an alternative justification if any
+  conclusion still accepts one. The O(1) `accepts_justification`
+  pre-check exists to avoid building a `Provenance` on that path, and
+  bindings are never stringified at all (Provenance holds `Symbol`s —
+  [03](03_data_model.md) §7).
 - **any absent** → `fire()` builds one `Provenance` shared by all
   conclusions and inserts each.
 
 `build_fact` walks the template resolving `Reg`s; an unbound var in an
-`:assert` is a hard error in ein.py (`KeyError` with a specific message)
-— in ein.rs a typed error with the same rendered text.
+`:assert` is a hard error — a typed error, rendered as a `KeyError` line
+([defined_behaviour.md](../../../kernel/defined_behaviour.md#4-errors-and-exit-codes)).
 
 ### Contradiction detection
 
 `contradicts(kb, fact)` — the incremental check the fail-fast fork
-saturation (S1.9.E23, ~2× on exhaustive zebra2) depends on — becomes:
+saturation (S1.9.E23) depends on — is:
 
-| shape | ein.py | ein.rs |
-|---|---|---|
-| `(false …)` | name compare | `rel == FALSE_SYM` |
-| `(not X)` landed | `_fact_by_id(X)` — O(deg) scan | `present.test(inner_fact_id)` |
-| positive `X` landed | `(rn, args) in _negated_facts` | `negated.test(fact_id)` |
+| shape | check |
+|---|---|
+| `(false …)` | `rel == FALSE_SYM` |
+| `(not X)` landed | `present.test(inner_fact_id)` |
+| positive `X` landed | `negated.test(fact_id)` |
 
-Two bit tests. The full `ContradictionDetector.detect()` scan (used
-pre/post fork) walks `_facts_by_relation['false']` then `['not']`;
-identical in Rust, but the inner lookup is a bit test, and the result
-order (direct ⊥ first, then pairs in extent order) is preserved because
-it reaches the unsat core and the trace.
+Two bit tests. The full detection scan (used pre/post fork) walks the
+`false` extent then the `not` extent; the inner lookup is a bit test, and
+the result order (direct ⊥ first, then pairs in extent order) is fixed
+because it reaches the unsat core and the trace.
 
 ---
 
@@ -364,20 +341,14 @@ it reaches the unsat core and the trace.
 `is_stalled()` forces a fresh full enqueue pass, checks the mirror, then
 checks whether any queued entry is unfired, then consults the boundary.
 It is called by external drivers that wrote facts directly to the KB.
-Port as-is — including the deliberate side effect of running an enqueue
-pass, which changes `_tiebreaker` and therefore later ordering.
+That includes the deliberate side effect of running an enqueue pass,
+which advances the tiebreaker and therefore changes later ordering.
 
 ---
 
 ## 8. Acceptance for this design
 
-- **T2 firing-sequence parity** on every fixture under
-  `examples/saturation/**`, `examples/features/**`,
-  `examples/domain_elim/**`, plus root saturation of `zebra.ein` /
-  `zebra2.ein` (378 and 502 facts respectively — a per-fact,
-  per-provenance diff).
-- Counters identical: `naf_rounds`, `naf_admitted`, `naf_retired`,
-  `naf_dropped == 0`, alternative-justification counts per fact.
+- `naf_dropped == 0` on every corpus entry.
 - Win A: `compile_rule` invocation count on exhaustive zebra2 drops from
   ~17 430 to ≤ 60 (the distinct `(rule, activator)` pairs), with the
   event log proving the cache order is unchanged.
@@ -386,7 +357,7 @@ pass, which changes `_tiebreaker` and therefore later ordering.
   2026-08-19**: only **7.3 %** of an exhaustive zebra2's evaluations are on a
   guard the mechanism can help ([Q-M1a.17](../open_questions.md#q-m1a17--win-bs--80--assumed-monotone-guards-dominate)),
   so this clause measures a lever that is not there. The identical-sequence half
-  of it stands and is unconditional — it is T2. The boundary's *speed*
+  of it stands and is unconditional. The boundary's *speed*
   acceptance moves to
   [S1a.6.12](../README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)'s, stated
   in cumulative profile share rather than in evaluations, because after the

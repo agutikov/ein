@@ -7,10 +7,10 @@ itself a graph node, and that the *instance-of* relation is itself
 an instance of itself.
 
 It is the substrate from which the surface S-expression language
-([`../03-ein-lang/`](../03-ein-lang/)) and the Python data model
+([`../03-ein-lang/`](../03-ein-lang/)) and the data model
 ([`../02-data-model/`](../02-data-model/)) are derived.
 
-> **No language, no Python here.** Pure graph-algebraic claims.
+> **No language, no code here.** Pure graph-algebraic claims.
 
 ---
 
@@ -78,10 +78,10 @@ either:
 - a **`:keyword`** — positional-shorthand marker; not a node, but a
   slot-name on a relation.
 
-The Python data model encodes this in `Fact.__eq__` (by `(rel,
-args)` tuple) and in name-identity for named objects — the `NameRef`
-index keyed by the atom (the former `Instance.__eq__`-by-name was
-removed with the type/instance entity-view, S1.7.23); see
+The data model encodes this in fact identity (by `(rel, args)`
+tuple) and in name-identity for named objects — the `NameRef`
+index keyed by the atom (by-name instance identity was removed with
+the type/instance entity-view, S1.7.23); see
 [`../02-data-model/01_entities.md` §1.4](../02-data-model/01_entities.md).
 
 ## 3. Two flavours of node
@@ -137,11 +137,11 @@ the others are *uses* of it:
 | **relation instance** = **fact** | `(co-located Norwegian Red)` | proposition node          |
 | **multi-arrow node** (colloquial) | any `(A B C)`        | bare graph-structural sense       |
 
-The Python data model picks one term per use:
+The data model picks one term per use:
 
 - `Relation` entity ⟺ relation-as-type (the declaration).
 - `Fact` entity ⟺ relation instance.
-- "node with ≥ 2 outgoing arrows" — has no Python entity; it's the
+- "node with ≥ 2 outgoing arrows" — has no entity of its own; it's the
   *category* the first two are subcases of.
 
 In informal discussion, **prefer the precise term** (`Relation
@@ -301,19 +301,17 @@ property tag exactly like `transitive` / `functional`. Symmetry lives
 *entirely* in the user's positive rule `(rule symmetric (?R) :match
 (?R ?a ?b) :assert (?R ?b ?a))`; the kernel keys on `is_symmetric` in
 **no search path**. S1.7.24 deleted the three search-layer sites that
-used to hardcode symmetric-awareness: generation's both-orderings emit
-(`hypgen._fill_slot`), the on-death mirror (`back_prop`'s
-`promote_symmetric` + the monotonic writeback; `back_prop` itself later
-removed entirely, S1.9.E6a), and the open-set
-canonicalisation (`solution.open_hypotheses`). Correct model counting
+used to hardcode symmetric-awareness: generation's both-orderings emit,
+the on-death mirror (with its monotonic writeback), and the open-set
+canonicalisation. Correct model counting
 (`k`) is now recovered *generically* — the two orientations of an
 undecided pair saturate (via the user's rule) to the same KB and
-collapse at the `canon.state_key` solution-node dedup; result-level
+collapse at the `canon::state_key` solution-node dedup; result-level
 lattice records (gaps solutions, contradictions deads, the shuffle
-snapshot) key on that state, not the commitment path. The two unprivileged
-property queries that survived the deletion in ein.py — `store.is_symmetric`
-and `symmetric_relations` — did **not** survive the port: nothing in the
-crates carries either name, which is the same claim one step stronger. This makes the kernel sound for a user-defined
+snapshot) key on that state, not the commitment path. No unprivileged
+property query of symmetry survives either: nothing in the crates carries
+`is_symmetric` or `symmetric_relations`, which is the same claim one step
+stronger. This makes the kernel sound for a user-defined
 or differently-named symmetric rule, and a precondition for sound rule
 *induction* ([F7](../../../../plans/followups/f7_rule_induction.md)) — a
 symmetric-aware kernel would presuppose the very property induction must
@@ -340,8 +338,8 @@ The `(false)` fact's `args` are empty by convention — multiple
 firings within a single fork dedupe (`Fact` identity is
 `(relation, args)`), so only the first firing's provenance is
 preserved. That's enough for "is this branch dead?" and for
-the unsat-core frontier walk (`KnowledgeBase.unsat_core` via
-`provenance.walk_premises`) to identify the responsible
+the unsat-core frontier walk (`unsat_core` via
+`walk_premises`) to identify the responsible
 hypothesis from the first firing's premise chain. Promote to `(false <witness>)`
 with per-firing args if a future puzzle needs all parallel
 contradictions individually addressable.

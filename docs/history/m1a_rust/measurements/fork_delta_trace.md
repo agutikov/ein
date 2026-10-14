@@ -143,12 +143,11 @@ two arms, 1.08 M enterings compared fact by fact:
 
 - **unchanged**: the verdict, `k`, the models, the query bindings, the printed
   unsat core, the entering count, each entering's `kind`, every **alive**
-  fork's fixpoint fact for fact, and all 85 fields of `summary.json` —
-  **T0 and T1 in full**;
-- **changed**: the firing lists themselves (T2 and T3), and — the finding this
+  fork's fixpoint fact for fact, and all 85 fields of `summary.json`;
+- **changed**: the firing lists themselves, and — the finding this
   stage did not expect — the **proof structure**: which of several equally
   valid derivations is recorded first, for 267 529 facts. See
   [baseline.md §11](baseline.md#11-the-resumed-fork-saturator-measured) for
-  the numbers,
+  the numbers and
   [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
-  for the decision, and [D3](../divergences.md) for what was accepted.
+  for the decision.

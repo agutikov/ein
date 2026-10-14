@@ -1,7 +1,7 @@
 ;;; `:expect` — a query that states its own answer (M1c S1c.1.2).
 ;;;
 ;;; Every other check in this repo is *relative*: the goldens compare ein.rs to
-;;; its own past, and after P1a.10 there is no second engine to compare it to.
+;;; its own past, which says "still what it was" and never "and that is right".
 ;;; `:expect` is the one kind that is not — the program says what it should
 ;;; derive, and the engine checks it. `ein solve` exits 1 when the claim is
 ;;; false, so this file is a test that needs no harness to be one.

@@ -18,9 +18,9 @@
 //!
 //! ### Storage
 //!
-//! A clause is a `Box<[FactId]>` sorted by **id**, not by content. ein.py's is
-//! a `frozenset`, so the only questions asked of it are membership and subset
-//! — and for those any total order does, which is why this one does not need
+//! A clause is a `Box<[FactId]>` sorted by **id**, not by content. It is a
+//! set, so the only questions asked of it are membership and subset — and for
+//! those any total order does, which is why this one does not need
 //! [`ein_core::Terms::cmp_fact_semantic`]. The one place order escapes is the
 //! `nogood` event, and that sorts the rendered s-expressions.
 //!
@@ -54,7 +54,7 @@ use crate::events::Events;
 /// Gated by `enable_path_nogoods` at the call site: with it off the store
 /// stays empty and `filter_candidate`'s subset check is a no-op, so subsumed
 /// dead commitments are re-explored — a different entering count, which is why
-/// the lever is a T1 observable rather than a tuning knob.
+/// the lever shows in the counters rather than being a tuning knob.
 pub fn emit_nogood(
     kb: &Kb,
     terms: &Terms,

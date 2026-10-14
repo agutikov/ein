@@ -13,9 +13,9 @@
 //! interned tables instead is the same trade the fact store makes — creating a
 //! record says nothing about whether any KB has recorded it, so a fork may
 //! build one without the parent seeing it, and a `ProvId` means the same thing
-//! in every branch. What ein.py copies per fork (and must: a justification
-//! recorded inside a hypothesis fork can name premises root never assumed) is
-//! the *table*, and that stays per-KB.
+//! in every branch. What is per-fork (and must be: a justification recorded
+//! inside a hypothesis fork can name premises root never assumed) is the
+//! *table*, and that stays per-KB.
 //!
 //! ## The fork region
 //!
@@ -98,7 +98,7 @@ pub enum ProvKind {
 }
 
 impl ProvKind {
-    /// The spelling ein.py stores in `Provenance.kind`.
+    /// The spelling dumps and traces print.
     pub fn as_str(self) -> &'static str {
         match self {
             ProvKind::Source => "source",
@@ -126,13 +126,12 @@ pub struct NafRef {
 /// One argument position of a [`NafRef`].
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum NafArg {
-    /// The query ranged free here — ein.py's `None`.
+    /// The query ranged free here.
     Free,
     /// A name or a number: a bound variable, an `Atom`'s name, an `Int`.
     Value(Value),
-    /// A nested pattern, which `world._ground` renders as a
-    /// `(relation, (args…))` tuple — so it can be partly free, and cannot
-    /// collapse into a [`Value`].
+    /// A nested pattern, rendered as a `(relation, (args…))` tuple — so it
+    /// can be partly free, and cannot collapse into a [`Value`].
     Nested { rel: Symbol, args: Box<[NafArg]> },
 }
 
@@ -149,10 +148,9 @@ pub struct Prov {
     /// Variable bindings in **bind order**, which is the order they land in
     /// the trace ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §2).
     ///
-    /// ein.py stringifies these at record time (`(k, str(v))`); keeping the
-    /// `Value` and rendering at display time is the same information with the
-    /// rendering decision left where it belongs — `Terms::display` is
-    /// `str(v)` for each of the three shapes.
+    /// Kept as the `Value` and rendered at display time
+    /// (`Terms::display`), which leaves the rendering decision where it
+    /// belongs.
     pub bindings: Box<[(Symbol, Value)]>,
     /// S1.21.8's negative premises. **Recorded, not yet interpreted** by any
     /// walk: making a walk honour them is a semantics change that
@@ -446,7 +444,7 @@ impl ProvArena {
 
     /// No hash-consing: two firings with the same premises produce two
     /// records, and the dedup that matters happens in
-    /// `record_justification`, where ein.py does it too.
+    /// `record_justification`.
     pub fn push(&mut self, prov: Prov) -> ProvId {
         crate::counters::bump(|c| c.prov_push += 1);
         if self.forking {

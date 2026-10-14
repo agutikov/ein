@@ -1,10 +1,10 @@
 //! What a whole solve costs — the P1a.4 figure.
 //!
-//! The milestone's baseline is `solve zebra2.ein` end-to-end: 1.87 s under
-//! CPython on the default `stop_after = 1` path and 5.69 s exhaustive, with
-//! **hypothesis search** the 4.96 s of it. This measures the search alone —
-//! parse and load are P1a.1/P1a.2's rows — over the same work, which the
-//! printed verdict and entering count say.
+//! The milestone's baseline is `solve zebra2.ein` end-to-end, on the default
+//! `stop_after = 1` path and exhaustive, with **hypothesis search** most of
+//! it. This measures the search alone — parse and load are P1a.1/P1a.2's
+//! rows — over the same work, which the printed verdict and entering count
+//! say.
 //!
 //! ```sh
 //! cargo run --release -p ein-infer --example solve_cost

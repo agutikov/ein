@@ -90,8 +90,8 @@ The verdicts are **answers to one problem**, not separate commands.
 the lattice exhausted, `k` is *the* model count; without it, `k` is a **lower
 bound**, and the `Ambiguity` rendering says so in two places (`(a lower bound
 — the search did not exhaust)` beside the number, and *models found* in the
-sentence). `Solution` has said the same thing as *"(not certified — pass
---exhaustive)"* since ein.py. The words themselves do not change: the verdict
+sentence). `Solution` has long said the same thing as *"(not certified — pass
+--exhaustive)"*. The words themselves do not change: the verdict
 is still read from the result, and `verdict.type` is still `Ambiguity`.
 
 **`k` counts models, and since M1d S1d.2.6 that is not the same number as
@@ -137,11 +137,8 @@ itself the smallest explanation of that dead.
 `contradictions_solve` — which fixed the verdict by *which function was
 called* and so disagreed on the same input — were removed 2026-06-16.)
 
-**And the `Mode` enum went with them.** ein.py kept `SOLVE` / `GAPS` /
-`CONTRADICTIONS` as engine-internal vocabulary after the entries were removed
-— `SOLVE` reaching the live path and the other two surviving as unreferenced
-members — and this section documented all three as reserved strings. **The
-port did not carry it**: there is no `Mode` in
+**And the `Mode` enum went with them.** There is no `Mode` — no `SOLVE` /
+`GAPS` / `CONTRADICTIONS` — in
 [`verdict.rs`](../../../ein.rs/crates/ein-infer/src/verdict.rs), nor anywhere
 else in `ein-infer`, and no goal-check string is branched on. The
 exactly-one-binding test is
@@ -205,10 +202,8 @@ closure as the stdlib `symmetric` rule (`std.algebra`) — pinned by
 `stdlib_semantics.rs::the_native_mirror_computes_the_same_closure_as_the_stdlib_rule`
 — but skips the plan + match the rule pays per mirror. **No real
 symmetric-heavy puzzle exists yet** — zebra2 uses `co-located*` rules, not the
-generic closure — so the speed-up is measured only on a synthetic generator,
-and the ~1.2× that used to be quoted here came from a runner that left with
-the Python engine. Opt-in by marking
-the relation; ordinary puzzles take the no-op path (the mirror queue is empty
+generic closure — so the speed-up is unmeasured on any real puzzle. Opt-in by
+marking the relation; ordinary puzzles take the no-op path (the mirror queue is empty
 when nothing is marked, so zero overhead). Re-adds, behind the dunder, the
 kernel symmetric-awareness S1.7.24
 removed — now namespaced so it never masquerades as a userspace name.

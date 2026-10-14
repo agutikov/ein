@@ -11,7 +11,7 @@ added four more — `eq` and `absent`, each below and above its arity — which 
 [§ The second batch](#the-second-batch-m1e-arity).
 
 Sibling `../*.ein` fail at parse and `../load/*.ein` at load. The split is by
-**where** a file stops being usable, and it is what lets a port gate on one
+**where** a file stops being usable, and it is what let M1a gate on one
 layer at a time — [P1a.1](../../../docs/history/m1a_rust/README.md#p1a1--ir-frontend)
 on parse, [P1a.2](../../../docs/history/m1a_rust/README.md#p1a2--kb-core) on load,
 [S1a.3.1](../../../docs/history/m1a_rust/README.md#s1a31--the-pattern-compiler) on
@@ -39,12 +39,10 @@ both directions:
 
 `activator_arity.ein` is the only fixture here whose CLI run **succeeds**, and
 that is the point of it. S1.22.0 added *two* guards for the mismatch: the
-`CompileError` below, and `Engine._activators_for`'s arity filter, which drops
-the activator before the compiler ever sees it. The filter is what the engine
+`CompileError` below, and `activators_for`'s arity filter, which drops the
+activator before the compiler ever sees it. The filter is what the engine
 relies on, so the error is unreachable through the engine — reaching it needs
-the unfiltered walk — `ein_infer::plan_shape_with(…, false)`, which is what
-`utils/ir_oracle.py`'s `plan-shape` had a `"filter": false` for until
-S1a.10.4 removed it. The fixture
+the unfiltered walk, `ein_infer::plan_shape_with(…, false)`. The fixture
 therefore pins two things at once: the message a direct caller of
 `compile_rule` gets, and — as an ordinary `positive` corpus entry — that
 `(pairwise r)` derives nothing.
@@ -52,7 +50,7 @@ therefore pins two things at once: the message a direct caller of
 ## The second batch (M1e: arity)
 
 `CO-H1` was **one** shape — `(eq ?x)`, which panicked the process at exit 101
-with a runtime `assert!`'s parity note for a message. S1e.1.6's sweep over
+with a runtime `assert!`'s internal message for a diagnostic. S1e.1.6's sweep over
 every kernel meta-primitive at every arity turned it into a rule:
 
 > [`00_ebnf.md` §2](../../../docs/kernel/ir/03-ein-lang/00_ebnf.md) has a block
@@ -101,7 +99,6 @@ line=…, col=…)`, the loader's own form. The S1.22.0 four predate anyone aski
 and end in nothing rather than in `at None`.
 
 Consumers:
-`ein.py/tests/inference/test_compile_negative.py` (gone since S1a.10.5)
-and
 [`ein.rs/crates/ein-infer/tests/compile_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/compile_semantics.rs)
-— both suites, because either one alone can be the suite nobody ran.
+and the corpus sweep, whose `compile-negative` group is this directory less
+`activator_arity.ein`.

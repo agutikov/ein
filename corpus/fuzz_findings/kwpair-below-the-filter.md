@@ -1,6 +1,6 @@
 # kwpair-below-the-filter
 
-- found: 2026-08-23, `utils/fuzz_ein.py --seed 20260823 --iters 5000
+- found: 2026-08-23, `utils/fuzz_engine.py --seed 20260823 --iters 5000
   --no-id-order --jobs 8`, mode `mixed` — the
   [T1a.7.2.6](../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
   stress session, whose subject was the `jobs` property. This is the only
@@ -23,7 +23,7 @@ thread 'main' (3482912) panicked at crates/ein-render/src/dot_util.rs:152:32:
 not a value node: KwPair
 ```
 
-(Verbatim, because `utils/fuzz_ein.py` dedups a panic on **its site and
+(Verbatim, because `utils/fuzz_engine.py` dedups a panic on **its site and
 message** and seeds that set from these notes.)
 
 ```sh
@@ -53,10 +53,9 @@ pairs, and the recursion reaches them with nothing between.
 ## Why it is here rather than fixed
 
 Because there are two defensible answers and nothing has chosen one.
-`value_label` says it panics "as ein.py's `TypeError` does" — a rationale
-whose subject was deleted at
-[S1a.10.5](../../docs/history/m1a_rust/README.md#p1a10--one-implementation), so
-what used to be parity is now just an abort. The two candidates are:
+`value_label` panics on a keyword pair by design, and nothing says why a
+renderer should abort on a program the loader accepts. The two candidates
+are:
 
 - **render it** — `ir_dot.rs:339` already spells a keyword pair as
   `:{key} {value}`, so the crate has the rendering; or

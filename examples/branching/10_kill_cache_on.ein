@@ -20,24 +20,24 @@
 ;;; again.
 ;;;
 ;;;   cache ON  (`… true`):  the first kill writes a `(not h)` REASONING
-;;;     fact; later passes skip `h` via the O(1) `_negated_facts` filter
+;;;     fact; later passes skip `h` via the O(1) `negated_fact` filter
 ;;;     instead of re-simulating it.
 ;;;   cache OFF (`… false`): nothing is written, so the one-step simulation
 ;;;     re-runs for `h` on every pass.
 ;;;
 ;;; The cache changes NEITHER the answer NOR the search shape — identical
 ;;; verdict and identical enterings either way. It only cuts repeated
-;;; lookahead work, visible as the `lookahead_sims` line in the bench's
-;;; stats block. Measured with
-;;; `ein solve <file> --exhaustive --stats` (it was `python -m ein.cli
-;;; search …` when these numbers were taken; there is no `search` subcommand
-;;; and no Python engine):
+;;; lookahead work, visible in `--json-summary`'s `root.hypgen.filtered`
+;;; block. Measured with
+;;; `ein solve <file> --exhaustive --json-summary s.json`:
 ;;;
-;;;   ON  (10):  Solution (k=1), enterings_total 41, lookahead_sims 126
-;;;   OFF (11):  Solution (k=1), enterings_total 41, lookahead_sims 654
+;;;   ON  (10):  Solution (k=1), enterings_total 41, negated_fact 12
+;;;   OFF (11):  Solution (k=1), enterings_total 41, lookahead_killed 12
 ;;;
-;;; — same Solution, same 41 enterings; the cache turns 654 one-step
-;;; simulations into 126 (~5x fewer).
+;;; — same Solution, same 41 enterings. With the cache on, root's
+;;; generation pass drops the same 12 doomed candidates by one bit test on
+;;; the negated index (`negated_fact`) instead of a one-step simulation
+;;; each (`lookahead_killed`).
 
 (config :enable-lookahead-kill-cache true)
 

@@ -2,51 +2,47 @@
 
 **Settles:** where the Rust code lives, how it splits into crates, what
 it is allowed to depend on, and what the gates are.
-**Phase:** [P1a.0](../README.md#p1a0--conformance-harness-and-shared-assets), stage
+**Phase:** [P1a.0](../README.md#p1a0--corpus-and-shared-assets), stage
 [S1a.0.4](../README.md#s1a04--workspace-skeleton-and-ci).
 
 ---
 
 ## 1. Repo layout
 
-`ein.rs/` sits beside `ein.py/`, mirroring the naming the repo already
-uses:
+`ein.rs/` sits at the repo root, beside the assets it reads:
 
 ```
 ein/
 ├── stdlib/                     ← shared, single source of truth (11)
 ├── examples/                   ← shared corpus
 ├── conformance/                ← corpus manifest + expected messages
-├── ein.py/                     ← the oracle (unchanged, stays green)
 ├── ein.rs/
 │   ├── Cargo.toml              (workspace)
 │   ├── rust-toolchain.toml     (pinned stable + components)
 │   ├── deny.toml               (cargo-deny: licences, advisories)
 │   └── crates/
-│       ├── ein-core/           values, interner, KB, indexes, provenance, pyrepr
+│       ├── ein-core/           values, interner, KB, indexes, provenance, repr
 │       ├── ein-ir/             lexer, parser, AST, dumper, macros, imports, stdlib embed
 │       ├── ein-infer/          compile, match, saturate, world, search, verdict, explain
 │       ├── ein-einb/           the `.einb` container            [P1a.8]
 │       ├── ein-render/         DOT renderers, markdown trace, solution table
 │       ├── ein-cli/            the `ein` binary
-│       ├── ein-py/             PyO3 bindings (maturin)     [reserved, deferred]
-│       ├── ein-oracle/         ein.py + CPython as test oracles (dev-only)
-│       ├── ein-parity/         the normalisation list, executable (dev-only) [S1a.6.10]
-│       └── ein-conformance/    corpus runner, event differ
+│       ├── ein-python/             PyO3 bindings (maturin)     [reserved, deferred]
+│       └── ein-narration/      what is narration rather than content (dev-only) [S1a.6.10]
 └── utils/                      (existing scripts; gains a couple of runners)
 ```
 
 Why this split:
 
 - **`ein-core` has no I/O and no engine.** It is the data model
-  ([03](03_data_model.md)) plus the `python_repr` compatibility renderer
+  ([03](03_data_model.md)) plus the `repr` value renderer
   ([02](02_determinism_and_order.md) §7). Everything depends on it;
   it depends on nothing.
 - **`ein-ir` owns the only filesystem access in the engine** (import
   resolution + the embedded stdlib), so any future policy on what the
   engine may read is one seam rather than an audit.
 - **`ein-infer` never formats anything.** All rendering lives in
-  `ein-render`, so the T3 surface is one crate and can be diffed as a
+  `ein-render`, so the printed surface is one crate and can be diffed as a
   unit.
 - **`ein-einb` is a crate because of §2's `unsafe` rule, not because of its
   size.** It could have been a module of `ein-infer`, except that every other
@@ -57,34 +53,18 @@ Why this split:
   `ein-infer` (`SOLUTIONS` stores what a solve produced) and below `ein-cli`;
   `ein-render` does not depend on it, so the stack is linear up to
   `ein-infer` and forks there.
-- **`ein-conformance` is a normal crate, not a test harness bolted on.**
-  It has a binary (`ein-conformance run|diff`) so it is usable by
-  hand, which is how it will actually get used during the port.
-- **`ein-oracle` is dev-only** (`publish = false`, referenced only from
-  `[dev-dependencies]`). It keeps `ein.py` and CPython warm behind a
-  JSON-Lines protocol, because most of what the port has to prove — the
-  AST, the dumper, `repr()`, a float's field width — has no CLI surface
-  for `ein-conformance` to drive. Added at
-  [S1a.1.1](../README.md#s1a11--lexer-parser-error-messages)/[S1a.1.2](../README.md#s1a12--ast-arena-compatibility-renderers-dumper);
-  the differential *fuzzer* lives beside the parser it fuzzes
-  (`ein-ir/tests/fuzz_parity.rs`) rather than in `ein-conformance`, so
-  `cargo test --workspace` runs it and the harness binary keeps linking
-  neither implementation.
-- **`ein-parity` is the eighth workspace member, and it exists for a reason a
-  smaller repo would not have.** Added at
-  [S1a.6.10](../README.md#s1a610--the-parity-contract-relaxes-answers-not-narration), it holds
-  [design/01 §5](01_parity_contract.md#5-legitimate-divergences-the-normalisation-list)'s
-  normalisation list as code — *what the two engines are not required to
-  agree on*. A crate rather than a module because both the harness binary
-  and four crates' own `tests/` need it, and before it existed the same
-  decision was implemented six times, in two languages, each cut made as
-  the next test went red. It is `publish = false` and no shipping crate
-  depends on it: a renderer that decides what a diff will look at is a
-  renderer with an opinion about the contract.
+- **`ein-narration` is a dev-only workspace member, and it exists for a
+  reason a smaller repo would not have.** Added at
+  [S1a.6.10](../README.md#s1a610--answers-not-narration), it holds
+  one rule as code — *a fork's derivation, and anything keyed on a dying
+  fork's stopping point, is narration, not content*. A crate rather than a
+  module because several crates' own `tests/` need it, and before it existed
+  the same decision was implemented in each of them, each cut made as the
+  next test went red. It is `publish = false` and no shipping crate depends
+  on it: a renderer that decides what a diff will look at is a renderer with
+  an opinion about the contract.
 
-`ein.rs/` compiles to a binary named `ein`. It does **not** get installed
-onto `$PATH` during the port — the harness invokes both engines by
-explicit path, so there is never ambiguity about which `ein` ran.
+`ein.rs/` compiles to a binary named `ein`.
 
 ---
 
@@ -100,19 +80,19 @@ if that ever matters.
 | `rustc-hash` (`FxHashMap`) | core, infer | deterministic, fast, non-DoS-resistant hashing — correct choice here, and it removes the `RandomState` iteration-order hazard ([02](02_determinism_and_order.md) §9) |
 | `smallvec` | core, infer | premises, bindings, commitments — all small and hot |
 | `bitvec` *or* a hand-rolled `BitSet` | core | presence / negated / alive sets. Hand-rolled is ~80 lines; prefer it |
-| `md-5` | render | `hashed_id` parity ([02](02_determinism_and_order.md) §8) |
-| `sha1` | render | `palette.hash_color`'s index — the same argument one digest over ([S1a.5.1](../README.md#s1a51--dot-renderers)) |
+| `md-5` | render | `hashed_id` — a stable digest, never a salted hash ([02](02_determinism_and_order.md) §8) |
+| `sha1` | render | `palette::hash_color`'s index — the same argument one digest over ([S1a.5.1](../README.md#s1a51--dot-renderers)) |
 | `blake3` | ein-einb | the container's header digest — content addressing (design/10 §2) |
 | `include_dir` | ir | embedded stdlib |
 | `memchr` | ir | lexer scanning |
 | `rayon` | infer | [P1a.7](../README.md#p1a7--parallelism) only, behind a `parallel` feature — **taken up 2026-08-22** at [T1a.7.2.1](../README.md#s1a72--level-1-parallel-enterings), and the feature is default-on so `--jobs N` works in the shipped binary. What it buys over `std::thread::scope` is not the API: a fanned-out layer runs in **bounded batches**, so the results in flight cannot grow with the layer, and that makes the cost of a *barrier* the thing to watch — spawning `jobs` threads per batch is ~96 000 spawns on `features/01 -e` and a **3× slowdown** at `--jobs 2`, measured. The threads have to live between batches. The pool is built once per solve and only when `jobs > 1`, so a default run creates no thread at all |
 | `boxcar` (or another lock-free append-only vec) | core | **considered, rejected 2026-08-22.** [design/08 §6](08_parallelism.md#6-what-must-be-sync-and-how) sketched the fact store as one, and it would have solved the real problem — `FactStore::args` returns a `&[Value]` into an arena a `Vec` push can move, which `#![forbid(unsafe_code)]` leaves no in-crate way to fix. What killed it is that the problem does not arise: [T1a.7.1.2](../README.md#s1a71--making-the-shared-state-sync) measured **zero** enterings appending a fact id on four of six workloads and 7 of 111 on the worst, so workers hold `&FactStore` and never push. Two dependent loads per read on a 26 M-call path, plus a dependency, for an append that happens at most seven times — the row stays as the record of a decision, not as a reservation |
-| `clap` (derive) | cli | 37 options across 8 parsers; [Q-M1a.13](../open_questions.md#q-m1a13--argparse-surface-parity) took help and usage-error *text* off the byte gate on 2026-08-18, so nothing has to reproduce `argparse`'s formatter |
-| `serde` + `serde_json` | conformance, cli(`--events`) | the event protocol |
+| `clap` (derive) | cli | 37 options across 8 parsers; help and usage-error *text* are clap's own |
+| `serde` + `serde_json` | cli(`--events`) | the event protocol |
 | `zstd` | ein-einb | optional section compression. **Not taken up**: P1a.8 shipped the per-section `flags` word that would select it and no compressor, because a saturated `zebra2` is 56 KB uncompressed against a 64 KB budget and a compressed section forfeits the `mmap` the layout exists for. A reader refuses a non-zero `flags` rather than guessing |
-| `pyo3` / `maturin` | ein-py | **reserved, not taken up.** P1a.9 was to build the binding and [deferred it 2026-08-21](../README.md#p1a9--release) for want of a consumer — M20 links the crates, M1c's runner must shell out to be a fair measurement, and M2's CPython premise (llama.cpp) turned out to be an HTTP server. The crate, this row and the `python` feature stay reserved so the trip-wires in [Q-M1a.23](../open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding) are cheap to answer |
+| `pyo3` / `maturin` | ein-python | **reserved, not taken up.** P1a.9 was to build the binding and [deferred it 2026-08-21](../README.md#p1a9--release) for want of a consumer — M20 links the crates, M1c's runner must shell out to be a fair measurement, and M2's llama.cpp turned out to be an HTTP server. The crate, this row and the `python` feature stay reserved so the trip-wires in [Q-M1a.23](../open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding) are cheap to answer |
 | `criterion`, `proptest`, `arbitrary` | dev-dependencies | benches and property tests |
-| `snmalloc-rs` | cli (binary only), conformance (bench) | the global allocator — [T1a.6.2.7](../README.md#s1a62--memory-layout), added 2026-08-19. glibc `malloc` was **20.0 %** of an exhaustive `zebra2`'s self time; measured against `mimalloc` and `tikv-jemallocator`, this one is the fastest *and* the only fast one that does not cost peak RSS. On the **binary**, never on an engine crate: a library that installs a global allocator makes the choice for everything that links it. Build-time it pulls `cc` + `cmake` |
+| `snmalloc-rs` | cli (binary only), corpus (bench) | the global allocator — [T1a.6.2.7](../README.md#s1a62--memory-layout), added 2026-08-19. glibc `malloc` was **20.0 %** of an exhaustive `zebra2`'s self time; measured against `mimalloc` and `tikv-jemallocator`, this one is the fastest *and* the only fast one that does not cost peak RSS. On the **binary**, never on an engine crate: a library that installs a global allocator makes the choice for everything that links it. Build-time it pulls `cc` + `cmake` |
 
 **Not used:** any parser generator (see [04](04_ir_frontend.md) §1), any
 async runtime *anywhere* (with the server dropped there is no consumer
@@ -136,7 +116,7 @@ crate).
 | `events` | — | **Not taken up, and measured before it was dropped (S1a.9.3 T1a.9.3.2).** The row reserved a flag that would compile the `--events` emitter out "for a zero-overhead measurement build"; nothing ever added it, and the emitter is unconditional. What it would have removed is one discriminant compare per emit site — `if events.on()`, guarding a closure that is never entered when the sink is `Off`. Priced with the strongest possible version of the feature (`Events::on()` replaced by `false`, so LLVM folds every guard): `solve zebra2 -e` **+3.9 %**, `solve zebra -e` **+1.8 %** — *slower*, at two sample counts, because dead-code elimination moved the layout of a hot function. There is no win here to reserve a flag for ([feature_cost.md §1](../measurements/feature_cost.md#1-the-events-guard--not-worth-a-feature)) |
 | `python` | off | PyO3 bindings. Reserved; nothing builds it (see the `pyo3` row) |
 | `snmalloc` | **on** (`ein-cli`) | the global allocator (T1a.6.2.7). `--no-default-features` builds against the system allocator, which is what a distro package that would rather not vendor a C++ allocator wants — and costs **+25.2 % of `solve zebra2 -e` and +36.2 % of `solve zebra -e`**, re-taken 2026-08-23 ([feature_cost.md §2](../measurements/feature_cost.md#2---no-default-features--what-a-packager-is-buying)). It read *15.9 % of `solve zebra2 -e`* here until then, which is the 2026-08-19 figure and still true of that engine: nothing about the allocator changed, the engine got 3–8× faster and did not get faster at allocating, so the share grew while the absolute cost fell. The one cell the system allocator wins is `render rules` (−34 %), which is process start-up and snmalloc's arena set-up |
-| `fork-delta` | off | [D3](../divergences.md)'s fixture: compiles the pre-[S1a.6.9](../README.md#s1a69--the-fork-entry-delta-the-resumed-saturator) fresh-fork saturator back in, reachable with `EIN_FORK_DELTA=0` |
+| `fork-delta` | off | the resumed saturator's fixture: compiles the pre-[S1a.6.9](../README.md#s1a69--the-fork-entry-delta-the-resumed-saturator) fresh-fork saturator back in, reachable with `EIN_FORK_DELTA=0` |
 | `counters` | off | the work counters ([S1a.6.1](../README.md#s1a61--fresh-profile-and-bench-baseline) T1a.6.1.3), compiled out entirely when off |
 
 **What CI checks about all this, since S1a.9.3.** The release tier builds
@@ -166,25 +146,15 @@ Three tiers.
 - `cargo fmt --check`, `cargo clippy -- -D warnings`
 - `cargo test --workspace` (unit + property tests)
 - `cargo deny check`
-- **conformance-fast**: the pinned corpus subset at the current phase's
-  tier ([01](01_parity_contract.md) § Tier → phase map)
 - `stdlib-check` ([11](11_shared_assets.md) §3)
 - corpus-completeness check
-- the existing `./run_tests.sh --fast` for ein.py (the oracle must stay
-  green — a parity failure is meaningless if the oracle moved)
 
 **Nightly (~1 h)**
 
-- **conformance-full**: the whole corpus × the whole run matrix
-- `PYTHONHASHSEED` sweep on ein.py ([02](02_determinism_and_order.md) §9)
-- ein.rs self-parity: every corpus entry run twice, byte-diffed
-- `./run_tests.sh` full, including the acceptance gate
+- the whole corpus × the whole run matrix
+- determinism: every corpus entry run twice, byte-diffed
 - benches (`criterion`) with regression thresholds
-- the differential fuzzer for a fixed budget, corpus-minimising any find
-- `ein.py` packaging: build the sdist + wheel and install from **each**.
-  Per-commit installs editable, which exercises one of the three build hooks;
-  an sdist that omits the in-tree backend ([11](11_shared_assets.md)
-  § Packaging) is unbuildable and nothing else would notice
+- the fuzzer for a fixed budget, corpus-minimising any find
 
 **Release** — [`.github/workflows/release.yml`](../../../../.github/workflows/release.yml),
 written at S1a.9.3 (2026-08-23). Six jobs on a `v*` tag:
@@ -192,16 +162,15 @@ written at S1a.9.3 (2026-08-23). Six jobs on a `v*` tag:
 - `gate` — the whole per-commit gate plus `EIN_CORPUS_SLOW=1` and
   `EIN_ID_SEEDS=8`, i.e. nightly's depth in one job.
 - `jobs-cross-diff` — `EIN_JOBS_SWEEP=2,4,8,16` over
-  `ein-render/tests/jobs_invariance.rs`, which is P1a.7's acceptance and the
-  successor to `ein-conformance --tier T3`. It replaces a stub that had sat
-  `if: false` since this file was written; the phase it was waiting for
-  shipped 2026-08-22.
+  `ein-render/tests/jobs_invariance.rs`, which is P1a.7's acceptance. It
+  replaces a stub that had sat `if: false` since this file was written; the
+  phase it was waiting for shipped 2026-08-22.
 - `no-default-features` — build, test, and the two dependency-graph
   assertions above.
 - `build` — four required legs: `x86_64`/`aarch64` Linux (glibc, on the
   *oldest* runner image, because the glibc a binary links is the floor of the
   systems it runs on), macOS universal2 (two slices, `lipo`), Windows MSVC.
-  Each **sweeps the corpus at T3 on its own platform** — that is the check
+  Each **sweeps the whole corpus on its own platform** — that is the check
   that would otherwise be silent, since line endings, filesystem
   case-sensitivity and locale formatting are properties of the platform and
   not of the target triple — then runs the artefact's own `--version` and a
@@ -225,8 +194,7 @@ question TSan would answer — *do the threads agree?* — is answered directly 
 
 ### Benchmarks
 
-`criterion` benches, all against the shared corpus so the numbers are
-comparable with the Python baseline:
+`criterion` benches, all against the shared corpus:
 
 | bench | measures |
 |---|---|
@@ -234,23 +202,13 @@ comparable with the Python baseline:
 | `load` | parse + imports + macro expansion + index build |
 | `saturate_root` | root saturation only |
 | `match_hot` | `match::run` over the saturated root, per plan |
-| `boundary` | a full `_admit_from_boundary` round — **both puzzles** |
+| `boundary` | a full `admit_from_boundary` round — **both puzzles** |
 | `solve_fast` / `solve_exhaustive` | end-to-end, both puzzles |
 | `fork` | fork + first delta write |
 
-The Python side got a matching runner (`utils/bench_baseline.py`) so
-`design/README.md § Measured` could be refreshed with one command per
-implementation. With one implementation the set is `cargo bench` alone; the
-runner left at
-[S1a.10.4](../README.md#s1a104--utils-re-aimed-at-one-engine) and its column
-is frozen where it stands.
-
 **Eight names, nine cases since [S1a.6.1](../README.md#s1a61--fresh-profile-and-bench-baseline).**
-`boundary` runs both puzzles because it had drifted: the Python runner timed
-`zebra2` and the criterion group timed `zebra`, and the two were put in one
-comparison table before anyone noticed they were different workloads. The
-lesson generalises — *a bench pair is only comparable if both halves name the
-same input* — which is why every row above says which.
+`boundary` runs both puzzles, and every row above says which input it times:
+*a bench pair is only comparable if both halves name the same input*.
 
 **Variance is a gate, not a footnote.** `criterion`'s console output prints no
 standard deviation; `utils/criterion_table.py` reads the `estimates.json` it
@@ -263,8 +221,7 @@ what a phase-internal before/after must pass before its number is quoted.
 
 ## 5. Repo hygiene
 
-- `.gitignore`: `ein.rs/target/`, `ein.py/src/ein/stdlib/` (now
-  build-generated — [11](11_shared_assets.md) §3), `corpus/out/`.
+- `.gitignore`: `ein.rs/target/`, `corpus/out/`.
 - `AGENTS.md` (= `CLAUDE.md`) gains an `ein.rs/` entry under *Where
   things live* and a note that `stdlib/` is shared. Do this in P1a.0, not
   at the end — the file is how future sessions orient.
@@ -273,8 +230,7 @@ what a phase-internal before/after must pass before its number is quoted.
 
 ## Cross-links
 
-- [01 — Parity contract](01_parity_contract.md) — what CI is gating.
 - [11 — Shared assets](11_shared_assets.md) — `stdlib-check`, the corpus
   manifest.
-- [`run_tests.sh`](../../../../run_tests.sh) — the existing two-phase Python
-  runner the Rust gates sit beside.
+- [`run_tests.sh`](../../../../run_tests.sh) — the per-commit tier, run
+  locally.

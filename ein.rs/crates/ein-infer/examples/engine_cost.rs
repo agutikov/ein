@@ -1,22 +1,14 @@
 //! What a root saturation costs, and how much work `match_hot` measures.
 //!
 //! The companion to `compile_cost`: a program that reports the figures the
-//! stage's acceptance quotes, so the comparison against ein.py is against the
-//! **same work** rather than against a wall clock alone. `match_hot` in
-//! particular is only a meaningful ratio if both sides enumerate the same
-//! matches and consume the same premises — which the parity tests prove and
-//! this prints.
+//! stage's acceptance quotes, with the **work** beside the wall clock rather
+//! than a wall clock alone. `match_hot` in particular is only comparable
+//! across commits if both runs enumerate the same matches and consume the
+//! same premises — which this prints.
 //!
 //! ```sh
 //! cargo run --release -p ein-infer --example engine_cost
 //! ```
-//!
-//! The Python column, measured the same way on the dev machine:
-//!
-//! | | ein.py | ein.rs |
-//! |---|---:|---:|
-//! | root saturation, `zebra2` | 90 ms | see below |
-//! | `match_hot` (every plan, saturated root) | 2 110 µs | see below |
 
 use std::time::Instant;
 

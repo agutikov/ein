@@ -41,7 +41,7 @@ Looks like a lost line-continuation when the string was reflowed (every sibling 
 
 ### Finding
 
-The comment claims `json.dumps(summary, indent=2, ensure_ascii=False)`; the writer escapes all non-ASCII and its own test asserts "ensure_ascii=True is CPython's default and no caller overrides it". One of the two is wrong about the parity target; if ein.py really passed ensure_ascii=False for the summary, the ported bytes differ for any non-ASCII `:why` content.
+The comment claims the summary is written with non-ASCII left unescaped; the writer escapes all non-ASCII and its own test asserts that escaping is the default and no caller overrides it. One of the two is wrong; if the summary is meant to carry non-ASCII verbatim, the bytes differ for any non-ASCII `:why` content.
 
 ---
 

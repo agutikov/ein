@@ -1,26 +1,13 @@
-//! **The D3 event cut's negative control** — T1a.10.3.3.
+//! **The event cut's negative control** — T1a.10.3.3.
 //!
-//! [S1a.6.10](../../../../docs/history/m1a_rust/README.md#s1a610--the-parity-contract-relaxes-answers-not-narration)
-//! narrowed the event comparison from "the whole stream" to "what each segment
-//! derived", because a fork resumes root's saturation rather than re-deriving
-//! it and the two engines therefore narrated different amounts of the same
-//! derivation
-//! ([D3](../../../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)).
-//! **A relaxation that cannot be shown to still catch the thing it was relaxed
-//! around is a hole rather than a decision**, so the cut has always had a
-//! control: `utils/mutant_ein.py`, a wrapper that ran the shipping binary and
-//! then deleted one event from the log it wrote, which the gate had to
-//! report. The script was deleted at
-//! [S1a.10.4](../../../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
-//! once this file had its three mutations.
-//!
-//! That wrapper needed two processes and a harness to be the second operand.
-//! Both are gone
-//! ([S1a.10.3](../../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine)),
-//! and the control does not need either: the mutation was always applied to
-//! the *artefact*, so the only thing the processes bought was a way to produce
-//! one. Here the stream is produced in-process and mutated in memory, and the
-//! three mutations are the script's three, unchanged:
+//! `ein_narration::events::diff` compares two event streams by "what each
+//! segment derived" rather than as whole streams, because a fork resumes
+//! root's saturation rather than re-deriving it, so two runs can narrate
+//! different amounts of one derivation. **A cut that cannot be shown to still
+//! catch the thing it was cut around is a hole rather than a decision**, so the
+//! cut has a control: delete one event from a stream, and the cut has to
+//! report it or stay silent. The stream is produced in-process and mutated in
+//! memory, and there are three mutations:
 //!
 //! | delete | the cut must |
 //! |---|---|
@@ -29,14 +16,8 @@
 //! | the first `enqueue` | stay silent — likewise |
 //!
 //! The last two are the *positive* controls: a cut that reported them would
-//! still be comparing narration, and D3 would still be costing it 97 of 240
-//! cells. Run all three and the relaxation is calibrated in both directions
-//! rather than asserted.
-//!
-//! This is the ledger's
-//! [§3.7](../../../../docs/history/m1a_rust/oracle_ledger.md#3-the-instruments-that-are-not-tiers)
-//! row, which is why `ein-parity`'s `events` module survives a phase that
-//! retired the harness it was written for.
+//! still be comparing narration. Run all three and the cut is calibrated in
+//! both directions rather than asserted.
 
 use ein_core::Terms;
 use ein_corpus::repo_root;
@@ -81,7 +62,7 @@ fn stream(rel: &str, exhaustive: bool) -> Vec<Value> {
         .collect()
 }
 
-/// `mutant_ein.py`'s three predicates, by name.
+/// The three mutations' predicates, by name.
 fn picked(which: &str, e: &Value) -> bool {
     let kind = e.get("e").and_then(Value::as_str).unwrap_or("");
     let redundant = e.get("redundant").and_then(Value::as_bool) == Some(true);
@@ -119,7 +100,7 @@ fn the_cut_reports_a_dropped_derivation_and_ignores_dropped_narration() {
         // A control over an unchanged stream first: if a log did not agree
         // with itself, every verdict below would be noise.
         assert!(
-            ein_parity::events::diff(&log, &log).is_empty(),
+            ein_narration::events::diff(&log, &log).is_empty(),
             "{rel}: a stream does not compare equal to itself"
         );
         for (i, (which, must_report)) in CASES.iter().enumerate() {
@@ -127,7 +108,7 @@ fn the_cut_reports_a_dropped_derivation_and_ignores_dropped_narration() {
                 continue;
             };
             applied[i] += 1;
-            let report = ein_parity::events::diff(&log, &mutated);
+            let report = ein_narration::events::diff(&log, &mutated);
             if report.is_empty() == *must_report {
                 bad.push(format!(
                     "  {rel} :: delete the first `{which}` event — the cut {} it, \
@@ -165,12 +146,12 @@ fn a_deleted_narration_event_still_moves_the_elided_count() {
     let mut checked = 0usize;
     for (rel, exhaustive) in STREAMS {
         let log = stream(rel, exhaustive);
-        let before = ein_parity::events::split(&log).elided_total();
+        let before = ein_narration::events::split(&log).elided_total();
         for which in ["redundant", "enqueue"] {
             let Some(mutated) = mutate(&log, which) else {
                 continue;
             };
-            let after = ein_parity::events::split(&mutated).elided_total();
+            let after = ein_narration::events::split(&mutated).elided_total();
             assert_eq!(
                 after + 1,
                 before,

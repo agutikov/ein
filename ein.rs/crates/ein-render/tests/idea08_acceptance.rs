@@ -1,11 +1,9 @@
-//! idea-08 trace fidelity, on the engine that ships —
-//! [T1a.6.11.2](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing).
+//! idea-08 trace fidelity, on the engine that ships — T1a.6.11.2.
 //!
 //! Every named move in the human zebra walkthrough must correspond to a named
 //! rule firing in the engine, and the proof a user is handed must *exhibit*
-//! it. `ein.py/tests/trace/test_idea08_acceptance.py` has asserted that since
-//! M1 S1.6.5; this is the same assertion on ein.rs, and it exists because of
-//! how nearly the port lost it.
+//! it. That has been the assertion since M1 S1.6.5, and this file exists
+//! because of how nearly it was lost.
 //!
 //! **The near-miss.** `--trace` renders one node's firings, and until
 //! [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
@@ -13,12 +11,11 @@
 //! getting root's proof *by accident*. Take the re-derivation away and the
 //! solution node's trace covered 12 distinct rules instead of 24, with
 //! `symmetric` — which closes `next-to` at root and nowhere else — missing
-//! entirely. The Python test is what caught it. Since
-//! [S1a.6.10](../../../../docs/history/m1a_rust/README.md#s1a610--the-parity-contract-relaxes-answers-not-narration)
-//! no cross-engine diff compares a rendered trace at all, so without this file
-//! the same regression would be silent on the shipping engine.
+//! entirely. A rendered trace is narration, so no invariance sweep compares
+//! one byte for byte, and without this file the same regression would be
+//! silent.
 //!
-//! Two levels, as on the Python side, and both run here: the library
+//! Two levels, and both run here: the library
 //! **defines** the rules, and they actually **fire** — asserted against the
 //! rendered markdown rather than against the firing list, because the
 //! markdown is what a reader gets and the root section is part of it.
@@ -201,9 +198,7 @@ fn the_generic_library_defines_the_walkthrough_rules() {
 
 // ── and the trace exhibits them ────────────────────────────────────
 
-/// The assertion S1a.6.9 nearly lost. Exhaustive, as on the Python side —
-/// where it costs 35 s and is `EIN_RUN_SLOW`-gated, and here it is the reason
-/// the port exists.
+/// The assertion S1a.6.9 nearly lost. Exhaustive.
 #[test]
 fn the_zebra2_trace_exhibits_the_walkthrough_rules() {
     let fired = rules_in_trace("examples/zebra2.ein", true);
@@ -232,7 +227,7 @@ fn the_zebra2_trace_exhibits_the_walkthrough_rules() {
 ///
 /// `stop_after = 1`, not exhaustive: this asserts over the *solution path*,
 /// and the exhaustive certification is the acceptance gate's job
-/// (`ein.py/acceptance/test_zebra_two_ontologies.py`).
+/// (`ein-infer/tests/acceptance.rs`).
 #[test]
 fn the_generic_trace_exhibits_the_walkthrough_rules() {
     let fired = rules_in_trace("examples/zebra.ein", false);
@@ -245,8 +240,8 @@ fn the_generic_trace_exhibits_the_walkthrough_rules() {
 }
 
 /// The two encodings are claimed to be the same inference over different
-/// ontologies. They are also the two puzzles whose `--trace` nobody compares
-/// against ein.py any more, so this is where "both still reach it" is checked.
+/// ontologies. A rendered trace is narration that no sweep reads for its
+/// rules, so this is where "both still reach it" is checked.
 #[test]
 fn both_encodings_reach_the_same_walkthrough() {
     for (rel, target) in [

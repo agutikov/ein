@@ -5,9 +5,7 @@
 //! `corpus_shapes` (digest once) and `id_order_invariance` (twice, ids
 //! permuted). It is what
 //! [P1a.7's acceptance](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
-//! names in place of `ein-conformance --tier T3`, which ran two *processes*
-//! per corpus cell and left with the second engine at
-//! [P1a.10](../../../../docs/history/m1a_rust/README.md#p1a10--one-implementation).
+//! names.
 //!
 //! ## What it claims, and it is stronger than the contract
 //!
@@ -44,9 +42,8 @@
 //!
 //! ## Why it is cheap enough to be in `cargo test`
 //!
-//! `ein-conformance --tier T3` cost 738 s for a full sweep because it ran two
-//! processes per cell. This runs in-process, like its two siblings, and the
-//! job counts it sweeps are a **measurement decision**: `EIN_JOBS_SWEEP`
+//! It runs in-process, like its two siblings, and the job counts it sweeps
+//! are a **measurement decision**: `EIN_JOBS_SWEEP`
 //! overrides them, and the default is `2` because two threads is where a
 //! fan-out either commits in order or does not. `EIN_JOBS_SWEEP=2,4,8,16` is
 //! the acceptance's full matrix and is what a release run should use.
@@ -154,7 +151,7 @@ fn jobs_does_not_move_any_observable() {
                 // unsat core and a counter are the promise; a firing count,
                 // an event ordinal and a dying fork's stopping point are
                 // narration.
-                let is_answer = ein_parity::blank(&base) != ein_parity::blank(&got)
+                let is_answer = ein_narration::blank(&base) != ein_narration::blank(&got)
                     && match (op.narrow(&base), op.narrow(&got)) {
                         (Some(x), Some(y)) => x != y,
                         _ => false,

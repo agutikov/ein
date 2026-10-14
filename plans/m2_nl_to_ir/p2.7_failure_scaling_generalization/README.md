@@ -120,6 +120,6 @@ statements inserted at a stated rate).
   is almost a ready-made controlled experiment on generalization / scaling*;
   [M1d P1d.10](../../../docs/history/m1d_satisfiability/README.md#p1d10--exhaustive-search) —
   the solver's curve on under-determined instances, already measured once.
-- [F10 `findings.md`](../../followups/f10_m1_refactor_tail/README.md) — the
+- [M1e's `review/`](../../../docs/history/m1e_review_processing/review/summary.md) — the
   repo's precedent for a review register kept whole; the failure sample is
   the same kind of artefact.

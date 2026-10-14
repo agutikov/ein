@@ -1,10 +1,9 @@
 //! The registries — everything a load produces that facts do not.
 //!
-//! ein.py keeps these on the `KnowledgeBase` and shares them **by reference**
-//! across every fork and snapshot, because they are immutable once the loader
-//! finishes. Here they are an `Arc<Program>` that every `Kb` holds, which says
-//! the same thing in the type system: a fork cannot write one, and sharing one
-//! costs a refcount.
+//! They are immutable once the loader finishes, so they are shared **by
+//! reference** across every fork and snapshot: an `Arc<Program>` that every
+//! `Kb` holds, which says so in the type system — a fork cannot write one, and
+//! sharing one costs a refcount.
 //!
 //! The `add_*` methods are the loader's, and their rules are load-time
 //! semantics rather than bookkeeping — first-declaration-wins for rules,
@@ -103,7 +102,7 @@ impl Program {
     /// `"relation"`. Since S1.7.6, `type` and `instance` are **not** special:
     /// they categorise as relations only when a puzzle declares them.
     /// `hrules` are deliberately absent — a name declared only as an hrule
-    /// falls through to `"object"`, as it does in ein.py.
+    /// falls through to `"object"`.
     ///
     /// **Obligations are not** (M1d S1d.2.4), and the difference from `hrules`
     /// is the whole reason the line is here. A category says what a name *is*;
@@ -116,9 +115,8 @@ impl Program {
     /// is what found it, and the assertion that catches it lives in
     /// `ein-infer/tests/obligation_reports.rs`.
     ///
-    /// `hrules` stay out for their own reason — ein.py's, and a parity
-    /// constraint rather than a judgement — which is why the two cannot share
-    /// a line.
+    /// `hrules` stay out as a fixed behaviour rather than as a judgement about
+    /// what an hrule's name is, which is why the two cannot share a line.
     pub fn categorise(&self, terms: &Terms, name: Symbol) -> NameCategory {
         if name == terms.kernel.relation || name == terms.kernel.rule {
             return NameCategory::Relation;

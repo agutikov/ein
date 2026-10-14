@@ -1,14 +1,12 @@
-//! Where `std.*` comes from — the Rust half of the shared stdlib
+//! Where `std.*` comes from
 //! (M1a S1a.0.3, [design/11](../../../../docs/history/m1a_rust/design/11_shared_assets.md)).
 //!
-//! The stdlib is checked in **once**, at repo-root `stdlib/`, and both
-//! implementations read those bytes. It is not test data: 1 231 lines of
-//! ein-lang across seven modules, three of which `zebra2.ein` imports from. A
-//! second copy would make every parity result meaningless — a T2 diff would
-//! report "the engines disagree" when in fact the *programs* differ.
+//! The stdlib is checked in **once**, at repo-root `stdlib/`, and everything
+//! reads those bytes. It is not test data: 1 231 lines of ein-lang across
+//! seven modules, three of which `zebra2.ein` imports from. A second copy
+//! would let two runs disagree because the *programs* differ.
 //!
-//! Two sources behind one trait, resolved in the same three steps `ein.py`'s
-//! `imports._stdlib_root()` uses:
+//! Two sources behind one trait, resolved in three steps:
 //!
 //! 1. `$EIN_STDLIB` — an explicit override, always wins. It is what points a
 //!    run at a stdlib that is not the checkout's, which is how a test can
@@ -17,12 +15,10 @@
 //!    [`MARKER`]. A source tree is authoritative, so editing a module takes
 //!    effect with no rebuild.
 //! 3. **The embedded copy**, compiled in by `include_dir!`. This is what makes
-//!    `ein.rs` one self-contained binary, and it is the step Python answers
-//!    with the wheel's packaged copy.
+//!    `ein` one self-contained binary.
 //!
 //! `Missing` is a fourth outcome, not an error here: the caller reports
-//! "module not found at `<path>`", which names the path it looked at — the
-//! message ein.py produces, and therefore the one to produce.
+//! "module not found at `<path>`", which names the path it looked at.
 
 use include_dir::{Dir, include_dir};
 use std::path::{Path, PathBuf};
@@ -61,8 +57,7 @@ impl Source {
 
     /// The path a module *would* live at — what "module not found at …"
     /// prints. For the embedded copy there is no filesystem path, so this
-    /// composes one from the describe string; parity of that message with
-    /// ein.py's is a P1a.2 question (ein.py has no embedded case).
+    /// composes one from the describe string.
     pub fn module_path(&self, rel: &str) -> String {
         format!("{}/{rel}", self.describe())
     }
@@ -204,9 +199,9 @@ mod tests {
     ///
     /// This is the whole point of the arrangement. `include_dir!` copies the
     /// tree at build time, so a binary built before an edit carries the old
-    /// bytes — and a stdlib that differs between the two implementations is
-    /// the one failure mode no parity tier can diagnose, because both engines
-    /// would be *correct* about different programs.
+    /// bytes — and a binary whose stdlib differs from the checkout's is
+    /// *correct* about a different program, which no output diff can
+    /// diagnose.
     #[test]
     fn the_embedded_copy_matches_the_manifest() {
         let manifest = crate_dir().join("../../../stdlib").join(MARKER);

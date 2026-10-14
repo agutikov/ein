@@ -6,7 +6,7 @@
 //! `&str` borrowed from the arena, and no lock returns a borrow that outlives
 //! its guard. A sharded `RwLock` — [design/08
 //! §6](../../../../docs/history/m1a_rust/design/08_parallelism.md#6-what-must-be-sync-and-how)'s
-//! sketch — would therefore have to change every read site in the port, not
+//! sketch — would therefore have to change every read site in the engine, not
 //! the write sites.
 //!
 //! It does not have to, because of what this file measures: **the symbol table

@@ -1,30 +1,26 @@
 //! The monotonic solver's budget, its learned clauses, and what a dumper sees
 //! — T1a.10.2.2.
 //!
-//! Replaces three Python files, all under `ein.py/tests/inference/monotonic/`:
-//!
-//! | Python | subject |
-//! |---|---|
-//! | `test_monotonic_budget.py` | `max_time` and the partial stats an abort carries |
-//! | `test_monotonic_cdcl.py` | no-good learning: emit, subsume, prune, and the singleton `(not h)` writeback |
-//! | `test_monotonic_dumper.py` | the lifecycle hooks — that they fire, that they are honest, and that they change nothing |
+//! | subject |
+//! |---|
+//! | `max_time` and the partial stats an abort carries |
+//! | no-good learning: emit, subsume, prune, and the singleton `(not h)` writeback |
+//! | the lifecycle hooks — that they fire, that they are honest, and that they change nothing |
 //!
 //! The common subject is the **search's bookkeeping**: what it learns from a
 //! dead commitment, what it refuses to learn twice, and what it tells an
 //! observer it did. `ein-infer/src/{solve,nogoods}.rs`.
 //!
-//! Two notes on how the port differs from the originals.
+//! Two notes on what is asserted.
 //!
-//! The Python tests read `kb._nogoods` and `kb._negated_facts` directly. Those
-//! are the *store*, not the behaviour, so what is asserted here is what the
-//! store buys: a superset of a dead set is never entered, a retired hypothesis
-//! never comes back, and a live sibling of a dead one still reaches the
-//! answer. Where the store itself is the claim — `emit_nogood`'s two
+//! The KB's no-goods and negated facts are the *store*, not the behaviour, so
+//! what is asserted here is what the store buys: a superset of a dead set is
+//! never entered, a retired hypothesis never comes back, and a live sibling of
+//! a dead one still reaches the answer. Where the store itself is the claim — `emit_nogood`'s two
 //! subsumption directions and its size floor, neither of which any `.ein`
 //! program in the corpus reaches — it is called directly, as a unit.
 //!
-//! The dumper tests used `MonotonicDumper(tmp_path)` and read
-//! `00_timeline.jsonl`. That writer lives in `ein-render`, which depends on
+//! The writer of `00_timeline.jsonl` lives in `ein-render`, which depends on
 //! this crate, so a test here cannot construct one. [`Recorder`] stands in: it
 //! implements the same [`Dumper`] trait and keeps the same fields the timeline
 //! record carries, so "the record says X" becomes "the hook was handed X" —
@@ -52,8 +48,7 @@ fn repo_root() -> PathBuf {
 
 // ── The fixtures ───────────────────────────────────────────────────
 
-/// One singleton dies, one survives — `test_monotonic_cdcl.py`'s
-/// `SINGLETON_FIXTURE`.
+/// One singleton dies, one survives.
 ///
 /// `paint`'s slots carry `Thing` rather than the top `T`, which is what keeps
 /// hypgen's name-free candidate set down to `{Red, Blue}`; `never` is declared
@@ -116,7 +111,7 @@ const ALL_DIE: &str = r#"
        :hypothesis-relations h)
 "#;
 
-/// Lookahead off, as every one of the Python originals ran.
+/// Lookahead off.
 ///
 /// With it on, hypgen kills a doomed singleton *before* the candidate loop
 /// sees it, and the `(not h)` lands through the kill cache instead of through
@@ -303,8 +298,8 @@ impl Dumper for Recorder {
 /// Two things here are easy to get wrong and neither is the abort itself.
 ///
 /// The limit is rendered with `{:?}`, not `{}`: `0.0` has to come back as
-/// `0.0s`, because CPython's `str(float)` never drops the fractional part and
-/// Rust's `Display` always does. A `Display` here would produce
+/// `0.0s`, because the message always carries the fractional part and Rust's
+/// `Display` drops it from a whole number. A `Display` here would produce
 /// `max-time (0s) exceeded` and every other assertion in this test would still
 /// pass.
 ///
@@ -313,7 +308,7 @@ impl Dumper for Recorder {
 /// is read, so nothing later would correct it, and an aborted run would report
 /// itself as a completed proof of `k`.
 #[test]
-fn a_spent_time_budget_aborts_with_partial_stats_and_a_python_shaped_reason() {
+fn a_spent_time_budget_aborts_with_partial_stats_and_a_float_seconds_reason() {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let mut kb = load_file(
@@ -779,9 +774,9 @@ fn emit_nogood_refuses_a_clause_below_the_size_floor() {
 /// leave the verdict intact and `saturate_count` different, so `MonotonicStats`
 /// is compared whole rather than field by field.
 ///
-/// It also carries the engine half of ein.py's
-/// `test_dumper_out_dir_none_writes_no_files`: [`Recorder`] holds no output
-/// directory, and the run still delivers the whole lifecycle vocabulary to it.
+/// It also carries the engine half of *a dumper with no output directory*:
+/// [`Recorder`] holds none, and the run still delivers the whole lifecycle
+/// vocabulary to it.
 /// The other half — that such a dumper touches the filesystem nowhere — is a
 /// property of `ein_render::dump`'s writer and has to be asserted there.
 #[test]
@@ -875,11 +870,8 @@ fn a_run_that_stops_mid_layer_still_reaches_its_summary() {
 ///
 /// `nogood_subsumed` is not `!nogood_emitted`. With learning off nothing is
 /// *attempted*, so "subsumed" — which means "we already knew this" — would be
-/// a claim about a clause that was never offered. The Python original
-/// (divergence D-R5-1) is a regression test for the sharper version of the
-/// same bug: the flag was assigned inside the `if enable_path_nogoods` branch
-/// and read outside it, so the two features were fine apart and crashed
-/// together. The second half of this test is the discriminator: with learning
+/// a claim about a clause that was never offered. The second half of this
+/// test is the discriminator: with learning
 /// on, the very same dead entering does report an emitted clause, so a
 /// hard-coded `false` would not pass.
 #[test]

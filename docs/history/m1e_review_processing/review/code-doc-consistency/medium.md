@@ -15,7 +15,7 @@
 
 ### Finding
 
-All three hyperlink `engine.rs`, which has no such method — engine.rs is a compile cache; the loop is `Saturator::step` and it is queue-based, not queue-less. Survived from ein.py's `Engine`; the S1a.10.6 doc pass missed it in all three places.
+All three hyperlink `engine.rs`, which has no such method — engine.rs is a compile cache; the loop is `Saturator::step` and it is queue-based, not queue-less. The S1a.10.6 doc pass missed it in all three places.
 
 ### Recommendation
 
@@ -106,7 +106,7 @@ Replace with the current route (`ein render`-adjacent or the library call) and r
 
 ---
 
-## examples/README points at the deleted Python engine, and the two-encodings agreement claim has no named owner
+## examples/README points at files that do not exist, and the two-encodings agreement claim has no named owner
 
 **Severity:** Medium
 **Confidence:** High
@@ -118,7 +118,7 @@ Replace with the current route (`ein render`-adjacent or the library call) and r
 
 ### Finding
 
-"see docs/api/ to drive them from Python" (no Python module exists — docs/api's whole point), and `acceptance/test_zebra_two_ontologies.py` (no acceptance/ directory anywhere). The claim that dead pointer carried — zebra.ein and zebra2.ein agree cell by cell — now has no named enforcement; whether anything in cargo test still pins the two encodings to the same model was not established by this review (see `review/open-questions.md` Q10). Also the dangling "C2" reference (:28-29; same in stdlib/README.md:139-140) — bare link text whose target is gone.
+"see docs/api/ to drive them" (a page that is not the embedding surface), and a test under `acceptance/` (no acceptance/ directory anywhere). The claim that dead pointer carried — zebra.ein and zebra2.ein agree cell by cell — now has no named enforcement; whether anything in cargo test still pins the two encodings to the same model was not established by this review (see `review/open-questions.md` Q10). Also the dangling "C2" reference (:28-29; same in stdlib/README.md:139-140) — bare link text whose target is gone.
 
 ### Recommendation
 
@@ -146,7 +146,7 @@ Split the sentence into the 4 + 25.
 
 ---
 
-## architecture_and_algorithms.md mixes as-built ein.rs facts with as-was ein.py vocabulary without marking which is which
+## architecture_and_algorithms.md mixes as-built facts with as-was vocabulary without marking which is which
 
 **Severity:** Medium
 **Confidence:** High
@@ -159,8 +159,8 @@ Split the sentence into the 4 + 25.
 
 ### Finding
 
-The deductive-layer file list names saturator.rs and firing.rs twice each; O4 says EqClasses is "wired into the API so firing can call kb.classes.union" — firing.rs contains no such call (equality is a stub; matching does not resolve classes, pinned by `naf_semantics::matching_does_not_resolve_equality_classes`); section 3's type table uses ein.py names (JoinPlan, World, Scan/Join opcodes) the Rust engine renders differently. implementation.md:69 marks the World divergence; this page doesn't — the two designated as-built references disagree on how faithfully to describe the port.
+The deductive-layer file list names saturator.rs and firing.rs twice each; O4 says EqClasses is "wired into the API so firing can call kb.classes.union" — firing.rs contains no such call (equality is a stub; matching does not resolve classes, pinned by `naf_semantics::matching_does_not_resolve_equality_classes`); section 3's type table uses names (JoinPlan, World, Scan/Join opcodes) the engine spells differently. implementation.md:69 marks the World difference; this page doesn't — the two designated as-built references disagree on how to describe the engine.
 
 ### Recommendation
 
-Dedupe the file list, fix O4 to "stub", and mark the ein.py vocabulary as historical where kept.
+Dedupe the file list, fix O4 to "stub", and mark the as-was vocabulary as historical where kept.

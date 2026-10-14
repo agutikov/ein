@@ -1,5 +1,4 @@
-//! The derivation-slice and KB-snapshot renderers — `ein.py`'s
-//! `render/slice.py`.
+//! The derivation-slice and KB-snapshot renderers.
 //!
 //! The trace does not want the whole 25-cell KB at each step. It wants, per
 //! hypothesis, **just what that hypothesis touched** — a provenance cone: the
@@ -167,14 +166,14 @@ pub fn render_slice(
             "  {bottom} [shape=doublecircle, color=\"{SEED_COLOUR}\", \
              fontcolor=\"{SEED_COLOUR}\", label=\"⊥\"];"
         ));
-        // `sorted`, because `unsat_core` is a `set[Fact]`: iterating it raw
-        // made the `-> ⊥` edge order depend on `PYTHONHASHSEED`, and this
-        // block lands verbatim in `--trace` output (hazard H4). `key=repr`
-        // matches `inference.explain`'s convention and is total over mixed
-        // argument types, where a bare `sorted` would raise (Q-M1a.4).
+        // Sorted, because `unsat_core` is a set: its raw iteration order is
+        // not a property of the data, and this block lands verbatim in
+        // `--trace` output (hazard H4). Sorting by `repr` matches the
+        // explainer's convention and is total over mixed argument types
+        // (`defined_behaviour.md` §2.1).
         let mut core: Vec<(String, FactId)> = unsat_core
             .iter()
-            .map(|f| (ein_core::pyrepr::repr(&terms.py_fact(*f)), *f))
+            .map(|f| (ein_core::repr::repr(&terms.repr_fact(*f)), *f))
             .collect();
         core.sort();
         for (_, f) in core {

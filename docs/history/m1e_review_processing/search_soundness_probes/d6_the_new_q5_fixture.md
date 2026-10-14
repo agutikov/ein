@@ -307,9 +307,8 @@ positive initial KB.
    strictly-weaker debug mode rather than an A/B of equals.
 
 The precedent for step 1 is exact and recent: `disjunctive-prune`'s wrong
-`(neq ?h_other ?h1)` guard survived a year of byte-exact parity between two
-engines and died to **one independent enumeration written outside the engine
-on the day**.
+`(neq ?h_other ?h1)` guard survived a year and died to **one independent
+enumeration written outside the engine on the day**.
 
 ### Task T1e.1.1.4 — The record-site conformance check
 

@@ -4,9 +4,9 @@
 ;;; questions — the shape where one candidate can be parked on the boundary
 ;;; while another with the same bindings fires from the queue.
 ;;;
-;;; `_seen` is keyed on `(binding_key, guards)`, not on the disjunct
-;;; (S1.22.0), so both disjuncts of a match are enqueued: the guarded one
-;;; parks until the closure quiesces, the unguarded one fires immediately.
+;;; The saturator's `seen` set is keyed on `(binding_key, guards)`, not on
+;;; the disjunct (S1.22.0), so both disjuncts of a match are enqueued: the
+;;; guarded one parks until the closure quiesces; the unguarded one fires.
 ;;; When they share a binding key the parked one is already *fired* by the
 ;;; time the boundary reaches it, and the round drops it rather than admitting
 ;;; a second derivation of the same conclusion.

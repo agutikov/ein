@@ -13,7 +13,7 @@ moved is cheap where a move followed by a re-triage of 38 renamed files is not.
 **Satisfied 2026-08-31**: all three ran.
 **Blocks:** nothing. Everything downstream of it wants it and nothing waits on
 it.
-**Source:** the user's note of 2026-08-28, reproduced in full in
+**Source:** the user's note of 2026-08-28, restated in
 § The instruction.
 
 ---
@@ -25,7 +25,7 @@ Five things, and they are not one job:
 1. **Re-tree.** `docs/ein/{user,reasoning,ein.rs,overview}`, `docs/lib` kept,
    `docs/history` **removed**. Reshape `docs/api`, `docs/guide`, `docs/kernel`,
    `docs/install.md` into it — *"connect each document to the new docs tree,
-   but not copy. Rewrite instead"* — dropping Python/CPython/PyPy, dropping
+   but not copy. Rewrite instead"* — dropping
    references to plans / open questions / history, referencing only `ein.rs/`
    and `docs/ein/`, and separating three perspectives: **user surface**
    (problem → solve-as-a-black-box → result), **implementation-agnostic
@@ -85,9 +85,7 @@ alone hold **464 doc-comment links into `docs/history/`**: 368 into
 `m1a_rust/design/`** — the eleven contracts
 [`AGENTS.md`](../../../AGENTS.md) describes as *"the contracts the crates cite
 as their specification"*, and for several modules they are the **only**
-statement of intent that is not the implementation. Six more measurement pages
-carry CPython and PyPy columns that *nothing can re-take*, because the engine
-that produced them was deleted at M1a S1a.10.5.
+statement of intent that is not the implementation.
 
 So: deleting the directory as a directory is right, and deleting its contents
 is not. The rule this stage applies — and it is the repo's own, from
@@ -101,7 +99,7 @@ is not. The rule this stage applies — and it is the repo's own, from
   re-takable censuses and the measurements, which stay *as measurements* with
   their date and their machine;
 - **(c) is deleted**, and lives in git — the phase/stage records, the open-question
-  ledgers, the oracle ledger, the divergence list.
+  ledgers.
 
 After it, `docs/history/` does not exist, no `docs/ein/` page says *M1d P1d.2*,
 and no crate links to a file that is gone. That is the user's instruction
@@ -161,7 +159,7 @@ docs/
       api.md                      ← docs/api/rust.md (marker-guarded region intact)
       architecture.md             ← kernel/architecture.md + inference/implementation.md
                                     + ir/02-data-model/03_implementation.md
-      design/                     ← history/m1a_rust/design/ 01–12, de-scaffolded
+      design/                     ← history/m1a_rust/design/ 02–12, de-scaffolded
       algorithms.md               ← inference/features.md (the levers and what they cost)
       read-outs.md                ← inference/{lattice_dump,lattice_diagrams,events}.md
       benchmarks/                 ← history/m1a/measurements/ + the four M1d censuses
@@ -173,24 +171,8 @@ docs/
   lib/                            unchanged
 ```
 
-Four pages have no row above and each is a decision, not an oversight:
+One page has no row above, and it is a decision, not an oversight:
 
-- **`docs/api/{ein,ir,kb,inference,trace}.md`** — 1 019 lines of *Python*
-  embedding contract, filed as history with a 🏛 banner and kept alive only
-  because [Q-M1a.23](../../../docs/history/m1a_rust/open_questions.md)'s three
-  trip-wires cite them as the specification a binding would be rebuilt from.
-  The instruction *drop Python* and that deferral cannot both hold. **Proposed:
-  delete, and record in the same commit that Q-M1a.23's trip-wires now resolve
-  to git.** It is the sharpest single collision in the stage and it wants the
-  user's word.
-- **`inference/parity_baselines.md`** — parity against an engine that no longer
-  exists. Delete.
-- **`measurements/{baseline,scaling}.md`** — 4 106 lines whose CPython and PyPy
-  columns are frozen constants. *Drop Python* would delete the only columns
-  that cannot be re-taken. **Proposed: keep the pages under
-  `ein.rs/benchmarks/`, and state at the top that the two columns are a
-  historical constant** — a measurement is not a Python reference in the sense
-  the instruction means.
 - **`docs/history/m1d_satisfiability/ideas.md`** — the user's own, and
   `AGENTS.md` says it is authoritative on intent *"as `plans/ideas/*` is"*.
   **Move to `plans/ideas/`**, which is where the repo already keeps that class.
@@ -295,9 +277,8 @@ implementation?* If yes it is `reasoning/`; if no it is `ein.rs/`.
 
 Three known traps:
 
-- `defined_behaviour.md` is *"the thirteen diagnostics, orderings and error
-  strings whose only statement used to be a Python source file"* — it is
-  simultaneously a user-facing reference (the diagnostics) and an
+- `defined_behaviour.md` is the thirteen diagnostics, orderings and error
+  strings — it is simultaneously a user-facing reference (the diagnostics) and an
   implementation-agnostic contract (the orderings). It splits.
 - The M1d pages are the best implementation-agnostic writing in the repo
   (`the_boundary`, `completeness`, `the_verdict`, `obligation_forms`) and they
@@ -402,10 +383,6 @@ P1e.2's own edits verifiable.
   into a summary of itself. The repo already states the rule —
   *a page rewritten to describe the current engine is neither history nor a
   specification* — and this stage is the largest opportunity to break it.
-- **Deleting `docs/api`'s five Python pages closes a deferral that was kept
-  cheap on purpose.** Q-M1a.23's whole argument is that a deferral is cheap to
-  reverse *only while the specification survives it*. Deleting them is a real
-  cost paid for a real gain, and it is the user's call, not this stage's.
 - **The release-voice check is a blunt instrument.** A grep for `S1a.` will
   hit a test named `s1a_6_9_resumed_saturation`, a golden file name, and a
   changelog. Scope it to doc comments and `docs/ein/`, allow an explicit

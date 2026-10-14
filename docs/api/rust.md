@@ -26,8 +26,7 @@ printed here — checked by `cargo test --workspace`, which is the gate. It is t
 substitute for the contract suite the deferred
 [S1a.9.2](../history/m1a_rust/README.md#p1a9--release) would have been, and it
 is stronger on the one axis that matters: it cannot rot without the gate going
-red. The five Python pages beside it went stale precisely because nothing ran
-them.
+red.
 
 ## Three consumers, and what each takes
 
@@ -51,7 +50,7 @@ ein-render = { path = "../ein/ein.rs/crates/ein-render" }   # optional
 ein-einb   = { path = "../ein/ein.rs/crates/ein-einb" }     # optional
 ```
 
-Six crates ship and two are dev-only (`ein-corpus`, `ein-parity`, both
+Six crates ship and two are dev-only (`ein-corpus`, `ein-narration`, both
 `publish = false`). They stack linearly up to `ein-infer` and fork there:
 
 ```text
@@ -335,12 +334,11 @@ this page names is; everything else moves.
 The version is `0.1.0` and the crates are unpublished, so there is no semver
 commitment yet. What *is* stable is the layer above: the CLI's surface, the
 event protocol (`ein-events/1`), the `.einb` format major, and the IR language
-itself, which M1a's invariant I1 froze for the whole port.
+itself, which M1a's invariant I1 froze for the whole milestone.
 
 ## See also
 
-- [`docs/api/README.md`](README.md) — this subtree's index, and why five of
-  its pages are history
+- [`docs/api/README.md`](README.md) — this subtree's index
 - [`docs/kernel/inference/implementation.md`](../kernel/inference/implementation.md)
   — the engine internals, module by module
 - [`docs/kernel/inference/architecture_and_algorithms.md`](../kernel/inference/architecture_and_algorithms.md)

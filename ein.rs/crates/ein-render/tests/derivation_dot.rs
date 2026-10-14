@@ -1,12 +1,15 @@
-//! S1a.2.4 acceptance — `DerivationDAG.to_dot` byte-for-byte.
+//! S1a.2.4 acceptance — [`derivation_dag_to_dot`] byte-for-byte.
 //!
-//! The fixture is the one `ein.py/tests/render/test_golden_dot.py` captured
-//! `kb_provenance_dag.dot` from, rebuilt against the port's data model. The
-//! golden is the *committed* one, read from `ein.py/`: a port that ships its
-//! own copy of the expected bytes proves only that it agrees with itself.
+//! The fixture is a two-premise derivation built directly against the data
+//! model, and its rendering is the checked-in
+//! `tests/golden/dot/kb_provenance_dag.dot`.
+//!
+//! ```text
+//! EIN_BLESS=1 cargo test -p ein-render --test derivation_dot   # regenerate it
+//! ```
 
 use ein_core::{Justifications, Kb, Program, Prov, Relation, Terms, Value, build_derivation_dag};
-use ein_corpus::repo_root;
+use ein_corpus::{golden, golden_path};
 use ein_render::derivation_dag_to_dot;
 
 /// `(relation p T T) (relation q T T) (is-a a T) … (p a b :source "(1)")
@@ -74,10 +77,12 @@ fn the_derivation_dag_renders_the_committed_golden() {
     let (terms, kb, derived) = fixture();
     let dag = build_derivation_dag(&kb, &terms, derived, Justifications::Primary);
     let got = derivation_dag_to_dot(&dag, &kb, &terms);
-    let golden = repo_root()
-        .join("ein.rs/crates/ein-render/tests/golden/from_ein_py/dot/kb_provenance_dag.dot");
-    let want = std::fs::read_to_string(&golden).expect("the committed golden");
-    assert_eq!(got, want, "\n--- ein.rs ---\n{got}\n--- ein.py ---\n{want}");
+    if let Some(e) = golden(
+        &golden_path("ein-render", "dot/kb_provenance_dag.dot"),
+        &got,
+    ) {
+        panic!("{e}\n--- got ---\n{got}");
+    }
 }
 
 #[test]

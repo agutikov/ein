@@ -1,9 +1,8 @@
 //! The IR abstract syntax tree — an arena, not a tree of pointers.
 //!
-//! ein.py's nodes are frozen dataclasses whose `loc` field is
-//! `field(compare=False)`, which is the single reason
-//! `parse(dump(parse(x))) == parse(x)` holds. ein.rs reproduces that by
-//! keeping positions in a **side table**: [`Node`] carries no `Loc`, so
+//! Node equality ignores source positions, which is the single reason
+//! `parse(dump(parse(x))) == parse(x)` holds. Positions live in a **side
+//! table** so that it holds by construction: [`Node`] carries no `Loc`, so
 //! structural equality ([`Ast::eq_nodes`]) cannot see one
 //! ([design/04](../../../../docs/history/m1a_rust/design/04_ir_frontend.md) §3).
 //!
@@ -12,22 +11,23 @@
 //! subtree copy (macro expansion) is a walk over integers rather than a graph
 //! clone.
 //!
-//! Two ein.py quirks are *deliberately* reproduced here rather than fixed,
-//! because they are observable and the harness diffs bytes:
+//! Two quirks are *deliberately* kept rather than fixed, because they are
+//! observable:
 //!
 //! - **Synthetic heads.** `()` lowers to a form headed `@empty` and a
 //!   `rule`/`macro` parameter list to one headed `@params`; the dumper prints
 //!   any `@`-headed form without its head.
-//! - **Top-level forms carry no `loc`.** `_topform`, `relation_decl`,
-//!   `generic_fact`, `eq_fact`, `not_form`, … all build their `SForm` without
-//!   passing one, and only `generic_list` sets `loc=head.loc`. A loader error
-//!   that interpolates `at {form.loc}` therefore prints `at None`, and so must
-//!   ein.rs (Q-M1a.6 — a real usability bug, fixed in *both* after parity).
+//! - **Top-level forms carry no `loc`.** `relation_decl`, `generic_fact`,
+//!   `eq_fact`, `not_form`, … all build their `SForm` without one, and only
+//!   `generic_list` takes its head's. A loader error that interpolates a
+//!   form's location therefore prints `at None` (`defined_behaviour.md`
+//!   § 1.5; Q-M1a.6 — a real usability bug, kept so that fixing it is one
+//!   visible re-baseline).
 
 use rustc_hash::FxHashMap;
 
-pub use ein_core::pyrepr::canonical_int;
-use ein_core::pyrepr::repr_str;
+pub use ein_core::repr::canonical_int;
+use ein_core::repr::repr_str;
 
 /// An interned string: an atom name, a variable name, a string body, or the
 /// canonical decimal text of an integer.
@@ -45,8 +45,7 @@ pub struct NodeId(pub u32);
 pub struct FileId(pub u32);
 
 /// A source position: **1-based** line and column, in characters, taken from
-/// the token's first character — what Lark's `propagate_positions` yields and
-/// what `ir/ast.py::_loc` records.
+/// the token's first character.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Loc {
     pub file: FileId,
@@ -75,9 +74,9 @@ impl ArgSpan {
 /// [`Ast::eq_nodes`].
 #[derive(Clone, Copy, Debug)]
 pub enum Node {
-    /// `SYMBOL`, and the `=` of an `eq_fact` (`EQ` is a *named* terminal in
-    /// the Lark grammar precisely so it survives token filtering and arrives
-    /// as `Atom("=")` — in both the fact and the list-head position).
+    /// `SYMBOL`, and the `=` of an `eq_fact` (`EQ` is a *named* terminal
+    /// precisely so it arrives as `Atom("=")` — in both the fact and the
+    /// list-head position).
     Atom(SymId),
     /// `?name` — the `?` is not stored.
     Var(SymId),
@@ -88,15 +87,14 @@ pub enum Node {
     /// A double-quoted string, stored **unescaped**.
     Str(SymId),
     /// An integer, stored as its *canonical decimal text* — `007` and `7`
-    /// intern to the same symbol, exactly as `Int(value=int(tok))` collapses
-    /// them, and the width is unbounded as Python's is
+    /// intern to the same symbol, and the width is unbounded
     /// ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §3).
     Int(SymId),
     /// `low..high`, or `low..*` when `high` is `None`. Both bounds are
     /// canonical decimal text, for the same reason as [`Node::Int`].
     Range { low: SymId, high: Option<SymId> },
     /// `:key value`. `key` is a [`Node::Keyword`] node so it keeps its own
-    /// `Loc`, as ein.py's `KwPair.key` does.
+    /// `Loc`.
     KwPair { key: NodeId, value: NodeId },
     /// `(head arg…)`. `head` is an `Atom` for every real form and may be a
     /// `Var` or `Wildcard` inside a pattern interior (`(?rel ?a ?b)`).
@@ -234,7 +232,7 @@ impl Ast {
     }
 
     /// `(name arg…)` with a **synthetic** head — the `Atom` carries no `Loc`,
-    /// which is what every `_topform`-built form does in ein.py.
+    /// as every top-level form's head does.
     pub fn sform_named(&mut self, name: &str, args: &[NodeId], loc: Option<Loc>) -> NodeId {
         let head = self.atom(name, None);
         self.sform(head, args, loc)
@@ -269,8 +267,7 @@ impl Ast {
 
     // ── Structural equality ────────────────────────────────────────
 
-    /// Structural equality, ignoring positions — ein.py's `IRNode.__eq__`
-    /// with `loc` excluded from `compare`.
+    /// Structural equality, ignoring positions.
     ///
     /// Import de-duplication compares two declarations that came from
     /// different files, so this must be a *shape* comparison; the `Loc` side
@@ -322,7 +319,8 @@ impl Ast {
     }
 }
 
-/// `repr(node)` — the dataclass `repr` two loader messages interpolate.
+/// The `repr` of a node — `Atom(name='foo')`, `SForm(head=…, args=(…,))` —
+/// which two loader messages interpolate.
 ///
 /// `(config foo)` reports `got Atom(name='foo')`, and an ill-typed flag value
 /// reports the node it got; both are text a puzzle author reads, so the
@@ -334,7 +332,7 @@ pub fn node_repr(ast: &Ast, id: NodeId) -> String {
         Node::Keyword(s) => format!("Keyword(name={})", repr_str(ast.sym(s))),
         Node::Wildcard => "Wildcard()".to_string(),
         Node::Str(s) => format!("String(value={})", repr_str(ast.sym(s))),
-        // `Int` and `Range` carry Python *integers*, so they print unquoted.
+        // `Int` and `Range` carry *integers*, so they print unquoted.
         Node::Int(s) => format!("Int(value={})", ast.sym(s)),
         Node::Range { low, high } => format!(
             "Range(low={}, high={})",
@@ -361,20 +359,20 @@ pub fn node_repr(ast: &Ast, id: NodeId) -> String {
     }
 }
 
-/// `f"{loc}"` — the dataclass `repr` a loader message interpolates.
+/// A source location as a loader message interpolates it —
+/// `Loc(file='a.ein', line=6, col=20)`.
 ///
-/// `None` for a **top-level** form, which is what makes ein.py's loader
-/// messages end in `at None`: `_topform`, `relation_decl`, `generic_fact`,
-/// `eq_fact`, … all build their `SForm` without a `loc` and only
-/// `generic_list` passes one. Q-M1a.6 — a real usability bug, fixed in both
-/// implementations *after* parity, because fixing it during the port would
-/// break T3 and hide regressions.
+/// `None` for a **top-level** form, which is what makes loader messages end
+/// in `at None` (`defined_behaviour.md` § 1.5): `relation_decl`,
+/// `generic_fact`, `eq_fact`, … all build their `SForm` without a `loc` and
+/// only `generic_list` passes one. Q-M1a.6 — a real usability bug, kept so
+/// that fixing it is one visible re-baseline rather than noise.
 pub fn loc_repr(ast: &Ast, loc: Option<Loc>) -> String {
     match loc {
         None => "None".to_string(),
         Some(l) => format!(
             "Loc(file={}, line={}, col={})",
-            ein_core::pyrepr::repr_str(ast.file(l.file)),
+            ein_core::repr::repr_str(ast.file(l.file)),
             l.line,
             l.col
         ),
@@ -413,7 +411,7 @@ mod tests {
     }
 
     #[test]
-    fn a_loc_renders_as_pythons_dataclass_repr() {
+    fn a_loc_renders_as_file_line_col_or_none() {
         let mut ast = Ast::new();
         let f = ast.intern_file(Some("examples/zebra2.ein"));
         assert_eq!(loc_repr(&ast, None), "None");

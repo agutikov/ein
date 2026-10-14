@@ -4,7 +4,7 @@
 > describes the engine as it was **designed** at P1.5b, not as it shipped.
 > Four of the things it specifies were retired between 2026-06-15 and
 > 2026-08-17, and its source links were mechanically re-aimed at
-> `ein.rs/crates/ein-infer/src/solve.rs` when the port landed, which is what
+> `ein.rs/crates/ein-infer/src/solve.rs` at M1a, which is what
 > makes it *read* current:
 >
 > | what this page specifies | when it went, and why | what holds today |
@@ -17,7 +17,7 @@
 > **It is kept, and kept in place, on purpose.** Five pages cite it, one of
 > them a shipped milestone record —
 > [`docs/history/m1a_rust/design/07_search_layer.md`](../../history/m1a_rust/design/07_search_layer.md)
-> calls it *"the per-step contract"* the Rust port had to reproduce — and the
+> calls it *"the per-step contract"* of M1a's search layer — and the
 > first row above is a refutation that needs its subject. It stays here rather
 > than moving under `docs/history/` because **M1 has no `docs/history/`
 > entry**: [`docs/history/README.md`](../../history/README.md) records that
@@ -106,7 +106,7 @@ helper (the per-candidate flow described in §3 below).
 S1.5b.21 extracts the helper from today's `monotonic_solve`
 body; S1.5b.21 + S1.5b.23 add the two new wrappers.
 
-```python
+```
 # All three: ein-infer/src/solve.rs
 
 def monotonic_solve(
@@ -542,8 +542,7 @@ What stays:
 
 ## Cross-references
 
-- Engine entry: [`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs) —
-  ein.py's whole `monotonic/` package in one module.
+- Engine entry: [`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs).
 - Filter helpers:
   [`nogoods.rs`](../../../ein.rs/crates/ein-infer/src/nogoods.rs)
   (`matches_any_nogood`, `emit_nogood`).

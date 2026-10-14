@@ -125,9 +125,8 @@ The two phases are
 [`Saturator::step`](../../../ein.rs/crates/ein-infer/src/saturator.rs), and it
 is one loop rather than two: `closure_step` fires purely positive matches from
 a priority-banded queue until it is empty, and only then does
-`admit_from_boundary` speak. *This paragraph named a queue-less `Engine::step`
-until 2026-08-31; that was `ein.py`'s second, simpler loop — `ein.rs`'s
-`Engine` is the compile cache and has no `step` (M1e `CD-M1`).*
+`admit_from_boundary` speak. `Engine` is the compile cache and has no `step`
+(M1e `CD-M1`).
 
 ## Corollaries the engine relies on
 
@@ -281,11 +280,11 @@ fixes are pinned.
   2026-08-17.** `absents_still_pass` walked `plan.steps` only, while
   `match.run` also yielded from the S1.8.A13 `extra_match_plans`
   disjuncts — their guards got no protection at all, a confirmed unsound
-  firing that had been pinned `xfail(strict=True)`. It is closed
+  firing that had been pinned as an expected failure. It is closed
   *structurally*, not by walking one more tuple: guards are lifted **per
   disjunct** into `plan.naf_guards`, and `match.run_guarded` yields every
   match together with its own disjunct's guards, so there is no longer a
-  tuple a caller could forget. The strict xfail is retired.
+  tuple a caller could forget. The expected failure is retired.
 
 ## Divergence introduced by the fix
 

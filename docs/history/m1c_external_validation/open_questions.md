@@ -59,8 +59,8 @@ per-fact `:derives` passes on every one. An `:expect` naming `smoke-loc` and
 `pet-loc` fails on all 23.
 
 **The cost is a loader change with a trap in it.** Today the last `query`
-silently wins (`from_ir.rs`, "Last one wins, for both blocks", pinned in both
-engines by `the_last_query_and_the_last_config_win`). A *test* file whose
+silently wins (`from_ir.rs`, "Last one wins, for both blocks", pinned by
+`the_last_query_and_the_last_config_win`). A *test* file whose
 second check is silently discarded is worse than no test file, so
 `Program.query` becomes plural and every consumer says what it does with N.
 `config`'s last-wins stays: a config is a setting, a query is content, and the

@@ -186,18 +186,15 @@ grammar.
 T1a.9.4.6**, which found this milestone's plan asserting a boundary that had
 been deferred out from under it.
 
-**The premise that is gone.** M2's documents were written when ein was Python,
-so "the frontend is Python, calling the engine in-process" needed no argument.
-Both halves of that are now open:
+**The premise that is gone.** M2's documents assumed a frontend calling the
+engine in-process, and that needed no argument. It is now open:
 
-- `ein.py/` was deleted at M1a
-  [S1a.10.5](../../docs/history/m1a_rust/README.md#s1a105--the-removal).
 - **PyO3 is not the boundary**: the binding was deferred 2026-08-21 for want
   of a consumer
   ([Q-M1a.23](../../docs/history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)),
   and *this milestone was the last candidate*. There is also **no socket** —
   the server was dropped 2026-08-18; the engine ships as a library plus a CLI.
-- **The llama.cpp argument was never a CPython argument.**
+- **The llama.cpp argument was never a language argument.**
   The LLM infra ([S2.2.2](p2.2_formalizer/s2.2.2_llama_server_and_client.md))
   is a `llama-server` container and a thin HTTP client. The pattern it mirrors
   is acva's, and acva's client is **C++**.

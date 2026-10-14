@@ -1,21 +1,15 @@
-//! T1a.10.1.2 — **the T3 bytes, banked.**
+//! T1a.10.1.2 — **every rendering of every corpus file, banked.**
 //!
-//! `ein-conformance --tier T3` compared every artefact of every corpus cell
-//! between two engines: stdout, stderr, the exit code, the `--trace`
-//! markdown, the `--dump-states` tree, every DOT view.
-//! [P1a.10](../../../../docs/history/m1a_rust/README.md#p1a10--one-implementation)
-//! removes the other engine, and this is what takes over: the same sweep,
-//! against a checked-in digest of what ein.rs produced **while the oracle was
-//! still there and still agreeing**. That timing is the whole provenance
-//! argument — the manifest was blessed in a tree where `cargo test
-//! --workspace` was green with the differential half running, so every line
-//! in it is a byte string ein.py had signed off on.
+//! Every observable surface of every corpus file — the solve table and the
+//! `--trace` markdown, the `--dump-states` tree, every DOT view, and the
+//! shapes behind them — is rendered and digested against a checked-in
+//! manifest, `tests/golden/corpus_shapes.md5`.
 //!
-//! **One edit to the banked bytes has happened since**: the 107 lines whose
-//! rendering quotes a *resolved path* were re-blessed with the checkout root
-//! replaced by `<repo>` ([`portable`]). Nothing semantic moved — the elided
-//! prefix was the blessing machine's directory, never the engine's answer,
-//! and it is what made this test green where it was blessed and red on CI.
+//! **The 107 lines whose rendering quotes a *resolved path*** are banked with
+//! the checkout root replaced by `<repo>` ([`portable`]). Nothing semantic is
+//! elided — the prefix is the blessing machine's directory, never the
+//! engine's answer, and it is what made this test green where it was blessed
+//! and red on CI.
 //!
 //! It sweeps the *shape* functions rather than the CLI, because they are a
 //! superset: `render rules` is one of `dot_shape`'s seventeen views, `solve`'s
@@ -38,26 +32,20 @@
 //!
 //! ## The two ops that arrived with floors
 //!
-//! `load` and `saturate` were added by
-//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite),
-//! and they are the only two surfaces whose sole owner had been a differential
-//! sweep: `ein-ir/tests/load_parity.rs` diffed `ein_core::shape` against
-//! `ir_oracle.py`'s `kb-shape`, and `ein-infer/tests/saturate_parity.rs`
-//! diffed the whole verbose event stream. Both sweeps carried a **coverage
-//! floor** — "at least 60 files actually loaded", "at least 50 files and 3 000
-//! events" — because a sweep that compares nothing agrees about nothing, and
-//! those floors move here with the ops rather than dying with the tests.
+//! `load` — `ein_core::shape` of the loaded KB — and `saturate` — the whole
+//! verbose event stream — each carry a **coverage floor**: "at least 60 files
+//! actually loaded", "at least 50 files and 3 000 events", because a sweep
+//! that compares nothing agrees about nothing.
 //!
-//! Twelve renderings *are* checked in whole
-//! ([S1a.6.11](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing),
-//! `tests/golden/`), chosen because they are the ones the parity contract
-//! stopped comparing. This manifest is the other 4 216, and the split is on
-//! the ledger rather than in a comment.
+//! Twelve renderings *are* checked in whole as well (S1a.6.11,
+//! `tests/golden/`), chosen because they are narration: they are what moves
+//! when the engine changes how much of a derivation it narrates, and there a
+//! digest saying *that* it moved is not enough.
 //!
 //! ## What it is not
 //!
-//! It is not evidence that the bytes are *right*. Nothing in a
-//! single-implementation repo is: a self-golden says "still what it was", and
+//! It is not evidence that the bytes are *right*. No golden is: a golden says
+//! "still what it was", and
 //! the claim "and what it was is what the semantics say" belongs to the
 //! acceptance fixtures and to
 //! [P1c.1](../../../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance).
@@ -112,8 +100,8 @@ fn every_corpus_rendering_reproduces_its_digest() {
     let ops = ops();
     let mut lines: Vec<String> = Vec::new();
     let mut bytes = 0usize;
-    // The two ops S1a.10.2 inherited from a differential sweep carry that
-    // sweep's own coverage floors — see [`SWEPT_FLOORS`].
+    // `load` and `saturate` carry their own coverage floors — see the
+    // module note.
     let (mut loads, mut saturates, mut events) = (0usize, 0usize, 0usize);
     let root = repo_root();
     let root_str = root.display().to_string();
@@ -162,12 +150,12 @@ fn every_corpus_rendering_reproduces_its_digest() {
     );
     assert!(
         loads >= 60,
-        "only {loads} corpus files loaded — `load_parity`'s floor was 60"
+        "only {loads} corpus files loaded — the floor is 60"
     );
     assert!(
         saturates >= 50 && events >= 3_000,
         "only {saturates} files / {events} events saturated — \
-         `saturate_parity`'s floor was 50 and 3 000"
+         the floor is 50 and 3 000"
     );
     eprintln!(
         "corpus shapes: {} renderings, {:.1} MB of text, {} KB of manifest",

@@ -112,9 +112,9 @@ pub struct CommitmentSetResult {
 /// All four lattice call sites in `solve.rs` pass root's snapshot, and
 /// `solve::resume_forks` is false only in a `fork-delta` build with
 /// `EIN_FORK_DELTA=0` — which exists so `utils/fork_delta_verify.py` can get
-/// both arms out of one binary and keep
-/// [D3](../../../../docs/history/m1a_rust/divergences.md) from widening in
-/// silence.
+/// both arms out of one binary and keep the difference between them — a
+/// resumed fork narrates less of one derivation than a re-deriving one — from
+/// widening in silence.
 ///
 /// *This paragraph said `None` on every shipping path until M1e `MA-M2`.* It
 /// was true before S1a.6.9 and became the older of two statements of one fact:
@@ -296,7 +296,7 @@ mod tests {
     /// not reach the other — the property
     /// [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism) runs on.
     ///
-    /// The `REPEAT` line of the parity diff already says the two calls *agree*;
+    /// The `REPEAT` line of `commit_shape` already says the two calls *agree*;
     /// what it cannot say is that they agree because they are isolated rather
     /// than because nothing happened to collide. This writes into the first
     /// fork between the calls and checks the second is untouched.

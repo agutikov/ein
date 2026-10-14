@@ -1,45 +1,32 @@
-;;; Ein — bug repro
+;;; Ein — mixed value kinds in one hypothesis slot
 ;;;
-;;; `TypeError: '<' not supported between instances of 'str' and 'int'`
-;;; from `apriori.layer_1`, on a KB that is otherwise perfectly well-formed.
+;;; Two candidate `seat` facts whose second argument is the int `1` in one
+;;; and the symbol `left` in the other, on a KB that is otherwise perfectly
+;;; well-formed.
 ;;;
-;;; The bug. `apriori.layer_1` opens the commitment search with
-;;; `sorted(alive)`, where each element is a `FactId` — `(relation_name,
-;;; args)`. Tuple comparison walks into `args`, so two candidates of the same
-;;; relation whose slot *i* holds a `str` in one and an `int` in the other are
-;;; incomparable and CPython raises. `canon.state_key` avoids exactly this with
-;;; `key=repr`; `apriori` does not.
+;;; What it pins. The commitment search orders its candidates by *content*
+;;; (`Terms::cmp_fact_semantic`, called from `apriori::layer_1`):
+;;; relation name first, then the arguments element-wise. Two candidates of
+;;; the same relation whose slot *i* holds an int in one and a symbol in the
+;;; other are therefore compared across value kinds, and `Value` is totally
+;;; ordered by construction — `Int < Sym < Fact` across tags — so the pair
+;;; sorts like any other and the run answers `Solution`, `?s = 1`.
 ;;;
 ;;; Why it needs an hrule. Blind hypothesis generation cannot reach it:
-;;; `hypgen._raw_candidates` builds candidates out of `kb.names`, and
-;;; `store.rebuild_indexes` only enters an arg into that index
-;;; `if isinstance(a, str)` — so every blind candidate is all-strings. An
+;;; `hypgen::candidate_objects` builds candidates out of `kb.names()`, which
+;;; holds symbols only — so every blind candidate is all-symbols. An
 ;;; `hrule` has no such filter: its `:assert` args come from *bindings*, and a
 ;;; variable that matched an int arg carries the int through. Hence the shape
 ;;; below — one `hrule`, one variable, two facts that bind it to `1` and to
 ;;; `left`.
 ;;;
-;;; Status: **not fixed, pinned.** This is M1a hazard H2
-;;; (`docs/history/m1a_rust/design/02_determinism_and_order.md` §5) and open question
-;;; Q-M1a.4. ein.rs's `Value` is totally ordered by construction and cannot
-;;; raise, so on this input the two implementations must differ: one crashes,
-;;; one answers. Fixing ein.py to sort by `repr` here would change the
-;;; candidate order of every puzzle to buy nothing any real puzzle has asked
-;;; for. So the crash is recorded rather than repaired, and the corpus carries
-;;; it in the `crash-parity` group (Q-M1a.14).
-;;;
-;;; One more thing this fixture showed, which changed that group's comparison
-;;; rule: the message itself is not stable. Which operand lands on the left of
-;;; the failing `<` depends on the `frozenset` iteration order inside `sorted`,
-;;; so across `PYTHONHASHSEED` values ein.py alternates between
-;;; `'str' and 'int'` and `'int' and 'str'`. A crash is therefore compared by
-;;; exit code and exception *class*, never by its message.
+;;; `nested-fact-hypothesis.ein` is the other half of the same ordering: two
+;;; candidates whose argument is a nested `Fact`, with no mixed slot types.
 ;;;
 ;;; Pinned by `corpus/corpus.toml` (the sweep runs it under every declared
 ;;; run, against a banked exit golden) and by `ein-infer/tests/interning.rs`,
 ;;; which uses it for a second thing: `Ann` is a name only the compiler ever
-;;; sees. It was `ein.py/tests/inference/test_mixed_type_hypothesis.py` until
-;;; M1a S1a.10.2.
+;;; sees.
 
 (relation slotval T T)
 (relation seat    T T)

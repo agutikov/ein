@@ -14,7 +14,7 @@ file it keeps its id; do not reuse a closed id.
 | Q1  | What kind of graph is the IR? Typed multigraph, hypergraph, or e-graph? | here (cross-milestone) |
 | Q2  | When does the graph engine hand off to a solver, and which one?         | here — **closed 2026-08-18: never** (M3 dropped) |
 | Q3  | Surface IR syntax — heavy-semantic Lisp vs richer DSL?                  | here (decided in M1.P1.1 S1.1.1) |
-| Q4  | Rule presentation language — Python functions, graph-rewrite DSL, or Horn clauses? | [M1](#absorbed--the-m1-milestone-questions-q4q42) |
+| Q4  | Rule presentation language — host-language functions, graph-rewrite DSL, or Horn clauses? | [M1](#absorbed--the-m1-milestone-questions-q4q42) |
 | Q5  | What "enough" means for the inference rule set                          | [M1](#absorbed--the-m1-milestone-questions-q4q42) |
 | Q6  | Should symmetry breaking happen pre- or post-trace?                     | [M1](#absorbed--the-m1-milestone-questions-q4q42) |
 | Q7  | Is the surface generator (NL output) allowed to be an LLM?              | [M2](m2_nl_to_ir/open_questions.md) |
@@ -34,7 +34,7 @@ file it keeps its id; do not reuse a closed id.
 | Q28 | Empty parens `()` — placeholder, ⊥, ⊤, or forbidden?                          | [M1](#absorbed--the-m1-milestone-questions-q4q42) |
 | Q29 | Pattern: walker vs cached executable program — compile unit?                  | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
 | Q30 | Universal rule library + import mechanism — does `examples/rules.ein` exist?  | [M1](#absorbed--the-m1-milestone-questions-q4q42) — deferred to P1.8 (2026-05-20) |
-| Q31 | `:why` template substitution language — `{?var}` or Python `{var}`?           | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
+| Q31 | `:why` template substitution language — `{?var}` or bare `{var}`?             | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
 | Q32 | `:where` semantics — sugar, top-level, or drop entirely?                      | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
 | Q33 | Predicate primitives — minimal set for M1                                     | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
 | Q34 | Algebraic properties beyond symmetric/transitive + 2^7 cartesian product | [followups F4](followups/f4_cross_cutting.md) |
@@ -42,7 +42,6 @@ file it keeps its id; do not reuse a closed id.
 | Q36 | Relation inheritance / rule polymorphism                                      | [followups F4](followups/f4_cross_cutting.md) |
 | Q37 | Induction — rules from facts                                                  | [followups F4](followups/f4_cross_cutting.md) |
 | Q38 | LLM as fact/relation/type/rule extractor                                      | [followups F4](followups/f4_cross_cutting.md) |
-| Q39 | Module path — `src/ein/inference/` vs `src/ein/rules/inference/`?     | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
 | Q40 | `(hypothesis ?h)` / `(contradiction-under ?h)` rule premises — Provenance map? | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
 | Q41 | Rule priority — scale (100/200/…) and placement (per-rule vs config)          | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
 | Q42 | P1.3 scope — path (a) narrow vs (b) all 10 with deferred                       | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
@@ -96,7 +95,7 @@ Counter-arguments and richer-DSL alternatives are listed there.
 # Absorbed — the M1 milestone questions (Q4–Q42)
 
 M1 shipped 2026-06-17 and its plan folder was deleted in P1.22
-(S1.22.99). Its `open_questions.md` is merged below **verbatim** rather
+(S1.22.99). Its `open_questions.md` is merged below rather
 than dropped: `docs/kernel/` deep-links thirteen of these anchors — the
 *resolved* ones as much as the open ones, because a resolved question is
 the record of the decision. Ids are sticky, so every `#q<n>` anchor still
@@ -112,7 +111,7 @@ Per [idea 06 §Open sub-questions point 1](ideas/06-inference-rules-completeness
 
 **Options:**
 
-- **A** — Python predicate over a `Graph` view. Easy; awful for
+- **A** — Host-language predicate over a `Graph` view. Easy; awful for
   trace generation (the rule "fires" with no structured premise list).
 - **B** — Graph-rewrite DSL (LHS pattern → RHS pattern, à la DPO).
   Structural, formal, slightly heavy. Matches
@@ -122,11 +121,11 @@ Per [idea 06 §Open sub-questions point 1](ideas/06-inference-rules-completeness
 
 **Working answer**: B — a small DSL where each rule is
 `(rule <name> :match <pattern> :assert <conclusion> :why <reason-template>)`.
-The original sketch carved out a Python-callable fallback for "cases
+The original sketch carved out an engine-code fallback for "cases
 where a pattern can't express what we need", citing the spatial
 constraint of P1.4 as the trigger; the declarative square rule
 (see [Q17](#q17--spatial-relation-formalisation)) removes that
-trigger. Keep the Python fallback latent as an *escape hatch* for
+trigger. Keep the engine-code fallback latent as an *escape hatch* for
 future problem classes, but Zebra ships without using it.
 Locked in P1.3 S1.3.1.
 
@@ -190,7 +189,7 @@ Per [idea 06 §Open sub-questions point 4](ideas/06-inference-rules-completeness
 equality, exclusivity, exhaustion, hypothesis-contradiction,
 arc-consistency, cardinality, forced-unique). Problem-specific
 rules — including the *square rule* (formerly the "spatial bundle"
-loaded by Python on `:spatial-via`) — are now ordinary rule
+loaded by engine code on `:spatial-via`) — are now ordinary rule
 declarations + property-application facts inside the puzzle's `.ein`
 file. No bundle-loading mechanism; the IR is the only configuration
 surface. New problem classes write their own rules in their own
@@ -215,7 +214,7 @@ The 2021 prototype's open question
   pairwise `(right-of House_{i+1} House_i)` facts; reuse the 2021
   prototype's *square rule* (now `square-fwd` / `square-bwd` rules + property
   facts) to project spatial relations across `co-located`. No
-  integer arithmetic; no position lattice; no `:spatial-via` Python
+  integer arithmetic; no position lattice; no `:spatial-via` engine
   hardcode.
 
 **Working answer**: the declarative graph-only formulation. Decided
@@ -235,7 +234,7 @@ Implementation already shipped in `examples/zebra.ein`:
 
 Trade-offs:
 
-- *For:* IR-native, no Python fallback. The trace renderer reads each
+- *For:* IR-native, no engine-code fallback. The trace renderer reads each
   spatial step as a square-rule firing — fully visible to
   [idea 08](ideas/08-human-style-deductive-trace.md). (The original
   entry also noted that an SMT translation would map `square-fwd` /
@@ -634,7 +633,7 @@ Full context:
 
 Surfaced 2026-05-19 during the P1.3 review. Zebra.ein uses
 `{?rel}` (ein-var style, `?` prefix). The original P1.3 plan used
-`{r}` / `{p0}` (Python format).
+`{r}` / `{p0}` (bare-name format fields).
 
 **Resolved 2026-05-20** — adopt the `{?var}` notation. The `?` is
 *part of the reference*, not a prefix that's stripped; `?var` is
@@ -659,15 +658,15 @@ was "`:where` is sugar for inline `(and …)` premise"; zebra.ein's
 keyword inside `(and …)`* — already a top-level construct.
 
 **Resolved 2026-05-20** — **drop `:where`; ship a built-in
-predicate registry** (`inference/predicates.py`). All four
+predicate registry**. All four
 candidate benefits of `:where` over canonical `(and …)` (guard-
 vs-generator distinction, prevent auto-vivification, readability,
 future-proofing) dissolve once a predicate registry exists; the
 registry is strictly more general.
 
 Concrete:
-- `inference/predicates.py` — initial set `eq`, `neq` (per Q33).
-- Loader (`kb/from_ir.py`) consults registry before auto-
+- The registry — initial set `eq`, `neq` (per Q33).
+- The loader consults the registry before auto-
   vivifying unknown heads.
 - Matcher dispatches premises via `(head ∈ registry)` → guard,
   else fact-scan.
@@ -692,11 +691,9 @@ minimal predicate set** required for the current 6 rules.
 
 ### M1 built-in predicate registry
 
-```python
-predicates = {
-    "eq":  lambda b, args: resolve(args[0], b) == resolve(args[1], b),
-    "neq": lambda b, args: resolve(args[0], b) != resolve(args[1], b),
-}
+```text
+eq   ?a ?b   — the two resolved arguments are equal
+neq  ?a ?b   — the two resolved arguments differ
 ```
 
 Two binary predicates. That's it.
@@ -724,30 +721,6 @@ A future F-numbered followup adjacent to F4 owns these.
 
 Full context:
 `p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q33.
-
-## Q39 — Module path
-
-Surfaced 2026-05-19 during the P1.3 review. The kernel docs at
-`docs/kernel/inference/` point at `src/ein/inference/`; the
-original P1.3 plan used `src/ein/rules/`.
-
-**Resolved 2026-05-20** — **flat `src/ein/inference/`**
-(option A). All M1 engine artifacts (matcher, firing, engine
-driver, predicate registry, compiler) sit at this one level. Tests
-at `tests/inference/`.
-
-KB and its `kb.rules` (rule *definitions*) stay in
-`src/ein/kb/` — rule definitions are *data*; matching /
-saturation is *engine*.
-
-Promotion to nested `rules/inference/` (option B) when a second
-non-engine file appears at the rule-language layer — likely Q30 /
-P1.8 (universal rule library lands `rules/library/…`) or F5
-(rules-as-data lands rule synthesis machinery). Migration is a
-mechanical `git mv` + import-fix sweep; no design rework.
-
-Full context:
-`p1.3_inference_rules/s1.3.0_review_and_revisions.md` §G — Q39.
 
 ## Q40 — Hypothesis-rule premises
 

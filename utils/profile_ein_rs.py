@@ -1,29 +1,25 @@
 #!/usr/bin/env python3
-"""`perf` attribution for ein.rs — the successor to `utils/profile_solve.py`.
+"""`perf` attribution for the `ein` binary.
 
     python3 utils/profile_ein_rs.py solve examples/zebra2.ein -e
     python3 utils/profile_ein_rs.py --repeat 5 --top 25 solve examples/zebra.ein -e
     python3 utils/profile_ein_rs.py --keep /path/perf.data solve examples/zebra2.ein
 
-Two tables, and the second is the one that compares:
+Two tables:
 
 **Self time by symbol** — `perf`'s flat profile, the leaf frame of every
-sample. Directly comparable to cProfile's `tottime` column.
+sample.
 
-**Self time by subsystem** — the same samples bucketed into
-`profile_solve.py`'s eight categories, which is what let the Python and Rust
-profiles be read side by side. That script (cProfile around one ein.py
-`solve()`) left with its subject at
-[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine);
-**the eight buckets stay**, because `baseline.md` §3 is written in them and a
-re-bucketing would silently rewrite every attribution in the file. Bucketing is
+**Self time by subsystem** — the same samples bucketed into eight engine
+categories. **The eight buckets are fixed**, because `baseline.md` §3 is
+written in them and a re-bucketing would silently rewrite every attribution in
+the file. Bucketing is
 by the **innermost enclosing engine frame**, not by the leaf, and the
 difference is the whole reason the table is trustworthy:
 
 - `FactStore::get` is called by the matcher *and* by the saturator. A leaf-only
   rule has to pick one and is wrong about the other half.
-- `malloc` / `memcpy` / `Vec::push` are leaves under everything. cProfile hides
-  that cost inside the Python caller's `tottime`, so to stay comparable this
+- `malloc` / `memcpy` / `Vec::push` are leaves under everything, so this
   walks *through* non-engine frames rather than bucketing them: allocator time
   lands on whoever asked for the memory.
 - A stack with no engine frame at all is process start-up — `ld.so` resolving
@@ -75,36 +71,33 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 EIN_RS = REPO / "ein.rs"
 
-# Mirrored `utils/profile_solve.py::_SUBSYSTEMS` — same names, same order, same
-# first-match-wins rule, needles rewritten as Rust paths. Where a Python module
-# became a differently-named Rust one the mapping is noted; where ein.rs has a
-# module Python did not, it joins the bucket its caller belongs to. The Python
-# original is gone (S1a.10.4) and this list is now the definition, so the
-# comments naming its modules are what is left of the mapping.
+# The eight engine buckets and then the frontend, first match wins, in this
+# order. A module with no bucket of its own joins the bucket its caller
+# belongs to.
 _SUBSYSTEMS: list[tuple[str, tuple[str, ...]]] = [
-    # `store.py:fork` + `_copy_fact_indexes_into` → the COW layer machinery.
+    # The COW layer machinery: forking a KB and copying its indexes.
     ("fork/copy",     ("Kb::fork", "Kb::layers", "kb::Layer::", "::snapshot")),
-    # `saturator.py`, `compile.py`, `firing.py` + the three store writes.
+    # The saturator, the compiler, firing + the three store writes.
     ("saturate",      ("ein_infer::saturator", "ein_infer::compile",
                        "ein_infer::firing", "ein_infer::plan",
                        "ein_infer::engine", "add_and_index_fact",
                        "record_justification", "accepts_justification")),
-    # `match.py`, `resolve.py` → `match_.rs` (argument resolution is compiled
-    # into the register machine; there is no separate resolve module).
+    # `match_.rs` (argument resolution is compiled into the register
+    # machine; there is no separate resolve module).
     ("match/bind",    ("ein_infer::match_",)),
     ("contradiction", ("ein_infer::contradiction", "ein_infer::nogoods",
                        "ein_infer::naf_deps", "ein_infer::sanity")),
-    # `hypgen.py`, `lookahead.py`, `commitment.py` + `hrule.rs`, which is the
-    # hypothesis-rule half `hypgen.py` keeps inline.
+    # Hypothesis generation, lookahead, commitment + `hrule.rs`, the
+    # hypothesis-rule half.
     ("hypgen/branch", ("ein_infer::hypgen", "ein_infer::lookahead",
                        "ein_infer::commitment", "ein_infer::hrule")),
-    # `solver.py:_compute_alive`, `closed.py`, `solution.py` → `verdict.rs`.
+    # `compute_alive`, `closed.rs`, `verdict.rs`.
     ("alive/closed",  ("ein_infer::closed", "ein_infer::verdict",
                        "compute_alive", "ein_infer::solve")),
     ("canon/key",     ("ein_infer::canon", "state_key")),
     ("apriori/elim",  ("ein_infer::apriori", "ein_infer::predicates",
                        "ein_infer::explain")),
-    # Not a Python bucket: the frontend is another phase's row, and without it
+    # Not one of the eight: the frontend is another phase's row, and without it
     # parse and load would land in `other (engine)` and read as unattributed
     # engine time. `ein_render` joins it — a `render` workload is all frontend
     # and presentation, and neither is what the eight engine buckets are for.
@@ -113,9 +106,8 @@ _SUBSYSTEMS: list[tuple[str, tuple[str, ...]]] = [
 
 # Which frames the walk-outward rule may *stop* on. A frame outside this set is
 # transparent — `malloc`, `memcpy`, `Vec::push`, `FactStore::get`, `Terms::
-# intern_text` — so its cost lands on the engine function that asked for it,
-# which is where cProfile's `tottime` puts the equivalent C-level work. That is
-# also why `ein_core::` is *not* here: the data model is a leaf under everything,
+# intern_text` — so its cost lands on the engine function that asked for it.
+# That is also why `ein_core::` is *not* here: the data model is a leaf under everything,
 # and attributing it to itself would answer "what is slow" with "the KB".
 _STOP_ON = ("ein_infer::", "ein_ir::", "ein_render::", "ein_cli::")
 
@@ -221,8 +213,8 @@ def parse_script(text: str, cum_needles: tuple[str, ...] = ()) -> dict:
     *is* a time share and no cycle counting is needed.
 
     **Cumulative** is per-sample presence, deduplicated: a stack that passes
-    through the saturator twice counts once. That makes the column comparable to
-    cProfile's `cumtime` — "how much of the run happens under this" — and it is
+    through the saturator twice counts once. That makes the column read as
+    "how much of the run happens under this", and it is
     the only column that can answer the question S1a.6.1 asks out loud, "is the
     boundary still 72 %?", because self time cannot see a caller that spends all
     its time in a callee.

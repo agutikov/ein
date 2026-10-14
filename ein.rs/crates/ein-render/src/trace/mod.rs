@@ -1,7 +1,6 @@
 //! The trace: its AST, the linearizer, the relevance prune, and the markdown.
 //!
-//! `ein.py`'s `ein/trace/` package, module for module. The answer table lives
-//! beside it in [`crate::answer`], as it does there.
+//! The answer table lives beside it in [`crate::answer`].
 
 pub mod ast;
 pub mod linearize;

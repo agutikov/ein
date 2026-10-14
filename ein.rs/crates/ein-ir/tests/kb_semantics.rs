@@ -1,30 +1,24 @@
 //! T1a.10.2.2 — **the KB after load**: what the loader built, where each fact
 //! came from, and which library it read to get there.
 //!
-//! Replaces the semantics half of `ein.py/tests/kb/`, which is being deleted
-//! with its implementation: `test_entities.py` (a fact's origin),
-//! `test_imports.py` (the three import tiers, the reserved-name guard),
-//! `test_layers.py` (the fact view's filters), `test_load_negative.py` (the
-//! `.expected` corpus's portability), `test_provenance.py` (`walk_premises`
-//! and the derivation DAG), `test_stdlib_resolution.py` (where `std.*` comes
-//! from), `test_store.py` and `test_store_indexing.py` (the registries and the
-//! seven cross-reference indexes).
+//! Its subjects: a fact's origin, the three import tiers and the
+//! reserved-name guard, the fact view's filters, the `.expected` corpus's
+//! portability, `walk_premises` and the derivation DAG, where `std.*` comes
+//! from, and the registries and the seven cross-reference indexes.
 //!
 //! It lives in `ein-ir` rather than in `ein-core` for one reason: every claim
 //! here is about a KB *that was loaded from source*, and `ein-core` has no
-//! parser. The Python originals had the same shape — `tests/kb/conftest.py`'s
-//! fixtures are `KnowledgeBase.from_ir(parse(text))`.
+//! parser.
 //!
-//! Two things the port deliberately does **not** translate. The Python suite
-//! reached into `kb._facts_by_relation`, `kb.names`, `kb._nogoods` and
-//! `_cached_macro_names`; none of those names exists here, and a test that
-//! poked the Rust equivalents would pin this build rather than the language.
-//! What each of them protected is asserted through [`ein_core::shape`], the
-//! `Kb` reads, and the walks instead. And the Python fixtures that drove
-//! `$EIN_STDLIB` with `monkeypatch` are driven through
-//! [`Resolver::with_stdlib`] here: mutating the process environment from a
-//! test that runs in parallel with others reading it is unsound in Rust 2024,
-//! and the injection seam exists precisely so a test need not.
+//! Two things it deliberately does **not** do. It never reaches into the KB's
+//! private tables — the per-relation index, the name table, the no-good store,
+//! a cached macro list: a test that poked those would pin this build rather
+//! than the language, so what each of them protects is asserted through
+//! [`ein_core::shape`], the `Kb` reads, and the walks instead. And it never
+//! sets `$EIN_STDLIB`: that is driven through [`Resolver::with_stdlib`],
+//! because mutating the process environment from a test that runs in parallel
+//! with others reading it is unsound in Rust 2024, and the injection seam
+//! exists precisely so a test need not.
 
 use ein_core::{
     BitSet, FactId, IntId, Justifications, Kb, Prov, ProvKind, Symbol, Tag, Terms, Value,
@@ -63,7 +57,7 @@ fn load_error(text: &str) -> String {
     let mut terms = Terms::new();
     let forms = parse(&mut ast, text, Some("<fixture>")).expect("the fixture parses");
     match load(&mut ast, &mut terms, &forms, None) {
-        Ok(_) => panic!("expected a KBLoadError, but it loaded"),
+        Ok(_) => panic!("expected a load error, but it loaded"),
         Err(e) => e.0,
     }
 }
@@ -386,7 +380,7 @@ fn a_file_relative_import_resolves_against_the_importing_file() {
 /// supplies one — so `examples/broken/load/` cannot hold it and
 /// [its README](../../../../examples/broken/load/README.md) records the gap.
 /// That makes this test the corpus entry: it is the only place the message is
-/// checked at all, in either implementation.
+/// checked at all.
 #[test]
 fn a_file_relative_import_without_a_base_directory_is_refused() {
     assert_eq!(
@@ -625,7 +619,7 @@ fn keep_decides_membership_without_stopping_the_walk() {
 ///
 /// They are two walks over one graph written at different times for different
 /// consumers — the core feeds the no-good clause, the DAG feeds the rendered
-/// explanation — and nothing in either implementation forces them to agree.
+/// explanation — and nothing in either walk forces them to agree.
 /// A drift would be invisible in the ordinary case and would surface as an
 /// explanation that names a premise the no-good does not, which reads as an
 /// engine bug rather than as a walk bug.
@@ -762,11 +756,9 @@ fn an_override_without_the_marker_is_refused_and_names_the_variable() {
 /// the process.
 ///
 /// This is the entire reason a checkout outranks a packaged copy: edit a
-/// stdlib module, re-run, see the change. ein.py had to say so explicitly
-/// because its `stdlib_macro_names` was an `lru_cache` and the tests had to
-/// clear it; here there is no cache to clear, which is exactly the kind of
-/// property that gets quietly reintroduced by someone optimising a filesystem
-/// read out of a hot path. The same [`Resolver`] is used for both calls, so a
+/// stdlib module, re-run, see the change. There is no cache to clear, which
+/// is exactly the kind of property that gets quietly reintroduced by someone
+/// optimising a filesystem read out of a hot path. The same [`Resolver`] is used for both calls, so a
 /// cache anywhere — per process, per resolver — fails this.
 #[test]
 fn editing_a_module_takes_effect_without_a_rebuild() {
@@ -857,13 +849,10 @@ fn permuted(after: &Terms) -> Terms {
 /// indexes, every fact's provenance — is a function of the **file**, and of
 /// nothing else about the run.
 ///
-/// This is what replaces `load_parity.rs`'s oracle sweep once ein.py is gone.
-/// The oracle answered "is the shape right"; nothing in a single-implementation
-/// repo can answer that, and pretending otherwise is the trap
-/// [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
-/// names. What survives is the half that is still falsifiable and is the half
-/// that actually catches bugs: **nothing in that text may depend on which
-/// integer a name happened to be assigned.** `Symbol` has no `Ord` and every
+/// Whether the shape is *right* is the goldens' question; this is the half
+/// that is falsifiable without one and is the half that actually catches
+/// bugs: **nothing in that text may depend on which integer a name happened
+/// to be assigned.** `Symbol` has no `Ord` and every
 /// observable sort goes through `Interner::rank` precisely so this holds; a
 /// map iterated in id order, a `min_by_key` over a `Value`, a set rendered in
 /// insertion order all break it, and all of them are invisible in a run where

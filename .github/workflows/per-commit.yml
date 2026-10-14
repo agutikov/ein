@@ -14,13 +14,6 @@
 # `run:` here part of that list: the provisioning steps (checkout, toolchain,
 # cache, Python, Graphviz) are not gate steps and are excluded by name in the
 # test, so an *unmarked* new step fails it rather than being ignored.
-#
-# The `conformance-fast` job that used to close this file ran the parity
-# harness over the corpus, Python against Rust, at T3. It was retired with the
-# harness at M1a S1a.10.3: the corpus is still swept every commit, by
-# `cargo test --workspace`, which runs `ein-cli/tests/corpus_cli.rs` — every
-# entry under every declared run, as a process, against a banked exit golden —
-# in about three seconds rather than eight minutes of two engines.
 
 name: per-commit
 
@@ -33,11 +26,6 @@ concurrency:
   group: per-commit-${{ github.ref }}
   cancel-in-progress: true
 
-# The `oracle` job — `pip install -e 'ein.py[dev]'`, `./run_tests.sh --fast`,
-# `ruff check ein.py` — went with its subject at S1a.10.5. It ran first and on
-# its own, because a parity failure is meaningless if the oracle moved; there
-# is no parity and no oracle, and `rust` below is the gate.
-
 jobs:
   shared-assets:
     name: stdlib + corpus — no drift, no gaps
@@ -46,8 +34,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.14" }
-      # The stdlib is the one input whose divergence no parity tier can
-      # diagnose: both engines would be *correct* about different programs.
+      # The stdlib is the one input whose divergence no test inside the
+      # workspace can diagnose, because the engine would be *correct* about a
+      # different program.
       # gate-step
       - run: python3 utils/stdlib_manifest.py
       # No iteration over a hash map at an observable site (design/02 §9).
@@ -69,15 +58,7 @@ jobs:
         with: { components: "rustfmt, clippy" }
       - uses: Swatinem/rust-cache@v2
         with: { workspaces: ein.rs }
-      # ein.py was a *test* dependency of ein.rs from P1a.1 to S1a.10.2: the
-      # frontend has no CLI surface for the conformance harness to drive, so 42
-      # of the workspace's integration tests talked to `utils/ir_oracle.py`
-      # instead, and without `pip install -e ein.py` they skipped — loudly, but
-      # they skipped, and a silent gate is not a gate.
-      #
-      # S1a.10.2 un-differentialled all 42, so **the install is gone and its
-      # absence is the check**: a test that reacquired an oracle would now fail
-      # rather than skip. `python3` itself stays, for one thing —
+      # `python3` is here for one thing —
       # `examples/gen_zebra2_variants.py --check`, a stdlib-only script that
       # `cli_semantics.rs` runs to compare the zebra2 variants byte for byte.
       - uses: actions/setup-python@v5
@@ -102,8 +83,7 @@ jobs:
       - run: cargo doc --workspace --no-deps
         env: { RUSTDOCFLAGS: "-D warnings" }
       # The whole gate. Covers the corpus-completeness check, the corpus sweep
-      # through the CLI, the embedded-stdlib digest, and since S1a.10.2 every
-      # claim the frontend's differential tests carried.
+      # through the CLI and the embedded-stdlib digest.
       # gate-step
       - run: cargo test --workspace
       # M1e2 S1e2.1.6 — the review bundle for one small case, with the debug

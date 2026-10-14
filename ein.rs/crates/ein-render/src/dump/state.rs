@@ -1,5 +1,4 @@
-//! `MonotonicDumper` and `ProgressDumper` — `ein.py`'s
-//! `inference/monotonic/state_dump.py`.
+//! `MonotonicDumper` and `ProgressDumper`.
 //!
 //! Per-layer filesystem snapshots of a solve, and the live `-v` view over the
 //! same hooks. The layout:
@@ -63,8 +62,8 @@ pub fn commitment_json(terms: &Terms, commitment: &[FactId]) -> Json {
     )
 }
 
-/// Every field of [`MonotonicStats`], in its declaration order — the order
-/// `dataclasses.fields` yields, and what `summary.json` sorts.
+/// Every field of [`MonotonicStats`], in its declaration order, which is what
+/// `summary.json` sorts.
 pub fn stats_json(stats: &MonotonicStats) -> Vec<(&'static str, Json)> {
     let b = &stats.base;
     vec![
@@ -236,7 +235,7 @@ impl ProgressDumper {
         let _ = self.stream.flush();
     }
 
-    /// `f"{elapsed:5.0f}s"` — the elapsed-seconds column.
+    /// The elapsed-seconds column — whole seconds, right-aligned in five.
     fn el(&self) -> String {
         format!("{:5.0}s", self.inner.timeline.elapsed())
     }

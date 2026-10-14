@@ -3,23 +3,21 @@
 
 Rust's default `HashMap` uses a per-process randomised `RandomState`, so
 iterating one makes the *same binary on the same input* produce different
-output between runs. That is the one class of nondeterminism a parity harness
-cannot report usefully: the diff moves every time you look at it, and the
-first suspicion always falls on the other implementation.
+output between runs. That is the one class of nondeterminism a golden diff
+cannot report usefully: the diff moves every time you look at it.
 
 `design/12` §2 answers it with `FxHashMap` everywhere — deterministic hashing,
 and the right choice here anyway since none of this is adversary-facing input.
 But `FxHashMap`'s iteration order, while stable run-to-run, is still an
 artefact of hash values and insertion history rather than of the data, where
-the observables this port had to reproduce came from *insertion-ordered*
-`dict`s and explicit `sorted()`
+the engine's observables are defined by *insertion order* or an explicit sort
 ([design/02](../docs/history/m1a_rust/design/02_determinism_and_order.md) §2). So the
 rule is stronger than "don't use RandomState": **do not iterate a hash map at
 all** where the order can reach an output.
 
 The dynamic half of the question is two tests and a fuzzer:
 `ein-render/tests/id_order_invariance.rs` runs the corpus twice under
-permuted ids, and `utils/fuzz_ein.py` points it at generated input. This grep
+permuted ids, and `utils/fuzz_engine.py` points it at generated input. This grep
 finds an order that *could* leak; those find one that *does*.
 
     python3 utils/check_hashmap_iteration.py            # exit 1 on a finding

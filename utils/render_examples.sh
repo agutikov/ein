@@ -25,14 +25,12 @@
 #
 # ── The two views that were gone, and came back ─────────────────────────
 #
-# Until M1a S1a.10.4 the headline output was the **IR-graph** view — one
-# `NN_<name>.dot` per top-level form — plus `_unified.dot`, the whole-KB
-# "everything on one page" view. `ein ir dot` and `ein kb dot` were removed
-# in P1.11, so this script reached the Python renderers through `python3 -c`,
-# and when the Python engine left at P1a.10 the two views left with it while
-# their Rust ports stayed alive and unreachable (Q-M1e.20). M1e2 S1e2.1.3
-# put them back on the CLI as `ein render program` and `ein render kb`, and
-# `program/` and `_kb.dot` below are those two views again.
+# The **IR-graph** view — one `NN_<name>.dot` per top-level form — and
+# `_unified.dot`, the whole-KB "everything on one page" view, left the CLI
+# with `ein ir dot` and `ein kb dot` in P1.11, and their renderers stayed
+# alive and unreachable (Q-M1e.20). M1e2 S1e2.1.3 put them back on the CLI
+# as `ein render program` and `ein render kb`, and `program/` and `_kb.dot`
+# below are those two views again.
 #
 # Layout engines per view (per readability):
 #   *ontology* / *constraints* → fdp   (force-directed; instances spread)

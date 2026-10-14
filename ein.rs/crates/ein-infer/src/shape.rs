@@ -1,32 +1,27 @@
 //! Every plan a KB compiles, as one deterministic text — the S1a.3.1 diff.
 //!
-//! A `JoinPlan` has no CLI surface, so a harness comparing two `ein`
-//! *processes* could not see one: nothing either of them printed exposed a
-//! step sequence, a guard's scope, or a `watched` set. So the compiler was
-//! compared the way the loader was at
-//! [S1a.2.3](../../../../docs/history/m1a_rust/README.md#s1a23--the-loader-from_ir)
-//! — both implementations render the same text and the texts are diffed
-//! (`utils/ir_oracle.py`'s `plan-shape` op was the other half, and left with
-//! the second engine at S1a.10.4) — and since
-//! S1a.10.2 the text is digested into `corpus_shapes.md5` instead.
+//! A compiled plan has no CLI surface: nothing `ein` prints exposes a step
+//! sequence, a guard's scope, or a `watched` set. So the compiler is rendered
+//! as one text, the way the loader is at
+//! [S1a.2.3](../../../../docs/history/m1a_rust/README.md#s1a23--the-loader-from_ir),
+//! and since S1a.10.2 the text is digested into `corpus_shapes.md5`.
 //!
-//! Two rules make the text comparable, and they are the same two the KB shape
+//! Two rules make the text stable, and they are the same two the KB shape
 //! settled on:
 //!
 //! - **Values are rendered with `repr`**, so the atom `7` prints as `'7'` and
 //!   the integer `7` as `7`, and a slot that changed shape cannot hide.
 //! - **Sets are rendered sorted** — `watched`, `scope` and a step's shared
-//!   variables are `frozenset`s in ein.py, whose order is not reproducible
-//!   even run to run.
+//!   variables are sets, whose iteration order is not reproducible even run
+//!   to run.
 //!
 //! What is deliberately *not* in the text: registers and probes. They are the
-//! port's own metadata, ein.py has nothing to compare them against, and the
-//! claim that they change no behaviour is checked where it is made — by the
-//! matcher's debug assertion that its probe choice is `_candidates`' choice
-//! (S1a.3.2).
+//! compiler's own metadata, and the claim that they change no behaviour is
+//! checked where it is made — by the matcher's debug assertion that its probe
+//! choice is the left-to-right candidate scan's choice (S1a.3.2).
 
 use ein_core::entities::Rule;
-use ein_core::pyrepr::{PyValue, repr, repr_str};
+use ein_core::repr::{ReprValue, repr, repr_str};
 use ein_core::{FactId, Kb, Symbol, Terms};
 use ein_ir::{Ast, node_repr};
 use rustc_hash::FxHashMap;
@@ -44,7 +39,7 @@ use crate::plan::{GuardArgKind, NafGuard, Plan, Slot, Span, Step};
 /// The order is `kb.rules` in registry (insertion) order × that rule's
 /// activators in `rule_apps_by_rule` order, which is the order the compile
 /// cache is built in — and the cache's iteration order is observable through
-/// `_enqueue_pass`'s full pass, so it is part of what this diff checks.
+/// the saturator's full enqueue pass, so it is part of what this diff checks.
 pub fn plan_shape(ast: &Ast, terms: &mut Terms, kb: &Kb) -> Result<String, CompileError> {
     plan_shape_with(ast, terms, kb, true)
 }
@@ -54,8 +49,7 @@ pub fn plan_shape(ast: &Ast, terms: &mut Terms, kb: &Kb) -> Result<String, Compi
 ///
 /// Nothing in the engine compiles an unfiltered pair — both drivers filter
 /// first, which is exactly why `compile_rule`'s arity error is otherwise
-/// unreachable. `filter_activators: false` is how its fixture reaches it, on
-/// both sides (`plan-shape` takes the same flag).
+/// unreachable. `filter_activators: false` is how its fixture reaches it.
 pub fn plan_shape_with(
     ast: &Ast,
     terms: &mut Terms,
@@ -78,7 +72,7 @@ pub fn plan_shape_with(
             render_plan(&mut out, ast, terms, &plan, &key.activator);
         }
     }
-    // Lines are `"\n".join`ed on the Python side, so there is no trailing one.
+    // Lines are newline-joined, so there is no trailing one.
     if out.ends_with('\n') {
         out.pop();
     }
@@ -107,10 +101,10 @@ pub fn match_shape(ast: &Ast, terms: &mut Terms, kb: &Kb) -> Result<String, Comp
         for activator in activators_for(kb, terms, rule) {
             let key = plan_key(terms, rule, activator);
             let plan = crate::compile::compile_rule(ast, terms, rule, activator)?;
-            let key_repr = repr(&PyValue::Tuple(
+            let key_repr = repr(&ReprValue::Tuple(
                 key.activator
                     .iter()
-                    .map(|&s| PyValue::Str(terms.sym(s).to_string()))
+                    .map(|&s| ReprValue::Str(terms.sym(s).to_string()))
                     .collect(),
             ));
             out.push_str(&format!("PLAN {} key={key_repr}\n", terms.sym(plan.rule)));
@@ -142,8 +136,8 @@ pub fn match_shape(ast: &Ast, terms: &mut Terms, kb: &Kb) -> Result<String, Comp
 /// diff.
 ///
 /// The protocol itself, at `verbose`, so a redundant firing is emitted rather
-/// than only counted — a dropped one is exactly the kind of difference a port
-/// introduces, which is why T2 runs at that level. The trailing `SUMMARY` line
+/// than only counted — a dropped one would otherwise be invisible, which is
+/// why the stream is taken at that level. The trailing `SUMMARY` line
 /// carries what is engine state rather than an event: the NAF counters the
 /// phase gates on, and the compile-cache size Win A is measured in.
 pub fn saturate_events(
@@ -226,7 +220,7 @@ pub fn saturate_events(
 ///
 /// The event stream **is** the observable: candidate order decides `layer_1`'s
 /// singleton order and therefore the whole traversal, and which counter a drop
-/// lands in is a T1 observable in its own right. So there is no second
+/// lands in is observable in the stats in its own right. So there is no second
 /// rendering of the candidate list that would have to agree with this one.
 /// What the trailing block adds is what the events do not carry — the
 /// `--hyp-stats` report, its `raw == emitted + sum(filtered)` invariant, and
@@ -237,8 +231,9 @@ pub fn saturate_events(
 /// `closed` runs the auto-closure pass first — the *other* regime the
 /// generator is asked in, and the one `--hyp-stats` and the JSON summary use.
 /// Without it what this sees is the `(__closed__ R)` facts a puzzle authored
-/// or `std.closure` derived, which is also what `solve` sees: both ein.py call
-/// sites run `emit_closed` on a **fork**.
+/// or `std.closure` derived, which is also what `solve` sees: both call sites
+/// — the `--hyp-stats` preview and the JSON summary — run `emit_closed` on a
+/// **fork**.
 pub fn hyp_shape(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<String, String> {
     hyp_shape_with(ast, terms, kb, false)
 }
@@ -316,10 +311,10 @@ pub fn hyp_shape_with(
     }
     lines.push("STATS".to_string());
     lines.extend(stats.report_lines());
-    lines.push(format!("BALANCE {}", py_bool(stats.balances())));
+    lines.push(format!("BALANCE {}", bool_word(stats.balances())));
     lines.push(format!(
         "COMPLETE {} raw={}",
-        py_bool(is_complete),
+        bool_word(is_complete),
         short.raw
     ));
     lines.push(format!("OPEN {}", open.len()));
@@ -333,9 +328,8 @@ pub fn hyp_shape_with(
 /// until the enqueue pass has refreshed the cache, and a map taken at load
 /// time silently omits exactly the rules the analysis is about.
 ///
-/// The warning texts go out verbatim rather than counted — ein.py raises them
-/// through `warnings`, the suite runs under `filterwarnings=["error"]`, and a
-/// caller therefore reads the string.
+/// The warning texts go out verbatim rather than counted, because a caller
+/// reads the string.
 pub fn naf_map(
     ast: &Ast,
     terms: &mut Terms,
@@ -363,19 +357,23 @@ pub fn naf_map(
             // corpus census, and its diff is the finding.
             let exposed = match &d.refutation {
                 None => String::new(),
-                Some(r) => format!(" refutes={} watching={}", r.concludes, py_list(&r.watching)),
+                Some(r) => format!(
+                    " refutes={} watching={}",
+                    r.concludes,
+                    list_repr(&r.watching)
+                ),
             };
             format!(
                 "NAF {} {} derived={} declared={}{exposed}",
                 repr_str(s.terms.sym(d.rule)),
-                repr(&PyValue::Tuple(
+                repr(&ReprValue::Tuple(
                     d.activator
                         .iter()
-                        .map(|&a| PyValue::Str(s.terms.sym(a).to_string()))
+                        .map(|&a| ReprValue::Str(s.terms.sym(a).to_string()))
                         .collect()
                 )),
-                py_list(&d.derived),
-                py_list(&d.declared_only),
+                list_repr(&d.derived),
+                list_repr(&d.declared_only),
             )
         })
         .collect();
@@ -405,7 +403,7 @@ pub fn naf_map(
 /// elements exercise all four.
 ///
 /// The no-good workload is a fixed recipe rather than a random one, because
-/// the point is that two implementations run *the same* one: every 7th layer-3
+/// the point is that every run takes *the same* one: every 7th layer-3
 /// set, then every 5th layer-2 set, then every 3rd singleton, then the layer-3
 /// slice again. That order makes each of the three outcomes happen — a plain
 /// insert, an insert that removes stored supersets, and a clause that is
@@ -434,7 +432,7 @@ pub fn lattice_shape(
         let all = crate::hypgen::open_hypotheses(&mut s)
             .map_err(crate::saturator::SaturateError::Compile)?;
         let mut capped: Vec<FactId> = all.iter().copied().collect();
-        // determinism-ok: sorted by content immediately, as `sorted(alive)` is.
+        // determinism-ok: sorted by content immediately, as alive is.
         capped.sort_by(|&a, &b| s.terms.cmp_fact_semantic(a, b));
         capped.truncate(12);
         (all.len(), capped.into_iter().collect::<FxHashSet<FactId>>())
@@ -490,8 +488,8 @@ pub fn lattice_shape(
         .iter()
         .map(|c| crate::nogoods::clause_repr(terms, c))
         .collect();
-    // determinism-ok: the store is a set on both sides and this is its only
-    // rendering, sorted here exactly as ein.py sorts it at the same point.
+    // determinism-ok: the store is a set and this is its only rendering,
+    // sorted here.
     clauses.sort();
     out.push(format!("STORE {}", clauses.len()));
     out.extend(
@@ -514,12 +512,11 @@ pub fn lattice_shape(
 /// pin where the caps cut.
 ///
 /// `rounds` and `facts_considered` go out alongside the frontier because they
-/// say what the search *did*: a port can return the right frontier the wrong
-/// way, and this is the module where that is most likely.
+/// say what the search *did*: a search can return the right frontier the
+/// wrong way, and this is the module where that is most likely.
 ///
-/// Frontiers go out **sorted**. ein.py's is a `frozenset`, so its own
-/// iteration order is not reproducible even run to run, and every display site
-/// sorts.
+/// Frontiers go out **sorted**: a frontier is a set, whose iteration order is
+/// not reproducible even run to run, and every display site sorts.
 pub fn explain_shape(
     ast: &Ast,
     terms: &mut Terms,
@@ -559,7 +556,7 @@ pub fn explain_shape(
         format!(
             "{tag} {} target={target} exhausted={} rounds={} considered={} {}",
             e.len(),
-            py_bool(e.exhausted),
+            bool_word(e.exhausted),
             e.rounds,
             e.facts_considered,
             show(&e.frontier)
@@ -589,7 +586,7 @@ pub fn explain_shape(
     let mut out = vec![
         format!(
             "ALTS {} witnesses={}",
-            py_bool(kb.has_alternative_justifications()),
+            bool_word(kb.has_alternative_justifications()),
             witnesses.len()
         ),
         format!("CORE {} {}", core.len(), show(&core)),
@@ -606,7 +603,7 @@ pub fn explain_shape(
         // is won by the same witness whichever way it is broken —
         // `zebra2-bad` has four size-1 cores whose repr-smallest is also the
         // first the detector found. Reversing the witness list separates the
-        // two, so dropping the `" ".join(sorted(repr(f)))` half of the key
+        // two, so dropping the sorted-`repr` half of the key
         // becomes visible instead of being a comment nobody can check.
         line("FALLBACK-REV", &{
             let mut rev = witnesses.clone();
@@ -615,14 +612,14 @@ pub fn explain_shape(
         }),
     ];
 
-    // `sorted(…, key=repr)` over the `Fact` dataclass repr, then `[::11][:8]`.
+    // Sorted by each fact's `repr`, then every 5th, capped at 12.
     let mut derived: Vec<(String, FactId)> = kb
         .facts()
         .filter(|&f| {
             kb.primary(f)
                 .is_some_and(|p| terms.provs.get(p).kind == ein_core::ProvKind::Rule)
         })
-        .map(|f| (repr(&terms.py_fact(f)), f))
+        .map(|f| (repr(&terms.repr_fact(f)), f))
         .collect();
     derived.sort();
     let sample: Vec<FactId> = derived
@@ -688,7 +685,7 @@ pub fn commit_shape(
         let all = crate::hypgen::open_hypotheses(&mut s)
             .map_err(crate::saturator::SaturateError::Compile)?;
         let mut capped: Vec<FactId> = all.iter().copied().collect();
-        // determinism-ok: sorted by content immediately, as `sorted(alive)` is.
+        // determinism-ok: sorted by content immediately, as alive is.
         capped.sort_by(|&a, &b| s.terms.cmp_fact_semantic(a, b));
         capped.truncate(8);
         (all.len(), capped.into_iter().collect::<FxHashSet<FactId>>())
@@ -731,7 +728,7 @@ pub fn commit_shape(
             None,
         )?;
         let again = enter_line(terms, &commitments[0], &r);
-        out.push(format!("REPEAT {}", py_bool(again == first)));
+        out.push(format!("REPEAT {}", bool_word(again == first)));
     }
     out.push(format!(
         "ROOT facts={} commitments={}",
@@ -796,8 +793,8 @@ fn enter_line(terms: &Terms, c: &[FactId], r: &crate::commitment::CommitmentSetR
 /// `saturate_events` already compares one layer down.
 ///
 /// The `n` field is **kept**, and it is the strongest line here: it counts
-/// every event including the filtered ones, so two implementations agreeing on
-/// it agree on the whole stream, not merely on the part that is printed.
+/// every event including the filtered ones, so two runs agreeing on it agree
+/// on the whole stream, not merely on the part that is printed.
 pub fn solve_shape(
     ast: &Ast,
     terms: &mut Terms,
@@ -845,7 +842,7 @@ pub fn solve_shape(
         "VERDICT {} k={} exhausted={}",
         solved.answer.as_str(),
         s.solution_nodes,
-        py_bool(s.exhausted)
+        bool_word(s.exhausted)
     )];
     if let crate::verdict::Answer::Aborted { reason } = &solved.answer {
         out.push(format!("ABORT {reason}"));
@@ -937,15 +934,15 @@ pub fn solve_shape(
     Ok(out.join("\n"))
 }
 
-/// `repr(list_of_str)` — `PyValue` has no list shape, and one is needed in
-/// exactly this one place.
-fn py_list(items: &[String]) -> String {
+/// A list of strings as `['a', 'b']` — `ReprValue` has no list shape, and one
+/// is needed in exactly this one place.
+fn list_repr(items: &[String]) -> String {
     let rendered: Vec<String> = items.iter().map(|s| repr_str(s)).collect();
     format!("[{}]", rendered.join(", "))
 }
 
-/// One [`NafRef`] as `repr((relation, args))` — the tuple `world._ground`
-/// builds, with `None` where the query ranged free.
+/// One [`NafRef`] as the `repr` of the tuple `(relation, args)`, with `None`
+/// where the query ranged free.
 fn naf_repr(terms: &Terms, r: &ein_core::NafRef) -> String {
     format!(
         "({}, {})",
@@ -956,7 +953,7 @@ fn naf_repr(terms: &Terms, r: &ein_core::NafRef) -> String {
 
 fn naf_args_repr(terms: &Terms, args: &[ein_core::NafArg]) -> String {
     let items: Vec<String> = args.iter().map(|a| naf_arg_repr(terms, a)).collect();
-    // Python's one-tuple comma: `('x',)` is a tuple, `('x')` is a string.
+    // A one-element tuple keeps its trailing comma: `('x',)`, never `('x')`.
     if items.len() == 1 {
         format!("({},)", items[0])
     } else {
@@ -967,7 +964,7 @@ fn naf_args_repr(terms: &Terms, args: &[ein_core::NafArg]) -> String {
 fn naf_arg_repr(terms: &Terms, arg: &ein_core::NafArg) -> String {
     match arg {
         ein_core::NafArg::Free => "None".to_string(),
-        ein_core::NafArg::Value(v) => repr(&terms.py_value(*v)),
+        ein_core::NafArg::Value(v) => repr(&terms.repr_value(*v)),
         ein_core::NafArg::Nested { rel, args } => format!(
             "({}, {})",
             repr_str(terms.sym(*rel)),
@@ -983,7 +980,7 @@ fn match_text(terms: &Terms, at: &FxHashMap<FactId, usize>, m: &Match<'_>) -> St
             format!(
                 "({}, {})",
                 repr_str(terms.sym(name)),
-                repr(&terms.py_value(value))
+                repr(&terms.repr_value(value))
             )
         })
         .collect();
@@ -992,15 +989,15 @@ fn match_text(terms: &Terms, at: &FxHashMap<FactId, usize>, m: &Match<'_>) -> St
 }
 
 fn render_plan(out: &mut String, ast: &Ast, terms: &Terms, plan: &Plan, key: &[Symbol]) {
-    let key_repr = repr(&PyValue::Tuple(
+    let key_repr = repr(&ReprValue::Tuple(
         key.iter()
-            .map(|&s| PyValue::Str(terms.sym(s).to_string()))
+            .map(|&s| ReprValue::Str(terms.sym(s).to_string()))
             .collect(),
     ));
-    let args_repr = repr(&PyValue::Tuple(
+    let args_repr = repr(&ReprValue::Tuple(
         plan.activator_args
             .iter()
-            .map(|&s| PyValue::Str(terms.sym(s).to_string()))
+            .map(|&s| ReprValue::Str(terms.sym(s).to_string()))
             .collect(),
     ));
     let why = plan.why.map(|s| terms.sym(s)).unwrap_or("");
@@ -1013,7 +1010,7 @@ fn render_plan(out: &mut String, ast: &Ast, terms: &Terms, plan: &Plan, key: &[S
         out.push_str(&format!(
             "  SEED {} {}\n",
             terms.sym(*name),
-            repr(&terms.py_value(*value))
+            repr(&terms.repr_value(*value))
         ));
     }
     for (i, d) in plan.disjuncts.iter().enumerate() {
@@ -1038,7 +1035,7 @@ fn render_plan(out: &mut String, ast: &Ast, terms: &Terms, plan: &Plan, key: &[S
     if !refs.is_empty() {
         let rendered: Vec<String> = refs
             .iter()
-            .map(|(r, neg)| format!("({}, {})", repr_str(terms.sym(*r)), py_bool(*neg)))
+            .map(|(r, neg)| format!("({}, {})", repr_str(terms.sym(*r)), bool_word(*neg)))
             .collect();
         out.push_str(&format!("  NAFREFS [{}]\n", rendered.join(", ")));
     }
@@ -1057,7 +1054,7 @@ fn render_guard(
         "  D{disjunct} GUARD {index} scope=({}) watched=({}) monotone={}\n",
         names(terms, &g.scope),
         names(terms, &g.watched),
-        py_bool(g.monotone),
+        bool_word(g.monotone),
     ));
     render_steps(out, ast, terms, plan, &g.reg_names, g.sub, 2);
 }
@@ -1112,11 +1109,11 @@ fn render_steps(
     }
 }
 
-/// One compiled slot, in the vocabulary the Python renderer uses.
+/// One compiled slot, as the plan-shape text renders it.
 fn slot_text(ast: &Ast, terms: &Terms, plan: &Plan, regs: &[Symbol], slot: &Slot) -> String {
     match slot {
         Slot::Reg(r) => format!("?{}", terms.sym(regs[*r as usize])),
-        Slot::Const(v) => repr(&terms.py_value(*v)),
+        Slot::Const(v) => repr(&terms.repr_value(*v)),
         Slot::Nested { rel, slots } => {
             let mut s = format!("({}", terms.sym(*rel));
             for inner in plan.slots(*slots) {
@@ -1144,7 +1141,7 @@ fn opt_name(terms: &Terms, sym: Option<Symbol>) -> String {
     }
 }
 
-fn py_bool(b: bool) -> &'static str {
+fn bool_word(b: bool) -> &'static str {
     if b { "True" } else { "False" }
 }
 
@@ -1153,7 +1150,7 @@ pub fn reg_name<'a>(terms: &'a Terms, plan: &Plan, reg: crate::plan::Reg) -> &'a
     terms.sym(plan.reg_names[reg as usize])
 }
 
-/// A guard argument as ein.py stores it — the raw IR node.
+/// A guard argument as the plan stores it — the raw IR node.
 pub fn guard_arg_text(ast: &Ast, node: ein_ir::NodeId, _kind: GuardArgKind) -> String {
     node_repr(ast, node)
 }

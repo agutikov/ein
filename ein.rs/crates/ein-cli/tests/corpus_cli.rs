@@ -1,13 +1,9 @@
 //! T1a.10.3.2 — **the corpus, through the CLI.**
 //!
-//! `ein-conformance run --impl-a … --impl-b … --tier T3` took every entry of
-//! `corpus/corpus.toml`, ran it under every declared run as a *process* on
-//! both implementations, and diffed everything the two processes produced.
-//! [S1a.10.3](../../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine)
-//! retires the second operand. What replaces the harness is not a diff, it is
-//! a **sweep**: the same cells, one engine, run to see that they run. How many
-//! is `wc -l` on this file's own golden, `golden/corpus_exits.txt`, which is
-//! one line per cell of the full selection —
+//! Every entry of `corpus/corpus.toml`, under every declared run, as a
+//! *process*: a **sweep**, run to see that the cells run. How many is `wc -l`
+//! on this file's own golden, `golden/corpus_exits.txt`, which is one line
+//! per cell of the full selection —
 //! [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)
 //! re-priced the tail and sixteen runs turned out to be asking their fixtures
 //! nothing.
@@ -22,8 +18,7 @@
 //! - that the manifest's `runs` column still names invocations the CLI
 //!   accepts — a renamed flag or a dropped subcommand is a usage error here
 //!   and invisible everywhere else;
-//! - the **exit code**, which was T0's and which nothing else asserts over the
-//!   whole corpus;
+//! - the **exit code**, which nothing else asserts over the whole corpus;
 //! - that a refused input says *why* on stderr rather than dying quietly;
 //! - that `--trace`, `--dump-states` and `--json-summary` write the files they
 //!   promise, at the paths the caller chose.
@@ -54,9 +49,8 @@
 //!
 //! ## The timeout is not decoration
 //!
-//! Every cell runs under `EIN_CORPUS_TIMEOUT` seconds (default 300, which is
-//! what `ein-conformance --timeout` defaulted to) and a cell that outlives it
-//! is killed and recorded as `-2`. Without it, the failure mode of a change
+//! Every cell runs under `EIN_CORPUS_TIMEOUT` seconds (default 300) and a
+//! cell that outlives it is killed and recorded as `-2`. Without it, the failure mode of a change
 //! that makes some corpus program stop terminating is not a red gate but a
 //! **hung** one, with no output and no name — and this file is the only test
 //! in the workspace that runs unbounded search from a process it did not
@@ -104,9 +98,8 @@ impl Cell {
 /// `ein_corpus::manifest::SLOW_MS` or more together. **Two** of them, named in
 /// `ein-corpus` and pinned by `the_slow_set_is_exactly_these_two` (M1e
 /// S1e.3.6), where there were seventeen at
-/// [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced):
-/// flagged under CPython at T1a.0.1.1 against a budget two engines out of
-/// date, one of them `zebra2.ein` at 16 ms. They add ~16 s to a default
+/// [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced),
+/// one of them `zebra2.ein` at 16 ms. They add ~16 s to a default
 /// selection that costs 3.5, so they are still nightly's.
 ///
 /// `EIN_BLESS=1` implies it: a golden blessed from the default selection would
@@ -379,10 +372,9 @@ fn no_cell_crashes() {
 /// was busy". This sweep also runs the **`dev`** binary (`opt-level = 1`)
 /// while `cost_ms` is measured on `release`, which is 1.09× over the whole
 /// sweep and more than that on some cells. And the drift it exists to catch
-/// was **165×**: the flag was set under CPython in 2026-08-17 and was still
-/// there, unexamined, two engines later
-/// ([S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)).
-/// Nothing that big hides inside 4×.
+/// was **165×**: a flag set on 2026-08-17 and still there, unexamined, when
+/// [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)
+/// re-priced it. Nothing that big hides inside 4×.
 const COST_FACTOR: u32 = 4;
 
 /// **The `slow` flag still describes the sweep it has just run** — S1a.9.0.
@@ -484,15 +476,10 @@ fn the_slow_flag_still_describes_the_sweep() {
     );
 }
 
-/// **Every entry that is supposed to work, works** — the liveness check's
-/// successor.
+/// **Every entry that is supposed to work, works.**
 ///
-/// The harness asked "did either implementation ever exit 0?", because two
-/// engines that both fail to start agree on every cell
-/// ([found at S1a.1.3](../../../../docs/history/m1a_rust/README.md#s1a13--macro-expansion-and-import-resolution):
-/// 438 cells, 0 DIFF, both sides `ModuleNotFoundError`). With one engine that
-/// question is sharper and per-entry rather than per-run: every `positive` and
-/// `stdlib` entry must answer under at least one of its runs. Not *all* of
+/// Per entry rather than per run: every `positive` and `stdlib` entry must
+/// answer under at least one of its runs. Not *all* of
 /// them — seventeen have no rule forms, so `render rules` exits 1 on a file
 /// that is otherwise fine.
 #[test]

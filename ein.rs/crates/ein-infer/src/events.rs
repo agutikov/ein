@@ -1,29 +1,24 @@
 //! The `--events` protocol — `docs/kernel/inference/events.md`, engine side.
 //!
 //! The engine narrates what it did: one JSON object per line, opt-in behind
-//! `--events FILE`. It was built as the operand of the Rust port's T2 parity
-//! tier — "the two engines took the same steps" — and the tier retired with
-//! the second engine at S1a.10.3 while the format did not, because nothing
-//! about it was ever about there being two of them. The schema is fixed
-//! (`ein-events/1`) and was designed as a schema rather than as debug output,
-//! so any other observer — a trace viewer, a benchmark harness, an embedder —
-//! reads the same stream.
+//! `--events FILE`. The schema is fixed (`ein-events/1`) and was designed as a
+//! schema rather than as debug output, so any observer — a trace viewer, a
+//! benchmark harness, an embedder, a golden — reads the same stream.
 //!
 //! Three properties the protocol depends on, and how this module gets them:
 //!
 //! - **Off is free.** The sink is an `Option`; every call site reads
-//!   [`Events::on`] before building anything. ein.py's reason is the same and
-//!   sharper — an unguarded `events.emit(...)` packs a `dict` whatever the flag
-//!   says, and the firing path runs ~234 k times on an exhaustive `zebra2`.
+//!   [`Events::on`] before building anything, because the firing path runs
+//!   ~234 k times on an exhaustive `zebra2`.
 //! - **Emitting cannot change behaviour.** Nothing here touches engine state.
 //!   In particular it must never advance the saturator's tiebreaker or consume
 //!   an iterator the caller will consume again. A protocol that perturbs the
-//!   run it describes is not an oracle.
+//!   run it describes is no record of it.
 //! - **No internal ids.** Facts go out as the canonical s-expression, so
-//!   nothing in the stream depends on either implementation's interning.
+//!   nothing in the stream depends on interning order.
 //!
 //! The writer flushes per line: a crashed run's prefix is the most useful
-//! artefact it can leave, and the differ is built to read one.
+//! artefact it can leave.
 
 use std::io::Write;
 
@@ -32,9 +27,9 @@ use ein_core::{FactId, Symbol, Terms, Value};
 pub const SCHEMA: &str = "ein-events/1";
 
 /// `--events-level`. At `normal` a redundant firing is counted but not
-/// emitted, which keeps a hand-readable file; **T2 comparisons run at
+/// emitted, which keeps a hand-readable file; **the golden streams run at
 /// `verbose`**, because a dropped redundant firing is exactly the kind of
-/// difference a port introduces.
+/// difference a change to the engine introduces.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Level {
     Normal,
@@ -288,9 +283,9 @@ impl Line {
         self.out.push(']');
     }
 
-    /// `events.bindings` — ordered `[name, value]` pairs, a list rather than an
-    /// object because **binding order is the observable** and a JSON object's
-    /// key order is not something a differ should have to trust.
+    /// Ordered `[name, value]` pairs, a list rather than an object because
+    /// **binding order is the observable** and a JSON object's key order is
+    /// not something a reader should have to trust.
     /// A list of string lists — the `verdict` event's `models`, one sorted
     /// fact list per branch.
     pub fn str_lists(&mut self, key: &str, values: &[Vec<String>]) {
@@ -344,8 +339,8 @@ impl Line {
     }
 }
 
-/// `json.dumps(s, ensure_ascii=False)` for a string: escape what JSON requires
-/// and nothing else, so non-ASCII goes out as UTF-8 rather than `\uXXXX`.
+/// A JSON string literal: escape what JSON requires and nothing else, so
+/// non-ASCII goes out as UTF-8 rather than `\uXXXX`.
 pub fn push_json_str(out: &mut String, s: &str) {
     out.push('"');
     for ch in s.chars() {
@@ -364,7 +359,7 @@ pub fn push_json_str(out: &mut String, s: &str) {
 
 /// An in-memory sink, shared with the caller so the log can be read back.
 ///
-/// The differential tests want the whole log as a `String`; the CLI wants a
+/// The tests want the whole log as a `String`; the CLI wants a
 /// file. `Events` takes a `Box<dyn Write>` so it does not have to know which.
 #[derive(Clone, Default)]
 pub struct Buffer(std::sync::Arc<std::sync::Mutex<Vec<u8>>>);
@@ -393,7 +388,7 @@ impl Write for Buffer {
     }
 }
 
-/// A fact as its canonical s-expression — `cli._factdump.fact_sexpr`.
+/// A fact as its canonical s-expression.
 ///
 /// Note the nullary case: `(q)`, with no trailing space. `Terms::compact`
 /// spells the same fact `(q )`, because the loader's error messages build it
@@ -409,8 +404,8 @@ pub fn sexpr(terms: &Terms, id: FactId) -> String {
     }
 }
 
-/// One argument: `str(arg)` for a name or a number, the s-expression for a
-/// nested fact.
+/// One argument: the display text for a name or a number, the s-expression
+/// for a nested fact.
 pub fn sexpr_value(terms: &Terms, v: Value) -> String {
     match v.as_fact() {
         Some(id) => sexpr(terms, id),
@@ -434,7 +429,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn a_line_keeps_its_field_order_and_python_spacing() {
+    fn a_line_keeps_its_field_order_and_separator_spacing() {
         let mut e = Events::to(Box::new(Vec::new()), Level::Verbose);
         e.emit("fire", |l| {
             l.str("rule", "symmetric");
@@ -453,7 +448,7 @@ mod tests {
     }
 
     #[test]
-    fn strings_escape_the_way_ensure_ascii_false_does() {
+    fn strings_escape_json_specials_and_keep_non_ascii() {
         let mut out = String::new();
         push_json_str(&mut out, "a\"b\\c\nd é");
         assert_eq!(out, "\"a\\\"b\\\\c\\nd é\"");

@@ -6,11 +6,7 @@ by the Datalog/RETE literature rather than invented here — D1 (RETE
 beta-memories) and D2 (worst-case-optimal joins).
 
 **Why it's a followup and not a phase.** No workload is currently blocked
-on it, and the margin has widened by two orders of magnitude. `zebra2` solved
-in ~1.3 s fast / ~3.9 s exhaustive **under PyPy** (frozen — that engine left
-the tree at
-[S1a.10.5](../../docs/history/m1a_rust/README.md#s1a105--the-removal)); it
-is **6.3 ms / 26.8 ms** on ein.rs at `--jobs 1`
+on it. `zebra2` solves fast / exhaustive in **6.3 ms / 26.8 ms** at `--jobs 1`
 ([features.md](../../docs/kernel/inference/features.md), 2026-08-23), and a
 fanned-out exhaustive run is 3.17–4.40× faster again on 8 cores. Both readings
 are inside every ergonomic envelope the project has. This is the file to
@@ -18,7 +14,7 @@ promote when one isn't.
 
 > **Status after [M1a P1a.6](../../docs/history/m1a_rust/README.md#p1a6--performance), which
 > was this file's own most likely promotion trigger (2026-08-20):** the phase
-> ran, the port reached the matcher, and **neither entry landed**. D1 was
+> ran, reached the matcher, and **neither entry landed**. D1 was
 > gated, measured and declined twice — the second time at *0.45 candidates per
 > step entered*; D2's shape trigger fired and its cost trigger moved further
 > out of reach. What the phase shipped instead is in
@@ -49,18 +45,17 @@ status box above first, then this for the arc:
   doing work that has to happen. That makes D1 the largest remaining lever
   and, unlike before, the *only* one with a clear ceiling story.
 
-**Both measurements above are ein.py's, and
-[S1a.6.1](../../docs/history/m1a_rust/README.md#s1a61--fresh-profile-and-bench-baseline) (2026-08-18)
-re-took them on ein.rs, where D1 will actually land.** What changed:
+**[S1a.6.1](../../docs/history/m1a_rust/README.md#s1a61--fresh-profile-and-bench-baseline) (2026-08-18)
+re-took both.** What changed:
 
-- **The 95 % split does not carry over.** On the parity build an exhaustive
+- **The 95 % split no longer holds.** An exhaustive
   `zebra2` is 59.7 % saturation-side and 29.0 % matcher; an exhaustive `zebra`
   is 66.9 % **matcher**. So D1's lever is real but puzzle-dependent, and the
   workload that needs it is `zebra`, which is also the one still missing its
   P1a.6 target.
 - **D1's catch dissolved, as this file predicted it would.** "A memory that
   must be copied per fork can lose more than it saves" was the parking reason;
-  a fork's whole delta in ein.rs is **3.6 KB mean, 9 KB worst case** over 101
+  a fork's whole delta is **3.6 KB mean, 9 KB worst case** over 101
   enterings ([baseline.md §5](../../docs/history/m1a_rust/measurements/baseline.md#5-memory)),
   so per-fork memories are affordable outright and the read-only-share
   design is an optimisation rather than a precondition.
@@ -72,16 +67,13 @@ Re-run the baseline before starting either entry — this has moved twice, and
 four times counting the two above:
 
 ```sh
-# The two commands this block used to carry both ran `utils/profile_solve.py`
-# under a PyPy venv on `PYTHONPATH=ein.py/src`. Both are gone with the engine
-# they imported (M1a S1a.10.4/.10.5). These are the successors, and they run:
 utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 10 solve examples/zebra2.ein -e
 utils/bench_env.sh python3 utils/feature_matrix.py --runs 5        # the lever matrix
 ```
 
 `utils/profile_ein_rs.py` is the attribution half, `utils/e2e_baseline.py` the
-wall-clock one, and `feature_matrix.py` — which **drove both engines** until
-S1a.10.4 and now drives the one binary `$EIN_BIN` names — the lever matrix.
+wall-clock one, and `feature_matrix.py` — which drives the binary `$EIN_BIN`
+names — the lever matrix.
 The whole set is listed in
 [baseline.md § Reproducing all of it](../../docs/history/m1a_rust/measurements/baseline.md#reproducing-all-of-it).
 
@@ -155,8 +147,8 @@ result. Beta-memories are exactly that missing rung: materialise
 `(plan, prefix-of-steps) → bindings` and update it incrementally per
 derived fact.
 
-**Where.** `inference/saturator.py` (the enqueue pass), `match.py`
-(`_run_steps`), `engine.py` (plan cache — the natural owner of a per-plan
+**Where.** `ein-infer`'s `saturator.rs` (the enqueue pass), `match_.rs`
+(`walk`), `engine.rs` (the compile cache — the natural owner of a per-plan
 memory).
 
 **The catch to design against.** A beta-memory is per-KB state, and this
@@ -199,7 +191,7 @@ genuine cycle shows up *and* profiles badly.
 > solve cannot be improved by more than that fifth, and 71.8 % of its premises
 > are not joins at all any more but single interned lookups. **D2 stays
 > closed**, and the trigger stays what it was — a cyclic body whose match cost
-> *dominates* — with the note that the port has now made "dominates" harder to
+> *dominates* — with the note that P1a.6 has now made "dominates" harder to
 > reach, not easier.
 
 **Trigger.** A compiled `JoinPlan` whose step graph is cyclic *and* whose
@@ -216,10 +208,6 @@ Promote into a perf phase (not into this file) when **any** holds:
 - a user-facing workload — M2's NL output, M20's GUI turnaround, a bigger
   puzzle corpus — exceeds its ergonomic time envelope *and* a fresh profile
   puts the matcher back on top;
-- the [M1a Rust port](../../docs/history/m1a_rust/README.md) reaches the matcher and wants the
-  final algorithm rather than a transcription of the Python one (the port
-  is the most likely trigger, and the reason this file exists rather than
-  being dropped);
 - a cyclic rule body appears **and its match cost dominates** (D2's specific
   trigger — the body exists already, see D2).
 
@@ -227,9 +215,6 @@ Promote into a perf phase (not into this file) when **any** holds:
 
 - [F9 ledger](f9_e_catalog.md) — the closed *search*-layer catalog; read
   its "what the catalog taught" section before opening a perf entry here.
-- [F10 — M1 refactor-debt tail](f10_m1_refactor_tail/README.md) — structural
-  debt to clear **before** the Rust port; overlaps this file's second
-  promotion trigger.
 - [`architecture_and_algorithms.md`](../../docs/kernel/inference/architecture_and_algorithms.md)
   §O1/§O2/§7 — the operation-by-operation SOTA comparison these two entries
   are the open rows of.

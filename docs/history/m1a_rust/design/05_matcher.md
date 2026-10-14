@@ -1,41 +1,27 @@
-# 05 — The matcher: from dict-copying generators to a register machine
+# 05 — The matcher: a register machine
 
 **Settles:** the compiled plan representation and the join execution
 model — §O1.
-**Phase:** [P1a.3](../README.md#p1a3--deductive-core) (parity),
+**Phase:** [P1a.3](../README.md#p1a3--deductive-core),
 [P1a.6](../README.md#p1a6--performance) (beta-memories).
-**Replaces:** `ein/inference/{compile,match,firing,resolve,predicates}.py`.
 
 ---
 
-## 1. The 46 %
+## 1. Three structural costs
 
-From the exhaustive-zebra2 profile:
+A matcher over a dynamically typed binding set pays three costs that are
+structural rather than incidental:
 
-```
-5 980 322 calls  match._bind_arg     4.12 s self   6.36 s cum
-4 646 381 calls  match._bind_args    3.60 s self  10.69 s cum
-31 947 782 calls builtins.isinstance 2.84 s self
-1 015 900 calls  match._run_steps    1.28 s self  12.33 s cum
-```
+1. **A binding-set copy per bound variable** — an allocation + rehash of
+   the whole binding set, per variable, per candidate fact, at every
+   level of the join.
+2. **Type dispatch at runtime.** A slot is `Var | Atom | Int |
+   NestedPattern`; an arg is a symbol, an `int` or a `Fact`; every
+   unification asks which.
+3. **Recursion** — a frame and a fresh tuple of the remaining steps per
+   step entered.
 
-Those four functions are the bulk of the 46 % of self time cProfile
-attributes to the match/bind subsystem, and most of the 31.9 M
-`isinstance` calls are made from inside them. Three costs, all
-structural:
-
-1. **A dict copy per bound variable.** `_bind_arg` returns
-   `{**bindings, slot.name: arg}` on every successful `Var` bind. That is
-   an allocation + rehash of the whole binding set, per variable, per
-   candidate fact, at every level of the join.
-2. **Type dispatch by `isinstance`.** A slot is `Var | Atom | Int |
-   NestedPattern`; an arg is `str | int | Fact`. Six `isinstance` calls
-   is a *cheap* path through `_bind_arg`.
-3. **Generator recursion.** `_run_steps` is a recursive generator; every
-   step allocates a frame and a `rest = tuple(rest_list)` (a fresh tuple
-   per call, from `step, *rest_list = steps`).
-
-None of this is Python being slow; it is the data model
+None of this is the language being slow; it is the data model
 ([03](03_data_model.md)) making the fast path impossible. Fix the model
 and the matcher becomes a loop over `u32`s.
 
@@ -43,11 +29,10 @@ and the matcher becomes a loop over `u32`s.
 
 ## 2. Compile: from `JoinPlan` to bytecode
 
-`compile.py` already produces the right *shape* — `Scan` / `Join` /
-`Guard` / `AbsentGuard`, with `(absent …)` lifted into per-disjunct
-`NafGuard`s by `split_naf`, plus `assert_templates` and
-`extra_match_plans` for the A13 or/and lowering. ein.rs keeps the
-semantics exactly and changes the encoding.
+The compiled plan has the right *shape* — `Scan` / `Join` / `Guard` /
+`AbsentGuard`, with `(absent …)` lifted into per-disjunct `NafGuard`s by
+`split_naf`, plus `assert_templates` and `extra_match_plans` for the A13
+or/and lowering. The semantics stay exactly; the encoding changes.
 
 ```rust
 pub struct PlanId(u32);
@@ -85,22 +70,20 @@ Two compile-time additions, both pure metadata (no semantic change):
   same variable in two disjuncts may get different registers; that is
   fine because a match never spans disjuncts.
 - **`Probe`** — the precomputed answer to "which arg slot does
-  `_candidates` narrow on?". ein.py recomputes this per call by walking
-  `step.arg_slots` looking for the first slot with a known value
-  (`match._candidates`).
+  candidate selection narrow on?": the first slot with a known value.
   The *rule* is static except for one thing — whether a `Reg` slot is
   already bound at that point — and that is also static, because bind
   order is static. So `Probe` is `{ slot_index, source: Const(Value) |
   Reg(Reg) }`, resolved at compile time, and the runtime does one
-  index-lookup instead of a scan. **Parity note:** it must pick the same
-  slot ein.py picks, including the "nested-`Fact` binding is not keyed,
-  keep scanning" and "`NestedPattern` slot, keep scanning" rules.
+  index-lookup instead of a scan. **The rule, exactly:** a nested-`Fact`
+  binding is not keyed, keep scanning; a `NestedPattern` slot, keep
+  scanning.
 
 `bindings_seed` (the activator binding) is materialised into `seed`, so
-the runtime never rebuilds a dict. The `CompileError` conditions —
+the runtime never rebuilds a binding set. The `CompileError` conditions —
 unbound relation head, empty `(absent …)` sub-plan, nested `(or …)`,
-activator arity mismatch — port with byte-identical messages; they are
-authoring errors users see.
+activator arity mismatch — have fixed messages; they are authoring errors
+users see.
 
 ---
 
@@ -139,100 +122,93 @@ loop {
   equality; `Reg` → `UNBOUND ? bind : u32` equality; `Nested` → the arg
   must be `Value::fact(id)` and the nested pattern must unify against
   that fact's row (one level of recursion, bounded by pattern depth).
-  Compare that with `_bind_arg`'s six `isinstance` calls and a dict copy.
 - **Emission** is a callback — `FnMut(&MatchCtx) -> ControlFlow<()>` —
-  not a materialised `Vec`. The saturator's `_enqueue_binding` runs
+  not a materialised `Vec`. The saturator's `enqueue_binding` runs
   *inside* it, so a match that is a duplicate costs nothing beyond the
-  key hash. (ein.py already effectively does this by consuming the
-  generator lazily; the callback just removes the generator machinery.)
+  key hash.
 
 ### The trail is also the binding order
 
-`Provenance.bindings` is `tuple((k, str(v)) for k, v in
-bindings.items())` — CPython dict insertion order, i.e. **the order the
-matcher first bound each variable**, and it is printed in the trace
+`Provenance.bindings` is in **the order the matcher first bound each
+variable**, and it is printed in the trace
 ([02](02_determinism_and_order.md) §3a). The `trail` is exactly that
 order, so rendering walks the trail rather than the register file. Seed
-bindings come first (they are inserted first, by `dict(plan.bindings_seed)`),
-then body vars in bind order. Pin it with a T3 fixture.
+bindings come first, then body vars in bind order. Pinned by a golden.
 
 ### `premises` order
 
-ein.py appends each consumed fact in step order (`(*premises, fact)`),
-and `_seed_steps` deliberately rebuilds the tuple so the seeded fact sits
-at *its* step's position — so that provenance from a semi-naive seed is
-identical to provenance from a full run. `prems` is written at
-`prems[step_ordinal]`, which gives the same result without the splice.
+Premises are in step order, and a semi-naive seed puts the seeded fact
+at *its* step's position — so that provenance from a seed is identical
+to provenance from a full run. `prems` is written at
+`prems[step_ordinal]`, which gives that without a splice.
 
 ---
 
 ## 4. Entry points
 
-Four, mirroring `match.py` one-for-one:
+| entry | used by |
+|---|---|
+| `run(plan, kb, &mut f)` | the saturator's `step`, `goal_bindings` |
+| `run_guarded` — yields the disjunct's `NafGuard`s with each match | the saturator's full match |
+| `run_seeded` | semi-naive delta |
+| `run_seeded_guarded` | the saturator's seeded match |
+| `run_steps` | `holds` (guard queries) |
 
-| ein.py | ein.rs | used by |
-|---|---|---|
-| `run(plan, kb)` | `run(plan, kb, &mut f)` | `Engine.step`, `goal_bindings` |
-| `run_guarded(plan, kb)` | `run_guarded` — yields the disjunct's `NafGuard`s with each match | `Saturator._full_match` |
-| `run_seeded(plan, fact, kb)` | `run_seeded` | semi-naive delta |
-| `run_seeded_guarded(plan, fact, kb)` | `run_seeded_guarded` | `Saturator._seed_match` |
-| `run_steps(steps, bindings, …)` | `run_steps` | `World.holds` (guard queries) |
-
-`run_seeded`'s contract is subtle and must be copied exactly: for each
+`run_seeded`'s contract is subtle: for each
 top-level `Scan`/`Join` whose relation equals the new fact's relation,
 bind that step to the fact and run *the remaining steps* — seeding at
 **each** such step, since the fact may play either role in e.g.
 `(R ?a ?b) ∧ (R ?b ?c)`.
 
 `goal_bindings` builds a synthetic `JoinPlan` named `<query>` from the
-query's `:goal` pattern and runs it; same in Rust.
+query's `:goal` pattern and runs it.
 
 ---
 
 ## 5. Predicates and guards
 
-`predicates.py` is a registry with `eq` and `neq`. It is a *registry*
-because ein-lang can, in principle, gain more. ein.rs keeps a
-`PredId`-indexed table with the same two entries and the same
+The predicates are a registry with `eq` and `neq` — a *registry* because
+ein-lang can, in principle, gain more: a `PredId`-indexed table with an
 `is_predicate` / `names()` surface (`names()` is sorted and reaches
-`--help`-adjacent output and `primitives.non_object_names`).
+`--help`-adjacent output and the set of reserved non-object names).
 
 One detail with teeth: **a `Guard`'s args are raw IR nodes, not
-compiled slots.** `_compile_premise` emits `Guard(predicate, args=node.args)`
-without running `_slot`, so a guard inside an `(absent …)` sees
-unsubstituted parameter vars — which is exactly why `split_naf` takes
-`seed_vars` and starts every guard's scope from the rule's parameters
-(see the docstring in `compile.split_naf`). ein.rs must reproduce the
-same asymmetry: guard args resolve against the *runtime* binding
-environment, including seeds, not against compile-time substitution.
+compiled slots.** A premise compiles to a guard holding its arguments as
+written, with no slot compilation, so a guard inside an `(absent …)`
+sees unsubstituted parameter vars — which is exactly why `split_naf`
+takes `seed_vars` and starts every guard's scope from the rule's
+parameters. The asymmetry is the rule: guard args resolve against the
+*runtime* binding environment, including seeds, not against compile-time
+substitution.
 
 ---
 
 ## 6. Optimisations, and which ones are legal
 
-The parity contract splits candidate optimisations cleanly.
+The order contract ([02](02_determinism_and_order.md)) splits candidate
+optimisations cleanly.
 
-### Parity-preserving (allowed, and where the win is)
+### Order-preserving (allowed, and where the win is)
 
-| change | replaces | expected |
-|---|---|---|
-| register bindings + trail | dict copy per bind | the bulk of the 46 % |
-| `u32` equality | `str.__eq__` + `isinstance` | the 31.9 M `isinstance` |
-| explicit cursor loop | recursive generator + tuple rebuild | ~1.3 s self |
-| compile-time `Probe` | per-call `_candidates` slot scan | 0.26 s + better locality |
-| callback emission | tuple/dict materialisation per match | allocation-free inner loop |
-| `_binding_key` as a fixed `[Value; n]` hashed with FxHash | `frozenset((k, _hashable(v)) …)` | 2.7 s cum, 445 k calls |
-| plan-local relation `Vec<FactId>` pointer cached per Scan | dict lookup per step | small, free |
-| **a fully bound premise resolved by one interned lookup** ([T1a.6.12.3](../README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)) | fetching the participation bucket and unifying all of it | measured: candidates **1 172 870 → 238 567** on `zebra -e`, −20.6 % end-to-end |
+| change | removes |
+|---|---|
+| register bindings + trail | a binding-set copy per bind |
+| `u32` equality | string compares and runtime type dispatch |
+| explicit cursor loop | recursion + a tuple rebuild per step |
+| compile-time `Probe` | a per-call slot scan |
+| callback emission | materialising each match — the inner loop allocates nothing |
+| `binding_key` as a fixed `[Value; n]` hashed with FxHash | hashing a set of pairs |
+| plan-local relation `Vec<FactId>` pointer cached per Scan | a lookup per step |
+| **a fully bound premise resolved by one interned lookup** ([T1a.6.12.3](../README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)) | fetching the participation bucket and unifying all of it — measured: candidates **1 172 870 → 238 567** on `zebra -e`, −20.6 % end-to-end |
 
-The last row is the one the parity argument has to be stated for, because it
+The last row is the one the order argument has to be stated for, because it
 does not merely *narrow* the candidate stream — it replaces it. A premise every
 one of whose slots is bound denotes exactly one argument tuple; `unify` accepts
 a fact iff its arguments **are** that tuple; and the fact store interns
 propositions, so no two facts share one. The scan therefore emits the same
 one-or-none sequence with the same `FactId`, and a nested pattern naming a
 proposition that was never interned emits nothing without a lookup at all. It
-is the same argument the probe narrowing rests on (`_bind_args` re-checks every
+is the same argument the probe narrowing rests on (unification re-checks every
 slot), taken to its limit: when the re-check is the *whole* test, the search
 around it is redundant.
 
@@ -240,46 +216,38 @@ Its price is one slot inspection per premise on the path where nothing is
 bound — `+0.9 %` on `branching/07 -e`, which has no ground premise anywhere,
 and +4.0 % on the `match_hot` micro-bench.
 
-`_binding_key` deserves a note: the Python key is
-`(rule_name, plan.activator_args, frozenset(bindings.items()))`, and
-`activator_args` is the activator's **string args only**
-(`tuple(a for a in activator.args if isinstance(a, str))`) while the
-*cache* key stringifies **all** args. Two activators differing only in an
-`int` arg therefore share a binding key. That is almost certainly
-unintended, but it is current behaviour, so ein.rs computes the key from
-the same filtered tuple. Flagged as Q-M1a.8.
+`binding_key` deserves a note: the key is `(rule, the activator's symbol
+args, the bindings)`, and its activator component holds the activator's
+**symbol args only**, while the plan *cache* key covers **all** args. Two
+activators differing only in an `int` arg therefore share a binding key.
+Flagged as Q-M1a.8.
 
-> **The last sentence of that inference is wrong, and was wrong of ein.py**
+> **The last sentence of that inference is wrong**
 > (2026-08-29, M1e
 > [S1e.1.4](../../m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3)).
 > The key's *third* component carries the parameter bindings, and
-> `compile_rule` binds a parameter for every argument that is
-> `isinstance(a, (str, int))` — so an `int` is in the key after all and two
-> activators differing only there both fire. What reaches neither component is
-> a nested `Fact`. The port decision above is unaffected: the same filtered
-> tuple is still the same key. What changed is what the asymmetry costs, which
+> `compile_rule` binds a parameter for every argument that is a symbol or an
+> `int` — so an `int` is in the key after all and two activators differing
+> only there both fire. What reaches neither component is a nested `Fact`.
+> The key above is unaffected. What changed is what the asymmetry costs, which
 > is [`defined_behaviour.md` §3.2](../../../kernel/defined_behaviour.md#32-a-rule-applications-identity-ignores-nested-fact-activator-arguments)
 > and
 > [Q-M1e.16](../../m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one).
 
-`engine._hashable` — a defensive shim for `list`/`dict` binding values —
-has no reachable caller (bindings hold `str | int | Fact`). ein.rs drops
-it; the conformance fuzzer would catch it if that were ever wrong.
+### Order-breaking (rejected here)
 
-### Parity-breaking (rejected here, revisit only with a ledger entry)
-
-| change | why it breaks parity |
+| change | why it breaks order |
 |---|---|
 | **join reordering** (cost-based or first-fail) | changes the *order* matches are produced → firing order → the trace. Legal only if the reorder is proven to preserve enumeration order, which reordering by definition does not. |
 | **worst-case-optimal join** (Leapfrog Triejoin / Generic Join, [F11 D2](../../../../plans/followups/f11_deductive_layer_perf.md)) | same reason. Its trigger is *half* met — **not** none: `stdlib/slots.ein`'s `slot-adjacent-fwd` has the triangle `p1 — PT — p2 — p1`, so "ein rule bodies are acyclic chains/stars" was wrong (S1a.6.3's re-check, 2026-08-19). What is not met is the cost half: those relations hold 30 and 16 facts, and matching is 37.7 % of a 78 ms run. Revisit when a cyclic body is *hot*. |
-| **deduplicating matches inside the matcher** | the saturator's `_seen`/`_fired` sets already do it, and their counters are observable. |
-| **skipping the re-check of already-probed slots** | `_bind_args` re-checks *every* slot even after `_candidates` narrowed on one; the narrowing is documented as behaviour-preserving precisely because of that. Dropping the re-check would be equivalent only if the index and the unifier agreed on equality — they do — but the invariant is cheap to keep and expensive to lose. Measure before touching. |
+| **deduplicating matches inside the matcher** | the saturator's `seen`/`fired` sets already do it, and their counters are observable. |
+| **skipping the re-check of already-probed slots** | unification re-checks *every* slot even after candidate selection narrowed on one; the narrowing is documented as behaviour-preserving precisely because of that. Dropping the re-check would be equivalent only if the index and the unifier agreed on equality — they do — but the invariant is cheap to keep and expensive to lose. Measure before touching. |
 
 ---
 
 ## 7. Beta-memories (P1a.6, [F11](../../../../plans/followups/f11_deductive_layer_perf.md) D1)
 
-The one *named* remaining lever, and the port is its promotion trigger.
+The one *named* remaining lever, and M1a is its promotion trigger.
 
 **What.** Persist partial joins: for a plan and a prefix of its steps,
 materialise the binding tuples that satisfy the prefix, and extend them
@@ -291,7 +259,7 @@ participation index is already the alpha-memory.
 engine forks KBs constantly; a memory that must be copied per fork can
 lose more than it saves."
 
-**The answer this port makes available.** [03](03_data_model.md)'s KB is
+**The answer the data model makes available.** [03](03_data_model.md)'s KB is
 `Arc<KbCore> + Delta`. So the memory splits the same way:
 
 - the **root** memory is built once during root saturation, lives in
@@ -303,13 +271,13 @@ lose more than it saves."
   smaller than the root one;
 - enumeration walks root-then-delta, which is the same order the layered
   extents give — so **match order is preserved**, which is what makes
-  this parity-safe at all;
+  this order-safe at all;
 - a fork is dropped wholesale, so there is no invalidation problem: the
   root memory is never invalidated within a solve (append-only), and the
   delta memory dies with the fork.
 
-**Gate.** It ships only if it is (a) T2-green — identical event traces —
-and (b) measurably better on both zebra2 and zebra. If it is a wash, it
+**Gate.** It ships only if it has (a) identical event traces and (b) is
+measurably better on both zebra2 and zebra. If it is a wash, it
 is reverted, exactly as P1.8a's D3 cross-fork carry was.
 
 > **The gate ran on 2026-08-19 and the memory was not built**
@@ -366,17 +334,13 @@ rather than assuming it.
 
 ## 8. Acceptance for this design
 
-- T2 event-trace parity on every `examples/saturation/**`,
-  `examples/features/**` fixture — the firing sequence is the matcher's
-  signature.
 - A microbenchmark harness (`criterion`) over `match::run` on the
-  saturated zebra2 root, reported against the ein.py call counts
-  (6.0 M `_bind_arg`, 4.6 M `_bind_args`) so the *work* is comparable,
-  not just the wall-clock.
+  saturated zebra2 root, reported beside the work counters so the *work*
+  is visible, not just the wall-clock.
 - Zero heap allocations in the inner loop, asserted with a counting
   allocator in a test build.
-- `MAX_REGS` overflow (a rule with more than N vars) is a clean
-  `CompileError`, not a panic — with a fixture.
+- `MAX_REGS` overflow (a `:match` binding more than 256 distinct
+  variables) is a clean `CompileError`, not a panic — with a fixture.
 
 ## Cross-links
 

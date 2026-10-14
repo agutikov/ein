@@ -1,20 +1,31 @@
-//! Python's `format(float, spec)` for the `f` presentation type — Q-M1a.15.
+//! Float formatting under a `[[fill]align][sign][0][width][.precision]f` spec.
 //!
-//! Several reported numbers are formatted floats: `--hyp-stats`'s
-//! `{100.0 * n / total:>5.1f}` percentages, `--timing`'s `{ms:9.2f}` (whose
-//! *values* the harness normalises away but whose *widths* it does not), and
-//! `--stats`' `{elapsed_ms:.1f}`. Rust and Python agree on round-half-even for
-//! finite `f64`, so the digits come from `format!("{:.*}")` — but they disagree
-//! on `NaN` (Rust spells it `NaN`), and Rust has no equivalent of Python's
-//! sign/zero-pad/alignment interaction at all.
+//! Several reported numbers are formatted floats: `--hyp-stats`'s `>5.1f`
+//! percentages, `--timing`'s `9.2f` milliseconds (whose *values* a golden
+//! cannot pin but whose *widths* it can), and `--stats`' `.1f` elapsed time.
+//! The rules:
 //!
-//! Small, and it removes a whole class of one-character T3 diffs.
+//! - **digits** — `precision` digits after the point, six when none is given,
+//!   rounded from the exact binary value with ties to even. Rust's
+//!   `format!("{:.*}")` does exactly that for a finite `f64`, so the digits
+//!   come from it.
+//! - **NaN and infinity** — `nan` and `inf`, whatever the precision. NaN
+//!   never carries a `-`, even with its sign bit set; `-inf` and `-0.0` do.
+//!   (Rust spells the first `NaN`, which is why it is not left to `format!`.)
+//! - **sign** — what goes in front of a non-negative number: nothing for `-`
+//!   (the default), `+` for `+`, a space for ` `.
+//! - **width, fill, alignment** — padded to `width` with `fill` (a space by
+//!   default): `>` right (the default), `<` left, `^` centred with the odd
+//!   character on the right, `=` between the sign and the digits. A `0`
+//!   before the width means fill `0` with `=`, unless either was given.
+//! - anything else — another presentation type, grouping, `#`, a missing
+//!   `f` — is refused rather than guessed.
 
 /// Where the padding goes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Align {
     Left,
-    /// Python's default for numbers.
+    /// The default for numbers.
     Right,
     Center,
     /// `=` — padding between the sign and the digits, which is what `0` means.
@@ -44,8 +55,8 @@ pub struct Spec {
 
 impl Default for Spec {
     fn default() -> Self {
-        // Python's defaults for a float with an `f` type: right-aligned,
-        // space-filled, six digits.
+        // The defaults for an `f` spec: right-aligned, space-filled, six
+        // digits.
         Spec {
             fill: ' ',
             align: Align::Right,
@@ -57,7 +68,7 @@ impl Default for Spec {
 }
 
 impl Spec {
-    /// Parse the subset of Python's format mini-language this port uses.
+    /// Parse a spec of the shape above.
     ///
     /// `None` for anything outside it (a presentation type other than `f`,
     /// grouping, `#`) — a caller that meets one has found a site this module
@@ -144,10 +155,10 @@ impl Spec {
             }
             out.precision = chars[start..i].iter().collect::<String>().parse().ok()?;
         }
-        // The `f` is **required**. An empty spec is not `.6f`: Python falls
-        // back to `str(x)` there, which is the shortest round-tripping repr
-        // and a different algorithm entirely — `format(1.5, '')` is `'1.5'`
-        // where `format(1.5, 'f')` is `'1.500000'`.
+        // The `f` is **required**. An empty spec does not mean `.6f`: the
+        // reading it would otherwise invite is the shortest round-tripping
+        // text, a different algorithm entirely — `1.5` where `f` gives
+        // `1.500000`.
         match chars.get(i) {
             Some('f') => i += 1,
             _ => return None,
@@ -156,9 +167,9 @@ impl Spec {
     }
 }
 
-/// `format(value, spec)`.
+/// `value`, formatted under `spec`.
 pub fn format_float(value: f64, spec: &Spec) -> String {
-    // NaN never carries a sign in CPython, not even `-float('nan')`; infinity
+    // NaN never carries a sign, not even with its sign bit set; infinity
     // does. Neither is affected by the precision.
     let (negative, body) = if value.is_nan() {
         (false, "nan".to_string())
@@ -198,8 +209,8 @@ pub fn format_float(value: f64, spec: &Spec) -> String {
     }
 }
 
-/// `format(value, spec)` where `spec` is written out — the shape the call
-/// sites use, so they read like the f-strings they replace.
+/// `value`, formatted under `spec` written out — the shape the call sites
+/// use, so the spec reads inline where the number is printed.
 ///
 /// Panics on a spec outside the supported subset; that is a programming error
 /// in ein.rs, not a runtime condition.
@@ -253,7 +264,7 @@ mod tests {
         ] {
             assert!(Spec::parse(spec).is_none(), "{spec}");
         }
-        // `f` with no precision is six digits, as Python's is.
+        // `f` with no precision is six digits.
         assert_eq!(format_spec(1.5, "f"), "1.500000");
     }
 }

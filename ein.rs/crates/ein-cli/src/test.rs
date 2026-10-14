@@ -43,8 +43,8 @@
 //! | 1 | an expectation is **false**, or could not be checked |
 //! | 2 | a load error, a usage error, a budget abort — or nothing to check |
 //!
-//! `solve` exits **1** on a load error, because that is ein.py's code for it
-//! and the port kept it. Here 1 is taken: it means *a claim is false*. A test
+//! `solve` exits **1** on a load error. Here 1 is taken: it means *a claim is
+//! false*. A test
 //! runner that cannot tell a broken file from a false claim is precisely the
 //! failure T1c.1.3.5 is written against, so a load error takes 2 — the code
 //! that already means "this run is not a verdict" (a usage error, a budget

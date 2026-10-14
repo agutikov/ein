@@ -1,8 +1,7 @@
-# P1a.6 baseline — the parity build, measured
+# P1a.6 baseline — the unoptimised build, measured
 
 **Produced by:** [S1a.6.1](../README.md#s1a61--fresh-profile-and-bench-baseline), 2026-08-18
-**Build:** `master` @ `063b1a5`, the P1a.5 parity build — I1 discharged,
-T3 472/473 with [D2](../divergences.md) the only cell.
+**Build:** `master` @ `063b1a5`, the P1a.5 build.
 **Machine:** Intel i9-14900HX (8 P-cores + 16 E-cores), Linux 7.1.8,
 `powersave` governor, turbo on, everything pinned to **cpu4** (a P-core
 sibling) by `utils/bench_env.sh`.
@@ -18,21 +17,18 @@ record, as with `features.md`).
 > spread is small (≤ 2 % on all but one cell); a bench script that asks for
 > `sudo` would be worse than a bench script that reports what it ran under.
 
-> **What can still be re-measured, since [S1a.10.4](../README.md#s1a104--utils-re-aimed-at-one-engine).**
-> Half of this file is a two-column comparison and one of the columns has no
-> instrument any more.
+> **What re-measures it.** Every figure here: `utils/e2e_baseline.py`
+> (processes, and `--bin` for two builds), `cargo bench` +
+> `utils/criterion_table.py`, `utils/profile_ein_rs.py`, `ein-infer`'s
+> `counter_cost` / `alloc_cost` / `layout_shape` / `hypgen_calls` /
+> `frontend_cost` examples, `utils/fork_split.py`,
+> `utils/fork_delta_verify.py`, `utils/feature_matrix.py`,
+> `utils/bench_env.sh`.
 >
-> | | |
-> |---|---|
-> | **live** | every ein.rs figure. `utils/e2e_baseline.py` (processes, and `--bin` for two builds of one engine), `cargo bench` + `utils/criterion_table.py`, `utils/profile_ein_rs.py`, `ein-infer`'s `counter_cost` / `alloc_cost` / `layout_shape` / `hypgen_calls` / `frontend_cost` examples, `utils/fork_split.py`, `utils/fork_delta_verify.py`, `utils/feature_matrix.py`, `utils/bench_env.sh` |
-> | **frozen** | every **CPython** and **PyPy** figure, and every ratio with one in the denominator — including the milestone's `24.8×` / `165×` and §4's whole ein.py column. Their instruments (`utils/bench_baseline.py`, `utils/count_work.py`, `e2e_baseline.py`'s two interpreter rows) left with the engine they measured |
-> | **gone** | every `ein-conformance` invocation below, and `utils/mutant_ein.py`. The tier counts (`T3 472/473`, `T2 239/240`) are a record of a gate that was green on the day, not a command. The event cut's control is `ein-infer/tests/event_cut_control.rs` now ([S1a.10.3](../README.md#s1a103--the-corpus-without-a-second-engine)) |
->
-> The per-section *"Reproducing this section"* blocks are left as they were
-> written — they say what produced the numbers above them, which is the point
-> of a record. **[§ Reproducing all of it](#reproducing-all-of-it) at the end
-> of the file is the one that is kept runnable**, and it is the only block
-> here that a reader should copy today.
+> The per-section *"Reproducing this section"* blocks say what produced the
+> numbers above them, which is the point of a record. **[§ Reproducing all of
+> it](#reproducing-all-of-it) at the end of the file is the one that is kept
+> runnable**, and it is the only block here that a reader should copy today.
 
 ---
 
@@ -42,102 +38,57 @@ record, as with `features.md`).
 warm-up, per-child peak RSS. **This is the table the phase's targets are
 measured against**, because "end-to-end" in the
 [milestone baseline](../README.md#what-shipped) means a
-process: interpreter start-up, imports, a cold JIT, the run, the print.
+process: start-up, the load, the run, the print.
 
-| workload | CPython 3.14 | PyPy 3.11 | ein.rs | vs PyPy |
-|---|---:|---:|---:|---:|
-| `solve zebra2.ein -e` | 5 837.6 ms | 4 938.0 ms | **198.8 ms** | **24.8×** |
-| `solve zebra2.ein` | 1 995.3 ms | 2 529.9 ms | **37.6 ms** | 67.3× |
-| `solve zebra.ein -e` | 32 686.2 ms | 8 787.4 ms | **585.8 ms** | 15.0× |
-| `solve zebra.ein` | 7 651.2 ms | 3 045.1 ms | **120.8 ms** | 25.2× |
-| `render rules zebra2.ein` | 300.8 ms | 828.0 ms | **1.1 ms** | 753× |
-| `saturate zebra2.ein` | 844.3 ms | 1 410.4 ms | **5.0 ms** | 282× |
-| peak RSS (`zebra2 -e`) | 47.0 MB | 223.1 MB | **17.4 MB** | 12.8× |
+| workload | ein.rs |
+|---|---:|
+| `solve zebra2.ein -e` | **198.8 ms** |
+| `solve zebra2.ein` | **37.6 ms** |
+| `solve zebra.ein -e` | **585.8 ms** |
+| `solve zebra.ein` | **120.8 ms** |
+| `render rules zebra2.ein` | **1.1 ms** |
+| `saturate zebra2.ein` | **5.0 ms** |
+| peak RSS (`zebra2 -e`) | **17.4 MB** |
 
-Spreads: ≤ 2 % everywhere except `solve zebra -e` under PyPy (6.4 %) and
-`render` under ein.rs (12.2 % of 1.1 ms, i.e. ±0.1 ms — process start-up).
-
-### Where the milestone's denominators moved
-
-The stage asked for this refresh in as many words: *"a 20× claim measured
-against a six-month-old number is not a measurement."* Three of the four
-moved.
-
-| number | as recorded | today | why it matters |
-|---|---:|---:|---|
-| PyPy `solve zebra2 -e` | 4.07 s | **4.94 s** | the ≥ 20× target's denominator; 20× is now ≤ 247 ms, not ≤ 204 ms |
-| PyPy `solve zebra -e` | 8.15 s | **8.79 s** | — |
-| PyPy parse + load `zebra2` | 0.78 s | **0.43 s** ¶ | the ≥ 50× target's denominator |
-| CPython `solve zebra2 -e` | 5.69 s | **5.84 s** | stable |
-
-¶ **0.78 s is not reproducible from its own components.** The milestone's
-attribution records PyPy parse at 0.27 s and kb load at 0.37 s (0.64 s), and
-today's warm in-process figures are 0.24 s and 0.19 s (0.43 s) — where
-`parse` covers nine files and `load` covers `zebra2` alone, so the sum is
-two workloads and not one. Recorded rather than reconciled, because the
-target is met on every reading: ein.rs parses `zebra2` in 200 µs, *loads* it
-in 1.04 ms, and runs a whole `saturate zebra2` **process** — start-up, load,
-saturation, print — in 5.0 ms against a ≤ 15 ms target.
-
-**PyPy is slower than CPython on two of the six workloads** — `solve
-zebra2` (2 530 vs 1 995 ms) and `saturate` (1 410 vs 844 ms). A short run
-never repays the JIT's warm-up, which is exactly the shape of a CLI
-invocation and exactly what `utils/bench_baseline.py`'s warm in-process
-timing cannot see. Both columns are kept for that reason.
+Spreads: ≤ 2 % everywhere except `render` (12.2 % of 1.1 ms, i.e. ±0.1 ms —
+process start-up).
 
 **The two `-e` targets split.** `solve zebra2 -e` is **met** — 198.8 ms
-against a ≤ 200 ms target, 24.8× against a PyPy that got faster than the
-recorded baseline. `solve zebra -e` is **not** — 585.8 ms against ≤ 400 ms,
-1.46× short — and §3 says where its time goes: the matcher, 66.9 % of self
+against a ≤ 200 ms target. `solve zebra -e` is **not** — 585.8 ms against
+≤ 400 ms, 1.46× short — and §3 says where its time goes: the matcher, 66.9 % of self
 time on that puzzle against 29.0 % on the other.
 
 ## 2. The in-process bench set
 
-`utils/bench_baseline.py` (both interpreters) and `cargo bench`, same eight
-names. Warm, best-of-N, inside one process — the right shape for comparing
-a `parse` against a `parse`, and the wrong one for a headline claim (§1).
+`cargo bench`, eight names. Warm, best-of-N, inside one process — the right
+shape for comparing a `parse` against a `parse`, and the wrong one for a
+headline claim (§1).
 
-| bench | CPython | PyPy | ein.rs | vs CPython / PyPy |
-|---|---:|---:|---:|---:|
-| `parse` (both puzzles + 7 stdlib modules) | 783.0 ms | 244.4 ms | **780.5 µs** | 1 003× / 313× |
-| `parse` (`zebra2` alone) | — | — | **200.2 µs** | — |
-| `load` (zebra2: parse + imports + macros + index) | 640.3 ms | 187.2 ms | **1.04 ms** | 616× / 180× |
-| `saturate_root` (zebra2) | 85.3 ms | 90.1 ms | **2.76 ms** | 31× / 33× |
-| `match_hot` (every plan, saturated root) | 2.2 ms | 5.4 ms | **38.9 µs** | 57× / 139× |
-| `boundary` (zebra2) ‡ | 85.8 ms | 66.2 ms | **2.79 ms** | 31× / 24× |
-| `fork` + first delta write | 17.3 µs † | — | **257 ns** | 67× |
-| `solve_fast` (zebra2) | 1 881.2 ms | 758.2 ms | **35.59 ms** | 53× / 21× |
-| `solve_exhaustive` (zebra2) | 5 749.9 ms | 2 299.2 ms | **198.14 ms** | 29× / 12× |
+| bench | ein.rs |
+|---|---:|
+| `parse` (both puzzles + 7 stdlib modules) | **780.5 µs** |
+| `parse` (`zebra2` alone) | **200.2 µs** |
+| `load` (zebra2: parse + imports + macros + index) | **1.04 ms** |
+| `saturate_root` (zebra2) | **2.76 ms** |
+| `match_hot` (every plan, saturated root) | **38.9 µs** |
+| `boundary` (zebra2) ‡ | **2.79 ms** |
+| `fork` + first delta write | **257 ns** |
+| `solve_fast` (zebra2) | **35.59 ms** |
+| `solve_exhaustive` (zebra2) | **198.14 ms** |
 
-Every ein.rs figure is today's criterion mean (§6), not a number carried
-forward — so the whole table is one day's measurement on one machine, which is
-the only kind of ratio worth printing.
+Every figure is today's criterion mean (§6), not a number carried forward.
 
-† `fork` is below `perf_counter` resolution in `bench_baseline.py` (it prints
-0.0 ms); the CPython figure is P1a.2's measurement of the same thing.
-
-‡ **The two `boundary` rows were not the same workload**, and putting them
-in one table is how that surfaced: `utils/bench_baseline.py` times a
-*zebra2* root saturation and the criterion group timed a *zebra* one — the
-column above would have read 9.3× and meant nothing. Fixed in the bench set
-rather than in a footnote: the group now runs both puzzles (`boundary/zebra`
-7.32 ms, `boundary/zebra2` 2.79 ms), and the row above is the comparable
-one. The set is **nine cases across eight names** as of this stage.
-
-**`boundary` is the one bench where PyPy beats CPython** (66.2 vs 85.8 ms),
-which is a hint on its own: the boundary is a `_watch_stamp` loop over
-integers, the shape a tracing JIT is best at, and §7 item 2 shows what that
-same loop became in a layered KB.
+‡ The criterion group timed a *zebra* root saturation until this stage; it
+now runs both puzzles (`boundary/zebra` 7.32 ms, `boundary/zebra2`
+2.79 ms). The set is **nine cases across eight names** as of this stage.
 
 ## 3. Attribution — where the time goes
 
 `utils/profile_ein_rs.py`: `perf record --call-graph lbr` on a
 `--profile profiling` binary (release codegen + line tables; identical
-timing, re-checked on every run), bucketed into
-`utils/profile_solve.py`'s subsystems by the **innermost enclosing engine
-frame**, so allocator and data-model leaves land on the engine function
-that asked for them — the way cProfile's `tottime` accounts for the
-equivalent C-level work.
+timing, re-checked on every run), bucketed into eight subsystems by the
+**innermost enclosing engine frame**, so allocator and data-model leaves
+land on the engine function that asked for them.
 
 > **LBR, not frame pointers, and that was measured.** With `--call-graph
 > fp`, 57 % of an exhaustive `zebra2`'s samples arrive with no caller:
@@ -152,17 +103,17 @@ equivalent C-level work.
 
 ### Self time by subsystem
 
-| subsystem | `zebra2 -e` | `zebra -e` | ein.py `zebra2 -e` (for shape) |
-|---|---:|---:|---:|
-| saturate (incl. compile, firing) | **59.7 %** | 25.6 % | small self, >99 % cumulative |
-| match/bind | 29.0 % | **66.9 %** | 46 % |
-| hypgen/branch | 7.3 % | 5.3 % | — |
-| alive/closed | 1.3 % | 1.2 % | — |
-| frontend/load | 1.6 % | 0.4 % | — |
-| contradiction | 0.3 % | 0.4 % | — |
-| canon/key, apriori/elim | 0.4 % | 0.1 % | — |
-| fork/copy | 0.0 % | 0.0 % | 0.01 % |
-| unattributed | 0.3 % | 0.1 % | — |
+| subsystem | `zebra2 -e` | `zebra -e` |
+|---|---:|---:|
+| saturate (incl. compile, firing) | **59.7 %** | 25.6 % |
+| match/bind | 29.0 % | **66.9 %** |
+| hypgen/branch | 7.3 % | 5.3 % |
+| alive/closed | 1.3 % | 1.2 % |
+| frontend/load | 1.6 % | 0.4 % |
+| contradiction | 0.3 % | 0.4 % |
+| canon/key, apriori/elim | 0.4 % | 0.1 % |
+| fork/copy | 0.0 % | 0.0 % |
+| unattributed | 0.3 % | 0.1 % |
 
 **The two puzzles are two different profiles**, and the phase's stage list
 has to serve both: `zebra2 -e` is dominated by saturation-side work
@@ -211,79 +162,45 @@ other column says.
 | 9.5 % | `Kb::n_facts_of` |
 | 2.6 % | `Interner::intern` |
 
-**Is the boundary still 72 %?** No — it is *at least* 41.4 % and the honest
-answer needs an in-engine timer rather than LBR: `examples/engine_cost.rs`
-puts it at 80 % of a `zebra` **root saturation**. What has changed is that
-it is no longer the only thing worth looking at: **compile is a fifth of the
-exhaustive run**, which [design/06](../design/06_saturation.md) § Win A
+**How large is the boundary?** *At least* 41.4 %, and the honest answer
+needs an in-engine timer rather than LBR: `examples/engine_cost.rs` puts it
+at 80 % of a `zebra` **root saturation**. It is not the only thing worth
+looking at: **compile is a fifth of the exhaustive run**, which [design/06](../design/06_saturation.md) § Win A
 predicted at 12 % and for which no stage was ever written.
 
 ## 4. What the engine *did* — the work counters
 
-`ein_core::counters` (feature-gated, compiled out by default) against
-`utils/count_work.py` (runtime wrappers on ein.py, no source edits). Same
-field names, so the tables diff row for row.
+`ein_core::counters` (feature-gated, compiled out by default), `zebra2 -e` /
+`zebra -e`:
 
-`zebra2 -e` / `zebra -e`, ein.py → ein.rs:
+| counter | `zebra2 -e` | `zebra -e` |
+|---|---:|---:|
+| `unify_slot` | 5 980 766 | 60 235 905 |
+| `candidates` | 4 609 731 | 29 507 263 |
+| `walk` | 481 851 | 1 078 117 |
+| `plan_compile` | 17 430 | 5 138 |
+| `fact_insert` | 2 175 | 6 766 |
+| `guard_query` | 33 113 | 69 317 |
+| `watch_stamp` | 324 492 | 411 452 |
+| `watch_stamp_rel` | 644 166 | 820 008 |
+| `fork` | 104 | 114 |
+| `binding_key` | 82 465 | 200 283 |
+| `plan_run` | 83 159 | 113 986 |
+| `prov_node` | 0 | 0 |
+| *(enterings)* | 101 | 111 |
 
-| counter | `zebra2 -e` py | rs | `zebra -e` py | rs | verdict |
-|---|---:|---:|---:|---:|---|
-| `unify_slot` | 5 980 322 | 5 980 766 | 60 392 123 | 60 235 905 | +0.007 % / −0.26 % |
-| `candidates` | 4 646 381 | 4 609 731 | 29 640 102 | 29 507 263 | −0.79 % / −0.45 % |
-| `walk` | 474 446 | 481 851 | 1 092 635 | 1 078 117 | +1.6 % / −1.3 % |
-| `plan_compile` | 17 430 | 17 430 | 5 138 | 5 138 | **exact** |
-| `fact_insert` | 2 175 | 2 175 | 6 766 | 6 766 | **exact** |
-| `guard_query` | 33 113 | 33 113 | 69 317 | 69 317 | **exact** |
-| `watch_stamp` | 324 492 | 324 492 | 411 452 | 411 452 | **exact** |
-| `watch_stamp_rel` | 644 166 | 644 166 | 820 008 | 820 008 | **exact** |
-| `fork` | 101 | 104 | 111 | 114 | +3 |
-| `binding_key` | 445 414 | 82 465 | 726 361 | 200 283 | **5.4× / 3.6× fewer** |
-| `plan_run` | 13 732 | 83 159 | 4 953 | 113 986 | not comparable |
-| `prov_node` | 0 | 0 | 0 | 0 | a solve walks no provenance |
-| *(enterings)* | 101 | 101 | 111 | 111 | **exact** |
+- **`candidates` counts what a join tried, not what it was offered.**
+  `facts_with` is lazy, so a join that breaks after three candidates costs
+  three (`candidates_offered`: 6 853 068 on `zebra2 -e`, 1.49× the
+  candidates actually tried).
+- `binding_key` is computed once and cached on the queue entry; `plan_run`
+  counts per disjunct; `prov_node` is 0 because a solve walks no
+  provenance.
 
-Read in three groups:
-
-- **The five exact rows are a parity result stronger than T1.** T1 compares
-  the counters the engine publishes; these are counters nobody published,
-  and the two implementations agree on every one digit for digit —
-  including 644 166 per-relation extent counts and 17 430 plan compilations
-  on the same run.
-- **The three near-exact rows differ only in abandoned work.** ein.py
-  materialises `_candidates` as a tuple and ein.rs iterates `facts_with`
-  lazily, so a join that breaks after three candidates costs three here and
-  the whole bucket there (`candidates_offered`: 6 853 068 on `zebra2 -e`,
-  1.49× the candidates actually tried). Where the two abandon differs by a
-  candidate or two, and nothing downstream sees it: firings, facts and
-  enterings are identical, which is what T2 already proves.
-- **Two rows are structural.**
-  `binding_key` is lower because ein.rs caches the key on the queue entry
-  where ein.py recomputes it at four sites — an optimisation already taken.
-  `plan_run` counts per-disjunct in ein.rs and per-plan in ein.py, so it is
-  a mapping artefact and is recorded rather than chased.
-
-> **`plan_compile` read 180 against 17 430 on the first attempt, and that
-> was the instrument.** `utils/count_work.py` wraps a module attribute, and
-> `engine.py` binds `compile_rule` into its own namespace with `from .compile
-> import compile_rule` — so the wrapper never saw the caller that does all
-> the work, and an apparent **97× gap** was really a 1:1 match. It is
-> recorded here because it was nearly published: the number was plausible
-> (ein.rs *does* recompile per engine), it agreed with a real finding (§7
-> item 1), and it was wrong. What caught it was a second instrument
-> disagreeing — the `compile` **event** stream, which both implementations
-> emit **17 250** of on that run, in files of 183 231 identical lines.
-> `count_work.py` now rebinds every `ein.*` module attribute that holds the
-> function and reports how many it replaced under `-v`. It found a second
-> unwrapped binding while it was there — `lookahead.py`'s own `_bind_args` —
-> which changed no number, because neither puzzle reaches it. That is the
-> other half of the lesson: an instrument has to report its own coverage,
-> since a wrapper that saw nothing and a call site that ran nothing produce
-> the same zero.
-
-**`plan_compile` left the exact group at
-[S1a.6.8](../README.md#s1a68--the-compile-cache-and-the-extent-counts)** — 17 430 → **305**, against
-ein.py's unchanged 17 430 — and a new `extent_probe` row joined the table.
-Every other counter above is still bit-identical after that stage;
+**`plan_compile` fell at
+[S1a.6.8](../README.md#s1a68--the-compile-cache-and-the-extent-counts)** — 17 430 → **305** — and a
+new `extent_probe` row joined the table. Every other counter above is still
+bit-identical after that stage;
 [§10](#10-after-s1a68--the-same-instruments-re-run) has both.
 
 ## 5. Memory
@@ -359,29 +276,13 @@ instruments really are measuring the same thing.
 
 ### The acceptance gate
 
-| gate | tests | CPython | PyPy | ein.rs |
-|---|---:|---:|---:|---:|
-| the three fixtures (`zebra_two_ontologies`, `zebra_three_classes`, `mode_consistency`) | 19 py / 3 rs | — | **36.0 s** | **1.27 s** → **0.62 s** at S1a.6.9 |
-| the whole `acceptance/` gate (`./run_tests.sh --acceptance-only`) | 21 | 140.2 s § | **49.3 s** | — |
+| gate | tests | ein.rs |
+|---|---:|---:|
+| the three fixtures (`zebra_two_ontologies`, `zebra_three_classes`, `mode_consistency`) | 3 | **1.27 s** → **0.62 s** at S1a.6.9 |
 
-**The ≤ 5 s target is met at 1.27 s**, 28× against PyPy's 36.0 s on the
-same three fixtures — measured on the test binary directly, three runs
-within 10 ms of each other, so it is the tests and not `cargo`.
-
-The full-gate row moved again, as [design/README](../design/README.md#measured)'s
-‡ note predicted it would: ~91 s at S1.21.8, 43.7 s at P1a.0, **49.3 s**
-today. Nothing in ein.py changed and P1a.0 was *yesterday* on this same
-machine, so the 13 % is what a single un-repeated process measurement is worth
-— which is why every number in this file is best-of-N with its spread printed
-next to it. Third recorded value of the same quantity; each one is real and
-none of them is *the* number.
-
-§ **The CPython column is 19/21, and the two failures are not engine
-results.** `acceptance/test_bench_solve_mode.py` spawns `sys.executable -m
-ein.cli`, and the system interpreter has no `ein` installed
-(`ModuleNotFoundError`), where `.venv-pypy` has it editable. The remaining
-19 pass. Recorded because the number is real and the caveat is what makes it
-readable, not to be fixed here.
+**The ≤ 5 s target is met at 1.27 s** — measured on the test binary
+directly, three runs within 10 ms of each other, so it is the tests and not
+`cargo`.
 
 ## 7. The top five costs
 
@@ -392,10 +293,9 @@ have.
 
 `Engine::compile_for` misses, and `PlanMemo::intern` re-compiles, once per
 engine per (rule, activator) pair: **17 430 compiles** on an exhaustive
-`zebra2`, of which 17 250 are the engine misses both implementations emit a
-`compile` event for. ein.py does exactly the same number — this is not a
-regression against the oracle, it is an **unclaimed 21 %**, and
-`engine.rs`'s own module comment describes the design that would claim it —
+`zebra2`, of which 17 250 are the engine misses that emit a `compile`
+event. It is an **unclaimed 21 %**, and `engine.rs`'s own module comment
+describes the design that would claim it —
 
 > *"which is why the **process-wide memo** holds the plans and each engine
 > keeps its own ordered list ([design/06](../design/06_saturation.md) §
@@ -405,9 +305,9 @@ regression against the oracle, it is an **unclaimed 21 %**, and
 a fresh one: one per fork saturation, plus one per `lookahead` probe and one
 per `closed` marking. The doc predicted the fix and the code shipped the shape it was
 contrasting itself with. Hoisting the memo into a shared, refcounted store
-while each engine keeps its own insertion-ordered plan list is
-parity-preserving *by construction*: the cache order that reaches the trace
-is the per-engine list, which does not move.
+while each engine keeps its own insertion-ordered plan list is invisible
+to every observable *by construction*: the cache order that reaches the
+trace is the per-engine list, which does not move.
 
 `Interner::intern` belongs to this item too, not to a separate one: its
 callers are **`Compiler::slot` (42 %) and `Compiler::premise` (33 %)**, so
@@ -416,7 +316,7 @@ does none of it.
 
 **Predicted by:** [design/06](../design/06_saturation.md) § Win A — which
 predicted the *count* exactly (17 430 → ~170 distinct pairs) and the saving
-at 12 %, where the Rust profile now says 21.1 %.
+at 12 %, where the profile now says 21.1 %.
 **Missed by:** nothing — this is an implementation gap, not a design one,
 which is why it is first: the cheapest 20 % in the phase, and the design
 work is already written.
@@ -432,8 +332,7 @@ work is already written.
 ### 2. `Kb::n_facts_of` under the watch stamp — 9.5 %, and it grows with depth
 
 `watch_stamp_into` asks for 644 166 relation extent sizes on `zebra2 -e`.
-In ein.py that is `len(fbr.get(rel, ()))` on one flat dict — O(1). In
-ein.rs the KB is layered, so it is a hash lookup **per layer**, and the
+The KB is layered, so each is a hash lookup **per layer**, and the
 exhaustive search reaches **depth 35** (§5). The stamp that
 [design/06](../design/06_saturation.md) § Boundary introduced to make NAF
 re-evaluation cheap is itself 9.5 % of the run — entirely because of the
@@ -441,7 +340,7 @@ layered COW model, and growing with the depth the search reaches.
 
 **Predicted by:** nobody. [design/03](../design/03_data_model.md) §5 argues
 for O(1) forks and never asks what a *count* costs afterwards; design/06
-assumes the stamp is free because it is in ein.py.
+assumes the stamp is free.
 **The fix is small:** a per-relation count maintained on insert, `O(1)`
 regardless of depth, or a flatten threshold (T1a.6.2.5) that keeps depth
 bounded. Both are invisible to every observable.
@@ -459,13 +358,12 @@ bounded. Both are invisible to every observable.
 
 `unify` + `try_candidate` + `walk` = 57.1 % of `zebra -e`'s self time, and
 `zebra -e` is the workload that misses its target by 1.46×. The work
-counters say ein.rs performs the *same* 60.2 M slot unifications as ein.py
-(−0.26 %), so this is not a search doing more — it is 60 M of a 586 ms run,
-about 6 ns each.
+counters say what it is: 60.2 M slot unifications in a 586 ms run, about
+6 ns each.
 
 **Predicted by:** [design/05](../design/05_matcher.md) §§1, 6 — the
-register machine exists because of this line in the Python profile, and it
-delivered a 57× `match_hot`. What remains is per-candidate constant factor:
+register machine exists for this line. What remains is per-candidate
+constant factor:
 `FactStore::get` + `::args` (7.0 % combined on `zebra -e`) is a double
 indirection per candidate, which is exactly T1a.6.2.2's bucket-major
 storage, and beta-memories ([S1a.6.3](../README.md#s1a63--beta-memories-f11-d1), F11 D1)
@@ -507,13 +405,13 @@ changed" — which is the same shape as item 2 and probably the same commit.
 
 | stage | profile says | order |
 |---|---|---|
-| **[S1a.6.8](../README.md#s1a68--the-compile-cache-and-the-extent-counts)** (new) ✅ | items 1 + 2: 21.1 % and 9.5 %, both parity-preserving by construction, both small | **shipped 2026-08-18** — −30.5 % / −7.8 %, [§10](#10-after-s1a68--the-same-instruments-re-run) |
+| **[S1a.6.8](../README.md#s1a68--the-compile-cache-and-the-extent-counts)** (new) ✅ | items 1 + 2: 21.1 % and 9.5 %, both invisible by construction, both small | **shipped 2026-08-18** — −30.5 % / −7.8 %, [§10](#10-after-s1a68--the-same-instruments-re-run) |
 | **[S1a.6.9](../README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)** (new, added after this list) | [§9](#9-the-fork-entry-re-derivation): 95.0 % of `zebra -e` is fork saturation and 94.6 % of that is re-derivation. The measurement and the decision run **second**; the shipping half is gated on [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) and runs last | **second** |
 | [S1a.6.2](../README.md#s1a62--memory-layout) Memory layout | item 4 (21 % allocator) and item 3's `FactStore` indirection; T1a.6.2.5 gains a second reason (depth 35), and §9 adds two tasks — a system allocator (T1a.6.2.7) and a per-entering region (T1a.6.2.8) | third |
 | [S1a.6.3](../README.md#s1a63--beta-memories-f11-d1) Beta-memories | **gate opens**: 66.9 % of `zebra -e` is the join, and a fork's delta is 3.6 KB, so F11's "a memory copied per fork can lose more than it saves" no longer holds. §9 gives it its target: the *root* memories are the invisible way to remove the re-derivation | fourth |
 | [S1a.6.4](../README.md#s1a64--hypgen-and-lattice-hot-paths) Hypgen and lattice | 7.3 % / 5.3 % self — real, smaller than written. **T1a.6.4.1's premise needs its own measurement first**: the interning on the profile's hot list is the *compiler's* (42 % `Compiler::slot`, 33 % `Compiler::premise`), so "18 k interns per `complete()` call" is not what this profile shows | fifth |
 | [S1a.6.5](../README.md#s1a65--frontend-and-load-path) Frontend and load | **already met**: `parse zebra2` 200 µs, `load` 1.04 ms, and the whole `saturate zebra2` process 5.0 ms against a ≤ 15 ms target. Reduce to a confirmation + the allocation report its acceptance asks for | sixth, short |
-| [S1a.6.6](../README.md#s1a66--the-differential-fuzzer) Differential fuzzer | unchanged — it guards everything above | throughout |
+| [S1a.6.6](../README.md#s1a66--the-fuzzer) The fuzzer | unchanged — it guards everything above | throughout |
 | [S1a.6.7](../README.md#s1a67--re-measure-the-lever-matrix) Re-lever matrix | unchanged | last |
 
 ## 9. The fork-entry re-derivation
@@ -534,10 +432,10 @@ D2 + D5) but **not across the fork boundary**, which is where the delta is
 smallest and known exactly.
 
 > **Historical from 2026-08-19.** This section measures the *fresh* fork
-> saturator, which is what ein.py does and what ein.rs did until
+> saturator, which is what ein.rs did until
 > [S1a.6.9](../README.md#s1a69--the-fork-entry-delta-the-resumed-saturator). It is kept because it is the
 > measurement that stage was chosen by, and because it is still what
-> `utils/fork_split.py` reports for ein.py or for a `fork-delta` build under
+> `utils/fork_split.py` reports for a `fork-delta` build under
 > `EIN_FORK_DELTA=0`. **For the shipping engine, read
 > [§11](#11-the-resumed-fork-saturator-measured)**: 9 834 fork firings on
 > `zebra2 -e` rather than 38 136, and 0 fork compiles rather than 12 625.
@@ -672,12 +570,12 @@ This section is the first re-measure, and every later stage adds its own.
 
 ### The four targets
 
-| workload | target | at S1a.6.1 | **at S1a.6.8** | vs PyPy today |
-|---|---:|---:|---:|---:|
-| `solve zebra2.ein -e` | ≤ 200 ms | 198.8 ms | **138.1 ms** (−30.5 %) ✅ | **37.0×** |
-| `solve zebra.ein -e` | ≤ 400 ms | 585.8 ms | **539.9 ms** (−7.8 %) ❌ | 16.2× |
-| parse + load `zebra2` | ≤ 15 ms | 1.04 ms | **1.01 ms** ✅ | 185× |
-| the acceptance gate (3 fixtures) | ≤ 5 s | 1.27 s | **1.02 s** (−19.7 %) ✅ | 35× |
+| workload | target | at S1a.6.1 | **at S1a.6.8** |
+|---|---:|---:|---:|
+| `solve zebra2.ein -e` | ≤ 200 ms | 198.8 ms | **138.1 ms** (−30.5 %) ✅ |
+| `solve zebra.ein -e` | ≤ 400 ms | 585.8 ms | **539.9 ms** (−7.8 %) ❌ |
+| parse + load `zebra2` | ≤ 15 ms | 1.04 ms | **1.01 ms** ✅ |
+| the acceptance gate (3 fixtures) | ≤ 5 s | 1.27 s | **1.02 s** (−19.7 %) ✅ |
 
 `zebra -e` is **1.35× short** where it was 1.46×. It is still the target the
 phase turns on, and § 9 says where the rest of it is.
@@ -701,7 +599,7 @@ them attributable — `taskset -c 4`, best of 4, one series:
 
 | build | `zebra2 -e` | `zebra -e` | `zebra2` | `zebra` |
 |---|---:|---:|---:|---:|
-| S1a.6.1 (P1a.5 parity build) | 198.8 ms | 585.8 ms | 37.6 ms | 120.8 ms |
+| S1a.6.1 (P1a.5 build) | 198.8 ms | 585.8 ms | 37.6 ms | 120.8 ms |
 | **+ T1a.6.8.1** (per-run plan memo) | 162.4 ms | 585.0 ms | 33.1 ms | 122.4 ms |
 | **+ T1a.6.8.2** (O(1) extent count) | **139.8 ms** | **542.2 ms** | **31.2 ms** | **117.7 ms** |
 
@@ -769,7 +667,7 @@ Only two rows moved, and one of them is new:
 
 | counter | before | after | note |
 |---|---:|---:|---|
-| `plan_compile` (`zebra2 -e`) | 17 430 | **305** | **the one counter the two implementations are meant to disagree on** — ein.py still compiles 17 430. 305 is the distinct `(rule, activator)` pair count on that run, reported rather than predicted; design/06 § Win A guessed ~170, and the forks derive activators the root never had |
+| `plan_compile` (`zebra2 -e`) | 17 430 | **305** | 305 is the distinct `(rule, activator)` pair count on that run, reported rather than predicted; design/06 § Win A guessed ~170, and the forks derive activators the root never had |
 | `plan_compile` (`zebra -e`) | 5 138 | **242** | |
 | `extent_probe` (`zebra2 -e`) | — | 646 184 | new: map probes inside `n_facts_of`, the instrument for its O(1)-in-depth claim. 644 166 of them are the watch stamp's; the other 2 018 are hypgen's and apriori's |
 
@@ -798,9 +696,8 @@ saved allocations were transient by construction.
 
 ### The gate
 
-**T3 472/473, with [D2](../divergences.md) the only differing cell** — the
-same 472/473 the P1a.5 parity build left. The `--events-level verbose` stream
-for `solve zebra2.ein -e` is **byte-identical** to the pre-change build,
+The `--events-level verbose` stream for `solve zebra2.ein -e` is
+**byte-identical** to the pre-change build,
 183 231 lines, which is the check that matters for T1a.6.8.1: a shared memo
 must change memo hits and nothing else, and the `compile` event fires on an
 *engine* miss.
@@ -823,15 +720,14 @@ cargo run --release -p ein-infer --example alloc_cost
 measured the cost; this measures what removing it buys and what it moves.
 **It shipped**: `Saturator::resume` is the path ein.rs takes, and
 [Q-M1a.18](../open_questions.md#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint)
-was answered ein.rs-only, with
-[D3](../divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
-recording what that costs.
+was answered yes — a fork *resumes* root's saturation rather than
+re-deriving it, so two runs can narrate different amounts of one derivation.
 
 Every diff below comes from **one binary**: a `--features fork-delta` build
 compiles in the way back to the old fresh-fork saturator (`EIN_FORK_DELTA=0`),
 so the two arms differ by `Saturator::new` against `Saturator::resume` and by
-nothing else. That build is D3's fixture, and `utils/fork_delta_verify.py` is
-how the divergence stays measured rather than merely accepted.
+nothing else. That build is the fixture, and `utils/fork_delta_verify.py` is
+how the difference stays measured rather than merely accepted.
 
 ### What it removes
 
@@ -855,12 +751,12 @@ a resumed fork inherits root's plan list rather than rebuilding it.
 
 Best of 5, same machine, `target-fd` binary both arms:
 
-| workload | fresh | **resumed** | | vs PyPy |
-|---|---:|---:|---:|---:|
-| `solve zebra2.ein` | 31.1 ms | **27.1 ms** | 1.15× | 93× |
-| `solve zebra2.ein -e` | 137.5 ms | **100.2 ms** | 1.37× | 49× |
-| `solve zebra.ein` | 115.1 ms | **97.3 ms** | 1.18× | 31× |
-| `solve zebra.ein -e` | 525.6 ms | **392.6 ms** | 1.34× | 22.4× |
+| workload | fresh | **resumed** | |
+|---|---:|---:|---:|
+| `solve zebra2.ein` | 31.1 ms | **27.1 ms** | 1.15× |
+| `solve zebra2.ein -e` | 137.5 ms | **100.2 ms** | 1.37× |
+| `solve zebra.ein` | 115.1 ms | **97.3 ms** | 1.18× |
+| `solve zebra.ein -e` | 525.6 ms | **392.6 ms** | 1.34× |
 
 **`zebra -e` crosses its ≤ 400 ms target** — the phase's one unmet target,
 and the reason S1a.6.9 exists. On the shipping binary it is **394.2 ms** and
@@ -893,12 +789,12 @@ the layered snapshot would have been the wash
 
 | stream | `zebra2 -e` | `zebra -e` |
 |---|---:|---:|
-| `--events --events-level verbose` (T2) | 183 231 → 68 670 (**−62.5 %**) | 405 367 → 97 723 (**−75.9 %**) |
+| `--events --events-level verbose` | 183 231 → 68 670 (**−62.5 %**) | 405 367 → 97 723 (**−75.9 %**) |
 | `--events` at `normal` | 146 689 → 60 439 (−58.8 %) | 297 287 → 76 733 (−74.2 %) |
 | `solve --trace` steps under the hypothesis | 561 → **240** | — |
 | `solve --trace` steps, root section ‖ | 0 → **321** | — |
 
-**T2 moves at `normal` too**, not only at `verbose` — Q-M1a.18 was written
+**The stream moves at `normal` too**, not only at `verbose` — Q-M1a.18 was written
 expecting the verbose-only loss. A redundant firing is not emitted at
 `normal`, but the ~1 790 `enqueue` lines per entering that produce it are, and
 those go with it.
@@ -913,30 +809,6 @@ adds, numbered as one sequence. Same 24 rules as before, in the order
 [`zebra_walkthrough.md`](../../../kernel/inference/zebra_walkthrough.md)
 tells it. The rendered before/after is
 [`fork_delta_trace.md`](fork_delta_trace.md).
-
-### What it costs the parity harness
-
-Against ein.py, which keeps the fresh saturator:
-
-| tier | before | after | cells D3 costs |
-|---|---|---|---:|
-| T3 (artefacts) | 472 / 473 | **465 / 473** | **7** |
-| T2 (event stream) | 239 / 240 ‡ | **142 / 240** | **97** |
-| T1 (`summary.json`) | — | unchanged | **0** |
-| T0 (the verdict) | — | unchanged | **0** |
-
-‡ the one cell in each *before* column is
-[D2](../divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers),
-which predates this.
-
-The seven T3 cells are exactly the seven corpus entries that declare a
-`solve --trace` or a `solve --dump-states` run — every other artefact a solve
-writes is unmoved, stdout and `summary.json` included.
-[S1a.6.10](../README.md#s1a610--the-parity-contract-relaxes-answers-not-narration) is the stage that teaches the harness
-to compare what a fork *derived* instead of the whole firing list, and
-[§12](#12-the-parity-contract-relaxed-and-re-measured) is what happened when
-it did: **472 / 473 and 239 / 240**, D2 the only cell in either. The numbers
-above are what D3 cost in between.
 
 ### What it does **not** move — verified, not argued
 
@@ -954,17 +826,16 @@ firing lists.
 | entering `kind` | **0** | **0** |
 | **alive** fork fixpoint, fact by fact | **0** | **0** |
 | stdout (verdict, `k`, models, bindings, core) | **0** | **0** |
-| `summary.json` — **T0 + T1**, all 85 fields ° | **0** | **0** |
+| `summary.json`, all 85 fields ° | **0** | **0** |
 | `--dump-states` tree ¶ | **0** | **0** |
 | unsat core, per entering | 110 | **0** |
 | dead fork's *partial* state ‡ | 2 067 | **0** |
 
-° every solve cell gets `--json-summary`, exactly as the conformance harness
-does, and only the clock is normalised out of it. This is the row the whole
-decision rests on: the two engines publish the same verdict, the same `k`, the
-same enterings, layers, saturations, merges and learned clauses. **They run
-the same search and reach the same answer**; they narrate different amounts of
-it.
+° every solve cell gets `--json-summary`, and only the clock is normalised
+out of it. This is the row the whole decision rests on: the two arms publish
+the same verdict, the same `k`, the same enterings, layers, saturations,
+merges and learned clauses. **They run the same search and reach the same
+answer**; they narrate different amounts of it.
 
 ¶ with the wall-clock fields and the firing counts normalised out — those are
 the narration, tabulated above.
@@ -1024,11 +895,10 @@ not a property.
 
 ### The near-miss
 
-`ein.py/tests/trace/test_idea08_acceptance.py::test_zebra2_fires_walkthrough_rules`
-asserts that the solution's firing list exhibits the nine rules
-[`zebra_walkthrough.md`](../../../kernel/inference/zebra_walkthrough.md)
-narrates, and it is what caught this. With the resumed saturator and the
-renderer untouched, the solution node's trace covered **12 distinct rules
+An acceptance test asserting that the solution's firing list exhibits the
+nine rules [`zebra_walkthrough.md`](../../../kernel/inference/zebra_walkthrough.md)
+narrates is what caught this. With the resumed saturator and the renderer
+untouched, the solution node's trace covered **12 distinct rules
 instead of 24** and `symmetric` was not among them.
 
 The trace was not wrong; it was *incomplete in a way it had not been before*,
@@ -1039,9 +909,8 @@ them. Take the re-derivation away and the accident stops paying.
 
 The fix is the root section above, and it is better than what it replaced —
 the givens and the hypothesis are now distinguishable, which they never were.
-[T1a.6.11.2](../README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing) ports the assertion to ein.rs, so
-the next change to either half meets the same alarm on the engine that
-ships.
+[T1a.6.11.2](../README.md#s1a611--fixtures-for-the-narration) pins the assertion in
+`cargo test`, so the next change to either half meets the same alarm.
 
 ### Reproducing this section
 
@@ -1052,127 +921,6 @@ EIN_FORK_DELTA=1 python3 utils/fork_split.py --bin ein.rs/target-fd/release/ein
 python3 utils/fork_delta_verify.py --json ein.rs/bench-out/fork-delta.json
 python3 utils/fork_delta_verify.py --no-fail-fast
 python3 utils/fork_delta_verify.py -k zebra2.ein --with-trace
-```
-
-## 12. The parity contract, relaxed and re-measured
-
-**[S1a.6.10](../README.md#s1a610--the-parity-contract-relaxes-answers-not-narration) + [S1a.6.11](../README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing),
-2026-08-19.** §11 measured what the resumed fork saturator costs the harness;
-this is what it costs after the harness was taught the rule.
-
-| tier | before S1a.6.9 | after S1a.6.9 (§11) | **after S1a.6.10** |
-|---|---|---|---|
-| T3 — artefacts, 473 cells | 472 ‡ | 465 | **472** ‡ |
-| T2 — the event stream, 240 cells | 239 ‡ | 142 | **239** ‡ |
-| T1 — `summary.json` | — | unchanged | **unchanged** |
-| T0 — the verdict | — | unchanged | **unchanged** |
-
-‡ [D2](../divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers),
-which predates all of this and is the only differing cell in either tier.
-
-### The cut, chosen by measurement rather than by argument
-
-The T2 comparison could have been narrowed six ways. Each was run over the
-**same 240 captured logs** before one was written down — the corpus is the
-experiment, not the illustration:
-
-| the derivation is … | cells agreeing |
-|---|---:|
-| the whole stream (the contract before this) | 142 / 240 |
-| the ordered non-redundant firings | 142 / 240 |
-| … also eliding `compile` | 213 / 240 |
-| … as an ordered `(rule, premises, derived)` | 214 / 240 |
-| … as a **multiset** of `(rule, premises, derived)`, per `enter`-delimited segment, `dead-post` excluded | 232 / 240 |
-| **… as a multiset of derived facts + the set of rules, same segmentation** | **239 / 240** |
-
-Three things the plan did not predict, and each is why the row above it is not
-the answer:
-
-1. **The ordered productive subsequence is not identical.** S1a.6.9's 6 136 →
-   6 136 is a *count*; the order moves for the same reason the primary
-   justification does. 26 cells still differ under an ordered comparison.
-2. **`compile` moves.** A plan-memo *miss* is emitted once per enqueue pass
-   that needs the rule, so a fresh fork that re-derives root's closure misses
-   where a resumed one does not: **244 against 128** on
-   `examples/branching/02_one_dead_one_alive.ein`'s plain `solve`. The
-   *distinct* compiles are identical, rule for rule and activator for
-   activator.
-3. **A dying fork's derivation has to leave the comparison outright.** Every
-   mismatch left after the multiset cut was a `dead-post` segment.
-
-### The two controls
-
-A relaxation is only a decision if both directions are checked.
-
-**Negative — does it still catch a real loss?**
-`utils/mutant_ein.py` runs the *shipping* binary and deletes one event from
-the log it wrote:
-
-| `EIN_MUTANT` | what it deletes | T2 must | measured, over `--filter branching` (70 comparable cells) |
-|---|---|---|---|
-| `productive` | the first `fire` with `redundant = false` | **report** | **68 / 68** cells where the deletion applied; exit 1 |
-| `redundant` | the first `fire` with `redundant = true` | pass | 70 / 70, exit 0 |
-| `enqueue` | the first `enqueue` | pass | 70 / 70, exit 0 |
-
-The other two of the 70 have no productive firing to delete
-(`14_lookahead_unjudgeable :: saturate` emits five events and none of them is
-a firing), so the mutation is a no-op and the cell rightly agrees. **The first
-run of this control was not 68/68 — it was 66, and the two escapes were the
-finding**: `solve -L` on `04_two_levels` and `05_mini_zebra`, where the first
-entering is a lookahead probe that dies, so root's saturation shared a
-`dead-post` segment and was skipped with it. That is what put the hypgen
-boundary in `split`. What still escapes is only what the rule says will: a
-derivation lost inside a *dying* fork.
-
-**Positive — is the old contract still available?** The determinism sweep,
-ein.py against itself under `PYTHONHASHSEED=0` / `=42`, run with `--strict`:
-**473 / 473, zero differences**, 673 s of engine time. That is the run that
-found hazards H1 and H4, and one engine against itself has no excuse to
-narrate differently — `.github/workflows/nightly.yml` passes `--strict` for
-exactly that reason.
-
-### What replaced the bytes
-
-[S1a.6.11](../README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing): twelve ein.rs goldens, 2 188 lines —
-five real solves' traces, two `slice` cones, a fork's own `enterings/` dump
-with the timeline's firing counts, the snapshot projection, and three event
-streams that between them contain every class the relaxed T2 elides.
-`./run_tests.sh` gained a **Phase 3** (`cargo test --workspace`) so the repo's
-one documented gate runs both engines: **1 506 + 21 + 302** green.
-
-### Reproducing this section
-
-**From the repo root, and that is not a style choice:** the harness runs both
-implementations with the repo root as their working directory
-([conformance/README](../../../../corpus/README.md)), so a *relative* impl
-path is resolved against the root no matter where the runner was launched.
-`cd ein.rs` plus `--impl-b ./target/release/ein` is the shape that looks right
-and reports 473 harness errors — which the liveness check catches, loudly, and
-which is why it exists.
-
-```sh
-cargo build --release --manifest-path ein.rs/Cargo.toml
-
-# the two tiers, relaxed (the shipping contract)
-for T in T3 T2; do
-  ein.rs/target/release/ein-conformance run --tier $T \
-      --impl-a ".venv-pypy/bin/python -m ein.cli" \
-      --impl-b ein.rs/target/release/ein
-done
-
-# the determinism sweep, unrelaxed
-ein.rs/target/release/ein-conformance run --tier T3 --strict \
-    --impl-a ".venv-pypy/bin/python -m ein.cli" \
-    --impl-b ".venv-pypy/bin/python -m ein.cli" \
-    --env-a PYTHONHASHSEED=0 --env-b PYTHONHASHSEED=42
-
-# the negative control
-for M in productive redundant enqueue; do
-  EIN_MUTANT=$M ein.rs/target/release/ein-conformance run --tier T2 \
-      --filter branching \
-      --impl-a "$PWD/.venv-pypy/bin/python -m ein.cli" \
-      --impl-b "python3 $PWD/utils/mutant_ein.py $PWD/ein.rs/target/release/ein"
-done
 ```
 
 ## 13. S1a.6.2 — the layout stage, and the profile it starts from
@@ -1208,9 +956,7 @@ compiler's small ones. The 21 % of self time [§7](#7-the-top-five-costs) item 4
 attributed to glibc `malloc` is **20.0 %** on `zebra2 -e` and only **9.4 %** on
 `zebra -e`, whose remaining cost is 80.1 % one subsystem.
 
-The work counters, for the first time since S1a.6.9 moved them — this is what
-the two engines now do *differently*, and the row that matters is that they
-still agree on the answer:
+The work counters, for the first time since S1a.6.9 moved them:
 
 | counter | `zebra2` fast | `zebra2 -e` | `zebra` fast | `zebra -e` |
 |---|---:|---:|---:|---:|
@@ -1229,9 +975,7 @@ still agree on the answer:
 
 `zebra -e`'s 60.2 M slot unifications at S1a.6.1 are **51.5 M** — S1a.6.9
 removed 14 % of the join's work along with the re-derivation — and `zebra2
--e`'s `extent_probe` is 646 184 → 408 133 for the same reason. `plan_compile`
-is the one counter the two implementations are meant to disagree on
-([§10](#10-after-s1a68--the-same-instruments-re-run)).
+-e`'s `extent_probe` is 646 184 → 408 133 for the same reason.
 
 ### T1a.6.2.7 — the global allocator, measured three ways
 
@@ -1355,8 +1099,8 @@ Worth the paragraph because of what caught it: the release-vs-profiling line
 `utils/profile_ein_rs.py` prints on every run, added at S1a.6.1 on the argument
 that *"a profile taken on a binary that runs at a different speed from the
 shipped one is measuring a different program"*. It had printed ±0.3 % for a
-month. A vendored C dependency is the first thing in this port that could make
-it lie, and it did so within an hour of arriving.
+month. A vendored C dependency is the first thing in this engine that could
+make it lie, and it did so within an hour of arriving.
 
 ### What it does not move
 
@@ -1367,8 +1111,7 @@ it lie, and it did so within an hour of arriving.
   meant something else changed.
 - **Every work counter is unchanged** — the `counters` build is `ein-infer`'s
   example, which links no allocator at all.
-- **T3 472/473, [D2](../divergences.md) the only differing cell**, and
-  `cargo test --workspace` green including `tests/match_alloc.rs`, the
+- **`cargo test --workspace` green**, including `tests/match_alloc.rs`, the
   inner-loop allocation-count test the stage's notes ask for after every task.
   Nothing outside `#[cfg(test)]` orders, hashes or compares by address, so an
   allocator cannot reach an observable — but the gate ran anyway, as the
@@ -1419,8 +1162,7 @@ instrument said so before either was built.
 | mean extent walked | **61** | **368** |
 
 **The index does not key a nested-fact argument** — `index_fact`'s "the
-join-key types only", which is ein.py's S1.8.B-idx reproduced — and
-`(not (R …))` is what the corpus scans. So bucket-major storage would have
+join-key types only" — and `(not (R …))` is what the corpus scans. So bucket-major storage would have
 been built for **0.9 %** of `zebra -e`'s candidates. T1a.6.2.2 is closed
 against that number, and the finding it leaves behind is
 [S1a.6.3](../README.md#s1a63--beta-memories-f11-d1)'s: the extent scan is not slow, it is
@@ -1583,14 +1325,14 @@ build beta-memories built two changes to the index instead, and then answered
 its own gate with the profile they left behind. `solve zebra.ein -e`
 **349.1 → 78.1 ms (4.5×)** and `solve zebra2.ein -e` **75.8 → 44.0 ms (1.7×)**.
 
-| workload | target | at S1a.6.2 | **at S1a.6.3** | vs PyPy today |
-|---|---:|---:|---:|---:|
-| `solve zebra2.ein -e` | ≤ 200 ms | 75.8 ms | **44.0 ms** ✅ | **112×** |
-| `solve zebra.ein -e` | ≤ 400 ms | 349.1 ms | **78.1 ms** ✅ | **112×** |
-| `solve zebra2.ein` | — | 20.5 ms | **10.9 ms** | 232× |
-| `solve zebra.ein` | — | 89.2 ms | **14.8 ms** | 206× |
-| parse + load `zebra2` | ≤ 15 ms | 0.90 ms | **0.90 ms** ✅ | 478× |
-| the acceptance gate (3 fixtures) | ≤ 5 s | 0.58 s | **0.28 s** ✅ | **129×** |
+| workload | target | at S1a.6.2 | **at S1a.6.3** |
+|---|---:|---:|---:|
+| `solve zebra2.ein -e` | ≤ 200 ms | 75.8 ms | **44.0 ms** ✅ |
+| `solve zebra.ein -e` | ≤ 400 ms | 349.1 ms | **78.1 ms** ✅ |
+| `solve zebra2.ein` | — | 20.5 ms | **10.9 ms** |
+| `solve zebra.ein` | — | 89.2 ms | **14.8 ms** |
+| parse + load `zebra2` | ≤ 15 ms | 0.90 ms | **0.90 ms** ✅ |
+| the acceptance gate (3 fixtures) | ≤ 5 s | 0.58 s | **0.28 s** ✅ |
 
 ### T1a.6.3.0 — the index keys one level in
 
@@ -1624,9 +1366,7 @@ argument, and `probes_for` compiles a probe per inner slot.
 
 **Every counter that measures a decision the engine made is identical to the
 digit; every counter that measures candidates it was offered fell by 93–95 %.**
-That split is the whole claim of a narrowing, and it is why T2 stayed at
-**239/240** and T3 at **472/473** with [D2](../divergences.md) the only cell in
-either.
+That split is the whole claim of a narrowing.
 
 **Why it is sound** (T1a.6.3.1's argument, written before the code): a probe
 replaces "every fact of the relation" with "every fact in a bucket", and the
@@ -1647,9 +1387,9 @@ verified to fail when either path keys the wrong inner position, which is the
 only way to know a differential test is testing anything.
 
 **One observable did move, and it was not a match.** `saturate`'s snapshot
-prints `facts_by_rel_slot_val`, and ein.rs's index now holds more postings than
-ein.py's — 897 against 743 on `zebra2-hints` — which broke **43** T3 cells.
-That line reports a property of the *knowledge base*: how many join keys its
+prints `facts_by_rel_slot_val`, and the index now holds more postings — 897
+against 743 on `zebra2-hints` — which moved that line on **43** corpus
+cells. That line reports a property of the *knowledge base*: how many join keys its
 facts produce. How an engine chooses to index those facts to answer a query
 faster is not what a reader of the snapshot is being told, so `index_sizes`
 counts the `DIRECT` postings only and says why in the code.
@@ -1672,8 +1412,8 @@ Flat past 2048, so 256 bytes a layer — 4 % of the ~6 KB a fork owns, and
 `Layer::footprint` counts it so that number stays honest. `facts_with` is
 **10.1 %** after. A filter can only skip a layer that *provably* lacks the key,
 and the failure mode that would matter — a stale filter silently dropping
-matches — is guarded by a `debug_assert` in `facts_with`, by the differential
-test, and by T2.
+matches — is guarded by a `debug_assert` in `facts_with` and by the
+differential test.
 
 ### The bench set
 
@@ -1735,8 +1475,8 @@ unchanged at 17.5 MB.
 
 ### The gate: the beta-memory is **not** built, and here is the number
 
-The stage ships a beta-memory only if it is T2-green **and** measurably better
-on both puzzles, and it says in as many words that failing that test and
+The stage ships a beta-memory only if it changes no firing **and** is
+measurably better on both puzzles, and it says in as many words that failing that test and
 recording why "is a successful outcome for this stage". It fails it, and the
 reason is what the two changes above did to the thing a beta-memory
 materialises.
@@ -1829,25 +1569,16 @@ re-measurement of `322dd63` rather than S1a.6.3's recorded value — the machine
 was busier when this stage started than when the last one ended, and Rule 6
 exists because that is normal.
 
-| workload | target | at S1a.6.3 (re-run) | **at S1a.6.4** | vs PyPy ¤ |
-|---|---:|---:|---:|---:|
-| `solve zebra2.ein -e` | ≤ 200 ms | 42.7 ms | **41.7 ms** ✅ | **118×** |
-| `solve zebra.ein -e` | ≤ 400 ms | 78.1 ms | **77.1 ms** ✅ | **114×** |
-| `solve zebra2.ein` | — | 10.9 ms | **10.3 ms** | 246× |
-| `solve zebra.ein` | — | 15.1 ms | **15.1 ms** | 202× |
-| parse + load `zebra2` | ≤ 15 ms | 0.90 ms | **0.89 ms** ✅ | 483× |
-| the acceptance gate (3 fixtures) | ≤ 5 s | 0.199 s | **0.196 s** ✅ | **184×** |
+| workload | target | at S1a.6.3 (re-run) | **at S1a.6.4** |
+|---|---:|---:|---:|
+| `solve zebra2.ein -e` | ≤ 200 ms | 42.7 ms | **41.7 ms** ✅ |
+| `solve zebra.ein -e` | ≤ 400 ms | 78.1 ms | **77.1 ms** ✅ |
+| `solve zebra2.ein` | — | 10.9 ms | **10.3 ms** |
+| `solve zebra.ein` | — | 15.1 ms | **15.1 ms** |
+| parse + load `zebra2` | ≤ 15 ms | 0.90 ms | **0.89 ms** ✅ |
+| the acceptance gate (3 fixtures) | ≤ 5 s | 0.199 s | **0.196 s** ✅ |
 
-¤ **Against [§1](#1-end-to-end-process-against-process)'s PyPy column**
-(4 938.0 / 2 529.9 / 8 787.4 / 3 045.1 ms), which is what §10–§14 divide by.
-The [README's target table](../README.md#p1a6--performance) carries a *different* PyPy
-reading from the same stage — 4.53 s and 8.33 s — so its ratio column reads
-~5 % lower for the same ein.rs number (109× and 108× for this row). Both are
-real and neither is wrong; they are two runs of the same thing, and the point
-of naming the denominator is that a reader can tell which is which.
-
-The acceptance row is a **fourth** reading of a quantity §6 already says has
-three, and it is smaller than S1a.6.3's 0.28 s because it is measured
+The acceptance row is smaller than S1a.6.3's 0.28 s because it is measured
 differently: the three `ein-infer` acceptance tests run from their own binary,
 unpinned, best of three, at *both* ends of this stage's own A/B (0.199 →
 0.196 s). The delta is what the stage claims; the absolute is what the method
@@ -1972,7 +1703,7 @@ the stage removed allocations, not state. Process peak RSS 17.3 MB.
 |---|---|
 | [T1a.6.4.1](../README.md#s1a64--hypgen-and-lattice-hot-paths) intern-on-probe | **not built — the premise is not true here.** ein.rs's row key *is* the identity, and `FactStore::intern` is a probe plus a push on a miss, so "probe first, materialise on survival" is one hash lookup either way. It is **0.69 %** of the blind-mode `features/05 -e` and 0.39 % of `zebra2 -e`, over 125–336 raw candidates per pass rather than the ~18 k design/07 §2 estimated. The `seen_in_call` table the task asks for is already `FxHashSet<FactId>` over the interned id, which is the open-addressed row-key table by another name |
 | T1a.6.4.4 no-good bitmask | **not built, measured in its own regime.** design/07 §4 names `enable_singleton_writeback=false` on zebra2 as where clause checking dominates. It does explode as predicted — **3 831 enterings, 354 clauses, 2.38 s** — and in that run the whole apriori/no-good machinery is **0.3 %**: `filter_candidate` 0.3 %, `nogood` and `is_subset` 0.0 %, the `contradiction` bucket 0.1 % self. `admit_from_boundary` is 60.2 % of it. A `u64` mask would replace an instruction that is not being executed |
-| T1a.6.4.5 incremental alive | **not built, and the profile says why.** The premise is that `_compute_alive` re-runs the generator per layer — true, and `hypgen_call − hypgen_complete` is **6** on every workload measured, against 384 167 `complete()` calls on `features/05 -e`. The `alive/closed` bucket is 0.5–2.6 % self and most of that is `solve.rs`'s own loop. The task's own gate ("only if the profile still shows `_compute_alive`") answers itself |
+| T1a.6.4.5 incremental alive | **not built, and the profile says why.** The premise is that `compute_alive` re-runs the generator per layer — true, and `hypgen_call − hypgen_complete` is **6** on every workload measured, against 384 167 `complete()` calls on `features/05 -e`. The `alive/closed` bucket is 0.5–2.6 % self and most of that is `solve.rs`'s own loop. The task's own gate ("only if the profile still shows `compute_alive`") answers itself |
 | T1a.6.4.6 `complete()` fast path | **recorded as wrong, and now also as unnecessary.** Reordering the enumeration to find a survivor sooner would change which kill-cache writes the lookahead makes along the way — root-visible facts. The stage made the per-candidate path cheaper instead, and the *setup* it removed was 71 % of the call |
 
 ### Where `zebra -e` stands, and what it chooses next
@@ -2040,25 +1771,16 @@ than two readings taken on different days. The `parse + load` row is
 binary, each measured the way [§15](#15-s1a64--the-per-call-setup-and-the-enumerator-the-targets-never-run)
 measured it.
 
-| workload | target | at S1a.6.4 | **at S1a.6.5** | vs PyPy ¤ |
-|---|---:|---:|---:|---:|
-| `solve zebra2.ein -e` | ≤ 200 ms | 41.4 ms | **40.8 ms** ✅ | **121×** |
-| `solve zebra.ein -e` | ≤ 400 ms | 77.0 ms | **76.9 ms** ✅ | **114×** |
-| `solve zebra2.ein` | — | 10.3 ms | **10.0 ms** | 253× |
-| `solve zebra.ein` | — | 14.7 ms | **14.7 ms** | 207× |
-| parse + load `zebra2` | ≤ 15 ms | 0.89 ms | **0.66 ms** ✅ | 648× ⁂ |
-| the acceptance gate (3 fixtures) | ≤ 5 s | 0.196 s | **0.196 s** ✅ | 184× |
-| `saturate zebra2` | — | 3.9 ms | **3.6 ms** | — |
-| `render rules zebra2` | — | 1.6 ms | **1.5 ms** | — |
-
-¤ Against [§1](#1-end-to-end-process-against-process)'s PyPy column, as
-§10–§15 divide by; the [README's table](../README.md#p1a6--performance) carries a second
-reading of the same interpreter and its ratios run ~5 % lower.
-
-⁂ Against the README's 0.43 s, which is [§1](#where-the-milestones-denominators-moved)'s
-account of a planned denominator that is not reproducible from its own
-components — the target is met on any reading, and a whole `saturate zebra2`
-*process* is now 3.6 ms.
+| workload | target | at S1a.6.4 | **at S1a.6.5** |
+|---|---:|---:|---:|
+| `solve zebra2.ein -e` | ≤ 200 ms | 41.4 ms | **40.8 ms** ✅ |
+| `solve zebra.ein -e` | ≤ 400 ms | 77.0 ms | **76.9 ms** ✅ |
+| `solve zebra2.ein` | — | 10.3 ms | **10.0 ms** |
+| `solve zebra.ein` | — | 14.7 ms | **14.7 ms** |
+| parse + load `zebra2` | ≤ 15 ms | 0.89 ms | **0.66 ms** ✅ |
+| the acceptance gate (3 fixtures) | ≤ 5 s | 0.196 s | **0.196 s** ✅ |
+| `saturate zebra2` | — | 3.9 ms | **3.6 ms** |
+| `render rules zebra2` | — | 1.6 ms | **1.5 ms** |
 
 The stage takes **0.23 ms off every invocation**, and the table is what that
 looks like from both ends: 6–8 % of a process that only loads and saturates,
@@ -2182,11 +1904,11 @@ transferable finding: **at this scale the growth is cheaper than the estimate.**
 `utils/e2e_baseline.py --startup`, the third row set after the milestone six
 and S1a.6.4's `--blind`. Best of 15 processes:
 
-| cell | ein.rs | ein.py CPython | ein.py PyPy |
-|---|---:|---:|---:|
-| `--help` | **1.02 ms** | 97.6 ms | 442.1 ms |
-| `solve friends` (651 B, one rule, one fact) | **1.15 ms** | 132.3 ms | 542.4 ms |
-| `saturate friends` | **1.20 ms** | 118.6 ms | 522.1 ms |
+| cell | ein.rs |
+|---|---:|
+| `--help` | **1.02 ms** |
+| `solve friends` (651 B, one rule, one fact) | **1.15 ms** |
+| `saturate friends` | **1.20 ms** |
 
 `/bin/true` through the same timing loop is **0.23 ms**, so 0.8 ms is ein's
 own. The binary is 3 581 440 B, four shared libraries (`libstdc++` and
@@ -2198,8 +1920,7 @@ build does `--help` in 0.43 ms and `solve friends` in 0.60 ms. That is
 `render rules zebra2`" measured on a workload that does no engine work at all,
 so it is the arena set-up and nothing else. It does not change the decision —
 8–16 % of a `solve` repays it inside the first 5 ms of engine work — but a
-corpus cell that does nothing pays it, and the harness runs 473 of those per
-tier.
+corpus cell that does nothing pays it.
 
 ### Reproducing this section
 
@@ -2353,28 +2074,21 @@ Best-of-7 processes, both columns measured in the same run — the "before" is
 the `S1a.6.11` binary re-run today, not a recorded value, which is what makes
 the deltas subtraction rather than arithmetic across two afternoons.
 
-| workload | target | at S1a.6.11 | **at S1a.6.12** | vs PyPy ¤ |
-|---|---:|---:|---:|---:|
-| `solve zebra2.ein -e` | ≤ 200 ms | 41.1 ms | **28.9 ms** ✅ | **157×** |
-| `solve zebra.ein -e` | ≤ 400 ms | 76.7 ms | **47.5 ms** ✅ | **175×** |
-| `solve zebra2.ein` | — | 10.0 ms | **7.9 ms** | 320× ¶ |
-| `solve zebra.ein` | — | 14.8 ms | **9.3 ms** | 327× ¶ |
-| parse + load `zebra2` | ≤ 15 ms | 0.66 ms | **0.67 ms** ✅ | 642× |
-| the acceptance gate (3 fixtures) | ≤ 5 s | 0.196 s | **0.127 s** ✅ | **283×** |
+| workload | target | at S1a.6.11 | **at S1a.6.12** |
+|---|---:|---:|---:|
+| `solve zebra2.ein -e` | ≤ 200 ms | 41.1 ms | **28.9 ms** ✅ |
+| `solve zebra.ein -e` | ≤ 400 ms | 76.7 ms | **47.5 ms** ✅ |
+| `solve zebra2.ein` | — | 10.0 ms | **7.9 ms** |
+| `solve zebra.ein` | — | 14.8 ms | **9.3 ms** |
+| parse + load `zebra2` | ≤ 15 ms | 0.66 ms | **0.67 ms** ✅ |
+| the acceptance gate (3 fixtures) | ≤ 5 s | 0.196 s | **0.127 s** ✅ |
 
-¤ Against the [README's PyPy column](../README.md#p1a6--performance) — 4.53 s, 8.33 s,
-0.43 s, 36.0 s — the same denominator that table uses. The parse + load row is
-the `load/zebra2` criterion bench and this stage does not touch the frontend:
-664.1 → 672.8 µs is drift between two `cargo bench` runs, and the four frontend
-rows of the bench set below show the same ±3 % in both directions.
+The parse + load row is the `load/zebra2` criterion bench and this stage does
+not touch the frontend: 664.1 → 672.8 µs is drift between two `cargo bench`
+runs, and the four frontend rows of the bench set below show the same ±3 % in
+both directions.
 
-¶ The two rows the README's table does not carry, against
-[§1](#1-end-to-end-process-against-process)'s PyPy readings instead (2 529.9 ms
-and 3 045.1 ms). Naming the denominator is the point: the two columns are two
-runs of the same interpreter and differ by ~5 %.
-
-The acceptance row is the fifth recorded reading of a quantity [§6](#6-cargo-bench--variance-and-the-acceptance-gate)
-says has three, measured the way [§15](#15-s1a64--the-per-call-setup-and-the-enumerator-the-targets-never-run)
+The acceptance row is measured the way [§15](#15-s1a64--the-per-call-setup-and-the-enumerator-the-targets-never-run)
 measures it — the three `ein-infer` acceptance tests from their own binary,
 unpinned, best of three (0.135 / 0.131 / **0.127** s).
 
@@ -2549,8 +2263,8 @@ at process scale.
 ### Where `zebra -e` stands
 
 47.5 ms, from 76.7 at the start of the stage and 585.8 at the start of the
-phase — **12.3×** across P1a.6, and 175× the PyPy column. The profile that
-chooses what comes next no longer has a block above 8 %:
+phase — **12.3×** across P1a.6. The profile that chooses what comes next no
+longer has a block above 8 %:
 
 | block | self |
 |---|---:|
@@ -2593,7 +2307,7 @@ utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml
 python3 utils/criterion_table.py --max-rsd 3 --json ein.rs/bench-out/criterion.json
 ```
 
-## 19. S1a.6.7 and S1a.6.6 — the lever matrix in two engines, and the fuzzer
+## 19. S1a.6.7 and S1a.6.6 — the lever matrix, and the fuzzer
 
 **2026-08-20, `master` @ `62381ba`, same machine.** The phase's last two
 stages ship **no engine change between them** — one re-measures, one
@@ -2619,15 +2333,11 @@ construction: nothing between `6e077b3` and here touches the engine.
 
 ### What the lever matrix says now — and what it says about itself
 
-[`utils/feature_matrix.py`](../../../../utils/feature_matrix.py) drove ein.py
-in-process from S1.20.I3 until this stage; it now drives **both engines as
-processes**, delivers each lever through a generated `(config …)` block (five
-of the ten have no CLI flag), and reads the verdict and twelve counters back
-out of `--json-summary` — the T0/T1 surface itself. **Every cell of every
-matrix agrees between the engines** on the verdict, `k`, the goal bindings and
-those counters: 22 cells on `zebra2`, 22 on `zebra`, 22 on `lattice/02`, 6 on
-`branching/06`, with one exemption where ein.py stops on its 90 s budget and
-ein.rs does not.
+[`utils/feature_matrix.py`](../../../../utils/feature_matrix.py) drives the
+engine **as a process**, delivers each lever through a generated `(config …)`
+block (five of the ten have no CLI flag), and reads the verdict and twelve
+counters back out of `--json-summary`: 22 cells on `zebra2`, 22 on `zebra`,
+22 on `lattice/02`, 6 on `branching/06`.
 
 Two method changes were forced by the first run, and the second is the finding:
 
@@ -2636,38 +2346,31 @@ Two method changes were forced by the first run, and the second is the finding:
 | order | one cell at a time, all its runs | **round-robin over the cells** |
 | resolution | asserted | a **`control` cell** — byte-identical to `baseline`, measured last |
 
-Measured cell-by-cell, PyPy's baseline — the divisor of every ratio in the
-table — runs first and reads ~20 % fast, which came out as a uniform 1.2×
-tax on eight levers that ein.rs measured at exactly 1.0× with identical
-entering counts. And with round-robin in place, the control still reads:
+With round-robin in place, the control reads:
 
-| | ein.py (PyPy) | ein.rs |
-|---|---:|---:|
-| `zebra2` fast | 1.0× | 1.0× |
-| `zebra2` exhaustive | **1.2×** | **1.0×** |
-| `zebra` fast | 0.9× | 1.1× ‖ |
-| `zebra` exhaustive | 1.0× | 1.0× |
+| | ratio |
+|---|---:|
+| `zebra2` fast | 1.0× |
+| `zebra2` exhaustive | **1.0×** |
+| `zebra` fast | 1.1× ‖ |
+| `zebra` exhaustive | 1.0× |
 
 ‖ 8 ms against 7 — the resolution of an integer-millisecond column, not drift.
 
-**So the ein.py column cannot resolve anything below ~1.2×, and the ein.rs
-column resolves 1.0× exactly.** Four rows the 2026-08-17 table reported
-between 0.9× and 1.1× were never measurements. The two levers it named
-survive, and one of them grew:
+**So the matrix resolves 1.0× exactly**, and the levers it names are these:
 
-| lever off | `zebra2 -e` ein.py | ein.rs | `zebra -e` ein.py | ein.rs |
-|---|---:|---:|---:|---:|
-| `enable_singleton_writeback` | **∞** (3 358 @ 90 s) | **56.6×** (3 831 enterings) | **∞** (1 277 @ 90 s) | **43.8×** (3 834) |
-| `enable_fail_fast_fork` | **2.4×** | **7.1×** | **2.9×** | **7.0×** |
-| `lattice_order="score-sum"` | 1.0× (134) | 1.2× (134) | **0.6×** (62) | **0.6×** (62) |
-| `enable_pre_branch_lookahead` | 1.0× (111) | 1.0× (111) | 1.1× (134) | 1.1× (134) |
-| the other five | 1.0–1.1× | **1.0×** | 1.0× | **1.0×** |
+| lever off | `zebra2 -e` | `zebra -e` |
+|---|---:|---:|
+| `enable_singleton_writeback` | **56.6×** (3 831 enterings) | **43.8×** (3 834) |
+| `enable_fail_fast_fork` | **7.1×** | **7.0×** |
+| `lattice_order="score-sum"` | 1.2× (134) | **0.6×** (62) |
+| `enable_pre_branch_lookahead` | 1.0× (111) | 1.1× (134) |
+| the other five | **1.0×** | **1.0×** |
 
 `enable_fail_fast_fork` is the phase's own result seen from the other side:
 what it removes is a fixed quantity of dead-fork saturation, everything around
-it shrank, so its ratio **rose** from 1.9× (ein.py, 2026-08-17) to 7.1×
-(ein.rs, today) — **86 %** of an exhaustive `zebra2` without it is saturating
-forks already known to be dead.
+it shrank, so its ratio is **7.1×** — **86 %** of an exhaustive `zebra2`
+without it is saturating forks already known to be dead.
 
 ### The lever that is not a prune
 
@@ -2681,77 +2384,42 @@ the answer is not a ratio:
 | `branching/06 -e` | Ambiguity k=22, 5 173, 197 ms | **Contradiction k=0**, 11 501, 890 ms |
 | `lattice/02 -e` | Ambiguity k=3, 6 | **Contradiction k=0**, 7 |
 
-Both engines, to the digit. `complete(kb)` is "the generator proposes nothing
-undecided" and the generator's candidates are **lookahead-filtered**, so a
-candidate the one-step simulation kills is *decided* with the lever on and
-*open* with it off. With it off, `branching/06` reports `Contradiction` on a
-puzzle with 22 models. It is not a port bug and not a prune; it is a
-definition, and it is parked as [F4 Q40](../../../../plans/followups/f4_cross_cutting.md).
-Not the kill *cache*: with `-K` the verdict is unchanged (5 192 enterings
-against 5 173).
+`complete(kb)` is "the generator proposes nothing undecided" and the
+generator's candidates are **lookahead-filtered**, so a candidate the
+one-step simulation kills is *decided* with the lever on and *open* with it
+off. With it off, `branching/06` reports `Contradiction` on a puzzle with 22
+models. It is not a bug and not a prune; it is a definition, and it is parked
+as [F4 Q40](../../../../plans/followups/f4_cross_cutting.md). Not the kill
+*cache*: with `-K` the verdict is unchanged (5 192 enterings against 5 173).
 
-`lattice_order="score-sum"` at **0.6× on `zebra` and 1.2× on `zebra2`**, in
-both engines, is a candidate default change recorded with its own
-counter-example and left as a decision — Rule "resist changing a default in
-the same commit as the measurement", and here in the same *stage*.
+`lattice_order="score-sum"` at **0.6× on `zebra` and 1.2× on `zebra2`** is a
+candidate default change recorded with its own counter-example and left as a
+decision — Rule "resist changing a default in the same commit as the
+measurement", and here in the same *stage*.
 
 ### The fuzzer, and the four things it found
 
 S1a.6.6 ran for the first time on the same day. One session of **21.3
 minutes, 12 080 cases** at 20 jobs — 567–700 cases/min, **85.2 %** of them
 loading (the stage asked for ≥ 80 %), the rest rejected by the frontend, which
-is material rather than waste: what two engines must agree on there is the
-*message*. Eight cells reported, in three classes and no fourth.
+is material rather than waste: what is checked there is the *message*.
 
-The first ten minutes produced 13 reported cells, and the triage is the point:
+| what | outcome |
+|---|---|
+| **an integer goal binding** | `--json-summary` wrote `"y": "8"` for `8`. Fixed; `Json::BigInt` carries the IR's unbounded `INT` |
+| **an unbound `:assert` variable** | the error line printed its message bare, where the CLI names the class and quotes the message (`KeyError: "unbound var ?v1 in :assert — …"`). Fixed |
+| **`(query :goal (?R Rex Animal))`** | a goal whose relation is a variable, two lines, ran to completion. Fixed: refused when a solution block is rendered |
+| **two `Fact` arguments in one `alive` slot** | not a bug — layer 1 sorts `alive` by the total order `Int < Sym < Fact` and answers — but a shape no fixture covered, reached by one `(hrule … :assert (not …))` with no mixed types. A fixture now: `examples/ein-bugs/nested-fact-hypothesis.ein` |
 
-| what | how many | outcome |
-|---|---:|---|
-| **an integer goal binding** | 4 | **T0 bug in ein.rs** — `"y": "8"` where ein.py writes `8`. Fixed; `Json::BigInt` carries the IR's unbounded `INT` |
-| **a nested-fact goal binding** | 3 | **bug in ein.py** — `json.dumps` raised and wrote no summary. Fixed; renders the s-expression, as ein.rs already did |
-| **D2's second shape** | 5 | `sorted(alive)` over two `Fact` args. **No mixed types needed** — one `(hrule … :assert (not …))`. Accepted, with a fixture and a re-stated ledger entry |
-| **a crash-parity cell** | 1 | `(?R ?x)` unbound: identical class, identical exit code, only ein.py's traceback wrapper. **Passes** — a corpus entry, not a divergence |
+The third is also where the phase's own gate earned its keep. The first fix
+checked the goal in the CLI, before the verdict was known: a contradictory
+puzzle with the same goal renders no solution block, so it exits 0, and the
+eager check made it exit 1. A renderer-level test reported it within the
+hour, and both arms are fixtures now (`query-goal-free-head.ein`,
+`…-unsat.ein`).
 
-Two more bugs landed in the same session and are worth the same table: an
-unbound `:assert` variable ended ein.py's traceback with `KeyError: "…"` —
-whose `str` is the *repr* of its key — where ein.rs printed the message bare
-(the case [Q-M1a.14](../open_questions.md#q-m1a14--crash-parity) named in its
-first paragraph and nothing had ever reached), and `(query :goal (?R Rex
-Animal))` — two lines — is a program ein.py rejects **inside its table
-renderer** and ein.rs ran to completion.
-
-The second of those is also where the phase's own gate earned its keep. The
-first fix checked the goal in the CLI, before the verdict was known, and
-turned one divergence into another: ein.py raises only when it *renders a
-solution block*, so a contradictory puzzle with the same broken goal exits 0
-on both sides and the eager check made ein.rs exit 1. `trace_parity` — which
-runs the renderer, not the CLI — reported it within the hour, and both arms
-are fixtures now (`query-goal-free-head.ein`, `…-unsat.ein`).
-
-Two of those are genuine parity bugs in a surface **five phases of byte parity
-had signed off**, and the reason both hid is the same: `stdout` is identical
-on all of them, and no corpus puzzle binds a query variable to anything but a
-symbol. That is precisely the gap
-[design/01 §7](../design/01_parity_contract.md) predicted a fuzzer would
-cover.
-
-Three fuzzer bugs were found by the fuzzer's own controls, and they are worth
-recording because each is a way to *look* successful:
-
-1. **A canary that itself diverges** made every minimisation shrink to the
-   first form that parses — `still_diverges` accepted any reported cell, not
-   the case's own. Now it checks the path, and a diverging canary stops the
-   run.
-2. **A crash reported at T3 is not a finding.** Judged in the `crash-parity`
-   group — exit code + exception class — the `unbound-relation-head` shape
-   passes, and it was being re-found on every batch.
-3. **A generator that produces the ledger's own entry** reports the known
-   answer forever: four findings in five were D2 until `(hrule …)` stopped
-   getting negative heads and int arguments, and the two D2 fixtures left the
-   mutation seed set.
-
-After all three, the same 120 cases produce **0 findings and 4 crash-parity
-candidates**.
+The first hid because `stdout` is identical either way, and no corpus puzzle
+binds a query variable to anything but a symbol.
 
 ### D1 and D2, re-priced at the close
 
@@ -2774,64 +2442,39 @@ functions are about a fifth of a 47 ms solve, where the phase began at 66.9 %.
 
 ### The gate, at the close
 
-`./run_tests.sh` — **1 516 pytest + 21 acceptance + the whole ein.rs
-workspace, green** — and the corpus-wide parity run:
-
-```text
-group               same    DIFF    skip
-crash-parity          11       2       0
-load-negative         87       0       0
-parse-negative        12       0       0
-positive             358       0       0
-stdlib                28       0       0
-total                496       2       0     tier T3, 179.4s of engine time
-```
-
-The two are D2's two shapes. Seven of those cells are new this phase and all
-seven are the fuzzer's: two regressions for the bugs it found, four
-`crash-parity` entries, and one that exists only to pin an asymmetry — the
-`Contradiction` arm of `query-goal-free-head`, which exits **0** where its
-sibling exits 1 because no solution block is rendered and so the goal is never
-compiled. That distinction is not decoration: the first fix for the sibling
-missed it and traded one divergence for another, and `trace_parity` — which
-runs the renderer rather than the binary — caught it inside the hour.
+`./run_tests.sh` — the whole ein.rs workspace, green. Seven corpus entries
+are new this phase and all seven are the fuzzer's, one of which exists only to
+pin an asymmetry — the `Contradiction` arm of `query-goal-free-head`, which
+exits **0** where its sibling exits 1 because no solution block is rendered
+and so the goal is never compiled.
 
 ### Reproducing this section
 
 ```sh
 utils/bench_env.sh python3 utils/e2e_baseline.py --runs 7
-utils/bench_env.sh python3 utils/feature_matrix.py --runs 5 \
-    --python .venv-pypy/bin/python
+utils/bench_env.sh python3 utils/feature_matrix.py --runs 5
 utils/bench_env.sh python3 utils/feature_matrix.py --runs 3 \
-    --python .venv-pypy/bin/python --puzzle examples/zebra.ein
-utils/bench_env.sh python3 utils/feature_matrix.py --runs 3 \
-    --python .venv-pypy/bin/python --cells lookahead \
+    --puzzle examples/zebra.ein
+utils/bench_env.sh python3 utils/feature_matrix.py --runs 3 --cells lookahead \
     --puzzle examples/branching/06_lookahead_on.ein
 utils/bench_env.sh python3 utils/feature_matrix.py --runs 5 \
-    --python .venv-pypy/bin/python \
     --puzzle examples/lattice/02_genuine_3set_death.ein
 utils/bench_env.sh cargo run --release --manifest-path ein.rs/Cargo.toml \
     --features counters -p ein-infer --example counter_cost
-# the fuzzer: a session, and its own negative control
-python3 utils/fuzz_ein.py --minutes 150 --batch 80 --jobs 20
-python3 utils/fuzz_ein.py --iters 2 --batch 2 --tier T2 --canary "" \
-    --impl-b "python3 utils/mutant_ein.py ein.rs/target/release/ein"
+# the fuzzer
+python3 utils/fuzz_engine.py --minutes 150 --batch 80 --jobs 20
 ```
 
 ## Reproducing all of it
 
 Every line from the repo root, every measurement through the fingerprint.
-**This block is maintained**; the per-section ones above are records. What it
-cannot reproduce is listed in the note at the top of the file — the CPython and
-PyPy columns and the four parity tiers, whose instruments left with the second
-engine at [P1a.10](../README.md#p1a10--one-implementation).
+**This block is maintained**; the per-section ones above are records.
 
 ```sh
 utils/bench_env.sh --report                    # the machine state, nothing else
 mkdir -p ein.rs/bench-out                      # git-ignored artefact root
 
-# §1 processes. §2's Python halves are frozen: `utils/bench_baseline.py` is
-# gone and `cargo bench` below is the whole in-process set.
+# §1 processes
 utils/bench_env.sh python3 utils/e2e_baseline.py --json ein.rs/bench-out/e2e.json
 
 # §3 attribution (add `--callers SUBSTR` for a caller breakdown)
@@ -2839,8 +2482,7 @@ utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 10 \
     --cum-of ein_infer::compile --json ein.rs/bench-out/prof-zebra2-e.json \
     solve examples/zebra2.ein -e
 
-# §4 work counters. The ein.py column was `utils/count_work.py`, which wrapped
-# module attributes on an engine that is gone; this half survives.
+# §4 work counters
 cargo run --release --manifest-path ein.rs/Cargo.toml --features counters \
     -p ein-infer --example counter_cost
 
@@ -2851,8 +2493,8 @@ utils/bench_env.sh python3 utils/e2e_baseline.py --blind --runs 5
 
 # §19 the lever matrix, with the control row that prices the method
 utils/bench_env.sh python3 utils/feature_matrix.py --runs 5
-# §19 the fuzzer — a session over the properties one engine can check
-python3 utils/fuzz_ein.py --minutes 150 --batch 80
+# §19 the fuzzer
+python3 utils/fuzz_engine.py --minutes 150 --batch 80
 
 # §17 / §18 the boundary and the snapshot — the two cones, and what they do
 utils/bench_env.sh python3 utils/profile_ein_rs.py --repeat 3 \
@@ -2883,13 +2525,8 @@ python3 utils/fork_delta_verify.py --json ein.rs/bench-out/fork-delta.json
 utils/bench_env.sh cargo bench --manifest-path ein.rs/Cargo.toml
 python3 utils/criterion_table.py --max-rsd 3 --json ein.rs/bench-out/criterion.json
 
-# §12 the parity contract. The two tiers and the PYTHONHASHSEED sweep needed
-# two operands and have none; what asks their questions of the engine that is
-# left is `cargo test`, and the successors are named in the ledger:
-#   the tiers            -> tests/golden/corpus_exits.txt + corpus_shapes.md5
-#   the determinism sweep -> EIN_ID_SEEDS=8 cargo test -p ein-render \
-#                                --test id_order_invariance
-#   the mutant control    -> cargo test -p ein-infer --test event_cut_control
+# the determinism sweep: every corpus file, re-run with its ids assigned in
+# shuffled orders, has to answer the same way
 EIN_ID_SEEDS=8 cargo test --manifest-path ein.rs/Cargo.toml \
     -p ein-render --test id_order_invariance
 

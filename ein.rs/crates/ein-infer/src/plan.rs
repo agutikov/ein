@@ -1,11 +1,8 @@
 //! The compiled form of a `(rule, activator)` pair — plan bytecode.
 //!
-//! ein.py's `JoinPlan` (`ein/inference/compile.py`) was a
-//! frozen dataclass holding tuples of `Scan` / `Join` / `Guard` /
-//! `AbsentGuard` opcodes whose slots are **raw IR nodes**, dispatched by
-//! `isinstance` at every unification. This is the same shape with the encoding
-//! changed ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §2):
-//! flat arenas indexed by [`Span`], a slot that is one of four `u32`-sized
+//! A plan is a program of `Scan` / `Join` / `Guard` / `AbsentGuard` opcodes,
+//! encoded ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §2)
+//! as flat arenas indexed by [`Span`], a slot that is one of four `u32`-sized
 //! things, and every variable resolved to a **register** at compile time.
 //!
 //! ### Register spaces
@@ -28,12 +25,12 @@
 //! guard's scope** — and a variable outside that scope must be free even when
 //! the parent has since bound it. [`NafGuard::scope_of`] is that projection,
 //! resolved to register pairs. Guards nested inside a guard share their
-//! enclosing sub-plan's space, because `_run_steps` passes them the same
-//! binding dict.
+//! enclosing sub-plan's space, because they are evaluated in the same
+//! environment.
 //!
 //! ### Registers are not an order
 //!
-//! `Provenance.bindings` is CPython dict-insertion order, i.e. the order the
+//! `Provenance.bindings` is in binding order, i.e. the order the
 //! matcher first bound each variable — which the matcher's trail records
 //! directly. Register *numbers* are therefore free to be assigned in whatever
 //! order the compiler encounters them, and nothing observable reads them.
@@ -75,8 +72,8 @@ pub type Reg = u16;
 /// count has to be bounded somewhere. 256 distinct variables in one `:match`
 /// is two orders of magnitude past anything in the corpus (the widest rule in
 /// `stdlib/` binds seven), and overflowing it is a [`crate::CompileError`] rather
-/// than a panic — ein.py has no such limit, so this is the port's one
-/// compile-time bound and it says so out loud.
+/// than a panic — this is the engine's one compile-time bound and it says so
+/// out loud.
 pub const MAX_REGS: usize = 256;
 
 /// A compiled argument position.
@@ -88,22 +85,21 @@ pub enum Slot {
     Const(Value),
     /// A sub-pattern matched against a `Fact`-valued argument (Q40 option A).
     Nested { rel: Symbol, slots: Span },
-    /// An IR node `_slot` returned unchanged — a `String`, a `Wildcard`, a
+    /// An IR node the compiler's `slot` returned unchanged — a `String`, a `Wildcard`, a
     /// `Range`, a `KwPair`, or an `SForm` whose head is neither an atom nor a
     /// bound parameter.
     ///
-    /// ein.py's unifier falls through to `slot == arg`, and no IR node is ever
-    /// equal to a `str` / `int` / `Fact`, so an opaque slot **never matches**.
-    /// It is kept (rather than collapsed to a "never" marker) because it is
-    /// what the plan-shape diff prints, and a port that silently agreed on
-    /// "never" would agree for the wrong reason.
+    /// The unifier compares it to the argument by equality, and no IR node is
+    /// ever equal to a name, an integer or a `Fact`, so an opaque slot **never
+    /// matches**. It is kept (rather than collapsed to a "never" marker)
+    /// because it is what the plan-shape diff prints.
     Opaque(NodeId),
 }
 
 /// One step of a disjunct's positive program.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Step {
-    /// A relation lookup — ein.py's `Scan` (no shared variables) or `Join`.
+    /// A relation lookup — a `Scan` (no shared variables) or a `Join`.
     Rel(RelStep),
     /// A built-in predicate evaluated against the current bindings.
     Guard { pred: Pred, args: Span },
@@ -116,22 +112,23 @@ pub enum Step {
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct RelStep {
     /// `true` for a `Join`: some slot names a variable an earlier premise
-    /// already mentioned. Informational in ein.py too — the unifier treats
-    /// both identically — but it is in the compiled shape, so it is compared.
+    /// already mentioned. Informational — the unifier treats both
+    /// identically — but it is in the compiled shape, so the shape dump
+    /// prints it.
     pub join: bool,
     pub rel: Symbol,
     pub slots: Span,
     /// The ordered candidate probes for this step — see [`Probe`].
     pub probe: Span,
-    /// The shared variables, sorted by name. ein.py keeps a `frozenset`, whose
-    /// order is not reproducible; every reader of it sorts.
+    /// The shared variables, sorted by name — a set, stored in the one order
+    /// every reader of it wants.
     pub shared: Span,
 }
 
 /// A slot the participation index *could* be keyed on at this step.
 ///
-/// ein.py's `_candidates` walks `arg_slots` left to right and narrows on the
-/// first slot whose value is known, skipping two shapes: a `NestedPattern`
+/// The candidate scan walks the argument slots left to right and narrows on
+/// the first slot whose value is known, skipping two shapes: a nested pattern
 /// (never keyed) and a variable bound to a nested `Fact` (not keyed).
 ///
 /// The first skip is static and is applied here — an opaque or nested slot
@@ -150,7 +147,7 @@ pub struct RelStep {
 /// So the compile-time win is *narrowing the scan*, not eliminating it: the
 /// runtime walks this pre-filtered list — no type dispatch, no `arg_slots`
 /// re-walk — and takes the first entry that is a constant or a bound non-fact
-/// register. That is what `_candidates` computes, by construction.
+/// register. That is the left-to-right scan's answer, by construction.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Probe {
     /// The argument position this probe keys on.
@@ -176,12 +173,11 @@ pub enum ProbeSrc {
 
 /// A guard argument, pre-resolved against the register space.
 ///
-/// A `Guard`'s args are **raw IR nodes** in ein.py — `_compile_premise` emits
-/// `Guard(predicate, args=node.args)` without running `_slot` — so they
-/// resolve against the *runtime* environment, seeds included, rather than
-/// against compile-time substitution. That asymmetry is load-bearing: it is
-/// why `split_naf` seeds every guard's scope with the rule's parameters
-/// (`compile.split_naf`'s docstring), and getting it wrong makes an
+/// A `Guard`'s args are **raw IR nodes** — the compiler does not substitute
+/// them as it does a relation's slots — so they resolve against the
+/// *runtime* environment, seeds included, rather than against compile-time
+/// substitution. That asymmetry is load-bearing: it is why `split_naf` seeds
+/// every guard's scope with the rule's parameters, and getting it wrong makes an
 /// `(eq ?y ?PARAM)` inside an `(absent …)` resolve `?PARAM` to nothing.
 ///
 /// Resolving the node to a register *is* that runtime lookup, moved to
@@ -189,20 +185,19 @@ pub enum ProbeSrc {
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct GuardArg {
     pub kind: GuardArgKind,
-    /// The node it came from — what the plan-shape diff prints, because ein.py
-    /// stores the node itself.
+    /// The node it came from — what the plan-shape diff prints.
     pub node: NodeId,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum GuardArgKind {
-    /// A `Var`: its bound value, or "unbound" — which `resolve_leaf`'s lenient
-    /// policy renders as Python's `None`, equal only to another `None`.
+    /// A `Var`: its bound value, or "unbound" — which guard resolution's
+    /// lenient policy treats as a null, equal only to another unbound value.
     Reg(Reg),
     /// An `Atom` (resolving to its **name**) or an `Int` (to its value).
     Const(Value),
     /// Anything else — a `String`, a `Wildcard`, an `SForm` — which
-    /// `resolve_leaf` returns as-is, so it compares by IR-node equality.
+    /// guard resolution returns as-is, so it compares by IR-node equality.
     Node,
 }
 
@@ -232,12 +227,12 @@ pub struct NafGuard {
     /// `(and (Q ?x) (absent (P ?x)))`.
     pub scope_of: Box<[Option<Reg>]>,
     /// The variables bound before the guard, **seeded with the rule's
-    /// parameters** — ein.py's `NafGuard.scope`, sorted, kept for the shape
-    /// diff. `scope_of` is the executable form.
+    /// parameters**, sorted, kept for the shape diff. `scope_of` is the
+    /// executable form.
     pub scope: Box<[Symbol]>,
     /// Every relation the negative query reads, nested guards included —
-    /// the boundary's invalidation key. Sorted: ein.py keeps a `frozenset`
-    /// and both readers (`_watch_stamp`, the `park`/`retire` events) sort it.
+    /// the boundary's invalidation key. Sorted, because both readers (the
+    /// watch stamp, the `park`/`retire` events) want it sorted.
     pub watched: Box<[Symbol]>,
     /// The query is purely positive, so its match set only grows: once it
     /// finds a match it finds one forever, and a candidate it rejects is dead
@@ -257,11 +252,10 @@ pub struct Disjunct {
     /// A **structural** encoding of this disjunct's guards, into
     /// [`Plan::guard_keys`].
     ///
-    /// The saturator's `_seen` set is keyed on `(binding_key, guards)`, and in
-    /// ein.py `guards` is a tuple of frozen dataclasses — compared **by
-    /// value**. So two `(or …)` disjuncts whose guards happen to be the same
-    /// query really do collapse there, and a port that keyed on the disjunct
-    /// index would enqueue one candidate twice.
+    /// The saturator's `seen` set is keyed on `(binding_key, guards)`, and
+    /// the guards are compared **by value**. So two `(or …)` disjuncts whose
+    /// guards happen to be the same query really do collapse there, and a key
+    /// on the disjunct index would enqueue one candidate twice.
     ///
     /// Keying on the guards rather than on the disjunct is also the S1.22.0
     /// fix in the other direction: without it, two disjuncts with equal
@@ -344,8 +338,7 @@ impl Plan {
         &self.guard_keys[span.range()]
     }
 
-    /// The first conclusion template — ein.py's `assert_template`, the
-    /// back-compat reader for the single-assert consumers (closure/NAF
+    /// The first conclusion template — the back-compat reader for the single-assert consumers (closure/NAF
     /// analysis, hrule).
     pub fn assert_template(&self) -> Option<Slot> {
         self.asserts.first().copied()

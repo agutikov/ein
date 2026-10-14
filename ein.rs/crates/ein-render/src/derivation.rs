@@ -1,4 +1,4 @@
-//! The derivation DAG as a Graphviz `digraph` — `provenance.DerivationDAG.to_dot`.
+//! The derivation DAG as a Graphviz `digraph`.
 //!
 //! Source and hypothesis facts are ellipses labelled with what they rest on;
 //! rule-derived facts are boxes labelled with the rule. An AND/OR graph — one
@@ -11,8 +11,8 @@
 use crate::dot_util::{fact_key, hashed_id};
 use ein_core::{DerivationDag, FactId, Kb, ProvKind, Terms};
 
-/// Render `dag` — byte-identical to ein.py, which
-/// `ein-render/tests/golden/from_ein_py/dot/kb_provenance_dag.dot` pins.
+/// Render `dag` — the bytes `ein-render/tests/golden/dot/kb_provenance_dag.dot`
+/// pins.
 pub fn derivation_dag_to_dot(dag: &DerivationDag, kb: &Kb, terms: &Terms) -> String {
     let mut lines = vec![
         "digraph derivation {".to_string(),
@@ -59,8 +59,8 @@ pub fn fact_dot_id(terms: &Terms, f: FactId) -> String {
     hashed_id("f_", &fact_key(terms.sym(rel), &args), false)
 }
 
-/// `(rel arg arg)` — with the trailing space a nullary fact gets, because
-/// ein.py's f-string puts one there unconditionally.
+/// `(rel arg arg)` — with the trailing space a nullary fact gets, because the
+/// separator after the relation is written unconditionally.
 fn compact(terms: &Terms, f: FactId) -> String {
     let (rel, args) = terms.fact(f);
     let args: Vec<String> = args.iter().map(|a| terms.display(*a)).collect();
@@ -86,8 +86,8 @@ fn fact_dot_label(kb: &Kb, terms: &Terms, f: FactId) -> String {
     // `\n` here is the two-character DOT line break, not a newline.
     match prov.kind {
         ProvKind::Source => {
-            // `source or 'ontology'` — Python's `or`, so an empty string
-            // falls through to the default just as `None` does.
+            // An empty source falls through to the default just as an absent
+            // one does.
             let source = prov
                 .source
                 .map(|s| terms.sym(s))

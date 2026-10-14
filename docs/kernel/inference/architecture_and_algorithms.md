@@ -6,38 +6,17 @@
 > known algorithms** for each. It is a map from this puzzle reasoner to the
 > broader literature — written to orient optimization work
 > (P1.8a,
-> the [M1a Rust port](../../history/m1a_rust/README.md)) and to make the engine's
+> [M1a](../../history/m1a_rust/README.md)) and to make the engine's
 > design choices legible against the state of the art.
 >
 > Source of truth for the code:
 > [`ein-infer`](../../../ein.rs/crates/ein-infer/src/) (engine),
 > [`ein-core`](../../../ein.rs/crates/ein-core/src/) (data model), mapped
-> module by module in [`implementation.md`](implementation.md). For the
+> module by module in [`implementation.md`](implementation.md), which wins
+> wherever the two disagree. For the
 > *planned* how-to chapters (`01_matcher.md` … `05_trace.md`) see
 > [`README.md`](README.md); this file is the architecture + algorithms
 > overview those chapters sit under.
-
-> **Two vocabularies, and this is which is which** (M1e `CD-M8`). The page is
-> the *language-independent* view and it is written in the register the design
-> was worked out in, which is `ein.py`'s: `JoinPlan`, `World`, `_phase1_root`,
-> `kb/store`. Those are **as-was** names, kept because the arguments around
-> them are quoted in stage records that used them, and because renaming a
-> design discussion to match a port makes it neither. Everything else on the
-> page is as-built. The map, which is the thing that was missing —
-> [`implementation.md`](implementation.md) is the as-built reference and wins
-> wherever the two disagree:
->
-> | as-was (`ein.py`, used here) | as-built (`ein.rs`) |
-> |---|---|
-> | `JoinPlan`, `.naf_guards`, `.disjuncts()` | `Plan`, its per-`Disjunct` guard span, `Plan::guards` — [`plan.rs`](../../../ein.rs/crates/ein-infer/src/plan.rs) |
-> | `Scan` / `Join` / `Guard` opcodes | `Step::Rel` (a `RelStep` is both `Scan` and `Join`, split for the trace), `Step::Guard`, `Step::Absent` |
-> | `compile.split_naf` | the guard lift in [`compile.rs`](../../../ein.rs/crates/ein-infer/src/compile.rs); no function carries the name, the lift is inline |
-> | **`World`** | **gone.** The boundary asks the KB directly — `Matcher::holds`, `Saturator::first_failing`, `Saturator::negative_premises` — because the boundary phase is the only code that runs there and a read-only wrapper bought nothing the borrow checker was not already giving. Marked at [`implementation.md`](implementation.md)'s boundary row, which is the precedent this note generalises |
-> | `Engine.compile_all` / `.compile_for` | the same, `::`-spelled. **There is no `Engine::step`** — `CD-M1` |
-> | `_closure_step`, `_admit_from_boundary`, `_enqueue_binding`, `_enqueue_pass` | the same names on `Saturator`, without the leading underscore |
-> | `match.run_seeded_guarded` | `Matcher::run_seeded` |
-> | `_phase1_root` / `_phase2_layers` | `Run::phase1` / `Run::phase2` — [`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs) |
-> | module paths `kb/entities`, `kb/store`, `compile`, `world`, `monotonic/lattice` | `ein-core/entities.rs`, `ein-core/kb.rs`, `ein-infer/compile.rs`, — , `ein-infer/solve.rs` |
 
 ---
 
@@ -58,16 +37,16 @@ shapes of one question, all read off a single search (P1.7a):
 
 These are **three answers to one problem, not three problem statements**: the
 verdict is *read from* the result — the count `k` of distinct
-`state_key`-deduped solution nodes (`verdict_of`) — never *chosen* up front.
+`state_key`-deduped solution nodes (`Run::finalise`) — never *chosen* up front.
 There is **one** public entry, `solve()`; the stop policy (single /
-`stop_after=N` / exhaustive) only bounds how far the lattice is walked, and the
-optional `store_lattice` proof carries the gaps view (the full solution set)
+`stop_after: Some(N)` / exhaustive) only bounds how far the lattice is walked,
+and the optional `store_lattice` proof carries the gaps view (the full solution set)
 and the contradictions view (the refutation map) for whichever answer the
 puzzle yields. (An earlier design exposed sibling `gaps_solve` /
 `contradictions_solve` entries that hard-wired `Ambiguity` / `Contradiction` by
 *which function was called* — and so returned mutually contradictory verdicts
 on the same KB. They were removed 2026-06-16; this is the soundness story
-P1.7a's `verdict_of` always intended.)
+P1.7a's single verdict read-out always intended.)
 
 The engine is the confluence of **three classical paradigms**, and almost
 every component below is recognisable as a piece of one of them:
@@ -107,36 +86,36 @@ copy does.
   ein-lang (.ein)                       ── IR layer ──
         │  parse  (ein-ir: lex + recursive descent → Ast)
         ▼
-  KnowledgeBase  ───────────────────────────────────────────  ── data model ──
+  Kb  ──────────────────────────────────────────────────────  ── data model ──
    relations · rules · hrules · facts(ontology|fact|reasoning)
    + 7 reverse indexes  + EqClasses(union-find)  + provenance
         │
-        │  Engine.compile_all()   rule × activator → JoinPlan
+        │  Engine::compile_all()  rule × activator → Plan
         │                         positive Scan/Join/Guard steps
-        ▼                         + naf_guards (compile.split_naf)
+        ▼                         + NafGuards (lifted, compile.rs)
   ┌─────────────────────────────────────────────────────────┐
   │  DEDUCTIVE LAYER  (monotone, per KB)                      │   ── inference ──
-  │   Saturator.saturate()  ── two phases to fixpoint ──      │
+  │   Saturator::saturate() ── two phases to fixpoint ──      │
   │    CLOSURE  (purely positive — no negation consulted)     │
   │     match (multi-way join)  → fire  → append fact         │
   │     ▲ priority queue, delta-driven (semi-naive, S1.8.B2v) │
   │     │ a NAF-guarded match is PARKED, never enqueued       │
-  │    BOUNDARY  at quiescence: World(kb) judges the parked   │
+  │    BOUNDARY  at quiescence: the KB judges the parked      │
   │     └ candidates, admits ONE → back into the closure      │
-  │   ContradictionDetector.detect()  (X,¬X) | (false)        │
+  │   contradiction::detect()  (X,¬X) | (false)               │
   └─────────────────────────────────────────────────────────┘
         ▲ fork()                                  │ alive set
         │                                          ▼
   ┌─────────────────────────────────────────────────────────┐
   │  SEARCH LAYER  (non-monotone)                            │
-  │   _phase1_root   saturate root, forced-positive cascade  │
+  │   Run::phase1    saturate root, forced-positive cascade  │
   │   hypgen         enumerate undecided candidate facts     │
-  │   _phase2_layers BFS the commitment-set lattice by size  │
-  │      apriori.generate_layer  (prefix-join + nogood prune) │
+  │   Run::phase2    BFS the commitment-set lattice by size  │
+  │      apriori::generate_layer (prefix-join + nogood prune) │
   │      try_commitment_set      fork+write+saturate+detect   │
   │      ├─ dead  → emit no-good (prunes supersets)           │
   │      └─ alive → record solution node iff complete∧consistent
-  │   verdict_of(k deduped solution nodes by state_key)       │
+  │   Run::finalise(k deduped solution nodes by state_key)    │
   └─────────────────────────────────────────────────────────┘
         ▼
   Verdict = Solution(k=1) | Ambiguity(k>1) | Contradiction(k=0)
@@ -146,7 +125,7 @@ copy does.
 **`Open` is M1d [S1d.2.6](../../../docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus)'s**,
 and it is a *read-out* rather than a search change: the loop above still
 records a node iff `complete ∧ consistent`, where `complete` still means *the
-generator proposes nothing*. What `verdict_of` does differently is ask each
+generator proposes nothing*. What `Run::finalise` does differently is ask each
 recorded node's obligation tally whether it is **discharged**, and decline to
 call an undischarged one a model. So `k` — the models — parts company with
 `solution_nodes` — the recorded nodes — on exactly the states that owe, and no
@@ -161,45 +140,43 @@ fixpoint state none and report exactly the words they always did
 nothing was refuted, nothing was discharged, and something is owed — *not yet a
 model*, as against `Contradiction`'s *no model*.
 
-**The deductive inner loop** (one KB → fixpoint). `Engine.compile_all`
-compiles every `(rule, activator)` pair into a `JoinPlan` — a sequence of
-`Scan`/`Join`/`Guard` opcodes (`compile.rs`). Since S1.21.8 that sequence is
-**purely positive**: `compile.split_naf` lifts every top-level `(absent …)`
-premise out into `JoinPlan.naf_guards`, one guard tuple per `(or …)`
-disjunct, which `JoinPlan.disjuncts()` pairs back with its steps. The
+**The deductive inner loop** (one KB → fixpoint). `Engine::compile_all`
+compiles every `(rule, activator)` pair into a `Plan` — per disjunct, a
+sequence of `Scan`/`Join`/`Guard` steps (`compile.rs`, `plan.rs`). Since
+S1.21.8 that sequence is **purely positive**: the guard lift in `compile.rs`
+takes every top-level `(absent …)` premise out into a `NafGuard`, one guard
+span per `(or …)` disjunct, which `Plan::guards` pairs back with its steps. The
 `Saturator` then alternates two phases (`step()`). In the **closure** phase it
 runs a priority queue of enqueued `(plan, binding)` firings; each
-`_closure_step()` pops the highest-priority unfired binding, applies it
-(`firing.fire` → append a derived `Fact` with provenance), and
+`closure_step()` pops the highest-priority unfired binding, applies it
+(`firing::fire` → append a derived fact with provenance), and
 re-enqueues the matches the new fact enables — consulting no negation
 anywhere. A match whose disjunct carries guards never enters that queue: it is
-**parked** (`_enqueue_binding`). At closure quiescence the **boundary** phase
-builds a `World` over the stalled KB, judges the parked candidates against
-that fixpoint, and admits exactly **one** (`_admit_from_boundary`), which
+**parked** (`enqueue_binding`). At closure quiescence the **boundary** phase
+asks the stalled KB directly, judges the parked candidates against that
+fixpoint, and admits exactly **one** (`admit_from_boundary`), which
 re-enters the closure. `step()` returns `None` — the real fixpoint — only when
 a quiescence admits nothing. Since S1.8.B2v the closure's re-enqueue is
 **delta-driven**: only plans whose premises touch the just-derived fact's
 relation are re-matched, and they are **seeded** at the new fact rather than
-re-scanned (`saturator._enqueue_pass`, `match.run_seeded_guarded`).
-There was a second, queue-less loop — `Engine.step()`, which the `Saturator`
-wrapped and which did the same two phases directly — and **it did not survive
-the port**: `ein.rs`'s `Engine` is the compile cache, and `Saturator::step` is
-the only implementation of this paragraph (M1e `CD-M1`).
+re-scanned (`Saturator::enqueue_pass`, `Matcher::run_seeded`).
+There is no second, queue-less loop: `Engine` is the compile cache, and
+`Saturator::step` is the only implementation of this paragraph (M1e `CD-M1`).
 
-**The search outer loop** (many KBs → a verdict). `_phase1_root` saturates
+**The search outer loop** (many KBs → a verdict). `Run::phase1` saturates
 the root and runs the *forced-positive cascade* (while the alive set is a
 singleton, promote it to a root fact and re-saturate — unit propagation).
-`_phase2_layers` then explores the **commitment-set lattice** breadth-first
+`Run::phase2` then explores the **commitment-set lattice** breadth-first
 by set size: layer 1 = singleton hypotheses, layer k = Apriori prefix-joins
-of layer k-1 (`apriori.generate_layer`), pruned by learned no-goods. Each
+of layer k-1 (`apriori::generate_layer`), pruned by learned no-goods. Each
 candidate goes through `try_commitment_set`: `fork()` the root, write the
 hypotheses, saturate, detect. A **dead** branch emits a no-good clause (whose
 supersets Apriori then prunes — downward closure); an **alive** branch that is
-`complete ∧ consistent` (`solution.is_solution_node`) is recorded as a solution
+`complete ∧ consistent` (`hypgen::is_solution_node`) is recorded as a solution
 node, deduped by `state_key`. The root stays stable mid-search — an alive
 branch's consequences never merge back (the "unconditional"-fact extraction
 was retired in P1.21 R2 as unsound under NAF). The verdict is read off
-the deduped count k (`verdict_of`).
+the deduped count k (`Run::finalise`).
 
 The **closure/worlds seam** this picture is drawn against — NAF lifted out of
 the closure onto an explicit boundary — is **shipped** as of S1.21.8; the seam
@@ -212,24 +189,20 @@ and the normative reading of a boundary query is
 
 ## 3. Data types
 
-*The **`type (module)`** column is as-was — `ein.py`'s type names and package
-paths. The note at the top of this page maps them to what ships; three rows
-below say so inline, because those three are not renames.*
-
 | type (`module`) | what it is | analog |
 |---|---|---|
-| `Fact` (`kb/entities`) | `(relation_name, args)` identity; `args ∈ str \| int \| Fact` (nested = a relational node); carries `provenance` | a ground atom / tuple / labelled hyperedge |
-| `Relation` (`kb/entities`) | a named relation + `signature` (type atoms) | a database relation schema / predicate symbol |
-| `Rule` (`kb/entities`) | `params`, `match` pattern, `assert`, `priority`, activator | a Datalog/production rule (Horn-ish clause) |
-| `JoinPlan` = `Scan`/`Join`/`Guard` steps + `NafGuard`s (`compile`) — **as-built: `Plan` + `Step` + `Disjunct`, `plan.rs`** | a rule's `:match` compiled to a join program over relations; its `(absent …)` premises split off (`split_naf`) into a per-disjunct guard tuple, paired back by `disjuncts()` | a query plan / RETE network / WAM-ish opcode list, plus its negation side-conditions |
-| `World` (`world`) — **as-built: there is no such type.** The boundary asks the KB directly (`Matcher::holds`, `Saturator::{first_failing, negative_premises}`), the same three questions with no wrapper | a read-only view of a saturated KB taken at a quiescence point (not a snapshot), plus the commitment it assumes; the only thing an `(absent …)` is ever asked of (`holds` / `absent` / `admits` / `negative_premises`) | a possible world / an ATMS environment; the `W` of `W ⊭ ∃x̄.Pθ` |
-| 7 KB indexes (`kb/store`) | `_facts_by_relation`, **`_facts_by_rel_slot_val`** (the participation index, `(rel,slot,val)→facts`), `_negated_facts`, `_rule_apps_*`, `names`, … | database join indexes; RETE alpha-memories |
-| `EqClasses` (`kb/store`) — as-built `ein-core/kb.rs`, and **no engine code calls it** (§O4) | union-find over names (a *placeholder* — no propagation, and matching does not consult it) | disjoint-set / congruence classes / e-graph |
-| `Provenance` + `DerivationDAG` (`kb/provenance`) | per-**derivation** justification (`source`/`rule`/`hypothesis`) — a fact is an OR-node over the ones recorded for it (`kb.justifications`); `absent_premises` records the queries that had to *fail* (recorded, not yet interpreted); the derivation AND/OR graph, source frontier | TMS justifications; database why-provenance; proof terms |
-| `CanonicalSetId` (`apriori`) | a sorted tuple of FactIds = one **commitment set** | a CSP partial assignment / an ATMS environment / an itemset |
-| no-good `Clause = frozenset[FactId]` (`nogoods`) | a learned "this combination is dead" clause, kept subsumption-minimal | CDCL conflict clause / CSP no-good |
-| `SolutionRecord` / `DeadCommitment` (`monotonic/lattice`) | a recorded model / refutation with its `state_key` and core | model / unsat certificate |
-| `Verdict` (`verdict`) | `Solution \| Ambiguity \| Contradiction \| Open` (§2 — the fourth is *owing*, not *unsat*) + optional `LatticeProof` | SAT/UNSAT/MULTIPLE + certificate |
+| `FactId` (`ein-core/facts.rs`) | an interned `(relation, args)` identity; `args` are `Value`s — `Sym \| Int \| Fact` (nested = a relational node); its derivations are `Prov` records | a ground atom / tuple / labelled hyperedge |
+| `Relation` (`ein-core/entities.rs`) | a named relation + `signature` (type atoms) | a database relation schema / predicate symbol |
+| `Rule` (`ein-core/entities.rs`) | `params`, `match` pattern, `assert`, `priority`, activator | a Datalog/production rule (Horn-ish clause) |
+| `Plan` = per-`Disjunct` `Step`s (`Scan`/`Join`/`Guard`) + `NafGuard`s (`plan.rs`) | a rule's `:match` compiled to a join program over relations; its top-level `(absent …)` premises lifted off (`compile.rs`) into a per-disjunct guard span, paired back by `Plan::guards` | a query plan / RETE network / WAM-ish opcode list, plus its negation side-conditions |
+| the boundary's *world* — no type of its own (`saturator.rs`) | a saturated KB asked at a quiescence point (not a snapshot), plus the commitment it assumes; the only thing an `(absent …)` is ever asked of (`Matcher::holds`, `Saturator::{first_failing, negative_premises}`) | a possible world / an ATMS environment; the `W` of `W ⊭ ∃x̄.Pθ` |
+| 7 KB indexes (`ein-core/kb.rs`) | `by_rel`, **`by_rel_slot_val`** (the participation index, `(rel,slot,val)→facts`), `negated`, `rule_apps_*`, the per-name participation entries, … | database join indexes; RETE alpha-memories |
+| `EqClasses` (`ein-core/kb.rs`) — **no engine code calls it** (§O4) | union-find over names (a *placeholder* — no propagation, and matching does not consult it) | disjoint-set / congruence classes / e-graph |
+| `Prov` + `DerivationDag` (`ein-core/prov.rs`, `ein-core/walks.rs`) | per-**derivation** justification (`source`/`rule`/`hypothesis`) — a fact is an OR-node over the ones recorded for it (`Kb::justifications`); `absent` records the queries that had to *fail* (recorded, not yet interpreted); the derivation AND/OR graph, source frontier | TMS justifications; database why-provenance; proof terms |
+| `CanonicalSetId` (`apriori.rs`) | a sorted `Vec<FactId>` = one **commitment set** | a CSP partial assignment / an ATMS environment / an itemset |
+| no-good clause, a `Box<[FactId]>` in `Nogoods` (`ein-core/kb.rs`, `nogoods.rs`) | a learned "this combination is dead" clause, kept subsumption-minimal | CDCL conflict clause / CSP no-good |
+| `SolutionRecord` / `DeadCommitment` (`solve.rs`) | a recorded model / refutation with its `state_key` and core | model / unsat certificate |
+| `Verdict` (`verdict.rs`) | `Solution \| Ambiguity \| Contradiction \| Open` (§2 — the fourth is *owing*, not *unsat*) + optional `LatticeProof` | SAT/UNSAT/MULTIPLE + certificate |
 
 ---
 
@@ -240,27 +213,27 @@ operations. The next two sections give each one its analog in another field
 and the fast/optimal algorithm known for it.
 
 - **O1 — Multi-way join / conjunctive pattern match.** Bind a rule body
-  `(R ?a ?b) ∧ (S ?b ?c) ∧ …` against the KB. (`match._run_steps`.)
+  `(R ?a ?b) ∧ (S ?b ?c) ∧ …` against the KB. (`match_.rs`.)
 - **O2 — Forward-chaining saturation to a fixpoint.** Fire rules until no
   new fact. (`saturator`.)
 - **O3 — Negation as failure.** `(absent P)` / `forall` premises — lifted out
   of the closure plan at compile time, judged at the closure/world boundary.
-  (`compile.split_naf` → `NafGuard`, `world.World.absent`,
-  `saturator._admit_from_boundary`.)
+  (the guard lift in `compile.rs` → `NafGuard`, `Matcher::holds`,
+  `Saturator::admit_from_boundary`.)
 - **O4 — Equality / congruence.** Merge co-referent names. (`EqClasses`,
   `resolve_leaf` — currently a stub.)
 - **O5 — Contradiction detection.** Find `(X, ¬X)` or `(false)`.
   (`contradiction`.)
 - **O6 — Provenance & unsat-core.** Track every recorded derivation of each
   fact; search that AND/OR graph for the smallest source frontier of a clash.
-  (`provenance`, `store.unsat_core`, `explain`, `frontier`.)
+  (`prov.rs`, `walks::unsat_core`, `explain.rs`.)
 - **O7 — Hypothesis enumeration over a subset lattice.** Generate undecided
   candidates and the size-k commitment sets. (`hypgen`, `apriori`.)
 - **O8 — Conflict-driven pruning.** Learn no-goods (Apriori downward-closure
   prune), cache one-step lookahead kills as `(not h)`, prune by that lookahead.
   (`nogoods`, `apriori`, `lookahead`, `hypgen`.)
 - **O9 — Model canonicalisation / dedup.** Collapse equivalent models.
-  (`canon.state_key`.)
+  (`canon::state_key`.)
 
 ---
 
@@ -314,8 +287,8 @@ and **beta-memories** (materialised partial joins, reused across firings);
 **TREAT** (Miranker 1987) keeps alpha-memories but *recomputes* the joins
 (cheaper memory, more recompute); **LEAPS** is lazy.
 
-**Ein today.** Left-deep binary joins via recursive `_run_steps` over
-`Scan`/`Join`. The **participation index** `_facts_by_rel_slot_val`
+**Ein today.** Left-deep binary joins via the recursive `Matcher::walk` over
+`Scan`/`Join`. The **participation index** `by_rel_slot_val`
 (S1.8.B-idx) is exactly a **RETE alpha-memory / join index** — it narrows a
 bound Scan/Join to candidates by `(relation, slot, value)`. The S1.8.B2v
 delta-driven enqueue + `run_seeded` is **TREAT-like**: it keeps no
@@ -326,11 +299,11 @@ and no worst-case-optimal join (binary plans only). Both are parked as
 [F11](../../../plans/followups/f11_deductive_layer_perf.md), which carries
 the fork-state design problem a beta-memory has to answer first.
 
-> **Measured in the Rust port, 2026-08-19, and both parks hardened.** The
+> **Measured 2026-08-19, and both parks hardened.** The
 > alpha-memory turned out to be the lever, not the beta-memory:
-> `_facts_by_rel_slot_val` keys the join *types* only, so a `(not (R ?b ?i))`
+> `by_rel_slot_val` keyed the join *types* only, so a `(not (R ?b ?i))`
 > premise — `std.slots`' rule 247, and **99.1 %** of an exhaustive `zebra`'s
-> candidates — narrowed on nothing and scanned the whole `not` extent. ein.rs
+> candidates — narrowed on nothing and scanned the whole `not` extent. The KB
 > now keys **one level inside** a nested argument: candidates 25.16 M →
 > **1.17 M**, `solve zebra.ein -e` **349 → 78 ms**, with the firing sequence
 > unchanged. The partial-join product a beta-memory would cache is
@@ -353,11 +326,7 @@ the fork-state design problem a beta-memory has to answer first.
 > ([S1a.6.12](../../history/m1a_rust/README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot)).
 > The RETE ladder has no rung for this because RETE's alpha network *is* the
 > proposition store; a system that keeps the two apart has to remember to ask.
->
-> **ein.py has neither change.** The nested key is an ein.rs narrowing, and a
-> narrowing is invisible to the parity contract by construction; the ground
-> lookup is the first place the two engines do measurably different work for
-> the same answer, and `scan_ground` counts it.
+> `scan_ground` counts the ground lookups.
 
 ### O2 — Saturation (the fixpoint loop)
 
@@ -397,13 +366,13 @@ fresh KB instead).
 non-monotone rules.
 
 **Ein today — one evaluation point, at an explicit boundary (S1.21.8).**
-`(absent P)` still compiles to an `AbsentGuard`, but `compile.split_naf`
-**lifts** every top-level one out of the plan, so what the closure runs is a
+`(absent P)` still compiles to a guard, but the lift in `compile.rs`
+takes every top-level one out of the plan, so what the closure runs is a
 purely positive program and a match says nothing about negation. The lifted
-`NafGuard`s hang off `JoinPlan.naf_guards`, one tuple per disjunct; a match
+`NafGuard`s hang off the plan, one span per disjunct (`Plan::guards`); a match
 whose disjunct carries them is parked rather than enqueued. At closure
-quiescence the saturator builds a `World` over the stalled KB and asks it:
-`World.absent` runs the guard's sub-plan under the bindings *projected to*
+quiescence the saturator asks the stalled KB directly:
+`Matcher::holds` runs the guard's sub-plan under the bindings *projected to*
 `NafGuard.scope` — the vars bound by the premises that **preceded** the guard,
 which is what makes lifting exactly as strong as evaluating in place
 (`(and (absent (P ?x)) (Q ?x))` still means "no `P` at all";
@@ -416,10 +385,9 @@ belongs to the negative query, which the boundary evaluates as one unit.
 
 Three consequences, all load-bearing:
 
-- **Nothing to re-check.** `match.absents_still_pass` (the fire-time re-check
-  that closed the enqueue-vs-fire race, S1.5a.1) and
-  `saturator._absent_relations` (the absent-flip full-match split, S1.8.B2v)
-  are **deleted, not bypassed**. Admission is one-at-a-time into an empty
+- **Nothing to re-check.** The fire-time re-check that closed the
+  enqueue-vs-fire race (S1.5a.1) and the absent-flip full-match split
+  (S1.8.B2v) are **deleted, not bypassed**. Admission is one-at-a-time into an empty
   queue, so the admitted candidate fires against precisely the world its
   guard was judged against — no window in which a verdict can go stale, and
   `Saturator.naf_dropped` is structurally 0. The `forall` false→true flip the
@@ -433,7 +401,7 @@ Three consequences, all load-bearing:
   priority*. The Q41 priority bands drop from load-bearing to **advisory**
   scheduling.
 - **Negative dependence is recorded.** An admitted firing writes the queries
-  that had to fail into `Provenance.absent_premises` (§O6) — recorded, not
+  that had to fail into `Prov.absent` (§O6) — recorded, not
   yet interpreted.
 
 **The non-monotonicity still lives in the search layer, not the deductive
@@ -445,7 +413,7 @@ machinery and **no stratification checker**. A genuinely non-stratified rule
 set (`p ← absent q; q ← absent p`) is still answered by operational order —
 now boundary-admission order rather than priority-then-FIFO — and the engine
 reports one model where several exist without saying so;
-`naf_deps.DerivedNafWarning` (advisory, `SolverConfig.warn_derived_naf`,
+`naf_deps`' `DerivedNafWarning` (advisory, `SolverConfig.warn_derived_naf`,
 default off) flags the shape that can cause it, re-grounded by S1.21.8 from a
 soundness warning to a stratification one. The **normative semantics**
 (worlds, the `W ⊭ ∃x̄.Pθ` definition, the single evaluation point E1 with
@@ -488,7 +456,7 @@ union-find → congruence closure → e-graph, in that order of ambition.
 CSP it is constraint-violation checking under propagation.
 
 **Ein today.** An explicit scan for `(X, ¬X)` pairs (using
-the O(1) `_negated_facts` index) plus the rule-asserted `(false)` sentinel
+the O(1) `negated` index) plus the rule-asserted `(false)` sentinel
 (`contradiction.rs`). Measured ~0 s — not a bottleneck, so the watched-literal
 machinery would be premature. **Adequate as-is.**
 
@@ -497,8 +465,8 @@ saturate to quiescence and only then ask; since the KB is append-only a
 contradiction can never be retracted, so every firing past the clash is
 provably waste — and on zebra2 the clash lands after ~320 of ~2790 firings,
 i.e. **88 % of a dying fork's saturation** (64 % of *all* fork-saturation
-time across an exhaustive run). `contradiction.contradicts(kb, fact)` is the
-incremental dual of the scan — one dict lookup, asked of each derived fact as
+time across an exhaustive run). `contradiction::contradicts` is the
+incremental dual of the scan — one lookup, asked of each derived fact as
 it lands — and `try_commitment_set` stops there
 (`enable_fail_fast_fork`, default on). That is the cheap end of what watched
 literals buy in SAT: not "cost-free until a literal flips", but "ask at
@@ -513,10 +481,10 @@ for why/how-provenance. In SAT/SMT, **resolution proofs** (DRUP/DRAT) certify
 UNSAT and **MUS** extraction finds a minimal unsatisfiable subset.
 
 **Ein today.** Provenance is per **derivation**, not per fact:
-`Fact.provenance` is the primary justification and `kb.justifications(fact)`
+`Kb::primary` is the primary justification and `Kb::justifications`
 returns every recorded one, so a fact is an OR-node over AND-nodes — the proof
 structure is an AND/OR graph, a faithful ATMS justification network. A
-re-derivation is appended to a KB side table by `store.record_justification`
+re-derivation is appended to a KB side table by `Kb::record_justification`
 (capped per fact at `MAX_ALT_JUSTIFICATIONS = 32`, kept sorted by premise count
 so the cap retains the *shortest*; terminals take none — a `source`/`hypothesis`
 primary is the frontier, and a rule-kind primary with empty `premises_raw` is a
@@ -525,8 +493,8 @@ synthetic engine writeback whose contract is that provenance grounds out on it,
 by `SolverConfig.record_alternative_justifications` (default on; measured +2.5 %
 median on an exhaustive `zebra2` solve). S1.21.8 added the *negative* half: a
 firing admitted at the NAF boundary (§O3) records the `(absent …)` queries
-that had to fail in `Provenance.absent_premises` — one `(relation, args)`
-pattern each, `None` where the query ranged free — so `Deps(Y)`, the union of
+that had to fail in `Prov.absent` — one `NafRef`, a `(relation, args)`
+pattern, each, `NafArg::Free` where the query ranged free — so `Deps(Y)`, the union of
 `PositiveDeps(Y)` and `NegativeDeps(Y)` (REVIEW_M1-01 §2), is finally
 *representable*. It is recorded, **not interpreted**: `unsat_core`,
 `explain`, `frontier` and the trace's "using" line all still read positive
@@ -538,7 +506,7 @@ least fixpoint from the frontier upward, which is what makes the routinely
 *cyclic* engine-recorded provenance (symmetric/transitive closure) safe by
 construction, and why `detect_provenance_cycles` stays a load-time check on
 user-authored provenance rather than something run over a saturated KB.
-`frontier.smallest_contradiction_frontier` is that search over the detector's
+`explain::smallest_contradiction_frontier` is that search over the detector's
 witnesses: **a minimum-cardinality AND/OR search over every derivation the
 store retained (provenance-based, NAF-safe, budgeted); not a subset-minimal
 MUS** — and, because it *chooses* a justification per fact by search instead of
@@ -549,14 +517,14 @@ k = 0 verdict and each dead commitment report: on `zebra2-bad` it names exactly
 1 fact, the injected `:source "injected contradiction"`, where the union core
 names 38. (The verdict still *unions* across dead commitments — with an
 exhausted lattice no single dead explains unsat — but each dead's core is the
-smallest explanation of that dead.) `store.unsat_core` — the *union* source
+smallest explanation of that dead.) `walks::unsat_core` — the *union* source
 frontier of a clash (the given facts that jointly force it, collected by a
-`walk_premises` closure walk) — and `store.derivation_dag` stay
+`walk_premises` closure walk) — and `walks::build_derivation_dag` stay
 **primary-justification only** by default and deliberately so: unioning over
 alternatives makes a core monotonically *larger*, the opposite of a legible
-explanation; their `all_justifications=True` opt-in gives that union as a
+explanation; their `Justifications::All` opt-in gives that union as a
 soundness envelope (every explanation is a subset of it), and
-`DerivationDAG.and_nodes` / `is_or_graph` carry the conjunction structure a
+`DerivationDag`'s `and_nodes` / `is_or_graph` carry the conjunction structure a
 flat edge set cannot express.
 
 **Gap:** minimality here is bounded three ways, and every claim of it must say
@@ -629,12 +597,13 @@ subsumption-**minimal** conflict clauses and prunes by the subset test
 (O7's Apriori filter); `lookahead.rs` is a **one-step (singleton-consistency /
 forward-checking) lookahead** that kills candidates which would die in one
 firing before paying for a fork+saturate, caching each kill as a learned unit
-`(not h)` (`hypgen._write_negated`, gated by `enable_lookahead_kill_cache` —
+`(not h)` (`hypgen::write_negated`, gated by `enable_lookahead_kill_cache` —
 ≈ a unit clause + unit propagation); the **forced-positive cascade** —
 promoting a singleton-alive hypothesis to root and re-saturating
-(`_helpers._promote_forced_positives`) — is its positive dual. The lookahead
+(`Run::promote_forced_positives`) — is its positive dual. The lookahead
 is the search layer's only direct reader of a rule's `(absent …)` guards, and
-S1.21.8 fixed the world it read them in (divergence D3): a guard
+S1.21.8 fixed the world it read them in
+([`absent_semantics.md`](absent_semantics.md)'s divergence D3): a guard
 must hold in the world **with** `h` — no match in `kb` *and* `h` creating
 none — and a guard whose verdict that test cannot decide (one with a nested
 absent, non-monotone in the KB) makes the lookahead skip the disjunct rather
@@ -644,8 +613,8 @@ activity ordering (there is a `score_hypothesis` hook, S1.5a.7, mostly a
 stub), no watched-literals. These are exactly the pieces a DPLL/CDCL
 re-architecture (O7) would bring.
 
-> **Measured in the Rust port, 2026-08-19: the clause store is not where the
-> time is, in the one regime that was supposed to prove it was.** The port's
+> **Measured 2026-08-19: the clause store is not where the
+> time is, in the one regime that was supposed to prove it was.** M1a's
 > design named `enable-singleton-writeback false` on zebra2 — where the search
 > explodes from 101 enterings to 3 831 (the reading that day; **3 557** on
 > today's engine and on a rebuild of the commit this was published from —
@@ -680,7 +649,7 @@ re-architecture (O7) would bring.
 exploring symmetric models; **graph canonicalisation** (nauty/bliss) for full
 structural symmetry.
 
-**Ein today.** `canon.state_key` canonicalises the propositional fact set
+**Ein today.** `canon::state_key` canonicalises the propositional fact set
 order-insensitively — the sorted, provenance-free `(relation, args)` tuple; the
 representation *itself* is the identity (P1.21 R1 — any hash of it is a
 display digest, never identity), so distinct branches that reach the same
@@ -692,41 +661,32 @@ the S1.7.24 symmetric-removal made fully generic (no hard-coded symmetry). **Ade
 
 ## 7. Summary — where the bodies are, and the levers
 
-> **Which numbers below are still re-measurable.** Every figure attributed to
-> **ein.rs** is: `utils/profile_ein_rs.py`, `criterion_table.py`,
+> **Which numbers below are still re-measurable.** Every figure from M1a on
+> is: `utils/profile_ein_rs.py`, `criterion_table.py`,
 > `e2e_baseline.py` and `feature_matrix.py` all still run, through
 > [`bench_env.sh`](../../../utils/bench_env.sh) — whose `--cores P:8` form is
 > what a `--jobs N` number needs, since on a hybrid CPU "8 cores" names three
-> different machines. Every figure attributed to
-> **ein.py** is a **frozen constant** — the instruments that produced them
-> (`profile_ein.py`, `bench_solve.py`, the two-engine feature matrix) left with
-> the engine they measured at M1a
-> [S1a.10.4](../../history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
-> / [S1a.10.5](../../history/m1a_rust/README.md#s1a105--the-removal).
-> They are kept because the *arc* is the argument — a claim about where a
-> reasoner's time goes is worth more with two implementations behind it than
-> one — and they are not a live gate.
+> different machines.
 
-The measured cost (P1.8a, ein.py) is **almost entirely O1+O2** — the matcher
+The measured cost (P1.8a) is **almost entirely O1+O2** — the matcher
 inside saturation (~95 % of a solve). The optimisation arc has been a walk *up
 the Datalog ladder*: naive → **semi-naive** (participation index = alpha-memory;
 D2 delta-driven; D5 seeded delta join), for ~3.6×. S1.9.E23 then took the
 other axis — not making a firing cheaper but **not firing at all** past the
 point where the fork is already dead (§O5): **~2×** on exhaustive zebra2
-(1.9× in [`features.md`](features.md)'s harness, 2.3–2.4× in a standalone
-fresh-process A/B at `max_set_size=5` — 8.5 s → 3.7 s; the fast path 1.3×).
+(2.3–2.4× in a standalone fresh-process A/B at `max_set_size=5` — 8.5 s → 3.7 s; the fast path 1.3×).
 Note what that does to the profile: **over half** of an exhaustive solve was
 saturating forks already known to be dead, and is now ~0 — so what remains is
 saturation of forks that genuinely live, i.e. the matcher again.
 
-**That 95 % is a property of the implementation, not of the algorithm, and the
-Rust port is what showed it.** [M1a P1a.6](../../history/m1a_rust/README.md#p1a6--performance)
-re-took every measurement here on an engine 150–175× faster end-to-end, and
-the answer to "where are the bodies" moved three times inside one phase:
+**That 95 % is a property of the implementation, not of the algorithm, and
+[M1a P1a.6](../../history/m1a_rust/README.md#p1a6--performance) is what
+showed it**: it re-took every measurement here, and the answer to "where are
+the bodies" moved three times inside one phase:
 
 | what dominates `solve zebra -e` | when | share |
 |---|---|---|
-| the matcher (O1) | ein.py (P1.8a), and ein.rs at byte parity | ~95 % / **66.9 %** |
+| the matcher (O1) | P1.8a, and at the start of P1a.6 | ~95 % / **66.9 %** |
 | the **NAF boundary** (O3) — visiting parked candidates and re-asking their guards | once the participation index keyed *inside* a nested argument | **37.7 %** cumulative |
 | nothing — no block above **8 %** of self time | after the boundary stage | the largest is the enqueue path (`enqueue_pass` + `enqueue_binding` + the `BindingKey` hashing under them) |
 
@@ -737,14 +697,13 @@ they are one interned-fact lookup rather than a scan of a ten-deep bucket —
 took it to **239 k**. Ein's O1 is a *better-asked* multi-way join, not a
 different one.
 
-**The levers, re-measured in both engines**
-([`features.md`](features.md), 2026-08-20, with a control row that states each
+**The levers, re-measured**
+([`features.md`](features.md), 2026-08-23, with a control row that states the
 column's resolution): `enable_singleton_writeback` is the largest by far —
 without it an exhaustive `zebra2` explores **3 557** commitments instead of
-101, which ein.py cannot finish in 90 s and ein.rs pays 54.5× for — and
+101, at 54.5× — and
 `enable_fail_fast_fork` is the one whose whole effect is price per branch, now
-**2.4× (ein.py) / 7.0–7.1× (ein.rs)** where the 2026-08-17 Python-only table
-read 1.9×. Its ratio *grew* as the engine got faster, which is the profile
+**7.0–7.1×** where S1.9.E23 measured ~2×. Its ratio *grew* as the engine got faster, which is the profile
 table above seen from the other side: what fail-fast removes is a fixed
 quantity of dead-fork saturation, and everything around it shrank.
 
@@ -781,7 +740,7 @@ The remaining named levers map onto the literature precisely:
   thing D5 still recomputes). The natural successor to D5 for O1, and with
   dead-fork waste gone it *was* the single largest remaining lever
   ([F11](../../../plans/followups/f11_deductive_layer_perf.md)).
-  **It is not any more, measured 2026-08-19 in the Rust port:** deepening the
+  **It is not any more, measured 2026-08-19:** deepening the
   alpha-memory by one level (key inside a nested argument) cut an exhaustive
   `zebra`'s candidates from 25.16 M to 1.17 M, leaving the partial join **2.2
   tuples wide per step entered**. F11 D1 is re-priced rather than closed —

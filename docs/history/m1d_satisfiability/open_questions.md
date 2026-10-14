@@ -350,7 +350,7 @@ and multiplying the ranges it prints gives 9.95 × 10¹³ against 32.
   `ein solve -e examples/saturation/type-exclusivity/colors.ein` printed
   `solutions (k) 5` for a file with **nine** models, and that **5 of the 10**
   corpus entries answering `Ambiguity` under their declared runs do it with
-  `exhausted = false`. `Solution` had hedged its `k = 1` since ein.py; the
+  `exhausted = false`. `Solution` had always hedged its `k = 1`; the
   verdict whose `k` is a *number* rather than a uniqueness guess hedged
   nothing.
 - **The description ships as `--models key`** — S1d.3.2's recommendation, as
@@ -481,24 +481,18 @@ third refutes it.
 `Aborted` is kept outside the `Verdict` union on purpose, and `verdict.rs` says
 why: *"`solution_nodes == 0` there means **unexplored**, not proven
 unsatisfiable."* A depth cap is a budget in precisely that sense. The
-asymmetry is visible in the rendering too: a `Solution` at `exhausted = False`
+asymmetry is visible in the rendering too: a `Solution` at `exhausted = false`
 prints *"(a solution — pass `--exhaustive` to certify uniqueness)"*, and a
-`Contradiction` at `exhausted = False` prints no qualifier at all.
+`Contradiction` at `exhausted = false` prints no qualifier at all.
 
-### What the documents say, which is two things
+### What the documents say
 
-- The **kernel** pages define the verdict by `k` and never mention exhaustion:
-  `k = 0 → Contradiction` in
-  [`reserved_engine_strings.md`](../../kernel/inference/reserved_engine_strings.md),
-  `Verdict = Solution(k=1) | Ambiguity(k>1) | Contradiction(k=0)` in
-  [`architecture_and_algorithms.md`](../../kernel/inference/architecture_and_algorithms.md).
-  By those, the engine is correct as written.
-- [`docs/api/inference.md`](../../api/inference.md) says
-  *"`0` → `Contradiction` — unsat (**when exhausted**)"*. That parenthetical is
-  the only statement in the tree that ties the word to the cap — and it is on a
-  page specifying a Python embedding API that
-  [Q-M1a.23](../m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)
-  deferred and nobody is building.
+The **kernel** pages define the verdict by `k` and never mention exhaustion:
+`k = 0 → Contradiction` in
+[`reserved_engine_strings.md`](../../kernel/inference/reserved_engine_strings.md),
+`Verdict = Solution(k=1) | Ambiguity(k>1) | Contradiction(k=0)` in
+[`architecture_and_algorithms.md`](../../kernel/inference/architecture_and_algorithms.md).
+By those, the engine is correct as written.
 
 So this is not a doc-versus-code defect anybody can just fix. It is a
 **vocabulary that was never decided**, and measuring the corpus is what made it
@@ -608,13 +602,8 @@ is [Q-M1d.1](#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted) —
 the rendering of a truncated `k = 0`) is neither taken nor refused.
 [P1d.10](README.md#p1d10--exhaustive-search) owns it.
 
-**The reading that won** is
-[`docs/api/inference.md`](../../api/inference.md)'s parenthetical — *"`0`
-→ `Contradiction` — unsat (**when exhausted**)"* — the only statement in the
-tree that ever tied the word to more than `k`. It is on a **history** page
-specifying a Python embedding nobody is building, and it was right. It is cited
-here rather than edited, for the reason the 🏛 banner gives: a page rewritten
-to describe the current engine is neither history nor a specification.
+**The reading that won** is *"`0` → `Contradiction` — unsat (**when
+exhausted**)"* — the word tied to more than `k`.
 
 
 ## Q-M1d.7 — May a program require its own model count?

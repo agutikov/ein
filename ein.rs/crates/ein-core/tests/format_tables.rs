@@ -1,48 +1,37 @@
-//! `pyrepr` and `pyfmt` against **frozen CPython answers** — S1a.1.2's
-//! acceptance, after the interpreter left.
+//! `repr` and `numfmt`, as tables — the specification of both formats.
 //!
-//! Both modules re-implement behaviour nobody wrote down as a spec: `repr()`'s
-//! quote choice and escape table, and `format()`'s sign/pad/align
-//! interaction. A differential test was the only kind that could be wrong in
-//! the direction that mattered, and
-//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
-//! could not keep one. What it kept instead is the **corpus** — every
-//! generator below is unchanged, and every one is deterministic — with
-//! CPython's answers checked in beside it:
+//! Both modules implement a format whose rules are a quote choice, an escape
+//! table and a sign/pad/align interaction, and a rule stated only in prose is
+//! one nobody notices changing. So every generator below is deterministic,
+//! and its output is checked in beside it, one row per case:
 //!
 //! | table | rows | what it covers |
 //! |---|---:|---|
 //! | `repr_values.txt` | 35 | every value shape reachable from a fact argument |
-//! | `repr_escapes.txt` | 1 500+ | every code point where this implementation's printability classification turns over, plus all of U+0000–U+02FF and U+2000–U+20FF |
+//! | `repr_escapes.txt` | 1 500+ | every code point where the printability classification turns over, plus all of U+0000–U+02FF and U+2000–U+20FF |
 //! | `float_format.txt` | 2 584 | 136 seeded doubles × 19 format specs |
 //!
-//! This is the weakest of the substitutions the stage made and it is worth
-//! being plain about why: a frozen table cannot follow CPython. If a future
-//! Python changes `repr`'s escape set — as 3.0 did, and as a Unicode revision
-//! could again — these tables keep the old answer and nothing notices. They
-//! are a **regression** gate for ein.rs, not a parity gate against Python, and
-//! that is [accepted loss L2](../../../../docs/history/m1a_rust/oracle_ledger.md#6-accepted-loss)
-//! taking effect. What they still do is exactly what the sweeps did on every
-//! ordinary day: notice when this engine's answer moves.
+//! A diff here is a change to what the engine prints, and re-blessing one is
+//! a decision to change the format:
 //!
 //! ```text
-//! EIN_BLESS=1 cargo test -p ein-core --test cpython_tables
+//! EIN_BLESS=1 cargo test -p ein-core --test format_tables
 //! ```
 
-use ein_core::pyfmt::{Spec, format_float};
-use ein_core::pyrepr::{PyValue, repr};
+use ein_core::numfmt::{Spec, format_float};
+use ein_core::repr::{ReprValue, repr};
 use ein_corpus::{golden, golden_path};
 
-fn s(x: &str) -> PyValue {
-    PyValue::Str(x.to_string())
+fn s(x: &str) -> ReprValue {
+    ReprValue::Str(x.to_string())
 }
 
-fn i(x: &str) -> PyValue {
-    PyValue::Int(x.to_string())
+fn i(x: &str) -> ReprValue {
+    ReprValue::Int(x.to_string())
 }
 
 /// Every value shape reachable from a fact argument.
-fn value_corpus() -> Vec<PyValue> {
+fn value_corpus() -> Vec<ReprValue> {
     let strings = [
         "",
         "a",
@@ -67,7 +56,7 @@ fn value_corpus() -> Vec<PyValue> {
         "House-1",
         "__closed__",
     ];
-    // Canonical decimal text only — `PyValue::Int` carries what
+    // Canonical decimal text only — `ReprValue::Int` carries what
     // `canonical_int` produced, so `-0` is `0` before it ever gets here.
     let ints = [
         "0",
@@ -77,37 +66,37 @@ fn value_corpus() -> Vec<PyValue> {
         "-123456789012345678901234567890",
     ];
 
-    let mut out: Vec<PyValue> = Vec::new();
+    let mut out: Vec<ReprValue> = Vec::new();
     out.extend(strings.iter().map(|x| s(x)));
     out.extend(ints.iter().map(|x| i(x)));
     // Tuples of every arity that renders differently: `()`, `(a,)`, `(a, b)`.
-    out.push(PyValue::Tuple(vec![]));
-    out.push(PyValue::Tuple(vec![s("a")]));
-    out.push(PyValue::Tuple(vec![i("-7")]));
-    out.push(PyValue::Tuple(vec![s("a"), i("2"), s("it's")]));
-    out.push(PyValue::Tuple(vec![
-        PyValue::Tuple(vec![s("a")]),
-        PyValue::Tuple(vec![]),
+    out.push(ReprValue::Tuple(vec![]));
+    out.push(ReprValue::Tuple(vec![s("a")]));
+    out.push(ReprValue::Tuple(vec![i("-7")]));
+    out.push(ReprValue::Tuple(vec![s("a"), i("2"), s("it's")]));
+    out.push(ReprValue::Tuple(vec![
+        ReprValue::Tuple(vec![s("a")]),
+        ReprValue::Tuple(vec![]),
     ]));
     // Facts, including a nested one — the relational-node duality.
-    let inner = PyValue::Fact {
+    let inner = ReprValue::Fact {
         relation_name: "co-located".into(),
         args: vec![s("Norwegian"), s("House-2")],
     };
     out.push(inner.clone());
-    out.push(PyValue::Fact {
+    out.push(ReprValue::Fact {
         relation_name: "hypothesis".into(),
         args: vec![inner.clone()],
     });
-    out.push(PyValue::Fact {
+    out.push(ReprValue::Fact {
         relation_name: "arity-0".into(),
         args: vec![],
     });
-    out.push(PyValue::Fact {
+    out.push(ReprValue::Fact {
         relation_name: "quote'd".into(),
         args: vec![i("1"), inner, s("x")],
     });
-    out.push(PyValue::Tuple(vec![PyValue::Fact {
+    out.push(ReprValue::Tuple(vec![ReprValue::Fact {
         relation_name: "n".into(),
         args: vec![s("a")],
     }]));
@@ -116,12 +105,11 @@ fn value_corpus() -> Vec<PyValue> {
 
 /// **`repr` of every reachable value shape.**
 ///
-/// Quote choice (a `'` in the string flips CPython to `"`), the escape table,
-/// the one-tuple's trailing comma, a nested `Fact`'s dataclass repr, an
-/// arity-0 relation, and integers wider than an `i64` — 35 shapes, each with
-/// the answer CPython gave.
+/// Quote choice (a `'` and no `"` in the string flips the quote to `"`), the
+/// escape table, the one-tuple's trailing comma, a nested `Fact`, an arity-0
+/// relation, and integers wider than an `i64` — 35 shapes, one row each.
 #[test]
-fn repr_matches_cpython_for_every_reachable_value_shape() {
+fn repr_of_every_reachable_value_shape() {
     let corpus = value_corpus();
     assert!(
         corpus.len() >= 30,
@@ -139,16 +127,16 @@ fn repr_matches_cpython_for_every_reachable_value_shape() {
 
 /// **`repr`'s escape table, code point by code point.**
 ///
-/// The table is a Unicode-category question and CPython's answer depends on
-/// *its* Unicode version, so the sweep is over every code point where this
-/// implementation's classification turns over — the boundaries, where a
-/// disagreement would live — plus all of U+0000–U+02FF and the
-/// general-punctuation block, where it would be most visible.
+/// The table is a Unicode-category question and its answer depends on the
+/// Unicode version `printable.rs` was generated from, so the sweep is over
+/// every code point where the classification turns over — the boundaries,
+/// where a regeneration would move something — plus all of U+0000–U+02FF and
+/// the general-punctuation block, where it would be most visible.
 ///
 /// One line per point, so the golden is a diff of the points that changed
 /// rather than of a 1 500-character string.
 #[test]
-fn repr_escapes_the_same_code_points_cpython_escapes() {
+fn repr_escape_table_code_point_by_code_point() {
     let mut points: Vec<u32> = (0..0x300).collect();
     points.extend(0x2000..0x2100);
     let mut prev = escapes(0x80);
@@ -175,7 +163,7 @@ fn repr_escapes_the_same_code_points_cpython_escapes() {
         };
         out.push_str(&format!(
             "U+{c:04X} {}\n",
-            repr(&PyValue::Str(ch.to_string()))
+            repr(&ReprValue::Str(ch.to_string()))
         ));
     }
     if let Some(msg) = golden(&golden_path("ein-core", "repr_escapes.txt"), &out) {
@@ -189,7 +177,7 @@ fn escapes(cp: u32) -> bool {
     let Some(ch) = char::from_u32(cp) else {
         return false;
     };
-    repr(&PyValue::Str(ch.to_string())).contains('\\')
+    repr(&ReprValue::Str(ch.to_string())).contains('\\')
 }
 
 /// **`format_float` over 136 doubles × 19 specs.**
@@ -201,7 +189,7 @@ fn escapes(cp: u32) -> bool {
 /// because two doubles that print the same are not the same double and a diff
 /// has to be able to tell which one moved.
 #[test]
-fn float_formatting_matches_cpython() {
+fn float_formatting_over_seeded_doubles_and_specs() {
     let mut values: Vec<f64> = vec![
         0.0,
         -0.0,

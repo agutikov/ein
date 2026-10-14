@@ -47,7 +47,7 @@ COMMAND ein solve
   OPTION --dump-lattice -- metavar=DIR arity=1 default=None choices=- group=- required=False help=persist every commitment the search tested, with its firings and outcome, to DIR (enterings/, proof_summary.json — docs/kernel/inference/lattice_dump.md). One dumper per solve, so not with --dump-states, -v, --layer-progress or -t
   OPTION --dump-states -D metavar=DIR arity=1 default=None choices=- group=- required=False help=persist the engine dump tree (root snapshot per layer + timeline) to DIR
   OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Schema: docs/kernel/inference/events.md.
-  OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume, and what T2 comparisons run at, since a dropped redundant firing is exactly what a port loses.
+  OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume.
   OPTION --exhaustive -e metavar=- arity=0 default=False choices=- group=stop required=False help=do not stop at the first model. Certification also needs the lattice to end within --max-set-size, which `exhausted` in --stats reports (slower)
   OPTION --full-kb-snapshots -F metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) append a whole-KB snapshot of the final state
   OPTION --hyp-stats -H metavar=- arity=0 default=False choices=- group=- required=False help=print the root-hypothesis preview (total + per-relation breakdown + hypgen filter report)
@@ -80,7 +80,7 @@ COMMAND ein solve
 COMMAND ein test
   ABOUT run the expectations the programs state about themselves (M1c)
   OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Schema: docs/kernel/inference/events.md.
-  OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume, and what T2 comparisons run at, since a dropped redundant firing is exactly what a port loses.
+  OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume.
   OPTION --json-report -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write one row per (query …) of the whole selection — the claim's shape, the relations its :goal closes, the outcome, and whether the search exhausted — to FILE as JSON. Additive. Unlike --json-summary it is the report of the run rather than of one query, so it takes any selection.
   OPTION --json-summary -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write the structured run summary (verdict, model, every engine counter, the root-saturation shape, the resolved config) to FILE as JSON. Additive, and refused when the selection is more than one run.
   OPTION --max-enterings -E metavar=MAX_ENTERINGS arity=1 default=None choices=- group=- required=False help=abort a query after N commitment tries (as --max-time)
@@ -93,7 +93,7 @@ COMMAND ein saturate
   ABOUT Benchmark + state dump for the Saturator.
   OPTION --dump -- metavar=- arity=0 default=False choices=- group=- required=False help=after the benchmark, print the saturated KB grouped by origin
   OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Schema: docs/kernel/inference/events.md.
-  OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume, and what T2 comparisons run at, since a dropped redundant firing is exactly what a port loses.
+  OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume.
   OPTION --max-steps -- metavar=MAX_STEPS arity=1 default=None choices=- group=- required=False help=hard cap on saturator firings (raises SaturatorStepLimitError when exceeded); useful for runaway-debugging on a fresh input. Default: no cap.
   OPTION --progress-every -- metavar=PROGRESS_EVERY arity=1 default='500' choices=- group=- required=False help=log a one-line progress sample every N steps (0 disables; default: 500).
   POSITIONAL file required=True help=path to a .ein file

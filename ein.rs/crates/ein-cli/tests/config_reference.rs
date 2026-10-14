@@ -24,7 +24,7 @@
 //! 4. [`the_shipped_environment_set_is_what_the_page_lists`] — every
 //!    `EIN_*` name a *shipping* crate reads from the process environment has a
 //!    row, and every row names one. The classification is the result: a grep
-//!    census lists `EIN_RS`, which is a Python local.
+//!    census lists `EIN_RS`, which is a constant in two `utils/` scripts.
 //! 5. [`the_two_inert_flags_are_still_inert`] — `print-alive` and
 //!    `candidate-order-seed` are read by no code path, which is the page's
 //!    one novel claim about behaviour, so it is held by behaviour.
@@ -352,7 +352,7 @@ fn the_cli_counts_come_from_the_golden() {
 
 // ── 4. The environment census ───────────────────────────────────────
 
-/// The crates that ship. `ein-corpus` and `ein-parity` are `publish = false`
+/// The crates that ship. `ein-corpus` and `ein-narration` are `publish = false`
 /// and reach no binary, so what they read is the *harness*'s environment and
 /// belongs in the page's second class, not its first.
 const SHIPPING: [&str; 6] = [

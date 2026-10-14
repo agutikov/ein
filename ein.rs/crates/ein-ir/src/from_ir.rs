@@ -1,4 +1,4 @@
-//! IR → `Kb` — `ein/kb/from_ir.py`.
+//! IR → `Kb` — the loader.
 //!
 //! The loader walks a **flat sequence** of top-level forms and classifies each
 //! by its head: `relation` declares one, `rule` / `hrule` declare a rule,
@@ -7,15 +7,12 @@
 //! block wrappers are gone (S1.7c.4): a `(facts …)` form loads as a fact whose
 //! relation is `facts`, like any other head.
 //!
-//! It is a validation surface as much as a construction one, and that is what
-//! makes it a byte-parity target: errors **accumulate** and surface as one
-//! `; `-joined message, so both the text of each error and the order they were
-//! found in are observable. `examples/broken/load/` is the fixture set.
+//! It is a validation surface as much as a construction one: errors
+//! **accumulate** and surface as one `; `-joined message, so both the text of
+//! each error and the order they were found in are observable. `examples/broken/load/` is the fixture set.
 //!
 //! It lives in `ein-ir` rather than beside the store because it needs the
 //! frontend and the data model at once, and `ein-core` depends on nothing.
-//! `ein.py` puts `imports.py` in `kb/` for the mirror-image reason; the port
-//! already moved that one here, and this follows it.
 
 use crate::ast::{Ast, Node, NodeId, loc_repr, node_repr};
 use crate::imports::Resolver;
@@ -25,12 +22,12 @@ use ein_core::config::{FIELDS, FieldKind, SolverConfig};
 use ein_core::entities::{ExprRef, Loc, Macro, Pattern, Query, Relation, Rule};
 use ein_core::{
     FactId, Kb, Overflow, Program, Prov, ProvId, Symbol, Terms, Value, detect_provenance_cycles,
-    is_predicate, is_reserved, python_float, python_int,
+    is_predicate, is_reserved, parse_float, parse_int,
 };
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
-/// The accumulated problems, `; `-joined — `KBLoadError`.
+/// The accumulated problems, `; `-joined.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct KbLoadError(pub String);
 
@@ -413,7 +410,7 @@ fn kw_get(pairs: &[(String, NodeId)], name: &str) -> Option<NodeId> {
 }
 
 /// The `String` body of a node, or `None` when it is not a string — the
-/// `isinstance(x, String)` guard the loader applies to `:why` and `:source`.
+/// strings-only guard the loader applies to `:why` and `:source`.
 fn string_value(ast: &Ast, node: Option<NodeId>) -> Option<&str> {
     match node.map(|n| ast.node(n)) {
         Some(Node::Str(s)) => Some(ast.sym(s)),
@@ -422,8 +419,8 @@ fn string_value(ast: &Ast, node: Option<NodeId>) -> Option<&str> {
 }
 
 /// Stringify an `Atom` / `String` / `Int` / `Var` / `Range` for use as a fact
-/// argument — `_atomic_value`. Anything else (a `Wildcard`, a keyword, a
-/// nested form) answers `None`.
+/// argument. Anything else (a `Wildcard`, a keyword, a nested form) answers
+/// `None`.
 fn atomic_value(ast: &Ast, terms: &mut Terms, node: NodeId) -> Result<Option<Value>, Overflow> {
     Ok(Some(match ast.node(node) {
         Node::Atom(s) | Node::Str(s) => terms.value_text(ast.sym(s))?,
@@ -447,7 +444,7 @@ fn atomic_value(ast: &Ast, terms: &mut Terms, node: NodeId) -> Result<Option<Val
 /// as a **relational node**.
 ///
 /// A nested form whose head is not a bare atom takes the head `"<nested>"`,
-/// which is a lossy collapse ein.py also performs.
+/// which is a lossy collapse.
 fn fact_args(ast: &Ast, terms: &mut Terms, args: &[NodeId]) -> Result<Vec<Value>, Overflow> {
     let mut out = Vec::new();
     for &a in args {
@@ -1161,8 +1158,7 @@ fn ingest_fact(
     let pairs = kw_pairs(ast, &args);
     let source = string_value(ast, kw_get(&pairs, "source")).map(str::to_string);
     // Present-but-not-an-atom `:rule` reads as absent, and the record falls
-    // back to source-kind — as it does in ein.py, where `_atom_name` answers
-    // `None` and the `is not None` test then fails.
+    // back to source-kind: a non-atom has no atom name to record.
     let rule_name = kw_get(&pairs, "rule").and_then(|n| ast.atom_name(n).map(str::to_string));
 
     // `:using` carries `(rel args)` compact forms. They are interned, not
@@ -1249,14 +1245,14 @@ pub fn config_from_kw_pairs(ast: &Ast, args: &[NodeId]) -> Result<SolverConfig, 
     Ok(config)
 }
 
-/// What `_unwrap` leaves behind, *typed* — because the coercers dispatch on
-/// the Python type it produced, not on the text.
+/// What a `(config …)` value unwraps to, *typed* — because the coercers
+/// dispatch on the kind of value, not on the text.
 ///
-/// `_unwrap` returns `.value` when the node has one (`Int`, `String`), then
-/// `.name` (`Atom`, `Var`, `Keyword`), then the node itself. So a `String` and
-/// an `Atom` both arrive as a Python `str` and satisfy `_coerce_str`, while an
-/// `Int` arrives as an `int` and does **not** — which is the one place a
-/// text-only unwrapping would silently accept what ein.py rejects.
+/// A `String` unwraps to its body and an `Atom` / `Var` / `Keyword` to its
+/// name, both as text; an `Int` unwraps to an integer; anything else stays a
+/// node. So a `String` and an `Atom` both satisfy a string flag, while an
+/// `Int` does **not** — which is the one place a text-only unwrapping would
+/// silently accept a value the loader rejects.
 enum Unwrapped<'a> {
     Text(&'a str),
     Int(&'a str),
@@ -1266,8 +1262,8 @@ enum Unwrapped<'a> {
 fn unwrap(ast: &Ast, node: NodeId) -> Unwrapped<'_> {
     match ast.node(node) {
         Node::Str(s) => Unwrapped::Text(ast.sym(s)),
-        // `Var.name` and `Keyword.name` are the bare names, `?` and `:` not
-        // included — `_unwrap` reaches for `.name` without looking at what
+        // A `Var`'s and a `Keyword`'s names are the bare names, `?` and `:`
+        // not included — the unwrap takes the name without looking at what
         // kind of node it found.
         Node::Atom(s) | Node::Var(s) | Node::Keyword(s) => Unwrapped::Text(ast.sym(s)),
         Node::Int(s) => Unwrapped::Int(ast.sym(s)),
@@ -1322,12 +1318,10 @@ fn set_flag(
             }
         }
         FieldKind::Int => {
-            // A `true` / `false` atom would coerce through `int()` in neither
-            // implementation, but CPython checks `isinstance(value, bool)`
-            // first and says so; the atoms reach here as text, and `int()`
-            // rejects them anyway with the same message.
+            // A `true` / `false` atom is not an integer: it reaches here as
+            // text, and `parse_int` rejects it with the ordinary message.
             let n = numeric
-                .and_then(python_int)
+                .and_then(parse_int)
                 .ok_or_else(|| format!("config flag :{flag} expects an integer, got {}", got()))?;
             match flag {
                 "candidate-order-seed" => config.candidate_order_seed = n,
@@ -1337,7 +1331,7 @@ fn set_flag(
         }
         FieldKind::Float => {
             let n = numeric
-                .and_then(python_float)
+                .and_then(parse_float)
                 .ok_or_else(|| format!("config flag :{flag} expects a number, got {}", got()))?;
             match flag {
                 "hypgen-rel-weight" => config.hypgen_rel_weight = n,
@@ -1655,7 +1649,7 @@ mod tests {
             .collect();
         assert_eq!(nested, vec![vec![Tag::Fact], vec![Tag::Fact]]);
         // A nested head that is not a bare atom collapses to `<nested>` — a
-        // lossy rename ein.py also performs.
+        // lossy rename.
         let compacts = facts(&terms, &kb);
         assert!(compacts[1].contains("<nested>"), "{compacts:?}");
         // The inner proposition is interned but not believed: it is not in
@@ -1701,8 +1695,7 @@ mod tests {
     #[test]
     fn a_present_but_unusable_annotation_reads_as_absent() {
         // `:source` must be a String and `:rule` an Atom; anything else is
-        // not an error, it simply does not register — `_atom_name` answers
-        // `None` and the `is not None` test then fails.
+        // not an error, it simply does not register.
         let (terms, kb) = ok("(relation r T T)\n(r a b :source sentence :rule \"x\")");
         let fact = kb.facts().last().expect("a fact");
         let prov = terms.provs.get(kb.primary(fact).expect("recorded"));

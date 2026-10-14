@@ -1,7 +1,7 @@
-//! Shared loaders — the Rust half of `ein/cli/_common.py`.
+//! Shared loaders.
 //!
-//! The sentinel convention is ein.py's: print the failure to stderr and return
-//! `None`, letting the caller `return 1`. Nothing here exits on a *load*
+//! The sentinel convention: print the failure to stderr and return `None`,
+//! letting the caller `return 1`. Nothing here exits on a *load*
 //! error, which is why the exit code is the caller's to choose.
 
 use std::path::Path;
@@ -53,23 +53,22 @@ pub fn refuse_max_set_size_under_tree(m: &ArgMatches) -> bool {
     true
 }
 
-/// `Path.read_text(encoding="utf-8")` — including how it *fails*.
+/// A file read as UTF-8 — including how it *fails*.
 ///
-/// ein.py calls it unguarded, so a missing file is not an argument error but a
-/// `FileNotFoundError` traceback and exit 1: the `crash-parity` group of
-/// [Q-M1a.14](../../../../docs/history/m1a_rust/open_questions.md#q-m1a14--crash-parity).
-/// The harness compares the exception class off the last stderr line
-/// (`tier::exception_class`), so the class is named, with CPython's `OSError`
-/// text for the errnos a CLI actually meets.
+/// A missing or unreadable file is not an argument error: the run prints one
+/// line naming the error class, the errno text and the quoted path
+/// (`FileNotFoundError: [Errno 2] No such file or directory: '<path>'`, and
+/// its two siblings below) and exits 1
+/// ([`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)).
 pub fn read_text_or_crash(path: &Path) -> String {
     let bytes = read_bytes_or_crash(path);
     match String::from_utf8(bytes) {
         Ok(text) => text,
         Err(_) => {
-            // What `read_text` raises, and what `read_to_string` used to raise
-            // here before the bytes had to be sniffed for a `.einb` magic
-            // first: the decode is the same one, moved a line later.
-            let shown = ein_core::pyrepr::repr_str(&path.display().to_string());
+            // What `read_to_string` used to report here before the bytes had
+            // to be sniffed for a `.einb` magic first: the decode is the same
+            // one, moved a line later.
+            let shown = ein_core::repr::repr_str(&path.display().to_string());
             eprintln!("UnicodeDecodeError: 'utf-8' codec can't decode bytes in {shown}");
             std::process::exit(1);
         }
@@ -83,7 +82,7 @@ pub fn read_bytes_or_crash(path: &Path) -> Vec<u8> {
     match std::fs::read(path) {
         Ok(bytes) => bytes,
         Err(e) => {
-            let shown = ein_core::pyrepr::repr_str(&path.display().to_string());
+            let shown = ein_core::repr::repr_str(&path.display().to_string());
             let line = match e.kind() {
                 ErrorKind::NotFound => {
                     format!("FileNotFoundError: [Errno 2] No such file or directory: {shown}")
@@ -102,7 +101,7 @@ pub fn read_bytes_or_crash(path: &Path) -> Vec<u8> {
     }
 }
 
-/// `_parse_or_exit` — parse a file, printing a parse error to stderr.
+/// Parse a file, printing a parse error to stderr.
 pub fn parse_or_exit(ast: &mut Ast, path: &Path) -> Option<Vec<NodeId>> {
     let text = read_text_or_crash(path);
     match ein_ir::parse(ast, &text, path.to_str()) {
@@ -139,7 +138,7 @@ pub fn looks_like_einb(bytes: &[u8]) -> bool {
     bytes.len() >= EINB_MAGIC.len() && bytes[..EINB_MAGIC.len()] == EINB_MAGIC
 }
 
-/// `_load_kb_or_exit` — a `Kb` from a path, in **either** format.
+/// A `Kb` from a path, in **either** format.
 ///
 /// `base_dir` is the puzzle's own directory, so file-relative `(import …)`
 /// forms resolve against it (S1.8.A3).
@@ -183,7 +182,7 @@ pub fn load_any_query_or_exit(
     let text = match String::from_utf8(bytes) {
         Ok(t) => t,
         Err(_) => {
-            let shown = ein_core::pyrepr::repr_str(&path.display().to_string());
+            let shown = ein_core::repr::repr_str(&path.display().to_string());
             eprintln!("UnicodeDecodeError: 'utf-8' codec can't decode bytes in {shown}");
             std::process::exit(1);
         }
@@ -251,7 +250,7 @@ fn open_einb(
     }
 }
 
-/// `_rule_forms` — the flat top-level `(rule …)` / `(hrule …)` declarations.
+/// The flat top-level `(rule …)` / `(hrule …)` declarations.
 pub fn rule_forms(ast: &Ast, forms: &[NodeId]) -> Vec<NodeId> {
     forms
         .iter()
@@ -260,39 +259,35 @@ pub fn rule_forms(ast: &Ast, forms: &[NodeId]) -> Vec<NodeId> {
         .collect()
 }
 
-/// How ein.py *fails* on an error it does not catch.
+/// How a run *fails* on a rule that will not compile.
 ///
-/// `CompileError` propagates out of `solve` and `saturate` alike, so CPython
-/// prints a traceback whose last line is
-/// `ein.inference.compile.CompileError: <message>`. The `crash-parity` group
-/// compares the exit code plus the class off that line
-/// ([Q-M1a.14](../../../../docs/history/m1a_rust/open_questions.md#q-m1a14--crash-parity)),
-/// and P1a.3 already brought the message body to parity — so naming the class
-/// is what makes the whole line match.
+/// The error reaches `solve` and `saturate` alike, and both end on the one
+/// line `ein.inference.compile.CompileError: <message>` and exit 1 — the
+/// class named, then the message
+/// ([`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)).
 pub fn compile_error_line(msg: impl std::fmt::Display) -> String {
     format!("ein.inference.compile.CompileError: {msg}")
 }
 
-/// A `SaturateError` as the line ein.py's traceback would end with.
+/// A `SaturateError` as the line the run ends with.
 ///
-/// CPython prints a builtin exception by its bare name and anything else by
-/// its qualified one, and `KeyError`'s `str` is the **repr** of its key — so
-/// an unbound `:assert` variable ends a traceback as
-/// `KeyError: "unbound var ?v1 in :assert — bindings: {…}"`, quotes and all.
-/// ein.rs printed the message alone until 2026-08-20, when
-/// [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-differential-fuzzer)'s
-/// fuzzer produced the first input that reaches it —
-/// [Q-M1a.14](../../../../docs/history/m1a_rust/open_questions.md#q-m1a14--crash-parity)
-/// named this exact case ("a `KeyError` from an unbound `:assert` var is
-/// caught nowhere") and no corpus file had ever hit it.
-/// `examples/ein-bugs/unbound-assert-var.ein` is the fixture.
+/// `KeyError` and `TypeError` are named bare and the other classes qualified,
+/// and `KeyError`'s message is quoted the way
+/// [`repr_str`](ein_core::repr::repr_str) quotes a string — so an unbound
+/// `:assert` variable ends the run as
+/// `KeyError: "unbound var ?v1 in :assert — bindings: {…}"`, quotes and all
+/// ([`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)).
+/// The message was printed alone until 2026-08-20, when
+/// [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-fuzzer)'s
+/// fuzzer produced the first input that reaches it; no corpus file had ever
+/// hit it. `examples/ein-bugs/unbound-assert-var.ein` is the fixture.
 pub fn saturate_error_line(e: &ein_infer::saturator::SaturateError) -> String {
     use ein_infer::firing::FireError;
     use ein_infer::saturator::SaturateError;
     match e {
         SaturateError::Compile(c) => compile_error_line(c),
         SaturateError::Fire(FireError::UnboundVar(m)) => {
-            format!("KeyError: {}", ein_core::pyrepr::repr_str(m))
+            format!("KeyError: {}", ein_core::repr::repr_str(m))
         }
         SaturateError::Fire(FireError::NotAFact(m)) => format!("TypeError: {m}"),
         SaturateError::StepLimit(m) => {

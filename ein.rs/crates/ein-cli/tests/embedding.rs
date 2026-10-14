@@ -9,12 +9,10 @@
 //! names these tests; on the page it is delimited by `<!-- prose -->`.
 //!
 //! That is the whole mechanism, and it is deliberately the cheapest one that
-//! cannot rot. `docs/api/`'s five Python pages were a *good* contract — five
-//! steps, a worked example with real numbers, per-symbol tables — and they
-//! still went stale, because nothing ran them. The substitute for the
-//! contract suite the deferred [S1a.9.2] would have been is not a bigger
-//! suite; it is a page whose example is compiled and run by
-//! `cargo test --workspace` and whose text is diffed against what ran.
+//! cannot rot. The substitute for the contract suite the deferred [S1a.9.2]
+//! would have been is not a bigger suite; it is a page whose example is
+//! compiled and run by `cargo test --workspace` and whose text is diffed
+//! against what ran.
 //!
 //! [S1a.9.2]: ../../../../docs/history/m1a_rust/README.md#p1a9--release
 //!

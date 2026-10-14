@@ -1,16 +1,16 @@
 //! Negation as failure at the closure/world boundary — S1.21.8, as law.
 //!
-//! **T1a.10.2.2.** These replace six Python files, all of them about the same
-//! boundary from a different side:
+//! **T1a.10.2.2.** Six claims, all of them about the same boundary from a
+//! different side:
 //!
-//! | Python original | its side of the boundary |
-//! |---|---|
-//! | `tests/inference/test_absent_semantics.py` | the probes P1–P8 of [`docs/kernel/inference/absent_semantics.md`](../../../../docs/kernel/inference/absent_semantics.md) — what `(absent P)` *means* |
-//! | `tests/inference/test_world_boundary.py` | what the boundary *records*: the negative half of `Deps(Y)` |
-//! | `tests/inference/test_saturator_naf.py` | the closure a guard is judged against, including one a rule built |
-//! | `tests/inference/monotonic/test_root_stability_naf.py` | C1 — a NAF-derived fork fact is not a truth of root |
-//! | `tests/inference/test_naf_deps.py` | the advisory stratification map and its one wired flag |
-//! | `tests/inference/test_open.py` | `(unknown P)`, which is two guards in a trench coat |
+//! | its side of the boundary |
+//! |---|
+//! | the probes P1–P8 of [`docs/kernel/inference/absent_semantics.md`](../../../../docs/kernel/inference/absent_semantics.md) — what `(absent P)` *means* |
+//! | what the boundary *records*: the negative half of `Deps(Y)` |
+//! | the closure a guard is judged against, including one a rule built |
+//! | C1 — a NAF-derived fork fact is not a truth of root |
+//! | the advisory stratification map and its one wired flag |
+//! | `(unknown P)`, which is two guards in a trench coat |
 //!
 //! The one idea underneath all of them: **`absent` is a query about a world,
 //! not an atom**. The closure runs purely positive to a fixpoint; every
@@ -21,11 +21,10 @@
 //! worlds), and a fact admitted through a guard depends on an absence that a
 //! sibling world does not share (so it must never be merged into root).
 //!
-//! What is deliberately **not** ported: the Python tests that reached into
-//! `compile.split_naf`, `world.project` or `Saturator._parked` to watch the
-//! mechanism. ein.rs has the same mechanism under different names, and a test
-//! that renamed its way across would pin this build rather than the language.
-//! Where such a test protected something observable — a parked candidate is
+//! What is deliberately **not** asserted is the mechanism — the compile-time
+//! NAF split, the world projection, the saturator's parked set. A test that
+//! watched it would pin this build rather than the language. Where the
+//! mechanism protects something observable — a parked candidate is
 //! not a stalled saturator, a guard set's `watched` key is complete — the
 //! observable is what is asserted here.
 
@@ -181,8 +180,8 @@ fn intern_fact(terms: &mut Terms, rel: &str, args: &[&str]) -> FactId {
 }
 
 /// A recorded negative premise as `(rel arg …)`, with `_` where the query
-/// ranged free. ein.py stores `None` in that position and the distinction is
-/// the whole subject of one test below, so it gets a visible spelling.
+/// ranged free. That position is [`NafArg::Free`] and the distinction is the
+/// whole subject of one test below, so it gets a visible spelling.
 fn naf_sexpr(terms: &Terms, r: &NafRef) -> String {
     let args: Vec<String> = r.args.iter().map(|a| naf_arg(terms, a)).collect();
     if args.is_empty() {
@@ -468,8 +467,8 @@ fn gate_program(gate: i64, derive: i64) -> String {
 }
 
 /// **Priority no longer decides what is derivable** — P1 and P2 of
-/// `absent_semantics.md`, and the same claim `test_saturator_naf.py` made
-/// under the name "a guard is judged against the closure fixpoint".
+/// `absent_semantics.md`, which is the same claim as "a guard is judged
+/// against the closure fixpoint".
 ///
 /// *(work-list: `priority-does-not-decide-what-is-derivable` merged with
 /// `a-guard-is-judged-against-the-closure-fixpoint` — two fixtures, one

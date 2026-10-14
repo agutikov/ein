@@ -4,7 +4,7 @@
 //! asks for a confirmation that nothing a worker holds is secretly
 //! single-threaded — a lazily-computed cache behind a `Cell`, an `Rc` that
 //! crept in, a `RefCell` in a registry. The compiler already knows the answer
-//! to that question for every type in the port; what was missing was somebody
+//! to that question for every type in the engine; what was missing was somebody
 //! asking it, in a file that fails when the answer changes.
 //!
 //! `ein_core::terms` has asked it of the intern tables since

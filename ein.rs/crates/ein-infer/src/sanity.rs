@@ -4,8 +4,8 @@
 //! ("moves to P1a.5") and landed here: it is off by default, costs up to
 //! `2k+1` saturations per checked commitment, and has no bearing on a
 //! shipping verdict — but `ein solve -y` turns it on, and a flag whose *effect* is
-//! absent is not a drop-in replacement. It is invisible at T0/T1/T3, which is
-//! why the T2 event trace is what found it missing.
+//! absent is a flag that lies. It is invisible in the answer, the counters and
+//! the printed output, which is why the event trace is what found it missing.
 //!
 //! The claim: for an alive size-`k` commitment `C`, every `(k−1)`-subset
 //! parent path saturates to the same KB as the direct path — compared by
@@ -31,7 +31,7 @@ pub struct SanityError {
     pub direct_state_key: Box<[FactId]>,
     /// Only the *mismatching* parents, each with the key its path reached.
     pub parent_state_keys: Vec<(CanonicalSetId, Box<[FactId]>)>,
-    /// Rendered at construction: `__str__` reprs the commitments, and the
+    /// Rendered at construction: the message reprs the commitments, and the
     /// repr needs a `Terms` the error cannot borrow.
     rendered: String,
 }
@@ -42,8 +42,7 @@ impl std::fmt::Display for SanityError {
     }
 }
 
-/// `SanityError.__str__` — the digests are `state_digest` in Python's `#x`
-/// form, which is `0x…` lowercase hex.
+/// The message — the digests are `state_digest` as `0x…` lowercase hex.
 fn render(
     terms: &Terms,
     commitment: &[FactId],
@@ -57,12 +56,12 @@ fn render(
                 let (rel, args) = terms.facts.get(f);
                 let args: Vec<String> = args
                     .iter()
-                    .map(|a| terms.py_value(*a))
-                    .map(|v| ein_core::pyrepr::repr(&v))
+                    .map(|a| terms.repr_value(*a))
+                    .map(|v| ein_core::repr::repr(&v))
                     .collect();
                 format!(
                     "({}, ({}{}))",
-                    ein_core::pyrepr::repr_str(terms.sym(rel)),
+                    ein_core::repr::repr_str(terms.sym(rel)),
                     args.join(", "),
                     if args.len() == 1 { "," } else { "" }
                 )

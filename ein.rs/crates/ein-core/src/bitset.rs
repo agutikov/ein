@@ -3,8 +3,7 @@
 //! Three of the KB's indexes are membership tests over `FactId` — belief,
 //! the negated-inner set, and (from
 //! [P1a.4](../../../../docs/history/m1a_rust/README.md#p1a4--search-layer)) the alive
-//! set. ein.py spells them `set[tuple[str, tuple]]`; here an id is a dense
-//! `u32`, so a bitset answers in one shift and one mask
+//! set. An id is a dense `u32`, so a bitset answers in one shift and one mask
 //! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §6).
 //!
 //! Hand-rolled rather than `bitvec`, per

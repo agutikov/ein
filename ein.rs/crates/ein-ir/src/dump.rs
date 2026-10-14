@@ -1,16 +1,16 @@
-//! The canonical IR printer — `ir/dump.py`, byte for byte.
+//! The canonical IR printer.
 //!
-//! Three consumers make this a T3 surface rather than a convenience:
-//! `ein-ir/tests/golden/from_ein_py/*.golden` (which *is* `dump_canonical(parse(f))`),
+//! Three consumers make its bytes observable rather than a convenience:
+//! `ein-ir/tests/golden/*.golden` (which *is* `dump_canonical(parse(f))`),
 //! `--dump-states`, and the markdown trace. The width-driven line breaking is
 //! where an off-by-one hides, so the rule is transcribed rather than
 //! re-derived:
 //!
-//! > render compact; if `indent * len(INDENT) + len(compact) > width` **and**
+//! > render compact; if `indent × |INDENT| + |compact| > width` **and**
 //! > the node is a form **with** arguments, put the head on its own line, one
 //! > argument per line indented one deeper, and append the `)` to the last.
 //!
-//! `len` there is Python's — a **character** count, not bytes. `zebra2.golden`
+//! `|…|` there is a **character** count, not bytes. `zebra2.golden`
 //! contains `⟹`, so the difference is not hypothetical.
 //!
 //! Note what does *not* break: a [`Node::KwPair`] is not a form, so it always
@@ -19,9 +19,9 @@
 
 use crate::ast::{Ast, Node, NodeId};
 
-/// `_INDENT` — two spaces.
+/// One indentation level — two spaces.
 const INDENT: &str = "  ";
-/// `_DEFAULT_WIDTH`.
+/// The default column budget.
 pub const DEFAULT_WIDTH: usize = 80;
 
 /// A `@`-prefixed head is synthetic (`@params`, `@empty`) and is printed
@@ -41,7 +41,7 @@ fn atom_text(ast: &Ast, node: NodeId) -> String {
     }
 }
 
-/// `strings.escape_string_literal` — the full set (`\` `"` `\n` `\t` `\r`)
+/// `s` as a string literal — the full escape set (`\` `"` `\n` `\t` `\r`)
 /// applied **in that order**, so a literal backslash-then-n survives as
 /// `\\n` rather than collapsing into a newline escape.
 ///
@@ -136,8 +136,8 @@ pub fn dump_pretty(ast: &Ast, node: NodeId, indent: usize, width: usize) -> Stri
     format!("{open}\n{})", body.join("\n"))
 }
 
-/// `dump_canonical` over an iterable: forms separated by a blank line, with a
-/// trailing newline when there is anything at all.
+/// Every form in `nodes`, separated by a blank line, with a trailing newline
+/// when there is anything at all.
 pub fn dump_canonical(ast: &Ast, nodes: &[NodeId]) -> String {
     dump_canonical_width(ast, nodes, DEFAULT_WIDTH)
 }
@@ -165,7 +165,7 @@ mod tests {
     }
 
     #[test]
-    fn escaping_is_applied_in_python_order() {
+    fn escaping_is_applied_backslash_first() {
         assert_eq!(escape_string_literal("a\nb"), "\"a\\nb\"");
         assert_eq!(escape_string_literal("a\\nb"), "\"a\\\\nb\"");
         assert_eq!(escape_string_literal("q\"q"), "\"q\\\"q\"");
@@ -212,7 +212,7 @@ mod tests {
     #[test]
     fn the_width_budget_counts_characters_not_bytes() {
         // 20 `⟹` are 20 characters and 60 bytes; at width 40 the form fits on
-        // one line only if the budget is counted the way Python counts it.
+        // one line only if the budget counts characters.
         let arrows = "⟹".repeat(20);
         let src = format!("(a \"{arrows}\")");
         let mut ast = Ast::new();

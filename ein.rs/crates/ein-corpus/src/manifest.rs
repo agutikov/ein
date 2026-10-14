@@ -7,11 +7,7 @@
 //!
 //! Format and the group vocabulary: `corpus/README.md`.
 //!
-//! The reader survived `ein-conformance`, which was retired with the second
-//! engine at
-//! [S1a.10.3](../../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine).
-//! What changed with it is what a `runs` entry *means*: an invocation the file
-//! is **exercised** under, not one two implementations are **compared** under.
+//! A `runs` entry is an invocation the file is **exercised** under:
 //! [`crate::plan::argv`] turns one into an argv and
 //! `ein-cli/tests/corpus_cli.rs` runs it.
 
@@ -19,8 +15,8 @@ use serde::Deserialize;
 use std::path::Path;
 
 /// The manifest's path, repo-root-relative. One location, named once: a
-/// `--corpus` override was the harness's, and a corpus that can be pointed
-/// elsewhere is a completeness check that can be pointed at an empty file.
+/// corpus that can be pointed elsewhere is a completeness check that can be
+/// pointed at an empty file.
 pub const MANIFEST: &str = "corpus/corpus.toml";
 
 #[derive(Debug, Deserialize)]
@@ -120,9 +116,9 @@ impl Corpus {
     }
 }
 
-/// Bumped to 2 at S1a.10.3, which renamed `crash-parity` (a claim about
-/// ein.py's exception classes) to `regression` and split the compile-error
-/// fixtures out as `compile-negative`. The version is what refuses a
+/// Bumped to 2 at S1a.10.3, which renamed one group to `regression` and split
+/// the compile-error fixtures out as `compile-negative`. The version is what
+/// refuses a
 /// schema-1 manifest: an unknown group is an error, but a *renamed* one would
 /// otherwise reach [`Corpus::load`]'s vocabulary check as a typo, and the
 /// reader should say which of the two it is.
@@ -131,11 +127,10 @@ pub const SCHEMA: &str = "ein-corpus/2";
 /// **The `slow` threshold**, in milliseconds of an entry's declared runs
 /// summed — S1a.9.0.
 ///
-/// Until that stage `slow` had no threshold at all: it was set from a probe of
-/// the whole matrix under CPython in 2026-08-17 ("3 s or more on any run") and
-/// never re-taken, so by the time ein.rs was the only engine the flag was
-/// two engines out of date and false on `zebra2.ein`, which it marked slow at
-/// **16 ms**.
+/// Until that stage `slow` had no threshold at all: it was set from a one-off
+/// probe of the whole matrix on 2026-08-17 ("3 s or more on any run") and
+/// never re-taken, so by S1a.9.0 the flag was false on `zebra2.ein`, which it
+/// marked slow at **16 ms**.
 /// A flag with a number behind it can rot; a flag with no number cannot even
 /// be checked.
 ///
@@ -151,12 +146,11 @@ pub const SLOW_MS: u64 = 1000;
 
 /// The group vocabulary — `corpus/README.md`.
 ///
-/// `generated` was the seventh until
-/// [S1a.10.4](../../../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine).
-/// It named the throwaway manifest `utils/fuzz_ein.py` wrote to hand a batch
-/// to the parity harness; the rewritten fuzzer runs the binary directly and
-/// writes no manifest, and a corpus entry is a file the engine is
-/// *permanently* exercised over rather than one that lives for milliseconds.
+/// `generated` was the seventh until S1a.10.4. It named the throwaway
+/// manifest `utils/fuzz_engine.py` wrote for a batch of generated programs; the
+/// fuzzer now runs the binary directly and writes no manifest, and a corpus
+/// entry is a file the engine is *permanently* exercised over rather than one
+/// that lives for milliseconds.
 pub const GROUPS: [&str; 6] = [
     "positive",
     "stdlib",
@@ -174,12 +168,9 @@ mod tests {
 
     /// Every `.ein` the corpus must cover, repo-root-relative.
     ///
-    /// `stdlib/` is named, not searched for. It was searched for until
-    /// S1a.10.3, with `ein.py/src/ein/stdlib` as a fallback — a build-time
-    /// copy of the same files (design/11), and a fallback that would have
-    /// turned "the stdlib directory is gone" into "the check passes over
-    /// seven fewer files". The ledger's §4 lists it as the one relocation the
-    /// removal still owed.
+    /// `stdlib/` is named, not searched for: a search with a fallback would
+    /// turn "the stdlib directory is gone" into "the check passes over fewer
+    /// files".
     ///
     /// `tests/` joined them at M1c
     /// [S1c.1.4](../../../../docs/history/m1c_external_validation/README.md#s1c14--the-stdlib-corpus):
@@ -213,10 +204,8 @@ mod tests {
         out
     }
 
-    /// The completeness check. It had a Python twin
-    /// (`ein.py/tests/test_corpus_manifest.py`) while there were two suites;
-    /// the four claims that twin made and this module did not are the four
-    /// below, ported at T1a.10.1.1.
+    /// The completeness check. The four claims below it are the manifest's
+    /// other invariants (T1a.10.1.1).
     #[test]
     fn every_ein_file_has_an_entry() {
         let corpus = corpus();
@@ -398,12 +387,8 @@ mod tests {
         }
     }
 
-    /// T1a.10.1.1 — the first of the four claims the manifest check made
-    /// **only** on the Python side, ported so the corpus's contract survives
-    /// the suite that held it. `test_corpus_manifest.py` had nine tests and
-    /// this module had five; these are the other four, and the count is the
-    /// point: "the completeness check is duplicated in both suites" was true
-    /// of the completeness check and not of the manifest's other invariants.
+    /// T1a.10.1.1 — the first of the manifest's four other invariants:
+    /// "every file has an entry" says nothing about whether a file has two.
     #[test]
     fn paths_are_unique() {
         let corpus = corpus();
@@ -423,12 +408,9 @@ mod tests {
     /// the third — and `ein-bugs/*.ein` are the bug-repro puzzles, which fail
     /// at no fixed point because some of them no longer fail at all.
     ///
-    /// That last group was `crash-parity` until S1a.10.3, and its membership
-    /// rule was "ein.py raises an unhandled exception here", which is neither
-    /// a directory nor a fact about the language. Two of its ten members
-    /// answer in ein.rs ([D2](../../../../docs/history/m1a_rust/divergences.md)), which
-    /// is why the group no longer predicts an exit code and the sweep's
-    /// golden does.
+    /// That last group is defined by where a file lives, not by what it does:
+    /// some of its members answer and some are refused, which is why the
+    /// group does not predict an exit code and the sweep's golden does.
     #[test]
     fn negatives_are_grouped_by_where_they_fail() {
         for e in &corpus().entry {

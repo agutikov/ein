@@ -65,8 +65,7 @@ jobs:
       # the goldens, the manifest's own invariants. **The acceptance gate is
       # in here**, not a separate step: P1.7a's three zebra2 task-class
       # fixtures are `ein-infer/tests/acceptance.rs` (16) and
-      # `ein-cli/tests/acceptance_cli.rs` (5) since S1a.10.2, where the same
-      # work takes 0.26 s instead of the ~40 s that once made it its own tier.
+      # `ein-cli/tests/acceptance_cli.rs` (5), 0.26 s.
       - run: cargo test --workspace
       # The two `slow = true` entries the per-commit sweep skips. `cost_ms`
       # in corpus/corpus.toml is what says they are slow, measured, and both
@@ -93,9 +92,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with: { workspaces: ein.rs }
-      # P1a.7's acceptance in one command, and the successor to
-      # `ein-conformance --tier T3`, which ran two processes per corpus cell
-      # and left with the second engine at S1a.10.3. The sweep's own
+      # P1a.7's acceptance in one command. The sweep's own
       # `the_sweep_is_not_vacuous` fails if this build has no fan-out, so a
       # feature-resolution accident cannot turn 20 712 cells into 20 712
       # comparisons of `--jobs 1` against itself.
@@ -211,11 +208,11 @@ jobs:
             target/x86_64-apple-darwin/release/ein
           lipo -info target/universal2/ein
 
-      # **T1a.9.3.3 — the corpus at T3, on this platform.** The host build,
+      # **T1a.9.3.3 — the whole corpus, on this platform.** The host build,
       # not the artefact: what this is looking for is line endings, filesystem
       # case-sensitivity and locale-dependent formatting, which are properties
       # of the platform and not of the target triple. `EIN_CORPUS_SLOW=1` is
-      # what "the corpus at T3" means after S1a.10.3.
+      # what makes it the whole corpus.
       - name: the corpus, swept here
         working-directory: ein.rs
         run: cargo test -p ein-cli --release --test corpus_cli

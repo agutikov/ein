@@ -17,7 +17,7 @@
 
 ```
 thread 'main' panicked at crates/ein-infer/src/match_.rs:778:
-`eq` needs two arguments; ein.py raises IndexError here
+`eq` needs two arguments; …
 ```
 
 ### Evidence
@@ -26,7 +26,7 @@ The compiler lowers `eq`/`neq` without any arity check (`compile.rs:594-608`), d
 
 ### Impact
 
-A crash from well-formed surface input. It bypasses the repo's own discipline that every refusal carries a stderr diagnostic (`corpus_cli::every_refusal_carries_a_diagnostic`), and the `defined_behaviour.md` §4 error table maps ein.py's `IndexError` here to nothing. Any generated or hand-written program with a malformed guard takes down the process instead of getting a `file:line:col` error.
+A crash from well-formed surface input. It bypasses the repo's own discipline that every refusal carries a stderr diagnostic (`corpus_cli::every_refusal_carries_a_diagnostic`), and the `defined_behaviour.md` §4 error table maps this case to nothing. Any generated or hand-written program with a malformed guard takes down the process instead of getting a `file:line:col` error.
 
 ### Recommendation
 

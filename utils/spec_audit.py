@@ -25,7 +25,7 @@ Reported per run and summed over the corpus:
   the instrument's control: both arms fork the same root, so a difference there
   is a nondeterminism and not a finding about `W`.
 - **kind** — `alive` / `dead-pre` / `dead-post`. A move here moves
-  `enterings_alive` and `enterings_dead_*`, which are T1 counters.
+  `enterings_alive` and `enterings_dead_*`, two of the summary's counters.
 - **core** — the entering's unsat core, which reaches the `enter` event and,
   through `union_dead_cores`, an unsat verdict's printed core.
 - **state (alive)** — an alive fork runs to quiescence, so its fact set is the
@@ -141,10 +141,8 @@ def main() -> int:
         return 2
 
     corpus = tomllib.load(open(REPO / "corpus" / "corpus.toml", "rb"))
-    # `regression` was `positive` + `crash-parity` until S1a.10.3 regrouped
-    # `examples/ein-bugs/` as one directory; five of its ten entries were in
-    # this selection before and are again. Two of the rest are refused, which
-    # costs nothing here — a run that writes no audit rows contributes none.
+    # `regression` holds entries the engine refuses, which costs nothing
+    # here — a run that writes no audit rows contributes none.
     entries = [e for e in corpus["entry"]
                if e["group"] in ("positive", "stdlib", "regression")
                and not (args.only and args.only not in e["path"])

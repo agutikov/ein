@@ -13,7 +13,7 @@
 //! | `exhausted = true` | *these are the models* |
 //! | `exhausted = false` | *these are models **found*** — a further model may exist |
 //!
-//! A `Solution` has qualified its own `k` since ein.py — *"(not certified —
+//! A `Solution` has always qualified its own `k` — *"(not certified —
 //! pass --exhaustive)"* — and the verdict that reports a model **set** did
 //! not, which is the wrong way round: `k = 1` unqualified is a guess about
 //! uniqueness, and `k = 5` unqualified is a **wrong count**.

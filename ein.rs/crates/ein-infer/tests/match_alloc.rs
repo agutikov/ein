@@ -1,9 +1,9 @@
 //! S1a.3.2 acceptance — the inner loop allocates nothing.
 //!
 //! The claim is not "matching got faster". It is that the *per-candidate* cost
-//! stopped being an allocation: ein.py's `_bind_arg` returns
-//! `{**bindings, name: arg}` on every successful bind, which is a fresh dict
-//! per bound variable per candidate fact at every level of the join
+//! is not an allocation: a bind writes a register in a fixed-size file rather
+//! than building a fresh environment per bound variable per candidate fact at
+//! every level of the join
 //! ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §1). A
 //! counting allocator is how that is checked rather than asserted: run the same
 //! plan over a KB twice the size, and the allocation count must not move.

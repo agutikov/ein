@@ -1,4 +1,4 @@
-//! The saturation driver — S1.21.8's **two-phase** loop, ported.
+//! The saturation driver — S1.21.8's **two-phase** loop.
 //!
 //! ```text
 //! step():
@@ -18,8 +18,8 @@
 //!   which on `p ← absent q; q ← absent p` derives both — and `{p, q}` is not a
 //!   model of that program under any reading.
 //!
-//! Everything else ports verbatim: priority bands (advisory since S1.21.8, and
-//! still the order), FIFO within a band via the monotone tiebreaker, `_seen`
+//! Everything else stands: priority bands (advisory since S1.21.8, and
+//! still the order), FIFO within a band via the monotone tiebreaker, `seen`
 //! keyed on `(binding_key, guards)`, and `naf_dropped` structurally 0 — there
 //! is no enqueue/fire window left for a guard to go stale in.
 
@@ -50,9 +50,7 @@ use crate::plan::{NafGuard, Plan, Reg, Slot, Span, Step};
 /// --dump` prints such a rule `unbanded` rather than putting it in a band.
 ///
 /// This said *"sit between the eliminate band (300) and the hypothesis band
-/// (900)"* until M1e S1e.4.8 (`MA-L1`) — wrong in the direction that matters,
-/// and inherited: it is a verbatim port of `ein.py`'s own comment, whose
-/// `heapq` was a min-heap too, so it was wrong there as well.
+/// (900)"* until M1e S1e.4.8 (`MA-L1`) — wrong in the direction that matters.
 ///
 /// The bands that exist are fifteen values over 374 occurrences,
 ///
@@ -133,8 +131,8 @@ impl From<FireError> for SaturateError {
     }
 }
 
-/// One queued or parked candidate — ein.py's 6-tuple, with the payload in a
-/// side arena so the heap compares two integers
+/// One queued or parked candidate, with the payload in a side arena so the
+/// heap compares two integers
 /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §2).
 #[derive(Clone)]
 struct Entry {
@@ -145,10 +143,10 @@ struct Entry {
     premises: Box<[FactId]>,
     /// This candidate's identity, built once at enqueue.
     ///
-    /// ein.py recomputes `_binding_key` at every dequeue and at every boundary
-    /// round — a fresh `frozenset` per parked candidate per round, which on a
-    /// zebra root is ~60 000 of them. The answer cannot change (the registers
-    /// are a snapshot), so the only thing recomputing buys is the allocation.
+    /// Recomputing it at every dequeue and at every boundary round would build
+    /// a fresh key per parked candidate per round — ~60 000 of them on a zebra
+    /// root. The answer cannot change (the registers are a snapshot), so the
+    /// only thing recomputing buys is the allocation.
     key: BindingKey,
     /// The interned identity of this candidate's guards — the boundary's
     /// invalidation unit.
@@ -239,11 +237,10 @@ struct WatchTables {
 }
 
 /// `(priority, tiebreaker, entry)`. The tiebreaker is unique and monotone, so
-/// the comparison never reaches the third field — exactly as ein.py's heap
-/// never compares two `JoinPlan`s.
+/// the comparison never reaches the third field.
 type Ranked = Reverse<(i64, u64, u32)>;
 
-/// An interned guard tuple — the `_seen` key's second half.
+/// An interned guard tuple — the `seen` key's second half.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 struct GuardSetId(u32);
 
@@ -255,10 +252,10 @@ pub struct Saturator {
     /// The parked candidates, in (priority, FIFO) order — S1a.3.4 T7.
     ///
     /// A `BTreeSet` rather than a heap because a boundary round **reads** the
-    /// whole set in order and removes at most one entry from it. ein.py pops
-    /// every candidate and re-pushes the rejects, which on a zebra root is
-    /// ~60 000 heap operations across the run for ~1 000 actual judgements.
-    /// Ordered iteration gives the same sequence — so "the first candidate
+    /// whole set in order and removes at most one entry from it. Popping every
+    /// candidate and re-pushing the rejects would be ~60 000 heap operations
+    /// across a zebra root's run for ~1 000 actual judgements. Ordered
+    /// iteration gives the same sequence — so "the first candidate
     /// whose guards pass" is the same candidate — without touching the ones
     /// it skips.
     parked: std::collections::BTreeSet<(i64, u64, u32)>,
@@ -274,8 +271,7 @@ pub struct Saturator {
     /// stamped with — [`Saturator::refresh_epochs`].
     epoch: u32,
     /// `judged_at[e]` is the epoch at which entry `e` was last judged and
-    /// *failed*, or 0 for a candidate that has never been judged — which is
-    /// what ein.py's *absence* from `_park_stamp` says.
+    /// *failed*, or 0 for a candidate that has never been judged.
     ///
     /// A side table rather than a field on [`Entry`] because a fork inherits
     /// the arena and re-judges against its own world: this is the only part of
@@ -320,9 +316,9 @@ pub struct Saturator {
     /// actually run. The boundary's cost is this number times the cost of one
     /// query, and 72 % of an exhaustive solve sits under it
     /// ([design/06](../../../../docs/history/m1a_rust/design/06_saturation.md) §2), so
-    /// it is the figure Win B is measured in. Not an ein.py observable: it is
-    /// the port's own instrument, and it is deliberately *not* in the T2 diff
-    /// — a number that must not change is not evidence that nothing changed.
+    /// it is the figure Win B is measured in. It is the engine's own
+    /// instrument, and it is deliberately *not* in the event stream — a number
+    /// that must not change is not evidence that nothing changed.
     pub guard_evals: u64,
     /// Of those, the ones on a **monotone** guard — the only ones the
     /// semi-naive re-evaluation of
@@ -334,9 +330,9 @@ pub struct Saturator {
     /// quiescence, which is 40 of them on a zebra2 root and therefore free.
     ///
     /// It exists because the boundary's *share* is the question Win B is
-    /// answered against: 72 % of an exhaustive ein.py solve sits here, and an
-    /// optimisation aimed at 72 % is a different proposition from one aimed at
-    /// a tenth of that.
+    /// answered against: design/06 §2 put it at 72 % of an exhaustive solve,
+    /// and an optimisation aimed at 72 % is a different proposition from one
+    /// aimed at a tenth of that.
     pub boundary_nanos: u64,
     /// Structurally 0 since S1.21.8, kept as an observable so the old
     /// measurement gate still has something to assert. It counted firings
@@ -673,9 +669,8 @@ impl Saturator {
     /// would then be a wrong answer rather than a cheap one. That pass
     /// **advances the tiebreaker**, which is the FIFO position of every
     /// candidate enqueued after it — so a run that asks and a run that does
-    /// not can fire the same rules in a different order. ein.py's does the
-    /// same, and the divergence would be a parity one; that is the reason it
-    /// stays, not an argument that it is free.
+    /// not can fire the same rules in a different order. That is the
+    /// behaviour, and it is not free.
     ///
     /// So an embedder probing quiescence mid-drive is perturbing the drive.
     /// [`docs/api/rust.md`] says so where a reader of the crate boundary will
@@ -1147,9 +1142,8 @@ impl Saturator {
         let mut admitted = 0;
         // The set itself, walked in place — no per-round copy of it.
         //
-        // ein.py pops every parked candidate and re-pushes the rejects; the
-        // port replaced that with ordered iteration over a snapshot, because a
-        // round *removes* from the set as it goes. But the removals are known
+        // The round is ordered iteration rather than pop-and-re-push, over a
+        // snapshot, because a round *removes* from the set as it goes. But the removals are known
         // in advance to be at most one admission (which ends the round) plus
         // whatever the walk retires, so they can be deferred to the end and
         // the walk can hold the set instead of copying it. That matters
@@ -1403,11 +1397,9 @@ impl Saturator {
                 s.kb.facts_of(self.sym_sym)
                     .filter_map(|f| s.terms.facts.args(f).first().and_then(|v| v.as_sym()))
                     .collect();
-            // ein.py builds a `frozenset` here, whose iteration order depends
-            // on string hashes and so on `PYTHONHASHSEED` — the one place set
-            // order leaked into firing order (M1a hazard H1). ein.py was fixed
-            // to sort the cold seed; this holds the sorted order throughout, so
-            // the mirror sequence is a function of the input alone.
+            // Sorted by name and held sorted throughout: a hash-ordered set
+            // here leaks into firing order (M1a hazard H1). So the mirror
+            // sequence is a function of the input alone.
             self.sym_rels
                 .sort_by(|a, b| s.terms.sym(*a).cmp(s.terms.sym(*b)));
             self.sym_rels.dedup();
@@ -1553,10 +1545,10 @@ fn collect_refs(plan: &Plan, g: &NafGuard, span: Span, regs: &[Value], out: &mut
 /// A slot's value under the guard's *projected* environment; free otherwise.
 ///
 /// A sub-plan-local variable grounds to `Free` even when the parent has a
-/// value for the same name, because `world._collect_refs` walks with the
-/// projected dict — which is the same restriction the query itself ran under.
-/// A `Fact`-valued binding also grounds to `Free`: ein.py's `_ground` keeps
-/// only `str` and `int`.
+/// value for the same name, because the negative-provenance walk uses the
+/// projected environment — which is the same restriction the query itself ran
+/// under. A `Fact`-valued binding also grounds to `Free`: only a name or an
+/// integer is kept.
 fn ground(plan: &Plan, g: &NafGuard, slot: &Slot, regs: &[Value]) -> NafArg {
     match slot {
         Slot::Reg(r) => match g.scope_of[*r as usize] {
@@ -1664,11 +1656,9 @@ mod tests {
     /// The `__symmetric__` cold seed iterates the marked relations **sorted by
     /// name**, so the mirror firing sequence is a function of the input alone.
     ///
-    /// ein.py's `_symmetric_rels()` is a `frozenset`, whose iteration order
-    /// depends on string hashes and therefore on `PYTHONHASHSEED`; with two or
-    /// more markers that leaked into the seed order, hence into the firing
-    /// order, hence into every derivation-order observable. That is M1a hazard
-    /// H1, fixed in ein.py first and ported sorted.
+    /// A hash-ordered set here would, with two or more markers, leak into the
+    /// seed order, hence into the firing order, hence into every
+    /// derivation-order observable. That is M1a hazard H1.
     #[test]
     fn the_mirror_seeds_its_relations_in_name_order() {
         let src = "(relation zeta A B)\n(relation alpha A B)\n(relation mid A B)\n\

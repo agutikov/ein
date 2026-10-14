@@ -1,19 +1,19 @@
-//! The engine — the compile cache, its **order**, and the `_fired` record.
+//! The engine — the compile cache, its **order**, and the `fired` record.
 //!
-//! ein.py's `Engine` is a dict from `(rule_name, activator_args)` to a
-//! `JoinPlan` plus a set of binding keys that have already fired. Two things
-//! about it are load-bearing and neither is the caching:
+//! An [`Engine`] maps `(rule_name, activator_args)` to a compiled plan, plus a
+//! set of binding keys that have already fired. Two things about it are
+//! load-bearing and neither is the caching:
 //!
-//! 1. **The cache's iteration order is observable.** `_enqueue_pass`'s full
-//!    pass walks `cache.values()`, so the order plans were first compiled in
-//!    reaches the firing order and therefore the trace. A fork builds its cache
+//! 1. **The cache's iteration order is observable.** The full enqueue pass
+//!    walks the plans in insertion order, so the order plans were first
+//!    compiled in reaches the firing order and therefore the trace. A fork builds its cache
 //!    by iterating `rules × the fork's own activators`, so a fork-derived
 //!    activator for an early rule sorts *before* a root activator of a later
 //!    rule. Sharing one cache across forks and appending would be a different
 //!    order, which is why the process-wide memo holds the **plans** and each
 //!    engine keeps its own ordered list
 //!    ([design/06](../../../../docs/history/m1a_rust/design/06_saturation.md) § Win A).
-//! 2. **`_fired` is the canonical "already applied" record**, guard-free: once
+//! 2. **`fired` is the canonical "already applied" record**, guard-free: once
 //!    the conclusion is derived, every other disjunct for those bindings is
 //!    redundant, which is what it already meant.
 
@@ -37,7 +37,7 @@ use crate::plan::{Plan, PlanId};
 /// clone actually copies is the index vectors and the `fired` set.
 #[derive(Clone, Default)]
 pub struct Engine {
-    /// The plans, in ein.py's cache-insertion order.
+    /// The plans, in cache-insertion order.
     plans: Vec<PlanId>,
     /// The same plans, resolved — parallel to `plans`.
     ///
@@ -91,7 +91,7 @@ impl Engine {
     }
 
     /// A handle the caller can hold while mutating the engine — which
-    /// `_apply` must, since it writes `fired` with the plan in hand.
+    /// `Saturator::apply` must, since it writes `fired` with the plan in hand.
     pub fn plan_arc(&self, index: usize) -> Arc<Plan> {
         Arc::clone(&self.arcs[index])
     }
@@ -175,16 +175,16 @@ impl Engine {
         };
         let at = self.plans.len();
         // The `compile` event fires on an **engine** miss, not a memo miss: it
-        // reports what this engine had to add to its cache, which is what
-        // ein.py's `compile_for` reports and what the cache order is about.
+        // reports what this engine had to add to its cache, which is what the
+        // cache order is about.
         if events.on() {
             let (rule_name, n_steps, n_disjuncts, n_guards, asserts) = (
                 terms.sym(plan.rule).to_string(),
                 plan.disjuncts[0].steps.len(),
                 plan.disjuncts.len() - 1,
-                // `len(plan.naf_guards)` — one guard *tuple* per disjunct,
-                // so this counts disjuncts, not guarded ones. Reproduced
-                // rather than corrected: the event is a comparison surface.
+                // One guard list per disjunct, so this counts disjuncts, not
+                // guarded ones — which is what `events.md` documents
+                // `n_guards` as.
                 plan.disjuncts.len(),
                 plan.asserts.len(),
             );

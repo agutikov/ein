@@ -19,11 +19,9 @@
 //! ```
 //!
 //! What the test cannot re-derive is in the page's rings 3 and 4 — the
-//! `utils/` scripts, `docs/api/rust.md`, `corpus.toml`, and the three
-//! `from_ein_py/` goldens that may never be re-blessed. Ring 4 is the one that
-//! matters and the one no instrument can hold: an edit changing the *parse*
-//! spends the repo's last independent provenance, and nothing fails at the
-//! moment it happens.
+//! `utils/` scripts, `docs/api/rust.md`, `corpus.toml`, and the three byte
+//! goldens of the two puzzles, which an edit changing the *parse* moves and
+//! `EIN_BLESS=1` re-banks like any other golden.
 
 use std::path::{Path, PathBuf};
 

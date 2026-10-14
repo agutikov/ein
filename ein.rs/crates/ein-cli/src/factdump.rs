@@ -1,10 +1,7 @@
 //! `ein solve --print-final-*` — a solution KB as canonical s-expressions.
 //!
-//! The Rust half of `ein/cli/_factdump.py`. `fact_sexpr` is *not* re-written
-//! here: it is the event protocol's fact renderer, ported at
-//! [P1a.0](../../../../docs/history/m1a_rust/README.md#p1a0--conformance-harness-and-shared-assets) as
-//! `ein_infer::events::sexpr`, and the stage plan says reuse rather than
-//! duplicate.
+//! A fact is *not* rendered here: the event protocol's fact renderer,
+//! `ein_infer::events::sexpr`, is reused rather than duplicated.
 
 use ein_core::{Kb, Symbol, Terms};
 use ein_infer::events::sexpr;
@@ -14,7 +11,7 @@ use ein_ir::{Ast, Node, NodeId};
 ///
 /// Generic: the atoms named in the `:hrules` activators that are *declared
 /// relations*, so type/object atoms drop out position-independently. Every
-/// `:hrules` pair contributes, not just the first — ein.py accumulates.
+/// `:hrules` pair contributes, not just the first.
 pub fn hypothesis_target_relations(ast: &Ast, terms: &Terms, kb: &Kb) -> Vec<Symbol> {
     let Some(query) = kb.program().query() else {
         return Vec::new();
@@ -31,8 +28,8 @@ pub fn hypothesis_target_relations(ast: &Ast, terms: &Terms, kb: &Kb) -> Vec<Sym
             collect_atoms(ast, value, &mut names);
         }
     }
-    // `names & set(kb.relations)` — the intersection, then in *registry*
-    // order, because the caller only ever sorts it or tests membership.
+    // The named atoms that are declared relations, in *registry* order,
+    // because the caller only ever sorts it or tests membership.
     let mut out: Vec<Symbol> = Vec::new();
     for (sym, _) in kb.program().relations.iter() {
         if names.iter().any(|n| n == terms.sym(sym)) {
@@ -42,7 +39,7 @@ pub fn hypothesis_target_relations(ast: &Ast, terms: &Terms, kb: &Kb) -> Vec<Sym
     out
 }
 
-/// `_atoms` — every atom name in a node: an `Atom`'s own, an `SForm`'s head
+/// Every atom name in a node: an `Atom`'s own, an `SForm`'s head
 /// when it is an atom, and recursively its arguments. Nothing else.
 fn collect_atoms(ast: &Ast, node: NodeId, out: &mut Vec<String>) {
     match ast.node(node) {
@@ -81,10 +78,7 @@ pub fn print_final_state(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol])
                 .collect();
             let mut names: Vec<&str> = targets.iter().map(|&s| terms.sym(s)).collect();
             names.sort_unstable();
-            let shown: Vec<String> = names
-                .iter()
-                .map(|n| ein_core::pyrepr::repr_str(n))
-                .collect();
+            let shown: Vec<String> = names.iter().map(|n| ein_core::repr::repr_str(n)).collect();
             (
                 picked,
                 format!(
@@ -111,8 +105,8 @@ pub fn print_final_state(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol])
         }
     };
 
-    // `key=(relation_name, tuple(fact_sexpr(a) for a in args))` — the args
-    // rendered, not the raw ids, so the order is the one a reader sees.
+    // Keyed on the relation name, then the args *rendered* rather than the
+    // raw ids, so the order is the one a reader sees.
     let mut keyed: Vec<(&str, Vec<String>, ein_core::FactId)> = facts
         .drain(..)
         .map(|f| {
@@ -129,13 +123,13 @@ pub fn print_final_state(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol])
     println!("final-state facts ({label}; {} facts):", keyed.len());
     for (rel, args, _) in &keyed {
         // Note the unconditional separator: a nullary fact prints `(rel )`
-        // here, where `fact_sexpr` would spell it `(rel)`. ein.py builds this
-        // line with its own join, and the difference is observable.
+        // here, where `sexpr` would spell it `(rel)`. This line has its own
+        // join, and the difference is observable.
         println!("  ({rel} {})", args.join(" "));
     }
 }
 
-/// `Fact.is_derived` — produced by the engine, i.e. it has provenance and that
+/// Derived — produced by the engine, i.e. it has provenance and that
 /// provenance is not a `:source` ingestion. A fact with none is neither given
 /// nor derived, so it drops out of every `--print-final-*` mode but `hfacts`.
 fn is_derived(kb: &Kb, terms: &Terms, fact: ein_core::FactId) -> bool {

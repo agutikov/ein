@@ -2,23 +2,22 @@
 
 > **Status: historical record.** The tree solver was removed after
 > S1.5b (`monotonic_solve` followed it in P1.7a, superseded by the sound
-> `solve()`), and the `test_monotonic_parity.py` regression pin went with
-> it — there is no longer a second engine to be at parity *with*. The
+> `solve()`), and the regression pin went with it — there is no longer a
+> tree solver to be at parity *with*. The
 > numbers below stay as the measured record of what the monotonic engine
 > replaced and by how much; they are not a live gate. Current per-fixture
 > behaviour is pinned by the `branching` corpus group, swept by
 > [`corpus_cli.rs`](../../../ein.rs/crates/ein-cli/tests/corpus_cli.rs).
 >
 > **Every wall-clock number on this page is a frozen constant** (M1a
-> [S1a.10.6](../../history/m1a_rust/README.md#s1a106--the-docs-after-the-oracle)):
-> both instruments that produced them — `bench_solve.py` and
-> `bench_monotonic.py`, under PyPy — went with the engine they measured. What
+> [S1a.10.6](../../history/m1a_rust/README.md#s1a106--defined-behaviour)):
+> both instruments that produced them went with the solvers they measured. What
 > is still re-measurable is the *verdict* column, and that is what the sweep
 > checks.
 
 Recorded by M1 S1.5b.9 T1.5b.9.1 + T1.5b.9.3. Each row was captured by
-running both `bench_solve.py` (tree) and `bench_monotonic.py` (monotonic)
-on the laptop reference under PyPy.
+benchmarking both the tree solver and the monotonic one on the laptop
+reference.
 
 ## Result table
 
@@ -36,13 +35,13 @@ on the laptop reference under PyPy.
 | `10_backprop_on.ein`                     |     5 | Solution           | Solution     | `p=Dave`              | 289.4 ms   |   9.1 ms  | ✓ |
 | `11_backprop_off.ein`                    |     5 | Solution           | Solution     | `p=Dave`              | 378.2 ms   |   7.5 ms  | ✓ |
 
-Total combined wall (all 11 fixtures, sequential, PyPy):
+Total combined wall (all 11 fixtures, sequential):
 
 - tree:      ~2.6 s
 - monotonic: ~0.8 s
 
 Both well inside the S1.5b.9 T1.5b.9.4 < 60 s budget; the parametrised
-pytest ran both engines for all 11 fixtures in ~3.5 s on the laptop reference
+test ran both solvers for all 11 fixtures in ~3.5 s on the laptop reference
 (3.47 s observed). Today the same eleven fixtures are eleven cells of the
 `branching` corpus group, run as processes by
 [`corpus_cli.rs`](../../../ein.rs/crates/ein-cli/tests/corpus_cli.rs).
@@ -73,13 +72,13 @@ artefact is a tree-specific shape — depth-cap halt with multiple
 open satisfying leaves.
 
 Both verdicts are equally valid under their respective contracts.
-The parity test asserts this divergence explicitly rather than
-either treating it as a failure or papering over it with `xfail`.
+The parity test asserted this divergence explicitly rather than
+either treating it as a failure or papering over it as an expected failure.
 
 ### Other expected divergences
 
 None — the 10 uniquely-solvable demos converge to the same
-binding via both engines.
+binding via both solvers.
 
 ## Engine-side observations
 
@@ -109,9 +108,9 @@ tree's depth-first search pays.
 
 ## Test surface this baseline locks in
 
-- 11 parametrised cases in the since-removed `test_monotonic_parity.py`.
+- 11 parametrised cases in the since-removed tree-vs-monotonic parity test.
 - Each case asserts: tree verdict type, monotonic verdict type,
-  monotonic verdict bindings, and (when both engines return
+  monotonic verdict bindings, and (when both solvers return
   Solution) that monotonic's binding row appears in the tree
   verdict's leaf-kb binding set.
 - Combined parity-test wall: < 5 s on laptop reference.

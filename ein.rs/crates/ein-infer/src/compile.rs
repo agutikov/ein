@@ -3,18 +3,16 @@
 //! Q29 picked *compile unit = per (rule, activator-binding) pair*: the
 //! activator fact binds the rule's parameter list **before** matching begins,
 //! so the compiler substitutes the parameters and bakes concrete relation
-//! names into the program. This is
-//! ein.py's `ein/inference/compile.py`
-//! with the slots lowered to [`Slot`]s and the variables numbered
-//! ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §2); the
-//! semantics are ported, not revisited.
+//! names into the program, with the slots lowered to [`Slot`]s and the
+//! variables numbered
+//! ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §2).
 //!
 //! The compiler is small and its **edge cases are semantics**. S1.22.0 turned
 //! four silent `return []` paths into errors precisely because dropping a
 //! premise is unsound in one direction and incomplete in the other: a plan
 //! whose premises all drop has no steps, which the matcher accepts as one
 //! *vacuous* match, so the rule fires unconditionally. All four are
-//! [`CompileError`]s here, with ein.py's message text.
+//! [`CompileError`]s here.
 //!
 //! Two additions are pure metadata and change nothing about what a plan
 //! matches: register numbering, and the candidate [`Probe`] list
@@ -36,8 +34,7 @@ use crate::predicates;
 /// A `:match` clause the compiler cannot lower to a faithful plan.
 ///
 /// Every branch that raises this used to `return []` — silently dropping a
-/// premise, or a whole disjunction. The message is what a rule author sees, so
-/// it is compared byte-for-byte against ein.py's.
+/// premise, or a whole disjunction. The message is what a rule author sees.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct CompileError(pub String);
 
@@ -91,7 +88,7 @@ pub fn activators_into(kb: &Kb, terms: &Terms, rule: &Rule, out: &mut Vec<Option
 
 // ── The compile cache key ──────────────────────────────────────────
 
-/// `(rule_name, tuple(str(a) for a in activator.args))` — ein.py's cache key.
+/// `(rule_name, the activator's arguments as text)` — the compile cache's key.
 ///
 /// It stringifies **all** the activator's arguments while
 /// [`Plan::activator_args`] keeps only the string ones. That asymmetry is
@@ -103,8 +100,8 @@ pub fn activators_into(kb: &Kb, terms: &Terms, rule: &Rule, out: &mut Vec<Option
 /// M1e [S1e.1.4](../../../../docs/history/m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3),
 /// and see `BindingKey` for what that costs and where.
 ///
-/// Interning `str(a)` reproduces the collision Python already has: the integer
-/// `7` and the atom `7` both stringify to `"7"` and therefore share a key.
+/// Interning each argument's text has one collision: the integer `7` and the
+/// atom `7` both stringify to `"7"` and therefore share a key.
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct PlanKey {
     pub rule: Symbol,
@@ -154,7 +151,7 @@ pub fn plan_key(terms: &mut Terms, rule: &Rule, activator: Option<FactId>) -> Pl
 /// are hits, plus 102 fresh `Engine`s that each recompile ~170 pairs from
 /// scratch. Sharing the *plans* across forks removes that; what a fork may
 /// **not** share is the compile cache's **iteration order**, which
-/// `_enqueue_pass`'s full pass walks — so each engine keeps its own ordered
+/// the saturator's full enqueue pass walks — so each engine keeps its own ordered
 /// `Vec<PlanId>` (S1a.3.3) and this holds only the plans.
 ///
 /// Append-only, which is what will let [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
@@ -313,8 +310,8 @@ struct Compiler<'a> {
     // The guard sub-plan currently being compiled, with the scope it projects.
     sub: Option<Space>,
     sub_scope: FxHashSet<Symbol>,
-    // `_compile_relation`'s `known_vars` — one set for the whole disjunct,
-    // polluted by `(absent …)` sub-plans exactly as ein.py's is.
+    // `known_vars` — one set for the whole disjunct, polluted by
+    // `(absent …)` sub-plans too.
     known: FxHashSet<Symbol>,
     // `split_naf`'s `bound` — the variables of the *positive* premises seen so
     // far, seeded with the rule's parameters. A guard's scope is a snapshot.
@@ -355,7 +352,7 @@ impl<'a> Compiler<'a> {
         };
         let mut disjuncts: Vec<Disjunct> = Vec::new();
         if bodies.is_empty() {
-            // `rule.match is None` → one empty disjunct, which the matcher
+            // No `:match` → one empty disjunct, which the matcher
             // accepts as a single vacuous match.
             disjuncts.push(Disjunct {
                 steps: Span::EMPTY,
@@ -401,9 +398,9 @@ impl<'a> Compiler<'a> {
 
     /// Bind the rule's parameters from the activator, positionally.
     ///
-    /// Only `str` / `int` arguments bind — a nested-`Fact` argument leaves its
-    /// parameter free, which is why a seed can be shorter than the parameter
-    /// list. The `bindings` dict is what `_slot` substitutes from and what
+    /// Only name and integer arguments bind — a nested-`Fact` argument leaves
+    /// its parameter free, which is why a seed can be shorter than the
+    /// parameter list. The seed is what `slot` substitutes from and what
     /// `split_naf` seeds every guard's scope with.
     fn bind_activator(
         &mut self,
@@ -423,13 +420,13 @@ impl<'a> Compiler<'a> {
             // drivers filter mismatched activators before they get here
             // (`activators_for`, `hrule.Hrules`); a direct caller that
             // constructs the pair anyway gets told.
-            let args_repr = ein_core::pyrepr::repr(&ein_core::pyrepr::PyValue::Tuple(
-                args.iter().map(|&a| self.terms.py_value(a)).collect(),
+            let args_repr = ein_core::repr::repr(&ein_core::repr::ReprValue::Tuple(
+                args.iter().map(|&a| self.terms.repr_value(a)).collect(),
             ));
-            let params_repr = ein_core::pyrepr::repr(&ein_core::pyrepr::PyValue::Tuple(
+            let params_repr = ein_core::repr::repr(&ein_core::repr::ReprValue::Tuple(
                 rule.params
                     .iter()
-                    .map(|&p| ein_core::pyrepr::PyValue::Str(self.terms.sym(p).to_string()))
+                    .map(|&p| ein_core::repr::ReprValue::Str(self.terms.sym(p).to_string()))
                     .collect(),
             ));
             return Err(CompileError(format!(
@@ -444,11 +441,11 @@ impl<'a> Compiler<'a> {
         }
         for (&p, &a) in rule.params.iter().zip(args.iter()) {
             if a.as_fact().is_some() {
-                continue; // `isinstance(a, (str, int))` — a Fact does not bind.
+                continue; // A nested Fact does not bind.
             }
             match self.plan_space.get(p) {
-                // A repeated parameter name: Python's dict keeps the first
-                // position and takes the last value.
+                // A repeated parameter name keeps the first position and
+                // takes the last value.
                 Some(reg) => self.seed[reg as usize].1 = a,
                 None => {
                     self.plan_space.push(p, None)?;
@@ -620,7 +617,7 @@ impl<'a> Compiler<'a> {
         // is checked **here**, at compile time, since M1e S1e.2.1. It used to
         // be checked by a runtime `assert!` in the matcher and only from
         // below: `(eq ?x)` reached `guard_holds` and panicked the process with
-        // a parity note for a message, and `(eq ?x A B)` reached it and passed
+        // an assertion for a message, and `(eq ?x A B)` reached it and passed
         // on `args[0..2]` with the tail dropped. `neq` never showed either,
         // because the grammar shape-pins `NeqForm` and `eq` is an ordinary
         // `GenericList` — which is the rule, not the coincidence.
@@ -738,7 +735,7 @@ impl<'a> Compiler<'a> {
     /// S1e.2.1, `CO-H1` and its class.
     ///
     /// Same shape as the refusals beside it: name the form, quote it as the IR
-    /// `repr` two implementations could be compared on, and say what to write
+    /// `repr`, and say what to write
     /// instead. It carries one thing they do not — the **position**. A
     /// premise is a `generic_list`, which is the one production the parser
     /// hands a `Loc`, so unlike a top-level declaration this can say where;
@@ -762,10 +759,10 @@ impl<'a> Compiler<'a> {
 
     fn empty_sub_plan(&self, node: NodeId) -> CompileError {
         // S1.22.0 — an empty sub-plan is not "a query that finds nothing", it
-        // is a query that matches VACUOUSLY: `_run_steps(())` yields one match,
-        // so `World.holds` is True and the guard fails against every possible
-        // KB. `monotone` is then True, so the candidate is retired permanently
-        // on its first judgement.
+        // is a query that matches VACUOUSLY: running no steps yields one match,
+        // so `holds` is true and the guard fails against every possible KB.
+        // `monotone` is then true, so the candidate is retired permanently on
+        // its first judgement.
         CompileError(format!(
             "`(absent …)` sub-plan compiled to no steps in {} — the guard \
              would fail against every KB and its candidates would be retired \
@@ -865,8 +862,8 @@ impl<'a> Compiler<'a> {
 
         // `known_vars` grows *after* the shared check, and it is shared by the
         // whole disjunct — including `(absent …)` sub-plans, whose variables
-        // therefore make a later top-level premise a `Join`. ein.py threads one
-        // set through `_compile_body`; so does this.
+        // therefore make a later top-level premise a `Join`. One set is
+        // threaded through the whole body.
         for &name in &vars {
             self.known.insert(name);
         }
@@ -894,12 +891,12 @@ impl<'a> Compiler<'a> {
 
     /// Lower one IR slot node.
     ///
-    /// A `Var` the activator bound becomes a `Const` — ein.py keeps the IR
-    /// type (`Atom` / `Int`) so the unifier treats it uniformly with a literal.
+    /// A `Var` the activator bound becomes a `Const`, so the unifier treats it
+    /// uniformly with a literal.
     /// An `SForm` becomes a nested pattern, with its head substituted from the
     /// binding when it is a bound `Var`. Everything else — a `String`, a
     /// `Wildcard`, a `Range`, a `KwPair`, an `SForm` with an unusable head —
-    /// is returned as-is and compared by equality, which is ein.py's
+    /// is returned as-is and compared by equality, which is the
     /// "unrecognised shape" safety net and which never matches anything.
     fn slot(&mut self, node: NodeId) -> Result<Slot, CompileError> {
         match self.ast.node(node) {
@@ -941,9 +938,9 @@ impl<'a> Compiler<'a> {
                 let Some(rel) = rel else {
                     return Ok(Slot::Opaque(node));
                 };
-                // Nested args are **not** KwPair-filtered — `_slot` recurses
-                // over `node.args` unconditionally, where `_compile_relation`
-                // filters. The asymmetry is ein.py's.
+                // Nested args are **not** KwPair-filtered — this recurses over
+                // every argument unconditionally, where the relation compiler
+                // filters. The asymmetry is kept.
                 let children: Vec<NodeId> = self.ast.args(args).to_vec();
                 let mut lowered = Vec::with_capacity(children.len());
                 for c in children {
@@ -1053,18 +1050,17 @@ impl<'a> Compiler<'a> {
 
     // ── The structural guard key ───────────────────────────────────
     //
-    // ein.py compares guards **by value** — they are frozen dataclasses — so
-    // two `(or …)` disjuncts asking the same negative question collapse in
-    // `_seen`. Encoding the guards into a flat `u32` vector reproduces that
-    // without any structural comparison at run time.
+    // Guards compare **by value**, so two `(or …)` disjuncts asking the same
+    // negative question collapse in `seen`. Encoding the guards into a flat
+    // `u32` vector gives that without any structural comparison at run time.
     //
-    // Everything ein.py's `__eq__` reaches is encoded and nothing else:
-    // `Scan` vs `Join` (different classes) and a `Join`'s `shared_vars`
+    // Everything guard equality reaches is encoded and nothing else:
+    // `Scan` vs `Join` and a `Join`'s `shared_vars`
     // included, register *indices* rather than variable names (identical
     // sub-plans allocate registers in the same encounter order, so the indices
     // agree exactly where the names do), and raw IR nodes **structurally**,
     // because two `(neq ?p ?q)` nodes at different source positions are equal
-    // dataclasses and must key alike.
+    // guards and must key alike.
 
     fn encode_guards(&mut self, guards: Span) -> Span {
         let start = self.guard_keys.len() as u32;
@@ -1214,11 +1210,11 @@ impl<'a> Compiler<'a> {
 
     /// The ordered probe candidates for one relation step — see [`Probe`].
     ///
-    /// The top-level walk is `_candidates`', unchanged. What T1a.6.3.0 adds is
+    /// The top-level walk is the left-to-right candidate scan. What T1a.6.3.0 adds is
     /// a **second level**: a `Nested` slot still contributes no key of its
     /// own, but each of *its* slots does, appended at the outer slot's
     /// position. The list stays in left-to-right order and the runtime still
-    /// takes the first usable entry, so wherever ein.py's scan would have
+    /// takes the first usable entry, so wherever the top-level scan would have
     /// narrowed, this narrows on the same slot; the nested entries are reached
     /// only when nothing before them was usable — which, for a
     /// `(not (R …))` premise, is always.
@@ -1232,7 +1228,7 @@ impl<'a> Compiler<'a> {
                         inner: SlotKey::DIRECT,
                         src: ProbeSrc::Const(v),
                     });
-                    // `_candidates` *returns* on the first known value, so no
+                    // The candidate scan stops at the first known value, so no
                     // later slot can ever be the one it narrows on.
                     break;
                 }
@@ -1434,7 +1430,7 @@ mod tests {
 
     /// The activator binding is materialised into the register file, in
     /// `bindings_seed` order — which is the order `Provenance.bindings` starts
-    /// with, since CPython inserts `dict(plan.bindings_seed)` first.
+    /// with, since the seed is bound first.
     #[test]
     fn the_seed_takes_the_first_registers_in_binding_order() {
         let (_, terms, plan) = compile(
@@ -1447,7 +1443,7 @@ mod tests {
         assert_eq!(terms.sym(plan.reg_names[0]), "R");
         assert_eq!(terms.sym(plan.reg_names[1]), "T");
         // …and a seeded parameter is a *constant* in a slot, never a register:
-        // `_slot` substitutes it before the matcher ever sees it.
+        // `slot` substitutes it before the matcher ever sees it.
         assert!(matches!(
             plan.steps(plan.disjuncts[0].steps)[0],
             Step::Rel(RelStep { rel, .. }) if terms.sym(rel) == "edge"
@@ -1528,8 +1524,8 @@ mod tests {
         );
     }
 
-    /// The probe list is `_candidates`' scan, pre-filtered: constants end it
-    /// (Python *returns* on the first known value), registers stay in it (they
+    /// The probe list is the candidate scan, pre-filtered: constants end it
+    /// (the scan stops at the first known value), registers stay in it (they
     /// may be unbound, or hold a nested fact), and nested patterns are skipped
     /// because the index has no key for one.
     #[test]
@@ -1602,7 +1598,7 @@ mod tests {
     /// `known_vars` is one set for the whole disjunct, and an `(absent …)`
     /// sub-plan writes into it — so a variable first seen inside a guard makes
     /// a *later* top-level premise a `Join`. It is informational, and it is in
-    /// the compiled shape, so it is ported rather than tidied.
+    /// the compiled shape, so it is kept rather than tidied.
     #[test]
     fn a_guards_variables_leak_into_the_scan_join_labelling() {
         let (_, terms, plan) = compile(
@@ -1691,7 +1687,7 @@ mod tests {
     }
 
     /// A `:assert (and …)` concludes several facts from one application, and
-    /// the introspection helpers read the *first* template — ein.py's
+    /// the introspection helpers read the *first* template — the
     /// `assert_template` back-compat reader.
     #[test]
     fn a_multi_assert_keeps_every_template_and_answers_for_the_first() {

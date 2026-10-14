@@ -15,9 +15,9 @@
 //! (functional ∧ total ⇒ closed). [`crate::hypgen`] does not care which path
 //! produced the fact — the index lookup is the same.
 //!
-//! **Where it is called from matters, and it is not `solve`.** Both ein.py
-//! call sites — `cli/solve.py`'s `--hyp-stats` preview and `cli/_summary.py`'s
-//! root observables — run it on a **fork**, so the search itself sees every
+//! **Where it is called from matters, and it is not `solve`.** Both call
+//! sites — the `--hyp-stats` preview and the JSON summary's root
+//! observables — run it on a **fork**, so the search itself sees every
 //! relation open. It moves a lot when it does run: over the corpus it takes
 //! `closed_relation` from 6 pre-candidate skips to 278 and `raw` from 4 479
 //! candidates to 3 022.

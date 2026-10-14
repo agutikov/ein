@@ -4,12 +4,10 @@
 //! bindings, where a relation's truth is *data*. All numeric / set /
 //! cardinality / aggregation primitives are deferred to followups.
 //!
-//! ein.py keeps a `dict[str, Callable]` so a followup can `register()` a
-//! third. Here it is an enum plus the same four-function surface, because a
-//! `PredId`-indexed table is what the matcher wants and because the *set* of
-//! names is what reaches output — `names()` is sorted and feeds
-//! `primitives.non_object_names`, which is what stops the blind hypothesis
-//! enumerator proposing `eq` as a graph object.
+//! It is an enum with a four-function surface, because a `PredId`-indexed
+//! table is what the matcher wants and because the *set* of names is fixed:
+//! `names()` is sorted, and the blind hypothesis enumerator reserves both
+//! names, which is what stops it proposing `eq` as a graph object.
 
 use ein_core::Symbol;
 use ein_core::terms::Terms;
@@ -53,7 +51,7 @@ impl Pred {
     }
 }
 
-/// `predicates.get(name)` — the predicate for a head name, or `None`.
+/// The predicate for a head name, or `None`.
 pub fn get(name: &str) -> Option<Pred> {
     match name {
         "eq" => Some(Pred::Eq),
@@ -62,12 +60,12 @@ pub fn get(name: &str) -> Option<Pred> {
     }
 }
 
-/// `predicates.is_predicate(name)`.
+/// Whether `name` is a built-in predicate's head.
 pub fn is_predicate(name: &str) -> bool {
     get(name).is_some()
 }
 
-/// Every registered name, **sorted** — ein.py's `tuple(sorted(_REGISTRY))`.
+/// Every registered name, **sorted**.
 pub fn names() -> [&'static str; 2] {
     ["eq", "neq"]
 }

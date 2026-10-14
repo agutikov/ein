@@ -1,20 +1,19 @@
 //! `ein solve`'s diagnostic printers — the counters, the phase table, the
 //! resolved config, the root-hypothesis preview, and the timing dumper.
 //!
-//! Every column position here is ein.py's. The floats go through
-//! [`ein_core::pyfmt`] rather than Rust's `{:.2}` because the two disagree on
-//! sign and fill even where they agree on digits (Q-M1a.15).
+//! The floats go through [`ein_core::numfmt`] rather than Rust's `{:.2}`
+//! because the two disagree on sign and fill even where they agree on digits.
 
 use std::time::Instant;
 
-use ein_core::pyfmt::format_spec;
+use ein_core::numfmt::format_spec;
 use ein_core::{Kb, SolverConfig, Terms};
 use ein_infer::SharedMemo;
 use ein_infer::solve::{Dumper, JobStats, MonotonicStats};
 use ein_infer::verdict::Answer;
 use ein_ir::Ast;
 
-/// `_TimingDumper` — per-phase wall-clock off the solve loop's hooks, no file
+/// Per-phase wall-clock off the solve loop's hooks, no file
 /// I/O. `t0` is set at construction, immediately before `solve`.
 pub struct TimingDumper {
     pub t0: Instant,
@@ -94,8 +93,8 @@ pub fn print_stats(stats: &MonotonicStats, elapsed_ms: f64) {
 ///
 /// **Printed only when `--jobs > 1`**, and that is the whole of why it may
 /// live on a surface the invariance sweeps read. `--stats` is already the one
-/// block that reports the *run* rather than the answer — it has printed a
-/// `wall` since ein.py, and no two runs agree on that — so a job count is at
+/// block that reports the *run* rather than the answer — it has always printed
+/// a `wall`, and no two runs agree on that — so a job count is at
 /// home here and nowhere else. Every number below is deliberately absent from
 /// [`MonotonicStats`] and from `--json-summary`, because those are compared
 /// exactly between `--jobs 1` and `--jobs N` and these must differ.
@@ -190,8 +189,8 @@ pub fn print_timing(
 /// `-c/--dump-config` — each resolved `SolverConfig` field, in declaration
 /// order, with the name kebab-cased into a 32-column field.
 ///
-/// Note this is *not* `config::rendered_fields`: that one spells values as
-/// `repr` for the KB-shape dump, and `--dump-config` prints `str(v)` with
+/// Note this is *not* `config::rendered_fields`: that one quotes string
+/// values for the KB-shape dump, and `--dump-config` prints them bare with
 /// bools lowered — so `'popularity'` there is `popularity` here.
 pub fn print_resolved_config(cfg: &SolverConfig) {
     let b = |v: bool| if v { "true" } else { "false" }.to_string();

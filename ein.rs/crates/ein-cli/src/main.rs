@@ -1,4 +1,4 @@
-//! `ein` — the drop-in binary.
+//! `ein` — the binary.
 //!
 //! A thin shell over [`ein_cli::run`]: the surface lives in the library so the
 //! help-content check can *introspect* the parsers rather than scrape their

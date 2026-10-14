@@ -15,12 +15,7 @@
 //!   every solve cell leaves a machine-readable verdict behind and no manifest
 //!   entry has to ask for it.
 //!
-//! A third substitution used to happen here: at `--tier T2` the harness added
-//! `--events {out}/events.jsonl --events-level verbose` to every `solve` and
-//! `saturate` cell, because the event log was the tier's operand. The tiers
-//! were retired with the second engine at
-//! [S1a.10.3](../../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine)
-//! and the substitution went with them — `--events` is not unowned, it is
+//! No run gains `--events`. The event stream is
 //! `ein-cli/tests/cli_semantics.rs`'s through the CLI and
 //! `ein-infer/tests/golden_events.rs`'s as three whole verbose streams, and
 //! neither needs the corpus swept at 78 MB of logs per run to say so.

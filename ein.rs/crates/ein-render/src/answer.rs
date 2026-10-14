@@ -1,4 +1,4 @@
-//! The `solve` answer and its table — `ein.py`'s `trace/answer.py`.
+//! The `solve` answer and its table.
 //!
 //! **No hardcoded vocabulary.** Every word of English here comes from
 //! *puzzle-authored* templates; there is no relation→verb table. Two template
@@ -180,8 +180,8 @@ pub fn render_answer(
             // `saturation/type-exclusivity/colors.ein -e` says 5 at the
             // default cap and has 9 at `-m 6`. M1d
             // [S1d.3.3](../../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)
-            // T1d.3.3.2: a `Solution` has qualified itself since ein.py and
-            // the verdict that reports a model *set* did not.
+            // T1d.3.3.2: a `Solution` had always qualified itself and the
+            // verdict that reports a model *set* had not.
             if exhausted {
                 format!("Ambiguous — {k} distinct complete models; the puzzle is under-determined.")
             } else {
@@ -236,7 +236,7 @@ pub fn render_answer(
             };
             format!("Open — {}; {held}.", owed_phrase(terms, owes))
         }
-        // ein.py's fall-through prints the *class* name, and `Aborted` is the
+        // The fall-through prints the shape's *name*, and `Aborted` is the
         // only shape that reaches it.
         Answer::Aborted { .. } => "Unexpected verdict: Aborted".to_string(),
     }
@@ -297,8 +297,8 @@ fn two_col(rows: &[(String, String)], indent: &str, header: Option<(&str, &str)>
     out
 }
 
-/// `f"{indent}{a:<{w}}  {b}".rstrip()` — the width is in *characters*, as
-/// Python's format spec counts them.
+/// `indent`, `a` padded on the right to `w`, two spaces, `b`, trailing
+/// whitespace trimmed — the width is in *characters*, not bytes.
 fn pad_row(indent: &str, a: &str, b: &str, w: usize) -> String {
     let pad = w.saturating_sub(a.chars().count());
     let line = format!("{indent}{a}{}  {b}", " ".repeat(pad));
@@ -361,8 +361,8 @@ fn solution_block(ast: &Ast, terms: &mut Terms, kb: &Kb, header: &str) -> Vec<St
 /// All text is rendered from puzzle data; this function contributes the field
 /// labels and the layout, never domain vocabulary.
 ///
-/// `exhausted` qualifies **every count it prints**: a `Solution`'s `k` since
-/// ein.py, and — since M1d
+/// `exhausted` qualifies **every count it prints**: a `Solution`'s `k` from
+/// the start, and — since M1d
 /// [S1d.3.3](../../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)
 /// — an `Ambiguity`'s, which is the one that needed it most. `models`
 /// chooses the model *set*'s projection ([`crate::models::ModelsForm`]):
@@ -378,13 +378,13 @@ pub fn render_solution_table(
     source: Option<&str>,
     models: crate::models::ModelsForm,
 ) -> Result<String, String> {
-    // ein.py compiles the `:goal` pattern inside `_solution_block`, so a goal
-    // the compiler rejects — `(query :goal (?R Rex Animal))`, an unbound
-    // relation head — raises out of the renderer. Note *where*: only a
+    // The `:goal` pattern is compiled where a solution block is rendered, so
+    // a goal the compiler rejects — `(query :goal (?R Rex Animal))`, an
+    // unbound relation head — fails out of the renderer. Note *where*: only a
     // verdict with a model renders a block, so a `Contradiction` prints its
-    // unsat core and exits 0 with the same broken goal. Reproducing that is
-    // the whole subtlety, and getting it wrong turned one divergence into
-    // another for the length of one commit (S1a.6.6, 2026-08-20).
+    // unsat core and exits 0 with the same broken goal. That is the whole
+    // subtlety, and getting it wrong moved the failure to the other verdict
+    // for the length of one commit (S1a.6.6, 2026-08-20).
     let has_model = matches!(
         answer,
         Answer::Verdict(Verdict::Solution(_)) | Answer::Verdict(Verdict::Ambiguity(_))

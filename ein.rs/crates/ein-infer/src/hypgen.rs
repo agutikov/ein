@@ -5,15 +5,15 @@
 //! obligation-driven while the state owes something it may branch on
 //! ([`crate::oblgen`]), otherwise blind combinatorial. Then an eight-stage
 //! filter pipeline whose **attribution** — which counter a drop lands in — is
-//! a T1 observable through [`HypGenStats`] and through the `hyp` / `hypskip`
+//! observable through [`HypGenStats`] and through the `hyp` / `hypskip`
 //! events, and every rung feeds it: what changes between them is which
 //! candidates are proposed, never what happens to one afterwards.
 //!
 //! ### What must not change
 //!
 //! - **The filter order.** It decides which counter a drop is attributed to,
-//!   and the counters are compared. A reordering that looks like an
-//!   optimisation is a parity failure
+//!   and the counters are observable. A reordering that looks like an
+//!   optimisation changes them
 //!   ([S1a.4.1](../../../../docs/history/m1a_rust/README.md#s1a41--hypothesis-generation)).
 //! - **The candidate order.** It becomes `layer_1`'s singleton order and
 //!   therefore the whole traversal.
@@ -25,10 +25,9 @@
 //!
 //! ### What is free
 //!
-//! The cost. ein.py builds a `Fact`, a `Provenance` slot and two tuple hashes
-//! for each of ~18 k raw candidates per call on `zebra2`; here the *row key
-//! is the identity*, so a candidate costs one intern — a hash lookup that
-//! returns the same `FactId` every later call — and the two filters that
+//! The cost. There are ~18 k raw candidates per call on `zebra2`, and the
+//! *row key is the identity*, so a candidate costs one intern — a hash lookup
+//! that returns the same `FactId` every later call — and the two filters that
 //! reject almost all of them are single bit tests on it
 //! ([design/07](../../../../docs/history/m1a_rust/design/07_search_layer.md) §2).
 //!
@@ -38,8 +37,8 @@
 //! push is bounded by the distinct candidate space, not by the number of
 //! calls, so the split would buy a branch and cost the caller a second
 //! lookup. What the design was actually protecting against — a per-candidate
-//! allocation on the rejected path — is absent either way, and the `Fact`
-//! ein.py builds has no counterpart here at all.
+//! allocation on the rejected path — is absent either way, and a candidate is
+//! never anything but its `FactId`.
 
 use std::ops::ControlFlow;
 
@@ -65,7 +64,7 @@ pub const NO_HYPOTHESIS: &str = "no-hypothesis";
 /// `verdict` a `hyp` event carries.
 ///
 /// The discriminants are the **sorted** key order, because both readers walk
-/// them sorted: `HypGenStats.as_report_lines` and the stats diff.
+/// them sorted: [`HypGenStats::report_lines`] and the JSON summary.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Drop {
     FactAlreadyExists = 0,
@@ -108,13 +107,12 @@ impl Skip {
 
 /// Per-filter counters for one [`generate`] call.
 ///
-/// ein.py's two `defaultdict(int)`s are dense arrays here, and a **zero count
-/// means the key was never bumped** — which is the same thing, since a bump is
-/// `+= 1`. That equivalence is what lets [`HypGenStats::report_lines`]
-/// reproduce `as_report_lines`, whose loops walk only the keys that exist.
+/// The two per-filter tallies are dense arrays, and a **zero count means the
+/// key was never bumped**, since a bump is `+= 1`. That equivalence is what
+/// lets [`HypGenStats::report_lines`] print only the keys that were bumped.
 ///
 /// Invariant: `raw == emitted + sum(filtered)`, asserted by the renderer's
-/// caller on both sides.
+/// caller.
 #[derive(Clone, Default, Debug)]
 pub struct HypGenStats {
     pub raw: u64,
@@ -141,14 +139,14 @@ impl HypGenStats {
         self.pre_candidate[s as usize] += 1;
     }
 
-    /// `raw == emitted + sum(filtered.values())` — the invariant the stage's
+    /// `raw == emitted + sum(filtered)` — the invariant the stage's
     /// acceptance names, checked rather than asserted in prose.
     pub fn balances(&self) -> bool {
         self.raw == self.emitted + self.filtered.iter().sum::<u64>()
     }
 
-    /// `HypGenStats.as_report_lines` — what `--hyp-stats` prints, field widths
-    /// included. Keys sorted, and absent keys omitted.
+    /// What `--hyp-stats` prints, field widths included. Keys sorted, and
+    /// never-bumped keys omitted.
     pub fn report_lines(&self) -> Vec<String> {
         let mut out = vec![
             format!("  raw                {}", self.raw),
@@ -308,8 +306,7 @@ fn generate_rungs(
     ein_core::counters::bump(|c| c.hypgen_call += 1);
     let cfg = s.kb.program().config.clone().unwrap_or_default();
     // Built once per call (it compiles the rule plans, emitting `compile`
-    // events as ein.py's `Engine(kb).compile_all()` does) and reused per
-    // candidate.
+    // events as `Engine::compile_all` does) and reused per candidate.
     let lookahead = if cfg.enable_pre_branch_lookahead {
         Some(Lookahead::new(s)?)
     } else {
@@ -355,8 +352,8 @@ fn generate_rungs(
         }
     }
 
-    // T1a.4.1.1 — hoisted out of `_fill_slot`, which ein.py calls once per
-    // (object, relation, slot) and re-sorts `kb.names` in each. Safe because
+    // T1a.4.1.1 — hoisted out of the per-(object, relation, slot) fill, which
+    // would otherwise re-sort the names in each. Safe because
     // the sequence cannot change mid-call: the only mutation is
     // `write_negated`'s `(not h)`, whose head bumps the name `not` and whose
     // one argument is a nested fact — so no *new* argument name is indexed,
@@ -386,7 +383,7 @@ struct Ctx {
     seen: FxHashSet<FactId>,
 }
 
-/// `_emit` — count the candidate, run the pipeline, narrate, hand it on.
+/// Count the candidate, run the pipeline, narrate, hand it on.
 fn emit(
     s: &mut Session<'_>,
     ctx: &mut Ctx,
@@ -417,8 +414,8 @@ fn emit(
 ///
 /// Returns the **name of the filter that dropped it**, or `None` for a keeper
 /// — returning the name rather than a bool is what lets a `hyp` event say
-/// *why*, so a counter difference between two implementations locates itself
-/// instead of having to be bisected.
+/// *why*, so a counter that moves between two builds locates the filter that
+/// moved it instead of having to be bisected.
 fn apply_filters(
     s: &mut Session<'_>,
     ctx: &mut Ctx,
@@ -505,8 +502,8 @@ fn raw_candidates(
     for &RelPlan { rel, arity, skip } in relations {
         // The verdict is per relation, the **counter** is per (focal,
         // relation) — T1a.6.4.3 moves the first and leaves the second where
-        // it was, because `pre_candidate` and the `hypskip` stream are T1 and
-        // T2 observables and both count once per focal object.
+        // it was, because `pre_candidate` and the `hypskip` stream are both
+        // observable and both count once per focal object.
         if let Some(skip) = skip {
             stats.skip(skip);
             hypskip(s, rel, skip.as_str(), None);
@@ -538,8 +535,8 @@ struct RelPlan {
 /// `not` and which therefore cannot add a `(__closed__ R)` fact. The three
 /// skips are tested in the order that decides which counter a skip lands in.
 ///
-/// `kb.relations.values()` is walked in **insertion order** — a Python `dict`,
-/// whose order is a language guarantee and is observable right here.
+/// The program's relation registry is walked in **insertion order** —
+/// declaration order, which is observable right here.
 fn relation_plan(
     s: &Session<'_>,
     allowed: &Option<FxHashSet<Symbol>>,
@@ -610,7 +607,7 @@ fn fill_slot(
             hypskip(s, rel, "self_edge", Some(focal));
             continue;
         }
-        // `_build_args` — place the two names at their slots.
+        // Place the two names at their slots.
         let mut args = [Value::UNBOUND; 2];
         args[fixed_slot] = Value::sym(focal);
         args[other_slot] = Value::sym(filler);
@@ -681,9 +678,10 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms) -> Vec<Symbol> {
             && !reserved.contains(&n)
             && kb.category(terms, n) == NameCategory::Object
     });
-    // `sorted(kb.names)` — by name, which the rank table turns into a `u32`
-    // sort. `kb.names` is a set-order dict in ein.py, so this sort is not a
-    // convenience: it is the only thing making the sequence reproducible.
+    // By name, which the rank table turns into a `u32` sort. `Kb::names` is
+    // first-seen order, which is not a contract, so this sort is not a
+    // convenience: it is the only thing making the sequence a function of
+    // the names.
     //
     // The table is read **once**: `Interner::rank` re-enters its `OnceCell`
     // per call and a sort calls its key function O(n log n) times, which was
@@ -696,7 +694,7 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms) -> Vec<Symbol> {
 /// The focal order: descending fact-participation, ties by name, **stable**.
 ///
 /// The key already carries the name, so the stability is belt-and-braces —
-/// but the port should not depend on the key alone, and `sort_by` costs
+/// but the order should not depend on the key alone, and `sort_by` costs
 /// nothing here.
 fn by_participation(kb: &Kb, terms: &Terms, objects: &[Symbol]) -> Vec<Symbol> {
     // Decorate, sort, undecorate (T1a.6.4.3). `sort_by_key` evaluates its key
@@ -814,9 +812,8 @@ pub fn eligible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, Comp
 /// The relation-name set under a `(query … :KEYWORD …)` keyword.
 ///
 /// `None` means the keyword is absent — for `:hypothesis-relations` that is
-/// "unrestricted", and note ein.py's `or None`, which turns an *empty* list
-/// back into unrestricted too. The **first** matching keyword wins, not the
-/// last: ein.py returns out of the loop.
+/// "unrestricted", and note that an *empty* list is unrestricted too. The
+/// **first** matching keyword wins, not the last.
 fn query_relations(s: &Session<'_>, keyword: &str) -> Option<FxHashSet<Symbol>> {
     let query = s.kb.program().query()?;
     for &pair in query.kw_pairs.iter() {
@@ -830,7 +827,7 @@ fn query_relations(s: &Session<'_>, keyword: &str) -> Option<FxHashSet<Symbol>> 
             continue;
         }
         let (names, declared) = coerce_relation_names(s, value);
-        // `frozenset(...) or None` — an *empty list* is unrestricted. What
+        // An *empty list* is unrestricted. What
         // decides that is how many names the keyword **declared**, not how
         // many resolved: a name no fact or declaration ever used has no
         // `Symbol`, and dropping it silently would turn a whitelist of one
@@ -879,15 +876,14 @@ fn coerce_relation_names(s: &Session<'_>, value: ein_ir::NodeId) -> (FxHashSet<S
 /// **string** args only — a nested fact or an int has no name to index by and
 /// contributes nothing.
 ///
-/// The two reserved modes and the unknown-mode case return their ein.py
-/// messages verbatim; both are surfaced at first call rather than at load.
+/// The two reserved modes and the unknown-mode case return an error with a
+/// fixed message; both are surfaced at first call rather than at load.
 pub fn score_hypothesis(kb: &Kb, terms: &Terms, fact: FactId) -> Result<f64, ScoreError> {
-    // `kb.config or SolverConfig()` is what the *generator* does; scoring does
-    // **not**. ein.py reads the mode through
-    // `getattr(cfg, …) if cfg is not None else "most-constrained"`, so a KB
-    // with no `(config …)` block falls to the neutral score rather than to
-    // the default's `"popularity"` — and the two differ, since the default
-    // flipped in S1.5a.7. Reproduced, not tidied.
+    // The *generator* falls back to `SolverConfig::default()`; scoring does
+    // **not**. With no `(config …)` block the mode is `"most-constrained"`,
+    // so such a KB falls to the neutral score rather than to the default's
+    // `"popularity"` — and the two differ, since the default flipped in
+    // S1.5a.7. Kept, not tidied.
     let Some(cfg) = kb.program().config.clone() else {
         return Ok(0.0);
     };
@@ -908,24 +904,23 @@ pub fn score_hypothesis(kb: &Kb, terms: &Terms, fact: FactId) -> Result<f64, Sco
                 "hypgen-scoring={} is reserved for a follow-up stage; today \
                  only 'most-constrained' and 'popularity' are wired. See \
                  M1 P1.5as1.5a.7_hypgen_scoring_branch_info.md § T1.5a.7.3.",
-                ein_core::pyrepr::repr_str(mode)
+                ein_core::repr::repr_str(mode)
             )))
         }
         mode => Err(ScoreError::Unknown(format!(
             "unknown hypgen-scoring mode: {} (expected 'most-constrained' or \
              'popularity')",
-            ein_core::pyrepr::repr_str(mode)
+            ein_core::repr::repr_str(mode)
         ))),
     }
 }
 
-/// ein.py raises two *different* exception types here, and a caller may tell
-/// them apart, so the port does too.
+/// Two *different* failures, and a caller may tell them apart.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum ScoreError {
-    /// `NotImplementedError`.
+    /// A reserved mode that is not wired yet.
     NotImplemented(String),
-    /// `ValueError`.
+    /// A mode that does not exist.
     Unknown(String),
 }
 
@@ -1036,8 +1031,8 @@ mod tests {
     /// A KB with no `(config …)` block scores **0.0**, not the default mode's
     /// popularity — `score_hypothesis` reads the mode off `kb.config` and
     /// falls back to `"most-constrained"` when there is none, while the
-    /// dataclass default has been `"popularity"` since S1.5a.7. Two different
-    /// fallbacks for the same field, and the port keeps both.
+    /// `SolverConfig` default has been `"popularity"` since S1.5a.7. Two
+    /// different fallbacks for the same field, and both are kept.
     #[test]
     fn no_config_block_scores_neutral_not_popular() {
         assert_eq!(scored(SRC, None), Ok(0.0));
@@ -1053,10 +1048,9 @@ mod tests {
     }
 
     /// The two reserved modes and the unknown case, byte-for-byte — they are
-    /// user-visible text, and the messages were captured from ein.py rather
-    /// than paraphrased.
+    /// user-visible text.
     #[test]
-    fn the_unwired_modes_report_ein_pys_text() {
+    fn the_unwired_modes_report_their_fixed_text() {
         assert_eq!(
             scored(SRC, Some("branch-info")),
             Err(ScoreError::NotImplemented(
@@ -1077,7 +1071,7 @@ mod tests {
         );
     }
 
-    /// `as_report_lines`' field widths and its sorted, sparse key walk — a
+    /// `report_lines`' field widths and its sorted, sparse key walk — a
     /// counter that was never bumped has no line at all.
     #[test]
     fn the_stats_report_omits_the_keys_that_never_fired() {

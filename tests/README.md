@@ -31,9 +31,7 @@ One program per stdlib rule or tight family, each the smallest thing that
 activates it and each stating what it should and should not derive.
 
 **Why they exist.** Every other check in this repository is *relative*: the
-goldens compare ein.rs to its own past, and since
-[P1a.10](../docs/history/m1a_rust/README.md#p1a10--one-implementation) there is
-no second engine to compare it to at all. The stdlib was where that gap was
+goldens compare ein.rs to its own past. The stdlib was where that gap was
 widest —
 [the census](../docs/history/m1c_external_validation/stdlib_census.md)
 measured **38 of 73 rules never firing** on 2026-08-23 over 400 corpus runs,

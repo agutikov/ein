@@ -1,5 +1,4 @@
-//! The search layer's semantics — T1a.10.2.2, the ported half of ten Python
-//! files.
+//! The search layer's semantics — T1a.10.2.2.
 //!
 //! Everything above the saturator and below the CLI: the lattice's arithmetic
 //! ([`ein_infer::apriori`]), the commitment primitive
@@ -10,28 +9,22 @@
 //! ([`ein_infer::hypgen`]), state identity ([`ein_infer::canon`]) and what a
 //! solution node *is*.
 //!
-//! Replaces, under S1a.10.2:
+//! | subject |
+//! |---|
+//! | canonicalise / prefix-join / filter / `layer_1` |
+//! | the alive / dead-pre / dead-post trichotomy, and fail-fast |
+//! | the two contradiction shapes and the incremental check |
+//! | `examples/saturation/`'s 24 per-rule demos |
+//! | the lookahead's kill conditions |
+//! | the OR-aware smallest frontier (S1.21.7) |
+//! | `:hypothesis-relations` / `:no-hypothesis` |
+//! | `consistent ∧ complete` |
+//! | canonical model identity (P1.21 R1) |
+//! | the blind enumerator's solve |
 //!
-//! | Python original | subject |
-//! |---|---|
-//! | `tests/inference/test_apriori.py` | canonicalise / prefix-join / filter / `layer_1` |
-//! | `tests/inference/test_commitment.py` | the alive / dead-pre / dead-post trichotomy, and fail-fast |
-//! | `tests/inference/test_contradiction.py` | the two contradiction shapes and the incremental check |
-//! | `tests/inference/test_demos.py` | `examples/saturation/`'s 24 per-rule demos |
-//! | `tests/inference/test_dies_immediately.py` | the lookahead's kill conditions |
-//! | `tests/inference/test_frontier.py` | the OR-aware smallest frontier (S1.21.7) |
-//! | `tests/inference/test_guided_hypgen.py` | `:hypothesis-relations` / `:no-hypothesis` |
-//! | `tests/inference/test_solution.py` | `consistent ∧ complete` |
-//! | `tests/inference/test_state_key.py` | canonical model identity (P1.21 R1) |
-//! | `tests/inference/test_typed_blind_solve.py` | the blind enumerator's solve |
-//!
-//! **What did not come across.** Several Python tests reached into the Python
-//! object graph — `kb._alt_justifications`, `sol.generate_hypotheses`
-//! monkeypatched to count what a generator was asked for, a `_Collide` tuple
-//! subclass forcing every state key into one dict bucket. Those pin CPython,
-//! not the language. Where the internal protected an observable the observable
-//! is what is asserted here, and where it protected nothing the behaviour is
-//! reported `not-portable` rather than given a test that cannot fail.
+//! Internals — the alternative-justification table, what a generator was
+//! asked for — are not asserted; where one protects an observable, the
+//! observable is what is asserted here.
 
 use std::collections::BTreeSet;
 use std::ops::ControlFlow;
@@ -152,8 +145,7 @@ fn primary_kind(kb: &Kb, terms: &Terms, f: FactId) -> Option<ProvKind> {
 }
 
 /// The union of every contradiction witness's premise closure, under one
-/// reading of the OR-node — `_union_core` in the Python original, which took
-/// the `Primary` reading by default.
+/// reading of the OR-node.
 fn union_core(kb: &Kb, terms: &Terms, how: Justifications) -> FxHashSet<FactId> {
     let w: Vec<FactId> = detect(kb, terms)
         .iter()
@@ -162,14 +154,14 @@ fn union_core(kb: &Kb, terms: &Terms, how: Justifications) -> FxHashSet<FactId> 
     unsat_core(kb, terms, &w, how).into_iter().collect()
 }
 
-// ── The lattice's arithmetic — `test_apriori.py` ───────────────────
+// ── The lattice's arithmetic ───────────────────────────────────────
 
 /// Four propositions whose **content** order is the reverse of their
 /// **interning** order, so every ordering assertion below separates the two.
 ///
-/// ein.py sorts `(relation_name, args)` tuples; a `FactId` is interning order,
-/// which is an artefact of what the loader happened to see first. A port that
-/// sorted by id would pass a test built on ids and produce a different
+/// The lattice sorts by content, `(relation name, args)`; a `FactId` is
+/// interning order, which is an artefact of what the loader happened to see
+/// first. An order that sorted by id would pass a test built on ids and produce a different
 /// traversal on every puzzle.
 fn four_out_of_order() -> (Terms, [FactId; 4]) {
     let mut terms = Terms::new();
@@ -360,7 +352,7 @@ fn layer_1_of_an_empty_alive_set_is_empty() {
     );
 }
 
-// ── The commitment primitive — `test_commitment.py` ────────────────
+// ── The commitment primitive ───────────────────────────────────────
 
 /// A fork whose hypothesis triggers a rule keeps the consequence to itself,
 /// and `hypothesis_facts` is exactly what was committed.
@@ -646,7 +638,7 @@ fn fail_fast_cannot_reach_a_dead_pre() {
     }
 }
 
-// ── Contradiction detection — `test_contradiction.py` ──────────────
+// ── Contradiction detection ────────────────────────────────────────
 
 /// A pair is a contradiction however each side entered the KB — the S1.22.1b
 /// soundness fix.
@@ -851,7 +843,7 @@ fn fail_fast_agrees_with_the_post_hoc_scan_over_a_real_saturation() {
     assert_eq!(first_incremental, first_scan);
 }
 
-// ── The per-rule demos — `test_demos.py` ───────────────────────────
+// ── The per-rule demos ─────────────────────────────────────────────
 
 /// The eight rule directories, each with three scenarios.
 const DEMO_RULES: [&str; 8] = [
@@ -1005,7 +997,7 @@ fn each_demo_carries_a_query_goal() {
     }
 }
 
-// ── The one-step lookahead — `test_dies_immediately.py` ────────────
+// ── The one-step lookahead ─────────────────────────────────────────
 
 /// Saturate `src`, then ask the lookahead about `(rel arg…)`.
 fn dies(src: &str, rel: &str, args: &[&str]) -> bool {
@@ -1092,7 +1084,7 @@ fn a_kb_with_no_rules_never_kills() {
     assert!(!dies(src, "co-located", &["A", "B"]));
 }
 
-// ── The smallest frontier — `test_frontier.py` ─────────────────────
+// ── The smallest frontier ──────────────────────────────────────────
 
 /// One fact with two derivations, plus one clash — the R3 report's E3 fixture.
 ///
@@ -1293,7 +1285,7 @@ fn turning_alternative_recording_off_restores_the_primary_only_frontier() {
     );
 }
 
-// ── Guided hypothesis generation — `test_guided_hypgen.py` ─────────
+// ── Guided hypothesis generation ───────────────────────────────────
 
 /// Two declared relations over two objects — the blind enumerator proposes
 /// both unless a query keyword narrows it.
@@ -1371,7 +1363,7 @@ fn no_hypothesis_overrides_the_whitelist() {
     );
 }
 
-// ── What a solution node is — `test_solution.py` ───────────────────
+// ── What a solution node is ────────────────────────────────────────
 
 /// A KB is a solution node iff it is **both** consistent and complete.
 ///
@@ -1418,7 +1410,7 @@ fn solution_node_needs_both_halves() {
     assert!(complete && !consistent && !node, "complete, not consistent");
 }
 
-// ── Canonical state identity — `test_state_key.py` ─────────────────
+// ── Canonical state identity ───────────────────────────────────────
 
 fn solve_file(rel: &str, stop_after: Option<u64>) -> (Solved, Terms) {
     let mut ast = Ast::new();
@@ -1437,10 +1429,7 @@ fn solve_file(rel: &str, stop_after: Option<u64>) -> (Solved, Terms) {
 /// Solution-node identity is the canonical fact list itself, never a digest of
 /// it — so two distinct closed models can never merge.
 ///
-/// The Python original forced the failure by monkeypatching the state key into
-/// a tuple subclass with a constant hash, so every state landed in one dict
-/// bucket. That has no referent here: `state_key` *returns* the sorted fact
-/// list and every identity site compares lists, so there is no hash in the
+/// `state_key` *returns* the sorted fact list and every identity site compares lists, so there is no hash in the
 /// path to collide — which is the claim, and the first assertion below is how
 /// it is checked rather than argued. The second is the consequence the bug
 /// report (REVIEW_M1-01 §1) was written about: under hash-as-identity
@@ -1498,7 +1487,7 @@ fn distinct_closures_have_distinct_keys() {
     assert_ne!(zebra2, minus_15);
 }
 
-// ── The blind enumerator's solve — `test_typed_blind_solve.py` ─────
+// ── The blind enumerator's solve ───────────────────────────────────
 
 const BLIND: &str = "examples/branching/12_typed_blind_solve.ein";
 

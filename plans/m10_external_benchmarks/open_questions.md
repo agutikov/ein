@@ -74,19 +74,17 @@ worth more than a number, and it is the corpus's only link to
 
 ## Q-M10.3 — Where does the benchmark live, and is any of it a gate?
 
-- **(a) `ein.rs/crates/ein-bench` + `bench/` for data**, mirroring
-  `ein-conformance` + `conformance/`: a crate that shells out and links
-  nothing.
+- **(a) `ein.rs/crates/ein-bench` + `bench/` for data**: a crate that shells
+  out and links nothing.
 - **(b) A `utils/` script**, like the M1a measurement set (`bench_env.sh`,
   `e2e_baseline.py`, `profile_ein_rs.py`).
 - **(c) In-tree tests**, run by `cargo test --workspace`.
 
-**Recommendation: (a) for the code, and (c) for the answer half only.** After
-[P1a.10](../../docs/history/m1a_rust/README.md#p1a10--one-implementation) `cargo test
---workspace` is the whole gate and a shell script is where a check goes to
+**Recommendation: (a) for the code, and (c) for the answer half only.**
+`cargo test --workspace` is the whole gate and a shell script is where a check goes to
 die — but a per-commit gate that depends on six external programs fails for
 reasons that have nothing to do with the commit. So: the harness is a crate;
-the answer-parity subset runs in `nightly.yml` where the systems are
+the answer-agreement subset runs in `nightly.yml` where the systems are
 installable and reports `missing` where they are not; every number with a
 clock in it is taken by a person on a quiet machine.
 

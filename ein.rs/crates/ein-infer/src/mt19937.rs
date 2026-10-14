@@ -1,24 +1,21 @@
-//! CPython's `random.Random`, enough of it for `--shuffle`.
+//! MT19937 and a downward Fisher–Yates shuffle — what `--shuffle` draws from.
 //!
-//! `solve` shuffles each layer's candidates through one `random.Random(seed)`
+//! `solve` shuffles each layer's candidates through one seeded generator
 //! whose state **advances across layers**, so reproducing the traversal means
-//! reproducing the generator bit for bit: the Mersenne Twister, its
-//! `init_by_array` seeding, `getrandbits`, `_randbelow_with_getrandbits` and
-//! `shuffle`'s exact Fisher–Yates direction.
+//! reproducing the generator bit for bit: the Mersenne Twister, its standard
+//! `init_by_array` seeding, `getrandbits`, the rejection-sampling `randbelow`
+//! and the shuffle's exact Fisher–Yates direction
+//! ([`defined_behaviour.md`](../../../../docs/kernel/defined_behaviour.md) §3.1).
 //!
-//! This is [Q-M1a.5](../../../../docs/history/m1a_rust/open_questions.md) resolved as
-//! its option (a). The alternative was to declare shuffled runs T0-only, and
-//! the argument against it is what `--shuffle` is *for*: it exists to probe
-//! whether the verdict depends on traversal order, so a silent ordering
-//! difference there is exactly the one easiest to dismiss as "well, it is
-//! shuffled".
+//! The alternative was to fix only a shuffled run's answer and
+//! leave its order unspecified, and the argument against it is what
+//! `--shuffle` is *for*: it exists to probe whether the verdict depends on
+//! traversal order, so a silent ordering difference there is exactly the one
+//! easiest to dismiss as "well, it is shuffled".
 //!
-//! Ported from CPython's `_randommodule.c` — the reference implementation the
-//! standard library ships, unchanged since 2.4 — and checked against it by
-//! table rather than by reading: `utils/ir_oracle.py`'s `shuffle` op
-//! returned what `random.Random(seed).shuffle(list(range(n)))` produces, and
-//! the answers it gave are the tables in this file's own tests. The op left
-//! with the script at S1a.10.4; the tables are what remain of it.
+//! Checked by table rather than by reading: this file's own tests pin the
+//! first draws of four seeds — a zero, a negative and a wider-than-one-word
+//! seed among them — and two consecutive shuffles from one generator.
 
 const N: usize = 624;
 const M: usize = 397;
@@ -32,10 +29,10 @@ pub struct Mt19937 {
 }
 
 impl Mt19937 {
-    /// `random.Random(seed)` for an integer seed.
+    /// The generator for an integer seed.
     ///
-    /// CPython takes the **absolute value** and splits it into 32-bit words,
-    /// little-endian, then seeds by array — so `Random(-5)` and `Random(5)`
+    /// Seeding takes the **absolute value** and splits it into 32-bit words,
+    /// least significant first, then seeds by array — so seeds `-5` and `5`
     /// are the same generator, and a zero seed still seeds with one word.
     pub fn seeded(seed: i64) -> Mt19937 {
         let n = seed.unsigned_abs();
@@ -125,8 +122,8 @@ impl Mt19937 {
 
     /// `getrandbits(k)`, for `k` up to 64.
     ///
-    /// A single draw for `k <= 32`; above that CPython draws one word per 32
-    /// bits, **least significant first**, and shifts only the last one down.
+    /// A single draw for `k <= 32`; above that it draws one word per 32 bits,
+    /// **least significant first**, and shifts only the last one down.
     /// The word count is what matters: it decides how far the generator
     /// advances, and a shortcut that produced the same number from one draw
     /// would desynchronise every later call.
@@ -151,9 +148,9 @@ impl Mt19937 {
         out
     }
 
-    /// `_randbelow_with_getrandbits` — rejection sampling on the bit length,
-    /// which is what makes the result uniform *and* what makes the number of
-    /// draws data-dependent, so it has to be reproduced exactly.
+    /// `randbelow(n)` — draw `n`'s bit length in bits and reject until the
+    /// result is below `n`, which is what makes the result uniform *and* what
+    /// makes the number of draws data-dependent, so it has to be exact.
     fn randbelow(&mut self, n: usize) -> usize {
         if n == 0 {
             return 0;
@@ -167,10 +164,10 @@ impl Mt19937 {
         }
     }
 
-    /// `random.shuffle` — Fisher–Yates **downwards**, `for i in
-    /// reversed(range(1, len(x)))`. The direction is not a detail: reversing
-    /// it consumes the same numbers in a different order and produces a
-    /// different permutation from the same seed.
+    /// Fisher–Yates **downwards**: for `i` from the last index down to 1,
+    /// swap `i` with `randbelow(i + 1)`. The direction is not a detail:
+    /// reversing it consumes the same numbers in a different order and
+    /// produces a different permutation from the same seed.
     pub fn shuffle<T>(&mut self, x: &mut [T]) {
         for i in (1..x.len()).rev() {
             let j = self.randbelow(i + 1);
@@ -183,12 +180,11 @@ impl Mt19937 {
 mod tests {
     use super::*;
 
-    /// The first words `random.Random(seed).getrandbits(32)` produces,
-    /// captured from CPython 3.14 — including a seed wider than one word and
-    /// a negative one, because those are the two places the seeding differs
-    /// from the textbook `init_genrand`.
+    /// The first 32-bit words the seeded generator produces — including a
+    /// seed wider than one word and a negative one, because those are the two
+    /// places the seeding differs from the textbook `init_genrand`.
     #[test]
-    fn the_first_draws_match_cpython() {
+    fn the_first_draws_match_the_known_vectors() {
         for (seed, want) in [
             (0i64, [3_626_764_237u32, 1_654_615_998, 3_255_389_356]),
             (42, [2_746_317_213, 478_163_327, 107_420_369]),
@@ -206,9 +202,10 @@ mod tests {
 
     /// `shuffle` itself, and — the part `solve` depends on — that **one**
     /// generator carries its state across two shuffles, so the second list's
-    /// permutation is not the one a fresh `Random(seed)` would give it.
+    /// permutation is not the one a fresh generator from the same seed would
+    /// give it.
     #[test]
-    fn shuffle_matches_cpython_and_carries_state() {
+    fn shuffle_matches_the_known_permutations_and_carries_state() {
         let mut r = Mt19937::seeded(42);
         let mut x: Vec<u32> = (0..10).collect();
         r.shuffle(&mut x);

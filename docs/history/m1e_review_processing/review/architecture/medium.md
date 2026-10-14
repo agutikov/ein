@@ -25,7 +25,7 @@ Each copy-pair is a standing invitation for the next milestone to update one sid
 
 ### Recommendation
 
-One constant for reserved names; one macro-ingestion path; one timeline emitter (or a stated parity reason); a test that diffs run_tests.sh's step list against per-commit.yml (both are simple enough to parse).
+One constant for reserved names; one macro-ingestion path; one timeline emitter (or a stated reason for two); a test that diffs run_tests.sh's step list against per-commit.yml (both are simple enough to parse).
 
 ---
 

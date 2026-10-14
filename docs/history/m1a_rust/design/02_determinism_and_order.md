@@ -1,13 +1,13 @@
 # 02 — Determinism and iteration order
 
-**Settles:** every place in ein.py where iteration order is observable,
-and the Rust structure that reproduces it.
-**Phase:** audited in [P1a.0](../README.md#p1a0--conformance-harness-and-shared-assets),
+**Settles:** every place where iteration order is observable, and the
+structure that fixes it.
+**Phase:** audited in [P1a.0](../README.md#p1a0--corpus-and-shared-assets),
 consumed by [P1a.1](../README.md#p1a1--ir-frontend)–[P1a.5](../README.md#p1a5--presentation-and-cli).
 
 ---
 
-## 1. Why order is the hard part of this port
+## 1. Why order is the hard part
 
 Nothing in the engine's *semantics* depends on iteration order — S1.5a.1a
 made the search order content-determined, S1.21.8 demoted the priority
@@ -18,247 +18,230 @@ which decides the trace, which decides `--trace out.md`'s bytes; which
 candidate hypgen yields first decides `stats.filtered` attribution; and
 so on down to `--dump-states`.
 
-So T2/T3 parity ([01](01_parity_contract.md)) is, almost entirely, the
-problem of **reproducing CPython's ordering guarantees in Rust**. This
-document is the audit. It is meant to be exhaustive; anything found
-later that is not here is a bug in the audit and gets added.
+So a reproducible output is, almost entirely, the problem of **fixing
+every observable order**. This document is the audit. It is meant to be
+exhaustive; anything found later that is not here is a bug in the audit
+and gets added.
 
-Three ordering facts about CPython that the port leans on:
+Three ordering facts the engine leans on:
 
-- **`dict` and `set` differ.** `dict` preserves insertion order (a
-  language guarantee since 3.7); `set` does not, and its iteration order
-  depends on hash values and insertion history. Every `set` in ein.py is
-  therefore either (a) only ever membership-tested, or (b) `sorted()`
-  before use. The audit confirms this holds — see §4.
-- **`sorted()` on `str` compares Unicode code points**, and Rust's
-  `Ord for str` compares UTF-8 bytes. **These give the same order** —
-  UTF-8 is order-preserving on code points. So `sorted(names)` in Python
-  and `names.sort()` in Rust agree for all inputs.
-- **`sorted()` is stable**, so a sort on a partial key leaves ties in
-  their input order. Rust's `sort_by`/`sort_by_key` are also stable
-  (`sort_unstable_*` are not — **never use them at an observable site**).
+- **An ordered container and a hash container differ.** A `Vec` or an
+  `IndexMap`-shaped registry keeps insertion order; a hash map or set
+  does not, and its iteration order depends on hash values and insertion
+  history. Every hash container is therefore either (a) only ever
+  membership-tested, or (b) sorted before use. The audit confirms this
+  holds — see §4.
+- **Names sort by Unicode code point**, which is what `Ord for str`
+  gives: UTF-8 byte order is code-point order.
+- **Every observable sort is stable**, so a sort on a partial key leaves
+  ties in their input order: `sort_by` / `sort_by_key`, and
+  `sort_unstable_*` **never at an observable site**.
 
 ---
 
-## 2. Ordered containers ein.rs must provide
+## 2. Ordered containers
 
-| ein.py | order semantics | ein.rs |
+| container | order semantics | structure |
 |---|---|---|
-| `kb.relations`, `kb.rules`, `kb.hrules`, `kb.macros` | insertion order; iterated by `hypgen._raw_candidates`, `Engine.compile_all`, `hrule.Hrules`, `store.rebuild_indexes` | `IndexMap`-shaped: `Vec<T>` + `FxHashMap<Symbol, u32>` |
-| `kb.facts` | append order; drives `rebuild_indexes`, `all_facts()`, `state_key` input | `Vec<FactId>` |
-| `kb._facts_by_relation[R]` | append order; **drives match order** via `match._candidates` | `Vec<FactId>` per relation |
-| `kb._facts_by_rel_slot_val[(R,i,v)]` | append order; the narrowed candidate list | `Vec<FactId>` |
-| `kb.names` | rebuilt as a dict comprehension over a `set` union → **order is set-order**, but every consumer sorts (`sorted(kb.names)`) or looks up by key | `FxHashMap<Symbol, NameRef>`; consumers sort |
-| `Engine._cache` | insertion order; iterated by `_enqueue_pass`, `_iter_pending`, `closed.producible_relations`, `naf_deps` | `Vec<JoinPlan>` + `FxHashMap<CacheKey, PlanId>` |
+| the registries — relations, rules, hrules, macros | insertion order; iterated by hypgen's `raw_candidates`, `Engine::compile_all`, hrule matching, `rebuild_indexes` | `IndexMap`-shaped: `Vec<T>` + `FxHashMap<Symbol, u32>` |
+| the fact list | append order; drives `rebuild_indexes`, `all_facts()`, `state_key` input | `Vec<FactId>` |
+| a relation's extent | append order; **drives match order** via candidate selection | `Vec<FactId>` per relation |
+| a participation bucket `(R, i, v)` | append order; the narrowed candidate list | `Vec<FactId>` |
+| `names` | unordered; every consumer sorts or looks up by key | `FxHashMap<Symbol, NameRef>`; consumers sort |
+| an engine's plan list | insertion order; iterated by the enqueue pass, the pending check, `closed`'s producible relations, `naf_deps` | `Vec<JoinPlan>` + `FxHashMap<CacheKey, PlanId>` |
 | `bindings` (match result) | **binding order** = order vars were first bound; lands in `Provenance.bindings` and thus in the trace | registers + a `SmallVec<[VarSlot; 8]>` bind trail ([05](05_matcher.md)) |
-| `Provenance.premises_raw` | plan step order (rebuilt by `_seed_steps` to match `run`'s order) | `SmallVec<[FactId; 4]>` in step order |
-| `Saturator._queue` / `_parked` | `heapq` min-heap on `(priority, tiebreaker, …)` | `BinaryHeap<Reverse<(u32, u64)>>` + side table |
+| `Provenance.premises` | plan step order (a seeded match puts the seeded fact at its own step) | `SmallVec<[FactId; 4]>` in step order |
+| the saturator's queue / parked set | min-heap on `(priority, tiebreaker, …)` | `BinaryHeap<Reverse<(u32, u64)>>` + side table |
 
 ### The heap is exactly reproducible
 
-`heapq` entries are 6-tuples whose first two elements are
-`(priority, tiebreaker)`; `_tiebreaker` is a per-Saturator counter
-incremented on every enqueue, so **no two entries ever compare equal on
-the first two elements** and tuple comparison never reaches element 2
-(the `JoinPlan`, which is not orderable). Pop order is therefore a total
-function of the key sequence, and any correct priority queue reproduces
-it. ein.rs uses `BinaryHeap` with a reversed `(priority, tiebreaker)`
-key.
+An agenda entry is keyed `(priority, tiebreaker)`, and the tiebreaker is
+a per-saturator counter incremented on every enqueue, so **no two entries
+ever compare equal on the key** and comparison never reaches the payload
+(the plan, which is not orderable). Pop order is therefore a total
+function of the key sequence, and any correct priority queue gives it —
+here a `BinaryHeap` with a reversed `(priority, tiebreaker)` key.
 
-The same argument covers `_parked`, including the re-push of the
-`rejected` list at the end of `_admit_from_boundary`: the heap's internal
-array differs between implementations, its pop order does not.
+The same argument covers the parked set, including the re-push of the
+rejected candidates at the end of a boundary round: whatever the heap's
+internal array holds, its pop order is fixed.
 
 ---
 
 ## 3. Order-sensitive sites — the audit
 
-Each row: the site, what it orders, and the Rust obligation. Sites are
+Each row: the site, what it orders, and the obligation. Sites are
 grouped by which output they can perturb.
 
-### 3a. Sites that change the firing sequence (→ trace, T2)
+### 3a. Sites that change the firing sequence (→ trace, event stream)
 
 | site | orders | obligation |
 |---|---|---|
-| `match._candidates` | the fact list scanned for a `Scan`/`Join` | preserve per-relation and per-`(rel,slot,val)` append order; **and pick the same bucket** — Python takes the *first* slot with a known value, scanning `arg_slots` left to right |
-| `match._run_steps` | recursion = left-deep, steps in plan order | same step order; the register machine must not reorder joins ([05](05_matcher.md) § Join order) |
-| `match._seed_steps` | seeds at *each* matching step index `i`, in step order, rebuilding `premises` at `prem_pos` | identical loop |
-| `match.run` / `run_guarded` | `steps` first, then each `extra_match_plans` disjunct in order | identical |
-| `Engine.compile_all` | `kb.rules.values()` × `_activators_for` (which reads `_rule_apps_by_rule[name]` append order) | ordered registries |
-| `Saturator._enqueue_pass` | full pass iterates `cache.values()`; delta pass iterates `delta_facts` then `pos_index[rel]` | `pos_index` values are `Vec<PlanId>` built by iterating the cache in order |
-| `Saturator._closure_step` | mirror firings before rule firings; `_mirror_queue` is a **LIFO** (`.pop()`) | `Vec` used as a stack — not a queue, despite the name |
-| `Saturator._next_mirror_firing` | cold seed iterates `_symmetric_rels()` (a `frozenset`!) then each relation's extent | **`frozenset` iteration order leaks here.** See §5 — this is the one genuine hazard found. |
-| `Saturator._admit_from_boundary` | parked pop order; first passing candidate wins | heap parity as above |
-| `World.first_failing` | guards in tuple order | identical |
+| candidate selection (`match_`) | the fact list scanned for a `Scan`/`Join` | preserve per-relation and per-`(rel,slot,val)` append order; **and pick the bucket of the *first* slot with a known value**, scanning the arg slots left to right |
+| step execution (`match_`) | left-deep, steps in plan order | the register machine must not reorder joins ([05](05_matcher.md) § Join order) |
+| the seeded match (`run_seeded`) | seeds at *each* matching step index `i`, in step order, with the seeded fact at its own premise position | the same loop |
+| `run` / `run_guarded` | `steps` first, then each `extra_match_plans` disjunct in order | the same |
+| `Engine::compile_all` | rules × activators (the rule's applications, in append order) | ordered registries |
+| `enqueue_pass` | full pass iterates the plan list; delta pass iterates the delta facts then `pos_index[rel]` | `pos_index` values are `Vec<PlanId>` built by iterating the plan list in order |
+| `closure_step` | mirror firings before rule firings; the mirror queue is a **LIFO** | `Vec` used as a stack — not a queue, despite the name |
+| `next_mirror_firing` | cold seed iterates the symmetric relations, then each relation's extent | **sorted by name** — a hash-ordered set here is the one genuine hazard found. See §5 |
+| `admit_from_boundary` | parked pop order; first passing candidate wins | the heap argument above |
+| `first_failing` | guards in tuple order | the same |
 
-### 3b. Sites that change search-layer counters (T1)
+### 3b. Sites that change search-layer counters
 
 | site | orders | obligation |
 |---|---|---|
-| `hypgen._candidate_objects` | `sorted(kb.names)` → name order | sort interned *strings*, not `Symbol` ids |
-| `hypgen._generate` | `sorted(objects, key=(-participation, name))`, **stable** | stable sort with the same key |
-| `hypgen._raw_candidates` | `kb.relations.values()` insertion order, then `slot_idx` ascending | ordered registry |
-| `hypgen._fill_slot` | `_candidate_objects(kb)` again (name order) | same |
-| `apriori.layer_1` | `sorted(alive)` over `FactId` tuples | see §5 — mixed-type args |
-| `apriori.apriori_prefix_join` | `sorted(a_prev)`, then the `break` on prefix mismatch | identical comparator |
-| `apriori.order_candidates` | `sorted(candidates)` (lex) or `sorted(key=(-score, c))` | identical, stable |
-| `nogoods.emit_nogood` | subsumption scan over a `set` — **order-free** (removal + insert) | any container |
-| `_helpers._record_setnode` | `tuple(sorted(commitment)) < tuple(sorted(cur.commitment))` | same comparator |
+| `hypgen::candidate_objects` | name order | sort by interned *strings*, not `Symbol` ids |
+| `hypgen::generate` | objects sorted by `(-participation, name)`, **stable** | stable sort with that key |
+| `hypgen::raw_candidates` | relations in declaration order, then slot index ascending | ordered registry |
+| `hypgen::fill_slot` | `candidate_objects` again (name order) | same |
+| `apriori::layer_1` | sorts `alive` | see §5 — mixed-type args |
+| `apriori::apriori_prefix_join` | the sorted previous layer, then the `break` on prefix mismatch | the same comparator |
+| `apriori::order_candidates` | sorted (lex) or by `(-score, c)` | stable |
+| `nogoods::emit_nogood` | subsumption scan over a set — **order-free** (removal + insert) | any container |
+| `solve`'s `record_node` | the smaller of two sorted commitments for one state | the same comparator |
 
-### 3c. Sites that change output bytes (T3)
+### 3c. Sites that change output bytes
 
 | site | orders / formats | obligation |
 |---|---|---|
-| `canon.state_key` | `sorted(facts, key=repr)` | **identity only** — any total order is equivalent (see §6). *But* `_lattice_dump` sorts nodes by `repr(state_key)` for the dump tree, so under `--dump-states` the repr order **is** observable → needs `python_repr` (§7) |
-| `explain._build_graph` / `_recorded_fallback` | `sorted(…, key=repr)` over `Fact`s; `" ".join(sorted(repr(f) for f in core))` | `python_repr` of a `Fact` dataclass |
-| `trace.answer` / `trace.linearize` | several `sorted({…})` over sets of strings | string sort |
-| `kb.render._schema_nodes` | `sorted(type_set)`, `sorted(insts - types)` | string sort |
-| `render.dot_util.hashed_id` | content-hash-derived node ids | **verify the hash** — see §8 |
-| `cli.solve._print_final` | `sorted(core, key=(relation_name, tuple(fact_sexpr(a))))` | same key |
-| `naf_deps` | `tuple(sorted(derived))`, `tuple(sorted(declared))` | string sort |
-| `store.rebuild_indexes` | `_rules_by_relation` = `sorted(names)` of a `set` | string sort |
-| `SolverConfig` field order (`--dump-config`) | dataclass declaration order | fixed array in the same order |
-| `HypGenStats.as_report_lines` | `sorted(self.filtered)`, `sorted(self.pre_candidate)` | string sort over the counter names |
+| `canon::state_key` | the sorted fact list | **identity only** — any total order is equivalent (see §6). *But* the lattice dump sorts nodes by the `repr` of the state key, so under `--dump-states` the repr order **is** observable → needs `repr` (§7) |
+| `explain::build_graph` / `recorded_fallback` | sorted by `repr` over facts; the fallback keys on the core's `repr`s, sorted and space-joined | the `repr` of a `Fact` (§7) |
+| the trace's answer and `linearize` | several sorts over sets of strings | string sort |
+| `kb_dot`'s `schema_nodes` | the sorted type set, the sorted instances that are not types | string sort |
+| `dot_util::hashed_id` | content-hash-derived node ids | **verify the hash** — see §8 |
+| `solve`'s `print_final` | the core sorted by `(relation, its args' s-exprs)` | the same key |
+| `naf_deps` | derived and declared, each sorted | string sort |
+| `rebuild_indexes` | rules by relation = sorted names | string sort |
+| `SolverConfig` field order (`--dump-config`) | declaration order | a fixed array in that order |
+| `HypGenStats`' report lines | the filter and pre-candidate counter names, sorted | string sort over the counter names |
 
 ---
 
 ## 4. `set` audit — where non-determinism could have leaked and doesn't
 
-Every `set`/`frozenset` in the engine, and its use:
+Every hash set in the engine, and its use:
 
 | container | use | verdict |
 |---|---|---|
-| `Saturator._seen` | membership | safe |
-| `Engine._fired` | membership | safe |
-| `kb._negated_facts` | membership | safe |
-| `kb._nogoods` | membership + subsumption (order-free) | safe |
-| `NafGuard.watched` / `scope` | `sorted()` before use in `_watch_stamp`; `scope` used as a filter | safe |
-| `JoinPlan…shared_vars` | informational only | safe |
-| `explain` env sets | sorted with `key=repr` before emission | safe |
-| `unsat_core` (`set[Fact]`) | sorted at *most* display sites | **hazard — §5 H4.** Two sites did not sort: `render/slice.py`'s `⊥` edges and `_lattice_dump.py`'s `unsat_core.jsonl`. Fixed at S1a.0.1 |
-| `alive` (`frozenset[FactId]`) | `sorted(alive)` in `layer_1`; membership elsewhere | safe *modulo* §5 |
-| `Saturator._symmetric_rels()` (`frozenset[str]`) | **iterated directly** in `_next_mirror_firing`'s cold seed and `_has_pending_mirror` | **hazard — §5** |
+| the saturator's `seen` | membership | safe |
+| the engine's `fired` | membership | safe |
+| the negated set | membership | safe |
+| the no-good store | membership + subsumption (order-free) | safe |
+| `NafGuard.watched` / `scope` | sorted before use in the watch stamp; `scope` used as a filter | safe |
+| a plan's shared vars | informational only | safe |
+| `explain` env sets | sorted by `repr` before emission | safe |
+| `unsat_core` (a set of facts) | sorted at *most* display sites | **hazard — §5 H4.** Two sites did not sort: the trace slice's `⊥` edges and the lattice dump's `unsat_core.jsonl`. Both do |
+| `alive` (a set of `FactId`s) | sorted in `layer_1`; membership elsewhere | safe *modulo* §5 |
+| the symmetric relations | **iterated** in `next_mirror_firing`'s cold seed and the pending-mirror check | **hazard — §5** |
 
 ---
 
 ## 5. The four real hazards
 
 > H1–H3 were predicted by this audit and confirmed at
-> [S1a.0.1](../README.md#s1a01--parity-contract-corpus-manifest-divergence-ledger).
-> **H4 was not** — the harness found it on its first Python-vs-Python run, on
-> the second corpus entry it looked at. That is the argument for building the
-> instrument before the thing it measures, restated as evidence.
+> [S1a.0.1](../README.md#s1a01--corpus-manifest-and-determinism-audit).
+> **H4 was not** — the determinism harness found it on the second corpus
+> entry it looked at. That is the argument for building the instrument
+> before the thing it measures, restated as evidence.
 
-### H1 — `frozenset` iteration in the symmetric mirror
+### H1 — set iteration in the symmetric mirror
 
-`Saturator._next_mirror_firing` cold-seeds `_mirror_queue` by iterating
-`self._symmetric_rels()`, a `frozenset[str]`. With two or more
-`(__symmetric__ R)` markers, the seed order — and therefore the mirror
-firing order — depends on CPython's set iteration, which depends on
-string hashes, which depend on `PYTHONHASHSEED`.
+`next_mirror_firing` cold-seeds the mirror queue by iterating the
+relations marked `(__symmetric__ R)`. With two or more markers, a
+hash-ordered set there makes the seed order — and therefore the mirror
+firing order — depend on hash values, so one puzzle could produce two
+firing sequences across runs.
 
-**This means ein.py is not self-parity-stable today** on such a puzzle.
-Verify with `PYTHONHASHSEED=0` vs `=1` in
-[S1a.0.1](../README.md#s1a01--parity-contract-corpus-manifest-divergence-ledger);
-if it reproduces, the fix is a one-line `sorted(...)` in ein.py — a
-genuine ordering bug the port surfaced — and ein.rs then sorts too. The
+The seed iterates them **sorted by name**, pinned by
+`saturator.rs`'s `the_mirror_seeds_its_relations_in_name_order`. The
 current corpus may not trigger it (zebra2 marks few relations); the
 fuzzer will.
 
-### H2 — `sorted()` over `FactId`s with mixed-type args
+### H2 — sorting `alive` with mixed-type args
 
-`apriori.layer_1` does `sorted(alive)` where an element is
-`(relation_name, args)` and `args` may mix `str` and `int`. Two facts of
-the *same* relation whose slot *i* is `str` in one and `int` in the other
-make Python raise `TypeError: '<' not supported between instances of
-'str' and 'int'`. `canon.state_key` avoids this deliberately
-(`key=repr`); `apriori` does not.
+`layer_1` sorts `alive`, and two facts of the *same* relation may hold a
+symbol in slot *i* in one and an integer in the other — or, from an
+`hrule` whose `:assert` head is a `(not …)`, a nested `Fact` in each.
 
 **Confirmed at S1a.0.1, with a narrower scope than expected.** Blind
-hypgen cannot reach it: `_raw_candidates` builds candidates out of
-`kb.names`, and `rebuild_indexes` only enters an arg there
-`if isinstance(a, str)`. Only an `hrule` can carry a non-string through,
-because its `:assert` args come from bindings. Reproducer:
-[`examples/ein-bugs/mixed-type-hypothesis.ein`](../../../../examples/ein-bugs/mixed-type-hypothesis.ein).
+hypgen cannot reach it: it builds candidates out of the KB's names, and
+only symbols enter those. Only an `hrule` can carry a non-symbol through,
+because its `:assert` args come from bindings. Reproducers:
+[`examples/ein-bugs/mixed-type-hypothesis.ein`](../../../../examples/ein-bugs/mixed-type-hypothesis.ein)
+and
+[`nested-fact-hypothesis.ein`](../../../../examples/ein-bugs/nested-fact-hypothesis.ein).
 
-ein.rs's `Value` has a total order by construction (tag, then payload),
-so it cannot raise. The port must therefore decide what "parity" means
-for an input where Python crashes:
+`Value` has a total order by construction, so the sort always answers:
+`Int < Sym < Fact` by tag, then within a tag
+([defined_behaviour.md §2.1](../../../kernel/defined_behaviour.md#21-fact-arguments-are-totally-ordered-int--sym--fact)).
 
-- **Recommended:** ein.rs orders `Int < Symbol < Fact` (tag order) and
-  the harness records this as an accepted divergence (D-class:
-  *ein.rs is total where ein.py raises*), with a fixture pinning that
-  ein.py raises `TypeError` and ein.rs solves.
-- The alternative — fixing ein.py to sort by `repr` here too — changes
-  ein.py's candidate order and would re-baseline every T2 golden. Not
-  worth it unless a real puzzle needs it. Tracked as Q-M1a.4.
+### H3 — `--shuffle` is one seeded generator across layers
 
-### H3 — `--shuffle` needs CPython's Mersenne Twister
-
-`solver._explore_layers` builds `random.Random(cfg.lattice_order_seed)`
-and calls `.shuffle(candidates)` once per layer, carrying RNG state
-across layers. Reproducing that in Rust means porting MT19937 seeding
-(`init_by_array` on the seed) plus CPython's `random.shuffle` loop
-(`for i in reversed(range(1, len(x))): j = _randbelow(i+1); x[i], x[j] = x[j], x[i]`)
-and `_randbelow_with_getrandbits`. ≈ 60 lines, deterministic, testable
-against a table of `Random(seed).shuffle(list(range(n)))` outputs
-generated from Python. Recommended; see Q-M1a.5.
+`--shuffle` builds one generator from `lattice_order_seed` and shuffles
+each layer's candidates with it, carrying its state across layers, so
+the traversal is reproducible only if the generator is reproduced bit for
+bit. It is MT19937 with the standard `init_by_array` seeding — over the
+seed's absolute value split into 32-bit words, least significant first —
+and the shuffle is a downward Fisher–Yates that, for `i` from `len − 1`
+down to 1, swaps `x[i]` with `x[randbelow(i+1)]`, `randbelow` drawing by
+rejection from `getrandbits` (`ein-infer/src/mt19937.rs`,
+[defined_behaviour.md §3](../../../kernel/defined_behaviour.md#3-search)).
+≈ 60 lines, deterministic, pinned by a table of draws.
 
 **Confirmed at S1a.0.1**: two `--shuffle` runs at the same seed are
 byte-identical, and across seeds the verdict, every counter and the root
 shape agree — only the *order* the k models are found in moves. That is
 why `--json-summary` sorts its `solutions` array by model: leaving the
-engine's order there would make T0 report a difference on exactly the
-runs whose point is that there is none.
+engine's order there would report a difference on exactly the runs whose
+point is that there is none.
 
 ### H4 — `unsat_core` iterated raw at two display sites
 
 The §4 audit recorded `unsat_core` as "sorted at every display site".
 Two sites were not:
 
-- `render/slice.py`'s refuted-branch block iterates the core to emit
+- the trace slice's refuted-branch block iterates the core to emit
   `<fact> -> "⊥"` edges. That DOT lands verbatim in `solve --trace`
-  output, so **the same puzzle produced two different trace files across
-  runs** — `PYTHONHASHSEED=0` and `=42` differ by one transposed edge on
+  output, so in hash order **the same puzzle produces two different
+  trace files across runs** — one transposed edge on
   `examples/branching/04_two_levels.ein`.
-- `_lattice_dump.py` writes `unsat_core.jsonl` one line per core fact in
+- the lattice dump writes `unsat_core.jsonl` one line per core fact in
   iteration order, so the `--dump-states` tree carried the same
   instability.
 
-Both fixed at S1a.0.1 with `sorted(…, key=repr)` — `key=repr` rather than
-a bare `sorted` because it matches `inference.explain`'s existing
-convention and is total over the mixed arg types H2 describes. Pinned by
-`tests/render/test_slice_dot.py::test_bottom_edges_are_sorted_not_set_ordered`
-and `tests/inference/lattice/test_lattice_dumper.py::test_unsat_core_lines_are_sorted`,
-both of which fail on every hash seed without the fix.
+Both sort by `repr` — rather than by a bare comparator because it is the
+explanation's existing convention and is total over the mixed arg types
+H2 describes.
 
 The audit was wrong in a specific and instructive way: it classified the
 container by what *most* of its consumers do. The rule that replaces it —
-for the port and for the remaining §4 rows — is that a `set` is safe only
-when **every** reader is checked, and "safe" is a claim about call sites,
-not about containers.
+for the remaining §4 rows — is that a set is safe only when **every**
+reader is checked, and "safe" is a claim about call sites, not about
+containers.
 
 ---
 
 ## 6. Where order provably does *not* matter
 
-Worth stating explicitly so the port does not over-constrain itself:
+Worth stating explicitly so the engine does not over-constrain itself:
 
 - **`state_key` identity.** The key is a sorted permutation of a
   multiset. For any two KBs, sorted-by-X keys are equal iff the
-  multisets are equal iff sorted-by-Y keys are equal. So ein.rs may sort
+  multisets are equal iff sorted-by-Y keys are equal. So the engine sorts
   by `FactId` (a `u32` sort) instead of `repr` **for identity purposes**
-  — 1-2 orders of magnitude cheaper — and only needs `python_repr`
-  ordering where the key is *displayed* (§7). P1.21 R1's rule ("identity
+  — 1-2 orders of magnitude cheaper — and needs `repr` ordering only
+  where the key is *displayed* (§7). P1.21 R1's rule ("identity
   is the representation, never a hash of it") is preserved: the
   representation is still the full sorted vector; only the sort key
   changes.
-- **`frozenset` binding keys** (`_binding_key`, `Engine._fired`): hashed
-  and compared, never iterated.
-- **`_nogoods` subsumption**: emitting clause *c* removes every stored
+- **Binding keys** (`binding_key`, `fired`): hashed and compared, never
+  iterated.
+- **No-good subsumption**: emitting clause *c* removes every stored
   superset and inserts *c*; the resulting minimal set is order-free.
-- **Index rebuild**: `rebuild_indexes` is a pure function of
-  `kb.facts` order, which is preserved.
+- **Index rebuild**: `rebuild_indexes` is a pure function of the fact
+  list's order, which is preserved.
 
 ---
 
@@ -395,91 +378,64 @@ the second fails the freeze-count test.
 
 ---
 
-## 7. `python_repr` — a small compatibility module
+## 7. `repr` — the value renderer
 
-A handful of T3 sites sort or print `repr()` of Python values. ein.rs
-needs a faithful renderer for exactly three shapes:
+A handful of output sites sort or print the `repr` of a value. The
+renderer covers exactly the shapes a fact argument can take:
 
-| Python value | repr | note |
+| value | repr | note |
 |---|---|---|
-| `str` | `'text'`, `"it's"` when it contains `'` and no `"` | plus `\\`, `\n`, `\r`, `\t`, `\xNN`, `\uNNNN` escapes |
-| `int` | decimal, `-` prefix | |
-| `tuple` | `(a, b)`; **1-tuples are `(a,)`**; `()` for empty | |
-| `Fact` | `Fact(relation_name='co-located', args=('a', 'b'))` | dataclass repr; `provenance`/`raw`/`loc`/`_kb` are `repr=False` |
+| symbol | `'text'`; `"it's"` when the body contains `'` and no `"` | the chosen quote and `\` backslash-escaped; `\t` `\n` `\r`; any other C0 control and DEL as `\xNN`; any other non-printable code point as `\xNN` / `\uNNNN` / `\UNNNNNNNN`, lower-case hex |
+| `int` | canonical decimal, `-` prefix | |
+| tuple | `(a, b)`; **1-tuples are `(a,)`**; `()` for empty | |
+| `Fact` | `Fact(relation_name='co-located', args=('a', 'b'))` | the relation name as a symbol and the args as a tuple, a nested fact recursively |
 
-Scope: ~120 lines in `ein-core::pyrepr`, with a differential test that
-feeds every corpus value through both `repr()` and the Rust renderer.
-Used only at display/sort sites — never on a hot path.
+Scope: ~120 lines in `ein-core::repr`, pinned row by row by
+`ein-core/tests/format_tables.rs`. Used only at display/sort sites —
+never on a hot path.
 
-**Alternative considered and rejected:** change ein.py's `key=repr`
-sorts to explicit comparators. It would delete this module, but it
-re-baselines existing goldens and edits M1 code for the port's
-convenience — exactly the direction the milestone's non-goals forbid.
-Revisit only if `python_repr` turns out to be a bug farm.
+**Alternative considered and rejected:** replace the `repr` sorts with
+explicit comparators. It would delete this module, but it re-baselines
+every golden that shows one of those orders. Revisit only if `repr`
+turns out to be a bug farm.
 
 ---
 
 ## 8. Hashes that reach the output
 
-**Three** hash functions surface in artefacts — two verified 2026-08-17,
-the third at [S1a.5.1](../README.md#s1a51--dot-renderers),
-which is where the renderer that uses it was ported. Two are portable
-and one is not:
+**Three** hash functions surface in artefacts. Two are stable digests and
+the third is display-only:
 
-- **`render.dot_util.hashed_id(prefix, seed)` is portable.** It is
-  `prefix + md5(seed.encode("utf-8")).hexdigest()[:10]`. ein.rs
-  reproduces it with any MD5 implementation; the checked-in goldens in
-  `ein.py/tests/golden/dot/` are the fixture. The four historical
-  hand-rolled copies were collapsed onto this one definition in S1.7c.25,
-  so there is exactly one to match. Callers own `seed` construction
-  (`fact_key`'s flat `rel|arg,arg` form, and `render/slice`'s recursive
-  key) — ein.rs must match **those** string builders too, not just the
-  digest.
-- **`render.palette.hash_color(name)` is portable.** T1a.5.1.1 asked
-  whether it hashes with a stable digest or with Python's salted
-  `hash()` — the latter would have put it on `state_digest`'s footing
-  and meant fixing ein.py before porting it. It is
-  `PALETTE[int(sha1(name).hexdigest(), 16) % 10]`: a digest, so stable
-  across `PYTHONHASHSEED`, and there is nothing to fix. It reaches every
-  DOT artefact as a colour attribute but never as a node *id*, so a
-  mismatch would be visible rather than structural. ein.rs folds the
-  20-byte digest under the modulus instead of building a 160-bit
-  integer — same residue, no bignum.
-- **`canon.state_digest` is *not* portable, and not stable across
-  CPython runs either.** It is `hash(state_key)` — a tuple of `str`s
-  through SipHash, salted by `PYTHONHASHSEED`. Its docstring says
-  display-only, and it is: `_lattice_dump` writes it to
-  `state_hash.txt` and into `SanityError` messages. So **`--dump-states`
-  output is not byte-stable under ein.py itself**.
-
-  Consequence for T3: `state_hash.txt` and any `state_digest` in a
-  message are on the normalisation list ([01](01_parity_contract.md) §5)
-  — compared for *presence and shape* (10-16 hex/decimal chars), not
-  value. ein.rs uses a stable 64-bit digest of the same canonical
-  representation so that its own output is reproducible run-to-run,
-  which is strictly better and costs nothing.
-
-  This also confirms the P1.21 R1 rule from the outside: a digest is
-  never identity, and nothing reads `state_hash.txt` back.
+- **`dot_util::hashed_id(prefix, seed)` is a stable digest.** It is
+  `prefix` + the first 10 hex digits of the MD5 of `seed`'s UTF-8 bytes;
+  the checked-in DOT goldens (`ein-render/tests/golden/dot/`) are the
+  fixture. There is exactly one definition. Callers own `seed`
+  construction (`fact_key`'s flat `rel|arg,arg` form, and the slice's
+  recursive key), so **those** string builders are part of the id, not
+  just the digest.
+- **`palette::hash_color(name)` is a stable digest**:
+  `PALETTE[sha1(name) mod 10]`, never a salted hash, so nothing about it
+  varies run to run. It reaches every DOT artefact as a colour attribute
+  but never as a node *id*, so a mismatch would be visible rather than
+  structural. The 20-byte digest is folded under the modulus rather than
+  built into a 160-bit integer — same residue, no bignum.
+- **`canon::state_digest` is display-only.** It is a 64-bit hash of the
+  state key, written into sanity-error messages, and stable run to run —
+  but it is never identity: distinct states may share one, and nothing
+  reads it back. This confirms the P1.21 R1 rule from the outside: a
+  digest is never identity.
 
 ---
 
-## 9. The determinism test, on both sides
+## 9. The determinism test
 
-Added in [P1a.0](../README.md#p1a0--conformance-harness-and-shared-assets) and run by both
-suites:
+Added in [P1a.0](../README.md#p1a0--corpus-and-shared-assets):
+the engine run twice must be byte-identical. It catches `HashMap`
+iteration leaking in, since Rust's default `RandomState` is per-process
+randomised — hence [12](12_toolchain_and_layout.md)'s rule: **`FxHashMap`
+everywhere, and no iteration over any hash map at an observable site**.
 
-1. **Self-parity under hash seeds** — run the corpus under
-   `PYTHONHASHSEED ∈ {0, 1, 42, random}`; T3-diff the outputs. Any
-   difference is a ein.py ordering bug (H1 is the expected hit).
-2. **Self-parity across runs** — ein.rs run twice must be byte-identical
-   (catches `HashMap` iteration leaking in, since Rust's default
-   `RandomState` is per-process randomised — hence [12](12_toolchain_and_layout.md)'s
-   rule: **`FxHashMap` everywhere, and no iteration over any hash map at
-   an observable site**).
-3. **Cross-parity** — the T0–T3 diff from [01](01_parity_contract.md).
-
-A lint enforces (2) structurally: a `dylint` rule — or, pragmatically, a
+A lint enforces it structurally: a `dylint` rule — or, pragmatically, a
 grep in CI — forbidding `.iter()` / `.values()` / `.keys()` on a hash map
 outside an explicitly annotated allow-list.
 
@@ -487,8 +443,6 @@ outside an explicitly annotated allow-list.
 
 ## Cross-links
 
-- [01 — Parity contract](01_parity_contract.md) — the tiers this audit
-  serves.
 - [05 — Matcher](05_matcher.md) — the bind trail that preserves binding
   order; the candidate-bucket rule.
 - [07 — Search layer](07_search_layer.md) — hypgen and apriori ordering.

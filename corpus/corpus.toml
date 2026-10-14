@@ -15,18 +15,12 @@
 # docs/history/m1a_rust/measurements/corpus_cost.md and
 # `utils/bench_env.sh python3 utils/corpus_cost.py` re-takes it.
 #
-# It used to say "any of its runs took 3 s or more in the T1a.0.1.1 probe of
-# the whole matrix (CPython 3.14, 2026-08-17)" — a budget two engines out of
-# date, which is how seventeen entries came to be flagged for costs between
-# 11 ms and two minutes, `zebra2.ein` among them.
-#
 # Generated once from the tree; maintained by hand from here.
 #
-# schema 2 (S1a.10.3) renamed the `crash-parity` group, whose claim was about
-# ein.py's exception classes, to `regression`, and split the compile-error
-# fixtures out as `compile-negative`. A schema-1 manifest names groups that no
-# longer exist, so the version is what refuses it rather than a stale entry
-# silently dropping out of every selection.
+# schema 2 (S1a.10.3) introduced the `regression` group and split the
+# compile-error fixtures out as `compile-negative`. A schema-1 manifest names
+# groups that no longer exist, so the version is what refuses it rather than a
+# stale entry silently dropping out of every selection.
 
 schema = "ein-corpus/2"
 
@@ -205,7 +199,7 @@ note   = "S1a.3.4 — `p ← absent q; q ← absent p`. Both guards pass against
 path   = "examples/features/08_disjunct_guard_sets.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "M1a S1a.6.12 — one rule, two `(or …)` disjuncts with different guards and the same binding key, so a parked candidate is already fired when the boundary reaches it. The only fixture in the corpus that takes that branch, and the one that pins ein.rs's `may_collide` fallback against ein.py's unconditional check."
+note   = "M1a S1a.6.12 — one rule, two `(or …)` disjuncts with different guards and the same binding key, so a parked candidate is already fired when the boundary reaches it. The only fixture in the corpus that takes that branch, and the one that pins the `may_collide` fallback."
 
 [[entry]]
 path   = "examples/features/09_adjacent_via_same_house.ein"
@@ -484,49 +478,49 @@ note   = "M1e S1e.1.3 / Q2 — `alt-cap-core.ein` with `wide` at priority 50 ins
 path   = "examples/ein-bugs/mixed-type-hypothesis.ein"
 group  = "regression"
 runs   = ["solve -e"]
-note   = "M1a hazard H2 / Q-M1a.4 — an hrule binds one variable to an int and a str, and `apriori.layer_1`'s `sorted(alive)` raises. The message names its operands in a `PYTHONHASHSEED`-dependent order, which is why this group compares the exception class and not the line."
+note   = "M1a hazard H2 — an hrule binds one variable to an int and a str, so two candidates in the commitment search's `alive` set hold an int and a symbol in the same slot. Values of different kinds order by kind (int < symbol < fact), so the order is total and the run answers."
 
 [[entry]]
 path   = "examples/ein-bugs/nested-fact-hypothesis.ein"
 group  = "regression"
 runs   = ["solve -e"]
-note   = "M1a hazard H2, second shape — the same `sorted(alive)`, over two `Fact` args instead of a str and an int, so it needs no mixed slot types: one hrule whose `:assert` is a `(not …)` is enough. Found by the S1a.6.6 fuzzer 2026-08-20; D2's reach, widened with a fixture rather than in prose."
+note   = "M1a hazard H2, second shape — the same ordering of `alive`, over two nested-fact args instead of a str and an int, so it needs no mixed slot types: one hrule whose `:assert` is a `(not …)` is enough. Found by the S1a.6.6 fuzzer 2026-08-20."
 
 [[entry]]
 path   = "examples/ein-bugs/query-goal-free-head-unsat.ein"
 group  = "regression"
 runs   = ["solve", "solve -e", "saturate", "render rules"]
-note   = "The `Contradiction` arm of `query-goal-free-head.ein`: the same uncompilable goal, but no solution block is rendered, so ein.py never compiles it and the run exits 0. Pins the asymmetry a too-eager fix broke for the length of one commit."
+note   = "The `Contradiction` arm of `query-goal-free-head.ein`: the same uncompilable goal, but no solution block is rendered, so the goal is never compiled and the run exits 0. Pins the asymmetry a too-eager fix broke for the length of one commit."
 
 [[entry]]
 path   = "examples/ein-bugs/query-goal-free-head.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "S1a.6.6's shortest find — `(query :goal (?R Rex Animal))`. A query goal has no activator, so a head variable can never be bound and the pattern is uncompilable; ein.py raises out of the table renderer after a successful solve, and ein.rs ran the program until this fixture."
+note   = "S1a.6.6's shortest find — `(query :goal (?R Rex Animal))`. A query goal has no activator, so a head variable can never be bound and the pattern is uncompilable; `solve` refuses it with a `CompileError`, exit 1, and the engine ran the program until this fixture."
 
 [[entry]]
 path   = "examples/ein-bugs/unbound-assert-var.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "Q-M1a.14's own first example, reached for the first time 2026-08-20 by the S1a.6.6 fuzzer — an `(or …)` whose arms bind different variables lets one reach the `:assert` unbound. ein.py raises `KeyError`, whose `str` is the repr of its key; ein.rs printed the message unquoted until this fixture."
+note   = "Reached for the first time 2026-08-20 by the S1a.6.6 fuzzer — an `(or …)` whose arms bind different variables lets one reach the `:assert` unbound. The run is refused, exit 1, with the message double-quoted; the engine printed it unquoted until this fixture."
 
 [[entry]]
 path   = "examples/ein-bugs/unbound-relation-head.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "Q-M1a.14 — `(?R ?x)` with `?R` unbound is a `CompileError` in both engines with the identical message and exit code; ein.py's CLI lets it escape as a traceback and ein.rs prints the line alone. Found by the S1a.6.6 fuzzer's mutation arm."
+note   = "`(?R ?x)` with `?R` unbound is a `CompileError`: exit 1, and the message on one line. Found by the S1a.6.6 fuzzer's mutation arm."
 
 [[entry]]
 path   = "examples/ein-bugs/int-goal-binding.ein"
 group  = "regression"
 runs   = ["solve", "solve -e", "saturate", "render rules"]
-note   = "S1a.6.6 regression — an integer goal binding is a JSON *number* in `summary.json`, not a string. A T0 difference that five phases of byte parity missed because stdout is identical and no other corpus file binds a query variable to an int. Carries a value wider than i64 on purpose."
+note   = "S1a.6.6 regression — an integer goal binding is a JSON *number* in `summary.json`, not a string. stdout cannot show the difference, and no other corpus file binds a query variable to an int. Carries a value wider than i64 on purpose."
 
 [[entry]]
 path   = "examples/ein-bugs/fact-goal-binding.ein"
 group  = "regression"
 runs   = ["solve", "solve -e", "saturate", "render rules"]
-note   = "S1a.6.6 regression — a *nested fact* goal binding. ein.py raised inside `json.dumps` and wrote no summary at all; it now renders the fact as an s-expression, which is what ein.rs already did."
+note   = "S1a.6.6 regression — a *nested fact* goal binding, which `summary.json` renders as an s-expression string."
 
 # ── regression: examples/ein-bugs/wrong-answers/ ────────────
 #
@@ -684,7 +678,7 @@ runs   = ["solve", "saturate"]
 path   = "examples/broken/compile/eq_arity_low.ein"
 group  = "compile-negative"
 runs   = ["solve", "saturate"]
-note   = "`CO-H1` itself — `(eq ?x)` panicked the process, exit 101, with a parity note for a message. The only finding in the review reproduced against the release binary whose fix is a refusal."
+note   = "`CO-H1` itself — `(eq ?x)` panicked the process, exit 101, on a runtime `assert!`. The only finding in the review reproduced against the release binary whose fix is a refusal."
 
 [[entry]]
 path   = "examples/broken/compile/eq_arity_high.ein"
@@ -709,7 +703,7 @@ note   = "`(absent A B)` dropped everything past the first argument, so a two-su
 path   = "examples/broken/compile/activator_arity.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules"]
-note   = "S1a.3.1's fourth compile-error fixture, and the one that is `positive` rather than `compile-negative`: `Engine._activators_for`'s S1.22.0 arity filter drops `(pairwise r)` before the compiler sees it, so the rule never runs and the file solves. That it derives nothing is the assertion — until S1.22.0 the mismatch dropped every premise and the rule fired unconditionally."
+note   = "S1a.3.1's fourth compile-error fixture, and the one that is `positive` rather than `compile-negative`: `activators_for`'s S1.22.0 arity filter drops `(pairwise r)` before the compiler sees it, so the rule never runs and the file solves. That it derives nothing is the assertion — until S1.22.0 the mismatch dropped every premise and the rule fired unconditionally."
 
 
 # ── parse-negative ──────────────────────────────────────────
@@ -941,7 +935,7 @@ runs   = ["solve", "saturate", "render rules"]
 path   = "examples/broken/load/rule_half_declarators.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
-note   = "S1a.10.2. Two errors in one pass, in form order — `rule_missing_assert` and `rule_missing_match` pin each alone. It is also one of `dot_parity`'s eighteen node-kind probes: the rule views draw a half-specified declarator from the parsed forms, and no loadable file contains one."
+note   = "S1a.10.2. Two errors in one pass, in form order — `rule_missing_assert` and `rule_missing_match` pin each alone. It is also one of the eighteen node-kind syntax probes: the rule views draw a half-specified declarator from the parsed forms, and no loadable file contains one."
 
 [[entry]]
 path   = "examples/broken/load/rule_missing_assert.ein"
@@ -1311,11 +1305,9 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 
 # ── syntax probes ───────────────────────────────────────────
 #
-# The eighteen node-kind fixtures S1a.10.2 moved out of
-# `ein.rs/crates/ein-render/tests/dot_parity.rs`. They were rendered under
-# all eight parse views and diffed against ein.py; as corpus entries the
-# manifest digests them under every view and every op instead. They are
-# syntax probes rather than puzzles — several declare no relation and would
+# The eighteen node-kind fixtures S1a.10.2 added: one per shape the
+# renderers draw and no puzzle contains. The manifest digests them under
+# every view and every op. They are syntax probes rather than puzzles — several declare no relation and would
 # not solve — so the runs are the two that read the forms.
 
 [[entry]]

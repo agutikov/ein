@@ -6,11 +6,11 @@
 ;;; it is also a **syntax probe** — the rule views draw a half-specified rule
 ;;; from the parsed forms, which no loadable file contains.
 ;;;
-;;; One of the eighteen node-kind fixtures S1a.10.2 moved out of
-;;; `ein-render/tests/dot_parity.rs`, where they were rendered under all
-;;; eight parse views and diffed against ein.py. As corpus entries they are
-;;; digested by `corpus_shapes.md5` instead — every view, every op, no
-;;; second engine. They exist because no *puzzle* contains these shapes.
+;;; One of the eighteen node-kind fixtures. As corpus entries they are
+;;; rendered under every parse view and every op, and each rendering is
+;;; digested by `corpus_shapes.md5`, so a change to how any of these
+;;; shapes is drawn moves a digest. They exist because no *puzzle*
+;;; contains these shapes.
 
 (rule only-match () :match (r ?a ?b))
 (hrule h () :assert (r a b))

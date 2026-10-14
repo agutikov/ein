@@ -1,4 +1,4 @@
-//! `:why` template substitution — `ein.py`'s `inference/why.py`.
+//! `:why` template substitution.
 //!
 //! Q31 picked `{?var}` notation: the `?` is part of the reference, identical
 //! to the variable as it appears in `:match` / `:assert`. A bare `{x}` is a
@@ -22,7 +22,7 @@
 /// Substitute `{?ref}` references against `bindings`, an association list of
 /// `(name, rendered value)`.
 ///
-/// ein.py's regex is `\{\?([A-Za-z0-9][A-Za-z0-9_-]*)\}`, scanned here
+/// The pattern is `\{\?([A-Za-z0-9][A-Za-z0-9_-]*)\}`, scanned here
 /// directly: a reference is `{?`, one alphanumeric, then any run of
 /// alphanumerics / `_` / `-`, then `}`.
 pub fn render_why(template: &str, bindings: &[(String, String)]) -> String {

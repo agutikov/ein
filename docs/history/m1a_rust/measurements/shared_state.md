@@ -70,7 +70,7 @@ The read path is also where the difficulty actually is, and design/08 does not
 mention it: `FactStore::args` returns a `&[Value]` into the argument arena and
 `row` returns a `&Row`. **No lock returns a borrow that outlives its guard**,
 and a `Vec` reallocates on push, so "put the store behind an `RwLock`" is not a
-change to the write sites — it is a change to every read site in the port.
+change to the write sites — it is a change to every read site in the engine.
 
 ---
 

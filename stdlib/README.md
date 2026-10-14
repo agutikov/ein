@@ -3,21 +3,18 @@
 The canonical standard library, and the **single source of truth**. The import
 resolver maps a logical module name `std.<path>` to `<stdlib-root>/<path>.ein`
 (P1.8 S1.8.A1 §D4 / S1.8.A3), and `<stdlib-root>` is found by
-[`ein-ir`](../ein.rs/crates/ein-ir/src/stdlib.rs)'s `stdlib::resolve` — the
-same three steps ein.py's `kb/imports.py::_stdlib_root` used, until M1a
-S1a.10.5:
+[`ein-ir`](../ein.rs/crates/ein-ir/src/stdlib.rs)'s `stdlib::resolve`, in
+three steps:
 
 1. `$EIN_STDLIB` — an explicit override, always wins;
 2. **this directory**, found by walking up for a `stdlib/` carrying
    `MANIFEST.sha256`. A checkout is authoritative, so editing a module below
    takes effect with no rebuild and no reinstall;
 3. the **embedded copy** — the `include_dir!` tree inside the Rust binary, so
-   `ein` is one self-contained file wherever it is installed. The third step
-   was two, while a Python wheel carried `ein/stdlib/` as well; both
-   distribution promises were kept, and one of them now has no package.
+   `ein` is one self-contained file wherever it is installed.
 
 `MANIFEST.sha256` is what makes a fork detectable. Two readers, since M1a
-[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine):
+[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-and-the-fuzzer):
 step 2 above tests only that the file is *present* (that is what identifies a
 directory as the stdlib), and `ein-ir`'s
 `the_embedded_copy_matches_the_manifest` digests the embedded tree against it
@@ -28,8 +25,8 @@ here is two steps and the Rust test is what fails if you take only the first.
 
 This matters more than tidiness: the stdlib is not test data but part of the
 semantics under test, so a second, drifting copy would make every result
-meaningless — a diff would report "the engines disagree" when in fact the
-*programs* differ
+meaningless — a result would be blamed on the engine when in fact the
+*program* differs
 ([design/11](../docs/history/m1a_rust/design/11_shared_assets.md)).
 
 ## The obligation duals (M1d S1d.2.4)
@@ -109,11 +106,6 @@ facts.
 
 Why not `examples/`: that is user content and is not installed, so an
 install-relative import could not find it.
-
-Why the repo root and not inside `ein.py/` (moved there at M1a S1a.0.3): two
-implementations read this library, and a directory inside one of them would
-have made the other's copy a fork. The wheel still gets its copy — as a build
-product, from here.
 
 ## Modules
 

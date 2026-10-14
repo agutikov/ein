@@ -15,7 +15,7 @@
 ;;;
 ;;;   Level 1 — a hypothesis placing Blue or Green in H2 doesn't
 ;;;             satisfy the goal (which asks about H3); the branch
-;;;             stays alive but unsolved, so `_explore` recurses.
+;;;             stays alive but unsolved, so the search recurses.
 ;;;   Level 2 — given the depth-1 placement, the remaining free
 ;;;             color is forced into H3; the depth-2 hypothesis
 ;;;             (co-located <other> H3) closes the goal.

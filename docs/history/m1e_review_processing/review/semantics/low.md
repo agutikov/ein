@@ -17,7 +17,7 @@ MonotonicDumper emits `layer/outcome/commitment/kind/firings/facts_merged/unsat_
 
 ### Recommendation
 
-Pick one order (or extract a shared emitter) unless a parity constraint requires the difference — in which case say so at both sites.
+Pick one order (or extract a shared emitter) unless a constraint requires the difference — in which case say so at both sites.
 
 ---
 

@@ -6,14 +6,14 @@
     python3 utils/fork_delta_verify.py -k zebra --json out.json
     python3 utils/fork_delta_verify.py --with-trace     # size the narration too
 
-Runs **one** binary twice over the whole parity corpus — `EIN_FORK_DELTA=0`,
+Runs **one** binary twice over the corpus — `EIN_FORK_DELTA=0`,
 then unset — so the only difference between the arms is `Saturator::new`
 against `Saturator::resume`
 ([S1a.6.9](../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)).
 The resumed saturator is the shipping path; a `fork-delta` build compiles in
-the way back to the old one, and this script is
-[D3](../docs/history/m1a_rust/divergences.md)'s fixture — the divergence stays
-measured, so it cannot silently widen.
+the way back to the fresh one, and this script keeps the difference between
+the two — one fixpoint, narrated in different amounts — measured, so it cannot
+silently widen.
 
 The point is to compare artefacts that are **not** firing lists, because the
 firing list is what the change is expected to move. Per entering, from
@@ -32,8 +32,8 @@ firing list is what the change is expected to move. Per entering, from
 
 And per run, from the process itself: `stdout` (the verdict, `k`, the models,
 the query bindings, and for an unsat puzzle the core — the **answer**),
-`summary.json` (**T0 + T1**: the verdict and every counter the engine
-publishes, with only the clock normalised out) and the `--dump-states` tree
+`summary.json` (the verdict and every counter the engine publishes, with
+only the clock normalised out) and the `--dump-states` tree
 (the lattice, the no-good clauses). Wall-clock fields and firing counts are normalised out of both and
 reported separately — those are the narration, which is
 [T1a.6.9.3](../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)'s
@@ -87,9 +87,9 @@ VOLATILE = [
     re.compile(r"^(\s*(?:firings|derivations)\s+)[\d ]+$", re.M),
 ]
 FIRINGS = re.compile(r'"(?:n_)?firings":\s*(\d+)')
-# `summary.json` is T0 + T1 — the verdict and **every counter the engine
-# publishes**. Only the clock is normalised out of it: a firing count in here
-# would be a T1 move, which is the one thing this class exists to catch.
+# `summary.json` is the verdict and **every counter the engine publishes**.
+# Only the clock is normalised out of it: a firing count in here would be a
+# counter move, which is the one thing this class exists to catch.
 TIME_ONLY = [
     re.compile(r'"elapsed_seconds":\s*[0-9.]+'),
     re.compile(r'"wall_seconds":\s*[0-9.]+'),
@@ -122,9 +122,9 @@ def arm(binary: Path, argv: list[str], out: Path, delta: bool,
         # The way back to the pre-S1a.6.9 fresh fork saturator.
         env["EIN_FORK_DELTA"] = "0"
     cmd = [str(binary)] + [t.replace("{out}", str(out)) for t in argv]
-    # `--json-summary` on every solve cell, exactly as `plan.rs` does: it is
-    # what T0 and T1 read, and comparing it is the difference between "the
-    # answers agree" and "the engines did the same search".
+    # `--json-summary` on every solve cell, exactly as `plan.rs` does:
+    # comparing it is the difference between "the answers agree" and "the two
+    # arms did the same search".
     cmd += ["--json-summary", str(out / "summary.json")]
     p = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, env=env)
     tree, firings, summary = {}, 0, ""
@@ -261,10 +261,8 @@ def main() -> int:
         return 2
 
     corpus = tomllib.load(open(REPO / "corpus" / "corpus.toml", "rb"))
-    # `regression` was `positive` + `crash-parity` until S1a.10.3 regrouped
-    # `examples/ein-bugs/` as one directory; five of its ten entries were in
-    # this selection before and are again. Two of the rest are refused, which
-    # costs nothing here — a run that writes no audit rows contributes none.
+    # `regression` holds entries the engine refuses, which costs nothing
+    # here — a run that writes no audit rows contributes none.
     entries = [e for e in corpus["entry"]
                if e["group"] in ("positive", "stdlib", "regression")
                and not (args.only and args.only not in e["path"])

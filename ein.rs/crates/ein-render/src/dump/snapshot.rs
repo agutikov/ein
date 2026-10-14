@@ -1,5 +1,4 @@
-//! The lattice content snapshot — `ein.py`'s
-//! `inference/monotonic/snapshot.py`.
+//! The lattice content snapshot.
 //!
 //! Projects a completed lattice solve into a value that is *invariant* under
 //! within-layer traversal-order permutations: two solves of the same puzzle at
@@ -19,7 +18,7 @@
 //! to include it, and a shuffle harness comparing two snapshots must compare
 //! the same shape either way.
 
-use ein_core::pyrepr::{PyValue, repr};
+use ein_core::repr::{ReprValue, repr};
 use ein_core::{FactId, Kb, Tag, Terms, Value};
 use ein_infer::canon::state_key;
 use ein_infer::solve::LatticeProof;
@@ -56,30 +55,30 @@ pub struct LatticeSnapshot {
 /// `repr` of one canonical fact — `(relation_name, hashable_args)`, with a
 /// nested fact recursing into *that* shape rather than into a `Fact`.
 ///
-/// The nesting matters: `canon._hashable_args` lowers a nested `Fact` to its
-/// own `(rel, args)` tuple, so ein.py's `repr` of a state-key element spells
+/// The nesting matters: a canonical key lowers a nested fact to its own
+/// `(rel, args)` tuple, so the `repr` of a state-key element spells
 /// `('not', (('color-loc', ('Blue', 'House-1')),))` where the *commitment*
-/// repr — over raw `Fact.args` — spells `Fact(relation_name=…)`. Two shapes,
-/// two builders, and the sort order differs between them.
-fn canon_fact(terms: &Terms, id: FactId) -> PyValue {
+/// repr — over the raw arguments — spells `Fact(relation_name=…)`. Two
+/// shapes, two builders, and the sort order differs between them.
+fn canon_fact(terms: &Terms, id: FactId) -> ReprValue {
     let (rel, args) = terms.fact(id);
-    PyValue::Tuple(vec![
-        PyValue::Str(terms.sym(rel).to_string()),
-        PyValue::Tuple(args.iter().map(|a| canon_value(terms, *a)).collect()),
+    ReprValue::Tuple(vec![
+        ReprValue::Str(terms.sym(rel).to_string()),
+        ReprValue::Tuple(args.iter().map(|a| canon_value(terms, *a)).collect()),
     ])
 }
 
-fn canon_value(terms: &Terms, v: Value) -> PyValue {
+fn canon_value(terms: &Terms, v: Value) -> ReprValue {
     match v.tag() {
         Tag::Fact => canon_fact(terms, v.as_fact().expect("tagged Fact")),
-        _ => terms.py_value(v),
+        _ => terms.repr_value(v),
     }
 }
 
 /// `repr` of a whole canonical state key — the sort key for a *snapshot's*
 /// cells, where a proof's cells use [`crate::lattice_dag::commitment_repr`].
 pub fn canon_key_repr(terms: &Terms, key: &[FactId]) -> String {
-    repr(&PyValue::Tuple(
+    repr(&ReprValue::Tuple(
         key.iter().map(|f| canon_fact(terms, *f)).collect(),
     ))
 }
@@ -88,9 +87,9 @@ pub fn canon_key_repr(terms: &Terms, key: &[FactId]) -> String {
 ///
 /// [`ein_infer::canon::state_key`] sorts by `FactId` — a `u32` sort and a
 /// `memcmp` instead of a string per fact — because for *identity* any total
-/// order does. ein.py sorts by `repr`, and where the key is **displayed** that
-/// is the order a reader sees, so the re-sort lands here: at the one place a
-/// state key becomes output. `canon.rs` says as much, and names this phase.
+/// order does. Where the key is **displayed**, `repr` order is the order a
+/// reader sees, so the re-sort lands here: at the one place a state key
+/// becomes output. `canon.rs` says as much, and names this phase.
 fn repr_sorted(terms: &Terms, key: &[FactId]) -> Box<[FactId]> {
     let mut keyed: Vec<(String, FactId)> = key
         .iter()

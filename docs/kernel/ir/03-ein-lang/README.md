@@ -7,9 +7,8 @@ S-expression dialect — a flat sequence of forms classified by head
 model in [`../02-data-model/`](../02-data-model/).
 
 > **Source of truth for what parses**: [`00_ebnf.md`](00_ebnf.md) — the
-> complete grammar, in EBNF, which is where `grammar.lark` went at M1a
-> S1a.10.5. This tree explains intent, examples, and rendering; that file
-> is canonical.
+> complete grammar, in EBNF. This tree explains intent, examples, and
+> rendering; that file is canonical.
 
 ## Files
 

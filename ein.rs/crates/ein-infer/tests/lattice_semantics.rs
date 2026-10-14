@@ -1,5 +1,4 @@
-//! The lattice search's own record — T1a.10.2.2, the ported half of ten
-//! Python files under `ein.py/tests/inference/lattice/`.
+//! The lattice search's own record — T1a.10.2.2.
 //!
 //! `solve` answers a question; under `store_lattice` it also hands back a
 //! [`LatticeProof`](ein_infer::solve::LatticeProof) — the models it found, the
@@ -8,43 +7,34 @@
 //! what it must be consistent with, and which of its parts are *invariants of
 //! the puzzle* rather than artefacts of the traversal.
 //!
-//! | Python original | what it owned |
-//! |---|---|
-//! | `lattice/test_contradictions_backbone.py` | the refutation half: deads, cores, learned clauses |
-//! | `lattice/test_gaps_backbone.py` | the model half: how many, which, and where the root sits |
-//! | `lattice/test_lattice_dumper.py` | what a dump tree does and does not contain |
-//! | `lattice/test_lattice_fixtures.py` | the three `examples/lattice/` shapes, one claim each |
-//! | `lattice/test_lattice_proof.py` | `alive_at_end` and `SolutionRecord` |
-//! | `lattice/test_lattice_sanity.py` | `-y`, the saturation-commutativity check |
-//! | `lattice/test_lattice_scoring.py` | `score-sum` and the popularity weights |
-//! | `lattice/test_lattice_skeleton.py` | the degenerate KB |
-//! | `lattice/test_p16_contract.py` | the P1.6 handoff contract, clause by clause |
-//! | `lattice/test_shuffle_invariance.py` | 303 parametrised tests over two claims |
+//! | subject |
+//! |---|
+//! | the refutation half: deads, cores, learned clauses |
+//! | the model half: how many, which, and where the root sits |
+//! | what a dump tree does and does not contain |
+//! | the three `examples/lattice/` shapes, one claim each |
+//! | `alive_at_end` and `SolutionRecord` |
+//! | `-y`, the saturation-commutativity check |
+//! | `score-sum` and the popularity weights |
+//! | the degenerate KB |
+//! | the P1.6 handoff contract, clause by clause |
+//! | shuffle invariance, two claims over the corpus |
 //!
-//! **What did not come across, and why it is not a loss.** Most of what the
-//! Python suite asserted about this record was the *Python* record:
-//! `_record_setnode`'s MERGE path, `SetNode`'s multilabel invariant,
-//! `LatticeStats.state_key_merges`, `proof.kb_index`, the `(verdict, stats)`
-//! return tuple and half a dozen `isinstance` checks. ein.rs does not build the
-//! per-`SetNode` DAG at all — `kb_index` is empty — so a port of those would
-//! assert a constant. *This paragraph said the same of `state_key_merges`
-//! until M1e `MA-M3`, and that was the reason it read 0: the port dropped the
-//! DAG and the counter's increments went with it, though the **dedup** the DAG
-//! stood for is exactly what `record_node` still does. It counts now, and
-//! [`the_state_key_merge_counter_is_not_a_constant_zero`] is what keeps it
-//! counting.* What the DAG
-//! *stood for* is the solution-node dedup, and that is asserted here as an
-//! answer: [`a_state_hash_collision_is_one_model_not_two`] and
+//! **The record holds no per-`SetNode` DAG** — `kb_index` is empty — so
+//! nothing here asserts one. What such a DAG would *stand for* is the
+//! solution-node dedup that `record_node` does, and that is asserted here as
+//! an answer: [`a_state_hash_collision_is_one_model_not_two`] and
 //! [`two_orientations_of_one_puzzle_collapse_to_a_single_model`].
+//! `state_key_merges` read 0 until M1e `MA-M3`, because its increments had
+//! gone with the DAG though the dedup had not. It counts now, and
+//! [`the_state_key_merge_counter_is_not_a_constant_zero`] is what keeps it
+//! counting.
 //!
-//! Two tests are **stronger than their originals**. The Python
-//! commutativity-violation test monkeypatched `state_key` to return a fresh
-//! integer per call, because "the spec's contrived violation fixture can't be
-//! written within the IR's declarative semantics". It can now:
-//! [`NON_MONOTONE`] is eleven lines of ein-lang and the violation is real —
-//! see [`a_commutativity_violation_names_the_commitment_and_both_keys`]. And
-//! the shuffle-invariance pair compares the *whole refutation half* of the
-//! record rather than the model set alone.
+//! **The commutativity violation is real**: [`NON_MONOTONE`] is eleven lines
+//! of ein-lang whose saturation does not commute with hypothesis order — see
+//! [`a_commutativity_violation_names_the_commitment_and_both_keys`]. And the
+//! shuffle-invariance pair compares the *whole refutation half* of the record,
+//! not the model set alone.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -209,10 +199,8 @@ fn unary(terms: &mut Terms, rel: &str, arg: &str) -> FactId {
 
 /// What one corpus sweep did — and, as importantly, what it did **not** do.
 ///
-/// [S1a.10.1](../../../../docs/history/m1a_rust/oracle_ledger.md#2-the-finding--46--of-einrss-own-integration-tests-are-differential)
-/// found 41 tests passing on a `SKIP` line nobody read. A sweep that dropped a
-/// file on the floor would be that finding repeated inside its own repair, so
-/// every file lands in exactly one of these four buckets and each caller
+/// A sweep that dropped a file on the floor would pass on a file nobody read,
+/// so every file lands in exactly one of these four buckets and each caller
 /// asserts all four.
 #[derive(Debug, Default, PartialEq, Eq)]
 struct Census {
@@ -369,7 +357,7 @@ fn assert_census(c: &Census) {
     );
 }
 
-// ── The refutation half — `test_contradictions_backbone.py` ────────
+// ── The refutation half ────────────────────────────────────────────
 
 /// **dead-records-match-the-dead-counters.** Every death is counted once, and
 /// the one death that is not counted at all is the root's.
@@ -527,7 +515,7 @@ fn the_learned_nogoods_mirror_roots_store_at_return() {
     );
 }
 
-// ── The model half — `test_gaps_backbone.py` ───────────────────────
+// ── The model half ─────────────────────────────────────────────────
 
 /// **branching-04-has-two-models-and-they-bind-blue-and-green.** The
 /// canonical ambiguity, named.
@@ -664,8 +652,8 @@ fn the_proofs_counters_track_its_contents_on_every_corpus_file() {
     assert_census(&checked);
 }
 
-/// **`state_key_merges` is not a constant zero**, which it was from the port
-/// until M1e `MA-M3` — declared, zeroed, copied into the proof and serialised
+/// **`state_key_merges` is not a constant zero**, which it was until M1e
+/// `MA-M3` — declared, zeroed, copied into the proof and serialised
 /// into `proof_summary.json`, while the engine merged on most corpus files
 /// that search.
 ///
@@ -700,7 +688,7 @@ fn the_state_key_merge_counter_is_not_a_constant_zero() {
     assert_census(&checked);
 }
 
-// ── The dump tree — `test_lattice_dumper.py` ───────────────────────
+// ── The dump tree ──────────────────────────────────────────────────
 
 /// Every path under `dir`, relative and sorted.
 fn tree(dir: &Path) -> Vec<String> {
@@ -1093,7 +1081,7 @@ fn a_state_hash_collision_is_one_model_not_two() {
     );
 }
 
-// ── The proof's own fields — `test_lattice_proof.py` ───────────────
+// ── The proof's own fields ─────────────────────────────────────────
 
 /// **alive-at-end-is-the-frontier-the-depth-cap-cut.** What is left over says
 /// which terminator ended the search.
@@ -1188,13 +1176,12 @@ fn a_solution_record_carries_its_commitment_layer_and_firings() {
     assert_eq!(before, after, "a snapshot grew with its source");
 }
 
-// ── `-y`, the commutativity check — `test_lattice_sanity.py` ───────
+// ── `-y`, the commutativity check ──────────────────────────────────
 
 /// A program whose saturation does **not** commute with hypothesis order.
 ///
-/// M1's rule set is monotone, which is why the Python original had to
-/// monkeypatch `state_key` to reach this path at all. Negation as failure is
-/// the exception: `(absent (p ?x))` is judged against the world as it stands,
+/// M1's rule set is monotone, so this path is reachable only through negation
+/// as failure: `(absent (p ?x))` is judged against the world as it stands,
 /// so committing `{q}` first derives `(r X)` — nothing had said `p` yet — and
 /// adding `p` afterwards cannot retract it. Committing to both at once judges
 /// the guard against a world that already holds `p`, and `(r X)` is never
@@ -1473,7 +1460,7 @@ fn a_commutativity_violation_names_the_commitment_and_both_keys() {
     );
 }
 
-// ── Ordering — `test_lattice_scoring.py` ───────────────────────────
+// ── Ordering ───────────────────────────────────────────────────────
 
 /// **score-sum-picks-up-the-popularity-weights.** The informed ordering is
 /// informed by something.
@@ -1485,8 +1472,7 @@ fn a_commutativity_violation_names_the_commitment_and_both_keys() {
 /// satisfied by a mode that silently fell back to `lex`, and a permutation
 /// alone could be noise. The third arm is the reason the scorer reads the
 /// KB's own `(config …)` block rather than the default: a KB with no block at
-/// all scores 0.0 and collapses to `lex`, which ein.py does too and is
-/// reproduced rather than tidied.
+/// all scores 0.0 and collapses to `lex`.
 #[test]
 fn score_sum_orders_by_popularity_and_lex_does_not() {
     let (_, mut terms, kb) = checkable(
@@ -1537,7 +1523,7 @@ fn score_sum_orders_by_popularity_and_lex_does_not() {
     );
 }
 
-// ── The degenerate KB — `test_lattice_skeleton.py` ─────────────────
+// ── The degenerate KB ──────────────────────────────────────────────
 
 /// **an-empty-kb-is-a-trivial-solution.** Nothing to prove is not the same as
 /// nothing proved.
@@ -1560,7 +1546,7 @@ fn an_empty_kb_is_a_trivial_solution() {
     assert_eq!(r.kb.n_facts(), 0, "the fixture is supposed to be empty");
 }
 
-// ── The P1.6 handoff contract — `test_p16_contract.py` ─────────────
+// ── The P1.6 handoff contract ──────────────────────────────────────
 
 /// **every-solution-record-satisfies-the-goal**, under the reading `solve`
 /// actually uses.
@@ -1664,7 +1650,7 @@ fn every_dead_record_is_well_formed() {
 /// be *subsumed* by a shorter one learned earlier, so what has to hold is that
 /// some stored clause implies each recorded death — which is what makes the
 /// store a sound summary of the whole refutation list. The root dead is exempt
-/// because it emits no clause at all; encoding the exemption is the port's
+/// because it emits no clause at all; encoding the exemption is this test's
 /// job, and restoring an empty-clause entry to make the loop uniform would be
 /// the wrong repair.
 #[test]
@@ -1738,7 +1724,7 @@ fn the_proof_is_coherent_on_every_corpus_file() {
     assert_census(&checked);
 }
 
-// ── Shuffle invariance — `test_shuffle_invariance.py` ──────────────
+// ── Shuffle invariance ─────────────────────────────────────────────
 
 /// **the-refutation-half-of-the-snapshot-is-shuffle-invariant.** The traversal
 /// order is free; the record is not.
@@ -1749,8 +1735,8 @@ fn the_proof_is_coherent_on_every_corpus_file() {
 /// surviving frontier, and root's own terminal state key — which carries the
 /// singleton `(not h)` writebacks and the forced-positive promotions, and is
 /// therefore the one place a first-arrival attribution could leak into the
-/// answer. The Python original compared the model set alone; the refutation
-/// half is where a nogood-subsumption order would show up.
+/// answer. The refutation half, not the model set alone, is where a
+/// nogood-subsumption order would show up.
 #[test]
 fn the_refutation_half_of_the_record_is_shuffle_invariant() {
     for rel in [

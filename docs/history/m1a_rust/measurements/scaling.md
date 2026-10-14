@@ -54,13 +54,11 @@ Two readings:
 
 - **The serial residue is small everywhere and negligible on the big
   workloads.** Amdahl is not what bounds this phase.
-- **The two zebras are 29 and 47 ms.** After P1a.6 took them 165× off PyPy
-  — a ratio whose denominator is a [frozen
-  constant](baseline.md), the Python engine being gone —
-  the absolute room left in them is a few tens of milliseconds — and §2 shows
+- **The two zebras are 29 and 47 ms.** After P1a.6 the absolute room left
+  in them is a few tens of milliseconds — and §2 shows
   that less than half of it is in the part that parallelises exactly. The
   phase's stated scaling target (`≥ 6× on 8 cores for exhaustive zebra2's
-  Phase 2`) was written when that run was 4.5 s.
+  Phase 2`) was written before P1a.6.
 
 ## 2. The layer profile — where the enterings and the firings are
 
@@ -82,11 +80,10 @@ cardinality BFS — layer *L* enters commitment **sets of size L** — so a dead
 commitment `{h_1 … h_L}` licenses `¬(h_1 ∧ … ∧ h_L)`, a clause of width *L*.
 A clause is not a fact; it goes to the no-good store, where it prunes later
 candidate *generation*. At *L = 1*, and only there, that clause is a **unit**:
-`¬h_1` *is* a fact, and root gains `(not h_1)`. Both engines guard the
+`¬h_1` *is* a fact, and root gains `(not h_1)`. The engine guards the
 writeback on the **commitment's length** for exactly that reason —
-`solve.rs:908` `c.len() == 1`, `_helpers.py:454` `len(c) == 1` — and neither
-minimises a learned clause below the commitment (`learned_clause =
-frozenset(c)`), so "the learned clause is a singleton" and "the commitment is
+`solve.rs:908` `c.len() == 1` — and does not minimise a learned clause below
+the commitment, so "the learned clause is a singleton" and "the commitment is
 a singleton" are one condition.
 
 So layers ≥ 2 gain no fact between the layer opening and closing, which makes
@@ -189,7 +186,7 @@ design/08 §2 anticipated:
   the order;
 - so **`enable_fail_fast_fork` × speculation is the phase's real correctness
   question**, and it appears nowhere in design/08. S1a.7.2 has to answer it
-  before `--jobs N` can claim T1.
+  before `--jobs N` can claim the sequential run's counters.
 
 ### The speculation is wrong, not merely stale
 
@@ -276,7 +273,7 @@ now, and the cheapest answer is affordable: making layer 1 sequential costs
 three workloads of the measurement set**, because those three never write back.
 By Amdahl a 0.24 % sequential fraction admits 417×, against a phase target of
 6×. What it costs the zebra family is 40–94 % — and the zebra family is the
-*parity* cell set, not the measurement set (§5.4).
+*milestone* cell set, not the measurement set (§5.4).
 
 ---
 
@@ -409,8 +406,8 @@ not covered by the tests above and is not claimed here.
    engine change shows 6× on that. The
    entries with a search — `branching/06`, `branching/07`, `sq-bwd/houses`,
    `features/01`, 0.2–1.9 s and ≥ 98 % of enterings past layer 1 — are the
-   phase's measurement set, and the two zebras stay as the *parity* cells they
-   have always been.
+   phase's measurement set, and the two zebras stay as the *milestone* cells
+   they have always been.
 
 > **A sibling file.** This one is about the *search* — where the enterings are
 > and what a speculation costs. [shared_state.md](shared_state.md) is
@@ -962,12 +959,11 @@ really did waste something.
 
 **[S1a.7.3](../README.md#s1a73--level-3-the-parallel-boundary-round) and
 [S1a.7.4](../README.md#s1a74--level-2-the-parallel-enqueue-pass) are the phase's remaining engine
-stages, and their premises are from a deleted engine.** S1a.7.3 opens with
-"`_admit_from_boundary` is 72 % of an exhaustive solve under ein.py"; S1a.7.4
+stages, and their premises are stale.** S1a.7.3 opens with the boundary
+admission at "72 % of an exhaustive solve"; S1a.7.4
 calls itself "the smallest of the three engine-level parallel wins". Both
 sentences predate [P1a.6](../README.md#p1a6--performance), which spent a stage
-on each of the two sites, and the port has run without a Python engine since
-[S1a.10.5](../README.md#p1a10--one-implementation). So the same thing was
+on each of the two sites. So the same thing was
 done here that [S1a.7.0](../README.md#s1a70--the-speculation-audit) did to S1a.7.2 and
 [S1a.7.1](../README.md#s1a71--making-the-shared-state-sync) did to itself: measure first.
 

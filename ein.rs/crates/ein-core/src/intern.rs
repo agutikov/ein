@@ -3,13 +3,11 @@
 //! Relation names, object names, rule names, variable names, keyword names,
 //! and every `String` / `Range` / `Var` literal that reaches a fact argument
 //! intern here
-//! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §2). What
-//! ein.py holds as a `str` object per occurrence — 50 B each, shared only when
-//! CPython happened to intern it, which for a `"House-1"` read from a file it
-//! has not — becomes a 4-byte [`Symbol`], and every identity comparison
-//! becomes an integer compare.
+//! ([design/03](../../../../docs/history/m1a_rust/design/03_data_model.md) §2). Each
+//! becomes a 4-byte [`Symbol`] however often it occurs, and every identity
+//! comparison becomes an integer compare.
 //!
-//! Two rules the rest of the port depends on:
+//! Two rules the rest of the engine depends on:
 //!
 //! - **Ids are assignment-ordered.** [`Symbol`] deliberately has no `Ord`:
 //!   its numeric order is first-seen order, and using it as a sort key would
@@ -218,9 +216,9 @@ impl Interner {
 
     /// `sym`'s position in the lexicographically sorted symbol list.
     ///
-    /// This is what an observable sort by name uses: ein.py's `sorted(names)`
-    /// compares Unicode code points and Rust's `Ord for str` compares UTF-8
-    /// bytes, which agree for all inputs
+    /// This is what an observable sort by name uses: the order of Unicode code
+    /// points, which Rust's `Ord for str` gets by comparing UTF-8 bytes — the
+    /// two agree for all inputs
     /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §1),
     /// so ranking once turns every later name-sort into a `u32` sort.
     ///
@@ -244,7 +242,7 @@ impl Interner {
         })
     }
 
-    /// Compare two symbols the way `sorted()` would compare their names.
+    /// Compare two symbols by their names' text, as [`Self::rank`] orders them.
     pub fn cmp_text(&self, a: Symbol, b: Symbol) -> std::cmp::Ordering {
         self.rank(a).cmp(&self.rank(b))
     }

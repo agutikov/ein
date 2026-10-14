@@ -127,7 +127,7 @@ run S5 $E solve -m=-3 -s examples/zebra2.ein
 # S6 — "(no query goal to project)"
 run S6 $E solve -e examples/lattice/02_genuine_3set_death.ein
 
-# S8 — ein.py repr in a core
+# S8 — a struct repr in a core
 run S8 $E solve $S/nested-core.ein
 
 # P1 — render panic

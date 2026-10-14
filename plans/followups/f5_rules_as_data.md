@@ -132,17 +132,17 @@ rules-as-data exercise. Candidate kernel features to audit:
   natural rule rather than engine code.
 - **Static mutex pre-analysis (ex-[P1.9 E5](f9_e_catalog.md))**
   — audit *already resolved*: a `(rel, argpos)` mutex is the negative-companion
-  rule `functional-negative`, not a Python hypfilter table — express as a rule.
+  rule `functional-negative`, not a hypfilter table in engine code — express as a rule.
   Soundness of a synthesised companion is a bounded chase over a 2-atom abstract
   witness (monotone fragment) — the existing saturator as the check, no new
   engine. The companion *taxonomy* is
   [F7 sub-track D](f7_rule_induction.md#sub-track-d--companion-rule-synthesis-property-duals).
 - **Back-prop** — `(not h)` writes on unconditional death. **Audit resolved
-  2026-06-15: `back_prop.py` is dead tree-solver residue, not a kernel feature to
+  2026-06-15: the back-propagation pass is dead tree-solver residue, not a kernel feature to
   lift** (tree solver removed in `8d77b02`; the lattice does flat root-writes +
   Apriori nogoods instead). Removing it is a **scheduled refactor, not a parked
   audit item** —
-  ex-S1.9.E6a, done ([F9 ledger](f9_e_catalog.md)) — `back_prop.py` is
+  ex-S1.9.E6a, done ([F9 ledger](f9_e_catalog.md)) — the back-propagation pass is
   deleted and E6's `walk_premises` shipped.
 - **NAF re-eval** — fire-time check of `AbsentGuard`. This
   is probably load-bearing engine; document as such.

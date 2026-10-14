@@ -1,6 +1,6 @@
 # Data model — the store
 
-`KnowledgeBase` is the registry that owns the entity dataclasses
+`KnowledgeBase` is the registry that owns the entity records
 from [`01_entities.md`](01_entities.md), plus the reverse indexes
 and the derived-view machinery (the fact view, hypothesis forks,
 derivation DAGs).
@@ -12,25 +12,23 @@ derivation DAGs).
 [`ein-ir/from_ir.rs`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs).
 
 > **Notation.** The code blocks on this page and on
-> [`01_entities.md`](01_entities.md) are **Python-shaped pseudo-code for the
-> abstract shape**, not a callable API — this is the *abstract model* half of
+> [`01_entities.md`](01_entities.md) are **pseudo-code for the abstract
+> shape**, not a callable API — this is the *abstract model* half of
 > the sub-tree, and the implementation is Rust. Every name in them resolves in
 > [`ein-core`](../../../../ein.rs/crates/ein-core/src/) up to spelling
 > (`kb.derivation_dag(f)` is `build_derivation_dag(kb, terms, f, …)`,
 > `DerivationDAG` is `DerivationDag`, the `all_justifications=` keyword is the
 > `Justifications::{Primary, All}` argument); the code-level map, with the real
 > signatures and complexities, is
-> [`03_implementation.md`](03_implementation.md). There is no module to
-> import: `ein.py` was deleted at M1a
-> [S1a.10.5](../../../history/m1a_rust/README.md#s1a105--the-removal).
+> [`03_implementation.md`](03_implementation.md).
 
 ---
 
 ## 1. Registries
 
-The KB owns the entity-name dicts plus one fact list:
+The KB owns the entity-name registries plus one fact list:
 
-```python
+```text
 class KnowledgeBase:
     relations: dict[str, Relation]   # both declared and open-world
     rules:     dict[str, Rule]
@@ -57,14 +55,14 @@ maintained on single-fact additions:
 
 | index                       | maps                                          | populated by      |
 |-----------------------------|-----------------------------------------------|-------------------|
-| `_facts_by_relation`        | relation name → tuple of facts                 | full + incremental |
-| `_rules_by_relation`        | relation name → tuple of rules over it          | full rebuild      |
-| `_rule_apps_by_rule`        | rule name → tuple of property-application facts | full + incremental |
-| `_rule_apps_on_relation`    | relation name → tuple of property facts on it   | full + incremental |
+| `by_rel`                    | relation name → tuple of facts                 | full + incremental |
+| `rules_by_relation`         | relation name → tuple of rules over it          | full rebuild      |
+| `rule_apps_by_rule`         | rule name → tuple of property-application facts | full + incremental |
+| `rule_apps_on_rel`          | relation name → tuple of property facts on it   | full + incremental |
 | `names`                     | name → `NameRef` (head / arg participation)    | full + incremental |
 
-Entities expose these via `@property` accessors (e.g. `relation.facts`)
-— the dicts themselves are internal. (S1.7.23 removed the
+Entities reach these through accessors that take the KB (e.g.
+`relation.facts`) — the maps themselves are internal. (S1.7.23 removed the
 `_types_by_parent` / `_instances_by_type` / `_facts_by_instance` /
 `_rules_by_type` indexes — they served only the deleted `Type` /
 `Instance` accessors.)
@@ -107,19 +105,18 @@ once at the end with all problems concatenated.
 One method on `KnowledgeBase` returns a read-only filtered view over the
 fact list:
 
-```python
+```text
 kb.all_facts()  -> FactView   # every fact
 ```
 
 Named `all_facts()` — not `facts()` — because `kb.facts` is the registry
-list attribute (Python disallows shadowing). To select a *part* of the fact
+list. To select a *part* of the fact
 set, use the `by_source` / `by_rule` filters below, which read the
 provenance directly.
 
-`FactView` is a frozen dataclass wrapping a `tuple[Fact, ...]`. It
-supports the sequence protocol (`__iter__` / `__len__` /
-`__contains__` / `__bool__`) and four filter methods that return
-**iterators**:
+`FactView` is an immutable list of fact ids over the KB. It supports
+`len` / `is_empty` / `iter` / `contains` and four filter methods that
+return **iterators**:
 
 - `view.relation(name)` — facts whose head matches `name`.
 - `view.about(name)` — facts mentioning a name.
@@ -137,45 +134,32 @@ executes it against the KB's indexes
 
 A `fork` is a hypothesis branch (per
 [`../01-ein-graph/01_kb.md` §6](../01-ein-graph/01_kb.md)). The
-implementation:
+contract:
 
-```python
-def fork(self) -> KnowledgeBase:
-    new = KnowledgeBase()
+```text
+fork(kb) -> KnowledgeBase
     # Shared by reference (immutable post-load):
-    new.relations  = self.relations
-    new.rules      = self.rules
-    new.hrules     = self.hrules
-    new.query      = self.query
-    # Equality classes: forked (its own state, seeded from parent's).
-    new.classes._parent = dict(self.classes._parent)
-    # Facts list + reverse indexes: shallow-copied so appends to the
-    # fork don't touch the parent.
-    new.facts = list(self.facts)
-    new._facts_by_relation     = dict(self._facts_by_relation)
-    new._rule_apps_by_rule     = dict(self._rule_apps_by_rule)
-    new._rule_apps_on_relation = dict(self._rule_apps_on_relation)
-    new.names                  = dict(self.names)
+    #   the program — relations, rules, hrules, queries, config — and
+    #   `rules_by_relation`
+    # Forked (its own state, seeded from the parent's):
+    #   equality classes
+    # Facts + reverse indexes: the parent's layers are sealed and shared,
+    #   and the fork appends to a fresh top layer of its own, so appends to
+    #   the fork don't touch the parent.
     # Recorded justifications (§7) follow the *facts* contract, not the
-    # shared-by-reference one: a branch-local derivation may name
-    # hypothesis premises the root never assumed.
-    new._alt_justifications    = dict(self._alt_justifications)
-    # … (`_rules_by_relation` shared by reference; immutable post-load)
-    return new
+    #   shared-by-reference one: a branch-local derivation may name
+    #   hypothesis premises the root never assumed.
 ```
 
-**Cost:** O(|facts|) for the shallow copies — bounded by Zebra-
-scale at ~50-200 facts. If hypothesis branching becomes a hot path
-(P1.5 profiling), revisit with a copy-on-write index wrapper.
+**Cost:** seal the parent's top layer and clone the list of shared layers —
+allocation count independent of `|facts|`
+([`03_implementation.md` §3](03_implementation.md)).
 
-> **The back-pointer caveat is historical.** The Python implementation wired a
-> `_kb` pointer onto each entity, so a shared `Relation`'s `.facts` answered
-> *for the root* when asked on a fork, and this section had to warn about it.
-> ein.rs passes the KB explicitly — `to_dot(kb, …)`, `justifications(kb, f)` —
-> so there is nothing to attach, nothing to point at the wrong KB, and the
-> caveat has no subject. Said the same way by
-> [`01_entities.md` §5](01_entities.md#5-entity-attachment--the-back-pointer-and-why-it-is-gone)
-> and [`03_implementation.md` §2](03_implementation.md).
+No entity carries a pointer to its KB: every accessor takes the KB explicitly —
+`to_dot(kb, …)`, `justifications(kb, f)` — so nothing can answer for the wrong
+KB. Said the same way by
+[`01_entities.md` §5](01_entities.md#5-entity-attachment--why-there-is-no-back-pointer)
+and [`03_implementation.md` §2](03_implementation.md).
 
 A fork-scoped read is therefore just a read against the fork:
 `fork.all_facts().about(name)`.
@@ -199,7 +183,7 @@ Per [`01_entities.md` §3](01_entities.md), every fact has a
 derived more than one way carries the other derivations too, in a KB
 side table reached through four methods:
 
-```python
+```text
 kb.justifications(fact)  -> tuple[Provenance, ...]  # the OR-node, primary first
 kb.record_justification(fact, prov) -> bool         # engine-side; True if newly kept
 kb.accepts_justification(fact, n_premises) -> bool  # O(1) hot-path pre-check
@@ -222,9 +206,9 @@ dedup key and the `MAX_ALT_JUSTIFICATIONS` cap are in
   a wholly-redundant firing before it builds any fact and calls
   `record_justification` itself, as does the `__symmetric__` native
   mirror.
-- **Copy contract.** The table follows the *facts* contract —
-  shallow-copied per `fork()` (§5) and per `snapshot()`, never shared
-  by reference. A justification recorded inside a branch may name
+- **Copy contract.** The table follows the *facts* contract — a
+  branch's writes land in its own layer per `fork()` (§5) and per
+  `snapshot()`, never in the parent's. A justification recorded inside a branch may name
   `hypothesis`-kind premises the root never assumed, and sharing would
   leak that phantom assumption into a root-level core.
 - **Not rebuildable.** `rebuild_indexes()` deliberately leaves it
@@ -234,21 +218,20 @@ dedup key and the `MAX_ALT_JUSTIFICATIONS` cap are in
   set reconstructs.
 
 A consumer writing its own walk gets the same choice explicitly:
-`provenance.walk_premises(…, justifications=…)` and
-`build_derivation_dag(…, justifications=…)` share the selector
-`provenance.justifications_of()` — `None` (the default) means the
-primary justification alone, `kb.justifications` makes the walk
-OR-aware.
+`walk_premises(…, justifications)` and
+`build_derivation_dag(…, justifications)` share the selector
+`Justifications` — `Primary` (the default) means the primary
+justification alone, `All` makes the walk OR-aware.
 
 ### 7.1 `kb.derivation_dag(fact, *, all_justifications=False) -> DerivationDAG`
 
 BFS from `fact` through `provenance.premises_raw`, resolving each id
-via `kb._fact_by_id(rel, args)` and recursing into `rule`-kind facts
+through the KB and recursing into `rule`-kind facts
 only. `source`- and `hypothesis`-kind facts terminate the recursion.
 
-The result is a `DerivationDAG` frozen dataclass:
+The result is a `DerivationDAG` record:
 
-```python
+```text
 DerivationDAG(
     root:      Fact,
     nodes:     tuple[Fact, ...],
@@ -289,7 +272,7 @@ frontier upward.
 ### 7.2 `kb.unsat_core(conflicting, *, all_justifications=False) -> set[Fact]`
 
 For each fact in `conflicting`, walks its premise closure (the shared
-`provenance.walk_premises`, with one `visited` set memoising across
+`walk_premises`, with one `visited` set memoising across
 the conflicting facts) and accumulates the frontier terminals —
 source-kind, hypothesis-kind, or un-provenanced givens. The union is
 the **recorded source-frontier** that derives the conflict (per the
@@ -298,7 +281,7 @@ fact; not a subset-minimal MUS) — the input to the *contradictions*
 task class
 ([`docs/ideas/03-three-task-classes.md`](../../../../plans/ideas/03-three-task-classes.md)).
 
-```python
+```text
 core = kb.unsat_core([conflicting_fact_1, conflicting_fact_2])
 # core: set of source-kind Facts; their (rel, args) + source annotation
 # tell the user "these were the load-bearing premises".
@@ -328,15 +311,15 @@ across the dead commitments, since no single one explains the unsat).
 Two further caveats: the alternatives searched are only the firings
 the saturator attempted, capped per fact, so "minimal" stays relative
 to the rule set and the saturation strategy; and the search is
-budgeted — call `inference.explain.minimal_contradiction_frontier`
-directly to read `Explanation.exhausted`, which reports whether a cap
+budgeted — call `explain::minimal_contradiction_frontier`
+directly to read `Explanation::exhausted`, which reports whether a cap
 was hit (a truncated search is still sound).
 
 ## 8. Equality classes — placeholder
 
 `kb.classes: EqClasses` is a small union-find over instance names:
 
-```python
+```text
 kb.classes.find(name)       -> root name
 kb.classes.union(a, b)      -> merge classes
 kb.classes.equivalent(a, b) -> bool
@@ -356,7 +339,7 @@ Loaders and the inference engine mutate the KB through:
 - `kb.add_rule(rule)` — idempotent by name.
 - `kb.add_fact(f)` — dedupe by `(relation_name, args)`; first-seen
   provenance wins.
-- `kb._index_fact(f)` — incremental index update; call after a
+- `kb.index_fact(f)` — incremental index update; call after a
   single-fact `add_fact` to avoid a full `rebuild_indexes`.
 - `kb.rebuild_indexes()` — full rebuild from registries + fact list.
 
@@ -371,7 +354,7 @@ discarded) rather than mutation.
 
 ## 10. Connections
 
-- [`01_entities.md`](01_entities.md) — the dataclasses this store
+- [`01_entities.md`](01_entities.md) — the records this store
   owns.
 - [`../01-ein-graph/`](../01-ein-graph/) — the conceptual model.
 - [`../03-ein-lang/`](../03-ein-lang/) — the surface syntax the

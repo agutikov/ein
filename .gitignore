@@ -1,28 +1,11 @@
-# Python. The engine left at M1a S1a.10.5; what is left that is Python is
-# `utils/` and `examples/gen_zebra2_variants.py`. The PyO3 module these
-# patterns were also held for was deferred at P1a.9 (Q-M1a.23) and is not
-# being built; they cost nothing and stay.
+# Python: `utils/` and `examples/gen_zebra2_variants.py`.
 *.pyc
 __pycache__/
-*.egg-info/
-*.egg
-
-# Test / lint caches
-.pytest_cache/
-.ruff_cache/
-.coverage
-htmlcov/
 
 # Build / dist
 build/
 dist/
 
-# Virtualenvs. `.venv-pypy` was the project's PyPy interpreter, created by
-# `venv_install.sh pypy3`; both the script and the reason for it went with the
-# Python engine. Nothing in the tree makes one now.
-.venv/
-venv/
-.venv*
 # Engine dump trees (`--dump-states DIR`). **Anchored** to the repo root: the
 # bare `dump` / `dumps` these replace matched any path component, and silently
 # excluded `ein.rs/crates/ein-render/src/dump/` — a source module, ignored
@@ -43,13 +26,10 @@ utils/feature_matrix_results.json
 ein.rs/target/
 ein.rs/target-fd/
 # A fuzz session's scratch corpus: every run wipes and rewrites it.
+# Everything in `fuzz_findings/` is checked in on purpose — a violated
+# property, with a note — and a settled one becomes a `regression` entry with
+# a name.
 corpus/out/
-# `crash-candidates.txt` used to be here: generated inputs both engines refused
-# with the same exception class, which was a corpus *candidate* rather than a
-# find. With one engine there is no class to agree on, so S1a.10.4's fuzzer
-# does not write it. Everything in `fuzz_findings/` is checked in on purpose
-# now — a violated property, with a note — and a settled one becomes a
-# `regression` entry with a name.
 # Bench and profile artefacts (S1a.6.1): raw JSON + perf data, machine-specific
 # and per-run. The committed record is the tables in
 # docs/history/m1a_rust/measurements/baseline.md — the same split

@@ -16,11 +16,11 @@
 //! knowledge layers, and that was a soundness bug: a flatly inconsistent
 //! puzzle was accepted in silence.
 //!
-//! The port's change is the *lookup*, not the algorithm
+//! The lookup is two bit tests
 //! ([design/06](../../../../docs/history/m1a_rust/design/06_saturation.md) §6):
-//! ein.py's `(rn, args) in kb._negated_facts` and `_fact_by_id(X)` become two
-//! bit tests. The result **order** is preserved — direct ⊥ first, then pairs
-//! in extent order — because it reaches the unsat core and the trace.
+//! is `X` negated, and is `X` in the KB. The result **order** is fixed —
+//! direct ⊥ first, then pairs in extent order — because it reaches the unsat
+//! core and the trace.
 
 use ein_core::{FactId, Kb, Terms};
 

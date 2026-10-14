@@ -1,4 +1,4 @@
-//! The trace AST — `ein.py`'s `trace/ast.py`.
+//! The trace AST.
 //!
 //! A trace is itself IR: a list of `(step …)` forms carrying the rule name,
 //! the premises it consumed, the derived edge, the bindings, and a generated
@@ -10,12 +10,12 @@
 //! bindings. `diagram` and `section` are render-time enrichments and come back
 //! `None` after a round trip.
 //!
-//! **Why a fact here is not a `FactId`.** Everywhere else in the port a fact
-//! is an interned id. A parsed trace is the exception: `parse_trace_steps`
+//! **Why a fact here is not a `FactId`.** Everywhere else in the engine a
+//! fact is an interned id. A parsed trace is the exception: `parse_trace_steps`
 //! rebuilds facts that may name relations and objects no KB ever held, so
-//! there is nothing to intern them *into*. [`FactRef`] is therefore the owned
-//! `(relation_name, args)` shape ein.py's `FactRef` alias describes, and
-//! [`fact_ref`] converts one *out* of the KB where the linearizer needs it.
+//! there is nothing to intern them *into*. [`FactRef`] is therefore an owned
+//! `(relation_name, args)` pair, and [`fact_ref`] converts one *out* of the KB
+//! where the linearizer needs it.
 
 use ein_core::{FactId, Tag, Terms, Value};
 use ein_ir::dump::escape_string_literal;
@@ -97,8 +97,8 @@ pub struct TraceStep {
     pub rule: String,
     pub premises: Vec<FactRef>,
     pub derived: FactRef,
-    /// Variable bindings in bind order — a Python `dict`, whose order is the
-    /// order the matcher first bound each name.
+    /// Variable bindings in bind order — the order the matcher first bound
+    /// each name.
     pub bindings: Vec<(String, String)>,
     pub why: String,
     /// The inline DOT slice — render-time, not serialised.
@@ -140,10 +140,9 @@ impl TraceStep {
 
 /// Whether a string can be written as a bare atom rather than a literal.
 ///
-/// ein.py is `s and all(c.isalnum() or c in "-_*?." for c in s) and not
-/// s[0].isdigit()`. `isalnum` / `isdigit` are Python's *Unicode* predicates;
-/// `char::is_alphanumeric` / `is_numeric` are the closest Rust equivalents and
-/// agree with them over every character the grammar admits in a symbol.
+/// Non-empty, every character alphanumeric or one of `-_*?.`, and the first
+/// not numeric — `char::is_alphanumeric` / `is_numeric`, the *Unicode*
+/// predicates, not the ASCII ones.
 fn atom_safe(s: &str) -> bool {
     if s.is_empty() {
         return false;
@@ -219,8 +218,8 @@ pub fn trace_to_ir(steps: &[TraceStep]) -> String {
 
 // ── IR round-trip: back ────────────────────────────────────────────
 
-/// One IR scalar's Python value: `Atom` → its name, `Int` / `String` → their
-/// value, anything else → `str(x)` — the dataclass repr.
+/// One IR scalar's value: `Atom` → its name, `Int` / `String` → their value,
+/// anything else → its [`node_repr`].
 fn atom_or_value(ast: &Ast, id: NodeId) -> RefArg {
     match ast.node(id) {
         Node::Atom(s) => RefArg::Str(ast.sym(s).to_string()),
@@ -255,8 +254,8 @@ fn parse_using(ast: &Ast, val: NodeId) -> Vec<FactRef> {
     let Node::SForm { head, args } = ast.node(val) else {
         return Vec::new();
     };
-    // `val.head.name` — an AttributeError in ein.py when the head is a `?var`,
-    // and unreachable, because a `:using` is always written by `step_to_ir`.
+    // A head that is not an atom is not `and` — and is unreachable anyway,
+    // because a `:using` is always written by `step_to_ir`.
     let is_and = matches!(ast.node(head), Node::Atom(s) if ast.sym(s) == "and");
     if is_and {
         return ast
@@ -279,8 +278,8 @@ fn parse_bindings(ast: &Ast, val: NodeId) -> Vec<(String, String)> {
     let mut out: Vec<(String, String)> = Vec::new();
     let mut i = 0;
     while i + 1 < items.len() {
-        // `getattr(items[i], "name", None)` — only `Atom` / `Var` / `Keyword`
-        // carry a `name`, and an empty one is falsy, so it is skipped too.
+        // Only `Atom` / `Var` / `Keyword` carry a name, and an empty one is
+        // skipped too.
         let name = match ast.node(items[i]) {
             Node::Atom(s) | Node::Var(s) | Node::Keyword(s) => Some(ast.sym(s).to_string()),
             _ => None,
@@ -308,7 +307,7 @@ fn kw_get(ast: &Ast, form: NodeId, key: &str) -> Option<NodeId> {
             && let Node::Keyword(s) = ast.node(k)
             && ast.sym(s) == key
         {
-            // Last wins — `kw_map` builds a dict.
+            // Last wins — a repeated keyword overrides the earlier one.
             found = Some(value);
         }
     }

@@ -303,7 +303,7 @@ dependencies = [
  "ein-core",
  "ein-corpus",
  "ein-ir",
- "ein-parity",
+ "ein-narration",
  "ein-render",
  "rayon",
  "rustc-hash",
@@ -323,7 +323,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ein-parity"
+name = "ein-narration"
 version = "0.1.0"
 dependencies = [
  "serde_json",
@@ -337,7 +337,7 @@ dependencies = [
  "ein-corpus",
  "ein-infer",
  "ein-ir",
- "ein-parity",
+ "ein-narration",
  "md-5",
  "rustc-hash",
  "serde_json",

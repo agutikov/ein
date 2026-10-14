@@ -1,18 +1,13 @@
-//! T1a.10.1.4 — **the determinism sweep's successor**: one engine, permuted
-//! ids, and the whole corpus has to answer the same way.
+//! T1a.10.1.4 — **the determinism sweep**: one engine, permuted ids, and the
+//! whole corpus has to answer the same way.
 //!
-//! The sweep it replaces ran `ein-conformance --env-a PYTHONHASHSEED=0
-//! --env-b PYTHONHASHSEED=42 --strict` and found hazards H1 and H4. It asked
-//! one question — *does an output depend on a hash-order accident rather than
-//! on the data?* — and it asked it of ein.py, because ein.py is the engine
-//! whose `hash()` is salted. ein.rs is not: `FxHashMap` hashes the same way
-//! every run
+//! It asks one question — *does an output depend on an order accident rather
+//! than on the data?* — and it cannot ask it by re-running: `FxHashMap`
+//! hashes the same way every run
 //! ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §9),
-//! so re-running it proves nothing and re-running it against a second engine
-//! is not available after
-//! [P1a.10](../../../../docs/history/m1a_rust/README.md#p1a10--one-implementation).
+//! so two runs of one build agree whether or not an output leaks an order.
 //!
-//! What *is* available is the same question in this engine's own terms. Ids
+//! What *is* available is the question in this engine's own terms. Ids
 //! here are **assignment-ordered**: a [`Symbol`] is "how many distinct names
 //! had been seen when this one arrived", and
 //! [`ein_core::intern`](../../ein-core/src/intern.rs) says so —
@@ -35,16 +30,15 @@
 //! order *could* reach an output; this finds one that *does*, and it finds the
 //! ones that are not iterations at all — a sort that fell back on `Symbol`'s
 //! numeric order, a `min_by_key` on a `Value`, a set rendered in insertion
-//! order. It is strictly weaker in one direction, and that is on the ledger:
-//! it only sees what the corpus reaches.
+//! order. It is strictly weaker in one direction: it only sees what the
+//! corpus reaches.
 //!
 //! ## The seam
 //!
 //! `EIN_ID_FILES=<dir>` sweeps every `.ein` under `<dir>` instead of the
-//! corpus. One caller: `utils/fuzz_ein.py`, whose third property is
-//! [the ledger's L1](../../../../docs/history/m1a_rust/oracle_ledger.md#6-accepted-loss)
-//! item 3 — *the same program under a permuted interner answers the same way*,
-//! **applied to generated input rather than to the corpus**. The instrument
+//! corpus. One caller: `utils/fuzz_engine.py`, whose third property is *the same
+//! program under a permuted interner answers the same way*, **applied to
+//! generated input rather than to the corpus**. The instrument
 //! for that is this file and there is no second copy of it, so the fuzzer
 //! writes a batch to a directory and points this sweep at it.
 //!
@@ -324,7 +318,7 @@ fn no_observable_depends_on_the_order_ids_were_assigned_in() {
     // small generated programs can legitimately move nothing, and reporting
     // that as a broken instrument would make the seam useless.
     assert!(
-        !is_corpus || ein_parity::strict() || moved_at_all > 0,
+        !is_corpus || ein_narration::strict() || moved_at_all > 0,
         "no rendering moved under a permuted id space — \
          either the perturbation stopped perturbing or the proof stopped depending on it"
     );
@@ -368,8 +362,8 @@ enum Moved {
 }
 
 /// Whether the *answer* or the *narration of the proof* moved, which is what
-/// the cut decides — and the cut is `ein-parity`'s, applied here between two
-/// runs of one engine rather than between two engines. See the module note.
+/// the cut decides — and the cut is `ein-narration`'s, applied here between two
+/// runs that differ only in their id space. See the module note.
 ///
 /// One function because two tests ask it: the sweep, and the register's
 /// id-order rows, which must count as moved exactly what the sweep would
@@ -378,7 +372,7 @@ fn moved_by_the_cut(op: Op, base: &str, got: &str) -> Moved {
     if got == base {
         return Moved::No;
     }
-    if !ein_parity::strict() && ein_parity::blank(base) == ein_parity::blank(got) {
+    if !ein_narration::strict() && ein_narration::blank(base) == ein_narration::blank(got) {
         return Moved::StoppingPoint;
     }
     match (op.narrow(base), op.narrow(got)) {

@@ -263,7 +263,7 @@ pub fn union_dead_cores(cores: &[Vec<FactId>]) -> Vec<FactId> {
     // determinism-ok: identity order as a set union's normalisation. The core
     // *is* an answer, so this one is worth being explicit about: every site
     // that renders it re-sorts by text first (`shape.rs`, `slice.rs`,
-    // `trace/linearize.rs`), and `ein-parity` compares it as a set.
+    // `trace/linearize.rs`), and `ein-narration` compares it as a set.
     out.sort_unstable();
     out.dedup();
     out
@@ -273,7 +273,7 @@ pub fn union_dead_cores(cores: &[Vec<FactId>]) -> Vec<FactId> {
 
 /// A `(query …)` keyword's value, by keyword name.
 ///
-/// The **first** match wins: ein.py returns out of the loop.
+/// The **first** match wins.
 pub fn query_value(ast: &Ast, query: &Query, kw_name: &str) -> Option<NodeId> {
     for &pair in query.kw_pairs.iter() {
         let Node::KwPair { key, value } = ast.node(NodeId(pair.0)) else {
@@ -296,11 +296,10 @@ pub fn query_value(ast: &Ast, query: &Query, kw_name: &str) -> Option<NodeId> {
 /// `(query :goal …)`; pass one explicitly to project a different question over
 /// a solved model.
 ///
-/// ein.py hand-builds a `JoinPlan(rule_name="<query>", …)` around
-/// `compile_pattern(goal, {})`. There is no free-standing pattern compiler
-/// here — [`compile_rule`](crate::compile_rule) is the entry point — so the
-/// goal is wrapped in a parameter-less synthetic rule of the same name, which
-/// compiles to the same steps: no activator to bind, no `:assert` templates,
+/// There is no free-standing pattern compiler —
+/// [`compile_rule`](crate::compile_rule) is the entry point — so the goal is
+/// wrapped in a parameter-less synthetic rule named `<query>`, which compiles
+/// to the pattern's own steps: no activator to bind, no `:assert` templates,
 /// no `:why`.
 pub fn goal_bindings(
     ast: &Ast,
@@ -336,17 +335,16 @@ pub fn goal_bindings(
     };
     let plan = match crate::compile::compile_rule(ast, terms, &rule, None) {
         Ok(plan) => plan,
-        // ein.py lets `compile_pattern` raise straight out of `goal_bindings`,
-        // so a goal the compiler rejects — `(query :goal (?R Rex Animal))`,
-        // an unbound relation head — ends the *whole run* there rather than
-        // projecting nothing. Callers that must reproduce that ask
-        // [`goal_plan_error`] first; this one keeps its infallible signature.
+        // A goal the compiler rejects — `(query :goal (?R Rex Animal))`, an
+        // unbound relation head — ends the *whole run* rather than projecting
+        // nothing. Callers that render a model ask [`goal_plan_error`] first;
+        // this one keeps its infallible signature.
         Err(_) => return Vec::new(),
     };
     let mut rows: Vec<Vec<(Symbol, Value)>> = Vec::new();
     let mut matcher = crate::match_::Matcher::new();
     matcher.run(kb, terms, ast, &plan, &mut |m| {
-        // `dict(b)` — last binding of a repeated name wins, and the row keeps
+        // The last binding of a repeated name wins, and the row keeps
         // first-bind order, which is what the trace and the table print.
         let mut row: Vec<(Symbol, Value)> = Vec::new();
         for (name, value) in m.bindings() {
@@ -361,13 +359,12 @@ pub fn goal_bindings(
     rows
 }
 
-/// The error ein.py's `compile_pattern` would raise for this query goal.
+/// The error compiling this query goal fails with.
 ///
 /// `None` when there is no goal, or when it compiles. [`goal_bindings`] cannot
-/// report it — ein.py raises out of the same call and ein.rs has no exceptions
-/// — so the CLI asks this before it renders, and prints the line CPython's
-/// traceback would end with. Found by
-/// [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-differential-fuzzer)'s
+/// report it — its signature is infallible — so the CLI asks this before it
+/// renders a model, and refuses the run with this error. Found by
+/// [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-fuzzer)'s
 /// fuzzer on a two-line program; `examples/ein-bugs/query-goal-free-head.ein`
 /// is the fixture.
 pub fn goal_plan_error(

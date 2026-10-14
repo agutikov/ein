@@ -2,9 +2,8 @@
 
 **Two rules, ratified 2026-08-28.** They say what it takes to call a claim
 about this repo *settled*, and they exist because the tree they live in is
-load-bearing: since M1a [P1a.10](../history/m1a_rust/README.md#p1a10--one-implementation)
-`docs/kernel/` is the only statement of intent that is not also the
-implementation, so a claim here is checked by `cargo test --workspace` and by
+load-bearing: `docs/kernel/` is the only statement of intent that is not also
+the implementation, so a claim here is checked by `cargo test --workspace` and by
 nothing else.
 
 They were written as [M1e](../history/m1e_review_processing/README.md)'s

@@ -1,21 +1,20 @@
 //! Import resolution, minimisation and macro expansion — S1a.1.3's
-//! acceptance, without the oracle.
+//! acceptance.
 //!
 //! The minimisation half matters more than it looks: the surviving declaration
 //! set is observable through the plan cache and through firing order, so
-//! dropping one declaration too many or too few is a T1/T2 failure several
+//! dropping one declaration too many or too few is a wrong answer several
 //! phases later, on a fixture that will look unrelated.
 //!
-//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
-//! removes the second resolver:
+//! Where each part is checked:
 //!
-//! | was | now |
+//! | claim | where |
 //! |---|---|
-//! | three corpus-wide diffs (`resolve` / `minimize` / `expand`) | `corpus_shapes.md5`'s 107 `ir[resolve]` + 107 `ir[minimize]` + 107 `ir[expand]` lines — the same three ops through the same `dump_canonical` |
-//! | `macro-names` against the oracle | [`stdlib_macro_names_reads_the_module_rather_than_a_hardcoded_list`], which re-parses `stdlib/macro.ein` at test time |
-//! | the 14-module mangling diff | a checked-in table |
-//! | the two-qualification cache probe | kept, minus its oracle half |
-//! | the 12 `.expected` fixtures | unchanged — they never used the oracle |
+//! | the three corpus-wide ops (`resolve` / `minimize` / `expand`) | `corpus_shapes.md5`'s 107 `ir[resolve]` + 107 `ir[minimize]` + 107 `ir[expand]` lines, through `dump_canonical` |
+//! | `std.macro`'s exported names | [`stdlib_macro_names_reads_the_module_rather_than_a_hardcoded_list`], which re-parses `stdlib/macro.ein` at test time |
+//! | the 14-module mangling | a checked-in table |
+//! | one module under two qualifications | [`one_module_under_two_qualifications_does_not_leak_either_way`] |
+//! | the 12 `.expected` fixtures | [`the_import_and_macro_failures_are_byte_identical`] |
 
 use std::path::{Path, PathBuf};
 
@@ -32,9 +31,9 @@ fn parse_file(ast: &mut Ast, path: &Path) -> Vec<ein_ir::NodeId> {
 
 /// **`stdlib_macro_names` reads the module rather than a hard-coded list.**
 ///
-/// The claim the function's name makes, checkable without a second engine: the
-/// answer is exactly the `(macro …)` heads declared in `stdlib/macro.ein`,
-/// re-derived here by parsing the file at test time. A list that drifted from
+/// The claim the function's name makes, checked directly: the answer is
+/// exactly the `(macro …)` heads declared in `stdlib/macro.ein`, re-derived
+/// here by parsing the file at test time. A list that drifted from
 /// the module — the failure this exists for — fails on both sides of the
 /// comparison at once.
 #[test]
@@ -74,8 +73,7 @@ fn stdlib_macro_names_reads_the_module_rather_than_a_hardcoded_list() {
 }
 
 /// The checked-in messages, compared against the **fixture files** — the same
-/// text `ein.py/tests/kb/test_load_negative.py` and the corpus sweep
-/// hold ein.py to.
+/// text the corpus sweep holds the binary to.
 #[test]
 fn the_import_and_macro_failures_are_byte_identical() {
     let root = repo_root();
@@ -122,9 +120,8 @@ fn the_import_and_macro_failures_are_byte_identical() {
         assert_eq!(err.0, expected, "{name}");
     }
 
-    // The macro fixture's message is a `MacroError`; the `({head} {name}): `
-    // prefix around it is the loader's `errors.append(f"({head} {name}): {e}")`
-    // and arrives with the loader. Asserting the composition here is what
+    // The macro fixture's message is a `MacroError`; the loader prefixes it
+    // with `({head} {name}): ` and the prefix arrives with the loader. Asserting the composition here is what
     // makes the remaining half a one-line wiring job rather than a discovery.
     let path = dir.join("macro_arity_mismatch.ein");
     let expected = expand_placeholders(
@@ -148,7 +145,7 @@ fn the_import_and_macro_failures_are_byte_identical() {
 /// are handed the same nodes, so a qualification that rewrote a shared subtree
 /// in place instead of building a new one would leak `m.` into the flat import
 /// (or the other way round). `rename_atoms` builds; this is the test that says
-/// so, and it compares against `ein.py`, which has no cache at all.
+/// so.
 #[test]
 fn one_module_under_two_qualifications_does_not_leak_either_way() {
     let base = repo_root().join("examples");
@@ -173,9 +170,9 @@ fn one_module_under_two_qualifications_does_not_leak_either_way() {
         "a rename was applied twice:\n{got}"
     );
     // Both copies expand the same body: the rename touched the *heads* only,
-    // so `m.forall` and `forall` differ in exactly one token. This is the half
-    // that was ein.py's — a resolver with no cache cannot leak, so the whole
-    // point was that the cached one produces the same text.
+    // so `m.forall` and `forall` differ in exactly one token. A resolver with
+    // no cache could not leak, so the point is that the cached one produces
+    // the text an uncached one would.
     let flat = got
         .lines()
         .find(|l| l.starts_with("(macro forall"))
@@ -191,12 +188,12 @@ fn one_module_under_two_qualifications_does_not_leak_either_way() {
     );
 }
 
-/// **Module-name → file-path mangling is `pathlib`'s**, and the places it is
-/// surprising only show up in the "module not found" text.
+/// **Module-name → file-path mangling**, and the places it is surprising only
+/// show up in the "module not found" text.
 ///
 /// `std.nope.`, `std..nope`, `a.` and `std.__x` are the interesting rows: an
-/// empty segment and a trailing dot are not errors in `pathlib`, they are path
-/// components, so the message names a file nobody would have guessed. Checked
+/// empty segment — a doubled or a trailing dot — is not an error, it is
+/// dropped, so the message names a file nobody would have guessed. Checked
 /// in as a table because the message *is* the observable — resolution either
 /// finds a module or says which file it looked for.
 ///
@@ -204,7 +201,7 @@ fn one_module_under_two_qualifications_does_not_leak_either_way() {
 /// replaced by `{ROOT}` the way `examples/broken/load/`'s fixtures use
 /// `{FILE}`.
 #[test]
-fn module_paths_are_mangled_the_way_pathlib_mangles_them() {
+fn module_names_mangle_into_these_file_paths() {
     const MODULES: [&str; 14] = [
         "std.nope",
         "std.a.b",
@@ -474,9 +471,8 @@ fn a_stdlib_module_may_not_import_a_file_relative_one() {
 ///
 /// Three tiers — `$EIN_STDLIB`, the checkout walk, the `include_dir!` copy —
 /// and the third is the one a release binary uses and the one the harness can
-/// never reach, because it always sets the override
-/// (`ein-ir/src/stdlib.rs`'s own note). So the tier with no coverage was the
-/// tier that ships. This is the smallest thing that exercises it end to end: a
+/// never reach, because it always sets the override. So the tier with no
+/// coverage was the tier that ships. This is the smallest thing that exercises it end to end: a
 /// program importing a stdlib module, resolved against `Source::Embedded`, and
 /// the declaration it brings in has to arrive.
 #[test]

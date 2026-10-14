@@ -7,32 +7,6 @@
 #     ./run_tests.sh --tests-only    # cargo test and the review-bundle smoke — no checks, no bench smoke
 #     ./run_tests.sh -p ein-ir       # anything else is forwarded to cargo test
 #
-# **This was a three-phase runner until M1a S1a.10.5**, and each phase went
-# for a different reason. It is kept as a name rather than as a script: the
-# name is in `AGENTS.md`, in a dozen plan documents' "Gate:" lines and in the
-# user's habits, and a wrapper that still works is cheaper than re-teaching
-# the habit.
-#
-#   Phase 1  the pytest unit/integration suite (`ein.py/tests`). Its 1 538
-#            tests reduce to **275 behaviours** in fifteen Rust files —
-#            docs/history/m1a_rust/suite_dispositions.md
-#            has the file-by-file record, including the 96 subjects that died
-#            with their code. Ported at S1a.10.2.
-#   Phase 2  the P1.7a acceptance gate (`ein.py/acceptance`) — the three
-#            zebra2 task-class fixtures, ~40 s, deliberately outside the
-#            pytest testpaths because it was slow. All 21 tests are
-#            `ein-infer/tests/acceptance.rs` (16) and
-#            `ein-cli/tests/acceptance_cli.rs` (5) now, where the same work
-#            takes 0.26 s. It was a separate phase because it was slow; it is
-#            not slow any more, so the runner lost a phase rather than a
-#            check.
-#   Phase 3  `cargo test --workspace` — which is all of it.
-#
-# The interpreter selection (PyPy venv, then .venv, then python3, `EIN_PY` to
-# override) went with the engine that needed it, along with `-j`, `--fast`,
-# `--acceptance-only` and `--no-rust`. There is nothing left for them to
-# select between.
-#
 # **The gate needs Graphviz on `PATH`**: `ein-render/tests/dot_wellformed.rs`
 # is the only authority the DOT views have on being well-formed, and since
 # S1a.10.3 it *fails* rather than skips without it — a skip went to a stderr
@@ -43,9 +17,7 @@
 # build, twice within 0.3 s). It was 577 in ~1 m 16 s at S1a.9.0 the day
 # before, and the 35 s between them is not the eleven tests S1a.9.3 added:
 # P1a.7 closed in between and put `jobs_invariance` — 20 712 (file, op, jobs)
-# cells — into the default gate. It was 312 in 9 m 13 s before S1a.10.2, of
-# which nine minutes were 42 integration tests starting a `python3` per corpus
-# file. No test is marked slow; four targets are 78 % of the wall clock —
+# cells — into the default gate. No test is marked slow; four targets are 78 % of the wall clock —
 # `dot_wellformed` 51 s, `jobs_invariance` 12.5 s, `search_invariant` 12.4 s,
 # `id_order_invariance` 11.5 s.
 #

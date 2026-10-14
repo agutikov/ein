@@ -3,11 +3,7 @@
 Encoded puzzles and focused fixtures, in [ein-lang](../docs/kernel/ir/03-ein-lang/).
 Run any with `ein solve <file>` (or `ein saturate <file>` for the
 saturation demos); see [`docs/api/rust.md`](../docs/api/rust.md) to drive them
-from another **Rust** program. *This line said "from Python" until M1e
-`CD-M6`, and `import ein` has not worked since M1a
-[S1a.10.5](../docs/history/m1a_rust/README.md#s1a105--the-removal) —
-[`docs/api/README.md` § There is no Python module](../docs/api/README.md) is
-the standing statement.*
+from another Rust program.
 
 > The step-by-step **human Zebra walkthrough** (the M1 target trace) used to
 > live here; it moved to
@@ -33,8 +29,7 @@ encoding.
 
 **What pins that they agree cell by cell** — M1e
 [S1e.1.6](../docs/history/m1e_review_processing/README.md#s1e16--what-nothing-pins-q8-q9-q10),
-the review's `Q8`; it was `acceptance/test_zebra_two_ontologies.py` until that
-directory was deleted with `ein.py/`, and the pointer outlived it by six days:
+the review's `Q8`:
 
 | test | what it holds |
 |---|---|
@@ -65,8 +60,7 @@ git show ff1d6c5^:plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeo
 > halves of C2 that are still read went where they are read — its §5(ii)
 > anchoring argument into
 > [`stdlib/README.md`](../stdlib/README.md), and its §0 measurements are
-> superseded by the table above, whose footnote already carries C2's own
-> ~21 s / ~9 s as the PyPy figures they were. What is left in git is the
+> superseded by the table above. What is left in git is the
 > *reasoning*: §3 weighs the four ways the property could have been stated and
 > says why three were rejected, §5 prices the four things that made the
 > encoding fast. A bare **C2** with no link and no location was the third
@@ -86,8 +80,7 @@ git show ff1d6c5^:plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeo
 [scaling.md §1](../docs/history/m1a_rust/measurements/scaling.md), taken
 2026-08-20. **Re-taken 2026-09-01** on the same box with
 `utils/bench_env.sh` and `ein solve <file> -e -t`, median of five: **44.1 ms**
-and **28.2 ms**, verdict, `k` and `exhausted` unchanged. These were ~21 s and
-~9 s under PyPy before the port.)*
+and **28.2 ms**, verdict, `k` and `exhausted` unchanged.)*
 
 `zebra2.ein` remains the **primary M1 acceptance target** (it also carries the
 Ambiguity and Contradiction task-class variants below);
@@ -164,15 +157,13 @@ ein-render/tests/presentation_semantics.rs
 3. **Outside the crates**, which no test can re-derive: `docs/api/rust.md`
    (through `embedding.rs`'s marked region), the `utils/` scripts that name a
    zebra path (`grep -l 'examples/zebra' utils/*`), and `corpus/corpus.toml`.
-4. **Goldens — and three of them may never be re-blessed.**
-   `ein-ir/tests/golden/from_ein_py/zebra.golden` and `zebra2.golden`, and
-   `ein-render/tests/golden/from_ein_py/kb_zebra_unified.dot`, are the last
-   independent provenance in the repo: bytes `ein.py` signed off on before it
-   was deleted. **An edit to `zebra.ein` or `zebra2.ein` that changes the
-   *parse* spends them**, and no test says so at the moment it happens — which
-   is the sentence this section exists for. A `;`-comment does not: comments
-   are lexer trivia and reach no golden, which is why the headers those two
-   files gained at M1e S1e.4.5 moved nothing.
+4. **Goldens.** `ein-ir/tests/golden/zebra.golden` and `zebra2.golden`, and
+   `ein-render/tests/golden/kb_zebra_unified.dot`, are byte goldens of the two
+   puzzles. **An edit to `zebra.ein` or `zebra2.ein` that changes the *parse*
+   moves them**, and `EIN_BLESS=1` re-banks them like any other golden — read
+   the diff first. A `;`-comment does not: comments are lexer trivia and reach
+   no golden, which is why the headers those two files gained at M1e S1e.4.5
+   moved nothing.
 
 ## Feature fixtures (per engine capability)
 
@@ -183,14 +174,14 @@ ein-render/tests/presentation_semantics.rs
 | [`saturation/`](saturation/) | per-rule saturation demos by family — symmetric, transitive, `implies`, square fwd/bwd/unique, type-exclusivity, hypothesis-contradiction (see [`saturation/README.md`](saturation/README.md)) |
 | [`lattice/`](lattice/) | commitment-lattice search: subset-pruned, genuine 3-set death, state-hash collision |
 | [`domain_elim/`](domain_elim/) | domain-elimination vs hypothesis measurement fixtures (see [`domain_elim/README.md`](domain_elim/README.md)) |
-| [`syntax/`](syntax/) | seventeen **node-kind probes** — one per shape the renderers draw and no puzzle contains: the two `=` arities, an arity-0 relation, every argument kind, stored negation over four shapes, the `is-a` subject positions, `(relation …)` at every arity as a nested value, a full `(query …)`, a chained `(trace …)` and an empty one, `(config …)`, the three S1.7c.4 wrapper heads as ordinary facts, five rule shapes (nested `absent`, `forall`/`not`/`eq`, top-level `or`, disjoint guard sets), and the constraint-scope markers. The eighteenth — the two half-specified declarators — is `broken/load/rule_half_declarators.ein`, because it is a load-negative as well as a probe. Moved out of `ein-render/tests/dot_parity.rs` by M1a S1a.10.2, where they were diffed against ein.py under eight parse views; as corpus entries the manifest digests them under **every** view and every op |
+| [`syntax/`](syntax/) | seventeen **node-kind probes** — one per shape the renderers draw and no puzzle contains: the two `=` arities, an arity-0 relation, every argument kind, stored negation over four shapes, the `is-a` subject positions, `(relation …)` at every arity as a nested value, a full `(query …)`, a chained `(trace …)` and an empty one, `(config …)`, the three S1.7c.4 wrapper heads as ordinary facts, five rule shapes (nested `absent`, `forall`/`not`/`eq`, top-level `or`, disjoint guard sets), and the constraint-scope markers. The eighteenth — the two half-specified declarators — is `broken/load/rule_half_declarators.ein`, because it is a load-negative as well as a probe. As corpus entries the manifest digests them under **every** view and every op |
 
 ## Diagnostics & negative fixtures
 
 | dir | what it holds |
 |-----|---------------|
-| [`ein-bugs/`](ein-bugs/) | contradiction / bug-repro puzzles (`zebra2-bad.ein` — injected-fact contradiction; `mixed-type-hypothesis.ein` and `nested-fact-hypothesis.ein` — the two shapes of the `sorted(alive)` crash in `apriori.layer_1`, recorded rather than repaired: M1a Q-M1a.4 / D2, the second needing no mixed types at all; `unbound-relation-head.ein` and `unbound-assert-var.ein` — `(?R ?x)` with `?R` unbound, and an `(or …)` whose arms bind different variables so one reaches the `:assert` unbound: two crash-parity cells, the second of which ein.rs had to learn to spell `KeyError:` for; `query-goal-free-head.ein` and `query-goal-free-head-unsat.ein` — `(query :goal (?R Rex Animal))`, two lines, a program ein.py rejected in its table renderer and ein.rs ran, plus the `Contradiction` arm that exits **0** because no solution block is rendered and so the goal is never compiled; `int-goal-binding.ein` and `fact-goal-binding.ein` — the two goal-binding shapes the M1a S1a.6.6 fuzzer found and both engines were **fixed** for, an integer binding that must stay a JSON number and a nested-fact binding that used to crash `json.dumps`; and three M1e witnesses that the engine **recorded a state its own rules refute** — `alive-empty-phase1.ein`, `alive-empty-interlayer.ein` and `complete-records-stale.ein`, one per `record_node` caller, each answering `Solution`/`Ambiguity` on a model that re-saturated to `Contradiction`. **Fixed by M1e S1e.3.1 (`CO-M1`)**, and each `:expect` now states the right answer (`(false)`, `(false)`, `(model (p A) (p B))`); and the M1e pair `alt-cap-core.ein` / `alt-cap-core-reordered.ein`, one `:priority` apart, which report a **3-fact** and a **2-fact** unsat core for the same facts and the same rules — `MAX_ALT_JUSTIFICATIONS = 32` retains by premise count where the explanation search minimises frontier size, so a full list refuses the smaller explanation: S1e.1.3 / Q-M1e.15; and `naf-upward-closure.ein` — the twenty lines on which **`dead` is not upward-closed under `absent`**, `{(p A)}` dying while `{(p A), (q A)}` would live, so the maximal state is never generated. Five of the six shipped configurations answer it wrongly and all six say `exhausted = true`. It carries `(config :warn-derived-naf true)`, which makes S1e.2.3's `RefutationUnderAbsentWarning` part of its recorded output, and its `:expect` states today's answer and is meant to break: M1e Q-M1e.9, fix filed as F18; and its M1e S1e.3.3 sibling, the pair `alive-set-fresh-name.ein` / `alive-set-fresh-name-declared.ein`, which differ by **one fact** — `(seen Z)`, over a relation nothing else mentions — and by the whole answer: the first says `k = 0, exhausted = true`, *No solution*, where `{(q A Z), (q B Z)}` is a model, because a rule names `Z` and no fact does, so the name enters only inside a fork while the lattice enumerates subsets of the `alive` set taken at root; the second names `Z` in the ontology and answers `Solution k = 1` over exactly that model. The **M1 alive-set invariant** (`ST-M1`, Q-M1e.21) measured rather than argued, and neither file contains an `(absent …)`, so nothing is confounded with Q-M1e.9. **Those of them that still answer wrongly are rows of [`corpus/wrong_answers.toml`](../corpus/wrong_answers.toml)**, M1e2's register, with the line below) |
+| [`ein-bugs/`](ein-bugs/) | contradiction / bug-repro puzzles (`zebra2-bad.ein` — injected-fact contradiction; `mixed-type-hypothesis.ein` and `nested-fact-hypothesis.ein` — hypothesis candidates the layer-1 sort of `alive` has to compare across value kinds (an int against a symbol) and between two nested facts, which `Value`'s total order answers, the second needing no mixed types at all; `unbound-relation-head.ein` and `unbound-assert-var.ein` — `(?R ?x)` with `?R` unbound, and an `(or …)` whose arms bind different variables so one reaches the `:assert` unbound: two refusals at exit 1, the second spelled `KeyError: "…"`; `query-goal-free-head.ein` and `query-goal-free-head-unsat.ein` — `(query :goal (?R Rex Animal))`, two lines, a program the engine ran until M1a S1a.6.6 and now refuses where it renders a model, plus the `Contradiction` arm that exits **0** because no solution block is rendered and so the goal is never compiled; `int-goal-binding.ein` and `fact-goal-binding.ein` — the two goal-binding shapes the M1a S1a.6.6 fuzzer found, an integer binding that must stay a JSON number and a nested-fact binding that renders as an s-expression string; and three M1e witnesses that the engine **recorded a state its own rules refute** — `alive-empty-phase1.ein`, `alive-empty-interlayer.ein` and `complete-records-stale.ein`, one per `record_node` caller, each answering `Solution`/`Ambiguity` on a model that re-saturated to `Contradiction`. **Fixed by M1e S1e.3.1 (`CO-M1`)**, and each `:expect` now states the right answer (`(false)`, `(false)`, `(model (p A) (p B))`); and the M1e pair `alt-cap-core.ein` / `alt-cap-core-reordered.ein`, one `:priority` apart, which report a **3-fact** and a **2-fact** unsat core for the same facts and the same rules — `MAX_ALT_JUSTIFICATIONS = 32` retains by premise count where the explanation search minimises frontier size, so a full list refuses the smaller explanation: S1e.1.3 / Q-M1e.15; and `naf-upward-closure.ein` — the twenty lines on which **`dead` is not upward-closed under `absent`**, `{(p A)}` dying while `{(p A), (q A)}` would live, so the maximal state is never generated. Five of the six shipped configurations answer it wrongly and all six say `exhausted = true`. It carries `(config :warn-derived-naf true)`, which makes S1e.2.3's `RefutationUnderAbsentWarning` part of its recorded output, and its `:expect` states today's answer and is meant to break: M1e Q-M1e.9, fix filed as F18; and its M1e S1e.3.3 sibling, the pair `alive-set-fresh-name.ein` / `alive-set-fresh-name-declared.ein`, which differ by **one fact** — `(seen Z)`, over a relation nothing else mentions — and by the whole answer: the first says `k = 0, exhausted = true`, *No solution*, where `{(q A Z), (q B Z)}` is a model, because a rule names `Z` and no fact does, so the name enters only inside a fork while the lattice enumerates subsets of the `alive` set taken at root; the second names `Z` in the ontology and answers `Solution k = 1` over exactly that model. The **M1 alive-set invariant** (`ST-M1`, Q-M1e.21) measured rather than argued, and neither file contains an `(absent …)`, so nothing is confounded with Q-M1e.9. **Those of them that still answer wrongly are rows of [`corpus/wrong_answers.toml`](../corpus/wrong_answers.toml)**, M1e2's register, with the line below) |
 | [`ein-bugs/wrong-answers/`](ein-bugs/wrong-answers/) | **witnesses of known wrong answers** (M1e2 S1e2.1.1), eighteen programs of a few lines each that were probes under `plans/m1e2_correctness/probes/` and are banked because a register row cannot point into a plan directory. What each one answers and should answer is [`corpus/wrong_answers.toml`](../corpus/wrong_answers.toml)'s, not this line's: the `forced-*` family (W1 at layer 0 and W2, the forced-positive cascade refuting a consistent program), `owed-two-step` / `tree-dead` (W1 turning an `Open` into a `Contradiction`), `fresh-name-{default,nospawn}` (W4 separated from W1), `naf-nowb` (W3's lever row), `owed-seats{,-renamed}` (W5), `uncovered{,-knows}` and `arity3` (W6), `stale-naf-fork{,-warn}` and `f07-fpoff` (W8). Every header carries the hand derivation of the right answer |
 | [`broken/`](broken/) | curated **parse-failure** fixtures; each expects a `file:line:col` error (bare top-level atom, keyword-as-value, rule missing params, unclosed paren) |
-| [`broken/load/`](broken/load/) | curated **load-failure** fixtures — files that parse and then fail `KnowledgeBase.from_ir`; each carries the exact `KBLoadError` message in a `.expected` beside it (see [`broken/load/README.md`](broken/load/README.md)) |
+| [`broken/load/`](broken/load/) | curated **load-failure** fixtures — files that parse and then fail the loader (`ein_ir::load`); each carries the exact `KbLoadError` message in a `.expected` beside it (see [`broken/load/README.md`](broken/load/README.md)) |
 | [`broken/compile/`](broken/compile/) | curated **compile-failure** fixtures — files that parse and load and then hit one of the four `CompileError`s S1.22.0 turned from a silent `return []` into an error; each carries the exact message in a `.expected` beside it (see [`broken/compile/README.md`](broken/compile/README.md)). `activator_arity.ein` is the odd one: its error is unreachable through the engine by design, so the file solves and derives nothing, which is what it pins |

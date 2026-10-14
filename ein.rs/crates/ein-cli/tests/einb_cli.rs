@@ -1,8 +1,8 @@
 //! `ein kb save` and `ein solve <file.einb>` — T1a.8.1.7, and the phase's
 //! strongest acceptance:
 //!
-//! > `ein solve zebra2.einb` is byte-identical to `ein solve zebra2.ein` at
-//! > T3 — the strongest evidence the round-trip is faithful.
+//! > `ein solve zebra2.einb` is byte-identical to `ein solve zebra2.ein` —
+//! > the strongest evidence the round-trip is faithful.
 //!
 //! It is the strongest because it does not compare a KB to a KB through an
 //! instrument this stage also wrote. It runs the *engine* over both, through

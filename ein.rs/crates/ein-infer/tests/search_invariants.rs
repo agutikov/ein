@@ -21,9 +21,8 @@
 //! [design/08 §2a](../../../../docs/history/m1a_rust/design/08_parallelism.md)
 //! is where the argument for it is written.
 //!
-//! These are cheap here and were not cheap in ein.py — an exhaustive `zebra`
-//! is 47 ms against ~8 s — which is why the property gets a test rather than a
-//! paragraph.
+//! These are cheap — an exhaustive `zebra` is 47 ms — which is why the
+//! property gets a test rather than a paragraph.
 
 use ein_core::{Kb, Terms};
 use ein_infer::Events;
@@ -598,7 +597,7 @@ fn with_the_writeback_off_no_layer_writes_to_root() {
 /// fans out only layers that cannot write to root.
 ///
 /// The corpus-wide form of this — every file × every op, through
-/// `ein-parity`'s cut — is `jobs_invariance`; this is the unit form, and it is
+/// `ein-narration`'s cut — is `jobs_invariance`; this is the unit form, and it is
 /// here because it is the one that fails *first* and reads clearly when it
 /// does.
 ///

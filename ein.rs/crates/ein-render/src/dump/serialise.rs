@@ -1,5 +1,4 @@
-//! The dumpers' shared serialisers — `ein.py`'s
-//! `inference/monotonic/_serialise.py`.
+//! The dumpers' shared serialisers.
 //!
 //! Engine-agnostic projections of a fact, a firing or a whole KB into ein
 //! source text or machine-parseable JSON, plus the `00_timeline.jsonl` writer
@@ -53,8 +52,8 @@ fn fact_to_sform(scratch: &mut Ast, terms: &Terms, kb: Option<&Kb>, f: FactId) -
             scratch.push(Node::KwPair { key, value }, None)
         };
         match prov.kind {
-            // Both guarded by truthiness in ein.py, so an empty string or a
-            // missing name falls through to no keyword at all.
+            // Both skipped when empty, so an empty string or a missing name
+            // falls through to no keyword at all.
             ProvKind::Source => {
                 if let Some(s) = prov.source.map(|s| terms.sym(s)).filter(|s| !s.is_empty()) {
                     let sym = scratch.intern(s);
@@ -97,8 +96,8 @@ pub fn kb_to_ein_text(kb: &Kb, terms: &Terms) -> String {
     let (mut ont, mut rest): (Vec<NodeId>, Vec<NodeId>) = (Vec::new(), Vec::new());
     for f in kb.facts() {
         let node = fact_to_sform(&mut scratch, terms, Some(kb), f);
-        // `f.is_given or f.is_derived` — given is a `:source`-kind with a
-        // source, derived is any non-source kind.
+        // Given is a `:source`-kind with a source; derived is any non-source
+        // kind. Everything else is ontology and goes first.
         let prov = kb.primary(f).map(|p| terms.provs.get(p));
         let given = prov.is_some_and(|p| p.kind == ProvKind::Source && p.source.is_some());
         let derived = prov.is_some_and(|p| p.kind != ProvKind::Source);
@@ -160,7 +159,7 @@ pub fn firing_to_json(terms: &Terms, firing: &Firing) -> Json {
         ])
     };
     // The derived side shows the *primary* conclusion; a nested fact argument
-    // renders as its own `{relation, args}` dict rather than as text.
+    // renders as its own `{relation, args}` object rather than as text.
     let (drel, dargs) = terms.fact(firing.derived[0]);
     let derived = Json::obj(vec![
         ("relation", Json::str(terms.sym(drel))),
@@ -199,7 +198,7 @@ pub fn firing_to_json(terms: &Terms, firing: &Firing) -> Json {
     ])
 }
 
-/// A fact as a recursive `{relation, args}` dict — nested facts nest, and
+/// A fact as a recursive `{relation, args}` object — nested facts nest, and
 /// everything else stringifies.
 pub fn fact_summary(terms: &Terms, f: FactId) -> Json {
     let (rel, args) = terms.fact(f);
@@ -220,18 +219,13 @@ pub fn fact_summary(terms: &Terms, f: FactId) -> Json {
 }
 
 /// The `00_timeline.jsonl` + `summary.json` plumbing both file dumpers share.
-///
-/// ein.py factors it as a mixin with one behavioural knob — the timeline
-/// record's `json.dumps(default=)` serialiser. That knob does not survive the
-/// port and does not need to: `default=` only fires for values Python's JSON
-/// cannot encode, and every value built here is already encodable.
 pub struct Timeline {
     pub out_dir: Option<PathBuf>,
     file: Option<File>,
     seq: u64,
-    /// Seconds since the run started, for the timestamp fields — which are on
-    /// the [normalisation list](../../../../../docs/history/m1a_rust/design/01_parity_contract.md) §5,
-    /// so what has to match is that they are *there* and well-shaped.
+    /// Seconds since the run started, for the timestamp fields — which are
+    /// blanked before any comparison, so what has to match is that they are
+    /// *there* and well-shaped.
     started_at: std::time::Instant,
 }
 
@@ -286,15 +280,11 @@ impl Timeline {
     // fields in two key orders, on a writer whose insertion-order preservation
     // is its whole reason to exist (M1e `SE-L1`, and `AR-M1`'s third pair).
     //
-    // **The divergence is a fossil, not a choice.** In ein.py, `LatticeDumper`
-    // built the six always-present fields as a dict and then
-    // `rec.update({kind, firings, unsat_core_size})` *only if `result is not
-    // None`* — so the three result-derived keys landed last because they were
-    // conditional. `MonotonicDumper` passed all nine as keyword arguments in
-    // one call and got the natural order. Here `EnteringInfo` is not optional,
-    // so the `if` that produced the order is gone and the order it produced
-    // was ported anyway. What survives is the order ein.py used when it did
-    // not have to append.
+    // **The other order was a fossil, not a choice.** `LatticeDumper` put the
+    // three result-derived keys — `kind`, `firings`, `unsat_core_size` — last,
+    // as if they were still conditional on a result, and `EnteringInfo` is
+    // not optional. What survives is the order the record has when nothing is
+    // appended.
 
     /// `root_initial` — root before any entering.
     pub fn root_initial(&mut self, kb: &Kb) {
@@ -387,12 +377,12 @@ impl Timeline {
     }
 }
 
-/// `round(x, 3)` — Python's banker's rounding at three decimals.
+/// Round to three decimals, ties to even.
 fn round3(x: f64) -> f64 {
     let scaled = x * 1000.0;
     let r = scaled.round();
-    // `f64::round` breaks ties away from zero; Python's `round` breaks them to
-    // even. The difference only shows on an exact `.5`, which a clock reading
+    // `f64::round` breaks ties away from zero; this breaks them to even. The
+    // difference only shows on an exact `.5`, which a clock reading
     // essentially never is — but "essentially never" is not "never".
     let r = if (scaled - scaled.trunc()).abs() == 0.5 && r % 2.0 != 0.0 {
         r - scaled.signum()

@@ -1,20 +1,15 @@
-//! `MAX_REGS` overflow is a clean error — S1a.3.1, and the port's one
+//! `MAX_REGS` overflow is a clean error — S1a.3.1, and the engine's one
 //! compile-time bound.
 //!
-//! ein.py numbers nothing: its bindings are a `dict`, so a rule with a
-//! thousand variables costs a thousand dict entries and compiles fine. ein.rs
-//! resolves every variable to a register in a fixed-size file, because that is
-//! what makes the matcher's inner loop allocation-free
+//! ein.rs resolves every variable to a register in a fixed-size file, because
+//! that is what makes the matcher's inner loop allocation-free
 //! ([design/05](../../../../docs/history/m1a_rust/design/05_matcher.md) §3) — so the
-//! count has to stop somewhere, and where it stops is observable.
+//! count has to stop somewhere, and where it stops is observable: a rule may
+//! not bind more than 256 variables.
 //!
-//! This is therefore a **divergence**, ledger entry D1, and it gets the
-//! treatment the ledger asks for: a stated condition under which it becomes a
-//! bug (a real program hits it), and a fixture. The fixture is built here
-//! rather than checked into `examples/`, deliberately — a corpus file that
-//! ein.py compiles and ein.rs refuses would fail the corpus parity test, which
-//! is exactly the alarm the ledger wants kept armed for *unintended*
-//! divergences.
+//! The bound gets a stated condition under which it becomes a bug (a real
+//! program hits it), and a fixture. The fixture is built here rather than
+//! checked into `examples/`.
 
 use ein_core::Terms;
 use ein_ir::{Ast, from_ir::load, parse};
@@ -63,12 +58,12 @@ fn one_variable_past_the_ceiling_is_an_error_and_not_a_panic() {
         "unhelpful message: {err}"
     );
     // The point of the bound is a message, not a limit: it has to say what to
-    // do, because ein.py accepts the same file.
+    // do.
     assert!(err.contains("Split the rule."), "no remedy offered: {err}");
 }
 
 /// The bound is two orders of magnitude past the corpus. If a shipping rule
-/// ever approaches it, D1 stops being acceptable — so the distance is measured
+/// ever approaches it, the bound stops being acceptable — so the distance is measured
 /// rather than asserted from memory.
 #[test]
 fn the_corpus_is_nowhere_near_the_ceiling() {
@@ -96,7 +91,7 @@ fn the_corpus_is_nowhere_near_the_ceiling() {
     assert!(
         widest * 8 <= ein_infer::MAX_REGS,
         "the widest corpus rule ({widest_rule}, {widest} registers) is within \
-         8× of MAX_REGS ({}) — D1 needs re-deciding",
+         8× of MAX_REGS ({}) — the bound needs re-deciding",
         ein_infer::MAX_REGS
     );
     eprintln!("widest corpus rule: {widest_rule} with {widest} registers");

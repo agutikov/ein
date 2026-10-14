@@ -28,8 +28,8 @@
 ;;; ~~Same verdict (Solution) and the same binding (?h = H5) either
 ;;; way — only the node count differs. Measured: ON (06) = 2 tree
 ;;; nodes; OFF (07) = 82 (80 dead branches).~~ **That was P1.5, and it
-;;; is no longer true** (re-measured 2026-08-20, M1a S1a.6.7, in BOTH
-;;; implementations, which agree to the digit):
+;;; is no longer true** (re-measured 2026-08-20, M1a S1a.6.7, with
+;;; `ein solve <file>` and `ein solve <file> -e`):
 ;;;
 ;;;     ON  (06)  fast: Solution  k=1   67 enterings
 ;;;               -e:   Ambiguity k=22  5173 enterings
@@ -37,7 +37,7 @@
 ;;;               -e:   Contradiction k=0  11501 enterings
 ;;;
 ;;; This file is therefore the CONTRADICTION half of the pair, and the
-;;; reason is `complete(kb)` (inference/solution.py): it asks the
+;;; reason is `hypgen::complete`: it asks the
 ;;; hypothesis generator whether anything is undecided, and the
 ;;; generator's candidate list is lookahead-filtered. Without the
 ;;; lookahead the four doomed placements stay *open* forever, so no

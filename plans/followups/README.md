@@ -19,12 +19,11 @@ motivation strikes.
 | F3  | [Three task classes as first-class operations](f3_three_task_classes_first_class.md) | once M1.P1.5 ships the mode-selection skeleton; surface to users               |
 | F4  | [Cross-cutting](f4_cross_cutting.md)                              | rule-learning, versioned grammars, LLM-as-policy, scope-creep ideas             |
 | F5  | [Operate IR rules as data](f5_rules_as_data.md)                   | rung 2 of self-modification: rules rewrite rules, induce rules from facts     |
-| F6  | [Modify own harness code](f6_modify_own_harness.md)               | rung 3 of self-modification: engine emits patches to its own Python source    |
+| F6  | [Modify own harness code](f6_modify_own_harness.md)               | rung 3 of self-modification: engine emits patches to its own source           |
 | F7  | [Rule taxonomy + rule induction](f7_rule_induction.md)            | when the rule library grows past hand-management. **Sub-track B left 2026-08-23** — it is M2's theory pass ([S2.2.4](../m2_nl_to_ir/p2.2_formalizer/s2.2.4_passes.md)): activators *selected* from the stdlib catalogue, a rule synthesised only when the catalogue lacks the property. B′ (instance → type properties), C and D stay parked |
 | F8  | [FCA / RCA, ODIS, TPTP](f8_FCA_RCA_odis_tptp/ideas.md)            | raw notes — formal concept analysis over the relation algebra, external corpora |
 | F9  | [Hypothesis-loop E-catalog](f9_e_catalog.md) — **closed**         | nothing to trigger: all 28 entries settled (2026-06-15 + 2026-08-17). Kept as the ledger — read it before proposing a search-layer optimisation, it is where nine of them were measured and rejected |
-| F10 | [M1 refactor-debt tail](f10_m1_refactor_tail/README.md) — **closed** | nothing to trigger: all 23 stages settled (2026-08-17 re-measured the 17 the P1.22 relocation left looking open — every one had already landed, no code change needed). Kept for `findings.md`, P1.7b's 40-finding review register, and for the two stages whose *verdicts* matter: `.20`'s retired length bar and `.25`'s rejected shared-emitter headline |
-| F11 | [Deductive-layer perf](f11_deductive_layer_perf.md)               | when a workload outgrows the matcher (or the Rust port reaches it) — RETE beta-memories + worst-case-optimal joins; the live perf work now that F9's search-layer catalog is closed |
+| F11 | [Deductive-layer perf](f11_deductive_layer_perf.md)               | when a workload outgrows the matcher — RETE beta-memories + worst-case-optimal joins; the live perf work now that F9's search-layer catalog is closed |
 | F14 | Saturation and satisfiability — **promoted**                       | **promoted 2026-08-21 → [M1d](../../docs/history/m1d_satisfiability/README.md)**, at the user's direction. The note is now [`docs/history/m1d_satisfiability/ideas.md`](../../docs/history/m1d_satisfiability/ideas.md) and its argument is the milestone's [§ What the note says the engine is missing](../../docs/history/m1d_satisfiability/README.md) plus phase [P1d.2](../../docs/history/m1d_satisfiability/README.md#p1d2--obligations). Nothing is parked here any more |
 | F18 | [World-aware negatives](f18_world_aware_negatives.md)             | when a program needs the shape, or when M1f's S1f.10.8 rules that a refutation may rest on an `absent`. **Closed without being done** if that stage forbids the shape instead — `Prov::absent` is the starting point either way |
 
@@ -48,14 +47,11 @@ view: [`docs/ideas/10-generic-self-modification.md`](../ideas/10-generic-self-mo
   prior art / connections matter.
 - **Exception — directory followups.** A followup may be a *directory*
   with a `README.md` index when it carries already-written stage specs
-  that would be destroyed by flattening (F8, F10). The README still
+  that would be destroyed by flattening (F8). The README still
   obeys the one-page rule; the stage files are the parked detail. This
   is for content *relocated* out of a closed milestone, not a licence to
   draft stages here. When the last stub goes, the directory goes: F9 was
-  one of these until 2026-08-17 and is now a single file. **Unless a
-  non-stub artifact justifies it** — F10 outlived all 17 of its stubs the
-  same day but kept its directory for `findings.md`, a 40-finding review
-  register that is too long to inline and is not a stage spec.
+  one of these until 2026-08-17 and is now a single file.
 - **Closing an entry keeps the reason, not the stub.** A settled entry's
   spec is history; what a future reader needs is one line saying *why* —
   especially for a measured rejection, which is otherwise indistinguishable

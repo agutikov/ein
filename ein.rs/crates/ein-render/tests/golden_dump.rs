@@ -1,22 +1,21 @@
-//! The two halves of a `--dump-states` tree the cross-engine diff stopped
-//! reading — [S1a.6.11](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing).
+//! The two halves of a `--dump-states` tree that are narration — S1a.6.11.
 //!
-//! `dump_parity.rs` compares the whole tree against ein.py byte for byte,
-//! with two exceptions, both
-//! [D3](../../../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it):
+//! `dump_shape` renders the whole tree as one text, and two parts of it are
+//! narration — a fork resumes root's saturation rather than re-deriving it,
+//! so two runs can narrate different amounts of one derivation:
 //!
 //! - the **`enterings/` subtree** — a fork's own firing list, its state dump
 //!   in the fork's derivation order with the fork's `:rule` annotations, and,
 //!   for a dying fork, the core of whichever clash its fail-fast prefix
 //!   reached. Elided where it is *produced*, because `zebra2-hints` writes
-//!   6.6 MiB of it, so the file set is all that survives the diff.
+//!   6.6 MiB of it, so the file set is all that reaches `corpus_shapes.md5`.
 //! - the **snapshot's dead `state_key`s** and the two lattice DOTs the DAG
-//!   merges by them.
+//!   merges by them, which the invariance sweeps compare for presence only.
 //!
 //! …plus the one field of `00_timeline.jsonl` that is blanked rather than
 //! elided, its per-entering `firings` count.
 //!
-//! All three are pinned here instead, on a fixture small enough to read.
+//! All three are pinned here, on a fixture small enough to read.
 //!
 //! ```text
 //! EIN_BLESS=1 cargo test -p ein-render
@@ -73,9 +72,9 @@ fn run_dump(rel: &str) -> PathBuf {
 /// missing file, an extra file and a changed byte all read the same way.
 ///
 /// The timeline is here for **one field**: its per-entering `firings` count,
-/// which is the only part of `00_timeline.jsonl` the cross-engine diff blanks.
-/// The rest of that file is byte-compared against ein.py by `dump_parity`, so
-/// this pins it twice — cheap at a dozen lines, and the alternative was to
+/// which is the only part of `00_timeline.jsonl` the narration cut blanks.
+/// The whole file is digested by `corpus_shapes` too, so this pins it twice —
+/// cheap at a dozen lines, and the alternative was to
 /// argue that the count is implied by the firing lists below, which is not
 /// something this tree bears out: it has twelve `firings.jsonl` and ten
 /// `entering` records.
@@ -159,9 +158,9 @@ fn the_snapshot_projection_reproduces_its_golden() {
     let (path, mut ast, mut terms, forms) = parsed(FIXTURE);
     let got = dump_shape(&mut ast, &mut terms, &forms, path.parent(), "snapshot", 1)
         .expect("the snapshot renders");
-    // The two things `ein-parity` blanks out of this text when it is compared
-    // against ein.py — so if they were not here, this golden would be pinning
-    // the part that was never in question.
+    // The two things `ein-narration` blanks out of this text when it is
+    // compared — so if they were not here, this golden would be pinning the
+    // part that was never in question.
     assert!(
         got.contains("  deads          [{"),
         "the snapshot has no dead state keys, which is the half this pins"

@@ -568,8 +568,8 @@ branch, retract on contradiction, commit on uniqueness. This is the
 
 ## 8. Where this lives in code
 
-- **Rule nodes** are `Rule` dataclass instances in the KB.
-- **Patterns** (LHS / RHS) are `Pattern` dataclass instances — for
+- **Rule nodes** are `Rule` records in the KB.
+- **Patterns** (LHS / RHS) are `Pattern` records — for
   M1 they're structural-only views; the actual matcher lives in
   P1.3.
 - **Property facts** (the T2 activators) are ordinary `Fact` nodes

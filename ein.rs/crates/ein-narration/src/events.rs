@@ -1,25 +1,21 @@
 //! The event stream, compared for the derivation rather than the narration.
 //!
 //! Two [`--events`](../../../../docs/kernel/inference/events.md) logs in,
-//! a list of differences out. The tier that used to call it (T2, "the two
-//! engines took the same steps") was retired with the second engine at
-//! [S1a.10.3](../../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine);
-//! what calls it now is `ein-infer/tests/event_cut_control.rs`, which mutates
-//! one real stream and checks the cut still reports the mutation. That test is
-//! not decoration: **a relaxation nothing exercises is a hole rather than a
-//! decision**, and it is the only thing standing between §2's measured cut and
-//! a comparison that quietly stopped comparing.
+//! a list of differences out. What calls it is
+//! `ein-infer/tests/event_cut_control.rs`, which mutates one real stream and
+//! checks the cut still reports the mutation. That test is not decoration:
+//! **a relaxation nothing exercises is a hole rather than a decision**, and it
+//! is the only thing standing between the cut below and a comparison that
+//! quietly stopped comparing.
 //!
 //! # 1. Why the stream cannot simply be filtered
 //!
-//! [T2](../../../../docs/history/m1a_rust/design/01_parity_contract.md#t2--event-trace-parity)
-//! was the tier that pinned *the algorithm*, and since
+//! The firing traffic is where a run says *what it derived*, and since
 //! [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
-//! the two engines ran a deliberately different one at the fork boundary:
-//! ein.rs resumes root's saturation, ein.py re-derived it. 97 of T2's 240
-//! cells reported that as a difference, and eliding the firing traffic
-//! wholesale would have stopped catching the thing the tier existed for — a
-//! port that silently stopped deriving something.
+//! a fork resumes root's saturation rather than re-deriving it, so how much of
+//! that traffic a run narrates is not fixed. Eliding it wholesale would stop
+//! catching the thing a comparison of two streams exists for — a run that
+//! silently stopped deriving something.
 //!
 //! What survives the boundary is *what each fork derives*, so that is what is
 //! compared. The stream is split into **segments** — root's saturation, then
@@ -41,40 +37,18 @@
 //! its firing list is a *prefix* by construction and two firing orders leave
 //! two different prefixes. Its `kind`, its position and the fact that it died
 //! are still compared exactly, and with fail-fast off the prefixes agree —
-//! which is what says this is the stopping point and not a different conflict
-//! ([D3](../../../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)).
+//! which is what says this is the stopping point and not a different conflict.
 //!
-//! # 2. Why *that* cut, measured
+//! The derivation is a **multiset of facts plus a set of rules**, not an
+//! ordered list of `(rule, premises, derived)`, because a fork can record a
+//! *different one of a fact's equally valid derivations* first, and matching
+//! a fresh pass's admission order requires running a fresh pass, which is the
+//! thing a resumed fork removes.
 //!
-//! Six candidates were run over the 240 captured T2 cells before one was
-//! written down. Each row is the same corpus, the same logs, a different
-//! definition of "the derivation":
-//!
-//! | the derivation is … | cells agreeing |
-//! |---|---:|
-//! | the whole stream (the contract before this) | 142 / 240 |
-//! | the ordered non-redundant firings | 142 / 240 |
-//! | … also eliding `compile` | 213 / 240 |
-//! | … as an ordered `(rule, premises, derived)` | 214 / 240 |
-//! | … as a **multiset** of `(rule, premises, derived)`, per segment, `dead-post` excluded | 232 / 240 |
-//! | **… as a multiset of derived facts + the set of rules, per segment, `dead-post` excluded** | **239 / 240** |
-//!
-//! 239 / 240 is [D2](../../../../docs/history/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)
-//! and nothing else — the same standard T3 is held to. The row above it is
-//! the 7 cells where a fork records a *different one of a fact's equally valid
-//! derivations* first, which D3 measures at 267 529 facts corpus-wide and
-//! argues cannot be designed away: matching a fresh pass's admission order
-//! requires running a fresh pass, which is the thing removed. So the cut is
-//! the strongest one that reaches the standard, not the first one that went
-//! green.
-//!
-//! `compile` is on the elided list and was not on
-//! [S1a.6.10](../../../../docs/history/m1a_rust/README.md#s1a610--the-parity-contract-relaxes-answers-not-narration)'s
-//! predicted list: a `compile` is emitted on a plan-memo **miss**, and how
-//! many times a rule misses depends on how many enqueue passes ran, so it is
-//! downstream of the boundary like everything else here. The *distinct*
-//! compiles — which rules, for which activator, with what shape — are
-//! identical on both sides and are what the elided-count report exposes.
+//! `compile` is on the elided list because a `compile` is emitted on a
+//! plan-memo **miss**, and how many times a rule misses depends on how many
+//! enqueue passes ran, so it is downstream of the fork boundary like
+//! everything else here.
 
 use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet};
@@ -135,12 +109,12 @@ impl Split {
 ///
 /// - `n` is a per-run counter, so it differs the moment either side emits one
 ///   extra event. It is reported as a *position*, not a field.
-/// - the `run` event's `impl` names which implementation ran, which is the
-///   whole point of the comparison, and its `argv` carries the artefact paths
+/// - the `run` event's `impl` and `argv` describe the invocation rather than
+///   the run: `impl` names the binary, and `argv` carries the artefact paths
 ///   the **caller** chose — `--events a.jsonl` against `--events b.jsonl` is
-///   not a divergence. Both stay in the file, where they document the run.
+///   not a difference. Both stay in the file, where they document the run.
 ///
-/// These two rules predate D3 and hold under **both** contracts, so the
+/// These two rules are not narration and hold strict or relaxed, so the
 /// strict differ calls this too. What the relaxed one adds on top — an
 /// `enter`'s `n_firings` (rule 1) and a `dead-post` `enter`'s `core`
 /// (rule 3) — [`split`] applies, and a strict call site simply does not go
@@ -375,7 +349,7 @@ mod tests {
     /// segment 2 the dying fork's.
     fn base() -> Vec<Value> {
         log(&[
-            json!({"e": "run", "n": 0, "impl": "ein.py", "argv": ["--events", "a.jsonl"]}),
+            json!({"e": "run", "n": 0, "impl": "ein.rs", "argv": ["--events", "a.jsonl"]}),
             json!({"e": "load", "n": 1, "relations": 2}),
             fire("symmetric", &["(r a b)"], &["(r b a)"], false),
             json!({"e": "enqueue", "n": 3, "rule": "transitive"}),
@@ -393,8 +367,8 @@ mod tests {
         ])
     }
 
-    /// What ein.rs's resumed fork produces from the same run: a quarter of the
-    /// narration, a dying fork stopped somewhere else, and the same answer.
+    /// The same run narrated differently: fewer firings, a dying fork stopped
+    /// somewhere else, and the same answer.
     fn resumed() -> Vec<Value> {
         let mut v = base();
         v[0] = json!({"e": "run", "n": 0, "impl": "ein.rs", "argv": ["--events", "b.jsonl"]});
@@ -437,16 +411,16 @@ mod tests {
 
     #[test]
     fn a_productive_firing_that_became_redundant_is_caught() {
-        // The subtler port bug: still emitted, but no longer deriving.
+        // The subtler regression: still emitted, but no longer deriving.
         let mut broken = resumed();
         broken[7] = fire("functional", &["(p x)"], &["(q x)"], true);
         assert!(!diff(&base(), &broken).is_empty());
     }
 
     /// The other half of the relaxation, and the reason a `dead-post` segment
-    /// is excluded rather than merely tolerated: with fail-fast on, the two
-    /// engines stop a dying fork at *different firings*, so its derivation is
-    /// a prefix and not a claim about anything.
+    /// is excluded rather than merely tolerated: with fail-fast on, two runs
+    /// can stop a dying fork at *different firings*, so its derivation is a
+    /// prefix and not a claim about anything.
     #[test]
     fn a_dying_forks_own_derivation_is_not_compared() {
         let mut other = resumed();
@@ -533,9 +507,9 @@ mod tests {
 
     #[test]
     fn the_strict_normalisation_keeps_what_the_relaxed_one_drops() {
-        // `comparable` is §5 and holds under both contracts: `n` is a
-        // position and `impl` / `argv` are the caller's. `n_firings` and a
-        // dying fork's core are D3, so only the relaxed pass drops them.
+        // `comparable` holds strict or relaxed: `n` is a position and
+        // `impl` / `argv` are the invocation's. `n_firings` and a dying
+        // fork's core are narration, so only the relaxed pass drops them.
         let strict = comparable(&base()[8]);
         assert_eq!(strict.get("n"), None);
         assert_eq!(strict.get("impl"), None);

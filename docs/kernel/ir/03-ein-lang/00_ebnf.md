@@ -5,17 +5,12 @@
 > terminal table, the form set, what each declarator means. This file is the
 > grammar.
 >
-> It was `ein.py/src/ein/ir/grammar.lark` — 244 lines of Lark, read by an
-> Earley parser — until M1a
-> [S1a.10.5](../../../history/m1a_rust/README.md#s1a105--the-removal).
-> The engine that is left parses by **recursive descent**
+> The engine parses by **recursive descent**
 > ([`ein-ir/src/{lex,parse}.rs`](../../../../ein.rs/crates/ein-ir/src/parse.rs)),
-> which is an implementation and not a specification, so the grammar was
-> transcribed here before the file went. It is checked against that parser
-> rather than against the Lark it came from, and
+> which is an implementation and not a specification, so the grammar is
+> stated here. It is checked against that parser, and
 > [§5](#5-what-keeps-this-document-honest) is what pins it: a 78-case decision
-> table blessed while both parsers still ran, so the answers are lark's. That
-> is the last thing the two implementations were used for.
+> table.
 
 **Notation** — W3C EBNF, as in the XML specification:
 
@@ -71,7 +66,9 @@ LEXER_KEYWORDS ::= 'not' | 'and' | 'or' | 'neq' | 'rule' | 'hrule'
                      ordinary SYMBOL. `(relation R (T1 T2))` therefore parses
                      — as a fact — and the LOADER rejects it. Same for
                      `open`, whose `(open ?R)` is an ordinary fact head. */
-WordChar      ::= [A-Za-z0-9_]                    /* Python's `\w`, as `\b` uses it */
+WordChar      ::= /* `_`, or one character with Unicode Alphabetic or a
+                     numeric general category (Nd, Nl, No) — the class the
+                     word boundary after a LEXER_KEYWORD tests */
 
 VAR           ::= '?' [A-Za-z] [A-Za-z0-9_*-]*    /* no '.', unlike SYMBOL */
 KEYWORD       ::= ':' [a-z] [A-Za-z0-9_-]*        /* lower-case first character */
@@ -99,8 +96,8 @@ Four terminal facts that are load-bearing and easy to lose:
 3. **`RANGE` is tried before `INT`** — both start on a digit — and it never
    collides with a dotted `SYMBOL`, which is letter-anchored.
 4. **`STRING` takes a raw newline but not an escaped one.** `[^"\\]` accepts
-   `#xA`; `'\\' ( Char - #xA )` refuses it, because the `.` of the original
-   `\\.` was Python's and Python's `.` does not match a newline. Unescaping
+   `#xA`; `'\\' ( Char - #xA )` refuses it: a backslash escapes any
+   character but a newline. Unescaping
    is *minimal*: `\n` `\t` `\r` map, every other `\X` is `X`, and there is no
    `\xNN`, no `\uNNNN`, no octal — so `"\d"` is `d`.
 
@@ -168,17 +165,13 @@ provenance (`:rule type-exclusivity :using (c10)`) attaches naturally; in
 
 ## §3 Why this is not a plain CFG over a token stream
 
-The lexical and phrase layers are **not** separated by a scanner pass. Both
-implementations tokenize *contextually*: at each position the parser asks
-"does the terminal I want start here?", and a word may lex differently
-depending on what is being parsed.
-
-- Lark ran an Earley parser with a dynamic lexer, which explores every
-  tokenization and keeps the ones that parse.
-- `ein-ir` commits by recursive descent, and recovers the same language by
-  trying the **literal reading before the `SYMBOL` reading** at every head
-  position where both could match — the reason `LITERALS` is a data table in
-  `lex.rs` and not a `match` arm.
+The lexical and phrase layers are **not** separated by a scanner pass. The
+parser tokenizes *contextually*: at each position it asks "does the terminal I
+want start here?", and a word may lex differently depending on what is being
+parsed. `ein-ir` commits by recursive descent, and settles a word both
+readings could take by trying the **literal reading before the `SYMBOL`
+reading** at every head position where both could match — the reason
+`LITERALS` is a data table in `lex.rs` and not a `match` arm.
 
 The consequence to keep in mind when reading §2: a quoted literal like
 `'rule'` is a *character* match, not a token class, and the input `(rule.x A)`
@@ -197,11 +190,11 @@ different messages, and the corpus has a fixture directory for each
 ([`examples/broken/`](../../../../examples/broken/)).
 
 > **What those messages look like is specified, and it is strange.** A parse
-> error's reported line/column follows Lark's Earley scanner — `-1:-1` at EOF,
-> a ±40-character context window applied before the line is trimmed, and a
-> column held back past any pending `%ignore` match. A loader error about a
-> top-level form ends `at None`. All five are ein's own defined behaviour now,
-> stated in [`defined_behaviour.md` §1](../../defined_behaviour.md), and every
+> error reports `-1:-1` at EOF, a ±40-character context window applied before
+> the line is trimmed, and a column held back past any pending
+> whitespace-or-comment match. A loader error about a top-level form ends
+> `at None`. All five are defined behaviour, stated in
+> [`defined_behaviour.md` §1](../../defined_behaviour.md), and every
 > `.expected` file under `examples/broken/` is baselined against them.
 
 - **Which keywords each form requires** — `:match` / `:assert` in a rule,
@@ -233,13 +226,11 @@ different messages, and the corpus has a fixture directory for each
 
 ## §5 What keeps this document honest
 
-A specification with no test is a wish. Two checked-in artefacts pin §3, and
-both were blessed while the second parser still existed — which is what makes
-them lark's answers rather than ein.rs agreeing with itself:
+A specification with no test is a wish. Two checked-in artefacts pin §3:
 
 | | |
 |---|---|
-| [`ein-ir/tests/grammar_decisions.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_decisions.rs) | a **78-case decision table**, one line each, against `tests/golden/grammar_decisions.txt`. It is where every sharp edge in §1 is nailed down: `(rule-x A)` vs `(rulex A)` vs `(std.rule X)` vs `(neq_test X)`, `_` vs `_x` vs `__closed__`, `1..5` / `1..*` / `1..`, `"a⏎b"` vs `"a\⏎b"`, `()` vs `(x ())`, an unterminated block comment. Plus the four `examples/broken/*.ein` messages, whose `.expected` files were baselined against ein.py and are now the engine's own defined output — [`defined_behaviour.md` §1](../../defined_behaviour.md) |
+| [`ein-ir/tests/grammar_decisions.rs`](../../../../ein.rs/crates/ein-ir/tests/grammar_decisions.rs) | a **78-case decision table**, one line each, against `tests/golden/grammar_decisions.txt`. It is where every sharp edge in §1 is nailed down: `(rule-x A)` vs `(rulex A)` vs `(std.rule X)` vs `(neq_test X)`, `_` vs `_x` vs `__closed__`, `1..5` / `1..*` / `1..`, `"a⏎b"` vs `"a\⏎b"`, `()` vs `(x ())`, an unterminated block comment. Plus the four `examples/broken/*.ein` messages, whose `.expected` files are the engine's defined output — [`defined_behaviour.md` §1](../../defined_behaviour.md) |
 | `corpus_shapes.md5`'s `ir[parse]` lines | every corpus file's parse, digested — the *structure* of an acceptance, not just the fact of one |
 
 **Corpus coverage of §2, counted** (files under `examples/` + `stdlib/`
@@ -261,7 +252,6 @@ as a fact.
 
 M2's GBNF for constrained LLM decoding is derived from this grammar
 ([`plans/ideas/01`](../../../../plans/ideas/01-self-modifying-constraint-language.md)).
-The route was a `Lark → GBNF` translator over `grammar.lark`; with the Lark
-file gone, the source is §1 + §2 and the translation is by hand or by a
-generator that reads this document.
+The source is §1 + §2, and the translation is by hand or by a generator that
+reads this document.
 

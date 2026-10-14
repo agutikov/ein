@@ -1,20 +1,19 @@
 //! The argument surface — `ein`, `render`, `solve`, `test`, and `saturate`'s own.
 //!
 //! One module so the whole surface can be *introspected* rather than scraped:
-//! [Q-M1a.13](../../../../docs/history/m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity)
-//! resolved `--help` layout and usage-error text onto the normalisation list,
-//! and what replaces the byte diff is a structural comparison of exactly these
-//! builders against `argparse`'s parser objects. Layout is `clap`'s business;
-//! every option, short key, metavar, default, `choices` value and exclusive
-//! group here is ein.py's, and the help strings are its help strings.
+//! `--help` layout is `clap`'s business and is not pinned byte for byte, and
+//! what pins the surface instead is a structural rendering of exactly these
+//! builders ([`crate::help_shape`]) — every option, short key, metavar,
+//! default, `choices` value, exclusive group and help string.
 
 use clap::{Arg, ArgAction, ArgGroup, Command, builder::PossibleValuesParser};
 
-/// `type=int` — CPython's `int()`, which takes surrounding whitespace and PEP
-/// 515 `_` separators that Rust's `FromStr` does not. Accepting less would be
-/// a difference in *behaviour*, which is on the exact list.
-fn py_int(s: &str) -> Result<i64, String> {
-    ein_core::python_int(s).ok_or_else(|| format!("invalid int value: '{s}'"))
+/// An integer argument, through [`ein_core::parse_int`]: surrounding
+/// whitespace is ignored, a sign is allowed, and a `_` may sit between two
+/// digits (`1_000`) — the syntax `(config …)` coerces with, which Rust's
+/// `FromStr` alone does not accept.
+fn int_arg(s: &str) -> Result<i64, String> {
+    ein_core::parse_int(s).ok_or_else(|| format!("invalid int value: '{s}'"))
 }
 
 /// `-j/--jobs` — a positive integer, or the word `auto`.
@@ -35,7 +34,7 @@ fn jobs_spec(s: &str) -> Result<i64, String> {
     if s.eq_ignore_ascii_case("auto") {
         return Ok(0);
     }
-    match ein_core::python_int(s) {
+    match ein_core::parse_int(s) {
         Some(n) if n >= 1 => Ok(n),
         Some(n) => Err(format!(
             "invalid job count: '{n}' (expected 1 or more, or 'auto')"
@@ -56,19 +55,16 @@ fn jobs_spec(s: &str) -> Result<i64, String> {
 /// name. Neither reading a user could mean is available: *record nothing* is
 /// not what it does, and *no limit* is already spelled `--exhaustive`.
 ///
-/// ein.py accepted them too, with `type=int` and the same `>=` (`solver.py`'s
-/// `len(lstate.solution_nodes) >= stop_after`), so this is a **deliberate
-/// divergence from parity** rather than a repair — taken because nothing pins
-/// it: no golden under `tests/golden/from_ein_py/` is a `solve` invocation at
-/// all, and every `-n` in the corpus is `-n 3`. M1e
+/// Refusing them moves no recorded output: no golden under `tests/golden/` is
+/// a `solve` invocation at all, and every `-n` in the corpus is `-n 3`. M1e
 /// [S1e.1.5](../../../../docs/history/m1e_review_processing/README.md#s1e15---n-0-q7),
 /// the review's `Q7`.
 ///
-/// The non-integer message stays [`py_int`]'s, because
+/// The non-integer message stays [`int_arg`]'s, because
 /// [`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)
 /// quotes it verbatim, with `--solutions` as its example.
 fn solutions_spec(s: &str) -> Result<i64, String> {
-    match py_int(s)? {
+    match int_arg(s)? {
         n if n >= 1 => Ok(n),
         n => Err(format!(
             "invalid solution count: '{n}' (expected 1 or more, or --exhaustive)"
@@ -96,9 +92,10 @@ fn artefact_path(s: &str) -> Result<String, String> {
     Ok(s.to_string())
 }
 
-/// `type=float`, same argument.
-fn py_float(s: &str) -> Result<f64, String> {
-    ein_core::python_float(s).ok_or_else(|| format!("invalid float value: '{s}'"))
+/// A float argument, through [`ein_core::parse_float`]: [`int_arg`]'s
+/// whitespace and `_` rules, plus `inf` / `nan`, `.5`, `1.` and exponents.
+fn float_arg(s: &str) -> Result<f64, String> {
+    ein_core::parse_float(s).ok_or_else(|| format!("invalid float value: '{s}'"))
 }
 
 fn flag(short: char, long: &'static str, help: &'static str) -> Arg {
@@ -109,8 +106,7 @@ fn flag(short: char, long: &'static str, help: &'static str) -> Arg {
         .help(help)
 }
 
-/// The `--rule-mode` option, shared by `render rules` and `render rule` —
-/// ein.py shares the same `dict` of keyword arguments between the two.
+/// The `--rule-mode` option, shared by `render rules` and `render rule`.
 fn rule_mode() -> Arg {
     Arg::new("rule-mode")
         .long("rule-mode")
@@ -123,8 +119,7 @@ fn rule_mode() -> Arg {
         )
 }
 
-/// `--events` / `--events-level` — `cli/_events.add_arguments`, added to
-/// *both* `solve` and `saturate`.
+/// `--events` / `--events-level`, added to *both* `solve` and `saturate`.
 fn event_args(cmd: Command) -> Command {
     cmd.arg(
         Arg::new("events")
@@ -147,9 +142,7 @@ fn event_args(cmd: Command) -> Command {
             .default_value("normal")
             .help(
                 "(--events) `verbose` adds redundant firings and \
-                 pre-candidate hypothesis skips — ~6x the volume, and \
-                 what T2 comparisons run at, since a dropped \
-                 redundant firing is exactly what a port loses.",
+                 pre-candidate hypothesis skips — ~6x the volume.",
             ),
     )
 }
@@ -260,7 +253,7 @@ fn render_command() -> Command {
                     Arg::new("max-set-size")
                         .long("max-set-size")
                         .value_name("MAX_SET_SIZE")
-                        .value_parser(py_int)
+                        .value_parser(int_arg)
                         .default_value("3")
                         .help("commitment-set depth cap (default 3)"),
                 ),
@@ -301,7 +294,7 @@ fn solve_command() -> Command {
                 .short('m')
                 .long("max-set-size")
                 .value_name("MAX_SET_SIZE")
-                .value_parser(py_int)
+                .value_parser(int_arg)
                 .default_value("5")
                 .help("commitment-set depth cap (default: 5)"),
         )
@@ -310,7 +303,7 @@ fn solve_command() -> Command {
                 .short('T')
                 .long("max-time")
                 .value_name("MAX_TIME")
-                .value_parser(py_float)
+                .value_parser(float_arg)
                 .help("abort after N wall-clock seconds"),
         )
         .arg(
@@ -318,7 +311,7 @@ fn solve_command() -> Command {
                 .short('E')
                 .long("max-enterings")
                 .value_name("MAX_ENTERINGS")
-                .value_parser(py_int)
+                .value_parser(int_arg)
                 .help("abort after N commitment tries"),
         )
         // T1a.7.2.1. The *contract* — what `--jobs N` promises, and the
@@ -384,7 +377,7 @@ fn solve_command() -> Command {
                 .short('d')
                 .long("seed")
                 .value_name("SEED")
-                .value_parser(py_int)
+                .value_parser(int_arg)
                 .help("pin the --shuffle RNG seed for a reproducible permutation"),
         )
         // ── progress / diagnostics ──
@@ -409,7 +402,7 @@ fn solve_command() -> Command {
                 .short('g')
                 .long("progress-every")
                 .value_name("PROGRESS_EVERY")
-                .value_parser(py_int)
+                .value_parser(int_arg)
                 .default_value("100")
                 .help(
                     "under --verbose, log every N-th entering (default 100; \
@@ -609,7 +602,7 @@ fn test_command() -> Command {
                 .short('m')
                 .long("max-set-size")
                 .value_name("MAX_SET_SIZE")
-                .value_parser(py_int)
+                .value_parser(int_arg)
                 .default_value("5")
                 .help("commitment-set depth cap (default: 5)"),
         )
@@ -618,7 +611,7 @@ fn test_command() -> Command {
                 .short('T')
                 .long("max-time")
                 .value_name("MAX_TIME")
-                .value_parser(py_float)
+                .value_parser(float_arg)
                 .help(
                     "abort a query after N wall-clock seconds. An abort is an \
                      ERROR, never a pass and never a failure: nothing was \
@@ -630,7 +623,7 @@ fn test_command() -> Command {
                 .short('E')
                 .long("max-enterings")
                 .value_name("MAX_ENTERINGS")
-                .value_parser(py_int)
+                .value_parser(int_arg)
                 .help("abort a query after N commitment tries (as --max-time)"),
         )
         .arg(flag(
@@ -680,7 +673,7 @@ fn test_command() -> Command {
 ///
 /// Registered in the top-level tree as a bare subcommand purely so it appears
 /// in `ein --help`; the dispatcher intercepts `saturate` before `clap` ever
-/// reaches it, which is `_DELEGATED`'s two-level behaviour.
+/// reaches it.
 pub fn saturate_command() -> Command {
     event_args(
         Command::new("saturate")
@@ -697,7 +690,7 @@ pub fn saturate_command() -> Command {
                 Arg::new("max-steps")
                     .long("max-steps")
                     .value_name("MAX_STEPS")
-                    .value_parser(py_int)
+                    .value_parser(int_arg)
                     .help(
                         "hard cap on saturator firings (raises SaturatorStepLimitError \
                          when exceeded); useful for runaway-debugging on a fresh \
@@ -708,7 +701,7 @@ pub fn saturate_command() -> Command {
                 Arg::new("progress-every")
                     .long("progress-every")
                     .value_name("PROGRESS_EVERY")
-                    .value_parser(py_int)
+                    .value_parser(int_arg)
                     .default_value("500")
                     .help(
                         "log a one-line progress sample every N steps \
@@ -720,9 +713,8 @@ pub fn saturate_command() -> Command {
 
 /// The whole tree.
 pub fn command() -> Command {
-    /// `ein kb` — P1a.8's surface, and the only subcommand with no ein.py
-    /// counterpart. Registered only when the `einb` feature is on, so a build
-    /// without the container does not advertise it.
+    /// `ein kb` — P1a.8's surface. Registered only when the `einb` feature is
+    /// on, so a build without the container does not advertise it.
     #[cfg(feature = "einb")]
     fn kb_command() -> Command {
         Command::new("kb")
@@ -747,7 +739,7 @@ pub fn command() -> Command {
         .arg_required_else_help(false)
         // `clap`'s own is disabled: the flag is registered below and handled
         // in `run` before the parser, because this command requires a
-        // subcommand and `--version` has none. ein.py had neither.
+        // subcommand and `--version` has none.
         .disable_version_flag(true)
         .disable_help_subcommand(true)
         .arg(

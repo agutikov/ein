@@ -1,9 +1,9 @@
-//! The tokeniser — one function per Lark terminal, matched on demand.
+//! The tokeniser — one function per terminal, matched on demand.
 //!
-//! Lark parses ein-lang with **Earley + the dynamic lexer**, which does not
-//! produce a token stream at all: at every position it offers every terminal
-//! that matches there, and the parser explores. A plain maximal-munch lexer is
-//! therefore *not* equivalent, and the difference is observable —
+//! ein-lang's lexical grammar does not define a token stream at all: at every
+//! position every terminal that matches there is on offer, and the parse
+//! decides which reading survives. A plain maximal-munch lexer is therefore
+//! *not* equivalent, and the difference is observable —
 //!
 //! ```text
 //! (rulex (?a) :match X :assert Y)   →   (rule x (?a) :match X :assert Y)
@@ -20,22 +20,21 @@
 //! `(&str, Cursor)`, so
 //! the lexer allocates nothing per token and is trivially fuzzable.
 //!
-//! Terminal definitions are `grammar.lark`'s, verbatim — transcribed to EBNF
-//! at [`00_ebnf.md` §1](../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md)
-//! when that file went (S1a.10.5), which is the spec this scanner answers to; the
-//! comments below record only where the Rust differs in *form* from the
-//! regex.
+//! Terminal definitions are
+//! [`00_ebnf.md` §1](../../../../docs/kernel/ir/03-ein-lang/00_ebnf.md)'s,
+//! which is the spec this scanner answers to; the comments below record only
+//! where the Rust differs in *form* from the regex.
 
 /// A position in the source: byte offset for slicing, 1-based line and column
-/// **in characters** for `Loc` and for error rendering (Lark counts
-/// characters, not bytes).
+/// **in characters** for `Loc` and for error rendering (a reported position
+/// counts characters, not bytes).
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Cursor {
     pub pos: usize,
     pub line: u32,
     pub col: u32,
-    /// Characters consumed so far — `pos_in_stream` in Lark's terms, which
-    /// indexes a Python `str`.
+    /// Characters consumed so far — the position error rendering indexes
+    /// the source by.
     pub chars: usize,
 }
 
@@ -147,22 +146,24 @@ const LEXER_KEYWORDS: &[&str] = &[
     "not", "and", "or", "neq", "rule", "hrule", "query", "config", "trace", "macro", "import",
 ];
 
-/// Python's `\s`: Unicode `White_Space` **plus** U+001C–U+001F, which the
-/// standard property does not include but `re` does.
-fn is_py_space(ch: char) -> bool {
+/// Whitespace: Unicode `White_Space` **plus** U+001C–U+001F, which the
+/// standard property does not include (`00_ebnf.md` §1, `Space`).
+fn is_space(ch: char) -> bool {
     ch.is_whitespace() || ('\u{1c}'..='\u{1f}').contains(&ch)
 }
 
-/// Python's `\w`, as `\b` uses it.
+/// A word character, as the word boundary after a reserved word tests it:
+/// `_`, Unicode `Alphabetic`, or a numeric general category (`Nd` `Nl` `No`)
+/// — `00_ebnf.md` §1, `WordChar`.
 fn is_word(ch: char) -> bool {
     ch.is_alphanumeric() || ch == '_'
 }
 
-/// The ASCII half of [`is_py_space`], as a byte test: `\t\n\v\f\r`, space,
-/// and the U+001C–U+001F `re` adds. Everything outside it — U+00A0 and the
+/// The ASCII half of [`is_space`], as a byte test: `\t\n\v\f\r`, space,
+/// and U+001C–U+001F. Everything outside it — U+00A0 and the
 /// rest of `White_Space` — falls back to the `char` path, which is why this
 /// may be a fast path rather than a redefinition.
-const fn is_ascii_py_space(b: u8) -> bool {
+const fn is_ascii_space(b: u8) -> bool {
     matches!(b, b' ' | 0x09..=0x0d | 0x1c..=0x1f)
 }
 
@@ -205,13 +206,12 @@ fn advance_to(src: &str, mut c: Cursor, end: usize) -> Cursor {
     c
 }
 
-/// Advance over `%ignore`d input: whitespace, `;…` to end of line, and
-/// `#|…|#`.
+/// Advance over trivia: whitespace, `;…` to end of line, and `#|…|#`.
 ///
 /// An **unterminated** `#|` is not trivia: `BLOCK_COMMENT` requires the
 /// closing `|#`, so the terminal does not match and the `#` becomes the
 /// position at which nothing can be scanned. Leaving the cursor on it is what
-/// makes the error land where Lark's lands.
+/// makes the error land on the `#`.
 #[inline]
 pub fn skip_trivia(src: &str, c: Cursor) -> Cursor {
     // Every alternative the parser tries asks for a terminal at the *same*
@@ -228,7 +228,7 @@ pub fn skip_trivia(src: &str, c: Cursor) -> Cursor {
 /// and a non-ASCII byte only when it decodes to `White_Space`; both are the
 /// slow path's business, and a false positive there costs nothing.
 const fn is_trivia_start(b: u8) -> bool {
-    is_ascii_py_space(b) || b == b';' || b == b'#' || b >= 0x80
+    is_ascii_space(b) || b == b';' || b == b'#' || b >= 0x80
 }
 
 fn skip_trivia_from(src: &str, mut c: Cursor) -> Cursor {
@@ -237,7 +237,7 @@ fn skip_trivia_from(src: &str, mut c: Cursor) -> Cursor {
         let Some(&b) = bytes.get(c.pos) else {
             return c;
         };
-        if is_ascii_py_space(b) {
+        if is_ascii_space(b) {
             c.pos += 1;
             c.chars += 1;
             if b == b'\n' {
@@ -275,7 +275,7 @@ fn skip_trivia_from(src: &str, mut c: Cursor) -> Cursor {
         // only a decode can tell.
         if b >= 0x80 {
             let ch = char_at(src, c.pos).expect("a char boundary");
-            if is_py_space(ch) {
+            if is_space(ch) {
                 c.bump(ch);
                 continue;
             }
@@ -285,8 +285,8 @@ fn skip_trivia_from(src: &str, mut c: Cursor) -> Cursor {
 }
 
 /// Match one of [`LITERALS`] at `c` (after trivia). A plain string compare —
-/// Lark's `PatternStr` carries no word boundary, which is precisely why
-/// `rulex` can be read as `rule` + `x`.
+/// a literal carries no word boundary, which is precisely why `rulex` can be
+/// read as `rule` + `x`.
 pub fn match_literal(src: &str, c: Cursor, word: &str) -> Option<Lexeme> {
     ein_core::counters::bump(|k| k.lex_match += 1);
     let at = skip_trivia(src, c);
@@ -448,9 +448,9 @@ fn match_int(rest: &str) -> Option<usize> {
 
 /// `STRING: /"([^"\\]|\\.)*"/`.
 ///
-/// The `.` of `\\.` is Python's, which does **not** match a newline — so a raw
-/// newline inside a string is fine (`[^"\\]` takes it) but a backslash
-/// immediately before one is not, and the terminal fails.
+/// The `.` of `\\.` does **not** match a newline — so a raw newline inside a
+/// string is fine (`[^"\\]` takes it) but a backslash immediately before one
+/// is not, and the terminal fails.
 fn match_string(rest: &str) -> Option<usize> {
     let mut it = rest.char_indices();
     match it.next() {
@@ -470,7 +470,7 @@ fn match_string(rest: &str) -> Option<usize> {
     None
 }
 
-/// `STRING`'s body, unescaped with ein.py's **minimal** set: `\n`/`\t`/`\r`
+/// `STRING`'s body, unescaped with the **minimal** set: `\n`/`\t`/`\r`
 /// map, and every other `\X` is `X`. There is no `\xNN`, no `\uNNNN`, no
 /// octal — so `"\d"` is `d` and `"\\"` is a single backslash.
 pub fn unescape_string_body(body: &str) -> String {
@@ -486,8 +486,7 @@ pub fn unescape_string_body(body: &str) -> String {
             Some('t') => out.push('\t'),
             Some('r') => out.push('\r'),
             Some(other) => out.push(other),
-            // A trailing lone backslash: ein.py's loop appends it as-is
-            // (`i + 1 < len(body)` fails, so the `else` branch runs).
+            // A trailing lone backslash is kept as-is.
             None => out.push('\\'),
         }
     }

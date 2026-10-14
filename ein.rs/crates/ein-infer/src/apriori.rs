@@ -3,23 +3,22 @@
 //!
 //! The textbook Apriori prefix-join, filtered against the alive set and the
 //! learned no-good clauses (the downward-closure prune). Pure set arithmetic:
-//! no KB inspection and no saturation, which makes it the easiest part of the
-//! search layer to port and the easiest to get subtly wrong in *ordering*.
+//! no KB inspection and no saturation, which makes it the simplest part of the
+//! search layer and the easiest to get subtly wrong in *ordering*.
 //!
 //! ### The comparator is the whole risk
 //!
-//! ein.py sorts `(relation_name, args)` tuples — by **content**. `FactId`
-//! order here is interning order, which is an artefact of what the loader
-//! happened to see first, so sorting by it would produce a different layer-1
-//! order and therefore a different traversal on every puzzle.
-//! [`Terms::cmp_fact_semantic`] is the comparator that agrees with Python's,
-//! and it exists for this call site
+//! Candidates sort by **content** — relation name, then arguments
+//! element-wise. `FactId` order here is interning order, which is an artefact
+//! of what the loader happened to see first, so sorting by it would tie the
+//! layer-1 order, and therefore the traversal, to load order.
+//! [`Terms::cmp_fact_semantic`] is the content comparator, and it exists for
+//! this call site
 //! ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §3b).
 //!
-//! Where the two *cannot* agree is a mixed-type argument: Python raises
-//! `TypeError` comparing a `str` to an `int`, and `Value` is totally ordered
-//! by construction. That is [D2](../../../../docs/history/m1a_rust/divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers),
-//! with `examples/ein-bugs/mixed-type-hypothesis.ein` pinning both halves.
+//! A mixed-type argument still has an order: `Value` is totally ordered by
+//! construction, `Int < Sym < Fact` across tags, and
+//! `examples/ein-bugs/mixed-type-hypothesis.ein` pins it.
 //!
 //! ### Where no-goods are *not* consulted
 //!
@@ -42,14 +41,14 @@ pub type CanonicalSetId = Vec<FactId>;
 pub fn canonicalise(terms: &Terms, elements: impl IntoIterator<Item = FactId>) -> CanonicalSetId {
     let mut out: Vec<FactId> = elements.into_iter().collect();
     out.sort_by(|&a, &b| terms.cmp_fact_semantic(a, b));
-    // ein.py is `tuple(sorted(set(...)))`, so the dedup is by *identity* and
-    // the sort by content; interning makes those the same question, and
-    // `dedup` after the sort is the same answer.
+    // The dedup is by *identity* and the sort by content; interning makes
+    // those the same question, so `dedup` after the sort is enough.
     out.dedup();
     out
 }
 
-/// `tuple` ordering over two canonical sets: element-wise, then by length.
+/// Lexicographic ordering over two canonical sets: element-wise, then by
+/// length.
 pub fn cmp_set(terms: &Terms, a: &[FactId], b: &[FactId]) -> std::cmp::Ordering {
     for (&x, &y) in a.iter().zip(b.iter()) {
         let ord = terms.cmp_fact_semantic(x, y);
@@ -73,7 +72,7 @@ pub fn cmp_set(terms: &Terms, a: &[FactId], b: &[FactId]) -> std::cmp::Ordering 
 /// by the prefix as its primary key, and once a prefix differs no later entry
 /// can match it again. Replacing the `break` with a `continue` produces
 /// byte-identical output on all 65 files — checked, not assumed. It is kept
-/// because ein.py has it and because the scan is quadratic without it.
+/// because the scan is quadratic without it.
 pub fn apriori_prefix_join(terms: &Terms, a_prev: &[CanonicalSetId]) -> Vec<CanonicalSetId> {
     let mut sorted_prev: Vec<&CanonicalSetId> = a_prev.iter().collect();
     sorted_prev.sort_by(|a, b| cmp_set(terms, a, b));
@@ -185,7 +184,7 @@ pub fn generate_layer(
 /// `A_0 = {()}`, but explicit, and the one place the whole traversal order is
 /// decided.
 pub fn layer_1(terms: &Terms, alive: &FxHashSet<FactId>) -> Vec<CanonicalSetId> {
-    // `alive` is a `frozenset` in ein.py too, and `layer_1` is where it sorts.
+    // `alive` is unordered, and `layer_1` is where it gets sorted.
     // determinism-ok: sorted by content on the next line, before any caller.
     let mut ids: Vec<FactId> = alive.iter().copied().collect();
     ids.sort_by(|&a, &b| terms.cmp_fact_semantic(a, b));
@@ -201,10 +200,9 @@ pub fn layer_1(terms: &Terms, alive: &FxHashSet<FactId>) -> Vec<CanonicalSetId> 
 /// depends on `hypgen_scoring`, and under `"most-constrained"` every score is
 /// `0.0` and it collapses to `lex`.
 ///
-/// An element not yet in the KB is scored anyway: ein.py builds a synthetic
-/// `Fact` for it, because the scorer reads only the relation and the args.
-/// Here it needs no synthesis — a `FactId` exists whether or not any KB holds
-/// the proposition true.
+/// An element not yet in the KB is scored anyway, because the scorer reads
+/// only the relation and the args, and it needs no synthesis — a `FactId`
+/// exists whether or not any KB holds the proposition true.
 /// Takes the candidates **by value**, because it reorders them and cloning
 /// them to do it is not free: `features/01 -e` spends 26 ms per solve copying
 /// a layer's sets so that the sort has somewhere to put them, and a layer
@@ -232,9 +230,10 @@ pub fn order_candidates(
                 }
                 scored.push((sum, c));
             }
-            // `sorted(key=(-score, c))`, **stable**. `total_cmp` is a total
-            // order over the float and agrees with `<` on everything a score
-            // can be; the tuple key makes the sort total anyway.
+            // Descending score, then the canonical set, **stable**.
+            // `total_cmp` is a total order over the float and agrees with `<`
+            // on everything a score can be; the set tie-break makes the sort
+            // total anyway.
             scored.sort_by(|(sa, ca), (sb, cb)| {
                 sb.total_cmp(sa).then_with(|| cmp_set(terms, ca, cb))
             });
@@ -242,7 +241,7 @@ pub fn order_candidates(
         }
         other => Err(ScoreError::Unknown(format!(
             "unknown lattice_order mode: {} (expected 'lex' or 'score-sum')",
-            ein_core::pyrepr::repr_str(other)
+            ein_core::repr::repr_str(other)
         ))),
     }
 }
@@ -293,7 +292,7 @@ mod tests {
     }
 
     #[test]
-    fn an_unknown_order_mode_reports_ein_pys_text() {
+    fn an_unknown_order_mode_names_the_two_valid_ones() {
         let mut terms = Terms::new();
         let kb = Kb::new(ein_core::Program::new());
         let _ = ids(&mut terms, &["a"]);

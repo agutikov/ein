@@ -1,14 +1,14 @@
 ;;; Ein — branching demo 12/…  + S1.7.23 standing regression fixture
 ;;;
 ;;; A no-hrule, NON-`T`-typed puzzle that ACTUALLY SOLVES via the
-;;; blind hypothesis enumerator (`hypgen._generate`'s no-`(hrule …)`
+;;; blind hypothesis enumerator (`hypgen::generate`'s no-`(hrule …)`
 ;;; branch). It is the standing witness for retiring the kernel
 ;;; `is-a` type-filter — S1.7.23 T1.7.23.1.
 ;;;
 ;;; Why it exists
 ;;; -------------
 ;;; The M1 gate (zebra2) is hrule-driven, so it never exercises the
-;;; blind enumerator's `_type_compatible` type-pruning — retiring
+;;; blind enumerator's `is-a` type-pruning — retiring
 ;;; that filter is a measured no-op there (S1.7.8 / T1.7.7.1 spike).
 ;;; The existing feature demos `features/04`,`05` run the blind path
 ;;; but abort at k=0 (non-converging), so they cannot witness a
@@ -161,7 +161,7 @@
 ;; that the bijection can't fully *force* without a guess — so the
 ;; blind enumerator must propose `(color-of H2 …)`, and `solve`
 ;; branches. Keeping it to a single residual guess keeps the lattice
-;; tiny (fast under CPython) while still exercising the blind path.
+;; tiny while still exercising the blind path.
 (color-of H1 Red :source "(1) H1 is Red")
 
 (query

@@ -1,9 +1,8 @@
 //! The low-level DOT helpers every renderer shares.
 //!
-//! `ein.py`'s `render/dot_util.py`, and the reason it exists there is the
-//! reason it exists here: S1.7c.25 collapsed four hand-rolled copies of the
-//! node-id scheme onto one definition, and a port that re-hand-rolled them
-//! would re-acquire the divergence that collapse removed.
+//! It exists because S1.7c.25 collapsed four hand-rolled copies of the
+//! node-id scheme onto one definition, and a renderer that re-hand-rolled one
+//! would re-acquire the drift that collapse removed.
 
 use ein_core::{FactId, Tag, Terms, Value};
 use ein_ir::{Ast, Node, NodeId};
@@ -38,9 +37,9 @@ pub fn hashed_id(prefix: &str, seed: &str, quoted: bool) -> String {
 
 /// The flat content key behind a fact's node id: `rel|arg,arg`.
 ///
-/// Not recursive — a nested fact argument stringifies through `str(a)`, which
-/// for a frozen dataclass is its `repr`. `ein-core`'s `Terms::display` is that
-/// rendering, so callers pass the already-rendered arguments.
+/// Not recursive — a nested fact argument is its `repr`, which is what
+/// `ein-core`'s `Terms::display` renders, so callers pass the already-rendered
+/// arguments.
 pub fn fact_key(relation_name: &str, args: &[String]) -> String {
     format!("{relation_name}|{}", args.join(","))
 }
@@ -48,9 +47,9 @@ pub fn fact_key(relation_name: &str, args: &[String]) -> String {
 // ── The shape legend ───────────────────────────────────────────────
 //
 // `docs/kernel/ir/03-ein-lang/04_dot_rendering.md` § Node-shape legend. Named
-// constants rather than literals for the same reason ein.py names them: the
-// per-form IR renderer and the rule renderer must agree, and a legend that
-// lives in two string literals drifts.
+// constants rather than literals because the per-form IR renderer and the
+// rule renderer must agree, and a legend that lives in two string literals
+// drifts.
 
 pub const TYPE_SHAPE: &str = "box";
 pub const INSTANCE_SHAPE: &str = "oval";
@@ -76,11 +75,10 @@ pub fn multiline(parts: &[&str]) -> String {
 
 /// The opening lines of a `digraph`, as the seed of the caller's line list.
 ///
-/// Shared by the LR-family emitters (`render/slice`, `render/lattice_dag`,
-/// `render/constraints`). The other preambles — `kb/render`'s interleaved
-/// `fdp` comment, the derivation DAG's and the rule renderer's bespoke
-/// headers, the `_Builder`'s inline `{` — diverge too much to route here
-/// byte-identically, and ein.py does not try either.
+/// Shared by the LR-family emitters (`slice`, `lattice_dag`, `constraints`).
+/// The other preambles — `kb_dot`'s interleaved `fdp` comment, the derivation
+/// DAG's and the rule renderer's bespoke headers, the `Builder`'s inline `{` —
+/// differ too much to route here byte-identically.
 pub fn digraph_open(name: &str, rankdir: Option<&str>, node_defaults: Option<&str>) -> Vec<String> {
     let mut out = vec![format!("digraph {name} {{")];
     if let Some(r) = rankdir {
@@ -122,8 +120,8 @@ pub fn fact_label_parts(terms: &Terms, relation_name: &str, args: &[Value]) -> S
 /// A human-readable single-line label for an IR *value* node — what an edge
 /// label or a constraint operand shows.
 ///
-/// Panics on a [`Node::KwPair`], as ein.py's `TypeError` does: a keyword pair
-/// is not a value, and every caller filters them out before getting here.
+/// Panics on a [`Node::KwPair`]: a keyword pair is not a value, and every
+/// caller filters them out before getting here.
 pub fn value_label(ast: &Ast, id: NodeId) -> String {
     match ast.node(id) {
         Node::Atom(s) => ast.sym(s).to_string(),
@@ -159,7 +157,7 @@ mod tests {
 
     #[test]
     fn the_node_id_is_the_first_ten_hex_digits_of_the_md5() {
-        // The three ids in `ein-render/tests/golden/from_ein_py/dot/kb_provenance_dag.dot`.
+        // The three ids in `ein-render/tests/golden/dot/kb_provenance_dag.dot`.
         assert_eq!(hashed_id("f_", "q|a,c", false), "f_0b8a036bc4");
         assert_eq!(hashed_id("f_", "p|a,b", false), "f_69510aab53");
         assert_eq!(hashed_id("f_", "p|b,c", false), "f_b34b2c73fa");

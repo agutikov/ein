@@ -1,16 +1,11 @@
-//! The `(trace …)` IR round-trip — the half of S1a.5.2's acceptance that was
-//! never about a second engine.
+//! The `(trace …)` IR round-trip — half of S1a.5.2's acceptance.
 //!
-//! `trace_parity` compared three rendering modes per corpus entry against
-//! ein.py, and rode a property along inside the comparison: every rendered
-//! trace ends with a `--- round-trip` block that reports whether
-//! `trace_to_ir(parse_trace_steps(trace_to_ir(steps)))` reproduced its input.
-//! That property needs no oracle — it is a claim about one engine's two
-//! directions agreeing — and
-//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
-//! keeps it while the byte comparison goes to `corpus_shapes.md5` (107 files ×
-//! `trace[trace]` / `trace[answer]` / `trace[no-proof]`) and to
-//! `golden_trace.rs`'s five whole documents.
+//! Every rendered trace ends with a `--- round-trip` block that reports
+//! whether `trace_to_ir(parse_trace_steps(trace_to_ir(steps)))` reproduced its
+//! input — a claim about the engine's two directions agreeing. The bytes are
+//! pinned elsewhere, by `corpus_shapes.md5` (107 files × `trace[trace]` /
+//! `trace[answer]` / `trace[no-proof]`) and by `golden_trace.rs`'s five whole
+//! documents.
 //!
 //! It is worth keeping *separately* from the digests because it is the only
 //! thing here that is not a self-golden. A digest says the rendering is what
@@ -27,9 +22,9 @@ use ein_render::shape::trace_shape;
 ///
 /// The `--- round-trip` line is `trace_shape`'s own report, so what this sweep
 /// adds is coverage and a floor: the property has to hold on *every* file that
-/// renders a trace, and at least fifty have to render one. Fifty is
-/// `trace_parity`'s own floor, carried over — a sweep that quietly stopped
-/// finding traces would otherwise pass by asserting nothing about nothing.
+/// renders a trace, and at least fifty have to render one — a sweep that
+/// quietly stopped finding traces would otherwise pass by asserting nothing
+/// about nothing.
 #[test]
 fn every_rendered_trace_round_trips_through_the_ir() {
     let (mut round_trips, mut rendered, mut bad) = (0usize, 0usize, Vec::new());

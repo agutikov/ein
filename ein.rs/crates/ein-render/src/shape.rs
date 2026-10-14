@@ -1,14 +1,12 @@
 //! Every DOT view of a file, as one text — the S1a.5.1 diff.
 //!
 //! The renderers *do* have a CLI surface, but not all of it and not in every
-//! combination: `ein render` reaches four of them, `kb.to_dot`'s keyword
+//! combination: `ein render` reaches four of them, `kb_dot::to_dot`'s option
 //! surface is library-only, and the slice cones are reachable only through a
-//! `--trace` that [S1a.5.2](../../../../docs/history/m1a_rust/README.md#s1a52--trace-and-answer-rendering)
-//! has not built yet. So the renderers are compared the way the loader and
-//! the compiler were: both implementations render the same views over the
-//! same corpus and the texts are diffed (`utils/ir_oracle.py`'s `dot-shape`
-//! op was the other half, until S1a.10.4 removed it with the engine it
-//! rendered).
+//! `--trace` ([S1a.5.2](../../../../docs/history/m1a_rust/README.md#s1a52--trace-and-answer-rendering)).
+//! So the renderers are pinned the way the loader and the compiler are: every
+//! view is rendered over the whole corpus and the texts are digested
+//! (`ein-render/tests/corpus_shapes.rs`).
 //!
 //! Unlike `plan-shape` or `kb-shape` this invents no rendering of its own.
 //! Every view calls a renderer entry point exactly as a CLI subcommand or the
@@ -403,7 +401,7 @@ pub fn trace_shape(
         let solved = solve_for_trace(ast, terms, &mut kb, true, false, jobs)?;
         let mut out: Vec<String> = Vec::new();
         for exhausted in [true, false] {
-            out.push(format!("--- answer exhausted={}", py_bool(exhausted)));
+            out.push(format!("--- answer exhausted={}", bool_word(exhausted)));
             out.push(crate::answer::render_answer(
                 ast,
                 terms,
@@ -411,7 +409,7 @@ pub fn trace_shape(
                 &solved.answer,
                 exhausted,
             ));
-            out.push(format!("--- table exhausted={}", py_bool(exhausted)));
+            out.push(format!("--- table exhausted={}", bool_word(exhausted)));
             out.push(crate::answer::render_solution_table(
                 ast,
                 terms,
@@ -475,8 +473,8 @@ pub fn trace_shape(
     .steps;
     let ir = crate::trace::trace_to_ir(&steps);
     let mut reparse = Ast::new();
-    // A parse failure is ein.py's `IRParseError`, propagating out of the op —
-    // so it propagates here too rather than degrading to an empty trace.
+    // A parse failure propagates out of the op rather than degrading to an
+    // empty trace.
     let forms = ein_ir::parse(&mut reparse, &ir, None).map_err(|e| e.to_string())?;
     let again = match forms.first() {
         Some(&f) => crate::trace::trace_to_ir(&crate::trace::parse_trace_steps(&reparse, f)),
@@ -493,8 +491,8 @@ pub fn trace_shape(
     Ok(out.join("\n"))
 }
 
-/// `str(bool)` — `True` / `False`, because the separator lines interpolate one.
-fn py_bool(b: bool) -> &'static str {
+/// `True` / `False` — the word the separator lines interpolate.
+fn bool_word(b: bool) -> &'static str {
     if b { "True" } else { "False" }
 }
 
@@ -520,31 +518,28 @@ fn render_tree(root: &Path) -> String {
         out.push(format!("=== {rel}"));
         let text = std::fs::read_to_string(&path).unwrap_or_default();
         if rel.starts_with("enterings/") {
-            // **A fork's own dump is narration** — `ein-parity`'s rule, and
+            // **A fork's own dump is narration** — `ein-narration`'s rule, and
             // the one place it is applied where the artefact is *produced*
             // rather than where it is compared.
             //
             // That exception is measured, not assumed: `zebra2-hints` writes
             // **6.6 MiB** of per-entering dumps against 84 KiB for the rest of
-            // the tree, so rendering them into a shape that
-            // [S1a.6.10](../../../../docs/history/m1a_rust/README.md#s1a610--the-parity-contract-relaxes-answers-not-narration)'s
-            // normalisation immediately throws away would push hundreds of
-            // megabytes through the oracle's JSON-Lines pipe, twice, to
-            // compare nothing. `dump_parity` re-checks that this marker is
-            // exactly `ein_parity::NARRATED`, so the decision still has one
-            // owner. `utils/ir_oracle.py::_render_tree` was the other half.
+            // the tree, so rendering them into a shape that `ein-narration`'s
+            // normalisation immediately throws away would build megabytes of
+            // text per run to compare nothing. `dump_shape.rs` re-checks that
+            // this marker is exactly `ein_narration::NARRATED`, so the
+            // decision still has one owner.
             //
             // The **file set** is still compared exactly — a missing, renamed
             // or empty per-commitment dump still fails — and everything
             // outside `enterings/` is compared byte for byte: the root
             // snapshot, every layer dump, the timeline and `summary.json`.
             // Not even "empty or not": a resumed fork whose delta triggers
-            // nothing writes an *empty* `firings.jsonl` where ein.py's writes
-            // its re-derivation of root, so non-emptiness is the divergence
-            // too. What replaces the byte check is `utils/fork_delta_verify.py`
-            // — every fork's fact set, fact by fact, across 3.2 M enterings —
-            // and an ein.rs golden
-            // ([S1a.6.11](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing)).
+            // nothing writes an *empty* `firings.jsonl`, so non-emptiness is
+            // narration too. What pins the contents is
+            // `utils/fork_delta_verify.py` — every fork's fact set, fact by
+            // fact, across 3.2 M enterings — and `golden_dump.rs`'s
+            // `dump_enterings_subset-pruned.txt`.
             out.push("=== <narrated>".to_string());
             continue;
         }
@@ -573,18 +568,13 @@ fn collect_files(dir: &Path, out: &mut Vec<PathBuf>) {
 /// Blank the clock readings — value, not presence, so a record that lost its
 /// `ts_ms` still fails.
 ///
-/// The clocks, and only the clocks: they are on the
-/// [normalisation list](../../../../docs/history/m1a_rust/design/01_parity_contract.md) §5
-/// because no two runs can agree on them. The per-entering `firings` count
-/// used to be blanked here too and is not any more — it is
-/// [D3](../../../../docs/history/m1a_rust/divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it),
-/// which is a *comparison* decision and now lives with the rest of them in
-/// `ein-parity`. A renderer that decides what a diff will look at is a
-/// renderer with an opinion about the contract.
-///
-/// `utils/ir_oracle.py`'s `_normalise_dump_line` did the same on the Python
-/// side, and the two lists were maintained together until S1a.10.4 removed
-/// it. This one is now the whole list.
+/// The clocks, and only the clocks, because no two runs can agree on them.
+/// The per-entering `firings` count is not blanked here: a fork resumes
+/// root's saturation rather than re-deriving it, so two runs can narrate
+/// different amounts of one derivation, and that is a *comparison* decision
+/// that lives with the rest of them in `ein-narration`. A renderer that
+/// decides what a diff will look at is a renderer with an opinion about the
+/// contract.
 fn normalise_dump_line(line: &str) -> String {
     let mut out = line.to_string();
     for key in ["ts_ms", "elapsed_seconds"] {
@@ -708,7 +698,7 @@ pub fn dump_shape(
         }
     };
     let mut out = vec![
-        format!("ABORTED {}", py_bool(aborted)),
+        format!("ABORTED {}", bool_word(aborted)),
         render_tree(&out_dir),
     ];
     if mode == "progress" {
@@ -725,7 +715,7 @@ pub fn dump_shape(
 /// The two renders are not the same picture and are not meant to be: a
 /// snapshot's `solutions` are post-saturation state keys, so its solution view
 /// draws whole states where the proof's draws commitments. What matters is
-/// that both implementations draw the same one.
+/// that every run draws the same one.
 fn snapshot_shape(
     ast: &Ast,
     terms: &mut Terms,
@@ -764,8 +754,8 @@ fn snapshot_shape(
                     .collect();
                 (
                     // A *canonical* key's repr, not a commitment's — the two
-                    // shapes differ on a nested fact, and this is the sort
-                    // order ein.py's `sorted(sets, key=repr)` uses here.
+                    // shapes differ on a nested fact, and the sets are sorted
+                    // by this text.
                     crate::dump::snapshot::canon_key_repr(terms, s),
                     format!("{{{}}}", ids.join(" ")),
                 )
@@ -796,7 +786,7 @@ fn snapshot_shape(
         // Rendered in full, and *compared* as a count: a dead commitment's
         // `state_key` is the fork's state at the firing that killed it —
         // `enable_fail_fast_fork` stops there rather than at a fixpoint — so
-        // it is a dying fork's stopping point, which `ein-parity` blanks.
+        // it is a dying fork's stopping point, which `ein-narration` blanks.
         // The blanking is that crate's job and not this renderer's; with
         // fail-fast off the keys agree, which is what says this is the prefix
         // and not a difference of conflict.
@@ -812,9 +802,9 @@ fn snapshot_shape(
         // nodes — id and label both — on the dead commitment's `state_key`,
         // which is the field above, and the DAG *merges* dead commitments by
         // that key, so even the node and edge counts move. Rendered in full
-        // here and named as a derivation in `ein-parity`'s closed list, which
+        // here and named as a derivation in `ein-narration`'s closed list, which
         // is what elides them. The renderer itself is still byte-compared,
-        // through `dot_parity`'s `lattice` and `lattice-full` views, which
+        // through the `lattice` and `lattice-full` DOT views, which
         // read a `LatticeProof` and label their dead nodes by *commitment*
         // rather than by state.
         "=== dot solution".to_string(),

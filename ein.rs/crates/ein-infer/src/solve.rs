@@ -45,9 +45,8 @@ use crate::verdict::{Answer, Solution, Verdict, union_dead_cores};
 
 /// Per-candidate counters shared by the run-level stats and the proof's.
 ///
-/// ein.py factors these into a `_BaseStats` base class precisely so a counter
-/// added to one cannot go missing from the other; here the same job is done by
-/// [`LatticeStats`] holding a `base` rather than repeating the fields.
+/// Factored out so a counter added to one cannot go missing from the other:
+/// [`LatticeStats`] holds a `base` rather than repeating the fields.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
 pub struct BaseStats {
     pub enterings_total: u64,
@@ -346,11 +345,11 @@ pub enum SolveError {
     },
     Saturate(SaturateError),
     Compile(CompileError),
-    /// `lattice_order_seed` is set and the traversal shuffle is not ported —
-    /// see [`Q-M1a.5`](../../../../docs/history/m1a_rust/open_questions.md).
+    /// `lattice_order_seed` is set and the traversal shuffle is not implemented
+    /// ([`defined_behaviour.md`](../../../../docs/kernel/defined_behaviour.md) §3.1).
     Unsupported(String),
     /// `-y` found two lattice paths to one commitment that saturate to
-    /// different KBs. Fatal in ein.py too — `check_commutativity` raises.
+    /// different KBs. Fatal.
     Sanity(Box<crate::sanity::SanityError>),
 }
 
@@ -380,8 +379,8 @@ impl From<CompileError> for SolveError {
 
 /// What a dumper records about one entering.
 ///
-/// ein.py hands its hook the whole `CommitmentSetResult`; here the fields are
-/// borrowed separately, because by the time the *solution* outcome is known
+/// The fields are borrowed separately rather than as one commitment result,
+/// because by the time the *solution* outcome is known
 /// the result has been partially moved — its KB into the completed fork, its
 /// firings into the recorded node. Same information, one borrow later.
 pub struct EnteringInfo<'a> {
@@ -452,8 +451,7 @@ struct Speculated {
 /// by `ein-render`, which is where formatting lives.
 ///
 /// Every hook that shows a fact takes `&Terms` as well, because a `FactId`
-/// means nothing without one: ein.py's `Fact` carries its own text and this
-/// port's does not.
+/// means nothing without one: it does not carry its own text.
 #[allow(unused_variables)]
 pub trait Dumper {
     fn root_saturating(&mut self, n_firings: usize) {}
@@ -519,9 +517,8 @@ impl Dumper for NoDumper {
 /// What one run accumulates.
 struct LoopState {
     /// Deduped solution nodes. A `Vec` plus an index rather than a hash map,
-    /// because ein.py's is a `dict` and `verdict_of` reads
-    /// `list(...values())` — so **insertion order is the branch order** of an
-    /// `Ambiguity`, and a replacement keeps its original position.
+    /// because **insertion order is the branch order** of an `Ambiguity`, and
+    /// a replacement keeps its original position.
     nodes: Vec<(Box<[FactId]>, SolutionRecord)>,
     node_at: FxHashMap<Box<[FactId]>, usize>,
     dead: Vec<DeadCommitment>,
@@ -636,7 +633,8 @@ pub fn solve(
     // One generator per solve, **not** one per layer: its state advances
     // across layers, so each layer gets a different permutation from the same
     // seed. That is what makes a seeded run replayable, and it is why the
-    // generator has to be CPython's bit for bit (Q-M1a.5).
+    // generator is MT19937 with its standard seeding, bit for bit
+    // (`defined_behaviour.md` §3.1).
     let shuffle = cfg.lattice_order_seed.map(crate::mt19937::Mt19937::seeded);
     let mut run = Run {
         shuffle,
@@ -699,11 +697,11 @@ pub fn solve(
             } else {
                 None
             };
-            // The single exit hook, in ein.py's two-step order: the proof
+            // The single exit hook, in two steps: the proof
             // index first, so a `LatticeDumper` writes `proof_summary.json`
             // before the cumulative summary lands. (Not `kb_index/`, which
-            // this comment used to claim and which never materialises in
-            // either engine — `dump/lattice.rs`'s module docs say why.)
+            // this comment used to claim and which never materialises —
+            // `dump/lattice.rs`'s module docs say why.)
             if let Some(proof) = proof.as_ref() {
                 dumper.proof_summary(proof, terms);
             }
@@ -856,14 +854,14 @@ pub fn tree_traversal() -> bool {
 
 /// Does a fork **resume** root's saturation? Yes, since
 /// [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
-/// — this is the shipping path, and
-/// [D3](../../../../docs/history/m1a_rust/divergences.md) is what it costs.
+/// — this is the shipping path, and what it costs is that two runs can
+/// narrate different amounts of one derivation.
 ///
 /// The one way to get the old fresh-saturator path back is a `fork-delta`
-/// build with `EIN_FORK_DELTA=0`, and that exists for one reason: D3's rule 2
-/// wants a fixture that demonstrates the divergence and keeps it from
-/// silently widening. `utils/fork_delta_verify.py` is that fixture, and it
-/// needs both arms out of one binary.
+/// build with `EIN_FORK_DELTA=0`, and that exists for one reason: a fixture
+/// that demonstrates the difference and keeps it from silently widening.
+/// `utils/fork_delta_verify.py` is that fixture, and it needs both arms out of
+/// one binary.
 fn resume_forks() -> bool {
     !(cfg!(feature = "fork-delta") && std::env::var_os("EIN_FORK_DELTA").is_some_and(|v| v == "0"))
 }
@@ -1333,9 +1331,7 @@ impl Run<'_> {
             let mut sat = Saturator::new(&mut s)?;
             // Root saturation is the slow part of a Phase-1 solve, so the
             // firing count streams to the dumper. Both paths run the same
-            // loop — ein.py splits them to keep the C-speed `list()` drain on
-            // the common path, and the split is a cost decision, not a
-            // behavioural one.
+            // loop.
             let mut n = 0usize;
             let keep = self.opts.store_lattice;
             let root_firings = &mut self.root_firings;
@@ -1477,9 +1473,8 @@ impl Run<'_> {
         // frontier emptying.** A `phase_2_done` flag guarded two more `break`s
         // here until M1e `MA-M1`: it was `false` at its declaration, tested
         // twice, assigned nowhere, and needed `let _ = &mut phase_2_done;` at
-        // the loop's end to stay warning-free. Not a lost refactor — it was
-        // already dead in `ein.py`, which the port reproduced faithfully.
-        // What set it was `_merge_and_recheck` returning `stop`, and that path
+        // the loop's end to stay warning-free. Not a lost refactor: what set
+        // it was a merge-and-recheck returning `stop`, and that path
         // went at P1.7a (`8439fc9`, *"PURE PER-BRANCH search; keep root
         // STABLE"*), which is `absent_semantics.md`'s corollary **C1 — no
         // root-merge**: an alive fork's derived facts may depend on an absence
@@ -2178,7 +2173,7 @@ impl Run<'_> {
 
     /// Narrate the entering, and ask a survivor whether it is complete.
     ///
-    /// The order matters and is ein.py's: the `enter` event lands **between**
+    /// The order matters: the `enter` event lands **between**
     /// the fork's own saturation events and the `hyp` events `complete` emits.
     /// A worker records all three into its own buffer, so replaying that
     /// buffer at the commit reproduces the sequential stream exactly — which
@@ -2319,10 +2314,9 @@ impl Run<'_> {
         }
 
         if entered.solved {
-            // Before `record_node`, which takes the firings: ein.py calls the
-            // hook after, but nothing between the two lines is observable to
-            // it — `_record_node` writes no event and only seals a layer the
-            // fact list spans anyway.
+            // Before `record_node`, which takes the firings: nothing between
+            // the two lines is observable to the hook — `record_node` writes
+            // no event and only seals a layer the fact list spans anyway.
             dumper.entering(layer, c, terms, "solution", &info(&entered));
             // The one path that keeps a fork, so the one that promotes:
             // `record_node` snapshots this KB, and a snapshot citing a
@@ -2375,7 +2369,7 @@ impl Run<'_> {
     /// > A layer is fanned out **iff it cannot write a fact to root.**
     ///
     /// That is [S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
-    /// § The decision, and it is the whole reason this port needs no
+    /// § The decision, and it is the whole reason this engine needs no
     /// speculate-and-validate. A worker forks root when the layer opens, so
     /// the question a parallel layer has to answer is not "can the repair be
     /// made cheap" but "is there anything to repair".
@@ -2424,11 +2418,9 @@ impl Run<'_> {
         ast: &Ast,
         events: &mut Events,
     ) -> Result<FxHashSet<FactId>, SolveError> {
-        // ein.py's `events.ON` is a module flag, so **every** hypgen run
-        // narrates — including this one, and including `complete`'s inside the
-        // layer loop. Silencing them here would leave the two implementations
-        // agreeing on what they printed and disagreeing on what they did; the
-        // event stream's `n` is what makes that visible.
+        // **Every** hypgen run narrates — including this one, and including
+        // `complete`'s inside the layer loop — so the event stream's `n`
+        // counts everything the run did.
         let mut s = Session {
             kb,
             terms,
@@ -2688,9 +2680,8 @@ impl Run<'_> {
                     .insert(key.clone(), self.lstate.nodes.len());
                 self.lstate.nodes.push((key, r));
             }
-            // In place: ein.py assigns into the dict, which keeps the original
-            // insertion position, and that position is an `Ambiguity`'s branch
-            // order. The third merge site: this path outranks the stored one,
+            // In place, which keeps the original insertion position, and that
+            // position is an `Ambiguity`'s branch order. The third merge site: this path outranks the stored one,
             // so the record moves and the node count does not.
             Some(at) => {
                 self.lstate.state_key_merges += 1;
@@ -2703,8 +2694,8 @@ impl Run<'_> {
     /// Is there already a node under `key` whose commitment outranks this
     /// one's?
     ///
-    /// `tuple(sorted(commitment)) < tuple(sorted(cur.commitment))` — sorted
-    /// and compared by **content**, not by `FactId`. Interning order is an
+    /// Both commitments sorted and compared lexicographically by **content**,
+    /// not by `FactId`. Interning order is an
     /// artefact of what the loader saw first, and using it here would pick a
     /// different representative for a model two commitment paths both reach.
     fn loses_to_stored(&self, key: &[FactId], commitment: &[FactId], terms: &Terms) -> bool {
@@ -2868,9 +2859,8 @@ impl Run<'_> {
             .max_time
             .is_some_and(|m| self.t_start.elapsed().as_secs_f64() > m)
         {
-            // `str(float)` is `repr(float)` in Python 3, and Rust's `{:?}`
-            // is the same shortest round-trip — the agreement `SolverConfig`'s
-            // renderer already leans on.
+            // Rust's `{:?}` is the shortest round-trip text of the float —
+            // what `SolverConfig`'s renderer prints too.
             Some(format!(
                 "max-time ({:?}s) exceeded",
                 self.opts.max_time.expect("checked")
@@ -2918,11 +2908,10 @@ impl Run<'_> {
                 unsat_core: union_dead_cores(&cores),
             });
         }
-        // The records are **not** consumed: ein.py's verdict and its
-        // `LatticeProof` reference the same `SolutionRecord` objects, and the
-        // proof is packaged after the verdict is read. A second `snapshot` of
-        // an already-archival KB is what stands in for that sharing here — it
-        // is cheap (an `Arc` base plus one delta layer) and it is the only
+        // The records are **not** consumed: the verdict and the
+        // `LatticeProof` both read the same `SolutionRecord`s, and the proof
+        // is packaged after the verdict is read. A second `snapshot` of an
+        // already-archival KB is what lets both have one — it is cheap (an `Arc` base plus one delta layer) and it is the only
         // place the two would otherwise fight over ownership.
         //
         // **M1d S1d.2.6 — `complete` means discharged, in the read-out.** The

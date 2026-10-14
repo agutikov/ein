@@ -1,4 +1,4 @@
-//! S1a.5.1 acceptance — Graphviz accepts every file the port emits.
+//! S1a.5.1 acceptance — Graphviz accepts every file the engine emits.
 //!
 //! A digest sweep (`corpus_shapes.md5`) proves every view still renders the
 //! bytes it rendered. It cannot prove those bytes are *valid*: a golden of a
@@ -27,12 +27,9 @@
 //! what a genuine rejection does, now naming the digraph rather than the view.
 //!
 //! **It fails rather than skips when Graphviz is missing.** It used to skip —
-//! on a stderr line `cargo test` captures for a passing test, which is the
-//! shape the ledger's
-//! [§2](../../../../docs/history/m1a_rust/oracle_ledger.md#2-the-finding--46--of-einrss-own-integration-tests-are-differential)
-//! found 41 more of and S1a.10.3 removed the helper for. A check that reports
-//! a pass because its tool is absent is not a check, and "loudly" was the word
-//! doing the lying.
+//! on a stderr line `cargo test` captures for a passing test. A check that
+//! reports a pass because its tool is absent is not a check, and "loudly" was
+//! the word doing the lying.
 
 use ein_core::Terms;
 use ein_corpus::{corpus_files, repo_root};

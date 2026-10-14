@@ -1,4 +1,4 @@
-//! Pattern macros — `ir/macros.py`, a load-time AST rewrite.
+//! Pattern macros — a load-time AST rewrite.
 //!
 //! `(macro NAME (?p…) BODY)` is an alias: an invocation `(NAME a…)` in a rule
 //! clause is replaced by a copy of BODY under the parameter binding *before
@@ -50,9 +50,8 @@ pub struct Macro {
 /// **One reading, and this is it** — M1e `CO-M4`, `AR-M1`'s fourth pair. There
 /// were two: this one took the first declaration of a duplicate name and
 /// silently skipped a malformed form, `from_ir::ingest_macros` errored on
-/// both, and this one's doc comment claimed to be *"what the loader does, and
-/// therefore the shape the parity gate compares"* — wrong about the loader,
-/// and about a parity gate that no longer exists.
+/// both, and this one's doc comment claimed to be *"what the loader does"* —
+/// which it was not.
 ///
 /// The lenient reading had one argument for it, that a *dump* should render
 /// something even where a load would refuse. It does not survive contact with

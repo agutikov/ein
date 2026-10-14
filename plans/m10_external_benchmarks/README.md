@@ -22,13 +22,11 @@ the first time.
 
 ## Why this exists: every check the repo has is relative
 
-The conformance tiers compared two engines; the goldens compare ein.rs to its
-own past; after [P1a.10](../../docs/history/m1a_rust/README.md#p1a10--one-implementation)
-the second engine is gone, so what is left compares ein.rs to yesterday's
-ein.rs. All of it answers *did this change?* None of it answers *is this
+The goldens and the shape digests compare ein.rs to its own past — to
+yesterday's ein.rs. All of it answers *did this change?* None of it answers *is this
 right?* — and the precedent is specific, recent and expensive:
 `disjunctive-prune`'s `(neq ?h_other ?h1)` guard was wrong for a year, through
-five phases of byte-exact parity, and what found it was an **independent
+five phases of byte-exact regression checks, and what found it was an **independent
 enumeration** of a puzzle's models written outside the engine on the day.
 
 There are two ways to answer *is this right?* [M1c](../../docs/history/m1c_external_validation/README.md)
@@ -76,9 +74,9 @@ sharpening it added is the reason to run the benchmarks at all:
 
 There are no such numbers today. The engine's entire performance record
 ([baseline.md](../../docs/history/m1a_rust/measurements/baseline.md)) is Ein against
-Ein: ein.rs against ein.py, against PyPy, against its own previous commit.
-165× a Python implementation of the same algorithm says nothing about how the
-algorithm compares to a CDCL solver on the same puzzle.
+Ein: ein.rs against its own previous commit. A ratio against its own past
+says nothing about how the algorithm compares to a CDCL solver on the same
+puzzle.
 
 ## Two products, and the first one is not the clock
 
@@ -88,8 +86,8 @@ algorithm compares to a CDCL solver on the same puzzle.
    independently, and if they agree, the count is established by three
    systems that share no code with Ein and no code with each other. This is
    the [`disjunctive-prune`](../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance) check
-   made permanent: that bug survived a year of two engines agreeing and died
-   to one independent enumeration.
+   made permanent: that bug survived a year of the engine agreeing with its
+   own goldens and died to one independent enumeration.
 2. **Times, and what had to be said to get them.** Wall clock as a process,
    peak RSS, and the encoding column — how many lines, and *what the language
    made the author state*. On n-queens that column is the interesting one:
@@ -166,7 +164,7 @@ algorithm compares to a CDCL solver on the same puzzle.
   dropped, and never checked out by anything. CVC5 is a different program
   with a different name, and this benchmark uses **CVC5** — so the submodule
   had no consumer here, and M1a
-  [S1a.10.5](../../docs/history/m1a_rust/README.md#s1a105--the-removal)
+  [S1a.10.5](../../docs/history/m1a_rust/README.md#s1a105--the-grammar-as-ebnf)
   deinitialised it rather than making every clone fetch it. The three
   hand-written `.smt` files it sat beside **stay**, and are named below.
   `smt/README.md` has the one command that re-adds it if a stage ever wants

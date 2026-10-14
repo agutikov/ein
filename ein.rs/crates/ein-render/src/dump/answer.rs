@@ -65,14 +65,14 @@ fn sorted_facts(terms: &Terms, facts: impl IntoIterator<Item = FactId>) -> Json 
     Json::Array(out.into_iter().map(Json::Str).collect())
 }
 
-/// One goal binding, as `json.dumps` writes ein.py's.
+/// One goal binding.
 ///
-/// `goal_bindings` returns the **stored** argument, and ein.py stores an IR
-/// `INT` as a Python `int` — so `json.dumps` writes it as a *number*. Every
-/// binding used to go through `sexpr_value`, which made it a string, and
-/// `summary.json` is T0: `(query :goal (r1 ?x ?y))` over `(r1 o3 8)` was a
-/// verdict-level difference on a two-line program. Found by
-/// [S1a.6.6](../../../../../docs/history/m1a_rust/README.md#s1a66--the-differential-fuzzer)'s
+/// `goal_bindings` returns the **stored** argument, and an IR `INT` is
+/// written as a JSON *number*. Every binding used to go through
+/// `sexpr_value`, which made it a string, and `summary.json` is the answer:
+/// `(query :goal (r1 ?x ?y))` over `(r1 o3 8)` bound `?y` to `"8"` on a
+/// two-line program. Found by
+/// [S1a.6.6](../../../../../docs/history/m1a_rust/README.md#s1a66--the-fuzzer)'s
 /// fuzzer, 2026-08-20; `examples/ein-bugs/int-goal-binding.ein` is the
 /// fixture. A symbol stays a string and a nested fact its s-expression.
 fn binding_value(terms: &Terms, v: Value) -> Json {
@@ -100,8 +100,7 @@ pub fn bindings_json(ast: &Ast, terms: &mut Terms, kb: &Kb) -> Json {
             r
         })
         .collect();
-    // Rows are ordered by their rendered form, which is what ein.py's
-    // `sorted(rows, key=…)` compares.
+    // Rows are ordered by their rendered form, key by key.
     shown.sort_by_key(|r| {
         r.iter()
             .map(|(k, v)| (k.clone(), sexpr_value(terms, *v)))

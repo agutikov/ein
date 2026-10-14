@@ -1,14 +1,9 @@
-//! The `--dump-states` tree's own invariants — S1a.5.3's acceptance, without
-//! the oracle.
+//! The `--dump-states` tree's own invariants — S1a.5.3's acceptance.
 //!
 //! Five modes per corpus entry. The tree has no line protocol to diff over, so
-//! it is *rendered* as one text — every file, sorted by path, with its bytes —
-//! and until
-//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
-//! that text was diffed against ein.py's. The bytes are now
-//! `corpus_shapes.md5`'s (5 modes × 107 files) plus `golden_dump.rs`'s two
-//! whole trees, which is strictly more than the diff covered: the manifest
-//! digests the tree *unnarrowed*, where the diff applied D3's narration cut.
+//! it is *rendered* as one text — every file, sorted by path, with its bytes.
+//! The bytes are `corpus_shapes.md5`'s (5 modes × 107 files), digested
+//! *unnarrowed*, plus `golden_dump.rs`'s two whole trees.
 //!
 //! What has no owner in a digest is the **policy**, and that is what is left
 //! here: on a run the budget cuts, the timeline is flushed and the summary is
@@ -52,8 +47,8 @@ fn rendered(path: &Path, mode: &str) -> Option<String> {
 /// The floor is the abort *count*, and it is the part that would rot silently:
 /// the budget is a fixed number of enterings, so a search that got faster
 /// stops tripping it, and a sweep over a corpus that never aborts asserts
-/// nothing while still passing. `dump_parity`'s own floor was ten, over the
-/// same fixed budget; today 36 of the 73 files that render a dump trip it.
+/// nothing while still passing. The floor is ten, over a fixed budget; today
+/// 36 of the 73 files that render a dump trip it.
 #[test]
 fn a_budget_abort_leaves_a_timeline_and_no_summary() {
     let (mut aborts, mut swept) = (0usize, 0usize);
@@ -84,11 +79,11 @@ fn a_budget_abort_leaves_a_timeline_and_no_summary() {
 }
 
 /// `dump_shape` elides the `enterings/` subtree where it is produced, so its
-/// marker is the one thing about the rule that lives outside `ein-parity`.
+/// marker is the one thing about the rule that lives outside `ein-narration`.
 /// This is what keeps that from drifting.
 #[test]
 fn the_produced_marker_is_the_one_the_contract_expects() {
-    assert_eq!(ein_parity::NARRATED, "<narrated>");
+    assert_eq!(ein_narration::NARRATED, "<narrated>");
 }
 
 /// The top-level keys of one JSON object line, in order.

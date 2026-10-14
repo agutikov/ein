@@ -1,12 +1,11 @@
-//! The digraph accumulator behind the per-form IR renderer — `ir/to_dot`'s
-//! `_Builder`.
+//! The digraph accumulator behind the per-form IR renderer.
 //!
 //! Node ids are stored in their *quoted* DOT form. Re-declaring an id with no
 //! attributes is a no-op; re-declaring it *with* attributes overrides, which
 //! is how a name that first appears as a generic ground atom is refined when
 //! the ontology later calls it a type. The override keeps the node's original
-//! **position** — ein.py's `self._nodes[node_id] = attrs` on a `dict`, and the
-//! emission order is the dict's, so a `HashMap` here would scramble the file.
+//! **position**, and nodes are emitted in first-declaration order, so a
+//! `HashMap` here would scramble the file.
 
 use std::collections::HashMap;
 
@@ -50,9 +49,9 @@ impl Builder {
 
     pub fn edge(&mut self, src: &str, dst: &str, attrs: Option<&str>) {
         let mut line = format!("  {src} -> {dst}");
-        // ein.py tests the *string*, so an empty attribute string is falsy
-        // and emits no brackets — not the same as `None`, but rendered the
-        // same, which is why this takes one `Option` and checks both.
+        // An empty attribute string emits no brackets — not the same as
+        // `None`, but rendered the same, which is why this takes one `Option`
+        // and checks both.
         if let Some(a) = attrs.filter(|a| !a.is_empty()) {
             line.push_str(&format!(" [{a}]"));
         }

@@ -1,32 +1,23 @@
 //! The frontend fuzzer, on **self-checkable properties** — T1a.1.1.4's
-//! generator, after its oracle.
+//! generator.
 //!
-//! Earley explores tokenizations; recursive descent commits. That is the one
-//! structural risk in replacing Lark ([design/04](../../../../docs/history/m1a_rust/design/04_ir_frontend.md) §1),
-//! and the fuzzer settled it by generating malformed and nearly-well-formed
-//! inputs and asserting the two parsers agreed on accept/reject **and on the
-//! message**. That arm is
-//! [accepted loss L1](../../../../docs/history/m1a_rust/oracle_ledger.md#6-accepted-loss):
-//! the input space no fixture covers had exactly one owner and it is gone.
-//!
-//! What survives is the generator, the minimiser, the seed corpus, and three
-//! properties that need one implementation:
+//! The grammar admits every tokenization; recursive descent commits to one.
+//! That is the one structural risk in the parser
+//! ([design/04](../../../../docs/history/m1a_rust/design/04_ir_frontend.md) §1),
+//! and the fuzzer probes it by generating malformed and nearly-well-formed
+//! inputs. It is the generator, the minimiser, the seed corpus, and three
+//! properties:
 //!
 //! 1. **It never panics.** Generated input either parses or is *diagnosed* —
 //!    a recursive-descent parser that unwrapped an assumption would show up
 //!    here as a crash rather than as a wrong answer.
 //! 2. **What parses round-trips.** `dump_canonical → parse → dump_canonical`
 //!    is a fixed point on every mutation that parses. This is the strongest
-//!    self-checkable property the frontend has, and it is the one that would
-//!    have caught a dumper/parser disagreement without a second engine.
+//!    self-checkable property the frontend has, and it is the one that
+//!    catches a dumper/parser disagreement.
 //! 3. **The recorded findings still parse the way they parsed.** Every seed
 //!    and every checked-in `corpus/fuzz_findings/*.ein` against a table —
 //!    which is what makes a find a regression test rather than a souvenir.
-//!
-//! Property 2 is not weaker than the diff in every direction: the diff
-//! compared ein.rs's answer to lark's, and a *shared* misunderstanding of the
-//! grammar would have satisfied it. A round-trip is a claim about this
-//! engine's two halves agreeing, and no oracle could have made it.
 //!
 //! Budget is `EIN_FUZZ_ITERS` (default 2 000, which fits the per-commit tier);
 //! the nightly tier raises it. `EIN_FUZZ_SEED` moves the stream. Both are
@@ -271,12 +262,10 @@ fn seeds() -> Vec<String> {
         "(hrule h () :match (p ?a) :assert (q ?a) :why \"w\")".into(),
         "()".into(),
     ];
-    // `.ein` only. The differential arm took every file in these directories —
-    // any text is a legal fuzz seed — but S1a.10.2 turned the seed corpus into
-    // a checked-in table, and a table that moved when a README was edited
-    // would be a table nobody trusts. What is lost is a few `.expected` and
-    // `.md` files as *mutation* seeds; what is gained is that the seed list is
-    // a function of the fixtures.
+    // `.ein` only. Any text is a legal fuzz seed, but the seed corpus is a
+    // checked-in table, and a table that moved when a README was edited would
+    // be a table nobody trusts — so the seed list is a function of the
+    // fixtures.
     let mut files: Vec<PathBuf> = Vec::new();
     for dir in ["examples/broken", "corpus/fuzz_findings"] {
         if let Ok(entries) = std::fs::read_dir(root.join(dir)) {
@@ -323,7 +312,7 @@ fn generated(seeds: &[String], rng: &mut Rng) -> String {
 
 /// **Generated input is answered, never survived.**
 ///
-/// Every mutation either parses or comes back as an `IRParseError` — there is
+/// Every mutation either parses or comes back as a `ParseError` — there is
 /// no third outcome, and in a recursive-descent parser the third outcome is a
 /// panic. The counters are reported because a generator that stopped producing
 /// *rejected* input would leave the diagnostic paths untested while still
@@ -392,9 +381,8 @@ fn everything_that_parses_round_trips_through_the_dumper() {
 ///
 /// The seed corpus is the twelve hand-written shapes plus every file under
 /// `examples/broken/` and `corpus/fuzz_findings/` — which is what makes a
-/// find a regression test. The differential arm checked each against lark on
-/// every run; the table checks each against the answer lark gave, blessed
-/// while that arm was green.
+/// find a regression test. The table checks each against the answer it was
+/// recorded with.
 ///
 /// The table is keyed by the seed's own text, so a finding that is added,
 /// removed or edited changes the file and has to be blessed on purpose.

@@ -1,18 +1,16 @@
 //! T1a.10.2.3 — the acceptance gate's **CLI** half.
 //!
-//! Five of `ein.py/acceptance/`'s twenty-one tests do not ask the engine
-//! anything: they run `ein solve <puzzle>` and read what a person would see.
-//! The other sixteen are engine claims and live in
-//! `ein-infer/tests/acceptance.rs`; the split is by *what is being asserted*,
-//! not by which Python file it came from.
+//! These tests do not ask the engine anything: they run `ein solve <puzzle>`
+//! and read what a person would see. The acceptance gate's engine claims live
+//! in `ein-infer/tests/acceptance.rs`; the split is by *what is being
+//! asserted*.
 //!
-//! | Python | what it asserts |
+//! | test | what it asserts |
 //! |---|---|
-//! | `test_bench_solve_mode.py::test_solve_solves_zebra2_correctly` | the table names the four cells the puzzle asks about, `k = 1`, and the `:hrules` line reports the hypothesis relations |
-//! | `test_bench_solve_mode.py::test_solve_exhaustive_certifies_unique` | `-e` prints `exhausted true`, which is what turns `k = 1` into uniqueness |
-//! | `test_zebra_three_classes.py::test_cli_solve_emits_answer_in_words` | `zebra2` answers **in English**, from the file's `:goal-text` and `:why` templates |
-//! | `test_zebra_three_classes.py::test_cli_solve_contradiction_reports_no_solution` | the unsat fixture says "no solution", says why, and **names the injected `:source`** — and still exits 0, because classifying an unsat puzzle correctly is a success |
-//! | `test_zebra_two_ontologies.py::test_cli_solve_zebra_emits_answer_in_words` | the same, through the *other* encoding, so the English cannot be hardcoded per ontology |
+//! | [`solve_zebra2_prints_the_answer_the_puzzle_asked_for`] | the table names the four cells the puzzle asks about, `k = 1`, and the `:hrules` line reports the hypothesis relations; and `zebra2` answers **in English**, from the file's `:goal-text` and `:why` templates |
+//! | [`solve_exhaustive_certifies_that_the_answer_is_the_only_one`] | `-e` prints `exhausted true`, which is what turns `k = 1` into uniqueness |
+//! | [`solve_on_an_unsat_puzzle_says_no_solution_and_names_the_culprit`] | the unsat fixture says "no solution", says why, and **names the injected `:source`** — and still exits 0, because classifying an unsat puzzle correctly is a success |
+//! | [`solve_zebra_prints_the_same_answer_through_the_generic_encoding`] | the same, through the *other* encoding, so the English cannot be hardcoded per ontology |
 //!
 //! They run the built binary (`CARGO_BIN_EXE_ein`) rather than calling the
 //! library, because what is under test is the *presentation*: the exit code,
@@ -81,9 +79,9 @@ fn must_contain(out: &str, needles: &[&str], what: &str) {
 /// drinks water and who owns the zebra — and reports the table.
 #[test]
 fn solve_zebra2_prints_the_answer_the_puzzle_asked_for() {
-    // The Python original's argv, kept: `--print-final-state` and
-    // `--print-final-hfacts` are two surfaces nothing else in the suite runs
-    // end to end, and `--stats` is where `exhausted` is reported. `k` is the
+    // `--print-final-state` and `--print-final-hfacts` are two surfaces
+    // nothing else in the suite runs end to end, and `--stats` is where
+    // `exhausted` is reported. `k` is the
     // *table*'s row, which is what `field` finds first and what the assertion
     // below means — the two are different numbers on an `Open` verdict, and
     // since M1e S1e.3.4 they are under different labels (`AR-M2`).
@@ -116,9 +114,8 @@ fn solve_zebra2_prints_the_answer_the_puzzle_asked_for() {
         "k must be 1"
     );
     // `--print-final-hfacts` reports which relations the blind enumerator was
-    // pointed at. ein.py asserted `:hrules [.*'nation-loc'.*]`; the list is
-    // the five typed projections and nothing else, which is stronger and is
-    // what the fixture is for.
+    // pointed at: the five typed projections and nothing else, which is what
+    // the fixture is for.
     let hrules = out
         .split(":hrules [")
         .nth(1)
@@ -155,7 +152,7 @@ fn solve_exhaustive_certifies_that_the_answer_is_the_only_one() {
 /// The *other* encoding reaches the same English. The answer is rendered from
 /// the file's own `:goal-text` and its relations' `:why` templates, so a
 /// hardcoded per-ontology string would pass the previous test and fail this
-/// one — which is exactly why the Python gate had both.
+/// one — which is exactly why the gate has both.
 #[test]
 fn solve_zebra_prints_the_same_answer_through_the_generic_encoding() {
     let (code, out) = ein(&["solve", "examples/zebra.ein"]);

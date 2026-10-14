@@ -1,34 +1,28 @@
-//! S1a.2.1's acceptance — the two places the data model has to agree with
-//! CPython rather than with itself, checked without CPython.
+//! S1a.2.1's acceptance — one ordering, one canonical form and one rendering
+//! the data model has to get exactly right, each checked against a statement
+//! of it written out separately.
 //!
-//! Both are re-implementations of behaviour that only exists as CPython
-//! source: `sorted(names)` (which the interner's rank table replaces with a
-//! `u32` sort) and `str(int(tok))` (which the int pool applies to every
-//! literal). Unit tests can only check the cases somebody thought of; these
-//! check a generated corpus against a **specification of the imitated
-//! behaviour**, which is what
-//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
-//! substituted for asking the interpreter:
+//! The interner's rank table replaces every sort by name with a `u32` sort,
+//! and the int pool canonicalises every literal. Unit tests can only check the
+//! cases somebody thought of; these check a generated corpus against a
+//! **specification of the behaviour**:
 //!
-//! - `sorted()` on `str` is code-point order, and so is Rust's `Ord` on
-//!   `String` — UTF-8 preserves code-point order — so the reference is
+//! - names sort in code-point order, and so does Rust's `Ord` on `String` —
+//!   UTF-8 preserves code-point order — so the reference is
 //!   `Vec<String>::sort`, computed here rather than fetched.
-//! - `str(int(x))` is "strip the leading zeros, and `-0` is `0`", which is
-//!   nine lines of Rust that no more shares an implementation with `IntPool`
-//!   than CPython did.
-//! - `repr` of a nested `Fact` has no such specification, so the six shapes
-//!   the test builds are checked in as strings. Those six are ein.py's own
-//!   output, captured while the differential test was green.
+//! - a literal's canonical text is "strip the leading zeros, and `-0` is
+//!   `0`", which is nine lines of Rust that share no implementation with
+//!   `IntPool`.
+//! - `display` of a nested `Fact` has no such short specification, so the six
+//!   shapes the test builds are checked in as strings.
 //!
-//! The generated corpora stay the size they were — ~900 names and ~400
-//! literals — because their job is to reach the neighbourhoods a hand-written
-//! case would miss, and that job does not change when the reference does.
+//! The generated corpora are ~900 names and ~400 literals, because their job
+//! is to reach the neighbourhoods a hand-written case would miss.
 
 use ein_core::{IntPool, Interner, Symbol, Terms};
 
 /// A deterministic xorshift, so the corpus is the same on every run and on
-/// every machine — a differential test that fails only sometimes is not a
-/// gate.
+/// every machine — a test that fails only sometimes is not a gate.
 struct Rng(u64);
 
 impl Rng {
@@ -102,7 +96,7 @@ fn unicode_corpus() -> Vec<String> {
 }
 
 #[test]
-fn the_rank_table_orders_names_the_way_python_sorted_does() {
+fn the_rank_table_orders_names_by_code_point() {
     let corpus = unicode_corpus();
     assert!(corpus.len() >= 900, "corpus is {} strings", corpus.len());
 
@@ -119,9 +113,8 @@ fn the_rank_table_orders_names_the_way_python_sorted_does() {
         syms[i] = Some(interner.intern(&corpus[i]).expect("room"));
     }
 
-    // CPython's `sorted()` on `str` is code-point order; Rust's `Ord` on
-    // `String` is byte order over UTF-8, and UTF-8 is order-preserving on code
-    // points. So the reference is a sort, and the only thing that could make
+    // Names sort in code-point order; Rust's `Ord` on `String` is byte order
+    // over UTF-8, and UTF-8 is order-preserving on code points. So the reference is a sort, and the only thing that could make
     // it disagree is the rank table itself.
     let mut want: Vec<usize> = (0..corpus.len()).collect();
     want.sort_by(|&a, &b| corpus[a].cmp(&corpus[b]));
@@ -146,7 +139,7 @@ fn the_rank_table_orders_names_the_way_python_sorted_does() {
 }
 
 #[test]
-fn the_int_pool_canonicalises_exactly_as_int_then_str_does() {
+fn the_int_pool_canonicalises_every_literal() {
     // Widths either side of i64, leading zeros, both signs, and the two
     // spellings of zero.
     let mut literals: Vec<String> = Vec::new();
@@ -177,8 +170,8 @@ fn the_int_pool_canonicalises_exactly_as_int_then_str_does() {
 
     let mut pool = IntPool::new();
     let mut bad = Vec::new();
-    // `str(int(x)) == str(int(y))` iff the two literals are the same integer,
-    // so CPython's answer also tells us which pool ids must coincide.
+    // Two literals have the same canonical text iff they are the same
+    // integer, so the reference also tells us which pool ids must coincide.
     let mut by_canonical: std::collections::HashMap<String, ein_core::IntId> =
         std::collections::HashMap::new();
     for literal in &literals {
@@ -186,7 +179,7 @@ fn the_int_pool_canonicalises_exactly_as_int_then_str_does() {
         let want = canonical(literal);
         if pool.text(id) != want {
             bad.push(format!(
-                "{literal:?}: str(int(x)) is {want:?}, pool {:?}",
+                "{literal:?}: canonical is {want:?}, pool {:?}",
                 pool.text(id)
             ));
         }
@@ -210,10 +203,10 @@ fn the_int_pool_canonicalises_exactly_as_int_then_str_does() {
     assert_eq!(pool.len(), by_canonical.len());
 }
 
-/// `str(int(x))` for a decimal literal, written out rather than fetched.
+/// The canonical text of a decimal literal, written out rather than fetched.
 ///
-/// The whole of CPython's behaviour on this input class: strip the sign,
-/// strip the leading zeros, and a value of zero has no sign. Nine lines,
+/// The whole rule on this input class: strip the sign, strip the leading
+/// zeros, and a value of zero has no sign. Nine lines,
 /// sharing no code with [`IntPool`] — which is what makes the comparison a
 /// comparison.
 fn canonical(literal: &str) -> String {
@@ -232,24 +225,21 @@ fn canonical(literal: &str) -> String {
     }
 }
 
-/// **`Terms::display` renders a value the way CPython's `str` does** — for the
-/// six shapes that reach a trace.
+/// **`Terms::display` renders each of the six value shapes that reach a
+/// trace.**
 ///
-/// `display` is `str(v)`, which for a nested fact is its dataclass repr: the
-/// string that lands in provenance bindings and in a `:why` template. There is
-/// no short specification of that — it is `dataclasses`' generated `__repr__`
-/// over a tuple of values, with `repr` on each — so the six answers are
-/// checked in rather than re-derived. They are **ein.py's**, captured while
-/// `a_facts_repr_matches_cpythons_for_every_value_shape` was green against a
-/// live `utils/py_oracle.py` — the batch CPython oracle, deleted with the
-/// second engine at S1a.10.4. These six answers are what is left of it here.
+/// `display` of a nested fact is its `repr`: the string that lands in
+/// provenance bindings and in a `:why` template. There is no short
+/// specification of that — `Fact(relation_name=…, args=(…))` with `repr` on
+/// each argument, recursively — so the six answers are checked in rather than
+/// re-derived.
 ///
 /// What each shape is for: an atom (no quotes, unlike `repr`), an atom with an
-/// apostrophe (which flips CPython's quote choice to `"`), a leading-zero int,
+/// apostrophe (which flips a nested `repr`'s quote to `"`), a leading-zero int,
 /// a negative int wider than an `i64`, a nested fact, and a fact nested inside
 /// a fact — the last being the only place the recursion is visible.
 #[test]
-fn a_facts_repr_matches_cpythons_for_every_value_shape() {
+fn display_renders_every_value_shape() {
     let mut t = Terms::new();
     let co_located = t.intern_text("co-located").expect("room");
     let hypothesis = t.intern_text("hypothesis").expect("room");
@@ -282,7 +272,7 @@ fn a_facts_repr_matches_cpythons_for_every_value_shape() {
     ] {
         let got = t.display(v);
         if got != want {
-            bad.push(format!("{v:?}\n  cpython: {want}\n  ein.rs:  {got}"));
+            bad.push(format!("{v:?}\n  want: {want}\n  got:  {got}"));
         }
     }
     assert!(bad.is_empty(), "{}", bad.join("\n"));

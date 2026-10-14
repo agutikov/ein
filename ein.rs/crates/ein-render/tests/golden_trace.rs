@@ -1,24 +1,20 @@
-//! The rendered trace, against checked-in fixtures — S1a.5.2's synthetic one
-//! and [S1a.6.11](../../../../docs/history/m1a_rust/README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing)'s
-//! real solves.
+//! The rendered trace, against checked-in goldens — S1a.5.2's synthetic one
+//! and S1a.6.11's real solves.
 //!
 //! **Two kinds of golden, and the difference is the point.**
 //!
-//! - `tests/golden/trace_3step.md` is **ein.py's**: its
-//!   `tests/trace/test_render.py` builds a deterministic synthetic three-step
-//!   trace and locks the markdown. That committed file is the fixture, and the
-//!   trace is rebuilt against the port's own types — a `TraceStep` in ein.rs
-//!   holds an owned [`FactRef`] rather than an interned id, precisely so a
-//!   trace can exist without a KB, and this is where that claim is exercised.
-//! - `tests/golden/trace_*.md` are **ein.rs's own**, and they exist because
-//!   the synthetic one is not enough: it locks the *renderer* and says nothing
+//! - `tests/golden/trace_3step.md` is a deterministic synthetic three-step
+//!   trace, built from the trace types alone — a `TraceStep` holds an owned
+//!   [`FactRef`] rather than an interned id, precisely so a trace can exist
+//!   without a KB, and this is where that claim is exercised.
+//! - `tests/golden/trace_*.md` are real solves, and they exist because the
+//!   synthetic one is not enough: it locks the *renderer* and says nothing
 //!   about what a solve produces, which is why it kept passing through
 //!   [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
-//!   while the rendered trace lost half its rules. Since
-//!   [S1a.6.10](../../../../docs/history/m1a_rust/README.md#s1a610--the-parity-contract-relaxes-answers-not-narration)
-//!   nothing compares a rendered trace against ein.py any more — the two
-//!   engines narrate different amounts of the same derivation on purpose — so
-//!   this is the whole of its regression coverage.
+//!   while the rendered trace lost half its rules. A rendered trace is
+//!   narration — two runs can narrate different amounts of the same
+//!   derivation — so the invariance sweeps compare one for presence only and
+//!   `corpus_shapes.md5` can only say that one moved; these say what.
 //!
 //! The one that matters most is the **root-saturation section**: *Before any
 //! assumption*, then `Assuming …`, then the hypothesis's own steps, numbered
@@ -113,19 +109,14 @@ fn synthetic_trace() -> Trace {
 
 #[test]
 fn the_three_step_trace_reproduces_the_committed_golden() {
-    let want = std::fs::read_to_string(
-        repo_root().join("ein.rs/crates/ein-render/tests/golden/from_ein_py/trace_3step.md"),
-    )
-    .expect("the golden is checked in");
-    assert_eq!(
-        render_markdown(&synthetic_trace(), Mode::Engine, false),
-        want
-    );
+    let got = render_markdown(&synthetic_trace(), Mode::Engine, false);
+    if let Some(e) = golden(&golden_path("ein-render", "trace_3step.md"), &got) {
+        panic!("{e}");
+    }
 }
 
-/// The reorder pass is a *presentation* pass: same steps, grouped. ein.py
-/// asserts exactly this, and it is the property that makes `--reorder` safe to
-/// hand a reader.
+/// The reorder pass is a *presentation* pass: same steps, grouped. It is the
+/// property that makes `--reorder` safe to hand a reader.
 #[test]
 fn reorder_groups_by_entity_and_emits_every_step_once() {
     let trace = synthetic_trace();
@@ -149,7 +140,7 @@ fn reorder_groups_by_entity_and_emits_every_step_once() {
 ///
 /// | golden | shape it pins |
 /// |---|---|
-/// | `unconditional` | solved at root: the whole trace **is** the *Before any assumption* section, and ein.py renders "no surviving derivation" for the same run |
+/// | `unconditional` | solved at root: the whole trace **is** the *Before any assumption* section |
 /// | `one-hypothesis` | a single-element commitment: root's 7 steps, `Assuming …`, then the 10 the hypothesis adds |
 /// | `ambiguous` | the **same puzzle exhaustively** — `k = 2`, so the trace has to say which of the two solution nodes it narrates. The pair is what makes `-e`'s effect on a trace reviewable |
 /// | `two-level` | a two-element commitment reached at layer 2, with two refuted branches — the reductio section |
@@ -206,7 +197,7 @@ fn real_trace(rel: &str, exhaustive: bool) -> String {
 /// Replace every fenced `dot` block with one marker line.
 ///
 /// A block that *vanished* still fails — the marker counts — and what is
-/// inside one is `golden_dot.rs`'s and `dot_parity.rs`'s to pin.
+/// inside one is `golden_dot.rs`'s and `corpus_shapes.rs`'s to pin.
 fn strip_dot(md: &str) -> String {
     let mut out: Vec<&str> = Vec::new();
     let mut in_dot = false;

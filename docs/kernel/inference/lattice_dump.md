@@ -64,22 +64,9 @@ the library's, file for file and byte for byte, clocks aside.
 
 An exhaustive `zebra2` lattice sweep is large — bound it with
 `--max-set-size N`, `--max-time S`, or `--max-enterings K` so the dump stays a
-manageable size. (This paragraph used to recommend a PyPy interpreter to make
-the sweep finish at all; the engine that needed one left at M1a S1a.10.5, and
-the exhaustive solve is now seconds.)
+manageable size. The exhaustive solve itself takes seconds.
 
 ### Programmatically
-
-> **Superseded — this recipe was the Python engine's.** It imported
-> `ein.inference.monotonic`, `ein.ir` and `ein.kb.store` from `ein.py`, which
-> was deleted at M1a
-> [S1a.10.5](../../history/m1a_rust/README.md#s1a105--the-removal);
-> there is no module to import, and `pip install` is not a channel
-> ([`docs/install.md`](../../install.md)). The **dump format below is not
-> superseded** — it is what `LatticeDumper` writes today, banked by
-> [`golden_dump.rs`](../../../ein.rs/crates/ein-render/tests/golden_dump.rs)
-> (the timeline and the whole `enterings/` subtree) and byte-compared for the
-> rest by `dump_parity.rs`. What changed is only how you ask for it.
 
 The dumper is a Rust type,
 [`ein_render::dump::LatticeDumper`](../../../ein.rs/crates/ein-render/src/dump/lattice.rs),
@@ -199,7 +186,7 @@ on which bindings, in the context of each tested hypothesis.
 
 ## `kb_index/` — never materialises
 
-> **This folder has never been written, by either engine.** The design is kept
+> **This folder has never been written.** The design is kept
 > below because `proof_summary.json` carries a `kb_index` list, and an empty
 > one is not a lost dump.
 > [`dump/lattice.rs`](../../../ein.rs/crates/ein-render/src/dump/lattice.rs)
@@ -208,8 +195,7 @@ on which bindings, in the context of each tested hypothesis.
 > per-`SetNode` DAG is built only by a builder that nothing on the shipping
 > path calls — the same fact that makes `ein render lattice --view full`
 > always take its fallback
-> ([S1a.5.1](../../history/m1a_rust/README.md#s1a51--dot-renderers)). It is
-> ein.py's behaviour too, not a port gap, and
+> ([S1a.5.1](../../history/m1a_rust/README.md#s1a51--dot-renderers)).
 > [`lattice_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/lattice_semantics.rs)
 > pins it: `kb_index` empty, `state_key_merges` 0.
 
@@ -293,7 +279,7 @@ M1e2 S1e2.1.3:
 |---|---|
 | **From the CLI?** | **Yes, since M1e2 S1e2.1.3: `ein solve --dump-lattice DIR`.** Until then it was **no**. `--dump-states DIR` builds a `MonotonicDumper` (`00_root_initial.ein`, `00_timeline.jsonl`, `layers/layer_NN_{pre,post}.ein`, `summary.json`, no `enterings/` or `proof_summary.json`), and `make_dumper` in [`ein-cli/src/solve.rs`](../../../ein.rs/crates/ein-cli/src/solve.rs) never chose a `LatticeDumper`. It does now, refused beside the flags that choose another dumper |
 | **From Rust?** | **Yes.** `LatticeDumper::new(Some(dir))` passed as `solve`'s `dumper` argument, with `SolveOptions { stop_after: None, store_lattice: true, .. }` — both types are `pub` and the shape is [`golden_dump.rs`'s `run_dump`](../../../ein.rs/crates/ein-render/tests/golden_dump.rs). It is not in [`docs/api/rust.md`](../../api/rust.md), whose worked example stops at solve-and-render |
-| **Is the format pinned?** | **Yes**, which is why this page is *current* rather than superseded: `golden_dump.rs` banks the timeline and every file under `enterings/`, and `dump_parity.rs` banked the rest byte for byte against ein.py |
+| **Is the format pinned?** | **Yes**, which is why this page is *current* rather than superseded: `golden_dump.rs` banks the timeline and every file under `enterings/`, and `corpus_shapes.md5` digests the rest of the tree for every corpus entry |
 
 So the artifact was real, produced and tested, and the only thing missing was
 a **documented way to ask for it**, which is a decision about the shipping
@@ -318,7 +304,8 @@ answered (a) — a door each — on 2026-10-14.
   (`MonotonicDumper`, `ProgressDumper`).
 - Goldens: [`golden_dump.rs`](../../../ein.rs/crates/ein-render/tests/golden_dump.rs)
   (the timeline's per-entering `firings` count and every file under
-  `enterings/`) and `dump_parity.rs` (the rest of the tree, byte for byte).
+  `enterings/`) and `corpus_shapes.md5` (the rest of the tree, every corpus
+  entry).
 - CLI: [`ein solve`](../../../ein.rs/crates/ein-cli/src/solve.rs)
   (`--exhaustive`; `--trace` for the reductio markdown; `--dump-states DIR`
   for the *lighter* `MonotonicDumper` tree). The on-disk `LatticeDumper` tree

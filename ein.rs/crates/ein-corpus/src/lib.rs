@@ -11,25 +11,10 @@
 //! | [`mod@register`] | `corpus/wrong_answers.toml` — one row per witness of every known wrong answer, with today's answer and the right one (M1e2 S1e2.1.1) |
 //! | this module | [`repo_root`], [`corpus_files`], [`golden`], [`golden_path`] — found from the compiling crate, so a test runs the same from anywhere |
 //!
-//! # What used to be here
-//!
-//! This crate is `ein-oracle` with its subject removed. From
-//! [P1a.1](../../../../docs/history/m1a_rust/README.md#p1a1--ir-frontend) to
-//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
-//! it held `ein.py` and CPython behind a JSON-Lines protocol, so that the 42
-//! differential tests in the workspace did not each re-implement the process
-//! plumbing. S1a.10.2 un-differentialled all 42 and the `Oracle` half became
-//! dead code the same day;
-//! [S1a.10.3](../../../../docs/history/m1a_rust/README.md#s1a103--the-corpus-without-a-second-engine)
-//! removed it and folded in the manifest reader, which was the surviving half
-//! of `ein-conformance`.
-//!
-//! What is *not* here is a `skip` helper. The oracle's version printed to
-//! stderr — which `cargo test` captures for a passing test — so 41 tests
-//! reported a pass while asserting nothing, for two phases
-//! ([the ledger §2](../../../../docs/history/m1a_rust/oracle_ledger.md#2-the-finding--46--of-einrss-own-integration-tests-are-differential)).
-//! Nothing in this crate can be skipped: the corpus is checked in, and a
-//! fixture that cannot be found is a failure.
+//! What is *not* here is a `skip` helper. A skip that prints to stderr —
+//! which `cargo test` captures for a passing test — reports a pass while
+//! asserting nothing. Nothing in this crate can be skipped: the corpus is
+//! checked in, and a fixture that cannot be found is a failure.
 
 pub mod manifest;
 pub mod plan;
@@ -137,18 +122,7 @@ fn collect(dir: &Path, out: &mut Vec<PathBuf>) {
     }
 }
 
-/// A checked-in **ein.rs** golden: compare, or rewrite under `EIN_BLESS=1`.
-///
-/// Distinct from the nineteen under `tests/golden/from_ein_py/`, which are the
-/// *other* implementation's own output and are read-only — a golden re-blessed
-/// from ein.rs proves only that it agrees with itself. (They lived under
-/// `ein.py/tests/golden/` until
-/// [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
-/// carried them across by `git mv`, which is the last independent provenance
-/// the repo has.) These are the other kind, and since
-/// [S1a.6.10](../../../../docs/history/m1a_rust/README.md#s1a610--the-parity-contract-relaxes-answers-not-narration)
-/// they are the whole regression coverage of everything the parity contract
-/// stopped comparing: a shipping engine is compared against fixtures.
+/// A checked-in golden: compare, or rewrite under `EIN_BLESS=1`.
 ///
 /// Returns `None` when the golden matches (or was just written), and
 /// otherwise the message to fail with — naming the first differing line and
@@ -188,7 +162,7 @@ pub fn golden(path: &Path, got: &str) -> Option<String> {
     ))
 }
 
-/// Where an ein.rs golden lives: `<crate>/tests/golden/<name>`.
+/// Where a golden lives: `<crate>/tests/golden/<name>`.
 pub fn golden_path(krate: &str, name: &str) -> PathBuf {
     repo_root()
         .join("ein.rs/crates")

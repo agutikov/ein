@@ -61,7 +61,7 @@ shows. Four of S1e.2.2's findings were *invocations* — a CLI line producing
 neither artifact it names, `(instnce ?a ?T)` claimed to be a parse error — and
 the only instrument for those is a shell.
 
-[S1a.10.6]: docs/history/m1a_rust/README.md#s1a106--the-docs-after-the-oracle
+[S1a.10.6]: docs/history/m1a_rust/README.md#s1a106--defined-behaviour
 """
 
 from __future__ import annotations

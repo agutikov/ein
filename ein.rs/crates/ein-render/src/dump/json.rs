@@ -1,15 +1,17 @@
-//! A `json.dumps`-shaped writer.
+//! The dumps' JSON writer.
 //!
 //! The dumps are compared byte for byte, so what matters is not "valid JSON"
-//! but *CPython's* JSON: key order is a document property (insertion order,
-//! or sorted under `sort_keys=True`), `indent=2` changes the separators as
-//! well as the whitespace, and a float renders through `repr` rather than
-//! through a format string.
+//! but one exact spelling of it: key order is a document property (insertion
+//! order, or sorted when asked), indenting changes the separators as well as
+//! the whitespace — `", "` / `": "` compact, `","` / `": "` indented — a
+//! float is the shortest decimal that round-trips rather than a format
+//! string, and everything outside printable ASCII is a `\uXXXX` escape.
 //!
 //! `serde_json` cannot express the first of those without the `preserve_order`
 //! feature and an `indexmap` behind it, and would still need the float and the
 //! separator rules bolted on. Two hundred lines here buys exactness and no
-//! dependency — the same trade [`ein_core::pyrepr`] made for `repr()`.
+//! dependency — the same trade [`ein_core::repr`] made for a value's printed
+//! form.
 
 /// A JSON value, with objects as ordered key-value lists.
 #[derive(Clone, Debug)]
@@ -19,8 +21,8 @@ pub enum Json {
     /// An integer, as its canonical decimal text.
     Int(i64),
     /// An integer too wide for `i64`, as its canonical decimal text. The IR's
-    /// `INT` is unbounded and CPython writes a big integer as digits, so a
-    /// writer that fell back to a string here would differ from `json.dumps`.
+    /// `INT` is unbounded and a big integer is written as digits, so a writer
+    /// that fell back to a string here would change its JSON type.
     BigInt(String),
     Float(f64),
     Str(String),
@@ -43,21 +45,21 @@ impl Json {
     }
 }
 
-/// `json.dumps(value)` — compact, insertion order, `', '` / `': '`.
+/// Compact, insertion order, `", "` / `": "`.
 pub fn dumps(value: &Json) -> String {
     let mut out = String::new();
     write(&mut out, value, None, 0, false);
     out
 }
 
-/// `json.dumps(value, indent=2, sort_keys=True)`.
+/// Indented by two, keys sorted.
 pub fn dumps_indent_sorted(value: &Json) -> String {
     let mut out = String::new();
     write(&mut out, value, Some(2), 0, true);
     out
 }
 
-/// `json.dumps(value, indent=2)` — indented, insertion order.
+/// Indented by two, insertion order.
 pub fn dumps_indent(value: &Json) -> String {
     let mut out = String::new();
     write(&mut out, value, Some(2), 0, false);
@@ -119,16 +121,14 @@ fn write(out: &mut String, value: &Json, indent: Option<usize>, depth: usize, so
     }
 }
 
-/// `float.__repr__` — the shortest decimal that round-trips, which is what
-/// Rust's `{}` already produces, plus the `.0` CPython keeps on an integral
-/// value.
+/// The shortest decimal that round-trips, which is what Rust's `{}` already
+/// produces, plus a `.0` on an integral value.
 ///
-/// The two implementations part company where CPython switches to exponent
-/// notation (|x| ≥ 1e16, or 0 < |x| < 1e-4) and Rust does not. Every float
-/// that reaches this writer is a `round(_, 3)` of a clock reading in seconds
-/// or milliseconds, so neither bound is in range — and those fields are on the
-/// [normalisation list](../../../../../docs/history/m1a_rust/design/01_parity_contract.md) §5
-/// anyway, because ein.py is not stable there either.
+/// `{}` never switches to exponent notation, so a very large or very small
+/// value is written out in full. Every float that reaches this writer is a
+/// clock reading in seconds or milliseconds rounded to three decimals, so
+/// neither extreme is in range — and those fields are blanked before any
+/// comparison anyway, because no two runs agree on a clock.
 fn float_repr(f: f64) -> String {
     if f.is_nan() {
         return "NaN".to_string();
@@ -150,11 +150,11 @@ fn newline_indent(out: &mut String, indent: Option<usize>, depth: usize) {
     }
 }
 
-/// CPython's `py_encode_basestring_ascii` — the `ensure_ascii=True` default.
+/// A string literal, ASCII only.
 ///
 /// Control characters take their short escape where one exists and `\uXXXX`
-/// otherwise; every non-ASCII character becomes `\uXXXX`, with a surrogate
-/// pair above the BMP.
+/// otherwise; every character outside printable ASCII becomes `\uXXXX`, with
+/// a surrogate pair above the BMP.
 fn write_str(out: &mut String, s: &str) {
     out.push('"');
     for c in s.chars() {
@@ -188,7 +188,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn compact_separators_are_pythons() {
+    fn compact_separators_carry_a_space() {
         let v = Json::obj(vec![
             ("b", Json::int(1)),
             (
@@ -216,13 +216,11 @@ mod tests {
     }
 
     #[test]
-    fn non_ascii_is_escaped_as_cpython_escapes_it() {
-        // `ensure_ascii=True` is CPython's default, and the two `ein.py` call
-        // sites that overrode it are accounted for: `_events.py` did, and
-        // `ein-infer`'s event writer reproduces that (`events.rs`); `_summary.py`
-        // did, and `ein-cli`'s `summary::write` deliberately does not — M1e
-        // S1e.4.8, `MA-L3`, where the reason is written. Everything else took
-        // the default, and this writer is what those callers get.
+    fn non_ascii_is_escaped_with_a_surrogate_pair_above_the_bmp() {
+        // One writer does not take this escaping: `ein-infer`'s event writer
+        // (`events.rs`) writes non-ASCII as it is. `ein-cli`'s
+        // `summary::write` escapes, deliberately — M1e S1e.4.8, `MA-L3`, where
+        // the reason is written. Everything else is written by this one.
         assert_eq!(dumps(&Json::str("é")), r#""\u00e9""#);
         assert_eq!(dumps(&Json::str("⊥")), r#""\u22a5""#);
         assert_eq!(dumps(&Json::str("𝄞")), r#""\ud834\udd1e""#);

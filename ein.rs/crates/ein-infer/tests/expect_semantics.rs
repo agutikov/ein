@@ -7,9 +7,8 @@
 //!
 //! **Every rule here is tested in the failing direction**, because a checker
 //! that reports success on a broken expectation is the worst outcome the phase
-//! has available to it — the
-//! [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-differential-fuzzer)
-//! lesson, whose fuzzer's own three controls each failed once first.
+//! has available to it, and a control is not trusted until it has been seen to
+//! fail.
 
 use ein_core::{Kb, Terms};
 use ein_infer::solve::{NoDumper, SolveOptions, solve};

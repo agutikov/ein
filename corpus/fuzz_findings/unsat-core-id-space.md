@@ -1,8 +1,8 @@
 # unsat-core-id-space
 
-- found: 2026-08-21, `utils/fuzz_ein.py --seed 20260821 --minutes 4`, mode
+- found: 2026-08-21, `utils/fuzz_engine.py --seed 20260821 --minutes 4`, mode
   `mixed`, by the rewritten fuzzer
-  ([S1a.10.4](../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine))
+  ([S1a.10.4](../../docs/history/m1a_rust/README.md#s1a104--utils-and-the-fuzzer))
 - property: **id-order** — the same answer under a permuted interner
 - minimised: 19 → 4 forms
 
@@ -49,13 +49,13 @@ It is the class
 an observable that depends on the order ids were assigned in — and it is the
 second one the id-space sweep has found that the corpus does not reach (the
 first is [`d3-goal-row-order`](d3-goal-row-order.md)). Both arrived within
-minutes of `utils/fuzz_ein.py` being pointed at that sweep, which is the
+minutes of `utils/fuzz_engine.py` being pointed at that sweep, which is the
 argument for pointing it there.
 
 Same *surface* as [`d3-unsat-core`](d3-unsat-core.md) and a different cause:
 that one's 6-vs-4 core is the resumed fork saturator (`EIN_FORK_DELTA=0`
 reproduces the six), and it is **green** under a permuted id space. This one
-has one engine, one build, and two answers.
+has one build and two answers.
 
 The engine is not wrong to have more than one minimal core — a contradiction
 can have several — but it is wrong for *which* one it reports to be a function

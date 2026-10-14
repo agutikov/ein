@@ -1,17 +1,16 @@
 //! T1a.10.2.2 — **the `ein` binary as a tool**: exit codes, flag effects, the
 //! `--events` protocol, and the shape of the three canonical Zebra files.
 //!
-//! Replaces four Python files, whose common subject is *the surface a caller
-//! sees* rather than what the engine concluded:
+//! The common subject is *the surface a caller sees* rather than what the
+//! engine concluded:
 //!
-//! | Python original | what it owned |
+//! | subject | what it owns |
 //! |---|---|
-//! | `tests/test_cli.py` | how a broken file is reported by each subcommand |
-//! | `tests/test_solve_cli.py` | the stop policy, the diagnostic flags, `--json-summary` |
-//! | `tests/test_events.py` | `--events`, whose spec is [`events.md`](../../../../docs/kernel/inference/events.md) |
-//! | `tests/integration/test_zebra_parse.py` | that `zebra2.ein` and its two variants stay one encoding |
-//!
-//! | `tests/test_vscode_grammar.py` | the editor grammar's three closed name sets |
+//! | every subcommand | how a broken file is reported |
+//! | `ein solve` | the stop policy, the diagnostic flags, `--json-summary` |
+//! | the event stream | `--events`, whose spec is [`events.md`](../../../../docs/kernel/inference/events.md) |
+//! | the Zebra files | that `zebra2.ein` and its two variants stay one encoding |
+//! | the editor grammar | its three closed name sets |
 //!
 //! Everything here runs the built binary (`CARGO_BIN_EXE_ein`) except four
 //! claims that have no command line — `Events::off()`, root saturation, the
@@ -25,13 +24,6 @@
 //! relations between them: a counter that the `--stats` block and
 //! `--json-summary` report differently is a real defect, and a column that
 //! moved is not.
-//!
-//! Two of the ported claims came with a concession that turned out to be
-//! false in this engine, and the tests are stronger than their originals as a
-//! result — see [`schema_kinds`], which parses the event kinds out of
-//! `EVENTS.md` rather than copying them, and
-//! [`the_injected_clash_is_refuted_at_root_saturation`], whose Python original
-//! lived behind an `EIN_RUN_SLOW` gate.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::PathBuf;
@@ -154,8 +146,7 @@ fn corpus(rel: &str) -> PathBuf {
 
 // ── the three canonical Zebra files ────────────────────────────────
 //
-// From `tests/integration/test_zebra_parse.py`. The acceptance gate reads its
-// GAPS answer from `zebra2-minus-15.ein` and its CONTRADICTIONS answer from
+// The acceptance gate reads its GAPS answer from `zebra2-minus-15.ein` and its CONTRADICTIONS answer from
 // `ein-bugs/zebra2-bad.ein`, and both are only evidence about *zebra2* while
 // they stay zebra2 ± one clue. Nothing else in the suite would notice if a
 // rule drifted into one of them.
@@ -171,7 +162,7 @@ const INJECTED: &str = "(color-loc Green House-1)";
 ///
 /// The registry also holds auto-vivified heads (`co-located`, `bijective`, …)
 /// with `declared = false`; those are incidental to how a puzzle is written,
-/// so the contract is on the *declared* set, as ein.py's was.
+/// so the contract is on the *declared* set.
 const DECLARED: [&str; 9] = [
     "color-loc",
     "drink-loc",
@@ -243,8 +234,7 @@ fn shape_of(rel: &str) -> Shape {
 /// the three of them are one puzzle. The generator's own `--check` is stronger
 /// still — it compares whole bytes, so it catches a drifted rule *body* where
 /// the structural diff below compares only rule names — and it is run here
-/// when a `python3` is available, because it lives under `examples/` and
-/// outlives ein.py.
+/// too, through `python3`, because it lives under `examples/`.
 #[test]
 fn the_zebra2_variants_are_zebra2_plus_or_minus_one_condition() {
     let z = shape_of("examples/zebra2.ein");
@@ -279,10 +269,9 @@ fn the_zebra2_variants_are_zebra2_plus_or_minus_one_condition() {
     // T1, the review's `TE-M1`.
     //
     // It used to `eprintln!` and pass when `python3` was absent or exited 127.
-    // That is the shape the repo has already been bitten by twice — the
-    // oracle ledger § 2 records *41 tests passing on a SKIP line nobody read*,
-    // and `dot_wellformed` was converted for the same reason — and here it was
-    // worse than a lost assertion: the structural diff above compares rule
+    // That is a shape the repo has already been bitten by — `dot_wellformed`
+    // was converted for the same reason — and here it was worse than a lost
+    // assertion: the structural diff above compares rule
     // *names*, so a drifted rule **body** in a generated variant is caught by
     // nothing else. A local gate on a machine without `python3` reported a
     // pass on exactly that, while `AGENTS.md` said flatly *`--check` is in the
@@ -410,9 +399,8 @@ fn root_saturated(rel: &str) -> (Terms, Kb) {
 /// This is what makes the CONTRADICTIONS verdict cheap and its unsat core
 /// tight — the search never has to prove unsatisfiability, it inherits it —
 /// and it is the difference between the two fixtures being *a* difference and
-/// being *the* one that matters. The Python original ran ~6 s and ~4 s under
-/// CPython and lived behind an `EIN_RUN_SLOW` gate; here the two saturations
-/// are a few milliseconds each, so the gate has no reason to exist.
+/// being *the* one that matters. The two saturations are a few milliseconds
+/// each, so it runs in the default tier.
 #[test]
 fn the_injected_clash_is_refuted_at_root_saturation() {
     let (terms, kb) = root_saturated("examples/ein-bugs/zebra2-bad.ein");
@@ -441,7 +429,7 @@ fn the_injected_clash_is_refuted_at_root_saturation() {
     );
 }
 
-// ── The diagnostics — `tests/test_cli.py` ──────────────────────────
+// ── The diagnostics ─────────────────────────────────────────────────
 
 /// A file that parses and then fails to load, for the diagnostics below.
 const LOAD_NEGATIVE: &str = "examples/broken/load/derivation_cycle.ein";
@@ -449,7 +437,7 @@ const LOAD_NEGATIVE: &str = "examples/broken/load/derivation_cycle.ein";
 const PARSE_NEGATIVE: &str = "examples/broken/unclosed_paren.ein";
 
 /// **A load failure is *diagnosed*, not raised.** One line, on stderr, exit 1,
-/// and no traceback.
+/// and no stack trace.
 ///
 /// The claim is about the boundary between an engine error and a user error:
 /// `examples/broken/load/` is a corpus of *inputs a person can write*, and a
@@ -543,7 +531,7 @@ fn a_parse_error_names_the_file_from_every_subcommand() {
     }
 }
 
-// ── The stop policy and the diagnostic flags — `test_solve_cli.py` ─
+// ── The stop policy and the diagnostic flags ──────────────────────
 
 /// The fixture the stop-policy claims are made on: two genuine models, so
 /// "stop at one" and "exhaust" have different answers.
@@ -619,7 +607,7 @@ fn the_stop_policy_is_honoured() {
 /// Two halves, and the second is the one that would rot quietly:
 ///
 /// - the refusal, its exit code (**2**, a usage error) and its wording;
-/// - a **non-integer** still gets `py_int`'s message, unchanged, because
+/// - a **non-integer** still gets `int_arg`'s message, unchanged, because
 ///   [`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)
 ///   quotes that message verbatim and uses `--solutions` as its example. A
 ///   validator that replaced it would falsify a normative page and no test
@@ -679,7 +667,7 @@ fn solutions_takes_a_count_of_one_or_more_and_nothing_else() {
         );
         assert!(
             r.err.contains(&format!("invalid int value: '{bad}'")),
-            "a non-integer must keep `py_int`'s message — defined_behaviour.md \
+            "a non-integer must keep `int_arg`'s message — defined_behaviour.md \
              §4 quotes it:\n{}",
             r.err
         );
@@ -884,7 +872,7 @@ fn the_trace_goes_to_a_file_and_the_answer_to_stdout() {
     );
 }
 
-// ── `--json-summary` — `test_solve_cli.py` ─────────────────────────
+// ── `--json-summary` ────────────────────────────────────────────────
 
 /// **The summary declares its schema, and its blocks have a fixed shape.**
 ///
@@ -929,9 +917,8 @@ fn the_json_summary_declares_its_schema_and_its_block_shape() {
 ///
 /// A goal binding is the *stored* argument, so an IR `INT` is an integer and
 /// writing it as `"8"` is a type error a consumer cannot undo. S1a.6.6's
-/// fuzzer found this from the other side, on a two-line program, after five
-/// phases of byte parity had not: stdout was identical on both engines, so
-/// only the summary showed it. The wide literal is the second half — the IR's
+/// fuzzer found this on a two-line program: stdout was right, so only the
+/// summary showed it. The wide literal is the second half — the IR's
 /// `INT` is unbounded, so the value has to be carried as an exact numeric
 /// literal rather than clamped to an `i64`.
 #[test]
@@ -980,12 +967,9 @@ fn an_integer_goal_binding_stays_a_json_number() {
 /// **A nested-fact goal binding renders as an s-expression**, and the summary
 /// is still written.
 ///
-/// The sibling of the integer case, and the one where **ein.py was the engine
-/// that was wrong**: `json.dumps` cannot serialise a `Fact`, so the oracle
-/// raised and produced no summary at all. A crash is not a semantics worth
-/// preserving, so ein.py was changed to match ein.rs — which is worth
-/// recording here, because it is the only place in the port where the arrow
-/// pointed that way.
+/// The sibling of the integer case: a binding that is itself a fact is
+/// written as its s-expression, and a run that binds one still writes its
+/// summary rather than failing without one.
 #[test]
 fn a_nested_fact_goal_binding_renders_as_an_s_expression() {
     let scratch = Scratch::new("fact-binding");
@@ -1106,7 +1090,7 @@ fn an_abort_still_writes_its_summary() {
     );
 }
 
-// ── `--events` — `tests/test_events.py` ────────────────────────────
+// ── `--events` ──────────────────────────────────────────────────────
 
 /// **The stream ends in the verdict, and `n` is dense.**
 ///
@@ -1252,10 +1236,8 @@ const EVENT_COVER: [(&str, &str, &str); 9] = [
     ),
 ];
 
-/// Where the `--events` schema lives. It was `conformance/EVENTS.md` until
-/// S1a.10.3: the protocol is a product surface — a debugging tool, and
-/// M20's likely feed — and it outlived both the directory named after the
-/// two-engine harness and the tier that was its first reader.
+/// Where the `--events` schema lives: the protocol is a product surface — a
+/// debugging tool, and M20's likely feed.
 const EVENTS_DOC: &str = "docs/kernel/inference/events.md";
 
 /// Every event kind the schema names, read out of the document itself.
@@ -1356,9 +1338,9 @@ fn every_event_kind_the_schema_defines_is_reachable_from_the_corpus() {
 ///
 /// `normal` is the level a shipping run can afford; `verbose` adds the
 /// redundant firings and the pre-candidate hypothesis skips, which is roughly
-/// six times the volume. T2 compared at `verbose` for one reason: a *redundant*
-/// firing is precisely what a port drops without changing any answer, so the
-/// level that hides them is the level that hides the bug.
+/// six times the volume. A *redundant* firing is precisely what a change can
+/// drop without changing any answer, so the level that hides them is the
+/// level that hides the bug.
 #[test]
 fn the_events_level_gates_the_high_volume_kinds() {
     let scratch = Scratch::new("level");
@@ -1411,8 +1393,8 @@ fn the_events_level_gates_the_high_volume_kinds() {
 /// **`--events-level` is a closed set.** An unknown level is refused.
 ///
 /// The failure it prevents is silent: a typo that fell back to `normal` would
-/// produce a *shorter log that looks complete*, and a T2 comparison against it
-/// would pass because both sides were missing the same events.
+/// produce a *shorter log that looks complete*, and a comparison of two such
+/// logs would pass because both sides were missing the same events.
 #[test]
 fn an_unknown_events_level_is_refused_by_name() {
     let scratch = Scratch::new("bad-level");
@@ -1442,13 +1424,10 @@ fn an_unknown_events_level_is_refused_by_name() {
 
 /// **The event stream does not depend on the order ids were assigned in.**
 ///
-/// The Python original ran the same file under `PYTHONHASHSEED=0` and `=42`,
-/// because ein.py's `hash()` is salted and a set iterated at an instrumented
-/// site would come out reordered. ein.rs has no salted hash, so re-running it
-/// proves nothing; the question survives in this engine's own terms, because
-/// its ids are **assignment-ordered** — a `Symbol` is "how many distinct names
-/// had been seen when this one arrived". Perturbing that is the same
-/// experiment.
+/// The engine has no salted hash, so re-running a file proves nothing about
+/// order; the question is posed in this engine's own terms, because its ids
+/// are **assignment-ordered** — a `Symbol` is "how many distinct names had
+/// been seen when this one arrived". Perturbing that is the experiment.
 ///
 /// Here the perturbation is the cheap half: every name the file interns is
 /// pre-interned in reverse discovery order, so the whole non-kernel symbol
@@ -1511,7 +1490,7 @@ fn the_event_stream_does_not_depend_on_interning_order() {
     }
 }
 
-// ── The editor grammar — `tests/test_vscode_grammar.py` ────────────
+// ── The editor grammar ──────────────────────────────────────────────
 
 /// The TextMate grammar mirrors three *closed* reserved-name sets in head
 /// position. A stray copy that drifts from the registry is the failure mode
@@ -1566,8 +1545,8 @@ fn names_for_scope(node: &J, scope: &str, found: &mut BTreeSet<String>) {
     }
 }
 
-/// Every `(a|b|c)` group of lowercase words in a regex — the Python original's
-/// `r"\(([a-z][a-z*-]*(?:\|[a-z][a-z*-]*)*)\)"`, hand-scanned because
+/// Every `(a|b|c)` group of lowercase words in a regex —
+/// `\(([a-z][a-z*-]*(?:\|[a-z][a-z*-]*)*)\)`, hand-scanned because
 /// `ein-cli` has no regex dependency and one alternation form does not justify
 /// acquiring one.
 fn lowercase_alternations(regex: &str) -> Vec<String> {
@@ -2114,12 +2093,11 @@ fn a_file_that_starts_like_a_container_but_is_not_one_is_text_in_either_build() 
 /// **The summary escapes non-ASCII where the event stream does not** — M1e
 /// S1e.4.8, `MA-L3`.
 ///
-/// `ein.py` passed `ensure_ascii=False` at **two** call sites, and this port
-/// reproduced one of them: `--events` emits literal UTF-8, `--json-summary`
-/// emits `\uXXXX`. That is a real, live divergence from the stated parity
-/// target, **accepted** with the reason at `summary::write` — and this is what
-/// holds the premise the acceptance rests on, since the argument is *every
-/// consumer parses the summary, so the encoding is invisible to all of them*.
+/// `--events` emits literal UTF-8, `--json-summary` emits `\uXXXX`. The
+/// difference is **accepted**, with the reason at `summary::write` — and this
+/// is what holds the premise the acceptance rests on, since the argument is
+/// *every consumer parses the summary, so the encoding is invisible to all of
+/// them*.
 ///
 /// The carrier is an obligation `:why`, which is where a template string
 /// reaches both artefacts of one run. The assertions are about **encoding**
@@ -2153,7 +2131,7 @@ fn the_summary_escapes_non_ascii_where_the_event_stream_does_not() {
     );
     assert!(
         !e.is_ascii(),
-        "the event stream stopped emitting literal UTF-8, which is the half \
-         that *is* ein.py-faithful (`events::strings_escape_the_way_ensure_ascii_false_does`)"
+        "the event stream stopped emitting literal UTF-8, which is what \
+         `events::strings_escape_json_specials_and_keep_non_ascii` pins"
     );
 }

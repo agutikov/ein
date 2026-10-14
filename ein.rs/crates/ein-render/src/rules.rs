@@ -1,4 +1,4 @@
-//! The rule → DOT renderer — `ein.py`'s `render/rules.py`.
+//! The rule → DOT renderer.
 //!
 //! A `(rule Name (params…) :match … :assert … …)` as its *pattern →
 //! conclusion* shape, in two modes: **sidebyside** (two clusters, the

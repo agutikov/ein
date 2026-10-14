@@ -1,13 +1,10 @@
-//! T1a.10.1.3 — **the T1 counters, banked as properties.**
+//! T1a.10.1.3 — **the counters, banked as properties.**
 //!
-//! `ein-conformance --tier T1` compared `summary.json` between two engines:
-//! every counter the engine reports about its own work, on every `solve` cell
-//! of the corpus. [P1a.10](../../../../docs/history/m1a_rust/README.md#p1a10--one-implementation)
-//! retires the second operand, and the obvious replacement — check the numbers
-//! in against a golden — banks the *value* and loses the *reason*. A counter
-//! golden rots into "whatever it was last time"; two engines agreeing on 22
-//! was evidence, one engine reproducing 22 is a tautology with a file behind
-//! it.
+//! `summary.json` carries every counter the engine reports about its own work,
+//! on every `solve` cell of the corpus. The obvious check — the numbers in
+//! against a golden — banks the *value* and loses the *reason*. A counter
+//! golden rots into "whatever it was last time", and reproducing 22 is a
+//! tautology with a file behind it.
 //!
 //! So what is banked here is the arithmetic instead: the identities that make
 //! a counter set *coherent*, which hold for any correct run of any engine and
@@ -15,7 +12,7 @@
 //! moving the others fails here; one that moves them all consistently is a
 //! semantic change and is
 //! [P1c.1](../../../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance)'s
-//! to catch. That division is deliberate and it is on the ledger.
+//! to catch. That division is deliberate.
 //!
 //! Every identity below was **measured over the whole corpus before it was
 //! written down** — 176 solve cells, every entry including the `slow` ones,
@@ -41,17 +38,16 @@ use serde_json::Value as J;
 ///
 /// | counter | why it is zero |
 /// |---|---|
-/// | `root.saturator.naf_dropped` | structurally 0 since S1.21.8 moved NAF to the closure/world boundary: a guard is parked or admitted, never dropped. design/01 §2 says ein.rs reporting anything else means the boundary was rebuilt wrong |
+/// | `root.saturator.naf_dropped` | structurally 0 since S1.21.8 moved NAF to the closure/world boundary: a guard is parked or admitted, never dropped, and reporting anything else means the boundary was rebuilt wrong |
 /// | `stats.enterings_dead_pre` | a fork is `dead-pre` when `contradiction::detect` fires on the hypothesis facts *alone*, which needs the commitment to hold some `X` and `(not X)`. Hypgen only ever proposes positives (`hypgen::generate` builds candidates from relation extents) and drops any whose negation is already believed (`negated_fact`), and `apriori::filter_candidate` re-drops a candidate whose element left `alive` — which is exactly what the singleton writeback does when it writes `(not h)`. So no commitment can carry a pair, and every death is `dead-post` |
 /// | `stats.nogoods_subsumed` | the counter's other half: `handle_dead` emits a clause per death and counts it `subsumed` when the store already implies it. No corpus entry reaches a death whose clause is subsumed |
 ///
 /// The first two are **claims about the engine** and stay zero unless
 /// something changes on purpose. The third is a **claim about the corpus** and
 /// is the weaker one: it says nobody has written the fixture, not that the
-/// path is unreachable. Recorded here rather than in a comment because
-/// `ein-conformance` compared all three on 505 cells and learned nothing from
-/// any of them — two zeroes agree for the wrong reason — and that is precisely
-/// what an oracle's departure must not silently inherit.
+/// path is unreachable. Recorded here rather than in a comment because a
+/// zero compared against a zero learns nothing — two zeroes agree for the
+/// wrong reason.
 const STRUCTURAL_ZEROS: [&str; 3] = [
     "root.saturator.naf_dropped",
     "stats.enterings_dead_pre",
@@ -60,9 +56,8 @@ const STRUCTURAL_ZEROS: [&str; 3] = [
 
 /// The `config` block's key set, exactly.
 ///
-/// T1 read this block as part of `summary.json`; a key that stopped being
-/// emitted was a difference. With one engine it is a list, and the list is
-/// here so that adding a `SolverConfig` field without reporting it fails.
+/// A list, and the list is here so that adding a `SolverConfig` field without
+/// reporting it fails.
 const CONFIG_KEYS: [&str; 17] = [
     "candidate-order-seed",
     "enable-fail-fast-fork",
@@ -113,8 +108,8 @@ fn config_for(regime: &str, kb: &Kb) -> SolverConfig {
 }
 
 /// One cell: load, solve, and hand back the `summary.json` the CLI would have
-/// written — the same `summary::build`, so what is checked is the artefact T1
-/// read and not a private view of the same numbers.
+/// written — the same `summary::build`, so what is checked is the artefact a
+/// consumer reads and not a private view of the same numbers.
 fn summary(path: &std::path::Path, regime: &str, budget: u64, exhaustive: bool) -> Option<J> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -327,7 +322,7 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
     // to report a core, or both hold because none ever does.
     let mut cored = 0usize;
     // Every counter has to be non-zero *somewhere*, or it agrees for the wrong
-    // reason — the discipline `hypgen_parity`'s
+    // reason — the discipline `hypgen_coverage`'s
     // `every_filter_and_skip_fires_somewhere_in_the_corpus` already keeps for
     // the hypgen block, extended here to the stats block, which nothing
     // asserted before.
@@ -426,8 +421,7 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
             );
             // An unsat core is the *answer* of a contradictory root and is
             // reported for nothing else — the one place the core reaches
-            // stdout, which is why design/01 §5 excludes it from every
-            // relaxation. Stated as two implications rather than as an
+            // stdout. Stated as two implications rather than as an
             // equivalence, because `Contradiction` covers two situations and
             // only one of them has anything to blame: `k = 0` with the lattice
             // exhausted is "no model exists", and `k = 0` with `exhausted
@@ -550,8 +544,8 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
 
     // The zeroes, asserted as zeroes with a reason, and everything else
     // asserted to have fired at least once. A counter that is zero everywhere
-    // and *not* on the list is a coverage hole that used to be invisible: T1
-    // compared it 505 times and both sides said 0.
+    // and *not* on the list is a coverage hole: a zero compared against a
+    // zero says nothing.
     let mut silent: Vec<&str> = peak
         .iter()
         .filter(|&(_, &v)| v == 0)

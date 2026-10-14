@@ -1,7 +1,7 @@
 //! `ein-render` — DOT renderers, the markdown trace, the solution table.
 //!
-//! Everything that formats lives here, so the T3 surface is one crate and can
-//! be diffed as a unit
+//! Everything that formats lives here, so every rendered surface is one crate
+//! and can be diffed as a unit
 //! ([design/12](../../../../docs/history/m1a_rust/design/12_toolchain_and_layout.md) §1).
 //! The bulk lands at
 //! [P1a.5](../../../../docs/history/m1a_rust/README.md#p1a5--presentation-and-cli); the

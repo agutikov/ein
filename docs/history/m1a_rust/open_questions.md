@@ -1,4 +1,4 @@
-# Open Questions — M1a (Rust port)
+# Open Questions — M1a (the Rust engine)
 
 Milestone-scoped questions. Ids are **sticky** — `Q-M1a.<n>`, following
 the `Q-S1.5a.6.B` style used inside M1 stages rather than the global
@@ -7,7 +7,7 @@ the two namespaces cannot collide. A closed id is never reused.
 
 > ### Closed with the milestone — 2026-08-23 (S1a.9.4 T1a.9.4.5)
 >
-> **Twenty-three questions, twenty-one settled.** Eighteen were resolved,
+> **Seventeen questions, fifteen settled.** Twelve were resolved,
 > decided, answered or closed moot inside M1a; three
 > ([Q-M1a.19](#q-m1a19--how-does-a-program-state-what-it-expects),
 > [.20](#q-m1a20--what-may-an-expectation-say),
@@ -23,11 +23,10 @@ the two namespaces cannot collide. A closed id is never reused.
 > [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) was
 > **closed as stated and refiled as its real self**: the probe M1e S1e.1.4 ran
 > found that the collision it named does not exist and a neighbouring one
-> does. Both were things invariant **I1** forbade fixing: they are what ein.py
-> did, and while an oracle existed "improve it" and "diverge from it" were the
-> same act. With one implementation that constraint is gone and only the cost
-> of re-blessing the corpus goldens remains, which is a decision for whoever
-> next has a reason — and for Q-M1a.8 there is now
+> does. Both were things the milestone's surface invariant **I1** forbade
+> fixing, and what is left of that constraint is the cost of re-blessing the
+> corpus goldens, which is a decision for whoever next has a reason — and for
+> Q-M1a.8 there is now
 > [Q-M1e.16](../m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one)
 > to make it.
 
@@ -35,24 +34,18 @@ the two namespaces cannot collide. A closed id is never reused.
 
 | Q | title | status |
 |---|---|---|
-| [Q-M1a.1](#q-m1a1--port-boundary-a-full-vs-b-hot-loop) | Port boundary — A (full) vs B (hot loop behind PyO3) | **resolved 2026-08-17 — A** |
-| [Q-M1a.2](#q-m1a2--does-einpy-have-a-sunset) | Does ein.py have a sunset? | **decided 2026-08-20 — yes**, reversing the recommendation; [P1a.10](README.md#p1a10--one-implementation) **shipped 2026-08-21** |
-| [Q-M1a.3](#q-m1a3--parse-error-message-parity) | Parse-error message parity, including `-1:-1` at EOF | **resolved 2026-08-18 — (a)** |
-| [Q-M1a.4](#q-m1a4--sorted-over-mixed-type-fact-args) | `sorted()` over mixed-type fact args raises in ein.py | **resolved 2026-08-18 — (a), [D2](divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)** |
-| [Q-M1a.5](#q-m1a5--reproducing-cpythons-shuffle) | Reproducing CPython's `random.shuffle` for `--shuffle` | **resolved 2026-08-18 — (a), ported** |
-| [Q-M1a.6](#q-m1a6--at-none-in-loader-messages) | `at None` in loader messages (top-level forms carry no `loc`) | **open, and outlives the milestone** — a diagnostic-quality fix that I1 forbade while there was an oracle. Owner: whoever needs it; [M2 Q25](../../../plans/m2_nl_to_ir/open_questions.md#q25--what-language-is-the-frontend-written-in)'s validator is the likeliest |
+| [Q-M1a.3](#q-m1a3--parse-error-messages) | Parse-error messages, including `-1:-1` at EOF | **resolved 2026-08-18 — (a)** |
+| [Q-M1a.6](#q-m1a6--at-none-in-loader-messages) | `at None` in loader messages (top-level forms carry no `loc`) | **open, and outlives the milestone** — a diagnostic-quality fix that I1 forbade. Owner: whoever needs it; [M2 Q25](../../../plans/m2_nl_to_ir/open_questions.md#q25--what-language-is-the-frontend-written-in)'s validator is the likeliest |
 | [Q-M1a.7](#q-m1a7--may---jobs--1-move-counters) | May `--jobs > 1` move counters? | **decided 2026-08-22 — no, and validation is not what buys it.** Held by `jobs_invariance` at 20 712 cells, byte equality, 0 moved |
 | [Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args) | `_binding_key` drops non-string activator args | **closed 2026-08-29 as stated — the collision it named does not exist.** Two probes (M1e [S1e.1.4](../m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3), `rule_semantics::activators_differing_only_by_{an_int_argument_both_fire, a_nested_fact_argument_share_one_binding_key}`): an `int` argument seeds a register and reaches the key, a nested `Fact` does not — and the pair that *does* lose a firing is one of each, refiled as [Q-M1e.16](../m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) |
 | [Q-M1a.9](#q-m1a9--where-do-goldens-live) | Where do goldens live? | **answered 2026-08-21 — `ein.rs/crates/<crate>/tests/golden/`** |
 | [Q-M1a.10](#q-m1a10--does-f11-d1-beta-memories-land-inside-m1a) | Does F11 D1 (beta-memories) land inside M1a? | **answered no** 2026-08-19 — an index key was the lever, not a memory |
 | [Q-M1a.11](#q-m1a11--server-wire-protocol) | Server wire protocol — JSON-RPC vs gRPC vs bespoke | **closed moot 2026-08-18 — no server** |
 | [Q-M1a.12](#q-m1a12--remote-access-and-auth) | Remote access and auth for `ein serve` | **closed moot 2026-08-18 — no server** |
-| [Q-M1a.13](#q-m1a13--argparse-surface-parity) | Reproducing `argparse` `--help` and error text | **resolved 2026-08-18 — (b): behaviour exact, presentation normalised** |
-| [Q-M1a.14](#q-m1a14--crash-parity) | Crash parity — inputs where ein.py raises an unhandled exception | **mostly resolved 2026-08-18 — ein.rs names the class** |
-| [Q-M1a.15](#q-m1a15--float-formatting-parity) | Float formatting parity in reported numbers | **resolved 2026-08-18 — `pyfmt` landed** |
-| [Q-M1a.16](#q-m1a16--how-does-the-harness-drive-the-lever-matrix) | How does the harness drive the `SolverConfig` lever matrix? | **closed moot 2026-08-23 — no harness.** `utils/feature_matrix.py` writes the knob into a copy of the puzzle's `(config …)` block and drives the binary, so all ten levers are reachable and none needs an import |
+| [Q-M1a.13](#q-m1a13--help-and-usage-error-text) | `--help` layout and usage-error text | **resolved 2026-08-18 — (b): behaviour exact, presentation `clap`'s** |
+| [Q-M1a.16](#q-m1a16--how-does-the-corpus-drive-the-lever-matrix) | How does the corpus drive the `SolverConfig` lever matrix? | **closed 2026-08-23.** `utils/feature_matrix.py` writes the knob into a copy of the puzzle's `(config …)` block and drives the binary, so all ten levers are reachable |
 | [Q-M1a.17](#q-m1a17--win-bs--80--assumed-monotone-guards-dominate) | Win B's ≥ 80 % assumed monotone guards dominate — they are 7–16 % | **closed 2026-08-20: the mechanism is declined at a measured 1.4–2.2 % ceiling**, in [S1a.6.12](README.md#s1a612--the-naf-boundary-and-the-per-entering-snapshot), which took 38 % off `zebra -e` without it |
-| [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | **resolved 2026-08-19: yes, in ein.rs only** — D3; mechanism shipped in S1a.6.10 / S1a.6.11 |
+| [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) | May a fork stop re-narrating the root's fixpoint? | **resolved 2026-08-19: yes** — mechanism shipped in S1a.6.10 / S1a.6.11 |
 | [Q-M1a.19](#q-m1a19--how-does-a-program-state-what-it-expects) | How does a program state what it expects? | **moved 2026-08-21 with P1a.11 → [Q-M1c.1](../m1c_external_validation/open_questions.md#q-m1c1--how-does-a-program-state-what-it-expects)** |
 | [Q-M1a.20](#q-m1a20--what-may-an-expectation-say) | What may a `(test …)` expectation say? | **moved 2026-08-21 with P1a.11 → [Q-M1c.2](../m1c_external_validation/open_questions.md#q-m1c2--what-may-an-expectation-say)** |
 | [Q-M1a.21](#q-m1a21--may-the-search-stop-before-the-lattice-is-exhausted) | May the search stop before the lattice is exhausted? | **moved 2026-08-21 with P1a.12 → [Q-M1d.1](../../../docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)** |
@@ -61,242 +54,63 @@ the two namespaces cannot collide. A closed id is never reused.
 
 ---
 
-## Q-M1a.1 — Port boundary: A (full) vs B (hot loop)
+## Q-M1a.3 — Parse-error messages
 
-**Resolved 2026-08-17: A.** The placeholder deferred this; the milestone
-brief settles it — ein.rs re-implements the whole stack with a 1:1
-surface, and PyO3 becomes an *output* ([P1a.9](README.md#p1a9--release))
-rather than the boundary. Boundary B's advantage was preserving M1's
-tooling without re-implementation; the parity harness
-([design/01](design/01_parity_contract.md)) buys that back more cheaply
-than an FFI seam through the hottest loop in the engine would have.
+> **Stated as ein's defined behaviour** — [`docs/kernel/defined_behaviour.md` §1.1–1.4](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
 
-## Q-M1a.2 — Does ein.py have a sunset?
+A parse error is `{file}:{line}:{col}: unexpected input\n{context}`.
+Observed quirks: EOF errors report `-1:-1`, and the caret lands one past
+the last token ([design/04](design/04_ir_frontend.md) §4).
 
-Once ein.rs is the shipping engine, ein.py is (a) the parity oracle,
-(b) the reference implementation for M2 experiments, and (c) the
-"Python users get a working solver" fallback. Keeping it green costs CI
-time and every semantic change has to land twice.
+Options: (a) keep the messages exactly, quirks included; (b) keep the
+non-EOF cases and fix EOF; (c) improve the diagnostics, re-baselining the
+four `examples/broken/` fixtures.
 
-**Recommendation: no sunset.** The oracle is what makes the port
-falsifiable, and a second implementation of a research kernel is a
-feature, not debt. Revisit only if double-landing becomes the dominant
-cost of a semantic change — and note that M1 is *shipped*, so semantic
-changes should be rare.
-
-**Decided 2026-08-20 — yes, there is a sunset**, at the user's direction, and
-the recommendation above is overruled rather than satisfied: double-landing
-never became the dominant cost. [P1a.10](README.md#p1a10--one-implementation)
-is the phase, and it **shipped 2026-08-21** — six stages, `ein.py/` deleted,
-`cargo test --workspace` (542 tests) the whole gate.
-
-What the recommendation got right is the price, and it is worth restating as
-the thing to watch rather than as an objection that was answered. **The oracle
-is what makes the port falsifiable**, and after P1a.10 the corpus's expected
-outputs are *self*-goldens: they say "ein.rs still does what ein.rs did", not
-"ein.rs does what the semantics say". The evidence that this is a real cost and
-not a theoretical one is
-[S1a.6.6](README.md#s1a66--the-differential-fuzzer) — four genuine
-parity bugs in the fuzzer's first twenty minutes, on a surface five phases of
-byte parity had signed off. Nothing that replaces the oracle would have found
-those.
-
-Three things follow, and they are the phase's shape:
-
-1. **Bank before deleting.**
-   [S1a.10.1](README.md#s1a101--bank-what-only-the-oracle-proves) is a
-   gate, with an explicit *accepted-loss* list — the regressions that can now
-   pass unnoticed. A short list is a result; an empty one is a claim to be
-   suspicious of.
-2. **`docs/kernel/` becomes the only statement of intent that is not also the
-   implementation**, so the quirks that were defined as "whatever ein.py did"
-   — [Q-M1a.3](#q-m1a3--parse-error-message-parity)'s parse positions,
-   [D2](divergences.md)'s `sorted()` — have to be *stated*
-   ([S1a.10.6](README.md#s1a106--the-docs-after-the-oracle) T1a.10.6.3).
-   Undefined behaviour in a specification repo is worse than a quirk.
-   **Done 2026-08-21:**
-   [`docs/kernel/defined_behaviour.md`](../../kernel/defined_behaviour.md)
-   is thirteen of them, and enumerating them found two that are *bugs* rather
-   than quirks — the binding key that drops non-string activator args
-   ([Q-M1a.8](#q-m1a8--_binding_key-drops-non-string-activator-args)) and the
-   Python exception classes the CLI prints
-   ([Q-M1a.14](#q-m1a14--crash-parity)), which are now a name with no
-   referent. Neither is changed; both are checked-in expected output, and
-   changing either is a decision this phase had no standing to make.
-3. **[P1c.1](../m1c_external_validation/README.md#p1c1--stdlib-conformance)
-   is the partial answer** to what replaces it — it was P1a.11 until
-   2026-08-21 — and the argument is why it left: an expectation written next
-   to a rule is an *external* check, the only kind that gets stronger when the
-   oracle goes, and that makes it
-   [M1c](../m1c_external_validation/README.md)'s subject rather than the
-   port's.
-
-## Q-M1a.3 — Parse-error message parity
-
-> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §1.1–1.4](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--the-docs-after-the-oracle)). This entry is the *decision*; that page is what the engine now promises.
-
-ein.py wraps Lark's `UnexpectedInput` as
-`{file}:{line}:{col}: unexpected input\n{context}` where `context` is
-`e.get_context(text)`. Observed quirks: EOF errors report `-1:-1`, and
-the caret lands one past the last token
-([design/04](design/04_ir_frontend.md) §4).
-
-Options: (a) reproduce exactly, quirks included; (b) reproduce for the
-non-EOF cases and accept a ledger entry for EOF; (c) improve both
-implementations together, re-baselining the four `examples/broken/`
-fixtures.
-
-**Recommendation: (a) for the port, then (c) as a separate, deliberate
-change once T3 is green** — improving diagnostics while the harness is
-still finding bugs would hide regressions in noise.
+**Recommendation: (a) through M1a, then (c) as a separate, deliberate
+change** — improving diagnostics while the engine is still being built
+would hide regressions in noise.
 
 **Resolved 2026-08-18 at [S1a.1.1](README.md#s1a11--lexer-parser-error-messages):
-(a), and it needed more than the EOF case.** Four behaviours had to be
-reproduced, and only the first was known when this question was written:
+(a), and it needed more than the EOF case.** Four behaviours are kept, and
+only the first was known when this question was written:
 
-1. **`-1:-1` at EOF**, with `get_context` rendering the last line and a
-   caret one past its end — Lark's `UnexpectedEOF` sets
-   `pos_in_stream = -1` and Python's negative slicing does the rest.
+1. **`-1:-1` at EOF**, with the context rendering the last line and a caret
+   one past its end.
 2. **A ±40-character context window**, applied *before* the line is
    trimmed, so an error past column 40 renders a **truncated** source
    line.
-3. **The `%ignore` delayed-match quirk**: `xearley.py` writes a
-   `delayed_matches[m.end()]` key at every position where whitespace or a
-   comment matches — including inside a string literal, and including
-   when `to_scan` is empty, which still creates the key in a
-   `defaultdict`. A dict holding one empty list is truthy, so the error
-   is held back until the scanner walks past it. `(y";"{` reports the
-   `{`; `(y";"{?` reports the `?`. Found by the differential fuzzer, not
-   by reading, and simulated in `parse::death_position`.
+3. **The delayed error position**: whitespace and comments are matched at
+   every position the scanner passes — including inside a string literal,
+   and including positions no grammar rule is looking at — and a pending
+   match holds the error back until the scanner walks past it. `(y";"{`
+   reports the `{`; `(y";"{?` reports the `?`. Found by the fuzzer, not
+   by reading, and computed in `parse::death_position`.
 4. **Ambiguity resolution prefers the earlier alternative**, which is
    what makes `(rulex …)` a rule named `x` rather than a fact named
    `rulex`.
 
-All four are pinned by `parse_parity.rs` and by 2.2 M fuzzer mutations.
-The (c) half — improving the diagnostics in both implementations
-together — stays open and belongs after the P1a.5 byte gate.
-
-## Q-M1a.4 — `sorted()` over mixed-type fact args
-
-> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §2.1](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--the-docs-after-the-oracle)). This entry is the *decision*; that page is what the engine now promises.
-
-`apriori.layer_1` does `sorted(alive)` over `(relation, args)` tuples;
-if two facts of the same relation have `str` in a slot for one and `int`
-for the other, CPython raises `TypeError`. `canon.state_key` deliberately
-avoids this with `key=repr`; `apriori` does not.
-([design/02](design/02_determinism_and_order.md) §5 H2.)
-
-ein.rs's `Value` is totally ordered and cannot raise. So on such an
-input the two implementations *must* differ: one crashes, one answers.
-
-Options: (a) accept the divergence with a fixture pinning both
-behaviours; (b) fix ein.py to sort by `repr` here, re-baselining every
-affected candidate order; (c) reject such inputs at load time in both.
-
-**Recommendation: (a)**, unless a real puzzle needs mixed slot types —
-then (b), because a crash is not a semantics anyone wants to preserve.
-
-**S1a.0.1 — reproduced, and the scope is narrower than it looked.** Blind
-hypothesis generation *cannot* reach it: `hypgen._raw_candidates` builds
-candidates out of `kb.names`, and `store.rebuild_indexes` only enters an
-arg into that index `if isinstance(a, str)` — so every blind candidate is
-all-strings. Only an `hrule` can carry a non-string through, because its
-`:assert` args come from bindings. The reproducer is therefore one hrule,
-one variable, and two facts binding it to `1` and to `left`:
-[`examples/ein-bugs/mixed-type-hypothesis.ein`](../../../examples/ein-bugs/mixed-type-hypothesis.ein),
-pinned by `ein.py/tests/inference/test_mixed_type_hypothesis.py` (which
-also pins the scope claim, so a future change that lets blind hypgen emit
-a non-string arg re-opens this question by failing).
-
-That strengthens (a): no puzzle without an hrule can hit this, and (b)
-would re-baseline every candidate order in the corpus to fix an input
-nobody has written.
-
-**The comparator (a) needs landed at
-[S1a.2.1](README.md#s1a21--interner-value-factid-the-fact-store)**:
-`Terms::cmp_semantic` orders `Int < Sym < Fact` across tags, as H2
-recommends, and within a tag by the interner's rank table or by numeric
-value at any width. `Value` deliberately has no `Ord`, so the identity
-order cannot reach a sort site by accident.
-
-**Resolved 2026-08-18 at [S1a.4.3](README.md#s1a43--apriori-candidate-generation-and-the-no-good-store)
-— (a), and the behaviour is now reachable rather than argued.** The
-`lattice-shape` diff runs `layer_1` over every corpus file's alive set;
-exactly one file diverges, exactly the predicted one, and the port
-answers `[{(seat Ann 1)}, {(seat Ann left)}]` where ein.py raises. The
-ledger entry is [D2](divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers),
-and the parity sweep **asserts** the divergence rather than tolerating
-it, so a file that stopped diverging fails as loudly as one that
-started.
-
-**Re-opened in scope — not in decision — 2026-08-20 by
-[S1a.6.6](README.md#s1a66--the-differential-fuzzer)'s fuzzer.** "Two
-facts of the same relation have `str` in a slot for one and `int` for the
-other" is not the only way in. Two **`Fact`** arguments raise at the same
-sort (`'<' not supported between instances of 'Fact' and 'Fact'`, which
-design/02 § H2 named and nothing covered), and reaching that needs **no mixed
-types at all** — one `(hrule … :assert (not (R ?x c)))` produces candidates
-whose argument is a nested fact. No corpus puzzle had a negative hypothesis
-head, which is why five phases of parity never saw it;
-[`examples/ein-bugs/nested-fact-hypothesis.ein`](../../../examples/ein-bugs/nested-fact-hypothesis.ein)
-is the fixture now. The **decision stands at (a)** — the fix still re-baselines
-every candidate order in the corpus — but the argument for it is one reason
-lighter, and D2's "what would make this unacceptable" is restated
-accordingly.
-
-## Q-M1a.5 — Reproducing CPython's `shuffle`
-
-> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §3.1](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--the-docs-after-the-oracle)). This entry is the *decision*; that page is what the engine now promises.
-
-`--shuffle` seeds `random.Random(seed)` and shuffles each layer's
-candidates, carrying RNG state across layers.
-
-Options: (a) port MT19937 seeding + `random.shuffle` +
-`_randbelow_with_getrandbits` (~60 lines, table-tested against
-CPython output) and keep T3 everywhere; (b) declare shuffled runs
-T0-only, on the grounds that shuffle-invariance is the point.
-
-**Recommendation: (a).** It is cheap, it is testable, and `--shuffle`
-runs are exactly the ones where a silent ordering difference would be
-easiest to dismiss.
-
-**Resolved 2026-08-18 at [S1a.4.5](README.md#s1a45--the-solve-loop-and-verdict-synthesis)
-— (a), and it took about the size the recommendation guessed.**
-`ein-infer/src/mt19937.rs` is CPython's `_randommodule.c`: the twister,
-`init_by_array` seeding (absolute value, split into 32-bit words —
-`Random(-7)` and `Random(7)` are the same generator), `getrandbits`
-including its multi-word path, `_randbelow`'s rejection loop, and
-`shuffle`'s downward Fisher–Yates.
-
-It is checked twice. A **table** against CPython 3.14 — the first three
-words for four seeds, one of them wider than a word and one negative,
-plus a two-shuffle sequence that pins the state carrying across calls.
-And on **real data**: `solve-shape`'s third regime runs every corpus
-entry with `lattice_order_seed = 7` and compares the whole `enter`
-sequence — **65 files, 5 207 enterings, 0 differences** — where the
-traversal differs from the unshuffled one on 9 of the 14
-`examples/branching` files, so the generator is doing something rather
-than agreeing by inertia.
+`ein-ir/tests/grammar_decisions.rs` checks the four `examples/broken/`
+messages and the ambiguity decisions. The (c) half — improving the
+diagnostics — stays open.
 
 ## Q-M1a.6 — `at None` in loader messages
 
-> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §1.5](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--the-docs-after-the-oracle)). This entry is the *decision*; that page is what the engine now promises.
+> **Stated as ein's defined behaviour** — [`docs/kernel/defined_behaviour.md` §1.5](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
 
 Top-level `SForm`s are constructed without a `loc`
 ([design/04](design/04_ir_frontend.md) §3), so loader errors that
 interpolate `at {form.loc}` print `at None`. ein.rs has the position and
 would naturally print it.
 
-**Recommendation: print `at None` during the port (T3), then fix both
-implementations together** in a post-parity stage. Tracked here so the
-fix is not forgotten; it is a genuine usability bug.
+**Recommendation: print `at None` through M1a, then fix it** in a later
+stage. Tracked here so the fix is not forgotten; it is a genuine usability
+bug.
 
-**Reproduced at [S1a.1.3](README.md#s1a13--macro-expansion-and-import-resolution)**:
-`ast::loc_repr` renders `None` for a top-level form and Python's
-dataclass `repr` (`Loc(file='…', line=6, col=20)`) otherwise, which is
-what makes the eleven `examples/broken/load/import_*.expected` messages
-byte-identical — every one of them ends `at None`. The fix, when it
-comes, re-baselines all of them in both implementations at once.
+**Landed at [S1a.1.3](README.md#s1a13--macro-expansion-and-import-resolution)**:
+`ast::loc_repr` renders `None` for a top-level form and
+`Loc(file='…', line=6, col=20)` otherwise, and every one of the eleven
+`examples/broken/load/import_*.expected` messages ends `at None`. The fix,
+when it comes, re-baselines all of them at once.
 
 **Confirmed across the whole loader at
 [P1a.2](README.md#p1a2--kb-core)**: all eighteen remaining
@@ -309,7 +123,7 @@ exactly "every loader message except one".
 
 [design/08](design/08_parallelism.md) commits to deterministic parallel
 execution (same counters, same output) via speculate-and-validate, with
-`--unordered` as an opt-in that relaxes to T0.
+`--unordered` as an opt-in that relaxes the promise to the same answer.
 
 The open part is whether the validation cost is acceptable in the regimes
 that matter (a large no-good store with frequent singleton writebacks).
@@ -345,8 +159,8 @@ corpus entries. The decision is not made here; four things it needs are:
    continuation recovers `kind`; it recovers `core` only where the fork ran to
    quiescence. **That interaction is what
    [S1a.7.2](README.md#s1a72--level-1-parallel-enterings) has to settle**,
-   and it is what decides whether `--jobs N` can keep the T3 promise or has to
-   take a `--jobs`-scoped divergence the way
+   and it is what decides whether `--jobs N` can keep byte-identical output or
+   has to take a `--jobs`-scoped relaxation the way
    [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) took
    one for the fork.
 
@@ -383,10 +197,9 @@ sequential engine would give it. The four points above resolve as follows.
 4. **Answered by removal.** The interaction was between `enable_fail_fast_fork`
    and a *continued* fork, and there are no continuations. Fail-fast keeps its
    1.9–2.4× whole, no fork's `core` is read off a different firing than the
-   sequential engine's, and no `--jobs`-scoped divergence is taken — so this
+   sequential engine's, and no `--jobs`-scoped relaxation is taken — so this
    question does **not** join
-   [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint) in the
-   ledger.
+   [Q-M1a.18](#q-m1a18--may-a-fork-stop-re-narrating-the-roots-fixpoint).
 
 The one route that would have moved a counter is **batch-synchronous
 integration**, and it is rejected for that: 101 → 521 enterings on `zebra2 -e`
@@ -411,31 +224,29 @@ S1a.7.2's debug assertion is what would notice.
 
 ## Q-M1a.8 — `_binding_key` drops non-string activator args
 
-> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §3.2](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--the-docs-after-the-oracle)). This entry is the *decision*; that page is what the engine now promises.
+> **Stated as ein's defined behaviour** — [`docs/kernel/defined_behaviour.md` §3.2](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
 
-`Saturator._binding_key` uses `plan.activator_args`, which
-`compile_rule` builds as `tuple(a for a in activator.args if
-isinstance(a, str))` — while the *plan cache* key stringifies **all**
-args. Two activators differing only in an `int` arg therefore share a
-binding key and can suppress each other's firings.
+A rule application's binding key takes `plan.activator_args`, which the
+compiler builds from the activator's **symbol** arguments only — while the
+*plan cache* key renders **all** args. Two activators differing only in an
+`int` arg therefore share a binding key and can suppress each other's
+firings.
 
-Almost certainly unintended. **Port as-is** (it is current behaviour and
-T2 would flag any change), and open an ein.py issue with a fixture that
-demonstrates it. Fix both together, after parity.
+Almost certainly unintended. **Keep it as-is through M1a** (it is current
+behaviour, and changing it moves the surface), with a fixture that
+demonstrates it, and fix it after.
 
-> **Closed 2026-08-29 — the inference above is wrong, and was wrong in ein.py
-> too.** M1e
+> **Closed 2026-08-29 — the inference above is wrong.** M1e
 > [S1e.1.4](../m1e_review_processing/README.md#s1e14--q-m1a8s-real-trigger-q3)
 > (the review's `Q3`) ran the probe this entry asked for and it came back the
 > other way.
 >
-> `_binding_key` has **three** components, not two. `plan.activator_args` is
-> the second; the third is `frozenset(bindings.items())` in ein.py and the
-> register file in ein.rs, and an `int` activator argument **binds its
-> parameter** — `isinstance(a, (str, int))` in `compile_rule`'s bind loop — so
-> it is in the third. The entry read the second alone and concluded from it.
-> Two activators differing only in an `int` argument have different keys and
-> **both fire**
+> The binding key has **three** components, not two. `plan.activator_args` is
+> the second; the third is the register file, and an `int` activator argument
+> **binds its parameter** — the compiler's bind loop binds a symbol or an
+> `int` — so it is in the third. The entry read the second alone and
+> concluded from it. Two activators differing only in an `int` argument have
+> different keys and **both fire**
 > (`ein-infer/tests/rule_semantics.rs::activators_differing_only_by_an_int_argument_both_fire`).
 >
 > What genuinely reaches neither component is a **nested `Fact`**, which binds
@@ -457,27 +268,17 @@ demonstrates it. Fix both together, after parity.
 
 ## Q-M1a.9 — Where do goldens live?
 
-`ein.py/tests/golden/**` holds cross-implementation artefacts inside a
-Python-specific tree ([design/11](design/11_shared_assets.md) §5). Read
-in place, or promote to repo-root `testdata/golden/`?
+A golden is a checked-in expected output. Does it live in one repo-root
+`testdata/golden/`, or beside the code whose output it pins?
 
-**Recommendation: read in place until the [P1a.5](README.md#p1a5--presentation-and-cli)
-gate; promote when ein.rs starts producing goldens too.**
+**Answered 2026-08-21: `ein.rs/crates/<crate>/tests/golden/`** — not
+repo-root. The goldens
+[S1a.6.11](README.md#s1a611--fixtures-for-the-narration) added landed beside
+the crate whose output they pin rather than in a shared tree: a golden is read
+by exactly one test, and `ein_corpus::golden_path(krate, name)` is the whole of
+the convention.
 
-**Answered 2026-08-21: `ein.rs/crates/<crate>/tests/golden/`** — neither in
-place nor repo-root. The recommendation's trigger fired at
-[S1a.6.11](README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing), when ein.rs started
-producing goldens of its own, and they landed beside the crate whose output
-they pin rather than in a shared tree: a golden is read by exactly one test,
-and `ein_corpus::golden_path(krate, name)` is the whole of the convention.
-[S1a.10.2](README.md#s1a102--port-the-python-test-suite) then
-`git mv`-ed the nineteen cross-implementation artefacts into
-`tests/golden/from_ein_py/` — a directory of their own, read-only, because
-they are the last independent provenance in the repo and re-blessing one from
-ein.rs would turn "ein.rs reproduces what the other implementation produced"
-into "ein.rs agrees with itself".
-
-[S1a.10.3](README.md#s1a103--the-corpus-without-a-second-engine)
+[S1a.10.3](README.md#s1a103--the-corpus-as-a-sweep)
 is what closes it, because the corpus's `golden` group was empty *pending this
 question* and an empty group is a question with a home. The group is gone.
 
@@ -524,7 +325,7 @@ and that is exactly what dissolved it. M20 picked Tauri
 ([M20 § Stack](../../../plans/m20_gui/README.md#stack)), whose backend is a Rust
 process linking `ein-core`/`ein-ir`/`ein-infer` directly; a wire protocol
 between the GUI and the engine would have been a serialisation boundary
-inside one process. With M2 crossing into CPython through PyO3
+inside one process. With M2 reaching the engine through PyO3
 ([P1a.9](README.md#p1a9--release)) and the CLI running in-process,
 no consumer was left. The JSON-RPC recommendation and the rest of
 `design/09` are in git history if a hosted use case ever revives them.
@@ -537,34 +338,30 @@ use is ever wanted, the posture recorded here still holds as a starting
 point — a reverse proxy plus a token in front of a purpose-built service,
 never an auth system inside the engine.
 
-## Q-M1a.13 — `argparse` surface parity
+## Q-M1a.13 — Help and usage-error text
 
-> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §5](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--the-docs-after-the-oracle)). This entry is the *decision*; that page is what the engine now promises.
+> **Stated as ein's defined behaviour** — [`docs/kernel/defined_behaviour.md` §5](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--defined-behaviour)). This entry is the *decision*; that page is what the engine promises.
 
 **Resolved 2026-08-18: (b), with (c)'s content half made binding.** ein.rs
-uses `clap`; `--help` layout *and* usage-error text go on the
-[normalisation list](design/01_parity_contract.md) §5. Everything a script
-or a habit can depend on stays exact — the difference is presentation, and
-only presentation.
+uses `clap`; `--help` layout *and* usage-error text are `clap`'s. Everything
+a script or a habit can depend on stays exact — the difference is
+presentation, and only presentation.
 
-T3 includes `--help` output and CLI error messages. `argparse` has a very
-specific layout (usage line wrapping, `options:` heading, metavar
-rendering, two-space indent) and its own error text
-(`argument -n/--solutions: invalid int value: 'x'`). `clap` does not
-match it and cannot be configured to.
+The surface I1 fixes includes `--help` output and CLI error messages, and
+M1's has its own layout and its own error text. `clap` does not match it and
+cannot be configured to.
 
 The options were: (a) hand-roll the argument parser and the help renderer
-to match `argparse` byte-for-byte; (b) use `clap` and put
-`--help`/CLI-error text on the normalisation list; (c) match the
-*semantics* (flags, defaults, mutual exclusion, exit codes) exactly and
-accept different help text.
+to match it byte-for-byte; (b) use `clap` and let `--help`/CLI-error text be
+`clap`'s; (c) match the *semantics* (flags, defaults, mutual exclusion, exit
+codes) exactly and accept different help text.
 
 ### What stays exact
 
 - The three subcommands, the four `render` sub-subcommands, and the
   delegated dispatch — `ein saturate --help` prints `saturate`'s own help
-  under `prog="ein saturate"`, and `saturate` still appears in
-  `ein --help` though the top parser never parses it.
+  as `ein saturate`, and `saturate` still appears in `ein --help` though
+  the top parser never parses it.
 - Every option at every level: long name, short key, metavar, arity,
   default, `choices`, mutually-exclusive group — and its help *string*,
   which is content, not layout.
@@ -576,35 +373,20 @@ wording of a diagnosis.
 
 ### Why not (a)
 
-The two halves are not separable. `argparse` welds its wrapped `usage:`
-block onto *every* error, so exempting the layout exempts the message —
-measured 2026-08-18:
+The two halves are not separable. M1's CLI welds its wrapped `usage:` block
+onto *every* error, so exempting the layout exempts the message, and a
+byte-exact error needs the usage formatter, which is most of what (a) was
+priced at. The middle option — reproduce the `ein solve: error: …` diagnosis
+line and drop the usage block — was offered and declined: half a formatter
+for a line nothing reads mechanically.
 
-    $ ein solve examples/zebra.ein -n x
-    usage: ein solve [-h] [-n N | -e] [-m MAX_SET_SIZE] [-T MAX_TIME]
-                     [-E MAX_ENTERINGS] [-L] [-K] [-o {lex,score-sum}] [-y] [-z]
-                     [-d SEED] [-v] [-g PROGRESS_EVERY] [-D DIR] [-c] [-H] [-t]
-                     [-s] [-p] [-P] [-f] [--events FILE.jsonl]
-                     [--events-level {normal,verbose}] [--json-summary FILE.json]
-                     [-r FILE.md] [-G] [-F] [-R] [-l]
-                     file
-    ein solve: error: argument -n/--solutions: invalid int value: 'x'
-    → exit 2
+### What pins the content
 
-A byte-exact error therefore needs argparse's usage formatter, which is
-most of what (a) was priced at. The middle option — reproduce the
-`ein solve: error: …` diagnosis line and drop the usage block — was
-offered and declined: half a formatter for a line nothing reads
-mechanically.
-
-### What replaces the byte diff
-
-The byte comparison of `--help` was the only thing checking that ein.rs
-had not silently *lost* an option, so it is replaced rather than dropped.
-Both engines' help is parsed into a structure —
+Without a byte comparison of `--help`, something else has to notice a lost
+option. The help is parsed into a structure —
 `{subcommand → {option → short, metavar, arity, default, choices, group,
-help}}` — and the structures are diffed. On the property that matters
-this is *stronger* than the byte diff: a renamed short key or a changed
+help}}` — and the structure is checked in as a golden. On the property that
+matters this is *stronger* than a byte diff: a renamed short key or a changed
 default fails on its own line, instead of somewhere inside an 89-line
 text blob. Same instrument shape as
 [S1a.5.3](README.md#s1a53--state-dumps)'s `dump-shape` —
@@ -617,127 +399,28 @@ is none as of 2026-08-18: no script under `utils/` parses either, and
 `feature_matrix.py` only *echoes* a failing child's stderr into a report
 field. The day one is written, this is the entry to revisit.
 
-## Q-M1a.14 — Crash parity
+## Q-M1a.16 — How does the corpus drive the lever matrix?
 
-> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §4](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--the-docs-after-the-oracle)). This entry is the *decision*; that page is what the engine now promises.
-
-Some inputs make ein.py raise an unhandled exception (Q-M1a.4's
-`TypeError`; a `KeyError` from an unbound `:assert` var is *caught*
-nowhere and surfaces as a traceback). ein.rs will not have Python
-tracebacks.
-
-Proposal: the harness compares **exit code + the first line of stderr**
-for crash cases and records them as a distinct corpus group
-(`crash-parity`), with the traceback body normalised away. Any input in
-that group is also a candidate ein.py bug report.
-
-**S1a.0.1 — the first-stderr-line half is wrong; implemented as exit code
-+ exception class.** The first `crash-parity` fixture (Q-M1a.4's
-`mixed-type-hypothesis.ein`) raises `TypeError: '<' not supported between
-instances of 'int' and 'str'` — and *which operand is named first*
-depends on the `frozenset` iteration order inside `sorted`, so ein.py
-alternates between two messages across `PYTHONHASHSEED` values. A rule
-that compares that line makes the determinism sweep fail on a difference
-that is not one. `tier::compare_crash` therefore takes the exception
-class off the last traceback line and drops the message body.
-
-**A second fixture, from the CLI surface itself (found 2026-08-18, while
-resolving Q-M1a.13).** A missing input file is not an argument error:
-`cli/_common._parse_or_exit` and `cli/solve._timed_load` both call
-`Path.read_text` unguarded, so `ein solve /nope.ein` is a
-`FileNotFoundError` traceback and exit 1 — not the clean message
-[S1a.5.4](README.md#s1a54--the-cli) originally listed among its
-argument errors. It belongs to this group instead, and it sharpens the
-open half below: the first fixture needs a mixed-type puzzle, this one
-needs a typo.
-
-**S1a.5.4 — the open half, answered for every path the CLI reaches: name the
-class.** ein.rs now prints CPython's own last line, so the comparison passes
-on the whole line rather than only on the class it extracts:
-
-- a missing input file → `FileNotFoundError: [Errno 2] No such file or
-  directory: '<path>'`, exit 1;
-- a `CompileError` out of `solve` or `saturate` →
-  `ein.inference.compile.CompileError: <message>`, exit 1 — the *message*
-  was already at parity from P1a.3, so naming the class was the whole gap.
-
-That was 6 of the 7 `crash-parity` cells; the seventh was D2. **2026-08-20
-added three more, all from [S1a.6.6](README.md#s1a66--the-differential-fuzzer)'s
-fuzzer**: `nested-fact-hypothesis.ein` (D2's second shape — it diverges),
-`unbound-relation-head.ein` (`(?R ?x)` with `?R` unbound, which **passes** —
-identical message, identical exit code, and only ein.py's traceback wrapper
-around it) and `unbound-assert-var.ein`, which is **this question's own first
-example**: "a `KeyError` from an unbound `:assert` var is *caught* nowhere".
-Nothing in the corpus had ever reached it, and reaching it found the one gap
-left in the answer above — ein.rs printed the message alone where CPython
-prints `KeyError: "…"`, because `KeyError`'s `str` is the *repr* of its key.
-Fixed at the printer; the two other firing errors (`TypeError` for a
-non-fact `:assert` head, `SaturatorStepLimitError` for the step budget) were
-given their class names in the same edit, before an input reaches them. Naming a Python class from Rust is not a category error
-here: the class is the *oracle's* observable, and reproducing it is what I1
-asks for. What stays open is the
-narrower question the relaxation would answer — whether a future ein.rs-only
-error, with no Python counterpart to name, joins this group or a new one.
-Nothing in the corpus reaches one.
-
-## Q-M1a.15 — Float formatting parity
-
-> **Now stated as ein's own defined behaviour** — [`docs/kernel/defined_behaviour.md` §2.3](../../kernel/defined_behaviour.md) (M1a [S1a.10.6](README.md#s1a106--the-docs-after-the-oracle)). This entry is the *decision*; that page is what the engine now promises.
-
-Several reported numbers are formatted floats — `--hyp-stats`'s
-`{100.0 * n / total:>5.1f}` percentages, `--timing`'s `{ms:9.2f}` (whose
-*values* are normalised away, but whose *widths* are not), and
-`--stats`' `{elapsed_ms:.1f}`. Rust's `{:.1}` and Python's `%.1f` agree
-on round-half-to-even for `f64`, but the two differ on `-0.0`, on `inf`
-/ `nan` spellings, and on very large magnitudes.
-
-Proposal: a `pyfmt` helper beside `pyrepr`
-([design/02](design/02_determinism_and_order.md) §7) covering `f`-format
-with width/precision, differentially tested over a wide float corpus.
-Small, and it removes a whole class of one-character T3 diffs.
-
-**Resolved 2026-08-18 at [S1a.1.2](README.md#s1a12--ast-arena-compatibility-renderers-dumper):
-`ein-core::pyfmt`**, covering `[[fill]align][sign][0][width][.precision]f`
-and rejecting anything outside that subset rather than guessing at it.
-230 values × 19 specs against CPython, 0 differences. Three findings
-beyond the proposal: Rust spells NaN `NaN`; a NaN never carries a sign in
-CPython while an infinity does; and an **empty** spec is `str(x)`, not
-`.6f` — so the `f` is required, not assumed. The digits themselves come
-from Rust's `{:.*}`, which agrees with Python on round-half-even over the
-exact binary value.
-
-`pyrepr` landed with it, and needed a **generated Unicode table**:
-`repr()` escapes by general category and `rustc` exposes only
-`is_control()`, so `printable.rs` is generated from CPython's own tables
-by `utils/gen_unicode_printable.py` (737 ranges, Unicode 16.0.0). A
-CPython upgrade that moves a category surfaces as a named code point in
-the differential test rather than as a mystery diff at P1a.5.
-
-## Q-M1a.16 — How does the harness drive the lever matrix?
-
-[design/01](design/01_parity_contract.md) §4 puts "each `SolverConfig` lever
-flipped off (the same matrix [`utils/feature_matrix.py`](../../../utils/feature_matrix.py)
-already drives)" in the corpus run matrix. Building the manifest at
-[S1a.0.1](README.md#s1a01--parity-contract-corpus-manifest-divergence-ledger)
+The corpus run matrix is meant to include "each `SolverConfig` lever flipped
+off (the same matrix [`utils/feature_matrix.py`](../../../utils/feature_matrix.py)
+already drives)". Building the manifest at
+[S1a.0.1](README.md#s1a01--corpus-manifest-and-determinism-audit)
 found that only **four of the ten** are reachable from the CLI — `-L`
 (`enable_pre_branch_lookahead`), `-K` (`enable_lookahead_kill_cache`), `-y`
 (`lattice_sanity_check`) and `-o score-sum` (`lattice_order`). The other six —
 `enable_path_nogoods`, `enable_symmetric_mirror`, `enable_singleton_writeback`,
 `enable_forced_positive`, `enable_fail_fast_fork`, `hypgen_scoring` — exist only
-as a Python kwarg or a puzzle's own `(config …)` block. `feature_matrix.py`
-reaches them because it imports the engine; the harness shells out, so it
-cannot.
+in a `SolverConfig` built in code or a puzzle's own `(config …)` block, and the
+corpus sweep runs a process, so it cannot reach them.
 
 That matters more than it looks: those six gate exactly the optimisations
-[P1a.6](README.md#p1a6--performance) will re-implement, and "lever off" is the
-cheapest way to isolate a parity failure to one of them.
+[P1a.6](README.md#p1a6--performance) will build, and "lever off" is the
+cheapest way to isolate a failure to one of them.
 
-**Restated 2026-08-21 (S1a.10.3).** The harness is gone and the `levers` column
-outlived it: the sweep runs the four CLI-reachable levers as extra `solve`
-cells exactly as before. But the reason for the question moved. There is no
-parity failure to isolate any more, and the six unreachable levers are now
-reachable in the *only* way that matters — `ein-infer`'s tests construct a
-`SolverConfig` directly, which is how `search_semantics.rs` and
+**Restated 2026-08-21 (S1a.10.3).** The `levers` column of the sweep runs the
+four CLI-reachable levers as extra `solve` cells, and the six unreachable
+levers are reachable in the *only* way that matters — `ein-infer`'s tests
+construct a `SolverConfig` directly, which is how `search_semantics.rs` and
 `lattice_semantics.rs` already exercise them. What the CLI still cannot do is
 put a lever into a **corpus** cell, so what the question is asking has narrowed
 to "should the corpus sweep cover the other six?" — a coverage question about
@@ -745,22 +428,20 @@ one test, not a gap in the gate.
 
 Options:
 
-- **(a) add `--config KEY=VALUE` to both CLIs** (repeatable, kebab-cased,
+- **(a) add `--config KEY=VALUE` to the CLI** (repeatable, kebab-cased,
   parsed by the same coercer `(config …)` uses). Additive, ~20 lines, makes
-  `levers = "all"` real. Costs: one more flag on the T3 surface both
-  implementations must match, and a way to set a lever that a puzzle file
-  cannot audit.
+  `levers = "all"` real. Costs: one more flag on the surface, and a way to set
+  a lever that a puzzle file cannot audit.
 - **(b) generate per-lever puzzle variants** — copy the fixture with a
   `(config …)` block appended into a temp dir. No CLI change, but the corpus
-  entry is then not the file in `examples/`, which weakens the "both
-  implementations read the same bytes" guarantee for those runs.
-- **(c) leave the six unexercised** and note the gap. The corpus keeps four
-  levers; the other six are covered only by ein.py's own test suite.
+  entry is then not the file in `examples/`.
+- **(c) leave the six unexercised** by the corpus and note the gap. The corpus
+  keeps four levers; the other six are covered only by `ein-infer`'s tests.
 
 **Recommendation: (a)**, decided before [P1a.6](README.md#p1a6--performance)
-rather than at it — the flag has to exist in *both* implementations, so it is
-cheapest to add while the Rust CLI is still a stub. Until then the manifest's
-`levers` lists the four, and `corpus/README.md` says why.
+rather than at it, because the flag is cheapest to add while the CLI is still
+a stub. Until then the manifest's `levers` lists the four, and
+`corpus/README.md` says why.
 
 ## Q-M1a.17 — Win B's ≥ 80 % assumed monotone guards dominate
 
@@ -773,7 +454,7 @@ guard's query is purely positive, so if it found nothing at round *r* it
 can only start finding something through a fact added since — which is
 `run_seeded` on the guard's sub-plan, restricted to Δ ∩ watched.
 
-The port instruments that split (`Saturator::guard_evals` /
+ein.rs instruments that split (`Saturator::guard_evals` /
 `guard_evals_monotone`), and at **root scale the mix is the other way
 round**:
 
@@ -793,8 +474,8 @@ guards that *passed* earlier in the same `first_failing` scan.
 The boundary is still where the time is — 80 % of a `zebra` root
 saturation and 34 % of a `zebra2` one, and essentially all of it inside
 the queries themselves (945 evaluations × 6.2 µs ≈ the whole 5.8 ms).
-The two refinements that do not depend on monotonicity **landed** and are
-T2-green: the per-round `(guard, projected env) → verdict` memo, and an
+The two refinements that do not depend on monotonicity **landed**: the
+per-round `(guard, projected env) → verdict` memo, and an
 allocation-free watch stamp on an ordered parked set instead of a
 pop-and-re-push heap. Together they moved the boundary by ~2 % at root
 scale, which is the honest number.
@@ -870,21 +551,16 @@ decided.
 
 ## Q-M1a.18 — May a fork stop re-narrating the root's fixpoint?
 
-**Resolved 2026-08-19: yes, in ein.rs only.** `Saturator::resume` is ein.rs's
-shipping path; ein.py keeps the fresh saturator and the narration divergence is
-permanent, recorded as
-[D3](divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it).
+**Resolved 2026-08-19: yes.** `Saturator::resume` is the shipping path.
 
 The principle that moved with it, and it is bigger than this question: **the
-parity contract's hard requirement is that the two engines produce identical
-final solutions**, not identical bytes. P1a.1–P1a.5 built ein.rs equal to
-ein.py byte for byte, which is what made the port falsifiable; from P1a.6 on,
-byte-identical *narration* is a means that has served its purpose, and ein.rs's
-own regression coverage moves to checked-in fixtures
-([S1a.6.11](README.md#s1a611--einrss-own-fixtures-for-what-parity-stopped-comparing)) rather than to the
-oracle. T0 and T1 stay exact, and are now compared *more* carefully than
-before. [S1a.6.10](README.md#s1a610--the-parity-contract-relaxes-answers-not-narration) is the
-mechanism.
+hard requirement is identical final solutions**, not identical bytes.
+P1a.1–P1a.5 held the engine's output to the byte; from P1a.6 on,
+byte-identical *narration* is a means that has served its purpose, and its
+regression coverage moves to checked-in fixtures
+([S1a.6.11](README.md#s1a611--fixtures-for-the-narration)). The answer and
+the counters stay exact.
+[S1a.6.10](README.md#s1a610--answers-not-narration) is the mechanism.
 
 Two things decided it, and neither was the speed. **The answers do not move** —
 3.2 M enterings compared fact by fact, every verdict, model, unsat core and all
@@ -902,14 +578,11 @@ happened to deliver.
 
 **Both halves landed the same day.** S1a.6.10 wrote the rule once — a fork's
 derivation, and anything keyed on a dying fork's stopping point, is narration —
-into [design/01 §5](design/01_parity_contract.md#the-fork-row-stated-once) and
-into one crate, `ein.rs/crates/ein-parity`, replacing the six ad-hoc cuts
-S1a.6.9 had left behind; the harness went back to **T3 472/473 and T2 239/240**
-with [D2](divergences.md#d2--sortedalive-raises-in-einpy-where-einrs-answers)
-the only differing cell in either, and `--strict` keeps the byte-identical
-contract one flag away for the determinism sweep. S1a.6.11 replaced the elided
-bytes with twelve ein.rs goldens and ported idea-08's walkthrough-rule
-assertion to the engine that ships. **This question is closed.**
+into one crate, `ein.rs/crates/ein-narration`, replacing the six ad-hoc cuts
+S1a.6.9 had left behind, and `EIN_NARRATION_STRICT=1` keeps byte-identical
+narration one variable away for the determinism sweep. S1a.6.11 replaced the
+elided bytes with twelve ein.rs goldens and made idea-08's walkthrough-rule
+assertion a test of the engine that ships. **This question is closed.**
 
 ---
 
@@ -969,22 +642,23 @@ enterings compared fact by fact and justification by justification
 
 So the narration moves further than this question assumed:
 
-- **T2** loses 62.5 % / 75.9 % of its lines at `verbose` — **and 58.8 % /
-  74.2 % at `normal`**, which the question did not anticipate: a redundant
-  firing is not emitted at `normal`, but the ~1 790 `enqueue` lines per
-  entering that produce it are;
-- **T3** moves `n_firings` in `--trace`, the `("firings", len)` counts in
-  `--dump-states`, the *first five firings* `render/shape.rs` prints — and,
-  for the 90 002 facts above, **which rule the proof names**;
-- **T0/T1** do not move: `BaseStats` never counts a firing, and every counter
-  it does keep is unchanged;
-- **`ein.py/tests/trace/test_idea08_acceptance.py::test_zebra2_fires_walkthrough_rules`
-  fails**: the solution's trace covers 12 rules instead of 24 and `symmetric`
-  is not among them, because `symmetric` closes `next-to` at *root*. `--trace`
-  gets root's whole closure for free today, by accident, because every fork
-  re-derives it. Adopting this means the trace has to render root saturation
-  as its own section — which is what a human walkthrough does anyway, and is a
-  change to the renderer rather than to the engine.
+- **the event stream** loses 62.5 % / 75.9 % of its lines at `verbose` —
+  **and 58.8 % / 74.2 % at `normal`**, which the question did not anticipate:
+  a redundant firing is not emitted at `normal`, but the ~1 790 `enqueue`
+  lines per entering that produce it are;
+- **the rendered output** moves `n_firings` in `--trace`, the
+  `("firings", len)` counts in `--dump-states`, the *first five firings*
+  `render/shape.rs` prints — and, for the 90 002 facts above, **which rule the
+  proof names**;
+- **the answer and the counters** do not move: `BaseStats` never counts a
+  firing, and every counter it does keep is unchanged;
+- **idea-08's walkthrough-rule acceptance fails**: the solution's trace covers
+  12 rules instead of 24 and `symmetric` is not among them, because
+  `symmetric` closes `next-to` at *root*. `--trace` gets root's whole closure
+  for free today, by accident, because every fork re-derives it. Adopting this
+  means the trace has to render root saturation as its own section — which is
+  what a human walkthrough does anyway, and is a change to the renderer rather
+  than to the engine.
 
 **The options.**
 
@@ -994,24 +668,20 @@ So the narration moves further than this question assumed:
   compile share and [S1a.6.3](README.md#s1a63--beta-memories-f11-d1)'s
   *root* beta-memories for the match share — same firings, same order,
   discovered by lookup instead of by rescanning.
-- **(b) Yes, in both engines.** ein.py changes first, ein.rs follows, and the
-  change is recorded in [divergences.md](divergences.md) as a *joint* change
-  rather than a divergence. There are no goldens to regenerate — the harness
-  diffs two live engines — so "both or neither" is literal. This is a change
-  to the M1 engine, so it is a followup and a new stage, never a retrofit into
-  a shipped phase. **It now also buys a renderer change** (root saturation as
-  its own trace section) and a re-baselined `test_idea08_acceptance`, and it
-  accepts that a fact's recorded proof may name a different one of its valid
-  derivations.
-- **(c) Yes, behind a flag** that is off in the parity build. Keeps I1 and
-  gets the speed for the M20/M2 consumers — at the cost of a second code
-  path through the saturator's most delicate ordering, which is exactly
-  what P1a.6 Rule 3 (a wash is a revert) exists to discourage. The flag is
-  **already built** (`fork-delta` + `EIN_FORK_DELTA`), so this option is the
-  cheapest to take and the only one that is currently *true* of the tree.
+- **(b) Yes, behind a flag** that is off by default. Keeps I1 and gets the
+  speed for the M20/M2 consumers — at the cost of a second code path through
+  the saturator's most delicate ordering, which is exactly what P1a.6 Rule 3
+  (a wash is a revert) exists to discourage. The flag is **already built**
+  (`fork-delta` + `EIN_FORK_DELTA`), so this option is the cheapest to take
+  and the only one that is currently *true* of the tree.
+- **(c) Yes, as the shipping path.** This is a change to the engine's
+  narration, so it is a relaxation of I1 made in writing, never a silent
+  retrofit. It buys a renderer change (root saturation as its own trace
+  section) and a re-baselined walkthrough acceptance, and it accepts that a
+  fact's recorded proof may name a different one of its valid derivations.
 
-**Recommendation: still (b), and the argument is still not primarily speed —
-but it is now a bigger change than it looked.** A fork's firing list is what
+**Recommendation: (c), and the argument is not primarily speed — but it is a
+bigger change than it looked.** A fork's firing list is what
 [`08-human-style-deductive-trace`](../../../plans/ideas/08-human-style-deductive-trace.md)
 renders, and 961 re-derivations of what was already true before the
 hypothesis is noise in it — the human walkthrough in
@@ -1020,7 +690,7 @@ narrates what a hypothesis *adds*, and the rendered after-trace does exactly
 that from its second step. The speed is a consequence, and it happens to be
 the consequence that closes the milestone's last open target.
 
-What the evidence adds to the recommendation is the **cost line**: the M1
+What the evidence adds to the recommendation is the **cost line**: the
 engine would stop promising *which* derivation of a multiply-derivable fact
 it records first. That promise is not written down anywhere as a guarantee —
 `record_justification`'s contract is "first derivation wins", and which
@@ -1031,20 +701,18 @@ error, and a proof that names `injective-negative` where it used to name
 shorter one.
 
 **So the question is now sharper than "may the trace get shorter":** may the
-M1 engine record a different one of a fact's valid derivations as its primary,
+engine record a different one of a fact's valid derivations as its primary,
 in exchange for a trace that starts at the hypothesis and a solver that meets
 its last target? **(a)** says no and takes the invisible half through
-[S1a.6.3](README.md#s1a63--beta-memories-f11-d1). **(c)** says not on the
-parity build.
+[S1a.6.3](README.md#s1a63--beta-memories-f11-d1). **(b)** says not by default.
 
-**Decided: a fourth option, (d) — yes in ein.rs, and the contract relaxes with
-it.** Not (b): ein.py does not follow, so the two engines narrate different
-amounts of the same derivation, permanently. Not (c): the flag is not the
-shipping configuration, it is [D3](divergences.md)'s fixture. The evidence is
+**Decided: (c), and the contract relaxes with it.** Not (b): the flag is not
+the shipping configuration, it is the fresh-saturator arm
+`utils/fork_delta_verify.py` compares against. The evidence is
 [baseline.md §11](measurements/baseline.md#11-the-resumed-fork-saturator-measured)
-and [fork_delta_trace.md](measurements/fork_delta_trace.md); what it cost
-the harness — 7 T3 cells, 97 T2 — is the specification of
-[S1a.6.10](README.md#s1a610--the-parity-contract-relaxes-answers-not-narration).
+and [fork_delta_trace.md](measurements/fork_delta_trace.md);
+[S1a.6.10](README.md#s1a610--answers-not-narration) is the mechanism it
+specified.
 
 ## Q-M1a.19 — How does a program state what it expects?
 
@@ -1080,15 +748,15 @@ the id problem with a translation table plus a fast path: "when the live
 interner is empty … both tables are the identity and the pass is skipped
 entirely. That is the mmap-and-go case."
 
-[S1a.10.1](README.md#s1a101--bank-what-only-the-oracle-proves)'s
-determinism successor measured what happens when they are *not* the identity.
+[S1a.10.1](README.md#s1a101--digests-counter-identities-and-the-id-space-sweep)'s
+id-space sweep measured what happens when they are *not* the identity.
 Over 2 544 `(file, op)` pairs with the id space permuted:
 
 - **0 answers move** — verdict, model, counters, every non-derivation
   rendering, at 1 and at 8 seeds;
 - **66 renderings move**, and all of them are what
-  [D3](divergences.md#d3--a-fork-resumes-roots-saturation-einpy-re-derives-it)
-  already calls narration: 44 where `enable_fail_fast_fork` stopped a dying
+  [S1a.6.10](README.md#s1a610--answers-not-narration)'s rule already calls
+  narration: 44 where `enable_fail_fast_fork` stopped a dying
   fork at a different firing, 22 in the body of a rendered derivation, where a
   fact with two equally valid justifications recorded the other one first.
 
@@ -1135,11 +803,10 @@ rival and a subprocess rival are not comparable measurements. `utils/`'s
 seventeen scripts name their binary on purpose. That leaves
 [M2](../../../plans/m2_nl_to_ir/README.md), whose two stated reasons both fail:
 
-- **llama.cpp does not pull CPython.**
+- **llama.cpp does not pull in Python.**
   [P2.2](../../../plans/m2_nl_to_ir/p2.2_formalizer/README.md) is a `llama-server` container
   plus a thin HTTP client, mirroring the out-of-tree `acva` — whose client
-  is **C++**. P2.2's own README says "same pattern, Python client *this time*
-  instead of C++"; the *this time* was that ein was Python.
+  is **C++**.
 - **The one thing that wanted the binding argues against it.** M2's
   validator/repair loop needs *why* a load failed, as data. The CLI cannot
   supply that — [`defined_behaviour.md` §1/§4](../../kernel/defined_behaviour.md)
@@ -1188,20 +855,9 @@ true today.
 
 ### What is held in reserve
 
-`docs/api/`'s five Python pages — the five-step contract, the worked example,
-the per-symbol tables — are filed as history by
-[S1a.9.4](README.md#s1a94--documentation) rather than deleted, which is
-what makes this deferral cheap to reverse: on the day a trip-wire fires, the
-specification already exists. [design/12](design/12_toolchain_and_layout.md)
-§1's `ein-py` crate, §2's `pyo3`/`maturin` row and §3's `python` feature stay
-reserved for the same reason.
+[design/12](design/12_toolchain_and_layout.md) §1's `ein-python` crate, §2's
+`pyo3`/`maturin` row and §3's `python` feature stay reserved, which keeps this
+deferral cheap to reverse.
 
-Two things that were *forced* and are now free, and should be decided with a
-module in hand rather than in advance: the **published name** (the `ein` PyPI
-name came free at
-[S1a.10.5](README.md#s1a105--the-removal) and nothing claims
-it), and the **exception hierarchy** — S1a.9.1 was going to keep
-`IRParseError(SyntaxError)` "because consumers were written against it", and
-those consumers left with `ein.py/`.
-[`defined_behaviour.md` §4](../../kernel/defined_behaviour.md) already
-calls the six Python class names "a name without a referent".
+Two things should be decided with a module in hand rather than in advance: the
+**published name** and the **exception hierarchy**.

@@ -1,9 +1,8 @@
 //! `ein render` — DOT views of rules / constraints / the search lattice.
 //!
-//! The Rust half of `ein/cli/render.py`. Every body is the same three steps:
-//! load, call one renderer, write it with a trailing newline. The renderers
-//! themselves reached byte parity at
-//! [S1a.5.1](../../../../docs/history/m1a_rust/README.md#s1a51--dot-renderers);
+//! Every body is the same three steps: load, call one renderer, write it with
+//! a trailing newline. The renderers themselves are `ein-render`'s
+//! ([S1a.5.1](../../../../docs/history/m1a_rust/README.md#s1a51--dot-renderers));
 //! what this adds is the surface around them.
 
 use std::path::Path;
@@ -50,10 +49,7 @@ pub fn cmd_rule(file: &str, name: &str, mode: RuleMode) -> i32 {
             return 0;
         }
     }
-    eprintln!(
-        "no rule named {} in {file}",
-        ein_core::pyrepr::repr_str(name)
-    );
+    eprintln!("no rule named {} in {file}", ein_core::repr::repr_str(name));
     1
 }
 

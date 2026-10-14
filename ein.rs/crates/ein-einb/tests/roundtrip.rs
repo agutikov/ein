@@ -2,7 +2,7 @@
 //! §6](../../../../docs/history/m1a_rust/design/10_binary_format.md#6-acceptance-for-this-design),
 //! P1a.8's acceptance.
 //!
-//! `save(kb) → open()` has to be **T1-identical**: the same facts in the same
+//! `save(kb) → open()` has to be **identical**: the same facts in the same
 //! order, the same provenance, the same indexes, in both the empty-interner
 //! and shared-interner cases. Two comparators, because the two cases can not
 //! be asked the same question:
@@ -125,8 +125,8 @@ fn every_corpus_entry_round_trips_into_an_empty_and_a_shared_interner() {
         }
         checked += 1;
     }
-    // `load_parity`'s floor, which this inherits with the op: a sweep that
-    // loaded nothing agrees about nothing.
+    // The floor `corpus_shapes` holds `load` to: a sweep that loaded nothing
+    // agrees about nothing.
     assert!(checked >= 60, "only {checked} corpus files loaded");
     // The remap is half of what is being tested; a sweep in which every file
     // took the fast path would have tested one half twice.

@@ -8,22 +8,19 @@
 ;;; rule pays per mirror. Identical closure, one kernel fast-path —
 ;;; `docs/kernel/ir/03-ein-lang/06_reserved_names.md` for the reference, and
 ;;; `utils/feature_matrix.py`'s `no-symmetric-mirror` cell for what the mirror
-;;; is worth. (`utils/symmetric_bench.py` was the in-process Python
-;;; measurement, and left with the engine it imported at M1a S1a.10.4.)
+;;; is worth.
 ;;;
 ;;; Contrast with `saturation/symmetric/*.ein`, which exercise the *userspace*
 ;;; `symmetric` rule from `std.algebra`. Nothing else in `examples/` marks a
 ;;; relation, so this file is the only fixture that reaches the mirror.
 ;;;
 ;;; THREE marked relations, on purpose. The mirror's cold seed walks the
-;;; marked-relation set once, and that set is a `frozenset[str]`: before the
-;;; M1a determinism audit (hazard H1 — `docs/history/m1a_rust/design/02` §5) the walk
-;;; order was CPython's set order, so which relation got mirrored first — and
-;;; hence the whole derivation order — depended on `PYTHONHASHSEED`. This file
-;;; is the fixture that reproduces it: with one marked relation the bug is
-;;; invisible, with three it shows up in `ein saturate --dump`'s "derived facts
-;;; by relation" block. The seed is sorted now, so the firing sequence is a
-;;; function of the input alone.
+;;; marked-relation set once, **sorted by name**, so which relation gets
+;;; mirrored first — and hence the whole derivation order — is a function of
+;;; the input alone. A hash-ordered walk would leak into the firing order, and
+;;; this file is the fixture that would show it: with one marked relation the
+;;; order is invisible, with three it shows up in `ein saturate --dump`'s
+;;; "derived facts by relation" block.
 ;;;
 ;;; The three relations are deliberately *unsorted* in the file (`knows`,
 ;;; `rivals`, `allies` — sorted: allies, knows, rivals), so a seed that

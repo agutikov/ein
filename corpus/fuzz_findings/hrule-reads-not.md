@@ -1,9 +1,9 @@
 # hrule-reads-not
 
-- found: 2026-08-21, `utils/fuzz_ein.py --seed 11 --iters 100`, mode `mixed`,
+- found: 2026-08-21, `utils/fuzz_engine.py --seed 11 --iters 100`, mode `mixed`,
   the session that re-opened the fuzzer after
-  [S1a.10.4](../../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
-  T1a.10.4.2 rewrote it around single-engine properties
+  [S1a.10.4](../../docs/history/m1a_rust/README.md#s1a104--utils-and-the-fuzzer)
+  T1a.10.4.2 rewrote it around the properties it checks
 - property: **no-crash** — a generated program exits 0, 1 or 2, never a panic
 - minimised: 19 → 1 form (a second and a third minimum with different
   relation names reached the same site and were deduped)
@@ -21,7 +21,7 @@ thread 'no_observable_depends_on_the_order_ids_were_assigned_in' panicked at cra
 an hrule reads `not`, which hypgen's kill cache writes mid-enumeration — see `Hrules::candidates`
 ```
 
-(Verbatim, because `utils/fuzz_ein.py` dedups a panic on **its site and
+(Verbatim, because `utils/fuzz_engine.py` dedups a panic on **its site and
 message** and seeds that set from these notes — a note that paraphrases the
 abort gets the same finding re-filed every session.)
 
@@ -39,22 +39,21 @@ EIN_ID_FILES=$PWD/corpus/fuzz_findings \
 
 ## Why it is here rather than fixed
 
-`Hrules::candidates` documents its own precondition: ein.py's hypothesis
-enumerator writes into the live `_facts_by_relation` list, so a `not` fact the
-kill cache writes mid-enumeration is visible to the rest of that enumeration;
-ein.rs borrows the KB immutably for the whole walk and finishes it first. **The
-two agree exactly whenever the only relation the pipeline writes — `not` — is
-not one an hrule's `:match` reads**, and the `debug_assert` is that condition,
-justified by "no corpus hrule reads it".
+`Hrules::candidates` documents its own precondition: the matcher borrows the
+KB immutably for the whole walk and finishes it before hypgen's filter
+pipeline runs, so a `not` fact the kill cache writes is not visible to the
+rest of that enumeration. **That cannot change an answer whenever the only
+relation the pipeline writes — `not` — is not one an hrule's `:match`
+reads**, and the `debug_assert` is that condition, justified by "no corpus
+hrule reads it".
 
 The generator wrote one. `(not …)` and `(absent (not …))` premises are
 ordinary ein-lang — `examples/features/01_not_and_absent.ein` is a fixture for
 them — so this is a **legal program the engine asserts against in a debug
 build and answers in a release build**, and nobody has said which answer is
-right. That is a semantics question, not a `utils/` clean-up, and it is
-exactly the shape [accepted loss L1](../../docs/history/m1a_rust/oracle_ledger.md#6-accepted-loss)
-names: a wrong answer on a program shape nobody wrote a fixture for. The
-difference is that this one has a fixture now.
+right. That is a semantics question, not a `utils/` clean-up: a possible
+wrong answer on a program shape nobody wrote a fixture for, and this one has a
+fixture now.
 
 Not a corpus entry yet: an entry is a program with a *settled* expectation,
 and this one's expectation is the open question. When it settles it becomes a

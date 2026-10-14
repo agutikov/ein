@@ -1,4 +1,4 @@
-//! The constraint-scope → DOT renderer — `ein.py`'s `render/constraints.py`.
+//! The constraint-scope → DOT renderer.
 //!
 //! A puzzle's *structural constraints* are the **un-annotated**
 //! rule-application facts — the implicit "co-located is symmetric / color-loc

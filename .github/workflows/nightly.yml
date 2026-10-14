@@ -3,45 +3,12 @@
 # Budget: an hour. Everything the per-commit tier cannot afford, plus the check
 # that only makes sense over time: does anything the corpus does not cover
 # break.
-#
-# Three jobs left at M1a S1a.10.3, with the harness they drove. Each named a
-# question, and each question has an owner that runs without a second engine:
-#
-#   hash-seed-sweep    ein.py against itself under two PYTHONHASHSEEDs — the
-#                      check that found hazards H1 and H4. Successor:
-#                      `ein-render/tests/id_order_invariance.rs`, which
-#                      permutes the *id space* instead of a hash seed and is
-#                      stronger for it (the ledger §5). `EIN_ID_SEEDS=8` below.
-#   conformance-full   the whole corpus, both engines, T1 and T3. Successor:
-#                      `cargo test --workspace` per commit, plus the corpus
-#                      sweep at EIN_CORPUS_SLOW=1 below for the 17 slow
-#                      entries the per-commit tier skips.
-#   frontend-fuzz      the parser against lark, 10^6 mutations. Successor:
-#                      `ein-ir/tests/fuzz_properties.rs`, which checks the
-#                      frontend's own properties — nothing panics, everything
-#                      that parses round-trips, every recorded finding still
-#                      parses the way it was recorded.
 
 name: nightly
 
 on:
   schedule: [{ cron: "0 3 * * *" }]
   workflow_dispatch:
-
-# Two more went at S1a.10.5, with the tree they tested:
-#
-#   full-suite   ein.py's whole pytest suite plus the acceptance gate. The
-#                suite is 275 behaviours in fifteen Rust files now
-#                (suite_dispositions.md) and the acceptance gate is
-#                `ein-infer/tests/acceptance.rs` + `acceptance_cli.rs`, both
-#                inside the per-commit tier — it was nightly's because it took
-#                ~40 s and it takes 0.26 s.
-#   packaging    the sdist and wheel build, and install from them. There is no
-#                Python package and no wheel replacing it — P1a.9 deferred the
-#                PyO3 module on 2026-08-21 (Q-M1a.23). What S1a.9.3 built
-#                instead is a four-platform *binary* matrix, in the release
-#                tier, where a packaging check belongs once there is nothing
-#                interpreted to install.
 
 jobs:
   deep-corpus:
@@ -62,9 +29,8 @@ jobs:
       # two tests hold the flag to it in both directions.
       - run: cargo test -p ein-cli --release --test corpus_cli
         env: { EIN_CORPUS_SLOW: "1" }
-      # Eight id-space permutations rather than one. The successor to the
-      # PYTHONHASHSEED sweep: same question — does any output depend on an
-      # ordering accident — asked of the one engine that is left.
+      # Eight id-space permutations rather than one: does any output depend on
+      # an ordering accident.
       - run: cargo test -p ein-render --release --test id_order_invariance
         env: { EIN_ID_SEEDS: "8" }
       # M1e2 S1e2.1.2 — every `--dump-answer` state file a fixpoint of its own
@@ -133,11 +99,7 @@ jobs:
   benches:
     name: benchmarks — the M1a measurement set
     runs-on: ubuntu-latest
-    # The Python half (`utils/bench_baseline.py --json bench-python.json`, and
-    # the `pip install -e ein.py` it needed) went with the second engine at
-    # S1a.10.4. What it produced is a frozen column in
-    # docs/history/m1a_rust/measurements/baseline.md §2; `cargo bench` is the
-    # whole set now. A shared runner is nobody's quiet machine, so this job
+    # A shared runner is nobody's quiet machine, so this job
     # exists to prove the benches still *run*, not to publish a timing —
     # `--test` is one iteration per case, which is exactly that check.
     steps:

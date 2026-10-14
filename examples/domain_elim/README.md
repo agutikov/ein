@@ -20,11 +20,5 @@ library, so each comparison moves a single variable:
 | `b_only.ein` | — | ✓ | forced-positive promotion |
 | `b_branch.ein` | — | — | real forking + refutation (lookahead off) |
 
-Run the measurement:
-
-```sh
-python3 utils/s1_5b_32_measure.py
-```
-
 Full analysis + results tables:
 [`docs/kernel/inference/domain_elim_vs_hypothesis.md`](../../docs/kernel/inference/domain_elim_vs_hypothesis.md).

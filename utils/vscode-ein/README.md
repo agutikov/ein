@@ -38,7 +38,7 @@ atoms.
 
 This grammar is *regex* highlighting. It will happily colour
 syntactically-invalid ein (a malformed `(query)`, a stray reserved word).
-Shape correctness is the loader's job (`kb.from_ir`); this only paints
+Shape correctness is the loader's job (`ein_ir::from_ir`); this only paints
 the lexical surface.
 
 ## Source of truth (don't hand-edit the lists in two places)
@@ -46,10 +46,10 @@ the lexical surface.
 The three closed name sets mirror the kernel's single source of truth:
 
 - **declarators** — [`docs/kernel/ir/03-ein-lang/06_reserved_names.md`](../../docs/kernel/ir/03-ein-lang/06_reserved_names.md)
-- **primitives** — `ein-infer`'s primitive set, was `ein.py/src/ein/inference/primitives.py` (`STRUCTURAL ∪ SUGAR`)
-- **predicates** — `ein-infer`'s predicate registry, was `ein.py/src/ein/inference/predicates.py` (`names()`)
+- **primitives** — `ein_core::STRUCTURAL`, plus the verdict atom `open`
+- **predicates** — `ein-infer`'s predicate registry (`ein_infer::predicates::names()`)
 
-`ein.py/tests/test_vscode_grammar.py` re-derives each list straight out
+`ein-cli/tests/cli_semantics.rs` re-derives each list straight out
 of `ein.tmLanguage.json` and asserts it equals the authoritative set, so
 the grammar can't silently drift from the kernel. If you add a kernel
 primitive / declarator, update the matching `begin` alternation here and

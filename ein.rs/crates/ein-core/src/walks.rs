@@ -44,10 +44,9 @@ impl Justifications {
 
 /// Resolve a premise id to a fact this KB actually holds.
 ///
-/// ein.py's `_fact_by_id` scans the relation extent, so it answers for
-/// *indexed* facts; belief and indexing part company only between the
-/// loader's `add_fact` and the `rebuild_indexes` that ends every load, and no
-/// walk runs in that window.
+/// Asking belief rather than the relation extent is the same question here:
+/// belief and indexing part company only between the loader's `add_fact` and
+/// the `rebuild_indexes` that ends every load, and no walk runs in that window.
 fn resolve(kb: &Kb, premise: FactId) -> Option<FactId> {
     kb.contains(premise).then_some(premise)
 }
@@ -72,9 +71,8 @@ pub fn is_frontier(kb: &Kb, terms: &Terms, fact: FactId) -> bool {
 /// facts in one pass; the union is identical to walking each separately.
 ///
 /// Iterative, because a deep derivation chain would otherwise be a recursion
-/// limit. Returns first-visit order — ein.py returns a `set`, whose iteration
-/// order was the H4 hazard, so an order that is merely *defined* is already
-/// an improvement; every display site sorts regardless.
+/// limit. Returns first-visit order — an order that is merely *defined*,
+/// which is all the H4 hazard asks for; every display site sorts regardless.
 pub fn walk_premises(
     kb: &Kb,
     terms: &Terms,

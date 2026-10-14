@@ -1,30 +1,22 @@
 //! What a `:match` compiles to, what it is refused for, and what a
 //! `(config …)` block coerces to — T1a.10.2.2.
 //!
-//! Replaces four Python files, all of which asserted the *semantics* of the
-//! front half of the engine rather than any Python object:
+//! Four subjects, all of them the *semantics* of the front half of the engine:
 //!
-//! | Python original | subject |
-//! |---|---|
-//! | `ein.py/tests/inference/test_compile.py` | the in-`:match` kw_pair drop, and S1.22.0's four refusals |
-//! | `ein.py/tests/inference/test_compile_negative.py` | each refusal's message, against its `.expected` fixture |
-//! | `ein.py/tests/inference/test_config.py` | `SolverConfig` coercion from IR literals (the F-KER-4 regression) |
-//! | `ein.py/tests/inference/test_relation_arity.py` | the arity-1 `(relation R)` membership channel and bare declarations |
+//! - the in-`:match` kw_pair drop, and S1.22.0's four refusals;
+//! - each refusal's message, against its `.expected` fixture;
+//! - `SolverConfig` coercion from IR literals (the F-KER-4 regression);
+//! - the arity-1 `(relation R)` membership channel and bare declarations.
 //!
-//! The Python tests reached into `plan.steps[0]`, `kb._facts_by_relation` and
-//! `SolverConfig.from_kw_pairs`. Where the two implementations agree on a
-//! *rendering* the assertion is on that rendering — [`ein_infer::plan_shape`]
-//! is the compiler's only readable surface and is the text ein.py's oracle
-//! produced too. Everywhere else it is on the observable the structure existed
-//! for: the facts a rule derives, the candidates the enumerator proposes, the
-//! message a rule author reads.
+//! Where a *rendering* exists the assertion is on that rendering —
+//! [`ein_infer::plan_shape`] is the compiler's only readable surface.
+//! Everywhere else it is on the observable the structure existed for: the
+//! facts a rule derives, the candidates the enumerator proposes, the message a
+//! rule author reads.
 //!
-//! `compile_parity.rs` covered the same four messages against the live oracle,
-//! and S1a.10.2 deleted it: the `.expected`-file half is
-//! [`every_compile_error_says_what_its_expected_file_says`] below, which needs
-//! no second engine, and its corpus-wide `plan_shape` sweep is
-//! `corpus_shapes.md5`'s 78 `::plan` lines. What went with it is that sweep's
-//! `plans >= 200` floor, replaced by the manifest's own `>= 4 000` renderings.
+//! The `.expected`-file half is
+//! [`every_compile_error_says_what_its_expected_file_says`] below, and the
+//! corpus-wide `plan_shape` sweep is `corpus_shapes.md5`'s 78 `::plan` lines.
 
 use std::collections::BTreeSet;
 use std::ops::ControlFlow;
@@ -203,8 +195,7 @@ fn a_where_keyword_pair_in_a_match_is_dropped_and_the_rule_still_compiles() {
 /// `the-four-compile-errors-say-what-their-expected-file-says`.
 ///
 /// These messages are a **surface**: a rule author reads them, and all but one
-/// name the offending IR form in Python's `repr`, which is the only reason two
-/// implementations could ever be compared on them. Checking the directory
+/// name the offending IR form by its `repr`. Checking the directory
 /// listing as well is not tidiness — a fixture renamed away from its
 /// `.expected`, or a refusal added without one, would leave a branch of the
 /// compiler with nobody asserting its text.
@@ -278,8 +269,8 @@ fn every_compile_error_says_what_its_expected_file_says() {
 /// KB; dropped from inside an `(absent …)` it left the guard's sub-plan empty,
 /// which matches vacuously — so the guard failed against every possible KB
 /// and, being monotone, retired its candidates for good. Only the positive
-/// site has a checked-in fixture, so the negative one is built here: a port
-/// that guarded only the site it had a fixture for would look correct.
+/// site has a checked-in fixture, so the negative one is built here: a
+/// compiler that guarded only the site it had a fixture for would look correct.
 #[test]
 fn a_nested_or_is_refused_in_a_premise_and_inside_an_absent() {
     let decls = "(relation a T) (relation p T) (relation q T) (relation out T)\n";
@@ -397,7 +388,7 @@ fn an_arity_mismatched_activator_is_refused_and_never_reaches_the_compiler() {
 /// here because they failed for unrelated reasons — an `int | None` field was
 /// rejected by a type comparison that could not see through the annotation, a
 /// plain `int` field by unwrapping the IR node through the wrong attribute —
-/// so a port could easily fix one and reintroduce the other. The unset default
+/// so a change could easily fix one and reintroduce the other. The unset default
 /// is the third: `None` is what makes `lattice-order-seed` mean "no shuffle"
 /// rather than "seed 0", and the two orders differ.
 #[test]
@@ -611,7 +602,7 @@ fn guessed_relations(text: &str) -> BTreeSet<String> {
 /// there is no type to draw fillers from, so every candidate the enumerator
 /// could build would be a guess over the entire name set. The filter is one
 /// `.filter(|r| !r.signature.is_empty())` in `hypgen`; no corpus file carries a
-/// bare declaration, so deleting it would not move a single parity run — which
+/// bare declaration, so deleting it would not move a single corpus run — which
 /// is precisely why it needs a test of its own rather than the corpus.
 #[test]
 fn an_empty_signature_is_not_a_hypothesis_target() {
@@ -633,8 +624,8 @@ fn an_empty_signature_is_not_a_hypothesis_target() {
 /// The enumerator fills arity 1 (the candidate *is* `(R focal)`, no filler
 /// loop) and arity 2 (a filler loop over the object set); a ternary
 /// declaration yields no candidates at all. No corpus relation exceeds arity
-/// 2, so nothing in the parity corpus can tell "skipped" from "never
-/// encountered", and a port that quietly emitted a truncated binary candidate
+/// 2, so nothing in the corpus can tell "skipped" from "never
+/// encountered", and an enumerator that quietly emitted a truncated binary candidate
 /// for a ternary relation would pass every run. The binary control is in the
 /// fixture for the same reason as above.
 #[test]

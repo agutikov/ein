@@ -1,9 +1,8 @@
 //! The knowledge base — a stack of immutable layers and one writable top.
 //!
-//! ein.py's `fork()` shallow-copies the fact list and six index dicts, and
-//! `snapshot()` does the same plus a `_nogoods` copy. That is cheap today
-//! (0.003 s over 206 calls on an exhaustive `zebra2`) because there are only
-//! 101 enterings — but [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
+//! A `fork()` that copied the fact list and the index maps would be cheap at
+//! an exhaustive `zebra2`'s hundred enterings — but
+//! [P1a.7](../../../../docs/history/m1a_rust/README.md#p1a7--parallelism)
 //! wants hundreds live at once, and [design/05](../../../../docs/history/m1a_rust/design/05_matcher.md)'s
 //! beta-memories are only affordable if a fork does not copy them, which is
 //! the exact objection [F11](../../../../plans/followups/f11_deductive_layer_perf.md)
@@ -104,7 +103,7 @@ pub const MAX_ALT_JUSTIFICATIONS: usize = 32;
 /// this stays a struct key, and `inner` fits in the padding that was already
 /// there.
 ///
-/// **Why the second level exists.** ein.py keys "the join-key types only": a
+/// **Why the second level exists.** Keyed on the join-key types only, a
 /// `Fact`-valued argument is not indexed, so a `(not (R ?a ?b))` premise
 /// scans `not`'s whole extent. On an exhaustive `zebra` that is **99.1 %** of
 /// 25.16 M candidates walking a 368-fact extent to reject all but a handful
@@ -180,8 +179,7 @@ pub struct Layer {
     /// A Bloom filter over `by_rel_slot_val`'s keys — derived state, rebuilt
     /// wherever that map is written and never read for anything but skipping.
     slot_bloom: [u64; BLOOM_WORDS],
-    /// The **inner** id of every `(not X)` — a bitset, where ein.py keeps a
-    /// `set` of `(relation, args)` tuples.
+    /// The **inner** id of every `(not X)`, as a bitset.
     negated: BitSet,
     rule_apps_by_rule: FxHashMap<Symbol, Vec<FactId>>,
     /// How many facts this layer added whose head names a rule.
@@ -329,10 +327,9 @@ impl Layer {
     /// Field-by-field comparison, naming the first disagreement.
     ///
     /// `names` is compared **as a set** rather than in order, and that is not
-    /// laziness: ein.py builds its `names` dict by comprehension over a *set*
-    /// union, so its order is hash-dependent and not reproducible even
-    /// run-to-run — which is why every consumer sorts (design/02 §2). Every
-    /// other list here is append-ordered and is compared exactly.
+    /// laziness: its order is in no contract, and every consumer sorts
+    /// (design/02 §2). Every other list here is append-ordered and is compared
+    /// exactly.
     fn diff(&self, other: &Layer) -> Result<(), String> {
         if self.facts != other.facts {
             return Err(format!("fact order: {:?} vs {:?}", self.facts, other.facts));
@@ -548,11 +545,10 @@ impl Nogoods {
     /// The clauses, in no particular order — see the annotation below before
     /// using this from the search layer.
     pub fn iter(&self) -> impl Iterator<Item = &[FactId]> {
-        // The oracle's `_nogoods` is itself a `set[frozenset]` (`kb/store.py`), so hash
-        // order is what ein.py has here too and the PYTHONHASHSEED sweep says it reaches
-        // nothing: subsumption tests it with `any`/`all`, apriori filters supersets with
-        // it, and the proof snapshot's only observable is `learned_nogoods_count`, a
-        // count. P1a.4 inherits the constraint — consume this into something
+        // Hash order, and it reaches nothing: subsumption tests it with
+        // `any`/`all`, the lattice filters supersets with it, and the proof
+        // snapshot's only observable is `learned_nogoods_count`, a count. The
+        // search layer inherits the constraint — consume this into something
         // order-insensitive, or sort at the point of output.
         // determinism-ok: every consumer of a no-good clause set is order-insensitive.
         self.clauses.iter().map(|c| &**c)
@@ -583,17 +579,16 @@ impl Drop for NogoodFreeze<'_> {
 
 /// A union-find over names — the M1 placeholder, reserved for F4's e-graph.
 ///
-/// The engine fires no equality propagation, so this stays inert; it is
-/// ported because `fork()` / `snapshot()` copy it and the copy is observable
-/// through [`EqClasses::classes`].
+/// The engine fires no equality propagation, so this stays inert; it exists
+/// because `fork()` / `snapshot()` copy it and the copy is observable through
+/// [`EqClasses::classes`].
 ///
 /// # Reading it does not write it — M1e S1e.4.3
 ///
-/// [`EqClasses::find`] auto-vivified until then, faithfully to `ein.py`'s
-/// `dict`-backed one, so `equivalent(a, c)` on an unrecorded `c` **inserted**
-/// it and `classes()` reported a different order depending on what had been
-/// asked earlier. Two things make that worth ten lines rather than a comment,
-/// and neither is the one the plan expected:
+/// [`EqClasses::find`] auto-vivified until then, so `equivalent(a, c)` on an
+/// unrecorded `c` **inserted** it and `classes()` reported a different order
+/// depending on what had been asked earlier. Two things make that worth ten
+/// lines rather than a comment, and neither is the one the plan expected:
 ///
 /// - **The premise the *comment* route rested on was misattributed.**
 ///   [`standard_of_proof.md`] cited
@@ -619,8 +614,7 @@ impl Drop for NogoodFreeze<'_> {
 /// [fc]: ../../../../ein.rs/crates/ein-core/tests/fork_cost.rs
 #[derive(Clone, Default, Debug)]
 pub struct EqClasses {
-    /// Insertion-ordered, because ein.py's is a `dict` and `classes()`
-    /// iterates it.
+    /// Insertion-ordered, because `classes()` iterates it.
     parent: Registry<Symbol>,
 }
 
@@ -632,14 +626,13 @@ impl EqClasses {
     /// The class root — a **lookup**. An element the map has never seen is
     /// its own root and is *not* inserted.
     ///
-    /// It auto-vivified until M1e S1e.4.3 (`ST-L1`), as `ein.py`'s did:
-    /// merely asking `equivalent(a, c)` inserted `c`, so [`Self::classes`]'s
-    /// output was a function of **query history** and [`Kb::branch`] copied
-    /// whatever the questions had left behind. Path compression stays, and so
-    /// does union-by-first-argument — those are the two behaviours
-    /// [design/03 §8] names as ported. Vivification is in no contract, and it
-    /// is the shape `design/02`'s determinism rules exist to keep away from
-    /// observables.
+    /// It auto-vivified until M1e S1e.4.3 (`ST-L1`): merely asking
+    /// `equivalent(a, c)` inserted `c`, so [`Self::classes`]'s output was a
+    /// function of **query history** and [`Kb::branch`] copied whatever the
+    /// questions had left behind. Path compression stays, and so does
+    /// union-by-first-argument — those are the two behaviours [design/03 §8]
+    /// names. Vivification is in no contract, and it is the shape
+    /// `design/02`'s determinism rules exist to keep away from observables.
     ///
     /// [design/03 §8]: ../../../../docs/history/m1a_rust/design/03_data_model.md
     pub fn find(&mut self, x: Symbol) -> Symbol {
@@ -670,7 +663,7 @@ impl EqClasses {
         self.find(x)
     }
 
-    /// Union by *first argument* — `a`'s root wins, as ein.py's does.
+    /// Union by *first argument* — `a`'s root wins.
     pub fn union(&mut self, a: Symbol, b: Symbol) -> Symbol {
         let (ra, rb) = (self.record(a), self.record(b));
         if ra != rb {
@@ -739,14 +732,14 @@ pub struct Kb {
     top: Layer,
     /// Relation → the rules that name it. Computed by
     /// [`Kb::rebuild_indexes`] and then **shared by reference**, never
-    /// maintained incrementally — ein.py's contract exactly, which is why a
-    /// property fact added during saturation does not extend it.
+    /// maintained incrementally, which is why a property fact added during
+    /// saturation does not extend it.
     rules_by_relation: Arc<Registry<Box<[Symbol]>>>,
     /// `relation → |extent|`, across **every** layer.
     ///
     /// `n_facts_of` is asked 644 166 times on an exhaustive `zebra2` — once per
     /// watched relation per parked boundary entry — and folding it over the
-    /// layer stack made it O(depth) where ein.py's flat index answers in O(1).
+    /// layer stack made it O(depth) where a flat index answers in O(1).
     /// The search reaches depth 35, and that cost was 9.5 % of the run
     /// ([baseline.md §7](../../../../docs/history/m1a_rust/measurements/baseline.md)
     /// item 2). Maintained wherever `by_rel` is, and cloned per fork: a map of
@@ -782,9 +775,8 @@ pub struct Kb {
     saturated_facts: usize,
 }
 
-/// `<KnowledgeBase relations=17 rules=30 facts=84>` — what ein.py's
-/// `__repr__` prints, which is also the most useful thing a failing test can
-/// show.
+/// `<KnowledgeBase relations=17 rules=30 facts=84>` — the most useful thing
+/// a failing test can show.
 impl std::fmt::Debug for Kb {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
@@ -844,8 +836,7 @@ impl Kb {
     /// The registries, mutably — **load time only**.
     ///
     /// Panics once the program is shared, which is precisely when mutating it
-    /// would be a bug: every fork and snapshot holds the same `Arc`, and
-    /// ein.py's registries are immutable after `load()` for the same reason.
+    /// would be a bug: every fork and snapshot holds the same `Arc`.
     pub fn program_mut(&mut self) -> &mut Program {
         Arc::get_mut(&mut self.program).expect("the program is shared — load is over")
     }
@@ -1163,10 +1154,8 @@ impl Kb {
 
     /// Every name that appears anywhere, in first-seen order.
     ///
-    /// ein.py builds this dict by comprehension over a **set** union, so its
-    /// order is set order — hash-dependent and not reproducible, which is why
-    /// every consumer sorts (design/02 §2). This order is deterministic; it is
-    /// still not something to depend on.
+    /// Every consumer sorts (design/02 §2). This order is deterministic; it
+    /// is still not something to depend on.
     pub fn names(&self) -> Vec<Symbol> {
         let mut out = Vec::new();
         // A `Symbol` is a dense `u32`, so the dedup is a bit test rather than
@@ -1248,11 +1237,10 @@ impl Kb {
 
     /// The **loader's** path: append if new, no indexing.
     ///
-    /// ein.py dedups here by scanning `self.facts` linearly, because the
-    /// indexes are not built yet; interning answers the same question in O(1),
-    /// and the answer is the same one — first occurrence wins, so a fact that
-    /// arrives twice with different provenance keeps the first, preserving the
-    /// most primitive declaration.
+    /// The indexes are not built yet, so the dedup is an interning question,
+    /// O(1) — and first occurrence wins, so a fact that arrives twice with
+    /// different provenance keeps the first, preserving the most primitive
+    /// declaration.
     pub fn add_fact(
         &mut self,
         terms: &mut Terms,
@@ -1475,22 +1463,21 @@ impl Kb {
     ///
     /// `Err` carries the first disagreement. Cheap enough to call after every
     /// saturation in a debug build, which is where design/03 §10 puts it.
-    /// The four index-entry totals `cli/saturate.py`'s snapshot reports —
+    /// The four index-entry totals `ein saturate`'s snapshot reports —
     /// `facts_by_relation`, `facts_by_rel_slot_val`, `rule_apps_by_rule`,
     /// `rule_apps_on_relation`, in that order.
     ///
-    /// ein.py holds one flat dict per index, so its `sum(len(v) for v in …)`
-    /// ranges over the whole KB. Here the layers are summed through the
-    /// materialised view, which is the same set of entries with the
-    /// copy-on-write seams closed.
+    /// Each total ranges over the whole KB: the layers are summed through the
+    /// materialised view, which is every entry with the copy-on-write seams
+    /// closed.
     ///
     /// **`facts_by_rel_slot_val` counts the `DIRECT` postings only.** Since
-    /// T1a.6.3.0 the index also holds keys *inside* a nested argument, which
-    /// ein.py's does not — 897 postings against 743 on `zebra2-hints`. This
-    /// line is a report about the **knowledge base**: how many `(relation,
-    /// slot, value)` join keys its facts produce, which is a property of the
-    /// data and identical in both engines. How ein.rs additionally indexes
-    /// those facts to answer a query faster is not what a reader of
+    /// T1a.6.3.0 the index also holds keys *inside* a nested argument — 897
+    /// postings against 743 on `zebra2-hints`. This line is a report about
+    /// the **knowledge base**: how many `(relation, slot, value)` join keys
+    /// its facts produce, which is a property of the data. How the engine
+    /// additionally indexes those facts to answer a query faster is not what
+    /// a reader of
     /// `saturate`'s snapshot is being told, and letting it leak in would make
     /// 43 corpus entries disagree about the *data* because the *engine*
     /// changed.
@@ -1524,8 +1511,8 @@ impl Kb {
         // A rebuild unions the registry names in, so a relation declared with
         // no facts yet gets an entry; the incremental path never does that.
         // The difference is real but it is not a layering question — it is
-        // the same gap ein.py has between `_index_fact` and
-        // `rebuild_indexes`, and it closes the moment the root is rebuilt.
+        // the gap between indexing one fact and `rebuild_indexes`, and it
+        // closes the moment the root is rebuilt.
         for name in self
             .program
             .relations
@@ -1544,13 +1531,13 @@ impl Kb {
     ///
     /// That map is taken once, at the end of `load`, and then shared by
     /// reference — a property fact added during saturation deliberately does
-    /// not extend it (ein.py's contract, and the reason `rules_by_relation` is
-    /// an `Arc` rather than a maintained index). Recomputing it from a
-    /// saturated fact set therefore produces a *different, larger* map than the
-    /// KB ever had, which is what a `.einb` of a saturated KB would otherwise
-    /// come back with: `rule_apps_on_rel` has grown, so every relation a
-    /// derived rule application mentions gains rules the original never
-    /// associated with it.
+    /// not extend it (the reason `rules_by_relation` is an `Arc` rather than
+    /// a maintained index). Recomputing it from a saturated fact set therefore
+    /// produces a *different, larger* map than the KB ever had, which is what
+    /// a `.einb` of a saturated KB would otherwise come back with:
+    /// `rule_apps_on_rel` has grown, so every relation a derived rule
+    /// application mentions gains rules the original never associated with
+    /// it.
     ///
     /// `template` is a fresh load of the same program, which is where the
     /// snapshot comes from in the first place.
@@ -1608,9 +1595,8 @@ impl Kb {
                 named.entry(rel).or_default().insert(terms.facts.rel(f));
             }
         }
-        // `tuple(self.rules[n] for n in sorted(names) if n in self.rules)` —
-        // the list is sorted **by rule name**, so it goes through the rank
-        // table rather than through registry order.
+        // The rules named and present, sorted **by rule name**, so the list
+        // goes through the rank table rather than through registry order.
         let mut out: Registry<Box<[Symbol]>> = Registry::new();
         for (rel, _) in self.program.relations.iter() {
             if let Some(set) = named.get(&rel) {
@@ -1739,8 +1725,8 @@ impl Kb {
         self.top.alts.insert(fact, alts);
     }
 
-    /// Field-by-field comparison against another KB — what "T1-identical"
-    /// means when a round trip has to prove it
+    /// Field-by-field comparison against another KB — what "identical" means
+    /// when a round trip has to prove it
     /// ([design/10 §6](../../../../docs/history/m1a_rust/design/10_binary_format.md)).
     ///
     /// Both sides are materialised first, so the answer is about *content* and
@@ -1868,7 +1854,7 @@ impl Kb {
 
 /// A filtered window over a fact list — `kb.all_facts()`.
 ///
-/// Eager in its fact list and lazy in its filters, exactly as ein.py's is.
+/// Eager in its fact list and lazy in its filters.
 pub struct FactView<'a> {
     facts: Vec<FactId>,
     kb: &'a Kb,
@@ -2454,7 +2440,7 @@ mod tests {
 
     #[test]
     fn a_forks_alternatives_do_not_leak_into_its_parent() {
-        // ein.py copies `_alt_justifications` per fork precisely because a
+        // Alternative justifications are per fork precisely because a
         // justification recorded inside a hypothesis fork can name premises
         // root never assumed; sharing would surface a phantom assumption in a
         // root-level unsat core.
@@ -2480,7 +2466,7 @@ mod tests {
     // ── Views ──────────────────────────────────────────────────────
 
     #[test]
-    fn the_fact_view_filters_the_way_ein_py_does() {
+    fn the_fact_view_filters_by_relation_name_source_and_rule() {
         let (mut terms, mut kb) = fixture();
         let condition = sym(&mut terms, "condition (10)");
         let rule = sym(&mut terms, "symmetric");

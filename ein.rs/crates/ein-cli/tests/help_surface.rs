@@ -1,21 +1,15 @@
-//! The CLI's argument surface — S1a.5.4's acceptance, without `argparse`.
+//! The CLI's argument surface — S1a.5.4's acceptance.
 //!
-//! [Q-M1a.13](../../../../docs/history/m1a_rust/open_questions.md#q-m1a13--argparse-surface-parity)
-//! took `--help` *layout* off the byte gate. What replaced it was a
-//! comparison of *structure*: both parsers rendered as `{command → {option →
-//! short, metavar, arity, default, choices, group, help}}`, and the texts
-//! diffed, so a renamed short key, a changed default, a dropped option or a
-//! new one failed on its own line.
+//! `--help` *layout* is not on the byte gate. What is checked is *structure*:
+//! every parser rendered as `{command → {option → short, metavar, arity,
+//! default, choices, group, help}}`, so a renamed short key, a changed
+//! default, a dropped option or a new one fails on its own line.
 //!
-//! [S1a.10.2](../../../../docs/history/m1a_rust/README.md#s1a102--port-the-python-test-suite)
-//! removes the second parser. The
-//! [ledger](../../../../docs/history/m1a_rust/oracle_ledger.md)
-//! calls the row **retired**, and the two oracle-free floors below are what it
-//! keeps — but a count is a weak successor to a diff, so the rendering itself
-//! is checked in as a golden. That is not "the surface is right"; it is "the
-//! surface has not moved without someone saying so", which is the same claim
-//! `corpus_shapes.md5` makes about every other rendering and the strongest one
-//! available with a single implementation.
+//! The two floors below count the options — but a count is a weak check on
+//! its own, so the rendering itself is checked in as a golden. That is not
+//! "the surface is right"; it is "the surface has not moved without someone
+//! saying so", which is the same claim `corpus_shapes.md5` makes about every
+//! other rendering.
 
 // Both are the golden test's, and the golden is of the *default* surface —
 // see `the_argument_surface_is_stable`.
@@ -27,28 +21,20 @@ use ein_corpus::{golden, golden_path};
 /// skip). An extractor that silently returned nothing would pass an empty
 /// diff; it does not pass this.
 ///
-/// **39 of them are ein.py's**; the other eleven are `solve --jobs`
-/// ([T1a.7.2.1](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)),
-/// `solve --models` (M1d
-/// [S1d.3.3](../../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)),
-/// `ein test`'s nine (M1c
-/// [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test),
-/// plus M1d S1d.4.1's `--json-report`)
-/// and — under the `einb` feature — `ein kb save --saturate`, none of which has
-/// a counterpart there, for the same reason: they are knobs for things ein.py
-/// never had. The split is kept in the sum below rather than folded away,
-/// because "the surface has not moved" is a claim about the *ported* surface
-/// and a new option is a different event from a changed one.
+/// `ein test`'s nine are M1c
+/// [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test)'s
+/// (plus M1d S1d.4.1's `--json-report`), and `ein kb save --saturate` exists
+/// only under the `einb` feature, so each is counted apart from the rest.
 ///
-/// 39, not the "~40, every one with a short key" the stage plan carried: 26 of
-/// `solve`'s 29 have short keys, and none of `saturate`'s 5 or `render`'s 5
-/// do. `saturate` has 5 rather than 3 because `_events.add_arguments` puts
-/// `--events` and `--events-level` on it too.
+/// `saturate` has 5 options rather than 3 because `--events` and
+/// `--events-level` are on it too.
 const EXPECTED: [(&str, usize); 10] = [
     ("COMMAND ein\n", 0),
-    // 29 of ein.py's, plus P1a.7's `--jobs`, M1d S1d.3.3's `--models`,
-    // M1d P1d.10's `--layer-progress` and M1e2's `--dump-answer` (S1e2.1.2),
-    // `--dump-lattice` (S1e2.1.3) and `--diff-models` (S1e2.1.4).
+    // Among them P1a.7's `--jobs`
+    // ([T1a.7.2.1](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)),
+    // M1d S1d.3.3's `--models`, M1d P1d.10's `--layer-progress` and M1e2's
+    // `--dump-answer` (S1e2.1.2), `--dump-lattice` (S1e2.1.3) and
+    // `--diff-models` (S1e2.1.4).
     ("COMMAND ein solve\n", 35),
     ("COMMAND ein saturate\n", 5),
     ("COMMAND ein render\n", 0),
@@ -56,15 +42,14 @@ const EXPECTED: [(&str, usize); 10] = [
     ("COMMAND ein render rule\n", 2),
     ("COMMAND ein render constraints\n", 0),
     ("COMMAND ein render lattice\n", 2),
-    // M1e2 S1e2.1.3's two doors, which ein.py had as `ein ir dot` / `ein kb
-    // dot` until P1.11 removed them: `--levi` and `--rule-mode`; `--since`,
+    // M1e2 S1e2.1.3's two doors: `--levi` and `--rule-mode`; `--since`,
     // `--colour-by`, `--no-types`, `--no-instances`.
     ("COMMAND ein render program\n", 2),
     ("COMMAND ein render kb\n", 4),
 ];
 
 /// M1c [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test)'s
-/// parser, the second in the tree with no ein.py counterpart. **Eight**, and
+/// parser. **Eight**, and
 /// the number is the design: the three that decide whether a run can finish
 /// (`-m`, `-T`, `-E`), the two that decide how much of a passing run to print
 /// (`-v`, `-q`), and the three file-only artefact ones the stage asked for by
@@ -75,10 +60,9 @@ const EXPECTED: [(&str, usize); 10] = [
 /// thing this count exists to notice.
 const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 9)];
 
-/// P1a.8's surface, which has no ein.py counterpart at all: `.einb` is a new
-/// format and `ein kb` is a new command, so these two parsers were never in
-/// the `argparse` diff and are here for the same reason the other nine are —
-/// an extractor that stopped seeing a parser would otherwise pass.
+/// P1a.8's surface, registered only under the `einb` feature, and here for
+/// the same reason the other parsers are — an extractor that stopped seeing a
+/// parser would otherwise pass.
 #[cfg(feature = "einb")]
 const CONTAINER: [(&str, usize); 2] = [("COMMAND ein kb\n", 0), ("COMMAND ein kb save\n", 1)];
 #[cfg(not(feature = "einb"))]
@@ -106,15 +90,10 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        39 + 6
-            + 6
-            + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        51 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "39 options across ein.py's eight parsers, plus six later `solve` \
-         options (`--jobs`, `--models`, `--layer-progress`, `--dump-answer`, \
-         `--dump-lattice`, `--diff-models`), `render program`'s two and `render kb`'s four, \
-         `ein test`'s nine and `ein kb save --saturate` — none of which \
-         ein.py has"
+        "51 options across the ten parsers of `ein`, `solve`, `saturate` and \
+         `render`, plus `ein test`'s nine and `ein kb save --saturate`"
     );
 }
 
@@ -122,9 +101,8 @@ fn the_extractor_finds_the_whole_surface() {
 ///
 /// Every option of every parser — 61 across thirteen at M1e2 S1e2.1.4, the count
 /// [`the_extractor_finds_the_whole_surface`] holds — each with its short key, metavar, arity,
-/// default, choices, group and help — the same text the diff against
-/// `argparse` consumed, blessed from a tree where that diff was green. A flag
-/// added, removed, renamed or re-defaulted shows up as a line.
+/// default, choices, group and help. A flag added, removed, renamed or
+/// re-defaulted shows up as a line.
 ///
 /// ```text
 /// EIN_BLESS=1 cargo test -p ein-cli --test help_surface

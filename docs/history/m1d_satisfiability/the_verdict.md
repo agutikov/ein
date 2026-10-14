@@ -20,7 +20,7 @@ count it had no right to state.
 
 | | | |
 |---|---|---|
-| **the count** | `ein solve` enumerates, and now **says so** | an `Ambiguity` reporting `k` carries the exhaustion qualifier a `Solution` has carried since ein.py |
+| **the count** | `ein solve` enumerates, and now **says so** | an `Ambiguity` reporting `k` carries the exhaustion qualifier a `Solution` has always carried |
 | **the description** | **(b), the determining key**, behind `--models key` | S1d.3.2's recommendation, shipped as *additional output* — 49 lines against 516 on the phase's own case |
 | **(a) the envelope** | **does not ship** | the readability veto: it cannot say how many models there are and the arithmetic it invites over-states by 3.11 × 10¹² ([representations §6](representations.md)) |
 | **(c) the diagram** | **does not ship** | 355 nodes for 32 models; a diagram wins when *k* is exponential in *n* and here *k* is 32 |
@@ -197,8 +197,8 @@ eyeballed:
 | **the exact table** | `zebra2-minus-15 -e -m 3`: **all 32 rows identical**, the same 4 columns, the same **22** minimum keys, the same **320** allowed combinations, the same two forced columns |
 | **every model set the corpus has** | each of the **11** other entries re-run at the census's own cap: **11 of 11 agree** on `k` *and* on the minimum key size — 2, 1, 8 (declined by budget), 4, 1, 1, 1, 2, 4, 4, 6 |
 
-That is the closest thing the repo still has to an oracle diff. It is not a
-gate — the census is a Python script and the engine may not depend on it — but
+That is the closest thing the repo has to a diff against an independent
+implementation. It is not a gate — the census is a Python script and the engine may not depend on it — but
 it is why the key sizes in this record and in
 [`model_set_census.md`](model_set_census.md) are one measurement rather than
 two.

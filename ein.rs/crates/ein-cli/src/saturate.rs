@@ -1,18 +1,17 @@
 //! `ein saturate` — wall-clock benchmark + state dump for the Saturator.
 //!
-//! The Rust half of `ein/cli/saturate.py`. The delegated subcommand: its own
-//! parser, its own `prog`, reached before the top-level one runs.
+//! The delegated subcommand: its own parser, its own `prog`, reached before
+//! the top-level one runs.
 //!
 //! Its output is dense and entirely mechanical — an entity census, a
 //! before/after snapshot with Δ columns, a firing breakdown and an optional
-//! whole-KB dump — which makes it the phase's easiest T3 target and its most
-//! unforgiving one: every column position below is ein.py's.
+//! whole-KB dump — and every column position below is part of it.
 
 use std::collections::BTreeMap;
 use std::path::Path;
 use std::time::Instant;
 
-use ein_core::pyfmt::format_spec;
+use ein_core::numfmt::format_spec;
 use ein_core::{Kb, NameCategory, ProvKind, SolverConfig, Terms};
 use ein_infer::SharedMemo;
 use ein_infer::events::{Events, Level};
@@ -143,7 +142,7 @@ fn fmt_int(n: i64) -> String {
     format!("{n:>6}")
 }
 
-/// Note the asymmetry, which is ein.py's: a positive delta is `+` followed by
+/// Note the asymmetry: a positive delta is `+` followed by
 /// a 5-wide number (6 chars), a negative one is a 5-wide number (5 chars),
 /// and zero is six blanks.
 fn fmt_delta(d: i64) -> String {
@@ -156,9 +155,7 @@ fn fmt_delta(d: i64) -> String {
     }
 }
 
-/// `SCALAR_KEYS`. `None` is a separator; `types` / `instances` head the list
-/// in ein.py under keys the snapshot never sets, so they never print and are
-/// not carried here.
+/// The scalar rows, in print order. `None` is a separator.
 const SCALAR_KEYS: [Option<(&str, &str)>; 27] = [
     Some(("relations", "relations (total)")),
     Some(("relations_declared", "  declared")),
@@ -277,7 +274,7 @@ fn dict_breakdown(
     dict_breakdown_by(label, before, after, |k: &String| k.clone())
 }
 
-/// `_print_dict_breakdown` — keys are the *union* of both sides, sorted, so a
+/// Keys are the *union* of both sides, sorted, so a
 /// relation that vanished still shows with its `after` zero.
 fn dict_breakdown_by<K: Ord + Clone>(
     label: &str,
@@ -315,8 +312,8 @@ fn dict_breakdown_by<K: Ord + Clone>(
 
 // ── Firing analysis ─────────────────────────────────────────────
 
-/// A `Counter` whose iteration order is insertion order, which is what the
-/// `sorted(…, key=lambda r: -count[r])` tie-break resolves to.
+/// A tally whose iteration order is insertion order, which is what a stable
+/// sort by descending count leaves ties in.
 struct Tally {
     order: Vec<String>,
     counts: Vec<i64>,
@@ -406,12 +403,12 @@ fn print_firings(terms: &Terms, firings: &[Firing]) {
 
 // ── Saturated KB dump (--dump) ──────────────────────────────────
 
-/// `_fact_text` — `(rel arg1 arg2 …)`, nested facts recursing.
+/// `(rel arg1 arg2 …)`, nested facts recursing.
 fn fact_text(terms: &Terms, id: ein_core::FactId) -> String {
     events::sexpr(terms, id)
 }
 
-/// `_fact_text_with_provenance` — the compact form with its annotation.
+/// The compact form with its annotation.
 fn fact_text_with_provenance(terms: &Terms, kb: &Kb, id: ein_core::FactId) -> String {
     let base = fact_text(terms, id);
     let base = &base[1..base.len() - 1];
@@ -433,7 +430,7 @@ fn fact_text_with_provenance(terms: &Terms, kb: &Kb, id: ein_core::FactId) -> St
     }
 }
 
-/// `p.branch` — `None` prints as Python's `None`.
+/// `p.branch`, printed as `None` when the provenance has none.
 fn branch(p: &ein_core::Prov) -> String {
     match p.branch {
         Some(b) => b.to_string(),
@@ -576,14 +573,15 @@ fn dump_kb(ast: &Ast, terms: &Terms, kb: &Kb) {
 }
 
 /// The per-rule tally's key: a rule name and whether the firing was
-/// redundant, which ein.py keys with a `(str, bool)` tuple.
+/// redundant.
 fn tally_key(rule: &str, redundant: bool) -> String {
     format!("{rule}\u{0}{redundant}")
 }
 
-/// `SaturatorStepLimitError`'s message, whose tail is `repr(self._last_firing)`
-/// — a dataclass repr all the way down, which is why it goes through
-/// [`ein_core::pyrepr`] rather than Rust's `{:?}`.
+/// The step-limit error's message, whose tail is the last firing spelled
+/// `Firing(rule='…', activator=(…), bindings={…}, …)` — strings quoted and
+/// tuples parenthesised all the way down, which is why it goes through
+/// [`ein_core::repr`] rather than Rust's `{:?}`.
 fn step_limit_message(max_steps: i64, terms: &Terms, last: Option<&Firing>) -> String {
     let shown = match last {
         None => "None".to_string(),
@@ -597,20 +595,27 @@ fn step_limit_message(max_steps: i64, terms: &Terms, last: Option<&Firing>) -> S
 }
 
 fn repr_firing(terms: &Terms, f: &Firing) -> String {
-    use ein_core::pyrepr::{PyValue, repr, repr_str};
-    let tuple = |vs: Vec<PyValue>| repr(&PyValue::Tuple(vs));
+    use ein_core::repr::{ReprValue, repr, repr_str};
+    let tuple = |vs: Vec<ReprValue>| repr(&ReprValue::Tuple(vs));
     let activator = tuple(
         f.activator
             .iter()
-            .map(|&s| PyValue::Str(terms.sym(s).to_string()))
+            .map(|&s| ReprValue::Str(terms.sym(s).to_string()))
             .collect(),
     );
     let bindings: Vec<String> = f
         .bindings
         .iter()
-        .map(|(k, v)| format!("{}: {}", repr_str(terms.sym(*k)), repr(&terms.py_value(*v))))
+        .map(|(k, v)| {
+            format!(
+                "{}: {}",
+                repr_str(terms.sym(*k)),
+                repr(&terms.repr_value(*v))
+            )
+        })
         .collect();
-    let facts = |ids: &[ein_core::FactId]| tuple(ids.iter().map(|&id| terms.py_fact(id)).collect());
+    let facts =
+        |ids: &[ein_core::FactId]| tuple(ids.iter().map(|&id| terms.repr_fact(id)).collect());
     format!(
         "Firing(rule={}, activator={activator}, bindings={{{}}}, derived={}, \
          premises={}, redundant={})",
@@ -662,10 +667,9 @@ fn bench(
     let events = &mut events_owned;
     crate::solve::events_load(events, &terms, &kb);
 
-    // Compiled with the log **off**: ein.py hands this engine to the
-    // `Saturator`, so its enqueue pass finds the cache warm and emits nothing;
-    // here the saturator builds its own and compiles again, and recording both
-    // passes would double every `compile` event.
+    // Compiled with the log **off**: the saturator builds its own engine and
+    // compiles again, and recording both passes would double every `compile`
+    // event.
     let mut eng = Engine::new();
     let mut quiet = Events::off();
     let t = Instant::now();
@@ -689,10 +693,8 @@ fn bench(
     let t_start = Instant::now();
     let mut t_mark = t_start;
     let mut limit_msg: Option<String> = None;
-    // ein.py hands its pre-compiled `Engine` to the `Saturator`, so the two
-    // snapshots read the *same* object: 6 plans before, 32 and 880 fired
-    // after. Here the saturator builds its own, so the after-snapshot reads
-    // that one back out.
+    // The saturator builds its own `Engine` rather than taking the one
+    // compiled above, so the after-snapshot reads that one back out.
     let sat_engine: Option<Engine>;
     {
         let mut s = Session {
@@ -731,7 +733,7 @@ fn bench(
                     i,
                     format_spec(now.duration_since(t_mark).as_secs_f64() * 1000.0, "8.2f"),
                     s.kb.n_facts(),
-                    ein_core::pyrepr::repr_str(s.terms.sym(firing.rule)),
+                    ein_core::repr::repr_str(s.terms.sym(firing.rule)),
                     if firing.redundant { " [redundant]" } else { "" }
                 );
                 t_mark = now;

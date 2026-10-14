@@ -1,13 +1,9 @@
 //! `ein solve --json-summary FILE` — the structured run summary (S1a.0.1).
 //!
-//! The Rust half of `ein/cli/_summary.py`. This file was the parity contract's
-//! first two tiers — **T0** (the answer is the same) and **T1** (every counter
-//! the engine reports about its own work is the same). The harness that read
-//! it retired at S1a.10.3; what reads it now is
-//! `ein-cli/tests/summary_properties.rs`, which holds the same fields to
-//! thirteen arithmetic identities instead of to a second engine.
+//! What reads it in the tree is `ein-cli/tests/summary_properties.rs`, which
+//! holds its fields to thirteen arithmetic identities.
 //!
-//! Four properties, all still worth having: **additive** (writes a file,
+//! Four properties: **additive** (writes a file,
 //! never stdout/stderr/the exit code), **order-free** (every set-shaped
 //! observable sorted, so a difference reports semantics rather than order),
 //! **self-describing** (field order fixed by construction, `schema`
@@ -33,7 +29,7 @@ use ein_render::dump::json::dumps_indent;
 
 const SCHEMA: &str = "ein-summary/1";
 
-/// The T0 observables: what was proved, and the model(s) that prove it.
+/// The verdict observables: what was proved, and the model(s) that prove it.
 fn verdict_block(ast: &Ast, terms: &mut Terms, answer: &Answer) -> Vec<(String, Json)> {
     let mut core: Vec<String> = Vec::new();
     let branches: Vec<&ein_infer::Solution> = match answer {
@@ -118,7 +114,7 @@ fn verdict_block(ast: &Ast, terms: &mut Terms, answer: &Answer) -> Vec<(String, 
 }
 
 /// Every `MonotonicStats` field, in declaration order — the base counters
-/// lead, as `_BaseStats` does.
+/// lead.
 fn stats_block(stats: &MonotonicStats) -> Json {
     let b = &stats.base;
     Json::obj(vec![
@@ -157,11 +153,10 @@ fn sparse(counts: &[u64; 4], name: impl Fn(usize) -> &'static str) -> Json {
 /// untouched: how big the fixpoint is, how many plans it took, what the
 /// boundary did, and what hypgen would enumerate from it.
 ///
-/// It runs on the **live** event log, not a silent one: ein.py's summary is
-/// built after `_events.verdict` and before `_events.finish`, so its second
-/// root saturation is recorded — 92 further events on a fixture whose whole
-/// solve is 96. A silent one here would make every `--events --json-summary`
-/// run diverge at T2, which is how this was found.
+/// It runs on the **live** event log, not a silent one: the summary is built
+/// after the `verdict` event and before `finish`, so its second root
+/// saturation is recorded — 92 further events on a fixture whose whole solve
+/// is 96.
 fn root_block(
     ast: &Ast,
     terms: &mut Terms,
@@ -278,8 +273,8 @@ fn root_block(
 ///
 /// The event log is silent for the same reason `--events` output is a
 /// contract: a probe nobody asked for must not narrate into a stream somebody
-/// is diffing. [`root_block`] runs on the live log deliberately and for the
-/// opposite reason — it is reproducing what ein.py recorded.
+/// is diffing. [`root_block`] runs on the live log deliberately: its second
+/// root saturation is part of the recorded stream.
 ///
 /// [P1d.2 handed forward]: `docs/history/m1d_satisfiability/hypotheses_from_obligations.md`
 fn leftover_at(
@@ -557,34 +552,18 @@ pub fn build_aborted(
 /// The summary as JSON, two-space indented, **ASCII-only**, with a trailing
 /// newline.
 ///
-/// # The one place this diverges from `ein.py`, deliberately — M1e S1e.4.8
+/// # Escaped here, literal in the event stream — M1e S1e.4.8
 ///
-/// This said `json.dumps(summary, indent=2, ensure_ascii=False)` until then,
-/// which was a **true statement about the parity target and a false one about
-/// this function**: `dumps_indent` escapes every non-ASCII character. `MA-L3`
-/// reported it as comment-against-comment and it is not — the question is
-/// settleable, and not from the goldens (neither `from_ein_py/` directory
-/// holds a summary; none exists anywhere in the tree). It is settleable from
-/// git: `git show 4c1a5b3^:ein.py/src/ein/cli/_summary.py` line 208 is
-/// literally that call, `ensure_ascii=False` and all.
+/// `dumps_indent` escapes every non-ASCII character, so `ein solve
+/// examples/zebra.ein --json-summary` emits `\u2014` where the *same run*'s
+/// `--events` emits a literal em dash: `ein-infer`'s event writer leaves
+/// non-ASCII text as it is (`events.rs`, pinned by
+/// `strings_escape_json_specials_and_keep_non_ascii`). `MA-L3` reported the
+/// difference, and it is **accepted rather than changed**:
 ///
-/// So the divergence is real and live — `ein solve examples/zebra.ein
-/// --json-summary` emits `\u2014` where the *same run*'s `--events` emits a
-/// literal em dash, because `ein-infer`'s event writer reproduced `ein.py`'s
-/// **other** override exactly (`events.rs`, pinned by
-/// `strings_escape_the_way_ensure_ascii_false_does`). The port knew what the
-/// flag meant, implemented it once, and missed it once.
-///
-/// **Accepted rather than fixed**, and the reasons are not "it is only a
-/// comment":
-///
-/// - there is nothing left to be byte-identical *to* — `ein.py` left at
-///   S1a.10.5 and the T3 gate that would have compared this went with it, so
-///   "match `_summary.py:208`" means reproducing a call signature from git
-///   history rather than a checked output;
 /// - the summary is documented as a **parsed**, self-describing artefact and
 ///   every reader in the tree parses it, so `json.loads` and `serde_json` give
-///   identical values from either encoding — the divergence is invisible to
+///   identical values from either encoding — the difference is invisible to
 ///   every consumer that exists;
 /// - an ASCII-only artefact survives a pipeline, a locale and a terminal that
 ///   an em dash does not, which is a real virtue for the surface an embedder
@@ -592,11 +571,10 @@ pub fn build_aborted(
 ///
 /// What holds the premise is
 /// `cli_semantics::the_summary_escapes_non_ascii_where_the_event_stream_does_not`.
-/// The alternative, if a consumer ever wants the bytes: thread `ensure_ascii`
-/// through `dump/json.rs`'s writer and point **this function alone** at the
-/// non-escaping variant — `--dump-states` and `test --json-report` must keep
-/// the default, since `_lattice_dump.py` and `_serialise.py` took CPython's,
-/// and a blanket change would introduce a divergence while closing one.
+/// The alternative, if a consumer ever wants the bytes: thread a non-escaping
+/// switch through `dump/json.rs`'s writer and point **this function alone** at
+/// it — `--dump-states` and `test --json-report` must keep the default, since
+/// they escape too and a blanket change would move every output they have.
 pub fn write(path: &str, summary: &Json) -> std::io::Result<()> {
     std::fs::write(path, text(summary))
 }

@@ -10,14 +10,11 @@ self-modifying constraint language (followup F2) — *consumes* the
 kernel. Below it there is one implementation, [`ein.rs`](../../ein.rs/)
 (M1a). This tree is the contract between them.
 
-> **Since M1a [P1a.10](../history/m1a_rust/README.md#p1a10--one-implementation)
-> this tree is the only statement of intent that is not also the
-> implementation.** It was written when there were two engines and a harness
-> that checked they agreed; now a claim here is checked by
-> `cargo test --workspace` and by nothing else. Behaviours that used to be
-> defined by "whatever the Python engine does" are stated in
-> [`defined_behaviour.md`](defined_behaviour.md), and what it takes to call a
-> claim here settled is [`standard_of_proof.md`](standard_of_proof.md) — two
+> **This tree is the only statement of intent that is not also the
+> implementation**: a claim here is checked by `cargo test --workspace` and by
+> nothing else. Behaviours whose only other statement would be the source are
+> stated in [`defined_behaviour.md`](defined_behaviour.md), and what it takes
+> to call a claim here settled is [`standard_of_proof.md`](standard_of_proof.md) — two
 > rules, ratified 2026-08-28.
 
 ## Reading order
@@ -109,7 +106,7 @@ visible from the page itself. Triaged page by page at M1e
   rewritten that way is neither a record nor a specification, and the design it
   held stops being recoverable — which matters here, because
   [`docs/history/m1a_rust/design/07_search_layer.md`](../history/m1a_rust/design/07_search_layer.md)
-  cites the first of the three as the contract the Rust port had to reproduce.
+  cites the first of the three as the contract M1a's search layer had to reproduce.
 - **moved to [`docs/history/`](../history/README.md)** — for a page that belongs
   to a shipped milestone's record. **A page is moved *into* an existing
   milestone record; it is never made into one.** That is why the three above are
@@ -130,7 +127,7 @@ meet it.
 ## Keeping this true
 
 **The failure mode this section exists to prevent has a name.** M1a
-[S1a.10.6](../history/m1a_rust/README.md#s1a106--the-docs-after-the-oracle) was
+[S1a.10.6](../history/m1a_rust/README.md#s1a106--defined-behaviour) was
 a doc pass over this tree, and it missed **every** page M1e's review later
 found — `algorithm_layer_n.md`, `lattice_dump.md`, `02_store.md`,
 `02_patterns.md`, `04_dot_rendering.md`, `inference/README.md`, this README —
@@ -138,8 +135,8 @@ plus four more the review itself did not name (`reserved_engine_strings.md`,
 `02_rules.md`, `01_entities.md`, `features.md`). The reason is structural, not
 carelessness: **a doc pass driven by what the milestone changed cannot catch a
 page describing machinery removed two milestones ago**, because nothing in the
-milestone touched it. S1a.10.6 audited what the oracle's departure invalidated,
-and it did that well.
+milestone touched it. S1a.10.6 audited what its own milestone invalidated, and
+it did that well.
 
 So the checks below are deliberately **milestone-independent**. None of them
 needs to know what changed; each asks a question of a page in isolation.
@@ -203,7 +200,7 @@ explicit audience banner.
 | **newcomer** | [`../guide/`](../guide/) — *Learn Ein by solving the Zebra puzzle*, a from-zero tutorial. Start here if you're new; it links into the pages below as you go. |
 | **user** | `ir/01-ein-graph/` (semantics); `ir/03-ein-lang/` (the language — grammar, patterns, `06_reserved_names` kernel-API + card, `07_stdlib_api`); `ir/02-data-model/{01_entities,02_store}` (the abstract model) |
 | **dev**  | `ir/02-data-model/03_implementation.md`; `inference/implementation.md`; `inference/architecture_and_algorithms.md`; [`architecture.md`](architecture.md); [`defined_behaviour.md`](defined_behaviour.md) |
-| **embedder** | Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). From **Rust**: link the crates — [`../api/rust.md`](../api/rust.md), whose worked example is a test the gate runs. From anywhere else: the `ein` binary plus `--json-summary` / [`--events`](inference/events.md). The five *Python* pages under [`../api/`](../api/) are **history** — the contract of the engine that was, kept whole because [Q-M1a.23](../history/m1a_rust/open_questions.md#q-m1a23--when-does-the-engine-need-a-python-binding)'s trip-wires would restore it; there is no module to import. |
+| **embedder** | Driving Ein *as a library*, distinct from authoring puzzles (user) or changing the engine (dev). From **Rust**: link the crates — [`../api/rust.md`](../api/rust.md), whose worked example is a test the gate runs. From anywhere else: the `ein` binary plus `--json-summary` / [`--events`](inference/events.md). |
 | **both** | this README, [`glossary.md`](glossary.md), the per-subtree READMEs, and [`configuration.md`](configuration.md) — the `(config …)` flags a puzzle may set, the CLI options and the `EIN_*` environment, with *does it change the answer* on every flag row |
 
 - **Newcomer path** (never seen Ein): the [guide](../guide/) end-to-end
@@ -219,8 +216,7 @@ explicit audience banner.
   [`../api/rust.md`](../api/rust.md) (the five steps, one worked example,
   then per-area detail), then `01-ein-graph` + `03-ein-lang` for the puzzles
   you load. From a non-Rust program the surface is the binary —
-  `--json-summary` and [`--events`](inference/events.md). The Python pages
-  beside it are history; read their banner before anything else in them.
+  `--json-summary` and [`--events`](inference/events.md).
 
 ## Cross-references
 
@@ -243,11 +239,11 @@ explicit audience banner.
 - Ideas (the user's framing of the project's *goals*): [`plans/ideas/`](../../plans/ideas).
 - External tech index: [`docs/lib/`](../lib/).
 - Source of truth for parsing: [`ir/03-ein-lang/00_ebnf.md`](ir/03-ein-lang/00_ebnf.md)
-  — the complete grammar, in EBNF. It was `grammar.lark` until M1a S1a.10.5.
+  — the complete grammar, in EBNF.
 - Source of truth for the KB: [`ein-core`](../../ein.rs/crates/ein-core/src/).
 - **Defined behaviour**: [`defined_behaviour.md`](defined_behaviour.md) — the
-  thirteen diagnostics, orderings and error strings whose only statement, until
-  the second engine left, was a Python source file.
+  thirteen diagnostics, orderings and error strings the engine defines, stated
+  as normative rather than left to the source.
 - **End-to-end target trace**:
   [`inference/zebra_walkthrough.md`](inference/zebra_walkthrough.md) — the human
   Wikipedia Zebra solution annotated as ein inference (NL ↔ ein

@@ -26,9 +26,9 @@ md-5.workspace = true
 # only, so their order never reaches the output — which is exactly the case
 # design/02 §9 wants a non-randomised hasher for.
 rustc-hash.workspace = true
-# `render/palette.hash_color` is `sha1(name)` mod the palette length — a
-# colour index, not a security claim, and stable across `PYTHONHASHSEED`
-# precisely because it is a digest and not Python's salted `hash()`.
+# `palette::hash_color` is `sha1(name)` mod the palette length — a colour
+# index, not a security claim, and stable across processes and builds
+# precisely because it is a digest and not a salted hash.
 sha1.workspace = true
 
 [dev-dependencies]
@@ -39,11 +39,10 @@ sha1.workspace = true
 # a default feature, so it survives that flag. `the_sweep_is_not_vacuous`
 # fails if this row is ever dropped.
 ein-infer = { path = "../ein-infer", features = ["parallel"] }
-# The DOT goldens under `ein-render/tests/golden/from_ein_py/dot/` are the fixture; reading
+# The DOT goldens under `ein-render/tests/golden/dot/` are the fixture; reading
 # them needs nothing, but building the KB a golden was captured from does.
 ein-corpus = { path = "../ein-corpus" }
-# The one implementation of "what the parity contract stopped comparing",
-# one implementation of what counts as narration, shared by every test that
-# has to know.
-ein-parity = { path = "../ein-parity" }
+# The one implementation of what counts as narration, shared by every test
+# that has to know.
+ein-narration = { path = "../ein-narration" }
 serde_json.workspace = true

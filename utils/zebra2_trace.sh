@@ -2,11 +2,7 @@
 #
 # Solve zebra2 and render its markdown trace (S1.6.4) into build/zebra2/.
 #
-# The engine is `ein.rs/target/release/ein`; `$EIN_BIN` overrides it. It was
-# `.venv-pypy/bin/python -m ein.cli` until M1a S1a.10.4, for the reason the
-# PyPy venv existed at all — CPython took >90s over the full zebra2 lattice
-# solve where PyPy took ~35s. ein.rs takes ~40ms, so the interpreter choice
-# that shaped this script is not a choice any more.
+# The engine is `ein.rs/target/release/ein`; `$EIN_BIN` overrides it.
 #
 # Output:
 #   build/zebra2/zebra2.md         — the trace (inline fenced `dot` blocks)

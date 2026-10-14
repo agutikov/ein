@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Process-level end-to-end timings — the denominators of P1a.6's targets.
+"""Process-level end-to-end timings — P1a.6's instrument.
 
 `cargo bench` times engine calls *inside* one process, which is the right shape
 for comparing a `parse` against a `parse`. It is the wrong shape for the
-milestone's headline claim: "`solve zebra2.ein -e` end-to-end, 4.07 s under
-PyPy". End-to-end is a **process** — start-up, the run, the print — and that is
-what a user waits for and what `ein.rs` had to beat.
+milestone's headline claim, "`solve zebra2.ein -e` end-to-end". End-to-end
+is a **process** — start-up, the run, the print — and that is what a user
+waits for.
 
 So this measures processes, one `ein` binary per series against the same argv:
 
@@ -16,16 +16,12 @@ So this measures processes, one `ein` binary per series against the same argv:
         --bin system=ein.rs/target-alloc-system/release/ein \
         --bin snmalloc=ein.rs/target/release/ein          # two builds, one series
 
-**One engine, still worth a process timing.** Until
-[S1a.10.4](../docs/history/m1a_rust/README.md#s1a104--utils-re-aimed-at-one-engine)
-the rows were three implementations — CPython, PyPy, ein.rs — and the ratio
-between them was the point. The PyPy and CPython columns in
-[baseline.md](../docs/history/m1a_rust/measurements/baseline.md) are frozen
-constants now: nothing can re-measure them. What this still answers is the
-question `--bin` was added for and the one every P1a.6 stage asked — *did this
-change make the shipping binary faster?* — across builds (allocator arms,
-feature flags, `--profile`s) and across commits, which is why it survives the
-oracle instead of collapsing into `cargo bench`. `$EIN_BIN` moves the default.
+**A process timing, not a `cargo bench`.** What this answers is the question
+`--bin` was added for and the one every P1a.6 stage asked — *did this change
+make the shipping binary faster?* — across builds (allocator arms, feature
+flags, `--profile`s) and across commits
+([baseline.md](../docs/history/m1a_rust/measurements/baseline.md)).
+`$EIN_BIN` moves the default.
 
 Reported per cell: **best, median, spread** (max - min as a % of the median)
 and **peak RSS** of the child. Best-of-N is the estimator — the machine's

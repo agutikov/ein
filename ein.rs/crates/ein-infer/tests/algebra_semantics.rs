@@ -1,14 +1,12 @@
 //! `std.algebra` — the relation-algebra library as *behaviour* (T1a.10.2.2).
 //!
-//! Replaces three Python files, which die with `ein.py/`:
+//! Three groups:
 //!
-//! - `ein.py/tests/inference/test_algebra.py` — the A7 seed: `converse`, the
-//!   `imply` family, and the reflective `symmetric ⇄ (converse R R)` lemmas.
-//! - `ein.py/tests/inference/test_converse_typecheck.py` — A10: the
-//!   `converse-illtyped-{dom,ran}` signature check, `std.typing`'s one-knob
-//!   `(type-hierarchy …)` driver, and `(reflexive R)`.
-//! - `ein.py/tests/inference/test_relation_algebra.py` — A12: composition, the
-//!   Boolean lattice (`meet` / `join` / `difference` / `complement` / `top` /
+//! - the A7 seed: `converse`, the `imply` family, and the reflective
+//!   `symmetric ⇄ (converse R R)` lemmas.
+//! - A10: the `converse-illtyped-{dom,ran}` signature check, `std.typing`'s
+//!   one-knob `(type-hierarchy …)` driver, and `(reflexive R)`.
+//! - A12: composition, the Boolean lattice (`meet` / `join` / `difference` / `complement` / `top` /
 //!   `empty`), the identity, the single-relation property checks, and the
 //!   Tarski/Maddux equational lemmas (Schröder B10, contravariance B7,
 //!   converse-over-join B8).
@@ -26,8 +24,8 @@
 //! What is asserted is the **fixpoint**, never a plan or a firing's internals:
 //! the facts the KB holds once saturation is done, and — where the claim is
 //! about running away rather than about a conclusion — how many firings it took
-//! to get there. Where the Python original asked `X in derived`, the port often
-//! asks for the *whole extent* of the derived relation instead: "meet is
+//! to get there. Where a membership check `X in derived` would do, a test here
+//! often asks for the *whole extent* of the derived relation instead: "meet is
 //! intersection" is a statement about which pairs are absent as much as about
 //! which are present, and a membership check cannot fail on an over-derivation.
 
@@ -42,7 +40,7 @@ use ein_ir::{Ast, parse};
 struct Run {
     /// Every fact in the KB at the fixpoint, rendered `(rel arg …)`.
     facts: BTreeSet<String>,
-    /// The conclusions of the non-redundant firings — ein.py's `_derived`.
+    /// The conclusions of the non-redundant firings.
     ///
     /// A subset of `facts`, and the sharper of the two when the claim is that a
     /// *rule* produced something rather than that the fact is present: a given
@@ -276,9 +274,8 @@ fn converse_is_symmetric_on_its_pair_and_the_back_edge_mirrors() {
 /// that already exists, so it fires once and is redundant forever after. The
 /// budget is the falsifier — a rule producing a *fresh* fact each time round
 /// would exhaust it — and the count bound catches a dedup that still works but
-/// has stopped being cheap. The bound is the Python original's `n < 100`, over
-/// the same quantity (`saturate`'s step count, redundant firings included);
-/// this engine reaches the fixpoint in 7.
+/// has stopped being cheap. The bound is `n < 100` over `saturate`'s step
+/// count, redundant firings included; this engine reaches the fixpoint in 7.
 #[test]
 fn the_algebra_lemma_loop_terminates() {
     let src = algebra(LEMMAS)
@@ -830,8 +827,7 @@ fn join_converse_derives_the_converse_union() {
 /// re-derives the original `(compose r s t)`. It terminates because that fact
 /// already exists — nothing about the rules themselves bounds the loop. The
 /// 8 000-step budget is the runaway detector; the firing count is the
-/// regression detector, carried over from the Python original's `n < 400`.
-/// This engine reaches the fixpoint in 16.
+/// regression detector, at `n < 400`. This engine reaches the fixpoint in 16.
 #[test]
 fn the_reflective_lemma_set_terminates() {
     let src = algebra("compose converse converse-pair-symmetric compose-contravariant")

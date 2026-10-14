@@ -80,7 +80,7 @@ the call falls back to the blind generator.
 [`obligation_forms.md`](obligation_forms.md) is the full menu, A through G, and
 **form G won**: a rule shape asserting a reserved atom. Not a kernel primitive
 (form A), not a first-class object (form E), not a stdlib convention. **Nine**
-load refusals with no Python counterpart. The user settled two sub-questions:
+new load refusals. The user settled two sub-questions:
 the atom is `(open ?R)` and not a bare `(open)` — *"why does `open` take
 arguments when `(false)` does not?"* — and obligation rules run **after** the
 fixpoint, as one pass, never in the agenda.

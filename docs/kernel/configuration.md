@@ -30,7 +30,7 @@
 |---|---:|---|
 | `(config …)` flags | **17** | `FIELDS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs); the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
 | CLI options | **61** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
-| `EIN_*` environment | **8** read by the shipped binary, of 29 greppable names | § [4](#4-the-environment) |
+| `EIN_*` environment | **8** read by the shipped binary, of 26 greppable names | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
 
@@ -121,9 +121,9 @@ config (resolved)
 | `print-alive` | `bool` | `false` | **nothing** | **inert** | inert |
 | `warn-derived-naf` | `bool` | `false` | **two questions, one flag**, both emitted once after root's saturation. `DerivedNafWarning` — the `(absent …)` guard watches a **rule-derived** relation: a *stratification* signal since S1.21.8, not a soundness one. `RefutationUnderAbsentWarning` (M1e [S1e.2.3](../history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)) — the rule concludes `(false)` or a `(not …)` from a guard over a relation the program's **generator can still propose**, which *is* a soundness signal: [`dead` is not upward-closed under `absent`](../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent). The second shares the flag because a `SolverConfig` field is rendered into the KB-shape digest, so an eighteenth would re-bless every shape golden in the corpus | no | contract |
 | `candidate-order-seed` | `int` | `-1` | **nothing** | **inert** | inert |
-| `lattice-sanity-check` | `bool` | `false` | for every alive commitment of size ≥ 2, re-saturates each `(k−1)`-subset parent path and compares the KBs — **1 + k + one per alive parent**, so up to `2k+1` each (it was documented as `k+1` in three places until M1e S1e.4.8, inherited from ein.py's docstring, which counted the parents' `try_commitment_set` and forgot their re-saturation). It also **adds `compile` / `enqueue` / `fire` / `quiesce` events to `--events`**, which is inherent to running the extra saturations through a narrating stream. A mismatch aborts the run with `SolveError::Sanity` | no — but it can **fail** the run | probe |
+| `lattice-sanity-check` | `bool` | `false` | for every alive commitment of size ≥ 2, re-saturates each `(k−1)`-subset parent path and compares the KBs — **1 + k + one per alive parent**, so up to `2k+1` each (it was documented as `k+1` in three places until M1e S1e.4.8, a count that included the parents' `try_commitment_set` and forgot their re-saturation). It also **adds `compile` / `enqueue` / `fire` / `quiesce` events to `--events`**, which is inherent to running the extra saturations through a narrating stream. A mismatch aborts the run with `SolveError::Sanity` | no — but it can **fail** the run | probe |
 | `lattice-order` | `str` | `lex` | the within-layer candidate order: `lex` is the canonical-tuple sort, `score-sum` sums `hypgen-scoring` over each set, descending, tie-broken by the tuple | order only | measurement lever |
-| `lattice-order-seed` | `int` | `None` | seeds one CPython-MT19937 generator per *solve*, applied after the order to permute each layer. `None` disables it | order only | probe |
+| `lattice-order-seed` | `int` | `None` | seeds one MT19937 generator per *solve* — `init_by_array` over `|seed|`'s 32-bit words, each layer shuffled Fisher–Yates from the top with `randbelow(i+1)` by rejection sampling — applied after the order to permute each layer. `None` disables it | order only | probe |
 | `enable-path-nogoods` | `bool` | `true` | whether a dead commitment emits a learned clause. Off, a dead set that a clause would have subsumed is entered again | no | contract |
 | `enable-symmetric-mirror` | `bool` | `true` | the kernel's native arg-swap closure over relations marked `(__symmetric__ R)`. Off, such a relation is closed only if the program's own rule closes it | **yes** | contract |
 | `enable-singleton-writeback` | `bool` | `true` | whether a size-1 dead clause writes `(not h)` back to root, and whether layer-1 deaths integrate mid-layer rather than at the barrier | no † | contract |
@@ -198,7 +198,7 @@ all of them.
 - **The rest are reachable only from a `(config …)` head**, which is why
   `utils/feature_matrix.py` builds each cell as a copy of the puzzle with one
   generated block appended, and why the corpus sweep — which runs a process —
-  cannot flip them ([Q-M1a.16](../history/m1a_rust/open_questions.md#q-m1a16--how-does-the-harness-drive-the-lever-matrix)).
+  cannot flip them ([Q-M1a.16](../history/m1a_rust/open_questions.md#q-m1a16--how-does-the-corpus-drive-the-lever-matrix)).
 - **A one-lever sweep of 2026-08-28** did the same across the tree: each flag
   flipped in an appended `(config …)` block, over the 29 `examples/` fixtures
   that state no such head of their own (appending is last-wins, so a fixture
@@ -270,10 +270,7 @@ fact essentially one derivation, so it leaves the default alone.
 every direction that does not.** `print-alive` and `candidate-order-seed` are
 parsed, type-checked, `--dump-config`-printed, `--json-summary`-echoed,
 rendered into the KB-shape digest and round-tripped through `.einb`'s meta —
-and read by no code path. They are port gaps: ein.py's did something, the
-surface crossed and the behaviour did not, and no parity tier could have
-noticed, because a knob that does nothing produces identical output in both
-engines. The claim is held from outside by
+and read by no code path. The claim is held from outside by
 `config_reference.rs::the_two_inert_flags_are_still_inert`, and the four
 options — wire, delete, document, deprecate — are
 [Q-M1e.10](../history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)'s.
@@ -348,7 +345,7 @@ Five classes. Only the first two touch the answer.
   not, which was `Q7` / `EH-L1`. **`-m 0` stays legal** and means a truncation
   (§ `defined_behaviour.md` 5), and a **negative** `-m` or `-E` is still
   clamped onto it silently —
-  [Q-M1e.17](../history/m1e_review_processing/open_questions.md#q-m1e17--three-py_int-options-silently-reinterpret-a-negative).
+  [Q-M1e.17](../history/m1e_review_processing/open_questions.md#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative).
   **`-m` is refused under `EIN_TRAVERSAL=tree`** — in all three subcommands
   that take it (`solve`, `test`, `render lattice`) — exit 2, since M1e
   [S1e.2.1](../history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal):
@@ -397,9 +394,9 @@ Five classes. Only the first two touch the answer.
 
 ## 4. The environment
 
-Twenty-nine `EIN_*` names are greppable in this tree. Eight are read by the
+Twenty-six `EIN_*` names are greppable in this tree. Eight are read by the
 shipped binary; ten by the test harness; two by `utils/` and the shell; and
-**nine are not environment variables at all** — which is the part a grep
+**six are not environment variables at all** — which is the part a grep
 cannot tell you and the reason this section is a classification rather than a
 list.
 
@@ -434,7 +431,7 @@ set. `ein --version`'s `features` line says which build you have.
 ### Read by the test harness
 
 Not the binary's: these are read by `#[cfg(test)]` code, by a `tests/` target,
-or by one of the two dev-only crates (`ein-corpus`, `ein-parity`, both
+or by one of the two dev-only crates (`ein-corpus`, `ein-narration`, both
 `publish = false`). Setting one has no effect on `ein solve`.
 
 | name | what it does | read at |
@@ -448,7 +445,7 @@ or by one of the two dev-only crates (`ein-corpus`, `ein-parity`, both
 | `EIN_JOBS_SWEEP` | the job counts `jobs_invariance` runs, e.g. `2,4,8,16` | `ein-render/tests/jobs_invariance.rs` |
 | `EIN_FUZZ_ITERS` | the parser fuzzer's budget, default 2 000 | `ein-ir/tests/fuzz_properties.rs` |
 | `EIN_FUZZ_SEED` | moves that fuzzer's stream | `ein-ir/tests/fuzz_properties.rs` |
-| `EIN_PARITY_STRICT` | `=1` turns off D3's narration normalisation, restoring the byte-identical contract | `ein-parity/src/lib.rs` |
+| `EIN_NARRATION_STRICT` | `=1` runs the id-order, jobs and corpus-shape comparisons with no narration cut — a fork's derivation compared byte for byte, which is how the cut is measured | `ein-narration/src/lib.rs` |
 
 ### Read by `utils/` and the shell
 
@@ -459,11 +456,11 @@ or by one of the two dev-only crates (`ein-corpus`, `ein-parity`, both
 
 ### Not an environment variable at all
 
-Nine names a grep for `EIN_[A-Z_]*` returns that nothing ever reads from the
+Six names a grep for `EIN_[A-Z_]*` returns that nothing ever reads from the
 environment. Naming them is the point of this section: the census that
 produced it was written because *"what does `ein` read from the environment"*
 had no answer short of doing this exercise, and a grep's answer would be wrong
-by nine.
+by six.
 
 | name | what it actually is |
 |---|---|
@@ -471,9 +468,6 @@ by nine.
 | `EIN_CMD` | a shell array in `utils/render_examples.sh`, assigned from `$EIN_BIN` |
 | `EIN_C_PROBLEM_H` | an include guard in `c/problem.h` |
 | `EIN_RENDER_LEVI` | **documented and never implemented.** `ir/03-ein-lang/04_dot_rendering.md` claims it; the only Levi switch is the library-level `DotOpts.levi`. It is one of [CD-H1](../history/m1e_review_processing/README.md#the-findings)'s items |
-| `EIN_PY` | named in a `run_tests.sh` comment describing the interpreter selection that left with the Python engine. The comment says so; nothing reads it |
-| `EIN_RUN_SLOW` | named in three comments in the past tense — a gate ein.py's suite had. Gone with it |
-| `EIN_MUTANT` | a frozen measurement's variable in `measurements/baseline.md`, read by the `ein-conformance` harness that M1a S1a.10.3 deleted |
 | `EIN_PRIORITY` | *proposed* by [S1f.5.6](../../plans/m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/s1f.5.6_rule_priority.md); does not exist |
 | `EIN_NOGOOD_INJECT` | *proposed* by [S1e.1.2](../history/m1e_review_processing/README.md#s1e12--determinism-under---jobs-q1); does not exist |
 
@@ -586,8 +580,7 @@ EIN_BLESS=1 cargo test --manifest-path ein.rs/Cargo.toml -p ein-cli --test confi
 ```
 
 Edit the engine, run that, commit. **Never edit the generated block by hand** —
-it is `docs/api/rust.md`'s rule for the same reason, and the five Python pages
-beside that one are what happens without it.
+it is `docs/api/rust.md`'s rule for the same reason.
 
 The prose columns are not generated and cannot be: *what it changes* is read
 off a call site and *does it change the answer* is a judgement with evidence.

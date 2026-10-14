@@ -1,4 +1,4 @@
-//! The unified KB → DOT renderer — `ein.py`'s `kb/render.py`.
+//! The unified KB → DOT renderer.
 //!
 //! One `digraph` over the whole knowledge base, **fusing** entity identity
 //! across forms: `Norwegian` is emitted once and participates in its type
@@ -71,8 +71,8 @@ fn fact_node_id(terms: &Terms, f: FactId) -> String {
 /// The short `(N)` inside `"condition (N)"`, or the original string when
 /// there is no parenthesised group.
 ///
-/// ein.py is `re.search(r"\(([^)]+)\)", source)` — the *first* `(` followed
-/// by at least one non-`)` character and then a `)`.
+/// The group is the *first* `(` followed by at least one non-`)` character
+/// and then a `)`.
 fn short_source(source: &str) -> String {
     for (i, c) in source.char_indices() {
         if c != '(' {
@@ -271,8 +271,8 @@ fn label_extra(kb: &Kb, terms: &Terms, f: FactId) -> Option<String> {
     if prov.kind == ProvKind::Source
         && let Some(s) = prov.source
     {
-        // `if f.source:` — Python's truthiness, so an empty `:source` falls
-        // through to the rule branch exactly as `None` does.
+        // An empty `:source` falls through to the rule branch exactly as an
+        // absent one does.
         let text = terms.sym(s);
         if !text.is_empty() {
             return Some(short_source(text));

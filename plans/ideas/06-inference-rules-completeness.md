@@ -74,7 +74,7 @@ The user's framing is closest to (3) and (4): the question presumes
 
 ## Open sub-questions
 
-1. **What is the right rule-presentation language?** Free Python
+1. **What is the right rule-presentation language?** Free host-language
    functions? A `(pattern → conclusion)` graph-rewrite DSL? A
    declarative Horn-clause / Datalog encoding?
 2. **How is rule provenance recorded?** Each derived edge tagged with

@@ -5,14 +5,14 @@
 **Severity:** Low
 **Confidence:** High
 **Topic:** State model
-**Classification:** design ambiguity (deliberate parity today, a determinism tripwire for the planned consumer)
+**Classification:** design ambiguity (deliberate today, a determinism tripwire for the planned consumer)
 
 **Locations**
 - `ein.rs/crates/ein-core/src/kb.rs:415-481` (test at `:1909-1923` documents the behavior)
 
 ### Finding
 
-Merely *asking* `kb.classes().equivalent(a, c)` inserts `c` into the parent map, so `classes()` output order depends on query history. Faithful to ein.py, and inert today (nothing fires equality propagation — O4 is a stub) — but a query-mutates-state API is exactly the shape the determinism rules exist to keep away from observables, and the first real consumer (the F4 e-graph seam) will inherit it silently.
+Merely *asking* `kb.classes().equivalent(a, c)` inserts `c` into the parent map, so `classes()` output order depends on query history. Inert today (nothing fires equality propagation — O4 is a stub) — but a query-mutates-state API is exactly the shape the determinism rules exist to keep away from observables, and the first real consumer (the F4 e-graph seam) will inherit it silently.
 
 ### Recommendation
 
