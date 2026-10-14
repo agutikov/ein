@@ -47,10 +47,20 @@ and the dead ones with their refutations — because the proof carries
 `unsat_core` (contradictions); there is no per-view command to choose
 between.
 
-The CLI does **not** surface the on-disk `LatticeDumper` tree
-(`enterings/`, `proof_summary.json`, …): `--dump-states` builds a
-`MonotonicDumper`, and no flag builds the other one. That per-hypothesis dump
-is reachable from Rust only — see *Programmatically* below.
+**The on-disk tree is `--dump-lattice DIR`** — since M1e2 S1e2.1.3, which
+answered
+[Q-M1e.20](../../history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable):
+
+```sh
+ein solve examples/lattice/01_subset_pruned.ein -e -m 3 --dump-lattice ./lattice/
+```
+
+It writes the tree § Layout describes. A solve has **one** dumper, so the
+flag is refused (exit 2, with clap's reason) beside `--dump-states`, `-v`,
+`--layer-progress` and `-t`, each of which chooses a different one. Like
+`--dump-states`, its directory is made before the search: a run that cannot
+make it exits 1. `ein-cli/tests/render_doors.rs` holds that the CLI's tree is
+the library's, file for file and byte for byte, clocks aside.
 
 An exhaustive `zebra2` lattice sweep is large — bound it with
 `--max-set-size N`, `--max-time S`, or `--max-enterings K` so the dump stays a
@@ -76,7 +86,7 @@ The dumper is a Rust type,
 handed to [`ein_infer::solve::solve`](../../../ein.rs/crates/ein-infer/src/solve.rs)
 as its `dumper` argument — the shape
 [`golden_dump.rs`'s `run_dump`](../../../ein.rs/crates/ein-render/tests/golden_dump.rs)
-uses. **No CLI flag reaches it**, and that is § *How to run it*'s subject.
+uses. The CLI's `--dump-lattice` (above) builds the same dumper the same way.
 
 `LatticeDumper::new(None)` makes every hook a no-op (the call sites stay
 uniform, nothing hits disk) — useful for a wrapper that streams the
@@ -276,22 +286,26 @@ it's the entry point for "show me every refutation" tooling.
 
 ## Reachability — what can ask for this dump
 
-Three questions, and the honest answers as of M1e S1e.2.2:
+Three questions. The answers as of M1e S1e.2.2, with the first one changed by
+M1e2 S1e2.1.3:
 
 | | |
 |---|---|
-| **From the CLI?** | **No.** `--dump-states DIR` builds a `MonotonicDumper` — `00_root_initial.ein`, `00_timeline.jsonl`, `layers/layer_NN_{pre,post}.ein`, `summary.json`, and no `enterings/` or `proof_summary.json`. `make_dumper` in [`ein-cli/src/solve.rs`](../../../ein.rs/crates/ein-cli/src/solve.rs) chooses between `ProgressDumper`, a timing dumper, `MonotonicDumper` and none; `LatticeDumper` is not among them |
+| **From the CLI?** | **Yes, since M1e2 S1e2.1.3: `ein solve --dump-lattice DIR`.** Until then it was **no**. `--dump-states DIR` builds a `MonotonicDumper` (`00_root_initial.ein`, `00_timeline.jsonl`, `layers/layer_NN_{pre,post}.ein`, `summary.json`, no `enterings/` or `proof_summary.json`), and `make_dumper` in [`ein-cli/src/solve.rs`](../../../ein.rs/crates/ein-cli/src/solve.rs) never chose a `LatticeDumper`. It does now, refused beside the flags that choose another dumper |
 | **From Rust?** | **Yes.** `LatticeDumper::new(Some(dir))` passed as `solve`'s `dumper` argument, with `SolveOptions { stop_after: None, store_lattice: true, .. }` — both types are `pub` and the shape is [`golden_dump.rs`'s `run_dump`](../../../ein.rs/crates/ein-render/tests/golden_dump.rs). It is not in [`docs/api/rust.md`](../../api/rust.md), whose worked example stops at solve-and-render |
 | **Is the format pinned?** | **Yes**, which is why this page is *current* rather than superseded: `golden_dump.rs` banks the timeline and every file under `enterings/`, and `dump_parity.rs` banked the rest byte for byte against ein.py |
 
-So the artifact is real, produced and tested, and the only thing missing is a
-**documented way to ask for it** — which is a decision about the shipping
-surface, not one a doc pass takes.
-[`ein_render::kb_dot`](../../../ein.rs/crates/ein-render/src/kb_dot.rs) is in
-exactly the same position for exactly the same reason
-([`utils/render_examples.sh`](../../../utils/render_examples.sh) says so at its
-own head, and declines it too), so it is **one** question with two instances:
-[Q-M1e.20](../../history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable).
+So the artifact was real, produced and tested, and the only thing missing was
+a **documented way to ask for it**, which is a decision about the shipping
+surface and not one a doc pass takes. M1e2 took it.
+[`ein_render::kb_dot`](../../../ein.rs/crates/ein-render/src/kb_dot.rs) was in
+exactly the same position for exactly the same reason, and got its door —
+`ein render kb` — the same day
+([`utils/render_examples.sh`](../../../utils/render_examples.sh) had declined it
+at its own head, and renders it again now). So it was **one** question with two
+instances:
+[Q-M1e.20](../../history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable),
+answered (a) — a door each — on 2026-10-14.
 
 ---
 

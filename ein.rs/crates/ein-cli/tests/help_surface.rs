@@ -44,17 +44,23 @@ use ein_corpus::{golden, golden_path};
 /// `solve`'s 29 have short keys, and none of `saturate`'s 5 or `render`'s 5
 /// do. `saturate` has 5 rather than 3 because `_events.add_arguments` puts
 /// `--events` and `--events-level` on it too.
-const EXPECTED: [(&str, usize); 8] = [
+const EXPECTED: [(&str, usize); 10] = [
     ("COMMAND ein\n", 0),
     // 29 of ein.py's, plus P1a.7's `--jobs`, M1d S1d.3.3's `--models`,
-    // M1d P1d.10's `--layer-progress` and M1e2 S1e2.1.2's `--dump-answer`.
-    ("COMMAND ein solve\n", 33),
+    // M1d P1d.10's `--layer-progress` and M1e2's `--dump-answer` (S1e2.1.2)
+    // and `--dump-lattice` (S1e2.1.3).
+    ("COMMAND ein solve\n", 34),
     ("COMMAND ein saturate\n", 5),
     ("COMMAND ein render\n", 0),
     ("COMMAND ein render rules\n", 1),
     ("COMMAND ein render rule\n", 2),
     ("COMMAND ein render constraints\n", 0),
     ("COMMAND ein render lattice\n", 2),
+    // M1e2 S1e2.1.3's two doors, which ein.py had as `ein ir dot` / `ein kb
+    // dot` until P1.11 removed them: `--levi` and `--rule-mode`; `--since`,
+    // `--colour-by`, `--no-types`, `--no-instances`.
+    ("COMMAND ein render program\n", 2),
+    ("COMMAND ein render kb\n", 4),
 ];
 
 /// M1c [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test)'s
@@ -100,11 +106,13 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        39 + 4
+        39 + 5
+            + 6
             + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "39 options across ein.py's eight parsers, plus `solve --jobs`, \
-         `solve --models`, `solve --layer-progress`, `solve --dump-answer`, \
+        "39 options across ein.py's eight parsers, plus five later `solve` \
+         options (`--jobs`, `--models`, `--layer-progress`, `--dump-answer`, \
+         `--dump-lattice`), `render program`'s two and `render kb`'s four, \
          `ein test`'s nine and `ein kb save --saturate` — none of which \
          ein.py has"
     );
@@ -112,7 +120,7 @@ fn the_extractor_finds_the_whole_surface() {
 
 /// **The whole rendering, checked in.**
 ///
-/// Every option of every parser — 53 across eleven at M1e2 S1e2.1.2, the count
+/// Every option of every parser — 60 across thirteen at M1e2 S1e2.1.3, the count
 /// [`the_extractor_finds_the_whole_surface`] holds — each with its short key, metavar, arity,
 /// default, choices, group and help — the same text the diff against
 /// `argparse` consumed, blessed from a tree where that diff was green. A flag

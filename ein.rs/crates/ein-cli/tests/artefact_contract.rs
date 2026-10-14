@@ -1,7 +1,7 @@
 //! M1e [S1e.3.5](../../../../docs/history/m1e_review_processing/README.md#s1e35--error-handling-medium)
 //! — **what the artefact flags do when the file cannot be written.** Five at
-//! that stage; M1e2 S1e2.1.2 added `--dump-answer`, which takes
-//! `--dump-states`' arm.
+//! that stage; M1e2 S1e2.1.2 and S1e2.1.3 added `--dump-answer` and
+//! `--dump-lattice`, which take `--dump-states`' arm.
 //!
 //! `EH-M1` is one sentence: a failed `--events` open, a failed
 //! `--json-summary` write and a failed `--trace` write each print a line and
@@ -100,14 +100,15 @@ impl Drop for ReadOnly {
 const FILE: &str = "examples/features/10_expect.ein";
 
 /// Every artefact flag, and which subcommand carries it.
-const ARTEFACTS: [(&str, &str); 7] = [
+const ARTEFACTS: [(&str, &str); 8] = [
     ("solve", "events"),
     ("solve", "json-summary"),
     ("solve", "trace"),
     ("solve", "dump-states"),
-    // M1e2 S1e2.1.2 — a directory made before the search, so the
+    // M1e2 S1e2.1.2 and .3 — directories made before the search, so the
     // `--dump-states` arm of the exit-code rule below.
     ("solve", "dump-answer"),
+    ("solve", "dump-lattice"),
     ("test", "json-report"),
     ("test", "json-summary"),
 ];
@@ -138,8 +139,8 @@ fn every_artefact_failure_names_its_flag_and_its_path() {
     }
 }
 
-/// **The additive four leave the exit code alone; `--dump-states` and
-/// `--dump-answer` do not.**
+/// **The additive four leave the exit code alone; the three directories —
+/// `--dump-states`, `--dump-answer`, `--dump-lattice` — do not.**
 ///
 /// Two arms and the split is not arbitrary. Four flags say *additive: stdout,
 /// stderr and the exit code are unchanged* in their own `--help`, and a failed
@@ -153,11 +154,14 @@ fn every_artefact_failure_names_its_flag_and_its_path() {
 /// [Q-M1e.22](../../../../docs/history/m1e_review_processing/open_questions.md),
 /// filed with `TE-M4`'s exit-2 overload because the two are one conversation.
 #[test]
-fn a_failed_artefact_write_leaves_the_exit_code_alone_except_for_the_two_directories() {
+fn a_failed_artefact_write_leaves_the_exit_code_alone_except_for_the_directories() {
     let ro = ReadOnly::new("exit");
     for (cmd, flag) in ARTEFACTS {
         let r = ein(&[cmd, FILE, &format!("--{flag}"), &ro.at("out")]);
-        let want = i32::from(flag == "dump-states" || flag == "dump-answer");
+        let want = i32::from(matches!(
+            flag,
+            "dump-states" | "dump-answer" | "dump-lattice"
+        ));
         assert_eq!(
             r.code, want,
             "{cmd} --{flag} exited {} and the contract says {want}\n{}",

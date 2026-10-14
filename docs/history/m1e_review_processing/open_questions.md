@@ -35,7 +35,7 @@ records which question became which id.
 | [Q-M1e.17](#q-m1e17--three-py_int-options-silently-reinterpret-a-negative) | Three `py_int` options **silently reinterpret a negative** | open — raised 2026-08-29 by [S1e.1.5](README.md#s1e15---n-0-q7), which closed the third of them (`-n`) by refusing it. `-m` and `-E` still clamp, and `-E`'s abort line **prints the clamped number**; **owner unassigned**. **Owned 2026-10-14** by S5 of [M1e2's proposed P1e2.3](../../../plans/m1e2_correctness/README.md#p1e23--surfaces-that-misreport-the-answer-proposed) |
 | [Q-M1e.18](#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments) | Three kernel primitives are **not shape-pinned**, and drop their extra arguments | **answered 2026-08-29 — candidate (2)**, by [S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T1, which took the whole class rather than `CO-H1`'s one cell: `eq` and `absent` are checked at compile time and refused with a positioned `CompileError`. The grammar and the lexer's `SYMBOL` set are untouched, so no program that worked still works differently. `false` needed nothing |
 | [Q-M1e.19](#q-m1e19--algorithmic-pathology-has-no-owner) | **Algorithmic pathology** has no owner | open — the one of `Q9`'s four unswept surfaces with no home. The other three have one: this stage swept the parser/CLI edges, `cast.rs` goes with `ein-einb`'s next change, and micro-CSP ground truth is [M10](../../../plans/m10_external_benchmarks/README.md)'s thesis. **Open, no owner** at the close, and the closing claim says so |
-| [Q-M1e.20](#q-m1e20--two-renderers-are-produced-tested-and-unreachable) | **Two renderers are produced, tested and unreachable** — the per-hypothesis lattice dump and the unified KB DOT view | open — raised 2026-08-30 by [S1e.2.2](README.md#s1e22--code--doc-the-canonical-tree) T3, which was told to route the decision rather than take it in a doc pass; **owner unassigned**, and both are `pub` and golden-pinned today. **Owned 2026-10-14** by [M1e2 S1e2.1.3](../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.3_the_doors.md), option (a) |
+| [Q-M1e.20](#q-m1e20--two-renderers-are-produced-tested-and-unreachable) | **Two renderers are produced, tested and unreachable** — the per-hypothesis lattice dump and the unified KB DOT view | open — raised 2026-08-30 by [S1e.2.2](README.md#s1e22--code--doc-the-canonical-tree) T3, which was told to route the decision rather than take it in a doc pass; **owner unassigned**, and both are `pub` and golden-pinned today. **Owned 2026-10-14** by [M1e2 S1e2.1.3](../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.3_the_doors.md), option (a). **Answered 2026-10-14, (a)**: `ein render program`, `ein render kb` and `ein solve --dump-lattice` |
 | [Q-M1e.21](#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about) | A rule may **name an object the search can never hypothesise about** | open — raised 2026-08-31 by [S1e.3.3](README.md#s1e33--state-model-medium), which built the check `ST-M1` asked for and found the check has a live defect behind it: `k = 0, exhausted = true` on an eleven-line program with a model. **Owner unassigned**; three candidate fixes priced, and two corpus programs already break the invariant harmlessly. **Owned 2026-10-14** by [M1e2 S1e2.2.4](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.4_fresh_name_unreachable.md) (W4) |
 | [Q-M1e.22](#q-m1e22--should-a-failed-artefact-write-have-an-exit-code-of-its-own) | Should a **failed artefact write** have an exit code of its own? | open — raised 2026-08-31 by [S1e.3.5](README.md#s1e35--error-handling-medium), which ruled `EH-M1` the additive way and wrote it into `defined_behaviour.md` § 4.4. The residue is a **CLI-vocabulary** question and is one conversation with [TE-M4](README.md#the-findings)'s exit-2 overload; **owner unassigned**, and neither should be settled alone. **Owned 2026-10-14** by [M2 S2.1.2](../../../plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation/s2.1.2_feedback_object.md), whose feedback object already names the exit-2 overload |
 
@@ -1482,6 +1482,20 @@ view. If the answer is *the GUI*, (a) is premature and the feed is
 [`--events`](../../kernel/inference/events.md); if the answer is *a
 puzzle author chasing a rule that will not fire*, (a) is the answer and the
 flag is small.
+
+**Answered 2026-10-14 — (a), by
+[M1e2 S1e2.1.3](../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.3_the_doors.md).**
+The consumer turned out to be the second one: the reviewer of a wrong answer,
+for whom M1e2 builds a bundle that reaches the engine through the binary.
+There are three doors, because `utils/README.md` counted a third renderer in
+the same state (`ein_render::ir_dot`, the program as written).
+`ein render program FILE` draws it, parsed and never loaded.
+`ein render kb FILE [--since FILE]` draws a KB, and a model is a FILE because
+`--dump-answer`'s state files load. `ein solve --dump-lattice DIR` writes the
+`LatticeDumper` tree, and is refused beside any other flag that chooses the
+solve's one dumper. `ein-cli/tests/render_doors.rs` holds them, including
+that the CLI's lattice tree is the library's file for file. Nothing here
+pre-empts M20, which binds the same crates.
 
 ## Q-M1e.21 — A rule may name an object the search can never hypothesise about
 

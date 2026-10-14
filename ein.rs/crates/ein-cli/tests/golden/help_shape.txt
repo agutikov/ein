@@ -12,10 +12,22 @@ COMMAND ein render
 COMMAND ein render constraints
   ABOUT constraint-scope DOT (structural properties)
   POSITIONAL file required=True help=
+COMMAND ein render kb
+  ABOUT a KB as one DOT digraph, entities fused across forms: FILE loaded and saturated. A --dump-answer state file is a FILE, so a model draws the same way root does
+  OPTION --colour-by -- metavar=COLOUR_BY arity=1 default='relation' choices=relation|origin|none group=- required=False help=edge colour: per relation (default), per origin, or none
+  OPTION --no-instances -- metavar=- arity=0 default=False choices=- group=- required=False help=leave out the instance ovals and every fact edge
+  OPTION --no-types -- metavar=- arity=0 default=False choices=- group=- required=False help=leave out the type boxes and their is-a edges
+  OPTION --since -- metavar=FILE arity=1 default=None choices=- group=- required=False help=load and saturate FILE too, and draw at penwidth 3 every fact it lacks — a model against its root.ein is what the commitment added
+  POSITIONAL file required=True help=
 COMMAND ein render lattice
   ABOUT commitment-lattice / proof-DAG DOT (runs a solve, S1.6.3)
   OPTION --max-set-size -- metavar=MAX_SET_SIZE arity=1 default='3' choices=- group=- required=False help=commitment-set depth cap (default 3)
   OPTION --view -- metavar=VIEW arity=1 default='solution' choices=full|solution group=- required=False help='solution' survivors + pruned siblings (default) or 'full' every commitment (falls back to 'solution' — solve doesn't store the per-commitment SetNode DAG)
+  POSITIONAL file required=True help=
+COMMAND ein render program
+  ABOUT the program as written: one DOT digraph per group — rules, ontology, facts, the query. Parsed, never loaded, so a program the loader refuses still draws
+  OPTION --levi -- metavar=- arity=0 default=False choices=- group=- required=False help=draw unary and binary facts as Levi-bipartite octagons rather than labelled arrows
+  OPTION --rule-mode -- metavar=RULE_MODE arity=1 default='sidebyside' choices=sidebyside|overlay group=- required=False help=rule rendering: 'sidebyside' LHS|RHS clusters (default) or 'overlay' (LHS solid + RHS dashed)
   POSITIONAL file required=True help=
 COMMAND ein render rule
   ABOUT a single rule's DOT, by name
@@ -31,6 +43,7 @@ COMMAND ein solve
   ABOUT solve a puzzle: print the solution(s) or the unsat core
   OPTION --dump-answer -- metavar=DIR arity=1 default=None choices=- group=- required=False help=write the answer as files to DIR: the program, root, one loadable file per model and open state with the commitment that reached it, every refuted commitment, and answer.json (= --json-summary). DIR is made before the search; past that, stdout, stderr and the exit code are unchanged.
   OPTION --dump-config -c metavar=- arity=0 default=False choices=- group=- required=False help=print the resolved SolverConfig before solving
+  OPTION --dump-lattice -- metavar=DIR arity=1 default=None choices=- group=- required=False help=persist every commitment the search tested, with its firings and outcome, to DIR (enterings/, proof_summary.json — docs/kernel/inference/lattice_dump.md). One dumper per solve, so not with --dump-states, -v, --layer-progress or -t
   OPTION --dump-states -D metavar=DIR arity=1 default=None choices=- group=- required=False help=persist the engine dump tree (root snapshot per layer + timeline) to DIR
   OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Schema: docs/kernel/inference/events.md.
   OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume, and what T2 comparisons run at, since a dropped redundant firing is exactly what a port loses.

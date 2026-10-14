@@ -14,7 +14,7 @@ use ein_infer::events::{Events, Level};
 use ein_infer::solve::{Dumper, MonotonicStats, NoDumper, SolveError, SolveOptions, Solved, solve};
 use ein_infer::verdict::{Answer, Verdict};
 use ein_ir::Ast;
-use ein_render::dump::{MonotonicDumper, ProgressDumper};
+use ein_render::dump::{LatticeDumper, MonotonicDumper, ProgressDumper};
 use ein_render::{ModelsForm, render_solution_table};
 
 use crate::common::read_text_or_crash;
@@ -98,6 +98,10 @@ enum Chosen {
     Progress(Box<ProgressDumper>),
     Timing(TimingDumper),
     Monotonic(Box<MonotonicDumper>),
+    /// `--dump-lattice` — M1e2 S1e2.1.3. The parser refuses it beside every
+    /// flag that chooses one of the other three, because a solve has one
+    /// dumper and silently preferring one would drop the other's tree.
+    Lattice(Box<LatticeDumper>),
     None(NoDumper),
 }
 
@@ -107,6 +111,7 @@ impl Chosen {
             Chosen::Progress(d) => d.as_mut(),
             Chosen::Timing(d) => d,
             Chosen::Monotonic(d) => d.as_mut(),
+            Chosen::Lattice(d) => d.as_mut(),
             Chosen::None(d) => d,
         }
     }
@@ -135,7 +140,15 @@ impl Chosen {
     }
 }
 
-fn make_dumper(m: &ArgMatches) -> Result<Chosen, String> {
+/// Which dumper, and — on failure — which flag's directory could not be made,
+/// so the diagnostic names the flag the caller passed.
+fn make_dumper(m: &ArgMatches) -> Result<Chosen, (&'static str, String)> {
+    if let Some(dir) = m.get_one::<String>("dump-lattice") {
+        let d = LatticeDumper::new(Some(Path::new(dir)))
+            .map_err(|e| ("dump-lattice", e.to_string()))?;
+        return Ok(Chosen::Lattice(Box::new(d)));
+    }
+    let failed = |e: std::io::Error| ("dump-states", e.to_string());
     let out_dir = m.get_one::<String>("dump-states").map(PathBuf::from);
     let every = *m.get_one::<i64>("progress-every").unwrap_or(&100);
     // `--verbose` wins over `--layer-progress`: both build the same dumper and
@@ -149,14 +162,30 @@ fn make_dumper(m: &ArgMatches) -> Result<Chosen, String> {
             "",
             !verbose,
         )
-        .map_err(|e| e.to_string())?;
+        .map_err(failed)?;
         return Ok(Chosen::Progress(Box::new(d)));
     }
     if m.get_flag("timing") {
+        // `-t` with `--dump-states` used to take this arm and **drop the dump**:
+        // exit 0, no directory, nothing said — found by M1e2 S1e2.1.3 while
+        // wiring `--dump-lattice` beside it, and the very pair S1e2.1.5's
+        // review bundle asks for. `ProgressDumper` already feeds `--timing`
+        // (`phases`) and writes the tree; with its stream discarded it is both.
+        if out_dir.is_some() {
+            let d = ProgressDumper::with_volume(
+                out_dir.as_deref(),
+                Box::new(std::io::sink()),
+                every.max(0) as u64,
+                "",
+                true,
+            )
+            .map_err(failed)?;
+            return Ok(Chosen::Progress(Box::new(d)));
+        }
         return Ok(Chosen::Timing(TimingDumper::new()));
     }
     if out_dir.is_some() {
-        let d = MonotonicDumper::new(out_dir.as_deref()).map_err(|e| e.to_string())?;
+        let d = MonotonicDumper::new(out_dir.as_deref()).map_err(failed)?;
         return Ok(Chosen::Monotonic(Box::new(d)));
     }
     Ok(Chosen::None(NoDumper))
@@ -486,11 +515,12 @@ fn resolve_jobs(n: i64) -> usize {
 
 /// The artefact flags: each names **one** path, so each is incompatible with a
 /// file that asks more than one question.
-const ONE_PATH_FLAGS: [&str; 5] = [
+const ONE_PATH_FLAGS: [&str; 6] = [
     "events",
     "trace",
     "json-summary",
     "dump-states",
+    "dump-lattice",
     "dump-answer",
 ];
 
@@ -602,11 +632,10 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
     // have thrown away the one exit-code signal the family has.
     let mut dumper = match make_dumper(m) {
         Ok(d) => d,
-        Err(e) => {
+        Err((flag, e)) => {
             artefact_failed(
-                "dump-states",
-                m.get_one::<String>("dump-states")
-                    .map_or("", String::as_str),
+                flag,
+                m.get_one::<String>(flag).map_or("", String::as_str),
                 e,
             );
             return (1, n_queries);
@@ -659,7 +688,10 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
             .map(|n| (*n).max(0) as u64),
         // `--dump-answer` reads the proof `--trace` does, and asks for it the
         // same way; the search is the one every corpus `--trace` cell runs.
-        store_lattice: trace_path.is_some() || answer_dir.is_some(),
+        // `--dump-lattice`'s `proof_summary.json` is written from the proof.
+        store_lattice: trace_path.is_some()
+            || answer_dir.is_some()
+            || m.get_one::<String>("dump-lattice").is_some(),
         jobs: resolve_jobs(*m.get_one::<i64>("jobs").unwrap_or(&1)),
         ..SolveOptions::default()
     };

@@ -338,24 +338,44 @@ digraph reasoning_edge_example {
 
 ### How to ask for this view
 
-> **Superseded — the recipe here was the Python engine's.** It read
-> `KnowledgeBase.to_dot(colour_by=…, include_instances=…)` out of
-> `ein.kb`, through a `python3 -c` in `utils/render_examples.sh`, because
-> `ein kb dot` had been removed in P1.11. `ein.py` was deleted at M1a
-> [S1a.10.5](../../../history/m1a_rust/README.md#s1a105--the-removal)
-> and the workaround went with it. **The schema this chapter specifies is not
-> superseded** — it is what the live renderer emits.
+> The recipe this section held until M1e2 was the Python engine's —
+> `KnowledgeBase.to_dot(…)` through a `python3 -c`, because `ein kb dot` had
+> been removed in P1.11 — and it left with `ein.py` at M1a
+> [S1a.10.5](../../../history/m1a_rust/README.md#s1a105--the-removal). The
+> schema this chapter specifies was never superseded: it is what the live
+> renderer emits, and below is how to ask for it.
 
 The renderer is [`ein_render::kb_dot`](../../../../ein.rs/crates/ein-render/src/kb_dot.rs)
 (`to_dot(kb, terms, &KbDotOpts)`, with `ColourBy` and the `include_*` fields
 the keyword arguments used to be). It is exercised over the whole corpus by
 [`dot_wellformed.rs`](../../../../ein.rs/crates/ein-render/tests/dot_wellformed.rs)
-and digested in six views by `shape.rs`. **No CLI subcommand reaches it**:
-`ein render` offers `rules` / `rule` / `constraints` / `lattice` and no `kb`,
-so outside a test nothing can ask for this view.
-[`utils/render_examples.sh`](../../../../utils/render_examples.sh) says the
-same thing at its own head and declines to decide it, because putting
-`ein render kb` back is a decision about the shipping surface.
+and digested in six views by `shape.rs`. **Since M1e2 S1e2.1.3 it has a
+door again**, the one `ein kb dot` was until P1.11:
+
+```sh
+ein render kb examples/zebra2.ein                       # root, after saturation
+ein render kb examples/zebra2.ein --colour-by origin    # given / derived / hypothesis
+ein solve examples/lattice/02_genuine_3set_death.ein -e --dump-answer out/
+ein render kb out/models/02.ein --since out/root.ein    # model 2, what it added in bold
+```
+
+`FILE` is loaded and saturated, so a `--dump-answer` state file
+([`answer_dump.md`](../../inference/answer_dump.md)) is a `FILE`: it loads as
+a program and saturates to itself. `--since FILE` loads a second one into the
+same interner and draws every fact it lacks at `penwidth=3` — the transition
+highlight below, *this step added E*, which nothing had asked for before.
+`--no-types` / `--no-instances` are the two `include_*` switches. On `zebra2`'s
+root the view is 195 nodes, so it draws, and S1e2.1.4 chooses what a model's
+default view is.
+
+The program **as written** — this chapter's per-form IR view — is the other
+door: `ein render program FILE [--levi] [--rule-mode …]`. It prints one
+digraph per group (the rule library, the ontology, the facts, the query). It
+**parses and never loads**, so a program the loader refuses still has a
+picture. [`utils/render_examples.sh`](../../../../utils/render_examples.sh)
+writes both views for every example. Both doors are held by
+`ein-cli/tests/render_doors.rs`, which pipes what the *command* prints
+through `dot -Tsvg`.
 
 ### No head is special-cased
 

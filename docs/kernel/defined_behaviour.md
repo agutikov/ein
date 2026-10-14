@@ -557,17 +557,17 @@ and all 21 cells of the sweep, the fourteen that were right included, are
 > the review's `EH-M1`. The behaviour is older; what is new is that it is a
 > ruling with a test rather than an accident with five spellings.
 
-Six options name a file or a directory the run will write: `solve --events`,
-`--json-summary`, `--trace`, `--dump-states`, `--dump-answer` (M1e2 S1e2.1.2),
-and `test --json-report` (plus `test`'s own `--events` / `--json-summary`).
+Seven options name a file or a directory the run will write: `solve --events`,
+`--json-summary`, `--trace`, `--dump-states`, `--dump-answer` and
+`--dump-lattice` (M1e2 S1e2.1.2, S1e2.1.3), and `test --json-report` (plus `test`'s own `--events` / `--json-summary`).
 What happens when the write fails:
 
 | | |
 |---|---|
 | **the message** | `error: --<flag> <path>: <os error>`, on stderr, for every one of them. The flag because a run may carry three; the path because a shell that expanded a variable to the wrong place can then see it; the OS error because that is the only part that was ever there |
 | **the exit code** | **unchanged** — 0 on a run that answered. The four flags whose `--help` says *additive: stdout, stderr and the exit code are unchanged* keep saying it: the answer on stdout is correct and complete, and the artefact is paperwork |
-| **the exception** | **`--dump-states`** exits 1. It claims no additivity, and its sink is a *directory opened before the search* rather than a file written after it, so a failure there means the run cannot do what it was asked. **`--dump-answer`** takes the same arm for the same reason: its directory is made before the search, and a run that cannot make it exits 1 without solving. Its files are written after the answer exists, and a failure there is the additive arm's — the message, and the exit code unchanged |
-| **an empty path** | a **usage error**: exit 2, refused by the value parser before anything runs, for all six |
+| **the exception** | **`--dump-states`** exits 1. It claims no additivity, and its sink is a *directory opened before the search* rather than a file written after it, so a failure there means the run cannot do what it was asked. **`--dump-answer`** and **`--dump-lattice`** take the same arm for the same reason: the directory is made before the search, and a run that cannot make it exits 1 without solving. Its files are written after the answer exists, and a failure there is the additive arm's — the message, and the exit code unchanged |
+| **an empty path** | a **usage error**: exit 2, refused by the value parser before anything runs, for all seven |
 
 **The empty path is the one that was a defect rather than a policy.** It
 reached all five options; three then failed with a bare *No such file or
@@ -584,7 +584,7 @@ already means *usage error* and *budget abort* in this tool
 A third meaning is a CLI-vocabulary change and belongs with that overload
 rather than beside it —
 [Q-M1e.22](../history/m1e_review_processing/open_questions.md#q-m1e22--should-a-failed-artefact-write-have-an-exit-code-of-its-own).
-Pinned by `ein-cli/tests/artefact_contract.rs`, three tests over all six
+Pinned by `ein-cli/tests/artefact_contract.rs`, three tests over all seven
 options.
 
 ### 4.5 The store's own limits — M1e S1e.4.1

@@ -102,3 +102,77 @@ pub fn cmd_lattice(file: &str, view: LatticeView, max_set_size: i64) -> i32 {
     ));
     0
 }
+
+/// `ein render program` — the program **as written**, by
+/// [`ein_render::ir_to_dot`]: parsed and never loaded, so `examples/broken/`
+/// draws too. M1e2 S1e2.1.3, answering Q-M1e.20.
+///
+/// Imports are not resolved: the stdlib's forms would drown the program's own.
+pub fn cmd_program(file: &str, mode: RuleMode, levi: bool) -> i32 {
+    let mut ast = Ast::new();
+    let Some(forms) = parse_or_exit(&mut ast, Path::new(file)) else {
+        return 1;
+    };
+    let opts = ein_render::DotOpts {
+        rule_mode: mode,
+        levi,
+        ..ein_render::DotOpts::default()
+    };
+    let dot = ein_render::ir_to_dot(&ast, &forms, opts);
+    if dot.trim().is_empty() {
+        eprintln!("no renderable forms in {file}");
+        return 1;
+    }
+    emit(&dot);
+    0
+}
+
+/// `ein render kb` — one KB as one digraph, by [`ein_render::kb_to_dot`]:
+/// `file` loaded and saturated. M1e2 S1e2.1.3, answering Q-M1e.20.
+///
+/// **A model is a file**, not a `--state model:N` here. `ein solve
+/// --dump-answer` writes each recorded state as a program that loads and
+/// saturates to itself, so `render kb DIR/models/02.ein --since DIR/root.ein`
+/// draws model 2 with what its commitment added in bold — from the one solve
+/// whose answer the directory holds, rather than from a second solve this
+/// command would have to be handed the same flags for.
+pub fn cmd_kb(
+    file: &str,
+    since: Option<&str>,
+    colour_by: ein_render::ColourBy,
+    include_types: bool,
+    include_instances: bool,
+) -> i32 {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let Some(kb) = loaded_and_saturated(&mut ast, &mut terms, file) else {
+        return 1;
+    };
+    // One `Terms` for both, so a fact is the same `FactId` in each and the
+    // renderer's `since` comparison is by identity.
+    let before = match since {
+        Some(path) => match loaded_and_saturated(&mut ast, &mut terms, path) {
+            Some(kb) => Some(kb),
+            None => return 1,
+        },
+        None => None,
+    };
+    let opts = ein_render::KbDotOpts {
+        colour_by,
+        include_types,
+        include_instances,
+        since: before.as_ref(),
+        name: "kb",
+    };
+    emit(&ein_render::kb_to_dot(&kb, &terms, &opts));
+    0
+}
+
+fn loaded_and_saturated(ast: &mut Ast, terms: &mut Terms, file: &str) -> Option<ein_core::Kb> {
+    let mut kb = load_any_or_exit(ast, terms, Path::new(file))?;
+    if let Err(e) = ein_infer::saturate_events(ast, terms, &mut kb) {
+        eprintln!("{file}: {e}");
+        return None;
+    }
+    Some(kb)
+}

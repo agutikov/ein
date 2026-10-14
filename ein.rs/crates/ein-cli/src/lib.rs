@@ -81,6 +81,16 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                     mode(a),
                 ),
                 Some(("constraints", a)) => render::cmd_constraints(&file(a)),
+                Some(("program", a)) => render::cmd_program(&file(a), mode(a), a.get_flag("levi")),
+                Some(("kb", a)) => render::cmd_kb(
+                    &file(a),
+                    a.get_one::<String>("since").map(String::as_str),
+                    a.get_one::<String>("colour-by")
+                        .and_then(|c| ein_render::ColourBy::parse(c))
+                        .unwrap_or(ein_render::ColourBy::Relation),
+                    !a.get_flag("no-types"),
+                    !a.get_flag("no-instances"),
+                ),
                 // The third taker of `--max-set-size`, and the third place it
                 // is refused under `EIN_TRAVERSAL=tree` — M1e S1e.2.1,
                 // `CO-H3`(a). `cmd_lattice` solves, so the traversal reaches

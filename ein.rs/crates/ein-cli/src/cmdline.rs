@@ -184,6 +184,61 @@ fn render_command() -> Command {
                 .about("constraint-scope DOT (structural properties)")
                 .arg(Arg::new("file").required(true)),
         )
+        // M1e2 S1e2.1.3 — the two renderers Q-M1e.20 found produced, tested
+        // and reachable from no command.
+        .subcommand(
+            Command::new("program")
+                .about(
+                    "the program as written: one DOT digraph per group — rules, \
+                     ontology, facts, the query. Parsed, never loaded, so a \
+                     program the loader refuses still draws",
+                )
+                .arg(Arg::new("file").required(true))
+                .arg(
+                    Arg::new("levi")
+                        .long("levi")
+                        .action(ArgAction::SetTrue)
+                        .help(
+                            "draw unary and binary facts as Levi-bipartite \
+                             octagons rather than labelled arrows",
+                        ),
+                )
+                .arg(rule_mode()),
+        )
+        .subcommand(
+            Command::new("kb")
+                .about(
+                    "a KB as one DOT digraph, entities fused across forms: FILE \
+                     loaded and saturated. A --dump-answer state file is a FILE, \
+                     so a model draws the same way root does",
+                )
+                .arg(Arg::new("file").required(true))
+                .arg(Arg::new("since").long("since").value_name("FILE").help(
+                    "load and saturate FILE too, and draw at penwidth 3 \
+                             every fact it lacks — a model against its \
+                             root.ein is what the commitment added",
+                ))
+                .arg(
+                    Arg::new("colour-by")
+                        .long("colour-by")
+                        .value_name("COLOUR_BY")
+                        .value_parser(PossibleValuesParser::new(["relation", "origin", "none"]))
+                        .default_value("relation")
+                        .help("edge colour: per relation (default), per origin, or none"),
+                )
+                .arg(
+                    Arg::new("no-types")
+                        .long("no-types")
+                        .action(ArgAction::SetTrue)
+                        .help("leave out the type boxes and their is-a edges"),
+                )
+                .arg(
+                    Arg::new("no-instances")
+                        .long("no-instances")
+                        .action(ArgAction::SetTrue)
+                        .help("leave out the instance ovals and every fact edge"),
+                ),
+        )
         .subcommand(
             Command::new("lattice")
                 .about("commitment-lattice / proof-DAG DOT (runs a solve, S1.6.3)")
@@ -370,6 +425,21 @@ fn solve_command() -> Command {
                 .help(
                     "persist the engine dump tree (root snapshot per layer + \
                      timeline) to DIR",
+                ),
+        )
+        .arg(
+            Arg::new("dump-lattice")
+                .long("dump-lattice")
+                .value_name("DIR")
+                .value_parser(artefact_path)
+                // One dumper per solve: each of these chooses a different one.
+                .conflicts_with_all(["dump-states", "verbose", "layer-progress", "timing"])
+                .help(
+                    "persist every commitment the search tested, with its \
+                     firings and outcome, to DIR (enterings/, \
+                     proof_summary.json — docs/kernel/inference/lattice_dump.md). \
+                     One dumper per solve, so not with --dump-states, -v, \
+                     --layer-progress or -t",
                 ),
         )
         .arg(

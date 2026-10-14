@@ -25,21 +25,20 @@ are.
 
 | | | needs |
 |---|---|---|
-| [`render_examples.sh`](render_examples.sh) | every `.ein` under `examples/` → per-rule DOT + the constraint-scope and commitment-lattice views, + SVG. The input set is `find examples -path examples/broken -prune -o -name '*.ein' -print \| wc -l`; how many DOTs and lattices come out is what the run prints | `ein`, Graphviz |
+| [`render_examples.sh`](render_examples.sh) | every `.ein` under `examples/` → per-rule DOT, the program as written, the root KB, and the constraint-scope and commitment-lattice views, + SVG. The input set is `find examples -path examples/broken -prune -o -name '*.ein' -print \| wc -l`; how many DOTs and lattices come out is what the run prints | `ein`, Graphviz |
 | [`zebra2_trace.sh`](zebra2_trace.sh) | solve `zebra2.ein`, write its markdown derivation trace; `--svg` rasterises the inline `dot` blocks and rewrites the markdown to reference them | `ein`, Graphviz for `--svg` |
 | [`render_knowledge_graph.sh`](render_knowledge_graph.sh) | `docs/lib/knowledge-graph.dot` → SVG/PNG, choosing among `dot` / `fdp` / `sfdp` / `osage` | Graphviz |
 | [`render_knowledge_graph_cy.py`](render_knowledge_graph_cy.py) | the same graph as an interactive Cytoscape.js page (`docs/lib/knowledge-graph.cy/`) | — |
 | [`package_vscode_ein.sh`](package_vscode_ein.sh) | [`vscode-ein/`](vscode-ein/) → an installable `.vsix` | `@vscode/vsce` |
 
-> **`render_examples.sh` renders less than it used to**, and its header says
-> why. Half of it called the Python API directly for the **IR-graph** and
-> **unified-KB** views, because `ein ir dot` and `ein kb dot` were removed from
-> the CLI in **P1.11** (2026-06-16, `8378ad7`, which dropped `ein ir`'s
-> `parse`/`lint`/`dot` and `ein kb dot` in one commit — this line read *P1.7c*
-> until M1e `CD-M5`, a date before `ein ir parse --resolve` was written). Both renderers are ported and alive — `ein_render::ir_dot`
-> and `ein_render::kb_dot`, seventeen views between them, swept by
-> `dot_wellformed.rs` — and nothing outside a test can ask for one. Putting
-> them back is a decision about the shipping surface, not a `utils/` cleanup.
+> **`render_examples.sh` renders all five views again**, since M1e2
+> S1e2.1.3. The **IR-graph** and **unified-KB** views were the two it lost
+> when `ein ir dot` and `ein kb dot` left the CLI in **P1.11** (2026-06-16,
+> `8378ad7` — this line read *P1.7c* until M1e `CD-M5`). Their Rust ports,
+> `ein_render::ir_dot` and `ein_render::kb_dot`, stayed alive and
+> unreachable until Q-M1e.20 was answered with a door each: `ein render
+> program` and `ein render kb`. The script writes them as `program/` and
+> `_kb.dot`.
 
 ## Checks
 

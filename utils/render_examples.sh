@@ -4,10 +4,15 @@
 # Includes nested demo files (examples/zebra/demos/<rule>/<name>.ein);
 # skips examples/broken/.
 #
-# Three views per example, all of them `ein render`:
+# Five views per example, all of them `ein render`:
 #
 #   rules/NN_rule_<name>.dot   one digraph per rule, LHS|RHS side-by-side
 #                              clusters (`--rule-mode overlay` for the other)
+#   program/NN_<group>.dot     the program as written — ontology, facts, the
+#                              query — one digraph per group (`render program`;
+#                              its rule digraph is `rules/` above)
+#   _kb.dot                    the KB after root saturation, entities fused
+#                              across forms (`render kb`)
 #   _constraints.dot           the constraint-scope view (S1.6.2)
 #   _lattice.dot               the commitment-lattice / proof-DAG (S1.6.3).
 #                              This one RUNS a solve, so it is best-effort
@@ -18,23 +23,16 @@
 # rendered SVG by default; pass `--no-svg` (alias `--dot-only`) to skip
 # rasterising.
 #
-# ── What this used to render, and does not ──────────────────────────────
+# ── The two views that were gone, and came back ─────────────────────────
 #
 # Until M1a S1a.10.4 the headline output was the **IR-graph** view — one
 # `NN_<name>.dot` per top-level form — plus `_unified.dot`, the whole-KB
-# "everything on one page" view. Neither is on the CLI: `ein ir dot` and
-# `ein kb dot` were removed in P1.11 and never came back, so this script
-# reached `ein.ir.to_dot` and `KnowledgeBase.to_dot` through `python3 -c`,
-# which is why it wanted `PYTHONPATH` as well as an engine.
-#
-# The Python engine left the tree at
-# [P1a.10](../docs/history/m1a_rust/README.md#p1a10--one-implementation) and the
-# workaround left with it. Both renderers are **ported and alive** —
-# `ein_render::ir_dot` and `ein_render::kb_dot`, seventeen views between them,
-# rendered over the whole corpus by `ein-render/tests/dot_wellformed.rs` — but
-# nothing outside a test can ask for one. Making them browsable again means
-# putting them back on the CLI (`ein render ir|kb`), which is a decision about
-# the shipping surface and not one a `utils/` clean-up should take.
+# "everything on one page" view. `ein ir dot` and `ein kb dot` were removed
+# in P1.11, so this script reached the Python renderers through `python3 -c`,
+# and when the Python engine left at P1a.10 the two views left with it while
+# their Rust ports stayed alive and unreachable (Q-M1e.20). M1e2 S1e2.1.3
+# put them back on the CLI as `ein render program` and `ein render kb`, and
+# `program/` and `_kb.dot` below are those two views again.
 #
 # Layout engines per view (per readability):
 #   *ontology* / *constraints* → fdp   (force-directed; instances spread)
@@ -49,6 +47,8 @@
 #
 # Output layout:
 #   <out>/<example-rel-path>/rules/NN_rule_<name>.dot (+ .<fmt> sibling)
+#   <out>/<example-rel-path>/program/NN_<group>.dot    (+ .<fmt> sibling)
+#   <out>/<example-rel-path>/_kb.dot                  (+ .<fmt> sibling)
 #   <out>/<example-rel-path>/_constraints.dot         (+ .<fmt> sibling)
 #   <out>/<example-rel-path>/_lattice.dot             (+ .<fmt> sibling)
 #
@@ -275,6 +275,8 @@ total_dots=0
 total_imgs=0
 total_constraints=0
 total_lattice=0
+total_program=0
+total_kb=0
 raster_first="${RASTER_FORMATS%% *}"
 for ein in "${ein_files[@]}"; do
     # Relative path from EXAMPLES_DIR, minus the .ein extension.
@@ -290,7 +292,7 @@ for ein in "${ein_files[@]}"; do
     find "${out}" -maxdepth 1 -type f \
         \( -name '*.dot' -o -name '*.svg' -o -name '*.pdf' \
            -o -name '*.png' -o -name '*.gv' \) -delete
-    rm -rf "${out}/rules"
+    rm -rf "${out}/rules" "${out}/program"
 
     # ── Rules: a multi-digraph stream, one per rule. A file with no rule
     #    forms exits 1 with a message on stderr, which is not an error here. ──
@@ -312,6 +314,28 @@ for ein in "${ein_files[@]}"; do
     total_dots=$((total_dots + n_dot))
     total_imgs=$((total_imgs + n_img))
     printf "    %2d dot, %2d %s\n" "${n_dot}" "${n_img}" "${raster_first:-(no raster)}"
+
+    # ── The program as written, one digraph per group. Its rule-library
+    #    digraph is the rules/ view above, so it is not kept twice. ──
+    mkdir -p "${out}/program"
+    "${EIN_CMD[@]}" render program "${ein}" 2>/dev/null \
+        | split_dot_stream "${out}/program" || true
+    rm -rf "${out}/program/rules"
+    render_each "${out}/program"
+    total_program=$((total_program + $( count_files "${out}/program" '[0-9][0-9]_*.dot' )))
+
+    # ── The KB after root saturation — one DOT per example. It saturates and
+    #    never searches, but a demo's root can still be large, so it shares
+    #    the lattice's timeout. ──
+    kb_dot="${out}/_kb.dot"
+    if "${LATTICE_PREFIX[@]+"${LATTICE_PREFIX[@]}"}" \
+            "${EIN_CMD[@]}" render kb "${ein}" > "${kb_dot}" \
+            2>/dev/null && [[ -s "${kb_dot}" ]]; then
+        total_kb=$((total_kb + 1))
+        [[ -n "${RASTER_FORMATS}" ]] && render_one "${kb_dot}"
+    else
+        rm -f "${kb_dot}"
+    fi
 
     # ── Constraint scope (S1.6.2) — one DOT per example. ──
     constraints_dot="${out}/_constraints.dot"
@@ -342,6 +366,7 @@ for ein in "${ein_files[@]}"; do
 done
 
 echo
-echo "done — ${total_dots} per-rule DOT files (+${total_constraints} constraints,"
+echo "done — ${total_dots} per-rule DOT files (+${total_program} program,"
+echo "       +${total_kb} kb, +${total_constraints} constraints,"
 echo "       +${total_lattice} lattice), ${total_imgs} per-rule renders"
 echo "       under ${OUT_DIR}"

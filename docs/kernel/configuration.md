@@ -29,7 +29,7 @@
 | surface | how many | who owns the list |
 |---|---:|---|
 | `(config …)` flags | **17** | `FIELDS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs); the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **53** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| CLI options | **60** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **8** read by the shipped binary, of 29 greppable names | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -292,22 +292,24 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**53** options across eleven parsers, in the default build (`einb`,
+**60** options across thirteen parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 33 |
+| `ein solve` | 34 |
 | `ein test` | 9 |
 | `ein saturate` | 5 |
+| `ein render kb` | 4 |
 | `ein render rule` | 2 |
 | `ein render lattice` | 2 |
+| `ein render program` | 2 |
 | `ein render rules` | 1 |
 | `ein kb save` | 1 |
 
 `ein`, `ein kb`, `ein render` and `ein render constraints` take none — they are
 dispatchers. `ein kb save` exists only under the `einb` feature; a
-`--no-default-features` build has 52 and no `ein kb` at all.
+`--no-default-features` build has 59 and no `ein kb` at all.
 
 ### 3.2 The six options that shadow a flag
 
@@ -365,18 +367,24 @@ Five classes. Only the first two touch the answer.
   contract, and pinned by `ein-render/tests/jobs_invariance.rs`. The default is
   1 and stays 1.
 - **Presentation** — `-p`, `-P`, `-f`, `-s`, `-t`, `-v`, `-H`, `-c`, `-g`,
-  `--layer-progress`, `--models`. stdout and stderr only. `--models key` is
+  `--layer-progress`, `--models`, and `ein render program`'s / `ein render
+  kb`'s six (M1e2 S1e2.1.3), which draw a file and solve nothing. stdout and
+  stderr only. `--models key` is
   read by the `Ambiguity` arm alone and reaches nothing recorded — not the
   model list, not `--json-summary`, not `--events`, not `:expect`.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary`,
   `--json-report`, `--trace` with its four modifiers (`-F`, `-G`, `-l`, `-R`),
-  `-D`/`--dump-states`, and `--dump-answer` (M1e2 S1e2.1.2,
-  [`answer_dump.md`](inference/answer_dump.md)). **Additive** in the strict
+  `-D`/`--dump-states`, `--dump-lattice` (M1e2 S1e2.1.3,
+  [`lattice_dump.md`](inference/lattice_dump.md)) and `--dump-answer` (M1e2
+  S1e2.1.2, [`answer_dump.md`](inference/answer_dump.md)). The three
+  directories are made before the search, and `--dump-lattice` is refused
+  beside `--dump-states`, `-v`, `--layer-progress` and `-t`: each chooses the
+  solve's one dumper. **Additive** in the strict
   sense: stdout, stderr and the exit code are identical with them and
   without — and for `--dump-answer` so are the summary and the event stream,
-  which `answer_dump::the_flag_moves_no_answer` holds. Five of them name
+  which `answer_dump::the_flag_moves_no_answer` holds. Six of them name
   **one** path — `events`, `trace`, `json-summary`, `dump-states`,
-  `dump-answer` — so each is refused when the selection asks more than one
+  `dump-lattice`, `dump-answer` — so each is refused when the selection asks more than one
   question; `ein test --json-report` deliberately is not, because a report has
   no run to be more than one of.
 
