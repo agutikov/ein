@@ -1,7 +1,11 @@
 # P1e2.2 — The wrong answers, one stage each
 
 **Estimate:** ~5.5 weeks: 13 stages, 27.5 days.
-**Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it.
+**Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
+and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
+answer as a region R
+([Q-M1e2.7](../open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice))
+and restates every right answer under it before the review resumes.
 No stage here starts until [S1e2.1.7](../p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md)
 has confirmed its case. That review may correct a right answer, withdraw a
 case or split one, and this table is edited to match before anything is

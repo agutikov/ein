@@ -13,7 +13,11 @@
 # **The review (S1e2.1.7) reads the bundle built at `029ef6f`** on 2026-10-15
 # (`python3 utils/review_bundle.py` → build/review/, 26 cases, 6 788 pages,
 # 0 dangling links). Rebuilding at that commit gives the same pages, apart from
-# wall-clock fields.
+# wall-clock fields. W1 was read on a rebuild at `caef67a` (the same cases, plus
+# each layer drawn), and each row's `[case.review]` names the bundle it was read
+# on. **The review is paused after W1** (2026-10-15): the user's reading of W1
+# became Q-M1e2.7, *the answer is a region R of the lattice*, and P1e2.1a
+# rewrites the definitions before the other twelve cases are read against them.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
@@ -75,6 +79,12 @@
 #     answer under each other reading. A `qualifier` is a sentence the right
 #     read-out would add (W6).
 #
+#   [case.review] — the user's verdict (S1e2.1.7), absent until the row is read:
+#     verdict   confirmed | right-answer-corrected | not-wrong | split | merge
+#               (`not-wrong` here and `status = "not-wrong"` go together)
+#     date      YYYY-MM-DD;  bundle: the commit the pages read were built at
+#     note      the reviewer's sentence, quoted where it was the user's words
+#
 # ── What `:expect` keeps (T1e2.1.1.3) ─────────────────────────────────────────
 #
 # A witness that also carries an `:expect` keeps it stating **today's** answer
@@ -114,6 +124,12 @@ closes    = ["p"]
 models    = [["(p A)"], ["(p B)", "(p C)"]]
 derived   = "the file's header; solution_semantics.md § 2 — {(p A)} has both children dead, {(p B),(p C)} its only child"
 
+[case.review]
+verdict = "confirmed"
+date    = "2026-10-15"
+bundle  = "caef67a"
+note    = "R = {∅, A, B, C, BC}, maximal line {A}, {B,C}. The user: \"Definitely 100% we can't throw out A because it's size is smaller than (B, C)\". No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
+
 [[case]]
 id       = "W1/branching-16"
 case     = "W1"
@@ -151,6 +167,12 @@ closes    = ["p"]
 models    = [["(p A)"], ["(p B)", "(p C)"]]
 derived   = "the file's header; solution_semantics.md § 2"
 
+[case.review]
+verdict = "confirmed"
+date    = "2026-10-15"
+bundle  = "caef67a"
+note    = "a lever row: \"value of config :enable-pre-branch-lookahead must not affect solution values, because no config option affects problem search lattice, config may only affect search speed\" (Q-M1e2.7). No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
+
 [[case]]
 id       = "W1/lattice-02-L"
 case     = "W1"
@@ -187,6 +209,12 @@ exhausted = true
 closes    = ["a-prop", "b-prop", "c-prop"]
 models    = [["(a-prop X)", "(b-prop X)"], ["(a-prop X)", "(c-prop X)"], ["(b-prop X)", "(c-prop X)"]]
 derived   = "every pair is alive and the triple dies, so the three pairs are maximal; the default run says so"
+
+[case.review]
+verdict = "confirmed"
+date    = "2026-10-15"
+bundle  = "caef67a"
+note    = "R has 7 nodes, maximal line the three pairs; the fixture header's P1.5b \"Expected verdict: Contradiction\" corrected. A lever row, and no config option may change the answer (Q-M1e2.7). No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
 
 [[case]]
 id       = "W1/forced-2-two"
@@ -226,6 +254,12 @@ closes    = ["q"]
 models    = [[]]
 derived   = "Q-M1e.6 clause 3: root is consistent and every remaining hypothesis makes it dead"
 
+[case.review]
+verdict = "confirmed"
+date    = "2026-10-15"
+bundle  = "caef67a"
+note    = "R = {∅}: one model, empty. The one-firing twin answers it; the number of firings may not change the answer. No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
+
 [[case]]
 id       = "W1/forced-2-off"
 case     = "W1"
@@ -253,6 +287,12 @@ exhausted = true
 closes    = ["q"]
 models    = [[]]
 derived   = "Q-M1e.6 clause 3, as for forced-2.ein"
+
+[case.review]
+verdict = "confirmed"
+date    = "2026-10-15"
+bundle  = "caef67a"
+note    = "a lever row (forced-positive off), and no config option may change the answer (Q-M1e2.7). No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
 
 [[case]]
 id       = "W1/owed-two-step"
@@ -296,6 +336,12 @@ open      = [[]]
 owes      = [1]
 derived   = "the user's ruling of 2026-08-25 (tests/stdlib/closure/03_closed_and_owing.ein): a consistent state that owes what it cannot pay is Open"
 
+[case.review]
+verdict = "confirmed"
+date    = "2026-10-15"
+bundle  = "caef67a"
+note    = "R is empty and ∅ is alive and owes 1: Open, not Contradiction (the 2026-08-25 ruling). No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
+
 [[case]]
 id       = "W1/fresh-name-nospawn"
 case     = "W1"
@@ -323,6 +369,12 @@ exhausted = true
 closes    = ["q"]
 models    = [[]]
 derived   = "Q-M1e.6 clause 3: every q is refuted and root is consistent"
+
+[case.review]
+verdict = "confirmed"
+date    = "2026-10-15"
+bundle  = "caef67a"
+note    = "a lever row (lookahead off), and no config option may change the answer (Q-M1e2.7). No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
 
 # ══ W2 — the forced-positive cascade refutes a consistent program ═════════════
 

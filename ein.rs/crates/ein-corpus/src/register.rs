@@ -39,6 +39,15 @@ pub const STATUSES: [&str; 3] = ["open", "fixed", "not-wrong"];
 /// The verdict words, as `--json-summary`'s `verdict.type` spells them.
 pub const VERDICTS: [&str; 4] = ["Solution", "Ambiguity", "Contradiction", "Open"];
 
+/// What the user's review (M1e2 S1e2.1.7) may rule on a row.
+pub const REVIEW_VERDICTS: [&str; 5] = [
+    "confirmed",
+    "right-answer-corrected",
+    "not-wrong",
+    "split",
+    "merge",
+];
+
 /// What a `look_at` pointer may name — the pages of a review-bundle run
 /// directory. A pointer is one of these words, optionally followed by an
 /// argument: `layer 2`, `entering p(A)`, `model 3`, `events writeback`,
@@ -112,6 +121,24 @@ pub struct Row {
     #[serde(default)]
     pub twin: Vec<Answer>,
     pub right: Right,
+    /// The user's verdict on the row (S1e2.1.7). Absent until it is reviewed.
+    #[serde(default)]
+    pub review: Option<Review>,
+}
+
+/// One review verdict, as the user gave it.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Review {
+    /// One of [`REVIEW_VERDICTS`].
+    pub verdict: String,
+    /// `YYYY-MM-DD`.
+    pub date: String,
+    /// The commit the review bundle the reviewer read was built at.
+    pub bundle: String,
+    /// The reviewer's sentence, where there was one.
+    #[serde(default)]
+    pub note: Option<String>,
 }
 
 impl Row {
@@ -261,6 +288,35 @@ impl Register {
             }
             if r.status == "fixed" && (r.right.verdict.is_none() || r.right.k.is_none()) {
                 out.push(at("a fixed row states the right verdict and k".to_string()));
+            }
+            if let Some(rv) = &r.review {
+                if !REVIEW_VERDICTS.contains(&rv.verdict.as_str()) {
+                    out.push(at(format!(
+                        "review verdict {:?} is not one of {REVIEW_VERDICTS:?}",
+                        rv.verdict
+                    )));
+                }
+                let d = rv.date.as_bytes();
+                if d.len() != 10
+                    || d[4] != b'-'
+                    || d[7] != b'-'
+                    || !d
+                        .iter()
+                        .enumerate()
+                        .all(|(i, c)| i == 4 || i == 7 || c.is_ascii_digit())
+                {
+                    out.push(at(format!("review date {:?} is not YYYY-MM-DD", rv.date)));
+                }
+                if rv.bundle.len() < 7 || !rv.bundle.bytes().all(|c| c.is_ascii_hexdigit()) {
+                    out.push(at(format!("review bundle {:?} is not a commit", rv.bundle)));
+                }
+            }
+            if (r.status == "not-wrong")
+                != r.review.as_ref().is_some_and(|v| v.verdict == "not-wrong")
+            {
+                out.push(at(
+                    "status `not-wrong` and review verdict `not-wrong` go together".to_string(),
+                ));
             }
             for (label, a) in r.answers() {
                 let at = |m: String| format!("{} [{label}]: {m}", r.id);

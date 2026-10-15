@@ -1,8 +1,8 @@
 # M1e2 — Correctness: every known wrong answer
 
-**Estimate:** ~8.5 weeks: 2 phases and 20 stages, **39.5 days** of stage
-estimates (P1e2.1 12, P1e2.2 27.5), plus one phase proposed and not
-specified.
+**Estimate:** ~11.5 weeks: 3 phases and 27 stages, **55 days** of stage
+estimates (P1e2.1 12, P1e2.1a 15.5, P1e2.2 27.5), plus one phase proposed and
+not specified.
 **Status:** created 2026-10-14 on the user's instruction: *"Create new
 milestone for correctness issues. … first phase is for solution dumps and
 rendering to markdown with graphs, so I can review all existing wrong
@@ -89,11 +89,26 @@ The phase then ends with the **user's review** of every case, and
 [P1e2.2](p1e2.2_wrong_answers/README.md)'s stage list is edited to match
 before anything is fixed.
 
+**The review changed the definition on its first case.** Reading W1 on
+2026-10-15, the user confirmed all seven of its rows. The user also gave a
+reading that replaces *which node is a solution* with *what shape is the set
+of nodes that are*: the answer is a **region R** of the hypothesis lattice,
+the nodes that are alive and discharged. R lies between a minimal line that
+obligations set and a maximal line that restrictions set, and it can have
+holes where `absent` breaks monotonicity
+([Q-M1e2.7](open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)).
+The user also ruled that no config option may change the answer. So the
+review paused, and
+[P1e2.1a](p1e2.1a_the_solution_region/README.md) defines R, computes it,
+draws it and makes the language and the read-out speak it, before the twelve
+unread cases are read against it.
+
 ## Phases
 
 | ID | title | stages | est. | ends with |
 |---|---|---:|---:|---|
 | [P1e2.1](p1e2.1_seeing_the_answer/README.md) | Seeing the answer: dumps, and the answer rendered for review | 7 | 12 d | `utils/review_bundle.py` → `build/review/`: every case's problem, every run's every artefact rendered with every graph as SVG, the right answer and the diff; the register as a cargo test; Q-M1e.20 answered; **the review held** |
+| [P1e2.1a](p1e2.1a_the_solution_region/README.md) | The solution region: R defined, computed, drawn and reported | 7 | 15.5 d | the answer redefined as a **region R** of the hypothesis lattice, with its minimal and maximal lines and its holes ([Q-M1e2.7](open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)); an oracle that computes R by saturation alone for n ≤ 16; the whole lattice drawn with the walk overlaid; the language and the read-out speaking R; the engine checked against the oracle under every lever; **the review resumed** |
 | [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 13 | 27.5 d | every register row `fixed` or ruled `not-wrong`; no wrong answer at default settings; no lever that changes a certified answer |
 | P1e2.3 | Surfaces that misreport the answer | — | *proposed* | below |
 

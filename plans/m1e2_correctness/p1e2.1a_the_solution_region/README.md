@@ -1,0 +1,166 @@
+# P1e2.1a — The solution region: R defined, computed, drawn and reported
+
+**Estimate:** ~3 weeks: 7 stages, 15.5 days.
+**Status:** created 2026-10-15, not started.
+**Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md) S1e2.1.1–6,
+which built the register, the doors and the bundle this phase extends.
+**Blocks:** the rest of the review,
+[S1e2.1.7](../p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md), which paused
+after W1, and therefore every stage of
+[P1e2.2](../p1e2.2_wrong_answers/README.md).
+**Source:** the user's instruction of 2026-10-15, after reading W1: *"we need
+to modify ein language, ein.rs and update docs to fully cover R in all cases
+with holes and without, meaning of "solution", etc. And only after that we
+can revisit the review; Also add search lattice rendering tooling is the new
+phase, while it's visulaization become so important for solution correctness
+analysis."* The reading this phase implements is
+[Q-M1e2.7](../open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice).
+
+---
+
+## Why this comes before the review
+
+The review's first case changed the definition every other case is judged
+against. W1 asked whether `{(p A)}` is a solution of `branching/15`. The
+user's answer was that the question had the wrong shape. The answer to a
+program is a **region** of its hypothesis lattice, *R = the nodes that are
+alive and discharged*. R lies between a **minimal line**, which the
+obligations set, and a **maximal line**, which the restrictions set, and it
+may have **holes** where `absent` breaks monotonicity. Under
+[Q-M1e.6](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
+a solution was one kind of node. Under Q-M1e2.7 the answer is R's shape,
+and `{none, one, several}` becomes *R is empty*, *R has one node on the line
+that matters*, *R has several*.
+
+Twelve cases are still unread, and five of them are contested readings
+(W3, W5, W6, W8, W12). Each one would be argued against a definition that is
+about to change, so the review waits.
+
+The second reason is the user's: **the lattice has to be seen.** Every W1
+row was decided by looking at a handful of nodes, and nothing in the bundle
+draws them. [`ein render lattice`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
+shows survivors and their pruned siblings only, and its `--view full` falls
+back to that. The brute-force script behind Q-M1e2.7's table,
+[`probes/region.py`](../probes/region.py), listed the whole lattice for seven
+programs in a few seconds. It settled W1 by doing so, and it found the first
+measured hole, on W3's witness.
+
+## What exists, and what does not
+
+Taken 2026-10-15 against `caef67a`.
+
+| want | what exists | the gap |
+|---|---|---|
+| R, defined | [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md) § 2: a solution is a saturated, consistent state that owes nothing **or** is maximal (Q-M1e.6) | no region, no minimal line, no holes; `alive₀` is defined after the forced-positive cascade, so the universe depends on config |
+| R, computed | nothing. The engine's walk is the only computation, and it is what is being checked | an **oracle**: every node of the lattice classified by saturation alone |
+| R, drawn | `ein render lattice` (survivors + pruned siblings), `--dump-lattice` (one page per entering), the bundle's `pages/lattice/` | the **whole lattice**, every node's status and the reason for it, R's lines and holes, with the engine's walk overlaid |
+| R, stated by a program | `:expect (model …)`, `(or (model …) …)`, `(false)`: one model set | no way to say *which line*, or to state a region |
+| R, reported | `verdict.k`, `solutions`, `open_states`, `exhausted` | no line named, no hole reported, and `k` is a count of recorded nodes, not of a line |
+| R, checked | [`corpus/wrong_answers.toml`](../../../corpus/wrong_answers.toml): hand-derived right answers for 26 witnesses | no computed right answer anywhere, and nothing checks a lever against the answer without it |
+
+## Stages
+
+| ID | title | est. | ends with |
+|---|---|---:|---|
+| [S1e2.1a.1](s1e2.1a.1_the_oracle.md) | The oracle | 2.5 d | `ein_infer::region`: every commitment over the root candidate list classified **dead** / **owing n** / **in R** by saturation alone, with no search-time write; R's minimal and maximal lines and its holes; the n-limit as ruled; reached by `ein solve --dump-region DIR` |
+| [S1e2.1a.2](s1e2.1a.2_the_lattice_drawn.md) | The lattice drawn | 2.5 d | `ein render region DIR`: the Hasse diagram, L0 at the top, every node coloured by status with its reason one hover away, R's lines outlined and holes marked, and this run's walk overlaid (entered, pre-killed, pruned, never generated, recorded); views that stay readable as n grows |
+| [S1e2.1a.3](s1e2.1a.3_the_definition.md) | The region census, and the definition | 2.5 d | R measured over every corpus entry the oracle reaches; Q-M1e2.7's sub-questions (a)–(h) ruled by the user with the census on the table; `solution_semantics.md` rewritten around R; the config principle in `configuration.md` |
+| [S1e2.1a.4](s1e2.1a.4_the_language.md) | The language states a region | 2.5 d | the forms the rulings call for: which line a query asks for, and `:expect` over a region; `ein test` and `--json-report` check them; the grammar page says so |
+| [S1e2.1a.5](s1e2.1a.5_the_read_out.md) | The read-out speaks R | 2 d | the verdict block, `--json-summary`, `--dump-answer` and `--models` report R's lines, say which line `k` counts, split empty R into `Contradiction` and `Open`, and report holes as ruled; every golden named before it moves |
+| [S1e2.1a.6](s1e2.1a.6_engine_against_oracle.md) | The engine against the oracle | 2 d | a cargo test over every corpus entry with n ≤ 16: the engine's reported lines equal the oracle's, **under every lever**, or the disagreement is a register row; the census of disagreements is the first answer-check M1e2 has that is not a hand derivation |
+| [S1e2.1a.7](s1e2.1a.7_the_bundle_shows_r.md) | The bundle shows R, and the review resumes | 1.5 d | a § *The region* on every case page and in `--corpus` mode; every register `right` block restated under the new definition, computed by the oracle wherever n ≤ 16; S1e2.1.7 resumes on the twelve unread cases |
+
+**Work order is id order, with one overlap.** The oracle and the drawing come
+first, because they show R before anyone rules on it, which is this
+milestone's *see first* order. The oracle's classification (dead, owing,
+discharged) depends on none of Q-M1e2.7's sub-questions. S1e2.1a.3 needs
+S1e2.1a.1 for its census. S1e2.1a.4 and S1e2.1a.5 need the rulings and can
+run in parallel. S1e2.1a.6 needs S1e2.1a.5, because it compares what the
+engine *reports*. S1e2.1a.7 needs all of them.
+
+## Where this phase stops and P1e2.2 starts
+
+This phase **defines, computes, draws and reports** R. It does not make the
+search find R. That is [P1e2.2](../p1e2.2_wrong_answers/README.md)'s work, one
+case at a time. After S1e2.1a.5 the engine reports *what its walk found* in
+R's vocabulary. Where the walk is wrong, the report is wrong in a new
+shape, and the register holds it. W1's fix stays
+[S1e2.2.1](../p1e2.2_wrong_answers/s1e2.2.1_maximal_not_recorded.md), and it
+is restated against the maximal line at S1e2.1a.7.
+
+## Acceptance
+
+- **R is defined, with holes and without**, in `solution_semantics.md`, and
+  every verdict word, `k` and `exhausted` is defined in R's terms. Each of
+  Q-M1e2.7's sub-questions carries the user's ruling, in the question and on
+  the page.
+- **The oracle classifies by saturation alone.** A test holds that no
+  search-time root write reaches it. The witness is Q-M1e2.7's: the commitment
+  `{(seats Ann C1)}` on `owed-seats` with `functional` and `injective` owes 2,
+  where `solve -m 0` says 0. The limit is as ruled: n ≤ 16 silent; 17–19
+  refused unless asked for, then one warning line; ≥ 20 refused unless asked
+  for, then a prominent warning stating 2ⁿ and the projected cost.
+- **The oracle's answers on the seven programs in Q-M1e2.7's table equal the
+  table**, which was taken by a different route
+  ([`probes/region.py`](../probes/region.py): `ein saturate` per subset, one
+  process each). Two implementations agreeing is the evidence that the
+  library oracle is right. One of the seven has a hole.
+- **Every case page draws its lattice**, every node with its status and why
+  (the core, or the owed instances), R's lines and holes, and the run's walk
+  overlaid. **Missing** (on R's reported line, not recorded) and **spurious**
+  (recorded, not on that line) are named.
+- **No config option changes R.** `configuration.md` says so, and S1e2.1a.6's
+  test checks every lever over every entry the oracle reaches. A lever that
+  changes the answer is a register row, not a *weaker mode*.
+- **A program can state a region**, and `ein test` checks the statement.
+- `./run_tests.sh` green at every stage boundary. Every golden a stage moves
+  is named in its file before it moves.
+
+## Risks
+
+- **Language design without end.** The milestone's own risk list said a
+  ruling that needs a new language feature becomes a followup. The user
+  overrode that for R on 2026-10-15. The line drawn here is **forms for R
+  only**: a query's choice of line, `:expect` over a region, and a hole's
+  report. Anything else the rulings suggest is a followup.
+- **2ⁿ.** The oracle reaches small programs only. The zebra family has
+  candidate lists in the thousands, so its region stays a definition there, not a
+  measurement. S1e2.1a.3's census says how much of the corpus the oracle
+  reaches, and the phase claims nothing about the rest.
+- **The oracle shares a saturator with the engine it checks.** If saturation
+  is wrong (W7 loses a derivation), the oracle inherits the error. The
+  oracle checks the **walk**, not the saturator, and the pages say so. The
+  scratch prototype's per-subset `ein saturate` route is a second path for
+  small n, and S1e2.1a.1 compares the two.
+- **Holes.** Without holes, two lines describe R. With holes they do not, and a
+  report that silently assumes convexity would be a new wrong answer. The
+  oracle never assumes it: it enumerates, and does not prune by closure.
+- **The trivial line.** In an obligations-only program the maximal line is
+  everything, which is cheap for the oracle at n ≤ 16 and exponential for the
+  search. Ruling (f) decides whether it is reported, and the search must not
+  chase it either way.
+- **The read-out change moves many goldens.** Every `Solution` and
+  `Ambiguity` summary in the corpus could move at S1e2.1a.5. They are
+  named first, and an unexplained move is a stop.
+
+## Connections
+
+- [Q-M1e2.7](../open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)
+  is the reading. Its sub-questions are S1e2.1a.3's.
+- [Q-M1e.6](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e6--what-is-a-solution-and-what-is-a-model)
+  becomes a special case, and
+  [Q-M1e2.1](../open_questions.md#q-m1e21--is-a-discharged-superset-of-a-discharged-state-a-new-model)
+  becomes sub-question (a).
+- [Q-M1e.8](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set):
+  `exhausted` certifies the walk. Sub-question (g) makes it certify the lines.
+- [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)
+  and [Q-M1e2.2](../open_questions.md#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in)
+  are the two ways R gets holes.
+- [`lattice_dump.md`](../../../docs/kernel/inference/lattice_dump.md) and
+  [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
+  are the pages the drawing extends.
+- [M1f S1f.10.3](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.3_the_restricted_join.md)
+  restricts the join and claims *not one model moved*. The oracle is what
+  can check that claim on small programs.
+- [M20](../../m20_gui/README.md): a GUI that draws the lattice binds
+  `ein_infer::region`, not the DOT.

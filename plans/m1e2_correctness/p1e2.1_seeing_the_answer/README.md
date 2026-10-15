@@ -10,12 +10,17 @@ fixpoint. S1e2.1.3 done 2026-10-14: `ein render program`, `ein render kb`,
 `--diff-models`. S1e2.1.5 done 2026-10-15: `utils/review_bundle.py run`,
 every artefact of a run rendered, five cross-checks (which found S2 unaided).
 S1e2.1.6 done 2026-10-15: `utils/review_bundle.py` — 26 case pages, the
-smoke step in the gate, the whole bundle in the nightly.
+smoke step in the gate, the whole bundle in the nightly. S1e2.1.7 **paused
+2026-10-15 after W1**: all seven rows confirmed, the user's reading filed as
+[Q-M1e2.7](../open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice),
+and [P1e2.1a](../p1e2.1a_the_solution_region/README.md) inserted before the
+rest of the review.
 **Depends on:** nothing. Every renderer this phase needs is already written,
 and three of them are already tested. What is missing is the way to reach them
 from the CLI, a file per answer, and one page that puts a wrong run beside its
 control and its right answer.
 **Blocks:** [P1e2.2](../p1e2.2_wrong_answers/README.md), every stage of it.
+S1e2.1.7 also waits on [P1e2.1a](../p1e2.1a_the_solution_region/README.md).
 No wrong answer is fixed until the user has *looked* at it, and
 [S1e2.1.7](s1e2.1.7_the_review.md) is where that happens.
 **Source:** the user's instruction of 2026-10-14: *"first phase is for

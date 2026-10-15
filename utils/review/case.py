@@ -178,6 +178,14 @@ CHECKLIST = [
 ]
 
 
+def review_cell(row: dict) -> str:
+    """The user's verdict on a row (S1e2.1.7), or that it has not been read."""
+    rv = row.get("review")
+    if not rv:
+        return "— *not yet reviewed*"
+    return f"**{rv['verdict']}**, {rv['date']}, on the bundle at `{rv['bundle']}`" + (f" — {rv['note']}" if rv.get("note") else "")
+
+
 def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
     """Build every run of one register row, and its page."""
     if out.exists():
@@ -219,6 +227,7 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
                    + (f", exhausted = {str(r_['exhausted']).lower()}" if "exhausted" in r_ else "")
                    + (f" — *{r_['reading']}*" if r_.get("reading") else ""))],
         ["note", row.get("note", "—")],
+        ["review", review_cell(row)],
     ])
     lines.append("")
 
@@ -395,8 +404,9 @@ def index_page(out: Path, built: list[tuple[dict, Path, list[Col]]], extra: list
             rows.append([f"[{row['id']}]({rel(p, page)})", row["owner"], row["settings"],
                          f"{w['verdict']} k={w['k']}" + ("" if agrees else f" **(now {got.verdict} k={got.k})**"),
                          f"{r.get('verdict', '—')} k={r.get('k', '—')}",
-                         ", ".join(differs) or ("*a reading*" if r.get("reading") else "—"), row["status"]])
-        lines += table(["case", "owner", "settings", "wrong (register)", "right", "differs in", "status"], rows) + [""]
+                         ", ".join(differs) or ("*a reading*" if r.get("reading") else "—"), row["status"],
+                         row["review"]["verdict"] if "review" in row else "—"])
+        lines += table(["case", "owner", "settings", "wrong (register)", "right", "differs in", "status", "review"], rows) + [""]
     if extra:
         lines += ["## Programs", ""]
         lines += table(["program", "verdict", "k", "exhausted"],

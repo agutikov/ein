@@ -33,7 +33,13 @@
 ;;; Expected verdict + counts under contradictions_solve with
 ;;; max_set_size=3:
 ;;;
-;;;   verdict          Contradiction (mode contract)
+;;;   verdict          NOT Contradiction. This line said "Contradiction (mode
+;;;                    contract)", P1.5b's reading. Every pair is alive and
+;;;                    nothing is owed, so the answer is a region of 7 nodes
+;;;                    whose maximal line is the three pairs: k = 3, which the
+;;;                    default run reports and the `-L` run does not. Register
+;;;                    row W1/lattice-02-L, confirmed by the user 2026-10-15;
+;;;                    the region is Q-M1e2.7 (plans/m1e2_correctness/).
 ;;;   enterings_total  7   (3 singletons + 3 pairs + 1 triple)
 ;;;   dead_commitments 1   (the {h1, h2, h3} death only —
 ;;;                         no 2-subset dies)
