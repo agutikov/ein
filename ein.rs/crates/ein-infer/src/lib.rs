@@ -36,6 +36,7 @@ pub mod hypgen;
 pub mod invariant;
 pub mod lookahead;
 pub mod match_;
+pub mod monotone;
 pub mod mt19937;
 pub mod naf_deps;
 pub mod nogoods;
@@ -43,6 +44,7 @@ pub mod oblgen;
 pub mod obligations;
 pub mod plan;
 pub mod predicates;
+pub mod region;
 pub mod sanity;
 pub mod saturator;
 pub mod shape;
@@ -94,7 +96,7 @@ pub use shape::{
     plan_shape, plan_shape_with, saturate_events, solve_shape,
 };
 pub use solve::{
-    DeadCommitment, Dumper, EnteringInfo, LatticeProof, LatticeStats, LayerCensus, MonotonicStats,
-    NoDumper, OnBudget, SolveError, SolveOptions, Solved, solve,
+    DeadCommitment, Dumper, EnteredRecord, EnteringInfo, LatticeProof, LatticeStats, LayerCensus,
+    MonotonicStats, NoDumper, OnBudget, SolveError, SolveOptions, Solved, Universe, solve,
 };
 pub use verdict::{Answer, Solution, Verdict, goal_bindings, query_value};

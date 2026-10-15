@@ -40,7 +40,7 @@ The two questions S1e2.1a.1 could not settle without a ruling are both about
 the non-monotone case:
 
 - **A node's state, fork or scratch.** The engine builds a node from root's
-  fixpoint with the commitment written in. `probes/region.py` builds it from
+  fixpoint with the commitment written in. `utils/region.py` builds it from
   the program with the commitment written in as given facts. On a monotone
   program the two agree, which is the theorem below. On
   [`stale-naf-fork.ein`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein)
@@ -56,8 +56,8 @@ the non-monotone case:
 
 Measured 2026-10-15, and the reason the phase is not *"`absent`"*. A hole needs
 no `absent` in any saturation rule. On this eleven-line program
-(`plans/m1e2_correctness/probes/owed-trigger-hole.ein`, banked as a corpus
-fixture by S1e2.1a.1):
+([`examples/lattice/04_obligation_trigger_hole.ein`](../../../examples/lattice/04_obligation_trigger_hole.ein),
+banked as a corpus fixture by S1e2.1a.1):
 
 ```lisp
 (import std.algebra :symbols (total-owed))

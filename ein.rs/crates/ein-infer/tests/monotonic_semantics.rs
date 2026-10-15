@@ -327,7 +327,7 @@ fn a_spent_time_budget_aborts_with_partial_stats_and_a_float_seconds_reason() {
         ..SolveOptions::default()
     };
     let outcome = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts);
-    let Err(SolveError::Budget { reason, stats }) = outcome else {
+    let Err(SolveError::Budget { reason, stats, .. }) = outcome else {
         panic!("expected a budget abort before the first entering");
     };
     assert_eq!(reason, "max-time (0.0s) exceeded");

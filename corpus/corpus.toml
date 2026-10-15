@@ -251,6 +251,18 @@ levers = ["-L", "-K", "-y", "-o score-sum"]
 note   = "two commitments that share a `state_key` — the merge path."
 
 [[entry]]
+path   = "examples/lattice/04_obligation_trigger_hole.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render rules", "render constraints", "render lattice", "solve -e --dump-region {out}/region"]
+note   = "a hole in the solution region with no `absent` in any saturation rule: an obligation's trigger grows with the commitment (M1e2 S1e2.1a.1)."
+
+[[entry]]
+path   = "examples/lattice/05_owed_seats_bounded.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render constraints", "render lattice", "solve -e --dump-region {out}/region"]
+note   = "owed-seats with `functional` and `injective`: R is the two matchings, two components of one point each (M1e2 S1e2.1a.1)."
+
+[[entry]]
 path   = "examples/saturation/hypothesis-contradiction/coloc-disproved.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]

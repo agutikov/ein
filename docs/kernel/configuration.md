@@ -29,7 +29,7 @@
 | surface | how many | who owns the list |
 |---|---:|---|
 | `(config …)` flags | **17** | `FIELDS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs); the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **61** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| CLI options | **64** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **8** read by the shipped binary, of 26 greppable names | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -289,12 +289,12 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**61** options across thirteen parsers, in the default build (`einb`,
+**64** options across thirteen parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 35 |
+| `ein solve` | 38 |
 | `ein test` | 9 |
 | `ein saturate` | 5 |
 | `ein render kb` | 4 |
@@ -306,7 +306,7 @@ parallel copy. What this page states is the *shape*, read off that golden:
 
 `ein`, `ein kb`, `ein render` and `ein render constraints` take none — they are
 dispatchers. `ein kb save` exists only under the `einb` feature; a
-`--no-default-features` build has 60 and no `ein kb` at all.
+`--no-default-features` build has 63 and no `ein kb` at all.
 
 ### 3.2 The six options that shadow a flag
 
@@ -377,16 +377,23 @@ Five classes. Only the first two touch the answer.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary`,
   `--json-report`, `--trace` with its four modifiers (`-F`, `-G`, `-l`, `-R`),
   `-D`/`--dump-states`, `--dump-lattice` (M1e2 S1e2.1.3,
-  [`lattice_dump.md`](inference/lattice_dump.md)) and `--dump-answer` (M1e2
-  S1e2.1.2, [`answer_dump.md`](inference/answer_dump.md)). The three
-  directories are made before the search, and `--dump-lattice` is refused
+  [`lattice_dump.md`](inference/lattice_dump.md)), `--dump-answer` (M1e2
+  S1e2.1.2, [`answer_dump.md`](inference/answer_dump.md)), and `--dump-region`
+  with its `--region-limit N` and `--region-states` (M1e2 S1e2.1a.1,
+  [`region_dump.md`](inference/region_dump.md)). The four directories are
+  made before the search, and `--dump-lattice` is refused
   beside `--dump-states`, `-v`, `--layer-progress` and `-t`: each chooses the
   solve's one dumper. **Additive** in the strict
   sense: stdout, stderr and the exit code are identical with them and
   without — and for `--dump-answer` so are the summary and the event stream,
-  which `answer_dump::the_flag_moves_no_answer` holds. Six of them name
-  **one** path — `events`, `trace`, `json-summary`, `dump-states`,
-  `dump-lattice`, `dump-answer` — so each is refused when the selection asks more than one
+  which `answer_dump::the_flag_moves_no_answer` holds. `--dump-region` holds
+  the same (`region_dump::the_flag_moves_no_answer`) with one exception the
+  user chose: a program whose root candidates exceed `--region-limit` gets one
+  `note:` line on stderr saying so, and when the limit is raised to 17 or more
+  a `warning:` with the projected cost — the exit code stays the solve's.
+  Seven of them name **one** path — `events`, `trace`, `json-summary`,
+  `dump-states`, `dump-lattice`, `dump-answer`, `dump-region` — so each is
+  refused when the selection asks more than one
   question; `ein test --json-report` deliberately is not, because a report has
   no run to be more than one of.
 

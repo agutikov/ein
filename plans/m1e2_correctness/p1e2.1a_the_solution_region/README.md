@@ -42,7 +42,7 @@ row was decided by looking at a handful of nodes, and nothing in the bundle
 draws them. [`ein render lattice`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
 shows survivors and their pruned siblings only, and its `--view full` falls
 back to that. The brute-force script behind Q-M1e2.7's table,
-[`probes/region.py`](../probes/region.py), listed the whole lattice for seven
+`probes/region.py` (now [`utils/region.py`](../../../utils/region.py)), listed the whole lattice for seven
 programs in a few seconds. It settled W1 by doing so, and it found the first
 measured hole, on W3's witness.
 
@@ -116,7 +116,7 @@ is restated against the maximal line at S1e2.1a.7.
   for, then a prominent warning stating 2ⁿ and the projected cost.
 - **The oracle's answers on the seven programs in Q-M1e2.7's table equal the
   table**, which was taken by a different route
-  ([`probes/region.py`](../probes/region.py): `ein saturate` per subset, one
+  ([`utils/region.py`](../../../utils/region.py): `ein saturate` per subset, one
   process each). Two implementations agreeing is the evidence that the
   library oracle is right. One of the seven has a hole.
 - **Every case page draws its lattice**, every node with its status and why

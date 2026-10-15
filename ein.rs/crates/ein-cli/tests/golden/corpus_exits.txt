@@ -535,6 +535,19 @@
 0    examples/lattice/03_state_hash_collision.ein :: solve -o score-sum
 0    examples/lattice/03_state_hash_collision.ein :: solve -p -s
 0    examples/lattice/03_state_hash_collision.ein :: solve -y
+0    examples/lattice/04_obligation_trigger_hole.ein :: render constraints
+0    examples/lattice/04_obligation_trigger_hole.ein :: render lattice
+0    examples/lattice/04_obligation_trigger_hole.ein :: render rules
+0    examples/lattice/04_obligation_trigger_hole.ein :: saturate
+0    examples/lattice/04_obligation_trigger_hole.ein :: solve
+0    examples/lattice/04_obligation_trigger_hole.ein :: solve -e
+0    examples/lattice/04_obligation_trigger_hole.ein :: solve -e --dump-region {out}/region
+0    examples/lattice/05_owed_seats_bounded.ein :: render constraints
+0    examples/lattice/05_owed_seats_bounded.ein :: render lattice
+0    examples/lattice/05_owed_seats_bounded.ein :: saturate
+0    examples/lattice/05_owed_seats_bounded.ein :: solve
+0    examples/lattice/05_owed_seats_bounded.ein :: solve -e
+0    examples/lattice/05_owed_seats_bounded.ein :: solve -e --dump-region {out}/region
 0    examples/saturation/hypothesis-contradiction/coloc-disproved.ein :: render constraints
 0    examples/saturation/hypothesis-contradiction/coloc-disproved.ein :: render lattice
 0    examples/saturation/hypothesis-contradiction/coloc-disproved.ein :: render rules

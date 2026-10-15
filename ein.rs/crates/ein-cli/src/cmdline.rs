@@ -72,6 +72,18 @@ fn solutions_spec(s: &str) -> Result<i64, String> {
     }
 }
 
+/// `--region-limit`'s `n` — **not negative**, the
+/// [S5](../../../../plans/m1e2_correctness/README.md#p1e23--surfaces-that-misreport-the-answer-proposed)
+/// shape `int_arg` alone would let through.
+fn region_limit_spec(s: &str) -> Result<i64, String> {
+    match int_arg(s)? {
+        n if (0..=63).contains(&n) => Ok(n),
+        n => Err(format!(
+            "invalid region limit: '{n}' (expected 0 to 63 candidates)"
+        )),
+    }
+}
+
 /// An artefact flag's path — **not empty**.
 ///
 /// M1e [S1e.3.5](../../../../docs/history/m1e_review_processing/README.md#s1e35--error-handling-medium),
@@ -447,6 +459,43 @@ fn solve_command() -> Command {
                      and answer.json (= --json-summary). DIR is made before \
                      the search; past that, stdout, stderr and the exit code \
                      are unchanged.",
+                ),
+        )
+        // M1e2 S1e2.1a.1 — the oracle's door, its limit, and its states.
+        .arg(
+            Arg::new("dump-region")
+                .long("dump-region")
+                .value_name("DIR")
+                .value_parser(artefact_path)
+                .help(
+                    "write the solution region to DIR: every subset of the root \
+                     candidates saturated by the program's rules alone, with no \
+                     search machinery (region.json, region.md), and this run's \
+                     walk over the lattice (walk.json) — \
+                     docs/kernel/inference/region_dump.md. Runs after the solve; \
+                     stdout, the exit code and the other artefacts are unchanged.",
+                ),
+        )
+        .arg(
+            Arg::new("region-limit")
+                .long("region-limit")
+                .value_name("N")
+                .value_parser(region_limit_spec)
+                .default_value("16")
+                .help(
+                    "(--dump-region) the most root candidates the region is \
+                     computed for: 2^N saturations. Above it the directory holds \
+                     the walk and a note says why; 17-19 warns, 20 and more \
+                     warns with the projected cost.",
+                ),
+        )
+        .arg(
+            Arg::new("region-states")
+                .long("region-states")
+                .action(ArgAction::SetTrue)
+                .help(
+                    "(--dump-region) also keep every node's state beyond \
+                     root's, as text, in region.json",
                 ),
         )
         .arg(flag(

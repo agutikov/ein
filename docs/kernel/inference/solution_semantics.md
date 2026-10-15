@@ -191,6 +191,16 @@ recorded, and the two are not the same number in the mixed regime.
 with a live frontier, no `--solutions` cut, not the tree traversal. Read §6
 before reading it as a certification of the model set.
 
+**Every word above assumes a monotone lattice**, one where adding a fact never
+takes a conclusion away or adds a debt. Since M1e2
+[S1e2.1a.1](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md)
+a static check says whether a program's is
+([`region_dump.md` § Monotonicity](region_dump.md#monotonicity--the-static-check)).
+A program it finds a site in gets one more line under the verdict,
+`lattice  not monotone (n sites) — this answer assumes it is`, and the search
+and the words are unchanged. What they should mean there is
+[P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)'s.
+
 ---
 
 ## 6. What the engine implements, and where it differs

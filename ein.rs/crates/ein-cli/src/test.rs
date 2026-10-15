@@ -261,6 +261,11 @@ struct Ran {
     exhausted: bool,
     layers: u64,
     enterings: u64,
+    /// `ein_infer::monotone`'s verdict at root, and how many sites it found —
+    /// M1e2 S1e2.1a.1's stub, here because an expectation checked on a
+    /// non-monotone lattice is checked against an answer that assumed it was.
+    monotone: bool,
+    sites: usize,
     /// Wall clock for this query's solve. **The one field that does not
     /// reproduce**, which is why nothing digests a report: it is a measurement
     /// surface, not a golden.
@@ -326,6 +331,8 @@ impl Row {
                     ("exhausted", Json::Bool(r.exhausted)),
                     ("layers", Json::int(r.layers as i64)),
                     ("enterings", Json::int(r.enterings as i64)),
+                    ("monotone", Json::Bool(r.monotone)),
+                    ("sites", Json::int(r.sites as i64)),
                     ("ms", Json::Float(r.ms)),
                 ]),
             )),
@@ -797,6 +804,8 @@ fn check_query(
         exhausted: solved.stats.exhausted,
         layers: solved.stats.base.layers_explored,
         enterings: solved.stats.base.enterings_total,
+        monotone: solved.monotonicity.is_monotone(),
+        sites: solved.monotonicity.sites.len(),
         ms,
     };
     crate::solve::events_verdict(&mut events, terms, &solved.answer, &solved.stats);
@@ -811,6 +820,7 @@ fn check_query(
             &file,
             &mut events,
             &solved.owes,
+            &solved.monotonicity,
         ) {
             Ok(s) => {
                 if let Err(e) = crate::summary::write(out, &s) {

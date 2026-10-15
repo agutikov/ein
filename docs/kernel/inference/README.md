@@ -57,6 +57,9 @@ docs/kernel/inference/
 ├── lattice_dump.md                ← the commitment-lattice dump format
 ├── answer_dump.md                 ← `ein solve --dump-answer`: the answer as
 │                                     files, every state loadable (M1e2)
+├── region_dump.md                 ← `ein solve --dump-region`: the solution
+│                                     region by brute force, the run's walk,
+│                                     and the monotonicity check (M1e2)
 ├── events.md                      ← the `--events` protocol: one JSON object
 │                                     per line, every step the engine took
 │                                     (schema `ein-events/1`; M1a S1a.0.2,
@@ -1084,7 +1087,9 @@ Both of those record the **search**. For the **answer** — every recorded
 model and open state as a file that loads and re-saturates to itself, the
 commitment that reached it, and every refuted commitment's core and clause —
 `ein solve --dump-answer DIR`: see [`answer_dump.md`](answer_dump.md)
-(M1e2 S1e2.1.2).
+(M1e2 S1e2.1.2). For the answer as a **region** of the lattice, computed
+without the search, and the run's walk placed in it: `ein solve
+--dump-region DIR`, [`region_dump.md`](region_dump.md) (M1e2 S1e2.1a.1).
 
 ### Budget — `max_time` / `max_enterings`
 

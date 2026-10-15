@@ -1,0 +1,42 @@
+;;; A hole in the solution region with no `absent` in any saturation rule —
+;;; M1e2 S1e2.1a.1, P1e2.1b § What non-monotone means.
+;;;
+;;; `total-owed meal is-a` says every Diner owes a meal. Nobody is a Diner at
+;;; root; seating a guest derives `(is-a ?g Diner)`. So the commitment
+;;; `{(seats Ann C1)}` owes 1, while ∅ and `{(seats Ann C1), (meal Ann Soup)}`
+;;; owe nothing:
+;;;
+;;;   L0: ∅ in R
+;;;   L1: {(meal Ann Soup)} in R, {(seats Ann C1)} owing 1   ← a hole
+;;;   L2: {(seats Ann C1), (meal Ann Soup)} in R
+;;;
+;;; An obligation is the negation of its witness, so its *trigger* — here the
+;;; `(?isa ?a ?A)` premise of `total-owed` — reads at the polarity an `absent`
+;;; does, and a commitment that grows it can add a debt. `ein_infer::monotone`
+;;; reports it as an `obligation-trigger` site; `ein_infer::region`'s cube
+;;; shows the hole. The two hrules make the root candidate list exactly the
+;;; two facts above.
+;;;
+;;; What the engine answers is not this file's question: P1e2.1b's is what R
+;;; means here.
+
+(import std.algebra :symbols (total-owed))
+
+(relation is-a  T T)
+(relation seats Guest Chair)
+(relation meal  Diner Food)
+
+(is-a Ann Guest) (is-a C1 Chair) (is-a Soup Food)
+
+(rule seated-dines ()
+  :match  (seats ?g ?c)
+  :assert (is-a ?g Diner)
+  :why    "{?g} is seated, so {?g} dines"
+  :priority 200)
+
+(total-owed meal is-a)
+
+(hrule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c))
+(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food))  :assert (meal ?g ?f))
+
+(query :goal (meal ?g ?f))

@@ -465,6 +465,7 @@ pub fn build(
     source: &str,
     events: &mut ein_infer::events::Events,
     owes: &OwesReport,
+    monotonicity: &ein_infer::monotone::Monotonicity,
 ) -> Result<Json, String> {
     // `k` is the count of **models**, which is `solution_nodes` for every
     // verdict but `Open`: an open state is a node the search recorded and the
@@ -501,6 +502,13 @@ pub fn build(
         ("verdict", Json::Object(verdict)),
         ("stats", stats_block(stats)),
         ("owes", owes_report(terms, owes)),
+        // M1e2 S1e2.1a.1 — the static check at root, on every arm. A program
+        // with a site reached the `non_monotone` stub, and this block is the
+        // stub's machine-readable half.
+        (
+            "monotonicity",
+            ein_render::dump::region::monotonicity_json(monotonicity, terms),
+        ),
         ("leftover", leftover),
         ("root", root_block(ast, terms, kb, events)?),
         ("config", config_block(config)),
@@ -532,6 +540,7 @@ pub fn build_aborted(
     config: &SolverConfig,
     source: &str,
     events: &mut ein_infer::events::Events,
+    monotonicity: &ein_infer::monotone::Monotonicity,
 ) -> Result<Json, String> {
     let mut answer = Answer::Aborted {
         reason: reason.to_string(),
@@ -546,6 +555,7 @@ pub fn build_aborted(
         source,
         events,
         &OwesReport::default(),
+        monotonicity,
     )
 }
 

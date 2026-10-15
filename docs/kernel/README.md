@@ -83,10 +83,11 @@ Every page in this tree is in exactly **one** of three states, and the state is
 visible from the page itself. Triaged page by page at M1e
 [S1e.2.2](../history/m1e_review_processing/README.md#s1e22--code--doc-the-canonical-tree)
 (2026-08-30), 40 pages; 41 since M1e2 S1e2.1.2 added
-[`inference/answer_dump.md`](inference/answer_dump.md), current:
+[`inference/answer_dump.md`](inference/answer_dump.md), and 42 since S1e2.1a.1
+added [`inference/region_dump.md`](inference/region_dump.md), current:
 
 - **current** — every claim holds of the engine that ships. No banner; this is
-  the default and 38 of the 41 pages are here. What makes it checkable rather
+  the default and 39 of the 42 pages are here. What makes it checkable rather
   than aspirational is the test in [§ Keeping this
   true](#keeping-this-true) below: every code identifier the page names
   resolves in `ein.rs/crates/`, and every environment variable and CLI

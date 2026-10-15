@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 """The solution region of a small program, by brute force: Q-M1e2.7's tables.
 
-    region.py FILE.ein FACT…        e.g.  region.py branching/15.ein '(p A)' '(p B)' '(p C)'
+    region.py [--json] FILE.ein FACT…   e.g.  region.py branching/15.ein '(p A)' '(p B)' '(p C)'
+
+Banked as plans/m1e2_correctness/probes/region.py when Q-M1e2.7 was filed and
+moved here by M1e2 S1e2.1a.1, which made it the **second route** the library
+oracle (`ein solve --dump-region`, `ein_infer::region`) is checked against:
+`ein-cli/tests/region_dump.rs` runs both on Q-M1e2.7's seven programs and
+compares them node for node. `--json` is the form that test reads.
 
 The lattice over n candidate facts is the n-cube: a node is an n-bit mask, an
 edge adds or removes one fact, and layer k is the masks with k bits set. Every
@@ -45,7 +51,7 @@ ein.rs/target/release/ein.
 import itertools, json, os, re, subprocess, sys, tempfile
 from collections import Counter
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 EIN = os.environ.get("EIN_BIN", os.path.join(ROOT, "ein.rs/target/release/ein"))
 OFF = "(config :enable-forced-positive false :enable-pre-branch-lookahead false)"
 
@@ -126,15 +132,34 @@ def topology(n, st):
 
 
 def main():
-    if len(sys.argv) < 2:
+    argv = sys.argv[1:]
+    as_json = bool(argv) and argv[0] == "--json"
+    if as_json:
+        argv = argv[1:]
+    if not argv:
         sys.exit(__doc__)
     # Drop the file's own (config …) lines so the switch above is the only one.
-    src = "\n".join(l for l in open(sys.argv[1]).read().split("\n") if not l.startswith("(config"))
-    H = sys.argv[2:]
+    src = "\n".join(l for l in open(argv[0]).read().split("\n") if not l.startswith("(config"))
+    H = argv[1:]
     n = len(H)
     with tempfile.TemporaryDirectory() as d:
         st = [classify(src, [H[i] for i in range(n) if m >> i & 1], d) for m in range(1 << n)]
     t = topology(n, st)
+    if as_json:
+        facts = lambda m: [H[i] for i in range(n) if m >> i & 1]
+        sets = lambda ms: sorted(sorted(facts(m)) for m in ms)
+        print(json.dumps({
+            "candidates": H,
+            "nodes": [{"facts": sorted(facts(m)), "status": st[m]} for m in range(1 << n)],
+            "minimal": sets(t["mn"]),
+            "maximal": sets(t["mx"]),
+            "holes": sets(t["holes"]),
+            "components": sorted(len(c) for c in t["comps"]),
+            "subcubes": sorted([sorted(facts(a)), sorted(facts(b))] for a, b in t["prime"]),
+            "nogoods": sets(t["nogoods"]),
+            "duality_n": sorted(t["mx"]) == t["dual"],
+        }, indent=1))
+        return
     name = lambda m: "{" + ", ".join(H[i] for i in range(n) if m >> i & 1) + "}" if m else "∅"
     J = lambda ms: ", ".join(map(name, ms)) or "—"
     for k in range(n + 1):

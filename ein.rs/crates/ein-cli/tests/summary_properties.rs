@@ -142,6 +142,7 @@ fn summary(path: &std::path::Path, regime: &str, budget: u64, exhaustive: bool) 
         &path.to_string_lossy(),
         &mut events,
         &solved.owes,
+        &solved.monotonicity,
     )
     .ok()?;
     serde_json::from_str(&ein_render::dump::json::dumps_indent(&json)).ok()
@@ -250,7 +251,12 @@ fn the_summary_has_one_shape_on_every_arm() {
     let err = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
         .err()
         .expect("a one-entering cap aborts the zebra");
-    let ein_infer::solve::SolveError::Budget { reason, stats } = err else {
+    let ein_infer::solve::SolveError::Budget {
+        reason,
+        stats,
+        monotonicity,
+    } = err
+    else {
         panic!("the cap did not raise a budget error: {err:?}");
     };
     let aborted = ein_cli::summary::build_aborted(
@@ -262,6 +268,7 @@ fn the_summary_has_one_shape_on_every_arm() {
         &config,
         rel,
         &mut events,
+        &monotonicity,
     )
     .expect("the aborted summary builds");
     let aborted: J = serde_json::from_str(&ein_render::dump::json::dumps_indent(&aborted))

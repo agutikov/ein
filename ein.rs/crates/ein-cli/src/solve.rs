@@ -517,13 +517,14 @@ fn resolve_jobs(n: i64) -> usize {
 
 /// The artefact flags: each names **one** path, so each is incompatible with a
 /// file that asks more than one question.
-const ONE_PATH_FLAGS: [&str; 6] = [
+const ONE_PATH_FLAGS: [&str; 7] = [
     "events",
     "trace",
     "json-summary",
     "dump-states",
     "dump-lattice",
     "dump-answer",
+    "dump-region",
 ];
 
 pub fn run(m: &ArgMatches) -> i32 {
@@ -685,6 +686,15 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
             Some(inlined_program(file))
         }
     };
+    // `--dump-region` makes its directory before the search for
+    // `--dump-answer`'s reason, and writes into it after everything else.
+    let region_dir = m.get_one::<String>("dump-region").cloned();
+    if let Some(dir) = region_dir.as_deref()
+        && let Err(e) = std::fs::create_dir_all(dir)
+    {
+        artefact_failed("dump-region", dir, e);
+        return (1, n_queries);
+    }
     // The `max(0)` can no longer fire: `cmdline::solutions_spec` refuses
     // anything below 1 (M1e S1e.1.5). It stays as the cast's guard rather than
     // as a policy — a policy that lives in two places is a policy with two
@@ -708,6 +718,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
         // `--dump-lattice`'s `proof_summary.json` is written from the proof.
         store_lattice: trace_path.is_some()
             || answer_dir.is_some()
+            || region_dir.is_some()
             || m.get_one::<String>("dump-lattice").is_some(),
         jobs: resolve_jobs(*m.get_one::<i64>("jobs").unwrap_or(&1)),
         ..SolveOptions::default()
@@ -723,7 +734,11 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
         &opts,
     ) {
         Ok(s) => s,
-        Err(SolveError::Budget { reason, stats }) => {
+        Err(SolveError::Budget {
+            reason,
+            stats,
+            monotonicity,
+        }) => {
             eprintln!("** aborted: {reason} **");
             let summary_path = m.get_one::<String>("json-summary");
             if summary_path.is_some() || answer_dir.is_some() {
@@ -743,6 +758,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
                     } else {
                         &mut off
                     },
+                    &monotonicity,
                 );
                 write_summaries(built, summary_path, answer_dir.as_deref(), |dir, text| {
                     let inputs = ein_render::dump::AnswerInputs {
@@ -791,7 +807,10 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
             return (1, n_queries);
         }
     };
-    println!("{table}");
+    println!(
+        "{}",
+        ein_render::answer::with_lattice_line(table, &solved.monotonicity)
+    );
     print_final(&ast, &terms, &kb, &solved.answer, m);
     if let Some((path, want)) = &expected {
         print_model_diff(&terms, &solved.answer, path, want);
@@ -841,6 +860,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
                 &mut off
             },
             &solved.owes,
+            &solved.monotonicity,
         );
         write_summaries(built, summary_path, answer_dir.as_deref(), |dir, text| {
             let inputs = ein_render::dump::AnswerInputs {
@@ -862,17 +882,110 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
     // the trace above it: the query's own claim about its answer, checked. A
     // `:expect` that `solve` merely ignored would be worse than no `:expect`,
     // which is the whole reason the keyword is not a comment.
-    (
-        check_expectation(
-            &ast,
-            &mut terms,
-            &kb,
-            &solved.answer,
-            solved.stats.exhausted,
-            file,
-        ),
-        n_queries,
-    )
+    let code = check_expectation(
+        &ast,
+        &mut terms,
+        &kb,
+        &solved.answer,
+        solved.stats.exhausted,
+        file,
+    );
+    // After the claim is checked, so the oracle adds nothing to stdout and its
+    // stderr lines come after every other one.
+    if let Some(dir) = region_dir.as_deref() {
+        write_region(m, file, index, &config, &terms, &kb, &solved, dir);
+    }
+    (code, n_queries)
+}
+
+/// `--dump-region` — the oracle on **its own load** of the program, then the
+/// three files. M1e2 S1e2.1a.1.
+///
+/// Its own load because the oracle interns every fact of `2ⁿ` fixpoints, and
+/// doing that in the solve's `Terms` would renumber nothing the solve printed
+/// but everything a later reader of those ids compared. The run's walk is
+/// joined to the cube by fact text.
+///
+/// A refusal over the limit is a **note**, by the user's choice of
+/// 2026-10-15: the solve already ran, the directory says why there is no
+/// region, and the exit code is the solve's.
+#[allow(clippy::too_many_arguments)]
+fn write_region(
+    m: &ArgMatches,
+    file: &str,
+    index: usize,
+    config: &ein_core::SolverConfig,
+    terms: &Terms,
+    kb: &Kb,
+    solved: &ein_infer::solve::Solved,
+    dir: &str,
+) {
+    let limit = (*m.get_one::<i64>("region-limit").unwrap_or(&16)).clamp(0, 63) as u32;
+    let mut ast = Ast::new();
+    let mut oterms = Terms::new();
+    let Some(mut okb) =
+        crate::common::load_any_query_or_exit(&mut ast, &mut oterms, Path::new(file), index)
+    else {
+        return;
+    };
+    okb.program_mut().config = Some(config.clone());
+    let opts = ein_infer::region::Options {
+        limit,
+        keep_states: m.get_flag("region-states"),
+        // `--jobs` is the solve's execution knob and the oracle's too: it
+        // changes the wall clock and nothing in the directory.
+        jobs: resolve_jobs(*m.get_one::<i64>("jobs").unwrap_or(&1)),
+    };
+    let mut on_projection = |p: &ein_infer::region::Projection| {
+        let secs = p.projected.as_secs_f64();
+        if p.n >= ein_infer::region::LOUD_FROM {
+            eprintln!(
+                "warning: --dump-region {dir}: {n} root candidates — the region is 2^{n} = \
+                 {nodes} saturations.\nwarning:   measured {per:.1} µs per node on the first \
+                 {probe}; projected {secs:.1} s.\nwarning:   --region-limit {limit} asked for \
+                 it; interrupt to stop.",
+                n = p.n,
+                nodes = p.nodes,
+                per = p.per_node.as_secs_f64() * 1e6,
+                probe = ein_infer::region::PROBE_NODES,
+            );
+        } else {
+            eprintln!(
+                "warning: --dump-region {dir}: {} root candidates, 2^{} saturations, \
+                 projected {secs:.1} s",
+                p.n, p.n
+            );
+        }
+    };
+    let outcome =
+        match ein_infer::region::compute(&mut okb, &mut oterms, &ast, &opts, &mut on_projection) {
+            Ok(o) => o,
+            Err(e) => {
+                artefact_failed("dump-region", dir, e);
+                return;
+            }
+        };
+    if let ein_infer::region::Outcome::Refused { n, limit, .. } = &outcome {
+        eprintln!(
+            "note: --dump-region {dir}: {}",
+            ein_render::dump::region::refusal_note(*n, *limit)
+        );
+    }
+    let inputs = ein_render::dump::RegionInputs {
+        source: file,
+        limit,
+    };
+    if let Err(e) = ein_render::dump::write_region_dir(
+        Path::new(dir),
+        &outcome,
+        &oterms,
+        terms,
+        kb,
+        solved,
+        &inputs,
+    ) {
+        artefact_failed("dump-region", dir, e);
+    }
 }
 
 /// `--diff-models` — the answer's states against the ones a file lists

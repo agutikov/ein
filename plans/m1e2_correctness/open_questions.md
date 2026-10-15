@@ -182,7 +182,7 @@ and it is the answer. Its **minimal line** is R's minimal elements, its
 
 ### Measured
 
-These numbers come from [`probes/region.py`](probes/region.py), a brute-force
+These numbers come from `probes/region.py` (since S1e2.1a.1 [`utils/region.py`](../../utils/region.py)), a brute-force
 instrument. It enumerates every subset of a program's candidate hypotheses,
 adds it to the program as given facts, saturates with
 `:enable-forced-positive` and `:enable-pre-branch-lookahead` off, and reads
@@ -333,7 +333,7 @@ facts, a set H of possible hypotheses, and constraints.
   ([representations.md](../../docs/history/m1d_satisfiability/representations.md))
   is the skeptical reading of a model set.
 
-Measured with the merged [`probes/region.py`](probes/region.py), same
+Measured with the merged `probes/region.py` (now [`utils/region.py`](../../utils/region.py)), same
 programs and settings as the table above:
 
 | program | components | maximal sub-cubes (dimension) | holes | minimal dead sets N | duality |
@@ -351,12 +351,12 @@ one with a hole.
 
 ### Holes without `absent` (2026-10-15)
 
-Measured while writing the oracle. `plans/m1e2_correctness/probes/owed-trigger-hole.ein`
+Measured while writing the oracle. [`examples/lattice/04_obligation_trigger_hole.ein`](../../examples/lattice/04_obligation_trigger_hole.ein)
 has no `absent` in any saturation rule, and `total-owed meal is-a` over a
 `Diner` type that seating a guest derives:
 
 ```
-$ python3 plans/m1e2_correctness/probes/region.py plans/m1e2_correctness/probes/owed-trigger-hole.ein '(seats Ann C1)' '(meal Ann Soup)'
+$ python3 utils/region.py examples/lattice/04_obligation_trigger_hole.ein '(seats Ann C1)' '(meal Ann Soup)'
 L0: ∅=ok
 L1: {(seats Ann C1)}=owes 1  {(meal Ann Soup)}=ok
 L2: {(seats Ann C1), (meal Ann Soup)}=ok

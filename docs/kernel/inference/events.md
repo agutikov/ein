@@ -100,6 +100,7 @@ difference a change to the engine or an optimisation introduces.
 | `load` | after `kb.from_ir` | `relations`, `rules`, `hrules`, `macros`, `facts` counts; `relation_names` and `rule_names` in registry order |
 | `verdict` | end | `type`, `k`, `exhausted`, `counters` (every `MonotonicStats` field), `core` (sorted), `models` (each a sorted fact list, the list itself sorted) |
 | `warn` | **at root, before the search** — the alive-set check right after `load`, the `(absent …)` audit at root's first `quiesce`; one line per breach, in the checker's own order | `category`, `message` (rendered, one line) |
+| `monotonicity` | **at root, before the search**, after root's obligation tally — and **only when the program's lattice is not monotone** (M1e2 S1e2.1a.1) | `verdict` (`"non-monotone"`), `sites` (the count), `site` (one rendered line per site, sorted) |
 
 **`type` gained a fourth value at M1d
 [S1d.2.6](../../../docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus)
@@ -146,6 +147,24 @@ Two corpus entries reach this kind, and they are the cover rows for it:
 itself) for the second category, and `examples/ein-bugs/alive-set-fresh-name.ein`
 for the third. `DerivedNafWarning` has no corpus witness — its witness is
 `ein-infer/tests/naf_semantics.rs`, on a program written in the test.
+
+#### `monotonicity` — the non-monotone lattice, a stub
+
+M1e2 [S1e2.1a.1](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
+[`ein_infer::monotone`](../../../ein.rs/crates/ein-infer/src/monotone.rs)
+classifies every relation a compiled plan reads. A **site** is a read a
+commitment can undo: an `(absent …)` at odd depth in a saturation rule over a
+relation a commitment changes, an obligation's trigger over one, or a rule
+whose activator a commitment can derive. A program with a site has a lattice
+whose region may have holes, and `solve`'s `non_monotone` stub narrates this one
+line and changes nothing else about the search. What the search should do
+there is [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)'s.
+
+A monotone program emits nothing, so every stream of one is byte-identical to
+before the stage. The same verdict is `--json-summary`'s `monotonicity` block
+on every run, and a line under the verdict on stdout when there is a site. The
+cover row is `examples/ein-bugs/naf-upward-closure.ein`, whose `bad` rule reads
+`q`, a hypothesised relation, inside an `absent`.
 
 ### Deductive layer
 

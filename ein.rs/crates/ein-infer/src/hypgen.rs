@@ -124,6 +124,13 @@ pub struct HypGenStats {
     /// that declares no obligation rule, which is the shape every counter
     /// baseline was taken under.
     pub rung: crate::oblgen::RungReport,
+    /// The candidates the one-step lookahead dropped, in drop order — M1e2
+    /// S1e2.1a.1. With them, `emitted` is the list the generator would have
+    /// proposed had the lookahead been off, which is the config-free universe
+    /// [`crate::monotone`] and [`crate::region`] are about; the lookahead is a
+    /// config switch, so what it drops is still part of the lattice. Pushed
+    /// only on a kill, so a run without the lookahead pays nothing.
+    pub lookahead_killed: Vec<FactId>,
 }
 
 impl HypGenStats {
@@ -282,6 +289,37 @@ pub fn generate_blind(
     generate_rungs(s, stats, f, Rungs::BlindOnly, false)
 }
 
+/// The **config-free** candidate list: [`generate`] with the lookahead filter
+/// and its kill cache off and the obligations rung at its default order,
+/// whatever the program's `(config …)` and `EIN_OBLIGATION_CHOICE` say — M1e2
+/// [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
+///
+/// The user ruled on 2026-10-15 that no config option may change the
+/// problem's lattice, so the lattice's universe cannot be the list a switch
+/// filtered. This is the list the switches filter, and it writes nothing: with
+/// the kill cache off the walk is pure apart from interning its candidates.
+pub fn generate_config_free(
+    s: &mut Session<'_>,
+    stats: &mut HypGenStats,
+    f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
+) -> Result<(), CompileError> {
+    let opts = GenOptions {
+        lookahead: false,
+        kill_cache: false,
+        choice: crate::oblgen::Choice::RuleOrder,
+    };
+    generate_with(s, stats, f, Rungs::Ladder, false, Some(opts))
+}
+
+/// What a call reads from the config and the environment, when the caller
+/// does not let it.
+#[derive(Clone, Copy)]
+struct GenOptions {
+    lookahead: bool,
+    kill_cache: bool,
+    choice: crate::oblgen::Choice,
+}
+
 /// Which rungs of the generation ladder a call is allowed to use.
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Rungs {
@@ -303,11 +341,28 @@ fn generate_rungs(
     rungs: Rungs,
     one_branch: bool,
 ) -> Result<(), CompileError> {
+    generate_with(s, stats, f, rungs, one_branch, None)
+}
+
+/// [`generate_rungs`], with the config and the environment overridable.
+fn generate_with(
+    s: &mut Session<'_>,
+    stats: &mut HypGenStats,
+    f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
+    rungs: Rungs,
+    one_branch: bool,
+    opts: Option<GenOptions>,
+) -> Result<(), CompileError> {
     ein_core::counters::bump(|c| c.hypgen_call += 1);
     let cfg = s.kb.program().config.clone().unwrap_or_default();
+    let opts = opts.unwrap_or(GenOptions {
+        lookahead: cfg.enable_pre_branch_lookahead,
+        kill_cache: cfg.enable_lookahead_kill_cache,
+        choice: crate::oblgen::Choice::from_env(),
+    });
     // Built once per call (it compiles the rule plans, emitting `compile`
     // events as `Engine::compile_all` does) and reused per candidate.
-    let lookahead = if cfg.enable_pre_branch_lookahead {
+    let lookahead = if opts.lookahead {
         Some(Lookahead::new(s)?)
     } else {
         None
@@ -316,7 +371,7 @@ fn generate_rungs(
     let excluded = query_relations(s, NO_HYPOTHESIS).unwrap_or_default();
     let mut ctx = Ctx {
         lookahead,
-        kill_cache: cfg.enable_lookahead_kill_cache,
+        kill_cache: opts.kill_cache,
         matcher: Matcher::new(),
         seen: FxHashSet::default(),
     };
@@ -341,7 +396,7 @@ fn generate_rungs(
             &allowed,
             &excluded,
             &closed,
-            crate::oblgen::Choice::from_env(),
+            opts.choice,
             stats,
             &mut |s, stats, fact| emit(s, &mut ctx, stats, fact, f),
             one_branch,
@@ -438,6 +493,7 @@ fn apply_filters(
         && l.dies_immediately(s, &mut ctx.matcher, fact)
     {
         stats.bump(Drop::LookaheadKilled);
+        stats.lookahead_killed.push(fact);
         if ctx.kill_cache {
             write_negated(s, fact);
         }
@@ -946,9 +1002,18 @@ impl std::fmt::Display for ScoreError {
 /// recovered generically at the `state_key` dedup, because the *user's* rule
 /// established the equivalence.
 pub fn open_hypotheses(s: &mut Session<'_>) -> Result<FxHashSet<FactId>, CompileError> {
+    open_hypotheses_counted(s, &mut HypGenStats::new())
+}
+
+/// [`open_hypotheses`], keeping the call's stats — the root call's
+/// [`HypGenStats::lookahead_killed`] is how a solve reads the config-free
+/// universe without a second walk.
+pub fn open_hypotheses_counted(
+    s: &mut Session<'_>,
+    stats: &mut HypGenStats,
+) -> Result<FxHashSet<FactId>, CompileError> {
     let mut open = FxHashSet::default();
-    let mut stats = HypGenStats::new();
-    generate(s, &mut stats, &mut |fact| {
+    generate(s, stats, &mut |fact| {
         open.insert(fact);
         ControlFlow::Continue(())
     })?;

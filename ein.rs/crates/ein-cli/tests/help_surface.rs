@@ -33,9 +33,10 @@ const EXPECTED: [(&str, usize); 10] = [
     // Among them P1a.7's `--jobs`
     // ([T1a.7.2.1](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)),
     // M1d S1d.3.3's `--models`, M1d P1d.10's `--layer-progress` and M1e2's
-    // `--dump-answer` (S1e2.1.2), `--dump-lattice` (S1e2.1.3) and
-    // `--diff-models` (S1e2.1.4).
-    ("COMMAND ein solve\n", 35),
+    // `--dump-answer` (S1e2.1.2), `--dump-lattice` (S1e2.1.3),
+    // `--diff-models` (S1e2.1.4), and S1e2.1a.1's `--dump-region`,
+    // `--region-limit` and `--region-states`.
+    ("COMMAND ein solve\n", 38),
     ("COMMAND ein saturate\n", 5),
     ("COMMAND ein render\n", 0),
     ("COMMAND ein render rules\n", 1),
@@ -90,9 +91,9 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        51 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        54 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "51 options across the ten parsers of `ein`, `solve`, `saturate` and \
+        "54 options across the ten parsers of `ein`, `solve`, `saturate` and \
          `render`, plus `ein test`'s nine and `ein kb save --saturate`"
     );
 }

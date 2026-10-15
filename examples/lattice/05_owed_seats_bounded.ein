@@ -1,0 +1,32 @@
+;;; `owed-seats` with both upper bounds — M1e2 S1e2.1a.1, the sixth program of
+;;; Q-M1e2.7's tables.
+;;;
+;;; `examples/ein-bugs/wrong-answers/owed-seats.ein` states only the lower
+;;; bounds (`total-owed`, `surjective-owed`), so its region is every set that
+;;; covers both guests and both chairs: 7 nodes, the two matchings at the
+;;; bottom and all four seatings at the top. Adding `functional` and
+;;; `injective` kills every node with a clash, and what is left is the two
+;;; matchings, each a component of its own and a point:
+;;;
+;;;   |R| = 2   minimal = maximal = {(seats Ann C1), (seats Bob C2)},
+;;;                                 {(seats Ann C2), (seats Bob C1)}
+;;;
+;;; It is also the witness for the oracle's *saturation alone*: the commitment
+;;; `{(seats Ann C1)}` owes 2 (Bob unseated, C2 empty). Read through a solve,
+;;; the forced-positive cascade had already written `(seats Bob C2)` at root
+;;; and the same commitment owed nothing.
+
+(import std.algebra :symbols (total-owed surjective-owed functional injective))
+
+(relation is-a   T T)
+(relation seats  Guest Chair)
+
+(is-a Ann Guest) (is-a Bob Guest)
+(is-a C1 Chair)  (is-a C2 Chair)
+
+(total-owed      seats is-a)
+(surjective-owed seats is-a)
+(functional seats)
+(injective  seats)
+
+(query :goal (seats ?g ?c))

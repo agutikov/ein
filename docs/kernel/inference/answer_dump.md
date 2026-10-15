@@ -149,7 +149,9 @@ the program.
 ## The run summary
 
 `answer.json` is `--json-summary`'s object (`ein-summary/1`): `verdict`,
-`stats`, `owes`, `leftover`, `root`, `config`. The `stats` block is what a
+`stats`, `owes`, `monotonicity` (M1e2 S1e2.1a.1:
+[`region_dump.md` § Monotonicity](region_dump.md#monotonicity--the-static-check)),
+`leftover`, `root`, `config`. The `stats` block is what a
 reader asks *how did the search go* of. Each counter is defined here, because
 until M1e2 S1e2.1.5 no page did. The review bundle quotes these rows beside
 the numbers rather than paraphrasing them, and

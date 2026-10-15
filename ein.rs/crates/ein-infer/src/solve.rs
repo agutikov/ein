@@ -37,6 +37,7 @@ use crate::commitment::{CommitmentSetResult, Kind, try_commitment_set};
 use crate::compile::{CompileError, SharedMemo};
 use crate::events::Events;
 use crate::firing::Firing;
+use crate::monotone::Monotonicity;
 use crate::obligations::Owes;
 use crate::saturator::{SaturateError, Saturator, Session, Snapshot};
 use crate::verdict::{Answer, Solution, Verdict, union_dead_cores};
@@ -185,6 +186,16 @@ pub struct SolutionRecord {
     pub owes: Owes,
 }
 
+/// One commitment the search entered, and how it ended — M1e2 S1e2.1a.1,
+/// for `--dump-region`'s `walk.json`. The proof had the dead ones and the
+/// recorded ones; an alive entering that was neither was nowhere.
+#[derive(Clone, Debug)]
+pub struct EnteredRecord {
+    pub commitment: CanonicalSetId,
+    pub layer: u32,
+    pub kind: Kind,
+}
+
 pub struct DeadCommitment {
     pub commitment: CanonicalSetId,
     pub unsat_core: Vec<FactId>,
@@ -232,6 +243,8 @@ pub struct LatticeProof {
     pub dead_commitments: Vec<DeadCommitment>,
     pub alive_at_end: Vec<CanonicalSetId>,
     pub learned_nogoods: Vec<Box<[FactId]>>,
+    /// Every entering in commit order (M1e2 S1e2.1a.1).
+    pub entered: Vec<EnteredRecord>,
     pub stats: LatticeStats,
 }
 
@@ -342,6 +355,10 @@ pub enum SolveError {
     Budget {
         reason: String,
         stats: Box<MonotonicStats>,
+        /// Root's [`crate::monotone`] verdict, which a cut search still
+        /// reached — M1e2 S1e2.1a.1, so an aborted summary has the block every
+        /// other arm has.
+        monotonicity: Box<Monotonicity>,
     },
     Saturate(SaturateError),
     Compile(CompileError),
@@ -523,6 +540,8 @@ struct LoopState {
     node_at: FxHashMap<Box<[FactId]>, usize>,
     dead: Vec<DeadCommitment>,
     alive_at_end: Vec<CanonicalSetId>,
+    /// Every entering, in commit order — kept only under `store_lattice`.
+    entered: Vec<EnteredRecord>,
     state_key_merges: u64,
     /// A `stop_after` or depth-cap cut → `stats.exhausted = false`.
     truncated: bool,
@@ -565,6 +584,23 @@ pub struct Solved {
     /// for a program that states no obligation, which is every corpus entry
     /// that declares no lower bound.
     pub owes: OwesReport,
+    /// Whether the program's lattice is monotone — M1e2
+    /// [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md),
+    /// [`crate::monotone`] at root. A program with a site reached the
+    /// `non_monotone` stub P1e2.1b replaces.
+    pub monotonicity: Monotonicity,
+    /// The two candidate lists the lattice is over.
+    pub universe: Universe,
+}
+
+/// The root candidate lists — the config-free one and the one the search
+/// started from.
+#[derive(Clone, Default, Debug)]
+pub struct Universe {
+    /// What root's first generator call proposed before the lookahead filter.
+    pub proposed: Vec<FactId>,
+    /// `alive₀`, after the lookahead and the forced-positive cascade.
+    pub alive0: Vec<FactId>,
 }
 
 /// The outstanding obligations a solve found, at the two places a reader asks.
@@ -645,12 +681,16 @@ pub fn solve(
         root_initial: Vec::new(),
         root_owes: Owes::default(),
         declares_obligations: false,
+        root_proposed: Vec::new(),
+        alive0: Vec::new(),
+        monotonicity: Monotonicity::default(),
         stats: MonotonicStats::new(),
         lstate: LoopState {
             nodes: Vec::new(),
             node_at: FxHashMap::default(),
             dead: Vec::new(),
             alive_at_end: Vec::new(),
+            entered: Vec::new(),
             state_key_merges: 0,
             truncated: false,
         },
@@ -712,9 +752,18 @@ pub fn solve(
                 stats: run.stats,
                 jobs: run.jobs,
                 owes,
+                monotonicity: std::mem::take(&mut run.monotonicity),
+                universe: Universe {
+                    proposed: std::mem::take(&mut run.root_proposed),
+                    alive0: std::mem::take(&mut run.alive0),
+                },
             })
         }
-        Err(SolveError::Budget { reason, stats }) if opts.on_budget == OnBudget::Verdict => {
+        Err(SolveError::Budget {
+            reason,
+            stats,
+            monotonicity,
+        }) if opts.on_budget == OnBudget::Verdict => {
             Ok(Solved {
                 answer: Answer::Aborted { reason },
                 proof: None,
@@ -723,6 +772,8 @@ pub fn solve(
                 // A budget cut is not a fixpoint, so there is no state whose
                 // debts this could be about.
                 owes: OwesReport::default(),
+                monotonicity: *monotonicity,
+                universe: Universe::default(),
             })
         }
         Err(e) => Err(e),
@@ -784,6 +835,17 @@ struct Run<'o> {
     ///
     /// [`openness_census.md`]: ../../../../docs/history/m1d_satisfiability/openness_census.md
     declares_obligations: bool,
+    /// The universe, config-free and in candidate order: what root's first
+    /// generator call proposed **before** the lookahead filter, which is the
+    /// list `crate::region`'s cube is over — M1e2 S1e2.1a.1. Empty when root
+    /// is dead before anything is generated.
+    root_proposed: Vec<FactId>,
+    /// `alive₀`: what the search starts from, after the lookahead and the
+    /// forced-positive cascade. Both are config, so this can be smaller than
+    /// `root_proposed`, and the dump says where.
+    alive0: Vec<FactId>,
+    /// [`crate::monotone`]'s answer at root.
+    monotonicity: Monotonicity,
     stats: MonotonicStats,
     lstate: LoopState,
     /// Root writes waiting for the next integration barrier. Always empty
@@ -1136,6 +1198,13 @@ impl Run<'_> {
             )?;
             self.stats.base.enterings_total += 1;
             commit.push(cand);
+            if self.opts.store_lattice {
+                self.lstate.entered.push(EnteredRecord {
+                    commitment: commit.clone(),
+                    layer: depth + 1,
+                    kind: r.kind,
+                });
+            }
             if r.kind != Kind::Alive {
                 match r.kind {
                     Kind::DeadPre => self.stats.base.enterings_dead_pre += 1,
@@ -1389,7 +1458,26 @@ impl Run<'_> {
             return Ok(Phase1::Done);
         }
 
-        let mut alive = self.compute_alive(root, terms, ast, events)?;
+        let mut alive = {
+            let mut s = Session {
+                kb: root,
+                terms,
+                ast,
+                events,
+                memo: self.memo.clone(),
+            };
+            let mut stats = crate::hypgen::HypGenStats::new();
+            let alive = crate::hypgen::open_hypotheses_counted(&mut s, &mut stats)?;
+            // The config-free universe without a second walk: the lookahead
+            // is the only filter between the two lists, and what it dropped
+            // is in the stats. A second, lookahead-free walk here would
+            // intern the candidates before the lookahead's own facts and
+            // renumber them.
+            let mut proposed: Vec<FactId> = alive.iter().copied().collect();
+            proposed.extend(stats.lookahead_killed.iter().copied());
+            self.root_proposed = crate::apriori::canonicalise(s.terms, proposed);
+            alive
+        };
         if self.cfg.enable_forced_positive {
             let (next, term) = self.promote_forced_positives(root, terms, ast, events, alive)?;
             alive = next;
@@ -1405,6 +1493,22 @@ impl Run<'_> {
         // "what does this puzzle still owe".
         self.root_owes = crate::obligations::tally(root, terms, ast, &self.memo, events)?;
         self.declares_obligations = !root.program().obligations.is_empty();
+        self.alive0 = crate::apriori::canonicalise(terms, alive.iter().copied());
+        // After the tally, which is what compiles the obligation plans.
+        let hypothesised: FxHashSet<Symbol> = self
+            .root_proposed
+            .iter()
+            .map(|&f| terms.facts.get(f).0)
+            .collect();
+        self.monotonicity = crate::monotone::classify(
+            root,
+            terms,
+            &crate::monotone::plans_of(&self.memo),
+            &hypothesised,
+        );
+        if !self.monotonicity.is_monotone() {
+            self.non_monotone(terms, events);
+        }
         if alive.is_empty() {
             // Empty alive, and root was consistent at the `has_contradiction`
             // above. That is **not** `solution(root)` on its own:
@@ -2277,6 +2381,13 @@ impl Run<'_> {
         a_layer: &mut Vec<CanonicalSetId>,
     ) -> Result<bool, SolveError> {
         let mut entered = entered;
+        if self.opts.store_lattice {
+            self.lstate.entered.push(EnteredRecord {
+                commitment: c.clone(),
+                layer,
+                kind: entered.kind,
+            });
+        }
         if entered.kind != Kind::Alive {
             // Closed, not discarded: `handle_dead` writes root's no-good and
             // `(not h)` — which belong to the arena proper — and then hands the
@@ -2408,6 +2519,32 @@ impl Run<'_> {
     fn snapshot_root(&mut self, sat: &Saturator, kb: &Kb) {
         if resume_forks() {
             self.root_snapshot = Some(Arc::new(sat.snapshot(kb)));
+        }
+    }
+
+    /// **The non-monotone lattice — a stub.** M1e2
+    /// [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md),
+    /// on the user's instruction of 2026-10-15: *"implement detection of
+    /// non-monotonicity and add a stub for handling this case in `solve` and
+    /// other tools"*.
+    ///
+    /// Reached when [`crate::monotone`] finds a site: a read a commitment can
+    /// undo, so the lattice may have holes and two lines may not describe its
+    /// region. What the search should *do* then — refuse, qualify, or search
+    /// differently — is
+    /// [P1e2.1b](../../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)'s
+    /// S1e2.1b.5, and until it is decided this changes **nothing** about the
+    /// search. It narrates one `monotonicity` event, and the read-out
+    /// ([`Solved::monotonicity`]) says the answer assumes a monotone lattice.
+    fn non_monotone(&mut self, terms: &Terms, events: &mut Events) {
+        if events.on() {
+            let m = &self.monotonicity;
+            let sites: Vec<String> = m.sites.iter().map(|s| s.render(terms)).collect();
+            events.emit("monotonicity", |l| {
+                l.str("verdict", "non-monotone");
+                l.num("sites", sites.len() as i64);
+                l.owned_strs("site", sites);
+            });
         }
     }
 
@@ -2879,6 +3016,7 @@ impl Run<'_> {
         Err(SolveError::Budget {
             reason,
             stats: Box::new(self.stats),
+            monotonicity: Box::new(self.monotonicity.clone()),
         })
     }
 
@@ -2973,6 +3111,7 @@ impl Run<'_> {
             dead_commitments: std::mem::take(&mut self.lstate.dead),
             alive_at_end: std::mem::take(&mut self.lstate.alive_at_end),
             learned_nogoods: learned,
+            entered: std::mem::take(&mut self.lstate.entered),
             stats: LatticeStats {
                 base: self.stats.base,
                 solutions_found: self.stats.solution_nodes,

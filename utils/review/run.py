@@ -13,9 +13,11 @@ snapshot pair a diff.
 
 A solve has **one dumper**, so the run is several invocations: `main` carries
 every flag that can share a solve (`--trace --full-kb-snapshots`,
-`--dump-states`, `--dump-answer`, `--events`, `--json-summary`, and the stdout
-diagnostics), `lattice` carries `--dump-lattice`, and `grid` / `key` the two
-model forms. Their answers have to be the same answer, which is cross-check 1.
+`--dump-states`, `--dump-answer`, `--dump-region`, `--events`,
+`--json-summary`, and the stdout diagnostics), `lattice` carries
+`--dump-lattice`, and `grid` / `key` the two model forms. `--dump-region`'s
+three files are kept under `raw/region/`; the case page's § The region is
+S1e2.1a.7's. Their answers have to be the same answer, which is cross-check 1.
 """
 
 from __future__ import annotations
@@ -91,6 +93,7 @@ def drive(spec: RunSpec, out: Path, bin: str) -> list[Invocation]:
     main = solve + ["--json-summary", str(raw / "summary.json"),
                     "--dump-states", str(raw / "states"),
                     "--dump-answer", str(raw / "answer"),
+                    "--dump-region", str(raw / "region"),
                     "--stats", "--timing", "--hyp-stats", "--dump-config", "-p"]
     if spec.trace:
         main += ["--trace", str(raw / "trace.md"), "--full-kb-snapshots"]

@@ -52,6 +52,7 @@ fn summary(rel: &str, max_set_size: u32) -> J {
         rel,
         &mut events,
         &solved.owes,
+        &solved.monotonicity,
     )
     .unwrap_or_else(|e| panic!("{rel}: {e}"));
     serde_json::from_str(&ein_render::dump::json::dumps_indent(&json)).expect("summary is JSON")

@@ -368,6 +368,46 @@ fn solution_block(ast: &Ast, terms: &mut Terms, kb: &Kb, header: &str) -> Vec<St
 /// chooses the model *set*'s projection ([`crate::models::ModelsForm`]):
 /// `Key` is read by the `Ambiguity` arm alone, and `Grid` (M1e2 S1e2.1.4) by
 /// every arm that prints a state.
+/// The `non_monotone` stub's line, under the verdict — M1e2
+/// [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
+///
+/// A program `ein_infer::monotone` finds a site in has a lattice whose region
+/// may have holes, and every verdict word, `k` and `exhausted` the table
+/// prints was defined for one that has none. The search is unchanged, so the
+/// answer is unchanged; this says what it assumed. What the search should do
+/// instead is P1e2.1b's, and the sites are in `--json-summary`'s
+/// `monotonicity` block and `--dump-region`'s `region.md`.
+///
+/// A monotone program's table is returned untouched, so no golden of one
+/// moves.
+pub fn with_lattice_line(table: String, m: &ein_infer::monotone::Monotonicity) -> String {
+    if m.is_monotone() {
+        return table;
+    }
+    let n = m.sites.len();
+    let line = format!(
+        "  lattice         not monotone ({n} site{}) — this answer assumes it is",
+        if n == 1 { "" } else { "s" }
+    );
+    let mut out: Vec<String> = Vec::new();
+    let mut placed = false;
+    for l in table.lines() {
+        out.push(l.to_string());
+        if !placed && l.starts_with("  verdict ") {
+            out.push(line.clone());
+            placed = true;
+        }
+    }
+    if !placed {
+        out.push(line);
+    }
+    let mut text = out.join("\n");
+    if table.ends_with('\n') {
+        text.push('\n');
+    }
+    text
+}
+
 #[allow(clippy::too_many_arguments)]
 pub fn render_solution_table(
     ast: &Ast,
