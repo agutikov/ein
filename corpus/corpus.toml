@@ -263,6 +263,36 @@ runs   = ["solve", "solve -e", "saturate", "render constraints", "render lattice
 note   = "owed-seats with `functional` and `injective`: R is the two matchings, two components of one point each (M1e2 S1e2.1a.1)."
 
 [[entry]]
+path   = "examples/lattice/synth/merged_states.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
+note   = "Q-M1e2.7 (e): A brings B and C brings D, so the minimal line is two nodes saturation moves; written by utils/region_synth.py (M1e2 S1e2.1a.8)."
+
+[[entry]]
+path   = "examples/lattice/synth/one_model_per_component.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
+note   = "Q-M1e2.7 (i): exactly one of four, R four isolated nodes, each a component and each on both lines; written by utils/region_synth.py (M1e2 S1e2.1a.8)."
+
+[[entry]]
+path   = "examples/lattice/synth/three_components.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
+note   = "the user's shape (2026-10-15): R in three components — a monotone sub-cube, a one-node hole, a bigger hole — written by utils/region_synth.py, which holds the oracle to the header's target node for node (M1e2 S1e2.1a.8)."
+
+[[entry]]
+path   = "examples/lattice/synth/trigger_hole.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
+note   = "a hole of each kind — an obligation trigger's and an absent's — beside an owing root; written by utils/region_synth.py (M1e2 S1e2.1a.8)."
+
+[[entry]]
+path   = "examples/lattice/synth/trivial_line.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
+note   = "Q-M1e2.7 (f): obligations and nothing else, so the maximal line is all n facts; written by utils/region_synth.py (M1e2 S1e2.1a.8)."
+
+[[entry]]
 path   = "examples/saturation/hypothesis-contradiction/coloc-disproved.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]

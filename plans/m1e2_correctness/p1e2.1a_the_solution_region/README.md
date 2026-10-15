@@ -1,8 +1,9 @@
 # P1e2.1a — The solution region: R defined, computed, drawn and reported
 
-**Estimate:** ~3.5 weeks: 7 stages, 17 days (15.5 when written; S1e2.1a.1
-grew by 1.5 on 2026-10-15, below).
-**Status:** in progress — S1e2.1a.1 and S1e2.1a.2 done 2026-10-15.
+**Estimate:** ~4 weeks: 8 stages, 19 days (15.5 when written; S1e2.1a.1
+grew by 1.5 on 2026-10-15, and S1e2.1a.8 was added the same day at the
+user's request, 2 days).
+**Status:** in progress — S1e2.1a.1, S1e2.1a.2 and S1e2.1a.8 done 2026-10-15.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md) S1e2.1.1–6,
 which built the register, the doors and the bundle this phase extends.
 **Blocks:** the rest of the review,
@@ -75,13 +76,17 @@ Taken 2026-10-15 against `caef67a`.
 |---|---|---:|---|
 | [S1e2.1a.1](s1e2.1a.1_the_oracle.md) | The oracle, and the monotone lattice | 4 d | `ein_infer::monotone`: the static check that classifies every read as static, dynamic-monotone or dynamic-non-monotone, and the `non_monotone` stub in `solve`, `ein test` and the dump; `ein_infer::region`: every commitment over the root candidate list, held as an n-bit mask with two independent bits (dead; owing, read on dead states too) by saturation alone, with no search-time write; R's lines, components, maximal sub-cubes, holes with their repair edges, the minimal dead sets N and discharging sets E, and the N/E duality cross-check; the n-limit as ruled; reached by `ein solve --dump-region DIR` |
 | [S1e2.1a.2](s1e2.1a.2_the_lattice_drawn.md) | The lattice drawn | 2.5 d | `ein render region DIR`: the cube's Hasse diagram, L0 at the top, every node coloured by status with its reason one hover away, every edge classed by the statuses it joins, components coloured, sub-cubes listed, holes with their repair edges; this run's walk overlaid (entered, pre-killed, pruned, never generated, recorded) and every learned nogood checked against the cube; views that stay readable as n grows. **Done 2026-10-15**, with saturation drawn as a move inside the pure cube (`C ⇒ cl(C)`, the user's input of the same day) |
+| [S1e2.1a.8](s1e2.1a.8_region_to_program.md) | From a region to a program | 2 d | the opposite task, the user's of 2026-10-15: `utils/region_synth.py` writes a program for a chosen region (prime implicants → `(false)` rules with `absent`, obligations with witnesses), held to it node for node by the oracle and the static check by its monotonicity; the user's three-component shape and four more banked in `examples/lattice/synth/`; the solution as files; the region gallery (`review_bundle.py --regions`). **Done 2026-10-15** |
 | [S1e2.1a.3](s1e2.1a.3_the_definition.md) | The region census, and the definition | 2.5 d | R measured over every corpus entry the oracle reaches; Q-M1e2.7's sub-questions (a)–(i) ruled by the user with the census on the table; `solution_semantics.md` rewritten around R; the config principle in `configuration.md` |
 | [S1e2.1a.4](s1e2.1a.4_the_language.md) | The language states a region | 2.5 d | the forms the rulings call for: which line a query asks for, and `:expect` over a region; `ein test` and `--json-report` check them; the grammar page says so |
 | [S1e2.1a.5](s1e2.1a.5_the_read_out.md) | The read-out speaks R | 2 d | the verdict block, `--json-summary`, `--dump-answer` and `--models` report R's lines, say which line `k` counts, split empty R into `Contradiction` and `Open`, and report holes as ruled; every golden named before it moves |
 | [S1e2.1a.6](s1e2.1a.6_engine_against_oracle.md) | The engine against the oracle | 2 d | a cargo test over every corpus entry with n ≤ 16: the engine's reported lines equal the oracle's, **under every lever**, or the disagreement is a register row; the census of disagreements is the first answer-check M1e2 has that is not a hand derivation |
 | [S1e2.1a.7](s1e2.1a.7_the_bundle_shows_r.md) | The bundle shows R, and the review resumes | 1.5 d | a § *The region* on every case page and in `--corpus` mode; every register `right` block restated under the new definition, computed by the oracle wherever n ≤ 16; S1e2.1.7 resumes on the twelve unread cases |
 
-**Work order is id order, with one overlap.** The oracle and the drawing come
+**Work order is id order, with one overlap, and S1e2.1a.8 after .2.** It was
+added on 2026-10-15 and done the same day, after S1e2.1a.2's drawings: its
+programs are the cases S1e2.1a.3 rules on and S1e2.1a.6 checks.
+**Otherwise:** The oracle and the drawing come
 first, because they show R before anyone rules on it, which is this
 milestone's *see first* order. The oracle's classification (dead, owing,
 discharged) depends on none of Q-M1e2.7's sub-questions. S1e2.1a.3 needs

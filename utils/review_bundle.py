@@ -4,6 +4,7 @@
     utils/review_bundle.py [--out DIR] [CASE | FILE.ein …]      the bundle
     utils/review_bundle.py --corpus [--out DIR]                 every corpus entry
     utils/review_bundle.py --smoke                              the gate's check
+    utils/review_bundle.py --regions [--out DIR]                the region gallery (build/review/regions/)
     utils/review_bundle.py run FILE [SOLVE FLAGS…] --out DIR [--env NAME=V]…
 
 **The bundle** (S1e2.1.6), default `build/review/`: an index, and one page per
@@ -17,6 +18,9 @@ with a declared `solve` run, at that run's flags and without events.
 `--smoke` builds one small case into a temporary directory and link-checks
 it: the per-commit gate's step, using the debug `ein` `cargo test` built.
 A case that fails to build makes the command exit 1.
+`--regions` (S1e2.1a.8) surveys every corpus program's region and writes a
+gallery: the synthetic programs `utils/region_synth.py` wrote, the biggest
+regions and the most interesting, each with a page (`review/regions.py`).
 
 One run, fully explicit (S1e2.1.5): every artefact `ein` can write for
 `ein solve FILE FLAGS`, kept verbatim under DIR/raw/ and rendered as pages
@@ -176,6 +180,11 @@ def main(argv: list[str]) -> int:
     if "--smoke" in argv:
         argv.remove("--smoke")
         return cmd_smoke(argv)
+    if "--regions" in argv:
+        argv.remove("--regions")
+        from review.regions import cmd_regions
+        return cmd_regions(Path(take(argv, "--out") or REPO / "build/review/regions").resolve(),
+                           ein_bin(take(argv, "--bin")))
     return cmd_bundle(argv)
 
 

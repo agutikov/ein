@@ -435,6 +435,10 @@ def index_page(out: Path, built: list[tuple[dict, Path, list[Col]]], extra: list
                        [[f"[{name}]({rel(p, page)})", r.verdict, r.k, r.exhausted] for name, p, r in extra]) + [""]
     if failed:
         lines += ["## Failed to build", ""] + [f"- `{n}`: {e}" for n, e in failed] + [""]
+    if (out / "regions" / "README.md").exists():
+        lines += ["## The region gallery", "",
+                  f"[Every corpus program's region]({rel(out / 'regions' / 'README.md', page)}) — the synthetic "
+                  "programs, the biggest and the most interesting (`utils/review_bundle.py --regions`).", ""]
     write(page, "\n".join(lines) + "\n")
     return page
 

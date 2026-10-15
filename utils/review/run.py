@@ -43,6 +43,10 @@ REFUTED_PER_PAGE = 100
 # this, a kind's page says how many rows there are, which it shows (the first
 # and the last), and that `raw/events.jsonl` holds every one.
 EVENT_ROWS_PER_KIND = 10_000
+# Region nodes paged in full up to this many (n ≤ 16); past it, each layer's
+# first page, and the raw table keeps every row — an n = 20 cube is 2 100
+# pages otherwise.
+REGION_ROWS_PAGED = 1 << 16
 
 
 @dataclass
@@ -620,11 +624,19 @@ def region_pages(p: Pages) -> None:
     if tinv and tinv.code == 0:
         pre, sections = split_trace(tinv.stdout)
         lines += ["## Every node", "", *pre.splitlines()[1:], ""]
+        total = sum(body.count("\n| `") for _, body in sections)
+        capped = total > REGION_ROWS_PAGED
+        if capped:
+            lines += [f"**{total} nodes**: past {REGION_ROWS_PAGED} the layer pages show each layer's first "
+                      f"{ROWS_PER_PAGE} rows, and [`render-region-table.stdout.txt`]"
+                      f"({rel(p.raw / 'render-region-table.stdout.txt', index)}) holds every one.", ""]
         rows = []
         for title, body in sections:
             stem = rdir / _safe(title.split(" —")[0].lower())
             tl = [l for l in body.splitlines() if l.startswith("|")]
             head_row, body_rows = tl[:2], tl[2:]
+            if capped:
+                body_rows = body_rows[:ROWS_PER_PAGE]
             chunks = [body_rows[i:i + ROWS_PER_PAGE] for i in range(0, max(len(body_rows), 1), ROWS_PER_PAGE)]
             paths = [stem.with_suffix(".md") if len(chunks) == 1 else stem.with_name(f"{stem.name}-{i + 1:02d}.md")
                      for i in range(len(chunks))]

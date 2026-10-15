@@ -75,7 +75,8 @@ pub const DEFAULT_LIMIT: u32 = 16;
 pub const WARN_FROM: usize = 17;
 /// From here a raised limit warns prominently, with the projected cost.
 pub const LOUD_FROM: usize = 20;
-/// How many nodes are timed before a large run is projected.
+/// How many nodes, spread over the cube, are timed before a large run is
+/// projected.
 pub const PROBE_NODES: usize = 64;
 /// The interval search on a region with holes stops past this many subset
 /// tests, and the topology records that it did.
@@ -163,8 +164,7 @@ impl Default for Options {
     }
 }
 
-/// Nodes per fan-out after the first, which is [`PROBE_NODES`] so that the
-/// projection is measured on a finished batch.
+/// Nodes per fan-out.
 const BATCH: usize = 1024;
 
 /// The whole cube, classified.
@@ -225,9 +225,10 @@ pub enum Outcome {
 /// that nothing else will use — the oracle's own load, so that its interning
 /// cannot renumber anyone else's facts.
 ///
-/// `on_projection` is called once, after [`PROBE_NODES`] nodes, when
-/// `n ≥ WARN_FROM`: it is how the caller prints the raised limit's warning
-/// with a measured cost rather than a guess.
+/// `on_projection` is called once, before the run, when `n ≥ WARN_FROM`: it is
+/// how the caller prints the raised limit's warning with a measured cost
+/// rather than a guess — [`PROBE_NODES`] nodes spread over every layer, each
+/// saturated and discarded, projected at one job.
 pub fn compute(
     root: &mut Kb,
     terms: &mut Terms,
@@ -341,11 +342,34 @@ pub fn compute(
         })
         .flatten();
 
+    // The projection, before the run: [`PROBE_NODES`] nodes spread evenly over
+    // the masks, so over every layer, each saturated and discarded. It was the
+    // first 64 nodes in layer order until S1e2.1a.8 — the cheapest commitments
+    // of the cube — and `branching/10` (n = 18) projected 22.9 s for a run
+    // still going after 11 minutes on 8 jobs.
+    if n >= WARN_FROM {
+        let t_probe = Instant::now();
+        for i in 0..PROBE_NODES as u64 {
+            let mask =
+                ((size as u64 - 1) as u128 * i as u128 / (PROBE_NODES as u64 - 1) as u128) as u64;
+            node(root, &snapshot, terms, ast, &memo, &facts_of(mask), &axes)?;
+        }
+        let per_node = t_probe.elapsed() / PROBE_NODES as u32;
+        on_projection(&Projection {
+            n,
+            nodes: size as u64,
+            per_node,
+            // At one job: a worker hands back every node that would number a
+            // new fact, so `--jobs` divides it by less than the jobs —
+            // `square-bwd/houses` (n = 20) is 35 s here and 11 s at 16.
+            projected: per_node * size as u32,
+        });
+    }
+
     let t_nodes = Instant::now();
-    let mut done = 0usize;
     let mut start = 0usize;
     while start < size {
-        let len = if start == 0 { PROBE_NODES } else { BATCH };
+        let len = BATCH;
         let batch = &order[start..(start + len).min(size)];
         start += batch.len();
         // The fan-out: every node a worker could finish without numbering a
@@ -394,16 +418,6 @@ pub fn compute(
             if let Some(st) = states.as_mut() {
                 st[m] = out.delta;
             }
-        }
-        done += batch.len();
-        if done == PROBE_NODES.min(size) && n >= WARN_FROM {
-            let per_node = t_nodes.elapsed() / done as u32;
-            on_projection(&Projection {
-                n,
-                nodes: size as u64,
-                per_node,
-                projected: per_node * size as u32,
-            });
         }
     }
     let cost_nodes = t_nodes.elapsed();

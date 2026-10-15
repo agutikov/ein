@@ -175,8 +175,10 @@ fn drawn(doc: &RegionDoc, ov: &Overlay, view: View) -> Vec<u64> {
 // ── DOT ─────────────────────────────────────────────────────────────
 
 /// R's fill, one per component.
+/// None near owing's amber or dead's salmon, so a component never reads as a
+/// status.
 const COMPONENT_FILLS: [&str; 6] = [
-    "#a1d99b", "#9ecae1", "#d9f0a3", "#bcbddc", "#99d8c9", "#fdd0a2",
+    "#a1d99b", "#9ecae1", "#bcbddc", "#66c2a4", "#f1b6da", "#d9d9d9",
 ];
 const OWING_FILL: &str = "#fee391";
 const DEAD_FILL: &str = "#fcbba1";

@@ -548,6 +548,31 @@
 0    examples/lattice/05_owed_seats_bounded.ein :: solve
 0    examples/lattice/05_owed_seats_bounded.ein :: solve -e
 0    examples/lattice/05_owed_seats_bounded.ein :: solve -e --dump-region {out}/region
+0    examples/lattice/synth/merged_states.ein :: render lattice
+0    examples/lattice/synth/merged_states.ein :: saturate
+0    examples/lattice/synth/merged_states.ein :: solve
+0    examples/lattice/synth/merged_states.ein :: solve -e
+0    examples/lattice/synth/merged_states.ein :: solve -e --dump-region {out}/region
+0    examples/lattice/synth/one_model_per_component.ein :: render lattice
+0    examples/lattice/synth/one_model_per_component.ein :: saturate
+0    examples/lattice/synth/one_model_per_component.ein :: solve
+0    examples/lattice/synth/one_model_per_component.ein :: solve -e
+0    examples/lattice/synth/one_model_per_component.ein :: solve -e --dump-region {out}/region
+0    examples/lattice/synth/three_components.ein :: render lattice
+0    examples/lattice/synth/three_components.ein :: saturate
+0    examples/lattice/synth/three_components.ein :: solve
+0    examples/lattice/synth/three_components.ein :: solve -e
+0    examples/lattice/synth/three_components.ein :: solve -e --dump-region {out}/region
+0    examples/lattice/synth/trigger_hole.ein :: render lattice
+0    examples/lattice/synth/trigger_hole.ein :: saturate
+0    examples/lattice/synth/trigger_hole.ein :: solve
+0    examples/lattice/synth/trigger_hole.ein :: solve -e
+0    examples/lattice/synth/trigger_hole.ein :: solve -e --dump-region {out}/region
+0    examples/lattice/synth/trivial_line.ein :: render lattice
+0    examples/lattice/synth/trivial_line.ein :: saturate
+0    examples/lattice/synth/trivial_line.ein :: solve
+0    examples/lattice/synth/trivial_line.ein :: solve -e
+0    examples/lattice/synth/trivial_line.ein :: solve -e --dump-region {out}/region
 0    examples/saturation/hypothesis-contradiction/coloc-disproved.ein :: render constraints
 0    examples/saturation/hypothesis-contradiction/coloc-disproved.ein :: render lattice
 0    examples/saturation/hypothesis-contradiction/coloc-disproved.ein :: render rules

@@ -355,6 +355,32 @@ fn the_oracle_and_the_per_subset_route_agree_node_for_node() {
     let _ = std::fs::remove_dir_all(&root);
 }
 
+/// **Any region can be written as a program** (S1e2.1a.8): `utils/region_synth.py
+/// --random` draws 300 targets over at most six candidates — half of them with
+/// implications, so saturation moves nodes — writes each as a program, and
+/// holds this binary's oracle to it node for node, with the static check
+/// calling it monotone exactly when the target is. The one target it does not
+/// draw, a dead root under a non-empty R, it refuses by name: every node is
+/// built from root's fixpoint, which is P1e2.1b's question.
+#[test]
+fn a_random_region_written_as_a_program_comes_back() {
+    require_python3();
+    let out = Command::new("python3")
+        .arg("-I")
+        .arg(repo_root().join("utils/region_synth.py"))
+        .args(["--random", "300", "--seed", "1", "--max-n", "6"])
+        .env("EIN_BIN", env!("CARGO_BIN_EXE_ein"))
+        .output()
+        .expect("region_synth.py runs");
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    assert!(
+        out.status.success(),
+        "{stdout}{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert!(stdout.contains("300 targets, seed 1, 0 failed"), "{stdout}");
+}
+
 /// **Over the limit is a note, not an error.** The solve's exit code, a
 /// directory holding the walk and a `region.json` saying why there is no
 /// region, and one stderr line naming the option.
@@ -421,7 +447,7 @@ fn first_warning(file: &Path, n: usize, dir: &Path) -> Vec<String> {
 }
 
 /// **Raised, 17–19 warns on one line and 20 and more warns loudly**, each
-/// with the cost measured on the first nodes.
+/// with the cost measured on nodes spread over the cube.
 #[test]
 fn a_raised_limit_warns_with_the_projected_cost() {
     let root = scratch("warn");

@@ -1,0 +1,77 @@
+;;; one_model_per_component — a program written for its region, by utils/region_synth.py
+;;; (M1e2 S1e2.1a.8). Generated: edit the spec and regenerate, never this file:
+;;;   python3 utils/region_synth.py --example one_model_per_component --out <this file>
+;;;
+;;; Q-M1e2.7 (i): a well-posed puzzle's shape. Exactly one of A, B, C, D, any
+;;; two exclude each other, none owes: R is four isolated nodes, each its own
+;;; component and each on both lines. An Ambiguity of four, component by
+;;; component.
+;;;
+;;; The cube is over 4 candidates (h A B C D), 16 nodes. The target:
+;;;   R           4 nodes in 4 component(s): 1 nodes from {A}; 1 nodes from {B}; 1 nodes from {C}; 1 nodes from {D}
+;;;   minimal     {A}, {B}, {C}, {D}
+;;;   maximal     {A}, {B}, {C}, {D}
+;;;   holes       none
+;;;   owing       1 nodes; dead 11
+;;;   monotone    yes — the static check should find no site
+;;;
+;;; 6 dead rule(s), 1 obligation rule(s), from the target's prime implicants.
+;;;
+;;; region-spec: {"name":"one_model_per_component","about":"Q-M1e2.7 (i): a well-posed puzzle's shape. Exactly one of A, B, C, D, any\ntwo exclude each other, none owes: R is four isolated nodes, each its own\ncomponent and each on both lines. An Ambiguity of four, component by\ncomponent.","candidates":"ABCD","R":[["A","A"],["B","B"],["C","C"],["D","D"]],"owing":[["",""]]}
+;;; region-status: oRRxRxxxRxxxxxxx
+
+(relation h T)
+(relation slot T)
+(relation world T)
+(relation need T T)
+
+(world W)
+(slot A) (slot B) (slot C) (slot D)
+
+(need K1 A) (need K1 B) (need K1 C) (need K1 D)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h B))
+  :assert (false)
+  :why    "A B is dead"
+  :priority 300)
+
+(rule dead-2 ()
+  :match  (and (h A) (h C))
+  :assert (false)
+  :why    "A C is dead"
+  :priority 300)
+
+(rule dead-3 ()
+  :match  (and (h B) (h C))
+  :assert (false)
+  :why    "B C is dead"
+  :priority 300)
+
+(rule dead-4 ()
+  :match  (and (h A) (h D))
+  :assert (false)
+  :why    "A D is dead"
+  :priority 300)
+
+(rule dead-5 ()
+  :match  (and (h B) (h D))
+  :assert (false)
+  :why    "B D is dead"
+  :priority 300)
+
+(rule dead-6 ()
+  :match  (and (h C) (h D))
+  :assert (false)
+  :why    "C D is dead"
+  :priority 300)
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B C D is required"
+  :priority 500)
+
+(query :goal (h ?x))

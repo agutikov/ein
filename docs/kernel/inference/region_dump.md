@@ -195,7 +195,7 @@ are the user's ruling of 2026-10-15:
 | ≤ 16 | runs, silently |
 | over the limit | not computed. `region.json` has `refused`, `region.md` says why, the walk is written, and stderr gets one `note:` line naming `--region-limit`. The exit code is the solve's |
 | 17–19, raised | runs, after one `warning:` line with the projected time |
-| ≥ 20, raised | runs, after a three-line `warning:`: `2ⁿ`, the cost per node measured on the first 64, the projected time |
+| ≥ 20, raised | runs, after a three-line `warning:`: `2ⁿ`, the cost per node measured on 64 nodes spread over every layer (saturated and discarded before the run; since S1e2.1a.8 — the first 64 in layer order were the cheapest, and projected 22.9 s for `branching/10`, n = 18, which ran past 11 minutes on 8 jobs), the projected time at one job (`--jobs` shortens it by less than the jobs: a worker hands back every node that numbers a new fact) |
 
 ## What it does not check
 
@@ -205,6 +205,17 @@ The per-subset route, [`utils/region.py`](../../../utils/region.py), is a
 second implementation for small programs. It runs one `ein saturate` per
 subset, and `ein-cli/tests/region_dump.rs` holds the two to the same nodes on
 Q-M1e2.7's seven programs.
+
+**From the other side**, [`utils/region_synth.py`](../../../utils/region_synth.py)
+writes a program for a chosen region, carrying the target in its header
+(M1e2
+[S1e2.1a.8](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.8_region_to_program.md)).
+`ein-infer/tests/region.rs` holds the oracle to the banked ones in
+`examples/lattice/synth/` node for node. `ein-cli/tests/region_dump.rs` does
+the same for 300 random targets, and requires the static check to call each
+program monotone exactly when its target is. The one target it refuses, a dead
+root under a non-empty R, is the fork route's limit: every node is built from
+root's fixpoint.
 
 ## Cross-references
 

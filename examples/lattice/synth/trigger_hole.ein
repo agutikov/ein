@@ -1,0 +1,59 @@
+;;; trigger_hole — a program written for its region, by utils/region_synth.py
+;;; (M1e2 S1e2.1a.8). Generated: edit the spec and regenerate, never this file:
+;;;   python3 utils/region_synth.py --example trigger_hole --out <this file>
+;;;
+;;; A hole made by an obligation, not by an absent (lattice/04's mechanism):
+;;; B triggers a debt only C pays, so {A,B} owes between {A} and {A,B,C}.
+;;; Beside it, a dead node revived — {A,D} dies without E — so the region
+;;; has a hole of each kind. Root owes A.
+;;;
+;;; The cube is over 5 candidates (h A B C D E), 32 nodes. The target:
+;;;   R           9 nodes in 1 component(s): 9 nodes from {A}
+;;;   minimal     {A}
+;;;   maximal     {A,B,C,D,E}
+;;;   holes       {A,B}, {A,D}, {A,B,D}, {A,C,D}, {A,B,C,D}, {A,B,E}, {A,B,D,E}
+;;;   owing       20 nodes; dead 3
+;;;   monotone    no — a dead node revived or a debt added by growth needs an `absent` or an obligation trigger, so the static check should flag it
+;;;
+;;; 2 dead rule(s), 2 obligation rule(s), from the target's prime implicants.
+;;;
+;;; region-spec: {"name":"trigger_hole","about":"A hole made by an obligation, not by an absent (lattice/04's mechanism):\nB triggers a debt only C pays, so {A,B} owes between {A} and {A,B,C}.\nBeside it, a dead node revived — {A,D} dies without E — so the region\nhas a hole of each kind. Root owes A.","candidates":"ABCDE","R":[["A","ABCDE"]],"holes":[["AB","ABDE"],["AD","ABCD"]],"owing":[["","BCDE"],["AB","ABDE"]]}
+;;; region-status: oRoooRoRoxoooxoxoRoooRoRoRoooRoR
+
+(relation h T)
+(relation slot T)
+(relation world T)
+(relation need T T)
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 A) (need K2 C)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h D) (absent (h B)) (absent (h E)))
+  :assert (false)
+  :why    "A D is dead while B and E are missing"
+  :priority 300)
+
+(rule dead-2 ()
+  :match  (and (h A) (h C) (h D) (absent (h E)))
+  :assert (false)
+  :why    "A C D is dead while E is missing"
+  :priority 300)
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required"
+  :priority 500)
+
+(rule owe-2 ()
+  :match  (and (h B) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of C is required"
+  :priority 500)
+
+(query :goal (h ?x))

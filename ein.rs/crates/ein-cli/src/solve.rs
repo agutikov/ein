@@ -942,8 +942,8 @@ fn write_region(
         if p.n >= ein_infer::region::LOUD_FROM {
             eprintln!(
                 "warning: --dump-region {dir}: {n} root candidates — the region is 2^{n} = \
-                 {nodes} saturations.\nwarning:   measured {per:.1} µs per node on the first \
-                 {probe}; projected {secs:.1} s.\nwarning:   --region-limit {limit} asked for \
+                 {nodes} saturations.\nwarning:   measured {per:.1} µs per node on {probe} spread \
+                 over the cube; projected {secs:.1} s at one job.\nwarning:   --region-limit {limit} asked for \
                  it; interrupt to stop.",
                 n = p.n,
                 nodes = p.nodes,
@@ -953,7 +953,7 @@ fn write_region(
         } else {
             eprintln!(
                 "warning: --dump-region {dir}: {} root candidates, 2^{} saturations, \
-                 projected {secs:.1} s",
+                 projected {secs:.1} s at one job",
                 p.n, p.n
             );
         }

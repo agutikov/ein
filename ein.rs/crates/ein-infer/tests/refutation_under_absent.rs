@@ -156,6 +156,12 @@ fn exposure(path: &Path) -> Vec<String> {
 /// same tree finds **60** rules with an `absent` and a refuting conclusion,
 /// and nine of them matter.
 ///
+/// **Four rows are written on purpose** (M1e2 S1e2.1a.8): the `dead-i` rules
+/// `utils/region_synth.py` wrote for the holes of `lattice/synth/three_components`
+/// and `trigger_hole`. A hole is a dead node under an alive one, and the only
+/// way to write one is a refutation resting on an `absent` over a relation the
+/// generator proposes, so these programs are exposed by construction.
+///
 /// [D4]: ../../../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md
 const EXPOSED: &str = "\
 examples/branching/13_lookahead_naf_world.ein::self-block[] (false) \u{2190} cand
@@ -167,6 +173,10 @@ examples/features/05_stdlib_domain_elim.ein::no-room-left[color-of is-a House Co
 examples/features/05_stdlib_domain_elim.ein::typecheck-arg-0[color-of is-a House] (false) \u{2190} is-a
 examples/features/05_stdlib_domain_elim.ein::typecheck-arg-1[color-of is-a Color] (false) \u{2190} is-a
 examples/features/12_expect_false.ein::no-room[in instance] (false) \u{2190} instance
+examples/lattice/synth/three_components.ein::dead-3[] (false) \u{2190} h
+examples/lattice/synth/three_components.ein::dead-7[] (false) \u{2190} h
+examples/lattice/synth/trigger_hole.ein::dead-1[] (false) \u{2190} h
+examples/lattice/synth/trigger_hole.ein::dead-2[] (false) \u{2190} h
 examples/syntax/rule-forall-and-not.ein::f[] (not \u{2026}) \u{2190} r
 ";
 

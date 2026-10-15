@@ -276,6 +276,79 @@ fn a_node_and_its_closure_are_one_state() {
     }
 }
 
+/// **The opposite direction** (S1e2.1a.8). Every program under
+/// `examples/lattice/synth/` was written by `utils/region_synth.py` for a
+/// region it carries in its header (`;;; region-status:`, one class per node
+/// in mask order). The oracle has to find exactly that region, node for node,
+/// and the static check has to call the program monotone exactly when the
+/// target is: no dead node below an alive one, no owing node above one in R.
+#[test]
+fn every_synthetic_program_has_the_region_it_was_written_for() {
+    let dir = repo_root().join("examples/lattice/synth");
+    let mut files: Vec<_> = std::fs::read_dir(&dir)
+        .expect("examples/lattice/synth")
+        .map(|e| e.expect("entry").path())
+        .filter(|p| p.extension().is_some_and(|x| x == "ein"))
+        .collect();
+    files.sort();
+    assert!(files.len() >= 5, "{} synthetic programs", files.len());
+    for path in files {
+        let rel = path
+            .strip_prefix(repo_root())
+            .unwrap()
+            .to_string_lossy()
+            .to_string();
+        let text = std::fs::read_to_string(&path).unwrap();
+        let want: Vec<u8> = text
+            .lines()
+            .find_map(|l| l.strip_prefix(";;; region-status: "))
+            .unwrap_or_else(|| panic!("{rel}: no region-status header"))
+            .trim()
+            .bytes()
+            .collect();
+        let (r, _) = region_of(&rel);
+        assert_eq!(want.len(), r.status.len(), "{rel}: the header's cube");
+        let got: Vec<u8> = r
+            .status
+            .iter()
+            .map(|&s| {
+                if s & region::DEAD != 0 {
+                    b'x'
+                } else if s & region::OWING != 0 {
+                    b'o'
+                } else {
+                    b'R'
+                }
+            })
+            .collect();
+        let differ: Vec<String> = (0..want.len())
+            .filter(|&m| want[m] != got[m])
+            .map(|m| {
+                format!(
+                    "{}: want {}, oracle {}",
+                    r.name(m as u64),
+                    want[m] as char,
+                    got[m] as char
+                )
+            })
+            .collect();
+        assert!(differ.is_empty(), "{rel}:\n  {}", differ.join("\n  "));
+        let n = r.n();
+        let monotone = (0..want.len()).all(|m| {
+            (0..n).all(|b| {
+                let up = m | 1 << b;
+                (want[m] != b'x' || want[up] == b'x') && (want[m] != b'R' || want[up] != b'o')
+            })
+        });
+        assert_eq!(
+            monotone,
+            r.monotonicity.is_monotone(),
+            "{rel}: the target is{} monotone",
+            if monotone { "" } else { " not" }
+        );
+    }
+}
+
 #[test]
 fn jobs_change_nothing() {
     for rel in [

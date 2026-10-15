@@ -1,0 +1,59 @@
+;;; merged_states — a program written for its region, by utils/region_synth.py
+;;; (M1e2 S1e2.1a.8). Generated: edit the spec and regenerate, never this file:
+;;;   python3 utils/region_synth.py --example merged_states --out <this file>
+;;;
+;;; Q-M1e2.7 (e): saturation moves nodes. A brings B and C brings D, so a
+;;; commitment and its closure are one state; R is everything holding A or C
+;;; and not both, so its minimal line {A}, {C} is two transient nodes whose
+;;; saturation lands on {A,B} and {C,D}.
+;;;
+;;; The cube is over 5 candidates (h A B C D E), 32 nodes. The target:
+;;;   R           16 nodes in 2 component(s): 8 nodes from {A}; 8 nodes from {C}
+;;;   minimal     {A}, {C}
+;;;   maximal     {A,B,D,E}, {B,C,D,E}
+;;;   holes       none
+;;;   owing       8 nodes; dead 8
+;;;   monotone    yes — the static check should find no site
+;;;
+;;; 1 dead rule(s), 1 obligation rule(s), 2 implication(s), from the target's prime implicants.
+;;;
+;;; region-spec: {"name":"merged_states","about":"Q-M1e2.7 (e): saturation moves nodes. A brings B and C brings D, so a\ncommitment and its closure are one state; R is everything holding A or C\nand not both, so its minimal line {A}, {C} is two transient nodes whose\nsaturation lands on {A,B} and {C,D}.","candidates":"ABCDE","implies":[["A","B"],["C","D"]],"R":[["A","ABDE"],["C","BCDE"]],"owing":[["","BDE"]]}
+;;; region-status: oRoRRxRxoRoRRxRxoRoRRxRxoRoRRxRx
+
+(relation h T)
+(relation slot T)
+(relation world T)
+(relation need T T)
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 A) (need K1 C)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule imp-A-B ()
+  :match  (h A)
+  :assert (h B)
+  :why    "A brings B"
+  :priority 200)
+
+(rule imp-C-D ()
+  :match  (h C)
+  :assert (h D)
+  :why    "C brings D"
+  :priority 200)
+
+(rule dead-1 ()
+  :match  (and (h A) (h C))
+  :assert (false)
+  :why    "A C is dead"
+  :priority 300)
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A C is required"
+  :priority 500)
+
+(query :goal (h ?x))

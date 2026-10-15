@@ -1,0 +1,102 @@
+;;; three_components — a program written for its region, by utils/region_synth.py
+;;; (M1e2 S1e2.1a.8). Generated: edit the spec and regenerate, never this file:
+;;;   python3 utils/region_synth.py --example three_components --out <this file>
+;;;
+;;; The user's shape of 2026-10-15: R in three separate components — one
+;;; monotone (a 2-dimensional sub-cube over C), one with a one-node hole (as
+;;; ein-bugs/naf-upward-closure.ein has it), and one with a bigger hole. Each
+;;; component is picked by one of C, F, G, which exclude each other; a node
+;;; holding none of them owes one.
+;;;
+;;; The cube is over 7 candidates (h A B C D E F G), 128 nodes. The target:
+;;;   R           13 nodes in 3 component(s): 4 nodes from {C}; 3 nodes from {F}; 6 nodes from {G}
+;;;   minimal     {C}, {F}, {G}
+;;;   maximal     {C,D,E}, {A,B,F}, {A,B,D,G}
+;;;   holes       {A,F}, {A,G}, {A,B,G}
+;;;   owing       16 nodes; dead 99
+;;;   monotone    no — a dead node revived or a debt added by growth needs an `absent` or an obligation trigger, so the static check should flag it
+;;;
+;;; 10 dead rule(s), 1 obligation rule(s), from the target's prime implicants.
+;;;
+;;; region-spec: {"name":"three_components","about":"The user's shape of 2026-10-15: R in three separate components — one\nmonotone (a 2-dimensional sub-cube over C), one with a one-node hole (as\nein-bugs/naf-upward-closure.ein has it), and one with a bigger hole. Each\ncomponent is picked by one of C, F, G, which exclude each other; a node\nholding none of them owes one.","candidates":"ABCDEFG","R":[["C","CDE"],["F","ABF"],["G","ABDG"]],"holes":[["AF","AF"],["AG","ABG"]],"owing":[["","ABDE"]]}
+;;; region-status: ooooRxxxooooRxxxooooRxxxooooRxxxRxRRxxxxxxxxxxxxxxxxxxxxxxxxxxxxRxRxxxxxRRRRxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+(relation h T)
+(relation slot T)
+(relation world T)
+(relation need T T)
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F) (slot G)
+
+(need K1 C) (need K1 F) (need K1 G)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h C))
+  :assert (false)
+  :why    "A C is dead"
+  :priority 300)
+
+(rule dead-2 ()
+  :match  (and (h B) (h C))
+  :assert (false)
+  :why    "B C is dead"
+  :priority 300)
+
+(rule dead-3 ()
+  :match  (and (h A) (h F) (absent (h B)))
+  :assert (false)
+  :why    "A F is dead while B is missing"
+  :priority 300)
+
+(rule dead-4 ()
+  :match  (and (h C) (h F))
+  :assert (false)
+  :why    "C F is dead"
+  :priority 300)
+
+(rule dead-5 ()
+  :match  (and (h D) (h F))
+  :assert (false)
+  :why    "D F is dead"
+  :priority 300)
+
+(rule dead-6 ()
+  :match  (and (h E) (h F))
+  :assert (false)
+  :why    "E F is dead"
+  :priority 300)
+
+(rule dead-7 ()
+  :match  (and (h A) (h G) (absent (h D)))
+  :assert (false)
+  :why    "A G is dead while D is missing"
+  :priority 300)
+
+(rule dead-8 ()
+  :match  (and (h C) (h G))
+  :assert (false)
+  :why    "C G is dead"
+  :priority 300)
+
+(rule dead-9 ()
+  :match  (and (h E) (h G))
+  :assert (false)
+  :why    "E G is dead"
+  :priority 300)
+
+(rule dead-10 ()
+  :match  (and (h F) (h G))
+  :assert (false)
+  :why    "F G is dead"
+  :priority 300)
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C F G is required"
+  :priority 500)
+
+(query :goal (h ?x))

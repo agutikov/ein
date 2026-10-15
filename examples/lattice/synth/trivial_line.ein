@@ -1,0 +1,40 @@
+;;; trivial_line — a program written for its region, by utils/region_synth.py
+;;; (M1e2 S1e2.1a.8). Generated: edit the spec and regenerate, never this file:
+;;;   python3 utils/region_synth.py --example trivial_line --out <this file>
+;;;
+;;; Q-M1e2.7 (f): obligations and nothing else. Root owes one of A, B; past that
+;;; nothing is refuted, so the maximal line is the whole candidate set, n facts
+;;; down — the line the user called trivial — and the minimal line is {A}, {B}.
+;;;
+;;; The cube is over 5 candidates (h A B C D E), 32 nodes. The target:
+;;;   R           24 nodes in 1 component(s): 24 nodes from {A}
+;;;   minimal     {A}, {B}
+;;;   maximal     {A,B,C,D,E}
+;;;   holes       none
+;;;   owing       8 nodes; dead 0
+;;;   monotone    yes — the static check should find no site
+;;;
+;;; 0 dead rule(s), 1 obligation rule(s), from the target's prime implicants.
+;;;
+;;; region-spec: {"name":"trivial_line","about":"Q-M1e2.7 (f): obligations and nothing else. Root owes one of A, B; past that\nnothing is refuted, so the maximal line is the whole candidate set, n facts\ndown — the line the user called trivial — and the minimal line is {A}, {B}.","candidates":"ABCDE","R":[["A","ABCDE"],["B","ABCDE"]],"owing":[["","CDE"]]}
+;;; region-status: oRRRoRRRoRRRoRRRoRRRoRRRoRRRoRRR
+
+(relation h T)
+(relation slot T)
+(relation world T)
+(relation need T T)
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 A) (need K1 B)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A B is required"
+  :priority 500)
+
+(query :goal (h ?x))
