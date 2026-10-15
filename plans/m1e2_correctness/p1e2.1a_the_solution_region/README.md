@@ -1,6 +1,7 @@
 # P1e2.1a — The solution region: R defined, computed, drawn and reported
 
-**Estimate:** ~3 weeks: 7 stages, 15.5 days.
+**Estimate:** ~3.5 weeks: 7 stages, 17 days (15.5 when written; S1e2.1a.1
+grew by 1.5 on 2026-10-15, below).
 **Status:** created 2026-10-15, not started.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md) S1e2.1.1–6,
 which built the register, the doors and the bundle this phase extends.
@@ -45,6 +46,16 @@ back to that. The brute-force script behind Q-M1e2.7's table,
 programs in a few seconds. It settled W1 by doing so, and it found the first
 measured hole, on W3's witness.
 
+**The phase is about the monotone lattice** (the user's answer of
+2026-10-15, recorded in [S1e2.1a.1](s1e2.1a.1_the_oracle.md#scope-after-the-users-answer-of-2026-10-15)).
+A program where adding a fact can take a conclusion away has a lattice the
+two lines do not describe. Such a program is **detected** here, by a static
+check over its compiled plans, and its answer is reported as *assuming a
+monotone lattice*. What its R is belongs to
+[P1e2.1b](../p1e2.1b_the_non_monotone_lattice/README.md). That includes
+holes, Q-M1e2.7's (d), and whether a node is built from root's fixpoint or
+from scratch.
+
 ## What exists, and what does not
 
 Taken 2026-10-15 against `caef67a`.
@@ -62,7 +73,7 @@ Taken 2026-10-15 against `caef67a`.
 
 | ID | title | est. | ends with |
 |---|---|---:|---|
-| [S1e2.1a.1](s1e2.1a.1_the_oracle.md) | The oracle | 2.5 d | `ein_infer::region`: every commitment over the root candidate list, held as an n-bit mask with two independent bits (dead; owing, read on dead states too) by saturation alone, with no search-time write; R's lines, components, maximal sub-cubes, holes with their repair edges, the minimal dead sets N and discharging sets E, and the N/E duality cross-check; the n-limit as ruled; reached by `ein solve --dump-region DIR` |
+| [S1e2.1a.1](s1e2.1a.1_the_oracle.md) | The oracle, and the monotone lattice | 4 d | `ein_infer::monotone`: the static check that classifies every read as static, dynamic-monotone or dynamic-non-monotone, and the `non_monotone` stub in `solve`, `ein test` and the dump; `ein_infer::region`: every commitment over the root candidate list, held as an n-bit mask with two independent bits (dead; owing, read on dead states too) by saturation alone, with no search-time write; R's lines, components, maximal sub-cubes, holes with their repair edges, the minimal dead sets N and discharging sets E, and the N/E duality cross-check; the n-limit as ruled; reached by `ein solve --dump-region DIR` |
 | [S1e2.1a.2](s1e2.1a.2_the_lattice_drawn.md) | The lattice drawn | 2.5 d | `ein render region DIR`: the cube's Hasse diagram, L0 at the top, every node coloured by status with its reason one hover away, every edge classed by the statuses it joins, components coloured, sub-cubes listed, holes with their repair edges; this run's walk overlaid (entered, pre-killed, pruned, never generated, recorded) and every learned nogood checked against the cube; views that stay readable as n grows |
 | [S1e2.1a.3](s1e2.1a.3_the_definition.md) | The region census, and the definition | 2.5 d | R measured over every corpus entry the oracle reaches; Q-M1e2.7's sub-questions (a)–(i) ruled by the user with the census on the table; `solution_semantics.md` rewritten around R; the config principle in `configuration.md` |
 | [S1e2.1a.4](s1e2.1a.4_the_language.md) | The language states a region | 2.5 d | the forms the rulings call for: which line a query asks for, and `:expect` over a region; `ein test` and `--json-report` check them; the grammar page says so |
@@ -90,10 +101,13 @@ is restated against the maximal line at S1e2.1a.7.
 
 ## Acceptance
 
-- **R is defined, with holes and without**, in `solution_semantics.md`, and
+- **R is defined for a monotone program**, in `solution_semantics.md`, and
   every verdict word, `k` and `exhausted` is defined in R's terms. Each of
-  Q-M1e2.7's sub-questions carries the user's ruling, in the question and on
-  the page.
+  Q-M1e2.7's sub-questions except (d) carries the user's ruling, in the
+  question and on the page. (d) is P1e2.1b's.
+- **A non-monotone program is detected, and says so.** The static check names
+  its sites, the cube counts the violations it observes, and `solve`, `ein
+  test` and `--dump-region` report it through one stub P1e2.1b replaces.
 - **The oracle classifies by saturation alone.** A test holds that no
   search-time root write reaches it. The witness is Q-M1e2.7's: the commitment
   `{(seats Ann C1)}` on `owed-seats` with `functional` and `injective` owes 2,
@@ -134,7 +148,12 @@ is restated against the maximal line at S1e2.1a.7.
   small n, and S1e2.1a.1 compares the two.
 - **Holes.** Without holes, two lines describe R. With holes they do not, and a
   report that silently assumes convexity would be a new wrong answer. The
-  oracle never assumes it: it enumerates, and does not prune by closure.
+  oracle never assumes it: it enumerates, and does not prune by closure. A
+  hole needs no `absent`: an obligation whose trigger a commitment can change
+  makes one too
+  ([P1e2.1b](../p1e2.1b_the_non_monotone_lattice/README.md#what-non-monotone-means-and-what-is-not)).
+  What a hole means is P1e2.1b's. This phase finds them and labels what it
+  reports around them.
 - **The trivial line.** In an obligations-only program the maximal line is
   everything, which is cheap for the oracle at n ≤ 16 and exponential for the
   search. Ruling (f) decides whether it is reported, and the search must not
@@ -155,7 +174,8 @@ is restated against the maximal line at S1e2.1a.7.
   `exhausted` certifies the walk. Sub-question (g) makes it certify the lines.
 - [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)
   and [Q-M1e2.2](../open_questions.md#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in)
-  are the two ways R gets holes.
+  are two of the ways R gets holes, and an obligation trigger is the third.
+  All three are [P1e2.1b](../p1e2.1b_the_non_monotone_lattice/README.md)'s.
 - [`lattice_dump.md`](../../../docs/kernel/inference/lattice_dump.md) and
   [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
   are the pages the drawing extends.

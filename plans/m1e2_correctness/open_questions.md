@@ -15,12 +15,12 @@ rule on, not five stage files to find.
 | Q | title | needed by | status |
 |---|---|---|---|
 | [Q-M1e2.1](#q-m1e21--is-a-discharged-superset-of-a-discharged-state-a-new-model) | Is a discharged superset of a discharged state a new model? | [S1e2.2.3](p1e2.2_wrong_answers/s1e2.2.3_obligations_join_superset.md) (W5) | open |
-| [Q-M1e2.2](#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in) | Does a guard's `absent` premise bind the state the search ends in? | [S1e2.2.6](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md) (W8) | open |
+| [Q-M1e2.2](#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in) | Does a guard's `absent` premise bind the state the search ends in? | [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s S1e2.1b.2, then [S1e2.2.6](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md) (W8) | open |
 | [Q-M1e2.3](#q-m1e23--what-does-exhausted-certify-when-the-rung-leaves-relations-uncovered) | What does `exhausted` certify when the rung leaves relations uncovered? | [S1e2.2.8](p1e2.2_wrong_answers/s1e2.2.8_uncovered_certified.md) (W6) | open |
 | [Q-M1e2.4](#q-m1e24--is-an-empty-unsat-core-a-core) | Is an empty unsat core a core? | [S1e2.2.13](p1e2.2_wrong_answers/s1e2.2.13_empty_core.md) (W12) | open |
 | [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) | open |
 | [Q-M1e2.6](#q-m1e26--does-p1e23-become-a-phase) | Does P1e2.3 become a phase? | the milestone's scope | open |
-| [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; then every case the review has not read | **reading given 2026-10-15**; its sub-questions open |
+| [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; its sub-questions open |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed.
@@ -54,6 +54,13 @@ Q-M1e.6 it qualifies. Three answers: **guards are premises** (a stale fact
 disqualifies a state), **refuse what cannot be stratified** (a load error),
 or **append-only is the semantics** (not wrong, and say so). The first two
 compose.
+
+**Asked of every node (2026-10-15).** The oracle has to build each node of
+the cube, and the question is then not only about the state the search ends
+in. Built on root's fixpoint (the engine's fork), `{(q one)}` on
+`stale-naf-fork.ein` is dead. Built from scratch (`region.py`), it is in R.
+[P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s S1e2.1b.2 owns the
+question in that form.
 
 ## Q-M1e2.3 — What does `exhausted` certify when the rung leaves relations uncovered?
 
@@ -150,6 +157,9 @@ and it is the answer. Its **minimal line** is R's minimal elements, its
   contradiction stays) and so is *discharged* (a witness stays). So R has no
   holes: every node between two of its members is a member. R is then fully
   described by its two lines, which is why two lines are enough.
+  *Corrected 2026-10-15:* a witness stays, but a new **debt** can arrive, so
+  *discharged* is upward-closed only when no obligation's trigger can grow
+  with the commitment. See [§ Holes without `absent`](#holes-without-absent-2026-10-15).
 - **With holes.** `absent` breaks both closures. A superset of a dead node can
   be alive again (W3, Q-M1e.9), and a fact derived under an `absent` survives
   the commitment that falsifies its guard (W8). Those two cases become *R has
@@ -262,7 +272,9 @@ sub-cubes, and |R| is their sizes by inclusion–exclusion (`branching/15`:
 
 **Holes.** A hole is a node outside R that lies between two members of R.
 Under monotone rules there are none, because both *dead* and *discharged* are
-preserved as facts are added. So every hole comes from `absent`. A hole is a
+preserved as facts are added. So every hole comes from `absent`.
+*Corrected the same day: from `absent`, or from an obligation's trigger
+([§ Holes without `absent`](#holes-without-absent-2026-10-15)).* A hole is a
 failure that **adding a fact repairs**: in W3, `{(p A)}` dies only because
 `(q A)` has not been said yet. It is a debt written as a restriction.
 - **The outer lines are the answer.** Hole nodes are not solutions.
@@ -337,6 +349,34 @@ programs and settings as the table above:
 The duality holds on every program without holes and fails exactly on the
 one with a hole.
 
+### Holes without `absent` (2026-10-15)
+
+Measured while writing the oracle. `plans/m1e2_correctness/probes/owed-trigger-hole.ein`
+has no `absent` in any saturation rule, and `total-owed meal is-a` over a
+`Diner` type that seating a guest derives:
+
+```
+$ python3 plans/m1e2_correctness/probes/region.py plans/m1e2_correctness/probes/owed-trigger-hole.ein '(seats Ann C1)' '(meal Ann Soup)'
+L0: ∅=ok
+L1: {(seats Ann C1)}=owes 1  {(meal Ann Soup)}=ok
+L2: {(seats Ann C1), (meal Ann Soup)}=ok
+region: 3 nodes;  minimal: ∅;  maximal: {(seats Ann C1), (meal Ann Soup)};  holes: {(seats Ann C1)}
+```
+
+The owing node is a hole. An obligation is the negation of its witness, so
+its **trigger** reads at the same polarity an `absent` does. A hole needs a
+read that a commitment can change at non-monotone polarity. An `absent` in a
+saturation rule is one such read, and an obligation's trigger is the other.
+An `absent` over a relation no commitment reaches is neither, which covers
+zebra2's spatial `absent`s and the stdlib's `is-a` scans. The classification,
+its theorem and the detector are
+[P1e2.1b § What non-monotone means](p1e2.1b_the_non_monotone_lattice/README.md#what-non-monotone-means-and-what-is-not)
+and [S1e2.1a.1](p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
+
+**The non-monotone case moved to a phase of its own** the same day, on the
+user's answer to the oracle's first question: *"move non-monotonic solution
+question into phase p1e2.1b"*. Sub-question (d) moved with it.
+
 ### Sub-questions, for [P1e2.1a](p1e2.1a_the_solution_region/README.md)'s first stage
 
 - **(a) What does `k` count?** The minimal line, the maximal line, both
@@ -353,7 +393,9 @@ one with a hole.
   have yet?
 - **(c) How does `:expect` state a region?** Today it states a model set,
   one line's worth.
-- **(d) What is reported when R has holes?** Both lines no longer describe
+- **(d) What is reported when R has holes?** *Moved to
+  [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s S1e2.1b.3 on
+  2026-10-15.* Both lines no longer describe
   R. Is the answer then the list of R's maximal convex pieces, or a
   qualifier, or a refusal (Q-M1e2.2's *refuse what cannot be stratified*)?
   The follow-up's recommendation: the outer lines stay the answer, and the
