@@ -263,6 +263,26 @@ runs   = ["solve", "solve -e", "saturate", "render constraints", "render lattice
 note   = "owed-seats with `functional` and `injective`: R is the two matchings, two components of one point each (M1e2 S1e2.1a.1)."
 
 [[entry]]
+path   = "examples/lattice/06_friends_tables.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
+note   = "the user's seating example of 2026-10-16: two groups of friends (2, 3) at two tables (2, 3 seats), one guest avoiding the air-conditioner, and a group that does not fit goes elsewhere — the obligation is the group's. 19 candidates, so the corpus run records the region's refusal. Not monotone by construction (an obligation trigger): R is 21 isolated nodes with 166 holes, and the engine records 8 of them."
+
+[[entry]]
+path   = "examples/lattice/06_friends_tables_everyone_sits.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
+note   = "06_friends_tables' monotone twin, with total-owed: everyone must sit. R is 8 isolated seatings and no holes, one projection class by table; the engine records all 8 (M1e2 P1e2.1a, 2026-10-16)."
+
+[[entry]]
+path   = "examples/lattice/07_two_pairs_two_tables.ein"
+group  = "positive"
+runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
+slow   = true
+cost_ms = 3890
+note   = "two pairs at two 2-seat tables: R is 8 isolated seatings — 8 components — in 2 projection classes by table (M1e2 P1e2.1a, 2026-10-16). Slow because its question is the region, and n = 16 is 2^16 saturations: the --dump-region cell is 3.87 s of the 3.89 (utils/corpus_cost.py, 2026-10-16). The run stays — it is the one that asks the question."
+
+[[entry]]
 path   = "examples/lattice/synth/merged_states.ein"
 group  = "positive"
 runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]

@@ -1,7 +1,9 @@
 # P1e2.1b — The non-monotone lattice: what R is when adding a fact can take one away
 
-**Estimate:** not yet. Five stages are named and none is specified. They are
-specified when [S1e2.1a.1](../p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md)'s
+**Estimate:** not yet for the phase. Six stages are named. One of them,
+[S1e2.1b.6](s1e2.1b.6_the_two_lattices_compared.md), is specified at 4 days
+(2026-10-16, at the user's request). The other five are specified when
+[S1e2.1a.1](../p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md)'s
 detector has measured where the corpus is non-monotone, because the size of
 every stage here depends on that number.
 **Status:** created 2026-10-15 on the user's instruction, given while
@@ -110,9 +112,13 @@ reports both the sites and the violations the cube observed.
 | S1e2.1b.3 | Holes | Q-M1e2.7's (d): what is reported when the lines do not describe R, for both sources, `absent` and obligation triggers |
 | S1e2.1b.4 | A refutation that rests on an `absent` | whether a nogood, the kill cache or the singleton writeback may learn from such a refutation. [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), W3, and [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here) (S1f.10.8's ruling) |
 | S1e2.1b.5 | The handling | S1e2.1a.1's stub replaced in `solve`, `ein test`, `--dump-region` and the bundle: refuse, qualify, or search differently, as ruled |
+| [S1e2.1b.6](s1e2.1b.6_the_two_lattices_compared.md) | The two lattices compared | the user's of 2026-10-16. A page in `docs/kernel/` with a table comparing monotone and non-monotone regions: what each means, how it looks on the lattice, what causes it, how to detect it, its properties, and how to solve each case in a way that is stable, proved and effective. It starts from *R is, in general, its node set* and lists what each property lets the engine simplify |
 
 Each stage gets a file once S1e2.1b.1 has a census. Until then the table is
-the scope.
+the scope. S1e2.1b.6 is the exception, with a file since 2026-10-16.
+
+**Work order:** .1, then .6 as the frame, then .2–.4. Each of .2–.4 fills its
+cell of .6's non-monotone column as it rules. .5 comes last.
 
 ## What it inherits
 

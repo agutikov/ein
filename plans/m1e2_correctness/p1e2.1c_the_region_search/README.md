@@ -1,0 +1,46 @@
+# P1e2.1c — The region search: R past the oracle's reach
+
+**Estimate:** not yet. Five stages are named and none is specified. They are
+specified when [S1e2.1a.9](../p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)
+has measured how far its routes reach, and when
+[S1e2.1b.6](../p1e2.1b_the_non_monotone_lattice/s1e2.1b.6_the_two_lattices_compared.md)
+has written down the strategies.
+**Status:** created 2026-10-16, on the user's *"Q-M1e2.8 - yes"*. That ruled
+the plan's recommendation: the oracle becomes `solve`'s answer now
+(S1e2.1a.9), and the region search is a phase of its own, next.
+**Depends on:** S1e2.1a.9 (the default, its routes and its flags) and
+[P1e2.1b](../p1e2.1b_the_non_monotone_lattice/README.md) (what R is for a
+non-monotone program, and S1e2.1b.6's strategies).
+**Blocks:** [P1e2.2](../p1e2.2_wrong_answers/README.md). Its stages are
+re-scoped against this phase before any of them runs.
+
+---
+
+## Why a phase
+
+The user, 2026-10-16: *"our default behaviour that searches for maximal
+solutions is not completely wrong but it is relevant only in special case with
+no obligations. So it has to be reworked"*, and *"the default simple `solve`
+without flags we get exhausive certifying full region description"*.
+
+S1e2.1a.9 gives the default an honest answer wherever it is cheap: the alive
+down-set of a monotone program, and the 2ⁿ oracle at n ≤ the limit. Everywhere
+else it says *partial*. The zebra family is past both: n = 56, and an alive
+set nobody has counted. A default that says *partial* on the flagship puzzle
+is honest, but it is not finished. This phase finishes it.
+
+## Stages (named, not specified)
+
+| ID | title | the question |
+|---|---|---|
+| S1e2.1c.1 | How large the alive set gets | route 1's reach on the zebra family and the slow entries, and what a description costs as the alive set grows |
+| S1e2.1c.2 | The lines by duality | for a monotone program, enumerate N and E and dualise (MARCO-style, incremental hypergraph transversal), so that the lines, and with them k_s and k_c by sub-cubes, cost output size rather than \|alive\| |
+| S1e2.1c.3 | The non-monotone search | S1e2.1b.6's guard split, or whatever P1e2.1b rules, past the oracle's limit |
+| S1e2.1c.4 | The flags at scale | *any*, *single*, *minimal* and *maximal* by the cheapest sound route for each, with the certificate each one is entitled to |
+| S1e2.1c.5 | The old walk, and P1e2.2 re-scoped | which register rows the new default closes by construction (W1, W2 and W5 are symptoms of walking for the maximal line), which survive into it, and whether the lattice walk is kept, as a lever, or retired |
+
+## Where it stops
+
+It makes `ein solve`'s default describe R for every program the corpus holds,
+or say precisely why not. What R means is P1e2.1a's (monotone) and P1e2.1b's
+(the rest). The individual wrong answers that survive are P1e2.2's.

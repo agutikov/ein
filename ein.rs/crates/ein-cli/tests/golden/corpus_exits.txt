@@ -548,6 +548,21 @@
 0    examples/lattice/05_owed_seats_bounded.ein :: solve
 0    examples/lattice/05_owed_seats_bounded.ein :: solve -e
 0    examples/lattice/05_owed_seats_bounded.ein :: solve -e --dump-region {out}/region
+0    examples/lattice/06_friends_tables.ein :: render lattice
+0    examples/lattice/06_friends_tables.ein :: saturate
+0    examples/lattice/06_friends_tables.ein :: solve
+0    examples/lattice/06_friends_tables.ein :: solve -e
+0    examples/lattice/06_friends_tables.ein :: solve -e --dump-region {out}/region
+0    examples/lattice/06_friends_tables_everyone_sits.ein :: render lattice
+0    examples/lattice/06_friends_tables_everyone_sits.ein :: saturate
+0    examples/lattice/06_friends_tables_everyone_sits.ein :: solve
+0    examples/lattice/06_friends_tables_everyone_sits.ein :: solve -e
+0    examples/lattice/06_friends_tables_everyone_sits.ein :: solve -e --dump-region {out}/region
+0    examples/lattice/07_two_pairs_two_tables.ein :: render lattice
+0    examples/lattice/07_two_pairs_two_tables.ein :: saturate
+0    examples/lattice/07_two_pairs_two_tables.ein :: solve
+0    examples/lattice/07_two_pairs_two_tables.ein :: solve -e
+0    examples/lattice/07_two_pairs_two_tables.ein :: solve -e --dump-region {out}/region
 0    examples/lattice/synth/merged_states.ein :: render lattice
 0    examples/lattice/synth/merged_states.ein :: saturate
 0    examples/lattice/synth/merged_states.ein :: solve

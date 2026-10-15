@@ -326,7 +326,7 @@ mod tests {
     }
 
     #[test]
-    fn the_slow_set_is_exactly_these_two() {
+    fn the_slow_set_is_exactly_these_three() {
         let manifest = corpus();
         let slow: Vec<&str> = manifest
             .entry
@@ -339,6 +339,7 @@ mod tests {
             [
                 "examples/features/01_not_and_absent.ein",
                 "examples/features/04_open.ein",
+                "examples/lattice/07_two_pairs_two_tables.ein",
             ],
             "the `slow` set moved. An entry that gained the flag has left the \
              default sweep — check that the cost is real (`utils/bench_env.sh \

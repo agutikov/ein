@@ -1,0 +1,56 @@
+;;; 07_two_pairs_two_tables — two pairs of friends, two tables of two seats.
+;;;
+;;; The pairs (Ann, Bob) and (Cat, Dan); table T1 has seats S1 S2, table T2 has
+;;; S3 S4. Friends sit at one table together. Every friend fits every table, so
+;;; the hypotheses are 4 friends × 4 seats = 16, and the table choice is free:
+;;; either pair can take either table.
+;;;
+;;; The region is 8 models, 2 × 2 × 2: which pair takes T1, then each pair's
+;;; order. Under one-fact edges every model is its own component (8), because
+;;; moving one friend passes through a node that is dead (two in a seat, one in
+;;; two seats) or owing (one without a seat). Grouped by the table each pair
+;;; took, the models fall into 2 projection classes of 4 — the grouping a query
+;;; over (pair-at ?pair ?table) would see.
+;;;
+;;; Obligation: every friend has a seat (total-owed). Restrictions: one seat
+;;; each, one friend per seat, friends together. Monotone; no rule derives a
+;;; seat, so k_s = k_c.
+;;;
+;;; Measured 2026-10-16 (`ein solve -e … --dump-region DIR`, n = 16): |R| = 8 of
+;;; 65 536, 8 components of one point, no holes, duality holds; `ein solve -e`
+;;; answers k = 8. The 2 projection classes were counted from region.json by
+;;; hand — no surface computes them yet (S1e2.1a.4).
+
+(import std.algebra :symbols (functional injective total-owed))
+
+(relation is-a   T T)
+(relation member Friend Group)
+(relation at     Seat Table)
+(relation sits   Friend Seat)
+
+(is-a Ann Friend) (is-a Bob Friend) (is-a Cat Friend) (is-a Dan Friend)
+(is-a S1 Seat) (is-a S2 Seat) (is-a S3 Seat) (is-a S4 Seat)
+(is-a P1 Group) (is-a P2 Group)
+(is-a T1 Table) (is-a T2 Table)
+
+(member Ann P1) (member Bob P1)
+(member Cat P2) (member Dan P2)
+(at S1 T1) (at S2 T1)
+(at S3 T2) (at S4 T2)
+
+(functional sits)
+(injective  sits)
+(total-owed sits is-a)
+
+(rule together ()
+  :match  (and (sits ?a ?s) (sits ?b ?t)
+               (member ?a ?g) (member ?b ?g)
+               (at ?s ?x) (at ?t ?y) (neq ?x ?y))
+  :assert (false)
+  :why    "{?a} and {?b} are friends and sit at different tables")
+
+(hrule seat ()
+  :match  (and (is-a ?p Friend) (is-a ?s Seat))
+  :assert (sits ?p ?s))
+
+(query :goal (sits ?p ?s))

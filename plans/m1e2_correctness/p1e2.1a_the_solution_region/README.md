@@ -1,9 +1,14 @@
 # P1e2.1a — The solution region: R defined, computed, drawn and reported
 
-**Estimate:** ~4 weeks: 8 stages, 19 days (15.5 when written; S1e2.1a.1
-grew by 1.5 on 2026-10-15, and S1e2.1a.8 was added the same day at the
-user's request, 2 days).
-**Status:** in progress — S1e2.1a.1, S1e2.1a.2 and S1e2.1a.8 done 2026-10-15.
+**Estimate:** ~5 weeks: 9 stages, 23 days. It was 15.5 days when written.
+S1e2.1a.1 grew by 1.5 on 2026-10-15, and S1e2.1a.8 (2 days) was added the
+same day at the user's request. S1e2.1a.9 (4 days) was added on 2026-10-16,
+when Q-M1e2.8 was ruled. S1e2.1a.4 is re-estimated after its grammar diff.
+**Status:** in progress. S1e2.1a.1, S1e2.1a.2 and S1e2.1a.8 were done
+2026-10-15. On 2026-10-16, ahead of S1e2.1a.3's census, the user ruled every
+sub-question but (d) for the monotone case, and the shape of `solve`'s default
+([§ The rulings of 2026-10-16](#the-rulings-of-2026-10-16)). The terms are in
+[`definitions.md`](definitions.md).
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md) S1e2.1.1–6,
 which built the register, the doors and the bundle this phase extends.
 **Blocks:** the rest of the review,
@@ -57,6 +62,39 @@ monotone lattice*. What its R is belongs to
 holes, Q-M1e2.7's (d), and whether a node is built from root's fixpoint or
 from scratch.
 
+## The rulings of 2026-10-16
+
+[Q-M1e2.7 § The rulings, and the questions back](../open_questions.md#the-rulings-and-the-questions-back-2026-10-16)
+has them verbatim. What they change here:
+
+- **The general case comes first.** R is, in general, its node set. The two
+  lines are a simplification that convexity licenses, and monotonicity
+  guarantees convexity. The phase still finishes the monotone case and leaves
+  the non-monotone one to P1e2.1b, but the definition page starts from the
+  general case
+  ([S1e2.1b.6](../p1e2.1b_the_non_monotone_lattice/s1e2.1b.6_the_two_lattices_compared.md)'s
+  ladder).
+- **`k` is replaced by k_s and k_c** (a), (e): \|R\| in states and in
+  commitments, both reported. The walk cannot count R, so
+  [S1e2.1a.9](s1e2.1a.9_solve_describes_the_region.md) makes `solve`'s
+  **default an exhaustive, certifying, full description of R**, with flags
+  that make the task simpler: any solution, a single one expected, maximal
+  only, minimal only (Q-M1e2.8, ruled). Beyond what it reaches is
+  [P1e2.1c](../p1e2.1c_the_region_search/README.md).
+- **Solving and asking come apart** (b), (c): `(solve :hrules …)`,
+  `(solution …)` for the expected region, and `(query … :expect …)` over the
+  goal's projection. S1e2.1a.4 grows, and is re-estimated after its grammar
+  diff.
+- **The verdict words judge a stated expectation** (i). Without one, `ein
+  solve` explores and describes R.
+- **(f), (g), (h) hold for the monotone case**, which is this phase's. ∅ is
+  a solution exactly when root is alive and discharged, whatever the
+  generator proposes.
+- **W11 is not this phase's question.** It is revisited twice after the
+  refactoring: in S1e2.1.7's review, then in S1e2.2.12.
+- **Still open:** how a state's class is shown, which is (e)'s proposal of a
+  closed set with its minimal generators.
+
 ## What exists, and what does not
 
 Taken 2026-10-15 against `caef67a`.
@@ -78,12 +116,16 @@ Taken 2026-10-15 against `caef67a`.
 | [S1e2.1a.2](s1e2.1a.2_the_lattice_drawn.md) | The lattice drawn | 2.5 d | `ein render region DIR`: the cube's Hasse diagram, L0 at the top, every node coloured by status with its reason one hover away, every edge classed by the statuses it joins, components coloured, sub-cubes listed, holes with their repair edges; this run's walk overlaid (entered, pre-killed, pruned, never generated, recorded) and every learned nogood checked against the cube; views that stay readable as n grows. **Done 2026-10-15**, with saturation drawn as a move inside the pure cube (`C ⇒ cl(C)`, the user's input of the same day) |
 | [S1e2.1a.8](s1e2.1a.8_region_to_program.md) | From a region to a program | 2 d | the opposite task, the user's of 2026-10-15: `utils/region_synth.py` writes a program for a chosen region (prime implicants → `(false)` rules with `absent`, obligations with witnesses), held to it node for node by the oracle and the static check by its monotonicity; the user's three-component shape and four more banked in `examples/lattice/synth/`; the solution as files; the region gallery (`review_bundle.py --regions`). **Done 2026-10-15** |
 | [S1e2.1a.3](s1e2.1a.3_the_definition.md) | The region census, and the definition | 2.5 d | R measured over every corpus entry the oracle reaches; Q-M1e2.7's sub-questions (a)–(i) ruled by the user with the census on the table; `solution_semantics.md` rewritten around R; the config principle in `configuration.md` |
-| [S1e2.1a.4](s1e2.1a.4_the_language.md) | The language states a region | 2.5 d | the forms the rulings call for: which line a query asks for, and `:expect` over a region; `ein test` and `--json-report` check them; the grammar page says so |
-| [S1e2.1a.5](s1e2.1a.5_the_read_out.md) | The read-out speaks R | 2 d | the verdict block, `--json-summary`, `--dump-answer` and `--models` report R's lines, say which line `k` counts, split empty R into `Contradiction` and `Open`, and report holes as ruled; every golden named before it moves |
+| [S1e2.1a.4](s1e2.1a.4_the_language.md) | The language states a region | 2.5 d, to be re-estimated | the forms (b) and (c) ruled 2026-10-16: `(solve :hrules …)` split from `(query …)`, `(solution …)` for the expected region, `(query … :expect …)` over the goal's projection; `ein test` and `--json-report` check them; the corpus migration named first; the grammar page says so |
+| [S1e2.1a.9](s1e2.1a.9_solve_describes_the_region.md) | `ein solve` describes the region | 4 d | the user's default of 2026-10-16: no flag means R in full, certified. Route 1 is a monotone program's alive down-set, held to the oracle node for node; route 2 is the oracle at n ≤ the limit; route 3 is the walk, said to be partial. The flags *any*, *single*, *minimal* and *maximal* on two axes. Every golden named before it moves |
+| [S1e2.1a.5](s1e2.1a.5_the_read_out.md) | The read-out speaks R | 2 d | k_s and k_c replace `k` (a), (e); the default read-out describes R, and the verdict words judge a stated expectation (i), from a flag or from the program; every surface says what it counts; empty R split into its two kinds; holes through the stub; every golden named before it moves |
 | [S1e2.1a.6](s1e2.1a.6_engine_against_oracle.md) | The engine against the oracle | 2 d | a cargo test over every corpus entry with n ≤ 16: the engine's reported lines equal the oracle's, **under every lever**, or the disagreement is a register row; the census of disagreements is the first answer-check M1e2 has that is not a hand derivation |
 | [S1e2.1a.7](s1e2.1a.7_the_bundle_shows_r.md) | The bundle shows R, and the review resumes | 1.5 d | a § *The region* on every case page and in `--corpus` mode; every register `right` block restated under the new definition, computed by the oracle wherever n ≤ 16; S1e2.1.7 resumes on the twelve unread cases |
 
-**Work order is id order, with one overlap, and S1e2.1a.8 after .2.** It was
+**Work order: .1, .2, .8 (done), then .3, .9, .4 and .5 in parallel, .6, .7.**
+S1e2.1a.9 comes before .5 because .5 prints what .9 computes.
+**Before 2026-10-16 the order was id order, with one overlap, and S1e2.1a.8
+after .2.** It was
 added on 2026-10-15 and done the same day, after S1e2.1a.2's drawings: its
 programs are the cases S1e2.1a.3 rules on and S1e2.1a.6 checks.
 **Otherwise:** The oracle and the drawing come
@@ -96,8 +138,11 @@ engine *reports*. S1e2.1a.7 needs all of them.
 
 ## Where this phase stops and P1e2.2 starts
 
-This phase **defines, computes, draws and reports** R. It does not make the
-search find R. That is [P1e2.2](../p1e2.2_wrong_answers/README.md)'s work, one
+This phase **defines, computes, draws and reports** R. Since 2026-10-16 it also
+makes `solve`'s default compute R wherever that is cheap and exact
+(S1e2.1a.9). It does not fix the walk. Taking the default further is
+[P1e2.1c](../p1e2.1c_the_region_search/README.md)'s work, and the wrong
+answers that survive are [P1e2.2](../p1e2.2_wrong_answers/README.md)'s, one
 case at a time. After S1e2.1a.5 the engine reports *what its walk found* in
 R's vocabulary. Where the walk is wrong, the report is wrong in a new
 shape, and the register holds it. W1's fix stays
@@ -139,9 +184,14 @@ is restated against the maximal line at S1e2.1a.7.
 
 - **Language design without end.** The milestone's own risk list said a
   ruling that needs a new language feature becomes a followup. The user
-  overrode that for R on 2026-10-15. The line drawn here is **forms for R
-  only**: a query's choice of line, `:expect` over a region, and a hole's
-  report. Anything else the rulings suggest is a followup.
+  overrode that for R on 2026-10-15, and moved the line again on 2026-10-16:
+  (b) and (c) split solving from asking. The line is now **those forms**:
+  - `(solve …)`;
+  - `(solution …)`;
+  - the query's projection `:expect`;
+  - a query's choice of subset.
+
+  Anything else is a followup.
 - **2ⁿ.** The oracle reaches small programs only. The zebra family has
   candidate lists in the thousands, so its region stays a definition there, not a
   measurement. S1e2.1a.3's census says how much of the corpus the oracle

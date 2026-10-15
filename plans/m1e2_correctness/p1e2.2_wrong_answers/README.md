@@ -5,7 +5,10 @@
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R
 ([Q-M1e2.7](../open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice))
-and restates every right answer under it before the review resumes.
+and restates every right answer under it before the review resumes. Since
+2026-10-16 it also depends on [P1e2.1c](../p1e2.1c_the_region_search/README.md),
+whose last stage re-scopes this one: W1, W2 and W5 are symptoms of walking for
+the maximal line and may be closed by the new default rather than fixed here.
 No stage here starts until [S1e2.1.7](../p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md)
 has confirmed its case. That review may correct a right answer, withdraw a
 case or split one, and this table is edited to match before anything is

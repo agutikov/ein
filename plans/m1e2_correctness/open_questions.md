@@ -20,7 +20,8 @@ rule on, not five stage files to find.
 | [Q-M1e2.4](#q-m1e24--is-an-empty-unsat-core-a-core) | Is an empty unsat core a core? | [S1e2.2.13](p1e2.2_wrong_answers/s1e2.2.13_empty_core.md) (W12) | open |
 | [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) | open |
 | [Q-M1e2.6](#q-m1e26--does-p1e23-become-a-phase) | Does P1e2.3 become a phase? | the milestone's scope | open |
-| [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; its sub-questions open |
+| [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; on 2026-10-16 (a)–(c) and (e)–(i) [ruled for the monotone case](#the-second-answer-2026-10-16), and [(e)'s display and (h)'s names](#the-third-answer-2026-10-16) |
+| [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) | Where does the rework of `ein solve` go? | P1e2.1a's S1e2.1a.5 (it must print `k` = \|R\|), and P1e2.2's scope | **ruled 2026-10-16**: [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) now, [P1e2.1c](p1e2.1c_the_region_search/README.md) next |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
 and is not re-filed.
@@ -44,6 +45,11 @@ is the size of R's minimal line (2, the matchings), *literal* is |R| (7),
 and R's maximal line is one node, every guest on every chair. The question
 becomes Q-M1e2.7's (a), which line `k` counts, and is re-asked when
 [P1e2.1a](p1e2.1a_the_solution_region/README.md) has written the definitions.
+
+**Answered by (a), 2026-10-16:** `k` = |R|, so every node of R counts, and a
+discharged superset of a discharged state is a solution. On `owed-seats` that
+is the literal **7**, the same in commitments and in states, since nothing
+there saturates onto anything else. S1e2.2.3 is re-read against it.
 
 ## Q-M1e2.2 — Does a guard's `absent` premise bind the state the search ends in?
 
@@ -435,3 +441,498 @@ overlap at 16 and at 20, and the plan reads them as follows:
 | ≤ 16 | runs, silently |
 | 17–19 | refused unless asked for; when asked, runs with a one-line warning |
 | ≥ 20 | refused unless asked for; when asked, runs after a prominent warning that states 2ⁿ and the projected cost |
+
+### The rulings, and the questions back (2026-10-16)
+
+The user's answer to the sub-questions, verbatim. The part of the same message
+that adds a stage to P1e2.1b is quoted in
+[S1e2.1b.6](p1e2.1b_the_non_monotone_lattice/s1e2.1b.6_the_two_lattices_compared.md),
+and the W11 sentence in
+[S1e2.2.12](p1e2.2_wrong_answers/s1e2.2.12_core_id_order.md#the-verdict-moves-under-a-lever-2026-10-16).
+
+> What `solve` could answer? for example "does alive and discharged solutions
+> exist?" - it's enough to prove at least one; "is it the only single
+> solution?"; "how many different solutions exist?" it is |R|; is
+> minimal/maximal solution trivial? if not how many minimal/maximal solutions
+> exist? sub-cube dimentions; number of components; enumerate all/min/max
+> solutions; is the problem/solution/program monotonic? is it sinlge
+> component? what else could `solve` answer about solution region topology?
+> our default behaviour that searches for maximal solutions is not completely
+> wrong but it is relevant only in special case with no obligations. So it has
+> to be reworked.
+>
+> In general non-monotonic case R is completely defined only by full set of
+> nodes. Is that correct? Let's go from it, and simplify the results if our
+> case allows or if it is reqested explicitely. (a) Let's change the meaning of
+> k now from |max(R)| to |R|. (b) first of all `ein solve` study the solution
+> region topology, and quering some specific subset of like min line or max
+> line is secondary, more than that query goal could become incompletely
+> specified with some solution, also query is not the best place for hrules -
+> need to split solution-related features like hrules from queries, we solve
+> once and then queries answer questions about region and about specific
+> solutions; Does it make sense? (c) :expect has to be the answer for query,
+> new updated query, and another expect has to be a full expected region
+> definition, maybe (solve :hrules ...) and (solution (or (model ...) (model
+> ...) ...)) and (query :goal ... :expect <only facts from goal, query
+> response, multiple models, deduplicated, maybe different models still
+> produce identical goals>) ; (d) moved (e) probably we need this information
+> in full solution that some commitments saturate to the same state, what does
+> it mean in practice? we can easily saturate but yet can't so easily split,
+> and don't know if smaller commitments are solutions if saturated is, so
+> commitments give more information, but we need also saturation equvalence
+> information, propose a way to expose all of it; (f) obligations only max
+> line is a set of all hypothesis, that is why I called it trivial; is that
+> true? (g) exhaused gives all found information about region, if limited by
+> levels or iterations or time or anything - then information is not full, but
+> if not limited then it is full information about region; region is a
+> certificate of the lattice, right? (h) it is limitations of our current Ein
+> - we don't emit new names, only combine existing, that guarantees lattice is
+> finit; emitting new names/atoms will make everything even more complex, we
+> can't handle it yet, and we don't know if we actually need it; If the
+> hyothesis list is too small (too small for what? for producing expected
+> solution?) - then ein program is wrong, or ein solve has a bug, isn't it? Or
+> I didn't understand the question then explain better. I really forgot what
+> "forced positives" are? (i) No, definitely components can't be models.
+> Models are models. Components are non-intersecting subsets of models, e.g.
+> {A} {B,C}; e.g. 2 groups of friends want to sit at the table, and all
+> friends wants to sit at the same table, so if we have 2 tables we have 2
+> components correspondign to group-table, and inside each component
+> permutations of seat-friend; it can't be model, but query can ask e.g. only
+> what table selected, and then seats will be hidden information; 'Ambiguity'
+> is still relevant when we expect a one and only one solution.
+> 'Contradiction' is relevant when we expect some solution. In other cases, by
+> default, we are exploring, studying the solution region.
+
+#### Where each sub-question stands
+
+| | the user's answer | status | goes to |
+|---|---|---|---|
+| **general** | R is, in general, its full node set; start there and simplify where the case allows or a query asks | **ruled**. The plan's answer to *"is that correct?"* is below | S1e2.1a.3's page; [S1e2.1b.6](p1e2.1b_the_non_monotone_lattice/s1e2.1b.6_the_two_lattices_compared.md)'s ladder |
+| **(a)** | `k` = \|R\|, not \|max R\| | **ruled**, and its unit too (second answer): `k` is replaced by **k_s** (states) and **k_c** (commitments), both reported | S1e2.1a.5, S1e2.1a.9 |
+| **(b)** | `ein solve` studies the region first. Asking for one line is secondary. `hrules` move out of `(query …)`. Solve once, then queries ask about the region and about single solutions | **ruled**. The plan's answer to *"does it make sense?"* is below | S1e2.1a.4; [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) for the search |
+| **(c)** | three forms: `(solve :hrules …)`; `(solution (or (model …) …))`, the full expected region; `(query :goal … :expect …)`, the goal's projection, deduplicated | **ruled** as the direction. The grammar is S1e2.1a.4's page diff | S1e2.1a.4 |
+| **(d)** | moved | P1e2.1b | S1e2.1b.3 |
+| **(e)** | asks for a way to expose saturation equivalence alongside commitments | **ruled**: k_s and k_c (second answer); `(region …)` with `(merged (to from) …)` (third answer) | S1e2.1a.1's record; S1e2.1a.4, S1e2.1a.5 |
+| **(f)** | asked: *is the obligations-only maximal line the whole candidate set?* | **ruled for P1e2.1a's scope** (second answer): yes, for a monotone program, and it is trivial. The non-monotone counterexample below is S1e2.1b.6's | S1e2.1a.3's page |
+| **(g)** | `exhausted` means complete information about R; a limited run gives partial information; *"region is a certificate of the lattice, right?"* | **ruled for P1e2.1a's scope** (second answer): exhausted = the full region; a limit makes it partial | S1e2.1a.5, S1e2.1a.9 |
+| **(h)** | no new names, so the lattice is finite; asks what *too small* means; asks what forced positives are | **ruled for P1e2.1a's scope** (second answer): the universe is the candidate list, and a list too small for a model is a program error or an engine bug. ∅ is a solution exactly when root is alive and discharged, whatever the generator proposes | S1e2.1a.3; W4, W6 |
+| **(i)** | a component is a set of models, never a model. `Ambiguity` judges an expectation of exactly one solution and `Contradiction` an expectation of some. Without an expectation the read-out explores | **ruled**, and the user's grouping is named **projection classes** (second answer) | S1e2.1a.5; [`definitions.md`](p1e2.1a_the_solution_region/definitions.md) |
+
+#### Measured for these answers
+
+Taken 2026-10-16 at `777d224a`, by running every `.ein` under `examples/`,
+`tests/` and `corpus/` (242 files) through `ein solve FILE --dump-region DIR`,
+with a 60 s timeout each. 154 regions were computed, 29 were refused by the
+limit, and 59 files produced none (they failed to load or timed out).
+T1e2.1a.3.1's census re-takes all of it.
+
+| | regions |
+|---|---:|
+| R non-empty | 118 |
+| **∅ ∈ R**: no obligation that root owes | **107** |
+| exactly one state in R | 68 |
+| exactly one maximal node | 103 |
+| … of which R holds more than one state | **35** |
+| R counted in commitments ≠ R counted in states | **14** |
+| flagged non-monotone by the static check | 13 |
+
+Of the 14 where the two counts differ, the largest is
+`features/02_star_in_identifiers.ein`: 32 768 commitments and 728 states. On
+`branching/05_mini_zebra.ein` it is 8 and 5.
+
+#### The plan's answers
+
+**General: is R, in general, its full node set?** Yes.
+
+- A non-monotone R can be any subset of the cube. S1e2.1a.8's synthesizer
+  writes a program for any target (2 100 random targets, 0 mismatches), except
+  a dead ∅ under a non-empty R.
+- There are 2^(2ⁿ) possible regions, so no shorter description exists in
+  general.
+- *Full set* still has an exact compact form, the union of R's maximal
+  sub-cubes, which the oracle already computes.
+
+The simplifications follow in order, each licensed by one property:
+
+1. **Convex** (no holes): the two lines are exact.
+2. **Monotone** (the static check): the lines follow from N and E without
+   enumerating, and a certificate is N + E.
+3. **Shape**: restrictions only gives min = {∅}; obligations only gives
+   max = {⊤}.
+
+S1e2.1b.6 writes this ladder down.
+
+**(a) × (e): what `k` = |R| counts.** The two measured facts above bear on it.
+
+- **Commitments against states.** On 14 corpus regions, R counted in
+  commitments is larger than R counted in states, up to 45× (32 768 against
+  728). A puzzle that states its completeness as obligations (`bijective`,
+  `total`) is the extreme case. Its unique model is reached by every
+  commitment that saturates to it, so R in commitments counts the ways to
+  *guess* the model, not models. This is argued, not measured: zebra2's cube,
+  with n = 56, is out of reach. **The plan recommends k = the number of states
+  in R, with the commitment count printed beside it.**
+- **Programs that state no obligation.** ∅ is in R on 107 of the 118 non-empty
+  regions. In a program with restrictions only, every consistent partial
+  commitment is a solution, as the user's W1 topology `{∅, A, B, C, (B,C)}`
+  has it. So k = |R| is large there even when the maximal line is a single
+  node: 35 regions have one maximal node and several states. For example,
+  `syntax/constraint-scopes.ein` has 4 096 states. This is what (a) means and
+  is not a defect. It does mean that *"is it the only single solution?"* has
+  two forms:
+  - |R| = 1, for a program that states what it owes;
+  - |max R| = 1, for one that does not.
+
+  An expectation of exactly one solution, (i), has to say which. The
+  alternative is that a puzzle states its completeness as obligations, and
+  then R collapses to its models.
+
+**(b) Does it make sense?** Yes.
+
+- It matches what the engine already depends on. The lattice is fixed by the
+  candidate list, which `hrules` select, and a query's goal is a projection of
+  an answer. Today `:hrules` sits on `(query …)`: 19 corpus files put it there
+  (outside comments, 2026-10-16). In principle, two queries could then define
+  two lattices. The split makes *one program, one lattice, one R* structural.
+- *"incompletely specified"* is real. In a program with restrictions only, the
+  goal has no row at ∅. Today's read-out prints that case as *(no query goal to
+  project)* (inventory S6). A query over R therefore has to say *undetermined
+  in these solutions*, or be asked over a named subset, which (b) makes
+  secondary.
+
+**(c)** Two notes for S1e2.1a.4's grammar.
+
+- `(solution …)` listing every model is exact, but it explodes: 728 states on
+  `features/02`. It should also accept region shapes:
+  - a sub-cube, `[a … b]`;
+  - the two lines, with a `:convex` claim that the runner checks.
+- A `(model …)` inside `(solution …)` should name a **state**. *Naming a
+  relation closes it* carries over unchanged.
+
+The query's `:expect` over the goal's projection, deduplicated, is the same
+notion as (i)'s *what the table is* below.
+
+**(e) A proposal.** For a monotone program, saturation is a closure operator
+on the cube:
+
+- **extensive**: C ⊆ cl(C);
+- **idempotent**: cl(cl(C)) = cl(C). Measured: 0 of 32 074 moving alive nodes
+  land on another state (S1e2.1a.2);
+- **monotone**: C ⊆ D ⇒ cl(C) ⊆ cl(D). This follows from the theorem.
+  S1e2.1b.6 adds the test.
+
+So each state s is a class `{C : cl(C) = s}`:
+
+- **its top is s itself**, the closed set;
+- **its bottoms are its minimal generators**: the smallest commitments that
+  force s;
+- **C ∈ R ⇔ cl(C) ∈ R.** This is the easy direction the user named: whether a
+  smaller commitment is a solution takes one saturation.
+- **The hard direction, *split*, is the minimal generators.** They are what
+  has to be guessed to reach s. The size of the smallest one is the number of
+  hypotheses the solution needs, which is the branch depth
+  [`zebra_walkthrough.md`](../../docs/kernel/inference/zebra_walkthrough.md)
+  tabulates.
+
+**What to expose:**
+
+- per state in R: its closed set, its minimal generators, and the size of its
+  class;
+- `k` counted in states, with \|R\| in commitments beside it;
+- the merged diagram: the closed sets ordered by inclusion, as an `ein render
+  region` view. Closed sets are closed under intersection, so it is a lattice.
+  This is formal concept analysis's closed sets and minimal generators (Ganter
+  & Wille, 1999).
+
+Today the oracle keys a class by its numerically smallest mask. The proposal
+keys it by its closed set, which is unique. For a non-monotone program the
+classes still exist, but cl need not be monotone. That cell belongs to
+S1e2.1b.6.
+
+**(f) Yes, for a monotone program.** If nothing dies and *discharged* is
+upward-closed, the full candidate set ⊤ is in R whenever R is non-empty, so the
+maximal line is {⊤}. `owed-seats` (⊤ = every guest on every chair) and
+`examples/lattice/synth/trivial_line.ein` show it.
+
+**It is not true when an obligation's trigger can grow.** A probe written with
+`utils/region_synth.py` on 2026-10-16 (target: candidates `ABC`; R = `[A … AB]`;
+everything else owing; nothing dead) passes `--check`. Its maximal line is
+`{A,B}`, and ⊤ = `{A,B,C}` owes, because `C` triggers a debt that nothing
+pays. The static check flags it.
+
+The dual also holds: with restrictions only, the minimal line is {∅}. Both
+trivial lines are visible statically from the program's shape. The plan
+recommends naming them in one word and never enumerating or chasing them.
+
+**(g) Yes, with one correction to today's word.**
+
+- *Today* `exhausted = true` certifies the **walk**, not R
+  ([Q-M1e.8](../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set)).
+  W1 is a run that is `exhausted` and still misses a node of R.
+- Under the ruling, `exhausted = true` means *the reported region is R*.
+- A limited run reports what it found as a lower bound, and every node in it
+  is checked.
+
+*"Region is a certificate of the lattice"* reads the other way round in the
+plan's terms. **R is the answer.** A *certificate* is what lets a reader check
+a claimed R without recomputing it:
+
+- **monotone**: small. It is N and E, one saturation per member, plus the
+  static verdict;
+- **non-monotone**: in general nothing smaller than every node's
+  classification.
+
+**(h) The question, explained.**
+
+- **The universe is the candidate list.** R is defined over the candidates the
+  generator offers at root, and **too small** means *too small to contain
+  every model of the program*: a fact some model needs is not a candidate, so
+  that model is not a node at all. There are two ways today:
+  - **W4.** A rule asserts a constant the ontology lacks.
+    `examples/ein-bugs/alive-set-fresh-name.ein` is eleven lines on which that
+    costs a verdict. Under the user's rule that Ein emits no new names, that
+    program is **ill-formed**. The consequence the plan draws is that the
+    alive-set invariant, today a `warn` line, becomes a load error.
+    *Overruled by the [third answer](#the-third-answer-2026-10-16):* rules are
+    part of the program, so the name is not new, and W4 is an engine bug.
+  - **W6.** A relation the program could have in a model is never
+    hypothesised, such as `knows` in `completeness.md` §3c. Whether that is a
+    bug depends on what the list is *supposed* to hold.
+
+  **The ruling sought:** the universe is defined declaratively, as every
+  type-correct ground atom of every hypothesisable relation over the declared
+  objects. The generator's list is checkable against it, and a shortfall is an
+  **engine bug**. A program that needs a name outside it is a **program
+  error**.
+- **The second half of (h): the universe must not depend on config.**
+  `solution_semantics.md` § 1 takes `alive₀` *after* the forced-positive
+  cascade. The oracle already uses the config-free list. The ruling sought is
+  that the page defines the universe that way too.
+
+**Forced positives.** When exactly one candidate hypothesis is still alive at
+root, because every other one has been refuted, the engine promotes it into
+root as a **fact**. Its provenance is `<forced-positive>` with no premises.
+Then root is re-saturated, and the step repeats while one candidate remains.
+The code is `solve.rs`'s `promote_forced_positives`, behind
+`:enable-forced-positive`, which is on by default. The reasoning behind it is
+*"every model extending root must contain it"*. That holds only if ∅ is not
+itself a solution. W2 is the case where ∅ is the solution: on `forced-2`, ∅ is
+the whole of R, the cascade promotes the one candidate, root dies, and the
+engine answers `Contradiction`. Under the config principle, a forced positive
+can be at most a search-time shortcut. It can never define the universe or the
+answer.
+
+**(i) Agreed, with one clash to resolve.** The oracle computes a component as
+a set of nodes of R connected by one-fact edges. Under that definition, the
+two-tables example does **not** give one component per table.
+
+- With seating that is `functional` and `injective`, every full seating is an
+  isolated node. Swapping two guests passes through a node with a guest in two
+  seats, which is dead, or a node with a guest in none, which owes. So each
+  seating is a component of its own.
+- That is measured: `owed-seats` with `functional` and `injective` has
+  **2 components**, the two matchings, each of dimension 0, as does
+  `synth/one_model_per_component`.
+
+The grouping the user describes, *models that agree on the table*, is the
+partition a **query's goal** induces: the user's *"seats will be hidden
+information"*, and (c)'s deduplicated projection. **The plan recommends** that
+*component* keep its topological meaning, and that the user's notion be named
+**projection classes**: a query's answers, each class being the models that
+give one goal row set. A query answers with projection classes. Components
+describe R's shape.
+
+### The second answer (2026-10-16)
+
+The user's reply to the plan's answers, verbatim:
+
+> "when exactly one candidate is still alive at root, the engine promotes it
+> to a root fact and re-saturates" - how does it differ from handling other
+> previous candidates? engine also take them and add to root and saturate.
+> What the differense for the last one alive? Empty set is a solution if
+> sat(root) is already discharged and alive, it doesn't depends on hypgen at
+> all. More than that - there could be no hypothesis at all, e.g. hrules
+> doesn't match anything. But root could be already a solution. Trivial but
+> valid case. (i) Provide me a definition table, in a file, what is fact, kb,
+> state, model, commitment, solution, region, component, ... etc. Yes, what I
+> described is a projection classes. […] (h) what is "alive-set invariant" ?
+> In W11 (rule fire-0 (?P) ...) ?P variable not used. We are now at p1e2.1a,
+> where solve will be changed and expect will be changed, and k changes it's
+> meaning, but you keep asking about W11 k=0 vs k=2; It doesn't make sense
+> now. We will revisit W11 twice after the refactoring. Once at
+> plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md and
+> again at plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.12_core_id_order.md;
+> k unit - k_states and k_commitments are different numbers, we need both,
+> replace k with k_s and k_c; (f) (g) (h) - Again, we are in p1e2.1a - we
+> solve monotone problems here, will solve non-monotone in next phase;
+> Q-M1e2.8 - yes
+
+and, in the same turn:
+
+> change solve behaviour; the default simple `solve` without flags we get
+> exhausive certifying full region description; while with some flags can
+> simplify the task - e.g. look for any solution, or expect there is a single
+> solution - so k>=2 is a contradiction; or look for only maximal solutions,
+> or only for minimal solutions
+
+The elided part asks for the seating example, which is banked as
+[`examples/lattice/06_friends_tables.ein`](../../examples/lattice/06_friends_tables.ein),
+with [`07_two_pairs_two_tables.ein`](../../examples/lattice/07_two_pairs_two_tables.ein)
+beside it.
+
+What it rules:
+
+| | ruling | where it lands |
+|---|---|---|
+| **∅** | ∅ is a solution exactly when `sat(root)` is alive and discharged. That does not depend on the generator, and it holds when the generator proposes nothing | `definitions.md`; S1e2.1a.3's page; S1e2.1a.9 |
+| **(a), (e)** | `k` is replaced by **k_s** (\|R\| in states) and **k_c** (\|R\| in commitments), both reported | S1e2.1a.5, S1e2.1a.9 |
+| **(f), (g), (h)** | answered for the **monotone** case, which is P1e2.1a's scope. The non-monotone halves are P1e2.1b's | S1e2.1a.3; S1e2.1b.6 |
+| **(i)** | the user's grouping is **projection classes**, and a definitions table exists: [`definitions.md`](p1e2.1a_the_solution_region/definitions.md) | S1e2.1a.4, S1e2.1a.5 |
+| **W11** | not a P1e2.1a question. It is revisited twice after the refactoring: in [S1e2.1.7](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md)'s review, then in [S1e2.2.12](p1e2.2_wrong_answers/s1e2.2.12_core_id_order.md) | those two stages |
+| **Q-M1e2.8** | yes: S1e2.1a.9 now, P1e2.1c next | [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) |
+| **`solve`'s default** | `ein solve` with no flags gives an **exhaustive, certifying, full description of R**. Flags make the task simpler: **any** solution; **expect a single solution**, so that k ≥ 2 contradicts the expectation; **maximal** solutions only; **minimal** solutions only | S1e2.1a.9 |
+
+**The forced positive, answered.** An ordinary candidate is **entered**. The
+search forks root, writes the candidate into the fork, saturates, and judges
+that one node. Root does not change, and the node is one of many.
+
+A forced positive is written **into root itself**, as a fact with no premises,
+and root is re-saturated. From then on every node holds it, and the node
+without it, ∅, is gone from the walk.
+
+The *last alive* condition is the warrant: *if a solution must add a
+candidate and all but one are refuted, every solution holds that one.* That is
+sound only when ∅ is not itself a solution, which is the user's point. Probes
+taken 2026-10-16:
+
+- **No candidate at all.** The `hrule` matches nothing. `solve` answers
+  `Solution`, model ∅, so the trivial case is handled.
+- **Two alive candidates** that exclude each other. The engine answers
+  `Ambiguity`, k = 2. R is `{∅, {(p A)}, {(p B)}}`, and ∅ is missing.
+- **One alive candidate**, the other dead alone. The cascade promotes `(p A)`
+  into root, and the engine answers `Solution` `{(p A)}`. R is
+  `{∅, {(p A)}}`, and ∅ is missing.
+
+So ∅ is recorded only when the generator proposes nothing. That follows from
+today's **complete**, *the active rung proposes nothing*, which is a property
+of the generator. Under the ruling it is replaced by **discharged**, a
+property of the state. W1's layer-0 row is the same defect.
+
+**The alive-set invariant (h).** It is the M1 kernel's assumption that rules
+assert no new objects, no new relations, and that hypotheses connect only
+existing names. From that, the alive set, and with it the candidate list, is a
+function of root alone. Three mechanisms rely on it: the per-KB recompute of
+`alive`, the `state_key` dedup behind `k`, and the tree traversal's
+exhaustiveness. Since M1e S1e.3.3 `ein_infer::invariant` checks its static
+half at load: every constant a rule's `:assert` names must be in the program's
+facts. A breach is a `warn` line, not an error.
+`examples/ein-bugs/alive-set-fresh-name.ein` is the eleven-line breach that
+costs a verdict. *Corrected by the third answer:* rules are part of the
+program, so the name that rule asserts is a program name. The program is
+well-formed, and the missing candidates are an engine bug (W4).
+
+### The third answer (2026-10-16)
+
+The user, verbatim:
+
+> in examples/lattice/06_friends_tables.ein if group doesn't fit - group
+> doesn't sit (e.g. go to another restraunt); So not total-owed, but local
+> group owed; WHY we still need to write someting into the root, when those
+> forced positives arrive??? Alive-set invariant question - rules are part of
+> root, so rules can't assert new names. "display which commitments saturate
+> to the same state" - yes, full region info shows all valid commitments and
+> all states that have multiple generating commitments with minimal ones;
+> something like (region (model ...) (model ...) ...) (merged (to from) (to
+> from)))
+
+| | ruling | the plan's note | where it lands |
+|---|---|---|---|
+| **root is not the search's to write** | the user's question: why write into root at all when a forced positive arrives? | **There is no need.** Root is `sat(program)`, and ∅ *is* root, a node like any other. In a monotone program, if every candidate but h is dead alone, every node holding another candidate is dead, so the alive nodes are at most ∅ and {h}. Two saturations then decide the whole region, and nothing has to be written. Promoting h into root decides nothing more, loses ∅, and makes the outcome depend on a config switch (`:enable-forced-positive`, and the lookahead that decides what *sole survivor* means). **Proposed: root is immutable. The search keeps what it learns in its own state.** The search's negative writes into root fall under the same principle, and they are parked with W11 | S1e2.1a.9 (route 1 writes nothing into root); [S1e2.2.2](p1e2.2_wrong_answers/s1e2.2.2_forced_positive_refutes.md) (W2); P1e2.1c's S1e2.1c.5 |
+| **(h), the alive-set invariant** | rules are part of the program, so a name a rule asserts is a name of the program, never a new one | This **corrects the plan's second answer**, which called `alive-set-fresh-name.ein` ill-formed. It is well-formed. `Z` is a program name, the universe has to include it, and the missing candidates are an **engine bug**. That is Q-M1e.21's option (b): seed the names from the rules' `:assert` constants | [S1e2.2.4](p1e2.2_wrong_answers/s1e2.2.4_fresh_name_unreachable.md) (W4); `definitions.md` |
+| **(e), how a state's class is shown** | the full region lists **every valid commitment**, and **every state with several generating commitments, with its minimal ones**. The sketch is `(region (model …) (model …) …)` and `(merged (to from) (to from) …)` | For a monotone program the sketch is **exact and compact**. A state's class is the union of the intervals [from … to] over its minimal generators: if g ⊆ C ⊆ s and cl(g) = s, then s = cl(g) ⊆ cl(C) ⊆ cl(s) = s. So `(region …)` listing the states and `(merged …)` listing their minimal generators names every valid commitment, and k_c follows by inclusion–exclusion. **Proposed:** the read-out prints this block, and the language reads it back as an expectation. A run's region can then be banked as its own claim | S1e2.1a.4, S1e2.1a.5 |
+| **06's obligation** | a group that does not fit goes elsewhere. The obligation is the group's, not `total-owed` | **The program is then not monotone, by construction.** *Once a member sits, the others owe a seat* is an obligation whose trigger grows with the commitment, the second source of holes. The cube: R is 21 nodes (∅; the pair alone, 8; the trio alone, 4; both, 8), and **166 holes**, every partly seated group. The engine records 8. The natural way to write a conditional requirement makes trigger holes, so they are P1e2.1b's common case, not an exotic one. The everyone-sits version is kept as the monotone twin | [`06_friends_tables.ein`](../../examples/lattice/06_friends_tables.ein); S1e2.1b.6 |
+
+### What `solve` can answer about R (2026-10-16)
+
+The user's questions, then the plan's additions (marked +). The cost column
+says what an answer needs:
+
+- **witness**: one node and its saturation;
+- **lines**: enumerating a line, via N and E when the program is monotone;
+- **R**: all of R, or its sub-cube cover;
+- **static**: the program alone.
+
+| question | answered by | cost |
+|---|---|---|
+| does R have a node? | one node of R, checked | witness |
+| is it the only solution? | \|R\| = 1, or \|max R\| = 1 (see (a)); a witness plus a proof of no other | lines |
+| how many solutions? | `k` = \|R\| (in states and in commitments, (e)) | R, or the sub-cubes by inclusion–exclusion when convex |
+| is the minimal / maximal line trivial? | min = {∅}, max = {⊤}, from the program's shape | static |
+| how many minimal / maximal solutions, and which? | \|min R\|, \|max R\|, enumerated | lines |
+| how many components; is it one? | components under one-fact edges | R |
+| sub-cube dimensions | each maximal sub-cube's free facts | R |
+| enumerate all / min / max | the node set, or one line | R / lines |
+| is the program monotone? | the static check's sites, and the violations the cube observes | static, then R |
+| + if R is empty, which kind and why? | no alive node: a core. Every alive node owes: the debts no alive extension pays | witness per kind |
+| + does it have holes? | hole count, minimal holes with their guard and repair edges | R |
+| + which commitments give one state? | per state: its closed set and minimal generators (e) | R |
+| + how much must be guessed? | the smallest generator's size per state | R |
+| + which facts hold in every solution, in some, in none? | backbone, credulous and impossible sets: Theorist's skeptical and credulous readings | lines, for a monotone program |
+| + which facts decide the others? | per-fact counts; M1d's determining key (`--models key`) | R |
+| + what does a query's goal see? | projection classes (i), deduplicated (c) | R |
+| + which rule shapes which part of R? | per minimal nogood its rule chain; per minimal owing node its obligations | lines |
+| + which rules or facts can be dropped without changing R? | redundancy: R recomputed without each | R per rule |
+| + what would make R a single state? | the smallest set of facts or rules whose addition leaves one state, and per candidate fact how far it splits R | R |
+| + is R symmetric? | R mapped onto itself under interchangeable constants. An answer that is not is a defect (W5) | R |
+| + how far apart are the solutions? | the minimum Hamming distance between states | R |
+| + is the answer complete? | `exhausted` (g), and the certificate | — |
+| + what is the universe? | the candidate list, and where it differs from `alive₀` (h) | static |
+
+The questions marked **R** are the ones the user named for improving a theory
+and for searching for one. They are why the region is the object of study and
+not its first node. Which of them `ein solve` answers by default, and which
+behind a flag, is S1e2.1a.5's to propose and the user's to rule.
+
+## Q-M1e2.8 — Where does the rework of `ein solve` go?
+
+The user, 2026-10-16: *"our default behaviour that searches for maximal
+solutions is not completely wrong but it is relevant only in special case with
+no obligations. So it has to be reworked"*. And under (b): *"first of all `ein
+solve` study the solution region topology"*.
+
+[P1e2.1a](p1e2.1a_the_solution_region/README.md) does not make the search find
+R ([§ Where this phase stops](p1e2.1a_the_solution_region/README.md#where-this-phase-stops-and-p1e22-starts)),
+and [P1e2.2](p1e2.2_wrong_answers/README.md) fixes the walk one case at a
+time. Neither is a rework. There is also a constraint: under (a),
+S1e2.1a.5 has to report `k` = |R|, and the walk cannot count R. It records
+complete nodes and does not expand them.
+
+The options:
+
+1. **In P1e2.1a, now: the oracle becomes `solve`'s answer wherever it
+   reaches.** This would be a new stage, S1e2.1a.9.
+   - At n ≤ the limit, `ein solve` computes R exactly. That is the general
+     case, stable and proved by construction. The corpus's 150 cubes take
+     20 s in total (S1e2.1a.1).
+   - Above the limit, the walk runs, and the read-out says the region is
+     partial.
+   - Before this can go into the gate, its cost in `cargo test`'s corpus sweep
+     has to be measured.
+2. **A phase of its own, P1e2.1c, after P1e2.1b and before P1e2.2:** the region
+   search built from S1e2.1b.6's strategies (dualisation of N and E for a
+   monotone program, the guard split otherwise). P1e2.2 is then re-scoped
+   against it, because W1, W2 and W5 are symptoms of walking for the maximal
+   line and may close by construction.
+3. **After M1e2.** P1e2.2 fixes the walk as planned, and the rework is a
+   milestone of its own.
+
+**The plan recommends 1 now and 2 next.** Option 1 is what lets S1e2.1a.5
+print the ruled `k` truthfully on everything the oracle reaches. Option 2
+decides whether P1e2.2's 27.5 days are spent on a walk that is about to be
+replaced.
+
+**Ruled 2026-10-16: yes, 1 now and 2 next.** The same turn ruled what the
+default is: *"the default simple `solve` without flags we get exhausive
+certifying full region description"*, with flags that simplify the task.
+Option 1 is [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md),
+and option 2 is [P1e2.1c](p1e2.1c_the_region_search/README.md).

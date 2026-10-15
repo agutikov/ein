@@ -1,0 +1,89 @@
+;;; 06_friends_tables — who sits where: two groups of friends, two tables, and a
+;;; group that does not fit goes to another restaurant.
+;;;
+;;; The pair (Ann, Bob) and the trio (Cat, Dan, Eve). The small table has two
+;;; seats (S1 S2), the big one three (B1 B2 B3). Friends sit at one table
+;;; together. Seat B1 faces the air-conditioner, and Eve will not sit there.
+;;;
+;;; The obligation is the group's, not everyone's (the user, 2026-10-16: "if
+;;; group doesn't fit - group doesn't sit … So not total-owed, but local group
+;;; owed"): once a member of a group sits, every member of that group owes a
+;;; seat. Nobody is owed a seat before their group sits, so ∅ — everyone goes
+;;; elsewhere — is a solution. 06_friends_tables_everyone_sits.ein is the
+;;; same program with total-owed instead.
+;;;
+;;; A group is proposed seats only at a table it fits, (fits G T), so the
+;;; hypotheses are 3×3 (trio at the big table) + 2×2 (pair at the small one)
+;;; + 2×3 (pair at the big one) = 19. Ein has no arithmetic, so "fits" is data.
+;;;
+;;; NOT MONOTONE, by construction. A seated member's debt is an obligation
+;;; whose trigger, (sits ?a ?s), grows with the commitment: adding a fact adds
+;;; a debt. So a partly seated group is a hole: {(sits Ann S1)} owes Bob a seat,
+;;; and lies between ∅ and {(sits Ann S1), (sits Bob S2)}, both solutions. The
+;;; static check flags the rule, and what R means here is P1e2.1b's.
+;;;
+;;; Measured 2026-10-16, with
+;;;   ein solve -e examples/lattice/06_friends_tables.ein \
+;;;       --dump-region DIR --region-limit 19 --jobs 16
+;;; R is 21 nodes (k_s = k_c = 21), each its own component:
+;;;   L0  ∅                                  everyone elsewhere
+;;;   L2  8: the pair alone                  2 at the small table, 6 at the big
+;;;   L3  4: the trio alone                  at the big table, Eve off B1
+;;;   L5  8: both                            pair small, trio big
+;;; 166 holes: every partly seated group. Minimal line {∅}; maximal line 14 —
+;;; the pair alone at the big table (6, since the trio cannot then sit) and
+;;; both groups seated (8). `ein solve -e` answers k = 8, the both-seated eight:
+;;; it misses ∅ and the six pair-at-the-big-table nodes, and records 48 open
+;;; states. The everyone-sits twin has R = the same eight, and no holes.
+
+(import std.algebra :symbols (functional injective))
+
+(relation is-a      T T)
+(relation member    Friend Group)
+(relation at        Seat Table)
+(relation fits      Group Table)
+(relation sits      Friend Seat)
+(relation faces-ac  Seat)
+(relation avoids-ac Friend)
+
+(is-a Ann Friend) (is-a Bob Friend)
+(is-a Cat Friend) (is-a Dan Friend) (is-a Eve Friend)
+(is-a S1 Seat) (is-a S2 Seat)
+(is-a B1 Seat) (is-a B2 Seat) (is-a B3 Seat)
+(is-a Pair Group) (is-a Trio Group)
+(is-a Small Table) (is-a Big Table)
+
+(member Ann Pair) (member Bob Pair)
+(member Cat Trio) (member Dan Trio) (member Eve Trio)
+(at S1 Small) (at S2 Small)
+(at B1 Big) (at B2 Big) (at B3 Big)
+(fits Pair Small) (fits Pair Big) (fits Trio Big)
+(faces-ac B1)
+(avoids-ac Eve)
+
+(functional sits)
+(injective  sits)
+
+(rule group-seated-owed ()
+  :match  (and (sits ?a ?s) (member ?a ?g) (member ?b ?g)
+               (absent (and (is-a ?t Seat) (sits ?b ?t))))
+  :assert (open sits)
+  :why    "{?a}'s group {?g} sits, and {?b} has no seat")
+
+(rule together ()
+  :match  (and (sits ?a ?s) (sits ?b ?t)
+               (member ?a ?g) (member ?b ?g)
+               (at ?s ?x) (at ?t ?y) (neq ?x ?y))
+  :assert (false)
+  :why    "{?a} and {?b} are friends and sit at different tables")
+
+(rule air-conditioner ()
+  :match  (and (sits ?p ?s) (avoids-ac ?p) (faces-ac ?s))
+  :assert (false)
+  :why    "{?p} will not sit facing the air-conditioner at {?s}")
+
+(hrule seat ()
+  :match  (and (member ?p ?g) (fits ?g ?t) (at ?s ?t))
+  :assert (sits ?p ?s))
+
+(query :goal (sits ?p ?s))

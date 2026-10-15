@@ -95,9 +95,9 @@ impl Cell {
 }
 
 /// `EIN_CORPUS_SLOW=1` — the entries whose declared runs cost
-/// `ein_corpus::manifest::SLOW_MS` or more together. **Two** of them, named in
-/// `ein-corpus` and pinned by `the_slow_set_is_exactly_these_two` (M1e
-/// S1e.3.6), where there were seventeen at
+/// `ein_corpus::manifest::SLOW_MS` or more together. **Three** of them, named
+/// in `ein-corpus` and pinned by `the_slow_set_is_exactly_these_three` (M1e
+/// S1e.3.6; the third is M1e2's, a 2^16 region), where there were seventeen at
 /// [S1a.9.0](../../../../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced),
 /// one of them `zebra2.ein` at 16 ms. They add ~16 s to a default
 /// selection that costs 3.5, so they are still nightly's.

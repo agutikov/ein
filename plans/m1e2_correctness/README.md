@@ -1,9 +1,10 @@
 # M1e2 — Correctness: every known wrong answer
 
-**Estimate:** ~12 weeks: 3 estimated phases and 28 stages, **58.5 days** of
-stage estimates (P1e2.1 12, P1e2.1a 19, P1e2.2 27.5). One more phase,
-P1e2.1b, has five stages named and none estimated, and one phase is proposed
-and not specified.
+**Estimate:** ~14 weeks: 3 estimated phases and 29 stages, **62.5 days** of
+stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.2 27.5). Two more phases have
+stages named and few estimated: P1e2.1b (six, one estimated: S1e2.1b.6,
+4 days) and P1e2.1c (five, none estimated), both added or grown 2026-10-16. One
+phase is proposed and not specified.
 **Status:** created 2026-10-14 on the user's instruction: *"Create new
 milestone for correctness issues. … first phase is for solution dumps and
 rendering to markdown with graphs, so I can review all existing wrong
@@ -113,13 +114,30 @@ non-monotone one. P1e2.1b decides what R is there, and its first finding is
 already in: a hole needs no `absent`, because an obligation's trigger is the
 same kind of read.
 
+**Then the user ruled from the general case (2026-10-16).** In general R is
+its node set, and the two lines are a simplification. `k` = |R|. `ein solve`
+studies the region first. Solving moves into `(solve …)`, and queries ask
+about the result. The verdict words judge a stated expectation, and without
+one the run explores. The searches that look for the maximal line are right
+only for a program that states no obligation, so `solve` *"has to be
+reworked"*. The same day the user ruled the default: *no flag means an exhaustive,
+certifying, full description of R*, with flags for any solution, a single one
+expected, or one line only. That is
+[S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)
+where it is cheap and exact, and
+[P1e2.1c](p1e2.1c_the_region_search/README.md) beyond that, building on P1e2.1b's
+[S1e2.1b.6](p1e2.1b_the_non_monotone_lattice/s1e2.1b.6_the_two_lattices_compared.md).
+`k` became **k_s** and **k_c**. The terms are in
+[`definitions.md`](p1e2.1a_the_solution_region/definitions.md).
+
 ## Phases
 
 | ID | title | stages | est. | ends with |
 |---|---|---:|---:|---|
 | [P1e2.1](p1e2.1_seeing_the_answer/README.md) | Seeing the answer: dumps, and the answer rendered for review | 7 | 12 d | `utils/review_bundle.py` → `build/review/`: every case's problem, every run's every artefact rendered with every graph as SVG, the right answer and the diff; the register as a cargo test; Q-M1e.20 answered; **the review held** |
-| [P1e2.1a](p1e2.1a_the_solution_region/README.md) | The solution region: R defined, computed, drawn and reported | 8 | 19 d | the answer redefined as a **region R** of the hypothesis lattice, with its minimal and maximal lines ([Q-M1e2.7](open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)), for a **monotone** program; a non-monotone one detected by a static check and reported through one stub; an oracle that computes R by saturation alone for n ≤ 16; the whole lattice drawn with the walk overlaid; programs written for a chosen region (S1e2.1a.8); the language and the read-out speaking R; the engine checked against the oracle under every lever; **the review resumed** |
-| [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) | The non-monotone lattice: what R is when adding a fact can take one away | 5 named | — | the site census; a node's state, fork or scratch (Q-M1e2.2, W8); holes (Q-M1e2.7 (d)), from `absent` and from obligation triggers; whether a refutation may rest on an `absent` (Q-M1e.9, W3); the stub replaced |
+| [P1e2.1a](p1e2.1a_the_solution_region/README.md) | The solution region: R defined, computed, drawn and reported | 9 | 23 d | the answer redefined as a **region R** of the hypothesis lattice, with its minimal and maximal lines ([Q-M1e2.7](open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)), for a **monotone** program; a non-monotone one detected by a static check and reported through one stub; an oracle that computes R by saturation alone for n ≤ 16; the whole lattice drawn with the walk overlaid; programs written for a chosen region (S1e2.1a.8); the language and the read-out speaking R; the engine checked against the oracle under every lever; **the review resumed** |
+| [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) | The non-monotone lattice: what R is when adding a fact can take one away | 6 named | 4 d of 1 | the site census; a node's state, fork or scratch (Q-M1e2.2, W8); holes (Q-M1e2.7 (d)), from `absent` and from obligation triggers; whether a refutation may rest on an `absent` (Q-M1e.9, W3); the stub replaced; **the two lattices compared** in a `docs/kernel/` page, with how to solve each one stably, provably and effectively (S1e2.1b.6) |
+| [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 5 named | — | `ein solve`'s default describes R for every program the corpus holds, or says why not: the alive set at scale, the lines by duality, the non-monotone search, the flags at scale; the old walk's fate, and P1e2.2 re-scoped |
 | [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 13 | 27.5 d | every register row `fixed` or ruled `not-wrong`; no wrong answer at default settings; no lever that changes a certified answer |
 | P1e2.3 | Surfaces that misreport the answer | — | *proposed* | below |
 

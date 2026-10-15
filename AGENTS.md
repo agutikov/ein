@@ -278,8 +278,9 @@ constrained-reasoning research.
   **`slow = true` is a measured claim** — an entry whose declared runs cost
   1 s or more together, recorded in `cost_ms` and checked in both directions
   ([corpus_cost.md](docs/history/m1a_rust/measurements/corpus_cost.md) is the
-  measurement, `utils/corpus_cost.py` re-takes it). **Two** entries are slow,
-  where seventeen were — three until M1a T1a.7.2.0 made
+  measurement, `utils/corpus_cost.py` re-takes it). **Three** entries are slow
+  (the third since M1e2, 2026-10-16: `lattice/07_two_pairs_two_tables`, whose
+  question is a 2¹⁶ region), where seventeen were — three until M1a T1a.7.2.0 made
   `branching/07_lookahead_off` 2.8× cheaper and the re-take took its flag off,
   which is the mechanism working ([corpus_cost.md
   §7](docs/history/m1a_rust/measurements/corpus_cost.md#7-the-first-re-take--2026-08-22-and-it-moved-an-entry));

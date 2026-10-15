@@ -218,15 +218,16 @@ the build and machine
 `corpus_cli`'s `the_slow_flag_still_describes_the_sweep` (the wall clock of
 the sweep it has just run, at a 4× tolerance).
 
-**Two** entries are slow — `features/01_not_and_absent` and
-`features/04_open`, named in `ein-corpus` and pinned per commit by
-`the_slow_set_is_exactly_these_two` (M1e S1e.3.6) — and they are 12 cells and
-**13.2 s** of engine.
+**Three** entries are slow: `features/01_not_and_absent`, `features/04_open`,
+and, since M1e2 (2026-10-16), `lattice/07_two_pairs_two_tables`, whose question
+is a region of 2¹⁶ nodes. They are named in `ein-corpus` and pinned per commit
+by `the_slow_set_is_exactly_these_three` (M1e S1e.3.6). Together they are 17
+cells and **17.1 s** of engine.
 
 The **cell count** is `wc -l ein.rs/crates/ein-cli/tests/golden/corpus_exits.txt`:
 the exit golden is one line per cell of the full selection, so it is the number
 and it cannot drift from the sweep that writes it. The default selection is
-that minus the two slow entries' twelve. What the sweep costs is a
+that minus the three slow entries' seventeen. What the sweep costs is a
 measurement — **5.3 s** of `cargo test` by default and **22.2 s** with
 `EIN_CORPUS_SLOW=1`, where before S1a.9.0 they took **307 s** (2026-08-22, and
 `utils/corpus_cost.py` re-takes it).

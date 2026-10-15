@@ -1,0 +1,81 @@
+;;; 06_friends_tables_everyone_sits — who sits where, when everyone must sit.
+;;;
+;;; The monotone twin of 06_friends_tables.ein: the same groups, tables and
+;;; air-conditioner, but every friend owes a seat (total-owed), so a group that
+;;; does not fit cannot leave. The user corrected the model on 2026-10-16: a
+;;; group that does not fit goes elsewhere, which is 06_friends_tables.ein.
+;;;
+;;; The pair (Ann, Bob) and the trio (Cat, Dan, Eve). The small table has two
+;;; seats (S1 S2), the big one three (B1 B2 B3). Friends sit at one table
+;;; together. Seat B1 faces the air-conditioner, and Eve will not sit there.
+;;;
+;;; A group is proposed seats only at a table it fits, (fits G T), so the
+;;; hypotheses are 3×3 (trio at the big table) + 2×2 (pair at the small one)
+;;; + 2×3 (pair at the big one) = 19. Ein has no arithmetic, so "fits" is data.
+;;;
+;;; Obligation: every friend has a seat (total-owed). Restrictions: one seat
+;;; each (functional), one friend per seat (injective), friends together, and
+;;; Eve away from the air-conditioner. No rule derives a seat, so saturation
+;;; moves no node and k_s = k_c. The program is monotone.
+;;;
+;;; Measured 2026-10-16 (M1e2 P1e2.1a, at the user's request), with
+;;;   ein solve -e examples/lattice/06_friends_tables.ein \
+;;;       --dump-region DIR --region-limit 19 --jobs 16          # 6.2 s
+;;; R is 8 nodes, all at L5, each its own component; no holes; the minimal and
+;;; maximal lines are the same 8 seatings — the pair at the small table in 2
+;;; orders, the trio at the big table with Eve off B1 in 2 × 2. 68 minimal dead
+;;; sets, 675 minimal discharging sets, and the duality holds. Below L5 every
+;;; alive node owes; from L5 down every node is dead. `ein solve -e` answers
+;;; k = 8, the right models, and also records 48 open states: the pair at the
+;;; big table, which leaves the trio no seat — owing, and on neither line.
+;;;
+;;; Grouped by table the 8 seatings are ONE projection class: the trio does not
+;;; fit the small table, so the table choice is forced.
+;;; 07_two_pairs_two_tables.ein frees it.
+
+(import std.algebra :symbols (functional injective total-owed))
+
+(relation is-a      T T)
+(relation member    Friend Group)
+(relation at        Seat Table)
+(relation fits      Group Table)
+(relation sits      Friend Seat)
+(relation faces-ac  Seat)
+(relation avoids-ac Friend)
+
+(is-a Ann Friend) (is-a Bob Friend)
+(is-a Cat Friend) (is-a Dan Friend) (is-a Eve Friend)
+(is-a S1 Seat) (is-a S2 Seat)
+(is-a B1 Seat) (is-a B2 Seat) (is-a B3 Seat)
+(is-a Pair Group) (is-a Trio Group)
+(is-a Small Table) (is-a Big Table)
+
+(member Ann Pair) (member Bob Pair)
+(member Cat Trio) (member Dan Trio) (member Eve Trio)
+(at S1 Small) (at S2 Small)
+(at B1 Big) (at B2 Big) (at B3 Big)
+(fits Pair Small) (fits Pair Big) (fits Trio Big)
+(faces-ac B1)
+(avoids-ac Eve)
+
+(functional sits)
+(injective  sits)
+(total-owed sits is-a)
+
+(rule together ()
+  :match  (and (sits ?a ?s) (sits ?b ?t)
+               (member ?a ?g) (member ?b ?g)
+               (at ?s ?x) (at ?t ?y) (neq ?x ?y))
+  :assert (false)
+  :why    "{?a} and {?b} are friends and sit at different tables")
+
+(rule air-conditioner ()
+  :match  (and (sits ?p ?s) (avoids-ac ?p) (faces-ac ?s))
+  :assert (false)
+  :why    "{?p} will not sit facing the air-conditioner at {?s}")
+
+(hrule seat ()
+  :match  (and (member ?p ?g) (fits ?g ?t) (at ?s ?t))
+  :assert (sits ?p ?s))
+
+(query :goal (sits ?p ?s))
