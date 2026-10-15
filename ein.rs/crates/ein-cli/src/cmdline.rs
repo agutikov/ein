@@ -244,6 +244,33 @@ fn render_command() -> Command {
                         .help("leave out the instance ovals and every fact edge"),
                 ),
         )
+        // M1e2 S1e2.1a.2 — the cube a `--dump-region` directory holds, drawn
+        // from the files, so the picture is of the run whose answer it shows.
+        .subcommand(
+            Command::new("region")
+                .about(
+                    "the solution region as a Hasse diagram: DIR is an `ein solve \
+                     --dump-region` directory, drawn with that run's walk on it \
+                     (docs/kernel/ir/03-ein-lang/04_dot_rendering.md)",
+                )
+                .arg(Arg::new("dir").required(true))
+                .arg(
+                    Arg::new("view")
+                        .long("view")
+                        .value_name("VIEW")
+                        .value_parser(PossibleValuesParser::new([
+                            "auto", "full", "border", "lines", "table",
+                        ]))
+                        .default_value("auto")
+                        .help(
+                            "'full' every node of the cube; 'border' R, its holes and \
+                             every node one edge from it; 'lines' the root, both lines, \
+                             the holes and the recorded nodes; 'table' every node as \
+                             markdown, at any n; 'auto' (default) full up to n = 6, \
+                             border up to 64 nodes, else lines",
+                        ),
+                ),
+        )
         .subcommand(
             Command::new("lattice")
                 .about("commitment-lattice / proof-DAG DOT (runs a solve, S1.6.3)")

@@ -32,6 +32,10 @@ holes:
   local vs global    nodes of R whose one-fact neighbours say "maximal"
                      (or "minimal") where the whole cube says otherwise
 
+`--json` also gives every alive node's **closure**: the candidates its
+fixpoint holds, read off `--dump-answer`'s `root.ein` — where saturation moves
+the node inside the cube (S1e2.1a.2), checked against the oracle's `closure`.
+
 The forced-positive cascade and the pre-branch lookahead are switched off in
 the copy: they are search-time root writes, and the first version of this
 script, which left them on, reported `{(seats Ann C1)}` on owed-seats +
@@ -56,19 +60,26 @@ EIN = os.environ.get("EIN_BIN", os.path.join(ROOT, "ein.rs/target/release/ein"))
 OFF = "(config :enable-forced-positive false :enable-pre-branch-lookahead false)"
 
 
-def classify(src, sub, d):
-    """'dead', 'owes n' or 'ok' for the program plus the facts in `sub`."""
+def classify(src, sub, d, H):
+    """('dead' | 'owes n' | 'ok', closure) for the program plus the facts in
+    `sub`. The closure is the candidates of `H` the fixpoint holds — read off
+    `--dump-answer`'s `root.ein`, so on an alive node only; `None` on a dead
+    one."""
     f = os.path.join(d, "x.ein")
     with open(f, "w") as fh:
         fh.write(src + "\n" + OFF + "\n" + " ".join(sub) + "\n")
     sat = subprocess.run([EIN, "saturate", f], capture_output=True, text=True).stdout
     if re.search(r"^\s+false\s+\d+", sat, re.M):
-        return "dead"
-    j = os.path.join(d, "s.json")
-    subprocess.run([EIN, "solve", "-e", "-m", "0", f, "--json-summary", j], capture_output=True)
+        return "dead", None
+    j, a = os.path.join(d, "s.json"), os.path.join(d, "answer")
+    subprocess.run([EIN, "solve", "-e", "-m", "0", f, "--json-summary", j, "--dump-answer", a],
+                   capture_output=True)
     with open(j) as fh:
         owes = json.load(fh)["owes"]["root"]["total"]
-    return f"owes {owes}" if owes else "ok"
+    with open(os.path.join(a, "root.ein")) as fh:
+        held = {re.sub(r"\s+:(rule|source|hypothesis|using)\s+(\"[^\"]*\"|\S+)", "", l.strip())
+                for l in fh if l.startswith("(")}
+    return (f"owes {owes}" if owes else "ok"), sorted(h for h in H if h in held)
 
 
 def le(a, b):
@@ -143,14 +154,16 @@ def main():
     H = argv[1:]
     n = len(H)
     with tempfile.TemporaryDirectory() as d:
-        st = [classify(src, [H[i] for i in range(n) if m >> i & 1], d) for m in range(1 << n)]
+        out = [classify(src, [H[i] for i in range(n) if m >> i & 1], d, H) for m in range(1 << n)]
+    st = [o[0] for o in out]
     t = topology(n, st)
     if as_json:
         facts = lambda m: [H[i] for i in range(n) if m >> i & 1]
         sets = lambda ms: sorted(sorted(facts(m)) for m in ms)
         print(json.dumps({
             "candidates": H,
-            "nodes": [{"facts": sorted(facts(m)), "status": st[m]} for m in range(1 << n)],
+            "nodes": [{"facts": sorted(facts(m)), "status": st[m], "closure": out[m][1]}
+                      for m in range(1 << n)],
             "minimal": sets(t["mn"]),
             "maximal": sets(t["mx"]),
             "holes": sets(t["holes"]),

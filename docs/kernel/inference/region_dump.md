@@ -72,6 +72,23 @@ no learned clause. Each node carries two **independent** bits:
 smallest mask whose fixpoint is the same fact set, which is how two
 commitments that reach one state show (Q-M1e2.7's (e)).
 
+Four more fields say what saturation does to a node
+([S1e2.1a.2](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.2_the_lattice_drawn.md)):
+
+- **`closure`** is the mask of the candidates its fixpoint holds. It always
+  contains the node's own mask, and it is a different node when the rules
+  derive a hypothesised fact. That is the node saturation *moves it to* inside
+  the cube. An alive node and its closure are one state: on the corpus,
+  32 074 alive nodes move and none lands on another state (2026-10-15,
+  `census_for_inspection`).
+- **`excluded`** is the mask of the candidates whose `(not h)` it holds.
+- **`beyond`** counts the facts beyond root's that are not candidates.
+- **`beyond_hypothesised`** counts the positive ones among them over a
+  candidate's relation: facts a generator could have proposed and root's did
+  not.
+
+They are what a node *is* that its coordinates do not say.
+
 ## `region.json`
 
 `schema`, `source`, `n`, `limit`, `candidates`, `monotonicity` (below), then
@@ -90,22 +107,36 @@ either `region` with `refused: null`, or `region: null` with `refused`
 | `violations` | `dead_not_upward_closed` (a dead node with an alive superset) and `discharged_not_upward_closed` (a discharged node with an owing superset), each with a count and the smallest pair |
 | `edges` | every upward edge, counted by the statuses at its two ends |
 | `root_dead`, `assumes_monotone` | root's own fixpoint is contradictory; the static check found a site |
-| `nodes` | one record per mask: `mask`, `layer`, `facts`, `status`, `minimal`, `maximal`, `hole`, `component`, `class`, `owes`, `owed`, `core`, `refuted_by`, `absent_premises`, and `state` (the node's facts beyond root's) under `--region-states` |
+| `nodes` | one record per mask: `mask`, `layer`, `facts`, `status`, `minimal`, `maximal`, `hole`, `component`, `class`, `closure`, `excluded`, `beyond`, `beyond_hypothesised`, `owes`, `owed`, `core`, `refuted_by`, `absent_premises`, and `state` (the node's facts beyond root's) under `--region-states` |
 
 ## `walk.json`
 
 `schema`, `source`, `verdict` (`type`, `k`, `exhausted`, `monotone`),
-`universe` (`proposed`, `alive0`), and from the run's proof: `enterings` (every
-commitment entered, its layer and `outcome`), `recorded` (each model or open
-state, as `model` / `open`, its debt, and `state_mask`: the commitment plus
-what the cascade promoted to root, which is where the recorded *state* sits in
-the cube), `dead` (each refuted commitment's clause and core),
-`learned_nogoods`, `alive_at_end`, and `root_writes` (every fact the search
-wrote into root after its fixpoint). Classifying the walk against the cube
-(entered, pruned, never generated, missing, spurious) is
-[S1e2.1a.2](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.2_the_lattice_drawn.md)'s
-drawing. `region.md` already says, for each recorded node, where its state
-sits, and which members of each line were not recorded.
+`bounds` (the run's `max_set_size` and `solutions`, `null` under `-e`),
+`universe` (`proposed`, `alive0`), and from the run's proof:
+
+- `promotions`: each forced positive the cascade wrote into root, with
+  `after_enterings`, how many enterings came before it (S1e2.1a.2);
+- `enterings`: every commitment entered, with its layer, its `outcome`, and
+  `state_mask`, the cube node it **stood on**: the commitment plus every
+  promotion before it;
+- `recorded`: each model or open state, as `model` / `open`, with its debt and
+  its `state_mask`, placed the same way;
+- `dead`: each refuted commitment's clause and core;
+- `learned_nogoods`, `alive_at_end`;
+- `root_writes`: every fact the search wrote into root after its fixpoint.
+
+A `state_mask` is `null` when a fact of the commitment is not a coordinate.
+
+Classifying the walk against the cube is
+[`ein render region DIR`](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-the-walk-s1e21a2)'s
+work (S1e2.1a.2). It marks each node entered, reached by saturation, pruned
+and why, never generated, missing or spurious, and checks every learned clause,
+refuted singleton and lookahead kill against the cube. `region.md` says, for
+each recorded node, where its state sits, and which members of each line no
+recorded model holds. Both compare **states** (`class`), not masks: a
+commitment whose saturation derives a candidate records its closure's
+state.
 
 ## Monotonicity — the static check
 
@@ -179,5 +210,7 @@ Q-M1e2.7's seven programs.
 
 - [`answer_dump.md`](answer_dump.md): the answer the search recorded, as files.
 - [`lattice_dump.md`](lattice_dump.md): every commitment the search tested.
+- [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-the-walk-s1e21a2):
+  this directory drawn, `ein render region`.
 - [`solution_semantics.md`](solution_semantics.md): the definitions this
   checks the walk against.

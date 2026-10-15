@@ -172,3 +172,24 @@ fn loaded_and_saturated(ast: &mut Ast, terms: &mut Terms, file: &str) -> Option<
     }
     Some(kb)
 }
+
+/// `ein render region` — a `--dump-region` directory drawn: the cube by
+/// [`ein_render::region_dot`], with the walk the same run wrote joined to it
+/// by [`ein_render::region_doc::Overlay`]. M1e2 S1e2.1a.2.
+///
+/// Reads the two files and nothing else — no load, no solve — so the picture
+/// is the run's, and a directory from another checkout draws the same.
+pub fn cmd_region(dir: &str, view: &str) -> i32 {
+    let (doc, walk) = match ein_render::region_doc::read_dir(Path::new(dir)) {
+        Ok(x) => x,
+        Err(e) => {
+            eprintln!("{e}");
+            return 1;
+        }
+    };
+    let view =
+        ein_render::region_dot::View::parse(view).unwrap_or(ein_render::region_dot::View::Auto);
+    let out = ein_render::region_dot::render(&doc, &walk, view);
+    print!("{out}");
+    0
+}

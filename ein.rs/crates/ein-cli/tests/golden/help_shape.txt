@@ -29,6 +29,10 @@ COMMAND ein render program
   OPTION --levi -- metavar=- arity=0 default=False choices=- group=- required=False help=draw unary and binary facts as Levi-bipartite octagons rather than labelled arrows
   OPTION --rule-mode -- metavar=RULE_MODE arity=1 default='sidebyside' choices=sidebyside|overlay group=- required=False help=rule rendering: 'sidebyside' LHS|RHS clusters (default) or 'overlay' (LHS solid + RHS dashed)
   POSITIONAL file required=True help=
+COMMAND ein render region
+  ABOUT the solution region as a Hasse diagram: DIR is an `ein solve --dump-region` directory, drawn with that run's walk on it (docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
+  OPTION --view -- metavar=VIEW arity=1 default='auto' choices=auto|full|border|lines|table group=- required=False help='full' every node of the cube; 'border' R, its holes and every node one edge from it; 'lines' the root, both lines, the holes and the recorded nodes; 'table' every node as markdown, at any n; 'auto' (default) full up to n = 6, border up to 64 nodes, else lines
+  POSITIONAL dir required=True help=
 COMMAND ein render rule
   ABOUT a single rule's DOT, by name
   OPTION --name -- metavar=NAME arity=1 default=None choices=- group=- required=True help=rule name to render

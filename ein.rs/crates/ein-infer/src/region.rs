@@ -105,6 +105,21 @@ pub struct Node {
     pub absent_premises: Vec<String>,
     /// The smallest mask whose fixpoint is this node's fact set.
     pub class: u64,
+    /// The candidates its fixpoint holds — the node saturation *moves it to*
+    /// inside the cube. Always a superset of the node's own mask; equal to it
+    /// when saturation derives no candidate, which is the cube with no rule
+    /// that writes a hypothesised fact.
+    pub closure: u64,
+    /// The candidates whose `(not h)` its fixpoint holds: adding one of them
+    /// is a pair contradiction one edge up.
+    pub excluded: u64,
+    /// Facts its fixpoint holds beyond root's that are **not** candidates —
+    /// what the node is that its coordinates do not say.
+    pub beyond: u32,
+    /// Of [`Self::beyond`], the positive facts over a relation the candidate
+    /// list proposes: facts a generator could have proposed and root's did
+    /// not.
+    pub beyond_hypothesised: u32,
 }
 
 /// What the oracle measured about itself.
@@ -291,7 +306,12 @@ pub fn compute(
     }
     let cost_root = t_root.elapsed();
 
-    let root_facts: FxHashSet<FactId> = root.facts().collect();
+    let axes = Axes {
+        root_facts: root.facts().collect(),
+        candidates: candidates.iter().map(|c| c.fact).collect(),
+        is_candidate: candidates.iter().map(|c| c.fact).collect(),
+        hypothesised: hypothesised.clone(),
+    };
     let root = root.sealed();
     let size = 1usize << n;
     let mut status = vec![0u8; size];
@@ -351,7 +371,7 @@ pub fn compute(
                             ast,
                             &memo,
                             &facts_of(mask),
-                            &root_facts,
+                            &axes,
                         );
                         let refused = view.refused();
                         let _ = view.provs.take_fork();
@@ -365,15 +385,7 @@ pub fn compute(
         for (k, &mask) in batch.iter().enumerate() {
             let out = match speculated[k].take() {
                 Some(out) => out?,
-                None => node(
-                    root,
-                    &snapshot,
-                    terms,
-                    ast,
-                    &memo,
-                    &facts_of(mask),
-                    &root_facts,
-                )?,
+                None => node(root, &snapshot, terms, ast, &memo, &facts_of(mask), &axes)?,
             };
             let class = *classes.entry(out.state).or_insert(mask);
             let m = mask as usize;
@@ -416,6 +428,16 @@ pub fn compute(
     })))
 }
 
+/// What a node's fixpoint is read against: root's facts and the cube's axes.
+struct Axes {
+    root_facts: FxHashSet<FactId>,
+    /// The candidates in bit order.
+    candidates: Vec<FactId>,
+    is_candidate: FxHashSet<FactId>,
+    /// The candidates' relations.
+    hypothesised: FxHashSet<ein_core::Symbol>,
+}
+
 /// One node's fixpoint, read.
 struct NodeOut {
     dead: bool,
@@ -437,10 +459,10 @@ fn node(
     ast: &Ast,
     memo: &SharedMemo,
     facts: &[FactId],
-    root_facts: &FxHashSet<FactId>,
+    axes: &Axes,
 ) -> Result<NodeOut, SolveError> {
     terms.provs.open_fork();
-    let out = node_in_region(root, snapshot, terms, ast, memo, facts, root_facts);
+    let out = node_in_region(root, snapshot, terms, ast, memo, facts, axes);
     terms.provs.discard_fork();
     out
 }
@@ -452,7 +474,7 @@ fn node_in_region(
     ast: &Ast,
     memo: &SharedMemo,
     facts: &[FactId],
-    root_facts: &FxHashSet<FactId>,
+    axes: &Axes,
 ) -> Result<NodeOut, SolveError> {
     let mut off = Events::off();
     let mut fork = root.branch();
@@ -509,12 +531,29 @@ fn node_in_region(
             }
         })
         .collect();
+    for (b, &c) in axes.candidates.iter().enumerate() {
+        if fork.contains(c) {
+            node.closure |= 1 << b;
+        }
+        if fork.is_negated(c) {
+            node.excluded |= 1 << b;
+        }
+    }
     let state = crate::canon::state_key(&fork);
     let delta: Vec<FactId> = state
         .iter()
         .copied()
-        .filter(|f| !root_facts.contains(f))
+        .filter(|f| !axes.root_facts.contains(f))
         .collect();
+    for &f in &delta {
+        if axes.is_candidate.contains(&f) {
+            continue;
+        }
+        node.beyond += 1;
+        if axes.hypothesised.contains(&terms.facts.rel(f)) {
+            node.beyond_hypothesised += 1;
+        }
+    }
     Ok(NodeOut {
         dead: !contradictions.is_empty(),
         owes: node.owes,

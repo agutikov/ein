@@ -241,6 +241,41 @@ fn monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged() 
 /// four, node for node and reason for reason — including the core, whose
 /// choice depends on interner order (W11), because a worker never numbers a
 /// fact and every new number is the calling thread's, in layer order.
+/// **Saturation is a move inside the cube** (S1e2.1a.2). Every node's
+/// closure — the candidates its fixpoint holds — contains its own mask, and an
+/// alive node and its closure are one state: committing to what saturation
+/// derived changes nothing. The second is what lets `ein render region` draw
+/// `C ⇒ cl(C)` as an arrow rather than as a node of its own; it holds on every
+/// corpus cube (`census_for_inspection` counts the exceptions), and these two
+/// are the programs where it is not vacuous at n ≤ 9.
+#[test]
+fn a_node_and_its_closure_are_one_state() {
+    for rel in [
+        "examples/saturation/transitive/taxonomy.ein",
+        "examples/branching/05_mini_zebra.ein",
+    ] {
+        let (r, _) = region_of(rel);
+        let mut moved = 0;
+        for (m, node) in r.nodes.iter().enumerate() {
+            let m = m as u64;
+            assert_eq!(node.closure & m, m, "{rel}: {} ⊄ its closure", r.name(m));
+            assert_eq!(node.excluded & node.closure & !m, 0, "{rel}: {}", r.name(m));
+            if r.status[m as usize] & region::DEAD != 0 || node.closure == m {
+                continue;
+            }
+            moved += 1;
+            assert_eq!(
+                r.nodes[node.closure as usize].class,
+                node.class,
+                "{rel}: {} and {} are different states",
+                r.name(m),
+                r.name(node.closure)
+            );
+        }
+        assert!(moved > 0, "{rel}: nothing moved");
+    }
+}
+
 #[test]
 fn jobs_change_nothing() {
     for rel in [
@@ -343,6 +378,9 @@ fn census_for_inspection() {
     let mut by_kind: std::collections::BTreeMap<(String, String), usize> = Default::default();
     let mut costs: Vec<(f64, usize, String)> = Vec::new();
     let mut ns: Vec<usize> = Vec::new();
+    // Alive nodes saturation moves, and those whose closure is another state.
+    let mut moves = 0usize;
+    let mut move_breaks: Vec<String> = Vec::new();
     let t_all = std::time::Instant::now();
     for path in ein_corpus::corpus_files() {
         let rel = path
@@ -369,6 +407,15 @@ fn census_for_inspection() {
             Outcome::Region(r) => {
                 enumerable += 1;
                 costs.push((t.elapsed().as_secs_f64(), r.n(), rel.clone()));
+                for (m, node) in r.nodes.iter().enumerate() {
+                    if r.status[m] & region::DEAD != 0 || node.closure == m as u64 {
+                        continue;
+                    }
+                    moves += 1;
+                    if r.nodes[node.closure as usize].class != node.class {
+                        move_breaks.push(format!("{rel}: {}", r.name(m as u64)));
+                    }
+                }
                 (&r.monotonicity, r.n(), r.topology.holes.len())
             }
             Outcome::Refused {
@@ -387,6 +434,13 @@ fn census_for_inspection() {
                     .or_default() += 1;
             }
         }
+    }
+    eprintln!(
+        "alive nodes saturation moves: {moves}; whose closure is another state: {}",
+        move_breaks.len()
+    );
+    for b in move_breaks.iter().take(20) {
+        eprintln!("  {b}");
     }
     costs.sort_by(|a, b| b.0.total_cmp(&a.0));
     eprintln!(

@@ -57,7 +57,7 @@ constrained-reasoning research.
   and `inference/implementation.md` + `ir/02-data-model/03_implementation.md`,
   the module maps. **Since M1e S1e.5.1 there is also a
   [configuration reference](docs/kernel/configuration.md)** — the 17
-  `(config …)` flags, the 64 CLI options, the eight `EIN_*` names the binary
+  `(config …)` flags, the 65 CLI options, the eight `EIN_*` names the binary
   actually reads, the precedence between the three, and on every flag row a
   *does it change the answer* and a *stability* column. Its defaults block is
   `ein solve --dump-config`'s own output (`EIN_BLESS=1` re-banks it), and two
@@ -503,6 +503,7 @@ EIN_LEFTOVER=1    ein solve … --json-summary out.json        # the M1d S1d.3.1
 ein test examples tests stdlib --json-report r.json          # the M1d S1d.4.1 read-out
 ein solve … --dump-answer DIR                                # M1e2: the answer as files, each state loadable
 ein solve … --dump-region DIR                                # M1e2: the region of the lattice, computed without the search
+ein render region DIR [--view full|border|lines|table]       # M1e2: that region drawn, the run's walk on it
 ein render program|kb FILE                                   # M1e2: the program as written; a KB (or a dumped model)
 python3 utils/review_bundle.py                               # M1e2: build/review/, one page per register row
 ```
@@ -512,7 +513,7 @@ set.** The shipped binary reads **eight** (three of them only in a non-default
 build), the test harness reads ten more, `utils/` and the shell two — and six
 greppable `EIN_*` names are not environment variables at all, `EIN_RS` and
 `EIN_RENDER_LEVI` among them. The whole census, classified, with the 17
-`(config …)` flags and the 64 CLI options beside it and a *does it change the
+`(config …)` flags and the 65 CLI options beside it and a *does it change the
 answer* column on every flag row:
 [`docs/kernel/configuration.md`](docs/kernel/configuration.md) (M1e S1e.5.1),
 pinned by `ein-cli/tests/config_reference.rs`.

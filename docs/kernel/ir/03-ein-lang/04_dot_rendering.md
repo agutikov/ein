@@ -214,6 +214,158 @@ Fed a `LatticeSnapshotV1`
 the diagram is **order-stable across `lattice_order_seed`** (reuses the
 S1.5b.31 shuffle-invariance guarantee).
 
+## Region rendering — the cube and the walk (S1e2.1a.2)
+
+`ein render region DIR` draws a
+[`--dump-region`](../../inference/region_dump.md) directory: the hypothesis
+lattice with every node classified by saturation alone, and the run's walk
+over it. It reads `region.json` and `walk.json` and nothing else (no load, no
+solve), so the picture is of the run whose answer it shows. The join of the
+walk to the cube is
+[`ein_render::region_doc`](../../../../ein.rs/crates/ein-render/src/region_doc.rs)
+and the views are
+[`ein_render::region_dot`](../../../../ein.rs/crates/ein-render/src/region_dot.rs).
+M1e2
+[S1e2.1a.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.2_the_lattice_drawn.md).
+
+```sh
+ein solve examples/branching/15_lookahead_two_step_on.ein -e --dump-region out/
+ein render region out/ | dot -Tsvg > region.svg     # --view auto|full|border|lines|table
+```
+
+**The nodes are the pure cube.** Every subset `C` of the root candidates `H₁`
+is a node. There is one rank per layer, with `L0` at the top, and a thin edge
+from `C` to `C + h` for each single hypothesis `h`. This cube is the lattice
+as it would be if no rule derived a hypothesised fact: a program whose rules
+only emit obligations and constraints. Where saturation does derive
+candidates, **it is drawn as a move inside the cube**, not as a node of its
+own. `sat(root + C)` holds candidates `C` did not commit to, and their union
+with `C` is `cl(C)`. A `sat` arrow goes from `C` to `cl(C)`, and `C` is drawn
+*transient* (dashed outline, paler fill) because it is the state it lands on.
+A cube edge that adds a fact the saturation already derived is *absorbed*
+(dotted): it moves nothing.
+
+That rests on a measured property: an alive node and its closure are one
+state. Committing to what saturation derived changes no fixpoint.
+`ein-infer/tests/region.rs` pins it on two programs, and the corpus census
+(`EIN_REGION_CENSUS=1 cargo test --release -p ein-infer --test region
+census_for_inspection -- --nocapture`, 2026-10-15) counts **32 074** alive
+nodes that move, in 12 files, and **0** whose closure is another state.
+
+A dead node's move is not drawn, because a contradictory fixpoint holds
+everything. Facts a fixpoint holds that are not coordinates are counted in the
+tooltip, not drawn. Those are derived facts, and facts over a candidate
+relation that root's generator did not propose. They decide a node's status
+without being a position in the cube.
+
+### One channel per question
+
+| channel | says | values |
+|---|---|---|
+| **fill** | what the cube says | green **R** (alive, discharged; one colour per component when R has several); amber **owing**; salmon **dead**; a salmon-to-amber gradient for dead+owing |
+| **shape** | what the search did | **octagon**: a recorded state (model or open); **rounded box**: the search stood here (root, the root after the forced-positive cascade, an entering) or reached it by saturation; **ellipse**: never stood here, with the reason under the facts |
+| **border** | the lines and the defects | double: **R's minimal line**; heavy green: **R's maximal line**; purple: a **hole**; red: **MISSING**; magenta: **SPURIOUS**, an **unsound exclusion**, or the search's reading of a node against the cube's |
+
+The lines are named *minimal* and *maximal*, never *top* or *bottom*, so a
+reader who flips the picture is not misled. With `L0` at the top, the maximal
+line is the lower one.
+
+### Edges
+
+| edge | style | meaning |
+|---|---|---|
+| R → R | green, solid | inside R |
+| R → owing | orange, dashed | adding the fact adds a debt (an obligation's trigger, a non-monotone site) |
+| R → dead | red, solid | adding the fact kills |
+| owing → R | blue, solid | adding the fact pays the last debt: how the minimal line is reached |
+| owing → owing | light orange | still owing |
+| owing → dead | red, dashed | kills an owing node |
+| dead → R | magenta, bold | revives a dead node: dead is not upward-closed here |
+| dead → owing | magenta, dashed | revives a dead node, owing |
+| dead → dead | grey, thin | dead to dead |
+| absorbed | grey, dotted, no arrowhead | adds a fact saturation already derived |
+| `sat` | dark blue, heavy | `C ⇒ cl(C)`, layout-neutral (`constraint=false`) |
+| `+fact` | purple label | a **repair edge**: the fact that takes a hole back into R |
+| `✗ alive` | magenta, dashed | an unsound exclusion, to the smallest alive superset it pruned |
+| `+k` | grey, dashed | the `lines` view only: inclusion across `k` facts, the nodes between hidden |
+
+A node on the maximal line is one whose upward edges all leave R, so the
+picture shows why it is maximal. Every edge's tooltip names the fact it adds.
+
+### The walk, overlaid
+
+The walk is joined to the cube by fact text (`region_doc::Overlay`). Each
+entering is placed on the node it **stood on**: its commitment plus every
+forced positive promoted before it, which `walk.json` times
+(`promotions[].after_enterings`). Each node then says what the run did with
+it:
+
+- **recorded** model or open;
+- **root**, or **root after the cascade** (W2's move);
+- **entered** `alive` / `dead_pre` / `dead_post`;
+- **reached by saturation** (the search held its state without entering it);
+- or why the search never stood there, first match in this order:
+  - *outside the run's universe*;
+  - *pre-killed* (the lookahead or a root negative);
+  - *below the search's root* (it lacks a promoted fact);
+  - *element refuted* (a refuted singleton dropped from `alive`);
+  - *pruned by a clause*;
+  - *past -m*;
+  - *never generated* (the search stopped at `-n`, or no join proposed it).
+
+**MISSING and SPURIOUS compare states, not masks.** Two nodes are one state
+when the oracle gave them one `class`. A recorded commitment whose saturation
+lands on a line node therefore records that node. A line node is **missing**
+when no recorded *model* is its state. A recorded model is **spurious**
+against a line when its state is on no node of it. Which line is *the* answer
+is S1e2.1a.3's ruling (a), so both are compared, and the legend says so.
+
+**Every exclusion is checked against the cube.** That covers each learned
+clause, each refuted singleton and each lookahead kill. It is sound exactly
+when every superset is dead. An unsound one is named, with the smallest alive
+superset it pruned. That is W3's mechanism made visible on
+`ein-bugs/wrong-answers/naf-nowb.ein`. A node whose entering the search called
+alive and the cube calls dead, or the reverse, is marked `≠ the cube`.
+
+### Views
+
+| view | draws | `auto` picks it |
+|---|---|---|
+| `full` | every node and edge of the cube | `n ≤ 6` (64 nodes, 192 edges) |
+| `border` | R, its holes, every node one edge from R, the root, the recorded nodes, what an unsound exclusion pruned; the hidden nodes counted per layer in the rank column | while that is ≤ 64 nodes |
+| `lines` | the root, both lines, the holes, the recorded nodes, what an unsound exclusion pruned, and where saturation takes them; joined by inclusion. When R is empty, `N` and `E` instead of lines | past that |
+| `table` | every node as markdown, one section per layer: status, why, where saturation takes it, what the walk did | never (it is not DOT) |
+
+A run of layers with nothing drawn is one rank label, not a column of empty
+ranks: `tests/stdlib/bijection/06_blind_enumeration.ein` (n = 16) draws R's one
+node and its sixteen dead neighbours, then `L2–L16 · 65519 … hidden: 0 R, 0
+owing, 65519 dead`. A node of more than four facts is labelled by its
+bits (`#0 #3 #5`), and the legend lists the bits. The legend's lists are
+capped at twelve entries, and `--view table` has all of them.
+
+**The cutoffs were measured** (2026-10-15, release, every corpus file `ein solve
+FILE --dump-region` then every view through `dot`).
+
+- **Corpus counts.** 178 dumps rendered with every view accepted by Graphviz.
+  `auto` picks `full` for 139, `border` for 5 (largest 56 nodes), `lines` for 5
+  (largest 40), and 29 are over the oracle's limit.
+- **`full` stops at n = 6.** It reads at n = 6
+  (`ein-bugs/alive-set-fresh-name-declared.ein`, 64 nodes).
+- **`border` stops at 64 nodes.** It reads at 56 nodes
+  (`branching/05_mini_zebra.ein`, n = 9; its widest layer holds 21). It does
+  not read at 247 (`type-exclusivity/colors.ein`, n = 8): one layer holds about
+  60 nodes and the SVG is 6 400 px wide at 40 dpi.
+- **`lines` is unbounded.** It stayed under 41 nodes on every corpus program.
+
+`ein-cli/tests/region_render.rs` runs every view of nine programs through `dot
+-Tsvg` (this page's standard, `dot_wellformed.rs`'s), holds `auto` to those
+cutoffs, and pins W1, W2, W3 and a saturation move as drawn.
+
+**Sub-cubes** are listed under the drawing with their dimension and free
+facts. Each node's tooltip names the ones it is in. A sub-cube's outline is its
+R → R edges: sub-cubes overlap whenever two share a node, which they do on
+W1's own `branching/15`, so a cluster per sub-cube cannot be drawn.
+
 ## Markdown trace (S1.6.4)
 
 The capstone output — what makes Ein *not just a solver* (idea 08)

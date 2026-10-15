@@ -177,15 +177,22 @@ fn require_python3() {
     );
 }
 
+/// A program where saturation **moves** a node inside the cube — a
+/// commitment derives candidates it did not commit to — so the closure check
+/// below is not vacuous: none of the seven does (S1e2.1a.2).
+const MOVES: &str = "examples/saturation/transitive/taxonomy.ein";
+
 /// **Two routes agree.** The library oracle and `utils/region.py` on the
-/// seven programs, node for node: the status of every subset, the two lines,
-/// the holes, the components' sizes, the maximal sub-cubes, `N`, and the N
-/// side of the duality. One of the seven has a hole.
+/// seven programs and [`MOVES`], node for node: the status of every subset,
+/// every alive node's closure (S1e2.1a.2), the two lines, the holes, the
+/// components' sizes, the maximal sub-cubes, `N`, and the N side of the
+/// duality. One of the seven has a hole.
 #[test]
 fn the_oracle_and_the_per_subset_route_agree_node_for_node() {
     require_python3();
     let root = scratch("routes");
-    for (i, file) in SEVEN.iter().enumerate() {
+    let mut moved = 0;
+    for (i, file) in SEVEN.iter().chain([&MOVES]).enumerate() {
         let dir = root.join(format!("{i}"));
         let r = dump(file, &["-e"], &dir);
         assert_eq!(r.code, 0, "{file}: {}", r.err);
@@ -249,6 +256,47 @@ fn the_oracle_and_the_per_subset_route_agree_node_for_node() {
             })
             .collect();
         assert_eq!(ours, theirs, "{file}: the nodes differ");
+        // Every alive node's closure: the candidates its fixpoint holds.
+        let named = |mask: i64| -> Vec<String> {
+            let mut f: Vec<String> = (0..cands.len())
+                .filter(|b| mask >> b & 1 == 1)
+                .map(|b| cands[b].clone())
+                .collect();
+            f.sort();
+            f
+        };
+        let ours: BTreeSet<(Vec<String>, Vec<String>)> = rg["nodes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|n| !n["status"].as_str().unwrap().starts_with("dead"))
+            .map(|n| {
+                if n["closure"] != n["mask"] {
+                    moved += 1;
+                }
+                (
+                    named(n["mask"].as_i64().unwrap()),
+                    named(n["closure"].as_i64().unwrap()),
+                )
+            })
+            .collect();
+        let theirs: BTreeSet<(Vec<String>, Vec<String>)> = py["nodes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|n| !n["closure"].is_null())
+            .map(|n| {
+                let f = |x: &J| -> Vec<String> {
+                    x.as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|y| y.as_str().unwrap().to_string())
+                        .collect()
+                };
+                (f(&n["facts"]), f(&n["closure"]))
+            })
+            .collect();
+        assert_eq!(ours, theirs, "{file}: the closures differ");
         for key in ["minimal", "maximal", "holes", "nogoods"] {
             assert_eq!(sets(&rg[key]), sets(&py[key]), "{file}: {key}");
         }
@@ -300,6 +348,10 @@ fn the_oracle_and_the_per_subset_route_agree_node_for_node() {
             "{file}: the N side of the duality"
         );
     }
+    assert!(
+        moved > 0,
+        "no node moved: the closure check compared identities"
+    );
     let _ = std::fs::remove_dir_all(&root);
 }
 

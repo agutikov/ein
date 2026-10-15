@@ -8,16 +8,18 @@ snapshot pair a diff.
     DIR/run.md            what was run, the answer, and every page with its size
     DIR/raw/              everything the engine wrote, never edited
     DIR/img/              every DOT above and every ```dot block of the trace, as SVG
-    DIR/pages/            program, root, trace/, states/, lattice/, answer, summary,
-                          events/, consistency
+    DIR/pages/            program, root, trace/, states/, lattice/, region/, answer,
+                          summary, events/, consistency
 
 A solve has **one dumper**, so the run is several invocations: `main` carries
 every flag that can share a solve (`--trace --full-kb-snapshots`,
 `--dump-states`, `--dump-answer`, `--dump-region`, `--events`,
 `--json-summary`, and the stdout diagnostics), `lattice` carries
 `--dump-lattice`, and `grid` / `key` the two model forms. `--dump-region`'s
-three files are kept under `raw/region/`; the case page's § The region is
-S1e2.1a.7's. Their answers have to be the same answer, which is cross-check 1.
+three files are kept under `raw/region/` and drawn by `ein render region`
+(S1e2.1a.2) into `pages/region/`; the case page shows each run's drawing, and
+its § The region in R's vocabulary is S1e2.1a.7's. Their answers have to be
+the same answer, which is cross-check 1.
 """
 
 from __future__ import annotations
@@ -118,6 +120,19 @@ def drive(spec: RunSpec, out: Path, bin: str) -> list[Invocation]:
                        ("render-constraints", [bin, "render", "constraints", spec.file]),
                        ("render-lattice", lattice)]:
         invs.append(run(name, argv, spec.env, timeout=120))
+    # The region drawn from the directory the main run wrote (S1e2.1a.2):
+    # `auto`, the lines (the view that reads at any n) when `auto` is not
+    # already them, and every node as a table.
+    if (raw / "region" / "region.json").exists():
+        region = str(raw / "region")
+        auto = run("render-region", [bin, "render", "region", region], timeout=120)
+        invs.append(auto)
+        said = auto.stdout.split("\n", 2)[1] if auto.stdout.count("\n") > 1 else ""
+        if auto.code == 0 and "view lines" not in said and "view none" not in said:
+            invs.append(run("render-region-lines", [bin, "render", "region", region, "--view", "lines"],
+                            timeout=120))
+        invs.append(run("render-region-table", [bin, "render", "region", region, "--view", "table"],
+                        timeout=120))
     answer = raw / "answer"
     if (answer / "root.ein").exists():
         invs.append(run("render-root", [bin, "render", "kb", str(answer / "root.ein")]))
@@ -558,6 +573,76 @@ def lattice_pages(p: Pages, lat: dict[str, Path]) -> None:
     p.add("Lattice", index_page, lines)
 
 
+# ── the region ────────────────────────────────────────────────────────────────
+
+def region_view(inv) -> str:
+    """The view a `render region` DOT says it is, from its second line."""
+    lines = inv.stdout.split("\n", 2)
+    return lines[1].split("view ", 1)[-1].strip() if len(lines) > 1 else "?"
+
+
+def region_pages(p: Pages) -> None:
+    """`--dump-region`'s directory as pages: the drawings, `region.md`, and
+    every node by layer — S1e2.1a.2. The script draws and splits; the join of
+    the walk to the cube is `ein render region`'s."""
+    raw = p.raw / "region"
+    if not (raw / "region.json").exists():
+        return
+    rdir = p.dir / "region"
+    index = rdir / "index.md"
+    defined = [("region_dump.md", "docs/kernel/inference/region_dump.md"),
+               ("04_dot_rendering.md § Region rendering",
+                "docs/kernel/ir/03-ein-lang/04_dot_rendering.md")]
+    region = load_json(raw / "region.json") or {}
+    walk = load_json(raw / "walk.json") or {}
+    r = region.get("region") or {}
+    n = region.get("n", "?")
+    head = (f"n = {n} · |R| = {r.get('size', '—')}"
+            + ("" if region.get("monotonicity", {}).get("monotone", True) else " · **not monotone**")
+            + f" · walk: **{walk.get('verdict', {}).get('type', '?')}**, k = {walk.get('verdict', {}).get('k', '?')}")
+    lines = header("The region", "the lattice of commitments, every node classified by saturation alone, "
+                   "with this run's walk on it", "`--dump-region DIR`, `ein render region DIR`", defined,
+                   [raw / "region.json", raw / "walk.json", raw / "region.md"], index, head)
+    lines += ["Fill is what the cube says, shape is what the search did, border marks the lines and the defects. "
+              "Every node's reason is in its tooltip: open the SVG on its own to hover.", ""]
+    for name, title in [("render-region", "The drawing"), ("render-region-lines", "The lines")]:
+        inv = p.inv.get(name)
+        if inv is None:
+            continue
+        lines += [f"## {title} — `--view {region_view(inv)}`", ""]
+        if inv.code != 0:
+            lines += [f"_exit {inv.code}: {inv.stderr.strip() or 'nothing printed'}_", ""]
+            continue
+        (res,) = p.svgs([SvgJob(inv.stdout, p.img / "region" / f"{name.removeprefix('render-')}.svg")])
+        lines += image(res, index, f"region — {region_view(inv)}")
+    # Every node, by layer, from `--view table`.
+    tinv = p.inv.get("render-region-table")
+    if tinv and tinv.code == 0:
+        pre, sections = split_trace(tinv.stdout)
+        lines += ["## Every node", "", *pre.splitlines()[1:], ""]
+        rows = []
+        for title, body in sections:
+            stem = rdir / _safe(title.split(" —")[0].lower())
+            tl = [l for l in body.splitlines() if l.startswith("|")]
+            head_row, body_rows = tl[:2], tl[2:]
+            chunks = [body_rows[i:i + ROWS_PER_PAGE] for i in range(0, max(len(body_rows), 1), ROWS_PER_PAGE)]
+            paths = [stem.with_suffix(".md") if len(chunks) == 1 else stem.with_name(f"{stem.name}-{i + 1:02d}.md")
+                     for i in range(len(chunks))]
+            for i, (chunk, path) in enumerate(zip(chunks, paths)):
+                nav = " · ".join(f"[{j + 1}]({rel(q, path)})" if q != path else f"**{j + 1}**" for j, q in enumerate(paths))
+                ph = header(f"The region — {title}", "every node of this layer: status, why, where saturation takes it, "
+                            "what the walk did", "`ein render region DIR --view table`", defined,
+                            [raw / "region.json", raw / "walk.json"], path,
+                            f"[the region]({rel(index, path)})" + (f" · pages {nav}" if len(paths) > 1 else ""))
+                p.add(f"Region: {title}" + (f" {i + 1}" if len(paths) > 1 else ""), path, ph + head_row + chunk)
+            rows.append([f"[{title}]({rel(paths[0], index)})", len(body_rows), len(paths)])
+        lines += table(["layer", "nodes", "pages"], rows) + [""]
+    md = read(raw / "region.md")
+    if md:
+        lines += details("`region.md`, as the dump wrote it", [re.sub(r"(?m)^#", "###", md)])
+    p.add("Region", index, lines)
+
+
 # ── the answer ────────────────────────────────────────────────────────────────
 
 def grids_from(stdout: str) -> list[str]:
@@ -940,6 +1025,7 @@ def build_run(spec: RunSpec, out: Path, bin: str) -> RunResult:
     states = states_pages(p, lat)
     if not tree(spec):
         lattice_pages(p, lat)
+    region_pages(p)
     answer_pages(p)
     summary_page(p, summary)
     events = events_pages(p) if spec.events else []

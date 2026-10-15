@@ -89,6 +89,12 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                     !a.get_flag("no-types"),
                     !a.get_flag("no-instances"),
                 ),
+                Some(("region", a)) => render::cmd_region(
+                    a.get_one::<String>("dir").expect("required"),
+                    a.get_one::<String>("view")
+                        .map(String::as_str)
+                        .unwrap_or("auto"),
+                ),
                 // The third taker of `--max-set-size`, and the third place it
                 // is refused under `EIN_TRAVERSAL=tree` — M1e S1e.2.1,
                 // `CO-H3`(a). `cmd_lattice` solves, so the traversal reaches

@@ -35,6 +35,10 @@ pub const WALK_SCHEMA: &str = "ein-walk/1";
 pub struct RegionInputs<'a> {
     pub source: &'a str,
     pub limit: u32,
+    /// The run's `--max-set-size` and `-n`: the walk's bounds, which say why a
+    /// node was never generated.
+    pub max_set_size: u32,
+    pub stop_after: Option<u64>,
 }
 
 /// Write `region.json`, `walk.json` and `region.md` into `dir`.
@@ -290,6 +294,13 @@ fn region_block(r: &Region) -> Json {
                     },
                 ),
                 ("class", Json::int(node.class as i64)),
+                ("closure", Json::int(node.closure as i64)),
+                ("excluded", Json::int(node.excluded as i64)),
+                ("beyond", Json::int(node.beyond as i64)),
+                (
+                    "beyond_hypothesised",
+                    Json::int(node.beyond_hypothesised as i64),
+                ),
                 ("owes", Json::int(node.owes as i64)),
                 ("owed", strs(&node.owed)),
                 ("core", strs(&node.core)),
@@ -440,6 +451,13 @@ impl Set {
     }
 }
 
+fn mask_json(m: Option<u64>) -> Json {
+    match m {
+        Some(m) => Json::int(m as i64),
+        None => Json::Null,
+    }
+}
+
 /// One refuted commitment of the walk.
 struct Dead {
     set: Set,
@@ -457,16 +475,17 @@ struct Walk {
     monotone: bool,
     proposed: Vec<String>,
     alive0: Vec<String>,
-    entered: Vec<(Set, u32, &'static str)>,
-    recorded: Vec<(Set, &'static str, usize)>,
+    /// Each entering, its layer, its outcome, and the cube node it stood on:
+    /// the commitment plus every promotion before it.
+    entered: Vec<(Set, u32, &'static str, Option<u64>)>,
+    /// Each recorded state, as what, its debt, and its cube node.
+    recorded: Vec<(Set, &'static str, usize, Option<u64>)>,
+    /// The forced positives, in order, and after how many enterings.
+    promotions: Vec<(String, usize)>,
     dead: Vec<Dead>,
     nogoods: Vec<Set>,
     alive_at_end: Vec<Set>,
     root_writes: Vec<String>,
-    /// The root writes that are coordinates of the cube — what the
-    /// forced-positive cascade promoted. Every recorded state contains them,
-    /// so a recorded node sits at its commitment **plus** these.
-    promoted: u64,
     has_proof: bool,
 }
 
@@ -487,23 +506,36 @@ impl Walk {
             alive0: text(&solved.universe.alive0),
             entered: Vec::new(),
             recorded: Vec::new(),
+            promotions: Vec::new(),
             dead: Vec::new(),
             nogoods: Vec::new(),
             alive_at_end: Vec::new(),
             root_writes: Vec::new(),
-            promoted: 0,
             has_proof: solved.proof.is_some(),
         };
         let Some(proof) = solved.proof.as_ref() else {
             return w;
         };
         let open = matches!(&solved.answer, Answer::Verdict(Verdict::Open { .. }));
-        for e in &proof.entered {
-            w.entered.push((
-                Set::of(terms, &e.commitment, bits),
-                e.layer,
-                e.kind.as_str(),
-            ));
+        // The root each entering stood on: the promotions before it, as cube
+        // bits. A promotion that is not a coordinate leaves no bit, and the
+        // node is then still the commitment's own.
+        let promoted_before = |at: usize| -> u64 {
+            proof
+                .promotions
+                .iter()
+                .filter(|p| p.after_enterings <= at)
+                .filter_map(|p| bits.get(ein_infer::events::sexpr(terms, p.fact).as_str()))
+                .fold(0u64, |acc, &b| acc | 1 << b)
+        };
+        for p in &proof.promotions {
+            w.promotions
+                .push((ein_infer::events::sexpr(terms, p.fact), p.after_enterings));
+        }
+        for (i, e) in proof.entered.iter().enumerate() {
+            let set = Set::of(terms, &e.commitment, bits);
+            let at = set.mask.map(|m| m | promoted_before(i));
+            w.entered.push((set, e.layer, e.kind.as_str(), at));
         }
         for s in &proof.solutions {
             let kind = if open || (solved.owes.in_scope() && !s.owes.is_empty()) {
@@ -511,8 +543,18 @@ impl Walk {
             } else {
                 "model"
             };
-            w.recorded
-                .push((Set::of(terms, &s.commitment, bits), kind, s.owes.total()));
+            // Where its entering stood, or — for root, which has none — on the
+            // root every promotion moved.
+            let at = proof
+                .entered
+                .iter()
+                .rposition(|e| {
+                    e.commitment == s.commitment && e.kind == ein_infer::commitment::Kind::Alive
+                })
+                .unwrap_or(proof.entered.len());
+            let set = Set::of(terms, &s.commitment, bits);
+            let node = set.mask.map(|m| m | promoted_before(at));
+            w.recorded.push((set, kind, s.owes.total(), node));
         }
         for d in &proof.dead_commitments {
             w.dead.push(Dead {
@@ -536,10 +578,6 @@ impl Walk {
             .map(|f| ein_infer::events::sexpr(terms, f))
             .collect();
         writes.sort();
-        w.promoted = writes
-            .iter()
-            .filter_map(|f| bits.get(f.as_str()))
-            .fold(0u64, |acc, &b| acc | 1 << b);
         w.root_writes = writes;
         w
     }
@@ -558,6 +596,19 @@ impl Walk {
                 ]),
             ),
             (
+                "bounds",
+                Json::obj(vec![
+                    ("max_set_size", Json::int(inputs.max_set_size as i64)),
+                    (
+                        "solutions",
+                        match inputs.stop_after {
+                            Some(n) => Json::int(n as i64),
+                            None => Json::Null,
+                        },
+                    ),
+                ]),
+            ),
+            (
                 "universe",
                 Json::obj(vec![
                     ("proposed", strs(&self.proposed)),
@@ -565,15 +616,30 @@ impl Walk {
                 ]),
             ),
             (
+                "promotions",
+                Json::Array(
+                    self.promotions
+                        .iter()
+                        .map(|(f, at)| {
+                            Json::obj(vec![
+                                ("fact", Json::str(f)),
+                                ("after_enterings", Json::int(*at as i64)),
+                            ])
+                        })
+                        .collect(),
+                ),
+            ),
+            (
                 "enterings",
                 Json::Array(
                     self.entered
                         .iter()
-                        .map(|(s, layer, kind)| {
+                        .map(|(s, layer, kind, at)| {
                             Json::obj(vec![
                                 ("commitment", s.json()),
                                 ("layer", Json::int(*layer as i64)),
                                 ("outcome", Json::str(*kind)),
+                                ("state_mask", mask_json(*at)),
                             ])
                         })
                         .collect(),
@@ -584,18 +650,12 @@ impl Walk {
                 Json::Array(
                     self.recorded
                         .iter()
-                        .map(|(s, kind, owes)| {
+                        .map(|(s, kind, owes, at)| {
                             Json::obj(vec![
                                 ("commitment", s.json()),
                                 ("as", Json::str(*kind)),
                                 ("owes", Json::int(*owes as i64)),
-                                (
-                                    "state_mask",
-                                    match s.mask {
-                                        Some(m) => Json::int((m | self.promoted) as i64),
-                                        None => Json::Null,
-                                    },
-                                ),
+                                ("state_mask", mask_json(*at)),
                             ])
                         })
                         .collect(),
@@ -961,21 +1021,25 @@ fn walk_md(r: Option<&Region>, walk: &Walk) -> String {
     if walk.recorded.is_empty() {
         out.push_str("  - nothing\n");
     }
-    for (s, kind, owes) in &walk.recorded {
-        let place = match (r, s.mask) {
+    for (s, kind, owes, at) in &walk.recorded {
+        let place = match (r, *at) {
             (Some(r), Some(m)) => {
-                let m = m | walk.promoted;
                 let t = &r.topology;
+                // By state: a commitment whose saturation derives a
+                // candidate holds the state of a larger node.
+                let class = r.nodes[m as usize].class;
+                let on_line =
+                    |line: &[u64]| line.iter().any(|&x| r.nodes[x as usize].class == class);
                 let mut on = Vec::new();
-                if t.minimal.contains(&m) {
+                if on_line(&t.minimal) {
                     on.push("the minimal line");
                 }
-                if t.maximal.contains(&m) {
+                if on_line(&t.maximal) {
                     on.push("the maximal line");
                 }
                 format!(
                     "{}{} in the cube, {}",
-                    if walk.promoted != 0 {
+                    if Some(m) != s.mask {
                         format!("as the state {}: ", r.name(m))
                     } else {
                         String::new()
@@ -1006,10 +1070,14 @@ fn walk_md(r: Option<&Region>, walk: &Walk) -> String {
         // The overlay's question in one line each — which nodes of each line
         // the run recorded. Which line is *the* answer is S1e2.1a.3's ruling
         // (a), so both are listed.
+        // By state, as `ein render region` compares: a line node is recorded
+        // when a recorded model holds its fixpoint.
         let recorded: FxHashSet<u64> = walk
             .recorded
             .iter()
-            .filter_map(|(s, _, _)| s.mask.map(|m| m | walk.promoted))
+            .filter(|x| x.1 == "model")
+            .filter_map(|x| x.3)
+            .map(|m| r.nodes[m as usize].class)
             .collect();
         for (line, masks) in [
             ("minimal", &r.topology.minimal),
@@ -1018,7 +1086,7 @@ fn walk_md(r: Option<&Region>, walk: &Walk) -> String {
             let missing: Vec<u64> = masks
                 .iter()
                 .copied()
-                .filter(|m| !recorded.contains(m))
+                .filter(|&m| !recorded.contains(&r.nodes[m as usize].class))
                 .collect();
             out.push_str(&format!(
                 "- **{line} line not recorded**: {}\n",

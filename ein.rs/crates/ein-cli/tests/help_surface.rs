@@ -28,7 +28,7 @@ use ein_corpus::{golden, golden_path};
 ///
 /// `saturate` has 5 options rather than 3 because `--events` and
 /// `--events-level` are on it too.
-const EXPECTED: [(&str, usize); 10] = [
+const EXPECTED: [(&str, usize); 11] = [
     ("COMMAND ein\n", 0),
     // Among them P1a.7's `--jobs`
     // ([T1a.7.2.1](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)),
@@ -47,6 +47,8 @@ const EXPECTED: [(&str, usize); 10] = [
     // `--colour-by`, `--no-types`, `--no-instances`.
     ("COMMAND ein render program\n", 2),
     ("COMMAND ein render kb\n", 4),
+    // M1e2 S1e2.1a.2's `--view` over a `--dump-region` directory.
+    ("COMMAND ein render region\n", 1),
 ];
 
 /// M1c [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test)'s
@@ -91,9 +93,9 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        54 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        55 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "54 options across the ten parsers of `ein`, `solve`, `saturate` and \
+        "55 options across the eleven parsers of `ein`, `solve`, `saturate` and \
          `render`, plus `ein test`'s nine and `ein kb save --saturate`"
     );
 }

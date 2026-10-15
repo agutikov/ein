@@ -183,9 +183,297 @@ fn write_str(out: &mut String, s: &str) {
     out.push('"');
 }
 
+// ── reading ─────────────────────────────────────────────────────────
+
+impl Json {
+    /// `self[key]` of an object, or `None`.
+    pub fn get(&self, key: &str) -> Option<&Json> {
+        match self {
+            Json::Object(pairs) => pairs.iter().find(|(k, _)| k == key).map(|(_, v)| v),
+            _ => None,
+        }
+    }
+
+    pub fn as_str(&self) -> Option<&str> {
+        match self {
+            Json::Str(s) => Some(s),
+            _ => None,
+        }
+    }
+
+    pub fn as_i64(&self) -> Option<i64> {
+        match self {
+            Json::Int(n) => Some(*n),
+            _ => None,
+        }
+    }
+
+    pub fn as_bool(&self) -> Option<bool> {
+        match self {
+            Json::Bool(b) => Some(*b),
+            _ => None,
+        }
+    }
+
+    /// An array's items; `&[]` for anything else, `null` included.
+    pub fn items(&self) -> &[Json] {
+        match self {
+            Json::Array(v) => v,
+            _ => &[],
+        }
+    }
+
+    pub fn is_null(&self) -> bool {
+        matches!(self, Json::Null)
+    }
+}
+
+/// Parse one JSON document — what `ein render region` reads a dump back
+/// with (M1e2 S1e2.1a.2). Every JSON text is accepted, not only this writer's
+/// spelling: an integer that fits `i64` is [`Json::Int`], a wider one
+/// [`Json::BigInt`], anything with a point or an exponent [`Json::Float`].
+pub fn parse(text: &str) -> Result<Json, String> {
+    let mut p = Parser {
+        s: text.as_bytes(),
+        i: 0,
+    };
+    p.ws();
+    let v = p.value(0)?;
+    p.ws();
+    if p.i != p.s.len() {
+        return Err(p.err("trailing characters"));
+    }
+    Ok(v)
+}
+
+struct Parser<'a> {
+    s: &'a [u8],
+    i: usize,
+}
+
+/// Nesting past this is refused rather than recursed into.
+const MAX_DEPTH: usize = 512;
+
+impl Parser<'_> {
+    fn err(&self, what: &str) -> String {
+        format!("JSON: {what} at byte {}", self.i)
+    }
+
+    fn ws(&mut self) {
+        while self.i < self.s.len() && matches!(self.s[self.i], b' ' | b'\t' | b'\n' | b'\r') {
+            self.i += 1;
+        }
+    }
+
+    fn eat(&mut self, lit: &str) -> Result<(), String> {
+        if self.s[self.i..].starts_with(lit.as_bytes()) {
+            self.i += lit.len();
+            Ok(())
+        } else {
+            Err(self.err(&format!("expected `{lit}`")))
+        }
+    }
+
+    fn value(&mut self, depth: usize) -> Result<Json, String> {
+        if depth > MAX_DEPTH {
+            return Err(self.err("nesting too deep"));
+        }
+        match self.s.get(self.i) {
+            None => Err(self.err("unexpected end")),
+            Some(b'n') => self.eat("null").map(|_| Json::Null),
+            Some(b't') => self.eat("true").map(|_| Json::Bool(true)),
+            Some(b'f') => self.eat("false").map(|_| Json::Bool(false)),
+            Some(b'"') => self.string().map(Json::Str),
+            Some(b'[') => {
+                self.i += 1;
+                let mut out = Vec::new();
+                self.ws();
+                if self.s.get(self.i) == Some(&b']') {
+                    self.i += 1;
+                    return Ok(Json::Array(out));
+                }
+                loop {
+                    self.ws();
+                    out.push(self.value(depth + 1)?);
+                    self.ws();
+                    match self.s.get(self.i) {
+                        Some(b',') => self.i += 1,
+                        Some(b']') => {
+                            self.i += 1;
+                            return Ok(Json::Array(out));
+                        }
+                        _ => return Err(self.err("expected `,` or `]`")),
+                    }
+                }
+            }
+            Some(b'{') => {
+                self.i += 1;
+                let mut out = Vec::new();
+                self.ws();
+                if self.s.get(self.i) == Some(&b'}') {
+                    self.i += 1;
+                    return Ok(Json::Object(out));
+                }
+                loop {
+                    self.ws();
+                    if self.s.get(self.i) != Some(&b'"') {
+                        return Err(self.err("expected a key"));
+                    }
+                    let k = self.string()?;
+                    self.ws();
+                    self.eat(":")?;
+                    self.ws();
+                    out.push((k, self.value(depth + 1)?));
+                    self.ws();
+                    match self.s.get(self.i) {
+                        Some(b',') => self.i += 1,
+                        Some(b'}') => {
+                            self.i += 1;
+                            return Ok(Json::Object(out));
+                        }
+                        _ => return Err(self.err("expected `,` or `}`")),
+                    }
+                }
+            }
+            Some(c) if *c == b'-' || c.is_ascii_digit() => self.number(),
+            Some(_) => Err(self.err("unexpected character")),
+        }
+    }
+
+    fn number(&mut self) -> Result<Json, String> {
+        let start = self.i;
+        if self.s.get(self.i) == Some(&b'-') {
+            self.i += 1;
+        }
+        let mut float = false;
+        while let Some(&c) = self.s.get(self.i) {
+            match c {
+                b'0'..=b'9' => {}
+                b'.' | b'e' | b'E' | b'+' | b'-' => float = true,
+                _ => break,
+            }
+            self.i += 1;
+        }
+        let text = std::str::from_utf8(&self.s[start..self.i]).expect("ASCII");
+        if float {
+            return text
+                .parse::<f64>()
+                .map(Json::Float)
+                .map_err(|_| self.err("bad number"));
+        }
+        if text == "-" || text.is_empty() {
+            return Err(self.err("bad number"));
+        }
+        Ok(match text.parse::<i64>() {
+            Ok(n) => Json::Int(n),
+            Err(_) => Json::BigInt(text.to_string()),
+        })
+    }
+
+    fn hex4(&mut self) -> Result<u32, String> {
+        let h = self
+            .s
+            .get(self.i..self.i + 4)
+            .and_then(|b| std::str::from_utf8(b).ok())
+            .and_then(|t| u32::from_str_radix(t, 16).ok())
+            .ok_or_else(|| self.err("bad \\u escape"))?;
+        self.i += 4;
+        Ok(h)
+    }
+
+    fn string(&mut self) -> Result<String, String> {
+        self.i += 1; // the opening quote
+        let mut out = String::new();
+        loop {
+            let start = self.i;
+            while let Some(&c) = self.s.get(self.i) {
+                if c == b'"' || c == b'\\' {
+                    break;
+                }
+                self.i += 1;
+            }
+            out.push_str(
+                std::str::from_utf8(&self.s[start..self.i]).map_err(|_| self.err("not UTF-8"))?,
+            );
+            match self.s.get(self.i) {
+                None => return Err(self.err("unterminated string")),
+                Some(b'"') => {
+                    self.i += 1;
+                    return Ok(out);
+                }
+                Some(_) => {
+                    self.i += 1;
+                    let e = *self
+                        .s
+                        .get(self.i)
+                        .ok_or_else(|| self.err("unterminated escape"))?;
+                    self.i += 1;
+                    match e {
+                        b'"' => out.push('"'),
+                        b'\\' => out.push('\\'),
+                        b'/' => out.push('/'),
+                        b'b' => out.push('\u{08}'),
+                        b'f' => out.push('\u{0c}'),
+                        b'n' => out.push('\n'),
+                        b'r' => out.push('\r'),
+                        b't' => out.push('\t'),
+                        b'u' => {
+                            let hi = self.hex4()?;
+                            let cp = if (0xD800..0xDC00).contains(&hi) {
+                                self.eat("\\u")?;
+                                let lo = self.hex4()?;
+                                if !(0xDC00..0xE000).contains(&lo) {
+                                    return Err(self.err("unpaired surrogate"));
+                                }
+                                0x10000 + ((hi - 0xD800) << 10) + (lo - 0xDC00)
+                            } else {
+                                hi
+                            };
+                            out.push(char::from_u32(cp).ok_or_else(|| self.err("bad code point"))?);
+                        }
+                        _ => return Err(self.err("bad escape")),
+                    }
+                }
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// What this writer writes, this reader reads back to the same text.
+    #[test]
+    fn a_document_round_trips_through_parse() {
+        let v = Json::obj(vec![
+            ("s", Json::str("a\tb\"c\\d\né⊥𝄞")),
+            ("n", Json::int(-42)),
+            ("big", Json::BigInt("123456789012345678901234567890".into())),
+            ("f", Json::Float(0.125)),
+            (
+                "a",
+                Json::Array(vec![Json::Null, Json::Bool(true), Json::Object(vec![])]),
+            ),
+        ]);
+        for text in [dumps(&v), dumps_indent(&v)] {
+            let back = parse(&text).expect("parses");
+            assert_eq!(dumps(&back), dumps(&v));
+        }
+        assert_eq!(
+            parse("{\"k\": [1, 2]}")
+                .unwrap()
+                .get("k")
+                .unwrap()
+                .items()
+                .len(),
+            2
+        );
+        assert!(parse("[1,]").is_err());
+        assert!(parse("{\"a\" 1}").is_err());
+        assert!(parse("1 2").is_err());
+        assert!(parse("\"\\ud834\"").is_err());
+    }
 
     #[test]
     fn compact_separators_carry_a_space() {

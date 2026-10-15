@@ -196,6 +196,15 @@ pub struct EnteredRecord {
     pub kind: Kind,
 }
 
+/// One fact the forced-positive cascade promoted into root, and when: after
+/// how many enterings. A commitment entered later stands on a root that holds
+/// it, so the cube node the search was at is the commitment **plus** every
+/// promotion before it (M1e2 S1e2.1a.2).
+pub struct Promotion {
+    pub fact: FactId,
+    pub after_enterings: usize,
+}
+
 pub struct DeadCommitment {
     pub commitment: CanonicalSetId,
     pub unsat_core: Vec<FactId>,
@@ -245,6 +254,8 @@ pub struct LatticeProof {
     pub learned_nogoods: Vec<Box<[FactId]>>,
     /// Every entering in commit order (M1e2 S1e2.1a.1).
     pub entered: Vec<EnteredRecord>,
+    /// Every forced-positive promotion, in order (M1e2 S1e2.1a.2).
+    pub promotions: Vec<Promotion>,
     pub stats: LatticeStats,
 }
 
@@ -542,6 +553,8 @@ struct LoopState {
     alive_at_end: Vec<CanonicalSetId>,
     /// Every entering, in commit order — kept only under `store_lattice`.
     entered: Vec<EnteredRecord>,
+    /// Every forced positive, against `entered`'s length — the same.
+    promotions: Vec<Promotion>,
     state_key_merges: u64,
     /// A `stop_after` or depth-cap cut → `stats.exhausted = false`.
     truncated: bool,
@@ -691,6 +704,7 @@ pub fn solve(
             dead: Vec::new(),
             alive_at_end: Vec::new(),
             entered: Vec::new(),
+            promotions: Vec::new(),
             state_key_merges: 0,
             truncated: false,
         },
@@ -2600,6 +2614,12 @@ impl Run<'_> {
                 .expect("room for a promotion");
             self.stats.base.facts_merged += 1;
             self.stats.base.forced_positives += 1;
+            if self.opts.store_lattice {
+                self.lstate.promotions.push(Promotion {
+                    fact: h,
+                    after_enterings: self.lstate.entered.len(),
+                });
+            }
             if events.on() {
                 let text = crate::events::sexpr(terms, h);
                 events.emit("writeback", |l| {
@@ -3112,6 +3132,7 @@ impl Run<'_> {
             alive_at_end: std::mem::take(&mut self.lstate.alive_at_end),
             learned_nogoods: learned,
             entered: std::mem::take(&mut self.lstate.entered),
+            promotions: std::mem::take(&mut self.lstate.promotions),
             stats: LatticeStats {
                 base: self.stats.base,
                 solutions_found: self.stats.solution_nodes,

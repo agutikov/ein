@@ -893,7 +893,7 @@ fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
     // After the claim is checked, so the oracle adds nothing to stdout and its
     // stderr lines come after every other one.
     if let Some(dir) = region_dir.as_deref() {
-        write_region(m, file, index, &config, &terms, &kb, &solved, dir);
+        write_region(m, file, index, &config, &terms, &kb, &solved, &opts, dir);
     }
     (code, n_queries)
 }
@@ -918,6 +918,7 @@ fn write_region(
     terms: &Terms,
     kb: &Kb,
     solved: &ein_infer::solve::Solved,
+    solve_opts: &SolveOptions,
     dir: &str,
 ) {
     let limit = (*m.get_one::<i64>("region-limit").unwrap_or(&16)).clamp(0, 63) as u32;
@@ -974,6 +975,8 @@ fn write_region(
     let inputs = ein_render::dump::RegionInputs {
         source: file,
         limit,
+        max_set_size: solve_opts.max_set_size,
+        stop_after: solve_opts.stop_after,
     };
     if let Err(e) = ein_render::dump::write_region_dir(
         Path::new(dir),

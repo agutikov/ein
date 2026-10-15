@@ -167,6 +167,27 @@ class _PagesShim:
         self.dir = r.out / "pages"
 
 
+# ── the lattice ───────────────────────────────────────────────────────────────
+
+def lattice_block(cols: list, page: Path) -> list[str]:
+    """Each run's region, drawn (S1e2.1a.2): the SVG `pages/region/` holds,
+    linked to that page. The right column has none — it is the definitions."""
+    out = ["**The lattice** — every node of the commitment cube by saturation alone, with each run's walk "
+           f"on it ([legend]({doc('docs/kernel/ir/03-ein-lang/04_dot_rendering.md', page)}#region-rendering--the-cube-and-the-walk-s1e21a2)):", ""]
+    any_drawn = False
+    for c in cols:
+        if c.result is None:
+            continue
+        svg = c.result.out / "img" / "region" / "region.svg"
+        index = c.result.out / "pages" / "region" / "index.md"
+        if svg.exists():
+            any_drawn = True
+            out += [f"*{c.label}* — [the region]({rel(index, page)})", "", f"![{c.label}]({rel(svg, page)})", ""]
+        elif index.exists():
+            out += [f"*{c.label}* — [the region]({rel(index, page)}) (no drawing)", ""]
+    return out if any_drawn else []
+
+
 # ── the case page ─────────────────────────────────────────────────────────────
 
 CHECKLIST = [
@@ -291,6 +312,7 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
                        ("∅" if c.result.verdict == "Contradiction" else "—")))],
     ]
     lines += table(head, rows) + [""]
+    lines += lattice_block(cols, page)
     if right.get("derived"):
         lines += [f"*Right answer derived from:* {right['derived']}", ""]
     for alt in right.get("alternative", []):
@@ -434,8 +456,12 @@ def program_case(file: str, flags: list[str], out: Path, bin: str, events: bool 
     lines += details(f"the source — {read(path).count(chr(10))} lines", ["```lisp", read(path).rstrip(), "```"])
     for sub in ("program", "root"):
         lines += [f"![{s.stem}]({rel(s, page)})" for s in sorted((r.out / "img" / sub).glob("*.svg"))]
-    lines += ["", "## The answer", "", "```text", verdict_block(r.invocations[0].stdout), "```", "",
-              "## The models", ""]
+    lines += ["", "## The answer", "", "```text", verdict_block(r.invocations[0].stdout), "```", ""]
+    svg = r.out / "img" / "region" / "region.svg"
+    if svg.exists():
+        lines += ["## The lattice", "", f"[The region]({rel(r.out / 'pages' / 'region' / 'index.md', page)}) — "
+                  f"every node by saturation alone, this run's walk on it.", "", f"![region]({rel(svg, page)})", ""]
+    lines += ["## The models", ""]
     for s in states_of(r):
         lines += [f"- [{s['stem']}]({rel(r.out / 'pages' / 'answer.md', page)}): "
                   + " ".join(f"`{f}`" for f in s.get("added", [])) + "  *(added to root)*"]

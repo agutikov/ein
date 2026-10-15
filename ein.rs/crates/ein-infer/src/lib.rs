@@ -97,6 +97,7 @@ pub use shape::{
 };
 pub use solve::{
     DeadCommitment, Dumper, EnteredRecord, EnteringInfo, LatticeProof, LatticeStats, LayerCensus,
-    MonotonicStats, NoDumper, OnBudget, SolveError, SolveOptions, Solved, Universe, solve,
+    MonotonicStats, NoDumper, OnBudget, Promotion, SolveError, SolveOptions, Solved, Universe,
+    solve,
 };
 pub use verdict::{Answer, Solution, Verdict, goal_bindings, query_value};

@@ -284,6 +284,7 @@ fn the_lattice_golden_reproduces() {
         alive_at_end: Vec::new(),
         learned_nogoods: Vec::new(),
         entered: Vec::new(),
+        promotions: Vec::new(),
         stats: LatticeStats::default(),
     };
     check_dot(
