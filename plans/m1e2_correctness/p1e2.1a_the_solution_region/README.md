@@ -7,8 +7,12 @@ when Q-M1e2.8 was ruled. S1e2.1a.4 is re-estimated after its grammar diff.
 **Status:** in progress. S1e2.1a.1, S1e2.1a.2 and S1e2.1a.8 were done
 2026-10-15. On 2026-10-16, ahead of S1e2.1a.3's census, the user ruled every
 sub-question but (d) for the monotone case, and the shape of `solve`'s default
-([§ The rulings of 2026-10-16](#the-rulings-of-2026-10-16)). The terms are in
-[`definitions.md`](definitions.md).
+([§ The rulings of 2026-10-16](#the-rulings-of-2026-10-16)). S1e2.1a.3 was
+done the same day: the census ([`region_census.md`](region_census.md))
+contradicts no ruling, and
+[`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)
+now defines R. The terms are in [`definitions.md`](definitions.md), and on
+that page since S1e2.1a.3.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md) S1e2.1.1–6,
 which built the register, the doors and the bundle this phase extends.
 **Blocks:** the rest of the review,
@@ -92,8 +96,11 @@ has them verbatim. What they change here:
   generator proposes.
 - **W11 is not this phase's question.** It is revisited twice after the
   refactoring: in S1e2.1.7's review, then in S1e2.2.12.
-- **Still open:** how a state's class is shown, which is (e)'s proposal of a
-  closed set with its minimal generators.
+- **Still open:** whether `(region …)` with `(merged …)`, the third answer's
+  sketch of how a state's class is shown, is one form for both directions,
+  printed by `solve` and stated by a program. That is S1e2.1a.4's grammar
+  diff. And whether root is never written by the search, which the plan
+  proposed and S1e2.1a.9 assumes.
 
 ## What exists, and what does not
 
@@ -115,14 +122,14 @@ Taken 2026-10-15 against `caef67a`.
 | [S1e2.1a.1](s1e2.1a.1_the_oracle.md) | The oracle, and the monotone lattice | 4 d | `ein_infer::monotone`: the static check that classifies every read as static, dynamic-monotone or dynamic-non-monotone, and the `non_monotone` stub in `solve`, `ein test` and the dump; `ein_infer::region`: every commitment over the root candidate list, held as an n-bit mask with two independent bits (dead; owing, read on dead states too) by saturation alone, with no search-time write; R's lines, components, maximal sub-cubes, holes with their repair edges, the minimal dead sets N and discharging sets E, and the N/E duality cross-check; the n-limit as ruled; reached by `ein solve --dump-region DIR` |
 | [S1e2.1a.2](s1e2.1a.2_the_lattice_drawn.md) | The lattice drawn | 2.5 d | `ein render region DIR`: the cube's Hasse diagram, L0 at the top, every node coloured by status with its reason one hover away, every edge classed by the statuses it joins, components coloured, sub-cubes listed, holes with their repair edges; this run's walk overlaid (entered, pre-killed, pruned, never generated, recorded) and every learned nogood checked against the cube; views that stay readable as n grows. **Done 2026-10-15**, with saturation drawn as a move inside the pure cube (`C ⇒ cl(C)`, the user's input of the same day) |
 | [S1e2.1a.8](s1e2.1a.8_region_to_program.md) | From a region to a program | 2 d | the opposite task, the user's of 2026-10-15: `utils/region_synth.py` writes a program for a chosen region (prime implicants → `(false)` rules with `absent`, obligations with witnesses), held to it node for node by the oracle and the static check by its monotonicity; the user's three-component shape and four more banked in `examples/lattice/synth/`; the solution as files; the region gallery (`review_bundle.py --regions`). **Done 2026-10-15** |
-| [S1e2.1a.3](s1e2.1a.3_the_definition.md) | The region census, and the definition | 2.5 d | R measured over every corpus entry the oracle reaches; Q-M1e2.7's sub-questions (a)–(i) ruled by the user with the census on the table; `solution_semantics.md` rewritten around R; the config principle in `configuration.md` |
+| [S1e2.1a.3](s1e2.1a.3_the_definition.md) | The region census, and the definition | 2.5 d | R measured over every corpus entry the oracle reaches; Q-M1e2.7's sub-questions (a)–(i) ruled by the user with the census on the table; `solution_semantics.md` rewritten around R; the config principle in `configuration.md`. **Done 2026-10-16**: `utils/region_census.py`, 159 regions, every ruling met by the census, and one flag that changes R (`enable-symmetric-mirror`) |
 | [S1e2.1a.4](s1e2.1a.4_the_language.md) | The language states a region | 2.5 d, to be re-estimated | the forms (b) and (c) ruled 2026-10-16: `(solve :hrules …)` split from `(query …)`, `(solution …)` for the expected region, `(query … :expect …)` over the goal's projection; `ein test` and `--json-report` check them; the corpus migration named first; the grammar page says so |
 | [S1e2.1a.9](s1e2.1a.9_solve_describes_the_region.md) | `ein solve` describes the region | 4 d | the user's default of 2026-10-16: no flag means R in full, certified. Route 1 is a monotone program's alive down-set, held to the oracle node for node; route 2 is the oracle at n ≤ the limit; route 3 is the walk, said to be partial. The flags *any*, *single*, *minimal* and *maximal* on two axes. Every golden named before it moves |
 | [S1e2.1a.5](s1e2.1a.5_the_read_out.md) | The read-out speaks R | 2 d | k_s and k_c replace `k` (a), (e); the default read-out describes R, and the verdict words judge a stated expectation (i), from a flag or from the program; every surface says what it counts; empty R split into its two kinds; holes through the stub; every golden named before it moves |
 | [S1e2.1a.6](s1e2.1a.6_engine_against_oracle.md) | The engine against the oracle | 2 d | a cargo test over every corpus entry with n ≤ 16: the engine's reported lines equal the oracle's, **under every lever**, or the disagreement is a register row; the census of disagreements is the first answer-check M1e2 has that is not a hand derivation |
 | [S1e2.1a.7](s1e2.1a.7_the_bundle_shows_r.md) | The bundle shows R, and the review resumes | 1.5 d | a § *The region* on every case page and in `--corpus` mode; every register `right` block restated under the new definition, computed by the oracle wherever n ≤ 16; S1e2.1.7 resumes on the twelve unread cases |
 
-**Work order: .1, .2, .8 (done), then .3, .9, .4 and .5 in parallel, .6, .7.**
+**Work order: .1, .2, .8, .3 (done), then .9 and .4 in parallel, .5, .6, .7.**
 S1e2.1a.9 comes before .5 because .5 prints what .9 computes.
 **Before 2026-10-16 the order was id order, with one overlap, and S1e2.1a.8
 after .2.** It was

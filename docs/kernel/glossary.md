@@ -184,73 +184,116 @@ reserved for an e-graph promotion (F4 Q30).
 
 Defined in full, with the worked example and the places the engine's
 implementation differs from the definition, in
-[`inference/solution_semantics.md`](inference/solution_semantics.md).
+[`inference/solution_semantics.md`](inference/solution_semantics.md). Since
+M1e2 S1e2.1a.3 (2026-10-16) the answer is a **region** of the hypothesis
+lattice, and the entries below are written for a **monotone** program.
 
-### Hypothesis
-A fact the program has not decided and the generator is willing to guess:
-a fact of a hypothesis-eligible relation the state neither asserts nor
-refutes. Which ones exist is the **generation ladder**'s answer — the
-program's own `(hrule …)`, else the facts that would discharge what the
-state owes, else the blind enumerator. Scoping (`:hypothesis-relations`,
-`:no-hypothesis`, `(__closed__ R)`) decides eligibility, so a fact of an
-excluded relation is not a hypothesis at all.
+### Root
+`sat(program)`: the program's facts saturated by its rules, nothing
+hypothesised. The lattice's node ∅. Proposed, not yet ruled: never written
+by the search, which today writes forced positives and negatives into it.
+
+### Hypothesis (candidate)
+A fact the generator proposes at root, with no config switch applied. Which
+ones exist is the **generation ladder**'s answer — the program's own
+`(hrule …)`, else the facts that would discharge what root owes, else the
+blind enumerator. Scoping (`:hypothesis-relations`, `:no-hypothesis`,
+`(__closed__ R)`) decides eligibility, so a fact of an excluded relation is
+not a hypothesis at all.
+
+### Universe (H)
+The candidate list, n = |H|: **the space every definition quantifies over**.
+It must contain every fact a model needs; a shortfall is a program error or
+an engine bug.
 
 ### Hypothesis set (L1, `alive₀`)
-The hypotheses at root's fixpoint — root saturated, the forced-positive
-cascade run, no contradiction. **The space the search quantifies over**:
-every later definition reads *hypothesis* as *member of this set*. Called
-L1 because the search's first layer enters its singletons.
+**The walk's** space, not the definition's: the candidates left at root after
+the lookahead filter and the forced-positive cascade. It differs from the
+universe on 29 of the 194 corpus programs whose walk was read on 2026-10-16,
+which the config principle forbids. Called L1 because the search's first
+layer enters its singletons.
 
 ### Commitment (L{n})
-A set of hypotheses assumed together, `{h₁ … h_n} ⊆ alive₀` — the lattice's
-node, and what a [layer](#layer) is a layer of. An L{n} commitment **is**
-n L1 hypotheses.
+A subset of the universe — a node of the lattice, and what a
+[layer](#layer) is a layer of. Without merging, the lattice is the n-cube.
+
+### State
+`sat(root + C)` for a commitment C. **Dead** when it holds `(false)`,
+**alive** otherwise; **owing n** with n undischarged
+[obligation](#obligation) instances; **discharged** when it owes nothing.
+
+### Closure, state class
+cl(C), the candidates C's state holds (C ⊆ cl(C)). The commitments that reach
+one state form its **class**: the closed set on top, its **minimal
+generators** at the bottom — the least that must be guessed.
 
 ### Entering
 Forking root, adding a commitment's facts, saturating, and looking for a
-contradiction. The engine's unit of work (`enterings_total`). Three
-outcomes: `alive`, `dead-pre` (contradictory before saturation ran) and
-`dead-post`; **dead** is the union of the last two.
+contradiction. The walk's unit of work (`enterings_total`). Three outcomes:
+`alive`, `dead-pre` (contradictory before saturation ran) and `dead-post`;
+**dead** is the union of the last two.
 
 ### Integrated
 The hypotheses *true* in a state — the committed ones **plus any saturation
-derived**. Commit three, derive ten of which five are themselves
-hypotheses, and eight are integrated. Every quantifier over "the other
-hypotheses" reads over `alive₀ \ integrated(S)`, never over the committed
-set.
+derived**: the closure, above.
+
+### Region (R), solution
+**R = the commitments whose state is alive and discharged**, the answer to a
+program. A **solution** is a node of R. In general R is its node set; on a
+monotone program it has no holes and its **minimal** and **maximal lines**
+describe it. ∅ is a solution exactly when root is alive and discharged.
+
+### k_s, k_c
+|R| counted in states and in commitments. Ruled on 2026-10-16 to replace
+`k`, which counts what the walk recorded.
+
+### Line, hole, sub-cube, component
+The **minimal** and **maximal line** are R's minimal and maximal nodes —
+set by obligations and by restrictions. A **hole** is a node outside R between
+two members; a monotone program has none. A **sub-cube** [a … b] is every
+commitment between a and b, of dimension |b| − |a|. A **component** is a
+connected part of R under one-fact edges: a set of models, never a model.
+
+### Monotone
+No read that can take a conclusion away, or add a debt, as a commitment
+grows. Then dead and discharged are upward-closed and R is convex. A static
+check over the compiled plans, checked by the cube.
 
 ### Complete
-The engine's predicate: *the generator proposes nothing at this state*. It
-is a **sound but incomplete** approximation of the [solution](#solution)
-criterion — it never admits a false model, and it misses real ones whose
-remaining hypotheses need more than one rule firing to die.
-
-### Solution
-A saturated, consistent state in which every hypothesis it has not
-integrated is inconsistent with it — or, where the program states
-obligations, one that owes nothing. Operationally: **a maximal alive
-commitment, one with no live child**, so the search below it ends.
+The walk's predicate: *the active rung proposes nothing at this state*. A
+property of the generator, which is why the walk finds the maximal line at
+best and never records ∅ while a candidate exists. Under the region it is
+replaced by **discharged**.
 
 ### Model
-The **positive** part of a solution's KB **minus the positive part of the
+The **positive** part of a solution's state **minus the positive part of the
 initial KB** — the KB as loaded, before the first saturation. So a model
 carries no `(not …)`, nothing the file stated and nothing the loader wrote:
-it is what the puzzle did not say and the solve established. Distinct from
-the solution's KB, which is what the read-out currently prints.
+it is what the puzzle did not say and the solution established. Distinct from
+the recorded KB, which is what the read-out currently prints. A query sees a
+model's **projection**; models with one projection form a **projection
+class**.
 
 ### Obligation
 A rule that asserts the verdict atom `(open ?R)` while a witness is
 missing. What a state **owes** is its undischarged instances; a state
-owing none is **discharged**. Scoped — only a program that *states* an
-obligation is judged by discharge rather than by maximality. See
+owing none is **discharged**. Obligations set R's minimal line, as
+restrictions — rules that assert `(false)` — set its maximal line. See
 [`m1d/domain_contract.md`](../history/m1d_satisfiability/domain_contract.md).
 
 ### Exhausted
-That the search did not stop early — no depth cap reached with a live
+Today: that the walk did not stop early — no depth cap reached with a live
 frontier, no `--solutions` cut, not the tree traversal. It certifies that
 **the lattice was walked**, which is not the same claim as *every solution
 in it was recognised*; the two are separated in
 [`inference/solution_semantics.md` §6](inference/solution_semantics.md).
+Ruled on 2026-10-16 to mean *the reported region is all of R*.
+
+### Config principle
+No config option affects the problem's lattice; config may only affect
+search speed (the user, 2026-10-15). A budget may stop the walk, and the
+report then says it is partial. See
+[`configuration.md` § 2.5](configuration.md#25-the-config-principle-read-against-every-row).
 
 ---
 

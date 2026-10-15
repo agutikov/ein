@@ -2671,8 +2671,9 @@ impl Run<'_> {
     /// reading something true, and a state its own rules refute is
     /// inconsistent.
     ///
-    /// `docs/kernel/inference/solution_semantics.md` § 2 states three
-    /// conjuncts:
+    /// `docs/kernel/inference/solution_semantics.md` § 2.6 states three
+    /// conjuncts — the definition the walk records by, which M1e2 S1e2.1a.3
+    /// kept as the special case of the region R:
     ///
     /// ```text
     /// solution(S) ≡ S saturated ∧ S consistent ∧ (owes nothing ∨ maximal)

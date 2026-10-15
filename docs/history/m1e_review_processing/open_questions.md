@@ -334,6 +334,11 @@ question is still the right home for:
 
 ## Q-M1e.6 — What is a **solution**, and what is a **model**?
 
+> **Since 2026-10-16 a special case of M1e2's
+> [Q-M1e2.7](../../../plans/m1e2_correctness/open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)**:
+> the answer is the region of nodes that are alive and discharged, and this
+> definition is its [§ 2.6](../../kernel/inference/solution_semantics.md#26-the-old-definition-as-a-special-case).
+
 **Decided 2026-08-28**, by the user, in answer to
 [S1e.1.1](search_soundness_probes/README.md)'s Q5 —
 which had asked which of two engine configurations is right and was told,

@@ -64,10 +64,11 @@ docs/kernel/inference/
 │                                     per line, every step the engine took
 │                                     (schema `ein-events/1`; M1a S1a.0.2,
 │                                     re-homed here at S1a.10.3)
-├── solution_semantics.md          ← normative: hypothesis / commitment /
-│                                     entering / solution / model, and where
-│                                     the engine's `complete()` differs from
-│                                     the definition (M1e, 2026-08-28)
+├── solution_semantics.md          ← normative: the answer is the region R
+│                                     of alive, discharged commitments; its
+│                                     lines, k_s and k_c, model; and where the
+│                                     walk differs (M1e 2026-08-28, rewritten
+│                                     around R at M1e2 S1e2.1a.3, 2026-10-16)
 ├── reserved_engine_strings.md     ← engine-internal reserved atoms
 │                                     (__closed__, __symmetric__, false, …)
 ├── implementation.md              ← the module-by-module engine map

@@ -65,6 +65,15 @@ constrained-reasoning research.
   `candidate-order-seed` are parsed, validated, dumped, `--json-summary`-echoed
   and `.einb`-round-tripped, and read by no code path
   ([Q-M1e.10](docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)).
+  **Since M1e2 S1e2.1a.3 (2026-10-16) the answer is a region**:
+  [`inference/solution_semantics.md`](docs/kernel/inference/solution_semantics.md)
+  defines it as *R = the commitments whose state is alive and discharged*,
+  counted in states and in commitments (k_s, k_c), with the old *maximal alive
+  commitment* as its § 2.6 special case. `ein solve`'s walk reports less than
+  R, and the page's § 6 says where. The same stage gave `configuration.md` a
+  § 2.5 and an `R?` column: *no config option changes R*, measured over every
+  lever by `utils/region_census.py --levers`, and `enable-symmetric-mirror`
+  is the one flag that does.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -319,7 +328,7 @@ constrained-reasoning research.
   extension; `ein solve x.einb` is byte-identical to `ein solve x.ein` apart
   from the path it echoes. Anything crossing a tool boundary is still `.ein`
   text or the event protocol's JSON.
-- **`utils/`** — **twenty-eight scripts, all but one driving `ein.rs`**.
+- **`utils/`** — **twenty-nine scripts, all but one driving `ein.rs`**.
   Every script that runs the engine names the binary — **`$EIN_BIN`** or
   `--bin` — defaulting to `ein.rs/target/release/ein`, except the three that
   want a build of their own (`fork_delta_verify.py` → `target-fd`,

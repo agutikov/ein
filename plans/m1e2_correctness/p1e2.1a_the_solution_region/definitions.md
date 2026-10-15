@@ -18,10 +18,10 @@ P1e2.1a solves. Where a definition changes for a non-monotone program, the row
 says so and points at
 [P1e2.1b](../p1e2.1b_the_non_monotone_lattice/README.md).
 
-**Where it goes next.** It moves into
+**Moved 2026-10-16.** S1e2.1a.3 rewrote
 [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)
-when S1e2.1a.3 rewrites that page. After the move, this file is the plan's
-record and the page is the definition.
+from this table. The page is the definition now, and this file is the plan's
+record of where each term came from and what its status was.
 
 ## Context and problem
 
@@ -125,7 +125,7 @@ carry `:source "condition (n)"`, the numbered sentences of the puzzle. Its
 | **solution** | a node of R. **∅ is a solution exactly when root is alive and discharged, whatever the generator proposes**, including when it proposes nothing | the 8 seatings; ∅ here owes 4 | ruled 2026-10-15 and 2026-10-16 | Q-M1e2.7 |
 | **region** R | every solution: `{C : C alive and discharged}`. In general R is its whole node set, simplified only where the case allows or a query asks | R = 8 nodes, all at L4 | ruled | Q-M1e2.7 |
 | **k_c** | \|R\| counted in **commitments** | 8 | ruled 2026-10-16: it replaces `k`. Today's `k` counts recorded nodes | (a), (e) |
-| **k_s** | \|R\| counted in **states** (state classes) | 8. They differ on 14 corpus regions, up to 32 768 against 728 | ruled 2026-10-16: it replaces `k` | (a), (e) |
+| **k_s** | \|R\| counted in **states** (state classes) | 8. They differ on 13 corpus regions, up to 32 768 against 728 ([region_census.md § 6](region_census.md#6-commitments-against-states-ruling-a--e)) | ruled 2026-10-16: it replaces `k` | (a), (e) |
 | **minimal line** / **maximal line** | R's minimal elements / R's maximal elements | both are the 8 seatings | engine (the oracle) | Q-M1e2.7 |
 | **trivial line** | in a monotone program: the minimal line is {∅} when it has restrictions only, and the maximal line is {⊤} (every candidate) when it has obligations only | `synth/trivial_line` | ruled for monotone (2026-10-16) | (f) |
 | **convex** | R has no **hole**, that is, no non-member between two members. Then R = ⋃ [a … b] over its lines. A monotone program is always convex | both seating programs | engine (the oracle counts holes) | Q-M1e2.7 |

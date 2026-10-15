@@ -15,6 +15,16 @@
 > newcomer path is [`docs/guide/`](../guide/README.md). A reference that
 > explains twice will disagree with itself.
 >
+> **The config principle**, the user's ruling of 2026-10-15: *no config option
+> affects the problem's search lattice; config may only affect search speed.*
+> The answer is the region R of
+> [`solution_semantics.md` § 2](inference/solution_semantics.md#2-the-answer--the-region-r),
+> and it is the same under every knob on this page. A **budget** may stop the
+> walk early, and the read-out must then say the answer is partial. A knob
+> that changes R, or changes a reported answer that does not say it is
+> partial, is a wrong answer and not a mode. § [2.5](#25-the-config-principle-read-against-every-row)
+> reads every lever against it, measured.
+>
 > **Nothing here is hand-maintained.** The defaults block is the binary's own
 > `--dump-config` output, the flag table is diffed against `FIELDS`, the option
 > counts are read off the help-shape golden, and the environment
@@ -111,34 +121,49 @@ config (resolved)
 
 ### 2.2 The flags
 
-| flag | type | default | what it changes | answer? | stability |
-|---|---|---|---|---|---|
-| `enable-pre-branch-lookahead` | `bool` | `true` | whether hypgen simulates one rule step over each candidate and drops the ones it can prove die (`hypgen.rs`). Not only a prune: the filtered list is what `complete()` asks, so it decides which states are recorded as solutions | **yes** | measurement lever |
-| `enable-lookahead-kill-cache` | `bool` | `true` | whether a lookahead kill is written down as `(not h)`, so a later enumeration skips `h` through the negated index instead of re-simulating | **KB only** † | measurement lever |
-| `hypgen-scoring` | `str` | `popularity` | which scorer `score_hypothesis` runs. Read **only** under `lattice-order "score-sum"`; under `lex` nothing calls it. `most-constrained` returns a constant `0.0`; `branch-info` and `popularity+branch-info` error at first call | order only | partly wired |
-| `hypgen-rel-weight` | `float` | `1.0` | the coefficient on the relation's extent size in the popularity score | order only | contract |
-| `hypgen-obj-weight` | `float` | `1.0` | the coefficient on each named argument's appearances as an argument | order only | contract |
-| `print-alive` | `bool` | `false` | **nothing** | **inert** | inert |
-| `warn-derived-naf` | `bool` | `false` | **two questions, one flag**, both emitted once after root's saturation. `DerivedNafWarning` — the `(absent …)` guard watches a **rule-derived** relation: a *stratification* signal since S1.21.8, not a soundness one. `RefutationUnderAbsentWarning` (M1e [S1e.2.3](../history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)) — the rule concludes `(false)` or a `(not …)` from a guard over a relation the program's **generator can still propose**, which *is* a soundness signal: [`dead` is not upward-closed under `absent`](../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent). The second shares the flag because a `SolverConfig` field is rendered into the KB-shape digest, so an eighteenth would re-bless every shape golden in the corpus | no | contract |
-| `candidate-order-seed` | `int` | `-1` | **nothing** | **inert** | inert |
-| `lattice-sanity-check` | `bool` | `false` | for every alive commitment of size ≥ 2, re-saturates each `(k−1)`-subset parent path and compares the KBs — **1 + k + one per alive parent**, so up to `2k+1` each (it was documented as `k+1` in three places until M1e S1e.4.8, a count that included the parents' `try_commitment_set` and forgot their re-saturation). It also **adds `compile` / `enqueue` / `fire` / `quiesce` events to `--events`**, which is inherent to running the extra saturations through a narrating stream. A mismatch aborts the run with `SolveError::Sanity` | no — but it can **fail** the run | probe |
-| `lattice-order` | `str` | `lex` | the within-layer candidate order: `lex` is the canonical-tuple sort, `score-sum` sums `hypgen-scoring` over each set, descending, tie-broken by the tuple | order only | measurement lever |
-| `lattice-order-seed` | `int` | `None` | seeds one MT19937 generator per *solve* — `init_by_array` over `|seed|`'s 32-bit words, each layer shuffled Fisher–Yates from the top with `randbelow(i+1)` by rejection sampling — applied after the order to permute each layer. `None` disables it | order only | probe |
-| `enable-path-nogoods` | `bool` | `true` | whether a dead commitment emits a learned clause. Off, a dead set that a clause would have subsumed is entered again | no | contract |
-| `enable-symmetric-mirror` | `bool` | `true` | the kernel's native arg-swap closure over relations marked `(__symmetric__ R)`. Off, such a relation is closed only if the program's own rule closes it | **yes** | contract |
-| `enable-singleton-writeback` | `bool` | `true` | whether a size-1 dead clause writes `(not h)` back to root, and whether layer-1 deaths integrate mid-layer rather than at the barrier | no † | contract |
-| `enable-forced-positive` | `bool` | `true` | whether a sole-surviving alive singleton is promoted to a root fact and re-saturated — the backbone prune, with provenance `<forced-positive>` and empty premises | no | contract |
-| `record-alternative-justifications` | `bool` | `true` | whether a re-derivation of a known fact is recorded as an alternative justification or dropped: the proof is an AND/OR graph, or a tree | explanation only | contract |
-| `enable-fail-fast-fork` | `bool` | `true` | whether a fork's saturation stops at the firing whose conclusion makes it inconsistent, instead of running to quiescence and only then scanning | no | contract |
+| flag | type | default | what it changes | answer? | R? | stability |
+|---|---|---|---|---|---|---|
+| `enable-pre-branch-lookahead` | `bool` | `true` | whether hypgen simulates one rule step over each candidate and drops the ones it can prove die (`hypgen.rs`). Not only a prune: the filtered list is what `complete()` asks, so it decides which states are recorded as solutions | **yes** | no | measurement lever |
+| `enable-lookahead-kill-cache` | `bool` | `true` | whether a lookahead kill is written down as `(not h)`, so a later enumeration skips `h` through the negated index instead of re-simulating | **KB only** † | no | measurement lever |
+| `hypgen-scoring` | `str` | `popularity` | which scorer `score_hypothesis` runs. Read **only** under `lattice-order "score-sum"`; under `lex` nothing calls it. `most-constrained` returns a constant `0.0`; `branch-info` and `popularity+branch-info` error at first call | order only | no | partly wired |
+| `hypgen-rel-weight` | `float` | `1.0` | the coefficient on the relation's extent size in the popularity score | order only | no | contract |
+| `hypgen-obj-weight` | `float` | `1.0` | the coefficient on each named argument's appearances as an argument | order only | no | contract |
+| `print-alive` | `bool` | `false` | **nothing** | **inert** | no | inert |
+| `warn-derived-naf` | `bool` | `false` | **two questions, one flag**, both emitted once after root's saturation. `DerivedNafWarning` — the `(absent …)` guard watches a **rule-derived** relation: a *stratification* signal since S1.21.8, not a soundness one. `RefutationUnderAbsentWarning` (M1e [S1e.2.3](../history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)) — the rule concludes `(false)` or a `(not …)` from a guard over a relation the program's **generator can still propose**, which *is* a soundness signal: [`dead` is not upward-closed under `absent`](../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent). The second shares the flag because a `SolverConfig` field is rendered into the KB-shape digest, so an eighteenth would re-bless every shape golden in the corpus | no | no | contract |
+| `candidate-order-seed` | `int` | `-1` | **nothing** | **inert** | no | inert |
+| `lattice-sanity-check` | `bool` | `false` | for every alive commitment of size ≥ 2, re-saturates each `(k−1)`-subset parent path and compares the KBs — **1 + k + one per alive parent**, so up to `2k+1` each (it was documented as `k+1` in three places until M1e S1e.4.8, a count that included the parents' `try_commitment_set` and forgot their re-saturation). It also **adds `compile` / `enqueue` / `fire` / `quiesce` events to `--events`**, which is inherent to running the extra saturations through a narrating stream. A mismatch aborts the run with `SolveError::Sanity` | no — but it can **fail** the run | no — but it **aborts** one non-monotone program | probe |
+| `lattice-order` | `str` | `lex` | the within-layer candidate order: `lex` is the canonical-tuple sort, `score-sum` sums `hypgen-scoring` over each set, descending, tie-broken by the tuple | order only | no | measurement lever |
+| `lattice-order-seed` | `int` | `None` | seeds one MT19937 generator per *solve* — `init_by_array` over `|seed|`'s 32-bit words, each layer shuffled Fisher–Yates from the top with `randbelow(i+1)` by rejection sampling — applied after the order to permute each layer. `None` disables it | order only | no | probe |
+| `enable-path-nogoods` | `bool` | `true` | whether a dead commitment emits a learned clause. Off, a dead set that a clause would have subsumed is entered again | no | no | contract |
+| `enable-symmetric-mirror` | `bool` | `true` | the kernel's native arg-swap closure over relations marked `(__symmetric__ R)`. Off, such a relation is closed only if the program's own rule closes it | **yes** | **yes** | contract |
+| `enable-singleton-writeback` | `bool` | `true` | whether a size-1 dead clause writes `(not h)` back to root, and whether layer-1 deaths integrate mid-layer rather than at the barrier | no † | no | contract |
+| `enable-forced-positive` | `bool` | `true` | whether a sole-surviving alive singleton is promoted to a root fact and re-saturated — the backbone prune, with provenance `<forced-positive>` and empty premises | no | no | contract |
+| `record-alternative-justifications` | `bool` | `true` | whether a re-derivation of a known fact is recorded as an alternative justification or dropped: the proof is an AND/OR graph, or a tree | explanation only | no | contract |
+| `enable-fail-fast-fork` | `bool` | `true` | whether a fork's saturation stops at the firing whose conclusion makes it inconsistent, instead of running to quiescence and only then scanning | no | no | contract |
 
-### 2.3 Reading the two judgement columns
+### 2.3 Reading the judgement columns
 
-The **answer** is what
-[`solution_semantics.md`](inference/solution_semantics.md) defines: the
-verdict, `k`, and the set of **models** — a model being the positive part of a
-solution's KB minus the positive part of the initial KB. A run's recorded
-*solution KB* is a bigger object than its models, and the fourth row below is
-the whole reason the distinction is load-bearing here.
+**Two questions about the answer, since 2026-10-16.** The answer itself is the
+region R that
+[`solution_semantics.md` § 2](inference/solution_semantics.md#2-the-answer--the-region-r)
+defines, and the walk under `ein solve` is one way of reporting it.
+
+- **`R?`** asks whether the flag changes R: the candidates, any node's status
+  or state class, root's fixpoint, or the facts of any state in R. It is
+  measured, over every program the oracle reaches, by
+  [`utils/region_census.py --all --levers`](../../utils/region_census.py),
+  § [2.5](#25-the-config-principle-read-against-every-row). Under the config
+  principle every cell has to read **no**.
+- **`answer?`** asks whether the flag changes what a run **reports** today:
+  the verdict, `k`, and the set of recorded **models**, a model being the
+  positive part of a solution's KB minus the positive part of the initial KB
+  ([`solution_semantics.md` § 5.1](inference/solution_semantics.md#51-today)).
+  A run's recorded *solution KB* is a bigger object than its models, and the
+  fourth row below is the whole reason the distinction is load-bearing here.
+  Under the principle, a cell that is not **no** or **inert** is a wrong
+  answer unless the report says it is partial, § 2.5.
+
+The `answer?` values:
 
 | value | means | witness |
 |---|---|---|
@@ -275,6 +300,71 @@ and read by no code path. The claim is held from outside by
 options — wire, delete, document, deprecate — are
 [Q-M1e.10](../history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)'s.
 
+### 2.5 The config principle, read against every row
+
+The user's ruling of 2026-10-15, made during the review of W1: *"no config
+option affects problem search lattice, config may only affect search speed"*.
+It is stronger than M1e2's acceptance line, which forbade a lever to change a
+*certified* answer only. **A budget** (`-m`, `-E`, `-T`, `-n`, § 3.3) does
+not change R either: it stops the walk, and the read-out must then say the
+answer is partial.
+
+**R, measured.** [`utils/region_census.py --all --levers`](../../utils/region_census.py),
+2026-10-16 at `9248236d`: every program the oracle reaches (159, n ≤ 16), run
+once at default settings and once under each of 24 levers: the four CLI
+shadows, the three `EIN_*` search levers of § 4, and all seventeen flags, each
+flipped in an appended `(config …)` block that holds the program's own
+resolved config with one flag changed. Each run's R is compared with the
+default's: the candidates, every node's status and state class, root's
+fixpoint, and the facts of every state in R. The per-program rows are the
+census page,
+[`region_census.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_census.md).
+
+- **No lever changes R on 158 of the 159**, and 23 of the 24 change it on
+  none. That is by construction for most of them: the oracle's universe is
+  config-free and its nodes are built by saturation alone
+  ([`region_dump.md`](inference/region_dump.md#the-cube)).
+- **`enable-symmetric-mirror` changes R.** On
+  [`features/06_symmetric_native.ein`](../../examples/features/06_symmetric_native.ein),
+  turned off, it removes three facts from root's fixpoint, `(knows Bob Ann)`
+  the query's goal among them. The mirror is how `(__symmetric__ R)` means
+  anything, so the flag switches off part of the program's theory. It is the
+  one flag that **violates the principle**.
+- **`lattice-sanity-check` (and `-y`) aborts one program**, so there is no R
+  to compare: on
+  [`corpus/fuzz_findings/d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein),
+  which the static check flags non-monotone, the probe fails with
+  *"Saturation commutativity violated"*: a fork and its parent path reach
+  different KBs. That is the probe working, and the question it raises,
+  which state a node of a non-monotone lattice is, is
+  [P1e2.1b](../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)'s
+  S1e2.1b.2.
+
+**What each lever does to the report.** Every lever whose `answer?` cell is
+not **no** or **inert**, with the register rows that already hold a wrong
+answer it reaches. Turning each remaining cell into a register row, or showing
+it is a budget, is
+[S1e2.1a.6](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.6_engine_against_oracle.md)'s,
+against R and over every lever cell.
+
+| lever | `R?` | what it does to the report | register |
+|---|---|---|---|
+| `enable-pre-branch-lookahead` (`-L`) | no | changes the verdict: `complete` is asked with the filter off | W1/lattice-02-L, W1/fresh-name-nospawn, W2/forced-1-L, W4/alive-set-fresh-name |
+| `enable-lookahead-kill-cache` (`-K`) | no | changes the recorded KB, and where an entailment goes unnoticed, the verdict | W9/complete-records-stale-K, W9/alive-empty-phase1-K |
+| `enable-singleton-writeback` | no | with `-L`, changes the verdict on a program with a hole | W3/naf-nowb-L |
+| `enable-forced-positive` | no | none observed on the 29-fixture sweep. On `forced-2` both settings answer wrong, `Contradiction` either way: W2 with it on, W1's layer 0 with it off | W1/forced-2-off |
+| `enable-symmetric-mirror` | **yes** | changes R, and with it the answer | none yet: a flag that changes R is not a walk's wrong answer, so the principle's resolution is the user's (retire the flag, or ignore it) |
+| `hypgen-scoring`, the two weights, `lattice-order`, `lattice-order-seed` | no | the order of discovery. Under a stop rule a different model is printed, and the read-out says the run did not exhaust | none: a budget |
+| `record-alternative-justifications` | no | which unsat core is reported | the core is not R. Which core is reported is W10's and W11's, revisited at [S1e2.1.7](../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md) and S1e2.2.12 |
+| `EIN_OBLIGATION_CHOICE=off` | no | the walk's universe: the obligations rung declines, and the blind rung proposes instead | none yet |
+| `EIN_OBLIGATION_CHOICE=fail-first` | no | the order the owed instances are walked in. Not yet measured against R | none yet |
+| `EIN_TRAVERSAL=tree` | no | the traversal: `exhausted = false` on every run, and a different model count | W5/owed-seats's twin |
+
+The other six flags read **no** in both columns, `lattice-sanity-check` apart
+from its abort above, and two of them are inert. So do `--jobs` (§ 3.3) and
+every presentation and artefact option: they change speed, or what is printed
+beside the answer, never the answer.
+
 ---
 
 ## 3. The CLI
@@ -337,7 +427,13 @@ Five classes. Only the first two touch the answer.
 - **Budget** — `-e`/`--exhaustive`, `-n`/`--solutions`, `-m`/`--max-set-size`,
   `-E`/`--max-enterings`, `-T`/`--max-time`. These change `k` and `exhausted`
   by construction, which is what `Ambiguity`'s *"(a lower bound — the search
-  did not exhaust)"* exists to say. **`-n 0` is refused**, exit 2, since M1e
+  did not exhaust)"* exists to say. Under the config principle (§ [2.5](#25-the-config-principle-read-against-every-row))
+  a budget never changes R. It stops the walk, and every surface has to say
+  the answer is partial. Two surfaces do not yet: the `--trace` headline and
+  `--json-summary`'s `verdict.type` call a truncated `k = 0` run a
+  contradiction (M1e2's S2 and S3, which
+  [S1e2.1a.5](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)
+  rewrites). **`-n 0` is refused**, exit 2, since M1e
   [S1e.1.5](../history/m1e_review_processing/README.md#s1e15---n-0-q7)
   — and so is every negative, which the CLI used to clamp onto it. It was
   accepted until 2026-08-29 and behaved exactly as `-n 1`: `stop_after` is
@@ -605,7 +701,8 @@ the binary. A wrong judgement is still possible; a *missing* one is not.
   config matrix: ten levers on `zebra2`, fast and exhaustive, with counters.
   This page says what a flag *is*; that one says what it is *worth*.
 - [`inference/solution_semantics.md`](inference/solution_semantics.md) — what
-  the answer column is an answer about: solution, model, `owes`, `exhausted`.
+  the two answer columns are about: the region R, and what a run reports
+  today.
 - [`defined_behaviour.md`](defined_behaviour.md) — the config diagnostics'
   wording, the CLI surface's guarantees, and the exit codes.
 - [`docs/install.md`](../install.md) — `$EIN_STDLIB` and the three resolution

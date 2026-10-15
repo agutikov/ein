@@ -129,6 +129,9 @@ cell of .6's non-monotone column as it rules. .5 comes last.
 | [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here), W3 | S1e2.1b.4 |
 | `naf_deps.rs`'s `RefutationUnderAbsentWarning` (M1e S1e.2.3), the containment | S1e2.1b.4, which also decides whether S1e2.1a.1's detector replaces it. It is the third-kind subset whose conclusion is a refutation and whose relation is eligible directly, not through D |
 | S1e2.1a.1's `non_monotone` stub | S1e2.1b.5 |
+| [S1e2.1a.3's census](../p1e2.1a_the_solution_region/region_census.md#5-holes-upward-closure-the-duality): the five programs with a hole. Two are W3's witnesses. Three have no register row, because whether today's answer on them is wrong depends on what R means here: `lattice/04_obligation_trigger_hole.ein` (Solution k = 1 where the fork route's R has 3 states), `synth/three_components.ein` and `synth/trigger_hole.ein` (written to have their holes, S1e2.1a.8) | S1e2.1b.3, which decides whether each gets a row |
+| the same census's [§ 9](../p1e2.1a_the_solution_region/region_census.md#9-the-config-principle): `-y` (`lattice-sanity-check`) aborts `corpus/fuzz_findings/d3-unsat-core.ein`, flagged non-monotone, with *"Saturation commutativity violated"*: a fork and its parent path reach different KBs | S1e2.1b.2, fork or scratch |
+| the census's [§ 8](../p1e2.1a_the_solution_region/region_census.md#8-monotonicity-the-static-check-against-the-cube): 13 programs flagged, a violation observed on 5. The other eight are where the check is conservative | S1e2.1b.1 starts from it |
 
 ## Where it stops
 

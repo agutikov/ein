@@ -20,7 +20,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.4](#q-m1e24--is-an-empty-unsat-core-a-core) | Is an empty unsat core a core? | [S1e2.2.13](p1e2.2_wrong_answers/s1e2.2.13_empty_core.md) (W12) | open |
 | [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) | open |
 | [Q-M1e2.6](#q-m1e26--does-p1e23-become-a-phase) | Does P1e2.3 become a phase? | the milestone's scope | open |
-| [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; on 2026-10-16 (a)–(c) and (e)–(i) [ruled for the monotone case](#the-second-answer-2026-10-16), and [(e)'s display and (h)'s names](#the-third-answer-2026-10-16) |
+| [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; on 2026-10-16 (a)–(c) and (e)–(i) [ruled for the monotone case](#the-second-answer-2026-10-16), and [(e)'s display and (h)'s names](#the-third-answer-2026-10-16); [the census](#the-census-2026-10-16) contradicts none |
 | [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) | Where does the rework of `ein solve` go? | P1e2.1a's S1e2.1a.5 (it must print `k` = \|R\|), and P1e2.2's scope | **ruled 2026-10-16**: [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) now, [P1e2.1c](p1e2.1c_the_region_search/README.md) next |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
@@ -524,7 +524,9 @@ Taken 2026-10-16 at `777d224a`, by running every `.ein` under `examples/`,
 `tests/` and `corpus/` (242 files) through `ein solve FILE --dump-region DIR`,
 with a 60 s timeout each. 154 regions were computed, 29 were refused by the
 limit, and 59 files produced none (they failed to load or timed out).
-T1e2.1a.3.1's census re-takes all of it.
+T1e2.1a.3.1's census re-took all of it the same day, over the corpus and the
+register rather than every file, and replaces this table:
+[§ The census](#the-census-2026-10-16).
 
 | | regions |
 |---|---:|
@@ -892,6 +894,31 @@ The questions marked **R** are the ones the user named for improving a theory
 and for searching for one. They are why the region is the object of study and
 not its first node. Which of them `ein solve` answers by default, and which
 behind a flag, is S1e2.1a.5's to propose and the user's to rule.
+
+### The census (2026-10-16)
+
+[S1e2.1a.3](p1e2.1a_the_solution_region/s1e2.1a.3_the_definition.md) put the
+corpus beside the rulings: `utils/region_census.py --all --levers`, 159
+regions computed, written up in
+[`region_census.md`](p1e2.1a_the_solution_region/region_census.md). **No
+measured fact contradicts a ruling**
+([§ 11 there](p1e2.1a_the_solution_region/region_census.md#11-what-each-ruling-meets-in-the-census)).
+The numbers each ruling meets:
+
+- **general**: holes only on programs the static check flags, 5 of 13;
+- **(a)**: on the 51 non-empty monotone regions with a candidate, k_s = 1 on
+  12, and 25 have one maximal node and several states;
+- **(a) × (e)**: k_c ≠ k_s on 13 regions, up to 32 768 against 728;
+- **(f)**: restrictions only gives min = {∅} on 25 of 25, obligations only
+  gives max = {⊤} on 5 of 5;
+- **(h)**: alive₀ ≠ H on 29 programs, every dropped candidate a dead
+  singleton, every promotion a lost ∅;
+- **∅**: in R on 41 of the 51, and every exception owes at root;
+- **the config principle**: no lever changes R on 158 of the 159, and
+  `enable-symmetric-mirror` changes it on `features/06`.
+
+93 of the 146 monotone cubes have no candidate at all, which is why the
+counts above leave them out; the first take above did not.
 
 ## Q-M1e2.8 — Where does the rework of `ein solve` go?
 
