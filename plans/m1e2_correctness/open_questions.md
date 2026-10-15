@@ -216,11 +216,138 @@ treats an obligation as if it were a restriction.
 - [Q-M1e2.1](#q-m1e21--is-a-discharged-superset-of-a-discharged-state-a-new-model)
   becomes sub-question (a) below.
 
+### The cube, and what replaces `k` (2026-10-15)
+
+The user's follow-up, verbatim:
+
+> well, so instead of single number k that may be k=0, k=1. k>1 we have at
+> least 3 numbers: |R|, |top(R)|, |bottom(R)|; this is only if we don't have
+> holes in R; So we could have both - not connected partitions of R and one
+> partition could have holes; holes also have top and bollom bounds, what does
+> they mean, do we need to count them, or only outer bound of R has meaning?
+> One more notice, without merging lattice looks like hypercube, is it true?
+> How we can use it?
+
+**The lattice is the n-cube, exactly.** Without merging, the nodes are the
+subsets of the n candidates ordered by inclusion, and the diagram is the
+n-dimensional hypercube:
+- a node is an n-bit word;
+- an edge adds or removes one fact;
+- layer k is the words with k bits set, C(n,k) of them.
+
+Merging commitments that saturate to one state (sub-question (e)) gives a
+different lattice, one node per distinct state, and that one is no longer a
+cube.
+
+**Without holes, two lines determine R, and |R| follows.** A set with no
+holes is exactly every node between some minimal node and some maximal node
+above it, so |R| is derived and says little on its own. What describes R is
+its **sub-cubes**. An interval [a … b] is every set between a and b: the facts
+in a are fixed in, those outside b are fixed out, and the rest are free. Its
+**dimension** is |b| − |a|, the number of free facts. R is a union of maximal
+sub-cubes, and |R| is their sizes by inclusion–exclusion (`branching/15`:
+2 + 4 − 1 = 5).
+
+**Components.** These are R's connected pieces under one-fact edges.
+- They appear only when a program has both kinds of constraint. With
+  restrictions only, R connects through ∅. With obligations only, it connects
+  through the full set.
+- Without holes, each component has its own two lines, and R's lines are their
+  union.
+- A component is not the count of solutions: `branching/15` has one
+  component and two maximal nodes.
+- **A well-posed puzzle is the case where every component is a single point**
+  (dimension 0). There the component count, the minimal line and the maximal
+  line all give the classical k.
+
+**Holes.** A hole is a node outside R that lies between two members of R.
+Under monotone rules there are none, because both *dead* and *discharged* are
+preserved as facts are added. So every hole comes from `absent`. A hole is a
+failure that **adding a fact repairs**: in W3, `{(p A)}` dies only because
+`(q A)` has not been said yet. It is a debt written as a restriction.
+- **The outer lines are the answer.** Hole nodes are not solutions.
+- **The hole count is a certificate.** Zero holes means the two lines describe
+  R exactly, and that every learned nogood is sound.
+- **A hole's minimal nodes are the useful diagnostic.** Each one is where a
+  repairable failure starts, and its core names the `absent` guard responsible.
+- **Its repair edges matter more than its maximal nodes.** A repair edge goes
+  from a hole node up into R, labelled with the fact that revives it. In W3 it
+  is `{(p A)} + (q A) → {(p A),(q A)}`.
+- **Holes are where pruning is unsound.** `{(p A)}` is a minimal dead set with
+  an alive superset. A learned nogood there prunes `{(p A),(q A)}`, which is a
+  node of R. That is the whole of W3.
+
+**The lines are decided by edges.** Without holes:
+- a node of R is maximal exactly when every upward edge leads to a dead node;
+- a node of R is minimal exactly when every downward edge leads to an owing
+  node.
+
+Both are local tests, and the search's layer n+1 already looks at those upward
+edges. So **W1's fix is a local test on the cube**. Across a hole, a local test
+and the true global answer can disagree.
+
+**Two lists determine the answer when there are no holes.** Let N be the
+minimal dead sets (the minimal nogoods) and E the minimal sets that discharge
+every obligation. Then:
+- the **minimal line** is the members of E that are alive;
+- the **maximal line** is the largest sets containing no member of N, kept
+  where discharged. Equivalently, it is the complements of the minimal sets
+  that hit every member of N.
+
+This is "bottom bound from obligations, top bound from restrictions", made
+exact. It is the duality of Reiter's diagnosis theory and of MUS/MCS
+enumeration (MARCO), and it is the route past n = 20: the lines can be
+enumerated from N and E without visiting all 2ⁿ nodes. A dead state's debt is
+not read today (`owes.root` says 0 on a dead root whatever it owes), so E
+needs the oracle to record *dead* and *owing* as two independent bits.
+
+**Symmetry.** Interchangeable constants, such as the two chairs, permute the
+cube's coordinates, so R must map to itself under that permutation. An answer
+that does not is a defect: W5's *chosen by name order* is one. An oracle can
+also enumerate one node per symmetry class.
+
+**Prior art: Poole's Theorist.** David Poole, *A logical framework for default
+reasoning*, Artificial Intelligence 36(1), 1988
+([doi:10.1016/0004-3702(88)90077-X](https://doi.org/10.1016/0004-3702(88)90077-X)).
+The user's notes on it are `plans/followups/f19_pool_theorist/`. Theorist has
+facts, a set H of possible hypotheses, and constraints.
+- A **scenario** is a consistent set of hypotheses, and an **extension**
+  follows from a maximal scenario. R's maximal line is the extensions that
+  discharge every obligation.
+- An **explanation** is a minimal scenario that entails the goal. R's
+  minimal line is the explanations, with the obligations as the goal.
+- Theorist's **skeptical / credulous** distinction maps onto a line:
+  facts true at every node of it, or at some node. M1d's *certain core*
+  ([representations.md](../../docs/history/m1d_satisfiability/representations.md))
+  is the skeptical reading of a model set.
+
+Measured with the merged [`probes/region.py`](probes/region.py), same
+programs and settings as the table above:
+
+| program | components | maximal sub-cubes (dimension) | holes | minimal dead sets N | duality |
+|---|---:|---|---|---|---|
+| `branching/15` | 1 | [∅…{A}] 1, [∅…{B,C}] 2 | — | {A,B}, {A,C} | holds |
+| `lattice/02` | 1 | [∅…pair] 2, three times | — | {a,b,c} | holds |
+| `forced-2-two` | 1 | [∅…∅] 0 | — | {q one}, {q two} | holds |
+| `owed-two-step` | 0 | — | — | {likes Ann Soup}, {likes Ann Stew} | holds (R empty) |
+| `owed-seats` | 1 | [matching…all 4] 2, twice | — | — | holds |
+| `owed-seats` + `functional` + `injective` | **2** | the two matchings, dimension 0 | — | the 4 clashing pairs | holds |
+| `naf-upward-closure` (W3) | 1 | [∅…{q}] 1, [{q}…{p,q}] 1 | **{p}** | {p} | **fails**: the complement rule gives {q}, R's maximal line is {p,q} |
+
+The duality holds on every program without holes and fails exactly on the
+one with a hole.
+
 ### Sub-questions, for [P1e2.1a](p1e2.1a_the_solution_region/README.md)'s first stage
 
 - **(a) What does `k` count?** The minimal line, the maximal line, both
   (two counts), or the informative one by the program's shape? And which
-  verdict word goes with which?
+  verdict word goes with which? Since the follow-up above, `k` may be replaced
+  by a descriptor:
+  - the component count;
+  - for each component, its two lines and its sub-cube dimensions;
+  - the minimal holes.
+
+  The question is then which of these the verdict line prints.
 - **(b) How does a program say which line it asks for?** By its shape
   (obligations stated or not), or by a query keyword the language does not
   have yet?
@@ -229,6 +356,9 @@ treats an obligation as if it were a restriction.
 - **(d) What is reported when R has holes?** Both lines no longer describe
   R. Is the answer then the list of R's maximal convex pieces, or a
   qualifier, or a refusal (Q-M1e2.2's *refuse what cannot be stratified*)?
+  The follow-up's recommendation: the outer lines stay the answer, and the
+  read-out adds the minimal holes, each with the `absent` guard of its core
+  and its repair edges. A hole is never counted as a solution.
 - **(e) Commitments or states?** A node is a commitment, but a model is a
   state, and two commitments can saturate to one state. Q-M1e.6's
   *integrated* hypotheses are the same question. Is R deduplicated by state
@@ -247,6 +377,9 @@ treats an obligation as if it were a restriction.
   defines `alive₀` *after the forced-positive cascade*, and the cascade is a
   config switch (`:enable-forced-positive`). So today the universe itself
   depends on config.
+- **(i) Components.** Is the answer reported per component? Is a component
+  the unit an `Ambiguity` is about, given that in a well-posed puzzle the
+  components are the models?
 
 ### The oracle's limit (ruled 2026-10-15)
 
