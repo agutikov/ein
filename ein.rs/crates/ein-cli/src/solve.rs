@@ -1084,7 +1084,7 @@ fn write_summaries(
 /// and `imports_semantics::the_inlining_route_the_stdlib_readme_documents_round_trips`
 /// holds to the same program. The file has already loaded, so a failure here
 /// is a defect, and it is written into the file rather than swallowed.
-fn inlined_program(file: &str) -> String {
+pub(crate) fn inlined_program(file: &str) -> String {
     let path = Path::new(file);
     let text = read_text_or_crash(path);
     let mut ast = Ast::new();

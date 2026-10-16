@@ -406,9 +406,10 @@ dispatchers. `ein kb save` exists only under the `einb` feature; a
 the walk and into a **region mode**, answered by
 [`ein_infer::explore`](../../ein.rs/crates/ein-infer/src/explore.rs) and held to
 the oracle by `ein-infer/tests/explore.rs`. A region mode takes `-n`, `-T`,
-`-j`, `--region-limit` and `-s`, and since T1e2.1a.5.2 `--dump-answer`, whose
-`answer.txt` is the read-out uncut; it refuses every other `solve` option with
-a usage error, exit 2: what the walk's options mean there is S1e2.1a.5's to
+`-j`, `--region-limit` and `-s`, and since T1e2.1a.5.2 `--json-summary`
+(`ein-summary/2`) and `--dump-answer` (`ein-answer/2`, whose `answer.txt` is
+the read-out uncut); it refuses every other `solve` option with a usage error,
+exit 2: what the walk's options mean there is S1e2.1a.5's to
 say. Its read-out is
 [`read_out.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)'s,
 and every answer exits 0.

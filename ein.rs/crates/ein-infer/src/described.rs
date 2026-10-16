@@ -74,6 +74,16 @@ pub struct Owing {
     pub owed: Vec<String>,
 }
 
+/// A minimal dead set: dead, with every proper subset alive — and why.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Dead {
+    pub set: Box<[u32]>,
+    /// Its unsat core, where the route kept it.
+    pub core: Vec<String>,
+    /// The rules whose firing produced its contradiction.
+    pub refuted_by: Vec<String>,
+}
+
 /// A node outside `R` between two members of it — the cube's alone.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Hole {
@@ -138,6 +148,8 @@ pub struct Described {
     pub minimal_commitments: Vec<Box<[u32]>>,
     /// `N`, the minimal dead sets — those met, on a partial run.
     pub nogoods: u64,
+    /// The same sets, each with why it is dead, in visit order.
+    pub dead: Vec<Dead>,
     /// Candidates dead alone, which no state can hold.
     pub dead_alone: u64,
     /// Some node met owes: the program states an obligation that bites.
@@ -378,6 +390,17 @@ pub fn of_downset(d: &DownSet) -> Described {
             .map(|&i| points[i as usize].set.clone())
             .collect(),
         nogoods: points.iter().filter(|p| p.status & DEAD != 0).count() as u64,
+        // Route 1 visits a set only when every subset is alive, so each dead
+        // point is minimal.
+        dead: points
+            .iter()
+            .filter(|p| p.status & DEAD != 0)
+            .map(|p| Dead {
+                set: p.set.clone(),
+                core: p.core.clone(),
+                refuted_by: p.refuted_by.clone(),
+            })
+            .collect(),
         dead_alone,
         owing_met: points.iter().any(|p| p.owes > 0) || d.top.as_ref().is_some_and(|t| t.owes > 0),
         dead_met: points.iter().any(|p| p.status & DEAD != 0),
@@ -547,6 +570,17 @@ pub fn of_cube(r: &Region) -> Described {
         k_c: t.size_r,
         minimal_commitments: line.into_iter().map(set_of).collect(),
         nogoods: t.nogoods.len() as u64,
+        dead: {
+            let mut v: Vec<u64> = t.nogoods.clone();
+            v.sort_by_key(|&m| (m.count_ones(), set_of(m)));
+            v.into_iter()
+                .map(|m| Dead {
+                    set: set_of(m),
+                    core: r.nodes[m as usize].core.clone(),
+                    refuted_by: r.nodes[m as usize].refuted_by.clone(),
+                })
+                .collect()
+        },
         dead_alone: (0..n).filter(|&b| !alive(1u64 << b)).count() as u64,
         owing_met: r.status.iter().any(|s| s & OWING != 0),
         dead_met: r.status.iter().any(|s| s & DEAD != 0),

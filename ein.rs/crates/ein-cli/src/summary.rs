@@ -515,6 +515,38 @@ pub fn build(
     ]))
 }
 
+/// The summary of a region run, `ein-summary/2` — M1e2 T1e2.1a.5.2,
+/// [`read_out.md` § 8.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#81---json-summary-ein-summary2).
+/// The read-out's blocks (`asked`, `region`, `verdict`, `queries`, `claim`,
+/// `work`) from [`ein_render::dump::region_answer::summary_blocks`], then the
+/// program's: the static check, root's saturation and the resolved config,
+/// as `ein-summary/1` has them. Every key on every run.
+pub fn build_region(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+    r: &ein_infer::read_out::ReadOut,
+    source: &str,
+) -> Result<Json, String> {
+    let mut pairs: Vec<(&str, Json)> = vec![
+        (
+            "schema",
+            Json::str(ein_render::dump::region_answer::SUMMARY),
+        ),
+        ("source", Json::str(source)),
+    ];
+    pairs.extend(ein_render::dump::region_answer::summary_blocks(r));
+    pairs.push((
+        "monotonicity",
+        ein_render::dump::region::monotonicity_json(&r.answer.monotonicity, terms),
+    ));
+    let mut off = ein_infer::events::Events::off();
+    pairs.push(("root", root_block(ast, terms, kb, &mut off)?));
+    let config = kb.program().config.clone().unwrap_or_default();
+    pairs.push(("config", config_block(&config)));
+    Ok(Json::obj(pairs))
+}
+
 /// The summary for a run cut short by `--max-time` / `--max-enterings`.
 ///
 /// **[`build`] with an `Aborted` answer, and nothing else** — M1e S1e.3.2,

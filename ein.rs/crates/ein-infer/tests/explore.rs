@@ -326,10 +326,12 @@ fn described_against(tag: &str, r: &Region, d: &Described) -> Vec<String> {
                 line_masks.len()
             ));
         }
-        if d.nogoods != t.nogoods.len() as u64 {
+        let dead: BTreeSet<u64> = d.dead.iter().map(|x| mask(&x.set)).collect();
+        if d.nogoods != t.nogoods.len() as u64 || dead != t.nogoods.iter().copied().collect() {
             bad.push(format!(
-                "{tag}: N = {} where the oracle has {}",
+                "{tag}: N = {} ({} sets) where the oracle has {}",
                 d.nogoods,
+                dead.len(),
                 t.nogoods.len()
             ));
         }

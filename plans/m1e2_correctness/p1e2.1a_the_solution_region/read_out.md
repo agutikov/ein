@@ -379,18 +379,27 @@ replace `verdict` (with its `solutions` and `open_states`), `stats` and
 ```
 asked     {which: all|minimal|maximal, ask: describe|find|single, n}
 region    {k_s, k_c, exhausted, stopped: null | {why: asked|budget|limit|deadline, …},
-           root: in-r|owing|dead, empty: null|dead|owing,
+           complete_up_to, root: in-r|owing|dead, root_owes, empty: null|dead|owing,
            minimal: {states, commitments, least, trivial}, maximal: {states, trivial},
-           components: [sizes], subcubes: [dimensions], merged, nogoods, discharging, holes,
-           route, licences,
-           states:   [{facts, closure, from, minimal_generators, commitments, lines: [minimal, maximal], owes}],
-           frontier: [{facts, owes: [{relation, why}]}],      (empty R, owing kind)
+           components: [sizes], subcubes: [dimensions], merged: {states, minimal},
+           nogoods, discharging, holes: {count, minimal: [{set, dead, core, owes}]},
+           universe: {candidates, dead_alone}, route: "1"|"2", licences,
+           states:   [{facts, closure, from, minimal_generators, commitments,
+                       lines: [minimal, maximal], listed}],
+           frontier: [{facts, set, owes, owed}],               (empty R, owing kind)
            core:     [facts], refuted_by: [rules]}             (empty R, dead kind)
 verdict   null | {word, which}                                (--single only)
-queries   [{goal, over, exact, classes: [{facts, rows, states}], expect: null | {outcome, lines}}]
-claim     null | {outcome, lines}                             (the solve claim)
+queries   [{goal, over: all|listed, exact, classes: [{facts, rows, states}], expect: null}]
+claim     null | {outcome: held|failed|not-checked, lines}   (the solve claim)
 work      {saturations, facts, layers}
 ```
+
+**Built in T1e2.1a.5.2's fifth step**, for the region modes; the walk keeps
+`ein-summary/1` until the switch removes it. Under a mode R was not described,
+so R's numbers are `null` and `states` holds the mode's own. A query's
+`expect` is `null` until its `:expect` lands at the switch, so that the shape
+does not move then. `region_answer.rs` holds the key set to one shape on
+every arm, nine of them.
 
 `monotonicity`, `root` and `config` stay as they are. Every bound carries
 `exhausted = false` beside it: a reader never has to know which numbers were
@@ -400,11 +409,13 @@ complete.
 
 - **`answer.txt`**, the read-out uncut: stdout with no listing cut (§ 4.1).
   Its `(region …)` reads back as the claim, `(merged …)`s included.
-- **`models/NN.ein`**, one loadable program per **listed** state, as today:
-  the program, then the state's facts. Its header comment gives the state's
-  number, its lines, its commitment and its minimal generators. On a partial
-  run it also writes every other member found, which is where X11's 10 075
-  go.
+- **`models/NN.ein`**, one loadable program per state the run reached, as
+  today: the program, then the state's facts. Its header comment gives the
+  state's number, its lines, its commitment and its minimal generators. On a
+  partial run that is every member found, listed or not, which is where
+  X11's 10 075 go. Each is read again through the node function, and
+  `region_answer.rs` loads every one and finds it a fixpoint that holds its
+  state's model.
 - **`index.json`** names what `models/` holds: `asked`, the same `region`
   block as the summary, and per file its `lines`. That is the acceptance's
   *`models/` per line, named in `index.json`*.
@@ -412,7 +423,11 @@ complete.
   **`nogoods.json`** holds N with each core.
 - **`root_writes.json` and `alive_at_end.json` go.** Root is never written,
   and there is no walk to end.
-- `answer.json` stays the summary byte for byte, as `answer_dump.rs` checks.
+- `answer.json` stays the summary byte for byte, as `answer_dump.rs` checks
+  for the walk and `region_answer.rs` for the region modes.
+- **The flags are additive**: stdout, stderr and the exit code are the same
+  with them and without, so the header leaves them out, as it leaves out
+  `-j`.
 
 ### 8.3 `--models list|key|grid`
 

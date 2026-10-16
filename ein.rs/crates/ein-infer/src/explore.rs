@@ -938,6 +938,11 @@ impl<'a> Space<'a> {
             .filter(|(_, s)| s.dead)
             .map(|(set, _)| &set[..])
             .collect();
+        let minimal_dead: Vec<&[u32]> = dead
+            .iter()
+            .copied()
+            .filter(|d| proper_subsets(d).all(|p| alive.contains(&p[..])))
+            .collect();
         let root = self.seen.get(&[][..]);
         let node = self.root_node.clone().unwrap_or_default();
         Described {
@@ -957,10 +962,15 @@ impl<'a> Space<'a> {
             any_alive: !alive.is_empty(),
             k_c: members.len() as u64,
             minimal_commitments,
-            nogoods: dead
+            nogoods: minimal_dead.len() as u64,
+            dead: minimal_dead
                 .iter()
-                .filter(|d| proper_subsets(d).all(|p| alive.contains(&p[..])))
-                .count() as u64,
+                .map(|d| described::Dead {
+                    set: Box::from(*d),
+                    core: Vec::new(),
+                    refuted_by: Vec::new(),
+                })
+                .collect(),
             dead_alone: dead.iter().filter(|d| d.len() == 1).count() as u64,
             owing_met: met.iter().any(|(_, s)| s.owes > 0),
             dead_met: !dead.is_empty(),

@@ -1106,7 +1106,7 @@ is what pins k_c, and it reads back as the claim.
 `ein solve --dump-answer DIR --region-budget 33554432 examples/zebra2.ein` — `DIR/answer.txt`
 
 ```text
-solve · --dump-answer DIR --region-budget 33554432 examples/zebra2.ein
+solve · --region-budget 33554432 examples/zebra2.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      1

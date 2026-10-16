@@ -166,10 +166,7 @@ fn the_walks_options_are_refused_beside_a_mode() {
         (vec!["--single", "-m", "3"], "--max-set-size"),
         (vec!["--minimal", "-L"], "--no-lookahead"),
         (vec!["--region-budget", "10", "-p"], "--print-final-state"),
-        (
-            vec!["--maximal", "--json-summary", "/tmp/x.json"],
-            "--json-summary",
-        ),
+        (vec!["--maximal", "--trace", "/tmp/x.md"], "--trace"),
     ] {
         let mut a = vec!["solve", THREE];
         a.extend(args.iter());

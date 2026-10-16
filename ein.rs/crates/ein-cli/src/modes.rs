@@ -26,7 +26,7 @@ use ein_infer::read_out::{self, ReadOut};
 use ein_ir::Ast;
 
 /// The `solve` options a region mode takes. Every other one is the walk's.
-const TAKES: [&str; 11] = [
+const TAKES: [&str; 12] = [
     "file",
     "solutions",
     "max-time",
@@ -38,6 +38,7 @@ const TAKES: [&str; 11] = [
     "single",
     "region-budget",
     "dump-answer",
+    "json-summary",
 ];
 
 /// Whether this `solve` run asks a region mode.
@@ -67,9 +68,13 @@ pub fn mode_of(m: &ArgMatches) -> Mode {
     Mode { which, ask }
 }
 
-/// The arguments after `command`, as typed, less `-j N`: the header names the
-/// question, and the same question at another `-j` prints the same lines
-/// (C4).
+/// The options the header leaves out, with their values: `-j`, because the
+/// same question at another `-j` prints the same lines (C4), and the files a
+/// run writes, because writing one changes nothing printed.
+const UNSHOWN: [&str; 4] = ["-j", "--jobs", "--json-summary", "--dump-answer"];
+
+/// The arguments after `command`, as typed, less [`UNSHOWN`]: the header
+/// names the question.
 pub fn header_argv(command: &str) -> String {
     let args: Vec<String> = std::env::args().collect();
     let start = args
@@ -79,11 +84,13 @@ pub fn header_argv(command: &str) -> String {
     let mut shown: Vec<&str> = Vec::new();
     let mut it = args[start..].iter();
     while let Some(a) = it.next() {
-        if a == "-j" || a == "--jobs" {
+        if UNSHOWN.contains(&a.as_str()) {
             it.next();
             continue;
         }
-        if a.starts_with("--jobs=") || (a.starts_with("-j") && a.len() > 2) {
+        if UNSHOWN.iter().any(|u| a.starts_with(&format!("{u}=")))
+            || (a.starts_with("-j") && a.len() > 2)
+        {
             continue;
         }
         shown.push(a);
@@ -122,12 +129,22 @@ pub fn run(m: &ArgMatches) -> i32 {
     // `--dump-answer` makes its directory before the run, as the walk's
     // does, so a path that cannot be written fails before the work.
     let dump = m.get_one::<String>("dump-answer").cloned();
-    if let Some(dir) = dump.as_deref()
-        && let Err(e) = std::fs::create_dir_all(dir)
-    {
-        crate::solve::artefact_failed("dump-answer", dir, e);
-        return 1;
+    if let Some(dir) = dump.as_deref() {
+        // Every state file starts with the program's source, which a
+        // container does not carry.
+        if crate::common::looks_like_einb(&crate::common::read_bytes_or_crash(Path::new(&file))) {
+            eprintln!(
+                "error: --dump-answer {dir}: a .einb container carries no program source, and \
+                 every file the answer directory holds starts with it — run it on the .ein"
+            );
+            return 2;
+        }
+        if let Err(e) = std::fs::create_dir_all(dir) {
+            crate::solve::artefact_failed("dump-answer", dir, e);
+            return 1;
+        }
     }
+    let summary_path = m.get_one::<String>("json-summary").cloned();
 
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -150,21 +167,53 @@ pub fn run(m: &ArgMatches) -> i32 {
         max_time,
         m.get_flag("stats"),
     );
-    if code != 2
-        && let Some(dir) = dump.as_deref()
-        && let Err(e) = write_answer_txt(&r, Path::new(dir), &file, opts.budget)
+    if code == 2 || (summary_path.is_none() && dump.is_none()) {
+        return code;
+    }
+    // The summary and the answer directory: the same facts as stdout, as
+    // files. Additive: nothing printed above moves with them.
+    let summary = match crate::summary::build_region(&ast, &mut terms, &mut kb, &r, &file) {
+        Ok(s) => crate::summary::text(&s),
+        Err(e) => {
+            eprintln!("{e}");
+            return 1;
+        }
+    };
+    if let Some(path) = summary_path.as_deref()
+        && let Err(e) = std::fs::write(path, &summary)
     {
-        crate::solve::artefact_failed("dump-answer", dir, e);
+        crate::solve::artefact_failed("json-summary", path, e);
         return 1;
+    }
+    if let Some(dir) = dump.as_deref() {
+        let program = crate::solve::inlined_program(&file);
+        let answer_txt = uncut(&r, &file, opts.budget);
+        let inputs = ein_render::dump::region_answer::Inputs {
+            source: &file,
+            program: &program,
+            summary: &summary,
+            answer_txt: &answer_txt,
+        };
+        if let Err(e) = ein_render::dump::region_answer::write(
+            Path::new(dir),
+            &r,
+            &mut kb,
+            &mut terms,
+            &ast,
+            &inputs,
+        ) {
+            crate::solve::artefact_failed("dump-answer", dir, e);
+            return 1;
+        }
     }
     code
 }
 
-/// `DIR/answer.txt`: the read-out with no listing cut — where stdout's cut
-/// says the rest is (the user's ruling of 2026-10-16, the diff's § 4.1).
-pub fn write_answer_txt(r: &ReadOut, dir: &Path, file: &str, budget: u64) -> std::io::Result<()> {
+/// `answer.txt`: the read-out with no listing cut — where stdout's cut says
+/// the rest is (the user's ruling of 2026-10-16, the diff's § 4.1).
+fn uncut(r: &ReadOut, file: &str, budget: u64) -> String {
     let argv = header_argv("solve");
-    let text = ein_render::read_out::render(
+    ein_render::read_out::render(
         r,
         &ein_render::read_out::Options {
             command: "solve",
@@ -173,8 +222,8 @@ pub fn write_answer_txt(r: &ReadOut, dir: &Path, file: &str, budget: u64) -> std
             budget,
             uncut: true,
         },
-    );
-    std::fs::write(dir.join("answer.txt"), text.stdout)
+    )
+    .stdout
 }
 
 /// Print `r`, write its stderr lines, and return its exit code. `-T` aborts

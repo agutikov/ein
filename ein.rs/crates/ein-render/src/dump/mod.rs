@@ -17,6 +17,7 @@ pub mod answer;
 pub mod json;
 pub mod lattice;
 pub mod region;
+pub mod region_answer;
 pub mod serialise;
 pub mod snapshot;
 pub mod state;
