@@ -23,6 +23,7 @@ pub mod closed;
 pub mod commitment;
 pub mod compile;
 pub mod contradiction;
+pub mod downset;
 pub mod engine;
 pub mod events;
 pub mod expect;

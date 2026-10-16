@@ -395,7 +395,7 @@ The search and the words are unchanged.
 | ruling (2026-10-16) | what changes | stage |
 |---|---|---|
 | (a), (e) | **k_s and k_c replace `k`** on every surface. Where the run cannot know R, each is a lower bound and says so | [S1e2.1a.5](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md) |
-| the default | **`ein solve` with no flag describes R in full**, exhaustively and certified. Flags make the task simpler: *any* solution; *a single one* expected, so k ≥ 2 contradicts it; *maximal* only; *minimal* only | [S1e2.1a.9](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) |
+| the default | **`ein solve` with no flag describes R in full**, exhaustively and certified. Flags make the task simpler: *any* solution; *a single one* expected, so k ≥ 2 contradicts it; *maximal* only; *minimal* only. Route 1, a monotone program's R from its alive down-set, is in the library and held to the oracle; the CLI waits for the flags' ruling ([`solve_flags.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_flags.md)) | [S1e2.1a.9](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) |
 | (i) | **the verdict words judge a stated expectation.** `Ambiguity` is relevant where exactly one solution is expected, `Contradiction` where some is. Without an expectation, `solve` explores and describes R | S1e2.1a.5 |
 | (g) | **`exhausted` means the reported region is all of R.** A run a budget stopped (`-m`, `-E`, `-T`) reports what it found as a lower bound, and every node in it is checked | S1e2.1a.5, S1e2.1a.9 |
 | (b), (c) | **solving and asking come apart**: `(solve :hrules …)` defines the lattice, `(solution …)` states the expected region, `(query :goal … :expect …)` asks about the goal's projection classes | S1e2.1a.4 |
@@ -415,8 +415,12 @@ S1e2.1a.5's page diff.
 
 **A certificate** is evidence that a claimed R is R, cheaper to check than
 recomputing it. For a monotone program it is N, E and the static verdict, one
-saturation per member (proposed). For a non-monotone one, nothing smaller than
-every node's classification is known.
+saturation per member. Route 1
+([`ein_infer::downset`](../../../ein.rs/crates/ein-infer/src/downset.rs)) produces
+N and the alive members of E, which are the minimal line, as it goes: a dead
+commitment it visits has every proper subset alive. No surface prints them
+yet. For a non-monotone program, nothing smaller than every node's
+classification is known.
 
 ---
 
@@ -594,6 +598,7 @@ it cannot see a candidate the generator never proposes (W4, W6).
 | the universe H | `hypgen::generate_config_free` |
 | a node's state, dead, owing, closure, class | [`region.rs`](../../../ein.rs/crates/ein-infer/src/region.rs) `compute`, `Node` |
 | R, its lines, holes, components, sub-cubes, N, E, the duality | `region::Topology` |
+| R of a monotone program from its alive down-set (route 1), k_s, k_c, the merged classes | [`downset.rs`](../../../ein.rs/crates/ein-infer/src/downset.rs) `compute`, `Description` |
 | monotone | [`monotone.rs`](../../../ein.rs/crates/ein-infer/src/monotone.rs) |
 | owes, discharged | [`obligations.rs`](../../../ein.rs/crates/ein-infer/src/obligations.rs) `tally` |
 | the walk's `alive₀` | `Run::phase1` → `compute_alive` → `hypgen::open_hypotheses` |
@@ -628,6 +633,13 @@ leave those out.
   (§ 5.2).
 - **k_c ≠ k_s** on 13 regions, up to 32 768 against 728 (§ 2.3).
 - **The universe**: alive₀ ≠ H on 29 of 194 walks (§ 6.3).
+- **Route 1** (S1e2.1a.9,
+  [`route1_reach.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/route1_reach.md),
+  `cargo run --release -p ein-infer --example route1_reach`, 2026-10-16): R
+  of 162 of 195 programs from the alive set and N alone, 15 of them past the
+  oracle's limit. With its budget raised, `zebra.ein`'s R is **one state**,
+  reached by 261 982 of its commitments, with 63 on the minimal line and
+  270 454 alive.
 - **The config principle**: no lever changes R on any of the 159, except
   `enable-symmetric-mirror` on
   [`features/06_symmetric_native.ein`](../../../examples/features/06_symmetric_native.ein),

@@ -237,6 +237,138 @@ pub fn compute(
     on_projection: &mut dyn FnMut(&Projection),
 ) -> Result<Outcome, SolveError> {
     let t_root = Instant::now();
+    let Prepared {
+        snapshot,
+        root_dead,
+        candidates,
+        hypothesised,
+        monotonicity,
+        memo,
+    } = prepare(root, terms, ast)?;
+    let n = candidates.len();
+
+    if n > opts.limit as usize || n >= 64 {
+        return Ok(Outcome::Refused {
+            n,
+            limit: opts.limit,
+            candidates,
+            monotonicity,
+        });
+    }
+    let cost_root = t_root.elapsed();
+
+    let axes = Axes::new(root, &candidates, hypothesised, opts.keep_states);
+    let root = root.sealed();
+    let size = 1usize << n;
+    let mut status = vec![0u8; size];
+    let mut nodes = vec![Node::default(); size];
+    let mut states = opts.keep_states.then(|| vec![Vec::new(); size]);
+    let mut classes: FxHashMap<Box<[FactId]>, u64> = FxHashMap::default();
+
+    // Layer order, as the stage asks: the probe's first nodes are then the
+    // small commitments, and every node is independent of the order anyway.
+    let mut order: Vec<u64> = (0..size as u64).collect();
+    order.sort_by_key(|m| (m.count_ones(), *m));
+
+    let facts_of = |mask: u64| -> Vec<FactId> {
+        (0..n)
+            .filter(|b| mask >> b & 1 == 1)
+            .map(|b| candidates[b].fact)
+            .collect()
+    };
+    let pool = pool_of(opts.jobs);
+
+    // The projection, before the run: [`PROBE_NODES`] nodes spread evenly over
+    // the masks, so over every layer, each saturated and discarded. It was the
+    // first 64 nodes in layer order until S1e2.1a.8 — the cheapest commitments
+    // of the cube — and `branching/10` (n = 18) projected 22.9 s for a run
+    // still going after 11 minutes on 8 jobs.
+    if n >= WARN_FROM {
+        let t_probe = Instant::now();
+        for i in 0..PROBE_NODES as u64 {
+            let mask =
+                ((size as u64 - 1) as u128 * i as u128 / (PROBE_NODES as u64 - 1) as u128) as u64;
+            node(root, &snapshot, terms, ast, &memo, &facts_of(mask), &axes)?;
+        }
+        let per_node = t_probe.elapsed() / PROBE_NODES as u32;
+        on_projection(&Projection {
+            n,
+            nodes: size as u64,
+            per_node,
+            // At one job: a worker hands back every node that would number a
+            // new fact, so `--jobs` divides it by less than the jobs —
+            // `square-bwd/houses` (n = 20) is 35 s here and 11 s at 16.
+            projected: per_node * size as u32,
+        });
+    }
+
+    let t_nodes = Instant::now();
+    let mut start = 0usize;
+    while start < size {
+        let batch = &order[start..(start + BATCH).min(size)];
+        start += batch.len();
+        let sets: Vec<Vec<FactId>> = batch.iter().map(|&m| facts_of(m)).collect();
+        let outs = fan_out(
+            pool.as_ref(),
+            root,
+            &snapshot,
+            terms,
+            ast,
+            &memo,
+            &axes,
+            &sets,
+        )?;
+        // The commit, in layer order.
+        for (out, &mask) in outs.into_iter().zip(batch) {
+            let class = *classes.entry(out.state).or_insert(mask);
+            let m = mask as usize;
+            status[m] = (if out.dead { DEAD } else { 0 }) | (if out.owes > 0 { OWING } else { 0 });
+            nodes[m] = Node { class, ..out.node };
+            if let Some(st) = states.as_mut() {
+                st[m] = out.delta;
+            }
+        }
+    }
+    let cost_nodes = t_nodes.elapsed();
+
+    let t_topo = Instant::now();
+    let topology = Topology::of(n, &status);
+    let cost_topology = t_topo.elapsed();
+
+    Ok(Outcome::Region(Box::new(Region {
+        candidates,
+        status,
+        nodes,
+        root_dead,
+        monotonicity,
+        topology,
+        cost: Cost {
+            root: cost_root,
+            nodes: cost_nodes,
+            topology: cost_topology,
+        },
+        states,
+    })))
+}
+
+/// What both routes start from: root's fixpoint, the universe, and the
+/// static check. [`compute`] (the oracle, route 2) and
+/// [`crate::downset::compute`] (route 1) read every node against it.
+pub(crate) struct Prepared {
+    pub snapshot: Snapshot,
+    /// Root's own fixpoint derives `(false)`.
+    pub root_dead: bool,
+    /// The universe, config-free, in rendered-text order.
+    pub candidates: Vec<Candidate>,
+    /// The candidates' relations — `H`.
+    pub hypothesised: FxHashSet<ein_core::Symbol>,
+    pub monotonicity: Monotonicity,
+    pub memo: SharedMemo,
+}
+
+/// Saturate root, take the universe at its fixpoint, and classify the plans.
+/// Root is written by its own saturation and by nothing else.
+pub(crate) fn prepare(root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Prepared, SolveError> {
     let memo = SharedMemo::default();
     let mut off = Events::off();
 
@@ -280,7 +412,6 @@ pub fn compute(
         .collect();
     candidates.sort_by(|a, b| a.text.cmp(&b.text));
     candidates.dedup_by(|a, b| a.fact == b.fact);
-    let n = candidates.len();
 
     // The static check, over root's plans. Root's tally is what compiles the
     // obligation plans; a node can only compile one root lacks through an
@@ -296,169 +427,135 @@ pub fn compute(
         &crate::monotone::plans_of(&memo),
         &hypothesised,
     );
-
-    if n > opts.limit as usize || n >= 64 {
-        return Ok(Outcome::Refused {
-            n,
-            limit: opts.limit,
-            candidates,
-            monotonicity,
-        });
-    }
-    let cost_root = t_root.elapsed();
-
-    let axes = Axes {
-        root_facts: root.facts().collect(),
-        candidates: candidates.iter().map(|c| c.fact).collect(),
-        is_candidate: candidates.iter().map(|c| c.fact).collect(),
-        hypothesised: hypothesised.clone(),
-    };
-    let root = root.sealed();
-    let size = 1usize << n;
-    let mut status = vec![0u8; size];
-    let mut nodes = vec![Node::default(); size];
-    let mut states = opts.keep_states.then(|| vec![Vec::new(); size]);
-    let mut classes: FxHashMap<Box<[FactId]>, u64> = FxHashMap::default();
-
-    // Layer order, as the stage asks: the probe's first nodes are then the
-    // small commitments, and every node is independent of the order anyway.
-    let mut order: Vec<u64> = (0..size as u64).collect();
-    order.sort_by_key(|m| (m.count_ones(), *m));
-
-    let facts_of = |mask: u64| -> Vec<FactId> {
-        (0..n)
-            .filter(|b| mask >> b & 1 == 1)
-            .map(|b| candidates[b].fact)
-            .collect()
-    };
-    #[cfg(feature = "parallel")]
-    let pool = (opts.jobs > 1)
-        .then(|| {
-            rayon::ThreadPoolBuilder::new()
-                .num_threads(opts.jobs)
-                .thread_name(|i| format!("ein-region-{i}"))
-                .build()
-                .ok()
-        })
-        .flatten();
-
-    // The projection, before the run: [`PROBE_NODES`] nodes spread evenly over
-    // the masks, so over every layer, each saturated and discarded. It was the
-    // first 64 nodes in layer order until S1e2.1a.8 — the cheapest commitments
-    // of the cube — and `branching/10` (n = 18) projected 22.9 s for a run
-    // still going after 11 minutes on 8 jobs.
-    if n >= WARN_FROM {
-        let t_probe = Instant::now();
-        for i in 0..PROBE_NODES as u64 {
-            let mask =
-                ((size as u64 - 1) as u128 * i as u128 / (PROBE_NODES as u64 - 1) as u128) as u64;
-            node(root, &snapshot, terms, ast, &memo, &facts_of(mask), &axes)?;
-        }
-        let per_node = t_probe.elapsed() / PROBE_NODES as u32;
-        on_projection(&Projection {
-            n,
-            nodes: size as u64,
-            per_node,
-            // At one job: a worker hands back every node that would number a
-            // new fact, so `--jobs` divides it by less than the jobs —
-            // `square-bwd/houses` (n = 20) is 35 s here and 11 s at 16.
-            projected: per_node * size as u32,
-        });
-    }
-
-    let t_nodes = Instant::now();
-    let mut start = 0usize;
-    while start < size {
-        let len = BATCH;
-        let batch = &order[start..(start + len).min(size)];
-        start += batch.len();
-        // The fan-out: every node a worker could finish without numbering a
-        // new fact. `None` is a node handed back.
-        #[allow(unused_mut)]
-        let mut speculated: Vec<Option<Result<NodeOut, SolveError>>> =
-            batch.iter().map(|_| None).collect();
-        #[cfg(feature = "parallel")]
-        if let Some(pool) = pool.as_ref() {
-            use rayon::prelude::*;
-            let lent = terms.lend();
-            let shared = lent.get();
-            pool.install(|| {
-                batch
-                    .par_iter()
-                    .map(|&mask| {
-                        let mut view = shared.worker();
-                        view.provs.open_fork();
-                        let out = node_in_region(
-                            root,
-                            &snapshot,
-                            &mut view,
-                            ast,
-                            &memo,
-                            &facts_of(mask),
-                            &axes,
-                        );
-                        let refused = view.refused();
-                        let _ = view.provs.take_fork();
-                        (!refused).then_some(out)
-                    })
-                    .collect_into_vec(&mut speculated)
-            });
-        }
-        // The commit, in layer order — and every handed-back node computed
-        // here, which is where its new facts get their numbers.
-        for (k, &mask) in batch.iter().enumerate() {
-            let out = match speculated[k].take() {
-                Some(out) => out?,
-                None => node(root, &snapshot, terms, ast, &memo, &facts_of(mask), &axes)?,
-            };
-            let class = *classes.entry(out.state).or_insert(mask);
-            let m = mask as usize;
-            status[m] = (if out.dead { DEAD } else { 0 }) | (if out.owes > 0 { OWING } else { 0 });
-            nodes[m] = Node { class, ..out.node };
-            if let Some(st) = states.as_mut() {
-                st[m] = out.delta;
-            }
-        }
-    }
-    let cost_nodes = t_nodes.elapsed();
-
-    let t_topo = Instant::now();
-    let topology = Topology::of(n, &status);
-    let cost_topology = t_topo.elapsed();
-
-    Ok(Outcome::Region(Box::new(Region {
-        candidates,
-        status,
-        nodes,
+    Ok(Prepared {
+        snapshot,
         root_dead,
+        candidates,
+        hypothesised,
         monotonicity,
-        topology,
-        cost: Cost {
-            root: cost_root,
-            nodes: cost_nodes,
-            topology: cost_topology,
-        },
-        states,
-    })))
+        memo,
+    })
 }
 
 /// What a node's fixpoint is read against: root's facts and the cube's axes.
-struct Axes {
+pub(crate) struct Axes {
     root_facts: FxHashSet<FactId>,
     /// The candidates in bit order.
     candidates: Vec<FactId>,
     is_candidate: FxHashSet<FactId>,
     /// The candidates' relations.
     hypothesised: FxHashSet<ein_core::Symbol>,
+    /// Render each node's facts beyond root's — [`Options::keep_states`].
+    keep_states: bool,
+}
+
+impl Axes {
+    pub(crate) fn new(
+        root: &Kb,
+        candidates: &[Candidate],
+        hypothesised: FxHashSet<ein_core::Symbol>,
+        keep_states: bool,
+    ) -> Axes {
+        Axes {
+            root_facts: root.facts().collect(),
+            candidates: candidates.iter().map(|c| c.fact).collect(),
+            is_candidate: candidates.iter().map(|c| c.fact).collect(),
+            hypothesised,
+            keep_states,
+        }
+    }
 }
 
 /// One node's fixpoint, read.
-struct NodeOut {
-    dead: bool,
-    owes: u32,
-    node: Node,
-    state: Box<[FactId]>,
-    delta: Vec<String>,
+pub(crate) struct NodeOut {
+    pub dead: bool,
+    pub owes: u32,
+    /// Its two masks are set only while `n < 64`; [`Self::closure`] is the
+    /// first of them at any `n`.
+    pub node: Node,
+    /// Its fixpoint's facts **beyond root's**, sorted by id — the state's key.
+    /// Every fixpoint holds root's, since a fork only adds, so two keys are
+    /// equal exactly when the two states are.
+    pub state: Box<[FactId]>,
+    /// The candidates its fixpoint holds, as bit indices.
+    pub closure: Vec<u32>,
+    /// [`Self::state`] rendered, only under [`Axes::keep_states`].
+    pub delta: Vec<String>,
+}
+
+#[cfg(feature = "parallel")]
+pub(crate) type Pool = rayon::ThreadPool;
+/// No pool without the `parallel` feature: every node runs on the caller.
+#[cfg(not(feature = "parallel"))]
+pub(crate) type Pool = ();
+
+pub(crate) fn pool_of(jobs: usize) -> Option<Pool> {
+    #[cfg(feature = "parallel")]
+    {
+        (jobs > 1)
+            .then(|| {
+                rayon::ThreadPoolBuilder::new()
+                    .num_threads(jobs)
+                    .thread_name(|i| format!("ein-region-{i}"))
+                    .build()
+                    .ok()
+            })
+            .flatten()
+    }
+    #[cfg(not(feature = "parallel"))]
+    {
+        let _ = jobs;
+        None
+    }
+}
+
+/// Every node of `sets`, in `sets`' order — fanned out over `pool` where a
+/// worker can finish one without numbering a new fact, and the rest computed
+/// here, in order, which is where their new facts get their numbers. The
+/// result is therefore the sequential one byte for byte at any `jobs`.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn fan_out(
+    pool: Option<&Pool>,
+    root: &Kb,
+    snapshot: &Snapshot,
+    terms: &mut Terms,
+    ast: &Ast,
+    memo: &SharedMemo,
+    axes: &Axes,
+    sets: &[Vec<FactId>],
+) -> Result<Vec<NodeOut>, SolveError> {
+    // `None` is a node handed back.
+    #[allow(unused_mut)]
+    let mut speculated: Vec<Option<Result<NodeOut, SolveError>>> =
+        sets.iter().map(|_| None).collect();
+    #[cfg(feature = "parallel")]
+    if let Some(pool) = pool {
+        use rayon::prelude::*;
+        let lent = terms.lend();
+        let shared = lent.get();
+        pool.install(|| {
+            sets.par_iter()
+                .map(|facts| {
+                    let mut view = shared.worker();
+                    view.provs.open_fork();
+                    let out = node_in_region(root, snapshot, &mut view, ast, memo, facts, axes);
+                    let refused = view.refused();
+                    let _ = view.provs.take_fork();
+                    (!refused).then_some(out)
+                })
+                .collect_into_vec(&mut speculated)
+        });
+    }
+    #[cfg(not(feature = "parallel"))]
+    let _ = pool;
+    let mut outs = Vec::with_capacity(sets.len());
+    for (k, facts) in sets.iter().enumerate() {
+        outs.push(match speculated[k].take() {
+            Some(out) => out?,
+            None => node(root, snapshot, terms, ast, memo, facts, axes)?,
+        });
+    }
+    Ok(outs)
 }
 
 /// Fork root, write `facts`, saturate to quiescence, read both bits.
@@ -545,11 +642,16 @@ fn node_in_region(
             }
         })
         .collect();
+    let masks = axes.candidates.len() < 64;
+    let mut closure: Vec<u32> = Vec::new();
     for (b, &c) in axes.candidates.iter().enumerate() {
         if fork.contains(c) {
-            node.closure |= 1 << b;
+            closure.push(b as u32);
+            if masks {
+                node.closure |= 1 << b;
+            }
         }
-        if fork.is_negated(c) {
+        if masks && fork.is_negated(c) {
             node.excluded |= 1 << b;
         }
     }
@@ -572,8 +674,13 @@ fn node_in_region(
         dead: !contradictions.is_empty(),
         owes: node.owes,
         node,
-        delta: sorted_text(terms, &delta),
-        state,
+        delta: if axes.keep_states {
+            sorted_text(terms, &delta)
+        } else {
+            Vec::new()
+        },
+        state: delta.into_boxed_slice(),
+        closure,
     })
 }
 

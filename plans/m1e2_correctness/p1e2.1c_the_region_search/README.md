@@ -25,15 +25,24 @@ without flags we get exhausive certifying full region description"*.
 
 S1e2.1a.9 gives the default an honest answer wherever it is cheap: the alive
 down-set of a monotone program, and the 2ⁿ oracle at n ≤ the limit. Everywhere
-else it says *partial*. The zebra family is past both: n = 56, and an alive
-set nobody has counted. A default that says *partial* on the flagship puzzle
-is honest, but it is not finished. This phase finishes it.
+else it says *partial*. The zebra family is past the oracle at n = 56, and
+past route 1's default budget. Its alive set was counted on 2026-10-16
+([`route1_reach.md` § 6](../p1e2.1a_the_solution_region/route1_reach.md#6-where-route-1-declines-and-zebras-region-counted)):
+
+- `zebra.ein` has **270 454** alive commitments, and its R is **one state**
+  of 261 982 commitments with 63 minimal generators. That took 25 s on 12
+  jobs, which a reader can ask for and a default should not pay;
+- `zebra2-minus-15` already holds 704 443 commitments of R at sizes ≤ 5, and
+  each layer is 2.5–4× the last.
+
+A default that says *partial* on the flagship puzzle is honest, but it is not
+finished. This phase finishes it.
 
 ## Stages (named, not specified)
 
 | ID | title | the question |
 |---|---|---|
-| S1e2.1c.1 | How large the alive set gets | route 1's reach on the zebra family and the slow entries, and what a description costs as the alive set grows |
+| S1e2.1c.1 | How large the alive set gets | route 1's reach on the zebra family and the slow entries, and what a description costs as the alive set grows. First answer: [`route1_reach.md`](../p1e2.1a_the_solution_region/route1_reach.md) (zebra counted; `zebra2-minus-15` and the seven everything-alive cubes not) |
 | S1e2.1c.2 | The lines by duality | for a monotone program, enumerate N and E and dualise (MARCO-style, incremental hypergraph transversal), so that the lines, and with them k_s and k_c by sub-cubes, cost output size rather than \|alive\| |
 | S1e2.1c.3 | The non-monotone search | S1e2.1b.6's guard split, or whatever P1e2.1b rules, past the oracle's limit |
 | S1e2.1c.4 | The flags at scale | *any*, *single*, *minimal* and *maximal* by the cheapest sound route for each, with the certificate each one is entitled to |

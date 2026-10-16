@@ -6,10 +6,12 @@
 //! node for node is `ein-cli/tests/region_dump.rs`'s, because that route runs
 //! the binary.
 
-use std::path::Path;
+use std::collections::{BTreeMap, BTreeSet};
+use std::path::{Path, PathBuf};
 
-use ein_core::Terms;
+use ein_core::{Kb, Terms};
 use ein_corpus::repo_root;
+use ein_infer::downset::{self, Declined, DownSet};
 use ein_infer::monotone::{Monotonicity, SiteKind};
 use ein_infer::region::{self, Options, Outcome, Region};
 use ein_ir::{Ast, load, parse};
@@ -536,4 +538,316 @@ fn census_for_inspection() {
         "all enumerable: {sum:.2} s; whole census {:.2} s",
         t_all.elapsed().as_secs_f64()
     );
+}
+
+// ── Route 1 — S1e2.1a.9 ─────────────────────────────────────────────
+
+/// A program's own load, or `None` for a file that does not load (the
+/// negative fixtures).
+fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
+    let text = std::fs::read_to_string(path).ok()?;
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let forms = parse(&mut ast, &text, path.to_str()).ok()?;
+    let kb = load(&mut ast, &mut terms, &forms, path.parent()).ok()?;
+    Some((kb, terms, ast))
+}
+
+/// Every corpus file and every register witness, once — less the witnesses
+/// a debug build aborts on (W7's two), in a debug build.
+fn corpus_and_register() -> Vec<PathBuf> {
+    let mut files = ein_corpus::corpus_files();
+    for row in ein_corpus::register().case {
+        for (_, a) in row.answers() {
+            if cfg!(debug_assertions) && a.debug_panic.is_some() {
+                continue;
+            }
+            files.push(repo_root().join(row.witness_of(a)));
+        }
+    }
+    files.sort();
+    files.dedup();
+    files
+}
+
+fn facts_text(kb: &Kb, terms: &Terms) -> BTreeSet<String> {
+    kb.facts()
+        .map(|f| ein_infer::events::sexpr(terms, f))
+        .collect()
+}
+
+/// Route 1 against the oracle on one program: every disagreement, as lines.
+fn route_1_against_oracle(rel: &str, r: &Region, d: &DownSet) -> Vec<String> {
+    let mut bad = Vec::new();
+    let texts = |c: &[region::Candidate]| c.iter().map(|c| c.text.clone()).collect::<Vec<_>>();
+    if texts(&r.candidates) != texts(&d.candidates) {
+        return vec![format!("{rel}: the two universes differ")];
+    }
+    if let Some(why) = &d.declined {
+        return vec![format!(
+            "{rel}: route 1 declined ({why:?}) on a monotone program"
+        )];
+    }
+    let n = r.n();
+    let size = 1usize << n;
+    let t = &r.topology;
+    // Visited is exactly alive ∪ N, and every other node is dead in the cube.
+    let visited: BTreeSet<u64> = (0..d.points.len() as u32).map(|i| d.mask(i)).collect();
+    let mut want: BTreeSet<u64> = (0..size as u64)
+        .filter(|&m| r.status[m as usize] & region::DEAD == 0)
+        .collect();
+    want.extend(t.nogoods.iter().copied());
+    if visited != want {
+        let extra: Vec<String> = visited.difference(&want).map(|&m| r.name(m)).collect();
+        let missing: Vec<String> = want.difference(&visited).map(|&m| r.name(m)).collect();
+        bad.push(format!(
+            "{rel}: visited ≠ alive ∪ N — extra {extra:?}, missing {missing:?}"
+        ));
+    }
+    for (i, p) in d.points.iter().enumerate() {
+        let m = d.mask(i as u32);
+        if p.status != r.status[m as usize] {
+            bad.push(format!(
+                "{rel}: {} has status {} on route 1 and {} in the cube",
+                r.name(m),
+                p.status,
+                r.status[m as usize]
+            ));
+        }
+    }
+    let desc = d
+        .description
+        .as_ref()
+        .expect("a description when not declined");
+    let masks = |v: &[u32]| v.iter().map(|&i| d.mask(i)).collect::<BTreeSet<u64>>();
+    let set = |v: &[u64]| v.iter().copied().collect::<BTreeSet<u64>>();
+    for (what, got, want) in [
+        ("minimal", masks(&desc.minimal), set(&t.minimal)),
+        ("maximal", masks(&desc.maximal), set(&t.maximal)),
+        ("N", masks(&desc.nogoods), set(&t.nogoods)),
+    ] {
+        if got != want {
+            bad.push(format!("{rel}: {what} differs"));
+        }
+    }
+    if desc.k_c != t.size_r {
+        bad.push(format!("{rel}: k_c {} against |R| {}", desc.k_c, t.size_r));
+    }
+    let oracle_ks = (0..size)
+        .filter(|&m| r.in_r(m as u64))
+        .map(|m| r.nodes[m].class)
+        .collect::<BTreeSet<u64>>()
+        .len() as u64;
+    if desc.k_s != oracle_ks {
+        bad.push(format!("{rel}: k_s {} against {oracle_ks}", desc.k_s));
+    }
+    let mut sizes: Vec<u64> = desc.components.iter().map(|c| c.size).collect();
+    let mut want_sizes: Vec<u64> = t.components.iter().map(|c| c.size).collect();
+    sizes.sort_unstable();
+    want_sizes.sort_unstable();
+    if sizes != want_sizes {
+        bad.push(format!(
+            "{rel}: components {sizes:?} against {want_sizes:?}"
+        ));
+    }
+    let cubes: BTreeSet<(u64, u64)> = desc
+        .subcubes
+        .iter()
+        .map(|&(a, b)| (d.mask(a), d.mask(b)))
+        .collect();
+    let want_cubes: BTreeSet<(u64, u64)> = t.subcubes.iter().flatten().copied().collect();
+    if cubes != want_cubes {
+        bad.push(format!("{rel}: sub-cubes differ"));
+    }
+    // One state partition: route 1's class and the oracle's are each a
+    // function of the other on the alive points.
+    let mut fwd: BTreeMap<u32, u64> = BTreeMap::new();
+    let mut back: BTreeMap<u64, u32> = BTreeMap::new();
+    for (i, p) in d.points.iter().enumerate() {
+        if p.status & region::DEAD != 0 {
+            continue;
+        }
+        let oc = r.nodes[d.mask(i as u32) as usize].class;
+        if *fwd.entry(p.class).or_insert(oc) != oc || *back.entry(oc).or_insert(p.class) != p.class
+        {
+            bad.push(format!(
+                "{rel}: {} is in another state on route 1",
+                r.name(d.mask(i as u32))
+            ));
+        }
+        if d.mask(p.class) != oc && r.nodes[d.mask(p.class) as usize].class != oc {
+            bad.push(format!(
+                "{rel}: {}'s class representative",
+                r.name(d.mask(i as u32))
+            ));
+        }
+        let closure: u64 = p.closure.iter().fold(0, |m, &b| m | 1 << b);
+        if closure != r.nodes[d.mask(i as u32) as usize].closure {
+            bad.push(format!("{rel}: {}'s closure", r.name(d.mask(i as u32))));
+        }
+    }
+    // The merges: per state of R with several commitments, its minimal
+    // generators by the local test over the cube.
+    let mut by_class: BTreeMap<u64, Vec<u64>> = BTreeMap::new();
+    for m in 0..size as u64 {
+        if r.in_r(m) {
+            by_class
+                .entry(r.nodes[m as usize].class)
+                .or_default()
+                .push(m);
+        }
+    }
+    let want_merged: BTreeSet<(BTreeSet<u64>, u64, u64)> = by_class
+        .iter()
+        .filter(|(_, v)| v.len() > 1)
+        .map(|(&c, v)| {
+            let gens = v
+                .iter()
+                .copied()
+                .filter(|&m| {
+                    (0..n).all(|b| {
+                        m >> b & 1 == 0
+                            || r.nodes[(m ^ 1 << b) as usize].class != c
+                            || !r.in_r(m ^ 1 << b)
+                    })
+                })
+                .collect();
+            (gens, v.len() as u64, r.nodes[c as usize].closure)
+        })
+        .collect();
+    let got_merged: BTreeSet<(BTreeSet<u64>, u64, u64)> = desc
+        .merged
+        .iter()
+        .map(|g| {
+            (
+                masks(&g.generators),
+                g.size,
+                g.to.iter().fold(0, |m, &b| m | 1 << b),
+            )
+        })
+        .collect();
+    if got_merged != want_merged {
+        bad.push(format!("{rel}: the merged classes differ"));
+    }
+    bad
+}
+
+/// **Route 1 equals the oracle** — S1e2.1a.9's acceptance, the empirical half
+/// of `monotone.rs`'s theorem made a test. On every corpus file and register
+/// witness whose cube the oracle enumerates and whose static verdict is
+/// monotone, route 1 visits exactly the alive nodes and `N`, agrees with the
+/// cube on both bits of every node it visits, and gives the oracle's `R`: its
+/// lines, `k_c`, `k_s`, components, sub-cubes, `N`, states and merges. On
+/// every flagged program it declines. Its root is the oracle's — `sat(program)`
+/// — so the route writes nothing into root.
+#[test]
+fn route_1_is_the_oracle_on_every_monotone_program_it_reaches() {
+    let mut failures: Vec<String> = Vec::new();
+    let (mut monotone, mut flagged, mut saved) = (0usize, 0usize, (0u64, 0u64));
+    // The oracle's record is the same at any `jobs` (`jobs_change_nothing`),
+    // and its four `n = 16` cubes are most of this test's wall clock.
+    let oracle = Options {
+        jobs: std::thread::available_parallelism().map_or(1, |n| n.get().min(8)),
+        ..Options::default()
+    };
+    for path in corpus_and_register() {
+        let rel = path
+            .strip_prefix(repo_root())
+            .unwrap_or(&path)
+            .to_string_lossy()
+            .to_string();
+        let Some((mut kb, mut terms, ast)) = loaded(&path) else {
+            continue;
+        };
+        let t0 = std::time::Instant::now();
+        let Ok(Outcome::Region(r)) =
+            region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
+        else {
+            continue;
+        };
+        let (mut kb1, mut terms1, ast1) = loaded(&path).expect("loaded once already");
+        let opts = downset::Options {
+            budget: u64::MAX,
+            jobs: 1,
+        };
+        let d = downset::compute(&mut kb1, &mut terms1, &ast1, &opts)
+            .unwrap_or_else(|e| panic!("{rel}: {e}"));
+        if facts_text(&kb1, &terms1) != facts_text(&kb, &terms) {
+            failures.push(format!("{rel}: route 1's root is not sat(program)"));
+        }
+        if !r.monotonicity.is_monotone() {
+            flagged += 1;
+            if d.declined != Some(Declined::NotMonotone) {
+                failures.push(format!("{rel}: flagged, and route 1 did not decline"));
+            }
+            continue;
+        }
+        monotone += 1;
+        saved.0 += d.points.len() as u64;
+        saved.1 += 1u64 << r.n();
+        failures.extend(route_1_against_oracle(&rel, &r, &d));
+        if std::env::var_os("EIN_ROUTE1_TIMES").is_some() {
+            eprintln!("{:.3} {rel}", t0.elapsed().as_secs_f64());
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    // The census of 2026-10-16 (`region_census.md`): 146 monotone cubes and
+    // 13 flagged. A sweep that silently found none would pass the loop above.
+    assert!(
+        monotone >= 140 && flagged >= 10,
+        "{monotone} monotone, {flagged} flagged"
+    );
+    assert!(
+        saved.0 < saved.1,
+        "route 1 visited {} of {} nodes",
+        saved.0,
+        saved.1
+    );
+}
+
+/// Route 1 at four jobs is route 1 at one, point for point.
+#[test]
+fn route_1_jobs_change_nothing() {
+    for rel in [
+        "examples/branching/05_mini_zebra.ein",
+        "examples/saturation/type-exclusivity/pets.ein",
+        "examples/lattice/05_owed_seats_bounded.ein",
+        "examples/lattice/07_two_pairs_two_tables.ein",
+    ] {
+        let run = |jobs: usize| {
+            let (mut kb, mut terms, ast) = loaded(&repo_root().join(rel)).expect(rel);
+            let opts = downset::Options {
+                budget: u64::MAX,
+                jobs,
+            };
+            downset::compute(&mut kb, &mut terms, &ast, &opts).unwrap()
+        };
+        let (a, b) = (run(1), run(4));
+        assert_eq!(a.points.len(), b.points.len(), "{rel}");
+        for (x, y) in a.points.iter().zip(&b.points) {
+            assert_eq!(
+                (&x.set, x.status, &x.owed, &x.core, x.class, &x.closure),
+                (&y.set, y.status, &y.owed, &y.core, y.class, &y.closure),
+                "{rel}"
+            );
+        }
+        assert_eq!(a.layers, b.layers, "{rel}");
+    }
+}
+
+/// Past the oracle's limit: route 1 describes `zebra2.ein`'s neighbours or
+/// declines at its budget, and says which — never a silent partial answer.
+#[test]
+fn route_1_declines_at_its_budget_with_whole_layers() {
+    let (mut kb, mut terms, ast) =
+        loaded(&repo_root().join("examples/branching/10_kill_cache_on.ein")).unwrap();
+    let opts = downset::Options { budget: 3, jobs: 1 };
+    let d = downset::compute(&mut kb, &mut terms, &ast, &opts).unwrap();
+    let Some(Declined::Budget { layer, next }) = d.declined else {
+        panic!("{:?}", d.declined);
+    };
+    assert_eq!(layer, 1, "∅ fits; layer 1's {next} do not");
+    assert_eq!(next, d.n() as u64);
+    assert_eq!(d.points.len(), 1);
+    assert!(d.description.is_none());
 }

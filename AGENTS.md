@@ -74,6 +74,12 @@ constrained-reasoning research.
   § 2.5 and an `R?` column: *no config option changes R*, measured over every
   lever by `utils/region_census.py --levers`, and `enable-symmetric-mirror`
   is the one flag that does.
+  **S1e2.1a.9's route 1**
+  ([`ein_infer::downset`](ein.rs/crates/ein-infer/src/downset.rs)) computes a
+  monotone program's R from its alive set and N alone. It is held to the
+  oracle node for node, and it counts `zebra.ein`'s R as one state of 261 982
+  commitments. `ein solve` does not reach it until the user rules on
+  [`solve_flags.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_flags.md).
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -514,6 +520,7 @@ ein test examples tests stdlib --json-report r.json          # the M1d S1d.4.1 r
 ein solve … --dump-answer DIR                                # M1e2: the answer as files, each state loadable
 ein solve … --dump-region DIR                                # M1e2: the region of the lattice, computed without the search
 ein render region DIR [--view full|border|lines|table]       # M1e2: that region drawn, the run's walk on it
+cargo run --release -p ein-infer --example route1_reach      # M1e2: route 1, R from the alive down-set, over the corpus
 ein render program|kb FILE                                   # M1e2: the program as written; a KB (or a dumped model)
 python3 utils/review_bundle.py                               # M1e2: build/review/, one page per register row
 python3 utils/review_bundle.py --regions                     # M1e2: build/review/regions/, every corpus region surveyed

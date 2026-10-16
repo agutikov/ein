@@ -13,6 +13,11 @@ contradicts no ruling, and
 [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)
 now defines R. The terms are in [`definitions.md`](definitions.md), and on
 that page since S1e2.1a.3.
+S1e2.1a.9 started the same day. Route 1 is in the library, held to the oracle
+node for node, and measured ([`route1_reach.md`](route1_reach.md)): it
+describes R on 162 of 195 programs and counts zebra's (one state, 261 982
+commitments). Its flags page diff ([`solve_flags.md`](solve_flags.md)) waits
+for the user's ruling before the CLI moves.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md) S1e2.1.1–6,
 which built the register, the doors and the bundle this phase extends.
 **Blocks:** the rest of the review,
@@ -96,6 +101,9 @@ has them verbatim. What they change here:
   generator proposes.
 - **W11 is not this phase's question.** It is revisited twice after the
   refactoring: in S1e2.1.7's review, then in S1e2.2.12.
+- **Waiting for the user since 2026-10-16:** [`solve_flags.md` § 9](solve_flags.md#9-what-needs-the-users-ruling)'s
+  four questions: the flag names, where today's walk goes, route 1's budget,
+  and when the default switches.
 - **Still open:** whether `(region …)` with `(merged …)`, the third answer's
   sketch of how a state's class is shown, is one form for both directions,
   printed by `solve` and stated by a program. That is S1e2.1a.4's grammar
@@ -124,7 +132,7 @@ Taken 2026-10-15 against `caef67a`.
 | [S1e2.1a.8](s1e2.1a.8_region_to_program.md) | From a region to a program | 2 d | the opposite task, the user's of 2026-10-15: `utils/region_synth.py` writes a program for a chosen region (prime implicants → `(false)` rules with `absent`, obligations with witnesses), held to it node for node by the oracle and the static check by its monotonicity; the user's three-component shape and four more banked in `examples/lattice/synth/`; the solution as files; the region gallery (`review_bundle.py --regions`). **Done 2026-10-15** |
 | [S1e2.1a.3](s1e2.1a.3_the_definition.md) | The region census, and the definition | 2.5 d | R measured over every corpus entry the oracle reaches; Q-M1e2.7's sub-questions (a)–(i) ruled by the user with the census on the table; `solution_semantics.md` rewritten around R; the config principle in `configuration.md`. **Done 2026-10-16**: `utils/region_census.py`, 159 regions, every ruling met by the census, and one flag that changes R (`enable-symmetric-mirror`) |
 | [S1e2.1a.4](s1e2.1a.4_the_language.md) | The language states a region | 2.5 d, to be re-estimated | the forms (b) and (c) ruled 2026-10-16: `(solve :hrules …)` split from `(query …)`, `(solution …)` for the expected region, `(query … :expect …)` over the goal's projection; `ein test` and `--json-report` check them; the corpus migration named first; the grammar page says so |
-| [S1e2.1a.9](s1e2.1a.9_solve_describes_the_region.md) | `ein solve` describes the region | 4 d | the user's default of 2026-10-16: no flag means R in full, certified. Route 1 is a monotone program's alive down-set, held to the oracle node for node; route 2 is the oracle at n ≤ the limit; route 3 is the walk, said to be partial. The flags *any*, *single*, *minimal* and *maximal* on two axes. Every golden named before it moves |
+| [S1e2.1a.9](s1e2.1a.9_solve_describes_the_region.md) | `ein solve` describes the region | 4 d | the user's default of 2026-10-16: no flag means R in full, certified. Route 1 is a monotone program's alive down-set, held to the oracle node for node; route 2 is the oracle at n ≤ the limit; route 3 is the walk, said to be partial. The flags *any*, *single*, *minimal* and *maximal* on two axes. Every golden named before it moves. **In progress**: route 1 (`ein_infer::downset`) and its reach done 2026-10-16; the flags' page diff waits for the ruling |
 | [S1e2.1a.5](s1e2.1a.5_the_read_out.md) | The read-out speaks R | 2 d | k_s and k_c replace `k` (a), (e); the default read-out describes R, and the verdict words judge a stated expectation (i), from a flag or from the program; every surface says what it counts; empty R split into its two kinds; holes through the stub; every golden named before it moves |
 | [S1e2.1a.6](s1e2.1a.6_engine_against_oracle.md) | The engine against the oracle | 2 d | a cargo test over every corpus entry with n ≤ 16: the engine's reported lines equal the oracle's, **under every lever**, or the disagreement is a register row; the census of disagreements is the first answer-check M1e2 has that is not a hand derivation |
 | [S1e2.1a.7](s1e2.1a.7_the_bundle_shows_r.md) | The bundle shows R, and the review resumes | 1.5 d | a § *The region* on every case page and in `--corpus` mode; every register `right` block restated under the new definition, computed by the oracle wherever n ≤ 16; S1e2.1.7 resumes on the twelve unread cases |
