@@ -524,3 +524,14 @@ state.
 - **(B) `(region)` only**: the claim language speaks of R alone. The 13
   fixtures lose their fact pins, the sweep falls to 126, and the read-out
   prints the owing frontier outside the language.
+
+**Ruled 2026-10-16: (A)**, verbatim: *"Ok, I agree - ein solve has to print
+why R is empty"*. Asked in the same exchange whether these words are only for
+`:expect`: yes. `region`, `merged` and `owing` mean something only inside
+`(solve … :expect …)`, and `model`, `or` and `false` inside either `:expect`.
+None is reserved elsewhere, except one guard that is decided unless the user
+objects: a **top-level** `(region …)`, `(merged …)` or `(owing …)` is a load
+error saying the claim belongs under `(solve … :expect …)`. Otherwise a
+printed region pasted at the top level would load silently as a fact of a new
+relation, the `:expct` failure again. `model` stays unreserved, as today.
+
