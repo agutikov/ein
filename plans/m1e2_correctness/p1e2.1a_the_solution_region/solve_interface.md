@@ -64,7 +64,8 @@ What it settles:
 - **[`walk_and_region.md` § 7](walk_and_region.md#7-two-rulings-meet-here)
   follows.** If R is the oracle's R, a node is `sat(root ∪ C)` with nothing
   the search wrote into it. So W9's and W11's `right` blocks are restated at
-  S1e2.1a.7, and root is never written.
+  S1e2.1a.10 (S1e2.1a.7 until the re-order of 2026-10-16), and root is
+  never written.
 
 ### 0.1 The approval
 
@@ -515,7 +516,7 @@ binds them there, and C1 and C3 bind them everywhere.
 | corpus `-m`, `--dump-states`, `-E` cells | 8, 8, 1 | removed or re-pointed one by one. Each is named before it moves |
 | corpus `levers` columns | 12 | `-o score-sum` goes. `-L`, `-K` and `-y` stay, now with C4's guarantee |
 | register runs | 46 | re-pointed to the mode that asks the row's question, `--maximal` for a model-set row |
-| register rows whose wrong answer is the walk's | 15 of 26: W1 (7 rows), W2 (2), W3 (2, the walk's pruning under `absent`, where a mode takes the cube), W5, W9 (2), and W11's `unsat-core-id-space`. Then `zebra2-hints` and `branching/07`, once S1e2.1a.6 files them | **expected to flip to fixed** at the switch. Each is confirmed by § 5's test against its `right` block restated under R at S1e2.1a.7, which therefore lands first |
+| register rows whose wrong answer is the walk's | 15 of 26: W1 (7 rows), W2 (2), W3 (2, the walk's pruning under `absent`, where a mode takes the cube), W5, W9 (2), and W11's `unsat-core-id-space`. Then the rows S1e2.1a.10 files: `zebra2-hints`, `branching/07` and four flagged programs | **expected to flip to fixed** at the switch. Each is confirmed by § 5's test against its `right` block restated under R at [S1e2.1a.10](s1e2.1a.10_the_register_under_r.md), which therefore lands first |
 | register rows the oracle shares, or that are about a read-out | W4 and W6 (the candidate list), W7 (the saturator), W8 (the node under `absent`, P1e2.1b's), W10, W11's `d3-unsat-core` and W12 (which core is printed), C1 (the blind rung) | unchanged by this interface ([`solution_semantics.md` § 6.6](../../../docs/kernel/inference/solution_semantics.md#66-what-the-oracle-does-not-check)) |
 | option census | 65 → 74 at T1e2.1a.9.4 (`solve` +4, `oracle` 5); −9 at the switch, + the read-out's | `configuration.md` § 3, `help_surface.rs`, `help_shape.txt`, `config_reference.rs` |
 | config fields | 17 → 8 | six corpus files edited (§ 2.4) |

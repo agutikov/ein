@@ -398,9 +398,11 @@ So R's node is `sat(root ∪ C)`. Q-M1e.7's reading stays true of what the
 **walk** records, which is the walk's business until S1e2.1c.5 decides its
 fate. The consequences:
 
-- W9's and W11's `right` blocks are restated at S1e2.1a.7, in the direction
+- W9's and W11's `right` blocks are restated at S1e2.1a.10 (S1e2.1a.7 until
+  the re-order of 2026-10-16), in the direction
   above;
-- `zebra2-hints` gets a register row at S1e2.1a.6, which it needs either
+- `zebra2-hints` gets a register row at S1e2.1a.10 (S1e2.1a.6 until the
+  re-order), which it needs either
   way (W1's shape);
 - *root is never written* holds for R by the same argument, since a promotion
   is a write a flag turns off (`enable-forced-positive`).
@@ -413,20 +415,23 @@ be consistent: region is a region of oracle"*. The oracle's node is
 
 ## 8. What it leaves for the stages that follow
 
-- **[S1e2.1a.6](s1e2.1a.6_engine_against_oracle.md)** turns this comparison
-  into its test. `walk_vs_region.rs` is its first version. Two disagreements
-  have no register row:
+- **[S1e2.1a.10](s1e2.1a.10_the_register_under_r.md)** extends this
+  comparison to every declared cell, before the switch removes the walk. It
+  was S1e2.1a.6's until the re-order of 2026-10-16. `walk_vs_region.rs` is
+  its first version. Two disagreements have no register row:
   - `zebra2-hints.ein`: W1's shape, and the walk's node (§ 4.3);
   - `branching/07_lookahead_off`: W1 under `-L` (§ 4.4).
-- **[S1e2.1a.7](s1e2.1a.7_the_bundle_shows_r.md)** restates every register
-  `right` block under R. **W11's witness** has `right = Contradiction, k = 0`,
-  and R has two maximal states there, so the restatement moves it.
+
+  Four more are among § 4.6's flagged programs.
+- **S1e2.1a.10** also restates every register `right` block under R, which
+  was S1e2.1a.7's. **W11's witness** has `right = Contradiction, k = 0`, and R
+  has two maximal states there, so the restatement moves it.
 - **The walk's stronger node** is a fourth way a search write reaches an
   answer, after the three in
   [§ 6.2](../../../docs/kernel/inference/solution_semantics.md#62-what-is-recorded-is-s--k-and-the-criteria-were-checked-against-s).
   It is not a row of its own: its answer-changing witnesses are W9's two,
   W11's, and the `zebra2-hints` row above. On zebra it changes no answer and
   is a third of the walk's enterings.
-- **W9 and W11 change direction** at S1e2.1a.7, since § 7 holds: their
+- **W9 and W11 change direction** at S1e2.1a.10, since § 7 holds: their
   `right` blocks are the default's answer, and R's is the one the kill cache
   removes.

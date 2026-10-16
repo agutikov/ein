@@ -1,9 +1,11 @@
 # P1e2.1a — The solution region: R defined, computed, drawn and reported
 
-**Estimate:** ~5 weeks: 9 stages, 23 days. It was 15.5 days when written.
+**Estimate:** ~5 weeks: 10 stages, 23 days. It was 15.5 days when written.
 S1e2.1a.1 grew by 1.5 on 2026-10-15, and S1e2.1a.8 (2 days) was added the
 same day at the user's request. S1e2.1a.9 (4 days) was added on 2026-10-16,
-when Q-M1e2.8 was ruled. S1e2.1a.4 is re-estimated after its grammar diff.
+when Q-M1e2.8 was ruled. S1e2.1a.10 (1.5 days) was split out of S1e2.1a.6
+and S1e2.1a.7 the same day, and they shrank by what it took. S1e2.1a.4 is
+re-estimated after its grammar diff.
 **Status:** in progress. S1e2.1a.1, S1e2.1a.2 and S1e2.1a.8 were done
 2026-10-15. On 2026-10-16, ahead of S1e2.1a.3's census, the user ruled every
 sub-question but (d) for the monotone case, and the shape of `solve`'s default
@@ -13,11 +15,15 @@ contradicts no ruling, and
 [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)
 now defines R. The terms are in [`definitions.md`](definitions.md), and on
 that page since S1e2.1a.3.
-S1e2.1a.9 started the same day. Route 1 is in the library, held to the oracle
-node for node, and measured ([`route1_reach.md`](route1_reach.md)): it
-describes R on 162 of 195 programs and counts zebra's (one state, 261 982
-commitments). Its flags page diff ([`solve_flags.md`](solve_flags.md)) waits
-for the user's ruling before the CLI moves.
+S1e2.1a.9 was done the same day, apart from the switch, which is S1e2.1a.5's.
+Route 1 is in the library, held to the oracle node for node, and measured
+([`route1_reach.md`](route1_reach.md)): it describes R on 162 of 195 programs
+and counts zebra's (one state, 261 982 commitments). The interface
+([`solve_interface.md`](solve_interface.md)) was approved, and its additive
+half is built: the region modes and `ein oracle`, every mode held to the
+oracle. **The rest of the phase was re-ordered the same day**
+([§ Stages](#stages)), because the switch needs two pieces of work the plan
+had after it.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md) S1e2.1.1–6,
 which built the register, the doors and the bundle this phase extends.
 **Blocks:** the rest of the review,
@@ -148,24 +154,40 @@ Taken 2026-10-15 against `caef67a`.
 | [S1e2.1a.8](s1e2.1a.8_region_to_program.md) | From a region to a program | 2 d | the opposite task, the user's of 2026-10-15: `utils/region_synth.py` writes a program for a chosen region (prime implicants → `(false)` rules with `absent`, obligations with witnesses), held to it node for node by the oracle and the static check by its monotonicity; the user's three-component shape and four more banked in `examples/lattice/synth/`; the solution as files; the region gallery (`review_bundle.py --regions`). **Done 2026-10-15** |
 | [S1e2.1a.3](s1e2.1a.3_the_definition.md) | The region census, and the definition | 2.5 d | R measured over every corpus entry the oracle reaches; Q-M1e2.7's sub-questions (a)–(i) ruled by the user with the census on the table; `solution_semantics.md` rewritten around R; the config principle in `configuration.md`. **Done 2026-10-16**: `utils/region_census.py`, 159 regions, every ruling met by the census, and one flag that changes R (`enable-symmetric-mirror`) |
 | [S1e2.1a.4](s1e2.1a.4_the_language.md) | The language states a region | 2.5 d, to be re-estimated | the forms (b) and (c) ruled 2026-10-16: `(solve :hrules …)` split from `(query …)`, `(solution …)` for the expected region, `(query … :expect …)` over the goal's projection; `ein test` and `--json-report` check them; the corpus migration named first; the grammar page says so |
-| [S1e2.1a.9](s1e2.1a.9_solve_describes_the_region.md) | `ein solve` describes the region | 4 d | the user's default of 2026-10-16: no flag means R in full, certified. Route 1 is a monotone program's alive down-set, held to the oracle node for node; route 2 is the oracle at n ≤ the limit; past both, a partial description with bounds and no walk. The flags *any*, *single*, *minimal* and *maximal* on two axes. Every golden named before it moves. **In progress**: route 1 (`ein_infer::downset`) and its reach done 2026-10-16; the flags ruled and the interface ([`solve_interface.md`](solve_interface.md)) approved 2026-10-16, with no `ein walk`; T1e2.1a.9.4's additive half built the same day: `ein_infer::explore`, the region flags, `ein oracle`, every mode held to the oracle. The retirements wait for S1e2.1a.5 |
-| [S1e2.1a.5](s1e2.1a.5_the_read_out.md) | The read-out speaks R | 2 d | k_s and k_c replace `k` (a), (e); the default read-out describes R, and the verdict words judge a stated expectation (i), from a flag or from the program; every surface says what it counts; empty R split into its two kinds; holes through the stub; every golden named before it moves |
-| [S1e2.1a.6](s1e2.1a.6_engine_against_oracle.md) | The engine against the oracle | 2 d | a cargo test over every corpus entry with n ≤ 16: the engine's reported lines equal the oracle's, **under every lever**, or the disagreement is a register row; the census of disagreements is the first answer-check M1e2 has that is not a hand derivation |
-| [S1e2.1a.7](s1e2.1a.7_the_bundle_shows_r.md) | The bundle shows R, and the review resumes | 1.5 d | a § *The region* on every case page and in `--corpus` mode; every register `right` block restated under the new definition, computed by the oracle wherever n ≤ 16; S1e2.1.7 resumes on the twelve unread cases |
+| [S1e2.1a.9](s1e2.1a.9_solve_describes_the_region.md) | `ein solve` describes the region | 4 d | the user's default of 2026-10-16: no flag means R in full, certified. Route 1 is a monotone program's alive down-set, held to the oracle node for node; route 2 is the oracle at n ≤ the limit; past both, a partial description with bounds and no walk. The flags *any*, *single*, *minimal* and *maximal* on two axes. **Done 2026-10-16** apart from the switch: route 1 (`ein_infer::downset`) and its reach; the flags ruled and the interface ([`solve_interface.md`](solve_interface.md)) approved, with no `ein walk`; T1e2.1a.9.4's additive half, which is `ein_infer::explore`, the region flags, `ein oracle`, and every mode held to the oracle. The retirements and the golden move are S1e2.1a.5's |
+| [S1e2.1a.10](s1e2.1a.10_the_register_under_r.md) | The register under R, before the switch | 1.5 d | the walk's last census, every declared run and lever cell against R, while the walk can still be run; every walk wrong answer with no row filed, six known (`zebra2-hints`, `branching/07`, and four flagged programs); every `right` block restated under R, computed by the oracle or route 1, with no hand derivation left, and held by a test; W9 and W11 reversed; W1 re-read. Taken from S1e2.1a.6 and S1e2.1a.7 on 2026-10-16 |
+| [S1e2.1a.5](s1e2.1a.5_the_read_out.md) | The read-out speaks R, and the default switches | 2 d | k_s and k_c replace `k` (a), (e); the default read-out describes R, and the verdict words judge a stated expectation (i), from a flag or from the program; every surface says what it counts; empty R split into its two kinds; holes through the stub. **The switch**, in one commit: bare `ein solve` describes R, the nine options and nine config fields retire, the last path to the walk goes, `ein oracle` gets its other five options, the corpus, the summaries and the 46 register runs move, and the 15 walk rows and S1e2.1a.10's flip to `fixed`. Every golden named before it moves |
+| [S1e2.1a.6](s1e2.1a.6_engine_against_oracle.md) | The engine against the oracle, under every lever | 1 d | the modes' answers held to R under every lever cell the corpus declares (C4), now that the walk's levers are the modes'; the `enable-symmetric-mirror` row. *The engine equals the oracle* at default levers is already `explore.rs`'s test, and the walk's census is S1e2.1a.10's |
+| [S1e2.1a.7](s1e2.1a.7_the_bundle_shows_r.md) | The bundle shows R, and the review resumes | 1 d | a § *The region* on every case page and in `--corpus` mode; S1e2.1.7 resumes on the twelve unread cases |
 
-**Work order: .1, .2, .8, .3 (done), then .9 and .4 in parallel, .5, .6, .7.**
-S1e2.1a.9 comes before .5 because .5 prints what .9 computes.
-**Before 2026-10-16 the order was id order, with one overlap, and S1e2.1a.8
-after .2.** It was
+**Work order: .1, .2, .8, .3, .9 (done), then .4 and .10 in parallel, .5, .6,
+.7.** Re-ordered 2026-10-16 after the interface was approved. The switch is
+S1e2.1a.5's, and it removes the last CLI path to the walk. That commit needs
+two things the plan had filed later:
+
+- **the register's right answers restated under R**, which were S1e2.1a.7's.
+  After the switch no run reproduces the walk's wrong answers, so its 15 rows
+  must flip to `fixed` in that commit, and a row flips only against a `right`
+  block restated under R;
+- **the walk's wrong answers with no row filed**, which was S1e2.1a.6's. Six
+  are known: `zebra2-hints`, `branching/07` and four flagged programs. After
+  the switch nothing reproduces them.
+
+S1e2.1a.10 is both, taken out of the two stages before the switch. S1e2.1a.9
+comes before .5 because .5 prints what .9 computes. S1e2.1a.4 comes before .5
+because the region form .5 prints is the one .4 reads back, and the round-trip
+test needs both.
+**Before that the order was .9 and .4 in parallel, then .5, .6, .7. Before
+2026-10-16 it was id order, with one overlap, and S1e2.1a.8 after .2.** It was
 added on 2026-10-15 and done the same day, after S1e2.1a.2's drawings: its
 programs are the cases S1e2.1a.3 rules on and S1e2.1a.6 checks.
 **Otherwise:** The oracle and the drawing come
 first, because they show R before anyone rules on it, which is this
 milestone's *see first* order. The oracle's classification (dead, owing,
 discharged) depends on none of Q-M1e2.7's sub-questions. S1e2.1a.3 needs
-S1e2.1a.1 for its census. S1e2.1a.4 and S1e2.1a.5 need the rulings and can
-run in parallel. S1e2.1a.6 needs S1e2.1a.5, because it compares what the
-engine *reports*. S1e2.1a.7 needs all of them.
+S1e2.1a.1 for its census. S1e2.1a.4 and S1e2.1a.5 need the rulings.
+S1e2.1a.6 needs S1e2.1a.5, because it compares what the engine *reports*.
+S1e2.1a.7 needs all of them.
 
 ## Where this phase stops and P1e2.2 starts
 
@@ -174,11 +196,11 @@ makes `solve`'s default compute R wherever that is cheap and exact
 (S1e2.1a.9). It does not fix the walk. Taking the default further is
 [P1e2.1c](../p1e2.1c_the_region_search/README.md)'s work, and the wrong
 answers that survive are [P1e2.2](../p1e2.2_wrong_answers/README.md)'s, one
-case at a time. After S1e2.1a.5 the engine reports *what its walk found* in
-R's vocabulary. Where the walk is wrong, the report is wrong in a new
-shape, and the register holds it. W1's fix stays
-[S1e2.2.1](../p1e2.2_wrong_answers/s1e2.2.1_maximal_not_recorded.md), and it
-is restated against the maximal line at S1e2.1a.7.
+case at a time. After S1e2.1a.5 no CLI path reaches the walk. The register's
+rows whose wrong answer was the walk's flip to `fixed` in the switch commit,
+against the `right` blocks S1e2.1a.10 restated. What that leaves of P1e2.2's
+stages, W1's [S1e2.2.1](../p1e2.2_wrong_answers/s1e2.2.1_maximal_not_recorded.md)
+among them, is the re-scoping P1e2.1c's last stage does.
 
 ## Acceptance
 
