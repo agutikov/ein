@@ -120,6 +120,21 @@ pub fn check(
     })
 }
 
+/// Check `claim` against `d`, an exhausted description of `root`'s R that a
+/// run already computed — what `ein solve` does, so that the claim and the
+/// read-out are about one R and the program is solved once.
+pub fn check_described(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    claim: &Claim,
+    d: &Described,
+    opts: &Options,
+) -> Result<Report, SolveError> {
+    debug_assert!(d.exhausted, "a claim is checked against all of R");
+    compare(root, terms, ast, claim, &of_described(d.clone()), opts)
+}
+
 /// R, by route 1 on a monotone program and by the cube otherwise — or why no
 /// route described it, with the static verdict.
 fn lattice(

@@ -120,6 +120,9 @@ pub struct Described {
     /// On a partial route-1 run: every member of `R` reached by a commitment
     /// of at most this many candidates was visited.
     pub complete_up_to: Option<usize>,
+    /// On a route-1 run its budget stopped: the layer it did not take, and
+    /// that layer's commitments.
+    pub stopped_before: Option<(usize, u64)>,
     pub root: Root,
     /// Some node is alive.
     pub any_alive: bool,
@@ -363,6 +366,10 @@ pub fn of_downset(d: &DownSet) -> Described {
         route: Route::DownSet,
         exhausted,
         complete_up_to: (!exhausted).then(|| d.layers.len().saturating_sub(1)),
+        stopped_before: match d.declined {
+            Some(crate::downset::Declined::Budget { layer, next, .. }) => Some((layer, next)),
+            _ => None,
+        },
         root: root_of(points.first(), d.root_dead),
         any_alive,
         k_c,
@@ -528,6 +535,7 @@ pub fn of_cube(r: &Region) -> Described {
         route: Route::Cube,
         exhausted: true,
         complete_up_to: None,
+        stopped_before: None,
         root: Root {
             alive: !r.root_dead && alive(0),
             owes: root.owes,

@@ -48,6 +48,7 @@ pub mod oblgen;
 pub mod obligations;
 pub mod plan;
 pub mod predicates;
+pub mod read_out;
 pub mod region;
 pub mod sanity;
 pub mod saturator;

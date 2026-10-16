@@ -573,6 +573,93 @@ pub(crate) fn fan_out(
     Ok(outs)
 }
 
+/// The node function, for a reader that needs a state itself and not its two
+/// bits: the read-out's `(model …)`s and its query classes (M1e2
+/// T1e2.1a.5.2). Root is prepared once; each fixpoint is a fork of it,
+/// written and saturated exactly as `fan_out` does for every route, and its
+/// provenance is reclaimed when the reader returns.
+pub struct Nodes<'a> {
+    root: &'a Kb,
+    snapshot: Snapshot,
+    memo: SharedMemo,
+    terms: &'a mut Terms,
+    ast: &'a Ast,
+}
+
+impl<'a> Nodes<'a> {
+    /// Over `root`, a program a route has answered or a fresh one: preparing
+    /// saturates it, which a saturated root leaves as it is.
+    pub fn new(
+        root: &'a mut Kb,
+        terms: &'a mut Terms,
+        ast: &'a Ast,
+        _candidates: &[Candidate],
+    ) -> Result<Nodes<'a>, SolveError> {
+        let prepared = prepare(root, terms, ast)?;
+        Ok(Nodes {
+            root: root.sealed(),
+            snapshot: prepared.snapshot,
+            memo: prepared.memo,
+            terms,
+            ast,
+        })
+    }
+
+    /// `read` the fixpoint of root plus `facts`.
+    pub fn with_fixpoint<R>(
+        &mut self,
+        facts: &[FactId],
+        read: impl FnOnce(&Kb, &mut Terms) -> R,
+    ) -> Result<R, SolveError> {
+        self.terms.provs.open_fork();
+        let out = fixpoint(
+            self.root,
+            &self.snapshot,
+            self.terms,
+            self.ast,
+            &self.memo,
+            facts,
+        )
+        .map(|kb| read(&kb, self.terms));
+        self.terms.provs.discard_fork();
+        out
+    }
+}
+
+/// Root's fork with `facts` written, saturated to quiescence — the half of
+/// [`node_in_region`] every route shares.
+fn fixpoint(
+    root: &Kb,
+    snapshot: &Snapshot,
+    terms: &mut Terms,
+    ast: &Ast,
+    memo: &SharedMemo,
+    facts: &[FactId],
+) -> Result<Kb, SolveError> {
+    let mut off = Events::off();
+    let mut fork = root.branch();
+    for &h in facts {
+        let (rel, args) = terms.facts.get(h);
+        let args = args.to_vec();
+        let prov = terms.provs.push(Prov::from_hypothesis(0, None));
+        fork.add_and_index_fact(terms, rel, &args, Some(prov))
+            .expect("room for a hypothesis");
+    }
+    {
+        let mut s = Session {
+            kb: &mut fork,
+            terms,
+            ast,
+            events: &mut off,
+            memo: memo.clone(),
+        };
+        let delta = snapshot.new_facts_of(s.kb);
+        let mut sat = Saturator::resume(&mut s, snapshot, delta)?;
+        sat.saturate(&mut s, None, &mut |_| {})?;
+    }
+    Ok(fork)
+}
+
 /// Fork root, write `facts`, saturate to quiescence, read both bits.
 ///
 /// The provenance the fork pushes lives in a region of the arena that is
@@ -602,27 +689,8 @@ fn node_in_region(
     facts: &[FactId],
     axes: &Axes,
 ) -> Result<NodeOut, SolveError> {
+    let fork = fixpoint(root, snapshot, terms, ast, memo, facts)?;
     let mut off = Events::off();
-    let mut fork = root.branch();
-    for &h in facts {
-        let (rel, args) = terms.facts.get(h);
-        let args = args.to_vec();
-        let prov = terms.provs.push(Prov::from_hypothesis(0, None));
-        fork.add_and_index_fact(terms, rel, &args, Some(prov))
-            .expect("room for a hypothesis");
-    }
-    {
-        let mut s = Session {
-            kb: &mut fork,
-            terms,
-            ast,
-            events: &mut off,
-            memo: memo.clone(),
-        };
-        let delta = snapshot.new_facts_of(s.kb);
-        let mut sat = Saturator::resume(&mut s, snapshot, delta)?;
-        sat.saturate(&mut s, None, &mut |_| {})?;
-    }
 
     let contradictions = crate::contradiction::detect(&fork, terms);
     let mut node = Node::default();

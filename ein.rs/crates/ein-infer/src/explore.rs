@@ -946,6 +946,7 @@ impl<'a> Space<'a> {
             route: Route::Cube,
             exhausted: false,
             complete_up_to: None,
+            stopped_before: None,
             root: described::Root {
                 alive: root.is_some_and(|r| !r.dead) || (root.is_none() && !self.root_dead),
                 owes: root.map_or(0, |r| r.owes),
