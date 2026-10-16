@@ -30,6 +30,10 @@ S1e2.1a.4's grammar is ruled, its real examples
 claim checked by `ein test` against R. The query's new `:expect` lands with the
 switch. S1e2.1a.10 is done: the census
 ([`walk_census.md`](walk_census.md)), and the register under R.
+S1e2.1a.5's vocabulary is written for the user to read
+([`read_out.md`](read_out.md), with real runs in
+[`read_out_examples.md`](read_out_examples.md)). It asks three questions, and
+the stage is re-estimated from 2 days to 5.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md) S1e2.1.1–6,
 which built the register, the doors and the bundle this phase extends.
 **Blocks:** the rest of the review,
