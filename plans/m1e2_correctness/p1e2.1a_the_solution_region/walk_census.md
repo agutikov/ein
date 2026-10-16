@@ -240,6 +240,24 @@ shape on two more programs, and the config principle makes them wrong by
 itself. Everything else in §§ 3.1–3.3 is one of the six known, a register
 row's own run, or another cell of a case that already exists.
 
+### 3.5 Filed, 2026-10-16
+
+T1e2.1a.10.2 filed §§ 3.1–3.3 in `corpus/wrong_answers.toml`, with three
+departures from the proposals above:
+
+- **Four § 3.2 cells are not filed**: `owed-seats`, `owed-seats-renamed`,
+  `uncovered` and `uncovered-knows` under bare `solve`. Each returns one state
+  of R with `exhausted = false`. That is a correct, uncertified witness, which
+  is what the switch's `-n 1` prints. It is off the maximal line, which is the
+  walk's question and not R's. The other 13 twins all say `exhausted = true`
+  and are filed.
+- **The `--dump-region` cells are not filed.** The walk they run is the `-e`
+  cell's, with the same answer, and at the switch the cell becomes `ein oracle
+  --dump`.
+- **`d3-unsat-core` under `-e` is filed** as W1/d3-unsat-core. A register run
+  needs no corpus declaration, and an answer not filed now is lost at the
+  switch.
+
 ## 4. What is not a defect
 
 | cell | the walk | R | why not |

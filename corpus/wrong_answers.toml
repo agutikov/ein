@@ -10,6 +10,16 @@
 # `a44273e` (whose engine sources are `71dd237`'s, where the inventory was
 # taken), release build, stdlib = the checkout. Every one reproduced.
 #
+# **Eight rows and thirteen twins were added on 2026-10-16** by S1e2.1a.10,
+# taken at `8d1997f1` (engine sources `06d62a7c`'s) from the walk's last census
+# (`plans/m1e2_correctness/p1e2.1a_the_solution_region/walk_census.md`): every
+# cell the walk gets wrong under R, filed before S1e2.1a.5's switch removes the
+# walk. Their `right` is R's maximal line, from the oracle or route 1. The same
+# commit **reversed W9's two rows and W11/unsat-core-id-space's `right`**: under R
+# a node is `sat(root ∪ C)` with nothing the search wrote (`solve_interface.md`
+# § 0), so the default run is the wrong one and `-K` agrees with R. The old
+# answer stays as a `[[case.right.alternative]]` under Q-M1e.7 ruling A.
+#
 # **The review (S1e2.1.7) reads the bundle built at `029ef6f`** on 2026-10-15
 # (`python3 utils/review_bundle.py` → build/review/, 26 cases, 6 788 pages,
 # 0 dangling links). Rebuilding at that commit gives the same pages, apart from
@@ -159,6 +169,14 @@ exhausted = true
 closes    = ["p"]
 models    = [["(p B)", "(p C)"]]
 
+[[case.twin]]
+run       = "solve"
+why       = "the default stop, -n 1"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(p A)", "(p B)", "(p C)"]
+
 [case.right]
 verdict   = "Ambiguity"
 k         = 2
@@ -201,6 +219,14 @@ k         = 3
 exhausted = true
 closes    = ["a-prop", "b-prop", "c-prop"]
 models    = [["(a-prop X)", "(b-prop X)"], ["(a-prop X)", "(c-prop X)"], ["(b-prop X)", "(c-prop X)"]]
+
+[[case.twin]]
+run       = "solve -L"
+why       = "the default stop, -n 1"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(a-prop X)", "(b-prop X)", "(c-prop X)"]
 
 [case.right]
 verdict   = "Ambiguity"
@@ -246,6 +272,14 @@ exhausted = true
 closes    = ["q"]
 models    = [[]]
 
+[[case.twin]]
+run       = "solve"
+why       = "the default stop, -n 1"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(q one)", "(q two)"]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
@@ -275,6 +309,14 @@ note     = "W2's witness with the cascade off falls through into W1 at layer 0 �
 
 [case.wrong]
 run       = "solve -e"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(q one)"]
+
+[[case.twin]]
+run       = "solve"
+why       = "the default stop, -n 1"
 verdict   = "Contradiction"
 k         = 0
 exhausted = true
@@ -326,6 +368,14 @@ models    = []
 open      = [[]]
 owes      = [1]
 
+[[case.twin]]
+run       = "solve"
+why       = "the default stop, -n 1"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(likes Ann Soup)", "(likes Ann Stew)"]
+
 [case.right]
 verdict   = "Open"
 k         = 0
@@ -362,6 +412,14 @@ k         = 0
 exhausted = true
 core      = ["(q A B)", "(q B A)"]
 
+[[case.twin]]
+run       = "solve"
+why       = "the default stop, -n 1"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(q A B)", "(q B A)"]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
@@ -375,6 +433,211 @@ verdict = "confirmed"
 date    = "2026-10-15"
 bundle  = "caef67a"
 note    = "a lever row (lookahead off), and no config option may change the answer (Q-M1e2.7). No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
+
+[[case]]
+id       = "W1/zebra2-hints"
+case     = "W1"
+title    = "a maximal alive commitment is never recorded"
+class    = "verdict + certification"
+settings = "default"
+owner    = "S1e2.2.1"
+question = ["Q-M1e.8"]
+witness  = "examples/zebra2-hints.ein"
+status   = "open"
+look_at  = ["answer"]
+note     = "W1's shape plus the walk's stronger node (walk_and_region.md § 4.3)"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["color-loc", "drink-loc", "nation-loc", "pet-loc", "smoke-loc"]
+models    = [["(color-loc Blue House-2)", "(color-loc Green House-5)", "(color-loc Ivory House-4)", "(color-loc Red House-3)", "(color-loc Yellow House-1)", "(drink-loc Coffee House-5)", "(drink-loc Juice House-4)", "(drink-loc Milk House-3)", "(drink-loc Tea House-2)", "(drink-loc Water House-1)", "(nation-loc Englishman House-3)", "(nation-loc Japanese House-5)", "(nation-loc Norwegian House-1)", "(nation-loc Spaniard House-4)", "(nation-loc Ukrainian House-2)", "(pet-loc Dog House-4)", "(pet-loc Fox House-1)", "(pet-loc Horse House-2)", "(pet-loc Snail House-3)", "(pet-loc Zebra House-5)", "(smoke-loc Chesterfields House-2)", "(smoke-loc Kools House-1)", "(smoke-loc Lucky_Strike House-4)", "(smoke-loc Old_Gold House-3)", "(smoke-loc Parliament House-5)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["color-loc", "drink-loc", "nation-loc", "pet-loc", "smoke-loc"]
+models    = [["(color-loc Blue House-2)", "(color-loc Green House-5)", "(color-loc Ivory House-4)", "(color-loc Red House-3)", "(color-loc Yellow House-1)", "(drink-loc Coffee House-5)", "(drink-loc Juice House-4)", "(drink-loc Milk House-3)", "(drink-loc Tea House-2)", "(drink-loc Water House-1)", "(nation-loc Englishman House-3)", "(nation-loc Japanese House-5)", "(nation-loc Norwegian House-1)", "(nation-loc Spaniard House-4)", "(nation-loc Ukrainian House-2)", "(pet-loc Dog House-4)", "(pet-loc Fox House-1)", "(pet-loc Horse House-2)", "(pet-loc Snail House-3)", "(pet-loc Zebra House-5)", "(smoke-loc Chesterfields House-2)", "(smoke-loc Kools House-1)", "(smoke-loc Lucky_Strike House-4)", "(smoke-loc Old_Gold House-3)", "(smoke-loc Parliament House-5)"], ["(color-loc Blue House-2)", "(color-loc Green House-5)", "(color-loc Ivory House-4)", "(color-loc Red House-3)", "(color-loc Yellow House-1)", "(drink-loc Coffee House-5)", "(drink-loc Milk House-3)", "(drink-loc Water House-1)", "(nation-loc Englishman House-3)", "(nation-loc Norwegian House-1)", "(nation-loc Spaniard House-5)", "(pet-loc Dog House-5)", "(pet-loc Fox House-4)", "(pet-loc Horse House-2)", "(pet-loc Snail House-3)", "(pet-loc Zebra House-1)", "(smoke-loc Chesterfields House-5)", "(smoke-loc Kools House-1)", "(smoke-loc Old_Gold House-3)"]]
+derived   = "route 1 (ein solve --maximal), each state saturated from root and its candidates; the walk records the first and never the second"
+
+[[case]]
+id       = "W1/branching-07"
+case     = "W1"
+title    = "a maximal alive commitment is never recorded"
+class    = "verdict + certification"
+settings = "the file's (config :enable-pre-branch-lookahead false)"
+owner    = "S1e2.2.1"
+question = ["Q-M1e.8"]
+witness  = "examples/branching/07_lookahead_off.ein"
+status   = "open"
+look_at  = ["summary"]
+note     = "W1 under the file's own lookahead switch, which the config principle makes wrong by itself"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Contradiction"
+k         = 0
+exhausted = false
+core      = ["(co-located Blue Color)", "(co-located Blue H1)", "(co-located Blue H2)", "(co-located Blue H3)", "(co-located Blue H4)", "(co-located Blue H5)", "(co-located Blue House)", "(co-located Color Blue)", "(co-located Color Green)", "(co-located Color H1)", "(co-located Color H2)", "(co-located Color H3)", "(co-located Color H4)", "(co-located Color H5)", "(co-located Color Ivory)", "(co-located Color Red)", "(co-located Color Yellow)", "(co-located Green Color)", "(co-located Green H1)", "(co-located Green H2)", "(co-located Green H3)", "(co-located Green H4)", "(co-located Green H5)", "(co-located Green House)", "(co-located H1 Blue)", "(co-located H1 Color)", "(co-located H1 Green)", "(co-located H1 House)", "(co-located H1 Ivory)", "(co-located H1 Yellow)", "(co-located H2 Blue)", "(co-located H2 Color)", "(co-located H2 House)", "(co-located H2 Ivory)", "(co-located H2 Red)", "(co-located H2 Yellow)", "(co-located H3 Blue)", "(co-located H3 Color)", "(co-located H3 Green)", "(co-located H3 House)", "(co-located H3 Red)", "(co-located H3 Yellow)", "(co-located H4 Blue)", "(co-located H4 Color)", "(co-located H4 Green)", "(co-located H4 House)", "(co-located H4 Ivory)", "(co-located H4 Red)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located H5 Green)", "(co-located H5 House)", "(co-located H5 Ivory)", "(co-located H5 Red)", "(co-located H5 Yellow)", "(co-located House Blue)", "(co-located House Green)", "(co-located House H1)", "(co-located House H2)", "(co-located House H3)", "(co-located House H4)", "(co-located House H5)", "(co-located House Ivory)", "(co-located House Red)", "(co-located House Yellow)", "(co-located Ivory Color)", "(co-located Ivory H1)", "(co-located Ivory H2)", "(co-located Ivory H3)", "(co-located Ivory H4)", "(co-located Ivory H5)", "(co-located Ivory House)", "(co-located Red Color)", "(co-located Red H1)", "(co-located Red H2)", "(co-located Red H3)", "(co-located Red H4)", "(co-located Red H5)", "(co-located Red House)", "(co-located Yellow Color)", "(co-located Yellow H1)", "(co-located Yellow H2)", "(co-located Yellow H3)", "(co-located Yellow H4)", "(co-located Yellow H5)", "(co-located Yellow House)", "(is-a Blue Color)", "(is-a Blue Green)", "(is-a Blue H1)", "(is-a Blue H2)", "(is-a Blue H3)", "(is-a Blue H4)", "(is-a Blue H5)", "(is-a Blue House)", "(is-a Blue Ivory)", "(is-a Blue Red)", "(is-a Blue Yellow)", "(is-a Color Blue)", "(is-a Color Green)", "(is-a Color H1)", "(is-a Color H2)", "(is-a Color H3)", "(is-a Color H4)", "(is-a Color H5)", "(is-a Color House)", "(is-a Color Ivory)", "(is-a Color Red)", "(is-a Color T)", "(is-a Color Yellow)", "(is-a Green Blue)", "(is-a Green Color)", "(is-a Green H1)", "(is-a Green H2)", "(is-a Green H3)", "(is-a Green H4)", "(is-a Green H5)", "(is-a Green House)", "(is-a Green Ivory)", "(is-a Green Red)", "(is-a Green Yellow)", "(is-a H1 Blue)", "(is-a H1 Color)", "(is-a H1 Green)", "(is-a H1 H2)", "(is-a H1 H3)", "(is-a H1 H4)", "(is-a H1 H5)", "(is-a H1 House)", "(is-a H1 Ivory)", "(is-a H1 Red)", "(is-a H1 Yellow)", "(is-a H2 Blue)", "(is-a H2 Color)", "(is-a H2 Green)", "(is-a H2 H1)", "(is-a H2 H3)", "(is-a H2 H4)", "(is-a H2 H5)", "(is-a H2 House)", "(is-a H2 Ivory)", "(is-a H2 Red)", "(is-a H2 Yellow)", "(is-a H3 Blue)", "(is-a H3 Color)", "(is-a H3 Green)", "(is-a H3 H1)", "(is-a H3 H2)", "(is-a H3 H4)", "(is-a H3 H5)", "(is-a H3 House)", "(is-a H3 Ivory)", "(is-a H3 Red)", "(is-a H3 Yellow)", "(is-a H4 Blue)", "(is-a H4 Color)", "(is-a H4 Green)", "(is-a H4 H1)", "(is-a H4 H2)", "(is-a H4 H3)", "(is-a H4 H5)", "(is-a H4 House)", "(is-a H4 Ivory)", "(is-a H4 Red)", "(is-a H4 Yellow)", "(is-a H5 Blue)", "(is-a H5 Color)", "(is-a H5 Green)", "(is-a H5 H1)", "(is-a H5 H2)", "(is-a H5 H3)", "(is-a H5 H4)", "(is-a H5 House)", "(is-a H5 Ivory)", "(is-a H5 Red)", "(is-a H5 Yellow)", "(is-a House Blue)", "(is-a House Color)", "(is-a House Green)", "(is-a House H1)", "(is-a House H2)", "(is-a House H3)", "(is-a House H4)", "(is-a House H5)", "(is-a House Ivory)", "(is-a House Red)", "(is-a House T)", "(is-a House Yellow)", "(is-a Ivory Blue)", "(is-a Ivory Color)", "(is-a Ivory Green)", "(is-a Ivory H1)", "(is-a Ivory H2)", "(is-a Ivory H3)", "(is-a Ivory H4)", "(is-a Ivory H5)", "(is-a Ivory House)", "(is-a Ivory Red)", "(is-a Ivory Yellow)", "(is-a Red Blue)", "(is-a Red Color)", "(is-a Red Green)", "(is-a Red H1)", "(is-a Red H2)", "(is-a Red H3)", "(is-a Red H4)", "(is-a Red H5)", "(is-a Red House)", "(is-a Red Ivory)", "(is-a Red Yellow)", "(is-a Yellow Blue)", "(is-a Yellow Color)", "(is-a Yellow Green)", "(is-a Yellow H1)", "(is-a Yellow H2)", "(is-a Yellow H3)", "(is-a Yellow H4)", "(is-a Yellow H5)", "(is-a Yellow House)", "(is-a Yellow Ivory)", "(is-a Yellow Red)"]
+
+[[case.twin]]
+run       = "solve"
+why       = "the default stop, -n 1"
+verdict   = "Contradiction"
+k         = 0
+exhausted = false
+core      = ["(co-located Blue Color)", "(co-located Blue H1)", "(co-located Blue H2)", "(co-located Blue H3)", "(co-located Blue H4)", "(co-located Blue H5)", "(co-located Blue House)", "(co-located Color Blue)", "(co-located Color Green)", "(co-located Color H1)", "(co-located Color H2)", "(co-located Color H3)", "(co-located Color H4)", "(co-located Color H5)", "(co-located Color Ivory)", "(co-located Color Red)", "(co-located Color Yellow)", "(co-located Green Color)", "(co-located Green H1)", "(co-located Green H2)", "(co-located Green H3)", "(co-located Green H4)", "(co-located Green H5)", "(co-located Green House)", "(co-located H1 Blue)", "(co-located H1 Color)", "(co-located H1 Green)", "(co-located H1 House)", "(co-located H1 Ivory)", "(co-located H1 Yellow)", "(co-located H2 Blue)", "(co-located H2 Color)", "(co-located H2 House)", "(co-located H2 Ivory)", "(co-located H2 Red)", "(co-located H2 Yellow)", "(co-located H3 Blue)", "(co-located H3 Color)", "(co-located H3 Green)", "(co-located H3 House)", "(co-located H3 Red)", "(co-located H3 Yellow)", "(co-located H4 Blue)", "(co-located H4 Color)", "(co-located H4 Green)", "(co-located H4 House)", "(co-located H4 Ivory)", "(co-located H4 Red)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located H5 Green)", "(co-located H5 House)", "(co-located H5 Ivory)", "(co-located H5 Red)", "(co-located H5 Yellow)", "(co-located House Blue)", "(co-located House Green)", "(co-located House H1)", "(co-located House H2)", "(co-located House H3)", "(co-located House H4)", "(co-located House H5)", "(co-located House Ivory)", "(co-located House Red)", "(co-located House Yellow)", "(co-located Ivory Color)", "(co-located Ivory H1)", "(co-located Ivory H2)", "(co-located Ivory H3)", "(co-located Ivory H4)", "(co-located Ivory H5)", "(co-located Ivory House)", "(co-located Red Color)", "(co-located Red H1)", "(co-located Red H2)", "(co-located Red H3)", "(co-located Red H4)", "(co-located Red H5)", "(co-located Red House)", "(co-located Yellow Color)", "(co-located Yellow H1)", "(co-located Yellow H2)", "(co-located Yellow H3)", "(co-located Yellow H4)", "(co-located Yellow H5)", "(co-located Yellow House)", "(is-a Blue Color)", "(is-a Blue Green)", "(is-a Blue H1)", "(is-a Blue H2)", "(is-a Blue H3)", "(is-a Blue H4)", "(is-a Blue H5)", "(is-a Blue House)", "(is-a Blue Ivory)", "(is-a Blue Red)", "(is-a Blue Yellow)", "(is-a Color Blue)", "(is-a Color Green)", "(is-a Color H1)", "(is-a Color H2)", "(is-a Color H3)", "(is-a Color H4)", "(is-a Color H5)", "(is-a Color House)", "(is-a Color Ivory)", "(is-a Color Red)", "(is-a Color T)", "(is-a Color Yellow)", "(is-a Green Blue)", "(is-a Green Color)", "(is-a Green H1)", "(is-a Green H2)", "(is-a Green H3)", "(is-a Green H4)", "(is-a Green H5)", "(is-a Green House)", "(is-a Green Ivory)", "(is-a Green Red)", "(is-a Green Yellow)", "(is-a H1 Blue)", "(is-a H1 Color)", "(is-a H1 Green)", "(is-a H1 H2)", "(is-a H1 H3)", "(is-a H1 H4)", "(is-a H1 H5)", "(is-a H1 House)", "(is-a H1 Ivory)", "(is-a H1 Red)", "(is-a H1 Yellow)", "(is-a H2 Blue)", "(is-a H2 Color)", "(is-a H2 Green)", "(is-a H2 H1)", "(is-a H2 H3)", "(is-a H2 H4)", "(is-a H2 H5)", "(is-a H2 House)", "(is-a H2 Ivory)", "(is-a H2 Red)", "(is-a H2 Yellow)", "(is-a H3 Blue)", "(is-a H3 Color)", "(is-a H3 Green)", "(is-a H3 H1)", "(is-a H3 H2)", "(is-a H3 H4)", "(is-a H3 H5)", "(is-a H3 House)", "(is-a H3 Ivory)", "(is-a H3 Red)", "(is-a H3 Yellow)", "(is-a H4 Blue)", "(is-a H4 Color)", "(is-a H4 Green)", "(is-a H4 H1)", "(is-a H4 H2)", "(is-a H4 H3)", "(is-a H4 H5)", "(is-a H4 House)", "(is-a H4 Ivory)", "(is-a H4 Red)", "(is-a H4 Yellow)", "(is-a H5 Blue)", "(is-a H5 Color)", "(is-a H5 Green)", "(is-a H5 H1)", "(is-a H5 H2)", "(is-a H5 H3)", "(is-a H5 H4)", "(is-a H5 House)", "(is-a H5 Ivory)", "(is-a H5 Red)", "(is-a H5 Yellow)", "(is-a House Blue)", "(is-a House Color)", "(is-a House Green)", "(is-a House H1)", "(is-a House H2)", "(is-a House H3)", "(is-a House H4)", "(is-a House H5)", "(is-a House Ivory)", "(is-a House Red)", "(is-a House T)", "(is-a House Yellow)", "(is-a Ivory Blue)", "(is-a Ivory Color)", "(is-a Ivory Green)", "(is-a Ivory H1)", "(is-a Ivory H2)", "(is-a Ivory H3)", "(is-a Ivory H4)", "(is-a Ivory H5)", "(is-a Ivory House)", "(is-a Ivory Red)", "(is-a Ivory Yellow)", "(is-a Red Blue)", "(is-a Red Color)", "(is-a Red Green)", "(is-a Red H1)", "(is-a Red H2)", "(is-a Red H3)", "(is-a Red H4)", "(is-a Red H5)", "(is-a Red House)", "(is-a Red Ivory)", "(is-a Red Yellow)", "(is-a Yellow Blue)", "(is-a Yellow Color)", "(is-a Yellow Green)", "(is-a Yellow H1)", "(is-a Yellow H2)", "(is-a Yellow H3)", "(is-a Yellow H4)", "(is-a Yellow H5)", "(is-a Yellow House)", "(is-a Yellow Ivory)", "(is-a Yellow Red)"]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 22
+exhausted = true
+derived   = "route 1 (ein solve --maximal): 22 maximal states of k_s = 74; the default config's twin, branching/06, records all 22"
+
+[[case]]
+id       = "W1/alive-empty-interlayer"
+case     = "W1"
+title    = "a maximal alive commitment is never recorded"
+class    = "verdict + certification"
+settings = "default"
+owner    = "S1e2.2.1"
+question = ["Q-M1e.8"]
+witness  = "examples/ein-bugs/alive-empty-interlayer.ein"
+status   = "open"
+look_at  = ["root-writes", "summary"]
+note     = "right under Q-M1e.7 ruling A, as the inventory had it; under R it is W9's direction. Its :expect (false) states the walk's answer until the switch"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(p Z)"]
+
+[[case.twin]]
+run       = "solve"
+why       = "the default stop, -n 1"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(p Z)"]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p"]
+models    = [["(p A)", "(p B)"]]
+qualifier = "assumes a monotone lattice: the static check flags this program, and what R is here is P1e2.1b's"
+derived   = "the oracle: R has 4 states and one maximal, {(p A),(p B)}; (p Z) dies only after two firings, so the walk enters {(p A),(p B)} alive and never judges it complete (walk_census.md § 3.3)"
+
+[[case]]
+id       = "W1/d3-unsat-core"
+case     = "W1"
+title    = "a maximal alive commitment is never recorded"
+class    = "verdict + certification"
+settings = "default"
+owner    = "S1e2.2.1"
+question = ["Q-M1e.8"]
+witness  = "corpus/fuzz_findings/d3-unsat-core.ein"
+not_in_corpus = "it moves under a permuted interner at the third seed, which the nightly's EIN_ID_SEEDS=8 would assert"
+status   = "open"
+look_at  = ["summary"]
+note     = "the walk's -e answer on W11's witness; W11/d3-unsat-core is its core under solve -m 2"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["is-a", "r0", "r1"]
+models    = [["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0 o2 o3)", "(r1 o2 o3)", "(r1 o3 o2)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["is-a", "r0", "r1"]
+models    = [["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0 o2 o3)", "(r0 o3 o2)"], ["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0 o2 o3)", "(r1 o2 o3)", "(r1 o3 o2)"]]
+qualifier = "assumes a monotone lattice: the static check flags this program, and what R is here is P1e2.1b's"
+derived   = "the oracle: R has 20 states and two maximal; the walk records one (walk_and_region.md § 4.6)"
+
+[[case]]
+id       = "W1/branching-04-L"
+case     = "W1"
+title    = "a maximal alive commitment is never recorded"
+class    = "verdict + certification"
+settings = "lever: -L"
+owner    = "S1e2.2.1"
+question = ["Q-M1e.8"]
+witness  = "examples/branching/04_two_levels.ein"
+status   = "open"
+look_at  = ["summary"]
+note     = "W1/lattice-02-L's shape on another program, found by the walk's last census"
+
+[case.wrong]
+run       = "solve -L"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(co-located Blue H1)", "(co-located Blue H2)", "(co-located Blue H3)", "(co-located Green H1)", "(co-located Green H2)", "(co-located Green H3)", "(co-located H1 Blue)", "(co-located H1 Green)", "(co-located H2 Blue)", "(co-located H2 Green)", "(co-located H2 Red)", "(co-located H3 Blue)", "(co-located H3 Green)", "(co-located H3 Red)", "(co-located Red H1)", "(co-located Red H2)", "(co-located Red H3)", "(is-a Blue Color)", "(is-a Blue Green)", "(is-a Blue H1)", "(is-a Blue H2)", "(is-a Blue H3)", "(is-a Blue Red)", "(is-a Green Blue)", "(is-a Green Color)", "(is-a Green H1)", "(is-a Green H2)", "(is-a Green H3)", "(is-a Green Red)", "(is-a H1 Blue)", "(is-a H1 Green)", "(is-a H1 H2)", "(is-a H1 H3)", "(is-a H1 House)", "(is-a H1 Red)", "(is-a H2 Blue)", "(is-a H2 Green)", "(is-a H2 H1)", "(is-a H2 H3)", "(is-a H2 House)", "(is-a H2 Red)", "(is-a H3 Blue)", "(is-a H3 Green)", "(is-a H3 H1)", "(is-a H3 H2)", "(is-a H3 House)", "(is-a H3 Red)", "(is-a Red Blue)", "(is-a Red Color)", "(is-a Red Green)", "(is-a Red H1)", "(is-a Red H2)", "(is-a Red H3)"]
+
+[case.control]
+run       = "solve"
+why       = "the lookahead on: one of the two maximal states, at the default stop"
+verdict   = "Solution"
+k         = 1
+exhausted = false
+closes    = ["co-located"]
+models    = [["(co-located Blue H2)", "(co-located Green H3)", "(co-located H1 Red)", "(co-located H2 Blue)", "(co-located H3 Green)", "(co-located Red H1)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["co-located"]
+models    = [["(co-located Blue H2)", "(co-located Green H3)", "(co-located H1 Red)", "(co-located H2 Blue)", "(co-located H3 Green)", "(co-located Red H1)"], ["(co-located Blue H3)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Blue)", "(co-located Red H1)"]]
+derived   = "route 1 (ein solve --maximal): two maximal states; the default run records one at its stop"
+
+[[case]]
+id       = "W1/lattice-01-L"
+case     = "W1"
+title    = "a maximal alive commitment is never recorded"
+class    = "verdict + certification"
+settings = "lever: -L"
+owner    = "S1e2.2.1"
+question = ["Q-M1e.8"]
+witness  = "examples/lattice/01_subset_pruned.ein"
+status   = "open"
+look_at  = ["summary"]
+note     = "W1/lattice-02-L's shape on another program, found by the walk's last census"
+
+[case.wrong]
+run       = "solve -L"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(incompat a b)", "(proposed a)", "(proposed b)"]
+
+[case.control]
+run       = "solve"
+why       = "the lookahead on: one of the two maximal states, at the default stop"
+verdict   = "Solution"
+k         = 1
+exhausted = false
+closes    = ["proposed"]
+models    = [["(proposed a)", "(proposed c)", "(proposed d)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["proposed"]
+models    = [["(proposed a)", "(proposed c)", "(proposed d)"], ["(proposed b)", "(proposed c)", "(proposed d)"]]
+derived   = "the oracle: R has 12 states and two maximal; the default run records one at its stop"
 
 # ══ W2 — the forced-positive cascade refutes a consistent program ═════════════
 
@@ -404,6 +667,14 @@ verdict   = "Contradiction"
 k         = 0
 exhausted = true
 core      = ["(q one)"]
+
+[[case.twin]]
+run       = "solve"
+why       = "the default stop, -n 1"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = []
 
 [case.right]
 verdict   = "Solution"
@@ -439,6 +710,14 @@ k         = 1
 exhausted = true
 closes    = ["q"]
 models    = [[]]
+
+[[case.twin]]
+run       = "solve -L"
+why       = "the default stop, -n 1"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = []
 
 [case.right]
 verdict   = "Solution"
@@ -480,6 +759,15 @@ exhausted = true
 closes    = ["p", "q"]
 models    = [["(p A)", "(q A)"]]
 
+[[case.twin]]
+run       = "solve"
+why       = "the default stop, -n 1"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(q A)"]]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
@@ -517,6 +805,23 @@ exhausted = true
 closes    = ["p", "q"]
 models    = [["(q A)"]]
 
+[[case.twin]]
+run       = "solve"
+why       = "the default stop, -n 1, the lookahead on"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(q A)"]]
+
+[[case.twin]]
+run       = "solve -L"
+why       = "the default stop, -n 1"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(p A)"]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
@@ -524,6 +829,73 @@ exhausted = true
 closes    = ["p", "q"]
 models    = [["(p A)", "(q A)"]]
 derived   = "as W3/naf-upward-closure — the program is the same"
+
+[[case]]
+id       = "W3/three-components"
+case     = "W3"
+title    = "dead is not upward-closed under absent"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.5"
+question = ["Q-M1e.9", "F18", "S1f.10.8"]
+witness  = "examples/lattice/synth/three_components.ein"
+status   = "open"
+look_at  = ["summary"]
+note     = "S1e2.1a.8's program written for a chosen region; the walk never enters the two states it misses"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["h"]
+models    = [["(h C)", "(h D)", "(h E)"]]
+
+[case.right]
+verdict   = "Ambiguity"
+k         = 3
+exhausted = true
+closes    = ["h"]
+models    = [["(h A)", "(h B)", "(h D)", "(h G)"], ["(h A)", "(h B)", "(h F)"], ["(h C)", "(h D)", "(h E)"]]
+qualifier = "assumes a monotone lattice: the static check flags this program, and what R is here is P1e2.1b's"
+derived   = "the oracle: R has 13 states, maximal line 3, and the cube 3 holes (walk_census.md § 3.3)"
+
+[[case]]
+id       = "W3/trigger-hole"
+case     = "W3"
+title    = "dead is not upward-closed under absent"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.5"
+question = ["Q-M1e.9", "F18", "S1f.10.8"]
+witness  = "examples/lattice/synth/trigger_hole.ein"
+status   = "open"
+look_at  = ["summary"]
+note     = "S1e2.1a.8's program written for a chosen region; its obligation-trigger hole is P1e2.1b's"
+
+[case.wrong]
+run       = "solve -e"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(h A)", "(h D)"]
+
+[[case.twin]]
+run       = "solve"
+why       = "the default stop, -n 1"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(h A)", "(h D)"]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["h"]
+models    = [["(h A)", "(h B)", "(h C)", "(h D)", "(h E)"]]
+qualifier = "assumes a monotone lattice: the static check flags this program, and what R is here is P1e2.1b's"
+derived   = "the oracle: R has 9 states, maximal line one, all five candidates, and the cube 7 holes (walk_census.md § 3.3)"
 
 # ══ W4 — a rule's fresh constant never becomes a hypothesis ═══════════════════
 
@@ -599,6 +971,14 @@ models    = [["(q A Z)", "(q B Z)"]]
 witness   = "examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein"
 run       = "solve -e"
 why       = "− the spawn rule: no fresh name at all, and the same refutation"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = ["(q A B)", "(q B A)"]
+
+[[case.twin]]
+run       = "solve"
+why       = "the default stop, -n 1"
 verdict   = "Contradiction"
 k         = 0
 exhausted = true
@@ -911,17 +1291,27 @@ derived   = "today's answer: the fork holding both is dead, so root is the solut
 [[case]]
 id       = "W9/complete-records-stale-K"
 case     = "W9"
-title    = "with the kill cache off, an unnoticed entailment makes a state a model"
+title    = "the kill cache's writes remove a state of R"
 class    = "verdict"
-settings = "lever: -K"
+settings = "default"
 owner    = "S1e2.2.9"
 question = ["Q-M1e.7"]
 witness  = "examples/ein-bugs/complete-records-stale.ein"
 status   = "open"
+note     = "reversed 2026-10-16 (S1e2.1a.10): the default run is the wrong one under R, and -K agrees with it; the id keeps its -K, because ids are stable"
 look_at  = ["layer 1", "answer"]
 
 [case.wrong]
+run       = "solve -e"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p", "q"]
+models    = [["(p A)", "(p B)"]]
+
+[case.control]
 run       = "solve -e -K"
+why       = "the kill cache off: nothing the search wrote reaches the node, which is R's node"
 exit      = 1
 verdict   = "Ambiguity"
 k         = 2
@@ -929,16 +1319,17 @@ exhausted = true
 closes    = ["p", "q"]
 models    = [["(p A)", "(p B)"], ["(q A)"]]
 
-[case.control]
-run       = "solve -e"
-why       = "the kill cache on"
-verdict   = "Solution"
-k         = 1
+[case.right]
+reading   = "R's node is sat(root ∪ C), with nothing the search wrote (solve_interface.md § 0, approved 2026-10-16)"
+verdict   = "Ambiguity"
+k         = 2
 exhausted = true
 closes    = ["p", "q"]
-models    = [["(p A)", "(p B)"]]
+models    = [["(p A)", "(p B)"], ["(q A)"]]
+derived   = "the oracle: R's maximal line, which the -K run records (walk_census.md § 3.1)"
 
-[case.right]
+[[case.right.alternative]]
+reading   = "Q-M1e.7 ruling A: the search's negatives are part of the state"
 verdict   = "Solution"
 k         = 1
 exhausted = true
@@ -949,17 +1340,26 @@ derived   = "Q-M1e.7 ruling A: engine-written negatives are entailed consequence
 [[case]]
 id       = "W9/alive-empty-phase1-K"
 case     = "W9"
-title    = "with the kill cache off, an unnoticed entailment makes a state a model"
+title    = "the kill cache's writes remove a state of R"
 class    = "verdict"
-settings = "lever: -K"
+settings = "default"
 owner    = "S1e2.2.9"
 question = ["Q-M1e.7"]
 witness  = "examples/ein-bugs/alive-empty-phase1.ein"
 status   = "open"
+note     = "reversed 2026-10-16 (S1e2.1a.10): the default run is the wrong one under R, and -K agrees with it; the id keeps its -K, because ids are stable"
 look_at  = ["root", "answer"]
 
 [case.wrong]
+run       = "solve -e"
+verdict   = "Contradiction"
+k         = 0
+exhausted = true
+core      = []
+
+[case.control]
 run       = "solve -e -K"
+why       = "the kill cache off: nothing the search wrote reaches the node, which is R's node"
 exit      = 1
 verdict   = "Solution"
 k         = 1
@@ -967,15 +1367,25 @@ exhausted = true
 closes    = ["p"]
 models    = [[]]
 
-[case.control]
-run       = "solve -e"
-why       = "the kill cache on"
+[[case.twin]]
+run       = "solve"
+why       = "the default stop, -n 1"
 verdict   = "Contradiction"
 k         = 0
 exhausted = true
 core      = []
 
 [case.right]
+reading   = "R's node is sat(root ∪ C), with nothing the search wrote (solve_interface.md § 0, approved 2026-10-16)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p"]
+models    = [[]]
+derived   = "the oracle: R's maximal line, which the -K run records (walk_census.md § 3.1)"
+
+[[case.right.alternative]]
+reading   = "Q-M1e.7 ruling A: the search's negatives are part of the state"
 verdict   = "Contradiction"
 k         = 0
 exhausted = true
@@ -1040,7 +1450,26 @@ exhausted = true
 core      = ["(r1 o4 o5)"]
 id_order  = { op = "solve[default]", seed = 1 }
 
+[case.control]
+run       = "solve -e -K"
+why       = "the kill cache off: nothing the search wrote reaches the node, which is R's node"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["r1"]
+models    = [["(r1 o1 o5)", "(r1 o4 o5)"], ["(r1 o4 o1)", "(r1 o4 o5)"]]
+
 [case.right]
+reading   = "R's node is sat(root ∪ C), with nothing the search wrote (solve_interface.md § 0, approved 2026-10-16)"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["r1"]
+models    = [["(r1 o1 o5)", "(r1 o4 o5)"], ["(r1 o4 o1)", "(r1 o4 o5)"]]
+derived   = "the oracle: R has two maximal states, which the -K run records (walk_census.md § 3.1). The user's reading of W11 is S1e2.1.7's and S1e2.2.12's"
+
+[[case.right.alternative]]
+reading   = "Q-M1e.7 ruling A: the search's negatives are part of the state"
 verdict   = "Contradiction"
 k         = 0
 exhausted = true
