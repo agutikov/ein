@@ -68,6 +68,8 @@
 (co-located Red   H1 :source "(1)")
 (co-located Green H2 :source "(2)")
 
-(query
-  :goal (co-located Blue ?h)
+(solve
   :hypothesis-relations (co-located))
+
+(query
+  :goal (co-located Blue ?h))

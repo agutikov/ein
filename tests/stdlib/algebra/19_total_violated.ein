@@ -27,7 +27,9 @@
 (not (likes Ann Soup))
 (not (likes Ann Stew))       ; ⊥ — Ann's whole extent is excluded
 
+(solve
+  :no-hypothesis (is-a likes))
+
 (query
   :goal (likes ?who ?what)
-  :no-hypothesis (is-a likes)
   :expect (false))

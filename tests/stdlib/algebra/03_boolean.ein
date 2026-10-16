@@ -55,9 +55,11 @@
 (owns  Ann Car)  (owns  Ann Bike)
 (rents Ann Car)  (rents Bob Bike)
 
+(solve
+  :no-hypothesis (owns rents shares owns-only either))
+
 (query
   :goal (shares ?who ?what)
-  :no-hypothesis (owns rents shares owns-only either)
   :expect (model (owns      Ann Car) (owns  Ann Bike)
                  (rents     Ann Car) (rents Bob Bike)
                  (shares    Ann Car)

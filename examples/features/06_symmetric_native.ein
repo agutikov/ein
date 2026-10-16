@@ -72,7 +72,9 @@
 ;; relations as a candidate and `ein solve` would spend minutes proving that
 ;; none of them helps — a fixture that takes longer than `zebra2` to say
 ;; "already solved at root".
+(solve
+  :no-hypothesis (knows rivals allies is-a))
+
 (query
   :goal (knows Bob Ann)
-  :no-hypothesis (knows rivals allies is-a)
 )

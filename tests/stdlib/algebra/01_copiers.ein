@@ -58,12 +58,14 @@
 (marked A)
 (p-untouched B A)          ; authored, and the only edge its relation may hold
 
-(query
-  :goal (p-conv ?x ?y)
+(solve
   ;; A saturation program: the model is the saturated root. Without this the
   ;; search speculates `p` edges and every closed extent below is a claim about
   ;; a different world.
-  :no-hypothesis (instance p p-conv p-rev p-fwd p-inc p-untouched marked flagged)
+  :no-hypothesis (instance p p-conv p-rev p-fwd p-inc p-untouched marked flagged))
+
+(query
+  :goal (p-conv ?x ?y)
   :expect (model (p           A B)
                  (p-conv      B A)
                  (p-rev       B A)

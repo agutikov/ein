@@ -81,11 +81,12 @@ impl Drop for Dir {
     }
 }
 
-const BODY: &str = "(relation p Thing Place)\n(p A H1)\n(p B H2)\n";
-const TRUE_CLAIM: &str =
-    "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A H1) (p B H2)))\n";
-const FALSE_CLAIM: &str =
-    "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A H1) (p B H3)))\n";
+/// The facts every program here is about, with the lattice they are asked
+/// over: nothing guessed. One `(solve …)` per file since M1e2 S1e2.1a.4, so the
+/// claims below are bare queries and a file states its lattice once.
+const BODY: &str = "(relation p Thing Place)\n(p A H1)\n(p B H2)\n(solve :no-hypothesis (p))\n";
+const TRUE_CLAIM: &str = "(query :goal (p A ?h) :expect (model (p A H1) (p B H2)))\n";
+const FALSE_CLAIM: &str = "(query :goal (p A ?h) :expect (model (p A H1) (p B H3)))\n";
 
 // ── The corpus fixtures that state their own answer, which must hold ──
 
@@ -135,7 +136,7 @@ fn a_surplus_fact_is_reported_with_the_rule_that_derived_it() {
         "mirror.ein",
         "(import std.algebra :symbols (symmetric))\n\
          (relation p Thing Thing)\n(symmetric p)\n(p A B)\n\
-         (query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A B)))\n",
+         (solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A B)))\n",
     );
     let r = ein(&["test", &f]);
     assert_eq!(r.code, 1, "{}{}", r.out, r.err);
@@ -468,30 +469,35 @@ fn a_capped_frontier_is_not_checked_and_says_which_cap() {
     assert!(r.summary().contains("1 not checked"), "{}", r.summary());
 }
 
+/// One file with a claim that fails and one that a cap leaves unchecked. Its
+/// two queries share one lattice, which is all a file has since M1e2
+/// S1e2.1a.4, so the two outcomes have to come from one walk: at `-m 2` the
+/// obligations rung has found two of its three models and is not exhausted.
+/// The p-claim lists one model and fails at any depth (found > claimed); the
+/// seats claim lists all three and is unchecked at the cap, held without it.
+/// The third model is W5's register row, a superset the walk records by name
+/// order, and this fixture moves with that row at the switch (S1e2.1a.5).
+fn mixed() -> String {
+    format!(
+        "{BODY}\
+         (import std.algebra :symbols (total-owed surjective-owed))\n\
+         (relation is-a T T)\n(relation seats Guest Chair)\n\
+         (is-a Ann Guest) (is-a Bob Guest)\n(is-a C1 Chair) (is-a C2 Chair)\n\
+         (total-owed seats is-a)\n(surjective-owed seats is-a)\n\
+         {FALSE_CLAIM}\
+         (query :goal (seats ?g ?c) :expect (or (model (seats Ann C1) (seats Bob C2)) \
+                      (model (seats Ann C2) (seats Bob C1)) \
+                      (model (seats Ann C1) (seats Ann C2) (seats Bob C1))))\n"
+    )
+}
+
 /// A file with one of each: the status column says **FAILED**, because a claim
 /// shown to be false is a stronger thing to report than one nobody could
 /// check. Both are exit 1, so this is about which word the column carries.
 #[test]
 fn a_failure_outranks_an_unchecked_one_in_the_file_label() {
     let d = Dir::new("mixed");
-    let searched = "(relation instance Thing Type)\n\
-         (instance Ann Person) (instance Bob Person)\n\
-         (relation seat Person Slot)\n\
-         (rule one-slot (?R) :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c)) \
-          :assert (false) :priority 250)\n\
-         (rule one-person (?R) :match (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b)) \
-          :assert (false) :priority 250)\n\
-         (one-slot seat) (one-person seat)\n\
-         (hrule guess (?x ?y) :match (instance ?x Person) :assert (seat ?x ?y))\n";
-    let f = d.file(
-        "mixed.ein",
-        &format!(
-            "{BODY}{searched}{FALSE_CLAIM}\
-             (query :goal (seat ?w ?s) :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
-              :expect (or (model (seat Ann S1) (seat Bob S2)) \
-                          (model (seat Ann S2) (seat Bob S1))))\n"
-        ),
-    );
+    let f = d.file("mixed.ein", &mixed());
     // At the default depth both queries answer and only the first is wrong.
     let deep = ein(&["test", &f]);
     assert_eq!(deep.code, 1, "{}{}", deep.out, deep.err);
@@ -504,8 +510,8 @@ fn a_failure_outranks_an_unchecked_one_in_the_file_label() {
         deep.out
     );
 
-    // At a cap of 1 the second is NOT CHECKED and the first is still FAILED.
-    let capped = ein(&["test", &f, "-m", "1"]);
+    // At a cap of 2 the second is NOT CHECKED and the first is still FAILED.
+    let capped = ein(&["test", &f, "-m", "2"]);
     assert_eq!(capped.code, 1, "{}{}", capped.out, capped.err);
     assert!(capped.out.contains("NOT CHECKED"), "{}", capped.out);
     assert!(
@@ -603,7 +609,7 @@ fn an_expectation_on_a_later_query_is_reached() {
     let d = Dir::new("later");
     let f = d.file(
         "later.ein",
-        &format!("{BODY}(query :goal (p A ?h) :no-hypothesis (p))\n{FALSE_CLAIM}"),
+        &format!("{BODY}(query :goal (p A ?h))\n{FALSE_CLAIM}"),
     );
     let r = ein(&["test", &f]);
     assert_eq!(r.code, 1, "{}{}", r.out, r.err);
@@ -821,7 +827,7 @@ fn a_files_rows_are_indexed_from_its_own_base() {
     d.file("a_quiet.ein", BODY);
     d.file(
         "b_two.ein",
-        &format!("{BODY}(query :goal (p A ?h) :no-hypothesis (p))\n{TRUE_CLAIM}"),
+        &format!("{BODY}(query :goal (p A ?h))\n{TRUE_CLAIM}"),
     );
     let r = report(&[&d.path()], &d.0.join("r.json"));
     let rows = r["rows"].as_array().unwrap();
@@ -1016,30 +1022,13 @@ fn the_verbose_header_and_the_report_row_agree_field_for_field() {
 #[test]
 fn the_two_surfaces_agree_on_a_failure_and_on_an_unchecked_claim() {
     let d = Dir::new("cross-surface-red");
-    let searched = "(relation instance Thing Type)\n\
-         (instance Ann Person) (instance Bob Person)\n\
-         (relation seat Person Slot)\n\
-         (rule one-slot (?R) :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c)) \
-          :assert (false) :priority 250)\n\
-         (rule one-person (?R) :match (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b)) \
-          :assert (false) :priority 250)\n\
-         (one-slot seat) (one-person seat)\n\
-         (hrule guess (?x ?y) :match (instance ?x Person) :assert (seat ?x ?y))\n";
-    let f = d.file(
-        "mixed.ein",
-        &format!(
-            "{BODY}{searched}{FALSE_CLAIM}\
-             (query :goal (seat ?w ?s) :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
-              :expect (or (model (seat Ann S1) (seat Bob S2)) \
-                          (model (seat Ann S2) (seat Bob S1))))\n"
-        ),
-    );
+    let f = d.file("mixed.ein", &mixed());
     let out = d.0.join("r.json");
     let r = ein(&[
         "test",
         &f,
         "-m",
-        "1",
+        "2",
         "-v",
         "--json-report",
         &out.to_string_lossy(),

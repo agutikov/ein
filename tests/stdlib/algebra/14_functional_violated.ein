@@ -29,7 +29,9 @@
 (assigned Build Ann)
 (assigned Build Bob)   ; ⊥ — one task, two distinct workers
 
+(solve
+  :no-hypothesis (assigned))
+
 (query
   :goal (assigned ?task ?who)
-  :no-hypothesis (assigned)
   :expect (false))

@@ -41,7 +41,7 @@ you can author a puzzle without reading engine source.
 | say "∀ b s.t. G, B holds"                    | `(forall ?b G B)` *(import `std.macro`)*| §macro sugar |
 | tag a relation symmetric / transitive / …    | `(symmetric R)` + the rule consuming it | §not-reserved |
 | freeze a relation (no guessing on it)        | `(__closed__ R)` *(usually auto)*       | §hypothesis control |
-| scope / exclude the blind enumerator         | `(query … :hypothesis-relations (…))` / `:no-hypothesis (…)` | §hypothesis control |
+| scope / exclude the blind enumerator         | `(solve … :hypothesis-relations (…))` / `:no-hypothesis (…)` | §hypothesis control |
 
 ## Top-level declarators — the closed classifier set (P1.7c)
 
@@ -52,7 +52,7 @@ Each top-level form is classified by its **head**: a head in the table
 below is a declarator (`trace` is the engine-emitted sibling); **any other
 head is a fact** — "detect facts by *not* being reserved" (the author's
 design note). This set is **closed**: the parser keys on it (`rule` / `hrule` / `query` /
-`config` / `trace` / `macro` / `import` are SYMBOL-excluded, so a malformed declarator — e.g.
+`solve` / `config` / `trace` / `macro` / `import` are SYMBOL-excluded, so a malformed declarator — e.g.
 `(query)` with no kw-pairs — is a *parse* error; `relation` is the one
 exception, kept a plain SYMBOL so rules can pattern-match
 `(relation ?R ?A ?B)`, so its malformed form is rejected at *load* time),
@@ -66,6 +66,7 @@ same set.
 | `rule` | `(rule N (?p…) :match … :assert …)` | declare a saturation rewrite rule | `kb.from_ir` |
 | `hrule` | `(hrule N (?p…) :match … :assert …)` | declare a hypothesis-generation rule (drives `hypgen`, never fired by the saturator) | `kb.from_ir`; `hypgen` |
 | `query` | `(query :goal … …)` | what to ask the engine | `kb.from_ir` (`store.Query`) |
+| `solve` | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …])` | the problem's lattice, at most one per file (M1e2 S1e2.1a.4) | `kb.from_ir` (`ein_core::Solve`); `hypgen`, `hrule` |
 | `config` | `(config [:flag v]*)` | solver-level knobs | `kb.from_ir`; `inference.config.SolverConfig` |
 | `macro` | `(macro N (?p…) BODY)` | declare a load-time AST-rewrite alias; a rule clause's `(N a…)` invocation expands to BODY before compilation (P1.8 S1.5.9) | `kb.from_ir` (`_ingest_macros`); `ir.macros.expand_macros` |
 | `import` | `(import M [:as A \| :symbols (S…)])` | pull in a library module `M` (a dotted logical name, e.g. `std.macro`); qualified-by-default, or aliased/flat-selective (P1.8 S1.8.A1–A2) | `kb.from_ir` (grammar A2; resolve A3) |
@@ -114,18 +115,20 @@ four routes are pinned as fixtures in
 The list above is **`ein_core::RESERVED`**, and until M1e S1e.4.2 (`SE-L2`) the
 lexer had a different set under the same name. Both pages describing them were
 individually accurate and a reader of both concluded the lexer's eleven had
-grown to twelve when `open` joined this one. It did not, and it must not:
+grown to twelve when `open` joined this one. It did not, and it must not. (The
+lexer's set is twelve since M1e2 S1e2.1a.4, with the `solve` declarator.)
 
 | | the question it answers | membership | how it fails |
 |---|---|---|---|
 | `ein_core::RESERVED` — **this page** | what may a declarator **bind**? | `absent` `and` `eq` `false` `neq` `not` `open` `or` `relation` | a **load** error, at the declaration |
-| `ein-ir`'s `LEXER_KEYWORDS` — [`00_ebnf.md`](00_ebnf.md) | what may not **lex** as a `SYMBOL`? | `not` `and` `or` `neq` `rule` `hrule` `query` `config` `trace` `macro` `import` | a **parse** error, wherever the word appears |
+| `ein-ir`'s `LEXER_KEYWORDS` — [`00_ebnf.md`](00_ebnf.md) | what may not **lex** as a `SYMBOL`? | `not` `and` `or` `neq` `rule` `hrule` `query` `solve` `config` `trace` `macro` `import` | a **parse** error, wherever the word appears |
 
 Four names are in both and neither set contains the other. **`open` and
 `relation` are the two that decide it**: both must lex as ordinary `SYMBOL`s,
 because `(open ?R)` is a fact head the loader routes and `(relation ?R ?A ?B)`
-is a pattern rules match. `lex::tests::the_lexer_keywords_are_eleven_and_are_not_ein_cores_nine`
-holds the eleven, the four-name intersection, and both of those.
+is a pattern rules match. `lex::tests::the_lexer_keywords_are_twelve_and_are_not_ein_cores_nine`
+holds the twelve, the four-name intersection, and both of those. They were
+eleven until M1e2 S1e2.1a.4 added `solve`.
 
 ## The verdict atom — `open` (M1d P1d.2 S1d.2.3, read since S1d.2.4)
 
@@ -271,18 +274,20 @@ candidate stays parked and is re-judged at every later quiescence
 |------|------|---------|-------------|
 | `__closed__` | `(__closed__ R)` | suppress hypothesis generation for R (its extension is fixed). A **dunder** kernel-trigger name (the bare `closed` is now a free userspace name); author-writable, but usually **auto-inferred** by `emit_closed` for any relation no rule produces, or derived by `std.closure`. Kept kernel mechanism for M1 (S1.7.10). | `ein-infer/closed.rs` (`CLOSED = "__closed__"`); the hypgen filter |
 | `__symmetric__` | `(__symmetric__ R)` | close R's extension under arg-swap natively in the saturator (`(R a b)` ⇒ `(R b a)`) — a **dunder** kernel perf-opt counterpart of the stdlib `symmetric` rule (identical closure, skips the matcher per mirror) | `ein-infer/saturator.rs` (`SYMMETRIC`) |
-| `hypothesis-relations` | `(query … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator to the listed relations | `hypgen` (`HYPOTHESIS_RELATIONS`) |
-| `no-hypothesis` | `(query … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire) | `hypgen` (`NO_HYPOTHESIS`) |
+| `hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator to the listed relations | `hypgen` (`HYPOTHESIS_RELATIONS`) |
+| `no-hypothesis` | `(solve … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire) | `hypgen` (`NO_HYPOTHESIS`) |
 | `expect` | `(query … :expect (model …) \| (or (model …) …) \| (false))` | what the answer should be — the query's own claim, checked by the engine (M1c S1c.1.2). `ein solve` exits 1 when it is false | `ein-ir/expect.rs` (shape, at load) + `ein-infer/expect.rs` (the comparison) |
 
 **A `(query …)` keyword outside the allow-list is a load error** since M1c
-S1c.1.2. The list is **seven**: the three query keywords above
-(`:hypothesis-relations`, `:no-hypothesis`, `:expect` — the two dunder triggers
-in the same table are facts, not keywords), plus `:goal`, `:goal-text`,
-`:hrules` and the obsolete, ignored `:mode`
+S1c.1.2. The list is **four**: `:expect` above (the two dunder triggers in the
+same table are facts, not keywords), plus `:goal`, `:goal-text` and the
+obsolete, ignored `:mode`
 ([`from_ir.rs`](../../../../ein.rs/crates/ein-ir/src/from_ir.rs)'s
-`QUERY_KEYWORDS`; the same seven are named in the diagnostic,
-[`defined_behaviour.md` §4.1](../../defined_behaviour.md)). It was a silent
+`QUERY_KEYWORDS`). It was seven until M1e2 S1e2.1a.4 moved `:hrules`,
+`:hypothesis-relations` and `:no-hypothesis` to `(solve …)`, whose own
+allow-list is those three (`SOLVE_KEYWORDS`). On a query each of them is a
+load error that names `(solve …)`. The diagnostics are in
+[`defined_behaviour.md` §4.1](../../defined_behaviour.md). It was a silent
 no-op, which stopped being survivable when a keyword could carry a *test*.
 
 ## Not reserved (removed)

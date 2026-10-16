@@ -102,4 +102,4 @@ pub use solve::{
     MonotonicStats, NoDumper, OnBudget, Promotion, SolveError, SolveOptions, Solved, Universe,
     solve,
 };
-pub use verdict::{Answer, Solution, Verdict, goal_bindings, query_value};
+pub use verdict::{Answer, Solution, Verdict, goal_bindings, query_value, solve_value};

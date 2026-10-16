@@ -83,10 +83,12 @@
 
 (wears Ann Red)
 
+(solve
+  ;; `wears` is deliberately not here — see above.
+  :no-hypothesis (is-a))
+
 (query
   :goal (wears ?who ?colour)
-  ;; `wears` is deliberately not here — see above.
-  :no-hypothesis (is-a)
   :expect (model (wears Ann Red)
                  (not (wears Ann Green)) (not (wears Ann Blue))
                  (not (wears Bob Red))   (not (wears Cid Red))))

@@ -45,18 +45,20 @@ BlockComment  ::= '#|' ( Char* - ( Char* '|#' Char* ) ) '|#'   /* non-nesting */
 /* Atoms. */
 SYMBOL        ::= ( '__' )? [A-Za-z] [A-Za-z0-9_*.-]*
                   /* …and the match is rejected outright when the input at
-                     this position begins with one of the eleven
+                     this position begins with one of the twelve
                      LEXER_KEYWORDS followed by a non-word character (or by
                      end of input). The lookahead is START-anchored, so
                      `std.rule` is one SYMBOL and `rule.x` is not a SYMBOL at
                      all. */
 LEXER_KEYWORDS ::= 'not' | 'and' | 'or' | 'neq' | 'rule' | 'hrule'
-                 | 'query' | 'config' | 'trace' | 'macro' | 'import'
+                 | 'query' | 'solve' | 'config' | 'trace' | 'macro' | 'import'
+                  /* Twelve since M1e2 S1e2.1a.4 added 'solve'. */
                   /* This production was called RESERVED until M1e S1e.4.2,
                      and so was a DIFFERENT set in ein-core — the nine names a
                      declarator may not BIND, which is where `open` lives.
                      Reading the two together said the lexer's eleven had
-                     become twelve. They overlap in four (`not` `and` `or`
+                     become twelve (they did, with 'solve', which is a
+                     declarator and not `open`). They overlap in four (`not` `and` `or`
                      `neq`) and neither contains the other:
                      06_reserved_names.md § What is reserved, and by which
                      set has the table.
@@ -110,7 +112,7 @@ Program       ::= Form*
 
 Form          ::= RelationDecl
                 | RuleDecl | HruleDecl
-                | QueryForm | ConfigForm
+                | QueryForm | SolveForm | ConfigForm
                 | TraceForm
                 | MacroDecl | ImportForm
                 | FactForm                        /* anything else */
@@ -121,6 +123,7 @@ RuleDecl      ::= '(' 'rule'  SYMBOL RuleParams KwPair+ ')'
 HruleDecl     ::= '(' 'hrule' SYMBOL RuleParams KwPair+ ')'
 RuleParams    ::= '(' VAR* ')'                    /* MANDATORY; `()` when non-generic */
 QueryForm     ::= '(' 'query'  KwPair+ ')'
+SolveForm     ::= '(' 'solve'  KwPair* ')'        /* `(solve)` is valid: the default lattice */
 ConfigForm    ::= '(' 'config' KwPair* ')'        /* `(config)` is valid: all defaults */
 MacroDecl     ::= '(' 'macro' SYMBOL MacroParams Value ')'
 MacroParams   ::= '(' VAR+ ')'

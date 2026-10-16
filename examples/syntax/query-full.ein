@@ -1,6 +1,8 @@
 ;;; Syntax probe — query-full.
 ;;;
-;;; A `(query …)` carrying all three of its keywords.
+;;; A `(query …)` carrying all three of its keywords, until M1e2 S1e2.1a.4
+;;; moved `:hrules` to the `(solve …)` it now sits beside: the query keeps
+;;; `:goal` and `:goal-text`, and the lattice is stated once.
 ;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
 ;;; rendered under every parse view and every op, and each rendering is
@@ -8,4 +10,5 @@
 ;;; shapes is drawn moves a digest. They exist because no *puzzle*
 ;;; contains these shapes.
 
-(query :goal (drinks Water ?h) :hrules (h1 h2) :goal-text "who drinks water")
+(solve :hrules (h1 h2))
+(query :goal (drinks Water ?h) :goal-text "who drinks water")

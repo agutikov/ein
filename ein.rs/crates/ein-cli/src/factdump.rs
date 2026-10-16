@@ -7,17 +7,17 @@ use ein_core::{Kb, Symbol, Terms};
 use ein_infer::events::sexpr;
 use ein_ir::{Ast, Node, NodeId};
 
-/// Relations a query `:hrules` clause targets — the hypothesis commitments.
+/// Relations the `(solve …)` `:hrules` clause targets — the hypothesis commitments.
 ///
 /// Generic: the atoms named in the `:hrules` activators that are *declared
 /// relations*, so type/object atoms drop out position-independently. Every
 /// `:hrules` pair contributes, not just the first.
 pub fn hypothesis_target_relations(ast: &Ast, terms: &Terms, kb: &Kb) -> Vec<Symbol> {
-    let Some(query) = kb.program().query() else {
+    let Some(solve) = kb.program().solve() else {
         return Vec::new();
     };
     let mut names: Vec<String> = Vec::new();
-    for &pair in query.kw_pairs.iter() {
+    for &pair in solve.kw_pairs.iter() {
         let Node::KwPair { key, value } = ast.node(NodeId(pair.0)) else {
             continue;
         };
@@ -63,7 +63,7 @@ pub enum Mode {
     All,
     /// `-P` — `All` with the `(not …)` facts dropped: the positive residue.
     Positive,
-    /// `-f` — only the query `:hrules` target facts, *whatever their origin*,
+    /// `-f` — only the `(solve …)` `:hrules` target facts, *whatever their origin*,
     /// so the given conditions count too.
     Hfacts,
 }

@@ -57,7 +57,9 @@
 (not (co-loc Cat S1))
 (not (co-loc Cat S2))      ; ⊥ — the cat has nowhere to be
 
+(solve
+  :no-hypothesis (type instance co-loc))
+
 (query
   :goal (co-loc ?a ?b)
-  :no-hypothesis (type instance co-loc)
   :expect (false))

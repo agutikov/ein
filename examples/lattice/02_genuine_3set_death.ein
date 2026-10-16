@@ -70,9 +70,11 @@
 (is-a Item T)
 (is-a X    Item)
 
-(query
-  :goal (a-prop ?x)
+(solve
   :hrules (
     guess (a-prop Item)
     guess (b-prop Item)
     guess (c-prop Item)))
+
+(query
+  :goal (a-prop ?x))

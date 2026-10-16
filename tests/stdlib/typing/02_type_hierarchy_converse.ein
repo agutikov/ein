@@ -38,7 +38,9 @@
 (converse owns owned-by)
 (type-hierarchy is-a*)         ; the only wiring there is
 
+(solve
+  :no-hypothesis (is-a* owns owned-by))
+
 (query
   :goal (owns ?who ?what)
-  :no-hypothesis (is-a* owns owned-by)
   :expect (false))

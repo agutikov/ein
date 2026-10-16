@@ -440,7 +440,10 @@ Five arrived on 2026-08-23 with
 
 | input | message | exit |
 |---|---|---|
-| a `(query …)` keyword outside the allow-list | `(query …): unknown keyword :<k> — one of :goal :goal-text :hrules :hypothesis-relations :no-hypothesis :expect :mode` | 1 |
+| a `(query …)` keyword outside the allow-list | `(query …): unknown keyword :<k> — one of :goal :goal-text :expect :mode` | 1 |
+| a lattice keyword on a `(query …)` (M1e2 S1e2.1a.4) | `(query …): :<k> chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice` | 1 |
+| a `(solve …)` keyword outside the allow-list | `(solve …): unknown keyword :<k> — one of :hrules :hypothesis-relations :no-hypothesis` | 1 |
+| more than one `(solve …)` | `<n> (solve …) forms — a program states its lattice once` | 1 |
 | `:expect` that is not `(false)` / `(model …)` / `(or (model …) …)` | ``:expect <what> — expected `(false)`, `(model …)` or `(or (model …) …)` `` | 1 |
 | `:expect` naming a relation the program does not have | `:expect names <r>, which no declaration or fact makes a relation` | 1 |
 | `:expect` omitting a relation the `:goal` asks about | `:expect does not name <r>, which the query's :goal asks about` | 1 |

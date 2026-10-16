@@ -124,7 +124,7 @@ fn why(body: &str, query: &str) -> Vec<String> {
 fn a_complete_extent_holds() {
     assert!(holds(
         DETERMINATE,
-        "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A H1) (p B H2)))"
+        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1) (p B H2)))"
     ));
 }
 
@@ -139,7 +139,7 @@ fn a_complete_extent_holds() {
 fn a_surplus_fact_in_a_named_relation_fails_and_is_named() {
     let lines = why(
         DETERMINATE,
-        "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A H1)))",
+        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1)))",
     );
     assert_eq!(lines.len(), 2, "{lines:?}");
     assert!(lines[0].contains("(p B H2)"), "{lines:?}");
@@ -160,7 +160,7 @@ fn a_surplus_fact_names_the_rule_that_derived_it() {
     let lines = why(
         "(import std.algebra :symbols (symmetric))\n\
          (relation p Thing Thing)\n(symmetric p)\n(p A B)\n",
-        "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A B)))",
+        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A B)))",
     );
     assert_eq!(lines.len(), 2, "{lines:?}");
     assert!(lines[0].contains("(p B A)"), "the mirrored edge: {lines:?}");
@@ -174,8 +174,7 @@ fn a_surplus_fact_names_the_rule_that_derived_it() {
 fn a_missing_fact_fails_and_is_named() {
     let lines = why(
         DETERMINATE,
-        "(query :goal (p A ?h) :no-hypothesis (p) \
-         :expect (model (p A H1) (p B H2) (p C H3)))",
+        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1) (p B H2) (p C H3)))",
     );
     assert!(
         lines
@@ -193,7 +192,7 @@ fn an_unnamed_relation_is_not_constrained() {
     assert!(
         holds(
             DETERMINATE,
-            "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A H1) (p B H2)))"
+            "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1) (p B H2)))"
         ),
         "`relation` and `instance` facts are in the model and are not listed"
     );
@@ -209,19 +208,17 @@ fn stored_negatives_are_checked_for_presence_and_not_for_extent() {
     assert!(
         holds(
             body,
-            "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A H1)))"
+            "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1)))"
         ),
         "the stored (not (p A H2)) is not surplus — closure is positive-only"
     );
     assert!(holds(
         body,
-        "(query :goal (p A ?h) :no-hypothesis (p) \
-         :expect (model (p A H1) (not (p A H2))))"
+        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1) (not (p A H2))))"
     ));
     let lines = why(
         body,
-        "(query :goal (p A ?h) :no-hypothesis (p) \
-         :expect (model (p A H1) (not (p A H3))))",
+        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1) (not (p A H3))))",
     );
     assert!(
         lines.iter().any(|l| l.contains("(not (p A H3))")),
@@ -238,17 +235,17 @@ fn bottom_is_the_contradiction_spelling() {
                 (no p)\n";
     assert!(holds(
         body,
-        "(query :goal (p A ?h) :no-hypothesis (p) :expect (false))"
+        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (false))"
     ));
     let lines = why(
         DETERMINATE,
-        "(query :goal (p A ?h) :no-hypothesis (p) :expect (false))",
+        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (false))",
     );
     assert!(lines[0].contains("expected (false)"), "{lines:?}");
     // …and the other direction, with the message that says what to write.
     let lines = why(
         body,
-        "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A H1)))",
+        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1)))",
     );
     assert!(lines[0].contains("`:expect (false)`"), "{lines:?}");
 }
@@ -257,8 +254,7 @@ fn bottom_is_the_contradiction_spelling() {
 fn k_is_implied_by_the_number_of_disjuncts() {
     let lines = why(
         AMBIGUOUS,
-        "(query :goal (seat ?w ?s) :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
-         :expect (model (seat Ann S1) (seat Bob S2)))",
+        "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) :expect (model (seat Ann S1) (seat Bob S2)))",
     );
     assert!(lines[0].contains("k = 1"), "{lines:?}");
     assert!(lines[0].contains("k = 2"), "{lines:?}");
@@ -274,8 +270,7 @@ fn k_is_implied_by_the_number_of_disjuncts() {
 fn a_count_mismatch_says_what_the_models_were() {
     let lines = why(
         AMBIGUOUS,
-        "(query :goal (seat ?w ?s) :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
-         :expect (model (seat Ann S1) (seat Bob S2)))",
+        "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) :expect (model (seat Ann S1) (seat Bob S2)))",
     );
     assert_eq!(
         lines.len(),
@@ -327,8 +322,7 @@ fn a_count_mismatch_says_what_the_models_were() {
 fn the_disjuncts_compare_as_a_set_not_a_sequence() {
     let q = |a: &str, b: &str| {
         format!(
-            "(query :goal (seat ?w ?s) \
-             :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
+            "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) \
              :expect (or (model {a}) (model {b})))"
         )
     };
@@ -343,7 +337,7 @@ fn the_disjuncts_compare_as_a_set_not_a_sequence() {
 fn the_facts_in_a_model_compare_as_a_set() {
     assert!(holds(
         DETERMINATE,
-        "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p B H2) (p A H1)))"
+        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p B H2) (p A H1)))"
     ));
 }
 
@@ -353,8 +347,7 @@ fn the_facts_in_a_model_compare_as_a_set() {
 fn one_wrong_disjunct_fails() {
     let lines = why(
         AMBIGUOUS,
-        "(query :goal (seat ?w ?s) :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
-         :expect (or (model (seat Ann S1) (seat Bob S2)) \
+        "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) :expect (or (model (seat Ann S1) (seat Bob S2)) \
                      (model (seat Ann S2) (seat Bob S2))))",
     );
     // **The decisive content, not "some line exists"** — M1e S1e.3.6 T5, the
@@ -392,8 +385,7 @@ fn one_wrong_disjunct_fails() {
 fn two_identical_disjuncts_do_not_cover_two_models() {
     let lines = why(
         AMBIGUOUS,
-        "(query :goal (seat ?w ?s) :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
-         :expect (or (model (seat Ann S1) (seat Bob S2)) \
+        "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) :expect (or (model (seat Ann S1) (seat Bob S2)) \
                      (model (seat Ann S1) (seat Bob S2))))",
     );
     // **The augmenting-path report, in its own words.** This asserted
@@ -473,8 +465,7 @@ fn rendering_agrees_with_the_fact_dump() {
 
 // ── An expectation is a claim about the *exhausted* answer ─────────
 
-const TWO_MODELS: &str = "(query :goal (seat ?w ?s) \
-     :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
+const TWO_MODELS: &str = "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) \
      :expect (or (model (seat Ann S1) (seat Bob S2)) \
                  (model (seat Ann S2) (seat Bob S1))))";
 
@@ -506,8 +497,7 @@ fn an_unexhausted_search_does_not_confirm_a_verdict() {
 /// search did next, so it stays a failure rather than becoming "not checked".
 #[test]
 fn too_many_models_is_a_failure_not_an_unchecked_one() {
-    let one = "(query :goal (seat ?w ?s) \
-         :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
+    let one = "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) \
          :expect (model (seat Ann S1) (seat Bob S2)))";
     let r = check_stopping(AMBIGUOUS, one, Some(2)).expect("solves");
     assert_eq!(r.outcome, expect::Outcome::Failed, "{:?}", r.lines);
@@ -552,7 +542,7 @@ fn an_exhausted_contradiction_still_refutes_a_model_claim() {
     let r = check(
         "(relation p Thing Place)\n(p A H1)\n\
          (rule no (?R) :match (?R ?a ?b) :assert (false) :priority 250)\n(no p)\n",
-        "(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A H1)))",
+        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1)))",
     )
     .expect("solves");
     assert_eq!(r.outcome, expect::Outcome::Failed, "{:?}", r.lines);
@@ -563,8 +553,7 @@ fn an_exhausted_contradiction_still_refutes_a_model_claim() {
 /// disagreement about *content*, and no amount of further search unfinds it.
 #[test]
 fn a_wrong_model_is_a_failure_even_unexhausted() {
-    let wrong = "(query :goal (seat ?w ?s) \
-         :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)) \
+    let wrong = "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) \
          :expect (or (model (seat Ann S1) (seat Bob S1)) \
                      (model (seat Ann S2) (seat Bob S2))))";
     let r = check_stopping(AMBIGUOUS, wrong, Some(2)).expect("solves");

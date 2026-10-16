@@ -101,9 +101,11 @@
   :priority 500
   :why    "Bob and Dog share seat S2, and the anchored closure says so neither way")
 
+(solve
+  :no-hypothesis (type instance co-loc undecided))
+
 (query
   :goal (co-loc ?a ?b)
-  :no-hypothesis (type instance co-loc undecided)
   :expect (model (co-loc Ann Cat) (co-loc Cat Ann)
                  (co-loc Ann S1)  (co-loc S1 Ann)
                  (co-loc Cat S1)  (co-loc S1 Cat)

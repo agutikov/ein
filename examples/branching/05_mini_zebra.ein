@@ -71,11 +71,13 @@
 (co-located Alice Tea :source "(1) Alice drinks Tea")
 (co-located Alice Cat :source "(2) Alice has the Cat")
 
-(query
-  :goal (and (co-located ?n Coffee)
-             (co-located ?n ?p)
-             (is-a ?p Pet))
+(solve
   :hrules (
     guess (Nationality Drink)
     guess (Nationality Pet)
     guess (Drink Pet)))
+
+(query
+  :goal (and (co-located ?n Coffee)
+             (co-located ?n ?p)
+             (is-a ?p Pet)))

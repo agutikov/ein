@@ -21,4 +21,5 @@
 (total-owed likes is-a)
 (rule no-soup () :match (likes Ann Soup) :assert (false) :priority 300)
 (rule no-stew () :match (likes Ann Stew) :assert (false) :priority 300)
-(query :goal (likes ?who ?what) :no-hypothesis (is-a))
+(solve :no-hypothesis (is-a))
+(query :goal (likes ?who ?what))

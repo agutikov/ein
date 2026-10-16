@@ -29,7 +29,9 @@
 (likes Ann Soup)             ; the line `25` does not have
 (likes Bob Stew)
 
+(solve
+  :no-hypothesis (is-a likes))
+
 (query
   :goal (likes ?who ?what)
-  :no-hypothesis (is-a likes)
   :expect (model (likes Ann Soup) (likes Bob Stew)))

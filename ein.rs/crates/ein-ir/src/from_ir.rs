@@ -19,7 +19,7 @@ use crate::imports::Resolver;
 use crate::macros::{self, Macro as IrMacro, MacroError};
 use crate::parse::parse;
 use ein_core::config::{FIELDS, FieldKind, SolverConfig};
-use ein_core::entities::{ExprRef, Loc, Macro, Pattern, Query, Relation, Rule};
+use ein_core::entities::{ExprRef, Loc, Macro, Pattern, Query, Relation, Rule, Solve};
 use ein_core::{
     FactId, Kb, Overflow, Program, Prov, ProvId, Symbol, Terms, Value, detect_provenance_cycles,
     is_predicate, is_reserved, parse_float, parse_int,
@@ -98,6 +98,7 @@ pub fn load_query(
         (Vec::new(), Vec::new(), Vec::new(), Vec::new());
     let (mut query_blocks, mut config_blocks): (Vec<NodeId>, Vec<NodeId>) =
         (Vec::new(), Vec::new());
+    let mut solve_blocks: Vec<NodeId> = Vec::new();
     for &form in &forms {
         let Some(head) = ast.head_name(form).map(str::to_string) else {
             errors.push(format!(
@@ -115,6 +116,7 @@ pub fn load_query(
                 loc_repr(ast, ast.loc(form))
             )),
             "query" => query_blocks.push(form),
+            "solve" => solve_blocks.push(form),
             "config" => config_blocks.push(form),
             // Engine-emitted output; parsed by the trace reader, not here.
             "trace" => {}
@@ -145,6 +147,18 @@ pub fn load_query(
         })
         .collect();
     kb.program_mut().queries = queries;
+    // One lattice per program (M1e2 S1e2.1a.4): a second `(solve …)` would be
+    // a second R, which is what splitting solving from asking removed.
+    if solve_blocks.len() > 1 {
+        errors.push(format!(
+            "{} (solve …) forms — a program states its lattice once",
+            solve_blocks.len()
+        ));
+    }
+    kb.program_mut().solve = solve_blocks.first().map(|&form| Solve {
+        kw_pairs: ast.form_args(form).iter().map(|n| ExprRef(n.0)).collect(),
+    });
+    validate_solve(ast, &kb, &mut errors);
     validate_queries(ast, terms, &kb, &mut errors);
     if let Some(&last) = config_blocks.last() {
         let args: Vec<NodeId> = ast.form_args(last).to_vec();
@@ -262,6 +276,11 @@ fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
     for q in &program.queries {
         roots.extend(q.kw_pairs.iter().map(|e| NodeId(e.0)));
     }
+    // …and the `(solve …)` block, whose `:hrules` activators bind hrule
+    // parameters to names no fact may mention.
+    if let Some(s) = &program.solve {
+        roots.extend(s.kw_pairs.iter().map(|e| NodeId(e.0)));
+    }
     for root in roots {
         walk(ast, terms, root);
     }
@@ -280,15 +299,44 @@ fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
 /// files carry a comment saying it is obsolete, and rejecting it would make a
 /// stale file fail to load rather than fail to matter. Accepted-and-ignored is
 /// documented; silently-unknown is not.
-const QUERY_KEYWORDS: [&str; 7] = [
-    "goal",
-    "goal-text",
-    "hrules",
-    "hypothesis-relations",
-    "no-hypothesis",
-    "expect",
-    "mode",
-];
+///
+/// The three keywords that choose the candidate list left for `(solve …)` at
+/// M1e2 S1e2.1a.4, so that one program has one lattice and one R. On a query
+/// each is a load error naming its new home ([`LATTICE_KEYWORDS`]).
+const QUERY_KEYWORDS: [&str; 4] = ["goal", "goal-text", "expect", "mode"];
+
+/// The keywords that choose the candidate list — the lattice — and so belong
+/// to `(solve …)`, M1e2 S1e2.1a.4.
+const LATTICE_KEYWORDS: [&str; 3] = ["hrules", "hypothesis-relations", "no-hypothesis"];
+
+/// Every `(solve …)` keyword the engine reads: the lattice's.
+const SOLVE_KEYWORDS: [&str; 3] = LATTICE_KEYWORDS;
+
+/// The `(solve …)` block's keywords: an allow-list, as `(query …)`'s is.
+fn validate_solve(ast: &Ast, kb: &Kb, errors: &mut Vec<String>) {
+    let Some(solve) = kb.program().solve() else {
+        return;
+    };
+    for &pair in solve.kw_pairs.iter() {
+        let Node::KwPair { key, .. } = ast.node(NodeId(pair.0)) else {
+            continue;
+        };
+        let Node::Keyword(name) = ast.node(key) else {
+            continue;
+        };
+        let name = ast.sym(name);
+        if !SOLVE_KEYWORDS.contains(&name) {
+            errors.push(format!(
+                "(solve …): unknown keyword :{name} — one of {}",
+                SOLVE_KEYWORDS
+                    .iter()
+                    .map(|k| format!(":{k}"))
+                    .collect::<Vec<_>>()
+                    .join(" ")
+            ));
+        }
+    }
+}
 
 /// The `(query …)` blocks' own validation — keywords, and `:expect`.
 ///
@@ -305,7 +353,12 @@ fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>)
                 continue;
             };
             let name = ast.sym(name);
-            if !QUERY_KEYWORDS.contains(&name) {
+            if LATTICE_KEYWORDS.contains(&name) {
+                errors.push(format!(
+                    "(query …): :{name} chooses the lattice and belongs on (solve …) \
+                     since M1e2 S1e2.1a.4 — one program, one lattice"
+                ));
+            } else if !QUERY_KEYWORDS.contains(&name) {
                 errors.push(format!(
                     "(query …): unknown keyword :{name} — one of {}",
                     QUERY_KEYWORDS

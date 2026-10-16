@@ -329,7 +329,13 @@ pub fn render_facts_forms(ast: &Ast, facts: &[NodeId], derived: bool, levi: bool
 
 /// `(query …)` — the keyword args as one compact note node.
 pub fn render_query(ast: &Ast, form: NodeId) -> String {
-    let mut b = Builder::new("query");
+    render_note(ast, form, "query")
+}
+
+/// A keyword block — `(query …)` or, since M1e2 S1e2.1a.4, `(solve …)` — as
+/// one note listing its keywords.
+fn render_note(ast: &Ast, form: NodeId, head: &str) -> String {
+    let mut b = Builder::new(head);
     let mut parts: Vec<String> = Vec::new();
     for a in ast.form_args(form) {
         if let Node::KwPair { key, value } = ast.node(*a)
@@ -339,12 +345,12 @@ pub fn render_query(ast: &Ast, form: NodeId) -> String {
         }
     }
     let label = if parts.is_empty() {
-        "query".to_string()
+        head.to_string()
     } else {
         parts.join("\\n")
     };
     b.node(
-        &quote("query"),
+        &quote(head),
         Some(&format!("shape=note, label=\"{label}\"")),
     );
     b.build()
@@ -500,6 +506,7 @@ pub fn to_dot_form(ast: &Ast, form: NodeId, opts: DotOpts) -> String {
         "rules" => render_rules_forms(ast, &args, opts.rule_mode),
         "rule" | "hrule" => render_rule_form(ast, form, opts.rule_mode),
         "query" => render_query(ast, form),
+        "solve" => render_note(ast, form, "solve"),
         "trace" => render_trace(ast, form, opts.trace_view),
         // Solver knobs — no graph structure to render.
         "config" => String::new(),
@@ -532,7 +539,8 @@ pub fn to_dot(ast: &Ast, forms: &[NodeId], opts: DotOpts) -> String {
     let mut chunks: Vec<String> = Vec::new();
     for f in forms {
         match ast.head_name(f).unwrap_or("") {
-            "ontology" | "facts" | "reasoning" | "rules" | "query" | "trace" | "config" => {
+            "ontology" | "facts" | "reasoning" | "rules" | "query" | "solve" | "trace"
+            | "config" => {
                 chunks.push(to_dot_form(ast, f, opts));
             }
             "rule" | "hrule" => rules.push(f),

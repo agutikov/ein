@@ -43,7 +43,9 @@
 
 (r A B)
 
+(solve
+  :no-hypothesis (r))
+
 (query
   :goal (r ?x ?y)
-  :no-hypothesis (r)
   :expect (model (r A B) (r A A) (r B B)))

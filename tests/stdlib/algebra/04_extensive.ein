@@ -61,9 +61,11 @@
 
 (edge A B)
 
+(solve
+  :no-hypothesis (instance edge loop full gap))
+
 (query
   :goal (gap ?x ?y)
-  :no-hypothesis (instance edge loop full gap)
   :expect (model (edge A B)
                  (loop A A) (loop B B)
                  (full A A) (full A B) (full B A) (full B B)

@@ -20,7 +20,9 @@
 
 (wears Ann Puce)     ; ⊥ — Puce is not an `is-a` Colour
 
+(solve
+  :no-hypothesis (is-a wears))
+
 (query
   :goal (wears ?who ?colour)
-  :no-hypothesis (is-a wears)
   :expect (false))

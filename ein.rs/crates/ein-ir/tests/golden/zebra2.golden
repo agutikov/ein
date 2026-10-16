@@ -287,7 +287,9 @@
   Blue
   :source "condition (15)")
 
+(solve
+  :hrules (guess (color-loc Color House) (nation-loc Nationality House) (drink-loc Drink House) (smoke-loc Cigarette House) (pet-loc Pet House)))
+
 (query
   :goal (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))
-  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}"
-  :hrules (guess (color-loc Color House) (nation-loc Nationality House) (drink-loc Drink House) (smoke-loc Cigarette House) (pet-loc Pet House)))
+  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}")

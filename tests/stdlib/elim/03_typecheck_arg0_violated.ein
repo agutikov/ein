@@ -32,7 +32,9 @@
 ;; a Value is no Slot either, and would have said nothing about which one ran.
 (holds Nowhere S1)   ; ⊥ — Nowhere is not an `is-a` Slot
 
+(solve
+  :no-hypothesis (is-a holds))
+
 (query
   :goal (holds ?slot ?value)
-  :no-hypothesis (is-a holds)
   :expect (false))

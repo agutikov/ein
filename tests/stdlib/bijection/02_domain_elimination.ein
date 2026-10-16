@@ -63,9 +63,11 @@
   :priority 500
   :why    "Bob's row is only one-third excluded, so nothing may be forced into it")
 
+(solve
+  :no-hypothesis (is-a wears undecided))
+
 (query
   :goal (wears ?who ?colour)
-  :no-hypothesis (is-a wears undecided)
   :expect (model (wears Ann Blue)
                  (not (wears Ann Red)) (not (wears Ann Green))
                  (not (wears Bob Blue)) (not (wears Cid Blue))

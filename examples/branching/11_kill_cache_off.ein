@@ -88,8 +88,10 @@
 (co-located Red Cat  :source "(2) the Red house keeps the Cat")
 (co-located Red Pipe :source "(3) the Red house smokes a Pipe")
 
-(query
-  :goal (and (co-located ?x Milk) (co-located ?x ?p) (is-a ?p Pet))
+(solve
   :hrules (
     guess (Color Drink) guess (Color Pet) guess (Color Smoke)
     guess (Drink Pet)   guess (Drink Smoke) guess (Pet Smoke)))
+
+(query
+  :goal (and (co-located ?x Milk) (co-located ?x ?p) (is-a ?p Pet)))

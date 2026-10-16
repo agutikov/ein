@@ -10,7 +10,7 @@
 //! declared-wins-over-open-world for relations.
 
 use crate::config::SolverConfig;
-use crate::entities::{Macro, NameCategory, Query, Registry, Relation, Rule};
+use crate::entities::{Macro, NameCategory, Query, Registry, Relation, Rule, Solve};
 use crate::intern::Symbol;
 use crate::terms::Terms;
 
@@ -48,12 +48,14 @@ pub struct Program {
     /// last-wins on purpose — a config is a setting and a query is content,
     /// and the two want opposite rules.
     pub queries: Vec<Query>,
-    /// Which of `queries` this load is *about*. One run answers one query
-    /// (`:hypothesis-relations` and `:hrules` are per-query, so two queries
-    /// over one KB are two genuinely different searches); the CLI loads once
-    /// per query and every consumer reads [`Program::query`], so nothing
-    /// downstream has to know there were others.
+    /// Which of `queries` this load is *about*. One run answers one query;
+    /// the CLI loads once per query and every consumer reads
+    /// [`Program::query`], so nothing downstream has to know there were
+    /// others. Since M1e2 S1e2.1a.4 every query asks about the one lattice
+    /// [`Program::solve`] states.
     pub active_query: usize,
+    /// The `(solve …)` block, at most one — the lattice every query asks about.
+    pub solve: Option<Solve>,
     pub config: Option<SolverConfig>,
 }
 
@@ -65,6 +67,11 @@ impl Program {
     /// The query this load is about — `queries[active_query]`.
     pub fn query(&self) -> Option<&Query> {
         self.queries.get(self.active_query)
+    }
+
+    /// The `(solve …)` block, when the program states one.
+    pub fn solve(&self) -> Option<&Solve> {
+        self.solve.as_ref()
     }
 
     /// Register a relation; the *declared* flag wins over open-world.

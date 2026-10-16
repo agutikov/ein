@@ -130,6 +130,16 @@ pub struct Query {
     pub kw_pairs: Box<[ExprRef]>,
 }
 
+/// The `(solve …)` block — M1e2 S1e2.1a.4: the problem's lattice, stated once.
+/// It holds the keywords that choose the candidate list (`:hrules`,
+/// `:hypothesis-relations`, `:no-hypothesis`), which `(query …)` carried until
+/// then, so that one program has one lattice and one R. Raw kw-pairs, as
+/// [`Query`] keeps them.
+#[derive(Clone, Debug, Default)]
+pub struct Solve {
+    pub kw_pairs: Box<[ExprRef]>,
+}
+
 /// An insertion-ordered map from [`Symbol`] to `V`, whose order is observable
 /// through hypgen's `raw_candidates` and `Engine::compile_all`
 /// ([design/02](../../../../docs/history/m1a_rust/design/02_determinism_and_order.md) §2).

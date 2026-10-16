@@ -365,9 +365,9 @@ const SOLVE_FIXTURE: &str = "\
 (is-a Thing T)
 (is-a a Thing) (is-a s Thing)
 
-(query
+(solve :hypothesis-relations (x h)) (query
   :goal  (never ?q)
-  :hypothesis-relations (x h))
+)
 ";
 
 /// **A whole search leaves root's fact set untouched.**

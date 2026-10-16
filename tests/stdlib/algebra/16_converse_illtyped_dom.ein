@@ -22,7 +22,7 @@
 ;;; `is-a*` is declared and empty on purpose: the `(absent (?isR* Pet Place))`
 ;;; guard is what a subtype declaration would defeat, so a fixture that wants
 ;;; the rule to fire must leave the hierarchy with no path between the two
-;;; types. This is also why the query names it in `:no-hypothesis` — a
+;;; types. This is also why `(solve …)` names it in `:no-hypothesis` — a
 ;;; speculated `(is-a* Pet Place)` would make the pair well-typed and the
 ;;; verdict a model.
 
@@ -36,7 +36,9 @@
 (converse-illtyped-dom owns owned-by is-a*)
 (converse-illtyped-ran owns owned-by is-a*)   ; well-typed on its side: silent
 
+(solve
+  :no-hypothesis (is-a* owns owned-by))
+
 (query
   :goal (owns ?who ?what)
-  :no-hypothesis (is-a* owns owned-by)
   :expect (false))

@@ -55,9 +55,11 @@
   :priority 500
   :why    "B and C were never related either way, and the mirror must not invent it")
 
+(solve
+  :no-hypothesis (sits-with undecided))
+
 (query
   :goal (sits-with ?x ?y)
-  :no-hypothesis (sits-with undecided)
   :expect (model (sits-with A B) (sits-with B A)
                  (not (sits-with A C))
                  (not (sits-with C A))

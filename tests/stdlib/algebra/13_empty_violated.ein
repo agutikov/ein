@@ -17,7 +17,9 @@
 
 (forbidden A B)      ; ⊥
 
+(solve
+  :no-hypothesis (forbidden))
+
 (query
   :goal (forbidden ?x ?y)
-  :no-hypothesis (forbidden)
   :expect (false))

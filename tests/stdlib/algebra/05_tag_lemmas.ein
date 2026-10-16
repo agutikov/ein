@@ -61,9 +61,11 @@
 (m C D)
 (q E F)                ; p is authored empty on purpose
 
+(solve
+  :no-hypothesis (n m p q))
+
 (query
   :goal (symmetric ?rel)
-  :no-hypothesis (n m p q)
   :expect (model (symmetric n) (symmetric m)
                  (converse n n) (converse m m)
                  (converse p q) (converse q p)

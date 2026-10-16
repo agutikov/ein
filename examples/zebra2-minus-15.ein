@@ -365,7 +365,7 @@
 
 ;; ──── Hypothesis generation ────────────────────────────────
 ;; One hrule parameterised over (?R ?T1 ?T2); activators in the
-;; (query …) :hrules clause enumerate every *-loc relation with
+;; (solve …) :hrules clause enumerate every *-loc relation with
 ;; its (attribute-type, House) pair.
 (hrule guess (?R ?T1 ?T2)
   :match  (and (is-a ?a ?T1) (is-a ?b ?T2))
@@ -510,6 +510,17 @@
 ;; Everything else (schema, rules, ontology, conditions 1-14) is identical;
 ;; regenerate with examples/gen_zebra2_variants.py.
 
+(solve
+  ;; Hypothesis-generator activators: one (?R ?T1 ?T2) triple per
+  ;; *-loc relation; the hrule emits (?R ?v ?h) candidates for
+  ;; every (v, h) of the corresponding types.
+  :hrules (guess
+            (color-loc  Color       House)
+            (nation-loc Nationality House)
+            (drink-loc  Drink       House)
+            (smoke-loc  Cigarette   House)
+            (pet-loc    Pet         House)))
+
 (query
   ;; (no :mode — obsolete: the verdict is read from the result `k`, never
   ;; chosen up front; the engine's goal test is hardwired to SOLVE.)
@@ -527,16 +538,7 @@
   ;; :goal-text renders the headline NL result from the bound goal vars
   ;; (the rule/relation `:why` `{?var}` engine). This — not any hardcoded
   ;; verb table — is what prints "The Norwegian drinks…" on the solve table.
-  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}"
-  ;; Hypothesis-generator activators: one (?R ?T1 ?T2) triple per
-  ;; *-loc relation; the hrule emits (?R ?v ?h) candidates for
-  ;; every (v, h) of the corresponding types.
-  :hrules (guess
-            (color-loc  Color       House)
-            (nation-loc Nationality House)
-            (drink-loc  Drink       House)
-            (smoke-loc  Cigarette   House)
-            (pet-loc    Pet         House)))
+  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}")
 
 ;; Expected solution facts:
 ;;   - (nation-loc Norwegian ?h) ∧ (drink-loc Water ?h) — same ?h

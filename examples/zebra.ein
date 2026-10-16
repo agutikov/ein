@@ -75,7 +75,7 @@
 ;; Explicit rather than defaulted, because this encoding is the one that
 ;; stresses hypothesis filtering: `co-located` spans 30 attribute values
 ;; (zebra2's five projections each span 5), so an unfiltered enumeration
-;; is ~20x larger. The `:hrules` clause in (query …) is what actually
+;; is ~20x larger. The `:hrules` clause in (solve …) is what actually
 ;; bounds it; these knobs decide how hard each candidate is tested
 ;; before it is entered.
 (config
@@ -176,7 +176,7 @@
 ;; ──── Hypothesis generation ────────────────────────────────────────
 ;; Byte-for-byte zebra2's hrule: the guessed RELATION rides in as the
 ;; parameter ?R, so the body names only kernel primitives and variables,
-;; and the `:hrules` activators in (query …) say what to speculate
+;; and the `:hrules` activators in (solve …) say what to speculate
 ;; about. What differs between the two encodings is *only* the activator
 ;; list — zebra2 names five different typed relations, this file names
 ;; the SAME generic `co-located` five times, once per attribute type
@@ -320,6 +320,16 @@
 ;; (15) The Norwegian lives next to the blue house.
 (next-to    Norwegian Blue       :source "condition (15)")
 
+(solve
+  ;; One activator per attribute type that must be placed — all five
+  ;; naming the same generic link relation.
+  :hrules (guess
+            (co-located Color       House)
+            (co-located Nationality House)
+            (co-located Drink       House)
+            (co-located Cigarette   House)
+            (co-located Pet         House)))
+
 (query
   ;; The two puzzle questions are "who drinks water?" and "who owns the
   ;; zebra?" — a Nationality, not a House (S1.7.5 who-vs-where). The
@@ -336,15 +346,7 @@
              (instance ?h_zebra House)
              (co-located ?who_zebra ?h_zebra)
              (instance ?who_zebra Nationality))
-  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}"
-  ;; One activator per attribute type that must be placed — all five
-  ;; naming the same generic link relation.
-  :hrules (guess
-            (co-located Color       House)
-            (co-located Nationality House)
-            (co-located Drink       House)
-            (co-located Cigarette   House)
-            (co-located Pet         House)))
+  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}")
 
 ;; Expected solution facts:
 ;;   - (co-located Norwegian ?h) ∧ (co-located Water ?h) — same ?h

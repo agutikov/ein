@@ -57,7 +57,9 @@
 (not (co-loc S1 Dog))
 (not (co-loc S1 Rat))      ; ⊥ — seat 1 has no pet left
 
+(solve
+  :no-hypothesis (type instance co-loc))
+
 (query
   :goal (co-loc ?a ?b)
-  :no-hypothesis (type instance co-loc)
   :expect (false))

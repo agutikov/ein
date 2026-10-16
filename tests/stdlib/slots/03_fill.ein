@@ -64,9 +64,11 @@
   :priority 500
   :why    "Cat is excluded from one seat of three — nothing may be forced")
 
+(solve
+  :no-hypothesis (type instance co-loc undecided))
+
 (query
   :goal (co-loc ?a ?b)
-  :no-hypothesis (type instance co-loc undecided)
   :expect (model (co-loc S1 Rat) (co-loc Rat S1)
                  (not (co-loc S1 Cat)) (not (co-loc S1 Dog))
                  (not (co-loc Rat S2)) (not (co-loc Rat S3))

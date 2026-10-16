@@ -46,9 +46,11 @@
   :assert (false)
   :why    "nothing may reach B")
 
+(solve
+  :no-hypothesis (p))
+
 (query
   :goal   (q ?x ?y)
-  :no-hypothesis (p)
   ;; Today's answer. The truth is root itself, which has no `q` row — so it
   ;; is also an answer `:expect` cannot state (Q-M1e.13).
   :expect (false))

@@ -11,7 +11,7 @@
 //! becomes a candidate routed through the ordinary filter pipeline.
 //!
 //! A generic hrule — `(hrule guess (?rel ?type) …)` — takes its activators
-//! from the `(query … :hrules (NAME (a b) …))` keywords rather than from
+//! from the `(solve … :hrules (NAME (a b) …))` keywords rather than from
 //! puzzle state, because an hrule activator *steers the search*. A
 //! parameter-less hrule needs none.
 
@@ -172,7 +172,8 @@ fn reads_negation(plan: &Plan, terms: &ein_core::Terms) -> bool {
 }
 
 /// Activator argument-tuples per hrule name, read from the
-/// `(query … :hrules (NAME (a b) …))` keywords.
+/// `(solve … :hrules (NAME (a b) …))` keywords — on `(query …)` until M1e2
+/// S1e2.1a.4 moved the lattice's keywords to `(solve …)`.
 ///
 /// A `:hrules` value is `(NAME (args…) (args…) …)`: its head is the hrule
 /// name, and each remaining item is one argument tuple binding that hrule's
@@ -180,10 +181,10 @@ fn reads_negation(plan: &Plan, terms: &ein_core::Terms) -> bool {
 /// contributes — they accumulate rather than the first one winning.
 fn hrule_activators(s: &Session<'_>) -> FxHashMap<Symbol, Vec<Vec<Symbol>>> {
     let mut out: FxHashMap<Symbol, Vec<Vec<Symbol>>> = FxHashMap::default();
-    let Some(query) = s.kb.program().query() else {
+    let Some(solve) = s.kb.program().solve() else {
         return out;
     };
-    for &pair in query.kw_pairs.iter() {
+    for &pair in solve.kw_pairs.iter() {
         let ein_ir::Node::KwPair { key, value } = s.ast.node(ein_ir::NodeId(pair.0)) else {
             continue;
         };

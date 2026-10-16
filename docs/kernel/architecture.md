@@ -365,8 +365,9 @@ kernel page is `06_reserved_names.md`), and each doc comment carries a table
 saying what the other set is. What made the pair worth a rename rather than a
 shrug: the two docs were individually accurate and a reader of both concluded
 the lexer's eleven had become **twelve** when `open` joined the other one —
-which it must never do, because `(open ?R)` is an ordinary fact head.
-`lex::tests::the_lexer_keywords_are_eleven_and_are_not_ein_cores_nine` holds
+which it must never do, because `(open ?R)` is an ordinary fact head. (The
+lexer's set did become twelve at M1e2 S1e2.1a.4, with the `solve` declarator.)
+`lex::tests::the_lexer_keywords_are_twelve_and_are_not_ein_cores_nine` holds
 the list, the four-name intersection, and that `open` lexes as a `SYMBOL`.
 
 The test: ask whether an edit to one side would be *wrong* not to make to the

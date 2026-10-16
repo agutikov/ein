@@ -73,7 +73,9 @@
   :priority 300
   :why    "every member of {?g} is marked (expansion written out)")
 
+(solve
+  :no-hypothesis (group member marked complete complete-raw))
+
 (query
   :goal (complete ?g)
-  :no-hypothesis (group member marked complete complete-raw)
   :expect (model (complete Team) (complete-raw Team)))

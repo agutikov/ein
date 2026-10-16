@@ -58,9 +58,11 @@
 (tr  A B) (tr  B A)
 (cyc A B) (cyc B A)
 
+(solve
+  :no-hypothesis (chn tr cyc))
+
 (query
   :goal (tr ?x ?y)
-  :no-hypothesis (chn tr cyc)
   :expect (model (chn A B) (chn B C) (chn A C)
                  (tr  A B) (tr  B A)
                  (cyc A B) (cyc B A) (cyc A A) (cyc B B)))

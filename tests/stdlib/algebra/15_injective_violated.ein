@@ -18,7 +18,9 @@
 (assigned Build Ann)
 (assigned Ship  Ann)   ; ⊥ — one worker, two distinct tasks
 
+(solve
+  :no-hypothesis (assigned))
+
 (query
   :goal (assigned ?task ?who)
-  :no-hypothesis (assigned)
   :expect (false))

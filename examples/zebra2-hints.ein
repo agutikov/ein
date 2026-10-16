@@ -505,7 +505,7 @@
 
 ;; ──── Hypothesis generation ────────────────────────────────
 ;; One hrule parameterised over (?R ?T1 ?T2); activators in the
-;; (query …) :hrules clause enumerate every *-loc relation with
+;; (solve …) :hrules clause enumerate every *-loc relation with
 ;; its (attribute-type, House) pair.
 (hrule guess (?R ?T1 ?T2)
   :match  (and (is-a ?a ?T1) (is-a ?b ?T2))
@@ -691,9 +691,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(query
-  :goal (and (drink-loc Water ?h_water)
-             (pet-loc   Zebra ?h_zebra))
+(solve
   ;; Hypothesis-generator activators: one (?R ?T1 ?T2) triple per
   ;; *-loc relation; the hrule emits (?R ?v ?h) candidates for
   ;; every (v, h) of the corresponding types.
@@ -703,6 +701,10 @@
             (drink-loc  Drink       House)
             (smoke-loc  Cigarette   House)
             (pet-loc    Pet         House)))
+
+(query
+  :goal (and (drink-loc Water ?h_water)
+             (pet-loc   Zebra ?h_zebra)))
 
 ;; Expected solution facts:
 ;;   - (nation-loc Norwegian ?h) ∧ (drink-loc Water ?h) — same ?h

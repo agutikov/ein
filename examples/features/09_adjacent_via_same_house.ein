@@ -125,6 +125,8 @@
 ;; it would hypothesise `right-of` and `next-to` too and close over them
 ;; symmetrically, which is a runaway rather than a failed assertion. Four
 ;; candidates is enough to report a verdict and stop.
-(query
-  :goal (pet-loc Fox ?h)
+(solve
   :hypothesis-relations (colour-loc pet-loc))
+
+(query
+  :goal (pet-loc Fox ?h))

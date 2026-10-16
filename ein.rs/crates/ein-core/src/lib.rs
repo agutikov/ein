@@ -37,7 +37,9 @@ pub mod why;
 pub use bitset::BitSet;
 pub use config::SolverConfig;
 pub use counters::Counters;
-pub use entities::{ExprRef, Loc, Macro, NameCategory, Pattern, Query, Registry, Relation, Rule};
+pub use entities::{
+    ExprRef, Loc, Macro, NameCategory, Pattern, Query, Registry, Relation, Rule, Solve,
+};
 pub use facts::{FactId, FactStore, Row};
 pub use intern::{CAPACITY, Interner, Overflow, Symbol};
 pub use kb::{Added, EqClasses, FactView, Kb, Layer, NameEntry, NogoodFreeze, Nogoods, SlotKey};

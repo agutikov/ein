@@ -1,0 +1,12 @@
+;; LOAD NEGATIVE — an unknown (solve …) keyword.
+;;
+;; M1e2 S1e2.1a.4: `(solve …)`'s keywords are an allow-list, as `(query …)`'s
+;; have been since M1c S1c.1.2, so a misspelled lattice keyword cannot load, do
+;; nothing and say nothing.
+;;
+;; Expected (load error): see solve_unknown_keyword.expected.
+
+(relation p Thing Place)
+(p A H1)
+(solve :no-hypothesys (p))
+(query :goal (p A ?h))

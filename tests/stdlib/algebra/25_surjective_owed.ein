@@ -43,7 +43,9 @@
 
 (likes Bob Stew)
 
+(solve
+  :no-hypothesis (is-a likes))
+
 (query
   :goal (likes ?who ?what)
-  :no-hypothesis (is-a likes)
   :expect (model (likes Bob Stew)))

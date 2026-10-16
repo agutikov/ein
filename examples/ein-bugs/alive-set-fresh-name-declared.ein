@@ -52,9 +52,11 @@
   :assert (false)
   :why    "nothing may reach B")
 
+(solve
+  :no-hypothesis (p seen))
+
 (query
   :goal   (q ?x ?y)
-  :no-hypothesis (p seen)
   ;; The model its twin cannot reach. `q` is named, so this closes `q`:
   ;; exactly these two positive `q` facts, both built out of the name the
   ;; other file's rule invents.

@@ -73,9 +73,11 @@
   :assert (false)
   :priority 300)
 
-(query
-  :goal   (likes ?who ?what)
+(solve
   ;; The blind rung would propose `is-a` and `likes` facts of its own; the
   ;; subject here is the partition, not the generator.
-  :no-hypothesis (is-a likes)
+  :no-hypothesis (is-a likes))
+
+(query
+  :goal   (likes ?who ?what)
   :expect (model (likes Ann Soup) (likes Bob Soup)))

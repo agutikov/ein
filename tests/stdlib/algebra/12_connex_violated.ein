@@ -27,7 +27,9 @@
 (lt A B)
 (lt B C)             ; and no (lt A C) — so A and C are incomparable: ⊥
 
+(solve
+  :no-hypothesis (instance lt))
+
 (query
   :goal (lt ?x ?y)
-  :no-hypothesis (instance lt)
   :expect (false))

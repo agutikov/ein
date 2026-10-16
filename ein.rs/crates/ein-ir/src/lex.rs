@@ -106,6 +106,7 @@ pub const LITERALS: &[&str] = &[
     "rule",
     "hrule",
     "query",
+    "solve",
     "config",
     "trace",
     "macro",
@@ -122,13 +123,15 @@ pub const LITERALS: &[&str] = &[
     "symmetry-class",
 ];
 
-/// The eleven words `SYMBOL`'s negative lookahead rejects. `relation` is
+/// The twelve words `SYMBOL`'s negative lookahead rejects. `relation` is
 /// deliberately absent; see [`LITERALS`].
 ///
 /// **Not `ein_core::RESERVED`, which is a different set with a different job**
 /// — it was called `RESERVED` here too until M1e S1e.4.2 (`SE-L2`), and a
 /// reader of both concluded the lexer's eleven had grown to twelve when `open`
-/// joined the other one. They answer different questions:
+/// joined the other one. (The lexer's set is twelve since M1e2 S1e2.1a.4, with
+/// the `solve` declarator, which is not `open`.) They answer different
+/// questions:
 ///
 /// | | question | membership | how it fails |
 /// |---|---|---|---|
@@ -143,7 +146,8 @@ pub const LITERALS: &[&str] = &[
 /// `imports_semantics::every_ein_core_reserved_name_is_unbindable_through_a_qualified_import`
 /// asserts the intersection is exactly those four.
 const LEXER_KEYWORDS: &[&str] = &[
-    "not", "and", "or", "neq", "rule", "hrule", "query", "config", "trace", "macro", "import",
+    "not", "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro",
+    "import",
 ];
 
 /// Whitespace: Unicode `White_Space` **plus** U+001C–U+001F, which the
@@ -584,7 +588,10 @@ mod tests {
         assert_eq!(&src[l.next.pos..], "x");
     }
 
-    /// **The lexer's eleven are eleven, and they are not `ein-core`'s nine.**
+    /// **The lexer's twelve are twelve, and they are not `ein-core`'s nine.**
+    ///
+    /// Eleven until M1e2 S1e2.1a.4 added `solve`, the declarator of the
+    /// problem's lattice.
     ///
     /// Both sets were called `RESERVED` until M1e S1e.4.2 (`SE-L2`), and the
     /// docs' arithmetic then read as twelve. This holds the three claims the
@@ -593,14 +600,14 @@ mod tests {
     /// `LEXER_KEYWORDS` production honest, since nothing parses that page —
     /// the intersection, and the one name whose membership is load-bearing.
     #[test]
-    fn the_lexer_keywords_are_eleven_and_are_not_ein_cores_nine() {
+    fn the_lexer_keywords_are_twelve_and_are_not_ein_cores_nine() {
         assert_eq!(
             LEXER_KEYWORDS,
             [
-                "not", "and", "or", "neq", "rule", "hrule", "query", "config", "trace", "macro",
-                "import"
+                "not", "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace",
+                "macro", "import"
             ],
-            "the eleven are also written out in 00_ebnf.md § Atoms, which nothing parses"
+            "the twelve are also written out in 00_ebnf.md § Atoms, which nothing parses"
         );
         let both: Vec<&str> = LEXER_KEYWORDS
             .iter()

@@ -1,0 +1,13 @@
+;; LOAD NEGATIVE — two (solve …) forms.
+;;
+;; M1e2 S1e2.1a.4: one program, one lattice, one R. A second `(solve …)` would
+;; state a second lattice, which is what splitting solving from asking removed,
+;; so it is refused rather than merged or discarded.
+;;
+;; Expected (load error): see solve_twice.expected.
+
+(relation p Thing Place)
+(p A H1)
+(solve :no-hypothesis (p))
+(solve :no-hypothesis (p))
+(query :goal (p A ?h))

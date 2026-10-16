@@ -51,8 +51,10 @@
   :assert (seat ?p ?s)
   :why    "suppose {?p} sits in {?s}")
 
+(solve
+  :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)))
+
 (query
   :goal   (seat ?who ?slot)
-  :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))
   :expect (or (model (seat Ann S1) (seat Bob S2))
               (model (seat Ann S2) (seat Bob S1))))

@@ -805,6 +805,24 @@ runs   = ["solve", "saturate", "render rules"]
 note   = "M1c S1c.1.2 — `(query …)`'s keywords are an allow-list. A mistyped `:expect` used to parse, load, check nothing and say nothing."
 
 [[entry]]
+path   = "examples/broken/load/query_lattice_keyword.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1e2 S1e2.1a.4 — a lattice keyword on (query …) is refused and pointed at (solve …): one program, one lattice."
+
+[[entry]]
+path   = "examples/broken/load/solve_twice.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1e2 S1e2.1a.4 — a second (solve …) would be a second lattice, and is refused rather than merged or discarded."
+
+[[entry]]
+path   = "examples/broken/load/solve_unknown_keyword.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1e2 S1e2.1a.4 — (solve …)'s keywords are an allow-list, as (query …)'s are."
+
+[[entry]]
 path   = "examples/broken/load/expect_unknown_relation.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]

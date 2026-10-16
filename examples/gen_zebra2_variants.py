@@ -12,7 +12,7 @@ silently drifts a variant: just re-run this script.
                                    (color-loc Green House-1), which condition
                                    (6) forbids (no house is right-of House-1).
   examples/zebra2-obligations.ein — M1d S1d.2.5: the `(hrule guess …)` and the
-                                   `(query … :hrules …)` clause removed, and
+                                   `(solve … :hrules …)` form removed, and
                                    NOTHING else. The theory alone drives the
                                    search — `(bijective *-loc)` fans out into
                                    `total-owed` / `surjective-owed`, and the
@@ -69,7 +69,7 @@ BAD_INJECT = (
 HRULE_BLOCK = (
     ";; ──── Hypothesis generation ────────────────────────────────\n"
     ";; One hrule parameterised over (?R ?T1 ?T2); activators in the\n"
-    ";; (query …) :hrules clause enumerate every *-loc relation with\n"
+    ";; (solve …) :hrules clause enumerate every *-loc relation with\n"
     ";; its (attribute-type, House) pair.\n"
     "(hrule guess (?R ?T1 ?T2)\n"
     "  :match  (and (is-a ?a ?T1) (is-a ?b ?T2))\n"
@@ -77,9 +77,10 @@ HRULE_BLOCK = (
     '  :why    "guess: ({?R} {?a} {?b})?")\n'
 )
 
-# …and its activator clause, which is the last keyword of the (query …) form,
-# so the replacement has to close the form itself.
+# …and its activators, which since M1e2 S1e2.1a.4 are the whole `(solve …)` form:
+# the lattice's keywords left `(query …)`, and zebra2 states nothing else there.
 HRULES_KW = (
+    "(solve\n"
     "  ;; Hypothesis-generator activators: one (?R ?T1 ?T2) triple per\n"
     "  ;; *-loc relation; the hrule emits (?R ?v ?h) candidates for\n"
     "  ;; every (v, h) of the corresponding types.\n"
@@ -89,12 +90,13 @@ HRULES_KW = (
     "            (drink-loc  Drink       House)\n"
     "            (smoke-loc  Cigarette   House)\n"
     "            (pet-loc    Pet         House)))\n"
+    "\n"
 )
 
 OBLIGATIONS_MARK = (
     ";; ──── Hypothesis generation: THERE IS NONE (generated) ──────\n"
     ";; The canonical zebra2.ein declares an `(hrule guess (?R ?T1 ?T2))` here\n"
-    ";; and lists its activators in the `(query … :hrules …)` clause below.\n"
+    ";; and lists its activators in the `(solve … :hrules …)` form below.\n"
     ";; This variant deletes both, and nothing else — which is a claim this\n"
     ";; generator makes rather than a reader.\n"
     ";;\n"
@@ -112,11 +114,11 @@ OBLIGATIONS_MARK = (
 )
 
 OBLIGATIONS_KW_MARK = (
-    "  ;; No :hrules (generated) — the five `(bijective *-loc)` declarations are\n"
-    "  ;; the hypothesis-generator activators now: one obligation per unlocated\n"
-    "  ;; value and one per unfilled house, and the branch is that obligation's\n"
-    "  ;; own domain scan.\n"
-    "  )\n"
+    ";; No (solve … :hrules …) (generated) — the five `(bijective *-loc)`\n"
+    ";; declarations are the hypothesis-generator activators now: one obligation\n"
+    ";; per unlocated value and one per unfilled house, and the branch is that\n"
+    ";; obligation's own domain scan.\n"
+    "\n"
 )
 
 

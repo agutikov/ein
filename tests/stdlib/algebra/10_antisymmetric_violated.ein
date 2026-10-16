@@ -18,7 +18,9 @@
 (before A B)
 (before B A)         ; ⊥ — A ≠ B, so the guard passes
 
+(solve
+  :no-hypothesis (before))
+
 (query
   :goal (before ?x ?y)
-  :no-hypothesis (before)
   :expect (false))

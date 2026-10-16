@@ -41,7 +41,9 @@
   :assert (seat Ann ?v)
   :why    "guess that Ann sits at {?v}")
 
+(solve
+  :hrules (guess))
+
 (query
   :goal   (seat Ann ?s)
-  :hrules (guess)
 )

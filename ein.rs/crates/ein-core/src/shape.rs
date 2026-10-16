@@ -91,6 +91,11 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
             out.push(format!("QUERY {}", q.kw_pairs.len()));
         }
     }
+    // M1e2 S1e2.1a.4. Only when there is one, so a program that states no
+    // lattice keeps the digest it had.
+    if let Some(s) = &program.solve {
+        out.push(format!("SOLVE {}", s.kw_pairs.len()));
+    }
     match &program.config {
         None => out.push("CONFIG None".to_string()),
         Some(c) => {

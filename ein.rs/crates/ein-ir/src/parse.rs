@@ -596,6 +596,7 @@ impl<'a> Parser<'a> {
             Parser::alt_rule_decl,
             Parser::alt_hrule_decl,
             Parser::alt_query,
+            Parser::alt_solve,
             Parser::alt_config,
             Parser::alt_trace,
             Parser::alt_macro_decl,
@@ -683,6 +684,16 @@ impl<'a> Parser<'a> {
         let c = self.kw_pairs(c);
         let close = self.eat(c, Term::RParen)?;
         Some((self.finish_named(mark, "query", None), close.next))
+    }
+
+    /// `solve_form: "(" "solve" kw_pair* ")"` — M1e2 S1e2.1a.4. `(solve)` is
+    /// valid, as `(config)` is: the default lattice, stated.
+    fn alt_solve(&mut self, c: Cursor) -> Parsed {
+        let lit = self.eat_lit(c, "solve")?;
+        let mark = self.scratch.len();
+        let c = self.kw_pairs(lit.next);
+        let close = self.eat(c, Term::RParen)?;
+        Some((self.finish_named(mark, "solve", None), close.next))
     }
 
     fn alt_config(&mut self, c: Cursor) -> Parsed {

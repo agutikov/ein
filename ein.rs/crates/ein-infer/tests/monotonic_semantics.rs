@@ -65,9 +65,9 @@ const SINGLETON: &str = r#"
 (is-a Thing T)
 (is-a Red Thing) (is-a Blue Thing)
 
-(query
+(solve :hypothesis-relations paint) (query
        :goal  (never ?x)
-       :hypothesis-relations paint)
+)
 "#;
 
 /// A pair dies that neither of its elements dies alone — `MULTI_FIXTURE`.
@@ -86,9 +86,9 @@ const MULTI: &str = r#"
 (is-a Thing T)
 (is-a a Thing) (is-a b Thing) (is-a c Thing)
 
-(query
+(solve :hypothesis-relations R) (query
        :goal  (never ?x)
-       :hypothesis-relations R)
+)
 "#;
 
 /// Every layer-1 singleton dies — `ALL_DIE_FIXTURE`.
@@ -106,9 +106,9 @@ const ALL_DIE: &str = r#"
 (relation h Thing Thing)
 (is-a a Thing) (is-a b Thing)
 
-(query
+(solve :hypothesis-relations h) (query
        :goal  (h ?x ?y)
-       :hypothesis-relations h)
+)
 "#;
 
 /// Lookahead off.

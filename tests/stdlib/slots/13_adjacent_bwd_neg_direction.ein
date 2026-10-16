@@ -101,7 +101,9 @@
   :priority 500
   :why    "slot-adjacent-bwd-neg reached ¬(co-loc Ann S4) from ¬(co-loc Cat S3)")
 
+(solve
+  :no-hypothesis (type instance co-loc right-of excluded))
+
 (query
   :goal (excluded ?x ?y)
-  :no-hypothesis (type instance co-loc right-of excluded)
   :expect (model (excluded Ann S4)))

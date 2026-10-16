@@ -48,9 +48,11 @@
 (seat R2 C1)
 (seat R2 C2)
 
+(solve
+  :no-hypothesis (instance step two-step seat))
+
 (query
   :goal (two-step ?x ?y)
-  :no-hypothesis (instance step two-step seat)
   :expect (model (step     A B) (step B C)
                  (two-step A C)
                  (seat     R1 C1) (seat R1 C2)

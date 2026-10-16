@@ -557,10 +557,11 @@ pub fn run(m: &ArgMatches) -> i32 {
 /// One query of the file: load it, solve it, print it, check its `:expect`.
 ///
 /// Returns the exit code and **how many** `(query …)` blocks the file has, so
-/// [`run`] can come back for the rest. Loading once per query is not a
-/// concession: `:hypothesis-relations` and `:hrules` are per-query, so two
-/// queries over one KB are two genuinely different searches, and sharing a
-/// loaded `Kb` between them would be an optimisation rather than a semantics.
+/// [`run`] can come back for the rest. Loading once per query was not a
+/// concession while the lattice keywords were per-query. Since M1e2 S1e2.1a.4
+/// they are `(solve …)`'s, so every query searches the same lattice and the
+/// second load is now a cost, not a semantics. S1e2.1a.5's switch solves once
+/// and answers every query from the one region.
 fn run_query(m: &ArgMatches, file: &str, index: usize) -> (i32, usize) {
     let mut ast = Ast::new();
     let mut terms = Terms::new();

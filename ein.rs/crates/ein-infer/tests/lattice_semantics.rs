@@ -847,7 +847,7 @@ fn a_dumper_with_no_output_directory_writes_nothing_and_still_hears_everything()
            :assert (edge ?a ?c) :why \"tr\")
          (hrule guess (?R ?T) :match (is-a ?x ?T) :assert (?R ?x) :why \"guess {?x}\")
          (is-a Item T) (is-a X Item) (is-a Y Item)
-         (query :goal (h ?x) :hrules (guess (h Item)))\n",
+         (solve :hrules (guess (h Item))) (query :goal (h ?x))\n",
     );
     for i in 1..12 {
         src.push_str(&format!("(edge n{i} n{} :source \"{i}\")\n", i + 1));
@@ -1202,11 +1202,11 @@ const NON_MONOTONE: &str = "\
   :why    \"guess: is {?x} {?R}?\")
 (is-a Item T)
 (is-a X Item)
-(query
-  :goal (r ?x)
-  :hrules (
+(solve :hrules (
     guess (p Item)
-    guess (q Item)))
+    guess (q Item))) (query
+  :goal (r ?x)
+)
 ";
 
 /// Load an inline program and hand back the pieces `check_commutativity`

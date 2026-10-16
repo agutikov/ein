@@ -41,12 +41,14 @@
 ;; it is authored, and listed below to show a `(not …)` being pinned.
 (not (next-to A C))
 
-(query
-  :goal (next-to A ?s)
+(solve
   ;; No hypothesis generation: this is a saturation demo, and the model is the
   ;; saturated root. Without it the search speculates `next-to` edges and the
   ;; closed extent below would be a different (and much larger) claim.
-  :no-hypothesis (next-to instance)
+  :no-hypothesis (next-to instance))
+
+(query
+  :goal (next-to A ?s)
   :expect (model (next-to A B) (next-to B A)
                  (next-to B C) (next-to C B)
                  (not (next-to A C))))

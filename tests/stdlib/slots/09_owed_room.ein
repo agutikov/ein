@@ -52,7 +52,9 @@
 
 (co-loc Ann S1)              ; Bob, Cat and Dog are still owed a seat
 
+(solve
+  :no-hypothesis (type instance co-loc))
+
 (query
   :goal (co-loc ?a ?b)
-  :no-hypothesis (type instance co-loc)
   :expect (model (co-loc Ann S1)))

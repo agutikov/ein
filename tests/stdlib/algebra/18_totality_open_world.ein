@@ -65,9 +65,11 @@
   :priority 500
   :why    "Ann's extent is only half excluded, so `total` has nothing to refute")
 
+(solve
+  :no-hypothesis (is-a likes undecided))
+
 (query
   :goal (likes ?who ?what)
-  :no-hypothesis (is-a likes undecided)
   :expect (model (likes Bob Stew)
                  (not (likes Ann Soup))
                  (undecided Ann Stew)))

@@ -26,4 +26,5 @@
 (thing one)
 (rule taint () :match (q ?x)   :assert (bad ?x) :priority 200)
 (rule kill  () :match (bad ?x) :assert (false)  :priority 300)
-(query :goal (thing ?x) :no-hypothesis (bad))
+(solve :no-hypothesis (bad))
+(query :goal (thing ?x))

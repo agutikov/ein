@@ -19,12 +19,13 @@
 
 use ein_core::{FactId, Kb, Terms};
 use ein_infer::firing::Firing;
-use ein_infer::query_value;
+use ein_infer::{query_value, solve_value};
 use ein_ir::{Ast, Node, NodeId};
 use rustc_hash::FxHashSet;
 
-/// Relation names the puzzle solves for — the query goal's relations plus its
-/// `:hrules` targets. Empty when there is no query.
+/// Relation names the puzzle solves for — the query goal's relations plus the
+/// `:hrules` targets, which `(solve …)` holds since M1e2 S1e2.1a.4. Empty when
+/// there is no query.
 fn solution_relations(ast: &Ast, kb: &Kb, terms: &Terms) -> FxHashSet<ein_core::Symbol> {
     let mut rels: FxHashSet<ein_core::Symbol> = FxHashSet::default();
     let Some(query) = kb.program().query() else {
@@ -34,7 +35,10 @@ fn solution_relations(ast: &Ast, kb: &Kb, terms: &Terms) -> FxHashSet<ein_core::
     if let Some(goal) = query_value(ast, query, "goal") {
         collect_goal_relations(ast, goal, &mut names);
     }
-    if let Some(hrules) = query_value(ast, query, "hrules")
+    if let Some(hrules) = kb
+        .program()
+        .solve()
+        .and_then(|s| solve_value(ast, s, "hrules"))
         && let Node::SForm { args, .. } = ast.node(hrules)
     {
         // `(<activator> (R T1 T2) …)` — each triple's head is a relation.

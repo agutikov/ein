@@ -1,0 +1,13 @@
+;; LOAD NEGATIVE — a lattice keyword left on (query …).
+;;
+;; M1e2 S1e2.1a.4 split solving from asking: the keywords that choose the
+;; candidate list (`:hrules`, `:hypothesis-relations`, `:no-hypothesis`) are the
+;; lattice's, and the lattice is stated once, in `(solve …)`. Several queries
+;; ask about one region, so a query may not choose its own. The loader says where
+;; the keyword went instead of calling it unknown.
+;;
+;; Expected (load error): see query_lattice_keyword.expected.
+
+(relation p Thing Place)
+(p A H1)
+(query :goal (p A ?h) :no-hypothesis (p))

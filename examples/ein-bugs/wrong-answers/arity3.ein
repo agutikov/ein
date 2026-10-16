@@ -22,4 +22,5 @@
 (relation r3 T T T)
 (relation r2 T T)
 (is-a A T) (is-a B T)
-(query :goal (r3 ?x ?y ?z) :no-hypothesis (is-a))
+(solve :no-hypothesis (is-a))
+(query :goal (r3 ?x ?y ?z))

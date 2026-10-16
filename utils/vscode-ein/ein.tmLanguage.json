@@ -94,8 +94,8 @@
     },
 
     "declarator-other": {
-      "comment": "(query …) / (config …) / (trace …) / (import …) — declarators with no defined-name capture.",
-      "begin": "(\\()\\s*(query|config|trace|import)\\b",
+      "comment": "(query …) / (solve …) / (config …) / (trace …) / (import …) — declarators with no defined-name capture.",
+      "begin": "(\\()\\s*(query|solve|config|trace|import)\\b",
       "beginCaptures": {
         "1": { "name": "punctuation.section.parens.begin.ein" },
         "2": { "name": "keyword.control.declarator.ein" }

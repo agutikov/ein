@@ -365,7 +365,7 @@
 
 ;; ──── Hypothesis generation: THERE IS NONE (generated) ──────
 ;; The canonical zebra2.ein declares an `(hrule guess (?R ?T1 ?T2))` here
-;; and lists its activators in the `(query … :hrules …)` clause below.
+;; and lists its activators in the `(solve … :hrules …)` form below.
 ;; This variant deletes both, and nothing else — which is a claim this
 ;; generator makes rather than a reader.
 ;;
@@ -516,6 +516,11 @@
 ;; (15) The Norwegian lives next to the blue house.
 (adjacent-via next-to  nation-loc Norwegian   color-loc Blue    :source "condition (15)")
 
+;; No (solve … :hrules …) (generated) — the five `(bijective *-loc)`
+;; declarations are the hypothesis-generator activators now: one obligation
+;; per unlocated value and one per unfilled house, and the branch is that
+;; obligation's own domain scan.
+
 (query
   ;; (no :mode — obsolete: the verdict is read from the result `k`, never
   ;; chosen up front; the engine's goal test is hardwired to SOLVE.)
@@ -533,12 +538,7 @@
   ;; :goal-text renders the headline NL result from the bound goal vars
   ;; (the rule/relation `:why` `{?var}` engine). This — not any hardcoded
   ;; verb table — is what prints "The Norwegian drinks…" on the solve table.
-  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}"
-  ;; No :hrules (generated) — the five `(bijective *-loc)` declarations are
-  ;; the hypothesis-generator activators now: one obligation per unlocated
-  ;; value and one per unfilled house, and the branch is that obligation's
-  ;; own domain scan.
-  )
+  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}")
 
 ;; Expected solution facts:
 ;;   - (nation-loc Norwegian ?h) ∧ (drink-loc Water ?h) — same ?h

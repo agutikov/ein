@@ -52,6 +52,8 @@
   :assert (false)
   :why    "nothing may reach B")
 
-(query
-  :goal   (q ?x ?y)
+(solve
   :no-hypothesis (p))
+
+(query
+  :goal   (q ?x ?y))

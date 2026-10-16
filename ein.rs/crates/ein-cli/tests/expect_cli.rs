@@ -84,7 +84,9 @@ fn the_feature_fixture_holds_and_says_so() {
 fn a_false_expectation_exits_one_and_names_the_fact() {
     let f = Fixture::new(
         "surplus",
-        &format!("{BODY}(query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A H1)))\n"),
+        &format!(
+            "{BODY}(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1)))\n"
+        ),
     );
     let r = ein(&["solve", &f.path()]);
     assert_eq!(r.code, 1, "a false claim is a failure: {}{}", r.out, r.err);
@@ -97,8 +99,7 @@ fn a_true_expectation_exits_zero() {
     let f = Fixture::new(
         "holds",
         &format!(
-            "{BODY}(query :goal (p A ?h) :no-hypothesis (p) \
-             :expect (model (p A H1) (p B H2)))\n"
+            "{BODY}(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1) (p B H2)))\n"
         ),
     );
     let r = ein(&["solve", &f.path()]);
@@ -185,10 +186,9 @@ fn every_query_runs_and_any_failure_sets_the_code() {
         "two",
         &format!(
             "{BODY}\
-             (query :goal (p A ?h) :no-hypothesis (p) \
-              :expect (model (p A H1) (p B H2)))\n\
-             (query :goal (p B ?h) :no-hypothesis (p) \
-              :expect (model (p A H1) (p B H3)))\n"
+             (solve :no-hypothesis (p))\n\
+             (query :goal (p A ?h) :expect (model (p A H1) (p B H2)))\n\
+             (query :goal (p B ?h) :expect (model (p A H1) (p B H3)))\n"
         ),
     );
     let r = ein(&["solve", &f.path()]);
@@ -209,8 +209,9 @@ fn an_artefact_flag_over_several_queries_is_refused() {
         "artefact",
         &format!(
             "{BODY}\
-             (query :goal (p A ?h) :no-hypothesis (p) :expect (model (p A H1) (p B H2)))\n\
-             (query :goal (p B ?h) :no-hypothesis (p) :expect (model (p A H1) (p B H2)))\n"
+             (solve :no-hypothesis (p))\n\
+             (query :goal (p A ?h) :expect (model (p A H1) (p B H2)))\n\
+             (query :goal (p B ?h) :expect (model (p A H1) (p B H2)))\n"
         ),
     );
     let out = std::env::temp_dir().join(format!("ein-expect-cli-{}.jsonl", std::process::id()));
@@ -251,10 +252,9 @@ fn the_container_round_trips_expect_and_the_query_index() {
         "einb",
         &format!(
             "{BODY}\
-             (query :goal (p A ?h) :no-hypothesis (p) \
-              :expect (model (p A H1) (p B H2)))\n\
-             (query :goal (p B ?h) :no-hypothesis (p) \
-              :expect (model (p A H1) (p B H3)))\n"
+             (solve :no-hypothesis (p))\n\
+             (query :goal (p A ?h) :expect (model (p A H1) (p B H2)))\n\
+             (query :goal (p B ?h) :expect (model (p A H1) (p B H3)))\n"
         ),
     );
     let container = std::env::temp_dir().join(format!("ein-expect-{}.einb", std::process::id()));

@@ -21,7 +21,9 @@
 (converse-illtyped-dom owns owned-by is-a*)   ; well-typed on its side: silent
 (converse-illtyped-ran owns owned-by is-a*)
 
+(solve
+  :no-hypothesis (is-a* owns owned-by))
+
 (query
   :goal (owns ?who ?what)
-  :no-hypothesis (is-a* owns owned-by)
   :expect (false))

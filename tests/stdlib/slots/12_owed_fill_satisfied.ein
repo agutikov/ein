@@ -32,8 +32,10 @@
 (co-loc S1 Ann) (co-loc S1 Cat)
 (co-loc S2 Bob) (co-loc S2 Dog)
 
+(solve
+  :no-hypothesis (type instance co-loc))
+
 (query
   :goal (co-loc ?a ?b)
-  :no-hypothesis (type instance co-loc)
   :expect (model (co-loc S1 Ann) (co-loc S1 Cat)
                  (co-loc S2 Bob) (co-loc S2 Dog)))

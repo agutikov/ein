@@ -63,9 +63,11 @@
 (r-c B A)
 (s-c C B)
 
+(solve
+  :no-hypothesis (r s t j r-c s-c t-c j-c))
+
 (query
   :goal (t-c ?x ?y)
-  :no-hypothesis (r s t j r-c s-c t-c j-c)
   :expect (model (compose r s t) (compose s-c r-c t-c)
                  (join    r s j) (join    r-c s-c j-c)
                  (r-c B A) (s-c C B)

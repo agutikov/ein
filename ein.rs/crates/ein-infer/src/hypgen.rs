@@ -871,8 +871,10 @@ pub fn eligible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, Comp
 /// "unrestricted", and note that an *empty* list is unrestricted too. The
 /// **first** matching keyword wins, not the last.
 fn query_relations(s: &Session<'_>, keyword: &str) -> Option<FxHashSet<Symbol>> {
-    let query = s.kb.program().query()?;
-    for &pair in query.kw_pairs.iter() {
+    // On `(solve …)` since M1e2 S1e2.1a.4: the candidate list is the lattice's,
+    // stated once for every query.
+    let solve = s.kb.program().solve()?;
+    for &pair in solve.kw_pairs.iter() {
         let ein_ir::Node::KwPair { key, value } = s.ast.node(ein_ir::NodeId(pair.0)) else {
             continue;
         };

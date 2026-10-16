@@ -80,9 +80,11 @@
 (pick A X) (pick B Y)
 (loopy A A)
 
+(solve
+  :no-hypothesis (instance lt pick loopy nothing))
+
 (query
   :goal (lt ?x ?y)
-  :no-hypothesis (instance lt pick loopy nothing)
   :expect (model (lt A B) (lt B C) (lt A C)
                  (pick A X) (pick B Y)
                  (loopy A A)))

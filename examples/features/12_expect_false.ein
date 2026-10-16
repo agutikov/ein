@@ -91,7 +91,9 @@
 (in P1 H1)
 (not (in P2 H1))
 
+(solve
+  :no-hypothesis (in))
+
 (query
   :goal   (in ?who ?hole)
-  :no-hypothesis (in)
   :expect (false))

@@ -18,7 +18,9 @@
 (loops A B)          ; not a self-loop — silent
 (loops A A)          ; ⊥
 
+(solve
+  :no-hypothesis (loops))
+
 (query
   :goal (loops ?x ?y)
-  :no-hypothesis (loops)
   :expect (false))

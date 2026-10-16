@@ -81,9 +81,11 @@
 (is-a Item T)
 (is-a X    Item)
 
-(query
-  :goal (h1 ?x)
+(solve
   :hrules (
     guess (h1 Item)
     guess (h2 Item)
     guess (h3 Item)))
+
+(query
+  :goal (h1 ?x))

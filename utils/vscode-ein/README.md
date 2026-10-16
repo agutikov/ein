@@ -14,7 +14,7 @@ wrappers).
 
 | Element | Example | Scope |
 |---------|---------|-------|
-| Declarator heads (head position only) | `relation` `rule` `hrule` `query` `config` `trace` | `keyword.control.declarator` |
+| Declarator heads (head position only) | `relation` `rule` `hrule` `query` `solve` `config` `trace` | `keyword.control.declarator` |
 | Declared name | the `symmetric` in `(rule symmetric …)`, the `color-loc` in `(relation color-loc …)` | `entity.name.function` / `entity.name.type` |
 | Rule-body / ⊥ primitives (head only) | `not` `and` `or` `absent` `false` `open` `forall` | `keyword.control.primitive` |
 | Computed predicates (head only) | `eq` `neq` | `keyword.operator.predicate` |

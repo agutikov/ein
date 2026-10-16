@@ -92,9 +92,11 @@
 (right-of Ann Cat) (not (co-loc Ann S2))
 (right-of Bob Dog) (not (co-loc Dog S2))
 
+(solve
+  :no-hypothesis (type instance co-loc right-of))
+
 (query
   :goal (co-loc ?a ?b)
-  :no-hypothesis (type instance co-loc right-of)
   :expect (model (co-loc Cid S1) (co-loc S1 Cid)
                  (co-loc Dog S1) (co-loc S1 Dog)
                  (co-loc Bob S2) (co-loc S2 Bob)

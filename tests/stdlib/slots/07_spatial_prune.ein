@@ -99,9 +99,11 @@
 (above Ann Cat) (co-loc Cat S1)
 (above Dog Bob) (co-loc Dog S4)
 
+(solve
+  :no-hypothesis (type instance co-loc above))
+
 (query
   :goal (co-loc ?a ?b)
-  :no-hypothesis (type instance co-loc above)
   :expect (model (co-loc Cat S1) (co-loc S1 Cat)
                  (co-loc Dog S4) (co-loc S4 Dog)
                  (not (co-loc Ann S4))    ; slot-prune-fwd — S4 is no source of S1

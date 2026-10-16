@@ -99,9 +99,11 @@
   :assert (false)
   :why    "nothing may reach B")
 
+(solve
+  :no-hypothesis (p))
+
 (query
   :goal   (q ?x ?y)
-  :no-hypothesis (p)
   ;; Today's answer. The truth is `(model (q A Z) (q B Z))`, which the
   ;; control reaches and this file's lattice cannot enumerate.
   :expect (false))

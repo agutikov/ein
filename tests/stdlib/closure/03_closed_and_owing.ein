@@ -118,9 +118,11 @@
 
 ;; No `(r a1 b1)`. `a1` owes a `B` it can never be given.
 
-(query
-  :goal (closed-here ?R)
+(solve
   ;; `r` is closed by derivation; the other two are scoped out by hand so the
   ;; blind generator is quiet and the verdict is about the requirement alone.
-  :no-hypothesis (is-a closed-here)
+  :no-hypothesis (is-a closed-here))
+
+(query
+  :goal (closed-here ?R)
   :expect (model (closed-here r)))

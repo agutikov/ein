@@ -72,9 +72,11 @@
 
 (wears Ann Red)
 
+(solve
+  :no-hypothesis (is-a wears))
+
 (query
   :goal (wears ?who ?colour)
-  :no-hypothesis (is-a wears)
   :expect (model (wears Ann Red)
                  ;; functional-negative: Ann's other two colours
                  (not (wears Ann Green)) (not (wears Ann Blue))

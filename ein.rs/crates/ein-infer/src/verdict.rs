@@ -275,7 +275,17 @@ pub fn union_dead_cores(cores: &[Vec<FactId>]) -> Vec<FactId> {
 ///
 /// The **first** match wins.
 pub fn query_value(ast: &Ast, query: &Query, kw_name: &str) -> Option<NodeId> {
-    for &pair in query.kw_pairs.iter() {
+    kw_value(ast, &query.kw_pairs, kw_name)
+}
+
+/// A `(solve …)` keyword's value, by keyword name — M1e2 S1e2.1a.4, where the
+/// lattice's keywords moved. The **first** match wins, as in [`query_value`].
+pub fn solve_value(ast: &Ast, solve: &ein_core::Solve, kw_name: &str) -> Option<NodeId> {
+    kw_value(ast, &solve.kw_pairs, kw_name)
+}
+
+fn kw_value(ast: &Ast, kw_pairs: &[ein_core::ExprRef], kw_name: &str) -> Option<NodeId> {
+    for &pair in kw_pairs.iter() {
         let Node::KwPair { key, value } = ast.node(NodeId(pair.0)) else {
             continue;
         };

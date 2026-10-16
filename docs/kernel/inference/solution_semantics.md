@@ -83,8 +83,9 @@ Which facts can be proposed at all is decided by:
   one, else the facts that would discharge what root owes
   ([`oblgen.rs`](../../../ein.rs/crates/ein-infer/src/oblgen.rs)), else the
   blind combinatorial enumerator;
-- the query's scoping: `:hypothesis-relations`, `:no-hypothesis`,
-  `(__closed__ R)`. A fact of an excluded relation is not a candidate at all.
+- the scoping `(solve …)` states (on `(query …)` until M1e2 S1e2.1a.4):
+  `:hypothesis-relations`, `:no-hypothesis`, and the `(__closed__ R)` fact. A
+  fact of an excluded relation is not a candidate at all.
 
 The **universe** H is the candidate list, and n = |H|. It replaces `alive₀`
 as the space every later definition quantifies over: the user ruled on
@@ -401,8 +402,8 @@ The search and the words are unchanged.
 | the default | **`ein solve` with no flag describes R in full**, exhaustively and certified. Flags make the task simpler: *any* solution; *a single one* expected, so k ≥ 2 contradicts it; *maximal* only; *minimal* only. Route 1, a monotone program's R from its alive down-set, is in the library and held to the oracle. **One tool, consistent with the oracle**: every question about R is a mode of `ein solve` that does the least work it needs, the cube is `ein oracle`, and there is no `ein walk` (the user, 2026-10-16). The interface was approved the same day ([`solve_interface.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)). **Its modes are built** ([`ein_infer::explore`](../../../ein.rs/crates/ein-infer/src/explore.rs), held to the oracle by `ein-infer/tests/explore.rs`): `ein solve --minimal`, `--maximal`, `--single`, `--region-budget`, and `ein oracle`. Bare `ein solve` stays the walk until S1e2.1a.5 | [S1e2.1a.9](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) |
 | (i) | **the verdict words judge a stated expectation.** `Ambiguity` is relevant where exactly one solution is expected, `Contradiction` where some is. Without an expectation, `solve` explores and describes R | S1e2.1a.5 |
 | (g) | **`exhausted` means the reported region is all of R.** A run a budget stopped (`-m`, `-E`, `-T`) reports what it found as a lower bound, and every node in it is checked | S1e2.1a.5, S1e2.1a.9 |
-| (b), (c) | **solving and asking come apart**: `(solve :hrules …)` defines the lattice, `(solution …)` states the expected region, `(query :goal … :expect …)` asks about the goal's projection classes | S1e2.1a.4 |
-| (e) | **the region's printed form**: every state of R, and each state with several generating commitments with its minimal ones, as `(region (model …) …)` with `(merged (to from) …)` | S1e2.1a.4, S1e2.1a.5 |
+| (b), (c) | **solving and asking come apart**: `(solve :hrules …)` defines the lattice, and since the grammar's ruling of 2026-10-16 states the expected region as its `:expect (region …)`; `(query :goal … :expect …)` asks about the goal's projection classes. `(solve …)` exists since T1e2.1a.4.2 | S1e2.1a.4 ([`region_language.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_language.md), [`region_examples.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_examples.md)) |
+| (e) | **the region's printed form**: every state of R, and each state with several generating commitments with its minimal ones, as `(region (model …) …)` with `(merged <to> <from>)` | S1e2.1a.4, S1e2.1a.5 |
 
 **Empty R has two kinds**, and the read-out keeps them apart:
 

@@ -61,9 +61,11 @@
 
 (third-state is-a)
 
+(solve
+  :no-hypothesis (is-a likes state-open))
+
 (query
   :goal (state-open ?who ?what)
-  :no-hypothesis (is-a likes state-open)
   :expect (model (state-open Bob Soup) (state-open Bob Stew)
                  (likes Ann Soup)
                  (not (likes Ann Stew))))

@@ -53,7 +53,8 @@ key on it).
 | `relation` | declare a relation-type + its arg-type signature | `(relation <name> <T1> <T2> [<T3> …] [:kw v]*)` |
 | `rule` | a saturation rewrite rule | `(rule <name> (<param-vars>*) :match … :assert … …)` |
 | `hrule` | a hypothesis-generation rule (drives the blind enumerator) | same shape as `rule` |
-| `query` | what to ask the engine — and, with `:expect`, what the answer should be | `(query :goal … [:goal-text …] [:hrules …] [:expect …])`; several per file |
+| `query` | what to ask the engine — and, with `:expect`, what the answer should be | `(query :goal … [:goal-text …] [:expect …])`; several per file |
+| `solve` | the problem's lattice: what may be guessed, stated once (M1e2 S1e2.1a.4) | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …])`; at most one per file |
 | `config` | solver knobs | `(config [:flag v]*)` |
 | `trace` | **engine output** — derivation log (engine-emitted, not authored) | `(trace <step\|branch-open\|…>*)` |
 | *anything else* | **a fact** | `(= …)` · `(not …)` · generic `(<NAME> <args>* [:kw v]*)` |
@@ -484,27 +485,59 @@ and the boundary projects the completed bindings back down to that set
 and no less. Write the binding premise **before** the guard when you
 mean "for this `?x`".
 
+### Solve
+
+```lisp
+(solve
+  [:hrules (<activator> …)]                ; hypothesis-generator activators
+  [:hypothesis-relations (<rel> …)]        ; speculate only these
+  [:no-hypothesis (<rel> …)]               ; …or never these
+  )
+```
+
+**The lattice is stated once** (M1e2
+[S1e2.1a.4](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.4_the_language.md)).
+The three keywords choose the candidate list, and the candidate list is the
+lattice the answer is a region of. Until then they sat on `(query …)`, so two
+queries in one file could ask about two different lattices. Now a program has
+one lattice and one R, and every query asks about it. That is the user's ruling
+(b) of 2026-10-16: *"we solve once and then queries answer questions about
+region and about specific solutions"*.
+
+- **At most one per file.** A second is a load error. With none, the lattice is
+  the default ladder's, unrestricted.
+- **`(solve)` is valid**, as `(config)` is: the default lattice, stated.
+- **Its keywords are an allow-list**, as a query's are. On a `(query …)`, each
+  of the three is a load error that names `(solve …)`.
+- **`solve` lexes as a keyword**, as `query` and `config` do, so it cannot be
+  a relation name ([`00_ebnf.md`](00_ebnf.md)).
+- `:hrules` is read by the hrule rung, the other two by the candidate filter
+  ([`06_reserved_names.md` § Hypothesis / query control](06_reserved_names.md#hypothesis--query-control)).
+
+The expected region, `:expect (region …)` on `(solve …)`, is the stage's second
+half and is not yet built.
+
 ### Query
 
 ```lisp
 (query
   :goal <expr>                             ; what to find / verify
   [:goal-text <STRING>]                    ; NL headline template (optional)
-  [:hrules (<activator> …)]                ; hypothesis-generator activators
-  [:hypothesis-relations (<rel> …)]        ; speculate only these
-  [:no-hypothesis (<rel> …)]               ; …or never these
   [:expect <expectation>])                 ; what the answer should be (M1c)
 ```
 
-**The keywords are an allow-list.** Those six, plus the obsolete `:mode`, are
-what a `(query …)` may carry; anything else is a **load error**. It used to be
+**The keywords are an allow-list.** Those three, plus the obsolete `:mode`, are
+what a `(query …)` may carry; anything else is a **load error**. The three
+lattice keywords were here until M1e2 S1e2.1a.4 moved them to
+[`(solve …)`](#solve), and on a query each is refused with a message that
+says so. It used to be
 a silent no-op, which was survivable while a query only asked a question and
 became untenable the moment one could carry a *test*: a mistyped `:expect`
 that loaded, checked nothing and said nothing is the exact failure the keyword
 exists to prevent.
 
 **A file may carry several `(query …)` blocks**, each an independent question
-over the same ontology, rules and facts. Before M1c
+over the same ontology, rules, facts and, since M1e2 S1e2.1a.4, lattice. Before M1c
 [S1c.1.2](../../../history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
 the **last** one silently won and the rest were discarded at load. `ein solve`
 now runs every one of them in order, printing `query <i> of <n>` above each;

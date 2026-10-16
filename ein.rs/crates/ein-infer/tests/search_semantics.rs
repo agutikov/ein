@@ -1317,17 +1317,17 @@ fn candidates(src: &str) -> (BTreeSet<String>, Vec<String>, HypGenStats) {
 /// *unrestricted*, i.e. the filter silently turning itself off rather than
 /// failing.
 #[test]
-fn query_relation_keyword_accepts_a_bare_symbol() {
-    let goal = "(query :goal (co-located A B)";
+fn lattice_relation_keyword_accepts_a_bare_symbol() {
+    let goal = "(query :goal (co-located A B))";
     for (bare, list) in [
         (
-            ":hypothesis-relations co-located)",
-            ":hypothesis-relations (co-located))",
+            ":hypothesis-relations co-located",
+            ":hypothesis-relations (co-located)",
         ),
-        (":no-hypothesis likes)", ":no-hypothesis (likes))"),
+        (":no-hypothesis likes", ":no-hypothesis (likes)"),
     ] {
-        let (bare_facts, bare_rels, _) = candidates(&format!("{TWO_REL}{goal} {bare}"));
-        let (list_facts, list_rels, _) = candidates(&format!("{TWO_REL}{goal} {list}"));
+        let (bare_facts, bare_rels, _) = candidates(&format!("{TWO_REL}(solve {bare}) {goal}"));
+        let (list_facts, list_rels, _) = candidates(&format!("{TWO_REL}(solve {list}) {goal}"));
         assert!(!bare_facts.is_empty(), "{bare}: nothing generated at all");
         assert_eq!(bare_rels, ["co-located"], "{bare}");
         assert_eq!(bare_facts, list_facts, "{bare} differs from {list}");
@@ -1347,8 +1347,8 @@ fn query_relation_keyword_accepts_a_bare_symbol() {
 #[test]
 fn no_hypothesis_overrides_the_whitelist() {
     let (facts, rels, stats) = candidates(&format!(
-        "{TWO_REL}(query :goal (co-located A B) \
-         :hypothesis-relations (co-located likes) :no-hypothesis (likes))"
+        "{TWO_REL}(solve :hypothesis-relations (co-located likes) :no-hypothesis (likes)) \
+         (query :goal (co-located A B))"
     ));
     assert!(!facts.is_empty());
     assert_eq!(rels, ["co-located"], "likes is excluded");

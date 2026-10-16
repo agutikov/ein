@@ -38,4 +38,5 @@
 (total-owed likes is-a)
 (rule taint () :match (likes ?p ?f) :assert (bad ?p) :priority 200)
 (rule kill  () :match (bad ?p)      :assert (false)  :priority 300)
-(query :goal (likes ?who ?what) :no-hypothesis (is-a bad))
+(solve :no-hypothesis (is-a bad))
+(query :goal (likes ?who ?what))

@@ -1497,11 +1497,11 @@ fn the_event_stream_does_not_depend_on_interning_order() {
 /// these four tests exist for.
 const GRAMMAR: &str = "utils/vscode-ein/ein.tmLanguage.json";
 
-/// The closed declarator set — P1.7c, plus S1.5.9's `macro` and S1.8.A2's
-/// `import`. Source of truth:
+/// The closed declarator set — P1.7c, plus S1.5.9's `macro`, S1.8.A2's
+/// `import` and M1e2 S1e2.1a.4's `solve`. Source of truth:
 /// [`docs/kernel/ir/03-ein-lang/06_reserved_names.md`](../../../../docs/kernel/ir/03-ein-lang/06_reserved_names.md).
-const DECLARATORS: [&str; 8] = [
-    "config", "hrule", "import", "macro", "query", "relation", "rule", "trace",
+const DECLARATORS: [&str; 9] = [
+    "config", "hrule", "import", "macro", "query", "relation", "rule", "solve", "trace",
 ];
 
 /// The wrapper heads S1.7c.4 removed. They are ordinary fact heads now and
