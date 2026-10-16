@@ -2,8 +2,11 @@
 
 **Stage:** [S1e2.1a.5](s1e2.1a.5_the_read_out.md), task T1e2.1a.5.1. The page
 diff these illustrate is [`read_out.md`](read_out.md).
-**Status:** written 2026-10-16, for the user to read with the page diff.
-**Nothing in `ein solve` has moved.**
+**Status:** written 2026-10-16, for the user to read with the page diff, and
+re-generated the same day after the user's three rulings
+([`read_out.md` § 11](read_out.md#11-the-users-rulings-2026-10-16)): every
+answer exits 0, and a listing past 100 lines is cut on stdout and written whole
+by `--dump-answer` (X13). **Nothing in `ein solve` has moved.**
 **How it was made:** every block below is the stdout of
 [`read_out_preview`](../../../ein.rs/crates/ein-infer/examples/read_out_preview.rs),
 an `ein-infer` example that prints the proposed read-out from the library's own
@@ -13,13 +16,17 @@ query's projection classes from `goal_bindings` on those fixpoints. The
 caption names the `ein solve` run the block stands for; the preview takes the
 same flags (`--over` stands in for a query's `:over`, which does not parse
 yet). The last line of each block is the exit code the proposal gives that
-run, and a `stderr:` line is what it would write there. Re-take any block with
+run, and a `stderr:` line is what it would write there. A block captioned
+`--dump-answer DIR` is what that run writes to `DIR/answer.txt`: the read-out
+with no listing cut, which the preview prints under `--uncut`. Re-take any
+block with
 
 ```sh
 cargo run --release -p ein-infer --example read_out_preview -- [FLAGS] FILE
 ```
 
-The page was generated at `0f9a6656` plus the preview. No fact or number in a
+The page was generated at `b07dbc25` plus the preview's two changes for the
+rulings. No fact or number in a
 block was typed by hand.
 
 ---
@@ -37,9 +44,10 @@ block was typed by hand.
 | [X7](#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) | `tests/stdlib/algebra/09_irreflexive_violated.ein` | 0 | empty R, the dead kind; `--single` says `Contradiction` |
 | [X8](#x8--ein-bugsnaf-upward-closureein-a-hole) | `ein-bugs/naf-upward-closure.ein` | 2 | a program the static check flags: route 2, a hole, the stub |
 | [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: members, never line members |
-| [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: partial at the default budget and already answered; exhausted at 2²⁵; `--maximal -n 1`; `--single` |
+| [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: partial at the default budget and already answered; exhausted at 2²⁵, cut on stdout and whole in `answer.txt`; `--maximal -n 1`; `--single` |
 | [X11](#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) | `saturation/square-bwd/floors.ein` | 20 | R is the whole cube: partial, with both trivial lines certified; the first questions in 1–11 saturations |
 | [X12](#x12--testsregion03_merged_orein-a-program-that-states-its-region) | `tests/region/03_merged_or.ein` | 3 | a program that states its region: the printed region is its claim |
+| [X13](#x13--saturationtype-exclusivitycolorsein-an-exhausted-r-past-100-lines) | `saturation/type-exclusivity/colors.ein` | 8 | an exhausted R past stdout's 100 lines: what fits, and where the rest is |
 
 ## X1 — `branching/05_mini_zebra.ein`: everything at once
 
@@ -270,7 +278,8 @@ exit 0
 ```
 
 **`--single`.** The run's own expectation, so the verdict word is printed:
-`Ambiguity` after two saturations, exit 1, and the one stderr line.
+`Ambiguity` after two saturations. It exits 0, as every answer does: the
+word is the answer, and an answer is a successful run.
 
 `ein solve --single examples/lattice/02_genuine_3set_death.ein`
 
@@ -297,9 +306,7 @@ solve · --single examples/lattice/02_genuine_3set_death.ein
                       ?x = X
   as :expect        not printed: these classes are a lower bound, and the claim would say they are all
 
-stderr: examples/lattice/02_genuine_3set_death.ein: --single FAILED — expected exactly one state of R, found two or more (Ambiguity)
-
-exit 1
+exit 0
 ```
 
 **`--maximal --single`.** The question a restrictions-only program means by
@@ -330,9 +337,7 @@ solve · --maximal --single examples/lattice/02_genuine_3set_death.ein
                       ?x = X
   as :expect        not printed: these classes are a lower bound, and the claim would say they are all
 
-stderr: examples/lattice/02_genuine_3set_death.ein: --single FAILED — expected exactly one state of the maximal line, found two or more (Ambiguity)
-
-exit 1
+exit 0
 ```
 
 ## X3 — `features/11_expect_ambiguity.ein`: a query over the maximal line
@@ -750,9 +755,7 @@ solve · --single tests/stdlib/closure/03_closed_and_owing.ein
   over              the 0 states listed — R is empty: no state to answer from
   as :expect        (false)
 
-stderr: tests/stdlib/closure/03_closed_and_owing.ein: --single FAILED — expected exactly one state of R, found none (Open)
-
-exit 1
+exit 0
 ```
 
 ## X7 — `tests/stdlib/algebra/09_irreflexive_violated.ein`: R empty, every node dead
@@ -807,9 +810,7 @@ solve · --single tests/stdlib/algebra/09_irreflexive_violated.ein
   over              the 0 states listed — R is empty: no state to answer from
   as :expect        (false)
 
-stderr: tests/stdlib/algebra/09_irreflexive_violated.ein: --single FAILED — expected exactly one state of R, found none (Contradiction)
-
-exit 1
+exit 0
 ```
 
 ## X8 — `ein-bugs/naf-upward-closure.ein`: a hole
@@ -891,9 +892,9 @@ solve · examples/lattice/06_friends_tables.ein
   work              65 299 saturations · 455 247 facts beyond root
 
   ;; the line members this run certified. Not a (region …): read back, it would claim these are all of R.
-  ;; the 20 other members met are written by --dump-answer, not listed here.
   ;; state 1 of 1 — ∅, root itself · minimal
   (model)
+  ;; 20 other members met are not certified on a line, and not listed: --dump-answer DIR writes each to DIR/models/
 
   query             (sits ?p ?s)
   over              the 21 members met — 21 states → 21 projection classes  (a lower bound)
@@ -988,6 +989,8 @@ solve · examples/lattice/06_friends_tables.ein
                       ?p = Eve · ?s = B2
   as :expect        not printed: these classes are a lower bound, and the claim would say they are all
 
+stderr: note: examples/lattice/06_friends_tables.ein: partial — the question needs 2^19 saturations, past --region-limit 16
+
 exit 0
 ```
 
@@ -1006,7 +1009,7 @@ solve · examples/zebra2.ein
   asked             all of R — describe
   states (k_s)      1   (a lower bound: complete up to commitments of 4 candidates)
   commitments (k_c) 3 916   (a lower bound: complete up to commitments of 4 candidates)
-  exhausted         no — route 1 stopped before layer 5: its 10 131 commitments project 526 812 facts on top of the 353 194 spent, past --region-budget 524 288
+  exhausted         no — route 1 stopped before layer 5: its 10 131 commitments project 526 812 facts on top of the 353 194 spent, past --region-budget 524288
   ∅                 not in R — root owes 36 instances
   minimal line      ≥ 1 state — complete up to commitments of 4 candidates
   maximal line      ≥ 1 state — all those a commitment of up to 3 candidates reaches
@@ -1040,18 +1043,75 @@ solve · examples/zebra2.ein
                         “The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”
   as :expect        not printed: these classes are a lower bound, and the claim would say they are all
 
+stderr: note: examples/zebra2.ein: partial — route 1 stopped before layer 5 at --region-budget 524288
+
 exit 0
 ```
 
 **At `--region-budget 33554432`** (2²⁵ facts; 22 s at `-j 8`) R is exhausted:
 one state, 261 982 commitments, 63 minimal generators, and four of them single
-facts. The block is long because the `(merged …)` lists all 63, which is what
-pins k_c.
+facts. R as one `(region …)` is 111 lines, past stdout's 100, so stdout lists
+the state and leaves out the `(merged …)`, and says where it is.
 
 `ein solve --region-budget 33554432 examples/zebra2.ein` — 22 s at `-j 8`
 
 ```text
 solve · --region-budget 33554432 examples/zebra2.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      1
+  commitments (k_c) 261 982
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 not in R — root owes 36 instances
+  minimal line      1 state, from 63 commitments — the least guess is 1 candidate
+  maximal line      1 state
+  components        1
+  sub-cubes         63, 4 of dimension 17, 59 of dimension 16
+  merged            1 state reached by more than one commitment, with 63 minimal
+  N                 366 minimal dead sets
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          56 candidates, 21 dead alone
+  route             1, the alive down-set — licence L1, dead is upward-closed
+  work              270 579 saturations · 15 094 278 facts beyond root · 19 layers
+
+  ;; R as one (region …) is 111 lines, past stdout's 100: what fits is below, not wrapped in a (region …)
+  ;; state 1 of 1 — 18 candidates · minimal and maximal · 261 982 commitments, 63 minimal
+  (model (color-loc Blue House-2) (color-loc Green House-5)
+         (color-loc Ivory House-4) (color-loc Red House-3)
+         (color-loc Yellow House-1) (drink-loc Coffee House-5)
+         (drink-loc Juice House-4) (drink-loc Milk House-3)
+         (drink-loc Tea House-2) (drink-loc Water House-1)
+         (nation-loc Englishman House-3) (nation-loc Japanese House-5)
+         (nation-loc Norwegian House-1) (nation-loc Spaniard House-4)
+         (nation-loc Ukrainian House-2) (pet-loc Dog House-4)
+         (pet-loc Fox House-1) (pet-loc Horse House-2)
+         (pet-loc Snail House-3) (pet-loc Zebra House-5)
+         (smoke-loc Chesterfields House-2) (smoke-loc Kools House-1)
+         (smoke-loc Lucky_Strike House-4) (smoke-loc Old_Gold House-3)
+         (smoke-loc Parliament House-5))
+  ;; not shown: 1 (merged …) — --dump-answer DIR writes the whole (region …) to DIR/answer.txt
+
+  query             (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?h_water = House-1 · ?h_zebra = House-5 · ?who_water = Norwegian · ?who_zebra = Japanese
+                        “The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”
+  as :expect        (model (drink-loc Water House-1)
+                           (nation-loc Japanese House-5)
+                           (nation-loc Norwegian House-1)
+                           (pet-loc Zebra House-5))
+
+exit 0
+```
+
+**What `--dump-answer DIR` writes to `DIR/answer.txt`** for the same run: the
+whole `(region …)`, whose `(merged …)` lists all 63 minimal commitments. That
+is what pins k_c, and it reads back as the claim.
+
+`ein solve --dump-answer DIR --region-budget 33554432 examples/zebra2.ein` — `DIR/answer.txt`
+
+```text
+solve · --dump-answer DIR --region-budget 33554432 examples/zebra2.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      1
@@ -1293,7 +1353,7 @@ solve · examples/saturation/square-bwd/floors.ein
   asked             all of R — describe
   states (k_s)      10 077   (a lower bound: complete up to commitments of 5 candidates)
   commitments (k_c) 21 701   (a lower bound: complete up to commitments of 5 candidates)
-  exhausted         no — route 1 stopped before layer 6: its 38 760 commitments project 387 600 facts on top of the 197 809 spent, past --region-budget 524 288
+  exhausted         no — route 1 stopped before layer 6: its 38 760 commitments project 387 600 facts on top of the 197 809 spent, past --region-budget 524288
   ∅                 in R — root is alive and owes nothing
   minimal line      1 state — ∅, the trivial line: no obligation is stated
   maximal line      1 state — ⊤, every candidate: no node is dead, the trivial line, certified by one saturation
@@ -1306,7 +1366,6 @@ solve · examples/saturation/square-bwd/floors.ein
   work              21 700 saturations · 197 809 facts beyond root · 6 layers
 
   ;; the line members this run certified. Not a (region …): read back, it would claim these are all of R.
-  ;; the 10 075 other members met are written by --dump-answer, not listed here.
   ;; state 1 of 2 — ∅, root itself · minimal
   (model (above-of Floor2 Floor1) (above-of Floor5 Floor4)
          (co-located Floor1 Floor4) (co-located Floor2 Floor5))
@@ -1325,12 +1384,15 @@ solve · examples/saturation/square-bwd/floors.ein
          (co-located Floor4 Floor4) (co-located Floor4 Floor5)
          (co-located Floor5 Floor1) (co-located Floor5 Floor2)
          (co-located Floor5 Floor4) (co-located Floor5 Floor5))
+  ;; 10 075 other members met are not certified on a line, and not listed: --dump-answer DIR writes each to DIR/models/
 
   query             (co-located Floor2 Floor5)
   over              all of R — 10 077 states → 1 projection class  (a lower bound)
     class 1 of 1    10 077 states
                       the goal holds: it has no variable
   as :expect        not printed: these classes are a lower bound, and the claim would say they are all
+
+stderr: note: examples/saturation/square-bwd/floors.ein: partial — route 1 stopped before layer 6 at --region-budget 524288
 
 exit 0
 ```
@@ -1392,9 +1454,7 @@ solve · --single examples/saturation/square-bwd/floors.ein
                       the goal holds: it has no variable
   as :expect        not printed: these classes are a lower bound, and the claim would say they are all
 
-stderr: examples/saturation/square-bwd/floors.ein: --single FAILED — expected exactly one state of R, found two or more (Ambiguity)
-
-exit 1
+exit 0
 ```
 
 `ein solve --maximal -n 1 examples/saturation/square-bwd/floors.ein`
@@ -1486,6 +1546,154 @@ solve · tests/region/03_merged_or.ein
   as :expect        (model (co-located A C))
 
   (solve :expect)   holds
+
+exit 0
+```
+
+## X13 — `saturation/type-exclusivity/colors.ein`: an exhausted R past 100 lines
+
+Two colours, one rule that keeps them from co-locating, and no obligation: the
+universe is eight `is-a` and `co-located` facts, 4 minimal dead sets keep
+R from being the cube, and R is 169 states. As one `(region …)` it is
+537 lines. The user's ruling: **stdout's listings share 100
+lines**, each printing whole items while they last and at least one. The
+region comes first and takes them: stdout lists states 1–37 outside a
+`(region …)`, since a cut wrapped in one would claim to be all of R, then says
+what it left out and that `--dump-answer DIR` writes the whole `(region …)` to
+`DIR/answer.txt`. The query still gets its `over` row, its one class and its
+one-line `as :expect`. The summary rows are never cut. Stdout is
+125 lines, and `answer.txt` is 561. The state numbers are
+the same in both, so *state 37* on the screen is *state 37* in the
+file.
+
+`ein solve examples/saturation/type-exclusivity/colors.ein`
+
+```text
+solve · examples/saturation/type-exclusivity/colors.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      169
+  commitments (k_c) 169
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  maximal line      9 states
+  components        1
+  sub-cubes         9, 4 of dimension 6, 4 of dimension 5, 1 of dimension 4
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 4 minimal dead sets
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          8 candidates, 0 dead alone
+  route             1, the alive down-set — licence L1, dead is upward-closed
+  work              173 saturations · 644 facts beyond root · 7 layers
+
+  ;; R as one (region …) is 537 lines, past stdout's 100: what fits is below, not wrapped in a (region …)
+  ;; state 1 of 169 — ∅, root itself · minimal
+  (model (is-a Blue Color) (is-a Red Color))
+  ;; state 2 of 169 — 1 candidate · from {(co-located Blue Color)}
+  (model (co-located Blue Color) (is-a Blue Color) (is-a Red Color))
+  ;; state 3 of 169 — 1 candidate · from {(co-located Color Blue)}
+  (model (co-located Color Blue) (is-a Blue Color) (is-a Red Color))
+  ;; state 4 of 169 — 1 candidate · from {(co-located Color Red)}
+  (model (co-located Color Red) (is-a Blue Color) (is-a Red Color))
+  ;; state 5 of 169 — 1 candidate · from {(co-located Red Color)}
+  (model (co-located Red Color) (is-a Blue Color) (is-a Red Color))
+  ;; state 6 of 169 — 1 candidate · from {(is-a Blue Red)}
+  (model (is-a Blue Color) (is-a Blue Red) (is-a Red Color))
+  ;; state 7 of 169 — 1 candidate · from {(is-a Color Blue)}
+  (model (is-a Blue Color) (is-a Color Blue) (is-a Red Color))
+  ;; state 8 of 169 — 1 candidate · from {(is-a Color Red)}
+  (model (is-a Blue Color) (is-a Color Red) (is-a Red Color))
+  ;; state 9 of 169 — 1 candidate · from {(is-a Red Blue)}
+  (model (is-a Blue Color) (is-a Red Blue) (is-a Red Color))
+  ;; state 10 of 169 — 2 candidates · from {(co-located Blue Color), (co-located Color Blue)}
+  (model (co-located Blue Color) (co-located Color Blue) (is-a Blue Color)
+         (is-a Red Color))
+  ;; state 11 of 169 — 2 candidates · from {(co-located Blue Color), (co-located Color Red)}
+  (model (co-located Blue Color) (co-located Color Red) (is-a Blue Color)
+         (is-a Red Color))
+  ;; state 12 of 169 — 2 candidates · from {(co-located Blue Color), (co-located Red Color)}
+  (model (co-located Blue Color) (co-located Red Color) (is-a Blue Color)
+         (is-a Red Color))
+  ;; state 13 of 169 — 2 candidates · from {(co-located Blue Color), (is-a Blue Red)}
+  (model (co-located Blue Color) (is-a Blue Color) (is-a Blue Red)
+         (is-a Red Color))
+  ;; state 14 of 169 — 2 candidates · from {(co-located Blue Color), (is-a Color Blue)}
+  (model (co-located Blue Color) (is-a Blue Color) (is-a Color Blue)
+         (is-a Red Color))
+  ;; state 15 of 169 — 2 candidates · from {(co-located Blue Color), (is-a Color Red)}
+  (model (co-located Blue Color) (is-a Blue Color) (is-a Color Red)
+         (is-a Red Color))
+  ;; state 16 of 169 — 2 candidates · from {(co-located Blue Color), (is-a Red Blue)}
+  (model (co-located Blue Color) (is-a Blue Color) (is-a Red Blue)
+         (is-a Red Color))
+  ;; state 17 of 169 — 2 candidates · from {(co-located Color Blue), (co-located Color Red)}
+  (model (co-located Color Blue) (co-located Color Red) (is-a Blue Color)
+         (is-a Red Color))
+  ;; state 18 of 169 — 2 candidates · from {(co-located Color Blue), (co-located Red Color)}
+  (model (co-located Color Blue) (co-located Red Color) (is-a Blue Color)
+         (is-a Red Color))
+  ;; state 19 of 169 — 2 candidates · from {(co-located Color Blue), (is-a Blue Red)}
+  (model (co-located Color Blue) (is-a Blue Color) (is-a Blue Red)
+         (is-a Red Color))
+  ;; state 20 of 169 — 2 candidates · from {(co-located Color Blue), (is-a Color Blue)}
+  (model (co-located Color Blue) (is-a Blue Color) (is-a Color Blue)
+         (is-a Red Color))
+  ;; state 21 of 169 — 2 candidates · from {(co-located Color Blue), (is-a Color Red)}
+  (model (co-located Color Blue) (is-a Blue Color) (is-a Color Red)
+         (is-a Red Color))
+  ;; state 22 of 169 — 2 candidates · from {(co-located Color Blue), (is-a Red Blue)}
+  (model (co-located Color Blue) (is-a Blue Color) (is-a Red Blue)
+         (is-a Red Color))
+  ;; state 23 of 169 — 2 candidates · from {(co-located Color Red), (co-located Red Color)}
+  (model (co-located Color Red) (co-located Red Color) (is-a Blue Color)
+         (is-a Red Color))
+  ;; state 24 of 169 — 2 candidates · from {(co-located Color Red), (is-a Blue Red)}
+  (model (co-located Color Red) (is-a Blue Color) (is-a Blue Red)
+         (is-a Red Color))
+  ;; state 25 of 169 — 2 candidates · from {(co-located Color Red), (is-a Color Blue)}
+  (model (co-located Color Red) (is-a Blue Color) (is-a Color Blue)
+         (is-a Red Color))
+  ;; state 26 of 169 — 2 candidates · from {(co-located Color Red), (is-a Color Red)}
+  (model (co-located Color Red) (is-a Blue Color) (is-a Color Red)
+         (is-a Red Color))
+  ;; state 27 of 169 — 2 candidates · from {(co-located Color Red), (is-a Red Blue)}
+  (model (co-located Color Red) (is-a Blue Color) (is-a Red Blue)
+         (is-a Red Color))
+  ;; state 28 of 169 — 2 candidates · from {(co-located Red Color), (is-a Blue Red)}
+  (model (co-located Red Color) (is-a Blue Color) (is-a Blue Red)
+         (is-a Red Color))
+  ;; state 29 of 169 — 2 candidates · from {(co-located Red Color), (is-a Color Blue)}
+  (model (co-located Red Color) (is-a Blue Color) (is-a Color Blue)
+         (is-a Red Color))
+  ;; state 30 of 169 — 2 candidates · from {(co-located Red Color), (is-a Color Red)}
+  (model (co-located Red Color) (is-a Blue Color) (is-a Color Red)
+         (is-a Red Color))
+  ;; state 31 of 169 — 2 candidates · from {(co-located Red Color), (is-a Red Blue)}
+  (model (co-located Red Color) (is-a Blue Color) (is-a Red Blue)
+         (is-a Red Color))
+  ;; state 32 of 169 — 2 candidates · from {(is-a Blue Red), (is-a Color Blue)}
+  (model (is-a Blue Color) (is-a Blue Red) (is-a Color Blue)
+         (is-a Red Color))
+  ;; state 33 of 169 — 2 candidates · from {(is-a Blue Red), (is-a Color Red)}
+  (model (is-a Blue Color) (is-a Blue Red) (is-a Color Red) (is-a Red Color))
+  ;; state 34 of 169 — 2 candidates · from {(is-a Blue Red), (is-a Red Blue)}
+  (model (is-a Blue Color) (is-a Blue Red) (is-a Red Blue) (is-a Red Color))
+  ;; state 35 of 169 — 2 candidates · from {(is-a Color Blue), (is-a Color Red)}
+  (model (is-a Blue Color) (is-a Color Blue) (is-a Color Red)
+         (is-a Red Color))
+  ;; state 36 of 169 — 2 candidates · from {(is-a Color Blue), (is-a Red Blue)}
+  (model (is-a Blue Color) (is-a Color Blue) (is-a Red Blue)
+         (is-a Red Color))
+  ;; state 37 of 169 — 2 candidates · from {(is-a Color Red), (is-a Red Blue)}
+  (model (is-a Blue Color) (is-a Color Red) (is-a Red Blue) (is-a Red Color))
+  ;; not shown: 132 more states — --dump-answer DIR writes the whole (region …) to DIR/answer.txt
+
+  query             (not (co-located Red Blue))
+  over              all of R — 169 states → 1 projection class
+    class 1 of 1    169 states (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, …)
+                      the goal holds: it has no variable
+  as :expect        (model (not (co-located Red Blue)))
 
 exit 0
 ```

@@ -893,7 +893,11 @@ says what an answer needs:
 The questions marked **R** are the ones the user named for improving a theory
 and for searching for one. They are why the region is the object of study and
 not its first node. Which of them `ein solve` answers by default, and which
-behind a flag, is S1e2.1a.5's to propose and the user's to rule.
+behind a flag, is S1e2.1a.5's to propose and the user's to rule. **Ruled
+2026-10-16**
+([`read_out.md` § 11](p1e2.1a_the_solution_region/read_out.md#11-the-users-rulings-2026-10-16)):
+*"bare ein solve prints as much details as possible, except full lattice"*,
+which is that page's § 10 *by default* column as proposed.
 
 ### The census (2026-10-16)
 

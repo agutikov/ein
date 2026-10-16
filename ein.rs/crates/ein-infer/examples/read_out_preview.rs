@@ -14,14 +14,18 @@
 //! ```sh
 //! cargo run --release -p ein-infer --example read_out_preview -- \
 //!     [--minimal | --maximal] [-n N | --single] [--region-budget F] \
-//!     [--region-limit N] [--over all|minimal|maximal] [--jobs J] FILE
+//!     [--region-limit N] [--over all|minimal|maximal] [--jobs J] [--uncut] FILE
 //! ```
 //!
 //! With no mode flag it prints the proposed default, `ein solve FILE`: R
-//! described. The last line is the exit code the proposal gives the run.
+//! described. The last line is the exit code the proposal gives the run, and
+//! the `stderr:` lines above it what the run writes there. `--uncut` prints
+//! what `--dump-answer DIR` writes as `DIR/answer.txt`: every listing whole.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
+use std::sync::Mutex;
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 
 use ein_core::{Kb, Terms, render_why};
 use ein_infer::compile::SharedMemo;
@@ -34,6 +38,84 @@ use ein_infer::{Events, goal_bindings, query_value, solve_value, try_commitment_
 use ein_ir::{Ast, Node, NodeId, load, parse};
 
 const RULE: &str = "──────────────────────────────────────────────────────────────";
+
+/// The most lines stdout's listings print together: R's states, a line's
+/// members, each query's classes and `as :expect`, in that order. A listing
+/// past what is left prints whole items while they fit, at least one, and
+/// says where the rest is: `--dump-answer DIR` writes the read-out uncut, as
+/// `DIR/answer.txt`. The user's ruling of 2026-10-16 (`read_out.md` § 11,
+/// ruling 2).
+const LIST_LINES: usize = 100;
+
+/// `--uncut`: print what `answer.txt` holds, every listing whole.
+static UNCUT: AtomicBool = AtomicBool::new(false);
+
+/// The listing lines printed so far, against [`LIST_LINES`].
+static LISTED: AtomicUsize = AtomicUsize::new(0);
+
+/// What is left of [`LIST_LINES`].
+fn left() -> usize {
+    if uncut() {
+        usize::MAX
+    } else {
+        LIST_LINES.saturating_sub(LISTED.load(Ordering::Relaxed))
+    }
+}
+
+fn listed(lines: usize) {
+    LISTED.fetch_add(lines, Ordering::Relaxed);
+}
+
+/// What the run writes to stderr, printed after the read-out as `stderr: …`.
+static STDERR: Mutex<Vec<String>> = Mutex::new(Vec::new());
+
+fn uncut() -> bool {
+    UNCUT.load(Ordering::Relaxed)
+}
+
+fn to_stderr(line: String) {
+    STDERR.lock().expect("one thread").push(line);
+}
+
+/// How many of `blocks` a listing prints: all of them when uncut or when they
+/// fit in what is [`left`], otherwise whole blocks while they fit, at least
+/// one.
+fn fit(blocks: &[Vec<String>]) -> usize {
+    let left = left();
+    let mut lines = 0usize;
+    for (i, b) in blocks.iter().enumerate() {
+        lines = lines.saturating_add(b.len());
+        if lines > left {
+            return i.max(1);
+        }
+    }
+    blocks.len()
+}
+
+/// Prints the blocks [`fit`] allows, counts them against [`LIST_LINES`], and
+/// returns how many.
+fn print_blocks(blocks: &[Vec<String>]) -> usize {
+    let shown = fit(blocks);
+    for l in blocks[..shown].iter().flatten() {
+        println!("{l}");
+    }
+    listed(blocks[..shown].iter().map(Vec::len).sum());
+    shown
+}
+
+/// The read-out's last lines: what went to stderr, then the exit code.
+fn finish(code: i32) -> i32 {
+    let lines = std::mem::take(&mut *STDERR.lock().expect("one thread"));
+    if !lines.is_empty() {
+        println!();
+        for l in lines {
+            println!("stderr: {l}");
+        }
+    }
+    println!();
+    println!("exit {code}");
+    code
+}
 
 struct Args {
     which: Which,
@@ -90,6 +172,10 @@ fn args() -> Args {
                 shown.push(format!("--region-limit {n}"));
             }
             "--jobs" => a.jobs = it.next().expect("--jobs J").parse().expect("a count"),
+            "--uncut" => {
+                UNCUT.store(true, Ordering::Relaxed);
+                shown.push("--dump-answer DIR".to_string());
+            }
             "--over" => {
                 a.over = match it.next().expect("--over WHICH").as_str() {
                     "minimal" => Which::Minimal,
@@ -132,7 +218,11 @@ fn group(n: u64) -> String {
 }
 
 fn row(label: &str, value: impl AsRef<str>) {
-    println!("  {label:<18}{}", value.as_ref());
+    println!("{}", row_text(label, value));
+}
+
+fn row_text(label: &str, value: impl AsRef<str>) -> String {
+    format!("  {label:<18}{}", value.as_ref())
 }
 
 fn relation_of(fact: &str) -> &str {
@@ -389,12 +479,9 @@ fn print_queries(
             Node::Str(s) => Some(ast.sym(s).to_string()),
             _ => None,
         });
-        let shown = if exact {
-            cl.len()
-        } else {
-            cl.len().min(PARTIAL_LIST)
-        };
-        for (ci, c) in cl.iter().take(shown).enumerate() {
+        let mut blocks: Vec<Vec<String>> = Vec::new();
+        for (ci, c) in cl.iter().enumerate() {
+            let mut b: Vec<String> = Vec::new();
             let mut which: Vec<String> = c
                 .states
                 .iter()
@@ -417,38 +504,48 @@ fn print_queries(
                 plural(c.states.len() as u64, "state", "states")
             };
             if c.rows.is_empty() {
-                row(
+                b.push(row_text(
                     &format!("  {head}"),
                     format!("{where_} — the goal has no row: undetermined here"),
-                );
+                ));
+                blocks.push(b);
                 continue;
             }
-            row(&format!("  {head}"), where_);
+            b.push(row_text(&format!("  {head}"), where_));
             for r in &c.rows {
-                let b: Vec<String> = r.iter().map(|(k, v)| format!("?{k} = {v}")).collect();
-                if b.is_empty() {
-                    row("", "  the goal holds: it has no variable");
+                let bound: Vec<String> = r.iter().map(|(k, v)| format!("?{k} = {v}")).collect();
+                if bound.is_empty() {
+                    b.push(row_text("", "  the goal holds: it has no variable"));
                 } else {
-                    row("", format!("  {}", b.join(" · ")));
+                    b.push(row_text("", format!("  {}", bound.join(" · "))));
                 }
                 if let Some(t) = &text {
-                    row("", format!("    “{}”", render_why(t, r)));
+                    b.push(row_text("", format!("    “{}”", render_why(t, r))));
                 }
             }
+            blocks.push(b);
+        }
+        let shown = print_blocks(&blocks);
+        if shown < cl.len() {
+            row(
+                "",
+                format!(
+                    "… {}: --dump-answer DIR writes them to DIR/answer.txt",
+                    plural((cl.len() - shown) as u64, "more class", "more classes")
+                ),
+            );
         }
         if !exact {
-            if shown < cl.len() {
-                row(
-                    "",
-                    format!(
-                        "… {} more classes, written by --dump-answer",
-                        group((cl.len() - shown) as u64)
-                    ),
-                );
-            }
             row(
                 "as :expect",
                 "not printed: these classes are a lower bound, and the claim would say they are all",
+            );
+            continue;
+        }
+        if shown < cl.len() {
+            row(
+                "as :expect",
+                "not printed: stdout lists part of the classes; it is in DIR/answer.txt",
             );
             continue;
         }
@@ -473,6 +570,19 @@ fn print_queries(
                 lines.extend(m);
             }
         }
+        // A one-line claim is no longer than the note that would replace it.
+        if lines.len() > left().max(1) {
+            row(
+                "as :expect",
+                format!(
+                    "{}, past what is left of stdout's {LIST_LINES}: --dump-answer DIR writes \
+                     it to DIR/answer.txt",
+                    plural(lines.len() as u64, "line", "lines")
+                ),
+            );
+            continue;
+        }
+        listed(lines.len());
         for (li, l) in lines.iter().enumerate() {
             row(if li == 0 { "as :expect" } else { "" }, l);
         }
@@ -668,18 +778,27 @@ fn describe_route_1(a: &Args, kb: Kb, mut terms: Terms, ast: Ast, d: DownSet) ->
             next,
             spent,
             projected,
-        }) => row(
-            "exhausted",
-            format!(
-                "no — route 1 stopped before layer {layer}: its {} commitments project {} \
-                 facts on top of the {} spent, past --region-budget {}",
-                group(*next),
-                group(*projected),
-                group(*spent),
-                group(a.budget)
-            ),
-        ),
-        Some(other) => row("exhausted", format!("no — {}", other.as_str())),
+        }) => {
+            row(
+                "exhausted",
+                format!(
+                    "no — route 1 stopped before layer {layer}: its {} commitments project {} \
+                     facts on top of the {} spent, past --region-budget {}",
+                    group(*next),
+                    group(*projected),
+                    group(*spent),
+                    a.budget
+                ),
+            );
+            to_stderr(format!(
+                "note: {}: partial — route 1 stopped before layer {layer} at --region-budget {}",
+                a.file, a.budget
+            ));
+        }
+        Some(other) => {
+            row("exhausted", format!("no — {}", other.as_str()));
+            to_stderr(format!("note: {}: partial — {}", a.file, other.as_str()));
+        }
     }
     let root_alive = root.status & region::DEAD == 0;
     if k_s == 0 && exhausted {
@@ -976,10 +1095,7 @@ fn describe_route_1(a: &Args, kb: Kb, mut terms: Terms, ast: Ast, d: DownSet) ->
         Which::Maximal => states.into_iter().filter(|s| s.maximal).collect(),
     };
     print_queries(&kb, &ast, &mut terms, &listed, over, exhausted, Which::All);
-    let code = claim_line(a);
-    println!();
-    println!("exit {code}");
-    code
+    finish(claim_line(a))
 }
 
 /// Members of R the partial run certifies minimal: every one-down subset
@@ -1069,43 +1185,45 @@ fn on_lines(s: &St) -> &'static str {
     }
 }
 
+/// A state's comment in R's listing: its number, its size, its lines, and
+/// the commitment that reaches it or how many do.
+fn state_comment(i: usize, k: usize, s: &St, cands: &[String]) -> String {
+    let what = if s.closure.is_empty() {
+        "∅, root itself".to_string()
+    } else {
+        plural(s.closure.len() as u64, "candidate", "candidates")
+    };
+    let from = match s.class_size {
+        Some(1) | None if s.closure.is_empty() => String::new(),
+        Some(1) | None => format!(" · from {}", set_name(cands, &s.rep)),
+        Some(c) => format!(
+            " · {} commitments, {} minimal",
+            group(c),
+            group(s.generators.len() as u64)
+        ),
+    };
+    format!(";; state {} of {k} — {what}{}{from}", i + 1, on_lines(s))
+}
+
 fn print_region(states: &[St], cands: &[String]) {
     let k = states.len();
-    let mut out: Vec<String> = vec!["  (region".to_string()];
+    // One block per state, then one per `(merged …)`, at the region's indent.
+    let mut blocks: Vec<Vec<String>> = Vec::new();
     for (i, s) in states.iter().enumerate() {
-        let what = if s.closure.is_empty() {
-            "∅, root itself".to_string()
-        } else {
-            plural(s.closure.len() as u64, "candidate", "candidates")
-        };
-        let from = match s.class_size {
-            Some(1) | None if s.closure.is_empty() => String::new(),
-            Some(1) | None => format!(" · from {}", set_name(cands, &s.rep)),
-            Some(c) => format!(
-                " · {} commitments, {} minimal",
-                group(c),
-                group(s.generators.len() as u64)
-            ),
-        };
-        out.push(format!(
-            "    ;; state {} of {k} — {what}{}{from}",
-            i + 1,
-            on_lines(s)
-        ));
-        for l in wrapped("model", &s.model, 4, 78) {
-            out.push(l);
-        }
+        let mut b = vec![format!("    {}", state_comment(i, k, s, cands))];
+        b.extend(wrapped("model", &s.model, 4, 78));
+        blocks.push(b);
     }
     for (i, s) in states.iter().enumerate() {
         if s.class_size.unwrap_or(1) < 2 {
             continue;
         }
-        out.push(format!(
+        let mut out = vec![format!(
             "    ;; state {} is reached by {} commitments; its {} minimal",
             i + 1,
             group(s.class_size.unwrap_or(0)),
             group(s.generators.len() as u64)
-        ));
+        )];
         let to = wrapped("model", &s.model, 12, 78);
         out.push(format!("    (merged {}", to[0].trim_start()));
         for l in &to[1..] {
@@ -1138,54 +1256,75 @@ fn print_region(states: &[St], cands: &[String]) {
                 }
             }
         }
+        blocks.push(out);
     }
-    if let Some(last) = out.last_mut() {
-        last.push(')');
+    let total = 2 + blocks.iter().map(Vec::len).sum::<usize>() - 1;
+    if total <= left() {
+        listed(total);
+        println!("  (region");
+        let mut lines: Vec<String> = blocks.into_iter().flatten().collect();
+        if let Some(last) = lines.last_mut() {
+            last.push(')');
+        }
+        for l in lines {
+            println!("{l}");
+        }
+        return;
     }
-    for l in out {
-        println!("{l}");
+    // Past stdout's limit: whole blocks while they fit, outside a `(region
+    // …)`, since a cut wrapped in one would claim to be all of R.
+    let blocks: Vec<Vec<String>> = blocks
+        .into_iter()
+        .map(|b| b.into_iter().map(|l| l[2..].to_string()).collect())
+        .collect();
+    println!(
+        "  ;; R as one (region …) is {} lines, past stdout's {LIST_LINES}: what fits is below, \
+         not wrapped in a (region …)",
+        group(total as u64)
+    );
+    let shown = print_blocks(&blocks);
+    let n_merged = blocks.len() - k;
+    let mut rest: Vec<String> = Vec::new();
+    if shown < k {
+        rest.push(plural((k - shown) as u64, "more state", "more states"));
     }
+    let merged_shown = shown.saturating_sub(k);
+    if merged_shown < n_merged {
+        rest.push(format!(
+            "{} (merged …)",
+            group((n_merged - merged_shown) as u64)
+        ));
+    }
+    println!(
+        "  ;; not shown: {} — --dump-answer DIR writes the whole (region …) to DIR/answer.txt",
+        rest.join(" and ")
+    );
 }
 
-/// A partial run lists this many certified line members, or query classes,
-/// and says how many more there are. An exhausted run lists everything.
-const PARTIAL_LIST: usize = 64;
-
-/// A partial description's listing: the line members it certified, at most
-/// [`PARTIAL_LIST`] of them, and where the rest are.
+/// A partial description's listing: the line members it certified, as many
+/// as stdout's limit allows, and where the rest are.
 fn print_partial(lines: &[&St], found: u64, cands: &[String]) {
     println!(
         "  ;; the line members this run certified. Not a (region …): read back, it \
          would claim these are all of R."
     );
-    let shown = lines.len().min(PARTIAL_LIST);
-    let more_lines = (lines.len() - shown) as u64;
+    print_members(lines, cands, None);
     let other = found - lines.len() as u64;
-    let mut rest = Vec::new();
-    if more_lines > 0 {
-        rest.push(format!("{} more certified line members", group(more_lines)));
-    }
     if other > 0 {
-        rest.push(format!("the {} other members met", group(other)));
-    }
-    if !rest.is_empty() {
         println!(
-            "  ;; {} {} written by --dump-answer, not listed here.",
-            rest.join(" and "),
-            if rest.len() == 1 && more_lines + other == 1 {
-                "is"
-            } else {
-                "are"
-            }
+            "  ;; {} met {} not certified on a line, and not listed: --dump-answer DIR \
+             writes each to DIR/models/",
+            plural(other, "other member", "other members"),
+            if other == 1 { "is" } else { "are" }
         );
     }
-    print_members(&lines[..shown], cands, None);
 }
 
 /// States listed as members, not as a region: a line, `-n`'s cut, a partial
-/// run.
+/// run. As many as stdout's limit allows, and how many more there are.
 fn print_members(states: &[&St], cands: &[String], line: Option<&str>) {
     let k = states.len();
+    let mut blocks: Vec<Vec<String>> = Vec::new();
     for (i, s) in states.iter().enumerate() {
         let what = if s.closure.is_empty() {
             "∅, root itself".to_string()
@@ -1204,10 +1343,16 @@ fn print_members(states: &[&St], cands: &[String], line: Option<&str>) {
             Some(l) => format!(" · {l}"),
             None => on_lines(s).to_string(),
         };
-        println!("  ;; state {} of {k} — {what}{on}{from}", i + 1);
-        for l in wrapped("model", &s.model, 2, 78) {
-            println!("{l}");
-        }
+        let mut b = vec![format!("  ;; state {} of {k} — {what}{on}{from}", i + 1)];
+        b.extend(wrapped("model", &s.model, 2, 78));
+        blocks.push(b);
+    }
+    let shown = print_blocks(&blocks);
+    if shown < k {
+        println!(
+            "  ;; … {}: --dump-answer DIR writes the listing uncut, to DIR/answer.txt",
+            plural((k - shown) as u64, "more state", "more states")
+        );
     }
 }
 
@@ -1388,10 +1533,7 @@ fn describe_cube(a: &Args) -> i32 {
         print_region(&states, &cands);
     }
     print_queries(&kb, &ast, &mut terms, &states, "all of R", true, Which::All);
-    let code = claim_line(a);
-    println!();
-    println!("exit {code}");
-    code
+    finish(claim_line(a))
 }
 
 // ── The program's region claim, checked against R ─────────────────────
@@ -1428,7 +1570,23 @@ fn claim_line(a: &Args) -> i32 {
     for l in &checked.report.lines {
         row("", l);
     }
-    i32::from(!checked.report.passed())
+    // A refuted claim is the program's own assertion failing, the one answer
+    // that exits 1. A claim the run could not check is a note.
+    let why = checked.report.lines.first().cloned().unwrap_or_default();
+    match checked.report.outcome {
+        ein_infer::Outcome::Held => 0,
+        ein_infer::Outcome::Failed => {
+            to_stderr(format!("{}: (solve :expect) FAILED — {why}", a.file));
+            1
+        }
+        ein_infer::Outcome::NotChecked => {
+            to_stderr(format!(
+                "note: {}: (solve :expect) NOT CHECKED — {why}",
+                a.file
+            ));
+            0
+        }
+    }
 }
 
 // ── A mode: explore's answer ───────────────────────────────────────────
@@ -1532,48 +1690,34 @@ fn mode(a: &Args) -> i32 {
         Which::Minimal => "minimal line",
         Which::Maximal => "maximal line",
     };
-    let mut stderr: Option<String> = None;
+    // Every answer exits 0, `--single`'s four words included: an answer is
+    // a successful run (the user's ruling of 2026-10-16).
     let code = match a.ask {
-        Ask::Single => match ans.verdict {
-            Some(Verdict::Solution) => {
-                row("verdict", format!("Solution — {line} is one state"));
-                0
+        Ask::Single => {
+            match ans.verdict {
+                Some(Verdict::Solution) => {
+                    row("verdict", format!("Solution — {line} is one state"));
+                }
+                Some(Verdict::Ambiguity) => {
+                    row(
+                        "verdict",
+                        format!("Ambiguity — {line} holds two states or more; two of them below"),
+                    );
+                }
+                Some(v @ (Verdict::Contradiction | Verdict::Open)) => {
+                    let why = if v == Verdict::Contradiction {
+                        "R is empty: every node is dead"
+                    } else {
+                        "R is empty: every alive node owes"
+                    };
+                    row("verdict", format!("{} — {why}", v.word()));
+                }
+                None => {
+                    row("verdict", "not decided — the run stopped first");
+                }
             }
-            Some(Verdict::Ambiguity) => {
-                row(
-                    "verdict",
-                    format!("Ambiguity — {line} holds two states or more; two of them below"),
-                );
-                stderr = Some(format!(
-                    "{}: --single FAILED — expected exactly one state of {line}, found two \
-                     or more (Ambiguity)",
-                    a.file
-                ));
-                1
-            }
-            Some(v @ (Verdict::Contradiction | Verdict::Open)) => {
-                let why = if v == Verdict::Contradiction {
-                    "R is empty: every node is dead"
-                } else {
-                    "R is empty: every alive node owes"
-                };
-                row("verdict", format!("{} — {why}", v.word()));
-                stderr = Some(format!(
-                    "{}: --single FAILED — expected exactly one state of {line}, found none ({})",
-                    a.file,
-                    v.word()
-                ));
-                1
-            }
-            None => {
-                row("verdict", "not decided — the run stopped first");
-                stderr = Some(format!(
-                    "{}: --single NOT CHECKED — the run stopped before it decided",
-                    a.file
-                ));
-                1
-            }
-        },
+            0
+        }
         _ => {
             let q = if ans.exhausted {
                 if k == 0 {
@@ -1616,7 +1760,7 @@ fn mode(a: &Args) -> i32 {
             "exhausted",
             format!(
                 "no — stopped at --region-budget {}: {} facts spent, the next step projects {}",
-                group(a.budget),
+                a.budget,
                 group(*spent),
                 group(*projected)
             ),
@@ -1629,6 +1773,16 @@ fn mode(a: &Args) -> i32 {
             ),
         ),
         Some(Stopped::Deadline) => row("exhausted", "no — --max-time"),
+    }
+    if let Some(stop) = &ans.stopped {
+        let why = match stop {
+            Stopped::Budget { .. } => format!("stopped at --region-budget {}", a.budget),
+            Stopped::Limit { n, limit } => {
+                format!("the question needs 2^{n} saturations, past --region-limit {limit}")
+            }
+            Stopped::Deadline => "stopped at --max-time".to_string(),
+        };
+        to_stderr(format!("note: {}: partial — {why}", a.file));
     }
     let empty_in_r = states.iter().any(|s| s.closure.is_empty());
     if partial_describe && empty_in_r {
@@ -1713,13 +1867,7 @@ fn mode(a: &Args) -> i32 {
         ans.exhausted,
         a.over,
     );
-    if let Some(e) = stderr {
-        println!();
-        println!("stderr: {e}");
-    }
-    println!();
-    println!("exit {code}");
-    code
+    finish(code)
 }
 
 fn main() {

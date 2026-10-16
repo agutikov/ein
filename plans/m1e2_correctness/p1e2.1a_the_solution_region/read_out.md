@@ -1,9 +1,12 @@
 # The read-out speaks R — the page diff for the vocabulary
 
 **Stage:** [S1e2.1a.5](s1e2.1a.5_the_read_out.md), task T1e2.1a.5.1.
-**Status:** proposed 2026-10-16, for the user to read before any surface
-moves. **Nothing in `ein solve` has moved.** Three questions are the user's
-(§ 11). The rest is decided here unless the user objects (§ 12).
+**Status:** proposed 2026-10-16, and **ruled the same day**: the user
+answered § 11's three questions, and § 12 stands as decided. Two of the
+answers changed the page: every answer exits 0 (§ 9), and stdout's listings
+stop at 100 lines, with the whole read-out written by `--dump-answer`
+(§ 4.1). **Nothing
+in `ein solve` has moved.** T1e2.1a.5.2 builds what this page says.
 **What it stands on:**
 
 - the rulings (a), (e), (g) and (i) of
@@ -18,11 +21,11 @@ moves. **Nothing in `ein solve` has moved.** Three questions are the user's
   this stage's switch.
 
 **The examples are real.** [`read_out_examples.md`](read_out_examples.md)
-holds 25 runs on twelve programs. Each block is printed by
+holds 27 runs on thirteen programs, re-generated after the rulings. Each block is printed by
 [`read_out_preview`](../../../ein.rs/crates/ein-infer/examples/read_out_preview.rs),
 an `ein-infer` example that prints the layout proposed here from the
 library's own R, states and goal projections. This page quotes them as
-`X1`…`X12`.
+`X1`…`X13`.
 
 ---
 
@@ -66,7 +69,7 @@ What is left to decide is how each surface says it.
 | events | `enter`, `layer`, `nogood`, `writeback`, `traversal`, `verdict` | the walk | the walk goes |
 | exit codes | 0 for all four words; 1 for a false `:expect` or a load error; 2 for usage or an abort | — | a word with no expectation cannot fail, so nothing can exit 1 for it |
 
-## 3. Five rules every surface follows
+## 3. Six rules every surface follows
 
 1. **It says what was asked, and what it lists.** Which part of R (all of R,
    the minimal line, the maximal line) and which question (describe, N
@@ -77,17 +80,21 @@ What is left to decide is how each surface says it.
    name: `maximal line  3 states — all of them`. A bound says it is one, and
    why.
 3. **No verdict word without an expectation.** The four words are
-   `--single`'s answer (§ 11, question 1). A claim the program states is
-   judged `holds`, `FAILED` or `NOT CHECKED`, as it is today.
+   `--single`'s answer, and nowhere else (§ 11, ruling 1). A claim the program
+   states is judged `holds`, `FAILED` or `NOT CHECKED`, as it is today.
 4. **Every printed state is a member of R (C1). It is marked as a line member
    only where that is certified.** The `(region …)` form, which reads back as a
    claim that these are *all* of R, is printed only for an exhausted
    description. A line, an `-n` cut or a partial run is listed as states, each
-   a `(model …)` with a comment, and never wrapped in `(region …)`.
+   a `(model …)` with a comment, and never wrapped in `(region …)`. Neither is
+   a region that stdout cut at its 100 lines (§ 4.1).
 5. **Completeness is one row, `exhausted`**, and `decided` under `--single`.
    When it is *no*, the row gives the reason: stopped as asked (`-n`), at the
    budget (with what was spent and what the next step projects), past
    `--region-limit`, or `-T`, which aborts with exit 2.
+6. **Every answer exits 0** (§ 11, ruling 1). R empty, a partial run and each
+   of `--single`'s four words are answers. Only an error is not: usage, a load
+   error, `-T`, and a claim the program states that the run refutes (§ 9).
 
 ## 4. The default read-out, `ein solve FILE`
 
@@ -146,6 +153,45 @@ and the rule under it, so a transcript still starts the same way.
 **Then each query** (§ 7), then **each claim the program states**, checked
 against what the run computed (§ 7.3).
 
+### 4.1 Past 100 lines, stdout lists what fits
+
+The user's ruling (§ 11, ruling 2). **Stdout's listings share 100 lines.**
+A listing is R's states and their `(merged …)`s, a line's or a cut's members,
+a query's classes, or a query's `as :expect`, and they are printed in that
+order. Each prints whole items while the 100 lines last, and at least one.
+The summary rows are never cut, and neither is a query's `over` row or a
+claim's outcome.
+
+- **A cut region is not wrapped in `(region …)`** (rule 4). Its first comment
+  says how long the whole `(region …)` is; the states that fit follow with the
+  numbers they have in the whole, so *state 37* on the screen is *state 37* in
+  the file; the last comment names what was left out.
+- **`--dump-answer DIR` writes the read-out uncut, as `DIR/answer.txt`**
+  (§ 8.2). That is the flag the user asked after: it already writes the answer
+  as files, and since S1e2.1a.4 none of them is the read-out. Without it
+  nothing is written, and stdout is the same with it and without, as for every
+  file a run writes.
+- **A cut query** lists the classes that fit, says how many more there are,
+  and prints no `as :expect` on stdout, since the claim would be about classes
+  the screen does not show. An `as :expect` longer than what is left says how
+  long it is and where it is; one of a single line is always printed, since
+  the note would be as long.
+
+[X13](read_out_examples.md#x13--saturationtype-exclusivitycolorsein-an-exhausted-r-past-100-lines)
+is `colors.ein`: R is 169 states, 537 lines as one `(region …)`, and stdout
+lists states 1–37. [X10](read_out_examples.md#x10--zebra2ein-the-puzzle)'s
+exhausted zebra2 is cut by its `(merged …)` alone: the one state fits, and its
+63 minimal commitments are in `answer.txt`.
+
+**Measured** with the preview over the 198 corpus programs that load, at the
+default budget (2026-10-16): of the 178 exhausted runs, 15 are cut, and the
+longest read-out is 126 lines with its summary rows (`nationalities.ein`;
+uncut, `pets.ein` ran to 44 457). Of the 20 partial runs, 5 are cut, and the
+longest is 124. The median exhausted read-out is 27 lines. One limit per
+listing instead of a shared one let a read-out reach 186 lines
+(`lattice/synth/trivial_line.ein`: a 50-line region, 93 lines of classes and
+a 40-line `as :expect`).
+
 ## 5. The modes
 
 [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode)
@@ -203,8 +249,8 @@ follows:
 | `maximal line` | `1 state — ⊤ …` when one saturation of ⊤ finds it in R. Otherwise the states certified maximal, `— all those a commitment of up to L − 1 candidates reaches`, or `not reached` | L1 and L2 for ⊤; L4 for the rest: `C ∪ {x}` with x outside the closure is visited dead or never generated |
 | `components`, `sub-cubes`, `merged` | `not known` | they need all of R |
 | `N` | `≥ … — complete up to size L` | a minimal dead set's subsets are all alive, so it is generated |
-| the listing | **the certified line members only**, as `(model …)`s, **at most 64**, with one comment saying how many more there are and that `--dump-answer` writes them | rule 4; the floors run met 10 075 other members (X11), and they are not the answer to *describe* |
-| queries | over every member met, marked *a lower bound*, at most 64 classes, and **no `as :expect`** | each class shown is real; there may be more, and a pasted claim would say there are not |
+| the listing | **the certified line members only**, as `(model …)`s, cut at 100 lines like any listing (§ 4.1), with one comment saying how many other members were met and that `--dump-answer` writes each to `models/` | rule 4; the floors run met 10 075 other members (X11), and they are not the answer to *describe* |
+| queries | over every member met, marked *a lower bound*, cut at 100 lines, and **no `as :expect`** | each class shown is real; there may be more, and a pasted claim would say there are not |
 
 [X10](read_out_examples.md#x10--zebra2ein-the-puzzle) is zebra2 at the
 default budget. It is partial, and it has answered the puzzle: its one state is
@@ -224,16 +270,14 @@ the whole cube, and the row says so. The `exhausted` row names the route that
 declined and why: `no — not monotone, and the question needs the whole cube:
 2^19, past --region-limit 16`. **It runs no walk.**
 
-**Why the cap applies to partial runs only.** Measured with the preview over
-every corpus program that loads, 198 of them, at the default budget
-(2026-10-16): without a cap, the flagged programs past the limit listed every
-member they met, up to 64 761 states and 648 435 lines
+**Why a partial run lists only certified line members.** Measured with the
+preview over every corpus program that loads, 198 of them, at the default
+budget (2026-10-16): listing every member they met, the flagged programs past
+the limit printed up to 64 761 states and 648 435 lines
 (`square-unique/terminus.ein`). Listing only the certified line members does
 not help everywhere: all 64 761 members `features/04_open.ein` meets are
-minimal, which is 585 192 lines. With the cap the longest partial run is 646
-lines. A partial listing is evidence, and every member is in `--dump-answer`.
-An exhausted description is the answer, and question 2 of § 11 asks whether
-it is ever capped.
+minimal, which is 585 192 lines. The 100-line rule (§ 4.1) bounds both, and
+every member is in `--dump-answer`.
 
 ### 6.3 Holes: the stub, never silent
 
@@ -351,6 +395,8 @@ complete.
 
 ### 8.2 `--dump-answer DIR`: `ein-answer/2`
 
+- **`answer.txt`**, the read-out uncut: stdout with no listing cut (§ 4.1).
+  Its `(region …)` reads back as the claim, `(merged …)`s included.
 - **`models/NN.ein`**, one loadable program per **listed** state, as today:
   the program, then the state's facts. Its header comment gives the state's
   number, its lines, its commitment and its minimal generators. On a partial
@@ -409,17 +455,34 @@ which set that is:
 
 ## 9. Exit codes
 
+**An answer exits 0, and only an error does not** (§ 11, ruling 1): *"any
+solution of ein program is successful execution of ein tool"*.
+
 | run | 0 | 1 | 2 |
 |---|---|---|---|
-| describe, `-n`, `--minimal`, `--maximal` | always, **empty R and partial included**: a request is not an expectation, and a stopped run is an answer that says *partial* ([`solve_flags.md` § 10](solve_flags.md#10-decided-here-unless-the-user-objects)) | a claim the program states is `FAILED` or `NOT CHECKED` | usage, `-T` |
-| `--single` | `Solution` | `Ambiguity`, `Contradiction`, `Open`, not decided | usage, `-T` |
+| every mode: describe, `-n`, `--minimal`, `--maximal`, `--single` | **every answer**: R empty of either kind, a partial run, `Solution`, `Ambiguity`, `Contradiction`, `Open`, and `--single` not decided | a claim the program states that the run **refutes** (`FAILED`) | usage, `-T` |
 | a load error | — | `ein solve` | `ein test`, unchanged |
+| `ein test` | every claim `holds` | a claim `FAILED` or `NOT CHECKED`, unchanged | a load error, usage |
 
-On stderr there is one line per claim that is not `holds`, and one per
-`--single` that did not hold. A partial run adds one `note:` line, so that a
-pipeline sees it:
+- **A refuted claim is the one answer that is an error.** The program asserts
+  something about its own answer, and the run shows it false: the program is
+  wrong, as a failed `assert` is. That is the reading the ruling needed, and
+  it keeps M1c's `ein solve` behaviour for a false `:expect`.
+- **A claim the run could not check is a note under `ein solve`**, not an
+  error. The run answered a narrower question than the claim (an `-n` cut, a
+  line, a budget), and asking one is the user's call. `ein test` keeps exit 1
+  for it, since checking is all it does.
+- **`--single`'s exit codes, ruled in
+  [`solve_interface.md` § 2.1](solve_interface.md#21-ein-solve)
+  as 1 for `Ambiguity`, `Contradiction`, `Open` and *not decided*, are 0.**
+  That rule was there so a shell could test uniqueness. A program that
+  expects one solution can say so as a claim, and a refuted claim exits 1.
+
+On stderr there is one line per refuted claim, and one `note:` per claim not
+checked and per partial run, so that a pipeline sees each:
 
 ```
+examples/f.ein: (solve :expect) FAILED — the claim lists 1 state, R has 2
 note: examples/zebra2.ein: partial — route 1 stopped before layer 5 at --region-budget 524288
 ```
 
@@ -428,8 +491,9 @@ note: examples/zebra2.ein: partial — route 1 stopped before layer 5 at --regio
 The user's list and the plan's additions, from
 [§ What `solve` can answer about R](../open_questions.md#what-solve-can-answer-about-r-2026-10-16).
 That page says *"which of them `ein solve` answers by default, and which
-behind a flag, is S1e2.1a.5's to propose and the user's to rule"*, which is
-question 3 of § 11.
+behind a flag, is S1e2.1a.5's to propose and the user's to rule"*. **Ruled as
+it stands** (§ 11, ruling 3): the *by default* column is what bare `ein solve`
+prints, and nothing in it moves behind `-s`.
 
 | question | by default (describe) | by a mode or flag | not built |
 |---|---|---|---|
@@ -460,41 +524,49 @@ question 3 of § 11.
 The *not built* column stays where Q-M1e2.7's table filed it. The phase's
 risk list makes any of them a followup.
 
-## 11. What needs the user's ruling
+## 11. The user's rulings (2026-10-16)
 
-1. **Where the four words appear.**
-   - **(A), proposed: only as `--single`'s answer.** The exploring read-out
-     describes empty R by its kind (§ 6.1). `-n N` is a request, not an
-     expectation: it exits 0 and says *R is empty* when it is. A program's
-     claims are judged `holds` / `FAILED` / `NOT CHECKED`, with the reason
-     in plain counts.
-   - (B) As (A), and also in a false claim's reason when the claim stated one
-     state or some: `FAILED — Ambiguity: the claim lists 1 state, R has 2`.
-   - (C) Keep `Contradiction` and `Open` as the names of the two kinds of
-     empty R in the exploring read-out too.
+The three questions this page asked, and the answers, in the user's words.
 
-   (A) keeps (i) literal: one place where an expectation of one is stated,
-   one place where the words judge it.
-2. **How much of an exhausted R stdout lists.**
-   - **(A), proposed: every state**, in the `(region …)` form, after the
-     summary rows, and every class of every query. `--models key|grid` are the
-     compact forms, and `| head` is a glance.
-   - (B) The same cap as a partial run's: 64 states and 64 classes, then *… n
-     more*, and the whole `(region …)` in `--dump-answer` only.
+1. **Where the four words appear.** Proposed: only as `--single`'s answer,
+   with empty R described by its kind (§ 6.1) and `-n N` a request, not an
+   expectation. The alternatives were the words in a false claim's reason (B)
+   and `Contradiction`/`Open` as the names of empty R's kinds (C).
 
-   Measured over the 198 corpus programs that load, at the default budget
-   (2026-10-16): 178 exhaust. Their read-outs are 29 lines at the median and
-   107 at the 90th percentile. Seven have more than 64 states, and three are
-   long: `type-exclusivity/pets.ein` (11 339 states, 44 457 lines),
-   `syntax/constraint-scopes.ein` (4 096 states, 17 430 lines) and
-   `features/02_star_in_identifiers.ein` (728, 15 957). (B) would make the
-   default describe those three in part, which is what the default was ruled
-   not to do. The partial runs are capped either way (§ 6.2).
-3. **The default's answers: § 10's *by default* column.** Every row of it is
-   computed by route 1 or the cube anyway, so printing it costs no work.
-   Proposed as it stands. A row the user does not want moves behind `-s`.
+   > yes, Solution/Ambiguity/Contradiction/Open appear only as --single's
+   > answer, ein program exit not 0 only on error, any solution of ein program
+   > is successful execution of ein tool - why it should be other way?
 
-## 12. Decided here unless the user objects
+   **(A)**, and **every answer exits 0** (rule 6, § 9). The *other way* was
+   [`solve_interface.md`](solve_interface.md)'s `--single`, which exited 1 on
+   anything but `Solution` so that a shell could test uniqueness. A claim the
+   program states does that job, and a refuted claim is the one answer that
+   exits 1 (§ 9).
+2. **How much of an exhausted R stdout lists.** Proposed: all of it (A), or
+   64 states and then *n more* (B).
+
+   > How much of an exhausted R to print - maybe make sense to save to file
+   > if exceeds some limit e.g. 100 lines, I think flags to explicitely ask to
+   > output into file already exist?
+
+   **Cut at 100 lines, and the whole in a file** (§ 4.1). The flag exists:
+   `--dump-answer DIR` writes the answer as files, and it gains `answer.txt`,
+   the read-out uncut (§ 8.2). The other file flags write a different thing:
+   `--json-summary` the summary as data, `--trace` the derivation. The 100
+   lines are shared by every listing on stdout, and the partial run's 64 is
+   gone. Over the corpus, 20 of 198 read-outs are cut, and none is longer
+   than 126 lines (§ 4.1).
+3. **The default's answers, § 10's *by default* column.** Proposed as it
+   stands.
+
+   > yes, bare ein solve prints as much details as possible, except full
+   > lattice
+
+   **As it stands.** Every row of it is computed by route 1, or by the cube
+   only where the static check flags the program, so the default never asks
+   for the cube by itself; `ein oracle` is the cube.
+
+## 12. Decided here, and not objected to
 
 - **The labels**: `states (k_s)` and `commitments (k_c)`, mirroring today's
   `solutions (k)`. `exhausted` everywhere, `decided` under `--single`. `asked`
@@ -505,9 +577,9 @@ risk list makes any of them a followup.
 - **A printed `(model …)` closes the candidates' relations**, as
   `claim::print` does. A claim a program writes may name more: X6's fixture
   pins `(closed-here r)` where the printed form is `(model)`.
-- **A partial run lists its certified line members, at most 64**, and
-  certifies ⊤ with one saturation when ⊤ is in R: L6's trivial line, for the
-  price of one fixpoint.
+- **A partial run lists its certified line members**, under the 100-line rule
+  (§ 4.1), and certifies ⊤ with one saturation when ⊤ is in R: L6's trivial
+  line, for the price of one fixpoint.
 - **`work` is printed by default**, since it does not depend on the machine.
   The wall clock stays behind `-s` and `-t`. It is the one row C4 lets a
   speed lever move, so `jobs_invariance`, `id_order_invariance` and
@@ -520,7 +592,8 @@ risk list makes any of them a followup.
   reader moves in the switch commit: the Rust tests, and the `utils/` scripts
   that read `verdict` or `stats`.
 - **The `verdict` event becomes `region`**, and the walk's event kinds go.
-- **A partial run writes one `note:` to stderr** and exits 0.
+- **A partial run writes one `note:` to stderr** and exits 0, and so does a
+  claim the run did not check (§ 9).
 - **P1e2.3, in passing.** The switch closes S1 (its hint goes with `-e`), S2,
   S3, S5 (with `-m` and `-E`), S6, S7 and S9 (with the tree). S4 and S8 are
   checked in T1e2.1a.5.2. P1 is not a read-out. Q-M1e2.6 gets this note when
@@ -537,7 +610,9 @@ risk list makes any of them a followup.
   (where a program's claims are now checked by `solve`), `guide_transcripts.rs`
   (`docs/guide/04` and the top-level `README.md`), `embedding.rs` and
   `docs/api/rust.md`, `acceptance_cli.rs`, `cli_semantics.rs`, `expect_cli.rs`,
-  `test_cli.rs`, `region_modes.rs`, `model_set_report.rs` and `models_grid.rs`;
+  `test_cli.rs`, `region_modes.rs` (whose
+  `single_exits_like_a_false_expectation` pins `--single`'s exit 1, which
+  ruling 1 makes 0), `model_set_report.rs` and `models_grid.rs`;
 - **the summary and the dump**: `summary_properties.rs`, whose identities
   become the region's (k_c ≥ k_s; line sizes ≤ k_s; Σ layer visits =
   saturations), `answer_dump.rs`, `wrong_answers.rs`, `leftover_probe.rs`,

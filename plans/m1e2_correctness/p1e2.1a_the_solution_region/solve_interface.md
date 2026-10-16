@@ -145,11 +145,13 @@ ASK     (describe, the default) | -n N | --single
   release may change the route, and with it which N are printed, but never
   whether they are in R. `-n 1` is *any*.
 - **`--single`** judges the expectation it states, in today's three words
-  (ruling (i)). **1** is `Solution`, exit 0. **≥ 2** is `Ambiguity`, exit 1,
-  and prints two of the states. **0** is `Contradiction`, or `Open` when every
-  alive node owes, exit 1. **Undecided within the budget** is `NOT CHECKED`,
-  exit 1, with its stderr line, as a false `:expect` has
-  ([M1d S1d.4.3](../../../docs/history/m1d_satisfiability/the_vocabulary.md)).
+  (ruling (i)). **1** is `Solution`. **≥ 2** is `Ambiguity`, and prints two of
+  the states. **0** is `Contradiction`, or `Open` when every alive node owes.
+  **Undecided within the budget** says so. *Approved with exit 1 for all but
+  `Solution`; **every one exits 0 since the user's ruling of 2026-10-16***
+  ([`read_out.md` § 9](read_out.md#9-exit-codes)): *"any solution of ein
+  program is successful execution of ein tool"*. A program that expects one
+  solution states it as a claim, and a refuted claim exits 1.
 - **`--minimal` and `--maximal`** are mutually exclusive, and so are `-n` and
   `--single`.
 - **What every run prints beside its answer** is the route it took, the
@@ -407,7 +409,7 @@ states, and it says so.
 
 | question | command | what you get |
 |---|---|---|
-| Exactly one solution, for a program that states what it requires (obligations) | `ein solve F --single` | `Solution`, exit 0; `Ambiguity` with two states, exit 1; `Contradiction` or `Open`, exit 1 |
+| Exactly one solution, for a program that states what it requires (obligations) | `ein solve F --single` | `Solution`; `Ambiguity` with two states; `Contradiction` or `Open`. Each exits 0 ([`read_out.md` § 9](read_out.md#9-exit-codes), 2026-10-16) |
 | Exactly one complete solution, for any program, restrictions only included | `ein solve F --maximal --single` | the same words, about the maximal line |
 | Is the minimal guess unique? | `ein solve F --minimal --single` | the same, about the minimal line |
 | The same check, stated in the program | `(solution …)` in F, then `ein test F` | S1e2.1a.4's form. The runner picks `--single`'s route |
