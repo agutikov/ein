@@ -26,7 +26,7 @@ use ein_infer::read_out::{self, ReadOut};
 use ein_ir::Ast;
 
 /// The `solve` options a region mode takes. Every other one is the walk's.
-const TAKES: [&str; 17] = [
+const TAKES: [&str; 20] = [
     "file",
     "solutions",
     "max-time",
@@ -44,6 +44,9 @@ const TAKES: [&str; 17] = [
     "print-final-positive",
     "print-final-hfacts",
     "diff-models",
+    "trace",
+    "no-diagrams",
+    "hyp-stats",
 ];
 
 /// Whether this `solve` run asks a region mode.
@@ -75,8 +78,9 @@ pub fn mode_of(m: &ArgMatches) -> Mode {
 
 /// The options the header leaves out, with their values: `-j`, because the
 /// same question at another `-j` prints the same lines (C4), and the files a
-/// run writes, because writing one changes nothing printed.
-const UNSHOWN: [&str; 4] = ["-j", "--jobs", "--json-summary", "--dump-answer"];
+/// run writes, because writing one changes nothing printed. `--no-diagrams`,
+/// which shapes the trace alone, is left out too, as a flag with no value.
+const UNSHOWN: [&str; 5] = ["-j", "--jobs", "--json-summary", "--dump-answer", "--trace"];
 
 /// The arguments after `command`, as typed, less [`UNSHOWN`]: the header
 /// names the question.
@@ -89,6 +93,9 @@ pub fn header_argv(command: &str) -> String {
     let mut shown: Vec<&str> = Vec::new();
     let mut it = args[start..].iter();
     while let Some(a) = it.next() {
+        if a == "--no-diagrams" {
+            continue;
+        }
         if UNSHOWN.contains(&a.as_str()) {
             it.next();
             continue;
@@ -172,6 +179,19 @@ pub fn run(m: &ArgMatches) -> i32 {
     else {
         return 1;
     };
+    // `--trace` tells root's derivation first, so root is saturated here, with
+    // its firings kept; the run's own preparation then finds it saturated.
+    let trace = m.get_one::<String>("trace").cloned();
+    let root_firings = match trace {
+        Some(_) => match ein_infer::region::root_firings(&mut kb, &mut terms, &ast) {
+            Ok(f) => Some(f),
+            Err(e) => {
+                eprintln!("{e}");
+                return 1;
+            }
+        },
+        None => None,
+    };
     let r = match read_out::run(&mut kb, &mut terms, &ast, &opts) {
         Ok(r) => r,
         Err(e) => {
@@ -193,6 +213,24 @@ pub fn run(m: &ArgMatches) -> i32 {
     if let Err(e) = extras(m, &r, &mut kb, &mut terms, &ast, want.as_ref()) {
         eprintln!("{e}");
         return 1;
+    }
+    if let (Some(path), Some(firings)) = (trace.as_deref(), root_firings.as_deref()) {
+        let diagrams = !m.get_flag("no-diagrams");
+        let written = trace_markdown(
+            &r,
+            &mut kb,
+            &mut terms,
+            &ast,
+            firings,
+            &file,
+            opts.budget,
+            diagrams,
+        )
+        .and_then(|md| std::fs::write(path, md).map_err(|e| e.to_string()));
+        if let Err(e) = written {
+            crate::solve::artefact_failed("trace", path, e);
+            return 1;
+        }
     }
     if summary_path.is_none() && dump.is_none() {
         return code;
@@ -260,6 +298,9 @@ fn extras(
     .filter(|(flag, _)| m.get_flag(flag))
     .map(|(_, d)| d)
     .collect();
+    if m.get_flag("hyp-stats") {
+        universe(r, terms);
+    }
     if !matches!(form, Some("key" | "grid")) && dumps.is_empty() && want.is_none() {
         return Ok(());
     }
@@ -377,6 +418,170 @@ fn extras(
             let _ = n;
         })
         .map_err(|e| e.to_string())
+}
+
+/// `-H`: H, the universe — every candidate, by relation, and those dead
+/// alone, which no state of R can hold (`read_out.md` § 8.6, P1e2.3's S4).
+fn universe(r: &ReadOut, terms: &Terms) {
+    let a = &r.answer;
+    let dead: Option<&[u32]> = r.described().map(|d| d.dead_alone_set.as_slice());
+    let mut by_rel: Vec<(String, Vec<(usize, &str)>)> = Vec::new();
+    for (i, c) in a.candidates.iter().enumerate() {
+        let rel = terms.sym(terms.facts.get(c.fact).0).to_string();
+        match by_rel.iter_mut().find(|(r, _)| *r == rel) {
+            Some((_, v)) => v.push((i, c.text.as_str())),
+            None => by_rel.push((rel, vec![(i, c.text.as_str())])),
+        }
+    }
+    by_rel.sort_by(|x, y| x.0.cmp(&y.0));
+    let is_dead = |i: usize| dead.is_some_and(|d| d.contains(&(i as u32)));
+    let n_dead = dead.map_or(0, <[u32]>::len);
+    println!();
+    println!(
+        "H — the universe: {} candidate{} over {} relation{}{}",
+        a.candidates.len(),
+        if a.candidates.len() == 1 { "" } else { "s" },
+        by_rel.len(),
+        if by_rel.len() == 1 { "" } else { "s" },
+        match dead {
+            Some(_) => format!(", {n_dead} dead alone"),
+            None =>
+                ", dead alone not known: a mode does not visit every candidate alone".to_string(),
+        }
+    );
+    for (rel, cands) in &by_rel {
+        let d = cands.iter().filter(|(i, _)| is_dead(*i)).count();
+        println!(
+            "  {rel:<16}{} candidate{}{}",
+            cands.len(),
+            if cands.len() == 1 { "" } else { "s" },
+            if dead.is_some() {
+                format!(", {d} dead alone")
+            } else {
+                String::new()
+            }
+        );
+        let width = cands
+            .iter()
+            .map(|(_, t)| t.chars().count())
+            .max()
+            .unwrap_or(0);
+        for (i, text) in cands {
+            if is_dead(*i) {
+                println!("    {text:<width$}   dead alone");
+            } else {
+                println!("    {text}");
+            }
+        }
+    }
+}
+
+/// `--trace FILE.md`: root's derivation, then each state stdout printed,
+/// derived from its first minimal commitment, then N and the owing frontier
+/// (`read_out.md` § 8.4).
+#[allow(clippy::too_many_arguments)]
+fn trace_markdown(
+    r: &ReadOut,
+    kb: &mut ein_core::Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    root_firings: &[ein_infer::Firing],
+    file: &str,
+    budget: u64,
+    diagrams: bool,
+) -> Result<String, String> {
+    use ein_render::trace::region::{DeadTrace, RegionTrace, StateTrace, region_markdown};
+    let a = &r.answer;
+    let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
+    let name = |set: &[u32]| -> String {
+        if set.is_empty() {
+            "∅".to_string()
+        } else {
+            let v: Vec<&str> = set.iter().map(|&b| cands[b as usize].as_str()).collect();
+            v.join(", ")
+        }
+    };
+    let set_name = |set: &[u32]| -> String {
+        if set.is_empty() {
+            "∅".to_string()
+        } else {
+            format!("{{{}}}", name(set))
+        }
+    };
+    let text = ein_render::read_out::render(
+        r,
+        &ein_render::read_out::Options {
+            command: "solve",
+            argv: &header_argv("solve"),
+            file,
+            budget,
+            uncut: false,
+        },
+    );
+    let head: Vec<String> = text
+        .stdout
+        .lines()
+        .skip(2)
+        .take_while(|l| !l.is_empty())
+        .map(str::to_string)
+        .collect();
+    let root = ein_render::trace::steps_of(ast, terms, root_firings, kb, diagrams, &[]);
+    let mut states = Vec::new();
+    let k = r.states.len();
+    {
+        let mut nodes = ein_infer::region::Nodes::new(kb, terms, ast, &a.candidates)
+            .map_err(|e| e.to_string())?;
+        for &i in &text.shown {
+            let s = &r.states[i];
+            let from = s.generators.first().unwrap_or(&s.rep).clone();
+            let facts: Vec<ein_core::FactId> = from
+                .iter()
+                .map(|&b| a.candidates[b as usize].fact)
+                .collect();
+            let steps = nodes
+                .with_fixpoint_traced(&facts, |kb, terms, firings| {
+                    ein_render::trace::steps_of(ast, terms, firings, kb, diagrams, &facts)
+                })
+                .map_err(|e| e.to_string())?;
+            states.push(StateTrace {
+                title: ein_render::read_out::state_title(i, k, s, &cands),
+                commitment: name(&from),
+                steps,
+            });
+        }
+    }
+    let dead = r
+        .described()
+        .map(|d| {
+            d.dead
+                .iter()
+                .map(|x| DeadTrace {
+                    set: set_name(&x.set),
+                    core: x.core.clone(),
+                    refuted_by: x.refuted_by.clone(),
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    let owing = match &r.listing {
+        ein_infer::read_out::Listing::Owing(f) => f
+            .iter()
+            .map(|o| (set_name(&o.node.set), o.node.owed.clone()))
+            .collect(),
+        _ => Vec::new(),
+    };
+    let listed = r.listed().count();
+    Ok(region_markdown(
+        &RegionTrace {
+            head,
+            root,
+            untraced: listed.saturating_sub(states.len()),
+            states,
+            dead,
+            owing,
+        },
+        diagrams,
+    ))
 }
 
 /// `answer.txt`: the read-out with no listing cut — where stdout's cut says

@@ -152,6 +152,8 @@ pub struct Described {
     pub dead: Vec<Dead>,
     /// Candidates dead alone, which no state can hold.
     pub dead_alone: u64,
+    /// Which they are, as candidate indices — those met, on a partial run.
+    pub dead_alone_set: Vec<u32>,
     /// Some node met owes: the program states an obligation that bites.
     pub owing_met: bool,
     /// Some node met is dead.
@@ -368,10 +370,12 @@ pub fn of_downset(d: &DownSet) -> Described {
     } else {
         Vec::new()
     };
-    let dead_alone = points
+    let dead_alone_set: Vec<u32> = points
         .iter()
         .filter(|p| p.set.len() == 1 && p.status & DEAD != 0)
-        .count() as u64;
+        .map(|p| p.set[0])
+        .collect();
+    let dead_alone = dead_alone_set.len() as u64;
     Described {
         candidates: d.candidates.clone(),
         monotonicity: d.monotonicity.clone(),
@@ -402,6 +406,7 @@ pub fn of_downset(d: &DownSet) -> Described {
             })
             .collect(),
         dead_alone,
+        dead_alone_set,
         owing_met: points.iter().any(|p| p.owes > 0) || d.top.as_ref().is_some_and(|t| t.owes > 0),
         dead_met: points.iter().any(|p| p.status & DEAD != 0),
         states,
@@ -582,6 +587,7 @@ pub fn of_cube(r: &Region) -> Described {
                 .collect()
         },
         dead_alone: (0..n).filter(|&b| !alive(1u64 << b)).count() as u64,
+        dead_alone_set: (0..n as u32).filter(|&b| !alive(1u64 << b)).collect(),
         owing_met: r.status.iter().any(|s| s & OWING != 0),
         dead_met: r.status.iter().any(|s| s & DEAD != 0),
         states,

@@ -58,6 +58,9 @@ pub struct Text {
     pub stdout: String,
     pub stderr: Vec<String>,
     pub code: i32,
+    /// The states stdout printed, as indices into `ReadOut::states` — what
+    /// `--trace` traces.
+    pub shown: Vec<usize>,
 }
 
 /// `261 982`: digit groups of three, the corpus pages' spelling.
@@ -107,6 +110,7 @@ struct Out {
     stderr: Vec<String>,
     listed: usize,
     uncut: bool,
+    shown: Vec<usize>,
 }
 
 impl Out {
@@ -192,6 +196,7 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
         stderr: Vec::new(),
         listed: 0,
         uncut: o.uncut,
+        shown: Vec::new(),
     };
     let a = &r.answer;
     let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
@@ -247,6 +252,7 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
         stdout: out.text,
         stderr: out.stderr,
         code,
+        shown: out.shown,
     }
 }
 
@@ -746,6 +752,18 @@ fn on_lines(s: &Listed) -> &'static str {
     }
 }
 
+/// A state's title — its number, its size, its lines, and the commitment
+/// that reaches it or how many do — as the trace heads its section.
+pub fn state_title(i: usize, k: usize, s: &Listed, cands: &[String]) -> String {
+    let c = state_comment(i, k, s, cands);
+    let t = c.trim_start_matches(";; ");
+    let mut chars = t.chars();
+    match chars.next() {
+        Some(f) => f.to_uppercase().collect::<String>() + chars.as_str(),
+        None => String::new(),
+    }
+}
+
 /// A state's comment in R's listing: its number, its size, its lines, and
 /// the commitment that reaches it or how many do.
 fn state_comment(i: usize, k: usize, s: &Listed, cands: &[String]) -> String {
@@ -816,7 +834,7 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
                 "  ;; the line members this run certified. Not a (region …): read back, it \
                  would claim these are all of R.",
             );
-            let listed: Vec<&Listed> = r.states.iter().filter(|s| s.listed).collect();
+            let listed: Vec<(usize, &Listed)> = r.listed().collect();
             members(out, &listed, cands, None);
             if *others > 0 {
                 out.line(format!(
@@ -835,7 +853,7 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
                     Which::Minimal => Some("minimal"),
                     Which::Maximal => Some("maximal"),
                 };
-                let all: Vec<&Listed> = r.states.iter().collect();
+                let all: Vec<(usize, &Listed)> = r.states.iter().enumerate().collect();
                 members(out, &all, cands, tag);
             }
         }
@@ -905,6 +923,7 @@ fn region(out: &mut Out, states: &[Listed], cands: &[String]) {
     let total = 2 + blocks.iter().map(Vec::len).sum::<usize>() - 1;
     if total <= out.left() {
         out.listed += total;
+        out.shown = (0..k).collect();
         out.line("  (region");
         let mut lines: Vec<String> = blocks.into_iter().flatten().collect();
         if let Some(last) = lines.last_mut() {
@@ -927,6 +946,7 @@ fn region(out: &mut Out, states: &[Listed], cands: &[String]) {
         group(total as u64)
     ));
     let shown = out.blocks(&blocks);
+    out.shown = (0..shown.min(k)).collect();
     let n_merged = blocks.len() - k;
     let mut rest: Vec<String> = Vec::new();
     if shown < k {
@@ -947,10 +967,10 @@ fn region(out: &mut Out, states: &[Listed], cands: &[String]) {
 
 /// States listed as members, not as a region: a line, `-n`'s cut, `--single`,
 /// a partial run's certified members.
-fn members(out: &mut Out, states: &[&Listed], cands: &[String], line: Option<&str>) {
+fn members(out: &mut Out, states: &[(usize, &Listed)], cands: &[String], line: Option<&str>) {
     let k = states.len();
     let mut blocks: Vec<Vec<String>> = Vec::new();
-    for (i, s) in states.iter().enumerate() {
+    for (i, (_, s)) in states.iter().enumerate() {
         let what = if s.closure.is_empty() {
             "∅, root itself".to_string()
         } else {
@@ -984,6 +1004,7 @@ fn members(out: &mut Out, states: &[&Listed], cands: &[String], line: Option<&st
         blocks.push(b);
     }
     let shown = out.blocks(&blocks);
+    out.shown = states[..shown].iter().map(|(i, _)| *i).collect();
     if shown < k {
         out.line(format!(
             "  ;; … {}: --dump-answer DIR writes the listing uncut, to DIR/answer.txt",

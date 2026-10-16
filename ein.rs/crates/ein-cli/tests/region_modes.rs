@@ -169,7 +169,7 @@ fn the_walks_options_are_refused_beside_a_mode() {
             vec!["--region-budget", "10", "--events", "/tmp/x.jsonl"],
             "--events",
         ),
-        (vec!["--maximal", "--trace", "/tmp/x.md"], "--trace"),
+        (vec!["--maximal", "--reorder"], "--reorder"),
     ] {
         let mut a = vec!["solve", THREE];
         a.extend(args.iter());
@@ -341,4 +341,61 @@ fn the_listed_states_print_as_asked() {
         "{}",
         g.out
     );
+}
+
+/// `-H` and `--trace` under a region mode — T1e2.1a.5.2's seventh step,
+/// `read_out.md` § 8.4 and § 8.6.
+#[test]
+fn the_universe_and_the_trace() {
+    let zebra = "examples/branching/05_mini_zebra.ein";
+    let r = ein(&["solve", zebra, "--region-budget", "524288", "-H"]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    assert!(
+        r.out
+            .contains("H — the universe: 9 candidates over 1 relation, 6 dead alone"),
+        "{}",
+        r.out
+    );
+    assert_eq!(r.out.matches("   dead alone\n").count(), 6, "{}", r.out);
+    let m = ein(&["solve", zebra, "--maximal", "-H"]);
+    assert!(m.out.contains("dead alone not known"), "{}", m.out);
+
+    let dir = scratch("trace");
+    std::fs::create_dir_all(&dir).unwrap();
+    let md = dir.join("t.md");
+    let p = md.to_string_lossy().to_string();
+    let bare = ein(&["solve", zebra, "--region-budget", "524288"]);
+    let t = ein(&["solve", zebra, "--region-budget", "524288", "--trace", &p]);
+    assert_eq!(
+        (t.code, &t.out, &t.err),
+        (bare.code, &bare.out, &bare.err),
+        "--trace moved the read-out"
+    );
+    let text = std::fs::read_to_string(&md).unwrap();
+    for want in [
+        "# Region trace",
+        "  states (k_s)      5",
+        "## Root — 24 steps",
+        "## State 5 of 5 — 3 candidates · maximal · 4 commitments, 3 minimal",
+        "Assuming **(co-located Bob Coffee), (co-located Bob Dog)**.",
+        "## N — 6 minimal dead sets",
+    ] {
+        assert!(text.contains(want), "no `{want}` in the trace:\n{text}");
+    }
+    // An empty R that owes is traced through its frontier.
+    let o = ein(&[
+        "solve",
+        "tests/stdlib/closure/03_closed_and_owing.ein",
+        "--region-budget",
+        "524288",
+        "--trace",
+        &p,
+    ]);
+    assert_eq!(o.code, 0, "{}", o.err);
+    let text = std::fs::read_to_string(&md).unwrap();
+    assert!(
+        text.contains("## Owing — 1 node") && text.contains("- **∅** owes"),
+        "{text}"
+    );
+    let _ = std::fs::remove_dir_all(&dir);
 }

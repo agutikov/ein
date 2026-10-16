@@ -381,6 +381,28 @@ pub(crate) struct Prepared {
     pub memo: SharedMemo,
 }
 
+/// Saturate `root`, a **freshly loaded** program, and return the firings
+/// that did it, in order — root's derivation, which a region trace tells
+/// before any commitment. The same saturation `prepare` runs.
+pub fn root_firings(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+) -> Result<Vec<crate::firing::Firing>, SolveError> {
+    let mut off = Events::off();
+    let mut firings = Vec::new();
+    let mut s = Session {
+        kb: root,
+        terms,
+        ast,
+        events: &mut off,
+        memo: SharedMemo::default(),
+    };
+    let mut sat = Saturator::new(&mut s)?;
+    sat.saturate(&mut s, None, &mut |f| firings.push(f.clone()))?;
+    Ok(firings)
+}
+
 /// Saturate root, take the universe at its fixpoint, and classify the plans.
 /// Root is written by its own saturation and by nothing else.
 pub(crate) fn prepare(root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Prepared, SolveError> {
@@ -640,6 +662,29 @@ impl<'a> Nodes<'a> {
         out
     }
 
+    /// `read` the fixpoint of root plus `facts`, with the firings that
+    /// derived what it holds beyond root, in order — a state's trace.
+    pub fn with_fixpoint_traced<R>(
+        &mut self,
+        facts: &[FactId],
+        read: impl FnOnce(&Kb, &mut Terms, &[crate::firing::Firing]) -> R,
+    ) -> Result<R, SolveError> {
+        self.terms.provs.open_fork();
+        let mut firings = Vec::new();
+        let out = fixpoint_firing(
+            self.root,
+            &self.snapshot,
+            self.terms,
+            self.ast,
+            &self.memo,
+            facts,
+            &mut |f| firings.push(f.clone()),
+        )
+        .map(|kb| read(&kb, self.terms, &firings));
+        self.terms.provs.discard_fork();
+        out
+    }
+
     /// `read` the fixpoint of root plus `facts`.
     pub fn with_fixpoint<R>(
         &mut self,
@@ -671,6 +716,19 @@ fn fixpoint(
     memo: &SharedMemo,
     facts: &[FactId],
 ) -> Result<Kb, SolveError> {
+    fixpoint_firing(root, snapshot, terms, ast, memo, facts, &mut |_| {})
+}
+
+/// [`fixpoint`], handing every firing to `sink` — what a trace is made of.
+fn fixpoint_firing(
+    root: &Kb,
+    snapshot: &Snapshot,
+    terms: &mut Terms,
+    ast: &Ast,
+    memo: &SharedMemo,
+    facts: &[FactId],
+    sink: &mut dyn FnMut(&crate::firing::Firing),
+) -> Result<Kb, SolveError> {
     let mut off = Events::off();
     let mut fork = root.branch();
     for &h in facts {
@@ -690,7 +748,7 @@ fn fixpoint(
         };
         let delta = snapshot.new_facts_of(s.kb);
         let mut sat = Saturator::resume(&mut s, snapshot, delta)?;
-        sat.saturate(&mut s, None, &mut |_| {})?;
+        sat.saturate(&mut s, None, sink)?;
     }
     Ok(fork)
 }

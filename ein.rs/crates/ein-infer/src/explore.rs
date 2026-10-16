@@ -972,6 +972,7 @@ impl<'a> Space<'a> {
                 })
                 .collect(),
             dead_alone: dead.iter().filter(|d| d.len() == 1).count() as u64,
+            dead_alone_set: dead.iter().filter(|d| d.len() == 1).map(|d| d[0]).collect(),
             owing_met: met.iter().any(|(_, s)| s.owes > 0),
             dead_met: !dead.is_empty(),
             states,

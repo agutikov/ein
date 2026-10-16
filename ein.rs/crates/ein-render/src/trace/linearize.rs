@@ -202,6 +202,28 @@ fn step_from_firing(
     step
 }
 
+/// The steps of `firings`, numbered from 1, as the walk's trace builds them:
+/// what a region trace tells for root and for each state.
+pub fn steps_of(
+    ast: &Ast,
+    terms: &Terms,
+    firings: &[Firing],
+    kb: &Kb,
+    diagrams: bool,
+    commitment: &[FactId],
+) -> Vec<TraceStep> {
+    build_steps(
+        ast,
+        terms,
+        firings,
+        Some(kb),
+        kb,
+        diagrams,
+        false,
+        commitment,
+    )
+}
+
 #[allow(clippy::too_many_arguments)]
 fn build_steps(
     ast: &Ast,

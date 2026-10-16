@@ -30,7 +30,7 @@ impl Mode {
     }
 }
 
-fn dot_block(dot: Option<&String>) -> Vec<String> {
+pub(crate) fn dot_block(dot: Option<&String>) -> Vec<String> {
     match dot.filter(|d| !d.is_empty()) {
         None => Vec::new(),
         Some(d) => vec![
@@ -42,7 +42,7 @@ fn dot_block(dot: Option<&String>) -> Vec<String> {
     }
 }
 
-fn premises_line(step: &TraceStep) -> String {
+pub(crate) fn premises_line(step: &TraceStep) -> String {
     let labels = step.premise_labels();
     if !labels.is_empty() {
         let quoted: Vec<String> = labels.iter().map(|p| format!("`{p}`")).collect();
