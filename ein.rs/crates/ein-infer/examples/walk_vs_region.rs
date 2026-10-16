@@ -23,196 +23,23 @@
 //! cargo run --release -p ein-infer --example walk_vs_region -- [--jobs J] [FILE…] > rows.jsonl
 //! ```
 
+#[path = "shared/known.rs"]
+mod known;
+
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
-use ein_core::{Kb, Terms};
 use ein_corpus::repo_root;
 use ein_infer::Events;
-use ein_infer::downset;
-use ein_infer::region::{self, Outcome};
+use ein_infer::region;
 use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
 use ein_infer::verdict::{Answer, Verdict};
-use ein_ir::{Ast, load, parse};
+use known::{Known, State, closure_of, known, loaded};
 use rustc_hash::FxHashMap;
 use serde_json::{Value, json};
 
-/// Route 1's budget here: enough for `zebra.ein` (270 912 visits).
-const BUDGET: u64 = 1 << 20;
 /// The walk's, per variant.
 const ENTERINGS: u64 = 1 << 21;
-
-type State = Vec<u32>;
-
-fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
-    let text = std::fs::read_to_string(path).ok()?;
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let forms = parse(&mut ast, &text, path.to_str()).ok()?;
-    let kb = load(&mut ast, &mut terms, &forms, path.parent()).ok()?;
-    Some((kb, terms, ast))
-}
-
-/// R and its neighbours, as sets of closures.
-#[derive(Default)]
-struct Known {
-    route: u8,
-    monotone: bool,
-    candidates: Vec<String>,
-    k_c: u64,
-    alive: u64,
-    /// Every state of R.
-    r: BTreeSet<State>,
-    /// The states of R's maximal line.
-    max: BTreeSet<State>,
-    min: BTreeSet<State>,
-    /// Alive, owing, and no alive commitment one fact up: what the walk can
-    /// record as an open state.
-    open_max: BTreeSet<State>,
-    alive_states: u64,
-    visited: u64,
-    /// The status of every commitment the route decided; any other is dead by
-    /// the theorem (route 1) or does not occur (route 2 holds them all).
-    status: FxHashMap<State, u8>,
-}
-
-fn known(path: &Path, jobs: usize) -> Option<Known> {
-    let (mut kb, mut terms, ast) = loaded(path)?;
-    let d = downset::compute(
-        &mut kb,
-        &mut terms,
-        &ast,
-        &downset::Options {
-            budget: u64::MAX,
-            max_visits: BUDGET,
-            jobs,
-        },
-    )
-    .ok()?;
-    let candidates: Vec<String> = d.candidates.iter().map(|c| c.text.clone()).collect();
-    if let Some(desc) = &d.description {
-        let mut k = Known {
-            route: 1,
-            monotone: true,
-            candidates,
-            k_c: desc.k_c,
-            visited: d.points.len() as u64,
-            ..Known::default()
-        };
-        k.status = d
-            .points
-            .iter()
-            .map(|p| (p.set.to_vec(), p.status))
-            .collect();
-        let index: FxHashMap<&[u32], usize> = d
-            .points
-            .iter()
-            .enumerate()
-            .map(|(i, p)| (&p.set[..], i))
-            .collect();
-        let alive = |s: &[u32]| {
-            index
-                .get(s)
-                .is_some_and(|&i| d.points[i].status & region::DEAD == 0)
-        };
-        let mut alive_states: BTreeSet<State> = BTreeSet::new();
-        for p in &d.points {
-            if p.status & region::DEAD != 0 {
-                continue;
-            }
-            k.alive += 1;
-            alive_states.insert(p.closure.to_vec());
-            if p.in_r() {
-                k.r.insert(p.closure.to_vec());
-            } else {
-                let up = (0..k.candidates.len() as u32)
-                    .filter(|b| p.set.binary_search(b).is_err())
-                    .any(|b| {
-                        let mut s = p.set.to_vec();
-                        let at = s.partition_point(|&x| x < b);
-                        s.insert(at, b);
-                        alive(&s)
-                    });
-                if !up {
-                    k.open_max.insert(p.closure.to_vec());
-                }
-            }
-        }
-        k.alive_states = alive_states.len() as u64;
-        for &i in &desc.maximal {
-            k.max.insert(d.points[i as usize].closure.to_vec());
-        }
-        for &i in &desc.minimal {
-            k.min.insert(d.points[i as usize].closure.to_vec());
-        }
-        return Some(k);
-    }
-    if d.n() > region::DEFAULT_LIMIT as usize || d.monotonicity.is_monotone() {
-        return None;
-    }
-    let (mut kb, mut terms, ast) = loaded(path)?;
-    let opts = region::Options {
-        jobs,
-        ..region::Options::default()
-    };
-    let Ok(Outcome::Region(r)) = region::compute(&mut kb, &mut terms, &ast, &opts, &mut |_| {})
-    else {
-        return None;
-    };
-    let n = r.n();
-    let bits = |m: u64| -> State { (0..n as u32).filter(|b| m >> b & 1 == 1).collect() };
-    let mut k = Known {
-        route: 2,
-        monotone: false,
-        candidates,
-        k_c: r.topology.size_r,
-        visited: 1 << n,
-        ..Known::default()
-    };
-    let mut alive_states: BTreeSet<State> = BTreeSet::new();
-    for m in 0..(1u64 << n) {
-        let st = r.status[m as usize];
-        k.status.insert(bits(m), st);
-        if st & region::DEAD != 0 {
-            continue;
-        }
-        k.alive += 1;
-        let closure = bits(r.nodes[m as usize].closure);
-        alive_states.insert(closure.clone());
-        if st == 0 {
-            k.r.insert(closure);
-        } else {
-            let up = (0..n)
-                .any(|b| m >> b & 1 == 0 && r.status[(m | 1 << b) as usize] & region::DEAD == 0);
-            if !up {
-                k.open_max.insert(closure);
-            }
-        }
-    }
-    k.alive_states = alive_states.len() as u64;
-    for &m in &r.topology.maximal {
-        k.max.insert(bits(r.nodes[m as usize].closure));
-    }
-    for &m in &r.topology.minimal {
-        k.min.insert(bits(r.nodes[m as usize].closure));
-    }
-    Some(k)
-}
-
-/// The candidates a recorded KB holds, by text.
-fn closure_of(kb: &Kb, terms: &Terms, index: &FxHashMap<&str, u32>) -> State {
-    let mut v: Vec<u32> = kb
-        .facts()
-        .filter_map(|f| {
-            index
-                .get(ein_infer::events::sexpr(terms, f).as_str())
-                .copied()
-        })
-        .collect();
-    v.sort_unstable();
-    v.dedup();
-    v
-}
 
 fn run_walk(path: &Path, k: &Known, variant: &str, jobs: usize) -> Value {
     let Some((mut kb, mut terms, ast)) = loaded(path) else {
@@ -382,7 +209,7 @@ fn main() {
             .unwrap_or(&path)
             .to_string_lossy()
             .to_string();
-        let Some(k) = known(&path, jobs) else {
+        let Some(k) = known(&path, jobs, false) else {
             continue;
         };
         let mut walks = serde_json::Map::new();
