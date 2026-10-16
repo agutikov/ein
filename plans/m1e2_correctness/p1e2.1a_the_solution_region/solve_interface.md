@@ -2,10 +2,11 @@
 
 **Stage:** [S1e2.1a.9](s1e2.1a.9_solve_describes_the_region.md), task
 T1e2.1a.9.2, second version.
-**Status:** proposed 2026-10-16, after the user's ruling of the same day
-(§ 0). It replaces [`solve_flags.md`](solve_flags.md) § 5 (`ein walk`) and
-§ 10's route-3 bullet, and keeps every other ruling on that page. **It waits
-for the user's review. Nothing in the parser has moved.**
+**Status:** **ruled 2026-10-16, all of it**, § 7's decisions included
+(§ 0.1). It was proposed the same day, after the ruling in § 0. It replaces
+[`solve_flags.md`](solve_flags.md) § 5 (`ein walk`) and § 10's route-3 bullet,
+and keeps every other ruling on that page. T1e2.1a.9.4 builds it. **Nothing
+in the parser has moved yet.**
 **How to read it:** § 1 is the contract every mode is held to. §§ 2–3 are the
 reference: the commands and flags, then how each mode is computed and what it
 costs. § 4 is the guide, question → command. §§ 5–7 say why two modes cannot
@@ -62,6 +63,27 @@ What it settles:
   follows.** If R is the oracle's R, a node is `sat(root ∪ C)` with nothing
   the search wrote into it. So W9's and W11's `right` blocks are restated at
   S1e2.1a.7, and root is never written.
+
+### 0.1 The approval
+
+The user, 2026-10-16, on this page, verbatim:
+
+> All - yes, walk main principle was mining and reusing all possible
+> information in favor of speed. Now we put the correctness and consistency as
+> an absolute requirement and switch from searching the solution to
+> exploration of the region in general. So everything you said make sense.
+
+That is the change of principle the page follows from, in the user's words:
+
+- **the walk's principle** was *mine and reuse all possible information, for
+  speed*;
+- **the principle now** is that correctness and consistency are absolute, and
+  the task is to explore the region rather than to search for a solution.
+
+Speed is still sought, but only through licences (§ 3.1), the information a
+theorem proves safe to reuse. The walk's writes, its `complete()` and its
+depth cap reused information no theorem covered, and that is where
+[`walk_and_region.md`](walk_and_region.md)'s five reasons came from.
 
 ## 1. The contract
 
@@ -471,6 +493,8 @@ S1e2.1c.5 no longer asks whether the walk is kept: it is not. What is left of
 that stage is P1e2.2's re-scoping.
 
 ## 7. Decided here unless the user objects
+
+**Ruled 2026-10-16: yes, every item** (§ 0.1).
 
 - **`-n` prints the same states under every lever** (C4), so every order
   lever is retired: `-o`, `-z`, `-d`, and the five order fields. The

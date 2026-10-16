@@ -80,7 +80,7 @@ constrained-reasoning research.
   oracle node for node, and it counts `zebra.ein`'s R as one state of 261 982
   commitments. `ein solve` does not reach it yet. The interface that will is
   [`solve_interface.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md),
-  under review. It has one tool for R, `ein solve`, whose modes each do the
+  approved 2026-10-16. It has one tool for R, `ein solve`, whose modes each do the
   least work their question needs, and `ein oracle` for the cube. There is no
   `ein walk`: the user withdrew it on 2026-10-16, because two commands must
   never give inconsistent answers.

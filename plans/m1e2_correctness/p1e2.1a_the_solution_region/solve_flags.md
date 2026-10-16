@@ -6,8 +6,8 @@ T1e2.1a.9.2.
 day** (§ 9). Question 3 came after the analysis the user asked for first,
 [`walk_and_region.md`](walk_and_region.md). The same ruling **withdrew
 question 2's `ein walk`** and asked for one tool. The interface that replaces
-§ 5 here is [`solve_interface.md`](solve_interface.md), which keeps every
-other ruling on this page. **Nothing in the parser has moved.**
+§ 5 here is [`solve_interface.md`](solve_interface.md), approved the same day.
+It keeps every other ruling on this page. **Nothing in the parser has moved.**
 **What it stands on:** route 1 exists in the library since T1e2.1a.9.3
 ([`ein_infer::downset`](../../../ein.rs/crates/ein-infer/src/downset.rs)) and is held
 to the oracle node for node. How far it reaches is
