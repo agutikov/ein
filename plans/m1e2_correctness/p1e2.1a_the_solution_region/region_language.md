@@ -1,9 +1,10 @@
 # The language states a region — the grammar diff for the ruling
 
 **Stage:** [S1e2.1a.4](s1e2.1a.4_the_language.md), task T1e2.1a.4.1.
-**Status:** proposed 2026-10-16. Six questions for the user (§ 9), and the
-rest decided here unless the user objects (§ 10). **Nothing in the parser has
-moved.**
+**Status:** proposed 2026-10-16, and **all six questions ruled the same day**
+(§ 9), with `(merged …)` respelled by the user. The user asked to see real
+examples before anything is built: [`region_examples.md`](region_examples.md),
+for acceptance. **Nothing in the parser has moved.**
 **What it stands on:** the rulings (b), (c) and (e) of
 [Q-M1e2.7](../open_questions.md#the-rulings-and-the-questions-back-2026-10-16),
 the third answer's sketch
@@ -162,7 +163,7 @@ to the region claim, not to (c)'s query answer.
 (solve :expect (region
                  …
                  (model (h A) (h B))
-                 (merged (to (h A) (h B)) (from (h A)))))
+                 (merged (model (h A) (h B)) (model (h A)))))
 
 ;; tests/stdlib/closure/03_closed_and_owing.ein: root owes, so R is empty.
 (solve :no-hypothesis (is-a closed-here)
@@ -182,14 +183,16 @@ to the region claim, not to (c)'s query answer.
 - **The models are R's states, one to one.** Their number is the claim's
   k_s. A state of R that matches no model, or a model that matches no state,
   makes the claim false.
-- **`(merged (to …) (from …))`** gives one minimal generator of a state with
-  several generating commitments. `to` is the state's candidates and `from`
-  one minimal commitment that saturates to it, both as candidate facts. It is
-  the third answer's `(to from)`, with heads, because a bare list of facts does
-  not parse (`ListHead` is a symbol). It is **all or nothing**. A claim with no
-  `(merged …)` is about states, and k_c is not claimed. A claim with one must
-  list every minimal generator of every such state, and then it pins k_c,
-  which follows by inclusion–exclusion.
+- **`(merged <to> <from>)`**, as the user spelled it on 2026-10-16. It gives a
+  state reached by several commitments, with its minimal ones:
+  - `<to>` is `(model …)`, one of the states the claim lists;
+  - `<from>` is `(model …)` for its one minimal commitment, or `(or (model …)
+    …)` for several. These models are **commitments**: the candidates
+    committed, with nothing derived and nothing from root.
+
+  It is **all or nothing**. A claim with no `(merged …)` is about states, and
+  k_c is not claimed. A claim with one lists every such state, and then it pins
+  k_c, which follows by inclusion–exclusion.
 - **`(owing (model …) …)`** gives the alive, owing nodes with no alive node one
   fact up: the frontier the read-out reports when R is empty and alive nodes
   exist. It is what the 13 fixtures of § 2 state. On them it is root itself, so
@@ -307,6 +310,22 @@ sets they ask about.
   until P1e2.1b.
 
 ## 9. What needs the user's ruling
+
+**Ruled 2026-10-16, all six**, verbatim:
+
+> Where the region claim lives, and its name: A; A state's generators:
+> (merged (model <to model>) (or (model <from model 1>) (model <from model 2>)
+> ...)) - so (merged <to model> (from models)); The second kind of empty R:
+> yes; The query's answer: yes; Region shapes, Component subsets - don't need
+> now both, the region is already defined by it's nodes; Show real examples
+> for syntax to review and accept before continue
+
+So: 1 is (A), named `region`. 2 is the user's `(merged <to> <from>)`, which
+§ 4 now spells. 3 and 4 are yes. 5 and 6 are not built, *"the region is
+already defined by it's nodes"*. The examples are
+[`region_examples.md`](region_examples.md).
+
+The questions as they were put:
 
 1. **Where the region claim lives, and its name.**
    - **(A), proposed:** `(solve … :expect (region …))`. That makes one new

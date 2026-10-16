@@ -24,8 +24,9 @@ half is built: the region modes and `ein oracle`, every mode held to the
 oracle. **The rest of the phase was re-ordered the same day**
 ([§ Stages](#stages)), because the switch needs two pieces of work the plan
 had after it.
-S1e2.1a.4's grammar diff ([`region_language.md`](region_language.md)) waits
-for the user's ruling. S1e2.1a.10 is done: the census
+S1e2.1a.4's grammar diff ([`region_language.md`](region_language.md)) is
+ruled, and its real examples ([`region_examples.md`](region_examples.md)) wait
+for the user's acceptance. S1e2.1a.10 is done: the census
 ([`walk_census.md`](walk_census.md)), and the register under R.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md) S1e2.1.1–6,
 which built the register, the doors and the bundle this phase extends.
