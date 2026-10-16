@@ -26,6 +26,7 @@ motivation strikes.
 | F11 | [Deductive-layer perf](f11_deductive_layer_perf.md)               | when a workload outgrows the matcher — RETE beta-memories + worst-case-optimal joins; the live perf work now that F9's search-layer catalog is closed |
 | F14 | Saturation and satisfiability — **promoted**                       | **promoted 2026-08-21 → [M1d](../../docs/history/m1d_satisfiability/README.md)**, at the user's direction. The note is now [`docs/history/m1d_satisfiability/ideas.md`](../../docs/history/m1d_satisfiability/ideas.md) and its argument is the milestone's [§ What the note says the engine is missing](../../docs/history/m1d_satisfiability/README.md) plus phase [P1d.2](../../docs/history/m1d_satisfiability/README.md#p1d2--obligations). Nothing is parked here any more |
 | F18 | [World-aware negatives](f18_world_aware_negatives.md)             | when a program needs the shape, or when M1f's S1f.10.8 rules that a refutation may rest on an `absent`. **Closed without being done** if that stage forbids the shape instead — `Prov::absent` is the starting point either way |
+| F20 | [The three rule kinds are the three sentence forms](f20_rule_kinds_as_sentence_moods.md) | when M2's formalizer decides which rule kind a clause becomes, or idea 08 renders rules back into text: assertion → positive fact, negation → restriction, question → obligation (the user, 2026-10-16) |
 
 **F12, F13, F15, F16 and F17 are raw `ideas.md` notes**, added after this
 index was written and not yet worked into one-page themes: rules and relations,
