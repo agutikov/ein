@@ -375,9 +375,9 @@ fn solve_command() -> Command {
                 .action(ArgAction::SetTrue)
                 .help(
                     "expect exactly one state in the chosen part of the \
-                     region: Solution exits 0; Ambiguity, Contradiction or \
-                     Open exit 1, and so does a run that stopped before it \
-                     decided",
+                     region, answered Solution, Ambiguity, Contradiction or \
+                     Open; every answer exits 0, and a run that stopped \
+                     before it decided says so",
                 ),
         )
         .arg(

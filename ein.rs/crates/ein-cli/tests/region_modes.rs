@@ -4,7 +4,8 @@
 //!
 //! What the modes *answer* is `ein-infer/tests/explore.rs`'s, held to the
 //! oracle there. What is held here is the surface:
-//! - the exit codes, with `--single` exiting the way a false `:expect` does;
+//! - the exit codes: every answer exits 0, `--single`'s four words included
+//!   (the user's ruling of 2026-10-16), and a stopped run says so on stderr;
 //! - the refusals;
 //! - `-j`;
 //! - the oracle's directory, which `ein render region` draws with no run
@@ -79,15 +80,16 @@ fn describe_is_the_oracles_description_and_exits_0() {
 }
 
 #[test]
-fn single_exits_like_a_false_expectation() {
-    // Three maximal states: Ambiguity, exit 1, the `:expect` line on stderr.
+fn every_answer_exits_0_and_a_stopped_run_says_so() {
+    // Three maximal states: Ambiguity, an answer like any other — exit 0,
+    // nothing on stderr.
     let r = ein(&["solve", THREE, "--maximal", "--single"]);
-    assert_eq!(r.code, 1);
+    assert_eq!(r.code, 0, "{}", r.err);
     assert_eq!(
         line(&r.out, "verdict").split_whitespace().last(),
         Some("Ambiguity")
     );
-    assert!(r.err.contains("--single FAILED"), "{}", r.err);
+    assert!(r.err.is_empty(), "{}", r.err);
     // ⊤ is the square cube's one maximal state: Solution, exit 0, cheaply.
     let r = ein(&["solve", SQUARE, "--maximal", "--single", "-s"]);
     assert_eq!(r.code, 0, "{}{}", r.out, r.err);
@@ -96,7 +98,7 @@ fn single_exits_like_a_false_expectation() {
         Some("Solution")
     );
     assert!(r.err.is_empty(), "{}", r.err);
-    // A budget that stops it first: NOT CHECKED, exit 1.
+    // A budget that stops it first: not decided, exit 0, and one `note:`.
     let r = ein(&[
         "solve",
         "examples/lattice/06_friends_tables_everyone_sits.ein",
@@ -104,8 +106,10 @@ fn single_exits_like_a_false_expectation() {
         "--region-budget",
         "1",
     ]);
-    assert_eq!(r.code, 1);
-    assert!(r.err.contains("--single NOT CHECKED"), "{}", r.err);
+    assert_eq!(r.code, 0, "{}", r.err);
+    assert!(r.err.starts_with("note: "), "{}", r.err);
+    assert!(r.err.contains("--single not decided"), "{}", r.err);
+    assert_eq!(r.err.lines().count(), 1, "{}", r.err);
     assert!(line(&r.out, "stopped").contains("at the budget"));
 }
 

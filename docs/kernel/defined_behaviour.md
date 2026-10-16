@@ -642,8 +642,13 @@ and its exit codes **deliberately differ** from the other three's:
 | code | `solve` / `oracle` / `render` / `saturate` | `test` |
 |---|---|---|
 | 0 | success | every expectation held, and at least one was checked |
-| 1 | a load error — or a false `:expect`, or a `solve --single` that did not hold or did not decide (M1e2 S1e2.1a.9), or an `oracle` cube that contradicts a monotone static verdict | an expectation is **false**, or was not checked |
+| 1 | a load error — or a false `:expect`, or an `oracle` cube that contradicts a monotone static verdict | an expectation is **false**, or was not checked |
 | 2 | a usage error, or a budget abort | a load error, a usage error, a budget abort — or nothing to check |
+
+**An answer is never an exit code** on the other three: since M1e2
+S1e2.1a.5 a `solve --single` exits 0 whatever its word, and a run its budget
+stopped writes one `note:` to stderr and exits 0 (the user's ruling of
+2026-10-16, [`read_out.md` § 9](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#9-exit-codes)).
 
 1 is taken there, and a runner that cannot tell a broken file from a false
 claim is the one failure mode a test runner must not have. 2 dominates 1 in a

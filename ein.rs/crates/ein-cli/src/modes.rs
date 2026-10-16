@@ -19,7 +19,7 @@ use std::time::{Duration, Instant};
 use clap::ArgMatches;
 use clap::parser::ValueSource;
 use ein_core::Terms;
-use ein_infer::explore::{self, Answer, Ask, Mode, Route, Stopped, Verdict, Which};
+use ein_infer::explore::{self, Answer, Ask, Mode, Route, Stopped, Which};
 use ein_ir::Ast;
 
 /// The `solve` options a region mode takes. Every other one is the walk's.
@@ -127,8 +127,16 @@ pub fn run(m: &ArgMatches) -> i32 {
     rc
 }
 
-/// The exit code, and the stderr line a `--single` that did not hold owes —
-/// the one `:expect` gives (M1d S1d.4.3).
+/// The exit code, and the `note:` a stopped run writes to stderr.
+///
+/// **Every answer exits 0**, `--single`'s four words included: an answer is
+/// a successful run, and only an error is not (the user's ruling of
+/// 2026-10-16, [`read_out.md` § 9]). `-T` aborts with 2. A run that stopped
+/// before it decided its question, or before it exhausted the part of `R` it
+/// describes, is an answer that says *partial*, and one `note:` line lets a
+/// pipeline see it.
+///
+/// [`read_out.md` § 9]: ../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#9-exit-codes
 fn code(a: &Answer, file: &str, max_time: Option<f64>) -> i32 {
     if a.stopped == Some(Stopped::Deadline) {
         eprintln!(
@@ -137,39 +145,18 @@ fn code(a: &Answer, file: &str, max_time: Option<f64>) -> i32 {
         );
         return 2;
     }
-    if a.mode.ask != Ask::Single {
-        return 0;
+    if let Some(s) = &a.stopped {
+        let what = if a.mode.ask == Ask::Single {
+            "--single not decided"
+        } else {
+            "partial"
+        };
+        eprintln!(
+            "note: {file}: {what} — the run stopped {}",
+            stopped_words(Some(s))
+        );
     }
-    match a.verdict {
-        Some(Verdict::Solution) => 0,
-        Some(v) => {
-            eprintln!(
-                "{file}: --single FAILED — expected exactly one state of {}, found {}",
-                which_words(a.mode.which),
-                match v {
-                    Verdict::Ambiguity => "two or more (Ambiguity)",
-                    Verdict::Open => "none: every alive node owes (Open)",
-                    _ => "none (Contradiction)",
-                }
-            );
-            1
-        }
-        None => {
-            eprintln!(
-                "{file}: --single NOT CHECKED — the run stopped before it decided ({})",
-                stopped_words(a.stopped.as_ref())
-            );
-            1
-        }
-    }
-}
-
-fn which_words(w: Which) -> &'static str {
-    match w {
-        Which::All => "R",
-        Which::Minimal => "R's minimal line",
-        Which::Maximal => "R's maximal line",
-    }
+    0
 }
 
 fn stopped_words(s: Option<&Stopped>) -> String {

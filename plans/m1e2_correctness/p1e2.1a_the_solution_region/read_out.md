@@ -21,7 +21,7 @@ in `ein solve` has moved.** T1e2.1a.5.2 builds what this page says.
   this stage's switch.
 
 **The examples are real.** [`read_out_examples.md`](read_out_examples.md)
-holds 27 runs on thirteen programs, re-generated after the rulings. Each block is printed by
+holds 29 runs on thirteen programs, re-generated after the rulings. Each block is printed by
 [`read_out_preview`](../../../ein.rs/crates/ein-infer/examples/read_out_preview.rs),
 an `ein-infer` example that prints the layout proposed here from the
 library's own R, states and goal projections. This page quotes them as
@@ -611,8 +611,9 @@ The three questions this page asked, and the answers, in the user's words.
   (`docs/guide/04` and the top-level `README.md`), `embedding.rs` and
   `docs/api/rust.md`, `acceptance_cli.rs`, `cli_semantics.rs`, `expect_cli.rs`,
   `test_cli.rs`, `region_modes.rs` (whose
-  `single_exits_like_a_false_expectation` pins `--single`'s exit 1, which
-  ruling 1 makes 0), `model_set_report.rs` and `models_grid.rs`;
+  `single_exits_like_a_false_expectation` pinned `--single`'s exit 1, which
+  ruling 1 makes 0; moved in T1e2.1a.5.2's first step), `model_set_report.rs`
+  and `models_grid.rs`;
 - **the summary and the dump**: `summary_properties.rs`, whose identities
   become the region's (k_c ≥ k_s; line sizes ≤ k_s; Σ layer visits =
   saturations), `answer_dump.rs`, `wrong_answers.rs`, `leftover_probe.rs`,
