@@ -3,8 +3,10 @@
 **Stage:** [S1e2.1a.4](s1e2.1a.4_the_language.md), task T1e2.1a.4.1, after
 the ruling.
 **Status:** written 2026-10-16 for the user to accept, as asked: *"Show real
-examples for syntax to review and accept before continue"*. **Nothing parses
-yet.** T1e2.1a.4.2 starts when the user accepts.
+examples for syntax to review and accept before continue"*. **Accepted the
+same day**, with one question back: *"yet don't understand why we need special
+`owing` form, what is wrong with just empy (region) ?"*. § 5 answers it,
+measured. **Nothing parses yet.**
 **How it was made:** every claim below states the program's real R. Each R is
 the oracle's (`ein oracle FILE --dump DIR --states`), or route 1's for
 `zebra2.ein`, which is past the oracle. The text is rendered from that data
@@ -470,3 +472,55 @@ plus the fixtures under `tests/`. Each example here becomes a test: its claim,
 printed by `ein solve`, read back and held. The diff's § 7 migration stands as
 ruled. The keyword move lands in this stage, and the claims move at the
 switch.
+
+## 5. Why `(owing …)` and not `(region)` — the user's question
+
+**Nothing is wrong with `(region)` as a statement about R.** On E6 it is
+exactly R, and it stays legal: R empty, of either kind. `(owing …)` is the one
+item in a claim that is *not* about R. It lists the alive nodes outside R that
+owe, which is what R's emptiness leaves to say. It exists for two reasons.
+
+**1. Thirteen fixtures test what a rule derives, on a root that owes.** These
+are § 2's 13. Five of them are about the obligation itself (`total-owed`,
+`surjective-owed`, `closed-and-owing`, `owed-room`, `owed-fill`). The other
+eight owe only because a `bijective` or slot declaration brings an obligation
+with nothing to pay it. Their claims pin root's derived facts. R is empty
+whether the rule under test works or not, so a claim about R alone cannot see
+the rule. Measured with `utils/stdlib_mutants.py` on 2026-10-16 at `ad7d0336`,
+whose mutants are defects spliced into a stdlib rule:
+
+| `ein test` runs | mutants killed of 217 |
+|---|---:|
+| all of `tests/` (today) | 157 |
+| `tests/` without the 13 (`--targets`, the other 44 files) | 126 |
+
+So **31 kills come from those 13 claims alone.** Each of the 31 was then
+replayed against the 13, with `EIN_STDLIB` pointing at the mutant's tree and
+`ein solve -e`:
+
+- **27** leave every fixture `Open`, and change only the facts the rule
+  derives: `bijective-setup`'s four activators, `domain-` and
+  `range-elimination`, and every `slot-*` premise swap. An empty `(region)`
+  passes on all 27;
+- **4** make `slots/07_spatial_prune` dead (`slot-adjacent-*`'s dropped
+  `absent`). R is still empty, so `(region)`, read as *either kind*, passes on
+  these too. A `(region)` that meant *empty, alive nodes owe* would catch them;
+- **0** make R non-empty.
+
+Writing `(region)` on the 13 would take the sweep from 157 to 126, and
+`tests/mutation_survivors.txt` would grow by 31.
+
+**2. It is what `ein solve` prints for that kind of empty R.** The read-out
+has to say *why* R is empty: no node alive, or alive nodes that all owe and
+what they hold (S1e2.1a.5's acceptance). With `(owing …)`, that answer is a
+claim and reads back like every other one (ruling 1, one form for both
+directions). Without it, the read-out says something the language cannot
+state.
+
+**The choice, for the user:**
+
+- **(A) Keep `(owing …)`**: the 31 kills stay, and the printed form reads
+  back. *Proposed.*
+- **(B) `(region)` only**: the claim language speaks of R alone. The 13
+  fixtures lose their fact pins, the sweep falls to 126, and the read-out
+  prints the owing frontier outside the language.
