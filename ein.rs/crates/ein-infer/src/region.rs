@@ -605,6 +605,41 @@ impl<'a> Nodes<'a> {
         })
     }
 
+    /// `read` the fixpoints of root plus each of `sets`, all at once — for a
+    /// reader that compares states, as a model set's determining key does.
+    pub fn with_fixpoints<R>(
+        &mut self,
+        sets: &[Vec<FactId>],
+        read: impl FnOnce(&[Kb], &mut Terms) -> R,
+    ) -> Result<R, SolveError> {
+        self.terms.provs.open_fork();
+        let mut kbs = Vec::with_capacity(sets.len());
+        let mut failed = None;
+        for facts in sets {
+            match fixpoint(
+                self.root,
+                &self.snapshot,
+                self.terms,
+                self.ast,
+                &self.memo,
+                facts,
+            ) {
+                Ok(kb) => kbs.push(kb),
+                Err(e) => {
+                    failed = Some(e);
+                    break;
+                }
+            }
+        }
+        let out = match failed {
+            Some(e) => Err(e),
+            None => Ok(read(&kbs, self.terms)),
+        };
+        drop(kbs);
+        self.terms.provs.discard_fork();
+        out
+    }
+
     /// `read` the fixpoint of root plus `facts`.
     pub fn with_fixpoint<R>(
         &mut self,

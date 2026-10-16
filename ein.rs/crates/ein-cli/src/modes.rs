@@ -26,7 +26,7 @@ use ein_infer::read_out::{self, ReadOut};
 use ein_ir::Ast;
 
 /// The `solve` options a region mode takes. Every other one is the walk's.
-const TAKES: [&str; 12] = [
+const TAKES: [&str; 17] = [
     "file",
     "solutions",
     "max-time",
@@ -39,6 +39,11 @@ const TAKES: [&str; 12] = [
     "region-budget",
     "dump-answer",
     "json-summary",
+    "models",
+    "print-final-state",
+    "print-final-positive",
+    "print-final-hfacts",
+    "diff-models",
 ];
 
 /// Whether this `solve` run asks a region mode.
@@ -145,6 +150,21 @@ pub fn run(m: &ArgMatches) -> i32 {
         }
     }
     let summary_path = m.get_one::<String>("json-summary").cloned();
+    // `--diff-models FILE` is read before the run, as the walk's is: a file
+    // it cannot read is a usage error, and nothing runs.
+    let want = match m.get_one::<String>("diff-models") {
+        None => None,
+        Some(path) => match std::fs::read_to_string(path)
+            .map_err(|e| e.to_string())
+            .and_then(|t| ein_render::models::parse_expected(&t))
+        {
+            Ok(e) => Some((path.clone(), e)),
+            Err(e) => {
+                eprintln!("error: --diff-models {path}: {e}");
+                return 2;
+            }
+        },
+    };
 
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -167,7 +187,14 @@ pub fn run(m: &ArgMatches) -> i32 {
         max_time,
         m.get_flag("stats"),
     );
-    if code == 2 || (summary_path.is_none() && dump.is_none()) {
+    if code == 2 {
+        return code;
+    }
+    if let Err(e) = extras(m, &r, &mut kb, &mut terms, &ast, want.as_ref()) {
+        eprintln!("{e}");
+        return 1;
+    }
+    if summary_path.is_none() && dump.is_none() {
         return code;
     }
     // The summary and the answer directory: the same facts as stdout, as
@@ -207,6 +234,149 @@ pub fn run(m: &ArgMatches) -> i32 {
         }
     }
     code
+}
+
+/// What a region run prints after its read-out when asked, over **the states
+/// it listed** — `read_out.md` § 8.3 and § 8.6: `--models key|grid`, then
+/// `-p`, `-P` and `-f` per state, then `--diff-models FILE`. Each block
+/// says which set it is drawn from. These are asked for by name, so the
+/// shared 100 lines do not cut them.
+fn extras(
+    m: &ArgMatches,
+    r: &ReadOut,
+    kb: &mut ein_core::Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    want: Option<&(String, ein_render::models::Expected)>,
+) -> Result<(), String> {
+    use crate::factdump::{Mode as Dump, print_final_state};
+    let form = m.get_one::<String>("models").map(String::as_str);
+    let dumps: Vec<Dump> = [
+        ("print-final-state", Dump::All),
+        ("print-final-positive", Dump::Positive),
+        ("print-final-hfacts", Dump::Hfacts),
+    ]
+    .into_iter()
+    .filter(|(flag, _)| m.get_flag(flag))
+    .map(|(_, d)| d)
+    .collect();
+    if !matches!(form, Some("key" | "grid")) && dumps.is_empty() && want.is_none() {
+        return Ok(());
+    }
+    let a = &r.answer;
+    let listed: Vec<(usize, &ein_infer::read_out::Listed)> = r.listed().collect();
+    let what = match (r.described().is_some(), &r.listing) {
+        (true, ein_infer::read_out::Listing::Region) => "every state of R".to_string(),
+        (true, _) => "the line members this run certified".to_string(),
+        (false, _) => format!(
+            "the {} listed",
+            if listed.len() == 1 { "state" } else { "states" }
+        ),
+    };
+    let sets: Vec<Vec<ein_core::FactId>> = listed
+        .iter()
+        .map(|(_, s)| {
+            s.rep
+                .iter()
+                .map(|&b| a.candidates[b as usize].fact)
+                .collect()
+        })
+        .collect();
+    // The candidates' relations stand in for `:hrules`' targets: they are
+    // what a commitment is made of.
+    let mut targets: Vec<ein_core::Symbol> = Vec::new();
+    for c in &a.candidates {
+        let rel = terms.facts.get(c.fact).0;
+        if !targets.contains(&rel) {
+            targets.push(rel);
+        }
+    }
+    let n = listed.len();
+    let exhausted = a.exhausted;
+    let mut nodes =
+        ein_infer::region::Nodes::new(kb, terms, ast, &a.candidates).map_err(|e| e.to_string())?;
+    nodes
+        .with_fixpoints(&sets, |kbs, terms| {
+            let label = |i: usize| format!("state {} of {}", listed[i].0 + 1, r.states.len());
+            match form {
+                Some("key") => {
+                    println!();
+                    println!("models — the determining key of {what}");
+                    let refs: Vec<&ein_core::Kb> = kbs.iter().collect();
+                    let of = ein_render::models::KeyOf::States {
+                        maximal: listed.iter().all(|(_, s)| s.maximal),
+                    };
+                    match ein_render::models::key_table_of(terms, &refs, exhausted, "  ", of) {
+                        ein_render::models::KeyOutcome::Table(rows) => {
+                            for l in rows {
+                                println!("{l}");
+                            }
+                        }
+                        ein_render::models::KeyOutcome::Unaffordable(why) => {
+                            println!("  determining key — none within budget");
+                            for l in ein_render::models::wrap(&format!("{why}."), "    ") {
+                                println!("{l}");
+                            }
+                        }
+                    }
+                }
+                Some("grid") => {
+                    println!();
+                    println!("models — {what}, each as a grid");
+                    for (i, kb) in kbs.iter().enumerate() {
+                        println!();
+                        println!("  ── {} ──", label(i));
+                        for l in ein_render::grid::grid_or_reason(terms, kb, "  ") {
+                            println!("{l}");
+                        }
+                    }
+                }
+                _ => {}
+            }
+            for (i, kb) in kbs.iter().enumerate() {
+                if dumps.is_empty() {
+                    break;
+                }
+                println!();
+                println!("── {} ──", label(i));
+                for d in &dumps {
+                    print_final_state(terms, kb, *d, &targets);
+                }
+            }
+            if let Some((path, want)) = want {
+                use ein_render::models::{comparable_facts, diff_lines, diff_model_sets};
+                let closes = want.closes.as_deref();
+                let got: Vec<Vec<String>> = kbs
+                    .iter()
+                    .map(|kb| comparable_facts(terms, kb, closes))
+                    .collect();
+                let d = diff_model_sets(&got, &want.models);
+                let over = match closes {
+                    Some(c) => format!("compared over {}", c.join(" ")),
+                    None => "compared as positive facts minus the given ones".to_string(),
+                };
+                let head = format!("{what} against {path}, {over}");
+                let got_label = |i: usize| label(i);
+                let want_label = |j: usize| {
+                    let facts = &want.models[j];
+                    format!(
+                        "model {} of the file [{}]",
+                        j + 1,
+                        if facts.is_empty() {
+                            "no facts".to_string()
+                        } else {
+                            facts.join(" ")
+                        }
+                    )
+                };
+                println!();
+                for l in diff_lines(&d, &head, &got_label, &want_label, "") {
+                    println!("{l}");
+                }
+            }
+            let _ = n;
+        })
+        .map_err(|e| e.to_string())
 }
 
 /// `answer.txt`: the read-out with no listing cut — where stdout's cut says

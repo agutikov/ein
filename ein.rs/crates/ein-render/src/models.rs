@@ -538,6 +538,29 @@ pub enum KeyOutcome {
 /// subset is a superset of the truth, so a 33rd model can contradict a printed
 /// fact there and only a printed *claim about completeness* here.
 pub fn key_table(terms: &Terms, models: &[&Kb], exhausted: bool, indent: &str) -> KeyOutcome {
+    key_table_of(terms, models, exhausted, indent, KeyOf::Models)
+}
+
+/// What a key table's rows are, which decides the guarantee its last
+/// sentence gives.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum KeyOf {
+    /// The walk's models.
+    Models,
+    /// States of R (M1e2 T1e2.1a.5.2). `maximal`: every one is on the maximal
+    /// line, so a row added to the program leaves R that state alone; a
+    /// state below the line leaves R the states above it.
+    States { maximal: bool },
+}
+
+/// [`key_table`] over `of`.
+pub fn key_table_of(
+    terms: &Terms,
+    models: &[&Kb],
+    exhausted: bool,
+    indent: &str,
+    of: KeyOf,
+) -> KeyOutcome {
     let Some(v) = variables(terms, models) else {
         return KeyOutcome::Unaffordable(
             "the models differ in no single-valued slot and no varying atom".to_string(),
@@ -643,13 +666,25 @@ pub fn key_table(terms: &Terms, models: &[&Kb], exhausted: bool, indent: &str) -
         1 => "; the other varying slot follows".to_string(),
         m => format!("; the other {m} varying slots follow"),
     };
-    let mut prose = format!(
-        "{} rows, one per model{}. Add a row's facts to the program and it re-solves to \
-         that model{}{rest}.",
-        rows.len(),
-        if exhausted { "" } else { " found" },
-        if exhausted { " alone" } else { "" }
-    );
+    let found = if exhausted { "" } else { " found" };
+    let alone = if exhausted { " alone" } else { "" };
+    let mut prose = match of {
+        KeyOf::Models => format!(
+            "{} rows, one per model{found}. Add a row's facts to the program and it re-solves \
+             to that model{alone}{rest}.",
+            rows.len(),
+        ),
+        KeyOf::States { maximal: true } => format!(
+            "{} rows, one per state{found}. Add a row's facts to the program and its R is \
+             that state{alone}{rest}.",
+            rows.len(),
+        ),
+        KeyOf::States { maximal: false } => format!(
+            "{} rows, one per state{found}{rest}. Not every state is maximal: a row's facts \
+             added to the program make its state root, and R the states above it.",
+            rows.len(),
+        ),
+    };
     if !exhausted {
         // *Alone* is the word the caveat takes back, and taking it back is the
         // whole of what `exhausted = false` costs this form. A row's four
@@ -668,7 +703,7 @@ pub fn key_table(terms: &Terms, models: &[&Kb], exhausted: bool, indent: &str) -
 /// Greedy wrap at 78 columns, indent included — the width the record prices
 /// (b) at, and the reason it beat the envelope on the *read* column: a form
 /// that does not fit a page is a form nobody reads.
-pub(crate) fn wrap(text: &str, indent: &str) -> Vec<String> {
+pub fn wrap(text: &str, indent: &str) -> Vec<String> {
     // A grouped number is one word. `group` separates its triples with an
     // ordinary space — the repo's typography everywhere else — so the wrapper
     // has to know that `118 030 185` may not be broken after `118`, and this

@@ -165,7 +165,10 @@ fn the_walks_options_are_refused_beside_a_mode() {
         (vec!["--maximal", "-e"], "--exhaustive"),
         (vec!["--single", "-m", "3"], "--max-set-size"),
         (vec!["--minimal", "-L"], "--no-lookahead"),
-        (vec!["--region-budget", "10", "-p"], "--print-final-state"),
+        (
+            vec!["--region-budget", "10", "--events", "/tmp/x.jsonl"],
+            "--events",
+        ),
         (vec!["--maximal", "--trace", "/tmp/x.md"], "--trace"),
     ] {
         let mut a = vec!["solve", THREE];
@@ -240,4 +243,102 @@ fn the_oracle_refuses_past_its_limit() {
     let r = ein(&["oracle", THREE, "--region-limit", "2"]);
     assert_eq!(r.code, 2);
     assert!(r.err.contains("over --region-limit 2"), "{}", r.err);
+}
+
+/// `--models key|grid`, `-p/-P/-f` and `--diff-models` over the listed states
+/// — T1e2.1a.5.2's sixth step, `read_out.md` § 8.3 and § 8.6. Each block
+/// follows the read-out, which it leaves as it was, and names its set.
+#[test]
+fn the_listed_states_print_as_asked() {
+    let run = |extra: &[&str]| {
+        let mut a = vec!["solve", THREE];
+        a.extend(extra.iter());
+        ein(&a)
+    };
+    let check = |extra: &[&str], want: &[&str]| {
+        let mode: Vec<&str> = extra
+            .iter()
+            .take_while(|a| !["--models", "-P", "-p", "-f", "--diff-models"].contains(a))
+            .copied()
+            .collect();
+        let (bare, r) = (run(&mode), run(extra));
+        assert_eq!(r.code, 0, "{extra:?}: {}", r.err);
+        // The header names the flags, which change what is printed; below
+        // it the read-out is as it was.
+        let body = |o: &str| {
+            o.split_once('\n')
+                .map_or(String::new(), |x| x.1.to_string())
+        };
+        assert!(
+            body(&r.out).starts_with(&body(&bare.out)),
+            "{extra:?}: the read-out moved"
+        );
+        for w in want {
+            assert!(r.out.contains(w), "{extra:?}: no `{w}` in\n{}", r.out);
+        }
+    };
+    check(
+        &["--region-budget", "524288", "--models", "key"],
+        &[
+            "models — the determining key of every state of R",
+            "7 rows, one per state. Not every state is maximal",
+        ],
+    );
+    check(
+        &["--maximal", "--models", "key"],
+        &["its R is that\n    state alone"],
+    );
+    check(
+        &["--maximal", "-P"],
+        &[
+            "── state 1 of 3 ──",
+            "── state 3 of 3 ──",
+            "final-state facts",
+        ],
+    );
+    let dir = scratch("diff");
+    std::fs::create_dir_all(&dir).unwrap();
+    let want = dir.join("want.txt");
+    std::fs::write(
+        &want,
+        "closes a-prop b-prop c-prop\nmodel\n(a-prop X)\n(b-prop X)\nmodel\n(a-prop X)\n(c-prop X)\n",
+    )
+    .unwrap();
+    let w = want.to_string_lossy().to_string();
+    check(
+        &["--maximal", "--diff-models", &w],
+        &[
+            "2 matched, 0 near, 0 missing, 1 spurious",
+            "+ spurious: state 3 of 3",
+        ],
+    );
+    // A file it cannot read stops the run before it starts, as the walk's does.
+    let r = run(&["--maximal", "--diff-models", "/nonexistent/want.txt"]);
+    assert_eq!(r.code, 2);
+    assert!(
+        r.out.is_empty() && r.err.starts_with("error: --diff-models"),
+        "{}",
+        r.err
+    );
+    let _ = std::fs::remove_dir_all(&dir);
+    // `--models grid` per state, here with the reason a program without a
+    // row type gets; the cells themselves are `models_grid.rs`'s.
+    let g = ein(&[
+        "solve",
+        "examples/branching/04_two_levels.ein",
+        "--maximal",
+        "--models",
+        "grid",
+    ]);
+    assert_eq!(g.code, 0, "{}", g.err);
+    assert!(
+        g.out.contains("models — the states listed, each as a grid"),
+        "{}",
+        g.out
+    );
+    assert!(
+        g.out.contains("── state 2 of 2 ──") && g.out.contains("grid — none:"),
+        "{}",
+        g.out
+    );
 }
