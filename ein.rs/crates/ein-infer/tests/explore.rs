@@ -17,6 +17,7 @@ use std::path::{Path, PathBuf};
 
 use ein_core::{Kb, Terms};
 use ein_corpus::repo_root;
+use ein_infer::described::Described;
 use ein_infer::explore::{self, Answer, Ask, Mode, Verdict, Which};
 use ein_infer::region::{self, Outcome, Region};
 use ein_ir::{Ast, load, parse};
@@ -192,6 +193,12 @@ fn against(rel: &str, r: &Region, a: &Answer, budgeted: bool) -> Vec<String> {
             _ => {}
         }
     }
+    if a.mode.ask == Ask::Describe && a.mode.which == Which::All {
+        match &a.described {
+            Some(d) => bad.extend(described_against(&tag, r, d)),
+            None => bad.push(format!("{tag}: describe carries no description")),
+        }
+    }
     if a.mode.ask == Ask::Describe && a.mode.which == Which::All && a.exhausted {
         let c = a.counts.expect("describe counts");
         let k_s = p.classes.len() as u64;
@@ -215,6 +222,176 @@ fn against(rel: &str, r: &Region, a: &Answer, budgeted: bool) -> Vec<String> {
         {
             bad.push(format!("{tag}: ∅, the components or N differ"));
         }
+    }
+    bad
+}
+
+/// `g ⊆ m`, as masks.
+fn below(g: u64, m: u64) -> bool {
+    g & m == g
+}
+
+/// One state of `R` as the oracle has it, keyed by its closure mask.
+struct OracleState {
+    commitments: u64,
+    generators: BTreeSet<u64>,
+    minimal: bool,
+    maximal: bool,
+}
+
+/// Every way a description breaks C1 or C2 against the oracle: exactly the
+/// oracle's on an exhausted run; on a partial one, nothing it does not hold,
+/// and a line flag only where the oracle's line has the state.
+fn described_against(tag: &str, r: &Region, d: &Described) -> Vec<String> {
+    let mut bad = Vec::new();
+    let n = r.n();
+    let t = &r.topology;
+    let line =
+        |v: &[u64]| -> BTreeSet<u64> { v.iter().map(|&m| r.nodes[m as usize].class).collect() };
+    let (min_line, max_line) = (line(&t.minimal), line(&t.maximal));
+    let mut oracle: BTreeMap<u64, OracleState> = BTreeMap::new();
+    let mut members: Vec<u64> = (0..1u64 << n).filter(|&m| r.in_r(m)).collect();
+    members.sort_by_key(|m| m.count_ones());
+    for m in members {
+        let node = &r.nodes[m as usize];
+        let o = oracle.entry(node.closure).or_insert(OracleState {
+            commitments: 0,
+            generators: BTreeSet::new(),
+            minimal: min_line.contains(&node.class),
+            maximal: max_line.contains(&node.class),
+        });
+        o.commitments += 1;
+        if !o.generators.iter().any(|&g| below(g, m)) {
+            o.generators.insert(m);
+        }
+    }
+    let mut seen = BTreeSet::new();
+    let mut last: Option<(usize, Vec<u32>)> = None;
+    for s in &d.states {
+        let key = (s.closure.len(), s.closure.to_vec());
+        if last.as_ref().is_some_and(|l| *l >= key) {
+            bad.push(format!("{tag}: states not in canonical order"));
+        }
+        last = Some(key);
+        let c = mask(&s.closure);
+        if !seen.insert(c) {
+            bad.push(format!("{tag}: {} described twice", d.name(&s.closure)));
+        }
+        let Some(o) = oracle.get(&c) else {
+            bad.push(format!("{tag}: {} is not a state of R", d.name(&s.closure)));
+            continue;
+        };
+        let gens: BTreeSet<u64> = s.generators.iter().map(|g| mask(g)).collect();
+        if !r.in_r(mask(&s.rep)) || r.nodes[mask(&s.rep) as usize].closure != c {
+            bad.push(format!(
+                "{tag}: {}'s rep does not reach it",
+                d.name(&s.closure)
+            ));
+        }
+        let flags_ok = if d.exhausted {
+            (s.minimal, s.maximal) == (o.minimal, o.maximal)
+        } else {
+            (!s.minimal || o.minimal) && (!s.maximal || o.maximal)
+        };
+        let counts_ok = if d.exhausted {
+            s.commitments == o.commitments && gens == o.generators
+        } else {
+            s.commitments <= o.commitments && gens.is_subset(&o.generators)
+        };
+        if !flags_ok || !counts_ok {
+            bad.push(format!(
+                "{tag}: {}: lines {:?}, {} commitments, generators {gens:?} — the oracle has \
+                 {:?}, {}, {:?}",
+                d.name(&s.closure),
+                (s.minimal, s.maximal),
+                s.commitments,
+                (o.minimal, o.maximal),
+                o.commitments,
+                o.generators
+            ));
+        }
+    }
+    let line_masks: BTreeSet<u64> = t.minimal.iter().copied().collect();
+    let got: BTreeSet<u64> = d.minimal_commitments.iter().map(|s| mask(s)).collect();
+    let alive = |m: u64| r.status[m as usize] & region::DEAD == 0;
+    if d.exhausted {
+        if seen.len() != oracle.len() || d.k_c != t.size_r || got != line_masks {
+            bad.push(format!(
+                "{tag}: k_s, k_c, minimal line = {}, {}, {} where the oracle has {}, {}, {}",
+                seen.len(),
+                d.k_c,
+                got.len(),
+                oracle.len(),
+                t.size_r,
+                line_masks.len()
+            ));
+        }
+        if d.nogoods != t.nogoods.len() as u64 {
+            bad.push(format!(
+                "{tag}: N = {} where the oracle has {}",
+                d.nogoods,
+                t.nogoods.len()
+            ));
+        }
+        let shape = d.shape.as_ref();
+        let mut comps: Vec<u64> = shape.map_or(Vec::new(), |s| s.components.clone());
+        let mut want: Vec<u64> = t.components.iter().map(|c| c.size).collect();
+        comps.sort_unstable();
+        want.sort_unstable();
+        if comps != want {
+            bad.push(format!(
+                "{tag}: components {comps:?} where the oracle has {want:?}"
+            ));
+        }
+        if let (Some(mut dims), Some(cubes)) =
+            (shape.and_then(|s| s.subcubes.clone()), t.subcubes.as_ref())
+        {
+            let mut want: Vec<usize> = cubes
+                .iter()
+                .map(|&(lo, hi)| (hi.count_ones() - lo.count_ones()) as usize)
+                .collect();
+            dims.sort_unstable();
+            want.sort_unstable();
+            if dims != want {
+                bad.push(format!(
+                    "{tag}: sub-cubes {dims:?} where the oracle has {want:?}"
+                ));
+            }
+        }
+        let frontier: BTreeSet<u64> = d.frontier.iter().map(|o| mask(&o.set)).collect();
+        let want: BTreeSet<u64> = if oracle.is_empty() {
+            (0..1u64 << n)
+                .filter(|&m| alive(m) && r.status[m as usize] & region::OWING != 0)
+                .filter(|&m| !(0..n).any(|b| m >> b & 1 == 0 && alive(m | 1 << b)))
+                .collect()
+        } else {
+            BTreeSet::new()
+        };
+        if frontier != want {
+            bad.push(format!(
+                "{tag}: the owing frontier differs from the oracle's"
+            ));
+        }
+    } else if !got.is_subset(&line_masks) || d.k_c > t.size_r {
+        bad.push(format!(
+            "{tag}: a partial description claims more than R holds"
+        ));
+    }
+    let dead_alone = (0..n).filter(|&b| !alive(1 << b)).count() as u64;
+    if d.exhausted && d.dead_alone != dead_alone {
+        bad.push(format!(
+            "{tag}: {} dead alone where the oracle has {dead_alone}",
+            d.dead_alone
+        ));
+    }
+    let root = &r.nodes[0];
+    if d.root.alive != alive(0)
+        || (alive(0) && d.root.owes != root.owes)
+        || d.any_alive != (0..1u64 << n).any(alive)
+    {
+        bad.push(format!(
+            "{tag}: root or any-alive differs from the oracle's"
+        ));
     }
     bad
 }
@@ -274,6 +451,13 @@ fn every_mode_is_the_oracle() {
         };
         let root = facts_text(&kb, &terms);
         let monotone = r.monotonicity.is_monotone();
+        // The cube's own description, on every program: a flagged one prints
+        // it, and the claim check reads it.
+        failures.extend(described_against(
+            &format!("{rel} the cube"),
+            &r,
+            &ein_infer::described::of_cube(&r),
+        ));
         *counted
             .entry(if monotone { "monotone" } else { "flagged" })
             .or_default() += 1;

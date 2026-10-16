@@ -25,11 +25,12 @@ use ein_core::{FactId, Kb, Terms};
 use ein_ir::Ast;
 use ein_ir::claim::{Claim, Region as Stated};
 use ein_ir::expect::Model;
-use rustc_hash::FxHashSet;
 
+use crate::described::{self, Described};
 use crate::events::sexpr;
 use crate::expect::{Outcome, Report};
-use crate::region::{self, Axes, DEAD, OWING, fan_out, pool_of, prepare};
+use crate::explore::Route;
+use crate::region::{self, Axes, fan_out, pool_of, prepare};
 use crate::solve::SolveError;
 use crate::{downset, region::Candidate};
 
@@ -64,11 +65,12 @@ pub struct Checked {
     pub k_c: u64,
 }
 
-/// One state of R: a commitment that reaches it, and every commitment of R
-/// that does.
+/// One state of R: a commitment that reaches it, how many commitments of R
+/// do, and the minimal ones.
 struct State {
     rep: Vec<u32>,
-    sets: Vec<Vec<u32>>,
+    commitments: u64,
+    generators: Vec<Vec<u32>>,
 }
 
 /// R, as the claim needs it.
@@ -107,7 +109,7 @@ pub fn check(
         }
     };
     let k_s = lattice.states.len() as u64;
-    let k_c = lattice.states.iter().map(|s| s.sets.len() as u64).sum();
+    let k_c = lattice.states.iter().map(|s| s.commitments).sum();
     let report = compare(root, terms, ast, claim, &lattice, opts)?;
     Ok(Checked {
         report,
@@ -144,7 +146,7 @@ fn lattice(
             },
         )?;
         match &d.declined {
-            None => return Ok(Ok(of_downset(d))),
+            None => return Ok(Ok(of_described(described::of_downset(&d)))),
             Some(downset::Declined::Budget { layer, .. }) => {
                 return Ok(Err((
                     format!(
@@ -185,7 +187,7 @@ fn lattice(
         &mut |_| {},
     )?;
     Ok(match outcome {
-        region::Outcome::Region(r) => Ok(of_cube(*r)),
+        region::Outcome::Region(r) => Ok(of_described(described::of_cube(&r))),
         region::Outcome::Refused { n, limit, .. } => Err((
             format!("R was not described: n = {n} is past the oracle's limit of {limit}"),
             monotone,
@@ -231,11 +233,12 @@ pub fn print(
     items.sort();
     let mut merged: Vec<String> = Vec::new();
     for (st, seen) in l.states.iter().zip(&states) {
-        if st.sets.len() < 2 {
+        if st.commitments < 2 {
             continue;
         }
-        let mut gens: Vec<String> = minimal_generators(st)
-            .into_iter()
+        let mut gens: Vec<String> = st
+            .generators
+            .iter()
             .map(|g| {
                 let mut facts: Vec<String> = g
                     .iter()
@@ -262,95 +265,27 @@ pub fn print(
     Ok(Some(format!("(region {})", items.join(" "))))
 }
 
-/// A state's minimal generating commitments: those of its class with no proper
-/// subset in the class.
-fn minimal_generators(st: &State) -> Vec<&Vec<u32>> {
-    st.sets
-        .iter()
-        .filter(|s| {
-            !st.sets
-                .iter()
-                .any(|o| o.len() < s.len() && o.iter().all(|b| s.contains(b)))
-        })
-        .collect()
-}
-
-fn of_downset(d: downset::DownSet) -> Lattice {
-    let alive: FxHashSet<&[u32]> = d
-        .points
-        .iter()
-        .filter(|p| p.status & DEAD == 0)
-        .map(|p| &p.set[..])
-        .collect();
-    let n = d.candidates.len() as u32;
-    let mut by_class: BTreeMap<u32, State> = BTreeMap::new();
-    for p in d.points.iter().filter(|p| p.in_r()) {
-        by_class
-            .entry(p.class)
-            .or_insert_with(|| State {
-                rep: p.closure.to_vec(),
-                sets: Vec::new(),
-            })
-            .sets
-            .push(p.set.to_vec());
-    }
-    let frontier = d
-        .points
-        .iter()
-        .filter(|p| p.status & DEAD == 0 && p.status & OWING != 0)
-        .filter(|p| {
-            !(0..n).any(|b| {
-                p.set.binary_search(&b).is_err() && {
-                    let mut s = p.set.to_vec();
-                    let at = s.partition_point(|&x| x < b);
-                    s.insert(at, b);
-                    alive.contains(&s[..])
-                }
-            })
-        })
-        .map(|p| p.set.to_vec())
-        .collect();
+/// R as the claim reads it, from the one description every surface reads
+/// ([`crate::described`]).
+fn of_described(d: Described) -> Lattice {
     Lattice {
-        any_alive: !alive.is_empty(),
+        route: match d.route {
+            Route::DownSet => "route 1",
+            Route::Cube => "route 2",
+        },
+        monotone: d.monotonicity.is_monotone(),
+        any_alive: d.any_alive,
+        states: d
+            .states
+            .into_iter()
+            .map(|s| State {
+                rep: s.rep.to_vec(),
+                commitments: s.commitments,
+                generators: s.generators.into_iter().map(|g| g.to_vec()).collect(),
+            })
+            .collect(),
+        frontier: d.frontier.into_iter().map(|o| o.set.to_vec()).collect(),
         candidates: d.candidates,
-        route: "route 1",
-        monotone: true,
-        states: by_class.into_values().collect(),
-        frontier,
-    }
-}
-
-fn of_cube(r: region::Region) -> Lattice {
-    let n = r.n();
-    let set_of = |m: u64| -> Vec<u32> { (0..n as u32).filter(|&b| m >> b & 1 == 1).collect() };
-    let mut by_class: BTreeMap<u64, State> = BTreeMap::new();
-    for m in 0..r.status.len() as u64 {
-        if !r.in_r(m) {
-            continue;
-        }
-        let class = r.nodes[m as usize].class;
-        by_class
-            .entry(class)
-            .or_insert_with(|| State {
-                rep: set_of(class),
-                sets: Vec::new(),
-            })
-            .sets
-            .push(set_of(m));
-    }
-    let alive = |m: u64| r.status[m as usize] & DEAD == 0;
-    let frontier = (0..r.status.len() as u64)
-        .filter(|&m| alive(m) && r.status[m as usize] & OWING != 0)
-        .filter(|&m| !(0..n).any(|b| m >> b & 1 == 0 && alive(m | 1 << b)))
-        .map(set_of)
-        .collect();
-    Lattice {
-        any_alive: (0..r.status.len() as u64).any(alive),
-        route: "route 2",
-        monotone: r.monotonicity.is_monotone(),
-        candidates: r.candidates,
-        states: by_class.into_values().collect(),
-        frontier,
     }
 }
 
@@ -627,10 +562,7 @@ fn compare(
         };
         let st = &l.states[of_model[i]];
         covered[of_model[i]] = true;
-        let minimal: BTreeSet<BTreeSet<String>> = minimal_generators(st)
-            .into_iter()
-            .map(|s| text(s))
-            .collect();
+        let minimal: BTreeSet<BTreeSet<String>> = st.generators.iter().map(|s| text(s)).collect();
         let from: BTreeSet<BTreeSet<String>> = m
             .from
             .iter()
@@ -641,7 +573,7 @@ fn compare(
                     .collect()
             })
             .collect();
-        if st.sets.len() < 2 {
+        if st.commitments < 2 {
             lines.push(format!(
                 "a (merged …) names {}, which one commitment alone reaches",
                 describe(&states[of_model[i]], &closed)
@@ -650,16 +582,16 @@ fn compare(
             lines.push(format!(
                 "{} is reached by {} commitments, and its minimal ones are not the listed ones",
                 describe(&states[of_model[i]], &closed),
-                st.sets.len()
+                st.commitments
             ));
         }
     }
     for (j, st) in l.states.iter().enumerate() {
-        if st.sets.len() > 1 && !covered[j] {
+        if st.commitments > 1 && !covered[j] {
             lines.push(format!(
                 "{} is reached by {} commitments and no (merged …) lists it",
                 describe(&states[j], &closed),
-                st.sets.len()
+                st.commitments
             ));
         }
     }

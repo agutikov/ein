@@ -232,6 +232,14 @@ pub struct DownSet {
     pub declined: Option<Declined>,
     /// Present exactly when [`Self::declined`] is `None`.
     pub description: Option<Description>,
+    /// ⊤, every candidate, saturated once when the budget stopped the route:
+    /// in `R`, it certifies the trivial maximal line (L6) on a run that is
+    /// otherwise partial
+    /// ([`read_out.md` § 6.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#62-a-partial-run-c3)).
+    /// Not one of [`Self::points`], whose visit order it would break.
+    pub top: Option<Point>,
+    /// The facts beyond root's that ⊤'s fixpoint holds.
+    pub top_facts: u64,
     pub cost: Cost,
 }
 
@@ -302,6 +310,8 @@ pub(crate) fn compute_prepared(
         layer_wall: Vec::new(),
         declined: None,
         description: None,
+        top: None,
+        top_facts: 0,
         cost: Cost::default(),
     };
     if !out.monotonicity.is_monotone() {
@@ -394,6 +404,32 @@ pub(crate) fn compute_prepared(
         } else {
             join(&alive)
         };
+    }
+    if matches!(out.declined, Some(Declined::Budget { .. })) && !facts.is_empty() {
+        let o = fan_out(
+            pool.as_ref(),
+            root,
+            &snapshot,
+            terms,
+            ast,
+            &memo,
+            &axes,
+            std::slice::from_ref(&facts),
+        )?
+        .into_iter()
+        .next()
+        .expect("one node");
+        out.top_facts = o.state.len() as u64;
+        out.top = Some(Point {
+            set: (0..out.n() as u32).collect(),
+            status: (if o.dead { DEAD } else { 0 }) | (if o.owes > 0 { OWING } else { 0 }),
+            owes: o.owes,
+            owed: o.node.owed,
+            core: o.node.core,
+            refuted_by: o.node.refuted_by,
+            class: classes.get(&o.state).copied().unwrap_or(u32::MAX),
+            closure: o.closure.into_boxed_slice(),
+        });
     }
     out.cost.nodes = t_nodes.elapsed();
 

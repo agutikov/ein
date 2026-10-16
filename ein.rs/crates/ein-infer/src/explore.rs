@@ -43,6 +43,7 @@ use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet};
 
 use crate::compile::SharedMemo;
+use crate::described::{self, Described};
 use crate::downset::{self, Declined, is_subset, join};
 use crate::monotone::Monotonicity;
 use crate::region::{self, Axes, Candidate, Outcome, Pool, Prepared, fan_out, pool_of, prepare};
@@ -236,6 +237,9 @@ pub struct Answer {
     pub shape: Option<Shape>,
     /// Describe, over all of `R`.
     pub counts: Option<Counts>,
+    /// Describe, over all of `R`: what the run established about it, exhausted
+    /// or partial — what the read-out prints.
+    pub described: Option<Box<Described>>,
     /// The chosen part of `R` was exhausted: [`Self::states`] is all of it.
     pub exhausted: bool,
     /// [`Ask::Single`]'s verdict, when the run reached one.
@@ -349,6 +353,8 @@ struct Space<'a> {
     root_dead: bool,
     seen: FxHashMap<Box<[u32]>, Seen>,
     classes: FxHashMap<Box<[FactId]>, u32>,
+    /// Root's node, once evaluated: what it owes, or why it is dead.
+    root_node: Option<region::Node>,
     saturations: u64,
     spent: u64,
     budget: u64,
@@ -390,6 +396,7 @@ impl<'a> Space<'a> {
             root_dead,
             seen: FxHashMap::default(),
             classes: FxHashMap::default(),
+            root_node: None,
             saturations: 0,
             spent: 0,
             budget: opts.budget,
@@ -413,6 +420,7 @@ impl<'a> Space<'a> {
             minimal: found.minimal,
             shape: None,
             counts: None,
+            described: None,
             exhausted: found.exhausted,
             verdict: found.verdict,
             stopped: found.stopped,
@@ -468,6 +476,9 @@ impl<'a> Space<'a> {
         )?;
         for (s, o) in fresh.into_iter().zip(outs) {
             self.saturations += 1;
+            if s.is_empty() {
+                self.root_node = Some(o.node.clone());
+            }
             self.spent += o.state.len() as u64;
             let next = self.classes.len() as u32;
             let class = *self.classes.entry(o.state).or_insert(next);
@@ -872,6 +883,96 @@ impl<'a> Space<'a> {
         }
         Ok(f)
     }
+
+    /// A flagged program described past `--region-limit`, from the members
+    /// [`Self::cube_in_order`] met. Each is in `R`. Every proper subset of a
+    /// member was met in an earlier layer, so a member with no member of `R`
+    /// below it is certified minimal, monotone or not. The maximal line needs
+    /// the whole cube, and is not certified.
+    fn partial_cube(&self) -> Described {
+        // determinism-ok: sorted by size and candidates on the next line.
+        let mut met: Vec<(&Box<[u32]>, &Seen)> = self.seen.iter().collect();
+        met.sort_by(|a, b| (a.0.len(), a.0).cmp(&(b.0.len(), b.0)));
+        let members: FxHashSet<&[u32]> = met
+            .iter()
+            .filter(|(_, s)| s.in_r())
+            .map(|(set, _)| &set[..])
+            .collect();
+        let alive: FxHashSet<&[u32]> = met
+            .iter()
+            .filter(|(_, s)| !s.dead)
+            .map(|(set, _)| &set[..])
+            .collect();
+        let mut minimal_commitments: Vec<Box<[u32]>> = Vec::new();
+        let mut order: Vec<u32> = Vec::new();
+        let mut by_class: FxHashMap<u32, described::State> = FxHashMap::default();
+        for (set, s) in met.iter().filter(|(_, s)| s.in_r()) {
+            let minimal = !proper_subsets(set).any(|p| members.contains(&p[..]));
+            if minimal {
+                minimal_commitments.push((*set).clone());
+            }
+            let st = by_class.entry(s.class).or_insert_with(|| {
+                order.push(s.class);
+                described::State {
+                    rep: (*set).clone(),
+                    closure: s.closure.clone(),
+                    commitments: 0,
+                    generators: Vec::new(),
+                    minimal: false,
+                    maximal: false,
+                }
+            });
+            st.commitments += 1;
+            st.minimal |= minimal;
+            if !st.generators.iter().any(|g| is_subset(g, set)) {
+                st.generators.push((*set).clone());
+            }
+        }
+        let mut states: Vec<described::State> = order
+            .iter()
+            .map(|c| by_class.remove(c).expect("met"))
+            .collect();
+        states.sort_by(|a, b| (a.closure.len(), &a.closure).cmp(&(b.closure.len(), &b.closure)));
+        let dead: Vec<&[u32]> = met
+            .iter()
+            .filter(|(_, s)| s.dead)
+            .map(|(set, _)| &set[..])
+            .collect();
+        let root = self.seen.get(&[][..]);
+        let node = self.root_node.clone().unwrap_or_default();
+        Described {
+            candidates: self.candidates.clone(),
+            monotonicity: self.monotonicity.clone(),
+            route: Route::Cube,
+            exhausted: false,
+            complete_up_to: None,
+            root: described::Root {
+                alive: root.is_some_and(|r| !r.dead) || (root.is_none() && !self.root_dead),
+                owes: root.map_or(0, |r| r.owes),
+                owed: node.owed,
+                core: node.core,
+                refuted_by: node.refuted_by,
+            },
+            any_alive: !alive.is_empty(),
+            k_c: members.len() as u64,
+            minimal_commitments,
+            nogoods: dead
+                .iter()
+                .filter(|d| proper_subsets(d).all(|p| alive.contains(&p[..])))
+                .count() as u64,
+            dead_alone: dead.iter().filter(|d| d.len() == 1).count() as u64,
+            owing_met: met.iter().any(|(_, s)| s.owes > 0),
+            dead_met: !dead.is_empty(),
+            states,
+            shape: None,
+            frontier: Vec::new(),
+            work: described::Work {
+                saturations: self.saturations,
+                facts: self.spent,
+                layers: None,
+            },
+        }
+    }
 }
 
 /// Steps of 1, 2, 4, … up to [`BATCH`] nodes.
@@ -954,8 +1055,9 @@ fn describe_route_1(
             jobs: opts.jobs,
         },
     )?;
-    let saturations = d.points.len() as u64;
-    let facts: u64 = d.layers.iter().map(|l| l.facts).sum();
+    let saturations = d.points.len() as u64 + u64::from(d.top.is_some());
+    let facts: u64 = d.layers.iter().map(|l| l.facts).sum::<u64>() + d.top_facts;
+    let described = described::of_downset(&d);
     let mut states = Vec::new();
     let (mut k_c, mut k_s) = (0u64, 0u64);
     for (i, p) in d.points.iter().enumerate() {
@@ -1011,6 +1113,7 @@ fn describe_route_1(
         exhausted: shape.is_some(),
         shape,
         counts: Some(Counts { k_c, k_s }),
+        described: Some(Box::new(described)),
         states,
         minimal: Vec::new(),
         verdict: None,
@@ -1069,8 +1172,10 @@ fn flagged(
             k_c: found.members,
             k_s: found.states.len() as u64,
         });
+        let partial = describe_all.then(|| Box::new(sp.partial_cube()));
         let mut answer = sp.answer(opts.mode, Route::Cube, found);
         answer.counts = counts;
+        answer.described = partial;
         return Ok(answer);
     }
     let outcome = region::compute_prepared(
@@ -1185,6 +1290,7 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
         // determinism-ok: a count over the values, which no order reaches.
         merged: per_class.values().filter(|&&c| c > 1).count(),
     });
+    let described = describe_all.then(|| Box::new(described::of_cube(&r)));
     // Facts beyond root: the non-candidates and the candidates each holds.
     let facts: u64 = r
         .nodes
@@ -1202,6 +1308,7 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
             k_s: classes.len() as u64,
         }),
         shape,
+        described,
         exhausted,
         verdict,
         stopped: None,
