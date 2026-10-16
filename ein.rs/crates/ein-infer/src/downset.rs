@@ -36,9 +36,14 @@
 //!
 //! ### Where it stops
 //!
-//! At a budget of visited commitments, checked before each layer, so a
-//! declined run has visited whole layers `0 … k` and nothing past them. What
-//! the route found then is exact up to size `k` and says nothing beyond it.
+//! At a budget of **facts beyond root**, summed over the visited fixpoints —
+//! the unit the user ruled on 2026-10-16, because per node the cost spreads
+//! 400× across the corpus and per fact 28× (`route1_reach.md` § 3). A layer's
+//! facts are known only once it has run, so the budget is checked before each
+//! layer against a projection: the layer's size times the facts per node of
+//! the layer before, at least one. A declined run has visited whole layers
+//! `0 … k` and nothing past them. What the route found then is exact up to
+//! size `k` and says nothing beyond it.
 
 use std::time::{Duration, Instant};
 
@@ -50,10 +55,10 @@ use crate::monotone::Monotonicity;
 use crate::region::{Axes, Candidate, Cost, DEAD, OWING, Prepared, fan_out, pool_of, prepare};
 use crate::solve::SolveError;
 
-/// Visited commitments past which the route declines: the oracle's cost at
-/// its own limit, `2¹⁶` saturations. T1e2.1a.9.1 measured where it falls
-/// (`route1_reach.md`).
-pub const DEFAULT_BUDGET: u64 = 1 << 16;
+/// Facts beyond root past which the route declines: `2¹⁹`, ruled 2026-10-16
+/// on T1e2.1a.9.1's measurement (`route1_reach.md` § 4) — the smallest budget
+/// that loses nothing the corpus has below the zebra family.
+pub const DEFAULT_BUDGET: u64 = 1 << 19;
 
 /// Nodes per fan-out, as the oracle's.
 const BATCH: usize = 1024;
@@ -61,8 +66,12 @@ const BATCH: usize = 1024;
 /// How the route is asked.
 #[derive(Clone, Copy, Debug)]
 pub struct Options {
-    /// The most commitments it visits.
+    /// The most facts beyond root it derives, summed over its fixpoints and
+    /// checked against each layer's projection.
     pub budget: u64,
+    /// The most commitments it visits — the measurement examples' unit,
+    /// which `route1_reach.md`'s visit tables were taken in.
+    pub max_visits: u64,
     /// Threads, with [`crate::region::Options::jobs`]' contract: any value
     /// gives the same record.
     pub jobs: usize,
@@ -72,9 +81,29 @@ impl Default for Options {
     fn default() -> Self {
         Options {
             budget: DEFAULT_BUDGET,
+            max_visits: u64::MAX,
             jobs: 1,
         }
     }
+}
+
+impl Options {
+    /// No budget in either unit: the route runs to the end of the down-set.
+    pub fn unbounded(jobs: usize) -> Self {
+        Options {
+            budget: u64::MAX,
+            max_visits: u64::MAX,
+            jobs,
+        }
+    }
+}
+
+/// Layer `layer`'s projected facts, from its size and the facts per node of
+/// the layer before — at least one, so that a layer of nodes that derive
+/// nothing still costs its saturations.
+pub(crate) fn projected(next: u64, before: Option<&Layer>) -> u64 {
+    let per_node = before.map_or(1, |l| (l.facts / l.visited.max(1)).max(1));
+    next.saturating_mul(per_node)
 }
 
 /// One visited commitment.
@@ -121,9 +150,15 @@ pub struct Layer {
 pub enum Declined {
     /// The static check found a site: the theorem does not license the route.
     NotMonotone,
-    /// Layer `layer` would have taken the visit count past the budget; it
-    /// held `next` commitments.
-    Budget { layer: usize, next: u64 },
+    /// Layer `layer` would have taken the run past its budget: `next`
+    /// commitments, projected at `projected` facts on top of the `spent`
+    /// already derived (or past `max_visits`).
+    Budget {
+        layer: usize,
+        next: u64,
+        spent: u64,
+        projected: u64,
+    },
     /// `from` is alive and discharged, `to` is `from` plus one fact, alive,
     /// and owes: the cube contradicts the static verdict. Both are indices
     /// into [`DownSet::points`].
@@ -237,6 +272,19 @@ pub fn compute(
     opts: &Options,
 ) -> Result<DownSet, SolveError> {
     let t_root = Instant::now();
+    let prepared = prepare(root, terms, ast)?;
+    compute_prepared(root, terms, ast, prepared, t_root, opts)
+}
+
+/// [`compute`] after [`prepare`], for [`crate::explore`].
+pub(crate) fn compute_prepared(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    prepared: Prepared,
+    t_root: Instant,
+    opts: &Options,
+) -> Result<DownSet, SolveError> {
     let Prepared {
         snapshot,
         root_dead,
@@ -244,7 +292,7 @@ pub fn compute(
         hypothesised,
         monotonicity,
         memo,
-    } = prepare(root, terms, ast)?;
+    } = prepared;
     let mut out = DownSet {
         candidates,
         monotonicity,
@@ -274,10 +322,17 @@ pub fn compute(
     while !frontier.is_empty() {
         let layer = out.layers.len();
         let visited = out.points.len() as u64;
-        if visited + frontier.len() as u64 > opts.budget {
+        let next = frontier.len() as u64;
+        let spent: u64 = out.layers.iter().map(|l| l.facts).sum();
+        let projected = projected(next, out.layers.last());
+        if visited.saturating_add(next) > opts.max_visits
+            || spent.saturating_add(projected) > opts.budget
+        {
             out.declined = Some(Declined::Budget {
                 layer,
-                next: frontier.len() as u64,
+                next,
+                spent,
+                projected,
             });
             break;
         }
@@ -356,7 +411,7 @@ pub fn compute(
 /// The next layer: every `(k+1)`-set whose `k`-subsets are all in `alive`,
 /// which is sorted lexicographically and holds sets of one size `k ≥ 1`.
 /// The output is sorted the same way.
-fn join(alive: &[Box<[u32]>]) -> Vec<Box<[u32]>> {
+pub(crate) fn join(alive: &[Box<[u32]>]) -> Vec<Box<[u32]>> {
     let is_alive: FxHashSet<&[u32]> = alive.iter().map(|s| &s[..]).collect();
     let mut out = Vec::new();
     let mut probe: Vec<u32> = Vec::new();
@@ -410,7 +465,7 @@ fn contradiction(points: &[Point], index: &FxHashMap<Box<[u32]>, u32>) -> Option
     None
 }
 
-fn without(set: &[u32], drop: usize, into: &mut Vec<u32>) {
+pub(crate) fn without(set: &[u32], drop: usize, into: &mut Vec<u32>) {
     into.clear();
     into.extend(
         set.iter()
@@ -420,7 +475,7 @@ fn without(set: &[u32], drop: usize, into: &mut Vec<u32>) {
     );
 }
 
-fn is_subset(a: &[u32], b: &[u32]) -> bool {
+pub(crate) fn is_subset(a: &[u32], b: &[u32]) -> bool {
     let mut j = 0;
     for &x in a {
         while j < b.len() && b[j] < x {

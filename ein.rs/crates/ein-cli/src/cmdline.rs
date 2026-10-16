@@ -72,6 +72,17 @@ fn solutions_spec(s: &str) -> Result<i64, String> {
     }
 }
 
+/// `--region-budget`'s count — one or more: a budget of nothing would be a
+/// run that answers nothing, which is not a question anyone asks.
+fn region_budget_spec(s: &str) -> Result<i64, String> {
+    match int_arg(s)? {
+        n if n >= 1 => Ok(n),
+        n => Err(format!(
+            "invalid region budget: '{n}' (expected 1 or more facts)"
+        )),
+    }
+}
+
 /// `--region-limit`'s `n` — **not negative**, the
 /// [S5](../../../../plans/m1e2_correctness/README.md#p1e23--surfaces-that-misreport-the-answer-proposed)
 /// shape `int_arg` alone would let through.
@@ -313,7 +324,11 @@ fn solve_command() -> Command {
                 .value_name("N")
                 .value_parser(solutions_spec)
                 .default_value("1")
-                .help("stop after N distinct solutions (default: 1)"),
+                .help(
+                    "stop after N distinct solutions (default: 1). With \
+                     --minimal, --maximal or --region-budget: N states of \
+                     the chosen part of the region",
+                ),
         )
         .arg(flag(
             'e',
@@ -324,8 +339,58 @@ fn solve_command() -> Command {
         ))
         .group(
             ArgGroup::new("stop")
-                .args(["solutions", "exhaustive"])
+                .args(["solutions", "exhaustive", "single"])
                 .multiple(false),
+        )
+        // ── the region modes — M1e2 S1e2.1a.9, solve_interface.md ──
+        .arg(
+            Arg::new("minimal")
+                .long("minimal")
+                .action(ArgAction::SetTrue)
+                .help(
+                    "the region's minimal line: the commitments of R that \
+                     nothing can be taken from, and their states. A region \
+                     mode: until S1e2.1a.5 one of the four region flags is \
+                     what takes a run off the walk",
+                ),
+        )
+        .arg(
+            Arg::new("maximal")
+                .long("maximal")
+                .action(ArgAction::SetTrue)
+                .help(
+                    "the region's maximal line: the states of R that nothing \
+                     can be added to, found by climbing from each member of \
+                     R. What the walk looks for, under the oracle's node",
+                ),
+        )
+        .group(
+            ArgGroup::new("which")
+                .args(["minimal", "maximal"])
+                .multiple(false),
+        )
+        .arg(
+            Arg::new("single")
+                .long("single")
+                .action(ArgAction::SetTrue)
+                .help(
+                    "expect exactly one state in the chosen part of the \
+                     region: Solution exits 0; Ambiguity, Contradiction or \
+                     Open exit 1, and so does a run that stopped before it \
+                     decided",
+                ),
+        )
+        .arg(
+            Arg::new("region-budget")
+                .long("region-budget")
+                .value_name("FACTS")
+                .value_parser(region_budget_spec)
+                .help(
+                    "the region modes' budget: facts derived beyond root, \
+                     summed over every saturation (default 2^19 = 524288). \
+                     A run that reaches it prints what it established and \
+                     bounds, never a different answer",
+                ),
         )
         // ── engine knobs ──
         .arg(
@@ -745,6 +810,60 @@ fn test_command() -> Command {
     )
 }
 
+/// `ein oracle` — the region by brute force, M1e2 S1e2.1a.9 T1e2.1a.9.4: every
+/// subset of the root candidates saturated, nothing skipped. It is the
+/// reference every `ein solve` mode is held to, and it costs `2ⁿ` on every
+/// program, so it runs only when asked for by name
+/// ([`solve_interface.md` § 2.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#22-ein-oracle)).
+fn oracle_command() -> Command {
+    Command::new("oracle")
+        .about("the solution region by brute force: every subset of the root candidates saturated (M1e2)")
+        .arg(Arg::new("file").required(true))
+        .arg(
+            Arg::new("region-limit")
+                .long("region-limit")
+                .value_name("N")
+                .value_parser(region_limit_spec)
+                .default_value("16")
+                .help(
+                    "the most root candidates the cube is computed for: 2^N \
+                     saturations. Above it the command refuses; 17-19 warns, \
+                     20 and more warns with the projected cost",
+                ),
+        )
+        .arg(
+            Arg::new("dump")
+                .long("dump")
+                .value_name("DIR")
+                .value_parser(artefact_path)
+                .help(
+                    "also write the cube to DIR: region.json and region.md \
+                     (docs/kernel/inference/region_dump.md), which `ein render \
+                     region DIR` draws",
+                ),
+        )
+        .arg(
+            Arg::new("states")
+                .long("states")
+                .action(ArgAction::SetTrue)
+                .help("(--dump) also keep every node's state beyond root's, as text, in region.json"),
+        )
+        .arg(
+            Arg::new("jobs")
+                .short('j')
+                .long("jobs")
+                .value_name("JOBS")
+                .value_parser(jobs_spec)
+                .default_value("1")
+                .help("threads, or 'auto' (default: 1). Same cube, byte for byte"),
+        )
+        .arg(flag(
+            's',
+            "stats",
+            "print the work: saturations and the wall clock of each phase",
+        ))
+}
+
 /// `ein saturate`'s **own** parser, with its own `prog`.
 ///
 /// Registered in the top-level tree as a bare subcommand purely so it appears
@@ -827,6 +946,7 @@ pub fn command() -> Command {
         )
         .subcommand(render_command())
         .subcommand(solve_command())
+        .subcommand(oracle_command())
         .subcommand(test_command())
         .subcommand(
             // Bare — never parsed. Its flags live in `saturate_command`.

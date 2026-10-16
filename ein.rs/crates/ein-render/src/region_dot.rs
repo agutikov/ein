@@ -482,10 +482,8 @@ fn dot(doc: &RegionDoc, cube: &Cube, walk: &WalkDoc, ov: &Overlay, view: View) -
             }
         ),
         format!(
-            "walk: {} k = {} exhausted = {} · view {} ({} of {} nodes)",
-            walk.verdict,
-            walk.k,
-            walk.exhausted,
+            "{} · view {} ({} of {} nodes)",
+            walk.line(),
             view.as_str(),
             nodes.len(),
             1u64 << n
@@ -976,13 +974,7 @@ fn refused_dot(doc: &RegionDoc, walk: &WalkDoc) -> String {
         format!("region · {}", doc.source),
         format!("n = {} — no cube", doc.n),
         doc.refused.clone().unwrap_or_default(),
-        format!(
-            "walk: {} k = {} exhausted = {} · {} enterings",
-            walk.verdict,
-            walk.k,
-            walk.exhausted,
-            walk.enterings.len()
-        ),
+        format!("{} · {} enterings", walk.line(), walk.enterings.len()),
     ];
     let _ = writeln!(
         out,
@@ -1020,7 +1012,7 @@ fn table(doc: &RegionDoc, walk: &WalkDoc, ov: &Overlay) -> String {
     let n = doc.n;
     let _ = writeln!(
         out,
-        "n = {n} · |R| = {} of {} · {} · walk: **{}**, k = {}, exhausted = {}\n",
+        "n = {n} · |R| = {} of {} · {} · {}\n",
         cube.size_r,
         1u64 << n,
         if doc.monotone {
@@ -1028,9 +1020,7 @@ fn table(doc: &RegionDoc, walk: &WalkDoc, ov: &Overlay) -> String {
         } else {
             format!("**not monotone** ({} sites)", doc.sites.len())
         },
-        walk.verdict,
-        walk.k,
-        walk.exhausted
+        walk.line()
     );
     let names = |ms: &[u64]| -> String {
         if ms.is_empty() {

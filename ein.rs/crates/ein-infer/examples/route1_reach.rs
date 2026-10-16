@@ -8,12 +8,16 @@
 //! the static verdict, what route 1 visited per layer, whether it declined
 //! and why, `k_c`, `k_s`, the lines, and the wall clock of each route. The
 //! route the default would take is the last field: `1` (route 1 described
-//! `R`), `2` (the oracle, `n ≤ 16`), or `3` (neither: the walk, partial).
+//! `R`), `2` (the oracle, `n ≤ 16`), or `3` (neither: partial).
 //!
 //! ```sh
 //! cargo run --release -p ein-infer --example route1_reach -- \
-//!     [--budget N] [--jobs J] [--oracle] [FILE…] > rows.jsonl
+//!     [--budget N] [--facts F] [--jobs J] [--oracle] [FILE…] > rows.jsonl
 //! ```
+//!
+//! `--budget` is in **visited commitments**, default `2¹⁶`, the unit
+//! `route1_reach.md`'s sweeps were taken in. `--facts` adds the ruled unit,
+//! facts beyond root (`downset::DEFAULT_BUDGET`), and is off unless given.
 //!
 //! With no `FILE` it sweeps `corpus_files()` plus the register's witnesses.
 //! `utils/route1_reach.py` turns the rows into `route1_reach.md`'s tables.
@@ -38,7 +42,8 @@ fn loaded(path: &Path) -> Option<(ein_core::Kb, Terms, Ast)> {
 }
 
 fn main() {
-    let mut budget = downset::DEFAULT_BUDGET;
+    let mut budget: u64 = 1 << 16;
+    let mut facts = u64::MAX;
     let mut jobs = 1usize;
     let mut oracle = false;
     let mut files: Vec<PathBuf> = Vec::new();
@@ -51,6 +56,7 @@ fn main() {
                     .and_then(|v| v.parse().ok())
                     .expect("--budget N")
             }
+            "--facts" => facts = args.next().and_then(|v| v.parse().ok()).expect("--facts F"),
             "--jobs" => jobs = args.next().and_then(|v| v.parse().ok()).expect("--jobs J"),
             "--oracle" => oracle = true,
             _ => files.push(PathBuf::from(a)),
@@ -76,7 +82,11 @@ fn main() {
             continue;
         };
         let t = Instant::now();
-        let opts = downset::Options { budget, jobs };
+        let opts = downset::Options {
+            budget: facts,
+            max_visits: budget,
+            jobs,
+        };
         let d = match downset::compute(&mut kb, &mut terms, &ast, &opts) {
             Ok(d) => d,
             Err(e) => {
@@ -98,7 +108,7 @@ fn main() {
             .map(|(l, w)| json!([l.visited, l.dead, l.owing, l.r, l.facts, w.as_secs_f64()]))
             .collect();
         let declined = d.declined.as_ref().map(|x| match x {
-            Declined::Budget { layer, next } => {
+            Declined::Budget { layer, next, .. } => {
                 json!({"why": "budget", "layer": layer, "next": next})
             }
             other => json!({"why": other.as_str()}),

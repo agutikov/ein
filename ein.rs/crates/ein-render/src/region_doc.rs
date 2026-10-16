@@ -123,6 +123,9 @@ pub struct WDead {
 /// `walk.json`.
 #[derive(Clone, Debug, Default)]
 pub struct WalkDoc {
+    /// No `walk.json` in the directory: an `ein oracle --dump` (M1e2
+    /// T1e2.1a.9.4), drawn with no run overlaid.
+    pub absent: bool,
     pub verdict: String,
     pub k: i64,
     pub exhausted: bool,
@@ -347,6 +350,7 @@ impl WalkDoc {
         let u = j.get("universe");
         let list = |k: &str| j.get(k).map(Json::items).unwrap_or(&[]);
         Ok(WalkDoc {
+            absent: false,
             verdict: v
                 .and_then(|v| v.get("type"))
                 .and_then(Json::as_str)
@@ -428,10 +432,29 @@ pub fn read_dir(dir: &Path) -> Result<(RegionDoc, WalkDoc), String> {
         let text = std::fs::read_to_string(&p).map_err(|e| format!("{}: {e}", p.display()))?;
         parse(&text).map_err(|e| format!("{}: {e}", p.display()))
     };
-    Ok((
-        RegionDoc::from_json(&load("region.json")?)?,
-        WalkDoc::from_json(&load("walk.json")?)?,
-    ))
+    let walk = if dir.join("walk.json").exists() {
+        WalkDoc::from_json(&load("walk.json")?)?
+    } else {
+        WalkDoc {
+            absent: true,
+            ..WalkDoc::default()
+        }
+    };
+    Ok((RegionDoc::from_json(&load("region.json")?)?, walk))
+}
+
+impl WalkDoc {
+    /// The drawing's one line about the run.
+    pub fn line(&self) -> String {
+        if self.absent {
+            "no run overlaid (an `ein oracle` dump)".to_string()
+        } else {
+            format!(
+                "walk: {} k = {} exhausted = {}",
+                self.verdict, self.k, self.exhausted
+            )
+        }
+    }
 }
 
 // ── the overlay ─────────────────────────────────────────────────────
@@ -606,6 +629,13 @@ impl Overlay {
 
         let mut marks = vec![Mark::default(); size];
         marks[0].root = Some("root");
+        if w.absent {
+            // No run: the cube alone, every node unmarked.
+            return Overlay {
+                marks,
+                ..Overlay::default()
+            };
+        }
         if search_root != 0 {
             marks[search_root as usize].root = Some("root after the cascade");
         }

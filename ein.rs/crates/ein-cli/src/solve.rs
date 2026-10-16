@@ -508,7 +508,7 @@ fn models_form(m: &clap::ArgMatches) -> ModelsForm {
 /// *puzzle file* set it — a `.ein` that reads differently on an 8-core machine
 /// than on a 4-core one, through a field the KB-shape digest renders. Jobs is
 /// an execution knob; `SolverConfig` is the semantics.
-fn resolve_jobs(n: i64) -> usize {
+pub(crate) fn resolve_jobs(n: i64) -> usize {
     if n == 0 {
         return std::thread::available_parallelism().map_or(1, |n| n.get());
     }
@@ -528,6 +528,11 @@ const ONE_PATH_FLAGS: [&str; 7] = [
 ];
 
 pub fn run(m: &ArgMatches) -> i32 {
+    // A region mode — M1e2 T1e2.1a.9.4. Until S1e2.1a.5 one of the four
+    // region flags is what takes a run off the walk.
+    if crate::modes::wanted(m) {
+        return crate::modes::run(m);
+    }
     // `--max-set-size` and `EIN_TRAVERSAL=tree` are mutually exclusive — M1e
     // S1e.2.1, `CO-H3`(a). The reason is `common::refuse_max_set_size_under_tree`'s.
     if crate::common::refuse_max_set_size_under_tree(m) {

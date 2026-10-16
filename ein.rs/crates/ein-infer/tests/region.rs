@@ -766,10 +766,7 @@ fn route_1_is_the_oracle_on_every_monotone_program_it_reaches() {
             continue;
         };
         let (mut kb1, mut terms1, ast1) = loaded(&path).expect("loaded once already");
-        let opts = downset::Options {
-            budget: u64::MAX,
-            jobs: 1,
-        };
+        let opts = downset::Options::unbounded(1);
         let d = downset::compute(&mut kb1, &mut terms1, &ast1, &opts)
             .unwrap_or_else(|e| panic!("{rel}: {e}"));
         if facts_text(&kb1, &terms1) != facts_text(&kb, &terms) {
@@ -816,10 +813,7 @@ fn route_1_jobs_change_nothing() {
     ] {
         let run = |jobs: usize| {
             let (mut kb, mut terms, ast) = loaded(&repo_root().join(rel)).expect(rel);
-            let opts = downset::Options {
-                budget: u64::MAX,
-                jobs,
-            };
+            let opts = downset::Options::unbounded(jobs);
             downset::compute(&mut kb, &mut terms, &ast, &opts).unwrap()
         };
         let (a, b) = (run(1), run(4));
@@ -837,17 +831,56 @@ fn route_1_jobs_change_nothing() {
 
 /// Past the oracle's limit: route 1 describes `zebra2.ein`'s neighbours or
 /// declines at its budget, and says which — never a silent partial answer.
+/// In visits, as the measurement examples ask.
 #[test]
 fn route_1_declines_at_its_budget_with_whole_layers() {
     let (mut kb, mut terms, ast) =
         loaded(&repo_root().join("examples/branching/10_kill_cache_on.ein")).unwrap();
-    let opts = downset::Options { budget: 3, jobs: 1 };
+    let opts = downset::Options {
+        max_visits: 3,
+        ..downset::Options::unbounded(1)
+    };
     let d = downset::compute(&mut kb, &mut terms, &ast, &opts).unwrap();
-    let Some(Declined::Budget { layer, next }) = d.declined else {
+    let Some(Declined::Budget { layer, next, .. }) = d.declined else {
         panic!("{:?}", d.declined);
     };
     assert_eq!(layer, 1, "∅ fits; layer 1's {next} do not");
     assert_eq!(next, d.n() as u64);
     assert_eq!(d.points.len(), 1);
+    assert!(d.description.is_none());
+}
+
+/// The ruled unit, facts beyond root: the budget is checked before each
+/// layer against the layer's size times the facts per node of the layer
+/// before, so a run declines on a projection and never mid-layer, and what it
+/// spent is at most the budget.
+#[test]
+fn route_1_declines_at_a_facts_budget_before_the_layer_that_would_pass_it() {
+    let (mut kb, mut terms, ast) = loaded(&repo_root().join("examples/zebra2-hints.ein")).unwrap();
+    let budget = 1 << 14;
+    let opts = downset::Options {
+        budget,
+        ..downset::Options::unbounded(1)
+    };
+    let d = downset::compute(&mut kb, &mut terms, &ast, &opts).unwrap();
+    let Some(Declined::Budget {
+        layer,
+        next,
+        spent,
+        projected,
+    }) = d.declined
+    else {
+        panic!("{:?}", d.declined);
+    };
+    assert_eq!(d.layers.len(), layer, "whole layers 0 … {layer} − 1");
+    assert_eq!(spent, d.layers.iter().map(|l| l.facts).sum::<u64>());
+    assert!(spent <= budget, "{spent} spent of {budget}");
+    assert!(spent + projected > budget);
+    let before = d.layers.last().expect("root ran");
+    assert_eq!(
+        projected,
+        next * (before.facts / before.visited).max(1),
+        "the layer's size times the facts per node of the layer before"
+    );
     assert!(d.description.is_none());
 }

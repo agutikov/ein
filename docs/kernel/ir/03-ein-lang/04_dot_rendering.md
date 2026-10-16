@@ -233,6 +233,11 @@ ein solve examples/branching/15_lookahead_two_step_on.ein -e --dump-region out/
 ein render region out/ | dot -Tsvg > region.svg     # --view auto|full|border|lines|table
 ```
 
+A directory with no `walk.json` — what `ein oracle --dump DIR` writes since
+M1e2 S1e2.1a.9 — is drawn with **no run overlaid**: every node carries its
+status and nothing else, and the note says *no run overlaid (an `ein oracle`
+dump)* where it would name the walk.
+
 **The nodes are the pure cube.** Every subset `C` of the root candidates `H₁`
 is a node. There is one rank per layer, with `L0` at the top, and a thin edge
 from `C` to `C + h` for each single hypothesis `h`. This cube is the lattice

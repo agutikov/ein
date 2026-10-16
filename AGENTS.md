@@ -57,7 +57,7 @@ constrained-reasoning research.
   and `inference/implementation.md` + `ir/02-data-model/03_implementation.md`,
   the module maps. **Since M1e S1e.5.1 there is also a
   [configuration reference](docs/kernel/configuration.md)** — the 17
-  `(config …)` flags, the 65 CLI options, the eight `EIN_*` names the binary
+  `(config …)` flags, the 74 CLI options, the eight `EIN_*` names the binary
   actually reads, the precedence between the three, and on every flag row a
   *does it change the answer* and a *stability* column. Its defaults block is
   `ein solve --dump-config`'s own output (`EIN_BLESS=1` re-banks it), and two
@@ -78,12 +78,18 @@ constrained-reasoning research.
   ([`ein_infer::downset`](ein.rs/crates/ein-infer/src/downset.rs)) computes a
   monotone program's R from its alive set and N alone. It is held to the
   oracle node for node, and it counts `zebra.ein`'s R as one state of 261 982
-  commitments. `ein solve` does not reach it yet. The interface that will is
-  [`solve_interface.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md),
-  approved 2026-10-16. It has one tool for R, `ein solve`, whose modes each do the
-  least work their question needs, and `ein oracle` for the cube. There is no
-  `ein walk`: the user withdrew it on 2026-10-16, because two commands must
-  never give inconsistent answers.
+  commitments. **The interface on top of it is
+  [`solve_interface.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)**,
+  approved 2026-10-16. There is one tool for R, `ein solve`, whose modes each
+  do the least work their question needs, and `ein oracle` for the cube. There
+  is no `ein walk`: the user withdrew it, because two commands must never give
+  inconsistent answers. **The modes are built**
+  ([`ein_infer::explore`](ein.rs/crates/ein-infer/src/explore.rs)):
+  `ein solve --minimal`, `--maximal`, `--single` and `--region-budget F`, each
+  with `-n N`, and `ein oracle FILE [--dump DIR]`.
+  `ein-infer/tests/explore.rs` holds every mode to the oracle. Until S1e2.1a.5
+  switches the default, a bare `ein solve` is still the walk, and a walk option
+  beside a region flag is a usage error.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -328,9 +334,10 @@ constrained-reasoning research.
   is a crate at all), `ein-render` (DOT views, the markdown trace, the
   state/lattice dumps, the JSON summary) and `ein-cli`. They stack linearly up
   to `ein-infer` and fork there — `ein-einb` and `ein-render` are siblings
-  above it, and `ein-cli` depends on both. `ein-cli` fronts **four**
-  subcommands since M1c S1c.1.3 — `ein {render,saturate,solve,test}`, plus
-  `ein kb` under the `einb` feature.
+  above it, and `ein-cli` depends on both. `ein-cli` fronts **five**
+  subcommands — `ein {oracle,render,saturate,solve,test}`, `oracle` since M1e2
+  S1e2.1a.9 and `test` since M1c S1c.1.3 — plus `ein kb` under the `einb`
+  feature.
 
   **`.einb` is a private cache format, never an interchange one.** `ein kb save
   <file.ein> <out.einb>` writes one and every command that takes a `.ein` path
@@ -523,6 +530,8 @@ EIN_LEFTOVER=1    ein solve … --json-summary out.json        # the M1d S1d.3.1
 ein test examples tests stdlib --json-report r.json          # the M1d S1d.4.1 read-out
 ein solve … --dump-answer DIR                                # M1e2: the answer as files, each state loadable
 ein solve … --dump-region DIR                                # M1e2: the region of the lattice, computed without the search
+ein solve … --maximal | --minimal | --single | -n N --region-budget F   # M1e2: a question about R, the least work it needs
+ein oracle FILE [--dump DIR]                                 # M1e2: R by brute force, 2ⁿ saturations — the reference every mode is held to
 ein render region DIR [--view full|border|lines|table]       # M1e2: that region drawn, the run's walk on it
 cargo run --release -p ein-infer --example route1_reach      # M1e2: route 1, R from the alive down-set, over the corpus
 cargo run --release -p ein-infer --example walk_vs_region    # M1e2: the walk's answer and nodes against R
@@ -537,7 +546,7 @@ set.** The shipped binary reads **eight** (three of them only in a non-default
 build), the test harness reads ten more, `utils/` and the shell two — and six
 greppable `EIN_*` names are not environment variables at all, `EIN_RS` and
 `EIN_RENDER_LEVI` among them. The whole census, classified, with the 17
-`(config …)` flags and the 65 CLI options beside it and a *does it change the
+`(config …)` flags and the 74 CLI options beside it and a *does it change the
 answer* column on every flag row:
 [`docs/kernel/configuration.md`](docs/kernel/configuration.md) (M1e S1e.5.1),
 pinned by `ein-cli/tests/config_reference.rs`.

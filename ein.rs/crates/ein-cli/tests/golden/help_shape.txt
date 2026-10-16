@@ -7,6 +7,14 @@ COMMAND ein kb save
   OPTION --saturate -s metavar=- arity=0 default=False choices=- group=- required=False help=bank the least fixpoint too, not just the loaded KB
   POSITIONAL file required=True help=
   POSITIONAL out required=True help=
+COMMAND ein oracle
+  ABOUT the solution region by brute force: every subset of the root candidates saturated (M1e2)
+  OPTION --dump -- metavar=DIR arity=1 default=None choices=- group=- required=False help=also write the cube to DIR: region.json and region.md (docs/kernel/inference/region_dump.md), which `ein render region DIR` draws
+  OPTION --jobs -j metavar=JOBS arity=1 default='1' choices=- group=- required=False help=threads, or 'auto' (default: 1). Same cube, byte for byte
+  OPTION --region-limit -- metavar=N arity=1 default='16' choices=- group=- required=False help=the most root candidates the cube is computed for: 2^N saturations. Above it the command refuses; 17-19 warns, 20 and more warns with the projected cost
+  OPTION --states -- metavar=- arity=0 default=False choices=- group=- required=False help=(--dump) also keep every node's state beyond root's, as text, in region.json
+  OPTION --stats -s metavar=- arity=0 default=False choices=- group=- required=False help=print the work: saturations and the wall clock of each phase
+  POSITIONAL file required=True help=
 COMMAND ein render
   ABOUT DOT for rules / constraints (S1.6.1)
 COMMAND ein render constraints
@@ -64,6 +72,8 @@ COMMAND ein solve
   OPTION --max-enterings -E metavar=MAX_ENTERINGS arity=1 default=None choices=- group=- required=False help=abort after N commitment tries
   OPTION --max-set-size -m metavar=MAX_SET_SIZE arity=1 default='5' choices=- group=- required=False help=commitment-set depth cap (default: 5)
   OPTION --max-time -T metavar=MAX_TIME arity=1 default=None choices=- group=- required=False help=abort after N wall-clock seconds
+  OPTION --maximal -- metavar=- arity=0 default=False choices=- group=which required=False help=the region's maximal line: the states of R that nothing can be added to, found by climbing from each member of R. What the walk looks for, under the oracle's node
+  OPTION --minimal -- metavar=- arity=0 default=False choices=- group=which required=False help=the region's minimal line: the commitments of R that nothing can be taken from, and their states. A region mode: until S1e2.1a.5 one of the four region flags is what takes a run off the walk
   OPTION --models -- metavar=FORM arity=1 default='list' choices=list|key|grid group=- required=False help=how to print the models: 'list' (a block per model, the default); 'key' (the smallest set of slots that tells them apart, and the table of combinations that occur — an ambiguous verdict only); 'grid' (each model and open state as a table, the anchor type's objects down the side, where the program's declarations license one). Changes stdout and nothing recorded
   OPTION --no-diagrams -G metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) suppress all inline dot blocks
   OPTION --no-kill-cache -K metavar=- arity=0 default=False choices=- group=- required=False help=disable the lookahead-kill (not h) cache (pairs with --no-lookahead to exercise the raw loop)
@@ -72,13 +82,15 @@ COMMAND ein solve
   OPTION --print-final-positive -P metavar=- arity=0 default=False choices=- group=- required=False help=like --print-final-state but drops the (not …) facts
   OPTION --print-final-state -p metavar=- arity=0 default=False choices=- group=- required=False help=dump each solution's derived facts (for an unsat verdict, the unsat-core facts instead)
   OPTION --progress-every -g metavar=PROGRESS_EVERY arity=1 default='100' choices=- group=- required=False help=under --verbose, log every N-th entering (default 100; set 1 to log every entering)
+  OPTION --region-budget -- metavar=FACTS arity=1 default=None choices=- group=- required=False help=the region modes' budget: facts derived beyond root, summed over every saturation (default 2^19 = 524288). A run that reaches it prints what it established and bounds, never a different answer
   OPTION --region-limit -- metavar=N arity=1 default='16' choices=- group=- required=False help=(--dump-region) the most root candidates the region is computed for: 2^N saturations. Above it the directory holds the walk and a note says why; 17-19 warns, 20 and more warns with the projected cost.
   OPTION --region-states -- metavar=- arity=0 default=False choices=- group=- required=False help=(--dump-region) also keep every node's state beyond root's, as text, in region.json
   OPTION --relevant -l metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) prune to the goal-relevant slice
   OPTION --reorder -R metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) cluster steps by target entity instead of engine order
   OPTION --seed -d metavar=SEED arity=1 default=None choices=- group=- required=False help=pin the --shuffle RNG seed for a reproducible permutation
   OPTION --shuffle -z metavar=- arity=0 default=False choices=- group=- required=False help=shuffle the within-layer commitment order (a per-layer random permutation). Fresh seed each run unless --seed pins it; the seed used is printed to stderr. Changes the TRAVERSAL order, not the verdict — the answer is shuffle-invariant.
-  OPTION --solutions -n metavar=N arity=1 default='1' choices=- group=stop required=False help=stop after N distinct solutions (default: 1)
+  OPTION --single -- metavar=- arity=0 default=False choices=- group=stop required=False help=expect exactly one state in the chosen part of the region: Solution exits 0; Ambiguity, Contradiction or Open exit 1, and so does a run that stopped before it decided
+  OPTION --solutions -n metavar=N arity=1 default='1' choices=- group=stop required=False help=stop after N distinct solutions (default: 1). With --minimal, --maximal or --region-budget: N states of the chosen part of the region
   OPTION --stats -s metavar=- arity=0 default=False choices=- group=- required=False help=print engine counters (k, enterings, layers, wall)
   OPTION --timing -t metavar=- arity=0 default=False choices=- group=- required=False help=print a per-phase wall-clock table: parse, kb load, compile, root saturation, hypothesis search (enterings, layers, saturations, per-hypothesis avg), and totals
   OPTION --trace -r metavar=FILE.md arity=1 default=None choices=- group=- required=False help=write the self-contained markdown derivation trace to FILE (a file, not stdout)

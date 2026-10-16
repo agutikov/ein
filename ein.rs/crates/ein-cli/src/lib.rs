@@ -1,6 +1,6 @@
 //! `ein` — the binary, as a library.
 //!
-//! Four subcommands, and the **delegated** dispatch that gives `saturate` its
+//! Five subcommands, and the **delegated** dispatch that gives `saturate` its
 //! own parser while still listing it in `ein --help`: `argv[0]` is intercepted
 //! before the top-level parser ever sees it — `clap` has no equivalent of
 //! "registered so it appears in help, never actually parsed".
@@ -23,6 +23,8 @@ mod factdump;
 pub mod help_shape;
 #[cfg(feature = "einb")]
 mod kb;
+mod modes;
+mod oracle;
 mod printers;
 mod render;
 pub mod saturate;
@@ -62,6 +64,7 @@ fn code(status: i32) -> ExitCode {
 fn dispatch(m: &clap::ArgMatches) -> i32 {
     match m.subcommand() {
         Some(("solve", sm)) => solve::run(sm),
+        Some(("oracle", sm)) => oracle::run(sm),
         Some(("test", sm)) => test::run(sm),
         Some(("render", sm)) => {
             let file =

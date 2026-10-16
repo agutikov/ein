@@ -1,4 +1,5 @@
-//! `ein solve --dump-region DIR` — the solution region and this run's walk.
+//! `ein solve --dump-region DIR` — the solution region and this run's walk;
+//! and `ein oracle --dump DIR` — the region alone ([`write_cube_dir`]).
 //!
 //! M1e2 [S1e2.1a.1](../../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
 //! Three files, documented in
@@ -41,6 +42,34 @@ pub struct RegionInputs<'a> {
     pub stop_after: Option<u64>,
 }
 
+/// Write `region.json` and `region.md` into `dir`, with no walk: what
+/// `ein oracle --dump DIR` asks for, M1e2 T1e2.1a.9.4. `ein render region`
+/// draws such a directory with no run overlaid.
+pub fn write_cube_dir(
+    dir: &Path,
+    oracle: &Outcome,
+    oracle_terms: &Terms,
+    inputs: &RegionInputs,
+) -> std::io::Result<()> {
+    std::fs::create_dir_all(dir)?;
+    // A previous `--dump-region` into the same directory leaves a walk this
+    // run did not take: it goes, so the drawing cannot overlay it.
+    match std::fs::remove_file(dir.join("walk.json")) {
+        Ok(()) => {}
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+        Err(e) => return Err(e),
+    }
+    std::fs::write(
+        dir.join("region.json"),
+        dumps_indent(&region_json(oracle, oracle_terms, inputs)) + "\n",
+    )?;
+    std::fs::write(
+        dir.join("region.md"),
+        region_md(oracle, oracle_terms, None, inputs),
+    )?;
+    Ok(())
+}
+
 /// Write `region.json`, `walk.json` and `region.md` into `dir`.
 pub fn write_region_dir(
     dir: &Path,
@@ -72,7 +101,7 @@ pub fn write_region_dir(
     )?;
     std::fs::write(
         dir.join("region.md"),
-        region_md(oracle, oracle_terms, &walk, inputs),
+        region_md(oracle, oracle_terms, Some(&walk), inputs),
     )?;
     Ok(())
 }
@@ -707,7 +736,12 @@ fn md_sets(r: &Region, ms: &[u64]) -> String {
         .join(", ")
 }
 
-fn region_md(oracle: &Outcome, terms: &Terms, walk: &Walk, inputs: &RegionInputs) -> String {
+fn region_md(
+    oracle: &Outcome,
+    terms: &Terms,
+    walk: Option<&Walk>,
+    inputs: &RegionInputs,
+) -> String {
     let mut out = format!("# Region · {}\n\n", inputs.source);
     let (candidates, m) = match oracle {
         Outcome::Region(r) => (&r.candidates, &r.monotonicity),
@@ -758,7 +792,9 @@ fn region_md(oracle: &Outcome, terms: &Terms, walk: &Walk, inputs: &RegionInputs
                 "## No region\n\n{}.\n\n",
                 refusal_note(*n, *limit)
             ));
-            out.push_str(&walk_md(None, walk));
+            if let Some(walk) = walk {
+                out.push_str(&walk_md(None, walk));
+            }
             return out;
         }
         Outcome::Region(r) => r,
@@ -935,7 +971,9 @@ fn region_md(oracle: &Outcome, terms: &Terms, walk: &Walk, inputs: &RegionInputs
             r.status.len()
         ));
     }
-    out.push_str(&walk_md(Some(r), walk));
+    if let Some(walk) = walk {
+        out.push_str(&walk_md(Some(r), walk));
+    }
     out.push_str(&format!(
         "## Cost\n\nroot {:.3} ms · {} nodes {:.3} ms ({:.1} µs each) · topology {:.3} ms. \
          These are the only lines of this directory that differ between two runs.\n",

@@ -39,7 +39,7 @@
 | surface | how many | who owns the list |
 |---|---:|---|
 | `(config …)` flags | **17** | `FIELDS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs); the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **65** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| CLI options | **74** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **8** read by the shipped binary, of 26 greppable names | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -379,13 +379,14 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**65** options across fourteen parsers, in the default build (`einb`,
+**74** options across fifteen parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 38 |
+| `ein solve` | 42 |
 | `ein test` | 9 |
+| `ein oracle` | 5 |
 | `ein saturate` | 5 |
 | `ein render kb` | 4 |
 | `ein render rule` | 2 |
@@ -397,7 +398,18 @@ parallel copy. What this page states is the *shape*, read off that golden:
 
 `ein`, `ein kb`, `ein render` and `ein render constraints` take none — they are
 dispatchers. `ein kb save` exists only under the `einb` feature; a
-`--no-default-features` build has 64 and no `ein kb` at all.
+`--no-default-features` build has 73 and no `ein kb` at all.
+
+**M1e2 S1e2.1a.9 added nine** (2026-10-16): `ein solve`'s four region flags,
+`--minimal`, `--maximal`, `--single` and `--region-budget`, and the new
+`ein oracle` with five. One of the four region flags takes a `solve` run off
+the walk and into a **region mode**, answered by
+[`ein_infer::explore`](../../ein.rs/crates/ein-infer/src/explore.rs) and held to
+the oracle by `ein-infer/tests/explore.rs`. A region mode takes `-n`, `-T`,
+`-j`, `--region-limit` and `-s`, and refuses every other `solve` option with a
+usage error, exit 2: what the walk's options mean there is S1e2.1a.5's to say.
+The design, and what is retired when the default switches, is
+[`solve_interface.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md).
 
 ### 3.2 The six options that shadow a flag
 

@@ -16,7 +16,16 @@ static check it reports is
 
 ```sh
 ein solve examples/branching/15_lookahead_two_step_on.ein -e --dump-region out/
+ein oracle examples/branching/15_lookahead_two_step_on.ein --dump out/   # the cube alone
 ```
+
+**Since M1e2 S1e2.1a.9 `ein oracle --dump DIR` writes the same directory
+without a walk**: `region.json` and `region.md`, no `walk.json`, and no
+*This run's walk* section in `region.md`. It removes a `walk.json` an earlier
+`--dump-region` left there, so a drawing never overlays a run that did not
+happen. `ein render region` draws such a directory with no run overlaid.
+`--dump-region` itself goes when the walk does, at S1e2.1a.5
+([`solve_interface.md` § 6](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#6-what-moves)).
 
 ## The directory
 

@@ -237,6 +237,21 @@ pub fn compute(
     on_projection: &mut dyn FnMut(&Projection),
 ) -> Result<Outcome, SolveError> {
     let t_root = Instant::now();
+    let prepared = prepare(root, terms, ast)?;
+    compute_prepared(root, terms, ast, prepared, t_root, opts, on_projection)
+}
+
+/// [`compute`] after [`prepare`] — how [`crate::explore`] reaches the cube
+/// once it has read the static verdict, without saturating root twice.
+pub(crate) fn compute_prepared(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    prepared: Prepared,
+    t_root: Instant,
+    opts: &Options,
+    on_projection: &mut dyn FnMut(&Projection),
+) -> Result<Outcome, SolveError> {
     let Prepared {
         snapshot,
         root_dead,
@@ -244,7 +259,7 @@ pub fn compute(
         hypothesised,
         monotonicity,
         memo,
-    } = prepare(root, terms, ast)?;
+    } = prepared;
     let n = candidates.len();
 
     if n > opts.limit as usize || n >= 64 {

@@ -83,7 +83,8 @@ fn known(path: &Path, jobs: usize) -> Option<Known> {
         &mut terms,
         &ast,
         &downset::Options {
-            budget: BUDGET,
+            budget: u64::MAX,
+            max_visits: BUDGET,
             jobs,
         },
     )

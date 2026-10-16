@@ -24,7 +24,7 @@ pub mod state;
 pub use answer::{AnswerInputs, clear_previous, write_aborted_answer_dir, write_answer_dir};
 pub use json::Json;
 pub use lattice::LatticeDumper;
-pub use region::{RegionInputs, write_region_dir};
+pub use region::{RegionInputs, write_cube_dir, write_region_dir};
 pub use serialise::kb_to_ein_text;
 pub use snapshot::{LatticeSnapshot, lattice_snapshot};
 pub use state::{MonotonicDumper, ProgressDumper};

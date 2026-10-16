@@ -5,8 +5,10 @@ T1e2.1a.9.2, second version.
 **Status:** **ruled 2026-10-16, all of it**, § 7's decisions included
 (§ 0.1). It was proposed the same day, after the ruling in § 0. It replaces
 [`solve_flags.md`](solve_flags.md) § 5 (`ein walk`) and § 10's route-3 bullet,
-and keeps every other ruling on that page. T1e2.1a.9.4 builds it. **Nothing
-in the parser has moved yet.**
+and keeps every other ruling on that page. **T1e2.1a.9.4 built its additive
+half the same day** (§ 6): the modes, `ein oracle`, and the tests that hold
+every mode to the oracle. The retirements wait for S1e2.1a.5's switch, under
+ruling 4.
 **How to read it:** § 1 is the contract every mode is held to. §§ 2–3 are the
 reference: the commands and flags, then how each mode is computed and what it
 costs. § 4 is the guide, question → command. §§ 5–7 say why two modes cannot
@@ -329,15 +331,20 @@ Saturations, i.e. nodes evaluated. *Measured* numbers carry their command.
 261 982 commitments. There are 27 alive states and 8 472 alive commitments
 that owe. ∅ ∉ R. Four of R's 63 minimal generators are single facts.
 
-| question | mode | the walk today | the walk, writes off | **now**, derived | **at P1e2.1c** |
-|---|---|---:|---:|---:|---:|
-| any solution | `-n 1` | 13 | 24 | ≤ 57: root, then layer 1 holds four members of R | 2, the tree |
-| a complete solution | `--maximal -n 1` | 13 | 24 | ≤ 95: + 38 extensions of s, all dead | ≤ 95 |
-| unique? | `--single` | 111 | 8 891 | ≤ 9 031: 8 472 owing + 63 minimal + 458 nogoods + 38 | ≈ 47: the tree's 9, + 38 |
-| unique among complete? | `--maximal --single` | 111 | 8 891 | ≤ 8 863: the climb + the 8 310 alive nodes not under s + 458 | ≤ 1 512, the state route; ≈ 47 here since k_s = 1 |
-| all complete | `--maximal` | 111 | 8 891 | ≤ 8 863 | as above |
-| the least guessed | `--minimal` | — | — | ≤ 8 993 | output-sized: 63 generators |
-| everything | (none) | — | — | 270 912. That is 2²⁴·⁹ facts, so it stops at the default budget with a partial answer that already prints s | ≤ 1 512 + the transversals |
+| question | mode | the walk today | the walk, writes off | **now**, derived | **now**, measured | **at P1e2.1c** |
+|---|---|---:|---:|---:|---:|---:|
+| any solution | `-n 1` | 13 | 24 | ≤ 57: root, then layer 1 holds four members of R | 32 | 2, the tree |
+| a complete solution | `--maximal -n 1` | 13 | 24 | ≤ 95: + 38 extensions of s, all dead | 70 | ≤ 95 |
+| unique? | `--single` | 111 | 8 891 | ≤ 9 031: 8 472 owing + 63 minimal + 458 nogoods + 38 | 8 927, `Solution` | ≈ 47: the tree's 9, + 38 |
+| unique among complete? | `--maximal --single` | 111 | 8 891 | ≤ 8 863: the climb + the 8 310 alive nodes not under s + 458 | 8 818, `Solution` | ≤ 1 512, the state route; ≈ 47 here since k_s = 1 |
+| all complete | `--maximal` | 111 | 8 891 | ≤ 8 863 | 8 818, one state | as above |
+| the least guessed | `--minimal` | — | — | ≤ 8 993 | 8 889, one state | output-sized: 63 generators |
+| everything | (none) | — | — | 270 912. That is 2²⁴·⁹ facts, so it stops at the default budget with a partial answer that already prints s | 760, stopped after layer 2 with s printed | ≤ 1 512 + the transversals |
+
+*Measured* is T1e2.1a.9.4's build, 2026-10-16, release, `-j 8`:
+`ein solve examples/zebra.ein MODE -s`, at the default budget for the first
+two rows and the last, and at `--region-budget 1048576` for the rest. Every
+measured count is under its derived bound.
 
 - **The walk's 111 is not reachable soundly.** It rests on the walk's
   stronger node: with every search write off, the same walk needs 8 891
@@ -354,9 +361,15 @@ that owe. ∅ ∉ R. Four of R's 63 minimal generators are single facts.
   maximality check, n − |s|. Reaching `zebra.ein` itself needs L5's
   precondition on the hrule rung, which is P1e2.1c's to prove.
 - **At the default budget, every *now* row from `--single` down stops
-  partial on zebra.** About 112 facts per node puts 9 000 saturations near
-  2²⁰. `--region-budget 2^21` certifies them. At P1e2.1c they fit with room
-  to spare.
+  partial on zebra.** They derive 875 260–916 398 facts, between 2¹⁹ and
+  2²⁰, so `--region-budget 1048576` certifies each in about one second at
+  `-j 8`. `zebra2.ein` fits the default: `--single` is 8 616 saturations and
+  418 806 facts, `Solution`. At P1e2.1c they fit with room to spare.
+- **`zebra2-hints.ein --maximal` gives both maximal states** in 128
+  saturations at the default budget. The walk misses the 7-fact one
+  ([`walk_and_region.md` § 4.3](walk_and_region.md#43-a-different-node)), and
+  `every_mode_is_the_oracle` cannot see that program, which is past the
+  oracle's limit at n = 36.
 
 **`examples/saturation/square-bwd/floors.ein`**: n = 20. Every commitment is
 alive and in R: k_c = 2²⁰, k_s = 27 559, the maximal line is {⊤}, ∅ ∈ R.
@@ -437,19 +450,30 @@ second state. That is why the second row exists (ruling (a)).
 ## 5. Why two modes cannot disagree, and the test that holds it
 
 By construction (§ 1): one node function, and licences only where the static
-class proves them. What makes it a fact rather than an argument is one test,
-`every_mode_is_the_oracle` in
-[`ein-infer/tests/region.rs`](../../../ein.rs/crates/ein-infer/tests/region.rs).
-It extends `route_1_is_the_oracle_on_every_monotone_program_it_reaches`,
-which becomes its describe row:
+class proves them. What makes it a fact rather than an argument is
+[`ein-infer/tests/explore.rs`](../../../ein.rs/crates/ein-infer/tests/explore.rs),
+built at T1e2.1a.9.4:
 
-- **for every program whose R is known**: the oracle at n ≤ 16, and route 1
-  at a raised budget past that (the zebra family);
-- **every cell of § 2.1's table**, with `-n` at 1, 2 and k_s + 1;
-- **checks** C1 on every printed state, C2 on every certified claim, and C3
-  at a budget small enough to stop every non-trivial run;
-- **and C4**, the same output under every kept speed lever and under `-j`
-  1 and 8. That is S1e2.1a.6's lever test, extended to the modes.
+- **`every_mode_is_the_oracle`**, over every corpus file and register witness
+  whose cube the oracle enumerates, monotone or flagged. Every cell of
+  § 2.1's table runs, with `-n` at 1, 2 and k_s + 1. C1 is checked on every
+  printed state and minimal commitment, and C2 on every exhausted part,
+  verdict and count. Root afterwards must be `sat(program)`. C3 reruns every
+  monotone cell at a budget of 8 facts: 247 runs stop on the way, and the
+  test fails below 200 so the check cannot pass vacuously. It takes 10 s in
+  the dev profile;
+- **`every_mode_at_four_jobs_is_every_mode_at_one`**: C4 for `-j`, on six
+  programs, answer and work alike. Its lever half is S1e2.1a.6's lever test,
+  extended to the modes when the walk's levers become the modes' at
+  S1e2.1a.5;
+- **`a_square_cube_answers_its_first_questions_in_a_handful_of_saturations`**:
+  § 3.4's square table, as assertions.
+
+`route_1_is_the_oracle_on_every_monotone_program_it_reaches` stays beside
+them in `region.rs`, and it is the describe row's own check. **Past the
+oracle's limit nothing is in the gate yet.** The zebra family is held only by
+§ 3.4's measurements, and comparing the modes with route 1 there is
+S1e2.1a.6's.
 
 The flagged programs are in it. They get the cube within the limit, so C2
 binds them there, and C1 and C3 bind them everywhere.
@@ -458,15 +482,31 @@ binds them there, and C1 and C3 bind them everywhere.
 
 **When.** Ruling 4 stands: the default switches once, in S1e2.1a.5's commit.
 
-- **T1e2.1a.9.4** lands `ein oracle`, the flags, the cuts of § 3.2, the
-  retired options as usage errors, the retired config fields, and § 5's
-  test.
+- **T1e2.1a.9.4, built 2026-10-16, is additive.** It added:
+  - [`ein_infer::explore`](../../../ein.rs/crates/ein-infer/src/explore.rs),
+    the cuts of § 3.2 and the climb;
+  - the four region flags;
+  - `ein oracle`, with `--dump` that `ein render region` draws with no run
+    overlaid;
+  - § 5's tests.
+
+  Until the switch a run enters a region mode only through one of the four
+  region flags, and `-n` counts states only beside one of them. Every walk
+  option given beside a region flag is a usage error naming S1e2.1a.5.
+- **The retirements wait for the switch**, which this page had at
+  T1e2.1a.9.4: § 2.1's nine options and § 2.4's nine config fields. The walk
+  is still the default and still reads every one of them, so retiring one
+  now would move a corpus golden twice, which ruling 4 exists to prevent.
+- **`ein oracle` has 5 options, not § 2.2's 10.** `-T`, `--json-summary`,
+  `--models`, `-p` and `-P` come with S1e2.1a.5's read-out, which is also
+  where the interim layout `ein solve`'s region modes print is replaced.
+  `-T` also needs a deadline inside `region::compute`.
 - **Until S1e2.1a.5, bare `ein solve FILE` is still today's walk.** It can
   disagree with the new modes, and only where the register says it is wrong.
-- **S1e2.1a.5** switches the default to describe and removes the last CLI
-  path to the walk. The walk's library code goes in the same commit, or is
-  kept with no caller until P1e2.1c measures what of it the cheap modes
-  reuse.
+- **S1e2.1a.5** switches the default to describe, retires what § 2.1 and
+  § 2.4 list, and removes the last CLI path to the walk. The walk's library
+  code goes in the same commit, or is kept with no caller until P1e2.1c
+  measures what of it the cheap modes reuse.
 
 | what | how many | what happens |
 |---|---:|---|
@@ -477,7 +517,7 @@ binds them there, and C1 and C3 bind them everywhere.
 | register runs | 46 | re-pointed to the mode that asks the row's question, `--maximal` for a model-set row |
 | register rows whose wrong answer is the walk's | 15 of 26: W1 (7 rows), W2 (2), W3 (2, the walk's pruning under `absent`, where a mode takes the cube), W5, W9 (2), and W11's `unsat-core-id-space`. Then `zebra2-hints` and `branching/07`, once S1e2.1a.6 files them | **expected to flip to fixed** at the switch. Each is confirmed by § 5's test against its `right` block restated under R at S1e2.1a.7, which therefore lands first |
 | register rows the oracle shares, or that are about a read-out | W4 and W6 (the candidate list), W7 (the saturator), W8 (the node under `absent`, P1e2.1b's), W10, W11's `d3-unsat-core` and W12 (which core is printed), C1 (the blind rung) | unchanged by this interface ([`solution_semantics.md` § 6.6](../../../docs/kernel/inference/solution_semantics.md#66-what-the-oracle-does-not-check)) |
-| option census | 65 → 71 | `configuration.md` § 3, `help_surface.rs`, `help_shape.txt`, `config_reference.rs` |
+| option census | 65 → 74 at T1e2.1a.9.4 (`solve` +4, `oracle` 5); −9 at the switch, + the read-out's | `configuration.md` § 3, `help_surface.rs`, `help_shape.txt`, `config_reference.rs` |
 | config fields | 17 → 8 | six corpus files edited (§ 2.4) |
 
 **P1e2.1c** then takes each *now* column of § 3.2 to its *at P1e2.1c*

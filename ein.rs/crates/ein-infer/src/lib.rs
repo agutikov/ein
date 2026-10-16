@@ -28,6 +28,7 @@ pub mod engine;
 pub mod events;
 pub mod expect;
 pub mod explain;
+pub mod explore;
 pub mod firing;
 /// The T1a.6.9.2 verification instrument — off unless the build asked for it.
 #[cfg(feature = "fork-delta")]

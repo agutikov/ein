@@ -618,10 +618,11 @@ is what holds that.
 
 ## 5. The CLI surface
 
-Everything a script or a habit can depend on is fixed: the four subcommands
-and four `render` sub-subcommands, the delegated dispatch (`ein saturate
---help` prints `saturate`'s own help; `saturate` appears in `ein --help`
-though the top parser never parses it), every option's long name, short key,
+Everything a script or a habit can depend on is fixed: the five subcommands
+(`oracle` since M1e2 S1e2.1a.9) and the `render` sub-subcommands, the
+delegated dispatch (`ein saturate --help` prints `saturate`'s own help;
+`saturate` appears in `ein --help` though the top parser never parses it),
+every option's long name, short key,
 metavar, arity, default, choices and mutually-exclusive group, its help
 *string*, the accept/reject verdict on every invocation, the exit code, and
 which stream each byte goes to.
@@ -630,10 +631,10 @@ which stream each byte goes to.
 [S1c.1.3](../history/m1c_external_validation/README.md#s1c13--ein-test),
 and its exit codes **deliberately differ** from the other three's:
 
-| code | `solve` / `render` / `saturate` | `test` |
+| code | `solve` / `oracle` / `render` / `saturate` | `test` |
 |---|---|---|
 | 0 | success | every expectation held, and at least one was checked |
-| 1 | a load error — or a false `:expect` | an expectation is **false**, or was not checked |
+| 1 | a load error — or a false `:expect`, or a `solve --single` that did not hold or did not decide (M1e2 S1e2.1a.9), or an `oracle` cube that contradicts a monotone static verdict | an expectation is **false**, or was not checked |
 | 2 | a usage error, or a budget abort | a load error, a usage error, a budget abort — or nothing to check |
 
 1 is taken there, and a runner that cannot tell a broken file from a false

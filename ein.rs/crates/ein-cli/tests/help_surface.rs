@@ -16,7 +16,7 @@
 #[cfg(feature = "einb")]
 use ein_corpus::{golden, golden_path};
 
-/// The surface, counted from the parsers themselves — 50 options across 9
+/// The surface, counted from the parsers themselves — 64 options across 12
 /// parsers, `-h` and `-V` excluded as parser furniture (see `help_shape`'s
 /// skip). An extractor that silently returned nothing would pass an empty
 /// diff; it does not pass this.
@@ -28,15 +28,21 @@ use ein_corpus::{golden, golden_path};
 ///
 /// `saturate` has 5 options rather than 3 because `--events` and
 /// `--events-level` are on it too.
-const EXPECTED: [(&str, usize); 11] = [
+const EXPECTED: [(&str, usize); 12] = [
     ("COMMAND ein\n", 0),
     // Among them P1a.7's `--jobs`
     // ([T1a.7.2.1](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)),
     // M1d S1d.3.3's `--models`, M1d P1d.10's `--layer-progress` and M1e2's
     // `--dump-answer` (S1e2.1.2), `--dump-lattice` (S1e2.1.3),
     // `--diff-models` (S1e2.1.4), and S1e2.1a.1's `--dump-region`,
-    // `--region-limit` and `--region-states`.
-    ("COMMAND ein solve\n", 38),
+    // `--region-limit` and `--region-states`. And S1e2.1a.9's four region
+    // flags, `--minimal`, `--maximal`, `--single` and `--region-budget`
+    // ([`solve_interface.md`](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)):
+    // the walk's options go at S1e2.1a.5's switch, not here.
+    ("COMMAND ein solve\n", 42),
+    // S1e2.1a.9's `ein oracle`: `--region-limit`, `--dump`, `--states`,
+    // `--jobs`, `--stats`.
+    ("COMMAND ein oracle\n", 5),
     ("COMMAND ein saturate\n", 5),
     ("COMMAND ein render\n", 0),
     ("COMMAND ein render rules\n", 1),
@@ -93,16 +99,16 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        55 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        64 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "55 options across the eleven parsers of `ein`, `solve`, `saturate` and \
-         `render`, plus `ein test`'s nine and `ein kb save --saturate`"
+        "64 options across the twelve parsers of `ein`, `solve`, `oracle`, \
+         `saturate` and `render`, plus `ein test`'s nine and `ein kb save --saturate`"
     );
 }
 
 /// **The whole rendering, checked in.**
 ///
-/// Every option of every parser — 61 across thirteen at M1e2 S1e2.1.4, the count
+/// Every option of every parser — 74 across fifteen at M1e2 S1e2.1a.9, the count
 /// [`the_extractor_finds_the_whole_surface`] holds — each with its short key, metavar, arity,
 /// default, choices, group and help. A flag added, removed, renamed or
 /// re-defaulted shows up as a line.
