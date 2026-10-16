@@ -19,6 +19,7 @@ pub mod apriori;
 /// What this build has compiled in — `ein --version`'s feature line.
 pub mod build;
 pub mod canon;
+pub mod claim;
 pub mod closed;
 pub mod commitment;
 pub mod compile;

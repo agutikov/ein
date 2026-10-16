@@ -1,0 +1,19 @@
+;;; REGION CLAIM — `(region)`: R is empty, of either kind. M1e2 S1e2.1a.4.
+;;;
+;;; 04_owing.ein's program, stated with the claim that says only that R has no
+;;; state. It holds on both kinds of empty R: here every alive node owes, and on
+;;; 06_false.ein every node is dead.
+
+(import std.algebra :symbols (total-owed))
+(relation is-a  T T)
+(relation likes Person Food)
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+(total-owed likes is-a)
+(likes Bob Stew)
+
+(solve
+  :no-hypothesis (is-a likes)
+  :expect (region))
+
+(query :goal (likes ?who ?what))

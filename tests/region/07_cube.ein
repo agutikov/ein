@@ -1,0 +1,31 @@
+;;; REGION CLAIM — a flagged program, checked against the cube. M1e2 S1e2.1a.4.
+;;;
+;;; Seating Ann makes her a diner, and a diner owes a meal: an obligation whose
+;;; trigger a commitment changes, so the static check flags the program and R
+;;; is the cube's (route 2), under *assumes a monotone lattice*. {(seats Ann
+;;; C1)} alone is a hole between ∅ and the seated, fed state.
+;;; The program is examples/lattice/04_obligation_trigger_hole.ein's.
+
+(import std.algebra :symbols (total-owed))
+(relation is-a  T T)
+(relation seats Guest Chair)
+(relation meal  Diner Food)
+(is-a Ann Guest) (is-a C1 Chair) (is-a Soup Food)
+(rule seated-dines ()
+  :match  (seats ?g ?c)
+  :assert (is-a ?g Diner)
+  :priority 200)
+(total-owed meal is-a)
+(hrule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c))
+(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food))  :assert (meal ?g ?f))
+
+(solve
+  :expect (region
+            ;; state 1 — ∅, root itself, on the minimal line
+            (model)
+            ;; state 2
+            (model (meal Ann Soup))
+            ;; state 3 — on the maximal line
+            (model (meal Ann Soup) (seats Ann C1))))
+
+(query :goal (meal ?g ?f))

@@ -492,7 +492,7 @@ mean "for this `?x`".
   [:hrules (<activator> …)]                ; hypothesis-generator activators
   [:hypothesis-relations (<rel> …)]        ; speculate only these
   [:no-hypothesis (<rel> …)]               ; …or never these
-  )
+  [:expect <claim>])                       ; the expected region
 ```
 
 **The lattice is stated once** (M1e2
@@ -514,8 +514,57 @@ region and about specific solutions"*.
 - `:hrules` is read by the hrule rung, the other two by the candidate filter
   ([`06_reserved_names.md` § Hypothesis / query control](06_reserved_names.md#hypothesis--query-control)).
 
-The expected region, `:expect (region …)` on `(solve …)`, is the stage's second
-half and is not yet built.
+#### The expected region — `(solve … :expect …)`
+
+```lisp
+<claim> ::= (region <item>*)              ; R, by its nodes
+          | (false)                       ; every node dead
+<item>  ::= (model <fact>*)               ; one state of R
+          | (merged <to> <from>)          ; a state several commitments reach
+          | (owing (model <fact>*) …)     ; R empty, and these alive nodes owe
+<to>    ::= (model <fact>*)               ; one of the states listed
+<from>  ::= (model <fact>*)               ; its one minimal commitment
+          | (or (model <fact>*) …)        ; …or its several
+```
+
+The forms the user ruled on 2026-10-16, after reading them on eight real
+programs
+([`region_examples.md`](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_examples.md)).
+How a claim reads:
+
+1. **A `(model …)` is a state of R.** Root's facts are part of it.
+2. **Naming a relation closes it, across the whole claim.** Every relation the
+   claim names positively is listed at its complete extent in every model, so
+   `(model)` is a state with none of them. Stored negatives are not closed, and
+   a listed `(not …)` is checked for presence.
+3. **The models are R's states, one to one**, in any order. Their number is
+   the claimed k_s.
+4. **`(merged …)` is all or nothing.** A claim with none is about states. A
+   claim with one lists every state more than one commitment reaches, each
+   with exactly its minimal commitments, and so pins k_c too. `<to>` repeats
+   a listed state, and the `<from>` models are **commitments**: the candidates
+   committed, with nothing derived and nothing of root's.
+5. **`(owing …)`** says R is empty and lists the alive, owing nodes with no
+   alive node one fact up. The read-out has to say why R is empty, and this is
+   how it says it in a form that reads back (ruled (A), 2026-10-16).
+6. **`(false)`** says every node is dead. **`(region)`** says R is empty, of
+   either kind.
+
+The words are this keyword's alone. A top-level `(region …)`, `(merged …)` or
+`(owing …)` is a load error, because pasted outside `(solve … :expect …)` it
+would load as a fact of a new relation and check nothing. `model` is not
+reserved, as before.
+
+**Who checks it.** `ein test` does, against R as `ein solve` describes it:
+route 1 on a monotone program, and the cube on one the static check flags,
+under *assumes a monotone lattice*. The claim is never checked against the
+walk. A route that stops at its budget, or a flagged program past the
+oracle's limit, leaves the claim `NOT CHECKED`. Until
+[S1e2.1a.5](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
+switch, bare `ein solve` is the walk and does not check it. `ein_infer::claim::print`
+writes any R in this form, and `ein-infer/tests/claim_round_trip.rs` reads
+every corpus region it prints back as its own claim.
+`tests/region/` has one program per form.
 
 ### Query
 

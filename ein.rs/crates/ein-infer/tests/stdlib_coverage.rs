@@ -456,10 +456,18 @@ fn every_program_states_an_expectation() {
                 .unwrap_or_else(|e| panic!("{}: {e}", path.display()));
             let kb = load_query(&mut ast, &mut terms, &forms, path.parent(), 0)
                 .unwrap_or_else(|e| panic!("{}: {e}", path.display()));
-            !kb.program()
-                .queries
-                .iter()
-                .any(|q| ein_infer::query_value(&ast, q, "expect").is_some())
+            // A query's `:expect`, or since M1e2 S1e2.1a.4 the region claim
+            // on `(solve …)`: either is a statement the runner checks.
+            let solve_claims = kb
+                .program()
+                .solve()
+                .is_some_and(|s| ein_infer::solve_value(&ast, s, "expect").is_some());
+            !solve_claims
+                && !kb
+                    .program()
+                    .queries
+                    .iter()
+                    .any(|q| ein_infer::query_value(&ast, q, "expect").is_some())
         })
         .map(|p| {
             p.strip_prefix(repo_root())

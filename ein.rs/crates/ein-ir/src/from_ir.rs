@@ -117,6 +117,12 @@ pub fn load_query(
             )),
             "query" => query_blocks.push(form),
             "solve" => solve_blocks.push(form),
+            // A claim's words, at the top level: a printed region pasted
+            // outside `(solve … :expect …)` would otherwise load as a fact of
+            // a new relation, check nothing and say nothing (M1e2 S1e2.1a.4).
+            h if crate::claim::CLAIM_HEADS.contains(&h) => errors.push(format!(
+                "a top-level ({h} …) — a region claim belongs under (solve … :expect …)"
+            )),
             "config" => config_blocks.push(form),
             // Engine-emitted output; parsed by the trace reader, not here.
             "trace" => {}
@@ -158,7 +164,7 @@ pub fn load_query(
     kb.program_mut().solve = solve_blocks.first().map(|&form| Solve {
         kw_pairs: ast.form_args(form).iter().map(|n| ExprRef(n.0)).collect(),
     });
-    validate_solve(ast, &kb, &mut errors);
+    validate_solve(ast, terms, &kb, &mut errors);
     validate_queries(ast, terms, &kb, &mut errors);
     if let Some(&last) = config_blocks.last() {
         let args: Vec<NodeId> = ast.form_args(last).to_vec();
@@ -309,11 +315,14 @@ const QUERY_KEYWORDS: [&str; 4] = ["goal", "goal-text", "expect", "mode"];
 /// to `(solve …)`, M1e2 S1e2.1a.4.
 const LATTICE_KEYWORDS: [&str; 3] = ["hrules", "hypothesis-relations", "no-hypothesis"];
 
-/// Every `(solve …)` keyword the engine reads: the lattice's.
-const SOLVE_KEYWORDS: [&str; 3] = LATTICE_KEYWORDS;
+/// Every `(solve …)` keyword the engine reads: the lattice's, and `:expect`,
+/// the expected region ([`crate::claim`]).
+const SOLVE_KEYWORDS: [&str; 4] = ["hrules", "hypothesis-relations", "no-hypothesis", "expect"];
 
-/// The `(solve …)` block's keywords: an allow-list, as `(query …)`'s is.
-fn validate_solve(ast: &Ast, kb: &Kb, errors: &mut Vec<String>) {
+/// The `(solve …)` block's keywords — an allow-list, as `(query …)`'s is — and
+/// its `:expect`, whose shape [`crate::claim::parse`] checks and whose
+/// relations must be the program's, as a query's `:expect`'s are.
+fn validate_solve(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>) {
     let Some(solve) = kb.program().solve() else {
         return;
     };
@@ -336,6 +345,58 @@ fn validate_solve(ast: &Ast, kb: &Kb, errors: &mut Vec<String>) {
             ));
         }
     }
+    let Some(node) = solve_keyword(ast, &solve.kw_pairs, "expect") else {
+        return;
+    };
+    let claim = match crate::claim::parse(ast, node) {
+        Ok(c) => c,
+        Err(message) => {
+            errors.push(message);
+            return;
+        }
+    };
+    let crate::claim::Claim::Region(region) = &claim else {
+        return;
+    };
+    let models = region.models.iter().chain(region.owing.iter()).chain(
+        region
+            .merged
+            .iter()
+            .flat_map(|m| std::iter::once(&m.to).chain(&m.from)),
+    );
+    let mut reported: BTreeSet<String> = BTreeSet::new();
+    for model in models {
+        for &f in &model.facts {
+            let Ok(fact) = crate::expect::fact(ast, f) else {
+                continue;
+            };
+            let known = terms
+                .syms
+                .get(fact.relation)
+                .is_some_and(|sym| kb.program().relations.get(sym).is_some());
+            if !known && reported.insert(fact.relation.to_string()) {
+                errors.push(format!(
+                    "(solve … :expect …) names {}, which no declaration or fact makes a relation",
+                    fact.relation
+                ));
+            }
+        }
+    }
+}
+
+/// A `(solve …)` keyword's value node. The **first** match wins.
+fn solve_keyword(ast: &Ast, kw_pairs: &[ExprRef], want: &str) -> Option<NodeId> {
+    for &pair in kw_pairs {
+        let Node::KwPair { key, value } = ast.node(NodeId(pair.0)) else {
+            continue;
+        };
+        if let Node::Keyword(name) = ast.node(key)
+            && ast.sym(name) == want
+        {
+            return Some(value);
+        }
+    }
+    None
 }
 
 /// The `(query …)` blocks' own validation — keywords, and `:expect`.

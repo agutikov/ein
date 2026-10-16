@@ -811,6 +811,24 @@ runs   = ["solve", "saturate", "render rules"]
 note   = "M1e2 S1e2.1a.4 — a lattice keyword on (query …) is refused and pointed at (solve …): one program, one lattice."
 
 [[entry]]
+path   = "examples/broken/load/region_top_level.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1e2 S1e2.1a.4 — a region claim at the top level is refused: pasted outside (solve … :expect …) it would load as a fact of a new relation and check nothing."
+
+[[entry]]
+path   = "examples/broken/load/region_owing_with_states.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1e2 S1e2.1a.4 — (owing …) says R is empty, so it cannot sit beside states."
+
+[[entry]]
+path   = "examples/broken/load/region_merged_unlisted.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1e2 S1e2.1a.4 — a (merged …) names one of the states the claim lists."
+
+[[entry]]
 path   = "examples/broken/load/solve_twice.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
@@ -1389,6 +1407,48 @@ runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
 # renderers draw and no puzzle contains. The manifest digests them under
 # every view and every op. They are syntax probes rather than puzzles — several declare no relation and would
 # not solve — so the runs are the two that read the forms.
+
+[[entry]]
+path   = "tests/region/01_states.ein"
+group  = "positive"
+runs   = ["test", "saturate"]
+note   = "M1e2 S1e2.1a.4 — a region claim by its states, ∅ among them as `(model)`: three properties, the triple dead, R is seven states."
+
+[[entry]]
+path   = "tests/region/02_merged_single.ein"
+group  = "positive"
+runs   = ["test", "saturate"]
+note   = "M1e2 S1e2.1a.4 — `(merged …)` with one minimal commitment on every state; with every one listed the claim pins k_c = 16 as well as k_s = 8."
+
+[[entry]]
+path   = "tests/region/03_merged_or.ein"
+group  = "positive"
+runs   = ["test", "saturate"]
+note   = "M1e2 S1e2.1a.4 — `(merged …)` with an `(or …)` of two minimal commitments of different sizes, under the blind rung; root's facts are in every model."
+
+[[entry]]
+path   = "tests/region/04_owing.ein"
+group  = "positive"
+runs   = ["test", "saturate"]
+note   = "M1e2 S1e2.1a.4 — `(owing …)`: R empty, and root, the alive node that owes, states what it holds. Ruled (A) on 2026-10-16: ein solve has to print why R is empty."
+
+[[entry]]
+path   = "tests/region/05_empty.ein"
+group  = "positive"
+runs   = ["test", "saturate"]
+note   = "M1e2 S1e2.1a.4 — `(region)`: R is empty, of either kind; 04's program."
+
+[[entry]]
+path   = "tests/region/06_false.ein"
+group  = "positive"
+runs   = ["test", "saturate"]
+note   = "M1e2 S1e2.1a.4 — `(false)` on (solve …): every node dead."
+
+[[entry]]
+path   = "tests/region/07_cube.ein"
+group  = "positive"
+runs   = ["test", "saturate"]
+note   = "M1e2 S1e2.1a.4 — a flagged program, its claim checked against the cube (route 2): an obligation trigger makes a hole."
 
 [[entry]]
 path   = "examples/syntax/arg-kinds.ein"

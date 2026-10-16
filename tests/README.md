@@ -2,8 +2,9 @@
 
 **Ein programs whose job is to fail when the engine is wrong.**
 
-Everything here is an `.ein` file carrying an `:expect`, so it states its own
-answer and `ein test` turns the directory into a status code:
+Everything here is an `.ein` file carrying an `:expect` (a query's, or since
+M1e2 S1e2.1a.4 the region claim on `(solve …)`), so it states its own answer
+and `ein test` turns the directory into a status code:
 
 ```sh
 ein test tests/                       # 0 if every claim holds, 1 if one is false
@@ -23,6 +24,30 @@ They are corpus entries all the same. `corpus/corpus.toml` has one row per file
 this directory beside the other two, so a test file with no entry fails the
 gate — the sweep would otherwise never run it, which reads as coverage nobody
 has.
+
+## `region/` — the region claim, one program per form
+
+M1e2 [S1e2.1a.4](../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.4_the_language.md).
+Each program states its expected region on `(solve … :expect …)`, and `ein
+test` checks it against R as `ein solve` describes it. That is route 1, or the
+cube on a flagged program, and never the walk. The claims were rendered from
+each program's computed R, the way
+[`region_examples.md`](../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_examples.md)'s
+were.
+
+| file | the form |
+|---|---|
+| `01_states.ein` | states, ∅ among them as `(model)` |
+| `02_merged_single.ein` | `(merged …)` on every state, one `(model …)` from each |
+| `03_merged_or.ein` | `(merged …)` with an `(or …)` of two commitments of different sizes |
+| `04_owing.ein` | `(owing …)`: R empty, root owes |
+| `05_empty.ein` | `(region)`: R empty, either kind |
+| `06_false.ein` | `(false)`: every node dead |
+| `07_cube.ein` | a flagged program, checked against the cube |
+
+Every claim here holds. Their false twins, and the claims a route cannot
+check, are `ein-infer/tests/claim_semantics.rs`. Corpus group `positive`,
+runs `test` and `saturate`.
 
 ## `stdlib/` — the stdlib conformance corpus
 

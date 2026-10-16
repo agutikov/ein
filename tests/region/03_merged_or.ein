@@ -1,0 +1,39 @@
+;;; REGION CLAIM — (merged …) with an (or …) of two minimal commitments.
+;;; M1e2 S1e2.1a.4.
+;;;
+;;; A chain under transitivity, with the blind rung proposing the three
+;;; reversed pairs. The maximal state is reached by five commitments, and two
+;;; of them are minimal, of different sizes: {(co-located C A)} alone, and
+;;; {(co-located B A), (co-located C B)}. Root's three co-located facts are in
+;;; every model, because naming a relation closes it at its whole extent.
+;;; The program is examples/saturation/transitive/colocation-chain.ein's.
+
+(rule transitive (?rel)
+  :match  (and (?rel ?a ?b) (?rel ?b ?c) (neq ?a ?c))
+  :assert (?rel ?a ?c)
+  :priority 200)
+(relation co-located T T)
+(transitive co-located)
+(co-located A B)
+(co-located B C)
+
+(solve
+  :expect (region
+            ;; state 1 — ∅, root itself, on the minimal line
+            (model (co-located A B) (co-located A C) (co-located B C))
+            ;; state 2
+            (model (co-located A B) (co-located A C) (co-located B A)
+                   (co-located B C))
+            ;; state 3 — on the maximal line
+            (model (co-located A B) (co-located A C) (co-located B A)
+                   (co-located B C) (co-located C A) (co-located C B))
+            ;; state 4
+            (model (co-located A B) (co-located A C) (co-located B C)
+                   (co-located C B))
+            ;; state 3 is reached by 5 commitments; its 2 minimal ones
+            (merged (model (co-located A B) (co-located A C) (co-located B A)
+                           (co-located B C) (co-located C A) (co-located C B))
+                    (or (model (co-located B A) (co-located C B))
+                        (model (co-located C A))))))
+
+(query :goal (co-located A C))

@@ -1,0 +1,23 @@
+;;; REGION CLAIM — R empty, and the alive node that owes. M1e2 S1e2.1a.4.
+;;;
+;;; Ann likes nothing and every person owes a liking, so root owes. Nothing is
+;;; guessed, so root is the only node: R is empty of the second kind, and the
+;;; one alive, owing node with no alive node above it is root itself. Its
+;;; `likes` extent is what `(owing …)` states; under R a claim that listed it
+;;; as a state of R would be false. The program is
+;;; tests/stdlib/algebra/23_total_owed.ein's.
+
+(import std.algebra :symbols (total-owed))
+(relation is-a  T T)
+(relation likes Person Food)
+(is-a Ann Person) (is-a Bob Person)
+(is-a Soup Food)  (is-a Stew Food)
+(total-owed likes is-a)
+(likes Bob Stew)
+
+(solve
+  :no-hypothesis (is-a likes)
+  :expect (region
+            (owing (model (likes Bob Stew)))))
+
+(query :goal (likes ?who ?what))

@@ -66,7 +66,7 @@ same set.
 | `rule` | `(rule N (?p…) :match … :assert …)` | declare a saturation rewrite rule | `kb.from_ir` |
 | `hrule` | `(hrule N (?p…) :match … :assert …)` | declare a hypothesis-generation rule (drives `hypgen`, never fired by the saturator) | `kb.from_ir`; `hypgen` |
 | `query` | `(query :goal … …)` | what to ask the engine | `kb.from_ir` (`store.Query`) |
-| `solve` | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …])` | the problem's lattice, at most one per file (M1e2 S1e2.1a.4) | `kb.from_ir` (`ein_core::Solve`); `hypgen`, `hrule` |
+| `solve` | `(solve [:hrules …] [:hypothesis-relations …] [:no-hypothesis …] [:expect <claim>])` | the problem's lattice, at most one per file, and its expected region (M1e2 S1e2.1a.4) | `kb.from_ir` (`ein_core::Solve`); `hypgen`, `hrule`; `ein-ir/claim.rs`, `ein-infer/claim.rs` |
 | `config` | `(config [:flag v]*)` | solver-level knobs | `kb.from_ir`; `inference.config.SolverConfig` |
 | `macro` | `(macro N (?p…) BODY)` | declare a load-time AST-rewrite alias; a rule clause's `(N a…)` invocation expands to BODY before compilation (P1.8 S1.5.9) | `kb.from_ir` (`_ingest_macros`); `ir.macros.expand_macros` |
 | `import` | `(import M [:as A \| :symbols (S…)])` | pull in a library module `M` (a dotted logical name, e.g. `std.macro`); qualified-by-default, or aliased/flat-selective (P1.8 S1.8.A1–A2) | `kb.from_ir` (grammar A2; resolve A3) |
@@ -277,6 +277,7 @@ candidate stays parked and is re-judged at every later quiescence
 | `hypothesis-relations` | `(solve … :hypothesis-relations (R₁ R₂ …))` | restrict the blind enumerator to the listed relations | `hypgen` (`HYPOTHESIS_RELATIONS`) |
 | `no-hypothesis` | `(solve … :no-hypothesis (R₁ R₂ …))` | the exclusion dual of `:hypothesis-relations` — never guess on the listed relations (saturation rules on them still fire) | `hypgen` (`NO_HYPOTHESIS`) |
 | `expect` | `(query … :expect (model …) \| (or (model …) …) \| (false))` | what the answer should be — the query's own claim, checked by the engine (M1c S1c.1.2). `ein solve` exits 1 when it is false | `ein-ir/expect.rs` (shape, at load) + `ein-infer/expect.rs` (the comparison) |
+| `expect` on `(solve …)` | `(solve … :expect (region …) \| (false))` | the expected region (M1e2 S1e2.1a.4): R's states, `(merged …)` generators, `(owing …)`, read only here. A top-level `(region …)`, `(merged …)` or `(owing …)` is a load error; `model` stays unreserved | `ein-ir/claim.rs` (shape, at load) + `ein-infer/claim.rs` (against R) |
 
 **A `(query …)` keyword outside the allow-list is a load error** since M1c
 S1c.1.2. The list is **four**: `:expect` above (the two dunder triggers in the

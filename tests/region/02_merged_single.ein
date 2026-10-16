@@ -1,0 +1,70 @@
+;;; REGION CLAIM — (merged …) with one minimal commitment per state.
+;;; M1e2 S1e2.1a.4.
+;;;
+;;; A brings B and C brings D; an obligation needs one of A or C, and A with C
+;;; is dead, so ∅ is not in R. Every state is reached by exactly two
+;;; commitments, its minimal one and that one plus the fact it brings, so every
+;;; state carries a (merged …) whose <from> is a single (model …). With every
+;;; (merged …) listed, the claim pins k_c = 16 as well as k_s = 8.
+;;; The program is examples/lattice/synth/merged_states.ein's.
+
+(relation h T)
+(relation slot T)
+(relation world T)
+(relation need T T)
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+(need K1 A) (need K1 C)
+(hrule guess () :match (slot ?x) :assert (h ?x))
+(rule imp-A-B () :match (h A) :assert (h B) :priority 200)
+(rule imp-C-D () :match (h C) :assert (h D) :priority 200)
+(rule dead-1 () :match (and (h A) (h C)) :assert (false) :priority 300)
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :priority 500)
+
+(solve
+  :expect (region
+            ;; state 1 — on the minimal line
+            (model (h A) (h B))
+            ;; state 2 — on the minimal line
+            (model (h C) (h D))
+            ;; state 3
+            (model (h B) (h C) (h D))
+            ;; state 4
+            (model (h A) (h B) (h D))
+            ;; state 5
+            (model (h A) (h B) (h E))
+            ;; state 6
+            (model (h C) (h D) (h E))
+            ;; state 7 — on the maximal line
+            (model (h B) (h C) (h D) (h E))
+            ;; state 8 — on the maximal line
+            (model (h A) (h B) (h D) (h E))
+            ;; state 1 is reached by 2 commitments; its minimal one
+            (merged (model (h A) (h B))
+                    (model (h A)))
+            ;; state 2 is reached by 2 commitments; its minimal one
+            (merged (model (h C) (h D))
+                    (model (h C)))
+            ;; state 3 is reached by 2 commitments; its minimal one
+            (merged (model (h B) (h C) (h D))
+                    (model (h B) (h C)))
+            ;; state 4 is reached by 2 commitments; its minimal one
+            (merged (model (h A) (h B) (h D))
+                    (model (h A) (h D)))
+            ;; state 5 is reached by 2 commitments; its minimal one
+            (merged (model (h A) (h B) (h E))
+                    (model (h A) (h E)))
+            ;; state 6 is reached by 2 commitments; its minimal one
+            (merged (model (h C) (h D) (h E))
+                    (model (h C) (h E)))
+            ;; state 7 is reached by 2 commitments; its minimal one
+            (merged (model (h B) (h C) (h D) (h E))
+                    (model (h B) (h C) (h E)))
+            ;; state 8 is reached by 2 commitments; its minimal one
+            (merged (model (h A) (h B) (h D) (h E))
+                    (model (h A) (h D) (h E)))))
+
+(query :goal (h ?x))

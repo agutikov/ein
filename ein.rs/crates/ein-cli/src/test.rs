@@ -99,7 +99,7 @@ const ONE_PATH_FLAGS: [&str; 2] = ["events", "json-summary"];
 /// `--json-report`'s version. **Not** `ein-summary/1`'s: a report is one row
 /// per query of a selection, a summary is one run, and a consumer that read
 /// the same version marker on both would be right to expect the same fields.
-const REPORT_SCHEMA: &str = "ein-test-report/1";
+const REPORT_SCHEMA: &str = "ein-test-report/2";
 
 /// What one query came to — [`Outcome`] plus the two ways a run can fail to
 /// produce one at all.
@@ -248,6 +248,19 @@ struct Claim {
     /// The relations the expectation names, sorted — *naming a relation
     /// closes it*, so this is the set whose extent the claim pins.
     relations: Vec<String>,
+    /// A `(solve … :expect (region …))` claim's `(merged …)` and `(owing …)`
+    /// counts — M1e2 S1e2.1a.4. `None` on a query's claim, which has neither.
+    region_parts: Option<(usize, usize)>,
+}
+
+/// What `ein_infer::claim` found for a `(solve … :expect …)` claim: R, by the
+/// route that described it.
+struct RegionRan {
+    route: Option<&'static str>,
+    monotone: bool,
+    k_s: u64,
+    k_c: u64,
+    ms: f64,
 }
 
 /// What the run made of a claim — the fields only a solve can fill.
@@ -278,7 +291,8 @@ struct Row {
     path: String,
     /// 1-based, and **0 for a file that did not load**: a load error is a fact
     /// about the file, and inventing a query number for it would be inventing
-    /// a query.
+    /// a query. 0 too on the row of a `(solve … :expect …)` claim, which is
+    /// not a query's and says so in [`Self::place`].
     query: usize,
     queries: usize,
     goal: Option<String>,
@@ -289,6 +303,13 @@ struct Row {
     claim: Option<Claim>,
     outcome: &'static str,
     ran: Option<Ran>,
+    /// `solve` for the row of a `(solve … :expect …)` claim, `query` for every
+    /// other — M1e2 S1e2.1a.4, where a file gained a claim that is not a
+    /// query's.
+    place: &'static str,
+    /// The solve claim's run. A query's run is [`Self::ran`], which is the
+    /// walk's and has the walk's fields.
+    region: Option<RegionRan>,
 }
 
 impl Row {
@@ -303,21 +324,29 @@ impl Row {
                 Json::Array(self.goal_relations.iter().map(Json::str).collect()),
             ),
             ("outcome", Json::str(self.outcome)),
+            ("place", Json::str(self.place)),
         ];
         pairs.push((
             "expect",
             match &self.claim {
                 None => Json::Null,
-                Some(c) => Json::obj(vec![
-                    ("shape", Json::str(c.shape)),
-                    ("models", Json::int(c.models as i64)),
-                    ("facts", Json::int(c.facts as i64)),
-                    ("negated", Json::int(c.negated as i64)),
-                    (
-                        "relations",
-                        Json::Array(c.relations.iter().map(Json::str).collect()),
-                    ),
-                ]),
+                Some(c) => {
+                    let mut kv = vec![
+                        ("shape", Json::str(c.shape)),
+                        ("models", Json::int(c.models as i64)),
+                        ("facts", Json::int(c.facts as i64)),
+                        ("negated", Json::int(c.negated as i64)),
+                        (
+                            "relations",
+                            Json::Array(c.relations.iter().map(Json::str).collect()),
+                        ),
+                    ];
+                    if let Some((merged, owing)) = c.region_parts {
+                        kv.push(("merged", Json::int(merged as i64)));
+                        kv.push(("owing", Json::int(owing as i64)));
+                    }
+                    Json::obj(kv)
+                }
             },
         ));
         match &self.ran {
@@ -336,6 +365,18 @@ impl Row {
                     ("ms", Json::Float(r.ms)),
                 ]),
             )),
+        }
+        if let Some(r) = &self.region {
+            pairs.push((
+                "region",
+                Json::obj(vec![
+                    ("route", r.route.map_or(Json::Null, Json::str)),
+                    ("monotone", Json::Bool(r.monotone)),
+                    ("k_s", Json::int(r.k_s as i64)),
+                    ("k_c", Json::int(r.k_c as i64)),
+                    ("ms", Json::Float(r.ms)),
+                ]),
+            ));
         }
         Json::obj(pairs)
     }
@@ -374,7 +415,44 @@ fn claim_of(ast: &Ast, query: &ein_core::Query) -> Option<Claim> {
         facts,
         negated,
         relations,
+        region_parts: None,
     })
+}
+
+/// The claim a `(solve … :expect …)` states, read like [`claim_of`].
+fn solve_claim_of(ast: &Ast, claim: &ein_ir::claim::Claim) -> Claim {
+    let (mut facts, mut negated) = (0usize, 0usize);
+    let mut relations: Vec<String> = Vec::new();
+    let (shape, models, parts, listed): (_, _, _, Vec<&ein_ir::expect::Model>) = match claim {
+        ein_ir::claim::Claim::False => ("false", 0, None, Vec::new()),
+        ein_ir::claim::Claim::Region(r) => (
+            "region",
+            r.models.len(),
+            Some((r.merged.len(), r.owing.len())),
+            r.models.iter().chain(r.owing.iter()).collect(),
+        ),
+    };
+    for m in listed {
+        for &f in &m.facts {
+            let Ok(f) = ein_ir::expect::fact(ast, f) else {
+                continue;
+            };
+            facts += 1;
+            negated += usize::from(f.negated);
+            if !relations.iter().any(|r| r == f.relation) {
+                relations.push(f.relation.to_string());
+            }
+        }
+    }
+    relations.sort();
+    Claim {
+        shape,
+        models,
+        facts,
+        negated,
+        relations,
+        region_parts: parts,
+    }
 }
 
 /// The status column. Vocabulary shared with `solve`'s `:expect` line on
@@ -559,7 +637,6 @@ fn write_report(path: &str, tally: &Tally, rows: &[Row]) -> std::io::Result<()> 
 fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, rows: &mut Vec<Row>) {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
-    let first = rows.len();
     let Some(kb) = crate::common::load_any_query_or_exit(&mut ast, &mut terms, path, 0) else {
         println!("{}", status("ERROR", path));
         tally.errors += 1;
@@ -577,6 +654,8 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             claim: None,
             outcome: Came::Error.key(),
             ran: None,
+            place: "query",
+            region: None,
         });
         return;
     };
@@ -584,6 +663,26 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
     let claims: Vec<usize> = (0..n_queries)
         .filter(|&i| ein_infer::query_value(&ast, &kb.program().queries[i], "expect").is_some())
         .collect();
+    // The `(solve … :expect …)` claim — M1e2 S1e2.1a.4. Checked against R on a
+    // load of its own, and first, because it is about the lattice every query
+    // asks over: its header prints first and its row comes first, so the two
+    // surfaces list the file in one order. Never by the walk.
+    let solve_node = kb
+        .program()
+        .solve()
+        .and_then(|s| ein_infer::solve_value(&ast, s, "expect"));
+    let mut worst = Came::Held;
+    let mut lines: Vec<String> = Vec::new();
+    if solve_node.is_some() {
+        let (came, header, detail) = check_solve_claim(path, n_queries, volume, tally, rows);
+        worst = worst.max(came);
+        if volume == Volume::Verbose || came != Came::Held {
+            lines.push(format!("  {header}"));
+            lines.extend(detail.into_iter().map(|l| format!("    {l}")));
+        }
+    }
+    // The query rows start after it.
+    let first = rows.len();
     // Every query gets a row, claim or no claim: the census's question is a
     // *fraction*, and a report that listed only the numerator could not answer
     // it. Read off the planning load, which has already parsed all of them.
@@ -601,6 +700,8 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             claim: None,
             outcome: "no-query",
             ran: None,
+            place: "query",
+            region: None,
         });
     }
     for (i, query) in kb.program().queries.iter().enumerate() {
@@ -619,10 +720,12 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             // command's second promise and the flag must not move it.
             outcome: "no-expect",
             ran: None,
+            place: "query",
+            region: None,
         });
     }
 
-    if claims.is_empty() {
+    if claims.is_empty() && solve_node.is_none() {
         tally.silent += 1;
         if volume != Volume::Quiet {
             println!("{}", status("(no expect)", path));
@@ -649,8 +752,6 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         return;
     }
 
-    let mut worst = Came::Held;
-    let mut lines: Vec<String> = Vec::new();
     let mut preloaded = Some((ast, terms, kb));
     for &index in &claims {
         let loaded = match preloaded.take() {
@@ -686,6 +787,117 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             println!("{l}");
         }
     }
+}
+
+/// The `(solve … :expect …)` claim: R described, by route 1 or the cube, and
+/// compared — M1e2 S1e2.1a.4. The claim is never checked against the walk.
+///
+/// Its own load, because `ein_infer::claim::check` wants a program nothing
+/// has saturated, as `explore` does.
+fn check_solve_claim(
+    path: &Path,
+    n_queries: usize,
+    volume: Volume,
+    tally: &mut Tally,
+    rows: &mut Vec<Row>,
+) -> (Came, String, Vec<String>) {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let mut row = Row {
+        path: path.display().to_string(),
+        query: 0,
+        queries: n_queries,
+        goal: None,
+        goal_relations: Vec::new(),
+        claim: None,
+        outcome: Came::Error.key(),
+        ran: None,
+        place: "solve",
+        region: None,
+    };
+    let Some(mut kb) = crate::common::load_any_query_or_exit(&mut ast, &mut terms, path, 0) else {
+        tally.errors += 1;
+        rows.push(row);
+        return (
+            Came::Error,
+            "solve · :expect".to_string(),
+            vec!["did not load".into()],
+        );
+    };
+    let node = kb
+        .program()
+        .solve()
+        .and_then(|s| ein_infer::solve_value(&ast, s, "expect"))
+        .expect("planned above");
+    let claim = match ein_ir::claim::parse(&ast, node) {
+        Ok(c) => c,
+        Err(e) => {
+            // The loader refused every shape `claim::parse` can, so this is an
+            // engine bug, said as one.
+            eprintln!(
+                "internal error: (solve … :expect …) passed the loader and did not parse: {e}"
+            );
+            tally.errors += 1;
+            rows.push(row);
+            return (Came::Error, "solve · :expect".to_string(), vec![e]);
+        }
+    };
+    let shape = match &claim {
+        ein_ir::claim::Claim::False => "(false)",
+        ein_ir::claim::Claim::Region(r) if r.models.is_empty() && r.owing.is_empty() => "(region)",
+        ein_ir::claim::Claim::Region(_) => "(region …)",
+    };
+    let where_ = format!("solve · :expect {shape}");
+    row.claim = Some(solve_claim_of(&ast, &claim));
+    let t0 = Instant::now();
+    let checked = match ein_infer::claim::check(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &claim,
+        &ein_infer::claim::Options::default(),
+    ) {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("{e}");
+            tally.errors += 1;
+            rows.push(row);
+            return (Came::Error, where_, vec![e.to_string()]);
+        }
+    };
+    let came = match checked.report.outcome {
+        Outcome::Held => {
+            tally.held += 1;
+            Came::Held
+        }
+        Outcome::Failed => {
+            tally.failed += 1;
+            Came::Failed
+        }
+        Outcome::NotChecked => {
+            tally.not_checked += 1;
+            Came::NotChecked
+        }
+    };
+    row.outcome = came.key();
+    row.region = Some(RegionRan {
+        route: checked.route,
+        monotone: checked.monotone,
+        k_s: checked.k_s,
+        k_c: checked.k_c,
+        ms: t0.elapsed().as_secs_f64() * 1000.0,
+    });
+    rows.push(row);
+    let header = match (volume, checked.route) {
+        (Volume::Verbose, Some(route)) => format!(
+            "{where_} — {} ({route}, k_s = {}, k_c = {})",
+            came.verb(),
+            checked.k_s,
+            checked.k_c
+        ),
+        _ => format!("{where_} — {}", came.verb()),
+    };
+    (came, header, checked.report.lines)
 }
 
 /// One query's claim: solve to exhaustion, compare, report.

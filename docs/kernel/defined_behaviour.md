@@ -442,8 +442,13 @@ Five arrived on 2026-08-23 with
 |---|---|---|
 | a `(query …)` keyword outside the allow-list | `(query …): unknown keyword :<k> — one of :goal :goal-text :expect :mode` | 1 |
 | a lattice keyword on a `(query …)` (M1e2 S1e2.1a.4) | `(query …): :<k> chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice` | 1 |
-| a `(solve …)` keyword outside the allow-list | `(solve …): unknown keyword :<k> — one of :hrules :hypothesis-relations :no-hypothesis` | 1 |
+| a `(solve …)` keyword outside the allow-list | `(solve …): unknown keyword :<k> — one of :hrules :hypothesis-relations :no-hypothesis :expect` | 1 |
 | more than one `(solve …)` | `<n> (solve …) forms — a program states its lattice once` | 1 |
+| a top-level `(region …)`, `(merged …)` or `(owing …)` | `a top-level (<h> …) — a region claim belongs under (solve … :expect …)` | 1 |
+| a `(solve … :expect …)` that is not `(false)` or `(region …)` | `(solve … :expect (<h> …)) — …`, naming the query's forms where `(model …)` or `(or …)` was written | 1 |
+| `(owing …)` beside states of R | `` (region …) — `(owing …)` says R is empty, and the region lists states `` | 1 |
+| a `(merged …)` whose `<to>` is not a listed state | `(merged …) — its state is not one the region lists` | 1 |
+| a claim naming a relation the program does not have | `(solve … :expect …) names <r>, which no declaration or fact makes a relation` | 1 |
 | `:expect` that is not `(false)` / `(model …)` / `(or (model …) …)` | ``:expect <what> — expected `(false)`, `(model …)` or `(or (model …) …)` `` | 1 |
 | `:expect` naming a relation the program does not have | `:expect names <r>, which no declaration or fact makes a relation` | 1 |
 | `:expect` omitting a relation the `:goal` asks about | `:expect does not name <r>, which the query's :goal asks about` | 1 |
@@ -742,9 +747,16 @@ Two things about it are contract rather than convenience:
   a *program*, so they are not in the numerator of "what fraction of the corpus
   claims a model set".
 
-The schema is `ein-test-report/1`, deliberately not `ein-summary/1`: a summary
+The schema is `ein-test-report/2`, deliberately not `ein-summary/1`: a summary
 is one run's counters, a report is one row per query, and a consumer reading
 the same version marker on both would be right to expect the same fields.
+**`/2` since M1e2 S1e2.1a.4.** A file's `(solve … :expect …)` claim has a row
+of its own, first among the file's rows, as its header is first among the
+file's lines. Every row says which kind it is in `place` (`query` or
+`solve`). A solve row has `query = 0`, an `expect` with the claim's `shape`
+(`region` or `false`), `models`, `merged` and `owing`, a `ran` of `null`
+(that field is the walk's), and a `region` with the `route`, `monotone`,
+`k_s`, `k_c` and `ms` of the R it was checked against.
 
 **M1d [S1d.4.3](../../docs/history/m1d_satisfiability/the_vocabulary.md)
 moved no byte of stdout and added one line to stderr.** A `:expect` that does

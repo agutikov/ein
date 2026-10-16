@@ -1,0 +1,42 @@
+;;; REGION CLAIM — R by its states, ∅ among them. M1e2 S1e2.1a.4.
+;;;
+;;; Three properties of one item, and the triple is jointly forbidden. Every
+;;; pair is alive, so R is seven states: ∅ (root itself, which holds no fact of
+;;; the three relations, so its model is `(model)`), the three singletons and
+;;; the three pairs. Naming a relation closes it across the whole claim.
+;;; The program is examples/lattice/02_genuine_3set_death.ein's; the claim is
+;;; plans/m1e2_correctness/p1e2.1a_the_solution_region/region_examples.md's E4.
+
+(rule three-conflict ()
+  :match  (and (a-prop ?x) (b-prop ?y) (c-prop ?z))
+  :assert (false)
+  :priority 200)
+(hrule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (?R ?x))
+(relation is-a   T T)
+(relation a-prop T)
+(relation b-prop T)
+(relation c-prop T)
+(is-a Item T)
+(is-a X    Item)
+
+(solve
+  :hrules (guess (a-prop Item) guess (b-prop Item) guess (c-prop Item))
+  :expect (region
+            ;; state 1 — ∅, root itself, on the minimal line
+            (model)
+            ;; state 2
+            (model (a-prop X))
+            ;; state 3
+            (model (b-prop X))
+            ;; state 4 — on the maximal line
+            (model (a-prop X) (b-prop X))
+            ;; state 5
+            (model (c-prop X))
+            ;; state 6 — on the maximal line
+            (model (a-prop X) (c-prop X))
+            ;; state 7 — on the maximal line
+            (model (b-prop X) (c-prop X))))
+
+(query :goal (a-prop ?x))

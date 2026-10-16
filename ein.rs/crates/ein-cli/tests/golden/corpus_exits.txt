@@ -234,6 +234,15 @@
 1    examples/broken/load/query_lattice_keyword.ein :: render rules
 1    examples/broken/load/query_lattice_keyword.ein :: saturate
 1    examples/broken/load/query_lattice_keyword.ein :: solve
+1    examples/broken/load/region_merged_unlisted.ein :: render rules
+1    examples/broken/load/region_merged_unlisted.ein :: saturate
+1    examples/broken/load/region_merged_unlisted.ein :: solve
+1    examples/broken/load/region_owing_with_states.ein :: render rules
+1    examples/broken/load/region_owing_with_states.ein :: saturate
+1    examples/broken/load/region_owing_with_states.ein :: solve
+1    examples/broken/load/region_top_level.ein :: render rules
+1    examples/broken/load/region_top_level.ein :: saturate
+1    examples/broken/load/region_top_level.ein :: solve
 1    examples/broken/load/relation_duplicate.ein :: render rules
 1    examples/broken/load/relation_duplicate.ein :: saturate
 1    examples/broken/load/relation_duplicate.ein :: solve
@@ -863,6 +872,20 @@
 0    stdlib/typing.ein :: render rules
 0    stdlib/typing.ein :: saturate
 0    stdlib/typing.ein :: solve
+0    tests/region/01_states.ein :: saturate
+0    tests/region/01_states.ein :: test
+0    tests/region/02_merged_single.ein :: saturate
+0    tests/region/02_merged_single.ein :: test
+0    tests/region/03_merged_or.ein :: saturate
+0    tests/region/03_merged_or.ein :: test
+0    tests/region/04_owing.ein :: saturate
+0    tests/region/04_owing.ein :: test
+0    tests/region/05_empty.ein :: saturate
+0    tests/region/05_empty.ein :: test
+0    tests/region/06_false.ein :: saturate
+0    tests/region/06_false.ein :: test
+0    tests/region/07_cube.ein :: saturate
+0    tests/region/07_cube.ein :: test
 0    tests/stdlib/algebra/01_copiers.ein :: render constraints
 1    tests/stdlib/algebra/01_copiers.ein :: render rules
 0    tests/stdlib/algebra/01_copiers.ein :: saturate

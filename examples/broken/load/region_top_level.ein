@@ -1,0 +1,11 @@
+;; LOAD NEGATIVE — a region claim at the top level.
+;;
+;; M1e2 S1e2.1a.4: `region`, `merged` and `owing` mean something only inside
+;; `(solve … :expect …)`. A printed region pasted at the top of a file would
+;; otherwise load as a fact of a new relation called `region`, check nothing
+;; and say nothing — the `:expct` failure M1c S1c.1.2 closed for queries.
+
+(relation p T)
+(p A)
+(solve)
+(region (model (p A)))

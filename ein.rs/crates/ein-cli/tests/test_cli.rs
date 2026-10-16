@@ -678,7 +678,7 @@ fn report(args: &[&str], out: &std::path::Path) -> serde_json::Value {
 fn every_file_of_the_selection_has_a_row() {
     let d = Dir::new("report-rows");
     let r = report(&["examples/features"], &d.0.join("r.json"));
-    assert_eq!(r["schema"], "ein-test-report/1");
+    assert_eq!(r["schema"], "ein-test-report/2");
     let rows = r["rows"].as_array().expect("rows");
     let files: std::collections::BTreeSet<&str> =
         rows.iter().map(|x| x["path"].as_str().unwrap()).collect();
@@ -870,6 +870,29 @@ fn a_files_rows_are_indexed_from_its_own_base() {
 /// entry, so the human-facing and the machine-facing surfaces of one run
 /// disagreed by name on twelve of the corpus's programs.
 fn header_for(row: &serde_json::Value) -> String {
+    let verb = match row["outcome"].as_str().expect("an outcome") {
+        "held" => "holds",
+        "failed" => "FAILED",
+        "not-checked" => "NOT CHECKED",
+        other => panic!("a row carrying a run came out {other}: {row}"),
+    };
+    // A `(solve … :expect …)` claim's row (M1e2 S1e2.1a.4): its run is R, by
+    // the route that described it, and its header says so.
+    if row["place"] == "solve" {
+        let e = &row["expect"];
+        let shape = match e["shape"].as_str().expect("a shape") {
+            "false" => "(false)",
+            _ if e["models"] == 0 && e["owing"] == 0 => "(region)",
+            _ => "(region …)",
+        };
+        let region = &row["region"];
+        return format!(
+            "  solve · :expect {shape} — {verb} ({}, k_s = {}, k_c = {})",
+            region["route"].as_str().expect("a route"),
+            region["k_s"],
+            region["k_c"],
+        );
+    }
     let goal = row["goal"].as_str().unwrap_or("?");
     let (q, n) = (
         row["query"].as_u64().expect("a query index"),
@@ -879,12 +902,6 @@ fn header_for(row: &serde_json::Value) -> String {
         format!(":goal {goal}")
     } else {
         format!("query {q} of {n} · :goal {goal}")
-    };
-    let verb = match row["outcome"].as_str().expect("an outcome") {
-        "held" => "holds",
-        "failed" => "FAILED",
-        "not-checked" => "NOT CHECKED",
-        other => panic!("a row carrying a run came out {other}: {row}"),
     };
     let ran = &row["ran"];
     format!(
@@ -942,7 +959,7 @@ fn the_verbose_header_and_the_report_row_agree_field_for_field() {
         .as_array()
         .expect("rows")
         .iter()
-        .filter(|x| !x["ran"].is_null())
+        .filter(|x| !x["ran"].is_null() || !x["region"].is_null())
         .collect();
     // A query-level error prints a header and carries no run; the selection
     // must have none, or the two sequences are not the same length for a

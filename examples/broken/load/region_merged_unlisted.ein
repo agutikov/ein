@@ -1,0 +1,9 @@
+;; LOAD NEGATIVE — a `(merged …)` whose state the region does not list.
+;;
+;; M1e2 S1e2.1a.4: `(merged <to> <from>)` gives the minimal commitments of one
+;; of the states the claim lists, and `<to>` is that state, fact for fact. A
+;; `<to>` that is not a listed state names nothing the claim states.
+
+(relation p T)
+(p A)
+(solve :expect (region (model (p A)) (merged (model) (model (p A)))))

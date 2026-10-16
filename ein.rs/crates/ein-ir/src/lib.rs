@@ -16,6 +16,7 @@
 #![forbid(unsafe_code)]
 
 pub mod ast;
+pub mod claim;
 pub mod dump;
 pub mod expect;
 pub mod from_ir;

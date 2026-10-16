@@ -1,0 +1,17 @@
+;;; REGION CLAIM — `(false)`: every node is dead. M1e2 S1e2.1a.4.
+;;;
+;;; Root holds a self-loop that `irreflexive` refutes, and nothing is guessed,
+;;; so the only node is dead. `(false)` keeps the spelling and the meaning it
+;;; has on a query. The program is tests/stdlib/algebra/09_irreflexive_violated.ein's.
+
+(import std.algebra :symbols (irreflexive))
+(relation loops Node Node)
+(irreflexive loops)
+(loops A B)
+(loops A A)
+
+(solve
+  :no-hypothesis (loops)
+  :expect (false))
+
+(query :goal (loops ?x ?y))
