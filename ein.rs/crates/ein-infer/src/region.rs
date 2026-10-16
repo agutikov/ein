@@ -57,7 +57,7 @@ use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet};
 
 use crate::compile::SharedMemo;
-use crate::events::{Events, sexpr};
+use crate::events::{Events, Level, sexpr};
 use crate::hypgen::HypGenStats;
 use crate::monotone::Monotonicity;
 use crate::saturator::{Saturator, Session, Snapshot};
@@ -236,13 +236,35 @@ pub fn compute(
     opts: &Options,
     on_projection: &mut dyn FnMut(&Projection),
 ) -> Result<Outcome, SolveError> {
+    compute_with(root, terms, ast, opts, on_projection, &mut Events::off())
+}
+
+/// [`compute`], narrating root and every node into `events`, in layer order.
+pub fn compute_with(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    opts: &Options,
+    on_projection: &mut dyn FnMut(&Projection),
+    events: &mut Events,
+) -> Result<Outcome, SolveError> {
     let t_root = Instant::now();
-    let prepared = prepare(root, terms, ast)?;
-    compute_prepared(root, terms, ast, prepared, t_root, opts, on_projection)
+    let prepared = prepare_with(root, terms, ast, events)?;
+    compute_prepared(
+        root,
+        terms,
+        ast,
+        prepared,
+        t_root,
+        opts,
+        on_projection,
+        events,
+    )
 }
 
 /// [`compute`] after [`prepare`] — how [`crate::explore`] reaches the cube
 /// once it has read the static verdict, without saturating root twice.
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn compute_prepared(
     root: &mut Kb,
     terms: &mut Terms,
@@ -251,6 +273,7 @@ pub(crate) fn compute_prepared(
     t_root: Instant,
     opts: &Options,
     on_projection: &mut dyn FnMut(&Projection),
+    events: &mut Events,
 ) -> Result<Outcome, SolveError> {
     let Prepared {
         snapshot,
@@ -275,6 +298,10 @@ pub(crate) fn compute_prepared(
     let axes = Axes::new(root, &candidates, hypothesised, opts.keep_states);
     let root = root.sealed();
     let size = 1usize << n;
+    // The probe below is not part of the run, so the axes narrate only after
+    // it.
+    let probe_axes = axes.clone();
+    let axes = axes.narrating(events.narration());
     let mut status = vec![0u8; size];
     let mut nodes = vec![Node::default(); size];
     let mut states = opts.keep_states.then(|| vec![Vec::new(); size]);
@@ -303,7 +330,15 @@ pub(crate) fn compute_prepared(
         for i in 0..PROBE_NODES as u64 {
             let mask =
                 ((size as u64 - 1) as u128 * i as u128 / (PROBE_NODES as u64 - 1) as u128) as u64;
-            node(root, &snapshot, terms, ast, &memo, &facts_of(mask), &axes)?;
+            node(
+                root,
+                &snapshot,
+                terms,
+                ast,
+                &memo,
+                &facts_of(mask),
+                &probe_axes,
+            )?;
         }
         let per_node = t_probe.elapsed() / PROBE_NODES as u32;
         on_projection(&Projection {
@@ -334,7 +369,13 @@ pub(crate) fn compute_prepared(
             &sets,
         )?;
         // The commit, in layer order.
-        for (out, &mask) in outs.into_iter().zip(batch) {
+        for (mut out, &mask) in outs.into_iter().zip(batch) {
+            if events.on() || out.events.is_some() {
+                let mut commitment: Vec<String> =
+                    facts_of(mask).iter().map(|&f| sexpr(terms, f)).collect();
+                commitment.sort();
+                narrate_node(events, &mut out, commitment);
+            }
             let class = *classes.entry(out.state).or_insert(mask);
             let m = mask as usize;
             status[m] = (if out.dead { DEAD } else { 0 }) | (if out.owes > 0 { OWING } else { 0 });
@@ -388,14 +429,14 @@ pub fn root_firings(
     root: &mut Kb,
     terms: &mut Terms,
     ast: &Ast,
+    events: &mut Events,
 ) -> Result<Vec<crate::firing::Firing>, SolveError> {
-    let mut off = Events::off();
     let mut firings = Vec::new();
     let mut s = Session {
         kb: root,
         terms,
         ast,
-        events: &mut off,
+        events,
         memo: SharedMemo::default(),
     };
     let mut sat = Saturator::new(&mut s)?;
@@ -406,8 +447,30 @@ pub fn root_firings(
 /// Saturate root, take the universe at its fixpoint, and classify the plans.
 /// Root is written by its own saturation and by nothing else.
 pub(crate) fn prepare(root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Prepared, SolveError> {
+    prepare_with(root, terms, ast, &mut Events::off())
+}
+
+/// [`prepare`], narrating root into `events` as the walk does at root: the
+/// alive-set check's `warn` lines, root's saturation, its obligation pass,
+/// and — on a program the static check flags — one `monotonicity` line.
+pub(crate) fn prepare_with(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    events: &mut Events,
+) -> Result<Prepared, SolveError> {
     let memo = SharedMemo::default();
     let mut off = Events::off();
+    if events.on() {
+        let u = crate::invariant::Universe::of(root, terms);
+        for b in u.rule_breaches(root, terms, ast) {
+            let line = b.render(terms);
+            events.emit("warn", |l| {
+                l.str("category", "alive-set-invariant");
+                l.str("message", &line);
+            });
+        }
+    }
 
     // Root's fixpoint, and the snapshot every node resumes from.
     let snapshot = {
@@ -415,7 +478,7 @@ pub(crate) fn prepare(root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Pre
             kb: root,
             terms,
             ast,
-            events: &mut off,
+            events,
             memo: memo.clone(),
         };
         let mut sat = Saturator::new(&mut s)?;
@@ -453,7 +516,7 @@ pub(crate) fn prepare(root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Pre
     // The static check, over root's plans. Root's tally is what compiles the
     // obligation plans; a node can only compile one root lacks through an
     // activator a commitment derives, and that is a site of its own.
-    crate::obligations::tally(root, terms, ast, &memo, &mut off)?;
+    crate::obligations::tally(root, terms, ast, &memo, events)?;
     let hypothesised: FxHashSet<_> = candidates
         .iter()
         .map(|c| terms.facts.get(c.fact).0)
@@ -464,6 +527,14 @@ pub(crate) fn prepare(root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Pre
         &crate::monotone::plans_of(&memo),
         &hypothesised,
     );
+    if events.on() && !monotonicity.is_monotone() {
+        let sites: Vec<String> = monotonicity.sites.iter().map(|s| s.render(terms)).collect();
+        events.emit("monotonicity", |l| {
+            l.str("verdict", "non-monotone");
+            l.num("sites", sites.len() as i64);
+            l.owned_strs("site", sites);
+        });
+    }
     Ok(Prepared {
         snapshot,
         root_dead,
@@ -475,6 +546,7 @@ pub(crate) fn prepare(root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Pre
 }
 
 /// What a node's fixpoint is read against: root's facts and the cube's axes.
+#[derive(Clone)]
 pub(crate) struct Axes {
     root_facts: FxHashSet<FactId>,
     /// The candidates in bit order.
@@ -484,6 +556,8 @@ pub(crate) struct Axes {
     hypothesised: FxHashSet<ein_core::Symbol>,
     /// Render each node's facts beyond root's — [`Options::keep_states`].
     keep_states: bool,
+    /// Narrate each node into a worker stream the caller replays in order.
+    narration: Option<Level>,
 }
 
 impl Axes {
@@ -499,7 +573,14 @@ impl Axes {
             is_candidate: candidates.iter().map(|c| c.fact).collect(),
             hypothesised,
             keep_states,
+            narration: None,
         }
+    }
+
+    /// The same axes, narrating each node at `narration` (`None`: silent).
+    pub(crate) fn narrating(mut self, narration: Option<Level>) -> Axes {
+        self.narration = narration;
+        self
     }
 }
 
@@ -518,6 +599,9 @@ pub(crate) struct NodeOut {
     pub closure: Vec<u32>,
     /// [`Self::state`] rendered, only under [`Axes::keep_states`].
     pub delta: Vec<String>,
+    /// The node's own narration, when the axes narrate: its saturation's and
+    /// its obligation pass's events, for the caller to replay in order.
+    pub events: Option<Events>,
 }
 
 #[cfg(feature = "parallel")]
@@ -678,6 +762,7 @@ impl<'a> Nodes<'a> {
             self.ast,
             &self.memo,
             facts,
+            &mut Events::off(),
             &mut |f| firings.push(f.clone()),
         )
         .map(|kb| read(&kb, self.terms, &firings));
@@ -716,10 +801,21 @@ fn fixpoint(
     memo: &SharedMemo,
     facts: &[FactId],
 ) -> Result<Kb, SolveError> {
-    fixpoint_firing(root, snapshot, terms, ast, memo, facts, &mut |_| {})
+    fixpoint_firing(
+        root,
+        snapshot,
+        terms,
+        ast,
+        memo,
+        facts,
+        &mut Events::off(),
+        &mut |_| {},
+    )
 }
 
-/// [`fixpoint`], handing every firing to `sink` — what a trace is made of.
+/// [`fixpoint`], narrating into `events` and handing every firing to `sink` —
+/// what a trace is made of.
+#[allow(clippy::too_many_arguments)]
 fn fixpoint_firing(
     root: &Kb,
     snapshot: &Snapshot,
@@ -727,9 +823,9 @@ fn fixpoint_firing(
     ast: &Ast,
     memo: &SharedMemo,
     facts: &[FactId],
+    events: &mut Events,
     sink: &mut dyn FnMut(&crate::firing::Firing),
 ) -> Result<Kb, SolveError> {
-    let mut off = Events::off();
     let mut fork = root.branch();
     for &h in facts {
         let (rel, args) = terms.facts.get(h);
@@ -743,7 +839,7 @@ fn fixpoint_firing(
             kb: &mut fork,
             terms,
             ast,
-            events: &mut off,
+            events,
             memo: memo.clone(),
         };
         let delta = snapshot.new_facts_of(s.kb);
@@ -782,8 +878,17 @@ fn node_in_region(
     facts: &[FactId],
     axes: &Axes,
 ) -> Result<NodeOut, SolveError> {
-    let fork = fixpoint(root, snapshot, terms, ast, memo, facts)?;
-    let mut off = Events::off();
+    let mut ev = Events::worker_for(axes.narration);
+    let fork = fixpoint_firing(
+        root,
+        snapshot,
+        terms,
+        ast,
+        memo,
+        facts,
+        &mut ev,
+        &mut |_| {},
+    )?;
 
     let contradictions = crate::contradiction::detect(&fork, terms);
     let mut node = Node::default();
@@ -805,7 +910,7 @@ fn node_in_region(
         node.refuted_by = rules;
         node.absent_premises = absent_premises(&fork, terms, first.witness());
     }
-    let owes = crate::obligations::tally(&fork, terms, ast, memo, &mut off)?;
+    let owes = crate::obligations::tally(&fork, terms, ast, memo, &mut ev)?;
     node.owes = owes.total() as u32;
     node.owed = owes
         .instances()
@@ -857,7 +962,34 @@ fn node_in_region(
         },
         state: delta.into_boxed_slice(),
         closure,
+        events: axes.narration.map(|_| ev),
     })
+}
+
+/// One node's narration, replayed into `events`, then its `enter` line:
+/// the layer (the commitment's size), the commitment, what the node is, and
+/// a dead node's core — M1e2 T1e2.1a.5.2, `read_out.md` § 8.6.
+pub(crate) fn narrate_node(events: &mut Events, out: &mut NodeOut, commitment: Vec<String>) {
+    if let Some(w) = out.events.take() {
+        events.replay(w);
+    }
+    if !events.on() {
+        return;
+    }
+    let kind = if out.dead {
+        "dead"
+    } else if out.owes > 0 {
+        "owing"
+    } else {
+        "in-r"
+    };
+    events.emit("enter", |l| {
+        l.num("layer", commitment.len() as i64);
+        l.owned_strs("commitment", commitment);
+        l.str("kind", kind);
+        l.num("owes", i64::from(out.owes));
+        l.strs("core", out.node.core.iter().map(String::as_str));
+    });
 }
 
 fn sorted_text(terms: &Terms, facts: &[FactId]) -> Vec<String> {

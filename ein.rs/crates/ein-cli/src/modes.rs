@@ -26,7 +26,7 @@ use ein_infer::read_out::{self, ReadOut};
 use ein_ir::Ast;
 
 /// The `solve` options a region mode takes. Every other one is the walk's.
-const TAKES: [&str; 20] = [
+const TAKES: [&str; 22] = [
     "file",
     "solutions",
     "max-time",
@@ -47,6 +47,8 @@ const TAKES: [&str; 20] = [
     "trace",
     "no-diagrams",
     "hyp-stats",
+    "events",
+    "events-level",
 ];
 
 /// Whether this `solve` run asks a region mode.
@@ -80,7 +82,15 @@ pub fn mode_of(m: &ArgMatches) -> Mode {
 /// same question at another `-j` prints the same lines (C4), and the files a
 /// run writes, because writing one changes nothing printed. `--no-diagrams`,
 /// which shapes the trace alone, is left out too, as a flag with no value.
-const UNSHOWN: [&str; 5] = ["-j", "--jobs", "--json-summary", "--dump-answer", "--trace"];
+const UNSHOWN: [&str; 7] = [
+    "-j",
+    "--jobs",
+    "--json-summary",
+    "--dump-answer",
+    "--trace",
+    "--events",
+    "--events-level",
+];
 
 /// The arguments after `command`, as typed, less [`UNSHOWN`]: the header
 /// names the question.
@@ -181,9 +191,14 @@ pub fn run(m: &ArgMatches) -> i32 {
     };
     // `--trace` tells root's derivation first, so root is saturated here, with
     // its firings kept; the run's own preparation then finds it saturated.
+    // `--events FILE`: the walk's `run` and `load` lines, then root and every
+    // node the route visits, then one `region` line (`read_out.md` § 8.6).
+    let cfg = kb.program().config.clone().unwrap_or_default();
+    let mut events = crate::solve::events_start(m, &file, &cfg);
+    crate::solve::events_load(&mut events, &terms, &kb);
     let trace = m.get_one::<String>("trace").cloned();
     let root_firings = match trace {
-        Some(_) => match ein_infer::region::root_firings(&mut kb, &mut terms, &ast) {
+        Some(_) => match ein_infer::region::root_firings(&mut kb, &mut terms, &ast, &mut events) {
             Ok(f) => Some(f),
             Err(e) => {
                 eprintln!("{e}");
@@ -192,7 +207,7 @@ pub fn run(m: &ArgMatches) -> i32 {
         },
         None => None,
     };
-    let r = match read_out::run(&mut kb, &mut terms, &ast, &opts) {
+    let r = match read_out::run_with(&mut kb, &mut terms, &ast, &opts, &mut events) {
         Ok(r) => r,
         Err(e) => {
             eprintln!("{e}");
@@ -209,6 +224,30 @@ pub fn run(m: &ArgMatches) -> i32 {
     );
     if code == 2 {
         return code;
+    }
+    if events.on() {
+        // The summary's own blocks, as JSON on one line: what the run asked,
+        // R as it established it (its states are the summary's and the
+        // dump's), `--single`'s word, and the work.
+        let blocks = ein_render::dump::region_answer::summary_blocks(&r);
+        let get = |k: &str| {
+            blocks
+                .iter()
+                .find(|(key, _)| *key == k)
+                .map(|(_, v)| v.clone())
+                .unwrap_or(ein_render::dump::Json::Null)
+        };
+        let mut region = get("region");
+        if let ein_render::dump::Json::Object(fields) = &mut region {
+            fields.retain(|(k, _)| k != "states" && k != "frontier");
+        }
+        let compact = |j: &ein_render::dump::Json| ein_render::dump::json::dumps(j);
+        events.emit("region", |l| {
+            l.json("asked", &compact(&get("asked")));
+            l.json("region", &compact(&region));
+            l.json("verdict", &compact(&get("verdict")));
+            l.json("work", &compact(&get("work")));
+        });
     }
     if let Err(e) = extras(m, &r, &mut kb, &mut terms, &ast, want.as_ref()) {
         eprintln!("{e}");
@@ -227,28 +266,33 @@ pub fn run(m: &ArgMatches) -> i32 {
             diagrams,
         )
         .and_then(|md| std::fs::write(path, md).map_err(|e| e.to_string()));
+        // Additive: a file that could not be written says so, and the answer
+        // printed above stands with its exit code
+        // (`defined_behaviour.md` § 4.4).
         if let Err(e) = written {
             crate::solve::artefact_failed("trace", path, e);
-            return 1;
         }
     }
     if summary_path.is_none() && dump.is_none() {
         return code;
     }
     // The summary and the answer directory: the same facts as stdout, as
-    // files. Additive: nothing printed above moves with them.
+    // files, additive in the same sense.
     let summary = match crate::summary::build_region(&ast, &mut terms, &mut kb, &r, &file) {
         Ok(s) => crate::summary::text(&s),
         Err(e) => {
-            eprintln!("{e}");
-            return 1;
+            for (flag, path) in [("json-summary", &summary_path), ("dump-answer", &dump)] {
+                if let Some(p) = path {
+                    crate::solve::artefact_failed(flag, p, &e);
+                }
+            }
+            return code;
         }
     };
     if let Some(path) = summary_path.as_deref()
         && let Err(e) = std::fs::write(path, &summary)
     {
         crate::solve::artefact_failed("json-summary", path, e);
-        return 1;
     }
     if let Some(dir) = dump.as_deref() {
         let program = crate::solve::inlined_program(&file);
@@ -268,7 +312,6 @@ pub fn run(m: &ArgMatches) -> i32 {
             &inputs,
         ) {
             crate::solve::artefact_failed("dump-answer", dir, e);
-            return 1;
         }
     }
     code

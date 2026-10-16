@@ -1313,6 +1313,27 @@ fn every_event_kind_the_schema_defines_is_reachable_from_the_corpus() {
                 .or_insert(0) += 1;
         }
     }
+    // A region run (M1e2 T1e2.1a.5.2) is what emits `region`, where the walk
+    // emits `verdict`.
+    let path = scratch.at("cover-region.jsonl");
+    ein_env(
+        &[],
+        &[
+            "solve",
+            "examples/branching/05_mini_zebra.ein",
+            "--region-budget",
+            "524288",
+            "--events",
+            &path,
+            "--events-level",
+            "verbose",
+        ],
+    );
+    for e in events_of(&path) {
+        *seen
+            .entry(e["e"].as_str().unwrap_or("?").to_string())
+            .or_insert(0) += 1;
+    }
     let schema = schema_kinds();
     // The row count, not a floor with slack: the three payload tables have 22
     // kind cells and a removed kind is a schema version bump (§ Versioning),

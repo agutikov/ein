@@ -51,6 +51,7 @@ use ein_core::{FactId, Kb, Terms};
 use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet};
 
+use crate::events::Events;
 use crate::monotone::Monotonicity;
 use crate::region::{Axes, Candidate, Cost, DEAD, OWING, Prepared, fan_out, pool_of, prepare};
 use crate::solve::SolveError;
@@ -281,10 +282,14 @@ pub fn compute(
 ) -> Result<DownSet, SolveError> {
     let t_root = Instant::now();
     let prepared = prepare(root, terms, ast)?;
-    compute_prepared(root, terms, ast, prepared, t_root, opts)
+    compute_prepared(root, terms, ast, prepared, t_root, opts, &mut Events::off())
 }
 
 /// [`compute`] after [`prepare`], for [`crate::explore`].
+///
+/// `events` hears every node visited, in visit order — its saturation's
+/// events and an `enter` line — and one `layer` line per layer with route 1's
+/// counters (M1e2 T1e2.1a.5.2).
 pub(crate) fn compute_prepared(
     root: &mut Kb,
     terms: &mut Terms,
@@ -292,6 +297,7 @@ pub(crate) fn compute_prepared(
     prepared: Prepared,
     t_root: Instant,
     opts: &Options,
+    events: &mut Events,
 ) -> Result<DownSet, SolveError> {
     let Prepared {
         snapshot,
@@ -319,7 +325,7 @@ pub(crate) fn compute_prepared(
         out.cost.root = t_root.elapsed();
         return Ok(out);
     }
-    let axes = Axes::new(root, &out.candidates, hypothesised, false);
+    let axes = Axes::new(root, &out.candidates, hypothesised, false).narrating(events.narration());
     let facts: Vec<FactId> = out.candidates.iter().map(|c| c.fact).collect();
     let root = root.sealed();
     out.cost.root = t_root.elapsed();
@@ -364,7 +370,15 @@ pub(crate) fn compute_prepared(
                 &axes,
                 &sets,
             )?;
-            for (o, set) in outs.into_iter().zip(chunk) {
+            for (mut o, set) in outs.into_iter().zip(chunk) {
+                if events.on() || o.events.is_some() {
+                    let mut c: Vec<String> = set
+                        .iter()
+                        .map(|&b| out.candidates[b as usize].text.clone())
+                        .collect();
+                    c.sort();
+                    crate::region::narrate_node(events, &mut o, c);
+                }
                 let id = out.points.len() as u32;
                 stats.facts += o.state.len() as u64;
                 let class = *classes.entry(o.state).or_insert(id);
@@ -393,6 +407,14 @@ pub(crate) fn compute_prepared(
                 });
             }
         }
+        events.emit("layer", |l| {
+            l.num("layer", layer as i64);
+            l.num("visited", stats.visited as i64);
+            l.num("dead", stats.dead as i64);
+            l.num("owing", stats.owing as i64);
+            l.num("r", stats.r as i64);
+            l.num("facts", stats.facts as i64);
+        });
         out.layers.push(stats);
         out.layer_wall.push(t_layer.elapsed());
         frontier = if layer == 0 {
@@ -419,6 +441,12 @@ pub(crate) fn compute_prepared(
         .into_iter()
         .next()
         .expect("one node");
+        let mut o = o;
+        if events.on() || o.events.is_some() {
+            let mut c: Vec<String> = out.candidates.iter().map(|c| c.text.clone()).collect();
+            c.sort();
+            crate::region::narrate_node(events, &mut o, c);
+        }
         out.top_facts = o.state.len() as u64;
         out.top = Some(Point {
             set: (0..out.n() as u32).collect(),

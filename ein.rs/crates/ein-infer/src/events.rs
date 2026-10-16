@@ -249,6 +249,14 @@ impl Line {
         push_json_str(&mut self.out, value);
     }
 
+    /// A value that is already JSON — an object a reader parses as a whole,
+    /// as the `region` event carries the summary's `region` block. The caller
+    /// vouches that `json` is one valid JSON value on one line.
+    pub fn json(&mut self, key: &str, json: &str) {
+        self.key(key);
+        self.out.push_str(json);
+    }
+
     pub fn num(&mut self, key: &str, value: i64) {
         self.key(key);
         self.out.push_str(&value.to_string());

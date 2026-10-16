@@ -45,8 +45,9 @@ use rustc_hash::{FxHashMap, FxHashSet};
 use crate::compile::SharedMemo;
 use crate::described::{self, Described};
 use crate::downset::{self, Declined, is_subset, join};
+use crate::events::Events;
 use crate::monotone::Monotonicity;
-use crate::region::{self, Axes, Candidate, Outcome, Pool, Prepared, fan_out, pool_of, prepare};
+use crate::region::{self, Axes, Candidate, Outcome, Pool, Prepared, fan_out, pool_of};
 use crate::saturator::Snapshot;
 use crate::solve::SolveError;
 
@@ -279,8 +280,21 @@ pub fn run(
     ast: &Ast,
     opts: &Options,
 ) -> Result<Answer, SolveError> {
+    run_with(root, terms, ast, opts, &mut Events::off())
+}
+
+/// [`run`], narrating into `events`: root as the walk narrates it, then every
+/// node visited — its saturation's events and an `enter` line, in visit order
+/// whatever `-j` is — and route 1's `layer` lines (M1e2 T1e2.1a.5.2).
+pub fn run_with(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    opts: &Options,
+    events: &mut Events,
+) -> Result<Answer, SolveError> {
     let t0 = Instant::now();
-    let prepared = prepare(root, terms, ast)?;
+    let prepared = region::prepare_with(root, terms, ast, events)?;
     let mut answer = if prepared.monotonicity.is_monotone() {
         if opts.mode
             == (Mode {
@@ -288,9 +302,9 @@ pub fn run(
                 ask: Ask::Describe,
             })
         {
-            describe_route_1(root, terms, ast, prepared, t0, opts)?
+            describe_route_1(root, terms, ast, prepared, t0, opts, events)?
         } else {
-            let mut sp = Space::open(root, terms, ast, prepared, opts);
+            let mut sp = Space::open(root, terms, ast, prepared, opts, events);
             let out = match (opts.mode.which, opts.mode.ask) {
                 (Which::All, Ask::Find(n)) => sp.find_all(n),
                 (Which::All, Ask::Single) => sp.single_all(),
@@ -301,7 +315,7 @@ pub fn run(
             sp.answer(opts.mode, Route::DownSet, out)
         }
     } else {
-        flagged(root, terms, ast, prepared, t0, opts)?
+        flagged(root, terms, ast, prepared, t0, opts, events)?
     };
     answer.wall = t0.elapsed();
     Ok(answer)
@@ -359,6 +373,7 @@ struct Space<'a> {
     spent: u64,
     budget: u64,
     deadline: Option<Instant>,
+    events: &'a mut Events,
 }
 
 /// `Ok(Err(stop))`: the step was not taken.
@@ -371,6 +386,7 @@ impl<'a> Space<'a> {
         ast: &'a Ast,
         prepared: Prepared,
         opts: &Options,
+        events: &'a mut Events,
     ) -> Space<'a> {
         let Prepared {
             snapshot,
@@ -380,7 +396,7 @@ impl<'a> Space<'a> {
             monotonicity,
             memo,
         } = prepared;
-        let axes = Axes::new(root, &candidates, hypothesised, false);
+        let axes = Axes::new(root, &candidates, hypothesised, false).narrating(events.narration());
         let facts = candidates.iter().map(|c| c.fact).collect();
         Space {
             root: root.sealed(),
@@ -401,6 +417,7 @@ impl<'a> Space<'a> {
             spent: 0,
             budget: opts.budget,
             deadline: opts.deadline,
+            events,
         }
     }
 
@@ -474,7 +491,15 @@ impl<'a> Space<'a> {
             &self.axes,
             &inputs,
         )?;
-        for (s, o) in fresh.into_iter().zip(outs) {
+        for (s, mut o) in fresh.into_iter().zip(outs) {
+            if self.events.on() || o.events.is_some() {
+                let mut c: Vec<String> = s
+                    .iter()
+                    .map(|&b| self.candidates[b as usize].text.clone())
+                    .collect();
+                c.sort();
+                region::narrate_node(self.events, &mut o, c);
+            }
             self.saturations += 1;
             if s.is_empty() {
                 self.root_node = Some(o.node.clone());
@@ -1054,6 +1079,7 @@ fn describe_route_1(
     prepared: Prepared,
     t0: Instant,
     opts: &Options,
+    events: &mut Events,
 ) -> Result<Answer, SolveError> {
     let d = downset::compute_prepared(
         root,
@@ -1066,6 +1092,7 @@ fn describe_route_1(
             max_visits: u64::MAX,
             jobs: opts.jobs,
         },
+        events,
     )?;
     let saturations = d.points.len() as u64 + u64::from(d.top.is_some());
     let facts: u64 = d.layers.iter().map(|l| l.facts).sum::<u64>() + d.top_facts;
@@ -1144,6 +1171,7 @@ fn flagged(
     prepared: Prepared,
     t0: Instant,
     opts: &Options,
+    events: &mut Events,
 ) -> Result<Answer, SolveError> {
     let n = prepared.candidates.len();
     let early = matches!(
@@ -1155,7 +1183,7 @@ fn flagged(
         // Layer order, stopping when the question is decided. Past the limit
         // a question that needs the whole cube stays undecided. The cube is
         // bounded by the limit, so the facts budget does not apply.
-        let mut sp = Space::open(root, terms, ast, prepared, opts);
+        let mut sp = Space::open(root, terms, ast, prepared, opts, events);
         sp.budget = u64::MAX;
         let which = if early { opts.mode.which } else { Which::All };
         let ask = if early {
@@ -1202,6 +1230,7 @@ fn flagged(
             jobs: opts.jobs,
         },
         &mut |_| {},
+        events,
     )?;
     let Outcome::Region(r) = outcome else {
         unreachable!("within the limit");

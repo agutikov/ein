@@ -35,7 +35,12 @@ S1e2.1a.5's vocabulary is written and ruled
 [`read_out_examples.md`](read_out_examples.md)): the verdict words are
 `--single`'s alone, every answer exits 0, and stdout's listings stop at 100
 lines with the whole read-out in `--dump-answer`. The stage is re-estimated
-from 2 days to 5.
+from 2 days to 5. **T1e2.1a.5.2's surfaces are built** for the region modes
+and `ein oracle`: the read-out (its golden is
+[`read_out_examples.md`](read_out_examples.md), printed by `ein solve`
+itself), `ein-summary/2`, `ein-answer/2`, `--models`, `-p/-P/-f`,
+`--diff-models`, `-H`, `--trace` and the event stream. The switch,
+T1e2.1a.5.3, is next; `ein test`'s report moves with it.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md) S1e2.1.1–6,
 which built the register, the doors and the bundle this phase extends.
 **Blocks:** the rest of the review,

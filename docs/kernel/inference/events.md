@@ -99,6 +99,7 @@ difference a change to the engine or an optimisation introduces.
 | `run` | process start | `version`, `level`, `impl`, `file`, `argv`, `config` (every resolved `SolverConfig` field, kebab-cased) |
 | `load` | after `kb.from_ir` | `relations`, `rules`, `hrules`, `macros`, `facts` counts; `relation_names` and `rule_names` in registry order |
 | `verdict` | end | `type`, `k`, `exhausted`, `counters` (every `MonotonicStats` field), `core` (sorted), `models` (each a sorted fact list, the list itself sorted) |
+| `region` | end of a **region run** (`ein solve` under a region flag, M1e2 T1e2.1a.5.2) — where the walk emits `verdict` | `asked`, `region`, `verdict`, `work`: the `ein-summary/2` blocks of the same names, each one JSON value, `region` without its `states` and `frontier` ([§ Region runs](#region-runs)) |
 | `warn` | **at root, before the search** — the alive-set check right after `load`, the `(absent …)` audit at root's first `quiesce`; one line per breach, in the checker's own order | `category`, `message` (rendered, one line) |
 | `monotonicity` | **at root, before the search**, after root's obligation tally — and **only when the program's lattice is not monotone** (M1e2 S1e2.1a.1) | `verdict` (`"non-monotone"`), `sites` (the count), `site` (one rendered line per site, sorted) |
 
@@ -239,8 +240,8 @@ carrying it makes the heap's pop order checkable rather than inferred.
 | `rung` | a generation call that **reached** the obligations rung | `mode`, `reason`, `owed`, `branches`, `declined`, `candidates`, `uncovered` |
 | `hyp` | each constructed hypgen candidate | `fact`, `verdict` ∈ {`emitted`, the name of the filter that dropped it} |
 | `hypskip` | a **pre-candidate** skip — *verbose only* | `relation`, `reason`, `object` (for `self_edge`) |
-| `enter` | `try_commitment_set` returns | `layer`, `commitment`, `kind`, `n_firings`, `core` |
-| `layer` | every way out of a layer | the census row — sixteen counters, below |
+| `enter` | `try_commitment_set` returns. **In a region run**, after each node's own events, in visit order | `layer`, `commitment`, `kind`, `n_firings`, `core`. **In a region run**: `layer` (the commitment's size), `commitment` (sorted), `kind` ∈ {`dead`, `owing`, `in-r`}, `owes`, `core` |
+| `layer` | every way out of a layer. **In a region run**, at the end of each route-1 layer | the census row — sixteen counters, below. **In a region run**: `layer` (0-based, the commitments' size), `visited`, `dead`, `owing`, `r`, `facts` — route 1's own counters |
 | `nogood` | `emit_nogood` | `clause`, `emitted`, `subsumed` |
 | `writeback` | singleton `(not h)` / forced-positive promotion | `fact`, `reason` |
 | `traversal` | the **second traversal** deciding whether to run — once at root, and again at any node that changes its mind. `EIN_TRAVERSAL=tree` only | `kind` (always `tree`), `verdict` ∈ {`accepted`, `declined`}, `reason` (the rung `mode`), then `max_set_size` + `stop_after` on `accepted` and `depth` on a node's `declined` |
@@ -456,6 +457,32 @@ the comparison with no narration cut, event by event.
 has a negative control: `event_cut_control.rs` builds a real verbose stream,
 deletes one event from it, and asserts that deleting a *productive* firing is
 reported while deleting a redundant one or an `enqueue` is not.
+
+## Region runs
+
+M1e2 [T1e2.1a.5.2](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md),
+[`read_out.md` § 8.6](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#86-the-rest).
+`ein solve --events FILE` under a region flag (`--minimal`, `--maximal`,
+`--single`, `--region-budget`) narrates the run that answered, which is not
+the walk:
+
+1. `run` and `load`, as above;
+2. **root**: the alive-set check's `warn` lines, root's saturation (`compile`,
+   `enqueue`, `fire`, …), its obligation pass (`owe`), and on a program the
+   static check flags one `monotonicity` line;
+3. **every node the route visits**, in visit order whatever `-j` is: that
+   node's saturation and obligation events, then one `enter` line. A worker
+   narrates into its own buffer and the run replays it in order, so the
+   stream at `-j 4` is the stream at `-j 1` line for line;
+4. **route 1**: one `layer` line at the end of each layer, with its own
+   counters;
+5. **`region`**, last.
+
+`rung`, `hyp`, `hypskip`, `nogood`, `writeback` and `traversal` are the
+walk's, and a region run emits none of them. Until S1e2.1a.5's switch, a bare
+`ein solve` is still the walk and narrates as the sections above say.
+`region_modes.rs`'s `the_event_stream_is_the_runs_and_jobs_move_no_line`
+holds the shape and the `-j` invariance.
 
 ## Versioning
 

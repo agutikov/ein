@@ -166,8 +166,8 @@ fn the_walks_options_are_refused_beside_a_mode() {
         (vec!["--single", "-m", "3"], "--max-set-size"),
         (vec!["--minimal", "-L"], "--no-lookahead"),
         (
-            vec!["--region-budget", "10", "--events", "/tmp/x.jsonl"],
-            "--events",
+            vec!["--maximal", "--dump-states", "/tmp/x"],
+            "--dump-states",
         ),
         (vec!["--maximal", "--reorder"], "--reorder"),
     ] {
@@ -397,5 +397,66 @@ fn the_universe_and_the_trace() {
         text.contains("## Owing — 1 node") && text.contains("- **∅** owes"),
         "{text}"
     );
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+/// `--events FILE` under a region mode — T1e2.1a.5.2's seventh step,
+/// `read_out.md` § 8.6: `run` and `load`, root's own events, one `enter` per
+/// node visited after that node's events, a `layer` per route-1 layer, and
+/// one `region` line last. The same stream at one job and at four, and the
+/// read-out it leaves as it was.
+#[test]
+fn the_event_stream_is_the_runs_and_jobs_move_no_line() {
+    let zebra = "examples/branching/05_mini_zebra.ein";
+    let dir = scratch("events");
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = |j: &str| dir.join(format!("{j}.jsonl")).to_string_lossy().to_string();
+    let bare = ein(&["solve", zebra, "--region-budget", "524288"]);
+    let mut streams = Vec::new();
+    for j in ["1", "4"] {
+        let p = path(j);
+        let r = ein(&[
+            "solve",
+            zebra,
+            "--region-budget",
+            "524288",
+            "-j",
+            j,
+            "--events",
+            &p,
+        ]);
+        assert_eq!(
+            (r.code, &r.out, &r.err),
+            (bare.code, &bare.out, &bare.err),
+            "-j {j}"
+        );
+        let lines: Vec<serde_json::Value> = std::fs::read_to_string(&p)
+            .unwrap()
+            .lines()
+            .map(|l| serde_json::from_str(l).expect("one JSON object per line"))
+            .collect();
+        streams.push(lines);
+    }
+    let kinds = |s: &[serde_json::Value], k: &str| s.iter().filter(|e| e["e"] == k).count();
+    let one = &streams[0];
+    assert_eq!(one[0]["e"], "run");
+    assert_eq!(one[1]["e"], "load");
+    let last = one.last().unwrap();
+    assert_eq!(last["e"], "region");
+    assert_eq!(last["region"]["k_s"], 5);
+    assert_eq!(
+        kinds(one, "enter") as u64,
+        last["work"]["saturations"].as_u64().unwrap()
+    );
+    assert_eq!(
+        kinds(one, "layer") as u64,
+        last["work"]["layers"].as_u64().unwrap()
+    );
+    assert!(
+        kinds(one, "fire") > 0,
+        "root and the nodes narrate their firings"
+    );
+    // Every line but `run`, whose argv names the -j, is the same at four jobs.
+    assert_eq!(one[1..], streams[1][1..]);
     let _ = std::fs::remove_dir_all(&dir);
 }

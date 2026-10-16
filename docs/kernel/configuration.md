@@ -408,8 +408,9 @@ the walk and into a **region mode**, answered by
 the oracle by `ein-infer/tests/explore.rs`. A region mode takes `-n`, `-T`,
 `-j`, `--region-limit` and `-s`, and since T1e2.1a.5.2 `--json-summary`
 (`ein-summary/2`), `--dump-answer` (`ein-answer/2`, whose `answer.txt` is the
-read-out uncut), and `--models`, `-p`, `-P`, `-f` and `--diff-models` over the
-states it lists; it refuses every other `solve` option with a usage error,
+read-out uncut), `--models`, `-p`, `-P`, `-f` and `--diff-models` over the
+states it lists, `-H`, `--trace` and `--no-diagrams`, and `--events` and
+`--events-level`; it refuses every other `solve` option with a usage error,
 exit 2: what the walk's options mean there is S1e2.1a.5's to
 say. Its read-out is
 [`read_out.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)'s,

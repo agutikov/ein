@@ -159,6 +159,7 @@ fn lattice(
                 max_visits: u64::MAX,
                 jobs: opts.jobs,
             },
+            &mut crate::events::Events::off(),
         )?;
         match &d.declined {
             None => return Ok(Ok(of_described(described::of_downset(&d)))),
@@ -200,6 +201,7 @@ fn lattice(
             jobs: opts.jobs,
         },
         &mut |_| {},
+        &mut crate::events::Events::off(),
     )?;
     Ok(match outcome {
         region::Outcome::Region(r) => Ok(of_described(described::of_cube(&r))),

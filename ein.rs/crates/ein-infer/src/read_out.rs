@@ -136,7 +136,18 @@ pub fn run(
     ast: &Ast,
     opts: &explore::Options,
 ) -> Result<ReadOut, SolveError> {
-    let answer = explore::run(root, terms, ast, opts)?;
+    run_with(root, terms, ast, opts, &mut crate::events::Events::off())
+}
+
+/// [`run`], narrating the run into `events` ([`explore::run_with`]).
+pub fn run_with(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    opts: &explore::Options,
+    events: &mut crate::events::Events,
+) -> Result<ReadOut, SolveError> {
+    let answer = explore::run_with(root, terms, ast, opts, events)?;
     of_answer(root, terms, ast, answer, opts)
 }
 
