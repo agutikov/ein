@@ -521,6 +521,7 @@ ein solve … --dump-answer DIR                                # M1e2: the answe
 ein solve … --dump-region DIR                                # M1e2: the region of the lattice, computed without the search
 ein render region DIR [--view full|border|lines|table]       # M1e2: that region drawn, the run's walk on it
 cargo run --release -p ein-infer --example route1_reach      # M1e2: route 1, R from the alive down-set, over the corpus
+cargo run --release -p ein-infer --example walk_vs_region    # M1e2: the walk's answer and nodes against R
 ein render program|kb FILE                                   # M1e2: the program as written; a KB (or a dumped model)
 python3 utils/review_bundle.py                               # M1e2: build/review/, one page per register row
 python3 utils/review_bundle.py --regions                     # M1e2: build/review/regions/, every corpus region surveyed

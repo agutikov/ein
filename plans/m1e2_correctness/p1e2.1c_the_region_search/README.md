@@ -43,7 +43,7 @@ finished. This phase finishes it.
 | ID | title | the question |
 |---|---|---|
 | S1e2.1c.1 | How large the alive set gets | route 1's reach on the zebra family and the slow entries, and what a description costs as the alive set grows. First answer: [`route1_reach.md`](../p1e2.1a_the_solution_region/route1_reach.md) (zebra counted; `zebra2-minus-15` and the seven everything-alive cubes not) |
-| S1e2.1c.2 | The lines by duality | for a monotone program, enumerate N and E and dualise (MARCO-style, incremental hypergraph transversal), so that the lines, and with them k_s and k_c by sub-cubes, cost output size rather than \|alive\| |
+| S1e2.1c.2 | The lines by duality | for a monotone program, enumerate N and E and dualise (MARCO-style, incremental hypergraph transversal), so that the lines, and with them k_s and k_c by sub-cubes, cost output size rather than \|alive\|. [`walk_and_region.md` § 6](../p1e2.1a_the_solution_region/walk_and_region.md#6-what-this-means-for-question-3) measured the state lattice beside the commitment one: zebra has 27 alive states against 270 454 alive commitments, and a route over states costs at most *states × n* |
 | S1e2.1c.3 | The non-monotone search | S1e2.1b.6's guard split, or whatever P1e2.1b rules, past the oracle's limit |
 | S1e2.1c.4 | The flags at scale | *any*, *single*, *minimal* and *maximal* by the cheapest sound route for each, with the certificate each one is entitled to |
 | S1e2.1c.5 | The old walk, and P1e2.2 re-scoped | which register rows the new default closes by construction (W1, W2 and W5 are symptoms of walking for the maximal line), which survive into it, and whether the lattice walk is kept, as a lever, or retired |

@@ -101,9 +101,14 @@ has them verbatim. What they change here:
   generator proposes.
 - **W11 is not this phase's question.** It is revisited twice after the
   refactoring: in S1e2.1.7's review, then in S1e2.2.12.
-- **Waiting for the user since 2026-10-16:** [`solve_flags.md` § 9](solve_flags.md#9-what-needs-the-users-ruling)'s
-  four questions: the flag names, where today's walk goes, route 1's budget,
-  and when the default switches.
+- **Ruled 2026-10-16:** [`solve_flags.md` § 9](solve_flags.md#9-what-needs-the-users-ruling)'s
+  questions 1, 2 and 4. The flag names are as proposed. Today's walk becomes
+  `ein walk`. The default switches once, at S1e2.1a.5.
+- **Waiting for the user:**
+  - question 3, route 1's budget, which comes after
+    [`walk_and_region.md`](walk_and_region.md): why the walk and R differ;
+  - that page's § 7, to confirm: R's node excludes the search's writes, by
+    the config principle.
 - **Still open:** whether `(region …)` with `(merged …)`, the third answer's
   sketch of how a state's class is shown, is one form for both directions,
   printed by `solve` and stated by a program. That is S1e2.1a.4's grammar

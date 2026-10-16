@@ -428,7 +428,17 @@ classification is known.
 
 Everything above is the definition. `ein solve` computes a **walk** over the
 lattice, and the walk tests a different predicate. Each difference below is
-observable today.
+observable today. Measured over the 185 programs whose R is known
+([`walk_and_region.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/walk_and_region.md),
+2026-10-16):
+
+- on a monotone program the walk is a search for **R's maximal line**, and
+  without a depth cap it finds that line on 156 of 172;
+- the rest are the four ways it can fail: § 6.1, the depth cap, § 6.2–6.3's
+  writes, and the obligations rung;
+- **its node is `sat(root ∪ K ∪ P ∪ C)`**, so it calls 92 of its enterings
+  dead that R keeps alive;
+- it never calls a node alive that R calls dead.
 
 ### 6.1 The walk looks for the maximal line
 
@@ -640,6 +650,13 @@ leave those out.
   oracle's limit. With its budget raised, `zebra.ein`'s R is **one state**,
   reached by 261 982 of its commitments, with 63 on the minimal line and
   270 454 alive.
+- **The walk against R** (S1e2.1a.9,
+  [`walk_and_region.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/walk_and_region.md),
+  `--example walk_vs_region`, 2026-10-16): `-e` gives R's maximal line on 143
+  of the 172 monotone programs whose R is known, and `-e -m n` on 156. Zebra's
+  walk enters 111 commitments where route 1 visits 270 912, because the walk
+  stops at the first complete commitment of a state, and zebra has 27 alive
+  states.
 - **The config principle**: no lever changes R on any of the 159, except
   `enable-symmetric-mirror` on
   [`features/06_symmetric_native.ein`](../../../examples/features/06_symmetric_native.ein),

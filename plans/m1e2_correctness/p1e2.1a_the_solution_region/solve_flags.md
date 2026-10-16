@@ -2,9 +2,11 @@
 
 **Stage:** [S1e2.1a.9](s1e2.1a.9_solve_describes_the_region.md), task
 T1e2.1a.9.2.
-**Status:** proposed 2026-10-16. **Nothing in the parser has moved.** The user
-reads this before T1e2.1a.9.4 changes the CLI. § 9 lists what needs the
-user's ruling and § 10 what the stage decides unless the user objects.
+**Status:** proposed 2026-10-16. **Questions 1, 2 and 4 were ruled the same
+day**, and this page's § 9 has the rulings; § 10 is what the stage decides
+unless the user objects. **Question 3 waits** for the analysis the user asked
+for first, [`walk_and_region.md`](walk_and_region.md). **Nothing in the parser
+has moved.**
 **What it stands on:** route 1 exists in the library since T1e2.1a.9.3
 ([`ein_infer::downset`](../../../ein.rs/crates/ein-infer/src/downset.rs)) and is held
 to the oracle node for node. How far it reaches is
@@ -205,14 +207,31 @@ and S1e2.1a.4's migration table is where each one goes.
 
 ## 9. What needs the user's ruling
 
+The user, 2026-10-16, verbatim:
+
+> 1 - yes; 2 - yes; 4 - yes; 3 - explain first the difference between walk and
+> oracle/solve; then analyse and report the reasons why they differ; because
+> this conflicts with my assumption that thay are equivalent
+
 1. **The names.** `-n N` (with `-n 1` as *any*), `--single`, `--minimal`,
-   `--maximal`, `--region-budget N`. Proposed as written.
+   `--maximal`, `--region-budget N`. **Ruled: yes.**
 2. **Where today's walk goes.** (a) `ein walk`, (b) `ein solve --walk`, or (c)
-   `EIN_WALK=1`. Proposed: (a), for the config principle (§ 5).
+   `EIN_WALK=1`. **Ruled: (a), `ein walk`.**
 3. **Route 1's budget**: its unit and its default
-   ([`route1_reach.md` § 4](route1_reach.md#4-the-budget)).
+   ([`route1_reach.md` § 4](route1_reach.md#4-the-budget)). **Open.** The user
+   asked first why the walk and the oracle differ at all, since the question
+   assumes they compute the same thing: [`walk_and_region.md`](walk_and_region.md).
+   Its § 6 puts the question again with what the analysis found:
+   - **(A)** route 1 enumerates commitments, under a budget of 2¹⁹ facts;
+   - **(B)** a route that enumerates **states** as well. Zebra has 27 alive
+     states against 270 454 alive commitments.
+
+   Its § 7 asks the user to confirm one consequence: R's node is
+   `sat(root ∪ C)`, without the search's writes. That follows from the config
+   principle, and it moves W9's and W11's `right` blocks.
 4. **When the default switches.** (A) at S1e2.1a.5, once, or (B) now, twice.
-   Proposed: (A) (§ 7).
+   **Ruled: (A).** The default switches in S1e2.1a.5's commit, with the
+   read-out that prints it.
 
 ## 10. Decided here unless the user objects
 
