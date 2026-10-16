@@ -7,6 +7,11 @@ The user, 2026-10-16:
 > analyse and report the reasons why they differ; because this conflicts with
 > my assumption that thay are equivalent
 
+**Ruled since**, the same day: question 3 is (A), with the state route as
+P1e2.1c's first step (§ 6); § 7's consequence follows from the user's
+*"region is a region of oracle"*; and there is no `ein walk`. The interface
+that replaces it is [`solve_interface.md`](solve_interface.md).
+
 ```sh
 cargo run --release -p ein-infer --example walk_vs_region -- --jobs 12 > rows.jsonl   # 12 min 32 s
 WVR_SHOW=1 cargo run --release -p ein-infer --example walk_vs_region -- FILE          # the states, by name
@@ -69,7 +74,7 @@ commitment, because k_c and the merged form are defined over commitments.
 
 ## 2. What each computes
 
-| | the oracle (route 2) and route 1 | the walk (`ein solve` today; `ein walk` after T1e2.1a.9.4) |
+| | the oracle (route 2) and route 1 | the walk (`ein solve` today, until S1e2.1a.5 retires it) |
 |---|---|---|
 | **the question** | R = { C : alive ∧ discharged }, all of it | the states of nodes the generator calls **complete**: *the active rung proposes nothing here* |
 | **the universe** | H, the config-free candidate list at root's fixpoint | `alive₀`: H after the lookahead's root kills and the forced-positive cascade (≠ H on 26 of the 172) |
@@ -361,27 +366,11 @@ The two answers to question 3 are therefore:
   about 1 500 saturations. It is S1e2.1c.2's work brought forward, and it
   needs the k_c count and the generators above.
 
-[`solve_flags.md` § 9](solve_flags.md#9-what-needs-the-users-ruling) carries the
-question.
-
-## 7. What it leaves for the stages that follow
-
-- **[S1e2.1a.6](s1e2.1a.6_engine_against_oracle.md)** turns this comparison
-  into its test. `walk_vs_region.rs` is its first version. Two disagreements
-  have no register row:
-  - `zebra2-hints.ein`: W1's shape, and the walk's node (§ 4.3);
-  - `branching/07_lookahead_off`: W1 under `-L` (§ 4.4).
-- **[S1e2.1a.7](s1e2.1a.7_the_bundle_shows_r.md)** restates every register
-  `right` block under R. **W11's witness** has `right = Contradiction, k = 0`,
-  and R has two maximal states there, so the restatement moves it.
-- **The walk's stronger node** is a fourth way a search write reaches an
-  answer, after the three in
-  [§ 6.2](../../../docs/kernel/inference/solution_semantics.md#62-what-is-recorded-is-s--k-and-the-criteria-were-checked-against-s).
-  It is not a row of its own: its answer-changing witnesses are W9's two,
-  W11's, and the `zebra2-hints` row above. On zebra it changes no answer and
-  is a third of the walk's enterings.
-- **W9 and W11 change direction** at S1e2.1a.7 if § 7 holds: their `right`
-  blocks are the default's answer, and R's is the one the kill cache removes.
+**Ruled 2026-10-16: (A) now, with (B) as the first step of P1e2.1c.** In the
+same ruling the user withdrew `ein walk`: one command, `ein solve`, answers
+every question about R with the least work each needs, and `ein oracle`
+computes the cube. That interface is
+[`solve_interface.md`](solve_interface.md).
 
 ## 7. Two rulings meet here
 
@@ -416,5 +405,28 @@ fate. The consequences:
 - *root is never written* holds for R by the same argument, since a promotion
   is a write a flag turns off (`enable-forced-positive`).
 
-This page states the consequence. It does not rule on it: the user confirms
-it, or says otherwise, beside question 3.
+This page stated the consequence and did not rule on it. **It follows from the
+user's ruling of 2026-10-16**, given with question 3's answer: *"results must
+be consistent: region is a region of oracle"*. The oracle's node is
+`sat(root ∪ C)`, so R's is too
+([`solve_interface.md` § 0](solve_interface.md#0-the-ruling)).
+
+## 8. What it leaves for the stages that follow
+
+- **[S1e2.1a.6](s1e2.1a.6_engine_against_oracle.md)** turns this comparison
+  into its test. `walk_vs_region.rs` is its first version. Two disagreements
+  have no register row:
+  - `zebra2-hints.ein`: W1's shape, and the walk's node (§ 4.3);
+  - `branching/07_lookahead_off`: W1 under `-L` (§ 4.4).
+- **[S1e2.1a.7](s1e2.1a.7_the_bundle_shows_r.md)** restates every register
+  `right` block under R. **W11's witness** has `right = Contradiction, k = 0`,
+  and R has two maximal states there, so the restatement moves it.
+- **The walk's stronger node** is a fourth way a search write reaches an
+  answer, after the three in
+  [§ 6.2](../../../docs/kernel/inference/solution_semantics.md#62-what-is-recorded-is-s--k-and-the-criteria-were-checked-against-s).
+  It is not a row of its own: its answer-changing witnesses are W9's two,
+  W11's, and the `zebra2-hints` row above. On zebra it changes no answer and
+  is a third of the walk's enterings.
+- **W9 and W11 change direction** at S1e2.1a.7, since § 7 holds: their
+  `right` blocks are the default's answer, and R's is the one the kill cache
+  removes.

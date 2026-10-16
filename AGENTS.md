@@ -78,8 +78,12 @@ constrained-reasoning research.
   ([`ein_infer::downset`](ein.rs/crates/ein-infer/src/downset.rs)) computes a
   monotone program's R from its alive set and N alone. It is held to the
   oracle node for node, and it counts `zebra.ein`'s R as one state of 261 982
-  commitments. `ein solve` does not reach it until the user rules on
-  [`solve_flags.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_flags.md).
+  commitments. `ein solve` does not reach it yet. The interface that will is
+  [`solve_interface.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md),
+  under review. It has one tool for R, `ein solve`, whose modes each do the
+  least work their question needs, and `ein oracle` for the cube. There is no
+  `ein walk`: the user withdrew it on 2026-10-16, because two commands must
+  never give inconsistent answers.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

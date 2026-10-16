@@ -101,14 +101,23 @@ has them verbatim. What they change here:
   generator proposes.
 - **W11 is not this phase's question.** It is revisited twice after the
   refactoring: in S1e2.1.7's review, then in S1e2.2.12.
-- **Ruled 2026-10-16:** [`solve_flags.md` § 9](solve_flags.md#9-what-needs-the-users-ruling)'s
-  questions 1, 2 and 4. The flag names are as proposed. Today's walk becomes
-  `ein walk`. The default switches once, at S1e2.1a.5.
-- **Waiting for the user:**
-  - question 3, route 1's budget, which comes after
-    [`walk_and_region.md`](walk_and_region.md): why the walk and R differ;
-  - that page's § 7, to confirm: R's node excludes the search's writes, by
-    the config principle.
+- **Ruled 2026-10-16:** all four of [`solve_flags.md` § 9](solve_flags.md#9-what-needs-the-users-ruling)'s
+  questions.
+  - The flag names are as proposed.
+  - The default switches once, at S1e2.1a.5.
+  - Route 1's budget is 2¹⁹ facts beyond root (A), after
+    [`walk_and_region.md`](walk_and_region.md) showed why the walk and R
+    differ. The state route (B) is P1e2.1c's first step.
+  - **`ein walk` was withdrawn**, in the message that answered question 3.
+    There is one tool for R, `ein solve`, and it does the least work each
+    question needs. `ein oracle` computes the cube, only when asked. Every
+    answer is consistent with the oracle's, whether or not the program is
+    monotone. So R's node excludes the search's writes, which was
+    `walk_and_region.md` § 7.
+- **Waiting for the user:** a review of
+  [`solve_interface.md`](solve_interface.md), the interface that follows. It
+  has the reference, the question → command guide, and each mode's route and
+  cost.
 - **Still open:** whether `(region …)` with `(merged …)`, the third answer's
   sketch of how a state's class is shown, is one form for both directions,
   printed by `solve` and stated by a program. That is S1e2.1a.4's grammar

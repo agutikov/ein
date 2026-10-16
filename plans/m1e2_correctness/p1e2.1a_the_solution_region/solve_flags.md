@@ -2,11 +2,12 @@
 
 **Stage:** [S1e2.1a.9](s1e2.1a.9_solve_describes_the_region.md), task
 T1e2.1a.9.2.
-**Status:** proposed 2026-10-16. **Questions 1, 2 and 4 were ruled the same
-day**, and this page's § 9 has the rulings; § 10 is what the stage decides
-unless the user objects. **Question 3 waits** for the analysis the user asked
-for first, [`walk_and_region.md`](walk_and_region.md). **Nothing in the parser
-has moved.**
+**Status:** proposed 2026-10-16, and **all four questions ruled the same
+day** (§ 9). Question 3 came after the analysis the user asked for first,
+[`walk_and_region.md`](walk_and_region.md). The same ruling **withdrew
+question 2's `ein walk`** and asked for one tool. The interface that replaces
+§ 5 here is [`solve_interface.md`](solve_interface.md), which keeps every
+other ruling on this page. **Nothing in the parser has moved.**
 **What it stands on:** route 1 exists in the library since T1e2.1a.9.3
 ([`ein_infer::downset`](../../../ein.rs/crates/ein-infer/src/downset.rs)) and is held
 to the oracle node for node. How far it reaches is
@@ -118,6 +119,13 @@ same commit.
 
 ## 5. Where today's walk goes
 
+> **Superseded 2026-10-16** by the user's ruling in
+> [`solve_interface.md` § 0](solve_interface.md#0-the-ruling): *"I don't want
+> to have two different commands that give different and inconsistent
+> results"*. There is no `ein walk`. `ein solve --maximal` answers what the
+> walk was for, under R's node, and the walk stops being reachable when the
+> default switches. The section is kept as the proposal that was ruled on.
+
 The walk is route 3, so its code stays whatever is decided here. What is
 being decided is how a person, the register and the corpus reach it **as the
 whole answer**, the way `ein solve` does today. The register needs that until
@@ -216,24 +224,34 @@ The user, 2026-10-16, verbatim:
 1. **The names.** `-n N` (with `-n 1` as *any*), `--single`, `--minimal`,
    `--maximal`, `--region-budget N`. **Ruled: yes.**
 2. **Where today's walk goes.** (a) `ein walk`, (b) `ein solve --walk`, or (c)
-   `EIN_WALK=1`. **Ruled: (a), `ein walk`.**
+   `EIN_WALK=1`. **Ruled: (a), `ein walk`. Withdrawn the same day**, below.
 3. **Route 1's budget**: its unit and its default
-   ([`route1_reach.md` § 4](route1_reach.md#4-the-budget)). **Open.** The user
-   asked first why the walk and the oracle differ at all, since the question
+   ([`route1_reach.md` § 4](route1_reach.md#4-the-budget)). The user asked
+   first why the walk and the oracle differ at all, since the question
    assumes they compute the same thing: [`walk_and_region.md`](walk_and_region.md).
-   Its § 6 puts the question again with what the analysis found:
+   Its § 6 put the question again with what the analysis found:
    - **(A)** route 1 enumerates commitments, under a budget of 2¹⁹ facts;
    - **(B)** a route that enumerates **states** as well. Zebra has 27 alive
      states against 270 454 alive commitments.
 
-   Its § 7 asks the user to confirm one consequence: R's node is
-   `sat(root ∪ C)`, without the search's writes. That follows from the config
-   principle, and it moves W9's and W11's `right` blocks.
+   **Ruled 2026-10-16: *"(A) now, with (B) as the first step of P1e2.1c"*.**
+   Its § 7, R's node is `sat(root ∪ C)` without the search's writes, follows
+   from the same message's *"region is a region of oracle"*.
+
+**Ruling 2 withdrawn, 2026-10-16**, in the message that answered question 3:
+*"I don't want to have two different commands that give different and
+inconsistent results … So I would prefer solve with subcommands + oracle
+command for full oracle, where walk would be `solve --max`"*. The full quote
+and the interface are [`solve_interface.md`](solve_interface.md).
 4. **When the default switches.** (A) at S1e2.1a.5, once, or (B) now, twice.
    **Ruled: (A).** The default switches in S1e2.1a.5's commit, with the
    read-out that prints it.
 
 ## 10. Decided here unless the user objects
+
+[`solve_interface.md` § 7](solve_interface.md#7-decided-here-unless-the-user-objects)
+keeps these, except the route-3 bullet: a run past every route's reach
+prints its certified part and its bounds, and runs no walk.
 
 - **`-e` is retired, not kept as a no-op.** A flag that does nothing is a
   claim nobody checks. The usage error names the replacement: *the default is

@@ -65,8 +65,11 @@ candidate list that leaves it out is an engine bug
 
 **Root** is `sat(program)`: the program's facts, saturated to quiescence by
 its rules, with nothing hypothesised. It is a node like any other, the node
-∅ of § 1.5. **Proposed (2026-10-16, not yet ruled): root is never written by
-the search.** Today it is, § 6.3.
+∅ of § 1.5. **Root is never written by the search.** The shipped walk still
+writes it (§ 6.3) until S1e2.1a.5 retires the walk. The rule follows from the
+user's ruling of 2026-10-16 that every answer `ein solve` gives is the
+oracle's, since the oracle never writes
+([`solve_interface.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)).
 
 ### 1.4 Candidate and universe
 
@@ -395,7 +398,7 @@ The search and the words are unchanged.
 | ruling (2026-10-16) | what changes | stage |
 |---|---|---|
 | (a), (e) | **k_s and k_c replace `k`** on every surface. Where the run cannot know R, each is a lower bound and says so | [S1e2.1a.5](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md) |
-| the default | **`ein solve` with no flag describes R in full**, exhaustively and certified. Flags make the task simpler: *any* solution; *a single one* expected, so k ≥ 2 contradicts it; *maximal* only; *minimal* only. Route 1, a monotone program's R from its alive down-set, is in the library and held to the oracle; the CLI waits for the flags' ruling ([`solve_flags.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_flags.md)) | [S1e2.1a.9](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) |
+| the default | **`ein solve` with no flag describes R in full**, exhaustively and certified. Flags make the task simpler: *any* solution; *a single one* expected, so k ≥ 2 contradicts it; *maximal* only; *minimal* only. Route 1, a monotone program's R from its alive down-set, is in the library and held to the oracle. **One tool, consistent with the oracle**: every question about R is a mode of `ein solve` that does the least work it needs, the cube is `ein oracle`, and there is no `ein walk` (the user, 2026-10-16). The interface waits for the user's review ([`solve_interface.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)) | [S1e2.1a.9](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) |
 | (i) | **the verdict words judge a stated expectation.** `Ambiguity` is relevant where exactly one solution is expected, `Contradiction` where some is. Without an expectation, `solve` explores and describes R | S1e2.1a.5 |
 | (g) | **`exhausted` means the reported region is all of R.** A run a budget stopped (`-m`, `-E`, `-T`) reports what it found as a lower bound, and every node in it is checked | S1e2.1a.5, S1e2.1a.9 |
 | (b), (c) | **solving and asking come apart**: `(solve :hrules …)` defines the lattice, `(solution …)` states the expected region, `(query :goal … :expect …)` asks about the goal's projection classes | S1e2.1a.4 |
@@ -526,8 +529,8 @@ recorded KB
 
 ### 6.3 The search writes into root, and its universe is not H
 
-The definition's root is `sat(program)` and is never written (§ 1.3,
-proposed). The walk writes into it three ways:
+The definition's root is `sat(program)` and is never written (§ 1.3). The
+walk writes into it three ways:
 
 - a **forced positive**: when exactly one candidate is still alive at root,
   it is promoted into root as a fact with no premises, provenance

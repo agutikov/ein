@@ -40,13 +40,18 @@ finished. This phase finishes it.
 
 ## Stages (named, not specified)
 
+**The first step is the state route** (the user, 2026-10-16: *"(A) now, with
+(B) as the first step of P1e2.1c"*). It visits each alive state once and
+counts k_c over the state lattice. It is S1e2.1c.2's first half, and it is
+what `--maximal`, `--single` and describe need to stop costing |alive|.
+
 | ID | title | the question |
 |---|---|---|
 | S1e2.1c.1 | How large the alive set gets | route 1's reach on the zebra family and the slow entries, and what a description costs as the alive set grows. First answer: [`route1_reach.md`](../p1e2.1a_the_solution_region/route1_reach.md) (zebra counted; `zebra2-minus-15` and the seven everything-alive cubes not) |
 | S1e2.1c.2 | The lines by duality | for a monotone program, enumerate N and E and dualise (MARCO-style, incremental hypergraph transversal), so that the lines, and with them k_s and k_c by sub-cubes, cost output size rather than \|alive\|. [`walk_and_region.md` § 6](../p1e2.1a_the_solution_region/walk_and_region.md#6-what-this-means-for-question-3) measured the state lattice beside the commitment one: zebra has 27 alive states against 270 454 alive commitments, and a route over states costs at most *states × n* |
 | S1e2.1c.3 | The non-monotone search | S1e2.1b.6's guard split, or whatever P1e2.1b rules, past the oracle's limit |
-| S1e2.1c.4 | The flags at scale | *any*, *single*, *minimal* and *maximal* by the cheapest sound route for each, with the certificate each one is entitled to |
-| S1e2.1c.5 | The old walk, and P1e2.2 re-scoped | which register rows the new default closes by construction (W1, W2 and W5 are symptoms of walking for the maximal line), which survive into it, and whether the lattice walk is kept, as a lever, or retired |
+| S1e2.1c.4 | The flags at scale | *any*, *single*, *minimal* and *maximal* by the cheapest sound route for each, with the certificate each one is entitled to. The target is [`solve_interface.md` § 3.2](../p1e2.1a_the_solution_region/solve_interface.md#32-a-monotone-program-each-modes-route)'s right-hand column. It includes licence L5, the obligation tree, which decides `zebra2-obligations`' uniqueness in 9 enterings, and whether a `--count` is worth a flag |
+| S1e2.1c.5 | P1e2.2 re-scoped | which register rows the new default closes by construction, and which survive into it. **The walk is not kept**: the user withdrew `ein walk` on 2026-10-16, and its rows are expected to flip at S1e2.1a.5's switch ([`solve_interface.md` § 6](../p1e2.1a_the_solution_region/solve_interface.md#6-what-moves)) |
 
 ## Where it stops
 
