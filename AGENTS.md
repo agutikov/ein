@@ -345,7 +345,7 @@ constrained-reasoning research.
   extension; `ein solve x.einb` is byte-identical to `ein solve x.ein` apart
   from the path it echoes. Anything crossing a tool boundary is still `.ein`
   text or the event protocol's JSON.
-- **`utils/`** — **twenty-nine scripts, all but one driving `ein.rs`**.
+- **`utils/`** — **thirty scripts, all but one driving `ein.rs`**.
   Every script that runs the engine names the binary — **`$EIN_BIN`** or
   `--bin` — defaulting to `ein.rs/target/release/ein`, except the three that
   want a build of their own (`fork_delta_verify.py` → `target-fd`,
@@ -539,6 +539,7 @@ ein render program|kb FILE                                   # M1e2: the program
 python3 utils/review_bundle.py                               # M1e2: build/review/, one page per register row
 python3 utils/review_bundle.py --regions                     # M1e2: build/review/regions/, every corpus region surveyed
 python3 utils/region_synth.py --example three_components     # M1e2: a program written for a chosen region (--check, --random)
+python3 utils/read_out_examples.py                           # M1e2: the read-out's golden page, written from the binary
 ```
 
 **The seven `EIN_*` names in that block are the ones an agent needs, not the

@@ -193,7 +193,13 @@ pub fn of_answer(
                     closure: s.closure.clone(),
                     rep: s.set.clone(),
                     commitments: None,
-                    generators,
+                    // The commitment the route met reaches it, which is what
+                    // a mode knows when it did not ask for the minimal ones.
+                    generators: if generators.is_empty() {
+                        vec![s.set.clone()]
+                    } else {
+                        generators
+                    },
                     minimal: answer.mode.which == Which::Minimal,
                     maximal: answer.mode.which == Which::Maximal,
                     listed: true,

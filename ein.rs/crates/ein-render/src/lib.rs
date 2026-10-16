@@ -23,6 +23,7 @@ pub mod kb_dot;
 pub mod lattice_dag;
 pub mod models;
 pub mod palette;
+pub mod read_out;
 pub mod region_doc;
 pub mod region_dot;
 pub mod rules;

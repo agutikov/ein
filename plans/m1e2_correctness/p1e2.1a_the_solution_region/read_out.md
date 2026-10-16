@@ -21,11 +21,14 @@ in `ein solve` has moved.** T1e2.1a.5.2 builds what this page says.
   this stage's switch.
 
 **The examples are real.** [`read_out_examples.md`](read_out_examples.md)
-holds 29 runs on thirteen programs, re-generated after the rulings. Each block is printed by
-[`read_out_preview`](../../../ein.rs/crates/ein-infer/examples/read_out_preview.rs),
-an `ein-infer` example that prints the layout proposed here from the
-library's own R, states and goal projections. This page quotes them as
-`X1`…`X13`.
+holds 29 runs on thirteen programs, re-generated after the rulings. **Since
+T1e2.1a.5.2 each block is printed by `ein solve` itself**, written by
+[`utils/read_out_examples.py`](../../../utils/read_out_examples.py) and held
+to the binary by `ein-cli/tests/read_out_examples.rs`. Until then they were
+printed by `read_out_preview`, an `ein-infer` example that printed this layout
+from the library's own R, and was deleted when the printer replaced it
+(`git log --diff-filter=D -- ein.rs/crates/ein-infer/examples/read_out_preview.rs`).
+This page quotes them as `X1`…`X13`.
 
 ---
 

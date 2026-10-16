@@ -1,33 +1,24 @@
 # The read-out in real runs — the examples for T1e2.1a.5.1
 
-**Stage:** [S1e2.1a.5](s1e2.1a.5_the_read_out.md), task T1e2.1a.5.1. The page
-diff these illustrate is [`read_out.md`](read_out.md).
-**Status:** written 2026-10-16, for the user to read with the page diff, and
+**Stage:** [S1e2.1a.5](s1e2.1a.5_the_read_out.md), tasks T1e2.1a.5.1 and
+T1e2.1a.5.2. The page diff these illustrate is [`read_out.md`](read_out.md).
+**Status:** written 2026-10-16 for the user to read with the page diff,
 re-generated the same day after the user's three rulings
-([`read_out.md` § 11](read_out.md#11-the-users-rulings-2026-10-16)): every
-answer exits 0, and a listing past 100 lines is cut on stdout and written whole
-by `--dump-answer` (X13). **Nothing in `ein solve` has moved.**
-**How it was made:** every block below is the stdout of
-[`read_out_preview`](../../../ein.rs/crates/ein-infer/examples/read_out_preview.rs),
-an `ein-infer` example that prints the proposed read-out from the library's own
-computation: R from route 1 or the cube, a mode's answer from
-`ein_infer::explore`, each state's facts from its own fixpoint, and each
-query's projection classes from `goal_bindings` on those fixpoints. The
-caption names the `ein solve` run the block stands for; the preview takes the
-same flags (`--over` stands in for a query's `:over`, which does not parse
-yet). The last line of each block is the exit code the proposal gives that
-run, and a `stderr:` line is what it would write there. A block captioned
-`--dump-answer DIR` is what that run writes to `DIR/answer.txt`: the read-out
-with no listing cut, which the preview prints under `--uncut`. Re-take any
-block with
+([`read_out.md` § 11](read_out.md#11-the-users-rulings-2026-10-16)), and
+**since T1e2.1a.5.2 printed by `ein solve` itself.**
+**How it is made:** every block below is one run of the binary, written by
+[`utils/read_out_examples.py`](../../../utils/read_out_examples.py): stdout,
+then each stderr line as `stderr: …`, then the exit code. A block captioned
+`--dump-answer DIR` is the `DIR/answer.txt` that run writes: the read-out with
+no listing cut. **Until the switch (T1e2.1a.5.3) a bare `ein solve` is the
+walk**, so a run that names no region flag is given `--region-budget 524288`,
+the default budget, and its caption and header say so; the switch drops it.
+[`ein-cli/tests/read_out_examples.rs`](../../../ein.rs/crates/ein-cli/tests/read_out_examples.rs)
+runs every caption again and compares the block, so the page is the read-out's
+golden. Two blocks are not one whole run: X3's query `:over maximal`, kept as
+the preview printed it until `:over` lands at the switch, and X4's scratch
+variant, whose query block is quoted.
 
-```sh
-cargo run --release -p ein-infer --example read_out_preview -- [FLAGS] FILE
-```
-
-The page was generated at `b07dbc25` plus the preview's two changes for the
-rulings. No fact or number in a
-block was typed by hand.
 
 ---
 
@@ -59,10 +50,10 @@ reached by four commitments, three of them minimal, and that is the one
 `(merged …)`. The query asks who drinks the coffee and which pet they keep: on
 four of the five states the goal has no row, and that class is `(model)`.
 
-`ein solve examples/branching/05_mini_zebra.ein`
+`ein solve --region-budget 524288 examples/branching/05_mini_zebra.ein`
 
 ```text
-solve · examples/branching/05_mini_zebra.ein
+solve · --region-budget 524288 examples/branching/05_mini_zebra.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      5
@@ -77,7 +68,7 @@ solve · examples/branching/05_mini_zebra.ein
   N                 6 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          9 candidates, 6 dead alone
-  route             1, the alive down-set — licence L1, dead is upward-closed
+  route             1, the alive down-set — L1 dead is upward-closed
   work              14 saturations · 66 facts beyond root · 4 layers
 
   (region
@@ -136,10 +127,10 @@ question.
 **Describe.** Seven states, the three pairs on the maximal line, three
 sub-cubes of dimension 2.
 
-`ein solve examples/lattice/02_genuine_3set_death.ein`
+`ein solve --region-budget 524288 examples/lattice/02_genuine_3set_death.ein`
 
 ```text
-solve · examples/lattice/02_genuine_3set_death.ein
+solve · --region-budget 524288 examples/lattice/02_genuine_3set_death.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      7
@@ -154,7 +145,7 @@ solve · examples/lattice/02_genuine_3set_death.ein
   N                 1 minimal dead set
   lattice           monotone (the static check) — R is convex: no hole
   universe          3 candidates, 0 dead alone
-  route             1, the alive down-set — licence L1, dead is upward-closed
+  route             1, the alive down-set — L1 dead is upward-closed
   work              8 saturations · 13 facts beyond root · 4 layers
 
   (region
@@ -249,10 +240,10 @@ exit 0
 every lever (C4). Nothing is said about the rest, and the exit code is 0: a
 request, not an expectation.
 
-`ein solve -n 2 examples/lattice/02_genuine_3set_death.ein`
+`ein solve --region-budget 524288 -n 2 examples/lattice/02_genuine_3set_death.ein`
 
 ```text
-solve · -n 2 examples/lattice/02_genuine_3set_death.ein
+solve · --region-budget 524288 -n 2 examples/lattice/02_genuine_3set_death.ein
 ──────────────────────────────────────────────────────────────
   asked             2 states of R (-n 2)
   states of R       2 states, as asked — R may hold more
@@ -348,10 +339,10 @@ maximal line**: two of R's seven states. Over all of R the goal `(seat ?who
 ?slot)` sees every seat fact, so each state is its own class, and `∅` is the
 undetermined one.
 
-`ein solve examples/features/11_expect_ambiguity.ein`
+`ein solve --region-budget 524288 examples/features/11_expect_ambiguity.ein`
 
 ```text
-solve · examples/features/11_expect_ambiguity.ein
+solve · --region-budget 524288 examples/features/11_expect_ambiguity.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      7
@@ -366,7 +357,7 @@ solve · examples/features/11_expect_ambiguity.ein
   N                 4 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          4 candidates, 0 dead alone
-  route             1, the alive down-set — licence L1, dead is upward-closed
+  route             1, the alive down-set — L1 dead is upward-closed
   work              11 saturations · 20 facts beyond root · 3 layers
 
   (region
@@ -418,7 +409,7 @@ the switch), the query's answer is exactly today's claim, word for word. That
 is how [`region_language.md` § 7](region_language.md#7-the-migration-named)
 migrates it. Only the query block differs, so only it is shown:
 
-`ein solve examples/features/11_expect_ambiguity.ein`, the query asked `:over maximal`
+`ein solve examples/features/11_expect_ambiguity.ein`, the query asked `:over maximal` — kept as the preview printed it, until `:over` lands at the switch
 
 ```text
   query             (seat ?who ?slot)
@@ -443,10 +434,10 @@ own **component**, because moving one friend passes through a node that is dead
 or owing, and minimal and maximal lines coincide. The goal `(sits ?p ?s)` names
 the seats, so each state is its own projection class.
 
-`ein solve examples/lattice/07_two_pairs_two_tables.ein`
+`ein solve --region-budget 524288 examples/lattice/07_two_pairs_two_tables.ein`
 
 ```text
-solve · examples/lattice/07_two_pairs_two_tables.ein
+solve · --region-budget 524288 examples/lattice/07_two_pairs_two_tables.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      8
@@ -461,7 +452,7 @@ solve · examples/lattice/07_two_pairs_two_tables.ein
   N                 64 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          16 candidates, 0 dead alone
-  route             1, the alive down-set — licence L1, dead is upward-closed
+  route             1, the alive down-set — L1 dead is upward-closed
   work              177 saturations · 448 facts beyond root · 5 layers
 
   (region
@@ -589,10 +580,10 @@ one and that one plus what it brings, so every state gets a `(merged …)`:
 k_c = 16 against k_s = 8. The A-side and the C-side never meet, which is the two
 components.
 
-`ein solve examples/lattice/synth/merged_states.ein`
+`ein solve --region-budget 524288 examples/lattice/synth/merged_states.ein`
 
 ```text
-solve · examples/lattice/synth/merged_states.ein
+solve · --region-budget 524288 examples/lattice/synth/merged_states.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      8
@@ -607,7 +598,7 @@ solve · examples/lattice/synth/merged_states.ein
   N                 1 minimal dead set
   lattice           monotone (the static check) — R is convex: no hole
   universe          5 candidates, 0 dead alone
-  route             1, the alive down-set — licence L1, dead is upward-closed
+  route             1, the alive down-set — L1 dead is upward-closed
   work              25 saturations · 65 facts beyond root · 5 layers
 
   (region
@@ -709,10 +700,10 @@ apart, and this program has none. The fixture's own migrated claim pins
 `(closed-here r)` as well, which a claim may: naming a relation closes it, and
 naming more is allowed.
 
-`ein solve tests/stdlib/closure/03_closed_and_owing.ein`
+`ein solve --region-budget 524288 tests/stdlib/closure/03_closed_and_owing.ein`
 
 ```text
-solve · tests/stdlib/closure/03_closed_and_owing.ein
+solve · --region-budget 524288 tests/stdlib/closure/03_closed_and_owing.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      0
@@ -721,7 +712,7 @@ solve · tests/stdlib/closure/03_closed_and_owing.ein
   empty             every alive node owes — no commitment pays every debt
   lattice           monotone (the static check) — R is convex: no hole
   universe          no candidate: R is {∅} or empty, decided by root alone
-  route             1, the alive down-set — licence L1, dead is upward-closed
+  route             1, the alive down-set — L1 dead is upward-closed
   work              1 saturation · 0 facts beyond root · 1 layer
 
   owing             ∅ — owes 1
@@ -763,10 +754,10 @@ exit 0
 Root holds `(loops A A)`, which `irreflexive` refutes. Root's core and the rule
 that refutes it say why, and the form is `(false)`.
 
-`ein solve tests/stdlib/algebra/09_irreflexive_violated.ein`
+`ein solve --region-budget 524288 tests/stdlib/algebra/09_irreflexive_violated.ein`
 
 ```text
-solve · tests/stdlib/algebra/09_irreflexive_violated.ein
+solve · --region-budget 524288 tests/stdlib/algebra/09_irreflexive_violated.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      0
@@ -775,7 +766,7 @@ solve · tests/stdlib/algebra/09_irreflexive_violated.ein
   empty             every node is dead — root's own fixpoint derives (false)
   lattice           monotone (the static check) — R is convex: no hole
   universe          no candidate: R is {∅} or empty, decided by root alone
-  route             1, the alive down-set — licence L1, dead is upward-closed
+  route             1, the alive down-set — L1 dead is upward-closed
   work              1 saturation · 0 facts beyond root · 1 layer
 
   unsat core        (loops A A)
@@ -822,27 +813,28 @@ between two members of it. The `lattice` row is S1e2.1a.1's stub, which says so,
 counts the holes and names each minimal one with why it is out; the `E` row is
 the cube's alone.
 
-`ein solve examples/ein-bugs/naf-upward-closure.ein`
+`ein solve --region-budget 524288 examples/ein-bugs/naf-upward-closure.ein`
 
 ```text
-solve · examples/ein-bugs/naf-upward-closure.ein
+solve · --region-budget 524288 examples/ein-bugs/naf-upward-closure.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      3
   commitments (k_c) 3
-  exhausted         yes — every commitment of the cube is classified: this is all of R
+  exhausted         yes — every commitment is classified: this is all of R
   ∅                 in R — root is alive and owes nothing
-  minimal line      1 state
+  minimal line      1 state — ∅, the trivial line: no obligation is stated
   maximal line      1 state
   components        1
-  sub-cubes         2
+  sub-cubes         2, each of dimension 1
+  merged            none — every state is reached by one commitment, so k_c = k_s
   N                 1 minimal dead set
   E                 1 minimal discharging set
   lattice           not monotone: 1 site (the static check) — 1 hole; assumes a monotone lattice for what a node is (P1e2.1b)
     minimal hole    {(p A)} — dead: (p A)
   universe          2 candidates, 1 dead alone
   route             2, the cube — no licence: the static check flags the program
-  work              4 saturations · 2^2
+  work              4 saturations · 5 facts beyond root
 
   (region
     ;; state 1 of 3 — ∅, root itself · minimal
@@ -874,21 +866,24 @@ That is the one state it lists. The other 20 members it met go to
 `--dump-answer`, and the query is answered over all 21 as a lower bound, with
 no `as :expect`: read back, that claim would say these classes are all.
 
-`ein solve examples/lattice/06_friends_tables.ein`
+`ein solve --region-budget 524288 examples/lattice/06_friends_tables.ein`
 
 ```text
-solve · examples/lattice/06_friends_tables.ein
+solve · --region-budget 524288 examples/lattice/06_friends_tables.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      21   (a lower bound: the run stopped before R was exhausted)
   commitments (k_c) 21   (a lower bound: the run stopped before R was exhausted)
   exhausted         no — not monotone, and the question needs the whole cube: 2^19, past --region-limit 16
   ∅                 in R — root is alive and owes nothing
-  minimal line      1 state — ∅: root is in R, so nothing in R is below it
+  minimal line      1 state — ∅
   maximal line      not known — without a licence it needs the whole cube
+  components        not known: R was not exhausted
+  sub-cubes         not known
+  N                 ≥ 68 minimal dead sets — those met in layer order
   lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated; assumes a monotone lattice for what a node is (P1e2.1b)
-  universe          19 candidates
-  route             2, the cube — L7 the cube
+  universe          19 candidates, 1 dead alone
+  route             2, the cube — no licence: the static check flags the program
   work              65 299 saturations · 455 247 facts beyond root
 
   ;; the line members this run certified. Not a (region …): read back, it would claim these are all of R.
@@ -1001,10 +996,10 @@ has already answered the puzzle: the one state it found is certified minimal,
 reached from the single fact `(drink-loc Juice House-4)`, and certified
 maximal. The query's class is printed with the lower-bound label.
 
-`ein solve examples/zebra2.ein`
+`ein solve --region-budget 524288 examples/zebra2.ein`
 
 ```text
-solve · examples/zebra2.ein
+solve · --region-budget 524288 examples/zebra2.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      1   (a lower bound: complete up to commitments of 4 candidates)
@@ -1018,11 +1013,11 @@ solve · examples/zebra2.ein
   N                 ≥ 366 minimal dead sets — complete up to size 4
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates, 21 dead alone
-  route             1, the alive down-set — licence L1, dead is upward-closed
-  work              5 908 saturations · 353 194 facts beyond root · 5 layers
+  route             1, the alive down-set — L1 dead is upward-closed
+  work              5 909 saturations · 353 376 facts beyond root · 5 layers
 
   ;; the line members this run certified. Not a (region …): read back, it would claim these are all of R.
-  ;; state 1 of 1 — 18 candidates · minimal and maximal · from {(drink-loc Juice House-4)}
+  ;; state 1 of 1 — 18 candidates · minimal and maximal · minimal {(drink-loc Juice House-4)} | {(nation-loc Japanese House-5)} | {(smoke-loc Lucky_Strike House-4)} | {(smoke-loc Parliament House-5)} | … 59 more
   (model (color-loc Blue House-2) (color-loc Green House-5)
          (color-loc Ivory House-4) (color-loc Red House-3)
          (color-loc Yellow House-1) (drink-loc Coffee House-5)
@@ -1071,7 +1066,7 @@ solve · --region-budget 33554432 examples/zebra2.ein
   N                 366 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates, 21 dead alone
-  route             1, the alive down-set — licence L1, dead is upward-closed
+  route             1, the alive down-set — L1 dead is upward-closed
   work              270 579 saturations · 15 094 278 facts beyond root · 19 layers
 
   ;; R as one (region …) is 111 lines, past stdout's 100: what fits is below, not wrapped in a (region …)
@@ -1126,7 +1121,7 @@ solve · --dump-answer DIR --region-budget 33554432 examples/zebra2.ein
   N                 366 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates, 21 dead alone
-  route             1, the alive down-set — licence L1, dead is upward-closed
+  route             1, the alive down-set — L1 dead is upward-closed
   work              270 579 saturations · 15 094 278 facts beyond root · 19 layers
 
   (region
@@ -1345,10 +1340,10 @@ The 10 075 other members it met go to `--dump-answer`, not to the screen, and
 the query's one class is printed without `as :expect`, since it is a lower
 bound.
 
-`ein solve examples/saturation/square-bwd/floors.ein`
+`ein solve --region-budget 524288 examples/saturation/square-bwd/floors.ein`
 
 ```text
-solve · examples/saturation/square-bwd/floors.ein
+solve · --region-budget 524288 examples/saturation/square-bwd/floors.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      10 077   (a lower bound: complete up to commitments of 5 candidates)
@@ -1362,8 +1357,8 @@ solve · examples/saturation/square-bwd/floors.ein
   N                 ≥ 0 minimal dead sets — complete up to size 5
   lattice           monotone (the static check) — R is convex: no hole
   universe          20 candidates, 0 dead alone
-  route             1, the alive down-set — licence L1, dead is upward-closed
-  work              21 700 saturations · 197 809 facts beyond root · 6 layers
+  route             1, the alive down-set — L1 dead is upward-closed
+  work              21 701 saturations · 197 833 facts beyond root · 6 layers
 
   ;; the line members this run certified. Not a (region …): read back, it would claim these are all of R.
   ;; state 1 of 2 — ∅, root itself · minimal
@@ -1401,10 +1396,10 @@ exit 0
 said they would: `-n 1` is root (one saturation), `--single` is `Ambiguity`
 in two, `--maximal -n 1` is the climb (eleven).
 
-`ein solve -n 1 examples/saturation/square-bwd/floors.ein`
+`ein solve --region-budget 524288 -n 1 examples/saturation/square-bwd/floors.ein`
 
 ```text
-solve · -n 1 examples/saturation/square-bwd/floors.ein
+solve · --region-budget 524288 -n 1 examples/saturation/square-bwd/floors.ein
 ──────────────────────────────────────────────────────────────
   asked             1 state of R (-n 1)
   states of R       1 state, as asked — R may hold more
@@ -1502,10 +1497,10 @@ S1e2.1a.4's fixture for `(merged …)` with `(or …)`: the colocation chain,
 is checked against the R the run described, and the `(region …)` printed above
 the query is that claim's own text: one form, both directions.
 
-`ein solve tests/region/03_merged_or.ein`
+`ein solve --region-budget 524288 tests/region/03_merged_or.ein`
 
 ```text
-solve · tests/region/03_merged_or.ein
+solve · --region-budget 524288 tests/region/03_merged_or.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      4
@@ -1520,7 +1515,7 @@ solve · tests/region/03_merged_or.ein
   N                 0 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          3 candidates, 0 dead alone
-  route             1, the alive down-set — licence L1, dead is upward-closed
+  route             1, the alive down-set — L1 dead is upward-closed
   work              8 saturations · 17 facts beyond root · 4 layers
 
   (region
@@ -1566,10 +1561,10 @@ one-line `as :expect`. The summary rows are never cut. Stdout is
 the same in both, so *state 37* on the screen is *state 37* in the
 file.
 
-`ein solve examples/saturation/type-exclusivity/colors.ein`
+`ein solve --region-budget 524288 examples/saturation/type-exclusivity/colors.ein`
 
 ```text
-solve · examples/saturation/type-exclusivity/colors.ein
+solve · --region-budget 524288 examples/saturation/type-exclusivity/colors.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      169
@@ -1584,7 +1579,7 @@ solve · examples/saturation/type-exclusivity/colors.ein
   N                 4 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          8 candidates, 0 dead alone
-  route             1, the alive down-set — licence L1, dead is upward-closed
+  route             1, the alive down-set — L1 dead is upward-closed
   work              173 saturations · 644 facts beyond root · 7 layers
 
   ;; R as one (region …) is 537 lines, past stdout's 100: what fits is below, not wrapped in a (region …)

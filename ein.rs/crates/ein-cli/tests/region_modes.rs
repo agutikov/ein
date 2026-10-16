@@ -11,6 +11,10 @@
 //! - the oracle's directory, which `ein render region` draws with no run
 //!   overlaid;
 //! - and the walk, still the default until S1e2.1a.5.
+//!
+//! Since T1e2.1a.5.2 the modes print the read-out of `read_out.md`, whose
+//! golden is `read_out_examples.md` (`read_out_examples.rs`); the rows here
+//! are read by label.
 
 use std::path::PathBuf;
 use std::process::Command;
@@ -45,38 +49,53 @@ fn scratch(tag: &str) -> PathBuf {
 const THREE: &str = "examples/lattice/02_genuine_3set_death.ein";
 const SQUARE: &str = "examples/saturation/square-bwd/floors.ein";
 
+/// The row labelled `key`, its value only.
 fn line<'a>(out: &'a str, key: &str) -> &'a str {
     out.lines()
-        .find(|l| l.starts_with(key))
-        .unwrap_or_else(|| panic!("no `{key}` line in:\n{out}"))
+        .find(|l| l.trim_start().starts_with(key))
+        .map(|l| l.trim_start()[key.len()..].trim_start())
+        .unwrap_or_else(|| panic!("no `{key}` row in:\n{out}"))
+}
+
+/// The `(region …)` block: from its first line to the first blank one.
+fn region_block(out: &str) -> Vec<&str> {
+    out.lines()
+        .skip_while(|l| l.trim_start() != "(region")
+        .take_while(|l| !l.is_empty())
+        .collect()
 }
 
 #[test]
 fn describe_is_the_oracles_description_and_exits_0() {
     let r = ein(&["solve", THREE, "--region-budget", "524288"]);
     assert_eq!(r.code, 0, "{}", r.err);
-    assert!(line(&r.out, "k_s").ends_with(" 7"), "{}", r.out);
-    assert!(line(&r.out, "k_c").ends_with(" 7"), "{}", r.out);
-    assert!(line(&r.out, "exhausted").ends_with("true"));
+    assert_eq!(line(&r.out, "states (k_s)"), "7", "{}", r.out);
+    assert_eq!(line(&r.out, "commitments (k_c)"), "7", "{}", r.out);
+    assert!(line(&r.out, "exhausted").starts_with("yes"));
     let o = ein(&["oracle", THREE]);
     assert_eq!(o.code, 0, "{}", o.err);
+    // Route 1 and the cube describe one R in one read-out: every row but the
+    // route and the work, and the region itself, line for line.
     for key in [
-        "k_s",
-        "k_c",
-        "∅ in R",
-        "minimal ",
-        "maximal ",
+        "states (k_s)",
+        "commitments (k_c)",
+        "exhausted",
+        "∅",
+        "minimal line",
+        "maximal line",
         "components",
-        "N ",
+        "sub-cubes",
+        "merged",
+        "N",
+        "universe",
     ] {
-        assert_eq!(
-            line(&r.out, key).split_whitespace().collect::<Vec<_>>(),
-            line(&o.out, key).split_whitespace().collect::<Vec<_>>(),
-            "{key}"
-        );
+        assert_eq!(line(&r.out, key), line(&o.out, key), "{key}");
     }
+    assert_eq!(region_block(&r.out), region_block(&o.out));
+    assert!(!region_block(&r.out).is_empty(), "{}", r.out);
     assert!(line(&o.out, "the cube").contains("the static verdict holds"));
     assert!(line(&o.out, "route").contains("the cube"));
+    assert!(line(&o.out, "E").contains("minimal discharging set"));
 }
 
 #[test]
@@ -85,18 +104,16 @@ fn every_answer_exits_0_and_a_stopped_run_says_so() {
     // nothing on stderr.
     let r = ein(&["solve", THREE, "--maximal", "--single"]);
     assert_eq!(r.code, 0, "{}", r.err);
-    assert_eq!(
-        line(&r.out, "verdict").split_whitespace().last(),
-        Some("Ambiguity")
+    assert!(
+        line(&r.out, "verdict").starts_with("Ambiguity"),
+        "{}",
+        r.out
     );
     assert!(r.err.is_empty(), "{}", r.err);
     // ⊤ is the square cube's one maximal state: Solution, exit 0, cheaply.
     let r = ein(&["solve", SQUARE, "--maximal", "--single", "-s"]);
     assert_eq!(r.code, 0, "{}{}", r.out, r.err);
-    assert_eq!(
-        line(&r.out, "verdict").split_whitespace().last(),
-        Some("Solution")
-    );
+    assert!(line(&r.out, "verdict").starts_with("Solution"), "{}", r.out);
     assert!(r.err.is_empty(), "{}", r.err);
     // A budget that stops it first: not decided, exit 0, and one `note:`.
     let r = ein(&[
@@ -108,20 +125,37 @@ fn every_answer_exits_0_and_a_stopped_run_says_so() {
     ]);
     assert_eq!(r.code, 0, "{}", r.err);
     assert!(r.err.starts_with("note: "), "{}", r.err);
-    assert!(r.err.contains("--single not decided"), "{}", r.err);
+    assert!(
+        r.err.contains("partial — stopped at --region-budget 1"),
+        "{}",
+        r.err
+    );
     assert_eq!(r.err.lines().count(), 1, "{}", r.err);
-    assert!(line(&r.out, "stopped").contains("at the budget"));
+    assert!(
+        line(&r.out, "verdict").starts_with("not decided"),
+        "{}",
+        r.out
+    );
+    assert!(
+        line(&r.out, "decided").contains("--region-budget 1"),
+        "{}",
+        r.out
+    );
 }
 
 #[test]
 fn n_inside_a_mode_is_n_states_and_outside_it_is_still_the_walk() {
     let r = ein(&["solve", THREE, "--maximal", "-n", "2"]);
     assert_eq!(r.code, 0);
-    assert_eq!(r.out.matches("\nstate ").count(), 2, "{}", r.out);
-    assert!(line(&r.out, "answer").contains("more may exist"));
+    assert_eq!(r.out.matches(";; state ").count(), 2, "{}", r.out);
+    assert!(
+        line(&r.out, "maximal line").contains("may hold more"),
+        "{}",
+        r.out
+    );
     // Until S1e2.1a.5 a run with no region flag is today's walk.
     let w = ein(&["solve", THREE, "-n", "2"]);
-    assert!(!w.out.contains("region "), "{}", w.out);
+    assert!(!w.out.contains("asked "), "{}", w.out);
     assert!(w.out.contains("verdict"), "{}", w.out);
 }
 
