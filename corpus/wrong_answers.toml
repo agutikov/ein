@@ -89,6 +89,19 @@
 #     answer under each other reading. A `qualifier` is a sentence the right
 #     read-out would add (W6).
 #
+#   [case.region] — the witness's R (M1e2 S1e2.1a.10, schema /2), as `ein solve`
+#     describes it. `ein-infer/tests/register_region.rs` recomputes it with
+#     `explore` and holds every field; `EIN_BLESS=1` re-banks the blocks.
+#     route     `route 1` (a monotone program's alive down-set) | `route 2`
+#               (the cube, for a program the static check flags)
+#     monotone  the static check's verdict. `false` means the region is the
+#               cube's, under *assumes a monotone lattice*: what R is there is
+#               P1e2.1b's
+#     k_s, k_c  |R| in states and in commitments
+#     empty     `no-alive` | `all-owe`, exactly when k_s = 0
+#     minimal, maximal   the lines, as commitments: each the candidates it
+#               holds, sorted. This is R's vocabulary. `models` above is the walk's
+#
 #   [case.review] — the user's verdict (S1e2.1.7), absent until the row is read:
 #     verdict   confirmed | right-answer-corrected | not-wrong | split | merge
 #               (`not-wrong` here and `status = "not-wrong"` go together)
@@ -102,7 +115,7 @@
 # follow — so the expectation and the register cannot disagree while the case
 # is open. The fixing stage moves both, and the row's status, in one commit.
 
-schema = "ein-wrong-answers/1"
+schema = "ein-wrong-answers/2"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -126,13 +139,24 @@ exhausted = true
 closes    = ["p"]
 models    = [["(p B)", "(p C)"]]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 5
+k_c      = 5
+minimal  = [[]]
+maximal  = [
+  ["(p A)"],
+  ["(p B)", "(p C)"],
+]
+
 [case.right]
 verdict   = "Ambiguity"
 k         = 2
 exhausted = true
 closes    = ["p"]
 models    = [["(p A)"], ["(p B)", "(p C)"]]
-derived   = "the file's header; solution_semantics.md § 2 — {(p A)} has both children dead, {(p B),(p C)} its only child"
+derived   = "the file's header; solution_semantics.md § 2 — {(p A)} has both children dead, {(p B),(p C)} its only child. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
 [case.review]
 verdict = "confirmed"
@@ -177,13 +201,24 @@ k         = 0
 exhausted = true
 core      = ["(p A)", "(p B)", "(p C)"]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 5
+k_c      = 5
+minimal  = [[]]
+maximal  = [
+  ["(p A)"],
+  ["(p B)", "(p C)"],
+]
+
 [case.right]
 verdict   = "Ambiguity"
 k         = 2
 exhausted = true
 closes    = ["p"]
 models    = [["(p A)"], ["(p B)", "(p C)"]]
-derived   = "the file's header; solution_semantics.md § 2"
+derived   = "the file's header; solution_semantics.md § 2. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
 [case.review]
 verdict = "confirmed"
@@ -228,13 +263,25 @@ k         = 0
 exhausted = true
 core      = ["(a-prop X)", "(b-prop X)", "(c-prop X)"]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 7
+k_c      = 7
+minimal  = [[]]
+maximal  = [
+  ["(a-prop X)", "(b-prop X)"],
+  ["(a-prop X)", "(c-prop X)"],
+  ["(b-prop X)", "(c-prop X)"],
+]
+
 [case.right]
 verdict   = "Ambiguity"
 k         = 3
 exhausted = true
 closes    = ["a-prop", "b-prop", "c-prop"]
 models    = [["(a-prop X)", "(b-prop X)"], ["(a-prop X)", "(c-prop X)"], ["(b-prop X)", "(c-prop X)"]]
-derived   = "every pair is alive and the triple dies, so the three pairs are maximal; the default run says so"
+derived   = "every pair is alive and the triple dies, so the three pairs are maximal; the default run says so. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
 [case.review]
 verdict = "confirmed"
@@ -280,13 +327,21 @@ k         = 0
 exhausted = true
 core      = ["(q one)", "(q two)"]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
 exhausted = true
 closes    = ["q"]
 models    = [[]]
-derived   = "Q-M1e.6 clause 3: root is consistent and every remaining hypothesis makes it dead"
+derived   = "Q-M1e.6 clause 3: root is consistent and every remaining hypothesis makes it dead. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
 [case.review]
 verdict = "confirmed"
@@ -322,13 +377,21 @@ k         = 0
 exhausted = true
 core      = ["(q one)"]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
 exhausted = true
 closes    = ["q"]
 models    = [[]]
-derived   = "Q-M1e.6 clause 3, as for forced-2.ein"
+derived   = "Q-M1e.6 clause 3, as for forced-2.ein. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
 [case.review]
 verdict = "confirmed"
@@ -376,6 +439,15 @@ k         = 0
 exhausted = true
 core      = ["(likes Ann Soup)", "(likes Ann Stew)"]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "all-owe"
+minimal  = []
+maximal  = []
+
 [case.right]
 verdict   = "Open"
 k         = 0
@@ -384,7 +456,7 @@ closes    = ["likes"]
 models    = []
 open      = [[]]
 owes      = [1]
-derived   = "the user's ruling of 2026-08-25 (tests/stdlib/closure/03_closed_and_owing.ein): a consistent state that owes what it cannot pay is Open"
+derived   = "the user's ruling of 2026-08-25 (tests/stdlib/closure/03_closed_and_owing.ein): a consistent state that owes what it cannot pay is Open. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
 [case.review]
 verdict = "confirmed"
@@ -420,13 +492,21 @@ k         = 0
 exhausted = true
 core      = ["(q A B)", "(q B A)"]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
 exhausted = true
 closes    = ["q"]
 models    = [[]]
-derived   = "Q-M1e.6 clause 3: every q is refuted and root is consistent"
+derived   = "Q-M1e.6 clause 3: every q is refuted and root is consistent. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
 [case.review]
 verdict = "confirmed"
@@ -454,6 +534,17 @@ k         = 1
 exhausted = true
 closes    = ["color-loc", "drink-loc", "nation-loc", "pet-loc", "smoke-loc"]
 models    = [["(color-loc Blue House-2)", "(color-loc Green House-5)", "(color-loc Ivory House-4)", "(color-loc Red House-3)", "(color-loc Yellow House-1)", "(drink-loc Coffee House-5)", "(drink-loc Juice House-4)", "(drink-loc Milk House-3)", "(drink-loc Tea House-2)", "(drink-loc Water House-1)", "(nation-loc Englishman House-3)", "(nation-loc Japanese House-5)", "(nation-loc Norwegian House-1)", "(nation-loc Spaniard House-4)", "(nation-loc Ukrainian House-2)", "(pet-loc Dog House-4)", "(pet-loc Fox House-1)", "(pet-loc Horse House-2)", "(pet-loc Snail House-3)", "(pet-loc Zebra House-5)", "(smoke-loc Chesterfields House-2)", "(smoke-loc Kools House-1)", "(smoke-loc Lucky_Strike House-4)", "(smoke-loc Old_Gold House-3)", "(smoke-loc Parliament House-5)"]]
+
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 6
+k_c      = 8316
+minimal  = [[]]
+maximal  = [
+  ["(drink-loc Juice House-4)", "(drink-loc Tea House-2)", "(nation-loc Japanese House-5)", "(nation-loc Spaniard House-4)", "(nation-loc Ukrainian House-2)", "(pet-loc Dog House-4)", "(pet-loc Fox House-1)", "(pet-loc Snail House-3)", "(pet-loc Zebra House-5)", "(smoke-loc Chesterfields House-2)", "(smoke-loc Lucky_Strike House-4)", "(smoke-loc Old_Gold House-3)", "(smoke-loc Parliament House-5)"],
+  ["(nation-loc Spaniard House-5)", "(pet-loc Dog House-5)", "(pet-loc Fox House-4)", "(pet-loc Snail House-3)", "(pet-loc Zebra House-1)", "(smoke-loc Chesterfields House-5)", "(smoke-loc Old_Gold House-3)"],
+]
 
 [case.right]
 verdict   = "Ambiguity"
@@ -491,6 +582,37 @@ k         = 0
 exhausted = false
 core      = ["(co-located Blue Color)", "(co-located Blue H1)", "(co-located Blue H2)", "(co-located Blue H3)", "(co-located Blue H4)", "(co-located Blue H5)", "(co-located Blue House)", "(co-located Color Blue)", "(co-located Color Green)", "(co-located Color H1)", "(co-located Color H2)", "(co-located Color H3)", "(co-located Color H4)", "(co-located Color H5)", "(co-located Color Ivory)", "(co-located Color Red)", "(co-located Color Yellow)", "(co-located Green Color)", "(co-located Green H1)", "(co-located Green H2)", "(co-located Green H3)", "(co-located Green H4)", "(co-located Green H5)", "(co-located Green House)", "(co-located H1 Blue)", "(co-located H1 Color)", "(co-located H1 Green)", "(co-located H1 House)", "(co-located H1 Ivory)", "(co-located H1 Yellow)", "(co-located H2 Blue)", "(co-located H2 Color)", "(co-located H2 House)", "(co-located H2 Ivory)", "(co-located H2 Red)", "(co-located H2 Yellow)", "(co-located H3 Blue)", "(co-located H3 Color)", "(co-located H3 Green)", "(co-located H3 House)", "(co-located H3 Red)", "(co-located H3 Yellow)", "(co-located H4 Blue)", "(co-located H4 Color)", "(co-located H4 Green)", "(co-located H4 House)", "(co-located H4 Ivory)", "(co-located H4 Red)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located H5 Green)", "(co-located H5 House)", "(co-located H5 Ivory)", "(co-located H5 Red)", "(co-located H5 Yellow)", "(co-located House Blue)", "(co-located House Green)", "(co-located House H1)", "(co-located House H2)", "(co-located House H3)", "(co-located House H4)", "(co-located House H5)", "(co-located House Ivory)", "(co-located House Red)", "(co-located House Yellow)", "(co-located Ivory Color)", "(co-located Ivory H1)", "(co-located Ivory H2)", "(co-located Ivory H3)", "(co-located Ivory H4)", "(co-located Ivory H5)", "(co-located Ivory House)", "(co-located Red Color)", "(co-located Red H1)", "(co-located Red H2)", "(co-located Red H3)", "(co-located Red H4)", "(co-located Red H5)", "(co-located Red House)", "(co-located Yellow Color)", "(co-located Yellow H1)", "(co-located Yellow H2)", "(co-located Yellow H3)", "(co-located Yellow H4)", "(co-located Yellow H5)", "(co-located Yellow House)", "(is-a Blue Color)", "(is-a Blue Green)", "(is-a Blue H1)", "(is-a Blue H2)", "(is-a Blue H3)", "(is-a Blue H4)", "(is-a Blue H5)", "(is-a Blue House)", "(is-a Blue Ivory)", "(is-a Blue Red)", "(is-a Blue Yellow)", "(is-a Color Blue)", "(is-a Color Green)", "(is-a Color H1)", "(is-a Color H2)", "(is-a Color H3)", "(is-a Color H4)", "(is-a Color H5)", "(is-a Color House)", "(is-a Color Ivory)", "(is-a Color Red)", "(is-a Color T)", "(is-a Color Yellow)", "(is-a Green Blue)", "(is-a Green Color)", "(is-a Green H1)", "(is-a Green H2)", "(is-a Green H3)", "(is-a Green H4)", "(is-a Green H5)", "(is-a Green House)", "(is-a Green Ivory)", "(is-a Green Red)", "(is-a Green Yellow)", "(is-a H1 Blue)", "(is-a H1 Color)", "(is-a H1 Green)", "(is-a H1 H2)", "(is-a H1 H3)", "(is-a H1 H4)", "(is-a H1 H5)", "(is-a H1 House)", "(is-a H1 Ivory)", "(is-a H1 Red)", "(is-a H1 Yellow)", "(is-a H2 Blue)", "(is-a H2 Color)", "(is-a H2 Green)", "(is-a H2 H1)", "(is-a H2 H3)", "(is-a H2 H4)", "(is-a H2 H5)", "(is-a H2 House)", "(is-a H2 Ivory)", "(is-a H2 Red)", "(is-a H2 Yellow)", "(is-a H3 Blue)", "(is-a H3 Color)", "(is-a H3 Green)", "(is-a H3 H1)", "(is-a H3 H2)", "(is-a H3 H4)", "(is-a H3 H5)", "(is-a H3 House)", "(is-a H3 Ivory)", "(is-a H3 Red)", "(is-a H3 Yellow)", "(is-a H4 Blue)", "(is-a H4 Color)", "(is-a H4 Green)", "(is-a H4 H1)", "(is-a H4 H2)", "(is-a H4 H3)", "(is-a H4 H5)", "(is-a H4 House)", "(is-a H4 Ivory)", "(is-a H4 Red)", "(is-a H4 Yellow)", "(is-a H5 Blue)", "(is-a H5 Color)", "(is-a H5 Green)", "(is-a H5 H1)", "(is-a H5 H2)", "(is-a H5 H3)", "(is-a H5 H4)", "(is-a H5 House)", "(is-a H5 Ivory)", "(is-a H5 Red)", "(is-a H5 Yellow)", "(is-a House Blue)", "(is-a House Color)", "(is-a House Green)", "(is-a House H1)", "(is-a House H2)", "(is-a House H3)", "(is-a House H4)", "(is-a House H5)", "(is-a House Ivory)", "(is-a House Red)", "(is-a House T)", "(is-a House Yellow)", "(is-a Ivory Blue)", "(is-a Ivory Color)", "(is-a Ivory Green)", "(is-a Ivory H1)", "(is-a Ivory H2)", "(is-a Ivory H3)", "(is-a Ivory H4)", "(is-a Ivory H5)", "(is-a Ivory House)", "(is-a Ivory Red)", "(is-a Ivory Yellow)", "(is-a Red Blue)", "(is-a Red Color)", "(is-a Red Green)", "(is-a Red H1)", "(is-a Red H2)", "(is-a Red H3)", "(is-a Red H4)", "(is-a Red H5)", "(is-a Red House)", "(is-a Red Ivory)", "(is-a Red Yellow)", "(is-a Yellow Blue)", "(is-a Yellow Color)", "(is-a Yellow Green)", "(is-a Yellow H1)", "(is-a Yellow H2)", "(is-a Yellow H3)", "(is-a Yellow H4)", "(is-a Yellow H5)", "(is-a Yellow House)", "(is-a Yellow Ivory)", "(is-a Yellow Red)"]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 74
+k_c      = 18622
+minimal  = [[]]
+maximal  = [
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located Green House)", "(co-located H2 House)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House Green)", "(co-located House H2)"],
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located H1 House)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House H1)", "(co-located House Red)", "(co-located Red House)"],
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located H3 House)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory House)"],
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located H4 House)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Yellow House)"],
+  ["(co-located Blue Color)", "(co-located Color Blue)", "(co-located H5 House)", "(co-located House H5)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located H2 Color)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color H1)", "(co-located Color Red)", "(co-located H1 Color)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)", "(co-located Red Color)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located H3 Color)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)", "(co-located Ivory Color)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located H4 Color)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)", "(co-located Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located H1 House)", "(co-located H2 Color)", "(co-located H5 Blue)", "(co-located House H1)", "(co-located House Red)", "(co-located Red House)"],
+  ["(co-located Blue H5)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located H2 Color)", "(co-located H3 House)", "(co-located H5 Blue)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory House)"],
+  ["(co-located Blue H5)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located H2 Color)", "(co-located H4 House)", "(co-located H5 Blue)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Yellow House)"],
+  ["(co-located Blue H5)", "(co-located Color H1)", "(co-located Color Red)", "(co-located Green House)", "(co-located H1 Color)", "(co-located H2 House)", "(co-located H5 Blue)", "(co-located House Green)", "(co-located House H2)", "(co-located Red Color)"],
+  ["(co-located Blue H5)", "(co-located Color H1)", "(co-located Color Red)", "(co-located H1 Color)", "(co-located H3 House)", "(co-located H5 Blue)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory House)", "(co-located Red Color)"],
+  ["(co-located Blue H5)", "(co-located Color H1)", "(co-located Color Red)", "(co-located H1 Color)", "(co-located H4 House)", "(co-located H5 Blue)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Red Color)", "(co-located Yellow House)"],
+  ["(co-located Blue H5)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located Green House)", "(co-located H2 House)", "(co-located H3 Color)", "(co-located H5 Blue)", "(co-located House Green)", "(co-located House H2)", "(co-located Ivory Color)"],
+  ["(co-located Blue H5)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located H1 House)", "(co-located H3 Color)", "(co-located H5 Blue)", "(co-located House H1)", "(co-located House Red)", "(co-located Ivory Color)", "(co-located Red House)"],
+  ["(co-located Blue H5)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located H3 Color)", "(co-located H4 House)", "(co-located H5 Blue)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Ivory Color)", "(co-located Yellow House)"],
+  ["(co-located Blue H5)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located Green House)", "(co-located H2 House)", "(co-located H4 Color)", "(co-located H5 Blue)", "(co-located House Green)", "(co-located House H2)", "(co-located Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located H1 House)", "(co-located H4 Color)", "(co-located H5 Blue)", "(co-located House H1)", "(co-located House Red)", "(co-located Red House)", "(co-located Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located H3 House)", "(co-located H4 Color)", "(co-located H5 Blue)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory House)", "(co-located Yellow Color)"],
+  ["(co-located Blue House)", "(co-located Color H5)", "(co-located H5 Color)", "(co-located House Blue)"],
+]
+
 [case.right]
 verdict   = "Ambiguity"
 k         = 22
@@ -525,6 +647,14 @@ k         = 0
 exhausted = true
 core      = ["(p Z)"]
 
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(p A)", "(p B)"]]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
@@ -555,6 +685,17 @@ k         = 1
 exhausted = true
 closes    = ["is-a", "r0", "r1"]
 models    = [["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0 o2 o3)", "(r1 o2 o3)", "(r1 o3 o2)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 20
+k_c      = 20
+minimal  = [[]]
+maximal  = [
+  ["(is-a o2 o3)", "(is-a o3 o2)", "(r0 o3 o2)"],
+  ["(is-a o2 o3)", "(is-a o3 o2)", "(r1 o2 o3)", "(r1 o3 o2)"],
+]
 
 [case.right]
 verdict   = "Ambiguity"
@@ -594,6 +735,17 @@ exhausted = false
 closes    = ["co-located"]
 models    = [["(co-located Blue H2)", "(co-located Green H3)", "(co-located H1 Red)", "(co-located H2 Blue)", "(co-located H3 Green)", "(co-located Red H1)"]]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 7
+k_c      = 31
+minimal  = [[]]
+maximal  = [
+  ["(co-located Blue H2)", "(co-located Green H3)", "(co-located H2 Blue)", "(co-located H3 Green)"],
+  ["(co-located Blue H3)", "(co-located Green H2)", "(co-located H2 Green)", "(co-located H3 Blue)"],
+]
+
 [case.right]
 verdict   = "Ambiguity"
 k         = 2
@@ -630,6 +782,17 @@ k         = 1
 exhausted = false
 closes    = ["proposed"]
 models    = [["(proposed a)", "(proposed c)", "(proposed d)"]]
+
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 12
+k_c      = 12
+minimal  = [[]]
+maximal  = [
+  ["(proposed a)", "(proposed c)", "(proposed d)"],
+  ["(proposed b)", "(proposed c)", "(proposed d)"],
+]
 
 [case.right]
 verdict   = "Ambiguity"
@@ -676,13 +839,21 @@ k         = 0
 exhausted = true
 core      = []
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
 exhausted = true
 closes    = ["q"]
 models    = [[]]
-derived   = "Q-M1e.6 clause 3: the program without hypotheses is consistent and its one hypothesis dies — promotion is valid only when root ∪ {h} is consistent"
+derived   = "Q-M1e.6 clause 3: the program without hypotheses is consistent and its one hypothesis dies — promotion is valid only when root ∪ {h} is consistent. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
 [[case]]
 id       = "W2/forced-1-L"
@@ -719,13 +890,21 @@ k         = 0
 exhausted = true
 core      = []
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
 exhausted = true
 closes    = ["q"]
 models    = [[]]
-derived   = "Q-M1e.6 clause 3; the default run says so"
+derived   = "Q-M1e.6 clause 3; the default run says so. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
 # ══ W3 — `dead` is not upward-closed under `absent` ════════════════════════════
 
@@ -768,13 +947,21 @@ exhausted = true
 closes    = ["p", "q"]
 models    = [["(q A)"]]
 
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 3
+k_c      = 3
+minimal  = [[]]
+maximal  = [["(p A)", "(q A)"]]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
 exhausted = true
 closes    = ["p", "q"]
 models    = [["(p A)", "(q A)"]]
-derived   = "the file's header: {(p A)} is dead, {(p A),(q A)} is alive, so the one maximal state is {(p A),(q A)}"
+derived   = "the file's header: {(p A)} is dead, {(p A),(q A)} is alive, so the one maximal state is {(p A),(q A)}. R agrees: this is its maximal line ([case.region], the oracle's cube, 2026-10-16)"
 
 [[case]]
 id       = "W3/naf-nowb-L"
@@ -822,13 +1009,21 @@ k         = 0
 exhausted = true
 core      = ["(p A)"]
 
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 3
+k_c      = 3
+minimal  = [[]]
+maximal  = [["(p A)", "(q A)"]]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
 exhausted = true
 closes    = ["p", "q"]
 models    = [["(p A)", "(q A)"]]
-derived   = "as W3/naf-upward-closure — the program is the same"
+derived   = "as W3/naf-upward-closure — the program is the same. R agrees: this is its maximal line ([case.region], the oracle's cube, 2026-10-16)"
 
 [[case]]
 id       = "W3/three-components"
@@ -850,6 +1045,22 @@ k         = 1
 exhausted = true
 closes    = ["h"]
 models    = [["(h C)", "(h D)", "(h E)"]]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 13
+k_c      = 13
+minimal  = [
+  ["(h C)"],
+  ["(h F)"],
+  ["(h G)"],
+]
+maximal  = [
+  ["(h A)", "(h B)", "(h D)", "(h G)"],
+  ["(h A)", "(h B)", "(h F)"],
+  ["(h C)", "(h D)", "(h E)"],
+]
 
 [case.right]
 verdict   = "Ambiguity"
@@ -887,6 +1098,14 @@ verdict   = "Contradiction"
 k         = 0
 exhausted = true
 core      = ["(h A)", "(h D)"]
+
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 9
+k_c      = 9
+minimal  = [["(h A)"]]
+maximal  = [["(h A)", "(h B)", "(h C)", "(h D)", "(h E)"]]
 
 [case.right]
 verdict   = "Solution"
@@ -929,13 +1148,21 @@ exhausted = true
 closes    = ["q"]
 models    = [["(q A Z)", "(q B Z)"]]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
 exhausted = true
 closes    = ["q"]
 models    = [["(q A Z)", "(q B Z)"]]
-derived   = "alive-set-fresh-name.ein's header: {(q A Z),(q B Z)} saturates to a consistent, quiescent, complete state; the -declared control reaches it"
+derived   = "alive-set-fresh-name.ein's header: {(q A Z),(q B Z)} saturates to a consistent, quiescent, complete state; the -declared control reaches it. The oracle's R is {∅}: it shares the candidate list this case is about (solution_semantics.md § 6.6), so [case.region] is not this answer"
 
 [[case]]
 id       = "W4/alive-set-fresh-name"
@@ -984,13 +1211,21 @@ k         = 0
 exhausted = true
 core      = ["(q A B)", "(q B A)"]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
 exhausted = true
 closes    = ["q"]
 models    = [["(q A Z)", "(q B Z)"]]
-derived   = "the file's header; the -declared control reaches it"
+derived   = "the file's header; the -declared control reaches it. The oracle's R is {∅}: it shares the candidate list this case is about (solution_semantics.md § 6.6), so [case.region] is not this answer"
 
 # ══ W5 — the obligations rung records a superset of a model ═══════════════════
 
@@ -1034,6 +1269,17 @@ exhausted = false
 closes    = ["seats"]
 models    = [["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)"], ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C2)"], ["(seats Ann C1)", "(seats Bob C1)", "(seats Bob C2)"], ["(seats Ann C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)"], ["(seats Ann C2)", "(seats Bob C1)", "(seats Bob C2)"]]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 7
+k_c      = 7
+minimal  = [
+  ["(seats Ann C1)", "(seats Bob C2)"],
+  ["(seats Ann C2)", "(seats Bob C1)"],
+]
+maximal  = [["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)", "(seats Bob C2)"]]
+
 [case.right]
 reading   = "Q-M1e2.1 minimal (recommended in S1e2.2.3): a requirement is discharged by a witness, and a complete node leaves the frontier"
 verdict   = "Ambiguity"
@@ -1041,7 +1287,7 @@ k         = 2
 exhausted = true
 closes    = ["seats"]
 models    = [["(seats Ann C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)"]]
-derived   = "the two matchings discharge both families; lattice_semantics::a_layer_that_yields_complete_models_stops_descending"
+derived   = "the two matchings discharge both families; lattice_semantics::a_layer_that_yields_complete_models_stops_descending. Under R this is the minimal line: R has 7 states, two minimal and one maximal, all four seats ([case.region], route 1). The obligations rung asks for the minimal line"
 
 [[case.right.alternative]]
 reading   = "Q-M1e2.1 literal: every state that owes nothing"
@@ -1085,12 +1331,23 @@ exhausted = true
 closes    = ["seats", "knows"]
 models    = [["(knows Ann Bob)", "(knows Bob Ann)", "(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)"], ["(knows Ann Bob)", "(knows Bob Ann)", "(seats Ann C1)", "(seats Bob C2)"], ["(knows Ann Bob)", "(knows Bob Ann)", "(seats Ann C2)", "(seats Bob C1)"]]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 7
+k_c      = 7
+minimal  = [
+  ["(seats Ann C1)", "(seats Bob C2)"],
+  ["(seats Ann C2)", "(seats Bob C1)"],
+]
+maximal  = [["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)", "(seats Bob C2)"]]
+
 [case.right]
 reading   = "Q-M1e2.3 scoped (recommended): the certification holds relative to alive₀ and the read-out names the scope"
 verdict   = "Ambiguity"
 exhausted = true
 qualifier = "exhaustive over the hypotheses the obligations rung proposes; knows is never hypothesised"
-derived   = "Q-M1e.6's second clarification (alive₀ is the rung's L1 set); completeness.md § 3c. k is W5's to settle"
+derived   = "Q-M1e.6's second clarification (alive₀ is the rung's L1 set); completeness.md § 3c. k is W5's to settle. Under R this is the minimal line: R has 7 states, two minimal and one maximal, all four seats ([case.region], route 1). The obligations rung asks for the minimal line"
 
 [[case.right.alternative]]
 reading   = "Q-M1e2.3 uncertified unless covered"
@@ -1124,6 +1381,14 @@ exhausted = true
 closes    = ["r2", "r3"]
 models    = [["(r2 A B)", "(r2 B A)"]]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 4
+k_c      = 4
+minimal  = [[]]
+maximal  = [["(r2 A B)", "(r2 B A)"]]
+
 [case.right]
 reading   = "Q-M1e2.3 scoped (recommended)"
 verdict   = "Solution"
@@ -1132,7 +1397,7 @@ exhausted = true
 closes    = ["r2", "r3"]
 models    = [["(r2 A B)", "(r2 B A)"]]
 qualifier = "exhaustive over the hypotheses the blind rung proposes; r3 (arity 3, the goal) is never hypothesised"
-derived   = "hypgen's fill_slot: arity ≥ 3 is unenumerated"
+derived   = "hypgen's fill_slot: arity ≥ 3 is unenumerated. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
 [[case.right.alternative]]
 reading   = "Q-M1e2.3 uncertified unless covered"
@@ -1175,13 +1440,21 @@ closes      = ["noted"]
 models      = [["(noted 1 1)", "(noted 1 3)", "(noted 2 1)", "(noted 2 3)"]]
 debug_panic = "two plans share (rule, activator) and disagree on their register layout"
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
 verdict   = "Solution"
 k         = 1
 exhausted = true
 closes    = ["noted"]
 models    = [["(noted 1 1)", "(noted 1 3)", "(noted 2 1)", "(noted 2 3)"]]
-derived   = "rule_semantics.rs's control: the nested-fact activator alone derives every (noted ?a ?f); adding an activator cannot remove a conclusion"
+derived   = "rule_semantics.rs's control: the nested-fact activator alone derives every (noted ?a ?f); adding an activator cannot remove a conclusion. The oracle's R shares the saturator this case is about (solution_semantics.md § 6.6), so [case.region] is not this answer"
 
 # ══ W8 — a positive derived under `absent` survives the commitment ════════════
 
@@ -1216,6 +1489,14 @@ exhausted = true
 closes    = ["p", "q"]
 models    = [["(p one)", "(q one)"]]
 
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 2
+k_c      = 2
+minimal  = [[]]
+maximal  = [["(q one)"]]
+
 [case.right]
 reading   = "Q-M1e2.2 guards are premises: committing (q one) withdraws (p one)"
 verdict   = "Solution"
@@ -1236,7 +1517,7 @@ k         = 1
 exhausted = true
 closes    = ["p", "q"]
 models    = [["(p one)", "(q one)"]]
-derived   = "today's answer, against the file's own header"
+derived   = "today's answer, against the file's own header. The oracle's cube agrees: its node is a fork of root ([case.region]). Which node is right is P1e2.1b's"
 
 [[case]]
 id       = "W8/stale-naf-fork"
@@ -1268,6 +1549,14 @@ exhausted = true
 closes    = ["p", "q"]
 models    = [["(p one)"]]
 
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
 reading   = "Q-M1e2.2 guards are premises"
 verdict   = "Solution"
@@ -1284,7 +1573,7 @@ k         = 1
 exhausted = true
 closes    = ["p", "q"]
 models    = [["(p one)"]]
-derived   = "today's answer: the fork holding both is dead, so root is the solution"
+derived   = "today's answer: the fork holding both is dead, so root is the solution. The oracle's cube agrees: its node is a fork of root ([case.region]). Which node is right is P1e2.1b's"
 
 # ══ W9 — with the kill cache off, an unnoticed entailment makes a model ═══════
 
@@ -1318,6 +1607,17 @@ k         = 2
 exhausted = true
 closes    = ["p", "q"]
 models    = [["(p A)", "(p B)"], ["(q A)"]]
+
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 5
+k_c      = 5
+minimal  = [[]]
+maximal  = [
+  ["(p A)", "(p B)"],
+  ["(q A)"],
+]
 
 [case.right]
 reading   = "R's node is sat(root ∪ C), with nothing the search wrote (solve_interface.md § 0, approved 2026-10-16)"
@@ -1375,6 +1675,14 @@ k         = 0
 exhausted = true
 core      = []
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
 reading   = "R's node is sat(root ∪ C), with nothing the search wrote (solve_interface.md § 0, approved 2026-10-16)"
 verdict   = "Solution"
@@ -1421,12 +1729,21 @@ k         = 0
 exhausted = true
 core      = ["(w1 X)", "(w2 X)"]
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 0
+k_c      = 0
+empty    = "no-alive"
+minimal  = []
+maximal  = []
+
 [case.right]
 verdict   = "Contradiction"
 k         = 0
 exhausted = true
 core      = ["(w1 X)", "(w2 X)"]
-derived   = "the file's header: the smallest frontier over the derivations is {(w1 X),(w2 X)}, and explain.rs promises the smallest"
+derived   = "the file's header: the smallest frontier over the derivations is {(w1 X),(w2 X)}, and explain.rs promises the smallest. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
 # ══ W11 — which core is reported depends on interner id order ═════════════════
 
@@ -1458,6 +1775,17 @@ k         = 2
 exhausted = true
 closes    = ["r1"]
 models    = [["(r1 o1 o5)", "(r1 o4 o5)"], ["(r1 o4 o1)", "(r1 o4 o5)"]]
+
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 3
+k_c      = 3
+minimal  = [[]]
+maximal  = [
+  ["(r1 o1 o5)"],
+  ["(r1 o4 o1)"],
+]
 
 [case.right]
 reading   = "R's node is sat(root ∪ C), with nothing the search wrote (solve_interface.md § 0, approved 2026-10-16)"
@@ -1496,7 +1824,29 @@ exhausted = false
 core      = ["(is-a o3 T)", "(r0 o3 o2)", "(r1 o2 o3)", "(r1 o3 o2)"]
 id_order  = { op = "trace[answer]", seed = 15839 }
 
+[case.region]
+route    = "route 2"
+monotone = false
+k_s      = 20
+k_c      = 20
+minimal  = [[]]
+maximal  = [
+  ["(is-a o2 o3)", "(is-a o3 o2)", "(r0 o3 o2)"],
+  ["(is-a o2 o3)", "(is-a o3 o2)", "(r1 o2 o3)", "(r1 o3 o2)"],
+]
+
 [case.right]
+reading   = "R's node is sat(root ∪ C), with nothing the search wrote (solve_interface.md § 0, approved 2026-10-16)"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["is-a", "r0", "r1"]
+models    = [["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0 o2 o3)", "(r0 o3 o2)"], ["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0 o2 o3)", "(r1 o2 o3)", "(r1 o3 o2)"]]
+qualifier = "assumes a monotone lattice: the static check flags this program, and what R is here is P1e2.1b's"
+derived   = "the oracle: R has 20 states and two maximal ([case.region]), the states W1/d3-unsat-core records. With no Contradiction under R, the core this row is about is not R's answer. The user's reading of W11 is S1e2.1.7's and S1e2.2.12's"
+
+[[case.right.alternative]]
+reading   = "Q-M1e.7 ruling A: the search's negatives are part of the state"
 verdict   = "Contradiction"
 k         = 0
 exhausted = false
@@ -1524,7 +1874,24 @@ k         = 0
 exhausted = true
 core      = []
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
 [case.right]
+reading   = "R's node is sat(root ∪ C), with nothing the search wrote (solve_interface.md § 0, approved 2026-10-16)"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["p"]
+models    = [[]]
+derived   = "the oracle: R is {∅}, root alive and discharged ([case.region]), as W9/alive-empty-phase1-K now records. The Contradiction whose core this row is about is not R's answer; whether that withdraws W12 is the review's (S1e2.1.7)"
+
+[[case.right.alternative]]
 reading   = "Q-M1e2.4: an empty unsat core is not a core"
 verdict   = "Contradiction"
 k         = 0
@@ -1561,6 +1928,37 @@ verdict   = "Ambiguity"
 k         = 22
 exhausted = false
 
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 74
+k_c      = 18622
+minimal  = [[]]
+maximal  = [
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located Green House)", "(co-located H2 House)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House Green)", "(co-located House H2)"],
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located H1 House)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House H1)", "(co-located House Red)", "(co-located Red House)"],
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located H3 House)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory House)"],
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located H4 House)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Yellow House)"],
+  ["(co-located Blue Color)", "(co-located Color Blue)", "(co-located H5 House)", "(co-located House H5)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located H2 Color)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color H1)", "(co-located Color Red)", "(co-located H1 Color)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)", "(co-located Red Color)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located H3 Color)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)", "(co-located Ivory Color)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located H4 Color)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)", "(co-located Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located H1 House)", "(co-located H2 Color)", "(co-located H5 Blue)", "(co-located House H1)", "(co-located House Red)", "(co-located Red House)"],
+  ["(co-located Blue H5)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located H2 Color)", "(co-located H3 House)", "(co-located H5 Blue)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory House)"],
+  ["(co-located Blue H5)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located H2 Color)", "(co-located H4 House)", "(co-located H5 Blue)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Yellow House)"],
+  ["(co-located Blue H5)", "(co-located Color H1)", "(co-located Color Red)", "(co-located Green House)", "(co-located H1 Color)", "(co-located H2 House)", "(co-located H5 Blue)", "(co-located House Green)", "(co-located House H2)", "(co-located Red Color)"],
+  ["(co-located Blue H5)", "(co-located Color H1)", "(co-located Color Red)", "(co-located H1 Color)", "(co-located H3 House)", "(co-located H5 Blue)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory House)", "(co-located Red Color)"],
+  ["(co-located Blue H5)", "(co-located Color H1)", "(co-located Color Red)", "(co-located H1 Color)", "(co-located H4 House)", "(co-located H5 Blue)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Red Color)", "(co-located Yellow House)"],
+  ["(co-located Blue H5)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located Green House)", "(co-located H2 House)", "(co-located H3 Color)", "(co-located H5 Blue)", "(co-located House Green)", "(co-located House H2)", "(co-located Ivory Color)"],
+  ["(co-located Blue H5)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located H1 House)", "(co-located H3 Color)", "(co-located H5 Blue)", "(co-located House H1)", "(co-located House Red)", "(co-located Ivory Color)", "(co-located Red House)"],
+  ["(co-located Blue H5)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located H3 Color)", "(co-located H4 House)", "(co-located H5 Blue)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Ivory Color)", "(co-located Yellow House)"],
+  ["(co-located Blue H5)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located Green House)", "(co-located H2 House)", "(co-located H4 Color)", "(co-located H5 Blue)", "(co-located House Green)", "(co-located House H2)", "(co-located Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located H1 House)", "(co-located H4 Color)", "(co-located H5 Blue)", "(co-located House H1)", "(co-located House Red)", "(co-located Red House)", "(co-located Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located H3 House)", "(co-located H4 Color)", "(co-located H5 Blue)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory House)", "(co-located Yellow Color)"],
+  ["(co-located Blue House)", "(co-located Color H5)", "(co-located H5 Color)", "(co-located House Blue)"],
+]
+
 [case.right]
 reading   = "Q-M1e.12 — not yet read; each reading gives a different answer"
-derived   = "(a) the program is under-specified: fix the fixture, not the engine; (b) the read-out is wrong: same models, no binding to a type printed; (c) candidate_objects excludes types: a different model set, uncounted"
+derived   = "(a) the program is under-specified: fix the fixture, not the engine; (b) the read-out is wrong: same models, no binding to a type printed; (c) candidate_objects excludes types: a different model set, uncounted. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"

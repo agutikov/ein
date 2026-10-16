@@ -31,7 +31,15 @@ use std::path::Path;
 /// outlive it.
 pub const REGISTER: &str = "corpus/wrong_answers.toml";
 
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/1";
+/// `/2` since M1e2 S1e2.1a.10 (2026-10-16): every row states its witness's R,
+/// [`Region`].
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/2";
+
+/// The routes that compute a [`Region`], as `ein solve` names them.
+pub const ROUTES: [&str; 2] = ["route 1", "route 2"];
+
+/// The two kinds of an empty `R`.
+pub const EMPTY_KINDS: [&str; 2] = ["no-alive", "all-owe"];
 
 /// What a row may say about itself.
 pub const STATUSES: [&str; 3] = ["open", "fixed", "not-wrong"];
@@ -121,6 +129,10 @@ pub struct Row {
     #[serde(default)]
     pub twin: Vec<Answer>,
     pub right: Right,
+    /// The witness's region, as the library computes it. Every row states one,
+    /// and `ein-infer/tests/register_region.rs` holds it to `explore`.
+    #[serde(default)]
+    pub region: Option<Region>,
     /// The user's verdict on the row (S1e2.1.7). Absent until it is reviewed.
     #[serde(default)]
     pub review: Option<Review>,
@@ -197,6 +209,29 @@ pub struct Answer {
     pub debug_panic: Option<String>,
     #[serde(default)]
     pub id_order: Option<IdOrder>,
+}
+
+/// The witness's `R` — M1e2 S1e2.1a.10. What `ein solve` describes, in its
+/// own vocabulary: the lines are **commitments**, each the candidates it
+/// holds, sorted. The walk's vocabulary, models projected over `closes`, stays
+/// in [`Answer`] and [`Right`].
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Region {
+    /// One of [`ROUTES`].
+    pub route: String,
+    /// The static check's verdict. A flagged program's `R` is the cube's,
+    /// under *assumes a monotone lattice*.
+    pub monotone: bool,
+    /// `|R|` in states.
+    pub k_s: u64,
+    /// `|R|` in commitments.
+    pub k_c: u64,
+    /// One of [`EMPTY_KINDS`], exactly when `k_s = 0`.
+    #[serde(default)]
+    pub empty: Option<String>,
+    pub minimal: Vec<Vec<String>>,
+    pub maximal: Vec<Vec<String>>,
 }
 
 /// An `id_order_invariance` op and the seed under which its output moves.
@@ -375,6 +410,38 @@ impl Register {
                         r.id,
                         m.len()
                     ));
+                }
+            }
+            match &r.region {
+                None => out.push(format!("{}: no [case.region]", r.id)),
+                Some(g) => {
+                    if !ROUTES.contains(&g.route.as_str()) {
+                        out.push(format!(
+                            "{} [region]: route {:?} is not one of {ROUTES:?}",
+                            r.id, g.route
+                        ));
+                    }
+                    let empty = g.k_s == 0;
+                    if empty != g.empty.is_some() {
+                        out.push(format!(
+                            "{} [region]: `empty` is stated exactly when k_s = 0",
+                            r.id
+                        ));
+                    }
+                    if let Some(e) = &g.empty
+                        && !EMPTY_KINDS.contains(&e.as_str())
+                    {
+                        out.push(format!(
+                            "{} [region]: empty {e:?} is not one of {EMPTY_KINDS:?}",
+                            r.id
+                        ));
+                    }
+                    if empty != (g.minimal.is_empty() && g.maximal.is_empty()) || g.k_c < g.k_s {
+                        out.push(format!(
+                            "{} [region]: the lines, k_s and k_c disagree",
+                            r.id
+                        ));
+                    }
                 }
             }
             if r.right.alternative.iter().any(|a| a.reading.is_none()) {
