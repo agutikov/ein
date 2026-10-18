@@ -76,8 +76,8 @@
 (solve
   ;; The blind rung would propose `is-a` and `likes` facts of its own; the
   ;; subject here is the partition, not the generator.
-  :no-hypothesis (is-a likes))
+  :no-hypothesis (is-a likes)
+  :expect (region (model (likes Ann Soup) (likes Bob Soup))))
 
 (query
-  :goal   (likes ?who ?what)
-  :expect (model (likes Ann Soup) (likes Bob Soup)))
+  :goal   (likes ?who ?what))

@@ -8,7 +8,7 @@ made the answer to a program a **region** of its hypothesis lattice,
 for the monotone case on 2026-10-16. A definition ruled from five hand-picked
 programs is only as good as the corpus it was not checked against, so this is
 that check: every corpus entry that declares a `solve` run, and every file the
-wrong-answer register names, through `ein solve FILE --dump-region DIR`.
+wrong-answer register names, through `ein oracle FILE --dump DIR`.
 
     utils/region_census.py                    # the tables, to stdout
     utils/region_census.py --json c.json      # + one row per program
@@ -16,22 +16,21 @@ wrong-answer register names, through `ein solve FILE --dump-region DIR`.
     utils/region_census.py --levers           # + R under every config lever
     utils/region_census.py --from c.json      # the tables again, running nothing
 
-**The transport is the oracle's own directory**, `region.json` and `walk.json`
+**The transport is the oracle's own directory**, `region.json`
 ([`region_dump.md`](../docs/kernel/inference/region_dump.md)). Nothing here
 saturates or re-derives a node: a census that reconstructs its subject is a
 census that can disagree with it. What it adds is arithmetic over the node
 array — the count of R in **states** as well as in commitments (k_s and k_c,
-ruling (a) × (e)), each state's minimal generators, the program's *shape* as
-the cube shows it, and where the walk's `alive₀` is not the oracle's universe.
+ruling (a) × (e)), each state's minimal generators, and the program's *shape*
+as the cube shows it.
 
-**One run per program, and it is plain `solve`** — the corpus's declared run,
-at default settings. The oracle runs on its own load after the solve and is
-config-free in its universe, so which solve precedes it changes only
-`walk.json`. `--all` adds the corpus entries that declare **no** `solve`
-(`corpus/README.md` § Dropped runs: the run does not ask their question, and
-four of them end in the OOM killer), reached through `solve -m 1`, whose walk
-stops after layer 1 and whose oracle is the same. A program that does not load
-has no region, and the table says which group it is in.
+**One run per program, `ein oracle`.** It was `ein solve --dump-region` until
+M1e2 S1e2.1a.5's switch, which also wrote the walk's `walk.json` and let this
+census say where the walk's `alive₀` was not the oracle's universe; no command
+runs the walk since, so that table went with it. `--all` adds the corpus
+entries that declare **no** `solve` (`corpus/README.md` § Dropped runs). A
+program that does not load has no region, and the table says which group it is
+in.
 
 **`--levers` is the config principle as a measurement** (the user's ruling of
 2026-10-15: *no config option affects the problem's search lattice*). Every
@@ -40,7 +39,7 @@ the corpus sweeps, the three `EIN_*` search levers, and every `(config …)`
 flag flipped in an appended block, [`feature_matrix.py`](feature_matrix.py)'s
 cell — and its answer is compared with the default's: the candidates, every
 node's status and state class, root's fixpoint, and the facts of every state
-in R (`--region-states`, so a lever that moves a model without moving the
+in R (`--states`, so a lever that moves a model without moving the
 shape is still caught). This asks whether a lever changes **R**. Whether it
 changes what the *engine reports* is S1e2.1a.6's question, against R.
 """
@@ -63,8 +62,10 @@ MANIFEST = REPO / "corpus" / "corpus.toml"
 REGISTER = REPO / "corpus" / "wrong_answers.toml"
 EIN = Path(os.environ.get("EIN_BIN", REPO / "ein.rs" / "target" / "release" / "ein"))
 
-# The four levers `corpus.toml` runs both ways, as the CLI spells them.
-CLI_LEVERS = (["-L"], ["-K"], ["-y"], ["-o", "score-sum"])
+# The CLI levers `corpus.toml` runs both ways, `-L`, `-K` and `-y`, are
+# `ein solve`'s and no route reads them; `ein oracle` takes none, so a lever
+# reaches the oracle as a `(config …)` flag or an environment variable.
+CLI_LEVERS: tuple = ()
 
 # The environment levers that steer the search and sit outside `SolverConfig`
 # (`configuration.md` § 5): the obligations rung's order and its `off`, and the
@@ -80,19 +81,10 @@ ENV_LEVERS = (("EIN_OBLIGATION_CHOICE", "off"), ("EIN_OBLIGATION_CHOICE", "fail-
 CONFIG_LEVERS = {
     "enable-pre-branch-lookahead": "false",
     "enable-lookahead-kill-cache": "false",
-    "hypgen-scoring": "most-constrained",
-    "hypgen-rel-weight": "2",
-    "hypgen-obj-weight": "2",
-    "print-alive": "true",
     "warn-derived-naf": "true",
-    "candidate-order-seed": "7",
     "lattice-sanity-check": "true",
-    "lattice-order": "score-sum",
-    "lattice-order-seed": "7",
     "enable-path-nogoods": "false",
     "enable-symmetric-mirror": "false",
-    "enable-singleton-writeback": "false",
-    "enable-forced-positive": "false",
     "record-alternative-justifications": "false",
     "enable-fail-fast-fork": "false",
 }
@@ -113,7 +105,7 @@ def selection(key: str | None, every: bool) -> list[dict]:
         if declared or every:
             out[e["path"]] = {"path": e["path"], "source": "corpus",
                               "group": e.get("group", ""),
-                              "vehicle": [] if declared else ["-m", "1"]}
+                              "vehicle": []}
     reg = tomllib.loads(REGISTER.read_text(encoding="utf-8"))
 
     def witnesses(node):
@@ -143,20 +135,20 @@ def selection(key: str | None, every: bool) -> list[dict]:
 
 def run_region(args, path: str, extra: list[str], tmp: Path,
                env: dict | None = None) -> tuple[dict | None, dict | None, dict]:
-    """`ein solve PATH [extra] --dump-region tmp`; the two files and the run.
-    Under `--levers` every node's state is kept too, because a lever that
-    leaves R's shape alone can still change what its states hold."""
-    argv = [str(args.bin), "solve", path, *extra, "--dump-region", str(tmp / "region"),
+    """`ein oracle PATH [extra] --dump tmp`; the file and the run. Under
+    `--levers` every node's state is kept too, because a lever that leaves R's
+    shape alone can still change what its states hold."""
+    argv = [str(args.bin), "oracle", path, *extra, "--dump", str(tmp / "region"),
             "--json-summary", str(tmp / "summary.json")]
     if args.levers:
-        argv.append("--region-states")
+        argv.append("--states")
     info: dict = {}
     t = time.perf_counter()
     try:
         p = subprocess.run(argv, cwd=REPO, capture_output=True, text=True,
                            timeout=args.timeout, env=env)
         info["exit"] = p.returncode
-        if p.returncode not in (0, 1) or not (tmp / "region" / "region.json").exists():
+        if p.returncode not in (0, 1, 2) or not (tmp / "region" / "region.json").exists():
             info["stderr"] = p.stderr.strip().splitlines()[-1:] if p.stderr else []
     except subprocess.TimeoutExpired:
         info["exit"] = None
@@ -587,21 +579,22 @@ def report(rows: list[dict]) -> None:
           [[r["path"], r["monotone"], r["k_c"], r["k_s"], r["merged_states"],
             r["largest_class"], r["several_generators"], r["guess_depth"]] for r in diff])
 
-    section("The universe — the oracle's candidates against the walk's alive₀")
     uni = [r for r in rows if "universe" in r]
-    moved = [r for r in uni if r["universe"]["dropped"] or r["universe"]["promoted"]
-             or r["universe"]["extra"]]
-    table(["", "programs"], [
-        ["walk written", len(uni)],
-        ["alive₀ = the config-free list", len(uni) - len(moved)],
-        ["alive₀ differs", len(moved)],
-        ["… a candidate promoted into root (forced positive)",
-         sum(1 for r in moved if r["universe"]["promoted"])],
-        ["… a candidate dropped before the search (lookahead, root negative)",
-         sum(1 for r in moved if r["universe"]["dropped"])],
-        ["… alive₀ holds a fact the config-free list does not",
-         sum(1 for r in moved if r["universe"]["extra"])],
-    ])
+    if uni:
+        section("The universe — the oracle's candidates against the walk's alive₀")
+        moved = [r for r in uni if r["universe"]["dropped"] or r["universe"]["promoted"]
+                 or r["universe"]["extra"]]
+        table(["", "programs"], [
+            ["walk written", len(uni)],
+            ["alive₀ = the config-free list", len(uni) - len(moved)],
+            ["alive₀ differs", len(moved)],
+            ["… a candidate promoted into root (forced positive)",
+             sum(1 for r in moved if r["universe"]["promoted"])],
+            ["… a candidate dropped before the search (lookahead, root negative)",
+             sum(1 for r in moved if r["universe"]["dropped"])],
+            ["… alive₀ holds a fact the config-free list does not",
+             sum(1 for r in moved if r["universe"]["extra"])],
+        ])
 
     section("Route 1's reach — alive nodes and their dead border (N)")
     tot_nodes = sum(2 ** r["n"] for r in mono)

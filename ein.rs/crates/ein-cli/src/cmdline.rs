@@ -67,7 +67,7 @@ fn solutions_spec(s: &str) -> Result<i64, String> {
     match int_arg(s)? {
         n if n >= 1 => Ok(n),
         n => Err(format!(
-            "invalid solution count: '{n}' (expected 1 or more, or --exhaustive)"
+            "invalid solution count: '{n}' (expected 1 or more; leave -n out to describe all of R)"
         )),
     }
 }
@@ -284,7 +284,10 @@ fn render_command() -> Command {
         )
         .subcommand(
             Command::new("lattice")
-                .about("commitment-lattice / proof-DAG DOT (runs a solve, S1.6.3)")
+                .about(
+                    "the nodes a describing `ein solve` run visits, as a DAG: R \
+                     green, owing amber, dead red (M1e2)",
+                )
                 .arg(Arg::new("file").required(true))
                 .arg(
                     Arg::new("view")
@@ -293,65 +296,83 @@ fn render_command() -> Command {
                         .value_parser(PossibleValuesParser::new(["full", "solution"]))
                         .default_value("solution")
                         .help(
-                            "'solution' survivors + pruned siblings (default) or \
-                             'full' every commitment (falls back to 'solution' — \
-                             solve doesn't store the per-commitment SetNode DAG)",
+                            "'solution' the nodes of R and the nodes one fact above \
+                             them that are not (default), or 'full' every node the \
+                             run visited",
                         ),
                 )
-                // Note: 3 here, not `solve`'s 5.
+                .arg(
+                    Arg::new("region-budget")
+                        .long("region-budget")
+                        .value_name("FACTS")
+                        .value_parser(region_budget_spec)
+                        .help(
+                            "the run's budget, as `ein solve --region-budget`'s \
+                             (default 2^19); a run that reaches it is drawn as far \
+                             as it went",
+                        ),
+                )
+                // The walk's depth cap, retired with `solve -m`.
                 .arg(
                     Arg::new("max-set-size")
                         .long("max-set-size")
-                        .value_name("MAX_SET_SIZE")
-                        .value_parser(int_arg)
-                        .default_value("3")
-                        .help("commitment-set depth cap (default 3)"),
+                        .hide(true)
+                        .num_args(1)
+                        .value_parser(clap::value_parser!(String)),
                 ),
         )
 }
 
-/// `ein solve` — the one solver command. Every option carries a short key
-/// except the three file-only ones.
+/// `ein solve` — the one command for R, `solve_interface.md` § 2.1. Since M1e2
+/// S1e2.1a.5's switch it describes R by default, and `--minimal`, `--maximal`,
+/// `--single` and `-n N` each ask one question about it.
+///
+/// The nine options the switch retired stay in the parser, **hidden**, so that
+/// a stale argv is refused with the sentence naming what replaced it
+/// (`crate::solve::RETIRED`) rather than with clap's "unexpected argument".
 fn solve_command() -> Command {
+    let retired = |id: &'static str, short: Option<char>, takes_value: bool| {
+        let mut a = Arg::new(id).long(id).hide(true);
+        if let Some(c) = short {
+            a = a.short(c);
+        }
+        if takes_value {
+            a.num_args(1).value_parser(clap::value_parser!(String))
+        } else {
+            a.action(ArgAction::SetTrue)
+        }
+    };
     let cmd = Command::new("solve")
-        .about("solve a puzzle: print the solution(s) or the unsat core")
+        .about(
+            "the solution region R: describe it, or ask one question about it \
+             (--minimal, --maximal, --single, -n N)",
+        )
         .arg(Arg::new("file").required(true))
-        // ── stop policy (single / N / exhaustive) ──
+        // ── the question: which part of R, and what is asked of it ──
         .arg(
             Arg::new("solutions")
                 .short('n')
                 .long("solutions")
                 .value_name("N")
                 .value_parser(solutions_spec)
-                .default_value("1")
                 .help(
-                    "stop after N distinct solutions (default: 1). With \
-                     --minimal, --maximal or --region-budget: N states of \
-                     the chosen part of the region",
+                    "N states of the chosen part of R — all of it, or the line \
+                     --minimal or --maximal names — in the route's own order, \
+                     the same under every lever and -j. Unset, R is described",
                 ),
         )
-        .arg(flag(
-            'e',
-            "exhaustive",
-            "do not stop at the first model. Certification also needs the \
-             lattice to end within --max-set-size, which `exhausted` in \
-             --stats reports (slower)",
-        ))
         .group(
             ArgGroup::new("stop")
-                .args(["solutions", "exhaustive", "single"])
+                .args(["solutions", "single"])
                 .multiple(false),
         )
-        // ── the region modes — M1e2 S1e2.1a.9, solve_interface.md ──
         .arg(
             Arg::new("minimal")
                 .long("minimal")
                 .action(ArgAction::SetTrue)
                 .help(
-                    "the region's minimal line: the commitments of R that \
-                     nothing can be taken from, and their states. A region \
-                     mode: until S1e2.1a.5 one of the four region flags is \
-                     what takes a run off the walk",
+                    "the minimal line: the commitments of R that nothing can be \
+                     taken from, and their states",
                 ),
         )
         .arg(
@@ -359,9 +380,8 @@ fn solve_command() -> Command {
                 .long("maximal")
                 .action(ArgAction::SetTrue)
                 .help(
-                    "the region's maximal line: the states of R that nothing \
-                     can be added to, found by climbing from each member of \
-                     R. What the walk looks for, under the oracle's node",
+                    "the maximal line: the states of R that nothing can be added \
+                     to, found by climbing from each member of R",
                 ),
         )
         .group(
@@ -374,10 +394,9 @@ fn solve_command() -> Command {
                 .long("single")
                 .action(ArgAction::SetTrue)
                 .help(
-                    "expect exactly one state in the chosen part of the \
-                     region, answered Solution, Ambiguity, Contradiction or \
-                     Open; every answer exits 0, and a run that stopped \
-                     before it decided says so",
+                    "expect exactly one state in the chosen part of R, answered \
+                     Solution, Ambiguity, Contradiction or Open; every answer \
+                     exits 0, and a run that stopped before it decided says so",
                 ),
         )
         .arg(
@@ -386,21 +405,23 @@ fn solve_command() -> Command {
                 .value_name("FACTS")
                 .value_parser(region_budget_spec)
                 .help(
-                    "the region modes' budget: facts derived beyond root, \
-                     summed over every saturation (default 2^19 = 524288). \
-                     A run that reaches it prints what it established and \
-                     bounds, never a different answer",
+                    "the budget: facts derived beyond root, summed over every \
+                     saturation (default 2^19 = 524288). A run that reaches it \
+                     prints what it established and bounds, never a different \
+                     answer",
                 ),
         )
-        // ── engine knobs ──
         .arg(
-            Arg::new("max-set-size")
-                .short('m')
-                .long("max-set-size")
-                .value_name("MAX_SET_SIZE")
-                .value_parser(int_arg)
-                .default_value("5")
-                .help("commitment-set depth cap (default: 5)"),
+            Arg::new("region-limit")
+                .long("region-limit")
+                .value_name("N")
+                .value_parser(region_limit_spec)
+                .default_value("16")
+                .help(
+                    "the most candidates a program the static check flags gets \
+                     the whole cube for: 2^N saturations (default 16). Past it a \
+                     question that needs the cube is answered in part",
+                ),
         )
         .arg(
             Arg::new("max-time")
@@ -408,19 +429,12 @@ fn solve_command() -> Command {
                 .long("max-time")
                 .value_name("MAX_TIME")
                 .value_parser(float_arg)
-                .help("abort after N wall-clock seconds"),
+                .help(
+                    "abort after N wall-clock seconds, exit 2; checked before each \
+                     step of work. A machine-dependent limit is never an answer",
+                ),
         )
-        .arg(
-            Arg::new("max-enterings")
-                .short('E')
-                .long("max-enterings")
-                .value_name("MAX_ENTERINGS")
-                .value_parser(int_arg)
-                .help("abort after N commitment tries"),
-        )
-        // T1a.7.2.1. The *contract* — what `--jobs N` promises, and the
-        // `--unordered` opt-out — is S1a.7.5's; this is the knob the engine
-        // already takes, so that the promise can be measured.
+        // T1a.7.2.1's knob, the same under every route.
         .arg(
             Arg::new("jobs")
                 .short('j')
@@ -429,76 +443,43 @@ fn solve_command() -> Command {
                 .value_parser(jobs_spec)
                 .default_value("1")
                 .help(
-                    "threads for a layer's enterings, or 'auto' \
-                     (default: 1). Same verdict, same models, same counters",
+                    "threads for each step's nodes, or 'auto' (default: 1). The \
+                     same read-out, byte for byte",
                 ),
         )
+        // ── levers: speed only, and none of them read by a route yet ──
         .arg(flag(
             'L',
             "no-lookahead",
-            "disable hypgen's one-step lookahead (forces deaths \
-             through the no-good learning path)",
+            "the one-step lookahead off — a lever: no route reads it until \
+             P1e2.1c gives it a speed, so it changes nothing printed",
         ))
         .arg(flag(
             'K',
             "no-kill-cache",
-            "disable the lookahead-kill (not h) cache (pairs with \
-             --no-lookahead to exercise the raw loop)",
+            "the lookahead's kill cache off — a lever, as --no-lookahead",
         ))
-        .arg(
-            Arg::new("lattice-order")
-                .short('o')
-                .long("lattice-order")
-                .value_name("LATTICE_ORDER")
-                .value_parser(PossibleValuesParser::new(["lex", "score-sum"]))
-                .help(
-                    "within-layer candidate ordering (S1.5b.26): 'lex' \
-                     (canonical-tuple sort, the deterministic default) or \
-                     'score-sum' (S1.5a.7 hypgen scoring summed per set)",
-                ),
-        )
         .arg(flag(
             'y',
             "lattice-sanity-check",
-            "S1.5b.27 regression: for every alive size-k≥2 \
-             commitment, verify every (k-1)-subset parent path \
-             saturates to the same kb (1 + k + one per alive parent, \
-             so up to 2k+1 each; adds compile/enqueue/fire/quiesce \
-             events to --events)",
+            "the lattice sanity check on — a lever: no route runs it until \
+             P1e2.1c, so it changes nothing printed",
         ))
-        // ── search order (shuffle invariance — S1.5b.31) ──
-        .arg(flag(
-            'z',
-            "shuffle",
-            "shuffle the within-layer commitment order (a per-layer \
-             random permutation). Fresh seed each run unless --seed \
-             pins it; the seed used is printed to stderr. Changes the \
-             TRAVERSAL order, not the verdict — the answer is \
-             shuffle-invariant.",
-        ))
-        .arg(
-            Arg::new("seed")
-                .short('d')
-                .long("seed")
-                .value_name("SEED")
-                .value_parser(int_arg)
-                .help("pin the --shuffle RNG seed for a reproducible permutation"),
-        )
-        // ── progress / diagnostics ──
+        // ── progress, on stderr ──
         .arg(flag(
             'v',
             "verbose",
-            "stream per-layer + per-entering progress to stderr",
+            "stream the route's steps to stderr as it takes them, and every \
+             --progress-every-th node",
         ))
         .arg(
             Arg::new("layer-progress")
                 .long("layer-progress")
                 .action(ArgAction::SetTrue)
                 .help(
-                    "stream the per-layer census to stderr and nothing per \
-                     entering: three lines a layer — alive, then what the join \
-                     proposed and the clauses filtered, then what entering \
-                     them killed, learned and found",
+                    "stream the route's steps to stderr as it takes them, one line \
+                     per route-1 layer or mode batch: visited, dead, owing, in R, \
+                     facts",
                 ),
         )
         .arg(
@@ -509,106 +490,34 @@ fn solve_command() -> Command {
                 .value_parser(int_arg)
                 .default_value("100")
                 .help(
-                    "under --verbose, log every N-th entering (default 100; \
-                     set 1 to log every entering)",
+                    "under --verbose, log every N-th node (default 100; set 1 to \
+                     log every node)",
                 ),
         )
-        .arg(
-            Arg::new("dump-states")
-                .short('D')
-                .long("dump-states")
-                .value_name("DIR")
-                .value_parser(artefact_path)
-                .help(
-                    "persist the engine dump tree (root snapshot per layer + \
-                     timeline) to DIR",
-                ),
-        )
-        .arg(
-            Arg::new("dump-lattice")
-                .long("dump-lattice")
-                .value_name("DIR")
-                .value_parser(artefact_path)
-                // One dumper per solve: each of these chooses a different one.
-                .conflicts_with_all(["dump-states", "verbose", "layer-progress", "timing"])
-                .help(
-                    "persist every commitment the search tested, with its \
-                     firings and outcome, to DIR (enterings/, \
-                     proof_summary.json — docs/kernel/inference/lattice_dump.md). \
-                     One dumper per solve, so not with --dump-states, -v, \
-                     --layer-progress or -t",
-                ),
-        )
-        .arg(
-            Arg::new("dump-answer")
-                .long("dump-answer")
-                .value_name("DIR")
-                .value_parser(artefact_path)
-                .help(
-                    "write the answer as files to DIR: the program, root, one \
-                     loadable file per model and open state with the \
-                     commitment that reached it, every refuted commitment, \
-                     and answer.json (= --json-summary). DIR is made before \
-                     the search; past that, stdout, stderr and the exit code \
-                     are unchanged.",
-                ),
-        )
-        // M1e2 S1e2.1a.1 — the oracle's door, its limit, and its states.
-        .arg(
-            Arg::new("dump-region")
-                .long("dump-region")
-                .value_name("DIR")
-                .value_parser(artefact_path)
-                .help(
-                    "write the solution region to DIR: every subset of the root \
-                     candidates saturated by the program's rules alone, with no \
-                     search machinery (region.json, region.md), and this run's \
-                     walk over the lattice (walk.json) — \
-                     docs/kernel/inference/region_dump.md. Runs after the solve; \
-                     stdout, the exit code and the other artefacts are unchanged.",
-                ),
-        )
-        .arg(
-            Arg::new("region-limit")
-                .long("region-limit")
-                .value_name("N")
-                .value_parser(region_limit_spec)
-                .default_value("16")
-                .help(
-                    "(--dump-region) the most root candidates the region is \
-                     computed for: 2^N saturations. Above it the directory holds \
-                     the walk and a note says why; 17-19 warns, 20 and more \
-                     warns with the projected cost.",
-                ),
-        )
-        .arg(
-            Arg::new("region-states")
-                .long("region-states")
-                .action(ArgAction::SetTrue)
-                .help(
-                    "(--dump-region) also keep every node's state beyond \
-                     root's, as text, in region.json",
-                ),
-        )
+        // ── what is printed beside the read-out ──
         .arg(flag(
             'c',
             "dump-config",
-            "print the resolved SolverConfig before solving",
+            "print the resolved config before the read-out",
         ))
         .arg(flag(
             'H',
             "hyp-stats",
-            "print the root-hypothesis preview (total + per-relation \
-             breakdown + hypgen filter report)",
+            "after the read-out, H, the universe: the candidates by relation, \
+             each dead alone marked",
         ))
         .arg(flag(
             't',
             "timing",
-            "print a per-phase wall-clock table: parse, kb load, \
-             compile, root saturation, hypothesis search (enterings, \
-             layers, saturations, per-hypothesis avg), and totals",
+            "after the read-out, where the wall clock went: load, the route, the \
+             read-out, the print",
         ))
-        // ── the model set's projection (M1d S1d.3.3) ──
+        .arg(flag(
+            's',
+            "stats",
+            "print the wall clock under the read-out",
+        ))
+        // ── the listed states' projection (M1d S1d.3.3) ──
         .arg(
             Arg::new("models")
                 .long("models")
@@ -616,13 +525,11 @@ fn solve_command() -> Command {
                 .value_parser(PossibleValuesParser::new(["list", "key", "grid"]))
                 .default_value("list")
                 .help(
-                    "how to print the models: 'list' (a block per model, the \
-                     default); 'key' (the smallest set of slots that tells \
-                     them apart, and the table of combinations that occur — an \
-                     ambiguous verdict only); 'grid' (each model and open \
-                     state as a table, the anchor type's objects down the \
-                     side, where the program's declarations license one). \
-                     Changes stdout and nothing recorded",
+                    "after the read-out, the states it listed: 'key' (the smallest \
+                     set of slots that tells them apart, and the table of \
+                     combinations that occur) or 'grid' (each as a table, the \
+                     anchor type's objects down the side, where the program's \
+                     declarations license one). 'list', the default, adds nothing",
                 ),
         )
         .arg(
@@ -630,24 +537,16 @@ fn solve_command() -> Command {
                 .long("diff-models")
                 .value_name("FILE")
                 .help(
-                    "after the answer, compare its models with the ones FILE \
-                     lists ('closes R …', then 'model' and one fact per line) \
-                     and print what matches, what is missing, what is \
-                     spurious and what is one fact off. Changes stdout and \
-                     nothing recorded",
+                    "after the read-out, compare the states it listed with the \
+                     models FILE lists ('closes R …', then 'model' and one fact per \
+                     line): what matches, what is missing, what is spurious and \
+                     what is one fact off",
                 ),
         )
-        // ── extra stdout ──
-        .arg(flag(
-            's',
-            "stats",
-            "print engine counters (k, enterings, layers, wall)",
-        ))
         .arg(flag(
             'p',
             "print-final-state",
-            "dump each solution's derived facts (for an \
-             unsat verdict, the unsat-core facts instead)",
+            "after the read-out, each listed state's facts beyond root: its model",
         ))
         .arg(flag(
             'P',
@@ -657,9 +556,47 @@ fn solve_command() -> Command {
         .arg(flag(
             'f',
             "print-final-hfacts",
-            "dump only the hypothesis-target (query :hrules) facts \
-             per solution",
-        ));
+            "after the read-out, each listed state's facts of the candidates' \
+             relations: what its commitment is made of",
+        ))
+        // ── files ──
+        .arg(
+            Arg::new("dump-answer")
+                .long("dump-answer")
+                .value_name("DIR")
+                .value_parser(artefact_path)
+                .help(
+                    "write the answer as files to DIR: answer.txt (the read-out \
+                     uncut), answer.json (= --json-summary), index.json, one \
+                     loadable file per state, the owing frontier and N \
+                     (docs/kernel/inference/answer_dump.md). DIR is made before \
+                     the run; past that, stdout, stderr and the exit code are \
+                     unchanged.",
+                ),
+        )
+        .arg(
+            Arg::new("dump-lattice")
+                .long("dump-lattice")
+                .value_name("DIR")
+                .value_parser(artefact_path)
+                .help(
+                    "write every node this run visited, in visit order, to DIR: \
+                     nodes.json (ein-lattice/2) and nodes.md \
+                     (docs/kernel/inference/lattice_dump.md). DIR is made before \
+                     the run; past that, stdout, stderr and the exit code are \
+                     unchanged.",
+                ),
+        )
+        // ── retired at the switch: refused, with what replaced each ──
+        .arg(retired("exhaustive", Some('e'), false))
+        .arg(retired("max-set-size", Some('m'), true))
+        .arg(retired("max-enterings", Some('E'), true))
+        .arg(retired("lattice-order", Some('o'), true))
+        .arg(retired("shuffle", Some('z'), false))
+        .arg(retired("seed", Some('d'), true))
+        .arg(retired("dump-states", Some('D'), true))
+        .arg(retired("dump-region", None, true))
+        .arg(retired("region-states", None, false));
 
     // ── event log (file only) ──
     let cmd = event_args(cmd);
@@ -672,9 +609,9 @@ fn solve_command() -> Command {
                 .value_name("FILE.json")
                 .value_parser(artefact_path)
                 .help(
-                    "write the structured run summary (verdict, model, \
-                     every engine counter, the root-saturation shape, the \
-                     resolved config) to FILE as JSON. Additive: stdout, \
+                    "write the read-out as ein-summary/2 to FILE: what was asked, \
+                     R as the run established it, every state, the queries and \
+                     claims, the work, root and the config. Additive: stdout, \
                      stderr and the exit code are unchanged.",
                 ),
         )
@@ -686,8 +623,9 @@ fn solve_command() -> Command {
                 .value_name("FILE.md")
                 .value_parser(artefact_path)
                 .help(
-                    "write the self-contained markdown derivation trace to \
-                     FILE (a file, not stdout)",
+                    "write the region trace to FILE: root's derivation, each listed \
+                     state's from its first minimal commitment, and N, each \
+                     minimal dead set with why (a file, not stdout)",
                 ),
         )
         .arg(flag(
@@ -698,18 +636,18 @@ fn solve_command() -> Command {
         .arg(flag(
             'F',
             "full-kb-snapshots",
-            "(--trace) append a whole-KB snapshot of the final state",
+            "(--trace) append each traced state's whole KB",
         ))
         .arg(flag(
             'R',
             "reorder",
-            "(--trace) cluster steps by target entity instead of \
+            "(--trace) cluster each section's steps by target entity instead of \
              engine order",
         ))
         .arg(flag(
             'l',
             "relevant",
-            "(--trace) prune to the goal-relevant slice",
+            "(--trace) prune each derivation to the goal-relevant slice",
         ))
 }
 
@@ -739,13 +677,15 @@ fn test_command() -> Command {
                 .help("a .ein file, or a directory to walk for them"),
         )
         .arg(
-            Arg::new("max-set-size")
-                .short('m')
-                .long("max-set-size")
-                .value_name("MAX_SET_SIZE")
-                .value_parser(int_arg)
-                .default_value("5")
-                .help("commitment-set depth cap (default: 5)"),
+            Arg::new("region-budget")
+                .long("region-budget")
+                .value_name("FACTS")
+                .value_parser(region_budget_spec)
+                .help(
+                    "each file's budget, as `ein solve --region-budget`'s (default \
+                     2^19 = 524288). A claim the run could not decide within it \
+                     is NOT CHECKED",
+                ),
         )
         .arg(
             Arg::new("max-time")
@@ -754,23 +694,32 @@ fn test_command() -> Command {
                 .value_name("MAX_TIME")
                 .value_parser(float_arg)
                 .help(
-                    "abort a query after N wall-clock seconds. An abort is an \
+                    "abort a file after N wall-clock seconds. An abort is an \
                      ERROR, never a pass and never a failure: nothing was \
                      established either way",
                 ),
+        )
+        // The walk's two, retired at M1e2 S1e2.1a.5's switch with `solve`'s.
+        .arg(
+            Arg::new("max-set-size")
+                .short('m')
+                .long("max-set-size")
+                .hide(true)
+                .num_args(1)
+                .value_parser(clap::value_parser!(String)),
         )
         .arg(
             Arg::new("max-enterings")
                 .short('E')
                 .long("max-enterings")
-                .value_name("MAX_ENTERINGS")
-                .value_parser(int_arg)
-                .help("abort a query after N commitment tries (as --max-time)"),
+                .hide(true)
+                .num_args(1)
+                .value_parser(clap::value_parser!(String)),
         )
         .arg(flag(
             'v',
             "verbose",
-            "one line per query, held ones included, with the verdict and k",
+            "one line per claim, held ones included, with what the run found",
         ))
         .arg(flag(
             'q',
@@ -789,10 +738,9 @@ fn test_command() -> Command {
             .value_name("FILE.json")
             .value_parser(artefact_path)
             .help(
-                "write the structured run summary (verdict, model, every \
-                 engine counter, the root-saturation shape, the resolved \
-                 config) to FILE as JSON. Additive, and refused when the \
-                 selection is more than one run.",
+                "write the file's run as ein-summary/2 to FILE, as `ein solve` \
+                 does. Additive, and refused when the selection is more than \
+                 one file.",
             ),
     )
     .arg(
@@ -801,11 +749,12 @@ fn test_command() -> Command {
             .value_name("FILE.json")
             .value_parser(artefact_path)
             .help(
-                "write one row per (query …) of the whole selection — the \
-                 claim's shape, the relations its :goal closes, the outcome, \
-                 and whether the search exhausted — to FILE as JSON. \
-                 Additive. Unlike --json-summary it is the report of the run \
-                 rather than of one query, so it takes any selection.",
+                "write one row per claim and per (query …) of the whole \
+                 selection — the claim's shape, the relations its :goal \
+                 closes, the outcome, and what the run found — to FILE as \
+                 ein-test-report/3. Additive. Unlike --json-summary it is the \
+                 report of the selection rather than of one run, so it takes \
+                 any selection.",
             ),
     )
 }

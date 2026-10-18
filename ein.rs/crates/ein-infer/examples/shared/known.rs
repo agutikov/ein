@@ -81,6 +81,7 @@ pub fn known(path: &Path, jobs: usize, keep_states: bool) -> Option<Known> {
             budget: u64::MAX,
             max_visits: BUDGET,
             jobs,
+            deadline: None,
         },
     )
     .ok()?;

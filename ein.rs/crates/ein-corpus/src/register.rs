@@ -32,8 +32,17 @@ use std::path::Path;
 pub const REGISTER: &str = "corpus/wrong_answers.toml";
 
 /// `/2` since M1e2 S1e2.1a.10 (2026-10-16): every row states its witness's R,
-/// [`Region`].
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/2";
+/// [`Region`]. `/3` since S1e2.1a.5's switch (2026-10-18): every row states
+/// [`Now`], the region run that asks its question, and the walk's blocks are
+/// the record of what the walk said.
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/3";
+
+/// What a [`Now`] run's states are: all of R, or one of its lines.
+pub const LINES: [&str; 3] = ["all", "minimal", "maximal"];
+
+/// The two kinds of an empty `R` as `ein-summary/2` spells them, which
+/// [`Now`] reads: every node dead, or every alive node owing.
+pub const SUMMARY_EMPTY: [&str; 2] = ["dead", "owing"];
 
 /// The routes that compute a [`Region`], as `ein solve` names them.
 pub const ROUTES: [&str; 2] = ["route 1", "route 2"];
@@ -119,8 +128,9 @@ pub struct Row {
     /// [`LOOK_AT`].
     #[serde(default)]
     pub look_at: Vec<String>,
-    /// What the engine answers today. For a `fixed` row, what it *used* to
-    /// answer.
+    /// What the walk answered. Since M1e2 S1e2.1a.5 no command runs the
+    /// walk, so this, [`Self::control`] and [`Self::twin`] are the record of
+    /// what it said, and [`Self::now`] is what is run.
     pub wrong: Answer,
     /// A run that gets it right today.
     #[serde(default)]
@@ -133,6 +143,14 @@ pub struct Row {
     /// and `ein-infer/tests/register_region.rs` holds it to `explore`.
     #[serde(default)]
     pub region: Option<Region>,
+    /// The region run that asks the row's question, and what it answers —
+    /// M1e2 S1e2.1a.5. `ein-cli/tests/wrong_answers.rs` runs it.
+    pub now: Now,
+    /// Why an `open` row's [`Self::now`] is still not [`Self::right`]: what R
+    /// shares with the case, or which reading the case waits on. Required
+    /// exactly when the row is open.
+    #[serde(default)]
+    pub open_because: Option<String>,
     /// The user's verdict on the row (S1e2.1.7). Absent until it is reviewed.
     #[serde(default)]
     pub review: Option<Review>,
@@ -170,6 +188,119 @@ impl Row {
     /// The file an answer was taken on.
     pub fn witness_of<'a>(&'a self, a: &'a Answer) -> &'a str {
         a.witness.as_deref().unwrap_or(&self.witness)
+    }
+}
+
+/// What a region run answers — M1e2 S1e2.1a.5, `ein-summary/2`'s fields.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Now {
+    /// A corpus run name: the mode that asks the row's question, `solve
+    /// --maximal` for a model-set row.
+    pub run: String,
+    /// One of [`LINES`]: which part of R its states are.
+    pub line: String,
+    pub exhausted: bool,
+    /// The states it lists.
+    pub k: usize,
+    /// One of [`SUMMARY_EMPTY`], when the run established R empty.
+    #[serde(default)]
+    pub empty: Option<String>,
+    /// The candidates' relations: what a state's `(model …)` names.
+    pub relations: Vec<String>,
+    /// Each listed state's `(model …)`, sorted; for an owing empty R, its
+    /// frontier's, which are the open states.
+    pub models: Vec<Vec<String>>,
+}
+
+impl Now {
+    /// The verdict word its states make: `Solution` for one, `Ambiguity` for
+    /// more, and for none `Contradiction` or `Open` by the kind of empty R.
+    pub fn verdict(&self) -> &'static str {
+        match (self.k, self.empty.as_deref()) {
+            (1, _) => "Solution",
+            (0, Some("owing")) => "Open",
+            (0, _) => "Contradiction",
+            _ => "Ambiguity",
+        }
+    }
+
+    /// Where it disagrees with `right`, field by field: the verdict, `k`,
+    /// `exhausted`, and the models over `closes` ∩ [`Self::relations`]. A
+    /// relation `closes` names that no candidate is over must hold the same
+    /// facts in every model `right` lists, or the comparison could not see
+    /// it.
+    pub fn against(&self, right: &Right) -> Vec<String> {
+        let mut out = Vec::new();
+        if let Some(v) = &right.verdict
+            && v != self.verdict()
+        {
+            out.push(format!("verdict: right {v}, now {}", self.verdict()));
+        }
+        if let Some(k) = right.k
+            && k != self.k
+        {
+            out.push(format!("k: right {k}, now {}", self.k));
+        }
+        if let Some(e) = right.exhausted
+            && e != self.exhausted
+        {
+            out.push(format!("exhausted: right {e}, now {}", self.exhausted));
+        }
+        let over: Vec<String> = right
+            .closes
+            .iter()
+            .filter(|c| self.relations.contains(c))
+            .cloned()
+            .collect();
+        let sorted = |m: &[Vec<String>]| -> Vec<Vec<String>> {
+            let mut v: Vec<Vec<String>> = m
+                .iter()
+                .map(|x| project(x.iter().map(String::as_str), &over))
+                .collect();
+            v.sort();
+            v
+        };
+        // An owing empty R lists its frontier, which `right` calls its open
+        // states; every other run lists its states, which are models.
+        let owing = self.k == 0 && self.empty.as_deref() == Some("owing");
+        let states: &[Vec<String>] = if owing { &[] } else { &self.models };
+        if let Some(models) = &right.models {
+            if sorted(models) != sorted(states) {
+                out.push(format!(
+                    "models over {over:?}: right {:?}, now {:?}",
+                    sorted(models),
+                    sorted(states)
+                ));
+            }
+            let unseen: Vec<String> = right
+                .closes
+                .iter()
+                .filter(|c| !self.relations.contains(c))
+                .cloned()
+                .collect();
+            let per_model: Vec<Vec<String>> = models
+                .iter()
+                .map(|m| project(m.iter().map(String::as_str), &unseen))
+                .collect();
+            if per_model.windows(2).any(|w| w[0] != w[1]) {
+                out.push(format!(
+                    "{unseen:?} hold no candidate, and right's models differ over them"
+                ));
+            }
+        }
+        if let Some(open) = &right.open {
+            let want = sorted(open);
+            let got = if owing {
+                sorted(&self.models)
+            } else {
+                Vec::new()
+            };
+            if want != got {
+                out.push(format!("open states: right {want:?}, now {got:?}"));
+            }
+        }
+        out
     }
 }
 
@@ -323,6 +454,47 @@ impl Register {
             }
             if r.status == "fixed" && (r.right.verdict.is_none() || r.right.k.is_none()) {
                 out.push(at("a fixed row states the right verdict and k".to_string()));
+            }
+            if (r.status == "open") != r.open_because.is_some() {
+                out.push(at(
+                    "`open_because` is stated exactly when the row is open".to_string()
+                ));
+            }
+            if !r.now.run.starts_with("solve") {
+                out.push(at(format!(
+                    "[now] run {:?} is not a solve — the register reads --json-summary",
+                    r.now.run
+                )));
+            }
+            if !LINES.contains(&r.now.line.as_str()) {
+                out.push(at(format!(
+                    "[now] line {:?} is not one of {LINES:?}",
+                    r.now.line
+                )));
+            }
+            if r.now.models.len() != r.now.k
+                && !(r.now.k == 0 && r.now.empty.as_deref() == Some("owing"))
+            {
+                out.push(at(format!(
+                    "[now] {} models listed for k = {}",
+                    r.now.models.len(),
+                    r.now.k
+                )));
+            }
+            if let Some(e) = &r.now.empty
+                && !SUMMARY_EMPTY.contains(&e.as_str())
+            {
+                out.push(at(format!(
+                    "[now] empty {e:?} is not one of {SUMMARY_EMPTY:?}"
+                )));
+            }
+            // A fixed row is fixed because its region run answers `right`:
+            // the comparison is data, so it holds without a run, and
+            // `wrong_answers.rs` holds the run to `now`.
+            if r.status == "fixed" {
+                for d in r.now.against(&r.right) {
+                    out.push(at(format!("fixed, and [now] is not [right]: {d}")));
+                }
             }
             if let Some(rv) = &r.review {
                 if !REVIEW_VERDICTS.contains(&rv.verdict.as_str()) {

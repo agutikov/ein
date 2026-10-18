@@ -579,9 +579,9 @@ fn every_artefact_run_leaves_its_artefact() {
                     Err(e) => bad.push(format!("  {} :: {} — summary.json: {e}", c.path, c.run)),
                     Ok(v) => {
                         summaries += 1;
-                        if v.get("verdict").is_none() {
+                        if v["schema"] != "ein-summary/2" || !v["region"].is_object() {
                             bad.push(format!(
-                                "  {} :: {} — summary has no verdict",
+                                "  {} :: {} — summary is not ein-summary/2 with a region",
                                 c.path, c.run
                             ));
                         }
@@ -596,11 +596,26 @@ fn every_artefact_run_leaves_its_artefact() {
                 bad.push(format!("  {} :: {} — no trace.md", c.path, c.run));
             }
         }
-        if c.run.contains("--dump-states") {
+        // The walk's `--dump-states` tree went at M1e2 S1e2.1a.5; the two
+        // directory artefacts since are a run's visited nodes and the cube.
+        for (flag, file, schema) in [
+            ("--dump-lattice", "lattice/nodes.json", "ein-lattice/2"),
+            ("--dump {out}/region", "region/region.json", "ein-region/1"),
+        ] {
+            if !c.run.contains(flag) {
+                continue;
+            }
             dumps += 1;
-            let d = c.out.join("states");
-            if !d.is_dir() {
-                bad.push(format!("  {} :: {} — no states/ tree", c.path, c.run));
+            match std::fs::read_to_string(c.out.join(file)) {
+                Err(e) => bad.push(format!("  {} :: {} — no {file} ({e})", c.path, c.run)),
+                Ok(text) => match serde_json::from_str::<serde_json::Value>(&text) {
+                    Ok(v) if v["schema"] == schema => {}
+                    Ok(v) => bad.push(format!(
+                        "  {} :: {} — {file} is {}, not {schema}",
+                        c.path, c.run, v["schema"]
+                    )),
+                    Err(e) => bad.push(format!("  {} :: {} — {file}: {e}", c.path, c.run)),
+                },
             }
         }
     }

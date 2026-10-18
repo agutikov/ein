@@ -7,6 +7,11 @@ milestone's headline claim, "`solve zebra2.ein -e` end-to-end". End-to-end
 is a **process** — start-up, the run, the print — and that is what a user
 waits for.
 
+**The walk's instrument.** It measures `ein solve`'s walk, which no command
+runs since M1e2 S1e2.1a.5's switch: re-take it against a binary built at or
+before commit 7ec8a480 (`--bin` / `$EIN_BIN`), and read its record as the
+walk's. Porting it to the region is not owed by the switch.
+
 So this measures processes, one `ein` binary per series against the same argv:
 
     utils/bench_env.sh python3 utils/e2e_baseline.py

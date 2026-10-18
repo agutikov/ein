@@ -18,7 +18,7 @@ use crate::ast::{Ast, Node, NodeId, loc_repr, node_repr};
 use crate::imports::Resolver;
 use crate::macros::{self, Macro as IrMacro, MacroError};
 use crate::parse::parse;
-use ein_core::config::{FIELDS, FieldKind, SolverConfig};
+use ein_core::config::{FLAGS, FieldKind, SolverConfig};
 use ein_core::entities::{ExprRef, Loc, Macro, Pattern, Query, Relation, Rule, Solve};
 use ein_core::{
     FactId, Kb, Overflow, Program, Prov, ProvId, Symbol, Terms, Value, detect_provenance_cycles,
@@ -309,7 +309,9 @@ fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
 /// The three keywords that choose the candidate list left for `(solve …)` at
 /// M1e2 S1e2.1a.4, so that one program has one lattice and one R. On a query
 /// each is a load error naming its new home ([`LATTICE_KEYWORDS`]).
-const QUERY_KEYWORDS: [&str; 4] = ["goal", "goal-text", "expect", "mode"];
+///
+/// `:over` is M1e2 T1e2.1a.5.3's: which states of R the query asks about.
+const QUERY_KEYWORDS: [&str; 5] = ["goal", "goal-text", "over", "expect", "mode"];
 
 /// The keywords that choose the candidate list — the lattice — and so belong
 /// to `(solve …)`, M1e2 S1e2.1a.4.
@@ -430,6 +432,11 @@ fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>)
                 ));
             }
         }
+        if let Some(node) = query_keyword(ast, query, "over")
+            && let Err(message) = crate::expect::Over::parse(ast, node)
+        {
+            errors.push(message);
+        }
         let Some(node) = query_keyword(ast, query, "expect") else {
             continue;
         };
@@ -461,27 +468,43 @@ fn validate_queries(ast: &Ast, terms: &Terms, kb: &Kb, errors: &mut Vec<String>)
                 }
             }
         }
-        // Rule 1: the goal's relations are mandatory. An expectation that does
-        // not pin what the query asked is not an expectation — and since
-        // naming a relation closes it, "pins" and "names" are the same word.
-        let Some(goal) = query_keyword(ast, query, "goal") else {
-            continue;
-        };
-        let goal_relations = pattern_relations(ast, goal);
+        // Since M1e2 T1e2.1a.5.3 a query's `:expect` lists its projection
+        // classes (`region_language.md` § 5): each `(model …)` is one class,
+        // the goal's atoms under its rows. So a listed fact must be one a goal
+        // atom matches — anything else is a claim about the state, which is
+        // the region claim's — and a class is listed once.
+        let atoms = query_keyword(ast, query, "goal")
+            .map(|g| crate::expect::goal_atoms(ast, g))
+            .unwrap_or_default();
+        let mut classes: Vec<Vec<String>> = Vec::new();
         for model in expectation.models() {
-            let closed: Vec<&str> = model
-                .facts
-                .iter()
-                .filter_map(|&f| crate::expect::fact(ast, f).ok())
-                .filter(|f| !f.negated)
-                .map(|f| f.relation)
-                .collect();
-            for want in &goal_relations {
-                if !closed.iter().any(|r| r == want) {
+            for &f in &model.facts {
+                if crate::expect::fact(ast, f).is_err() {
+                    continue;
+                }
+                if !atoms.iter().any(|&a| crate::expect::matches(ast, f, a)) {
                     errors.push(format!(
-                        ":expect does not name {want}, which the query's :goal asks about"
+                        ":expect lists {}, which no atom of the query's :goal matches — a \
+                         query's claim lists its projection classes; a claim about the state \
+                         is (solve … :expect (region …))'s",
+                        crate::expect::render(ast, f)
                     ));
                 }
+            }
+            let mut class: Vec<String> = model
+                .facts
+                .iter()
+                .map(|&f| crate::expect::render(ast, f))
+                .collect();
+            class.sort();
+            class.dedup();
+            if classes.contains(&class) {
+                errors.push(format!(
+                    ":expect lists the class (model {}) twice",
+                    class.join(" ")
+                ));
+            } else {
+                classes.push(class);
             }
         }
     }
@@ -1346,8 +1369,16 @@ pub fn config_from_kw_pairs(ast: &Ast, args: &[NodeId]) -> Result<SolverConfig, 
             Node::Keyword(s) => ast.sym(s).to_string(),
             _ => node_repr(ast, key),
         };
-        let Some(&(flag, kind)) = FIELDS.iter().find(|(f, _)| *f == key_name) else {
-            let mut valid: Vec<&str> = FIELDS.iter().map(|(f, _)| *f).collect();
+        if let Some((_, why)) = ein_core::config::RETIRED
+            .iter()
+            .find(|(f, _)| *f == key_name)
+        {
+            return Err(format!(
+                "config flag :{key_name} was retired at M1e2 S1e2.1a.5: {why}"
+            ));
+        }
+        let Some(&(flag, kind)) = FLAGS.iter().find(|(f, _)| *f == key_name) else {
+            let mut valid: Vec<&str> = FLAGS.iter().map(|(f, _)| *f).collect();
             valid.sort_unstable();
             return Err(format!(
                 "unknown config flag :{key_name} (expected one of: {})",
@@ -1873,23 +1904,49 @@ mod tests {
         assert!(e.contains("no declaration or fact makes a relation"), "{e}");
     }
 
-    /// Rule 1 — the goal's relations are mandatory. Naming a relation is what
-    /// closes it, so "pins what the query asked" and "names it" are one test.
+    /// Since M1e2 S1e2.1a.5 a query's `:expect` lists projection classes —
+    /// the goal's atoms under its rows — so a listed fact the goal does not
+    /// match is refused, and the message names where a claim about the state
+    /// belongs.
     #[test]
-    fn an_expect_that_does_not_name_the_goals_relation_is_a_load_error() {
+    fn a_query_claim_lists_only_facts_its_goal_matches() {
         let e = err("(relation p T P)\n(relation q T P)\n(p A H)\n(q A H)\n\
              (query :goal (p A ?h) :expect (model (q A H)))");
-        assert!(e.contains("does not name p"), "{e}");
-    }
-
-    /// …and it is checked per disjunct: one good model beside one bad one is
-    /// still a program that would pass by accident.
-    #[test]
-    fn rule_one_applies_to_every_disjunct() {
+        assert!(
+            e.contains("(q A H), which no atom of the query's :goal matches"),
+            "{e}"
+        );
+        assert!(e.contains("(solve … :expect (region …))"), "{e}");
+        // …in every disjunct, so one good class beside one bad one is still
+        // refused.
         let e = err("(relation p T P)\n(relation q T P)\n(p A H)\n(q A H)\n\
              (query :goal (p A ?h) \
               :expect (or (model (p A H)) (model (q A H))))");
-        assert!(e.contains("does not name p"), "{e}");
+        assert!(e.contains("(q A H), which no atom"), "{e}");
+        // A goal's constant must match, and a variable bind one value.
+        let e = err("(relation p T P)\n(p A H)\n(p B H)\n\
+             (query :goal (p A ?h) :expect (model (p B H)))");
+        assert!(e.contains("(p B H), which no atom"), "{e}");
+        let (_terms, _kb) = ok("(relation p T P)\n(p A H)\n\
+             (query :goal (and (p ?x ?h) (p ?x H)) :expect (model (p A H)))");
+    }
+
+    /// A class is listed once, and `:over` is one of three words.
+    #[test]
+    fn a_class_twice_and_an_unknown_over_are_load_errors() {
+        let e = err("(relation p T P)\n(p A H)\n\
+             (query :goal (p A ?h) :expect (or (model (p A H)) (model (p A H))))");
+        assert!(e.contains("lists the class (model (p A H)) twice"), "{e}");
+        let e = err("(relation p T P)\n(p A H)\n(query :goal (p A ?h) :over best)");
+        assert!(
+            e.contains(":over best — one of all, minimal, maximal"),
+            "{e}"
+        );
+        for over in ["all", "minimal", "maximal"] {
+            ok(&format!(
+                "(relation p T P)\n(p A H)\n(query :goal (p A ?h) :over {over})"
+            ));
+        }
     }
 
     #[test]

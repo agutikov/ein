@@ -1,194 +1,149 @@
 # The answer dump — `ein solve --dump-answer DIR`
 
-**What a solve answered, as files.** One directory per run: the program, root,
-one **loadable** file per recorded model or open state with the commitment
-that reached it, every refuted commitment, and the run summary. M1e2
+**What a solve answered, as files.** One directory per run: the read-out
+uncut, the summary, one **loadable** program per state the run reached, the
+owing frontier of an empty R, the minimal dead sets, and an index naming each.
+M1e2
 [S1e2.1.2](../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.2_every_answer_a_file.md)
-added it, because a person reviewing a wrong answer needs to see the answer,
-and before this flag it existed only as partial copies:
-
-| | what it holds | what it lacks |
-|---|---|---|
-| stdout | the verdict, and with `-p`/`-P` each model's facts | not loadable, and gone with the terminal |
-| `--json-summary` | every model's facts and goal rows, the core, the counters | *how*: which commitment reached a model, at which layer, what each refuted commitment's core and learned clause were |
-| `--dump-states` | root before and after each layer, and the timeline | the answer: it is the search's **frontier**, root per layer |
-
-The engine held the rest in the `store_lattice` proof — the one `--trace`
-renders — and nothing wrote it out.
+added the flag for the walk, because a person reviewing a wrong answer needs
+to see the answer. Since
+[S1e2.1a.5](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
+switch it writes the **region** read-out's answer, `ein-answer/2`
+([`read_out.md` § 8.2](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)):
+R, or the part of it the question asked, as [`solution_semantics.md`](solution_semantics.md)
+defines it.
 
 ```sh
-ein solve examples/lattice/02_genuine_3set_death.ein -e --dump-answer out/
+ein solve examples/ein-bugs/wrong-answers/owed-seats.ein --dump-answer out/
+ein solve examples/zebra2.ein --maximal --dump-answer out/
 ```
 
 ## The directory
 
 ```text
 out/
-  index.json          what is here — the verdict, k, exhausted, and every state file by name
-  program.ein         the source as loaded, imports inlined
-  root.ein            program + root's facts after its saturation, before any hypothesis
-  root_writes.json    what the search wrote into root after that, and by what
-  answer.json         byte-identical to --json-summary on the same run
-  models/NN.ein       program + one recorded model's facts
-  models/NN.json      {commitment, layer, reported, goal_bindings, owes, added, facts}
-  open/NN.ein, .json  the same, per recorded state that still owes
-  refuted/NN.json     {commitment, layer, kind, unsat_core, learned_clause}
-  alive_at_end.json   the frontier the depth cap left — [] when the search exhausted
+  index.json      what is here — the question, the summary's region block, and every state file by name
+  answer.txt      the read-out uncut: stdout with no listing cut
+  answer.json     byte-identical to --json-summary on the same run
+  models/NN.ein   program + one state's facts, one per state the run reached
+  owing/NN.ein    program + one owing node's facts, on an empty R of the owing kind
+  nogoods.json    N: each minimal dead set, its core and the rules that refuted it
 ```
 
-- **`NN` is stdout's numbering.** `models/02.ein` is *model 2/3* in the solve
-  table and *solution 2/3* under `-P`. It is the verdict's branch order, and
-  two or more digits, so the files list in that order.
-- **`program.ein`** is the three calls
-  [`stdlib/README.md`](../../../stdlib/README.md) documents for inlining an
-  import (`parse` → `resolve_and_minimize` → `dump_canonical`).
-  `imports_semantics::the_inlining_route_the_stdlib_readme_documents_round_trips`
-  holds that the result is the same program. Comments do not survive it.
-- **`root.ein`** is root at the moment its saturation reached a fixpoint —
-  [`LatticeProof::root_initial`](../../../ein.rs/crates/ein-infer/src/solve.rs),
-  the state the `root_initial` dumper hook is handed. It is *before* the
-  search's own root writes, which is why those are a file of their own.
-- **`root_writes.json`** lists every fact the final root holds and the
-  saturated one did not, each with the rule its provenance names. Those are
-  the kill cache's `<lookahead-dies-immediately>`, the singleton writeback,
-  and a `<forced-positive>` promotion. They are the writes the M1e2 cases
-  W1, W2 and W12 turn on, so they are not folded into a model's `added`
-  silently.
-- **`models/NN.json`**:
-  - `commitment` is the facts the commitment asserts, in
-    `00_timeline.jsonl`'s `{relation, args}` spelling, so a timeline row and
-    this record compare as equal values;
-  - `added` is the state's facts minus root's (positive and negative): *what
-    this commitment made true that root did not*, plus whatever the search
-    wrote into root after it started;
-  - `facts` is the whole state, in `--json-summary`'s sorted s-expression
-    spelling — the same strings as `verdict.solutions[].facts`;
-  - `reported` is whether the read-out shows this state (below).
-- **`open/`** holds the recorded states that still owe, in a program that
-  states an obligation. When the search found both kinds, the answer reports
-  only the models. The owing states are still written, with
-  `"reported": false`, because a reviewer asking what the search found wants
-  them and the read-out does not show them.
-- **`refuted/NN.json`** has one file per refuted commitment, in the order the
-  search refuted them. `kind` is `dead-pre` or `dead-post`, and
-  `learned_clause` is the no-good the death emitted. Under
-  `EIN_TRAVERSAL=tree` the proof has no layers and records only the dead
-  branches it narrates, so this directory may be empty there. That is what the
-  proof has, not a missing write
-  ([`configuration.md` § What `EIN_TRAVERSAL=tree` reports](../configuration.md)).
+- **`NN` is stdout's numbering.** `models/02.ein` is *state 2 of k* in the
+  `(region …)` block, two or more digits, so the files list in that order.
+  On a partial run it is every state the run reached, listed or not: a cut
+  at 100 lines (`-n`, or the shared stdout limit) cuts stdout, not the
+  directory, and `index.json` says which files stdout listed.
+- **`index.json`** carries `asked` and the same `region` block as the summary,
+  and per state file its `path`, `state` number, `lines`
+  (`minimal` / `maximal`) and `listed`.
+- **A state file's header** gives its number, the commitment it was read from,
+  its lines, how many commitments reach it and its minimal generators.
+- **`answer.txt`** reads back: its `(region …)` is the claim a `(solve …
+  :expect …)` states, `(merged …)`s included
+  ([`01_grammar.md` § Solve](../ir/03-ein-lang/01_grammar.md#solve)).
+- **`owing/`** holds the frontier of an empty R whose nodes all owe, each with
+  what it owes. **`nogoods.json`** is `[]` where N is empty or was not
+  computed (a line mode does not compute it).
+
+What the walk's directory held and this one does not: `program.ein`,
+`root.ein` and `root_writes.json` (root is never written: a region run
+classifies nodes, it does not commit), `refuted/` (N replaces it) and
+`alive_at_end.json` (there is no walk to end). The walk's `models/NN.json`
+records are the summary's `region.states[]` now.
 
 ## Every state file loads, and is a fixpoint
 
-A state file is the program followed by every fact of the state, sorted,
-each with the provenance keyword it carries (`:rule`, `:source`,
-`:hypothesis`). The program's own `(relation …)` declarations are not
-repeated, because the loader refuses a second one. So the file **loads as a
-program**, and saturating it **derives no fact and no `(false)`**. It holds
-exactly the recorded state and is a fixpoint of the rules that produced it.
-The keywords are for the reader: the loader reads `:source "…"` back, but
-takes `:rule` only as an atom and has no `:hypothesis`, so a reloaded fact
-keeps its identity and reads as given.
+A state file is the program as loaded, imports inlined, followed by every fact
+of the state, sorted, each with the provenance keyword it carries (`:rule`,
+`:source`, `:hypothesis`). The program's own `(relation …)` declarations are
+not repeated, because the loader refuses a second one. So the file **loads as
+a program**, and saturating it **derives no fact and no `(false)`**. Each state
+is read again through the node function every route uses, so the file is the
+state the read-out names and not a copy of one.
 
 That is the check for the class M1e's
 [`CO-M1`](../../history/m1e_review_processing/README.md#the-findings) fixed: a
-state the engine recorded that its own rules extend or refute. Per file, it is
-`answer_dump::every_recorded_state_is_a_fixpoint_of_its_own_program`. That
-test runs over every run `corpus/wrong_answers.toml` records and over `zebra2
--e`, plus `zebra2-minus-15 -e -m 3`'s 32 models under `EIN_CORPUS_SLOW=1`.
-One exception is the definition, not a waiver: a `root.ein` whose root was
-contradictory before any hypothesis holds `(false)` and saturates to it again
-(`alt-cap-core.ein`).
-
-**The stronger claim was measured and holds** (2026-10-14, the same runs plus
-`zebra2 -e`, release build). Re-solving a model file with the run's own flags
-answers `Solution`, `k = 1`, with exactly the file's state as the model, for
-**63 of 63** model files. Re-solving `root.ein` gives the original run's
-verdict and `k` for **42 of 42**. It is a measurement and not a test, because
-the generator proposes again on a loaded state.
-`plans/m1e2_correctness/probes/answer_resolve.py` takes it again.
+state the engine reports that its own rules extend or refute. Per file, it is
+`answer_dump::every_recorded_state_is_a_fixpoint_of_its_own_program`, over
+every run `corpus/wrong_answers.toml` records and seven cases of its own, and
+it checks one thing more: the file holds every candidate of its state's
+closure and no other candidate.
 
 **`--dump-states`' and `--dump-lattice`'s snapshots are a lesser thing.**
-`00_root_initial.ein`, `layers/layer_NN_{pre,post}.ein` and each entering's
-`kb.ein` carry the state's facts and no rules. They load, and reload to the
-same facts (`ein-render/tests/dump_states_load.rs`, since S1e2.1.7; before it
-they wrote a typed declaration's arity-1 companion `(relation R)` too, and the
-loader refused it as a second declaration), so `ein render kb` draws them. With
-no rules, saturating one derives nothing whether or not it is a fixpoint of
-the program.
+They carry a state's facts and no rules. They load and reload to the same
+facts (`ein-render/tests/dump_states_load.rs`), so `ein render kb` draws them,
+but with no rules, saturating one derives nothing whether or not it is a
+fixpoint of the program.
 
 ## The contract
 
 - **Additive.** stdout, stderr, the exit code, `--json-summary` and the
   `--events` stream are identical with the flag and without —
-  `answer_dump::the_flag_moves_no_answer`, on three programs, one of them
-  under `EIN_TRAVERSAL=tree`. The flag sets `store_lattice`, which is the
-  search every corpus `--trace` cell already runs.
-- **`answer.json` is `--json-summary`**, byte for byte, on every arm, an
-  aborted run included. One summary is built and written to both
-  (`answer_dump::answer_json_is_the_json_summary_byte_for_byte`). With
-  `--dump-answer` alone, the summary is built with the event stream off, so
-  the stream does not narrate a summary nobody asked for.
-- **The directory is made before the search**, and a run that cannot make it
-  exits 1 without solving. That is `--dump-states`' arm of
-  [`defined_behaviour.md` § 4.4](../defined_behaviour.md#44-an-artefact-flags-failure--m1e-s1e35),
-  for its reason. The files are written once the answer exists, and a failure
-  there takes the additive arm: `error: --dump-answer <path>: <os error>`, and
-  the exit code unchanged. An empty path is exit 2.
-- **One path, one question.** Like `--events`, `--trace`, `--json-summary` and
-  `--dump-states`, it is refused on a file with several `(query …)` blocks.
+  `answer_dump::the_flag_moves_no_answer`, on three questions — so the
+  read-out's header leaves the flag out, as it leaves out `-j`.
+- **`answer.json` is `--json-summary`**, byte for byte, and **`answer.txt` is
+  stdout**, on every question
+  (`answer_dump::answer_json_is_the_json_summary_byte_for_byte`).
+- **The directory is made before the run**, and a run that cannot make it
+  exits 1 without solving — [`defined_behaviour.md` §
+  4.4](../defined_behaviour.md#44-an-artefact-flags-failure--m1e-s1e35). The
+  files are written once the answer exists, and a failure there takes the
+  additive arm: `error: --dump-answer <path>: <os error>`, and the exit code
+  unchanged. An empty path is exit 2.
+- **One run, one directory.** A file with several `(query …)` blocks is one
+  run, and each query's classes are in `answer.json`'s `queries`. Under the
+  walk, which solved once per query, the flag was refused on such a file.
 - **A `.einb` is refused**, exit 2. The container carries no program source,
   and every state file starts with one.
-- **A budget cut** (`-E`, `-T`) writes `answer.json`, `program.ein` and an
-  `index.json` whose `verdict` is `Aborted` with the reason. There is no proof,
-  so there are no states.
+- **A budget stop is an answer**: `--region-budget` and `--region-limit`
+  write the whole directory, and `index.json`'s `region` says
+  `exhausted: false` and `stopped: {why, …}`. **A `-T` abort is not**: it
+  exits 2, and the directory it made first stays empty
+  (`answer_dump::a_stopped_run_still_says_what_it_is`).
 - **A second dump into the same directory leaves nothing stale.** When
-  `index.json` names this format, `models/`, `open/` and `refuted/` are
-  cleared before writing. A directory holding anything else is written beside
-  and nothing in it is deleted.
+  `index.json` names this format, `models/` and `owing/` are cleared before
+  writing. A directory holding anything else is written beside and nothing in
+  it is deleted.
 
 ## The run summary
 
-`answer.json` is `--json-summary`'s object (`ein-summary/1`): `verdict`,
-`stats`, `owes`, `monotonicity` (M1e2 S1e2.1a.1:
-[`region_dump.md` § Monotonicity](region_dump.md#monotonicity--the-static-check)),
-`leftover`, `root`, `config`. The `stats` block is what a
-reader asks *how did the search go* of. Each counter is defined here, because
-until M1e2 S1e2.1.5 no page did. The review bundle quotes these rows beside
-the numbers rather than paraphrasing them, and
+`answer.json` is `--json-summary`'s object, `ein-summary/2`
+([`read_out.md` § 8.1](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)):
+`asked`, `region`, `verdict` (under `--single` only), `queries`, `claim`,
+`work`, `monotonicity`
+([`region_dump.md` § Monotonicity](region_dump.md#monotonicity--the-static-check)),
+`leftover`, `root`, `config`. Every bound in `region` carries `exhausted`
+beside it, so a reader never has to know which numbers were complete.
+
+The `work` block is what a reader asks *what did the run cost* of. Each
+counter is defined here; the review bundle quotes these rows beside the
+numbers rather than paraphrasing them, and
 `answer_dump::every_summary_counter_is_defined_on_this_page` fails when a
-counter appears in a summary without a row.
+counter appears in a summary without a row. The walk's twelve `stats`
+counters went with it at the switch.
 
 | counter | what it counts |
 |---|---|
-| `enterings_total` | commitments the search entered: a fork made, the commitment's facts written, the fork saturated. Under `EIN_TRAVERSAL=tree` the tree's nodes, which narrate no `enter` event |
-| `enterings_alive` | …of which the fork was consistent after saturation |
-| `enterings_dead_pre` | …of which the fork was contradictory before saturation, from the commitment's own facts. Zero on every corpus run (`summary_properties.rs` says why) |
-| `enterings_dead_post` | …of which the fork was contradictory after saturation |
-| `facts_merged` | facts the search wrote into root by promotion. Today only the forced-positive cascade does, so it equals `forced_positives`. The singleton `(not h)` writeback is the `layer` event's `writebacks` |
-| `forced_positives` | singletons the cascade promoted into root (`<forced-positive>` in `root_writes.json`) |
-| `saturate_count` | saturations run *outside* an entering: root's own, one after each promotion, and one per state about to be recorded that something wrote into since its last saturation (`record_node` re-saturates it first; `zebra2 -e` records one model and counts 1, `lattice/02 -e` records three and counts 4). An entering's fork saturation is not counted here |
-| `layers_explored` | the deepest layer the lattice entered. Under `EIN_TRAVERSAL=tree`, the deepest node: a different quantity under the same name |
-| `nogoods_emitted` | learned clauses added to the store, one per dead commitment whose clause the store did not already imply |
-| `nogoods_subsumed` | …dead commitments whose clause a held one already covered |
-| `solution_nodes` | states the search **recorded**, models and open states together, after the `state_key` dedup. Not `k`: `k` counts models (`verdict.k`) |
-| `exhausted` | the search finished the lattice. `false` means it stopped at `-n`, at `--max-set-size` with a live frontier, or under the tree traversal, and `k` is then a lower bound |
+| `saturations` | node fixpoints computed, root's included: one per node route 1 visits, one per node of the cube under route 2, plus one per listed state a mode re-reads. The read-out's `work` row is this number |
+| `facts` | facts those saturations derived beyond root's own fixpoint, summed over nodes — what `--region-budget` is spent against |
+| `layers` | route 1's layers visited, root's layer 0 included. `null` under route 2, which visits the cube in mask order and has no layers |
 
 ## What it costs
 
-Nothing on the search beyond `store_lattice`. On `zebra2-minus-15 -e -m 3`
-(25.5 s, 32 models, release, 2026-10-14) the dump added ~0.2 s and
-**56 MB**, nearly all of it `refuted/`'s 11 577 files. Its `models/` and
-`root.ein` are 35 KB apiece, because each carries the program. A corpus-wide
-sweep that wants only the models can delete `refuted/` after the fact. The
-flag writes everything, because the reviewer it exists for asked for every
-artefact.
+Little beyond the run: each state file is one more saturation of a state the
+run already classified. On `examples/zebra2.ein` (bare describe, partial at
+the default budget, 1 state) the run took 3.61 s with the flag and without, and
+wrote 144 KB; on `zebra2-minus-15.ein`, 28 state files and 1.5 MB, 4.67 s
+against 4.68 s (release build, 2026-10-18, `ein solve FILE [--dump-answer
+DIR]`). A state file is mostly the program, so the directory's size is about
+*k* × the inlined program.
 
 ## Where it is read
 
 [M1e2 P1e2.1](../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/README.md)'s
-review bundle reads it. The grid and the model-set diff are drawn from
-`models/NN.json`, and the KB view of a model from `models/NN.ein`. The
-writer is
-[`ein_render::dump::answer`](../../../ein.rs/crates/ein-render/src/dump/answer.rs):
-a function over a finished `Solved`, not a `Dumper`, so it cannot perturb
-the search it reports.
+review bundle reads it: the KB view of a state from `models/NN.ein`, and the
+read-out from `answer.txt`. The writer is
+[`ein_render::dump::region_answer`](../../../ein.rs/crates/ein-render/src/dump/region_answer.rs):
+a function over a finished `ReadOut`, so it cannot perturb the run it reports.

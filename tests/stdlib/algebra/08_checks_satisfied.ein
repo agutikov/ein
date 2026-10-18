@@ -81,10 +81,10 @@
 (loopy A A)
 
 (solve
-  :no-hypothesis (instance lt pick loopy nothing))
+  :no-hypothesis (instance lt pick loopy nothing)
+  :expect (region (model (lt A B) (lt B C) (lt A C)
+                         (pick A X) (pick B Y)
+                         (loopy A A))))
 
 (query
-  :goal (lt ?x ?y)
-  :expect (model (lt A B) (lt B C) (lt A C)
-                 (pick A X) (pick B Y)
-                 (loopy A A)))
+  :goal (lt ?x ?y))

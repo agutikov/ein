@@ -440,7 +440,7 @@ Five arrived on 2026-08-23 with
 
 | input | message | exit |
 |---|---|---|
-| a `(query …)` keyword outside the allow-list | `(query …): unknown keyword :<k> — one of :goal :goal-text :expect :mode` | 1 |
+| a `(query …)` keyword outside the allow-list | `(query …): unknown keyword :<k> — one of :goal :goal-text :over :expect :mode` | 1 |
 | a lattice keyword on a `(query …)` (M1e2 S1e2.1a.4) | `(query …): :<k> chooses the lattice and belongs on (solve …) since M1e2 S1e2.1a.4 — one program, one lattice` | 1 |
 | a `(solve …)` keyword outside the allow-list | `(solve …): unknown keyword :<k> — one of :hrules :hypothesis-relations :no-hypothesis :expect` | 1 |
 | more than one `(solve …)` | `<n> (solve …) forms — a program states its lattice once` | 1 |
@@ -458,19 +458,25 @@ They accumulate and `; `-join with every other loader error, as §1.5's do, and
 each is pinned by a fixture in
 [`examples/broken/load/`](../../examples/broken/load/).
 
-**And one non-error that is also new**: a query whose `:expect` is *false*
-prints `:expect FAILED` with the disagreement and exits **1** — a result, not a
-usage error, so it takes §4's code rather than §5's. `ein solve` on a file with
-several `(query …)` blocks runs each and exits non-zero if any expectation
-fails; the flags that name a single output path are refused on such a file with
-exit **2**, which is §5's code because that one *is* a usage error.
+**And one non-error that is also new**: a claim that is *false* prints
+`:expect FAILED` with the disagreement, writes one `<file>: … :expect FAILED —
+<why>` line on stderr, and exits **1** — a result, not a usage error, so it
+takes §4's code rather than §5's. `ein solve` on a file with several
+`(query …)` blocks runs the program once and reads every query off that run,
+exiting 1 if any claim fails. Until M1e2 S1e2.1a.5 each query was its own walk,
+and the flags that name a single output path were refused on such a file with
+exit 2; a region run is one run however many queries it answers, so one path
+holds it, and the summary's `queries` lists them all.
 
-A third label joins `holds` and `FAILED`: **`NOT CHECKED`**, for a claim a
-stopped search neither confirmed nor refuted. It takes **1**, the same code a
-false claim does, because a green line for a claim nobody checked is what the
-whole form exists to prevent. Two things reach it — a run that stopped at `-n`,
-and a lattice frontier still alive at `--max-set-size`, where `k = 0` means "no
-model within the cap" rather than "no model".
+A third label joins `holds` and `FAILED`: **`NOT CHECKED`**, for a claim the
+run did not decide — it asked another part of R (`-n`, a line the claim is not
+about) or stopped (`--region-budget`, `--region-limit`). Under `ein solve` it
+is a `note:` on stderr and the run exits **0**, because the run answered what
+it was asked and an answer is not an error. Under `ein test` it takes **1**,
+because `ein test` runs the question each claim is about, so a claim it could
+not decide is a claim it failed to check — and a green line for a claim nobody
+checked is what the whole form exists to prevent. The words are S1e2.1a.5's
+([`read_out.md` § 9](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)).
 
 ### 4.2 The verdict atom's refusals — M1d S1d.2.3
 
@@ -556,15 +562,17 @@ and all 21 cells of the sweep, the fourteen that were right included, are
 > ruling with a test rather than an accident with five spellings.
 
 Seven options name a file or a directory the run will write: `solve --events`,
-`--json-summary`, `--trace`, `--dump-states`, `--dump-answer` and
-`--dump-lattice` (M1e2 S1e2.1.2, S1e2.1.3), and `test --json-report` (plus `test`'s own `--events` / `--json-summary`).
+`--json-summary`, `--trace`, `--dump-answer` and `--dump-lattice` (M1e2
+S1e2.1.2, S1e2.1.3), `oracle --dump` (S1e2.1a.9), and `test --json-report`
+(plus `test`'s own `--events` / `--json-summary`). The seventh was
+`--dump-states` until M1e2 S1e2.1a.5 retired it with the walk.
 What happens when the write fails:
 
 | | |
 |---|---|
 | **the message** | `error: --<flag> <path>: <os error>`, on stderr, for every one of them. The flag because a run may carry three; the path because a shell that expanded a variable to the wrong place can then see it; the OS error because that is the only part that was ever there |
 | **the exit code** | **unchanged** — 0 on a run that answered. The four flags whose `--help` says *additive: stdout, stderr and the exit code are unchanged* keep saying it: the answer on stdout is correct and complete, and the artefact is paperwork |
-| **the exception** | **`--dump-states`** exits 1. It claims no additivity, and its sink is a *directory opened before the search* rather than a file written after it, so a failure there means the run cannot do what it was asked. **`--dump-answer`** and **`--dump-lattice`** take the same arm for the same reason: the directory is made before the search, and a run that cannot make it exits 1 without solving. Its files are written after the answer exists, and a failure there is the additive arm's — the message, and the exit code unchanged |
+| **the exception** | **`--dump-answer`**, **`--dump-lattice`** and **`oracle --dump`** exit 1 when they cannot make their directory, without solving: the directory is made before the run, so a failure there means the run cannot do what it was asked. `--dump-states` took this arm first, until it was retired. Its files are written after the answer exists, and a failure there is the additive arm's — the message, and the exit code unchanged |
 | **an empty path** | a **usage error**: exit 2, refused by the value parser before anything runs, for all seven |
 
 **The empty path is the one that was a defect rather than a policy.** It
@@ -643,12 +651,23 @@ and its exit codes **deliberately differ** from the other three's:
 |---|---|---|
 | 0 | success | every expectation held, and at least one was checked |
 | 1 | a load error — or a false `:expect`, or an `oracle` cube that contradicts a monotone static verdict | an expectation is **false**, or was not checked |
-| 2 | a usage error, or a budget abort | a load error, a usage error, a budget abort — or nothing to check |
+| 2 | a usage error, or `-T` | a load error, a usage error, `-T` — or nothing to check |
 
 **An answer is never an exit code** on the other three: since M1e2
 S1e2.1a.5 a `solve --single` exits 0 whatever its word, and a run its budget
 stopped writes one `note:` to stderr and exits 0 (the user's ruling of
 2026-10-16, [`read_out.md` § 9](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#9-exit-codes)).
+
+**Most of the rest of § 5 is the walk's surface as M1c–M1e defined it** — the
+verdict words' qualifiers, `--max-set-size 0`, `--models` on the `Ambiguity`
+arm — and no command reaches the walk since the switch. What carried over,
+and where it is held: `-m` and `-E` are retired and refused with what replaced
+them; `-n 0` is still refused, exit 2, with the message below; the qualifier
+rule is the region read-out's, where every count that is not exact says *a
+lower bound* and how far it is complete, and a run that stopped never says R
+is empty (`cli_semantics::a_stopped_run_does_not_report_r_empty`);
+`--models list|key|grid` draws the states a run lists, and `key` is inert
+below two (`model_set_report.rs`).
 
 1 is taken there, and a runner that cannot tell a broken file from a false
 claim is the one failure mode a test runner must not have. 2 dominates 1 in a
@@ -823,7 +842,7 @@ way.** `--solutions 0` is **refused**, exit 2:
 
 ```text
 $ ein solve x.ein -n=0
-error: invalid value '0' for '--solutions <N>': invalid solution count: '0' (expected 1 or more, or --exhaustive)
+error: invalid value '0' for '--solutions <N>': invalid solution count: '0' (expected 1 or more; leave -n out to describe all of R)
 ```
 
 The asymmetry with `--max-set-size 0` above is the point, and it is not a
@@ -833,8 +852,9 @@ layer, and say so with `exhausted = false`. A stop-after of zero has none:
 cuts at the **first** model and `-n 0` was `-n 1` under another name, measured
 byte-identical on stdout and on every `--json-summary` field across a unique
 model, a nine-model ambiguity and a contradiction. Neither reading a user could
-mean was available — *record nothing* is not what it did, and *no limit* is
-already spelled `--exhaustive` — which is the argument `--jobs 0` had been
+mean was available — *record nothing* is not what it did, and *no limit* was
+already spelled `--exhaustive`, and is leaving `-n` out since M1e2 S1e2.1a.5 —
+which is the argument `--jobs 0` had been
 refused with since [S1a.7.5](../history/m1a_rust/README.md#s1a75--the---jobs-contract).
 
 Two things it settles that are easy to state loosely:

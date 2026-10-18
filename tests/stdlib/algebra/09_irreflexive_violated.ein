@@ -19,8 +19,8 @@
 (loops A A)          ; ⊥
 
 (solve
-  :no-hypothesis (loops))
+  :no-hypothesis (loops)
+  :expect (false))
 
 (query
-  :goal (loops ?x ?y)
-  :expect (false))
+  :goal (loops ?x ?y))

@@ -17,8 +17,8 @@
 (strictly-under A A)   ; ⊥ — the match is (?R ?a ?b) ∧ (?R ?b ?a) with a = b
 
 (solve
-  :no-hypothesis (strictly-under))
+  :no-hypothesis (strictly-under)
+  :expect (false))
 
 (query
-  :goal (strictly-under ?x ?y)
-  :expect (false))
+  :goal (strictly-under ?x ?y))

@@ -20,8 +20,8 @@
 (holds V1 Nothing)   ; ⊥ — Nothing is not an `is-a` Value
 
 (solve
-  :no-hypothesis (is-a holds))
+  :no-hypothesis (is-a holds)
+  :expect (false))
 
 (query
-  :goal (holds ?slot ?value)
-  :expect (false))
+  :goal (holds ?slot ?value))

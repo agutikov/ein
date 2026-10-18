@@ -1475,13 +1475,18 @@ fn a_commutativity_violation_names_the_commitment_and_both_keys() {
 /// all scores 0.0 and collapses to `lex`.
 #[test]
 fn score_sum_orders_by_popularity_and_lex_does_not() {
-    let (_, mut terms, kb) = checkable(
-        "(config :hypgen-scoring \"popularity\")
-         (relation p T)
+    // `:hypgen-scoring` is retired from the language (M1e2 S1e2.1a.5) and
+    // read by the walk's library alone, so the config is set on the KB.
+    let (_, mut terms, mut kb) = checkable(
+        "(relation p T)
          (relation q T)
          (q A :source \"1\") (q B :source \"2\") (q C :source \"3\")
          (p D :source \"4\")",
     );
+    kb.program_mut().config = Some(ein_core::SolverConfig {
+        hypgen_scoring: "popularity".to_string(),
+        ..ein_core::SolverConfig::default()
+    });
     let candidates: Vec<Vec<FactId>> = ["p", "q"]
         .iter()
         .map(|r| vec![unary(&mut terms, r, "X")])

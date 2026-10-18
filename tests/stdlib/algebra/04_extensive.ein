@@ -62,11 +62,11 @@
 (edge A B)
 
 (solve
-  :no-hypothesis (instance edge loop full gap))
+  :no-hypothesis (instance edge loop full gap)
+  :expect (region (model (edge A B)
+                         (loop A A) (loop B B)
+                         (full A A) (full A B) (full B A) (full B B)
+                         (gap  A A) (gap  B A) (gap  B B))))
 
 (query
-  :goal (gap ?x ?y)
-  :expect (model (edge A B)
-                 (loop A A) (loop B B)
-                 (full A A) (full A B) (full B A) (full B B)
-                 (gap  A A) (gap  B A) (gap  B B)))
+  :goal (gap ?x ?y))

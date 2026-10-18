@@ -1,12 +1,18 @@
 //! `ein render region DIR` — M1e2
 //! [S1e2.1a.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.2_the_lattice_drawn.md).
 //!
-//! The drawing of a `--dump-region` directory, held from the outside: every
-//! view is DOT Graphviz accepts (`dot_wellformed.rs`'s standard), `auto` picks
-//! the views the stage measured, and the overlay names what the register's
-//! witnesses show — W1's unrecorded maximal node, W3's unsound lookahead, W2's
-//! cascade moving the search's root, and a commitment whose saturation lands
-//! on a line node counting as that node.
+//! The drawing of an `ein oracle --dump` directory, held from the outside:
+//! every view is DOT Graphviz accepts (`dot_wellformed.rs`'s standard), and
+//! `auto` picks the views the stage measured.
+//!
+//! Until M1e2 S1e2.1a.5 the directory was `ein solve --dump-region`'s and
+//! carried the walk's `walk.json`, and four more tests here held the overlay
+//! to what the register's witnesses showed — W1's unrecorded maximal node,
+//! W3's unsound lookahead, W2's cascade moving the search's root, a commitment
+//! whose saturation lands on a line node. No command runs the walk since the
+//! switch, so nothing writes the file they read; drawing a region run on the
+//! cube is [S1e2.1a.7](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md)'s,
+//! and the four are in git history for it.
 
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -41,14 +47,15 @@ fn scratch(tag: &str) -> PathBuf {
     dir
 }
 
-/// `ein solve FILE FLAGS --dump-region DIR`, which has to succeed.
+/// `ein oracle FILE FLAGS --dump DIR`, which has to write the directory —
+/// over the limit too, where the oracle refuses and `region.json` says why.
 fn dumped(file: &str, flags: &[&str], dir: &Path) {
     let d = dir.to_string_lossy();
-    let mut args = vec!["solve", file];
+    let mut args = vec!["oracle", file];
     args.extend_from_slice(flags);
-    args.extend(["--dump-region", &d]);
+    args.extend(["--dump", &d]);
     let r = ein(&args);
-    assert!(dir.join("walk.json").is_file(), "{file}: {}", r.err);
+    assert!(dir.join("region.json").is_file(), "{file}: {}", r.err);
 }
 
 fn render(dir: &Path, view: &str) -> String {
@@ -69,32 +76,6 @@ fn view_of(dot: &str) -> &str {
         .nth(1)
         .and_then(|l| l.split("view ").nth(1))
         .unwrap_or("?")
-}
-
-/// The DOT statement drawing node `mask`.
-fn node_line(dot: &str, mask: i64) -> &str {
-    let head = format!("  m{mask} [label=");
-    dot.lines()
-        .find(|l| l.starts_with(&head))
-        .unwrap_or_else(|| panic!("node m{mask} is not drawn"))
-}
-
-/// The cube's bit of each candidate.
-fn mask_of(dir: &Path, facts: &[&str]) -> i64 {
-    let region = json(&dir.join("region.json"));
-    let cands: Vec<&str> = region["candidates"]
-        .as_array()
-        .expect("candidates")
-        .iter()
-        .map(|c| c.as_str().expect("text"))
-        .collect();
-    facts.iter().fold(0, |acc, f| {
-        let b = cands
-            .iter()
-            .position(|c| c == f)
-            .unwrap_or_else(|| panic!("{f} is not a candidate of {cands:?}"));
-        acc | 1 << b
-    })
 }
 
 fn require_graphviz() {
@@ -137,17 +118,17 @@ fn graphviz_accepts(dot: &str) -> Result<(), String> {
 /// forced positive, saturation moving nodes, an owing root, the n = 9 border
 /// view and the n = 8 lines view — and one directory over the limit.
 const DRAWN: [(&str, &[&str]); 9] = [
-    ("examples/branching/15_lookahead_two_step_on.ein", &["-e"]),
-    ("examples/lattice/04_obligation_trigger_hole.ein", &["-e"]),
-    ("examples/ein-bugs/wrong-answers/naf-nowb.ein", &["-e"]),
-    ("examples/ein-bugs/wrong-answers/forced-2.ein", &["-e"]),
-    ("examples/ein-bugs/wrong-answers/owed-seats.ein", &["-e"]),
-    ("examples/saturation/transitive/taxonomy.ein", &["-e"]),
-    ("examples/branching/05_mini_zebra.ein", &["-e"]),
+    ("examples/branching/15_lookahead_two_step_on.ein", &[]),
+    ("examples/lattice/04_obligation_trigger_hole.ein", &[]),
+    ("examples/ein-bugs/wrong-answers/naf-nowb.ein", &[]),
+    ("examples/ein-bugs/wrong-answers/forced-2.ein", &[]),
+    ("examples/ein-bugs/wrong-answers/owed-seats.ein", &[]),
+    ("examples/saturation/transitive/taxonomy.ein", &[]),
+    ("examples/branching/05_mini_zebra.ein", &[]),
     ("examples/saturation/type-exclusivity/colors.ein", &[]),
     (
         "examples/lattice/02_genuine_3set_death.ein",
-        &["-e", "--region-limit", "2"],
+        &["--region-limit", "2"],
     ),
 ];
 
@@ -194,126 +175,6 @@ fn every_view_is_drawn_and_auto_picks_the_measured_one() {
     assert_eq!(auto("05_mini_zebra.ein"), "border");
     assert_eq!(auto("colors.ein"), "lines");
     assert!(auto("02_genuine_3set_death.ein").starts_with("none"));
-    let _ = std::fs::remove_dir_all(&root);
-}
-
-/// **W1, drawn.** On `branching/15` the maximal-line node `{(p A)}` holds no
-/// recorded model's state: it is MISSING, red, and the recorded `{(p B),
-/// (p C)}` — on the maximal line — is SPURIOUS against the minimal one only.
-#[test]
-fn w1_the_unrecorded_maximal_node_is_missing() {
-    let root = scratch("w1");
-    let dir = root.join("d");
-    dumped(
-        "examples/branching/15_lookahead_two_step_on.ein",
-        &["-e"],
-        &dir,
-    );
-    let dot = render(&dir, "full");
-    let a = node_line(&dot, mask_of(&dir, &["(p A)"]));
-    assert!(a.contains("MISSING (max)") && a.contains("#e31a1c"), "{a}");
-    let bc = node_line(&dot, mask_of(&dir, &["(p B)", "(p C)"]));
-    assert!(
-        bc.contains("recorded model") && bc.contains("SPURIOUS (not min)"),
-        "{bc}"
-    );
-    assert!(!bc.contains("not min, max"), "{bc}");
-    let table = render(&dir, "table");
-    assert!(
-        table.contains(
-            "- **maximal line** `{(p A)}`, `{(p B), (p C)}` — missing `{(p A)}`; spurious none"
-        ),
-        "{table}"
-    );
-    let _ = std::fs::remove_dir_all(&root);
-}
-
-/// **W3's mechanism, drawn.** On `naf-nowb` the lookahead kills `(p A)` before
-/// the search, and the cube says `{(p A), (q A)}` is alive: the exclusion is
-/// named unsound, with the superset it pruned, and the hole's repair edge
-/// carries the fact that revives it.
-#[test]
-fn w3_an_unsound_exclusion_is_named_with_what_it_pruned() {
-    let root = scratch("w3");
-    let dir = root.join("d");
-    dumped(
-        "examples/ein-bugs/wrong-answers/naf-nowb.ein",
-        &["-e"],
-        &dir,
-    );
-    let dot = render(&dir, "full");
-    let pa = mask_of(&dir, &["(p A)"]);
-    let both = mask_of(&dir, &["(p A)", "(q A)"]);
-    assert!(node_line(&dot, pa).contains("✗ unsound exclusion"));
-    assert!(
-        dot.contains(&format!(
-            "  m{pa} -> m{both} [color=\"#ae017e\", style=dashed"
-        )),
-        "the unsound lookahead's edge to its alive superset:\n{dot}"
-    );
-    assert!(dot.contains("label=\"+(q A)\""), "the repair edge:\n{dot}");
-    assert!(
-        render(&dir, "table")
-            .contains("1 unsound: lookahead `{(p A)}` (alive superset `{(p A), (q A)}`)")
-    );
-    let _ = std::fs::remove_dir_all(&root);
-}
-
-/// **W2, drawn.** The forced-positive cascade promotes `(q one)` before any
-/// entering: `walk.json` times the promotion, the search's root moves onto
-/// the dead `{(q one)}`, and `∅` — the whole of R — is missing from both lines.
-#[test]
-fn w2_the_cascade_moves_the_search_root() {
-    let root = scratch("w2");
-    let dir = root.join("d");
-    dumped(
-        "examples/ein-bugs/wrong-answers/forced-2.ein",
-        &["-e"],
-        &dir,
-    );
-    let walk = json(&dir.join("walk.json"));
-    assert_eq!(walk["promotions"][0]["fact"], "(q one)");
-    assert_eq!(walk["promotions"][0]["after_enterings"], 0);
-    let dot = render(&dir, "full");
-    let q = node_line(&dot, mask_of(&dir, &["(q one)"]));
-    assert!(
-        q.contains("root after the cascade") && q.contains("dead"),
-        "{q}"
-    );
-    let empty = node_line(&dot, 0);
-    assert!(empty.contains("MISSING (min, max)"), "{empty}");
-    let _ = std::fs::remove_dir_all(&root);
-}
-
-/// **Saturation is a move inside the cube.** On `05_mini_zebra` the recorded
-/// commitment derives a third candidate: its node is transient, a `sat` arrow
-/// goes to the node its fixpoint is, that node is *reached by saturation* —
-/// and, compared by state, the maximal line is recorded, not missing.
-#[test]
-fn a_recorded_commitment_counts_as_the_node_its_saturation_lands_on() {
-    let root = scratch("moves");
-    let dir = root.join("d");
-    dumped("examples/branching/05_mini_zebra.ein", &["-e"], &dir);
-    let region = json(&dir.join("region.json"));
-    let walk = json(&dir.join("walk.json"));
-    let at = walk["recorded"][0]["state_mask"]
-        .as_i64()
-        .expect("in the cube");
-    let node = &region["region"]["nodes"][at as usize];
-    let closure = node["closure"].as_i64().unwrap();
-    assert_ne!(closure, at, "the recorded commitment's saturation moves it");
-    let top = &region["region"]["nodes"][closure as usize];
-    assert_eq!(top["maximal"], true);
-    assert_eq!(top["class"], node["class"], "one state");
-    let dot = render(&dir, "lines");
-    assert!(
-        dot.contains(&format!("  m{at} -> m{closure} [color=\"#08519c\"")),
-        "the sat arrow:\n{dot}"
-    );
-    assert!(node_line(&dot, at).contains("style=\"filled,dashed\""));
-    let landed = node_line(&dot, closure);
-    assert!(landed.contains("reached by saturation"), "{landed}");
-    assert!(!landed.contains("MISSING"), "{landed}");
     let _ = std::fs::remove_dir_all(&root);
 }
 

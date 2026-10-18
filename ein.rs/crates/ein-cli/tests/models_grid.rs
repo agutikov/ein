@@ -9,8 +9,10 @@
 //! Two licences, one answer, one independent source.
 //!
 //! The diff's claims are the three shapes `ein-render::models`' unit tests pin,
-//! seen through the CLI on the register's own witnesses: a missing model, a
-//! spurious one, and one a fact off.
+//! seen through the CLI: a missing model, a spurious one, and one a fact off.
+//! Until M1e2 S1e2.1a.5 they were the register's own witnesses, the walk's
+//! wrong answers; the region read-out answers those rows right, so the shapes
+//! are made here by writing the file wrong, over W1's witness.
 
 use std::collections::BTreeSet;
 use std::process::Command;
@@ -84,49 +86,55 @@ fn the_grid_is_the_published_table_in_both_encodings() {
     }
 }
 
-/// Where nothing licenses a grid the run says so in one line and the models
-/// are still printed — `key`'s *unaffordable → print the models* precedent.
+/// The read-out above the `models —` block, without the header's echo of the
+/// flags.
+fn above_models(out: &str) -> String {
+    out.lines()
+        .skip(1)
+        .take_while(|l| !l.starts_with("models — "))
+        .collect::<Vec<_>>()
+        .join("\n")
+        .trim_end()
+        .to_string()
+}
+
+/// Where nothing licenses a grid the run says so in one line per state, and
+/// the read-out above the block is the listing's — `key`'s *unaffordable →
+/// say why* precedent.
 #[test]
 fn no_licence_is_one_line_and_the_models_still_print() {
     let file = "examples/lattice/02_genuine_3set_death.ein";
-    let list = ein(&["solve", file, "-e"]);
-    let grid = ein(&["solve", file, "-e", "--models", "grid"]);
+    let list = ein(&["solve", file, "--maximal"]);
+    let grid = ein(&["solve", file, "--maximal", "--models", "grid"]);
     assert_eq!(grid.code, 0, "{}", grid.err);
     let none: Vec<&str> = grid
         .out
         .lines()
         .filter(|l| l.contains("grid — none:"))
         .collect();
-    assert_eq!(none.len(), 3, "one line per model:\n{}", grid.out);
-    let without: String = grid
-        .out
-        .lines()
-        .filter(|l| !l.contains("grid — none:"))
-        .collect::<Vec<_>>()
-        .join("\n");
-    // Each grid line came with a blank line before it; the listing is the same.
-    let squeeze = |s: &str| {
-        s.lines()
-            .filter(|l| !l.trim().is_empty())
-            .collect::<Vec<_>>()
-            .join("\n")
-    };
-    assert_eq!(squeeze(&without), squeeze(&list.out));
+    assert_eq!(none.len(), 3, "one line per state:\n{}", grid.out);
+    assert_eq!(above_models(&grid.out), above_models(&list.out));
 }
 
-/// An open state gets its grid too — and the cell its debt is about is the
-/// empty one.
+/// An owing node gets its grid too — and the cell its debt is about is the
+/// empty one. On an empty R of the owing kind the frontier is what the
+/// read-out lists, and since M1e2 S1e2.1a.5 it is what the forms draw, where
+/// the walk drew its `Open` state.
 #[test]
-fn an_open_state_has_a_grid_with_its_debt_as_an_empty_cell() {
+fn an_owing_node_has_a_grid_with_its_debt_as_an_empty_cell() {
     let r = ein(&[
         "solve",
         "tests/stdlib/closure/03_closed_and_owing.ein",
-        "-e",
         "--models",
         "grid",
     ]);
     assert_eq!(r.code, 0, "{}", r.err);
-    assert!(r.out.contains("Open — owes"), "{}", r.out);
+    assert!(r.out.contains("every alive node owes"), "{}", r.out);
+    assert!(
+        r.out.contains("── owing node 1 of 1 — owes 1 ──"),
+        "{}",
+        r.out
+    );
     assert!(r.out.contains("grid — rows:"), "{}", r.out);
     assert!(
         r.out.contains("| —"),
@@ -138,10 +146,18 @@ fn an_open_state_has_a_grid_with_its_debt_as_an_empty_cell() {
 /// `list` is still what `ein solve` prints.
 #[test]
 fn list_stays_the_default() {
-    let plain = ein(&["solve", "examples/zebra2.ein"]);
-    let list = ein(&["solve", "examples/zebra2.ein", "--models", "list"]);
-    assert_eq!(plain.out, list.out);
+    let plain = ein(&["solve", "examples/zebra2.ein", "-n", "1"]);
+    let list = ein(&[
+        "solve",
+        "examples/zebra2.ein",
+        "-n",
+        "1",
+        "--models",
+        "list",
+    ]);
+    assert_eq!(above_models(&plain.out), above_models(&list.out));
     assert!(!plain.out.contains("grid —"));
+    assert!(!list.out.contains("models — "));
 }
 
 fn diff(file: &str, flags: &[&str], expected: &str) -> String {
@@ -159,49 +175,47 @@ fn diff(file: &str, flags: &[&str], expected: &str) -> String {
     r.out
 }
 
-/// The three shapes, each on the register's own witness and its right answer.
+/// The three shapes, each on W1's witness — whose maximal line is `{(p A)}`
+/// and `{(p B), (p C)}`, the right answer since the switch — against a file
+/// written wrong; and the empty model, against the minimal line of a program
+/// whose ∅ owes.
 #[test]
 fn the_diff_names_the_missing_the_spurious_and_the_one_fact_off() {
-    // W1: the engine records one of the two models.
+    const W1: &str = "examples/branching/15_lookahead_two_step_on.ein";
     let out = diff(
-        "examples/branching/15_lookahead_two_step_on.ein",
-        &["-e"],
-        "closes p\nmodel\n(p A)\nmodel\n(p B)\n(p C)\n",
+        W1,
+        &["--maximal"],
+        "closes p\nmodel\n(p A)\nmodel\n(p B)\n(p C)\nmodel\n(p C)\n(p D)\n",
     );
     assert!(
-        out.contains("1 matched, 0 near, 1 missing, 0 spurious"),
+        out.contains("2 matched, 0 near, 1 missing, 0 spurious"),
         "{out}"
     );
     assert!(
-        out.contains("- missing: model 1 of the file [(p A)]"),
+        out.contains("- missing: model 3 of the file [(p C) (p D)]"),
         "{out}"
     );
-    // W5: a superset of a model, recorded as a third.
+    let out = diff(W1, &["--maximal"], "closes p\nmodel\n(p A)\n");
+    assert!(
+        out.contains("1 matched, 0 near, 0 missing, 1 spurious"),
+        "{out}"
+    );
+    assert!(out.contains("+ spurious: state 2 of 2"), "{out}");
+    let out = diff(
+        W1,
+        &["--maximal"],
+        "closes p\nmodel\n(p A)\n(p B)\nmodel\n(p B)\n(p C)\n",
+    );
+    assert!(
+        out.contains("1 matched, 1 near, 0 missing, 0 spurious"),
+        "{out}"
+    );
+    assert!(out.contains("lacks (p B)"), "{out}");
+    // The model with no fact, which no state of the minimal line is.
     let out = diff(
         "examples/ein-bugs/wrong-answers/owed-seats.ein",
-        &["-e"],
-        "closes seats\nmodel\n(seats Ann C1)\n(seats Bob C2)\nmodel\n(seats Ann C2)\n(seats Bob C1)\n",
-    );
-    assert!(
-        out.contains("2 matched, 0 near, 0 missing, 1 spurious"),
-        "{out}"
-    );
-    // W3: the right model lacks one fact.
-    let out = diff(
-        "examples/ein-bugs/naf-upward-closure.ein",
-        &["-e"],
-        "closes p q\nmodel\n(p A)\n(q A)\n",
-    );
-    assert!(
-        out.contains("0 matched, 1 near, 0 missing, 0 spurious"),
-        "{out}"
-    );
-    assert!(out.contains("lacks (p A)"), "{out}");
-    // W1 at layer 0: no model where the right answer is one with no `q`.
-    let out = diff(
-        "examples/ein-bugs/wrong-answers/forced-2-two.ein",
-        &["-e"],
-        "closes q\nmodel\n",
+        &["--minimal"],
+        "closes seats\nmodel\n",
     );
     assert!(
         out.contains("- missing: model 1 of the file [no facts]"),

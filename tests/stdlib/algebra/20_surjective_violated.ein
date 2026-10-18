@@ -22,8 +22,8 @@
 (not (likes Bob Soup))       ; ⊥ — nobody may like Soup
 
 (solve
-  :no-hypothesis (is-a likes))
+  :no-hypothesis (is-a likes)
+  :expect (false))
 
 (query
-  :goal (likes ?who ?what)
-  :expect (false))
+  :goal (likes ?who ?what))

@@ -85,8 +85,8 @@ paths the engine has actually broken on:
 | a `(config …)` lever | the flags the corpus exercises only on `solve` |
 
 Asserted heads never construct a nested term, so the derivable set is finite
-and a generated program terminates; the per-case `--max-enterings` /
-`--max-set-size 2` budgets bound the *search* on top of that. A case that
+and a generated program terminates; the per-case `--region-budget` /
+`--region-limit` budgets bound the *run* on top of that. A case that
 outlives `--timeout` anyway is the `terminates` finding.
 
 Every corpus file under the size limit is a mutation seed.
@@ -147,10 +147,13 @@ FINDINGS = REPO / "corpus" / "fuzz_findings"
 # file spliced in after the subcommand — `ein_corpus::plan::argv`'s first
 # shape, and `render`'s second. Deterministic budgets only: `--max-time` would
 # make the answer depend on the machine, and `deterministic` is one of the
-# properties.
+# properties. The two `solve` runs were the walk's, `--max-set-size 2
+# --max-enterings 300` with and without `-e`, until M1e2 S1e2.1a.5's switch:
+# they are R's description and its maximal line now, bounded by the facts a
+# run may derive and the cube a flagged program may need.
 RUNS = [
-    "solve --max-set-size 2 --max-enterings 300",
-    "solve -e --max-set-size 2 --max-enterings 300",
+    "solve --region-budget 4096 --region-limit 10",
+    "solve --maximal --region-budget 4096 --region-limit 10",
     "saturate",
     "render rules",
     "render constraints",
@@ -161,9 +164,10 @@ RUNS = [
 # says so rather than printing a command that does not exist.
 SWEEP = "cargo test -p ein-render --test id_order_invariance (EIN_ID_FILES)"
 
+# `:enable-singleton-writeback` and `:enable-forced-positive` were here until
+# M1e2 S1e2.1a.5 retired them; a program setting one is a load error now.
 LEVERS = [":enable-pre-branch-lookahead", ":enable-lookahead-kill-cache",
           ":enable-path-nogoods", ":enable-symmetric-mirror",
-          ":enable-singleton-writeback", ":enable-forced-positive",
           ":enable-fail-fast-fork"]
 
 
@@ -843,7 +847,7 @@ def main() -> int:
             # sweep a directory of them would make its own "did anything move"
             # check vacuous.
             code, _, _ = run_bounded([str(EIN), "solve", str(case),
-                                      "--max-enterings", "0"], args.timeout)
+                                      "--region-budget", "1"], args.timeout)
             if code in (0, 2):
                 shutil.copy(case, batch_dir / case.name)
 

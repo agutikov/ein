@@ -62,10 +62,10 @@
 (third-state is-a)
 
 (solve
-  :no-hypothesis (is-a likes state-open))
+  :no-hypothesis (is-a likes state-open)
+  :expect (region (model (state-open Bob Soup) (state-open Bob Stew)
+                         (likes Ann Soup)
+                         (not (likes Ann Stew)))))
 
 (query
-  :goal (state-open ?who ?what)
-  :expect (model (state-open Bob Soup) (state-open Bob Stew)
-                 (likes Ann Soup)
-                 (not (likes Ann Stew))))
+  :goal (state-open ?who ?what))

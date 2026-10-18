@@ -1,0 +1,8 @@
+;; M1e2 S1e2.1a.5: nine `(config …)` flags were retired with the walk —
+;; the order levers, the two that wrote into root, and the two that were inert
+;; (`solve_interface.md` § 2.4). Setting one is a load error that says why,
+;; rather than an unknown flag or a flag that does nothing.
+
+(config :lattice-order lex)
+(relation p T)
+(p A)

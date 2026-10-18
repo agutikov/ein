@@ -80,7 +80,9 @@ git show ff1d6c5^:plans/m1_core_graph_reasoning/p1.22_obsolete_syntax_and_closeo
 [scaling.md §1](../docs/history/m1a_rust/measurements/scaling.md), taken
 2026-08-20. **Re-taken 2026-09-01** on the same box with
 `utils/bench_env.sh` and `ein solve <file> -e -t`, median of five: **44.1 ms**
-and **28.2 ms**, verdict, `k` and `exhausted` unchanged.)*
+and **28.2 ms**, verdict, `k` and `exhausted` unchanged. Both rows are the
+walk's `-e`, which no command runs since M1e2 S1e2.1a.5; `ein solve <file>
+--single` decides the same uniqueness in 3.8 s on `zebra2.ein` (2026-10-18).)*
 
 `zebra2.ein` remains the **primary M1 acceptance target** (it also carries the
 Ambiguity and Contradiction task-class variants below);
@@ -125,11 +127,9 @@ ein-cli/tests/cli_semantics.rs
 ein-cli/tests/corpus_cli.rs
 ein-cli/tests/einb_cli.rs
 ein-cli/tests/embedding.rs
-ein-cli/tests/leftover_probe.rs
 ein-cli/tests/models_grid.rs
 ein-cli/tests/region_dump.rs
 ein-cli/tests/render_doors.rs
-ein-cli/tests/summary_properties.rs
 ein-corpus/benches/engine.rs
 ein-einb/tests/corruption.rs
 ein-einb/tests/invalidation.rs

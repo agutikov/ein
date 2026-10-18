@@ -7,6 +7,11 @@ cell: the verdict, every `MonotonicStats` counter, the goal bindings, the
 engine's own solve time, the whole process's wall clock and its peak RSS —
 one lever at a time, each cell a **process**.
 
+**The walk's instrument.** It measures `ein solve`'s walk, which no command
+runs since M1e2 S1e2.1a.5's switch: re-take it against a binary built at or
+before commit 7ec8a480 (`--bin` / `$EIN_BIN`), and read its record as the
+walk's. Porting it to the region is not owed by the switch.
+
     utils/bench_env.sh python3 utils/feature_matrix.py
     utils/bench_env.sh python3 utils/feature_matrix.py --runs 5
     utils/bench_env.sh python3 utils/feature_matrix.py \

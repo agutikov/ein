@@ -84,12 +84,8 @@
   ;; a lookahead kill is cached as `(not h)` so the next enumeration
   ;; skips it in O(1) instead of re-simulating
   :enable-lookahead-kill-cache true
-  ;; a sole surviving alive singleton is promoted to a root fact
-  :enable-forced-positive true
   ;; CDCL-style path-condition no-good learning
   :enable-path-nogoods true
-  ;; deterministic within-layer order (canonical-tuple sort)
-  :lattice-order lex
   ;; OFF, and this is the single most consequential knob in the file.
   ;; With multi-justification provenance on, a dead branch's no-good is
   ;; explained by searching the AND/OR proof graph for a genuinely

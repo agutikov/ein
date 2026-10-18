@@ -1,16 +1,11 @@
-//! `ein solve`'s region modes — M1e2
-//! [S1e2.1a.9](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)
-//! T1e2.1a.9.4: `--minimal`, `--maximal`, `--single` and `--region-budget`,
-//! with `-n`, answered by [`ein_infer::explore`] and, since
-//! [T1e2.1a.5.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md),
-//! printed in the read-out of
+//! `ein solve`'s region run, the only one since M1e2
+//! [S1e2.1a.5](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
+//! switch: bare `ein solve FILE` describes R, and `--minimal`, `--maximal`,
+//! `--single` and `-n N` each ask one question about it, answered by
+//! [`ein_infer::explore`] and printed in the read-out of
 //! [`read_out.md`](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)
-//! by [`ein_render::read_out`].
-//!
-//! **Until S1e2.1a.5's switch the default is still the walk** (ruling 4: the
-//! goldens move once). One of the four region flags is therefore what takes a
-//! run here, and every option of the walk's is refused beside them rather than
-//! ignored: a flag that does nothing is a claim nobody checks.
+//! by [`ein_render::read_out`]. The modes were built at S1e2.1a.9's
+//! T1e2.1a.9.4, and reached through a region flag until the switch.
 //!
 //! The program is loaded and solved **once**, and every `(query …)` it holds
 //! is answered from that one solve (the diff's § 7.1).
@@ -20,58 +15,10 @@ use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 use clap::ArgMatches;
-use clap::parser::ValueSource;
 use ein_core::Terms;
 use ein_infer::explore::{self, Ask, Mode, Stopped, Which};
 use ein_infer::read_out::{self, ReadOut};
 use ein_ir::Ast;
-
-/// The `solve` options a region mode takes. The nine it refuses are the ones
-/// the switch retires (`solve_interface.md` § 2.1).
-const TAKES: [&str; 34] = [
-    "file",
-    "solutions",
-    "max-time",
-    "jobs",
-    "region-limit",
-    "stats",
-    "minimal",
-    "maximal",
-    "single",
-    "region-budget",
-    "dump-answer",
-    "json-summary",
-    "models",
-    "print-final-state",
-    "print-final-positive",
-    "print-final-hfacts",
-    "diff-models",
-    "trace",
-    "no-diagrams",
-    "full-kb-snapshots",
-    "reorder",
-    "relevant",
-    "hyp-stats",
-    "events",
-    "events-level",
-    "dump-config",
-    "timing",
-    "verbose",
-    "layer-progress",
-    "progress-every",
-    "dump-lattice",
-    "no-lookahead",
-    "no-kill-cache",
-    "lattice-sanity-check",
-];
-
-/// Whether this `solve` run asks a region mode.
-pub fn wanted(m: &ArgMatches) -> bool {
-    m.get_flag("minimal")
-        || m.get_flag("maximal")
-        || m.get_flag("single")
-        || m.get_one::<i64>("region-budget").is_some()
-}
 
 /// The mode the flags ask for.
 pub fn mode_of(m: &ArgMatches) -> Mode {
@@ -84,8 +31,8 @@ pub fn mode_of(m: &ArgMatches) -> Mode {
     };
     let ask = if m.get_flag("single") {
         Ask::Single
-    } else if m.value_source("solutions") == Some(ValueSource::CommandLine) {
-        Ask::Find(*m.get_one::<i64>("solutions").expect("defaulted") as u64)
+    } else if let Some(&n) = m.get_one::<i64>("solutions") {
+        Ask::Find(n as u64)
     } else {
         Ask::Describe
     };
@@ -161,23 +108,6 @@ pub fn header_argv(command: &str) -> String {
 }
 
 pub fn run(m: &ArgMatches) -> i32 {
-    let solve = crate::cmdline::command();
-    let solve = solve.find_subcommand("solve").expect("solve is registered");
-    for arg in solve.get_arguments() {
-        let id = arg.get_id().as_str();
-        if TAKES.contains(&id) || m.value_source(id) != Some(ValueSource::CommandLine) {
-            continue;
-        }
-        let name = arg
-            .get_long()
-            .map(|l| format!("--{l}"))
-            .unwrap_or_else(|| id.to_string());
-        eprintln!(
-            "error: {name} is the walk's: the region modes (--minimal, --maximal, --single, \
-             --region-budget) do not take it until S1e2.1a.5 says what it means there"
-        );
-        return 2;
-    }
     let file = m.get_one::<String>("file").expect("required").clone();
     let mut opts = explore::Options::new(mode_of(m));
     if let Some(&b) = m.get_one::<i64>("region-budget") {
@@ -242,7 +172,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     // The program's config with the levers on it: what `-c` prints and the
     // `run` event carries. No route reads a lever yet (P1e2.1c), so a lever
     // changes nothing printed, which the corpus's `levers` cells check.
-    let cfg = crate::solve::resolved_config(&kb, m, None);
+    let cfg = crate::solve::resolved_config(&kb, m);
     if m.get_flag("dump-config") {
         crate::printers::print_resolved_config(&cfg);
     }
@@ -287,6 +217,10 @@ pub fn run(m: &ArgMatches) -> i32 {
             );
             return 2;
         }
+        Err(ein_infer::solve::SolveError::Compile(e)) => {
+            eprintln!("ein.inference.compile.CompileError: {e}");
+            return 1;
+        }
         Err(e) => {
             eprintln!("{e}");
             return 1;
@@ -305,30 +239,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     if code == 2 {
         return code;
     }
-    if events.on() {
-        // The summary's own blocks, as JSON on one line: what the run asked,
-        // R as it established it (its states are the summary's and the
-        // dump's), `--single`'s word, and the work.
-        let blocks = ein_render::dump::region_answer::summary_blocks(&r);
-        let get = |k: &str| {
-            blocks
-                .iter()
-                .find(|(key, _)| *key == k)
-                .map(|(_, v)| v.clone())
-                .unwrap_or(ein_render::dump::Json::Null)
-        };
-        let mut region = get("region");
-        if let ein_render::dump::Json::Object(fields) = &mut region {
-            fields.retain(|(k, _)| k != "states" && k != "frontier");
-        }
-        let compact = |j: &ein_render::dump::Json| ein_render::dump::json::dumps(j);
-        events.emit("region", |l| {
-            l.json("asked", &compact(&get("asked")));
-            l.json("region", &compact(&region));
-            l.json("verdict", &compact(&get("verdict")));
-            l.json("work", &compact(&get("work")));
-        });
-    }
+    emit_region(&mut events, &r);
     if let Err(e) = extras(&Shown::of(m), &r, &mut kb, &mut terms, &ast, want.as_ref()) {
         eprintln!("{e}");
         return 1;
@@ -339,10 +250,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     if let (Some(dir), Some(v)) = (lattice_dir.as_deref(), visits.as_ref()) {
         let v = v.lock().expect("the watch is done").clone();
         let candidates: Vec<String> = r.answer.candidates.iter().map(|c| c.text.clone()).collect();
-        let route = match r.answer.route {
-            explore::Route::DownSet => "1, the alive down-set",
-            explore::Route::Cube => "2, the cube",
-        };
+        let route = route_words(r.answer.route);
         let inputs = ein_render::dump::region_lattice::Inputs {
             source: &file,
             argv: &header_argv("solve"),
@@ -355,20 +263,26 @@ pub fn run(m: &ArgMatches) -> i32 {
         }
     }
     if let (Some(path), Some(firings)) = (trace.as_deref(), root_firings.as_deref()) {
-        let shape = TraceShape {
+        let shape = ein_render::trace::region::Shape {
             diagrams: !m.get_flag("no-diagrams"),
             relevant: m.get_flag("relevant"),
             reorder: m.get_flag("reorder"),
             full_kb: m.get_flag("full-kb-snapshots"),
         };
-        let written = trace_markdown(
+        let argv = header_argv("solve");
+        let written = ein_render::trace::region::of_read_out(
             &r,
             &mut kb,
             &mut terms,
             &ast,
             firings,
-            &file,
-            opts.budget,
+            &ein_render::read_out::Options {
+                command: "solve",
+                argv: &argv,
+                file: &file,
+                budget: opts.budget,
+                uncut: false,
+            },
             shape,
         )
         .and_then(|md| std::fs::write(path, md).map_err(|e| e.to_string()));
@@ -384,7 +298,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     }
     // The summary and the answer directory: the same facts as stdout, as
     // files, additive in the same sense.
-    let summary = match crate::summary::build_region(&ast, &mut terms, &mut kb, &r, &file) {
+    let summary = match crate::summary::build_region(&ast, &mut terms, &mut kb, &r, &file, &cfg) {
         Ok(s) => crate::summary::text(&s),
         Err(e) => {
             for (flag, path) in [("json-summary", &summary_path), ("dump-answer", &dump)] {
@@ -421,6 +335,36 @@ pub fn run(m: &ArgMatches) -> i32 {
         }
     }
     code
+}
+
+/// The `region` event that closes a region run's stream (`read_out.md`
+/// § 8.6): the summary's own blocks, as JSON on one line — what the run
+/// asked, R as it established it (its states are the summary's and the
+/// dump's), `--single`'s word, and the work. `ein solve` and `ein test` both
+/// end their streams with it.
+pub(crate) fn emit_region(events: &mut ein_infer::events::Events, r: &ReadOut) {
+    if !events.on() {
+        return;
+    }
+    let blocks = ein_render::dump::region_answer::summary_blocks(r);
+    let get = |k: &str| {
+        blocks
+            .iter()
+            .find(|(key, _)| *key == k)
+            .map(|(_, v)| v.clone())
+            .unwrap_or(ein_render::dump::Json::Null)
+    };
+    let mut region = get("region");
+    if let ein_render::dump::Json::Object(fields) = &mut region {
+        fields.retain(|(k, _)| k != "states" && k != "frontier");
+    }
+    let compact = |j: &ein_render::dump::Json| ein_render::dump::json::dumps(j);
+    events.emit("region", |l| {
+        l.json("asked", &compact(&get("asked")));
+        l.json("region", &compact(&region));
+        l.json("verdict", &compact(&get("verdict")));
+        l.json("work", &compact(&get("work")));
+    });
 }
 
 /// What a region run prints after its read-out when asked, over **the states
@@ -477,7 +421,17 @@ pub(crate) fn extras(
     }
     let a = &r.answer;
     let listed: Vec<(usize, &ein_infer::read_out::Listed)> = r.listed().collect();
+    // On an empty R of the owing kind there is no state, and the owing
+    // frontier is what the read-out lists instead: the forms draw it, labelled
+    // as what it is, and the diff has no state to compare.
+    let frontier: &[ein_infer::read_out::OwingState] = match &r.listing {
+        ein_infer::read_out::Listing::Owing(f) if listed.is_empty() => f,
+        _ => &[],
+    };
     let what = match (r.described().is_some(), &r.listing) {
+        _ if !frontier.is_empty() => {
+            "the owing frontier — R is empty, and every alive node owes".to_string()
+        }
         (true, ein_infer::read_out::Listing::Region) => "every state of R".to_string(),
         (true, _) => "the line members this run certified".to_string(),
         (false, _) => format!(
@@ -485,15 +439,14 @@ pub(crate) fn extras(
             if listed.len() == 1 { "state" } else { "states" }
         ),
     };
-    let sets: Vec<Vec<ein_core::FactId>> = listed
-        .iter()
-        .map(|(_, s)| {
-            s.rep
-                .iter()
-                .map(|&b| a.candidates[b as usize].fact)
-                .collect()
-        })
-        .collect();
+    let of = |set: &[u32]| -> Vec<ein_core::FactId> {
+        set.iter().map(|&b| a.candidates[b as usize].fact).collect()
+    };
+    let sets: Vec<Vec<ein_core::FactId>> = if frontier.is_empty() {
+        listed.iter().map(|(_, s)| of(&s.rep)).collect()
+    } else {
+        frontier.iter().map(|o| of(&o.node.set)).collect()
+    };
     // The candidates' relations stand in for `:hrules`' targets: they are
     // what a commitment is made of.
     let mut targets: Vec<ein_core::Symbol> = Vec::new();
@@ -503,14 +456,26 @@ pub(crate) fn extras(
             targets.push(rel);
         }
     }
-    let n = listed.len();
+    let n = sets.len();
     let exhausted = a.exhausted;
     let mut nodes =
         ein_infer::region::Nodes::new(kb, terms, ast, &a.candidates).map_err(|e| e.to_string())?;
     nodes
         .with_fixpoints(&sets, |kbs, terms| {
-            let label = |i: usize| format!("state {} of {}", listed[i].0 + 1, r.states.len());
+            let label = |i: usize| match frontier.get(i) {
+                Some(o) => format!(
+                    "owing node {} of {} — owes {}",
+                    i + 1,
+                    frontier.len(),
+                    o.node.owes
+                ),
+                None => format!("state {} of {}", listed[i].0 + 1, r.states.len()),
+            };
             match form {
+                // A key tells states apart, so one state or none has no key,
+                // and the flag is inert there, as it was on the walk's
+                // single-model verdicts (M1d S1d.3.3).
+                Some("key") if n < 2 => {}
                 Some("key") => {
                     println!();
                     println!("models — the determining key of {what}");
@@ -558,16 +523,23 @@ pub(crate) fn extras(
             if let Some((path, want)) = want {
                 use ein_render::models::{comparable_facts, diff_lines, diff_model_sets};
                 let closes = want.closes.as_deref();
-                let got: Vec<Vec<String>> = kbs
-                    .iter()
-                    .map(|kb| comparable_facts(terms, kb, closes))
-                    .collect();
+                let got: Vec<Vec<String>> = if frontier.is_empty() {
+                    kbs.iter()
+                        .map(|kb| comparable_facts(terms, kb, closes))
+                        .collect()
+                } else {
+                    Vec::new()
+                };
                 let d = diff_model_sets(&got, &want.models);
                 let over = match closes {
                     Some(c) => format!("compared over {}", c.join(" ")),
                     None => "compared as positive facts minus the given ones".to_string(),
                 };
-                let head = format!("{what} against {path}, {over}");
+                let head = if frontier.is_empty() {
+                    format!("{what} against {path}, {over}")
+                } else {
+                    format!("R's states (none) against {path}, {over}")
+                };
                 let got_label = |i: usize| label(i);
                 let want_label = |j: usize| {
                     let facts = &want.models[j];
@@ -595,7 +567,10 @@ pub(crate) fn extras(
 /// alone, which no state of R can hold (`read_out.md` § 8.6, P1e2.3's S4).
 fn universe(r: &ReadOut, terms: &Terms) {
     let a = &r.answer;
-    let dead: Option<&[u32]> = r.described().map(|d| d.dead_alone_set.as_slice());
+    let dead: Option<&[u32]> = r
+        .described()
+        .filter(|d| ein_render::read_out::dead_alone_known(d))
+        .map(|d| d.dead_alone_set.as_slice());
     let mut by_rel: Vec<(String, Vec<(usize, &str)>)> = Vec::new();
     for (i, c) in a.candidates.iter().enumerate() {
         let rel = terms.sym(terms.facts.get(c.fact).0).to_string();
@@ -617,7 +592,7 @@ fn universe(r: &ReadOut, terms: &Terms) {
         match dead {
             Some(_) => format!(", {n_dead} dead alone"),
             None =>
-                ", dead alone not known: a mode does not visit every candidate alone".to_string(),
+                ", dead alone not known: this run did not visit every candidate alone".to_string(),
         }
     );
     for (rel, cands) in &by_rel {
@@ -647,138 +622,6 @@ fn universe(r: &ReadOut, terms: &Terms) {
     }
 }
 
-/// `--trace FILE.md`: root's derivation, then each state stdout printed,
-/// derived from its first minimal commitment, then N and the owing frontier
-/// (`read_out.md` § 8.4).
-#[allow(clippy::too_many_arguments)]
-fn trace_markdown(
-    r: &ReadOut,
-    kb: &mut ein_core::Kb,
-    terms: &mut Terms,
-    ast: &Ast,
-    root_firings: &[ein_infer::Firing],
-    file: &str,
-    budget: u64,
-    shape: TraceShape,
-) -> Result<String, String> {
-    let TraceShape {
-        diagrams,
-        relevant,
-        reorder,
-        full_kb,
-    } = shape;
-    use ein_render::trace::region::{DeadTrace, RegionTrace, StateTrace, region_markdown};
-    let a = &r.answer;
-    let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
-    let name = |set: &[u32]| -> String {
-        if set.is_empty() {
-            "∅".to_string()
-        } else {
-            let v: Vec<&str> = set.iter().map(|&b| cands[b as usize].as_str()).collect();
-            v.join(", ")
-        }
-    };
-    let set_name = |set: &[u32]| -> String {
-        if set.is_empty() {
-            "∅".to_string()
-        } else {
-            format!("{{{}}}", name(set))
-        }
-    };
-    let text = ein_render::read_out::render(
-        r,
-        &ein_render::read_out::Options {
-            command: "solve",
-            argv: &header_argv("solve"),
-            file,
-            budget,
-            uncut: false,
-        },
-    );
-    let head: Vec<String> = text
-        .stdout
-        .lines()
-        .skip(2)
-        .take_while(|l| !l.is_empty())
-        .map(str::to_string)
-        .collect();
-    let root =
-        ein_render::trace::steps_of_with(ast, terms, root_firings, kb, diagrams, &[], relevant);
-    let mut states = Vec::new();
-    let k = r.states.len();
-    {
-        let mut nodes = ein_infer::region::Nodes::new(kb, terms, ast, &a.candidates)
-            .map_err(|e| e.to_string())?;
-        for &i in &text.shown {
-            let s = &r.states[i];
-            let from = s.generators.first().unwrap_or(&s.rep).clone();
-            let facts: Vec<ein_core::FactId> = from
-                .iter()
-                .map(|&b| a.candidates[b as usize].fact)
-                .collect();
-            let (steps, whole) = nodes
-                .with_fixpoint_traced(&facts, |kb, terms, firings| {
-                    (
-                        ein_render::trace::steps_of_with(
-                            ast, terms, firings, kb, diagrams, &facts, relevant,
-                        ),
-                        full_kb.then(|| ein_render::slice::render_state(kb, terms, None, "state")),
-                    )
-                })
-                .map_err(|e| e.to_string())?;
-            states.push(StateTrace {
-                title: ein_render::read_out::state_title(i, k, s, &cands),
-                commitment: name(&from),
-                steps,
-                full_kb: whole,
-            });
-        }
-    }
-    let dead = r
-        .described()
-        .map(|d| {
-            d.dead
-                .iter()
-                .map(|x| DeadTrace {
-                    set: set_name(&x.set),
-                    core: x.core.clone(),
-                    refuted_by: x.refuted_by.clone(),
-                })
-                .collect()
-        })
-        .unwrap_or_default();
-    let owing = match &r.listing {
-        ein_infer::read_out::Listing::Owing(f) => f
-            .iter()
-            .map(|o| (set_name(&o.node.set), o.node.owed.clone()))
-            .collect(),
-        _ => Vec::new(),
-    };
-    let listed = r.listed().count();
-    Ok(region_markdown(
-        &RegionTrace {
-            head,
-            root,
-            untraced: listed.saturating_sub(states.len()),
-            states,
-            dead,
-            owing,
-            reorder,
-        },
-        diagrams,
-    ))
-}
-
-/// The trace flags: `--no-diagrams`, `--relevant`, `--reorder`,
-/// `--full-kb-snapshots`.
-#[derive(Clone, Copy)]
-struct TraceShape {
-    diagrams: bool,
-    relevant: bool,
-    reorder: bool,
-    full_kb: bool,
-}
-
 /// `-v` and `--layer-progress`: the route's steps on stderr as it takes them,
 /// and under `-v` every `-g`-th node too.
 struct Progress {
@@ -803,10 +646,31 @@ impl Progress {
 }
 
 /// The watch a region run is read through: progress to stderr, and the
-/// nodes `--dump-lattice` writes.
-struct Watcher {
+/// nodes `--dump-lattice` writes and `ein render lattice` draws.
+pub(crate) struct Watcher {
     progress: Option<Progress>,
     visits: Option<Arc<Mutex<ein_render::dump::region_lattice::Visits>>>,
+}
+
+impl Watcher {
+    /// A watch that only collects what the route visits, into `visits`.
+    pub(crate) fn collecting(
+        visits: Arc<Mutex<ein_render::dump::region_lattice::Visits>>,
+    ) -> Watcher {
+        Watcher {
+            progress: None,
+            visits: Some(visits),
+        }
+    }
+}
+
+/// `1, the alive down-set` or `2, the cube`: the route, as the read-out names
+/// it.
+pub(crate) fn route_words(route: explore::Route) -> &'static str {
+    match route {
+        explore::Route::DownSet => "1, the alive down-set",
+        explore::Route::Cube => "2, the cube",
+    }
 }
 
 impl ein_infer::events::Watch for Watcher {

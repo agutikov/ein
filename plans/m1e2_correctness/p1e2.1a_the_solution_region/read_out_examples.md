@@ -10,14 +10,13 @@ re-generated the same day after the user's three rulings
 [`utils/read_out_examples.py`](../../../utils/read_out_examples.py): stdout,
 then each stderr line as `stderr: …`, then the exit code. A block captioned
 `--dump-answer DIR` is the `DIR/answer.txt` that run writes: the read-out with
-no listing cut. **Until the switch (T1e2.1a.5.3) a bare `ein solve` is the
-walk**, so a run that names no region flag is given `--region-budget 524288`,
-the default budget, and its caption and header say so; the switch drops it.
+no listing cut. Until the switch (T1e2.1a.5.3) a bare `ein solve` was the
+walk, so a run that named no region flag was given `--region-budget 524288`,
+the default budget; since the switch a bare `ein solve` is the description.
 [`ein-cli/tests/read_out_examples.rs`](../../../ein.rs/crates/ein-cli/tests/read_out_examples.rs)
 runs every caption again and compares the block, so the page is the read-out's
-golden. Two blocks are not one whole run: X3's query `:over maximal`, kept as
-the preview printed it until `:over` lands at the switch, and X4's scratch
-variant, whose query block is quoted.
+golden. One block is not one whole run: X4's scratch variant, whose query block
+is quoted.
 
 
 ---
@@ -28,7 +27,7 @@ variant, whose query block is quoted.
 |---|---|---:|---|
 | [X1](#x1--branching05_mini_zebraein-everything-at-once) | `branching/05_mini_zebra.ein` | 9 | the default read-out, every row; `(merged …)` with `(or …)`; a query with an undetermined class |
 | [X2](#x2--lattice02_genuine_3set_deathein-one-program-every-mode) | `lattice/02_genuine_3set_death.ein` | 3 | one program under every mode: describe, `--maximal`, `--minimal`, `-n 2`, `--single`, `--maximal --single` |
-| [X3](#x3--features11_expect_ambiguityein-a-query-over-the-maximal-line) | `features/11_expect_ambiguity.ein` | 4 | a query over all of R against one `:over maximal`: today's only `(or …)` claim, migrated |
+| [X3](#x3--features11_expect_ambiguityein-a-query-over-the-maximal-line) | `features/11_expect_ambiguity.ein` | 4 | a query `:over maximal`: the walk's only `(or …)` claim, migrated, and holding |
 | [X4](#x4--lattice07_two_pairs_two_tablesein-components-and-projection-classes) | `lattice/07_two_pairs_two_tables.ein` | 16 | the user's two tables: 8 components, and 2 projection classes of 4 |
 | [X5](#x5--latticesynthmerged_statesein-every-state-merged) | `lattice/synth/merged_states.ein` | 5 | ∅ not in R; a `(merged …)` on every state; two components |
 | [X6](#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe) | `tests/stdlib/closure/03_closed_and_owing.ein` | 0 | empty R, the owing kind; `--single` says `Open` |
@@ -50,10 +49,10 @@ reached by four commitments, three of them minimal, and that is the one
 `(merged …)`. The query asks who drinks the coffee and which pet they keep: on
 four of the five states the goal has no row, and that class is `(model)`.
 
-`ein solve --region-budget 524288 examples/branching/05_mini_zebra.ein`
+`ein solve examples/branching/05_mini_zebra.ein`
 
 ```text
-solve · --region-budget 524288 examples/branching/05_mini_zebra.ein
+solve · examples/branching/05_mini_zebra.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      5
@@ -127,10 +126,10 @@ question.
 **Describe.** Seven states, the three pairs on the maximal line, three
 sub-cubes of dimension 2.
 
-`ein solve --region-budget 524288 examples/lattice/02_genuine_3set_death.ein`
+`ein solve examples/lattice/02_genuine_3set_death.ein`
 
 ```text
-solve · --region-budget 524288 examples/lattice/02_genuine_3set_death.ein
+solve · examples/lattice/02_genuine_3set_death.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      7
@@ -200,12 +199,11 @@ solve · --maximal examples/lattice/02_genuine_3set_death.ein
   (model (b-prop X) (c-prop X))
 
   query             (a-prop ?x)
-  over              the 3 states listed — 3 states → 2 projection classes
+  over              the 3 states listed — 3 states → 2 projection classes  (a lower bound)
     class 1 of 2    1 state (3) — the goal has no row: undetermined here
     class 2 of 2    2 states (1, 2)
                       ?x = X
-  as :expect        (or (model)
-                        (model (a-prop X)))
+  as :expect        not printed: these classes are over the states listed, and the query asks about all of R
 
 exit 0
 ```
@@ -229,9 +227,9 @@ solve · --minimal examples/lattice/02_genuine_3set_death.ein
   (model)
 
   query             (a-prop ?x)
-  over              the 1 state listed — 1 state → 1 projection class
+  over              the 1 state listed — 1 state → 1 projection class  (a lower bound)
     class 1 of 1    1 state (1) — the goal has no row: undetermined here
-  as :expect        (model)
+  as :expect        not printed: these classes are over the states listed, and the query asks about all of R
 
 exit 0
 ```
@@ -240,10 +238,10 @@ exit 0
 every lever (C4). Nothing is said about the rest, and the exit code is 0: a
 request, not an expectation.
 
-`ein solve --region-budget 524288 -n 2 examples/lattice/02_genuine_3set_death.ein`
+`ein solve -n 2 examples/lattice/02_genuine_3set_death.ein`
 
 ```text
-solve · --region-budget 524288 -n 2 examples/lattice/02_genuine_3set_death.ein
+solve · -n 2 examples/lattice/02_genuine_3set_death.ein
 ──────────────────────────────────────────────────────────────
   asked             2 states of R (-n 2)
   states of R       2 states, as asked — R may hold more
@@ -259,7 +257,7 @@ solve · --region-budget 524288 -n 2 examples/lattice/02_genuine_3set_death.ein
   (model (a-prop X))
 
   query             (a-prop ?x)
-  over              the 2 states listed — 2 states → 2 projection classes  (a lower bound)
+  over              all of R — 2 states → 2 projection classes  (a lower bound)
     class 1 of 2    1 state — the goal has no row: undetermined here
     class 2 of 2    1 state
                       ?x = X
@@ -291,7 +289,7 @@ solve · --single examples/lattice/02_genuine_3set_death.ein
   (model (a-prop X))
 
   query             (a-prop ?x)
-  over              the 2 states listed — 2 states → 2 projection classes  (a lower bound)
+  over              all of R — 2 states → 2 projection classes  (a lower bound)
     class 1 of 2    1 state — the goal has no row: undetermined here
     class 2 of 2    1 state
                       ?x = X
@@ -326,7 +324,7 @@ solve · --maximal --single examples/lattice/02_genuine_3set_death.ein
   over              the 2 states listed — 2 states → 1 projection class  (a lower bound)
     class 1 of 1    2 states
                       ?x = X
-  as :expect        not printed: these classes are a lower bound, and the claim would say they are all
+  as :expect        not printed: these classes are over the states listed, and the query asks about all of R
 
 exit 0
 ```
@@ -334,15 +332,17 @@ exit 0
 ## X3 — `features/11_expect_ambiguity.ein`: a query over the maximal line
 
 [`region_examples.md`](region_examples.md)'s E5. Two people, two seats,
-restrictions only. Today's claim, the corpus's only `(or …)`, lists **R's
+restrictions only. The walk's claim, the corpus's only `(or …)`, listed **R's
 maximal line**: two of R's seven states. Over all of R the goal `(seat ?who
-?slot)` sees every seat fact, so each state is its own class, and `∅` is the
-undetermined one.
+?slot)` would see every seat fact, so each state would be its own class and
+`∅` the undetermined one. The switch migrated the query to `:over maximal`, as
+[`region_language.md` § 7](region_language.md#7-the-migration-named) says,
+so its answer is exactly the walk's claim, word for word, and it holds.
 
-`ein solve --region-budget 524288 examples/features/11_expect_ambiguity.ein`
+`ein solve examples/features/11_expect_ambiguity.ein`
 
 ```text
-solve · --region-budget 524288 examples/features/11_expect_ambiguity.ein
+solve · examples/features/11_expect_ambiguity.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      7
@@ -377,51 +377,16 @@ solve · --region-budget 524288 examples/features/11_expect_ambiguity.ein
     (model (seat Ann S2) (seat Bob S1)))
 
   query             (seat ?who ?slot)
-  over              all of R — 7 states → 7 projection classes
-    class 1 of 7    1 state (1) — the goal has no row: undetermined here
-    class 2 of 7    1 state (2)
-                      ?slot = S1 · ?who = Ann
-    class 3 of 7    1 state (3)
-                      ?slot = S2 · ?who = Ann
-    class 4 of 7    1 state (4)
-                      ?slot = S1 · ?who = Bob
-    class 5 of 7    1 state (5)
-                      ?slot = S2 · ?who = Bob
-    class 6 of 7    1 state (6)
-                      ?slot = S1 · ?who = Ann
-                      ?slot = S2 · ?who = Bob
-    class 7 of 7    1 state (7)
-                      ?slot = S1 · ?who = Bob
-                      ?slot = S2 · ?who = Ann
-  as :expect        (or (model)
-                        (model (seat Ann S1))
-                        (model (seat Ann S2))
-                        (model (seat Bob S1))
-                        (model (seat Bob S2))
-                        (model (seat Ann S1) (seat Bob S2))
-                        (model (seat Ann S2) (seat Bob S1)))
-
-exit 0
-```
-
-Asked `:over maximal` (the preview's `--over maximal`; the keyword lands at
-the switch), the query's answer is exactly today's claim, word for word. That
-is how [`region_language.md` § 7](region_language.md#7-the-migration-named)
-migrates it. Only the query block differs, so only it is shown:
-
-`ein solve examples/features/11_expect_ambiguity.ein`, the query asked `:over maximal` — kept as the preview printed it, until `:over` lands at the switch
-
-```text
-  query             (seat ?who ?slot)
   over              the maximal line — 2 states → 2 projection classes
-    class 1 of 2    1 state (1)
+    class 1 of 2    1 state (6)
                       ?slot = S1 · ?who = Ann
                       ?slot = S2 · ?who = Bob
-    class 2 of 2    1 state (2)
+    class 2 of 2    1 state (7)
                       ?slot = S1 · ?who = Bob
                       ?slot = S2 · ?who = Ann
   as :expect        (or (model (seat Ann S1) (seat Bob S2))
                         (model (seat Ann S2) (seat Bob S1)))
+  :expect           holds
 
 exit 0
 ```
@@ -434,10 +399,10 @@ own **component**, because moving one friend passes through a node that is dead
 or owing, and minimal and maximal lines coincide. The goal `(sits ?p ?s)` names
 the seats, so each state is its own projection class.
 
-`ein solve --region-budget 524288 examples/lattice/07_two_pairs_two_tables.ein`
+`ein solve examples/lattice/07_two_pairs_two_tables.ein`
 
 ```text
-solve · --region-budget 524288 examples/lattice/07_two_pairs_two_tables.ein
+solve · examples/lattice/07_two_pairs_two_tables.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      8
@@ -580,10 +545,10 @@ one and that one plus what it brings, so every state gets a `(merged …)`:
 k_c = 16 against k_s = 8. The A-side and the C-side never meet, which is the two
 components.
 
-`ein solve --region-budget 524288 examples/lattice/synth/merged_states.ein`
+`ein solve examples/lattice/synth/merged_states.ein`
 
 ```text
-solve · --region-budget 524288 examples/lattice/synth/merged_states.ein
+solve · examples/lattice/synth/merged_states.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      8
@@ -700,10 +665,10 @@ apart, and this program has none. The fixture's own migrated claim pins
 `(closed-here r)` as well, which a claim may: naming a relation closes it, and
 naming more is allowed.
 
-`ein solve --region-budget 524288 tests/stdlib/closure/03_closed_and_owing.ein`
+`ein solve tests/stdlib/closure/03_closed_and_owing.ein`
 
 ```text
-solve · --region-budget 524288 tests/stdlib/closure/03_closed_and_owing.ein
+solve · tests/stdlib/closure/03_closed_and_owing.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      0
@@ -724,6 +689,8 @@ solve · --region-budget 524288 tests/stdlib/closure/03_closed_and_owing.ein
   over              all of R — R is empty: no state to answer from
   as :expect        (false)
 
+  (solve :expect)   holds
+
 exit 0
 ```
 
@@ -743,8 +710,13 @@ solve · --single tests/stdlib/closure/03_closed_and_owing.ein
   work              1 saturation · 0 facts beyond root
 
   query             (closed-here ?R)
-  over              the 0 states listed — R is empty: no state to answer from
+  over              all of R — R is empty: no state to answer from
   as :expect        (false)
+
+  (solve :expect)   NOT CHECKED
+                    the claim is about all of R, and this run asked whether it is one state (--single)
+
+stderr: note: tests/stdlib/closure/03_closed_and_owing.ein: (solve :expect) NOT CHECKED — the claim is about all of R, and this run asked whether it is one state (--single)
 
 exit 0
 ```
@@ -754,10 +726,10 @@ exit 0
 Root holds `(loops A A)`, which `irreflexive` refutes. Root's core and the rule
 that refutes it say why, and the form is `(false)`.
 
-`ein solve --region-budget 524288 tests/stdlib/algebra/09_irreflexive_violated.ein`
+`ein solve tests/stdlib/algebra/09_irreflexive_violated.ein`
 
 ```text
-solve · --region-budget 524288 tests/stdlib/algebra/09_irreflexive_violated.ein
+solve · tests/stdlib/algebra/09_irreflexive_violated.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      0
@@ -777,6 +749,8 @@ solve · --region-budget 524288 tests/stdlib/algebra/09_irreflexive_violated.ein
   query             (loops ?x ?y)
   over              all of R — R is empty: no state to answer from
   as :expect        (false)
+
+  (solve :expect)   holds
 
 exit 0
 ```
@@ -798,8 +772,13 @@ solve · --single tests/stdlib/algebra/09_irreflexive_violated.ein
   work              1 saturation · 0 facts beyond root
 
   query             (loops ?x ?y)
-  over              the 0 states listed — R is empty: no state to answer from
+  over              all of R — R is empty: no state to answer from
   as :expect        (false)
+
+  (solve :expect)   NOT CHECKED
+                    the claim is about all of R, and this run asked whether it is one state (--single)
+
+stderr: note: tests/stdlib/algebra/09_irreflexive_violated.ein: (solve :expect) NOT CHECKED — the claim is about all of R, and this run asked whether it is one state (--single)
 
 exit 0
 ```
@@ -813,10 +792,10 @@ between two members of it. The `lattice` row is S1e2.1a.1's stub, which says so,
 counts the holes and names each minimal one with why it is out; the `E` row is
 the cube's alone.
 
-`ein solve --region-budget 524288 examples/ein-bugs/naf-upward-closure.ein`
+`ein solve examples/ein-bugs/naf-upward-closure.ein`
 
 ```text
-solve · --region-budget 524288 examples/ein-bugs/naf-upward-closure.ein
+solve · examples/ein-bugs/naf-upward-closure.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      3
@@ -850,6 +829,8 @@ solve · --region-budget 524288 examples/ein-bugs/naf-upward-closure.ein
                       ?x = A
   as :expect        (model (is-a A T))
 
+  (solve :expect)   holds
+
 exit 0
 ```
 
@@ -866,10 +847,10 @@ That is the one state it lists. The other 20 members it met go to
 `--dump-answer`, and the query is answered over all 21 as a lower bound, with
 no `as :expect`: read back, that claim would say these classes are all.
 
-`ein solve --region-budget 524288 examples/lattice/06_friends_tables.ein`
+`ein solve examples/lattice/06_friends_tables.ein`
 
 ```text
-solve · --region-budget 524288 examples/lattice/06_friends_tables.ein
+solve · examples/lattice/06_friends_tables.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      21   (a lower bound: the run stopped before R was exhausted)
@@ -882,7 +863,7 @@ solve · --region-budget 524288 examples/lattice/06_friends_tables.ein
   sub-cubes         not known
   N                 ≥ 68 minimal dead sets — those met in layer order
   lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated; assumes a monotone lattice for what a node is (P1e2.1b)
-  universe          19 candidates, 1 dead alone
+  universe          19 candidates, dead alone not known: the run stopped before it visited each alone
   route             2, the cube — no licence: the static check flags the program
   work              65 299 saturations · 455 247 facts beyond root
 
@@ -996,10 +977,10 @@ has already answered the puzzle: the one state it found is certified minimal,
 reached from the single fact `(drink-loc Juice House-4)`, and certified
 maximal. The query's class is printed with the lower-bound label.
 
-`ein solve --region-budget 524288 examples/zebra2.ein`
+`ein solve examples/zebra2.ein`
 
 ```text
-solve · --region-budget 524288 examples/zebra2.ein
+solve · examples/zebra2.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      1   (a lower bound: complete up to commitments of 4 candidates)
@@ -1283,7 +1264,7 @@ solve · --maximal -n 1 examples/zebra2.ein
     class 1 of 1    1 state
                       ?h_water = House-1 · ?h_zebra = House-5 · ?who_water = Norwegian · ?who_zebra = Japanese
                         “The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”
-  as :expect        not printed: these classes are a lower bound, and the claim would say they are all
+  as :expect        not printed: these classes are over the states listed, and the query asks about all of R
 
 exit 0
 ```
@@ -1318,7 +1299,7 @@ solve · --single examples/zebra2.ein
          (smoke-loc Old_Gold House-3) (smoke-loc Parliament House-5))
 
   query             (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))
-  over              the 1 state listed — 1 state → 1 projection class
+  over              all of R — 1 state → 1 projection class
     class 1 of 1    1 state (1)
                       ?h_water = House-1 · ?h_zebra = House-5 · ?who_water = Norwegian · ?who_zebra = Japanese
                         “The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”
@@ -1340,10 +1321,10 @@ The 10 075 other members it met go to `--dump-answer`, not to the screen, and
 the query's one class is printed without `as :expect`, since it is a lower
 bound.
 
-`ein solve --region-budget 524288 examples/saturation/square-bwd/floors.ein`
+`ein solve examples/saturation/square-bwd/floors.ein`
 
 ```text
-solve · --region-budget 524288 examples/saturation/square-bwd/floors.ein
+solve · examples/saturation/square-bwd/floors.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      10 077   (a lower bound: complete up to commitments of 5 candidates)
@@ -1396,10 +1377,10 @@ exit 0
 said they would: `-n 1` is root (one saturation), `--single` is `Ambiguity`
 in two, `--maximal -n 1` is the climb (eleven).
 
-`ein solve --region-budget 524288 -n 1 examples/saturation/square-bwd/floors.ein`
+`ein solve -n 1 examples/saturation/square-bwd/floors.ein`
 
 ```text
-solve · --region-budget 524288 -n 1 examples/saturation/square-bwd/floors.ein
+solve · -n 1 examples/saturation/square-bwd/floors.ein
 ──────────────────────────────────────────────────────────────
   asked             1 state of R (-n 1)
   states of R       1 state, as asked — R may hold more
@@ -1414,7 +1395,7 @@ solve · --region-budget 524288 -n 1 examples/saturation/square-bwd/floors.ein
          (co-located Floor1 Floor4) (co-located Floor2 Floor5))
 
   query             (co-located Floor2 Floor5)
-  over              the 1 state listed — 1 state → 1 projection class  (a lower bound)
+  over              all of R — 1 state → 1 projection class  (a lower bound)
     class 1 of 1    1 state
                       the goal holds: it has no variable
   as :expect        not printed: these classes are a lower bound, and the claim would say they are all
@@ -1444,7 +1425,7 @@ solve · --single examples/saturation/square-bwd/floors.ein
          (co-located Floor2 Floor5))
 
   query             (co-located Floor2 Floor5)
-  over              the 2 states listed — 2 states → 1 projection class  (a lower bound)
+  over              all of R — 2 states → 1 projection class  (a lower bound)
     class 1 of 1    2 states
                       the goal holds: it has no variable
   as :expect        not printed: these classes are a lower bound, and the claim would say they are all
@@ -1485,7 +1466,7 @@ solve · --maximal -n 1 examples/saturation/square-bwd/floors.ein
   over              the 1 state listed — 1 state → 1 projection class  (a lower bound)
     class 1 of 1    1 state
                       the goal holds: it has no variable
-  as :expect        not printed: these classes are a lower bound, and the claim would say they are all
+  as :expect        not printed: these classes are over the states listed, and the query asks about all of R
 
 exit 0
 ```
@@ -1497,10 +1478,10 @@ S1e2.1a.4's fixture for `(merged …)` with `(or …)`: the colocation chain,
 is checked against the R the run described, and the `(region …)` printed above
 the query is that claim's own text: one form, both directions.
 
-`ein solve --region-budget 524288 tests/region/03_merged_or.ein`
+`ein solve tests/region/03_merged_or.ein`
 
 ```text
-solve · --region-budget 524288 tests/region/03_merged_or.ein
+solve · tests/region/03_merged_or.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      4
@@ -1561,10 +1542,10 @@ one-line `as :expect`. The summary rows are never cut. Stdout is
 the same in both, so *state 37* on the screen is *state 37* in the
 file.
 
-`ein solve --region-budget 524288 examples/saturation/type-exclusivity/colors.ein`
+`ein solve examples/saturation/type-exclusivity/colors.ein`
 
 ```text
-solve · --region-budget 524288 examples/saturation/type-exclusivity/colors.ein
+solve · examples/saturation/type-exclusivity/colors.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      169

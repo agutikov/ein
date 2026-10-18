@@ -69,11 +69,12 @@ digraph { rankdir=LR; node [shape=box];
 }
 ```
 
-This is the single **load-bearing** lever for proving the solution unique —
-[`features.md`](../kernel/inference/features.md) measures that disabling its
-backing (`enable_singleton_writeback`) blows the exhaustive search up **54×**
-— 101 → **3 557** commitments, and it still has not exhausted when the default
-depth cap stops it.
+This was the single **load-bearing** lever for the old search's proof that
+the solution is unique —
+[`features.md`](../kernel/inference/features.md) measured that disabling its
+backing (`enable_singleton_writeback`) blew the exhaustive search up **54×**,
+101 → **3 557** commitments. The flag went with that search at M1e2
+S1e2.1a.5; the rule itself still fires in every saturation.
 Domain-elimination needs negatives to eat, which is where the next family
 comes in.
 

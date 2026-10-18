@@ -1,25 +1,26 @@
-//! M1e2 S1e2.1.2 — **`ein solve --dump-answer DIR`, held to what it says.**
+//! M1e2 S1e2.1.2 — **`ein solve --dump-answer DIR`, held to what it says**,
+//! since S1e2.1a.5's switch the region read-out's directory, `ein-answer/2`.
 //!
-//! The flag writes the answer as files: the program, root, one loadable file
-//! per recorded model or open state with the commitment that reached it, every
-//! refuted commitment, and `answer.json`. Its page is
+//! The flag writes the answer as files: the read-out, the summary, one
+//! loadable program per state the run reached, the owing frontier of an empty
+//! R, the minimal dead sets, and `index.json` naming each. Its page is
 //! [`docs/kernel/inference/answer_dump.md`](../../../../docs/kernel/inference/answer_dump.md),
 //! and these are the claims on it that a test can hold:
 //!
-//! - `answer.json` **is** `--json-summary`, byte for byte, on every arm;
-//! - every state file **loads**, holds exactly the recorded state, and is a
-//!   **fixpoint** of its own program — saturating it derives no fact and no
+//! - `answer.json` **is** `--json-summary`, and `answer.txt` stdout, byte for
+//!   byte, on every question;
+//! - every state file **loads**, holds exactly its state's candidates, and is
+//!   a **fixpoint** of its own program — saturating it derives no fact and no
 //!   `(false)`. A recorded state that is not a fixpoint is the class M1e's
 //!   `CO-M1` fixed, and this makes it observable per file;
-//! - `models/NN` is stdout's *model N/k*;
+//! - `models/NN` is stdout's *state N of k*;
 //! - the flag **moves no answer**: stdout, stderr, the exit code, the summary
 //!   and the event stream are the same with it and without;
 //! - a second dump into the same directory leaves nothing stale; a `.einb`
-//!   is refused; an aborted run still says what it is.
+//!   is refused; a stopped run still says what it is.
 //!
 //! ```text
 //! cargo test -p ein-cli --test answer_dump
-//! EIN_CORPUS_SLOW=1 cargo test -p ein-cli --test answer_dump   # + zebra2-minus-15 -e -m 3, 32 models
 //! ```
 
 use std::path::{Path, PathBuf};
@@ -73,14 +74,10 @@ fn dump(file: &str, flags: &[&str], env: &[String], dir: &Path) -> Run {
     ein(&args, env)
 }
 
-/// One state file, loaded and saturated in-process: `None` when it is a
-/// fixpoint holding exactly `recorded` facts, else what is wrong with it.
-///
-/// `may_be_false` is for `root.ein` alone: a root that is contradictory before
-/// any hypothesis is recorded holding `(false)`, and holding it again is the
-/// fixpoint. A model or an open state that saturates to `(false)` is a state
-/// the engine's own rules refute.
-fn not_a_fixpoint(path: &Path, recorded: usize, may_be_false: bool) -> Option<String> {
+/// A state file, loaded and saturated in-process: `None` when it is a
+/// fixpoint, holds every candidate of `closure` and no other of
+/// `candidates`, else what is wrong with it.
+fn not_a_fixpoint(path: &Path, closure: &[String], candidates: &[String]) -> Option<String> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let mut kb = match ein_ir::load_file(&mut ast, &mut terms, path) {
@@ -91,56 +88,96 @@ fn not_a_fixpoint(path: &Path, recorded: usize, may_be_false: bool) -> Option<St
     if let Err(e) = ein_infer::saturate_events(&ast, &mut terms, &mut kb) {
         return Some(format!("does not saturate: {e:?}"));
     }
-    let saturated = kb.n_facts();
-    if !may_be_false && ein_infer::contradiction::has_contradiction(&kb, &terms) {
+    if ein_infer::contradiction::has_contradiction(&kb, &terms) {
         return Some("saturates to (false)".to_string());
     }
-    if loaded != recorded {
-        return Some(format!(
-            "loads {loaded} facts where the state recorded {recorded}"
-        ));
-    }
+    let saturated = kb.n_facts();
     if saturated != loaded {
         return Some(format!(
             "derives {} facts it did not hold — not a fixpoint",
             saturated - loaded
         ));
     }
+    let held: std::collections::BTreeSet<String> = kb
+        .facts()
+        .map(|f| ein_infer::events::sexpr(&terms, f))
+        .collect();
+    for c in candidates {
+        if held.contains(c) != closure.contains(c) {
+            return Some(format!(
+                "{} {c}, which the state's closure {}",
+                if held.contains(c) { "holds" } else { "lacks" },
+                if held.contains(c) {
+                    "does not list"
+                } else {
+                    "lists"
+                }
+            ));
+        }
+    }
     None
 }
 
-/// Every `.ein` the directory holds against the fact count its record says.
-fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
-    let index = json(&dir.join("index.json"));
-    let mut n = 0;
-    for key in ["models", "open"] {
-        for stem in index[key].as_array().into_iter().flatten() {
-            let stem = stem.as_str().expect("a file stem");
-            let rec = json(&dir.join(format!("{stem}.json")));
-            let recorded = rec["facts"].as_array().expect("facts").len();
-            if let Some(why) = not_a_fixpoint(&dir.join(format!("{stem}.ein")), recorded, false) {
-                bad.push(format!("{label}: {stem}.ein {why}"));
-            }
-            n += 1;
-        }
-    }
-    let root = dir.join("root.ein");
-    let initial = index["root_initial_facts"].as_u64().unwrap_or(0) as usize;
-    if let Some(why) = not_a_fixpoint(&root, initial, true) {
-        bad.push(format!("{label}: root.ein {why}"));
-    }
-    n + 1
+fn strings(v: &J) -> Vec<String> {
+    v.as_array()
+        .map(|a| {
+            a.iter()
+                .filter_map(|x| x.as_str().map(str::to_string))
+                .collect()
+        })
+        .unwrap_or_default()
 }
 
-/// The programs the per-commit checks run on: one per verdict word, the
-/// obligations rung, an hrule, a blind rung and the puzzle.
-const CASES: [(&str, &[&str]); 6] = [
-    ("examples/lattice/02_genuine_3set_death.ein", &["-e"]),
-    ("examples/branching/16_lookahead_two_step_off.ein", &["-e"]),
-    ("examples/ein-bugs/wrong-answers/tree-dead.ein", &["-e"]),
-    ("examples/ein-bugs/wrong-answers/owed-seats.ein", &["-e"]),
-    ("examples/branching/15_lookahead_two_step_on.ein", &["-e"]),
-    ("examples/zebra2.ein", &["-e"]),
+/// Every state file the directory holds against its state in the summary.
+fn check_states(dir: &Path, label: &str, bad: &mut Vec<String>) -> usize {
+    let index = json(&dir.join("index.json"));
+    let summary = json(&dir.join("answer.json"));
+    let states = summary["region"]["states"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
+    let mut candidates: Vec<String> = states.iter().flat_map(|s| strings(&s["closure"])).collect();
+    candidates.sort();
+    candidates.dedup();
+    let mut n = 0;
+    for (i, entry) in index["models"].as_array().into_iter().flatten().enumerate() {
+        let path = entry["path"].as_str().expect("a path");
+        let closure = strings(&states[i]["closure"]);
+        if let Some(why) = not_a_fixpoint(&dir.join(path), &closure, &candidates) {
+            bad.push(format!("{label}: {path} {why}"));
+        }
+        n += 1;
+    }
+    for entry in index["owing"].as_array().into_iter().flatten() {
+        let path = entry["path"].as_str().expect("a path");
+        if let Some(why) = not_a_fixpoint(&dir.join(path), &[], &[]) {
+            bad.push(format!("{label}: {path} {why}"));
+        }
+        n += 1;
+    }
+    n
+}
+
+/// The programs the per-commit checks run on, with a question each: all of R
+/// on a program with a dead set and on an owing root, a line, a part, the
+/// word, an empty R, and the puzzle's model.
+const CASES: [(&str, &[&str]); 7] = [
+    ("examples/lattice/02_genuine_3set_death.ein", &[]),
+    ("examples/ein-bugs/wrong-answers/owed-seats.ein", &[]),
+    (
+        "examples/branching/16_lookahead_two_step_off.ein",
+        &["--maximal"],
+    ),
+    (
+        "examples/branching/15_lookahead_two_step_on.ein",
+        &["-n", "2"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/tree-dead.ein",
+        &["--single"],
+    ),
+    ("examples/ein-bugs/zebra2-bad.ein", &[]),
+    ("examples/zebra2.ein", &["-n", "1"]),
 ];
 
 #[test]
@@ -153,56 +190,50 @@ fn answer_json_is_the_json_summary_byte_for_byte() {
         let a = std::fs::read(dir.join("answer.json")).expect("answer.json");
         let s = std::fs::read(dir.with_extension("json")).expect("summary");
         assert!(a == s, "{file}: answer.json is not --json-summary's bytes");
+        let t = std::fs::read_to_string(dir.join("answer.txt")).expect("answer.txt");
+        assert_eq!(t, r.out, "{file}: answer.txt is not stdout");
     }
     let _ = std::fs::remove_dir_all(&root);
 }
 
-/// **Every recorded state is a fixpoint of its own program** — over every
-/// run the register records, and the puzzle.
+/// **Every state file is a fixpoint of its own program** — over every run
+/// the register records and the cases above, the puzzle's model among them.
 ///
 /// The register is the list that matters here: its rows are the runs a
 /// reviewer will open, and several of them are records the engine got wrong.
-/// *Wrong* is allowed. A recorded state that its own rules would extend or
+/// *Wrong* is allowed. A written state that its own rules would extend or
 /// refute is not, and is what this would report.
 #[test]
 fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     let root = scratch("fixpoint");
     let mut bad = Vec::new();
     let mut states = 0;
-    let mut runs: Vec<(String, String, Vec<String>)> = Vec::new();
+    let mut runs: Vec<(String, String)> = Vec::new();
     for row in &register().case {
-        for (_, a) in row.answers() {
-            // A debug build aborts on W7's pair; that is the row's own claim.
-            if a.debug_panic.is_some() && cfg!(debug_assertions) {
-                continue;
-            }
-            runs.push((row.witness_of(a).to_string(), a.run.clone(), a.env.clone()));
+        // A debug build aborts on W7's pair; that is the row's own claim.
+        if row.status.starts_with("merged:")
+            || (row.wrong.debug_panic.is_some() && cfg!(debug_assertions))
+        {
+            continue;
         }
+        runs.push((row.witness.clone(), row.now.run.clone()));
     }
-    runs.push(("examples/zebra2.ein".into(), "solve -e".into(), Vec::new()));
-    if std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1") {
-        runs.push((
-            "examples/zebra2-minus-15.ein".into(),
-            "solve -e -m 3".into(),
-            Vec::new(),
-        ));
+    for (file, flags) in CASES {
+        let mut run = vec!["solve"];
+        run.extend_from_slice(flags);
+        runs.push((file.to_string(), run.join(" ")));
     }
     runs.sort();
     runs.dedup();
-    for (i, (file, run, env)) in runs.iter().enumerate() {
+    for (i, (file, run)) in runs.iter().enumerate() {
         let dir = root.join(format!("r{i}"));
         let flags: Vec<&str> = run.split_whitespace().skip(1).collect();
-        let r = dump(file, &flags, env, &dir);
-        assert!(
-            r.code == 0 || r.code == 1,
-            "{file} {run}: exit {}\n{}",
-            r.code,
-            r.err
-        );
+        let r = dump(file, &flags, &[], &dir);
+        assert_eq!(r.code, 0, "{file} {run}: exit {}\n{}", r.code, r.err);
         states += check_states(&dir, &format!("{file} :: {run}"), &mut bad);
     }
     let _ = std::fs::remove_dir_all(&root);
-    assert!(states > runs.len(), "no recorded state was checked");
+    assert!(states > runs.len(), "no state file was checked");
     assert!(
         bad.is_empty(),
         "{} state files:\n{}",
@@ -211,64 +242,48 @@ fn every_recorded_state_is_a_fixpoint_of_its_own_program() {
     );
 }
 
-/// **`models/NN` is stdout's model N/k**, and the files are the answer.
+/// **`models/NN` is stdout's state N of k**, and the files are the answer.
 ///
-/// `owed-seats.ein` has three models whose facts differ, so a numbering that
-/// drifted from the read-out's would put one model's `-P` block against
-/// another model's file and fail.
+/// `owed-seats.ein` has seven states whose facts differ, so a numbering that
+/// drifted from the read-out's would put one state's `(model …)` against
+/// another state's file and fail.
 #[test]
 fn the_files_are_the_answer_in_the_read_outs_order() {
     let dir = scratch("order").join("d");
     let file = "examples/ein-bugs/wrong-answers/owed-seats.ein";
-    let r = dump(file, &["-e", "-P"], &[], &dir);
+    let r = dump(file, &[], &[], &dir);
     assert_eq!(r.code, 0, "{}", r.err);
     let index = json(&dir.join("index.json"));
     let summary = json(&dir.with_extension("json"));
-    let models: Vec<&str> = index["models"]
-        .as_array()
-        .expect("models")
-        .iter()
-        .map(|m| m.as_str().expect("stem"))
-        .collect();
+    let models = index["models"].as_array().expect("models");
     assert_eq!(
         models.len() as u64,
-        summary["verdict"]["k"].as_u64().unwrap()
+        summary["region"]["k_s"].as_u64().unwrap()
     );
-    // The set of models is the summary's set.
-    let mut ours: Vec<J> = models
-        .iter()
-        .map(|m| json(&dir.join(format!("{m}.json")))["facts"].clone())
-        .collect();
-    let mut theirs: Vec<J> = summary["verdict"]["solutions"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|s| s["facts"].clone())
-        .collect();
-    ours.sort_by_key(|v| v.to_string());
-    theirs.sort_by_key(|v| v.to_string());
-    assert_eq!(ours, theirs, "the files hold another model set");
-    // And file N is block N of `-P`.
-    let blocks: Vec<Vec<String>> = r
-        .out
-        .split("── solution ")
-        .skip(1)
-        .map(|b| {
-            b.lines()
-                .skip(1)
-                .take_while(|l| l.starts_with("  (") || l.starts_with("final-state"))
-                .filter(|l| l.starts_with("  ("))
-                .map(|l| l.trim().to_string())
-                .collect()
-        })
+    // Block N of the `(region …)` is file N.
+    let lines: Vec<&str> = r.out.lines().map(str::trim_start).collect();
+    let blocks: Vec<&str> = lines
+        .windows(2)
+        .filter(|w| w[0].starts_with(";; state ") && w[0].contains(" of "))
+        .map(|w| w[1])
         .collect();
     assert_eq!(blocks.len(), models.len(), "{}", r.out);
-    for (n, (block, stem)) in blocks.iter().zip(&models).enumerate() {
-        let facts = json(&dir.join(format!("{stem}.json")))["facts"].clone();
-        for f in block {
+    for (n, (block, entry)) in blocks.iter().zip(models).enumerate() {
+        assert_eq!(entry["state"], n as u64 + 1);
+        let text = std::fs::read_to_string(dir.join(entry["path"].as_str().unwrap())).unwrap();
+        assert!(
+            text.starts_with(&format!(";;; state {} of {}", n + 1, models.len())),
+            "{text}"
+        );
+        let facts = block
+            .trim_start_matches("(model")
+            .trim_end_matches(')')
+            .split(") (")
+            .map(|f| format!("({})", f.trim().trim_matches(['(', ')'])));
+        for f in facts.filter(|f| f != "()") {
             assert!(
-                facts.as_array().unwrap().iter().any(|x| x == f.as_str()),
-                "stdout's solution {} prints {f}, which {stem}.json does not hold",
+                text.lines().any(|l| l.starts_with(&f[..f.len() - 1])),
+                "stdout's state {} lists {f}, which its file does not hold",
                 n + 1
             );
         }
@@ -277,22 +292,19 @@ fn the_files_are_the_answer_in_the_read_outs_order() {
 }
 
 /// **The flag moves no answer.** Stdout, stderr, the exit code, the summary
-/// and the event stream, with the flag and without, on three programs — one
-/// of them under the tree traversal, whose proof has no layers.
+/// and the event stream, with the flag and without, on three questions.
 #[test]
 fn the_flag_moves_no_answer() {
     let root = scratch("additive");
-    let cases: [(&str, &[&str], &[&str]); 3] = [
-        ("examples/zebra2.ein", &["-e"], &[]),
-        ("examples/ein-bugs/wrong-answers/forced-2.ein", &["-e"], &[]),
+    let cases: [(&str, &[&str]); 3] = [
+        ("examples/zebra2.ein", &["-n", "1"]),
         (
-            "examples/zebra2-obligations.ein",
-            &["-e"],
-            &["EIN_TRAVERSAL=tree"],
+            "examples/ein-bugs/wrong-answers/forced-2.ein",
+            &["--maximal"],
         ),
+        ("examples/ein-bugs/wrong-answers/owed-seats.ein", &[]),
     ];
-    for (i, (file, flags, env)) in cases.iter().enumerate() {
-        let env: Vec<String> = env.iter().map(|s| s.to_string()).collect();
+    for (i, (file, flags)) in cases.iter().enumerate() {
         let run = |with: bool| {
             let tag = if with { "with" } else { "without" };
             let s = root.join(format!("{i}-{tag}.json"));
@@ -309,7 +321,7 @@ fn the_flag_moves_no_answer() {
             if with {
                 args.extend(["--dump-answer", &d]);
             }
-            let r = ein(&args, &env);
+            let r = ein(&args, &[]);
             let summary = std::fs::read_to_string(s.as_ref()).expect("summary");
             let events = std::fs::read_to_string(e.as_ref()).expect("events");
             (r, summary, events)
@@ -331,16 +343,16 @@ fn the_flag_moves_no_answer() {
 fn a_second_dump_into_one_directory_leaves_nothing_stale() {
     let dir = scratch("stale").join("d");
     let r = dump(
-        "examples/lattice/02_genuine_3set_death.ein",
-        &["-e"],
+        "examples/ein-bugs/wrong-answers/owed-seats.ein",
+        &[],
         &[],
         &dir,
     );
     assert_eq!(r.code, 0, "{}", r.err);
-    assert!(dir.join("models/03.ein").is_file());
+    assert!(dir.join("models/07.ein").is_file());
     let r = dump(
         "examples/branching/15_lookahead_two_step_on.ein",
-        &["-e"],
+        &["--maximal"],
         &[],
         &dir,
     );
@@ -350,23 +362,46 @@ fn a_second_dump_into_one_directory_leaves_nothing_stale() {
         .flatten()
         .map(|e| e.file_name().to_string_lossy().into_owned())
         .collect();
-    assert_eq!(left.len(), 2, "one model, two files — got {left:?}");
+    let k = json(&dir.join("index.json"))["models"]
+        .as_array()
+        .unwrap()
+        .len();
+    assert_eq!(
+        left.len(),
+        k,
+        "{k} states, {} files — got {left:?}",
+        left.len()
+    );
     let _ = std::fs::remove_dir_all(dir.parent().unwrap());
 }
 
+/// **A stopped run still says what it is**: a budget stop is an answer, so
+/// its directory is whole and its index says `exhausted false` and why; a
+/// `-T` abort is not, so it exits 2 and the directory it made first stays
+/// empty.
 #[test]
-fn an_aborted_run_still_says_what_it_is() {
+fn a_stopped_run_still_says_what_it_is() {
     let dir = scratch("abort").join("d");
-    let r = dump("examples/zebra2.ein", &["-E", "1"], &[], &dir);
-    assert_eq!(r.code, 2, "a budget cut exits 2\n{}", r.err);
+    let r = dump("examples/zebra2.ein", &["--region-budget", "1"], &[], &dir);
+    assert_eq!(r.code, 0, "a budget stop is an answer\n{}", r.err);
     let index = json(&dir.join("index.json"));
-    assert_eq!(index["verdict"], "Aborted");
-    assert!(index["reason"].as_str().unwrap().contains("max-enterings"));
+    assert_eq!(index["region"]["exhausted"], false);
+    assert_eq!(index["region"]["stopped"]["why"], "budget");
     let a = std::fs::read(dir.join("answer.json")).expect("answer.json");
     let s = std::fs::read(dir.with_extension("json")).expect("summary");
     assert!(
         a == s,
-        "the aborted answer.json is not --json-summary's bytes"
+        "the stopped answer.json is not --json-summary's bytes"
+    );
+
+    let t = dir.with_file_name("t");
+    let r = dump("examples/zebra2.ein", &["-T", "0"], &[], &t);
+    assert_eq!(r.code, 2, "{}", r.err);
+    assert!(t.is_dir(), "the directory is made before the run");
+    assert_eq!(
+        std::fs::read_dir(&t).unwrap().count(),
+        0,
+        "an abort wrote files"
     );
     let _ = std::fs::remove_dir_all(dir.parent().unwrap());
 }
@@ -400,7 +435,7 @@ fn a_container_is_refused_because_it_carries_no_program() {
     let _ = std::fs::remove_dir_all(&root);
 }
 
-/// **Every `stats` counter a summary carries is defined on the page.** The
+/// **Every `work` counter a summary carries is defined on the page.** The
 /// review bundle quotes `answer_dump.md` § The run summary beside each number,
 /// so a counter without a row would be printed with no meaning — and a row
 /// for a counter no summary carries is a definition of nothing.
@@ -420,12 +455,12 @@ fn every_summary_counter_is_defined_on_this_page() {
         .map(str::to_string)
         .collect();
     let dir = scratch("counters").join("d");
-    let r = dump("examples/zebra2.ein", &["-e"], &[], &dir);
+    let r = dump("examples/zebra2.ein", &["-n", "1"], &[], &dir);
     assert_eq!(r.code, 0, "{}", r.err);
     let summary = json(&dir.with_extension("json"));
-    let keys: std::collections::BTreeSet<String> = summary["stats"]
+    let keys: std::collections::BTreeSet<String> = summary["work"]
         .as_object()
-        .expect("stats")
+        .expect("work")
         .keys()
         .cloned()
         .collect();

@@ -147,7 +147,8 @@ fn lattice(
     let prepared = prepare(root, terms, ast)?;
     let monotone = prepared.monotonicity.is_monotone();
     let n = prepared.candidates.len();
-    if monotone {
+    // A dead root decides any program (`explore::Licence::ForkOnlyAdds`).
+    if monotone || prepared.root_dead {
         let d = downset::compute_prepared(
             root,
             terms,
@@ -158,6 +159,7 @@ fn lattice(
                 budget: opts.budget,
                 max_visits: u64::MAX,
                 jobs: opts.jobs,
+                deadline: None,
             },
             &mut crate::events::Events::off(),
         )?;
@@ -448,6 +450,76 @@ fn fixpoints(
         .collect())
 }
 
+/// Where exactly one state of R and one listed model are left over, the facts
+/// they differ in over the closed relations — and each fact the state holds
+/// and the model does not list, with the rule that put it there. That is M1c
+/// T1c.1.3.3's line, kept when the query's claim of a state became the region
+/// claim (M1e2 S1e2.1a.5): the step after "there is an extra fact here" is
+/// where its reader goes next.
+fn one_off(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    l: &Lattice,
+    states: &[Seen],
+    wants: &[Want],
+    closed: &BTreeSet<String>,
+) -> Result<Vec<String>, SolveError> {
+    let lost: Vec<usize> = (0..states.len())
+        .filter(|&i| !wants.iter().any(|w| fits(w, &states[i], closed)))
+        .collect();
+    let extra: Vec<usize> = (0..wants.len())
+        .filter(|&j| !states.iter().any(|s| fits(&wants[j], s, closed)))
+        .collect();
+    let ([i], [j]) = (lost.as_slice(), extra.as_slice()) else {
+        return Ok(Vec::new());
+    };
+    let (s, w) = (&states[*i], &wants[*j]);
+    let none = BTreeSet::new();
+    let mut surplus: Vec<String> = Vec::new();
+    let mut lines: Vec<String> = Vec::new();
+    for rel in closed {
+        let have = s.by_rel.get(rel).unwrap_or(&none);
+        let listed = w.closes.get(rel).unwrap_or(&none);
+        for f in listed.difference(have) {
+            lines.push(format!(
+                "  the model lists {f}, which the state does not hold"
+            ));
+        }
+        surplus.extend(have.difference(listed).cloned());
+    }
+    if surplus.is_empty() {
+        return Ok(lines);
+    }
+    let facts: Vec<FactId> = l.states[*i]
+        .rep
+        .iter()
+        .map(|&b| l.candidates[b as usize].fact)
+        .collect();
+    let mut nodes = region::Nodes::new(root, terms, ast, &l.candidates)?;
+    let why: Vec<(String, Option<String>)> = nodes.with_fixpoint(&facts, |kb, terms| {
+        surplus
+            .iter()
+            .map(|f| {
+                let id = kb.facts().find(|&id| sexpr(terms, id) == *f);
+                (
+                    f.clone(),
+                    id.and_then(|id| crate::expect::provenance(terms, kb, id)),
+                )
+            })
+            .collect()
+    })?;
+    for (f, w) in why {
+        lines.push(format!(
+            "  the state holds {f}, which the model does not list"
+        ));
+        if let Some(w) = w {
+            lines.push(format!("    {w}"));
+        }
+    }
+    Ok(lines)
+}
+
 fn describe(s: &Seen, closed: &BTreeSet<String>) -> String {
     let facts: Vec<&String> = closed
         .iter()
@@ -558,6 +630,7 @@ fn compare(
                 ));
             }
         }
+        lines.extend(one_off(root, terms, ast, l, &states, &wants, &closed)?);
         return Ok(failed(lines));
     };
     if stated.merged.is_empty() {

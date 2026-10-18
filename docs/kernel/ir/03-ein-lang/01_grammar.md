@@ -589,11 +589,12 @@ exists to prevent.
 over the same ontology, rules, facts and, since M1e2 S1e2.1a.4, lattice. Before M1c
 [S1c.1.2](../../../history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
 the **last** one silently won and the rest were discarded at load. `ein solve`
-now runs every one of them in order, printing `query <i> of <n>` above each;
-the flags that name a single output path — `--events`, `--trace`,
-`--json-summary`, `--dump-states` — are refused on a file that asks more than
-one question, because one path cannot hold two runs and overwriting quietly is
-the discard again under another name. `(config …)` keeps last-wins: a config is
+answers every one of them, printing `query <i> of <n>` above each. Since M1e2
+S1e2.1a.5 they are read off **one** run — R does not depend on the query, so a
+query is a projection of it — and the flags that name a single output path
+(`--events`, `--trace`, `--json-summary`, `--dump-answer`) write that one run,
+where each query used to be its own walk and the flags were refused.
+`(config …)` keeps last-wins: a config is
 a *setting*, a query is *content*, and the two want opposite rules.
 
 The engine answers idea 03's three task classes —
@@ -657,10 +658,11 @@ ein test puzzle.ein -v               # …and say what held, with the verdict an
 Three differences from `solve`, and each is the form's semantics rather than a
 preference:
 
-- **It exhausts.** An expectation is a claim about the *exhausted* answer —
-  `Solution` means one model *and no other* — so a search stopped at `-n`
-  establishes only a lower bound on `k` and confirms nothing. There is no `-n`
-  and no `--exhaustive` on `test`; exhausting is the behaviour.
+- **It runs the question each claim is about.** A claim is about a set — all
+  of R, a line, a query's classes over one — so a run that asked a part of it
+  (`-n`) confirms nothing. Since M1e2 S1e2.1a.5 `ein test` runs, per file, the
+  mode the file's claims are about (all of R when any is), and has no `-n`
+  and no line flag; deciding is the behaviour.
 - **It runs only what the expectations need.** A query with no `:expect` states
   nothing and is never solved, so a directory of programs costs one load each
   plus a search for each claim.
@@ -670,11 +672,13 @@ preference:
   have, and for the same reason a selection that checked nothing exits 2 as
   well.
 
-The verdict a stopped search cannot confirm has one more spelling under either
-command: **`NOT CHECKED`**, which is not a pass and takes the same exit code a
-false claim does. Under `test` the only thing that can still produce it is the
-lattice depth cap, `--max-set-size` — a `k = 0` from a capped search is "no
-model within the cap", not "no model".
+A claim a run did not decide has one more spelling under either command:
+**`NOT CHECKED`**, which is not a pass. Under `test` it takes the same exit
+code a false claim does, and the only thing that can still produce it is a
+budget, `--region-budget` or the cube's `--region-limit` — a partial R is a
+lower bound, not R. Under `solve` it is a `note:` on stderr and the run exits
+0, because the run answered the question it was asked (M1e2 S1e2.1a.5; until
+then the walk's `--max-set-size` was the cap, and `solve` exited 1).
 
 **`:goal-text` headline template (optional).** A `:goal-text "<tmpl>"` string
 renders the one-line natural-language answer for `ein solve`'s result table,

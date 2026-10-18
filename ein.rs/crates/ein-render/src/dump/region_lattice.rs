@@ -206,3 +206,99 @@ pub fn write(dir: &Path, v: &Visits, inputs: &Inputs<'_>) -> std::io::Result<()>
     )?;
     std::fs::write(dir.join("nodes.md"), markdown(v, inputs))
 }
+
+/// `ein render lattice FILE`: the nodes a describing run visited, as a DAG —
+/// R green, owing amber, dead red, ∅ at the bottom, an edge from each node to
+/// every visited node one candidate above it. Under `full` every node is
+/// drawn; otherwise R's nodes, root, and the nodes one fact above a node of
+/// R that are not in it: where R stops.
+pub fn dot(v: &Visits, inputs: &Inputs<'_>, full: bool) -> String {
+    use crate::dot_util::{digraph_open, multiline, quote};
+    use rustc_hash::FxHashMap;
+
+    let index: FxHashMap<&[String], usize> = v
+        .nodes
+        .iter()
+        .enumerate()
+        .map(|(i, n)| (n.commitment.as_slice(), i))
+        .collect();
+    let parents = |n: &VisitedNode| -> Vec<usize> {
+        (0..n.commitment.len())
+            .filter_map(|k| {
+                let mut p = n.commitment.clone();
+                p.remove(k);
+                index.get(p.as_slice()).copied()
+            })
+            .collect()
+    };
+    let in_r = |i: usize| v.nodes[i].kind == "in-r";
+    let drawn: Vec<bool> = v
+        .nodes
+        .iter()
+        .enumerate()
+        .map(|(i, n)| {
+            full || in_r(i) || n.commitment.is_empty() || parents(n).into_iter().any(in_r)
+        })
+        .collect();
+    let mut out = digraph_open(
+        "lattice",
+        Some("BT"),
+        Some("shape=box, style=\"rounded,filled\", fontname=\"Helvetica\", fontsize=10"),
+    );
+    let shown = drawn.iter().filter(|d| **d).count();
+    out.push(format!(
+        "  label={};",
+        quote(&format!(
+            "{} — {} of {} nodes visited by route {}{}",
+            inputs.source,
+            shown,
+            v.nodes.len(),
+            inputs.route,
+            if full { "" } else { ": R and where it stops" }
+        ))
+    ));
+    out.push("  labelloc=t;".to_string());
+    let mut by_size: Vec<Vec<usize>> = Vec::new();
+    for (i, n) in v.nodes.iter().enumerate() {
+        if !drawn[i] {
+            continue;
+        }
+        let (border, fill) = match n.kind {
+            "in-r" => ("#2ca02c", "#e8f6e8"),
+            "owing" => ("#ff7f0e", "#fff2e5"),
+            _ => ("#d62728", "#fdeaea"),
+        };
+        let parts: Vec<&str> = if n.commitment.is_empty() {
+            vec!["∅"]
+        } else {
+            n.commitment.iter().map(String::as_str).collect()
+        };
+        out.push(format!(
+            "  n{i} [label={}, color={}, fillcolor={}];",
+            multiline(&parts),
+            quote(border),
+            quote(fill)
+        ));
+        let k = n.commitment.len();
+        if by_size.len() <= k {
+            by_size.resize(k + 1, Vec::new());
+        }
+        by_size[k].push(i);
+    }
+    for layer in by_size.iter().filter(|l| l.len() > 1) {
+        let ids: Vec<String> = layer.iter().map(|i| format!("n{i}")).collect();
+        out.push(format!("  {{ rank=same; {}; }}", ids.join("; ")));
+    }
+    for (i, n) in v.nodes.iter().enumerate() {
+        if !drawn[i] {
+            continue;
+        }
+        for p in parents(n) {
+            if drawn[p] {
+                out.push(format!("  n{p} -> n{i};"));
+            }
+        }
+    }
+    out.push("}".to_string());
+    format!("{}\n", out.join("\n"))
+}

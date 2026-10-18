@@ -64,12 +64,12 @@
 (s-c C B)
 
 (solve
-  :no-hypothesis (r s t j r-c s-c t-c j-c))
+  :no-hypothesis (r s t j r-c s-c t-c j-c)
+  :expect (region (model (compose r s t) (compose s-c r-c t-c)
+                         (join    r s j) (join    r-c s-c j-c)
+                         (r-c B A) (s-c C B)
+                         (t-c C A)
+                         (j-c B A) (j-c C B))))
 
 (query
-  :goal (t-c ?x ?y)
-  :expect (model (compose r s t) (compose s-c r-c t-c)
-                 (join    r s j) (join    r-c s-c j-c)
-                 (r-c B A) (s-c C B)
-                 (t-c C A)
-                 (j-c B A) (j-c C B)))
+  :goal (t-c ?x ?y))

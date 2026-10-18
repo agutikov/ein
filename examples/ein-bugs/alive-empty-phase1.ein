@@ -52,6 +52,9 @@
   :assert (false)
   :priority 400)
 
+(solve :expect (region
+                 ;; state 1 of 1 — ∅, root itself · minimal and maximal
+                 (model)))
+
 (query
-  :goal   (p ?x)
-  :expect (false))
+  :goal   (p ?x))

@@ -95,4 +95,6 @@
   :priority 300
   :why    "{?x} has both")
 
-(query :goal (q ?y) :expect (false))
+(solve :expect (false))
+
+(query :goal (q ?y))

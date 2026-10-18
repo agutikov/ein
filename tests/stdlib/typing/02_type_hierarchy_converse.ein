@@ -39,8 +39,8 @@
 (type-hierarchy is-a*)         ; the only wiring there is
 
 (solve
-  :no-hypothesis (is-a* owns owned-by))
+  :no-hypothesis (is-a* owns owned-by)
+  :expect (false))
 
 (query
-  :goal (owns ?who ?what)
-  :expect (false))
+  :goal (owns ?who ?what))

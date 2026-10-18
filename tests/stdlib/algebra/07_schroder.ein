@@ -67,11 +67,11 @@
   :why    "(s B G) is still open: no exclusion was derived from an absent (t A G)")
 
 (solve
-  :no-hypothesis (r s t undecided))
+  :no-hypothesis (r s t undecided)
+  :expect (region (model (r A B) (s E F)
+                         (not (s B C))
+                         (not (r D E))
+                         (undecided B G))))
 
 (query
-  :goal (undecided ?x ?y)
-  :expect (model (r A B) (s E F)
-                 (not (s B C))
-                 (not (r D E))
-                 (undecided B G)))
+  :goal (undecided ?x ?y))

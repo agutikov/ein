@@ -64,11 +64,11 @@
   :why    "Bob's row is only one-third excluded, so nothing may be forced into it")
 
 (solve
-  :no-hypothesis (is-a wears undecided))
+  :no-hypothesis (is-a wears undecided)
+  :expect (region (owing (model (wears Ann Blue)
+                                (not (wears Ann Red)) (not (wears Ann Green))
+                                (not (wears Bob Blue)) (not (wears Cid Blue))
+                                (undecided Bob Red)))))
 
 (query
-  :goal (wears ?who ?colour)
-  :expect (model (wears Ann Blue)
-                 (not (wears Ann Red)) (not (wears Ann Green))
-                 (not (wears Bob Blue)) (not (wears Cid Blue))
-                 (undecided Bob Red)))
+  :goal (wears ?who ?colour))

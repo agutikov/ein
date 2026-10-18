@@ -90,6 +90,95 @@ impl Expectation {
     }
 }
 
+/// A query's `:over` — which states of R its classes are over (M1e2
+/// T1e2.1a.5.3, `region_language.md` § 5). All of R by default.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum Over {
+    #[default]
+    All,
+    Minimal,
+    Maximal,
+}
+
+impl Over {
+    /// Read `:over`'s value, or say what is wrong with it.
+    pub fn parse(ast: &Ast, node: NodeId) -> Result<Over, String> {
+        match ast.node(node) {
+            Node::Atom(s) => match ast.sym(s) {
+                "all" => Ok(Over::All),
+                "minimal" => Ok(Over::Minimal),
+                "maximal" => Ok(Over::Maximal),
+                other => Err(format!(
+                    "(query …): :over {other} — one of all, minimal, maximal"
+                )),
+            },
+            _ => Err(format!(
+                "(query …): :over {} — one of all, minimal, maximal",
+                render(ast, node)
+            )),
+        }
+    }
+
+    /// `all of R`, `the minimal line`, `the maximal line`.
+    pub fn words(self) -> &'static str {
+        match self {
+            Over::All => "all of R",
+            Over::Minimal => "the minimal line",
+            Over::Maximal => "the maximal line",
+        }
+    }
+}
+
+/// The goal's atoms: its conjuncts, `(and …)` flattened. A class is these
+/// atoms under its rows, so a query's `:expect` may list only facts one of
+/// them matches.
+pub fn goal_atoms(ast: &Ast, goal: NodeId) -> Vec<NodeId> {
+    match ast.node(goal) {
+        Node::SForm { head, args } if ast.atom_name(head) == Some("and") => ast
+            .args(args)
+            .iter()
+            .flat_map(|&c| goal_atoms(ast, c))
+            .collect(),
+        _ => vec![goal],
+    }
+}
+
+/// Whether the ground `fact` is an instance of the goal atom `pattern`: same
+/// heads and arity, a variable binding one value throughout, `_` anything.
+pub fn matches(ast: &Ast, fact: NodeId, pattern: NodeId) -> bool {
+    fn go<'a>(ast: &'a Ast, f: NodeId, p: NodeId, b: &mut Vec<(&'a str, String)>) -> bool {
+        match ast.node(p) {
+            Node::Var(s) => {
+                let name = ast.sym(s);
+                let value = render(ast, f);
+                match b.iter().find(|(k, _)| *k == name) {
+                    Some((_, v)) => *v == value,
+                    None => {
+                        b.push((name, value));
+                        true
+                    }
+                }
+            }
+            Node::Wildcard => true,
+            Node::SForm { head, args } => {
+                let Node::SForm {
+                    head: fh,
+                    args: fargs,
+                } = ast.node(f)
+                else {
+                    return false;
+                };
+                let (pa, fa) = (ast.args(args), ast.args(fargs));
+                pa.len() == fa.len()
+                    && go(ast, fh, head, b)
+                    && pa.iter().zip(fa).all(|(&x, &y)| go(ast, y, x, b))
+            }
+            _ => render(ast, f) == render(ast, p),
+        }
+    }
+    go(ast, fact, pattern, &mut Vec::new())
+}
+
 /// A listed fact, split into what the comparison needs.
 pub struct ExpectFact<'a> {
     /// `true` for `(not (r …))`.

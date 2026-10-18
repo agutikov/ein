@@ -95,6 +95,17 @@
   :why    "a clash is a contradiction"
   :priority 210)
 
+(solve :expect (region
+                 ;; state 1 of 5 — ∅, root itself · minimal
+                 (model)
+                 ;; state 2 of 5 — 1 candidate · maximal · from {(p A)}
+                 (model (p A))
+                 ;; state 3 of 5 — 1 candidate · from {(p B)}
+                 (model (p B))
+                 ;; state 4 of 5 — 1 candidate · from {(p C)}
+                 (model (p C))
+                 ;; state 5 of 5 — 2 candidates · maximal · from {(p B), (p C)}
+                 (model (p B) (p C))))
+
 (query
-  :goal   (p ?x)
-  :expect (model (p B) (p C)))
+  :goal   (p ?x))

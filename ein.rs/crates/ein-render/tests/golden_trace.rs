@@ -7,18 +7,21 @@
 //!   trace, built from the trace types alone — a `TraceStep` holds an owned
 //!   [`FactRef`] rather than an interned id, precisely so a trace can exist
 //!   without a KB, and this is where that claim is exercised.
-//! - `tests/golden/trace_*.md` are real solves, and they exist because the
+//! - `tests/golden/trace_*.md` are real runs, and they exist because the
 //!   synthetic one is not enough: it locks the *renderer* and says nothing
-//!   about what a solve produces, which is why it kept passing through
+//!   about what a run produces, which is why it kept passing through
 //!   [S1a.6.9](../../../../docs/history/m1a_rust/README.md#s1a69--the-fork-entry-delta-the-resumed-saturator)
 //!   while the rendered trace lost half its rules. A rendered trace is
 //!   narration — two runs can narrate different amounts of the same
 //!   derivation — so the invariance sweeps compare one for presence only and
-//!   `corpus_shapes.md5` can only say that one moved; these say what.
+//!   `corpus_shapes.md5` can only say that one moved; these say what. Since
+//!   M1e2 S1e2.1a.5 they are **region traces**, `ein solve --trace`'s
+//!   `# Region trace` ([`ein_render::trace::region`]): the walk's trace left
+//!   with its CLI path, and its renderer keeps the synthetic golden.
 //!
-//! The one that matters most is the **root-saturation section**: *Before any
-//! assumption*, then `Assuming …`, then the hypothesis's own steps, numbered
-//! as one sequence. That is the half of the trace
+//! The one that matters most is the **root section**: root's derivation, then
+//! each state's from its commitment, `Assuming …`, with its own steps. That is
+//! the half of the trace
 //! [idea-08](../../../../plans/ideas/08-human-style-deductive-trace.md) is
 //! about, and it is what the accidental fork re-derivation used to stand in
 //! for.
@@ -33,7 +36,7 @@
 
 use ein_core::Terms;
 use ein_corpus::{golden, golden_path, repo_root};
-use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
+use ein_infer::explore::{self, Ask, Mode as Asked, Which};
 use ein_ir::{Ast, parse};
 use ein_render::trace::ast::{FactRef, RefArg, TraceStep};
 use ein_render::trace::linearize::{Reductio, Trace};
@@ -136,37 +139,46 @@ fn reorder_groups_by_entity_and_emits_every_step_once() {
 
 // ── S1a.6.11 — the goldens over *real* solves ──────────────────────
 
-/// One fixture per trace shape, chosen small enough to read in a diff.
+/// One fixture per trace shape, chosen small enough to read in a diff, each
+/// under the flag that asks its question.
 ///
 /// | golden | shape it pins |
 /// |---|---|
-/// | `unconditional` | solved at root: the whole trace **is** the *Before any assumption* section |
-/// | `one-hypothesis` | a single-element commitment: root's 7 steps, `Assuming …`, then the 10 the hypothesis adds |
-/// | `ambiguous` | the **same puzzle exhaustively** — `k = 2`, so the trace has to say which of the two solution nodes it narrates. The pair is what makes `-e`'s effect on a trace reviewable |
-/// | `two-level` | a two-element commitment reached at layer 2, with two refuted branches — the reductio section |
-/// | `unsat` | no solution at all, and twelve reductios |
-const REAL_TRACES: [(&str, &str, bool); 5] = [
-    ("unconditional", "examples/domain_elim/ab.ein", false),
+/// | `unconditional` | R is root alone: the whole trace **is** the root section |
+/// | `one-hypothesis` | `--maximal`: one state, a one-candidate commitment over root |
+/// | `ambiguous` | the **same program described**: every state of R traced, ∅ among them |
+/// | `two-level` | `--maximal`: two states, each from a two-candidate commitment, and N |
+/// | `dead` | R empty of the dead kind: root's derivation of `(false)` |
+/// | `owing` | R empty of the owing kind: the frontier and what it owes |
+const REAL_TRACES: [(&str, &str, &str); 6] = [
+    ("unconditional", "examples/domain_elim/ab.ein", ""),
     (
         "one-hypothesis",
         "examples/branching/12_typed_blind_solve.ein",
-        false,
+        "--maximal",
     ),
     (
         "ambiguous",
         "examples/branching/12_typed_blind_solve.ein",
-        true,
+        "",
     ),
-    ("two-level", "examples/branching/04_two_levels.ein", false),
     (
-        "unsat",
-        "examples/saturation/type-exclusivity/pets.ein",
-        false,
+        "two-level",
+        "examples/branching/04_two_levels.ein",
+        "--maximal",
     ),
+    (
+        "dead",
+        "tests/stdlib/algebra/09_irreflexive_violated.ein",
+        "",
+    ),
+    ("owing", "tests/stdlib/closure/03_closed_and_owing.ein", ""),
 ];
 
-/// Solve `rel` and render its trace exactly as `ein solve --trace` does.
-fn real_trace(rel: &str, exhaustive: bool) -> String {
+/// Run `rel` under `flag` and render its trace exactly as `ein solve [flag]
+/// --trace` does: root saturated first with its firings kept, the run, then
+/// [`ein_render::trace::region::of_read_out`] with diagrams on.
+fn real_trace(rel: &str, flag: &str) -> String {
     let path = repo_root().join(rel);
     let text = std::fs::read_to_string(&path).expect("the fixture is checked in");
     let mut ast = Ast::new();
@@ -174,24 +186,45 @@ fn real_trace(rel: &str, exhaustive: bool) -> String {
     let forms = parse(&mut ast, &text, path.to_str()).expect("the fixture parses");
     let mut kb =
         ein_ir::load(&mut ast, &mut terms, &forms, path.parent()).expect("the fixture loads");
-    // Exactly what `ein solve [-e] --trace` resolves to: the CLI's own
-    // defaults, no entering budget, and `store_lattice` — which `--trace`
-    // implies, because the trace is a projection of the lattice. A golden
-    // rendered under a *different* configuration would pin something no user
-    // ever sees. `config: None` is not a gap: `solve` falls back to the KB's
-    // own `(config …)` block, which is what the CLI ends up passing.
-    let opts = SolveOptions {
-        stop_after: if exhaustive { None } else { Some(1) },
-        max_set_size: 5,
-        on_budget: OnBudget::Verdict,
-        store_lattice: true,
-        ..SolveOptions::default()
+    let mode = match flag {
+        "--maximal" => Asked {
+            which: Which::Maximal,
+            ask: Ask::Describe,
+        },
+        _ => Asked {
+            which: Which::All,
+            ask: Ask::Describe,
+        },
     };
+    let opts = explore::Options::new(mode);
     let mut events = ein_infer::events::Events::off();
-    let solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
-        .expect("the fixture solves");
-    let trace = ein_render::linearize(&ast, &terms, &kb, &solved, ein_render::LinearizeOpts::new());
-    strip_dot(&render_markdown(&trace, Mode::Engine, true))
+    let firings = ein_infer::region::root_firings(&mut kb, &mut terms, &ast, &mut events)
+        .expect("root saturates");
+    let r = ein_infer::read_out::run_with(&mut kb, &mut terms, &ast, &opts, &mut events)
+        .expect("the fixture runs");
+    let argv = format!("{rel} {flag}").trim_end().to_string();
+    let md = ein_render::trace::region::of_read_out(
+        &r,
+        &mut kb,
+        &mut terms,
+        &ast,
+        &firings,
+        &ein_render::read_out::Options {
+            command: "solve",
+            argv: &argv,
+            file: rel,
+            budget: opts.budget,
+            uncut: false,
+        },
+        ein_render::trace::region::Shape {
+            diagrams: true,
+            relevant: false,
+            reorder: false,
+            full_kb: false,
+        },
+    )
+    .expect("the trace renders");
+    strip_dot(&md)
 }
 
 /// Replace every fenced `dot` block with one marker line.
@@ -222,8 +255,8 @@ fn strip_dot(md: &str) -> String {
 fn every_real_solve_reproduces_its_golden() {
     let mut bad: Vec<String> = Vec::new();
     let mut lines = 0usize;
-    for (name, rel, exhaustive) in REAL_TRACES {
-        let got = real_trace(rel, exhaustive);
+    for (name, rel, flag) in REAL_TRACES {
+        let got = real_trace(rel, flag);
         lines += got.lines().count();
         if let Some(e) = golden(
             &golden_path("ein-render", &format!("trace_{name}.md")),
@@ -239,52 +272,43 @@ fn every_real_solve_reproduces_its_golden() {
     );
 }
 
-/// The root section is a *property*, not just bytes: an unconditional solve
-/// narrates its derivation, and a hypothesis's steps continue root's
-/// numbering rather than restarting.
+/// The root section is a *property*, not just bytes: a program solved at root
+/// narrates its derivation there, and a state's section is its commitment's
+/// derivation over root, numbered from 1 under its own heading.
 ///
 /// Kept separate from the byte golden on purpose — blessing a golden makes a
 /// change to it invisible, and this is the part of the change that must never
 /// be blessed away.
 #[test]
-fn the_root_section_is_rendered_and_numbered_as_one_sequence() {
-    let uncond = real_trace("examples/domain_elim/ab.ein", false);
+fn the_root_section_comes_first_and_each_state_is_derived_from_its_commitment() {
+    let uncond = real_trace("examples/domain_elim/ab.ein", "");
     assert!(
-        uncond.contains("## Before any assumption — 23 steps"),
-        "an unconditional solve stopped narrating root's derivation"
+        uncond.contains("## Root — 23 steps"),
+        "a program solved at root stopped narrating root's derivation:\n{uncond}"
     );
     assert!(
         !uncond.contains("Assuming"),
-        "an unconditional solve grew a hypothesis"
+        "a program solved at root grew a commitment"
     );
-
-    let hyp = real_trace("examples/branching/04_two_levels.ein", false);
-    let root_at = hyp
-        .find("## Before any assumption")
-        .expect("a root section");
-    let assuming_at = hyp.find("\nAssuming ").expect("a hypothesis");
+    let hyp = real_trace("examples/branching/04_two_levels.ein", "--maximal");
+    let root_at = hyp.find("## Root — ").expect("a root section");
+    let assuming_at = hyp.find("\nAssuming ").expect("a commitment");
     assert!(
         root_at < assuming_at,
         "root's steps come after the assumption"
     );
-    // 16 unconditional, then 4 more — one sequence, not two.
-    let steps: Vec<usize> = hyp
+    let root_steps = hyp[..assuming_at]
         .lines()
-        .filter_map(|l| l.strip_prefix("## Step "))
-        .filter_map(|l| l.split_whitespace().next())
-        .filter_map(|n| n.parse().ok())
-        .collect();
-    assert_eq!(
-        steps,
-        (1..=20).collect::<Vec<usize>>(),
-        "the step numbers restart across the fork boundary"
-    );
-    let last_root = hyp[..assuming_at]
-        .lines()
-        .filter(|l| l.starts_with("## Step "))
+        .filter(|l| l.starts_with("### Step "))
         .count();
     assert_eq!(
-        last_root, 16,
+        root_steps, 16,
         "the root section is not the unconditional 16"
+    );
+    // Each state's steps start again at 1, under its own heading.
+    let state = &hyp[assuming_at..];
+    assert!(
+        state.contains("### Step 1 — "),
+        "a state's derivation is not numbered from 1:\n{state}"
     );
 }

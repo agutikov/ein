@@ -73,12 +73,12 @@
 (wears Ann Red)
 
 (solve
-  :no-hypothesis (is-a wears))
+  :no-hypothesis (is-a wears)
+  :expect (region (owing (model (wears Ann Red)
+                                ;; functional-negative: Ann's other two colours
+                                (not (wears Ann Green)) (not (wears Ann Blue))
+                                ;; injective-negative: Red's other two agents
+                                (not (wears Bob Red))   (not (wears Cid Red))))))
 
 (query
-  :goal (wears ?who ?colour)
-  :expect (model (wears Ann Red)
-                 ;; functional-negative: Ann's other two colours
-                 (not (wears Ann Green)) (not (wears Ann Blue))
-                 ;; injective-negative: Red's other two agents
-                 (not (wears Bob Red))   (not (wears Cid Red))))
+  :goal (wears ?who ?colour))

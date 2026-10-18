@@ -44,8 +44,8 @@
 (r A B)
 
 (solve
-  :no-hypothesis (r))
+  :no-hypothesis (r)
+  :expect (region (model (r A B) (r A A) (r B B))))
 
 (query
-  :goal (r ?x ?y)
-  :expect (model (r A B) (r A A) (r B B)))
+  :goal (r ?x ?y))

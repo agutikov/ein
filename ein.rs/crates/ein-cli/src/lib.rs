@@ -35,7 +35,7 @@ pub mod version;
 
 use std::process::ExitCode;
 
-use ein_render::{LatticeView, RuleMode};
+use ein_render::RuleMode;
 
 /// The binary's whole body — argv in, exit status out.
 pub fn run() -> ExitCode {
@@ -98,18 +98,23 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                         .map(String::as_str)
                         .unwrap_or("auto"),
                 ),
-                // The third taker of `--max-set-size`, and the third place it
-                // is refused under `EIN_TRAVERSAL=tree` — M1e S1e.2.1,
-                // `CO-H3`(a). `cmd_lattice` solves, so the traversal reaches
-                // it like any other.
-                Some(("lattice", a)) if common::refuse_max_set_size_under_tree(a) => 2,
+                // The walk's depth cap went with `solve -m` (M1e2 S1e2.1a.5).
+                Some(("lattice", a))
+                    if solve::refuse_retired(
+                        a,
+                        &[(
+                            "max-set-size",
+                            "--max-set-size is retired with `ein solve -m`: \
+                             `--region-budget FACTS` bounds the run drawn",
+                        )],
+                    ) =>
+                {
+                    2
+                }
                 Some(("lattice", a)) => render::cmd_lattice(
                     &file(a),
-                    match a.get_one::<String>("view").map(String::as_str) {
-                        Some("full") => LatticeView::Full,
-                        _ => LatticeView::Solution,
-                    },
-                    *a.get_one::<i64>("max-set-size").unwrap_or(&3),
+                    a.get_one::<String>("view").map(String::as_str) == Some("full"),
+                    a.get_one::<i64>("region-budget").map(|&b| b as u64),
                 ),
                 _ => 2,
             }

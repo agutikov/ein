@@ -22,10 +22,11 @@ use ein_ir::{Ast, Node, NodeId};
 use crate::described::{Described, Owing};
 use crate::events::sexpr;
 use crate::expect::{Outcome, Report};
-use crate::explore::{self, Answer, Ask, Which};
+use crate::explore::{self, Answer, Ask, Verdict, Which};
 use crate::region::Nodes;
 use crate::solve::SolveError;
 use crate::verdict::{goal_bindings, query_value, solve_value};
+use ein_ir::expect::Over;
 
 /// One binding row: `(variable, value)`, sorted by variable.
 pub type Row = Vec<(String, String)>;
@@ -96,11 +97,20 @@ pub struct Class {
 pub struct Query {
     /// The goal, as written.
     pub goal: String,
+    /// What it asks about: its `:over`, all of `R` by default (M1e2
+    /// T1e2.1a.5.3).
+    pub over: Over,
+    /// The classes are over the set [`Self::over`] names. When the run asked
+    /// another — a mode's line, an `-n` cut, `--single` — they are over the
+    /// states it listed, and say so.
+    pub as_asked: bool,
     /// The classes are over a complete set — all of `R`, or all of the line
     /// the run listed — and not a lower bound.
     pub exact: bool,
     /// Sorted by size, then by facts.
     pub classes: Vec<Class>,
+    /// The query's `:expect`, checked against [`Self::classes`].
+    pub claim: Option<Report>,
 }
 
 /// What the run computed, for every surface to print.
@@ -232,7 +242,7 @@ pub fn of_answer(
         v.dedup();
         v
     };
-    let goals: Vec<(NodeId, Option<String>)> = root
+    let goals: Vec<Asked> = root
         .program()
         .queries
         .iter()
@@ -242,9 +252,30 @@ pub fn of_answer(
                 Node::Str(s) => Some(ast.sym(s).to_string()),
                 _ => None,
             });
-            Some((goal, text))
+            // The loader refused every other value.
+            let over = query_value(ast, q, "over")
+                .and_then(|n| Over::parse(ast, n).ok())
+                .unwrap_or_default();
+            Some(Asked {
+                goal,
+                text,
+                over,
+                expect: query_value(ast, q, "expect"),
+            })
         })
         .collect();
+    // A goal the compiler rejects — `(query :goal (?R Rex Animal))`, an
+    // unbound relation head — ends the run where a state would be answered
+    // from it, rather than projecting no row (M1a S1a.6.6). With no state
+    // listed the goal is never compiled, which is the asymmetry
+    // `query-goal-free-head-unsat.ein` pins.
+    if !states.is_empty() {
+        for g in &goals {
+            if let Some(e) = crate::verdict::goal_plan_error(ast, terms, root, Some(g.goal)) {
+                return Err(SolveError::Compile(e));
+            }
+        }
+    }
     // Per goal, per state, its rows.
     let mut rows: Vec<Vec<Vec<Row>>> = vec![Vec::new(); goals.len()];
     let mut owing_states: Vec<OwingState> = Vec::new();
@@ -260,7 +291,7 @@ pub fn of_answer(
                 let model = model_of(kb, terms, &named);
                 let per_goal: Vec<Vec<Row>> = goals
                     .iter()
-                    .map(|&(goal, _)| bindings(ast, terms, kb, goal))
+                    .map(|g| bindings(ast, terms, kb, g.goal))
                     .collect();
                 (model, per_goal)
             })?;
@@ -281,14 +312,62 @@ pub fn of_answer(
         l => l,
     };
 
-    let exact = answer.exhausted;
     let queries = goals
         .iter()
         .zip(rows)
-        .map(|(&(goal, ref text), per_state)| Query {
-            goal: ein_ir::dump::dump_compact(ast, goal),
-            exact,
-            classes: classes(ast, goal, text.as_deref(), per_state),
+        .map(|(g, per_state)| {
+            // The states the query is over, and whether they are the set it
+            // asks about, complete.
+            let (over, as_asked, exact) = match answer.described.as_deref() {
+                Some(d) => {
+                    let on = |s: &Listed| match g.over {
+                        Over::All => true,
+                        Over::Minimal => s.minimal,
+                        Over::Maximal => s.maximal,
+                    };
+                    let idx: Vec<usize> = (0..states.len()).filter(|&i| on(&states[i])).collect();
+                    (idx, true, d.exhausted)
+                }
+                None => {
+                    // `--single` that decided one state or none has listed the
+                    // whole of the part it asked; over all of R that state is
+                    // on both lines, and an empty R has neither.
+                    let whole = answer.mode.ask == Ask::Single
+                        && answer.stopped.is_none()
+                        && matches!(
+                            answer.verdict,
+                            Some(Verdict::Solution | Verdict::Contradiction | Verdict::Open)
+                        );
+                    let asked = (whole && answer.mode.which == Which::All)
+                        || matches!(
+                            (g.over, answer.mode.which),
+                            (Over::All, Which::All)
+                                | (Over::Minimal, Which::Minimal)
+                                | (Over::Maximal, Which::Maximal)
+                        );
+                    // An `-n` run that exhausted its part found fewer than it
+                    // asked for, so it listed the whole part.
+                    let exact = asked && (whole || answer.exhausted);
+                    ((0..states.len()).collect(), asked, exact)
+                }
+            };
+            let picked: Vec<(usize, Vec<Row>)> = per_state
+                .into_iter()
+                .enumerate()
+                .filter(|(i, _)| over.contains(i))
+                .collect();
+            let classes = classes(ast, g.goal, g.text.as_deref(), picked);
+            let claim = g
+                .expect
+                .map(|node| query_claim(ast, node, g.over, as_asked, exact, &classes, &answer));
+            Query {
+                goal: ein_ir::dump::dump_compact(ast, g.goal),
+                over: g.over,
+                as_asked,
+                exact,
+                classes,
+                claim,
+            }
         })
         .collect();
 
@@ -306,6 +385,131 @@ pub fn of_answer(
         queries,
         claim,
     })
+}
+
+/// One `(query …)` as the program writes it.
+struct Asked {
+    goal: NodeId,
+    text: Option<String>,
+    over: Over,
+    expect: Option<NodeId>,
+}
+
+/// What the run asked about R, for a claim it could not check.
+fn asked_words(answer: &Answer) -> String {
+    match (answer.mode.which, answer.mode.ask) {
+        (Which::All, Ask::Describe) => "all of R".to_string(),
+        (Which::All, Ask::Find(n)) => format!("{n} of its states (-n {n})"),
+        (Which::All, Ask::Single) => "whether it is one state (--single)".to_string(),
+        (Which::Minimal, Ask::Describe) => "its minimal line".to_string(),
+        (Which::Maximal, Ask::Describe) => "its maximal line".to_string(),
+        (Which::Minimal, Ask::Find(n)) => format!("{n} states of its minimal line"),
+        (Which::Maximal, Ask::Find(n)) => format!("{n} states of its maximal line"),
+        (Which::Minimal, Ask::Single) => "whether its minimal line is one state".to_string(),
+        (Which::Maximal, Ask::Single) => "whether its maximal line is one state".to_string(),
+    }
+}
+
+fn classes_word(n: usize) -> String {
+    format!("{n} {}", if n == 1 { "class" } else { "classes" })
+}
+
+/// A query's `:expect` against its classes (`region_language.md` § 5): the
+/// classes it lists, as a set, are the query's. Checked when the classes are
+/// over the set the query asks about and complete; otherwise not checked,
+/// with why.
+fn query_claim(
+    ast: &Ast,
+    node: NodeId,
+    over: Over,
+    as_asked: bool,
+    exact: bool,
+    classes: &[Class],
+    answer: &Answer,
+) -> Report {
+    let not_checked = |why: String| Report {
+        outcome: Outcome::NotChecked,
+        lines: vec![why],
+    };
+    if !as_asked {
+        return not_checked(format!(
+            "the claim is about {}, and this run asked {}",
+            over.words(),
+            asked_words(answer)
+        ));
+    }
+    if !exact {
+        return not_checked(match answer.mode.ask {
+            Ask::Describe => format!(
+                "the claim is about {}, and this run did not exhaust it",
+                over.words()
+            ),
+            _ => format!(
+                "the claim is about {}, and this run asked {}",
+                over.words(),
+                asked_words(answer)
+            ),
+        });
+    }
+    // The loader refused every shape this can.
+    let Ok(e) = ein_ir::expect::parse(ast, node) else {
+        return not_checked("the claim did not parse".to_string());
+    };
+    let want: Vec<Vec<String>> = e
+        .models()
+        .iter()
+        .map(|m| {
+            let mut v: Vec<String> = m
+                .facts
+                .iter()
+                .map(|&f| ein_ir::expect::render(ast, f))
+                .collect();
+            v.sort();
+            v.dedup();
+            v
+        })
+        .collect();
+    let have: Vec<&Vec<String>> = classes.iter().map(|c| &c.facts).collect();
+    let model = |f: &[String]| {
+        if f.is_empty() {
+            "(model)".to_string()
+        } else {
+            format!("(model {})", f.join(" "))
+        }
+    };
+    let missing: Vec<&Vec<String>> = have.iter().copied().filter(|c| !want.contains(c)).collect();
+    let extra: Vec<&Vec<String>> = want.iter().filter(|w| !have.contains(w)).collect();
+    if missing.is_empty() && extra.is_empty() {
+        return Report {
+            outcome: Outcome::Held,
+            lines: Vec::new(),
+        };
+    }
+    let head = format!(
+        "the claim lists {}, the query has {}",
+        classes_word(want.len()),
+        have.len()
+    );
+    let first = match (missing.first(), extra.first()) {
+        (Some(m), _) => format!("{head}: {} is not listed", model(m)),
+        (None, Some(x)) => format!("{head}: {} is no class of {}", model(x), over.words()),
+        (None, None) => head,
+    };
+    let mut lines = vec![first];
+    lines.extend(
+        missing
+            .iter()
+            .map(|m| format!("{} is a class the claim does not list", model(m))),
+    );
+    lines.extend(
+        extra
+            .iter()
+            .map(|x| format!("the claim lists {}, which is no class", model(x))),
+    );
+    Report {
+        outcome: Outcome::Failed,
+        lines,
+    }
 }
 
 /// The program's region claim against this run: checked when the run
@@ -383,7 +587,12 @@ fn bindings(ast: &Ast, terms: &mut Terms, kb: &Kb, goal: NodeId) -> Vec<Row> {
         .map(|r| {
             let mut r: Vec<(String, String)> = r
                 .iter()
-                .map(|(k, v)| (terms.sym(*k).to_string(), terms.display(*v)))
+                .map(|(k, v)| {
+                    (
+                        terms.sym(*k).to_string(),
+                        crate::events::sexpr_value(terms, *v),
+                    )
+                })
                 .collect();
             r.sort();
             r
@@ -434,10 +643,15 @@ fn ground(ast: &Ast, conj: NodeId, b: &[(String, String)]) -> Option<String> {
 }
 
 /// The projection classes of `per_state`, one goal's rows per state.
-fn classes(ast: &Ast, goal: NodeId, text: Option<&str>, per_state: Vec<Vec<Row>>) -> Vec<Class> {
+fn classes(
+    ast: &Ast,
+    goal: NodeId,
+    text: Option<&str>,
+    per_state: Vec<(usize, Vec<Row>)>,
+) -> Vec<Class> {
     let conj = conjuncts(ast, goal);
     let mut by_key: BTreeMap<Vec<String>, Class> = BTreeMap::new();
-    for (i, rows) in per_state.into_iter().enumerate() {
+    for (i, rows) in per_state {
         let mut facts: Vec<String> = rows
             .iter()
             .flat_map(|b| conj.iter().filter_map(|c| ground(ast, *c, b)))

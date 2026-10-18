@@ -197,8 +197,9 @@ fn every_row_has_an_emitter() {
 /// against. It is a floor and an exact value at the same time: both tests
 /// above already force the two sets equal, so this only guards against both
 /// halves shrinking together. 23 since M1e2 S1e2.1a.1 added `monotonicity`,
-/// 24 since T1e2.1a.5.2 added `region`.
+/// 24 since T1e2.1a.5.2 added `region`, and 23 since S1e2.1a.5's switch took
+/// the walk's `verdict` with its CLI path.
 #[test]
-fn the_protocol_has_twenty_four_kinds() {
-    assert_eq!(emitted_kinds().len(), 24, "{:?}", emitted_kinds());
+fn the_protocol_has_twenty_three_kinds() {
+    assert_eq!(emitted_kinds().len(), 23, "{:?}", emitted_kinds());
 }

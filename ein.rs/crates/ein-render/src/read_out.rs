@@ -25,7 +25,8 @@ use ein_infer::described::Described;
 use ein_infer::expect::Outcome;
 use ein_infer::explore::{Ask, Licence, Route, Stopped, Verdict, Which};
 use ein_infer::monotone::Monotonicity;
-use ein_infer::read_out::{Listed, Listing, ReadOut};
+use ein_infer::read_out::{Listed, Listing, Query, ReadOut};
+use ein_ir::expect::Over;
 
 /// The rule under the header.
 pub const RULE: &str = "──────────────────────────────────────────────────────────────";
@@ -220,9 +221,8 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
         None => mode_rows(&mut out, r, o, line),
     }
     listing(&mut out, r, &cands);
-    queries(&mut out, r);
+    let mut code = queries(&mut out, r, o);
 
-    let mut code = 0;
     if let Some(claim) = &r.claim {
         out.blank();
         let label = match claim.outcome {
@@ -254,6 +254,13 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
         code,
         shown: out.shown,
     }
+}
+
+/// Whether the description visited every candidate alone, so that its count
+/// of those dead alone is the count: an exhausted run, one complete past layer
+/// 1, or a dead root, which leaves every one dead alone without a visit.
+pub fn dead_alone_known(d: &Described) -> bool {
+    d.exhausted || d.complete_up_to.is_some_and(|k| k >= 1) || !d.root.alive
 }
 
 /// The `note:` a partial run writes.
@@ -562,13 +569,21 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
             "universe",
             "no candidate: R is {∅} or empty, decided by root alone",
         );
-    } else {
+    } else if dead_alone_known(d) {
         out.row(
             "universe",
             format!(
                 "{}, {} dead alone",
                 plural(n, "candidate", "candidates"),
                 group(d.dead_alone)
+            ),
+        );
+    } else {
+        out.row(
+            "universe",
+            format!(
+                "{}, dead alone not known: the run stopped before it visited each alone",
+                plural(n, "candidate", "candidates")
             ),
         );
     }
@@ -723,11 +738,16 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
         }
         Some(Stopped::Deadline) => out.row("exhausted", "no — --max-time"),
     }
-    lattice_row(
-        out,
-        &a.monotonicity,
-        a.shape.as_ref().and_then(|s| s.holes).map(|h| h as u64),
-    );
+    // A dead root leaves no node of R, so no hole (L0).
+    let holes = if a
+        .licences
+        .contains(&ein_infer::explore::Licence::ForkOnlyAdds)
+    {
+        Some(0)
+    } else {
+        a.shape.as_ref().and_then(|s| s.holes).map(|h| h as u64)
+    };
+    lattice_row(out, &a.monotonicity, holes);
     out.row("universe", plural(a.n() as u64, "candidate", "candidates"));
     out.row(
         "route",
@@ -791,6 +811,9 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
             if let Some(d) = r.described() {
                 for c in &d.root.core {
                     out.row("unsat core", c);
+                }
+                for c in &d.root.sources {
+                    out.row("source", c);
                 }
                 if !d.root.refuted_by.is_empty() {
                     out.row("refuted by", d.root.refuted_by.join(", "));
@@ -1013,32 +1036,70 @@ fn members(out: &mut Out, states: &[(usize, &Listed)], cands: &[String], line: O
     }
 }
 
-fn queries(out: &mut Out, r: &ReadOut) {
-    let a = &r.answer;
+/// Each query's block, then its `:expect` checked under it; returns the exit
+/// code a refuted claim takes.
+fn queries(out: &mut Out, r: &ReadOut, o: &Options) -> i32 {
+    let mut code = 0;
     let n_q = r.queries.len();
-    let k = r.states.len() as u64;
-    let over = match (r.described(), &r.listing) {
-        (Some(_), _) if a.route == Route::Cube && !a.exhausted => {
-            format!("the {} met", plural(k, "member", "members"))
-        }
-        (Some(_), _) => "all of R".to_string(),
-        (None, _) => format!("the {} listed", plural(k, "state", "states")),
-    };
     for (qi, q) in r.queries.iter().enumerate() {
-        out.blank();
         let label = if n_q > 1 {
             format!("query {} of {n_q}", qi + 1)
         } else {
             "query".to_string()
         };
-        out.row(&label, &q.goal);
-        if r.states.is_empty() && q.exact {
-            out.row(
-                "over",
-                format!("{over} — R is empty: no state to answer from"),
-            );
-            out.row("as :expect", "(false)");
+        query_block(out, r, q, &label);
+        let Some(claim) = &q.claim else {
             continue;
+        };
+        let why = claim.lines.first().cloned().unwrap_or_default();
+        match claim.outcome {
+            Outcome::Held => out.row(":expect", "holds"),
+            Outcome::Failed => {
+                out.row(":expect", format!("FAILED — {why}"));
+                for l in claim.lines.iter().skip(1) {
+                    out.row("", l);
+                }
+                out.stderr
+                    .push(format!("{}: {label} :expect FAILED — {why}", o.file));
+                code = 1;
+            }
+            Outcome::NotChecked => {
+                out.row(":expect", format!("NOT CHECKED — {why}"));
+                out.stderr.push(format!(
+                    "note: {}: {label} :expect NOT CHECKED — {why}",
+                    o.file
+                ));
+            }
+        }
+    }
+    code
+}
+
+/// One query's block: its goal, the set it is over, its classes, and the
+/// `:expect` that states them.
+fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
+    let a = &r.answer;
+    let k = r.states.len() as u64;
+    let over = match (r.described(), q.over) {
+        _ if !q.as_asked => format!("the {} listed", plural(k, "state", "states")),
+        (Some(_), Over::All) if a.route == Route::Cube && !a.exhausted => {
+            format!("the {} met", plural(k, "member", "members"))
+        }
+        (Some(_), over) => over.words().to_string(),
+        (None, over) => over.words().to_string(),
+    };
+    {
+        out.blank();
+        out.row(label, &q.goal);
+        if q.classes.is_empty() && q.exact {
+            let empty = if r.states.is_empty() {
+                "R is empty: no state to answer from"
+            } else {
+                "it holds no state"
+            };
+            out.row("over", format!("{over} — {empty}"));
+            out.row("as :expect", "(false)");
+            return;
         }
         let n_states = q.classes.iter().map(|c| c.states.len()).sum::<usize>() as u64;
         let tail = if q.exact { "" } else { "  (a lower bound)" };
@@ -1068,8 +1129,10 @@ fn queries(out: &mut Out, r: &ReadOut) {
             }
             let head = format!("class {} of {}", ci + 1, q.classes.len());
             // State numbers point into the listing, so only a complete
-            // listing gets them.
-            let where_ = if q.exact {
+            // listing gets them: one that is all of the part the run asked,
+            // whether or not that part is the set the query is about.
+            let complete = q.exact || r.described().map_or(r.answer.exhausted, |d| d.exhausted);
+            let where_ = if complete {
                 format!(
                     "{} ({})",
                     plural(c.states.len() as u64, "state", "states"),
@@ -1114,19 +1177,30 @@ fn queries(out: &mut Out, r: &ReadOut) {
                 ),
             );
         }
+        if !q.as_asked {
+            out.row(
+                "as :expect",
+                format!(
+                    "not printed: these classes are over the states listed, and the query asks \
+                     about {}",
+                    q.over.words()
+                ),
+            );
+            return;
+        }
         if !q.exact {
             out.row(
                 "as :expect",
                 "not printed: these classes are a lower bound, and the claim would say they are all",
             );
-            continue;
+            return;
         }
         if shown < q.classes.len() {
             out.row(
                 "as :expect",
                 "not printed: stdout lists part of the classes; it is in DIR/answer.txt",
             );
-            continue;
+            return;
         }
         // The query's `:expect`, one class per line: `(model …)` for one,
         // `(or …)` for several, `(false)` for none.
@@ -1159,7 +1233,7 @@ fn queries(out: &mut Out, r: &ReadOut) {
                     plural(lines.len() as u64, "line", "lines")
                 ),
             );
-            continue;
+            return;
         }
         out.listed += lines.len();
         for (li, l) in lines.iter().enumerate() {

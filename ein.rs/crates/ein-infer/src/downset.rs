@@ -76,6 +76,9 @@ pub struct Options {
     /// Threads, with [`crate::region::Options::jobs`]' contract: any value
     /// gives the same record.
     pub jobs: usize,
+    /// `-T`: checked before each layer, as the budget is. Reaching it is
+    /// [`SolveError::Deadline`], never a smaller down-set.
+    pub deadline: Option<Instant>,
 }
 
 impl Default for Options {
@@ -84,6 +87,7 @@ impl Default for Options {
             budget: DEFAULT_BUDGET,
             max_visits: u64::MAX,
             jobs: 1,
+            deadline: None,
         }
     }
 }
@@ -95,6 +99,7 @@ impl Options {
             budget: u64::MAX,
             max_visits: u64::MAX,
             jobs,
+            deadline: None,
         }
     }
 }
@@ -120,6 +125,8 @@ pub struct Point {
     /// A dead point's unsat core — the reason it is in `N`.
     pub core: Vec<String>,
     pub refuted_by: Vec<String>,
+    /// The `:source` of each core fact that carries one.
+    pub sources: Vec<String>,
     /// The first visited point with the same state, as an index into
     /// [`DownSet::points`].
     pub class: u32,
@@ -320,7 +327,9 @@ pub(crate) fn compute_prepared(
         top_facts: 0,
         cost: Cost::default(),
     };
-    if !out.monotonicity.is_monotone() {
+    // A dead root decides a flagged program too: every node is a fork of
+    // root's fixpoint, and a fork only adds (`explore::Licence::ForkOnlyAdds`).
+    if !out.monotonicity.is_monotone() && !out.root_dead {
         out.declined = Some(Declined::NotMonotone);
         out.cost.root = t_root.elapsed();
         return Ok(out);
@@ -336,6 +345,9 @@ pub(crate) fn compute_prepared(
     let mut classes: FxHashMap<Box<[FactId]>, u32> = FxHashMap::default();
     let mut frontier: Vec<Box<[u32]>> = vec![Box::default()];
     while !frontier.is_empty() {
+        if opts.deadline.is_some_and(|d| Instant::now() >= d) {
+            return Err(SolveError::Deadline);
+        }
         let layer = out.layers.len();
         let visited = out.points.len() as u64;
         let next = frontier.len() as u64;
@@ -410,6 +422,7 @@ pub(crate) fn compute_prepared(
                     owed: o.node.owed,
                     core: o.node.core,
                     refuted_by: o.node.refuted_by,
+                    sources: o.node.sources,
                     class,
                     closure: o.closure.into_boxed_slice(),
                 });
@@ -483,6 +496,7 @@ pub(crate) fn compute_prepared(
             owed: o.node.owed,
             core: o.node.core,
             refuted_by: o.node.refuted_by,
+            sources: o.node.sources,
             class: classes.get(&o.state).copied().unwrap_or(u32::MAX),
             closure: o.closure.into_boxed_slice(),
         });

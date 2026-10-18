@@ -9,10 +9,7 @@ use std::path::Path;
 
 use ein_core::Terms;
 use ein_ir::Ast;
-use ein_render::{
-    LatticeSource, LatticeView, RuleMode, render_constraints, render_lattice, render_rule_form,
-    render_rules_forms,
-};
+use ein_render::{RuleMode, render_constraints, render_rule_form, render_rules_forms};
 
 use crate::common::{load_any_or_exit, parse_or_exit, rule_forms};
 
@@ -62,39 +59,51 @@ pub fn cmd_constraints(file: &str) -> i32 {
     0
 }
 
-/// Unlike the static views this *runs the engine*: the lattice DAG comes from
-/// `solve`'s `LatticeProof` (`store_lattice`).
-pub fn cmd_lattice(file: &str, view: LatticeView, max_set_size: i64) -> i32 {
-    use ein_infer::solve::{NoDumper, SolveOptions, solve};
+/// `ein render lattice FILE` — the nodes a describing `ein solve` run visits,
+/// drawn by [`ein_render::dump::region_lattice::dot`] from what the route's
+/// watch saw: the same nodes, in the same order, as `--dump-lattice`. M1e2
+/// S1e2.1a.5's switch re-pointed it from the walk's lattice proof, which no
+/// command builds any more. A run that reaches its budget is drawn as far as it
+/// went.
+pub fn cmd_lattice(file: &str, full: bool, budget: Option<u64>) -> i32 {
+    use std::sync::{Arc, Mutex};
+
+    use ein_infer::explore::{self, Ask, Mode, Which};
+    use ein_render::dump::region_lattice::{Inputs, Visits, dot};
 
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let Some(mut kb) = load_any_or_exit(&mut ast, &mut terms, Path::new(file)) else {
         return 1;
     };
-    let opts = SolveOptions {
-        stop_after: None,
-        max_set_size: max_set_size.max(0) as u32,
-        store_lattice: true,
-        ..SolveOptions::default()
-    };
-    let mut events = ein_infer::events::Events::off();
-    let solved = match solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts) {
-        Ok(s) => s,
+    let visits = Arc::new(Mutex::new(Visits::default()));
+    let mut events = ein_infer::events::Events::off()
+        .watched(Box::new(crate::modes::Watcher::collecting(visits.clone())));
+    let mut opts = explore::Options::new(Mode {
+        which: Which::All,
+        ask: Ask::Describe,
+    });
+    if let Some(b) = budget {
+        opts.budget = b;
+    }
+    let answer = match explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events) {
+        Ok(a) => a,
         Err(e) => {
             eprintln!("{e}");
             return 1;
         }
     };
-    let Some(proof) = solved.proof.as_ref() else {
-        eprintln!("solve produced no LatticeProof for {file}");
-        return 1;
-    };
-    emit(&render_lattice(
-        &terms,
-        LatticeSource::Proof(proof),
-        view,
-        "lattice",
+    let v = visits.lock().expect("the run is done").clone();
+    let candidates: Vec<String> = answer.candidates.iter().map(|c| c.text.clone()).collect();
+    emit(&dot(
+        &v,
+        &Inputs {
+            source: file,
+            argv: file,
+            route: crate::modes::route_words(answer.route),
+            candidates: &candidates,
+        },
+        full,
     ));
     0
 }

@@ -86,6 +86,7 @@ fn main() {
             budget: facts,
             max_visits: budget,
             jobs,
+            deadline: None,
         };
         let d = match downset::compute(&mut kb, &mut terms, &ast, &opts) {
             Ok(d) => d,

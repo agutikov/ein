@@ -59,10 +59,10 @@
 (cyc A B) (cyc B A)
 
 (solve
-  :no-hypothesis (chn tr cyc))
+  :no-hypothesis (chn tr cyc)
+  :expect (region (model (chn A B) (chn B C) (chn A C)
+                         (tr  A B) (tr  B A)
+                         (cyc A B) (cyc B A) (cyc A A) (cyc B B))))
 
 (query
-  :goal (tr ?x ?y)
-  :expect (model (chn A B) (chn B C) (chn A C)
-                 (tr  A B) (tr  B A)
-                 (cyc A B) (cyc B A) (cyc A A) (cyc B B)))
+  :goal (tr ?x ?y))

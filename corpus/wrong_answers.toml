@@ -20,6 +20,17 @@
 # § 0), so the default run is the wrong one and `-K` agrees with R. The old
 # answer stays as a `[[case.right.alternative]]` under Q-M1e.7 ruling A.
 #
+# **Schema /3 since S1e2.1a.5's switch (2026-10-18)**, when `ein solve` stopped
+# running the walk. Every row gained `[case.now]`, the region run that asks its
+# question (`solve --maximal` for a model-set row, `--minimal` where the right
+# answer is the minimal line, `solve` for an empty R), and that is what is run.
+# **24 rows flipped to `fixed`**, each because its `now` answers its `right`:
+# W1 (13), W2 (2), W3 (4), W5, W9 (2) and both W11 rows. **10 stay `open`**,
+# each with `open_because`: W4 (2) and W7, where R shares the defect; W10,
+# whose read-out core is still the alternatives cap's; and W6 (2), W8 (2), W12
+# and C1, whose right answer waits on a reading not yet ruled. The walk's
+# `wrong`, `control` and `twin` blocks are kept as the record of what it said.
+#
 # **The review (S1e2.1.7) reads the bundle built at `029ef6f`** on 2026-10-15
 # (`python3 utils/review_bundle.py` → build/review/, 26 cases, 6 788 pages,
 # 0 dangling links). Rebuilding at that commit gives the same pages, apart from
@@ -31,22 +42,24 @@
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
-# `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs the
-# recorded runs through the `ein` binary, as a process, and compares the
-# `--json-summary` it writes:
+# `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
+# `[case.now]` through the `ein` binary, as a process, and holds the
+# `--json-summary` it writes (`ein-summary/2`) to it, field for field. What a
+# status means is data, checked without a run by `ein-corpus`'s
+# `the_register_is_well_formed`:
 #
-#   open       the wrong run still answers `wrong`, and every `control` and
-#              `twin` still answers what it records. An open case that changes
-#              answer is a fix nobody intended or a new wrong answer, and
-#              either one is news.
-#   fixed      the wrong run answers `right` (every field `right` states), and
-#              the controls and twins still answer what they record.
-#   not-wrong  the wrong run still answers `wrong` — which the review ruled is
-#              the right answer — and the row carries the review's reason.
+#   open       `open_because` says why `now` is still not `right`. An open row
+#              whose run changes answer is a fix nobody intended or a new wrong
+#              answer, and either one is news.
+#   fixed      `now` answers `right`, every field `right` states — the verdict
+#              its states make, k, exhausted, the models over `closes` (and over
+#              the candidates' relations, which is what a state's `(model …)`
+#              names), and the open states of an owing empty R.
+#   not-wrong  the review ruled `wrong` the right answer, with its reason.
 #
-# Rows whose wrong answer is visible only under a permuted interner (W11) carry
-# `wrong.id_order`; that half is held by `ein-render/tests/id_order_invariance.rs`,
-# which owns the permutation, and the plain half here.
+# Rows whose walk answer was visible only under a permuted interner (W11) keep
+# `wrong.id_order` as the record of it; `ein-render/tests/id_order_invariance.rs`
+# holds that a region run moves no line under that permutation.
 #
 # ── Fields ────────────────────────────────────────────────────────────────────
 #
@@ -62,7 +75,21 @@
 #             `events <kind>` — links on the case page, and the pointers the
 #             fixing stage starts from (S1e2.1.6)
 #
-#   [case.wrong] / [case.control] / [[case.twin]]   an answer the engine gives
+#   open_because  why an open row's `now` is still not `right`; required
+#             exactly when the row is open
+#
+#   [case.now] — the region run that asks the row's question, and what it
+#     answers, in `ein-summary/2`'s terms (M1e2 S1e2.1a.5):
+#     run       a corpus run name, `solve`, `solve --maximal` or `solve --minimal`
+#     line      all | minimal | maximal — which part of R its states are
+#     exhausted, k (the states it lists)
+#     empty     dead | owing, when the run established R empty
+#     relations the candidates' relations, which a state's `(model …)` names
+#     models    each listed state's `(model …)`, sorted; for an owing empty R,
+#               the frontier's — the open states
+#
+#   [case.wrong] / [case.control] / [[case.twin]]   an answer the walk gave —
+#     since the switch the record of it, not run
 #     witness   (control, twin) another file; default: the row's witness
 #     run       a corpus run name — `ein <run>` with the file elided, so
 #               `"solve -e -L"` is `ein solve <witness> -e -L`
@@ -111,11 +138,14 @@
 # ── What `:expect` keeps (T1e2.1.1.3) ─────────────────────────────────────────
 #
 # A witness that also carries an `:expect` keeps it stating **today's** answer
-# until the fixing stage moves it — the rule `branching/15`+`16` already
-# follow — so the expectation and the register cannot disagree while the case
-# is open. The fixing stage moves both, and the row's status, in one commit.
+# until the fixing stage moves it, so the expectation and the register cannot
+# disagree while the case is open. The fixing stage moves both, and the row's
+# status, in one commit. S1e2.1a.5's switch was that commit for the walk's
+# rows: every witness claim that stated a walk answer (`branching/15` and `16`,
+# the `ein-bugs/` alive-set and stale-record files, `naf-upward-closure`) now
+# states R, as a `(solve … :expect (region …))`.
 
-schema = "ein-wrong-answers/2"
+schema = "ein-wrong-answers/3"
 
 # ══ W1 — a maximal alive commitment is never recorded ════════════════════════
 
@@ -128,7 +158,7 @@ settings = "default"
 owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/branching/15_lookahead_two_step_on.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["entering p(A)", "layer 2", "answer"]
 
 [case.wrong]
@@ -164,6 +194,17 @@ date    = "2026-10-15"
 bundle  = "caef67a"
 note    = "R = {∅, A, B, C, BC}, maximal line {A}, {B,C}. The user: \"Definitely 100% we can't throw out A because it's size is smaller than (B, C)\". No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 2
+relations = ["p"]
+models    = [
+  ["(p A)"],
+  ["(p B)", "(p C)"],
+]
+
 [[case]]
 id       = "W1/branching-16"
 case     = "W1"
@@ -173,7 +214,7 @@ settings = "default"
 owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/branching/16_lookahead_two_step_off.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["entering p(A)", "layer 2", "refuted", "summary"]
 
 [case.wrong]
@@ -226,6 +267,17 @@ date    = "2026-10-15"
 bundle  = "caef67a"
 note    = "a lever row: \"value of config :enable-pre-branch-lookahead must not affect solution values, because no config option affects problem search lattice, config may only affect search speed\" (Q-M1e2.7). No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 2
+relations = ["p"]
+models    = [
+  ["(p A)"],
+  ["(p B)", "(p C)"],
+]
+
 [[case]]
 id       = "W1/lattice-02-L"
 case     = "W1"
@@ -235,7 +287,7 @@ settings = "lever: -L"
 owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/lattice/02_genuine_3set_death.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["layer 2", "layer 3", "refuted", "summary"]
 note     = "one of the 9 corpus entries that go from models to a certified Contradiction under -L (inventory § 4); the header's 'Expected verdict: Contradiction' is P1.5b's mode contract, superseded by the 2026-08-28 ruling"
 
@@ -289,6 +341,18 @@ date    = "2026-10-15"
 bundle  = "caef67a"
 note    = "R has 7 nodes, maximal line the three pairs; the fixture header's P1.5b \"Expected verdict: Contradiction\" corrected. A lever row, and no config option may change the answer (Q-M1e2.7). No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 3
+relations = ["a-prop", "b-prop", "c-prop"]
+models    = [
+  ["(a-prop X)", "(b-prop X)"],
+  ["(a-prop X)", "(c-prop X)"],
+  ["(b-prop X)", "(c-prop X)"],
+]
+
 [[case]]
 id       = "W1/forced-2-two"
 case     = "W1"
@@ -298,7 +362,7 @@ settings = "default"
 owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/wrong-answers/forced-2-two.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["layer 1", "refuted", "summary"]
 note     = "layer 0: every singleton dies and phase2 breaks without asking whether root is complete"
 
@@ -349,6 +413,16 @@ date    = "2026-10-15"
 bundle  = "caef67a"
 note    = "R = {∅}: one model, empty. The one-firing twin answers it; the number of firings may not change the answer. No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["q"]
+models    = [
+  [],
+]
+
 [[case]]
 id       = "W1/forced-2-off"
 case     = "W1"
@@ -358,7 +432,7 @@ settings = "lever: (config :enable-forced-positive false) in the file"
 owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/wrong-answers/forced-2-off.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["layer 1", "refuted", "summary"]
 note     = "W2's witness with the cascade off falls through into W1 at layer 0 — why S1e2.2.1 runs before S1e2.2.2"
 
@@ -399,6 +473,16 @@ date    = "2026-10-15"
 bundle  = "caef67a"
 note    = "a lever row (forced-positive off), and no config option may change the answer (Q-M1e2.7). No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["q"]
+models    = [
+  [],
+]
+
 [[case]]
 id       = "W1/owed-two-step"
 case     = "W1"
@@ -408,7 +492,7 @@ settings = "default"
 owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/wrong-answers/owed-two-step.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["root", "layer 1", "refuted", "summary"]
 note     = "in an obligations program W1 at layer 0 turns the ruled Open into a certified Contradiction"
 
@@ -464,6 +548,17 @@ date    = "2026-10-15"
 bundle  = "caef67a"
 note    = "R is empty and ∅ is alive and owes 1: Open, not Contradiction (the 2026-08-25 ruling). No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
 
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "owing"
+relations = ["likes"]
+models    = [
+  [],
+]
+
 [[case]]
 id       = "W1/fresh-name-nospawn"
 case     = "W1"
@@ -473,7 +568,7 @@ settings = "lever: (config :enable-pre-branch-lookahead false) in the file"
 owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["layer 1", "refuted", "summary"]
 note     = "alive-set-fresh-name.ein minus its spawn rule: the banked W4 file's k = 0 is this, not the fresh name"
 
@@ -514,6 +609,16 @@ date    = "2026-10-15"
 bundle  = "caef67a"
 note    = "a lever row (lookahead off), and no config option may change the answer (Q-M1e2.7). No split: one defect in Q-M1e2.7's terms, a maximal node of R that is never recorded; layer 0 is the case where R's maximal line is {∅}."
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["q"]
+models    = [
+  [],
+]
+
 [[case]]
 id       = "W1/zebra2-hints"
 case     = "W1"
@@ -523,7 +628,7 @@ settings = "default"
 owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/zebra2-hints.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["answer"]
 note     = "W1's shape plus the walk's stronger node (walk_and_region.md § 4.3)"
 
@@ -554,6 +659,17 @@ closes    = ["color-loc", "drink-loc", "nation-loc", "pet-loc", "smoke-loc"]
 models    = [["(color-loc Blue House-2)", "(color-loc Green House-5)", "(color-loc Ivory House-4)", "(color-loc Red House-3)", "(color-loc Yellow House-1)", "(drink-loc Coffee House-5)", "(drink-loc Juice House-4)", "(drink-loc Milk House-3)", "(drink-loc Tea House-2)", "(drink-loc Water House-1)", "(nation-loc Englishman House-3)", "(nation-loc Japanese House-5)", "(nation-loc Norwegian House-1)", "(nation-loc Spaniard House-4)", "(nation-loc Ukrainian House-2)", "(pet-loc Dog House-4)", "(pet-loc Fox House-1)", "(pet-loc Horse House-2)", "(pet-loc Snail House-3)", "(pet-loc Zebra House-5)", "(smoke-loc Chesterfields House-2)", "(smoke-loc Kools House-1)", "(smoke-loc Lucky_Strike House-4)", "(smoke-loc Old_Gold House-3)", "(smoke-loc Parliament House-5)"], ["(color-loc Blue House-2)", "(color-loc Green House-5)", "(color-loc Ivory House-4)", "(color-loc Red House-3)", "(color-loc Yellow House-1)", "(drink-loc Coffee House-5)", "(drink-loc Milk House-3)", "(drink-loc Water House-1)", "(nation-loc Englishman House-3)", "(nation-loc Norwegian House-1)", "(nation-loc Spaniard House-5)", "(pet-loc Dog House-5)", "(pet-loc Fox House-4)", "(pet-loc Horse House-2)", "(pet-loc Snail House-3)", "(pet-loc Zebra House-1)", "(smoke-loc Chesterfields House-5)", "(smoke-loc Kools House-1)", "(smoke-loc Old_Gold House-3)"]]
 derived   = "route 1 (ein solve --maximal), each state saturated from root and its candidates; the walk records the first and never the second"
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 2
+relations = ["drink-loc", "nation-loc", "pet-loc", "smoke-loc"]
+models    = [
+  ["(drink-loc Coffee House-5)", "(drink-loc Juice House-4)", "(drink-loc Milk House-3)", "(drink-loc Tea House-2)", "(drink-loc Water House-1)", "(nation-loc Englishman House-3)", "(nation-loc Japanese House-5)", "(nation-loc Norwegian House-1)", "(nation-loc Spaniard House-4)", "(nation-loc Ukrainian House-2)", "(pet-loc Dog House-4)", "(pet-loc Fox House-1)", "(pet-loc Horse House-2)", "(pet-loc Snail House-3)", "(pet-loc Zebra House-5)", "(smoke-loc Chesterfields House-2)", "(smoke-loc Kools House-1)", "(smoke-loc Lucky_Strike House-4)", "(smoke-loc Old_Gold House-3)", "(smoke-loc Parliament House-5)"],
+  ["(drink-loc Coffee House-5)", "(drink-loc Milk House-3)", "(drink-loc Water House-1)", "(nation-loc Englishman House-3)", "(nation-loc Norwegian House-1)", "(nation-loc Spaniard House-5)", "(pet-loc Dog House-5)", "(pet-loc Fox House-4)", "(pet-loc Horse House-2)", "(pet-loc Snail House-3)", "(pet-loc Zebra House-1)", "(smoke-loc Chesterfields House-5)", "(smoke-loc Kools House-1)", "(smoke-loc Old_Gold House-3)"],
+]
+
 [[case]]
 id       = "W1/branching-07"
 case     = "W1"
@@ -563,7 +679,7 @@ settings = "the file's (config :enable-pre-branch-lookahead false)"
 owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/branching/07_lookahead_off.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["summary"]
 note     = "W1 under the file's own lookahead switch, which the config principle makes wrong by itself"
 
@@ -619,6 +735,37 @@ k         = 22
 exhausted = true
 derived   = "route 1 (ein solve --maximal): 22 maximal states of k_s = 74; the default config's twin, branching/06, records all 22"
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 22
+relations = ["co-located", "is-a"]
+models    = [
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located Green H2)", "(co-located Green House)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H2 House)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House Green)", "(co-located House H2)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located Green H2)", "(co-located H1 House)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House H1)", "(co-located House Red)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Red House)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 House)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory H3)", "(co-located Ivory House)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 House)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(co-located Yellow House)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue Color)", "(co-located Color Blue)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 House)", "(co-located House H5)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Color)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color H1)", "(co-located Color Red)", "(co-located Green H2)", "(co-located H1 Color)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)", "(co-located Ivory H3)", "(co-located Red Color)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Color)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)", "(co-located Ivory Color)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Color)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow Color)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located Green H2)", "(co-located H1 House)", "(co-located H1 Red)", "(co-located H2 Color)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H1)", "(co-located House Red)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Red House)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Color)", "(co-located H2 Green)", "(co-located H3 House)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory H3)", "(co-located Ivory House)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Color)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 House)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(co-located Yellow House)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H1)", "(co-located Color Red)", "(co-located Green H2)", "(co-located Green House)", "(co-located H1 Color)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H2 House)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House Green)", "(co-located House H2)", "(co-located Ivory H3)", "(co-located Red Color)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H1)", "(co-located Color Red)", "(co-located Green H2)", "(co-located H1 Color)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 House)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory H3)", "(co-located Ivory House)", "(co-located Red Color)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H1)", "(co-located Color Red)", "(co-located Green H2)", "(co-located H1 Color)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 House)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Ivory H3)", "(co-located Red Color)", "(co-located Red H1)", "(co-located Yellow H4)", "(co-located Yellow House)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located Green H2)", "(co-located Green House)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H2 House)", "(co-located H3 Color)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House Green)", "(co-located House H2)", "(co-located Ivory Color)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located Green H2)", "(co-located H1 House)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Color)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H1)", "(co-located House Red)", "(co-located Ivory Color)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Red House)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Color)", "(co-located H3 Ivory)", "(co-located H4 House)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Ivory Color)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(co-located Yellow House)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located Green H2)", "(co-located Green House)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H2 House)", "(co-located H3 Ivory)", "(co-located H4 Color)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House Green)", "(co-located House H2)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow Color)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located Green H2)", "(co-located H1 House)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Color)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H1)", "(co-located House Red)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Red House)", "(co-located Yellow Color)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 House)", "(co-located H3 Ivory)", "(co-located H4 Color)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory H3)", "(co-located Ivory House)", "(co-located Red H1)", "(co-located Yellow Color)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue House)", "(co-located Color H5)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Color)", "(co-located House Blue)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+]
+
 [[case]]
 id       = "W1/alive-empty-interlayer"
 case     = "W1"
@@ -628,7 +775,7 @@ settings = "default"
 owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/alive-empty-interlayer.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["root-writes", "summary"]
 note     = "right under Q-M1e.7 ruling A, as the inventory had it; under R it is W9's direction. Its :expect (false) states the walk's answer until the switch"
 
@@ -664,6 +811,16 @@ models    = [["(p A)", "(p B)"]]
 qualifier = "assumes a monotone lattice: the static check flags this program, and what R is here is P1e2.1b's"
 derived   = "the oracle: R has 4 states and one maximal, {(p A),(p B)}; (p Z) dies only after two firings, so the walk enters {(p A),(p B)} alive and never judges it complete (walk_census.md § 3.3)"
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["p"]
+models    = [
+  ["(p A)", "(p B)"],
+]
+
 [[case]]
 id       = "W1/d3-unsat-core"
 case     = "W1"
@@ -674,7 +831,7 @@ owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "corpus/fuzz_findings/d3-unsat-core.ein"
 not_in_corpus = "it moves under a permuted interner at the third seed, which the nightly's EIN_ID_SEEDS=8 would assert"
-status   = "open"
+status   = "fixed"
 look_at  = ["summary"]
 note     = "the walk's -e answer on W11's witness; W11/d3-unsat-core is its core under solve -m 2"
 
@@ -706,6 +863,17 @@ models    = [["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0
 qualifier = "assumes a monotone lattice: the static check flags this program, and what R is here is P1e2.1b's"
 derived   = "the oracle: R has 20 states and two maximal; the walk records one (walk_and_region.md § 4.6)"
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 2
+relations = ["is-a", "r0", "r1"]
+models    = [
+  ["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0 o2 o3)", "(r0 o3 o2)"],
+  ["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0 o2 o3)", "(r1 o2 o3)", "(r1 o3 o2)"],
+]
+
 [[case]]
 id       = "W1/branching-04-L"
 case     = "W1"
@@ -715,7 +883,7 @@ settings = "lever: -L"
 owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/branching/04_two_levels.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["summary"]
 note     = "W1/lattice-02-L's shape on another program, found by the walk's last census"
 
@@ -754,6 +922,17 @@ closes    = ["co-located"]
 models    = [["(co-located Blue H2)", "(co-located Green H3)", "(co-located H1 Red)", "(co-located H2 Blue)", "(co-located H3 Green)", "(co-located Red H1)"], ["(co-located Blue H3)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Blue)", "(co-located Red H1)"]]
 derived   = "route 1 (ein solve --maximal): two maximal states; the default run records one at its stop"
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 2
+relations = ["co-located", "is-a"]
+models    = [
+  ["(co-located Blue H2)", "(co-located Green H3)", "(co-located H1 Red)", "(co-located H2 Blue)", "(co-located H3 Green)", "(co-located Red H1)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a House T)", "(is-a Red Color)"],
+  ["(co-located Blue H3)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Blue)", "(co-located Red H1)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a House T)", "(is-a Red Color)"],
+]
+
 [[case]]
 id       = "W1/lattice-01-L"
 case     = "W1"
@@ -763,7 +942,7 @@ settings = "lever: -L"
 owner    = "S1e2.2.1"
 question = ["Q-M1e.8"]
 witness  = "examples/lattice/01_subset_pruned.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["summary"]
 note     = "W1/lattice-02-L's shape on another program, found by the walk's last census"
 
@@ -802,8 +981,18 @@ closes    = ["proposed"]
 models    = [["(proposed a)", "(proposed c)", "(proposed d)"], ["(proposed b)", "(proposed c)", "(proposed d)"]]
 derived   = "the oracle: R has 12 states and two maximal; the default run records one at its stop"
 
-# ══ W2 — the forced-positive cascade refutes a consistent program ═════════════
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 2
+relations = ["proposed"]
+models    = [
+  ["(proposed a)", "(proposed c)", "(proposed d)"],
+  ["(proposed b)", "(proposed c)", "(proposed d)"],
+]
 
+# ══ W2 — the forced-positive cascade refutes a consistent program ═════════════
 [[case]]
 id       = "W2/forced-2"
 case     = "W2"
@@ -812,7 +1001,7 @@ class    = "verdict + certification + core"
 settings = "default"
 owner    = "S1e2.2.2"
 witness  = "examples/ein-bugs/wrong-answers/forced-2.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["root-writes", "events writeback", "summary"]
 
 [case.wrong]
@@ -855,6 +1044,16 @@ closes    = ["q"]
 models    = [[]]
 derived   = "Q-M1e.6 clause 3: the program without hypotheses is consistent and its one hypothesis dies — promotion is valid only when root ∪ {h} is consistent. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["q"]
+models    = [
+  [],
+]
+
 [[case]]
 id       = "W2/forced-1-L"
 case     = "W2"
@@ -863,7 +1062,7 @@ class    = "verdict + certification + core"
 settings = "lever: -L"
 owner    = "S1e2.2.2"
 witness  = "examples/ein-bugs/wrong-answers/forced-1.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["root-writes", "events writeback", "summary"]
 
 [case.wrong]
@@ -906,8 +1105,17 @@ closes    = ["q"]
 models    = [[]]
 derived   = "Q-M1e.6 clause 3; the default run says so. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
-# ══ W3 — `dead` is not upward-closed under `absent` ════════════════════════════
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["q"]
+models    = [
+  [],
+]
 
+# ══ W3 — `dead` is not upward-closed under `absent` ════════════════════════════
 [[case]]
 id       = "W3/naf-upward-closure"
 case     = "W3"
@@ -917,7 +1125,7 @@ settings = "default"
 owner    = "S1e2.2.5"
 question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/ein-bugs/naf-upward-closure.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["root-writes", "entering p(A)", "model 1"]
 
 [case.wrong]
@@ -963,6 +1171,16 @@ closes    = ["p", "q"]
 models    = [["(p A)", "(q A)"]]
 derived   = "the file's header: {(p A)} is dead, {(p A),(q A)} is alive, so the one maximal state is {(p A),(q A)}. R agrees: this is its maximal line ([case.region], the oracle's cube, 2026-10-16)"
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["p", "q"]
+models    = [
+  ["(p A)", "(q A)"],
+]
+
 [[case]]
 id       = "W3/naf-nowb-L"
 case     = "W3"
@@ -972,7 +1190,7 @@ settings = "lever: -L, with (config :enable-singleton-writeback false) in the fi
 owner    = "S1e2.2.5"
 question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/ein-bugs/wrong-answers/naf-nowb.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["entering p(A)", "events nogood", "layer 2", "summary"]
 note     = "two mechanisms: W3's width-1 no-good prunes the live superset, and W1 leaves the surviving {(q A)} unrecorded"
 
@@ -1025,6 +1243,16 @@ closes    = ["p", "q"]
 models    = [["(p A)", "(q A)"]]
 derived   = "as W3/naf-upward-closure — the program is the same. R agrees: this is its maximal line ([case.region], the oracle's cube, 2026-10-16)"
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["p", "q"]
+models    = [
+  ["(p A)", "(q A)"],
+]
+
 [[case]]
 id       = "W3/three-components"
 case     = "W3"
@@ -1034,7 +1262,7 @@ settings = "default"
 owner    = "S1e2.2.5"
 question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/lattice/synth/three_components.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["summary"]
 note     = "S1e2.1a.8's program written for a chosen region; the walk never enters the two states it misses"
 
@@ -1071,6 +1299,18 @@ models    = [["(h A)", "(h B)", "(h D)", "(h G)"], ["(h A)", "(h B)", "(h F)"], 
 qualifier = "assumes a monotone lattice: the static check flags this program, and what R is here is P1e2.1b's"
 derived   = "the oracle: R has 13 states, maximal line 3, and the cube 3 holes (walk_census.md § 3.3)"
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 3
+relations = ["h"]
+models    = [
+  ["(h A)", "(h B)", "(h D)", "(h G)"],
+  ["(h A)", "(h B)", "(h F)"],
+  ["(h C)", "(h D)", "(h E)"],
+]
+
 [[case]]
 id       = "W3/trigger-hole"
 case     = "W3"
@@ -1080,7 +1320,7 @@ settings = "default"
 owner    = "S1e2.2.5"
 question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/lattice/synth/trigger_hole.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["summary"]
 note     = "S1e2.1a.8's program written for a chosen region; its obligation-trigger hole is P1e2.1b's"
 
@@ -1116,8 +1356,17 @@ models    = [["(h A)", "(h B)", "(h C)", "(h D)", "(h E)"]]
 qualifier = "assumes a monotone lattice: the static check flags this program, and what R is here is P1e2.1b's"
 derived   = "the oracle: R has 9 states, maximal line one, all five candidates, and the cube 7 holes (walk_census.md § 3.3)"
 
-# ══ W4 — a rule's fresh constant never becomes a hypothesis ═══════════════════
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["h"]
+models    = [
+  ["(h A)", "(h B)", "(h C)", "(h D)", "(h E)"],
+]
 
+# ══ W4 — a rule's fresh constant never becomes a hypothesis ═══════════════════
 [[case]]
 id       = "W4/fresh-name-default"
 case     = "W4"
@@ -1128,6 +1377,7 @@ owner    = "S1e2.2.4"
 question = ["Q-M1e.21", "ST-M1"]
 witness  = "examples/ein-bugs/wrong-answers/fresh-name-default.ein"
 status   = "open"
+open_because = "R shares the candidate list this case is about: a rule's fresh constant is in no candidate, so H misses it and R is {∅} (solution_semantics.md § 6.6). The fix is the universe's, S1e2.2.4"
 look_at  = ["root-writes", "model 1", "events warn"]
 
 [case.wrong]
@@ -1164,6 +1414,16 @@ closes    = ["q"]
 models    = [["(q A Z)", "(q B Z)"]]
 derived   = "alive-set-fresh-name.ein's header: {(q A Z),(q B Z)} saturates to a consistent, quiescent, complete state; the -declared control reaches it. The oracle's R is {∅}: it shares the candidate list this case is about (solution_semantics.md § 6.6), so [case.region] is not this answer"
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["q"]
+models    = [
+  [],
+]
+
 [[case]]
 id       = "W4/alive-set-fresh-name"
 case     = "W4"
@@ -1174,6 +1434,7 @@ owner    = "S1e2.2.4"
 question = ["Q-M1e.21", "ST-M1"]
 witness  = "examples/ein-bugs/alive-set-fresh-name.ein"
 status   = "open"
+open_because = "R shares the candidate list this case is about: a rule's fresh constant is in no candidate, so H misses it and R is {∅} (solution_semantics.md § 6.6). The fix is the universe's, S1e2.2.4"
 look_at  = ["layer 1", "refuted", "events warn"]
 note     = "confounded with W1 at layer 0 (W1/fresh-name-nospawn): fixing W1 alone moves this to W4/fresh-name-default's wrong answer"
 
@@ -1227,8 +1488,17 @@ closes    = ["q"]
 models    = [["(q A Z)", "(q B Z)"]]
 derived   = "the file's header; the -declared control reaches it. The oracle's R is {∅}: it shares the candidate list this case is about (solution_semantics.md § 6.6), so [case.region] is not this answer"
 
-# ══ W5 — the obligations rung records a superset of a model ═══════════════════
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["q"]
+models    = [
+  [],
+]
 
+# ══ W5 — the obligations rung records a superset of a model ═══════════════════
 [[case]]
 id       = "W5/owed-seats"
 case     = "W5"
@@ -1238,7 +1508,7 @@ settings = "default"
 owner    = "S1e2.2.3"
 question = ["Q-M1e2.1"]
 witness  = "examples/ein-bugs/wrong-answers/owed-seats.ein"
-status   = "open"
+status   = "fixed"
 look_at  = ["layer 3", "model 3", "events rung"]
 
 [case.wrong]
@@ -1298,8 +1568,18 @@ closes    = ["seats"]
 models    = [["(seats Ann C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)"], ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)"], ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C2)"], ["(seats Ann C1)", "(seats Bob C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)", "(seats Bob C2)"], ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)", "(seats Bob C2)"]]
 derived   = "every subset of the four seats facts that gives each guest and each chair one"
 
-# ══ W6 — `exhausted = true` over relations the rung never hypothesises ═════════
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 2
+relations = ["seats"]
+models    = [
+  ["(seats Ann C1)", "(seats Bob C2)"],
+  ["(seats Ann C2)", "(seats Bob C1)"],
+]
 
+# ══ W6 — `exhausted = true` over relations the rung never hypothesises ═════════
 [[case]]
 id       = "W6/uncovered"
 case     = "W6"
@@ -1310,6 +1590,7 @@ owner    = "S1e2.2.8"
 question = ["Q-M1e2.3", "M1d eight measurements #4"]
 witness  = "examples/ein-bugs/wrong-answers/uncovered.ein"
 status   = "open"
+open_because = "contested: the case is the certification sentence over relations H never holds, and Q-M1e.6's reading is S1e2.2.8's. R's minimal line is the right block's two matchings"
 look_at  = ["events rung", "answer"]
 note     = "the third model is W5's superset; this case is only the certification"
 
@@ -1361,6 +1642,17 @@ verdict   = "Ambiguity"
 exhausted = true
 derived   = "today's answer"
 
+[case.now]
+run       = "solve --minimal"
+line      = "minimal"
+exhausted = true
+k         = 2
+relations = ["seats"]
+models    = [
+  ["(seats Ann C1)", "(seats Bob C2)"],
+  ["(seats Ann C2)", "(seats Bob C1)"],
+]
+
 [[case]]
 id       = "W6/arity3"
 case     = "W6"
@@ -1371,6 +1663,7 @@ owner    = "S1e2.2.8"
 question = ["Q-M1e2.3"]
 witness  = "examples/ein-bugs/wrong-answers/arity3.ein"
 status   = "open"
+open_because = "contested: the case is the certification sentence over relations H never holds (arity 3 is unenumerated), and Q-M1e.6's reading is S1e2.2.8's. R's maximal line agrees with the right block's model"
 look_at  = ["events hyp", "answer"]
 
 [case.wrong]
@@ -1405,8 +1698,17 @@ verdict   = "Solution"
 exhausted = false
 derived   = "the goal relation is uncovered, so the run is a lower bound"
 
-# ══ W7 — two activator layouts share a binding key ════════════════════════════
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["r2"]
+models    = [
+  ["(r2 A B)", "(r2 B A)"],
+]
 
+# ══ W7 — two activator layouts share a binding key ════════════════════════════
 [[case]]
 id       = "W7/binding-key-layout"
 case     = "W7"
@@ -1418,6 +1720,7 @@ question = ["Q-M1e.16"]
 witness  = "corpus/fuzz_findings/binding-key-layout.ein"
 not_in_corpus = "a debug build aborts on it (check_layout), and every in-process corpus sweep saturates every corpus file inside a debug test binary"
 status   = "open"
+open_because = "R shares the saturator this case is about: the lost derivation is lost in every node (solution_semantics.md § 6.6). The fix is S1e2.2.7's"
 look_at  = ["events fire", "model 1"]
 
 [case.wrong]
@@ -1456,8 +1759,17 @@ closes    = ["noted"]
 models    = [["(noted 1 1)", "(noted 1 3)", "(noted 2 1)", "(noted 2 3)"]]
 derived   = "rule_semantics.rs's control: the nested-fact activator alone derives every (noted ?a ?f); adding an activator cannot remove a conclusion. The oracle's R shares the saturator this case is about (solution_semantics.md § 6.6), so [case.region] is not this answer"
 
-# ══ W8 — a positive derived under `absent` survives the commitment ════════════
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
 
+# ══ W8 — a positive derived under `absent` survives the commitment ════════════
 [[case]]
 id       = "W8/features-07"
 case     = "W8"
@@ -1468,6 +1780,7 @@ owner    = "S1e2.2.6"
 question = ["Q-M1e2.2"]
 witness  = "examples/features/07_unstratifiable.ein"
 status   = "open"
+open_because = "contested: what a node is when a guard's witness arrives later is P1e2.1b's, and R is over the fork route under *assumes a monotone lattice*. R's maximal line agrees with the right block's reading"
 look_at  = ["root", "events writeback", "model 1"]
 note     = "the file's own header: {p, q} is not a model of this program under any reading"
 
@@ -1519,6 +1832,16 @@ closes    = ["p", "q"]
 models    = [["(p one)", "(q one)"]]
 derived   = "today's answer, against the file's own header. The oracle's cube agrees: its node is a fork of root ([case.region]). Which node is right is P1e2.1b's"
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["q"]
+models    = [
+  ["(q one)"],
+]
+
 [[case]]
 id       = "W8/stale-naf-fork"
 case     = "W8"
@@ -1529,6 +1852,7 @@ owner    = "S1e2.2.6"
 question = ["Q-M1e2.2"]
 witness  = "examples/ein-bugs/wrong-answers/stale-naf-fork.ein"
 status   = "open"
+open_because = "contested: what a node is when a guard's witness arrives later is P1e2.1b's, and R is over the fork route under *assumes a monotone lattice*, which keeps the stale (p one)"
 look_at  = ["root", "root-writes", "events hyp", "model 1"]
 
 [case.wrong]
@@ -1575,8 +1899,17 @@ closes    = ["p", "q"]
 models    = [["(p one)"]]
 derived   = "today's answer: the fork holding both is dead, so root is the solution. The oracle's cube agrees: its node is a fork of root ([case.region]). Which node is right is P1e2.1b's"
 
-# ══ W9 — with the kill cache off, an unnoticed entailment makes a model ═══════
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["q"]
+models    = [
+  [],
+]
 
+# ══ W9 — with the kill cache off, an unnoticed entailment makes a model ═══════
 [[case]]
 id       = "W9/complete-records-stale-K"
 case     = "W9"
@@ -1586,7 +1919,7 @@ settings = "default"
 owner    = "S1e2.2.9"
 question = ["Q-M1e.7"]
 witness  = "examples/ein-bugs/complete-records-stale.ein"
-status   = "open"
+status   = "fixed"
 note     = "reversed 2026-10-16 (S1e2.1a.10): the default run is the wrong one under R, and -K agrees with it; the id keeps its -K, because ids are stable"
 look_at  = ["layer 1", "answer"]
 
@@ -1637,6 +1970,17 @@ closes    = ["p", "q"]
 models    = [["(p A)", "(p B)"]]
 derived   = "Q-M1e.7 ruling A: engine-written negatives are entailed consequences, so {(q A)} entails (not (p A)), (not (p B)) and totality refutes it"
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 2
+relations = ["p", "q"]
+models    = [
+  ["(p A)", "(p B)"],
+  ["(q A)"],
+]
+
 [[case]]
 id       = "W9/alive-empty-phase1-K"
 case     = "W9"
@@ -1646,7 +1990,7 @@ settings = "default"
 owner    = "S1e2.2.9"
 question = ["Q-M1e.7"]
 witness  = "examples/ein-bugs/alive-empty-phase1.ein"
-status   = "open"
+status   = "fixed"
 note     = "reversed 2026-10-16 (S1e2.1a.10): the default run is the wrong one under R, and -K agrees with it; the id keeps its -K, because ids are stable"
 look_at  = ["root", "answer"]
 
@@ -1699,8 +2043,17 @@ k         = 0
 exhausted = true
 derived   = "Q-M1e.7 ruling A: both p candidates die in one firing, so root entails (not (p A)), (not (p B)) and totality refutes it. Which core is W12's question"
 
-# ══ W10 — the alternatives cap decides which core is reported ═════════════════
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["p"]
+models    = [
+  [],
+]
 
+# ══ W10 — the alternatives cap decides which core is reported ═════════════════
 [[case]]
 id       = "W10/alt-cap-core"
 case     = "W10"
@@ -1711,6 +2064,7 @@ owner    = "S1e2.2.11"
 question = ["Q-M1e.15"]
 witness  = "examples/ein-bugs/alt-cap-core.ein"
 status   = "open"
+open_because = "the read-out's unsat core is still the alternatives cap's: (p1 Y01), (p2 Y01), (p3 Y01), where the smallest frontier is {(w1 X), (w2 X)}. The core is explain.rs's, S1e2.2.11"
 look_at  = ["summary", "events alt"]
 
 [case.wrong]
@@ -1745,8 +2099,16 @@ exhausted = true
 core      = ["(w1 X)", "(w2 X)"]
 derived   = "the file's header: the smallest frontier over the derivations is {(w1 X),(w2 X)}, and explain.rs promises the smallest. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
 
-# ══ W11 — which core is reported depends on interner id order ═════════════════
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 0
+empty     = "dead"
+relations = ["p1", "p2", "p3", "q", "w1", "w2"]
+models    = []
 
+# ══ W11 — which core is reported depends on interner id order ═════════════════
 [[case]]
 id       = "W11/unsat-core-id-space"
 case     = "W11"
@@ -1756,7 +2118,7 @@ settings = "default (under a permuted interner)"
 owner    = "S1e2.2.12"
 witness  = "corpus/fuzz_findings/unsat-core-id-space.ein"
 not_in_corpus = "it moves under a permuted interner, which id_order_invariance asserts of every corpus file"
-status   = "open"
+status   = "fixed"
 look_at  = ["refuted", "summary"]
 
 [case.wrong]
@@ -1803,6 +2165,17 @@ k         = 0
 exhausted = true
 derived   = "design/02: no observable depends on the order ids were assigned in — one core, chosen canonically, under every permutation (S1e2.2.12 picks the rule)"
 
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 2
+relations = ["r1"]
+models    = [
+  ["(r1 o1 o5)", "(r1 o4 o5)"],
+  ["(r1 o4 o1)", "(r1 o4 o5)"],
+]
+
 [[case]]
 id       = "W11/d3-unsat-core"
 case     = "W11"
@@ -1812,7 +2185,7 @@ settings = "default (under a permuted interner, seed 15839)"
 owner    = "S1e2.2.12"
 witness  = "corpus/fuzz_findings/d3-unsat-core.ein"
 not_in_corpus = "it moves under a permuted interner at the third seed, which the nightly's EIN_ID_SEEDS=8 would assert"
-status   = "open"
+status   = "fixed"
 look_at  = ["refuted", "summary"]
 note     = "corpus/fuzz_findings/README.md says this file is green under a permuted id space; that is true at seed 1 only"
 
@@ -1852,8 +2225,18 @@ k         = 0
 exhausted = false
 derived   = "as W11/unsat-core-id-space"
 
-# ══ W12 — an exhausted `Contradiction` reports a 0-fact core ══════════════════
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 2
+relations = ["is-a", "r0", "r1"]
+models    = [
+  ["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0 o2 o3)", "(r0 o3 o2)"],
+  ["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0 o2 o3)", "(r1 o2 o3)", "(r1 o3 o2)"],
+]
 
+# ══ W12 — an exhausted `Contradiction` reports a 0-fact core ══════════════════
 [[case]]
 id       = "W12/alive-empty-phase1"
 case     = "W12"
@@ -1864,6 +2247,7 @@ owner    = "S1e2.2.13"
 question = ["Q-M1e2.4"]
 witness  = "examples/ein-bugs/alive-empty-phase1.ein"
 status   = "open"
+open_because = "contested: R is {∅}, root alive and discharged, so the Contradiction whose core the row is about is gone, and whether that withdraws W12 is the review's (S1e2.1.7)"
 look_at  = ["root-writes", "summary"]
 note     = "W2/forced-2's 0-fact core is the same class; it is W2's row"
 
@@ -1907,8 +2291,17 @@ exhausted = true
 core      = []
 derived   = "today's answer"
 
-# ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["p"]
+models    = [
+  [],
+]
 
+# ══ C1 — the untyped blind rung binds a type as an object ═════════════════════
 [[case]]
 id       = "C1/branching-06"
 case     = "C1"
@@ -1919,6 +2312,7 @@ owner    = "S1e2.2.10"
 question = ["Q-M1e.12"]
 witness  = "examples/branching/06_lookahead_on.ein"
 status   = "open"
+open_because = "contested: the case is whether the blind rung may bind a type as an object, readings (a)–(c) of the right block, S1e2.2.10's. R agrees with the right block's maximal line under (a)"
 look_at  = ["answer", "events hyp"]
 note     = "all 22 recorded models contain a co-located fact over a type (Color / House); 10 of 22 have a goal row binding ?h to one, 6 print it"
 
@@ -1962,3 +2356,34 @@ maximal  = [
 [case.right]
 reading   = "Q-M1e.12 — not yet read; each reading gives a different answer"
 derived   = "(a) the program is under-specified: fix the fixture, not the engine; (b) the read-out is wrong: same models, no binding to a type printed; (c) candidate_objects excludes types: a different model set, uncounted. R agrees: this is its maximal line ([case.region], route 1, 2026-10-16)"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 22
+relations = ["co-located", "is-a"]
+models    = [
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located Green H2)", "(co-located Green House)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H2 House)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House Green)", "(co-located House H2)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located Green H2)", "(co-located H1 House)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House H1)", "(co-located House Red)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Red House)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 House)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory H3)", "(co-located Ivory House)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue Color)", "(co-located Blue H5)", "(co-located Color Blue)", "(co-located Color H5)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 House)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 Color)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(co-located Yellow House)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue Color)", "(co-located Color Blue)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 House)", "(co-located House H5)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Color)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color H1)", "(co-located Color Red)", "(co-located Green H2)", "(co-located H1 Color)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)", "(co-located Ivory H3)", "(co-located Red Color)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Color)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)", "(co-located Ivory Color)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Blue House)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Color)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located H5 House)", "(co-located House Blue)", "(co-located House H5)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow Color)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located Green H2)", "(co-located H1 House)", "(co-located H1 Red)", "(co-located H2 Color)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H1)", "(co-located House Red)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Red House)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Color)", "(co-located H2 Green)", "(co-located H3 House)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory H3)", "(co-located Ivory House)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color Green)", "(co-located Color H2)", "(co-located Green Color)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Color)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 House)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(co-located Yellow House)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H1)", "(co-located Color Red)", "(co-located Green H2)", "(co-located Green House)", "(co-located H1 Color)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H2 House)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House Green)", "(co-located House H2)", "(co-located Ivory H3)", "(co-located Red Color)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H1)", "(co-located Color Red)", "(co-located Green H2)", "(co-located H1 Color)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 House)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory H3)", "(co-located Ivory House)", "(co-located Red Color)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H1)", "(co-located Color Red)", "(co-located Green H2)", "(co-located H1 Color)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 House)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Ivory H3)", "(co-located Red Color)", "(co-located Red H1)", "(co-located Yellow H4)", "(co-located Yellow House)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located Green H2)", "(co-located Green House)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H2 House)", "(co-located H3 Color)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House Green)", "(co-located House H2)", "(co-located Ivory Color)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located Green H2)", "(co-located H1 House)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Color)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H1)", "(co-located House Red)", "(co-located Ivory Color)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Red House)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H3)", "(co-located Color Ivory)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Color)", "(co-located H3 Ivory)", "(co-located H4 House)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H4)", "(co-located House Yellow)", "(co-located Ivory Color)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(co-located Yellow House)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located Green H2)", "(co-located Green House)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H2 House)", "(co-located H3 Ivory)", "(co-located H4 Color)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House Green)", "(co-located House H2)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow Color)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located Green H2)", "(co-located H1 House)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Color)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H1)", "(co-located House Red)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Red House)", "(co-located Yellow Color)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue H5)", "(co-located Color H4)", "(co-located Color Yellow)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 House)", "(co-located H3 Ivory)", "(co-located H4 Color)", "(co-located H4 Yellow)", "(co-located H5 Blue)", "(co-located House H3)", "(co-located House Ivory)", "(co-located Ivory H3)", "(co-located Ivory House)", "(co-located Red H1)", "(co-located Yellow Color)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+  ["(co-located Blue House)", "(co-located Color H5)", "(co-located Green H2)", "(co-located H1 Red)", "(co-located H2 Green)", "(co-located H3 Ivory)", "(co-located H4 Yellow)", "(co-located H5 Color)", "(co-located House Blue)", "(co-located Ivory H3)", "(co-located Red H1)", "(co-located Yellow H4)", "(is-a Blue Color)", "(is-a Color T)", "(is-a Green Color)", "(is-a H1 House)", "(is-a H2 House)", "(is-a H3 House)", "(is-a H4 House)", "(is-a H5 House)", "(is-a House T)", "(is-a Ivory Color)", "(is-a Red Color)", "(is-a Yellow Color)"],
+]

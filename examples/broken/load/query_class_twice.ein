@@ -1,0 +1,6 @@
+;; M1e2 S1e2.1a.5: a query's `:expect` lists projection classes as a set, so a
+;; class listed twice says nothing a single listing does not, and is a slip.
+
+(relation p Thing Place)
+(p A H1)
+(query :goal (p A ?h) :expect (or (model (p A H1)) (model (p A H1))))

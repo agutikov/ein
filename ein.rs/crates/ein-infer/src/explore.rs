@@ -123,6 +123,11 @@ pub enum Route {
 /// [`solve_interface.md` § 3.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#31-the-licences).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Licence {
+    /// L0: a fork only adds — every node is root's fixpoint and more, so when
+    /// root is dead every node is, on any program (M1e2 T1e2.1a.5.3). It is
+    /// the node function's own construction, not a theorem about the program,
+    /// and it is what decides a flagged program whose root is dead.
+    ForkOnlyAdds,
     /// L1: dead is upward-closed — no superset of a dead node is visited.
     DeadUpward,
     /// L2: discharged is upward-closed — an alive superset of a node of `R`
@@ -137,6 +142,7 @@ pub enum Licence {
 impl Licence {
     pub fn label(self) -> &'static str {
         match self {
+            Licence::ForkOnlyAdds => "L0 a fork only adds: root is dead, so every node is",
             Licence::DeadUpward => "L1 dead is upward-closed",
             Licence::DischargedUpward => "L2 discharged is upward-closed",
             Licence::LocalLines => "L4 the lines are local",
@@ -295,7 +301,10 @@ pub fn run_with(
 ) -> Result<Answer, SolveError> {
     let t0 = Instant::now();
     let prepared = region::prepare_with(root, terms, ast, events)?;
-    let mut answer = if prepared.monotonicity.is_monotone() {
+    // A dead root is the whole answer on any program: every node is a fork of
+    // root's fixpoint, and a fork only adds (L0). Route 1 visits root alone.
+    let fork_only_adds = prepared.root_dead && !prepared.monotonicity.is_monotone();
+    let mut answer = if prepared.monotonicity.is_monotone() || prepared.root_dead {
         if opts.mode
             == (Mode {
                 which: Which::All,
@@ -317,6 +326,9 @@ pub fn run_with(
     } else {
         flagged(root, terms, ast, prepared, t0, opts, events)?
     };
+    if fork_only_adds {
+        answer.licences = vec![Licence::ForkOnlyAdds];
+    }
     answer.wall = t0.elapsed();
     Ok(answer)
 }
@@ -1004,6 +1016,7 @@ impl<'a> Space<'a> {
                 owed: node.owed,
                 core: node.core,
                 refuted_by: node.refuted_by,
+                sources: node.sources,
             },
             any_alive: !alive.is_empty(),
             k_c: members.len() as u64,
@@ -1112,6 +1125,7 @@ fn describe_route_1(
             budget: opts.budget,
             max_visits: u64::MAX,
             jobs: opts.jobs,
+            deadline: opts.deadline,
         },
         events,
     )?;

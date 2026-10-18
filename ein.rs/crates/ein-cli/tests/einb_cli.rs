@@ -235,8 +235,11 @@ fn an_edited_stdlib_is_a_cache_miss_rather_than_a_stale_hit() {
         &["solve", container],
         &[("EIN_STDLIB", copy.to_str().expect("utf-8"))],
     );
+    // zebra2 is described in part at the default budget, and its stderr says
+    // so in a `note:` — so what is asked of it is that nothing *else* is
+    // there.
     assert!(
-        same.stderr.is_empty(),
+        same.stderr.lines().all(|l| l.starts_with("note: ")),
         "an identical stdlib is not a cache miss, got: {}",
         same.stderr
     );

@@ -85,7 +85,8 @@ fn job_counts() -> Vec<usize> {
     out
 }
 
-/// Ops that can possibly differ by job count: the ones that run a solve.
+/// Ops that can possibly differ by job count: the ones that run a solve —
+/// since M1e2 S1e2.1a.5 a region route, which fans a step's nodes out.
 ///
 /// Not used to *skip* anything — every op is swept, because an op that starts
 /// solving later should be covered without anyone remembering to add it here.
@@ -95,7 +96,7 @@ fn job_counts() -> Vec<usize> {
 fn solves(op: Op) -> bool {
     matches!(
         op,
-        Op::Solve(_) | Op::Lattice | Op::Trace(_) | Op::Dump(_) | Op::Dot(_)
+        Op::ReadOut(_) | Op::RegionTrace | Op::RegionLattice | Op::Dot(_)
     )
 }
 

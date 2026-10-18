@@ -100,15 +100,15 @@
 (above Dog Bob) (co-loc Dog S4)
 
 (solve
-  :no-hypothesis (type instance co-loc above))
+  :no-hypothesis (type instance co-loc above)
+  :expect (region (owing (model (co-loc Cat S1) (co-loc S1 Cat)
+                                (co-loc Dog S4) (co-loc S4 Dog)
+                                (not (co-loc Ann S4))    ; slot-prune-fwd — S4 is no source of S1
+                                (not (co-loc Bob S1))    ; slot-prune-bwd — S1 is no target of S4
+                                (not (co-loc Cat S4))    ; slot-endpoint-fwd — S4 has no source
+                                (not (co-loc Bob S4))
+                                (not (co-loc Ann S1))    ; slot-endpoint-bwd — S1 has no target
+                                (not (co-loc Dog S1))))))
 
 (query
-  :goal (co-loc ?a ?b)
-  :expect (model (co-loc Cat S1) (co-loc S1 Cat)
-                 (co-loc Dog S4) (co-loc S4 Dog)
-                 (not (co-loc Ann S4))    ; slot-prune-fwd — S4 is no source of S1
-                 (not (co-loc Bob S1))    ; slot-prune-bwd — S1 is no target of S4
-                 (not (co-loc Cat S4))    ; slot-endpoint-fwd — S4 has no source
-                 (not (co-loc Bob S4))
-                 (not (co-loc Ann S1))    ; slot-endpoint-bwd — S1 has no target
-                 (not (co-loc Dog S1))))
+  :goal (co-loc ?a ?b))

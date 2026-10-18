@@ -7,6 +7,11 @@
     python3 utils/fork_split.py --events /tmp/z.jsonl        # re-read a stream
     python3 utils/fork_split.py --bin /path/to/ein -- solve examples/zebra.ein -e
 
+**The walk's instrument.** It measures `ein solve`'s walk, which no command
+runs since M1e2 S1e2.1a.5's switch: re-take it against a binary built at or
+before commit 7ec8a480 (`--bin` / `$EIN_BIN`), and read its record as the
+walk's. Porting it to the region is not owed by the switch.
+
 The named instrument behind
 [baseline.md §9](../docs/history/m1a_rust/measurements/baseline.md#9-the-fork-entry-re-derivation),
 promoted from the inline script that section was first written with

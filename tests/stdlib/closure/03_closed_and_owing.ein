@@ -121,8 +121,8 @@
 (solve
   ;; `r` is closed by derivation; the other two are scoped out by hand so the
   ;; blind generator is quiet and the verdict is about the requirement alone.
-  :no-hypothesis (is-a closed-here))
+  :no-hypothesis (is-a closed-here)
+  :expect (region (owing (model (closed-here r)))))
 
 (query
-  :goal (closed-here ?R)
-  :expect (model (closed-here r)))
+  :goal (closed-here ?R))

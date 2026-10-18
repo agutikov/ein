@@ -38,8 +38,8 @@
 (likes Bob Stew)
 
 (solve
-  :no-hypothesis (is-a likes))
+  :no-hypothesis (is-a likes)
+  :expect (region (model (likes Ann Soup) (likes Bob Stew))))
 
 (query
-  :goal (likes ?who ?what)
-  :expect (model (likes Ann Soup) (likes Bob Stew)))
+  :goal (likes ?who ?what))

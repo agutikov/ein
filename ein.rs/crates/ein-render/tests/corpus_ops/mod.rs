@@ -12,22 +12,28 @@
 #![allow(dead_code)]
 
 use ein_core::Terms;
+use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_ir::dump::{dump_canonical, dump_compact};
 use ein_ir::imports::Resolver;
 use ein_ir::macros::{collect_macros, expand_rule_clauses};
 use ein_ir::{Ast, parse};
-use ein_render::shape::{DUMP_MODES, TRACE_MODES, all_views, dot_shape, dump_shape, trace_shape};
+use ein_render::shape::{SOLVE_VIEWS, all_views, dot_shape};
 use std::path::Path;
+use std::sync::{Arc, Mutex};
 
 /// Every observable surface the engine has. One op is one `(surface, mode)`
 /// pair.
 ///
 /// The list is every rendering built to be *comparable*: the frontend dumps,
 /// the loaded KB's shape, root saturation's verbose event stream, the plan,
-/// the match, hypothesis generation, the lattice, the NAF map, the solve,
-/// commit and explain shapes, every DOT view, the trace and the
-/// `--dump-states` tree. An id leak that reaches an output reaches one of
-/// them, and one that reaches nothing here reaches nothing a user can see.
+/// the match, hypothesis generation, the NAF map, the explain shapes, every
+/// DOT view, and — since M1e2 S1e2.1a.5's switch — what `ein solve` prints:
+/// the read-out under each question, the region trace, and `ein render
+/// lattice`'s drawing of the nodes a description visits. The walk's surfaces
+/// (its solve table, trace, `--dump-states` tree, lattice proof and commit
+/// shape) left with its CLI path. An id leak that reaches an output reaches
+/// one of these, and one that reaches nothing here reaches nothing a user can
+/// see.
 pub fn ops() -> Vec<Op> {
     let mut out = vec![
         Op::Load,
@@ -36,22 +42,67 @@ pub fn ops() -> Vec<Op> {
         Op::Match,
         Op::Hyp(false),
         Op::Hyp(true),
-        Op::Lattice,
         Op::Naf,
-        Op::Solve("default"),
-        Op::Solve("exhaustive"),
-        Op::Solve("shuffled"),
-        Op::Commit(true),
-        Op::Commit(false),
         Op::Explain(true),
         Op::Explain(false),
     ];
     out.extend(IR_MODES.iter().map(|m| Op::Ir(m)));
-    out.extend(all_views().into_iter().map(Op::Dot));
-    out.extend(TRACE_MODES.iter().map(|m| Op::Trace(m)));
-    out.extend(DUMP_MODES.iter().map(|m| Op::Dump(m)));
+    out.extend(
+        all_views()
+            .into_iter()
+            .filter(|v| !SOLVE_VIEWS.contains(v))
+            .map(Op::Dot),
+    );
+    out.extend(READ_OUT_MODES.iter().map(|(m, _)| Op::ReadOut(m)));
+    out.push(Op::RegionTrace);
+    out.push(Op::RegionLattice);
     out
 }
+
+/// The questions the sweep asks, as `ein solve`'s flags: describe, each line,
+/// `--single` and `-n 2`.
+pub const READ_OUT_MODES: [(&str, Mode); 5] = [
+    (
+        "describe",
+        Mode {
+            which: Which::All,
+            ask: Ask::Describe,
+        },
+    ),
+    (
+        "maximal",
+        Mode {
+            which: Which::Maximal,
+            ask: Ask::Describe,
+        },
+    ),
+    (
+        "minimal",
+        Mode {
+            which: Which::Minimal,
+            ask: Ask::Describe,
+        },
+    ),
+    (
+        "single",
+        Mode {
+            which: Which::All,
+            ask: Ask::Single,
+        },
+    ),
+    (
+        "n2",
+        Mode {
+            which: Which::All,
+            ask: Ask::Find(2),
+        },
+    ),
+];
+
+/// The sweep's budget and cube limit: small, so that every file is quick and
+/// partial runs, budget- and limit-stopped, are among what is compared.
+pub const SWEEP_BUDGET: u64 = 1 << 14;
+pub const SWEEP_LIMIT: u32 = 10;
 
 /// The frontend surfaces, which have no CLI of their own and are therefore
 /// invisible to a sweep over `ein` processes: `parse`'s accept/reject *and
@@ -71,14 +122,16 @@ pub enum Op {
     Plan,
     Match,
     Hyp(bool),
-    Lattice,
     Naf,
-    Solve(&'static str),
-    Commit(bool),
     Explain(bool),
     Dot(&'static str),
-    Trace(&'static str),
-    Dump(&'static str),
+    /// `ein solve`'s stdout, stderr lines and exit code under one of
+    /// [`READ_OUT_MODES`].
+    ReadOut(&'static str),
+    /// `ein solve --trace`'s markdown, under describe.
+    RegionTrace,
+    /// `ein render lattice`'s DOT.
+    RegionLattice,
 }
 
 impl std::fmt::Display for Op {
@@ -90,14 +143,12 @@ impl std::fmt::Display for Op {
             Op::Plan => write!(f, "plan"),
             Op::Match => write!(f, "match"),
             Op::Hyp(c) => write!(f, "hyp{}", if *c { "+closed" } else { "" }),
-            Op::Lattice => write!(f, "lattice"),
             Op::Naf => write!(f, "naf"),
-            Op::Solve(m) => write!(f, "solve[{m}]"),
-            Op::Commit(ff) => write!(f, "commit{}", if *ff { "" } else { "-nofailfast" }),
             Op::Explain(a) => write!(f, "explain{}", if *a { "" } else { "-noalts" }),
             Op::Dot(v) => write!(f, "dot[{v}]"),
-            Op::Trace(m) => write!(f, "trace[{m}]"),
-            Op::Dump(m) => write!(f, "dump[{m}]"),
+            Op::ReadOut(m) => write!(f, "read-out[{m}]"),
+            Op::RegionTrace => write!(f, "region-trace"),
+            Op::RegionLattice => write!(f, "region-lattice"),
         }
     }
 }
@@ -119,13 +170,16 @@ impl Op {
         }
         Some(match self {
             Op::Dot(view) if ein_narration::is_narration(view) => return None,
+            // The region trace is a derivation told step by step, which two
+            // runs may narrate differently — the walk's `markdown` was the same
+            // and compared for presence only (`ein_narration::is_narration`).
+            // `corpus_shapes` still digests it whole, in one id space.
+            Op::RegionTrace => return None,
             // The three ops the relaxation never touches: the frontend modes,
             // the loaded KB's shape, and root saturation's event stream. None
             // of them crosses a fork, so none of them carries narration, and
             // blanking a firing count here would only weaken the golden.
             Op::Ir(_) | Op::Load | Op::Saturate => text.to_string(),
-            Op::Trace(mode) => ein_narration::blank_blocks(&format!("--- {mode}\n{text}"), "--- "),
-            Op::Dump(_) => ein_narration::blank_blocks(text, "=== "),
             _ => ein_narration::blank(text),
         })
     }
@@ -177,29 +231,29 @@ pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<S
     }
     let outcome = match op {
         Op::Dot(view) => dot_shape(&mut ast, terms, &forms, base, view, jobs),
-        Op::Trace(mode) => trace_shape(&mut ast, terms, &forms, base, mode, jobs),
-        Op::Dump(mode) => dump_shape(&mut ast, terms, &forms, base, mode, jobs),
+        Op::ReadOut(_) | Op::RegionTrace | Op::RegionLattice => {
+            let mut kb = ein_ir::load(&mut ast, terms, &forms, base).ok()?;
+            region_op(&ast, terms, &mut kb, path, op, jobs)
+        }
         _ => {
             let mut kb = ein_ir::load(&mut ast, terms, &forms, base).ok()?;
             match op {
                 Op::Plan => ein_infer::plan_shape(&ast, terms, &kb).map_err(|e| e.to_string()),
                 Op::Match => ein_infer::match_shape(&ast, terms, &kb).map_err(|e| e.to_string()),
                 Op::Hyp(closed) => ein_infer::hyp_shape_with(&ast, terms, &mut kb, closed),
-                Op::Lattice => {
-                    ein_infer::lattice_shape(&ast, terms, &mut kb).map_err(|e| e.to_string())
-                }
                 Op::Naf => ein_infer::naf_map(&ast, terms, &mut kb).map_err(|e| e.to_string()),
                 Op::Saturate => {
                     ein_infer::saturate_events(&ast, terms, &mut kb).map_err(|e| e.to_string())
                 }
-                Op::Solve(mode) => ein_infer::solve_shape(&ast, terms, &mut kb, mode, jobs),
-                Op::Commit(ff) => {
-                    ein_infer::commit_shape(&ast, terms, &mut kb, ff).map_err(|e| e.to_string())
-                }
                 Op::Explain(alts) => {
                     ein_infer::explain_shape(&ast, terms, &mut kb, alts).map_err(|e| e.to_string())
                 }
-                Op::Ir(_) | Op::Load | Op::Dot(_) | Op::Trace(_) | Op::Dump(_) => {
+                Op::Ir(_)
+                | Op::Load
+                | Op::Dot(_)
+                | Op::ReadOut(_)
+                | Op::RegionTrace
+                | Op::RegionLattice => {
                     unreachable!("handled above")
                 }
             }
@@ -209,6 +263,121 @@ pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<S
         Ok(text) => text,
         Err(msg) => format!("<refused> {msg}"),
     })
+}
+
+/// A watch that keeps what a route visits, for `RegionLattice`.
+struct Keep(Arc<Mutex<ein_render::dump::region_lattice::Visits>>);
+
+impl ein_infer::events::Watch for Keep {
+    fn node(&mut self, v: &ein_infer::events::Visited<'_>) {
+        self.0.lock().expect("one thread").nodes.push(
+            ein_render::dump::region_lattice::VisitedNode {
+                commitment: v.commitment.to_vec(),
+                kind: v.kind,
+                owes: v.owes,
+                owed: v.owed.to_vec(),
+                core: v.core.to_vec(),
+                refuted_by: v.refuted_by.to_vec(),
+                closure: v.closure.to_vec(),
+                facts: v.facts,
+            },
+        );
+    }
+}
+
+/// One of `ein solve`'s surfaces, rendered as the binary renders it: the
+/// read-out under a question (stdout, then its stderr lines and exit code),
+/// the region trace, or `ein render lattice`'s DOT.
+fn region_op(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut ein_core::Kb,
+    path: &Path,
+    op: Op,
+    jobs: usize,
+) -> Result<String, String> {
+    let file = path.to_string_lossy().to_string();
+    let mode = match op {
+        Op::ReadOut(m) => {
+            READ_OUT_MODES
+                .iter()
+                .find(|(n, _)| *n == m)
+                .expect("a mode")
+                .1
+        }
+        _ => READ_OUT_MODES[0].1,
+    };
+    let mut opts = explore::Options::new(mode);
+    opts.budget = SWEEP_BUDGET;
+    opts.limit = SWEEP_LIMIT;
+    opts.jobs = jobs;
+    let argv = |m: &str| format!("{file} --{m}");
+    fn options<'a>(argv: &'a str, file: &'a str) -> ein_render::read_out::Options<'a> {
+        ein_render::read_out::Options {
+            command: "solve",
+            argv,
+            file,
+            budget: SWEEP_BUDGET,
+            uncut: false,
+        }
+    }
+    match op {
+        Op::ReadOut(m) => {
+            let r = ein_infer::read_out::run(kb, terms, ast, &opts).map_err(|e| e.to_string())?;
+            let a = argv(m);
+            let text = ein_render::read_out::render(&r, &options(&a, &file));
+            Ok(format!(
+                "{}--- stderr\n{}\n--- exit {}\n",
+                text.stdout,
+                text.stderr.join("\n"),
+                text.code
+            ))
+        }
+        Op::RegionTrace => {
+            let mut events = ein_infer::events::Events::off();
+            let firings = ein_infer::region::root_firings(kb, terms, ast, &mut events)
+                .map_err(|e| e.to_string())?;
+            let r = ein_infer::read_out::run_with(kb, terms, ast, &opts, &mut events)
+                .map_err(|e| e.to_string())?;
+            ein_render::trace::region::of_read_out(
+                &r,
+                kb,
+                terms,
+                ast,
+                &firings,
+                &options(&file, &file),
+                ein_render::trace::region::Shape {
+                    diagrams: true,
+                    relevant: false,
+                    reorder: false,
+                    full_kb: false,
+                },
+            )
+        }
+        Op::RegionLattice => {
+            let visits = Arc::new(Mutex::new(Default::default()));
+            let mut events =
+                ein_infer::events::Events::off().watched(Box::new(Keep(visits.clone())));
+            let a =
+                explore::run_with(kb, terms, ast, &opts, &mut events).map_err(|e| e.to_string())?;
+            let v = visits.lock().expect("done").clone();
+            let candidates: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
+            Ok(ein_render::dump::region_lattice::dot(
+                &v,
+                &ein_render::dump::region_lattice::Inputs {
+                    source: &file,
+                    argv: &file,
+                    route: match a.route {
+                        explore::Route::DownSet => "1, the alive down-set",
+                        explore::Route::Cube => "2, the cube",
+                    },
+                    candidates: &candidates,
+                },
+                false,
+            ))
+        }
+        _ => unreachable!("a region op"),
+    }
 }
 
 /// One frontend op, as text — the rendering on success, `<refused> …` with the

@@ -102,8 +102,8 @@
   :why    "slot-adjacent-bwd-neg reached ¬(co-loc Ann S4) from ¬(co-loc Cat S3)")
 
 (solve
-  :no-hypothesis (type instance co-loc right-of excluded))
+  :no-hypothesis (type instance co-loc right-of excluded)
+  :expect (region (owing (model (excluded Ann S4)))))
 
 (query
-  :goal (excluded ?x ?y)
-  :expect (model (excluded Ann S4)))
+  :goal (excluded ?x ?y))

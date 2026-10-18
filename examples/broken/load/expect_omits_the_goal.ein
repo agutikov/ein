@@ -1,6 +1,9 @@
-;; Rule 1: the goal's relations are mandatory. An expectation that does not pin
-;; what the query asked is not an expectation — and since naming a relation is
-;; what closes it, "pins" and "names" are the same word here.
+;; A query's `:expect` lists its projection classes — the goal's atoms under
+;; its rows (M1e2 S1e2.1a.5, `region_language.md` § 5) — so a listed fact the
+;; goal does not match is not a class of it. A claim about the state, which
+;; `(q A H1)` here would be, is the region claim's, `(solve … :expect (region
+;; …))`. Until the switch this was M1c's rule 1, *the goal's relations are
+;; mandatory*, and the same file was refused for naming `q` and not `p`.
 
 (relation p Thing Place)
 (relation q Thing Place)

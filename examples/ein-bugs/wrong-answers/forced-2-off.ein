@@ -19,7 +19,12 @@
 ;;; `Contradiction` — the core is a *hypothesis*, not a program fact.
 ;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
-(config :enable-forced-positive false)
+;;;
+;;; **Since M1e2 S1e2.1a.5 the program is `forced-2.ein`'s.** The switch retired
+;;; `:enable-forced-positive` (it wrote into root, which no route does), so the
+;;; `(config …)` line this file was is gone. R never read it — no config option
+;;; changes R (`configuration.md` § 2.5) — so the file's R is the one it had,
+;;; and the register keeps the walk's answer above as its `wrong`.
 (relation thing T)
 (relation q T)
 (relation bad T)

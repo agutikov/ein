@@ -5,15 +5,16 @@
 
 Banked as plans/m1e2_correctness/probes/region.py when Q-M1e2.7 was filed and
 moved here by M1e2 S1e2.1a.1, which made it the **second route** the library
-oracle (`ein solve --dump-region`, `ein_infer::region`) is checked against:
+oracle (`ein oracle --dump`, `ein_infer::region`) is checked against:
 `ein-cli/tests/region_dump.rs` runs both on Q-M1e2.7's seven programs and
 compares them node for node. `--json` is the form that test reads.
 
 The lattice over n candidate facts is the n-cube: a node is an n-bit mask, an
 edge adds or removes one fact, and layer k is the masks with k bits set. Every
 node C is appended to FILE as given facts and classified: dead (`ein saturate`
-derives `false`), owing n (`--json-summary`'s `owes.root.total` of a
-`solve -e -m 0`), or ok. R = the ok nodes.
+derives `false`), owing n (`--json-summary`'s `region.root_owes` of a
+`solve --region-budget 1`, which reads root and stops), or ok. R = the ok
+nodes. The closure is read off `ein saturate --dump`.
 
 Printed, all by subset comparison over the cube, never by assuming R has no
 holes:
@@ -57,28 +58,24 @@ from collections import Counter
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 EIN = os.environ.get("EIN_BIN", os.path.join(ROOT, "ein.rs/target/release/ein"))
-OFF = "(config :enable-forced-positive false :enable-pre-branch-lookahead false)"
-
-
 def classify(src, sub, d, H):
     """('dead' | 'owes n' | 'ok', closure) for the program plus the facts in
     `sub`. The closure is the candidates of `H` the fixpoint holds — read off
-    `--dump-answer`'s `root.ein`, so on an alive node only; `None` on a dead
+    `ein saturate --dump`'s listing, so on an alive node only; `None` on a dead
     one."""
     f = os.path.join(d, "x.ein")
     with open(f, "w") as fh:
-        fh.write(src + "\n" + OFF + "\n" + " ".join(sub) + "\n")
-    sat = subprocess.run([EIN, "saturate", f], capture_output=True, text=True).stdout
+        fh.write(src + "\n" + " ".join(sub) + "\n")
+    sat = subprocess.run([EIN, "saturate", "--dump", f], capture_output=True, text=True).stdout
     if re.search(r"^\s+false\s+\d+", sat, re.M):
         return "dead", None
-    j, a = os.path.join(d, "s.json"), os.path.join(d, "answer")
-    subprocess.run([EIN, "solve", "-e", "-m", "0", f, "--json-summary", j, "--dump-answer", a],
+    j = os.path.join(d, "s.json")
+    subprocess.run([EIN, "solve", f, "--region-budget", "1", "--json-summary", j],
                    capture_output=True)
     with open(j) as fh:
-        owes = json.load(fh)["owes"]["root"]["total"]
-    with open(os.path.join(a, "root.ein")) as fh:
-        held = {re.sub(r"\s+:(rule|source|hypothesis|using)\s+(\"[^\"]*\"|\S+)", "", l.strip())
-                for l in fh if l.startswith("(")}
+        owes = json.load(fh)["region"]["root_owes"]
+    held = {re.sub(r"\s+:(rule|source|hypothesis|using)\s+(\"[^\"]*\"|[^\s)]+)", "", l.strip())
+            for l in sat.split("SATURATED KB DUMP", 1)[1].splitlines() if l.startswith("  (")}
     return (f"owes {owes}" if owes else "ok"), sorted(h for h in H if h in held)
 
 

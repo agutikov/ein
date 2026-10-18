@@ -73,10 +73,18 @@
   :why    "{?x} has p without q"
   :priority 200)
 
-(query
-  :goal   (is-a ?x T)
+(solve
   ;; Today's answer, and the tripwire: the search records `(q A)` and the
   ;; cached `(not (p A))` and calls that a model. The maximal state is
   ;; `{(p A), (q A)}`, so a world-aware fix drops `(not (p A))` and adds
   ;; `(p A)` — and this line stops holding, which is the point of writing it.
-  :expect (model (is-a A T) (q A) (not (p A))))
+  :expect (region
+            ;; state 1 of 3 — ∅, root itself · minimal
+            (model)
+            ;; state 2 of 3 — 1 candidate · from {(q A)}
+            (model (q A))
+            ;; state 3 of 3 — 2 candidates · maximal · from {(p A), (q A)}
+            (model (p A) (q A))))
+
+(query
+  :goal   (is-a ?x T))

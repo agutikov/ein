@@ -379,55 +379,53 @@ fn an_arity_mismatched_activator_is_refused_and_never_reaches_the_compiler() {
 
 // ── `(config …)` coercion ──────────────────────────────────────────
 
-/// Numeric flags take their value from an IR integer literal — work-list
-/// `numeric-config-flags-load-through-the-ir`.
-///
-/// F-KER-4: for a while *every* numeric flag was unsettable from a
-/// `(config …)` block, and the suite did not notice because it built its
-/// configs in code and only the IR path was broken. Both numeric shapes are
-/// here because they failed for unrelated reasons — an `int | None` field was
-/// rejected by a type comparison that could not see through the annotation, a
-/// plain `int` field by unwrapping the IR node through the wrong attribute —
-/// so a change could easily fix one and reintroduce the other. The unset default
-/// is the third: `None` is what makes `lattice-order-seed` mean "no shuffle"
-/// rather than "seed 0", and the two orders differ.
+/// The numeric and string flags are retired — M1e2 S1e2.1a.5: every flag a
+/// program can set is a bool, and setting a retired one is a load error that
+/// says why (`solve_interface.md` § 2.4). The coercions they reached stay the
+/// container's (`ein-einb` round-trips every field), and
+/// `ein-ir/tests/golden/config_coercion.txt` pins each refusal.
 #[test]
-fn numeric_config_flags_load_through_the_ir() {
-    assert_eq!(cfg(":lattice-order-seed 7").lattice_order_seed, Some(7));
-    assert_eq!(cfg(":candidate-order-seed 5").candidate_order_seed, 5);
+fn the_retired_flags_are_refused_with_why() {
+    for (flag, why) in [
+        (":lattice-order-seed 7", "an order lever"),
+        (":candidate-order-seed 5", "it was inert"),
+        (":print-alive true", "it was inert"),
+        (":lattice-order lex", "an order lever"),
+        (":hypgen-rel-weight 2", "an order lever"),
+        (":enable-singleton-writeback false", "it wrote into root"),
+        (":enable-forced-positive false", "it wrote into root"),
+    ] {
+        let e = config(flag).expect_err("a retired flag is refused");
+        assert!(
+            e.contains("was retired at M1e2 S1e2.1a.5") && e.contains(why),
+            "{flag}: {e}"
+        );
+    }
     assert_eq!(
         SolverConfig::default().lattice_order_seed,
         None,
-        "an unset optional flag is absent, not zero"
+        "an unset optional field is absent, not zero"
     );
 }
 
-/// The other three coercions read their IR shapes — work-list
-/// `bool-str-and-float-flags-coerce-from-their-ir-shapes`.
-///
-/// The float cases are the ones worth writing down: **the ein-lang grammar has
-/// no float token**, so a float flag can only ever arrive as an integer
-/// literal or as a quoted string, and both have to work or the flag is
-/// unreachable from a file at all. `2` has to become `2.0` rather than be
-/// refused for not being a float, and `"1.5"` has to be parsed rather than
-/// kept as text — the string route is the *only* way to write a non-integral
-/// weight.
+/// The bool coercion reads its IR shapes — work-list
+/// `bool-str-and-float-flags-coerce-from-their-ir-shapes`, whose string and
+/// float halves retired with their flags.
 #[test]
-fn bool_str_and_float_flags_coerce_from_their_ir_shapes() {
-    assert!(cfg(":print-alive true").print_alive);
-    assert!(!cfg(":print-alive false").print_alive);
-    assert_eq!(cfg(":lattice-order lex").lattice_order, "lex");
-    assert_eq!(cfg(":hypgen-rel-weight 2").hypgen_rel_weight, 2.0);
-    assert_eq!(cfg(r#":hypgen-rel-weight "1.5""#).hypgen_rel_weight, 1.5);
+fn bool_flags_coerce_from_their_ir_shapes() {
+    assert!(cfg(":warn-derived-naf true").warn_derived_naf);
+    assert!(!cfg(":warn-derived-naf false").warn_derived_naf);
+    assert!(!cfg(r#":enable-path-nogoods "false""#).enable_path_nogoods);
 }
 
-/// The three refusals name the flag and the shape they wanted — work-list
-/// `the-three-config-rejections-say-what-they-say`.
+/// The two refusals name the flag and the shape they wanted — work-list
+/// `the-three-config-rejections-say-what-they-say`, whose integer refusal
+/// retired with the integer flags.
 ///
 /// A `(config …)` block is hand-authored and its keys are easy to misspell, so
 /// the unknown-flag message enumerates the accepted set rather than merely
 /// saying no: that enumeration is the only discovery mechanism the surface
-/// language offers for these. The type refusals matter for the opposite
+/// language offers for these. The type refusal matters for the opposite
 /// reason — silently coercing `7` to `true` would hand a puzzle a
 /// configuration its author did not write, and the run would still look
 /// successful.
@@ -438,22 +436,22 @@ fn the_config_rejections_name_the_flag_and_the_shape_they_wanted() {
         unknown.contains("unknown config flag :nope"),
         "must name the offending key: {unknown}"
     );
-    for known in ["candidate-order-seed", "lattice-order-seed", "print-alive"] {
+    for (known, _) in ein_core::config::FLAGS {
         assert!(
             unknown.contains(known),
             "the accepted set must be enumerated, and {known} is missing: {unknown}"
         );
     }
+    for (retired, _) in ein_core::config::RETIRED {
+        assert!(
+            !unknown.contains(retired),
+            "a retired flag is not offered: {unknown}"
+        );
+    }
 
-    let not_an_int = config(":candidate-order-seed foo").expect_err("not an integer");
+    let not_a_bool = config(":warn-derived-naf 7").expect_err("not a boolean");
     assert!(
-        not_an_int.contains("config flag :candidate-order-seed expects an integer"),
-        "{not_an_int}"
-    );
-
-    let not_a_bool = config(":print-alive 7").expect_err("not a boolean");
-    assert!(
-        not_a_bool.contains("config flag :print-alive expects true/false"),
+        not_a_bool.contains("config flag :warn-derived-naf expects true/false"),
         "{not_a_bool}"
     );
 }

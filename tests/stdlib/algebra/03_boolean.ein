@@ -56,12 +56,12 @@
 (rents Ann Car)  (rents Bob Bike)
 
 (solve
-  :no-hypothesis (owns rents shares owns-only either))
+  :no-hypothesis (owns rents shares owns-only either)
+  :expect (region (model (owns      Ann Car) (owns  Ann Bike)
+                         (rents     Ann Car) (rents Bob Bike)
+                         (shares    Ann Car)
+                         (owns-only Ann Bike)
+                         (either    Ann Car) (either Ann Bike) (either Bob Bike))))
 
 (query
-  :goal (shares ?who ?what)
-  :expect (model (owns      Ann Car) (owns  Ann Bike)
-                 (rents     Ann Car) (rents Bob Bike)
-                 (shares    Ann Car)
-                 (owns-only Ann Bike)
-                 (either    Ann Car) (either Ann Bike) (either Bob Bike)))
+  :goal (shares ?who ?what))

@@ -1,36 +1,34 @@
 //! M1d S1d.3.3 — **how `ein solve` reports a model *set***: the guarantee
-//! rule, and the determining key that is the set's compact form.
+//! rule, and the determining key that is the set's compact form, read since
+//! M1e2 S1e2.1a.5's switch over the states a run lists.
 //!
 //! [P1d.3](../../../../docs/history/m1d_satisfiability/README.md#p1d3--model-sets)
 //! answered *print or describe* with **both**, and the two halves are tested
-//! here because they are one surface: an `Ambiguity` block. The rule first,
-//! since the key inherits it.
+//! here because they are one surface. The rule first, since the key inherits
+//! it.
 //!
 //! ## The rule (T1d.3.3.2)
 //!
-//! | the search | what a report of the model set may claim |
+//! | the run | what a report of the set may claim |
 //! |---|---|
-//! | `exhausted = true` | *these are the models* |
-//! | `exhausted = false` | *these are models **found*** — a further model may exist |
+//! | exhausted | *these are the states* — of R, or of the line asked |
+//! | not exhausted | *these are states **found*** — the set may hold more |
 //!
-//! A `Solution` has always qualified its own `k` — *"(not certified —
-//! pass --exhaustive)"* — and the verdict that reports a model **set** did
-//! not, which is the wrong way round: `k = 1` unqualified is a guess about
-//! uniqueness, and `k = 5` unqualified is a **wrong count**.
-//! `examples/saturation/type-exclusivity/colors.ein` is the proof and is one
-//! of the two fixtures below: at the default depth `solve -e` finds 5 models
-//! and at `-m 6` there are **9**. `exhausted` was printed by `--stats` and by
-//! nothing else, so a reader of the count had no way to know it was a lower
-//! bound.
+//! The walk's `Ambiguity` printed a bare *5* for
+//! `examples/saturation/type-exclusivity/colors.ein`, whose maximal line has
+//! **9** states — the proof the rule needed. The region read-out carries the
+//! qualifier on every count: a describe's `k_s` says *a lower bound* and
+//! where it is complete up to, and a mode's line says *as asked — may hold
+//! more*.
 //!
 //! ## The key (T1d.3.3.4)
 //!
-//! `--models key` is **additional output, never a replacement**: it chooses
-//! the *projection* of the same model set that goes to stdout, and reaches
-//! nothing recorded. The third test is that claim, checked the way
+//! `--models key` is **additional output, never a second answer**: it adds a
+//! projection of the listed states to stdout and reaches nothing recorded. The
+//! third test is that claim, checked the way
 //! [S1d.2.5](../../../../docs/history/m1d_satisfiability/hypotheses_from_obligations.md)
 //! checked its lever — run the entry both ways and diff everything outside
-//! the cells that are allowed to move.
+//! the block that is allowed to move.
 
 use std::process::Command;
 
@@ -63,84 +61,66 @@ fn row(run: &Run, label: &str) -> String {
         .to_string()
 }
 
-/// **exhausted-true-says-these-are-the-models.** Row one of the rule, on a
-/// real multi-model entry.
-///
-/// `colors.ein` at `-m 6` exhausts with nine models, and that is the only
-/// state in which the engine may print a bare count. Nothing qualifies it,
-/// nothing says "found", and `--stats` agrees — which is the assertion that
-/// keeps the two surfaces from drifting apart, since the qualifier is
-/// computed from `stats.exhausted` and printed nowhere near it.
+const COLORS: &str = "examples/saturation/type-exclusivity/colors.ein";
+
+/// **exhausted-says-these-are-the-states.** Row one of the rule, on a real
+/// multi-state entry: `colors.ein`'s R is 169 states, exhausted, and its
+/// maximal line nine — the walk's nine models, asked by `--maximal`.
 #[test]
-fn an_exhausted_search_reports_the_models() {
-    let run = ein(&[
-        "solve",
-        "examples/saturation/type-exclusivity/colors.ein",
-        "-e",
-        "-m",
-        "6",
-        "-s",
-    ]);
-    assert_eq!(run.code, 0);
-    assert_eq!(row(&run, "exhausted"), "exhausted        true");
-    assert_eq!(row(&run, "solutions (k)   "), "solutions (k)   9");
+fn an_exhausted_run_reports_the_states() {
+    let all = ein(&["solve", COLORS]);
+    assert_eq!(all.code, 0);
+    assert_eq!(row(&all, "states (k_s)"), "states (k_s)      169");
     assert_eq!(
-        row(&run, "verdict"),
-        "verdict         Ambiguous — distinct complete models; \
-         the puzzle is under-determined"
+        row(&all, "exhausted"),
+        "exhausted         yes — every commitment is classified: this is all of R"
+    );
+    assert_eq!(row(&all, "maximal line"), "maximal line      9 states");
+    let max = ein(&["solve", COLORS, "--maximal"]);
+    assert_eq!(
+        row(&max, "maximal line"),
+        "maximal line      9 states — all of them"
+    );
+    assert_eq!(
+        row(&max, "exhausted"),
+        "exhausted         yes — this is all of the maximal line"
     );
 }
 
-/// **exhausted-false-says-these-are-models-found.** Row two, and the one that
-/// fails if someone later drops the qualifier.
-///
-/// The same file at the default cap. Every number on the surface is *the same
-/// kind of number* as above and every one of them is a lower bound: the search
-/// stopped at depth 5 with a non-empty frontier and the true count is 9. Two
-/// separate marks carry that — the parenthesis on the count and the word
-/// *found* in the verdict — because a reader who scans one line must not have
-/// to have read the other.
+/// **not-exhausted-says-these-are-states-found.** Row two, and the one that
+/// fails if someone later drops the qualifier: on a part asked (`-n 5`) and
+/// on a description its budget stopped. Every number is the same kind of
+/// number as above, and every one is a lower bound.
 #[test]
-fn an_unexhausted_search_reports_models_found() {
-    let run = ein(&[
-        "solve",
-        "examples/saturation/type-exclusivity/colors.ein",
-        "-e",
-        "-s",
-    ]);
-    assert_eq!(run.code, 0);
-    assert_eq!(row(&run, "exhausted"), "exhausted        false");
+fn an_unexhausted_run_reports_states_found() {
+    let part = ein(&["solve", COLORS, "--maximal", "-n", "5"]);
+    assert_eq!(part.code, 0);
     assert_eq!(
-        row(&run, "solutions (k)   "),
-        "solutions (k)   5   (a lower bound — the search did not exhaust)"
+        row(&part, "maximal line"),
+        "maximal line      5 states, as asked — the maximal line may hold more"
     );
+    assert!(
+        row(&part, "exhausted").starts_with("exhausted         no — stopped as asked"),
+        "{}",
+        part.out
+    );
+    let stopped = ein(&["solve", COLORS, "--region-budget", "50"]);
+    assert_eq!(stopped.code, 0);
     assert_eq!(
-        row(&run, "verdict"),
-        "verdict         Ambiguous — distinct complete models found; \
-         the puzzle is under-determined"
+        row(&stopped, "states (k_s)"),
+        "states (k_s)      37   (a lower bound: complete up to commitments of 2 candidates)"
     );
-    // And the claim behind the claim: the count really is short. A fixture
-    // that only asserted the wording would still pass if `colors.ein` grew a
-    // clue and stopped being ambiguous at depth 6.
-    let deeper = ein(&[
-        "solve",
-        "examples/saturation/type-exclusivity/colors.ein",
-        "-e",
-        "-m",
-        "6",
-        "-s",
-    ]);
-    assert_eq!(row(&deeper, "solutions (k)   "), "solutions (k)   9");
+    assert!(row(&stopped, "exhausted").starts_with("exhausted         no — route 1 stopped"));
 }
 
 /// **the-key-is-a-projection-not-a-second-answer.** T1d.3.3.4's constraint,
 /// as a diff.
 ///
-/// `--models key` may move the model *blocks* on stdout and nothing else. So:
-/// the same entry, both ways, with `--json-summary` written each time — the
-/// summaries must be **byte-identical**, because `verdict.solutions` is what
-/// every downstream consumer reads, and the two runs' stdout must agree on
-/// every line that is not a model block.
+/// `--models key` may add its block to stdout and nothing else. So: the same
+/// entry, both ways, with `--json-summary` written each time — the summaries
+/// must be **byte-identical**, because `region.states` is what every
+/// downstream consumer reads, and stdout must agree on every line outside the
+/// block and the header's echo of the flags.
 #[test]
 fn the_key_form_changes_stdout_and_nothing_recorded() {
     let dir = std::env::temp_dir().join(format!("ein-model-set-{}", std::process::id()));
@@ -150,11 +130,17 @@ fn the_key_form_changes_stdout_and_nothing_recorded() {
     let b = dir.join("key.json");
     let entry = "examples/lattice/02_genuine_3set_death.ein";
 
-    let listed = ein(&["solve", entry, "-e", "--json-summary", &a.to_string_lossy()]);
+    let listed = ein(&[
+        "solve",
+        entry,
+        "--maximal",
+        "--json-summary",
+        &a.to_string_lossy(),
+    ]);
     let keyed = ein(&[
         "solve",
         entry,
-        "-e",
+        "--maximal",
         "--models",
         "key",
         "--json-summary",
@@ -166,19 +152,21 @@ fn the_key_form_changes_stdout_and_nothing_recorded() {
         std::fs::read_to_string(&b).expect("a summary"),
         "--models moved something a consumer reads"
     );
-    // The verdict header is identical; only what follows it differs.
-    let head = |r: &Run| {
+    let body = |r: &Run| {
         r.out
             .lines()
-            .take_while(|l| !l.trim_start().starts_with("model 1/"))
-            .take(4)
+            .skip(1)
+            .take_while(|l| !l.starts_with("models — "))
             .map(str::to_string)
             .collect::<Vec<_>>()
+            .join("\n")
+            .trim_end()
+            .to_string()
     };
-    assert_eq!(head(&listed), head(&keyed));
+    assert_eq!(body(&listed), body(&keyed));
     assert!(
-        listed.out.contains("model 1/3") && !keyed.out.contains("model 1/3"),
-        "the key form should stand in for the blocks:\n{}",
+        !listed.out.contains("determining key") && keyed.out.contains("determining key"),
+        "the key form adds its block:\n{}",
         keyed.out
     );
     let _ = std::fs::remove_dir_all(&dir);
@@ -189,20 +177,23 @@ fn the_key_form_changes_stdout_and_nothing_recorded() {
 ///
 /// Three things a key table must carry, and each is a separate failure:
 /// the *size* against the varying total, the *count* of equally minimal keys
-/// — the answer to "why these" — and one row per model. The rows are the
-/// joint projection, so their number is `k`; an envelope's would have been the
-/// product.
+/// — the answer to "why these" — and one row per state. The rows are the
+/// joint projection, so their number is the states'; an envelope's would have
+/// been the product.
 #[test]
-fn the_key_table_names_its_size_its_alternatives_and_one_row_per_model() {
+fn the_key_table_names_its_size_its_alternatives_and_one_row_per_state() {
     let run = ein(&[
         "solve",
         "examples/lattice/02_genuine_3set_death.ein",
-        "-e",
+        "--maximal",
         "--models",
         "key",
     ]);
     assert_eq!(run.code, 0);
-    assert_eq!(row(&run, "solutions (k)   "), "solutions (k)   3");
+    assert_eq!(
+        row(&run, "maximal line"),
+        "maximal line      3 states — all of them"
+    );
     assert_eq!(
         row(&run, "determining key"),
         "determining key — 2 of 3 varying slots"
@@ -214,30 +205,30 @@ fn the_key_table_names_its_size_its_alternatives_and_one_row_per_model() {
         .skip(1)
         .take_while(|l| !l.trim().is_empty())
         .collect();
-    assert_eq!(table.len(), 3, "one row per model, got:\n{table:#?}");
+    assert_eq!(table.len(), 3, "one row per state, got:\n{table:#?}");
     assert!(
-        run.out.contains("rows, one per model."),
-        "an exhausted key table should claim the models, not models found:\n{}",
+        run.out.contains("3 rows, one per state."),
+        "an exhausted key table claims the states, not states found:\n{}",
         run.out
     );
 }
 
-/// **an-unaffordable-key-prints-the-models.** The fallback, and it is a
-/// first-class answer rather than an error.
+/// **an-unaffordable-key-says-why.** The fallback, and it is a first-class
+/// answer rather than an error.
 ///
 /// A minimum determining set is a minimum hitting set, which is NP-hard, and
 /// `branching/06_lookahead_on.ein` is the corpus entry that shows it: 42
-/// varying slots, 22 models, minimum key **8**, and `C(42, 8) = 118 030 185`
-/// candidate keys — so the count that answers *"why these"* cannot be taken
-/// and the form declines rather than printing an arbitrary basis. What it
-/// falls back to is the enumeration, which was a legitimate winner of the
-/// pricing all along, so the exit code is 0 and the models are all there.
+/// varying slots over its maximal line's 22 states, minimum key **8**, and
+/// `C(42, 8) = 118 030 185` candidate keys — so the count that answers *"why
+/// these"* cannot be taken and the form declines rather than printing an
+/// arbitrary basis. The states are listed above it either way, so the exit
+/// code is 0 and nothing is withheld.
 #[test]
-fn an_unaffordable_key_falls_back_to_the_enumeration() {
+fn an_unaffordable_key_says_why() {
     let run = ein(&[
         "solve",
         "examples/branching/06_lookahead_on.ein",
-        "-e",
+        "--maximal",
         "--models",
         "key",
     ]);
@@ -254,31 +245,48 @@ fn an_unaffordable_key_falls_back_to_the_enumeration() {
         "the reason should name the number that made it unaffordable:\n{}",
         run.out
     );
+    // The states are listed above it, as far as stdout's 100 lines go, and
+    // the cut names the file that holds the rest.
     assert!(
-        flat.contains("the models are printed instead") && run.out.contains("model 22/22"),
-        "the fallback is the enumeration, whole:\n{}",
+        run.out.contains(";; state 1 of 22"),
+        "the states are listed:\n{}",
+        run.out
+    );
+    assert!(
+        run.out
+            .contains(";; … 13 more states: --dump-answer DIR writes the listing uncut"),
+        "{}",
         run.out
     );
 }
 
-/// **only-a-model-set-has-a-key.** The flag is inert on the other verdicts.
+/// **only-a-set-has-a-key.** The flag is inert where one state or none is
+/// listed.
 ///
-/// A single model is its own smallest description and a refutation has no
-/// model set at all, so `--models key` may not change one byte of either.
-/// Checked rather than assumed, because the natural way to write the renderer
-/// — read the flag once, at the top — would have got this wrong.
+/// A single state is its own smallest description and an empty R has no set
+/// at all, so `--models key` may not change one byte of either but the
+/// header's echo of the flags. Checked rather than assumed, because the
+/// natural way to write the renderer — read the flag once, at the top — would
+/// have got this wrong, and did, until the switch's own test run.
 #[test]
-fn the_flag_is_inert_where_there_is_no_model_set() {
+fn the_flag_is_inert_where_there_is_no_set() {
     for entry in [
         "examples/branching/05_mini_zebra.ein",
         "examples/features/12_expect_false.ein",
     ] {
-        let listed = ein(&["solve", entry, "-e"]);
-        let keyed = ein(&["solve", entry, "-e", "--models", "key"]);
+        let listed = ein(&["solve", entry, "--maximal"]);
+        let keyed = ein(&["solve", entry, "--maximal", "--models", "key"]);
+        let body = |r: &Run| {
+            r.out
+                .lines()
+                .skip(1)
+                .map(str::to_string)
+                .collect::<Vec<_>>()
+        };
         assert_eq!(
-            (listed.out, listed.code),
-            (keyed.out, keyed.code),
-            "--models key moved {entry}, which has no model set"
+            (body(&listed), listed.code),
+            (body(&keyed), keyed.code),
+            "--models key moved {entry}, which has no set"
         );
     }
 }

@@ -110,8 +110,15 @@ fn every_state_is_the_oracles_and_every_claim_is_checked_once() {
             });
             opts.budget = u64::MAX;
             let (mut kb, mut terms, ast) = loaded(&path).expect("loaded once");
-            let out = read_out::run(&mut kb, &mut terms, &ast, &opts)
-                .unwrap_or_else(|e| panic!("{rel}: {e}"));
+            let out = match read_out::run(&mut kb, &mut terms, &ast, &opts) {
+                Ok(out) => out,
+                // A goal the compiler refuses ends the run where a state is
+                // answered (M1a S1a.6.6): `query-goal-free-head.ein`, whose
+                // refusal `corpus_cli` banks, and `features/02_star_in_
+                // identifiers.ein`, which declares no `solve` for it.
+                Err(ein_infer::solve::SolveError::Compile(_)) => continue,
+                Err(e) => panic!("{rel}: {e}"),
+            };
             let tag = format!("{rel} {which:?}");
             for s in &out.states {
                 let m = mask(&s.rep);
@@ -140,7 +147,16 @@ fn every_state_is_the_oracles_and_every_claim_is_checked_once() {
                 let mut seen: Vec<usize> =
                     q.classes.iter().flat_map(|c| c.states.clone()).collect();
                 seen.sort_unstable();
-                if seen != (0..out.states.len()).collect::<Vec<_>>() {
+                // The states a query is over: its `:over`'s, as the read-out
+                // flags them, or every state when the run listed another set.
+                let over: Vec<usize> = (0..out.states.len())
+                    .filter(|&i| match (q.as_asked, q.over) {
+                        (true, ein_ir::expect::Over::Minimal) => out.states[i].minimal,
+                        (true, ein_ir::expect::Over::Maximal) => out.states[i].maximal,
+                        _ => true,
+                    })
+                    .collect();
+                if seen != over {
                     failures.push(format!(
                         "{tag}: {}'s classes do not partition the states",
                         q.goal

@@ -260,9 +260,10 @@ is the one the cargo test re-implements, and the two have to stay one rule.
 
 ## What may be claimed here — M1d S1d.4.3
 
-**A claim that cannot be checked at the runner's own depth does not go in.**
-`ein test` exhausts and it exhausts at `--max-set-size 5`; where the frontier
-is still non-empty there, `:expect` reports
+**A claim that cannot be checked at the runner's own budget does not go in.**
+`ein test` runs the question each claim is about, at the default
+`--region-budget` since M1e2 S1e2.1a.5 (the walk's `--max-set-size 5` before);
+where the run stops short of R there, `:expect` reports
 [`NOT CHECKED`](../docs/kernel/defined_behaviour.md) — which is honest, is not
 a pass, and **takes a failing exit code**. So the policy needs no mechanism: a
 claim that does not check cannot be added without turning the gate red. It is
@@ -271,13 +272,13 @@ the failure mode of adding one, not a convention to remember.
 Its cost today is **zero entries** — 59 corpus claims, 59 held, all 59 under a
 search that exhausted, and 58 of them entering no commitment at all
 ([`closure_census.md`](../docs/history/m1d_satisfiability/closure_census.md)).
-Its forward cost is the **ten** corpus entries whose claim *would* come back
-unchecked if one were written — `saturation/type-exclusivity/pets.ein` most
-sharply, which reports `Contradiction k = 0` at `-m 5` and has **35 models** at
-`-m 10`. None of the ten carries a claim, and none gets one until the search
-that would check it is affordable, which is
-[P1d.10](../docs/history/m1d_satisfiability/README.md#p1d10--exhaustive-search)'s
-subject rather than this directory's.
+Its forward cost was the **ten** corpus entries whose claim *would* have come
+back unchecked under the walk — `saturation/type-exclusivity/pets.ein` most
+sharply, which the walk called `Contradiction k = 0` at `-m 5` and which has
+**35 models** at `-m 10`. Under R the set is the entries a describe does not
+exhaust at the default budget — the zebra family among them, and `pets.ein`
+is not: its R, 11 339 states, is exhausted. Making those affordable is
+P1e2.1c's speed, not this directory's.
 
 **The corollary for a new fixture**: keep it small enough that its answer is
 reached by saturation or by a couple of layers. That is what every program here

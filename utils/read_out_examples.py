@@ -10,14 +10,12 @@ binary; re-write it with
 
     python3 utils/read_out_examples.py [--bin ein.rs/target/release/ein]
 
-**Until S1e2.1a.5's switch a bare `ein solve` is the walk**, so a run that
-names no region flag is given `--region-budget 524288`, the default budget,
-and its caption and header say so. The switch drops that, and the page is
-written again.
+Until S1e2.1a.5's switch a bare `ein solve` was the walk, so a run that named
+no region flag was given `--region-budget 524288`, the default budget; the
+switch dropped that and the page was written again.
 
-Two blocks are not one whole run: X3's query `:over maximal`, which no flag
-asks until `:over` lands at the switch and which is kept as the preview
-printed it, and X4's scratch variant, whose query block is quoted.
+One block is not one whole run: X4's scratch variant, whose query block is
+quoted.
 """
 import argparse
 import os
@@ -29,8 +27,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md"
-REGION_FLAGS = {"--minimal", "--maximal", "--single", "--region-budget"}
-PRE_SWITCH = ["--region-budget", "524288"]
 
 ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
 ap.add_argument("--bin", default=os.environ.get("EIN_BIN", str(ROOT / "ein.rs/target/release/ein")))
@@ -51,13 +47,10 @@ assert variant != src
 
 
 def argv(args):
-    """The run's arguments: `--uncut` is `--dump-answer DIR`, and a run with
-    no region flag gets the default budget until the switch."""
+    """The run's arguments: `--uncut` is `--dump-answer DIR`."""
     a = []
     for x in args:
         a.extend(["--dump-answer", "DIR"] if x == "--uncut" else [x])
-    if not REGION_FLAGS & set(a):
-        a = PRE_SWITCH + a
     return a
 
 
@@ -109,14 +102,13 @@ re-generated the same day after the user's three rulings
 [`utils/read_out_examples.py`](../../../utils/read_out_examples.py): stdout,
 then each stderr line as `stderr: …`, then the exit code. A block captioned
 `--dump-answer DIR` is the `DIR/answer.txt` that run writes: the read-out with
-no listing cut. **Until the switch (T1e2.1a.5.3) a bare `ein solve` is the
-walk**, so a run that names no region flag is given `--region-budget 524288`,
-the default budget, and its caption and header say so; the switch drops it.
+no listing cut. Until the switch (T1e2.1a.5.3) a bare `ein solve` was the
+walk, so a run that named no region flag was given `--region-budget 524288`,
+the default budget; since the switch a bare `ein solve` is the description.
 [`ein-cli/tests/read_out_examples.rs`](../../../ein.rs/crates/ein-cli/tests/read_out_examples.rs)
 runs every caption again and compares the block, so the page is the read-out's
-golden. Two blocks are not one whole run: X3's query `:over maximal`, kept as
-the preview printed it until `:over` lands at the switch, and X4's scratch
-variant, whose query block is quoted.
+golden. One block is not one whole run: X4's scratch variant, whose query block
+is quoted.
 
 """)
 add("""---
@@ -127,7 +119,7 @@ add("""---
 |---|---|---:|---|
 | [X1](#x1--branching05_mini_zebraein-everything-at-once) | `branching/05_mini_zebra.ein` | 9 | the default read-out, every row; `(merged …)` with `(or …)`; a query with an undetermined class |
 | [X2](#x2--lattice02_genuine_3set_deathein-one-program-every-mode) | `lattice/02_genuine_3set_death.ein` | 3 | one program under every mode: describe, `--maximal`, `--minimal`, `-n 2`, `--single`, `--maximal --single` |
-| [X3](#x3--features11_expect_ambiguityein-a-query-over-the-maximal-line) | `features/11_expect_ambiguity.ein` | 4 | a query over all of R against one `:over maximal`: today's only `(or …)` claim, migrated |
+| [X3](#x3--features11_expect_ambiguityein-a-query-over-the-maximal-line) | `features/11_expect_ambiguity.ein` | 4 | a query `:over maximal`: the walk's only `(or …)` claim, migrated, and holding |
 | [X4](#x4--lattice07_two_pairs_two_tablesein-components-and-projection-classes) | `lattice/07_two_pairs_two_tables.ein` | 16 | the user's two tables: 8 components, and 2 projection classes of 4 |
 | [X5](#x5--latticesynthmerged_statesein-every-state-merged) | `lattice/synth/merged_states.ein` | 5 | ∅ not in R; a `(merged …)` on every state; two components |
 | [X6](#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe) | `tests/stdlib/closure/03_closed_and_owing.ein` | 0 | empty R, the owing kind; `--single` says `Open` |
@@ -190,19 +182,14 @@ add(block(["--maximal", "--single", "examples/lattice/02_genuine_3set_death.ein"
 add("""## X3 — `features/11_expect_ambiguity.ein`: a query over the maximal line
 
 [`region_examples.md`](region_examples.md)'s E5. Two people, two seats,
-restrictions only. Today's claim, the corpus's only `(or …)`, lists **R's
+restrictions only. The walk's claim, the corpus's only `(or …)`, listed **R's
 maximal line**: two of R's seven states. Over all of R the goal `(seat ?who
-?slot)` sees every seat fact, so each state is its own class, and `∅` is the
-undetermined one.
+?slot)` would see every seat fact, so each state would be its own class and
+`∅` the undetermined one. The switch migrated the query to `:over maximal`, as
+[`region_language.md` § 7](region_language.md#7-the-migration-named) says,
+so its answer is exactly the walk's claim, word for word, and it holds.
 """)
 add(block(["examples/features/11_expect_ambiguity.ein"]))
-add("""Asked `:over maximal` (the preview's `--over maximal`; the keyword lands at
-the switch), the query's answer is exactly today's claim, word for word. That
-is how [`region_language.md` § 7](region_language.md#7-the-migration-named)
-migrates it. Only the query block differs, so only it is shown:
-""")
-q = kept("`ein solve examples/features/11_expect_ambiguity.ein`, the query asked `:over maximal`")
-add(f"`ein solve examples/features/11_expect_ambiguity.ein`, the query asked `:over maximal` — kept as the preview printed it, until `:over` lands at the switch\n\n```text\n{q}\n```\n")
 
 add("""## X4 — `lattice/07_two_pairs_two_tables.ein`: components and projection classes
 

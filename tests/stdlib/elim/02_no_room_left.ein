@@ -67,8 +67,8 @@
 (not (holds S1 V3))        ; ⊥ — S1 has nowhere left to go
 
 (solve
-  :no-hypothesis (is-a holds))
+  :no-hypothesis (is-a holds)
+  :expect (false))
 
 (query
-  :goal (holds ?slot ?value)
-  :expect (false))
+  :goal (holds ?slot ?value))

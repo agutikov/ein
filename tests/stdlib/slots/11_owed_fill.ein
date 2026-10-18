@@ -50,8 +50,8 @@
 (co-loc S1 Ann)              ; S1 still owes a Pet; S2 owes both
 
 (solve
-  :no-hypothesis (type instance co-loc))
+  :no-hypothesis (type instance co-loc)
+  :expect (region (owing (model (co-loc S1 Ann)))))
 
 (query
-  :goal (co-loc ?a ?b)
-  :expect (model (co-loc S1 Ann)))
+  :goal (co-loc ?a ?b))

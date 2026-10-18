@@ -62,14 +62,14 @@
 (q E F)                ; p is authored empty on purpose
 
 (solve
-  :no-hypothesis (n m p q))
+  :no-hypothesis (n m p q)
+  :expect (region (model (symmetric n) (symmetric m)
+                         (converse n n) (converse m m)
+                         (converse p q) (converse q p)
+                         (n A B) (n B A)
+                         (m C D) (m D C)
+                         (q E F)
+                         (p F E))))
 
 (query
-  :goal (symmetric ?rel)
-  :expect (model (symmetric n) (symmetric m)
-                 (converse n n) (converse m m)
-                 (converse p q) (converse q p)
-                 (n A B) (n B A)
-                 (m C D) (m D C)
-                 (q E F)
-                 (p F E)))
+  :goal (symmetric ?rel))

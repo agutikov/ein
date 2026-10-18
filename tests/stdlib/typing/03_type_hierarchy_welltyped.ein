@@ -37,8 +37,8 @@
 (owns Ann Rex)
 
 (solve
-  :no-hypothesis (is-a* owns owned-by))
+  :no-hypothesis (is-a* owns owned-by)
+  :expect (region (model (owns Ann Rex) (is-a* Pet Animal))))
 
 (query
-  :goal (owns ?who ?what)
-  :expect (model (owns Ann Rex) (is-a* Pet Animal)))
+  :goal (owns ?who ?what))

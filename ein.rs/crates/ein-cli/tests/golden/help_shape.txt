@@ -33,9 +33,9 @@ COMMAND ein render kb
   OPTION --since -- metavar=FILE arity=1 default=None choices=- group=- required=False help=load and saturate FILE too, and draw at penwidth 3 every fact it lacks — a model against its root.ein is what the commitment added
   POSITIONAL file required=True help=
 COMMAND ein render lattice
-  ABOUT commitment-lattice / proof-DAG DOT (runs a solve, S1.6.3)
-  OPTION --max-set-size -- metavar=MAX_SET_SIZE arity=1 default='3' choices=- group=- required=False help=commitment-set depth cap (default 3)
-  OPTION --view -- metavar=VIEW arity=1 default='solution' choices=full|solution group=- required=False help='solution' survivors + pruned siblings (default) or 'full' every commitment (falls back to 'solution' — solve doesn't store the per-commitment SetNode DAG)
+  ABOUT the nodes a describing `ein solve` run visits, as a DAG: R green, owing amber, dead red (M1e2)
+  OPTION --region-budget -- metavar=FACTS arity=1 default=None choices=- group=- required=False help=the run's budget, as `ein solve --region-budget`'s (default 2^19); a run that reaches it is drawn as far as it went
+  OPTION --view -- metavar=VIEW arity=1 default='solution' choices=full|solution group=- required=False help='solution' the nodes of R and the nodes one fact above them that are not (default), or 'full' every node the run visited
   POSITIONAL file required=True help=
 COMMAND ein render program
   ABOUT the program as written: one DOT digraph per group — rules, ontology, facts, the query. Parsed, never loaded, so a program the loader refuses still draws
@@ -57,61 +57,51 @@ COMMAND ein render rules
   POSITIONAL file required=True help=
   SUBCOMMAND saturate (delegated)
 COMMAND ein solve
-  ABOUT solve a puzzle: print the solution(s) or the unsat core
-  OPTION --diff-models -- metavar=FILE arity=1 default=None choices=- group=- required=False help=after the answer, compare its models with the ones FILE lists ('closes R …', then 'model' and one fact per line) and print what matches, what is missing, what is spurious and what is one fact off. Changes stdout and nothing recorded
-  OPTION --dump-answer -- metavar=DIR arity=1 default=None choices=- group=- required=False help=write the answer as files to DIR: the program, root, one loadable file per model and open state with the commitment that reached it, every refuted commitment, and answer.json (= --json-summary). DIR is made before the search; past that, stdout, stderr and the exit code are unchanged.
-  OPTION --dump-config -c metavar=- arity=0 default=False choices=- group=- required=False help=print the resolved SolverConfig before solving
-  OPTION --dump-lattice -- metavar=DIR arity=1 default=None choices=- group=- required=False help=persist every commitment the search tested, with its firings and outcome, to DIR (enterings/, proof_summary.json — docs/kernel/inference/lattice_dump.md). One dumper per solve, so not with --dump-states, -v, --layer-progress or -t
-  OPTION --dump-region -- metavar=DIR arity=1 default=None choices=- group=- required=False help=write the solution region to DIR: every subset of the root candidates saturated by the program's rules alone, with no search machinery (region.json, region.md), and this run's walk over the lattice (walk.json) — docs/kernel/inference/region_dump.md. Runs after the solve; stdout, the exit code and the other artefacts are unchanged.
-  OPTION --dump-states -D metavar=DIR arity=1 default=None choices=- group=- required=False help=persist the engine dump tree (root snapshot per layer + timeline) to DIR
+  ABOUT the solution region R: describe it, or ask one question about it (--minimal, --maximal, --single, -n N)
+  OPTION --diff-models -- metavar=FILE arity=1 default=None choices=- group=- required=False help=after the read-out, compare the states it listed with the models FILE lists ('closes R …', then 'model' and one fact per line): what matches, what is missing, what is spurious and what is one fact off
+  OPTION --dump-answer -- metavar=DIR arity=1 default=None choices=- group=- required=False help=write the answer as files to DIR: answer.txt (the read-out uncut), answer.json (= --json-summary), index.json, one loadable file per state, the owing frontier and N (docs/kernel/inference/answer_dump.md). DIR is made before the run; past that, stdout, stderr and the exit code are unchanged.
+  OPTION --dump-config -c metavar=- arity=0 default=False choices=- group=- required=False help=print the resolved config before the read-out
+  OPTION --dump-lattice -- metavar=DIR arity=1 default=None choices=- group=- required=False help=write every node this run visited, in visit order, to DIR: nodes.json (ein-lattice/2) and nodes.md (docs/kernel/inference/lattice_dump.md). DIR is made before the run; past that, stdout, stderr and the exit code are unchanged.
   OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Schema: docs/kernel/inference/events.md.
   OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume.
-  OPTION --exhaustive -e metavar=- arity=0 default=False choices=- group=stop required=False help=do not stop at the first model. Certification also needs the lattice to end within --max-set-size, which `exhausted` in --stats reports (slower)
-  OPTION --full-kb-snapshots -F metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) append a whole-KB snapshot of the final state
-  OPTION --hyp-stats -H metavar=- arity=0 default=False choices=- group=- required=False help=print the root-hypothesis preview (total + per-relation breakdown + hypgen filter report)
-  OPTION --jobs -j metavar=JOBS arity=1 default='1' choices=- group=- required=False help=threads for a layer's enterings, or 'auto' (default: 1). Same verdict, same models, same counters
-  OPTION --json-summary -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write the structured run summary (verdict, model, every engine counter, the root-saturation shape, the resolved config) to FILE as JSON. Additive: stdout, stderr and the exit code are unchanged.
-  OPTION --lattice-order -o metavar=LATTICE_ORDER arity=1 default=None choices=lex|score-sum group=- required=False help=within-layer candidate ordering (S1.5b.26): 'lex' (canonical-tuple sort, the deterministic default) or 'score-sum' (S1.5a.7 hypgen scoring summed per set)
-  OPTION --lattice-sanity-check -y metavar=- arity=0 default=False choices=- group=- required=False help=S1.5b.27 regression: for every alive size-k≥2 commitment, verify every (k-1)-subset parent path saturates to the same kb (1 + k + one per alive parent, so up to 2k+1 each; adds compile/enqueue/fire/quiesce events to --events)
-  OPTION --layer-progress -- metavar=- arity=0 default=False choices=- group=- required=False help=stream the per-layer census to stderr and nothing per entering: three lines a layer — alive, then what the join proposed and the clauses filtered, then what entering them killed, learned and found
-  OPTION --max-enterings -E metavar=MAX_ENTERINGS arity=1 default=None choices=- group=- required=False help=abort after N commitment tries
-  OPTION --max-set-size -m metavar=MAX_SET_SIZE arity=1 default='5' choices=- group=- required=False help=commitment-set depth cap (default: 5)
-  OPTION --max-time -T metavar=MAX_TIME arity=1 default=None choices=- group=- required=False help=abort after N wall-clock seconds
-  OPTION --maximal -- metavar=- arity=0 default=False choices=- group=which required=False help=the region's maximal line: the states of R that nothing can be added to, found by climbing from each member of R. What the walk looks for, under the oracle's node
-  OPTION --minimal -- metavar=- arity=0 default=False choices=- group=which required=False help=the region's minimal line: the commitments of R that nothing can be taken from, and their states. A region mode: until S1e2.1a.5 one of the four region flags is what takes a run off the walk
-  OPTION --models -- metavar=FORM arity=1 default='list' choices=list|key|grid group=- required=False help=how to print the models: 'list' (a block per model, the default); 'key' (the smallest set of slots that tells them apart, and the table of combinations that occur — an ambiguous verdict only); 'grid' (each model and open state as a table, the anchor type's objects down the side, where the program's declarations license one). Changes stdout and nothing recorded
+  OPTION --full-kb-snapshots -F metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) append each traced state's whole KB
+  OPTION --hyp-stats -H metavar=- arity=0 default=False choices=- group=- required=False help=after the read-out, H, the universe: the candidates by relation, each dead alone marked
+  OPTION --jobs -j metavar=JOBS arity=1 default='1' choices=- group=- required=False help=threads for each step's nodes, or 'auto' (default: 1). The same read-out, byte for byte
+  OPTION --json-summary -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write the read-out as ein-summary/2 to FILE: what was asked, R as the run established it, every state, the queries and claims, the work, root and the config. Additive: stdout, stderr and the exit code are unchanged.
+  OPTION --lattice-sanity-check -y metavar=- arity=0 default=False choices=- group=- required=False help=the lattice sanity check on — a lever: no route runs it until P1e2.1c, so it changes nothing printed
+  OPTION --layer-progress -- metavar=- arity=0 default=False choices=- group=- required=False help=stream the route's steps to stderr as it takes them, one line per route-1 layer or mode batch: visited, dead, owing, in R, facts
+  OPTION --max-time -T metavar=MAX_TIME arity=1 default=None choices=- group=- required=False help=abort after N wall-clock seconds, exit 2; checked before each step of work. A machine-dependent limit is never an answer
+  OPTION --maximal -- metavar=- arity=0 default=False choices=- group=which required=False help=the maximal line: the states of R that nothing can be added to, found by climbing from each member of R
+  OPTION --minimal -- metavar=- arity=0 default=False choices=- group=which required=False help=the minimal line: the commitments of R that nothing can be taken from, and their states
+  OPTION --models -- metavar=FORM arity=1 default='list' choices=list|key|grid group=- required=False help=after the read-out, the states it listed: 'key' (the smallest set of slots that tells them apart, and the table of combinations that occur) or 'grid' (each as a table, the anchor type's objects down the side, where the program's declarations license one). 'list', the default, adds nothing
   OPTION --no-diagrams -G metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) suppress all inline dot blocks
-  OPTION --no-kill-cache -K metavar=- arity=0 default=False choices=- group=- required=False help=disable the lookahead-kill (not h) cache (pairs with --no-lookahead to exercise the raw loop)
-  OPTION --no-lookahead -L metavar=- arity=0 default=False choices=- group=- required=False help=disable hypgen's one-step lookahead (forces deaths through the no-good learning path)
-  OPTION --print-final-hfacts -f metavar=- arity=0 default=False choices=- group=- required=False help=dump only the hypothesis-target (query :hrules) facts per solution
+  OPTION --no-kill-cache -K metavar=- arity=0 default=False choices=- group=- required=False help=the lookahead's kill cache off — a lever, as --no-lookahead
+  OPTION --no-lookahead -L metavar=- arity=0 default=False choices=- group=- required=False help=the one-step lookahead off — a lever: no route reads it until P1e2.1c gives it a speed, so it changes nothing printed
+  OPTION --print-final-hfacts -f metavar=- arity=0 default=False choices=- group=- required=False help=after the read-out, each listed state's facts of the candidates' relations: what its commitment is made of
   OPTION --print-final-positive -P metavar=- arity=0 default=False choices=- group=- required=False help=like --print-final-state but drops the (not …) facts
-  OPTION --print-final-state -p metavar=- arity=0 default=False choices=- group=- required=False help=dump each solution's derived facts (for an unsat verdict, the unsat-core facts instead)
-  OPTION --progress-every -g metavar=PROGRESS_EVERY arity=1 default='100' choices=- group=- required=False help=under --verbose, log every N-th entering (default 100; set 1 to log every entering)
-  OPTION --region-budget -- metavar=FACTS arity=1 default=None choices=- group=- required=False help=the region modes' budget: facts derived beyond root, summed over every saturation (default 2^19 = 524288). A run that reaches it prints what it established and bounds, never a different answer
-  OPTION --region-limit -- metavar=N arity=1 default='16' choices=- group=- required=False help=(--dump-region) the most root candidates the region is computed for: 2^N saturations. Above it the directory holds the walk and a note says why; 17-19 warns, 20 and more warns with the projected cost.
-  OPTION --region-states -- metavar=- arity=0 default=False choices=- group=- required=False help=(--dump-region) also keep every node's state beyond root's, as text, in region.json
-  OPTION --relevant -l metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) prune to the goal-relevant slice
-  OPTION --reorder -R metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) cluster steps by target entity instead of engine order
-  OPTION --seed -d metavar=SEED arity=1 default=None choices=- group=- required=False help=pin the --shuffle RNG seed for a reproducible permutation
-  OPTION --shuffle -z metavar=- arity=0 default=False choices=- group=- required=False help=shuffle the within-layer commitment order (a per-layer random permutation). Fresh seed each run unless --seed pins it; the seed used is printed to stderr. Changes the TRAVERSAL order, not the verdict — the answer is shuffle-invariant.
-  OPTION --single -- metavar=- arity=0 default=False choices=- group=stop required=False help=expect exactly one state in the chosen part of the region, answered Solution, Ambiguity, Contradiction or Open; every answer exits 0, and a run that stopped before it decided says so
-  OPTION --solutions -n metavar=N arity=1 default='1' choices=- group=stop required=False help=stop after N distinct solutions (default: 1). With --minimal, --maximal or --region-budget: N states of the chosen part of the region
-  OPTION --stats -s metavar=- arity=0 default=False choices=- group=- required=False help=print engine counters (k, enterings, layers, wall)
-  OPTION --timing -t metavar=- arity=0 default=False choices=- group=- required=False help=print a per-phase wall-clock table: parse, kb load, compile, root saturation, hypothesis search (enterings, layers, saturations, per-hypothesis avg), and totals
-  OPTION --trace -r metavar=FILE.md arity=1 default=None choices=- group=- required=False help=write the self-contained markdown derivation trace to FILE (a file, not stdout)
-  OPTION --verbose -v metavar=- arity=0 default=False choices=- group=- required=False help=stream per-layer + per-entering progress to stderr
+  OPTION --print-final-state -p metavar=- arity=0 default=False choices=- group=- required=False help=after the read-out, each listed state's facts beyond root: its model
+  OPTION --progress-every -g metavar=PROGRESS_EVERY arity=1 default='100' choices=- group=- required=False help=under --verbose, log every N-th node (default 100; set 1 to log every node)
+  OPTION --region-budget -- metavar=FACTS arity=1 default=None choices=- group=- required=False help=the budget: facts derived beyond root, summed over every saturation (default 2^19 = 524288). A run that reaches it prints what it established and bounds, never a different answer
+  OPTION --region-limit -- metavar=N arity=1 default='16' choices=- group=- required=False help=the most candidates a program the static check flags gets the whole cube for: 2^N saturations (default 16). Past it a question that needs the cube is answered in part
+  OPTION --relevant -l metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) prune each derivation to the goal-relevant slice
+  OPTION --reorder -R metavar=- arity=0 default=False choices=- group=- required=False help=(--trace) cluster each section's steps by target entity instead of engine order
+  OPTION --single -- metavar=- arity=0 default=False choices=- group=stop required=False help=expect exactly one state in the chosen part of R, answered Solution, Ambiguity, Contradiction or Open; every answer exits 0, and a run that stopped before it decided says so
+  OPTION --solutions -n metavar=N arity=1 default=None choices=- group=stop required=False help=N states of the chosen part of R — all of it, or the line --minimal or --maximal names — in the route's own order, the same under every lever and -j. Unset, R is described
+  OPTION --stats -s metavar=- arity=0 default=False choices=- group=- required=False help=print the wall clock under the read-out
+  OPTION --timing -t metavar=- arity=0 default=False choices=- group=- required=False help=after the read-out, where the wall clock went: load, the route, the read-out, the print
+  OPTION --trace -r metavar=FILE.md arity=1 default=None choices=- group=- required=False help=write the region trace to FILE: root's derivation, each listed state's from its first minimal commitment, and N, each minimal dead set with why (a file, not stdout)
+  OPTION --verbose -v metavar=- arity=0 default=False choices=- group=- required=False help=stream the route's steps to stderr as it takes them, and every --progress-every-th node
   POSITIONAL file required=True help=
 COMMAND ein test
   ABOUT run the expectations the programs state about themselves (M1c)
   OPTION --events -- metavar=FILE.jsonl arity=1 default=None choices=- group=- required=False help=record the engine's step-by-step event log to FILE (one JSON object per line). Off by default and additive: stdout, stderr and the exit code are unchanged. Schema: docs/kernel/inference/events.md.
   OPTION --events-level -- metavar=EVENTS_LEVEL arity=1 default='normal' choices=normal|verbose group=- required=False help=(--events) `verbose` adds redundant firings and pre-candidate hypothesis skips — ~6x the volume.
-  OPTION --json-report -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write one row per (query …) of the whole selection — the claim's shape, the relations its :goal closes, the outcome, and whether the search exhausted — to FILE as JSON. Additive. Unlike --json-summary it is the report of the run rather than of one query, so it takes any selection.
-  OPTION --json-summary -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write the structured run summary (verdict, model, every engine counter, the root-saturation shape, the resolved config) to FILE as JSON. Additive, and refused when the selection is more than one run.
-  OPTION --max-enterings -E metavar=MAX_ENTERINGS arity=1 default=None choices=- group=- required=False help=abort a query after N commitment tries (as --max-time)
-  OPTION --max-set-size -m metavar=MAX_SET_SIZE arity=1 default='5' choices=- group=- required=False help=commitment-set depth cap (default: 5)
-  OPTION --max-time -T metavar=MAX_TIME arity=1 default=None choices=- group=- required=False help=abort a query after N wall-clock seconds. An abort is an ERROR, never a pass and never a failure: nothing was established either way
+  OPTION --json-report -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write one row per claim and per (query …) of the whole selection — the claim's shape, the relations its :goal closes, the outcome, and what the run found — to FILE as ein-test-report/3. Additive. Unlike --json-summary it is the report of the selection rather than of one run, so it takes any selection.
+  OPTION --json-summary -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write the file's run as ein-summary/2 to FILE, as `ein solve` does. Additive, and refused when the selection is more than one file.
+  OPTION --max-time -T metavar=MAX_TIME arity=1 default=None choices=- group=- required=False help=abort a file after N wall-clock seconds. An abort is an ERROR, never a pass and never a failure: nothing was established either way
   OPTION --quiet -q metavar=- arity=0 default=False choices=- group=volume required=False help=the summary line, and whatever was not ok
-  OPTION --verbose -v metavar=- arity=0 default=False choices=- group=volume required=False help=one line per query, held ones included, with the verdict and k
+  OPTION --region-budget -- metavar=FACTS arity=1 default=None choices=- group=- required=False help=each file's budget, as `ein solve --region-budget`'s (default 2^19 = 524288). A claim the run could not decide within it is NOT CHECKED
+  OPTION --verbose -v metavar=- arity=0 default=False choices=- group=volume required=False help=one line per claim, held ones included, with what the run found
   POSITIONAL path required=True help=a .ein file, or a directory to walk for them
 COMMAND ein saturate
   ABOUT Benchmark + state dump for the Saturator.

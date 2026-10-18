@@ -57,47 +57,66 @@ KB, and a `:goal-text` template that renders the headline answer.
 
 ## Solve it
 
-<!-- transcript: ein solve examples/zebra2.ein -->
+<!-- transcript: ein solve examples/zebra2.ein --single -->
 ```sh
-$ ein solve examples/zebra2.ein
-solve · examples/zebra2.ein
+$ ein solve examples/zebra2.ein --single
+solve · examples/zebra2.ein --single
 ──────────────────────────────────────────────────────────────
-  solutions (k)   1   (not certified — pass --exhaustive)
-  verdict         Solution
+  asked             is R one state? (--single)
+  verdict           Solution — R is one state
+  decided           yes — R holds no other state
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          56 candidates
+  route             1, the alive down-set — L1 dead is upward-closed · L2 discharged is upward-closed · L4 the lines are local
+  work              8 616 saturations · 418 806 facts beyond root
 
-  query bindings
-    ?h_water    = House-1
-    ?h_zebra    = House-5
-    ?who_water  = Norwegian
-    ?who_zebra  = Japanese
+  ;; state 1 of 1 — 18 candidates · from {(drink-loc Juice House-4)}
+  (model (color-loc Blue House-2) (color-loc Green House-5)
+         (color-loc Ivory House-4) (color-loc Red House-3)
+         (color-loc Yellow House-1) (drink-loc Coffee House-5)
+         (drink-loc Juice House-4) (drink-loc Milk House-3)
+         (drink-loc Tea House-2) (drink-loc Water House-1)
+         (nation-loc Englishman House-3) (nation-loc Japanese House-5)
+         (nation-loc Norwegian House-1) (nation-loc Spaniard House-4)
+         (nation-loc Ukrainian House-2) (pet-loc Dog House-4)
+         (pet-loc Fox House-1) (pet-loc Horse House-2) (pet-loc Snail House-3)
+         (pet-loc Zebra House-5) (smoke-loc Chesterfields House-2)
+         (smoke-loc Kools House-1) (smoke-loc Lucky_Strike House-4)
+         (smoke-loc Old_Gold House-3) (smoke-loc Parliament House-5))
 
-    query facts                     rendered
-    (drink-loc Water House-1)       Water is drunk in House-1
-    (nation-loc Norwegian House-1)  the Norwegian lives in House-1
-    (pet-loc Zebra House-5)         the Zebra is kept in House-5
-    (nation-loc Japanese House-5)   the Japanese lives in House-5
-
-  result
-    The Norwegian drinks water in House-1; the Japanese owns zebra in House-5
+  query             (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?h_water = House-1 · ?h_zebra = House-5 · ?who_water = Norwegian · ?who_zebra = Japanese
+                        “The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”
+  as :expect        (model (drink-loc Water House-1)
+                           (nation-loc Japanese House-5)
+                           (nation-loc Norwegian House-1)
+                           (pet-loc Zebra House-5))
 ```
 <!-- /transcript -->
 
-Every word of that answer came from the puzzle's own `:why` / `:goal-text`
-templates — Ein has no built-in vocabulary. The verdict is **read from the
-result**: `k = 1` distinct model = a solution (`k = 0` would print an unsat
-core; `k > 1`, an ambiguity).
+`--single` asks *is the answer one state?* — and the verdict word, `Solution`,
+says yes. The state is listed as a `(model …)` of the guessed facts, and the
+query block reads the goal off it. The headline sentence came from the
+puzzle's own `:goal-text` template — Ein has no built-in vocabulary. Had the
+puzzle two answers, the word would be `Ambiguity`, with two of them shown;
+none, `Contradiction` (with the facts that clash) or `Open` (with what is
+still owed).
 
 ## Three next moves
 
 ```sh
-ein solve examples/zebra2.ein --exhaustive    # certify the solution is UNIQUE (k stays 1)
+ein solve examples/zebra2.ein                 # describe every state the puzzle allows
 ein solve examples/zebra2.ein --trace out.md  # write a full markdown derivation trace
-ein solve examples/zebra2.ein --stats         # + engine counters (enterings, layers, wall)
+ein solve examples/zebra2.ein -s              # + the wall clock per phase
 ```
 
-`--exhaustive` keeps searching after the first model to *prove* there's no
-other; `--trace` emits the step-by-step "it follows that…" narrative with
-inline graphs.
+A bare `ein solve` describes the whole set of states — R — with its counts,
+its lines and what it cost. On this puzzle it finds the one state and stops at
+its default budget before it has shown there is no other, and says so on
+stderr: `--single` is the question that asks for the proof. `--trace` emits the
+step-by-step "it follows that…" narrative with inline graphs.
 
 ## Where to go next
 
@@ -107,7 +126,7 @@ inline graphs.
   the real puzzle, line by line against the Wikipedia solution. **Read it
   now** — it's the natural sequel to this chapter.
 - **Drive Ein from your own program** — [`docs/api/rust.md`](../api/rust.md)
-  (load a `.ein`, call `solve`, read the verdict and trace, in about thirty
+  (load a `.ein`, call `solve`, read the answer and trace, in about thirty
   lines). From a language that is not Rust, run the binary and read
   `--json-summary` / `--events`; there is no binding for another language,
   and [`docs/api/README.md`](../api/README.md) says why.

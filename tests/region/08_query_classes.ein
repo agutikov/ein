@@ -1,0 +1,33 @@
+;;; QUERY CLAIM — projection classes over all of R, `(model)` among them. M1e2
+;;; S1e2.1a.5.
+;;;
+;;; A query's `:expect` lists its classes: each `(model …)` is the goal's atoms
+;;; under one class of rows, and a state whose goal has no row is the class
+;;; `(model)`. The program is 01_states.ein's: R is seven states, of which
+;;; three hold `(a-prop X)` — {a}, {a, b}, {a, c} — and four do not — ∅, {b},
+;;; {c}, {b, c}. So the goal `(a-prop ?x)` falls into two classes over all of
+;;; R, and the claim lists both. A listed fact must be one the goal matches:
+;;; `(b-prop X)` here would be a load error, since a claim about the state is
+;;; the region claim's (01_states.ein).
+
+(rule three-conflict ()
+  :match  (and (a-prop ?x) (b-prop ?y) (c-prop ?z))
+  :assert (false)
+  :priority 200)
+(hrule guess (?R ?T)
+  :match  (is-a ?x ?T)
+  :assert (?R ?x))
+(relation is-a   T T)
+(relation a-prop T)
+(relation b-prop T)
+(relation c-prop T)
+(is-a Item T)
+(is-a X    Item)
+
+(solve
+  :hrules (guess (a-prop Item) guess (b-prop Item) guess (c-prop Item)))
+
+(query
+  :goal   (a-prop ?x)
+  :expect (or (model)
+              (model (a-prop X))))

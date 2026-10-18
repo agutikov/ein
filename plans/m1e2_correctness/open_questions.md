@@ -101,6 +101,24 @@ panic, are listed in the [milestone README](README.md#p1e23--surfaces-that-misre
 with witnesses. They are correctness issues and not wrong answers. Whether
 they belong in this milestone, a later one or a followup is the user's call.
 
+**Note, 2026-10-18 — S1e2.1a.5's switch removed eight of the ten surfaces**,
+each re-checked on its witness against the region read-out:
+
+| | after the switch |
+|---|---|
+| S1 | gone: no surface prints *"(not certified — pass --exhaustive)"*, and a `NOT CHECKED` names the question the run asked (`-n 1`, a line, a budget) |
+| S2 | gone: the trace is `# Region trace`, headed by `asked`, the counts and `exhausted`; a stopped run never says R is empty. `trace_unsat.md` was removed |
+| S3 | gone: `ein-summary/2` has no `type`; a stopped run's `region` says `exhausted: false`, `empty: null`, and why it stopped |
+| S4 | gone: `-H` lists the universe the run used, and it is `root.hypgen.emitted` — 56 on `zebra2`, 96 on `zebra2-minus-15-obligations` |
+| S5 | gone: `-E` and `-m` are retired and refused |
+| S6 | gone: a class with no row says *"the goal has no row: undetermined here"* |
+| S7 | gone: a class's rows are sorted and deduplicated, and the read-out prints them all |
+| S8 | gone: `nested-core.ein`'s core prints `(not (p A))`, the s-expression |
+| S9 | the tree's, and no command runs it |
+| P1 | **still panics**: `ein render constraints corpus/fuzz_findings/kwpair-below-the-filter.ein` exits 101 at `dot_util.rs:150` |
+
+So the question is now P1's alone.
+
 ## Q-M1e2.7 — The answer is a region of the lattice
 
 **A reading given 2026-10-15**, by the user, in the review of W1

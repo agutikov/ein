@@ -1,13 +1,13 @@
-# The region dump — `ein solve --dump-region DIR`
+# The region dump — `ein oracle FILE --dump DIR`
 
 **The answer as the region of the lattice, computed without the search.**
 The answer to a program is the set of commitments that are alive and owe
 nothing, `R`, a region of its hypothesis lattice
 ([Q-M1e2.7](../../../plans/m1e2_correctness/open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)).
 The search is one way to find `R`, and it is the thing under review. This
-flag computes `R` another way, by brute force: every subset of the root
-candidate list, each saturated by the program's rules alone. It then writes
-`R` beside this run's walk over the same lattice. M1e2
+directory is `R` computed another way, by brute force: every subset of the
+root candidate list, each saturated by the program's rules alone — the
+reference every `ein solve` mode is held to. M1e2
 [S1e2.1a.1](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md)
 added it. The computation is
 [`ein_infer::region`](../../../ein.rs/crates/ein-infer/src/region.rs), and the
@@ -15,17 +15,18 @@ static check it reports is
 [`ein_infer::monotone`](../../../ein.rs/crates/ein-infer/src/monotone.rs).
 
 ```sh
-ein solve examples/branching/15_lookahead_two_step_on.ein -e --dump-region out/
-ein oracle examples/branching/15_lookahead_two_step_on.ein --dump out/   # the cube alone
+ein oracle examples/branching/15_lookahead_two_step_on.ein --dump out/
+ein oracle examples/lattice/04_obligation_trigger_hole.ein --dump out/ --states   # + every node's state
 ```
 
-**Since M1e2 S1e2.1a.9 `ein oracle --dump DIR` writes the same directory
-without a walk**: `region.json` and `region.md`, no `walk.json`, and no
-*This run's walk* section in `region.md`. It removes a `walk.json` an earlier
-`--dump-region` left there, so a drawing never overlays a run that did not
-happen. `ein render region` draws such a directory with no run overlaid.
-`--dump-region` itself goes when the walk does, at S1e2.1a.5
-([`solve_interface.md` § 6](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#6-what-moves)).
+**Until M1e2 S1e2.1a.5's switch it was `ein solve --dump-region DIR`**, which
+wrote the cube beside the walk's own run, `walk.json`, so that a drawing could
+place each entering on the cube. S1e2.1a.9 gave `ein oracle --dump DIR` the
+same directory without a walk, and since the switch no command runs the walk:
+`--dump-region` and `--region-states` are refused with what replaced them
+(`ein oracle --dump`, `--states`), and `ein render region` draws a directory
+with no run overlaid. Drawing a *region* run on the cube is
+[S1e2.1a.7](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md)'s.
 
 ## The directory
 
@@ -34,18 +35,13 @@ out/
   region.json   every node of the cube, its two bits and their reasons, R's lines,
                 holes, components, sub-cubes, N, E, the duality, the violations,
                 and the static check (schema ein-region/1)
-  walk.json     what this run did with the lattice: its universe, every entering,
-                the recorded nodes, the learned clauses, the root writes (ein-walk/1)
-  region.md     the two for a reader, and what the computation cost
+  region.md     the same for a reader, and what the computation cost
 ```
 
-The flag runs **after** the solve and after every other artefact is written.
-It runs on **its own load** of the program, because the oracle interns every
-fact of `2ⁿ` fixpoints, and doing that in the solve's interner would renumber
-facts other readers compare. The cube and the walk are therefore joined by
-rendered fact text, and every commitment in both files is text. A commitment
-in `walk.json` also carries the cube's `mask` when every one of its facts is
-a coordinate of the cube, and `null` when one is not.
+The directory is made **before** the run, and written once the cube is
+computed; over the limit it holds `region.json` with `refused` and a
+`region.md` that says why. Every commitment in it is rendered fact text, so
+it does not depend on interner ids.
 
 ## The cube
 
@@ -61,10 +57,9 @@ at its default order whatever `EIN_OBLIGATION_CHOICE` says
 ([`generate_config_free`](../../../ein.rs/crates/ein-infer/src/hypgen.rs)).
 The user ruled on 2026-10-15 that no config option may change the problem's
 lattice, so a candidate the lookahead would have dropped is still a node. The
-search starts from `alive₀`, which is taken through the lookahead and after
-the forced-positive cascade, so the two lists can differ. `walk.json`'s
-`universe` has both, and `region.md` names what the config dropped and what
-the cascade promoted to root.
+walk started from `alive₀`, taken through the lookahead and after the
+forced-positive cascade, so the two lists could differ, and `walk.json`'s
+`universe` had both. Every route since the switch takes this list.
 
 **A node** is root's fixpoint with the commitment's facts written in and the
 saturation resumed to quiescence. It is never stopped at the first
@@ -116,9 +111,13 @@ either `region` with `refused: null`, or `region: null` with `refused`
 | `violations` | `dead_not_upward_closed` (a dead node with an alive superset) and `discharged_not_upward_closed` (a discharged node with an owing superset), each with a count and the smallest pair |
 | `edges` | every upward edge, counted by the statuses at its two ends |
 | `root_dead`, `assumes_monotone` | root's own fixpoint is contradictory; the static check found a site |
-| `nodes` | one record per mask: `mask`, `layer`, `facts`, `status`, `minimal`, `maximal`, `hole`, `component`, `class`, `closure`, `excluded`, `beyond`, `beyond_hypothesised`, `owes`, `owed`, `core`, `refuted_by`, `absent_premises`, and `state` (the node's facts beyond root's) under `--region-states` |
+| `nodes` | one record per mask: `mask`, `layer`, `facts`, `status`, `minimal`, `maximal`, `hole`, `component`, `class`, `closure`, `excluded`, `beyond`, `beyond_hypothesised`, `owes`, `owed`, `core`, `refuted_by`, `absent_premises`, and `state` (the node's facts beyond root's) under `--states` |
 
-## `walk.json`
+## `walk.json` — until the switch
+
+`ein solve --dump-region` wrote it, and no command has since M1e2 S1e2.1a.5.
+It is described here because a directory dumped before the switch carries one,
+and `ein render region` still reads it when present.
 
 `schema`, `source`, `verdict` (`type`, `k`, `exhausted`, `monotone`),
 `bounds` (the run's `max_set_size` and `solutions`, `null` under `-e`),
@@ -170,12 +169,11 @@ a sufficient condition, and the cube is its check: `region.md` flags a
 monotone verdict beside an observed violation as a defect, and
 `ein-infer/tests/region.rs` fails on one.
 
-**The stub.** A program with a site reaches `solve`'s `non_monotone`. It
-leaves the search unchanged and the answer unchanged, and says so in three
-places:
+**The stub.** A program with a site says so in three places:
 
-- one line under the verdict, `lattice  not monotone (n sites) — this answer
-  assumes it is`;
+- the read-out's `lattice` row, `not monotone: n sites (the static check) — …;
+  assumes a monotone lattice for what a node is (P1e2.1b)`, beside route 2,
+  the cube, since route 1's licence is monotonicity;
 - a `monotonicity` event ([`events.md`](events.md));
 - `--json-summary`'s `monotonicity` block, which every run carries, monotone
   or not.
@@ -202,14 +200,16 @@ are the user's ruling of 2026-10-15:
 | `n` | behaviour |
 |---|---|
 | ≤ 16 | runs, silently |
-| over the limit | not computed. `region.json` has `refused`, `region.md` says why, the walk is written, and stderr gets one `note:` line naming `--region-limit`. The exit code is the solve's |
+| over the limit | not computed. `region.json` has `refused`, `region.md` says why, and stderr gets one `error:` line naming `--region-limit`; `ein oracle` exits 2, since its whole answer is the cube (under `ein solve --dump-region` it was a `note:` and the solve's code) |
 | 17–19, raised | runs, after one `warning:` line with the projected time |
 | ≥ 20, raised | runs, after a three-line `warning:`: `2ⁿ`, the cost per node measured on 64 nodes spread over every layer (saturated and discarded before the run; since S1e2.1a.8 — the first 64 in layer order were the cheapest, and projected 22.9 s for `branching/10`, n = 18, which ran past 11 minutes on 8 jobs), the projected time at one job (`--jobs` shortens it by less than the jobs: a worker hands back every node that numbers a new fact) |
 
 ## What it does not check
 
-It checks the **walk**. It does not check the saturator, because both share
-it (W7), and it does not check that the candidate list is complete (W4, W6).
+It checks the **routes**: every `ein solve` mode is held to it
+(`ein-infer/tests/explore.rs`). It does not check the saturator, because they
+share it (W7), and it does not check that the candidate list is complete (W4,
+W6).
 The per-subset route, [`utils/region.py`](../../../utils/region.py), is a
 second implementation for small programs. It runs one `ein saturate` per
 subset, and `ein-cli/tests/region_dump.rs` holds the two to the same nodes on
@@ -228,9 +228,9 @@ root's fixpoint.
 
 ## Cross-references
 
-- [`answer_dump.md`](answer_dump.md): the answer the search recorded, as files.
-- [`lattice_dump.md`](lattice_dump.md): every commitment the search tested.
+- [`answer_dump.md`](answer_dump.md): a run's answer, as files.
+- [`lattice_dump.md`](lattice_dump.md): every node a run visited.
 - [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-the-walk-s1e21a2):
   this directory drawn, `ein render region`.
 - [`solution_semantics.md`](solution_semantics.md): the definitions this
-  checks the walk against.
+  computes.

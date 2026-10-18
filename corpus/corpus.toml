@@ -30,68 +30,68 @@ schema = "ein-corpus/2"
 [[entry]]
 path   = "examples/branching/01_saturate_only.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/branching/02_one_dead_one_alive.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/branching/03_five_hyps_one_alive.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/branching/04_two_levels.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
-levers = ["-L", "-K", "-y", "-o score-sum"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]
+levers = ["-L", "-K", "-y"]
 
 [[entry]]
 path   = "examples/branching/05_mini_zebra.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
-levers = ["-L", "-K", "-y", "-o score-sum"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]
+levers = ["-L", "-K", "-y"]
 
 [[entry]]
 path   = "examples/branching/06_lookahead_on.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-cost_ms = 377
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+cost_ms = 794
 note   = "the lookahead A/B's on side. `solve -e` is 214 ms against its sibling 07's 315 ms, for the same bytes — it was 245 against 916 until M1a T1a.7.2.0 took 07's layer stack apart, which is what stopped 07 being the corpus's slow entry and left this one the most expensive cell that is not slow. Was slow = true until S1a.9.0 measured it."
 
 [[entry]]
 path   = "examples/branching/07_lookahead_off.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 cost_ms = 754
 note   = "the lookahead A/B's off side: 11 501 enterings where 06 needs 67, and that cost is the finding (docs/kernel/inference/features.md). solve and solve -e are the same 0.32 s because with the lookahead off no node is ever complete, so the fast path has nothing to stop early at — the runs stay for the same reason the cost does. Was slow = true at 2.12 s until M1a T1a.7.2.0 coalesced root's layer stack at the layer barrier: its 162 mid-layer writebacks put root at depth 164 and all 11 501 forks walked it, which was 2.8x of this entry."
 
 [[entry]]
 path   = "examples/branching/08_hypothesis_relation_whitelist.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/branching/09_hrule.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/branching/10_kill_cache_on.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/branching/11_kill_cache_off.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/branching/12_typed_blind_solve.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 # The lookahead's D3 case (P1.21 R4). The levers are the point: with `-L`
 # (lookahead off) the candidate survives trivially, so only the ON row proves
@@ -99,7 +99,7 @@ runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "r
 [[entry]]
 path   = "examples/branching/13_lookahead_naf_world.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 levers = ["-L", "-K"]
 
 # The other half of D3: a guard the lookahead must refuse to judge. Judged
@@ -109,51 +109,51 @@ levers = ["-L", "-K"]
 [[entry]]
 path   = "examples/branching/15_lookahead_two_step_on.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "render rules"]
+runs   = ["solve", "saturate", "render rules"]
 note   = "M1e Q5's pair, ENABLED half — the lookahead lever isolated where `06`/`07` cannot isolate it: three hypotheses, both halves exhausting, and a solution set derivable in a paragraph. Answers `Solution k=1`; the hand-derived answer is **k = 2**. Its `:expect` states today's answer and is meant to break when maximality is recorded (Q-M1e.8)."
 
 [[entry]]
 path   = "examples/branching/16_lookahead_two_step_off.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "render rules"]
+runs   = ["solve", "saturate", "render rules"]
 note   = "The DISABLED half — one `(config …)` line and one `:expect` apart from `15`. Answers `Contradiction k=0` against `15`'s `Solution k=1`, both exhausted, and **both are wrong**: `{(p A)}` is maximal and neither half records it. That is the pair's point — the lever chooses between two under-reports, so neither side is the definition."
 
 [[entry]]
 path   = "examples/branching/14_lookahead_unjudgeable.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 levers = ["-L", "-K"]
 
 [[entry]]
 path   = "examples/domain_elim/ab.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
-levers = ["-L", "-K", "-y", "-o score-sum"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]
+levers = ["-L", "-K", "-y"]
 
 [[entry]]
 path   = "examples/domain_elim/b_branch.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/domain_elim/b_only.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/ein-bugs/zebra2-bad.ein"
 group  = "regression"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/ein-bugs/zebra2-hints.ein"
 group  = "regression"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/features/01_not_and_absent.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 slow   = true
 cost_ms = 3459
 note   = "slow out of proportion to its size: three NAF guards over a 3-object domain make the hypothesis space wide. solve and solve -e cost the same 1.67 s — no node is complete, so the search walks to the -m cap and calls it Contradiction (Q-M1d.6). The runs stay: this is the cheapest fixture where NAF meets the blind enumerator, and it is e2e_baseline.py's `features/01 -e` row."
@@ -162,20 +162,20 @@ note   = "slow out of proportion to its size: three NAF guards over a 3-object d
 path   = "examples/features/02_star_in_identifiers.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "no solve, solve -e: a lexer demo — `*` in an identifier tail, wired into the `is-a*` closure idiom — with no hypothesis structure to search. The runs enumerated a wide empty space to the -m cap for 214 / 265 ms and a Contradiction (Q-M1d.6); `saturate --dump` lists the ten `is-a*` edges the demo's header predicts, in 3.7 ms, which is the demo's question."
+slow   = true
+cost_ms = 1280
+note   = "no solve, solve -e: a lexer demo — `*` in an identifier tail, wired into the `is-a*` closure idiom — with no hypothesis structure to search. The runs enumerated a wide empty space to the -m cap for 214 / 265 ms and a Contradiction (Q-M1d.6); `saturate --dump` lists the ten `is-a*` edges the demo's header predicts, in 3.7 ms, which is the demo's question. Slow since M1e2 S1e2.1a.5's switch, at 1.28 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `render lattice` at 1.27 s."
 
 [[entry]]
 path   = "examples/features/03_forall.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/features/04_open.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-slow   = true
-cost_ms = 9740
-note   = "a feature demo of `open`, not of search — nothing bounds the hypothesis space, so `solve` measures the blind enumerator. no solve, solve -e: at the default -m 5 neither run ends in a verdict, they end in the OOM killer (14.3 GB of anonymous memory, 78 s), which is a property of an open domain and not of a budget. `render lattice` is the same search at -m 3, and its 10.2 s is the slowest thing in the corpus."
+note   = "a feature demo of `open`, not of search — nothing bounds the hypothesis space, so `solve` measures the blind enumerator. no solve, solve -e: at the default -m 5 neither run ends in a verdict, they end in the OOM killer (14.3 GB of anonymous memory, 78 s), which is a property of an open domain and not of a budget. `render lattice` is the same search at -m 3, and its 10.2 s is the slowest thing in the corpus. **Not slow since M1e2 S1e2.1a.5's switch**: no cell runs the walk, and the region's description stops at the default --region-budget, 329 ms together (`utils/corpus_cost.py`, 2026-10-18)."
 
 [[entry]]
 path   = "examples/features/05_stdlib_domain_elim.ein"
@@ -186,98 +186,100 @@ note   = "same shape as 04: the demo is the stdlib elimination rules, and the un
 [[entry]]
 path   = "examples/features/06_symmetric_native.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 note   = "the only fixture that marks a relation `(__symmetric__ R)`, and the only one that marks three — the reproducer for hazard H1."
 
 [[entry]]
 path   = "examples/features/07_unstratifiable.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 note   = "S1a.3.4 — `p ← absent q; q ← absent p`. Both guards pass against the empty world, so a batch boundary admission derives both; the fixture pins that exactly one is derived and the loser is retired."
 
 [[entry]]
 path   = "examples/features/08_disjunct_guard_sets.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 note   = "M1a S1a.6.12 — one rule, two `(or …)` disjuncts with different guards and the same binding key, so a parked candidate is already fired when the boundary reaches it. The only fixture in the corpus that takes that branch, and the one that pins the `may_collide` fallback."
 
 [[entry]]
 path   = "examples/features/09_adjacent_via_same_house.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 note   = "2026-08-20 — an `adjacent-via` over an irreflexive `?S` is not satisfied from the SAME house. `disjunctive-prune-{fwd,bwd}` used to exempt `h_other = h1` with a `(neq …)` premise the following `(absent (?S …))` already decided, and the determinate zebras never showed it; `zebra2-minus-15.ein` reported 55 models against 32 real ones. Contradiction at root, 0 enterings; with the guard back it answers Ambiguity k=4."
 
 [[entry]]
 path   = "examples/features/10_expect.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "test", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 note   = "M1c S1c.1.2 — the `:expect` form. The only entry in the corpus whose `solve` runs check a claim the *file* makes rather than one a golden makes: exit 1 if the model is not the one it names. Relation-closure is what it demonstrates — `next-to`'s listed extent is complete, so a surplus mirrored edge fails it, which is the case a per-fact assertion cannot catch. `test` since S1c.1.3: the same claim through the subcommand that reports it as a status code rather than as a line under a solution table."
 
 [[entry]]
 path   = "examples/features/11_expect_ambiguity.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "test", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 note   = "M1c S1c.1.2 — `:expect (or …)`, the k>1 verdict. **Plain `solve` is here to fail**, and it is the corpus's only witness for `Outcome::NotChecked` (M1d S1d.4.3): it stops at the first model and reports k=1, which is correct and is not this fixture's question — an `(or …)` expectation is a claim about the *exhausted* search — so the run exits **1** with `NOT CHECKED`, and `corpus_exits.txt` banks that. It could not be declared until S1d.4.3 gave a failing `:expect` a one-line stderr diagnosis, because `every_refusal_carries_a_diagnostic` forbids an exit 1 with an empty stderr. The failure says so rather than leaving a bare count mismatch. Swapping the two `(model …)` blocks leaves it passing: the disjuncts compare as a set. `test` needs no `-e` for the same claim (S1c.1.3): exhausting is what that subcommand does, which is the difference between being asked for an answer and being asked whether a claim holds."
 
 [[entry]]
 path   = "examples/features/12_expect_false.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "test", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 note   = "M1c S1c.1.2 — `:expect (false)`, the k=0 verdict, spelled with the kernel's own ⊥ rather than an invented word. Three pigeons, two holes, and the chain forced rather than searched, for two reasons its header carries: the blind version is Ambiguity k=6 rather than a contradiction, because a state leaving one pigeon nowhere is *complete* in an open world (M1d's subject), and it also has several equally small unsat cores, which is corpus/fuzz_findings/unsat-core-id-space.md reached from the corpus for the first time."
 
 [[entry]]
 path   = "examples/features/13_mixed_solution_and_open.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "test", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 note   = "M1e S1e.3.1 — the `Solution` arm's **mixed regime**, measured: one discharged model beside one open state, so `verdict.k` is 1 and `stats.solution_nodes` is 2. `finalise` defined that partition and its own comment said no corpus entry reached it; this one does. It is `CO-M2`'s witness — the table printed the search's node count in that arm until S1e.3.4, so this file would have read `solutions (k) 2` beside `verdict Solution`."
 
 [[entry]]
 path   = "examples/lattice/01_subset_pruned.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
-levers = ["-L", "-K", "-y", "-o score-sum"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]
+levers = ["-L", "-K", "-y"]
 
 [[entry]]
 path   = "examples/lattice/02_genuine_3set_death.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
-levers = ["-L", "-K", "-y", "-o score-sum"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]
+levers = ["-L", "-K", "-y"]
 
 [[entry]]
 path   = "examples/lattice/03_state_hash_collision.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
-levers = ["-L", "-K", "-y", "-o score-sum"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]
+levers = ["-L", "-K", "-y"]
 note   = "two commitments that share a `state_key` — the merge path."
 
 [[entry]]
 path   = "examples/lattice/04_obligation_trigger_hole.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "render rules", "render constraints", "render lattice", "solve -e --dump-region {out}/region"]
+runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region"]
 note   = "a hole in the solution region with no `absent` in any saturation rule: an obligation's trigger grows with the commitment (M1e2 S1e2.1a.1)."
 
 [[entry]]
 path   = "examples/lattice/05_owed_seats_bounded.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "render constraints", "render lattice", "solve -e --dump-region {out}/region"]
+runs   = ["solve", "saturate", "render constraints", "render lattice", "oracle --dump {out}/region"]
 note   = "owed-seats with `functional` and `injective`: R is the two matchings, two components of one point each (M1e2 S1e2.1a.1)."
 
 [[entry]]
 path   = "examples/lattice/06_friends_tables.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
-note   = "the user's seating example of 2026-10-16: two groups of friends (2, 3) at two tables (2, 3 seats), one guest avoiding the air-conditioner, and a group that does not fit goes elsewhere — the obligation is the group's. 19 candidates, so the corpus run records the region's refusal. Not monotone by construction (an obligation trigger): R is 21 isolated nodes with 166 holes, and the engine records 8 of them."
+runs   = ["solve", "saturate", "render lattice"]
+slow   = true
+cost_ms = 5048
+note   = "the user's seating example of 2026-10-16: two groups of friends (2, 3) at two tables (2, 3 seats), one guest avoiding the air-conditioner, and a group that does not fit goes elsewhere — the obligation is the group's. Not monotone by construction (an obligation trigger): R is 21 isolated nodes with 166 holes, and the walk recorded 8 of them. 19 candidates: the `solve` cell records route 2 stopping at --region-limit 16 with all 21 found, and since M1e2 S1e2.1a.5 there is no oracle cell, because `ein oracle` refuses the 2^19 cube at its default limit (exit 2) — the walk's `--dump-region` cell recorded the same refusal as a note. Slow since M1e2 S1e2.1a.5's switch, at 5.05 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `render lattice` at 2.57 s."
 
 [[entry]]
 path   = "examples/lattice/06_friends_tables_everyone_sits.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
-note   = "06_friends_tables' monotone twin, with total-owed: everyone must sit. R is 8 isolated seatings and no holes, one projection class by table; the engine records all 8 (M1e2 P1e2.1a, 2026-10-16)."
+runs   = ["solve", "saturate", "render lattice"]
+note   = "06_friends_tables' monotone twin, with total-owed: everyone must sit. R is 8 isolated seatings and no holes, one projection class by table; the walk recorded all 8 (M1e2 P1e2.1a, 2026-10-16), and route 1 exhausts R in the `solve` cell. No oracle cell: 19 candidates is over `ein oracle`'s default --region-limit 16, as for its twin."
 
 [[entry]]
 path   = "examples/lattice/07_two_pairs_two_tables.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
+runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
 slow   = true
 cost_ms = 3890
 note   = "two pairs at two 2-seat tables: R is 8 isolated seatings — 8 components — in 2 projection classes by table (M1e2 P1e2.1a, 2026-10-16). Slow because its question is the region, and n = 16 is 2^16 saturations: the --dump-region cell is 3.87 s of the 3.89 (utils/corpus_cost.py, 2026-10-16). The run stays — it is the one that asks the question."
@@ -285,62 +287,62 @@ note   = "two pairs at two 2-seat tables: R is 8 isolated seatings — 8 compone
 [[entry]]
 path   = "examples/lattice/synth/merged_states.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
+runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
 note   = "Q-M1e2.7 (e): A brings B and C brings D, so the minimal line is two nodes saturation moves; written by utils/region_synth.py (M1e2 S1e2.1a.8)."
 
 [[entry]]
 path   = "examples/lattice/synth/one_model_per_component.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
+runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
 note   = "Q-M1e2.7 (i): exactly one of four, R four isolated nodes, each a component and each on both lines; written by utils/region_synth.py (M1e2 S1e2.1a.8)."
 
 [[entry]]
 path   = "examples/lattice/synth/three_components.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
+runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
 note   = "the user's shape (2026-10-15): R in three components — a monotone sub-cube, a one-node hole, a bigger hole — written by utils/region_synth.py, which holds the oracle to the header's target node for node (M1e2 S1e2.1a.8)."
 
 [[entry]]
 path   = "examples/lattice/synth/trigger_hole.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
+runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
 note   = "a hole of each kind — an obligation trigger's and an absent's — beside an owing root; written by utils/region_synth.py (M1e2 S1e2.1a.8)."
 
 [[entry]]
 path   = "examples/lattice/synth/trivial_line.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "render lattice", "solve -e --dump-region {out}/region"]
+runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
 note   = "Q-M1e2.7 (f): obligations and nothing else, so the maximal line is all n facts; written by utils/region_synth.py (M1e2 S1e2.1a.8)."
 
 [[entry]]
 path   = "examples/saturation/hypothesis-contradiction/coloc-disproved.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/saturation/hypothesis-contradiction/next-to-disproved.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/saturation/hypothesis-contradiction/right-of-disproved.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/saturation/implies/org-chart.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/saturation/implies/parent-to-ancestor.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/saturation/implies/right-then-next.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/saturation/square-bwd/floors.ein"
@@ -399,85 +401,97 @@ note   = "no render lattice, solve, solve -e: as corner-house and cul-de-sac —
 [[entry]]
 path   = "examples/saturation/symmetric/couple.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/saturation/symmetric/friends.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/saturation/symmetric/neighbours.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/saturation/transitive/colocation-chain.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/saturation/transitive/mealtimes.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/saturation/transitive/taxonomy.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/saturation/type-exclusivity/colors.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/saturation/type-exclusivity/nationalities.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/saturation/type-exclusivity/pets.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
 
 [[entry]]
 path   = "examples/zebra.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "the second ontology: one generic `co-located` where zebra2 has five typed projections. The pair agreeing is the check that the engine's reasoning is not an artefact of one encoding."
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+cost_ms = 3624
+note   = "the second ontology: one generic `co-located` where zebra2 has five typed projections. The pair agreeing is the check that the engine's reasoning is not an artefact of one encoding. Slow since M1e2 S1e2.1a.5's switch, at 3.62 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve` at 1.82 s."
 
 [[entry]]
 path   = "examples/zebra2-hints.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+slow   = true
+cost_ms = 5561
+note   = "Slow since M1e2 S1e2.1a.5's switch, at 5.56 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve` at 2.77 s."
 
 [[entry]]
 path   = "examples/zebra2-minus-15.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints"]
-note   = "zebra2 with condition (15) removed — genuinely under-determined at 32 models, and M1d P1d.10 measured what proving that costs. All 32 are found by depth 3 (48 745 enterings, 25 s); the lattice does not end until **layer 22 and 17 204 592 enterings** — 24 min 56 s at -j16, `exhausted = true`, and not one further model. no solve -e: the -m 5 cut alone is 618 076 enterings, 416 s at --jobs 1 and 50 s at -j16, against a `slow` threshold of 1 s — so the exclusion is kept for a measured reason rather than for the 30-minute kill this note used to cite, which was a 2026-08-20 session and not this engine (M1d T1d.10.5.4). `solve` is 32 ms and stays. no render lattice: the same search at -m 3, which does finish — 27.8 s — and writes 11.6 MB of DOT that is the enumerator rather than a view. **M1d did not lift these; it priced them.** What would lift them is a cheaper argument for the same claim, and P1d.10 has one measured out of process at 171 nodes — S1d.10.6's to ship, not a run list's to assume."
+slow   = true
+cost_ms = 4846
+note   = "zebra2 with condition (15) removed — genuinely under-determined at 32 models, and M1d P1d.10 measured what proving that costs. All 32 are found by depth 3 (48 745 enterings, 25 s); the lattice does not end until **layer 22 and 17 204 592 enterings** — 24 min 56 s at -j16, `exhausted = true`, and not one further model. no solve -e: the -m 5 cut alone is 618 076 enterings, 416 s at --jobs 1 and 50 s at -j16, against a `slow` threshold of 1 s — so the exclusion is kept for a measured reason rather than for the 30-minute kill this note used to cite, which was a 2026-08-20 session and not this engine (M1d T1d.10.5.4). `solve` is 32 ms and stays. no render lattice: the same search at -m 3, which does finish — 27.8 s — and writes 11.6 MB of DOT that is the enumerator rather than a view. **M1d did not lift these; it priced them.** What would lift them is a cheaper argument for the same claim, and P1d.10 has one measured out of process at 171 nodes — S1d.10.6's to ship, not a run list's to assume. Slow since M1e2 S1e2.1a.5's switch, at 4.85 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve` at 4.82 s."
 
 [[entry]]
 path   = "examples/zebra2-minus-15-obligations.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints"]
-note   = "M1d S1d.2.5 — the under-determined regime with no hypothesis rule: `zebra2-minus-15.ein` with the `(hrule guess …)` and the `:hrules` clause deleted, generated by the same script that makes the other three variants so that \"nothing else changed\" is checked rather than claimed. Its twin's run list, verbatim, and for the same reasons, now priced there (M1d T1d.10.5.4) — no `solve -e` (618 076 enterings at -m 5 and 17 204 592 before the lattice ends at layer 22, for the same 32 models depth 3 already had), no `render lattice`. What it banks is that the obligations rung finds **the same 32 models in the same 48 745 enterings** as the hrule path at `-m 3`, which is the milestone's completeness claim on the one corpus entry where the model set is large enough to be worth comparing."
+slow   = true
+cost_ms = 4847
+note   = "M1d S1d.2.5 — the under-determined regime with no hypothesis rule: `zebra2-minus-15.ein` with the `(hrule guess …)` and the `:hrules` clause deleted, generated by the same script that makes the other three variants so that \"nothing else changed\" is checked rather than claimed. Its twin's run list, verbatim, and for the same reasons, now priced there (M1d T1d.10.5.4) — no `solve -e` (618 076 enterings at -m 5 and 17 204 592 before the lattice ends at layer 22, for the same 32 models depth 3 already had), no `render lattice`. What it banks is that the obligations rung finds **the same 32 models in the same 48 745 enterings** as the hrule path at `-m 3`, which is the milestone's completeness claim on the one corpus entry where the model set is large enough to be worth comparing. Slow since M1e2 S1e2.1a.5's switch, at 4.85 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve` at 4.82 s."
 
 [[entry]]
 path   = "examples/zebra2-obligations.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states"]
-levers = ["-L", "-K", "-y", "-o score-sum"]
-note   = "M1d S1d.2.5 — the fixture the obligations rung needed, because every searching entry before it carried `:hrules`. `zebra2.ein` with the hypothesis rule and its activator clause deleted and nothing else: the five `(bijective *-loc)` declarations fan out into `total-owed` / `surjective-owed`, and the rung branches on what they owe. Layer 1 is **56 candidates against the blind enumerator's 3 734**, and the whole search is the hrule path's, entering for entering — 101 enterings, 2 layers, one model, the same one. Its run list is `zebra2.ein`'s so the two are comparable cell by cell."
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice"]
+levers = ["-L", "-K", "-y"]
+slow   = true
+cost_ms = 39241
+note   = "M1d S1d.2.5 — the fixture the obligations rung needed, because every searching entry before it carried `:hrules`. `zebra2.ein` with the hypothesis rule and its activator clause deleted and nothing else: the five `(bijective *-loc)` declarations fan out into `total-owed` / `surjective-owed`, and the rung branches on what they owe. Layer 1 is **56 candidates against the blind enumerator's 3 734**, and the whole search is the hrule path's, entering for entering — 101 enterings, 2 layers, one model, the same one. Its run list is `zebra2.ein`'s so the two are comparable cell by cell. Slow since M1e2 S1e2.1a.5's switch, at 39.24 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve -n 3` at 5.43 s."
 
 [[entry]]
 path   = "examples/zebra2.ein"
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve -m 2", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-states {out}/states", "solve -E 1"]
-levers = ["-L", "-K", "-y", "-o score-sum"]
-cost_ms = 260
-note   = "the flagship, and what a stale flag looks like: `slow = true` on a file that solves in 16 ms and whose sixteen cells cost 260 ms together. Removed at S1a.9.0. **`solve -E 1` is the corpus's only budgeted run** and is here for M1e S1e.3.6 T4 (`TE-M4`): it exits **2**, the same code a usage error takes, and `no_cell_crashes` used to read that code as *the manifest names an argv the CLI refuses*. The cell is what makes the distinction exercised rather than merely written down."
+runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice", "solve -n 3", "solve --minimal", "solve -p -s", "solve --trace {out}/trace.md", "solve --dump-lattice {out}/lattice", "solve --region-budget 1"]
+levers = ["-L", "-K", "-y"]
+slow   = true
+cost_ms = 38095
+note   = "the flagship, and what a stale flag looks like: `slow = true` on a file that solves in 16 ms and whose sixteen cells cost 260 ms together. Removed at S1a.9.0. **`solve -E 1` is the corpus's only budgeted run** and is here for M1e S1e.3.6 T4 (`TE-M4`): it exits **2**, the same code a usage error takes, and `no_cell_crashes` used to read that code as *the manifest names an argv the CLI refuses*. The cell is what makes the distinction exercised rather than merely written down. Slow since M1e2 S1e2.1a.5's switch, at 38.09 s together (`utils/corpus_cost.py`, 2026-10-18): bare `solve` describes R and its cells run to the default --region-budget, the slowest `solve -n 3` at 5.07 s."
 
 
 # ── regression: examples/ein-bugs/ ──────────────────────────
@@ -491,67 +505,67 @@ note   = "the flagship, and what a stale flag looks like: `slow = true` on a fil
 [[entry]]
 path   = "examples/ein-bugs/alive-empty-phase1.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e D1 — the alive-∅ record site at phase 1. `compute_alive` writes the kill cache into root *after* `:1091`'s consistency check, and `:1118` recorded what it wrote: the model re-saturated to `Contradiction`. **Fixed by M1e S1e.3.1 (`CO-M1`)**: `record_node` re-saturates before recording, the file answers `Contradiction k = 0`, and its `:expect (false)` states that. Under `-K` it still answers `Solution`, which is M1e2's W9. Goal moved to `is-a` because a model with an empty goal extent is unstatable — Q-M1e.13."
 
 [[entry]]
 path   = "examples/ein-bugs/alive-empty-interlayer.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e D1, the same defect between layers, whose trigger is the singleton writeback rather than the kill cache. **Fixed by M1e S1e.3.1 (`CO-M1`)**: the file answers `Contradiction k = 0`, and `:expect (false)` states that."
 
 [[entry]]
 path   = "examples/ein-bugs/naf-upward-closure.ein"
 group  = "regression"
-runs   = ["solve", "solve -e", "saturate"]
+runs   = ["solve", "saturate"]
 note   = "M1e Q-M1e.9 / S1e.2.3 — `dead` is **not** upward-closed under `absent`: `{(p A)}` dies while `{(p A), (q A)}` is alive, so the maximal state is never generated. Five of six shipped configurations answer it wrongly and all six report `exhausted = true`. It carries `(config :warn-derived-naf true)`, so the S1e.2.3 diagnostic is part of its recorded output — the containment as a fixture rather than a claim. `:expect` states today's answer (`(q A)` plus the cached `(not (p A))`) and is **meant to break** when F18 makes the three consumers world-aware or S1f.10.8 forbids the shape. Goal on `is-a` because the model has no `p` fact — Q-M1e.13."
 
 [[entry]]
 path   = "examples/ein-bugs/alive-set-fresh-name.ein"
 group  = "regression"
-runs   = ["solve", "solve -e", "test"]
+runs   = ["solve", "test"]
 note   = "M1e S1e.3.3 / `ST-M1` — the **M1 alive-set invariant** broken on purpose, and the first program on which breaking it costs an answer. `spawn` asserts `(p ?b Z)` and no fact names `Z`, so the name enters only inside a fork while the lattice enumerates subsets of the `alive` set taken at root. Every subset dies and the engine says `k = 0, exhausted = true` — a refutation, not a lower bound — where `{(q A Z)}` is a model. Its twin `alive-set-fresh-name-declared.ein` is this file plus the one fact `(seen Z)` and answers `Solution k = 1` over exactly that model. `:expect (false)` states today's answer and is meant to break."
 
 [[entry]]
 path   = "examples/ein-bugs/alive-set-fresh-name-declared.ein"
 group  = "regression"
-runs   = ["solve", "solve -e", "test"]
+runs   = ["solve", "test"]
 note   = "M1e S1e.3.3 — the control for the entry above: the same rules and constraints plus `(seen Z)`, one fact over a relation nothing else mentions, which does nothing but put `Z` in the name universe before `alive₀` is computed. `Solution k = 1` in seven enterings. The pair is what makes `ST-M1` a measurement: the twin's refutation is not a property of its constraints. Its plain `solve` cell exits **1** on purpose — a `(model …)` claim is a claim about the *exhausted* answer and `-n 1` stops at the first, so the run reports `NOT CHECKED`, the same cell `examples/features/11_expect_ambiguity.ein` carries since S1d.4.3 gave it a stderr diagnostic. The twin exits 0 there because a `(false)` claim needs no `-e`: a search that found no model at all did exhaust."
 
 [[entry]]
 path   = "examples/ein-bugs/complete-records-stale.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e D3 — the record site every corpus solve uses: `complete()` runs the generation pipeline and its kill cache writes into the very fork `:1977` then records. Model 1 re-saturated to `Contradiction`. **Fixed by M1e S1e.3.1 (`CO-M1`)**: `Solution k = 1`, `{(p A), (p B)}`, stated by its `:expect (model (p A) (p B))`. Under `-K` it still answers `k = 2`, which is M1e2's W9."
 
 [[entry]]
 path   = "examples/ein-bugs/alt-cap-core.ein"
 group  = "regression"
-runs   = ["solve", "solve -e", "test"]
+runs   = ["solve", "test"]
 note   = "M1e S1e.1.3 / Q2 — the `MAX_ALT_JUSTIFICATIONS = 32` cap **changes which unsat core is reported**. `(false)` has 33 one-premise derivations three givens deep and one two-premise derivation over givens; the 33 fill the list first and the two-premise one is refused, so the core is the 3-fact chain and not the 2-fact pair. At a cap of 10^6 the same file reports the 2-fact core. Read with its `-reordered` twin, which differs in one `:priority`."
 
 [[entry]]
 path   = "examples/ein-bugs/alt-cap-core-reordered.ein"
 group  = "regression"
-runs   = ["solve", "solve -e", "test"]
+runs   = ["solve", "test"]
 note   = "M1e S1e.1.3 / Q2 — `alt-cap-core.ein` with `wide` at priority 50 instead of 300 and nothing else changed. Its two-premise derivation becomes the primary, which is never evicted, and the core is 2 facts. The pair is what makes the cap's cost order-dependence rather than only size: `glossary.md`'s *independent of the order in which the rules fired* is true of the search and not of the store in front of it."
 
 [[entry]]
 path   = "examples/ein-bugs/mixed-type-hypothesis.ein"
 group  = "regression"
-runs   = ["solve -e"]
+runs   = ["solve"]
 note   = "M1a hazard H2 — an hrule binds one variable to an int and a str, so two candidates in the commitment search's `alive` set hold an int and a symbol in the same slot. Values of different kinds order by kind (int < symbol < fact), so the order is total and the run answers."
 
 [[entry]]
 path   = "examples/ein-bugs/nested-fact-hypothesis.ein"
 group  = "regression"
-runs   = ["solve -e"]
+runs   = ["solve"]
 note   = "M1a hazard H2, second shape — the same ordering of `alive`, over two nested-fact args instead of a str and an int, so it needs no mixed slot types: one hrule whose `:assert` is a `(not …)` is enough. Found by the S1a.6.6 fuzzer 2026-08-20."
 
 [[entry]]
 path   = "examples/ein-bugs/query-goal-free-head-unsat.ein"
 group  = "regression"
-runs   = ["solve", "solve -e", "saturate", "render rules"]
+runs   = ["solve", "saturate", "render rules"]
 note   = "The `Contradiction` arm of `query-goal-free-head.ein`: the same uncompilable goal, but no solution block is rendered, so the goal is never compiled and the run exits 0. Pins the asymmetry a too-eager fix broke for the length of one commit."
 
 [[entry]]
@@ -575,13 +589,13 @@ note   = "`(?R ?x)` with `?R` unbound is a `CompileError`: exit 1, and the messa
 [[entry]]
 path   = "examples/ein-bugs/int-goal-binding.ein"
 group  = "regression"
-runs   = ["solve", "solve -e", "saturate", "render rules"]
+runs   = ["solve", "saturate", "render rules"]
 note   = "S1a.6.6 regression — an integer goal binding is a JSON *number* in `summary.json`, not a string. stdout cannot show the difference, and no other corpus file binds a query variable to an int. Carries a value wider than i64 on purpose."
 
 [[entry]]
 path   = "examples/ein-bugs/fact-goal-binding.ein"
 group  = "regression"
-runs   = ["solve", "solve -e", "saturate", "render rules"]
+runs   = ["solve", "saturate", "render rules"]
 note   = "S1a.6.6 regression — a *nested fact* goal binding, which `summary.json` renders as an s-expression string."
 
 # ── regression: examples/ein-bugs/wrong-answers/ ────────────
@@ -598,111 +612,111 @@ note   = "S1a.6.6 regression — a *nested fact* goal binding, which `summary.js
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forced-1.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 levers = ["-L"]
 note   = "M1e2 W2 under -L (`W2/forced-1-L`): one candidate refuted in one firing. Right at default flags; with the lookahead off the forced-positive cascade writes the singleton into root and the run is a certified Contradiction with a 0-fact core."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forced-1-two.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W1's control (`W1/forced-2-two`): two candidates, each refuted in one firing, and the right `Solution` k = 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forced-2.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W2 (`W2/forced-2`): one candidate refuted in two firings; the cascade promotes it into root and refutes a consistent program at default flags — `exhausted = true`, unsat core 0 facts, 0 enterings."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forced-2-off.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W1 at layer 0 (`W1/forced-2-off`): forced-2.ein with the cascade off, which falls through into W1 — the reason S1e2.2.1 runs before S1e2.2.2."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forced-2-two.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W1 at layer 0 (`W1/forced-2-two`): two candidates, each refuted in two firings; every singleton dies, phase2 breaks without asking whether root is complete, and a consistent program is a certified Contradiction. Its one-firing control answers Solution."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/owed-two-step.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W1 (`W1/owed-two-step`): an owed instance whose alternatives die in two firings answers Contradiction where the 2026-08-25 ruling says Open — owes 1."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/tree-dead.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W1's control (`W1/owed-two-step`): the same obligation with one-firing deaths, and the right `Open — owes 1`. Named for the tree traversal it was first written for."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/fresh-name-default.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W4 in isolation (`W4/fresh-name-default`): alive-set-fresh-name.ein without its lookahead-off line — Solution k = 1 over a model with no q, where {(q A Z), (q B Z)} is the model. A second breach of the M1 alive-set invariant."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W1 (`W1/fresh-name-nospawn`): alive-set-fresh-name.ein without its spawn rule still answers a certified Contradiction — the banked file's k = 0 is W1 at layer 0, not the fresh name. `:expect (false)` states today's answer."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/naf-nowb.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 levers = ["-L"]
 note   = "M1e2 W3's lever row (`W3/naf-nowb-L`): naf-upward-closure.ein with the singleton writeback off. Under -L the width-1 no-good and W1 together make a certified Contradiction of a program whose one model is {(p A), (q A)}."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/owed-seats.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W5 (`W5/owed-seats`): two guests, two chairs, `total-owed` + `surjective-owed`. The lattice records the two matchings and a strict superset of one, k = 3 exhausted — under no reading of Q-M1e2.1 is it 3."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/owed-seats-renamed.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W5's twin: owed-seats.ein with Ann renamed Zed, and a different third model — the model set moves under a renaming."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/uncovered.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W6, contested (`W6/uncovered`): completeness.md § 3c's fixture. `exhausted = true` while `knows` is never hypothesised — exhaustive over alive₀, not over the program (Q-M1e2.3)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/uncovered-knows.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W6's twin: uncovered.ein plus (knows Ann Bob) — three consistent states the original's rung never proposes."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/arity3.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W6, contested (`W6/arity3`): the blind rung never proposes an arity-3 fact, and a run whose goal is one is certified."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/stale-naf-fork.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W8, contested (`W8/stale-naf-fork`): (p one), derived under (absent (q one)), survives the commitment of (q one) and kills it — Q-M1e2.2."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W8's twin: stale-naf-fork.ein with :warn-derived-naf on, the same answer and no warn event — the S1e.2.3 diagnostic does not contain this shape."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/f07-fpoff.ein"
 group  = "regression"
-runs   = ["solve", "solve -e"]
+runs   = ["solve"]
 note   = "M1e2 W8's twin: features/07 with the forced-positive cascade off, and the same {(p one), (q one)} reached by a fork — so the cascade is not the cause."
 
 # ── compile-negative: examples/broken/compile/ ──────────────
@@ -850,7 +864,19 @@ note   = "M1c S1c.1.2 — `:expect` closes every relation it names, so a name th
 path   = "examples/broken/load/expect_omits_the_goal.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
-note   = "M1c S1c.1.2 rule 1 — the goal's relations are mandatory; naming a relation is what closes it."
+note   = "A query's `:expect` lists only facts its goal matches: its projection classes (M1e2 S1e2.1a.5). Until the switch it was M1c S1c.1.2's rule 1, the goal's relations are mandatory, and the same file was refused for that."
+
+[[entry]]
+path   = "examples/broken/load/query_over_unknown.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1e2 S1e2.1a.5 — a query's `:over` is all, minimal or maximal, and nothing else."
+
+[[entry]]
+path   = "examples/broken/load/query_class_twice.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1e2 S1e2.1a.5 — a query's `:expect` lists its classes as a set, so one listed twice is refused."
 
 [[entry]]
 path   = "examples/broken/load/expect_is_a_pattern.ein"
@@ -862,7 +888,13 @@ note   = "M1c S1c.1.2 — an expectation is an answer, so it is ground. A `?var`
 path   = "examples/broken/load/config_unknown_flag.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
-note   = "its message enumerates every legal `(config …)` flag, so this entry pins the `SolverConfig` field set as a byte-comparable surface."
+note   = "its message enumerates every legal `(config …)` flag, so this entry pins the flag set a program can set as a byte-comparable surface: eight since M1e2 S1e2.1a.5."
+
+[[entry]]
+path   = "examples/broken/load/config_retired_flag.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1e2 S1e2.1a.5 — a retired `(config …)` flag is refused with why it was retired, not as an unknown one."
 
 [[entry]]
 path   = "examples/broken/load/derivation_cycle.ein"
@@ -1449,6 +1481,18 @@ path   = "tests/region/07_cube.ein"
 group  = "positive"
 runs   = ["test", "saturate"]
 note   = "M1e2 S1e2.1a.4 — a flagged program, its claim checked against the cube (route 2): an obligation trigger makes a hole."
+
+[[entry]]
+path   = "tests/region/08_query_classes.ein"
+group  = "positive"
+runs   = ["test", "saturate"]
+note   = "M1e2 S1e2.1a.5 — a query's `:expect` as projection classes over all of R, `(model)` among them: 01_states.ein's program, whose goal `(a-prop ?x)` falls into two classes."
+
+[[entry]]
+path   = "tests/region/09_query_over_maximal.ein"
+group  = "positive"
+runs   = ["test", "saturate"]
+note   = "M1e2 S1e2.1a.5 — `:over maximal`: two people, two seats, seven classes over all of R and the two seatings over the maximal line, which is what the claim states."
 
 [[entry]]
 path   = "examples/syntax/arg-kinds.ein"

@@ -537,55 +537,58 @@ fn a_parse_error_names_the_file_from_every_subcommand() {
 /// "stop at one" and "exhaust" have different answers.
 const TWO_MODELS: &str = "examples/branching/04_two_levels.ein";
 
-/// **The stop policy is honoured**, and the three settings differ.
+/// The states a read-out lists: one `;; state i of k` heading each.
+fn listed(r: &Run) -> usize {
+    r.out
+        .lines()
+        .filter(|l| l.trim_start().starts_with(";; state ") && l.contains(" of "))
+        .count()
+}
+
+/// **The question is the flags'**, and the four settings differ — M1e2
+/// S1e2.1a.5's switch.
 ///
-/// Default is "one model, and do not claim it is the only one":
-/// `exhausted false` is what keeps `k = 1` from reading as uniqueness.
-/// `--exhaustive` runs the lattice out and reports both models. `--solutions
-/// N` is the middle setting, and on a two-model puzzle `-n 2` reaches the
-/// same `k` as `-e` while still not certifying it — which is the distinction
-/// a caller most often gets wrong.
+/// Bare `ein solve` describes all of R: seven states on this program,
+/// exhausted, as one `(region …)`. `-n 2` lists two of them and says the part
+/// may hold more. `--maximal` lists the two states nothing can be added to.
+/// `--single` asks whether R is one state and answers the word. The short and
+/// long spellings are one flag.
 #[test]
-fn the_stop_policy_is_honoured() {
-    let first = ein(&["solve", TWO_MODELS, "-s"]);
-    first.ok();
-    assert_eq!(first.field("solutions (k)").as_deref(), Some("1"));
-    assert_eq!(first.field("exhausted").as_deref(), Some("false"));
+fn the_question_is_the_flags() {
+    let all = ein(&["solve", TWO_MODELS]);
+    all.ok();
+    assert_eq!(all.field("states (k_s)").as_deref(), Some("7"));
+    assert_eq!(all.field("exhausted").as_deref(), Some("yes"));
+    assert!(all.out.contains("  (region\n"), "{}", all.out);
+    assert_eq!(listed(&all), 7);
 
-    let exhaustive = ein(&["solve", TWO_MODELS, "-e", "-s"]);
-    exhaustive.ok();
-    assert_eq!(exhaustive.field("solutions (k)").as_deref(), Some("2"));
-    assert_eq!(exhaustive.field("exhausted").as_deref(), Some("true"));
-    assert!(
-        exhaustive.out.to_lowercase().contains("ambiguous"),
-        "the verdict word did not reach stdout:\n{}",
-        exhaustive.out
-    );
-
-    let n2 = ein(&["solve", TWO_MODELS, "-n", "2", "-s"]);
+    let n2 = ein(&["solve", TWO_MODELS, "-n", "2"]);
     n2.ok();
-    assert_eq!(n2.field("solutions (k)").as_deref(), Some("2"));
-    assert_eq!(
-        n2.field("exhausted").as_deref(),
-        Some("false"),
-        "-n 2 certified a puzzle it did not exhaust"
+    assert_eq!(listed(&n2), 2);
+    assert!(!n2.out.contains("(region"), "a cut is never a (region …)");
+
+    let max = ein(&["solve", TWO_MODELS, "--maximal"]);
+    max.ok();
+    assert_eq!(listed(&max), 2);
+    assert!(
+        max.field("maximal line").is_some_and(|v| v == "2"),
+        "{}",
+        max.out
     );
-    // The short and long spellings are the same flag. Compared with the `wall`
-    // row dropped: it is wall-clock, and it is the one line in the block that
-    // differs run to run for reasons that have nothing to do with the flag.
-    let long = ein(&["solve", TWO_MODELS, "--solutions", "2", "--stats"]);
-    let without_wall = |r: &Run| -> String {
-        r.out
-            .lines()
-            .filter(|l| !l.trim_start().starts_with("wall"))
-            .collect::<Vec<&str>>()
-            .join("\n")
-    };
-    assert_eq!(
-        without_wall(&long),
-        without_wall(&n2),
-        "-n/-s and --solutions/--stats differ"
+
+    let single = ein(&["solve", TWO_MODELS, "--single"]);
+    single.ok();
+    assert!(
+        single
+            .out
+            .contains("Ambiguity — R holds two states or more"),
+        "the word did not reach stdout:\n{}",
+        single.out
     );
+
+    let long = ein(&["solve", TWO_MODELS, "--solutions", "2"]);
+    let header = |r: &Run| r.out.lines().skip(1).collect::<Vec<_>>().join("\n");
+    assert_eq!(header(&long), header(&n2), "-n and --solutions differ");
 }
 
 /// **`-n/--solutions` takes a count of one or more, and refuses everything
@@ -593,42 +596,28 @@ fn the_stop_policy_is_honoured() {
 /// [S1e.1.5](../../../../docs/history/m1e_review_processing/README.md#s1e15---n-0-q7),
 /// the review's `Q7`.
 ///
-/// `-n 0` used to be accepted, and what it *did* was `-n 1`: `stop_after` is
-/// compared with `>=` after a model is recorded, so `Some(0)` cuts at the
-/// first one, and the CLI clamped every negative onto the same `Some(0)`.
-/// Measured before the refusal, on one fixture per verdict — a unique model, a
-/// nine-model ambiguity, a contradiction — `-n 0`, `-n=-1` and `-n=-7` were
-/// byte-identical to `-n 1` on stdout and on every field of `--json-summary`,
-/// enterings included. Neither reading a user could mean was
-/// available — *record nothing* is not what it did, and *no limit* is
-/// `--exhaustive` — which is the argument `--jobs 0` was already refused with
-/// one screen away.
+/// `-n 0` used to be accepted, and what it *did* was `-n 1`. Neither reading a
+/// user could mean was available — *record nothing* is not what it did, and
+/// *no limit* is leaving `-n` out, which describes all of R since M1e2
+/// S1e2.1a.5.
 ///
 /// Two halves, and the second is the one that would rot quietly:
 ///
 /// - the refusal, its exit code (**2**, a usage error) and its wording;
 /// - a **non-integer** still gets `int_arg`'s message, unchanged, because
 ///   [`defined_behaviour.md` §4](../../../../docs/kernel/defined_behaviour.md)
-///   quotes that message verbatim and uses `--solutions` as its example. A
-///   validator that replaced it would falsify a normative page and no test
-///   would have said so.
+///   quotes that message verbatim and uses `--solutions` as its example.
 #[test]
 fn solutions_takes_a_count_of_one_or_more_and_nothing_else() {
-    // The positive control: the flag still works, and 1 is still the default.
-    for good in ["1", "2"] {
-        let r = ein(&["solve", TWO_MODELS, "-n", good, "-s"]);
+    // The positive control: the flag still works.
+    for good in [1usize, 2] {
+        let r = ein(&["solve", TWO_MODELS, "-n", &good.to_string()]);
         r.ok();
-        assert_eq!(
-            r.field("solutions (k)").as_deref(),
-            Some(good),
-            "-n {good} did not reach {good} models"
-        );
+        assert_eq!(listed(&r), good, "-n {good} did not list {good} states");
     }
 
     // A negative needs the `=` spelling to reach the validator at all: `-n -1`
-    // is clap's own *unexpected argument* — also exit 2, and the one door that
-    // was already shut. `0` is written both ways to show the refusal is the
-    // value's and not the spelling's.
+    // is clap's own *unexpected argument* — also exit 2.
     for bad in ["-n=0", "--solutions=0", "--solutions=-1", "--solutions=-7"] {
         let r = ein(&["solve", TWO_MODELS, bad]);
         assert_eq!(r.code, 2, "{bad} was not a usage error:\n{}", r.err);
@@ -638,7 +627,7 @@ fn solutions_takes_a_count_of_one_or_more_and_nothing_else() {
             r.err
         );
         assert!(
-            r.err.contains("1 or more") && r.err.contains("--exhaustive"),
+            r.err.contains("1 or more") && r.err.contains("leave -n out"),
             "{bad}'s message names neither the range nor the other reading:\n{}",
             r.err
         );
@@ -678,49 +667,20 @@ fn solutions_takes_a_count_of_one_or_more_and_nothing_else() {
 /// else** — [S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
 /// T1a.7.5.1.
 ///
-/// `auto` is [`std::thread::available_parallelism`], so the test cannot assert
-/// a number; what it asserts is that the flag resolves to *something the block
-/// reports* and that the answer is the default run's. `--jobs 0` is refused on
-/// purpose: it is the sentinel `auto` parses to, and letting a user type it
-/// would give one meaning two spellings — the more so because "0 threads"
-/// reads as "none" at least as often as "all of them".
+/// What it asserts is the contract: the read-out at two jobs and at `auto` is
+/// the one-job read-out, byte for byte, and `-j` is one of the options the
+/// header leaves out for that reason. `--jobs 0` is refused on purpose: it is
+/// the sentinel `auto` parses to, and letting a user type it would give one
+/// meaning two spellings.
 #[test]
 fn jobs_takes_a_count_or_auto_and_nothing_else() {
-    let one = ein(&["solve", TWO_MODELS, "-e"]);
+    let one = ein(&["solve", TWO_MODELS]);
     one.ok();
     for spec in ["2", "auto"] {
-        let r = ein(&["solve", TWO_MODELS, "-e", "--jobs", spec, "--stats"]);
+        let r = ein(&["solve", TWO_MODELS, "--jobs", spec]);
         r.ok();
-        assert_eq!(
-            r.out.contains("verdict"),
-            one.out.contains("verdict"),
-            "--jobs {spec} changed the answer"
-        );
-        // The block exists only above one job, and it names what was asked.
-        assert!(
-            r.out.contains("\njobs\n"),
-            "--jobs {spec} printed no jobs block:\n{}",
-            r.out
-        );
-        let asked: usize = r
-            .out
-            .lines()
-            .find_map(|l| l.trim().strip_prefix("workers"))
-            .and_then(|l| l.split("of ").nth(1))
-            .and_then(|l| l.split_whitespace().next())
-            .and_then(|n| n.parse().ok())
-            .expect("the workers row names the job count");
-        assert!(asked >= 2, "--jobs {spec} resolved to {asked}");
+        assert_eq!(r.out, one.out, "--jobs {spec} moved the read-out");
     }
-    // …and the default prints no block at all, which is what keeps every
-    // `--stats` run in the repo byte-identical to what it was.
-    let plain = ein(&["solve", TWO_MODELS, "-e", "--stats"]);
-    plain.ok();
-    assert!(
-        !plain.out.contains("\njobs\n"),
-        "--jobs 1 printed a jobs block"
-    );
-
     for bad in ["0", "xyz", "1.5"] {
         let r = ein(&["solve", TWO_MODELS, "--jobs", bad]);
         assert_ne!(r.code, 0, "--jobs {bad} was accepted");
@@ -732,117 +692,51 @@ fn jobs_takes_a_count_or_auto_and_nothing_else() {
     }
 }
 
-/// **The `--stats` block reports the engine's counters**, and they are the
-/// same numbers `--json-summary` writes.
+/// **The `work` row is the summary's `work` block**, and `-s` adds the wall
+/// clock under it.
 ///
-/// Two renderings of one counter set is exactly where a drift hides: a block
-/// that reads a stale copy, or a summary assembled from a different snapshot,
-/// is invisible in either alone. What is compared is the *values*, by label —
-/// the block's column layout belongs to `corpus_shapes.md5`.
-///
-/// **The first row was `solutions (k)` until M1e S1e.3.4**, and that is the
-/// label the *table* prints two dozen lines earlier — `field` takes the first
-/// match, so this assertion had **never once** read the `--stats` block. It
-/// passed because `TWO_MODELS -e` is an `Ambiguity` whose two numbers agree;
-/// on any of the twelve `Open` entries it would have compared 0 against 1. A
-/// test that cannot tell the two surfaces apart is the same defect as a reader
-/// who cannot, which is the whole of `AR-M2`, and the row is named after its
-/// counter now.
+/// Two renderings of one count is exactly where a drift hides. Since M1e2
+/// S1e2.1a.5 the walk's counters went with it, and what a run reports about
+/// its own work is the read-out's `work` row — saturations, facts beyond
+/// root, route-1 layers — which `--json-summary` writes as `work`.
 #[test]
-fn the_stats_block_reports_the_same_counters_as_the_json_summary() {
+fn the_work_row_is_the_summarys_work_block() {
     let scratch = Scratch::new("stats");
     let path = scratch.at("summary.json");
-    let r = ein(&["solve", TWO_MODELS, "-e", "-s", "--json-summary", &path]);
+    let r = ein(&["solve", TWO_MODELS, "-s", "--json-summary", &path]);
     r.ok();
     let j = json_at(&path);
-
-    assert_eq!(
-        r.field("solution_nodes").as_deref(),
-        Some(j["stats"]["solution_nodes"].as_i64().unwrap().to_string()).as_deref()
-    );
-    assert_eq!(
-        r.field("exhausted").as_deref(),
-        Some(j["stats"]["exhausted"].as_bool().unwrap().to_string()).as_deref()
-    );
-    for (label, key) in [
-        ("layers_explored", "layers_explored"),
-        ("saturate_count", "saturate_count"),
-    ] {
-        assert_eq!(
-            r.field(label).as_deref(),
-            Some(j["stats"][key].as_i64().unwrap().to_string()).as_deref(),
-            "{label} disagrees"
-        );
-    }
-    // The entering breakdown is one row: `36 (alive=20 dead_pre=0 dead_post=16)`.
-    let enterings = r
+    let row = r
         .out
         .lines()
-        .find(|l| l.trim_start().starts_with("enterings"))
-        .expect("the enterings row")
+        .find(|l| l.trim_start().starts_with("work "))
+        .expect("the work row")
         .to_string();
-    for (key, label) in [
-        ("enterings_alive", "alive"),
-        ("enterings_dead_pre", "dead_pre"),
-        ("enterings_dead_post", "dead_post"),
-    ] {
-        let want = format!("{label}={}", j["stats"][key].as_i64().unwrap());
-        assert!(enterings.contains(&want), "{want} missing from {enterings}");
-    }
-    assert!(
-        enterings.contains(&j["stats"]["enterings_total"].as_i64().unwrap().to_string()),
-        "the total is missing from {enterings}"
+    let want = format!(
+        "{} saturations · {} facts beyond root · {} layers",
+        j["work"]["saturations"], j["work"]["facts"], j["work"]["layers"]
     );
-    let nogoods = r
-        .out
-        .lines()
-        .find(|l| l.trim_start().starts_with("nogoods"))
-        .expect("the nogoods row")
-        .to_string();
-    for (key, label) in [
-        ("nogoods_emitted", "emitted"),
-        ("nogoods_subsumed", "subsumed"),
-    ] {
-        let want = format!("{label}={}", j["stats"][key].as_i64().unwrap());
-        assert!(nogoods.contains(&want), "{want} missing from {nogoods}");
-    }
-    assert!(r.field("wall").is_some(), "no wall-clock row");
+    assert!(row.ends_with(&want), "{row} against {want}");
+    assert!(r.field("wall").is_some(), "-s printed no wall-clock row");
 }
 
-/// **`--timing` covers every phase.** No cost may vanish from the accounting.
-///
-/// The table is the only place a caller can see *where* a slow run went, and
-/// its value is entirely in being exhaustive: a phase that stopped being
-/// reported does not look slow, it looks free. The eight names are the
-/// flag's own help text, which is the contract.
+/// **`--timing` covers every phase.** No cost may vanish from the accounting:
+/// a phase that stopped being reported does not look slow, it looks free.
 #[test]
 fn the_timing_table_names_every_phase() {
-    let r = ein(&["solve", TWO_MODELS, "-e", "--timing"]);
+    let r = ein(&["solve", TWO_MODELS, "--timing"]);
     r.ok();
     let table = r
         .out
-        .split_once("timing (ms)")
+        .split_once("\ntiming\n")
         .expect("no timing table in the output")
         .1;
-    for phase in [
-        "parse",
-        "kb load",
-        "compile",
-        "root saturation",
-        "hypothesis search",
-        "per hypothesis",
-        "solve",
-        "end-to-end",
-    ] {
+    for phase in ["load", "route", "read-out", "print", "total"] {
         assert!(
             table.lines().any(|l| l.trim_start().starts_with(phase)),
             "the {phase:?} phase is missing from:\n{table}"
         );
     }
-    assert!(
-        !r.out.contains("timing (ms)\n\n"),
-        "the table header has no rows under it"
-    );
 }
 
 /// **The trace goes to a file and the answer to stdout.** They do not mix.
@@ -850,24 +744,20 @@ fn the_timing_table_names_every_phase() {
 /// `--trace FILE` is a *file* flag, and the reason is redirection: the trace
 /// is a markdown document with fenced DOT blocks in it, and a caller piping
 /// `ein solve` into anything at all would otherwise get the document instead
-/// of the table. So stdout keeps the solve table and carries no fence.
+/// of the read-out.
 #[test]
 fn the_trace_goes_to_a_file_and_the_answer_to_stdout() {
     let scratch = Scratch::new("trace");
     let path = scratch.at("trace.md");
-    let r = ein(&["solve", TWO_MODELS, "-e", "--trace", &path]);
+    let r = ein(&["solve", TWO_MODELS, "--trace", &path]);
     r.ok();
     let trace = read(&path);
-    assert!(trace.contains("```"), "the trace has no fenced block");
-    assert!(
-        trace.len() > 200,
-        "the trace is {} bytes — it is not a document",
-        trace.len()
-    );
+    assert!(trace.starts_with("# Region trace"), "{trace}");
+    assert!(trace.contains("```dot"), "the trace has no fenced diagram");
     assert!(!r.out.contains("```"), "a fence reached stdout:\n{}", r.out);
     assert!(
-        r.out.contains("solutions (k)"),
-        "stdout lost the solve table:\n{}",
+        r.out.contains("states (k_s)"),
+        "stdout lost the read-out:\n{}",
         r.out
     );
 }
@@ -877,19 +767,18 @@ fn the_trace_goes_to_a_file_and_the_answer_to_stdout() {
 /// **The summary declares its schema, and its blocks have a fixed shape.**
 ///
 /// One object per run, and `schema` first: a consumer that reads
-/// `ein-summary/1` knows what the rest means, and one that reads something
+/// `ein-summary/2` knows what the rest means, and one that reads something
 /// else can refuse instead of guessing. `root.hypgen`'s four keys are the
-/// invariant behind them — `raw == emitted + Σ filtered` — so a fifth key or a
-/// missing one changes what the block *means*, not just what it contains.
+/// invariant behind them — `raw == emitted + Σ filtered`.
 #[test]
 fn the_json_summary_declares_its_schema_and_its_block_shape() {
     let scratch = Scratch::new("schema");
     let path = scratch.at("summary.json");
-    ein(&["solve", TWO_MODELS, "-e", "--json-summary", &path]).ok();
+    ein(&["solve", TWO_MODELS, "--json-summary", &path]).ok();
     let j = json_at(&path);
-    assert_eq!(j["schema"], "ein-summary/1");
+    assert_eq!(j["schema"], "ein-summary/2");
     assert_eq!(j["source"], TWO_MODELS);
-    for block in ["verdict", "stats", "root", "config"] {
+    for block in ["asked", "region", "work", "root", "config", "leftover"] {
         assert!(j[block].is_object(), "the {block} block is missing");
     }
     let hypgen = j["root"]["hypgen"]
@@ -910,7 +799,7 @@ fn the_json_summary_declares_its_schema_and_its_block_shape() {
         j["root"]["plans"].as_i64().unwrap_or(0) > 0,
         "a file with rules compiled no plans"
     );
-    assert_eq!(j["verdict"]["type"], "Ambiguity");
+    assert_eq!(j["region"]["k_s"], 7);
 }
 
 /// **An integer goal binding stays a JSON *number*** — at any width.
@@ -934,7 +823,8 @@ fn an_integer_goal_binding_stays_a_json_number() {
     .ok();
     let text = read(&path);
     let j: J = serde_json::from_str(&text).expect("the summary is JSON");
-    let rows = j["verdict"]["solutions"][0]["goal_bindings"]
+    // Since M1e2 S1e2.1a.5 a goal's rows are its query's projection classes'.
+    let rows = j["queries"][0]["classes"][0]["rows"]
         .as_array()
         .expect("the goal bindings");
     let bound: BTreeMap<String, String> = rows
@@ -982,7 +872,7 @@ fn a_nested_fact_goal_binding_renders_as_an_s_expression() {
     ]);
     r.ok();
     let j = json_at(&path);
-    let rows = j["verdict"]["solutions"][0]["goal_bindings"]
+    let rows = j["queries"][0]["classes"][0]["rows"]
         .as_array()
         .expect("the goal bindings");
     assert_eq!(rows.len(), 1);
@@ -1005,15 +895,14 @@ fn recording_an_artefact_changes_nothing_else() {
     let with = ein(&[
         "solve",
         TWO_MODELS,
-        "-m",
-        "2",
+        "--maximal",
         "-p",
         "--json-summary",
         &scratch.at("s.json"),
         "--events",
         &scratch.at("e.jsonl"),
     ]);
-    let without = ein(&["solve", TWO_MODELS, "-m", "2", "-p"]);
+    let without = ein(&["solve", TWO_MODELS, "--maximal", "-p"]);
     assert_eq!(with.out, without.out, "stdout moved");
     assert_eq!(with.err, without.err, "stderr moved");
     assert_eq!(with.code, without.code, "the exit code moved");
@@ -1035,14 +924,14 @@ fn recording_an_artefact_changes_nothing_else() {
 fn the_json_summary_is_order_free_and_reproducible() {
     let scratch = Scratch::new("order-free");
     let (a, b) = (scratch.at("a.json"), scratch.at("b.json"));
-    ein(&["solve", TWO_MODELS, "-m", "3", "-e", "--json-summary", &a]).ok();
-    ein(&["solve", TWO_MODELS, "-m", "3", "-e", "--json-summary", &b]).ok();
+    ein(&["solve", TWO_MODELS, "--json-summary", &a]).ok();
+    ein(&["solve", TWO_MODELS, "--json-summary", &b]).ok();
     assert_eq!(read(&a), read(&b), "two runs wrote different bytes");
 
     let j = json_at(&a);
-    let facts: Vec<&str> = j["verdict"]["solutions"][0]["facts"]
+    let facts: Vec<&str> = j["region"]["states"][1]["facts"]
         .as_array()
-        .expect("the model's facts")
+        .expect("a state's facts")
         .iter()
         .map(|f| f.as_str().expect("a fact is text"))
         .collect();
@@ -1059,52 +948,68 @@ fn the_json_summary_is_order_free_and_reproducible() {
     assert_eq!(by_rel, sorted, "facts_by_relation is not sorted by key");
 }
 
-/// **An abort still writes its summary**, and says which budget ran out.
+/// **A stopped run still writes its summary**, and says why it stopped.
 ///
 /// The run that most needs a machine-readable record is the one that did not
-/// finish, and the exit code is the caller's signal: 2 is "budget", distinct
-/// from 1's "your file is wrong" and 0's "here is the answer". The `reason`
-/// names the budget *and its value*, so a caller can raise the right one
-/// instead of guessing which of `-E` / `-T` / `-m` it hit.
+/// finish. Since M1e2 S1e2.1a.5 a budget stops a run with an answer — what it
+/// established, and bounds — so it exits 0, writes one `note:` on stderr, and
+/// its summary says `exhausted false` and names the budget. A `-T` abort is
+/// the one stop that is not an answer: it exits 2 and writes no summary,
+/// because nothing was established.
 #[test]
-fn an_abort_still_writes_its_summary() {
+fn a_stopped_run_writes_its_summary_and_says_why() {
     let scratch = Scratch::new("abort");
     let path = scratch.at("summary.json");
     let r = ein(&[
         "solve",
         "examples/zebra2.ein",
-        "-e",
-        "-E",
-        "3",
+        "--region-budget",
+        "1",
         "--json-summary",
         &path,
     ]);
-    assert_eq!(r.code, 2, "an abort is exit 2, not {}", r.code);
+    assert_eq!(r.code, 0, "a budget stop is an answer: {}", r.err);
+    assert!(
+        r.err.starts_with("note: ") && r.err.contains("partial"),
+        "{}",
+        r.err
+    );
     let j = json_at(&path);
-    assert_eq!(j["verdict"]["type"], "Aborted");
-    assert_eq!(j["verdict"]["exhausted"], false);
-    assert_eq!(j["verdict"]["reason"], "max-enterings (3) reached");
-    assert_eq!(
-        j["stats"]["enterings_total"], 3,
-        "the partial counters are not the ones it stopped at"
+    assert_eq!(j["region"]["exhausted"], false);
+    assert_eq!(j["region"]["stopped"]["why"], "budget");
+
+    let deadline = scratch.at("deadline.json");
+    let t = ein(&[
+        "solve",
+        "examples/zebra2.ein",
+        "-T",
+        "0",
+        "--json-summary",
+        &deadline,
+    ]);
+    assert_eq!(t.code, 2, "a -T abort is exit 2, not {}", t.code);
+    assert!(
+        !PathBuf::from(&deadline).exists(),
+        "a -T abort wrote a summary"
     );
 }
 
 // ── `--events` ──────────────────────────────────────────────────────
 
-/// **The stream ends in the verdict, and `n` is dense.**
+/// **The stream ends in `region`, and `n` is dense.**
 ///
 /// Both halves are about being able to say *where* two logs diverge. The
 /// sequence number is dense from 0 to the last event, so "the first difference
 /// is at event k" identifies one event rather than a range; and the last event
-/// is the `verdict`, carrying the type, `k`, `exhausted`, every counter and
-/// the models — so a truncated log is detectable and a complete one needs no
-/// second artefact to interpret.
+/// is the `region` line, carrying what was asked, R as the run established
+/// it and the work — so a truncated log is detectable and a complete one needs
+/// no second artefact to interpret. It was the walk's `verdict` until M1e2
+/// S1e2.1a.5.
 #[test]
-fn the_event_stream_is_dense_and_ends_in_the_verdict() {
+fn the_event_stream_is_dense_and_ends_in_the_region() {
     let scratch = Scratch::new("dense");
     let path = scratch.at("events.jsonl");
-    ein(&["solve", TWO_MODELS, "-e", "--events", &path]).ok();
+    ein(&["solve", TWO_MODELS, "--events", &path]).ok();
     let events = events_of(&path);
     assert!(events.len() > 100, "only {} events", events.len());
 
@@ -1120,16 +1025,11 @@ fn the_event_stream_is_dense_and_ends_in_the_verdict() {
     assert_eq!(events[0]["e"], "run", "the stream does not open with `run`");
 
     let last = events.last().expect("a last event");
-    assert_eq!(last["e"], "verdict");
-    assert_eq!(last["type"], "Ambiguity");
-    assert_eq!(last["k"], 2);
-    assert_eq!(last["exhausted"], true);
-    assert!(last["counters"].is_object(), "no counters on the verdict");
-    assert_eq!(
-        last["models"].as_array().map(Vec::len),
-        Some(2),
-        "the verdict does not carry both models"
-    );
+    assert_eq!(last["e"], "region");
+    assert_eq!(last["asked"]["which"], "all");
+    assert_eq!(last["region"]["k_s"], 7);
+    assert_eq!(last["region"]["exhausted"], true);
+    assert!(last["work"].is_object(), "no work on the region line");
 }
 
 /// **`Events::off()` is inert** — it formats nothing and does not count.
@@ -1173,68 +1073,52 @@ fn events_off_formats_nothing_and_does_not_count() {
 /// notice a kind that stopped being emitted by a file **not** listed here,
 /// which is why each entry names its reason.
 ///
-/// The third column is the **environment** the row needs, `NAME=value` or
-/// empty. Exactly one row has one, and it is the reason the column exists: a
-/// kind reachable only under an environment variable is a kind no
+/// It had a third column, the environment a row needed, for the walk's tree;
+/// a kind reachable only under an environment variable was a kind no
 /// default-environment sweep can see, which is how `traversal` shipped at M1d
 /// S1d.10.6 and reached M1e undocumented (`SE-M3`).
-const EVENT_COVER: [(&str, &str, &str); 9] = [
+const EVENT_COVER: [(&str, &str); 7] = [
     (
         "examples/branching/01_saturate_only.ein",
-        "the lifecycle and the deductive layer",
-        "",
+        "the lifecycle and the deductive layer, `enter`, `layer` and `region`",
     ),
     (
-        "examples/branching/02_one_dead_one_alive.ein",
-        "enter / nogood / alt",
-        "",
-    ),
-    (
-        "examples/branching/07_lookahead_off.ein",
-        "writeback — the singleton (not h)",
-        "",
+        "examples/branching/04_two_levels.ein",
+        "hyp / hypskip — how H is built, narrated since M1e2 S1e2.1a.5",
     ),
     (
         "examples/branching/12_typed_blind_solve.ein",
-        "park / admit / retire — the NAF boundary",
-        "",
+        "park / admit / retire — the NAF boundary, and alt",
     ),
     (
         "examples/features/06_symmetric_native.ein",
         "mirror — the native arg swap",
-        "",
-    ),
-    (
-        "tests/stdlib/algebra/23_total_owed.ein",
-        "owe — the post-fixpoint obligation pass, which no other cover file \
-         activates",
-        "",
     ),
     (
         "examples/zebra2-obligations.ein",
-        "traversal — and the *accepted* arm of it, which needs a program whose \
-         root probe comes back `obligations`: the five other rungs decline, \
-         and a decline narrates the same kind for none of the reasons the \
-         kind exists for",
-        "EIN_TRAVERSAL=tree",
+        "rung and owe — the obligations rung choosing H, and the \
+         post-fixpoint obligation pass",
     ),
     (
         "examples/ein-bugs/naf-upward-closure.ein",
-        "warn — the `RefutationUnderAbsentWarning` category, and the only \
-         corpus entry that carries `(config :warn-derived-naf true)`, so it \
-         is the only one from which the flag-gated half of the kind is \
-         reachable at all",
-        "",
+        "warn — the `RefutationUnderAbsentWarning` category, from the only \
+         corpus entry whose program carries `(config :warn-derived-naf true)` \
+         on an `absent` refutation, and `monotonicity`, a site",
     ),
     (
         "examples/ein-bugs/alive-set-fresh-name.ein",
         "warn — the `alive-set-invariant` category, the unconditional one, \
-         from a different call site in `solve.rs`. A second row for one kind \
-         because a cover that reached `warn` through the gated category alone \
-         would stay green if the static check stopped narrating",
-        "",
+         from a different call site. A second row for one kind because a \
+         cover that reached `warn` through the gated category alone would \
+         stay green if the static check stopped narrating",
     ),
 ];
+
+/// The kinds only the walk emits — its learned clauses, its root writeback and
+/// its tree — documented in `events.md` and reached by no command since M1e2
+/// S1e2.1a.5, because no command runs the walk. They are asserted *unreached*,
+/// so a route that starts emitting one is noticed.
+const WALK_ONLY: [&str; 3] = ["nogood", "traversal", "writeback"];
 
 /// Where the `--events` schema lives: the protocol is a product surface — a
 /// debugging tool, and M20's likely feed.
@@ -1273,79 +1157,58 @@ fn schema_kinds() -> BTreeSet<String> {
     kinds
 }
 
-/// **Every kind the schema defines is emitted by some corpus fixture.**
+/// **Every kind the schema defines is emitted by some corpus fixture**, but
+/// the walk's three, which no command emits since M1e2 S1e2.1a.5.
 ///
 /// A kind nothing reaches is a kind the engine can silently stop emitting
 /// while the tier that should catch it stays green — the same shape of problem
-/// as a test that skips. Four of the seventeen were unreached by any ein.rs
-/// test when this was written (`load`, `verdict`, `nogood`, `writeback`), and
-/// the parse of `EVENTS.md` is what keeps the cover honest as the schema
-/// grows: a new row with no fixture behind it fails here.
+/// as a test that skips. The parse of `EVENTS.md` is what keeps the cover
+/// honest as the schema grows: a new row with no fixture behind it fails here.
 #[test]
 fn every_event_kind_the_schema_defines_is_reachable_from_the_corpus() {
     let scratch = Scratch::new("cover");
     let mut seen: BTreeMap<String, usize> = BTreeMap::new();
-    for (i, (file, _why, env)) in EVENT_COVER.iter().enumerate() {
+    for (i, (file, _why)) in EVENT_COVER.iter().enumerate() {
         let path = scratch.at(&format!("cover-{i}.jsonl"));
-        let env: Vec<(&str, &str)> = env
-            .split_once('=')
-            .map(|(k, v)| vec![(k, v)])
-            .unwrap_or_default();
-        // A budget, so the two large fixtures stay fast; the kinds they are
-        // here for are all emitted well before it.
-        ein_env(
-            &env,
-            &[
-                "solve",
-                file,
-                "-e",
-                "-E",
-                "60",
-                "--events",
-                &path,
-                "--events-level",
-                "verbose",
-            ],
-        );
+        // A budget, so the large fixtures stay fast; the kinds they are here
+        // for are all emitted well before it.
+        ein(&[
+            "solve",
+            file,
+            "--region-budget",
+            "4096",
+            "--events",
+            &path,
+            "--events-level",
+            "verbose",
+        ]);
         for e in events_of(&path) {
             *seen
                 .entry(e["e"].as_str().unwrap_or("?").to_string())
                 .or_insert(0) += 1;
         }
     }
-    // A region run (M1e2 T1e2.1a.5.2) is what emits `region`, where the walk
-    // emits `verdict`.
-    let path = scratch.at("cover-region.jsonl");
-    ein_env(
-        &[],
-        &[
-            "solve",
-            "examples/branching/05_mini_zebra.ein",
-            "--region-budget",
-            "524288",
-            "--events",
-            &path,
-            "--events-level",
-            "verbose",
-        ],
-    );
-    for e in events_of(&path) {
-        *seen
-            .entry(e["e"].as_str().unwrap_or("?").to_string())
-            .or_insert(0) += 1;
-    }
     let schema = schema_kinds();
-    // The row count, not a floor with slack: the three payload tables have 22
-    // kind cells and a removed kind is a schema version bump (§ Versioning),
-    // so it should have to be typed here too. It was 21 until M1e `CD-M2`
-    // added the `warn` row — the kind had been emitted since S1e.2.3 with no
-    // row for this parse to find.
+    // The row count: the three payload tables have 22 kind cells (the walk's
+    // `verdict` left at M1e2 S1e2.1a.5 and `region` arrived at T1e2.1a.5.2),
+    // and a removed kind is a schema version bump (§ Versioning), so it should
+    // have to be typed here too.
     assert!(
         schema.len() >= 22,
         "EVENTS.md parsed to only {} kinds — the table shape moved: {schema:?}",
         schema.len()
     );
-    let missing: Vec<&String> = schema.iter().filter(|k| !seen.contains_key(*k)).collect();
+    for k in WALK_ONLY {
+        assert!(schema.contains(k), "{k} is not documented");
+        assert!(
+            !seen.contains_key(k),
+            "{k} is the walk's, and a run emitted it: a route narrates it now"
+        );
+    }
+    let missing: Vec<&String> = schema
+        .iter()
+        .filter(|k| !seen.contains_key(*k) && !WALK_ONLY.contains(&k.as_str()))
+        .collect();
     assert!(
         missing.is_empty(),
         "no corpus fixture emits {missing:?}; the cover reached {:?}",
@@ -1366,11 +1229,10 @@ fn every_event_kind_the_schema_defines_is_reachable_from_the_corpus() {
 fn the_events_level_gates_the_high_volume_kinds() {
     let scratch = Scratch::new("level");
     let (n, v) = (scratch.at("normal.jsonl"), scratch.at("verbose.jsonl"));
-    ein(&["solve", TWO_MODELS, "-e", "--events", &n]).ok();
+    ein(&["solve", TWO_MODELS, "--events", &n]).ok();
     ein(&[
         "solve",
         TWO_MODELS,
-        "-e",
         "--events",
         &v,
         "--events-level",
@@ -1728,235 +1590,152 @@ fn the_removed_block_wrappers_are_not_highlighted_as_keywords() {
 
 // ── `--layer-progress` — M1d P1d.10 ────────────────────────────────
 
-/// Parse the `layer N gen:` / `layer N test:` / `layer N done:` lines into
-/// `(label, {key: value})`, which is what the two tests below assert on.
-fn layer_lines(err: &str) -> Vec<(String, std::collections::BTreeMap<String, u64>)> {
+/// The `--layer-progress` rows on stderr: `layer N: V visited — D dead, O
+/// owing, R in R · F facts`, each as its layer and its five counts.
+fn layer_lines(err: &str) -> Vec<(u64, [u64; 5])> {
     let mut out = Vec::new();
     for l in err.lines() {
-        let t = l.trim_start();
-        let Some(rest) = t.strip_prefix("layer ") else {
+        let Some(rest) = l.strip_prefix("layer ") else {
             continue;
         };
-        let mut it = rest.split_whitespace();
-        let (Some(n), Some(what)) = (it.next(), it.next()) else {
-            continue;
-        };
-        let mut kv = std::collections::BTreeMap::new();
-        for tok in it {
-            if let Some((k, v)) = tok.split_once('=')
-                && let Ok(v) = v.parse::<u64>()
-            {
-                kv.insert(k.to_string(), v);
-            }
+        let nums: Vec<u64> = rest
+            .split(|c: char| !c.is_ascii_digit())
+            .filter(|t| !t.is_empty())
+            .filter_map(|t| t.parse().ok())
+            .collect();
+        if let [layer, visited, dead, owing, r, facts] = nums[..] {
+            out.push((layer, [visited, dead, owing, r, facts]));
         }
-        out.push((format!("{n} {what}"), kv));
     }
     out
 }
 
-/// **The layer rows' arithmetic closes.**
+/// **The layer rows' arithmetic closes**, and adds up to the `work` row.
 ///
-/// The flag exists so a reader can watch a search that runs for minutes, and a
-/// progress line nobody can add up is a progress line nobody can trust. Three
-/// identities, per layer, and each names a different half of the loop:
-///
-/// - `joined − dropped_dead − dropped_nogood = candidates` — generation
-/// - `entered = alive + dead` — testing
-/// - `alive = complete + survivors` — where the survivors went, which is the
-///   one the census row could not state on its own: `alive_enterings` counts
-///   every consistent fork and only the incomplete ones reach the next
-///   frontier
-///
-/// `zebra2` is the fixture because it is the corpus's pruning case — layer 1
-/// kills 32 of 56 and completes 13 more, so every term above is non-zero.
+/// The flag exists so a reader can watch a run that takes minutes, and a
+/// progress line nobody can add up is a progress line nobody can trust. Since
+/// M1e2 S1e2.1a.5 a row is route 1's layer: every node visited is dead,
+/// owing or in R, and the layers' visits and facts are the run's
+/// saturations and facts.
 #[test]
 fn the_layer_progress_rows_add_up() {
-    let r = ein(&["solve", "-e", "--layer-progress", "examples/zebra2.ein"]);
+    let r = ein(&["solve", "--layer-progress", TWO_MODELS]);
     assert_eq!(r.code, 0, "stderr:\n{}", r.err);
     let rows = layer_lines(&r.err);
-    let generated: Vec<_> = rows.iter().filter(|(l, _)| l.ends_with("gen:")).collect();
-    let test: Vec<_> = rows.iter().filter(|(l, _)| l.ends_with("test:")).collect();
-    let done: Vec<_> = rows.iter().filter(|(l, _)| l.ends_with("done:")).collect();
-    assert_eq!(
-        generated.len(),
-        2,
-        "two layers, two generation rows:\n{}",
-        r.err
-    );
-    assert_eq!(test.len(), generated.len());
-    assert_eq!(done.len(), generated.len());
-
-    let mut saw_a_death = false;
-    let mut saw_a_completion = false;
-    for i in 0..generated.len() {
-        let (g, t, d) = (&generated[i].1, &test[i].1, &done[i].1);
-        let at = |m: &std::collections::BTreeMap<String, u64>, k: &str| {
-            *m.get(k)
-                .unwrap_or_else(|| panic!("no {k} in layer {i} of:\n{}", r.err))
-        };
+    assert_eq!(rows.len(), 5, "five layers:\n{}", r.err);
+    for (i, (layer, [visited, dead, owing, in_r, _])) in rows.iter().enumerate() {
+        assert_eq!(*layer, i as u64, "the layers are not in order");
         assert_eq!(
-            at(g, "joined") - at(g, "−dead") - at(g, "−clause"),
-            at(g, "cand"),
-            "layer {i}: the join and the two filters do not reach `cand`"
+            *visited,
+            dead + owing + in_r,
+            "layer {i}: a node is none of the three"
         );
-        assert_eq!(
-            at(t, "entered"),
-            at(t, "alive") + at(t, "dead"),
-            "layer {i}: an entering was neither alive nor dead"
-        );
-        assert_eq!(
-            at(t, "alive"),
-            at(t, "complete") + at(d, "survivors"),
-            "layer {i}: a consistent fork was neither complete nor a survivor"
-        );
-        assert_eq!(
-            at(g, "cand"),
-            at(t, "entered"),
-            "layer {i}: a candidate was generated and not entered"
-        );
-        saw_a_death |= at(t, "dead") > 0;
-        saw_a_completion |= at(t, "complete") > 0;
     }
-    assert!(saw_a_death, "the fixture has to kill something");
-    assert!(saw_a_completion, "…and complete something");
+    let work = r
+        .out
+        .lines()
+        .find(|l| l.trim_start().starts_with("work "))
+        .expect("the work row")
+        .to_string();
+    let visited: u64 = rows.iter().map(|(_, c)| c[0]).sum();
+    let facts: u64 = rows.iter().map(|(_, c)| c[4]).sum();
+    assert!(
+        work.contains(&format!(
+            "{visited} saturations · {facts} facts beyond root"
+        )),
+        "{work} against {visited} visits and {facts} facts"
+    );
+    assert!(
+        rows.iter().any(|(_, c)| c[1] > 0),
+        "the fixture has to kill something"
+    );
 }
 
 /// **It is additive, and it is the layer half of `--verbose` alone.**
 ///
-/// Two claims in one run because they are the same claim from two sides: the
-/// flag changes what goes to *stderr* and nothing else, and what it removes
-/// from `-v` is the per-entering firehose — 6 180 lines on a 618 076-entering
-/// run at the default `--progress-every`, which is what makes `-v` unusable
-/// for watching a layer.
+/// The flag changes what goes to *stderr* and nothing else, and what it
+/// removes from `-v` is the per-node lines, which is what makes `-v` hard to
+/// read while watching a layer.
 #[test]
-fn layer_progress_is_verbose_without_the_enterings() {
-    let plain = ein(&["solve", "-e", "-s", "examples/zebra2.ein"]);
-    let lp = ein(&[
-        "solve",
-        "-e",
-        "-s",
-        "--layer-progress",
-        "examples/zebra2.ein",
-    ]);
-    let v = ein(&["solve", "-e", "-s", "-v", "examples/zebra2.ein"]);
-
-    // `wall` is the one volatile row of `--stats`, and it is volatile under
-    // any two runs — the claim is about every other byte.
-    let steady = |o: &str| {
-        o.lines()
-            .filter(|l| !l.trim_start().starts_with("wall"))
-            .collect::<Vec<_>>()
-            .join("\n")
-    };
-    assert_eq!(
-        steady(&plain.out),
-        steady(&lp.out),
-        "--layer-progress moved stdout"
-    );
+fn layer_progress_is_verbose_without_the_nodes() {
+    let plain = ein(&["solve", TWO_MODELS]);
+    let lp = ein(&["solve", "--layer-progress", TWO_MODELS]);
+    let v = ein(&["solve", "-v", "-g", "1", TWO_MODELS]);
+    assert_eq!(plain.out, lp.out, "--layer-progress moved stdout");
+    assert_eq!(plain.out, v.out, "-v moved stdout");
     assert_eq!(plain.code, lp.code);
     assert!(
         plain.err.is_empty(),
         "the control wrote stderr: {}",
         plain.err
     );
-
-    let entering = |e: &str| {
-        e.lines()
-            .filter(|l| l.trim_start().starts_with("e="))
-            .count()
-    };
-    assert_eq!(
-        entering(&lp.err),
-        0,
-        "--layer-progress narrated an entering"
-    );
+    let node = |e: &str| e.lines().filter(|l| l.starts_with("  node ")).count();
+    assert_eq!(node(&lp.err), 0, "--layer-progress narrated a node");
     assert!(
-        entering(&v.err) > 0,
+        node(&v.err) > 0,
         "-v narrated none — the contrast is vacuous"
     );
     assert_eq!(
-        layer_lines(&lp.err).len(),
-        layer_lines(&v.err).len(),
+        layer_lines(&lp.err),
+        layer_lines(&v.err),
         "the two disagree about the layer half"
     );
 }
 
-// ── The `k = 0` verdicts qualify themselves — M1d T1d.10.5.2b ──────
+// ── An empty count qualifies itself ────────────────────────────────
 
-/// **A refutation needs the lattice exhausted, and says so when it did not
-/// get it.**
+/// **A run that stopped does not say R is empty**, and one that exhausted
+/// says which kind of empty it is — M1d T1d.10.5.2b's rule, read under R.
 ///
-/// [S1d.3.3](../../../../docs/history/m1d_satisfiability/README.md#s1d33--the-verdict)
-/// made `exhausted = true` ⇒ *these are the models* normative and gave the
-/// qualifier to `Solution` and `Ambiguity`, leaving `Contradiction` — where
-/// the problem is a *word* and not a number — to
-/// [Q-M1d.1](../../../../docs/history/m1d_satisfiability/open_questions.md). This is
-/// that word.
-///
-/// `saturation/type-exclusivity/pets.ein` is the fixture because it makes the
-/// old sentence flatly false: *the constraints are contradictory* at `-m 5`
-/// and `-m 8`, **35 models** at `-m 10`. `ein-bugs/zebra2-bad.ein` is the
-/// non-vacuity control — an exhausted refutation with a real one-fact core,
-/// which must keep every word it had.
-///
-/// The claim channel needed no change and is asserted next door:
-/// `expect_semantics::a_contradiction_from_a_truncated_search_is_not_checked`
-/// has always answered `NOT CHECKED` here. What this pins is that the *verdict*
-/// channel now agrees with it instead of contradicting it.
+/// `saturation/type-exclusivity/pets.ein` is the fixture because the walk
+/// called it *contradictory* at `-m 5` and it has 11 339 states. Stopped by
+/// its budget before layer 1, a description has R's lower bounds and no
+/// `empty` row, and a dead-alone count only of what it visited. The control,
+/// `ein-bugs/zebra2-bad.ein`, is an exhausted empty R with a real one-fact
+/// core, which keeps every word.
 #[test]
-fn a_truncated_k0_is_not_reported_as_a_refutation() {
+fn a_stopped_run_does_not_report_r_empty() {
     let cut = ein(&[
         "solve",
-        "-e",
-        "-m",
-        "5",
-        "-s",
+        "--region-budget",
+        "2",
         "examples/saturation/type-exclusivity/pets.ein",
     ]);
     assert_eq!(cut.code, 0);
-    assert_eq!(cut.field("exhausted").as_deref(), Some("false"));
-    let verdict = cut
-        .out
-        .lines()
-        .find(|l| l.trim_start().starts_with("verdict"))
-        .unwrap_or_else(|| panic!("no verdict line in:\n{}", cut.out));
     assert!(
-        !verdict.contains("contradictory"),
-        "a search that stopped at -m 5 called a 35-model program contradictory: {verdict}"
+        cut.out.contains("states (k_s)      1   (a lower bound"),
+        "{}",
+        cut.out
     );
     assert!(
-        verdict.contains("did not exhaust"),
-        "the verdict does not say why its zero is a zero: {verdict}"
+        !cut.out.contains("\n  empty "),
+        "a stopped run called R empty:\n{}",
+        cut.out
     );
     assert!(
         cut.out
-            .contains("(none found — the search did not exhaust)"),
-        "the count carries no qualifier:\n{}",
+            .contains("dead alone not known: the run stopped before it visited each alone"),
+        "{}",
         cut.out
     );
-    // An unsat core explains why a program has *no model*, which is exactly
-    // what this run did not show — so the block is named for what it holds.
     assert!(
-        cut.out.contains("refuted so far") && !cut.out.contains("unsat core"),
-        "a truncated run still calls its deaths an unsat core:\n{}",
-        cut.out
+        cut.err.starts_with("note: ") && cut.err.contains("partial"),
+        "{}",
+        cut.err
     );
 
-    // Non-vacuity: an exhausted refutation keeps every word.
-    let done = ein(&["solve", "-e", "-s", "examples/ein-bugs/zebra2-bad.ein"]);
+    let done = ein(&["solve", "examples/ein-bugs/zebra2-bad.ein"]);
     assert_eq!(done.code, 0);
-    assert_eq!(done.field("exhausted").as_deref(), Some("true"));
+    assert_eq!(done.field("exhausted").as_deref(), Some("yes"));
     assert!(
         done.out
-            .contains("verdict         No solution — the constraints are contradictory"),
+            .contains("empty             every node is dead — root's own fixpoint derives (false)"),
         "the exhausted arm moved:\n{}",
         done.out
     );
-    assert!(done.out.contains("unsat core (1 facts)"));
     assert!(
-        !done.out.contains("did not exhaust"),
-        "the exhausted arm grew a qualifier it has no use for:\n{}",
         done.out
+            .contains("unsat core        (color-loc Green House-1)")
     );
 }
 
@@ -1991,80 +1770,36 @@ fn a_stdlib_override_without_the_marker_is_refused_through_the_environment() {
 
 // ── M1e S1e.2.1 — CO-H3(a): the tree and the stop policy ───────────
 
-/// `ein solve`, with `EIN_TRAVERSAL` set for the child process only.
-fn ein_traversal(traversal: &str, args: &[&str]) -> Run {
-    ein_env(&[("EIN_TRAVERSAL", traversal)], args)
-}
-
-/// **`--max-set-size` is refused under `EIN_TRAVERSAL=tree`, and `-n` is
-/// honoured** — M1e S1e.2.1, `CO-H3`(a).
+/// **`EIN_TRAVERSAL=tree` changes nothing a run prints** — since M1e2
+/// S1e2.1a.5, because no command runs the walk, and the tree was the walk's.
 ///
-/// The traversal used to consult `check_budget` and nothing else, so
-/// `EIN_TRAVERSAL=tree ein solve file` explored and recorded the entire tree
-/// while `-n 1` — the default — asked for one model, and `-m` was dropped in
-/// silence. The two flags get different answers because they are different
-/// questions:
-///
-/// - `-n` names *how many models to stop after*, which any traversal can
-///   answer. It is honoured, and cuts the search rather than the read-out.
-/// - `-m` bounds the size of the commitment **sets** the lattice enumerates.
-///   The tree enumerates none; its depth is what the program owes, and on this
-///   very file the deepest model sits one past the flag's own default of 5. So
-///   it is refused — exit 2 with a stderr `error:`, the shape a flag-
-///   combination refusal already takes — rather than honoured (which would
-///   read a lattice layer index as a tree depth, `T1d.10.6.4`'s question) or
-///   ignored (which is what shipped).
-///
-/// The refusal is checked on **all three** subcommands that take the flag, not
-/// just the one the finding was written about: `solve`, `test` and `render
-/// lattice` all solve, so all three meet the traversal. The lattice arm of
-/// each pair is the control — nothing here changed for it.
+/// Until then this test held the tree to `-n` and to a refusal of `-m`
+/// (M1e S1e.2.1, `CO-H3`(a)). The variable is still read by the walk's
+/// library code, which ships, so `configuration.md` § 4 lists it; this is
+/// the claim that a command's output does not depend on it, held from
+/// outside, and the retirement of `-m` the tree refused, held with it.
 #[test]
-fn the_tree_traversal_honours_n_and_refuses_m() {
+fn the_walks_traversal_reaches_no_command() {
     const FILE: &str = "examples/zebra2-minus-15-obligations.ein";
-
-    // **All three subcommands that take the flag**, because all three solve
-    // and fixing one of them is how the defect reappears next door.
     for args in [
-        vec!["solve", FILE, "-m", "3"],
-        vec!["test", "tests/stdlib", "-m", "3"],
-        vec!["render", "lattice", FILE, "--max-set-size", "3"],
+        vec!["solve", FILE, "--region-budget", "4096"],
+        vec!["test", "tests/stdlib/slots"],
+        vec!["render", "lattice", FILE, "--region-budget", "4096"],
     ] {
-        let refused = ein_traversal("tree", &args);
-        assert_eq!(refused.code, 2, "{args:?}: {}{}", refused.err, refused.out);
-        assert!(
-            refused.err.contains("--max-set-size bounds the lattice's")
-                && refused.err.contains("EIN_TRAVERSAL=tree"),
-            "{args:?}: the refusal does not say which two things conflict:\n{}",
-            refused.err
-        );
-        assert!(
-            refused.out.is_empty(),
-            "{args:?}: a refused run still printed its output:\n{}",
-            refused.out
-        );
-        // The same flag under the lattice is ordinary.
-        let lattice = ein(&args);
-        assert_eq!(lattice.code, 0, "{args:?}: {}", lattice.err);
+        let plain = ein(&args);
+        let tree = ein_env(&[("EIN_TRAVERSAL", "tree")], &args);
+        let strip = |r: &Run| {
+            r.out
+                .lines()
+                .map(|l| l.split("  (").next().unwrap_or(l).to_string())
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(tree.code, plain.code, "{args:?}");
+        assert_eq!(strip(&tree), strip(&plain), "{args:?}: the tree reached it");
     }
-
-    // …and with no `-m`, the tree runs and answers the question `-n` asked.
-    let one = ein_traversal("tree", &["solve", FILE, "--stats"]);
-    assert_eq!(one.code, 0, "{}", one.err);
-    assert_eq!(
-        one.field("solutions (k)").as_deref(),
-        Some("1"),
-        "the default -n 1 did not stop the tree:\n{}",
-        one.out
-    );
-    let all = ein_traversal("tree", &["solve", FILE, "-e", "--stats"]);
-    assert_eq!(all.field("solutions (k)").as_deref(), Some("32"));
-    assert_eq!(
-        all.field("enterings").as_deref(),
-        Some("86"),
-        "the S1d.10.6 headline moved:\n{}",
-        all.out
-    );
+    let m = ein(&["solve", FILE, "-m", "3"]);
+    assert_eq!(m.code, 2);
+    assert!(m.err.contains("-m/--max-set-size is retired"), "{}", m.err);
 }
 
 // ── The container sniff, in either feature set — M1e S1e.4.4, `EH-L2` ──

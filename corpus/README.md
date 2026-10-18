@@ -58,37 +58,39 @@ schema = "ein-corpus/2"
 [[entry]]
 path   = "examples/zebra2.ein"     # repo-root-relative
 group  = "positive"
-runs   = ["solve", "solve -e", "saturate", "render rules"]
+runs   = ["solve", "solve --maximal", "saturate", "render rules"]
 levers = ["-L", "-K"]              # each makes one more `solve <lever>` run
 slow   = true                      # excluded from the default sweep — see § `slow`
 cost_ms = 3459                     # what its runs cost, together, measured
 note   = "why this entry is interesting, when it is not obvious"
 ```
 
-A **run name is the `ein` argv with the file position elided**: `"solve -e"` is
-`ein solve <path> -e`, `"render rules"` is `ein render rules <path>`. Two
+A **run name is the `ein` argv with the file position elided**: `"solve
+--maximal"` is `ein solve <path> --maximal`, `"render rules"` is `ein render
+rules <path>`. Two
 substitutions happen in the sweep:
 
 - `{out}` expands to that cell's output directory, so a run can name its own
-  artefacts — `"solve --trace {out}/trace.md"`, `"solve --dump-states {out}/states"`;
+  artefacts — `"solve --trace {out}/trace.md"`, `"oracle --dump {out}/region"`;
 - every `solve` run silently gains `--json-summary {out}/summary.json`.
 
 `runs` is **the invocations this entry is exercised under**, and each one is
 a thing that must work.
 
 **Exit 2 means two things, and a run has to say which.** It is the CLI's
-usage-error code *and* the code a **budget abort** takes (`ein solve -E` /
-`-T`), plus `ein test`'s load error and nothing-to-check. `no_cell_crashes`
-read it as the first, unconditionally, and was safe only because nothing here
-declared a budget — so the first budgeted run added would have failed the crash
-check with a message about an argv the CLI refuses. Since M1e S1e.3.6 the check
-reads the run: **a `2` is allowed exactly where the run names `-E` / `-T` /
-`--max-enterings` / `--max-time`**, and `examples/zebra2.ein`'s `solve -E 1` is
-the cell that exercises it.
+usage-error code *and* the code a `-T` abort takes, plus `ein test`'s load
+error and nothing-to-check. Since M1e S1e.3.6 `no_cell_crashes` reads the run:
+**a `2` is allowed exactly where the run names `-E` / `-T` /
+`--max-enterings` / `--max-time`**. Since M1e2 S1e2.1a.5 no cell does: a
+budget that stops a description (`--region-budget`, `--region-limit`) is an
+answer and exits 0, so `examples/zebra2.ein`'s walk cell `solve -E 1` became
+`solve --region-budget 1`, which exits 0 with a `note:`, and `-E` is retired.
+`ein oracle` over its `--region-limit` exits 2 too, and is refused, not
+budgeted, so no cell declares one (`lattice/06`'s two entries say so).
 
-**`-E` is the one to use; `-T` is refused** — M1e S1e.4.5, `TE-L1`. The two
-are not equals: `-E` counts enterings and `-T` counts seconds, so a `-T` cell's
-**exit code is a stopwatch** and `corpus_exits.txt` banks it line by line.
+**`-T` is refused in a cell** — M1e S1e.4.5, `TE-L1`. `-T` counts seconds, so
+a `-T` cell's **exit code is a stopwatch** and `corpus_exits.txt` banks it
+line by line.
 Measured 2026-09-01, the same argv exits 2 at `-T 0.001` and 0 at `-T 60`.
 That would be the only place in this repo where a wall clock reaches a banked
 artefact — everywhere else the clock is scrubbed before a comparison — so it is
@@ -164,8 +166,10 @@ neither group is here.
 
 ## Dropped runs
 
-Some entries do not declare `solve`, or `solve -e`, or `render lattice`, and
-each says so in its `note`. Every reason is about the **puzzle**:
+Some entries do not declare `solve`, or `render lattice`, and each says so in
+its `note`. Every reason is about the **puzzle**. Until M1e2 S1e2.1a.5 the
+list was about the walk's `solve` and `solve -e`, and the reasons below are
+the ones those notes give:
 
 - **A demo that closes no domain.** The `saturation/**` demos exist to show ONE
   rule firing; `features/02_star_in_identifiers` is a lexer demo;

@@ -33,7 +33,70 @@ pub enum FieldKind {
     Str,
 }
 
-/// Every flag, in **declaration order**.
+/// The flags a `(config …)` takes since M1e2 S1e2.1a.5's switch, in
+/// declaration order: the eight `solve_interface.md` § 2.4 keeps. What
+/// `--dump-config` prints, what the KB-shape dump renders, and what the
+/// loader parses.
+pub const FLAGS: &[(&str, FieldKind)] = &[
+    ("enable-pre-branch-lookahead", FieldKind::Bool),
+    ("enable-lookahead-kill-cache", FieldKind::Bool),
+    ("warn-derived-naf", FieldKind::Bool),
+    ("lattice-sanity-check", FieldKind::Bool),
+    ("enable-path-nogoods", FieldKind::Bool),
+    ("enable-symmetric-mirror", FieldKind::Bool),
+    ("record-alternative-justifications", FieldKind::Bool),
+    ("enable-fail-fast-fork", FieldKind::Bool),
+];
+
+/// The nine flags the switch retired, each with why — the loader's error, so
+/// a program that sets one is refused with the reason rather than as an
+/// unknown flag (`solve_interface.md` § 2.4). Their fields stay on
+/// [`SolverConfig`] at their defaults, for the walk's library code, which no
+/// command reaches.
+pub const RETIRED: &[(&str, &str)] = &[
+    (
+        "hypgen-scoring",
+        "an order lever, and every route's order is part of its definition",
+    ),
+    (
+        "hypgen-rel-weight",
+        "an order lever, and every route's order is part of its definition",
+    ),
+    (
+        "hypgen-obj-weight",
+        "an order lever, and every route's order is part of its definition",
+    ),
+    (
+        "print-alive",
+        "it was inert: no code path read it (Q-M1e.10)",
+    ),
+    (
+        "candidate-order-seed",
+        "it was inert: no code path read it (Q-M1e.10)",
+    ),
+    (
+        "lattice-order",
+        "an order lever, and every route's order is part of its definition",
+    ),
+    (
+        "lattice-order-seed",
+        "an order lever, and every route's order is part of its definition",
+    ),
+    (
+        "enable-singleton-writeback",
+        "it wrote into root, which no route does: a candidate dead alone leaves \
+         the universe by L1",
+    ),
+    (
+        "enable-forced-positive",
+        "it wrote into root, which no route does: a candidate dead alone leaves \
+         the universe by L1",
+    ),
+];
+
+/// Every field of [`SolverConfig`], in **declaration order**: [`FLAGS`] and
+/// [`RETIRED`]'s, interleaved as declared. What the `.einb` container
+/// round-trips, so its format did not move with the switch.
 pub const FIELDS: &[(&str, FieldKind)] = &[
     ("enable-pre-branch-lookahead", FieldKind::Bool),
     ("enable-lookahead-kill-cache", FieldKind::Bool),
@@ -161,6 +224,14 @@ impl Default for SolverConfig {
 /// through [`crate::repr::repr_str`], and a float through Rust's shortest
 /// round-trip formatting (`{:?}`), so a weight prints as `1.0` or `0.5`.
 pub fn rendered_fields(c: &SolverConfig) -> Vec<(&'static str, String)> {
+    every_field(c)
+        .into_iter()
+        .filter(|(name, _)| FLAGS.iter().any(|(f, _)| f == name))
+        .collect()
+}
+
+/// [`rendered_fields`] over every field, retired ones included.
+fn every_field(c: &SolverConfig) -> Vec<(&'static str, String)> {
     let b = |v: bool| {
         if v {
             "True".to_string()
@@ -217,17 +288,30 @@ mod tests {
         // and then drops. Counting is the cheap half; the loader's own tests
         // check that each name reaches its field.
         assert_eq!(FIELDS.len(), 17);
+        assert_eq!((FLAGS.len(), RETIRED.len()), (8, 9));
         let mut names: Vec<&str> = FIELDS.iter().map(|(n, _)| *n).collect();
         names.sort_unstable();
         names.dedup();
         assert_eq!(names.len(), FIELDS.len(), "a flag name repeats");
         for (name, _) in FIELDS {
             assert!(!name.contains('_'), "{name} should be kebab-case");
+            let kept = FLAGS.iter().any(|(f, _)| f == name);
+            let retired = RETIRED.iter().any(|(f, _)| f == name);
+            assert!(
+                kept != retired,
+                "{name} is kept or retired, not both or neither"
+            );
         }
+        let every = every_field(&SolverConfig::default());
+        assert_eq!(
+            every.iter().map(|(n, _)| *n).collect::<Vec<_>>(),
+            FIELDS.iter().map(|(n, _)| *n).collect::<Vec<_>>(),
+            "the renderer and the field table drifted"
+        );
         let rendered = rendered_fields(&SolverConfig::default());
         assert_eq!(
             rendered.iter().map(|(n, _)| *n).collect::<Vec<_>>(),
-            FIELDS.iter().map(|(n, _)| *n).collect::<Vec<_>>(),
+            FLAGS.iter().map(|(n, _)| *n).collect::<Vec<_>>(),
             "the renderer and the flag table drifted"
         );
     }

@@ -148,15 +148,19 @@ fn the_load_negative_fixtures_are_byte_identical() {
 fn the_config_coercion_table_is_stable() {
     let bodies = [
         // Booleans: the atoms, the strings, and the wrong shapes.
-        "(config :print-alive true)",
-        "(config :print-alive false)",
-        "(config :print-alive \"true\")",
-        "(config :print-alive TRUE)",
-        "(config :print-alive 1)",
-        "(config :print-alive maybe)",
-        "(config :print-alive ?x)",
-        "(config :print-alive 1..5)",
-        "(config :print-alive (nested a))",
+        "(config :warn-derived-naf true)",
+        "(config :warn-derived-naf false)",
+        "(config :warn-derived-naf \"true\")",
+        "(config :warn-derived-naf TRUE)",
+        "(config :warn-derived-naf 1)",
+        "(config :warn-derived-naf maybe)",
+        "(config :warn-derived-naf ?x)",
+        "(config :warn-derived-naf 1..5)",
+        "(config :warn-derived-naf (nested a))",
+        // Since M1e2 S1e2.1a.5 every flag a program can set is a bool, and the
+        // string, int and float flags below are retired: their rows pin the
+        // refusal, which names why, and the coercions they reached are the
+        // container's alone.
         // Strings: an atom and a string coerce, an int does not.
         "(config :hypgen-scoring most-constrained)",
         "(config :hypgen-scoring \"popularity\")",
@@ -183,8 +187,8 @@ fn the_config_coercion_table_is_stable() {
         "(config :nope true)",
         "(config)",
         // Last one wins, and an earlier repeat of a key loses to a later.
-        "(config :print-alive true) (config :warn-derived-naf true)",
-        "(config :print-alive true :print-alive false)",
+        "(config :warn-derived-naf true) (config :enable-path-nogoods false)",
+        "(config :warn-derived-naf true :warn-derived-naf false)",
     ];
     let mut out = String::new();
     for body in bodies {

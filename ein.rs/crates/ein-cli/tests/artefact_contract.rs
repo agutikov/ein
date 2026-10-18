@@ -99,16 +99,19 @@ impl Drop for ReadOnly {
 
 const FILE: &str = "examples/features/10_expect.ein";
 
-/// Every artefact flag, and which subcommand carries it.
-const ARTEFACTS: [(&str, &str); 8] = [
+/// Every artefact flag, and which subcommand carries it. `--dump-states`, the
+/// first directory, retired with the walk at M1e2 S1e2.1a.5; `ein oracle`'s
+/// two arrived with it.
+const ARTEFACTS: [(&str, &str); 9] = [
     ("solve", "events"),
     ("solve", "json-summary"),
     ("solve", "trace"),
-    ("solve", "dump-states"),
-    // M1e2 S1e2.1.2 and .3 — directories made before the search, so the
-    // `--dump-states` arm of the exit-code rule below.
+    // M1e2 S1e2.1.2 and .3 — directories made before the run, so the
+    // directory arm of the exit-code rule below.
     ("solve", "dump-answer"),
     ("solve", "dump-lattice"),
+    ("oracle", "dump"),
+    ("oracle", "json-summary"),
     ("test", "json-report"),
     ("test", "json-summary"),
 ];
@@ -139,16 +142,17 @@ fn every_artefact_failure_names_its_flag_and_its_path() {
     }
 }
 
-/// **The additive four leave the exit code alone; the three directories —
-/// `--dump-states`, `--dump-answer`, `--dump-lattice` — do not.**
+/// **The additive files leave the exit code alone; the three directories —
+/// `solve --dump-answer`, `solve --dump-lattice`, `oracle --dump` — do not.**
 ///
 /// Two arms and the split is not arbitrary. Four flags say *additive: stdout,
 /// stderr and the exit code are unchanged* in their own `--help`, and a failed
 /// write does not make that false: the answer on stdout is correct and
-/// complete, and the artefact is paperwork. `--dump-states` claims no
-/// additivity, opens a **directory before the search** rather than writing a
-/// file after it, and so its failure means the run cannot do what it was asked
-/// — which is worth an exit code, and is the one signal the family has.
+/// complete, and the artefact is paperwork. A directory is made **before the
+/// run** rather than written after it, so its failure means the run cannot do
+/// what it was asked — which is worth an exit code, and is the one signal the
+/// family has. `--dump-states` was the first such directory, and retired with
+/// the walk.
 ///
 /// Whether the additive arm should have a code of its own is
 /// [Q-M1e.22](../../../../docs/history/m1e_review_processing/open_questions.md),
@@ -158,10 +162,7 @@ fn a_failed_artefact_write_leaves_the_exit_code_alone_except_for_the_directories
     let ro = ReadOnly::new("exit");
     for (cmd, flag) in ARTEFACTS {
         let r = ein(&[cmd, FILE, &format!("--{flag}"), &ro.at("out")]);
-        let want = i32::from(matches!(
-            flag,
-            "dump-states" | "dump-answer" | "dump-lattice"
-        ));
+        let want = i32::from(matches!(flag, "dump-answer" | "dump-lattice" | "dump"));
         assert_eq!(
             r.code, want,
             "{cmd} --{flag} exited {} and the contract says {want}\n{}",
@@ -172,13 +173,14 @@ fn a_failed_artefact_write_leaves_the_exit_code_alone_except_for_the_directories
     // which is what makes "the artefact is paperwork" true rather than a way
     // of not noticing.
     let r = ein(&["solve", FILE, "--json-summary", &ro.at("out")]);
-    assert!(r.out.contains("solutions (k)"), "{}", r.out);
+    assert!(r.out.contains("states (k_s)"), "{}", r.out);
 }
 
 /// **An empty path is a usage error**, refused before anything runs.
 ///
 /// It reached all five options and three of them then failed with a bare *No
-/// such file or directory*. `--dump-states ""` did not fail at all:
+/// such file or directory*. `--dump-states ""`, since retired, did not fail at
+/// all:
 /// `create_dir_all("")` is `Ok`, `""/00_timeline.jsonl` is a relative path,
 /// and the run dropped `00_root_initial.ein`, `00_timeline.jsonl`,
 /// `summary.json` and `layers/` into whatever directory the caller happened to
@@ -201,18 +203,20 @@ fn an_empty_artefact_path_is_refused() {
         );
         assert!(r.out.is_empty(), "{cmd} --{flag} ran anyway:\n{}", r.out);
     }
-    // The one that used to succeed, checked where it used to succeed: nothing
-    // is written into the working directory.
+    // The one that used to succeed was `--dump-states ""`, retired with the
+    // walk; a directory flag is still the case to watch, so nothing is
+    // written into the working directory by an empty one.
     let before: Vec<String> = std::fs::read_dir(repo_root())
         .expect("readdir")
         .flatten()
         .map(|e| e.file_name().to_string_lossy().into_owned())
         .collect();
-    ein(&["solve", FILE, "--dump-states", ""]);
-    for name in ["00_timeline.jsonl", "00_root_initial.ein", "summary.json"] {
+    ein(&["solve", FILE, "--dump-lattice", ""]);
+    ein(&["solve", FILE, "--dump-answer", ""]);
+    for name in ["nodes.json", "nodes.md", "answer.txt", "index.json"] {
         assert!(
             !before.contains(&name.to_string()) && !repo_root().join(name).exists(),
-            "an empty --dump-states wrote {name} into the working directory"
+            "an empty directory flag wrote {name} into the working directory"
         );
     }
 }

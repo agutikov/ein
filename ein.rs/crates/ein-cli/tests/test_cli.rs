@@ -9,10 +9,11 @@
 //! [S1a.6.6](../../../../docs/history/m1a_rust/README.md#s1a66--the-fuzzer)
 //! precedent: the fuzzer's own three controls each failed once first.
 //!
-//! The comparison itself lives in `ein-infer`'s `expect_semantics`; what is
-//! here is everything only a process can see — the exit code, the file
-//! selection, the summary line, and the three ways a run can produce no
-//! verdict at all.
+//! The comparisons themselves live in `ein-infer` — a query's classes in
+//! `expect_semantics`, a region claim in `claim_round_trip` and `tests/region/`;
+//! what is here is everything only a process can see — the exit code, the file
+//! selection, the summary line, the one run a file gets in the mode its
+//! claims need (M1e2 S1e2.1a.5), and the ways a run can decide nothing.
 
 use std::path::PathBuf;
 use std::process::Command;
@@ -82,20 +83,35 @@ impl Drop for Dir {
 }
 
 /// The facts every program here is about, with the lattice they are asked
-/// over: nothing guessed. One `(solve …)` per file since M1e2 S1e2.1a.4, so the
-/// claims below are bare queries and a file states its lattice once.
+/// over: nothing guessed, so R is root alone.
+const FACTS: &str = "(relation p Thing Place)\n(p A H1)\n(p B H2)\n";
+/// A region claim that holds — R is one state, both facts — and one that does
+/// not. One `(solve …)` per file since M1e2 S1e2.1a.4, and since S1e2.1a.5 a
+/// claim about the state is the region claim's.
+const TRUE_CLAIM: &str = "(solve :no-hypothesis (p) :expect (region (model (p A H1) (p B H2))))\n\
+                          (query :goal (p A ?h))\n";
+const FALSE_CLAIM: &str = "(solve :no-hypothesis (p) :expect (region (model (p A H1) (p B H3))))\n\
+                           (query :goal (p A ?h))\n";
+/// The same lattice with no claim, for files whose claims are queries'.
 const BODY: &str = "(relation p Thing Place)\n(p A H1)\n(p B H2)\n(solve :no-hypothesis (p))\n";
-const TRUE_CLAIM: &str = "(query :goal (p A ?h) :expect (model (p A H1) (p B H2)))\n";
-const FALSE_CLAIM: &str = "(query :goal (p A ?h) :expect (model (p A H1) (p B H3)))\n";
+/// A query's claim lists its projection classes: `(p A ?h)` has one, `(p A H1)`.
+const TRUE_QUERY: &str = "(query :goal (p A ?h) :expect (model (p A H1)))\n";
+const FALSE_QUERY: &str = "(query :goal (p A ?h) :expect (model (p A H2)))\n";
+
+fn holds() -> String {
+    format!("{FACTS}{TRUE_CLAIM}")
+}
+
+fn fails() -> String {
+    format!("{FACTS}{FALSE_CLAIM}")
+}
 
 // ── The corpus fixtures that state their own answer, which must hold ──
 
-/// One per verdict: `10_expect` is k = 1, `11_expect_ambiguity` is k = 2,
-/// `12_expect_false` is k = 0, and since M1e S1e.3.1
-/// `13_mixed_solution_and_open` is a k = 1 the *search* recorded two nodes for.
-/// `11` has no plain `solve` run in the corpus because `-n 1` cannot check a
-/// k > 1 claim — under `test` it needs no flag, which is the point of
-/// exhausting by default.
+/// One per shape since M1e2 S1e2.1a.5: `10_expect` claims R is one state,
+/// `11_expect_ambiguity` that its maximal line has two projection classes
+/// (`:over maximal`), and `12_expect_false` that every node is dead. Each
+/// `ein test` run is the mode its claim needs and no flag.
 #[test]
 fn the_three_feature_fixtures_hold() {
     for name in [
@@ -119,16 +135,22 @@ fn the_three_feature_fixtures_hold() {
 #[test]
 fn a_false_claim_exits_one_and_names_the_fact() {
     let d = Dir::new("false");
-    let f = d.file("wrong.ein", &format!("{BODY}{FALSE_CLAIM}"));
+    let f = d.file("wrong.ein", &fails());
     let r = ein(&["test", &f]);
     assert_eq!(r.code, 1, "{}{}", r.out, r.err);
     assert!(r.out.contains("FAILED"), "{}", r.out);
-    assert!(r.out.contains("(p B H3)"), "the missing fact: {}", r.out);
+    assert!(
+        r.out
+            .contains("the model lists (p B H3), which the state does not hold"),
+        "the missing fact: {}",
+        r.out
+    );
     assert!(r.summary().contains("0 held, 1 FAILED"), "{}", r.summary());
 }
 
 /// The case relation-closure exists for, and the derivation line M1c
 /// T1c.1.3.3 added under it: a surplus fact, and the rule that put it there.
+/// Since M1e2 S1e2.1a.5 it is the region claim's, which kept the line.
 #[test]
 fn a_surplus_fact_is_reported_with_the_rule_that_derived_it() {
     let d = Dir::new("surplus");
@@ -136,11 +158,17 @@ fn a_surplus_fact_is_reported_with_the_rule_that_derived_it() {
         "mirror.ein",
         "(import std.algebra :symbols (symmetric))\n\
          (relation p Thing Thing)\n(symmetric p)\n(p A B)\n\
-         (solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A B)))\n",
+         (solve :no-hypothesis (p) :expect (region (model (p A B))))\n\
+         (query :goal (p A ?h))\n",
     );
     let r = ein(&["test", &f]);
     assert_eq!(r.code, 1, "{}{}", r.out, r.err);
-    assert!(r.out.contains("(p B A)"), "the mirrored edge: {}", r.out);
+    assert!(
+        r.out
+            .contains("the state holds (p B A), which the model does not list"),
+        "the mirrored edge: {}",
+        r.out
+    );
     assert!(
         r.out.contains("derived by symmetric from (p A B)"),
         "and where it came from: {}",
@@ -148,25 +176,18 @@ fn a_surplus_fact_is_reported_with_the_rule_that_derived_it() {
     );
 }
 
-/// The stage's acceptance in its own words: "a `:verdict` that came out
-/// `Ambiguity` prints the k **and the models' query bindings**". A count on
-/// its own sends the reader back to `solve -e` to find out what the second
-/// model was.
+/// A query claim that lists one class where the query has two says how many,
+/// and which class it did not list.
 #[test]
-fn a_count_mismatch_names_the_models_it_found() {
-    let r = ein(&[
-        "test",
-        "examples/features/11_expect_ambiguity.ein",
-        "--max-set-size",
-        "5",
-    ]);
+fn a_class_mismatch_names_the_class_it_did_not_list() {
+    let r = ein(&["test", "examples/features/11_expect_ambiguity.ein"]);
     assert_eq!(
         r.code, 0,
         "the fixture holds as written: {}{}",
         r.out, r.err
     );
 
-    // The same puzzle, claiming one model where there are two.
+    // The same puzzle, claiming one seating where the maximal line has two.
     let d = Dir::new("kmismatch");
     let src =
         std::fs::read_to_string(repo_root().join("examples/features/11_expect_ambiguity.ein"))
@@ -181,16 +202,11 @@ fn a_count_mismatch_names_the_models_it_found() {
     let r = ein(&["test", &f]);
     assert_eq!(r.code, 1, "{}{}", r.out, r.err);
     assert!(
-        r.out
-            .contains("expected Solution with k = 1, got Ambiguity with k = 2"),
+        r.out.contains(
+            "the claim lists 1 class, the query has 2: \
+             (model (seat Ann S2) (seat Bob S1)) is not listed"
+        ),
         "{}",
-        r.out
-    );
-    assert!(r.out.contains("model 1 of 2"), "{}", r.out);
-    assert!(r.out.contains("model 2 of 2"), "{}", r.out);
-    assert!(
-        r.out.contains("?who=Ann"),
-        "the goal's own variables: {}",
         r.out
     );
 }
@@ -243,8 +259,8 @@ fn a_query_with_no_expectation_is_never_solved() {
 #[test]
 fn a_directory_runs_every_file_and_the_worst_result_sets_the_code() {
     let d = Dir::new("dir");
-    d.file("a_ok.ein", &format!("{BODY}{TRUE_CLAIM}"));
-    d.file("b_bad.ein", &format!("{BODY}{FALSE_CLAIM}"));
+    d.file("a_ok.ein", &holds());
+    d.file("b_bad.ein", &fails());
     d.file("c_quiet.ein", BODY);
     let r = ein(&["test", &d.path()]);
     assert_eq!(r.code, 1, "{}{}", r.out, r.err);
@@ -269,9 +285,9 @@ fn a_directory_runs_every_file_and_the_worst_result_sets_the_code() {
 #[test]
 fn several_paths_and_a_nested_directory_are_one_selection() {
     let d = Dir::new("nested");
-    d.file("top.ein", &format!("{BODY}{TRUE_CLAIM}"));
+    d.file("top.ein", &holds());
     std::fs::create_dir_all(d.0.join("sub")).expect("a subdirectory");
-    d.file("sub/deep.ein", &format!("{BODY}{TRUE_CLAIM}"));
+    d.file("sub/deep.ein", &holds());
     // Not a `.ein`, so a directory walk must not pick it up.
     d.file("notes.txt", "not a program");
     let r = ein(&["test", &d.path(), "examples/features/10_expect.ein"]);
@@ -288,7 +304,7 @@ fn several_paths_and_a_nested_directory_are_one_selection() {
 #[test]
 fn a_program_named_twice_is_counted_once() {
     let d = Dir::new("dedup");
-    let f = d.file("once.ein", &format!("{BODY}{TRUE_CLAIM}"));
+    let f = d.file("once.ein", &holds());
     let r = ein(&["test", &d.path(), &f, &f]);
     assert_eq!(r.code, 0, "{}{}", r.out, r.err);
     assert!(
@@ -305,7 +321,7 @@ fn a_program_named_twice_is_counted_once() {
 #[test]
 fn a_symlink_loop_does_not_hang_the_walk() {
     let d = Dir::new("loop");
-    d.file("one.ein", &format!("{BODY}{TRUE_CLAIM}"));
+    d.file("one.ein", &holds());
     std::os::unix::fs::symlink(&d.0, d.0.join("self")).expect("a loop");
     let r = ein(&["test", &d.path()]);
     assert_eq!(r.code, 0, "{}{}", r.out, r.err);
@@ -320,29 +336,25 @@ fn a_symlink_loop_does_not_hang_the_walk() {
 #[test]
 fn quiet_keeps_the_failures_and_drops_the_passes() {
     let d = Dir::new("quiet");
-    d.file("a_ok.ein", &format!("{BODY}{TRUE_CLAIM}"));
-    d.file("b_bad.ein", &format!("{BODY}{FALSE_CLAIM}"));
+    d.file("a_ok.ein", &holds());
+    d.file("b_bad.ein", &fails());
     let r = ein(&["test", &d.path(), "-q"]);
     assert_eq!(r.code, 1, "{}{}", r.out, r.err);
     assert!(!r.out.contains("a_ok.ein"), "{}", r.out);
     assert!(r.out.contains("b_bad.ein"), "{}", r.out);
 }
 
-/// `-v` says what held, with the verdict and both counts — the line that turns
-/// a green run into evidence rather than an absence of red.
-///
-/// **Both counts, since M1e S1e.3.4.** It printed `stats.solution_nodes` under
-/// the label `k =` from S1c.1.3 to then, which is `SE-M1`: the human-facing
-/// `k` and the machine-facing `ran.k` in `--json-report` disagreed *by name*
-/// on every `Open` entry. The second case is one of those twelve — `k = 0`
-/// beside `recorded = 1` — and it is the whole reason the header prints two
-/// numbers rather than a renamed one.
+/// `-v` says what held, with what the run found: R's size and route for a
+/// region claim, the set and its classes for a query's. Both counts of the
+/// walk's header (`k` and `recorded`, M1e S1e.3.4) went with it at M1e2
+/// S1e2.1a.5, and the owing fixture that parted them now claims R empty.
 #[test]
-fn verbose_reports_the_verdict_of_a_passing_query() {
+fn verbose_reports_what_the_run_found() {
     let r = ein(&["test", "examples/features/11_expect_ambiguity.ein", "-v"]);
     assert_eq!(r.code, 0, "{}{}", r.out, r.err);
     assert!(
-        r.out.contains("holds (Ambiguity, k = 2, recorded = 2)"),
+        r.out
+            .contains("holds (the maximal line, 2 classes over 2 states)"),
         "{}",
         r.out
     );
@@ -350,8 +362,9 @@ fn verbose_reports_the_verdict_of_a_passing_query() {
     let open = ein(&["test", "tests/stdlib/slots/03_fill.ein", "-v"]);
     assert_eq!(open.code, 0, "{}{}", open.out, open.err);
     assert!(
-        open.out.contains("holds (Open, k = 0, recorded = 1)"),
-        "the two counts part on an Open entry, and the header says which is which:\n{}",
+        open.out
+            .contains("solve · :expect (region …) — holds (route 1, k_s = 0, k_c = 0)"),
+        "an owing R is described, and the header says how big:\n{}",
         open.out
     );
 }
@@ -383,7 +396,7 @@ fn a_load_error_is_two_and_not_a_failed_expectation() {
 #[test]
 fn an_error_dominates_a_failure_in_the_exit_code() {
     let d = Dir::new("dominates");
-    d.file("a_bad.ein", &format!("{BODY}{FALSE_CLAIM}"));
+    d.file("a_bad.ein", &fails());
     d.file("b_broken.ein", "(relation p Thing Place)\n(p A H1\n");
     let r = ein(&["test", &d.path()]);
     assert_eq!(r.code, 2, "{}{}", r.out, r.err);
@@ -391,20 +404,35 @@ fn an_error_dominates_a_failure_in_the_exit_code() {
     assert!(r.summary().contains("1 error"), "{}", r.summary());
 }
 
-/// A budget abort is neither a pass nor a failure — nothing was established
-/// either way — so it is an ERROR and takes 2.
+/// A `-T` abort is neither a pass nor a failure — nothing was established
+/// either way — so it is an ERROR and takes 2. The walk's `-E` retired at M1e2
+/// S1e2.1a.5; a budget now answers in part (below), and only the wall clock
+/// aborts.
 #[test]
-fn a_budget_abort_is_an_error_and_never_a_pass() {
-    let r = ein(&[
+fn a_deadline_abort_is_an_error_and_never_a_pass() {
+    // The 2¹⁶ region of `lattice/07`, claimed whole: no deadline of 0 s
+    // reaches it.
+    let d = Dir::new("deadline");
+    let src =
+        std::fs::read_to_string(repo_root().join("examples/lattice/07_two_pairs_two_tables.ein"))
+            .expect("the fixture");
+    let f = d.file(
+        "slow.ein",
+        &format!("{src}\n(query :goal (sits ?p ?s) :expect (false))\n"),
+    );
+    let r = ein(&["test", &f, "-T", "0"]);
+    assert_eq!(r.code, 2, "{}{}", r.out, r.err);
+    assert!(r.out.contains("ERROR"), "{}", r.out);
+    assert!(r.out.contains("aborted before an answer"), "{}", r.out);
+    assert!(!r.out.contains("holds"), "{}", r.out);
+    let e = ein(&[
         "test",
         "examples/features/11_expect_ambiguity.ein",
         "-E",
         "1",
     ]);
-    assert_eq!(r.code, 2, "{}{}", r.out, r.err);
-    assert!(r.out.contains("ERROR"), "{}", r.out);
-    assert!(r.out.contains("aborted before an answer"), "{}", r.out);
-    assert!(!r.out.contains("holds"), "{}", r.out);
+    assert_eq!(e.code, 2, "{}{}", e.out, e.err);
+    assert!(e.err.contains("-E/--max-enterings is retired"), "{}", e.err);
 }
 
 /// **A selection that checked nothing is not green.** M1c's acceptance says a
@@ -435,60 +463,60 @@ fn a_path_that_does_not_exist_is_refused() {
     assert!(r.err.starts_with("error: "), "{}", r.err);
 }
 
-// ── Exhausting is the behaviour, not a flag ────────────────────────
+// ── The mode a claim needs, and nothing more ───────────────────────
 
-/// `solve` on the k = 2 fixture reports k = 1 at its `-n 1` default and cannot
-/// check the claim; `test` answers it with no flag at all. Both are right —
-/// `solve` is asked for an answer and `test` is asked whether a claim holds —
-/// and this is the difference stated as a test.
+/// `ein test` runs the mode a file's claims need (`solve_interface.md`
+/// § 2.3): `11`'s claim is about the maximal line, so it runs `--maximal`.
+/// `ein solve` checks the same claim against what it was asked: the
+/// description holds it, and `--minimal` cannot decide it, which is a `note:`
+/// and exit 0 under `solve` — the user's ruling of 2026-10-16 — where `ein
+/// test`, whose whole job is checking, says NOT CHECKED and exits 1.
 #[test]
-fn test_exhausts_where_solve_stops_at_one() {
+fn test_runs_the_mode_a_claim_needs() {
     let file = "examples/features/11_expect_ambiguity.ein";
-    let stopped = ein(&["solve", file]);
-    assert_eq!(stopped.code, 1, "{}{}", stopped.out, stopped.err);
-    assert!(stopped.out.contains("NOT CHECKED"), "{}", stopped.out);
+    let described = ein(&["solve", file]);
+    assert_eq!(described.code, 0, "{}{}", described.out, described.err);
+    assert!(
+        described.out.contains(":expect           holds"),
+        "{}",
+        described.out
+    );
+
+    let minimal = ein(&["solve", file, "--minimal"]);
+    assert_eq!(minimal.code, 0, "{}{}", minimal.out, minimal.err);
+    assert!(minimal.out.contains("NOT CHECKED"), "{}", minimal.out);
+    assert!(minimal.err.starts_with("note: "), "{}", minimal.err);
 
     let tested = ein(&["test", file]);
     assert_eq!(tested.code, 0, "{}{}", tested.out, tested.err);
 }
 
-/// …and the one thing that can still truncate an exhaustive run — the lattice
-/// depth cap — comes back NOT CHECKED rather than FAILED, with the cap named.
-/// A `k = 0` from a capped search is "no model within the cap".
+/// …and the one thing that can still stop a run short — its budget — comes
+/// back NOT CHECKED rather than FAILED, saying the run did not exhaust what
+/// the claim is about.
 #[test]
-fn a_capped_frontier_is_not_checked_and_says_which_cap() {
+fn a_budget_stopped_run_is_not_checked_and_says_why() {
     let r = ein(&[
         "test",
         "examples/features/11_expect_ambiguity.ein",
-        "-m",
+        "--region-budget",
         "1",
     ]);
     assert_eq!(r.code, 1, "{}{}", r.out, r.err);
     assert!(r.out.contains("NOT CHECKED"), "{}", r.out);
-    assert!(r.out.contains("--max-set-size"), "{}", r.out);
+    assert!(
+        r.out
+            .contains("the claim is about the maximal line, and this run did not exhaust it"),
+        "{}",
+        r.out
+    );
     assert!(r.summary().contains("1 not checked"), "{}", r.summary());
 }
 
-/// One file with a claim that fails and one that a cap leaves unchecked. Its
-/// two queries share one lattice, which is all a file has since M1e2
-/// S1e2.1a.4, so the two outcomes have to come from one walk: at `-m 2` the
-/// obligations rung has found two of its three models and is not exhausted.
-/// The p-claim lists one model and fails at any depth (found > claimed); the
-/// seats claim lists all three and is unchecked at the cap, held without it.
-/// The third model is W5's register row, a superset the walk records by name
-/// order, and this fixture moves with that row at the switch (S1e2.1a.5).
+/// One file with a claim that fails and one nobody can check: a false region
+/// claim, and a query claim on a query with no `:goal`, which no run answers.
 fn mixed() -> String {
-    format!(
-        "{BODY}\
-         (import std.algebra :symbols (total-owed surjective-owed))\n\
-         (relation is-a T T)\n(relation seats Guest Chair)\n\
-         (is-a Ann Guest) (is-a Bob Guest)\n(is-a C1 Chair) (is-a C2 Chair)\n\
-         (total-owed seats is-a)\n(surjective-owed seats is-a)\n\
-         {FALSE_CLAIM}\
-         (query :goal (seats ?g ?c) :expect (or (model (seats Ann C1) (seats Bob C2)) \
-                      (model (seats Ann C2) (seats Bob C1)) \
-                      (model (seats Ann C1) (seats Ann C2) (seats Bob C1))))\n"
-    )
+    format!("{}(query :expect (model))\n", fails())
 }
 
 /// A file with one of each: the status column says **FAILED**, because a claim
@@ -498,35 +526,21 @@ fn mixed() -> String {
 fn a_failure_outranks_an_unchecked_one_in_the_file_label() {
     let d = Dir::new("mixed");
     let f = d.file("mixed.ein", &mixed());
-    // At the default depth both queries answer and only the first is wrong.
-    let deep = ein(&["test", &f]);
-    assert_eq!(deep.code, 1, "{}{}", deep.out, deep.err);
+    let r = ein(&["test", &f]);
+    assert_eq!(r.code, 1, "{}{}", r.out, r.err);
+    assert!(r.out.contains("NOT CHECKED"), "{}", r.out);
     assert!(
-        deep.out
-            .lines()
-            .next()
-            .is_some_and(|l| l.starts_with("FAILED")),
-        "{}",
-        deep.out
-    );
-
-    // At a cap of 2 the second is NOT CHECKED and the first is still FAILED.
-    let capped = ein(&["test", &f, "-m", "2"]);
-    assert_eq!(capped.code, 1, "{}{}", capped.out, capped.err);
-    assert!(capped.out.contains("NOT CHECKED"), "{}", capped.out);
-    assert!(
-        capped
-            .out
+        r.out
             .lines()
             .next()
             .is_some_and(|l| l.starts_with("FAILED")),
         "the stronger finding heads the file: {}",
-        capped.out
+        r.out
     );
     assert!(
-        capped.summary().contains("1 FAILED") && capped.summary().contains("1 not checked"),
+        r.summary().contains("1 FAILED") && r.summary().contains("1 not checked"),
         "{}",
-        capped.summary()
+        r.summary()
     );
 }
 
@@ -551,17 +565,18 @@ fn the_artefact_flags_work_over_one_run() {
     let log = std::fs::read_to_string(&events).expect("the event log was written");
     assert!(log.lines().count() > 2, "{log}");
     let json = std::fs::read_to_string(&summary).expect("the summary was written");
-    assert!(json.contains("\"schema\": \"ein-summary/1\""), "{json}");
+    assert!(json.contains("\"schema\": \"ein-summary/2\""), "{json}");
 }
 
-/// One path cannot hold two runs, so each is refused over a selection that is
-/// more than one — before anything is written, and whether the several runs
-/// come from several files or from several queries in one.
+/// One path cannot hold two runs, so each is refused over a selection of
+/// more than one file — before anything is written. A file is **one** run
+/// since M1e2 S1e2.1a.5, whatever it claims, so a file with several claims
+/// takes the flag.
 #[test]
 fn an_artefact_flag_over_more_than_one_run_is_refused() {
     let d = Dir::new("refused");
-    d.file("a.ein", &format!("{BODY}{TRUE_CLAIM}"));
-    d.file("b.ein", &format!("{BODY}{TRUE_CLAIM}"));
+    d.file("a.ein", &holds());
+    d.file("b.ein", &holds());
     let out = d.0.join("events.jsonl");
 
     let many_files = ein(&["test", &d.path(), "--events", &out.to_string_lossy()]);
@@ -573,11 +588,21 @@ fn an_artefact_flag_over_more_than_one_run_is_refused() {
     );
     assert!(!out.exists(), "and nothing was written");
 
-    let two_queries = d.file("two.ein", &format!("{BODY}{TRUE_CLAIM}{FALSE_CLAIM}"));
-    let r = ein(&["test", &two_queries, "--events", &out.to_string_lossy()]);
-    assert_eq!(r.code, 2, "{}{}", r.out, r.err);
-    assert!(r.err.contains("states 2 expectations"), "{}", r.err);
-    assert!(!out.exists(), "and nothing was written");
+    let sub = Dir::new("refused-one");
+    let two = sub.file(
+        "two.ein",
+        &format!("{FACTS}(solve :no-hypothesis (p) :expect (region (model (p A H1) (p B H2))))\n{TRUE_QUERY}"),
+    );
+    let r = ein(&["test", &two, "--events", &out.to_string_lossy()]);
+    assert_eq!(r.code, 0, "{}{}", r.out, r.err);
+    let log = std::fs::read_to_string(&out).expect("one run, one stream");
+    assert_eq!(
+        log.lines()
+            .filter(|l| l.contains("\"e\": \"region\""))
+            .count(),
+        1,
+        "{log}"
+    );
 }
 
 // ── Several queries in one file ────────────────────────────────────
@@ -585,7 +610,7 @@ fn an_artefact_flag_over_more_than_one_run_is_refused() {
 #[test]
 fn every_expectation_in_a_file_is_checked_and_the_failure_is_located() {
     let d = Dir::new("queries");
-    let f = d.file("two.ein", &format!("{BODY}{TRUE_CLAIM}{FALSE_CLAIM}"));
+    let f = d.file("two.ein", &format!("{BODY}{TRUE_QUERY}{FALSE_QUERY}"));
     let r = ein(&["test", &f]);
     assert_eq!(r.code, 1, "{}{}", r.out, r.err);
     assert!(r.out.contains("query 2 of 2"), "{}", r.out);
@@ -609,7 +634,7 @@ fn an_expectation_on_a_later_query_is_reached() {
     let d = Dir::new("later");
     let f = d.file(
         "later.ein",
-        &format!("{BODY}(query :goal (p A ?h))\n{FALSE_CLAIM}"),
+        &format!("{BODY}(query :goal (p A ?h))\n{FALSE_QUERY}"),
     );
     let r = ein(&["test", &f]);
     assert_eq!(r.code, 1, "{}{}", r.out, r.err);
@@ -630,7 +655,7 @@ fn an_expectation_on_a_later_query_is_reached() {
 #[test]
 fn a_named_container_is_tested_and_a_walk_ignores_one() {
     let d = Dir::new("einb");
-    let src = d.file("holds.ein", &format!("{BODY}{TRUE_CLAIM}"));
+    let src = d.file("holds.ein", &holds());
     let container = d.0.join("holds.einb");
     let saved = ein(&["kb", "save", &src, &container.to_string_lossy()]);
     assert_eq!(saved.code, 0, "{}{}", saved.out, saved.err);
@@ -678,7 +703,7 @@ fn report(args: &[&str], out: &std::path::Path) -> serde_json::Value {
 fn every_file_of_the_selection_has_a_row() {
     let d = Dir::new("report-rows");
     let r = report(&["examples/features"], &d.0.join("r.json"));
-    assert_eq!(r["schema"], "ein-test-report/2");
+    assert_eq!(r["schema"], "ein-test-report/3");
     let rows = r["rows"].as_array().expect("rows");
     let files: std::collections::BTreeSet<&str> =
         rows.iter().map(|x| x["path"].as_str().unwrap()).collect();
@@ -714,31 +739,39 @@ fn the_shape_comes_from_the_program_and_not_from_the_text() {
             .unwrap_or("null")
             .to_string()
     };
+    // Since M1e2 S1e2.1a.5 `10` and `12` state their claims as region claims,
+    // whose row is the file's first; `11`'s is its query's.
     assert_eq!(
         shape("10_expect.ein"),
-        "model",
+        "region",
         "the comment is not the claim"
     );
     assert_eq!(shape("11_expect_ambiguity.ein"), "or");
     assert_eq!(shape("12_expect_false.ein"), "false");
     assert_eq!(shape("04_open.ein"), "null", "no `:expect`, no shape");
 
-    let row = |name: &str| -> serde_json::Value {
+    let row = |name: &str, place: &str| -> serde_json::Value {
         r["rows"]
             .as_array()
             .unwrap()
             .iter()
-            .find(|x| x["path"].as_str().unwrap().ends_with(name))
+            .find(|x| x["path"].as_str().unwrap().ends_with(name) && x["place"] == place)
             .cloned()
             .unwrap()
     };
-    let amb = row("11_expect_ambiguity.ein");
-    assert_eq!(amb["expect"]["models"], 2, "k is the disjunct count");
-    assert_eq!(amb["ran"]["k"], 2);
-    assert_eq!(amb["ran"]["exhausted"], true);
-    // What an expectation must *close*, and the first factor of the write cost
-    // of a claim a file does not yet carry.
-    assert_eq!(row("10_expect.ein")["goal_relations"][0], "next-to");
+    let amb = row("11_expect_ambiguity.ein", "query");
+    assert_eq!(amb["expect"]["models"], 2, "the claim lists two classes");
+    assert_eq!(amb["expect"]["over"], "maximal");
+    assert_eq!(amb["answer"]["classes"], 2);
+    assert_eq!(amb["answer"]["exact"], true);
+    assert_eq!(amb["answer"]["over"], "maximal");
+    // What a query's goal asks about — the first factor of the write cost of
+    // a claim a file does not yet carry.
+    assert_eq!(
+        row("10_expect.ein", "query")["goal_relations"][0],
+        "next-to"
+    );
+    assert_eq!(row("10_expect.ein", "solve")["region"]["k_s"], 1);
 }
 
 /// **Additive**: same stdout, same stderr, same exit code, and — the one that
@@ -779,7 +812,7 @@ fn the_report_changes_nothing_but_writes_a_file() {
         .clone();
     assert_eq!(open["outcome"], "no-expect");
     assert!(
-        open["ran"].is_null(),
+        open["answer"].is_null(),
         "it must not have been solved: {open}"
     );
 }
@@ -827,7 +860,7 @@ fn a_files_rows_are_indexed_from_its_own_base() {
     d.file("a_quiet.ein", BODY);
     d.file(
         "b_two.ein",
-        &format!("{BODY}(query :goal (p A ?h))\n{TRUE_CLAIM}"),
+        &format!("{BODY}(query :goal (p A ?h))\n{TRUE_QUERY}"),
     );
     let r = report(&[&d.path()], &d.0.join("r.json"));
     let rows = r["rows"].as_array().unwrap();
@@ -838,7 +871,7 @@ fn a_files_rows_are_indexed_from_its_own_base() {
     // denominator needs to be able to tell them apart.
     assert_eq!(rows[0]["outcome"], "no-query");
     assert_eq!(rows[0]["queries"], 0);
-    assert!(rows[0]["ran"].is_null());
+    assert!(rows[0]["answer"].is_null());
 
     assert_eq!(rows[1]["query"], 1);
     assert_eq!(rows[1]["queries"], 2);
@@ -847,7 +880,7 @@ fn a_files_rows_are_indexed_from_its_own_base() {
         "the query that claims nothing"
     );
     assert!(
-        rows[1]["ran"].is_null(),
+        rows[1]["answer"].is_null(),
         "and it was not solved: {}",
         rows[1]
     );
@@ -855,13 +888,13 @@ fn a_files_rows_are_indexed_from_its_own_base() {
     assert_eq!(rows[2]["query"], 2);
     assert_eq!(rows[2]["outcome"], "held");
     assert_eq!(rows[2]["expect"]["shape"], "model");
-    assert_eq!(rows[2]["ran"]["verdict"], "Solution");
+    assert_eq!(rows[2]["answer"]["classes"], 1);
 }
 
 // ── The two surfaces that report one run ───────────────────────────
 
-/// The header line [`check_query`] prints for a query, **rebuilt from that
-/// query's report row**.
+/// The header line `ein test -v` prints for a claim, **rebuilt from that
+/// claim's report row**.
 ///
 /// The direction is the whole point: every number comes from the row, under
 /// the row's names, so a header that printed one of them under the other's
@@ -903,12 +936,25 @@ fn header_for(row: &serde_json::Value) -> String {
     } else {
         format!("query {q} of {n} · :goal {goal}")
     };
-    let ran = &row["ran"];
+    let a = &row["answer"];
+    if a.is_null() {
+        return format!("  {where_} — {verb}");
+    }
+    let over = match a["over"].as_str().expect("an over") {
+        "all" => "all of R",
+        "minimal" => "the minimal line",
+        "maximal" => "the maximal line",
+        _ => "the states listed",
+    };
+    let classes = a["classes"].as_u64().expect("classes");
     format!(
-        "  {where_} — {verb} ({}, k = {}, recorded = {})",
-        ran["verdict"].as_str().expect("a verdict"),
-        ran["k"],
-        ran["solution_nodes"],
+        "  {where_} — {verb} ({over}, {} over {} states)",
+        if classes == 1 {
+            "1 class".to_string()
+        } else {
+            format!("{classes} classes")
+        },
+        a["states"],
     )
 }
 
@@ -953,40 +999,26 @@ fn the_verbose_header_and_the_report_row_agree_field_for_field() {
     let doc: serde_json::Value =
         serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
 
-    // Every row that carries a run, in walk order — which is print order, so
-    // the two sequences are comparable position for position.
+    // Every row that carries a claim, in walk order — which is print order,
+    // so the two sequences are comparable position for position.
     let ran: Vec<&serde_json::Value> = doc["rows"]
         .as_array()
         .expect("rows")
         .iter()
-        .filter(|x| !x["ran"].is_null() || !x["region"].is_null())
+        .filter(|x| !x["expect"].is_null() && x["outcome"] != "error")
         .collect();
-    // A query-level error prints a header and carries no run; the selection
-    // must have none, or the two sequences are not the same length for a
-    // reason that is not a defect. (`examples/broken/` errors at *file* level
-    // and prints no header.)
-    assert!(
-        doc["rows"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .all(|x| x["outcome"] != "error" || x["query"] == 0),
-        "a query-level error is in the selection; the correspondence below is \
-         about queries that ran"
-    );
 
     let observed = headers(&r.out);
     let expected: Vec<String> = ran.iter().map(|row| header_for(row)).collect();
     assert_eq!(
         observed.len(),
         expected.len(),
-        "the run printed {} query headers and the report carries {} runs",
+        "the run printed {} claim headers and the report carries {} claims",
         observed.len(),
         expected.len()
     );
-    // The **first** disagreement, not all of them: 68 lines of context bury
-    // the one line that is the finding, which is `events.md`'s rule for the
-    // stream differ and the same rule here.
+    // The **first** disagreement, not all of them: eighty lines of context
+    // bury the one line that is the finding.
     if let Some((i, (got, want))) = observed
         .iter()
         .zip(&expected)
@@ -995,43 +1027,37 @@ fn the_verbose_header_and_the_report_row_agree_field_for_field() {
     {
         let row = ran[i];
         panic!(
-            "query {i} of the selection reports two different runs\n  \
+            "claim {i} of the selection reports two different runs\n  \
              header: {got}\n  row:    {want}\n  from:   {}",
             row["path"]
         );
     }
 
-    // …and it is not vacuous. The cell that matters is the one where the two
-    // numbers differ: if none did, the header could still be printing either
-    // of them.
+    // …and it is not vacuous: both places, and every shape.
     assert!(
-        expected.len() >= 60,
-        "only {} queries ran — the selection stopped covering the corpus",
+        expected.len() >= 75,
+        "only {} claims ran — the selection stopped covering the corpus",
         expected.len()
     );
-    let split = ran
+    let shapes: std::collections::BTreeSet<&str> = ran
         .iter()
-        .filter(|x| x["ran"]["k"] != x["ran"]["solution_nodes"])
-        .count();
-    assert!(
-        split >= 12,
-        "only {split} of {} checked queries have k != solution_nodes — the \
-         regime this test exists for is not in the selection",
-        expected.len()
-    );
-    let words: std::collections::BTreeSet<&str> = ran
-        .iter()
-        .filter_map(|x| x["ran"]["verdict"].as_str())
+        .filter_map(|x| x["expect"]["shape"].as_str())
         .collect();
     assert!(
-        words.len() >= 4,
-        "the selection reached only {words:?}; the header is per-verdict"
+        // No corpus query claims a single class; `(or …)` is the query's.
+        ["false", "region", "or"].iter().all(|s| shapes.contains(s)),
+        "the selection reached only {shapes:?}; the header is per place and shape"
     );
+    let owing = ran
+        .iter()
+        .filter(|x| x["expect"]["owing"].as_u64().unwrap_or(0) > 0)
+        .count();
+    assert!(owing >= 10, "only {owing} owing claims in the selection");
 }
 
 /// The same correspondence on the two outcomes the corpus does not contain,
 /// and on the multi-query header form — a claim that is **false** and one
-/// nobody could **check**, in one file, at a cap that truncates the second.
+/// nobody could **check**, in one file.
 ///
 /// `held` is 68 of 68 in the sweep above by construction: the gate is green.
 /// A test that only ever saw `holds` would not notice a verb that stopped
@@ -1041,15 +1067,7 @@ fn the_two_surfaces_agree_on_a_failure_and_on_an_unchecked_claim() {
     let d = Dir::new("cross-surface-red");
     let f = d.file("mixed.ein", &mixed());
     let out = d.0.join("r.json");
-    let r = ein(&[
-        "test",
-        &f,
-        "-m",
-        "2",
-        "-v",
-        "--json-report",
-        &out.to_string_lossy(),
-    ]);
+    let r = ein(&["test", &f, "-v", "--json-report", &out.to_string_lossy()]);
     assert_eq!(r.code, 1, "{}{}", r.out, r.err);
     let doc: serde_json::Value =
         serde_json::from_str(&std::fs::read_to_string(&out).expect("a report")).expect("JSON");
@@ -1057,7 +1075,7 @@ fn the_two_surfaces_agree_on_a_failure_and_on_an_unchecked_claim() {
         .as_array()
         .expect("rows")
         .iter()
-        .filter(|x| !x["ran"].is_null())
+        .filter(|x| !x["expect"].is_null())
         .collect();
     let outcomes: Vec<&str> = ran.iter().filter_map(|x| x["outcome"].as_str()).collect();
     assert_eq!(

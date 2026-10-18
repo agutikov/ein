@@ -22,6 +22,11 @@ constrained-reasoning research.
   ([`ir/03-ein-lang/01_grammar.md` § Query](docs/kernel/ir/03-ein-lang/01_grammar.md#query)).
   A file may carry several `(query …)` blocks and each is run; the last one no
   longer silently wins, and an unrecognised query keyword is now a load error.
+  **Since M1e2 S1e2.1a.5 a query's `:expect` lists its projection classes**
+  over the states its `:over` names (`all`, `minimal`, `maximal`), and a claim
+  about the whole state is the solve form's, `(solve … :expect (region (model
+  …) (merged …) (owing …)))`; the several queries of a file are read off one
+  run.
   **Since M1d S1d.2.6 there is a fourth verdict word, `Open`** — a consistent,
   quiescent state with an obligation the program stated still unwitnessed,
   reported as *`Open — owes n (rel: n, …)`* with `k = 0` and the state itself
@@ -56,8 +61,9 @@ constrained-reasoning research.
   diagnostics, orderings and error strings the engine defines normatively;
   and `inference/implementation.md` + `ir/02-data-model/03_implementation.md`,
   the module maps. **Since M1e S1e.5.1 there is also a
-  [configuration reference](docs/kernel/configuration.md)** — the 17
-  `(config …)` flags, the 79 CLI options, the eight `EIN_*` names the binary
+  [configuration reference](docs/kernel/configuration.md)** — the 8
+  `(config …)` flags a program can set (nine more retired at M1e2 S1e2.1a.5,
+  refused with why), the 69 CLI options, the eight `EIN_*` names the binary
   actually reads, the precedence between the three, and on every flag row a
   *does it change the answer* and a *stability* column. Its defaults block is
   `ein solve --dump-config`'s own output (`EIN_BLESS=1` re-banks it), and two
@@ -87,9 +93,14 @@ constrained-reasoning research.
   ([`ein_infer::explore`](ein.rs/crates/ein-infer/src/explore.rs)):
   `ein solve --minimal`, `--maximal`, `--single` and `--region-budget F`, each
   with `-n N`, and `ein oracle FILE [--dump DIR]`.
-  `ein-infer/tests/explore.rs` holds every mode to the oracle. Until S1e2.1a.5
-  switches the default, a bare `ein solve` is still the walk, and a walk option
-  beside a region flag is a usage error.
+  `ein-infer/tests/explore.rs` holds every mode to the oracle. **Since
+  S1e2.1a.5's switch (2026-10-18) a bare `ein solve` describes R**: the walk
+  has no CLI path (its library stays, uncalled, until P1e2.1c measures what of
+  it the modes reuse), its nine options are refused with what replaced each,
+  the four verdict words are `--single`'s alone, every answer exits 0 and only
+  a refuted claim exits 1, and
+  [`corpus/wrong_answers.toml`](corpus/wrong_answers.toml) records 24 rows
+  fixed and 10 open, each saying why.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -303,13 +314,15 @@ constrained-reasoning research.
   **`slow = true` is a measured claim** — an entry whose declared runs cost
   1 s or more together, recorded in `cost_ms` and checked in both directions
   ([corpus_cost.md](docs/history/m1a_rust/measurements/corpus_cost.md) is the
-  measurement, `utils/corpus_cost.py` re-takes it). **Three** entries are slow
-  (the third since M1e2, 2026-10-16: `lattice/07_two_pairs_two_tables`, whose
-  question is a 2¹⁶ region), where seventeen were — three until M1a T1a.7.2.0 made
-  `branching/07_lookahead_off` 2.8× cheaper and the re-take took its flag off,
-  which is the mechanism working ([corpus_cost.md
+  measurement, `utils/corpus_cost.py` re-takes it). **Ten** entries are slow
+  since M1e2 S1e2.1a.5's switch (re-taken 2026-10-18): a bare describe runs to
+  the default `--region-budget` on the zebra family, 3.6–5 s a cell, so
+  `zebra2` and `zebra2-obligations` cost 38–39 s apiece, and `features/04_open`
+  stopped being slow because no cell runs the walk. It was three before, and
+  seventeen before M1a T1a.7.2.0 made `branching/07_lookahead_off` 2.8×
+  cheaper and the re-take took its flag off — the mechanism working both ways
+  ([corpus_cost.md
   §7](docs/history/m1a_rust/measurements/corpus_cost.md#7-the-first-re-take--2026-08-22-and-it-moved-an-entry));
-  `EIN_CORPUS_SLOW=1` is 20 s of `cargo test` rather than four minutes;
   and **a run is dropped from a `runs` column only when it does not ask the
   fixture's question**, never for costing too much.
 - **`ein.rs/`** — the engine ([M1a](docs/history/m1a_rust/README.md)). Two of
@@ -519,20 +532,18 @@ constrained-reasoning research.
 ./run_tests.sh                                               # the whole per-commit tier
 ./run_tests.sh --tests-only                                  # skip the static checks
 cargo test --manifest-path ein.rs/Cargo.toml --workspace     # the tests alone
-EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 2 slow entries
+EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test corpus_cli  # + the 10 slow entries
 EIN_ID_SEEDS=8    cargo test … -p ein-render --test id_order_invariance
 EIN_JOBS_SWEEP=2,4,8,16 cargo test … -p ein-render --test jobs_invariance
 EIN_BLESS=1       cargo test … --workspace                   # re-bank the goldens
-EIN_OBLIGATION_CHOICE=off|fail-first ein solve …             # the M1d S1d.2.5 rung levers
-EIN_TRAVERSAL=tree ein solve …                              # the M1d S1d.10.6 traversal
-ein solve … -e --models key                                  # the M1d S1d.3.3 form
+ein solve … --maximal --models key|grid                       # the M1d S1d.3.3 forms, over the states listed
 EIN_LEFTOVER=1    ein solve … --json-summary out.json        # the M1d S1d.3.1 probe
 ein test examples tests stdlib --json-report r.json          # the M1d S1d.4.1 read-out
 ein solve … --dump-answer DIR                                # M1e2: the answer as files, each state loadable
-ein solve … --dump-region DIR                                # M1e2: the region of the lattice, computed without the search
 ein solve … --maximal | --minimal | --single | -n N --region-budget F   # M1e2: a question about R, the least work it needs
 ein oracle FILE [--dump DIR]                                 # M1e2: R by brute force, 2ⁿ saturations — the reference every mode is held to
-ein render region DIR [--view full|border|lines|table]       # M1e2: that region drawn, the run's walk on it
+ein render region DIR [--view full|border|lines|table]       # M1e2: an oracle dump drawn
+ein solve … --dump-lattice DIR                               # M1e2: every node the run visited (ein render lattice draws them)
 cargo run --release -p ein-infer --example route1_reach      # M1e2: route 1, R from the alive down-set, over the corpus
 cargo run --release -p ein-infer --example walk_vs_region    # M1e2: the walk's answer and nodes against R
 ein render program|kb FILE                                   # M1e2: the program as written; a KB (or a dumped model)
@@ -542,12 +553,24 @@ python3 utils/region_synth.py --example three_components     # M1e2: a program w
 python3 utils/read_out_examples.py                           # M1e2: the read-out's golden page, written from the binary
 ```
 
-**The seven `EIN_*` names in that block are the ones an agent needs, not the
+**Since M1e2 S1e2.1a.5 (2026-10-18) the walk has no CLI path**, so several of
+the paragraphs below describe it as M1d and M1e left it — `EIN_OBLIGATION_CHOICE`,
+`EIN_TRAVERSAL`, the stop policy, `Ambiguity`'s qualifier and the walk's
+`:expect` wording are records of the library, which no command reaches. What
+carried over: `--models list|key|grid`, now over the states a run lists;
+`EIN_LEFTOVER`'s block in `ein-summary/2`; and `ein test --json-report`, now
+`ein-test-report/3`, a query row carrying its classes. The read-out's
+vocabulary is
+[`read_out.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md),
+and its golden page, written by the binary, is
+[`read_out_examples.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md).
+
+**The `EIN_*` names in that block are the ones an agent needs, not the
 set.** The shipped binary reads **eight** (three of them only in a non-default
 build), the test harness reads ten more, `utils/` and the shell two — and six
 greppable `EIN_*` names are not environment variables at all, `EIN_RS` and
 `EIN_RENDER_LEVI` among them. The whole census, classified, with the 17
-`(config …)` flags and the 79 CLI options beside it and a *does it change the
+`(config …)` fields and the 69 CLI options beside it and a *does it change the
 answer* column on every flag row:
 [`docs/kernel/configuration.md`](docs/kernel/configuration.md) (M1e S1e.5.1),
 pinned by `ein-cli/tests/config_reference.rs`.

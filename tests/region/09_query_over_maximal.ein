@@ -1,0 +1,39 @@
+;;; QUERY CLAIM — `:over maximal`, the answer a puzzle means. M1e2 S1e2.1a.5.
+;;;
+;;; Two people, two seats, one each way: a program of restrictions only, so ∅
+;;; is in R, and so is every partial seating. Over all of R the goal
+;;; `(seat ?who ?slot)` has seven classes, one per state, `(model)` among them.
+;;; Over the maximal line — the seatings nothing can be added to — it has the
+;;; two the puzzle is about, and that is what the claim states. The same claim
+;;; `:over all` is false, and under `ein solve --minimal` it is not checked:
+;;; the run did not ask for the maximal line.
+
+(relation instance Thing Type)
+(relation seat     Person Slot)
+
+(instance Ann Person) (instance Bob Person)
+(instance S1 Slot)    (instance S2 Slot)
+
+(rule one-seat-each (?R)
+  :match  (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
+  :assert (false)
+  :priority 250)
+(rule one-person-each (?R)
+  :match  (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
+  :assert (false)
+  :priority 250)
+(one-seat-each   seat)
+(one-person-each seat)
+
+(hrule guess (?p ?s)
+  :match  (instance ?p Person)
+  :assert (seat ?p ?s))
+
+(solve
+  :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)))
+
+(query
+  :goal   (seat ?who ?slot)
+  :over   maximal
+  :expect (or (model (seat Ann S1) (seat Bob S2))
+              (model (seat Ann S2) (seat Bob S1))))

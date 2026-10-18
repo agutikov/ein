@@ -62,15 +62,15 @@
   ;; A saturation program: the model is the saturated root. Without this the
   ;; search speculates `p` edges and every closed extent below is a claim about
   ;; a different world.
-  :no-hypothesis (instance p p-conv p-rev p-fwd p-inc p-untouched marked flagged))
+  :no-hypothesis (instance p p-conv p-rev p-fwd p-inc p-untouched marked flagged)
+  :expect (region (model (p           A B)
+                         (p-conv      B A)
+                         (p-rev       B A)
+                         (p-fwd       A B)
+                         (p-inc       A B)
+                         (p-untouched B A)
+                         (marked      A)
+                         (flagged     A))))
 
 (query
-  :goal (p-conv ?x ?y)
-  :expect (model (p           A B)
-                 (p-conv      B A)
-                 (p-rev       B A)
-                 (p-fwd       A B)
-                 (p-inc       A B)
-                 (p-untouched B A)
-                 (marked      A)
-                 (flagged     A)))
+  :goal (p-conv ?x ?y))

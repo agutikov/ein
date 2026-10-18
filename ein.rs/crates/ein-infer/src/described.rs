@@ -37,6 +37,8 @@ pub struct Root {
     pub core: Vec<String>,
     /// The rules whose firing produced root's contradiction.
     pub refuted_by: Vec<String>,
+    /// The `:source` of each core fact that carries one.
+    pub sources: Vec<String>,
 }
 
 impl Root {
@@ -202,6 +204,7 @@ fn root_of(p: Option<&Point>, root_dead: bool) -> Root {
             owed: p.owed.clone(),
             core: p.core.clone(),
             refuted_by: p.refuted_by.clone(),
+            sources: p.sources.clone(),
         },
         None => Root {
             alive: !root_dead,
@@ -370,12 +373,26 @@ pub fn of_downset(d: &DownSet) -> Described {
     } else {
         Vec::new()
     };
-    let dead_alone_set: Vec<u32> = points
-        .iter()
-        .filter(|p| p.set.len() == 1 && p.status & DEAD != 0)
-        .map(|p| p.set[0])
-        .collect();
+    // A dead root leaves every candidate dead alone without visiting one: on
+    // a monotone program by L1, and on any by L0 (a fork only adds).
+    let dead_alone_set: Vec<u32> = if d.root_dead {
+        (0..n).collect()
+    } else {
+        points
+            .iter()
+            .filter(|p| p.set.len() == 1 && p.status & DEAD != 0)
+            .map(|p| p.set[0])
+            .collect()
+    };
     let dead_alone = dead_alone_set.len() as u64;
+    // …and no hole, since a hole sits between two nodes of R.
+    let shape = match shape {
+        Some(mut sh) if d.root_dead => {
+            sh.holes = Some((0, Vec::new()));
+            Some(sh)
+        }
+        sh => sh,
+    };
     Described {
         candidates: d.candidates.clone(),
         monotonicity: d.monotonicity.clone(),
@@ -570,6 +587,7 @@ pub fn of_cube(r: &Region) -> Described {
             owed: root.owed.clone(),
             core: root.core.clone(),
             refuted_by: root.refuted_by.clone(),
+            sources: root.sources.clone(),
         },
         any_alive,
         k_c: t.size_r,

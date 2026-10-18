@@ -58,6 +58,17 @@
   :assert (false)
   :priority 400)
 
+(solve :expect (region
+                 ;; state 1 of 5 — ∅, root itself · minimal
+                 (model)
+                 ;; state 2 of 5 — 1 candidate · from {(p A)}
+                 (model (p A))
+                 ;; state 3 of 5 — 1 candidate · from {(p B)}
+                 (model (p B))
+                 ;; state 4 of 5 — 1 candidate · maximal · from {(q A)}
+                 (model (q A))
+                 ;; state 5 of 5 — 2 candidates · maximal · from {(p A), (p B)}
+                 (model (p A) (p B))))
+
 (query
-  :goal   (p ?x)
-  :expect (model (p A) (p B)))
+  :goal   (p ?x))

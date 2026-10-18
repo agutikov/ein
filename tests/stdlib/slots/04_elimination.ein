@@ -62,11 +62,11 @@
   :why    "S1 has one pet of three excluded — nothing may be filled into it")
 
 (solve
-  :no-hypothesis (type instance co-loc undecided))
+  :no-hypothesis (type instance co-loc undecided)
+  :expect (region (owing (model (co-loc Cat S3) (co-loc S3 Cat)
+                                (not (co-loc Cat S1)) (not (co-loc Cat S2))
+                                (not (co-loc S3 Dog)) (not (co-loc S3 Rat))
+                                (undecided S1 Dog)))))
 
 (query
-  :goal (co-loc ?a ?b)
-  :expect (model (co-loc Cat S3) (co-loc S3 Cat)
-                 (not (co-loc Cat S1)) (not (co-loc Cat S2))
-                 (not (co-loc S3 Dog)) (not (co-loc S3 Rat))
-                 (undecided S1 Dog)))
+  :goal (co-loc ?a ?b))

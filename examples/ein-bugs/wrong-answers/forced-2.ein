@@ -30,9 +30,10 @@
 ;;;
 ;;; ── Twins ─────────────────────────────────────────────────────────────────
 ;;;
-;;; `forced-2-off.ein` is this file plus `(config :enable-forced-positive
-;;; false)`: the cascade off, it still answers `Contradiction` — now through
-;;; W1 at layer 0, with a 1-fact core. Fixing W2 alone falls through into W1,
+;;; `forced-2-off.ein` was this file plus `(config :enable-forced-positive
+;;; false)`: the cascade off, the walk still answered `Contradiction` — then
+;;; through W1 at layer 0, with a 1-fact core. M1e2 S1e2.1a.5 retired the flag,
+;;; and the twin is this program since. Fixing W2 alone falls through into W1,
 ;;; which is why P1e2.2 orders S1e2.2.1 first. `forced-1.ein` is the
 ;;; one-firing twin, right at default flags and wrong the same way under `-L`.
 ;;;

@@ -44,8 +44,8 @@
 (likes Bob Stew)
 
 (solve
-  :no-hypothesis (is-a likes))
+  :no-hypothesis (is-a likes)
+  :expect (region (owing (model (likes Bob Stew)))))
 
 (query
-  :goal (likes ?who ?what)
-  :expect (model (likes Bob Stew)))
+  :goal (likes ?who ?what))

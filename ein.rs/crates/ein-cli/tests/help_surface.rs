@@ -38,8 +38,10 @@ const EXPECTED: [(&str, usize); 12] = [
     // `--region-limit` and `--region-states`. And S1e2.1a.9's four region
     // flags, `--minimal`, `--maximal`, `--single` and `--region-budget`
     // ([`solve_interface.md`](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)):
-    // the walk's options go at S1e2.1a.5's switch, not here.
-    ("COMMAND ein solve\n", 42),
+    // At S1e2.1a.5's switch the walk's nine went (hidden, refused with what
+    // replaced each): `-e`, `-m`, `-E`, `-o`, `-z`, `-d`, `-D`,
+    // `--dump-region`, `--region-states`.
+    ("COMMAND ein solve\n", 33),
     // S1e2.1a.9's `ein oracle`: `--region-limit`, `--dump`, `--states`,
     // `--jobs`, `--stats`; and S1e2.1a.5's five from `solve`, `-T`,
     // `--json-summary`, `--models`, `-p` and `-P`.
@@ -59,16 +61,16 @@ const EXPECTED: [(&str, usize); 12] = [
 ];
 
 /// M1c [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test)'s
-/// parser. **Eight**, and
-/// the number is the design: the three that decide whether a run can finish
-/// (`-m`, `-T`, `-E`), the two that decide how much of a passing run to print
-/// (`-v`, `-q`), and the three file-only artefact ones the stage asked for by
-/// name (`--events`, `--events-level`, `--json-summary`), and M1d S1d.4.1's
-/// `--json-report`. There is deliberately no `-n` and no `--exhaustive`: an
-/// expectation is a claim about the exhausted answer, so exhausting is the
-/// behaviour rather than a flag, and a *missing* option is exactly the kind of
+/// parser. **Eight**, and the number is the design: the two that decide
+/// whether a run can finish (`--region-budget`, `-T`; the walk's `-m` and `-E`
+/// retired with `solve`'s at M1e2 S1e2.1a.5), the two that decide how much of
+/// a passing run to print (`-v`, `-q`), the three file-only artefact ones the
+/// stage asked for by name (`--events`, `--events-level`, `--json-summary`),
+/// and M1d S1d.4.1's `--json-report`. There is deliberately no `-n`, no line
+/// flag and no `--exhaustive`: a claim says what it is about, and `ein test`
+/// runs the mode that decides it, so a *missing* option is exactly the kind of
 /// thing this count exists to notice.
-const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 9)];
+const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 8)];
 
 /// P1a.8's surface, registered only under the `einb` feature, and here for
 /// the same reason the other parsers are — an extractor that stopped seeing a
@@ -100,16 +102,16 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        69 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        60 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "69 options across the twelve parsers of `ein`, `solve`, `oracle`, \
+        "60 options across the twelve parsers of `ein`, `solve`, `oracle`, \
          `saturate` and `render`, plus `ein test`'s nine and `ein kb save --saturate`"
     );
 }
 
 /// **The whole rendering, checked in.**
 ///
-/// Every option of every parser — 79 across fifteen at M1e2 T1e2.1a.5.3, the count
+/// Every option of every parser — 69 across fifteen since M1e2 S1e2.1a.5's switch, the count
 /// [`the_extractor_finds_the_whole_surface`] holds — each with its short key, metavar, arity,
 /// default, choices, group and help. A flag added, removed, renamed or
 /// re-defaulted shows up as a line.
@@ -138,38 +140,56 @@ fn a_renamed_short_key_fails() {
     assert_ne!(shape, mutated, "the short key must be in the rendering");
 }
 
-/// **The `--view full` fallback says the same thing in the DOT and in the
-/// help** — M1e S1e.4.6, `CD-L3`.
-///
-/// The two surfaces a user meets in one session disagreed: `--view`'s help
-/// gave the real reason (*solve doesn't store the per-commitment SetNode
-/// DAG*), while the DOT the same command printed said *"no stored lattice
-/// (store_lattice=False)"* — false twice over, since every caller that can
-/// reach that line sets the flag `true` and `LatticeProof` has no `kb_index`
-/// for any setting of it to fill.
-///
-/// The stage's acceptance is *"the fallback message states the real reason,
-/// and agrees with `--view`'s help text"*, and agreement by inspection is what
-/// let them part in the first place. `ein-render` cannot see `cmdline.rs`, so
-/// the check lives here, where the constant and the golden are both in scope.
+/// **`ein render lattice`'s two views are what its help says** — the CD-L3
+/// guard (M1e S1e.4.6), re-pointed at M1e2 S1e2.1a.5. The walk's `--view full`
+/// fell back to the solution frontier, and the guard held the fallback's note
+/// to the help's reason. The re-pointed command draws a region run's visited
+/// nodes and has no fallback: `full` draws every node `--dump-lattice` lists,
+/// and `solution` R's nodes, root and the nodes one fact above R that are not
+/// in it.
 #[test]
-fn the_full_view_fallback_agrees_with_the_help_text() {
-    let note = ein_render::FULL_VIEW_FALLBACK;
-    assert!(
-        note.contains("per-commitment SetNode DAG"),
-        "the DOT note no longer names what is missing: {note:?}"
-    );
-    assert!(
-        !note.contains("store_lattice"),
-        "the DOT note is back to naming a flag that decides nothing: {note:?}"
-    );
+fn the_lattice_views_are_what_their_help_says() {
     let shape = std::fs::read_to_string(golden_path("ein-cli", "help_shape.txt"))
         .expect("golden/help_shape.txt");
     assert!(
-        shape.contains("per-commitment SetNode DAG"),
-        "`ein render lattice --view`'s help no longer names the per-commitment \
-         SetNode DAG, so the two surfaces have parted again (CD-L3)"
+        shape.contains("'full' every node the run visited"),
+        "`ein render lattice --view`'s help no longer says what `full` draws"
     );
+    // Owed seats: seven states of R among sixteen nodes visited, so the two
+    // views differ.
+    let file = "examples/ein-bugs/wrong-answers/owed-seats.ein";
+    let run = |args: &[&str]| {
+        let out = std::process::Command::new(env!("CARGO_BIN_EXE_ein"))
+            .args(args)
+            .current_dir(ein_corpus::repo_root())
+            .output()
+            .expect("the binary runs");
+        assert!(out.status.success(), "{args:?}");
+        String::from_utf8_lossy(&out.stdout).into_owned()
+    };
+    let nodes = |dot: &str| {
+        dot.lines()
+            .filter(|l| l.trim_start().starts_with('n') && l.contains("[label="))
+            .count()
+    };
+    let dir = std::env::temp_dir().join(format!("ein-help-lattice-{}", std::process::id()));
+    let d = dir.to_string_lossy().to_string();
+    run(&["solve", file, "--dump-lattice", &d]);
+    let doc: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(dir.join("nodes.json")).unwrap()).unwrap();
+    let visited = doc["visited"].as_u64().unwrap() as usize;
+    let full = run(&["render", "lattice", file, "--view", "full"]);
+    let solution = run(&["render", "lattice", file]);
+    assert_eq!(
+        nodes(&full),
+        visited,
+        "--view full is not every node visited"
+    );
+    assert!(
+        nodes(&solution) < visited && nodes(&solution) > 0,
+        "{solution}"
+    );
+    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// **Every artefact `ein solve` can write, the review bundle drives** — M1e2

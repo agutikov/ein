@@ -340,6 +340,36 @@ Three things are worth taking from it beyond the number.
   to move the threshold, and it is written down here so the next re-take knows
   which entry to look at first.
 
+## 8. The second re-take — 2026-10-18, M1e2 S1e2.1a.5's switch
+
+**Seven entries joined the slow set and one left it**, because the switch
+changed what a bare `ein solve` asks. The walk stopped at its first model; a
+description runs until R is classified or the default `--region-budget`
+(524 288 facts) stops it. On the zebra family it is the budget, at 3.6–5 s a
+cell. `utils/bench_env.sh python3 utils/corpus_cost.py --check --runs 1`,
+2026-10-18, commit 7ec8a480 plus the switch's working tree, P-core cpu4:
+
+| entry | cost | slowest cell | flag |
+|---|---:|---|---|
+| `zebra2-obligations` | 39.24 s | `solve -n 3`, 5.43 s | `slow` **added** |
+| `zebra2` | 38.09 s | `solve -n 3`, 5.07 s | `slow` **added** (was 260 ms) |
+| `zebra2-hints` | 5.56 s | `solve`, 2.77 s | `slow` **added** |
+| `lattice/06_friends_tables` | 5.05 s | `render lattice`, 2.57 s | `slow` **added** |
+| `zebra2-minus-15`, `-obligations` | 4.85 s each | `solve`, 4.82 s | `slow` **added** |
+| `zebra` | 3.62 s | `solve`, 1.82 s | `slow` **added** |
+| `features/02_star_in_identifiers` | 1.28 s | `render lattice`, 1.27 s | `slow` **added** |
+| `features/04_open` | 329 ms | `render lattice`, 315 ms | `slow` **removed** (was 9.74 s) |
+| `branching/06_lookahead_on` | 794 ms | `render lattice`, 415 ms | `cost_ms` 377 → 794 |
+
+`solve -n 3` is the dearest cell on a puzzle with one solution: asked for three
+states of an R that has one, the run has to finish R to know there is no
+second. Ten entries are slow where three were. **No cell was dropped** for its
+cost — `corpus/README.md`'s rule — so the zebra family is in
+`EIN_CORPUS_SLOW=1` and not in the default sweep, and `acceptance_cli.rs`,
+`models_grid.rs` and `answer_dump.rs` keep a per-commit run on `zebra2`
+(`--single`, bare and `-n 1`). Whether the default budget should be cheaper on
+these is the speed P1e2.1c owes, not a reason to move the threshold.
+
 ## Reproducing this file
 
 ```sh

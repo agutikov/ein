@@ -56,5 +56,6 @@
 
 (query
   :goal   (seat ?who ?slot)
+  :over   maximal
   :expect (or (model (seat Ann S1) (seat Bob S2))
               (model (seat Ann S2) (seat Bob S1))))

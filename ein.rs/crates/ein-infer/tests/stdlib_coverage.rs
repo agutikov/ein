@@ -73,7 +73,7 @@ use std::time::Instant;
 use ein_core::Terms;
 use ein_corpus::{ein_files_under, repo_root};
 use ein_infer::events::{Buffer, Events, Level};
-use ein_infer::solve::{NoDumper, SolveOptions, solve};
+use ein_infer::{explore, read_out};
 use ein_ir::{Ast, Node, NodeId, load_query, parse};
 
 /// The suite under test — the directory S1c.1.4 put the programs in, and the
@@ -229,36 +229,32 @@ fn run(path: &Path, imports: &BTreeMap<String, Vec<String>>) -> Ran {
         (ast, terms, kb, forms)
     };
 
-    // `ein test`'s own shape: load once to find out what the file claims, and
-    // reuse that load for the first query it does. Which queries run is its
-    // rule too, rather than "all of them" — a query with no `:expect` states
-    // nothing, and the one fixture in the repo that would cost most to enter
-    // (`features/04_open.ein`, an unbounded enumeration) is exactly one of
-    // those. Solving it would be paying for coverage nobody claimed.
-    let (ast, terms, kb, forms) = load(0);
+    // `ein test`'s own shape since M1e2 S1e2.1a.5: load once to find out what
+    // the file claims, and answer every claim from **one** region run — the
+    // description, which every claim's set is part of. A file that claims
+    // nothing is not run, and the one fixture in the repo that would cost most
+    // to enter (`features/04_open.ein`, an unbounded enumeration) is exactly
+    // one of those.
+    let (ast, mut terms, mut kb, forms) = load(0);
     let (declared, seeds) = heads(&ast, &forms);
-    let claims: Vec<usize> = (0..kb.program().queries.len())
-        .filter(|&i| ein_infer::query_value(&ast, &kb.program().queries[i], "expect").is_some())
-        .collect();
+    let claims = (0..kb.program().queries.len())
+        .any(|i| ein_infer::query_value(&ast, &kb.program().queries[i], "expect").is_some())
+        || kb
+            .program()
+            .solve()
+            .is_some_and(|s| ein_infer::solve_value(&ast, s, "expect").is_some());
 
     let mut fired = Vec::new();
-    let mut preloaded = Some((ast, terms, kb));
-    for &index in &claims {
-        let (ast, mut terms, mut kb) = match preloaded.take() {
-            Some(first) if index == 0 => first,
-            _ => {
-                let (ast, terms, kb, _) = load(index);
-                (ast, terms, kb)
-            }
-        };
+    if claims {
         let buffer = Buffer::new();
         let mut events = Events::to(Box::new(buffer.clone()), Level::Verbose);
-        let opts = SolveOptions {
-            config: Some(kb.program().config.clone().unwrap_or_default()),
-            ..SolveOptions::default()
-        };
-        solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
+        let opts = explore::Options::new(explore::Mode {
+            which: explore::Which::All,
+            ask: explore::Ask::Describe,
+        });
+        read_out::run_with(&mut kb, &mut terms, &ast, &opts, &mut events)
             .unwrap_or_else(|e| panic!("{}: {e:?}", path.display()));
+        drop(events);
         fired.extend(read_activations(path, &buffer.to_string_lossy()));
     }
 

@@ -381,17 +381,18 @@ fn moved_by_the_cut(op: Op, base: &str, got: &str) -> Moved {
     }
 }
 
-/// M1e2 S1e2.1.1 — **the register's id-order rows**, whose wrong answer is
+/// M1e2 S1e2.1.1 — **the register's id-order rows**, whose walk answer was
 /// visible only under a permuted interner (W11).
 ///
 /// `corpus/wrong_answers.toml` is otherwise held by
 /// `ein-cli/tests/wrong_answers.rs`, through the binary; a permutation is not
 /// something the binary can be asked for, so a row carrying `wrong.id_order`
-/// has its second half here, where the permutation is. An **open** row's op
-/// must still move at its seed by the same cut the sweep applies — which is
-/// why the cut is a function — and a **fixed** one must not. The witnesses are
-/// under `corpus/fuzz_findings/` for the reason this file is: as corpus
-/// entries they would fail the sweep above.
+/// has its second half here, where the permutation is. Since M1e2 S1e2.1a.5
+/// the walk op it names is the record of what moved, and what is run is the
+/// read-out of the row's `[case.now]` question at the same seed: a **fixed**
+/// row's must not move by the cut the sweep applies, and an **open** one's
+/// must still. The witnesses are under `corpus/fuzz_findings/` for the reason
+/// this file is: as corpus entries they would fail the sweep above.
 #[test]
 fn the_register_s_id_order_rows_answer_what_they_record() {
     let ops = ops();
@@ -401,10 +402,15 @@ fn the_register_s_id_order_rows_answer_what_they_record() {
         let Some(id) = &row.wrong.id_order else {
             continue;
         };
+        let mode = match row.now.line.as_str() {
+            "all" => "describe",
+            line => line,
+        };
+        let name = format!("read-out[{mode}]");
         let op = *ops
             .iter()
-            .find(|o| o.to_string() == id.op)
-            .unwrap_or_else(|| panic!("{}: no op named {:?}", row.id, id.op));
+            .find(|o| o.to_string() == name)
+            .unwrap_or_else(|| panic!("{}: no op named {name:?}", row.id));
         let path = repo_root().join(&row.witness);
         let mut base_terms = Terms::new();
         let base = run(&mut base_terms, &path, op)

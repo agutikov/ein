@@ -48,11 +48,11 @@
   :why    "Green's column is only one-third excluded, so nothing may be forced into it")
 
 (solve
-  :no-hypothesis (is-a wears undecided))
+  :no-hypothesis (is-a wears undecided)
+  :expect (region (owing (model (wears Cid Red)
+                                (not (wears Ann Red)) (not (wears Bob Red))
+                                (not (wears Cid Green)) (not (wears Cid Blue))
+                                (undecided Ann Green)))))
 
 (query
-  :goal (wears ?who ?colour)
-  :expect (model (wears Cid Red)
-                 (not (wears Ann Red)) (not (wears Bob Red))
-                 (not (wears Cid Green)) (not (wears Cid Blue))
-                 (undecided Ann Green)))
+  :goal (wears ?who ?colour))

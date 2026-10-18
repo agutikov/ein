@@ -6,6 +6,11 @@
     python3 utils/fork_delta_verify.py -k zebra --json out.json
     python3 utils/fork_delta_verify.py --with-trace     # size the narration too
 
+**The walk's instrument.** It measures `ein solve`'s walk, which no command
+runs since M1e2 S1e2.1a.5's switch: re-take it against a binary built at or
+before commit 7ec8a480 (`--bin` / `$EIN_BIN`), and read its record as the
+walk's. Porting it to the region is not owed by the switch.
+
 Runs **one** binary twice over the corpus — `EIN_FORK_DELTA=0`,
 then unset — so the only difference between the arms is `Saturator::new`
 against `Saturator::resume`

@@ -37,8 +37,8 @@
 (converse-illtyped-ran owns owned-by is-a*)   ; well-typed on its side: silent
 
 (solve
-  :no-hypothesis (is-a* owns owned-by))
+  :no-hypothesis (is-a* owns owned-by)
+  :expect (false))
 
 (query
-  :goal (owns ?who ?what)
-  :expect (false))
+  :goal (owns ?who ?what))

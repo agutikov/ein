@@ -1,11 +1,15 @@
-//! `ein solve --dump-region DIR` — M1e2
-//! [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
+//! `ein oracle FILE --dump DIR` — M1e2
+//! [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md)'s
+//! door, which was `ein solve --dump-region` until S1e2.1a.5's switch moved it
+//! to the oracle's own command.
 //!
-//! The oracle's door, held from the outside: it moves no answer; it agrees
+//! Held from the outside: the dump moves nothing the oracle prints; it agrees
 //! node for node with the second route, `utils/region.py`, which classifies
-//! each subset with one `ein saturate` process; its limit refuses with a note
+//! each subset with one `ein saturate` process; its limit refuses, exit 2,
 //! and warns when raised; and the `non_monotone` stub's line and block appear
-//! exactly where the static check finds a site.
+//! exactly where the static check finds a site. The walk's half of the
+//! directory, `walk.json`, went with the walk; drawing a region run on the
+//! cube is S1e2.1a.7's.
 
 use std::collections::BTreeSet;
 use std::io::{BufRead, BufReader};
@@ -50,9 +54,9 @@ fn json(path: &Path) -> J {
 
 fn dump(file: &str, flags: &[&str], dir: &Path) -> Run {
     let d = dir.to_string_lossy();
-    let mut args = vec!["solve", file];
+    let mut args = vec!["oracle", file];
     args.extend_from_slice(flags);
-    args.extend(["--dump-region", &d]);
+    args.extend(["--dump", &d]);
     ein(&args, &[])
 }
 
@@ -67,83 +71,39 @@ const SEVEN: [&str; 7] = [
     "examples/ein-bugs/naf-upward-closure.ein",
 ];
 
-/// **The flag moves no answer.** Stdout, the exit code, the summary and the
-/// event stream with it and without it; stderr too where the region fits, and
-/// otherwise stderr plus exactly the one refusal note.
+/// **The dump moves nothing the oracle prints**: stdout, stderr, the exit
+/// code and its summary, with `--dump` and without.
 #[test]
 fn the_flag_moves_no_answer() {
     let root = scratch("additive");
-    let cases: [(&str, &[&str], &[&str], bool); 5] = [
-        (
-            "examples/branching/15_lookahead_two_step_on.ein",
-            &["-e"],
-            &[],
-            true,
-        ),
-        (
-            "examples/ein-bugs/wrong-answers/owed-seats.ein",
-            &["-e"],
-            &[],
-            true,
-        ),
-        (
-            "examples/ein-bugs/naf-upward-closure.ein",
-            &["-e"],
-            &[],
-            true,
-        ),
-        ("examples/zebra2.ein", &["-e"], &[], false),
-        (
-            "examples/zebra2-obligations.ein",
-            &["-e"],
-            &["EIN_TRAVERSAL=tree"],
-            false,
-        ),
-    ];
-    for (i, (file, flags, env, fits)) in cases.iter().enumerate() {
-        let env: Vec<String> = env.iter().map(|s| s.to_string()).collect();
+    for (i, file) in [
+        "examples/branching/15_lookahead_two_step_on.ein",
+        "examples/ein-bugs/wrong-answers/owed-seats.ein",
+        "examples/ein-bugs/naf-upward-closure.ein",
+    ]
+    .iter()
+    .enumerate()
+    {
         let run = |with: bool| {
             let tag = if with { "with" } else { "without" };
             let s = root.join(format!("{i}-{tag}.json"));
-            let e = root.join(format!("{i}-{tag}.jsonl"));
             let d = root.join(format!("{i}-dir"));
-            let (s, e, d) = (
-                s.to_string_lossy(),
-                e.to_string_lossy(),
-                d.to_string_lossy(),
-            );
-            let mut args = vec!["solve", file];
-            args.extend_from_slice(flags);
-            args.extend(["--json-summary", &s, "--events", &e]);
+            let (s, d) = (s.to_string_lossy(), d.to_string_lossy());
+            let mut args = vec!["oracle", file, "--json-summary", &s];
             if with {
-                args.extend(["--dump-region", &d]);
+                args.extend(["--dump", &d]);
             }
-            let r = ein(&args, &env);
+            let r = ein(&args, &[]);
             let summary = std::fs::read_to_string(s.as_ref()).expect("summary");
-            let events = std::fs::read_to_string(e.as_ref()).expect("events");
-            (r, summary, events)
+            (r, summary)
         };
-        let (a, sa, ea) = run(false);
-        let (b, sb, eb) = run(true);
+        let (a, sa) = run(false);
+        let (b, sb) = run(true);
         assert_eq!(a.code, b.code, "{file}: exit code moved");
-        assert_eq!(a.out, b.out, "{file}: stdout moved");
-        if *fits {
-            assert_eq!(a.err, b.err, "{file}: stderr moved");
-        } else {
-            let extra: Vec<&str> = b
-                .err
-                .lines()
-                .filter(|l| !a.err.lines().any(|x| x == *l))
-                .collect();
-            assert_eq!(extra.len(), 1, "{file}: {extra:?}");
-            assert!(
-                extra[0].starts_with("note: --dump-region") && extra[0].contains("--region-limit"),
-                "{file}: {extra:?}"
-            );
-        }
-        assert_eq!(sa, sb, "{file}: the summary moved");
         let body = |s: &str| s.lines().skip(1).map(str::to_string).collect::<Vec<_>>();
-        assert_eq!(body(&ea), body(&eb), "{file}: the event stream moved");
+        assert_eq!(body(&a.out), body(&b.out), "{file}: stdout moved");
+        assert_eq!(a.err, b.err, "{file}: stderr moved");
+        assert_eq!(sa, sb, "{file}: the summary moved");
     }
     let _ = std::fs::remove_dir_all(&root);
 }
@@ -194,7 +154,7 @@ fn the_oracle_and_the_per_subset_route_agree_node_for_node() {
     let mut moved = 0;
     for (i, file) in SEVEN.iter().chain([&MOVES]).enumerate() {
         let dir = root.join(format!("{i}"));
-        let r = dump(file, &["-e"], &dir);
+        let r = dump(file, &[], &dir);
         assert_eq!(r.code, 0, "{file}: {}", r.err);
         let region = json(&dir.join("region.json"));
         let cands: Vec<String> = region["candidates"]
@@ -381,26 +341,30 @@ fn a_random_region_written_as_a_program_comes_back() {
     assert!(stdout.contains("300 targets, seed 1, 0 failed"), "{stdout}");
 }
 
-/// **Over the limit is a note, not an error.** The solve's exit code, a
-/// directory holding the walk and a `region.json` saying why there is no
-/// region, and one stderr line naming the option.
+/// **Over the limit is a refusal**: exit 2, one stderr line naming the
+/// option, and a directory whose `region.json` says why there is no region.
+/// Under `ein solve`, where the cube was an artefact beside the walk, it was a
+/// note; the oracle's whole answer is the cube.
 #[test]
-fn over_the_limit_the_run_notes_it_and_keeps_its_exit_code() {
+fn over_the_limit_the_oracle_refuses_and_says_why() {
     let root = scratch("limit");
     let file = "examples/lattice/02_genuine_3set_death.ein";
-    let plain = ein(&["solve", "-e", file], &[]);
     let dir = root.join("d");
-    let r = dump(file, &["-e", "--region-limit", "2"], &dir);
-    assert_eq!(r.code, plain.code);
-    assert_eq!(r.out, plain.out);
-    let note: Vec<&str> = r.err.lines().filter(|l| l.starts_with("note:")).collect();
-    assert_eq!(note.len(), 1, "{}", r.err);
-    assert!(note[0].contains("3 root candidates") && note[0].contains("--region-limit 3"));
+    let r = dump(file, &["--region-limit", "2"], &dir);
+    assert_eq!(r.code, 2, "{}", r.err);
+    assert!(r.out.is_empty(), "{}", r.out);
+    let refusal: Vec<&str> = r.err.lines().filter(|l| l.starts_with("error:")).collect();
+    assert_eq!(refusal.len(), 1, "{}", r.err);
+    assert!(
+        refusal[0].contains("3 root candidates") && refusal[0].contains("--region-limit 3"),
+        "{}",
+        r.err
+    );
     let region = json(&dir.join("region.json"));
     assert!(region["region"].is_null());
     assert_eq!(region["refused"]["n"], 3);
     assert_eq!(region["refused"]["limit"], 2);
-    assert!(dir.join("walk.json").is_file());
+    assert!(!dir.join("walk.json").exists());
     let md = std::fs::read_to_string(dir.join("region.md")).expect("region.md");
     assert!(md.contains("## No region"), "{md}");
     let _ = std::fs::remove_dir_all(&root);
@@ -422,9 +386,9 @@ fn wide_program(dir: &Path, n: usize) -> PathBuf {
 /// stopped — `2ⁿ` saturations are not this test's subject.
 fn first_warning(file: &Path, n: usize, dir: &Path) -> Vec<String> {
     let mut child = Command::new(env!("CARGO_BIN_EXE_ein"))
-        .args(["solve", "-n", "1"])
+        .arg("oracle")
         .arg(file)
-        .args(["--region-limit", &n.to_string(), "--dump-region"])
+        .args(["--region-limit", &n.to_string(), "--dump"])
         .arg(dir)
         .stdout(Stdio::null())
         .stderr(Stdio::piped())
@@ -462,30 +426,29 @@ fn a_raised_limit_warns_with_the_projected_cost() {
         "{w20:?}"
     );
     assert!(w20[2].contains("--region-limit 20"), "{w20:?}");
-    // Not raised, 17 is refused with the note.
+    // Not raised, 17 is refused.
     let r = ein(
         &[
-            "solve",
-            "-n",
-            "1",
+            "oracle",
             &wide_program(&root, 17).to_string_lossy(),
-            "--dump-region",
+            "--dump",
             &root.join("d17b").to_string_lossy(),
         ],
         &[],
     );
-    assert!(r.err.contains("note: --dump-region"), "{}", r.err);
+    assert_eq!(r.code, 2, "{}", r.err);
+    assert!(r.err.contains("over --region-limit 16"), "{}", r.err);
     assert!(!r.err.contains("warning:"), "{}", r.err);
     let _ = std::fs::remove_dir_all(&root);
 }
 
-/// `--region-states` keeps each node's state beyond root's.
+/// `--states` keeps each node's state beyond root's.
 #[test]
 fn region_states_keeps_every_nodes_state() {
     let root = scratch("states");
     let dir = root.join("d");
     let file = "examples/lattice/04_obligation_trigger_hole.ein";
-    let r = dump(file, &["-e", "--region-states"], &dir);
+    let r = dump(file, &["--states"], &dir);
     assert_eq!(r.code, 0, "{}", r.err);
     let region = json(&dir.join("region.json"));
     let seated = region["region"]["nodes"]
@@ -504,47 +467,15 @@ fn region_states_keeps_every_nodes_state() {
     assert_eq!(seated["status"], "owing");
     assert_eq!(seated["hole"], true);
     let without = root.join("e");
-    dump(file, &["-e"], &without);
+    dump(file, &[], &without);
     let region = json(&without.join("region.json"));
     assert!(region["region"]["nodes"][0].get("state").is_none());
     let _ = std::fs::remove_dir_all(&root);
 }
 
-/// **The walk is placed in the cube.** W1's witness records one of R's two
-/// maximal nodes, and `region.md` names the other; W3's records the state the
-/// forced positive made, which is on neither line.
-#[test]
-fn the_walk_is_placed_against_the_lines() {
-    let root = scratch("walk");
-    let dir = root.join("w1");
-    dump(
-        "examples/branching/15_lookahead_two_step_on.ein",
-        &["-e"],
-        &dir,
-    );
-    let walk = json(&dir.join("walk.json"));
-    assert_eq!(walk["schema"], "ein-walk/1");
-    assert_eq!(walk["recorded"].as_array().unwrap().len(), 1);
-    assert_eq!(walk["enterings"].as_array().unwrap().len(), 6);
-    let md = std::fs::read_to_string(dir.join("region.md")).unwrap();
-    assert!(
-        md.contains("**maximal line not recorded**: `{(p A)}`"),
-        "{md}"
-    );
-
-    let dir = root.join("w3");
-    dump("examples/ein-bugs/naf-upward-closure.ein", &["-e"], &dir);
-    let md = std::fs::read_to_string(dir.join("region.md")).unwrap();
-    assert!(
-        md.contains("as the state {(q A)}: R in the cube, on neither line"),
-        "{md}"
-    );
-    assert!(md.contains("promoted to root by the forced-positive cascade: `(q A)`"));
-    let _ = std::fs::remove_dir_all(&root);
-}
-
-/// **The stub's two halves**: one line under the verdict and a summary block,
-/// on a program with a site; nothing on stdout for one without.
+/// **The stub's two halves**: the read-out's `lattice` row and the summary's
+/// block say *not monotone* on a program with a site, and *monotone* on one
+/// without.
 #[test]
 fn the_non_monotone_stub_says_so_where_there_is_a_site() {
     let root = scratch("stub");
@@ -558,13 +489,20 @@ fn the_non_monotone_stub_says_so_where_there_is_a_site() {
     for (i, (file, monotone)) in cases.iter().enumerate() {
         let s = root.join(format!("{i}.json"));
         let r = ein(
-            &["solve", "-e", file, "--json-summary", &s.to_string_lossy()],
+            &[
+                "solve",
+                file,
+                "--region-budget",
+                "4096",
+                "--json-summary",
+                &s.to_string_lossy(),
+            ],
             &[],
         );
         let line = r
             .out
             .lines()
-            .any(|l| l.starts_with("  lattice         not monotone"));
+            .any(|l| l.starts_with("  lattice           not monotone"));
         assert_eq!(line, !monotone, "{file}:\n{}", r.out);
         let summary = json(&s);
         assert_eq!(summary["monotonicity"]["monotone"], *monotone, "{file}");

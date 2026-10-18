@@ -76,12 +76,12 @@
   :why    "nothing relates Bob and Rat either way, and no rule may invent it")
 
 (solve
-  :no-hypothesis (type instance co-loc undecided))
+  :no-hypothesis (type instance co-loc undecided)
+  :expect (region (owing (model (co-loc Ann Cat) (co-loc Cat Ann)
+                                (co-loc Dog S1)  (co-loc S1 Dog)
+                                (not (co-loc Cat S1))
+                                (not (co-loc Ann S1))
+                                (undecided Bob Rat)))))
 
 (query
-  :goal (co-loc ?a ?b)
-  :expect (model (co-loc Ann Cat) (co-loc Cat Ann)
-                 (co-loc Dog S1)  (co-loc S1 Dog)
-                 (not (co-loc Cat S1))
-                 (not (co-loc Ann S1))
-                 (undecided Bob Rat)))
+  :goal (co-loc ?a ?b))

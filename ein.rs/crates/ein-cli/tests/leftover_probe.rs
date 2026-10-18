@@ -9,53 +9,45 @@
 //! serialisation, and it is why the three claims below are three sections
 //! rather than three functions.
 //!
-//! What the probe answers is the question `complete` cannot be asked. A
-//! solution node is one the *active* rung proposed nothing at, and the active
-//! rung is whichever of the three the program earned; the **blind** enumerator
-//! may still have candidates there, and their number is the state's
-//! leftover-open count. P1d.2 handed the measurement forward rather than
-//! taking it, because a blind pass over the live node writes `(not h)` per
-//! lookahead kill and would move the node's `state_key`. Running it on a fork
-//! is what makes it a read — and *that* is the claim worth a test, because it
-//! is the one that would fail silently.
+//! What the probe answers is the question a state's model cannot be asked:
+//! how many facts the **blind** enumerator would still propose there, outside
+//! H. Since M1e2 S1e2.1a.5 it is read per state the read-out lists
+//! (`read_out.md` § 12) — a question about the universe, not about a route.
+//! Running it on a fork of the state's fixpoint is what makes it a read, and
+//! *that* is the claim worth a test, because it is the one that would fail
+//! silently.
 
 use ein_core::Terms;
 use ein_corpus::repo_root;
-use ein_infer::events::Events;
-use ein_infer::solve::{NoDumper, SolveOptions, solve};
+use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_ir::{Ast, load_file};
 use serde_json::Value as J;
 
-/// One entry's summary, exhaustively, as `--json-summary` writes it.
-fn summary(rel: &str, max_set_size: u32) -> J {
+/// One entry's summary, under `--maximal`, as `--json-summary` writes it.
+fn summary(rel: &str) -> J {
     let path = repo_root().join(rel);
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let mut kb = load_file(&mut ast, &mut terms, &path).unwrap_or_else(|e| panic!("{rel}: {e}"));
     let config = kb.program().config.clone().unwrap_or_default();
-    let opts = SolveOptions {
-        stop_after: None,
-        max_set_size,
-        config: Some(config.clone()),
-        ..SolveOptions::default()
-    };
-    let mut events = Events::off();
-    let mut solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
-        .unwrap_or_else(|_| panic!("{rel}: solve"));
-    let json = ein_cli::summary::build(
-        &ast,
-        &mut terms,
-        &mut kb,
-        &mut solved.answer,
-        &solved.stats,
-        &config,
-        rel,
-        &mut events,
-        &solved.owes,
-        &solved.monotonicity,
-    )
-    .unwrap_or_else(|e| panic!("{rel}: {e}"));
+    let opts = explore::Options::new(Mode {
+        which: Which::Maximal,
+        ask: Ask::Describe,
+    });
+    let r = ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts)
+        .unwrap_or_else(|e| panic!("{rel}: {e}"));
+    let json = ein_cli::summary::build_region(&ast, &mut terms, &mut kb, &r, rel, &config)
+        .unwrap_or_else(|e| panic!("{rel}: {e}"));
     serde_json::from_str(&ein_render::dump::json::dumps_indent(&json)).expect("summary is JSON")
+}
+
+fn listed(summary: &J) -> u64 {
+    summary["region"]["states"]
+        .as_array()
+        .expect("states")
+        .iter()
+        .filter(|s| s["listed"] == true)
+        .count() as u64
 }
 
 fn counts(summary: &J, key: &str) -> Vec<u64> {
@@ -75,32 +67,30 @@ fn the_leftover_probe_is_off_by_default_is_a_read_and_means_what_it_says() {
     // about — the rule the `owes` and `config` blocks already follow — so
     // `taken` carries the state and the two arrays are empty rather than
     // absent. Read before any write to the environment.
-    let closed_default = summary("examples/branching/12_typed_blind_solve.ein", 10);
+    let closed_default = summary("examples/branching/12_typed_blind_solve.ein");
     assert_eq!(closed_default["leftover"]["taken"], J::Bool(false));
-    assert!(counts(&closed_default, "models").is_empty());
-    assert!(counts(&closed_default, "open_states").is_empty());
+    assert!(counts(&closed_default, "states").is_empty());
 
-    let before = summary("examples/branching/06_lookahead_on.ein", 10);
+    let before = summary("examples/branching/06_lookahead_on.ein");
 
     // SAFETY: this binary holds exactly one test, so nothing else in the
     // process reads the environment while it is written. `EIN_LEFTOVER` is
-    // read once per summary, so the write has to land before `build` and not
-    // during it.
+    // read once per summary, so the write has to land before `build_region`
+    // and not during it.
     unsafe { std::env::set_var("EIN_LEFTOVER", "1") };
-    let after = summary("examples/branching/06_lookahead_on.ein", 10);
-    let closed = summary("examples/branching/12_typed_blind_solve.ein", 10);
-    let open = summary("examples/zebra2.ein", 5);
+    let after = summary("examples/branching/06_lookahead_on.ein");
+    let closed = summary("examples/branching/12_typed_blind_solve.ein");
+    let open = summary("examples/branching/05_mini_zebra.ein");
     unsafe { std::env::remove_var("EIN_LEFTOVER") };
 
     // ── 2. The probe changes nothing but its own block ──────────────
     //
     // The property that makes it a measurement rather than a different
     // engine, taken on a multi-model entry so that the model *set* is in
-    // scope: the walk writes into its fork, and if the fork were the node the
-    // writes would move `state_key`, the dedup, and therefore `k`. Everything
-    // outside `leftover` — the verdict, every counter, the root block, the
-    // owes report — is compared whole, so a probe that leaks is caught
-    // wherever it leaks.
+    // scope: the pass writes into its fork, and if the fork were the state the
+    // writes would move what the read-out lists. Everything outside
+    // `leftover` — R, every state, the work, the root block — is compared
+    // whole, so a probe that leaks is caught wherever it leaks.
     assert_eq!(after["leftover"]["taken"], J::Bool(true), "the lever took");
     let mut a = before.clone();
     let mut b = after.clone();
@@ -108,9 +98,9 @@ fn the_leftover_probe_is_off_by_default_is_a_read_and_means_what_it_says() {
     b.as_object_mut().expect("object").remove("leftover");
     assert_eq!(a, b, "the probe moved something outside its own block");
     assert_eq!(
-        counts(&after, "models").len() as u64,
-        after["verdict"]["k"].as_u64().expect("k"),
-        "one row per model, index-aligned with verdict.solutions"
+        counts(&after, "states").len() as u64,
+        listed(&after),
+        "one row per listed state, index-aligned with region.states"
     );
 
     // ── 3. What the count means ─────────────────────────────────────
@@ -119,30 +109,28 @@ fn the_leftover_probe_is_off_by_default_is_a_read_and_means_what_it_says() {
     // point of the number:
     //
     // * `branching/12_typed_blind_solve` closes its one relation, so at each
-    //   of its two models every candidate the blind enumerator can build is
-    //   already a fact or already negated. **Zero** — the model is a complete
-    //   assignment, and the open- and closed-world readings agree on it.
-    // * `zebra2` does not, and its **unique** model still leaves thousands of
-    //   atoms undecided: `next-to`, `is-a*`, and every cross-type pair the
-    //   type-blind enumerator will build. Under an open-world reading that
-    //   model is 2ⁿ models; the puzzle means the closed-world one, and nothing
-    //   in the file says so.
+    //   state of its maximal line every candidate the blind enumerator can
+    //   build is already a fact or already negated. **Zero** — the state is a
+    //   complete assignment, and the open- and closed-world readings agree.
+    // * `branching/05_mini_zebra` does not close `co-located`, and its
+    //   **unique** maximal state still leaves dozens of atoms undecided: every
+    //   pair the blind enumerator builds and no rule decides. Under an
+    //   open-world reading that state is 2ⁿ models; the puzzle means the
+    //   closed-world one, and nothing in the file says so. (`zebra2`'s one
+    //   state leaves 3 678, the number M1d measured, at seconds per run.)
     //
-    // Neither half is a golden — the bound is `> 1000`, not the 3 678 this
+    // Neither half is a golden — the bound is `> 0`, not the count this
     // engine reports today.
-    let rows = counts(&closed, "models");
-    assert_eq!(
-        rows.len() as u64,
-        closed["verdict"]["k"].as_u64().expect("k")
-    );
+    let rows = counts(&closed, "states");
+    assert_eq!(rows.len() as u64, listed(&closed));
     assert!(
         rows.iter().all(|&n| n == 0),
         "a closed domain leaves nothing open: {rows:?}"
     );
-    let rows = counts(&open, "models");
-    assert_eq!(rows.len(), 1, "zebra2 has one model");
+    let rows = counts(&open, "states");
+    assert_eq!(rows.len(), 1, "mini_zebra's maximal line is one state");
     assert!(
-        rows[0] > 1000,
-        "an open domain leaves the enumerator plenty: {rows:?}"
+        rows[0] > 0,
+        "an open domain leaves the enumerator something: {rows:?}"
     );
 }

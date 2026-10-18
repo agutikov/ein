@@ -7,10 +7,15 @@
 //!
 //! | test | what it asserts |
 //! |---|---|
-//! | [`solve_zebra2_prints_the_answer_the_puzzle_asked_for`] | the table names the four cells the puzzle asks about, `k = 1`, and the `:hrules` line reports the hypothesis relations; and `zebra2` answers **in English**, from the file's `:goal-text` and `:why` templates |
-//! | [`solve_exhaustive_certifies_that_the_answer_is_the_only_one`] | `-e` prints `exhausted true`, which is what turns `k = 1` into uniqueness |
-//! | [`solve_on_an_unsat_puzzle_says_no_solution_and_names_the_culprit`] | the unsat fixture says "no solution", says why, and **names the injected `:source`** — and still exits 0, because classifying an unsat puzzle correctly is a success |
+//! | [`solve_zebra2_prints_the_answer_the_puzzle_asked_for`] | bare `ein solve` lists R's one state with the four cells the puzzle asks about, H is the five hypothesis relations, and `zebra2` answers **in English**, from the file's `:goal-text` and `:why` templates |
+//! | [`solve_single_certifies_that_the_answer_is_the_only_one`] | `--single` answers `Solution — R is one state`, decided, which is what turns the one state into uniqueness |
+//! | [`solve_on_an_unsat_puzzle_says_no_solution_and_names_the_culprit`] | the unsat fixture says R is empty, says why, and **names the injected `:source`** — and still exits 0, because classifying an unsat puzzle correctly is a success |
 //! | [`solve_zebra_prints_the_same_answer_through_the_generic_encoding`] | the same, through the *other* encoding, so the English cannot be hardcoded per ontology |
+//!
+//! Since M1e2 S1e2.1a.5's switch bare `ein solve` describes R, and on both
+//! puzzles it stops at the default `--region-budget` with R's one state found:
+//! an answer, so exit 0, with one `note:` on stderr saying it is partial. That
+//! note is the only stderr a successful run here may write.
 //!
 //! They run the built binary (`CARGO_BIN_EXE_ein`) rather than calling the
 //! library, because what is under test is the *presentation*: the exit code,
@@ -40,10 +45,10 @@ fn ein(args: &[&str]) -> (i32, String) {
         .current_dir(repo_root())
         .output()
         .expect("the `ein` binary runs");
+    let err = String::from_utf8_lossy(&out.stderr);
     assert!(
-        out.stderr.is_empty() || !out.status.success(),
-        "a successful solve writes nothing to stderr, got: {}",
-        String::from_utf8_lossy(&out.stderr)
+        err.lines().all(|l| l.starts_with("note: ")) || !out.status.success(),
+        "a successful solve writes only notes to stderr, got: {err}"
     );
     (
         out.status.code().unwrap_or(-1),
@@ -76,22 +81,12 @@ fn must_contain(out: &str, needles: &[&str], what: &str) {
 }
 
 /// The default solve answers both halves of the puzzle's own question — who
-/// drinks water and who owns the zebra — and reports the table.
+/// drinks water and who owns the zebra — and lists the state.
 #[test]
 fn solve_zebra2_prints_the_answer_the_puzzle_asked_for() {
-    // `--print-final-state` and `--print-final-hfacts` are two surfaces
-    // nothing else in the suite runs end to end, and `--stats` is where
-    // `exhausted` is reported. `k` is the
-    // *table*'s row, which is what `field` finds first and what the assertion
-    // below means — the two are different numbers on an `Open` verdict, and
-    // since M1e S1e.3.4 they are under different labels (`AR-M2`).
-    let (code, out) = ein(&[
-        "solve",
-        "examples/zebra2.ein",
-        "--print-final-state",
-        "--print-final-hfacts",
-        "--stats",
-    ]);
+    // `-P` and `-H` are two surfaces nothing else in the suite runs end to end
+    // on the puzzle: the state's positive facts beyond root, and H.
+    let (code, out) = ein(&["solve", "examples/zebra2.ein", "-P", "-H"]);
     assert_eq!(code, 0, "a solved puzzle exits 0");
     must_contain(
         &out,
@@ -108,45 +103,49 @@ fn solve_zebra2_prints_the_answer_the_puzzle_asked_for() {
         ],
         "the four named cells",
     );
-    assert_eq!(
-        field(&out, "solutions (k)"),
-        Some("1".into()),
-        "k must be 1"
-    );
-    // `--print-final-hfacts` reports which relations the blind enumerator was
-    // pointed at: the five typed projections and nothing else, which is what
-    // the fixture is for.
-    let hrules = out
-        .split(":hrules [")
+    assert_eq!(field(&out, "states (k_s)"), Some("1".into()), "one state");
+    // H is what the commitments are made of: the five typed projections and
+    // nothing else, which is what the fixture is for.
+    let relations: Vec<&str> = out
+        .split("h — the universe")
         .nth(1)
-        .and_then(|r| r.split(']').next())
-        .unwrap_or("");
+        .expect("-H's block")
+        .lines()
+        .skip(1)
+        .take_while(|l| l.starts_with("  "))
+        .filter(|l| !l.starts_with("    "))
+        .filter_map(|l| l.split_whitespace().next())
+        .collect();
     assert_eq!(
-        hrules, "'color-loc', 'drink-loc', 'nation-loc', 'pet-loc', 'smoke-loc'",
+        relations,
+        [
+            "color-loc",
+            "drink-loc",
+            "nation-loc",
+            "pet-loc",
+            "smoke-loc"
+        ],
         "exactly the five hypothesis-target relations"
     );
 }
 
-/// `-e` is what makes `k = 1` mean *unique*: it says the lattice ran out.
+/// `--single` is what makes the one state mean *unique*: it decides that R
+/// holds no other.
 #[test]
-fn solve_exhaustive_certifies_that_the_answer_is_the_only_one() {
-    let (code, out) = ein(&["solve", "examples/zebra2.ein", "--exhaustive", "--stats"]);
+fn solve_single_certifies_that_the_answer_is_the_only_one() {
+    let (code, out) = ein(&["solve", "examples/zebra2.ein", "--single"]);
     assert_eq!(code, 0);
+    must_contain(&out, &["solution — r is one state"], "the word");
     assert_eq!(
-        field(&out, "solutions (k)"),
-        Some("1".into()),
-        "k must be 1"
+        field(&out, "decided"),
+        Some("yes".into()),
+        "--single certifies uniqueness by deciding R holds no other state"
     );
-    assert_eq!(
-        field(&out, "exhausted"),
-        Some("true".into()),
-        "an exhaustive run certifies uniqueness by saying the lattice ran out"
-    );
-    // The control: without `--exhaustive` the same puzzle reports the same `k`
-    // and does *not* certify it. Without this, the test above would pass on a
-    // build that hardcoded `true`.
-    let (_, plain) = ein(&["solve", "examples/zebra2.ein", "--stats"]);
-    assert_eq!(field(&plain, "exhausted"), Some("false".into()));
+    // The control: the default run finds the same one state and does *not*
+    // certify it. Without this, the test above would pass on a build that
+    // hardcoded the word.
+    let (_, plain) = ein(&["solve", "examples/zebra2.ein"]);
+    assert_eq!(field(&plain, "exhausted"), Some("no".into()));
 }
 
 /// The *other* encoding reaches the same English. The answer is rendered from
@@ -164,9 +163,9 @@ fn solve_zebra_prints_the_same_answer_through_the_generic_encoding() {
     );
 }
 
-/// An unsat puzzle is a *correct classification*, not a failure: exit 0, the
-/// words "no solution", the reason, and the `:source` of the fact that caused
-/// it — which is the whole point of `zebra2-bad.ein`.
+/// An unsat puzzle is a *correct classification*, not a failure: exit 0, R
+/// empty because every node is dead, the reason, and the `:source` of the fact
+/// that caused it — which is the whole point of `zebra2-bad.ein`.
 #[test]
 fn solve_on_an_unsat_puzzle_says_no_solution_and_names_the_culprit() {
     let (code, out) = ein(&["solve", "examples/ein-bugs/zebra2-bad.ein"]);
@@ -176,7 +175,11 @@ fn solve_on_an_unsat_puzzle_says_no_solution_and_names_the_culprit() {
     );
     must_contain(
         &out,
-        &["no solution", "contradict", "injected contradiction"],
+        &[
+            "every node is dead",
+            "unsat core        (color-loc green house-1)",
+            ":source \"injected contradiction\"",
+        ],
         "the contradiction report",
     );
 }

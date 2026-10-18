@@ -9,8 +9,14 @@
 //! ```text
 //! ein render program FILE [--levi] [--rule-mode …]          the program as written
 //! ein render kb FILE [--since FILE] [--colour-by …] …        a KB, one digraph
-//! ein solve FILE --dump-lattice DIR …                        every commitment tested
+//! ein solve FILE --dump-lattice DIR …                        every node the run visited
+//! ein render lattice FILE [--view full]                      those nodes drawn
 //! ```
+//!
+//! The third door was the walk's `LatticeDumper` tree until M1e2 S1e2.1a.5's
+//! switch; it is a region run's visited nodes since (`ein-lattice/2`,
+//! [`lattice_dump.md`](../../../../docs/kernel/inference/lattice_dump.md)), and
+//! `ein render lattice` draws them.
 //!
 //! The renderers' own standard is `ein-render/tests/dot_wellformed.rs`: what
 //! they emit, `dot` accepts. This extends it from the renderer to the door —
@@ -18,7 +24,7 @@
 //! one claim each door adds of its own.
 
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::process::{Command, Stdio};
 
 use ein_corpus::repo_root;
@@ -103,17 +109,29 @@ fn every_door_prints_dot_that_dot_draws() {
         assert!(r.out.contains("digraph"), "{what} printed no digraph");
         dot_accepts(what, &r.out);
     }
-    // The third door writes files, and the DOTs among them are the lattice's.
+    // The third door writes files, and the fourth draws the same nodes.
+    for view in ["solution", "full"] {
+        let r = ein(&[
+            "render",
+            "lattice",
+            "examples/ein-bugs/wrong-answers/owed-seats.ein",
+            "--view",
+            view,
+        ]);
+        assert_eq!(r.code, 0, "render lattice --view {view}: {}", r.err);
+        dot_accepts(&format!("render lattice --view {view}"), &r.out);
+    }
     let r = ein(&[
         "solve",
         "examples/zebra2.ein",
-        "-e",
+        "-n",
+        "1",
         "--dump-lattice",
         &lattice.to_string_lossy(),
     ]);
     assert_eq!(r.code, 0, "--dump-lattice: {}", r.err);
-    assert!(lattice.join("proof_summary.json").is_file());
-    assert!(lattice.join("enterings").is_dir());
+    assert!(lattice.join("nodes.json").is_file());
+    assert!(lattice.join("nodes.md").is_file());
     let _ = std::fs::remove_dir_all(&dir);
 }
 
@@ -130,16 +148,19 @@ fn render_program_draws_what_the_loader_refuses() {
 }
 
 /// **`--since` draws what a commitment added**, from the files `--dump-answer`
-/// wrote: a model's state against root's, one `Terms` for both, so a fact
-/// root also held is drawn plain and one it lacked is drawn at `penwidth=3`.
+/// wrote: a state against ∅'s, one `Terms` for both, so a fact ∅ also held is
+/// drawn plain and one it lacked is drawn at `penwidth=3`. Since M1e2
+/// S1e2.1a.5 ∅'s file is `models/01.ein` where ∅ is in R — the walk wrote a
+/// `root.ein` beside its models.
 #[test]
 fn render_kb_since_root_emboldens_what_the_commitment_added() {
     let dir = scratch("since").join("answer");
-    let file = "examples/ein-bugs/wrong-answers/owed-seats.ein";
-    let r = ein(&["solve", file, "-e", "--dump-answer", &dir.to_string_lossy()]);
+    let file = "examples/features/11_expect_ambiguity.ein";
+    let r = ein(&["solve", file, "--dump-answer", &dir.to_string_lossy()]);
     assert_eq!(r.code, 0, "{}", r.err);
-    let model = dir.join("models/01.ein");
-    let root = dir.join("root.ein");
+    // State 1 is ∅; state 6 seats both guests.
+    let root = dir.join("models/01.ein");
+    let model = dir.join("models/06.ein");
     let plain = ein(&["render", "kb", &model.to_string_lossy()]);
     assert_eq!(plain.code, 0, "{}", plain.err);
     assert!(
@@ -156,9 +177,9 @@ fn render_kb_since_root_emboldens_what_the_commitment_added() {
     assert_eq!(r.code, 0, "{}", r.err);
     dot_accepts("render kb --since", &r.out);
     let bold: Vec<&str> = r.out.lines().filter(|l| l.contains("penwidth=3")).collect();
-    // Model 1 seats two guests: two `seats` edges root did not have.
+    // State 6 seats two guests: two `seat` edges ∅ did not have.
     assert_eq!(
-        bold.iter().filter(|l| l.contains("seats")).count(),
+        bold.iter().filter(|l| l.contains("seat")).count(),
         2,
         "the bold edges are not the commitment's:\n{}",
         bold.join("\n")
@@ -166,148 +187,85 @@ fn render_kb_since_root_emboldens_what_the_commitment_added() {
     let _ = std::fs::remove_dir_all(dir.parent().unwrap());
 }
 
-/// The clock fields, masked — `golden_dump.rs`'s list.
-fn mask_clock(text: &str) -> String {
-    let mut out = text.to_string();
-    for key in ["\"ts_ms\": ", "\"elapsed_seconds\": ", "\"wall_seconds\": "] {
-        while let Some(at) = out.find(key) {
-            let start = at + key.len();
-            let end = out[start..]
-                .find(|c: char| !matches!(c, '0'..='9' | '.' | 'e' | 'E' | '+' | '-'))
-                .map_or(out.len(), |j| start + j);
-            out.replace_range(start..end, "<ts>");
-            out.replace_range(at..at + 1, "\u{1}");
-        }
-        out = out.replace('\u{1}', "\"");
-    }
-    out
-}
-
-fn tree(dir: &Path) -> Vec<(String, String)> {
-    fn walk(base: &Path, dir: &Path, out: &mut Vec<(String, String)>) {
-        for e in std::fs::read_dir(dir).expect("readdir").flatten() {
-            let p = e.path();
-            if p.is_dir() {
-                walk(base, &p, out);
-            } else {
-                let rel = p.strip_prefix(base).unwrap().to_string_lossy().into_owned();
-                out.push((
-                    rel,
-                    mask_clock(&std::fs::read_to_string(&p).unwrap_or_default()),
-                ));
-            }
-        }
-    }
-    let mut out = Vec::new();
-    walk(dir, dir, &mut out);
-    out.sort();
-    out
-}
-
-/// **The CLI's tree is the library's tree.** `golden_dump.rs` pins what a
-/// `LatticeDumper` writes when a Rust caller hands it to `solve`; this runs the
-/// same fixture through the new flag and through the library call, and the two
-/// directories are the same files with the same bytes, clocks aside.
+/// **The dump is the run's nodes.** `nodes.json` lists, in visit order,
+/// exactly the nodes the run's `--events` stream enters, with the kind each
+/// was classified as — so the drawing and the stream are one account of the
+/// run. The walk's door was held to the library's `LatticeDumper` tree file
+/// for file; that tree has no CLI caller since the switch.
 #[test]
-fn dump_lattice_writes_the_tree_the_library_writes() {
-    use ein_core::Terms;
-    use ein_infer::solve::{SolveOptions, solve};
-    use ein_ir::{Ast, load_file};
-
-    let file = "examples/lattice/01_subset_pruned.ein";
+fn dump_lattice_lists_the_nodes_the_run_entered() {
     let dir = scratch("lattice");
-    let cli = dir.join("cli");
+    let d = dir.join("d");
+    let ev = dir.join("e.jsonl");
+    let file = "examples/ein-bugs/wrong-answers/owed-seats.ein";
     let r = ein(&[
         "solve",
         file,
-        "-e",
-        "-m",
-        "3",
         "--dump-lattice",
-        &cli.to_string_lossy(),
+        &d.to_string_lossy(),
+        "--events",
+        &ev.to_string_lossy(),
     ]);
     assert_eq!(r.code, 0, "{}", r.err);
-
-    let lib = dir.join("lib");
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let mut kb = load_file(&mut ast, &mut terms, &repo_root().join(file)).expect("it loads");
-    let mut dumper = ein_render::dump::LatticeDumper::new(Some(&lib)).expect("a dumper");
-    let config = kb.program().config.clone().unwrap_or_default();
-    let opts = SolveOptions {
-        stop_after: None,
-        max_set_size: 3,
-        config: Some(config),
-        store_lattice: true,
-        ..SolveOptions::default()
-    };
-    let mut events = ein_infer::events::Events::off();
-    solve(&mut kb, &mut terms, &ast, &mut events, &mut dumper, &opts).expect("it solves");
-
-    let (a, b) = (tree(&cli), tree(&lib));
-    let names = |t: &[(String, String)]| t.iter().map(|(n, _)| n.clone()).collect::<Vec<_>>();
-    assert_eq!(names(&a), names(&b), "the two trees hold different files");
-    for ((name, x), (_, y)) in a.iter().zip(&b) {
-        assert_eq!(x, y, "{name} differs between the CLI and the library");
-    }
-    assert!(
-        a.iter().any(|(n, _)| n.starts_with("enterings/")),
-        "no enterings/"
+    let nodes: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(d.join("nodes.json")).unwrap()).unwrap();
+    assert_eq!(nodes["schema"], "ein-lattice/2");
+    let entered = std::fs::read_to_string(&ev)
+        .unwrap()
+        .lines()
+        .filter(|l| l.contains("\"e\": \"enter\""))
+        .count();
+    assert_eq!(
+        nodes["visited"], entered as u64,
+        "the dump and the stream disagree"
     );
+    assert_eq!(nodes["nodes"].as_array().unwrap().len(), entered);
+    let in_r = nodes["nodes"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|n| n["kind"] == "in-r")
+        .count();
+    assert_eq!(in_r, 7, "owed-seats' R is seven states, each visited once");
     let _ = std::fs::remove_dir_all(&dir);
 }
 
-/// **One dumper per solve**, so the flags that each choose one are refused
-/// together with a reason, at exit 2 — where `-t` used to take `--dump-states`'
-/// directory and drop it.
+/// **The dump moves no answer, beside any other flag.** The walk had one
+/// dumper per solve and refused `--dump-lattice` with `-v`, `--layer-progress`,
+/// `-t` and `--dump-states`; a region run's dump is a reader of the run, so
+/// it combines with each and stdout is the same with it and without.
+/// `--dump-states` is retired, and says what replaced it.
 #[test]
-fn the_flags_that_choose_a_dumper_are_refused_together() {
-    let dir = scratch("conflict");
+fn the_dump_combines_with_the_other_flags() {
+    let dir = scratch("combine");
     let d = dir.join("d").to_string_lossy().into_owned();
-    for other in [
-        vec!["--dump-states", "x"],
-        vec!["-v"],
-        vec!["--layer-progress"],
-        vec!["-t"],
-    ] {
-        let mut args = vec!["solve", "examples/zebra2.ein", "--dump-lattice", &d];
-        args.extend(other.iter().copied());
-        let r = ein(&args);
-        assert_eq!(r.code, 2, "{other:?}: {}", r.err);
-        assert!(r.err.contains("--dump-lattice"), "{other:?}: {}", r.err);
-        assert!(r.out.is_empty(), "{other:?} ran anyway");
+    let file = "examples/ein-bugs/wrong-answers/owed-seats.ein";
+    for other in [vec!["-v"], vec!["--layer-progress"], vec!["-s"]] {
+        let mut with = vec!["solve", file, "--dump-lattice", &d];
+        with.extend(other.iter().copied());
+        let mut without = vec!["solve", file];
+        without.extend(other.iter().copied());
+        let (a, b) = (ein(&with), ein(&without));
+        assert_eq!((a.code, b.code), (0, 0), "{other:?}: {}", a.err);
+        let steady = |o: &str| {
+            o.lines()
+                .filter(|l| !l.trim_start().starts_with("wall"))
+                .map(str::to_string)
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(steady(&a.out), steady(&b.out), "{other:?} moved stdout");
+        assert_eq!(a.err, b.err, "{other:?} moved stderr");
     }
-    let _ = std::fs::remove_dir_all(&dir);
-}
-
-/// **`-t` with `--dump-states` writes the dump.** It took the timing arm and
-/// wrote nothing, exit 0, until M1e2 S1e2.1.3; the tree is now the one a plain
-/// `--dump-states` writes, file for file.
-#[test]
-fn timing_and_dump_states_both_happen() {
-    let dir = scratch("timing");
-    let (with, plain) = (dir.join("with"), dir.join("plain"));
-    let r = ein(&[
-        "solve",
-        "examples/zebra2.ein",
-        "-t",
-        "--dump-states",
-        &with.to_string_lossy(),
-    ]);
+    let r = ein(&["solve", file, "-t", "--dump-lattice", &d]);
     assert_eq!(r.code, 0, "{}", r.err);
+    assert!(r.out.contains("\ntiming\n"), "the timing table is gone");
+    let r = ein(&["solve", file, "--dump-states", &d]);
+    assert_eq!(r.code, 2, "{}", r.err);
     assert!(
-        r.out.contains("root saturation"),
-        "the timing table is gone"
+        r.err.contains("-D/--dump-states is retired") && r.err.contains("--dump-lattice DIR"),
+        "{}",
+        r.err
     );
-    let r = ein(&[
-        "solve",
-        "examples/zebra2.ein",
-        "--dump-states",
-        &plain.to_string_lossy(),
-    ]);
-    assert_eq!(r.code, 0, "{}", r.err);
-    let names = |d: &Path| tree(d).into_iter().map(|(n, _)| n).collect::<Vec<_>>();
-    assert_eq!(names(&with), names(&plain));
-    assert!(!names(&with).is_empty(), "-t --dump-states wrote nothing");
+    assert!(r.out.is_empty(), "a retired flag ran anyway");
     let _ = std::fs::remove_dir_all(&dir);
 }

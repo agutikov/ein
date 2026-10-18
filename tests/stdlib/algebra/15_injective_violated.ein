@@ -19,8 +19,8 @@
 (assigned Ship  Ann)   ; ⊥ — one worker, two distinct tasks
 
 (solve
-  :no-hypothesis (assigned))
+  :no-hypothesis (assigned)
+  :expect (false))
 
 (query
-  :goal (assigned ?task ?who)
-  :expect (false))
+  :goal (assigned ?task ?who))

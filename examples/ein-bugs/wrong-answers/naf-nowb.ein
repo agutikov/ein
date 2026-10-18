@@ -33,8 +33,13 @@
 ;;; states both.
 ;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
+;;;
+;;; **Since M1e2 S1e2.1a.5 the program is `../naf-upward-closure.ein`'s.** The
+;;; switch retired `:enable-singleton-writeback` (it wrote into root, which no
+;;; route does), so only `:warn-derived-naf` is left on the `(config …)` line;
+;;; R never read the writeback, and is the one it was.
 
-(config :warn-derived-naf true :enable-singleton-writeback false)
+(config :warn-derived-naf true)
 
 (relation is-a T T)
 (relation p T)

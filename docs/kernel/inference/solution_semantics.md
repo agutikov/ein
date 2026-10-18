@@ -18,11 +18,14 @@
 > [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)'s.
 > Each place the definition depends on monotonicity says so.
 >
-> **§ 6 is the honest half.** §§ 1–5 are the definition. The shipped search
-> does not compute it, and § 6 says where it differs and how to reproduce
-> each difference. A reader who needs what `ein solve` prints today reads § 5's
-> first table and § 6. R itself **is** computed today, exactly, by
-> [`ein solve --dump-region`](region_dump.md) for n ≤ 16.
+> **§ 6 is the walk's half.** §§ 1–5 are the definition, and since M1e2
+> S1e2.1a.5's switch (2026-10-18) `ein solve` computes it: route 1 over the
+> alive down-set, the cube for a program the static check flags, and the
+> read-out of § 5.1. § 6 is the search `ein solve` ran until then, where it
+> differed from R and how each difference was reproduced; the walk is reached
+> from the library only since, and its reproductions run against a binary
+> built at or before commit 7ec8a480. R by brute force is
+> [`ein oracle --dump`](region_dump.md), for n ≤ 16.
 
 ---
 
@@ -268,10 +271,12 @@ fixture is named for.
 ![lattice/02's region, with the default exhaustive run's walk on it](diagrams/region_02_genuine_3set_death.svg)
 
 Drawn by [`ein render region`](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-the-walk-s1e21a2)
-([`.dot`](diagrams/region_02_genuine_3set_death.dot)), re-made with:
+([`.dot`](diagrams/region_02_genuine_3set_death.dot)) before the switch, with
+the walk's `-e` run on it. The same cube with no run overlaid is re-made
+with:
 
 ```sh
-ein solve -e examples/lattice/02_genuine_3set_death.ein --dump-region out/
+ein oracle examples/lattice/02_genuine_3set_death.ein --dump out/
 ein render region out/ > docs/kernel/inference/diagrams/region_02_genuine_3set_death.dot
 dot -Tsvg docs/kernel/inference/diagrams/region_02_genuine_3set_death.dot \
     -o docs/kernel/inference/diagrams/region_02_genuine_3set_death.svg
@@ -322,11 +327,12 @@ itself stated, and nothing the loader wrote down. It is **what the puzzle did
 not say and the solution established**: what a node of R adds.
 
 The distinction from the state is load-bearing, because two runs can agree on
-every model and disagree on every recorded KB. `ein solve -e
-examples/lattice/02_genuine_3set_death.ein` records `(not (c-prop X))` in the
+every model and disagree on every recorded KB. The walk's `ein solve -e
+examples/lattice/02_genuine_3set_death.ein` recorded `(not (c-prop X))` in the
 first state, written by the lookahead kill cache with provenance
-`<lookahead-dies-immediately>`, and `-K` records the same model without it.
-Same models; different KBs.
+`<lookahead-dies-immediately>`, and `-K` recorded the same model without it.
+Same models; different KBs. No route since the switch writes into a state
+anything its own fixpoint does not derive.
 
 **Projection.** A query's goal cuts a model down to the goal's rows. Models
 that differ only in facts the goal does not name give one row set, so a query
@@ -376,30 +382,31 @@ Normative detail on what an obligation quantifies over:
 
 ### 5.1 Today
 
-What `ein solve` prints at `9248236d`. The words judge the walk's recorded
-nodes, not R (§ 6).
+What `ein solve` prints since M1e2 S1e2.1a.5's switch, row by row in
+[`read_out.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)
+and in real runs in
+[`read_out_examples.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md),
+which `ein-cli/tests/read_out_examples.rs` holds to the binary:
 
-| word | means today | `k` |
+| question | flag | what it prints |
 |---|---|---|
-| `Solution` | one recorded model | 1 |
-| `Ambiguity` | several recorded models | > 1 |
-| `Open` | consistent and quiescent, with an obligation the program stated still unwitnessed | 0 models |
-| `Contradiction` | no recorded model | 0 |
+| all of R | none | k_s and k_c, `exhausted`, ∅, both lines, components, sub-cubes, merged states, N, the static check, H, the route and its licences, the work; then R as one `(region …)` and each query's projection classes |
+| a line | `--maximal`, `--minimal` | the line's states, exhausted or as far as the run went |
+| a part | `-n N` | `N` states of the part asked, each certified, nothing said of the rest |
+| one state? | `--single` | the word: `Solution` (one state), `Ambiguity` (two shown), `Contradiction` (every node dead), `Open` (every alive node owes) |
 
-`k` counts the **recorded** models. `stats.solution_nodes` counts what the
-search recorded. **`exhausted`** says the walk did not stop early: no depth cap
-reached with a live frontier, no `--solutions` cut, not the tree traversal.
+Every count that is not exact says so — *a lower bound* and how far it is
+complete — and a run a budget stopped writes one `note:`. Every answer exits
+0, and a claim the program states and the run refutes exits 1. A program the
+static check finds a site in says so on the `lattice` row and takes route 2,
+the cube.
 
-A program the static check (§ 1.6) finds a site in gets one more line under
-the verdict, `lattice  not monotone (n sites) — this answer assumes it is`.
-The search and the words are unchanged.
-
-### 5.2 Ruled, and not yet implemented
+### 5.2 Ruled 2026-10-16, built by S1e2.1a.5
 
 | ruling (2026-10-16) | what changes | stage |
 |---|---|---|
 | (a), (e) | **k_s and k_c replace `k`** on every surface. Where the run cannot know R, each is a lower bound and says so | [S1e2.1a.5](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md) |
-| the default | **`ein solve` with no flag describes R in full**, exhaustively and certified. Flags make the task simpler: *any* solution; *a single one* expected, so k ≥ 2 contradicts it; *maximal* only; *minimal* only. Route 1, a monotone program's R from its alive down-set, is in the library and held to the oracle. **One tool, consistent with the oracle**: every question about R is a mode of `ein solve` that does the least work it needs, the cube is `ein oracle`, and there is no `ein walk` (the user, 2026-10-16). The interface was approved the same day ([`solve_interface.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)). **Its modes are built** ([`ein_infer::explore`](../../../ein.rs/crates/ein-infer/src/explore.rs), held to the oracle by `ein-infer/tests/explore.rs`): `ein solve --minimal`, `--maximal`, `--single`, `--region-budget`, and `ein oracle`. Bare `ein solve` stays the walk until S1e2.1a.5 | [S1e2.1a.9](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) |
+| the default | **`ein solve` with no flag describes R in full**, exhaustively and certified. Flags make the task simpler: *any* solution; *a single one* expected, so k ≥ 2 contradicts it; *maximal* only; *minimal* only. Route 1, a monotone program's R from its alive down-set, is in the library and held to the oracle. **One tool, consistent with the oracle**: every question about R is a mode of `ein solve` that does the least work it needs, the cube is `ein oracle`, and there is no `ein walk` (the user, 2026-10-16). The interface was approved the same day ([`solve_interface.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)). **Its modes are built** ([`ein_infer::explore`](../../../ein.rs/crates/ein-infer/src/explore.rs), held to the oracle by `ein-infer/tests/explore.rs`): `ein solve --minimal`, `--maximal`, `--single`, `--region-budget`, and `ein oracle`; since S1e2.1a.5 a bare `ein solve` describes R | [S1e2.1a.9](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) |
 | (i) | **the verdict words judge a stated expectation.** `Ambiguity` is relevant where exactly one solution is expected, `Contradiction` where some is. Without an expectation, `solve` explores and describes R | S1e2.1a.5 |
 | (g) | **`exhausted` means the reported region is all of R.** A run a budget stopped (`-m`, `-E`, `-T`) reports what it found as a lower bound, and every node in it is checked | S1e2.1a.5, S1e2.1a.9 |
 | (b), (c) | **solving and asking come apart**: `(solve :hrules …)` defines the lattice, and since the grammar's ruling of 2026-10-16 states the expected region as its `:expect (region …)`; `(query :goal … :expect …)` asks about the goal's projection classes. `(solve …)` exists since T1e2.1a.4.2 | S1e2.1a.4 ([`region_language.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_language.md), [`region_examples.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_examples.md)) |
@@ -414,25 +421,29 @@ The search and the words are unchanged.
   and its control (§ 8).
 
 The 2026-08-25 ruling named them `Contradiction` and `Open`. Under (i) a word
-judges an expectation, and whether the exploring read-out keeps those names is
-S1e2.1a.5's page diff.
+judges an expectation, so the describing read-out names neither: its `empty`
+row says *every node is dead* or *every alive node owes*, and the words are
+`--single`'s.
 
 **A certificate** is evidence that a claimed R is R, cheaper to check than
 recomputing it. For a monotone program it is N, E and the static verdict, one
 saturation per member. Route 1
 ([`ein_infer::downset`](../../../ein.rs/crates/ein-infer/src/downset.rs)) produces
 N and the alive members of E, which are the minimal line, as it goes: a dead
-commitment it visits has every proper subset alive. No surface prints them
-yet. For a non-monotone program, nothing smaller than every node's
+commitment it visits has every proper subset alive. Since S1e2.1a.5 the
+read-out prints N's size and the minimal line, and `--dump-answer` writes N
+with each core (`nogoods.json`). For a non-monotone program, nothing smaller than every node's
 classification is known.
 
 ---
 
 ## 6. What the engine implements, and where it differs
 
-Everything above is the definition. `ein solve` computes a **walk** over the
-lattice, and the walk tests a different predicate. Each difference below is
-observable today. Measured over the 185 programs whose R is known
+Everything above is the definition. Until M1e2 S1e2.1a.5 `ein solve` computed
+a **walk** over the lattice, and the walk tested a different predicate. Each
+difference below was observable then, and is reproduced since with a binary
+built at or before commit 7ec8a480, or from the library
+(`cargo run --release -p ein-infer --example walk_vs_region`). Measured over the 185 programs whose R is known
 ([`walk_and_region.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/walk_and_region.md),
 2026-10-16):
 
@@ -567,8 +578,8 @@ truncated: the lattice really was walked to the end.
 
 ![lattice/02's region, with the -e -L run's walk on it](diagrams/region_02_genuine_3set_death_no_lookahead.svg)
 
-([`.dot`](diagrams/region_02_genuine_3set_death_no_lookahead.dot); the same
-commands as § 2.5 with `-L` added.)
+([`.dot`](diagrams/region_02_genuine_3set_death_no_lookahead.dot); drawn
+before the switch from `ein solve -e -L --dump-region`.)
 
 *The lattice was walked to the end* and *every solution in it was recognised*
 are two claims, and only the first is what `exhausted` tracks today
@@ -670,7 +681,7 @@ leave those out.
 
 ## Cross-references
 
-- [`region_dump.md`](region_dump.md): R computed, `ein solve --dump-region`.
+- [`region_dump.md`](region_dump.md): R by brute force, `ein oracle --dump`.
 - [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-the-walk-s1e21a2):
   R drawn, `ein render region`.
 - [`absent_semantics.md`](absent_semantics.md): worlds, the NAF boundary, and

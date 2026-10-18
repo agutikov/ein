@@ -1,1 +1,1 @@
-:expect does not name p, which the query's :goal asks about
+:expect lists (q A H1), which no atom of the query's :goal matches — a query's claim lists its projection classes; a claim about the state is (solve … :expect (region …))'s

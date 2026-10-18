@@ -5,7 +5,9 @@
 > It supersedes no page: before it the seventeen `(config …)` flags were stated
 > only in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs)'s `FIELDS`
 > and the nine field doc comments that had one, the CLI options only in
-> `--help`, and the `EIN_*` environment nowhere at all.
+> `--help`, and the `EIN_*` environment nowhere at all. **Since M1e2
+> S1e2.1a.5's switch (2026-10-18) a program sets eight of them**, nine retired
+> with the walk, and `ein solve` has 33 options where it had 42.
 >
 > **It is a reference, not a narrative.** One row per knob. What a lever *does
 > to the search*, and what it was measured at, is
@@ -19,18 +21,18 @@
 > affects the problem's search lattice; config may only affect search speed.*
 > The answer is the region R of
 > [`solution_semantics.md` § 2](inference/solution_semantics.md#2-the-answer--the-region-r),
-> and it is the same under every knob on this page. A **budget** may stop the
-> walk early, and the read-out must then say the answer is partial. A knob
+> and it is the same under every knob on this page. A **budget** may stop a
+> run early, and the read-out then says the answer is partial. A knob
 > that changes R, or changes a reported answer that does not say it is
 > partial, is a wrong answer and not a mode. § [2.5](#25-the-config-principle-read-against-every-row)
 > reads every lever against it, measured.
 >
 > **Nothing here is hand-maintained.** The defaults block is the binary's own
-> `--dump-config` output, the flag table is diffed against `FIELDS`, the option
+> `--dump-config` output, the flag table is diffed against `FLAGS`, the option
 > counts are read off the help-shape golden, and the environment
 > classification is scanned out of the shipping crates —
 > [`ein-cli/tests/config_reference.rs`](../../ein.rs/crates/ein-cli/tests/config_reference.rs),
-> six tests, in `cargo test --workspace`. § [6](#6-what-pins-this-page).
+> seven tests, in `cargo test --workspace`. § [6](#6-what-pins-this-page).
 
 ---
 
@@ -38,17 +40,17 @@
 
 | surface | how many | who owns the list |
 |---|---:|---|
-| `(config …)` flags | **17** | `FIELDS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs); the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **79** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| `(config …)` flags | **8** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the nine a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
+| CLI options | **69** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **8** read by the shipped binary, of 26 greppable names | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
 
-1. **A CLI option** — but only the six that shadow a flag, § [3.2](#32-the-six-options-that-shadow-a-flag).
+1. **A CLI option** — but only the three that shadow a flag, § [3.2](#32-the-three-options-that-shadow-a-flag).
 2. **The program's own `(config …)` head.** Several blocks are allowed and the
    loader keeps the **last one whole** — not a merge:
-   `(config :print-alive true) (config :warn-derived-naf true)` leaves
-   `print-alive` at its default
+   `(config :warn-derived-naf true) (config :enable-path-nogoods false)` leaves
+   `warn-derived-naf` at its default
    ([`from_ir.rs`](../../ein.rs/crates/ein-ir/src/from_ir.rs), `config_blocks.last()`;
    the last-wins rule is stated in [`01_grammar.md`](ir/03-ein-lang/01_grammar.md)).
 3. **`SolverConfig::default()`** — the block in § [2.1](#21-the-defaults).
@@ -58,38 +60,30 @@ the only way to see what a run actually used.
 
 Two things are deliberately *not* in that order. There is **no user-level
 config file** and no `$EIN_CONFIG`. And **no environment variable reaches
-`SolverConfig`**: the `EIN_*` levers that steer the engine sit beside it,
+`SolverConfig`**: the `EIN_*` levers that steered the walk sit beside it,
 because `SolverConfig` is rendered into the KB-shape digest and a knob whose
 settings are being *compared* would re-bless every shape golden in the corpus
 (§ [5](#5-what-is-deliberately-not-configuration)).
 
-The library's order is the same shape with a different top: an explicit
-`SolveOptions::config`, then `kb.config`, then the defaults
-([`solve.rs`](../../ein.rs/crates/ein-infer/src/solve.rs)). `ein-cli` computes
-1-then-2 and passes the result as that explicit argument, which is why the two
-orders never disagree.
-
 ---
 
-## 2. `(config …)` — the seventeen solver flags
+## 2. `(config …)` — the eight solver flags
 
 ```lisp
-(config :enable-fail-fast-fork false :lattice-order "score-sum")
+(config :enable-symmetric-mirror false :warn-derived-naf true)
 ```
 
-Names are `:kebab-case`; a value is `true` / `false`, an integer, or a bare or
-quoted string. **The surface lexer has no float literal**, so the two
-float-valued flags take an integer — `(config :hypgen-rel-weight 2)` resolves
-to `2.0`, and `(config :hypgen-rel-weight 2.0)` is a parse error at the `.`.
-
-An unknown flag and a wrong-typed value are both **load errors**, exit 1, and
-the message lists the valid names *sorted* where `--dump-config` prints them in
-declaration order —
-[`defined_behaviour.md` § Errors and exit codes](defined_behaviour.md#4-errors-and-exit-codes).
+Names are `:kebab-case`, and since M1e2 S1e2.1a.5 every flag a program can set
+is a bool: `true` / `false`, bare or quoted. An unknown flag, a wrong-typed
+value and a **retired** flag are all **load errors**, exit 1. The unknown-flag
+message lists the valid names *sorted*, where `--dump-config` prints them in
+declaration order, and the retired-flag message says why the flag went
+([`defined_behaviour.md` § Errors and exit codes](defined_behaviour.md#4-errors-and-exit-codes)):
 
 ```text
 kb load error: (config …): unknown config flag :nonsense (expected one of: …)
-kb load error: (config …): config flag :print-alive expects true/false, got Int(value=7)
+kb load error: (config …): config flag :warn-derived-naf expects true/false, got Int(value=7)
+kb load error: (config …): config flag :lattice-order was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
 ```
 
 ### 2.1 The defaults
@@ -101,19 +95,10 @@ kb load error: (config …): config flag :print-alive expects true/false, got In
 config (resolved)
   enable-pre-branch-lookahead      true
   enable-lookahead-kill-cache      true
-  hypgen-scoring                   popularity
-  hypgen-rel-weight                1.0
-  hypgen-obj-weight                1.0
-  print-alive                      false
   warn-derived-naf                 false
-  candidate-order-seed             -1
   lattice-sanity-check             false
-  lattice-order                    lex
-  lattice-order-seed               None
   enable-path-nogoods              true
   enable-symmetric-mirror          true
-  enable-singleton-writeback       true
-  enable-forced-positive           true
   record-alternative-justifications true
   enable-fail-fast-fork            true
 ```
@@ -123,30 +108,21 @@ config (resolved)
 
 | flag | type | default | what it changes | answer? | R? | stability |
 |---|---|---|---|---|---|---|
-| `enable-pre-branch-lookahead` | `bool` | `true` | whether hypgen simulates one rule step over each candidate and drops the ones it can prove die (`hypgen.rs`). Not only a prune: the filtered list is what `complete()` asks, so it decides which states are recorded as solutions | **yes** | no | measurement lever |
-| `enable-lookahead-kill-cache` | `bool` | `true` | whether a lookahead kill is written down as `(not h)`, so a later enumeration skips `h` through the negated index instead of re-simulating | **KB only** † | no | measurement lever |
-| `hypgen-scoring` | `str` | `popularity` | which scorer `score_hypothesis` runs. Read **only** under `lattice-order "score-sum"`; under `lex` nothing calls it. `most-constrained` returns a constant `0.0`; `branch-info` and `popularity+branch-info` error at first call | order only | no | partly wired |
-| `hypgen-rel-weight` | `float` | `1.0` | the coefficient on the relation's extent size in the popularity score | order only | no | contract |
-| `hypgen-obj-weight` | `float` | `1.0` | the coefficient on each named argument's appearances as an argument | order only | no | contract |
-| `print-alive` | `bool` | `false` | **nothing** | **inert** | no | inert |
-| `warn-derived-naf` | `bool` | `false` | **two questions, one flag**, both emitted once after root's saturation. `DerivedNafWarning` — the `(absent …)` guard watches a **rule-derived** relation: a *stratification* signal since S1.21.8, not a soundness one. `RefutationUnderAbsentWarning` (M1e [S1e.2.3](../history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)) — the rule concludes `(false)` or a `(not …)` from a guard over a relation the program's **generator can still propose**, which *is* a soundness signal: [`dead` is not upward-closed under `absent`](../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent). The second shares the flag because a `SolverConfig` field is rendered into the KB-shape digest, so an eighteenth would re-bless every shape golden in the corpus | no | no | contract |
-| `candidate-order-seed` | `int` | `-1` | **nothing** | **inert** | no | inert |
-| `lattice-sanity-check` | `bool` | `false` | for every alive commitment of size ≥ 2, re-saturates each `(k−1)`-subset parent path and compares the KBs — **1 + k + one per alive parent**, so up to `2k+1` each (it was documented as `k+1` in three places until M1e S1e.4.8, a count that included the parents' `try_commitment_set` and forgot their re-saturation). It also **adds `compile` / `enqueue` / `fire` / `quiesce` events to `--events`**, which is inherent to running the extra saturations through a narrating stream. A mismatch aborts the run with `SolveError::Sanity` | no — but it can **fail** the run | no — but it **aborts** one non-monotone program | probe |
-| `lattice-order` | `str` | `lex` | the within-layer candidate order: `lex` is the canonical-tuple sort, `score-sum` sums `hypgen-scoring` over each set, descending, tie-broken by the tuple | order only | no | measurement lever |
-| `lattice-order-seed` | `int` | `None` | seeds one MT19937 generator per *solve* — `init_by_array` over `|seed|`'s 32-bit words, each layer shuffled Fisher–Yates from the top with `randbelow(i+1)` by rejection sampling — applied after the order to permute each layer. `None` disables it | order only | no | probe |
-| `enable-path-nogoods` | `bool` | `true` | whether a dead commitment emits a learned clause. Off, a dead set that a clause would have subsumed is entered again | no | no | contract |
+| `enable-pre-branch-lookahead` | `bool` | `true` | the walk's one-step lookahead, which dropped a candidate it could prove died. **No route reads it** since the switch: route 1 and the cube take H config-free (`region.rs` § The universe). `-L` sets it `false` | unread | no | lever, unread |
+| `enable-lookahead-kill-cache` | `bool` | `true` | the walk's cache of a lookahead kill as `(not h)`. No route reads it; `-K` sets it `false` | unread | no | lever, unread |
+| `warn-derived-naf` | `bool` | `false` | **two questions, one flag**, both `warn` events on the stream after root's saturation, on every run that records one (M1e2 S1e2.1a.5 kept them when the walk left). `DerivedNafWarning` — the `(absent …)` guard watches a **rule-derived** relation: a *stratification* signal since S1.21.8, not a soundness one. `RefutationUnderAbsentWarning` (M1e [S1e.2.3](../history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)) — the rule concludes `(false)` or a `(not …)` from a guard over a relation the program's **generator can still propose**, which *is* a soundness signal: [`dead` is not upward-closed under `absent`](../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent) | no | no | contract |
+| `lattice-sanity-check` | `bool` | `false` | the walk's re-saturation of every `(k−1)`-subset parent path, aborting on a mismatch. No route runs it; `-y` sets it `true` | unread | no | probe, unread |
+| `enable-path-nogoods` | `bool` | `true` | whether the walk's dead commitment emitted a learned clause. No route reads it: route 1's `N` is the minimal dead sets it met, not a learned clause | unread | no | lever, unread |
 | `enable-symmetric-mirror` | `bool` | `true` | the kernel's native arg-swap closure over relations marked `(__symmetric__ R)`. Off, such a relation is closed only if the program's own rule closes it | **yes** | **yes** | contract |
-| `enable-singleton-writeback` | `bool` | `true` | whether a size-1 dead clause writes `(not h)` back to root, and whether layer-1 deaths integrate mid-layer rather than at the barrier | no † | no | contract |
-| `enable-forced-positive` | `bool` | `true` | whether a sole-surviving alive singleton is promoted to a root fact and re-saturated — the backbone prune, with provenance `<forced-positive>` and empty premises | no | no | contract |
-| `record-alternative-justifications` | `bool` | `true` | whether a re-derivation of a known fact is recorded as an alternative justification or dropped: the proof is an AND/OR graph, or a tree | explanation only | no | contract |
-| `enable-fail-fast-fork` | `bool` | `true` | whether a fork's saturation stops at the firing whose conclusion makes it inconsistent, instead of running to quiescence and only then scanning | no | no | contract |
+| `record-alternative-justifications` | `bool` | `true` | whether a re-derivation of a known fact is recorded as an alternative justification or dropped: the proof is an AND/OR graph, or a tree. It decides which minimal core a dead node's refutation names — the read-out's `unsat core`, the trace's `N` and `nogoods.json` | explanation only | no | contract |
+| `enable-fail-fast-fork` | `bool` | `true` | whether the walk's fork stopped at the firing that made it inconsistent. No route reads it: every node is run to its fixpoint, so a dead node's debts are its fixpoint's | unread | no | lever, unread |
 
 ### 2.3 Reading the judgement columns
 
-**Two questions about the answer, since 2026-10-16.** The answer itself is the
-region R that
+**Two questions about the answer.** The answer is the region R that
 [`solution_semantics.md` § 2](inference/solution_semantics.md#2-the-answer--the-region-r)
-defines, and the walk under `ein solve` is one way of reporting it.
+defines, and since the switch every `ein solve` run reports it, or a question
+about it.
 
 - **`R?`** asks whether the flag changes R: the candidates, any node's status
   or state class, root's fixpoint, or the facts of any state in R. It is
@@ -154,216 +130,108 @@ defines, and the walk under `ein solve` is one way of reporting it.
   [`utils/region_census.py --all --levers`](../../utils/region_census.py),
   § [2.5](#25-the-config-principle-read-against-every-row). Under the config
   principle every cell has to read **no**.
-- **`answer?`** asks whether the flag changes what a run **reports** today:
-  the verdict, `k`, and the set of recorded **models**, a model being the
-  positive part of a solution's KB minus the positive part of the initial KB
-  ([`solution_semantics.md` § 5.1](inference/solution_semantics.md#51-today)).
-  A run's recorded *solution KB* is a bigger object than its models, and the
-  fourth row below is the whole reason the distinction is load-bearing here.
-  Under the principle, a cell that is not **no** or **inert** is a wrong
-  answer unless the report says it is partial, § 2.5.
+- **`answer?`** asks whether the flag changes what a run **prints**: the
+  read-out's rows, its states and their models, its queries' classes and its
+  claims' outcomes.
 
-The `answer?` values:
-
-| value | means | witness |
-|---|---|---|
-| **yes** | can change the verdict, `k`, or the set of models | `-L` on `examples/lattice/02_genuine_3set_death.ein -e`: `Ambiguity k = 3` becomes an **exhausted** `Contradiction k = 0` |
-| **KB only** | same verdict, same `k`, same models — a different recorded solution **KB** | `-K` on the same file: the three models keep every positive and lose their `(not (c-prop X))` |
-| **order only** | same model *set*; a different order of discovery. Under a stop rule — and `-n 1` is the default — that is a different model on stdout, and where the search does not exhaust it can be a different *subset* of them | `-o score-sum` on `examples/saturation/type-exclusivity/colors.ein -e`: the same `k = 5` and the same facts, in a different order of `solution n/k` blocks |
-| **explanation only** | same verdict, same models; a different unsat core or proof shape | `examples/zebra.ein`'s own `(config …)` comment, which turns `record-alternative-justifications` off and says what that costs and what it buys |
-| **no** | same verdict, same `k`, same models, same recorded KBs. Counters and wall clock may move, sometimes by a lot | § [2.4](#24-what-the-answer-column-was-read-from) |
-| **inert** | read by no code path at all | [Q-M1e.10](../history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert) |
-
-**† Two rows are scoped to programs where the alive-set premise holds.**
-[Q-M1e.9](../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)
-was answered *no* on 2026-08-28: `dead` is **not** upward-closed under
-`absent`, and its twenty-line counterexample is a program on which five of the
-engine's six shipped configurations report the wrong model with
-`exhausted = true`. Three mechanisms read the refuted premise and all three
-have a flag here, but only two of them *move* that program:
-
-- **`enable-lookahead-kill-cache`** — `-K` changes the **model**. `{(q A)}`
-  becomes `{(p A), (q A)}`, which is the right answer, by accident.
-- **`enable-singleton-writeback`** — `false` together with `-L` changes the
-  **verdict**: `Solution k = 1` becomes `Contradiction k = 0`.
-- **`enable-path-nogoods`** is D4's third mechanism and flipping it does
-  nothing there, alone or with the writeback off, with `-L` or without: the
-  other two already reach the same wrong state. It keeps a plain **no**.
-
-So those two rows read *KB only* and *no* against the corpus, where the
-premise holds, and would read *yes* against a program where it does not. That
-is a property of the premise, not of the flags;
-[D4](../history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md)
-owns it.
+| value | means |
+|---|---|
+| **yes** | can change R's description, a state or a class |
+| **explanation only** | the same R and states; a different unsat core or proof shape |
+| **no** | the same read-out; counters and the wall clock may move |
+| **unread** | read by no route since M1e2 S1e2.1a.5 — the walk's library reads it, and no command runs the walk. P1e2.1c gives it a meaning on a route or retires it |
 
 **Stability** — what depending on a flag commits you to.
 
 | value | means |
 |---|---|
 | **contract** | stated here, exercised by the corpus or a named test, safe to depend on |
-| **measurement lever** | exists for an A/B. The default is the shipped path and the other arm is for measuring; `corpus.toml`'s `levers` runs four of them both ways on every entry that declares them, and [`features.md`](inference/features.md) is where the numbers are |
-| **probe** | exists to test an *invariance*, not to be used. Turning it on asserts something about the engine, not about the puzzle |
-| **partly wired** | the value set is larger than the behaviour. Only `hypgen-scoring`, whose four values are one real scorer, one constant and two that raise |
-| **inert** | read by nothing — [Q-M1e.10](../history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert) |
+| **lever, unread** | kept by the interface as a speed lever (`solve_interface.md` § 2.4) and read by no route yet. The corpus's `levers` cells run `-L`, `-K` and `-y` on every `cargo test` and hold the read-out unmoved (C4) |
+| **probe, unread** | exists to test an *invariance*, and no route runs it yet |
 
-There is no **experimental** flag. The word applies to exactly one knob in the
-system, `EIN_TRAVERSAL=tree`, and what it licenses is
-[Q-M1e.5](../history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface)'s
-open question.
+**The four "unread" flags and `lattice-sanity-check` are the inert flags of
+[Q-M1e.10](../history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)'s
+kind**, said here rather than left to be found: settable, validated,
+`--dump-config`-printed, `--json-summary`-echoed, rendered into the KB-shape
+digest — and read by no route. They are kept because the approved interface
+keeps them as levers for P1e2.1c's routes, and the claim that they move
+nothing is held from outside by
+`config_reference.rs::the_unread_flags_change_nothing_printed`.
 
-### 2.4 What the answer column was read from
+### 2.4 The nine retired flags
 
-Each **no** and each **yes** has evidence, and it is not the same evidence for
-all of them.
+M1e2 S1e2.1a.5's switch retired nine, each refused at load with the reason
+below (`ein_core::config::RETIRED`). Their fields stay on `SolverConfig` at
+their defaults for the walk's library code, and the `.einb` container
+round-trips them, so its format did not move.
 
-- **The four with a CLI lever** — `-L`, `-K`, `-y`, `-o score-sum` — are run
-  both ways on every `cargo test`, over each corpus entry that declares them
-  ([`corpus.toml`](../../corpus/corpus.toml)'s `levers`), and are four of the
-  ten cells [`features.md`](inference/features.md) measures on `zebra2`.
-- **The rest are reachable only from a `(config …)` head**, which is why
-  `utils/feature_matrix.py` builds each cell as a copy of the puzzle with one
-  generated block appended, and why the corpus sweep — which runs a process —
-  cannot flip them ([Q-M1a.16](../history/m1a_rust/open_questions.md#q-m1a16--how-does-the-corpus-drive-the-lever-matrix)).
-- **A one-lever sweep of 2026-08-28** did the same across the tree: each flag
-  flipped in an appended `(config …)` block, over the 29 `examples/` fixtures
-  that state no such head of their own (appending is last-wins, so a fixture
-  with one would have had it replaced whole), `solve -e -p` compared byte for
-  byte against the same fixture unflipped.
+| flag | why it went |
+|---|---|
+| `hypgen-scoring`, `hypgen-rel-weight`, `hypgen-obj-weight`, `lattice-order`, `lattice-order-seed` | order levers: every route's order is part of its definition, so `-n N` prints the same states under every lever (C4) |
+| `enable-singleton-writeback`, `enable-forced-positive` | they wrote into root, which no route does. What they knew survives as licence L1: a candidate dead alone leaves the universe |
+| `print-alive`, `candidate-order-seed` | inert: read by no code path ([Q-M1e.10](../history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)) |
 
-  | lever | fixtures moved | which |
-  |---|---:|---|
-  | `enable-path-nogoods false` | 0 / 29 | |
-  | `enable-symmetric-mirror false` | **1** / 29 | `features/06_symmetric_native` |
-  | `enable-singleton-writeback false` | 0 / 29 | |
-  | `enable-forced-positive false` | 0 / 29 | |
-  | `record-alternative-justifications false` | 0 / 29 | |
-  | `enable-fail-fast-fork false` | 0 / 29 | |
-  | `warn-derived-naf true` | 0 / 29 | |
-  | `lattice-order "score-sum"` | **3** / 29 | `branching/08`, `type-exclusivity/{colors,nationalities}` |
-  | `hypgen-scoring "most-constrained"` | 0 / 29 | |
-  | `lattice-order-seed 7` | **6** / 29 | the three above, plus `branching/02`, `lattice/02`, `features/11` |
-  | `print-alive true` | 0 / 29 | |
-  | `candidate-order-seed 7` | 0 / 29 | |
+Six corpus files set one, and lost the line at the switch: `examples/zebra.ein`
+(`lattice-order`, `enable-forced-positive`), `examples/syntax/config.ein`, and
+three register witnesses whose program is now their sibling's (`forced-2-off`,
+`f07-fpoff`, `naf-nowb`).
 
-  Twelve of the seventeen. The two float weights are not in it — they are read
-  only under `score-sum`, so flipping one alone is the `hypgen-scoring` row
-  again — and the other three, `-L`, `-K` and `-y`, are the corpus sweep's,
-  run both ways on every `cargo test`. The comparison is **stdout**, so the
-  `warn-derived-naf` row says only that its warning does not reach stdout;
-  the warning is a `warn` *event*, and `--events` is what carries it.
-
-Five rows are worth a sentence each.
-
-**`enable-symmetric-mirror` is `yes`, and `features.md`'s `1.0×` is not the
-same claim.** That page measures `zebra2`, where the mirror has a transparent
-fallback: the relations it would close are also closed by `std.algebra`'s
-`symmetric` rule. `examples/features/06_symmetric_native.ein` marks three
-relations and declares no such rule, and it is the only fixture in the tree
-that reaches the mirror at all. With the flag off it derives **0 facts instead
-of 3** and the query goal `(knows Bob Ann)` is no longer reached. A flag whose
-effect is invisible on the puzzle everything is measured on is exactly the row
-a reference has to get right.
-
-**`lattice-order "score-sum"` reorders and does not re-select.** Of the three
-fixtures it moves — `branching/08_hypothesis_relation_whitelist`,
-`type-exclusivity/colors`, `type-exclusivity/nationalities` — all three keep
-their `k` and the whole multiset of recorded facts, and what differs is which
-`solution n/k` block holds which. All three are also `exhausted = false` runs,
-which is where the caveat in the legend row bites: order is only *safe* while
-the search finishes, and none of these three does at `-m 5`.
-`hypgen-scoring` moved nothing on any of the 29 for the reason its row gives —
-under the default `lattice-order lex` no code calls the scorer at all.
-
-**`lattice-sanity-check` cannot change an answer but can remove one.** It is a
-regression harness compiled into the solver: if a `(k−1)`-subset parent path
-saturates to a different KB, the run ends in `SolveError::Sanity` and there is
-no verdict at all. That is `no` in the answer column and a **probe** in the
-stability one, and the two together are the honest description.
-
-**`record-alternative-justifications` is the corpus's untested difference.**
-Nothing in the 29-fixture sweep distinguishes the two settings, because the
-flag changes *which* minimal core a refutation names and no fixture there
-pins a core that has two. What it costs is measured and large, and
-[`examples/zebra.ein`](../../examples/zebra.ein) is where: with the AND/OR
-search on, minimising one dead branch's frontier took **~22.7 s**, half of a
-whole stop-after-1 solve, against ~2 s for the branch's own saturation — so
-that file turns the flag off and says why, in fifteen lines of comment. The
-knob is a property of the *ontology*: `zebra2`'s typed relations give each
-fact essentially one derivation, so it leaves the default alone.
-
-**The two inert flags are inert in every direction that matters and live in
-every direction that does not.** `print-alive` and `candidate-order-seed` are
-parsed, type-checked, `--dump-config`-printed, `--json-summary`-echoed,
-rendered into the KB-shape digest and round-tripped through `.einb`'s meta —
-and read by no code path. The claim is held from outside by
-`config_reference.rs::the_two_inert_flags_are_still_inert`, and the four
-options — wire, delete, document, deprecate — are
-[Q-M1e.10](../history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)'s.
+**What the answer column was read from.** A sweep of 2026-10-18: each of the
+eight flipped in an appended `(config …)` block (last-wins, so programs with a
+head of their own are skipped), over the **173** corpus programs that load and
+state none, `ein solve -p --region-budget 65536 --region-limit 12` compared
+byte for byte — stdout, stderr and the exit code — against the same program
+unflipped. **One flag moved one program**: `enable-symmetric-mirror false` on
+[`features/06_symmetric_native.ein`](../../examples/features/06_symmetric_native.ein),
+which marks three relations `(__symmetric__ R)` and declares no rule closing
+them. With the flag off it derives **0 facts instead of 3** and the query goal
+`(knows Bob Ann)` is no longer reached. `record-alternative-justifications`
+moved nothing, because no program there has a dead node with two minimal
+cores; what it buys and costs is measured on
+[`examples/zebra.ein`](../../examples/zebra.ein), whose own `(config …)` turns
+it off and says why.
 
 ### 2.5 The config principle, read against every row
 
 The user's ruling of 2026-10-15, made during the review of W1: *"no config
 option affects problem search lattice, config may only affect search speed"*.
 It is stronger than M1e2's acceptance line, which forbade a lever to change a
-*certified* answer only. **A budget** (`-m`, `-E`, `-T`, `-n`, § 3.3) does
-not change R either: it stops the walk, and the read-out must then say the
+*certified* answer only. **A budget** (`--region-budget`, `-T`, `-n`, § 3.3)
+does not change R either: it stops a run, and the read-out then says the
 answer is partial.
 
 **R, measured.** [`utils/region_census.py --all --levers`](../../utils/region_census.py),
 2026-10-16 at `9248236d`: every program the oracle reaches (159, n ≤ 16), run
-once at default settings and once under each of 24 levers: the four CLI
-shadows, the three `EIN_*` search levers of § 4, and all seventeen flags, each
-flipped in an appended `(config …)` block that holds the program's own
-resolved config with one flag changed. Each run's R is compared with the
-default's: the candidates, every node's status and state class, root's
-fixpoint, and the facts of every state in R. The per-program rows are the
-census page,
-[`region_census.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_census.md).
+once at default settings and once under each of 24 levers, the seventeen flags
+of the time among them. Each run's R is compared with the default's: the
+candidates, every node's status and state class, root's fixpoint, and the
+facts of every state in R
+([`region_census.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/region_census.md)).
 
 - **No lever changes R on 158 of the 159**, and 23 of the 24 change it on
   none. That is by construction for most of them: the oracle's universe is
   config-free and its nodes are built by saturation alone
   ([`region_dump.md`](inference/region_dump.md#the-cube)).
-- **`enable-symmetric-mirror` changes R.** On
-  [`features/06_symmetric_native.ein`](../../examples/features/06_symmetric_native.ein),
-  turned off, it removes three facts from root's fixpoint, `(knows Bob Ann)`
-  the query's goal among them. The mirror is how `(__symmetric__ R)` means
-  anything, so the flag switches off part of the program's theory. It is the
-  one flag that **violates the principle**.
-- **`lattice-sanity-check` (and `-y`) aborts one program**, so there is no R
-  to compare: on
+- **`enable-symmetric-mirror` changes R**, on `features/06` (§ 2.4). The
+  mirror is how `(__symmetric__ R)` means anything, so the flag switches off
+  part of the program's theory. It is the one flag that **violates the
+  principle**, and its question is
+  [S1e2.1a.6](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.6_engine_against_oracle.md)'s.
+- **`lattice-sanity-check` aborted one program under the walk**:
   [`corpus/fuzz_findings/d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein),
-  which the static check flags non-monotone, the probe fails with
-  *"Saturation commutativity violated"*: a fork and its parent path reach
-  different KBs. That is the probe working, and the question it raises,
-  which state a node of a non-monotone lattice is, is
+  which the static check flags non-monotone, failed the probe with
+  *"Saturation commutativity violated"*. No route runs the probe since the
+  switch; which state a node of a non-monotone lattice is remains
   [P1e2.1b](../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)'s
   S1e2.1b.2.
 
-**What each lever does to the report.** Every lever whose `answer?` cell is
-not **no** or **inert**, with the register rows that already hold a wrong
-answer it reaches. Turning each remaining cell into a register row, or showing
-it is a budget, is
-[S1e2.1a.6](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.6_engine_against_oracle.md)'s,
-against R and over every lever cell.
-
-| lever | `R?` | what it does to the report | register |
-|---|---|---|---|
-| `enable-pre-branch-lookahead` (`-L`) | no | changes the verdict: `complete` is asked with the filter off | W1/lattice-02-L, W1/fresh-name-nospawn, W2/forced-1-L, W4/alive-set-fresh-name |
-| `enable-lookahead-kill-cache` (`-K`) | no | changes the recorded KB, and where an entailment goes unnoticed, the verdict | W9/complete-records-stale-K, W9/alive-empty-phase1-K |
-| `enable-singleton-writeback` | no | with `-L`, changes the verdict on a program with a hole | W3/naf-nowb-L |
-| `enable-forced-positive` | no | none observed on the 29-fixture sweep. On `forced-2` both settings answer wrong, `Contradiction` either way: W2 with it on, W1's layer 0 with it off | W1/forced-2-off |
-| `enable-symmetric-mirror` | **yes** | changes R, and with it the answer | none yet: a flag that changes R is not a walk's wrong answer, so the principle's resolution is the user's (retire the flag, or ignore it) |
-| `hypgen-scoring`, the two weights, `lattice-order`, `lattice-order-seed` | no | the order of discovery. Under a stop rule a different model is printed, and the read-out says the run did not exhaust | none: a budget |
-| `record-alternative-justifications` | no | which unsat core is reported | the core is not R. Which core is reported is W10's and W11's, revisited at [S1e2.1.7](../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md) and S1e2.2.12 |
-| `EIN_OBLIGATION_CHOICE=off` | no | the walk's universe: the obligations rung declines, and the blind rung proposes instead | none yet |
-| `EIN_OBLIGATION_CHOICE=fail-first` | no | the order the owed instances are walked in. Not yet measured against R | none yet |
-| `EIN_TRAVERSAL=tree` | no | the traversal: `exhausted = false` on every run, and a different model count | W5/owed-seats's twin |
-
-The other six flags read **no** in both columns, `lattice-sanity-check` apart
-from its abort above, and two of them are inert. So do `--jobs` (§ 3.3) and
-every presentation and artefact option: they change speed, or what is printed
-beside the answer, never the answer.
+**What the levers did to the walk's report** — the register rows they reached,
+`-L`'s W1, W2 and W4 rows, `-K`'s W9 rows, the writeback's W3 row — were the
+walk's, and flipped to `fixed` at the switch where R answers them
+([`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml)). Under a region
+run every lever reads **no** or **unread**, `enable-symmetric-mirror` apart, and
+so do `--jobs` (§ 3.3) and every presentation and artefact option: they change
+speed, or what is printed beside the answer, never the answer.
 
 ---
 
@@ -379,14 +247,14 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**79** options across fifteen parsers, in the default build (`einb`,
+**69** options across fifteen parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 42 |
-| `ein test` | 9 |
+| `ein solve` | 33 |
 | `ein oracle` | 10 |
+| `ein test` | 8 |
 | `ein saturate` | 5 |
 | `ein render kb` | 4 |
 | `ein render rule` | 2 |
@@ -398,139 +266,90 @@ parallel copy. What this page states is the *shape*, read off that golden:
 
 `ein`, `ein kb`, `ein render` and `ein render constraints` take none — they are
 dispatchers. `ein kb save` exists only under the `einb` feature; a
-`--no-default-features` build has 78 and no `ein kb` at all.
+`--no-default-features` build has 68 and no `ein kb` at all.
 
-**M1e2 S1e2.1a.9 added nine** (2026-10-16): `ein solve`'s four region flags,
-`--minimal`, `--maximal`, `--single` and `--region-budget`, and the new
-`ein oracle` with five. One of the four region flags takes a `solve` run off
-the walk and into a **region mode**, answered by
-[`ein_infer::explore`](../../ein.rs/crates/ein-infer/src/explore.rs) and held to
-the oracle by `ein-infer/tests/explore.rs`. A region mode takes `-n`, `-T`,
-`-j`, `--region-limit` and `-s`, and since T1e2.1a.5.2 `--json-summary`
-(`ein-summary/2`), `--dump-answer` (`ein-answer/2`, whose `answer.txt` is the
-read-out uncut), `--models`, `-p`, `-P`, `-f` and `--diff-models` over the
-states it lists, `-H`, `--trace` and `--no-diagrams`, and `--events` and
-`--events-level`. **Since T1e2.1a.5.3's first step it takes every `solve`
-option but the nine the switch retires** (`-e`, `-m`, `-E`, `-o`, `-z`, `-d`,
-`-D`, `--dump-region`, `--region-states`), which it refuses with a usage
-error, exit 2:
-- `-c` prints the resolved config, and `-t` where the wall clock went (load,
-  the route, the read-out, the print);
-- `-v`, `--layer-progress` and `-g` write the route's steps to stderr as it
-  takes them, a route-1 layer or a mode's batch, and under `-v` every `-g`-th
-  node;
-- `--dump-lattice DIR` writes every node the route visited, in visit order, as
-  `nodes.json` (`ein-lattice/2`) and `nodes.md`;
-- `--trace`'s `--relevant`, `--reorder` and `--full-kb-snapshots` shape the
-  region trace as they shaped the walk's;
-- **`-L`, `-K` and `-y` are taken and change nothing printed**: no route reads
-  the lookahead, the kill cache or the sanity check yet. P1e2.1c gives each a
-  meaning on a route, and until then the corpus's `levers` cells check that
-  they leave the read-out as it was (C4).
+**M1e2 S1e2.1a.5's switch** (2026-10-18) made `ein solve` the region's
+command: bare `ein solve FILE` describes R, and `--minimal`, `--maximal`,
+`--single` and `-n N` ask one question about it, answered by
+[`ein_infer::explore`](../../ein.rs/crates/ein-infer/src/explore.rs), held to
+the oracle by `ein-infer/tests/explore.rs`, and printed in
+[`read_out.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)'s
+read-out. Every answer exits 0. **Nine options retired** and stay in the
+parser hidden, so a stale argv is refused, exit 2, with what replaced it
+(`ein-cli/src/solve.rs`'s `RETIRED`):
 
-`ein oracle` took `ein solve`'s `-T`, `--json-summary`, `--models`, `-p` and
-`-P` in the same step, which makes its ten.
-Its read-out is
-[`read_out.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)'s,
-and every answer exits 0.
-The design, and what is retired when the default switches, is
+| retired | replaced by |
+|---|---|
+| `-e`, `--exhaustive` | bare `ein solve`, which describes all of R; `--maximal` for the walk's models |
+| `-m`, `--max-set-size` | `--minimal`, the least commitments and their sizes; `--region-budget FACTS` for the work |
+| `-E`, `--max-enterings` | `--region-budget FACTS`, which stops a run with what it established |
+| `-o`, `-z`, `-d` | nothing: each route's order is part of its definition |
+| `-D`, `--dump-states` | `--dump-answer DIR` for each state, `--dump-lattice DIR` for each node visited |
+| `--dump-region`, `--region-states` | `ein oracle FILE --dump DIR [--states]` |
+
+`ein test` lost the walk's `-m` and `-E` the same way and took
+`--region-budget`. `ein render lattice` lost `--max-set-size` for
+`--region-budget`, and draws the nodes a describing run visits. The design is
 [`solve_interface.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md).
 
-### 3.2 The six options that shadow a flag
+### 3.2 The three options that shadow a flag
 
-`ein-cli`'s `resolved_config` is the whole of it: six options, five flags, and
-each writes in one direction only. There is no `--lookahead`, so an option can
-never restore a default the program turned off.
+`ein-cli`'s `resolved_config` is the whole of it: three options, three flags,
+and each writes in one direction only. There is no `--lookahead`, so an option
+can never restore a default the program turned off. All three flags are
+**unread** by every route (§ 2.2), so each option changes nothing printed, and
+the header line leaves them out, as it leaves out `-j`.
 
 | option | flag | set to |
 |---|---|---|
 | `-L`, `--no-lookahead` | `enable-pre-branch-lookahead` | `false` |
 | `-K`, `--no-kill-cache` | `enable-lookahead-kill-cache` | `false` |
 | `-y`, `--lattice-sanity-check` | `lattice-sanity-check` | `true` |
-| `-o`, `--lattice-order` | `lattice-order` | its argument (`lex` \| `score-sum`) |
-| `-z`, `--shuffle` | `lattice-order-seed` | a fresh seed, echoed to stderr |
-| `-d`, `--seed` | `lattice-order-seed` | that seed — **only together with `-z`** |
 
-`--seed` alone does nothing: the assignment sits under `if
-m.get_flag("shuffle")`, so `ein solve --dump-config x.ein -d 9` prints
-`lattice-order-seed None`. Verify any row of this table the same way — a
-`(config …)` head that sets the flag the other way, and `--dump-config` to see
-which won.
+Verify any row the same way — a `(config …)` head that sets the flag the other
+way, and `--dump-config` to see which won.
 
 ### 3.3 What an option can do to the answer
 
-Five classes. Only the first two touch the answer.
+Five classes. Only the first touches the answer, and then only by asking a
+different question or stopping early.
 
-- **Budget** — `-e`/`--exhaustive`, `-n`/`--solutions`, `-m`/`--max-set-size`,
-  `-E`/`--max-enterings`, `-T`/`--max-time`. These change `k` and `exhausted`
-  by construction, which is what `Ambiguity`'s *"(a lower bound — the search
-  did not exhaust)"* exists to say. Under the config principle (§ [2.5](#25-the-config-principle-read-against-every-row))
-  a budget never changes R. It stops the walk, and every surface has to say
-  the answer is partial. Two surfaces do not yet: the `--trace` headline and
-  `--json-summary`'s `verdict.type` call a truncated `k = 0` run a
-  contradiction (M1e2's S2 and S3, which
-  [S1e2.1a.5](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)
-  rewrites). **`-n 0` is refused**, exit 2, since M1e
-  [S1e.1.5](../history/m1e_review_processing/README.md#s1e15---n-0-q7)
-  — and so is every negative, which the CLI used to clamp onto it. It was
-  accepted until 2026-08-29 and behaved exactly as `-n 1`: `stop_after` is
-  tested *after* a model is recorded, so `Some(0)` cuts at the first one.
-  `--jobs 0` had been refused with that argument since S1a.7.5 and `-n 0` was
-  not, which was `Q7` / `EH-L1`. **`-m 0` stays legal** and means a truncation
-  (§ `defined_behaviour.md` 5), and a **negative** `-m` or `-E` is still
-  clamped onto it silently —
-  [Q-M1e.17](../history/m1e_review_processing/open_questions.md#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative).
-  **`-m` is refused under `EIN_TRAVERSAL=tree`** — in all three subcommands
-  that take it (`solve`, `test`, `render lattice`) — exit 2, since M1e
-  [S1e.2.1](../history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal):
-  the flag bounds the size of the commitment *sets* the lattice enumerates and
-  the tree enumerates none, its depth being what the program owes. It was
-  ignored in silence until 2026-08-29, and the reason it is refused rather than
-  read as a depth cap is measurable: 6 of `zebra2-minus-15-obligations`'s 32
-  models sit at commitment size **6**, one past this flag's own default, so the
-  obvious reading would have deleted them at stock settings. `-n`, by contrast,
-  is now **honoured** by the tree, which used to record the whole tree while
-  being asked for one model.
-- **The six shadows** — § [3.2](#32-the-six-options-that-shadow-a-flag). Their
-  answer column is the flag's.
-- **Execution** — `--jobs N` / `--jobs auto`: same verdict, same models, same
-  counters, by [S1a.7.5](../history/m1a_rust/README.md#s1a75--the---jobs-contract)'s
-  contract, and pinned by `ein-render/tests/jobs_invariance.rs`. The default is
-  1 and stays 1.
+- **The question and its budget** — `--minimal`, `--maximal`, `--single`,
+  `-n`/`--solutions`, `--region-budget`, `--region-limit`, `-T`/`--max-time`.
+  The first four choose what is asked about R; the budget, the cube's limit
+  and the deadline stop a run, and then every surface says the answer is
+  partial: a lower bound, a `note:` on stderr, `exhausted no` and why. A
+  `-T` abort exits 2 and prints no answer, because a machine-dependent limit
+  is never an answer. **`-n 0` is refused**, exit 2, since M1e
+  [S1e.1.5](../history/m1e_review_processing/README.md#s1e15---n-0-q7), and so
+  is every negative.
+- **The three shadows** — § [3.2](#32-the-three-options-that-shadow-a-flag),
+  unread.
+- **Execution** — `--jobs N` / `--jobs auto`: the same read-out, byte for byte,
+  by [S1a.7.5](../history/m1a_rust/README.md#s1a75--the---jobs-contract)'s
+  contract, pinned by `ein-render/tests/jobs_invariance.rs` and
+  `region_modes.rs::jobs_change_no_line_of_a_mode`. The default is 1 and stays
+  1.
 - **Presentation** — `-p`, `-P`, `-f`, `-s`, `-t`, `-v`, `-H`, `-c`, `-g`,
-  `--layer-progress`, `--models` (`list`, `key`, and since M1e2 S1e2.1.4
-  `grid` — each model as the table a person would draw, where `slot-partition`
-  or a `functional` / `injective` declaration licenses one, and one line
-  saying why not where nothing does), `--diff-models FILE` (S1e2.1.4: the
-  models against a listed set — matched, missing, spurious, one fact off), and
-  `ein render program`'s / `ein render kb`'s six (S1e2.1.3), which draw a file
-  and solve nothing, and `ein render region`'s `--view` (S1e2.1a.2), which
-  draws a `--dump-region` directory and loads nothing. stdout and stderr only; a `--diff-models` file that does
-  not parse is a usage error, exit 2, before the search. `--models key` is
-  read by the `Ambiguity` arm alone and reaches nothing recorded — not the
-  model list, not `--json-summary`, not `--events`, not `:expect`.
-- **Artefacts** — `--events`, `--events-level`, `--json-summary`,
-  `--json-report`, `--trace` with its four modifiers (`-F`, `-G`, `-l`, `-R`),
-  `-D`/`--dump-states`, `--dump-lattice` (M1e2 S1e2.1.3,
-  [`lattice_dump.md`](inference/lattice_dump.md)), `--dump-answer` (M1e2
-  S1e2.1.2, [`answer_dump.md`](inference/answer_dump.md)), and `--dump-region`
-  with its `--region-limit N` and `--region-states` (M1e2 S1e2.1a.1,
-  [`region_dump.md`](inference/region_dump.md)). The four directories are
-  made before the search, and `--dump-lattice` is refused
-  beside `--dump-states`, `-v`, `--layer-progress` and `-t`: each chooses the
-  solve's one dumper. **Additive** in the strict
-  sense: stdout, stderr and the exit code are identical with them and
-  without — and for `--dump-answer` so are the summary and the event stream,
-  which `answer_dump::the_flag_moves_no_answer` holds. `--dump-region` holds
-  the same (`region_dump::the_flag_moves_no_answer`) with one exception the
-  user chose: a program whose root candidates exceed `--region-limit` gets one
-  `note:` line on stderr saying so, and when the limit is raised to 17 or more
-  a `warning:` with the projected cost — the exit code stays the solve's.
-  Seven of them name **one** path — `events`, `trace`, `json-summary`,
-  `dump-states`, `dump-lattice`, `dump-answer`, `dump-region` — so each is
-  refused when the selection asks more than one
-  question; `ein test --json-report` deliberately is not, because a report has
-  no run to be more than one of.
+  `--layer-progress`, `--models` (`list`, `key`, `grid`, over the states the
+  read-out listed), `--diff-models FILE`, and `ein render program`'s / `ein
+  render kb`'s six, which draw a file and solve nothing, and `ein render
+  region`'s `--view`, which draws an `ein oracle --dump` directory and loads
+  nothing. stdout and stderr only; a `--diff-models` file that does not parse
+  is a usage error, exit 2, before the run.
+- **Artefacts** — `--events`, `--events-level`, `--json-summary`
+  (`ein-summary/2`), `--json-report` (`ein-test-report/3`), `--trace` with its
+  four modifiers (`-F`, `-G`, `-l`, `-R`), `--dump-lattice`
+  ([`lattice_dump.md`](inference/lattice_dump.md)), `--dump-answer`
+  ([`answer_dump.md`](inference/answer_dump.md)), and `ein oracle`'s `--dump`
+  with `--states` ([`region_dump.md`](inference/region_dump.md)). The
+  directories are made before the run. **Additive** in the strict sense:
+  stdout, stderr and the exit code are identical with them and without, and a
+  write that fails after the run reports itself and leaves the answer's exit
+  code ([`defined_behaviour.md` § 4.4](defined_behaviour.md)). A run answers
+  every `(query …)` of its file from one solve, so no artefact flag is refused
+  over several queries any more; `ein test` refuses `--events` and
+  `--json-summary` over a selection of more than one file.
 
 ---
 
@@ -553,22 +372,26 @@ and not a defect.
 ### Read by the shipped binary
 
 Read from the process environment by a crate that ships. None of them reaches
-`SolverConfig`, so none re-blesses a KB-shape golden.
+`SolverConfig`, so none re-blesses a KB-shape golden. **Since M1e2
+S1e2.1a.5's switch only `EIN_STDLIB` and `EIN_LEFTOVER` are reached by a
+command.** The other six are read by the walk's library code, which ships,
+links and is reached by no command until P1e2.1c decides what of it the region
+routes reuse; setting one changes nothing an `ein` run prints. The scan below
+pins the set *read by a shipping crate*, which is why they stay listed.
 
 | name | value | what it does | read at |
 |---|---|---|---|
 | `EIN_STDLIB` | a directory | overrides `std.*` resolution, ahead of the checkout walk and the embedded copy. Since M1e S1e.3.5 it **must carry `MANIFEST.sha256`**, the same marker the walk requires, and the refusal names the variable at the first `std.*` import — [`docs/install.md`](../install.md#point-it-at-a-different-stdlib). `ein --version` still reports an unprovable one as `unreadable` rather than refusing | `ein-ir/src/stdlib.rs` `resolve` |
-| `EIN_TRAVERSAL` | `tree` | the per-obligation depth-first traversal beside the lattice (M1d S1d.10.6). The one **experimental** surface in the system. Honours `-n`; **refuses `-m`** (§ 3.3) | `ein-infer/src/solve.rs` `tree_traversal` |
-| `EIN_OBLIGATION_CHOICE` | `off` \| `fail-first` \| *(default)* `rule-order` | the obligations rung's measurement lever; `off` is the pre-S1d.2.5 engine and the control arm of every number in `hypotheses_from_obligations.md` | `ein-infer/src/oblgen.rs` |
-| `EIN_LEFTOVER` | `1` | fills `--json-summary`'s `leftover` block — what the blind enumerator would still propose at each recorded state. Runs on a discarded fork, so nothing else in the summary moves | `ein-cli/src/summary.rs` |
-| `EIN_BATCH_PER_WORKER` | a positive integer, default 512 | enterings in flight per worker. Needs the `parallel` feature, which is **on** by default | `ein-infer/src/solve.rs` `batch_per_worker` |
+| `EIN_TRAVERSAL` | `tree` | **the walk's**: the per-obligation depth-first traversal beside its lattice (M1d S1d.10.6), § [What `EIN_TRAVERSAL=tree` reported](#what-ein_traversaltree-reports) | `ein-infer/src/solve.rs` `tree_traversal` |
+| `EIN_OBLIGATION_CHOICE` | `off` \| `fail-first` \| *(default)* `rule-order` | **the walk's**: its obligations rung's measurement lever; `off` is the pre-S1d.2.5 engine and the control arm of every number in `hypotheses_from_obligations.md`. The region's universe is taken config-free, rung order fixed | `ein-infer/src/oblgen.rs` |
+| `EIN_LEFTOVER` | `1` | fills `--json-summary`'s `leftover` block — what the blind enumerator would still propose at each **listed state**, outside H. Runs on a fork of each state, so nothing else in the summary moves (`leftover_probe.rs`) | `ein-cli/src/summary.rs` |
+| `EIN_BATCH_PER_WORKER` | a positive integer, default 512 | **the walk's**: enterings in flight per worker. Needs the `parallel` feature, which is **on** by default | `ein-infer/src/solve.rs` `batch_per_worker` |
 | `EIN_FORK_DELTA` | `0` | the pre-S1a.6.9 fresh-saturator fork path, for `utils/fork_delta_verify.py`'s two arms out of one binary. Needs `--features fork-delta`, **off** by default | `ein-infer/src/solve.rs` `resume_forks` |
 | `EIN_FORK_AUDIT` | a file path | one JSON-Lines record per entering. Needs `--features fork-delta`, **off** by default | `ein-infer/src/fork_audit.rs` |
 | `EIN_SPEC_AUDIT` | a file path | the speculation audit — every entering re-run against root as of layer start. Needs `--features spec-audit`, **off** by default | `ein-infer/src/spec_audit.rs` |
 
-The first five are live in a stock `cargo install`; the last three need a
-non-default build and are inert even when compiled in until the variable is
-set. `ein --version`'s `features` line says which build you have.
+The last three are the walk's too and need a non-default build. `ein
+--version`'s `features` line says which build you have.
 
 ### Read by the test harness
 
@@ -615,7 +438,12 @@ by six.
 
 ### What `EIN_TRAVERSAL=tree` reports
 
-The one **experimental** surface in the system (§ 2.3), and the only knob whose
+**The record of the walk's tree.** Since M1e2 S1e2.1a.5 no command runs the
+walk, so no command reaches the tree; what follows is what it reported while
+one did, kept because the register's `W5` twin and M1d's traversal numbers
+cite it.
+
+It was the one **experimental** surface in the system, and the only knob whose
 effect a reader cannot infer from the tables above: it does not change a
 setting, it runs a **second traversal**. What that traversal *reports* has been
 observable since M1d S1d.10.6 and stated nowhere, which is M1e
@@ -690,9 +518,9 @@ each time: **every `SolverConfig` field is `--dump-config`-printed,
   differently on an 8-core machine than on a 4-core one, through a field the
   digest compares. Jobs is an execution knob; `SolverConfig` is the semantics.
 - **`--models`** (M1d T1d.3.3.4). Presentation has no business in the digest.
-- **`EIN_TRAVERSAL` and `EIN_OBLIGATION_CHOICE`.** Both exist to be *compared*,
-  and a knob whose settings are being compared would re-bless every shape
-  golden in the corpus each time the comparison moved.
+- **`EIN_TRAVERSAL` and `EIN_OBLIGATION_CHOICE`**, the walk's. Both existed
+  to be *compared*, and a knob whose settings are being compared would
+  re-bless every shape golden in the corpus each time the comparison moved.
 
 And there is **no config file**. The `(config …)` head travels with the
 program, which is what makes a `.ein` reproducible on its own.
@@ -702,17 +530,18 @@ program, which is what makes a `.ein` reproducible on its own.
 ## 6. What pins this page
 
 [`ein-cli/tests/config_reference.rs`](../../ein.rs/crates/ein-cli/tests/config_reference.rs),
-six tests, in `cargo test --workspace`. The phase's design constraint is
+seven tests, in `cargo test --workspace`. The phase's design constraint is
 *generate or diff, never a third hand-maintained copy*, and each of these is
 one or the other.
 
 | test | what fails it |
 |---|---|
 | `the_defaults_block_is_the_binarys_own_dump_config` | the block in § 2.1 is not what `ein solve --dump-config` prints — a new flag, a renamed one, a changed default |
-| `every_flag_has_a_row_and_no_row_is_orphaned` | § 2.2's flags are not `FIELDS` in declaration order, or a row's type or default is not the block's |
+| `every_flag_has_a_row_and_no_row_is_orphaned` | § 2.2's flags are not `FLAGS` in declaration order, or a row's type or default is not the block's |
 | `the_cli_counts_come_from_the_golden` | § 3.1's per-parser counts or the total are not `help_shape.txt`'s |
 | `the_shipped_environment_set_is_what_the_page_lists` | a shipping crate reads an `EIN_*` name with no row in § 4's first class, or that class lists one nothing reads |
-| `the_two_inert_flags_are_still_inert` | flipping `print-alive` or `candidate-order-seed` changes `solve -e -p`'s stdout on either of two fixtures |
+| `the_unread_flags_change_nothing_printed` | flipping one of § 2.2's five **unread** flags changes `solve -p`'s stdout, stderr or exit code on either of two fixtures |
+| `the_retired_flags_are_refused_with_why` | a program setting one of § 2.4's nine loads, or is refused without the reason |
 | `the_surface_table_agrees_with_the_sections_it_summarises` | § 1's three counts are not the ones §§ 2–4 own |
 
 **Re-banking the block:**

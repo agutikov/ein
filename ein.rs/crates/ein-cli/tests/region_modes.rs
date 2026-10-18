@@ -6,11 +6,11 @@
 //! oracle there. What is held here is the surface:
 //! - the exit codes: every answer exits 0, `--single`'s four words included
 //!   (the user's ruling of 2026-10-16), and a stopped run says so on stderr;
-//! - the refusals;
+//! - the refusals: the nine options S1e2.1a.5's switch retired, each with
+//!   what replaced it;
 //! - `-j`;
 //! - the oracle's directory, which `ein render region` draws with no run
-//!   overlaid;
-//! - and the walk, still the default until S1e2.1a.5.
+//!   overlaid.
 //!
 //! Since T1e2.1a.5.2 the modes print the read-out of `read_out.md`, whose
 //! golden is `read_out_examples.md` (`read_out_examples.rs`); the rows here
@@ -144,7 +144,7 @@ fn every_answer_exits_0_and_a_stopped_run_says_so() {
 }
 
 #[test]
-fn n_inside_a_mode_is_n_states_and_outside_it_is_still_the_walk() {
+fn n_is_n_states_of_the_part_of_r_asked_about() {
     let r = ein(&["solve", THREE, "--maximal", "-n", "2"]);
     assert_eq!(r.code, 0);
     assert_eq!(r.out.matches(";; state ").count(), 2, "{}", r.out);
@@ -153,16 +153,21 @@ fn n_inside_a_mode_is_n_states_and_outside_it_is_still_the_walk() {
         "{}",
         r.out
     );
-    // Until S1e2.1a.5 a run with no region flag is today's walk.
+    // Since S1e2.1a.5's switch a bare `-n` asks for N states of all of R.
     let w = ein(&["solve", THREE, "-n", "2"]);
-    assert!(!w.out.contains("asked "), "{}", w.out);
-    assert!(w.out.contains("verdict"), "{}", w.out);
+    assert_eq!(w.code, 0);
+    assert!(
+        line(&w.out, "asked").starts_with("2 states of R (-n 2)"),
+        "{}",
+        w.out
+    );
+    assert_eq!(w.out.matches(";; state ").count(), 2, "{}", w.out);
 }
 
 #[test]
-fn the_walks_options_are_refused_beside_a_mode() {
-    // The nine the switch retires (`solve_interface.md` § 2.1), and only
-    // those: every other option of `solve`'s is a mode's since T1e2.1a.5.3.
+fn the_retired_options_are_refused_with_what_replaced_them() {
+    // The nine the switch retired (`solve_interface.md` § 2.1), and only
+    // those: every other option of `solve`'s is a mode's.
     for (args, name) in [
         (vec!["--maximal", "-e"], "--exhaustive"),
         (vec!["--single", "-m", "3"], "--max-set-size"),
@@ -184,11 +189,18 @@ fn the_walks_options_are_refused_beside_a_mode() {
         a.extend(args.iter());
         let r = ein(&a);
         assert_eq!(r.code, 2, "{args:?}");
+        // The sentence names the option and what replaced it.
         assert!(
-            r.err.contains(&format!("{name} is the walk's")),
+            r.err.starts_with("error: ")
+                && r.err.contains(name)
+                && (r.err.contains(" is retired") || r.err.contains(" moved")),
             "{args:?}: {}",
             r.err
         );
+        // …with or without a region flag beside it.
+        let mut bare = vec!["solve", THREE];
+        bare.extend(args.iter().skip(1));
+        assert_eq!(ein(&bare).err, r.err, "{args:?}");
     }
     // clap's own: the two lines exclude each other, and so do -n and --single.
     for args in [
@@ -238,10 +250,9 @@ fn the_oracles_directory_has_no_walk_and_draws_with_none() {
     let draw = ein(&["render", "region", &d]);
     assert_eq!(draw.code, 0, "{}", draw.err);
     assert!(draw.out.contains("no run overlaid"), "{}", draw.out);
-    // A `--dump-region` directory dumped over it keeps its walk; the oracle
-    // dumped over that one removes it.
-    assert_eq!(ein(&["solve", THREE, "--dump-region", &d]).code, 0);
-    assert!(dir.join("walk.json").exists());
+    // A stale `walk.json`, from a `--dump-region` before the switch, does not
+    // survive the oracle dumped over it.
+    std::fs::write(dir.join("walk.json"), "{}").unwrap();
     assert_eq!(ein(&["oracle", THREE, "--dump", &d]).code, 0);
     assert!(!dir.join("walk.json").exists());
     let _ = std::fs::remove_dir_all(&dir);

@@ -11,7 +11,7 @@
 //!
 //! 1. [`the_defaults_block_is_the_binarys_own_dump_config`] — the page's
 //!    generated block **is** `ein solve --dump-config` on a program with no
-//!    `(config …)` head. A flag added to `FIELDS` appears there or this fails.
+//!    `(config …)` head. A flag added to `FLAGS` appears there or this fails.
 //!    *Edit nothing by hand: `EIN_BLESS=1` rewrites the block in place.*
 //! 2. [`every_flag_has_a_row_and_no_row_is_orphaned`] — the judgement table
 //!    outside the markers lists the same flags, in the same order, with the
@@ -38,7 +38,7 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use ein_core::config::{FIELDS, FieldKind};
+use ein_core::config::{FLAGS, FieldKind, RETIRED};
 
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -111,7 +111,7 @@ fn dump_config_block() -> String {
 /// The page's generated region **is** the binary's `--dump-config` output.
 ///
 /// This is the flag list, in declaration order, with every default — so a
-/// flag added to [`FIELDS`], a renamed one and a changed default all fail
+/// flag added to [`FLAGS`], a renamed one and a changed default all fail
 /// here. It is the strongest of the five because the text is not derived from
 /// the source, it is the shipped program's own answer.
 ///
@@ -122,10 +122,10 @@ fn dump_config_block() -> String {
 fn the_defaults_block_is_the_binarys_own_dump_config() {
     let want = dump_config_block();
     assert!(
-        want.lines().count() == FIELDS.len() + 1,
+        want.lines().count() == FLAGS.len() + 1,
         "--dump-config printed {} lines for {} flags",
         want.lines().count(),
-        FIELDS.len()
+        FLAGS.len()
     );
 
     let text = page();
@@ -220,14 +220,14 @@ fn every_flag_has_a_row_and_no_row_is_orphaned() {
         "found no table in docs/kernel/configuration.md whose first column is `flag`"
     );
 
-    let want: Vec<&str> = FIELDS.iter().map(|(n, _)| *n).collect();
+    let want: Vec<&str> = FLAGS.iter().map(|(n, _)| *n).collect();
     let got: Vec<&str> = rows.iter().map(|r| r.flag.as_str()).collect();
     assert_eq!(
         got, want,
-        "the judgement table's flags are not `FIELDS`, in declaration order"
+        "the judgement table's flags are not `FLAGS`, in declaration order"
     );
 
-    for ((name, kind), row) in FIELDS.iter().zip(&rows) {
+    for ((name, kind), row) in FLAGS.iter().zip(&rows) {
         let expected = match kind {
             FieldKind::Bool => "bool",
             FieldKind::Int => "int",
@@ -464,31 +464,45 @@ fn the_shipped_environment_set_is_what_the_page_lists() {
     }
 }
 
-// ── 5. The two inert flags ──────────────────────────────────────────
+// ── 5. The unread flags, and the retired ones ───────────────────────
 
-/// `print-alive` and `candidate-order-seed` are settable, validated,
-/// `--dump-config`-printed, `--json-summary`-echoed, `.einb`-round-tripped —
-/// and read by nothing.
+/// The five flags no route reads since M1e2 S1e2.1a.5 — the walk's lookahead,
+/// kill cache, learned clauses, fail-fast fork and sanity probe — are
+/// settable, validated, `--dump-config`-printed and `--json-summary`-echoed,
+/// and change nothing a run prints.
 ///
-/// That is the page's one claim about behaviour that no other test covers, and
-/// it is the claim most likely to stop being true, because wiring either flag
-/// up is a small change nobody would think to re-document. So it is held from
-/// the outside: the whole of stdout, on two fixtures with different search
-/// shapes, byte for byte.
-///
-/// `-p` and no `-s`: the stats block carries a wall clock, and a test that
-/// compares wall clocks is a test that fails on a busy machine.
+/// That is the page's one claim about behaviour that no other test covers,
+/// and it is the claim most likely to stop being true, because P1e2.1c wiring
+/// one into a route is a small change nobody would think to re-document. So it
+/// is held from the outside: stdout, stderr and the exit code, on two fixtures
+/// with different routes, byte for byte. The corpus's `levers` cells hold the
+/// CLI shadows of three of them the same way.
 #[test]
-fn the_two_inert_flags_are_still_inert() {
+fn the_unread_flags_change_nothing_printed() {
     let fixtures = [
         "examples/branching/04_two_levels.ein",
-        "examples/lattice/02_genuine_3set_death.ein",
+        "examples/ein-bugs/naf-upward-closure.ein",
     ];
     let flags = [
-        "(config :print-alive true)",
-        "(config :candidate-order-seed 7)",
+        "(config :enable-pre-branch-lookahead false)",
+        "(config :enable-lookahead-kill-cache false)",
+        "(config :enable-path-nogoods false)",
+        "(config :enable-fail-fast-fork false)",
+        "(config :lattice-sanity-check true)",
     ];
-
+    let run = |path: &Path| {
+        let out = std::process::Command::new(env!("CARGO_BIN_EXE_ein"))
+            .args(["solve", "-p", &path.to_string_lossy()])
+            .current_dir(repo_root())
+            .output()
+            .expect("the binary runs");
+        let p = path.to_string_lossy().to_string();
+        (
+            out.status.code(),
+            String::from_utf8_lossy(&out.stdout).replace(&p, "F"),
+            String::from_utf8_lossy(&out.stderr).replace(&p, "F"),
+        )
+    };
     for path in fixtures {
         let src = std::fs::read_to_string(repo_root().join(path)).expect(path);
         let tag = Path::new(path)
@@ -496,27 +510,48 @@ fn the_two_inert_flags_are_still_inert() {
             .and_then(|s| s.to_str())
             .expect("a stem");
         // `(config …)` is last-wins, so appending a block overrides whatever
-        // the fixture set — the same way `utils/feature_matrix.py` builds a
-        // cell.
+        // the fixture set.
         let base = write_fixture(&format!("{tag}-base"), &src);
-        let base_out = ein(&["solve", "-e", "-p", &base.to_string_lossy()]);
+        let want = run(&base);
         assert!(
-            base_out.contains("final-state facts"),
-            "{path}: the baseline run printed no state\n{base_out}"
+            want.1.contains("final-state facts"),
+            "{path}: the baseline run printed no state\n{}",
+            want.1
         );
-
         for (i, flag) in flags.iter().enumerate() {
             let alt = write_fixture(&format!("{tag}-{i}"), &format!("{src}\n{flag}\n"));
-            let alt_out = ein(&["solve", "-e", "-p", &alt.to_string_lossy()]);
             assert_eq!(
-                base_out.replace(&*base.to_string_lossy(), "F"),
-                alt_out.replace(&*alt.to_string_lossy(), "F"),
-                "{path}: {flag} changed the run. It is documented as inert in \
-                 docs/kernel/configuration.md — either the flag was wired up \
-                 (update the page and delete this fixture's row) or something \
-                 else moved."
+                run(&alt),
+                want,
+                "{path}: {flag} changed the run. It is documented as unread in \
+                 docs/kernel/configuration.md — either a route reads it now \
+                 (update the page) or something else moved."
             );
         }
+    }
+}
+
+/// The nine retired flags are load errors that say why, and none is offered
+/// among the valid names.
+#[test]
+fn the_retired_flags_are_refused_with_why() {
+    for (flag, why) in RETIRED {
+        let f = write_fixture(
+            &format!("retired-{flag}"),
+            &format!("(config :{flag} true)\n(relation p T)\n(p A)\n"),
+        );
+        let out = std::process::Command::new(env!("CARGO_BIN_EXE_ein"))
+            .args(["solve", &f.to_string_lossy()])
+            .output()
+            .expect("the binary runs");
+        let err = String::from_utf8_lossy(&out.stderr);
+        assert_eq!(out.status.code(), Some(1), "{flag}: {err}");
+        assert!(
+            err.contains(&format!(
+                "config flag :{flag} was retired at M1e2 S1e2.1a.5: {why}"
+            )),
+            "{flag}: {err}"
+        );
     }
 }
 
@@ -535,9 +570,9 @@ fn the_two_inert_flags_are_still_inert() {
 fn the_surface_table_agrees_with_the_sections_it_summarises() {
     let text = page();
     assert!(
-        text.contains(&format!("| `(config …)` flags | **{}** |", FIELDS.len())),
+        text.contains(&format!("| `(config …)` flags | **{}** |", FLAGS.len())),
         "§ 1 does not say there are {} flags",
-        FIELDS.len()
+        FLAGS.len()
     );
     let n = env_names_read_by_shipping_crates().len();
     assert!(

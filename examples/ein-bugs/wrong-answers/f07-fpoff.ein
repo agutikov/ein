@@ -21,7 +21,10 @@
 ;;; under *append-only* today's answer qualifies.
 ;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
-(config :enable-forced-positive false)
+;;;
+;;; **Since M1e2 S1e2.1a.5 the program is `features/07`'s.** The switch retired
+;;; `:enable-forced-positive`, so the `(config …)` line above is gone; R never
+;;; read it, and is the one it was.
 (relation thing Thing)
 (relation p Thing)
 (relation q Thing)

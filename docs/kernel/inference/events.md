@@ -98,8 +98,7 @@ difference a change to the engine or an optimisation introduces.
 |---|---|---|
 | `run` | process start | `version`, `level`, `impl`, `file`, `argv`, `config` (every resolved `SolverConfig` field, kebab-cased) |
 | `load` | after `kb.from_ir` | `relations`, `rules`, `hrules`, `macros`, `facts` counts; `relation_names` and `rule_names` in registry order |
-| `verdict` | end | `type`, `k`, `exhausted`, `counters` (every `MonotonicStats` field), `core` (sorted), `models` (each a sorted fact list, the list itself sorted) |
-| `region` | end of a **region run** (`ein solve` under a region flag, M1e2 T1e2.1a.5.2) — where the walk emits `verdict` | `asked`, `region`, `verdict`, `work`: the `ein-summary/2` blocks of the same names, each one JSON value, `region` without its `states` and `frontier` ([§ Region runs](#region-runs)) |
+| `region` | end of every **region run** — every `ein solve` and `ein test` file since M1e2 S1e2.1a.5's switch (T1e2.1a.5.2 added it). It replaced the walk's `verdict`, which went with the walk's CLI path | `asked`, `region`, `verdict`, `work`: the `ein-summary/2` blocks of the same names, each one JSON value, `region` without its `states` and `frontier` ([§ Region runs](#region-runs)) |
 | `warn` | **at root, before the search** — the alive-set check right after `load`, the `(absent …)` audit at root's first `quiesce`; one line per breach, in the checker's own order | `category`, `message` (rendered, one line) |
 | `monotonicity` | **at root, before the search**, after root's obligation tally — and **only when the program's lattice is not monotone** (M1e2 S1e2.1a.1) | `verdict` (`"non-monotone"`), `sites` (the count), `site` (one rendered line per site, sorted) |
 
@@ -335,8 +334,8 @@ store's yield, and the reason for the split.
 
 **A layer emits its row however it ends** — the barrier, an `-n` cut, a `-T` or
 `-E` budget — so `Σ entered` is `enterings_total` on any lattice run at all.
-That is what makes a budget a **probe**: `solve -e -m 4 -E <enterings so far +
-1>` *generates* layer 4 and reports what the join proposed without entering it,
+That is what made a budget a **probe** on the walk: `solve -e -m 4 -E
+<enterings so far + 1>` *generated* layer 4 and reports what the join proposed without entering it,
 which is how [S1d.10.1](../../../docs/history/m1d_satisfiability/layer_census.md)
 priced a depth nobody can run. Under `EIN_TRAVERSAL=tree` there are no layers
 and the sum is `0` against a non-zero `enterings_total` — see
@@ -462,13 +461,14 @@ reported while deleting a redundant one or an `enqueue` is not.
 
 M1e2 [T1e2.1a.5.2](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md),
 [`read_out.md` § 8.6](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#86-the-rest).
-`ein solve --events FILE` under a region flag (`--minimal`, `--maximal`,
-`--single`, `--region-budget`) narrates the run that answered, which is not
-the walk:
+`ein solve --events FILE` narrates the run that answered — since S1e2.1a.5's
+switch every run, a bare description included, and `ein test`'s too:
 
 1. `run` and `load`, as above;
 2. **root**: the alive-set check's `warn` lines, root's saturation (`compile`,
-   `enqueue`, `fire`, …), its obligation pass (`owe`), and on a program the
+   `enqueue`, `fire`, …), its obligation pass (`owe`), **how H was built** —
+   the generator's `rung` line where it reached the obligations rung, one
+   `hyp` per candidate and, at `verbose`, the `hypskip`s — and on a program the
    static check flags one `monotonicity` line;
 3. **every node the route visits**, in visit order whatever `-j` is: that
    node's saturation and obligation events, then one `enter` line. A worker
@@ -478,9 +478,11 @@ the walk:
    counters;
 5. **`region`**, last.
 
-`rung`, `hyp`, `hypskip`, `nogood`, `writeback` and `traversal` are the
-walk's, and a region run emits none of them. Until S1e2.1a.5's switch, a bare
-`ein solve` is still the walk and narrates as the sections above say.
+`nogood`, `writeback` and `traversal` are the walk's, and no command emits
+them since the switch: `cli_semantics::every_event_kind_the_schema_defines_is_reachable_from_the_corpus`
+asserts them unreached, so a route that starts narrating one is noticed. The
+walk's payloads in the tables above are its record, reached from the library
+only.
 `region_modes.rs`'s `the_event_stream_is_the_runs_and_jobs_move_no_line`
 holds the shape and the `-j` invariance.
 

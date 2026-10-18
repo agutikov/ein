@@ -66,10 +66,10 @@
   :why    "Ann's extent is only half excluded, so `total` has nothing to refute")
 
 (solve
-  :no-hypothesis (is-a likes undecided))
+  :no-hypothesis (is-a likes undecided)
+  :expect (region (model (likes Bob Stew)
+                         (not (likes Ann Soup))
+                         (undecided Ann Stew))))
 
 (query
-  :goal (likes ?who ?what)
-  :expect (model (likes Bob Stew)
-                 (not (likes Ann Soup))
-                 (undecided Ann Stew)))
+  :goal (likes ?who ?what))

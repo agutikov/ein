@@ -56,11 +56,11 @@
   :why    "B and C were never related either way, and the mirror must not invent it")
 
 (solve
-  :no-hypothesis (sits-with undecided))
+  :no-hypothesis (sits-with undecided)
+  :expect (region (model (sits-with A B) (sits-with B A)
+                         (not (sits-with A C))
+                         (not (sits-with C A))
+                         (undecided B C))))
 
 (query
-  :goal (sits-with ?x ?y)
-  :expect (model (sits-with A B) (sits-with B A)
-                 (not (sits-with A C))
-                 (not (sits-with C A))
-                 (undecided B C)))
+  :goal (sits-with ?x ?y))

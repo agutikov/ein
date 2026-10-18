@@ -1,9 +1,7 @@
 (config
   :enable-pre-branch-lookahead true
   :enable-lookahead-kill-cache true
-  :enable-forced-positive true
   :enable-path-nogoods true
-  :lattice-order lex
   :record-alternative-justifications false)
 
 (import std.algebra :symbols (symmetric symmetric-negative-setup includes))

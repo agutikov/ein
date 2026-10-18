@@ -8,7 +8,7 @@
     region_synth.py --solution FILE.ein --out DIR        each line node as a loadable program
     region_synth.py --random N [--seed S] [--max-n K]    N random targets, written and checked
 
-`ein solve --dump-region` computes the region of a program; this writes a
+`ein oracle --dump` computes the region of a program; this writes a
 program for a region. A **target** is a status per node of the n-cube over the
 candidates `(h A)`, `(h B)`, …: in **R**, **owing**, or **dead**. A spec says it
 in intervals:
@@ -41,7 +41,7 @@ node in mask order (`R`, `o`, `x`), bit i the i-th candidate in text order.
 That is what `ein-infer/tests/region.rs` and `--check` compare the oracle
 with, node for node. `;;; region-spec:` is the spec it came from.
 
-`--check` runs `ein solve FILE -e --dump-region` and compares every node.
+`--check` runs `ein oracle FILE --dump` and compares every node.
 `--solution` writes each node of R's two lines as the program plus that
 node's facts: a file that loads and saturates to the line node's state, which
 `ein render kb` draws. That is the right answer, written by construction and
@@ -321,7 +321,7 @@ def ein_bin(arg: str | None) -> str:
 
 def oracle(path: Path, bin: str) -> dict:
     with tempfile.TemporaryDirectory(prefix="region-synth-") as d:
-        p = subprocess.run([bin, "solve", str(path), "-e", "--dump-region", d], capture_output=True, text=True)
+        p = subprocess.run([bin, "oracle", str(path), "--dump", d], capture_output=True, text=True)
         try:
             return json.loads((Path(d) / "region.json").read_text())
         except FileNotFoundError:

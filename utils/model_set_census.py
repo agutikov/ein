@@ -10,6 +10,11 @@ they would not have to be either — that a state with several independent open
 choices *is* the compact answer, because the model count is then the product of
 the candidate-set sizes. This measures the "independent".
 
+**The walk's instrument.** It measures `ein solve`'s walk, which no command
+runs since M1e2 S1e2.1a.5's switch: re-take it against a binary built at or
+before commit 7ec8a480 (`--bin` / `$EIN_BIN`), and read its record as the
+walk's. Porting it to the region is not owed by the switch.
+
     utils/model_set_census.py                     # the table, to stdout
     utils/model_set_census.py --json c.json       # + the machine copy
     utils/model_set_census.py -k zebra2-minus-15  # one entry, in full

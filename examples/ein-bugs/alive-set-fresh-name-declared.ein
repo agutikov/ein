@@ -53,11 +53,19 @@
   :why    "nothing may reach B")
 
 (solve
-  :no-hypothesis (p seen))
-
-(query
-  :goal   (q ?x ?y)
+  :no-hypothesis (p seen)
   ;; The model its twin cannot reach. `q` is named, so this closes `q`:
   ;; exactly these two positive `q` facts, both built out of the name the
   ;; other file's rule invents.
-  :expect (model (q A Z) (q B Z)))
+  :expect (region
+            ;; state 1 of 4 — ∅, root itself · minimal
+            (model)
+            ;; state 2 of 4 — 1 candidate · from {(q A Z)}
+            (model (q A Z))
+            ;; state 3 of 4 — 1 candidate · from {(q B Z)}
+            (model (q B Z))
+            ;; state 4 of 4 — 2 candidates · maximal · from {(q A Z), (q B Z)}
+            (model (q A Z) (q B Z))))
+
+(query
+  :goal   (q ?x ?y))

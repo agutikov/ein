@@ -1,10 +1,26 @@
-# Solution trace
+# Region trace
 
-> Solved in 0 steps after 23 unconditional; commitment ∅ (unconditional); 1 solution(s), 0 refuted.
+```text
+  asked             all of R — describe
+  states (k_s)      1
+  commitments (k_c) 1
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  maximal line      1 state
+  components        1
+  sub-cubes         1, of dimension 0
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 0 minimal dead sets
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate: R is {∅} or empty, decided by root alone
+  route             1, the alive down-set — L1 dead is upward-closed
+  work              1 saturation · 0 facts beyond root · 1 layer
+```
 
-## Before any assumption — 23 steps
+## Root — 23 steps
 
-## Step 1 — `bijective-properties`
+### Step 1 — `bijective-properties`
 
 > color-loc is bijective ⟹ functional ∧ injective ∧ total ∧ surjective.
 
@@ -14,7 +30,7 @@ Derives `functional(color-loc)`.
 
 <dot>
 
-## Step 2 — `derive-functional-negative`
+### Step 2 — `derive-functional-negative`
 
 > color-loc functional ⟹ functional-negative active.
 
@@ -24,7 +40,7 @@ Derives `functional-negative(color-loc)`.
 
 <dot>
 
-## Step 3 — `derive-domain-elimination`
+### Step 3 — `derive-domain-elimination`
 
 > color-loc functional + total ⟹ domain-elimination active.
 
@@ -34,7 +50,7 @@ Derives `domain-elimination(color-loc)`.
 
 <dot>
 
-## Step 4 — `derive-injective-negative`
+### Step 4 — `derive-injective-negative`
 
 > color-loc injective ⟹ injective-negative active.
 
@@ -44,7 +60,7 @@ Derives `injective-negative(color-loc)`.
 
 <dot>
 
-## Step 5 — `derive-range-elimination`
+### Step 5 — `derive-range-elimination`
 
 > color-loc injective + surjective ⟹ range-elimination active.
 
@@ -54,7 +70,7 @@ Derives `range-elimination(color-loc)`.
 
 <dot>
 
-## Step 6 — `functional-negative`
+### Step 6 — `functional-negative`
 
 > color-loc functional: (color-loc Red H2) ⟹ (not (color-loc Red H1)).
 
@@ -64,7 +80,7 @@ Derives `not(color-loc(Red, H1))`.
 
 <dot>
 
-## Step 7 — `functional-negative`
+### Step 7 — `functional-negative`
 
 > color-loc functional: (color-loc Red H2) ⟹ (not (color-loc Red H3)).
 
@@ -74,7 +90,7 @@ Derives `not(color-loc(Red, H3))`.
 
 <dot>
 
-## Step 8 — `functional-negative`
+### Step 8 — `functional-negative`
 
 > color-loc functional: (color-loc Green H3) ⟹ (not (color-loc Green H1)).
 
@@ -84,7 +100,7 @@ Derives `not(color-loc(Green, H1))`.
 
 <dot>
 
-## Step 9 — `functional-negative`
+### Step 9 — `functional-negative`
 
 > color-loc functional: (color-loc Green H3) ⟹ (not (color-loc Green H2)).
 
@@ -94,7 +110,7 @@ Derives `not(color-loc(Green, H2))`.
 
 <dot>
 
-## Step 10 — `injective-negative`
+### Step 10 — `injective-negative`
 
 > color-loc injective: (color-loc Red H2) ⟹ (not (color-loc Green H2)).
 
@@ -104,7 +120,7 @@ Derives `not(color-loc(Green, H2))`.
 
 <dot>
 
-## Step 11 — `injective-negative`
+### Step 11 — `injective-negative`
 
 > color-loc injective: (color-loc Red H2) ⟹ (not (color-loc Blue H2)).
 
@@ -114,7 +130,7 @@ Derives `not(color-loc(Blue, H2))`.
 
 <dot>
 
-## Step 12 — `injective-negative`
+### Step 12 — `injective-negative`
 
 > color-loc injective: (color-loc Green H3) ⟹ (not (color-loc Red H3)).
 
@@ -124,7 +140,7 @@ Derives `not(color-loc(Red, H3))`.
 
 <dot>
 
-## Step 13 — `injective-negative`
+### Step 13 — `injective-negative`
 
 > color-loc injective: (color-loc Green H3) ⟹ (not (color-loc Blue H3)).
 
@@ -134,7 +150,7 @@ Derives `not(color-loc(Blue, H3))`.
 
 <dot>
 
-## Step 14 — `domain-elimination`
+### Step 14 — `domain-elimination`
 
 > every House except H2 excluded for Red → (color-loc Red H2).
 
@@ -144,7 +160,7 @@ Derives `color-loc(Red, H2)`.
 
 <dot>
 
-## Step 15 — `domain-elimination`
+### Step 15 — `domain-elimination`
 
 > every House except H3 excluded for Green → (color-loc Green H3).
 
@@ -154,7 +170,7 @@ Derives `color-loc(Green, H3)`.
 
 <dot>
 
-## Step 16 — `domain-elimination`
+### Step 16 — `domain-elimination`
 
 > every House except H1 excluded for Blue → (color-loc Blue H1).
 
@@ -164,7 +180,7 @@ Derives `color-loc(Blue, H1)`.
 
 <dot>
 
-## Step 17 — `functional-negative`
+### Step 17 — `functional-negative`
 
 > color-loc functional: (color-loc Blue H1) ⟹ (not (color-loc Blue H2)).
 
@@ -174,7 +190,7 @@ Derives `not(color-loc(Blue, H2))`.
 
 <dot>
 
-## Step 18 — `functional-negative`
+### Step 18 — `functional-negative`
 
 > color-loc functional: (color-loc Blue H1) ⟹ (not (color-loc Blue H3)).
 
@@ -184,7 +200,7 @@ Derives `not(color-loc(Blue, H3))`.
 
 <dot>
 
-## Step 19 — `injective-negative`
+### Step 19 — `injective-negative`
 
 > color-loc injective: (color-loc Blue H1) ⟹ (not (color-loc Red H1)).
 
@@ -194,7 +210,7 @@ Derives `not(color-loc(Red, H1))`.
 
 <dot>
 
-## Step 20 — `injective-negative`
+### Step 20 — `injective-negative`
 
 > color-loc injective: (color-loc Blue H1) ⟹ (not (color-loc Green H1)).
 
@@ -204,7 +220,7 @@ Derives `not(color-loc(Green, H1))`.
 
 <dot>
 
-## Step 21 — `range-elimination`
+### Step 21 — `range-elimination`
 
 > every Color except Blue excluded for H1 → (color-loc Blue H1).
 
@@ -214,7 +230,7 @@ Derives `color-loc(Blue, H1)`.
 
 <dot>
 
-## Step 22 — `range-elimination`
+### Step 22 — `range-elimination`
 
 > every Color except Red excluded for H2 → (color-loc Red H2).
 
@@ -224,7 +240,7 @@ Derives `color-loc(Red, H2)`.
 
 <dot>
 
-## Step 23 — `range-elimination`
+### Step 23 — `range-elimination`
 
 > every Color except Green excluded for H3 → (color-loc Green H3).
 
@@ -234,12 +250,6 @@ Derives `color-loc(Green, H3)`.
 
 <dot>
 
-_(no surviving derivation — see the refuted branches below.)_
+## State 1 of 1 — ∅, root itself · minimal and maximal — 0 steps
 
-## Commitment lattice
-
-<dot>
-
-## Solution
-
-<dot>
+_Nothing beyond root and the commitment._

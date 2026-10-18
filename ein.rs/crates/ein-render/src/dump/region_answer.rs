@@ -17,7 +17,7 @@ use std::path::Path;
 use ein_core::{FactId, Kb, Terms};
 use ein_infer::described::Described;
 use ein_infer::expect::Outcome;
-use ein_infer::explore::{Ask, Route, Stopped, Which};
+use ein_infer::explore::{Ask, Route, Stopped, Verdict, Which};
 use ein_infer::read_out::{Listed, Listing, ReadOut};
 use ein_infer::region::Nodes;
 use ein_infer::solve::SolveError;
@@ -150,7 +150,17 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
         _ => (Json::Null, Json::Null, Json::Null),
     };
     let Some(d) = d else {
-        // A mode: R was not described, so R's numbers are `null`.
+        // A mode: R was not described, so R's numbers are `null` — except
+        // that R is empty, and of which kind, when the mode established it, as
+        // stdout says it.
+        let empty = match a.verdict {
+            Some(Verdict::Contradiction) => Json::str("dead"),
+            Some(Verdict::Open) => Json::str("owing"),
+            _ if a.exhausted && a.states.is_empty() && a.mode.ask == Ask::Describe => {
+                Json::str(if a.root_dead { "dead" } else { "owing" })
+            }
+            _ => Json::Null,
+        };
         return Json::obj(vec![
             ("k_s", Json::Null),
             ("k_c", Json::Null),
@@ -159,7 +169,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
             ("complete_up_to", Json::Null),
             ("root", Json::Null),
             ("root_owes", Json::Null),
-            ("empty", Json::Null),
+            ("empty", empty),
             ("minimal", Json::Null),
             ("maximal", Json::Null),
             ("components", Json::Null),
@@ -307,7 +317,14 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
             "universe",
             Json::obj(vec![
                 ("candidates", Json::int(n as i64)),
-                ("dead_alone", Json::int(d.dead_alone as i64)),
+                (
+                    "dead_alone",
+                    if crate::read_out::dead_alone_known(d) {
+                        Json::int(d.dead_alone as i64)
+                    } else {
+                        Json::Null
+                    },
+                ),
             ]),
         ),
         ("route", Json::str(route(d.route))),
@@ -339,6 +356,21 @@ fn licences(r: &ReadOut) -> Json {
 /// The read-out's blocks of `ein-summary/2`, in order: `asked`, `region`,
 /// `verdict`, `queries`, `claim`, `work`. The caller adds `schema` and
 /// `source` before them and the program's own blocks after.
+/// One binding's value, typed: an integer stays a JSON number, its digits
+/// unclamped (`Json::BigInt` past `i64`, since the IR's `INT` is unbounded),
+/// and anything else — an atom, a nested fact's s-expression — is a string.
+/// What M1e's fuzzer found the walk's summary quoting, kept for the region's.
+fn binding(v: &str) -> Json {
+    let digits = v.strip_prefix('-').unwrap_or(v);
+    if !digits.is_empty() && digits.bytes().all(|b| b.is_ascii_digit()) {
+        return match v.parse::<i64>() {
+            Ok(n) => Json::int(n),
+            Err(_) => Json::BigInt(v.to_string()),
+        };
+    }
+    Json::str(v)
+}
+
 pub fn summary_blocks(r: &ReadOut) -> Vec<(&'static str, Json)> {
     let a = &r.answer;
     let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
@@ -358,14 +390,18 @@ pub fn summary_blocks(r: &ReadOut) -> Vec<(&'static str, Json)> {
         ]),
         _ => Json::Null,
     };
-    let over = match r.described() {
-        Some(_) => "all",
-        None => "listed",
-    };
     let queries: Vec<Json> = r
         .queries
         .iter()
         .map(|q| {
+            // What the classes are over: the set the query's `:over` names,
+            // or the states the run listed when it asked another.
+            let over = match (q.as_asked, q.over) {
+                (false, _) => "listed",
+                (true, ein_ir::expect::Over::All) => "all",
+                (true, ein_ir::expect::Over::Minimal) => "minimal",
+                (true, ein_ir::expect::Over::Maximal) => "maximal",
+            };
             Json::obj(vec![
                 ("goal", Json::str(q.goal.as_str())),
                 ("over", Json::str(over)),
@@ -386,9 +422,7 @@ pub fn summary_blocks(r: &ReadOut) -> Vec<(&'static str, Json)> {
                                                 .map(|row| {
                                                     Json::Object(
                                                         row.iter()
-                                                            .map(|(k, v)| {
-                                                                (k.clone(), Json::str(v.as_str()))
-                                                            })
+                                                            .map(|(k, v)| (k.clone(), binding(v)))
                                                             .collect(),
                                                     )
                                                 })
@@ -409,10 +443,16 @@ pub fn summary_blocks(r: &ReadOut) -> Vec<(&'static str, Json)> {
                             .collect(),
                     ),
                 ),
-                // The query's own `:expect`, checked against its classes,
-                // lands with the switch; the key is here so that the schema
-                // does not change shape when it does.
-                ("expect", Json::Null),
+                // The query's own `:expect`, checked against its classes.
+                (
+                    "expect",
+                    q.claim.as_ref().map_or(Json::Null, |c| {
+                        Json::obj(vec![
+                            ("outcome", Json::str(outcome(c.outcome))),
+                            ("lines", strs(&c.lines)),
+                        ])
+                    }),
+                ),
             ])
         })
         .collect();

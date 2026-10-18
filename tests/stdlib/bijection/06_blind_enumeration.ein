@@ -115,9 +115,9 @@
 (seats Ann C1)
 
 (solve
-  :no-hypothesis (is-a is-a* sort))
+  :no-hypothesis (is-a is-a* sort)
+  :expect (region (model (seats Ann C1) (seats Bob C2)
+                         (not (seats Ann C2)) (not (seats Bob C1)))))
 
 (query
-  :goal (seats ?who ?where)
-  :expect (model (seats Ann C1) (seats Bob C2)
-                 (not (seats Ann C2)) (not (seats Bob C1))))
+  :goal (seats ?who ?where))

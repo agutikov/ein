@@ -62,13 +62,17 @@ after:   House-1 ──next-to──▶ House-2
 
 ```sh
 $ ein solve examples/saturation/symmetric/neighbours.ein
-  solutions (k)   1
-  verdict         Solution
-    query facts                rendered
-    (next-to House-2 House-1)  (next-to House-2 House-1)
+  states (k_s)      1
+  …
+  query             (next-to House-2 House-1)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      the goal holds: it has no variable
 ```
 
-The goal fact wasn't stated — `symmetric` derived it.
+The goal fact wasn't stated — `symmetric` derived it. R, the set of states
+the program allows, is one state here: nothing is guessed, so the only state
+is the saturated facts themselves.
 
 ## `transitive` — chain links together
 
@@ -111,10 +115,16 @@ after:   …  + Cat ──is-a──▶ Animal          (added by `transitive`)
 
 ```sh
 $ ein solve examples/saturation/transitive/taxonomy.ein
-  verdict         Solution
-    query facts        rendered
-    (is-a Cat Animal)  (is-a Cat Animal)
+  states (k_s)      4
+  …
+  query             (is-a Cat Animal)
+  over              all of R — 4 states → 1 projection class
+    class 1 of 1    4 states (1, 2, 3, 4)
+                      the goal holds: it has no variable
 ```
+
+Four states, because Ein may also guess `is-a` facts the program does not
+state, and none of the guesses breaks anything; the goal holds in all four.
 
 ## `co-located` — the first puzzle-shaped rule
 
@@ -151,9 +161,13 @@ digraph { rankdir=LR; node [shape=box]; edge [dir=none];
 **Run it** (its header documents the unique answer):
 
 ```sh
-$ ein solve examples/branching/05_mini_zebra.ein
+$ ein solve examples/branching/05_mini_zebra.ein --maximal
 # → the Coffee-drinker is Bob, and Bob owns the Dog.
 ```
+
+`--maximal` asks for the states nothing more can be guessed into — the
+complete answers. A bare `ein solve` lists all five states of R, the four
+partial ones included, and says the goal has no row in those four.
 
 That `guess` step — proposing a fact, then checking it for contradictions —
 is the **hypothesis loop**, the engine's search. You don't write it; you

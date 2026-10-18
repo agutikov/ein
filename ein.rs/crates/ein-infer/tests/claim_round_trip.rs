@@ -152,9 +152,11 @@ fn every_printed_region_holds_as_its_own_claim() {
         bad.len(),
         bad.join("\n\n")
     );
-    // Not vacuous: the corpus has every kind, and most of it is reached.
+    // Not vacuous: the corpus has every kind, and most of it is reached. The
+    // floor was 150 until M1e2 S1e2.1a.5 moved 72 query claims to region
+    // claims, whose programs `ein test` holds and this sweep skips.
     assert!(
-        checked >= 150,
+        checked >= 90,
         "only {checked} programs were printed and checked"
     );
     assert!(

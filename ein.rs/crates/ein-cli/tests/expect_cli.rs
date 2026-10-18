@@ -1,10 +1,13 @@
 //! `:expect` through the CLI — M1c
 //! [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects).
 //!
-//! The comparison itself is `ein-infer`'s `expect_semantics`; what is here is
-//! the part a program can only observe from outside: **the exit code**, and the
-//! promise that a query carrying `:expect` under plain `solve` is either
-//! checked or refused, and never ignored.
+//! The comparison itself is `ein-infer`'s `expect_semantics` (a query's
+//! classes) and `claim_round_trip` (the region claim); what is here is the part
+//! a program can only observe from outside: **the exit code**, and the promise
+//! that a claim under plain `solve` is checked, or noted as not checked, and
+//! never ignored. Since M1e2 S1e2.1a.5 a query's `:expect` lists its
+//! projection classes, and a claim about the whole state is the solve form's,
+//! `(solve … :expect (region …))`.
 //!
 //! A checker that reports success on a broken expectation is the worst outcome
 //! this phase has available to it, so the fixtures that must *fail* are checked
@@ -80,18 +83,41 @@ fn the_feature_fixture_holds_and_says_so() {
 
 // ── A false claim is exit 1, not a note ────────────────────────────
 
+/// Both claim forms: a query's that lists a class the query does not have,
+/// and a region claim whose model misses a fact the state holds, which it
+/// names — naming a relation closes it.
 #[test]
 fn a_false_expectation_exits_one_and_names_the_fact() {
-    let f = Fixture::new(
-        "surplus",
+    let q = Fixture::new(
+        "wrong-class",
         &format!(
-            "{BODY}(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1)))\n"
+            "{BODY}(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H2)))\n"
         ),
     );
-    let r = ein(&["solve", &f.path()]);
+    let r = ein(&["solve", &q.path()]);
     assert_eq!(r.code, 1, "a false claim is a failure: {}{}", r.out, r.err);
-    assert!(r.out.contains("FAILED"), "{}", r.out);
-    assert!(r.out.contains("(p B H2)"), "the surplus fact: {}", r.out);
+    assert!(r.out.contains(":expect           FAILED"), "{}", r.out);
+    assert!(
+        r.out
+            .contains("(model (p A H1)) is a class the claim does not list"),
+        "{}",
+        r.out
+    );
+    assert!(r.err.contains("query :expect FAILED"), "{}", r.err);
+
+    let s = Fixture::new(
+        "surplus",
+        &format!("{BODY}(solve :no-hypothesis (p) :expect (region (model (p A H1))))\n"),
+    );
+    let r = ein(&["solve", &s.path()]);
+    assert_eq!(r.code, 1, "a false claim is a failure: {}{}", r.out, r.err);
+    assert!(r.out.contains("(solve :expect)   FAILED"), "{}", r.out);
+    assert!(
+        r.out
+            .contains("the state holds (p B H2), which the model does not list"),
+        "the surplus fact: {}",
+        r.out
+    );
 }
 
 #[test]
@@ -99,12 +125,14 @@ fn a_true_expectation_exits_zero() {
     let f = Fixture::new(
         "holds",
         &format!(
-            "{BODY}(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1) (p B H2)))\n"
+            "{BODY}(solve :no-hypothesis (p) :expect (region (model (p A H1) (p B H2))))\n\
+             (query :goal (p A ?h) :expect (model (p A H1)))\n"
         ),
     );
     let r = ein(&["solve", &f.path()]);
     assert_eq!(r.code, 0, "{}{}", r.out, r.err);
-    assert!(r.out.contains("holds"), "{}", r.out);
+    assert!(r.out.contains(":expect           holds"), "{}", r.out);
+    assert!(r.out.contains("(solve :expect)   holds"), "{}", r.out);
 }
 
 /// The four load-time refusals, each with its message checked in beside it.
@@ -134,38 +162,33 @@ fn the_load_negatives_are_refused_with_their_banked_message() {
     }
 }
 
-/// **`NOT CHECKED`'s corpus witness, and the stream that unblocked it.**
+/// **`NOT CHECKED` is a note under `solve` and a failure under `ein test`**
+/// — M1e2 S1e2.1a.5's split, on the corpus's own fixture.
 ///
-/// M1d [S1d.4.1](../../../../docs/history/m1d_satisfiability/README.md#s1d41--what-closure-costs)
-/// went looking for a real file that reaches [`Outcome::NotChecked`] and found
-/// this one: `examples/features/11_expect_ambiguity.ein` under **plain
-/// `solve`**, which stops at `-n 1`, so the claim about a *set* is neither
-/// confirmed nor refuted. No constructed input and no `-m` cap — the corpus's
-/// own fixture, answering the question the phase is about.
-///
-/// It was not a cell of `corpus.toml`, and the blocker was the last assertion
-/// here inverted: `solve` printed the `:expect` verdict on stdout and exited 1
-/// with an **empty stderr**, which is exactly what
-/// `corpus_cli::every_refusal_carries_a_diagnostic` forbids. [S1d.4.3](../../../../docs/history/m1d_satisfiability/the_vocabulary.md)
-/// settled it the way the question deserved rather than by moving the block: a
-/// failing claim is a **result** and its report stays under the solution table,
-/// *and* a one-line diagnosis goes to stderr, because an exit 1 nobody can
-/// diagnose from a pipeline is a defect whichever stream the detail is on. The
-/// entry now declares `solve`, and `corpus_exits.txt` banks the 1.
+/// `examples/features/11_expect_ambiguity.ein` claims the maximal line's two
+/// classes. Asked for one state, `ein solve -n 1` did not decide that: it
+/// answers what it was asked, says on stderr — one line, naming the file —
+/// that the claim went unchecked, and exits 0, because an answer is not an
+/// error. `ein test` runs the question the claim is about, and it holds.
+/// Before the switch plain `solve` stopped at `-n 1` by default and exited 1
+/// here (M1d S1d.4.3).
 #[test]
-fn not_checked_is_reachable_from_a_corpus_file_with_no_cap() {
-    let r = ein(&["solve", "examples/features/11_expect_ambiguity.ein"]);
-    assert_eq!(r.code, 1, "{}{}", r.out, r.err);
-    assert!(r.out.contains(":expect        NOT CHECKED"), "{}", r.out);
+fn not_checked_is_a_note_under_solve_and_decided_by_test() {
+    let file = "examples/features/11_expect_ambiguity.ein";
+    let r = ein(&["solve", file, "-n", "1"]);
+    assert_eq!(r.code, 0, "{}{}", r.out, r.err);
+    assert!(r.out.contains(":expect           NOT CHECKED"), "{}", r.out);
     assert!(
-        r.out.contains("the search was not exhausted"),
-        "it says which half went unchecked: {}",
+        r.out
+            .contains("the claim is about the maximal line, and this run asked 1 of its states"),
+        "it says why the claim went unchecked: {}",
         r.out
     );
-    // One line, naming the file and the outcome — what a pipeline sees.
     assert!(
-        r.err.contains("NOT CHECKED") && r.err.contains("11_expect_ambiguity.ein"),
-        "an exit 1 says why on stderr: {:?}",
+        r.err.starts_with("note: ")
+            && r.err.contains("NOT CHECKED")
+            && r.err.contains("11_expect_ambiguity.ein"),
+        "{:?}",
         r.err
     );
     assert_eq!(
@@ -174,6 +197,16 @@ fn not_checked_is_reachable_from_a_corpus_file_with_no_cap() {
         "one line, not a second copy: {:?}",
         r.err
     );
+
+    let plain = ein(&["solve", file]);
+    assert_eq!(plain.code, 0, "{}{}", plain.out, plain.err);
+    assert!(
+        plain.out.contains(":expect           holds"),
+        "{}",
+        plain.out
+    );
+    let t = ein(&["test", file]);
+    assert_eq!(t.code, 0, "{}{}", t.out, t.err);
 }
 
 // ── Several queries in one file ────────────────────────────────────
@@ -187,8 +220,8 @@ fn every_query_runs_and_any_failure_sets_the_code() {
         &format!(
             "{BODY}\
              (solve :no-hypothesis (p))\n\
-             (query :goal (p A ?h) :expect (model (p A H1) (p B H2)))\n\
-             (query :goal (p B ?h) :expect (model (p A H1) (p B H3)))\n"
+             (query :goal (p A ?h) :expect (model (p A H1)))\n\
+             (query :goal (p B ?h) :expect (model (p B H3)))\n"
         ),
     );
     let r = ein(&["solve", &f.path()]);
@@ -198,27 +231,36 @@ fn every_query_runs_and_any_failure_sets_the_code() {
     assert!(r.out.contains("holds"), "the first one holds: {}", r.out);
     assert!(r.out.contains("FAILED"), "{}", r.out);
     assert!(r.out.contains("(p B H3)"), "{}", r.out);
+    assert!(r.err.contains("query 2 of 2 :expect FAILED"), "{}", r.err);
 }
 
-/// One path cannot hold two runs, so an artefact flag over a two-question file
-/// is refused rather than silently overwritten — the same reasoning that
-/// removed the last-query-wins discard in the first place.
+/// **A file with several queries is one run, so one path holds it** — since
+/// M1e2 S1e2.1a.5. The walk solved once per query and refused an artefact flag
+/// over two of them, because one path could not hold two runs; a region run
+/// computes R once and reads each query off it, so the summary's `queries`
+/// carries both and the event stream is the one run's.
 #[test]
-fn an_artefact_flag_over_several_queries_is_refused() {
+fn an_artefact_flag_over_several_queries_writes_the_one_run() {
     let f = Fixture::new(
         "artefact",
         &format!(
             "{BODY}\
              (solve :no-hypothesis (p))\n\
-             (query :goal (p A ?h) :expect (model (p A H1) (p B H2)))\n\
-             (query :goal (p B ?h) :expect (model (p A H1) (p B H2)))\n"
+             (query :goal (p A ?h) :expect (model (p A H1)))\n\
+             (query :goal (p B ?h) :expect (model (p B H2)))\n"
         ),
     );
-    let out = std::env::temp_dir().join(format!("ein-expect-cli-{}.jsonl", std::process::id()));
-    let r = ein(&["solve", &f.path(), "--events", &out.to_string_lossy()]);
-    assert_eq!(r.code, 2, "a usage refusal: {}{}", r.out, r.err);
-    assert!(r.err.contains("--events names one path"), "{}", r.err);
-    assert!(!out.exists(), "and nothing was written");
+    let out = std::env::temp_dir().join(format!("ein-expect-cli-{}.json", std::process::id()));
+    let r = ein(&["solve", &f.path(), "--json-summary", &out.to_string_lossy()]);
+    assert_eq!(r.code, 0, "{}{}", r.out, r.err);
+    let j: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&out).expect("the summary")).unwrap();
+    let queries = j["queries"].as_array().expect("queries");
+    assert_eq!(queries.len(), 2);
+    assert!(
+        queries.iter().all(|q| q["expect"]["outcome"] == "held"),
+        "{j}"
+    );
     let _ = std::fs::remove_file(&out);
 }
 
@@ -253,8 +295,8 @@ fn the_container_round_trips_expect_and_the_query_index() {
         &format!(
             "{BODY}\
              (solve :no-hypothesis (p))\n\
-             (query :goal (p A ?h) :expect (model (p A H1) (p B H2)))\n\
-             (query :goal (p B ?h) :expect (model (p A H1) (p B H3)))\n"
+             (query :goal (p A ?h) :expect (model (p A H1)))\n\
+             (query :goal (p B ?h) :expect (model (p B H3)))\n"
         ),
     );
     let container = std::env::temp_dir().join(format!("ein-expect-{}.einb", std::process::id()));

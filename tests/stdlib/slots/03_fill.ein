@@ -65,11 +65,11 @@
   :why    "Cat is excluded from one seat of three — nothing may be forced")
 
 (solve
-  :no-hypothesis (type instance co-loc undecided))
+  :no-hypothesis (type instance co-loc undecided)
+  :expect (region (owing (model (co-loc S1 Rat) (co-loc Rat S1)
+                                (not (co-loc S1 Cat)) (not (co-loc S1 Dog))
+                                (not (co-loc Rat S2)) (not (co-loc Rat S3))
+                                (undecided Cat S2)))))
 
 (query
-  :goal (co-loc ?a ?b)
-  :expect (model (co-loc S1 Rat) (co-loc Rat S1)
-                 (not (co-loc S1 Cat)) (not (co-loc S1 Dog))
-                 (not (co-loc Rat S2)) (not (co-loc Rat S3))
-                 (undecided Cat S2)))
+  :goal (co-loc ?a ?b))

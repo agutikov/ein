@@ -1,140 +1,24 @@
-//! `ein solve --json-summary FILE` — the structured run summary (S1a.0.1).
+//! `ein solve --json-summary FILE` — the structured run summary, since M1e2
+//! S1e2.1a.5's switch `ein-summary/2`: the read-out as data
+//! ([`read_out.md` § 8.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#81---json-summary-ein-summary2)).
 //!
-//! What reads it in the tree is `ein-cli/tests/summary_properties.rs`, which
-//! holds its fields to thirteen arithmetic identities.
-//!
-//! Four properties: **additive** (writes a file,
-//! never stdout/stderr/the exit code), **order-free** (every set-shaped
-//! observable sorted, so a difference reports semantics rather than order),
-//! **self-describing** (field order fixed by construction, `schema`
-//! versioned), and — since M1e S1e.3.2, `SE-M2` — **one shape on every arm**:
-//! the key set does not depend on the verdict, so a consumer switching on
-//! `schema` never tests for a key. That is the sentence repeated three times
-//! below (*a field that appears only sometimes is a field a consumer has to
-//! guess about*), and it is true by construction rather than by discipline:
-//! there is one assembly, [`build`], and [`build_aborted`] is it with an
-//! `Aborted` answer. `summary_properties::the_summary_has_one_shape_on_every_arm`
-//! is the guard.
+//! Four properties: **additive** (writes a file, never stdout/stderr/the exit
+//! code), **order-free** (every set-shaped observable sorted, so a difference
+//! reports semantics rather than order), **self-describing** (field order
+//! fixed by construction, `schema` versioned), and **one shape on every arm**:
+//! the key set does not depend on the question or on what R turned out to
+//! be, so a consumer switching on `schema` never tests for a key (*a field
+//! that appears only sometimes is a field a consumer has to guess about*).
+//! `ein-cli/tests/region_answer.rs` holds the key set on every arm, and
+//! `summary_properties.rs` the region's identities. `ein-summary/1`, the
+//! walk's, went with the walk's CLI path.
 
 use ein_core::{Kb, SolverConfig, Terms};
 use ein_infer::SharedMemo;
-use ein_infer::events::sexpr;
 use ein_infer::hypgen::{Drop, HypGenStats, Skip};
-use ein_infer::solve::{MonotonicStats, OwesReport};
-use ein_infer::verdict::{Answer, Verdict};
 use ein_ir::Ast;
 use ein_render::dump::Json;
-use ein_render::dump::answer::{bindings_json, facts_json, owes_json};
 use ein_render::dump::json::dumps_indent;
-
-const SCHEMA: &str = "ein-summary/1";
-
-/// The verdict observables: what was proved, and the model(s) that prove it.
-fn verdict_block(ast: &Ast, terms: &mut Terms, answer: &Answer) -> Vec<(String, Json)> {
-    let mut core: Vec<String> = Vec::new();
-    let branches: Vec<&ein_infer::Solution> = match answer {
-        Answer::Verdict(Verdict::Contradiction { unsat_core }) => {
-            core = unsat_core.iter().map(|&f| sexpr(terms, f)).collect();
-            core.sort();
-            Vec::new()
-        }
-        Answer::Verdict(Verdict::Solution(s)) => vec![s],
-        Answer::Verdict(Verdict::Ambiguity(bs)) => bs.iter().collect(),
-        // **Not** `solutions` — M1d S1d.2.6. An open state is a state the run
-        // reached and declined to call a model, and filing it under
-        // `solutions` would be the vocabulary error this stage exists to fix,
-        // as well as breaking `len(solutions) == k` for a consumer that has
-        // every right to rely on it. It gets its own key below.
-        Answer::Verdict(Verdict::Open { .. }) => Vec::new(),
-        Answer::Aborted { .. } => Vec::new(),
-    };
-    let open_states: Vec<&ein_infer::Solution> = match answer {
-        Answer::Verdict(Verdict::Open { states, .. }) => states.iter().collect(),
-        _ => Vec::new(),
-    };
-    // Sorted by model, not left in branch order: which of k models is found
-    // first is a *traversal* fact, and `--shuffle` reorders it while proving
-    // the answer unchanged.
-    let mut solutions: Vec<(Vec<String>, Json)> = branches
-        .iter()
-        .map(|b| {
-            let f = facts_json(terms, &b.kb);
-            let key = match &f {
-                Json::Array(items) => items
-                    .iter()
-                    .map(|i| match i {
-                        Json::Str(s) => s.clone(),
-                        _ => String::new(),
-                    })
-                    .collect(),
-                _ => Vec::new(),
-            };
-            let g = bindings_json(ast, terms, &b.kb);
-            (key, Json::obj(vec![("facts", f), ("goal_bindings", g)]))
-        })
-        .collect();
-    solutions.sort_by(|a, b| a.0.cmp(&b.0));
-    // The same shape, sorted the same way, under a name that says what it is.
-    // Emitted unconditionally — an empty array for every verdict but `Open`,
-    // because a field that appears only sometimes is a field a consumer has to
-    // guess about (the rule the `owes` and `config` blocks already follow).
-    let mut opens: Vec<(Vec<String>, Json)> = open_states
-        .iter()
-        .map(|b| {
-            let f = facts_json(terms, &b.kb);
-            let key = match &f {
-                Json::Array(items) => items
-                    .iter()
-                    .map(|i| match i {
-                        Json::Str(s) => s.clone(),
-                        _ => String::new(),
-                    })
-                    .collect(),
-                _ => Vec::new(),
-            };
-            let g = bindings_json(ast, terms, &b.kb);
-            (key, Json::obj(vec![("facts", f), ("goal_bindings", g)]))
-        })
-        .collect();
-    opens.sort_by(|a, b| a.0.cmp(&b.0));
-    vec![
-        (
-            "unsat_core".to_string(),
-            Json::Array(core.into_iter().map(Json::Str).collect()),
-        ),
-        (
-            "solutions".to_string(),
-            Json::Array(solutions.into_iter().map(|(_, v)| v).collect()),
-        ),
-        (
-            "open_states".to_string(),
-            Json::Array(opens.into_iter().map(|(_, v)| v).collect()),
-        ),
-    ]
-}
-
-/// Every `MonotonicStats` field, in declaration order — the base counters
-/// lead.
-fn stats_block(stats: &MonotonicStats) -> Json {
-    let b = &stats.base;
-    Json::obj(vec![
-        ("enterings_total", Json::int(b.enterings_total as i64)),
-        ("enterings_alive", Json::int(b.enterings_alive as i64)),
-        ("enterings_dead_pre", Json::int(b.enterings_dead_pre as i64)),
-        (
-            "enterings_dead_post",
-            Json::int(b.enterings_dead_post as i64),
-        ),
-        ("facts_merged", Json::int(b.facts_merged as i64)),
-        ("forced_positives", Json::int(b.forced_positives as i64)),
-        ("saturate_count", Json::int(b.saturate_count as i64)),
-        ("layers_explored", Json::int(b.layers_explored as i64)),
-        ("nogoods_emitted", Json::int(b.nogoods_emitted as i64)),
-        ("nogoods_subsumed", Json::int(b.nogoods_subsumed as i64)),
-        ("solution_nodes", Json::int(stats.solution_nodes as i64)),
-        ("exhausted", Json::Bool(stats.exhausted)),
-    ])
-}
 
 /// A sparse counter block: only the keys that fired, in sorted key order —
 /// which for both enums is discriminant order.
@@ -319,88 +203,60 @@ fn leftover_at(
     ))
 }
 
-/// The leftover-open count for every state the verdict recorded — M1d S1d.3.1.
+/// `EIN_LEFTOVER=1`'s block for a region run — M1d S1d.3.1's probe, re-read
+/// per listed state at M1e2 S1e2.1a.5 (`read_out.md` § 12): what the
+/// **blind** enumerator would still propose at each state the read-out
+/// listed, outside H — a question about the universe, not about a route.
 ///
-/// **Off unless `EIN_LEFTOVER=1`**, and an env lever rather than a flag or a
-/// `(config …)` field for the two reasons the milestone has already settled:
-/// `SolverConfig` is rendered into the KB-shape digest, so a knob would
-/// re-bless every shape golden in the corpus, and every `solve` in the corpus
-/// sweep writes a summary, so a probe that ran by default would put a blind
-/// generation pass — ≈40 ms on the zebra family — into `cargo test` per model.
-/// The lever is `EIN_OBLIGATION_CHOICE`'s neighbour and is documented with it.
-///
-/// The block is emitted either way, because a field that appears only
-/// sometimes is a field a consumer has to guess about; `taken` is how it says
-/// which. `models` and `open_states` are index-aligned with the same two keys
-/// under `verdict` — which is why the sort key is rebuilt here rather than
-/// assumed — and `*_by_relation` is index-aligned with them, attributing each
-/// count to the relations the candidates were about.
-fn leftover_block(ast: &Ast, terms: &mut Terms, answer: &mut Answer) -> Result<Json, String> {
+/// Off unless the variable is `1`, for the reasons the walk's had: a blind
+/// generation pass per state would sit in every corpus summary of
+/// `cargo test`, and a `(config …)` knob would re-bless every shape golden.
+/// The block is emitted either way, `taken` saying which, and `states` and
+/// `states_by_relation` are index-aligned with `region.states`' listed ones.
+fn leftover_block(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+    r: &ein_infer::read_out::ReadOut,
+) -> Result<Json, String> {
     let taken = matches!(std::env::var("EIN_LEFTOVER").as_deref(), Ok("1"));
-    let mut models: Vec<&mut ein_infer::Solution> = Vec::new();
-    let mut opens: Vec<&mut ein_infer::Solution> = Vec::new();
+    let mut counts: Vec<Json> = Vec::new();
+    let mut by_relation: Vec<Json> = Vec::new();
     if taken {
-        match answer {
-            Answer::Verdict(Verdict::Solution(s)) => models.push(s),
-            Answer::Verdict(Verdict::Ambiguity(bs)) => models.extend(bs.iter_mut()),
-            Answer::Verdict(Verdict::Open { states, .. }) => opens.extend(states.iter_mut()),
-            Answer::Verdict(Verdict::Contradiction { .. }) | Answer::Aborted { .. } => {}
+        let a = &r.answer;
+        let sets: Vec<Vec<ein_core::FactId>> = r
+            .listed()
+            .map(|(_, s)| {
+                s.rep
+                    .iter()
+                    .map(|&b| a.candidates[b as usize].fact)
+                    .collect()
+            })
+            .collect();
+        let mut nodes = ein_infer::region::Nodes::new(kb, terms, ast, &a.candidates)
+            .map_err(|e| e.to_string())?;
+        let found = nodes
+            .with_fixpoints(&sets, |kbs, terms| {
+                kbs.iter_mut()
+                    .map(|kb| leftover_at(ast, terms, kb))
+                    .collect::<Result<Vec<_>, String>>()
+            })
+            .map_err(|e| e.to_string())??;
+        for (n, rel) in found {
+            counts.push(Json::int(n as i64));
+            by_relation.push(Json::Object(rel));
         }
     }
-    type Row = (Vec<String>, u64, Vec<(String, Json)>);
-    let counted = |states: Vec<&mut ein_infer::Solution>,
-                   terms: &mut Terms|
-     -> Result<(Json, Json), String> {
-        let mut rows: Vec<Row> = Vec::new();
-        for st in states {
-            let mut key: Vec<String> = st.kb.facts().map(|f| sexpr(terms, f)).collect();
-            key.sort();
-            let (n, by_rel) = leftover_at(ast, terms, &mut st.kb)?;
-            rows.push((key, n, by_rel));
-        }
-        rows.sort_by(|a, b| a.0.cmp(&b.0));
-        Ok((
-            Json::Array(rows.iter().map(|r| Json::int(r.1 as i64)).collect()),
-            Json::Array(rows.into_iter().map(|r| Json::Object(r.2)).collect()),
-        ))
-    };
-    let (m, m_rel) = counted(models, terms)?;
-    let (o, o_rel) = counted(opens, terms)?;
     Ok(Json::obj(vec![
         ("taken", Json::Bool(taken)),
-        ("models", m),
-        ("models_by_relation", m_rel),
-        ("open_states", o),
-        ("open_states_by_relation", o_rel),
+        ("states", Json::Array(counts)),
+        ("states_by_relation", Json::Array(by_relation)),
     ]))
 }
 
-/// One quiescent state's outstanding obligations — M1d S1d.2.4.
-///
-/// What the run found outstanding, at the two places a reader asks.
-///
-/// `root` is the state the search starts from; `models` is one block per
-/// reported model, in the verdict's branch order. Emitted unconditionally, and
-/// all-zero for the 150 corpus programs that state no obligation — the same
-/// rule the `config` block follows, because a field that appears only
-/// sometimes is a field a consumer has to guess about.
-fn owes_report(terms: &Terms, report: &OwesReport) -> Json {
-    Json::obj(vec![
-        // M1d S1d.2.6 — how many obligation rules the program states, which is
-        // what puts it in or out of the three-state read-out's scope. A
-        // consumer cannot infer it from `root.total`: 0 there is both "paid"
-        // and "never stated", and only one of the two may be called satisfied.
-        ("declared", Json::int(report.declared as i64)),
-        ("root", owes_json(terms, &report.root)),
-        (
-            "models",
-            Json::Array(report.models.iter().map(|o| owes_json(terms, o)).collect()),
-        ),
-    ])
-}
-
-/// The resolved `SolverConfig`, kebab-cased, in declaration order — the same
-/// field order `--dump-config` prints.
+/// The resolved config: the eight flags a program can set
+/// (`ein_core::config::FLAGS`), kebab-cased, in declaration order — the same
+/// fields `--dump-config` prints.
 fn config_block(cfg: &SolverConfig) -> Json {
     Json::obj(vec![
         (
@@ -411,33 +267,12 @@ fn config_block(cfg: &SolverConfig) -> Json {
             "enable-lookahead-kill-cache",
             Json::Bool(cfg.enable_lookahead_kill_cache),
         ),
-        ("hypgen-scoring", Json::str(cfg.hypgen_scoring.clone())),
-        ("hypgen-rel-weight", Json::Float(cfg.hypgen_rel_weight)),
-        ("hypgen-obj-weight", Json::Float(cfg.hypgen_obj_weight)),
-        ("print-alive", Json::Bool(cfg.print_alive)),
         ("warn-derived-naf", Json::Bool(cfg.warn_derived_naf)),
-        ("candidate-order-seed", Json::int(cfg.candidate_order_seed)),
         ("lattice-sanity-check", Json::Bool(cfg.lattice_sanity_check)),
-        ("lattice-order", Json::str(cfg.lattice_order.clone())),
-        (
-            "lattice-order-seed",
-            match cfg.lattice_order_seed {
-                Some(v) => Json::int(v),
-                None => Json::Null,
-            },
-        ),
         ("enable-path-nogoods", Json::Bool(cfg.enable_path_nogoods)),
         (
             "enable-symmetric-mirror",
             Json::Bool(cfg.enable_symmetric_mirror),
-        ),
-        (
-            "enable-singleton-writeback",
-            Json::Bool(cfg.enable_singleton_writeback),
-        ),
-        (
-            "enable-forced-positive",
-            Json::Bool(cfg.enable_forced_positive),
         ),
         (
             "record-alternative-justifications",
@@ -450,83 +285,19 @@ fn config_block(cfg: &SolverConfig) -> Json {
     ])
 }
 
-/// The summary object for one solve — every arm of it.
-///
-/// [`build_aborted`] is this function with an `Aborted` answer, so the shape
-/// below is the whole schema and there is no second assembly to keep in step.
-#[allow(clippy::too_many_arguments)]
-pub fn build(
-    ast: &Ast,
-    terms: &mut Terms,
-    kb: &mut Kb,
-    answer: &mut Answer,
-    stats: &MonotonicStats,
-    config: &SolverConfig,
-    source: &str,
-    events: &mut ein_infer::events::Events,
-    owes: &OwesReport,
-    monotonicity: &ein_infer::monotone::Monotonicity,
-) -> Result<Json, String> {
-    // `k` is the count of **models**, which is `solution_nodes` for every
-    // verdict but `Open`: an open state is a node the search recorded and the
-    // read-out declines to call a model (M1d S1d.2.6). Keeping the counter and
-    // the answer as two numbers is what lets `stats.solution_nodes` stay the
-    // pre-P1d.2 value on the twelve entries whose word moved (M1e `MA-M4`:
-    // this read *eleven* and `expect.rs` read *twelve*;
-    // `utils/openness_census.py` owns the number) — nothing about
-    // the search changed there, and a golden that moved both would say it had.
-    let k = answer.k(stats.solution_nodes);
-    let mut verdict = vec![
-        ("type".to_string(), Json::str(answer.as_str())),
-        ("k".to_string(), Json::int(k as i64)),
-        ("exhausted".to_string(), Json::Bool(stats.exhausted)),
-        // Present on every arm and `null` on all but one — M1e S1e.3.2,
-        // `SE-M2`. It is the budget cut's own sentence and only an `Aborted`
-        // has one, which is exactly the case the rule this file states three
-        // times is about: a field that appears only sometimes is a field a
-        // consumer has to guess about. The `type` is what says whether to read
-        // it; a missing key is not.
-        (
-            "reason".to_string(),
-            match answer {
-                Answer::Aborted { reason } => Json::str(reason.as_str()),
-                Answer::Verdict(_) => Json::Null,
-            },
-        ),
-    ];
-    verdict.extend(verdict_block(ast, terms, answer));
-    let leftover = leftover_block(ast, terms, answer)?;
-    Ok(Json::obj(vec![
-        ("schema", Json::str(SCHEMA)),
-        ("source", Json::str(source)),
-        ("verdict", Json::Object(verdict)),
-        ("stats", stats_block(stats)),
-        ("owes", owes_report(terms, owes)),
-        // M1e2 S1e2.1a.1 — the static check at root, on every arm. A program
-        // with a site reached the `non_monotone` stub, and this block is the
-        // stub's machine-readable half.
-        (
-            "monotonicity",
-            ein_render::dump::region::monotonicity_json(monotonicity, terms),
-        ),
-        ("leftover", leftover),
-        ("root", root_block(ast, terms, kb, events)?),
-        ("config", config_block(config)),
-    ]))
-}
-
 /// The summary of a region run, `ein-summary/2` — M1e2 T1e2.1a.5.2,
 /// [`read_out.md` § 8.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#81---json-summary-ein-summary2).
 /// The read-out's blocks (`asked`, `region`, `verdict`, `queries`, `claim`,
 /// `work`) from [`ein_render::dump::region_answer::summary_blocks`], then the
-/// program's: the static check, root's saturation and the resolved config,
-/// as `ein-summary/1` has them. Every key on every run.
+/// program's: the static check, `EIN_LEFTOVER`'s block, root's saturation and
+/// the resolved config. Every key on every run.
 pub fn build_region(
     ast: &Ast,
     terms: &mut Terms,
     kb: &mut Kb,
     r: &ein_infer::read_out::ReadOut,
     source: &str,
+    config: &SolverConfig,
 ) -> Result<Json, String> {
     let mut pairs: Vec<(&str, Json)> = vec![
         (
@@ -540,55 +311,11 @@ pub fn build_region(
         "monotonicity",
         ein_render::dump::region::monotonicity_json(&r.answer.monotonicity, terms),
     ));
+    pairs.push(("leftover", leftover_block(ast, terms, kb, r)?));
     let mut off = ein_infer::events::Events::off();
     pairs.push(("root", root_block(ast, terms, kb, &mut off)?));
-    let config = kb.program().config.clone().unwrap_or_default();
-    pairs.push(("config", config_block(&config)));
+    pairs.push(("config", config_block(config)));
     Ok(Json::obj(pairs))
-}
-
-/// The summary for a run cut short by `--max-time` / `--max-enterings`.
-///
-/// **[`build`] with an `Aborted` answer, and nothing else** — M1e S1e.3.2,
-/// `SE-M2`. It used to assemble its own object, and a hand-written second copy
-/// of a shape is a copy that drifts: it omitted `verdict.open_states` and the
-/// whole `leftover` block, both of which the other arm emits unconditionally,
-/// so a consumer switching on schema `ein-summary/1` saw two keys only on runs
-/// that finished. Delegating makes *every arm emits the same key set* true by
-/// construction rather than by inspection, which is what
-/// `summary_properties::the_summary_has_one_shape_on_every_arm` then pins.
-///
-/// The one thing the caller cannot supply is `owes`: a budget cut is not a
-/// fixpoint, so there is no quiescent state whose debts this could be about.
-/// The block is present and all-zero rather than absent, for the same reason
-/// as everything else here.
-#[allow(clippy::too_many_arguments)]
-pub fn build_aborted(
-    ast: &Ast,
-    terms: &mut Terms,
-    kb: &mut Kb,
-    reason: &str,
-    stats: &MonotonicStats,
-    config: &SolverConfig,
-    source: &str,
-    events: &mut ein_infer::events::Events,
-    monotonicity: &ein_infer::monotone::Monotonicity,
-) -> Result<Json, String> {
-    let mut answer = Answer::Aborted {
-        reason: reason.to_string(),
-    };
-    build(
-        ast,
-        terms,
-        kb,
-        &mut answer,
-        stats,
-        config,
-        source,
-        events,
-        &OwesReport::default(),
-        monotonicity,
-    )
 }
 
 /// The summary as JSON, two-space indented, **ASCII-only**, with a trailing

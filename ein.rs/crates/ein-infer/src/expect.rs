@@ -106,7 +106,7 @@ pub enum Outcome {
 }
 
 /// What the check found. `lines` is empty exactly when [`Outcome::Held`].
-#[derive(Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Report {
     pub outcome: Outcome,
     /// One line per disagreement, in the order they were found — the loader's
@@ -204,7 +204,7 @@ impl<'a> Actual<'a> {
 /// is written around was found exactly one step past "there is an extra fact
 /// here". One level of premises, not a walk: the primary justification is what
 /// the engine chose, and a reader who needs the rest reaches for `--trace`.
-fn provenance(terms: &Terms, kb: &Kb, id: FactId) -> Option<String> {
+pub(crate) fn provenance(terms: &Terms, kb: &Kb, id: FactId) -> Option<String> {
     let prov = terms.provs.get(kb.primary(id)?);
     match prov.kind {
         ProvKind::Rule => {

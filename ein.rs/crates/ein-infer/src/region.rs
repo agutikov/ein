@@ -101,6 +101,10 @@ pub struct Node {
     pub core: Vec<String>,
     /// The rules whose firing produced the contradiction the core explains.
     pub refuted_by: Vec<String>,
+    /// The `:source` of each core fact that carries one, as `(fact) :source
+    /// "…"`, in the core's order: the sentence a reader looks for in the
+    /// program's text.
+    pub sources: Vec<String>,
     /// The `absent` premises its derivation of the contradiction rests on —
     /// where a hole's failure is repairable.
     pub absent_premises: Vec<String>,
@@ -492,7 +496,6 @@ pub(crate) fn prepare_with(
     events: &mut Events,
 ) -> Result<Prepared, SolveError> {
     let memo = SharedMemo::default();
-    let mut off = Events::off();
     if events.on() {
         let u = crate::invariant::Universe::of(root, terms);
         for b in u.rule_breaches(root, terms, ast) {
@@ -515,18 +518,39 @@ pub(crate) fn prepare_with(
         };
         let mut sat = Saturator::new(&mut s)?;
         sat.saturate(&mut s, None, &mut |_| {})?;
+        // `(config :warn-derived-naf true)`'s two warnings, as the walk
+        // narrated them after root's saturation: the stratification advice and
+        // the refutation under `absent` (M1e S1e.2.3). Stream lines only, and
+        // only when a stream is recording, so a run that asks for neither pays
+        // nothing — M1e2 S1e2.1a.5 kept them when the walk left.
+        let warn =
+            s.kb.program()
+                .config
+                .as_ref()
+                .is_some_and(|c| c.warn_derived_naf);
+        if warn && s.events.on() {
+            let eligible = crate::hypgen::eligible_relations(&mut s)?;
+            for w in crate::naf_deps::naf_warnings(&sat.engine, s.terms, &eligible) {
+                s.events.emit("warn", |l| {
+                    l.str("category", w.category);
+                    l.str("message", &w.text);
+                });
+            }
+        }
         sat.snapshot(s.kb)
     };
     let root_dead = crate::contradiction::has_contradiction(root, terms);
 
-    // The universe, config-free, in rendered-text order.
+    // The universe, config-free, in rendered-text order. Narrated, so the
+    // stream says how H was built — the rung and each candidate — as the
+    // walk's narrated its own generator (M1e2 S1e2.1a.5).
     let mut proposed: Vec<FactId> = Vec::new();
     {
         let mut s = Session {
             kb: root,
             terms,
             ast,
-            events: &mut off,
+            events,
             memo: memo.clone(),
         };
         let mut stats = HypGenStats::new();
@@ -745,10 +769,13 @@ impl<'a> Nodes<'a> {
 
     /// `read` the fixpoints of root plus each of `sets`, all at once — for a
     /// reader that compares states, as a model set's determining key does.
+    ///
+    /// The fixpoints are handed out mutably so a reader can fork one, as
+    /// `EIN_LEFTOVER`'s probe does; they are dropped after `read`.
     pub fn with_fixpoints<R>(
         &mut self,
         sets: &[Vec<FactId>],
-        read: impl FnOnce(&[Kb], &mut Terms) -> R,
+        read: impl FnOnce(&mut [Kb], &mut Terms) -> R,
     ) -> Result<R, SolveError> {
         self.terms.provs.open_fork();
         let mut kbs = Vec::with_capacity(sets.len());
@@ -771,7 +798,7 @@ impl<'a> Nodes<'a> {
         }
         let out = match failed {
             Some(e) => Err(e),
-            None => Ok(read(&kbs, self.terms)),
+            None => Ok(read(&mut kbs, self.terms)),
         };
         drop(kbs);
         self.terms.provs.discard_fork();
@@ -928,6 +955,7 @@ fn node_in_region(
         let witnesses: Vec<FactId> = contradictions.iter().map(|c| c.witness()).collect();
         let core = crate::explain::smallest_contradiction_frontier(&fork, terms, Some(&witnesses));
         node.core = sorted_text(terms, &core);
+        node.sources = sources_of(&fork, terms, &core);
         let mut rules: Vec<String> = [first.positive, Some(first.negative)]
             .into_iter()
             .flatten()
@@ -1040,6 +1068,24 @@ pub(crate) fn narrate_node(
         l.num("owes", i64::from(out.owes));
         l.strs("core", out.node.core.iter().map(String::as_str));
     });
+}
+
+/// `(fact) :source "…"` for each of `facts` whose provenance names a
+/// `:source`, sorted as [`sorted_text`] sorts.
+fn sources_of(kb: &Kb, terms: &Terms, facts: &[FactId]) -> Vec<String> {
+    let mut v: Vec<String> = facts
+        .iter()
+        .filter_map(|&f| {
+            let source = kb.primary(f).and_then(|p| terms.provs.get(p).source)?;
+            Some(format!(
+                "{} :source {:?}",
+                sexpr(terms, f),
+                terms.sym(source)
+            ))
+        })
+        .collect();
+    v.sort();
+    v
 }
 
 fn sorted_text(terms: &Terms, facts: &[FactId]) -> Vec<String> {

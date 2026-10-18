@@ -30,8 +30,8 @@
 (assigned Build Bob)   ; ⊥ — one task, two distinct workers
 
 (solve
-  :no-hypothesis (assigned))
+  :no-hypothesis (assigned)
+  :expect (false))
 
 (query
-  :goal (assigned ?task ?who)
-  :expect (false))
+  :goal (assigned ?task ?who))

@@ -1,413 +1,340 @@
-//! `:expect` — the comparison, and the three rules it implements.
+//! A query's `:expect` — the comparison, since M1e2 S1e2.1a.5 over
+//! **projection classes** (`region_language.md` § 5).
 //!
-//! M1c
-//! [S1c.1.2](../../../../docs/history/m1c_external_validation/README.md#s1c12--how-a-program-states-what-it-expects)
-//! T1c.1.2.4. The *shape* is `ein-ir`'s and is tested there; this is what
-//! happens when the shape meets an answer.
+//! A query's `:expect` lists its classes: each `(model …)` is the goal's atoms
+//! under one class of rows over the set its `:over` names, `(model)` the class
+//! of states where the goal has no row, and `(false)` no class at all. The
+//! classes compare as a set, and the read-out checks them against the run that
+//! computed them ([`ein_infer::read_out`]). What a query *could* state before —
+//! the whole state, with naming a relation closing it — is the region claim's
+//! now, `(solve … :expect (region …))`, and `claim_round_trip.rs` and
+//! `tests/region/` are its tests. The walk's comparison, `expect::check`, has
+//! no caller since the switch.
 //!
 //! **Every rule here is tested in the failing direction**, because a checker
-//! that reports success on a broken expectation is the worst outcome the phase
-//! has available to it, and a control is not trusted until it has been seen to
-//! fail.
+//! that reports success on a broken expectation is the worst outcome the
+//! language has, and a control is not trusted until it has been seen to fail.
 
-use ein_core::{Kb, Terms};
-use ein_infer::solve::{NoDumper, SolveOptions, solve};
-use ein_infer::{Events, expect};
+use ein_core::Terms;
+use ein_infer::expect::Outcome;
+use ein_infer::explore::{self, Ask, Mode, Which};
+use ein_infer::read_out::{self, Query};
 use ein_ir::expect::Expectation;
-use ein_ir::{Ast, Node, NodeId};
+use ein_ir::{Ast, Node};
 
-/// A two-person, two-seat puzzle with exactly two models, and whatever
-/// `:expect` the caller wants to try against it.
-///
-/// `-e`: the set comparison is about *every* model, so the search has to be
-/// exhausted before there is a set to compare.
-const AMBIGUOUS: &str = r#"
-(relation seat Person Slot)
+/// Two people, two seats, all-different both ways, and a restrictions-only
+/// program: R is seven states — ∅, the four single seatings, the two full
+/// ones — and its maximal line the two full ones.
+const SEATS: &str = r#"
 (relation instance Thing Type)
+(relation seat Person Slot)
 (instance Ann Person) (instance Bob Person)
 (instance S1 Slot)    (instance S2 Slot)
 (rule one-per-person (?R) :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))
-      :assert (false) :priority 250 :why "{?a} sits twice")
+      :assert (false) :priority 250)
 (rule one-per-seat (?R) :match (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
-      :assert (false) :priority 250 :why "{?c} seats two")
+      :assert (false) :priority 250)
 (one-per-person seat) (one-per-seat seat)
-(hrule guess (?p ?s) :match (instance ?p Person) :assert (seat ?p ?s) :why "guess")
+(hrule guess (?p ?s) :match (instance ?p Person) :assert (seat ?p ?s))
+(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)))
 "#;
 
-/// A determinate one: two facts, no search at all.
-const DETERMINATE: &str = r#"
-(relation p Thing Place)
-(p A H1)
-(p B H2)
+/// A program whose root is dead: R is empty, every node dead.
+const DEAD: &str = r#"
+(relation p T)
+(rule no () :match (p A) :assert (false) :priority 250)
+(p A)
 "#;
 
-/// Load `body` plus one query, solve exhaustively, and check the query's
-/// `:expect` — the whole pipeline, since half the rules are the loader's.
-fn check(body: &str, query: &str) -> Result<expect::Report, String> {
-    check_stopping(body, query, None)
-}
+const BOTH_FULL: &str = "(or (model (seat Ann S1) (seat Bob S2)) \
+                             (model (seat Ann S2) (seat Bob S1)))";
 
-/// The same, with a `-n` cap — one of the two ways to reach a *non-exhausted*
-/// answer, which is the state a verdict claim cannot be checked against.
-fn check_stopping(
-    body: &str,
-    query: &str,
-    stop_after: Option<u64>,
-) -> Result<expect::Report, String> {
-    check_with(body, query, stop_after, 5)
-}
-
-/// The **other** way: a lattice depth cap with the frontier still alive at it.
-/// `-n` can only ever find too few models; a cap can leave *none*, which is a
-/// `Contradiction` that has proved nothing — the case
-/// [`a_contradiction_from_a_truncated_search_is_not_checked`] pins.
-fn check_capped(body: &str, query: &str, max_set_size: u32) -> Result<expect::Report, String> {
-    check_with(body, query, None, max_set_size)
-}
-
-fn check_with(
-    body: &str,
-    query: &str,
-    stop_after: Option<u64>,
-    max_set_size: u32,
-) -> Result<expect::Report, String> {
+/// Load `body` plus `query`, ask `mode`, and hand back the query's answer.
+fn answer_with(body: &str, query: &str, mode: Mode, budget: Option<u64>) -> Result<Query, String> {
     let src = format!("{body}\n{query}\n");
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = ein_ir::parse(&mut ast, &src, None).map_err(|e| e.to_string())?;
-    let mut kb: Kb = ein_ir::load(&mut ast, &mut terms, &forms, None).map_err(|e| e.0)?;
-    let opts = SolveOptions {
-        stop_after,
-        max_set_size,
-        ..SolveOptions::default()
-    };
-    let mut events = Events::off();
-    let solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
-        .map_err(|e| e.to_string())?;
-    let node = expect_node(&ast, &kb).expect("the query carries an :expect");
-    let expectation = ein_ir::expect::parse(&ast, node)?;
-    Ok(expect::check(
-        &ast,
-        &mut terms,
-        &expectation,
-        &solved.answer,
-        solved.stats.exhausted,
-    ))
-}
-
-fn expect_node(ast: &Ast, kb: &Kb) -> Option<NodeId> {
-    let query = kb.program().query()?;
-    for &pair in query.kw_pairs.iter() {
-        if let Node::KwPair { key, value } = ast.node(NodeId(pair.0))
-            && let Node::Keyword(name) = ast.node(key)
-            && ast.sym(name) == "expect"
-        {
-            return Some(value);
-        }
+    let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None).map_err(|e| e.0)?;
+    let mut opts = explore::Options::new(mode);
+    if let Some(b) = budget {
+        opts.budget = b;
     }
-    None
+    let r = read_out::run(&mut kb, &mut terms, &ast, &opts).map_err(|e| e.to_string())?;
+    Ok(r.queries
+        .into_iter()
+        .next()
+        .expect("the query was answered"))
 }
 
-fn holds(body: &str, query: &str) -> bool {
-    check(body, query).expect("loads and solves").passed()
+const DESCRIBE: Mode = Mode {
+    which: Which::All,
+    ask: Ask::Describe,
+};
+
+fn answer(body: &str, query: &str) -> Query {
+    answer_with(body, query, DESCRIBE, None).expect("loads and runs")
 }
 
-fn why(body: &str, query: &str) -> Vec<String> {
-    let report = check(body, query).expect("loads and solves");
-    assert!(!report.passed(), "expected a failure, and it held");
-    report.lines
+fn outcome(q: &Query) -> Outcome {
+    q.claim
+        .as_ref()
+        .expect("the query carries an :expect")
+        .outcome
 }
 
-// ── Rule 3: naming a relation closes it ────────────────────────────
+fn lines(q: &Query) -> Vec<String> {
+    q.claim
+        .as_ref()
+        .expect("the query carries an :expect")
+        .lines
+        .clone()
+}
 
+// ── What a class is ────────────────────────────────────────────────
+
+/// Over all of R the seat goal has seven classes, one per state, `(model)`
+/// among them — ∅ holds no seat — and the claim that lists exactly those
+/// holds.
 #[test]
-fn a_complete_extent_holds() {
-    assert!(holds(
-        DETERMINATE,
-        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1) (p B H2)))"
-    ));
+fn the_classes_over_all_of_r_hold_when_listed_whole() {
+    let all = "(or (model) (model (seat Ann S1)) (model (seat Ann S2)) \
+                (model (seat Bob S1)) (model (seat Bob S2)) \
+                (model (seat Ann S1) (seat Bob S2)) (model (seat Ann S2) (seat Bob S1)))";
+    let q = answer(SEATS, &format!("(query :goal (seat ?w ?s) :expect {all})"));
+    assert!(q.exact && q.as_asked, "{q:?}");
+    assert_eq!(q.classes.len(), 7);
+    assert_eq!(outcome(&q), Outcome::Held, "{:?}", lines(&q));
 }
 
-/// The rule's whole point, and the one a per-fact `:derives` cannot state: a
-/// **surplus** fact in a named relation is a failure, and the message says
-/// which fact was unexpected — and, since M1c
-/// [T1c.1.3.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test),
-/// where it came from on the line under it. `(p B H2)` is authored here, so
-/// the provenance is the program's own text; `a_surplus_fact_names_the_rule_that_derived_it`
-/// is the case that matters.
+/// The same two full seatings, asked `:over maximal`, are the whole answer;
+/// asked over all of R they are two classes of seven, and the claim fails
+/// naming a class it does not list.
 #[test]
-fn a_surplus_fact_in_a_named_relation_fails_and_is_named() {
-    let lines = why(
-        DETERMINATE,
-        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1)))",
+fn over_selects_the_states_and_a_missing_class_is_named() {
+    let q = answer(
+        SEATS,
+        &format!("(query :goal (seat ?w ?s) :over maximal :expect {BOTH_FULL})"),
     );
-    assert_eq!(lines.len(), 2, "{lines:?}");
-    assert!(lines[0].contains("(p B H2)"), "{lines:?}");
+    assert_eq!(outcome(&q), Outcome::Held, "{:?}", lines(&q));
+    let q = answer(
+        SEATS,
+        &format!("(query :goal (seat ?w ?s) :expect {BOTH_FULL})"),
+    );
+    assert_eq!(outcome(&q), Outcome::Failed);
+    let l = lines(&q);
     assert!(
-        lines[0].contains("naming a relation closes it"),
-        "{lines:?}"
-    );
-    assert!(lines[1].contains("in the program's own text"), "{lines:?}");
-}
-
-/// **The line that is worth the plumbing.** A surplus fact a *rule* put there
-/// is the shape of the bug this milestone is written around —
-/// `disjunctive-prune` derived one for a year — and the next question after
-/// "there is an extra fact here" is always "which rule?". One level of
-/// premises, because the rest of the chain is `--trace`'s.
-#[test]
-fn a_surplus_fact_names_the_rule_that_derived_it() {
-    let lines = why(
-        "(import std.algebra :symbols (symmetric))\n\
-         (relation p Thing Thing)\n(symmetric p)\n(p A B)\n",
-        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A B)))",
-    );
-    assert_eq!(lines.len(), 2, "{lines:?}");
-    assert!(lines[0].contains("(p B A)"), "the mirrored edge: {lines:?}");
-    assert!(
-        lines[1].contains("derived by symmetric from (p A B)"),
-        "the rule and its premise: {lines:?}"
-    );
-}
-
-#[test]
-fn a_missing_fact_fails_and_is_named() {
-    let lines = why(
-        DETERMINATE,
-        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1) (p B H2) (p C H3)))",
+        l[0].starts_with("the claim lists 2 classes, the query has 7: (model) is not listed"),
+        "{l:?}"
     );
     assert!(
-        lines
-            .iter()
-            .any(|l| l.contains("(p C H3)") && l.contains("no such fact")),
-        "{lines:?}"
+        l.iter()
+            .any(|x| x == "(model (seat Ann S1)) is a class the claim does not list"),
+        "{l:?}"
     );
 }
 
-/// Relations the expectation never mentions are unconstrained — the other half
-/// of closure, and what keeps a test off the 250 facts of `is-a*` and
-/// activator noise a whole-state golden would pin.
+/// A listed class the query does not have fails too, and says so.
 #[test]
-fn an_unnamed_relation_is_not_constrained() {
+fn an_extra_class_is_named() {
+    let q = answer(
+        SEATS,
+        "(query :goal (seat ?w ?s) :over maximal \
+         :expect (or (model (seat Ann S1) (seat Bob S2)) \
+                     (model (seat Ann S2) (seat Bob S1)) \
+                     (model (seat Ann S1))))",
+    );
+    assert_eq!(outcome(&q), Outcome::Failed);
+    let l = lines(&q);
     assert!(
-        holds(
-            DETERMINATE,
-            "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1) (p B H2)))"
-        ),
-        "`relation` and `instance` facts are in the model and are not listed"
+        l[0].contains("the claim lists 3 classes, the query has 2")
+            && l[0].contains("(model (seat Ann S1)) is no class of the maximal line"),
+        "{l:?}"
     );
 }
 
-/// Closing a relation says nothing about the extent of its stored negatives —
-/// otherwise every expectation drags in the negative-completion rules' whole
-/// output, which on a Zebra puzzle is most of the model. A `(not …)` is still
-/// listable, and is then checked for presence.
+/// The classes compare as a set, and so do the facts in one.
 #[test]
-fn stored_negatives_are_checked_for_presence_and_not_for_extent() {
-    let body = "(relation p Thing Place)\n(p A H1)\n(not (p A H2))\n";
-    assert!(
-        holds(
-            body,
-            "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1)))"
-        ),
-        "the stored (not (p A H2)) is not surplus — closure is positive-only"
+fn the_classes_and_their_facts_compare_as_sets() {
+    let q = answer(
+        SEATS,
+        "(query :goal (seat ?w ?s) :over maximal \
+         :expect (or (model (seat Bob S1) (seat Ann S2)) \
+                     (model (seat Bob S2) (seat Ann S1))))",
     );
-    assert!(holds(
-        body,
-        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1) (not (p A H2))))"
-    ));
-    let lines = why(
-        body,
-        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1) (not (p A H3))))",
-    );
-    assert!(
-        lines.iter().any(|l| l.contains("(not (p A H3))")),
-        "{lines:?}"
-    );
+    assert_eq!(outcome(&q), Outcome::Held, "{:?}", lines(&q));
 }
 
-// ── The verdict, implied ───────────────────────────────────────────
-
+/// `(model)` is the class where the goal has no row: on the minimal line of a
+/// restrictions-only program that is ∅ alone.
 #[test]
-fn bottom_is_the_contradiction_spelling() {
-    let body = "(relation p Thing Place)\n(p A H1)\n\
-                (rule no (?R) :match (?R ?a ?b) :assert (false) :priority 250 :why \"no\")\n\
-                (no p)\n";
-    assert!(holds(
-        body,
-        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (false))"
-    ));
-    let lines = why(
-        DETERMINATE,
-        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (false))",
-    );
-    assert!(lines[0].contains("expected (false)"), "{lines:?}");
-    // …and the other direction, with the message that says what to write.
-    let lines = why(
-        body,
-        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1)))",
-    );
-    assert!(lines[0].contains("`:expect (false)`"), "{lines:?}");
-}
-
-#[test]
-fn k_is_implied_by_the_number_of_disjuncts() {
-    let lines = why(
-        AMBIGUOUS,
-        "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) :expect (model (seat Ann S1) (seat Bob S2)))",
-    );
-    assert!(lines[0].contains("k = 1"), "{lines:?}");
-    assert!(lines[0].contains("k = 2"), "{lines:?}");
-}
-
-/// …and the count is followed by **what the models were**, projected through
-/// the query's own `:goal` — M1c
-/// [T1c.1.3.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test).
-/// "You said one and I found two" without saying what the second one was
-/// leaves the reader to go and re-run the search by hand, which is the thing
-/// this whole form is for not having to do.
-#[test]
-fn a_count_mismatch_says_what_the_models_were() {
-    let lines = why(
-        AMBIGUOUS,
-        "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) :expect (model (seat Ann S1) (seat Bob S2)))",
+fn an_undetermined_goal_is_the_empty_class() {
+    let q = answer_with(
+        SEATS,
+        "(query :goal (seat ?w ?s) :over minimal :expect (model))",
+        Mode {
+            which: Which::Minimal,
+            ask: Ask::Describe,
+        },
+        None,
+    )
+    .expect("runs");
+    assert_eq!(outcome(&q), Outcome::Held, "{:?}", lines(&q));
+    let q = answer(
+        SEATS,
+        "(query :goal (seat ?w ?s) :over minimal :expect (model))",
     );
     assert_eq!(
-        lines.len(),
-        3,
-        "the count, then one line per model: {lines:?}"
+        outcome(&q),
+        Outcome::Held,
+        "the description's minimal line is ∅ too"
     );
-    let rows: Vec<&String> = lines[1..].iter().collect();
-    assert!(
-        rows.iter()
-            .all(|l| l.contains("model ") && l.contains("of 2")),
-        "{rows:?}"
-    );
-    // Both seatings, each shown as the goal's own variables.
-    let both = format!("{}{}", rows[0], rows[1]);
-    for want in [
-        "?w=Ann ?s=S1",
-        "?w=Bob ?s=S2",
-        "?w=Ann ?s=S2",
-        "?w=Bob ?s=S1",
-    ] {
-        let cells: Vec<&str> = want.split(' ').collect();
-        assert!(
-            both.contains(cells[1]) && both.contains(cells[0]),
-            "{want} is not in {rows:?}"
-        );
-    }
-    // **Sorted**, because the row order a goal projection happens to produce
-    // is `defined_behaviour.md` §6's under-determined one — a report that
-    // inherited it could not be diffed.
-    for row in &rows {
-        let cells: Vec<&str> = row
-            .split(": ")
-            .nth(1)
-            .expect("a projection")
-            .split("; ")
-            .collect();
-        let mut sorted = cells.clone();
-        sorted.sort();
-        assert_eq!(cells, sorted, "{row}");
-    }
 }
 
-// ── `(or …)` is a set ──────────────────────────────────────────────
-
-/// The order the search finds models in is exactly what S1a.7.0's invariance
-/// tests assert is not observable, so the comparison is over **sets**: the
-/// same two disjuncts in either order hold.
+/// `(false)` is no class: it holds exactly when the set is empty.
 #[test]
-fn the_disjuncts_compare_as_a_set_not_a_sequence() {
-    let q = |a: &str, b: &str| {
-        format!(
-            "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) \
-             :expect (or (model {a}) (model {b})))"
-        )
+fn false_is_no_class() {
+    let q = answer(DEAD, "(query :goal (p ?x) :expect (false))");
+    assert_eq!(outcome(&q), Outcome::Held, "{:?}", lines(&q));
+    let q = answer(
+        SEATS,
+        "(query :goal (seat ?w ?s) :over maximal :expect (false))",
+    );
+    assert_eq!(outcome(&q), Outcome::Failed);
+    assert!(lines(&q)[0].starts_with("the claim lists 0 classes, the query has 2"));
+}
+
+// ── When a claim is not checked ────────────────────────────────────
+
+/// A claim is checked against the classes over the set it asks about, and
+/// complete: a run that asked another set, or stopped, did not decide it.
+#[test]
+fn a_claim_the_run_did_not_decide_is_not_checked() {
+    let claim = format!("(query :goal (seat ?w ?s) :over maximal :expect {BOTH_FULL})");
+    // `--minimal` asked another line.
+    let q = answer_with(
+        SEATS,
+        &claim,
+        Mode {
+            which: Which::Minimal,
+            ask: Ask::Describe,
+        },
+        None,
+    )
+    .expect("runs");
+    assert!(!q.as_asked);
+    assert_eq!(outcome(&q), Outcome::NotChecked);
+    assert_eq!(
+        lines(&q),
+        ["the claim is about the maximal line, and this run asked its minimal line"]
+    );
+    // `-n 1` asked one state.
+    let q = answer_with(
+        SEATS,
+        &format!("(query :goal (seat ?w ?s) :expect {BOTH_FULL})"),
+        Mode {
+            which: Which::All,
+            ask: Ask::Find(1),
+        },
+        None,
+    )
+    .expect("runs");
+    assert_eq!(outcome(&q), Outcome::NotChecked);
+    assert!(
+        lines(&q)[0].contains("1 of its states (-n 1)"),
+        "{:?}",
+        lines(&q)
+    );
+    // A budget that stops the description.
+    let q = answer_with(
+        SEATS,
+        &format!("(query :goal (seat ?w ?s) :expect {BOTH_FULL})"),
+        DESCRIBE,
+        Some(1),
+    )
+    .expect("runs");
+    assert!(!q.exact);
+    assert_eq!(outcome(&q), Outcome::NotChecked);
+    assert_eq!(
+        lines(&q),
+        ["the claim is about all of R, and this run did not exhaust it"]
+    );
+}
+
+/// The `--maximal` run asked the claim's own line, and decides it.
+#[test]
+fn a_line_mode_decides_a_claim_over_its_line() {
+    let q = answer_with(
+        SEATS,
+        &format!("(query :goal (seat ?w ?s) :over maximal :expect {BOTH_FULL})"),
+        Mode {
+            which: Which::Maximal,
+            ask: Ask::Describe,
+        },
+        None,
+    )
+    .expect("runs");
+    assert!(q.as_asked && q.exact, "{q:?}");
+    assert_eq!(outcome(&q), Outcome::Held, "{:?}", lines(&q));
+}
+
+/// `--single` that decided one state has listed all of R, so a claim over
+/// all of R, or over either line, is decided by it; one that found two
+/// states has not, and its claim is not checked.
+#[test]
+fn a_decided_single_decides_a_claim_over_all_of_r() {
+    // One guest who must sit, one seat: ∅ owes, and R is the one seating.
+    const ONE: &str = r#"
+(import std.algebra :symbols (total-owed))
+(relation is-a T T)
+(relation seat Person Slot)
+(is-a Ann Person) (is-a S1 Slot)
+(total-owed seat is-a)
+(hrule guess (?p ?s) :match (is-a ?p Person) :assert (seat ?p ?s))
+(solve :hrules (guess (Ann S1)))
+"#;
+    let single = Mode {
+        which: Which::All,
+        ask: Ask::Single,
     };
-    let one = "(seat Ann S1) (seat Bob S2)";
-    let two = "(seat Ann S2) (seat Bob S1)";
-    assert!(holds(AMBIGUOUS, &q(one, two)));
-    assert!(holds(AMBIGUOUS, &q(two, one)), "the other order too");
+    for over in ["", ":over maximal", ":over minimal"] {
+        let q = answer_with(
+            ONE,
+            &format!("(query :goal (seat ?w ?s) {over} :expect (model (seat Ann S1)))"),
+            single,
+            None,
+        )
+        .expect("runs");
+        assert!(q.as_asked && q.exact, "{over}: {q:?}");
+        assert_eq!(outcome(&q), Outcome::Held, "{over}: {:?}", lines(&q));
+    }
+    let q = answer_with(
+        SEATS,
+        &format!("(query :goal (seat ?w ?s) :expect {BOTH_FULL})"),
+        single,
+        None,
+    )
+    .expect("runs");
+    assert!(!q.exact, "Ambiguity listed two states of seven");
+    assert_eq!(outcome(&q), Outcome::NotChecked);
 }
 
-/// …and the facts inside one disjunct are a set as well.
+/// An `-n` run that exhausted its part found fewer states than it asked for,
+/// so it listed the whole part and decides a claim over it.
 #[test]
-fn the_facts_in_a_model_compare_as_a_set() {
-    assert!(holds(
-        DETERMINATE,
-        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p B H2) (p A H1)))"
-    ));
-}
-
-/// One wrong disjunct fails even though the *count* is right and the other
-/// disjunct is exact — the case a greedy pairing gets wrong.
-#[test]
-fn one_wrong_disjunct_fails() {
-    let lines = why(
-        AMBIGUOUS,
-        "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) :expect (or (model (seat Ann S1) (seat Bob S2)) \
-                     (model (seat Ann S2) (seat Bob S2))))",
-    );
-    // **The decisive content, not "some line exists"** — M1e S1e.3.6 T5, the
-    // review's `TE-M5`. This asserted only that a line started with
-    // `"expectation "` *after* the failure was already established, so any
-    // failure text passed and a regression to the greedy report would have
-    // been green.
-    let report = lines.join("\n");
-    assert!(
-        report.contains("expectation 2 of 2")
-            && report.contains("expected (seat Ann S2), and the model has no such fact"),
-        "the report does not name the wrong disjunct and what it wanted:\n{report}"
-    );
-    // …and it says which *fact* the model has instead, with why that is a
-    // failure at all — naming a relation closes it.
-    assert!(
-        report.contains("(seat Ann S1), which the expectation does not list")
-            && report.contains("naming a relation closes it"),
-        "the surplus half is gone:\n{report}"
-    );
-    // The other failure's sentence must **not** appear: one wrong disjunct is
-    // a *fit* problem, not a *distinctness* one, and telling them apart is the
-    // whole of what the augmenting-path search buys.
-    assert!(
-        !report.contains("not distinct"),
-        "a fact-level mismatch was reported as a matching failure:\n{report}"
-    );
-}
-
-/// Two identical disjuncts against two distinct models: the count matches and
-/// every disjunct fits *a* model, but no perfect matching exists. Greedy would
-/// pair the first and then fail on the second with a confusing message; the
-/// augmenting-path search reports it as what it is.
-#[test]
-fn two_identical_disjuncts_do_not_cover_two_models() {
-    let lines = why(
-        AMBIGUOUS,
-        "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) :expect (or (model (seat Ann S1) (seat Bob S2)) \
-                     (model (seat Ann S1) (seat Bob S2))))",
-    );
-    // **The augmenting-path report, in its own words.** This asserted
-    // `!lines.is_empty()` — true of any failure whatever, including the
-    // confusing greedy one the doc comment above says this test exists to rule
-    // out (M1e S1e.3.6 T5, `TE-M5`).
-    //
-    // Greedy would pair disjunct 1 with a model, fail on disjunct 2, and
-    // report it as a *fact* mismatch against whichever model was left — a true
-    // sentence about the wrong problem. The distinguishing phrase is
-    // *distinct*: the failure is that no perfect matching exists, and it is
-    // reported as that.
-    let report = lines.join("\n");
-    assert!(
-        report.contains("matches a model that another expectation also claims")
-            && report.contains("the 2 expectations are not distinct"),
-        "not the augmenting-path report:\n{report}"
-    );
-    assert!(
-        !report.contains("the model has no such fact"),
-        "reported as a fact mismatch, which is the greedy diagnosis:\n{report}"
-    );
+fn an_exhausted_find_decides_its_part() {
+    let q = answer_with(
+        SEATS,
+        &format!("(query :goal (seat ?w ?s) :over maximal :expect {BOTH_FULL})"),
+        Mode {
+            which: Which::Maximal,
+            ask: Ask::Find(5),
+        },
+        None,
+    )
+    .expect("runs");
+    assert!(q.exact, "{q:?}");
+    assert_eq!(outcome(&q), Outcome::Held, "{:?}", lines(&q));
 }
 
 // ── The rendering agreement ────────────────────────────────────────
@@ -427,6 +354,8 @@ fn rendering_agrees_with_the_fact_dump() {
     let kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("loads");
 
     // The same facts, written as an expectation, rendered by the other half.
+    // Parsed and not loaded: the facts are no query's classes, and the shape
+    // is what is under test.
     let listed = "(query :goal (p A ?h) \
                   :expect (model (p A H1) (p A 42) (q B) (not (p A H2))))";
     let mut ast2 = Ast::new();
@@ -461,101 +390,4 @@ fn rendering_agrees_with_the_fact_dump() {
             "{want} is not among the fact dump {dumped:?}"
         );
     }
-}
-
-// ── An expectation is a claim about the *exhausted* answer ─────────
-
-const TWO_MODELS: &str = "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) \
-     :expect (or (model (seat Ann S1) (seat Bob S2)) \
-                 (model (seat Ann S2) (seat Bob S1))))";
-
-/// The hole this outcome exists to close. Stopped at two models, the run has
-/// found both of the listed ones — and has proved only that there are *at
-/// least* two. Reporting that as a pass would be a green result for the half
-/// of the claim ("and no third") that nobody checked.
-#[test]
-fn an_unexhausted_search_does_not_confirm_a_verdict() {
-    let stopped = check_stopping(AMBIGUOUS, TWO_MODELS, Some(2)).expect("solves");
-    assert_eq!(stopped.outcome, expect::Outcome::NotChecked);
-    assert!(!stopped.passed(), "NotChecked is not success");
-    assert!(
-        stopped.lines[0].contains("not exhausted") && stopped.lines[0].contains("lower bound"),
-        "{:?}",
-        stopped.lines
-    );
-
-    let exhausted = check_stopping(AMBIGUOUS, TWO_MODELS, None).expect("solves");
-    assert_eq!(
-        exhausted.outcome,
-        expect::Outcome::Held,
-        "the same claim, proved"
-    );
-}
-
-/// …and it bites only where more searching could have changed the answer.
-/// Finding **more** models than were claimed is a refutation whatever the
-/// search did next, so it stays a failure rather than becoming "not checked".
-#[test]
-fn too_many_models_is_a_failure_not_an_unchecked_one() {
-    let one = "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) \
-         :expect (model (seat Ann S1) (seat Bob S2)))";
-    let r = check_stopping(AMBIGUOUS, one, Some(2)).expect("solves");
-    assert_eq!(r.outcome, expect::Outcome::Failed, "{:?}", r.lines);
-}
-
-/// **A `k = 0` from a truncated search is not a refutation either**, and it
-/// used to be reported as one.
-///
-/// `MonotonicStats::exhausted`'s own words: a `k = 0` from a truncated run is
-/// "no model within the cap", not proven unsat. The `Contradiction` arm short-
-/// circuited above the shortfall check that says so, so a claim of two models
-/// against a depth-1 search came back `FAILED` — a refutation on the strength
-/// of a search that stopped. Found by M1c
-/// [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test),
-/// where `ein test` exhausts by default and `--max-set-size` is the only thing
-/// left that can truncate a run.
-#[test]
-fn a_contradiction_from_a_truncated_search_is_not_checked() {
-    // Both models seat two people, so nothing is complete at depth 1.
-    let capped = check_capped(AMBIGUOUS, TWO_MODELS, 1).expect("solves");
-    assert_eq!(
-        capped.outcome,
-        expect::Outcome::NotChecked,
-        "{:?}",
-        capped.lines
-    );
-    assert!(
-        capped.lines[0].contains("no model within the cap"),
-        "and says which cap to raise: {:?}",
-        capped.lines
-    );
-
-    // The same claim at a cap that admits the answer.
-    let deep = check_capped(AMBIGUOUS, TWO_MODELS, 5).expect("solves");
-    assert_eq!(deep.outcome, expect::Outcome::Held);
-}
-
-/// …and an *exhausted* `Contradiction` against a model claim still fails, so
-/// the guard above did not turn a refutation into a shrug.
-#[test]
-fn an_exhausted_contradiction_still_refutes_a_model_claim() {
-    let r = check(
-        "(relation p Thing Place)\n(p A H1)\n\
-         (rule no (?R) :match (?R ?a ?b) :assert (false) :priority 250)\n(no p)\n",
-        "(solve :no-hypothesis (p)) (query :goal (p A ?h) :expect (model (p A H1)))",
-    )
-    .expect("solves");
-    assert_eq!(r.outcome, expect::Outcome::Failed, "{:?}", r.lines);
-    assert!(r.lines[0].contains("`:expect (false)`"), "{:?}", r.lines);
-}
-
-/// A model that disagrees with the expectation it was matched to is a
-/// disagreement about *content*, and no amount of further search unfinds it.
-#[test]
-fn a_wrong_model_is_a_failure_even_unexhausted() {
-    let wrong = "(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2))) (query :goal (seat ?w ?s) \
-         :expect (or (model (seat Ann S1) (seat Bob S1)) \
-                     (model (seat Ann S2) (seat Bob S2))))";
-    let r = check_stopping(AMBIGUOUS, wrong, Some(2)).expect("solves");
-    assert_eq!(r.outcome, expect::Outcome::Failed, "{:?}", r.lines);
 }

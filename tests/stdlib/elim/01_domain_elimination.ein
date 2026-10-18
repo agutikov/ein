@@ -70,10 +70,10 @@
   :why    "S2 has nothing excluded, so nothing may be forced into it")
 
 (solve
-  :no-hypothesis (is-a holds undecided))
+  :no-hypothesis (is-a holds undecided)
+  :expect (region (model (holds S1 V3)
+                         (not (holds S1 V1)) (not (holds S1 V2))
+                         (undecided S2 V1))))
 
 (query
-  :goal (holds ?slot ?value)
-  :expect (model (holds S1 V3)
-                 (not (holds S1 V1)) (not (holds S1 V2))
-                 (undecided S2 V1)))
+  :goal (holds ?slot ?value))

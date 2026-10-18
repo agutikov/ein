@@ -10,11 +10,16 @@
 > **problem statements** (is the puzzle even consistent? which
 > committed pair kills it?) and **rules** (did the rule I expected
 > fire under this commitment? did it fire when it shouldn't?).
+>
+> **Since M1e2 S1e2.1a.5's switch `ein solve --dump-lattice DIR` writes a
+> region run's nodes** (the next section), and the walk's tree the rest of the
+> page describes is reachable from Rust only.
 
 ## Under a region mode — `nodes.json` and `nodes.md`
 
-Since M1e2 T1e2.1a.5.3 a region mode (`--minimal`, `--maximal`, `--single`,
-`--region-budget`) takes `--dump-lattice DIR` too, and writes two files:
+Since M1e2 T1e2.1a.5.3 a region mode takes `--dump-lattice DIR`, and since
+the switch every `ein solve` run does — a bare description and each mode. It
+writes two files:
 
 - **`nodes.json`**, schema `ein-lattice/2`: the run's header (`asked`), the
   route, the candidates, and every node the route visited, **in visit order**,
@@ -33,8 +38,9 @@ directory does not hold a second copy. Past its directory the flag is
 additive: stdout, stderr and the exit code are those of the run without it.
 The writer is [`ein_render::dump::region_lattice`](../../../ein.rs/crates/ein-render/src/dump/region_lattice.rs).
 
-The rest of this page is the walk's tree, which `ein solve` writes until
-S1e2.1a.5's switch takes the walk off the CLI.
+The rest of this page is the walk's tree, which `ein solve --dump-lattice`
+wrote until S1e2.1a.5's switch took the walk off the CLI. It is reached from
+Rust since (§ Programmatically), and `golden_dump.rs` still pins its format.
 
 This page covers the **exhaustive** lattice sweep —
 [`solve`](../../../ein.rs/crates/ein-infer/src/solve.rs) run
@@ -52,9 +58,14 @@ most hypotheses are never reached), which **is** on the CLI:
 
 ## How to run it
 
-### From the CLI
+### From the CLI — until the switch
 
-[`ein solve`](../../../ein.rs/crates/ein-cli/src/solve.rs) runs the exhaustive
+No command reaches this tree since M1e2 S1e2.1a.5: `-e` and `--dump-states`
+are refused with what replaced them, and `--dump-lattice` writes
+`ein-lattice/2`. What follows is how it was asked for, kept because a
+directory written then has this shape.
+
+[`ein solve`](../../../ein.rs/crates/ein-cli/src/solve.rs) ran the exhaustive
 sweep under `--exhaustive` (the default stop policy is a single
 solution); `--trace FILE` builds the `store_lattice` `LatticeProof` and
 renders the reductio markdown (every refuted commitment, foldable, plus
@@ -302,7 +313,7 @@ M1e2 S1e2.1.3:
 
 | | |
 |---|---|
-| **From the CLI?** | **Yes, since M1e2 S1e2.1.3: `ein solve --dump-lattice DIR`.** Until then it was **no**. `--dump-states DIR` builds a `MonotonicDumper` (`00_root_initial.ein`, `00_timeline.jsonl`, `layers/layer_NN_{pre,post}.ein`, `summary.json`, no `enterings/` or `proof_summary.json`), and `make_dumper` in [`ein-cli/src/solve.rs`](../../../ein.rs/crates/ein-cli/src/solve.rs) never chose a `LatticeDumper`. It does now, refused beside the flags that choose another dumper |
+| **From the CLI?** | **No, since M1e2 S1e2.1a.5**: `--dump-lattice DIR` writes a region run's `ein-lattice/2`. From M1e2 S1e2.1.3 to the switch it wrote this tree, and before S1e2.1.3 it was **no** as well. `--dump-states DIR` builds a `MonotonicDumper` (`00_root_initial.ein`, `00_timeline.jsonl`, `layers/layer_NN_{pre,post}.ein`, `summary.json`, no `enterings/` or `proof_summary.json`), and `make_dumper` in [`ein-cli/src/solve.rs`](../../../ein.rs/crates/ein-cli/src/solve.rs) never chose a `LatticeDumper`. It does now, refused beside the flags that choose another dumper |
 | **From Rust?** | **Yes.** `LatticeDumper::new(Some(dir))` passed as `solve`'s `dumper` argument, with `SolveOptions { stop_after: None, store_lattice: true, .. }` — both types are `pub` and the shape is [`golden_dump.rs`'s `run_dump`](../../../ein.rs/crates/ein-render/tests/golden_dump.rs). It is not in [`docs/api/rust.md`](../../api/rust.md), whose worked example stops at solve-and-render |
 | **Is the format pinned?** | **Yes**, which is why this page is *current* rather than superseded: `golden_dump.rs` banks the timeline and every file under `enterings/`, and `corpus_shapes.md5` digests the rest of the tree for every corpus entry |
 
@@ -332,8 +343,8 @@ answered (a) — a door each — on 2026-10-14.
   `enterings/`) and `corpus_shapes.md5` (the rest of the tree, every corpus
   entry).
 - CLI: [`ein solve`](../../../ein.rs/crates/ein-cli/src/solve.rs)
-  (`--exhaustive`; `--trace` for the reductio markdown; `--dump-states DIR`
-  for the *lighter* `MonotonicDumper` tree). The on-disk `LatticeDumper` tree
-  is reachable from Rust only (see *How to run it*).
+  `--dump-lattice DIR` writes a region run's `nodes.json` / `nodes.md`, and
+  `ein render lattice` draws them. The on-disk `LatticeDumper` tree is
+  reachable from Rust only (see *How to run it*).
 - Tests: [`lattice_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/lattice_semantics.rs).
 - Algorithm spec: [`algorithm_layer_n.md`](algorithm_layer_n.md).

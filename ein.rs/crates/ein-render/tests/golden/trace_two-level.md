@@ -1,10 +1,18 @@
-# Solution trace
+# Region trace
 
-> Solved in 4 steps after 16 unconditional; commitment {co-located(Blue, H2), co-located(Green, H3)}; 1 solution(s), 2 refuted.
+```text
+  asked             the maximal line — every state on it
+  maximal line      2 states — all of them
+  exhausted         yes — this is all of the maximal line
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          46 candidates
+  route             1, the alive down-set — L1 dead is upward-closed · L2 discharged is upward-closed · L4 the lines are local
+  work              142 saturations · 804 facts beyond root
+```
 
-## Before any assumption — 16 steps
+## Root — 16 steps
 
-## Step 1 — `symmetric`
+### Step 1 — `symmetric`
 
 > co-located sym
 
@@ -14,7 +22,7 @@ Derives `co-located(H1, Red)`.
 
 <dot>
 
-## Step 2 — `symmetric`
+### Step 2 — `symmetric`
 
 > co-located sym
 
@@ -24,7 +32,7 @@ Derives `co-located(Red, H1)`.
 
 <dot>
 
-## Step 3 — `sibling-exclusive`
+### Step 3 — `sibling-exclusive`
 
 > sib T
 
@@ -34,7 +42,7 @@ Derives `not(co-located(Color, House))`.
 
 <dot>
 
-## Step 4 — `sibling-exclusive`
+### Step 4 — `sibling-exclusive`
 
 > sib T
 
@@ -44,7 +52,7 @@ Derives `not(co-located(House, Color))`.
 
 <dot>
 
-## Step 5 — `sibling-exclusive`
+### Step 5 — `sibling-exclusive`
 
 > sib Color
 
@@ -54,7 +62,7 @@ Derives `not(co-located(Red, Blue))`.
 
 <dot>
 
-## Step 6 — `sibling-exclusive`
+### Step 6 — `sibling-exclusive`
 
 > sib Color
 
@@ -64,7 +72,7 @@ Derives `not(co-located(Red, Green))`.
 
 <dot>
 
-## Step 7 — `sibling-exclusive`
+### Step 7 — `sibling-exclusive`
 
 > sib Color
 
@@ -74,7 +82,7 @@ Derives `not(co-located(Blue, Red))`.
 
 <dot>
 
-## Step 8 — `sibling-exclusive`
+### Step 8 — `sibling-exclusive`
 
 > sib Color
 
@@ -84,7 +92,7 @@ Derives `not(co-located(Blue, Green))`.
 
 <dot>
 
-## Step 9 — `sibling-exclusive`
+### Step 9 — `sibling-exclusive`
 
 > sib Color
 
@@ -94,7 +102,7 @@ Derives `not(co-located(Green, Red))`.
 
 <dot>
 
-## Step 10 — `sibling-exclusive`
+### Step 10 — `sibling-exclusive`
 
 > sib Color
 
@@ -104,7 +112,7 @@ Derives `not(co-located(Green, Blue))`.
 
 <dot>
 
-## Step 11 — `sibling-exclusive`
+### Step 11 — `sibling-exclusive`
 
 > sib House
 
@@ -114,7 +122,7 @@ Derives `not(co-located(H1, H2))`.
 
 <dot>
 
-## Step 12 — `sibling-exclusive`
+### Step 12 — `sibling-exclusive`
 
 > sib House
 
@@ -124,7 +132,7 @@ Derives `not(co-located(H1, H3))`.
 
 <dot>
 
-## Step 13 — `sibling-exclusive`
+### Step 13 — `sibling-exclusive`
 
 > sib House
 
@@ -134,7 +142,7 @@ Derives `not(co-located(H2, H1))`.
 
 <dot>
 
-## Step 14 — `sibling-exclusive`
+### Step 14 — `sibling-exclusive`
 
 > sib House
 
@@ -144,7 +152,7 @@ Derives `not(co-located(H2, H3))`.
 
 <dot>
 
-## Step 15 — `sibling-exclusive`
+### Step 15 — `sibling-exclusive`
 
 > sib House
 
@@ -154,7 +162,7 @@ Derives `not(co-located(H3, H1))`.
 
 <dot>
 
-## Step 16 — `sibling-exclusive`
+### Step 16 — `sibling-exclusive`
 
 > sib House
 
@@ -164,9 +172,11 @@ Derives `not(co-located(H3, H2))`.
 
 <dot>
 
-Assuming **{co-located(Blue, H2), co-located(Green, H3)}**.
+## State 1 of 2 — 4 candidates · maximal · from {(co-located Blue H2), (co-located Green H3), (co-located H2 Blue), (co-located H3 Green)} — 4 steps
 
-## Step 17 — `symmetric`
+Assuming **(co-located Blue H2), (co-located Green H3), (co-located H2 Blue), (co-located H3 Green)**.
+
+### Step 1 — `symmetric`
 
 > co-located sym
 
@@ -176,17 +186,7 @@ Derives `co-located(H2, Blue)`.
 
 <dot>
 
-## Step 18 — `symmetric`
-
-> co-located sym
-
-Premises: `co-located(Green, H3)`
-
-Derives `co-located(H3, Green)`.
-
-<dot>
-
-## Step 19 — `symmetric`
+### Step 2 — `symmetric`
 
 > co-located sym
 
@@ -196,7 +196,17 @@ Derives `co-located(Blue, H2)`.
 
 <dot>
 
-## Step 20 — `symmetric`
+### Step 3 — `symmetric`
+
+> co-located sym
+
+Premises: `co-located(Green, H3)`
+
+Derives `co-located(H3, Green)`.
+
+<dot>
+
+### Step 4 — `symmetric`
 
 > co-located sym
 
@@ -206,34 +216,46 @@ Derives `co-located(Green, H3)`.
 
 <dot>
 
-## Refuted hypotheses
+## State 2 of 2 — 4 candidates · maximal · from {(co-located Blue H3), (co-located Green H2), (co-located H2 Green), (co-located H3 Blue)} — 4 steps
 
-<details>
-<summary>Assumed {co-located(Blue, H2), co-located(Blue, H3)} — refuted (dead-post)</summary>
+Assuming **(co-located Blue H3), (co-located Green H2), (co-located H2 Green), (co-located H3 Blue)**.
 
-Assumed **{co-located(Blue, H2), co-located(Blue, H3)}**; the branch derives ⊥.
+### Step 1 — `symmetric`
 
-Lifted no-good: `co-located(Blue, H2), co-located(Blue, H3)`.
+> co-located sym
 
-<dot>
+Premises: `co-located(Blue, H3)`
 
-</details>
-
-<details>
-<summary>Assumed {co-located(Blue, H2), co-located(Green, H2)} — refuted (dead-post)</summary>
-
-Assumed **{co-located(Blue, H2), co-located(Green, H2)}**; the branch derives ⊥.
-
-Lifted no-good: `co-located(Blue, H2), co-located(Green, H2)`.
+Derives `co-located(H3, Blue)`.
 
 <dot>
 
-</details>
+### Step 2 — `symmetric`
 
-## Commitment lattice
+> co-located sym
+
+Premises: `co-located(H3, Blue)`
+
+Derives `co-located(Blue, H3)`.
 
 <dot>
 
-## Solution
+### Step 3 — `symmetric`
+
+> co-located sym
+
+Premises: `co-located(Green, H2)`
+
+Derives `co-located(H2, Green)`.
+
+<dot>
+
+### Step 4 — `symmetric`
+
+> co-located sym
+
+Premises: `co-located(H2, Green)`
+
+Derives `co-located(Green, H2)`.
 
 <dot>

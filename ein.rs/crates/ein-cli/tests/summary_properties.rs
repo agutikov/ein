@@ -1,148 +1,117 @@
-//! T1a.10.1.3 — **the counters, banked as properties.**
+//! T1a.10.1.3 — **the summary, banked as properties**, since M1e2
+//! S1e2.1a.5's switch over `ein-summary/2`.
 //!
-//! `summary.json` carries every counter the engine reports about its own work,
-//! on every `solve` cell of the corpus. The obvious check — the numbers in
-//! against a golden — banks the *value* and loses the *reason*. A counter
-//! golden rots into "whatever it was last time", and reproducing 22 is a
-//! tautology with a file behind it.
+//! `summary.json` carries what the run established about R, on every `solve`
+//! cell of the corpus. The obvious check — the numbers against a golden —
+//! banks the *value* and loses the *reason*, and reproducing 22 is a
+//! tautology with a file behind it. So what is banked here is the arithmetic
+//! instead: the identities that make a description of R *coherent*, which
+//! hold for any correct run and do not have to be looked up. A regression that
+//! moves one number without the others fails here; one that moves them all
+//! consistently is a semantic change, and the oracle's test
+//! (`ein-infer/tests/explore.rs`) is what catches that.
 //!
-//! So what is banked here is the arithmetic instead: the identities that make
-//! a counter set *coherent*, which hold for any correct run of any engine and
-//! do not have to be looked up. A regression that moves one number without
-//! moving the others fails here; one that moves them all consistently is a
-//! semantic change and is
-//! [P1c.1](../../../../docs/history/m1c_external_validation/README.md#p1c1--stdlib-conformance)'s
-//! to catch. That division is deliberate.
+//! The walk's identities (enterings, clause accounting, `solution_nodes`) went
+//! with the walk's summary, `ein-summary/1`. The region's are
+//! `read_out.md` § 13's: k_c ≥ k_s, each line no larger than R, the
+//! components summing to k_c, an empty R exactly when k_s = 0 and of the kind
+//! root says, a query's classes partitioning the states it is over.
 //!
-//! Every identity below was **measured over the whole corpus before it was
-//! written down** — 176 solve cells, every entry including the `slow` ones,
-//! under `ein solve --json-summary`. Two of them are not identities but
-//! *reasons*, and they are the interesting ones: see [`STRUCTURAL_ZEROS`].
-//!
-//! The file's **second** test is not about the numbers but about the frame
-//! they arrive in: [`the_summary_has_one_shape_on_every_arm`] holds every
-//! verdict word — and the budget abort, which is not one — to a single key
-//! set. That is `summary.rs`'s own thrice-stated rule (*a field that appears
-//! only sometimes is a field a consumer has to guess about*) applied to the
-//! producer, and M1e S1e.3.2's `SE-M2` is the arm that had broken it.
+//! The file's **first** test is about the frame the numbers arrive in:
+//! [`the_summary_has_one_shape_on_every_arm`] holds every arm — each question,
+//! each kind of R, a partial run, the cube — to one shape at every depth.
 
-use ein_core::{Kb, SolverConfig, Terms};
+use ein_core::Terms;
 use ein_corpus::{corpus_files, repo_root};
-use ein_infer::events::Events;
-use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
+use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_ir::{Ast, load_file};
 use serde_json::Value as J;
 
-/// The counters that are **zero on every corpus cell**, and why — the half of
-/// this file that a golden could not have said.
+/// The counters that are **zero on every corpus cell**, and why.
 ///
 /// | counter | why it is zero |
 /// |---|---|
 /// | `root.saturator.naf_dropped` | structurally 0 since S1.21.8 moved NAF to the closure/world boundary: a guard is parked or admitted, never dropped, and reporting anything else means the boundary was rebuilt wrong |
-/// | `stats.enterings_dead_pre` | a fork is `dead-pre` when `contradiction::detect` fires on the hypothesis facts *alone*, which needs the commitment to hold some `X` and `(not X)`. Hypgen only ever proposes positives (`hypgen::generate` builds candidates from relation extents) and drops any whose negation is already believed (`negated_fact`), and `apriori::filter_candidate` re-drops a candidate whose element left `alive` — which is exactly what the singleton writeback does when it writes `(not h)`. So no commitment can carry a pair, and every death is `dead-post` |
-/// | `stats.nogoods_subsumed` | the counter's other half: `handle_dead` emits a clause per death and counts it `subsumed` when the store already implies it. No corpus entry reaches a death whose clause is subsumed |
-///
-/// The first two are **claims about the engine** and stay zero unless
-/// something changes on purpose. The third is a **claim about the corpus** and
-/// is the weaker one: it says nobody has written the fixture, not that the
-/// path is unreachable. Recorded here rather than in a comment because a
-/// zero compared against a zero learns nothing — two zeroes agree for the
-/// wrong reason.
-const STRUCTURAL_ZEROS: [&str; 3] = [
-    "root.saturator.naf_dropped",
-    "stats.enterings_dead_pre",
-    "stats.nogoods_subsumed",
-];
+const STRUCTURAL_ZEROS: [&str; 1] = ["root.saturator.naf_dropped"];
 
-/// The `config` block's key set, exactly.
-///
-/// A list, and the list is here so that adding a `SolverConfig` field without
-/// reporting it fails.
-const CONFIG_KEYS: [&str; 17] = [
-    "candidate-order-seed",
+/// The `config` block's key set, exactly: the eight flags a program can set.
+const CONFIG_KEYS: [&str; 8] = [
     "enable-fail-fast-fork",
-    "enable-forced-positive",
     "enable-lookahead-kill-cache",
     "enable-path-nogoods",
     "enable-pre-branch-lookahead",
-    "enable-singleton-writeback",
     "enable-symmetric-mirror",
-    "hypgen-obj-weight",
-    "hypgen-rel-weight",
-    "hypgen-scoring",
-    "lattice-order",
-    "lattice-order-seed",
     "lattice-sanity-check",
-    "print-alive",
     "record-alternative-justifications",
     "warn-derived-naf",
 ];
 
-/// The regimes a corpus `solve` cell runs under, reduced to what changes the
-/// counters. The manifest's own run matrix is `solve`, `solve -e`, `solve -n
-/// 3`, `solve -m 2`, `solve -p -s`, plus the `-L` / `-K` levers; `-p -s` and
-/// `-m 2` are presentation and budget, and the rest are these.
-///
-/// `no-path-nogoods` is **not** in the manifest — the CLI has no lever for it
-/// (Q-M1a.16) — and it is here because it is the one regime that falsifies
-/// [`nogood_accounting`]: with the clause store off, a death emits nothing and
-/// the identity has to be conditional rather than universal. A conditional
-/// nobody ever runs the other side of is an untested branch.
-const REGIMES: [(&str, u64, bool); 5] = [
-    // name, max_enterings, exhaustive
-    ("default", 300, false),
-    ("exhaustive", 300, true),
-    ("n3", 300, false),
-    ("no-lookahead", 300, true),
-    ("no-path-nogoods", 300, true),
+/// The questions a corpus `solve` cell asks, and the budget each runs under:
+/// small, so that the sweep is quick and partial runs are among its cells.
+const REGIMES: [(&str, Mode); 5] = [
+    (
+        "describe",
+        Mode {
+            which: Which::All,
+            ask: Ask::Describe,
+        },
+    ),
+    (
+        "maximal",
+        Mode {
+            which: Which::Maximal,
+            ask: Ask::Describe,
+        },
+    ),
+    (
+        "minimal",
+        Mode {
+            which: Which::Minimal,
+            ask: Ask::Describe,
+        },
+    ),
+    (
+        "single",
+        Mode {
+            which: Which::All,
+            ask: Ask::Single,
+        },
+    ),
+    (
+        "n3",
+        Mode {
+            which: Which::All,
+            ask: Ask::Find(3),
+        },
+    ),
 ];
 
-fn config_for(regime: &str, kb: &Kb) -> SolverConfig {
-    let mut cfg = kb.program().config.clone().unwrap_or_default();
-    match regime {
-        "no-lookahead" => cfg.enable_pre_branch_lookahead = false,
-        "no-path-nogoods" => cfg.enable_path_nogoods = false,
-        _ => {}
-    }
-    cfg
-}
+const BUDGET: u64 = 1 << 14;
 
-/// One cell: load, solve, and hand back the `summary.json` the CLI would have
-/// written — the same `summary::build`, so what is checked is the artefact a
-/// consumer reads and not a private view of the same numbers.
-fn summary(path: &std::path::Path, regime: &str, budget: u64, exhaustive: bool) -> Option<J> {
+/// The largest cube a flagged program gets in the sweep: the cube is bounded
+/// by its limit and not by the budget, and 2¹⁶ saturations a cell would be
+/// most of the sweep's cost for no identity it does not already check at 2¹⁰.
+const LIMIT: u32 = 10;
+
+/// One cell: load, run, and hand back the `summary.json` the CLI would have
+/// written — the same `summary::build_region`, so what is checked is the
+/// artefact a consumer reads.
+fn summary(path: &std::path::Path, mode: Mode, budget: u64) -> Option<J> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let mut kb = load_file(&mut ast, &mut terms, path).ok()?;
-    let config = config_for(regime, &kb);
-    let opts = SolveOptions {
-        stop_after: if exhaustive {
-            None
-        } else if regime == "n3" {
-            Some(3)
-        } else {
-            Some(1)
-        },
-        max_set_size: 5,
-        config: Some(config.clone()),
-        max_enterings: Some(budget),
-        on_budget: OnBudget::Verdict,
-        store_lattice: false,
-        ..SolveOptions::default()
-    };
-    let mut events = Events::off();
-    let mut solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts).ok()?;
-    let json = ein_cli::summary::build(
+    let config = kb.program().config.clone().unwrap_or_default();
+    let mut opts = explore::Options::new(mode);
+    opts.budget = budget;
+    opts.limit = LIMIT;
+    let r = ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts).ok()?;
+    let json = ein_cli::summary::build_region(
         &ast,
         &mut terms,
         &mut kb,
-        &mut solved.answer,
-        &solved.stats,
-        &config,
+        &r,
         &path.to_string_lossy(),
-        &mut events,
-        &solved.owes,
-        &solved.monotonicity,
+        &config,
     )
     .ok()?;
     serde_json::from_str(&ein_render::dump::json::dumps_indent(&json)).ok()
@@ -150,43 +119,65 @@ fn summary(path: &std::path::Path, regime: &str, budget: u64, exhaustive: bool) 
 
 // ── The schema's shape, on every arm ────────────────────────────────
 
-/// One cell per **verdict word**, plus the reason it is the one named.
-///
-/// A cover rather than a sweep, for [`cli_semantics::EVENT_COVER`]'s reason:
-/// the question — *does the schema's shape depend on the answer?* — is
-/// answered as well by five arms as by nine hundred cells, and this way the
-/// test costs five solves. What a cover cannot do is notice that a file
-/// stopped producing the word it is here for, so each row's word is asserted
-/// before the shape is.
-///
-/// [`cli_semantics::EVENT_COVER`]: ../cli_semantics.rs
-const SHAPE_COVER: [(&str, &str); 4] = [
-    ("examples/features/10_expect.ein", "Solution"),
-    ("examples/features/11_expect_ambiguity.ein", "Ambiguity"),
-    ("examples/features/12_expect_false.ein", "Contradiction"),
-    ("tests/stdlib/slots/03_fill.ein", "Open"),
+/// One cell per **arm** of the read-out, and what makes it that arm, asserted
+/// before the shape is, so a file that stopped being its arm is noticed.
+const SHAPE_COVER: [(&str, &str, u64); 8] = [
+    ("examples/branching/05_mini_zebra.ein", "describe", 1 << 19),
+    (
+        "tests/stdlib/algebra/09_irreflexive_violated.ein",
+        "describe",
+        1 << 19,
+    ),
+    (
+        "tests/stdlib/closure/03_closed_and_owing.ein",
+        "describe",
+        1 << 19,
+    ),
+    (
+        "examples/saturation/square-bwd/floors.ein",
+        "describe",
+        4096,
+    ),
+    (
+        "examples/lattice/06_friends_tables.ein",
+        "describe",
+        1 << 19,
+    ),
+    (
+        "examples/lattice/02_genuine_3set_death.ein",
+        "maximal",
+        1 << 19,
+    ),
+    (
+        "examples/lattice/02_genuine_3set_death.ein",
+        "single",
+        1 << 19,
+    ),
+    ("examples/lattice/02_genuine_3set_death.ein", "n3", 1 << 19),
 ];
 
 /// The blocks whose keys come from the **data** and not from the schema: a
 /// relation name, a filter's name, a pre-candidate skip's name. Their key sets
 /// differ per program by construction and are not part of the shape.
-const SPARSE_BLOCKS: [&str; 4] = [
+///
+/// `region.stopped` is a tagged union, its keys the kind's (`why`): a budget's,
+/// the cube's limit, the deadline.
+const SPARSE_BLOCKS: [&str; 6] = [
+    "stopped",
     "by_relation",
     "facts_by_relation",
     "filtered",
     "pre_candidate",
+    "states_by_relation",
 ];
 
-/// A summary's **shape**: every object's key list, at its path.
-///
-/// Arrays are opaque — `verdict.solutions` is empty on three of the five arms
-/// and descending into it would make the shape differ for the one reason that
-/// is not a defect. What is compared is the frame a consumer switches on.
-fn shape(v: &J) -> String {
-    fn walk(v: &J, path: &str, out: &mut Vec<String>) {
+/// A summary's **shape**: every object's key list, at its path. Arrays are
+/// opaque, and a `null` is a value — `verdict` is one on every run but
+/// `--single`'s — so what is compared is the frame a consumer switches on.
+fn shape(v: &J) -> std::collections::BTreeMap<String, Vec<String>> {
+    fn walk(v: &J, path: &str, out: &mut std::collections::BTreeMap<String, Vec<String>>) {
         let J::Object(map) = v else { return };
-        let keys: Vec<&str> = map.keys().map(String::as_str).collect();
-        out.push(format!("{path}{{{}}}", keys.join(",")));
+        out.insert(path.to_string(), map.keys().cloned().collect());
         for (k, child) in map {
             if SPARSE_BLOCKS.contains(&k.as_str()) {
                 continue;
@@ -194,119 +185,66 @@ fn shape(v: &J) -> String {
             walk(child, &format!("{path}.{k}"), out);
         }
     }
-    let mut out = Vec::new();
+    let mut out = Default::default();
     walk(v, "", &mut out);
-    out.join("\n")
+    out
 }
 
-/// **`ein-summary/1` has one shape, and the `Aborted` arm has it too.**
-///
-/// `summary.rs` states the rule three times — *a field that appears only
-/// sometimes is a field a consumer has to guess about* — and until M1e
-/// S1e.3.2 the arm that broke it was its own: `build_aborted` assembled a
-/// second object by hand, and that copy had lost `verdict.open_states` and the
-/// whole `leftover` block. A consumer switching on the schema version saw two
-/// keys only on runs that finished (`SE-M2`).
-///
-/// The fix is that there is no second assembly — `build_aborted` is `build`
-/// with an `Answer::Aborted` — so this test is the guard on the property
-/// rather than the thing that establishes it. It would also have caught the
-/// original, which is what makes it worth having: the defect was found by
-/// reading, and a shape nothing compares is a shape that drifts again.
+/// **`ein-summary/2` has one shape.** Every object's keys, at every path two
+/// arms both have, are the same, and the top level and the `region` block are
+/// on every arm.
 #[test]
 fn the_summary_has_one_shape_on_every_arm() {
-    let mut shapes: std::collections::BTreeMap<String, Vec<String>> = Default::default();
-    for (rel, word) in SHAPE_COVER {
-        let path = repo_root().join(rel);
-        let s = summary(&path, "exhaustive", 300, true)
-            .unwrap_or_else(|| panic!("{rel} did not produce a summary"));
-        assert_eq!(
-            s["verdict"]["type"].as_str(),
-            Some(word),
-            "{rel} is in the cover for {word} and answered {}",
-            s["verdict"]["type"]
-        );
-        shapes.entry(shape(&s)).or_default().push(rel.to_string());
-    }
-
-    // The fifth arm. A budget cut is the one answer no program states, so it
-    // is produced rather than named: `OnBudget::Raise` with a one-entering cap
-    // on a file that searches.
-    let rel = "examples/zebra2.ein";
-    let path = repo_root().join(rel);
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let mut kb = load_file(&mut ast, &mut terms, &path).expect(rel);
-    let config = kb.program().config.clone().unwrap_or_default();
-    let opts = SolveOptions {
-        stop_after: None,
-        max_set_size: 5,
-        config: Some(config.clone()),
-        max_enterings: Some(1),
-        on_budget: OnBudget::Raise,
-        store_lattice: false,
-        ..SolveOptions::default()
-    };
-    let mut events = Events::off();
-    let err = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
-        .err()
-        .expect("a one-entering cap aborts the zebra");
-    let ein_infer::solve::SolveError::Budget {
-        reason,
-        stats,
-        monotonicity,
-    } = err
-    else {
-        panic!("the cap did not raise a budget error: {err:?}");
-    };
-    let aborted = ein_cli::summary::build_aborted(
-        &ast,
-        &mut terms,
-        &mut kb,
-        &reason,
-        &stats,
-        &config,
-        rel,
-        &mut events,
-        &monotonicity,
-    )
-    .expect("the aborted summary builds");
-    let aborted: J = serde_json::from_str(&ein_render::dump::json::dumps_indent(&aborted))
-        .expect("the aborted summary is JSON");
-    assert_eq!(aborted["verdict"]["type"], "Aborted");
-    assert_eq!(
-        aborted["verdict"]["reason"], reason,
-        "the arm that has a reason does not carry it"
-    );
-    shapes
-        .entry(shape(&aborted))
-        .or_default()
-        .push(format!("{rel} [aborted]"));
-
-    // …and the four that do not have one say so, rather than omitting the key.
-    for (rel, _) in SHAPE_COVER {
-        let s = summary(&repo_root().join(rel), "exhaustive", 300, true).expect(rel);
-        assert_eq!(
-            s["verdict"]["reason"],
-            J::Null,
-            "{rel} is not an abort and carries a reason"
-        );
-    }
-
-    assert_eq!(
-        shapes.len(),
-        1,
-        "the schema has {} shapes, not one:\n{}",
-        shapes.len(),
-        shapes
+    let mode_of = |name: &str| {
+        REGIMES
             .iter()
-            .map(|(shape, who)| format!("  {} →\n{shape}", who.join(", ")))
-            .collect::<Vec<_>>()
-            .join("\n")
-    );
-    eprintln!(
-        "summary shape: one frame over {} arms",
-        SHAPE_COVER.len() + 1
+            .find(|(n, _)| *n == name)
+            .expect("a regime")
+            .1
+    };
+    let mut shapes: Vec<(String, std::collections::BTreeMap<String, Vec<String>>)> = Vec::new();
+    for (rel, regime, budget) in SHAPE_COVER {
+        let s = summary(&repo_root().join(rel), mode_of(regime), budget)
+            .unwrap_or_else(|| panic!("{rel} did not produce a summary"));
+        assert_eq!(s["schema"], "ein-summary/2", "{rel}");
+        shapes.push((format!("{rel} [{regime}]"), shape(&s)));
+    }
+    let (first, base) = &shapes[0];
+    let mut bad = Vec::new();
+    for (who, sh) in &shapes[1..] {
+        for path in [
+            "",
+            ".region",
+            ".asked",
+            ".work",
+            ".root",
+            ".config",
+            ".leftover",
+        ] {
+            if sh.get(path) != base.get(path) {
+                bad.push(format!(
+                    "{who}: {path:?} is {:?}, {first} has {:?}",
+                    sh.get(path),
+                    base.get(path)
+                ));
+            }
+        }
+        for (path, keys) in sh {
+            for (_, other) in &shapes {
+                if let Some(k) = other.get(path)
+                    && k != keys
+                {
+                    bad.push(format!("{who}: {path:?} is {keys:?}, elsewhere {k:?}"));
+                }
+            }
+        }
+    }
+    bad.sort();
+    bad.dedup();
+    assert!(
+        bad.is_empty(),
+        "the schema has more than one shape:\n  {}",
+        bad.join("\n  ")
     );
 }
 
@@ -322,30 +260,14 @@ fn u(v: &J, path: &str) -> i64 {
 }
 
 #[test]
-fn the_counter_set_is_coherent_on_every_corpus_cell() {
+fn the_description_is_coherent_on_every_corpus_cell() {
     let mut bad: Vec<String> = Vec::new();
     let mut cells = 0usize;
-    // Non-vacuity for the two unsat-core implications: at least one cell has
-    // to report a core, or both hold because none ever does.
-    let mut cored = 0usize;
-    // Every counter has to be non-zero *somewhere*, or it agrees for the wrong
-    // reason — the discipline `hypgen_coverage`'s
-    // `every_filter_and_skip_fires_somewhere_in_the_corpus` already keeps for
-    // the hypgen block, extended here to the stats block, which nothing
-    // asserted before.
+    let mut described = 0usize;
     let mut peak: std::collections::BTreeMap<&str, i64> = Default::default();
     let counters = [
-        "stats.enterings_total",
-        "stats.enterings_alive",
-        "stats.enterings_dead_pre",
-        "stats.enterings_dead_post",
-        "stats.facts_merged",
-        "stats.forced_positives",
-        "stats.saturate_count",
-        "stats.layers_explored",
-        "stats.nogoods_emitted",
-        "stats.nogoods_subsumed",
-        "stats.solution_nodes",
+        "work.saturations",
+        "work.facts",
         "root.facts",
         "root.plans",
         "root.saturator.naf_rounds",
@@ -358,8 +280,8 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
 
     for path in &corpus_files() {
         let rel = path.strip_prefix(repo_root()).unwrap_or(path);
-        for (regime, budget, exhaustive) in REGIMES {
-            let Some(s) = summary(path, regime, budget, exhaustive) else {
+        for (regime, mode) in REGIMES {
+            let Some(s) = summary(path, mode, BUDGET) else {
                 continue;
             };
             cells += 1;
@@ -369,128 +291,114 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
                     bad.push(format!("{at}: {name}"));
                 }
             };
+            let r = &s["region"];
+            let states = r["states"].as_array().cloned().unwrap_or_default();
+            let listed = states.iter().filter(|x| x["listed"] == true).count() as i64;
+            let exhausted = r["exhausted"] == true;
 
-            let kind_for_k = s["verdict"]["type"].as_str().unwrap_or("?");
-            // ── the verdict block agrees with the stats block ──────────
-            //
-            // **Except where the program states an obligation, and that
-            // exception is M1d S1d.2.6's whole content.**
-            // `stats.solution_nodes` counts what the *search* recorded — nodes
-            // the generator called complete — and `verdict.k` counts what the
-            // read-out calls a **model**. The two agreed for every verdict
-            // there was until a state could be complete and still owe.
-            //
-            // The exception was written as *"except `Open`"* and that is one
-            // regime too few: `finalise` partitions the recorded nodes and
-            // answers `Open` only when **every** one of them owes. Where one
-            // discharges and another does not, the verdict is `Solution` and
-            // the two counts differ just the same —
-            // `examples/features/13_mixed_solution_and_open.ein`, added at M1e
-            // S1e.3.1 because `finalise`'s own comment said no corpus entry
-            // reached that arm. So the condition is *the program declared an
-            // obligation*, which is `owes.declared`, and the 743 cells that
-            // declare none are checked exactly as before.
-            let scoped = u(&s, "owes.declared") > 0;
-            check(
-                "verdict.k == stats.solution_nodes (unless the program owes)",
-                scoped || u(&s, "verdict.k") == u(&s, "stats.solution_nodes"),
-            );
-            check(
-                "Open: k == 0 < solution_nodes == len(open_states)",
-                kind_for_k != "Open"
-                    || (u(&s, "verdict.k") == 0
-                        && u(&s, "stats.solution_nodes") > 0
-                        && s["verdict"]["open_states"].as_array().map_or(0, Vec::len) as i64
-                            == u(&s, "stats.solution_nodes")),
-            );
-            check(
-                "verdict.exhausted == stats.exhausted",
-                s["verdict"]["exhausted"] == s["stats"]["exhausted"],
-            );
-            check(
-                "len(verdict.solutions) == verdict.k",
-                s["verdict"]["solutions"].as_array().map_or(0, Vec::len) as i64
-                    == u(&s, "verdict.k"),
-            );
-            let kind = s["verdict"]["type"].as_str().unwrap_or("?");
-            let k = u(&s, "verdict.k");
-            let core = s["verdict"]["unsat_core"].as_array().map_or(0, Vec::len);
-            check(
-                "a verdict's type and its k agree",
-                match kind {
-                    "Solution" => k == 1,
-                    "Ambiguity" => k >= 2,
-                    // Both report no model; what separates them is *why*, and
-                    // `owes.declared` is where a consumer reads that.
-                    "Contradiction" | "Open" => k == 0,
-                    _ => true,
-                },
-            );
-            // An unsat core is the *answer* of a contradictory root and is
-            // reported for nothing else — the one place the core reaches
-            // stdout. Stated as two implications rather than as an
-            // equivalence, because `Contradiction` covers two situations and
-            // only one of them has anything to blame: `k = 0` with the lattice
-            // exhausted is "no model exists", and `k = 0` with `exhausted
-            // false` is "no model **within the cap**", which is not a
-            // refutation and carries an empty core.
-            //
-            // The equivalence stood for 440 cells and was falsified the day
-            // S1a.10.2 added `examples/syntax/equality.ein` to the corpus: two
-            // `=` forms, no rule, no hypothesis that ever completes, and a
-            // depth cap that cuts at layer 5 with every commitment still
-            // alive. Nothing died, so nothing is blamed.
-            let deaths = u(&s, "stats.enterings_dead_pre") + u(&s, "stats.enterings_dead_post");
-            check(
-                "an unsat core is reported for nothing but a Contradiction",
-                core == 0 || kind == "Contradiction",
-            );
-            check(
-                "a Contradiction that refuted something blames something",
-                !(kind == "Contradiction" && deaths > 0) || core > 0,
-            );
-            if core > 0 {
-                cored += 1;
+            // ── what a description of R is made of ─────────────────────
+            if regime == "describe" && exhausted {
+                described += 1;
+                let (k_s, k_c) = (u(&s, "region.k_s"), u(&s, "region.k_c"));
+                check("k_c >= k_s", k_c >= k_s);
+                check("one state per k_s", states.len() as i64 == k_s);
+                check("an exhausted description lists every state", listed == k_s);
+                check(
+                    "R is empty exactly when k_s = 0",
+                    (k_s == 0) == !r["empty"].is_null(),
+                );
+                check(
+                    "R is empty of the dead kind exactly when root is dead",
+                    (r["empty"] == "dead") == (r["root"] == "dead"),
+                );
+                if k_s > 0 {
+                    let (mn, mx) = (
+                        u(&s, "region.minimal.states"),
+                        u(&s, "region.maximal.states"),
+                    );
+                    check("each line holds a state, and no more than R", {
+                        (1..=k_s).contains(&mn) && (1..=k_s).contains(&mx)
+                    });
+                    check(
+                        "the components sum to k_c",
+                        r["components"]
+                            .as_array()
+                            .map(|c| c.iter().filter_map(J::as_i64).sum::<i64>())
+                            == Some(k_c),
+                    );
+                    check(
+                        "∅ in R makes the minimal line {∅}",
+                        r["root"] != "in-r" || mn == 1,
+                    );
+                    let merged = states
+                        .iter()
+                        .filter(|x| x["commitments"].as_i64().unwrap_or(1) > 1)
+                        .count() as i64;
+                    check(
+                        "merged counts the states reached by more than one commitment",
+                        u(&s, "region.merged.states") == merged,
+                    );
+                    let commitments: i64 = states
+                        .iter()
+                        .filter_map(|x| x["commitments"].as_i64())
+                        .sum();
+                    check("the states' commitments sum to k_c", commitments == k_c);
+                }
             }
-
-            // ── the search's own arithmetic ────────────────────────────
-            check(
-                "enterings_total == alive + dead_pre + dead_post",
-                u(&s, "stats.enterings_total")
-                    == u(&s, "stats.enterings_alive")
-                        + u(&s, "stats.enterings_dead_pre")
-                        + u(&s, "stats.enterings_dead_post"),
-            );
-            // Root itself is a solution node when the puzzle needs no
-            // hypothesis at all — 47 of 176 cells, which is why the bound is
-            // `+ 1` and not equality with `alive`.
-            check(
-                "solution_nodes <= enterings_alive + 1",
-                u(&s, "stats.solution_nodes") <= u(&s, "stats.enterings_alive") + 1,
-            );
-            check(
-                "a search that entered anything explored a layer",
-                u(&s, "stats.layers_explored") >= 1 || u(&s, "stats.enterings_total") == 0,
-            );
-            check("root was saturated", u(&s, "stats.saturate_count") >= 1);
-
-            // ── the clause store's accounting ──────────────────────────
-            // `handle_dead` emits one clause per death and counts it as
-            // landed or subsumed, so the two counters partition the deaths —
-            // but only while the store is on, which is what the
-            // `no-path-nogoods` regime exists to run the other side of.
-            let deaths = u(&s, "stats.enterings_dead_pre") + u(&s, "stats.enterings_dead_post");
-            let clauses = u(&s, "stats.nogoods_emitted") + u(&s, "stats.nogoods_subsumed");
-            check(
-                "emitted + subsumed accounts for every death",
-                if s["config"]["enable-path-nogoods"] == J::Bool(true) {
-                    clauses == deaths
-                } else {
-                    clauses == 0
-                },
-            );
-
-            // ── the root block ─────────────────────────────────────────
+            // ── what a mode answered ───────────────────────────────────
+            match regime {
+                "n3" => check("-n 3 lists at most three states", listed <= 3),
+                "single" => {
+                    check("--single lists at most two states", listed <= 2);
+                    check(
+                        "a decided --single carries its word",
+                        !exhausted || s["verdict"].is_object(),
+                    );
+                }
+                "maximal" | "minimal" => {
+                    let line = if regime == "maximal" {
+                        "maximal"
+                    } else {
+                        "minimal"
+                    };
+                    check(
+                        "a line mode's states are on its line",
+                        states.iter().all(|x| {
+                            x["lines"]
+                                .as_array()
+                                .is_some_and(|l| l.iter().any(|w| w == line))
+                        }),
+                    );
+                }
+                _ => {}
+            }
+            // ── the queries, over the states the run reached ───────────
+            for q in s["queries"].as_array().cloned().unwrap_or_default() {
+                let classes = q["classes"].as_array().cloned().unwrap_or_default();
+                let mut seen: Vec<i64> = classes
+                    .iter()
+                    .flat_map(|c| {
+                        c["states"]
+                            .as_array()
+                            .cloned()
+                            .unwrap_or_default()
+                            .into_iter()
+                            .filter_map(|i| i.as_i64())
+                    })
+                    .collect();
+                let n = seen.len();
+                seen.sort_unstable();
+                seen.dedup();
+                check("a state is in one class of a query", seen.len() == n);
+                if q["over"] == "all" && q["exact"] == true && regime == "describe" {
+                    check(
+                        "the classes over all of R partition it",
+                        n as i64 == states.len() as i64,
+                    );
+                }
+            }
+            // ── the work, root, and the config ─────────────────────────
+            check("a run saturates", u(&s, "work.saturations") >= 1);
             let by_rel: i64 = s["root"]["facts_by_relation"]
                 .as_object()
                 .map(|m| m.values().filter_map(J::as_i64).sum())
@@ -499,11 +407,6 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
                 "root.facts == sum(root.facts_by_relation)",
                 u(&s, "root.facts") == by_rel,
             );
-            // Every candidate the generator built is either emitted or dropped
-            // for exactly one named reason. `pre_candidate.*` counts what was
-            // refused *before* a candidate existed, so it is outside `raw` —
-            // the two blocks are the two halves of the pipeline and only the
-            // second is conserved.
             let filtered: i64 = s["root"]["hypgen"]["filtered"]
                 .as_object()
                 .map(|m| m.values().filter_map(J::as_i64).sum())
@@ -512,14 +415,11 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
                 "hypgen.raw == emitted + sum(filtered)",
                 u(&s, "root.hypgen.raw") == u(&s, "root.hypgen.emitted") + filtered,
             );
-
-            // ── the config block, key for key ──────────────────────────
             let keys: Vec<&str> = s["config"]
                 .as_object()
                 .map(|m| m.keys().map(String::as_str).collect())
                 .unwrap_or_default();
-            check("the config block reports every lever", keys == CONFIG_KEYS);
-
+            check("the config block reports every flag", keys == CONFIG_KEYS);
             for name in counters {
                 let v = u(&s, name);
                 check(&format!("{name} is not negative"), v >= 0);
@@ -531,7 +431,7 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
 
     assert!(
         bad.is_empty(),
-        "{} of {cells} cells break a counter identity:\n  {}",
+        "{} of {cells} cells break an identity:\n  {}",
         bad.len(),
         bad.iter()
             .take(30)
@@ -540,34 +440,23 @@ fn the_counter_set_is_coherent_on_every_corpus_cell() {
             .join("\n  ")
     );
     assert!(
-        cells >= 300,
+        cells >= 900,
         "only {cells} cells ran — the sweep stopped looking"
     );
     assert!(
-        cored >= 5,
-        "only {cored} cells reported an unsat core, so both core implications \
-         hold for the wrong reason"
+        described >= 150,
+        "only {described} exhausted descriptions, so R's identities hold for few programs"
     );
-
-    // The zeroes, asserted as zeroes with a reason, and everything else
-    // asserted to have fired at least once. A counter that is zero everywhere
-    // and *not* on the list is a coverage hole: a zero compared against a
-    // zero says nothing.
     let mut silent: Vec<&str> = peak
         .iter()
         .filter(|&(_, &v)| v == 0)
         .map(|(&k, _)| k)
         .collect();
     silent.sort_unstable();
-    let mut expected: Vec<&str> = STRUCTURAL_ZEROS.to_vec();
-    expected.sort_unstable();
     assert_eq!(
-        silent, expected,
+        silent,
+        STRUCTURAL_ZEROS.to_vec(),
         "the counters that never fire are not the ones with a written reason"
     );
-    eprintln!(
-        "counter properties: {cells} cells, {} counters, {} of them zero everywhere by design",
-        counters.len(),
-        expected.len()
-    );
+    eprintln!("summary properties: {cells} cells, {described} exhausted descriptions");
 }

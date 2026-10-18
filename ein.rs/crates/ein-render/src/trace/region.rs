@@ -15,6 +15,10 @@
 //! section's steps by the entity they are about, and `--full-kb-snapshots`
 //! appends each state's whole KB.
 
+use ein_core::{Kb, Terms};
+use ein_infer::read_out::{Listing, ReadOut};
+use ein_ir::Ast;
+
 use super::ast::TraceStep;
 use super::render::{dot_block, premises_line};
 
@@ -204,4 +208,125 @@ pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
         }
     }
     format!("{}\n", lines.join("\n").trim_end())
+}
+
+/// The trace flags: `--no-diagrams`, `--relevant`, `--reorder`,
+/// `--full-kb-snapshots`.
+#[derive(Clone, Copy, Debug)]
+pub struct Shape {
+    pub diagrams: bool,
+    pub relevant: bool,
+    pub reorder: bool,
+    pub full_kb: bool,
+}
+
+/// `ein solve --trace FILE.md`: root's derivation, then each state stdout
+/// printed, derived from its first minimal commitment, then N and the owing
+/// frontier (`read_out.md` § 8.4). `root_firings` are root's own saturation's
+/// ([`ein_infer::region::root_firings`]), and `options` the read-out's, whose
+/// summary rows head the trace and whose listing says which states it traces.
+pub fn of_read_out(
+    r: &ReadOut,
+    kb: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    root_firings: &[ein_infer::Firing],
+    options: &crate::read_out::Options<'_>,
+    shape: Shape,
+) -> Result<String, String> {
+    let Shape {
+        diagrams,
+        relevant,
+        reorder,
+        full_kb,
+    } = shape;
+    let a = &r.answer;
+    let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
+    let name = |set: &[u32]| -> String {
+        if set.is_empty() {
+            "∅".to_string()
+        } else {
+            let v: Vec<&str> = set.iter().map(|&b| cands[b as usize].as_str()).collect();
+            v.join(", ")
+        }
+    };
+    let set_name = |set: &[u32]| -> String {
+        if set.is_empty() {
+            "∅".to_string()
+        } else {
+            format!("{{{}}}", name(set))
+        }
+    };
+    let text = crate::read_out::render(r, options);
+    let head: Vec<String> = text
+        .stdout
+        .lines()
+        .skip(2)
+        .take_while(|l| !l.is_empty())
+        .map(str::to_string)
+        .collect();
+    let root = crate::trace::steps_of_with(ast, terms, root_firings, kb, diagrams, &[], relevant);
+    let mut states = Vec::new();
+    let k = r.states.len();
+    {
+        let mut nodes = ein_infer::region::Nodes::new(kb, terms, ast, &a.candidates)
+            .map_err(|e| e.to_string())?;
+        for &i in &text.shown {
+            let s = &r.states[i];
+            let from = s.generators.first().unwrap_or(&s.rep).clone();
+            let facts: Vec<ein_core::FactId> = from
+                .iter()
+                .map(|&b| a.candidates[b as usize].fact)
+                .collect();
+            let (steps, whole) = nodes
+                .with_fixpoint_traced(&facts, |kb, terms, firings| {
+                    (
+                        crate::trace::steps_of_with(
+                            ast, terms, firings, kb, diagrams, &facts, relevant,
+                        ),
+                        full_kb.then(|| crate::slice::render_state(kb, terms, None, "state")),
+                    )
+                })
+                .map_err(|e| e.to_string())?;
+            states.push(StateTrace {
+                title: crate::read_out::state_title(i, k, s, &cands),
+                commitment: name(&from),
+                steps,
+                full_kb: whole,
+            });
+        }
+    }
+    let dead = r
+        .described()
+        .map(|d| {
+            d.dead
+                .iter()
+                .map(|x| DeadTrace {
+                    set: set_name(&x.set),
+                    core: x.core.clone(),
+                    refuted_by: x.refuted_by.clone(),
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    let owing = match &r.listing {
+        Listing::Owing(f) => f
+            .iter()
+            .map(|o| (set_name(&o.node.set), o.node.owed.clone()))
+            .collect(),
+        _ => Vec::new(),
+    };
+    let listed = r.listed().count();
+    Ok(region_markdown(
+        &RegionTrace {
+            head,
+            root,
+            untraced: listed.saturating_sub(states.len()),
+            states,
+            dead,
+            owing,
+            reorder,
+        },
+        diagrams,
+    ))
 }

@@ -11,6 +11,19 @@ everything here *runs* it, *reads* it, or *renders* what it produced. If a check
 build of their own — `fork_delta_verify.py` → `target-fd`, `spec_audit.py` →
 `target-sa`, `profile_ein_rs.py` → `--profile profiling`, which it builds.
 
+**Eight are the walk's instruments.** Since M1e2 S1e2.1a.5's switch no command
+runs the walk, and `fork_split.py`, `fork_delta_verify.py`, `e2e_baseline.py`,
+`feature_matrix.py`, `layer_census.py`, `openness_census.py`,
+`model_set_census.py` and `closure_census.py` measure it: each says so in its
+docstring, re-takes against a binary built at or before commit 7ec8a480, and
+its record is the walk's. The switch ported the ones R needs —
+`region_census.py`, `region.py` and `region_synth.py` to `ein oracle --dump`,
+`fuzz_engine.py`'s two `solve` runs to R's description and maximal line, and
+`read_out_examples.py` off its pre-switch budget. The review bundle
+(`review_bundle.py`, `review/`) still draws the walk's runs on the cube, and
+re-pointing it at a region run is
+[S1e2.1a.7](../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md)'s.
+
 ---
 
 ## Renderers
