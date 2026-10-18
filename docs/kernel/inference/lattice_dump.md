@@ -11,6 +11,31 @@
 > committed pair kills it?) and **rules** (did the rule I expected
 > fire under this commitment? did it fire when it shouldn't?).
 
+## Under a region mode — `nodes.json` and `nodes.md`
+
+Since M1e2 T1e2.1a.5.3 a region mode (`--minimal`, `--maximal`, `--single`,
+`--region-budget`) takes `--dump-lattice DIR` too, and writes two files:
+
+- **`nodes.json`**, schema `ein-lattice/2`: the run's header (`asked`), the
+  route, the candidates, and every node the route visited, **in visit order**,
+  each with its commitment, its kind (`dead`, `owing`, `in-r`), what it owes,
+  its core and refuting rules when dead, its closure, and its facts beyond
+  root's; then `steps`, each a route-1 layer or a mode's batch, with the index
+  of the first node it covers;
+- **`nodes.md`**, the same as one table per step.
+
+The nodes are read through the route's watch
+([`ein_infer::events::Watch`](../../../ein.rs/crates/ein-infer/src/events.rs)),
+on the committing thread, so the files are the same at every `-j`
+(`ein-cli/tests/region_modes.rs::the_lattice_dump_is_every_node_visited`). Each
+node's firings are `--events`', which narrates every node visited, and the
+directory does not hold a second copy. Past its directory the flag is
+additive: stdout, stderr and the exit code are those of the run without it.
+The writer is [`ein_render::dump::region_lattice`](../../../ein.rs/crates/ein-render/src/dump/region_lattice.rs).
+
+The rest of this page is the walk's tree, which `ein solve` writes until
+S1e2.1a.5's switch takes the walk off the CLI.
+
 This page covers the **exhaustive** lattice sweep —
 [`solve`](../../../ein.rs/crates/ein-infer/src/solve.rs) run
 with `store_lattice=True` and an unbounded stop policy (`stop_after=None`)

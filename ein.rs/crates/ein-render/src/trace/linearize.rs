@@ -212,6 +212,20 @@ pub fn steps_of(
     diagrams: bool,
     commitment: &[FactId],
 ) -> Vec<TraceStep> {
+    steps_of_with(ast, terms, firings, kb, diagrams, commitment, false)
+}
+
+/// [`steps_of`], and with `relevant` (`--relevant`) only the goal-relevant
+/// slice, as the walk's trace prunes it.
+pub fn steps_of_with(
+    ast: &Ast,
+    terms: &Terms,
+    firings: &[Firing],
+    kb: &Kb,
+    diagrams: bool,
+    commitment: &[FactId],
+    relevant: bool,
+) -> Vec<TraceStep> {
     build_steps(
         ast,
         terms,
@@ -219,7 +233,7 @@ pub fn steps_of(
         Some(kb),
         kb,
         diagrams,
-        false,
+        relevant,
         commitment,
     )
 }

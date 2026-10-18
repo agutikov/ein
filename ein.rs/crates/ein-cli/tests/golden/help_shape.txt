@@ -11,6 +11,11 @@ COMMAND ein oracle
   ABOUT the solution region by brute force: every subset of the root candidates saturated (M1e2)
   OPTION --dump -- metavar=DIR arity=1 default=None choices=- group=- required=False help=also write the cube to DIR: region.json and region.md (docs/kernel/inference/region_dump.md), which `ein render region DIR` draws
   OPTION --jobs -j metavar=JOBS arity=1 default='1' choices=- group=- required=False help=threads, or 'auto' (default: 1). Same cube, byte for byte
+  OPTION --json-summary -- metavar=FILE.json arity=1 default=None choices=- group=- required=False help=write the read-out as ein-summary/2 to FILE, as `ein solve` does. Additive: stdout, stderr and the exit code are unchanged
+  OPTION --max-time -T metavar=MAX_TIME arity=1 default=None choices=- group=- required=False help=abort after N wall-clock seconds, exit 2. Checked before each batch of the cube's nodes; a stopped cube is never an answer
+  OPTION --models -- metavar=FORM arity=1 default='list' choices=list|key|grid group=- required=False help=after the read-out, the states it listed: 'key' (the smallest set of slots that tells them apart, and the table of combinations that occur) or 'grid' (each as a table, where the program's declarations license one). 'list', the default, adds nothing
+  OPTION --print-final-positive -P metavar=- arity=0 default=False choices=- group=- required=False help=like --print-final-state but drops the (not …) facts
+  OPTION --print-final-state -p metavar=- arity=0 default=False choices=- group=- required=False help=after the read-out, each listed state's facts beyond root: its model
   OPTION --region-limit -- metavar=N arity=1 default='16' choices=- group=- required=False help=the most root candidates the cube is computed for: 2^N saturations. Above it the command refuses; 17-19 warns, 20 and more warns with the projected cost
   OPTION --states -- metavar=- arity=0 default=False choices=- group=- required=False help=(--dump) also keep every node's state beyond root's, as text, in region.json
   OPTION --stats -s metavar=- arity=0 default=False choices=- group=- required=False help=print the work: saturations and the wall clock of each phase

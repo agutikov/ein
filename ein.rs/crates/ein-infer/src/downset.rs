@@ -371,13 +371,21 @@ pub(crate) fn compute_prepared(
                 &sets,
             )?;
             for (mut o, set) in outs.into_iter().zip(chunk) {
-                if events.on() || o.events.is_some() {
-                    let mut c: Vec<String> = set
-                        .iter()
-                        .map(|&b| out.candidates[b as usize].text.clone())
-                        .collect();
-                    c.sort();
-                    crate::region::narrate_node(events, &mut o, c);
+                if events.on() || o.events.is_some() || events.watching() {
+                    let text = |bits: &[u32]| {
+                        let mut c: Vec<String> = bits
+                            .iter()
+                            .map(|&b| out.candidates[b as usize].text.clone())
+                            .collect();
+                        c.sort();
+                        c
+                    };
+                    let closure = if events.watching() {
+                        text(&o.closure)
+                    } else {
+                        Vec::new()
+                    };
+                    crate::region::narrate_node(events, &mut o, text(set), || closure);
                 }
                 let id = out.points.len() as u32;
                 stats.facts += o.state.len() as u64;
@@ -407,6 +415,14 @@ pub(crate) fn compute_prepared(
                 });
             }
         }
+        events.watch_step(&crate::events::Stepped {
+            layer: Some(layer),
+            visited: stats.visited,
+            dead: stats.dead,
+            owing: stats.owing,
+            r: stats.r,
+            facts: stats.facts,
+        });
         events.emit("layer", |l| {
             l.num("layer", layer as i64);
             l.num("visited", stats.visited as i64);
@@ -442,10 +458,22 @@ pub(crate) fn compute_prepared(
         .next()
         .expect("one node");
         let mut o = o;
-        if events.on() || o.events.is_some() {
-            let mut c: Vec<String> = out.candidates.iter().map(|c| c.text.clone()).collect();
-            c.sort();
-            crate::region::narrate_node(events, &mut o, c);
+        if events.on() || o.events.is_some() || events.watching() {
+            let text = |bits: &[u32]| {
+                let mut c: Vec<String> = bits
+                    .iter()
+                    .map(|&b| out.candidates[b as usize].text.clone())
+                    .collect();
+                c.sort();
+                c
+            };
+            let all: Vec<u32> = (0..out.n() as u32).collect();
+            let closure = if events.watching() {
+                text(&o.closure)
+            } else {
+                Vec::new()
+            };
+            crate::region::narrate_node(events, &mut o, text(&all), || closure);
         }
         out.top_facts = o.state.len() as u64;
         out.top = Some(Point {

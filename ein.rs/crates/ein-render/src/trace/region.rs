@@ -9,6 +9,11 @@
 //! each minimal dead set with why it is dead, where the walk had its refuted
 //! hypotheses; and, for an empty R that owes, the frontier. A description is
 //! traced as far as stdout lists it, and the trace says where it stopped.
+//!
+//! The walk's three trace flags read here as they did there: `--relevant`
+//! keeps the goal-relevant slice of each derivation, `--reorder` groups each
+//! section's steps by the entity they are about, and `--full-kb-snapshots`
+//! appends each state's whole KB.
 
 use super::ast::TraceStep;
 use super::render::{dot_block, premises_line};
@@ -20,6 +25,8 @@ pub struct StateTrace {
     /// The commitment it is derived from, rendered.
     pub commitment: String,
     pub steps: Vec<TraceStep>,
+    /// `--full-kb-snapshots`: the state's whole KB, as DOT.
+    pub full_kb: Option<String>,
 }
 
 /// A minimal dead set, and why.
@@ -40,6 +47,8 @@ pub struct RegionTrace {
     pub dead: Vec<DeadTrace>,
     /// For an empty R that owes: each frontier node and what it owes.
     pub owing: Vec<(String, Vec<String>)>,
+    /// `--reorder`: each section's steps grouped by their entity.
+    pub reorder: bool,
 }
 
 fn step(step: &TraceStep, diagrams: bool) -> Vec<String> {
@@ -61,6 +70,47 @@ fn step(step: &TraceStep, diagrams: bool) -> Vec<String> {
     out
 }
 
+/// One section's steps, in engine order or grouped by entity (`--reorder`):
+/// every step once, keeping its number and its order within the group.
+fn steps(steps: &[TraceStep], diagrams: bool, reorder: bool) -> Vec<String> {
+    if !reorder {
+        return steps.iter().flat_map(|s| step(s, diagrams)).collect();
+    }
+    let mut groups: Vec<(String, Vec<&TraceStep>)> = Vec::new();
+    for s in steps {
+        let key = s.section.clone().unwrap_or_else(|| "(misc)".to_string());
+        match groups.iter_mut().find(|(k, _)| *k == key) {
+            Some(g) => g.1.push(s),
+            None => groups.push((key, vec![s])),
+        }
+    }
+    let mut out = Vec::new();
+    for (entity, group) in groups {
+        out.push(format!("### About {entity}"));
+        out.push(String::new());
+        for s in group {
+            let why = if s.why.is_empty() {
+                String::new()
+            } else {
+                format!(" — {}", s.why)
+            };
+            out.push(format!(
+                "**Step {}** · `{}` → `{}`{why}",
+                s.n,
+                s.rule,
+                s.derived_label()
+            ));
+            out.push(String::new());
+            out.push(premises_line(s));
+            out.push(String::new());
+            if diagrams {
+                out.extend(dot_block(s.diagram.as_ref()));
+            }
+        }
+    }
+    out
+}
+
 /// Render a [`RegionTrace`] as markdown.
 pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
     let mut lines = vec!["# Region trace".to_string(), String::new()];
@@ -74,11 +124,14 @@ pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
         lines.push("_Root derives nothing beyond what the program gives._".to_string());
         lines.push(String::new());
     }
-    for s in &t.root {
-        lines.extend(step(s, diagrams));
-    }
+    lines.extend(steps(&t.root, diagrams, t.reorder));
     for st in &t.states {
-        lines.push(format!("## {} — {} steps", st.title, st.steps.len()));
+        lines.push(format!(
+            "## {} — {} step{}",
+            st.title,
+            st.steps.len(),
+            if st.steps.len() == 1 { "" } else { "s" }
+        ));
         lines.push(String::new());
         if st.commitment != "∅" {
             lines.push(format!("Assuming **{}**.", st.commitment));
@@ -88,8 +141,11 @@ pub fn region_markdown(t: &RegionTrace, diagrams: bool) -> String {
             lines.push("_Nothing beyond root and the commitment._".to_string());
             lines.push(String::new());
         }
-        for s in &st.steps {
-            lines.extend(step(s, diagrams));
+        lines.extend(steps(&st.steps, diagrams, t.reorder));
+        if let Some(dot) = &st.full_kb {
+            lines.push("**The state's whole KB.**".to_string());
+            lines.push(String::new());
+            lines.extend(dot_block(Some(dot)));
         }
     }
     if t.untraced > 0 {

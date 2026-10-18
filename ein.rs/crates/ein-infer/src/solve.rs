@@ -379,6 +379,9 @@ pub enum SolveError {
     /// `-y` found two lattice paths to one commitment that saturate to
     /// different KBs. Fatal.
     Sanity(Box<crate::sanity::SanityError>),
+    /// `ein oracle -T`: the wall clock ran out inside the cube — M1e2
+    /// T1e2.1a.5.3. A machine-dependent limit is never an answer.
+    Deadline,
 }
 
 impl std::fmt::Display for SolveError {
@@ -389,6 +392,7 @@ impl std::fmt::Display for SolveError {
             SolveError::Compile(e) => write!(f, "{e}"),
             SolveError::Unsupported(m) => f.write_str(m),
             SolveError::Sanity(e) => write!(f, "{e}"),
+            SolveError::Deadline => f.write_str("--max-time reached inside the cube"),
         }
     }
 }

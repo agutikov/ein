@@ -9,6 +9,6 @@ pub mod relevance;
 pub mod render;
 
 pub use ast::{FactRef, RefArg, TraceStep, fact_ref, parse_trace_steps, step_to_ir, trace_to_ir};
-pub use linearize::{LinearizeOpts, Reductio, Trace, linearize, steps_of};
+pub use linearize::{LinearizeOpts, Reductio, Trace, linearize, steps_of, steps_of_with};
 pub use relevance::relevant_firings;
 pub use render::{Mode, render_markdown};

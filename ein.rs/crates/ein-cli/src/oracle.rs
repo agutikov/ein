@@ -27,11 +27,14 @@ pub fn run(m: &ArgMatches) -> i32 {
     let jobs = crate::solve::resolve_jobs(*m.get_one::<i64>("jobs").unwrap_or(&1));
     let dir = m.get_one::<String>("dump").cloned();
     let stats = m.get_flag("stats");
+    let max_time = m.get_one::<f64>("max-time").copied();
     let opts = region::Options {
         limit,
         keep_states: m.get_flag("states"),
         jobs,
+        deadline: max_time.map(|s| Instant::now() + std::time::Duration::from_secs_f64(s.max(0.0))),
     };
+    let summary_path = m.get_one::<String>("json-summary").cloned();
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let Some(mut kb) = crate::common::load_any_or_exit(&mut ast, &mut terms, Path::new(&file))
@@ -61,6 +64,13 @@ pub fn run(m: &ArgMatches) -> i32 {
     let t0 = Instant::now();
     let outcome = match region::compute(&mut kb, &mut terms, &ast, &opts, &mut on_projection) {
         Ok(o) => o,
+        Err(ein_infer::solve::SolveError::Deadline) => {
+            eprintln!(
+                "** aborted: --max-time {} s reached before the cube was done **",
+                max_time.unwrap_or(0.0)
+            );
+            return 2;
+        }
         Err(e) => {
             eprintln!("{e}");
             return 1;
@@ -127,6 +137,29 @@ pub fn run(m: &ArgMatches) -> i32 {
             (false, false) => "",
         }
     );
+    // `--models key|grid`, `-p` and `-P`, after the whole read-out.
+    if let Err(e) = crate::modes::extras(
+        &crate::modes::Shown::of(m),
+        &ro,
+        &mut kb,
+        &mut terms,
+        &ast,
+        None,
+    ) {
+        eprintln!("{e}");
+        return 1;
+    }
+    // `--json-summary`: the read-out as `ein-summary/2`, additive as
+    // `solve`'s is.
+    if let Some(path) = summary_path.as_deref() {
+        let written =
+            crate::summary::build_region(&ast, &mut terms, &mut kb, &ro, &file).and_then(|s| {
+                std::fs::write(path, crate::summary::text(&s)).map_err(|e| e.to_string())
+            });
+        if let Err(e) = written {
+            crate::solve::artefact_failed("json-summary", path, e);
+        }
+    }
     // A contradicted static verdict is an engine defect, never an answer.
     rc.max(i32::from(monotone && violations != (0, 0)))
 }

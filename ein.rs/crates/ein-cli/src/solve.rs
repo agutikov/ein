@@ -69,7 +69,7 @@ fn timed_load(
 }
 
 /// `kb.config` (or defaults) plus the CLI overrides.
-fn resolved_config(kb: &Kb, m: &ArgMatches, seed: Option<i64>) -> SolverConfig {
+pub(crate) fn resolved_config(kb: &Kb, m: &ArgMatches, seed: Option<i64>) -> SolverConfig {
     let mut cfg = kb.program().config.clone().unwrap_or_default();
     if m.get_flag("no-lookahead") {
         cfg.enable_pre_branch_lookahead = false;
@@ -942,6 +942,7 @@ fn write_region(
         // `--jobs` is the solve's execution knob and the oracle's too: it
         // changes the wall clock and nothing in the directory.
         jobs: resolve_jobs(*m.get_one::<i64>("jobs").unwrap_or(&1)),
+        deadline: None,
     };
     let mut on_projection = |p: &ein_infer::region::Projection| {
         let secs = p.projected.as_secs_f64();

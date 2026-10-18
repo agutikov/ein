@@ -862,6 +862,52 @@ fn oracle_command() -> Command {
             "stats",
             "print the work: saturations and the wall clock of each phase",
         ))
+        // The five `ein solve` takes for the read-out — M1e2 T1e2.1a.5.3.
+        .arg(
+            Arg::new("max-time")
+                .short('T')
+                .long("max-time")
+                .value_name("MAX_TIME")
+                .value_parser(float_arg)
+                .help(
+                    "abort after N wall-clock seconds, exit 2. Checked before each \
+                     batch of the cube's nodes; a stopped cube is never an answer",
+                ),
+        )
+        .arg(
+            Arg::new("json-summary")
+                .long("json-summary")
+                .value_name("FILE.json")
+                .value_parser(artefact_path)
+                .help(
+                    "write the read-out as ein-summary/2 to FILE, as `ein solve` \
+                     does. Additive: stdout, stderr and the exit code are unchanged",
+                ),
+        )
+        .arg(
+            Arg::new("models")
+                .long("models")
+                .value_name("FORM")
+                .value_parser(PossibleValuesParser::new(["list", "key", "grid"]))
+                .default_value("list")
+                .help(
+                    "after the read-out, the states it listed: 'key' (the smallest \
+                     set of slots that tells them apart, and the table of \
+                     combinations that occur) or 'grid' (each as a table, where \
+                     the program's declarations license one). 'list', the \
+                     default, adds nothing",
+                ),
+        )
+        .arg(flag(
+            'p',
+            "print-final-state",
+            "after the read-out, each listed state's facts beyond root: its model",
+        ))
+        .arg(flag(
+            'P',
+            "print-final-positive",
+            "like --print-final-state but drops the (not …) facts",
+        ))
 }
 
 /// `ein saturate`'s **own** parser, with its own `prog`.

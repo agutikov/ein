@@ -16,6 +16,7 @@
 //! is answered from that one solve (the diff's § 7.1).
 
 use std::path::Path;
+use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 use clap::ArgMatches;
@@ -25,8 +26,9 @@ use ein_infer::explore::{self, Ask, Mode, Stopped, Which};
 use ein_infer::read_out::{self, ReadOut};
 use ein_ir::Ast;
 
-/// The `solve` options a region mode takes. Every other one is the walk's.
-const TAKES: [&str; 22] = [
+/// The `solve` options a region mode takes. The nine it refuses are the ones
+/// the switch retires (`solve_interface.md` § 2.1).
+const TAKES: [&str; 34] = [
     "file",
     "solutions",
     "max-time",
@@ -46,9 +48,21 @@ const TAKES: [&str; 22] = [
     "diff-models",
     "trace",
     "no-diagrams",
+    "full-kb-snapshots",
+    "reorder",
+    "relevant",
     "hyp-stats",
     "events",
     "events-level",
+    "dump-config",
+    "timing",
+    "verbose",
+    "layer-progress",
+    "progress-every",
+    "dump-lattice",
+    "no-lookahead",
+    "no-kill-cache",
+    "lattice-sanity-check",
 ];
 
 /// Whether this `solve` run asks a region mode.
@@ -80,16 +94,41 @@ pub fn mode_of(m: &ArgMatches) -> Mode {
 
 /// The options the header leaves out, with their values: `-j`, because the
 /// same question at another `-j` prints the same lines (C4), and the files a
-/// run writes, because writing one changes nothing printed. `--no-diagrams`,
-/// which shapes the trace alone, is left out too, as a flag with no value.
-const UNSHOWN: [&str; 7] = [
+/// run writes, because writing one changes nothing printed. The flags that
+/// shape the trace alone, or what goes to stderr, are left out too
+/// ([`UNSHOWN_FLAGS`]).
+const UNSHOWN: [&str; 9] = [
     "-j",
     "--jobs",
     "--json-summary",
     "--dump-answer",
+    "--dump-lattice",
     "--trace",
     "--events",
     "--events-level",
+    "--progress-every",
+];
+
+/// [`UNSHOWN`]'s flags with no value: the trace's shape and stderr's
+/// progress change nothing stdout prints, and a lever changes nothing either,
+/// for `-j`'s reason (C4).
+const UNSHOWN_FLAGS: [&str; 16] = [
+    "-L",
+    "--no-lookahead",
+    "-K",
+    "--no-kill-cache",
+    "-y",
+    "--lattice-sanity-check",
+    "--no-diagrams",
+    "-G",
+    "--full-kb-snapshots",
+    "-F",
+    "--reorder",
+    "-R",
+    "--relevant",
+    "-l",
+    "--layer-progress",
+    "--verbose",
 ];
 
 /// The arguments after `command`, as typed, less [`UNSHOWN`]: the header
@@ -103,15 +142,16 @@ pub fn header_argv(command: &str) -> String {
     let mut shown: Vec<&str> = Vec::new();
     let mut it = args[start..].iter();
     while let Some(a) = it.next() {
-        if a == "--no-diagrams" {
+        if UNSHOWN_FLAGS.contains(&a.as_str()) || a == "-v" {
             continue;
         }
-        if UNSHOWN.contains(&a.as_str()) {
+        if UNSHOWN.contains(&a.as_str()) || a == "-g" {
             it.next();
             continue;
         }
         if UNSHOWN.iter().any(|u| a.starts_with(&format!("{u}=")))
             || (a.starts_with("-j") && a.len() > 2)
+            || (a.starts_with("-g") && a.len() > 2)
         {
             continue;
         }
@@ -166,6 +206,14 @@ pub fn run(m: &ArgMatches) -> i32 {
             return 1;
         }
     }
+    // `--dump-lattice` too: its directory is made before the run.
+    let lattice_dir = m.get_one::<String>("dump-lattice").cloned();
+    if let Some(dir) = lattice_dir.as_deref()
+        && let Err(e) = std::fs::create_dir_all(dir)
+    {
+        crate::solve::artefact_failed("dump-lattice", dir, e);
+        return 1;
+    }
     let summary_path = m.get_one::<String>("json-summary").cloned();
     // `--diff-models FILE` is read before the run, as the walk's is: a file
     // it cannot read is a usage error, and nothing runs.
@@ -185,16 +233,38 @@ pub fn run(m: &ArgMatches) -> i32 {
 
     let mut ast = Ast::new();
     let mut terms = Terms::new();
+    let t_load = Instant::now();
     let Some(mut kb) = crate::common::load_any_or_exit(&mut ast, &mut terms, Path::new(&file))
     else {
         return 1;
     };
+    let load = t_load.elapsed();
+    // The program's config with the levers on it: what `-c` prints and the
+    // `run` event carries. No route reads a lever yet (P1e2.1c), so a lever
+    // changes nothing printed, which the corpus's `levers` cells check.
+    let cfg = crate::solve::resolved_config(&kb, m, None);
+    if m.get_flag("dump-config") {
+        crate::printers::print_resolved_config(&cfg);
+    }
     // `--trace` tells root's derivation first, so root is saturated here, with
     // its firings kept; the run's own preparation then finds it saturated.
     // `--events FILE`: the walk's `run` and `load` lines, then root and every
     // node the route visits, then one `region` line (`read_out.md` § 8.6).
-    let cfg = kb.program().config.clone().unwrap_or_default();
     let mut events = crate::solve::events_start(m, &file, &cfg);
+    // `-v`, `--layer-progress` and `--dump-lattice` read the route's nodes
+    // and steps as it visits them.
+    let visits = lattice_dir.as_ref().map(|_| {
+        Arc::new(Mutex::new(
+            ein_render::dump::region_lattice::Visits::default(),
+        ))
+    });
+    let progress = Progress::of(m);
+    if progress.is_some() || visits.is_some() {
+        events = events.watched(Box::new(Watcher {
+            progress,
+            visits: visits.clone(),
+        }));
+    }
     crate::solve::events_load(&mut events, &terms, &kb);
     let trace = m.get_one::<String>("trace").cloned();
     let root_firings = match trace {
@@ -207,13 +277,23 @@ pub fn run(m: &ArgMatches) -> i32 {
         },
         None => None,
     };
+    let t_run = Instant::now();
     let r = match read_out::run_with(&mut kb, &mut terms, &ast, &opts, &mut events) {
         Ok(r) => r,
+        Err(ein_infer::solve::SolveError::Deadline) => {
+            eprintln!(
+                "** aborted: --max-time {} s reached before the question was decided **",
+                max_time.unwrap_or(0.0)
+            );
+            return 2;
+        }
         Err(e) => {
             eprintln!("{e}");
             return 1;
         }
     };
+    let run = t_run.elapsed();
+    let t_print = Instant::now();
     let code = print(
         &r,
         "solve",
@@ -249,12 +329,38 @@ pub fn run(m: &ArgMatches) -> i32 {
             l.json("work", &compact(&get("work")));
         });
     }
-    if let Err(e) = extras(m, &r, &mut kb, &mut terms, &ast, want.as_ref()) {
+    if let Err(e) = extras(&Shown::of(m), &r, &mut kb, &mut terms, &ast, want.as_ref()) {
         eprintln!("{e}");
         return 1;
     }
+    if m.get_flag("timing") {
+        timing(&r, load, run, t_print.elapsed());
+    }
+    if let (Some(dir), Some(v)) = (lattice_dir.as_deref(), visits.as_ref()) {
+        let v = v.lock().expect("the watch is done").clone();
+        let candidates: Vec<String> = r.answer.candidates.iter().map(|c| c.text.clone()).collect();
+        let route = match r.answer.route {
+            explore::Route::DownSet => "1, the alive down-set",
+            explore::Route::Cube => "2, the cube",
+        };
+        let inputs = ein_render::dump::region_lattice::Inputs {
+            source: &file,
+            argv: &header_argv("solve"),
+            route,
+            candidates: &candidates,
+        };
+        // Additive past its directory, as `--dump-answer` is.
+        if let Err(e) = ein_render::dump::region_lattice::write(Path::new(dir), &v, &inputs) {
+            crate::solve::artefact_failed("dump-lattice", dir, e);
+        }
+    }
     if let (Some(path), Some(firings)) = (trace.as_deref(), root_firings.as_deref()) {
-        let diagrams = !m.get_flag("no-diagrams");
+        let shape = TraceShape {
+            diagrams: !m.get_flag("no-diagrams"),
+            relevant: m.get_flag("relevant"),
+            reorder: m.get_flag("reorder"),
+            full_kb: m.get_flag("full-kb-snapshots"),
+        };
         let written = trace_markdown(
             &r,
             &mut kb,
@@ -263,7 +369,7 @@ pub fn run(m: &ArgMatches) -> i32 {
             firings,
             &file,
             opts.budget,
-            diagrams,
+            shape,
         )
         .and_then(|md| std::fs::write(path, md).map_err(|e| e.to_string()));
         // Additive: a file that could not be written says so, and the answer
@@ -322,26 +428,48 @@ pub fn run(m: &ArgMatches) -> i32 {
 /// `-p`, `-P` and `-f` per state, then `--diff-models FILE`. Each block
 /// says which set it is drawn from. These are asked for by name, so the
 /// shared 100 lines do not cut them.
-fn extras(
-    m: &ArgMatches,
+/// What [`extras`] is asked to print — read off `solve`'s flags, or
+/// `oracle`'s, which has fewer of them.
+pub(crate) struct Shown {
+    form: Option<String>,
+    dumps: Vec<crate::factdump::Mode>,
+    universe: bool,
+}
+
+impl Shown {
+    /// From the flags of a command that has them: each of `--models`, `-p`,
+    /// `-P`, `-f` and `-H` it does not define is off.
+    pub(crate) fn of(m: &ArgMatches) -> Shown {
+        use crate::factdump::Mode as Dump;
+        let has = |id: &str| m.try_get_one::<bool>(id).ok().flatten().copied() == Some(true);
+        Shown {
+            form: m.try_get_one::<String>("models").ok().flatten().cloned(),
+            dumps: [
+                ("print-final-state", Dump::All),
+                ("print-final-positive", Dump::Positive),
+                ("print-final-hfacts", Dump::Hfacts),
+            ]
+            .into_iter()
+            .filter(|(flag, _)| has(flag))
+            .map(|(_, d)| d)
+            .collect(),
+            universe: has("hyp-stats"),
+        }
+    }
+}
+
+pub(crate) fn extras(
+    shown: &Shown,
     r: &ReadOut,
     kb: &mut ein_core::Kb,
     terms: &mut Terms,
     ast: &Ast,
     want: Option<&(String, ein_render::models::Expected)>,
 ) -> Result<(), String> {
-    use crate::factdump::{Mode as Dump, print_final_state};
-    let form = m.get_one::<String>("models").map(String::as_str);
-    let dumps: Vec<Dump> = [
-        ("print-final-state", Dump::All),
-        ("print-final-positive", Dump::Positive),
-        ("print-final-hfacts", Dump::Hfacts),
-    ]
-    .into_iter()
-    .filter(|(flag, _)| m.get_flag(flag))
-    .map(|(_, d)| d)
-    .collect();
-    if m.get_flag("hyp-stats") {
+    use crate::factdump::print_final_state;
+    let form = shown.form.as_deref();
+    let dumps = &shown.dumps;
+    if shown.universe {
         universe(r, terms);
     }
     if !matches!(form, Some("key" | "grid")) && dumps.is_empty() && want.is_none() {
@@ -423,7 +551,7 @@ fn extras(
                 }
                 println!();
                 println!("── {} ──", label(i));
-                for d in &dumps {
+                for d in dumps {
                     print_final_state(terms, kb, *d, &targets);
                 }
             }
@@ -531,8 +659,14 @@ fn trace_markdown(
     root_firings: &[ein_infer::Firing],
     file: &str,
     budget: u64,
-    diagrams: bool,
+    shape: TraceShape,
 ) -> Result<String, String> {
+    let TraceShape {
+        diagrams,
+        relevant,
+        reorder,
+        full_kb,
+    } = shape;
     use ein_render::trace::region::{DeadTrace, RegionTrace, StateTrace, region_markdown};
     let a = &r.answer;
     let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
@@ -568,7 +702,8 @@ fn trace_markdown(
         .take_while(|l| !l.is_empty())
         .map(str::to_string)
         .collect();
-    let root = ein_render::trace::steps_of(ast, terms, root_firings, kb, diagrams, &[]);
+    let root =
+        ein_render::trace::steps_of_with(ast, terms, root_firings, kb, diagrams, &[], relevant);
     let mut states = Vec::new();
     let k = r.states.len();
     {
@@ -581,15 +716,21 @@ fn trace_markdown(
                 .iter()
                 .map(|&b| a.candidates[b as usize].fact)
                 .collect();
-            let steps = nodes
+            let (steps, whole) = nodes
                 .with_fixpoint_traced(&facts, |kb, terms, firings| {
-                    ein_render::trace::steps_of(ast, terms, firings, kb, diagrams, &facts)
+                    (
+                        ein_render::trace::steps_of_with(
+                            ast, terms, firings, kb, diagrams, &facts, relevant,
+                        ),
+                        full_kb.then(|| ein_render::slice::render_state(kb, terms, None, "state")),
+                    )
                 })
                 .map_err(|e| e.to_string())?;
             states.push(StateTrace {
                 title: ein_render::read_out::state_title(i, k, s, &cands),
                 commitment: name(&from),
                 steps,
+                full_kb: whole,
             });
         }
     }
@@ -622,9 +763,138 @@ fn trace_markdown(
             states,
             dead,
             owing,
+            reorder,
         },
         diagrams,
     ))
+}
+
+/// The trace flags: `--no-diagrams`, `--relevant`, `--reorder`,
+/// `--full-kb-snapshots`.
+#[derive(Clone, Copy)]
+struct TraceShape {
+    diagrams: bool,
+    relevant: bool,
+    reorder: bool,
+    full_kb: bool,
+}
+
+/// `-v` and `--layer-progress`: the route's steps on stderr as it takes them,
+/// and under `-v` every `-g`-th node too.
+struct Progress {
+    every: Option<u64>,
+    nodes: u64,
+    steps: u64,
+}
+
+impl Progress {
+    fn of(m: &ArgMatches) -> Option<Progress> {
+        let verbose = m.get_flag("verbose");
+        if !verbose && !m.get_flag("layer-progress") {
+            return None;
+        }
+        Some(Progress {
+            every: verbose
+                .then(|| (*m.get_one::<i64>("progress-every").unwrap_or(&100)).max(1) as u64),
+            nodes: 0,
+            steps: 0,
+        })
+    }
+}
+
+/// The watch a region run is read through: progress to stderr, and the
+/// nodes `--dump-lattice` writes.
+struct Watcher {
+    progress: Option<Progress>,
+    visits: Option<Arc<Mutex<ein_render::dump::region_lattice::Visits>>>,
+}
+
+impl ein_infer::events::Watch for Watcher {
+    fn node(&mut self, v: &ein_infer::events::Visited<'_>) {
+        if let Some(p) = self.progress.as_mut() {
+            p.nodes += 1;
+            if let Some(g) = p.every
+                && p.nodes % g == 0
+            {
+                let set = if v.commitment.is_empty() {
+                    "∅".to_string()
+                } else {
+                    format!("{{{}}}", v.commitment.join(", "))
+                };
+                let kind = if v.kind == "in-r" { "in R" } else { v.kind };
+                eprintln!("  node {}: {set} {kind}", p.nodes);
+            }
+        }
+        if let Some(visits) = self.visits.as_ref() {
+            visits.lock().expect("one thread watches").nodes.push(
+                ein_render::dump::region_lattice::VisitedNode {
+                    commitment: v.commitment.to_vec(),
+                    kind: v.kind,
+                    owes: v.owes,
+                    owed: v.owed.to_vec(),
+                    core: v.core.to_vec(),
+                    refuted_by: v.refuted_by.to_vec(),
+                    closure: v.closure.to_vec(),
+                    facts: v.facts,
+                },
+            );
+        }
+    }
+
+    fn step(&mut self, s: &ein_infer::events::Stepped) {
+        if let Some(p) = self.progress.as_mut() {
+            p.steps += 1;
+            let name = match s.layer {
+                Some(l) => format!("layer {l}"),
+                None => format!("step {}", p.steps),
+            };
+            eprintln!(
+                "{name}: {} visited — {} dead, {} owing, {} in R · {} facts",
+                s.visited, s.dead, s.owing, s.r, s.facts
+            );
+        }
+        if let Some(visits) = self.visits.as_ref() {
+            let mut v = visits.lock().expect("one thread watches");
+            let before: usize = v
+                .steps
+                .iter()
+                .map(|(x, _)| x.visited as usize)
+                .sum::<usize>();
+            v.steps.push((*s, before));
+        }
+    }
+}
+
+/// `-t`: where the wall clock went. The route is everything up to its last
+/// node, root's saturation and H included; the read-out is each listed
+/// state's model and the queries; the print is the text.
+fn timing(r: &ReadOut, load: Duration, run: Duration, print: Duration) {
+    let route = r.answer.wall;
+    let read = run.saturating_sub(route);
+    let ms = |d: Duration| format!("{:.2} ms", d.as_secs_f64() * 1e3);
+    println!();
+    println!("timing");
+    for (what, d, note) in [
+        ("load", load, "parse, imports, the program".to_string()),
+        (
+            "route",
+            route,
+            format!(
+                "root, H and every node visited: {} saturation{}",
+                r.answer.saturations,
+                if r.answer.saturations == 1 { "" } else { "s" }
+            ),
+        ),
+        (
+            "read-out",
+            read,
+            "each listed state's model, the queries".to_string(),
+        ),
+        ("print", print, "the text".to_string()),
+    ] {
+        println!("  {what:<10}{:>12}   {note}", ms(d));
+    }
+    println!("  {:<10}{:>12}", "total", ms(load + run + print));
 }
 
 /// `answer.txt`: the read-out with no listing cut — where stdout's cut says

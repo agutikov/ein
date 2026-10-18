@@ -196,6 +196,7 @@ fn main() {
             limit,
             keep_states: true,
             jobs,
+            deadline: None,
         };
         let outcome = region::compute(&mut kb, &mut terms, &ast, &opts, &mut |_| {});
         let Ok(Outcome::Region(r)) = outcome else {

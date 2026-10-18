@@ -39,7 +39,7 @@
 | surface | how many | who owns the list |
 |---|---:|---|
 | `(config …)` flags | **17** | `FIELDS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs); the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **74** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| CLI options | **79** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **8** read by the shipped binary, of 26 greppable names | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -379,14 +379,14 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**74** options across fifteen parsers, in the default build (`einb`,
+**79** options across fifteen parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
 |---|---:|
 | `ein solve` | 42 |
 | `ein test` | 9 |
-| `ein oracle` | 5 |
+| `ein oracle` | 10 |
 | `ein saturate` | 5 |
 | `ein render kb` | 4 |
 | `ein render rule` | 2 |
@@ -398,7 +398,7 @@ parallel copy. What this page states is the *shape*, read off that golden:
 
 `ein`, `ein kb`, `ein render` and `ein render constraints` take none — they are
 dispatchers. `ein kb save` exists only under the `einb` feature; a
-`--no-default-features` build has 73 and no `ein kb` at all.
+`--no-default-features` build has 78 and no `ein kb` at all.
 
 **M1e2 S1e2.1a.9 added nine** (2026-10-16): `ein solve`'s four region flags,
 `--minimal`, `--maximal`, `--single` and `--region-budget`, and the new
@@ -410,9 +410,27 @@ the oracle by `ein-infer/tests/explore.rs`. A region mode takes `-n`, `-T`,
 (`ein-summary/2`), `--dump-answer` (`ein-answer/2`, whose `answer.txt` is the
 read-out uncut), `--models`, `-p`, `-P`, `-f` and `--diff-models` over the
 states it lists, `-H`, `--trace` and `--no-diagrams`, and `--events` and
-`--events-level`; it refuses every other `solve` option with a usage error,
-exit 2: what the walk's options mean there is S1e2.1a.5's to
-say. Its read-out is
+`--events-level`. **Since T1e2.1a.5.3's first step it takes every `solve`
+option but the nine the switch retires** (`-e`, `-m`, `-E`, `-o`, `-z`, `-d`,
+`-D`, `--dump-region`, `--region-states`), which it refuses with a usage
+error, exit 2:
+- `-c` prints the resolved config, and `-t` where the wall clock went (load,
+  the route, the read-out, the print);
+- `-v`, `--layer-progress` and `-g` write the route's steps to stderr as it
+  takes them, a route-1 layer or a mode's batch, and under `-v` every `-g`-th
+  node;
+- `--dump-lattice DIR` writes every node the route visited, in visit order, as
+  `nodes.json` (`ein-lattice/2`) and `nodes.md`;
+- `--trace`'s `--relevant`, `--reorder` and `--full-kb-snapshots` shape the
+  region trace as they shaped the walk's;
+- **`-L`, `-K` and `-y` are taken and change nothing printed**: no route reads
+  the lookahead, the kill cache or the sanity check yet. P1e2.1c gives each a
+  meaning on a route, and until then the corpus's `levers` cells check that
+  they leave the read-out as it was (C4).
+
+`ein oracle` took `ein solve`'s `-T`, `--json-summary`, `--models`, `-p` and
+`-P` in the same step, which makes its ten.
+Its read-out is
 [`read_out.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)'s,
 and every answer exits 0.
 The design, and what is retired when the default switches, is

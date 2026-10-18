@@ -199,6 +199,7 @@ fn lattice(
             limit: opts.limit,
             keep_states: false,
             jobs: opts.jobs,
+            deadline: None,
         },
         &mut |_| {},
         &mut crate::events::Events::off(),

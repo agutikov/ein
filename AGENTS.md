@@ -57,7 +57,7 @@ constrained-reasoning research.
   and `inference/implementation.md` + `ir/02-data-model/03_implementation.md`,
   the module maps. **Since M1e S1e.5.1 there is also a
   [configuration reference](docs/kernel/configuration.md)** — the 17
-  `(config …)` flags, the 74 CLI options, the eight `EIN_*` names the binary
+  `(config …)` flags, the 79 CLI options, the eight `EIN_*` names the binary
   actually reads, the precedence between the three, and on every flag row a
   *does it change the answer* and a *stability* column. Its defaults block is
   `ein solve --dump-config`'s own output (`EIN_BLESS=1` re-banks it), and two
@@ -547,7 +547,7 @@ set.** The shipped binary reads **eight** (three of them only in a non-default
 build), the test harness reads ten more, `utils/` and the shell two — and six
 greppable `EIN_*` names are not environment variables at all, `EIN_RS` and
 `EIN_RENDER_LEVI` among them. The whole census, classified, with the 17
-`(config …)` flags and the 74 CLI options beside it and a *does it change the
+`(config …)` flags and the 79 CLI options beside it and a *does it change the
 answer* column on every flag row:
 [`docs/kernel/configuration.md`](docs/kernel/configuration.md) (M1e S1e.5.1),
 pinned by `ein-cli/tests/config_reference.rs`.

@@ -152,6 +152,9 @@ pub struct Options {
     /// have to number a new fact hands its node back, and every new fact is
     /// therefore numbered by the calling thread in the order `1` numbers it.
     pub jobs: usize,
+    /// `ein oracle -T`: checked before each batch of nodes. Reaching it is
+    /// [`SolveError::Deadline`], never a smaller cube.
+    pub deadline: Option<Instant>,
 }
 
 impl Default for Options {
@@ -160,6 +163,7 @@ impl Default for Options {
             limit: DEFAULT_LIMIT,
             keep_states: false,
             jobs: 1,
+            deadline: None,
         }
     }
 }
@@ -355,6 +359,9 @@ pub(crate) fn compute_prepared(
     let t_nodes = Instant::now();
     let mut start = 0usize;
     while start < size {
+        if opts.deadline.is_some_and(|d| Instant::now() >= d) {
+            return Err(SolveError::Deadline);
+        }
         let batch = &order[start..(start + BATCH).min(size)];
         start += batch.len();
         let sets: Vec<Vec<FactId>> = batch.iter().map(|&m| facts_of(m)).collect();
@@ -369,12 +376,36 @@ pub(crate) fn compute_prepared(
             &sets,
         )?;
         // The commit, in layer order.
+        let mut step = crate::events::Stepped::default();
         for (mut out, &mask) in outs.into_iter().zip(batch) {
-            if events.on() || out.events.is_some() {
+            step.visited += 1;
+            step.facts += out.state.len() as u64;
+            if out.dead {
+                step.dead += 1;
+            } else if out.owes > 0 {
+                step.owing += 1;
+            } else {
+                step.r += 1;
+            }
+            if events.on() || out.events.is_some() || events.watching() {
                 let mut commitment: Vec<String> =
                     facts_of(mask).iter().map(|&f| sexpr(terms, f)).collect();
                 commitment.sort();
-                narrate_node(events, &mut out, commitment);
+                let closure = |out: &NodeOut| {
+                    let mut c: Vec<String> = out
+                        .closure
+                        .iter()
+                        .map(|&b| sexpr(terms, candidates[b as usize].fact))
+                        .collect();
+                    c.sort();
+                    c
+                };
+                let text = if events.watching() {
+                    closure(&out)
+                } else {
+                    Vec::new()
+                };
+                narrate_node(events, &mut out, commitment, || text);
             }
             let class = *classes.entry(out.state).or_insert(mask);
             let m = mask as usize;
@@ -384,6 +415,7 @@ pub(crate) fn compute_prepared(
                 st[m] = out.delta;
             }
         }
+        events.watch_step(&step);
     }
     let cost_nodes = t_nodes.elapsed();
 
@@ -969,12 +1001,14 @@ fn node_in_region(
 /// One node's narration, replayed into `events`, then its `enter` line:
 /// the layer (the commitment's size), the commitment, what the node is, and
 /// a dead node's core — M1e2 T1e2.1a.5.2, `read_out.md` § 8.6.
-pub(crate) fn narrate_node(events: &mut Events, out: &mut NodeOut, commitment: Vec<String>) {
+pub(crate) fn narrate_node(
+    events: &mut Events,
+    out: &mut NodeOut,
+    commitment: Vec<String>,
+    closure: impl FnOnce() -> Vec<String>,
+) {
     if let Some(w) = out.events.take() {
         events.replay(w);
-    }
-    if !events.on() {
-        return;
     }
     let kind = if out.dead {
         "dead"
@@ -983,6 +1017,22 @@ pub(crate) fn narrate_node(events: &mut Events, out: &mut NodeOut, commitment: V
     } else {
         "in-r"
     };
+    if events.watching() {
+        let closure = closure();
+        events.watch_node(&crate::events::Visited {
+            commitment: &commitment,
+            kind,
+            owes: out.owes,
+            owed: &out.node.owed,
+            core: &out.node.core,
+            refuted_by: &out.node.refuted_by,
+            closure: &closure,
+            facts: out.state.len() as u64,
+        });
+    }
+    if !events.on() {
+        return;
+    }
     events.emit("enter", |l| {
         l.num("layer", commitment.len() as i64);
         l.owned_strs("commitment", commitment);

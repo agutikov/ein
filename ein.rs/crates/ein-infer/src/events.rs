@@ -71,6 +71,46 @@ pub struct Events {
     sink: Sink,
     seq: u64,
     level: Level,
+    /// An in-process reader of the region routes' nodes and steps — M1e2
+    /// T1e2.1a.5.3. It sees what `enter` and `layer` say, in the same order,
+    /// whether or not a sink is recording, and narrates nothing itself.
+    watch: Option<Box<dyn Watch + Send>>,
+}
+
+/// A node a region route visited: what an `enter` line says, plus its
+/// closure. Commitments and closures are candidate texts, sorted.
+pub struct Visited<'a> {
+    pub commitment: &'a [String],
+    /// `dead`, `owing` or `in-r`.
+    pub kind: &'static str,
+    pub owes: u32,
+    pub owed: &'a [String],
+    pub core: &'a [String],
+    pub refuted_by: &'a [String],
+    pub closure: &'a [String],
+    /// Its fixpoint's facts beyond root's.
+    pub facts: u64,
+}
+
+/// One step of a region route: a route-1 layer (`layer` is `Some`), or a
+/// mode's or the cube's batch of nodes.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct Stepped {
+    pub layer: Option<usize>,
+    pub visited: u64,
+    pub dead: u64,
+    pub owing: u64,
+    pub r: u64,
+    pub facts: u64,
+}
+
+/// What `-v`, `--layer-progress` and `--dump-lattice` read: each node a region
+/// route visits, and each step, on the committing thread in visit order, so
+/// `-j` moves nothing it sees. Watching cannot change the run, as emitting
+/// cannot.
+pub trait Watch {
+    fn node(&mut self, _: &Visited<'_>) {}
+    fn step(&mut self, _: &Stepped) {}
 }
 
 impl Default for Events {
@@ -85,6 +125,7 @@ impl Events {
             sink: Sink::Off,
             seq: 0,
             level: Level::Normal,
+            watch: None,
         }
     }
 
@@ -115,6 +156,7 @@ impl Events {
                 sink: Sink::Deferred(Vec::new()),
                 seq: 0,
                 level,
+                watch: None,
             },
         }
     }
@@ -173,6 +215,7 @@ impl Events {
             sink: Sink::Out(sink),
             seq: 0,
             level,
+            watch: None,
         };
         e.emit("run", |l| {
             l.str("version", SCHEMA);
@@ -184,6 +227,31 @@ impl Events {
 
     pub fn on(&self) -> bool {
         !matches!(self.sink, Sink::Off)
+    }
+
+    /// Hand the region routes' nodes and steps to `watch` as well.
+    pub fn watched(mut self, watch: Box<dyn Watch + Send>) -> Events {
+        self.watch = Some(watch);
+        self
+    }
+
+    /// Whether a [`Watch`] is reading this run.
+    pub fn watching(&self) -> bool {
+        self.watch.is_some()
+    }
+
+    /// Tell the watch about a node, if one is reading.
+    pub fn watch_node(&mut self, v: &Visited<'_>) {
+        if let Some(w) = self.watch.as_mut() {
+            w.node(v);
+        }
+    }
+
+    /// Tell the watch about a step, if one is reading.
+    pub fn watch_step(&mut self, s: &Stepped) {
+        if let Some(w) = self.watch.as_mut() {
+            w.step(s);
+        }
     }
 
     pub fn verbose(&self) -> bool {

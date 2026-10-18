@@ -161,15 +161,24 @@ fn n_inside_a_mode_is_n_states_and_outside_it_is_still_the_walk() {
 
 #[test]
 fn the_walks_options_are_refused_beside_a_mode() {
+    // The nine the switch retires (`solve_interface.md` § 2.1), and only
+    // those: every other option of `solve`'s is a mode's since T1e2.1a.5.3.
     for (args, name) in [
         (vec!["--maximal", "-e"], "--exhaustive"),
         (vec!["--single", "-m", "3"], "--max-set-size"),
-        (vec!["--minimal", "-L"], "--no-lookahead"),
+        (vec!["--minimal", "-E", "9"], "--max-enterings"),
+        (vec!["--minimal", "-o", "score-sum"], "--lattice-order"),
+        (vec!["--minimal", "-z"], "--shuffle"),
+        (vec!["--minimal", "-d", "3"], "--seed"),
         (
             vec!["--maximal", "--dump-states", "/tmp/x"],
             "--dump-states",
         ),
-        (vec!["--maximal", "--reorder"], "--reorder"),
+        (
+            vec!["--maximal", "--dump-region", "/tmp/x"],
+            "--dump-region",
+        ),
+        (vec!["--maximal", "--region-states"], "--region-states"),
     ] {
         let mut a = vec!["solve", THREE];
         a.extend(args.iter());
@@ -458,5 +467,194 @@ fn the_event_stream_is_the_runs_and_jobs_move_no_line() {
     );
     // Every line but `run`, whose argv names the -j, is the same at four jobs.
     assert_eq!(one[1..], streams[1][1..]);
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+/// The walk's other options, taken by the modes — T1e2.1a.5.3's first step.
+/// `-c` and `-t` add a block to stdout, `-v` and `--layer-progress` write the
+/// route's steps to stderr, and the levers `-L`, `-K` and `-y` change nothing
+/// printed, header included (C4): no route reads them until P1e2.1c.
+#[test]
+fn the_modes_take_the_walks_other_options() {
+    let zebra = "examples/branching/05_mini_zebra.ein";
+    let base = ["solve", zebra, "--region-budget", "524288"];
+    let run = |extra: &[&str]| {
+        let mut a = base.to_vec();
+        a.extend(extra.iter());
+        ein(&a)
+    };
+    let bare = run(&[]);
+    assert_eq!(bare.code, 0, "{}", bare.err);
+    for lever in [&["-L"][..], &["-K"], &["-y"], &["-L", "-K", "-y"]] {
+        let r = run(lever);
+        assert_eq!(
+            (r.code, &r.out, &r.err),
+            (bare.code, &bare.out, &bare.err),
+            "{lever:?} moved the read-out"
+        );
+    }
+    let c = run(&["-c"]);
+    assert!(
+        c.out.starts_with("config (resolved)\n")
+            && c.out
+                .ends_with(&bare.out[bare.out.find('\n').unwrap() + 1..]),
+        "{}",
+        c.out
+    );
+    let cl = run(&["-c", "-L"]);
+    assert!(
+        cl.out.contains("enable-pre-branch-lookahead      false"),
+        "-c shows the lever: {}",
+        cl.out
+    );
+    let t = run(&["-t"]);
+    assert!(
+        t.out.contains("\ntiming\n") && t.out.contains("  route "),
+        "{}",
+        t.out
+    );
+    // Progress goes to stderr, one line per route-1 layer, and stdout stands.
+    let p = run(&["--layer-progress"]);
+    assert_eq!(p.out, bare.out, "--layer-progress moved stdout");
+    let layers: usize = line(&bare.out, "work")
+        .split(" · ")
+        .find_map(|w| w.strip_suffix(" layers"))
+        .and_then(|n| n.trim().parse().ok())
+        .expect("a layers count");
+    assert_eq!(
+        p.err.lines().filter(|l| l.starts_with("layer ")).count(),
+        layers,
+        "{}",
+        p.err
+    );
+    let v = run(&["-v", "-g", "1"]);
+    assert_eq!(v.out, bare.out, "-v moved stdout");
+    let saturations: usize = line(&bare.out, "work")
+        .split(' ')
+        .next()
+        .and_then(|n| n.parse().ok())
+        .expect("a saturations count");
+    assert_eq!(
+        v.err.lines().filter(|l| l.starts_with("  node ")).count(),
+        saturations,
+        "{}",
+        v.err
+    );
+}
+
+/// `--dump-lattice DIR` under a mode: every node the route visited, in visit
+/// order, the same at one job and at four, and additive.
+#[test]
+fn the_lattice_dump_is_every_node_visited() {
+    let dir = scratch("lattice");
+    let mut dumps = Vec::new();
+    for (j, mode) in [("1", "--single"), ("4", "--single"), ("1", "--maximal")] {
+        let d = dir.join(format!("{j}{mode}"));
+        let p = d.to_string_lossy().to_string();
+        let bare = ein(&["solve", SQUARE, mode, "-j", j]);
+        let r = ein(&["solve", SQUARE, mode, "-j", j, "--dump-lattice", &p]);
+        assert_eq!(
+            (r.code, &r.out, &r.err),
+            (bare.code, &bare.out, &bare.err),
+            "{mode} -j {j}: the dump moved the read-out"
+        );
+        let doc: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(d.join("nodes.json")).unwrap()).unwrap();
+        assert_eq!(doc["schema"], "ein-lattice/2");
+        let saturations: u64 = line(&r.out, "work")
+            .split(' ')
+            .next()
+            .and_then(|n| n.replace('\u{a0}', "").parse().ok())
+            .expect("a saturations count");
+        assert_eq!(doc["visited"].as_u64(), Some(saturations), "{mode}");
+        assert_eq!(doc["nodes"].as_array().unwrap().len() as u64, saturations);
+        let stepped: u64 = doc["steps"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|s| s["visited"].as_u64().unwrap())
+            .sum();
+        assert!(stepped <= saturations, "{mode}");
+        assert!(
+            std::fs::read_to_string(d.join("nodes.md"))
+                .unwrap()
+                .starts_with("# Visited nodes — `examples/saturation/square-bwd/floors.ein`")
+        );
+        dumps.push(doc);
+    }
+    assert_eq!(dumps[0], dumps[1], "-j moved the dump");
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+/// `--trace`'s three shaping flags under a mode: `--relevant` keeps a slice,
+/// `--reorder` groups each section by entity, `--full-kb-snapshots` appends
+/// each state's KB. None of them moves stdout.
+#[test]
+fn the_trace_takes_its_three_shaping_flags() {
+    let zebra = "examples/branching/05_mini_zebra.ein";
+    let dir = scratch("trace-shape");
+    std::fs::create_dir_all(&dir).unwrap();
+    let trace = |extra: &[&str]| {
+        let p = dir.join("t.md").to_string_lossy().to_string();
+        let mut a = vec!["solve", zebra, "--single", "--no-diagrams", "--trace", &p];
+        a.extend(extra.iter());
+        let r = ein(&a);
+        assert_eq!(r.code, 0, "{}", r.err);
+        (r.out, std::fs::read_to_string(&p).unwrap())
+    };
+    let (out, plain) = trace(&[]);
+    let (o1, relevant) = trace(&["--relevant"]);
+    let (o2, reorder) = trace(&["--reorder"]);
+    let (o3, full) = trace(&["--full-kb-snapshots"]);
+    assert!(
+        out == o1 && out == o2 && out == o3,
+        "a trace flag moved stdout"
+    );
+    let steps = |t: &str| t.matches("### Step ").count() + t.matches("**Step ").count();
+    assert!(steps(&relevant) < steps(&plain), "{relevant}");
+    assert_eq!(steps(&reorder), steps(&plain));
+    assert!(reorder.contains("### About "), "{reorder}");
+    assert_eq!(
+        full.matches("**The state's whole KB.**").count(),
+        2,
+        "{full}"
+    );
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+/// `ein oracle`'s five options from `ein solve` — T1e2.1a.5.3's first step,
+/// `solve_interface.md` § 2.2.
+#[test]
+fn the_oracle_takes_the_read_outs_options() {
+    let dir = scratch("oracle-options");
+    std::fs::create_dir_all(&dir).unwrap();
+    let bare = ein(&["oracle", THREE]);
+    assert_eq!(bare.code, 0, "{}", bare.err);
+    let p = dir.join("s.json").to_string_lossy().to_string();
+    let s = ein(&["oracle", THREE, "--json-summary", &p]);
+    assert_eq!((s.code, &s.out, &s.err), (bare.code, &bare.out, &bare.err));
+    let doc: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&p).unwrap()).unwrap();
+    assert_eq!(doc["schema"], "ein-summary/2");
+    assert_eq!(doc["region"]["k_s"], 7);
+    let k = ein(&["oracle", THREE, "--models", "key"]);
+    // Below the header, which names the flag, the read-out is the same.
+    let body = |s: &str| s[s.find('\n').unwrap()..].to_string();
+    assert!(
+        body(&k.out).starts_with(&body(&bare.out))
+            && k.out.contains("models — the determining key of"),
+        "{}",
+        k.out
+    );
+    let pp = ein(&["oracle", THREE, "-P"]);
+    assert_eq!(pp.out.matches("── state ").count(), 7, "{}", pp.out);
+    let t = ein(&[
+        "oracle",
+        "examples/lattice/07_two_pairs_two_tables.ein",
+        "-T",
+        "0",
+    ]);
+    assert_eq!(t.code, 2, "{}", t.err);
+    assert!(t.err.contains("--max-time"), "{}", t.err);
     let _ = std::fs::remove_dir_all(&dir);
 }

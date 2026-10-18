@@ -491,14 +491,32 @@ impl<'a> Space<'a> {
             &self.axes,
             &inputs,
         )?;
+        let mut step = crate::events::Stepped::default();
         for (s, mut o) in fresh.into_iter().zip(outs) {
-            if self.events.on() || o.events.is_some() {
-                let mut c: Vec<String> = s
-                    .iter()
-                    .map(|&b| self.candidates[b as usize].text.clone())
-                    .collect();
-                c.sort();
-                region::narrate_node(self.events, &mut o, c);
+            step.visited += 1;
+            step.facts += o.state.len() as u64;
+            if o.dead {
+                step.dead += 1;
+            } else if o.owes > 0 {
+                step.owing += 1;
+            } else {
+                step.r += 1;
+            }
+            if self.events.on() || o.events.is_some() || self.events.watching() {
+                let text = |bits: &[u32]| {
+                    let mut c: Vec<String> = bits
+                        .iter()
+                        .map(|&b| self.candidates[b as usize].text.clone())
+                        .collect();
+                    c.sort();
+                    c
+                };
+                let closure = if self.events.watching() {
+                    text(&o.closure)
+                } else {
+                    Vec::new()
+                };
+                region::narrate_node(self.events, &mut o, text(s), || closure);
             }
             self.saturations += 1;
             if s.is_empty() {
@@ -516,6 +534,9 @@ impl<'a> Space<'a> {
                     closure: o.closure.into_boxed_slice(),
                 },
             );
+        }
+        if step.visited > 0 {
+            self.events.watch_step(&step);
         }
         Ok(Ok(sets.iter().map(|s| self.seen[s].clone()).collect()))
     }
@@ -1228,6 +1249,7 @@ fn flagged(
             limit: opts.limit,
             keep_states: false,
             jobs: opts.jobs,
+            deadline: opts.deadline,
         },
         &mut |_| {},
         events,
