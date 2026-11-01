@@ -53,6 +53,10 @@ pub const EMPTY_KINDS: [&str; 2] = ["no-alive", "all-owe"];
 /// What a row may say about itself.
 pub const STATUSES: [&str; 3] = ["open", "fixed", "not-wrong"];
 
+/// What gave a recorded [`Answer`]: the walk, which no command has run since
+/// M1e2 S1e2.1a.5's switch, or a region run (W13's `wrong`, M1e2 S1e2.1a.7).
+pub const ANSWERED_BY: [&str; 2] = ["walk", "region"];
+
 /// The verdict words, as `--json-summary`'s `verdict.type` spells them.
 pub const VERDICTS: [&str; 4] = ["Solution", "Ambiguity", "Contradiction", "Open"];
 
@@ -130,7 +134,9 @@ pub struct Row {
     pub look_at: Vec<String>,
     /// What the walk answered. Since M1e2 S1e2.1a.5 no command runs the
     /// walk, so this, [`Self::control`] and [`Self::twin`] are the record of
-    /// what it said, and [`Self::now`] is what is run.
+    /// what it said, and [`Self::now`] is what is run. A row filed after the
+    /// switch records a region run's wrong answer, and says so
+    /// ([`Answer::by`], W13's).
     pub wrong: Answer,
     /// A run that gets it right today.
     #[serde(default)]
@@ -154,6 +160,37 @@ pub struct Row {
     /// The user's verdict on the row (S1e2.1.7). Absent until it is reviewed.
     #[serde(default)]
     pub review: Option<Review>,
+    /// What made a `fixed` row's [`Self::now`] answer [`Self::right`]: the
+    /// commit, the work it was, and its date — M1e2 S1e2.1a.7, so a case page
+    /// says what fixed it. Stated exactly when the row is fixed.
+    #[serde(default)]
+    pub fixed: Option<Fixed>,
+}
+
+/// What fixed a row.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Fixed {
+    /// The commit, abbreviated.
+    pub commit: String,
+    /// The stage or task, as its commit names it.
+    pub by: String,
+    /// `YYYY-MM-DD`.
+    pub date: String,
+}
+
+fn is_date(d: &str) -> bool {
+    let d = d.as_bytes();
+    d.len() == 10
+        && d[4] == b'-'
+        && d[7] == b'-'
+        && d.iter()
+            .enumerate()
+            .all(|(i, c)| i == 4 || i == 7 || c.is_ascii_digit())
+}
+
+fn is_commit(c: &str) -> bool {
+    c.len() >= 7 && c.bytes().all(|b| b.is_ascii_hexdigit())
 }
 
 /// One review verdict, as the user gave it.
@@ -313,6 +350,10 @@ pub struct Answer {
     pub witness: Option<String>,
     /// A corpus run name ([`crate::plan::argv`]).
     pub run: String,
+    /// One of [`ANSWERED_BY`]; the walk when absent. A region run's
+    /// [`Self::why`] says how it was taken.
+    #[serde(default)]
+    pub by: Option<String>,
     /// `NAME=value`, set for the run.
     #[serde(default)]
     pub env: Vec<String>,
@@ -503,19 +544,24 @@ impl Register {
                         rv.verdict
                     )));
                 }
-                let d = rv.date.as_bytes();
-                if d.len() != 10
-                    || d[4] != b'-'
-                    || d[7] != b'-'
-                    || !d
-                        .iter()
-                        .enumerate()
-                        .all(|(i, c)| i == 4 || i == 7 || c.is_ascii_digit())
-                {
+                if !is_date(&rv.date) {
                     out.push(at(format!("review date {:?} is not YYYY-MM-DD", rv.date)));
                 }
-                if rv.bundle.len() < 7 || !rv.bundle.bytes().all(|c| c.is_ascii_hexdigit()) {
+                if !is_commit(&rv.bundle) {
                     out.push(at(format!("review bundle {:?} is not a commit", rv.bundle)));
+                }
+            }
+            if (r.status == "fixed") != r.fixed.is_some() {
+                out.push(at(
+                    "`[case.fixed]` is stated exactly when the row is fixed".to_string()
+                ));
+            }
+            if let Some(f) = &r.fixed {
+                if !is_commit(&f.commit) {
+                    out.push(at(format!("[fixed] commit {:?} is not a commit", f.commit)));
+                }
+                if !is_date(&f.date) {
+                    out.push(at(format!("[fixed] date {:?} is not YYYY-MM-DD", f.date)));
                 }
             }
             if (r.status == "not-wrong")
@@ -554,6 +600,14 @@ impl Register {
                 }
                 if label != "wrong" && a.why.is_none() {
                     out.push(at("a control or twin says what differs (`why`)".to_string()));
+                }
+                match a.by.as_deref() {
+                    None | Some("walk") => {}
+                    Some("region") if a.why.is_none() => out.push(at(
+                        "an answer a region run gave says how it was taken (`why`)".to_string(),
+                    )),
+                    Some("region") => {}
+                    Some(b) => out.push(at(format!("by {b:?} is not one of {ANSWERED_BY:?}"))),
                 }
                 if label != "wrong" && a.id_order.is_some() {
                     out.push(at("`id_order` belongs on the wrong run".to_string()));
@@ -702,6 +756,40 @@ mod tests {
             }
         }
         assert!(bad.is_empty(), "{}", bad.join("\n"));
+    }
+
+    /// **What fixed a row, and what gave its `wrong`**, M1e2 S1e2.1a.7: a
+    /// fixed row states `[case.fixed]` and no other row does, and a recorded
+    /// answer a region run gave says how it was taken.
+    #[test]
+    fn a_fixed_row_says_what_fixed_it() {
+        let text = std::fs::read_to_string(repo_root().join(REGISTER)).expect("the register");
+        let reg: Register = toml::from_str(&text).expect("parses");
+        let mut row = reg
+            .case
+            .iter()
+            .find(|r| r.wrong.by.as_deref() == Some("region"))
+            .expect("W13's wrong is a region run's")
+            .clone();
+        let defects = |r: &Row| {
+            Register {
+                schema: REGISTER_SCHEMA.to_string(),
+                case: vec![r.clone()],
+            }
+            .defects()
+        };
+        assert!(defects(&row).is_empty(), "{:?}", defects(&row));
+        let fixed = row.fixed.take();
+        assert!(defects(&row).iter().any(|d| d.contains("[case.fixed]")));
+        row.fixed = fixed;
+        row.wrong.why = None;
+        assert!(
+            defects(&row)
+                .iter()
+                .any(|d| d.contains("says how it was taken"))
+        );
+        row.wrong.by = Some("oracle".to_string());
+        assert!(defects(&row).iter().any(|d| d.contains("is not one of")));
     }
 
     #[test]

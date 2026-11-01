@@ -43,6 +43,11 @@
 # whose `wrong` is not the walk's. The register reads **25 rows fixed and 10
 # open**.
 #
+# **Every fixed row says what fixed it since S1e2.1a.7** (2026-11-01): a
+# `[case.fixed]` block, `fbcae3b2` for the switch's 24 and `c67b4d67` for W13,
+# and `by = "region"` on W13's `wrong`, so its case page does not caption it
+# as the walk's.
+#
 # **The review (S1e2.1.7) reads the bundle built at `029ef6f`** on 2026-10-15
 # (`python3 utils/review_bundle.py` → build/review/, 26 cases, 6 788 pages,
 # 0 dangling links). Rebuilding at that commit gives the same pages, apart from
@@ -102,6 +107,8 @@
 #
 #   [case.wrong] / [case.control] / [[case.twin]]   an answer the walk gave —
 #     since the switch the record of it, not run
+#     by        walk (the default) | region — a recorded answer a region run
+#               gave, with `why` saying how it was taken (W13's `wrong`, S1e2.1a.7)
 #     witness   (control, twin) another file; default: the row's witness
 #     run       a corpus run name — `ein <run>` with the file elided, so
 #               `"solve -e -L"` is `ein solve <witness> -e -L`
@@ -141,6 +148,10 @@
 #     minimal, maximal   the lines, as commitments: each the candidates it
 #               holds, sorted. This is R's vocabulary. `models` above is the walk's
 #
+#   [case.fixed] — what made a fixed row's `now` answer `right` (M1e2
+#     S1e2.1a.7), stated exactly when the row is fixed; its case page says it:
+#     commit    the commit, abbreviated;  by: the stage or task;  date YYYY-MM-DD
+#
 #   [case.review] — the user's verdict (S1e2.1.7), absent until the row is read:
 #     verdict   confirmed | right-answer-corrected | not-wrong | split | merge
 #               (`not-wrong` here and `status = "not-wrong"` go together)
@@ -172,6 +183,11 @@ question = ["Q-M1e.8"]
 witness  = "examples/branching/15_lookahead_two_step_on.ein"
 status   = "fixed"
 look_at  = ["entering p(A)", "layer 2", "answer"]
+
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
 
 [case.wrong]
 run       = "solve -e"
@@ -228,6 +244,11 @@ question = ["Q-M1e.8"]
 witness  = "examples/branching/16_lookahead_two_step_off.ein"
 status   = "fixed"
 look_at  = ["entering p(A)", "layer 2", "refuted", "summary"]
+
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
 
 [case.wrong]
 run       = "solve -e"
@@ -302,6 +323,11 @@ witness  = "examples/lattice/02_genuine_3set_death.ein"
 status   = "fixed"
 look_at  = ["layer 2", "layer 3", "refuted", "summary"]
 note     = "one of the 9 corpus entries that go from models to a certified Contradiction under -L (inventory § 4); the header's 'Expected verdict: Contradiction' is P1.5b's mode contract, superseded by the 2026-08-28 ruling"
+
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
 
 [case.wrong]
 run       = "solve -e -L"
@@ -378,6 +404,11 @@ status   = "fixed"
 look_at  = ["layer 1", "refuted", "summary"]
 note     = "layer 0: every singleton dies and phase2 breaks without asking whether root is complete"
 
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
+
 [case.wrong]
 run       = "solve -e"
 verdict   = "Contradiction"
@@ -448,6 +479,11 @@ status   = "fixed"
 look_at  = ["layer 1", "refuted", "summary"]
 note     = "W2's witness with the cascade off falls through into W1 at layer 0 — why S1e2.2.1 runs before S1e2.2.2"
 
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
+
 [case.wrong]
 run       = "solve -e"
 verdict   = "Contradiction"
@@ -507,6 +543,11 @@ witness  = "examples/ein-bugs/wrong-answers/owed-two-step.ein"
 status   = "fixed"
 look_at  = ["root", "layer 1", "refuted", "summary"]
 note     = "in an obligations program W1 at layer 0 turns the ruled Open into a certified Contradiction"
+
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
 
 [case.wrong]
 run       = "solve -e"
@@ -584,6 +625,11 @@ status   = "fixed"
 look_at  = ["layer 1", "refuted", "summary"]
 note     = "alive-set-fresh-name.ein minus its spawn rule: the banked W4 file's k = 0 is this, not the fresh name"
 
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
+
 [case.wrong]
 run       = "solve -e"
 verdict   = "Contradiction"
@@ -644,6 +690,11 @@ status   = "fixed"
 look_at  = ["answer"]
 note     = "W1's shape plus the walk's stronger node (walk_and_region.md § 4.3)"
 
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
+
 [case.wrong]
 run       = "solve -e"
 verdict   = "Solution"
@@ -694,6 +745,11 @@ witness  = "examples/branching/07_lookahead_off.ein"
 status   = "fixed"
 look_at  = ["summary"]
 note     = "W1 under the file's own lookahead switch, which the config principle makes wrong by itself"
+
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
 
 [case.wrong]
 run       = "solve -e"
@@ -791,6 +847,11 @@ status   = "fixed"
 look_at  = ["root-writes", "summary"]
 note     = "right under Q-M1e.7 ruling A, as the inventory had it; under R it is W9's direction. Its :expect (false) states the walk's answer until the switch"
 
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
+
 [case.wrong]
 run       = "solve -e"
 verdict   = "Contradiction"
@@ -847,6 +908,11 @@ status   = "fixed"
 look_at  = ["summary"]
 note     = "the walk's -e answer on W11's witness; W11/d3-unsat-core is its core under solve -m 2"
 
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
+
 [case.wrong]
 run       = "solve -e"
 verdict   = "Solution"
@@ -898,6 +964,11 @@ witness  = "examples/branching/04_two_levels.ein"
 status   = "fixed"
 look_at  = ["summary"]
 note     = "W1/lattice-02-L's shape on another program, found by the walk's last census"
+
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
 
 [case.wrong]
 run       = "solve -L"
@@ -958,6 +1029,11 @@ status   = "fixed"
 look_at  = ["summary"]
 note     = "W1/lattice-02-L's shape on another program, found by the walk's last census"
 
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
+
 [case.wrong]
 run       = "solve -L"
 verdict   = "Contradiction"
@@ -1015,6 +1091,11 @@ owner    = "S1e2.2.2"
 witness  = "examples/ein-bugs/wrong-answers/forced-2.ein"
 status   = "fixed"
 look_at  = ["root-writes", "events writeback", "summary"]
+
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
 
 [case.wrong]
 run       = "solve -e"
@@ -1076,6 +1157,11 @@ owner    = "S1e2.2.2"
 witness  = "examples/ein-bugs/wrong-answers/forced-1.ein"
 status   = "fixed"
 look_at  = ["root-writes", "events writeback", "summary"]
+
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
 
 [case.wrong]
 run       = "solve -e -L"
@@ -1140,6 +1226,11 @@ witness  = "examples/ein-bugs/naf-upward-closure.ein"
 status   = "fixed"
 look_at  = ["root-writes", "entering p(A)", "model 1"]
 note     = "Fixed at the switch by route 2, which learns from no refutation, i.e. under *respect*; *forbid* or *respect* is P1e2.4's S1e2.4.1 since 2026-11-01, and *forbid* would re-open this row as a refusal"
+
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
 
 [case.wrong]
 run       = "solve -e"
@@ -1206,6 +1297,11 @@ witness  = "examples/ein-bugs/wrong-answers/naf-nowb.ein"
 status   = "fixed"
 look_at  = ["entering p(A)", "events nogood", "layer 2", "summary"]
 note     = "two mechanisms: W3's width-1 no-good prunes the live superset, and W1 leaves the surviving {(q A)} unrecorded. W3: fixed at the switch by route 2, which learns from no refutation, i.e. under *respect*; *forbid* or *respect* is P1e2.4's S1e2.4.1 since 2026-11-01, and *forbid* would re-open this row as a refusal"
+
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
 
 [case.wrong]
 run       = "solve -e -L"
@@ -1279,6 +1375,11 @@ status   = "fixed"
 look_at  = ["summary"]
 note     = "S1e2.1a.8's program written for a chosen region; the walk never enters the two states it misses. W3: fixed at the switch by route 2, which learns from no refutation, i.e. under *respect*; *forbid* or *respect* is P1e2.4's S1e2.4.1 since 2026-11-01, and *forbid* would re-open this row as a refusal"
 
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
+
 [case.wrong]
 run       = "solve -e"
 verdict   = "Solution"
@@ -1336,6 +1437,11 @@ witness  = "examples/lattice/synth/trigger_hole.ein"
 status   = "fixed"
 look_at  = ["summary"]
 note     = "S1e2.1a.8's program written for a chosen region; its obligation-trigger hole is P1e2.1b's. W3: fixed at the switch by route 2, which learns from no refutation, i.e. under *respect*; *forbid* or *respect* is P1e2.4's S1e2.4.1 since 2026-11-01, and *forbid* would re-open this row as a refusal"
+
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
 
 [case.wrong]
 run       = "solve -e"
@@ -1523,6 +1629,11 @@ question = ["Q-M1e2.1"]
 witness  = "examples/ein-bugs/wrong-answers/owed-seats.ein"
 status   = "fixed"
 look_at  = ["layer 3", "model 3", "events rung"]
+
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
 
 [case.wrong]
 run       = "solve -e"
@@ -1941,6 +2052,11 @@ status   = "fixed"
 note     = "reversed 2026-10-16 (S1e2.1a.10): the default run is the wrong one under R, and -K agrees with it; the id keeps its -K, because ids are stable"
 look_at  = ["layer 1", "answer"]
 
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
+
 [case.wrong]
 run       = "solve -e"
 verdict   = "Solution"
@@ -2011,6 +2127,11 @@ witness  = "examples/ein-bugs/alive-empty-phase1.ein"
 status   = "fixed"
 note     = "reversed 2026-10-16 (S1e2.1a.10): the default run is the wrong one under R, and -K agrees with it; the id keeps its -K, because ids are stable"
 look_at  = ["root", "answer"]
+
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
 
 [case.wrong]
 run       = "solve -e"
@@ -2139,6 +2260,11 @@ not_in_corpus = "it moves under a permuted interner, which id_order_invariance a
 status   = "fixed"
 look_at  = ["refuted", "summary"]
 
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
+
 [case.wrong]
 run       = "solve -e"
 verdict   = "Contradiction"
@@ -2206,6 +2332,11 @@ not_in_corpus = "it moves under a permuted interner at the third seed, which the
 status   = "fixed"
 look_at  = ["refuted", "summary"]
 note     = "corpus/fuzz_findings/README.md says this file is green under a permuted id space; that is true at seed 1 only"
+
+[case.fixed]
+commit = "fbcae3b2"
+by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
+date   = "2026-10-18"
 
 [case.wrong]
 run       = "solve -m 2"
@@ -2339,8 +2470,15 @@ status   = "fixed"
 look_at  = ["root", "summary"]
 note     = "the one lever that moved R: utils/region_census.py --levers at S1e2.1a.3 (2026-10-16) and again after the switch (2026-11-01), and lever_invariance.rs on all twelve questions. Fixed by retiring the flag on the user's ruling of 2026-11-01, not by making it switch the mirror's implementation: setting it is a load error that says why, and a marked relation is always mirrored. No P1e2.2 stage, because nothing is left to fix. [case.now] cannot tell the two apart, since the witness has no candidate, so a state's (model …) is empty either way and the three facts are root's. What holds the fix is the refusal (config_reference.rs::the_retired_flags_are_refused_with_why, compile_semantics.rs), and the mirror's three firings in ein-infer's events_symmetric-native.jsonl golden and the corpus's shape digests"
 
+[case.fixed]
+commit = "c67b4d67"
+by     = "T1e2.1a.6.3, which retired `enable-symmetric-mirror`"
+date   = "2026-11-01"
+
 [case.wrong]
 run       = "solve"
+by        = "region"
+why       = "a region run, `ein solve` on the witness with (config :enable-symmetric-mirror false) appended, taken at df9afccf before T1e2.1a.6.3 made the flag a load error"
 verdict   = "Solution"
 k         = 1
 exhausted = true
