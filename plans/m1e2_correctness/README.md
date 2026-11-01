@@ -145,8 +145,8 @@ where it is cheap and exact, and
 | P1e2.3 | Surfaces that misreport the answer | — | *planned*, specified when it starts | below |
 | [P1e2.4](p1e2.4_what_the_switch_left/README.md) | What the switch left: the `absent` ruling, and the read-out at scale | 2 named | — | Q-M1e2.5 ruled, *forbid* or *respect*, and applied to W3's rows (S1e2.4.1); `--models key` declines before it allocates, and the read-out forms measured in memory on the largest regions (S1e2.4.2) |
 
-**The order, ruled 2026-11-02.** P1e2.1a is done. Next is **P1e2.4**, then
-P1e2.1b, where the user expects questions to discuss, then P1e2.1c, then
+**The order, ruled 2026-11-02.** P1e2.1a is done, and so is **P1e2.4**
+(2026-11-02). Next is P1e2.1b, where the user expects questions to discuss, then P1e2.1c, then
 P1e2.3. P1e2.4 was first put after P1e2.1c and moved ahead of P1e2.1b the same
 day, on the user's *"reorder P1e2.4 before P1e2.1b"*: P1e2.1b's S1e2.1b.4
 applies the *forbid* / *respect* ruling S1e2.4.1 takes. Only after P1e2.3 are

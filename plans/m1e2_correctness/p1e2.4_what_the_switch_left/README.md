@@ -7,8 +7,10 @@ to them after S1e2.1a.5's switch: *"file in additional phase in m1e2"*, both
 in one phase. One is a ruling W3's fix waited on and nobody had taken. The
 other is a failure the region gallery found the first time it ran against the
 region modes. **S1e2.4.1 is done 2026-11-02: the user ruled *forbid***
-([its stage file § 5](s1e2.4.1_refutation_under_absent.md#5-the-ruling)). **S1e2.4.2 started 2026-11-02**
-([its stage file](s1e2.4.2_models_key_declines.md)).
+([its stage file § 5](s1e2.4.1_refutation_under_absent.md#5-the-ruling)). **S1e2.4.2 is done 2026-11-02**
+([its stage file](s1e2.4.2_models_key_declines.md)): `--models key` and
+`--diff-models`' near pairing price their pair table first and decline past
+16 MiB. With both stages done, **the phase is done**.
 **Depends on:** nothing. Either stage can run first. **It runs before
 P1e2.1b** (the user, 2026-11-02: *"reorder P1e2.4 before P1e2.1b"*), because
 S1e2.1b.4 applies the ruling S1e2.4.1 takes; it was briefly ordered after
@@ -36,7 +38,7 @@ the switch left that is neither the region search
 | ID | title | the question |
 |---|---|---|
 | [S1e2.4.1](s1e2.4.1_refutation_under_absent.md) | May a refutation rest on an `absent`? | [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here): *forbid* or *respect*, for W3. **Ruled *forbid*, 2026-11-02**, on the exposed set re-counted (13 rules over 9 entries under the static check's reading, 14 over 10 under S1e.2.3's) and each option run on the real programs |
-| [S1e2.4.2](s1e2.4.2_models_key_declines.md) | `--models key` declines before it allocates | why `ein solve … --models key` was OOM-killed on an 11 339-state read-out, and the bound that stops it |
+| [S1e2.4.2](s1e2.4.2_models_key_declines.md) | `--models key` declines before it allocates | why `ein solve … --models key` was OOM-killed on an 11 339-state read-out, and the bound that stops it. **Done 2026-11-02.** The kill was the machine's: the form needs 8.1 GB however it is run, 6.8 GB of it one `Vec` per pair. A 16 MiB bound on both pairwise forms, priced before anything is allocated, takes `pets` to 74.9 MiB, declining, and the ten 64 000-state lines the corpus also held from killed to declined |
 
 Each stage gets a file when it starts. Until then this page is the scope.
 
@@ -120,6 +122,12 @@ kills a process.
   in memory gets the same treatment or a row here saying why not.
 - `utils/review_bundle.py --regions` builds the `pets` page with cross-check 1
   passing.
+
+**Measured by the stage** (2026-11-02,
+[T1e2.4.2.1](s1e2.4.2_models_key_declines.md#task-t1e2421--re-measure-and-why-the-second-build-passed)).
+`pets` has 15 varying slots, so its masks are 128 MiB. What took the 8 GB was
+`min_key_size`'s list of separating slots per pair, 6 833 MiB, and that list's
+sort, 982 MiB.
 
 **Found by the stage and not in its acceptance** (2026-11-02). The key
 search's node budget stops bounding time once masks are wide. Under the
