@@ -373,8 +373,9 @@ different question or stopping early.
   `--layer-progress`, `--models` (`list`, `key`, `grid`, over the states the
   read-out listed), `--diff-models FILE`, and `ein render program`'s / `ein
   render kb`'s six, which draw a file and solve nothing, and `ein render
-  region`'s `--view`, which draws an `ein oracle --dump` directory and loads
-  nothing. stdout and stderr only; a `--diff-models` file that does not parse
+  region`'s three, which draw an `ein oracle --dump` directory (`--view`) with
+  a solve run's `--dump-lattice` and `--dump-answer` on it (`--visited`,
+  `--answer`) and load nothing. stdout and stderr only; a `--diff-models` file that does not parse
   is a usage error, exit 2, before the run.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary`
   (`ein-summary/2`), `--json-report` (`ein-test-report/3`), `--trace` with its

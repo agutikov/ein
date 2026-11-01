@@ -6,7 +6,7 @@ same day at the user's request. S1e2.1a.9 (4 days) was added on 2026-10-16,
 when Q-M1e2.8 was ruled. S1e2.1a.10 (1.5 days) was split out of S1e2.1a.6
 and S1e2.1a.7 the same day, and they shrank by what it took. S1e2.1a.4 is
 re-estimated after its grammar diff.
-**Status:** in progress. S1e2.1a.1, S1e2.1a.2 and S1e2.1a.8 were done
+**Status:** done 2026-11-01. S1e2.1a.1, S1e2.1a.2 and S1e2.1a.8 were done
 2026-10-15. On 2026-10-16, ahead of S1e2.1a.3's census, the user ruled every
 sub-question but (d) for the monotone case, and the shape of `solve`'s default
 ([§ The rulings of 2026-10-16](#the-rulings-of-2026-10-16)). S1e2.1a.3 was
@@ -50,7 +50,12 @@ holds every mode's read-out under every lever to the default's, per commit,
 with the slow pair's cells nightly. It found one lever that moved R,
 `enable-symmetric-mirror`, which is retired and filed as W13, fixed. It also
 found that the summary's `root` block still runs the walk's generator,
-surface S4, parked with the proposed P1e2.3. S1e2.1a.7 is next.
+surface S4, parked with the proposed P1e2.3. **S1e2.1a.7 is done**
+(2026-11-01), and with it the phase: `ein render region` draws a region run
+(`--visited`, `--answer`; the census is 71) with the labels under ruling (a),
+every case and program page has a § The region, the register says what fixed
+each fixed row, and the review resumes on the bundle built at `17422b32`, the
+reading handed back to the user.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md) S1e2.1.1–6,
 which built the register, the doors and the bundle this phase extends.
 **Blocks:** the rest of the review,
@@ -185,7 +190,7 @@ Taken 2026-10-15 against `caef67a`.
 | [S1e2.1a.10](s1e2.1a.10_the_register_under_r.md) | The register under R, before the switch | 1.5 d | the walk's last census, every declared run and lever cell against R, while the walk can still be run; every walk wrong answer with no row filed: the census of 2026-10-16 ([`walk_census.md`](walk_census.md)) found 8 programs with no row, two of them new, and 17 twins; every `right` block restated under R, computed by the oracle or route 1, with no hand derivation left, and held by a test; W9 and W11 reversed; W1 re-read. Taken from S1e2.1a.6 and S1e2.1a.7 on 2026-10-16. **Done 2026-10-16**: 34 rows, each with its witness's `[case.region]` held to `explore` by `ein-infer/tests/register_region.rs`; 25 right answers are R's maximal line, two restated (W11/d3, W12), W1's confirmation stands |
 | [S1e2.1a.5](s1e2.1a.5_the_read_out.md) | The read-out speaks R, and the default switches | 2 d, re-estimated 5 | **Done 2026-10-18.** k_s and k_c replace `k` (a), (e); the default read-out describes R, and the verdict words judge a stated expectation (i), from a flag or from the program; every surface says what it counts; empty R split into its two kinds; holes through the stub. **The switch**, in one commit: bare `ein solve` describes R, the nine options and nine config fields retire, the last path to the walk goes, `ein oracle` gets its other five options, the corpus, the summaries and the register's runs move (one `[case.now]` per row, 34), and 24 rows flip to `fixed`. Every golden named before it moves |
 | [S1e2.1a.6](s1e2.1a.6_engine_against_oracle.md) | The engine against the oracle, under every lever | 1 d | the modes' answers held to R under every lever cell the corpus declares (C4), now that the walk's levers are the modes'; the `enable-symmetric-mirror` row. *The engine equals the oracle* at default levers is already `explore.rs`'s test, and the walk's census is S1e2.1a.10's. **Done 2026-11-01**: `lever_invariance.rs`, every declared cell and the three `EIN_*` levers through the binary and every settable flag in-process, on every program whose R is known, under all fifteen questions, 14 s per commit and the slow pair nightly; the mirror flag retired, W13 filed fixed; S4 re-found and parked |
-| [S1e2.1a.7](s1e2.1a.7_the_bundle_shows_r.md) | The bundle shows R, and the review resumes | 1 d | a § *The region* on every case page and in `--corpus` mode; S1e2.1.7 resumes on the twelve unread cases |
+| [S1e2.1a.7](s1e2.1a.7_the_bundle_shows_r.md) | The bundle shows R, and the review resumes | 1 d | a § *The region* on every case page and in `--corpus` mode; S1e2.1.7 resumes on the twelve unread cases. **Done 2026-11-01**: `ein render region --visited --answer` draws a region run on the cube, missing and spurious against the part of R it asked, the four overlay tests back; `[case.fixed]` on 25 rows and W13's `wrong` marked a region run's; § 5 The region on all 35 case pages; the bundle built at `17422b32`, recorded in the register, and the twelve cases handed back in P1e2.2's order, W11 first |
 
 **Work order: .1, .2, .8, .3, .9 (done), then .4 and .10 in parallel, .5, .6,
 .7.** Re-ordered 2026-10-16 after the interface was approved. The switch is
@@ -252,7 +257,12 @@ among them, is the re-scoping P1e2.1c's last stage does.
 - **Every case page draws its lattice**, every node with its status and why
   (the core, or the owed instances), R's lines and holes, and the run's walk
   overlaid. **Missing** (on R's reported line, not recorded) and **spurious**
-  (recorded, not on that line) are named.
+  (recorded, not on that line) are named. *Met by S1e2.1a.7 (2026-11-01) with
+  a region run in the walk's place, since no command runs the walk: § The
+  region on every case and program page draws the row's `[case.now]` on the
+  cube from its own dumps (`ein render region --visited --answer`), and under
+  ruling (a) the labels compare it with the part of R it asked — a node of it
+  no reported state holds is missing, whichever line it is on.*
 - **No config option changes R.** `configuration.md` says so, and S1e2.1a.6's
   test checks every lever over every entry the oracle reaches.
   `lever_invariance.rs` does, over every program whose R is known, since

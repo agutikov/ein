@@ -14,7 +14,10 @@ smoke step in the gate, the whole bundle in the nightly. S1e2.1.7 **paused
 2026-10-15 after W1**: all seven rows confirmed, the user's reading filed as
 [Q-M1e2.7](../open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice),
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md) inserted before the
-rest of the review.
+rest of the review. **Resumed 2026-11-01** on the bundle built at `17422b32`
+([S1e2.1a.7](../p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md)):
+every case page draws its run on R, and the twelve unread cases wait on the
+user's reading.
 **Depends on:** nothing. Every renderer this phase needs is already written,
 and three of them are already tested. What is missing is the way to reach them
 from the CLI, a file per answer, and one page that puts a wrong run beside its
