@@ -40,8 +40,15 @@
 # **W13 was filed and fixed on 2026-11-01**, in S1e2.1a.6's commit that
 # retired `enable-symmetric-mirror`, the one config flag that moved R
 # (`features/06`). Its `wrong` is a region run under the flag, the first row
-# whose `wrong` is not the walk's. The register reads **25 rows fixed and 10
-# open**.
+# whose `wrong` is not the walk's. The register then read **25 rows fixed and
+# 10 open**.
+#
+# **The user ruled *forbid* on 2026-11-02** (P1e2.4's S1e2.4.1, Q-M1e2.5): a
+# `(false)` or `(not …)` may not rest on an `(absent P)` over a relation a
+# commitment can still extend. W3's four rows, fixed at the switch under
+# *respect*, re-open with a refusal as `right` and *respect*'s answer as the
+# alternative; S1e2.2.5 builds the refusal. The register reads **21 rows fixed
+# and 14 open**.
 #
 # **Every fixed row says what fixed it since S1e2.1a.7** (2026-11-01): a
 # `[case.fixed]` block, `fbcae3b2` for the switch's 24 and `c67b4d67` for W13,
@@ -1238,14 +1245,10 @@ settings = "default"
 owner    = "S1e2.2.5"
 question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/ein-bugs/naf-upward-closure.ein"
-status   = "fixed"
+status   = "open"
 look_at  = ["root-writes", "entering p(A)", "model 1"]
-note     = "Fixed at the switch by route 2, which learns from no refutation, i.e. under *respect*; *forbid* or *respect* is P1e2.4's S1e2.4.1 since 2026-11-01, and *forbid* would re-open this row as a refusal"
-
-[case.fixed]
-commit = "fbcae3b2"
-by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
-date   = "2026-10-18"
+note     = "Fixed at the switch by route 2 under *respect*, and re-opened on 2026-11-02 when the user ruled *forbid* (S1e2.4.1): the program is to be refused, which S1e2.2.5 builds"
+open_because = "*forbid* (2026-11-02): rule `bad` concludes (false) from (absent (q ?x)), and q is a relation a commitment can still extend, so the right answer is a refusal at load. Today the program loads and [case.now] answers R by the cube; the refusal is S1e2.2.5's"
 
 [case.wrong]
 run       = "solve -e"
@@ -1283,6 +1286,11 @@ minimal  = [[]]
 maximal  = [["(p A)", "(q A)"]]
 
 [case.right]
+reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02 (P1e2.4's S1e2.4.1)"
+derived   = "no verdict: the program is refused at load, exit 1, the error naming the replacement. Rule `bad` concludes (false) from (absent (q ?x)), and q is a relation a commitment can still extend. What extendable means, and what the error names, are S1e2.2.5's (F1–F5)"
+
+[[case.right.alternative]]
+reading   = "*respect*, not taken (2026-11-02): the shape stays legal and nothing learns from its refutation. This was the row's right answer from the switch to the ruling, and is what [case.now] still answers"
 verdict   = "Solution"
 k         = 1
 exhausted = true
@@ -1309,14 +1317,10 @@ settings = "lever: -L, with (config :enable-singleton-writeback false) in the fi
 owner    = "S1e2.2.5"
 question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/ein-bugs/wrong-answers/naf-nowb.ein"
-status   = "fixed"
+status   = "open"
 look_at  = ["entering p(A)", "events nogood", "layer 2", "summary"]
-note     = "two mechanisms: W3's width-1 no-good prunes the live superset, and W1 leaves the surviving {(q A)} unrecorded. W3: fixed at the switch by route 2, which learns from no refutation, i.e. under *respect*; *forbid* or *respect* is P1e2.4's S1e2.4.1 since 2026-11-01, and *forbid* would re-open this row as a refusal"
-
-[case.fixed]
-commit = "fbcae3b2"
-by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
-date   = "2026-10-18"
+note     = "two mechanisms: W3's width-1 no-good prunes the live superset, and W1 leaves the surviving {(q A)} unrecorded. W3: fixed at the switch by route 2 under *respect*, and re-opened on 2026-11-02 when the user ruled *forbid* (S1e2.4.1): the program is to be refused, which S1e2.2.5 builds"
+open_because = "*forbid* (2026-11-02): as W3/naf-upward-closure, whose program this is: rule `bad` over q, so the right answer is a refusal at load. Today the program loads and [case.now] answers R by the cube; the refusal is S1e2.2.5's"
 
 [case.wrong]
 run       = "solve -e -L"
@@ -1360,6 +1364,11 @@ minimal  = [[]]
 maximal  = [["(p A)", "(q A)"]]
 
 [case.right]
+reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02 (P1e2.4's S1e2.4.1)"
+derived   = "no verdict: the program is refused at load, exit 1, the error naming the replacement. As W3/naf-upward-closure, whose program this is: rule `bad` over q. What extendable means, and what the error names, are S1e2.2.5's (F1–F5)"
+
+[[case.right.alternative]]
+reading   = "*respect*, not taken (2026-11-02): the shape stays legal and nothing learns from its refutation. This was the row's right answer from the switch to the ruling, and is what [case.now] still answers"
 verdict   = "Solution"
 k         = 1
 exhausted = true
@@ -1386,14 +1395,10 @@ settings = "default"
 owner    = "S1e2.2.5"
 question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/lattice/synth/three_components.ein"
-status   = "fixed"
+status   = "open"
 look_at  = ["summary"]
-note     = "S1e2.1a.8's program written for a chosen region; the walk never enters the two states it misses. W3: fixed at the switch by route 2, which learns from no refutation, i.e. under *respect*; *forbid* or *respect* is P1e2.4's S1e2.4.1 since 2026-11-01, and *forbid* would re-open this row as a refusal"
-
-[case.fixed]
-commit = "fbcae3b2"
-by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
-date   = "2026-10-18"
+note     = "S1e2.1a.8's program written for a chosen region; the walk never enters the two states it misses. W3: fixed at the switch by route 2 under *respect*, and re-opened on 2026-11-02 when the user ruled *forbid* (S1e2.4.1): the program is to be refused, which S1e2.2.5 builds"
+open_because = "*forbid* (2026-11-02): rules `dead-3` and `dead-7` conclude (false) from an (absent (h …)), and h is a relation a commitment can still extend, so the right answer is a refusal at load. Today the program loads and [case.now] answers R by the cube; the refusal is S1e2.2.5's"
 
 [case.wrong]
 run       = "solve -e"
@@ -1420,6 +1425,11 @@ maximal  = [
 ]
 
 [case.right]
+reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02 (P1e2.4's S1e2.4.1)"
+derived   = "no verdict: the program is refused at load, exit 1, the error naming the replacement. Rules `dead-3` and `dead-7` conclude (false) from an (absent (h …)), and h is a relation a commitment can still extend. What extendable means, and what the error names, are S1e2.2.5's (F1–F5)"
+
+[[case.right.alternative]]
+reading   = "*respect*, not taken (2026-11-02): the shape stays legal and nothing learns from its refutation. This was the row's right answer from the switch to the ruling, and is what [case.now] still answers"
 verdict   = "Ambiguity"
 k         = 3
 exhausted = true
@@ -1449,14 +1459,10 @@ settings = "default"
 owner    = "S1e2.2.5"
 question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/lattice/synth/trigger_hole.ein"
-status   = "fixed"
+status   = "open"
 look_at  = ["summary"]
-note     = "S1e2.1a.8's program written for a chosen region; its obligation-trigger hole is P1e2.1b's. W3: fixed at the switch by route 2, which learns from no refutation, i.e. under *respect*; *forbid* or *respect* is P1e2.4's S1e2.4.1 since 2026-11-01, and *forbid* would re-open this row as a refusal"
-
-[case.fixed]
-commit = "fbcae3b2"
-by     = "S1e2.1a.5's switch (T1e2.1a.5.3–4)"
-date   = "2026-10-18"
+note     = "S1e2.1a.8's program written for a chosen region; its obligation-trigger hole is P1e2.1b's. W3: fixed at the switch by route 2 under *respect*, and re-opened on 2026-11-02 when the user ruled *forbid* (S1e2.4.1): the program is to be refused, which S1e2.2.5 builds"
+open_because = "*forbid* (2026-11-02): rules `dead-1` and `dead-2` conclude (false) from an (absent (h …)), and h is a relation a commitment can still extend, so the right answer is a refusal at load. Today the program loads and [case.now] answers R by the cube; the refusal is S1e2.2.5's"
 
 [case.wrong]
 run       = "solve -e"
@@ -1482,6 +1488,11 @@ minimal  = [["(h A)"]]
 maximal  = [["(h A)", "(h B)", "(h C)", "(h D)", "(h E)"]]
 
 [case.right]
+reading   = "Q-M1e2.5 *forbid*, the user's ruling of 2026-11-02 (P1e2.4's S1e2.4.1)"
+derived   = "no verdict: the program is refused at load, exit 1, the error naming the replacement. Rules `dead-1` and `dead-2` conclude (false) from an (absent (h …)), and h is a relation a commitment can still extend. What extendable means, and what the error names, are S1e2.2.5's (F1–F5)"
+
+[[case.right.alternative]]
+reading   = "*respect*, not taken (2026-11-02): the shape stays legal and nothing learns from its refutation. This was the row's right answer from the switch to the ruling, and is what [case.now] still answers"
 verdict   = "Solution"
 k         = 1
 exhausted = true

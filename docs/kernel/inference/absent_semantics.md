@@ -215,8 +215,20 @@ Each is already enforced locally; this page is the shared reason.
   the constraint is a requirement rather than a refutation. Making the three
   consumers world-aware is
   [F18](../../../plans/followups/f18_world_aware_negatives.md), starting from
-  `Prov::absent`; whether the shape stays legal at all is
-  [S1f.10.8](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s.
+  `Prov::absent`. Whether the shape stays legal at all was
+  [S1f.10.8](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s
+  question, and the user ruled it on 2026-11-02
+  ([M1e2 S1e2.4.1](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)):
+  **it does not stay legal** (*forbid*). Over a relation a commitment can
+  still extend, the shape is an obligation written as a refutation, and a
+  program that writes it is to be refused with the replacement named:
+  `(open ?R)`, a decided attribute
+  ([`dual_rail.ein`](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/dual_rail.ein)),
+  or the relation closed. Building the refusal is
+  [S1e2.2.5](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)'s.
+  Until it ships the engine loads such a program, and since S1e2.1a.5's switch
+  (2026-10-18) none of the three mechanisms has a CLI path: the static check
+  flags the program, and the cube answers it, learning from no refutation.
   Note this is **not** the stratification hazard and the two do not overlap: a
   guard over a *rule-derived* relation can flip during saturation, and S1.21.8
   made that sound by judging it at a fixpoint. This one is a *commitment*

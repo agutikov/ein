@@ -18,7 +18,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.2](#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in) | Does a guard's `absent` premise bind the state the search ends in? | [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s S1e2.1b.2, then [S1e2.2.6](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md) (W8) | open |
 | [Q-M1e2.3](#q-m1e23--what-does-exhausted-certify-when-the-rung-leaves-relations-uncovered) | What does `exhausted` certify when the rung leaves relations uncovered? | [S1e2.2.8](p1e2.2_wrong_answers/s1e2.2.8_uncovered_certified.md) (W6) | open |
 | [Q-M1e2.4](#q-m1e24--is-an-empty-unsat-core-a-core) | Is an empty unsat core a core? | [S1e2.2.13](p1e2.2_wrong_answers/s1e2.2.13_empty_core.md) (W12) | open |
-| [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [P1e2.4](p1e2.4_what_the_switch_left/README.md)'s S1e2.4.1, then [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) and P1e2.1b's S1e2.1b.4 | **moved here 2026-11-01**, into a phase of its own; *forbid* or *respect* still open |
+| [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [P1e2.4](p1e2.4_what_the_switch_left/README.md)'s S1e2.4.1, then [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) and P1e2.1b's S1e2.1b.4 | **ruled 2026-11-02: *forbid*** ([S1e2.4.1 § 5](p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)); F1–F5 are S1e2.2.5's |
 | [Q-M1e2.6](#q-m1e26--does-p1e23-become-a-phase) | Does P1e2.3 become a phase? | the milestone's scope | **ruled 2026-11-02**: yes, after P1e2.1c |
 | [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; on 2026-10-16 (a)–(c) and (e)–(i) [ruled for the monotone case](#the-second-answer-2026-10-16), and [(e)'s display and (h)'s names](#the-third-answer-2026-10-16); [the census](#the-census-2026-10-16) contradicts none |
 | [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) | Where does the rework of `ein solve` go? | P1e2.1a's S1e2.1a.5 (it must print `k` = \|R\|), and P1e2.2's scope | **ruled 2026-10-16**: [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) now, [P1e2.1c](p1e2.1c_the_region_search/README.md) next |
@@ -110,6 +110,14 @@ still open is the ruling itself, *forbid* or *respect*. W3's four rows were
 flipped to `fixed` at the switch by route 2, which learns from no refutation.
 That flip assumed *respect*, and the stage puts it in front of the user with
 the exposed set re-counted.
+
+**Ruled 2026-11-02: *forbid*.** The user's reading: *"That is exactly what I meant (absent q ?x) => false - this is incorrect form of obligation, isn't it?"*
+Over a relation a commitment can still extend, the shape is an obligation
+written as a refutation, and a program that writes it is to be refused with
+the replacement named. W3's four rows re-open with the refusal as `right`.
+[S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) builds the
+refusal and settles F1–F5
+([S1e2.4.1 § 5](p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)).
 
 ## Q-M1e2.6 — Does P1e2.3 become a phase?
 

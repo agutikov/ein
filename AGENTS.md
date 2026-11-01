@@ -107,7 +107,9 @@ constrained-reasoning research.
   a refuted claim exits 1, and
   [`corpus/wrong_answers.toml`](corpus/wrong_answers.toml) records 24 rows
   fixed and 10 open, each saying why. S1e2.1a.6 filed W13 and fixed it in the
-  same commit, so it reads 25 and 10.
+  same commit, so it reads 25 and 10. The user's *forbid* of 2026-11-02 (S1e2.4.1:
+  a refutation may not rest on an `absent` over a relation a commitment can
+  still extend) re-opened W3's four with a refusal as `right`: 21 and 14.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
