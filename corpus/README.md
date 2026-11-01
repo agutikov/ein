@@ -273,29 +273,38 @@ Three decisions are worth knowing before editing the column:
 
 ## Levers
 
-`levers` is the `SolverConfig` on/off matrix from
-[`utils/feature_matrix.py`](../utils/feature_matrix.py), restricted to what the
-CLI can express: `-L` (no lookahead), `-K` (no kill cache), `-y` (lattice
-sanity check), `-o score-sum` (lattice order). The other six levers that matrix
-drives are reachable only through the library API or a puzzle's own
-`(config …)` block, so the sweep — which runs a process — cannot flip them.
-Tracked as [Q-M1a.16](../docs/history/m1a_rust/open_questions.md#q-m1a16--how-does-the-corpus-drive-the-lever-matrix).
+`levers` names the CLI levers a program is run under, each one more `solve
+<lever>` run: `-L` (`enable-pre-branch-lookahead` off), `-K`
+(`enable-lookahead-kill-cache` off) and `-y` (`lattice-sanity-check` on).
+**Twelve entries declare 30 cells** (2026-11-01). `-o score-sum` was the fourth until M1e2
+S1e2.1a.5's switch retired it with the walk's order levers. The other flags a
+program can set are reachable only through its own `(config …)` block, so a
+process sweep cannot flip them from outside
+([Q-M1a.16](../docs/history/m1a_rust/open_questions.md#q-m1a16--how-does-the-corpus-drive-the-lever-matrix)).
 
-**`-L` is not one side of an A/B — it is a strictly weaker debug mode**, and
-since M1e (2026-08-28) that is measured rather than assumed. `complete()` is a
-*sound but incomplete* approximation of maximality with the lookahead on and a
-**strictly weaker** one with it off: with `-L` a state is complete only when
-every remaining candidate is already asserted or already negated in the KB, so
-the OFF side recognises a subset of what the ON side does, never more. Its
-cells are therefore a **regression check on the weaker mode**, not a second
-opinion — where the two disagree, the ON side is the one to read, and where
-both are wrong the fixture that shows it is
-[`examples/branching/15`+`16`](../examples/branching/15_lookahead_two_step_on.ein):
-`Solution k=1` against `Contradiction k=0`, both exhausted, on a program whose
-hand-derived answer is **k=2**. `-K` is a different animal — it removes writes
-the search makes into the KB it records, so it changes recorded *fact sets*
-without changing `k`
+**Since the switch no route reads a lever**, and a cell is a claim that it
+changes nothing printed: C4 of
+[`solve_interface.md`](../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#1-the-contract),
+and the user's config principle of 2026-10-15
+([`configuration.md` § 2.5](../docs/kernel/configuration.md#25-the-config-principle-read-against-every-row)).
+`corpus_cli.rs` runs each cell for its exit code. Since M1e2 S1e2.1a.6
+**`ein-cli/tests/lever_invariance.rs` holds what it prints**: every declared
+cell under each of `ein solve`'s fifteen questions, stdout, stderr, the exit
+code and the summary, against the same question at the default, and every
+flag a `(config …)` can set on every program whose R is known. The zebra2
+pair's cells are `slow` and run in the nightly, under `EIN_CORPUS_SLOW=1`.
+A lever that changes an answer is a register row, never a weaker mode.
+
+**Before the switch the levers were the walk's**, and `-L` was *a strictly
+weaker debug mode*: `complete()` approximated maximality more weakly with the
+lookahead off, so its cells checked a weaker mode rather than giving a second
+opinion
+([`branching/15`+`16`](../examples/branching/15_lookahead_two_step_on.ein)
+showed both sides wrong), and `-K` removed writes the search made into the KB
+it recorded
 ([Q-M1e.7](../docs/history/m1e_review_processing/open_questions.md#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model)).
+Under R the register filed both: `-L`'s weaker mode as W1's `-L` rows, and
+the default's writes as W9, where `-K` was the run that agreed with R.
 
 ## Growth rule
 

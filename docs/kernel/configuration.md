@@ -146,7 +146,7 @@ about it.
 | value | means |
 |---|---|
 | **contract** | stated here, exercised by the corpus or a named test, safe to depend on |
-| **lever, unread** | kept by the interface as a speed lever (`solve_interface.md` § 2.4) and read by no route yet. The corpus's `levers` cells run `-L`, `-K` and `-y` on every `cargo test` and hold the read-out unmoved (C4) |
+| **lever, unread** | kept by the interface as a speed lever (`solve_interface.md` § 2.4) and read by no route yet. The corpus's `levers` cells run `-L`, `-K` and `-y` on every `cargo test`, and `lever_invariance.rs` holds every question's read-out and summary unmoved under them (C4, § 2.5) |
 | **probe, unread** | exists to test an *invariance*, and no route runs it yet |
 
 **The four "unread" flags and `lattice-sanity-check` are the inert flags of
@@ -156,7 +156,22 @@ kind**, said here rather than left to be found: settable, validated,
 digest — and read by no route. They are kept because the approved interface
 keeps them as levers for P1e2.1c's routes, and the claim that they move
 nothing is held from outside by
-`config_reference.rs::the_unread_flags_change_nothing_printed`.
+`config_reference.rs::the_unread_flags_change_nothing_printed`, and on every
+program whose R is known by `lever_invariance.rs` (§ 2.5).
+
+**One surface still reads two of them, and is wrong for it.**
+`--json-summary`'s `root` block (`summary::root_block`) runs the walk's
+hypothesis generator on a fork of root, which reads
+`enable-pre-branch-lookahead`, `enable-lookahead-kill-cache` and
+`EIN_OBLIGATION_CHOICE`, and counts root's facts after it. On
+`examples/branching/02_one_dead_one_alive.ein` `root.facts` is 27 where root's
+fixpoint holds 23, the other four being the kill cache's `(not h)` writes, and
+`root.hypgen.emitted` is 30 where H holds 48. Both move when the program sets
+either flag, and `-L` and `-K` leave them alone, so the CLI shadow and the flag
+it shadows disagree. Nothing R is made of moves. M1e2 S1e2.1a.6's lever test
+found it on 19 programs (2026-11-01); it is surface S4 of the proposed
+[P1e2.3](../../plans/m1e2_correctness/README.md#p1e23--surfaces-that-misreport-the-answer-proposed),
+and until then the test leaves those three fields out.
 
 ### 2.4 The nine retired flags
 
@@ -219,6 +234,19 @@ facts of every state in R
   program that wants a relation left unmirrored does not mark it.
   [S1e2.1a.6](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.6_engine_against_oracle.md)
   removes it, and until then this page describes the flag as it ships.
+- **What a run prints, held.** Since M1e2
+  [S1e2.1a.6](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.6_engine_against_oracle.md)
+  [`ein-cli/tests/lever_invariance.rs`](../../ein.rs/crates/ein-cli/tests/lever_invariance.rs)
+  is the principle as a test, in `cargo test --workspace`. It runs every
+  flag a `(config …)` can set, flipped from the program's own value, on every
+  corpus program and register witness whose R is known (a bare describe
+  exhausts), under each of `ein solve`'s fifteen questions, and compares the
+  read-out uncut, its stderr lines, its exit code and the summary with the
+  program's own. It runs every `levers` cell the corpus declares, and the
+  three `EIN_*` levers on the same files, through the binary. On 2026-11-01:
+  180 programs and 18 816 cells in-process, 348 declared cells and 432
+  environment cells through the binary, 14 s on this machine's eight workers.
+  One flag moved: `enable-symmetric-mirror`, as above.
 - **`lattice-sanity-check` aborted one program under the walk**:
   [`corpus/fuzz_findings/d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein),
   which the static check flags non-monotone, failed the probe with
@@ -378,7 +406,9 @@ Read from the process environment by a crate that ships. None of them reaches
 S1e2.1a.5's switch only `EIN_STDLIB` and `EIN_LEFTOVER` are reached by a
 command.** The other six are read by the walk's library code, which ships,
 links and is reached by no command until P1e2.1c decides what of it the region
-routes reuse; setting one changes nothing an `ein` run prints. The scan below
+routes reuse; setting one changes nothing an `ein` run prints, with one
+exception: `EIN_OBLIGATION_CHOICE` moves `--json-summary`'s `root.hypgen`,
+whose block still runs the walk's generator (§ 2.3, surface S4). The scan below
 pins the set *read by a shipping crate*, which is why they stay listed.
 
 | name | value | what it does | read at |

@@ -475,8 +475,9 @@ fn the_shipped_environment_set_is_what_the_page_lists() {
 /// and it is the claim most likely to stop being true, because P1e2.1c wiring
 /// one into a route is a small change nobody would think to re-document. So it
 /// is held from the outside: stdout, stderr and the exit code, on two fixtures
-/// with different routes, byte for byte. The corpus's `levers` cells hold the
-/// CLI shadows of three of them the same way.
+/// with different routes, byte for byte. `lever_invariance.rs` holds the CLI
+/// shadows of three of them the same way, under every question, and every flag
+/// on every program whose R is known (M1e2 S1e2.1a.6).
 #[test]
 fn the_unread_flags_change_nothing_printed() {
     let fixtures = [

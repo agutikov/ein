@@ -166,6 +166,29 @@ user to say whether they become a phase:
 | **S9** | under the tree, `layers_explored` carries the deepest node (documented) | lever |
 | **P1** | `ein render constraints corpus/fuzz_findings/kwpair-below-the-filter.ein` panics, exit 101, at `dot_util.rs:152`, on a program the loader accepts | default |
 
+**S4 outlived the switch, and S1e2.1a.6's lever test found it again**
+(2026-11-01, T1e2.1a.6.2). Since the switch `-H` lists H, the universe the
+routes take config-free, and `summary::root_block` still runs the walk's
+`hypgen::generate` on a fork of root. That generator reads the program's
+lookahead and kill-cache flags and `EIN_OBLIGATION_CHOICE`, and the block
+counts root's facts **after** it. On `examples/branching/02_one_dead_one_alive.ein`:
+
+- `root.facts` is 27 where root's fixpoint holds 23: the other four are the
+  kill cache's `(not h)` writes;
+- `root.hypgen.emitted` is 30 where H holds 48;
+- both move with `(config :enable-pre-branch-lookahead false)` or
+  `:enable-lookahead-kill-cache false` in the program (to 23, and to 34 or
+  30), on 19 programs, while `-L` and `-K` leave them alone, so the summary's
+  `config` echo says *false* beside a block computed with *true*;
+- `root.hypgen` moves with `EIN_OBLIGATION_CHOICE=off` on an obligations
+  program (`owed-seats.ein`: `pre_candidate.closed_relation` 4 → 10).
+
+No answer moves: the read-out, the states, the classes and every other block
+are identical, so it is a surface and not a register row. `lever_invariance.rs`
+leaves the three fields out and says why. Its settings are now *default, and
+a lever*. Whether the block should describe H, root's fixpoint, or neither is
+this phase's to rule.
+
 ## What it inherits from M1e
 
 | question | here |

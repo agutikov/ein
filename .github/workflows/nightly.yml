@@ -38,6 +38,13 @@ jobs:
       # -e -m 3`, 32 models, ~25 s of solve (`docs/kernel/inference/answer_dump.md`).
       - run: cargo test -p ein-cli --release --test answer_dump
         env: { EIN_CORPUS_SLOW: "1" }
+      # M1e2 S1e2.1a.6 — C4 under every lever, with the slow tier's declared
+      # cells: the zebra2 pair, whose bare describe runs to the default
+      # --region-budget, so a lever cell's cut answer must be the default's
+      # cut answer. The per-commit tier runs the rest of the file. 77 s on
+      # eight workers, 674 s of CPU (2026-11-01).
+      - run: cargo test -p ein-cli --release --test lever_invariance
+        env: { EIN_CORPUS_SLOW: "1" }
       # ── The two `--check` censuses — M1e S1e.4.5, `TE-L4` ──
       #
       # Both read the release `ein` the steps above have already built
