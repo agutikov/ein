@@ -373,7 +373,11 @@ ranks: `tests/stdlib/bijection/06_blind_enumeration.ein` (n = 16) draws R's one
 node and its sixteen dead neighbours, then `L2–L16 · 65519 … hidden: 0 R, 0
 owing, 65519 dead`. A node of more than four facts is labelled by its
 bits (`#0 #3 #5`), and the legend lists the bits. The legend's lists are
-capped at twelve entries, and `--view table` has all of them.
+capped at twelve entries, and `--view table` has all of them: its head names
+at most fifty nodes a list, with how many there are, and every row carries
+its own mark (`ein-cli/tests/region_render.rs::the_head_names_at_most_fifty_nodes_a_list`;
+the cap came from a budget-stopped run on a 2²⁰ cube that is all R, whose head
+listed a million nodes *not reached*).
 
 **The cutoffs were measured** (2026-10-15, release, every corpus file `ein solve
 FILE --dump-region` then every view through `dot`; the walk's overlay then, so

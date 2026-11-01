@@ -1061,15 +1061,35 @@ fn node_link(doc: &RegionDoc, m: u64) -> String {
     format!("[`{}`](#m{m})", md(&doc.name(m)))
 }
 
-fn links(doc: &RegionDoc, ms: &[u64]) -> String {
-    if ms.is_empty() {
-        "none".to_string()
-    } else {
-        ms.iter()
-            .map(|&m| node_link(doc, m))
-            .collect::<Vec<_>>()
-            .join(", ")
+/// The table's head names at most this many nodes per list. Every row's
+/// status or run cell carries the same mark, so the rest are a search away;
+/// a run a budget stopped on a 2²⁰ cube that is all R leaves a million nodes
+/// *not reached*, and the head listed every one (S1e2.1a.7's gallery, 2026-11-01).
+pub const HEAD_LIST_MAX: usize = 50;
+
+/// At most [`HEAD_LIST_MAX`] items, and how many there are when more.
+fn capped(items: Vec<String>, rows_say: &str) -> String {
+    let n = items.len();
+    if n == 0 {
+        return "none".to_string();
     }
+    let mut out = items
+        .into_iter()
+        .take(HEAD_LIST_MAX)
+        .collect::<Vec<_>>()
+        .join(", ");
+    if n > HEAD_LIST_MAX {
+        let _ = write!(
+            out,
+            ", … {} more: {n} in all, and each row's {rows_say}",
+            n - HEAD_LIST_MAX
+        );
+    }
+    out
+}
+
+fn links(doc: &RegionDoc, ms: &[u64], rows_say: &str) -> String {
+    capped(ms.iter().map(|&m| node_link(doc, m)).collect(), rows_say)
 }
 
 fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
@@ -1112,15 +1132,13 @@ fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
         },
         md(&run.line())
     );
-    let names = |ms: &[u64]| -> String {
-        if ms.is_empty() {
-            "none".to_string()
-        } else {
+    let names = |ms: &[u64], rows_say: &str| -> String {
+        capped(
             ms.iter()
                 .map(|&m| format!("`{}`", md(&doc.name(m))))
-                .collect::<Vec<_>>()
-                .join(", ")
-        }
+                .collect(),
+            rows_say,
+        )
     };
     if ov.answered {
         let _ = writeln!(
@@ -1130,7 +1148,11 @@ fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
             ov.part,
             run.asked()
         );
-        let _ = writeln!(out, "- **missing** {}", links(doc, &ov.missing));
+        let _ = writeln!(
+            out,
+            "- **missing** {}",
+            links(doc, &ov.missing, "status says **missing**")
+        );
         let spurious: Vec<String> = ov
             .spurious
             .iter()
@@ -1139,17 +1161,13 @@ fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
         let _ = writeln!(
             out,
             "- **spurious** {}",
-            if spurious.is_empty() {
-                "none".to_string()
-            } else {
-                spurious.join(", ")
-            }
+            capped(spurious, "status says **spurious**")
         );
         if !run.exhausted {
             let _ = writeln!(
                 out,
                 "- **not reached** {} — the run stopped ({}): a bound, not a defect",
-                links(doc, &ov.unreached),
+                links(doc, &ov.unreached, "status says *not reached*"),
                 run.stopped.as_deref().unwrap_or("?")
             );
         }
@@ -1160,7 +1178,11 @@ fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
         );
     }
     if ov.run {
-        let _ = writeln!(out, "- **≠ the cube** {}", links(doc, &ov.disagree));
+        let _ = writeln!(
+            out,
+            "- **≠ the cube** {}",
+            links(doc, &ov.disagree, "run cell says **≠**")
+        );
     }
     if run.visited {
         let unsound: Vec<String> = ov
@@ -1174,6 +1196,7 @@ fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
                 )
             })
             .collect();
+        let n_unsound = unsound.len();
         let _ = writeln!(
             out,
             "- **visited** {} of {} nodes; {} not visited above a dead node the run \
@@ -1181,11 +1204,14 @@ fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
             ov.marks.iter().filter(|m| m.visited.is_some()).count(),
             1u64 << n,
             ov.above_dead,
-            ov.unsound.len(),
+            n_unsound,
             if unsound.is_empty() {
                 String::new()
             } else {
-                format!(": **unsound** {}", unsound.join("; "))
+                format!(
+                    ": **unsound** {}",
+                    capped(unsound, "run cell says **✗ unsound**")
+                )
             }
         );
     }
@@ -1200,10 +1226,21 @@ fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
         let _ = writeln!(
             out,
             "- **{line} line** {}",
-            names(if i == 0 { &cube.minimal } else { &cube.maximal })
+            names(
+                if i == 0 { &cube.minimal } else { &cube.maximal },
+                if i == 0 {
+                    "status says `min`"
+                } else {
+                    "status says `max`"
+                }
+            )
         );
     }
-    let _ = writeln!(out, "- **holes** {}", names(&cube.holes));
+    let _ = writeln!(
+        out,
+        "- **holes** {}",
+        names(&cube.holes, "status says `hole`")
+    );
     let moved = cube
         .nodes
         .iter()
