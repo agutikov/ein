@@ -54,8 +54,9 @@ surface S4, parked with the proposed P1e2.3. **S1e2.1a.7 is done**
 (2026-11-01), and with it the phase: `ein render region` draws a region run
 (`--visited`, `--answer`; the census is 71) with the labels under ruling (a),
 every case and program page has a § The region, the register says what fixed
-each fixed row, and the review resumes on the bundle built at `17422b32`, the
-reading handed back to the user.
+each fixed row, and the review's bundle is built at `17422b32`. The review itself was
+deferred on 2026-11-02 to after P1e2.1b, P1e2.1c, P1e2.3 and P1e2.4
+([S1e2.1.7](../p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md)).
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md) S1e2.1.1–6,
 which built the register, the doors and the bundle this phase extends.
 **Blocks:** the rest of the review,

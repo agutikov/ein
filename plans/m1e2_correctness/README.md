@@ -4,8 +4,8 @@
 stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.2 27.5). Three more phases have
 stages named and few estimated: P1e2.1b (six, one estimated: S1e2.1b.6,
 4 days) and P1e2.1c (five, none estimated), both added or grown 2026-10-16,
-and P1e2.4 (two, none estimated), added 2026-11-01. One phase is proposed and
-not specified.
+and P1e2.4 (two, none estimated), added 2026-11-01. One phase, P1e2.3, is
+planned and not specified (ruled 2026-11-02).
 **Status:** created 2026-10-14 on the user's instruction: *"Create new
 milestone for correctness issues. … first phase is for solution dumps and
 rendering to markdown with graphs, so I can review all existing wrong
@@ -142,8 +142,17 @@ where it is cheap and exact, and
 | [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) | The non-monotone lattice: what R is when adding a fact can take one away | 6 named | 4 d of 1 | the site census; a node's state, fork or scratch (Q-M1e2.2, W8); holes (Q-M1e2.7 (d)), from `absent` and from obligation triggers; the ruling on a refutation that rests on an `absent` applied to the region search (Q-M1e.9, W3; the ruling is P1e2.4's); the stub replaced; **the two lattices compared** in a `docs/kernel/` page, with how to solve each one stably, provably and effectively (S1e2.1b.6) |
 | [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 5 named | — | `ein solve`'s default describes R for every program the corpus holds, or says why not: the alive set at scale, the lines by duality, the non-monotone search, the flags at scale; the old walk's fate, and P1e2.2 re-scoped |
 | [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 13 | 27.5 d | every register row `fixed` or ruled `not-wrong`; no wrong answer at default settings; no lever that changes a certified answer |
-| P1e2.3 | Surfaces that misreport the answer | — | *proposed* | below |
+| P1e2.3 | Surfaces that misreport the answer | — | *planned*, specified when it starts | below |
 | [P1e2.4](p1e2.4_what_the_switch_left/README.md) | What the switch left: the `absent` ruling, and the read-out at scale | 2 named | — | Q-M1e2.5 ruled, *forbid* or *respect*, and applied to W3's rows (S1e2.4.1); `--models key` declines before it allocates, and the read-out forms measured in memory on the largest regions (S1e2.4.2) |
+
+**The order, ruled 2026-11-02.** P1e2.1a is done. Next is P1e2.1b, where the
+user expects questions to discuss, then P1e2.1c, then P1e2.3 and P1e2.4. Only
+after them are the wrong answers revisited, S1e2.1.7 and then P1e2.2, and the
+revisit is the agent's first. The user, verbatim:
+*"only after that revisit wrong answers - first your revisit and then if still remain any ambiguity or no criteria to decide correct solution - then I can review logs and renderings manually"*.
+So the revisit reads every unreviewed row against the definitions as they
+stand then, on a bundle rebuilt at that commit, and settles each row a
+stated criterion decides. Only what it leaves ambiguous goes to the user.
 
 ### P1e2.3 — Surfaces that misreport the answer (proposed)
 
@@ -152,8 +161,10 @@ where it is cheap and exact, and
 precedent. The survey found nine surfaces that state something false about a
 run whose **answer** is right, and one panic a well-formed program reaches.
 They are correctness issues and not wrong answers, so they are recorded here
-with their witnesses ([inventory § 3](inventory.md#3-cases)) and wait for the
-user to say whether they become a phase:
+with their witnesses ([inventory § 3](inventory.md#3-cases)). **Ruled
+2026-11-02: they become a phase**, after P1e2.1c and beside P1e2.4,
+specified when it starts. What the switch left of them, P1 and S4, is in
+[Q-M1e2.6](open_questions.md#q-m1e26--does-p1e23-become-a-phase)'s notes:
 
 | id | what is false | settings |
 |---|---|---|

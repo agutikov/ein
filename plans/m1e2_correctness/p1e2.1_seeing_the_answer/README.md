@@ -16,15 +16,18 @@ smoke step in the gate, the whole bundle in the nightly. S1e2.1.7 **paused
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md) inserted before the
 rest of the review. **Resumed 2026-11-01** on the bundle built at `17422b32`
 ([S1e2.1a.7](../p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md)):
-every case page draws its run on R, and the twelve unread cases wait on the
-user's reading.
+every case page draws its run on R, and the twelve unread cases were handed
+back. **Deferred 2026-11-02** to after P1e2.1b, P1e2.1c, P1e2.3 and P1e2.4,
+and revisited by the agent first, with the user reading only what stays
+ambiguous ([S1e2.1.7](s1e2.1.7_the_review.md)).
 **Depends on:** nothing. Every renderer this phase needs is already written,
 and three of them are already tested. What is missing is the way to reach them
 from the CLI, a file per answer, and one page that puts a wrong run beside its
 control and its right answer.
 **Blocks:** [P1e2.2](../p1e2.2_wrong_answers/README.md), every stage of it.
 S1e2.1.7 also waits on [P1e2.1a](../p1e2.1a_the_solution_region/README.md).
-No wrong answer is fixed until the user has *looked* at it, and
+No wrong answer is fixed until it has been revisited, by the agent first and
+by the user where that leaves ambiguity (2026-11-02), and
 [S1e2.1.7](s1e2.1.7_the_review.md) is where that happens.
 **Source:** the user's instruction of 2026-10-14: *"first phase is for
 solution dumps and rendering to markdown with graphs, so I can review all
