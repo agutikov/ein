@@ -1,0 +1,26 @@
+;;; S1e2.4.1 probe — a `(not …)` conclusion over an `absent`.
+;;;
+;;; The rule concludes no `(false)`, but a stored negative, which refutes any
+;;; state that also holds the positive. At root `q` is absent, so root derives
+;;; `(not (p A))` and `(p A)` never enters the universe. In `{(q A)}` the
+;;; `absent` no longer holds, yet the node is built on root's fixpoint and keeps
+;;; root's `(not (p A))`. Whether it should is P1e2.1b's S1e2.1b.2 (fork or
+;;; scratch); this file only shows the shape the question names.
+;;;
+;;;   ein oracle plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/not_conclusion.ein
+;;;
+;;; Taken 2026-11-02: "universe 1 candidate", R = {∅, {(q A)}}, "not monotone:
+;;; 1 site (the static check) — no hole in this cube".
+
+(relation is-a T T)
+(relation p T)
+(relation q T)
+
+(is-a A T)
+
+(rule exclude ()
+  :match  (and (is-a ?x T) (absent (q ?x)))
+  :assert (not (p ?x))
+  :priority 200)
+
+(query :goal (is-a ?x T))

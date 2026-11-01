@@ -1,0 +1,26 @@
+;;; S1e2.4.1 probe — W3's `bad` with `q` closed: the same rule, harmless.
+;;;
+;;; `naf-upward-closure.ein` with one line added, `(solve :no-hypothesis (q))`.
+;;; No commitment can add a `q` fact, so `(absent (q A))` reads the same at
+;;; every node, `{(p A)}` stays dead in every superset, and the static check
+;;; calls the lattice monotone. R = {∅}: the universe is `(p A)` alone, dead.
+;;;
+;;;   ein oracle plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/closed_q.ein
+;;;
+;;; Taken 2026-11-02: 1 state, "monotone (the static check) — R is convex: no
+;;; hole", "the cube 0 dead nodes with an alive superset".
+
+(relation is-a T T)
+(relation p T)
+(relation q T)
+
+(is-a A T)
+
+(rule bad ()
+  :match  (and (p ?x) (absent (q ?x)))
+  :assert (false)
+  :priority 200)
+
+(solve :no-hypothesis (q))
+
+(query :goal (is-a ?x T))
