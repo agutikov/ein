@@ -121,3 +121,10 @@ kills a process.
   in memory gets the same treatment or a row here saying why not.
 - `utils/review_bundle.py --regions` builds the `pets` page with cross-check 1
   passing.
+
+**Found by the stage and not in its acceptance** (2026-11-02). The key
+search's node budget stops bounding time once masks are wide. Under the
+16 MiB bound, random states over 42 slots spend the 2 000 000 nodes in 66.6 s
+at k = 1 400 ([the stage file's notes](s1e2.4.2_models_key_declines.md#notes)).
+No corpus run is in that range. Whether the budget should be counted in mask
+words is open, and no stage is scheduled for it.

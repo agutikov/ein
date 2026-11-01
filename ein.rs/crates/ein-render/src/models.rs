@@ -18,7 +18,9 @@
 //! `ein solve` puts on stdout, and the models stay enumerable everywhere a
 //! consumer reads them. When no key is affordable the form *is* the
 //! enumeration — [`KeyOutcome::Unaffordable`], and (e) was a legitimate
-//! winner of the pricing all along.
+//! winner of the pricing all along. *Affordable* is priced before it is
+//! spent: in memory by [`PAIR_TABLE_BOUND`], since M1e2 S1e2.4.2, and in
+//! search nodes by the two budgets below.
 //!
 //! ## What a decision variable is
 //!
@@ -94,6 +96,81 @@ const KEY_NODE_BUDGET: u64 = 2_000_000;
 /// are would be exactly the arbitrary basis S1d.3.2 warned about.
 const KEY_TABLE_BUDGET: u128 = 4_000_000;
 
+/// **The memory bound on a pair table, in bytes**: 16 MiB. M1e2
+/// [S1e2.4.2](../../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.2_models_key_declines.md).
+///
+/// Two forms compare the listed states **pairwise**, and a table over pairs
+/// is quadratic in them. The key form holds a mask of k(k−1)/2 bits per
+/// varying slot ([`key_pair_table_bytes`]), and `--diff-models` holds the
+/// candidates for its *near* pairing. Each prices its table from the counts
+/// before it allocates anything, and past this bound it declines with the
+/// numbers, which is an answer and not an error: the states are listed above
+/// it either way.
+///
+/// The node budgets bound how long a search runs, and this bounds what it
+/// holds. Before it, `ein solve examples/saturation/type-exclusivity/pets.ein
+/// --models key` held 8.1 GB for its 11 339 states (2026-11-02), and was
+/// OOM-killed on a machine that had less. The corpus has ten runs, `--maximal` or `--minimal`
+/// over 64 000 states, that no machine could finish.
+///
+/// Calibrated on the corpus (2026-11-02): the largest table it answers is
+/// `colors.ein`'s, 169 states over 8 slots, 88 752 bytes. The smallest it
+/// declines is `constraint-scopes.ein`'s, 4 096 states over 9, 52 MiB, which
+/// the node budget declined anyway.
+pub const PAIR_TABLE_BOUND: u64 = 16 << 20;
+
+/// The bytes the key form holds for `k` distinct states over `n` varying
+/// slots, which is what [`PAIR_TABLE_BOUND`] is compared with:
+///
+/// - `n + 1` masks of k(k−1)/2 bits, one per slot and the full set
+///   (`separating`);
+/// - as many again for the search's path, one mask per level of depth;
+/// - 4 bytes a pair for the order the search takes them in.
+///
+/// Saturating, because the magnitude is what the bound needs.
+pub fn key_pair_table_bytes(k: usize, n: usize) -> u64 {
+    let k = k as u128;
+    let pairs = k * k.saturating_sub(1) / 2;
+    let mask = pairs.div_ceil(64) * 8;
+    let bytes = 2 * (n as u128 + 1) * mask + 4 * pairs;
+    u64::try_from(bytes).unwrap_or(u64::MAX)
+}
+
+/// `491 MiB`, rounded up, because a bound is passed by any part of a byte.
+fn mib(bytes: u128) -> String {
+    format!("{} MiB", group(bytes.div_ceil(1 << 20)))
+}
+
+/// Why the key form will not build its table for `k` states over `n`
+/// varying slots, or `None` when the table fits. `n` is `None` before the
+/// variables are built, and the price is then the least any key over these
+/// states could cost: one varying slot.
+fn key_over_bound(k: usize, n: Option<usize>) -> Option<String> {
+    let bytes = key_pair_table_bytes(k, n.unwrap_or(1));
+    if bytes <= PAIR_TABLE_BOUND {
+        return None;
+    }
+    let pairs = k as u128 * (k as u128).saturating_sub(1) / 2;
+    let holds = match n {
+        Some(n) => format!(
+            "over {n} varying slot{} holds {}",
+            if n == 1 { "" } else { "s" },
+            mib(bytes as u128)
+        ),
+        None => format!(
+            "holds at least {}, its size over a single varying slot",
+            mib(bytes as u128)
+        ),
+    };
+    Some(format!(
+        "the {} states are {} pairs, and the pair table that tells them apart {holds}: \
+         past the key form's bound of {}",
+        group(k as u128),
+        group(pairs),
+        mib(PAIR_TABLE_BOUND as u128)
+    ))
+}
+
 // ── decision variables ─────────────────────────────────────────────
 
 /// One decision variable: a single-valued slot, or a bare atom.
@@ -159,27 +236,13 @@ struct Vars {
     domains: Vec<Vec<Val>>,
 }
 
-/// Turn the model set into decision variables.
+/// Turn the model set into decision variables. `models` are distinct by
+/// state, which [`key_table_of`] sees to before it prices the pair table.
 ///
 /// `None` when there is nothing to key on — fewer than two models, or models
 /// that differ in no *positive* fact. Handled rather than asserted, because a
 /// rendering must not panic on a shape the engine can reach.
-///
-/// **Deduplicated by state key first**, through the one function that decides
-/// what *the same model* means (`ein_infer::canon::distinct_by_state`). Two
-/// identical models are a pair no variable separates, so the hitting set would
-/// be unsatisfiable and the search would spend its whole budget proving it — a
-/// wrong answer arrived at expensively, which is the worst of both.
-///
-/// `key_table` is public, so this cannot assume its caller deduplicated:
-/// `answer.rs` hands it `Verdict::models`, which is distinct by construction,
-/// and an embedder may hand it anything.
 fn variables(terms: &Terms, models: &[&Kb]) -> Option<Vars> {
-    let models: Vec<&Kb> = ein_infer::canon::distinct_by_state(models, |m| *m)
-        .into_iter()
-        .copied()
-        .collect();
-    let models = &models[..];
     if models.len() < 2 {
         return None;
     }
@@ -353,29 +416,46 @@ fn min_key_size(sep: &[Mask], full: &Mask, bits: usize, budget: &mut Budget) -> 
     let mut order: Vec<usize> = (0..sep.len()).collect();
     order.sort_by_key(|&i| std::cmp::Reverse(sep[i].count()));
 
-    // **Which pair is hardest does not depend on the path**, so the candidate
-    // list per pair is built once and the pairs are sorted by its length; a
-    // node then takes the first *uncovered* pair in that order. That is the
-    // same choice a per-node minimum makes — ties included, since the sort is
-    // stable and leaves equal-length pairs in bit order — and it takes a
-    // node's cost from `O(pairs x variables)` to `O(pairs)`, which is what
-    // makes a budget counted in **nodes** mean anything in seconds.
-    let mut by_pair: Vec<(usize, Vec<usize>)> = (0..bits)
-        .map(|b| {
-            (
-                b,
-                order.iter().copied().filter(|&v| sep[v].get(b)).collect(),
-            )
-        })
-        .collect();
-    by_pair.sort_by_key(|(_, c)| c.len());
+    // **Which pair is hardest does not depend on the path**, so the pairs are
+    // ordered once, by how many variables separate each, and a node takes the
+    // first *uncovered* pair in that order. That is the same choice a
+    // per-node minimum makes — ties included, since the order is stable and
+    // leaves equal pairs in bit order — and it takes a node's cost from
+    // `O(pairs x variables)` to `O(pairs + variables)`, which is what makes a
+    // budget counted in **nodes** mean anything in seconds.
+    let pairs = hardest_first(sep, bits);
 
     for d in 1..=sep.len() {
-        if hits(&Mask::zero(bits), d, sep, full, &by_pair, budget)? {
+        if hits(&Mask::zero(bits), d, sep, full, &order, &pairs, budget)? {
             return Some(d);
         }
     }
     None
+}
+
+/// Every pair, fewest separating variables first and in bit order among
+/// equals: a counting sort on the width, so the order is 4 bytes a pair.
+///
+/// It replaced a list of the separating variables per pair, sorted (M1e2
+/// S1e2.4.2): the same order, but on `pets.ein`'s 64 280 791 pairs the lists
+/// were 6 833 MiB and the sort's scratch 982 MiB. A node now reads a pair's
+/// variables off the masks, which is `O(variables)` and allocates nothing.
+fn hardest_first(sep: &[Mask], bits: usize) -> Vec<u32> {
+    let width = |b: usize| sep.iter().filter(|m| m.get(b)).count();
+    let mut start = vec![0usize; sep.len() + 2];
+    for b in 0..bits {
+        start[width(b) + 1] += 1;
+    }
+    for w in 1..start.len() {
+        start[w] += start[w - 1];
+    }
+    let mut pairs = vec![0u32; bits];
+    for b in 0..bits {
+        let w = width(b);
+        pairs[start[w]] = u32::try_from(b).expect("PAIR_TABLE_BOUND keeps the pairs below 2^32");
+        start[w] += 1;
+    }
+    pairs
 }
 
 fn hits(
@@ -383,7 +463,8 @@ fn hits(
     depth: usize,
     sep: &[Mask],
     full: &Mask,
-    by_pair: &[(usize, Vec<usize>)],
+    order: &[usize],
+    pairs: &[u32],
     budget: &mut Budget,
 ) -> Option<bool> {
     if covered == full {
@@ -395,13 +476,21 @@ fn hits(
     budget.spend()?;
     // The uncovered pair separated by fewest variables: the branch that has to
     // be taken, and the cheapest one to take.
-    let Some((_, best)) = by_pair.iter().find(|(b, _)| !covered.get(*b)) else {
+    let Some(&b) = pairs.iter().find(|&&b| !covered.get(b as usize)) else {
         // Every pair covered while `covered != full`: unreachable so long as
         // `full` is exactly the pair set, and `false` is the safe reading.
         return Some(false);
     };
-    for &v in best {
-        if hits(&covered.or(&sep[v]), depth - 1, sep, full, by_pair, budget)? {
+    for &v in order.iter().filter(|&&v| sep[v].get(b as usize)) {
+        if hits(
+            &covered.or(&sep[v]),
+            depth - 1,
+            sep,
+            full,
+            order,
+            pairs,
+            budget,
+        )? {
             return Some(true);
         }
     }
@@ -519,7 +608,10 @@ pub enum KeyOutcome {
     /// The key table, ready to print.
     Table(Vec<String>),
     /// No key was affordable, with the reason. The caller prints the models,
-    /// because the enumeration is the fallback and always was.
+    /// because the enumeration is the fallback and always was. Three things
+    /// decline, each priced before it is spent: a pair table past
+    /// [`PAIR_TABLE_BOUND`], a search past its node budget, and a count of
+    /// minimum keys past its candidate budget.
     Unaffordable(String),
 }
 
@@ -561,15 +653,50 @@ pub fn key_table_of(
     indent: &str,
     of: KeyOf,
 ) -> KeyOutcome {
-    let Some(v) = variables(terms, models) else {
+    // `k` is one per **distinct** model, which is what it means everywhere
+    // else in the verdict, and *the same model* is the same state key
+    // (`ein_infer::canon::state_key`). Two identical models are a pair no
+    // variable separates, so the hitting set would be unsatisfiable and the
+    // search would spend its whole budget proving it — a wrong answer arrived
+    // at expensively, which is the worst of both. This is public, so it cannot
+    // assume its caller deduplicated: `answer.rs` hands it `Verdict::models`,
+    // which is distinct by construction, and an embedder may hand it anything.
+    //
+    // **Priced before anything quadratic is allocated** (S1e2.4.2): first on
+    // k alone, then on the real n. The first price takes k by sorting the
+    // keys, `O(k log k)`, because `distinct_by_state`'s scan is `O(k²)` and
+    // spent 6.2 s of a 64 514-state line's 8.0 s before it could decline.
+    let k = {
+        let keys: Vec<Box<[FactId]>> = models
+            .iter()
+            .map(|m| ein_infer::canon::state_key(m))
+            .collect();
+        let mut keys: Vec<&[FactId]> = keys.iter().map(|k| &**k).collect();
+        // determinism-ok: a count, and no order of these keys reaches the
+        // output.
+        keys.sort_unstable();
+        keys.dedup();
+        keys.len()
+    };
+    if k >= 2
+        && let Some(why) = key_over_bound(k, None)
+    {
+        return KeyOutcome::Unaffordable(why);
+    }
+    let models: Vec<&Kb> = ein_infer::canon::distinct_by_state(models, |m| *m)
+        .into_iter()
+        .copied()
+        .collect();
+    debug_assert_eq!(models.len(), k, "one notion of the same state");
+    let Some(v) = variables(terms, &models) else {
         return KeyOutcome::Unaffordable(
             "the models differ in no single-valued slot and no varying atom".to_string(),
         );
     };
-    // `v.rows` is one row per **distinct** model, which is what `k` means
-    // everywhere else in the verdict.
-    let k = v.rows.len();
     let n = v.vary.len();
+    if let Some(why) = key_over_bound(k, Some(n)) {
+        return KeyOutcome::Unaffordable(why);
+    }
     let (sep, full, bits) = separating(&v);
     let mut budget = Budget(KEY_NODE_BUDGET);
     let Some(size) = min_key_size(&sep, &full, bits, &mut budget) else {
@@ -811,6 +938,10 @@ pub struct SetDiff {
     pub missing: Vec<usize>,
     /// Recorded models nothing expected.
     pub spurious: Vec<usize>,
+    /// Why nothing was paired *near*, when the candidates would have passed
+    /// [`PAIR_TABLE_BOUND`] (M1e2 S1e2.4.2). Every unmatched model is then a
+    /// missing or a spurious one, which is what it is.
+    pub unpaired: Option<String>,
 }
 
 impl SetDiff {
@@ -827,6 +958,12 @@ impl SetDiff {
 /// lower indices — paired only while the difference is at most half the
 /// larger model (and at least one fact), so two unrelated models stay a
 /// *missing* and a *spurious* rather than becoming a misleading pair.
+///
+/// **The near pairing is priced before it is taken** (M1e2 S1e2.4.2). It
+/// holds every unmatched (got, want) pair within the distance bound, 24 bytes
+/// each, which is quadratic: 889 MiB on `pets.ein`'s 11 339 states against a
+/// file of them each one fact off (2026-11-02). Past [`PAIR_TABLE_BOUND`] it pairs nothing
+/// and says why in [`SetDiff::unpaired`].
 pub fn diff_model_sets(got: &[Vec<String>], want: &[Vec<String>]) -> SetDiff {
     use std::collections::BTreeSet;
     let g: Vec<BTreeSet<&str>> = got
@@ -847,17 +984,40 @@ pub fn diff_model_sets(got: &[Vec<String>], want: &[Vec<String>]) -> SetDiff {
             w_free[j] = false;
         }
     }
+    let (gn, wn) = (
+        g_free.iter().filter(|f| **f).count(),
+        w_free.iter().filter(|f| **f).count(),
+    );
+    let candidates = gn as u128 * wn as u128;
+    let bytes = candidates * std::mem::size_of::<(usize, usize, usize)>() as u128;
     let mut pairs: Vec<(usize, usize, usize)> = Vec::new();
-    for i in (0..g.len()).filter(|&i| g_free[i]) {
-        for j in (0..w.len()).filter(|&j| w_free[j]) {
-            let d = g[i].symmetric_difference(&w[j]).count();
-            let bound = (g[i].len().max(w[j].len()) / 2).max(1);
-            if d <= bound {
-                pairs.push((d, i, j));
+    if bytes > PAIR_TABLE_BOUND as u128 {
+        out.unpaired = Some(format!(
+            "no model was paired as near: {} unmatched recorded against {} unmatched expected \
+             are {} candidate pairs, {} at {} bytes each, past the bound of {} on a pair table",
+            group(gn as u128),
+            group(wn as u128),
+            group(candidates),
+            mib(bytes),
+            std::mem::size_of::<(usize, usize, usize)>(),
+            mib(PAIR_TABLE_BOUND as u128)
+        ));
+    } else {
+        // Reserved whole, so what it holds is what was priced, and sorted
+        // unstably, which allocates nothing and is the same order: no two
+        // candidates share an `(i, j)`.
+        pairs.reserve_exact(candidates as usize);
+        for i in (0..g.len()).filter(|&i| g_free[i]) {
+            for j in (0..w.len()).filter(|&j| w_free[j]) {
+                let d = g[i].symmetric_difference(&w[j]).count();
+                let bound = (g[i].len().max(w[j].len()) / 2).max(1);
+                if d <= bound {
+                    pairs.push((d, i, j));
+                }
             }
         }
+        pairs.sort_unstable();
     }
-    pairs.sort();
     for (_, i, j) in pairs {
         if g_free[i] && w_free[j] {
             g_free[i] = false;
@@ -983,6 +1143,9 @@ pub fn diff_lines(
             "the sets differ"
         }
     ));
+    if let Some(why) = &diff.unpaired {
+        out.extend(wrap(&format!("{why}."), &format!("{indent}  ")));
+    }
     for (i, j) in &diff.matched {
         out.push(format!(
             "{indent}  = {} is {}",
@@ -1010,6 +1173,54 @@ pub fn diff_lines(
         out.push(format!("{indent}  + spurious: {}", got_label(*i)));
     }
     out
+}
+
+#[cfg(test)]
+mod key_tests {
+    use super::*;
+
+    /// **The counting sort is the order the stable sort gave** (S1e2.4.2):
+    /// the pairs by how many variables separate them, ties in bit order. The
+    /// list it replaced is rebuilt here, the way `min_key_size` built it, and
+    /// compared on masks where widths repeat, so ties are exercised.
+    #[test]
+    fn the_hardest_first_order_is_the_sorted_lists_order() {
+        let bits = 997;
+        for seed in 1..=6u64 {
+            let mut x = seed.wrapping_mul(0x9e37_79b9_7f4a_7c15);
+            let mut next = || {
+                x ^= x << 13;
+                x ^= x >> 7;
+                x ^= x << 17;
+                x
+            };
+            let n = 3 + seed as usize;
+            let sep: Vec<Mask> = (0..n)
+                .map(|_| {
+                    let mut m = Mask::zero(bits);
+                    for b in 0..bits {
+                        if next() % 3 == 0 {
+                            m.set(b);
+                        }
+                    }
+                    m
+                })
+                .collect();
+            let mut order: Vec<usize> = (0..n).collect();
+            order.sort_by_key(|&i| std::cmp::Reverse(sep[i].count()));
+            let mut by_pair: Vec<(usize, Vec<usize>)> = (0..bits)
+                .map(|b| {
+                    (
+                        b,
+                        order.iter().copied().filter(|&v| sep[v].get(b)).collect(),
+                    )
+                })
+                .collect();
+            by_pair.sort_by_key(|(_, c)| c.len());
+            let was: Vec<u32> = by_pair.iter().map(|(b, _)| *b as u32).collect();
+            assert_eq!(hardest_first(&sep, bits), was, "seed {seed}");
+        }
+    }
 }
 
 #[cfg(test)]

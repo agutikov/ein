@@ -376,7 +376,20 @@ different question or stopping early.
   region`'s three, which draw an `ein oracle --dump` directory (`--view`) with
   a solve run's `--dump-lattice` and `--dump-answer` on it (`--visited`,
   `--answer`) and load nothing. stdout and stderr only; a `--diff-models` file that does not parse
-  is a usage error, exit 2, before the run.
+  is a usage error, exit 2, before the run. **Two of them compare the listed
+  states pairwise, and each prices its pair table before it allocates it**
+  (M1e2 [S1e2.4.2](../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.2_models_key_declines.md)).
+  The bound is `ein_render::models::PAIR_TABLE_BOUND`, **16 MiB**, a constant
+  and not an option. `--models key` holds 2(n + 1) masks of k(k−1)/2 bits and
+  4 bytes a pair for k states over n varying slots. Past the bound it prints
+  *determining key — none within budget* and the numbers, as it does past its
+  search budget, and exits 0 with the states listed above it.
+  `--diff-models` holds 24 bytes per unmatched (recorded, expected) pair for
+  its *near* pairing. Past the bound it pairs nothing near, says so in its
+  block, and lists every unmatched model as missing or spurious. Both are held
+  by `ein-render/tests/key_declines.rs`, which measures what each holds with a
+  counting allocator. `ein solve examples/saturation/type-exclusivity/pets.ein
+  --models key` held 8.1 GB before the bound and 84 MiB after it (2026-11-02).
 - **Artefacts** — `--events`, `--events-level`, `--json-summary`
   (`ein-summary/2`), `--json-report` (`ein-test-report/3`), `--trace` with its
   four modifiers (`-F`, `-G`, `-l`, `-R`), `--dump-lattice`

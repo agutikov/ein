@@ -534,13 +534,10 @@ fn solve_command() -> Command {
                 .value_name("FORM")
                 .value_parser(PossibleValuesParser::new(["list", "key", "grid"]))
                 .default_value("list")
-                .help(
-                    "after the read-out, the states it listed: 'key' (the smallest \
-                     set of slots that tells them apart, and the table of \
-                     combinations that occur) or 'grid' (each as a table, the \
-                     anchor type's objects down the side, where the program's \
-                     declarations license one). 'list', the default, adds nothing",
-                ),
+                .help(models_help(
+                    "each as a table, the anchor type's objects down the side, \
+                     where the program's declarations license one",
+                )),
         )
         .arg(
             Arg::new("diff-models")
@@ -849,13 +846,9 @@ fn oracle_command() -> Command {
                 .value_name("FORM")
                 .value_parser(PossibleValuesParser::new(["list", "key", "grid"]))
                 .default_value("list")
-                .help(
-                    "after the read-out, the states it listed: 'key' (the smallest \
-                     set of slots that tells them apart, and the table of \
-                     combinations that occur) or 'grid' (each as a table, where \
-                     the program's declarations license one). 'list', the \
-                     default, adds nothing",
-                ),
+                .help(models_help(
+                    "each as a table, where the program's declarations license one",
+                )),
         )
         .arg(flag(
             'p',
@@ -867,6 +860,19 @@ fn oracle_command() -> Command {
             "print-final-positive",
             "like --print-final-state but drops the (not …) facts",
         ))
+}
+
+/// `--models`' help, `grid`'s gloss aside. The key's decline is said with the
+/// bound it is priced against (M1e2 S1e2.4.2), read from the constant, so the
+/// help cannot state a bound the renderer does not apply.
+fn models_help(grid: &str) -> String {
+    format!(
+        "after the read-out, the states it listed: 'key' (the smallest set of \
+         slots that tells them apart, and the table of combinations that occur; \
+         declined, with the reason, past a {} MiB pair table or its search \
+         budget) or 'grid' ({grid}). 'list', the default, adds nothing",
+        ein_render::models::PAIR_TABLE_BOUND >> 20
+    )
 }
 
 /// `ein saturate`'s **own** parser, with its own `prog`.

@@ -667,7 +667,10 @@ rule is the region read-out's, where every count that is not exact says *a
 lower bound* and how far it is complete, and a run that stopped never says R
 is empty (`cli_semantics::a_stopped_run_does_not_report_r_empty`);
 `--models list|key|grid` draws the states a run lists, and `key` is inert
-below two (`model_set_report.rs`).
+below two (`model_set_report.rs`). Past a 16 MiB pair table `key` declines
+before it allocates the table, with the numbers and exit 0, and so does
+`--diff-models`' near pairing (M1e2 S1e2.4.2, `ein-render/tests/key_declines.rs`;
+the bound is [`configuration.md` § 3](configuration.md)'s).
 
 1 is taken there, and a runner that cannot tell a broken file from a false
 claim is the one failure mode a test runner must not have. 2 dominates 1 in a

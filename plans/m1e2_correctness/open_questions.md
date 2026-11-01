@@ -154,6 +154,19 @@ milestone: P1e2.4, P1e2.1b, P1e2.1c, then P1e2.3, then the wrong answers
 ([README § Phases](README.md#phases)). It is specified when it starts, from P1,
 S4 and whatever P1e2.1b and P1e2.1c leave.
 
+**Note, 2026-11-02 — one more for P1e2.3 to read, from P1e2.4's S1e2.4.2.**
+It is not a misreport. Every line printed is true, but the forms printed after
+the read-out are outside the user's 100-line ruling.
+[`read_out.md` § 4.1](p1e2.1a_the_solution_region/read_out.md#41-past-100-lines-stdout-lists-what-fits)
+cuts the read-out's listings at 100 lines and says nothing of `--models
+key|grid`, `-p`, `-P` or `--diff-models`, which print every listed state.
+`ein solve examples/saturation/type-exclusivity/pets.ein --models grid` prints
+11 339 grids (2.2 MB), and before S1e2.4.2 its `--models key` printed an
+11 339-row table. Two things are open: whether the forms share the 100 lines,
+and whether `--dump-answer`'s `answer.txt` is where the rest goes. That is a
+surface question
+([the stage file](p1e2.4_what_the_switch_left/s1e2.4.2_models_key_declines.md#notes)).
+
 ## Q-M1e2.7 — The answer is a region of the lattice
 
 **A reading given 2026-10-15**, by the user, in the review of W1
