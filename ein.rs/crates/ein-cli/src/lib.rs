@@ -97,6 +97,8 @@ fn dispatch(m: &clap::ArgMatches) -> i32 {
                     a.get_one::<String>("view")
                         .map(String::as_str)
                         .unwrap_or("auto"),
+                    a.get_one::<String>("visited").map(String::as_str),
+                    a.get_one::<String>("answer").map(String::as_str),
                 ),
                 // The walk's depth cap went with `solve -m` (M1e2 S1e2.1a.5).
                 Some(("lattice", a))

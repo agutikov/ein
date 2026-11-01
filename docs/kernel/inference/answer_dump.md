@@ -144,6 +144,10 @@ DIR]`). A state file is mostly the program, so the directory's size is about
 
 [M1e2 P1e2.1](../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/README.md)'s
 review bundle reads it: the KB view of a state from `models/NN.ein`, and the
-read-out from `answer.txt`. The writer is
+read-out from `answer.txt`. `ein render region CUBE --answer DIR` reads
+`index.json`, and draws each state on the oracle's cube against the part of R
+the run asked
+([§ Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run),
+S1e2.1a.7). The writer is
 [`ein_render::dump::region_answer`](../../../ein.rs/crates/ein-render/src/dump/region_answer.rs):
 a function over a finished `ReadOut`, so it cannot perturb the run it reports.

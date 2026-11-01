@@ -1,7 +1,9 @@
-//! `ein render region DIR` — the cube drawn, with this run's walk on it.
-//! M1e2 [S1e2.1a.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.2_the_lattice_drawn.md);
-//! the legend is
-//! [`04_dot_rendering.md` § Region rendering](../../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-the-walk-s1e21a2).
+//! `ein render region DIR` — the cube drawn, with a region run on it.
+//! M1e2 [S1e2.1a.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.2_the_lattice_drawn.md)
+//! drew the cube and the walk; since
+//! [S1e2.1a.7](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md)
+//! the run is a region run's (`--visited`, `--answer`). The legend is
+//! [`04_dot_rendering.md` § Region rendering](../../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run).
 //!
 //! **The nodes are the pure cube**: every subset `C` of the root candidates
 //! `H₁`, one rank per layer, `L0` at the top, and a thin edge for adding one
@@ -15,11 +17,11 @@
 //! What a fixpoint holds that is not a coordinate is counted in the tooltip.
 //!
 //! One channel per question: **fill** is what the cube says (R by component,
-//! owing, dead), **shape** is what the search did (octagon recorded, box
-//! stood on, ellipse never), **border** is the lines and the defects (double:
-//! minimal line, heavy: maximal line, purple: hole, red: missing, magenta:
-//! spurious or an unsound clause), and **edges** are classed by the statuses
-//! at their two ends.
+//! owing, dead), **shape** is what the run did (octagon reported, box
+//! visited, ellipse neither), **border** is the lines and the defects (double:
+//! minimal line, heavy: maximal line, purple: hole, red: missing, orange: not
+//! reached, magenta: spurious, the run against the cube, or an unsound
+//! exclusion), and **edges** are classed by the statuses at their two ends.
 //!
 //! Four views ([`View`]), because a cube has `2ⁿ` nodes. The cutoffs are
 //! measured, and the stage file says on what.
@@ -29,7 +31,7 @@ use std::fmt::Write as _;
 use rustc_hash::FxHashSet;
 
 use crate::dot_util::esc;
-use crate::region_doc::{Cube, DEAD, OWING, Overlay, RegionDoc, Skip, WalkDoc, status_word};
+use crate::region_doc::{Cube, DEAD, OWING, Overlay, RegionDoc, RunDoc, Unvisited, status_word};
 
 /// The whole cube is drawn up to this `n` — 64 nodes, 192 edges.
 pub const FULL_MAX_N: usize = 6;
@@ -46,13 +48,13 @@ pub enum View {
     Auto,
     /// Every node and every edge of the cube.
     Full,
-    /// `R`, its holes, every node one edge from `R`, the root, the recorded
-    /// nodes and what an unsound exclusion pruned. Hidden nodes are counted
-    /// per layer.
+    /// `R`, its holes, every node one edge from `R`, the root, and what the
+    /// run got wrong: a missing node, a spurious state, an unsound exclusion,
+    /// a node it read otherwise than the cube. Hidden nodes are counted per
+    /// layer.
     Border,
-    /// The root, both lines, the holes, the recorded nodes and what an unsound
-    /// exclusion pruned, joined by inclusion: an edge spanning more than one
-    /// fact says how many.
+    /// The root, both lines, the holes and what the run got wrong, joined by
+    /// inclusion: an edge spanning more than one fact says how many.
     Lines,
     /// Every node as a markdown table, one section per layer — at any `n`.
     Table,
@@ -82,7 +84,7 @@ impl View {
 }
 
 /// What `auto` means for this region.
-pub fn resolve(doc: &RegionDoc, walk: &WalkDoc, view: View) -> View {
+pub fn resolve(doc: &RegionDoc, run: &RunDoc, view: View) -> View {
     if view != View::Auto {
         return view;
     }
@@ -92,7 +94,7 @@ pub fn resolve(doc: &RegionDoc, walk: &WalkDoc, view: View) -> View {
     if doc.n <= FULL_MAX_N {
         return View::Full;
     }
-    let ov = Overlay::of(doc, walk);
+    let ov = Overlay::of(doc, run);
     if drawn(doc, &ov, View::Border).len() <= BORDER_MAX_NODES {
         View::Border
     } else {
@@ -101,15 +103,15 @@ pub fn resolve(doc: &RegionDoc, walk: &WalkDoc, view: View) -> View {
 }
 
 /// Render `view` — DOT, or markdown for [`View::Table`].
-pub fn render(doc: &RegionDoc, walk: &WalkDoc, view: View) -> String {
-    let view = resolve(doc, walk, view);
-    let ov = Overlay::of(doc, walk);
+pub fn render(doc: &RegionDoc, run: &RunDoc, view: View) -> String {
+    let view = resolve(doc, run, view);
+    let ov = Overlay::of(doc, run);
     if view == View::Table {
-        return table(doc, walk, &ov);
+        return table(doc, run, &ov);
     }
     match &doc.cube {
-        None => refused_dot(doc, walk),
-        Some(cube) => dot(doc, cube, walk, &ov, view),
+        None => refused_dot(doc, run),
+        Some(cube) => dot(doc, cube, run, &ov, view),
     }
 }
 
@@ -127,18 +129,22 @@ fn drawn(doc: &RegionDoc, ov: &Overlay, view: View) -> Vec<u64> {
         View::Full | View::Auto | View::Table => keep.extend(0..size),
         View::Border | View::Lines => {
             keep.insert(0);
-            keep.insert(ov.search_root);
             keep.extend(cube.holes.iter().copied());
             keep.extend(cube.minimal.iter().copied());
             keep.extend(cube.maximal.iter().copied());
+            // What the run got wrong is drawn whatever the view. What it got
+            // right is on the lines, or in R.
+            keep.extend(ov.missing.iter().copied());
+            keep.extend(ov.spurious.iter().map(|x| x.0));
+            keep.extend(ov.disagree.iter().copied());
+            for &(d, a) in &ov.unsound {
+                keep.insert(d);
+                keep.insert(a);
+            }
             for (m, mark) in ov.marks.iter().enumerate() {
-                if mark.recorded.is_some() {
+                if mark.frontier.is_some() {
                     keep.insert(m as u64);
                 }
-            }
-            for e in ov.unsound() {
-                keep.insert(e.mask);
-                keep.extend(e.alive_superset);
             }
             if view == View::Border {
                 for m in 0..size {
@@ -152,18 +158,26 @@ fn drawn(doc: &RegionDoc, ov: &Overlay, view: View) -> Vec<u64> {
                 keep.extend(cube.nogoods.iter().copied());
                 keep.extend(cube.discharging.iter().copied());
             }
-            // Where saturation takes a node the search stood on, or a node of
-            // a line: the move the drawing is about. Not every border node's,
-            // which would draw half the cube's dead nodes again.
+            // Where saturation takes a node of a line, or a reported state:
+            // the move the drawing is about. Not every border node's, which
+            // would draw half the cube's dead nodes again. And the commitment
+            // a drawn state was read from, so its arrow has a tail.
             let closures: Vec<u64> = keep
                 .iter()
                 .filter(|&&m| {
                     let x = &cube.nodes[m as usize];
-                    ov.marks[m as usize].stood() || x.minimal || x.maximal
+                    ov.marks[m as usize].reported() || x.minimal || x.maximal
                 })
                 .map(|&m| cube.nodes[m as usize].closure)
                 .collect();
             keep.extend(closures);
+            let tails: Vec<u64> = (0..size)
+                .filter(|&m| {
+                    !ov.marks[m as usize].read_from.is_empty()
+                        && keep.contains(&cube.nodes[m as usize].closure)
+                })
+                .collect();
+            keep.extend(tails);
         }
     }
     // determinism-ok: sorted on the next line.
@@ -187,6 +201,7 @@ const HOLE_COLOUR: &str = "#6a3d9a";
 const MISSING_COLOUR: &str = "#e31a1c";
 const SPURIOUS_COLOUR: &str = "#ae017e";
 const SATURATION_COLOUR: &str = "#08519c";
+const UNREACHED_COLOUR: &str = "#fd8d3c";
 
 fn fill(cube: &Cube, m: u64) -> String {
     let node = &cube.nodes[m as usize];
@@ -330,24 +345,20 @@ fn node_dot(out: &mut String, doc: &RegionDoc, cube: &Cube, ov: &Overlay, m: u64
             (node.closure & !m).count_ones()
         ));
     }
-    let missing: Vec<&str> = [("min", &ov.missing[0]), ("max", &ov.missing[1])]
-        .iter()
-        .filter(|(_, v)| v.contains(&m))
-        .map(|(l, _)| *l)
-        .collect();
-    let spurious: Vec<&str> = [("min", &ov.spurious[0]), ("max", &ov.spurious[1])]
-        .iter()
-        .filter(|(_, v)| v.contains(&m))
-        .map(|(l, _)| *l)
-        .collect();
-    if !missing.is_empty() {
-        label.push(format!("MISSING ({})", missing.join(", ")));
+    let missing = ov.missing.contains(&m);
+    let unreached = ov.unreached.contains(&m);
+    let spurious = ov.is_spurious(m);
+    if missing {
+        label.push("MISSING".to_string());
     }
-    if !spurious.is_empty() {
-        label.push(format!("SPURIOUS (not {})", spurious.join(", ")));
+    if unreached {
+        label.push("not reached".to_string());
     }
-    let unsound = ov.unsound().any(|e| e.mask == m);
-    if unsound {
+    if spurious.is_some() {
+        label.push("SPURIOUS".to_string());
+    }
+    let unsound = ov.is_unsound(m);
+    if unsound.is_some() {
         label.push("✗ unsound exclusion".to_string());
     }
     let local = cube.local_max.contains(&m) || cube.local_min.contains(&m);
@@ -402,27 +413,43 @@ fn node_dot(out: &mut String, doc: &RegionDoc, cube: &Cube, ov: &Overlay, m: u64
                 .join(", ")
         ));
     }
-    tip.push(format!("walk: {}", if tag.is_empty() { "—" } else { &tag }));
-    if let Some((_, why)) = &mark.skipped {
-        tip.push(format!("  {why}"));
-    }
-    if let (Some(f), false) = (mark.reached_from, mark.stood()) {
-        tip.push(format!("  saturation of {} lands here", doc.name(f)));
+    if ov.run {
+        tip.push(format!("run: {}", if tag.is_empty() { "—" } else { &tag }));
+        if let Some(k) = &mark.visited {
+            tip.push(format!("  visited, read {k}"));
+        }
+        if let Some(Unvisited::AboveDead(d)) = mark.unvisited {
+            tip.push(format!("  not visited: above the dead {}", doc.name(d)));
+        }
+        if missing {
+            tip.push(format!(
+                "MISSING: a node of {}, and no state the run reported is its state",
+                ov.part
+            ));
+        }
+        if unreached {
+            tip.push(format!(
+                "not reached: a node of {}, and the run stopped before reporting its state",
+                ov.part
+            ));
+        }
+        if let Some(w) = spurious {
+            tip.push(format!("SPURIOUS: reported, and {w}"));
+        }
     }
     if let Some(d) = &mark.disagrees {
         tip.push(format!("≠ {d}"));
     }
-    for e in ov.unsound().filter(|e| e.mask == m) {
+    if let Some(a) = unsound {
         tip.push(format!(
-            "✗ {} excluded every superset, and {} is alive",
-            e.kinds.join("+"),
-            doc.name(e.alive_superset.unwrap_or_default())
+            "✗ the run visited it dead and not {}, which is above it and alive in the cube",
+            doc.name(a)
         ));
     }
 
-    let shape = if mark.recorded.is_some() {
+    let shape = if mark.reported() {
         "octagon"
-    } else if mark.visited() {
+    } else if mark.visited.is_some() {
         "box"
     } else {
         "ellipse"
@@ -434,10 +461,12 @@ fn node_dot(out: &mut String, doc: &RegionDoc, cube: &Cube, ov: &Overlay, m: u64
     if moves {
         style.push("dashed");
     }
-    let (colour, width) = if !missing.is_empty() {
+    let (colour, width) = if missing {
         (MISSING_COLOUR, 3.0)
-    } else if !spurious.is_empty() || unsound || mark.disagrees.is_some() {
+    } else if spurious.is_some() || unsound.is_some() || mark.disagrees.is_some() {
         (SPURIOUS_COLOUR, 3.0)
+    } else if unreached {
+        (UNREACHED_COLOUR, 2.5)
     } else if node.hole {
         (HOLE_COLOUR, 2.5)
     } else if node.maximal {
@@ -462,7 +491,7 @@ fn node_dot(out: &mut String, doc: &RegionDoc, cube: &Cube, ov: &Overlay, m: u64
     );
 }
 
-fn dot(doc: &RegionDoc, cube: &Cube, walk: &WalkDoc, ov: &Overlay, view: View) -> String {
+fn dot(doc: &RegionDoc, cube: &Cube, run: &RunDoc, ov: &Overlay, view: View) -> String {
     let n = doc.n;
     let nodes = drawn(doc, ov, view);
     let shown: FxHashSet<u64> = nodes.iter().copied().collect();
@@ -483,7 +512,7 @@ fn dot(doc: &RegionDoc, cube: &Cube, walk: &WalkDoc, ov: &Overlay, view: View) -
         ),
         format!(
             "{} · view {} ({} of {} nodes)",
-            walk.line(),
+            run.line(),
             view.as_str(),
             nodes.len(),
             1u64 << n
@@ -672,22 +701,16 @@ fn dot(doc: &RegionDoc, cube: &Cube, walk: &WalkDoc, ov: &Overlay, view: View) -
             );
         }
     }
-    // What an unsound exclusion pruned.
-    for e in ov.unsound() {
-        if let Some(w) = e.alive_superset
-            && w != e.mask
-        {
-            let _ = writeln!(
-                out,
-                "  m{} -> m{w} [color=\"{SPURIOUS_COLOUR}\", style=dashed, penwidth=2, \
-                 constraint=false, label=\"✗ alive\", fontsize=8, fontcolor=\"{SPURIOUS_COLOUR}\", \
-                 tooltip=\"{} excluded {} and every superset; {} is alive\"];",
-                e.mask,
-                e.kinds.join("+"),
-                esc(&doc.name(e.mask)),
-                esc(&doc.name(w))
-            );
-        }
+    // What an unsound exclusion left unvisited.
+    for &(d, a) in &ov.unsound {
+        let _ = writeln!(
+            out,
+            "  m{d} -> m{a} [color=\"{SPURIOUS_COLOUR}\", style=dashed, penwidth=2, \
+             constraint=false, label=\"✗ alive\", fontsize=8, fontcolor=\"{SPURIOUS_COLOUR}\", \
+             tooltip=\"the run visited {} dead and not {}, which is above it and alive\"];",
+            esc(&doc.name(d)),
+            esc(&doc.name(a))
+        );
     }
 
     legend(&mut out, doc, cube, ov, view, last_band);
@@ -799,26 +822,27 @@ fn legend(
         ),
         (
             "octagon",
-            "the run recorded this node's state (model or open)",
+            "a state the run reported, or a node of an empty R's owing frontier",
         ),
-        (
-            "rounded box",
-            "the search stood here (root, an entering), or reached it by saturation",
-        ),
+        ("rounded box", "a node the run visited"),
         (
             "ellipse",
-            "the search never stood here; why is under the facts",
+            "a node the run did not visit; why is under the facts",
         ),
         ("double border", "R's minimal line"),
         ("heavy green border", "R's maximal line"),
         ("purple border", "a hole: outside R, between two members"),
         (
             "red border",
-            "MISSING: on a line, and no recorded model is its state",
+            "MISSING: in the part of R the run asked, no reported state is its state, and the run says it is complete",
+        ),
+        (
+            "orange border",
+            "not reached: the same, on a run that stopped (a bound, not a defect)",
         ),
         (
             "magenta border",
-            "SPURIOUS, an unsound exclusion, or the search against the cube",
+            "SPURIOUS (a reported state outside the part asked), the run's reading against the cube's, or an unsound exclusion",
         ),
     ] {
         row(&mut key, format!("<I>{}</I>", html(a)), b);
@@ -847,11 +871,11 @@ fn legend(
             "a repair edge: the fact that takes a hole back into R",
         );
     }
-    if ov.unsound().next().is_some() {
+    if !ov.unsound.is_empty() {
         row(
             &mut key,
             format!("<FONT COLOR=\"{SPURIOUS_COLOUR}\"><B>╌▶</B></FONT> ✗ alive"),
-            "an exclusion the cube refutes, to the smallest alive superset it pruned",
+            "from a dead node the run visited to an unvisited node above it the cube says is alive",
         );
     }
     if view == View::Lines {
@@ -863,18 +887,27 @@ fn legend(
     }
 
     // The notes: one column, wrapped.
-    let mut notes: Vec<String> = vec![
-        "lines compared: both — which line is the answer is S1e2.1a.3's ruling (a)".to_string(),
-    ];
+    let mut notes: Vec<String> = Vec::new();
+    if ov.answered {
+        notes.push(format!(
+            "compared with {}, by state — ruling (a): the answer is R, and a run answers the part of it its question asked",
+            ov.part
+        ));
+        let spurious: Vec<u64> = ov.spurious.iter().map(|x| x.0).collect();
+        notes.push(format!(
+            "missing {}; spurious {}{}",
+            listed(doc, &ov.missing),
+            listed(doc, &spurious),
+            if ov.unreached.is_empty() {
+                String::new()
+            } else {
+                format!("; not reached {}", listed(doc, &ov.unreached))
+            }
+        ));
+    }
     for (i, line) in ["minimal", "maximal"].iter().enumerate() {
         let on = if i == 0 { &cube.minimal } else { &cube.maximal };
-        notes.push(format!(
-            "{line} line ({}): {} — missing {}; spurious {}",
-            on.len(),
-            listed(doc, on),
-            listed(doc, &ov.missing[i]),
-            listed(doc, &ov.spurious[i])
-        ));
+        notes.push(format!("{line} line ({}): {}", on.len(), listed(doc, on)));
     }
     match &cube.subcubes {
         Some(v) => {
@@ -912,25 +945,29 @@ fn legend(
         };
         notes.push(format!("minimal hole {}: {why}", short(doc, h)));
     }
-    let unsound: Vec<_> = ov.unsound().collect();
-    for e in unsound.iter().take(LEGEND_LIST_MAX) {
+    for &(d, a) in ov.unsound.iter().take(LEGEND_LIST_MAX) {
         notes.push(format!(
-            "✗ unsound {}: {} — {} is alive",
-            e.kinds.join("+"),
-            short(doc, e.mask),
-            short(doc, e.alive_superset.unwrap_or_default())
+            "✗ unsound exclusion: {} visited dead — {} above it is alive and was not visited",
+            short(doc, d),
+            short(doc, a)
         ));
     }
-    if unsound.len() > LEGEND_LIST_MAX {
+    if ov.unsound.len() > LEGEND_LIST_MAX {
         notes.push(format!(
             "… {} more unsound exclusions (--view table)",
-            unsound.len() - LEGEND_LIST_MAX
+            ov.unsound.len() - LEGEND_LIST_MAX
         ));
     }
-    if !ov.outside_recorded.is_empty() {
+    if !ov.disagree.is_empty() {
         notes.push(format!(
-            "recorded outside the cube: {}",
-            ov.outside_recorded.join("; ")
+            "≠ the cube: the run read {} otherwise",
+            listed(doc, &ov.disagree)
+        ));
+    }
+    if !ov.outside.is_empty() {
+        notes.push(format!(
+            "reported outside the cube: {}",
+            ov.outside.join("; ")
         ));
     }
     if !doc.monotone {
@@ -956,7 +993,7 @@ fn legend(
     let _ = writeln!(
         out,
         "  legend [shape=plaintext, label=<<TABLE BORDER=\"0\" CELLSPACING=\"6\">\
-         <TR><TD ALIGN=\"LEFT\"><B>legend</B> — fill: the cube · shape: the search · border: the lines and the defects</TD></TR>\
+         <TR><TD ALIGN=\"LEFT\"><B>legend</B> — fill: the cube · shape: the run · border: the lines and the defects</TD></TR>\
          <TR><TD ALIGN=\"LEFT\"><TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"3\">{}</TABLE></TD></TR>\
          <TR><TD ALIGN=\"LEFT\"><TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"3\">{notes}</TABLE></TD></TR>\
          </TABLE>>];",
@@ -966,16 +1003,34 @@ fn legend(
     let _ = writeln!(out, "  L{last_band} -> legend [style=invis];");
 }
 
-fn refused_dot(doc: &RegionDoc, walk: &WalkDoc) -> String {
+fn refused_dot(doc: &RegionDoc, run: &RunDoc) -> String {
     let mut out = String::new();
     let _ = writeln!(out, "digraph region {{");
     let _ = writeln!(out, "  // ein render region — view none (no cube)");
-    let lines = vec![
+    let mut lines = vec![
         format!("region · {}", doc.source),
         format!("n = {} — no cube", doc.n),
         doc.refused.clone().unwrap_or_default(),
-        format!("{} · {} enterings", walk.line(), walk.enterings.len()),
+        run.line(),
     ];
+    // The run alone: what it reported, with nothing to hold it to.
+    for s in run.states.iter().take(LEGEND_LIST_MAX) {
+        lines.push(format!(
+            "state {}: {}",
+            s.number,
+            if s.closure.is_empty() {
+                "∅".to_string()
+            } else {
+                format!("{{{}}}", s.closure.join(", "))
+            }
+        ));
+    }
+    if run.states.len() > LEGEND_LIST_MAX {
+        lines.push(format!(
+            "… {} more states (--view table)",
+            run.states.len() - LEGEND_LIST_MAX
+        ));
+    }
     let _ = writeln!(
         out,
         "  note [shape=note, fontsize=10, label=\"{}\"];",
@@ -999,7 +1054,25 @@ fn md(s: &str) -> String {
     s.replace('|', "\\|")
 }
 
-fn table(doc: &RegionDoc, walk: &WalkDoc, ov: &Overlay) -> String {
+/// A node as a link to its row: every row carries `<a id="mMASK">`, so the
+/// table's head links its lists into the table, and a page that splits the
+/// table by layer can follow the anchor.
+fn node_link(doc: &RegionDoc, m: u64) -> String {
+    format!("[`{}`](#m{m})", md(&doc.name(m)))
+}
+
+fn links(doc: &RegionDoc, ms: &[u64]) -> String {
+    if ms.is_empty() {
+        "none".to_string()
+    } else {
+        ms.iter()
+            .map(|&m| node_link(doc, m))
+            .collect::<Vec<_>>()
+            .join(", ")
+    }
+}
+
+fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
     let mut out = format!("# Region · {} — every node\n\n", doc.source);
     let Some(cube) = doc.cube.as_ref() else {
         let _ = writeln!(
@@ -1007,6 +1080,23 @@ fn table(doc: &RegionDoc, walk: &WalkDoc, ov: &Overlay) -> String {
             "No cube: {}.\n",
             doc.refused.as_deref().unwrap_or("the oracle did not run")
         );
+        if run.present() {
+            let _ = writeln!(out, "{} — with no cube to hold it to:\n", run.line());
+            for s in &run.states {
+                let _ = writeln!(
+                    out,
+                    "- state {}: `{}`{}",
+                    s.number,
+                    md(&if s.closure.is_empty() {
+                        "∅".to_string()
+                    } else {
+                        format!("{{{}}}", s.closure.join(", "))
+                    }),
+                    if s.listed { "" } else { " (dump only)" }
+                );
+            }
+            out.push('\n');
+        }
         return out;
     };
     let n = doc.n;
@@ -1020,54 +1110,100 @@ fn table(doc: &RegionDoc, walk: &WalkDoc, ov: &Overlay) -> String {
         } else {
             format!("**not monotone** ({} sites)", doc.sites.len())
         },
-        walk.line()
+        md(&run.line())
     );
     let names = |ms: &[u64]| -> String {
         if ms.is_empty() {
             "none".to_string()
         } else {
             ms.iter()
-                .map(|&m| format!("`{}`", doc.name(m)))
+                .map(|&m| format!("`{}`", md(&doc.name(m))))
                 .collect::<Vec<_>>()
                 .join(", ")
         }
     };
-    let _ = writeln!(
-        out,
-        "Lines compared: **both** — which line is the answer is S1e2.1a.3's ruling (a).\n"
-    );
+    if ov.answered {
+        let _ = writeln!(
+            out,
+            "**Compared with {}**, by state: ruling (a), the answer is R, and a run \
+             answers the part of it its question asked ({}).\n",
+            ov.part,
+            run.asked()
+        );
+        let _ = writeln!(out, "- **missing** {}", links(doc, &ov.missing));
+        let spurious: Vec<String> = ov
+            .spurious
+            .iter()
+            .map(|(m, why)| format!("{} ({why})", node_link(doc, *m)))
+            .collect();
+        let _ = writeln!(
+            out,
+            "- **spurious** {}",
+            if spurious.is_empty() {
+                "none".to_string()
+            } else {
+                spurious.join(", ")
+            }
+        );
+        if !run.exhausted {
+            let _ = writeln!(
+                out,
+                "- **not reached** {} — the run stopped ({}): a bound, not a defect",
+                links(doc, &ov.unreached),
+                run.stopped.as_deref().unwrap_or("?")
+            );
+        }
+    } else if !run.present() {
+        let _ = writeln!(
+            out,
+            "No run overlaid: `ein render region DIR --visited … --answer …` draws one.\n"
+        );
+    }
+    if ov.run {
+        let _ = writeln!(out, "- **≠ the cube** {}", links(doc, &ov.disagree));
+    }
+    if run.visited {
+        let unsound: Vec<String> = ov
+            .unsound
+            .iter()
+            .map(|&(d, a)| {
+                format!(
+                    "{} visited dead, {} above it alive",
+                    node_link(doc, d),
+                    node_link(doc, a)
+                )
+            })
+            .collect();
+        let _ = writeln!(
+            out,
+            "- **visited** {} of {} nodes; {} not visited above a dead node the run \
+             visited (licence L1), {} of them alive in the cube{}",
+            ov.marks.iter().filter(|m| m.visited.is_some()).count(),
+            1u64 << n,
+            ov.above_dead,
+            ov.unsound.len(),
+            if unsound.is_empty() {
+                String::new()
+            } else {
+                format!(": **unsound** {}", unsound.join("; "))
+            }
+        );
+    }
+    if !ov.outside.is_empty() {
+        let _ = writeln!(
+            out,
+            "- **reported outside the cube** {}",
+            md(&ov.outside.join("; "))
+        );
+    }
     for (i, line) in ["minimal", "maximal"].iter().enumerate() {
         let _ = writeln!(
             out,
-            "- **{line} line** {} — missing {}; spurious {}",
-            names(if i == 0 { &cube.minimal } else { &cube.maximal }),
-            names(&ov.missing[i]),
-            names(&ov.spurious[i])
+            "- **{line} line** {}",
+            names(if i == 0 { &cube.minimal } else { &cube.maximal })
         );
     }
     let _ = writeln!(out, "- **holes** {}", names(&cube.holes));
-    let unsound: Vec<String> = ov
-        .unsound()
-        .map(|e| {
-            format!(
-                "{} `{}` (alive superset `{}`)",
-                e.kinds.join("+"),
-                doc.name(e.mask),
-                doc.name(e.alive_superset.unwrap_or_default())
-            )
-        })
-        .collect();
-    let _ = writeln!(
-        out,
-        "- **exclusions** {} checked, {} unsound{}",
-        ov.exclusions.len(),
-        unsound.len(),
-        if unsound.is_empty() {
-            String::new()
-        } else {
-            format!(": {}", unsound.join("; "))
-        }
-    );
     let moved = cube
         .nodes
         .iter()
@@ -1076,26 +1212,8 @@ fn table(doc: &RegionDoc, walk: &WalkDoc, ov: &Overlay) -> String {
         .count();
     let _ = writeln!(
         out,
-        "- **saturation moves** {moved} of {} nodes to a larger one",
+        "- **saturation moves** {moved} of {} nodes to a larger one\n",
         1u64 << n
-    );
-    let mut skips: Vec<(Skip, usize)> = Vec::new();
-    for mark in &ov.marks {
-        if let Some((s, _)) = &mark.skipped {
-            match skips.iter_mut().find(|x| x.0 == *s) {
-                Some(x) => x.1 += 1,
-                None => skips.push((*s, 1)),
-            }
-        }
-    }
-    let visited = ov.marks.iter().filter(|m| m.visited()).count();
-    let _ = writeln!(
-        out,
-        "- **the walk** stood on {visited} nodes{}\n",
-        skips
-            .iter()
-            .map(|(s, c)| format!("; {c} {}", s.as_str()))
-            .collect::<String>()
     );
     out.push_str("| bit | candidate |\n|---:|---|\n");
     for (i, c) in doc.candidates.iter().enumerate() {
@@ -1109,7 +1227,11 @@ fn table(doc: &RegionDoc, walk: &WalkDoc, ov: &Overlay) -> String {
             "## L{k} — {size} node{}\n",
             if size == 1 { "" } else { "s" }
         );
-        out.push_str("| node | status | why | saturation | walk |\n|---|---|---|---|---|\n");
+        if ov.run {
+            out.push_str("| node | status | why | saturation | run |\n|---|---|---|---|---|\n");
+        } else {
+            out.push_str("| node | status | why | saturation |\n|---|---|---|---|\n");
+        }
         for m in (0..1u64 << n).filter(|m| m.count_ones() as usize == k) {
             let node = &cube.nodes[m as usize];
             let mark = &ov.marks[m as usize];
@@ -1123,17 +1245,14 @@ fn table(doc: &RegionDoc, walk: &WalkDoc, ov: &Overlay) -> String {
             if node.hole {
                 status.push("hole".into());
             }
-            if ov.missing[0].contains(&m) {
-                status.push("**missing (min)**".into());
+            if ov.missing.contains(&m) {
+                status.push("**missing**".into());
             }
-            if ov.missing[1].contains(&m) {
-                status.push("**missing (max)**".into());
+            if ov.unreached.contains(&m) {
+                status.push("not reached".into());
             }
-            if ov.spurious[0].contains(&m) {
-                status.push("**spurious (not min)**".into());
-            }
-            if ov.spurious[1].contains(&m) {
-                status.push("**spurious (not max)**".into());
+            if let Some(w) = ov.is_spurious(m) {
+                status.push(format!("**spurious** ({w})"));
             }
             let mut why = Vec::new();
             if !node.core.is_empty() {
@@ -1165,30 +1284,38 @@ fn table(doc: &RegionDoc, walk: &WalkDoc, ov: &Overlay) -> String {
             if node.class != m {
                 sat.push(format!("≡ `{}`", doc.name(node.class)));
             }
-            let mut w = vec![mark.tag()];
-            if let Some((_, d)) = &mark.skipped {
-                w.push(d.clone());
+            let cells = [
+                format!("<a id=\"m{m}\"></a>`{}`", md(&doc.name(m))),
+                md(&status.join(" · ")),
+                md(&why.join("; ")),
+                md(&sat.join("; ")),
+            ];
+            if !ov.run {
+                let _ = writeln!(out, "| {} |", cells.join(" | "));
+                continue;
             }
-            if let (Some(f), false) = (mark.reached_from, mark.stood()) {
-                w.push(format!("from `{}`", doc.name(f)));
+            let mut w = vec![mark.tag()];
+            if let Some(k) = &mark.visited
+                && mark.reported()
+            {
+                w.push(format!("visited, read {k}"));
+            }
+            if let Some(Unvisited::AboveDead(d)) = mark.unvisited {
+                w.push(format!("above the dead `{}`", doc.name(d)));
             }
             if let Some(d) = &mark.disagrees {
                 w.push(format!("**≠ {d}**"));
             }
-            for e in ov.unsound().filter(|e| e.mask == m) {
+            if let Some(a) = ov.is_unsound(m) {
                 w.push(format!(
-                    "**✗ unsound {}: `{}` alive**",
-                    e.kinds.join("+"),
-                    doc.name(e.alive_superset.unwrap_or_default())
+                    "**✗ unsound: `{}` above it is alive and was not visited**",
+                    doc.name(a)
                 ));
             }
             let _ = writeln!(
                 out,
-                "| `{}` | {} | {} | {} | {} |",
-                md(&doc.name(m)),
-                md(&status.join(" · ")),
-                md(&why.join("; ")),
-                md(&sat.join("; ")),
+                "| {} | {} |",
+                cells.join(" | "),
                 md(&w
                     .into_iter()
                     .filter(|s| !s.is_empty())

@@ -64,7 +64,7 @@ constrained-reasoning research.
   [configuration reference](docs/kernel/configuration.md)** — the 7
   `(config …)` flags a program can set (ten more retired, nine at M1e2
   S1e2.1a.5 and one at S1e2.1a.6, each refused with the stage and why), the
-  69 CLI options, the eight `EIN_*` names the binary actually reads, the
+  71 CLI options, the eight `EIN_*` names the binary actually reads, the
   precedence between the three, and on every flag row a *does it change the
   answer* and a *stability* column. Its defaults block is `ein solve
   --dump-config`'s own output (`EIN_BLESS=1` re-banks it). Two of the
@@ -550,7 +550,7 @@ ein solve … --dump-answer DIR                                # M1e2: the answe
 ein solve … --maximal | --minimal | --single | -n N --region-budget F   # M1e2: a question about R, the least work it needs
 ein oracle FILE [--dump DIR]                                 # M1e2: R by brute force, 2ⁿ saturations — the reference every mode is held to
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test lever_invariance   # M1e2: every mode under every lever, + the slow pair's cells
-ein render region DIR [--view full|border|lines|table]       # M1e2: an oracle dump drawn
+ein render region DIR [--visited D] [--answer D] [--view …]  # M1e2: an oracle dump drawn, a solve run on it
 ein solve … --dump-lattice DIR                               # M1e2: every node the run visited (ein render lattice draws them)
 cargo run --release -p ein-infer --example route1_reach      # M1e2: route 1, R from the alive down-set, over the corpus
 cargo run --release -p ein-infer --example walk_vs_region    # M1e2: the walk's answer and nodes against R
@@ -578,7 +578,7 @@ set.** The shipped binary reads **eight** (three of them only in a non-default
 build), the test harness reads ten more, `utils/` and the shell two — and six
 greppable `EIN_*` names are not environment variables at all, `EIN_RS` and
 `EIN_RENDER_LEVI` among them. The whole census, classified, with the 17
-`(config …)` fields and the 69 CLI options beside it and a *does it change the
+`(config …)` fields and the 71 CLI options beside it and a *does it change the
 answer* column on every flag row:
 [`docs/kernel/configuration.md`](docs/kernel/configuration.md) (M1e S1e.5.1),
 pinned by `ein-cli/tests/config_reference.rs`.

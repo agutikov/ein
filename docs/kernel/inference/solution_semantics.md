@@ -268,25 +268,28 @@ sub-cubes [∅ … pair] of dimension 2. N = {{a,b,c}}, E = {∅}, and the duali
 gives both lines. The conflict is genuinely three-way, which is what the
 fixture is named for.
 
-![lattice/02's region, with the default exhaustive run's walk on it](diagrams/region_02_genuine_3set_death.svg)
+![lattice/02's region, with a bare ein solve on it](diagrams/region_02_genuine_3set_death.svg)
 
-Drawn by [`ein render region`](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-the-walk-s1e21a2)
-([`.dot`](diagrams/region_02_genuine_3set_death.dot)) before the switch, with
-the walk's `-e` run on it. The same cube with no run overlaid is re-made
-with:
+Drawn by [`ein render region`](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)
+([`.dot`](diagrams/region_02_genuine_3set_death.dot)), with a bare `ein solve`
+on the cube (M1e2 S1e2.1a.7, 2026-11-01). Re-made with:
 
 ```sh
-ein oracle examples/lattice/02_genuine_3set_death.ein --dump out/
-ein render region out/ > docs/kernel/inference/diagrams/region_02_genuine_3set_death.dot
+ein oracle examples/lattice/02_genuine_3set_death.ein --dump cube/
+ein solve  examples/lattice/02_genuine_3set_death.ein --dump-lattice run/lattice --dump-answer run/answer
+ein render region cube/ --visited run/lattice --answer run/answer \
+    > docs/kernel/inference/diagrams/region_02_genuine_3set_death.dot
 dot -Tsvg docs/kernel/inference/diagrams/region_02_genuine_3set_death.dot \
     -o docs/kernel/inference/diagrams/region_02_genuine_3set_death.svg
 ```
 
-Fill is the node's status, shape is what the run did there, and the octagons
-are the three states the walk recorded: the maximal line, and 3 of R's 7
-states. *MISSING* and *SPURIOUS* in the drawing compare the walk with each line
-separately, which is the drawing's reading from before ruling (a); against R,
-the four unrecorded nodes are all unreported (§ 6.1).
+Fill is the node's status in the cube, shape is what the run did there, and
+border is the lines and the defects. The run describes all of R, so it is
+compared with all of R (ruling (a)): the seven octagons are the seven states
+it reported, the dead triple is a box because the run visited all eight
+nodes, and nothing is *MISSING* or *SPURIOUS*. Until S1e2.1a.7 this drawing carried the walk's `-e`
+run, which recorded three of the seven, the pairs, and compared them with
+each line separately (§ 6.1).
 
 ### 2.6 The old definition, as a special case
 
@@ -579,7 +582,9 @@ truncated: the lattice really was walked to the end.
 ![lattice/02's region, with the -e -L run's walk on it](diagrams/region_02_genuine_3set_death_no_lookahead.svg)
 
 ([`.dot`](diagrams/region_02_genuine_3set_death_no_lookahead.dot); drawn
-before the switch from `ein solve -e -L --dump-region`.)
+before the switch from `ein solve -e -L --dump-region`, with the walk's
+overlay, which `ein render region` drew until S1e2.1a.7. It is kept as drawn:
+it is the record of this section's claim.)
 
 *The lattice was walked to the end* and *every solution in it was recognised*
 are two claims, and only the first is what `exhausted` tracks today
@@ -685,7 +690,7 @@ leave those out.
 ## Cross-references
 
 - [`region_dump.md`](region_dump.md): R by brute force, `ein oracle --dump`.
-- [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-the-walk-s1e21a2):
+- [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run):
   R drawn, `ein render region`.
 - [`absent_semantics.md`](absent_semantics.md): worlds, the NAF boundary, and
   the corollaries a non-monotone program has to be read beside.

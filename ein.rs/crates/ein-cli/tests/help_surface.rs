@@ -56,8 +56,9 @@ const EXPECTED: [(&str, usize); 12] = [
     // `--colour-by`, `--no-types`, `--no-instances`.
     ("COMMAND ein render program\n", 2),
     ("COMMAND ein render kb\n", 4),
-    // M1e2 S1e2.1a.2's `--view` over a `--dump-region` directory.
-    ("COMMAND ein render region\n", 1),
+    // M1e2 S1e2.1a.2's `--view` over a region dump; S1e2.1a.7's `--visited`
+    // and `--answer`, a region run's two dumps drawn on it.
+    ("COMMAND ein render region\n", 3),
 ];
 
 /// M1c [S1c.1.3](../../../../docs/history/m1c_external_validation/README.md#s1c13--ein-test)'s
@@ -102,16 +103,16 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        60 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        62 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "60 options across the twelve parsers of `ein`, `solve`, `oracle`, \
+        "62 options across the twelve parsers of `ein`, `solve`, `oracle`, \
          `saturate` and `render`, plus `ein test`'s nine and `ein kb save --saturate`"
     );
 }
 
 /// **The whole rendering, checked in.**
 ///
-/// Every option of every parser — 69 across fifteen since M1e2 S1e2.1a.5's switch, the count
+/// Every option of every parser — 71 across fifteen since M1e2 S1e2.1a.7, the count
 /// [`the_extractor_finds_the_whole_surface`] holds — each with its short key, metavar, arity,
 /// default, choices, group and help. A flag added, removed, renamed or
 /// re-defaulted shows up as a line.

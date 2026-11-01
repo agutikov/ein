@@ -43,7 +43,7 @@
 | surface | how many | who owns the list |
 |---|---:|---|
 | `(config …)` flags | **7** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the ten a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **69** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| CLI options | **71** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **8** read by the shipped binary, of 26 greppable names | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -283,7 +283,7 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**69** options across fifteen parsers, in the default build (`einb`,
+**71** options across fifteen parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
@@ -293,16 +293,19 @@ parallel copy. What this page states is the *shape*, read off that golden:
 | `ein test` | 8 |
 | `ein saturate` | 5 |
 | `ein render kb` | 4 |
+| `ein render region` | 3 |
 | `ein render rule` | 2 |
 | `ein render lattice` | 2 |
 | `ein render program` | 2 |
 | `ein render rules` | 1 |
-| `ein render region` | 1 |
 | `ein kb save` | 1 |
 
 `ein`, `ein kb`, `ein render` and `ein render constraints` take none — they are
 dispatchers. `ein kb save` exists only under the `einb` feature; a
-`--no-default-features` build has 68 and no `ein kb` at all.
+`--no-default-features` build has 70 and no `ein kb` at all. M1e2
+S1e2.1a.7 added the last two, `ein render region`'s `--visited` and
+`--answer`: a region run's `--dump-lattice` and `--dump-answer` drawn on the
+cube ([`04_dot_rendering.md` § Region rendering](ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)).
 
 **M1e2 S1e2.1a.5's switch** (2026-10-18) made `ein solve` the region's
 command: bare `ein solve FILE` describes R, and `--minimal`, `--maximal`,

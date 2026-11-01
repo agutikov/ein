@@ -227,6 +227,10 @@ ein oracle FILE  [--region-limit N] [--dump DIR] [--states] [-j JOBS] [-T SECOND
 - **`ein render region DIR [--visited DIR2]`** draws an oracle dump, and with
   `--visited` overlays the nodes a `solve` run visited, from its
   `--dump-lattice`. Today it overlays the walk that the same run wrote.
+  *Built at [S1e2.1a.7](s1e2.1a.7_the_bundle_shows_r.md) (2026-11-01), with
+  `--answer DIR3` beside it — the run's `--dump-answer`, because MISSING and
+  SPURIOUS compare what the run reported, which `nodes.json` does not say.
+  The census is 71.*
 - **`ein render lattice FILE [solve flags]`** draws what that solve run
   visited.
 

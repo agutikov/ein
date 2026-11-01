@@ -255,16 +255,26 @@ fn render_command() -> Command {
                         .help("leave out the instance ovals and every fact edge"),
                 ),
         )
-        // M1e2 S1e2.1a.2 — the cube a `--dump-region` directory holds, drawn
-        // from the files, so the picture is of the run whose answer it shows.
+        // M1e2 S1e2.1a.2 — the cube an `ein oracle --dump` directory holds,
+        // drawn from the files, so the picture is of the run whose answer it
+        // shows; S1e2.1a.7 — a region run on it, from the run's own dumps.
         .subcommand(
             Command::new("region")
                 .about(
-                    "the solution region as a Hasse diagram: DIR is an `ein solve \
-                     --dump-region` directory, drawn with that run's walk on it \
+                    "the solution region as a Hasse diagram: DIR is an `ein oracle \
+                     --dump` directory, drawn with a `solve` run on it when --visited \
+                     or --answer names its dumps \
                      (docs/kernel/ir/03-ein-lang/04_dot_rendering.md)",
                 )
                 .arg(Arg::new("dir").required(true))
+                .arg(Arg::new("visited").long("visited").value_name("DIR").help(
+                    "a `solve --dump-lattice` directory: draw the nodes that run \
+                             visited, each read against the cube",
+                ))
+                .arg(Arg::new("answer").long("answer").value_name("DIR").help(
+                    "a `solve --dump-answer` directory: draw the states that run \
+                             reported, against the part of R it asked (MISSING, SPURIOUS)",
+                ))
                 .arg(
                     Arg::new("view")
                         .long("view")
@@ -276,8 +286,8 @@ fn render_command() -> Command {
                         .help(
                             "'full' every node of the cube; 'border' R, its holes and \
                              every node one edge from it; 'lines' the root, both lines, \
-                             the holes and the recorded nodes; 'table' every node as \
-                             markdown, at any n; 'auto' (default) full up to n = 6, \
+                             the holes and what the run got wrong; 'table' every node \
+                             as markdown, at any n; 'auto' (default) full up to n = 6, \
                              border up to 64 nodes, else lines",
                         ),
                 ),

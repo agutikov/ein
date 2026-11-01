@@ -1,18 +1,21 @@
-//! `ein render region DIR` — M1e2
-//! [S1e2.1a.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.2_the_lattice_drawn.md).
+//! `ein render region DIR [--visited DIR] [--answer DIR]` — M1e2
+//! [S1e2.1a.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.2_the_lattice_drawn.md)
+//! and [S1e2.1a.7](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md).
 //!
-//! The drawing of an `ein oracle --dump` directory, held from the outside:
-//! every view is DOT Graphviz accepts (`dot_wellformed.rs`'s standard), and
-//! `auto` picks the views the stage measured.
+//! The drawing of an `ein oracle --dump` directory with a region run on it,
+//! held from the outside: every view is DOT Graphviz accepts
+//! (`dot_wellformed.rs`'s standard), with and without a run, and `auto` picks
+//! the views S1e2.1a.2 measured.
 //!
-//! Until M1e2 S1e2.1a.5 the directory was `ein solve --dump-region`'s and
-//! carried the walk's `walk.json`, and four more tests here held the overlay
-//! to what the register's witnesses showed — W1's unrecorded maximal node,
-//! W3's unsound lookahead, W2's cascade moving the search's root, a commitment
-//! whose saturation lands on a line node. No command runs the walk since the
-//! switch, so nothing writes the file they read; drawing a region run on the
-//! cube is [S1e2.1a.7](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md)'s,
-//! and the four are in git history for it.
+//! Until M1e2 S1e2.1a.5 the run was the walk's (`walk.json`), and four tests
+//! here held the overlay to what the register's witnesses showed. S1e2.1a.7
+//! brought them back against a region run's dumps (`--dump-lattice`,
+//! `--dump-answer`): W1's maximal node that no reported state holds is
+//! MISSING, W3's hole and an exclusion the cube refutes, W2's root that a
+//! region run never moves, and a state that counts as the node its
+//! saturation lands on. A correct engine misses nothing, so where a test
+//! needs a wrong answer it writes one — the walk's, from the register — into
+//! a copy of the run's dump, which is the input the comparison is for.
 
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -58,11 +61,69 @@ fn dumped(file: &str, flags: &[&str], dir: &Path) {
     assert!(dir.join("region.json").is_file(), "{file}: {}", r.err);
 }
 
-fn render(dir: &Path, view: &str) -> String {
-    let d = dir.to_string_lossy();
-    let r = ein(&["render", "region", &d, "--view", view]);
+/// `ein solve FILE FLAGS --dump-answer DIR/answer --dump-lattice
+/// DIR/lattice`: the run's side of an overlay.
+fn ran(file: &str, flags: &[&str], dir: &Path) {
+    let (a, l) = (dir.join("answer"), dir.join("lattice"));
+    let (a, l) = (a.to_string_lossy(), l.to_string_lossy());
+    let mut args = vec!["solve", file];
+    args.extend_from_slice(flags);
+    args.extend(["--dump-answer", &a, "--dump-lattice", &l]);
+    let r = ein(&args);
+    assert_eq!(r.code, 0, "{file}: {}", r.err);
+}
+
+/// The cube in `dir`, with the run whose `answer/` and `lattice/` are in
+/// `run` drawn on it when one is given.
+fn render_with(dir: &Path, run: Option<&Path>, view: &str) -> String {
+    let d = dir.to_string_lossy().into_owned();
+    let mut args: Vec<String> = vec!["render".into(), "region".into(), d];
+    if let Some(run) = run {
+        args.extend([
+            "--visited".into(),
+            run.join("lattice").to_string_lossy().into_owned(),
+            "--answer".into(),
+            run.join("answer").to_string_lossy().into_owned(),
+        ]);
+    }
+    args.extend(["--view".into(), view.into()]);
+    let argv: Vec<&str> = args.iter().map(String::as_str).collect();
+    let r = ein(&argv);
     assert_eq!(r.code, 0, "render region {view}: {}", r.err);
     r.out
+}
+
+/// The DOT statement drawing node `mask`.
+fn node_line(dot: &str, mask: i64) -> &str {
+    let head = format!("  m{mask} [label=");
+    dot.lines()
+        .find(|l| l.starts_with(&head))
+        .unwrap_or_else(|| panic!("node m{mask} is not drawn:\n{dot}"))
+}
+
+/// The cube's bit of each candidate.
+fn mask_of(dir: &Path, facts: &[&str]) -> i64 {
+    let region = json(&dir.join("region.json"));
+    let cands: Vec<&str> = region["candidates"]
+        .as_array()
+        .expect("candidates")
+        .iter()
+        .map(|c| c.as_str().expect("text"))
+        .collect();
+    facts.iter().fold(0, |acc, f| {
+        let b = cands
+            .iter()
+            .position(|c| c == f)
+            .unwrap_or_else(|| panic!("{f} is not a candidate of {cands:?}"));
+        acc | 1 << b
+    })
+}
+
+/// Rewrite one JSON file of a dump in place.
+fn doctor(path: &Path, edit: impl FnOnce(&mut J)) {
+    let mut j = json(path);
+    edit(&mut j);
+    std::fs::write(path, serde_json::to_string(&j).expect("json")).expect("write");
 }
 
 fn json(path: &Path) -> J {
@@ -132,9 +193,10 @@ const DRAWN: [(&str, &[&str]); 9] = [
     ),
 ];
 
-/// **Every view is DOT Graphviz accepts**, `table` is markdown with one
-/// section per layer, and `auto` is the view the stage measured: the whole
-/// cube to n = 6, R and its border to 64 nodes, the lines past that.
+/// **Every view is DOT Graphviz accepts**, with no run on the cube and with
+/// a bare `ein solve` on it; `table` is markdown with one section per layer
+/// and an anchor per node; and `auto` is the view the stage measured: the
+/// whole cube to n = 6, R and its border to 64 nodes, the lines past that.
 #[test]
 fn every_view_is_drawn_and_auto_picks_the_measured_one() {
     require_graphviz();
@@ -142,26 +204,63 @@ fn every_view_is_drawn_and_auto_picks_the_measured_one() {
     let mut autos = Vec::new();
     for (i, (file, flags)) in DRAWN.iter().enumerate() {
         let dir = root.join(format!("{i}"));
-        dumped(file, flags, &dir);
-        for view in ["auto", "full", "border", "lines"] {
-            let dot = render(&dir, view);
-            if let Err(e) = graphviz_accepts(&dot) {
-                panic!("{file} --view {view}: Graphviz refused it:\n{e}");
+        let cube = dir.join("region");
+        dumped(file, flags, &cube);
+        ran(file, flags, &dir);
+        for run in [None, Some(dir.as_path())] {
+            for view in ["auto", "full", "border", "lines"] {
+                let dot = render_with(&cube, run, view);
+                if let Err(e) = graphviz_accepts(&dot) {
+                    panic!(
+                        "{file} --view {view} (run: {}): Graphviz refused it:\n{e}",
+                        run.is_some()
+                    );
+                }
+                if view == "auto" && run.is_none() {
+                    autos.push((*file, view_of(&dot).to_string()));
+                }
+                assert_eq!(
+                    dot.contains("no run overlaid"),
+                    run.is_none(),
+                    "{file} --view {view}: the title says whether a run is drawn"
+                );
             }
-            if view == "auto" {
-                autos.push((*file, view_of(&dot).to_string()));
+            let table = render_with(&cube, run, "table");
+            assert!(table.starts_with("# Region · "), "{file}: {table}");
+            let refused = json(&cube.join("region.json"))["region"].is_null();
+            if !refused {
+                let n = json(&cube.join("region.json"))["n"].as_u64().unwrap();
+                assert_eq!(
+                    table.matches("\n## L").count() as u64,
+                    n + 1,
+                    "{file}: one section per layer"
+                );
+                assert_eq!(
+                    table.matches("<a id=\"m").count() as u64,
+                    1 << n,
+                    "{file}: one anchor per node"
+                );
+                assert_eq!(
+                    table.contains("| run |"),
+                    run.is_some(),
+                    "{file}: the run column"
+                );
+                if run.is_some() {
+                    // A correct engine's run, against the cube that holds it.
+                    for line in [
+                        "- **missing** none",
+                        "- **spurious** none",
+                        "- **≠ the cube** none",
+                    ] {
+                        assert!(table.contains(line), "{file}: no `{line}`:\n{table}");
+                    }
+                }
+            } else if run.is_some() {
+                assert!(
+                    table.contains("with no cube to hold it to"),
+                    "{file}: {table}"
+                );
             }
-        }
-        let table = render(&dir, "table");
-        assert!(table.starts_with("# Region · "), "{file}: {table}");
-        let refused = json(&dir.join("region.json"))["region"].is_null();
-        if !refused {
-            let n = json(&dir.join("region.json"))["n"].as_u64().unwrap();
-            assert_eq!(
-                table.matches("\n## L").count() as u64,
-                n + 1,
-                "{file}: one section per layer"
-            );
         }
     }
     let auto = |f: &str| {
@@ -175,6 +274,250 @@ fn every_view_is_drawn_and_auto_picks_the_measured_one() {
     assert_eq!(auto("05_mini_zebra.ein"), "border");
     assert_eq!(auto("colors.ein"), "lines");
     assert!(auto("02_genuine_3set_death.ein").starts_with("none"));
+    let _ = std::fs::remove_dir_all(&root);
+}
+
+/// **W1, drawn.** On `branching/15` `--maximal` reports both nodes of the
+/// maximal line, and nothing is missing. The walk reported only `{(p B),
+/// (p C)}` and called it exhausted (the register's `wrong`): written into the
+/// run's answer, `{(p A)}` is MISSING, red, in the drawing and the table.
+/// Bare `ein solve` reports all of R — five states, five octagons.
+#[test]
+fn w1_a_node_of_the_part_asked_that_no_state_holds_is_missing() {
+    let root = scratch("w1");
+    let file = "examples/branching/15_lookahead_two_step_on.ein";
+    let cube = root.join("region");
+    dumped(file, &[], &cube);
+    let a = mask_of(&cube, &["(p A)"]);
+    let max = root.join("max");
+    ran(file, &["--maximal"], &max);
+    let dot = render_with(&cube, Some(&max), "full");
+    let pa = node_line(&dot, a);
+    assert!(
+        pa.contains("shape=octagon") && pa.contains("state 1"),
+        "{pa}"
+    );
+    assert!(!dot.contains("\\nMISSING"), "{dot}");
+    let table = render_with(&cube, Some(&max), "table");
+    assert!(
+        table.contains("**Compared with the maximal line**"),
+        "{table}"
+    );
+    assert!(table.contains("- **missing** none"), "{table}");
+
+    // The walk's answer, as the register records it.
+    doctor(&max.join("answer/index.json"), |j| {
+        let states = j["region"]["states"].as_array_mut().expect("states");
+        states.retain(|s| s["facts"] != serde_json::json!(["(p A)"]));
+        assert_eq!(states.len(), 1);
+    });
+    let dot = render_with(&cube, Some(&max), "full");
+    let pa = node_line(&dot, a);
+    assert!(pa.contains("MISSING") && pa.contains("#e31a1c"), "{pa}");
+    assert!(
+        pa.contains("shape=box") && pa.contains("\\nvisited"),
+        "visited, and reported by nothing: {pa}"
+    );
+    let table = render_with(&cube, Some(&max), "table");
+    assert!(
+        table.contains(&format!("- **missing** [`{{(p A)}}`](#m{a})")),
+        "{table}"
+    );
+    assert!(
+        table.contains(&format!(
+            "<a id=\"m{a}\"></a>`{{(p A)}}` | R · max · **missing**"
+        )),
+        "{table}"
+    );
+
+    let all = root.join("all");
+    ran(file, &[], &all);
+    let dot = render_with(&cube, Some(&all), "full");
+    assert_eq!(dot.matches("shape=octagon").count(), 5, "{dot}");
+    assert!(
+        !dot.contains("\\nMISSING") && !dot.contains("\\nSPURIOUS"),
+        "{dot}"
+    );
+    let _ = std::fs::remove_dir_all(&root);
+}
+
+/// **W3, drawn.** `naf-nowb` is not monotone: `{(p A)}` is a hole, dead
+/// under its `absent` guard, and `{(p A), (q A)}` above it is alive. The
+/// region run takes the cube (route 2), visits every node and reports the
+/// alive superset — the hole carries its repair edge, and nothing is missing
+/// or read otherwise than the cube. A run that pruned above the dead `{(p
+/// A)}`, as licence L1 would on a monotone program and as the walk's lookahead
+/// did here, is drawn with the exclusion named unsound and the alive node it
+/// left unvisited.
+#[test]
+fn w3_the_hole_is_drawn_and_an_exclusion_the_cube_refutes_is_named() {
+    let root = scratch("w3");
+    let file = "examples/ein-bugs/wrong-answers/naf-nowb.ein";
+    let cube = root.join("region");
+    dumped(file, &[], &cube);
+    let run = root.join("run");
+    ran(file, &["--maximal"], &run);
+    let pa = mask_of(&cube, &["(p A)"]);
+    let both = mask_of(&cube, &["(p A)", "(q A)"]);
+    let dot = render_with(&cube, Some(&run), "full");
+    assert!(dot.contains("label=\"+(q A)\""), "the repair edge:\n{dot}");
+    assert!(node_line(&dot, pa).contains("hole"), "{dot}");
+    assert!(node_line(&dot, both).contains("state 1"), "{dot}");
+    assert!(
+        !dot.contains("\\nMISSING") && !dot.contains("\\n≠ the cube"),
+        "{dot}"
+    );
+    let table = render_with(&cube, Some(&run), "table");
+    assert!(table.contains("- **visited** 4 of 4 nodes"), "{table}");
+
+    // The run had pruned above the dead singleton.
+    doctor(&run.join("lattice/nodes.json"), |j| {
+        let nodes = j["nodes"].as_array_mut().expect("nodes");
+        nodes.retain(|n| n["commitment"] != serde_json::json!(["(p A)", "(q A)"]));
+    });
+    let dot = render_with(&cube, Some(&run), "full");
+    assert!(node_line(&dot, pa).contains("✗ unsound exclusion"), "{dot}");
+    assert!(
+        dot.contains(&format!(
+            "  m{pa} -> m{both} [color=\"#ae017e\", style=dashed"
+        )),
+        "the exclusion's edge to the alive node it left:\n{dot}"
+    );
+    let table = render_with(&cube, Some(&run), "table");
+    assert!(
+        table.contains(&format!(
+            "1 of them alive in the cube: **unsound** [`{{(p A)}}`](#m{pa}) visited dead, \
+             [`{{(p A), (q A)}}`](#m{both}) above it alive"
+        )),
+        "{table}"
+    );
+    let _ = std::fs::remove_dir_all(&root);
+}
+
+/// **W2, drawn.** The walk's forced-positive cascade promoted `(q one)` into
+/// root before any entering, moved the search's root onto the dead `{(q
+/// one)}`, and left `∅` — all of R — missing. A region run never writes root:
+/// it visits `∅` and `{(q one)}`, reads them as the cube does, and reports
+/// `∅`.
+#[test]
+fn w2_a_region_run_never_moves_root() {
+    let root = scratch("w2");
+    let file = "examples/ein-bugs/wrong-answers/forced-2.ein";
+    let cube = root.join("region");
+    dumped(file, &[], &cube);
+    let run = root.join("run");
+    ran(file, &["--maximal"], &run);
+    let dot = render_with(&cube, Some(&run), "full");
+    let empty = node_line(&dot, 0);
+    assert!(
+        empty.contains("state 1") && empty.contains("shape=octagon"),
+        "{empty}"
+    );
+    let q = node_line(&dot, mask_of(&cube, &["(q one)"]));
+    assert!(
+        q.contains("dead") && q.contains("visited") && q.contains("shape=box"),
+        "{q}"
+    );
+    for word in ["\\nMISSING", "root after the cascade", "\\n≠ the cube"] {
+        assert!(!dot.contains(word), "{word}:\n{dot}");
+    }
+    let _ = std::fs::remove_dir_all(&root);
+}
+
+/// **Saturation is a move inside the cube.** On `05_mini_zebra` the describing
+/// run reads its maximal state from `{(co-located Bob Coffee), (co-located Bob
+/// Dog)}`, whose saturation derives `(co-located Coffee Dog)`: the commitment
+/// is transient with a `sat` arrow to its closure, the closure is the state,
+/// on the maximal line, and — compared by state — nothing is missing.
+#[test]
+fn a_reported_state_counts_as_the_node_its_saturation_lands_on() {
+    let root = scratch("moves");
+    let file = "examples/branching/05_mini_zebra.ein";
+    let cube = root.join("region");
+    dumped(file, &[], &cube);
+    let run = root.join("run");
+    ran(file, &[], &run);
+    let index = json(&run.join("answer/index.json"));
+    let state = index["region"]["states"]
+        .as_array()
+        .expect("states")
+        .iter()
+        .position(|s| s["from"] != s["closure"])
+        .expect("a state read from a commitment its saturation moves");
+    let s = &index["region"]["states"][state];
+    let strs = |v: &J| -> Vec<String> {
+        v.as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_str().unwrap().to_string())
+            .collect()
+    };
+    let (from, closure) = (strs(&s["from"]), strs(&s["closure"]));
+    let from = mask_of(&cube, &from.iter().map(String::as_str).collect::<Vec<_>>());
+    let closure = mask_of(
+        &cube,
+        &closure.iter().map(String::as_str).collect::<Vec<_>>(),
+    );
+    let region = json(&cube.join("region.json"));
+    assert_eq!(region["region"]["nodes"][closure as usize]["maximal"], true);
+    let dot = render_with(&cube, Some(&run), "lines");
+    assert!(
+        dot.contains(&format!("  m{from} -> m{closure} [color=\"#08519c\"")),
+        "the sat arrow:\n{dot}"
+    );
+    let tail = node_line(&dot, from);
+    assert!(
+        tail.contains("style=\"filled,rounded,dashed\"")
+            || tail.contains("style=\"filled,dashed\""),
+        "{tail}"
+    );
+    assert!(
+        tail.contains(&format!("from: state {}", state + 1)),
+        "{tail}"
+    );
+    let landed = node_line(&dot, closure);
+    assert!(landed.contains(&format!("state {}", state + 1)), "{landed}");
+    assert!(
+        landed.contains("shape=octagon") && !landed.contains("MISSING"),
+        "{landed}"
+    );
+    let _ = std::fs::remove_dir_all(&root);
+}
+
+/// **A run of another program** is refused, exit 1: its commitments are not
+/// the cube's nodes. So is an answer directory with no `index.json`.
+#[test]
+fn a_run_over_another_universe_is_an_error() {
+    let root = scratch("other");
+    let cube = root.join("region");
+    dumped(
+        "examples/branching/15_lookahead_two_step_on.ein",
+        &[],
+        &cube,
+    );
+    let run = root.join("run");
+    ran("examples/ein-bugs/wrong-answers/forced-2.ein", &[], &run);
+    let (c, l, a) = (
+        cube.to_string_lossy().into_owned(),
+        run.join("lattice").to_string_lossy().into_owned(),
+        run.join("answer").to_string_lossy().into_owned(),
+    );
+    for args in [
+        vec!["render", "region", &c, "--visited", &l],
+        vec!["render", "region", &c, "--answer", &a],
+    ] {
+        let r = ein(&args);
+        assert_eq!(r.code, 1, "{args:?}: {}", r.out);
+        assert!(
+            r.err.contains("not a run of the program the cube is of"),
+            "{}",
+            r.err
+        );
+        assert!(r.out.is_empty());
+    }
+    let r = ein(&["render", "region", &c, "--answer", &l]);
+    assert_eq!(r.code, 1);
+    assert!(r.err.contains("index.json"), "{}", r.err);
     let _ = std::fs::remove_dir_all(&root);
 }
 

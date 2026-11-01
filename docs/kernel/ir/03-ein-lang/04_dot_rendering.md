@@ -214,29 +214,44 @@ Fed a `LatticeSnapshotV1`
 the diagram is **order-stable across `lattice_order_seed`** (reuses the
 S1.5b.31 shuffle-invariance guarantee).
 
-## Region rendering — the cube and the walk (S1e2.1a.2)
+## Region rendering — the cube and a region run
 
-`ein render region DIR` draws a
-[`--dump-region`](../../inference/region_dump.md) directory: the hypothesis
-lattice with every node classified by saturation alone, and the run's walk
-over it. It reads `region.json` and `walk.json` and nothing else (no load, no
-solve), so the picture is of the run whose answer it shows. The join of the
-walk to the cube is
+<a id="region-rendering--the-cube-and-the-walk-s1e21a2"></a>
+
+`ein render region DIR` draws an [`ein oracle --dump`](../../inference/region_dump.md)
+directory: the hypothesis lattice with every node classified by saturation
+alone. **`--visited DIR`** and **`--answer DIR`** put an `ein solve` run on
+it, from that run's own [`--dump-lattice`](../../inference/lattice_dump.md#under-a-region-mode--nodesjson-and-nodesmd)
+(`nodes.json`, every node it visited) and
+[`--dump-answer`](../../inference/answer_dump.md) (`index.json`, every state
+it reported). It reads those files and nothing else (no load, no solve), so
+the picture is of the run whose answer it shows. The join of the run to the
+cube is
 [`ein_render::region_doc`](../../../../ein.rs/crates/ein-render/src/region_doc.rs)
 and the views are
 [`ein_render::region_dot`](../../../../ein.rs/crates/ein-render/src/region_dot.rs).
 M1e2
-[S1e2.1a.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.2_the_lattice_drawn.md).
+[S1e2.1a.2](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.2_the_lattice_drawn.md)
+drew the cube with the walk on it;
+[S1e2.1a.7](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md)
+replaced the walk with a region run, since no command has run the walk since
+S1e2.1a.5's switch.
 
 ```sh
-ein solve examples/branching/15_lookahead_two_step_on.ein -e --dump-region out/
-ein render region out/ | dot -Tsvg > region.svg     # --view auto|full|border|lines|table
+ein oracle examples/branching/15_lookahead_two_step_on.ein --dump cube/
+ein solve  examples/branching/15_lookahead_two_step_on.ein --maximal \
+    --dump-lattice run/lattice --dump-answer run/answer
+ein render region cube/ --visited run/lattice --answer run/answer | dot -Tsvg > region.svg
+#                       --view auto|full|border|lines|table
 ```
 
-A directory with no `walk.json` — what `ein oracle --dump DIR` writes since
-M1e2 S1e2.1a.9 — is drawn with **no run overlaid**: every node carries its
-status and nothing else, and the note says *no run overlaid (an `ein oracle`
-dump)* where it would name the walk.
+With neither option the cube is drawn with **no run overlaid**: every node
+carries its status and nothing else, and the title says *no run overlaid (an
+`ein oracle` dump alone)*. Either option alone draws its half. A run whose
+universe is not the cube's — another program, or another `--region-limit`'s
+candidates — is an error, exit 1, naming the file: its commitments would not
+be the cube's nodes. A directory written before the switch may also hold the
+walk's `walk.json`; it is not read since S1e2.1a.7.
 
 **The nodes are the pure cube.** Every subset `C` of the root candidates `H₁`
 is a node. There is one rank per layer, with `L0` at the top, and a thin edge
@@ -268,8 +283,8 @@ without being a position in the cube.
 | channel | says | values |
 |---|---|---|
 | **fill** | what the cube says | green **R** (alive, discharged; one colour per component when R has several); amber **owing**; salmon **dead**; a salmon-to-amber gradient for dead+owing |
-| **shape** | what the search did | **octagon**: a recorded state (model or open); **rounded box**: the search stood here (root, the root after the forced-positive cascade, an entering) or reached it by saturation; **ellipse**: never stood here, with the reason under the facts |
-| **border** | the lines and the defects | double: **R's minimal line**; heavy green: **R's maximal line**; purple: a **hole**; red: **MISSING**; magenta: **SPURIOUS**, an **unsound exclusion**, or the search's reading of a node against the cube's |
+| **shape** | what the run did | **octagon**: a state the run reported, or a node of an empty R's owing frontier; **rounded box**: a node the run visited; **ellipse**: neither, with the reason under the facts when the run's visits are known |
+| **border** | the lines and the defects | double: **R's minimal line**; heavy green: **R's maximal line**; purple: a **hole**; red: **MISSING**; orange: **not reached**; magenta: **SPURIOUS**, the run's reading of a node against the cube's, or an **unsound exclusion** |
 
 The lines are named *minimal* and *maximal*, never *top* or *bottom*, so a
 reader who flips the picture is not misled. With `L0` at the top, the maximal
@@ -291,55 +306,67 @@ line is the lower one.
 | absorbed | grey, dotted, no arrowhead | adds a fact saturation already derived |
 | `sat` | dark blue, heavy | `C ⇒ cl(C)`, layout-neutral (`constraint=false`) |
 | `+fact` | purple label | a **repair edge**: the fact that takes a hole back into R |
-| `✗ alive` | magenta, dashed | an unsound exclusion, to the smallest alive superset it pruned |
+| `✗ alive` | magenta, dashed | an unsound exclusion: from a dead node the run visited to an unvisited node above it the cube says is alive |
 | `+k` | grey, dashed | the `lines` view only: inclusion across `k` facts, the nodes between hidden |
 
 A node on the maximal line is one whose upward edges all leave R, so the
 picture shows why it is maximal. Every edge's tooltip names the fact it adds.
 
-### The walk, overlaid
+### A region run, overlaid
 
-The walk is joined to the cube by fact text (`region_doc::Overlay`). Each
-entering is placed on the node it **stood on**: its commitment plus every
-forced positive promoted before it, which `walk.json` times
-(`promotions[].after_enterings`). Each node then says what the run did with
-it:
+The run is joined to the cube by fact text (`region_doc::Overlay`): a
+commitment's node is the mask of its facts, and a reported state sits on its
+**closure**, the node its fixpoint's candidates make. Each node then says what
+the run did with it:
 
-- **recorded** model or open;
-- **root**, or **root after the cascade** (W2's move);
-- **entered** `alive` / `dead_pre` / `dead_post`;
-- **reached by saturation** (the search held its state without entering it);
-- or why the search never stood there, first match in this order:
-  - *outside the run's universe*;
-  - *pre-killed* (the lookahead or a root negative);
-  - *below the search's root* (it lacks a promoted fact);
-  - *element refuted* (a refuted singleton dropped from `alive`);
-  - *pruned by a clause*;
-  - *past -m*;
-  - *never generated* (the search stopped at `-n`, or no join proposed it).
+- **state N**: the run reported this node's state, numbered as stdout and
+  `models/NN.ein` number it (*dump only* when stdout's 100-line cut left it to
+  the directory); **frontier N, owes k** on an empty R of the owing kind;
+- **from: state N**: the commitment a state was read from, when its
+  saturation lands elsewhere — the `sat` arrow's tail;
+- **visited**: the run saturated this node, and its reading (`dead`, `owing`,
+  `in-r`) is in the tooltip;
+- or, when its visits are known, why it did not visit it: *above a dead node*
+  (a node it visited is dead and below this one — licence L1, *dead is
+  upward-closed*), *the run stopped first* (`-n`, `--single`, a budget), or
+  *not needed* by the question asked.
 
-**MISSING and SPURIOUS compare states, not masks.** Two nodes are one state
-when the oracle gave them one `class`. A recorded commitment whose saturation
-lands on a line node therefore records that node. A line node is **missing**
-when no recorded *model* is its state. A recorded model is **spurious**
-against a line when its state is on no node of it. Which line is *the* answer
-is S1e2.1a.3's ruling (a), so both are compared, and the legend says so.
+**What is compared follows S1e2.1a.3's ruling (a): the answer is R.** A run
+answers the part of R its question asked — all of it for a bare `ein solve`,
+one line for `--minimal` or `--maximal` (`asked.which`) — and the drawing
+compares the run with **that part**, by state:
 
-**Every exclusion is checked against the cube.** That covers each learned
-clause, each refuted singleton and each lookahead kill. It is sound exactly
-when every superset is dead. An unsound one is named, with the smallest alive
-superset it pruned. That is W3's mechanism made visible on
-`ein-bugs/wrong-answers/naf-nowb.ein`. A node whose entering the search called
-alive and the cube calls dead, or the reverse, is marked `≠ the cube`.
+- a node of the part asked is **MISSING** when no reported state is its state
+  (one oracle `class`) and the run says it is complete (`exhausted`). On a run
+  that stopped, the same node is **not reached**: a bound, not a defect
+  ([`solve_interface.md`](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)'s
+  C3);
+- a reported state is **SPURIOUS** when its state is no node of the part
+  asked: dead or owing in the cube, or in R and not on the line asked.
+
+Until S1e2.1a.7 the overlay was the walk's, which claimed to answer *the
+solutions*, and it compared the walk with each line separately because ruling
+(a) was not yet taken.
+
+**Every reading the run printed is checked against the cube.** A visited node
+whose kind or closure is not the cube's, a state printed on a line the cube
+does not put it on (C1), a line the run certified that leaves out a state on
+it (C2), a frontier node the cube does not call owing: each is marked `≠ the
+cube`, magenta, with what the two say. And every exclusion licence L1 would
+make is checked: an unvisited node above a dead one the run visited is
+**unsound** when the cube says it is alive, and the dead node carries a `✗
+alive` edge to it — W3's mechanism, which a region run does not have, since a
+program the static check flags takes the cube (route 2) and visits every
+node.
 
 ### Views
 
 | view | draws | `auto` picks it |
 |---|---|---|
 | `full` | every node and edge of the cube | `n ≤ 6` (64 nodes, 192 edges) |
-| `border` | R, its holes, every node one edge from R, the root, the recorded nodes, what an unsound exclusion pruned; the hidden nodes counted per layer in the rank column | while that is ≤ 64 nodes |
-| `lines` | the root, both lines, the holes, the recorded nodes, what an unsound exclusion pruned, and where saturation takes them; joined by inclusion. When R is empty, `N` and `E` instead of lines | past that |
-| `table` | every node as markdown, one section per layer: status, why, where saturation takes it, what the walk did | never (it is not DOT) |
+| `border` | R, its holes, every node one edge from R, the root, and what the run got wrong (a missing node, a spurious state, a node read otherwise, an unsound exclusion); the hidden nodes counted per layer in the rank column | while that is ≤ 64 nodes |
+| `lines` | the root, both lines, the holes, what the run got wrong, an owing frontier, and where saturation takes them; joined by inclusion. When R is empty, `N` and `E` instead of lines | past that |
+| `table` | every node as markdown, one section per layer: status, why, where saturation takes it, and with a run what it did. Each row carries `<a id="mMASK">`, so the head's lists of missing, spurious and `≠ the cube` nodes link to their rows, and a page that splits the table by layer keeps the anchors | never (it is not DOT) |
 
 A run of layers with nothing drawn is one rank label, not a column of empty
 ranks: `tests/stdlib/bijection/06_blind_enumeration.ein` (n = 16) draws R's one
@@ -349,7 +376,9 @@ bits (`#0 #3 #5`), and the legend lists the bits. The legend's lists are
 capped at twelve entries, and `--view table` has all of them.
 
 **The cutoffs were measured** (2026-10-15, release, every corpus file `ein solve
-FILE --dump-region` then every view through `dot`).
+FILE --dump-region` then every view through `dot`; the walk's overlay then, so
+a view's node count may differ by what a region run gets wrong, which on a
+correct engine is nothing).
 
 - **Corpus counts.** 178 dumps rendered with every view accepted by Graphviz.
   `auto` picks `full` for 139, `border` for 5 (largest 56 nodes), `lines` for 5
@@ -363,8 +392,11 @@ FILE --dump-region` then every view through `dot`).
 - **`lines` is unbounded.** It stayed under 41 nodes on every corpus program.
 
 `ein-cli/tests/region_render.rs` runs every view of nine programs through `dot
--Tsvg` (this page's standard, `dot_wellformed.rs`'s), holds `auto` to those
-cutoffs, and pins W1, W2, W3 and a saturation move as drawn.
+-Tsvg` (this page's standard, `dot_wellformed.rs`'s), with no run and with a
+bare `ein solve` on the cube, holds `auto` to those cutoffs, and pins W1, W2,
+W3 and a saturation move as drawn under a region run (S1e2.1a.7). A correct
+engine misses nothing, so the W1 and W3 tests write the walk's wrong answer
+into a copy of the run's dump and hold the drawing to naming it.
 
 **Sub-cubes** are listed under the drawing with their dimension and free
 facts. Each node's tooltip names the ones it is in. A sub-cube's outline is its

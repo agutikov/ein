@@ -24,9 +24,10 @@ wrote the cube beside the walk's own run, `walk.json`, so that a drawing could
 place each entering on the cube. S1e2.1a.9 gave `ein oracle --dump DIR` the
 same directory without a walk, and since the switch no command runs the walk:
 `--dump-region` and `--region-states` are refused with what replaced them
-(`ein oracle --dump`, `--states`), and `ein render region` draws a directory
-with no run overlaid. Drawing a *region* run on the cube is
-[S1e2.1a.7](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md)'s.
+(`ein oracle --dump`, `--states`). Since
+[S1e2.1a.7](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md)
+`ein render region DIR --visited … --answer …` draws a *region* run on the
+cube, from that run's own `--dump-lattice` and `--dump-answer`.
 
 ## The directory
 
@@ -116,8 +117,9 @@ either `region` with `refused: null`, or `region: null` with `refused`
 ## `walk.json` — until the switch
 
 `ein solve --dump-region` wrote it, and no command has since M1e2 S1e2.1a.5.
-It is described here because a directory dumped before the switch carries one,
-and `ein render region` still reads it when present.
+It is described here because a directory dumped before the switch carries one.
+`ein render region` read it until S1e2.1a.7, and does not since: a build of
+`7ec8a480`, the last whose `ein solve` ran the walk, draws such a directory.
 
 `schema`, `source`, `verdict` (`type`, `k`, `exhausted`, `monotone`),
 `bounds` (the run's `max_set_size` and `solutions`, `null` under `-e`),
@@ -136,15 +138,13 @@ and `ein render region` still reads it when present.
 
 A `state_mask` is `null` when a fact of the commitment is not a coordinate.
 
-Classifying the walk against the cube is
-[`ein render region DIR`](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-the-walk-s1e21a2)'s
-work (S1e2.1a.2). It marks each node entered, reached by saturation, pruned
-and why, never generated, missing or spurious, and checks every learned clause,
-refuted singleton and lookahead kill against the cube. `region.md` says, for
-each recorded node, where its state sits, and which members of each line no
-recorded model holds. Both compare **states** (`class`), not masks: a
-commitment whose saturation derives a candidate records its closure's
-state.
+Classifying the walk against the cube was `ein render region DIR`'s work
+from S1e2.1a.2 to S1e2.1a.7: it marked each node entered, reached by
+saturation, pruned and why, never generated, missing or spurious, and checked
+every learned clause, refuted singleton and lookahead kill against the cube.
+A *region* run is classified the same way since, by state (`class`), against
+the part of R it asked
+([§ Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)).
 
 ## Monotonicity — the static check
 
@@ -230,7 +230,7 @@ root's fixpoint.
 
 - [`answer_dump.md`](answer_dump.md): a run's answer, as files.
 - [`lattice_dump.md`](lattice_dump.md): every node a run visited.
-- [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-the-walk-s1e21a2):
-  this directory drawn, `ein render region`.
+- [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run):
+  this directory drawn, with a region run on it, `ein render region`.
 - [`solution_semantics.md`](solution_semantics.md): the definitions this
   computes.

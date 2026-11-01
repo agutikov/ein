@@ -37,6 +37,10 @@ node's firings are `--events`', which narrates every node visited, and the
 directory does not hold a second copy. Past its directory the flag is
 additive: stdout, stderr and the exit code are those of the run without it.
 The writer is [`ein_render::dump::region_lattice`](../../../ein.rs/crates/ein-render/src/dump/region_lattice.rs).
+`ein render region CUBE --visited DIR` draws the nodes on the oracle's cube,
+each read against it
+([§ Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run),
+S1e2.1a.7).
 
 The rest of this page is the walk's tree, which `ein solve --dump-lattice`
 wrote until S1e2.1a.5's switch took the walk off the CLI. It is reached from

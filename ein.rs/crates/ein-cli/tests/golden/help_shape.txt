@@ -43,8 +43,10 @@ COMMAND ein render program
   OPTION --rule-mode -- metavar=RULE_MODE arity=1 default='sidebyside' choices=sidebyside|overlay group=- required=False help=rule rendering: 'sidebyside' LHS|RHS clusters (default) or 'overlay' (LHS solid + RHS dashed)
   POSITIONAL file required=True help=
 COMMAND ein render region
-  ABOUT the solution region as a Hasse diagram: DIR is an `ein solve --dump-region` directory, drawn with that run's walk on it (docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
-  OPTION --view -- metavar=VIEW arity=1 default='auto' choices=auto|full|border|lines|table group=- required=False help='full' every node of the cube; 'border' R, its holes and every node one edge from it; 'lines' the root, both lines, the holes and the recorded nodes; 'table' every node as markdown, at any n; 'auto' (default) full up to n = 6, border up to 64 nodes, else lines
+  ABOUT the solution region as a Hasse diagram: DIR is an `ein oracle --dump` directory, drawn with a `solve` run on it when --visited or --answer names its dumps (docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
+  OPTION --answer -- metavar=DIR arity=1 default=None choices=- group=- required=False help=a `solve --dump-answer` directory: draw the states that run reported, against the part of R it asked (MISSING, SPURIOUS)
+  OPTION --view -- metavar=VIEW arity=1 default='auto' choices=auto|full|border|lines|table group=- required=False help='full' every node of the cube; 'border' R, its holes and every node one edge from it; 'lines' the root, both lines, the holes and what the run got wrong; 'table' every node as markdown, at any n; 'auto' (default) full up to n = 6, border up to 64 nodes, else lines
+  OPTION --visited -- metavar=DIR arity=1 default=None choices=- group=- required=False help=a `solve --dump-lattice` directory: draw the nodes that run visited, each read against the cube
   POSITIONAL dir required=True help=
 COMMAND ein render rule
   ABOUT a single rule's DOT, by name
