@@ -61,16 +61,17 @@ constrained-reasoning research.
   diagnostics, orderings and error strings the engine defines normatively;
   and `inference/implementation.md` + `ir/02-data-model/03_implementation.md`,
   the module maps. **Since M1e S1e.5.1 there is also a
-  [configuration reference](docs/kernel/configuration.md)** — the 8
-  `(config …)` flags a program can set (nine more retired at M1e2 S1e2.1a.5,
-  refused with why), the 69 CLI options, the eight `EIN_*` names the binary
-  actually reads, the precedence between the three, and on every flag row a
-  *does it change the answer* and a *stability* column. Its defaults block is
-  `ein solve --dump-config`'s own output (`EIN_BLESS=1` re-banks it), and two
-  of the seventeen flags are documented there as **inert**: `print-alive` and
-  `candidate-order-seed` are parsed, validated, dumped, `--json-summary`-echoed
-  and `.einb`-round-tripped, and read by no code path
-  ([Q-M1e.10](docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)).
+  [configuration reference](docs/kernel/configuration.md)** — the 7
+  `(config …)` flags a program can set (ten more retired, nine at M1e2
+  S1e2.1a.5 and one at S1e2.1a.6, each refused with the stage and why), the
+  69 CLI options, the eight `EIN_*` names the binary actually reads, the
+  precedence between the three, and on every flag row a *does it change the
+  answer* and a *stability* column. Its defaults block is `ein solve
+  --dump-config`'s own output (`EIN_BLESS=1` re-banks it). Two of the
+  seventeen fields, `print-alive` and `candidate-order-seed`, were **inert**,
+  read by no code path
+  ([Q-M1e.10](docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)),
+  until S1e2.1a.5 retired them.
   **Since M1e2 S1e2.1a.3 (2026-10-16) the answer is a region**:
   [`inference/solution_semantics.md`](docs/kernel/inference/solution_semantics.md)
   defines it as *R = the commitments whose state is alive and discharged*,
@@ -79,8 +80,12 @@ constrained-reasoning research.
   R, and the page's § 6 says where. The same stage gave `configuration.md` a
   § 2.5 and an `R?` column: *no config option changes R*, measured over every
   lever by `utils/region_census.py --levers`, and `enable-symmetric-mirror`
-  is the one flag that does. The user ruled it retired on 2026-11-01, and
-  S1e2.1a.6 removes it.
+  was the one flag that did. The user ruled it retired on 2026-11-01, and
+  S1e2.1a.6 retired it the same day: the mirror is always on, and the register
+  records the case as W13, fixed. **Since S1e2.1a.6 the config principle is a
+  test**: `ein-cli/tests/lever_invariance.rs` holds each mode's read-out and
+  summary under every lever to the default's, on every program whose R is
+  known, per commit.
   **S1e2.1a.9's route 1**
   ([`ein_infer::downset`](ein.rs/crates/ein-infer/src/downset.rs)) computes a
   monotone program's R from its alive set and N alone. It is held to the
@@ -101,7 +106,8 @@ constrained-reasoning research.
   the four verdict words are `--single`'s alone, every answer exits 0 and only
   a refuted claim exits 1, and
   [`corpus/wrong_answers.toml`](corpus/wrong_answers.toml) records 24 rows
-  fixed and 10 open, each saying why.
+  fixed and 10 open, each saying why. S1e2.1a.6 filed W13 and fixed it in the
+  same commit, so it reads 25 and 10.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -543,6 +549,7 @@ ein test examples tests stdlib --json-report r.json          # the M1d S1d.4.1 r
 ein solve … --dump-answer DIR                                # M1e2: the answer as files, each state loadable
 ein solve … --maximal | --minimal | --single | -n N --region-budget F   # M1e2: a question about R, the least work it needs
 ein oracle FILE [--dump DIR]                                 # M1e2: R by brute force, 2ⁿ saturations — the reference every mode is held to
+EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test lever_invariance   # M1e2: every mode under every lever, + the slow pair's cells
 ein render region DIR [--view full|border|lines|table]       # M1e2: an oracle dump drawn
 ein solve … --dump-lattice DIR                               # M1e2: every node the run visited (ein render lattice draws them)
 cargo run --release -p ein-infer --example route1_reach      # M1e2: route 1, R from the alive down-set, over the corpus

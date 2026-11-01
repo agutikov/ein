@@ -45,6 +45,12 @@ CLI path, nine options and nine config fields are retired, the query's `:over`
 and class claims landed with `ein-test-report/3`, and the register reads 24
 rows fixed and 10 open, each saying why. S1e2.1a.5 is done; S1e2.1a.6 and
 S1e2.1a.7 are next, and S1e2.1a.7 inherits the review bundle's re-point.
+**S1e2.1a.6 is done** (2026-11-01). `ein-cli/tests/lever_invariance.rs`
+holds every mode's read-out under every lever to the default's, per commit,
+with the slow pair's cells nightly. It found one lever that moved R,
+`enable-symmetric-mirror`, which is retired and filed as W13, fixed. It also
+found that the summary's `root` block still runs the walk's generator,
+surface S4, parked with the proposed P1e2.3. S1e2.1a.7 is next.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md) S1e2.1.1–6,
 which built the register, the doors and the bundle this phase extends.
 **Blocks:** the rest of the review,
@@ -178,7 +184,7 @@ Taken 2026-10-15 against `caef67a`.
 | [S1e2.1a.9](s1e2.1a.9_solve_describes_the_region.md) | `ein solve` describes the region | 4 d | the user's default of 2026-10-16: no flag means R in full, certified. Route 1 is a monotone program's alive down-set, held to the oracle node for node; route 2 is the oracle at n ≤ the limit; past both, a partial description with bounds and no walk. The flags *any*, *single*, *minimal* and *maximal* on two axes. **Done 2026-10-16** apart from the switch: route 1 (`ein_infer::downset`) and its reach; the flags ruled and the interface ([`solve_interface.md`](solve_interface.md)) approved, with no `ein walk`; T1e2.1a.9.4's additive half, which is `ein_infer::explore`, the region flags, `ein oracle`, and every mode held to the oracle. The retirements and the golden move are S1e2.1a.5's |
 | [S1e2.1a.10](s1e2.1a.10_the_register_under_r.md) | The register under R, before the switch | 1.5 d | the walk's last census, every declared run and lever cell against R, while the walk can still be run; every walk wrong answer with no row filed: the census of 2026-10-16 ([`walk_census.md`](walk_census.md)) found 8 programs with no row, two of them new, and 17 twins; every `right` block restated under R, computed by the oracle or route 1, with no hand derivation left, and held by a test; W9 and W11 reversed; W1 re-read. Taken from S1e2.1a.6 and S1e2.1a.7 on 2026-10-16. **Done 2026-10-16**: 34 rows, each with its witness's `[case.region]` held to `explore` by `ein-infer/tests/register_region.rs`; 25 right answers are R's maximal line, two restated (W11/d3, W12), W1's confirmation stands |
 | [S1e2.1a.5](s1e2.1a.5_the_read_out.md) | The read-out speaks R, and the default switches | 2 d, re-estimated 5 | **Done 2026-10-18.** k_s and k_c replace `k` (a), (e); the default read-out describes R, and the verdict words judge a stated expectation (i), from a flag or from the program; every surface says what it counts; empty R split into its two kinds; holes through the stub. **The switch**, in one commit: bare `ein solve` describes R, the nine options and nine config fields retire, the last path to the walk goes, `ein oracle` gets its other five options, the corpus, the summaries and the register's runs move (one `[case.now]` per row, 34), and 24 rows flip to `fixed`. Every golden named before it moves |
-| [S1e2.1a.6](s1e2.1a.6_engine_against_oracle.md) | The engine against the oracle, under every lever | 1 d | the modes' answers held to R under every lever cell the corpus declares (C4), now that the walk's levers are the modes'; the `enable-symmetric-mirror` row. *The engine equals the oracle* at default levers is already `explore.rs`'s test, and the walk's census is S1e2.1a.10's |
+| [S1e2.1a.6](s1e2.1a.6_engine_against_oracle.md) | The engine against the oracle, under every lever | 1 d | the modes' answers held to R under every lever cell the corpus declares (C4), now that the walk's levers are the modes'; the `enable-symmetric-mirror` row. *The engine equals the oracle* at default levers is already `explore.rs`'s test, and the walk's census is S1e2.1a.10's. **Done 2026-11-01**: `lever_invariance.rs`, every declared cell and the three `EIN_*` levers through the binary and every settable flag in-process, on every program whose R is known, under all fifteen questions, 14 s per commit and the slow pair nightly; the mirror flag retired, W13 filed fixed; S4 re-found and parked |
 | [S1e2.1a.7](s1e2.1a.7_the_bundle_shows_r.md) | The bundle shows R, and the review resumes | 1 d | a § *The region* on every case page and in `--corpus` mode; S1e2.1.7 resumes on the twelve unread cases |
 
 **Work order: .1, .2, .8, .3, .9 (done), then .4 and .10 in parallel, .5, .6,
@@ -248,7 +254,9 @@ among them, is the re-scoping P1e2.1c's last stage does.
   overlaid. **Missing** (on R's reported line, not recorded) and **spurious**
   (recorded, not on that line) are named.
 - **No config option changes R.** `configuration.md` says so, and S1e2.1a.6's
-  test checks every lever over every entry the oracle reaches. A lever that
+  test checks every lever over every entry the oracle reaches.
+  `lever_invariance.rs` does, over every program whose R is known, since
+  2026-11-01. A lever that
   changes the answer is a register row, not a *weaker mode*.
 - **A program can state a region**, and `ein test` checks the statement.
 - `./run_tests.sh` green at every stage boundary. Every golden a stage moves

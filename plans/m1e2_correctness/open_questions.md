@@ -136,6 +136,19 @@ each re-checked on its witness against the region read-out:
 
 So the question is now P1's alone.
 
+**Note, 2026-11-01 — S4 is not gone.** S1e2.1a.6's lever test
+(`ein-cli/tests/lever_invariance.rs`) found that the note above read it on
+`zebra2`, where the two agree. `summary::root_block` still runs the walk's
+`hypgen::generate` on a fork of root, which reads the program's lookahead and
+kill-cache flags and `EIN_OBLIGATION_CHOICE`, and counts root's facts after
+it. On `branching/02_one_dead_one_alive.ein` `-H` lists 48 candidates and
+`root.hypgen.emitted` says 30, and `root.facts` says 27 where root's fixpoint
+holds 23, the other four being the kill cache's `(not h)` writes. The block
+moves with the program's flags on 19 programs, and `-L` and `-K` leave it
+alone. No answer moves. The witnesses and the reproduction are in
+[the README beside S4's row](README.md#p1e23--surfaces-that-misreport-the-answer-proposed).
+So the question is P1's and S4's.
+
 ## Q-M1e2.7 — The answer is a region of the lattice
 
 **A reading given 2026-10-15**, by the user, in the review of W1
