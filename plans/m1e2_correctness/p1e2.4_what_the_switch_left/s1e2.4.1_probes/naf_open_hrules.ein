@@ -1,0 +1,37 @@
+;;; S1e2.4.1 probe, written from `examples/ein-bugs/naf-upward-closure.ein`.
+;;;
+;;; `naf_open.ein` plus two hrules that put `(p A)` and `(q A)` back in the
+;;; universe. R is today's, 3 states, and the `:expect` below is today's R
+;;; copied from `ein solve examples/ein-bugs/naf-upward-closure.ein`. `{(p
+;;; A)}` now OWES rather than dies, and the program is still flagged: an
+;;; obligation's trigger is a site too.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein solve plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/naf_open_hrules.ein
+
+(relation is-a T T)
+(relation p T)
+(relation q T)
+
+(is-a A T)
+
+(hrule guess-p () :match (is-a ?x T) :assert (p ?x))
+(hrule guess-q () :match (is-a ?x T) :assert (q ?x))
+
+(rule bad-owed ()
+  :match  (and (p ?x) (absent (and (q ?y) (eq ?y ?x))))
+  :assert (open q)
+  :why    "{?x} has p without q"
+  :priority 500)
+
+(solve
+  :expect (region
+    ;; state 1 of 3 — ∅, root itself · minimal
+    (model)
+    ;; state 2 of 3 — 1 candidate · from {(q A)}
+    (model (q A))
+    ;; state 3 of 3 — 2 candidates · maximal · from {(p A), (q A)}
+    (model (p A) (q A))))
+
+(query
+  :goal   (is-a ?x T))

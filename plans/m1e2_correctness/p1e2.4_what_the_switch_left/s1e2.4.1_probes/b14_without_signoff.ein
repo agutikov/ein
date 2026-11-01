@@ -1,0 +1,39 @@
+;;; S1e2.4.1 probe, written from `examples/branching/14_lookahead_unjudgeable.ein`.
+;;;
+;;; `premature-signoff` deleted. No node of the cube is dead by it: R is
+;;; unchanged, 3 states (the `:expect` is the original's R), and the program
+;;; is monotone.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein solve plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/b14_without_signoff.ein
+
+(config :enable-pre-branch-lookahead true)
+
+(relation pending      T)
+(relation needs-review T)
+(relation waived       T)
+(relation signed       T)
+
+(rule auto-sign ()
+  :match  (and (pending ?y) (waived ?y))
+  :assert (signed ?y)
+  :why    "{?y} is waived, so it is signed"
+  :priority 100)
+
+(pending      B :source "(1)")
+(needs-review B :source "(2)")
+
+(solve
+  :expect (region
+    ;; state 1 of 3 — ∅, root itself · minimal
+    (model)
+    ;; state 2 of 3 — 1 candidate · from {(signed B)}
+    (model (signed B))
+    ;; state 3 of 3 — 2 candidates · maximal · 2 commitments, 1 minimal
+    (model (signed B) (waived B))
+    ;; state 3 is reached by 2 commitments; its 1 minimal
+    (merged (model (signed B) (waived B))
+            (model (waived B)))))
+
+(query
+  :goal (signed ?x))

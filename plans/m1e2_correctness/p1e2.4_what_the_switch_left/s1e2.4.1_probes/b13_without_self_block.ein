@@ -1,0 +1,39 @@
+;;; S1e2.4.1 probe, written from `examples/branching/13_lookahead_naf_world.ein`.
+;;;
+;;; `self-block` deleted. Its `:match`, `(cand ?x)` and `(absent (cand ?x))`,
+;;; cannot hold in one world, so it never fires: R is unchanged, 3 states
+;;; (the `:expect` is the original's R), and the program is monotone.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein solve plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/b13_without_self_block.ein
+
+(config :enable-pre-branch-lookahead true)
+
+(relation ok      T)
+(relation blessed T)
+(relation cand    T)
+
+(rule promote ()
+  :match  (and (ok ?x) (blessed ?x))
+  :assert (cand ?x)
+  :why    "{?x} is ok and blessed, so it is a candidate"
+  :priority 100)
+
+(ok      A :source "(1)")
+(ok      B :source "(2)")
+(blessed A :source "(3)")
+
+(solve
+  :expect (region
+    ;; state 1 of 3 — ∅, root itself · minimal
+    (model (blessed A) (cand A))
+    ;; state 2 of 3 — 1 candidate · from {(cand B)}
+    (model (blessed A) (cand A) (cand B))
+    ;; state 3 of 3 — 2 candidates · maximal · 2 commitments, 1 minimal
+    (model (blessed A) (blessed B) (cand A) (cand B))
+    ;; state 3 is reached by 2 commitments; its 1 minimal
+    (merged (model (blessed A) (blessed B) (cand A) (cand B))
+            (model (blessed B)))))
+
+(query
+  :goal (cand ?x))

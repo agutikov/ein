@@ -1,0 +1,30 @@
+;;; S1e2.4.1 probe — a dead node with an alive superset, where the refuting rule
+;;; has no `absent` of its own. `clash` reads `p`; `p` is derived under
+;;; `(absent (q ?x))`. {(r one), (s one)} is dead, {(q one), (r one), (s one)}
+;;; is alive. S1e.2.3's warning and a per-rule check both miss it: the
+;;; refutation rests on the absent through a derived relation.
+;;; Re-take: ein oracle plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein
+
+(relation thing T)
+(relation s T)
+(relation q T)
+(relation r T)
+(relation p T)
+
+(thing one)
+
+(hrule guess-s () :match (thing ?x) :assert (s ?x))
+(hrule guess-q () :match (thing ?x) :assert (q ?x))
+(hrule guess-r () :match (thing ?x) :assert (r ?x))
+
+(rule derive-p ()
+  :match  (and (s ?x) (absent (q ?x)))
+  :assert (p ?x)
+  :priority 200)
+
+(rule clash ()
+  :match  (and (p ?x) (r ?x))
+  :assert (false)
+  :priority 300)
+
+(query :goal (s ?x))

@@ -1,0 +1,23 @@
+;;; S1e2.4.1 probe, written from `examples/ein-bugs/naf-upward-closure.ein`.
+;;;
+;;; `bad` over a STORED negative, `total`'s form: `(absent (q ?x))` → `(not (q
+;;; ?x))`. Nothing stores `(not (q A))`, so the rule never fires: R grows from
+;;; 3 states to 4 and the program is monotone.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein solve plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/naf_stored_negative.ein
+
+(relation is-a T T)
+(relation p T)
+(relation q T)
+
+(is-a A T)
+
+(rule bad ()
+  :match  (and (p ?x) (not (q ?x)))
+  :assert (false)
+  :why    "{?x} has p without q"
+  :priority 200)
+
+(query
+  :goal   (is-a ?x T))

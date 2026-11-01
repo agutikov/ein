@@ -1,0 +1,118 @@
+;;; S1e2.4.1 probe, written from `examples/lattice/synth/three_components.ein`.
+;;;
+;;; Its two refutations under an `absent`, `dead-3` and `dead-7`, written as
+;;; obligations in `region_synth.py`'s own `need` idiom. The `:expect` is the
+;;; original's R, copied from `ein solve` on it: the same 13 states, the holes
+;;; `{A,F}` and `{A,G}` owing instead of dead.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein solve plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/three_components_owe.ein
+
+(relation h T)
+(relation slot T)
+(relation world T)
+(relation need T T)
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E) (slot F) (slot G)
+
+(need K1 C) (need K1 F) (need K1 G) (need K3 B) (need K7 D)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule dead-1 ()
+  :match  (and (h A) (h C))
+  :assert (false)
+  :why    "A C is dead"
+  :priority 300)
+
+(rule dead-2 ()
+  :match  (and (h B) (h C))
+  :assert (false)
+  :why    "B C is dead"
+  :priority 300)
+
+(rule owe-dead-3 ()
+  :match  (and (h A) (h F) (absent (and (need K3 ?y) (h ?y))))
+  :assert (open h)
+  :why    "A F is dead while B is missing"
+  :priority 300)
+
+(rule dead-4 ()
+  :match  (and (h C) (h F))
+  :assert (false)
+  :why    "C F is dead"
+  :priority 300)
+
+(rule dead-5 ()
+  :match  (and (h D) (h F))
+  :assert (false)
+  :why    "D F is dead"
+  :priority 300)
+
+(rule dead-6 ()
+  :match  (and (h E) (h F))
+  :assert (false)
+  :why    "E F is dead"
+  :priority 300)
+
+(rule owe-dead-7 ()
+  :match  (and (h A) (h G) (absent (and (need K7 ?y) (h ?y))))
+  :assert (open h)
+  :why    "A G is dead while D is missing"
+  :priority 300)
+
+(rule dead-8 ()
+  :match  (and (h C) (h G))
+  :assert (false)
+  :why    "C G is dead"
+  :priority 300)
+
+(rule dead-9 ()
+  :match  (and (h E) (h G))
+  :assert (false)
+  :why    "E G is dead"
+  :priority 300)
+
+(rule dead-10 ()
+  :match  (and (h F) (h G))
+  :assert (false)
+  :why    "F G is dead"
+  :priority 300)
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of C F G is required"
+  :priority 500)
+
+(solve
+  :expect (region
+    ;; state 1 of 13 — 1 candidate · minimal · from {(h C)}
+    (model (h C))
+    ;; state 2 of 13 — 1 candidate · minimal · from {(h F)}
+    (model (h F))
+    ;; state 3 of 13 — 1 candidate · minimal · from {(h G)}
+    (model (h G))
+    ;; state 4 of 13 — 2 candidates · from {(h B), (h F)}
+    (model (h B) (h F))
+    ;; state 5 of 13 — 2 candidates · from {(h B), (h G)}
+    (model (h B) (h G))
+    ;; state 6 of 13 — 2 candidates · from {(h C), (h D)}
+    (model (h C) (h D))
+    ;; state 7 of 13 — 2 candidates · from {(h C), (h E)}
+    (model (h C) (h E))
+    ;; state 8 of 13 — 2 candidates · from {(h D), (h G)}
+    (model (h D) (h G))
+    ;; state 9 of 13 — 3 candidates · maximal · from {(h A), (h B), (h F)}
+    (model (h A) (h B) (h F))
+    ;; state 10 of 13 — 3 candidates · from {(h A), (h D), (h G)}
+    (model (h A) (h D) (h G))
+    ;; state 11 of 13 — 3 candidates · from {(h B), (h D), (h G)}
+    (model (h B) (h D) (h G))
+    ;; state 12 of 13 — 3 candidates · maximal · from {(h C), (h D), (h E)}
+    (model (h C) (h D) (h E))
+    ;; state 13 of 13 — 4 candidates · maximal · from {(h A), (h B), (h D), (h G)}
+    (model (h A) (h B) (h D) (h G))))
+
+(query :goal (h ?x))

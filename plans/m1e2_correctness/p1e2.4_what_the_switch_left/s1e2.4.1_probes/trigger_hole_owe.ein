@@ -1,0 +1,67 @@
+;;; S1e2.4.1 probe, written from `examples/lattice/synth/trigger_hole.ein`.
+;;;
+;;; `dead-1` and `dead-2` written as obligations in the `need` idiom
+;;; (`dead-1`'s two absents become one witness set {B, E}). The `:expect` is
+;;; the original's R: the same 9 states and 7 holes, every hole now owing.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein solve plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/trigger_hole_owe.ein
+
+(relation h T)
+(relation slot T)
+(relation world T)
+(relation need T T)
+
+(world W)
+(slot A) (slot B) (slot C) (slot D) (slot E)
+
+(need K1 A) (need K2 C) (need K3 B) (need K3 E) (need K4 E)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-dead-1 ()
+  :match  (and (h A) (h D) (absent (and (need K3 ?y) (h ?y))))
+  :assert (open h)
+  :why    "A D is dead while B and E are missing"
+  :priority 300)
+
+(rule owe-dead-2 ()
+  :match  (and (h A) (h C) (h D) (absent (and (need K4 ?y) (h ?y))))
+  :assert (open h)
+  :why    "A C D is dead while E is missing"
+  :priority 300)
+
+(rule owe-1 ()
+  :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "from the start: one of A is required"
+  :priority 500)
+
+(rule owe-2 ()
+  :match  (and (h B) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of C is required"
+  :priority 500)
+
+(solve
+  :expect (region
+    ;; state 1 of 9 — 1 candidate · minimal · from {(h A)}
+    (model (h A))
+    ;; state 2 of 9 — 2 candidates · from {(h A), (h C)}
+    (model (h A) (h C))
+    ;; state 3 of 9 — 2 candidates · from {(h A), (h E)}
+    (model (h A) (h E))
+    ;; state 4 of 9 — 3 candidates · from {(h A), (h B), (h C)}
+    (model (h A) (h B) (h C))
+    ;; state 5 of 9 — 3 candidates · from {(h A), (h C), (h E)}
+    (model (h A) (h C) (h E))
+    ;; state 6 of 9 — 3 candidates · from {(h A), (h D), (h E)}
+    (model (h A) (h D) (h E))
+    ;; state 7 of 9 — 4 candidates · from {(h A), (h B), (h C), (h E)}
+    (model (h A) (h B) (h C) (h E))
+    ;; state 8 of 9 — 4 candidates · from {(h A), (h C), (h D), (h E)}
+    (model (h A) (h C) (h D) (h E))
+    ;; state 9 of 9 — 5 candidates · maximal · from {(h A), (h B), (h C), (h D), (h E)}
+    (model (h A) (h B) (h C) (h D) (h E))))
+
+(query :goal (h ?x))

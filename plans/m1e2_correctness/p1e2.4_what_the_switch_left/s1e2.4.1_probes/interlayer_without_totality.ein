@@ -1,0 +1,73 @@
+;;; S1e2.4.1 probe, written from `examples/ein-bugs/alive-empty-interlayer.ein`.
+;;;
+;;; `totality` deleted. It needs a stored `(not (p Z))`, which only the walk's
+;;; kill cache wrote; no node of the cube holds one, so R is unchanged (its
+;;; own `:expect` still holds) and the program is monotone.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein solve plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/interlayer_without_totality.ein
+
+;;
+;; `phase2` recomputed `alive` after a layer, found it empty, and recorded root
+;; — which by then held this layer's singleton writeback `(not (p Z))` and the
+;; kill cache's `(not (p A))` / `(not (p B))`, all written after root's last
+;; saturation. `totality` matched that state and had not fired.
+;;
+;; Three enterings, one layer. The recorded state was
+;; `(is-a A T) (is-a B T) (is-a Z T) (not (p A)) (not (p B)) (not (p Z))`; feed
+;; it back as a program and this engine answered `Contradiction` on it.
+;;
+;; `record_node` now re-saturates a KB written since its last saturation and
+;; declines to record one its own rules refute, so this file answers
+;; `Contradiction` — the `-L` column, and the hand derivation: `{(p Z)}` dies,
+;; so `(not (p Z))` is entailed; `mutex` then refutes every state holding any
+;; `(p ?x)` and `totality` refutes the state holding none.
+;;
+;; **`-K` does not repair the old behaviour here** — the trigger is the
+;; singleton writeback, not the cache — which is what made this the harder of
+;; the two witnesses and why both were banked.
+;;
+;; ── The `:expect`, and Q-M1e.13 ───────────────────────────────────────────
+;;
+;; The banked claim named `is-a` because the recorded model contained no `p`
+;; fact and an expectation must name the goal's relations (Q-M1e.13).
+;; `(false)` names nothing, so the goal goes back to the question the file is
+;; about. Q-M1e.13 itself is still open.
+
+(relation is-a T T)
+(relation p T)
+(relation bad T)
+
+(is-a A T) (is-a B T) (is-a Z T)
+
+(hrule guess () :match (is-a ?x T) :assert (p ?x) :why "guess (p {?x})")
+
+;; (p Z) dies in TWO steps, so the one-step pre-branch lookahead cannot see it
+;; and it survives into the layer as an entering. Z sorts last, so its
+;; entering is the layer's last and the two survivors are entered against a
+;; root that has not grown yet.
+(rule taint () :match (p Z)   :assert (bad Z) :priority 200)
+(rule kill  () :match (bad Z) :assert (false) :priority 300)
+
+;; Once Z is refuted, nothing may have p — ONE step from any (p ?x), which is
+;; what empties `alive` on the recompute.
+(rule mutex ()
+  :match  (and (not (p Z)) (p ?x))
+  :assert (false)
+  :priority 350)
+
+;; Totality as a saturation refutation: something must have p. Dormant at
+;; phase 1 (no negative yet) and dormant in every fork entered before the
+;; writeback landed — so the two live branches are genuinely alive.
+(solve :expect (region
+                 ;; state 1 of 4 — ∅, root itself · minimal
+                 (model)
+                 ;; state 2 of 4 — 1 candidate · from {(p A)}
+                 (model (p A))
+                 ;; state 3 of 4 — 1 candidate · from {(p B)}
+                 (model (p B))
+                 ;; state 4 of 4 — 2 candidates · maximal · from {(p A), (p B)}
+                 (model (p A) (p B))))
+
+(query
+  :goal   (p ?x))

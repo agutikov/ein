@@ -1,0 +1,25 @@
+;;; S1e2.4.1 probe, written from `examples/ein-bugs/naf-upward-closure.ein`.
+;;;
+;;; `bad` as a requirement, `(open q)`. The loader refuses a ground
+;;; obligation, so the witness goes through `?y` and `eq`. With an obligation
+;;; and no hrule the generator's rung is the obligations', which proposes only
+;;; what a state owes; root owes nothing, so the universe is empty and R is
+;;; {∅}.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein solve plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/naf_open.ein
+
+(relation is-a T T)
+(relation p T)
+(relation q T)
+
+(is-a A T)
+
+(rule bad-owed ()
+  :match  (and (p ?x) (absent (and (q ?y) (eq ?y ?x))))
+  :assert (open q)
+  :why    "{?x} has p without q"
+  :priority 500)
+
+(query
+  :goal   (is-a ?x T))
