@@ -6,11 +6,12 @@ Every corpus program's region, surveyed, and a page for the ones worth
 reading: the **synthetic** programs `utils/region_synth.py` wrote for a chosen
 region, the **biggest** regions, and the **most interesting**, each one named
 for why. The survey runs `ein oracle FILE --dump` on each program and reads the
-numbers off `region.json` and `ein render region --view table`'s summary: the
-script sorts and links, and computes no region of its own. A program's page
-runs its corpus entry's first declared `solve` (or plain `solve`, which
-describes R). Since S1e2.1a.5's switch there is no walk to set against the
-cube: every mode is held to the oracle by `ein-infer/tests/explore.rs`.
+numbers off `region.json`: the script sorts and links, and computes no region
+of its own. A program's page runs its corpus entry's first declared `solve`
+(or plain `solve`, which describes R), and its § The region draws that run on
+the cube (S1e2.1a.7). Every mode is held to the oracle by
+`ein-infer/tests/explore.rs`; the page's drawing and its cross-check 7 say
+what this run did.
 
     DIR/README.md                       the gallery: the three sections, then every region
     DIR/programs/<path>/README.md       one program, every artefact (utils/review_bundle.py's program page)
@@ -20,7 +21,6 @@ cube: every mode is held to the oracle by `ein-infer/tests/explore.rs`.
 from __future__ import annotations
 
 import json
-import re
 import shutil
 import tempfile
 import tomllib
@@ -51,22 +51,6 @@ def corpus_entries() -> list[tuple[str, list[str]]]:
     return out
 
 
-def summary_of(table_md: str) -> dict:
-    """The table view's head, as fields: its lines say what the overlay found."""
-    s: dict = {}
-    for line in table_md.splitlines():
-        if line.startswith("| bit |"):
-            break
-        m = re.match(r"- \*\*(minimal|maximal) line\*\* (.*) — missing (.*); spurious (.*)$", line)
-        if m:
-            s[m.group(1)] = (m.group(2), m.group(3), m.group(4))
-        m = re.match(r"- \*\*exclusions\*\* (\d+) checked, (\d+) unsound", line)
-        if m:
-            s["exclusions"] = (int(m.group(1)), int(m.group(2)))
-    s["disagree"] = table_md.count("≠ the search") + table_md.count("**≠ ")
-    return s
-
-
 def survey(bin: str, tmp: Path) -> list[dict]:
     rows = []
     for path, flags in corpus_entries():
@@ -89,7 +73,6 @@ def survey(bin: str, tmp: Path) -> list[dict]:
             rows.append(row)
             continue
         nodes = r["nodes"]
-        t = run("table", [bin, "render", "region", str(d), "--view", "table"], timeout=SURVEY_TIMEOUT)
         row.update(
             size=r["size"], minimal=len(r["minimal"]), maximal=len(r["maximal"]), holes=len(r["holes"]),
             components=len(r["components"]),
@@ -98,8 +81,7 @@ def survey(bin: str, tmp: Path) -> list[dict]:
             dead=sum(x["status"].startswith("dead") for x in nodes),
             moved=sum(not x["status"].startswith("dead") and x.get("closure", x["mask"]) != x["mask"] for x in nodes),
             local=len(r["local_max"]) + len(r["local_min"]),
-            monotone=region["monotonicity"]["monotone"],
-            **{"overlay": summary_of(t.stdout)})
+            monotone=region["monotonicity"]["monotone"])
         shutil.rmtree(d, ignore_errors=True)
         rows.append(row)
     return rows
@@ -122,10 +104,6 @@ def tags(row: dict) -> list[str]:
         out.append("local ≠ global")
     if row["minimal"] > 1 and row["maximal"] > 1:
         out.append(f"{row['minimal']} minimal × {row['maximal']} maximal")
-    ov = row.get("overlay", {})
-    uns = ov.get("exclusions", (0, 0))[1]
-    if uns:
-        out.append(f"{uns} unsound exclusion(s)")
     if row["size"] == 0 and row["owing"]:
         out.append("R empty, owing")
     return out
@@ -216,7 +194,7 @@ def cmd_regions(out: Path, bin: str) -> int:
     lines = ["# The region gallery", "",
              f"> Every corpus program's region — {len(have)} computed, {len(rows) - len(have)} not — and a page for the ones "
              f"worth reading. Built by `python3 utils/review_bundle.py --regions` (M1e2 S1e2.1a.8). The legend is "
-             f"[§ Region rendering]({doc('docs/kernel/ir/03-ein-lang/04_dot_rendering.md', index)}#region-rendering--the-cube-and-the-walk-s1e21a2); "
+             f"[§ Region rendering]({doc('docs/kernel/ir/03-ein-lang/04_dot_rendering.md', index)}#region-rendering--the-cube-and-a-region-run); "
              f"the raw survey is [`survey.json`](survey.json). Each region is `ein oracle --dump`'s; each program "
              f"page runs the corpus entry's first declared `solve`.", ""]
     for title, what, group in [
@@ -225,7 +203,7 @@ def cmd_regions(out: Path, bin: str) -> int:
              "to each target node for node; each page also carries the right answer, by construction, as files.", synth),
             ("The biggest", f"The {BIGGEST} largest regions, twins merged (same n, |R|, lines and counts).", biggest),
             ("The most interesting", "Every other region with two or more of: holes, several components, not monotone, "
-             "saturation moves, local ≠ global, several nodes on both lines, an unsound exclusion.", interesting)]:
+             "saturation moves, local ≠ global, several nodes on both lines.", interesting)]:
         lines += [f"## {title}", "", what, ""]
         lines += table(head, [row_of(r) for r in group]) + [""]
         for r in group:

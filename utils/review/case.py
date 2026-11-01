@@ -6,7 +6,8 @@ twins, the right answer no run produced, and since S1e2.1a.5's switch
 question. The walk has no CLI path since the switch, so its blocks are the
 register's **record** of what it said, shown as data and not run; the one run
 is `now`, a S1e2.1.5 run directory under `runs/now/`. The case page compares
-the columns and never re-renders a run. The line is `utils/README.md`
+the columns and never re-renders a run, and its § 5 The region (S1e2.1a.7)
+draws the run on the oracle's cube. The line is `utils/README.md`
 § Renderers': `ein` writes for one run, and this script, which needs several
 answers, the register and Graphviz, assembles.
 
@@ -26,8 +27,8 @@ from datetime import date
 from pathlib import Path
 
 from review.run import (RunResult, RunSpec, _safe, asked_text, build_run, call_to_fact, diff_block, grids_from,
-                        set_text, state_files, state_href, verdict_block, yes)
-from review.util import REPO, details, doc, read, rel, run, table, write
+                        node_links, overlay_head, set_text, state_files, state_href, verdict_block, yes)
+from review.util import REPO, details, doc, load_json, read, rel, run, table, write
 
 REGISTER = REPO / "corpus/wrong_answers.toml"
 
@@ -175,40 +176,204 @@ def look(r: RunResult, pointer: str, page: Path) -> str:
     return f"[`{pointer}`]({rel(target, page)}{anchor})"
 
 
-# ── the lattice ───────────────────────────────────────────────────────────────
+# ── the region ────────────────────────────────────────────────────────────────
 
-def lattice_block(cols: list, page: Path) -> list[str]:
-    """The cube, drawn (S1e2.1a.2): `ein oracle --dump`'s directory as
-    `pages/region/` holds it, linked to that page. No run is overlaid on it
-    since the switch; § The region, which compares R with the register's
-    lines, is S1e2.1a.7's."""
-    out = ["**The lattice** — every node of the commitment cube by saturation alone, `ein oracle --dump` "
-           f"([legend]({doc('docs/kernel/ir/03-ein-lang/04_dot_rendering.md', page)}#region-rendering--the-cube-and-the-walk-s1e21a2)):", ""]
-    any_drawn = False
-    for c in cols:
-        if c.result is None:
-            continue
-        svg = c.result.out / "img" / "region" / "region.svg"
-        index = c.result.out / "pages" / "region" / "index.md"
+# States written into one cell of § The region's tables; the run's answer page
+# has every one.
+STATES_IN_A_CELL = 20
+
+LEGEND = "docs/kernel/ir/03-ein-lang/04_dot_rendering.md"
+
+
+def sets_cell(sets, link=None) -> str:
+    """Fact sets as one cell, capped: `∅ · {(p A)}`."""
+    if sets is None:
+        return "—"
+    if not sets:
+        return "none"
+    shown = " · ".join(set_text(x) for x in sets[:STATES_IN_A_CELL])
+    more = len(sets) - STATES_IN_A_CELL
+    return shown + (f" · … {more} more" + (f" ([all]({link}))" if link else "") if more > 0 else "")
+
+
+def now_states(r: RunResult, page: Path, line: str | None) -> str:
+    """The run's states on `line` (every state for None), each linked to its
+    section of the answer page, by closure — the cube's vocabulary."""
+    states = [(i, x) for i, x in enumerate(((r.summary or {}).get("region") or {}).get("states") or [])
+              if line is None or line in (x.get("lines") or [])]
+    if not states:
+        return "none"
+    cells = []
+    for i, x in states[:STATES_IN_A_CELL]:
+        href = state_href(r.out, i + 1, page)
+        name = f"state {i + 1}" + ("" if x.get("listed") else " (dump only)")
+        cells.append((f"[{name}]({href})" if href else name) + f" {set_text(x.get('closure'))}")
+    more = len(states) - STATES_IN_A_CELL
+    answer = r.out / "pages" / "answer.md"
+    return "<br>".join(cells) + (f"<br>… {more} more ([the answer page]({rel(answer, page)}))" if more > 0 else "")
+
+
+def region_section(r: RunResult, page: Path, row: dict | None = None, heading: str = "## The region") -> list[str]:
+    """§ The region (S1e2.1a.7): R by brute force with this run drawn on it,
+    the oracle's lines beside the register's and the run's, and what the
+    drawing found missing or spurious, linked to each node's row. Nothing here
+    is computed: the comparison is `ein render region`'s, and the cells are
+    read off the three summaries and the register."""
+    raw = r.out / "raw"
+    cube = load_json(raw / "region" / "region.json") or {}
+    oracle = load_json(raw / "summary.oracle.json") or {}
+    o_r = oracle.get("region") or {}
+    s = r.summary or {}
+    region = s.get("region") or {}
+    which = (s.get("asked") or {}).get("which", "all")
+    part = {"minimal": "minimal line", "maximal": "maximal line"}.get(which, "R")
+    cmd = f"`ein solve {r.spec.file}{' ' + ' '.join(r.spec.flags) if r.spec.flags else ''}`"
+    rpage = r.out / "pages" / "region" / "index.md"
+    tinv = next((i for i in r.invocations if i.name == "render-region-table"), None)
+    lines = [heading, "",
+             f"R by brute force, `ein oracle {r.spec.file} --dump`, with this run ({cmd}) drawn on it from the "
+             f"run's own dumps: `ein render region` [`region/`]({rel(raw / 'region' / 'region.json', page)}) "
+             f"`--visited` [`lattice/`]({rel(raw / 'lattice' / 'nodes.json', page)}) `--answer` "
+             f"[`answer/`]({rel(raw / 'answer' / 'index.json', page)}) "
+             f"([legend]({doc(LEGEND, page)}#region-rendering--the-cube-and-a-region-run)). "
+             f"[Every node]({rel(rpage, page)}), by layer, with what the run did there.", ""]
+    reg = (row or {}).get("region")
+    if cube.get("region") is None:
+        oinv = next((i for i in r.invocations if i.name == "oracle"), None)
+        note = ((cube.get("refused") or {}).get("note")
+                or ((oinv.stderr.strip().splitlines() or ["the oracle did not answer"])[0] if oinv else "not run"))
+        lines += [f"**The oracle did not compute R**: {note}. So there is no cube to draw the run on, and nothing to "
+                  "hold it to here; the register's `[case.region]` is route 1's, held to `explore` by "
+                  "`register_region.rs`. The run alone:" if reg else
+                  f"**The oracle did not compute R**: {note}. The run alone:", ""]
+        lines += table(["", "now — " + cmd] + (["the register's `[case.region]`"] if reg else []),
+                       [["asked", asked_text(s)] + ([f"{reg['route']}, monotone = {str(reg['monotone']).lower()}"]
+                                                     if reg else []),
+                        ["k_s · k_c", (f"{region.get('k_s')} · {region.get('k_c')}"
+                                       + ("" if region.get("exhausted") else " (bounds: the run stopped)"))
+                         if region.get("k_s") is not None else f"— ({part} asked)"]
+                        + ([f"{reg['k_s']} · {reg['k_c']}"] if reg else []),
+                        ["minimal line", now_states(r, page, "minimal") if which in ("all", "minimal")
+                         else "— (not asked)"] + ([sets_cell(reg.get("minimal"))] if reg else []),
+                        ["maximal line", now_states(r, page, "maximal") if which in ("all", "maximal")
+                         else "— (not asked)"] + ([sets_cell(reg.get("maximal"))] if reg else []),
+                        ["every state listed", now_states(r, page, None)] + (["—"] if reg else [])]) + [""]
+        svg = r.out / "img" / "region" / "region.svg"
         if svg.exists():
-            any_drawn = True
-            out += [f"*{c.label}* — [the region]({rel(index, page)})", "", f"![{c.label}]({rel(svg, page)})", ""]
-        elif index.exists():
-            out += [f"*{c.label}* — [the region]({rel(index, page)}) (not drawn: the oracle did not answer)", ""]
-            any_drawn = True
-    return out if any_drawn else []
+            lines += [f"![the run alone]({rel(svg, page)})", ""]
+        return lines
+
+    # What `ein render region` found, routed to each node's row.
+    head = overlay_head(tinv.stdout) if tinv is not None and tinv.code == 0 else []
+    for l in head:
+        # `ein render region`'s comparison, verbatim, its links routed to
+        # each node's row; the sentence that says what it compares stands as
+        # its own paragraph.
+        lines += [node_links(l, r.node_pages, raw, page)] + ([""] if l.startswith("**") else [])
+    if head:
+        lines.append("")
+    svg = r.out / "img" / "region" / "region.svg"
+    lsvg = r.out / "img" / "region" / "region-lines.svg"
+    if svg.exists():
+        lines += [f"![the region, with this run on it]({rel(svg, page)})", ""]
+    if lsvg.exists():
+        lines += [f"[The lines view]({rel(lsvg, page)}) draws the same run on the lines, the holes and what it got "
+                  "wrong only, which reads at any n.", ""]
+
+    # R: the oracle's, the register's, the run's.
+    mono = (cube.get("monotonicity") or {}).get("monotone", True)
+    o_lines = (cube.get("region") or {})
+    head_row = ["", "the oracle — `ein oracle --dump`"] + (["the register's `[case.region]`"] if row else []) + [
+        "now — " + cmd]
+    def reg_cell(k, f=lambda v: v):
+        return [f(reg.get(k)) if reg and reg.get(k) is not None else "—"] if row else []
+    rows = [
+        ["route · monotone", f"the cube, 2^{cube.get('n')} nodes · {'monotone' if mono else '**not monotone**'}"]
+        + ([f"{reg['route']} · {'monotone' if reg['monotone'] else '**not monotone**'}"] if reg else (["—"] if row else []))
+        + [f"route {region.get('route', '—')} · "
+           + ("monotone" if ((s.get("monotonicity") or {}).get("monotone", True)) else "**not monotone**")],
+        ["k_s · k_c", f"{o_r.get('k_s', '—')} · {o_r.get('k_c', '—')}"]
+        + ([f"{reg['k_s']} · {reg['k_c']}"] if reg else (["—"] if row else []))
+        + [f"{region.get('k_s')} · {region.get('k_c')}" if region.get("k_s") is not None else
+           f"— ({part} asked)"],
+        ["R empty", o_r.get("empty") or "no"] + ([(reg.get("empty") or "no") if reg else "—"] if row else [])
+        + [region.get("empty") or "no"],
+        ["minimal line", sets_cell(o_lines.get("minimal"))] + reg_cell("minimal", sets_cell)
+        + [now_states(r, page, "minimal") if which in ("all", "minimal") else "— (not asked)"],
+        ["maximal line", sets_cell(o_lines.get("maximal"))] + reg_cell("maximal", sets_cell)
+        + [now_states(r, page, "maximal") if which in ("all", "maximal") else "— (not asked)"],
+        ["holes", sets_cell(o_lines.get("holes"))] + (["—"] if row else []) + ["—"],
+    ]
+    if row and reg:
+        same = ([sorted(map(sorted, reg.get(k) or [])) for k in ("minimal", "maximal")]
+                == [sorted(map(sorted, o_lines.get(k) or [])) for k in ("minimal", "maximal")]
+                and (reg.get("k_s"), reg.get("k_c")) == (o_r.get("k_s"), o_r.get("k_c")))
+        rows.append(["the register against the oracle", "", "**the same**" if same else "**differs**", ""])
+    lines += ["**R**", ""] + table(head_row, rows) + [""]
+
+    # The answer: the part asked, by the oracle, the register's `right`, the run.
+    if row:
+        right = row["right"]
+        o_states = [x.get("closure") for x in (o_r.get("states") or [])
+                    if which == "all" or which in (x.get("lines") or [])]
+        rmodels = right.get("models")
+        lines += [f"**The answer — {part}**: the oracle's, the register's `right` and the run's. `right` is in the "
+                  f"walk's vocabulary, the models over `closes` (= {', '.join(right.get('closes') or []) or '—'}); "
+                  "the oracle and the run are in the cube's, the candidates each state holds. § 4 holds the run "
+                  "to `right` over `closes`, through `--diff-models`.", ""]
+        lines += table(["", f"the oracle's {part} — candidates held", "the register's `right` — models over `closes`",
+                        "now — candidates held"], [
+            ["k", len(o_states), f"{right.get('verdict', '—')}, k = {right.get('k', '—')}",
+             f"{len(listed(r))} listed, exhausted = {yes(region.get('exhausted'))}"],
+            ["states", sets_cell(o_states), sets_cell(rmodels) if rmodels is not None else "*not stated*",
+             now_states(r, page, None)]]
+            + ([["owing frontier", sets_cell([x.get("set") for x in o_r.get("frontier") or []]),
+                 sets_cell(right.get("open")) if right.get("open") is not None else "*not stated*",
+                 sets_cell([x.get("set") for x in region.get("frontier") or []])]]
+               if o_r.get("frontier") or region.get("frontier") or right.get("open") else [])) + [""]
+    return lines
 
 
 # ── the case page ─────────────────────────────────────────────────────────────
 
-CHECKLIST = [
-    "Is the program the one the case describes?",
-    "Is the right answer right — under the definitions it cites, and under the reading it names?",
-    "Is the wrong answer what the engine said? (the *wrong* column is the register's record of the walk; "
-    f"a build of `{WALK_COMMIT}` re-runs it)",
-    "Is it one defect — or two the witness confounds?",
-    "Is the lever, if there is one, the only way in?",
-]
+def checklist(row: dict) -> list[str]:
+    wrong = ("the *wrong* column is the register's record of a region run: " + row["wrong"].get("why", "")
+             if by_region(row["wrong"]) else
+             f"the *wrong* column is the register's record of the walk; a build of `{WALK_COMMIT}` re-runs it")
+    return [
+        "Is the program the one the case describes?",
+        "Is the right answer right — under the definitions it cites, and under the reading it names?",
+        f"Is the wrong answer what the engine said? ({wrong})",
+        "Is it one defect — or two the witness confounds?",
+        "Is the lever, if there is one, the only way in?",
+    ]
+
+
+def by_region(a: dict) -> bool:
+    """A recorded answer a region run gave, not the walk (`[case.wrong] by`,
+    S1e2.1a.7): W13's."""
+    return a.get("by") == "region"
+
+
+def recorded_by(a: dict) -> str:
+    return "a region run" if by_region(a) else "the walk"
+
+
+def fixed_callout(row: dict, page: Path) -> list[str]:
+    """What fixed a `fixed` row, from its `[case.fixed]`: the commit, the
+    `wrong` the register records, and the `right` the row's mode now gives."""
+    f = row.get("fixed")
+    if row["status"] != "fixed" or not f:
+        return []
+    w, now, right = row["wrong"], row["now"], row["right"]
+    part = {"all": "all of R", "maximal": "the maximal line", "minimal": "the minimal line"}.get(now.get("line"), "?")
+    return [f"> **Fixed** by {f['by']}, `{f['commit']}` ({f['date']}). {recorded_by(w).capitalize()} gave "
+            f"*{w.get('verdict')}, k = {w.get('k')}, exhausted = {str(w.get('exhausted')).lower()}* "
+            f"(`ein {w['run']}`, the register's `wrong`). `ein {now['run']}` now answers {part}: "
+            f"*{now.get('k')} state(s), exhausted = {str(now.get('exhausted')).lower()}*"
+            + (f", R empty ({now['empty']})" if now.get("empty") else "")
+            + f", which is the register's `right`, *{right.get('verdict', '—')}, k = {right.get('k', '—')}* — "
+            "`ein-corpus` holds `[case.now]` to it, and this build re-ran it (§ 3, § 4, § 5).", ""]
 
 
 def review_cell(row: dict) -> str:
@@ -269,8 +434,10 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
         ["status", f"**{row['status']}**"],
         ["owner", f"[{row['owner']}]({rel(owner, page)})" if owner else row["owner"]],
         ["carried as", ", ".join(row.get("question", [])) or "—"],
-        ["wrong", walk_answer(w) + " — *the walk, as the register records it*"],
-        ["now", f"`ein {now['run']}` → {now.get('line')} line, k = {now.get('k')}, exhausted = "
+        ["wrong", walk_answer(w) + f" — *{recorded_by(w)}, as the register records it*"
+                  + (f": {w['why']}" if by_region(w) and w.get("why") else "")],
+        ["now", f"`ein {now['run']}` → " + ("all of R" if now.get("line") == "all" else f"the {now.get('line')} line")
+                + f", k = {now.get('k')}, exhausted = "
                 f"{str(now.get('exhausted')).lower()}" + (f", R empty: {now['empty']}" if now.get("empty") else "")
                 + " — *the region run the register holds the row to*"],
         ["region", region_cell(row.get("region"))],
@@ -278,9 +445,13 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
                    + (f", exhausted = {str(right['exhausted']).lower()}" if "exhausted" in right else "")
                    + (f" — *{right['reading']}*" if right.get("reading") else ""))],
     ]
+    if row.get("fixed"):
+        f = row["fixed"]
+        rows.append(["fixed", f"by {f['by']}, `{f['commit']}`, {f['date']}"])
     if row.get("open_because"):
         rows.append(["open because", row["open_because"]])
     rows += [["note", row.get("note", "—")], ["review", review_cell(row)]]
+    lines += fixed_callout(row, page)
     lines += ["## 1 · The case", ""] + table(["", ""], rows) + [""]
 
     # 2 — the problem.
@@ -321,9 +492,13 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
 
     # 3 — the answers, side by side.
     lines += ["## 3 · The answers, side by side", "",
-              f"The walk's columns are the register's record (`wrong`, `control`, `twin`): the walk has no CLI path "
-              f"since S1e2.1a.5's switch, and a build of `{WALK_COMMIT}` re-runs them. **now** is run here.", ""]
-    head = ["", *[c.label + (" (walk, recorded)" if c.recorded else "") for c in cols]]
+              (f"The *wrong* column is the register's record of a region run ({w.get('why', '')}); "
+               if by_region(w) else
+               "The walk's columns are the register's record (`wrong`, `control`, `twin`): the walk has no CLI path "
+               f"since S1e2.1a.5's switch, and a build of `{WALK_COMMIT}` re-runs them. ")
+              + "**now** is run here.", ""]
+    head = ["", *[c.label + (f" ({'region run' if by_region(c.answer) else 'walk'}, recorded)" if c.recorded else "")
+                  for c in cols]]
     def per(fn):
         return [yes(fn(c)) for c in cols]
     region = ((r.summary or {}).get("region") or {})
@@ -362,7 +537,6 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
                                       ("**matches**" if not diffs else "**differs**: " + "; ".join(diffs)))],
     ]
     lines += table(head, table_rows) + [""]
-    lines += lattice_block(cols, page)
     if right.get("derived"):
         lines += [f"*Right answer derived from:* {right['derived']}", ""]
     for alt in right.get("alternative", []):
@@ -378,7 +552,7 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
     for c in cols:
         if c.right is not None or c.recorded:
             ms = (c.right or c.answer).get("models")
-            what = "right" if c.right is not None else f"{c.label} — the walk, recorded"
+            what = "right" if c.right is not None else f"{c.label} — {recorded_by(c.answer)}, recorded"
             lines += [f"### {what} — {len(ms) if ms is not None else 'not stated'} model(s)", ""]
             lines += [f"- {i + 1}: " + (" ".join(f"`{f}`" for f in m) or "*(no facts)*") for i, m in enumerate(ms or [])] or [
                 "_The register states no model set for this column: its answer is a verdict, a count or a qualifier._"]
@@ -408,16 +582,19 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
             lines += [f"**{c.label} against the right answer** (`--diff-models`, verbatim):", "", "```text",
                       diff_block(diff_inv), "```", ""]
 
-    # 5 — where it went wrong.
-    lines += ["## 5 · Where it went wrong", "",
+    # 5 — the region.
+    lines += region_section(r, page, row, "## 5 · The region")
+
+    # 6 — where it went wrong.
+    lines += ["## 6 · Where it went wrong", "",
               "The register's `look_at` pointers, written against the walk's run and resolved in **now**'s. "
               "The script links them; it does not find them.", ""]
     look_rows = [[f"`{ptr}`", look(r, ptr, page)] for ptr in row.get("look_at", [])]
     lines += table(["pointer", "now"], look_rows) if look_rows else ["_no pointers_"]
     lines.append("")
 
-    # 6 — every artefact.
-    lines += ["## 6 · Every artefact", ""]
+    # 7 — every artefact.
+    lines += ["## 7 · Every artefact", ""]
     run_md = r.out / "run.md"
     fails = [x for x in r.checks if x[1] is False]
     lines += [f"- **now** — [run.md]({rel(run_md, page)}) · {len(r.pages)} pages · "
@@ -428,9 +605,9 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
         lines.append(f"  - [{m.group(1)}]({rel(run_md.parent / m.group(2), page)}) — {m.group(3)} pages, {m.group(4)} lines")
     lines.append("")
 
-    # 7 — what to check.
-    lines += ["## 7 · What to check", "", "The review (S1e2.1.7) answers these for this row:", ""]
-    lines += [f"- [ ] {q}" for q in CHECKLIST]
+    # 8 — what to check.
+    lines += ["## 8 · What to check", "", "The review (S1e2.1.7) answers these for this row:", ""]
+    lines += [f"- [ ] {q}" for q in checklist(row)]
     lines += ["", "Verdict: *confirmed* · *right answer corrected* · *not wrong* · *split* · *merge*", ""]
     if right:
         write(out / "right" / "README.md", "\n".join(
@@ -460,8 +637,10 @@ def index_page(out: Path, built: list[tuple[dict, Path, list[Col]]], extra: list
              "`build/` is gitignored: rebuild with `python3 utils/review_bundle.py`.", ""]
     if built:
         lines += ["## The register", "",
-                  "*wrong* is the walk's answer as the register records it; *now* is the row's `[case.now]`, run "
-                  "here, and marked where it differs from what the register holds it to.", ""]
+                  "*wrong* is the answer the register records: the walk's, or a region run's where it says so; "
+                  "*now* is the row's `[case.now]`, run here, and marked where it differs from what the register "
+                  "holds it to. *fixed by* is the row's `[case.fixed]`, the commit that made `now` answer `right`. "
+                  "Each page's § 5 draws the run on R.", ""]
         rows = []
         for row, p, cols in built:
             w, r, now = row["wrong"], row["right"], row["now"]
@@ -475,14 +654,15 @@ def index_page(out: Path, built: list[tuple[dict, Path, list[Col]]], extra: list
             if "qualifier" in r:
                 differs.append("qualifier")
             rows.append([f"[{row['id']}]({rel(p, page)})", row["owner"], row["settings"],
-                         f"{w['verdict']} k={w['k']}",
+                         f"{w['verdict']} k={w['k']}" + (" *(region run)*" if by_region(w) else ""),
                          f"`{now['run']}` {got.now['line'] if got.now else '?'} k={got.k}"
                          + ("" if not diffs else " **(≠ the register: " + "; ".join(d.split(':')[0] for d in diffs) + ")**"),
                          f"{r.get('verdict', '—')} k={r.get('k', '—')}",
                          ", ".join(differs) or ("*a reading*" if r.get("reading") else "—"), row["status"],
+                         f"`{row['fixed']['commit']}`" if row.get("fixed") else "—",
                          row["review"]["verdict"] if "review" in row else "—"])
-        lines += table(["case", "owner", "settings", "wrong (walk, recorded)", "now (run)", "right", "differs in",
-                        "status", "review"], rows) + [""]
+        lines += table(["case", "owner", "settings", "wrong (recorded)", "now (run)", "right", "differs in",
+                        "status", "fixed by", "review"], rows) + [""]
     if extra:
         lines += ["## Programs", ""]
         lines += table(["program", "asked", "states listed", "exhausted"],
@@ -500,8 +680,8 @@ def index_page(out: Path, built: list[tuple[dict, Path, list[Col]]], extra: list
 
 def program_case(file: str, flags: list[str], out: Path, bin: str, events: bool = True,
                  timeout_note: str = "") -> tuple[Path, RunResult]:
-    """A page for a program outside the register: the problem, one run, its
-    states and every artefact — sections 2, 3, 4 and 6."""
+    """A page for a program outside the register: the problem, one run, R
+    with the run drawn on it (S1e2.1a.7), its states and every artefact."""
     if out.exists():
         shutil.rmtree(out)
     r = build_run(RunSpec(file, flags, title=file, events=events), out / "runs" / "run", bin)
@@ -516,10 +696,7 @@ def program_case(file: str, flags: list[str], out: Path, bin: str, events: bool 
     for sub in ("program", "root"):
         lines += [f"![{s.stem}]({rel(s, page)})" for s in sorted((r.out / "img" / sub).glob("*.svg"))]
     lines += ["", "## The answer", "", "```text", verdict_block(r.invocations[0].stdout), "```", ""]
-    svg = r.out / "img" / "region" / "region.svg"
-    if svg.exists():
-        lines += ["## The lattice", "", f"[The region]({rel(r.out / 'pages' / 'region' / 'index.md', page)}) — "
-                  f"every node by saturation alone, `ein oracle --dump`.", "", f"![region]({rel(svg, page)})", ""]
+    lines += region_section(r, page)
     lines += ["## The models", ""]
     files = {f.get("state"): f for f in state_files(r.out / "raw" / "answer") if f["kind"] == "models"}
     for i, s in enumerate(listed(r)):

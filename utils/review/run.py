@@ -15,17 +15,18 @@ A run is several invocations. `main` carries every flag that can share a solve
 `--events`, `--json-summary` and the stdout diagnostics), `grid` / `key` the
 two model forms, `diff` the comparison with the register's right answer, and
 `oracle` R by brute force: `ein oracle --dump`, whose directory
-`ein render region` draws into `pages/region/` and whose answer the run is
-held to (cross-check 5). Their answers have to be the same answer, which is
-cross-check 1.
+`ein render region` draws into `pages/region/` with this run on it (its
+`--dump-lattice` and `--dump-answer`, S1e2.1a.7), and whose answer the run is
+held to (cross-checks 5 and 7). Their answers have to be the same answer,
+which is cross-check 1.
 
 **Since S1e2.1a.5's switch (2026-10-18) there is no walk.** A region run
 classifies nodes and never writes root, so the walk's `--dump-states`
 timeline, its per-entering tree, `root_writes.json`, `refuted/` and
 `alive_at_end.json` have no producer: `--dump-lattice` is every node the run
 visited (`ein-lattice/2`), N replaces `refuted/`, and the cube is
-`ein oracle --dump`'s rather than `--dump-region`'s. The section of a case
-page that compares the run with R is S1e2.1a.7's.
+`ein oracle --dump`'s rather than `--dump-region`'s. The case page's § The
+region (S1e2.1a.7) is the cube with this run drawn on it.
 """
 
 from __future__ import annotations
@@ -106,6 +107,9 @@ class RunResult:
     # `lattice_pages`' steps: each a title, its page and its commitments —
     # what a `layer N` or `entering …` pointer resolves against.
     lattice: list[dict] = field(default_factory=list)
+    # Each cube node's row in `pages/region/`: mask → the layer page holding
+    # its `<a id="mMASK">` (S1e2.1a.7).
+    node_pages: dict[int, Path] = field(default_factory=dict)
 
 
 def flag_value(flags: list[str], *names: str) -> str | None:
@@ -221,19 +225,19 @@ def drive(spec: RunSpec, out: Path, bin: str) -> list[Invocation]:
                        ("render-lattice-full", lattice + ["--view", "full"]),
                        ("render-root", [bin, "render", "kb", spec.file])]:
         invs.append(run(name, argv, spec.env, timeout=120))
-    # The region drawn from the oracle's directory (S1e2.1a.2): `auto`, the
-    # lines (the view that reads at any n) when `auto` is not already them,
-    # and every node as a table.
-    if ((load_json(raw / "region" / "region.json") or {}).get("region")) is not None:
-        region = str(raw / "region")
-        auto = run("render-region", [bin, "render", "region", region], timeout=120)
+    # The region drawn from the oracle's directory (S1e2.1a.2), with this run
+    # on it from its own two dumps (S1e2.1a.7): `auto`, the lines (the view
+    # that reads at any n) when `auto` is not already them, and every node as
+    # a table. Over the oracle's limit the cube is refused and `auto` is the
+    # run alone, one note.
+    if (raw / "region" / "region.json").exists():
+        region = [bin, "render", "region", str(raw / "region")] + overlay_args(raw)
+        auto = run("render-region", region, timeout=120)
         invs.append(auto)
         said = auto.stdout.split("\n", 2)[1] if auto.stdout.count("\n") > 1 else ""
         if auto.code == 0 and "view lines" not in said and "view none" not in said:
-            invs.append(run("render-region-lines", [bin, "render", "region", region, "--view", "lines"],
-                            timeout=120))
-        invs.append(run("render-region-table", [bin, "render", "region", region, "--view", "table"],
-                        timeout=120))
+            invs.append(run("render-region-lines", region + ["--view", "lines"], timeout=120))
+        invs.append(run("render-region-table", region + ["--view", "table"], timeout=120))
     # Each state file, drawn against the program's root: what it added, bold.
     for f in state_files(raw / "answer")[:STATES_DRAWN]:
         invs.append(run(f"render-{f['stem'].replace('/', '-')}",
@@ -253,6 +257,16 @@ def drive(spec: RunSpec, out: Path, bin: str) -> list[Invocation]:
         lines.append(f"[{inv.name}] exit {inv.code}: {inv.shell()}")
     write(raw / "command.txt", "\n".join(lines) + "\n")
     return invs
+
+
+def overlay_args(raw: Path) -> list[str]:
+    """`--visited` and `--answer` for each of the run's two dumps it wrote."""
+    out = []
+    if (raw / "lattice" / "nodes.json").exists():
+        out += ["--visited", str(raw / "lattice")]
+    if (raw / "answer" / "index.json").exists():
+        out += ["--answer", str(raw / "answer")]
+    return out
 
 
 def state_files(answer: Path) -> list[dict]:
@@ -299,6 +313,7 @@ class Pages:
         self.refused: list[str] = []
         self.trace_blocks = 0
         self.lattice: list[dict] = []
+        self.node_pages: dict[int, Path] = {}
 
     def add(self, title: str, path: Path, lines: list[str], note: str = "") -> Path:
         write(path, "\n".join(lines).rstrip() + "\n")
@@ -638,11 +653,20 @@ def region_pages(p: Pages) -> None:
     r = region.get("region")
     if r is None:
         why = (oracle.stderr.strip() if oracle else "") or region.get("refused") or "no `region.json`"
-        p.add("Region", index, header("The region", "R by brute force — not computed for this program",
-                                      "`ein oracle FILE --dump DIR`", defined,
-                                      [p.raw / "oracle.stdout.txt", p.raw / "oracle.stderr.txt"], index,
-                                      f"`ein oracle` exited {oracle.code if oracle else '—'}")
-              + ["```text", str(why), "```"])
+        lines = header("The region", "R by brute force — not computed for this program",
+                       "`ein oracle FILE --dump DIR`", defined,
+                       [p.raw / "oracle.stdout.txt", p.raw / "oracle.stderr.txt"], index,
+                       f"`ein oracle` exited {oracle.code if oracle else '—'}") + ["```text", str(why), "```", ""]
+        # The run alone: `render region` draws it as one note, and its table
+        # lists what it reported with no cube to hold it to.
+        inv = p.inv.get("render-region")
+        if inv is not None and inv.code == 0:
+            (res,) = p.svgs([SvgJob(inv.stdout, p.img / "region" / "region.svg")])
+            lines += ["## The run alone — `ein render region` with no cube", ""] + image(res, index, "the run alone")
+        tinv = p.inv.get("render-region-table")
+        if tinv is not None and tinv.code == 0:
+            lines += ["## The run's states", "", *tinv.stdout.splitlines()[2:], ""]
+        p.add("Region", index, lines)
         return
     n = region.get("n", "?")
     head = (f"n = {n} · |R| = {r.get('size', '—')}"
@@ -651,8 +675,11 @@ def region_pages(p: Pages) -> None:
                    "brute force, the reference every mode is held to", "`ein oracle FILE --dump DIR`, "
                    "`ein render region DIR`", defined, [raw / "region.json", raw / "region.md",
                                                        p.raw / "oracle.stdout.txt"], index, head)
-    lines += ["Fill is what the cube says, border marks the lines and the defects. Every node's reason is in its "
-              "tooltip: open the SVG on its own to hover.", ""]
+    lines += ["Fill is what the cube says, shape what this run did, border marks the lines and the defects. Every "
+              "node's reason is in its tooltip: open the SVG on its own to hover. The run is drawn from its own "
+              f"[`--dump-lattice`]({rel(p.raw / 'lattice' / 'nodes.json', index)}) and "
+              f"[`--dump-answer`]({rel(p.raw / 'answer' / 'index.json', index)}) (`ein render region DIR --visited … "
+              "--answer …`).", ""]
     if oracle and oracle.code == 0:
         lines += details("the oracle's read-out (`ein oracle FILE`)", ["```text", verdict_block(oracle.stdout), "```"])
     for name, title in [("render-region", "The drawing"), ("render-region-lines", "The lines")]:
@@ -665,18 +692,15 @@ def region_pages(p: Pages) -> None:
             continue
         (res,) = p.svgs([SvgJob(inv.stdout, p.img / "region" / f"{name.removeprefix('render-')}.svg")])
         lines += image(res, index, f"region — {region_view(inv)}")
-    # Every node, by layer, from `--view table`.
+    # Every node, by layer, from `--view table`. Each row carries
+    # `<a id="mMASK">`; the head's lists link to `#mMASK`, routed here to the
+    # layer page that holds the row.
     tinv = p.inv.get("render-region-table")
     if tinv and tinv.code == 0:
         pre, sections = split_trace(tinv.stdout)
-        lines += ["## Every node", "", *pre.splitlines()[1:], ""]
-        total = sum(body.count("\n| `") for _, body in sections)
+        total = sum(sum(1 for l in body.splitlines() if l.startswith("| <a id=")) for _, body in sections)
         capped = total > REGION_ROWS_PAGED
-        if capped:
-            lines += [f"**{total} nodes**: past {REGION_ROWS_PAGED} the layer pages show each layer's first "
-                      f"{ROWS_PER_PAGE} rows, and [`render-region-table.stdout.txt`]"
-                      f"({rel(p.raw / 'render-region-table.stdout.txt', index)}) holds every one.", ""]
-        rows = []
+        rows, pages = [], []
         for title, body in sections:
             stem = rdir / _safe(title.split(" —")[0].lower())
             tl = [l for l in body.splitlines() if l.startswith("|")]
@@ -686,18 +710,57 @@ def region_pages(p: Pages) -> None:
             chunks = [body_rows[i:i + ROWS_PER_PAGE] for i in range(0, max(len(body_rows), 1), ROWS_PER_PAGE)]
             paths = [stem.with_suffix(".md") if len(chunks) == 1 else stem.with_name(f"{stem.name}-{i + 1:02d}.md")
                      for i in range(len(chunks))]
+            for chunk, path in zip(chunks, paths):
+                for row in chunk:
+                    m = re.match(r'\| <a id="m(\d+)">', row)
+                    if m:
+                        p.node_pages[int(m.group(1))] = path
+            pages.append((title, head_row, chunks, paths))
+            rows.append([f"[{title}]({rel(paths[0], index)})", len(body_rows), len(paths)])
+        for title, head_row, chunks, paths in pages:
             for i, (chunk, path) in enumerate(zip(chunks, paths)):
                 nav = " · ".join(f"[{j + 1}]({rel(q, path)})" if q != path else f"**{j + 1}**" for j, q in enumerate(paths))
-                ph = header(f"The region — {title}", "every node of this layer: status, why, where saturation takes it",
-                            "`ein render region DIR --view table`", defined, [raw / "region.json"], path,
+                ph = header(f"The region — {title}", "every node of this layer: status, why, where saturation takes it, "
+                            "what the run did", "`ein render region DIR --visited … --answer … --view table`", defined,
+                            [raw / "region.json"], path,
                             f"[the region]({rel(index, path)})" + (f" · pages {nav}" if len(paths) > 1 else ""))
-                p.add(f"Region: {title}" + (f" {i + 1}" if len(paths) > 1 else ""), path, ph + head_row + chunk)
-            rows.append([f"[{title}]({rel(paths[0], index)})", len(body_rows), len(paths)])
+                p.add(f"Region: {title}" + (f" {i + 1}" if len(paths) > 1 else ""), path,
+                      ph + head_row + [node_links(row, p.node_pages, p.raw, path) for row in chunk])
+        lines += ["## Every node", "", *[node_links(l, p.node_pages, p.raw, index) for l in pre.splitlines()[1:]], ""]
+        if capped:
+            lines += [f"**{total} nodes**: past {REGION_ROWS_PAGED} the layer pages show each layer's first "
+                      f"{ROWS_PER_PAGE} rows, and [`render-region-table.stdout.txt`]"
+                      f"({rel(p.raw / 'render-region-table.stdout.txt', index)}) holds every one.", ""]
         lines += table(["layer", "nodes", "pages"], rows) + [""]
     md = read(raw / "region.md")
     if md:
         lines += details("`region.md`, as the dump wrote it", [re.sub(r"(?m)^#", "###", md)])
     p.add("Region", index, lines)
+
+
+def node_links(text: str, node_pages: dict[int, Path], raw: Path, page: Path) -> str:
+    """`ein render region --view table`'s `(#mMASK)` links, routed from `page`
+    to the layer page that holds the row — or to the raw table, when the
+    pages cap left the row out."""
+    def to(m):
+        mask = int(m.group(1))
+        target = node_pages.get(mask)
+        if target is None:
+            return f"({rel(raw / 'render-region-table.stdout.txt', page)})"
+        return f"({'' if target == page else rel(target, page)}#m{mask})"
+    return re.sub(r"\(#m(\d+)\)", to, text)
+
+
+def overlay_head(table_md: str) -> list[str]:
+    """The table view's comparison of the run with the oracle, verbatim: the
+    `- **missing**`, `- **spurious**`, `- **not reached**`, `- **≠ the
+    cube**` and `- **visited**` lines `ein render region` computed."""
+    out = []
+    for line in table_md.split("\n| bit |", 1)[0].splitlines():
+        if line.startswith(("**Compared with", "- **missing**", "- **spurious**", "- **not reached**",
+                            "- **≠ the cube**", "- **visited**", "- **reported outside")):
+            out.append(line)
+    return out
 
 
 # ── the answer ────────────────────────────────────────────────────────────────
@@ -969,7 +1032,7 @@ def facts_by_line(s: dict | None, line: str) -> list[list[str]]:
 
 
 def consistency(p: Pages, s: dict | None, trace: list[dict], events: list[dict]) -> None:
-    """Six claims the artefacts make about each other, each a pass, a named
+    """Seven claims the artefacts make about each other, each a pass, a named
     mismatch, or not applicable with the reason."""
     def strip(x):
         if isinstance(x, dict):
@@ -1063,8 +1126,22 @@ def consistency(p: Pages, s: dict | None, trace: list[dict], events: list[dict])
         p.checks.append(("6 · answer/ has one state file per state the summary reached", ok,
                          "" if ok else f"{len(models)} model files, {len(states)} states"
                          + (f"; missing {', '.join(missing)}" if missing else "")))
+    # 7 — the drawing's own comparison: what `ein render region` found when it
+    # put the run on the cube (S1e2.1a.7).
+    tinv = p.inv.get("render-region-table")
+    head = overlay_head(tinv.stdout) if tinv is not None and tinv.code == 0 else []
+    name = "7 · the drawing names nothing missing, spurious or read otherwise than the cube"
+    if s is not None and head:
+        bad = [l for l in head if l.startswith(("- **missing**", "- **spurious**", "- **≠ the cube**"))
+               and not l.endswith(" none")]
+        bad += [l for l in head if l.startswith("- **visited**") and "**unsound**" in l]
+        p.checks.append((name, not bad, "; ".join(re.sub(r"\]\([^)]*\)", "]", l.lstrip("- ")) for l in bad)))
+    elif s is not None:
+        p.checks.append((name, None, "not applicable: no cube to draw the run on — "
+                         + (((p.inv.get("oracle").stderr.strip().splitlines() or ["no summary"])[0])
+                            if p.inv.get("oracle") else "the oracle was not run")))
     page = p.dir / "consistency.md"
-    lines = header("Cross-checks", "six claims the artefacts make about each other, checked against each other",
+    lines = header("Cross-checks", "seven claims the artefacts make about each other, checked against each other",
                    "this bundle — reading the files above",
                    [("S1e2.1.5", "plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.5_every_artefact_rendered.md")],
                    [], page, "**A mismatch is a finding**, filed when seen — not smoothed over by the renderer.")
@@ -1146,4 +1223,5 @@ def build_run(spec: RunSpec, out: Path, bin: str) -> RunResult:
     now = now_of(summary, p.inv["main"].stdout)
     return RunResult(out, spec, invs, summary, p.checks, p.pages,
                      ((summary or {}).get("verdict") or {}).get("type", ""),
-                     now["k"] if now else None, region.get("exhausted") if summary else None, now, p.lattice)
+                     now["k"] if now else None, region.get("exhausted") if summary else None, now, p.lattice,
+                     p.node_pages)

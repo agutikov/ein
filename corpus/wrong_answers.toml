@@ -2478,7 +2478,7 @@ date   = "2026-11-01"
 [case.wrong]
 run       = "solve"
 by        = "region"
-why       = "a region run, `ein solve` on the witness with (config :enable-symmetric-mirror false) appended, taken at df9afccf before T1e2.1a.6.3 made the flag a load error"
+why       = "`ein solve` on the witness with (config :enable-symmetric-mirror false) appended, taken at df9afccf before T1e2.1a.6.3 made the flag a load error"
 verdict   = "Solution"
 k         = 1
 exhausted = true

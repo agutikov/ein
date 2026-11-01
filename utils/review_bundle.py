@@ -11,8 +11,10 @@
 row of `corpus/wrong_answers.toml` — the row's `[case.now]` region run beside
 the walk's wrong answer, control and twins (the register's record of them:
 the walk has no CLI path since S1e2.1a.5's switch) and the right answer, the
-models diffed, links to where it went wrong (the row's `look_at`), every
-artefact two clicks away, and the checklist the review answers. A CASE is a
+models diffed, § The region — R by the oracle with this run drawn on it,
+beside the register's lines (S1e2.1a.7) — links to where it went wrong (the
+row's `look_at`), every artefact two clicks away, and the checklist the
+review answers. A fixed row says what fixed it (`[case.fixed]`). A CASE is a
 row id (`W1/branching-15`) or a case (`W1`, every row of it); a `.ein` path
 gets a page of its own with one `solve` run (flags after `--`; none describes
 all of R). `--corpus` builds one for every corpus entry with a declared
