@@ -49,12 +49,12 @@ jobs:
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: ein.rs } }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
         with: { components: "rustfmt, clippy" }
       - uses: Swatinem/rust-cache@v2
         with: { workspaces: ein.rs }
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with: { python-version: "3.14" }
       # `dot_wellformed.rs` fails rather than skips without Graphviz, which is
       # the only authority the DOT views have on being well-formed.
@@ -88,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: ein.rs } }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with: { workspaces: ein.rs }
@@ -105,7 +105,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: ein.rs } }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with: { workspaces: ein.rs }
@@ -173,7 +173,7 @@ jobs:
     # `include_dir!` losing the embedded stdlib under a cross build — does not
     # arise on three of the four.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with: { workspaces: ein.rs, key: "${{ matrix.name }}" }
@@ -251,7 +251,7 @@ jobs:
           (cd ../dist && sha "${out}" > "${out}.sha256")
           cat ../dist/*.sha256
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: dist-${{ matrix.name }}
           path: dist/
@@ -274,7 +274,7 @@ jobs:
     runs-on: ubuntu-22.04
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - run: sudo apt-get update && sudo apt-get install -y musl-tools
       - working-directory: ein.rs
@@ -293,7 +293,7 @@ jobs:
           mkdir -p ../dist
           cp "$bin" ../dist/ein-linux-x86_64-musl
           (cd ../dist && sha256sum ein-linux-x86_64-musl > ein-linux-x86_64-musl.sha256)
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: dist-linux-x86_64-musl
           path: dist/
@@ -306,8 +306,8 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v7
         with: { path: staged, pattern: "dist-*", merge-multiple: true }
       # One `SHA256SUMS` over the set, beside the per-artefact files each
       # platform wrote. Both are kept: the per-artefact file is what the

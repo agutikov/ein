@@ -31,8 +31,8 @@ jobs:
     name: stdlib + corpus — no drift, no gaps
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with: { python-version: "3.14" }
       # The stdlib is the one input whose divergence no test inside the
       # workspace can diagnose, because the engine would be *correct* about a
@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: ein.rs } }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
         with: { components: "rustfmt, clippy" }
       - uses: Swatinem/rust-cache@v2
@@ -61,7 +61,7 @@ jobs:
       # `python3` is here for one thing —
       # `examples/gen_zebra2_variants.py --check`, a stdlib-only script that
       # `cli_semantics.rs` runs to compare the zebra2 variants byte for byte.
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with: { python-version: "3.14" }
       # `ein-render/tests/dot_wellformed.rs` runs every DOT view of every
       # corpus file through `dot -Tsvg`, which is the only authority they have
