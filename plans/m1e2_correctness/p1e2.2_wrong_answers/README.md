@@ -71,6 +71,14 @@ then wrong model sets, then certifications, then levers, then cores.
 | [S1e2.2.12](s1e2.2.12_core_id_order.md) | **W11** which core is reported depends on interner id order | 4 | default | `corpus/fuzz_findings/` | 1.5 d | a canonical choice among equal-size cores; the id-order sweep green on both fuzz findings at every seed |
 | [S1e2.2.13](s1e2.2.13_empty_core.md) | **W12** an exhausted `Contradiction` reports a 0-fact core | 4 (contested) | default | S1e.3.1 § did not do | 1 d | a reading; then the core names the facts the refutation rests on, or the read-out says why it cannot |
 
+**W13 has no stage here.** *A config flag changes R*:
+`enable-symmetric-mirror` off took the mirror's facts out of root's fixpoint
+on `features/06_symmetric_native.ein`. P1e2.1a's
+[S1e2.1a.6](../p1e2.1a_the_solution_region/s1e2.1a.6_engine_against_oracle.md)
+found it under every mode, filed it, and fixed it in the same commit by
+retiring the flag on the user's ruling of 2026-11-01, so this phase has
+nothing left to do for it.
+
 ### Dependencies inside the phase
 
 - **S1e2.2.1 first.** W1 confounds three other cases. `forced-2.ein` goes

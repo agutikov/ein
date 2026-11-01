@@ -165,10 +165,10 @@ RUNS = [
 SWEEP = "cargo test -p ein-render --test id_order_invariance (EIN_ID_FILES)"
 
 # `:enable-singleton-writeback` and `:enable-forced-positive` were here until
-# M1e2 S1e2.1a.5 retired them; a program setting one is a load error now.
+# M1e2 S1e2.1a.5 retired them, and `:enable-symmetric-mirror` until S1e2.1a.6
+# did; a program setting one is a load error now.
 LEVERS = [":enable-pre-branch-lookahead", ":enable-lookahead-kill-cache",
-          ":enable-path-nogoods", ":enable-symmetric-mirror",
-          ":enable-fail-fast-fork"]
+          ":enable-path-nogoods", ":enable-fail-fast-fork"]
 
 
 # ───────────────────────── the generator ─────────────────────────

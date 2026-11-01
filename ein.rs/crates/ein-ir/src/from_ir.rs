@@ -1369,12 +1369,12 @@ pub fn config_from_kw_pairs(ast: &Ast, args: &[NodeId]) -> Result<SolverConfig, 
             Node::Keyword(s) => ast.sym(s).to_string(),
             _ => node_repr(ast, key),
         };
-        if let Some((_, why)) = ein_core::config::RETIRED
+        if let Some((_, stage, why)) = ein_core::config::RETIRED
             .iter()
-            .find(|(f, _)| *f == key_name)
+            .find(|(f, _, _)| *f == key_name)
         {
             return Err(format!(
-                "config flag :{key_name} was retired at M1e2 S1e2.1a.5: {why}"
+                "config flag :{key_name} was retired at M1e2 {stage}: {why}"
             ));
         }
         let Some(&(flag, kind)) = FLAGS.iter().find(|(f, _)| *f == key_name) else {

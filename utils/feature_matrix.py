@@ -85,6 +85,9 @@ CELLS: dict[str, dict] = {
     "no-lookahead":             {"enable_pre_branch_lookahead": False},
     "no-kill-cache":            {"enable_lookahead_kill_cache": False},
     "no-path-nogoods":          {"enable_path_nogoods": False},
+    # The flag was retired at M1e2 S1e2.1a.6 (it changed R), so this cell, like
+    # the four below it retired at S1e2.1a.5, reaches it only on a binary at or
+    # before 7ec8a480 — which is what the whole matrix needs.
     "no-symmetric-mirror":      {"enable_symmetric_mirror": False},
     "no-singleton-writeback":   {"enable_singleton_writeback": False},
     "no-forced-positive":       {"enable_forced_positive": False},

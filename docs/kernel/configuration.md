@@ -7,7 +7,9 @@
 > and the nine field doc comments that had one, the CLI options only in
 > `--help`, and the `EIN_*` environment nowhere at all. **Since M1e2
 > S1e2.1a.5's switch (2026-10-18) a program sets eight of them**, nine retired
-> with the walk, and `ein solve` has 33 options where it had 42.
+> with the walk, and `ein solve` has 33 options where it had 42. **Since
+> S1e2.1a.6 (2026-11-01) it sets seven**: `enable-symmetric-mirror`, the one
+> flag that changed R, retired too.
 >
 > **It is a reference, not a narrative.** One row per knob. What a lever *does
 > to the search*, and what it was measured at, is
@@ -40,7 +42,7 @@
 
 | surface | how many | who owns the list |
 |---|---:|---|
-| `(config …)` flags | **8** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the nine a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
+| `(config …)` flags | **7** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the ten a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
 | CLI options | **69** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **8** read by the shipped binary, of 26 greppable names | § [4](#4-the-environment) |
 
@@ -67,10 +69,10 @@ settings are being *compared* would re-bless every shape golden in the corpus
 
 ---
 
-## 2. `(config …)` — the eight solver flags
+## 2. `(config …)` — the seven solver flags
 
 ```lisp
-(config :enable-symmetric-mirror false :warn-derived-naf true)
+(config :record-alternative-justifications false :warn-derived-naf true)
 ```
 
 Names are `:kebab-case`, and since M1e2 S1e2.1a.5 every flag a program can set
@@ -84,6 +86,7 @@ declaration order, and the retired-flag message says why the flag went
 kb load error: (config …): unknown config flag :nonsense (expected one of: …)
 kb load error: (config …): config flag :warn-derived-naf expects true/false, got Int(value=7)
 kb load error: (config …): config flag :lattice-order was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
+kb load error: (config …): config flag :enable-symmetric-mirror was retired at M1e2 S1e2.1a.6: off, it changed the answer, and no config option may. The mirror is what `(__symmetric__ R)` means, so it is always on: a relation that is not to be mirrored is not marked
 ```
 
 ### 2.1 The defaults
@@ -98,7 +101,6 @@ config (resolved)
   warn-derived-naf                 false
   lattice-sanity-check             false
   enable-path-nogoods              true
-  enable-symmetric-mirror          true
   record-alternative-justifications true
   enable-fail-fast-fork            true
 ```
@@ -113,7 +115,6 @@ config (resolved)
 | `warn-derived-naf` | `bool` | `false` | **two questions, one flag**, both `warn` events on the stream after root's saturation, on every run that records one (M1e2 S1e2.1a.5 kept them when the walk left). `DerivedNafWarning` — the `(absent …)` guard watches a **rule-derived** relation: a *stratification* signal since S1.21.8, not a soundness one. `RefutationUnderAbsentWarning` (M1e [S1e.2.3](../history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)) — the rule concludes `(false)` or a `(not …)` from a guard over a relation the program's **generator can still propose**, which *is* a soundness signal: [`dead` is not upward-closed under `absent`](../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent) | no | no | contract |
 | `lattice-sanity-check` | `bool` | `false` | the walk's re-saturation of every `(k−1)`-subset parent path, aborting on a mismatch. No route runs it; `-y` sets it `true` | unread | no | probe, unread |
 | `enable-path-nogoods` | `bool` | `true` | whether the walk's dead commitment emitted a learned clause. No route reads it: route 1's `N` is the minimal dead sets it met, not a learned clause | unread | no | lever, unread |
-| `enable-symmetric-mirror` | `bool` | `true` | the kernel's native arg-swap closure over relations marked `(__symmetric__ R)`. Off, such a relation is closed only if the program's own rule closes it | **yes** | **yes** | contract |
 | `record-alternative-justifications` | `bool` | `true` | whether a re-derivation of a known fact is recorded as an alternative justification or dropped: the proof is an AND/OR graph, or a tree. It decides which minimal core a dead node's refutation names — the read-out's `unsat core`, the trace's `N` and `nogoods.json` | explanation only | no | contract |
 | `enable-fail-fast-fork` | `bool` | `true` | whether the walk's fork stopped at the firing that made it inconsistent. No route reads it: every node is run to its fixpoint, so a dead node's debts are its fixpoint's | unread | no | lever, unread |
 
@@ -173,15 +174,19 @@ found it on 19 programs (2026-11-01); it is surface S4 of the proposed
 [P1e2.3](../../plans/m1e2_correctness/README.md#p1e23--surfaces-that-misreport-the-answer-proposed),
 and until then the test leaves those three fields out.
 
-### 2.4 The nine retired flags
+### 2.4 The ten retired flags
 
-M1e2 S1e2.1a.5's switch retired nine, each refused at load with the reason
-below (`ein_core::config::RETIRED`). Their fields stay on `SolverConfig` at
-their defaults for the walk's library code, and the `.einb` container
-round-trips them, so its format did not move.
+M1e2 S1e2.1a.5's switch retired nine, and S1e2.1a.6 a tenth, each refused at
+load with the stage and the reason below (`ein_core::config::RETIRED`). Their
+fields stay on `SolverConfig` at their defaults, the nine for the walk's
+library code and the tenth for nothing, and the `.einb` container round-trips
+all seventeen, so its format did not move. A container stores its program as
+text and re-loads it on open, so one saved before a retirement whose program
+sets the flag is refused, as the `.ein` is.
 
 | flag | why it went |
 |---|---|
+| `enable-symmetric-mirror` (S1e2.1a.6) | off, it took the mirror's facts out of root's fixpoint and so changed R, the one flag that did (§ 2.5). The mirror is what `(__symmetric__ R)` means, and the user ruled on 2026-11-01 that it stays always on: a relation that is not to be mirrored is not marked. The register's W13 |
 | `hypgen-scoring`, `hypgen-rel-weight`, `hypgen-obj-weight`, `lattice-order`, `lattice-order-seed` | order levers: every route's order is part of its definition, so `-n N` prints the same states under every lever (C4) |
 | `enable-singleton-writeback`, `enable-forced-positive` | they wrote into root, which no route does. What they knew survives as licence L1: a candidate dead alone leaves the universe |
 | `print-alive`, `candidate-order-seed` | inert: read by no code path ([Q-M1e.10](../history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)) |
@@ -192,7 +197,7 @@ three register witnesses whose program is now their sibling's (`forced-2-off`,
 `f07-fpoff`, `naf-nowb`).
 
 **What the answer column was read from.** A sweep of 2026-10-18: each of the
-eight flipped in an appended `(config …)` block (last-wins, so programs with a
+eight settable then flipped in an appended `(config …)` block (last-wins, so programs with a
 head of their own are skipped), over the **173** corpus programs that load and
 state none, `ein solve -p --region-budget 65536 --region-limit 12` compared
 byte for byte — stdout, stderr and the exit code — against the same program
@@ -227,13 +232,13 @@ facts of every state in R
   none. That is by construction for most of them: the oracle's universe is
   config-free and its nodes are built by saturation alone
   ([`region_dump.md`](inference/region_dump.md#the-cube)).
-- **`enable-symmetric-mirror` changes R**, on `features/06` (§ 2.4). The
-  mirror is how `(__symmetric__ R)` means anything, so the flag switches off
-  part of the program's theory. It is the one flag that **violates the
-  principle**. **The user ruled on 2026-11-01 that it is retired**: a
-  program that wants a relation left unmirrored does not mark it.
+- **`enable-symmetric-mirror` changed R**, on `features/06`. The mirror is
+  how `(__symmetric__ R)` means anything, so the flag switched off part of the
+  program's theory. It was the one flag that **violated the principle**. The
+  user ruled on 2026-11-01 that it retires, and
   [S1e2.1a.6](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.6_engine_against_oracle.md)
-  removes it, and until then this page describes the flag as it ships.
+  retired it (§ 2.4): the mirror is always on, and the register's W13 records
+  the case, fixed in the commit that filed it.
 - **What a run prints, held.** Since M1e2
   [S1e2.1a.6](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.6_engine_against_oracle.md)
   [`ein-cli/tests/lever_invariance.rs`](../../ein.rs/crates/ein-cli/tests/lever_invariance.rs)
@@ -246,7 +251,8 @@ facts of every state in R
   three `EIN_*` levers on the same files, through the binary. On 2026-11-01:
   180 programs and 18 816 cells in-process, 348 declared cells and 432
   environment cells through the binary, 14 s on this machine's eight workers.
-  One flag moved: `enable-symmetric-mirror`, as above.
+  One flag moved: `enable-symmetric-mirror`, as above. With it retired the
+  in-process sweep is 16 464 cells, and nothing moves.
 - **`lattice-sanity-check` aborted one program under the walk**:
   [`corpus/fuzz_findings/d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein),
   which the static check flags non-monotone, failed the probe with
@@ -259,9 +265,9 @@ facts of every state in R
 `-L`'s W1, W2 and W4 rows, `-K`'s W9 rows, the writeback's W3 row — were the
 walk's, and flipped to `fixed` at the switch where R answers them
 ([`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml)). Under a region
-run every lever reads **no** or **unread**, `enable-symmetric-mirror` apart, and
-so do `--jobs` (§ 3.3) and every presentation and artefact option: they change
-speed, or what is printed beside the answer, never the answer.
+run every lever reads **no** or **unread**, and so do `--jobs` (§ 3.3) and
+every presentation and artefact option: they change speed, or what is printed
+beside the answer, never the answer.
 
 ---
 
@@ -573,7 +579,7 @@ one or the other.
 | `the_cli_counts_come_from_the_golden` | § 3.1's per-parser counts or the total are not `help_shape.txt`'s |
 | `the_shipped_environment_set_is_what_the_page_lists` | a shipping crate reads an `EIN_*` name with no row in § 4's first class, or that class lists one nothing reads |
 | `the_unread_flags_change_nothing_printed` | flipping one of § 2.2's five **unread** flags changes `solve -p`'s stdout, stderr or exit code on either of two fixtures |
-| `the_retired_flags_are_refused_with_why` | a program setting one of § 2.4's nine loads, or is refused without the reason |
+| `the_retired_flags_are_refused_with_why` | a program setting one of § 2.4's ten loads, or is refused without the stage and the reason |
 | `the_surface_table_agrees_with_the_sections_it_summarises` | § 1's three counts are not the ones §§ 2–4 own |
 
 **Re-banking the block:**

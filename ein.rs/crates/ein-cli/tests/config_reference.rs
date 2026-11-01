@@ -532,11 +532,12 @@ fn the_unread_flags_change_nothing_printed() {
     }
 }
 
-/// The nine retired flags are load errors that say why, and none is offered
+/// The ten retired flags (nine at S1e2.1a.5, the mirror at S1e2.1a.6) are load
+/// errors that say why, and which stage retired them, and none is offered
 /// among the valid names.
 #[test]
 fn the_retired_flags_are_refused_with_why() {
-    for (flag, why) in RETIRED {
+    for (flag, stage, why) in RETIRED {
         let f = write_fixture(
             &format!("retired-{flag}"),
             &format!("(config :{flag} true)\n(relation p T)\n(p A)\n"),
@@ -549,7 +550,7 @@ fn the_retired_flags_are_refused_with_why() {
         assert_eq!(out.status.code(), Some(1), "{flag}: {err}");
         assert!(
             err.contains(&format!(
-                "config flag :{flag} was retired at M1e2 S1e2.1a.5: {why}"
+                "config flag :{flag} was retired at M1e2 {stage}: {why}"
             )),
             "{flag}: {err}"
         );

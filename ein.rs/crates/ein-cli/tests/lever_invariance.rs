@@ -558,22 +558,15 @@ fn reach(path: &Path) -> Reach {
     })
 }
 
-/// The disagreements this test found and a later task of the stage removes,
-/// each pinned so that it cannot go quiet unnoticed: every question on the
-/// program must still disagree under the flag.
-///
-/// `enable-symmetric-mirror` off takes the mirror's three facts out of
-/// root's fixpoint on the one program that marks a relation
-/// `(__symmetric__ R)`, so the query goal `(knows Bob Ann)` is no longer
-/// derived — R moves. The user ruled on 2026-11-01 that the flag retires;
-/// T1e2.1a.6.3 retires it, files the register row, and deletes this line.
-const KNOWN: [(&str, &str); 1] = [(
-    "examples/features/06_symmetric_native.ein",
-    "enable-symmetric-mirror",
-)];
-
 /// **No `(config …)` flag moves a line of any mode**, on any program whose R
 /// is known.
+///
+/// It found one when it was written: `enable-symmetric-mirror` off took the
+/// mirror's three facts out of root's fixpoint on
+/// `examples/features/06_symmetric_native.ein`, on every question, so R
+/// moved. T1e2.1a.6.3 retired the flag on the user's ruling of 2026-11-01 and
+/// filed the case as the register's W13, fixed in the same commit. A program
+/// that sets it is a load error now, so it is not among [`FLAGS`].
 #[test]
 fn no_config_flag_moves_a_line_of_any_mode() {
     let files = programs();
@@ -613,7 +606,6 @@ fn no_config_flag_moves_a_line_of_any_mode() {
         }
     }
     let (mut cells, mut bad) = (0usize, Vec::new());
-    let mut pinned: BTreeMap<(String, &str), (usize, usize)> = BTreeMap::new();
     for (&(i, flag), out) in items.iter().zip(&outputs) {
         let Some(flag) = flag else { continue };
         let k = &known[i];
@@ -623,15 +615,8 @@ fn no_config_flag_moves_a_line_of_any_mode() {
             .unwrap_or(&k.path)
             .display()
             .to_string();
-        let is_known = KNOWN.contains(&(rel.as_str(), flag));
         for (((flags, _), want), got) in k.questions.iter().zip(defaults[&i]).zip(out) {
             cells += 1;
-            if is_known {
-                let p = pinned.entry((rel.clone(), flag)).or_default();
-                p.0 += 1;
-                p.1 += usize::from(got != want);
-                continue;
-            }
             if got != want {
                 bad.push(format!(
                     "{rel} {} with :{flag} flipped: {}",
@@ -654,17 +639,6 @@ fn no_config_flag_moves_a_line_of_any_mode() {
         bad.len(),
         bad.join("\n\n")
     );
-    for (path, flag) in KNOWN {
-        match pinned.get(&(path.to_string(), flag)) {
-            Some(&(asked, moved)) if asked > 0 && asked == moved => {}
-            got => bad.push(format!(
-                "{path} with :{flag} flipped is a known disagreement, and it moved on \
-                 {got:?} (questions, disagreements): fixed, or no longer swept — \
-                 take it out of KNOWN"
-            )),
-        }
-    }
-    assert!(bad.is_empty(), "{}", bad.join("\n"));
     // 180 on 2026-11-01, of 255 files: 12 partial, 63 with no read-out.
     assert!(known.len() >= 180, "{} programs compared", known.len());
 }

@@ -33,62 +33,80 @@ pub enum FieldKind {
     Str,
 }
 
-/// The flags a `(config …)` takes since M1e2 S1e2.1a.5's switch, in
-/// declaration order: the eight `solve_interface.md` § 2.4 keeps. What
-/// `--dump-config` prints, what the KB-shape dump renders, and what the
-/// loader parses.
+/// The flags a `(config …)` takes, in declaration order: the eight
+/// `solve_interface.md` § 2.4 kept at M1e2 S1e2.1a.5's switch, less
+/// `enable-symmetric-mirror`, retired at S1e2.1a.6. What `--dump-config`
+/// prints, what the KB-shape dump renders, and what the loader parses.
 pub const FLAGS: &[(&str, FieldKind)] = &[
     ("enable-pre-branch-lookahead", FieldKind::Bool),
     ("enable-lookahead-kill-cache", FieldKind::Bool),
     ("warn-derived-naf", FieldKind::Bool),
     ("lattice-sanity-check", FieldKind::Bool),
     ("enable-path-nogoods", FieldKind::Bool),
-    ("enable-symmetric-mirror", FieldKind::Bool),
     ("record-alternative-justifications", FieldKind::Bool),
     ("enable-fail-fast-fork", FieldKind::Bool),
 ];
 
-/// The nine flags the switch retired, each with why — the loader's error, so
-/// a program that sets one is refused with the reason rather than as an
-/// unknown flag (`solve_interface.md` § 2.4). Their fields stay on
-/// [`SolverConfig`] at their defaults, for the walk's library code, which no
-/// command reaches.
-pub const RETIRED: &[(&str, &str)] = &[
+/// The retired flags, each with the M1e2 stage that retired it and why — the
+/// loader's error, so a program that sets one is refused with the reason
+/// rather than as an unknown flag. Nine went with the walk at S1e2.1a.5's
+/// switch (`solve_interface.md` § 2.4), and `enable-symmetric-mirror` at
+/// S1e2.1a.6, the one flag that changed R (the user's ruling of 2026-11-01).
+/// Their fields stay on [`SolverConfig`] at their defaults: the nine for the
+/// walk's library code, which no command reaches, and the mirror's for the
+/// `.einb` container, since no code reads it — the mirror is always on.
+pub const RETIRED: &[(&str, &str, &str)] = &[
     (
         "hypgen-scoring",
+        "S1e2.1a.5",
         "an order lever, and every route's order is part of its definition",
     ),
     (
         "hypgen-rel-weight",
+        "S1e2.1a.5",
         "an order lever, and every route's order is part of its definition",
     ),
     (
         "hypgen-obj-weight",
+        "S1e2.1a.5",
         "an order lever, and every route's order is part of its definition",
     ),
     (
         "print-alive",
+        "S1e2.1a.5",
         "it was inert: no code path read it (Q-M1e.10)",
     ),
     (
         "candidate-order-seed",
+        "S1e2.1a.5",
         "it was inert: no code path read it (Q-M1e.10)",
     ),
     (
         "lattice-order",
+        "S1e2.1a.5",
         "an order lever, and every route's order is part of its definition",
     ),
     (
         "lattice-order-seed",
+        "S1e2.1a.5",
         "an order lever, and every route's order is part of its definition",
     ),
     (
+        "enable-symmetric-mirror",
+        "S1e2.1a.6",
+        "off, it changed the answer, and no config option may. The mirror is \
+         what `(__symmetric__ R)` means, so it is always on: a relation that is \
+         not to be mirrored is not marked",
+    ),
+    (
         "enable-singleton-writeback",
+        "S1e2.1a.5",
         "it wrote into root, which no route does: a candidate dead alone leaves \
          the universe by L1",
     ),
     (
         "enable-forced-positive",
+        "S1e2.1a.5",
         "it wrote into root, which no route does: a candidate dead alone leaves \
          the universe by L1",
     ),
@@ -182,6 +200,11 @@ pub struct SolverConfig {
     /// deterministic permutation, which is how shuffle-invariance is probed.
     pub lattice_order_seed: Option<i64>,
     pub enable_path_nogoods: bool,
+    /// **Retired at M1e2 S1e2.1a.6, and read by nothing.** The saturator
+    /// mirrors every relation marked `(__symmetric__ R)`, always; off, this
+    /// flag took the mirror's facts out of root's fixpoint and so changed R,
+    /// which no config option may (`configuration.md` § 2.5). The field stays,
+    /// at `true`, because the `.einb` container round-trips [`FIELDS`].
     pub enable_symmetric_mirror: bool,
     pub enable_singleton_writeback: bool,
     pub enable_forced_positive: bool,
@@ -288,7 +311,7 @@ mod tests {
         // and then drops. Counting is the cheap half; the loader's own tests
         // check that each name reaches its field.
         assert_eq!(FIELDS.len(), 17);
-        assert_eq!((FLAGS.len(), RETIRED.len()), (8, 9));
+        assert_eq!((FLAGS.len(), RETIRED.len()), (7, 10));
         let mut names: Vec<&str> = FIELDS.iter().map(|(n, _)| *n).collect();
         names.sort_unstable();
         names.dedup();
@@ -296,7 +319,7 @@ mod tests {
         for (name, _) in FIELDS {
             assert!(!name.contains('_'), "{name} should be kebab-case");
             let kept = FLAGS.iter().any(|(f, _)| f == name);
-            let retired = RETIRED.iter().any(|(f, _)| f == name);
+            let retired = RETIRED.iter().any(|(f, _, _)| f == name);
             assert!(
                 kept != retired,
                 "{name} is kept or retired, not both or neither"

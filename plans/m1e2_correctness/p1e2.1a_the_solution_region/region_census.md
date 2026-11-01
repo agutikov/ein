@@ -265,6 +265,10 @@ facts of every state in R:
 - That **R** does not move is the half this stage can measure. Whether a lever
   moves what the **engine reports** is
   [S1e2.1a.6](s1e2.1a.6_engine_against_oracle.md)'s, against this R.
+- **Since S1e2.1a.6 (2026-11-01)** the mirror flag is retired, on the user's
+  ruling of that day, and the register's W13 records it. The census was
+  re-taken after the switch and after the retirement; both are in that
+  stage's file.
 
 ## 10. Route 1's reach, for S1e2.1a.9
 

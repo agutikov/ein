@@ -110,7 +110,7 @@ pub(crate) fn resolved_config(kb: &Kb, m: &ArgMatches) -> SolverConfig {
     cfg
 }
 
-/// The resolved config as the `run` event's `config` object: the eight flags
+/// The resolved config as the `run` event's `config` object: the seven flags
 /// a program can set (`ein_core::config::FLAGS`), kebab keys, JSON values, in
 /// declaration order.
 pub(crate) fn config_json(cfg: &SolverConfig) -> Vec<(&'static str, String)> {
@@ -127,7 +127,6 @@ pub(crate) fn config_json(cfg: &SolverConfig) -> Vec<(&'static str, String)> {
         ("warn-derived-naf", b(cfg.warn_derived_naf)),
         ("lattice-sanity-check", b(cfg.lattice_sanity_check)),
         ("enable-path-nogoods", b(cfg.enable_path_nogoods)),
-        ("enable-symmetric-mirror", b(cfg.enable_symmetric_mirror)),
         (
             "record-alternative-justifications",
             b(cfg.record_alternative_justifications),

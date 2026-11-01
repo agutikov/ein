@@ -73,18 +73,17 @@ CLI_LEVERS: tuple = ()
 ENV_LEVERS = (("EIN_OBLIGATION_CHOICE", "off"), ("EIN_OBLIGATION_CHOICE", "fail-first"),
               ("EIN_TRAVERSAL", "tree"))
 
-# Every `(config …)` flag, flipped away from its default — the four with a CLI
-# shadow too, because a program's own block and a CLI option reach the oracle
-# by different routes. The two float weights take an integer (the surface
-# lexer has no float literal), and the two inert flags are in on purpose: a
-# lever that reaches nothing reaches R least of all, and the census shows it.
+# Every flag a `(config …)` can set, flipped away from its default — the three
+# with a CLI shadow too, because a program's own block and a CLI option reach
+# the oracle by different routes. `enable-symmetric-mirror` was the one flag
+# that moved R (`features/06`), and M1e2 S1e2.1a.6 retired it: setting it is a
+# load error, so it is not a lever any more.
 CONFIG_LEVERS = {
     "enable-pre-branch-lookahead": "false",
     "enable-lookahead-kill-cache": "false",
     "warn-derived-naf": "true",
     "lattice-sanity-check": "true",
     "enable-path-nogoods": "false",
-    "enable-symmetric-mirror": "false",
     "record-alternative-justifications": "false",
     "enable-fail-fast-fork": "false",
 }
@@ -288,9 +287,9 @@ def root_facts(args, path: str, env: dict | None = None) -> tuple:
     """Root's fixpoint, `sat(program)`, as `ein saturate --dump` lists it.
 
     `region.json`'s `state` is a node's facts *beyond root's*, so a lever that
-    changes root — `enable-symmetric-mirror` on a program whose only node is
-    ∅ — would move every model and no field of the dump. Read with the same
-    `(config …)` the cell carries."""
+    changes root — as `enable-symmetric-mirror` did on a program whose only
+    node is ∅, until M1e2 S1e2.1a.6 retired it — would move every model and
+    no field of the dump. Read with the same `(config …)` the cell carries."""
     p = subprocess.run([str(args.bin), "saturate", path, "--dump"], cwd=REPO,
                        capture_output=True, text=True, timeout=args.timeout, env=env)
     out, on = [], False

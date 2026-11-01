@@ -50,7 +50,8 @@ fn main() {
         ("no-lookahead", |c| c.enable_pre_branch_lookahead = false),
         ("no-kill-cache", |c| c.enable_lookahead_kill_cache = false),
         ("no-path-nogoods", |c| c.enable_path_nogoods = false),
-        ("no-symmetric-mirror", |c| c.enable_symmetric_mirror = false),
+        // `no-symmetric-mirror` went at M1e2 S1e2.1a.6: the flag is retired,
+        // the field is read by nothing, and the mirror is always on.
         ("no-singleton-writeback", |c| {
             c.enable_singleton_writeback = false
         }),

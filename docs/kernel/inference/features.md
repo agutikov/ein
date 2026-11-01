@@ -173,7 +173,14 @@ extra commitments rather than a price per branch.
   *fast-path over* the stdlib `symmetric` rule. `zebra2` imports that rule
   (`std.algebra`), so disabling the mirror falls back to it transparently —
   same answer, same cost here (1.0×). The mirror's benefit shows only on
-  puzzles where the matcher cost of the rule dominates.
+  puzzles where the matcher cost of the rule dominates. **Retired at M1e2
+  S1e2.1a.6** (2026-11-01): on a program with no such rule,
+  `features/06_symmetric_native.ein`, turning the mirror off changed the
+  answer, so the mirror is always on and setting the flag is a load error
+  ([`configuration.md` § 2.4](../configuration.md#24-the-ten-retired-flags)).
+  The rows here are the walk's record: `utils/feature_matrix.py` re-takes
+  them against a binary built at or before `7ec8a480`, the last that ran the
+  walk.
 - **`enable_forced_positive`** — `zebra2` records `forced_positives = 0`
   with it on, so the puzzle never triggers a forced-positive cascade;
   disabling it is a no-op here. Expected to matter on puzzles with

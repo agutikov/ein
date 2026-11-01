@@ -3,8 +3,9 @@
 # One row per **witness** of every known wrong answer: a well-formed program,
 # a run the CLI accepts, and an answer that is false under the definitions the
 # user has ruled on (Q-M1e.6, Q-M1e.7 ruling A, the 2026-08-25 `Open` ruling).
-# A case (W1–W12, C1 — `plans/m1e2_correctness/inventory.md`'s ids) has one row
-# per witness, and a fix is done when **every** row of its case answers right.
+# A case (W1–W12, C1 — `plans/m1e2_correctness/inventory.md`'s ids — and W13,
+# filed after it) has one row per witness, and a fix is done when **every** row
+# of its case answers right.
 #
 # Every `wrong` block was **re-run**, not copied, on 2026-10-14 against
 # `a44273e` (whose engine sources are `71dd237`'s, where the inventory was
@@ -35,6 +36,12 @@
 # Q-M1e2.1 *literal*: k = |R| = 7, as Q-M1e2.7's (a) had already said, and the
 # minimal line's 2 became the alternative. Its `now` is a bare `solve`, which
 # answers all of R. The row stays `fixed`: the walk's 3 was wrong under both.
+#
+# **W13 was filed and fixed on 2026-11-01**, in S1e2.1a.6's commit that
+# retired `enable-symmetric-mirror`, the one config flag that moved R
+# (`features/06`). Its `wrong` is a region run under the flag, the first row
+# whose `wrong` is not the walk's. The register reads **25 rows fixed and 10
+# open**.
 #
 # **The review (S1e2.1.7) reads the bundle built at `029ef6f`** on 2026-10-15
 # (`python3 utils/review_bundle.py` → build/review/, 26 cases, 6 788 pages,
@@ -2308,6 +2315,60 @@ line      = "maximal"
 exhausted = true
 k         = 1
 relations = ["p"]
+models    = [
+  [],
+]
+
+# ══ W13 — a config flag changes R ═════════════════════════════════════════════
+#
+# Filed and fixed in one commit, M1e2 S1e2.1a.6's T1e2.1a.6.3 (2026-11-01).
+# `wrong` is a region run, not the walk's: it was taken at `df9afccf` (engine
+# sources `cafac4de`'s) with
+# `ein solve` on the witness with `(config :enable-symmetric-mirror false)`
+# appended, and the models over `knows` are its state file's (`--dump-answer`).
+[[case]]
+id       = "W13/symmetric-mirror-off"
+case     = "W13"
+title    = "a config flag changes R"
+class    = "model set"
+settings = "lever: (config :enable-symmetric-mirror false), appended to the file; a load error since S1e2.1a.6"
+owner    = "S1e2.1a.6"
+question = ["Q-M1e2.7"]
+witness  = "examples/features/06_symmetric_native.ein"
+status   = "fixed"
+look_at  = ["root", "summary"]
+note     = "the one lever that moved R: utils/region_census.py --levers at S1e2.1a.3 (2026-10-16) and again after the switch (2026-11-01), and lever_invariance.rs on all twelve questions. Fixed by retiring the flag on the user's ruling of 2026-11-01, not by making it switch the mirror's implementation: setting it is a load error that says why, and a marked relation is always mirrored. No P1e2.2 stage, because nothing is left to fix. [case.now] cannot tell the two apart, since the witness has no candidate, so a state's (model …) is empty either way and the three facts are root's. What holds the fix is the refusal (config_reference.rs::the_retired_flags_are_refused_with_why, compile_semantics.rs), and the mirror's three firings in ein-infer's events_symmetric-native.jsonl golden and the corpus's shape digests"
+
+[case.wrong]
+run       = "solve"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["knows"]
+models    = [["(knows Ann Bob)", "(knows Gil Gil)"]]
+
+[case.region]
+route    = "route 1"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["knows"]
+models    = [["(knows Ann Bob)", "(knows Bob Ann)", "(knows Gil Gil)"]]
+derived   = "the oracle: R is {∅}, root alive and discharged ([case.region], route 1), and root's fixpoint holds the mirror (knows Bob Ann) of (knows Ann Bob), which (__symmetric__ knows) asks for, so the query goal holds. No config option may change R (the user's ruling of 2026-10-15, configuration.md § 2.5)"
+
+[case.now]
+run       = "solve"
+line      = "all"
+exhausted = true
+k         = 1
+relations = []
 models    = [
   [],
 ]

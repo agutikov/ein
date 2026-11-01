@@ -304,7 +304,6 @@ pub struct Saturator {
     sym_sym: Symbol,
     mirror_queue: Vec<FactId>,
     mirror_seeded: bool,
-    mirror_enabled: bool,
     record_alternatives: bool,
     last_firing: Option<Firing>,
 
@@ -434,10 +433,11 @@ impl Saturator {
             sym_sym,
             mirror_queue: Vec::new(),
             mirror_seeded: false,
-            // S1.20.I2 / S1.21.7 — both read once from the resolved config:
-            // the second is consulted on the redundant-firing path, the
-            // highest-volume path in the engine.
-            mirror_enabled: cfg.enable_symmetric_mirror,
+            // S1.21.7 — read once from the resolved config: it is consulted
+            // on the redundant-firing path, the highest-volume path in the
+            // engine. The mirror is not a setting: `enable-symmetric-mirror`
+            // was retired at M1e2 S1e2.1a.6, and a marked relation is
+            // always closed.
             record_alternatives: cfg.record_alternative_justifications,
             last_firing: None,
             naf_rounds: 0,
@@ -549,7 +549,6 @@ impl Saturator {
             // delta, and a delta fact reaches the KB by a direct write rather
             // than by a firing, so nothing else would offer it.
             mirror_seeded: snapshot.mirror_seeded,
-            mirror_enabled: cfg.enable_symmetric_mirror,
             record_alternatives: cfg.record_alternative_justifications,
             last_firing: None,
             naf_rounds: 0,
@@ -560,7 +559,7 @@ impl Saturator {
             guard_evals_monotone: 0,
             boundary_nanos: 0,
         };
-        if sat.mirror_enabled && sat.mirror_seeded {
+        if sat.mirror_seeded {
             let delta = sat.delta.clone().unwrap_or_default();
             sat.enqueue_mirror_sources(s, &delta);
         }
@@ -689,7 +688,7 @@ impl Saturator {
         let _ = self.delta.take();
         self.enqueue_pass(s, None)?;
         self.needs_enqueue = false;
-        if self.mirror_enabled && self.has_pending_mirror(s) {
+        if self.has_pending_mirror(s) {
             return Ok(false);
         }
         let unfired = self
@@ -712,9 +711,7 @@ impl Saturator {
         }
         // The native mirror runs before rule firings so the closure is
         // available to them. A no-op when no relation is marked.
-        if self.mirror_enabled
-            && let Some(firing) = self.next_mirror_firing(s)?
-        {
+        if let Some(firing) = self.next_mirror_firing(s)? {
             return Ok(Some(firing));
         }
         while let Some(Reverse((_, _, entry))) = self.queue.pop() {
@@ -736,9 +733,7 @@ impl Saturator {
                 self.delta
                     .get_or_insert_with(Vec::new)
                     .extend(firing.derived.iter().copied());
-                if self.mirror_enabled {
-                    self.enqueue_mirror_sources(s, &firing.derived);
-                }
+                self.enqueue_mirror_sources(s, &firing.derived);
             }
             return Ok(Some(firing));
         }

@@ -22,7 +22,6 @@ pub fn print_resolved_config(cfg: &SolverConfig) {
         ("warn-derived-naf", b(cfg.warn_derived_naf)),
         ("lattice-sanity-check", b(cfg.lattice_sanity_check)),
         ("enable-path-nogoods", b(cfg.enable_path_nogoods)),
-        ("enable-symmetric-mirror", b(cfg.enable_symmetric_mirror)),
         (
             "record-alternative-justifications",
             b(cfg.record_alternative_justifications),

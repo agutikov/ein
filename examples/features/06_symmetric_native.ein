@@ -8,7 +8,15 @@
 ;;; rule pays per mirror. Identical closure, one kernel fast-path —
 ;;; `docs/kernel/ir/03-ein-lang/06_reserved_names.md` for the reference, and
 ;;; `utils/feature_matrix.py`'s `no-symmetric-mirror` cell for what the mirror
-;;; is worth.
+;;; was worth to the walk.
+;;;
+;;; **The mirror cannot be turned off since M1e2 S1e2.1a.6.** Off,
+;;; `(config :enable-symmetric-mirror false)` took the three mirrored facts
+;;; below out of root's fixpoint, so the query's goal was no longer derived:
+;;; the one config flag that changed R. The user ruled on 2026-11-01 that it
+;;; retires, and setting it is now a load error that says why
+;;; (`corpus/wrong_answers.toml`, W13). A relation that is not to be mirrored
+;;; is not marked.
 ;;;
 ;;; Contrast with `saturation/symmetric/*.ein`, which exercise the *userspace*
 ;;; `symmetric` rule from `std.algebra`. Nothing else in `examples/` marks a

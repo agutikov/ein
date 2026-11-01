@@ -678,6 +678,9 @@ leave those out.
   [`features/06_symmetric_native.ein`](../../../examples/features/06_symmetric_native.ein),
   where it removes three facts from root
   ([configuration.md § 2.5](../configuration.md#25-the-config-principle-read-against-every-row)).
+  M1e2 S1e2.1a.6 retired that flag (2026-11-01), and
+  `ein-cli/tests/lever_invariance.rs` holds every mode's read-out under every
+  lever to the default's on every program whose R is known.
 
 ## Cross-references
 

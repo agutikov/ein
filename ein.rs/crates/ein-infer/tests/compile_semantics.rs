@@ -401,6 +401,13 @@ fn the_retired_flags_are_refused_with_why() {
             "{flag}: {e}"
         );
     }
+    // S1e2.1a.6: the one flag that changed R, retired on the user's ruling of
+    // 2026-11-01. The mirror itself is always on.
+    let e = config(":enable-symmetric-mirror false").expect_err("retired");
+    assert!(
+        e.contains("was retired at M1e2 S1e2.1a.6") && e.contains("always on"),
+        "{e}"
+    );
     assert_eq!(
         SolverConfig::default().lattice_order_seed,
         None,
@@ -442,7 +449,7 @@ fn the_config_rejections_name_the_flag_and_the_shape_they_wanted() {
             "the accepted set must be enumerated, and {known} is missing: {unknown}"
         );
     }
-    for (retired, _) in ein_core::config::RETIRED {
+    for (retired, _, _) in ein_core::config::RETIRED {
         assert!(
             !unknown.contains(retired),
             "a retired flag is not offered: {unknown}"

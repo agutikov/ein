@@ -173,7 +173,7 @@ d51e83317e36d569       25L  examples/branching/05_mini_zebra.ein::read-out[singl
 6054f3919e2d16da       25L  examples/branching/05_mini_zebra.ein::read-out[n2]
 29071fd632eb0b69      985L  examples/branching/05_mini_zebra.ein::region-trace
 e8e6a2ce5da67ba0       40L  examples/branching/05_mini_zebra.ein::region-lattice
-d43a79f6677a465e      130L  examples/branching/06_lookahead_on.ein::load
+fe9e86e9c6d7e9c7      129L  examples/branching/06_lookahead_on.ein::load
 e430e028e769efcf      107L  examples/branching/06_lookahead_on.ein::saturate
 e47252bf8de065c4       31L  examples/branching/06_lookahead_on.ein::plan
 2966ed597d3e1cbb      138L  examples/branching/06_lookahead_on.ein::match
@@ -208,7 +208,7 @@ fda132f0e2289b3e       48L  examples/branching/06_lookahead_on.ein::dot[kb]
 799d309c1a8610a8       35L  examples/branching/06_lookahead_on.ein::read-out[n2]
 8b6a419618d186fb     6096L  examples/branching/06_lookahead_on.ein::region-trace
 3c4b76c1b1a63823     3000L  examples/branching/06_lookahead_on.ein::region-lattice
-49e24efddecfbd2f      130L  examples/branching/07_lookahead_off.ein::load
+b83b878eb26655bb      129L  examples/branching/07_lookahead_off.ein::load
 e430e028e769efcf      107L  examples/branching/07_lookahead_off.ein::saturate
 e47252bf8de065c4       31L  examples/branching/07_lookahead_off.ein::plan
 2966ed597d3e1cbb      138L  examples/branching/07_lookahead_off.ein::match
@@ -313,7 +313,7 @@ f44ffff9a16d4a53       26L  examples/branching/09_hrule.ein::read-out[single]
 e28ac4d754d4a3a6       26L  examples/branching/09_hrule.ein::read-out[n2]
 f30c9bbe9a5f5744      513L  examples/branching/09_hrule.ein::region-trace
 cdef52d595a88396       22L  examples/branching/09_hrule.ein::region-lattice
-779f171cc4eb76a5      128L  examples/branching/10_kill_cache_on.ein::load
+0db79f0bb747b338      127L  examples/branching/10_kill_cache_on.ein::load
 0a2828410c391953      137L  examples/branching/10_kill_cache_on.ein::saturate
 4e5659466af36edf       31L  examples/branching/10_kill_cache_on.ein::plan
 decb6daed311e457       70L  examples/branching/10_kill_cache_on.ein::match
@@ -348,7 +348,7 @@ d25f018af5672f22       29L  examples/branching/10_kill_cache_on.ein::read-out[si
 626617fcfd6cd24e       29L  examples/branching/10_kill_cache_on.ein::read-out[n2]
 d80e121f2c1d6878     2885L  examples/branching/10_kill_cache_on.ein::region-trace
 5141b9ba7dda673f      291L  examples/branching/10_kill_cache_on.ein::region-lattice
-75e1ef023022b7d7      128L  examples/branching/11_kill_cache_off.ein::load
+623ce37b505bee30      127L  examples/branching/11_kill_cache_off.ein::load
 0a2828410c391953      137L  examples/branching/11_kill_cache_off.ein::saturate
 4e5659466af36edf       31L  examples/branching/11_kill_cache_off.ein::plan
 decb6daed311e457       70L  examples/branching/11_kill_cache_off.ein::match
@@ -418,7 +418,7 @@ e9fdd30847ce589a       21L  examples/branching/12_typed_blind_solve.ein::read-ou
 6a50c9cf48d309b2       27L  examples/branching/12_typed_blind_solve.ein::read-out[n2]
 ffceea5d0e1c1385      910L  examples/branching/12_typed_blind_solve.ein::region-trace
 87a4a844cde4721d       77L  examples/branching/12_typed_blind_solve.ein::region-lattice
-c699d36ceb99726b       48L  examples/branching/13_lookahead_naf_world.ein::load
+1aa56ea8496826a8       47L  examples/branching/13_lookahead_naf_world.ein::load
 df676ce9b1b86629        9L  examples/branching/13_lookahead_naf_world.ein::saturate
 eb28bd088ebedca2       14L  examples/branching/13_lookahead_naf_world.ein::plan
 995dea2cff176ea3        5L  examples/branching/13_lookahead_naf_world.ein::match
@@ -453,7 +453,7 @@ ce6c9549feb942fb       26L  examples/branching/13_lookahead_naf_world.ein::read-
 600f4a9c05b010c1       26L  examples/branching/13_lookahead_naf_world.ein::read-out[n2]
 75eafb474a75e94b       80L  examples/branching/13_lookahead_naf_world.ein::region-trace
 7a8d9316e29dac83       15L  examples/branching/13_lookahead_naf_world.ein::region-lattice
-9e31697912521a28       50L  examples/branching/14_lookahead_unjudgeable.ein::load
+1b7b8cc74af041b6       49L  examples/branching/14_lookahead_unjudgeable.ein::load
 d4997711894e44f6        5L  examples/branching/14_lookahead_unjudgeable.ein::saturate
 2daff85150aca053       18L  examples/branching/14_lookahead_unjudgeable.ein::plan
 e00827ae16b399b2        2L  examples/branching/14_lookahead_unjudgeable.ein::match
@@ -488,7 +488,7 @@ b64a69ca4b0ebb0f       17L  examples/branching/14_lookahead_unjudgeable.ein::dot
 d63662735a2686b7       24L  examples/branching/14_lookahead_unjudgeable.ein::read-out[n2]
 4cd141f92000c993       60L  examples/branching/14_lookahead_unjudgeable.ein::region-trace
 c476a9291967e838       15L  examples/branching/14_lookahead_unjudgeable.ein::region-lattice
-a079fb9dcabf8a7d       67L  examples/branching/15_lookahead_two_step_on.ein::load
+44de4f6aad5bbf61       66L  examples/branching/15_lookahead_two_step_on.ein::load
 225f461888c46c36        6L  examples/branching/15_lookahead_two_step_on.ein::saturate
 d9badb82918767f4       17L  examples/branching/15_lookahead_two_step_on.ein::plan
 4d365de28fa4e962        3L  examples/branching/15_lookahead_two_step_on.ein::match
@@ -523,7 +523,7 @@ f774e34fdf1ff111       27L  examples/branching/15_lookahead_two_step_on.ein::rea
 8b880e3de2dc5890       27L  examples/branching/15_lookahead_two_step_on.ein::read-out[n2]
 8dbbdd089a9ad5e6       71L  examples/branching/15_lookahead_two_step_on.ein::region-trace
 47b0cad5596406ca       24L  examples/branching/15_lookahead_two_step_on.ein::region-lattice
-f6d2330508220139       67L  examples/branching/16_lookahead_two_step_off.ein::load
+05557cef024df8cb       66L  examples/branching/16_lookahead_two_step_off.ein::load
 225f461888c46c36        6L  examples/branching/16_lookahead_two_step_off.ein::saturate
 d9badb82918767f4       17L  examples/branching/16_lookahead_two_step_off.ein::plan
 4d365de28fa4e962        3L  examples/branching/16_lookahead_two_step_off.ein::match
@@ -880,7 +880,7 @@ d41d8cd98f00b204        0L  examples/broken/load/config_retired_flag.ein::dot[ru
 9144b7d55d0c87c3        1L  examples/broken/load/config_retired_flag.ein::dot[kb-no-types]
 9144b7d55d0c87c3        1L  examples/broken/load/config_retired_flag.ein::dot[kb-no-instances]
 9144b7d55d0c87c3        1L  examples/broken/load/config_retired_flag.ein::dot[kb-since]
-a6ba0c20072c4c71        1L  examples/broken/load/config_unknown_flag.ein::load
+fd084c674e5b296e        1L  examples/broken/load/config_unknown_flag.ein::load
 e12429a8be454c6a        3L  examples/broken/load/config_unknown_flag.ein::ir[parse]
 49c9120d4ca33875        2L  examples/broken/load/config_unknown_flag.ein::ir[dump-compact]
 e12429a8be454c6a        3L  examples/broken/load/config_unknown_flag.ein::ir[resolve]
@@ -894,12 +894,12 @@ e6a3ab1f0c229fec        6L  examples/broken/load/config_unknown_flag.ein::dot[ir
 d41d8cd98f00b204        0L  examples/broken/load/config_unknown_flag.ein::dot[rules]
 d41d8cd98f00b204        0L  examples/broken/load/config_unknown_flag.ein::dot[rules-overlay]
 2c5f1213edf81f87        5L  examples/broken/load/config_unknown_flag.ein::dot[constraints]
-a6ba0c20072c4c71        1L  examples/broken/load/config_unknown_flag.ein::dot[kb]
-a6ba0c20072c4c71        1L  examples/broken/load/config_unknown_flag.ein::dot[kb-origin]
-a6ba0c20072c4c71        1L  examples/broken/load/config_unknown_flag.ein::dot[kb-none]
-a6ba0c20072c4c71        1L  examples/broken/load/config_unknown_flag.ein::dot[kb-no-types]
-a6ba0c20072c4c71        1L  examples/broken/load/config_unknown_flag.ein::dot[kb-no-instances]
-a6ba0c20072c4c71        1L  examples/broken/load/config_unknown_flag.ein::dot[kb-since]
+fd084c674e5b296e        1L  examples/broken/load/config_unknown_flag.ein::dot[kb]
+fd084c674e5b296e        1L  examples/broken/load/config_unknown_flag.ein::dot[kb-origin]
+fd084c674e5b296e        1L  examples/broken/load/config_unknown_flag.ein::dot[kb-none]
+fd084c674e5b296e        1L  examples/broken/load/config_unknown_flag.ein::dot[kb-no-types]
+fd084c674e5b296e        1L  examples/broken/load/config_unknown_flag.ein::dot[kb-no-instances]
+fd084c674e5b296e        1L  examples/broken/load/config_unknown_flag.ein::dot[kb-since]
 815eefdde13c258d        1L  examples/broken/load/derivation_cycle.ein::load
 9ad0af07a193c15e        5L  examples/broken/load/derivation_cycle.ein::ir[parse]
 3e3501727abed0d1        3L  examples/broken/load/derivation_cycle.ein::ir[dump-compact]
@@ -2017,7 +2017,7 @@ a73854b8fe1ef000       23L  examples/ein-bugs/alive-empty-phase1.ein::read-out[s
 db255b3df86a5b79       23L  examples/ein-bugs/alive-empty-phase1.ein::read-out[n2]
 5cdb13084eb5ee75       47L  examples/ein-bugs/alive-empty-phase1.ein::region-trace
 91c324406a404e89       12L  examples/ein-bugs/alive-empty-phase1.ein::region-lattice
-15e65912c0d975f9       50L  examples/ein-bugs/alive-set-fresh-name-declared.ein::load
+4e11b25587e94b82       49L  examples/ein-bugs/alive-set-fresh-name-declared.ein::load
 50d18800cbdb1acc        6L  examples/ein-bugs/alive-set-fresh-name-declared.ein::saturate
 41f2c266c9262176       15L  examples/ein-bugs/alive-set-fresh-name-declared.ein::plan
 bf8423a9f75315cd        3L  examples/ein-bugs/alive-set-fresh-name-declared.ein::match
@@ -2052,7 +2052,7 @@ b3796112aa95e79a       25L  examples/ein-bugs/alive-set-fresh-name-declared.ein:
 309ef7231e75d50b       27L  examples/ein-bugs/alive-set-fresh-name-declared.ein::read-out[n2]
 476b56b99e611bcb      157L  examples/ein-bugs/alive-set-fresh-name-declared.ein::region-trace
 f841c3639e314022       23L  examples/ein-bugs/alive-set-fresh-name-declared.ein::region-lattice
-7f51b2ddcb439b5d       40L  examples/ein-bugs/alive-set-fresh-name.ein::load
+9b5b9acf0db9486d       39L  examples/ein-bugs/alive-set-fresh-name.ein::load
 2466bd36fc7e96d4        6L  examples/ein-bugs/alive-set-fresh-name.ein::saturate
 41f2c266c9262176       15L  examples/ein-bugs/alive-set-fresh-name.ein::plan
 bf8423a9f75315cd        3L  examples/ein-bugs/alive-set-fresh-name.ein::match
@@ -2297,7 +2297,7 @@ fcb4d5159b1cf8e2       24L  examples/ein-bugs/mixed-type-hypothesis.ein::read-ou
 957443f678f8ccf9       24L  examples/ein-bugs/mixed-type-hypothesis.ein::read-out[n2]
 175af86846c53f33       45L  examples/ein-bugs/mixed-type-hypothesis.ein::region-trace
 1fecd53e22ccfa52       15L  examples/ein-bugs/mixed-type-hypothesis.ein::region-lattice
-47fd88dfcef5c353       40L  examples/ein-bugs/naf-upward-closure.ein::load
+dc2a7b88c59acc3f       39L  examples/ein-bugs/naf-upward-closure.ein::load
 d5a93935881670d2        4L  examples/ein-bugs/naf-upward-closure.ein::saturate
 c107f4e9a63826ec        8L  examples/ein-bugs/naf-upward-closure.ein::plan
 e04d05bd4ba5087f        1L  examples/ein-bugs/naf-upward-closure.ein::match
@@ -2787,7 +2787,7 @@ fe70c601dcfa08fa       20L  examples/ein-bugs/wrong-answers/fresh-name-default.e
 389c96b4b66fd404       20L  examples/ein-bugs/wrong-answers/fresh-name-default.ein::read-out[n2]
 034edaa126359bf8       47L  examples/ein-bugs/wrong-answers/fresh-name-default.ein::region-trace
 f8f57ef4ce882a9a       12L  examples/ein-bugs/wrong-answers/fresh-name-default.ein::region-lattice
-a1c7b142fa7ea49f       37L  examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein::load
+b9f25827054ed4d3       36L  examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein::load
 ab28e69264ddd463        5L  examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein::saturate
 d123cd7a79f0848f       10L  examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein::plan
 e921e750a11997a0        2L  examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein::match
@@ -2822,7 +2822,7 @@ c2bd64738eb2063d       23L  examples/ein-bugs/wrong-answers/fresh-name-nospawn.e
 808d12058c3b5235       23L  examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein::read-out[n2]
 86b5a546d5e41c0a       47L  examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein::region-trace
 5b173f889a7f6d78       12L  examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein::region-lattice
-2734fe2fc30d3abd       39L  examples/ein-bugs/wrong-answers/naf-nowb.ein::load
+16c1e4c0dd3f94cd       38L  examples/ein-bugs/wrong-answers/naf-nowb.ein::load
 d5a93935881670d2        4L  examples/ein-bugs/wrong-answers/naf-nowb.ein::saturate
 c107f4e9a63826ec        8L  examples/ein-bugs/wrong-answers/naf-nowb.ein::plan
 e04d05bd4ba5087f        1L  examples/ein-bugs/wrong-answers/naf-nowb.ein::match
@@ -2962,7 +2962,7 @@ bbd8426013c06899       23L  examples/ein-bugs/wrong-answers/owed-two-step.ein::r
 eecfcf1f58a45f33       16L  examples/ein-bugs/wrong-answers/owed-two-step.ein::read-out[n2]
 631e01dc42fbcda3       42L  examples/ein-bugs/wrong-answers/owed-two-step.ein::region-trace
 41cac897203c8ebe        7L  examples/ein-bugs/wrong-answers/owed-two-step.ein::region-lattice
-a4b0b3218be8ce74       40L  examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein::load
+b776cd891434c7e7       39L  examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein::load
 7cfa024973a9a5ea       10L  examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein::saturate
 8d199760ea6ed627       14L  examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein::plan
 f184064bbf154b35        4L  examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein::match
@@ -3137,7 +3137,7 @@ bda2f3731c2c4ccf       24L  examples/ein-bugs/wrong-answers/uncovered.ein::read-
 15db6249686d7690       27L  examples/ein-bugs/wrong-answers/uncovered.ein::read-out[n2]
 f6d2375cb7536ee9       65L  examples/ein-bugs/wrong-answers/uncovered.ein::region-trace
 d92eb4833627e8ac       24L  examples/ein-bugs/wrong-answers/uncovered.ein::region-lattice
-7e45ff6e467af2ee      464L  examples/ein-bugs/zebra2-bad.ein::load
+bca3313c8df49570      463L  examples/ein-bugs/zebra2-bad.ein::load
 3ba0ec571734661a    10352L  examples/ein-bugs/zebra2-bad.ein::saturate
 2119df901e370fb6      155L  examples/ein-bugs/zebra2-bad.ein::plan
 85c84dc6cb1e3743      170L  examples/ein-bugs/zebra2-bad.ein::match
@@ -3172,7 +3172,7 @@ da64d715e2ae3177       16L  examples/ein-bugs/zebra2-bad.ein::read-out[minimal]
 555e23233fc8df09       16L  examples/ein-bugs/zebra2-bad.ein::read-out[n2]
 336f90a6c02d95cf    65870L  examples/ein-bugs/zebra2-bad.ein::region-trace
 e8fd5aea8b88e6c5        7L  examples/ein-bugs/zebra2-bad.ein::region-lattice
-47a9cd063a65ee26      477L  examples/ein-bugs/zebra2-hints.ein::load
+a2cfa9fbde1242c9      476L  examples/ein-bugs/zebra2-hints.ein::load
 1390be3095f95512     2298L  examples/ein-bugs/zebra2-hints.ein::saturate
 c66e0ba6db38a04f      157L  examples/ein-bugs/zebra2-hints.ein::plan
 fcaf91a6000238bc      184L  examples/ein-bugs/zebra2-hints.ein::match
@@ -4992,7 +4992,7 @@ fb07461db5a90e4e       15L  examples/syntax/arg-kinds.ein::read-out[minimal]
 16de529235f10437       17L  examples/syntax/arg-kinds.ein::read-out[n2]
 f0a58d4cf9cb941a       32L  examples/syntax/arg-kinds.ein::region-trace
 b919689165963e74    23819L  examples/syntax/arg-kinds.ein::region-lattice
-7df26151bda1d96b        9L  examples/syntax/config.ein::load
+df4977744e9e9e78        8L  examples/syntax/config.ein::load
 87ccb5297ddb3199        3L  examples/syntax/config.ein::saturate
 d41d8cd98f00b204        0L  examples/syntax/config.ein::plan
 d41d8cd98f00b204        0L  examples/syntax/config.ein::match
@@ -5552,7 +5552,7 @@ b25e019ed08fe4ec       15L  examples/syntax/wrappers.ein::read-out[minimal]
 21aee7922f35d7a4       15L  examples/syntax/wrappers.ein::read-out[n2]
 215b4c2bb4f8d1a1       27L  examples/syntax/wrappers.ein::region-trace
 7ac9a44499bff393        7L  examples/syntax/wrappers.ein::region-lattice
-2a6fcde43e3e3b13      370L  examples/zebra.ein::load
+27acf762ed98c599      369L  examples/zebra.ein::load
 d8fee7e79153f49b     3684L  examples/zebra.ein::saturate
 7d2896968971541b       50L  examples/zebra.ein::plan
 2134afecd6a99143       52L  examples/zebra.ein::match
@@ -5587,7 +5587,7 @@ de053cdef494ec82      148L  examples/zebra.ein::dot[kb-since]
 419fe54e1b5642cc       54L  examples/zebra.ein::read-out[n2]
 d412374b0b9f364d    32578L  examples/zebra.ein::region-trace
 d217dc400ec38c0b       16L  examples/zebra.ein::region-lattice
-e5b86261e25137f5      473L  examples/zebra2-hints.ein::load
+a333f389a5e9c11c      472L  examples/zebra2-hints.ein::load
 d536b16f6c611e44     2621L  examples/zebra2-hints.ein::saturate
 b0a44ea14acdeb23      192L  examples/zebra2-hints.ein::plan
 4b9d07ebb49bb4fd      199L  examples/zebra2-hints.ein::match
@@ -5622,7 +5622,7 @@ cb56551d5edd51e8       23L  examples/zebra2-hints.ein::read-out[minimal]
 24aae9c36a1833eb       36L  examples/zebra2-hints.ein::read-out[n2]
 246760988c132be9    10372L  examples/zebra2-hints.ein::region-trace
 3ad3b87497f0362d       80L  examples/zebra2-hints.ein::region-lattice
-4c61b5d59ac995ba      452L  examples/zebra2-minus-15-obligations.ein::load
+7972231ea2f10c6c      451L  examples/zebra2-minus-15-obligations.ein::load
 38adc04b173acc7f     1439L  examples/zebra2-minus-15-obligations.ein::saturate
 2119df901e370fb6      155L  examples/zebra2-minus-15-obligations.ein::plan
 2b5831f533088498      168L  examples/zebra2-minus-15-obligations.ein::match
@@ -5657,7 +5657,7 @@ bc380d4586c63af7       16L  examples/zebra2-minus-15-obligations.ein::read-out[m
 45b2454d0f72314b       49L  examples/zebra2-minus-15-obligations.ein::read-out[n2]
 dd859dd0e8da2dc8     5018L  examples/zebra2-minus-15-obligations.ein::region-trace
 c80eb03f4e1aae63        7L  examples/zebra2-minus-15-obligations.ein::region-lattice
-e4c9397d8850ffba      454L  examples/zebra2-minus-15.ein::load
+12baa0555b9e2c6d      453L  examples/zebra2-minus-15.ein::load
 38adc04b173acc7f     1439L  examples/zebra2-minus-15.ein::saturate
 2119df901e370fb6      155L  examples/zebra2-minus-15.ein::plan
 2b5831f533088498      168L  examples/zebra2-minus-15.ein::match
@@ -5692,7 +5692,7 @@ cfd394f19159ff36       16L  examples/zebra2-minus-15.ein::read-out[maximal]
 8114d109a2eec4e0       49L  examples/zebra2-minus-15.ein::read-out[n2]
 dd859dd0e8da2dc8     5018L  examples/zebra2-minus-15.ein::region-trace
 0a811687673d80d5        7L  examples/zebra2-minus-15.ein::region-lattice
-1d1157c6cb2cc585      457L  examples/zebra2-obligations.ein::load
+5917c78e6c3bc427      456L  examples/zebra2-obligations.ein::load
 705e32fbc749b154     2292L  examples/zebra2-obligations.ein::saturate
 2119df901e370fb6      155L  examples/zebra2-obligations.ein::plan
 85c84dc6cb1e3743      170L  examples/zebra2-obligations.ein::match
@@ -5727,7 +5727,7 @@ a411c8cb86dd2657       33L  examples/zebra2-obligations.ein::read-out[single]
 689e9db3a7e15500       33L  examples/zebra2-obligations.ein::read-out[n2]
 e2155313ec826dd2    13359L  examples/zebra2-obligations.ein::region-trace
 2d8761b3f382eb55       16L  examples/zebra2-obligations.ein::region-lattice
-ff2b3d68139302e8      459L  examples/zebra2.ein::load
+a5466f99a455e953      458L  examples/zebra2.ein::load
 705e32fbc749b154     2292L  examples/zebra2.ein::saturate
 2119df901e370fb6      155L  examples/zebra2.ein::plan
 85c84dc6cb1e3743      170L  examples/zebra2.ein::match

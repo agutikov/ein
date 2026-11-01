@@ -1,1 +1,1 @@
-(config …): unknown config flag :nope (expected one of: enable-fail-fast-fork, enable-lookahead-kill-cache, enable-path-nogoods, enable-pre-branch-lookahead, enable-symmetric-mirror, lattice-sanity-check, record-alternative-justifications, warn-derived-naf)
+(config …): unknown config flag :nope (expected one of: enable-fail-fast-fork, enable-lookahead-kill-cache, enable-path-nogoods, enable-pre-branch-lookahead, lattice-sanity-check, record-alternative-justifications, warn-derived-naf)

@@ -254,7 +254,7 @@ fn leftover_block(
     ]))
 }
 
-/// The resolved config: the eight flags a program can set
+/// The resolved config: the seven flags a program can set
 /// (`ein_core::config::FLAGS`), kebab-cased, in declaration order — the same
 /// fields `--dump-config` prints.
 fn config_block(cfg: &SolverConfig) -> Json {
@@ -270,10 +270,6 @@ fn config_block(cfg: &SolverConfig) -> Json {
         ("warn-derived-naf", Json::Bool(cfg.warn_derived_naf)),
         ("lattice-sanity-check", Json::Bool(cfg.lattice_sanity_check)),
         ("enable-path-nogoods", Json::Bool(cfg.enable_path_nogoods)),
-        (
-            "enable-symmetric-mirror",
-            Json::Bool(cfg.enable_symmetric_mirror),
-        ),
         (
             "record-alternative-justifications",
             Json::Bool(cfg.record_alternative_justifications),
