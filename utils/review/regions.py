@@ -5,10 +5,12 @@
 Every corpus program's region, surveyed, and a page for the ones worth
 reading: the **synthetic** programs `utils/region_synth.py` wrote for a chosen
 region, the **biggest** regions, and the **most interesting**, each one named
-for why. The survey runs each program at its corpus entry's first declared
-`solve` flags (or plain `solve`) with `--dump-region`, and reads the numbers
-off `region.json` and `ein render region --view table`'s summary: the script
-sorts and links, and computes no region and no overlay of its own.
+for why. The survey runs `ein oracle FILE --dump` on each program and reads the
+numbers off `region.json` and `ein render region --view table`'s summary: the
+script sorts and links, and computes no region of its own. A program's page
+runs its corpus entry's first declared `solve` (or plain `solve`, which
+describes R). Since S1e2.1a.5's switch there is no walk to set against the
+cube: every mode is held to the oracle by `ein-infer/tests/explore.rs`.
 
     DIR/README.md                       the gallery: the three sections, then every region
     DIR/programs/<path>/README.md       one program, every artefact (utils/review_bundle.py's program page)
@@ -24,7 +26,8 @@ import tempfile
 import tomllib
 from pathlib import Path
 
-from review.util import REPO, SvgJob, details, doc, load_json, read, rel, render_svgs, run, table, write
+from review.run import solve_flags
+from review.util import REPO, SvgJob, doc, load_json, read, rel, render_svgs, run, table, write
 
 # Raised `--region-limit`s: the corpus's largest cubes under a minute each
 # (measured 2026-10-15 on 16 jobs). The n = 18 pair, `branching/10` and `/11`,
@@ -36,20 +39,15 @@ BIGGEST = 8
 
 
 def corpus_entries() -> list[tuple[str, list[str]]]:
-    """Every corpus entry with the flags of its declared `solve -e` run, else
-    its first `solve`, else none — the cube does not depend on them, the walk
-    does."""
+    """Every corpus entry with the flags of its first declared `solve` run,
+    else none — the cube does not depend on them, the program page's run does."""
     corpus = tomllib.loads((REPO / "corpus/corpus.toml").read_text(encoding="utf-8"))
     out = []
     for e in corpus["entry"]:
         if e.get("slow"):
             continue
         solves = [r for r in e.get("runs", []) if r.split()[0] == "solve" and "{out}" not in r]
-        # The exhaustive run where one is declared: the walk against R is then
-        # the whole walk, not the first model's.
-        run_name = next((r for r in solves if "-e" in r.split()), solves[0] if solves else "solve")
-        flags = [f for f in run_name.split()[1:] if "{out}" not in f and f != "--dump-region"]
-        out.append((e["path"], flags))
+        out.append((e["path"], solve_flags(solves[0]) if solves else []))
     return out
 
 
@@ -65,9 +63,6 @@ def summary_of(table_md: str) -> dict:
         m = re.match(r"- \*\*exclusions\*\* (\d+) checked, (\d+) unsound", line)
         if m:
             s["exclusions"] = (int(m.group(1)), int(m.group(2)))
-        m = re.match(r"- \*\*the walk\*\* (.*)$", line)
-        if m:
-            s["walk"] = m.group(1)
     s["disagree"] = table_md.count("≠ the search") + table_md.count("**≠ ")
     return s
 
@@ -77,12 +72,11 @@ def survey(bin: str, tmp: Path) -> list[dict]:
     for path, flags in corpus_entries():
         d = tmp / path.replace("/", "_")
         limit = BIG.get(path)
-        argv = [bin, "solve", path, *flags, "--dump-region", str(d), "-j", "8"]
+        argv = [bin, "oracle", path, "--dump", str(d), "-j", "8"]
         if limit:
             argv += ["--region-limit", str(limit)]
         inv = run("survey", argv, timeout=SURVEY_TIMEOUT)
         region = load_json(d / "region.json")
-        walk = load_json(d / "walk.json") or {}
         row = {"path": path, "flags": flags, "limit": limit, "n": None, "refused": None, "exit": inv.code}
         if region is None:
             row["refused"] = "timed out" if inv.code == -2 else "no region.json"
@@ -105,8 +99,6 @@ def survey(bin: str, tmp: Path) -> list[dict]:
             moved=sum(not x["status"].startswith("dead") and x.get("closure", x["mask"]) != x["mask"] for x in nodes),
             local=len(r["local_max"]) + len(r["local_min"]),
             monotone=region["monotonicity"]["monotone"],
-            verdict=walk.get("verdict", {}).get("type", "?"), k=walk.get("verdict", {}).get("k"),
-            exhausted=walk.get("verdict", {}).get("exhausted"),
             **{"overlay": summary_of(t.stdout)})
         shutil.rmtree(d, ignore_errors=True)
         rows.append(row)
@@ -134,11 +126,6 @@ def tags(row: dict) -> list[str]:
     uns = ov.get("exclusions", (0, 0))[1]
     if uns:
         out.append(f"{uns} unsound exclusion(s)")
-    mn, mx = ov.get("minimal"), ov.get("maximal")
-    if mn and mx and mn[1] != "none" and mx[1] != "none":
-        out.append("the walk misses both lines")
-    if mn and mx and mn[2] != "none" and mx[2] != "none":
-        out.append("a recorded model on neither line")
     if row["size"] == 0 and row["owing"]:
         out.append("R empty, owing")
     return out
@@ -207,7 +194,7 @@ def cmd_regions(out: Path, bin: str) -> int:
             text = read(page)
             write(page, text.replace("## The models", "\n".join(extra) + "\n## The engine's models", 1))
         pages[r["path"]] = page
-        print(f"{r['path']:60s} {r.get('verdict')} k={r.get('k')}  {', '.join(tags(r))}")
+        print(f"{r['path']:60s} |R|={r.get('size')}  {', '.join(tags(r))}")
 
     index = out / "README.md"
     def link(r):
@@ -219,36 +206,26 @@ def cmd_regions(out: Path, bin: str) -> int:
             return []
         svg = p.parent / "runs" / "run" / "img" / "region" / "region.svg"
         return [f"![{r['path']}]({rel(svg, index)})", ""] if svg.exists() else []
-    def lines_cell(r):
-        ov = r.get("overlay", {})
-        cell = []
-        for k in ("minimal", "maximal"):
-            if k in ov:
-                cell.append(f"{k[:3]}: missing {ov[k][1]}")
-        return "<br>".join(cell)
-    head = ["program", "n", "|R|", "min", "max", "holes", "comp.", "owing", "dead", "moved", "monotone",
-            "engine", "the walk against R", "why"]
+    head = ["program", "n", "|R|", "min", "max", "holes", "comp.", "owing", "dead", "moved", "monotone", "why"]
     def row_of(r):
         if r.get("size") is None:
-            return [link(r), r["n"] if r["n"] is not None else "—", "—", "", "", "", "", "", "", "", "", "", r["refused"], ""]
+            return [link(r), r["n"] if r["n"] is not None else "—", "—", "", "", "", "", "", "", "", "", r["refused"]]
         return [link(r), r["n"], r["size"], r["minimal"], r["maximal"], r["holes"], r["components"], r["owing"],
-                r["dead"], r["moved"], "yes" if r["monotone"] else "**no**", f"{r['verdict']} k={r['k']}",
-                lines_cell(r), ", ".join(tags(r))]
+                r["dead"], r["moved"], "yes" if r["monotone"] else "**no**", ", ".join(tags(r))]
 
     lines = ["# The region gallery", "",
              f"> Every corpus program's region — {len(have)} computed, {len(rows) - len(have)} not — and a page for the ones "
              f"worth reading. Built by `python3 utils/review_bundle.py --regions` (M1e2 S1e2.1a.8). The legend is "
              f"[§ Region rendering]({doc('docs/kernel/ir/03-ein-lang/04_dot_rendering.md', index)}#region-rendering--the-cube-and-the-walk-s1e21a2); "
-             f"the raw survey is [`survey.json`](survey.json). Each program ran at its corpus entry's declared "
-             f"`solve -e` flags where it has them, else its first `solve`, so *the walk* is that run's.", ""]
+             f"the raw survey is [`survey.json`](survey.json). Each region is `ein oracle --dump`'s; each program "
+             f"page runs the corpus entry's first declared `solve`.", ""]
     for title, what, group in [
             ("Synthetic — written for their region",
              "Programs `utils/region_synth.py` wrote for a chosen region (`examples/lattice/synth/`). The oracle is held "
              "to each target node for node; each page also carries the right answer, by construction, as files.", synth),
             ("The biggest", f"The {BIGGEST} largest regions, twins merged (same n, |R|, lines and counts).", biggest),
             ("The most interesting", "Every other region with two or more of: holes, several components, not monotone, "
-             "saturation moves, local ≠ global, several nodes on both lines, an unsound exclusion, a walk that misses "
-             "both lines, a recorded model on neither line.", interesting)]:
+             "saturation moves, local ≠ global, several nodes on both lines, an unsound exclusion.", interesting)]:
         lines += [f"## {title}", "", what, ""]
         lines += table(head, [row_of(r) for r in group]) + [""]
         for r in group:

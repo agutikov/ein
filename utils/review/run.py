@@ -1,32 +1,38 @@
-"""One run, fully explicit — M1e2 S1e2.1.5.
+"""One run, fully explicit — M1e2 S1e2.1.5, re-pointed at the region modes.
 
 `build_run` drives every artefact `ein` can write for one `(file, flags, env)`,
 keeps each verbatim under `raw/`, and renders it as pages a person reads
-without decoding anything: every graph an SVG, every JSON a table, every
-snapshot pair a diff.
+without decoding anything: every graph an SVG, every JSON a table.
 
     DIR/run.md            what was run, the answer, and every page with its size
     DIR/raw/              everything the engine wrote, never edited
     DIR/img/              every DOT above and every ```dot block of the trace, as SVG
-    DIR/pages/            program, root, trace/, states/, lattice/, region/, answer,
+    DIR/pages/            program, root, trace/, lattice/, region/, answer, nogoods,
                           summary, events/, consistency
 
-A solve has **one dumper**, so the run is several invocations: `main` carries
-every flag that can share a solve (`--trace --full-kb-snapshots`,
-`--dump-states`, `--dump-answer`, `--dump-region`, `--events`,
-`--json-summary`, and the stdout diagnostics), `lattice` carries
-`--dump-lattice`, and `grid` / `key` the two model forms. `--dump-region`'s
-three files are kept under `raw/region/` and drawn by `ein render region`
-(S1e2.1a.2) into `pages/region/`; the case page shows each run's drawing, and
-its § The region in R's vocabulary is S1e2.1a.7's. Their answers have to be
-the same answer, which is cross-check 1.
+A run is several invocations. `main` carries every flag that can share a solve
+(`--trace --full-kb-snapshots`, `--dump-answer`, `--dump-lattice`,
+`--events`, `--json-summary` and the stdout diagnostics), `grid` / `key` the
+two model forms, `diff` the comparison with the register's right answer, and
+`oracle` R by brute force: `ein oracle --dump`, whose directory
+`ein render region` draws into `pages/region/` and whose answer the run is
+held to (cross-check 5). Their answers have to be the same answer, which is
+cross-check 1.
+
+**Since S1e2.1a.5's switch (2026-10-18) there is no walk.** A region run
+classifies nodes and never writes root, so the walk's `--dump-states`
+timeline, its per-entering tree, `root_writes.json`, `refuted/` and
+`alive_at_end.json` have no producer: `--dump-lattice` is every node the run
+visited (`ein-lattice/2`), N replaces `refuted/`, and the cube is
+`ein oracle --dump`'s rather than `--dump-region`'s. The section of a case
+page that compares the run with R is S1e2.1a.7's.
 """
 
 from __future__ import annotations
 
 import json
 import re
-from collections import Counter, OrderedDict, defaultdict
+from collections import OrderedDict, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -36,8 +42,8 @@ from review.rasterise import rasterise_text
 
 STEPS_PER_PAGE = 50
 ROWS_PER_PAGE = 500
-REFUTED_PER_PAGE = 100
-# Event rows rendered per kind. `branching/06 -e` narrates 2.2 million verbose
+NOGOODS_PER_PAGE = 100
+# Event rows rendered per kind. A zebra-sized run narrates millions of verbose
 # events, nearly all of one kind; thousands of pages of `fire` rows are not a
 # thing a reviewer reads, and building them took longer than the run. Past
 # this, a kind's page says how many rows there are, which it shows (the first
@@ -47,6 +53,22 @@ EVENT_ROWS_PER_KIND = 10_000
 # first page, and the raw table keeps every row — an n = 20 cube is 2 100
 # pages otherwise.
 REGION_ROWS_PAGED = 1 << 16
+# The visited-node DAGs `ein render lattice` draws are laid out up to this many
+# nodes. Past it Graphviz takes minutes (`branching/07`'s describe visits
+# 19 192 nodes, `zebra2-hints`' 8 389) and the picture is not one a person
+# reads: the page says how many nodes there are and links the DOT, and the
+# step pages list every node.
+DAG_NODES_DRAWN = 1_000
+# State files given a section of their own — a grid, a drawing and their
+# facts — on the answer page. `--dump-answer` writes every state the run
+# reached, and a describe of `saturation/square-bwd/houses` reaches 10 077:
+# one `ein render kb` and one Graphviz layout each is an hour and 1.8 GB. Past
+# this the rest are rows of a paged table, each linking its loadable file.
+# 100 is the line budget stdout's listings share.
+STATES_DRAWN = 100
+# The oracle is 2ⁿ saturations, n ≤ --region-limit (16): seconds on the
+# register's witnesses, and a refusal past the limit.
+ORACLE_TIMEOUT = 300
 
 
 @dataclass
@@ -70,24 +92,94 @@ class RunResult:
     spec: RunSpec
     invocations: list[Invocation]
     summary: dict | None
-    checks: list[tuple[str, bool, str]]
+    checks: list[tuple[str, bool | None, str]]
     pages: list[tuple[str, Path, str]]
+    # `--single`'s word, the only place the four verdict words appear; "" for
+    # every other question.
     verdict: str = ""
+    # The states the run lists, as `[case.now]` counts them.
     k: int | None = None
     exhausted: bool | None = None
+    # The run in `[case.now]`'s fields: line, exhausted, k, empty, relations,
+    # models — what `ein-cli/tests/wrong_answers.rs` holds a row to.
+    now: dict | None = None
+    # `lattice_pages`' steps: each a title, its page and its commitments —
+    # what a `layer N` or `entering …` pointer resolves against.
+    lattice: list[dict] = field(default_factory=list)
 
 
-def tree(spec: RunSpec) -> bool:
-    return spec.env.get("EIN_TRAVERSAL") == "tree"
-
-
-def max_set_size(flags: list[str]) -> str | None:
+def flag_value(flags: list[str], *names: str) -> str | None:
     for i, f in enumerate(flags):
-        if f in ("-m", "--max-set-size") and i + 1 < len(flags):
+        if f in names and i + 1 < len(flags):
             return flags[i + 1]
-        if f.startswith("--max-set-size="):
-            return f.split("=", 1)[1]
+        for n in names:
+            if n.startswith("--") and f.startswith(n + "="):
+                return f.split("=", 1)[1]
     return None
+
+
+def solve_flags(run_name: str) -> list[str]:
+    """A corpus run name's flags with every `{out}`-valued option dropped,
+    the option's own name included: `solve --trace {out}/t.md -n 3` → `-n 3`."""
+    toks = run_name.split()[1:]
+    out = []
+    for i, t in enumerate(toks):
+        if "{out}" in t:
+            if out and out[-1].startswith("-") and out[-1] == toks[i - 1]:
+                out.pop()
+            continue
+        out.append(t)
+    return out
+
+
+# ── the answer, in the register's terms ───────────────────────────────────────
+
+def relations(stdout: str) -> list[str]:
+    """The relations `-H` lists, sorted — `wrong_answers.rs`'s `relations`."""
+    out, on = [], False
+    for line in stdout.splitlines():
+        if line.startswith("H — the universe"):
+            on = True
+            continue
+        if not on:
+            continue
+        if line.startswith("  ") and not line.startswith("   "):
+            words = line.split()
+            if len(words) >= 2 and words[1].isdigit():
+                out.append(words[0])
+            else:
+                on = False
+        elif not line.startswith("    "):
+            on = False
+    return sorted(set(out))
+
+
+def listed_states(s: dict | None) -> list[dict]:
+    return [x for x in ((s or {}).get("region") or {}).get("states") or [] if x.get("listed")]
+
+
+def now_of(s: dict | None, stdout: str) -> dict | None:
+    """The summary in `[case.now]`'s fields — `wrong_answers.rs`'s `now_of`."""
+    if not s:
+        return None
+    region = s.get("region") or {}
+    states = listed_states(s)
+    empty = region.get("empty")
+    if not states and empty == "owing":
+        models = [sorted(x.get("facts", [])) for x in region.get("frontier") or []]
+    else:
+        models = [sorted(x.get("facts", [])) for x in states]
+    return {"line": (s.get("asked") or {}).get("which", "?"), "exhausted": region.get("exhausted") is True,
+            "k": len(states), "empty": empty, "relations": relations(stdout), "models": sorted(models)}
+
+
+def asked_text(s: dict | None) -> str:
+    a = (s or {}).get("asked") or {}
+    which = {"all": "all of R", "minimal": "the minimal line", "maximal": "the maximal line"}.get(
+        a.get("which"), str(a.get("which", "?")))
+    ask = a.get("ask", "?")
+    n = f", -n {a['n']}" if a.get("n") is not None else ""
+    return f"{which} — {ask}{n}"
 
 
 # ── driving ───────────────────────────────────────────────────────────────────
@@ -97,19 +189,14 @@ def drive(spec: RunSpec, out: Path, bin: str) -> list[Invocation]:
     raw.mkdir(parents=True, exist_ok=True)
     solve = [bin, "solve", spec.file, *spec.flags]
     main = solve + ["--json-summary", str(raw / "summary.json"),
-                    "--dump-states", str(raw / "states"),
                     "--dump-answer", str(raw / "answer"),
-                    "--dump-region", str(raw / "region"),
+                    "--dump-lattice", str(raw / "lattice"),
                     "--stats", "--timing", "--hyp-stats", "--dump-config", "-p"]
     if spec.trace:
         main += ["--trace", str(raw / "trace.md"), "--full-kb-snapshots"]
     if spec.events:
         main += ["--events", str(raw / "events.jsonl"), "--events-level", "verbose"]
     invs = [run("main", main, spec.env)]
-    if not tree(spec):
-        invs.append(run("lattice", solve + ["--dump-lattice", str(raw / "lattice"),
-                                            "--json-summary", str(raw / "summary.lattice.json")],
-                        spec.env))
     invs.append(run("grid", solve + ["--models", "grid",
                                      "--json-summary", str(raw / "summary.grid.json")], spec.env))
     invs.append(run("key", solve + ["--models", "key",
@@ -117,17 +204,27 @@ def drive(spec: RunSpec, out: Path, bin: str) -> list[Invocation]:
     if spec.diff_models:
         invs.append(run("diff", solve + ["--diff-models", str(spec.diff_models),
                                          "--json-summary", str(raw / "summary.diff.json")], spec.env))
-    m = max_set_size(spec.flags)
-    lattice = [bin, "render", "lattice", spec.file] + (["--max-set-size", m] if m else [])
+    # R by brute force: the cube `ein render region` draws, and the answer
+    # cross-check 5 holds the run to. Past --region-limit it refuses, exit 2.
+    limit = flag_value(spec.flags, "--region-limit")
+    jobs = flag_value(spec.flags, "-j", "--jobs")
+    invs.append(run("oracle", [bin, "oracle", spec.file, "--dump", str(raw / "region"), "--stats",
+                               "--json-summary", str(raw / "summary.oracle.json")]
+                    + (["--region-limit", limit] if limit else []) + (["-j", jobs] if jobs else []),
+                    spec.env, timeout=ORACLE_TIMEOUT))
+    budget = flag_value(spec.flags, "--region-budget")
+    lattice = [bin, "render", "lattice", spec.file] + (["--region-budget", budget] if budget else [])
     for name, argv in [("render-program", [bin, "render", "program", spec.file]),
                        ("render-rules", [bin, "render", "rules", spec.file]),
                        ("render-constraints", [bin, "render", "constraints", spec.file]),
-                       ("render-lattice", lattice)]:
+                       ("render-lattice", lattice),
+                       ("render-lattice-full", lattice + ["--view", "full"]),
+                       ("render-root", [bin, "render", "kb", spec.file])]:
         invs.append(run(name, argv, spec.env, timeout=120))
-    # The region drawn from the directory the main run wrote (S1e2.1a.2):
-    # `auto`, the lines (the view that reads at any n) when `auto` is not
-    # already them, and every node as a table.
-    if (raw / "region" / "region.json").exists():
+    # The region drawn from the oracle's directory (S1e2.1a.2): `auto`, the
+    # lines (the view that reads at any n) when `auto` is not already them,
+    # and every node as a table.
+    if ((load_json(raw / "region" / "region.json") or {}).get("region")) is not None:
         region = str(raw / "region")
         auto = run("render-region", [bin, "render", "region", region], timeout=120)
         invs.append(auto)
@@ -137,20 +234,11 @@ def drive(spec: RunSpec, out: Path, bin: str) -> list[Invocation]:
                             timeout=120))
         invs.append(run("render-region-table", [bin, "render", "region", region, "--view", "table"],
                         timeout=120))
-    answer = raw / "answer"
-    if (answer / "root.ein").exists():
-        invs.append(run("render-root", [bin, "render", "kb", str(answer / "root.ein")]))
-        index = load_json(answer / "index.json") or {}
-        for stem in index.get("models", []) + index.get("open", []):
-            invs.append(run(f"render-{stem.replace('/', '-')}",
-                            [bin, "render", "kb", str(answer / f"{stem}.ein"),
-                             "--since", str(answer / "root.ein")]))
-    # Every layer's root after it, with what the layer added in bold — the
-    # snapshots load as programs since M1e2 S1e2.1.7.
-    for post in sorted((raw / "states" / "layers").glob("layer_*_post.ein")):
-        pre = post.with_name(post.name.replace("_post", "_pre"))
-        argv = [bin, "render", "kb", str(post)] + (["--since", str(pre)] if pre.exists() else [])
-        invs.append(run(f"render-{post.stem}", argv, timeout=120))
+    # Each state file, drawn against the program's root: what it added, bold.
+    for f in state_files(raw / "answer")[:STATES_DRAWN]:
+        invs.append(run(f"render-{f['stem'].replace('/', '-')}",
+                        [bin, "render", "kb", str(raw / "answer" / f["path"]), "--since", spec.file],
+                        spec.env, timeout=120))
     version = run("version", [bin, "--version"])
     commit = run("git", ["git", "rev-parse", "HEAD"])
     dirty = run("git-status", ["git", "status", "--porcelain"])
@@ -167,6 +255,36 @@ def drive(spec: RunSpec, out: Path, bin: str) -> list[Invocation]:
     return invs
 
 
+def state_files(answer: Path) -> list[dict]:
+    """`index.json`'s state files — `models/` then `owing/` — each with its
+    stem (`models/01`) and its kind."""
+    index = load_json(answer / "index.json") or {}
+    out = []
+    for kind in ("models", "owing"):
+        for f in index.get(kind) or []:
+            path = f.get("path") if isinstance(f, dict) else str(f)
+            if path:
+                out.append({**(f if isinstance(f, dict) else {}), "path": path, "kind": kind,
+                            "stem": path.removesuffix(".ein")})
+    return out
+
+
+def state_href(run_out: Path, state: int, page: Path) -> str | None:
+    """A link from `page` to state `state` of a run's answer: its section on
+    the answer page when it has one (the first `STATES_DRAWN` files), else the
+    page of the states table that holds its row. None when the run did not
+    reach it."""
+    files = state_files(run_out / "raw" / "answer")
+    i = next((i for i, f in enumerate(files) if f["kind"] == "models" and f.get("state") == state), None)
+    if i is None:
+        return None
+    if i < STATES_DRAWN:
+        return f"{rel(run_out / 'pages' / 'answer.md', page)}#{files[i]['stem'].replace('/', '')}"
+    rest = sorted((run_out / "pages").glob("states*.md"))
+    k = (i - STATES_DRAWN) // ROWS_PER_PAGE
+    return rel(rest[k], page) if k < len(rest) else None
+
+
 # ── pages ─────────────────────────────────────────────────────────────────────
 
 class Pages:
@@ -177,8 +295,10 @@ class Pages:
         self.raw, self.img, self.dir = out / "raw", out / "img", out / "pages"
         self.inv = {i.name: i for i in invs}
         self.pages: list[tuple[str, Path, str]] = []
-        self.checks: list[tuple[str, bool, str]] = []
+        self.checks: list[tuple[str, bool | None, str]] = []
         self.refused: list[str] = []
+        self.trace_blocks = 0
+        self.lattice: list[dict] = []
 
     def add(self, title: str, path: Path, lines: list[str], note: str = "") -> Path:
         write(path, "\n".join(lines).rstrip() + "\n")
@@ -215,22 +335,10 @@ def paged(p: "Pages", stem: Path, title: str, head_lines, head: list[str], rows:
 
 def _safe(s: str) -> str:
     """A file-name-safe form of `s`, unique: a name cut short carries a hash
-    of the whole, because two commitments' slugs can share sixty characters
-    (`pets.ein` has 32 that do)."""
+    of the whole, because two commitments' slugs can share sixty characters."""
     import hashlib
     t = re.sub(r"[^A-Za-z0-9_.-]+", "_", s) or "x"
     return t if len(t) <= 60 else t[:51] + "-" + hashlib.sha1(s.encode()).hexdigest()[:8]
-
-
-def fact_key(line: str) -> str:
-    """A fact line of a dump without its provenance keywords — what a
-    snapshot diff compares, because one fact's `:rule` can differ between two
-    snapshots of the same KB."""
-    return re.sub(r"\s+:(rule|source|hypothesis|using)\s+(\"[^\"]*\"|\S+)", "", line.strip())
-
-
-def snapshot_facts(path: Path) -> list[str]:
-    return sorted({fact_key(l) for l in read(path).splitlines() if l.strip().startswith("(")})
 
 
 def by_relation(facts) -> "OrderedDict[str, list[str]]":
@@ -241,37 +349,41 @@ def by_relation(facts) -> "OrderedDict[str, list[str]]":
     return OrderedDict(sorted(out.items()))
 
 
-def commit_text(c) -> str:
-    """A `{relation, args}` commitment, as `rel(a, b)` joined."""
-    if not c:
+def set_text(facts) -> str:
+    """A commitment or a closure, as the read-out prints one: `{(p A), (p B)}`, `∅`."""
+    if not facts:
         return "∅"
-    def one(f):
-        args = ", ".join(json.dumps(a) if isinstance(a, dict) else str(a) for a in f.get("args", []))
-        return f"{f.get('relation')}({args})"
-    return ", ".join(one(f) for f in c)
+    return "{" + ", ".join(facts) + "}"
+
+
+def call_to_fact(text: str) -> list[str]:
+    """A walk-era commitment, `p(A), q(B, C)`, as region facts: `(p A)`, `(q B C)`."""
+    return [f"({r} {' '.join(a.strip() for a in args.split(',') if a.strip())})".replace(" )", ")")
+            for r, args in re.findall(r"([\w*.-]+)\(([^)]*)\)", text)]
 
 
 def verdict_block(stdout: str) -> str:
-    """The solve table, verbatim: from `solve ·` to the blank line before
-    whatever diagnostic follows it."""
+    """The read-out, verbatim: from `solve ·` (or `oracle ·`) to the first
+    diagnostic block after it — `H`, a state's facts, the timing, the key."""
     lines = stdout.splitlines()
     try:
-        start = next(i for i, l in enumerate(lines) if l.startswith("solve ·"))
+        start = next(i for i, l in enumerate(lines) if l.startswith(("solve ·", "oracle ·")))
     except StopIteration:
         return stdout.strip()
     end = len(lines)
     for i in range(start + 1, len(lines)):
-        if re.match(r"^(final-state facts|unsat-core facts|stats$|timing|── solution)", lines[i]):
+        if re.match(r"^(H — the universe|── state|timing$|stats$|final-state facts|the states listed against|"
+                    r"determining key|grid —|work$)", lines[i]):
             end = i
             break
     return "\n".join(lines[start:end]).rstrip()
 
 
 def diff_block(inv: Invocation) -> str:
-    """`--diff-models`' block, verbatim: from `models against` to the blank
+    """`--diff-models`' block, verbatim: from `the states listed against` to the blank
     line that ends it — or the refusal, when the file did not parse."""
     lines = inv.stdout.splitlines()
-    start = next((i for i, l in enumerate(lines) if l.startswith("models against")), None)
+    start = next((i for i, l in enumerate(lines) if l.startswith(("the states listed against", "models against"))), None)
     if start is None:
         return inv.stderr.strip() or "(no diff printed)"
     end = next((i for i in range(start, len(lines)) if not lines[i].strip()), len(lines))
@@ -300,33 +412,37 @@ def program_page(p: Pages) -> None:
     p.add("Program", page, lines)
 
 
-def root_page(p: Pages, summary: dict | None, steps: list[dict]) -> None:
+def root_page(p: Pages, summary: dict | None, trace: list[dict]) -> None:
     page = p.dir / "root.md"
     lines = header("Root, after saturation", "the KB before any hypothesis: what the program derives on its own",
-                   "`--dump-answer` (`root.ein`), `ein render kb root.ein`, the trace's § Before any assumption",
-                   [("answer_dump.md", "docs/kernel/inference/answer_dump.md")],
-                   [p.raw / "answer" / "root.ein", p.raw / "answer" / "root_writes.json"], page)
+                   "`--json-summary` (`root`), `ein render kb FILE`, the trace's § Root",
+                   [("solution_semantics.md § 1.3", "docs/kernel/inference/solution_semantics.md")],
+                   [p.raw / "summary.json", p.raw / "render-root.stdout.txt"], page,
+                   "**Root is never written by a region run**: it is `sat(program)`, and every node is "
+                   "`sat(root ∪ C)` — there are no root writes to show.")
     root = (summary or {}).get("root", {})
     if root:
-        lines += ["## Facts by relation", "", f"From `summary.json`'s `root` block — {root.get('n_facts', '?')} facts.", ""]
-        lines += table(["relation", "facts"], [[r, n] for r, n in (root.get("by_relation") or {}).items()])
+        lines += ["## Facts by relation", "", f"From `summary.json`'s `root` block — {root.get('facts', '?')} facts.", ""]
+        lines += table(["relation", "facts"], [[r, n] for r, n in (root.get("facts_by_relation") or {}).items()])
         lines.append("")
+        rest = {k: v for k, v in root.items() if k not in ("facts", "facts_by_relation")}
+        if rest:
+            lines += ["## The rest of the block", ""]
+            lines += table(["field", "value"], [[k, json.dumps(v, ensure_ascii=False)] for k, v in rest.items()])
+            lines.append("")
     inv = p.inv.get("render-root")
     if inv and inv.code == 0:
-        lines += ["## The KB (`ein render kb root.ein`)", ""]
+        lines += ["## The KB (`ein render kb FILE`)", ""]
         for name, svg in p.dot_stream(inv.stdout, "root"):
             lines += image(svg, page, "root")
-    writes = load_json(p.raw / "answer" / "root_writes.json") or []
-    lines += ["## What the search wrote into root afterwards", "",
-              "`root_writes.json`: every fact the final root holds and the saturated one did not, with the rule its provenance names.", ""]
-    lines += table(["fact", "written by"], [[w.get("fact"), w.get("by") or "—"] for w in writes]) if writes else ["_none_"]
-    lines.append("")
-    uncond = [s for s in steps if s["unconditional"]]
-    if uncond:
-        lines += [f"## Before any assumption — {len(uncond)} steps (from the trace)", ""]
-        lines += table(["step", "rule", "what it did", "page"],
-                       [[s["n"], f"`{s['rule']}`", s["gist"], f"[step {s['n']}]({rel(s['page'], page)}#{s['anchor']})"]
-                        for s in uncond])
+    elif inv:
+        lines += [f"`ein render kb` exited {inv.code}: `{(inv.stderr.strip().splitlines() or [''])[0]}`", ""]
+    root_sec = next((s for s in trace if s["slug"] == "root"), None)
+    if root_sec and root_sec["steps"]:
+        lines += [f"## Root's derivation — {len(root_sec['steps'])} steps (from the trace)", ""]
+        lines += table(["step", "rule", "what it did"],
+                       [[f"[{s['n']}]({rel(s['page'], page)}#{s['anchor']})", f"`{s['rule']}`", s["gist"]]
+                        for s in root_sec["steps"]])
     p.add("Root", page, lines)
 
 
@@ -346,7 +462,23 @@ def anchor_of(title: str) -> str:
     return a
 
 
+def trace_slug(title: str) -> str:
+    if title.startswith("Root — "):
+        return "root"
+    m = re.match(r"State (\d+) of \d+", title)
+    if m:
+        return f"state-{int(m.group(1)):02d}"
+    if title.startswith("Owing — "):
+        return "owing"
+    if title.startswith("N — "):
+        return "nogoods"
+    return _safe(title).lower()
+
+
 def trace_pages(p: Pages) -> list[dict]:
+    """`--trace`'s region trace (`read_out.md` § 8.4): the head, § Root, one §
+    per traced state, § Owing and § N — each section a page, paged by its
+    steps (or N's sets), and every ```dot block an SVG."""
     raw = p.raw / "trace.md"
     tdir = p.dir / "trace"
     text = read(raw)
@@ -354,227 +486,133 @@ def trace_pages(p: Pages) -> list[dict]:
         p.add("Trace", tdir / "index.md", header("The trace", "not written", "`--trace`", [], [raw], tdir / "index.md"))
         return []
     pre, sections = split_trace(text)
-    defined = [("solution_semantics.md", "docs/kernel/inference/solution_semantics.md")]
-    uncond_n = 0
-    steps: list[dict] = []
-    others: list[tuple[str, str]] = []
-    for title, body in sections:
-        m = re.match(r"Before any assumption — (\d+) steps", title)
-        if m:
-            uncond_n = int(m.group(1))
-            continue
-        m = re.match(r"Step (\d+) — `([^`]+)`", title)
-        if m:
-            n = int(m.group(1))
-            gist = next((l[2:].strip() for l in body.splitlines() if l.startswith("> ")), "")
-            steps.append({"n": n, "rule": m.group(2), "title": title, "body": body, "gist": gist,
-                          "unconditional": len(steps) < uncond_n, "anchor": anchor_of(f"Step {n} — {m.group(2)}")})
-        else:
-            others.append((title, body))
+    defined = [("solution_semantics.md", "docs/kernel/inference/solution_semantics.md"),
+               ("read_out.md § 8.4", "plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md")]
+    out: list[dict] = []
     block = 0
-    # Step pages, 50 to a page, every dot block an SVG.
-    for start in range(0, len(steps), STEPS_PER_PAGE):
-        chunk = steps[start:start + STEPS_PER_PAGE]
-        name = f"steps-{chunk[0]['n']:03d}-{chunk[-1]['n']:03d}.md"
-        page = tdir / name
-        md = "".join(f"## {s['title']}\n{s['body']}" for s in chunk)
-        body, n, refused = rasterise_text(md, p.img / "trace", page, start=block)
-        block += n
-        p.refused += refused
-        for s in chunk:
-            s["page"] = page
-        lines = header(f"Trace — steps {chunk[0]['n']}–{chunk[-1]['n']}",
-                       "the engine's narration of each firing, with its derivation graph",
-                       "`--trace FILE --full-kb-snapshots`", defined, [raw], page,
-                       f"**Steps {chunk[0]['n']}–{chunk[-1]['n']}** of {len(steps)}; "
-                       f"{uncond_n} are before any assumption. [Index](index.md)")
-        p.add(f"Trace steps {chunk[0]['n']}–{chunk[-1]['n']}", page, lines + [body])
-    # The named sections, each a page — Refuted paged by its <details> blocks.
-    for title, body in others:
-        slug = {"Refuted hypotheses": "refuted", "Commitment lattice": "lattice",
-                "Solution": "solution", "Full KB (final state)": "full-kb"}.get(title, _safe(title).lower())
-        chunks = [body]
-        if slug == "refuted":
-            entries = re.split(r"(?m)^(?=<details>)", body)
-            head, entries = entries[0], entries[1:]
-            chunks = [head + "".join(entries[i:i + REFUTED_PER_PAGE])
-                      for i in range(0, max(len(entries), 1), REFUTED_PER_PAGE)]
+    for title, body in sections:
+        slug = trace_slug(title)
+        per = NOGOODS_PER_PAGE if slug == "nogoods" else STEPS_PER_PAGE
+        parts = re.split(r"(?m)^(?=### Step \d+ — |<details>)", body)
+        head, items = parts[0], parts[1:]
+        chunks = [head * (i == 0) + "".join(items[i:i + per]) for i in range(0, max(len(items), 1), per)]
+        if not chunks[0].strip():
+            chunks[0] = head
+        sec = {"title": title, "slug": slug, "steps": [], "pages": []}
         for ci, chunk in enumerate(chunks):
             name = f"{slug}.md" if len(chunks) == 1 else f"{slug}-{ci + 1:02d}.md"
             page = tdir / name
             body_r, n, refused = rasterise_text(chunk, p.img / "trace", page, start=block)
             block += n
             p.refused += refused
+            for m in re.finditer(r"(?m)^### Step (\d+) — `([^`]+)`\n(.*?)(?=^### Step |\Z)", chunk, re.S):
+                gist = next((l[2:].strip() for l in m.group(3).splitlines() if l.startswith("> ")), "")
+                derives = re.search(r"^Derives `([^`]*)`", m.group(3), re.M)
+                sec["steps"].append({"n": int(m.group(1)), "rule": m.group(2), "page": page,
+                                     "gist": gist or (f"derives `{derives.group(1)}`" if derives else ""),
+                                     "anchor": anchor_of(f"Step {m.group(1)} — {m.group(2)}")})
             lines = header(f"Trace — {title}" + (f" ({ci + 1}/{len(chunks)})" if len(chunks) > 1 else ""),
-                           f"the trace's § {title}", "`--trace FILE --full-kb-snapshots`", defined, [raw], page,
-                           "[Index](index.md)")
-            p.add(f"Trace: {title}" + (f" {ci + 1}" if len(chunks) > 1 else ""), page, lines + [body_r])
-    # The index: the preamble, then one row per step.
+                           f"the region trace's § {title.split(' — ')[0]}", "`--trace FILE --full-kb-snapshots`",
+                           defined, [raw], page, "[Index](index.md)")
+            p.add(f"Trace: {title.split(' — ')[0]}" + (f" {ci + 1}" if len(chunks) > 1 else ""), page,
+                  lines + ["## " + title, "", body_r])
+            sec["pages"].append(page)
+        out.append(sec)
+    # The index: the head block, then one row per section.
     page = tdir / "index.md"
-    lines = header("The trace", "the engine's *explanation* of the run — what it chose to narrate, with `:why` text",
+    steps = sum(len(s["steps"]) for s in out)
+    lines = header("The trace", "the engine's *explanation* of the run — root's derivation, each listed state's "
+                   "from its first minimal commitment, the owing frontier and N, with `:why` text",
                    "`--trace FILE --full-kb-snapshots`", defined, [raw], page,
-                   f"**{len(steps)} steps** ({uncond_n} before any assumption), **{block} graphs**, "
-                   f"{len(others)} named sections")
-    lines += [pre.replace("# Solution trace", "").strip(), ""]
-    lines += ["## Sections", ""] + [f"- [{t}]({anchor})" for t, anchor in
-                                    [(t, f"{({'Refuted hypotheses': 'refuted', 'Commitment lattice': 'lattice', 'Solution': 'solution', 'Full KB (final state)': 'full-kb'}.get(t, _safe(t).lower()))}"
-                                      + (".md" if not (t == "Refuted hypotheses" and (tdir / "refuted-01.md").exists()) else "-01.md"))
-                                     for t, _ in others]] + [""]
-    lines += ["## Every step", ""]
-    lines += table(["step", "", "rule", "what it did"],
-                   [[f"[{s['n']}]({rel(s['page'], page)}#{s['anchor']})",
-                     "root" if s["unconditional"] else "assumed", f"`{s['rule']}`", s["gist"]] for s in steps])
+                   f"**{len(out)} sections**, **{steps} steps**, **{block} graphs**")
+    head_md = pre.replace("# Region trace", "").strip()
+    if head_md:
+        lines += [head_md, ""]
+    lines += ["## Sections", ""]
+    lines += table(["section", "steps", "pages"],
+                   [[f"[{s['title']}]({rel(s['pages'][0], page)})", len(s["steps"]), len(s["pages"])] for s in out])
     p.add("Trace index", page, lines)
     p.trace_blocks = block
-    return steps
-
-
-# ── the state dump ────────────────────────────────────────────────────────────
-
-def lattice_index(p: Pages) -> dict[str, Path]:
-    """`--dump-lattice`'s per-entering folders, keyed by their commitment."""
-    out = {}
-    for f in (p.raw / "lattice" / "enterings").rglob("commitment.json"):
-        c = load_json(f)
-        layer = f.parent.parent.name
-        out[layer + "|" + json.dumps(c, sort_keys=True)] = f.parent
     return out
 
 
-def lattice_page_for(p: Pages, folder: Path) -> Path:
-    return p.dir / "lattice" / folder.parent.name / (_safe(folder.name) + ".md")
+# ── the visited nodes ─────────────────────────────────────────────────────────
 
-
-def states_pages(p: Pages, lat: dict[str, Path]) -> list[dict]:
-    sdir = p.dir / "states"
-    raw = p.raw / "states"
-    events = jsonl(raw / "00_timeline.jsonl")
-    defined = [("lattice_dump.md", "docs/kernel/inference/lattice_dump.md"),
-               ("inference/README.md § Diagnostics", "docs/kernel/inference/README.md")]
-    keys: list[str] = []
-    for e in events:
-        for k in e:
-            if k not in keys:
-                keys.append(k)
-    def cell(e, k):
-        if k not in e:
-            return ""
-        v = e[k]
-        if k == "commitment":
-            text = commit_text(v)
-            key = f"layer_{int(e.get('layer', 0)):02d}|" + json.dumps(v, sort_keys=True)
-            if key in lat:
-                return f"[{text}]({rel(lattice_page_for(p, lat[key]), page)})"
-            return text
-        return json.dumps(v) if isinstance(v, (dict, list)) else v
-    for start in range(0, max(len(events), 1), ROWS_PER_PAGE):
-        chunk = events[start:start + ROWS_PER_PAGE]
-        name = "timeline.md" if len(events) <= ROWS_PER_PAGE else f"timeline-{start // ROWS_PER_PAGE + 1:02d}.md"
-        page = sdir / name
-        lines = header("The state dump's timeline", "`00_timeline.jsonl`: every layer boundary and every entering, in order",
-                       "`--dump-states DIR`", defined, [raw / "00_timeline.jsonl"], page,
-                       f"rows {start + 1}–{start + len(chunk)} of {len(events)}; an entering links to its "
-                       "`--dump-lattice` page")
-        lines += table(keys, [[cell(e, k) for k in keys] for e in chunk])
-        p.add("States: timeline" + (f" {start // ROWS_PER_PAGE + 1}" if len(events) > ROWS_PER_PAGE else ""), page, lines)
-    # Per layer: what changed in root, and every entering.
-    layers = sorted({int(m.group(1)) for f in (raw / "layers").glob("layer_*_*.ein")
-                     if (m := re.match(r"layer_(\d+)_", f.name))})
-    for n in layers:
-        page = sdir / f"layer-{n:02d}.md"
-        pre, post = raw / "layers" / f"layer_{n:02d}_pre.ein", raw / "layers" / f"layer_{n:02d}_post.ein"
-        a, b = snapshot_facts(pre), snapshot_facts(post)
-        added, removed = sorted(set(b) - set(a)), sorted(set(a) - set(b))
-        start = next((e for e in events if e.get("event") == "layer_start" and e.get("layer") == n), {})
-        entered = [e for e in events if e.get("event") == "entering" and e.get("layer") == n]
-        lines = header(f"Layer {n}", "root before and after the layer, and every commitment the layer entered",
-                       "`--dump-states DIR` (`layers/layer_NN_{pre,post}.ein`)", defined, [pre, post], page,
-                       f"alive at the start: **{start.get('alive_size', '?')}**; entered: **{len(entered)}**")
-        lines += ["## Entered", ""]
-        entered_rows = [[cell(e, "commitment"), e.get("outcome", ""), e.get("firings", ""),
-                         e.get("facts_merged", ""), e.get("unsat_core_size", "")] for e in entered]
-        head = ["commitment", "outcome", "firings", "facts merged", "core size"]
-        if len(entered_rows) <= ROWS_PER_PAGE:
-            lines += table(head, entered_rows) if entered_rows else ["_none_"]
-        else:
-            lists = paged(p, sdir / f"layer-{n:02d}-entered", f"States: layer {n} entered",
-                          lambda path, note: header(f"Layer {n} — entered", "every commitment the layer entered",
-                                                    "`--dump-states DIR`", defined,
-                                                    [raw / "00_timeline.jsonl"], path, note),
-                          head, entered_rows)
-            lines += [f"{len(entered_rows)} — " + ", ".join(f"[page {i + 1}]({rel(x, page)})" for i, x in enumerate(lists))]
-        lines += ["", "## Root, pre → post", "",
-                  "A **set difference of the two snapshots' fact lines**, provenance keywords ignored — "
-                  "computed here, from files the engine wrote.", ""]
-        if not (added or removed):
-            lines += ["_No fact changed._", ""]
-        for title, facts in (("Added", added), ("Removed", removed)):
-            if facts:
-                lines += [f"### {title} ({len(facts)})", ""]
-                for r, fs in by_relation(facts).items():
-                    lines += [f"- `{r}` ({len(fs)}): " + ", ".join(f"`{f}`" for f in fs)]
-                lines.append("")
-        lines += ["## The snapshots", ""]
-        inv = p.inv.get(f"render-layer_{n:02d}_post")
-        if inv and inv.code == 0:
-            for name, svg in p.dot_stream(inv.stdout, f"layer_{n:02d}"):
-                lines += ["**Root after the layer, what the layer added in bold**, "
-                          "`ein render kb layer_NN_post.ein --since layer_NN_pre.ein`:", "",
-                          *image(svg, page, f"layer {n}")]
-        elif inv:
-            lines += [f"`ein render kb` exited {inv.code} on the post snapshot: "
-                      f"`{(inv.stderr.strip().splitlines() or [''])[0]}`", ""]
-        for title, path in (("pre", pre), ("post", post)):
-            facts = snapshot_facts(path)
-            lines += details(f"{title}: {len(facts)} facts",
-                             [f"- `{r}` ({len(fs)}): " + ", ".join(f"`{f}`" for f in fs)
-                              for r, fs in by_relation(facts).items()])
-        p.add(f"States: layer {n}", page, lines)
-    return events
-
-
-def lattice_pages(p: Pages, lat: dict[str, Path]) -> None:
+def lattice_pages(p: Pages) -> list[dict]:
+    """`--dump-lattice`'s `nodes.json` (`ein-lattice/2`): every node the run
+    visited, in visit order, one page per step — a route-1 layer or a mode's
+    batch — and `ein render lattice`'s two DAGs."""
     ldir = p.dir / "lattice"
     raw = p.raw / "lattice"
-    defined = [("lattice_dump.md", "docs/kernel/inference/lattice_dump.md")]
-    index_page = ldir / "index.md"
+    index = ldir / "index.md"
+    defined = [("lattice_dump.md § Under a region mode", "docs/kernel/inference/lattice_dump.md")]
+    d = load_json(raw / "nodes.json") or {}
+    nodes, steps = d.get("nodes") or [], d.get("steps") or []
+    lines = header("Every node visited", "the nodes this run's route visited, in visit order, each with its "
+                   "commitment, kind, closure, what it owes and why it is dead",
+                   "`--dump-lattice DIR`, `ein render lattice FILE [--view full]`", defined,
+                   [raw / "nodes.json", raw / "nodes.md", p.raw / "render-lattice.stdout.txt"], index,
+                   f"route **{d.get('route', '?')}** · **{d.get('visited', len(nodes))} nodes** over "
+                   f"{len(d.get('candidates') or [])} candidates · {len(steps)} steps")
+    if not d:
+        p.add("Lattice", index, lines + ["_`nodes.json` was not written._"])
+        return []
+    drawn: list[int] = []
+    for name, title, what in [("render-lattice", "R and one fact above it", "`ein render lattice FILE` — the nodes of "
+                               "R and the nodes one fact above them that are not, from a describing run"),
+                              ("render-lattice-full", "every node a describing run visits",
+                               "`ein render lattice FILE --view full`")]:
+        inv = p.inv.get(name)
+        if inv is None:
+            continue
+        lines += [f"## The DAG — {title}", "", what + ". R green, owing amber, dead red.", ""]
+        if inv.code != 0:
+            lines += [f"_exit {inv.code}: {inv.stderr.strip() or 'nothing printed'}_", ""]
+            continue
+        sub = p.img / "lattice" / name.removeprefix("render-")
+        for i, (n, block) in enumerate(split_digraphs(inv.stdout)):
+            count = len(re.findall(r"(?m)^\s*n\d+ \[", block))
+            if name == "render-lattice-full" and drawn and count == drawn[0]:
+                lines += [f"The same {count} nodes as the view above: every node the describing run visited is "
+                          "in R or one fact above it.", ""]
+                continue
+            drawn.append(count)
+            if count > DAG_NODES_DRAWN:
+                dot = write(sub / f"{i + 1:02d}_{_safe(n)}.dot", block)
+                lines += [f"**{count} nodes — not laid out**: past {DAG_NODES_DRAWN} Graphviz takes minutes and the "
+                          f"picture is not one a person reads. The [DOT]({rel(dot, index)}) is kept, and the step "
+                          "pages below list every node.", ""]
+                continue
+            (res,) = p.svgs([SvgJob(block, sub / f"{i + 1:02d}_{_safe(n)}.svg")])
+            lines += image(res, index, title)
+    lines += ["## The candidates", ""] + [f"- `{c}`" for c in d.get("candidates") or []] + [""]
+    out = []
     rows = []
-    for key, folder in sorted(lat.items(), key=lambda kv: (kv[1].parent.name, kv[1].name)):
-        page = lattice_page_for(p, folder)
-        commitment = load_json(folder / "commitment.json") or []
-        outcome = read(folder / "outcome.txt").strip()
-        firings = jsonl(folder / "firings.jsonl")
-        core = jsonl(folder / "unsat_core.jsonl")
-        lines = header(f"Entering {commit_text(commitment)}", "one commitment the search tested: its outcome and every firing",
-                       "`--dump-lattice DIR` (`enterings/layer_NN/<slug>/`)", defined,
-                       [folder / n for n in ("commitment.json", "outcome.txt", "firings.jsonl", "unsat_core.jsonl", "kb.ein")
-                        if (folder / n).exists()], page,
-                       f"{folder.parent.name.replace('_', ' ')} · **{outcome}** · {len(firings)} firings · [all enterings]({rel(index_page, page)})")
-        if core:
-            lines += ["## Unsat core", ""] + [f"- `{json.dumps(c)}`" for c in core] + [""]
-        lines += ["## Firings", ""]
-        lines += table(["#", "rule", "derived", "premises", "bindings"],
-                       [[i + 1, f.get("rule", ""), json.dumps(f.get("derived", "")), json.dumps(f.get("premises", "")),
-                         json.dumps(f.get("bindings", ""))] for i, f in enumerate(firings)]) if firings else ["_none_"]
-        p.add(f"Lattice: {commit_text(commitment)}", page, lines)
-        rows.append([folder.parent.name, f"[{commit_text(commitment)}]({rel(page, index_page)})", outcome, len(firings)])
-    proof = load_json(raw / "proof_summary.json")
-    lines = header("Every commitment tested", "`--dump-lattice`'s per-entering tree", "`--dump-lattice DIR`", defined,
-                   [raw / "proof_summary.json", raw / "00_timeline.jsonl"], index_page,
-                   f"**{len(rows)} enterings**")
-    if proof:
-        lines += ["## `proof_summary.json`", ""]
-        lines += table(["field", "value"], [[k, json.dumps(v) if not isinstance(v, list) else f"{len(v)} items"]
-                                            for k, v in proof.items()])
-        lines.append("")
-    # Rows link from the index's own directory; the list pages sit beside it.
-    lists = paged(p, ldir / "enterings", "Lattice: enterings",
-                  lambda path, note: header("Enterings", "every commitment `--dump-lattice` recorded, by layer",
-                                            "`--dump-lattice DIR`", defined, [raw / "enterings"], path, note),
-                  ["layer", "commitment", "outcome", "firings"], rows)
-    lines += ["## Enterings", "", f"{len(rows)} — " + ", ".join(f"[page {i + 1}]({rel(x, index_page)})"
-                                                                 for i, x in enumerate(lists))]
-    p.add("Lattice", index_page, lines)
+    for i, st in enumerate(steps):
+        lo = st.get("from", 0)
+        hi = steps[i + 1]["from"] if i + 1 < len(steps) else len(nodes)
+        title = f"layer {st['layer']}" if st.get("layer") is not None else f"step {i + 1}"
+        stem = ldir / f"step-{i + 1:02d}"
+        node_rows = [[x.get("n", j) + 1, set_text(x.get("commitment")), x.get("kind", ""), set_text(x.get("closure")),
+                      x.get("facts", ""), x.get("owes") or "", "; ".join(x.get("owed") or []),
+                      " ".join(x.get("core") or []), ", ".join(x.get("refuted_by") or [])]
+                     for j, x in enumerate(nodes[lo:hi], lo)]
+        paths = paged(p, stem, f"Lattice: {title}",
+                      lambda path, note, title=title, st=st: header(
+                          f"Visited — {title}", "every node of this step, in visit order", "`--dump-lattice DIR`",
+                          defined, [raw / "nodes.json"], path,
+                          f"{st.get('visited')} visited: {st.get('dead')} dead, {st.get('owing')} owing, "
+                          f"{st.get('in_r')} in R; {st.get('facts')} facts beyond root · {note} · "
+                          f"[all steps]({rel(index, path)})"),
+                      ["#", "commitment", "kind", "closure", "facts", "owes", "owed", "core", "refuted by"], node_rows)
+        out.append({"layer": st.get("layer"), "title": title, "page": paths[0],
+                    "commitments": [x.get("commitment") or [] for x in nodes[lo:hi]]})
+        rows.append([f"[{title}]({rel(paths[0], index)})", st.get("visited"), st.get("dead"), st.get("owing"),
+                     st.get("in_r"), st.get("facts")])
+    lines += ["## Steps", ""]
+    lines += table(["step", "visited", "dead", "owing", "in R", "facts"], rows)
+    p.add("Lattice", index, lines)
+    return out
 
 
 # ── the region ────────────────────────────────────────────────────────────────
@@ -586,29 +624,37 @@ def region_view(inv) -> str:
 
 
 def region_pages(p: Pages) -> None:
-    """`--dump-region`'s directory as pages: the drawings, `region.md`, and
-    every node by layer — S1e2.1a.2. The script draws and splits; the join of
-    the walk to the cube is `ein render region`'s."""
+    """`ein oracle --dump`'s directory as pages: the drawings, `region.md`,
+    and every node by layer — S1e2.1a.2. The script draws and splits; the cube
+    is the oracle's, and no run is overlaid on it since the switch."""
     raw = p.raw / "region"
-    if not (raw / "region.json").exists():
-        return
     rdir = p.dir / "region"
     index = rdir / "index.md"
     defined = [("region_dump.md", "docs/kernel/inference/region_dump.md"),
                ("04_dot_rendering.md § Region rendering",
                 "docs/kernel/ir/03-ein-lang/04_dot_rendering.md")]
+    oracle = p.inv.get("oracle")
     region = load_json(raw / "region.json") or {}
-    walk = load_json(raw / "walk.json") or {}
-    r = region.get("region") or {}
+    r = region.get("region")
+    if r is None:
+        why = (oracle.stderr.strip() if oracle else "") or region.get("refused") or "no `region.json`"
+        p.add("Region", index, header("The region", "R by brute force — not computed for this program",
+                                      "`ein oracle FILE --dump DIR`", defined,
+                                      [p.raw / "oracle.stdout.txt", p.raw / "oracle.stderr.txt"], index,
+                                      f"`ein oracle` exited {oracle.code if oracle else '—'}")
+              + ["```text", str(why), "```"])
+        return
     n = region.get("n", "?")
     head = (f"n = {n} · |R| = {r.get('size', '—')}"
-            + ("" if region.get("monotonicity", {}).get("monotone", True) else " · **not monotone**")
-            + f" · walk: **{walk.get('verdict', {}).get('type', '?')}**, k = {walk.get('verdict', {}).get('k', '?')}")
-    lines = header("The region", "the lattice of commitments, every node classified by saturation alone, "
-                   "with this run's walk on it", "`--dump-region DIR`, `ein render region DIR`", defined,
-                   [raw / "region.json", raw / "walk.json", raw / "region.md"], index, head)
-    lines += ["Fill is what the cube says, shape is what the search did, border marks the lines and the defects. "
-              "Every node's reason is in its tooltip: open the SVG on its own to hover.", ""]
+            + ("" if region.get("monotonicity", {}).get("monotone", True) else " · **not monotone**"))
+    lines = header("The region", "the lattice of commitments, every node classified by saturation alone — R by "
+                   "brute force, the reference every mode is held to", "`ein oracle FILE --dump DIR`, "
+                   "`ein render region DIR`", defined, [raw / "region.json", raw / "region.md",
+                                                       p.raw / "oracle.stdout.txt"], index, head)
+    lines += ["Fill is what the cube says, border marks the lines and the defects. Every node's reason is in its "
+              "tooltip: open the SVG on its own to hover.", ""]
+    if oracle and oracle.code == 0:
+        lines += details("the oracle's read-out (`ein oracle FILE`)", ["```text", verdict_block(oracle.stdout), "```"])
     for name, title in [("render-region", "The drawing"), ("render-region-lines", "The lines")]:
         inv = p.inv.get(name)
         if inv is None:
@@ -642,9 +688,8 @@ def region_pages(p: Pages) -> None:
                      for i in range(len(chunks))]
             for i, (chunk, path) in enumerate(zip(chunks, paths)):
                 nav = " · ".join(f"[{j + 1}]({rel(q, path)})" if q != path else f"**{j + 1}**" for j, q in enumerate(paths))
-                ph = header(f"The region — {title}", "every node of this layer: status, why, where saturation takes it, "
-                            "what the walk did", "`ein render region DIR --view table`", defined,
-                            [raw / "region.json", raw / "walk.json"], path,
+                ph = header(f"The region — {title}", "every node of this layer: status, why, where saturation takes it",
+                            "`ein render region DIR --view table`", defined, [raw / "region.json"], path,
                             f"[the region]({rel(index, path)})" + (f" · pages {nav}" if len(paths) > 1 else ""))
                 p.add(f"Region: {title}" + (f" {i + 1}" if len(paths) > 1 else ""), path, ph + head_row + chunk)
             rows.append([f"[{title}]({rel(paths[0], index)})", len(body_rows), len(paths)])
@@ -673,71 +718,104 @@ def grids_from(stdout: str) -> list[str]:
     return ["\n".join(g) for g in out]
 
 
-def answer_pages(p: Pages) -> None:
+def answer_pages(p: Pages, s: dict | None) -> None:
     raw = p.raw / "answer"
     page = p.dir / "answer.md"
     index = load_json(raw / "index.json") or {}
+    region = (s or {}).get("region") or index.get("region") or {}
+    states = region.get("states") or []
     defined = [("answer_dump.md", "docs/kernel/inference/answer_dump.md"),
                ("solution_semantics.md", "docs/kernel/inference/solution_semantics.md")]
-    lines = header("The answer", "every recorded state as the files `--dump-answer` wrote: grid, graph, commitment, what it added",
-                   "`--dump-answer DIR`, `--models grid`, `--models key`, `ein render kb … --since root.ein`",
-                   defined, [raw / "index.json", raw / "answer.json", p.raw / "grid.stdout.txt", p.raw / "key.stdout.txt"], page,
-                   f"**{index.get('verdict', '?')}**, k = {index.get('k', '?')}, exhausted = {index.get('exhausted', '?')}")
+    listed = [x for x in states if x.get("listed")]
+    lines = header("The answer", "every state the run reached, as the files `--dump-answer` wrote: grid, graph, "
+                   "commitment, its `(model …)`", "`--dump-answer DIR`, `--models grid`, `--models key`, "
+                   "`ein render kb … --since FILE`", defined,
+                   [raw / "index.json", raw / "answer.json", raw / "answer.txt", p.raw / "grid.stdout.txt",
+                    p.raw / "key.stdout.txt"], page,
+                   f"asked **{asked_text(s)}** · {len(listed)} state(s) listed of {len(states)} reached · "
+                   f"exhausted = {yes(region.get('exhausted'))}"
+                   + (f" · R empty: **{region['empty']}**" if region.get("empty") else ""))
+    lines += details("`answer.txt` — the read-out, uncut", ["```text", read(raw / "answer.txt").rstrip(), "```"])
     key = p.inv.get("key")
     if key and "determining key" in key.stdout:
         lines += ["## The determining key (`--models key`)", "", "```text"]
-        lines += [l for l in key.stdout.splitlines() if l.startswith("  ") and not l.startswith("  solutions")
-                  and "verdict" not in l][:200]
+        lines += key.stdout.split("determining key", 1)[1].splitlines()[:200]
         lines += ["```", ""]
     grids = grids_from(p.inv["grid"].stdout) if "grid" in p.inv else []
     gi = 0
-    for kind in ("models", "open"):
-        for stem in index.get(kind, []):
-            rec = load_json(raw / f"{stem}.json") or {}
-            lines += [f"## {stem}" + ("" if rec.get("reported", True) else " — not reported (a model outranks it)"), ""]
-            lines += [f"- **commitment:** {commit_text(rec.get('commitment'))} (layer {rec.get('layer')})",
-                      f"- **goal rows:** {json.dumps(rec.get('goal_bindings', []))}",
-                      f"- **owes:** {rec.get('owes', {}).get('total', 0)}"
-                      + "".join(f" — {i.get('why')}" for i in rec.get("owes", {}).get("instances", [])),
-                      f"- **file:** [`{stem}.ein`]({rel(raw / (stem + '.ein'), page)}) "
-                      f"([record]({rel(raw / (stem + '.json'), page)}))", ""]
-            if gi < len(grids) and (kind == "models" or index.get("verdict") == "Open"):
-                lines += ["**Grid** (`--models grid`, verbatim):", "", grids[gi], ""]
-                gi += 1
-            inv = p.inv.get(f"render-{stem.replace('/', '-')}")
-            if inv and inv.code == 0:
-                for name, svg in p.dot_stream(inv.stdout, stem):
-                    lines += ["**Root + what it added** (bold), `ein render kb … --since root.ein`:", "",
-                              *image(svg, page, stem)]
-            added = rec.get("added", [])
-            lines += details(f"added — {len(added)} facts not in root", [f"- `{f}`" for f in added])
-            lines += details(f"every fact — {len(rec.get('facts', []))}",
-                             [f"- `{r}` ({len(fs)}): " + ", ".join(f"`{f}`" for f in fs)
-                              for r, fs in by_relation(rec.get("facts", [])).items()])
-    refuted = sorted((raw / "refuted").glob("*.json"))
-    if refuted:
-        rpage = p.dir / "refuted.md"
-        rows = []
-        for f in refuted:
-            r = load_json(f) or {}
-            rows.append([f.stem, commit_text(r.get("commitment")), r.get("layer"), r.get("kind"),
-                         " ".join(r.get("unsat_core", [])), " ".join(r.get("learned_clause", []))])
-        p.add("Refuted commitments", rpage,
-              header("Every refuted commitment", "`refuted/NN.json`: commitment, layer, kind, core and learned clause",
-                     "`--dump-answer DIR`", defined, [raw / "refuted"], rpage, f"**{len(rows)}**")
-              + table(["#", "commitment", "layer", "kind", "unsat core", "learned clause"], rows))
-        lines += [f"## Refuted — {len(rows)}", "", f"[Every refuted commitment]({rel(rpage, page)})", ""]
-    alive = load_json(raw / "alive_at_end.json") or []
-    lines += [f"## Alive at the depth cap — {len(alive)}", ""]
-    if not alive:
-        lines += ["_none: the search exhausted, or no cap was reached_"]
-    else:
-        lists = paged(p, p.dir / "alive", "Alive at the depth cap",
-                      lambda path, note: header("Alive at the depth cap",
-                                                "`alive_at_end.json`: the frontier `--max-set-size` left",
-                                                "`--dump-answer DIR`", defined, [raw / "alive_at_end.json"], path, note),
-                      ["#", "commitment"], [[i + 1, commit_text(c)] for i, c in enumerate(alive)])
-        lines += [", ".join(f"[page {i + 1}]({rel(x, page)})" for i, x in enumerate(lists))]
+    files = state_files(raw)
+    for f in files[:STATES_DRAWN]:
+        stem = f["stem"]
+        st = states[f["state"] - 1] if f["kind"] == "models" and isinstance(f.get("state"), int) \
+            and 0 < f["state"] <= len(states) else {}
+        # The heading is the stem alone, so `#models01` is the anchor a case
+        # page's `model 1` pointer and § 4 link to.
+        lines += [f"## {stem}", ""]
+        lines += [f"- **state:** {f.get('state', '—')} · **lines:** {', '.join(f.get('lines') or []) or '—'} · "
+                  + ("listed on stdout" if f.get("listed", True) else "**not listed on stdout**"),
+                  f"- **from:** {set_text(st.get('from'))}" if st else "- **from:** —",
+                  "- **minimal generators:** " + (" · ".join(set_text(g) for g in st.get("minimal_generators") or [])
+                                                   or "—"),
+                  f"- **commitments reaching it:** {st.get('commitments') if st.get('commitments') is not None else '— (not counted by this question)'}",
+                  f"- **file:** [`{f['path']}`]({rel(raw / f['path'], page)})", ""]
+        if f["kind"] == "models" and f.get("listed", True) and gi < len(grids):
+            lines += ["**Grid** (`--models grid`, verbatim):", "", grids[gi], ""]
+            gi += 1
+        inv = p.inv.get(f"render-{stem.replace('/', '-')}")
+        if inv and inv.code == 0:
+            for name, svg in p.dot_stream(inv.stdout, stem):
+                lines += ["**The state, what it adds to root in bold**, `ein render kb … --since FILE`:", "",
+                          *image(svg, page, stem)]
+        elif inv:
+            lines += [f"`ein render kb` exited {inv.code}: `{(inv.stderr.strip().splitlines() or [''])[0]}`", ""]
+        if st:
+            lines += details(f"its `(model …)` — {len(st.get('facts', []))} facts",
+                             [f"- `{x}`" for x in st.get("facts", [])])
+            lines += details(f"its closure — {len(st.get('closure', []))} candidates",
+                             [f"- `{x}`" for x in st.get("closure", [])])
+    if not files:
+        lines += ["_No state file: the run reached no state._", ""]
+    rest = files[STATES_DRAWN:]
+    if rest:
+        def row(f):
+            st = states[f["state"] - 1] if f["kind"] == "models" and isinstance(f.get("state"), int) \
+                and 0 < f["state"] <= len(states) else {}
+            return [f.get("state", "—"), f["kind"], ", ".join(f.get("lines") or []) or "—",
+                    "yes" if f.get("listed", True) else "no", set_text(st.get("from")) if st else "—",
+                    len(st.get("facts", [])) if st else "—", f"[`{f['path']}`]({rel(raw / f['path'], p.dir / 'x.md')})"]
+        pages = paged(p, p.dir / "states", "Answer: the other states",
+                      lambda path, note: header("The other states", f"every state file past the first {STATES_DRAWN}, "
+                                                "one row each — the file loads as a program", "`--dump-answer DIR`",
+                                                defined, [raw / "index.json"], path,
+                                                f"{note} · [the answer]({rel(page, path)})"),
+                      ["state", "kind", "lines", "listed", "from", "facts", "file"], [row(f) for f in rest])
+        lines += [f"## The other {len(rest)} states", "",
+                  f"Past the first {STATES_DRAWN} a state is a row, not a section: no grid and no drawing, and its "
+                  "file is one link away — " + ", ".join(f"[page {i + 1}]({rel(x, page)})" for i, x in enumerate(pages)),
+                  ""]
+    frontier = region.get("frontier") or []
+    if frontier:
+        lines += [f"## The owing frontier — {len(frontier)}", ""]
+        lines += table(["#", "commitment", "facts", "owes"],
+                       [[i + 1, set_text(x.get("from") or x.get("commitment")), " ".join(x.get("facts", [])),
+                         json.dumps(x.get("owed", x.get("owes")), ensure_ascii=False)] for i, x in enumerate(frontier)])
+        lines.append("")
+    if region.get("core") or region.get("refuted_by"):
+        lines += ["## Root is dead", "", f"- **core:** {' '.join(region.get('core') or []) or '∅'}",
+                  f"- **refuted by:** {', '.join(region.get('refuted_by') or []) or '—'}", ""]
+    nogoods = load_json(raw / "nogoods.json") or []
+    npage = p.dir / "nogoods.md"
+    p.add("N", npage,
+          header("N — every minimal dead set", "`nogoods.json`: each minimal dead set, its core and the rules that "
+                 "refuted it — what the walk's `refuted/` was", "`--dump-answer DIR`", defined,
+                 [raw / "nogoods.json"], npage,
+                 f"**{len(nogoods)}**" + ("" if nogoods else " — N is empty, or this question does not compute it "
+                                                             "(a line mode does not)"))
+          + (table(["#", "set", "core", "refuted by"],
+                   [[i + 1, set_text(x.get("set")), " ".join(x.get("core") or []) or "—",
+                     ", ".join(x.get("refuted_by") or []) or "—"] for i, x in enumerate(nogoods)])
+             if nogoods else ["_none_"]))
+    lines += [f"## N — {len(nogoods)} minimal dead set(s)", "", f"[Every minimal dead set]({rel(npage, page)})", ""]
     p.add("Answer", page, lines)
 
 
@@ -748,6 +826,7 @@ def counter_meanings() -> dict[str, str]:
     out = {}
     text = read(REPO / "docs/kernel/inference/answer_dump.md")
     sec = text.split("## The run summary", 1)[-1] if "## The run summary" in text else ""
+    sec = sec.split("\n## ", 1)[0]
     for line in sec.splitlines():
         m = re.match(r"^\|\s*`([^`]+)`\s*\|\s*(.+?)\s*\|\s*$", line)
         if m:
@@ -755,40 +834,55 @@ def counter_meanings() -> dict[str, str]:
     return out
 
 
+def yes(v) -> str:
+    """A value as a page prints it: JSON's `true` / `false` / `null`."""
+    return json.dumps(v) if isinstance(v, bool) or v is None else str(v)
+
+
+def cell(v) -> str:
+    if isinstance(v, bool):
+        return yes(v)
+    if isinstance(v, (dict, list)):
+        return json.dumps(v, ensure_ascii=False)
+    return "null" if v is None else str(v)
+
+
 def summary_page(p: Pages, s: dict | None) -> None:
     page = p.dir / "summary.md"
     raw = p.raw / "summary.json"
     defined = [("answer_dump.md § The run summary", "docs/kernel/inference/answer_dump.md"),
+               ("read_out.md § 8.1", "plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md"),
                ("configuration.md", "docs/kernel/configuration.md")]
-    lines = header("The run summary", "`--json-summary`, as tables", "`--json-summary FILE`", defined, [raw], page)
+    lines = header("The run summary", "`--json-summary` (`ein-summary/2`), as tables", "`--json-summary FILE`",
+                   defined, [raw], page)
     if not s:
         p.add("Summary", page, lines + ["_No summary was written._"])
         return
-    v = s.get("verdict", {})
-    lines += ["## Verdict", ""]
-    lines += table(["field", "value"], [[k, json.dumps(v.get(k))] for k in ("type", "k", "exhausted", "reason")]
-                   + [["unsat_core", " ".join(v.get("unsat_core", [])) or "—"],
-                      ["solutions", f"{len(v.get('solutions', []))} (facts on the answer page)"],
-                      ["open_states", f"{len(v.get('open_states', []))}"]])
+    lines += ["## Asked", ""] + table(["field", "value"], [[k, cell(v)] for k, v in (s.get("asked") or {}).items()])
+    region = s.get("region") or {}
+    lines += ["", "## Region", "", "Every field but `states` (the answer page has them).", ""]
+    lines += table(["field", "value"], [[k, cell(v)] for k, v in region.items() if k != "states"])
+    lines += ["", "## Verdict", "", f"`{cell(s.get('verdict'))}` — `--single`'s alone; `null` for every other question.", ""]
+    lines += ["## Queries", ""]
+    qs = s.get("queries") or []
+    lines += table(["goal", "over", "exact", "classes", "expect"],
+                   [[f"`{q.get('goal')}`", q.get("over"), q.get("exact"), len(q.get("classes") or []),
+                     cell(q.get("expect"))] for q in qs]) if qs else ["_none_"]
+    lines += ["", "## The claim", "", f"`{cell(s.get('claim'))}`", ""]
     meanings = counter_meanings()
     link = doc("docs/kernel/inference/answer_dump.md", page) + "#the-run-summary"
-    lines += ["", "## Counters (`stats`)", "", f"Meanings are [`answer_dump.md` § The run summary]({link})'s, quoted.", ""]
+    lines += ["## Work", "", f"Meanings are [`answer_dump.md` § The run summary]({link})'s, quoted.", ""]
     lines += table(["counter", "value", "meaning"],
-                   [[k, json.dumps(val), rebase(meanings.get(k, "**not defined on any page**"),
-                                                "docs/kernel/inference/answer_dump.md", page)]
-                    for k, val in s.get("stats", {}).items()])
-    owes = s.get("owes", {})
-    lines += ["", "## Owes", "", f"declared obligation rules: {owes.get('declared', 0)}; owed at root: "
-              f"{owes.get('root', {}).get('total', 0)}", ""]
-    lines += table(["recorded state", "owes", "instances"],
-                   [[i + 1, m.get("total"), "; ".join(x.get("why", "") for x in m.get("instances", []))]
-                    for i, m in enumerate(owes.get("models", []))]) or []
-    root = s.get("root", {})
-    lines += ["", "## Root", ""] + table(["field", "value"], [[k, json.dumps(val)] for k, val in root.items()])
-    lines += ["", "## Leftover", "", "```json", json.dumps(s.get("leftover"), indent=2), "```", ""]
+                   [[k, cell(val), rebase(meanings.get(k, "**not defined on any page**"),
+                                          "docs/kernel/inference/answer_dump.md", page)]
+                    for k, val in (s.get("work") or {}).items()])
+    lines += ["", "## Monotonicity", ""]
+    lines += table(["field", "value"], [[k, cell(v)] for k, v in (s.get("monotonicity") or {}).items()])
+    lines += ["", "## Root", ""] + table(["field", "value"], [[k, cell(val)] for k, val in (s.get("root") or {}).items()])
+    lines += ["", "## Leftover", "", "```json", json.dumps(s.get("leftover"), indent=2, ensure_ascii=False), "```", ""]
     lines += ["## Resolved configuration", "",
               f"Every flag is documented in [`configuration.md`]({doc('docs/kernel/configuration.md', page)}).", ""]
-    lines += table(["flag", "value"], [[k, json.dumps(val)] for k, val in s.get("config", {}).items()])
+    lines += table(["flag", "value"], [[k, cell(val)] for k, val in (s.get("config") or {}).items()])
     p.add("Summary", page, lines)
 
 
@@ -858,7 +952,7 @@ def events_pages(p: Pages) -> list[dict]:
         rows.append([f"[`{kind}`]({rel(first, index)})", len(all_es) if not capped else f"{len(all_es)} (first and last {half} rendered)", pages_n,
                      rebase(docs.get(kind, ("", "—"))[1], "docs/kernel/inference/events.md", index)])
     lines = header("The event stream", "the engine's *record* of the run — every step, by kind",
-                   "`--events FILE --events-level verbose`", [("events.md", "docs/kernel/inference/events.md")],
+                   "`--events FILE --events-level verbose`", [("events.md § Region runs", "docs/kernel/inference/events.md")],
                    [raw], index, f"**{len(events)} events**, {len(by_kind)} kinds")
     if not events:
         lines += ["_Not written._" if not raw.exists() else "_Empty._"]
@@ -867,8 +961,16 @@ def events_pages(p: Pages) -> list[dict]:
     return events
 
 
-def consistency(p: Pages, s: dict | None, steps: list[dict], states: list[dict], events: list[dict]) -> None:
-    """The five cross-checks of S1e2.1.5, each a pass or a named mismatch."""
+def facts_by_line(s: dict | None, line: str) -> list[list[str]]:
+    """The states of `s` on `line` (`all`, `minimal`, `maximal`), each as its
+    sorted `(model …)` facts, sorted."""
+    states = ((s or {}).get("region") or {}).get("states") or []
+    return sorted(sorted(x.get("facts", [])) for x in states if line == "all" or line in (x.get("lines") or []))
+
+
+def consistency(p: Pages, s: dict | None, trace: list[dict], events: list[dict]) -> None:
+    """Six claims the artefacts make about each other, each a pass, a named
+    mismatch, or not applicable with the reason."""
     def strip(x):
         if isinstance(x, dict):
             return {k: strip(v) for k, v in x.items() if k not in ("source",)}
@@ -877,12 +979,16 @@ def consistency(p: Pages, s: dict | None, steps: list[dict], states: list[dict],
         return x
     # 1 — the invocations agree.
     base = strip(s) if s else None
-    for other in ("summary.lattice.json", "summary.grid.json", "summary.key.json", "summary.diff.json"):
+    for other in ("summary.grid.json", "summary.key.json", "summary.diff.json"):
         o = load_json(p.raw / other)
         if o is None:
-            if (other == "summary.lattice.json" and tree(p.spec)) or (other == "summary.diff.json" and not p.spec.diff_models):
+            if other == "summary.diff.json" and not p.spec.diff_models:
                 continue
-            p.checks.append((f"1 · {other} agrees with summary.json", False, "not written"))
+            inv = p.inv.get(other.split(".")[1])
+            p.checks.append((f"1 · {other} agrees with summary.json", False, "not written" + (
+                f": the `{inv.name}` run exited {inv.code}" + (" (killed — the OOM killer, or a signal)" if inv.code == -9
+                                                               else "") + f", `raw/{inv.name}.stderr.txt`"
+                if inv and inv.code != 0 else "")))
             continue
         same = strip(o) == base
         diff = "" if same else ", ".join(k for k in (base or {}) if strip(o).get(k) != (base or {}).get(k))
@@ -891,82 +997,76 @@ def consistency(p: Pages, s: dict | None, steps: list[dict], states: list[dict],
     a, b = read(p.raw / "answer" / "answer.json"), read(p.raw / "summary.json")
     p.checks.append(("2 · answer/answer.json is summary.json, byte for byte", bool(a) and a == b,
                      "" if a == b else ("answer.json missing" if not a else "the bytes differ")))
-    # 3 — the trace's headline and § Solution against the dumped answer.
-    trace = read(p.raw / "trace.md")
-    if trace and s:
-        head = next((l for l in trace.splitlines() if l.startswith("> ")), "")
-        k = s.get("verdict", {}).get("k")
-        exhausted = s.get("verdict", {}).get("exhausted")
-        n_ref = len(list((p.raw / "answer" / "refuted").glob("*.json")))
-        m = re.search(r"(\d+) solution\(s\), (\d+) refuted", head)
-        m0 = re.search(r"No solution — (\d+) commitments? refuted", head)
-        mo = re.search(r"Open — owes \d+;.*?(\d+) refuted", head)
-        if m:
-            said = (int(m.group(1)), int(m.group(2)))
-        elif m0:
-            said = (0, int(m0.group(1)))
-        elif mo:
-            said = (0, int(mo.group(1)))
-        else:
-            said = None
-        if said is None:
-            p.checks.append(("3a · the trace headline's counts are the answer's", False,
-                             f"the headline states no count: {head!r} (k = {k})"))
-        else:
-            ok = said == (k, n_ref)
-            p.checks.append(("3a · the trace headline's counts are the answer's", ok,
-                             "" if ok else f"the headline says {said[0]} solution(s), {said[1]} refuted; "
-                                           f"the answer has k = {k}, {n_ref} refuted"))
-            # The inventory's S2: "No solution" printed on a run that did not
-            # exhaust — the CLI's word was fixed and the headline's was not.
-            if m0 and exhausted is False:
-                p.checks.append(("3a′ · the headline does not claim *no solution* for a run that did not exhaust",
-                                 False, f"{head!r} on a run with exhausted = false (M1e2 S2)"))
-        _, secs = split_trace(trace)
-        sol = next((b for t, b in secs if t == "Solution"), None)
-        if sol is not None:
-            dot = sol.split("```dot", 1)[-1].split("```", 1)[0]
-            statements = [l for l in dot.strip().splitlines()[1:]
-                          if l.strip() and not l.strip().startswith(("//", "}", "rankdir", "node ", "edge ", "graph "))]
-            ok = bool(statements) or not k
-            p.checks.append(("3b · the trace's § Solution draws something when there is a model", ok,
-                             "" if ok else f"§ Solution is an empty graph, and the answer has {k} model(s)"))
-            # 3c — every labelled edge it draws between two named entities is a
-            # fact of a dumped model: `"a" -> "b" [label="R"]` is `(R a b)`, a
-            # self-loop `(R a)` (the compact view's unary idiom).
-            facts = set()
-            for stem in (load_json(p.raw / "answer" / "index.json") or {}).get("models", []):
-                facts |= set((load_json(p.raw / "answer" / f"{stem}.json") or {}).get("facts", []))
-            drawn = re.findall(r'^\s*"([^"]+)"\s*->\s*"([^"]+)"\s*\[label="([^"#][^"]*)"', dot, re.M)
-            missing = []
-            for a, b, label in drawn:
-                r = label.split()[0]   # `right-of (1)` — the count is the renderer's
-                cands = [f"({r} {a} {b})", f"({r} {b} {a})"] + ([f"({r} {a})"] if a == b else [])
-                if not any(c in facts for c in cands):
-                    missing.append(cands[0])
-            if drawn and facts:
-                p.checks.append(("3c · every edge § Solution draws is a fact of a dumped model", not missing,
-                                 "" if not missing else f"{len(missing)} of {len(drawn)} drawn edges are in no model, "
-                                 f"e.g. {', '.join(missing[:3])}"))
-    # 4 — Σ entered (events) = stats.enterings_total, on a lattice run.
-    if s and events and not tree(p.spec):
-        entered = sum(e.get("entered", 0) for e in events if e.get("e") == "layer")
-        total = s.get("stats", {}).get("enterings_total")
-        p.checks.append(("4 · Σ entered over the `layer` events is stats.enterings_total", entered == total,
-                         "" if entered == total else f"Σ entered = {entered}, enterings_total = {total}"))
-    # 5 — the timeline's last layer and layers_explored.
-    if s and states and tree(p.spec):
-        p.checks.append(("5 · the timeline's last layer is stats.layers_explored", None,
-                         "not applicable: under EIN_TRAVERSAL=tree there are no layers and layers_explored "
-                         "carries the deepest node (documented — M1e2 S9)"))
-    elif s and states:
-        last = max([e.get("layer", 0) for e in states if e.get("event") in ("layer_start", "layer_end", "entering")] or [0])
-        le = s.get("stats", {}).get("layers_explored")
-        p.checks.append(("5 · the timeline's last layer is stats.layers_explored", last == le,
-                         "" if last == le else f"timeline reaches layer {last}, layers_explored = {le}"))
+    region = (s or {}).get("region") or {}
+    states = region.get("states") or []
+    listed = [x for x in states if x.get("listed")]
+    # 3 — the trace narrates every listed state.
+    if s and spec_traced(p):
+        traced = sum(1 for t in trace if t["slug"].startswith("state-"))
+        m = re.search(r"_(\d+) more states? (?:is|are) not traced", read(p.raw / "trace.md"))
+        untraced = int(m.group(1)) if m else 0
+        ok = traced + untraced == len(listed)
+        p.checks.append(("3 · the trace has one § State per listed state", ok,
+                         "" if ok else f"{traced} traced + {untraced} untraced, and the summary lists {len(listed)}"))
+    # 4 — the lattice dump, the events and the summary count the same nodes.
+    nodes = load_json(p.raw / "lattice" / "nodes.json")
+    if nodes is not None:
+        node_list = nodes.get("nodes") or []
+        n_nodes = len(node_list)
+        steps_sum = sum(st.get("visited", 0) for st in nodes.get("steps") or [])
+        # Route 1 stopped by the budget saturates the top — every candidate —
+        # to bound what it did not reach (`downset.rs`, after the layer loop).
+        # That node is narrated and dumped like any other and is in no step.
+        top_probe = ((region.get("stopped") or {}).get("why") == "budget" and n_nodes == steps_sum + 1
+                     and len(node_list[-1].get("commitment") or []) == len(nodes.get("candidates") or []))
+        ok = n_nodes == nodes.get("visited") and (steps_sum == n_nodes or top_probe)
+        detail = (f"{n_nodes} nodes, visited = {nodes.get('visited')}, Σ steps.visited = {steps_sum}" if not ok else
+                  f"Σ steps.visited = {steps_sum}: the last node is route 1's post-budget probe of the top, every "
+                  "candidate, which no step covers" if top_probe else "")
+        if events:
+            enter = sum(1 for e in events if e.get("e") == "enter")
+            ok = ok and enter == n_nodes
+            detail = detail or ("" if enter == n_nodes else f"{enter} `enter` events, {n_nodes} nodes")
+        p.checks.append(("4 · nodes.json, its steps and the `enter` events count the same nodes", ok, detail))
+    # 5 — the run against the oracle: every answer is the oracle's.
+    oracle = load_json(p.raw / "summary.oracle.json")
+    asked = (s or {}).get("asked") or {}
+    name = "5 · the run's states are the oracle's, on the line it asked"
+    if s is None:
+        pass
+    elif oracle is None:
+        p.checks.append((name, None, "not applicable: the oracle did not answer — "
+                         + (((p.inv.get("oracle").stderr.strip().splitlines() or ["no summary"])[0])
+                            if p.inv.get("oracle") else "not run")))
+    elif not region.get("exhausted") or asked.get("n") is not None or asked.get("ask") == "single":
+        p.checks.append((name, None, "not applicable: the run lists part of what it asked (`-n`, `--single`, or a "
+                         "stopped run), so it is held to nothing it did not claim"))
+    else:
+        line = asked.get("which", "all")
+        mine, theirs = sorted(sorted(x.get("facts", [])) for x in listed), facts_by_line(oracle, line)
+        ok = mine == theirs
+        p.checks.append((name, ok, "" if ok else f"the run lists {len(mine)} state(s) on `{line}`, the oracle "
+                         f"{len(theirs)}; {sum(1 for m in mine if m not in theirs)} not the oracle's, "
+                         f"{sum(1 for t in theirs if t not in mine)} missing"))
+        if line == "all":
+            o_r = oracle.get("region") or {}
+            ok = (region.get("k_s"), region.get("k_c")) == (o_r.get("k_s"), o_r.get("k_c"))
+            p.checks.append(("5′ · k_s and k_c are the oracle's", ok, "" if ok else
+                             f"run k_s = {region.get('k_s')}, k_c = {region.get('k_c')}; oracle "
+                             f"k_s = {o_r.get('k_s')}, k_c = {o_r.get('k_c')}"))
+    # 6 — one loadable file per state reached.
+    files = state_files(p.raw / "answer")
+    if s is not None:
+        models = [f for f in files if f["kind"] == "models"]
+        missing = [f["path"] for f in files if not (p.raw / "answer" / f["path"]).exists()]
+        ok = len(models) == len(states) and not missing
+        p.checks.append(("6 · answer/ has one state file per state the summary reached", ok,
+                         "" if ok else f"{len(models)} model files, {len(states)} states"
+                         + (f"; missing {', '.join(missing)}" if missing else "")))
     page = p.dir / "consistency.md"
-    lines = header("Cross-checks", "five claims the artefacts make about each other, checked against each other",
-                   "this bundle — reading the files above", [("S1e2.1.5", "plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.5_every_artefact_rendered.md")],
+    lines = header("Cross-checks", "six claims the artefacts make about each other, checked against each other",
+                   "this bundle — reading the files above",
+                   [("S1e2.1.5", "plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.5_every_artefact_rendered.md")],
                    [], page, "**A mismatch is a finding**, filed when seen — not smoothed over by the renderer.")
     lines += table(["check", "result", "detail"],
                    [[c, "n/a" if ok is None else ("pass" if ok else "**MISMATCH**"), d] for c, ok, d in p.checks])
@@ -974,22 +1074,26 @@ def consistency(p: Pages, s: dict | None, steps: list[dict], states: list[dict],
     p.add("Consistency", page, lines)
 
 
+def spec_traced(p: Pages) -> bool:
+    return p.spec.trace and (p.raw / "trace.md").exists()
+
+
 # ── the run page ──────────────────────────────────────────────────────────────
 
 def run_page(p: Pages, s: dict | None) -> Path:
     page = p.out / "run.md"
     main = p.inv["main"]
-    v = (s or {}).get("verdict", {})
+    region = (s or {}).get("region") or {}
+    verdict = ((s or {}).get("verdict") or {}).get("type")
     lines = [f"# {p.spec.title or p.spec.file}", "",
              f"> `ein solve {p.spec.file} {' '.join(p.spec.flags)}`"
              + (f" with `{' '.join(f'{k}={x}' for k, x in p.spec.env.items())}`" if p.spec.env else "")
-             + f"  \n> **{v.get('type', '—')}**, k = {v.get('k', '—')}, exhausted = {v.get('exhausted', '—')}"
-             + f" · [raw/command.txt]({rel(p.raw / 'command.txt', page)})", ""]
+             + f"  \n> asked **{asked_text(s)}** · {len(listed_states(s))} state(s) listed · "
+             f"exhausted = {yes(region.get('exhausted'))}" + (f" · **{verdict}**" if verdict else "")
+             + f" · exit {main.code} · [raw/command.txt]({rel(p.raw / 'command.txt', page)})", ""]
     lines += ["## The answer — stdout, verbatim", "", "```text", verdict_block(main.stdout), "```", ""]
-    if tree(p.spec):
-        lines += ["**Under `EIN_TRAVERSAL=tree` there is no lattice tree**: the traversal has no layers, so "
-                  "`--dump-lattice` is not run and there are no per-commitment pages "
-                  f"([configuration.md]({doc('docs/kernel/configuration.md', page)})).", ""]
+    if main.code != 0 or main.stderr.strip():
+        lines += ["## stderr", "", "```text", main.stderr.strip() or "(empty)", "```", ""]
     if "diff" in p.inv:
         lines += ["## Against the right answer — `--diff-models`, verbatim", "", "```text",
                   diff_block(p.inv["diff"]), "```", ""]
@@ -999,8 +1103,7 @@ def run_page(p: Pages, s: dict | None) -> Path:
     lines += [f"- **{c}** — {d}" for c, _, d in fails] or ["_all pass_"]
     lines += ["", f"[Consistency]({rel(p.dir / 'consistency.md', page)})", ""]
     # Grouped by section, each linking its own index, so this page stays
-    # short whatever the run: `pets.ein -e` is 4 200 pages, nearly all of them
-    # one per commitment tested.
+    # short whatever the run.
     lines += ["## Every page", ""]
     groups: "OrderedDict[str, list[Path]]" = OrderedDict()
     for t, path, _ in p.pages:
@@ -1028,20 +1131,19 @@ def build_run(spec: RunSpec, out: Path, bin: str) -> RunResult:
         shutil.rmtree(out)
     invs = drive(spec, out, bin)
     p = Pages(out, spec, invs)
-    p.trace_blocks = 0
     summary = load_json(out / "raw" / "summary.json")
     program_page(p)
-    steps = trace_pages(p) if spec.trace else []
-    root_page(p, summary, steps)
-    lat = lattice_index(p)
-    states = states_pages(p, lat)
-    if not tree(spec):
-        lattice_pages(p, lat)
+    trace = trace_pages(p) if spec.trace else []
+    root_page(p, summary, trace)
+    p.lattice = lattice_pages(p)
     region_pages(p)
-    answer_pages(p)
+    answer_pages(p, summary)
     summary_page(p, summary)
     events = events_pages(p) if spec.events else []
-    consistency(p, summary, steps, states, events)
+    consistency(p, summary, trace, events)
     run_page(p, summary)
-    v = (summary or {}).get("verdict", {})
-    return RunResult(out, spec, invs, summary, p.checks, p.pages, v.get("type", ""), v.get("k"), v.get("exhausted"))
+    region = (summary or {}).get("region") or {}
+    now = now_of(summary, p.inv["main"].stdout)
+    return RunResult(out, spec, invs, summary, p.checks, p.pages,
+                     ((summary or {}).get("verdict") or {}).get("type", ""),
+                     now["k"] if now else None, region.get("exhausted") if summary else None, now, p.lattice)

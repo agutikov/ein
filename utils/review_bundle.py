@@ -8,13 +8,15 @@
     utils/review_bundle.py run FILE [SOLVE FLAGS…] --out DIR [--env NAME=V]…
 
 **The bundle** (S1e2.1.6), default `build/review/`: an index, and one page per
-row of `corpus/wrong_answers.toml` — the wrong run, its control and twins
-side by side with the right answer, the models diffed, links to where it went
-wrong (the row's `look_at`), every artefact two clicks away, and the
-checklist the review answers. A CASE is a row id (`W1/branching-15`) or a
-case (`W1`, every row of it); a `.ein` path gets a page of its own with one
-`solve -e` run (flags after `--`). `--corpus` builds one for every corpus entry
-with a declared `solve` run, at that run's flags and without events.
+row of `corpus/wrong_answers.toml` — the row's `[case.now]` region run beside
+the walk's wrong answer, control and twins (the register's record of them:
+the walk has no CLI path since S1e2.1a.5's switch) and the right answer, the
+models diffed, links to where it went wrong (the row's `look_at`), every
+artefact two clicks away, and the checklist the review answers. A CASE is a
+row id (`W1/branching-15`) or a case (`W1`, every row of it); a `.ein` path
+gets a page of its own with one `solve` run (flags after `--`; none describes
+all of R). `--corpus` builds one for every corpus entry with a declared
+`solve` run, at that run's flags and without events.
 `--smoke` builds one small case into a temporary directory and link-checks
 it: the per-commit gate's step, using the debug `ein` `cargo test` built.
 A case that fails to build makes the command exit 1.
@@ -23,10 +25,11 @@ gallery: the synthetic programs `utils/region_synth.py` wrote, the biggest
 regions and the most interesting, each with a page (`review/regions.py`).
 
 One run, fully explicit (S1e2.1.5): every artefact `ein` can write for
-`ein solve FILE FLAGS`, kept verbatim under DIR/raw/ and rendered as pages
-under DIR/pages/, with DIR/run.md as the table of contents. Every graph is an
-SVG, every JSON a table, every snapshot pair a diff, and DIR/pages/consistency.md
-checks the artefacts against each other.
+`ein solve FILE FLAGS`, and `ein oracle FILE --dump`'s cube beside it, kept
+verbatim under DIR/raw/ and rendered as pages under DIR/pages/, with
+DIR/run.md as the table of contents. Every graph is an SVG, every JSON a
+table, and DIR/pages/consistency.md checks the artefacts against each other
+and the run against the oracle.
 
 The engine is `--bin`, else `$EIN_BIN`, else `ein.rs/target/release/ein`.
 Graphviz (`dot`) must be on PATH.
@@ -41,7 +44,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from review.run import RunSpec, build_run  # noqa: E402
+from review.run import RunSpec, asked_text, build_run, solve_flags  # noqa: E402
 from review.util import REPO, ein_bin  # noqa: E402
 
 
@@ -71,7 +74,8 @@ def cmd_run(args: list[str]) -> int:
     r = build_run(RunSpec(file, flags, env, events=not no_events, trace=not no_trace), Path(out).resolve(), bin)
     fails = [c for c in r.checks if c[1] is False]
     applicable = [c for c in r.checks if c[1] is not None]
-    print(f"{r.out}/run.md — {r.verdict}, k = {r.k}, exhausted = {r.exhausted}; "
+    print(f"{r.out}/run.md — {asked_text(r.summary)}{', ' + r.verdict if r.verdict else ''}, "
+          f"{r.k} state(s) listed, exhausted = {str(r.exhausted).lower()}; "
           f"{len(r.pages)} pages; {len(applicable) - len(fails)}/{len(applicable)} cross-checks pass; "
           f"{time.time() - t:.1f} s")
     for c, _, d in fails:
@@ -107,16 +111,18 @@ def cmd_bundle(args: list[str]) -> int:
         try:
             page, cols = case_page(row, out / row["id"], bin)
             built.append((row, page, cols))
-            print(f"{row['id']:32s} {cols[0].result.verdict} k={cols[0].result.k} — {page.relative_to(out)}")
+            got = next(c.result for c in cols if c.result is not None)
+            print(f"{row['id']:32s} {row['now']['run']:16s} k={got.k} exhausted={str(got.exhausted).lower()} — "
+                  f"{page.relative_to(out)}")
         except Exception as e:  # noqa: BLE001 — a case that fails is reported, not fatal
             failed.append((row["id"], f"{type(e).__name__}: {e}"))
             print(f"{row['id']:32s} FAILED: {e}", file=sys.stderr)
     for f in files:
         rel_file = str(Path(f).resolve().relative_to(REPO)) if Path(f).resolve().is_relative_to(REPO) else f
         try:
-            page, r = program_case(rel_file, flags or ["-e"], out / "programs" / rel_file.removesuffix(".ein"), bin)
+            page, r = program_case(rel_file, flags, out / "programs" / rel_file.removesuffix(".ein"), bin)
             extra.append((rel_file, page, r))
-            print(f"{rel_file:32s} {r.verdict} k={r.k}")
+            print(f"{rel_file:32s} {asked_text(r.summary)} k={r.k} exhausted={str(r.exhausted).lower()}")
         except Exception as e:  # noqa: BLE001
             failed.append((rel_file, f"{type(e).__name__}: {e}"))
     index = index_page(out, built, extra, failed, bin)
@@ -135,7 +141,7 @@ def cmd_corpus(args: list[str]) -> int:
         run_name = next((r for r in e.get("runs", []) if r.split()[0] == "solve"), None)
         if run_name is None or e.get("slow"):
             continue
-        flags = [f for f in run_name.split()[1:] if "{out}" not in f]
+        flags = solve_flags(run_name)
         try:
             page, r = program_case(e["path"], flags, out / "programs" / e["path"].removesuffix(".ein"), bin,
                                    events=False, timeout_note=f"The corpus's first declared run: `{run_name}`.")
