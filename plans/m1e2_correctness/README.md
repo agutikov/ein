@@ -1,10 +1,11 @@
 # M1e2 — Correctness: every known wrong answer
 
 **Estimate:** ~14 weeks: 3 estimated phases and 29 stages, **62.5 days** of
-stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.2 27.5). Two more phases have
+stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.2 27.5). Three more phases have
 stages named and few estimated: P1e2.1b (six, one estimated: S1e2.1b.6,
-4 days) and P1e2.1c (five, none estimated), both added or grown 2026-10-16. One
-phase is proposed and not specified.
+4 days) and P1e2.1c (five, none estimated), both added or grown 2026-10-16,
+and P1e2.4 (two, none estimated), added 2026-11-01. One phase is proposed and
+not specified.
 **Status:** created 2026-10-14 on the user's instruction: *"Create new
 milestone for correctness issues. … first phase is for solution dumps and
 rendering to markdown with graphs, so I can review all existing wrong
@@ -136,10 +137,11 @@ where it is cheap and exact, and
 |---|---|---:|---:|---|
 | [P1e2.1](p1e2.1_seeing_the_answer/README.md) | Seeing the answer: dumps, and the answer rendered for review | 7 | 12 d | `utils/review_bundle.py` → `build/review/`: every case's problem, every run's every artefact rendered with every graph as SVG, the right answer and the diff; the register as a cargo test; Q-M1e.20 answered; **the review held** |
 | [P1e2.1a](p1e2.1a_the_solution_region/README.md) | The solution region: R defined, computed, drawn and reported | 10 | 23 d | the answer redefined as a **region R** of the hypothesis lattice, with its minimal and maximal lines ([Q-M1e2.7](open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)), for a **monotone** program; a non-monotone one detected by a static check and reported through one stub; an oracle that computes R by saturation alone for n ≤ 16; the whole lattice drawn with the walk overlaid; programs written for a chosen region (S1e2.1a.8); the language and the read-out speaking R; the engine checked against the oracle under every lever; **the review resumed** |
-| [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) | The non-monotone lattice: what R is when adding a fact can take one away | 6 named | 4 d of 1 | the site census; a node's state, fork or scratch (Q-M1e2.2, W8); holes (Q-M1e2.7 (d)), from `absent` and from obligation triggers; whether a refutation may rest on an `absent` (Q-M1e.9, W3); the stub replaced; **the two lattices compared** in a `docs/kernel/` page, with how to solve each one stably, provably and effectively (S1e2.1b.6) |
+| [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) | The non-monotone lattice: what R is when adding a fact can take one away | 6 named | 4 d of 1 | the site census; a node's state, fork or scratch (Q-M1e2.2, W8); holes (Q-M1e2.7 (d)), from `absent` and from obligation triggers; the ruling on a refutation that rests on an `absent` applied to the region search (Q-M1e.9, W3; the ruling is P1e2.4's); the stub replaced; **the two lattices compared** in a `docs/kernel/` page, with how to solve each one stably, provably and effectively (S1e2.1b.6) |
 | [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 5 named | — | `ein solve`'s default describes R for every program the corpus holds, or says why not: the alive set at scale, the lines by duality, the non-monotone search, the flags at scale; the old walk's fate, and P1e2.2 re-scoped |
 | [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 13 | 27.5 d | every register row `fixed` or ruled `not-wrong`; no wrong answer at default settings; no lever that changes a certified answer |
 | P1e2.3 | Surfaces that misreport the answer | — | *proposed* | below |
+| [P1e2.4](p1e2.4_what_the_switch_left/README.md) | What the switch left: the `absent` ruling, and the read-out at scale | 2 named | — | Q-M1e2.5 ruled, *forbid* or *respect*, and applied to W3's rows (S1e2.4.1); `--models key` declines before it allocates, and the read-out forms measured in memory on the largest regions (S1e2.4.2) |
 
 ### P1e2.3 — Surfaces that misreport the answer (proposed)
 
@@ -169,7 +171,7 @@ user to say whether they become a phase:
 | question | here |
 |---|---|
 | [Q-M1e.8](../../docs/history/m1e_review_processing/open_questions.md#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set): `exhausted` certifies the lattice, not the model set | W1, S1e2.2.1 |
-| [Q-M1e.9](../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent): `dead` and `absent` | W3, S1e2.2.5, with the language ruling proposed to move here from M1f's S1f.10.8 |
+| [Q-M1e.9](../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent): `dead` and `absent` | W3, S1e2.2.5; the language ruling moved here from M1f's S1f.10.8 on 2026-11-01, as P1e2.4's S1e2.4.1 |
 | [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object): the untyped blind rung | C1, S1e2.2.10 |
 | [Q-M1e.15](../../docs/history/m1e_review_processing/open_questions.md#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported): the alternatives cap | W10, S1e2.2.11 |
 | [Q-M1e.16](../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one): the binding key | W7, S1e2.2.7 |

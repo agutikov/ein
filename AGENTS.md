@@ -79,7 +79,8 @@ constrained-reasoning research.
   R, and the page's § 6 says where. The same stage gave `configuration.md` a
   § 2.5 and an `R?` column: *no config option changes R*, measured over every
   lever by `utils/region_census.py --levers`, and `enable-symmetric-mirror`
-  is the one flag that does.
+  is the one flag that does. The user ruled it retired on 2026-11-01, and
+  S1e2.1a.6 removes it.
   **S1e2.1a.9's route 1**
   ([`ein_infer::downset`](ein.rs/crates/ein-infer/src/downset.rs)) computes a
   monotone program's R from its alive set and N alone. It is held to the

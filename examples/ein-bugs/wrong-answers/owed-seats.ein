@@ -17,9 +17,11 @@
 ;;;   minimal  k = 2 — a requirement is discharged by a witness, a complete
 ;;;            node leaves the frontier (`lattice_semantics::a_layer_that_
 ;;;            yields_complete_models_stops_descending`), and a second witness
-;;;            is `functional`'s question, not `total`'s. Recommended.
+;;;            is `functional`'s question, not `total`'s. Not taken; it is
+;;;            R's minimal line, which `ein solve --minimal` answers.
 ;;;   literal  k = 7 — every seating that owes nothing: the two matchings,
-;;;            the four triples and all four facts.
+;;;            the four triples and all four facts. **Ruled 2026-11-01**:
+;;;            k = |R|, Q-M1e2.7's (a); a bare `ein solve` answers it.
 ;;;
 ;;; **Never 3**, and never a set that changes when a constant is renamed.
 ;;;

@@ -31,6 +31,11 @@
 # and C1, whose right answer waits on a reading not yet ruled. The walk's
 # `wrong`, `control` and `twin` blocks are kept as the record of what it said.
 #
+# **W5's right answer was restated on 2026-11-01**, when the user ruled
+# Q-M1e2.1 *literal*: k = |R| = 7, as Q-M1e2.7's (a) had already said, and the
+# minimal line's 2 became the alternative. Its `now` is a bare `solve`, which
+# answers all of R. The row stays `fixed`: the walk's 3 was wrong under both.
+#
 # **The review (S1e2.1.7) reads the bundle built at `029ef6f`** on 2026-10-15
 # (`python3 utils/review_bundle.py` → build/review/, 26 cases, 6 788 pages,
 # 0 dangling links). Rebuilding at that commit gives the same pages, apart from
@@ -1127,6 +1132,7 @@ question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/ein-bugs/naf-upward-closure.ein"
 status   = "fixed"
 look_at  = ["root-writes", "entering p(A)", "model 1"]
+note     = "Fixed at the switch by route 2, which learns from no refutation, i.e. under *respect*; *forbid* or *respect* is P1e2.4's S1e2.4.1 since 2026-11-01, and *forbid* would re-open this row as a refusal"
 
 [case.wrong]
 run       = "solve -e"
@@ -1192,7 +1198,7 @@ question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/ein-bugs/wrong-answers/naf-nowb.ein"
 status   = "fixed"
 look_at  = ["entering p(A)", "events nogood", "layer 2", "summary"]
-note     = "two mechanisms: W3's width-1 no-good prunes the live superset, and W1 leaves the surviving {(q A)} unrecorded"
+note     = "two mechanisms: W3's width-1 no-good prunes the live superset, and W1 leaves the surviving {(q A)} unrecorded. W3: fixed at the switch by route 2, which learns from no refutation, i.e. under *respect*; *forbid* or *respect* is P1e2.4's S1e2.4.1 since 2026-11-01, and *forbid* would re-open this row as a refusal"
 
 [case.wrong]
 run       = "solve -e -L"
@@ -1264,7 +1270,7 @@ question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/lattice/synth/three_components.ein"
 status   = "fixed"
 look_at  = ["summary"]
-note     = "S1e2.1a.8's program written for a chosen region; the walk never enters the two states it misses"
+note     = "S1e2.1a.8's program written for a chosen region; the walk never enters the two states it misses. W3: fixed at the switch by route 2, which learns from no refutation, i.e. under *respect*; *forbid* or *respect* is P1e2.4's S1e2.4.1 since 2026-11-01, and *forbid* would re-open this row as a refusal"
 
 [case.wrong]
 run       = "solve -e"
@@ -1322,7 +1328,7 @@ question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/lattice/synth/trigger_hole.ein"
 status   = "fixed"
 look_at  = ["summary"]
-note     = "S1e2.1a.8's program written for a chosen region; its obligation-trigger hole is P1e2.1b's"
+note     = "S1e2.1a.8's program written for a chosen region; its obligation-trigger hole is P1e2.1b's. W3: fixed at the switch by route 2, which learns from no refutation, i.e. under *respect*; *forbid* or *respect* is P1e2.4's S1e2.4.1 since 2026-11-01, and *forbid* would re-open this row as a refusal"
 
 [case.wrong]
 run       = "solve -e"
@@ -1551,32 +1557,37 @@ minimal  = [
 maximal  = [["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)", "(seats Bob C2)"]]
 
 [case.right]
-reading   = "Q-M1e2.1 minimal (recommended in S1e2.2.3): a requirement is discharged by a witness, and a complete node leaves the frontier"
-verdict   = "Ambiguity"
-k         = 2
-exhausted = true
-closes    = ["seats"]
-models    = [["(seats Ann C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)"]]
-derived   = "the two matchings discharge both families; lattice_semantics::a_layer_that_yields_complete_models_stops_descending. Under R this is the minimal line: R has 7 states, two minimal and one maximal, all four seats ([case.region], route 1). The obligations rung asks for the minimal line"
-
-[[case.right.alternative]]
-reading   = "Q-M1e2.1 literal: every state that owes nothing"
+reading   = "Q-M1e2.1 literal, ruled 2026-11-01: k = |R| (Q-M1e2.7 (a)), so a discharged superset of a discharged state is a state of R"
 verdict   = "Ambiguity"
 k         = 7
 exhausted = true
 closes    = ["seats"]
 models    = [["(seats Ann C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)"], ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)"], ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C2)"], ["(seats Ann C1)", "(seats Bob C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)", "(seats Bob C2)"], ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)", "(seats Bob C2)"]]
-derived   = "every subset of the four seats facts that gives each guest and each chair one"
+derived   = "every subset of the four seats facts that gives each guest and each chair one: all of R, 7 states, two minimal and one maximal, all four seats ([case.region], route 1)"
+
+[[case.right.alternative]]
+reading   = "Q-M1e2.1 minimal, not taken (S1e2.2.3's recommendation): a requirement is discharged by a witness, and a complete node leaves the frontier"
+verdict   = "Ambiguity"
+k         = 2
+exhausted = true
+closes    = ["seats"]
+models    = [["(seats Ann C1)", "(seats Bob C2)"], ["(seats Ann C2)", "(seats Bob C1)"]]
+derived   = "the two matchings discharge both families; lattice_semantics::a_layer_that_yields_complete_models_stops_descending. Under R this is the minimal line, which `solve --minimal` answers"
 
 [case.now]
-run       = "solve --minimal"
-line      = "minimal"
+run       = "solve"
+line      = "all"
 exhausted = true
-k         = 2
+k         = 7
 relations = ["seats"]
 models    = [
+  ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)"],
+  ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C1)", "(seats Bob C2)"],
+  ["(seats Ann C1)", "(seats Ann C2)", "(seats Bob C2)"],
+  ["(seats Ann C1)", "(seats Bob C1)", "(seats Bob C2)"],
   ["(seats Ann C1)", "(seats Bob C2)"],
   ["(seats Ann C2)", "(seats Bob C1)"],
+  ["(seats Ann C2)", "(seats Bob C1)", "(seats Bob C2)"],
 ]
 
 # ══ W6 — `exhausted = true` over relations the rung never hypothesises ═════════

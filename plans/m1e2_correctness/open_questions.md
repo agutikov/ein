@@ -14,11 +14,11 @@ rule on, not five stage files to find.
 
 | Q | title | needed by | status |
 |---|---|---|---|
-| [Q-M1e2.1](#q-m1e21--is-a-discharged-superset-of-a-discharged-state-a-new-model) | Is a discharged superset of a discharged state a new model? | [S1e2.2.3](p1e2.2_wrong_answers/s1e2.2.3_obligations_join_superset.md) (W5) | open |
+| [Q-M1e2.1](#q-m1e21--is-a-discharged-superset-of-a-discharged-state-a-new-model) | Is a discharged superset of a discharged state a new model? | [S1e2.2.3](p1e2.2_wrong_answers/s1e2.2.3_obligations_join_superset.md) (W5) | **ruled 2026-11-01**: *literal*, k = \|R\| = 7, as Q-M1e2.7's (a) had said; W5's `right` restated |
 | [Q-M1e2.2](#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in) | Does a guard's `absent` premise bind the state the search ends in? | [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s S1e2.1b.2, then [S1e2.2.6](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md) (W8) | open |
 | [Q-M1e2.3](#q-m1e23--what-does-exhausted-certify-when-the-rung-leaves-relations-uncovered) | What does `exhausted` certify when the rung leaves relations uncovered? | [S1e2.2.8](p1e2.2_wrong_answers/s1e2.2.8_uncovered_certified.md) (W6) | open |
 | [Q-M1e2.4](#q-m1e24--is-an-empty-unsat-core-a-core) | Is an empty unsat core a core? | [S1e2.2.13](p1e2.2_wrong_answers/s1e2.2.13_empty_core.md) (W12) | open |
-| [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) | open |
+| [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [P1e2.4](p1e2.4_what_the_switch_left/README.md)'s S1e2.4.1, then [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) and P1e2.1b's S1e2.1b.4 | **moved here 2026-11-01**, into a phase of its own; *forbid* or *respect* still open |
 | [Q-M1e2.6](#q-m1e26--does-p1e23-become-a-phase) | Does P1e2.3 become a phase? | the milestone's scope | open |
 | [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; on 2026-10-16 (a)–(c) and (e)–(i) [ruled for the monotone case](#the-second-answer-2026-10-16), and [(e)'s display and (h)'s names](#the-third-answer-2026-10-16); [the census](#the-census-2026-10-16) contradicts none |
 | [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) | Where does the rework of `ein solve` go? | P1e2.1a's S1e2.1a.5 (it must print `k` = \|R\|), and P1e2.2's scope | **ruled 2026-10-16**: [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) now, [P1e2.1c](p1e2.1c_the_region_search/README.md) next |
@@ -38,6 +38,15 @@ the lattice's own design, where a complete node leaves the frontier. *Yes*
 and the tree 6, so both are wrong under both readings. The recommendation in
 S1e2.2.3 is *minimal*. A requirement is discharged by a witness, and a second
 witness is `functional`'s question, not `total`'s.
+
+**Ruled 2026-11-01: *literal*.** The user, choosing between keeping the
+minimal line as W5's question and following (a) below to the letter, took
+the second: k = |R|, and a discharged superset of a discharged state is a
+state of R. The register's `W5/owed-seats` row states **7** as `right`, with
+the minimal line's 2 as the alternative not taken, and its `now` is a bare
+`ein solve`, which answers all of R. The row stays `fixed`: the walk's 3 was
+wrong under both readings. The rest of this entry is the record of how the
+question got here.
 
 **Reframed by [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice)
 (2026-10-15).** The two readings are two numbers of one region: *minimal*
@@ -93,6 +102,14 @@ M1f's [S1f.10.8](../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure
 The proposal is to run its T1 and its ruling as S1e2.2.5's first task, leaving
 S1f.10.8 the corollary it writes into `absent_semantics.md`. The alternative
 is that W3 waits for M1f.
+
+**Moved here 2026-11-01**, into a phase of its own:
+[P1e2.4](p1e2.4_what_the_switch_left/README.md)'s S1e2.4.1, beside the `--models key` failure the region
+gallery found. The user filed both *"in additional phase in m1e2"*. What is
+still open is the ruling itself, *forbid* or *respect*. W3's four rows were
+flipped to `fixed` at the switch by route 2, which learns from no refutation.
+That flip assumed *respect*, and the stage puts it in front of the user with
+the exposed set re-counted.
 
 ## Q-M1e2.6 — Does P1e2.3 become a phase?
 

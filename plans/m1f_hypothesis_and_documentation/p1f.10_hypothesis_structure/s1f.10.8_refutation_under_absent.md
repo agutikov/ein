@@ -1,5 +1,11 @@
 # S1f.10.8 — May a refutation rest on an `absent`?
 
+> **The ruling moved to M1e2 on 2026-11-01**: its T1 (the exposed set) and
+> the *forbid* / *respect* ruling are
+> [M1e2 P1e2.4](../../m1e2_correctness/p1e2.4_what_the_switch_left/README.md)'s
+> S1e2.4.1 ([Q-M1e2.5](../../m1e2_correctness/open_questions.md#q-m1e25--does-s1f108s-ruling-move-here)).
+> This stage keeps the corollary it writes into `absent_semantics.md`.
+
 **Phase:** [P1f.10](README.md) (The structure of the hypothesis set)
 **Estimate:** 2.5 days — 3 until 2026-08-28, when
 [S1e.2.3](../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent) took the check

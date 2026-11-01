@@ -215,8 +215,10 @@ facts of every state in R
 - **`enable-symmetric-mirror` changes R**, on `features/06` (§ 2.4). The
   mirror is how `(__symmetric__ R)` means anything, so the flag switches off
   part of the program's theory. It is the one flag that **violates the
-  principle**, and its question is
-  [S1e2.1a.6](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.6_engine_against_oracle.md)'s.
+  principle**. **The user ruled on 2026-11-01 that it is retired**: a
+  program that wants a relation left unmirrored does not mark it.
+  [S1e2.1a.6](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.6_engine_against_oracle.md)
+  removes it, and until then this page describes the flag as it ships.
 - **`lattice-sanity-check` aborted one program under the walk**:
   [`corpus/fuzz_findings/d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein),
   which the static check flags non-monotone, failed the probe with
