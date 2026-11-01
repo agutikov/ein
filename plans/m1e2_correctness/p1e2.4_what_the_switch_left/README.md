@@ -6,7 +6,9 @@
 to them after S1e2.1a.5's switch: *"file in additional phase in m1e2"*, both
 in one phase. One is a ruling W3's fix waited on and nobody had taken. The
 other is a failure the region gallery found the first time it ran against the
-region modes.
+region modes. **S1e2.4.1 started 2026-11-02.** Its evidence is in
+[its stage file](s1e2.4.1_refutation_under_absent.md), and it **waits on the
+user's ruling**, *forbid* or *respect*.
 **Depends on:** nothing. Either stage can run first. **It runs before
 P1e2.1b** (the user, 2026-11-02: *"reorder P1e2.4 before P1e2.1b"*), because
 S1e2.1b.4 applies the ruling S1e2.4.1 takes; it was briefly ordered after
@@ -33,7 +35,7 @@ the switch left that is neither the region search
 
 | ID | title | the question |
 |---|---|---|
-| S1e2.4.1 | May a refutation rest on an `absent`? | [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here): *forbid* or *respect*, for W3 |
+| [S1e2.4.1](s1e2.4.1_refutation_under_absent.md) | May a refutation rest on an `absent`? | [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here): *forbid* or *respect*, for W3. **Waiting on the user's ruling** since 2026-11-02, with the exposed set re-counted (13 rules over 9 entries under the static check's reading, 14 over 10 under S1e.2.3's) and each option run on the real programs |
 | S1e2.4.2 | `--models key` declines before it allocates | why `ein solve … --models key` was OOM-killed on an 11 339-state read-out, and the bound that stops it |
 
 Each stage gets a file when it starts. Until then this page is the scope.
