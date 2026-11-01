@@ -57,6 +57,16 @@
 # became Q-M1e2.7, *the answer is a region R of the lattice*, and P1e2.1a
 # rewrites the definitions before the other twelve cases are read against them.
 #
+# **The review resumes on the bundle built at `17422b32`** (2026-11-01, S1e2.1a.7):
+# `python3 utils/review_bundle.py` on a clean tree → build/review/, 35 cases,
+# 0 failed, 10 380 pages, 1 709 SVGs, 0 dangling links. Every case page has
+# § 5 The region, the row's `[case.now]` drawn on the oracle's R. Rebuilding at
+# `17422b32` gives the same pages, apart from wall-clock fields; this paragraph is a
+# comment the bundle does not read. The twelve unread cases are read W11 first
+# (the user, 2026-10-16), then in P1e2.2's order: W2, W5, W4, W3, W8, W7, W6,
+# W9, C1, W10, W12. W1's six rows filed after its reading and W13 carry no
+# review either.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
