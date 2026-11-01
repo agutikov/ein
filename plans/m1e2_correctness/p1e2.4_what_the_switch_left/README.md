@@ -7,7 +7,10 @@ to them after S1e2.1a.5's switch: *"file in additional phase in m1e2"*, both
 in one phase. One is a ruling W3's fix waited on and nobody had taken. The
 other is a failure the region gallery found the first time it ran against the
 region modes.
-**Depends on:** nothing. Either stage can run first.
+**Depends on:** nothing. Either stage can run first. **It runs before
+P1e2.1b** (the user, 2026-11-02: *"reorder P1e2.4 before P1e2.1b"*), because
+S1e2.1b.4 applies the ruling S1e2.4.1 takes; it was briefly ordered after
+P1e2.1c the same day.
 **Blocks:** S1e2.4.1 blocks [S1e2.2.5](../p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)
 (W3), P1e2.1b's S1e2.1b.4 and M1f's
 [S1f.10.8](../../m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)

@@ -19,7 +19,9 @@ answering S1e2.1a.1's open questions:
 "This phase" in the quote is [P1e2.1a](../p1e2.1a_the_solution_region/README.md).
 Points 1–3 are S1e2.1a.1's, and this phase gets what they leave.
 **Depends on:** S1e2.1a.1. Its detector gives this phase its census, and its
-stub is what S1e2.1b.5 replaces.
+stub is what S1e2.1b.5 replaces. Since 2026-11-02 also
+[P1e2.4](../p1e2.4_what_the_switch_left/README.md), which runs first: its
+S1e2.4.1 takes the *forbid* / *respect* ruling S1e2.1b.4 applies.
 **Blocks:** [S1e2.2.5](../p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)
 (W3) and [S1e2.2.6](../p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md)
 (W8), which take their reading from here. Also the review of any case whose

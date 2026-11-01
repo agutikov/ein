@@ -150,7 +150,7 @@ alone. No answer moves. The witnesses and the reproduction are in
 So the question is P1's and S4's.
 
 **Ruled 2026-11-02: P1e2.3 becomes a phase**, in the user's order of the
-milestone: P1e2.1b, P1e2.1c, then P1e2.3 and P1e2.4, then the wrong answers
+milestone: P1e2.4, P1e2.1b, P1e2.1c, then P1e2.3, then the wrong answers
 ([README § Phases](README.md#phases)). It is specified when it starts, from P1,
 S4 and whatever P1e2.1b and P1e2.1c leave.
 

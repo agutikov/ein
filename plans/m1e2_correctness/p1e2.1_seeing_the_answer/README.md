@@ -17,7 +17,7 @@ and [P1e2.1a](../p1e2.1a_the_solution_region/README.md) inserted before the
 rest of the review. **Resumed 2026-11-01** on the bundle built at `17422b32`
 ([S1e2.1a.7](../p1e2.1a_the_solution_region/s1e2.1a.7_the_bundle_shows_r.md)):
 every case page draws its run on R, and the twelve unread cases were handed
-back. **Deferred 2026-11-02** to after P1e2.1b, P1e2.1c, P1e2.3 and P1e2.4,
+back. **Deferred 2026-11-02** to after P1e2.4, P1e2.1b, P1e2.1c and P1e2.3,
 and revisited by the agent first, with the user reading only what stays
 ambiguous ([S1e2.1.7](s1e2.1.7_the_review.md)).
 **Depends on:** nothing. Every renderer this phase needs is already written,

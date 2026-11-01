@@ -67,8 +67,8 @@
 # W9, C1, W10, W12. W1's six rows filed after its reading and W13 carry no
 # review either.
 #
-# **Deferred 2026-11-02**: the user ordered P1e2.1b, P1e2.1c, P1e2.3 and
-# P1e2.4 first and the wrong answers after them, revisited by the agent first
+# **Deferred 2026-11-02**: the user ordered P1e2.4, P1e2.1b, P1e2.1c and
+# P1e2.3 first and the wrong answers after them, revisited by the agent first
 # and read by the user only where that leaves ambiguity. The revisit runs on a
 # bundle rebuilt then (S1e2.1.7).
 #

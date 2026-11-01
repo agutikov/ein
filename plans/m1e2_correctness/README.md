@@ -145,9 +145,12 @@ where it is cheap and exact, and
 | P1e2.3 | Surfaces that misreport the answer | — | *planned*, specified when it starts | below |
 | [P1e2.4](p1e2.4_what_the_switch_left/README.md) | What the switch left: the `absent` ruling, and the read-out at scale | 2 named | — | Q-M1e2.5 ruled, *forbid* or *respect*, and applied to W3's rows (S1e2.4.1); `--models key` declines before it allocates, and the read-out forms measured in memory on the largest regions (S1e2.4.2) |
 
-**The order, ruled 2026-11-02.** P1e2.1a is done. Next is P1e2.1b, where the
-user expects questions to discuss, then P1e2.1c, then P1e2.3 and P1e2.4. Only
-after them are the wrong answers revisited, S1e2.1.7 and then P1e2.2, and the
+**The order, ruled 2026-11-02.** P1e2.1a is done. Next is **P1e2.4**, then
+P1e2.1b, where the user expects questions to discuss, then P1e2.1c, then
+P1e2.3. P1e2.4 was first put after P1e2.1c and moved ahead of P1e2.1b the same
+day, on the user's *"reorder P1e2.4 before P1e2.1b"*: P1e2.1b's S1e2.1b.4
+applies the *forbid* / *respect* ruling S1e2.4.1 takes. Only after P1e2.3 are
+the wrong answers revisited, S1e2.1.7 and then P1e2.2, and the
 revisit is the agent's first. The user, verbatim:
 *"only after that revisit wrong answers - first your revisit and then if still remain any ambiguity or no criteria to decide correct solution - then I can review logs and renderings manually"*.
 So the revisit reads every unreviewed row against the definitions as they
@@ -162,8 +165,7 @@ precedent. The survey found nine surfaces that state something false about a
 run whose **answer** is right, and one panic a well-formed program reaches.
 They are correctness issues and not wrong answers, so they are recorded here
 with their witnesses ([inventory § 3](inventory.md#3-cases)). **Ruled
-2026-11-02: they become a phase**, after P1e2.1c and beside P1e2.4,
-specified when it starts. What the switch left of them, P1 and S4, is in
+2026-11-02: they become a phase**, after P1e2.1c, specified when it starts. What the switch left of them, P1 and S4, is in
 [Q-M1e2.6](open_questions.md#q-m1e26--does-p1e23-become-a-phase)'s notes:
 
 | id | what is false | settings |
