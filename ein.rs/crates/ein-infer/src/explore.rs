@@ -44,6 +44,7 @@ use rustc_hash::{FxHashMap, FxHashSet};
 
 use crate::compile::SharedMemo;
 use crate::described::{self, Described};
+use crate::detector::{self, StaleCheck, StaleNode, Status, Warning};
 use crate::downset::{self, Declined, is_subset, join};
 use crate::events::Events;
 use crate::monotone::Monotonicity;
@@ -257,6 +258,11 @@ pub struct Answer {
     /// Facts beyond root, summed over them — what the budget counts.
     pub facts: u64,
     pub wall: Duration,
+    /// On a program the static check flags, what the detector found: the
+    /// status, the stale facts of every node the run computed and, once the
+    /// read-out has run, the parent-path spot check ([`crate::detector`]).
+    /// `None` on a monotone program.
+    pub warning: Option<Box<Warning>>,
 }
 
 impl Answer {
@@ -304,6 +310,7 @@ pub fn run_with(
     // A dead root is the whole answer on any program: every node is a fork of
     // root's fixpoint, and a fork only adds (L0). Route 1 visits root alone.
     let fork_only_adds = prepared.root_dead && !prepared.monotonicity.is_monotone();
+    let n = prepared.candidates.len();
     let mut answer = if prepared.monotonicity.is_monotone() || prepared.root_dead {
         if opts.mode
             == (Mode {
@@ -328,6 +335,13 @@ pub fn run_with(
     };
     if fork_only_adds {
         answer.licences = vec![Licence::ForkOnlyAdds];
+        // Root is dead, so every node is, and the route read root alone.
+        if let Some(w) = answer.warning.as_mut() {
+            w.status = Status::RootDead {
+                n,
+                limit: opts.limit,
+            };
+        }
     }
     answer.wall = t0.elapsed();
     Ok(answer)
@@ -386,6 +400,13 @@ struct Space<'a> {
     budget: u64,
     deadline: Option<Instant>,
     events: &'a mut Events,
+    /// On a flagged program: every node computed that holds a stale fact.
+    stale: Vec<StaleNode>,
+    /// On a flagged program within the limit: each node's record, so a run
+    /// that read every node can say what the cube says of the status.
+    records: Option<FxHashMap<Box<[u32]>, region::Node>>,
+    /// Root's plans, what the attribution reads a node against.
+    plans: Vec<std::sync::Arc<crate::plan::Plan>>,
 }
 
 /// `Ok(Err(stop))`: the step was not taken.
@@ -407,8 +428,15 @@ impl<'a> Space<'a> {
             hypothesised,
             monotonicity,
             memo,
+            plans,
         } = prepared;
-        let axes = Axes::new(root, &candidates, hypothesised, false).narrating(events.narration());
+        let flagged = !monotonicity.is_monotone();
+        let mut axes =
+            Axes::new(root, &candidates, hypothesised, false).narrating(events.narration());
+        if flagged {
+            axes = axes.checking_stale(std::sync::Arc::new(StaleCheck::of(&plans)));
+        }
+        let within = candidates.len() <= opts.limit as usize && candidates.len() < 64;
         let facts = candidates.iter().map(|c| c.fact).collect();
         Space {
             root: root.sealed(),
@@ -430,6 +458,9 @@ impl<'a> Space<'a> {
             budget: opts.budget,
             deadline: opts.deadline,
             events,
+            stale: Vec::new(),
+            records: (flagged && within).then(FxHashMap::default),
+            plans,
         }
     }
 
@@ -438,6 +469,18 @@ impl<'a> Space<'a> {
     }
 
     fn answer(self, mode: Mode, route: Route, found: Found) -> Answer {
+        let (n, nodes, stale) = (self.n(), self.saturations, self.stale);
+        let warning = (!self.monotonicity.is_monotone()).then(|| {
+            Box::new(Warning {
+                status: Status::NotRead { n },
+                state: detector::State {
+                    cube: false,
+                    nodes,
+                    stale,
+                },
+                paths: None,
+            })
+        });
         Answer {
             mode,
             candidates: self.candidates,
@@ -456,6 +499,7 @@ impl<'a> Space<'a> {
             saturations: self.saturations,
             facts: self.spent,
             wall: Duration::ZERO,
+            warning,
         }
     }
 
@@ -534,6 +578,19 @@ impl<'a> Space<'a> {
             if s.is_empty() {
                 self.root_node = Some(o.node.clone());
             }
+            if !o.stale.is_empty() {
+                let status = (if o.dead { region::DEAD } else { 0 })
+                    | (if o.owes > 0 { region::OWING } else { 0 });
+                let node = self.name_of(s);
+                self.stale.push(StaleNode {
+                    node,
+                    class: region::Class::of(status),
+                    facts: std::mem::take(&mut o.stale),
+                });
+            }
+            if let Some(records) = self.records.as_mut() {
+                records.insert(s.clone(), o.node.clone());
+            }
             self.spent += o.state.len() as u64;
             let next = self.classes.len() as u32;
             let class = *self.classes.entry(o.state).or_insert(next);
@@ -551,6 +608,59 @@ impl<'a> Space<'a> {
             self.events.watch_step(&step);
         }
         Ok(Ok(sets.iter().map(|s| self.seen[s].clone()).collect()))
+    }
+
+    /// `{a, b}` or `∅`, in candidate order.
+    fn name_of(&self, set: &[u32]) -> String {
+        if set.is_empty() {
+            return "∅".to_string();
+        }
+        let parts: Vec<&str> = set
+            .iter()
+            .map(|&b| self.candidates[b as usize].text.as_str())
+            .collect();
+        format!("{{{}}}", parts.join(", "))
+    }
+
+    /// What the cube says of the status, when this run read every node of it
+    /// — a question decided early can still have read them all — and `None`
+    /// when it did not.
+    fn status_if_whole(&mut self) -> Result<Option<Status>, SolveError> {
+        let n = self.n();
+        let Some(records) = self.records.as_ref() else {
+            return Ok(None);
+        };
+        if n >= 64 || self.seen.len() as u64 != 1u64 << n {
+            return Ok(None);
+        }
+        let size = 1usize << n;
+        let mut status = vec![0u8; size];
+        let mut nodes = vec![region::Node::default(); size];
+        for (set, seen) in &self.seen {
+            let mask = set.iter().fold(0usize, |m, &b| m | 1 << b);
+            status[mask] = (if seen.dead { region::DEAD } else { 0 })
+                | (if seen.owes > 0 { region::OWING } else { 0 });
+            if let Some(r) = records.get(set) {
+                nodes[mask] = r.clone();
+            }
+        }
+        let topology = region::Topology::of(n, &status);
+        let sites = detector::site_texts(&self.monotonicity, self.terms);
+        let root_plans = detector::RootPlans::of(&self.plans);
+        let cube = detector::Cube {
+            status: &status,
+            nodes: &nodes,
+            candidates: &self.candidates,
+            topology: &topology,
+        };
+        let mut reader = region::Nodes::of_parts(
+            self.root,
+            self.snapshot.clone(),
+            self.memo.clone(),
+            self.terms,
+            self.ast,
+        );
+        detector::status_of(&cube, &sites, &root_plans, &mut reader, self.ast).map(Some)
     }
 
     /// The layer after `layer`, from its alive (or kept) sets: the
@@ -1177,6 +1287,21 @@ fn describe_route_1(
             ));
         }
     };
+    // A flagged program reaches route 1 only with a dead root; the caller
+    // sets the status.
+    let warning = (!d.monotonicity.is_monotone()).then(|| {
+        Box::new(Warning {
+            status: Status::NotRead {
+                n: d.candidates.len(),
+            },
+            state: detector::State {
+                cube: false,
+                nodes: saturations,
+                stale: d.stale.clone(),
+            },
+            paths: None,
+        })
+    });
     Ok(Answer {
         mode: opts.mode,
         candidates: d.candidates,
@@ -1195,6 +1320,7 @@ fn describe_route_1(
         saturations,
         facts,
         wall: Duration::ZERO,
+        warning,
     })
 }
 
@@ -1248,7 +1374,25 @@ fn flagged(
             k_s: found.states.len() as u64,
         });
         let partial = describe_all.then(|| Box::new(sp.partial_cube()));
+        // The cube's half: past the limit it is not known; within it, a run
+        // that read every node says what the cube says.
+        let status = if !within {
+            Status::PastLimit {
+                n,
+                limit: opts.limit,
+            }
+        } else {
+            match sp.status_if_whole()? {
+                Some(s) => s,
+                None => Status::NotRead { n },
+            }
+        };
+        let whole = matches!(status, Status::Exercised { .. } | Status::Conservative);
         let mut answer = sp.answer(opts.mode, Route::Cube, found);
+        if let Some(w) = answer.warning.as_mut() {
+            w.status = status;
+            w.state.cube = whole;
+        }
         answer.counts = counts;
         answer.described = partial;
         return Ok(answer);
@@ -1392,6 +1536,7 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
         saturations: 1u64 << n,
         facts,
         wall: Duration::ZERO,
+        warning: r.warning,
         candidates: r.candidates,
         monotonicity: r.monotonicity,
         root_dead: r.root_dead,

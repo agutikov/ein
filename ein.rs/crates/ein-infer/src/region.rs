@@ -49,6 +49,7 @@
 //! **with** holes, which have no shortcut and are skipped past a work bound
 //! the record says it hit.
 
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use ein_core::prov::NafArg;
@@ -57,9 +58,11 @@ use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet};
 
 use crate::compile::SharedMemo;
+use crate::detector::{self, StaleCheck, Warning};
 use crate::events::{Events, Level, sexpr};
 use crate::hypgen::HypGenStats;
 use crate::monotone::Monotonicity;
+use crate::plan::Plan;
 use crate::saturator::{Saturator, Session, Snapshot};
 use crate::solve::SolveError;
 
@@ -190,6 +193,10 @@ pub struct Region {
     /// Each node's state beyond root's, sorted by text — only when
     /// [`Options::keep_states`].
     pub states: Option<Vec<Vec<String>>>,
+    /// On a program the static check flags, what the detector read off the
+    /// cube: the status, attributed, and every node's stale facts
+    /// ([`crate::detector`], M1e2 S1e2.1b.5). `None` on a monotone program.
+    pub warning: Option<Box<Warning>>,
 }
 
 impl Region {
@@ -290,6 +297,7 @@ pub(crate) fn compute_prepared(
         hypothesised,
         monotonicity,
         memo,
+        plans,
     } = prepared;
     let n = candidates.len();
 
@@ -303,7 +311,13 @@ pub(crate) fn compute_prepared(
     }
     let cost_root = t_root.elapsed();
 
-    let axes = Axes::new(root, &candidates, hypothesised, opts.keep_states);
+    let mut axes = Axes::new(root, &candidates, hypothesised, opts.keep_states);
+    // The detector reads every node on a flagged program, and none on a
+    // monotone one (`crate::detector`'s zero-work argument).
+    let flagged = !monotonicity.is_monotone();
+    if flagged {
+        axes = axes.checking_stale(Arc::new(StaleCheck::of(&plans)));
+    }
     let root = root.sealed();
     let size = 1usize << n;
     // The probe below is not part of the run, so the axes narrate only after
@@ -314,6 +328,7 @@ pub(crate) fn compute_prepared(
     let mut nodes = vec![Node::default(); size];
     let mut states = opts.keep_states.then(|| vec![Vec::new(); size]);
     let mut classes: FxHashMap<Box<[FactId]>, u64> = FxHashMap::default();
+    let mut stale: Vec<(u64, Vec<String>)> = Vec::new();
 
     // Layer order, as the stage asks: the probe's first nodes are then the
     // small commitments, and every node is independent of the order anyway.
@@ -414,6 +429,9 @@ pub(crate) fn compute_prepared(
             let class = *classes.entry(out.state).or_insert(mask);
             let m = mask as usize;
             status[m] = (if out.dead { DEAD } else { 0 }) | (if out.owes > 0 { OWING } else { 0 });
+            if !out.stale.is_empty() {
+                stale.push((mask, std::mem::take(&mut out.stale)));
+            }
             nodes[m] = Node { class, ..out.node };
             if let Some(st) = states.as_mut() {
                 st[m] = out.delta;
@@ -426,6 +444,57 @@ pub(crate) fn compute_prepared(
     let t_topo = Instant::now();
     let topology = Topology::of(n, &status);
     let cost_topology = t_topo.elapsed();
+
+    // The detector's reading of the cube: the status, its violations
+    // attributed to the sites that made them, and the stale facts each node
+    // held. Read, never written: no node and no bit moves.
+    let warning = if flagged {
+        let sites = detector::site_texts(&monotonicity, terms);
+        let root_plans = detector::RootPlans::of(&plans);
+        let name = |mask: u64| -> String {
+            if mask == 0 {
+                return "∅".to_string();
+            }
+            let parts: Vec<&str> = (0..n)
+                .filter(|i| mask >> i & 1 == 1)
+                .map(|i| candidates[i].text.as_str())
+                .collect();
+            format!("{{{}}}", parts.join(", "))
+        };
+        let stale: Vec<detector::StaleNode> = stale
+            .into_iter()
+            .map(|(mask, facts)| detector::StaleNode {
+                node: name(mask),
+                class: Class::of(status[mask as usize]),
+                facts,
+            })
+            .collect();
+        let cube = detector::Cube {
+            status: &status,
+            nodes: &nodes,
+            candidates: &candidates,
+            topology: &topology,
+        };
+        let mut reader = Nodes {
+            root,
+            snapshot,
+            memo,
+            terms,
+            ast,
+        };
+        let status = detector::status_of(&cube, &sites, &root_plans, &mut reader, ast)?;
+        Some(Box::new(Warning {
+            status,
+            state: detector::State {
+                cube: true,
+                nodes: size as u64,
+                stale,
+            },
+            paths: None,
+        }))
+    } else {
+        None
+    };
 
     Ok(Outcome::Region(Box::new(Region {
         candidates,
@@ -440,6 +509,7 @@ pub(crate) fn compute_prepared(
             topology: cost_topology,
         },
         states,
+        warning,
     })))
 }
 
@@ -456,6 +526,9 @@ pub(crate) struct Prepared {
     pub hypothesised: FxHashSet<ein_core::Symbol>,
     pub monotonicity: Monotonicity,
     pub memo: SharedMemo,
+    /// Root's plans, what the static check read: the detector's stale check
+    /// and its attribution read a node against them.
+    pub plans: Vec<Arc<Plan>>,
 }
 
 /// Saturate `root`, a **freshly loaded** program, and return the firings
@@ -577,12 +650,8 @@ pub(crate) fn prepare_with(
         .iter()
         .map(|c| terms.facts.get(c.fact).0)
         .collect();
-    let monotonicity = crate::monotone::classify(
-        root,
-        terms,
-        &crate::monotone::plans_of(&memo),
-        &hypothesised,
-    );
+    let plans = crate::monotone::plans_of(&memo);
+    let monotonicity = crate::monotone::classify(root, terms, &plans, &hypothesised);
     if events.on() && !monotonicity.is_monotone() {
         let sites: Vec<String> = monotonicity.sites.iter().map(|s| s.render(terms)).collect();
         events.emit("monotonicity", |l| {
@@ -598,6 +667,7 @@ pub(crate) fn prepare_with(
         hypothesised,
         monotonicity,
         memo,
+        plans,
     })
 }
 
@@ -614,6 +684,8 @@ pub(crate) struct Axes {
     keep_states: bool,
     /// Narrate each node into a worker stream the caller replays in order.
     narration: Option<Level>,
+    /// Read each node's stale facts: on a flagged program only.
+    stale: Option<Arc<StaleCheck>>,
 }
 
 impl Axes {
@@ -630,7 +702,15 @@ impl Axes {
             hypothesised,
             keep_states,
             narration: None,
+            stale: None,
         }
+    }
+
+    /// The same axes, reading each node's stale facts against `check` — the
+    /// detector's, on a program the static check flags.
+    pub(crate) fn checking_stale(mut self, check: Arc<StaleCheck>) -> Axes {
+        self.stale = Some(check);
+        self
     }
 
     /// The same axes, narrating each node at `narration` (`None`: silent).
@@ -658,6 +738,9 @@ pub(crate) struct NodeOut {
     /// The node's own narration, when the axes narrate: its saturation's and
     /// its obligation pass's events, for the caller to replay in order.
     pub events: Option<Events>,
+    /// Its stale facts, `fact ← rule (absent …)`, sorted — read only when the
+    /// axes check them ([`Axes::checking_stale`]).
+    pub stale: Vec<String>,
 }
 
 #[cfg(feature = "parallel")]
@@ -767,6 +850,24 @@ impl<'a> Nodes<'a> {
         })
     }
 
+    /// Over a root a route has already prepared: its sealed fixpoint, the
+    /// snapshot every node resumes from, and the memo.
+    pub(crate) fn of_parts(
+        root: &'a Kb,
+        snapshot: Snapshot,
+        memo: SharedMemo,
+        terms: &'a mut Terms,
+        ast: &'a Ast,
+    ) -> Nodes<'a> {
+        Nodes {
+            root,
+            snapshot,
+            memo,
+            terms,
+            ast,
+        }
+    }
+
     /// `read` the fixpoints of root plus each of `sets`, all at once — for a
     /// reader that compares states, as a model set's determining key does.
     ///
@@ -827,6 +928,57 @@ impl<'a> Nodes<'a> {
         .map(|kb| read(&kb, self.terms, &firings));
         self.terms.provs.discard_fork();
         out
+    }
+
+    /// The state of `parent`'s fixpoint with `last` written in and saturated
+    /// again — a parent path to `parent ∪ {last}`, the detector's spot check —
+    /// as [`crate::canon::state_key`] keys it. `None` when the parent is dead:
+    /// the path through it does not exist, and `-y` skipped it too. The parent
+    /// is the node function's own fork; the step after it is a fresh
+    /// saturation over the whole KB, as `node_census`'s step is.
+    pub fn by_parent(
+        &mut self,
+        parent: &[FactId],
+        last: FactId,
+    ) -> Result<Option<Box<[FactId]>>, SolveError> {
+        self.terms.provs.open_fork();
+        let out = self.by_parent_in_fork(parent, last);
+        self.terms.provs.discard_fork();
+        out
+    }
+
+    fn by_parent_in_fork(
+        &mut self,
+        parent: &[FactId],
+        last: FactId,
+    ) -> Result<Option<Box<[FactId]>>, SolveError> {
+        let mut kb = fixpoint(
+            self.root,
+            &self.snapshot,
+            self.terms,
+            self.ast,
+            &self.memo,
+            parent,
+        )?;
+        if crate::contradiction::has_contradiction(&kb, self.terms) {
+            return Ok(None);
+        }
+        let (rel, args) = self.terms.facts.get(last);
+        let args = args.to_vec();
+        let prov = self.terms.provs.push(Prov::from_hypothesis(0, None));
+        kb.add_and_index_fact(self.terms, rel, &args, Some(prov))
+            .expect("room for a hypothesis");
+        let mut events = Events::off();
+        let mut s = Session {
+            kb: &mut kb,
+            terms: self.terms,
+            ast: self.ast,
+            events: &mut events,
+            memo: self.memo.clone(),
+        };
+        let mut sat = Saturator::new(&mut s)?;
+        sat.saturate(&mut s, None, &mut |_| {})?;
+        Ok(Some(crate::canon::state_key(&kb)))
     }
 
     /// `read` the fixpoint of root plus `facts`.
@@ -996,6 +1148,10 @@ fn node_in_region(
             node.excluded |= 1 << b;
         }
     }
+    let stale = match &axes.stale {
+        Some(check) => detector::stale_facts(&fork, terms, ast, check),
+        None => Vec::new(),
+    };
     let state = crate::canon::state_key(&fork);
     let delta: Vec<FactId> = state
         .iter()
@@ -1023,6 +1179,7 @@ fn node_in_region(
         state: delta.into_boxed_slice(),
         closure,
         events: axes.narration.map(|_| ev),
+        stale,
     })
 }
 

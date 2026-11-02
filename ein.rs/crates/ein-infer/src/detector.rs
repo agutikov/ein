@@ -12,6 +12,26 @@
 //! half, [`Static`], read off root's plans at load and carried on
 //! [`crate::monotone::Monotonicity`].
 //!
+//! The dynamic half, [`Warning`], says whether a site bit, and reads only what
+//! the run computes anyway, with the **status** and the **state** reported
+//! apart because the cube reads only the first:
+//!
+//! - **the status**: the cube's violations — holes, dead nodes with an alive
+//!   superset, discharged nodes with an owing superset — each attributed to
+//!   the sites that made it (S1e2.1b.3's rule, `status_of`): *exercised* or
+//!   *conservative*, and *not known* where the run did not read the cube;
+//! - **the state**: every node the run computes is read for **stale facts**
+//!   ([`stale_facts`], `node_census.md` § 4's check, in
+//!   [`crate::region`]'s node function), dead nodes included, because W8's
+//!   stale fact is in a dead node no run lists;
+//! - **the paths**: the read-out's parent-path spot check
+//!   ([`crate::region::Nodes::by_parent`]), at most [`SPOT_PARENTS`] parents
+//!   of each state it prints of two commitments or more. It reads one-step
+//!   parents only: on the probe `via_hole` and on `ACTIVATOR_UNDER_ABSENT` a
+//!   node is dead along a two-step chain through an alive parent, and one-step
+//!   parents see one of the two nodes (`node_census.md` § 11.2). Its row says
+//!   what was checked, and claims nothing more.
+//!
 //! It decides nothing. What a node is on a flagged program, and what is
 //! reported about it, are
 //! [F21](../../../../plans/followups/f21_non_monotone_programs_decided.md)'s
@@ -52,11 +72,20 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
-use ein_core::{Kb, Terms};
+use ein_core::prov::{NafArg, NafRef};
+use ein_core::{FactId, Kb, Symbol, Terms, Value};
+use ein_ir::Ast;
+use rustc_hash::{FxHashMap, FxHashSet};
 
+use crate::compile::SharedMemo;
+use crate::events::{Events, sexpr};
+use crate::match_::Matcher;
 use crate::monotone::{self, Monotonicity, SiteKind};
-use crate::plan::Plan;
+use crate::obligations::{self, Owed};
+use crate::plan::{Disjunct, NafGuard, Plan, Slot, Span, Step};
+use crate::region::{Candidate, DEAD, Node, Nodes, OWING, Topology};
 use crate::saturator::DEFAULT_PRIORITY;
+use crate::solve::SolveError;
 
 /// What the warning says is assumed, on every flagged program: the node is
 /// built by fork from root, and what it should be is open.
@@ -130,10 +159,32 @@ impl AtStake {
 
 /// One site of [`Monotonicity::sites`], read further: what its rule concludes
 /// and which property it puts at stake.
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Stake {
+    /// The site, as [`monotone::Site::render`] writes it.
+    pub site: String,
+    pub kind: SiteKind,
     pub concludes: Concludes,
     pub at_stake: AtStake,
+}
+
+impl Stake {
+    /// The `site` row: the site, what its rule concludes, what it puts at
+    /// stake.
+    pub fn text(&self) -> String {
+        let what = if self.kind == SiteKind::Activator {
+            format!("; {}", self.concludes.as_str())
+        } else {
+            format!(", concludes {}", self.concludes.as_str())
+        };
+        format!("{}{what} — at stake: {}", self.site, self.at_stake.words())
+    }
+
+    /// `rule [activator …]`: the site's text before its colon, what a status
+    /// names.
+    pub fn name(&self) -> &str {
+        self.site.split(':').next().unwrap_or(&self.site)
+    }
 }
 
 /// A strongly connected component of the saturation rules' dependency graph
@@ -171,6 +222,63 @@ impl Race {
     pub fn at_one_priority(&self) -> bool {
         self.reader_priority == self.writer_priority
     }
+}
+
+impl Cycle {
+    /// The `cycle` row.
+    pub fn text(&self) -> String {
+        format!(
+            "{} through an absent — {} — {}",
+            if self.odd { "odd" } else { "even" },
+            self.negative.join(" · "),
+            if self.odd {
+                "a state with no stale fact need not exist"
+            } else {
+                "several states with no stale fact can exist"
+            }
+        )
+    }
+}
+
+/// The `order` rows: one per finding, a mutual pair at one priority as one.
+pub fn order_texts(order: &[Race]) -> Vec<String> {
+    let pairs: BTreeSet<(&str, &str)> = order
+        .iter()
+        .map(|r| (r.reader.as_str(), r.writer.as_str()))
+        .collect();
+    let mut said: BTreeSet<(&str, &str)> = BTreeSet::new();
+    let mut out = Vec::new();
+    for r in order {
+        let (reader, writer) = (r.reader.as_str(), r.writer.as_str());
+        if said.contains(&(writer, reader)) {
+            continue;
+        }
+        said.insert((reader, writer));
+        let mutual = r.at_one_priority() && pairs.contains(&(writer, reader));
+        out.push(if mutual {
+            format!(
+                "{reader} and {writer} each read under an absent what the other concludes, both at \
+                 priority {}: which the boundary admits first is the order they are written in",
+                r.reader_priority
+            )
+        } else if r.at_one_priority() {
+            format!(
+                "{reader} reads {} under an absent and {writer} concludes it, both at priority {}: \
+                 which the boundary admits first is the order they are written in",
+                r.relations.join(", "),
+                r.reader_priority
+            )
+        } else {
+            format!(
+                "{reader} (priority {}) reads {} under an absent and {writer} ({}) concludes it: \
+                 {reader} is admitted first, whatever the order",
+                r.reader_priority,
+                r.relations.join(", "),
+                r.writer_priority
+            )
+        });
+    }
+    out
 }
 
 /// The static half of the detector, on a flagged program; empty on an
@@ -217,6 +325,8 @@ pub fn of_program(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], m: &Monotonicity)
                 SiteKind::Activator => AtStake::StateThroughPlan,
             };
             Stake {
+                site: s.render(terms),
+                kind: s.kind,
                 concludes,
                 at_stake,
             }
@@ -542,4 +652,574 @@ fn order(kb: &Kb, terms: &Terms, plans: &[Arc<Plan>], dynamic: &BTreeSet<String>
         }
     }
     out.into_values().collect()
+}
+
+// ── The dynamic half ────────────────────────────────────────────────
+
+/// What the cube says of the **status**, `dead` and `owes`: whether the
+/// flagged sites broke an upward closure on this program's own lattice.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Status {
+    /// The cube shows a violation: non-monotone here, by the sites the
+    /// violations are attributed to (S1e2.1b.3's rule).
+    Exercised {
+        by: Vec<String>,
+        holes: u64,
+        dead_not_upward_closed: u64,
+        discharged_not_upward_closed: u64,
+    },
+    /// The cube shows none: monotone here, the flags conservative.
+    Conservative,
+    /// The cube is past `--region-limit`.
+    PastLimit { n: usize, limit: u32 },
+    /// Within the limit, and this run did not read every node.
+    NotRead { n: usize },
+    /// Root is dead, so every node is (L0), and the run read root alone.
+    RootDead { n: usize, limit: u32 },
+}
+
+impl Status {
+    /// `exercised`, `conservative` or `not known`: the summary's word.
+    pub fn word(&self) -> &'static str {
+        match self {
+            Status::Exercised { .. } => "exercised",
+            Status::Conservative => "conservative",
+            _ => "not known",
+        }
+    }
+
+    /// The cube's holes, where the status read the whole cube.
+    pub fn holes(&self) -> Option<u64> {
+        match self {
+            Status::Exercised { holes, .. } => Some(*holes),
+            Status::Conservative => Some(0),
+            _ => None,
+        }
+    }
+}
+
+/// One node holding a stale fact.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct StaleNode {
+    /// `{a, b}` or `∅`, in candidate order.
+    pub node: String,
+    /// What the node is: in R, owing or dead.
+    pub class: crate::region::Class,
+    /// Its stale facts, `fact ← rule (absent …)`, sorted.
+    pub facts: Vec<String>,
+}
+
+/// What the stale check read: every node the run computed.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct State {
+    /// The run computed the whole cube.
+    pub cube: bool,
+    /// How many nodes it computed, and the check read.
+    pub nodes: u64,
+    /// The nodes that hold a stale fact, in the order the run computed them.
+    pub stale: Vec<StaleNode>,
+}
+
+/// The parent-path spot check: for each state the read-out prints of two
+/// commitments or more, up to [`SPOT_PARENTS`] of its parents `C \ {h}`.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct Paths {
+    pub bound: usize,
+    /// Printed states of two commitments or more.
+    pub states: u64,
+    /// Parents checked: alive, built, `h` written, saturated.
+    pub parents: u64,
+    /// Parents skipped because they are dead, as `-y` skipped one.
+    pub dead: u64,
+    pub saturations: u64,
+    /// `{state} by way of its parent without h`, one per path that reaches
+    /// another state.
+    pub differ: Vec<String>,
+    /// When the read-out prints no state of two commitments or more and the
+    /// run met some it does not print: how many states it met, and what
+    /// checking theirs would cost at most.
+    pub unprinted: Option<(u64, u64)>,
+}
+
+/// The dynamic half: whether a flagged site bit, in the status (the cube) and
+/// in the state (stale facts, parent paths). Reported apart, because the cube
+/// reads only the status: five programs it calls conservative have a broken
+/// state (`monotonicity.md` § 7.9).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Warning {
+    pub status: Status,
+    pub state: State,
+    /// Filled by the read-out, which knows what it prints.
+    pub paths: Option<Paths>,
+}
+
+/// How many parents of each printed state the spot check reads — the user's
+/// approval of 2026-11-03.
+pub const SPOT_PARENTS: usize = 3;
+
+// ── The stale check ─────────────────────────────────────────────────
+
+/// What the stale check reads a node against: root's plans, by rule. Built
+/// once per run, on a flagged program only.
+#[derive(Debug, Default)]
+pub struct StaleCheck {
+    by_rule: FxHashMap<Symbol, Vec<Arc<Plan>>>,
+}
+
+impl StaleCheck {
+    /// Over `plans`, root's: what `classify` read.
+    pub fn of(plans: &[Arc<Plan>]) -> StaleCheck {
+        let mut by_rule: FxHashMap<Symbol, Vec<Arc<Plan>>> = FxHashMap::default();
+        for p in plans {
+            by_rule.entry(p.rule).or_default().push(p.clone());
+        }
+        StaleCheck { by_rule }
+    }
+}
+
+/// Every fact of `kb` whose primary derivation's `absent` guard `kb` itself
+/// now falsifies, as `fact ← rule (absent …)`, sorted — `node_census.md`
+/// § 4's check. For each fact whose primary provenance records `absent`
+/// patterns, the plan and the disjunct that record exactly those patterns,
+/// with the saturator's registers rebuilt from the provenance's bindings; then
+/// the engine's matcher, [`Matcher::holds`], asks whether the guard's query now
+/// has a match. Where no plan reproduces the recorded patterns (a plan only a
+/// node compiled), the recorded patterns are read directly.
+pub fn stale_facts(kb: &Kb, terms: &Terms, ast: &Ast, check: &StaleCheck) -> Vec<String> {
+    let mut m = Matcher::new();
+    let mut out = Vec::new();
+    for f in kb.facts() {
+        let Some(p) = kb.primary(f) else { continue };
+        let prov = terms.provs.get(p);
+        if prov.absent.is_empty() {
+            continue;
+        }
+        let Some(rule) = prov.rule else { continue };
+        let mut verdict: Option<bool> = None;
+        if let Some(plans) = check.by_rule.get(&rule) {
+            'plans: for plan in plans {
+                let regs = regs_of(plan, &prov.bindings);
+                for d in plan.disjuncts.iter() {
+                    if d.guards.is_empty() || refs_of(plan, d, &regs).as_slice() != &*prov.absent {
+                        continue;
+                    }
+                    verdict = Some(
+                        plan.guards(d.guards)
+                            .iter()
+                            .any(|g| m.holds(kb, terms, ast, plan, g, &regs)),
+                    );
+                    break 'plans;
+                }
+            }
+        }
+        let falsified =
+            verdict.unwrap_or_else(|| prov.absent.iter().any(|r| naf_holds(kb, terms, r)));
+        if falsified {
+            let guards: Vec<String> = prov
+                .absent
+                .iter()
+                .map(|r| format!("(absent {})", naf_text(terms, r.rel, &r.args)))
+                .collect();
+            out.push(format!(
+                "{} ← {} {}",
+                sexpr(terms, f),
+                terms.sym(rule),
+                guards.join(" ")
+            ));
+        }
+    }
+    out.sort();
+    out
+}
+
+/// The saturator's registers for `plan`, rebuilt from a provenance's bindings.
+fn regs_of(plan: &Plan, bindings: &[(Symbol, Value)]) -> Vec<Value> {
+    let mut regs = vec![Value::UNBOUND; plan.n_regs as usize];
+    for (i, (_, v)) in plan.seed.iter().enumerate() {
+        regs[i] = *v;
+    }
+    for (name, v) in bindings {
+        if let Some(r) = plan.reg_names.iter().position(|n| n == name) {
+            regs[r] = *v;
+        }
+    }
+    regs
+}
+
+/// The `absent` patterns `d`'s guards record under `regs` — what the
+/// saturator writes into a provenance's `absent`.
+fn refs_of(plan: &Plan, d: &Disjunct, regs: &[Value]) -> Vec<NafRef> {
+    fn ground(plan: &Plan, g: &NafGuard, slot: &Slot, regs: &[Value]) -> NafArg {
+        match slot {
+            Slot::Reg(r) => match g.scope_of[*r as usize] {
+                Some(parent) => {
+                    let v = regs[parent as usize];
+                    if v.is_unbound() || v.as_fact().is_some() {
+                        NafArg::Free
+                    } else {
+                        NafArg::Value(v)
+                    }
+                }
+                None => NafArg::Free,
+            },
+            Slot::Const(v) => NafArg::Value(*v),
+            Slot::Nested { rel, slots } => NafArg::Nested {
+                rel: *rel,
+                args: plan
+                    .slots(*slots)
+                    .iter()
+                    .map(|s| ground(plan, g, s, regs))
+                    .collect(),
+            },
+            Slot::Opaque(_) => NafArg::Free,
+        }
+    }
+    fn collect(plan: &Plan, g: &NafGuard, span: Span, regs: &[Value], out: &mut Vec<NafRef>) {
+        for step in plan.steps(span) {
+            match step {
+                Step::Rel(r) => out.push(NafRef {
+                    rel: r.rel,
+                    args: plan
+                        .slots(r.slots)
+                        .iter()
+                        .map(|s| ground(plan, g, s, regs))
+                        .collect(),
+                }),
+                Step::Absent { sub } => collect(plan, g, *sub, regs, out),
+                Step::Guard { .. } => {}
+            }
+        }
+    }
+    let mut out = Vec::new();
+    for g in plan.guards(d.guards) {
+        collect(plan, g, g.sub, regs, &mut out);
+    }
+    let mut seen: Vec<NafRef> = Vec::new();
+    for r in out {
+        if !seen.contains(&r) {
+            seen.push(r);
+        }
+    }
+    seen
+}
+
+/// A recorded pattern matches a fact of `kb`.
+fn naf_holds(kb: &Kb, terms: &Terms, r: &NafRef) -> bool {
+    fn args_match(terms: &Terms, args: &[Value], pat: &[NafArg]) -> bool {
+        args.len() == pat.len()
+            && args.iter().zip(pat).all(|(v, p)| match p {
+                NafArg::Free => true,
+                NafArg::Value(x) => v == x,
+                NafArg::Nested { rel, args: ps } => v.as_fact().is_some_and(|f| {
+                    let (r2, a2) = terms.facts.get(f);
+                    r2 == *rel && args_match(terms, a2, ps)
+                }),
+            })
+    }
+    kb.facts_of(r.rel)
+        .any(|f| args_match(terms, terms.facts.args(f), &r.args))
+}
+
+fn naf_text(terms: &Terms, rel: Symbol, args: &[NafArg]) -> String {
+    let mut s = format!("({}", terms.sym(rel));
+    for a in args {
+        s.push(' ');
+        match a {
+            NafArg::Free => s.push('_'),
+            NafArg::Value(v) => s.push_str(&crate::events::sexpr_value(terms, *v)),
+            NafArg::Nested { rel, args } => s.push_str(&naf_text(terms, *rel, args)),
+        }
+    }
+    s.push(')');
+    s
+}
+
+// ── The cube's half: the status, attributed ─────────────────────────
+
+/// What the attribution reads of a cube: its status bits, each node's
+/// record, its candidates and its topology.
+pub(crate) struct Cube<'a> {
+    pub status: &'a [u8],
+    pub nodes: &'a [Node],
+    pub candidates: &'a [Candidate],
+    pub topology: &'a Topology,
+}
+
+impl Cube<'_> {
+    fn n(&self) -> usize {
+        self.candidates.len()
+    }
+
+    fn in_r(&self, mask: u64) -> bool {
+        self.status[mask as usize] == 0
+    }
+
+    fn facts_of(&self, mask: u64) -> Vec<FactId> {
+        (0..self.n())
+            .filter(|b| mask >> b & 1 == 1)
+            .map(|b| self.candidates[b].fact)
+            .collect()
+    }
+
+    /// The largest proper subset of `mask` in R: the node a hole's debt is new
+    /// against.
+    fn r_below(&self, mask: u64) -> Option<u64> {
+        let mut best: Option<u64> = None;
+        let mut sub = mask;
+        loop {
+            sub = sub.wrapping_sub(1) & mask;
+            if sub == mask {
+                break;
+            }
+            if self.in_r(sub) && best.is_none_or(|b| sub.count_ones() > b.count_ones()) {
+                best = Some(sub);
+            }
+            if sub == 0 {
+                break;
+            }
+        }
+        best
+    }
+}
+
+/// A site, rendered once, before the node function borrows `Terms`.
+pub(crate) struct SiteText {
+    kind: SiteKind,
+    label: String,
+    rule: Symbol,
+    rule_text: String,
+    activator: Box<[Symbol]>,
+    /// `rule [activator …]`: what the status row names.
+    name: String,
+}
+
+pub(crate) fn site_texts(m: &Monotonicity, terms: &Terms) -> Vec<SiteText> {
+    m.sites
+        .iter()
+        .map(|s| {
+            let text = s.render(terms);
+            SiteText {
+                kind: s.kind,
+                label: s.relation.label(terms),
+                rule: s.rule,
+                rule_text: terms.sym(s.rule).to_string(),
+                activator: s.activator.clone(),
+                name: text.split(':').next().unwrap_or(&text).to_string(),
+            }
+        })
+        .collect()
+}
+
+/// Root's plans, as `(rule, activator)`: a plan a node compiles is one not
+/// here.
+pub(crate) struct RootPlans {
+    pairs: FxHashSet<(Symbol, Box<[Symbol]>)>,
+    rules: FxHashSet<Symbol>,
+}
+
+impl RootPlans {
+    pub(crate) fn of(plans: &[Arc<Plan>]) -> RootPlans {
+        RootPlans {
+            pairs: plans
+                .iter()
+                .map(|p| (p.rule, p.activator_args.clone()))
+                .collect(),
+            rules: plans.iter().map(|p| p.rule).collect(),
+        }
+    }
+}
+
+/// `(absent (not (q A)))`'s relation, as [`monotone::Rel::label`] writes it.
+fn absent_label(premise: &str) -> String {
+    let inner = premise
+        .strip_prefix("(absent (")
+        .unwrap_or(premise)
+        .trim_end_matches(')');
+    let mut words = inner.split_whitespace();
+    match words.next() {
+        Some("not") => {
+            let r = words
+                .next()
+                .map(|w| w.trim_start_matches('(').trim_end_matches(')'))
+                .unwrap_or("?");
+            if r.is_empty() || r == "_" {
+                "(not ?)".to_string()
+            } else {
+                format!("(not {r})")
+            }
+        }
+        Some(r) => r.to_string(),
+        None => "?".to_string(),
+    }
+}
+
+/// The sites a dead node falls to: the activator site of a refuting rule root
+/// never compiled; else the `absent` sites over a premise's relation, those
+/// whose rule refuted it where there are any (S1e2.1b.3's rule, the
+/// `attribution` example's `dead`).
+fn dead_sites(sites: &[SiteText], root: &RootPlans, node: &Node, named: &mut BTreeSet<String>) {
+    let mut found = false;
+    for s in sites.iter().filter(|s| s.kind == SiteKind::Activator) {
+        if node.refuted_by.contains(&s.rule_text) && !root.rules.contains(&s.rule) {
+            named.insert(s.name.clone());
+            found = true;
+        }
+    }
+    if found {
+        return;
+    }
+    let labels: BTreeSet<String> = node
+        .absent_premises
+        .iter()
+        .map(|p| absent_label(p))
+        .collect();
+    let over: Vec<&SiteText> = sites
+        .iter()
+        .filter(|s| s.kind == SiteKind::Absent)
+        .filter(|s| {
+            labels.contains(&s.label)
+                || (s.label == "(not ?)" && labels.iter().any(|x| x.starts_with("(not ")))
+        })
+        .collect();
+    let refuting: Vec<&&SiteText> = over
+        .iter()
+        .filter(|s| node.refuted_by.contains(&s.rule_text))
+        .collect();
+    if !refuting.is_empty() {
+        named.extend(refuting.iter().map(|s| s.name.clone()));
+    } else {
+        named.extend(over.iter().map(|s| s.name.clone()));
+    }
+}
+
+/// The sites an owing node `at` falls to, by each debt new against `below`: a
+/// trigger site of the instance; else the activator site of an obligation
+/// whose plan root never compiled; else an `absent` site whose rule derived a
+/// fact `below` holds and `at` does not (the `attribution` example's
+/// `owing`).
+fn owing_sites(
+    nodes: &mut Nodes<'_>,
+    ast: &Ast,
+    sites: &[SiteText],
+    root: &RootPlans,
+    at: &[FactId],
+    below: &[FactId],
+    named: &mut BTreeSet<String>,
+) -> Result<(), SolveError> {
+    let found = nodes.with_fixpoints(&[below.to_vec(), at.to_vec()], |kbs, terms| {
+        let owed = |kb: &Kb, terms: &mut Terms| -> Vec<Owed> {
+            obligations::tally(kb, terms, ast, &SharedMemo::default(), &mut Events::off())
+                .map(|o| o.instances().to_vec())
+                .unwrap_or_default()
+        };
+        let lo = owed(&kbs[0], terms);
+        let hi = owed(&kbs[1], terms);
+        let lost: FxHashSet<Symbol> = kbs[0]
+            .facts()
+            .filter(|&f| !kbs[1].contains(f))
+            .filter_map(|f| kbs[0].primary(f))
+            .filter_map(|p| terms.provs.get(p).rule)
+            .collect();
+        let mut out: BTreeSet<String> = BTreeSet::new();
+        for o in hi.iter().filter(|o| !lo.contains(o)) {
+            let triggers: Vec<&SiteText> = sites
+                .iter()
+                .filter(|s| s.kind == SiteKind::ObligationTrigger)
+                .filter(|s| s.rule == o.rule && s.activator == o.activator)
+                .collect();
+            if !triggers.is_empty() {
+                out.extend(triggers.iter().map(|s| s.name.clone()));
+                continue;
+            }
+            if !root.pairs.contains(&(o.rule, o.activator.clone())) {
+                let acts: Vec<&SiteText> = sites
+                    .iter()
+                    .filter(|s| s.kind == SiteKind::Activator && s.rule == o.rule)
+                    .collect();
+                if !acts.is_empty() {
+                    out.extend(acts.iter().map(|s| s.name.clone()));
+                    continue;
+                }
+            }
+            out.extend(
+                sites
+                    .iter()
+                    .filter(|s| s.kind == SiteKind::Absent && lost.contains(&s.rule))
+                    .map(|s| s.name.clone()),
+            );
+        }
+        out
+    })?;
+    named.extend(found);
+    Ok(())
+}
+
+/// The status a whole cube shows, with the sites its violations are
+/// attributed to: each minimal hole, and the smallest witness of each
+/// violation — `site_census`'s reading, reduced to the names.
+pub(crate) fn status_of(
+    cube: &Cube<'_>,
+    sites: &[SiteText],
+    root: &RootPlans,
+    nodes: &mut Nodes<'_>,
+    ast: &Ast,
+) -> Result<Status, SolveError> {
+    let t = cube.topology;
+    let (h, d, o) = (
+        t.holes.len() as u64,
+        t.dead_not_upward_closed.count,
+        t.discharged_not_upward_closed.count,
+    );
+    if h == 0 && d == 0 && o == 0 {
+        return Ok(Status::Conservative);
+    }
+    let mut items: Vec<(u64, Option<u64>)> = t.minimal_holes.iter().map(|&m| (m, None)).collect();
+    if let Some((a, b)) = t.dead_not_upward_closed.witness {
+        items.push((a, Some(b)));
+    }
+    if let Some((a, b)) = t.discharged_not_upward_closed.witness {
+        items.push((a, Some(b)));
+    }
+    let mut named: BTreeSet<String> = BTreeSet::new();
+    for (mask, up) in items {
+        let status = cube.status[mask as usize];
+        match (up, status & DEAD == 0) {
+            // A discharged node with an owing superset: the debt new at the
+            // superset, against the node.
+            (Some(b), true) => owing_sites(
+                nodes,
+                ast,
+                sites,
+                root,
+                &cube.facts_of(b),
+                &cube.facts_of(mask),
+                &mut named,
+            )?,
+            _ if status & DEAD != 0 => {
+                dead_sites(sites, root, &cube.nodes[mask as usize], &mut named)
+            }
+            _ if status & OWING != 0 => {
+                let below = cube
+                    .r_below(mask)
+                    .map(|b| cube.facts_of(b))
+                    .unwrap_or_default();
+                owing_sites(
+                    nodes,
+                    ast,
+                    sites,
+                    root,
+                    &cube.facts_of(mask),
+                    &below,
+                    &mut named,
+                )?
+            }
+            _ => {}
+        }
+    }
+    Ok(Status::Exercised {
+        by: named.into_iter().collect(),
+        holes: h,
+        dead_not_upward_closed: d,
+        discharged_not_upward_closed: o,
+    })
 }

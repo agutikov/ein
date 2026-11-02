@@ -20,6 +20,7 @@ use ein_core::{Kb, Terms, render_why};
 use ein_ir::{Ast, Node, NodeId};
 
 use crate::described::{Described, Owing};
+use crate::detector::{Paths, SPOT_PARENTS};
 use crate::events::sexpr;
 use crate::expect::{Outcome, Report};
 use crate::explore::{self, Answer, Ask, Verdict, Which};
@@ -167,7 +168,7 @@ pub fn of_answer(
     root: &mut Kb,
     terms: &mut Terms,
     ast: &Ast,
-    answer: Answer,
+    mut answer: Answer,
     opts: &explore::Options,
 ) -> Result<ReadOut, SolveError> {
     let mut states: Vec<Listed> = Vec::new();
@@ -279,6 +280,12 @@ pub fn of_answer(
     // Per goal, per state, its rows.
     let mut rows: Vec<Vec<Vec<Row>>> = vec![Vec::new(); goals.len()];
     let mut owing_states: Vec<OwingState> = Vec::new();
+    // The detector's spot check, on a flagged program: the parent paths of
+    // each printed state of two commitments or more.
+    let mut paths = answer.warning.is_some().then(|| Paths {
+        bound: SPOT_PARENTS,
+        ..Paths::default()
+    });
     if !states.is_empty() || !owing.is_empty() {
         let facts = |set: &[u32]| -> Vec<ein_core::FactId> {
             set.iter()
@@ -286,18 +293,59 @@ pub fn of_answer(
                 .collect()
         };
         let mut nodes = Nodes::new(root, terms, ast, &answer.candidates)?;
+        let mut direct: Vec<Option<Box<[ein_core::FactId]>>> = Vec::with_capacity(states.len());
         for s in states.iter_mut() {
-            let (model, per_goal) = nodes.with_fixpoint(&facts(&s.rep), |kb, terms| {
+            let spot = paths.is_some() && s.listed && s.rep.len() >= 2;
+            let (model, per_goal, key) = nodes.with_fixpoint(&facts(&s.rep), |kb, terms| {
                 let model = model_of(kb, terms, &named);
                 let per_goal: Vec<Vec<Row>> = goals
                     .iter()
                     .map(|g| bindings(ast, terms, kb, g.goal))
                     .collect();
-                (model, per_goal)
+                (model, per_goal, spot.then(|| crate::canon::state_key(kb)))
             })?;
             s.model = model;
+            direct.push(key);
             for (g, r) in per_goal.into_iter().enumerate() {
                 rows[g].push(r);
+            }
+        }
+        if let Some(p) = paths.as_mut() {
+            let name = |set: &[u32]| -> String {
+                let parts: Vec<&str> = set
+                    .iter()
+                    .map(|&b| answer.candidates[b as usize].text.as_str())
+                    .collect();
+                format!("{{{}}}", parts.join(", "))
+            };
+            for (s, key) in states.iter().zip(&direct) {
+                let Some(key) = key else { continue };
+                p.states += 1;
+                for i in 0..s.rep.len().min(SPOT_PARENTS) {
+                    let parent: Vec<u32> = s
+                        .rep
+                        .iter()
+                        .enumerate()
+                        .filter(|&(j, _)| j != i)
+                        .map(|(_, &b)| b)
+                        .collect();
+                    let last = answer.candidates[s.rep[i] as usize].fact;
+                    p.saturations += 1;
+                    match nodes.by_parent(&facts(&parent), last)? {
+                        None => p.dead += 1,
+                        Some(k) => {
+                            p.saturations += 1;
+                            p.parents += 1;
+                            if k != *key {
+                                p.differ.push(format!(
+                                    "{} by way of its parent without {}",
+                                    name(&s.rep),
+                                    answer.candidates[s.rep[i] as usize].text
+                                ));
+                            }
+                        }
+                    }
+                }
             }
         }
         for o in owing {
@@ -311,6 +359,19 @@ pub fn of_answer(
         Listing::Owing(_) => Listing::Owing(owing_states),
         l => l,
     };
+    if let (Some(mut p), Some(w)) = (paths, answer.warning.as_mut()) {
+        // Nothing printed to check, and states met that are not printed: what
+        // checking theirs would cost, at most.
+        if p.states == 0 && states.iter().any(|s| !s.listed) {
+            let cost: u64 = states
+                .iter()
+                .filter(|s| s.rep.len() >= 2)
+                .map(|s| 2 * s.rep.len().min(SPOT_PARENTS) as u64)
+                .sum();
+            p.unprinted = Some((states.len() as u64, cost));
+        }
+        w.paths = Some(p);
+    }
 
     let queries = goals
         .iter()

@@ -249,6 +249,9 @@ pub struct DownSet {
     /// The facts beyond root's that ⊤'s fixpoint holds.
     pub top_facts: u64,
     pub cost: Cost,
+    /// On a flagged program — which route 1 takes only when root is dead —
+    /// the nodes it visited that hold a stale fact (`crate::detector`).
+    pub stale: Vec<crate::detector::StaleNode>,
 }
 
 impl DownSet {
@@ -313,6 +316,7 @@ pub(crate) fn compute_prepared(
         hypothesised,
         monotonicity,
         memo,
+        plans,
     } = prepared;
     let mut out = DownSet {
         candidates,
@@ -326,6 +330,7 @@ pub(crate) fn compute_prepared(
         top: None,
         top_facts: 0,
         cost: Cost::default(),
+        stale: Vec::new(),
     };
     // A dead root decides a flagged program too: every node is a fork of
     // root's fixpoint, and a fork only adds (`explore::Licence::ForkOnlyAdds`).
@@ -334,7 +339,13 @@ pub(crate) fn compute_prepared(
         out.cost.root = t_root.elapsed();
         return Ok(out);
     }
-    let axes = Axes::new(root, &out.candidates, hypothesised, false).narrating(events.narration());
+    let mut axes =
+        Axes::new(root, &out.candidates, hypothesised, false).narrating(events.narration());
+    // A flagged program reaches here only with a dead root (L0): the detector
+    // reads the nodes it visits, as on every route.
+    if !out.monotonicity.is_monotone() {
+        axes = axes.checking_stale(std::sync::Arc::new(crate::detector::StaleCheck::of(&plans)));
+    }
     let facts: Vec<FactId> = out.candidates.iter().map(|c| c.fact).collect();
     let root = root.sealed();
     out.cost.root = t_root.elapsed();
@@ -415,6 +426,22 @@ pub(crate) fn compute_prepared(
                     }
                 }
                 index.insert(set.clone(), id);
+                if !o.stale.is_empty() {
+                    let name = if set.is_empty() {
+                        "∅".to_string()
+                    } else {
+                        let parts: Vec<&str> = set
+                            .iter()
+                            .map(|&b| out.candidates[b as usize].text.as_str())
+                            .collect();
+                        format!("{{{}}}", parts.join(", "))
+                    };
+                    out.stale.push(crate::detector::StaleNode {
+                        node: name,
+                        class: crate::region::Class::of(status),
+                        facts: std::mem::take(&mut o.stale),
+                    });
+                }
                 out.points.push(Point {
                     set: set.clone(),
                     status,
