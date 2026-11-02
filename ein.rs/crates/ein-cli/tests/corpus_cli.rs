@@ -64,7 +64,7 @@
 //! machine.
 
 use std::collections::BTreeMap;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::{Command, Stdio};
 use std::time::{Duration, Instant};
 
@@ -78,10 +78,23 @@ struct Cell {
     /// cell the timeout killed. Neither collides with an exit code.
     code: i32,
     stderr: String,
-    out: PathBuf,
+    /// What the run's artefact flags left in its directory, read by
+    /// [`inspect`] before [`sweep`] removes the directory.
+    artefacts: Artefacts,
     /// Wall clock, child included — the only measurement this file takes, and
     /// [`the_slow_flag_still_describes_the_sweep`]'s operand.
     took: Duration,
+}
+
+/// One cell's artefacts, as [`every_artefact_run_leaves_its_artefact`] judges
+/// them: how many of each kind the run wrote, and every one that is missing or
+/// malformed.
+#[derive(Default)]
+struct Artefacts {
+    summaries: usize,
+    traces: usize,
+    dumps: usize,
+    bad: Vec<String>,
 }
 
 impl Cell {
@@ -168,11 +181,79 @@ fn run_cell(bin: &str, argv: &[String], repo: &Path, dir: &Path) -> (i32, String
     (code, stderr, took)
 }
 
+/// Read what a finished cell's artefact flags wrote into `dir`.
+///
+/// `{out}` in a run name is the manifest's way of naming a file the run will
+/// produce (`plan::argv`), and `solve` silently gains a `--json-summary`. The
+/// summary is *parsed*, not merely stat-ed: a truncated or malformed JSON
+/// object is exactly what an additive writer gets wrong under a run that dies
+/// part way through.
+fn inspect(path: &str, run: &str, code: i32, dir: &Path) -> Artefacts {
+    let mut a = Artefacts::default();
+    if code != 0 {
+        return a; // a refused run promises nothing.
+    }
+    if run.starts_with("solve") {
+        match std::fs::read_to_string(dir.join("summary.json")) {
+            Err(e) => a
+                .bad
+                .push(format!("  {path} :: {run} — no summary.json ({e})")),
+            Ok(text) => match serde_json::from_str::<serde_json::Value>(&text) {
+                Err(e) => a.bad.push(format!("  {path} :: {run} — summary.json: {e}")),
+                Ok(v) => {
+                    a.summaries += 1;
+                    if v["schema"] != "ein-summary/2" || !v["region"].is_object() {
+                        a.bad.push(format!(
+                            "  {path} :: {run} — summary is not ein-summary/2 with a region"
+                        ));
+                    }
+                }
+            },
+        }
+    }
+    if run.contains("--trace") {
+        a.traces += 1;
+        if !dir.join("trace.md").is_file() {
+            a.bad.push(format!("  {path} :: {run} — no trace.md"));
+        }
+    }
+    // The walk's `--dump-states` tree went at M1e2 S1e2.1a.5; the two
+    // directory artefacts since are a run's visited nodes and the cube.
+    for (flag, file, schema) in [
+        ("--dump-lattice", "lattice/nodes.json", "ein-lattice/2"),
+        ("--dump {out}/region", "region/region.json", "ein-region/1"),
+    ] {
+        if !run.contains(flag) {
+            continue;
+        }
+        a.dumps += 1;
+        match std::fs::read_to_string(dir.join(file)) {
+            Err(e) => a.bad.push(format!("  {path} :: {run} — no {file} ({e})")),
+            Ok(text) => match serde_json::from_str::<serde_json::Value>(&text) {
+                Ok(v) if v["schema"] == schema => {}
+                Ok(v) => a.bad.push(format!(
+                    "  {path} :: {run} — {file} is {}, not {schema}",
+                    v["schema"]
+                )),
+                Err(e) => a.bad.push(format!("  {path} :: {run} — {file}: {e}")),
+            },
+        }
+    }
+    a
+}
+
 /// Run every declared cell, once.
 ///
 /// Cells are sorted by `(path, run)` rather than left in manifest order, so
 /// re-ordering the manifest — which is grouped for readers, not for machines —
 /// does not churn the golden.
+///
+/// **Each cell's directory is removed as soon as it has been read**, and the
+/// root with it at the end. The root is named by the process id so that two
+/// sweeps never share one, and until 2026-11-03 nothing removed it: every run
+/// of the gate left 88–257 MB in the temp directory (the slow entries are the
+/// difference): 49 of them, 4.7 GB, had piled up in a 16 GB tmpfs that
+/// filled once. A sweep that panics part way still leaves its root behind.
 fn sweep() -> Vec<Cell> {
     let repo = repo_root();
     let bin = env!("CARGO_BIN_EXE_ein");
@@ -196,15 +277,18 @@ fn sweep() -> Vec<Cell> {
         std::fs::create_dir_all(&dir).expect("cell output directory");
         let argv = plan::argv(&run, &path, &dir);
         let (code, stderr, took) = run_cell(bin, &argv, &repo, &dir);
+        let artefacts = inspect(&path, &run, code, &dir);
+        let _ = std::fs::remove_dir_all(&dir);
         out.push(Cell {
             path,
             run,
             code,
             stderr,
-            out: dir,
+            artefacts,
             took,
         });
     }
+    let _ = std::fs::remove_dir_all(&root);
     out
 }
 
@@ -560,64 +644,18 @@ fn every_refusal_carries_a_diagnostic() {
 /// run is otherwise unchanged", so a sweep that never looked at the files
 /// would be checking the weaker half of it.
 ///
-/// The summary is *parsed*, not merely stat-ed: a truncated or malformed JSON
-/// object is exactly what an additive writer gets wrong under a run that dies
-/// part way through.
+/// The files are read by [`inspect`] during the sweep, because the sweep
+/// removes each cell's directory once it has run; this test adds up what was
+/// found.
 #[test]
 fn every_artefact_run_leaves_its_artefact() {
     let (mut summaries, mut traces, mut dumps) = (0usize, 0usize, 0usize);
     let mut bad: Vec<String> = Vec::new();
     for c in cells() {
-        if c.code != 0 {
-            continue; // a refused run promises nothing.
-        }
-        if c.run.starts_with("solve") {
-            let s = c.out.join("summary.json");
-            match std::fs::read_to_string(&s) {
-                Err(e) => bad.push(format!("  {} :: {} — no summary.json ({e})", c.path, c.run)),
-                Ok(text) => match serde_json::from_str::<serde_json::Value>(&text) {
-                    Err(e) => bad.push(format!("  {} :: {} — summary.json: {e}", c.path, c.run)),
-                    Ok(v) => {
-                        summaries += 1;
-                        if v["schema"] != "ein-summary/2" || !v["region"].is_object() {
-                            bad.push(format!(
-                                "  {} :: {} — summary is not ein-summary/2 with a region",
-                                c.path, c.run
-                            ));
-                        }
-                    }
-                },
-            }
-        }
-        if c.run.contains("--trace") {
-            traces += 1;
-            let t = c.out.join("trace.md");
-            if !t.is_file() {
-                bad.push(format!("  {} :: {} — no trace.md", c.path, c.run));
-            }
-        }
-        // The walk's `--dump-states` tree went at M1e2 S1e2.1a.5; the two
-        // directory artefacts since are a run's visited nodes and the cube.
-        for (flag, file, schema) in [
-            ("--dump-lattice", "lattice/nodes.json", "ein-lattice/2"),
-            ("--dump {out}/region", "region/region.json", "ein-region/1"),
-        ] {
-            if !c.run.contains(flag) {
-                continue;
-            }
-            dumps += 1;
-            match std::fs::read_to_string(c.out.join(file)) {
-                Err(e) => bad.push(format!("  {} :: {} — no {file} ({e})", c.path, c.run)),
-                Ok(text) => match serde_json::from_str::<serde_json::Value>(&text) {
-                    Ok(v) if v["schema"] == schema => {}
-                    Ok(v) => bad.push(format!(
-                        "  {} :: {} — {file} is {}, not {schema}",
-                        c.path, c.run, v["schema"]
-                    )),
-                    Err(e) => bad.push(format!("  {} :: {} — {file}: {e}", c.path, c.run)),
-                },
-            }
-        }
+        summaries += c.artefacts.summaries;
+        traces += c.artefacts.traces;
+        dumps += c.artefacts.dumps;
+        bad.extend(c.artefacts.bad.iter().cloned());
     }
     assert!(bad.is_empty(), "{}", bad.join("\n"));
     // Floors: a sweep that stopped producing artefacts would otherwise pass
