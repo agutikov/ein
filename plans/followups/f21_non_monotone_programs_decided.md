@@ -237,8 +237,8 @@ operator that is monotone on every KB. Its saturation is then a closure
 operator, and both arrows are monotone. That is what the static check
 approximates: a site says the operator is not monotone over D. The node
 functions can still be monotone on the program's own lattice, and those are
-the check's **conservative** flags: 8 of the 17 flagged programs within the
-limit at `6743dd17`
+the check's **conservative** flags: 8 of the 18 flagged programs within the
+limit at `4562bf70`
 ([`monotonicity.md` § 5.2](../../docs/kernel/inference/monotonicity.md#52-on-the-cube)).
 
 **The check's verdict is relative to root**, which the analysis above did not

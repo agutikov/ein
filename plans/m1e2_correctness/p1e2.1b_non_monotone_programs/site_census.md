@@ -194,6 +194,15 @@ Every item names a site, and the one it names is the one the program was
 written to show. The dead holes are named by their refuting rule's `absent`,
 and the owing holes by their trigger.
 
+**Since S1e2.1b.3 (2026-11-02)** the rule is
+[`examples/shared/attribution.rs`](../../../ein.rs/crates/ein-infer/examples/shared/attribution.rs),
+which `hole_census` reads too, and each item carries a cause beside its sites.
+It grew a clause for each cause the fixtures banked after this page found
+uncovered (`lattice/08`, `lattice/09`), and one for a refutation a node
+compiles. Its re-take at `4562bf70` names a site for all 23 items of the 18
+flagged cubes within the limit
+([hole census § 8](hole_census.md#8-the-attribution-gap-closed)).
+
 ## 4. Past the limit
 
 What a bare `ein solve` certifies today on each flagged program past

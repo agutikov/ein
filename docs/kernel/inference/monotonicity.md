@@ -66,11 +66,12 @@ each makes a shorter description exact:
 | **monotone** | the **static check** says *monotone*, before any search (§ 5.1) | the two lines, computed from the alive down-set and N, or from N and E, without visiting 2ⁿ nodes | N and E, one saturation per member, and the static verdict |
 | **shape** | which constraints the program states | restrictions only: the minimal line is {∅}. Obligations only: the maximal line is {⊤}. Both, and well-posed: every component a point | as monotone |
 
-**Convex is the common non-monotone case in the corpus.** Of the 17 flagged
-programs within the oracle's limit, 9 have no hole, and each of the 8 with
+**Convex is the common non-monotone case in the corpus.** Of the 18 flagged
+programs within the oracle's limit, 9 have no hole, and each of the 9 with
 one was written to show it (`cargo run --release -p ein-infer --example
-site_census`, 2026-11-02 at `6743dd17`). That says more about the corpus than
-about programs. **A conditional obligation makes holes as a matter of
+site_census`, 2026-11-02 at `4562bf70`; the holes by cause are M1e2
+S1e2.1b.3's [hole census](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md)).
+That says more about the corpus than about programs. **A conditional obligation makes holes as a matter of
 course**: [`lattice/06_friends_tables.ein`](../../../examples/lattice/06_friends_tables.ein),
 *a group that sits owes its members' seats*, the way a person writes *if you
 come, you all sit*, has R of 21 isolated nodes and 166 holes. Its monotone twin
@@ -184,35 +185,39 @@ cube shows one is **exercised**, and one whose cube shows none is
 **conservative**.
 
 `cargo run --release -p ein-infer --example site_census`, 2026-11-02 at
-`6743dd17`, over the corpus and the register's witnesses:
+`4562bf70` with M1e2 T1e2.1b.3.2's attribution, over the corpus and the
+register's witnesses:
 
 | | |
 |---|---:|
-| files that load and saturate | 207 of 270 |
-| flagged | **25** |
-| … within the limit | 17: **9 exercised**, **8 conservative** |
+| files that load and saturate | 208 of 271 |
+| flagged | **26** |
+| … within the limit | 18: **10 exercised**, **8 conservative** |
 | … past it | 8 |
-| sites | 35: 28 `absent`, 5 trigger, 2 activator |
+| sites | 37: 28 `absent`, 7 trigger, 2 activator |
 | monotone cubes with a violation | **0** of 155 |
 | flagged programs that would leave the set at fact grain | 2, `features/05` and `features/12`, both past the limit |
+| a violation no site is named for | **0** |
 
 Every conservative program is flagged over a relation it means to decide,
 and never makes the site bite. The census's first take, at `4b822a8d` the same
-day, had 22 flagged and 6 exercised. The difference is three fixtures banked
-for this page: `lattice/08`, `lattice/09` and `synth/maximal_not_top`. A
-fourth, `synth/local_not_global`, came after this take; it is flagged and has
-two holes. One activator site was exercised nowhere until
+day, had 22 flagged and 6 exercised, and its take at `6743dd17` 25 and 9. The
+differences are the four fixtures banked for this page: `lattice/08`,
+`lattice/09`, `synth/maximal_not_top` and, after `6743dd17`,
+`synth/local_not_global`, flagged with two holes. One activator site was
+exercised nowhere until
 [`09_activator_hole.ein`](../../../examples/lattice/09_activator_hole.ein):
 `features/01`'s is past the limit and static at fact grain.
 
-**The census's attribution has a gap the fixtures found.** It names, for each
-minimal hole and each violation's witness, the site that made it: a dead node
-by its `absent` premises, an owing node by the trigger sites of what it owes.
-On `lattice/08` and `lattice/09` the owing hole comes from an `absent` that
-took a witness away and from a compiled obligation, and the census names no
-site (*a violation no site is named for: 2*). The cube is right; the census's
-rule covers the causes it was written on. The attribution is S1e2.1b.3's to
-take up.
+**The census names a site for every violation.** For each minimal hole and
+each violation's witness it names a cause and the site that made it: a dead
+node by its refutation, an owing node by the debt new against the node of R
+below it. The take at `6743dd17` named none on `lattice/08` and `lattice/09`
+(*a violation no site is named for: 2*), whose owing holes come from an
+`absent` that took a witness away and from an obligation a node compiled.
+S1e2.1b.3 added a rule for each, and one for a refutation a node compiles; the
+re-take above names `soup-unless-allergic` and `total-owed`'s activator
+([hole census § 8](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md#8-the-attribution-gap-closed)).
 
 ## 6. How to solve
 
@@ -549,8 +554,8 @@ on 268 213 monotone nodes.
 The static check approximates this third property: a site says the operator
 is not monotone over D. The node functions can still be monotone on the
 program's own lattice, and those programs are the check's **conservative**
-flags: 8 of the 17 flagged programs within the limit (measured, § 5.2,
-`6743dd17`).
+flags: 8 of the 18 flagged programs within the limit (measured, § 5.2,
+`4562bf70`).
 
 **The check's verdict is relative to root.** A read over a relation outside D
 is *static* because root's fixpoint completes it and a fork never re-derives
@@ -629,7 +634,7 @@ site that concludes a positive fact: `d3-unsat-core`, `f07-fpoff`,
 | `owes` breaks over a path-independent state | held by a test, and measured | `each_cause_has_a_fixture_whose_cube_shows_its_hole`; `node_census` § 2.1 |
 | a monotone program has both properties and no hole | held by a test | `a_monotone_verdict_makes_saturation_a_closure_operator`, `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged` |
 | a *Monotone* verdict can leave scratch ≠ fork through a FIFO race over a static read | argued, unverified | the program of § 7.6 written and run by `node_census` (S1e2.1b.7); the `--control` run finds no corpus case |
-| 8 conservative flags of 17 within the limit | measured | `site_census`, `6743dd17` |
+| 8 conservative flags of 18 within the limit | measured | `site_census`, `4562bf70` |
 | (E) leaves a monotone, path-independent state on every program that loads | argued | premise: S1e2.2.5's F1 reads D and its F3 sees compiled plans |
 | (E)'s 13 programs | measured | `site_census`, `4b822a8d` and `6743dd17` |
 

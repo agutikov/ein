@@ -186,6 +186,13 @@ impl Attributed {
     pub fn named(&self) -> bool {
         !self.sites.is_empty()
     }
+
+    /// Both bits' attributions, for a node that is dead and owing.
+    pub fn merge(&mut self, other: Attributed) {
+        let causes: BTreeSet<Cause> = self.causes.drain(..).chain(other.causes).collect();
+        let sites: BTreeSet<String> = self.sites.drain(..).chain(other.sites).collect();
+        *self = finish(causes, sites);
+    }
 }
 
 fn finish(causes: BTreeSet<Cause>, sites: BTreeSet<String>) -> Attributed {

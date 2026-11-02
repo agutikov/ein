@@ -13,8 +13,11 @@
 //! root owes it); and its verdict at **fact grain**, the prototype in
 //! `shared/fact_grain.rs`, which no route reads. Per **flagged program within
 //! the limit**: the cube's three violations, each with its smallest witness,
-//! every minimal hole and every witness attributed to the sites its `absent`
-//! premises or its owed instances name, and *exercised* or *conservative*.
+//! every minimal hole and every witness attributed to a cause and the sites
+//! that made it (`shared/attribution.rs`, which `hole_census` reads too: a dead
+//! node by its refutation, an owing one by its debt, since S1e2.1b.3 including
+//! a witness an `absent` took away and an obligation a node compiled), and
+//! *exercised* or *conservative*.
 //! Past the limit: what route 2 certifies today (`explore::run`, as a bare
 //! `ein solve` asks it), and for `n` = 17–19 the oracle's projected cost.
 //!
@@ -31,6 +34,9 @@
 
 // `refutation_census` reads the rest of it.
 #[allow(dead_code)]
+#[path = "shared/attribution.rs"]
+mod attribution;
+#[allow(dead_code)]
 #[path = "shared/census.rs"]
 mod census;
 #[path = "shared/fact_grain.rs"]
@@ -40,13 +46,11 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
+use attribution::{Attributed, RootPlans};
 use census::{Root, located_imported, module_of};
 use ein_core::{FactId, Kb, Symbol, Terms};
-use ein_infer::compile::SharedMemo;
-use ein_infer::events::Events;
 use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_infer::monotone::{self, Site, SiteKind};
-use ein_infer::obligations;
 use ein_infer::region::{self, Outcome, Region};
 use ein_ir::Ast;
 use serde_json::{Value as Json, json};
@@ -96,146 +100,12 @@ fn at_root(root: &Root, kb: &Kb, site: &Site) -> usize {
         .count()
 }
 
-/// `(absent (not (q A)))`'s relation, as [`monotone::Rel::label`] writes it.
-fn absent_label(premise: &str) -> String {
-    let inner = premise
-        .strip_prefix("(absent (")
-        .unwrap_or(premise)
-        .trim_end_matches(')');
-    let mut words = inner.split_whitespace();
-    match words.next() {
-        Some("not") => {
-            let r = words
-                .next()
-                .map(|w| w.trim_start_matches('(').trim_end_matches(')'))
-                .unwrap_or("?");
-            if r.is_empty() || r == "_" {
-                "(not ?)".to_string()
-            } else {
-                format!("(not {r})")
-            }
-        }
-        Some(r) => r.to_string(),
-        None => "?".to_string(),
-    }
-}
-
-/// A site, as the cube's attribution reads it: rendered once, before
-/// `region::Nodes` borrows the oracle's `Terms`.
-struct SiteText {
-    kind: SiteKind,
-    label: String,
-    rule: Symbol,
-    rule_text: String,
-    activator: Box<[Symbol]>,
-    text: String,
-}
-
-/// Sites that a dead node's `absent` premises name: an `absent` site over the
-/// premise's relation (or over every stored negative) — and of those, the
-/// ones whose rule refuted the node, where there are any. A premise read by a
-/// rule that derived a premise of the refutation, and did not refute itself
-/// (`via`), is named by relation alone.
-fn sites_for_dead(sites: &[SiteText], premises: &[String], refuted_by: &[String]) -> Vec<String> {
-    let labels: BTreeSet<String> = premises.iter().map(|p| absent_label(p)).collect();
-    let named: Vec<&SiteText> = sites
-        .iter()
-        .filter(|s| s.kind == SiteKind::Absent)
-        .filter(|s| {
-            labels.contains(&s.label)
-                || (s.label == "(not ?)" && labels.iter().any(|x| x.starts_with("(not ")))
-        })
-        .collect();
-    let refuting: Vec<&&SiteText> = named
-        .iter()
-        .filter(|s| refuted_by.contains(&s.rule_text))
-        .collect();
-    if refuting.is_empty() {
-        named.iter().map(|s| s.text.clone()).collect()
-    } else {
-        refuting.iter().map(|s| s.text.clone()).collect()
-    }
-}
-
-/// One node's owed instances, as `(rule, activator)`, from its own fixpoint.
-fn owed_at(
-    nodes: &mut region::Nodes<'_>,
-    ast: &Ast,
-    facts: &[FactId],
-) -> Vec<(Symbol, Box<[Symbol]>)> {
-    nodes
-        .with_fixpoint(facts, |kb, terms| {
-            obligations::tally(kb, terms, ast, &SharedMemo::default(), &mut Events::off())
-                .map(|o| {
-                    o.instances()
-                        .iter()
-                        .map(|i| (i.rule, i.activator.clone()))
-                        .collect::<Vec<_>>()
-                })
-                .unwrap_or_default()
-        })
-        .unwrap_or_default()
-}
-
-/// Trigger sites that a node's owed instances name — those not already owed
-/// at `below`, the node of `R` the debt is new against.
-fn sites_for_owing(
-    sites: &[SiteText],
-    owed: &[(Symbol, Box<[Symbol]>)],
-    below: &[(Symbol, Box<[Symbol]>)],
-) -> Vec<String> {
-    let new: Vec<&(Symbol, Box<[Symbol]>)> = owed.iter().filter(|o| !below.contains(o)).collect();
-    sites
-        .iter()
-        .filter(|s| s.kind == SiteKind::ObligationTrigger)
-        .filter(|s| new.iter().any(|(r, a)| *r == s.rule && *a == s.activator))
-        .map(|s| s.text.clone())
-        .collect()
-}
-
-fn facts_of(r: &Region, mask: u64) -> Vec<FactId> {
-    (0..r.n())
-        .filter(|b| mask >> b & 1 == 1)
-        .map(|b| r.candidates[b].fact)
-        .collect()
-}
-
-/// The largest subset of `mask` in `R`, for a hole's "new against" node.
-fn r_below(r: &Region, mask: u64) -> Option<u64> {
-    let mut best: Option<u64> = None;
-    let mut sub = mask;
-    loop {
-        sub = sub.wrapping_sub(1) & mask;
-        if sub == mask {
-            break;
-        }
-        if r.in_r(sub) && best.is_none_or(|b| sub.count_ones() > b.count_ones()) {
-            best = Some(sub);
-        }
-        if sub == 0 {
-            break;
-        }
-    }
-    best
-}
-
 /// The cube's half of a row: violations, holes, and each minimal hole and
-/// each violation's smallest witness attributed to sites.
-fn cube_row(r: &Region, kb_r: &mut Kb, terms_r: &mut Terms, ast_r: &Ast) -> Json {
+/// each violation's smallest witness attributed to a cause and its sites, by
+/// `shared/attribution.rs`'s rule (S1e2.1b.3), which `hole_census` reads too.
+fn cube_row(r: &Region, kb_r: &mut Kb, terms_r: &mut Terms, ast_r: &Ast, root: &RootPlans) -> Json {
     let t = &r.topology;
-    let sites: Vec<SiteText> = r
-        .monotonicity
-        .sites
-        .iter()
-        .map(|s| SiteText {
-            kind: s.kind,
-            label: s.relation.label(terms_r),
-            rule: s.rule,
-            rule_text: terms_r.sym(s.rule).to_string(),
-            activator: s.activator.clone(),
-            text: s.render(terms_r),
-        })
-        .collect();
+    let sites = attribution::site_texts(&r.monotonicity.sites, terms_r);
     let mut nodes = region::Nodes::new(kb_r, terms_r, ast_r, &r.candidates).expect("prepares");
     let mut items: Vec<(&str, u64, Option<u64>)> = t
         .minimal_holes
@@ -252,39 +122,43 @@ fn cube_row(r: &Region, kb_r: &mut Kb, terms_r: &mut Terms, ast_r: &Ast) -> Json
     let mut unattributed = 0usize;
     for (what, mask, up) in items {
         let status = r.status[mask as usize];
-        let mut named: Vec<String> = Vec::new();
         let mut why = serde_json::Map::new();
+        let mut a = Attributed::default();
         if let (Some(b), true) = (up, status & region::DEAD == 0) {
             // A discharged node: the debt is the owing superset's, and new
             // against this node.
-            let owed = owed_at(&mut nodes, ast_r, &facts_of(r, b));
-            let below = owed_at(&mut nodes, ast_r, &facts_of(r, mask));
-            named.extend(sites_for_owing(&sites, &owed, &below));
+            a.merge(attribution::owing(
+                &mut nodes,
+                ast_r,
+                &sites,
+                root,
+                &attribution::facts_of(r, b),
+                &attribution::facts_of(r, mask),
+            ));
             why.insert("owed".into(), json!(r.nodes[b as usize].owed));
         } else {
             if status & region::DEAD != 0 {
                 let node = &r.nodes[mask as usize];
-                named.extend(sites_for_dead(
-                    &sites,
-                    &node.absent_premises,
-                    &node.refuted_by,
-                ));
+                a.merge(attribution::dead(&sites, root, node));
                 why.insert("absent".into(), json!(node.absent_premises));
                 why.insert("refuted_by".into(), json!(node.refuted_by));
             }
             if status & region::OWING != 0 {
-                let owed = owed_at(&mut nodes, ast_r, &facts_of(r, mask));
-                let below = match r_below(r, mask) {
-                    Some(b) => owed_at(&mut nodes, ast_r, &facts_of(r, b)),
-                    None => Vec::new(),
-                };
-                named.extend(sites_for_owing(&sites, &owed, &below));
+                let below = attribution::r_below(r, mask)
+                    .map(|b| attribution::facts_of(r, b))
+                    .unwrap_or_default();
+                a.merge(attribution::owing(
+                    &mut nodes,
+                    ast_r,
+                    &sites,
+                    root,
+                    &attribution::facts_of(r, mask),
+                    &below,
+                ));
                 why.insert("owed".into(), json!(r.nodes[mask as usize].owed));
             }
         }
-        named.sort();
-        named.dedup();
-        if named.is_empty() {
+        if !a.named() {
             unattributed += 1;
         }
         attributed.push(json!({
@@ -293,7 +167,8 @@ fn cube_row(r: &Region, kb_r: &mut Kb, terms_r: &mut Terms, ast_r: &Ast) -> Json
             "superset": up.map(|b| r.name(b)),
             "kind": if status & region::DEAD != 0 { "dead" } else if status & region::OWING != 0 { "owing" } else { "R" },
             "why": why,
-            "sites": named,
+            "causes": a.causes.iter().map(|c| c.key()).collect::<Vec<_>>(),
+            "sites": a.sites,
         }));
     }
     let violated = !t.holes.is_empty()
@@ -480,6 +355,7 @@ struct Totals {
     c1_types: Vec<String>,
     c1_drop: Vec<String>,
     unattributed: Vec<String>,
+    by_cause: BTreeMap<String, usize>,
     monotone_violated: Vec<String>,
     // The four older selections.
     c1015: [usize; 4],
@@ -564,6 +440,8 @@ fn main() {
             "shapes": fg.shapes.len(),
         });
 
+        // Root's plans, by text: what a node compiles is what is not here.
+        let root_plans = RootPlans::of(&root.plans, &terms);
         // The cube, on a second load: the oracle's own preparation.
         let mut cube = Json::Null;
         let mut computed = false;
@@ -584,7 +462,7 @@ fn main() {
                         .collect();
                     assert_eq!(mine, its, "{rel}: two loads, two verdicts");
                     assert_eq!(n, r.n(), "{rel}: two loads, two universes");
-                    cube = cube_row(&r, &mut kb_r, &mut terms_r, &ast_r);
+                    cube = cube_row(&r, &mut kb_r, &mut terms_r, &ast_r, &root_plans);
                 }
                 Ok(Outcome::Refused { .. }) => computed = true,
                 Err(_) => {}
@@ -710,6 +588,13 @@ fn main() {
             if cube["unattributed"].as_u64().unwrap_or(0) > 0 {
                 tot.unattributed.push(rel.clone());
             }
+            for a in cube["attributed"].as_array().into_iter().flatten() {
+                for c in a["causes"].as_array().into_iter().flatten() {
+                    *tot.by_cause
+                        .entry(c.as_str().unwrap_or("").to_string())
+                        .or_default() += 1;
+                }
+            }
         } else {
             tot.past.push((rel.clone(), n));
             row["past"] = past_row(&path, n, jobs);
@@ -821,6 +706,12 @@ fn print_block(row: &Json) {
                 None => String::new(),
             };
             let sites: Vec<String> = a["sites"].as_array().into_iter().flatten().map(s).collect();
+            let causes: Vec<String> = a["causes"]
+                .as_array()
+                .into_iter()
+                .flatten()
+                .map(s)
+                .collect();
             println!(
                 "    {} {}{} ({}) — {}  ← {}",
                 s(&a["what"]),
@@ -831,7 +722,7 @@ fn print_block(row: &Json) {
                 if sites.is_empty() {
                     "no site".to_string()
                 } else {
-                    sites.join("; ")
+                    format!("{}: {}", causes.join(" + "), sites.join("; "))
                 }
             );
         }
@@ -945,6 +836,15 @@ fn print_totals(tot: &Totals, swept_selection: bool, wall: f64) {
     for p in &tot.c1_drop {
         println!("    without       {p}");
     }
+    let by_cause: Vec<String> = tot
+        .by_cause
+        .iter()
+        .map(|(k, c)| format!("{k} {c}"))
+        .collect();
+    println!(
+        "minimal holes and violation witnesses attributed, by cause: {}",
+        by_cause.join(", ")
+    );
     println!(
         "a violation no site is named for: {}; a monotone cube with a violation: {}",
         tot.unattributed.len(),

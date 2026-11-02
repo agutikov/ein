@@ -14,6 +14,7 @@ cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hol
     plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/*.ein                                  # § 2, S1e2.4.1's probes
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census -- \
     --limit 19 examples/lattice/06_friends_tables.ein                                                         # § 7, 29 s at 16 jobs
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example site_census                    # § 8, 6.6 s
 ```
 
 Every command takes `--json` for one row per program, and `--no-scratch` to
@@ -269,3 +270,57 @@ budget with *holes not known: the cube was not enumerated*. At
 
 What a search past the limit can say about holes is F21's D7; what the
 read-out says about them is its D4.
+
+## 8. The attribution gap, closed
+
+S1e2.1b.6's re-take of the site census printed *a violation no site is named
+for: 2* ([`monotonicity.md` § 5.2](../../../docs/kernel/inference/monotonicity.md#52-on-the-cube)).
+`site_census` named a site for a dead node by its `absent` premises, and for
+an owing node by the trigger sites of what it owes. The owing holes of
+`lattice/08` and `lattice/09` fit neither rule: `lattice/08` owes because an
+`absent` took its witness away, `lattice/09` through an obligation a node
+compiled.
+
+Since T1e2.1b.3.2 `site_census` reads the rule this census reads,
+[`examples/shared/attribution.rs`](../../../ein.rs/crates/ein-infer/examples/shared/attribution.rs),
+and prints each item's cause beside its sites. The rule grew three clauses
+over S1e2.1b.1's:
+
+- **An `absent` that takes a witness away.** An owing node whose new debt is
+  not a trigger site's and whose plan root compiled is attributed to the
+  `absent` site whose rule derived a fact the node of R below it holds and it
+  does not. On `lattice/08` that is `(meal Ann Soup)`, by
+  `soup-unless-allergic`, held at `{(seats Ann C1)}` and lost at `{(allergic
+  Ann), (seats Ann C1)}`.
+- **An activator that compiles an obligation.** An owing node whose new
+  debt's `(rule, activator)` has no plan at root is attributed to that rule's
+  activator site. On `lattice/09` that is `total-owed` for `meal is-a`, which
+  only `{(opens K1)}` compiles.
+- **An activator that compiles a refutation.** A dead node refuted by a rule
+  with no plan at root is attributed to that rule's activator site, read from
+  `refuted_by`. It is the one clause that does not read the node's `absent`
+  premises, because on `ACTIVATOR_UNDER_ABSENT` there are none (§ 2).
+
+```sh
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example site_census    # 6.6 s
+```
+
+The re-take, 2026-11-02 at `4562bf70` with T1e2.1b.3.2's change, over the
+same 271 files: **26 flagged**, 18 within the limit (10 exercised, 8 conservative),
+8 past it; 37 sites (28 `absent`, 7 trigger, 2 activator); 23 minimal holes
+and violation witnesses, attributed by cause as *absent-refutes* 9,
+*trigger* 10, *absent-witness* 2, *activator-obligation* 2; and
+
+> a violation no site is named for: 0; a monotone cube with a violation: 0
+
+Every site named is the one the program was written to show:
+
+| program | item | cause | site |
+|---|---|---|---|
+| `lattice/08` | minimal hole `{(allergic Ann), (seats Ann C1)}` | absent-witness | `soup-unless-allergic` |
+| `lattice/08` | `{(seats Ann C1)}` ⊂ `{(allergic Ann), (seats Ann C1)}`, discharged below owing | absent-witness | `soup-unless-allergic` |
+| `lattice/09` | minimal hole `{(opens K1)}` | activator-obligation | `total-owed` (activator) |
+| `lattice/09` | `∅` ⊂ `{(opens K1)}`, discharged below owing | activator-obligation | `total-owed` (activator) |
+
+The other 19 items are named as before, each now with its cause. It is
+example code: no route reads it, and no answer moves.
