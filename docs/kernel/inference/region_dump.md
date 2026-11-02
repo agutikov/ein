@@ -163,7 +163,7 @@ then:
 | dynamic, non-monotone polarity | in `D`: odd depth in a saturation rule, even (the trigger) in an obligation | take a conclusion away, or add a debt | W3's `bad`, W8's `derive-p`, [`lattice/04`](../../../examples/lattice/04_obligation_trigger_hole.ein)'s `total-owed` trigger |
 
 A **site** is a read of the third kind, or a rule whose activator relation is
-in `D`. **No site means the lattice is monotone**: *dead* and *discharged* are
+in `D`. **No site means the program is monotone**: *dead* and *discharged* are
 both upward-closed, `R` has no holes, and its two lines describe it. That is
 a sufficient condition, and the cube is its check: `region.md` flags a
 monotone verdict beside an observed violation as a defect, and
@@ -175,20 +175,39 @@ a read over a relation in `D` is dynamic whatever its pattern, even where no
 candidate, and nothing derived from one, can match it. A fact-grain reading
 was prototyped beside it and held to the cube, and it is not what ships.
 
+**Which property the check is about.** The verdict is about the **program**,
+whose consequence operator the check approximates; the lattice is the domain,
+and is never itself monotone or not. A site can break two properties of the
+node functions, kept apart in
+[`monotonicity.md` § 7](monotonicity.md#7-two-properties-of-the-node-functions-and-path-dependence):
+the **state**'s, monotone in C and, where saturation is cumulative,
+independent of the path that built the node, which only an `absent` breaks;
+and the **status**'s, which an obligation's trigger or an activator breaks
+with no `absent`. `region.md`'s violations are the status's. A program whose
+cube shows none is a *conservative* flag.
+
 **The stub.** A program with a site says so in three places:
 
 - the read-out's `lattice` row, `not monotone: n sites (the static check) — …;
   assumes a monotone lattice for what a node is (P1e2.1b)`, beside route 2,
-  the cube, since route 1's licence is monotonicity;
+  the cube, since route 1's licence is monotonicity. The words are the
+  engine's, and *a monotone lattice* is the wrong term for what they mean, a
+  node built by fork from root; M1e2's
+  [S1e2.1b.5](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.5_the_handling.md)
+  rewords them;
 - a `monotonicity` event ([`events.md`](events.md));
 - `--json-summary`'s `monotonicity` block, which every run carries, monotone
   or not.
 
 What the region *is* on such a program — which route a node is built by, what
-a hole means, whether a refutation may rest on an `absent` — is
-[P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)'s.
-On one, `region.md` still computes everything and marks what assumes a
-monotone lattice.
+a hole means, what may be learned from a refutation that rests on an
+`absent` — is open: M1e2's
+[P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)
+documents it, and the decisions are
+[F21](../../../plans/followups/f21_non_monotone_programs_decided.md)'s
+(2026-11-02). On one, `region.md` still computes everything, by fork from
+root, and marks what assumes that (its words: *assumes a monotone
+lattice*).
 
 **Measured** 2026-10-15, with `EIN_REGION_CENSUS=1 cargo test -p ein-infer
 --test region census_for_inspection -- --nocapture`: of the 183 corpus files

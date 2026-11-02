@@ -14,10 +14,14 @@
 > **Scope.** The page is written for a **monotone** program, § 1.6: one where
 > adding a fact never takes a conclusion away and never adds a debt. That is
 > M1e2 P1e2.1a's scope. R is still a node set on any other program, but which
-> state a node is, and what a hole means, are
-> [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)'s.
+> state a node is, and what a hole means, are open: M1e2
+> [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)
+> documents them, and the user deferred the decisions to
+> [F21](../../../plans/followups/f21_non_monotone_programs_decided.md) on
+> 2026-11-02. Until then a node is built by fork from root, as § 1.5 says.
 > Each place the definition depends on monotonicity says so, and
-> [`monotonicity.md`](monotonicity.md) sets the two cases side by side.
+> [`monotonicity.md`](monotonicity.md) sets the two kinds of program side by
+> side.
 >
 > **§ 6 is the walk's half.** §§ 1–5 are the definition, and since M1e2
 > S1e2.1a.5's switch (2026-10-18) `ein solve` computes it: route 1 over the
@@ -116,7 +120,11 @@ commitments of k candidates.
 A node's **state** is `sat(root + C)`: root's fixpoint, forked, with C's facts
 written in and the saturation resumed to quiescence. It is never stopped at
 the first contradiction. For a monotone program, building the state from
-scratch gives the same fact set. Then:
+scratch gives the same fact set: measured on every node of every monotone
+cube within the limit, with one corner argued and not yet checked, an
+equal-priority race over a static read
+([`monotonicity.md` § 7.6](monotonicity.md#76-the-program-the-third-stronger-property)).
+Then:
 
 | | the state |
 |---|---|
@@ -154,6 +162,20 @@ Then:
 - **discharged is upward-closed**: a witness stays, and no new debt arrives;
 - so R (§ 2) has no holes, and its two lines describe it;
 - and cl is a closure operator, § 1.5.
+
+**Which property this is.** *Monotone* here is a property of the **program**:
+its consequence operator is monotone on every KB. The lattice of commitments
+is the domain and is never itself monotone or not. What a monotone program
+guarantees is two properties of the functions on its nodes, which a
+non-monotone program can lose separately
+([`monotonicity.md` § 7](monotonicity.md#7-two-properties-of-the-node-functions-and-path-dependence)):
+the **state** is monotone in C, which, where saturation is cumulative, is the
+same as being independent of the path that built the node (fork from root, a
+parent's fixpoint, or scratch); and the **status** is monotone, `dead` and
+*discharged* both upward-closed. An `absent` over a relation a commitment can
+change can break the first; an obligation's trigger breaks the second with no
+`absent` at all. The static check flags the program, so it also flags
+programs whose node functions keep both properties: the *conservative* flags.
 
 The static check is a sufficient condition, and the cube is its check: on
 every one of the corpus's **146** monotone cubes, 53 of them with at least one

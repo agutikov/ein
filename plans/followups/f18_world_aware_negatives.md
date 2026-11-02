@@ -17,6 +17,15 @@ instead forbids the shape, this theme is **closed without being done** — there
 is nothing left to be careful about — and that is the cheapest outcome
 available.
 
+**2026-11-02: the shape is forbidden.** The ruling moved from S1f.10.8 to
+M1e2's [S1e2.4.1](../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling),
+and the user ruled *forbid*. This theme closes without being done when
+[S1e2.2.5](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)'s
+refusal ships, if that refusal covers the derived case (its F2) and the plans a
+node compiles (its F3). Until then, and for whatever those leave loading, what
+a route may learn is [F21](f21_non_monotone_programs_decided.md)'s D6, whose
+option (b) is this theme's narrow form.
+
 ## The theme
 
 `dead` is not upward-closed under `absent`. `sat` is *inflationary* — the KB is

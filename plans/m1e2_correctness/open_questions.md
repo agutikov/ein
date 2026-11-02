@@ -15,12 +15,12 @@ rule on, not five stage files to find.
 | Q | title | needed by | status |
 |---|---|---|---|
 | [Q-M1e2.1](#q-m1e21--is-a-discharged-superset-of-a-discharged-state-a-new-model) | Is a discharged superset of a discharged state a new model? | [S1e2.2.3](p1e2.2_wrong_answers/s1e2.2.3_obligations_join_superset.md) (W5) | **ruled 2026-11-01**: *literal*, k = \|R\| = 7, as Q-M1e2.7's (a) had said; W5's `right` restated |
-| [Q-M1e2.2](#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in) | Does a guard's `absent` premise bind the state the search ends in? | [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s [S1e2.1b.2](p1e2.1b_the_non_monotone_lattice/s1e2.1b.2_fork_or_scratch.md), then [S1e2.2.6](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md) (W8) | open |
+| [Q-M1e2.2](#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in) | Does a guard's `absent` premise bind the state the search ends in? | [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s [S1e2.1b.2](p1e2.1b_the_non_monotone_lattice/s1e2.1b.2_fork_or_scratch.md) (the evidence, done), then [S1e2.2.6](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md) (W8) | **deferred to [F21](../followups/f21_non_monotone_programs_decided.md), 2026-11-02** (D1–D3); W8's tension with the milestone's acceptance is parked for the revisit |
 | [Q-M1e2.3](#q-m1e23--what-does-exhausted-certify-when-the-rung-leaves-relations-uncovered) | What does `exhausted` certify when the rung leaves relations uncovered? | [S1e2.2.8](p1e2.2_wrong_answers/s1e2.2.8_uncovered_certified.md) (W6) | open |
 | [Q-M1e2.4](#q-m1e24--is-an-empty-unsat-core-a-core) | Is an empty unsat core a core? | [S1e2.2.13](p1e2.2_wrong_answers/s1e2.2.13_empty_core.md) (W12) | open |
 | [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [P1e2.4](p1e2.4_what_the_switch_left/README.md)'s S1e2.4.1, then [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) and P1e2.1b's [S1e2.1b.4](p1e2.1b_the_non_monotone_lattice/s1e2.1b.4_refutation_resting_on_absent.md) | **ruled 2026-11-02: *forbid*** ([S1e2.4.1 § 5](p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)); F1–F5 are S1e2.2.5's |
 | [Q-M1e2.6](#q-m1e26--does-p1e23-become-a-phase) | Does P1e2.3 become a phase? | the milestone's scope; [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | **ruled 2026-11-02**: yes, after P1e2.1c; **specified the same day**, four stages, 5 d; closes at its S1e2.3.4 |
-| [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; on 2026-10-16 (a)–(c) and (e)–(i) [ruled for the monotone case](#the-second-answer-2026-10-16), and [(e)'s display and (h)'s names](#the-third-answer-2026-10-16); [the census](#the-census-2026-10-16) contradicts none |
+| [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; on 2026-10-16 (a)–(c) and (e)–(i) [ruled for the monotone case](#the-second-answer-2026-10-16), and [(e)'s display and (h)'s names](#the-third-answer-2026-10-16); [the census](#the-census-2026-10-16) contradicts none; **(d) deferred to [F21](../followups/f21_non_monotone_programs_decided.md), 2026-11-02** (D4) |
 | [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) | Where does the rework of `ein solve` go? | P1e2.1a's S1e2.1a.5 (it must print `k` = \|R\|), and P1e2.2's scope | **ruled 2026-10-16**: [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) now, [P1e2.1c](p1e2.1c_the_region_search/README.md) next |
 
 C1's reading is [Q-M1e.12](../../docs/history/m1e_review_processing/open_questions.md#q-m1e12--the-blind-rung-is-untyped-and-a-model-binds-a-type-as-an-object)'s
@@ -77,6 +77,27 @@ in. Built on root's fixpoint (the engine's fork), `{(q one)}` on
 [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s
 [S1e2.1b.2](p1e2.1b_the_non_monotone_lattice/s1e2.1b.2_fork_or_scratch.md) owns the
 question in that form.
+
+**Deferred to [F21](../followups/f21_non_monotone_programs_decided.md),
+2026-11-02**, unruled. S1e2.1b.2's evidence is in
+([`node_census.md`](p1e2.1b_the_non_monotone_lattice/node_census.md)): fork
+and scratch differ on 4 of 256 flagged nodes and on none of 268 213 monotone
+ones, and § 9 there computes W8's two rows under every option. The user then
+re-planned P1e2.1b to detect, document and warn, verbatim: *"Currently my
+goal is not to build complete theory os solving the non-monotonic problems;
+But I want to have a robust ways to detect non-monotonocity, understand
+consequences of solving it either way, be able to at least show warnings
+about the program that is not monotonic, etc. … so prepare everything we are
+able to do now, without making final decisions; And then leave further
+investigation of non-monotonic lattices as followup."* The question grew on
+the way: it is one case of the user's general form, *"sat(P+C1+C2) !=
+sat(sat(P+C1)+C2)"*, and what it asks is whether a node's state is a function
+of C alone. F21 holds it as D2 (the options (A)–(D), (D)'s scope, admission in
+stratum order), with (E), *forbid* extended to every `absent` site, as D1 and
+path dependence as D3. Until it is decided a node is built by fork from root,
+and P1e2.1b's detector says so wherever R is reported. W8's two rows stay
+`open`; their tension with the milestone's acceptance is parked for the
+revisit in [S1e2.2.6](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md#the-deferral-and-the-milestones-acceptance).
 
 ## Q-M1e2.3 — What does `exhausted` certify when the rung leaves relations uncovered?
 
@@ -488,7 +509,10 @@ question into phase p1e2.1b"*. Sub-question (d) moved with it.
   one line's worth.
 - **(d) What is reported when R has holes?** *Moved to
   [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s
-  [S1e2.1b.3](p1e2.1b_the_non_monotone_lattice/s1e2.1b.3_holes.md) on 2026-10-15.* Both lines no longer describe
+  [S1e2.1b.3](p1e2.1b_the_non_monotone_lattice/s1e2.1b.3_holes.md) on 2026-10-15,
+  and deferred to [F21](../followups/f21_non_monotone_programs_decided.md)'s D4
+  on 2026-11-02, unruled: S1e2.1b.3 drafts the options and their
+  consequences.* Both lines no longer describe
   R. Is the answer then the list of R's maximal convex pieces, or a
   qualifier, or a refusal (Q-M1e2.2's *refuse what cannot be stratified*)?
   The follow-up's recommendation: the outer lines stay the answer, and the
@@ -598,7 +622,7 @@ and the W11 sentence in
 | **(a)** | `k` = \|R\|, not \|max R\| | **ruled**, and its unit too (second answer): `k` is replaced by **k_s** (states) and **k_c** (commitments), both reported | S1e2.1a.5, S1e2.1a.9 |
 | **(b)** | `ein solve` studies the region first. Asking for one line is secondary. `hrules` move out of `(query …)`. Solve once, then queries ask about the region and about single solutions | **ruled**. The plan's answer to *"does it make sense?"* is below | S1e2.1a.4; [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) for the search |
 | **(c)** | three forms: `(solve :hrules …)`; `(solution (or (model …) …))`, the full expected region; `(query :goal … :expect …)`, the goal's projection, deduplicated | **ruled** as the direction. The grammar is S1e2.1a.4's page diff | S1e2.1a.4 |
-| **(d)** | moved | P1e2.1b | [S1e2.1b.3](p1e2.1b_the_non_monotone_lattice/s1e2.1b.3_holes.md) |
+| **(d)** | moved | P1e2.1b; **deferred to F21's D4, 2026-11-02** | [S1e2.1b.3](p1e2.1b_the_non_monotone_lattice/s1e2.1b.3_holes.md) (evidence); [F21](../followups/f21_non_monotone_programs_decided.md) |
 | **(e)** | asks for a way to expose saturation equivalence alongside commitments | **ruled**: k_s and k_c (second answer); `(region …)` with `(merged (to from) …)` (third answer) | S1e2.1a.1's record; S1e2.1a.4, S1e2.1a.5 |
 | **(f)** | asked: *is the obligations-only maximal line the whole candidate set?* | **ruled for P1e2.1a's scope** (second answer): yes, for a monotone program, and it is trivial. The non-monotone counterexample below is S1e2.1b.6's | S1e2.1a.3's page |
 | **(g)** | `exhausted` means complete information about R; a limited run gives partial information; *"region is a certificate of the lattice, right?"* | **ruled for P1e2.1a's scope** (second answer): exhausted = the full region; a limit makes it partial | S1e2.1a.5, S1e2.1a.9 |

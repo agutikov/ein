@@ -1,9 +1,14 @@
 # M1e2 — Correctness: every known wrong answer
 
-**Estimate:** ~20 weeks: 7 estimated phases and 47 stages, **101 days** of
-stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.1b 14, P1e2.1c 17.5, P1e2.2
-27.5, P1e2.3 5, P1e2.4 2). P1e2.1b was 15.5 until S1e2.1b.1's census
-re-estimated S1e2.1b.2–.5 on 2026-11-02, three of the four downwards. P1e2.1b and P1e2.1c, added or grown 2026-10-16, had one stage
+**Estimate:** ~21 weeks: 7 estimated phases and 47 stages, **103.5 days** of
+stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.1b 21, P1e2.1c 13, P1e2.2
+27.5, P1e2.3 5, P1e2.4 2). It was 101 until the user re-planned P1e2.1b on
+2026-11-02 to detect, document and warn, and to decide nothing: P1e2.1b went
+from 14 days to 21 (the detector 5.5, a new stage of consequences 4.5), and
+P1e2.1c from 17.5 to 13, its non-monotone search moved to
+[F21](../followups/f21_non_monotone_programs_decided.md). P1e2.1b was 15.5
+before S1e2.1b.1's census re-estimated S1e2.1b.2–.5 the same day, three of
+the four downwards. P1e2.1b and P1e2.1c, added or grown 2026-10-16, had one stage
 estimated between them until 2026-11-02, when the other nine were specified.
 Where one of their stages ends in the user's ruling, its days are for the
 evidence, and P1e2.1c's S1e2.1c.5 re-scopes P1e2.2's 27.5. P1e2.4, added
@@ -116,10 +121,14 @@ built at `17422b32`, where every case page draws its run on R
 be built on root's fixpoint or from scratch, and the two differ exactly where
 adding a fact can take a conclusion away. The user moved that case into a
 phase of its own, [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md),
-on 2026-10-15. P1e2.1a finishes the monotone lattice and *detects* the
-non-monotone one. P1e2.1b decides what R is there, and its first finding is
-already in: a hole needs no `absent`, because an obligation's trigger is the
-same kind of read.
+on 2026-10-15. P1e2.1a finishes the monotone case and *detects* the
+non-monotone one. P1e2.1b was to decide what R is there, and its first finding
+is already in: a hole needs no `absent`, because an obligation's trigger is
+the same kind of read. **On 2026-11-02 the user re-planned it** to detect,
+document and warn, and to decide nothing: *"prepare everything we are able to
+do now, without making final decisions; And then leave further investigation
+of non-monotonic lattices as followup"*. The decisions are
+[F21](../followups/f21_non_monotone_programs_decided.md)'s.
 
 **Then the user ruled from the general case (2026-10-16).** In general R is
 its node set, and the two lines are a simplification. `k` = |R|. `ein solve`
@@ -143,15 +152,16 @@ where it is cheap and exact, and
 |---|---|---:|---:|---|
 | [P1e2.1](p1e2.1_seeing_the_answer/README.md) | Seeing the answer: dumps, and the answer rendered for review | 7 | 12 d | `utils/review_bundle.py` → `build/review/`: every case's problem, every run's every artefact rendered with every graph as SVG, the right answer and the diff; the register as a cargo test; Q-M1e.20 answered; **the review held** |
 | [P1e2.1a](p1e2.1a_the_solution_region/README.md) | The solution region: R defined, computed, drawn and reported | 10 | 23 d | the answer redefined as a **region R** of the hypothesis lattice, with its minimal and maximal lines ([Q-M1e2.7](open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)), for a **monotone** program; a non-monotone one detected by a static check and reported through one stub; an oracle that computes R by saturation alone for n ≤ 16; the whole lattice drawn with the walk overlaid (a region run since S1e2.1a.7); programs written for a chosen region (S1e2.1a.8); the language and the read-out speaking R; the engine checked against the oracle under every lever; **the review resumed** |
-| [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) | The non-monotone lattice: what R is when adding a fact can take one away | 6 | 14 d | the site census; a node's state, fork or scratch (Q-M1e2.2, W8); holes (Q-M1e2.7 (d)), from `absent` and from obligation triggers; the ruling on a refutation that rests on an `absent` applied to the region search (Q-M1e.9, W3; the ruling is P1e2.4's); the stub replaced; **the two lattices compared** in a `docs/kernel/` page, with how to solve each one stably, provably and effectively (S1e2.1b.6) |
-| [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 5 | 17.5 d | `ein solve`'s default describes R for every program the corpus holds, or says why not: the alive set at scale, the lines by duality, the non-monotone search, the flags at scale; the old walk's fate, and P1e2.2 re-scoped |
+| [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) | Non-monotone programs: detected, documented, warned | 7 | 21 d | **decides nothing** (re-planned 2026-11-02; every decision is [F21](../followups/f21_non_monotone_programs_decided.md)'s): the site census; a node's state by fork and from scratch, measured (Q-M1e2.2 deferred); holes by cause (Q-M1e2.7 (d) deferred); the evidence on a refutation that rests on an `absent`, for S1e2.2.5; monotone and non-monotone programs compared in [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md), with the two properties of the node functions and every option's consequences; an explicit monotonicity check, in a CLI form the user approves; a cheap detector in `ein solve`, warning on every surface that reports R, with no answer moved |
+| [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 4 | 13 d | `ein solve`'s default describes R for every **monotone** program the corpus holds, or says why not: the alive set at scale, the lines by duality, the flags at scale; the old walk's fate, and P1e2.2 re-scoped. A flagged program keeps route 2 and P1e2.1b's warnings, and the non-monotone search moved to F21 (2026-11-02) |
 | [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 13 | 27.5 d | every register row `fixed` or ruled `not-wrong`; no wrong answer at default settings; no lever that changes a certified answer |
 | [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | Surfaces that misreport the answer | 4 | 5 d | every witness re-taken 2026-11-02 (S1–S3 and S6–S9 gone, S4 and P1 live, S5 moved to `-g`, S10 the forms past 100 lines); the summary's `root` block as ruled and unmoved by every lever (S1e2.3.1); no render view panics on a keyword pair (S1e2.3.2); the forms under the 100-line ruling (S1e2.3.3); Q-M1e.5 and Q-M1e.17 ruled and closed, the re-take re-takable (S1e2.3.4) |
 | [P1e2.4](p1e2.4_what_the_switch_left/README.md) | What the switch left: the `absent` ruling, and the read-out at scale | 2 | 2 d | Q-M1e2.5 ruled, *forbid* or *respect*, and applied to W3's rows (S1e2.4.1); `--models key` declines before it allocates, and the read-out forms measured in memory on the largest regions (S1e2.4.2) |
 
 **The order, ruled 2026-11-02.** P1e2.1a is done, and so is **P1e2.4**
-(2026-11-02). Next is P1e2.1b, where the user expects questions to discuss, then P1e2.1c, then
-P1e2.3. P1e2.4 was first put after P1e2.1c and moved ahead of P1e2.1b the same
+(2026-11-02). Next is P1e2.1b, re-planned the same day to detect, document and
+warn, with one question for the user (the explicit check's CLI form, on real
+programs), then P1e2.1c, scoped to monotone programs, then P1e2.3. P1e2.4 was first put after P1e2.1c and moved ahead of P1e2.1b the same
 day, on the user's *"reorder P1e2.4 before P1e2.1b"*: P1e2.1b's
 [S1e2.1b.4](p1e2.1b_the_non_monotone_lattice/s1e2.1b.4_refutation_resting_on_absent.md)
 applies the *forbid* / *respect* ruling S1e2.4.1 takes. Only after P1e2.3 are
@@ -271,6 +281,13 @@ milestone cites them across the boundary, as M1f does.
   border on *what the language means*: `absent`, stratification, types. The
   stages are written to take a ruling and apply it, and the line is that a
   ruling which needs a new language feature becomes a followup, not a stage.
+- **W8's reading is now a followup's.** On 2026-11-02 the user deferred
+  Q-M1e2.2 to [F21](../followups/f21_non_monotone_programs_decided.md), and
+  the acceptance below asks that no register row be `open` and that every
+  contested case have a ruling. W8's two rows meet both head on. Parked for
+  the revisit, not asked now: it reads W8 under today's documented node, or
+  the acceptance is amended
+  ([S1e2.2.6 § The deferral](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md#the-deferral-and-the-milestones-acceptance)).
 - **Overlap with M1f.** S1f.10.3 (the restricted join), S1f.10.4 (bounded
   groups) and S1f.10.8 (refutation under `absent`) all touch what this
   milestone fixes. [P1e2.2 § Where this phase meets M1f](p1e2.2_wrong_answers/README.md#where-this-phase-meets-m1f)
