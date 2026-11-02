@@ -377,6 +377,10 @@ where the grains differ is six programs written for the test. If the user
 would rather `features/05` and `features/12` stop being called non-monotone
 now, (b) is safe as far as the cube can tell, and the table above prices it.
 
+**Ruled 2026-11-02: (a)** ([the stage](s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)).
+The check stays at relation grain, and the prototype and its tests stay as
+evidence.
+
 ## 6. The S1e2.4.1 probes
 
 A second invocation over the 14 files in

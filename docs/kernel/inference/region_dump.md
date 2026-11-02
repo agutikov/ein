@@ -169,6 +169,12 @@ a sufficient condition, and the cube is its check: `region.md` flags a
 monotone verdict beside an observed violation as a defect, and
 `ein-infer/tests/region.rs` fails on one.
 
+**The grain is the relation's**, ruled by the user on 2026-11-02 (M1e2
+[S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)):
+a read over a relation in `D` is dynamic whatever its pattern, even where no
+candidate, and nothing derived from one, can match it. A fact-grain reading
+was prototyped beside it and held to the cube, and it is not what ships.
+
 **The stub.** A program with a site says so in three places:
 
 - the read-out's `lattice` row, `not monotone: n sites (the static check) — …;

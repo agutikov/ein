@@ -55,6 +55,22 @@
 //! `examples/lattice/04_obligation_trigger_hole.ein`: `total-owed meal is-a`,
 //! and a rule that derives `(is-a ?g Diner)` from a hypothesised seat.
 //!
+//! ### The grain
+//!
+//! The check reads at **relation grain**, and the theorem above is stated at
+//! it: a read is dynamic when its *relation* is in `D`, whatever its pattern.
+//! The user ruled that on 2026-11-02 (option (a) of
+//! [S1e2.1b.1](../../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)),
+//! over **fact grain**, where a read is dynamic only when a candidate, or a
+//! fact derived from candidates, can match its pattern. Fact grain was
+//! prototyped and held to the cube: it unflags 2 of the 22 flagged programs,
+//! both past the oracle's limit, and no cube within it
+//! (`site_census`, 2026-11-02,
+//! [§ 5](../../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/site_census.md#5-the-grain)).
+//! The prototype, `ein-infer/examples/shared/fact_grain.rs`, and its two tests
+//! in `tests/region.rs` stay as evidence for S1e2.2.5's reading of
+//! *extendable*; no route reads them.
+//!
 //! ### What it does not touch
 //!
 //! It reads compiled plans and the program's registries and nothing else — no

@@ -26,11 +26,12 @@ answering S1e2.1a.1's open questions:
 
 "This phase" in the quote is [P1e2.1a](../p1e2.1a_the_solution_region/README.md).
 Points 1–3 are S1e2.1a.1's, and this phase gets what they leave.
-**S1e2.1b.1: T1e2.1b.1.1–.3 done 2026-11-02** ([its stage file](s1e2.1b.1_the_site_census.md),
+**S1e2.1b.1 is done 2026-11-02** ([its stage file](s1e2.1b.1_the_site_census.md),
 [the census](site_census.md)). 22 programs are flagged, 6 exercised and 8
 conservative within the limit. The static check is prototyped at fact grain
-and held to the cube, and S1e2.1b.2–.5 are re-estimated. **T1e2.1b.1.4 waits
-on the user's ruling** on the grain.
+and held to the cube, and S1e2.1b.2–.5 are re-estimated. The user ruled the
+grain **(a), relation grain**: the check stays as shipped, and the prototype
+stays as evidence for S1e2.2.5's F1.
 **Depends on:** S1e2.1a.1. Its detector gives this phase its census, and its
 stub is what [S1e2.1b.5](s1e2.1b.5_the_handling.md) replaces. Since
 2026-11-02 also [P1e2.4](../p1e2.4_what_the_switch_left/README.md), which runs

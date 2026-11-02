@@ -158,6 +158,12 @@ every one of the corpus's **146** monotone cubes, 53 of them with at least one
 candidate, no dead node has an alive superset and no discharged node has an
 owing one (`utils/region_census.py --all`, 2026-10-16, § 8).
 
+The check reads at **relation grain**: a read is dynamic when its relation is
+in `D`, whatever its pattern, and the theorem is stated at that grain. The
+user ruled it on 2026-11-02 over a fact-grain reading, which was prototyped
+and held to the cube and changes no cube within the limit (M1e2
+[S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)).
+
 ---
 
 ## 2. The answer — the region R
