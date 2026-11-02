@@ -141,6 +141,18 @@ the replacement named. W3's four rows re-open with the refusal as `right`.
 refusal and settles F1–F5
 ([S1e2.4.1 § 5](p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)).
 
+**Note, 2026-11-02 — P1e2.1b's taint census**
+([`taint_census.md`](p1e2.1b_non_monotone_programs/taint_census.md),
+`cargo run --release -p ein-infer --example taint_census`). On the 18 flagged
+cubes within the limit, 122 dead nodes: 100 rest on no `absent` over D, and
+none of those has an alive superset; every dead hole rests on one.
+`ein-infer/tests/region.rs::an_untainted_death_is_dead_in_every_superset`
+holds it per commit. The taint has to follow each plan's activator: on the
+written `ACTIVATOR_UNDER_ABSENT`, read off provenance alone, a dead hole is
+untainted beside an alive superset. What a route may learn before the refusal
+ships, and from whatever F2 and F3 leave loading, is
+[F21](../followups/f21_non_monotone_programs_decided.md)'s D6.
+
 ## Q-M1e2.6 — Does P1e2.3 become a phase?
 
 Nine surfaces that misstate a run whose answer is right, and one reachable

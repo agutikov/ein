@@ -244,3 +244,19 @@ written programs:
 Past the limit the census reads the static half only: `features/01`'s
 activator site is the one there, and its plan at root concludes a positive
 fact.
+
+## 8. Handed on
+
+- [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here):
+  a dated note, the census and the test, and that learning before the refusal
+  ships is F21's D6.
+- [S1e2.2.5](../p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md#the-evidence-from-s1e21b4-2026-11-02):
+  F1 per dead node (§ 3), the `via` deaths for F2 (§ 2, § 5), and the
+  compiled refutation for F3 (§ 7), each with its numbers, and that
+  `ACTIVATOR_UNDER_ABSENT` escapes both of F3's placements.
+- [F21](../../followups/f21_non_monotone_programs_decided.md)'s D6: the census
+  and the test, linked, with the agent's recommendation, (b) with the
+  activator walk; and a fifth item under *what forbid does not cover*.
+- [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md): § 3's
+  *learned nogoods* row, § 7.4, § 7.7, § 7.8 and § 8 cite the census and the
+  test. The taxonomy's refutation rows are S1e2.1b.7's.

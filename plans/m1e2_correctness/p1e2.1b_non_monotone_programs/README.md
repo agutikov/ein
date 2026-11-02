@@ -32,8 +32,10 @@ fixture per cause, the guard split held to the oracle) and
 ([`node_census.md`](node_census.md)), with Q-M1e2.2 deferred to F21.
 [S1e2.1b.3](s1e2.1b.3_holes.md) is done at its evidence
 ([`hole_census.md`](hole_census.md)), with Q-M1e2.7 (d) deferred to F21's D4.
-**In progress:** [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md), its
-taint census taken ([`taint_census.md`](taint_census.md)).
+[S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) is done at its
+evidence ([`taint_census.md`](taint_census.md)), handed to S1e2.2.5 and F21's
+D6. **Next:** [S1e2.1b.5](s1e2.1b.5_the_detector.md)'s first task, the
+check's CLI form and the warnings drafted on real programs, for the user.
 **Depends on:** S1e2.1a.1, whose detector gives this phase its census and
 whose stub [S1e2.1b.5](s1e2.1b.5_the_detector.md) replaces with warnings.
 Since 2026-11-02 also [P1e2.4](../p1e2.4_what_the_switch_left/README.md),
@@ -263,13 +265,14 @@ reports both the sites and the violations the cube observed.
 | [S1e2.1b.1](s1e2.1b.1_the_site_census.md) | The site census | 2 d | **done** 2026-11-02 | [`site_census.md`](site_census.md): every site, every flagged cube's violations attributed, the fact-grain prototype held to the cube; the grain ruled *relation, as shipped* |
 | [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md) | A node's state, fork or scratch | 2.5 d | **done at its evidence** 2026-11-02 | [`node_census.md`](node_census.md): both routes node for node, staleness, stratification, invariance, cost, W8 computed under each option; the general path form recorded; **Q-M1e2.2 deferred to F21** (D1–D3) |
 | [S1e2.1b.3](s1e2.1b.3_holes.md) | Holes | 1.5 d | **done at its evidence** 2026-11-02 | `hole_census.md`: every hole by cause and kind, each attributed to a site (the gap S1e2.1b.6 found closed), the read-out today, and each reporting option drafted on real programs with its consequences. The decision is F21's D4 |
-| [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) | A refutation that rests on an `absent` | 1 d | evidence only; T1e2.1b.4.1 done 2026-11-02 | the taint census, its test banked, both readings of *extendable* per dead node and the compiled-refutation case handed to S1e2.2.5 (F1–F3). What may learn is F21's D6 |
+| [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) | A refutation that rests on an `absent` | 1 d | **done at its evidence** 2026-11-02 | the taint census, its test banked, both readings of *extendable* per dead node and the compiled-refutation case handed to S1e2.2.5 (F1–F3). What may learn is F21's D6 |
 | [S1e2.1b.5](s1e2.1b.5_the_detector.md) | The detector | 5.5 d | specified 2026-11-02 | an explicit check in the CLI form the user approved; a cheap detector in a bare `ein solve`, zero extra work on an unflagged program; a warning on every surface that reports R; held to the cube and to random programs |
 | [S1e2.1b.6](s1e2.1b.6_monotone_and_non_monotone_programs_compared.md) | Monotone and non-monotone programs compared | 4 d | **done** 2026-11-02 | [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md), *current*; one fixture per cause; seven drawings; the guard split held to the oracle (19 of 21 cubes) |
 | [S1e2.1b.7](s1e2.1b.7_the_consequences_written_down.md) | The consequences written down | 4.5 d | specified and re-scoped 2026-11-02 (the analysis and three pages' terms were written with the re-plan) | the path and cumulativity censuses and the FIFO-gap fixture, so that `monotonicity.md` § 7.8's unverified rows are measured; the taxonomy of causes; each option's consequences per program; (E)'s rewrites; `monotone.rs`'s module docs |
 
-**Work order:** .1, .6, .2 and .3 are done. Next .4, the evidence. Then S1e2.1b.5's first task, the check's CLI form and the
-warnings drafted on real programs, which goes to the user; .7 is written while
+**Work order:** .1, .6, .2, .3 and .4 are done: the evidence is in. Next
+S1e2.1b.5's first task, the check's CLI form and the warnings drafted on real
+programs, which goes to the user; .7 is written while
 the user reads it. Then .5's build, last: its warnings cite .7's taxonomy, and
 its tests make .7's claims executable.
 
@@ -316,8 +319,8 @@ precedent). No stage ends in a ruling.
 |---|---|---|
 | [Q-M1e2.7](../open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice) (d), holes | [S1e2.1b.3](s1e2.1b.3_holes.md) | F21's D4 |
 | [Q-M1e2.2](../open_questions.md#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in), W8 | [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md), done | F21's D1–D3 |
-| [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here), W3 | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) | the language: ruled *forbid*, built by S1e2.2.5. What a route may learn: F21's D6 |
-| `naf_deps.rs`'s `RefutationUnderAbsentWarning` (M1e S1e.2.3), the containment | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md): both readings of *extendable* per dead node | under *forbid* it becomes the refusal's text, S1e2.2.5's T1e2.2.5.3 |
+| [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here), W3 | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md), done: [`taint_census.md`](taint_census.md) and `region.rs::an_untainted_death_is_dead_in_every_superset` | the language: ruled *forbid*, built by S1e2.2.5. What a route may learn: F21's D6 |
+| `naf_deps.rs`'s `RefutationUnderAbsentWarning` (M1e S1e.2.3), the containment | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md), done: both readings of *extendable* per dead node, which agree on every one ([`taint_census.md` § 3](taint_census.md#3-the-readings-of-tainted-side-by-side)) | under *forbid* it becomes the refusal's text, S1e2.2.5's T1e2.2.5.3 |
 | S1e2.1a.1's `non_monotone` stub | [S1e2.1b.5](s1e2.1b.5_the_detector.md): the stub's words become warnings that say what is assumed | refuse, qualify or search differently: F21's D5 |
 | [S1e2.1a.3's census](../p1e2.1a_the_solution_region/region_census.md#5-holes-upward-closure-the-duality): five programs with a hole, of which `lattice/04_obligation_trigger_hole.ein` still has no register row | [S1e2.1b.3](s1e2.1b.3_holes.md), done: no row filed ([`hole_census.md` § 10](hole_census.md#10-the-consequences-per-option)) | the row follows from F21's D4: its (d4). Fork and scratch agree on `lattice/04`, so D2 does not move it |
 | the same census's [§ 9](../p1e2.1a_the_solution_region/region_census.md#9-the-config-principle): `-y` aborted `corpus/fuzz_findings/d3-unsat-core.ein` before the switch | [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md) ([`node_census.md` § 6.1](node_census.md#61-the--y-abort-on-d3-unsat-core)) | path dependence: F21's D3. The lever `-y`: [S1e2.1c.5](../p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md) |

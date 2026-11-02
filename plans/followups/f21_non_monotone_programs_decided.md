@@ -276,6 +276,12 @@ open, in P1e2.2, the last phase of the milestone's order. It does not cover:
   is a dead hole through one. Unless F2 takes `via`;
 - **a refutation compiled at a node** through an activator
   (`ACTIVATOR_REFUTES`), unless F3's refusal reads the plans a node compiles;
+- **a refutation through an activator derived under an `absent`**
+  (`ACTIVATOR_UNDER_ABSENT`, in `ein-infer/examples/shared/written.rs`): the
+  plan the node compiles reads no `absent`, so even a check of the plans a
+  node compiles misses it, unless F2's `via` follows a plan's activator. (E)
+  refuses its `act`. Measured by P1e2.1b's
+  [taint census § 7](../m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md#7-the-refutation-a-node-compiles-for-f3);
 - **obligation triggers and activators**, which are not refutations;
 - **the FIFO gap**.
 
@@ -424,9 +430,30 @@ premise over D, read off provenance, which is
 [F18](f18_world_aware_negatives.md)'s narrow form; (c) the refusal first, a
 reorder of the milestone. Evidence:
 [S1e2.1b.4](../m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md)'s
-taint census and the test it banks. **Until decided:** (a). F18 closes
-without being done once the refusal covers every refutation a route can learn
-from: D6's (c), or D1 with F2's `via` and F3.
+[taint census](../m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md)
+(2026-11-02, `cargo run --release -p ein-infer --example taint_census`) and the
+test it banks, `ein-infer/tests/region.rs::an_untainted_death_is_dead_in_every_superset`:
+
+- on the 18 flagged cubes within the limit, 122 dead nodes, 100 of them
+  resting on no `absent` over D and **none of those with an alive superset**;
+  every dead hole tainted. The readings *in D* and *eligible*, and the
+  oracle's own `absent_premises`, agree on every one;
+- **(b) read off provenance alone is unsound** on the written
+  `ACTIVATOR_UNDER_ABSENT`: a derivation does not record the activator its
+  plan was compiled from, so a death resting on an activator derived under an
+  `absent` looks untainted. With each plan's activator followed, (b) holds on
+  every cube the test reads;
+- what (b) buys: 91 of the 256 nodes of those cubes, 88 on
+  `synth/three_components`. Past the limit nothing is measured.
+
+The agent's recommendation, not the user's, conditional on the test as the
+stage put it: (b), with the taint following each plan's activator, which the
+test holds; (a) if that walk is not what is built.
+
+**Until decided:** (a). F18 closes without being done once the refusal covers
+every refutation a route can learn from: D6's (c), or D1 with F2's `via` and
+F3. Since S1e2.1b.4, `via` there has to follow a plan's activator, or D1's (E)
+has to be taken, for `ACTIVATOR_UNDER_ABSENT` to be covered.
 
 ### D7 — the non-monotone search past the oracle's limit
 
