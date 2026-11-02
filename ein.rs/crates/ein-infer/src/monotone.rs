@@ -312,6 +312,11 @@ pub struct Monotonicity {
     /// The non-monotone reads and the activator sites, sorted and distinct.
     /// Empty is the theorem's premise.
     pub sites: Vec<Site>,
+    /// The detector's static half, on a program with a site: what each site
+    /// puts at stake, the cycles through an `absent` over `D`, and the order
+    /// findings (M1e2 S1e2.1b.5, [`crate::detector`]). Empty on a program
+    /// with none, which it never reads.
+    pub detector: Box<crate::detector::Static>,
 }
 
 impl Monotonicity {
@@ -462,6 +467,9 @@ pub fn classify(
     let mut d: Vec<Rel> = dynamic.into_iter().collect();
     d.sort_by_key(|r| r.label(terms));
     out.dynamic = d;
+    // The detector's static half, gated on the verdict just reached: a program
+    // with no site gets none and pays one test (M1e2 S1e2.1b.5).
+    out.detector = Box::new(crate::detector::of_program(kb, terms, plans, &out));
     out
 }
 

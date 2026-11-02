@@ -25,6 +25,7 @@ pub mod commitment;
 pub mod compile;
 pub mod contradiction;
 pub mod described;
+pub mod detector;
 pub mod downset;
 pub mod engine;
 pub mod events;

@@ -1,10 +1,22 @@
 # The detector: the explicit check's form and the warnings, on real programs
 
 **Stage:** [S1e2.1b.5](s1e2.1b.5_the_detector.md), task T1e2.1b.5.1.
-**Status:** **drafted 2026-11-02, awaiting the user's approval.** Nothing is
-built. No flag, no subcommand, no grammar, no surface's text and no golden
-moved. Every *drafted* row below is printed by a prototype no route reads; every
-row marked *today* is the release binary's.
+**Status:** drafted 2026-11-02. **Approved by the user on 2026-11-03**,
+through the question dialog, with all four of § 8's recommendations selected:
+(1) the form is **(a1)**, `ein solve FILE --monotone`, exactly as § 2.2 drafts
+it, with `ein oracle` as it is (a4), and no `ein check` and no `:sites` claim;
+(2) the cube's half is **(i)**, static only, the `bit` row saying *not
+computed* and naming `ein oracle` and a bare `ein solve`; (3) the parent-path
+spot check **ships**, at ≤ 3 parents of each state the read-out prints; (4) the
+wording is **approved as drafted** in § 4.2 and § 4.3: the `assumes`, `site`,
+`cycle`, `order`, `status`, `state` and `paths` rows before today's hole rows,
+which stay unchanged (their form is F21's D4), the status and the state
+reported apart, and the stale check reading every node the run computes. The
+user did not object to § 8's *decided here unless the user objects*, so those
+details stand as written. The build is S1e2.1b.5's T1e2.1b.5.2–.6. Below, every
+*drafted* row is printed by a prototype no route reads, as it was when the page
+was put to the user; every row marked *today* is the release binary's at
+`e7bec8f0`.
 **Taken at:** `e7bec8f0` (the parent of the commit that adds this page),
 2026-11-02. Release build from `./build.sh --engine`: `ein 0.1.0`,
 `ein-events/1`, features `einb, parallel, snmalloc`, stdlib
