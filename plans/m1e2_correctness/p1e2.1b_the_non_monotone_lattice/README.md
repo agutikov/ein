@@ -32,8 +32,12 @@ conservative within the limit. The static check is prototyped at fact grain
 and held to the cube, and S1e2.1b.2–.5 are re-estimated. The user ruled the
 grain **(a), relation grain**: the check stays as shipped, and the prototype
 stays as evidence for S1e2.2.5's F1.
-**S1e2.1b.6 started 2026-11-02** ([its stage file](s1e2.1b.6_the_two_lattices_compared.md)):
-T1e2.1b.6.1–.3 are done: one fixture per cause and the closure-operator test, the drawings, and the guard split held to the oracle. It agrees on 19 of 21 cubes; W8's two are the fork-or-scratch difference.
+**S1e2.1b.6 is done 2026-11-02** ([its stage file](s1e2.1b.6_the_two_lattices_compared.md)):
+[`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md), the
+frame, with one fixture per cause, the closure-operator test, seven drawings
+and the guard split held to the oracle. The split agrees on 19 of 21 cubes,
+and W8's two are the fork-or-scratch difference. Its cells for S1e2.1b.2–.4
+name their owners. Next by the work order: S1e2.1b.2–.4.
 **Depends on:** S1e2.1a.1. Its detector gives this phase its census, and its
 stub is what [S1e2.1b.5](s1e2.1b.5_the_handling.md) replaces. Since
 2026-11-02 also [P1e2.4](../p1e2.4_what_the_switch_left/README.md), which runs

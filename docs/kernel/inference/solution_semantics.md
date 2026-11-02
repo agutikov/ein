@@ -16,7 +16,8 @@
 > M1e2 P1e2.1a's scope. R is still a node set on any other program, but which
 > state a node is, and what a hole means, are
 > [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)'s.
-> Each place the definition depends on monotonicity says so.
+> Each place the definition depends on monotonicity says so, and
+> [`monotonicity.md`](monotonicity.md) sets the two cases side by side.
 >
 > **§ 6 is the walk's half.** §§ 1–5 are the definition, and since M1e2
 > S1e2.1a.5's switch (2026-10-18) `ein solve` computes it: route 1 over the
@@ -129,7 +130,8 @@ node with cl(C) ≠ C is **transient**: saturation moves it, `C ⇒ cl(C)`.
 
 **State class.** The commitments that reach one state. For a monotone program
 saturation is a closure operator on the cube (extensive, idempotent,
-monotone), so a state s has:
+monotone; `ein-infer/tests/region.rs::a_monotone_verdict_makes_saturation_a_closure_operator`
+holds it on every monotone cube within the limit), so a state s has:
 
 - a **top**, s itself, the closed set;
 - **bottoms**, its **minimal generators**: the smallest commitments that
@@ -194,8 +196,8 @@ order:
 | **monotone** (§ 1.6) | convex, and the lines follow from N and E without visiting the cube (§ 2.4), with N, E and the static verdict as a certificate |
 | **shape** | restrictions only: the minimal line is {∅}. Obligations only: the maximal line is {⊤}, every candidate (§ 2.4) |
 
-[S1e2.1b.6](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.6_the_two_lattices_compared.md)
-writes the same ladder for the non-monotone case.
+[`monotonicity.md` § 2](monotonicity.md#2-the-ladder) writes the same
+ladder from the non-monotone side (M1e2 S1e2.1b.6).
 
 ### 2.2 ∅
 
@@ -247,13 +249,17 @@ maximal line is the largest sets containing no member of N, kept where
 discharged. It is Reiter's diagnosis duality and MUS/MCS enumeration's, and it
 is the route past the oracle's limit
 ([P1e2.1c](../../../plans/m1e2_correctness/p1e2.1c_the_region_search/README.md)).
-In the corpus it holds on every region without a hole, and fails only on
-regions with one (§ 8).
+In the corpus it holds on every monotone region (§ 8). On a non-monotone one
+it is not guaranteed, with a hole or without one:
+[`synth/maximal_not_top.ein`](../../../examples/lattice/synth/maximal_not_top.ein)
+has no hole, and its top owes ([`monotonicity.md` § 3](monotonicity.md#3-the-comparison)).
 
 **Locally.** Without holes, a node of R is maximal exactly when every edge up
 leads to a dead node, and minimal exactly when every edge down leads to an
 owing one. Across a hole, the local test and the cube can disagree. On the
-corpus they never do (§ 8).
+monotone corpus they never do (§ 8);
+[`synth/local_not_global.ein`](../../../examples/lattice/synth/local_not_global.ein)
+is a program written to make them disagree.
 
 ### 2.5 Worked: `examples/lattice/02_genuine_3set_death.ein`
 
@@ -696,6 +702,8 @@ leave those out.
 ## Cross-references
 
 - [`region_dump.md`](region_dump.md): R by brute force, `ein oracle --dump`.
+- [`monotonicity.md`](monotonicity.md): the monotone and the non-monotone
+  region compared, and how to solve each.
 - [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run):
   R drawn, `ein render region`.
 - [`absent_semantics.md`](absent_semantics.md): worlds, the NAF boundary, and

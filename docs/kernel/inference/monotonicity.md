@@ -1,0 +1,370 @@
+# Monotone and non-monotone lattices — the two regions compared
+
+**What the answer is when adding a fact can take one away.** The answer to a
+program is the region R of its hypothesis lattice, the commitments whose state
+is alive and discharged ([`solution_semantics.md`](solution_semantics.md)).
+That page is written for a **monotone** program, where growth never takes a
+conclusion away and never adds a debt. This page sets the two cases side by
+side: what each means, what causes the second, how each looks on the lattice,
+how it is detected, what each property lets the engine simplify, and how to
+compute R stably, provably and effectively in each. M1e2
+[S1e2.1b.6](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.6_the_two_lattices_compared.md)
+wrote it, at the user's request of 2026-10-16, for a reader who needs R **as a
+whole**: a complete answer with the provenance of its topology, the region's
+properties studied to improve a theory, or a search over theories for one
+with a single solution.
+
+**What is ruled and what is not.** The monotone column is settled. Three cells
+of the non-monotone column wait on a ruling, and each names the stage that
+owns it: what a node's state is ([S1e2.1b.2](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.2_fork_or_scratch.md)),
+what is reported when R has holes ([S1e2.1b.3](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.3_holes.md)),
+and what a search may learn from a refutation that rests on an `absent`
+([S1e2.1b.4](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.4_refutation_resting_on_absent.md)).
+Every other claim carries a test, a dated command, or a theorem whose premise
+a test enforces ([`standard_of_proof.md`](../standard_of_proof.md)).
+
+---
+
+## 1. Where it starts: R is its node set
+
+> **R = { C ⊆ H : sat(root + C) is alive and discharged }**,
+> [`solution_semantics.md` § 2](solution_semantics.md#2-the-answer--the-region-r).
+
+The user, 2026-10-16: *"In general non-monotonic case R is completely defined
+only by full set of nodes … Let's go from it, and simplify the results if our
+case allows or if it is requested explicitely."* That is exact
+([§ 2.1 there](solution_semantics.md#21-in-general-r-is-its-node-set)):
+
+- **Any subset of the cube is the region of some program.**
+  [`utils/region_synth.py`](../../../utils/region_synth.py) writes a program
+  for a chosen region, and the oracle gives it back node for node: 2 100
+  random targets with 0 mismatches (2026-10-15, M1e2 S1e2.1a.8), and 300 per
+  commit (`ein-cli/tests/region_dump.rs::a_random_region_written_as_a_program_comes_back`).
+  The one target it refuses is a dead ∅ under a non-empty R, because the
+  oracle builds every node from root's fixpoint. That is S1e2.1b.2's question.
+- **There are 2^(2ⁿ) regions**, so nothing shorter than the set describes all
+  of them. The shortest exact form of one is the union of its maximal
+  sub-cubes, which the oracle computes (`region.json`'s `subcubes`). It is
+  small when R is regular, and it reaches 2ⁿ⁻¹ isolated points (parity).
+
+## 2. The ladder
+
+Each step down is licensed by a property the step above does not have, and
+each makes a shorter description exact:
+
+| step | licensed by | R is described by | a claimed R is certified by |
+|---|---|---|---|
+| **general** | nothing | the node set, or its maximal sub-cubes | every node classified: 2ⁿ saturations |
+| **convex** | **no hole**, observed on the cube | the two lines: R = ⋃ [a … b] over minimal a ⊆ maximal b | as above: a hole is known only after the cube is enumerated |
+| **monotone** | the **static check** says *monotone*, before any search (§ 5.1) | the two lines, computed from the alive down-set and N, or from N and E, without visiting 2ⁿ nodes | N and E, one saturation per member, and the static verdict |
+| **shape** | which constraints the program states | restrictions only: the minimal line is {∅}. Obligations only: the maximal line is {⊤}. Both, and well-posed: every component a point | as monotone |
+
+**Convex is the common non-monotone case in the corpus.** Of the 17 flagged
+programs within the oracle's limit, 9 have no hole, and each of the 8 with
+one was written to show it (`cargo run --release -p ein-infer --example
+site_census`, 2026-11-02 at `6743dd17`). That says more about the corpus than
+about programs. **A conditional obligation makes holes as a matter of
+course**: [`lattice/06_friends_tables.ein`](../../../examples/lattice/06_friends_tables.ein),
+*a group that sits owes its members' seats*, the way a person writes *if you
+come, you all sit*, has R of 21 isolated nodes and 166 holes. Its monotone twin
+[`06_friends_tables_everyone_sits.ein`](../../../examples/lattice/06_friends_tables_everyone_sits.ein),
+*everyone must sit*, has 8 seatings and no hole (Q-M1e2.7, 2026-10-16,
+[`open_questions.md`](../../../plans/m1e2_correctness/open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)).
+
+## 3. The comparison
+
+| | monotone | non-monotone | evidence |
+|---|---|---|---|
+| **what it means** | adding a commitment never takes a conclusion away and never adds a debt | some commitment does one or the other | the definition in [`monotone.rs`](../../../ein.rs/crates/ein-infer/src/monotone.rs)'s module docs; the cube counts each breach as a violation (`region.json`'s `violations`) |
+| **what causes it** | nothing: no read of the third kind (§ 5.1) | a **site**, from one of three sources: an `absent` at odd depth in a saturation rule over a relation a commitment can change; an obligation's **trigger** over one; a rule whose **activator** relation a commitment can change, so a node compiles a plan root never had | one fixture per cause, each its program's only site, each with the hole its cause makes: [`08_absent_witness_hole.ein`](../../../examples/lattice/08_absent_witness_hole.ein), [`04_obligation_trigger_hole.ein`](../../../examples/lattice/04_obligation_trigger_hole.ein), [`09_activator_hole.ein`](../../../examples/lattice/09_activator_hole.ein) (`ein-infer/tests/region.rs::each_cause_has_a_fixture_whose_cube_shows_its_hole`) |
+| **what does not cause it** | | an `absent` over a static relation (zebra2's spatial reads, `region.rs::zebra2_is_monotone_by_construction`); an obligation's witness `absent` (`owed-seats`, `lattice/05`, `region.rs::monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged`); a rule that reads a stored negative of a hypothesised relation ([`complete-records-stale.ein`](../../../examples/ein-bugs/complete-records-stale.ein), monotone by the static check, no violation on its cube) | as listed |
+| **how it looks** | a **band**. Dead is an up-set, drawn at the bottom; owing is a down-set among the alive nodes, near L0; R lies between, and components separate where dead and owing meet | **islands**: a node outside R between two members (a hole), joined to R above it by a repair edge; a dead node with an alive superset; a discharged node with an owing superset | § 4's drawings |
+| **dead** | upward-closed | not, where a refutation rests on an `absent` (W3's `bad`) or on a plan a node compiled (`ACTIVATOR_REFUTES` in `region.rs`) | `region.json`'s `dead_not_upward_closed`. On no cube the static check calls monotone is it non-zero: 155 cubes, 0 (`site_census --json`'s rows, 2026-11-02 at `6743dd17`), and `region.rs::fact_grain_never_calls_a_violated_cube_monotone` sweeps them per commit |
+| **discharged** | upward-closed | not, where a trigger grows (`lattice/04`), an `absent` takes a witness away (`lattice/08`) or a commitment compiles an obligation (`lattice/09`) | `discharged_not_upward_closed`, asserted on all three by `each_cause_has_a_fixture_whose_cube_shows_its_hole` |
+| **R's shape** | convex | any subset of the cube | § 1's round trips |
+| **the lines, decided** | locally: a node of R is maximal iff every edge up leaves R, minimal iff every edge down does | globally only. Across a hole the one-fact test calls a node a line node that is not one | `region.json`'s `local_max` and `local_min`. On the monotone corpus they never disagree with the cube ([`solution_semantics.md` § 2.4](solution_semantics.md#24-shape)). On [`synth/local_not_global.ein`](../../../examples/lattice/synth/local_not_global.ein), *A and B together or not at all*, ∅ is maximal by the one-fact test and {A,B} minimal, and neither is (`region.rs::across_a_hole_the_one_fact_test_misreads_the_lines`) |
+| **N/E duality** | holds: the minimal line is E's alive members, the maximal line the discharged maximal sets containing no member of N | not guaranteed. It fails on the maximal side on `naf-upward-closure`, `synth/three_components` and `synth/trigger_hole`, which have holes, and on [`synth/maximal_not_top.ein`](../../../examples/lattice/synth/maximal_not_top.ein), which has none; it holds on `lattice/04`, `08` and `09` | `region.rs::the_duality_holds_without_holes_and_fails_on_the_hole`; `region.json`'s `duality` (`ein oracle FILE --dump DIR`, 2026-11-02) |
+| **trivial lines** | restrictions only: min = {∅}. Obligations only: max = {⊤}, so the maximal line says nothing (ruled for the monotone case, 2026-10-16) | max ≠ {⊤} where a trigger grows: `synth/maximal_not_top.ein` states obligations and nothing dead, and its maximal line is {A,B} while ⊤ owes | `every_synthetic_program_has_the_region_it_was_written_for` |
+| **learned nogoods, kill cache, singleton writeback** | sound: every superset of a dead set is dead | unsound where the refutation read a third-kind relation: W3, and `synth/three_components`' learned clauses {A,F} and {A,G} (S1e2.1a.8). The language is ruled, *forbid* ([S1e2.4.1 § 5](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling), 2026-11-02): a refutation may not rest on an `absent` over a relation a commitment can extend. **What the region search may learn is [S1e2.1b.4](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.4_refutation_resting_on_absent.md)'s.** Since the switch no route learns on a flagged program | the dead row's evidence |
+| **saturation on the cube** | a **closure operator**: C ⊆ cl(C), cl(cl(C)) = cl(C), C ⊆ D ⇒ cl(C) ⊆ cl(D). R's states are closed sets, each the union of the intervals [g … cl] over its minimal generators g | cl need not be monotone. States still partition the commitments, but not as the closed sets of a closure system | `region.rs::a_monotone_verdict_makes_saturation_a_closure_operator`: every node of every monotone cube within the limit, dead ones included, and saturation moves a node on 15 of them. On `CL_NOT_MONOTONE`, flagged, cl is not monotone |
+| **a node's state** | unique, the least fixpoint: built by fork from root or from scratch, one fact set, by the theorem (`ein-cli/tests/region_dump.rs` holds `utils/region.py`, the scratch route, to the oracle on Q-M1e2.7's seven programs) | depends on the route. On W8's [`stale-naf-fork.ein`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein), `{(q one)}` is dead by fork, because root derived `(p one)` under `(absent (q one))`, and in R from scratch. **Which one R is defined over is [S1e2.1b.2](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.2_fork_or_scratch.md)'s** | § 6.4: the guard split reads scratch, and disagrees with the oracle on exactly W8's two witnesses |
+| **holes, reported** | there are none | the read-out names each minimal hole today (`ein solve examples/lattice/04_obligation_trigger_hole.ein`: `minimal hole {(seats Ann C1)} — owes 1`). **What is reported, a qualifier, the pieces or a refusal, is [S1e2.1b.3](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.3_holes.md)'s** (Q-M1e2.7 (d)) | `region.json`'s `holes`, `minimal_holes`, `repairs` |
+| **certificate** | N, E and the static verdict: polynomial in \|N\| + \|E\| | the full classification. With the guard split, each cell's guess and its N and E (§ 6.4, not built) | route 1 is held to the oracle (`region.rs::route_1_is_the_oracle_on_every_monotone_program_it_reaches`) |
+| **detection** | static: [`monotone.rs`](../../../ein.rs/crates/ein-infer/src/monotone.rs), a sufficient condition read at **relation grain**, as the user ruled on 2026-11-02 ([S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)) | the static check flags a **site**; only the cube says whether it did harm | § 5 |
+
+## 4. The drawings
+
+Seven regions drawn by [`ein render region`](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run),
+each with a bare `ein solve` on its cube. Fill is the node's status, shape is
+what the run did there, and border is the lines and the defects; a purple
+border is a hole, and a `+fact` edge is the repair that takes it back into R.
+
+The run is what makes the pairs comparable. On a monotone program `ein solve`
+takes route 1, which grows the alive down-set and never enters a node above a
+dead one: it visits 7 of 8 nodes on `branching/15`, 11 of 16 on `lattice/05`
+and 25 of 32 on `merged_states`. On a flagged program it takes route 2, the
+cube, and visits every node.
+
+**Monotone.**
+
+| program | what it shows |
+|---|---|
+| [`branching/15_lookahead_two_step_on.ein`](../../../examples/branching/15_lookahead_two_step_on.ein) | restrictions only: dead is an up-set, the minimal line is {∅}, and R is the band above it |
+| [`lattice/05_owed_seats_bounded.ein`](../../../examples/lattice/05_owed_seats_bounded.ein) | restrictions and obligations: owing from above, dead from below, and R squeezed to two isolated points, the shape of a well-posed puzzle |
+| [`lattice/synth/merged_states.ein`](../../../examples/lattice/synth/merged_states.ein) | saturation moves nodes: a `sat` arrow from each transient commitment to its closure, and 16 commitments in 8 states |
+
+![branching/15](diagrams/monotonicity_15_lookahead_two_step_on.svg)
+
+![lattice/05](diagrams/monotonicity_05_owed_seats_bounded.svg)
+
+![synth/merged_states](diagrams/monotonicity_merged_states.svg)
+
+**Non-monotone**, one per cause and one for dead holes.
+
+| program | cause | what it shows |
+|---|---|---|
+| [`lattice/08_absent_witness_hole.ein`](../../../examples/lattice/08_absent_witness_hole.ein) | an `absent` | an owing hole: being allergic takes away the soup that paid Ann's meal |
+| [`lattice/04_obligation_trigger_hole.ein`](../../../examples/lattice/04_obligation_trigger_hole.ein) | a trigger | an owing hole: seating Ann makes her a Diner, and a Diner owes a meal |
+| [`lattice/09_activator_hole.ein`](../../../examples/lattice/09_activator_hole.ein) | an activator | the same cube as `lattice/04`, by another mechanism: opening the kitchen declares that every guest owes a meal. The picture cannot tell the causes apart; the static check can |
+| [`lattice/synth/three_components.ein`](../../../examples/lattice/synth/three_components.ein) | `absent`s | the user's shape of 2026-10-15: three components, two of them with dead holes, each revived by a repair edge |
+
+![lattice/08](diagrams/monotonicity_08_absent_witness_hole.svg)
+
+![lattice/04](diagrams/monotonicity_04_obligation_trigger_hole.svg)
+
+![lattice/09](diagrams/monotonicity_09_activator_hole.svg)
+
+![synth/three_components](diagrams/monotonicity_three_components.svg)
+
+Re-made with one command, from the repository root with `ein` on `PATH`:
+
+```sh
+for p in branching/15_lookahead_two_step_on lattice/05_owed_seats_bounded lattice/synth/merged_states \
+         lattice/08_absent_witness_hole lattice/04_obligation_trigger_hole lattice/09_activator_hole lattice/synth/three_components; do
+  f=examples/$p.ein; o=$(mktemp -d); d=docs/kernel/inference/diagrams/monotonicity_$(basename $p)
+  ein oracle $f --dump $o/cube > /dev/null && ein solve $f --dump-lattice $o/lattice --dump-answer $o/answer > /dev/null &&
+  ein render region $o/cube --visited $o/lattice --answer $o/answer > $d.dot && dot -Tsvg $d.dot -o $d.svg && rm -r $o
+done
+```
+
+## 5. Detection
+
+### 5.1 Static
+
+[`ein_infer::monotone`](../../../ein.rs/crates/ein-infer/src/monotone.rs)
+decides from the compiled plans, before any search
+([`region_dump.md` § Monotonicity](region_dump.md#monotonicity--the-static-check)).
+H is the relations of the candidate list, and D the relations a commitment
+can change: H, closed under *a saturation plan that reads D asserts into D*.
+A read of a relation outside D is **static**. A read of one in D is
+**dynamic**, at monotone or non-monotone polarity by its `absent` depth and
+its rule's kind. A **site** is a dynamic read at non-monotone polarity, or a
+rule whose activator relation is in D. No site is the theorem's premise: dead
+and discharged are then both upward-closed, so R has no hole.
+
+The check reads at **relation grain**, as the user ruled on 2026-11-02. A
+fact-grain reading, dynamic only where a candidate or a fact derived from one
+can match the read's pattern, was prototyped and held to the cube, and it is
+not what ships
+([site census § 5](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/site_census.md#5-the-grain)).
+
+### 5.2 On the cube
+
+The check is sufficient, not necessary. The oracle (`ein oracle FILE --dump
+DIR`, n ≤ 16) counts what a site did: holes, dead nodes with an alive
+superset, discharged nodes with an owing superset. A flagged program whose
+cube shows one is **exercised**, and one whose cube shows none is
+**conservative**.
+
+`cargo run --release -p ein-infer --example site_census`, 2026-11-02 at
+`6743dd17`, over the corpus and the register's witnesses:
+
+| | |
+|---|---:|
+| files that load and saturate | 207 of 270 |
+| flagged | **25** |
+| … within the limit | 17: **9 exercised**, **8 conservative** |
+| … past it | 8 |
+| sites | 35: 28 `absent`, 5 trigger, 2 activator |
+| monotone cubes with a violation | **0** of 155 |
+| flagged programs that would leave the set at fact grain | 2, `features/05` and `features/12`, both past the limit |
+
+Every conservative program is flagged over a relation it means to decide,
+and never makes the site bite. The census's first take, at `4b822a8d` the same
+day, had 22 flagged and 6 exercised. The difference is three fixtures banked
+for this page: `lattice/08`, `lattice/09` and `synth/maximal_not_top`. A
+fourth, `synth/local_not_global`, came after this take; it is flagged and has
+two holes. One activator site was exercised nowhere until
+[`09_activator_hole.ein`](../../../examples/lattice/09_activator_hole.ein):
+`features/01`'s is past the limit and static at fact grain.
+
+**The census's attribution has a gap the fixtures found.** It names, for each
+minimal hole and each violation's witness, the site that made it: a dead node
+by its `absent` premises, an owing node by the trigger sites of what it owes.
+On `lattice/08` and `lattice/09` the owing hole comes from an `absent` that
+took a witness away and from a compiled obligation, and the census names no
+site (*a violation no site is named for: 2*). The cube is right; the census's
+rule covers the causes it was written on. The attribution is S1e2.1b.3's to
+take up.
+
+## 6. How to solve
+
+### 6.1 Three words
+
+The user's, as this page uses them:
+
+- **stable**: the answer is a function of the program alone. It does not
+  depend on a lever, on interner ids, on rule order or on `--jobs`. That is
+  the config principle.
+- **proved**: the answer comes with a certificate that a second, simpler
+  check accepts.
+- **effective**: the cost grows with the size of the answer's description,
+  not with 2ⁿ, wherever the case allows.
+
+### 6.2 Per question
+
+| question | monotone | non-monotone |
+|---|---|---|
+| **is R non-empty** (a first solution) | any sound search. A node found is proved by one saturation, and learned nogoods are safe | a node found is proved the same way. A *no* needs care: learning from a refutation across a hole can prune all of R. On [`synth/trigger_hole.ein`](../../../examples/lattice/synth/trigger_hole.ein), with 9 nodes in R, the walk answered `Contradiction` ([S1e2.1a.8](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.8_region_to_program.md#the-fixtures-and-what-the-engine-answers-on-them), 2026-10-15, before the switch). What may be learned is S1e2.1b.4's |
+| **the lines** | grow the alive down-set layer by layer (route 1), or enumerate N and E and dualise: the minimal line is E's alive members, the maximal line the discharged complements of the minimal transversals of N. Prior art: MARCO-style MUS/MSS enumeration (Liffiton et al., *Constraints* 2016); incremental monotone dualisation is quasi-polynomial in input plus output (Fredman & Khachiyan, *J. Algorithms* 1996) | no duality. **Split on the guards** (§ 6.4): fix the truth of each ground fact a third-kind read can see change, g of them. Inside each cell the program is monotone and has lines, and R is the union over the cells of the part each cell's guess survives. That is the Gelfond–Lifschitz reduct's move, so it presumes a stable reading of a node, which is S1e2.1b.2's ruling. Cost: 2ᵍ × the monotone cost |
+| **\|R\|, components, sub-cubes** | from the lines: the sub-cubes, then inclusion–exclusion | per cell, then the union; or enumeration |
+| **states, not commitments** | the closed sets in R and their minimal generators: formal concept analysis's closed sets and minimal generators (Ganter & Wille 1999) | classes by state, read node by node |
+| **stable, how** | a node's state is unique. Output is ordered by rendered text, the candidate list is config-free, and a lever may only reorder or prune soundly (`ein-cli/tests/lever_invariance.rs`) | first the node (S1e2.1b.2), then the same |
+| **proved, how** | N, E and the static verdict | per cell, its guess and its N and E; otherwise the full classification |
+| **effective, how** | route 1 visits the alive down-set and never a node above a dead one (§ 4's runs), and saturation jumps over transient nodes. Dualising N and E instead, past route 1's reach, is P1e2.1c's | g, not n, sets the exponent, where g is small. § 6.4 measures g, and it is small on only part of the corpus |
+
+### 6.3 What the engine implements
+
+Two of these strategies, and none of the non-monotone ones:
+
+- **The oracle** — the general case, every node classified, at n ≤ 16
+  ([`region_dump.md` § The limit](region_dump.md#the-limit)). It is `ein
+  oracle FILE --dump DIR`, and inside `ein solve` it is **route 2**, the
+  route a flagged program takes, which past the limit stops at the budget with
+  a partial answer that says so.
+- **Route 1** — a monotone program's R from its alive down-set and N, with the
+  static verdict as its licence
+  ([`ein_infer::downset`](../../../ein.rs/crates/ein-infer/src/downset.rs)).
+  It is a bare `ein solve` on a program the check calls monotone, and it is
+  held to the oracle node for node
+  (`region.rs::route_1_is_the_oracle_on_every_monotone_program_it_reaches`).
+
+The lines by duality past route 1's reach are
+[P1e2.1c](../../../plans/m1e2_correctness/p1e2.1c_the_region_search/README.md)'s.
+The guard split is a prototype, below. Building any of it into `ein solve`
+is out of this page's scope
+([Q-M1e2.8](../../../plans/m1e2_correctness/open_questions.md#q-m1e28--where-does-the-rework-of-ein-solve-go));
+the non-monotone search is
+[S1e2.1c.3](../../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.3_the_non_monotone_search.md)'s.
+
+### 6.4 The guard split, prototyped
+
+[`utils/guard_split.py`](../../../utils/guard_split.py) builds the cells as
+programs and runs them through the engine:
+
+- **The guards.** Every third-kind read is pointed at `gs-<rel>`, a static
+  relation that holds the program's given facts of `<rel>` and the facts the
+  guess calls present. A derivable activator is a guard too, and a cell
+  compiles its rule when the guess calls it present. The guards are the facts
+  one saturation of the relaxed program (every guard read empty, every
+  candidate given) can hold, that the program does not give, and that a
+  rewritten read's pattern can match.
+- **The cells.** Each guess γ is checked by the cell's own rules, monotonically:
+  a fact called present is owed, a fact called absent refutes. So R(P_γ) is
+  the part of the cube on which the guess is the truth, and the split's R is
+  the union. Each cell is solved by a bare `ein solve`, route 1, and read back
+  from `--json-summary`: a state's commitments are the intervals [g … cl] over
+  its minimal generators, which is exact because cl is a closure operator on
+  a monotone cube (§ 3).
+- **The check.** The union is held to `ein oracle --dump` on the original
+  program, node for node.
+
+`python3 utils/guard_split.py --corpus` (2 s), 2026-11-02, against the
+binary and corpus of `6743dd17` and `synth/local_not_global.ein`, which was
+banked with the script. It takes every flagged corpus and register program
+and every program under `examples/lattice/synth/`. Within the limit that is
+**21 programs, and 19 agree with the oracle node for node**:
+
+| program | n | g | cells (non-empty) | \|R\| | node for node | saturations: cells / cube |
+|---|---:|---:|---:|---:|---|---:|
+| [`corpus/fuzz_findings/d3-unsat-core.ein`](../../../corpus/fuzz_findings/d3-unsat-core.ein) | 5 | 1 | 2 (2) | 20 | yes | 36 / 32 |
+| [`branching/13_lookahead_naf_world.ein`](../../../examples/branching/13_lookahead_naf_world.ein) | 2 | 2 | 4 (2) | 4 | yes | 9 / 4 |
+| [`branching/14_lookahead_unjudgeable.ein`](../../../examples/branching/14_lookahead_unjudgeable.ein) | 2 | 1 | 2 (2) | 4 | yes | 7 / 4 |
+| [`ein-bugs/alive-empty-interlayer.ein`](../../../examples/ein-bugs/alive-empty-interlayer.ein) | 3 | 2 | 4 (4) | 4 | yes | 17 / 8 |
+| [`ein-bugs/naf-upward-closure.ein`](../../../examples/ein-bugs/naf-upward-closure.ein) | 2 | 1 | 2 (2) | 3 | yes | 7 / 4 |
+| [`ein-bugs/wrong-answers/f07-fpoff.ein`](../../../examples/ein-bugs/wrong-answers/f07-fpoff.ein) | 1 | 2 | 4 (2, 1 node in two) | 2 | yes | 6 / 2 |
+| [`ein-bugs/wrong-answers/naf-nowb.ein`](../../../examples/ein-bugs/wrong-answers/naf-nowb.ein) | 2 | 1 | 2 (2) | 3 | yes | 7 / 4 |
+| [`ein-bugs/wrong-answers/stale-naf-fork-warn.ein`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein) | 1 | 1 | 2 (2) | 1 | **no**: {(q one)} extra | 4 / 2 |
+| [`ein-bugs/wrong-answers/stale-naf-fork.ein`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein) | 1 | 1 | 2 (2) | 1 | **no**: {(q one)} extra | 4 / 2 |
+| [`features/07_unstratifiable.ein`](../../../examples/features/07_unstratifiable.ein) | 1 | 2 | 4 (2, 1 node in two) | 2 | yes | 6 / 2 |
+| [`lattice/04_obligation_trigger_hole.ein`](../../../examples/lattice/04_obligation_trigger_hole.ein) | 2 | 1 | 2 (2) | 3 | yes | 7 / 4 |
+| [`lattice/08_absent_witness_hole.ein`](../../../examples/lattice/08_absent_witness_hole.ein) | 3 | 1 | 2 (2) | 5 | yes | 13 / 8 |
+| [`lattice/09_activator_hole.ein`](../../../examples/lattice/09_activator_hole.ein) | 2 | 1 | 2 (2) | 3 | yes | 7 / 4 |
+| [`lattice/synth/local_not_global.ein`](../../../examples/lattice/synth/local_not_global.ein) | 2 | 2 | 4 (2) | 2 | yes | 13 / 4 |
+| [`lattice/synth/maximal_not_top.ein`](../../../examples/lattice/synth/maximal_not_top.ein) | 3 | 1 | 2 (1) | 2 | yes | 13 / 8 |
+| [`lattice/synth/merged_states.ein`](../../../examples/lattice/synth/merged_states.ein) | 5 | 0 | 1 (1) | 16 | yes | 25 / 32 |
+| [`lattice/synth/one_model_per_component.ein`](../../../examples/lattice/synth/one_model_per_component.ein) | 4 | 0 | 1 (1) | 4 | yes | 11 / 16 |
+| [`lattice/synth/three_components.ein`](../../../examples/lattice/synth/three_components.ein) | 7 | 2 | 4 (4) | 13 | yes | 109 / 128 |
+| [`lattice/synth/trigger_hole.ein`](../../../examples/lattice/synth/trigger_hole.ein) | 5 | 2 | 4 (4) | 9 | yes | 74 / 32 |
+| [`lattice/synth/trivial_line.ein`](../../../examples/lattice/synth/trivial_line.ein) | 5 | 0 | 1 (1) | 24 | yes | 32 / 32 |
+| [`tests/region/07_cube.ein`](../../../tests/region/07_cube.ein) | 2 | 1 | 2 (2) | 3 | yes | 7 / 4 |
+
+**Where it disagrees.** On W8's two witnesses, `stale-naf-fork` and its
+`-warn` twin, the split puts `{(q one)}` in R and the oracle does not. The
+oracle builds a node by fork from root, which already holds `(p one)`, derived
+under `(absent (q one))`; a cell builds it from scratch, where `(p one)` is
+never derived. So **the guard split is not yet sound against the oracle's
+node**. It gives the reading the scratch route gives, `{(q one)}` in R
+([P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md#why-a-phase-of-its-own),
+`utils/region.py`), and which reading R takes is S1e2.1b.2's. On `features/07` and `f07-fpoff` one node lies in two cells: the
+program has two stable readings there, and the union is still the oracle's R.
+
+**g against n.** Within the limit g is at most 2 and n at most 7. g exceeds
+n on the two unstratifiable programs, because a guard need not be a
+candidate. On every program with a guard except `three_components`, the 2ᵍ
+cells cost more saturations than the 2ⁿ of the cube. The exponent matters only
+past the limit, where the split takes the guards and builds no cell:
+
+| program | sites | n | g |
+|---|---|---:|---:|
+| [`features/01_not_and_absent.ein`](../../../examples/features/01_not_and_absent.ein) | absent, activator | 35 | 18 |
+| [`features/04_open.ein`](../../../examples/features/04_open.ein) | absent | 81 | 28 |
+| [`features/05_stdlib_domain_elim.ein`](../../../examples/features/05_stdlib_domain_elim.ein) | absent | 56 | 0 |
+| [`features/12_expect_false.ein`](../../../examples/features/12_expect_false.ein) | absent | 20 | 0 |
+| [`lattice/06_friends_tables.ein`](../../../examples/lattice/06_friends_tables.ein) | obligation-trigger | 19 | 19 |
+| [`saturation/square-unique/corner-house.ein`](../../../examples/saturation/square-unique/corner-house.ein) | absent | 118 | 40 |
+| [`saturation/square-unique/cul-de-sac.ein`](../../../examples/saturation/square-unique/cul-de-sac.ein) | absent | 114 | 37 |
+| [`saturation/square-unique/terminus.ein`](../../../examples/saturation/square-unique/terminus.ein) | absent | 153 | 49 |
+
+So g ≪ n holds on 2 of the 8, the two that fact grain unflags, where no
+candidate can match the read and the split has one cell. On the others g is
+18 to 49. **On `lattice/06_friends_tables`, the conditional obligation, g = n**:
+its trigger reads the candidate relation itself, so every candidate is a
+guard and the split is no cheaper than the cube. The case § 2 calls a
+matter of course is the one the split does not shorten, which is S1e2.1c.3's
+to answer.
+
+## 7. What the non-monotone column waits on
+
+| cell | owner | state, 2026-11-02 |
+|---|---|---|
+| a node's state, fork or scratch | [S1e2.1b.2](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.2_fork_or_scratch.md) | the user's ruling. Fork and scratch differ on W8's two witnesses; the guard split reads scratch |
+| what is reported when R has holes | [S1e2.1b.3](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.3_holes.md) | the user's ruling. Today the read-out names each minimal hole |
+| what a search may learn from a refutation resting on an `absent` | [S1e2.1b.4](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.4_refutation_resting_on_absent.md) | the language ruled *forbid* (S1e2.4.1, 2026-11-02); the region search applies it there. A refutation a node compiles through an activator (`ACTIVATOR_REFUTES`) is one a check of root's plans cannot see |
+| the grain of the static check | [S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user) | **ruled**: relation grain, 2026-11-02 |
+| the handling in `solve`, `ein test`, `ein oracle` and the bundle | [S1e2.1b.5](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.5_the_handling.md) | after .2–.4; it picks from § 6 |
+
+## Cross-references
+
+- [`solution_semantics.md`](solution_semantics.md): R defined, for the
+  monotone case; § 2.1 is this page's starting point.
+- [`region_dump.md`](region_dump.md): the oracle's directory, and the static
+  check it reports.
+- [`04_dot_rendering.md` § Region rendering](../ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run):
+  how § 4's drawings are read.
+- [`absent_semantics.md`](absent_semantics.md): what an `absent` means at fire
+  time, which is why a fork and a scratch build can differ.
+- [`lattice_diagrams.md`](lattice_diagrams.md): **superseded**, the 2026-05
+  design's search lattice, not the cube drawn here.
+- The phase: [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md),
+  and its [site census](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/site_census.md).

@@ -60,6 +60,9 @@ docs/kernel/inference/
 ├── region_dump.md                 ← `ein solve --dump-region`: the solution
 │                                     region by brute force, the run's walk,
 │                                     and the monotonicity check (M1e2)
+├── monotonicity.md                ← monotone and non-monotone regions
+│                                     compared: causes, detection, and how
+│                                     to solve each (M1e2 S1e2.1b.6)
 ├── events.md                      ← the `--events` protocol: one JSON object
 │                                     per line, every step the engine took
 │                                     (schema `ein-events/1`; M1a S1a.0.2,

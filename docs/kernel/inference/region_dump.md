@@ -240,3 +240,5 @@ root's fixpoint.
   this directory drawn, with a region run on it, `ein render region`.
 - [`solution_semantics.md`](solution_semantics.md): the definitions this
   computes.
+- [`monotonicity.md`](monotonicity.md): what the static check's two verdicts
+  mean for R, compared, with one fixture and one drawing per cause.
