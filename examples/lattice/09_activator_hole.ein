@@ -1,0 +1,41 @@
+;;; A hole made by an activator — M1e2 S1e2.1b.6, the third of the three
+;;; causes of a non-monotone lattice (docs/kernel/inference/monotonicity.md).
+;;; Until this file the corpus had no exercised activator site (M1e2
+;;; S1e2.1b.1's site census).
+;;;
+;;; `(total-owed meal is-a)` is an activator: the fact that compiles the
+;;; stdlib rule for `meal`. Here no fact states it. A rule derives it once the
+;;; kitchen opens, so opening the kitchen *declares* that every guest owes a
+;;; meal, and a commitment compiles a plan root never had:
+;;;
+;;;   ∅                    in R  — nothing is owed
+;;;   {(opens K1)}         owing — Ann owes a meal                  ← a hole
+;;;   {(meal Ann Soup)}    in R
+;;;   both                 in R  — the soup pays
+;;;
+;;; The cube is lattice/04's, and the mechanism is not: the compiled rule's
+;;; trigger, `(is-a ?a Guest)`, is static once it exists. `ein_infer::monotone`
+;;; reads compiled plans, so it cannot see a plan a node compiles. It reports
+;;; an `activator` site (the activator relation `total-owed` is one a
+;;; commitment can change), and it is the program's only one.
+;;;
+;;; What R means on it is P1e2.1b's; this file's question is the cube.
+
+(import std.algebra :symbols (total-owed))
+
+(relation is-a  T T)
+(relation opens Kitchen)
+(relation meal  Guest Food)
+
+(is-a Ann Guest) (is-a K1 Kitchen) (is-a Soup Food)
+
+(rule kitchen-serves ()
+  :match  (opens ?k)
+  :assert (total-owed meal is-a)
+  :why    "{?k} is open, so every guest owes a meal"
+  :priority 200)
+
+(hrule open-kitchen () :match (is-a ?k Kitchen) :assert (opens ?k))
+(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food)) :assert (meal ?g ?f))
+
+(query :goal (meal ?g ?f))

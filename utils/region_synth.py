@@ -395,6 +395,17 @@ EXAMPLES: dict[str, dict] = {
         "R": [["A", "ABCDE"], ["B", "ABCDE"]],
         "owing": [["", "CDE"]],
     },
+    "maximal_not_top": {
+        "name": "maximal_not_top",
+        "about": ("Q-M1e2.7 (f)'s non-monotone half (M1e2 S1e2.1b.6): obligations and nothing\n"
+                  "dead, and still the maximal line is not the whole candidate set. Root owes\n"
+                  "A; C triggers a debt nothing pays. So R is [A … AB], its maximal line is\n"
+                  "{A,B}, and the top owes. With obligations only and no trigger that grows,\n"
+                  "the maximal line is every candidate (trivial_line)."),
+        "candidates": "ABC",
+        "R": [["A", "AB"]],
+        "owing": [["", "ABC"]],
+    },
     "one_model_per_component": {
         "name": "one_model_per_component",
         "about": ("Q-M1e2.7 (i): a well-posed puzzle's shape. Exactly one of A, B, C, D, any\n"

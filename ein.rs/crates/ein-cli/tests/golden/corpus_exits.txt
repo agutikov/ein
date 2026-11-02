@@ -514,6 +514,22 @@
 0    examples/lattice/07_two_pairs_two_tables.ein :: render lattice
 0    examples/lattice/07_two_pairs_two_tables.ein :: saturate
 0    examples/lattice/07_two_pairs_two_tables.ein :: solve
+0    examples/lattice/08_absent_witness_hole.ein :: oracle --dump {out}/region
+0    examples/lattice/08_absent_witness_hole.ein :: render constraints
+0    examples/lattice/08_absent_witness_hole.ein :: render lattice
+0    examples/lattice/08_absent_witness_hole.ein :: render rules
+0    examples/lattice/08_absent_witness_hole.ein :: saturate
+0    examples/lattice/08_absent_witness_hole.ein :: solve
+0    examples/lattice/09_activator_hole.ein :: oracle --dump {out}/region
+0    examples/lattice/09_activator_hole.ein :: render constraints
+0    examples/lattice/09_activator_hole.ein :: render lattice
+0    examples/lattice/09_activator_hole.ein :: render rules
+0    examples/lattice/09_activator_hole.ein :: saturate
+0    examples/lattice/09_activator_hole.ein :: solve
+0    examples/lattice/synth/maximal_not_top.ein :: oracle --dump {out}/region
+0    examples/lattice/synth/maximal_not_top.ein :: render lattice
+0    examples/lattice/synth/maximal_not_top.ein :: saturate
+0    examples/lattice/synth/maximal_not_top.ein :: solve
 0    examples/lattice/synth/merged_states.ein :: oracle --dump {out}/region
 0    examples/lattice/synth/merged_states.ein :: render lattice
 0    examples/lattice/synth/merged_states.ein :: saturate

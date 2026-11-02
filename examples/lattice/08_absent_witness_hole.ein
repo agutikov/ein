@@ -1,0 +1,48 @@
+;;; A hole made by an `absent` whose rule concludes a positive fact — M1e2
+;;; S1e2.1b.6, the first of the three causes of a non-monotone lattice
+;;; (docs/kernel/inference/monotonicity.md).
+;;;
+;;; `total-owed meal is-a` says every Guest owes a meal. A seated guest who is
+;;; not allergic has the soup, so seating Ann pays her debt; learning that she
+;;; is allergic takes the soup away again, and the debt comes back:
+;;;
+;;;   ∅                     owing — Ann owes a meal
+;;;   {seats}               in R  — the soup
+;;;   {seats, allergic}     owing — no soup                         ← a hole
+;;;   {seats, allergic, bread}  in R  — the bread pays
+;;;
+;;; The `absent` is read at odd depth in a saturation rule, over `allergic`,
+;;; which a commitment can add: `ein_infer::monotone` reports an `absent` site,
+;;; and it is the program's only one. The obligation's trigger, `(is-a ?a
+;;; Guest)`, is static, and its witness `absent` pays as `meal` grows.
+;;;
+;;; Its rule concludes `(meal ?g Soup)`, not `(false)` or `(not …)`, so the
+;;; *forbid* ruling of 2026-11-02 (M1e2 S1e2.4.1), which is about a refutation
+;;; resting on an `absent`, does not reach it: this cause survives that ruling.
+;;; The rule fires at no root fixpoint (its positive premise is a candidate),
+;;; so the fork route and the scratch route build the same nodes here.
+;;;
+;;; What R means on it is P1e2.1b's; this file's question is the cube.
+
+(import std.algebra :symbols (total-owed))
+
+(relation is-a     T T)
+(relation seats    Guest Chair)
+(relation allergic Guest)
+(relation meal     Guest Food)
+
+(is-a Ann Guest) (is-a C1 Chair) (is-a Soup Food) (is-a Bread Food)
+
+(rule soup-unless-allergic ()
+  :match  (and (seats ?g ?c) (absent (allergic ?g)))
+  :assert (meal ?g Soup)
+  :why    "{?g} is seated and not allergic, so {?g} has the soup"
+  :priority 200)
+
+(total-owed meal is-a)
+
+(hrule seat    () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c))
+(hrule allergy () :match (is-a ?g Guest) :assert (allergic ?g))
+(hrule bread   () :match (is-a ?g Guest) :assert (meal ?g Bread))
+
+(query :goal (meal ?g ?f))

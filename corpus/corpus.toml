@@ -285,6 +285,24 @@ cost_ms = 3890
 note   = "two pairs at two 2-seat tables: R is 8 isolated seatings — 8 components — in 2 projection classes by table (M1e2 P1e2.1a, 2026-10-16). Slow because its question is the region, and n = 16 is 2^16 saturations: the --dump-region cell is 3.87 s of the 3.89 (utils/corpus_cost.py, 2026-10-16). The run stays — it is the one that asks the question."
 
 [[entry]]
+path   = "examples/lattice/08_absent_witness_hole.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region"]
+note   = "the first of the three causes of a non-monotone lattice, an `absent` at odd depth in a saturation rule, here one that concludes a positive fact: being allergic takes the soup that paid Ann's meal away, so {seats, allergic} owes between {seats} and the top. It concludes no refutation, so S1e2.4.1's *forbid* does not reach it (M1e2 S1e2.1b.6)."
+
+[[entry]]
+path   = "examples/lattice/09_activator_hole.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render rules", "render constraints", "render lattice", "oracle --dump {out}/region"]
+note   = "the third cause, an activator: a rule derives `(total-owed meal is-a)` once the kitchen opens, so a commitment compiles the stdlib rule root never had. lattice/04's cube by another mechanism, and until this file the corpus had no exercised activator site (M1e2 S1e2.1b.6)."
+
+[[entry]]
+path   = "examples/lattice/synth/maximal_not_top.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
+note   = "Q-M1e2.7 (f)'s non-monotone half: obligations and nothing dead, and a trigger that grows makes the maximal line {A,B} while the top owes; written by utils/region_synth.py (M1e2 S1e2.1b.6)."
+
+[[entry]]
 path   = "examples/lattice/synth/merged_states.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]

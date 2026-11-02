@@ -249,6 +249,70 @@ fn monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged() 
     assert!(r.topology.discharged_not_upward_closed.count > 0);
 }
 
+/// An activator compiling a **refutation** at a node: `{(p A)}` derives `(watch
+/// q)`, which compiles `watch` for `q`, and `(r A)` with `(q A)` absent is then
+/// a contradiction. No plan at root reads `q` under an `absent`, so the static
+/// check's one site is the activator, and a check that runs on root's plans
+/// cannot see the refutation.
+const ACTIVATOR_REFUTES: &str = "(relation p T) (relation q T) (relation r T) (relation watch T)
+     (r A)
+     (hrule g1 () :match (r ?x) :assert (p ?x))
+     (hrule g2 () :match (r ?x) :assert (q ?x))
+     (rule watch (?R) :match (and (r ?x) (absent (?R ?x))) :assert (false))
+     (rule act () :match (p ?x) :assert (watch q))";
+
+/// **One fixture per cause** — S1e2.1b.6, the comparison's *what causes it*
+/// row. Each program's only site is of its cause, and its cube shows the hole
+/// that cause makes: an `absent` that takes a witness away
+/// (`lattice/08`), an obligation's trigger (`lattice/04`), and an activator
+/// (`lattice/09`, the same cube as `lattice/04` by another mechanism). None
+/// of the three concludes a refutation, so S1e2.4.1's *forbid* reaches none of
+/// them. [`ACTIVATOR_REFUTES`] is the third cause carrying a refutation: a
+/// dead hole, with the activator still the only site.
+#[test]
+fn each_cause_has_a_fixture_whose_cube_shows_its_hole() {
+    let cases: &[(&str, SiteKind, &[&str])] = &[
+        (
+            "examples/lattice/08_absent_witness_hole.ein",
+            SiteKind::Absent,
+            &["{(allergic Ann), (seats Ann C1)}"],
+        ),
+        (
+            "examples/lattice/04_obligation_trigger_hole.ein",
+            SiteKind::ObligationTrigger,
+            &["{(seats Ann C1)}"],
+        ),
+        (
+            "examples/lattice/09_activator_hole.ein",
+            SiteKind::Activator,
+            &["{(opens K1)}"],
+        ),
+    ];
+    for &(rel, kind, holes) in cases {
+        let (r, t) = region_of(rel);
+        let sites: Vec<String> = r.monotonicity.sites.iter().map(|s| s.render(&t)).collect();
+        assert!(
+            !sites.is_empty() && r.monotonicity.sites.iter().all(|s| s.kind == kind),
+            "{rel}: {sites:?}"
+        );
+        assert_eq!(names(&r, &r.topology.holes), holes, "{rel}");
+        assert_eq!(r.topology.dead_not_upward_closed.count, 0, "{rel}");
+        assert!(r.topology.discharged_not_upward_closed.count > 0, "{rel}");
+    }
+
+    let (mut kb, mut terms, ast) = loaded_text("activator-refutes", ACTIVATOR_REFUTES);
+    let Outcome::Region(r) =
+        region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
+            .expect("computes")
+    else {
+        panic!("activator-refutes: within the limit");
+    };
+    let kinds: Vec<SiteKind> = r.monotonicity.sites.iter().map(|s| s.kind).collect();
+    assert_eq!(kinds, [SiteKind::Activator]);
+    assert_eq!(names(&r, &r.topology.holes), ["{(p A)}"]);
+    assert_eq!(r.nodes[1].refuted_by, ["watch"]);
+}
+
 // ── Fact grain — S1e2.1b.1 ──────────────────────────────────────────
 
 /// Programs written to test the fact-grain prototype, each with what it is
@@ -493,6 +557,119 @@ fn a_node_and_its_closure_are_one_state() {
         }
         assert!(moved > 0, "{rel}: nothing moved");
     }
+}
+
+/// Where `cl` breaks a closure-operator law on one cube, as lines: `C ⊆
+/// cl(C)` (extensive), `cl(cl(C)) = cl(C)` (idempotent), and `C ⊆ D ⇒ cl(C)
+/// ⊆ cl(D)` (monotone), the last on every edge `C → C + h`, which implies it
+/// for every pair. Over every node, dead ones included: the oracle runs a dead
+/// node's saturation to quiescence too.
+fn closure_operator_breaks(r: &Region) -> Vec<String> {
+    let cl = |m: u64| r.nodes[m as usize].closure;
+    let mut bad = Vec::new();
+    for m in 0..r.nodes.len() as u64 {
+        if cl(m) & m != m {
+            bad.push(format!("not extensive at {}", r.name(m)));
+        }
+        if cl(cl(m)) != cl(m) {
+            bad.push(format!(
+                "not idempotent at {}: cl = {}, cl(cl) = {}",
+                r.name(m),
+                r.name(cl(m)),
+                r.name(cl(cl(m)))
+            ));
+        }
+        for b in 0..r.n() {
+            let up = m | 1 << b;
+            if up != m && cl(m) & cl(up) != cl(m) {
+                bad.push(format!(
+                    "not monotone on {} ⊂ {}: cl = {} ⊄ {}",
+                    r.name(m),
+                    r.name(up),
+                    r.name(cl(m)),
+                    r.name(cl(up))
+                ));
+            }
+        }
+    }
+    bad
+}
+
+/// A program the static check flags on which `cl` is **not** monotone, so the
+/// law below is the verdict's and not the oracle's: `{(p A)}` derives `(s A)`
+/// while `(q A)` is absent, and `{(p A), (q A)}` does not.
+const CL_NOT_MONOTONE: &str = "(relation p T) (relation q T) (relation s T) (relation r T) (r A)
+     (hrule g1 () :match (r ?x) :assert (p ?x))
+     (hrule g2 () :match (r ?x) :assert (q ?x))
+     (hrule g3 () :match (r ?x) :assert (s ?x))
+     (rule derive-s () :match (and (p ?x) (absent (q ?x))) :assert (s ?x))";
+
+/// **A *Monotone* verdict makes saturation a closure operator on the cube** —
+/// S1e2.1b.6, the comparison's *saturation on the cube* row. `cl(C)` is the
+/// candidates `C`'s fixpoint holds (`Node::closure`). On every corpus and
+/// register cube within the limit that the static check calls monotone, `cl`
+/// is extensive, idempotent and monotone on every node (`closure_operator_breaks`).
+/// That is what makes R's states the closed sets of a closure system, each
+/// with its minimal generators. The law is not vacuous: saturation moves a
+/// node on 15 of these cubes. And it is the verdict's: on
+/// [`CL_NOT_MONOTONE`], which the check flags, `cl` is not monotone.
+#[test]
+fn a_monotone_verdict_makes_saturation_a_closure_operator() {
+    let oracle = Options {
+        jobs: std::thread::available_parallelism().map_or(1, |n| n.get().min(8)),
+        ..Options::default()
+    };
+    let mut failures: Vec<String> = Vec::new();
+    let (mut cubes, mut moving) = (0usize, 0usize);
+    for path in corpus_and_register() {
+        let rel = path
+            .strip_prefix(repo_root())
+            .unwrap_or(&path)
+            .to_string_lossy()
+            .to_string();
+        let Some((mut kb, mut terms, ast)) = loaded(&path) else {
+            continue;
+        };
+        let Ok(Outcome::Region(r)) =
+            region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
+        else {
+            continue;
+        };
+        if !r.monotonicity.is_monotone() {
+            continue;
+        }
+        cubes += 1;
+        if (0..r.nodes.len() as u64).any(|m| r.nodes[m as usize].closure != m) {
+            moving += 1;
+        }
+        failures.extend(
+            closure_operator_breaks(&r)
+                .into_iter()
+                .take(3)
+                .map(|b| format!("{rel}: {b}")),
+        );
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    eprintln!("{cubes} monotone cubes; saturation moves a node on {moving}");
+    // 153 monotone cubes in a debug build on 2026-11-02, saturation moving a
+    // node on 15 of them: `site_census`'s 155 less W7's two witnesses, which a
+    // debug build skips. A sweep that silently found none would pass.
+    assert!(cubes >= 150, "{cubes} monotone cubes checked");
+    assert!(moving >= 10, "saturation moves a node on {moving} of them");
+
+    let (mut kb, mut terms, ast) = loaded_text("cl-not-monotone", CL_NOT_MONOTONE);
+    let Outcome::Region(r) =
+        region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
+            .expect("computes")
+    else {
+        panic!("cl-not-monotone: within the limit");
+    };
+    assert!(!r.monotonicity.is_monotone(), "the check flags it");
+    let breaks = closure_operator_breaks(&r);
+    assert!(
+        breaks.iter().any(|b| b.starts_with("not monotone")),
+        "cl-not-monotone: {breaks:?}"
+    );
 }
 
 /// **The opposite direction** (S1e2.1a.8). Every program under
