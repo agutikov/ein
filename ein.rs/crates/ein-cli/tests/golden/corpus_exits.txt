@@ -526,6 +526,18 @@
 0    examples/lattice/09_activator_hole.ein :: render rules
 0    examples/lattice/09_activator_hole.ein :: saturate
 0    examples/lattice/09_activator_hole.ein :: solve
+0    examples/lattice/10_fifo_gap.ein :: oracle --dump {out}/region
+0    examples/lattice/10_fifo_gap.ein :: render constraints
+0    examples/lattice/10_fifo_gap.ein :: render lattice
+0    examples/lattice/10_fifo_gap.ein :: render rules
+0    examples/lattice/10_fifo_gap.ein :: saturate
+0    examples/lattice/10_fifo_gap.ein :: solve
+0    examples/lattice/11_fifo_gap_static.ein :: oracle --dump {out}/region
+0    examples/lattice/11_fifo_gap_static.ein :: render constraints
+0    examples/lattice/11_fifo_gap_static.ein :: render lattice
+0    examples/lattice/11_fifo_gap_static.ein :: render rules
+0    examples/lattice/11_fifo_gap_static.ein :: saturate
+0    examples/lattice/11_fifo_gap_static.ein :: solve
 0    examples/lattice/synth/local_not_global.ein :: oracle --dump {out}/region
 0    examples/lattice/synth/local_not_global.ein :: render lattice
 0    examples/lattice/synth/local_not_global.ein :: saturate

@@ -120,11 +120,16 @@ commitments of k candidates.
 A node's **state** is `sat(root + C)`: root's fixpoint, forked, with C's facts
 written in and the saturation resumed to quiescence. It is never stopped at
 the first contradiction. For a monotone program, building the state from
-scratch gives the same fact set: measured on every node of every monotone
-cube within the limit, with one corner argued and not yet checked, an
-equal-priority race over a static read
-([`monotonicity.md` § 7.6](monotonicity.md#76-the-program-the-third-stronger-property)).
-Then:
+scratch gives the same fact set on every node of every monotone cube within
+the limit but one, banked to show the exception: an equal-priority race over
+a static read, settled at root and re-run inside a node built from scratch,
+where it leaves a stale fact the fork does not hold
+([`11_fifo_gap_static.ein`](../../../examples/lattice/11_fifo_gap_static.ein),
+[`monotonicity.md` § 7.6](monotonicity.md#76-the-program-the-third-stronger-property),
+measured 2026-11-02 by M1e2 S1e2.1b.7). With the boundary admitting in stratum
+order, emulated by priorities, that node's scratch state is the fork's
+([`node_census.md` § 12.4](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#124-admission-in-stratum-order-emulated)).
+The state defined here, the fork's, is the one every route builds. Then:
 
 | | the state |
 |---|---|

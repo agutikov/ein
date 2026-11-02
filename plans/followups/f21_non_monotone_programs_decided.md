@@ -175,10 +175,15 @@ fails.
   S_{i−1} = sat(P ∪ K_{i−1}). By monotonicity S_{i−1} ⊆ sat(P ∪ K_i), so
   P ∪ K_i ⊆ S_{i−1} ∪ K_i ⊆ sat(P ∪ K_i), and by cumulativity
   S_i = sat(P ∪ K_i). By induction every path ends at sat(P ∪ C).
-- **Who is cumulative.** A monotone program is: its saturation is a closure
-  operator. A stratified program evaluated stratum by stratum should be,
-  since its fixpoint is its perfect model; that is **unverified**, and
-  S1e2.1b.7's cumulativity census measures it on each flagged program.
+- **Who is cumulative.** A monotone program is, by fork: its saturation is a
+  closure operator. A stratified program evaluated stratum by stratum should
+  be, since its fixpoint is its perfect model. **Measured since S1e2.1b.7**
+  ([`node_census.md` § 12](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#12-the-cumulativity-census-and-the-fifo-gap--s1e21b7)):
+  as the engine admits today, saturation is cumulative on every node read
+  except where the FIFO race below reaches, four programs, one of them
+  monotone and failing from scratch only; with admission in stratum order,
+  emulated by priorities, every stratified program read is cumulative on
+  every node and every scratch node is stale-free.
 - **The FIFO counter-example.** The boundary admits equal-priority candidates
   one a round in (priority, FIFO) order, not in stratum order
   ([`node_census.md` § 4](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#4-the-staleness-census)).
@@ -189,8 +194,11 @@ fails.
   sat({a, b, q}) ≠ sat({a, b}). Its relative, the written `stratified_stale`
   (`p ← ¬q`, `q ← ¬r`, one priority, `derive-p` first), is measured: its
   scratch root holds a stale `(p one)`, and swapping the two rules' text
-  changes its universe (§ 2.3 and § 7.1 there). The example as written is not
-  yet run; S1e2.1b.7 banks it as a fixture.
+  changes its universe (§ 2.3 and § 7.1 there). **The example as written runs
+  as argued**: banked by S1e2.1b.7 as
+  [`examples/lattice/10_fifo_gap.ein`](../../examples/lattice/10_fifo_gap.ein),
+  `{a, b}` holds a stale `p` built at once and not by way of `{a}`
+  ([`node_census.md` § 12.1](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#121-the-fifo-gap-banked)).
 
 So the state has one property, monotone ⇔ path-independent, broken by an
 odd-depth `absent` over D and by the FIFO gap. **It is Q-M1e2.2's subject.**
@@ -248,10 +256,12 @@ A read outside D is static because root completes it and a fork never
 re-derives it. A scratch build re-derives root in every node, so the FIFO race
 can reach a static read: with `a` given and only `b` a candidate, r2
 `a ∧ b ∧ absent(q) → p` before r1 `a ∧ absent(z) → q` has no site, and
-scratch on {b} would hold a stale `p` that the fork does not. Argued, not run;
-no corpus program shows it (fork and scratch agree on all 268 213 monotone
-nodes). S1e2.1b.7 runs it. If it holds, D2's (B) needs admission in stratum
-order on programs the check calls monotone as well.
+scratch on {b} would hold a stale `p` that the fork does not. **Measured since
+S1e2.1b.7**: banked as `examples/lattice/11_fifo_gap_static.ein`, the check
+calls it monotone, route 1 answers it, and from scratch `{(b one)}` holds the
+stale `p` ([`node_census.md` § 12.2](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#122-the-static-variant-banked)).
+So D2's (B) needs admission in stratum order on programs the check calls
+monotone as well.
 
 | property | of | broken by | its subject |
 |---|---|---|---|
@@ -346,7 +356,7 @@ asked of every node. Moot under D1's (E).
 | | a node's state | measured consequence |
 |---|---|---|
 | **(A) fork** | `sat(sat(P) ∪ C)`, today's | nothing moves. W8's rows close `not-wrong` with the reason. Not stable under rule order on `features/07`, `f07-fpoff` |
-| **(B) scratch** | `sat(P ∪ C)` | `stale-naf-fork` and its twin gain `{(q one)}`; `features/07`, `f07-fpoff` and the probe `not_conclusion` lose a stale fact from one state. Saturation ×0.2–5.6 a node, root re-derived at every node. L0 stops being the node's construction. Exposed to the FIFO race on a stratified program, and possibly on one the check calls monotone (above) |
+| **(B) scratch** | `sat(P ∪ C)` | `stale-naf-fork` and its twin gain `{(q one)}`; `features/07`, `f07-fpoff` and the probe `not_conclusion` lose a stale fact from one state. Saturation ×0.2–5.6 a node, root re-derived at every node. L0 stops being the node's construction. Exposed to the FIFO race on a stratified program (`examples/lattice/10_fifo_gap.ein`) **and on one the check calls monotone**, measured since S1e2.1b.7: [`11_fifo_gap_static.ein`](../../examples/lattice/11_fifo_gap_static.ein), whose node `{(b one)}` holds a stale fact from scratch and not by fork. Admission in stratum order, emulated, removes both ([`node_census.md` § 12](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#12-the-cumulativity-census-and-the-fifo-gap--s1e21b7)) |
 | **(C) guards are premises** | (A) or (B), and a state holding a stale fact is not a solution | over (A): `features/07`, `f07-fpoff` lose `{(q one)}`; over (B): nothing on the corpus. A third node outcome, its own status or dead |
 | **(D) refuse a cycle through an odd `absent`** | a load error | over D: `features/07`, `f07-fpoff`, `d3-unsat-core` |
 | **(F) the stable endpoints of every path** | the set of states the path tree reaches at C whose facts are not stale ([§ The traversal](#the-traversal-a-tree-of-paths-and-what-it-may-be-memoized-by)); default logic's extensions | not measured. Per C: 0 on an odd cycle, 1 if stratified, several on an even cycle. The answer becomes a set of (C, state) pairs, so k_s counts states and not nodes. The cost is the state DAG, not the cube |

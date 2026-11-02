@@ -1,0 +1,60 @@
+;;; The FIFO gap — M1e2 S1e2.1b.7, the counter-example of
+;;; docs/kernel/inference/monotonicity.md § 7.3 written out and run.
+;;;
+;;; Two `absent` rules at one priority, the reader written first:
+;;;
+;;;   r2   a ∧ b ∧ absent(q) → p
+;;;   r1   a ∧ absent(z)     → q
+;;;
+;;; The program is stratified (z < q < p: nothing derives z, and q is read by
+;;; r2 only under an `absent`), so its perfect model at {a, b} is {a, b, q}.
+;;; The engine's boundary admits one parked candidate a round in (priority,
+;;; FIFO) order, not in stratum order, and r2 is written first:
+;;;
+;;;   node        built at once (fork from root, = scratch here)   by way of {a}
+;;;   ∅           {}                                               —
+;;;   {a}         {a, q}                                           —
+;;;   {b}         {b}                                              —
+;;;   {a, b}      {a, b, p, q} — p stale: q falsifies its guard    {a, b, q}
+;;;
+;;; Built at once, r2's and r1's candidates wait at the same boundary and r2
+;;; goes first; by way of {a}, r1 has already derived q, and r2's guard fails.
+;;; So the state at {a, b} depends on the path that built it while the state
+;;; function is monotone: {a, b, q} ⊆ sat({a, b}) and sat({a, b, q}) ≠
+;;; sat({a, b}), which is cumulativity failing. Every node is in R, so the
+;;; status never shows it: the static check flags r2 (an `absent` over q, which
+;;; a commitment changes), and the cube calls the program conservative.
+;;;
+;;; Writing r1 before r2 gives {a, b, q} built at once, and so does putting the
+;;; two in stratum order by priority. Read both ways by
+;;;   cargo run --release -p ein-infer --example node_census -- --paths examples/lattice/10_fifo_gap.ein
+;;;   cargo run --release -p ein-infer --example node_census -- --cumulative examples/lattice/10_fifo_gap.ein
+;;; (plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md § 12).
+;;;
+;;; What a node's state is on it is F21's D2, open; this file pins the gap.
+
+(relation thing T)
+(relation a T)
+(relation b T)
+(relation p T)
+(relation q T)
+(relation z T)
+
+(thing one)
+
+(hrule guess-a () :match (thing ?x) :assert (a ?x) :why "guess: (a {?x})?")
+(hrule guess-b () :match (thing ?x) :assert (b ?x) :why "guess: (b {?x})?")
+
+(rule r2 ()
+  :match  (and (a ?x) (b ?x) (absent (q ?x)))
+  :assert (p ?x)
+  :why    "{?x} has a and b and no q"
+  :priority 200)
+
+(rule r1 ()
+  :match  (and (a ?x) (absent (z ?x)))
+  :assert (q ?x)
+  :why    "{?x} has a and no z"
+  :priority 200)
+
+(query :goal (p ?x))

@@ -1,0 +1,58 @@
+;;; The FIFO gap over a static read — M1e2 S1e2.1b.7, the case
+;;; docs/kernel/inference/monotonicity.md § 7.6 argued and this file measures:
+;;; a program the static check calls **monotone**, on which a node built from
+;;; scratch holds a stale fact that the node built by fork does not.
+;;;
+;;; It is 10_fifo_gap.ein with `a` given and only `b` a candidate:
+;;;
+;;;   r2   a ∧ b ∧ absent(q) → p
+;;;   r1   a ∧ absent(z)     → q
+;;;
+;;; `q` is derived from `a`, a given fact, under an `absent` over `z`, which
+;;; nothing derives, so `q` is not a relation a commitment can change: r2's
+;;; `absent` reads a static relation and the program has no site. Root
+;;; completes `q`, and every fork inherits it:
+;;;
+;;;   node    by fork from root      from scratch, sat(P ∪ C)
+;;;   ∅       {a, q}                 {a, q}
+;;;   {b}     {a, b, q}              {a, b, p, q} — p stale
+;;;
+;;; From scratch the node re-derives root inside itself, and there r2 and r1
+;;; wait at one boundary at priority 200, r2 written first, so r2 is admitted
+;;; before q exists. The fork never meets the race: it was settled at root,
+;;; before `b`. So a *Monotone* verdict is relative to root's fixpoint, and a
+;;; reading of a node that builds it from scratch (F21's D2 (B)) meets the FIFO
+;;; gap on programs the check calls monotone as well, until admission follows
+;;; the strata. Every route that ships builds by fork, and every answer here
+;;; is the fork's.
+;;;
+;;;   cargo run --release -p ein-infer --example node_census -- --paths examples/lattice/11_fifo_gap_static.ein
+;;;   cargo run --release -p ein-infer --example node_census -- --cumulative examples/lattice/11_fifo_gap_static.ein
+;;;
+;;; (plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md § 12).
+
+(relation thing T)
+(relation a T)
+(relation b T)
+(relation p T)
+(relation q T)
+(relation z T)
+
+(thing one)
+(a one)
+
+(hrule guess-b () :match (thing ?x) :assert (b ?x) :why "guess: (b {?x})?")
+
+(rule r2 ()
+  :match  (and (a ?x) (b ?x) (absent (q ?x)))
+  :assert (p ?x)
+  :why    "{?x} has a and b and no q"
+  :priority 200)
+
+(rule r1 ()
+  :match  (and (a ?x) (absent (z ?x)))
+  :assert (q ?x)
+  :why    "{?x} has a and no z"
+  :priority 200)
+
+(query :goal (p ?x))

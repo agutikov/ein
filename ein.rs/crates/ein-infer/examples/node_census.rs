@@ -141,6 +141,20 @@ const WRITTEN: &[(&str, &str)] = &[
          (rule derive-q () :match (and (thing ?x) (absent (r ?x))) :assert (q ?x) :priority 200)\n\
          (query :goal (r ?x))\n",
     ),
+    // The FIFO gap over a static read (`monotonicity.md` § 7.6, S1e2.1b.7):
+    // `examples/lattice/10_fifo_gap.ein` with `a` given and only `b` a
+    // candidate. `q` is outside D, so the static check finds no site; root
+    // derives `q`, and a fork never re-derives it, while scratch re-derives
+    // root inside the node, where r2 is admitted first.
+    (
+        "fifo_gap_static",
+        "(relation thing T)\n(relation a T)\n(relation b T)\n(relation p T)\n(relation q T)\n(relation z T)\n\
+         (thing one)\n(a one)\n\
+         (hrule guess-b () :match (thing ?x) :assert (b ?x))\n\
+         (rule r2 () :match (and (a ?x) (b ?x) (absent (q ?x))) :assert (p ?x) :priority 200)\n\
+         (rule r1 () :match (and (a ?x) (absent (z ?x))) :assert (q ?x) :priority 200)\n\
+         (query :goal (p ?x))\n",
+    ),
 ];
 
 fn written() -> Vec<Source> {
@@ -2327,6 +2341,327 @@ fn print_paths(row: &Json) {
     }
 }
 
+// ── The cumulativity census (S1e2.1b.7) ─────────────────────────────
+
+/// Is saturation **cumulative** on this program, X ⊆ Y ⊆ sat(X) ⇒ sat(Y) =
+/// sat(X)? Read one fact at a time: for every node, each construction's X
+/// (scratch: P ∪ C; fork: sat(P) ∪ C), and every fact f its fixpoint derived
+/// beyond X, whether sat(X ∪ {f}) = sat(X). In [`World`], so every
+/// saturation is the same step the path census takes.
+fn cumulative_census(src: &Source, keep: bool) -> Json {
+    let mut row = json!({ "path": src.name });
+    let Some((mut w, base)) = World::of(src) else {
+        row["loads"] = json!(false);
+        return row;
+    };
+    cumulative_in(&mut w, base, src, keep, &mut row);
+    row
+}
+
+fn cumulative_in(w: &mut World, base: Kb, src: &Source, keep: bool, row: &mut Json) {
+    let n = w.cands.len();
+    row["n"] = json!(n);
+    row["monotone"] = json!(w.monotone);
+    row["stratified"] = w.strata["stratified"].clone();
+    row["stratified_over_d"] = w.strata["stratified_over_d"].clone();
+    if n > LIMIT {
+        row["past_limit"] = json!(true);
+        return;
+    }
+    let _ = src;
+    let t0 = Instant::now();
+    let Some(root) = w.step(&base, &[]) else {
+        row["failed"] = json!("root");
+        return;
+    };
+    let mut out = serde_json::Map::new();
+    for (label, start) in [("scratch", &base), ("fork", &root)] {
+        let start_facts: FxHashSet<FactId> = start.facts().collect();
+        let (mut tests, mut fails, mut nodes_failing) = (0usize, 0usize, 0usize);
+        let mut first: Vec<Json> = Vec::new();
+        for mask in 0..1u64 << n {
+            // Each node's provenance is reclaimed when the node is done, as
+            // `region::Nodes` reclaims it, so 2ⁿ nodes do not grow the arena.
+            w.terms.provs.open_fork();
+            let c = w.facts_of(mask);
+            let Some(fix) = w.step(start, &c) else {
+                row["failed"] = json!(label);
+                return;
+            };
+            let d0 = w.read(&fix, keep);
+            let derived: Vec<FactId> = fix
+                .facts()
+                .filter(|f| !start_facts.contains(f) && !c.contains(f))
+                .collect();
+            let mut failed_here = false;
+            for f in derived {
+                let mut cf = c.clone();
+                cf.push(f);
+                let Some(y) = w.step(start, &cf) else {
+                    row["failed"] = json!(label);
+                    return;
+                };
+                tests += 1;
+                let d1 = w.read(&y, keep);
+                if d1.digest != d0.digest {
+                    fails += 1;
+                    failed_here = true;
+                    if keep && first.len() < 6 {
+                        let a: BTreeSet<&String> = d0.facts.iter().collect();
+                        let b: BTreeSet<&String> = d1.facts.iter().collect();
+                        first.push(json!({
+                            "node": name(&w.texts, mask),
+                            "f": sexpr(&w.terms, f),
+                            "status": [class(d0.status), class(d1.status)],
+                            "only_sat_x": a.difference(&b).collect::<Vec<_>>(),
+                            "only_sat_x_and_f": b.difference(&a).collect::<Vec<_>>(),
+                        }));
+                    }
+                }
+            }
+            nodes_failing += failed_here as usize;
+            drop(fix);
+            w.terms.provs.discard_fork();
+        }
+        out.insert(
+            label.to_string(),
+            json!({ "tests": tests, "fail": fails, "nodes_failing": nodes_failing, "first": first }),
+        );
+    }
+    row["nodes"] = json!(1usize << n);
+    row["cumulative"] = Json::Object(out);
+    row["ms"] = json!((t0.elapsed().as_secs_f64() * 1e4).round() / 10.0);
+}
+
+// ── Admission in stratum order, emulated (S1e2.1b.7) ────────────────
+
+/// The program's text with every saturation rule that reads under an `absent`
+/// given the priority of its stratum, so that the boundary, which admits the
+/// lowest priority first, admits in stratum order. An emulation of F21's
+/// *admission in stratum order*, not the option built: the engine is
+/// unchanged, and only the rules written in the program's own text are moved.
+///
+/// A relation's stratum is the most `absent` edges on a path into it, over
+/// the graph `strata` reads (a plan's reads to its writes, an activator to
+/// what its rule writes), where an edge counts when its read is at any
+/// `absent` depth. A cycle holding such an edge has no stratum order, and the
+/// program is reported as such.
+fn stratum_text(src: &Source) -> Result<(String, Json), String> {
+    let (mut kb, mut terms, ast) = src
+        .load("", Terms::new())
+        .ok_or_else(|| "does not load".to_string())?;
+    let (root, ()) = census::root_of(&mut kb, &mut terms, &ast, |_, _| Some(()))
+        .ok_or_else(|| "does not saturate".to_string())?;
+    let program = kb.program();
+    let sat_plans: Vec<&Plan> = root
+        .plans
+        .iter()
+        .filter(|p| program.rules.contains(p.rule))
+        .map(|p| &**p)
+        .collect();
+    let mut labels: BTreeSet<String> = BTreeSet::new();
+    for p in &sat_plans {
+        for w in monotone::writes_of(p, &terms) {
+            labels.insert(w.label(&terms));
+        }
+        for (r, _) in monotone::reads_of(p, &terms) {
+            labels.insert(r.label(&terms));
+        }
+    }
+    let negatives: Vec<String> = labels
+        .iter()
+        .filter(|l| l.starts_with("(not ") && *l != "(not ?)")
+        .cloned()
+        .collect();
+    // (from, to, strict)
+    let mut edges: BTreeSet<(String, String, bool)> = BTreeSet::new();
+    // rule → its writes, and whether it reads under an absent
+    let mut rules: BTreeMap<String, (BTreeSet<String>, bool)> = BTreeMap::new();
+    for p in &sat_plans {
+        let rule = terms.sym(p.rule).to_string();
+        let writes: Vec<String> = monotone::writes_of(p, &terms)
+            .into_iter()
+            .map(|w| w.label(&terms))
+            .collect();
+        let e = rules.entry(rule).or_default();
+        e.0.extend(writes.iter().cloned());
+        for (r, depth) in monotone::reads_of(p, &terms) {
+            if depth >= 1 {
+                e.1 = true;
+            }
+            let from = r.label(&terms);
+            let froms = if from == "(not ?)" {
+                negatives.clone()
+            } else {
+                vec![from]
+            };
+            for f in froms {
+                for w in &writes {
+                    edges.insert((f.clone(), w.clone(), depth >= 1));
+                }
+            }
+        }
+    }
+    for rule in program.rules.values() {
+        if rule.params.is_empty() {
+            continue;
+        }
+        let act = terms.sym(rule.name).to_string();
+        for p in sat_plans.iter().filter(|p| p.rule == rule.name) {
+            for w in monotone::writes_of(p, &terms) {
+                edges.insert((act.clone(), w.label(&terms), false));
+            }
+        }
+    }
+    let mut ids: BTreeMap<String, usize> = BTreeMap::new();
+    for (a, b, _) in &edges {
+        let k = ids.len();
+        ids.entry(a.clone()).or_insert(k);
+        let k = ids.len();
+        ids.entry(b.clone()).or_insert(k);
+    }
+    let mut adj: Vec<Vec<usize>> = vec![Vec::new(); ids.len()];
+    for (a, b, _) in &edges {
+        adj[ids[a]].push(ids[b]);
+    }
+    let (comp, ncomp) = scc(&adj);
+    if let Some((a, b, _)) = edges
+        .iter()
+        .find(|(a, b, s)| *s && comp[ids[a]] == comp[ids[b]])
+    {
+        return Err(format!(
+            "no stratum order: a cycle through an absent ({a} → {b})"
+        ));
+    }
+    let mut stratum = vec![0usize; ncomp];
+    for _ in 0..=ncomp {
+        let mut changed = false;
+        for (a, b, s) in &edges {
+            let (ca, cb) = (comp[ids[a]], comp[ids[b]]);
+            let want = stratum[ca] + *s as usize;
+            if ca != cb && want > stratum[cb] {
+                stratum[cb] = want;
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
+    // Each rule that reads under an absent: the stratum of what it writes.
+    let mut level: BTreeMap<String, usize> = BTreeMap::new();
+    for (rule, (writes, reads_absent)) in &rules {
+        if !reads_absent {
+            continue;
+        }
+        let l = writes
+            .iter()
+            .filter_map(|w| ids.get(w).map(|&i| stratum[comp[i]]))
+            .max()
+            .unwrap_or(0);
+        level.insert(rule.clone(), l);
+    }
+    // Rewrite the text.
+    let text = &src.text;
+    let forms = top_forms(text);
+    let mut out = String::with_capacity(text.len() + 64);
+    let mut at = 0;
+    let mut moved: BTreeMap<String, Json> = BTreeMap::new();
+    for (a, z) in forms {
+        let form = &text[a..z];
+        let Some(rest) = form.strip_prefix("(rule ") else {
+            continue;
+        };
+        let name = rest.split_whitespace().next().unwrap_or("").to_string();
+        let Some(&l) = level.get(&name) else {
+            continue;
+        };
+        let new_p = 10 + l as i64;
+        let old_p = priority_of(form);
+        moved.insert(
+            name.clone(),
+            json!({ "stratum": l, "from": old_p, "to": new_p }),
+        );
+        out.push_str(&text[at..a]);
+        let body = &form[..form.len() - 1];
+        let rewritten = match body.find(":priority") {
+            Some(i) => {
+                let after = &body[i + ":priority".len()..];
+                let trimmed = after.trim_start();
+                let num_len = trimmed
+                    .find(|ch: char| ch.is_whitespace() || ch == ')')
+                    .unwrap_or(trimmed.len());
+                format!("{}:priority {}{})", &body[..i], new_p, &trimmed[num_len..])
+            }
+            None => format!("{body} :priority {new_p})"),
+        };
+        out.push_str(&rewritten);
+        at = z;
+    }
+    out.push_str(&text[at..]);
+    let not_written: Vec<&String> = level.keys().filter(|r| !moved.contains_key(*r)).collect();
+    Ok((
+        out,
+        json!({ "rules": moved, "not_in_the_text": not_written }),
+    ))
+}
+
+/// Admission in stratum order on one program: both routes on the rewritten
+/// text against today's, and cumulativity under it.
+fn stratum_row(src: &Source, jobs: usize) -> Json {
+    let mut row = json!({ "path": src.name });
+    let (text, how) = match stratum_text(src) {
+        Ok(x) => x,
+        Err(e) => {
+            row["stratum_order"] = json!(e);
+            return row;
+        }
+    };
+    row["rewrite"] = how;
+    let moved_any = text != src.text;
+    row["text_moved"] = json!(moved_any);
+    let src2 = src.with_text(text);
+    let (Some((f0, s0, _)), Some((f1, s1, _))) =
+        (both(src, jobs, &Terms::new), both(&src2, jobs, &Terms::new))
+    else {
+        row["skipped"] = json!("past the limit or does not load");
+        return row;
+    };
+    let r_of = |ans: &Answer| -> Vec<String> {
+        ans.iter()
+            .filter(|(_, v)| v.0 == 0)
+            .map(|(k, _)| k.clone())
+            .collect()
+    };
+    let states_moved = |a: &Answer, b: &Answer| -> Vec<String> {
+        a.iter()
+            .filter(|(k, v)| b.get(*k).is_some_and(|w| w != *v))
+            .map(|(k, _)| k.clone())
+            .collect()
+    };
+    row["fork"] = json!({ "moved": moved(&f0, &f1), "R_today": r_of(&f0), "R": r_of(&f1),
+                          "nodes_moved": states_moved(&f0, &f1) });
+    row["scratch"] = json!({ "moved": moved(&s0, &s1), "R_today": r_of(&s0), "R": r_of(&s1),
+                             "nodes_moved": states_moved(&s0, &s1) });
+    // Cumulativity under it.
+    let mut c = json!({});
+    if let Some((mut w, base)) = World::of(&src2) {
+        cumulative_in(&mut w, base, &src2, false, &mut c);
+    }
+    row["cumulative"] = c["cumulative"].clone();
+    // And the stale facts from scratch under it: every node, both ways.
+    let fork = fork_route(&src2, Terms::new(), false);
+    if let Some(fk) = fork {
+        let scratch: Vec<Option<Read>> =
+            scratch_route(&src2, &fk.uni.cands, false, jobs, &Terms::new);
+        row["stale_nodes"] = json!({
+            "fork": fk.reads.iter().filter(|r| !r.stale.is_empty()).count(),
+            "scratch": scratch.iter().flatten().filter(|r| !r.stale.is_empty()).count(),
+        });
+    }
+    row
+}
+
 // ── The selection and main ──────────────────────────────────────────
 
 /// `f` over `items` on `jobs` threads, in order.
@@ -2369,6 +2704,7 @@ fn main() {
     let (mut control, mut strata_only, mut inv, mut costs, mut use_written, mut scratch_cube) =
         (false, false, false, false, false, false);
     let mut paths_mode = false;
+    let (mut cumulative, mut stratum) = (false, false);
     let mut chain_bound: u128 = 13_700;
     let mut seeds = 8usize;
     let mut sample = 4096usize;
@@ -2385,6 +2721,8 @@ fn main() {
             "--written" => use_written = true,
             "--scratch-cube" => scratch_cube = true,
             "--paths" => paths_mode = true,
+            "--cumulative" => cumulative = true,
+            "--stratum-order" => stratum = true,
             "--chain-bound" => {
                 chain_bound = args
                     .next()
@@ -2522,6 +2860,123 @@ fn main() {
             })
             .collect()
     };
+
+    if cumulative {
+        let rows = par_map(&chosen, jobs, |src| cumulative_census(src, !control));
+        let mut sum: BTreeMap<String, u64> = BTreeMap::new();
+        for row in &rows {
+            if as_json {
+                println!("{row}");
+            }
+            if row.get("nodes").is_none() {
+                if !as_json && !control {
+                    println!(
+                        "{}: not read — {}",
+                        row["path"].as_str().unwrap_or("?"),
+                        row
+                    );
+                }
+                continue;
+            }
+            *sum.entry("programs".into()).or_default() += 1;
+            *sum.entry("nodes".into()).or_default() += row["nodes"].as_u64().unwrap_or(0);
+            let strat = row["stratified"].as_bool() == Some(true);
+            for k in ["scratch", "fork"] {
+                let c = &row["cumulative"][k];
+                for f in ["tests", "fail", "nodes_failing"] {
+                    *sum.entry(format!("{k}_{f}")).or_default() += c[f].as_u64().unwrap_or(0);
+                }
+                if c["fail"].as_u64().unwrap_or(0) > 0 {
+                    *sum.entry(format!(
+                        "{k}_programs_failing{}",
+                        if strat { "_stratified" } else { "" }
+                    ))
+                    .or_default() += 1;
+                }
+            }
+            if strat {
+                *sum.entry("stratified".into()).or_default() += 1;
+            }
+            let failing = ["scratch", "fork"]
+                .iter()
+                .any(|k| row["cumulative"][k]["fail"].as_u64().unwrap_or(0) > 0);
+            if !as_json && (!control || failing) {
+                println!(
+                    "{}  n {} · {} · stratified {} / over D {} · {} ms",
+                    row["path"].as_str().unwrap_or("?"),
+                    row["n"],
+                    if row["monotone"].as_bool() == Some(true) {
+                        "monotone"
+                    } else {
+                        "flagged"
+                    },
+                    row["stratified"],
+                    row["stratified_over_d"],
+                    row["ms"]
+                );
+                for k in ["scratch", "fork"] {
+                    let c = &row["cumulative"][k];
+                    println!(
+                        "  {k:<7} {} tests · {} change the fixpoint · on {} of {} nodes",
+                        c["tests"], c["fail"], c["nodes_failing"], row["nodes"]
+                    );
+                    for x in c["first"].as_array().into_iter().flatten() {
+                        println!(
+                            "    {} + {}: {} → {} · only sat(X) {} · only sat(X ∪ f) {}",
+                            x["node"].as_str().unwrap_or("?"),
+                            x["f"].as_str().unwrap_or("?"),
+                            x["status"][0].as_str().unwrap_or("?"),
+                            x["status"][1].as_str().unwrap_or("?"),
+                            x["only_sat_x"],
+                            x["only_sat_x_and_f"]
+                        );
+                    }
+                }
+            }
+        }
+        if !as_json {
+            println!("\n{}", json!(sum));
+            println!("wall {:.1} s", t_all.elapsed().as_secs_f64());
+        }
+        return;
+    }
+
+    if stratum {
+        let rows = par_map(&chosen, 1.max(jobs / 4), |src| stratum_row(src, 4));
+        for row in &rows {
+            if as_json {
+                println!("{row}");
+                continue;
+            }
+            println!("{}", row["path"].as_str().unwrap_or("?"));
+            if let Some(e) = row["stratum_order"].as_str() {
+                println!("  {e}");
+                continue;
+            }
+            println!(
+                "  rewrite {} · text moved {}",
+                row["rewrite"], row["text_moved"]
+            );
+            for k in ["fork", "scratch"] {
+                println!(
+                    "  {k:<7} moved {} · R today {} → {} · nodes moved {}",
+                    row[k]["moved"], row[k]["R_today"], row[k]["R"], row[k]["nodes_moved"]
+                );
+            }
+            println!(
+                "  cumulative under it {} · stale nodes under it {}",
+                json!({
+                    "scratch_fail": row["cumulative"]["scratch"]["fail"],
+                    "fork_fail": row["cumulative"]["fork"]["fail"],
+                }),
+                row["stale_nodes"]
+            );
+        }
+        if !as_json {
+            println!("wall {:.1} s", t_all.elapsed().as_secs_f64());
+        }
+        return;
+    }
 
     if paths_mode {
         let rows = par_map(&chosen, jobs, |src| path_census(src, chain_bound, !control));

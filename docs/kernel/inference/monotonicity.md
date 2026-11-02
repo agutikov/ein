@@ -95,7 +95,7 @@ come, you all sit*, has R of 21 isolated nodes and 166 holes. Its monotone twin
 | **trivial lines** | restrictions only: min = {∅}. Obligations only: max = {⊤}, so the maximal line says nothing (ruled for the monotone case, 2026-10-16) | max ≠ {⊤} where a trigger grows: `synth/maximal_not_top.ein` states obligations and nothing dead, and its maximal line is {A,B} while ⊤ owes | `every_synthetic_program_has_the_region_it_was_written_for` |
 | **learned nogoods, kill cache, singleton writeback** | sound: every superset of a dead set is dead | unsound where the refutation read a third-kind relation: W3, and `synth/three_components`' learned clauses {A,F} and {A,G} (S1e2.1a.8). The language is ruled, *forbid* ([S1e2.4.1 § 5](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling), 2026-11-02): a refutation may not rest on an `absent` over a relation a commitment can extend. **What a route may learn before that refusal ships is open**: F21's D6, measured by [S1e2.1b.4](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md)'s [taint census](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md): a death that rests on no `absent` over D is dead in every superset on every flagged cube within the limit, once the taint follows each plan's activator, and not read off provenance alone (`region.rs::an_untainted_death_is_dead_in_every_superset`). Since the switch no route learns on a flagged program | the dead row's evidence |
 | **saturation on the cube** | a **closure operator**: C ⊆ cl(C), cl(cl(C)) = cl(C), C ⊆ D ⇒ cl(C) ⊆ cl(D). R's states are closed sets, each the union of the intervals [g … cl] over its minimal generators g | cl need not be monotone. States still partition the commitments, but not as the closed sets of a closure system | `region.rs::a_monotone_verdict_makes_saturation_a_closure_operator`: every node of every monotone cube within the limit, dead ones included, and saturation moves a node on 15 of them. On `CL_NOT_MONOTONE`, flagged, cl is not monotone |
-| **a node's state** | unique, the least fixpoint: built by fork from root or from scratch, one fact set, by the theorem (`ein-cli/tests/region_dump.rs` holds `utils/region.py`, the scratch route, to the oracle on Q-M1e2.7's seven programs) | depends on the route. On W8's [`stale-naf-fork.ein`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein), `{(q one)}` is dead by fork, because root derived `(p one)` under `(absent (q one))`, and in R from scratch. A parent path can differ from both (§ 7.2). **Which one R is defined over is open**: Q-M1e2.2, F21's D2, with [S1e2.1b.2](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md)'s evidence | § 6.4: the guard split reads scratch, and disagrees with the oracle on exactly W8's two witnesses; § 7 |
+| **a node's state** | unique, the least fixpoint: built by fork from root, by the theorem; from scratch the same fact set except where an equal-priority race over a static read is re-run inside the node ([`lattice/11_fifo_gap_static`](../../../examples/lattice/11_fifo_gap_static.ein), § 7.6) (`ein-cli/tests/region_dump.rs` holds `utils/region.py`, the scratch route, to the oracle on Q-M1e2.7's seven programs) | depends on the route. On W8's [`stale-naf-fork.ein`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein), `{(q one)}` is dead by fork, because root derived `(p one)` under `(absent (q one))`, and in R from scratch. A parent path can differ from both (§ 7.2). **Which one R is defined over is open**: Q-M1e2.2, F21's D2, with [S1e2.1b.2](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md)'s evidence | § 6.4: the guard split reads scratch, and disagrees with the oracle on exactly W8's two witnesses; § 7 |
 | **holes, reported** | there are none | the read-out names up to four minimal holes today (`ein solve examples/lattice/04_obligation_trigger_hole.ein`: `minimal hole {(seats Ann C1)} — owes 1`). **What is reported, a qualifier, the pieces or a refusal, is open**: Q-M1e2.7 (d), F21's D4, with [S1e2.1b.3](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md)'s evidence: every hole by cause and kind, and each option drafted on real programs ([hole census](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md)) | `region.json`'s `holes`, `minimal_holes`, `repairs` |
 | **certificate** | N, E and the static verdict: polynomial in \|N\| + \|E\| | the full classification. With the guard split, each cell's guess and its N and E (§ 6.4, not built) | route 1 is held to the oracle (`region.rs::route_1_is_the_oracle_on_every_monotone_program_it_reaches`) |
 | **detection** | static: [`monotone.rs`](../../../ein.rs/crates/ein-infer/src/monotone.rs), a sufficient condition read at **relation grain**, as the user ruled on 2026-11-02 ([S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)) | the static check flags a **site**; only the cube says whether it did harm | § 5 |
@@ -440,7 +440,9 @@ are measured** since M1e2's S1e2.1b.7
   path stopping at its first contradiction (`enable-fail-fast-fork`); built to
   quiescence, as the oracle builds a node, those four agree;
 - on 150 monotone cubes (n ≤ 12, 6 069 nodes, 1 207 419 steps) no node depends
-  on the path. The five at n = 15–16 are past the census's bound.
+  on the path. The five at n = 15–16 are past the census's bound. Since
+  T1e2.1b.7.3 banked § 7.6's program, one node of a monotone cube does, between
+  fork and scratch (`node_census.md` § 12.2).
 
 Which construction defines a node is open (§ 8, D2), and whether a route may
 extend a parent is open too (D3).
@@ -498,12 +500,18 @@ S_{i−1} = sat(P ∪ K_{i−1}). By monotonicity S_{i−1} ⊆ sat(P ∪ K_i), 
 P ∪ K_i ⊆ S_{i−1} ∪ K_i ⊆ sat(P ∪ K_i), and by cumulativity
 S_i = sat(P ∪ K_i). By induction every path ends at sat(P ∪ C).
 
-**Who is cumulative.** A monotone program is: its saturation is a closure
-operator (argued; § 7.6 has the test beside it). A stratified program
-evaluated stratum by stratum should be, since its fixpoint is its perfect
-model; that is **unverified**, and S1e2.1b.7's cumulativity census checks it:
-on each flagged program, each node, add a derived fact before saturating and
-compare the fixpoint.
+**Who is cumulative.** A monotone program is, by fork: its saturation is a
+closure operator (argued; § 7.6 has the test beside it), and the cumulativity
+census finds no exception by fork on any monotone cube it read. From scratch
+one is banked, § 7.6's. A stratified program evaluated stratum by stratum
+should be, since its fixpoint is its perfect model, and it is **measured** so
+under an emulation: with each `absent` rule's priority set by its stratum,
+every stratified program read is cumulative on every node, and every node
+built from scratch is stale-free
+([`node_census.md` § 12.4](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#124-admission-in-stratum-order-emulated),
+`node_census -- --stratum-order`, 2026-11-02, at `a3ac7d6f`). The census adds
+each fact a node's fixpoint derived before saturating and compares the
+fixpoint (§ 12.3 there).
 
 **The engine's boundary breaks cumulativity.** It admits equal-priority
 candidates one a round in (priority, FIFO) order, not in stratum order
@@ -511,14 +519,20 @@ candidates one a round in (priority, FIFO) order, not in stratum order
 `a ∧ absent(z) → q`. Built at once, {a, b} gives {a, b, p, q}, with `p`
 stale; by way of {a} it gives {a, b, q}. The state function is monotone and
 the state is path-dependent: {a, b, q} ⊆ sat({a, b}), and sat({a, b, q}) ≠
-sat({a, b}). This example as written is **unverified** in the engine; banking
-it as a fixture and reading {a, b} by fork from {a} and from scratch with
-`node_census` checks it (S1e2.1b.7). Its relative `stratified_stale`
-(`p ← ¬q`, `q ← ¬r`, one priority, `derive-p` written first) is **measured**:
-its scratch root holds a stale `(p one)`, and swapping the two rules' text
-changes its universe (`node_census.md` § 2.3 and § 7.1, `bc1dff73`). No
-corpus program shows the gap: from scratch, no corpus node holds a stale fact
-(§ 4 there).
+sat({a, b}). This example as written is **measured**: banked as
+[`examples/lattice/10_fifo_gap.ein`](../../../examples/lattice/10_fifo_gap.ein),
+the engine reproduces it, {a, b} holding a stale `p` built at once and not by
+way of {a}, and adding the derived `q` before saturating at {a, b} takes `p`
+away ([`node_census.md` § 12.1](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#121-the-fifo-gap-banked), `node_census
+-- --paths --cumulative --invariance`, `a3ac7d6f`). As the engine admits
+today, saturation is cumulative on every node the census read except where
+this race reaches: the fixture, the reader at an earlier priority, the written
+`stratified_stale` and § 7.6's program (§ 12.3 there). Its relative
+`stratified_stale` (`p ← ¬q`, `q ← ¬r`, one priority, `derive-p` written
+first) was measured before: its scratch root holds a stale `(p one)`, and
+swapping the two rules' text changes its universe (`node_census.md` § 2.3 and
+§ 7.1, `bc1dff73`). Before the fixture no corpus program showed the gap: from
+scratch, no corpus node held a stale fact (§ 4 there).
 
 So the state has **one property**, monotone ⇔ path-independent wherever
 saturation is cumulative. It is broken by an odd-depth `absent` over D (§ 7.4)
@@ -606,14 +620,17 @@ extended by commitments, which is what the theorem and every shipped route
 need, and not on every KB. A scratch build re-derives root inside each node,
 where § 7.3's FIFO race can still reach a static read: with `a` given and
 only `b` a candidate, r2 `a ∧ b ∧ absent(q) → p` written before r1
-`a ∧ absent(z) → q` has no site (`q` is not in D), and by § 7.3's argument
-its scratch state on {b} would hold a stale `p` that its fork state does not.
-That is **argued and unverified**. The corpus shows no such case (the
-`--control` run: fork and scratch agree on all 268 213 monotone nodes), and
-S1e2.1b.7 writes the program and runs it. If it holds, building a node from
-scratch (F21's D2 (B)) needs admission in stratum order on programs the check
-calls monotone too, and [`solution_semantics.md` § 1.5](solution_semantics.md#15-commitment-node-state)'s
-*from scratch gives the same fact set* needs the same qualifier.
+`a ∧ absent(z) → q` has no site (`q` is not in D). **Measured**, banked as
+[`examples/lattice/11_fifo_gap_static.ein`](../../../examples/lattice/11_fifo_gap_static.ein):
+the static check calls it monotone and `ein solve` takes route 1, and its
+scratch state on {b} holds a stale `p` that its fork state does not
+([`node_census.md` § 12.2](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#122-the-static-variant-banked), `a3ac7d6f`).
+Before it, the corpus showed no such case (the `--control` run: fork and
+scratch agreed on all 268 213 monotone nodes, `bc1dff73`). So building a node
+from scratch (F21's D2 (B)) needs admission in stratum order on programs the
+check calls monotone too: under the emulation of § 12.4 there, scratch's {b}
+is the fork's. [`solution_semantics.md` § 1.5](solution_semantics.md#15-commitment-node-state)
+carries the qualifier.
 
 | property | of | broken by | its question |
 |---|---|---|---|
@@ -665,17 +682,17 @@ site that concludes a positive fact: `d3-unsat-core`, `f07-fpoff`,
 
 | claim | standing | held by, or what would check it |
 |---|---|---|
-| fork ≠ scratch on 4 of 256 flagged nodes, 0 of 268 213 monotone | measured | `node_census`, `bc1dff73`, 2026-11-02 |
+| fork ≠ scratch on 4 of 256 flagged nodes, 0 of 268 213 monotone | measured | `node_census`, `bc1dff73`, 2026-11-02. Re-taken at `a3ac7d6f` with § 7.6's program banked: 1 of 268 215 monotone nodes, that program's (`node_census.md` § 12.2) |
 | a one-step parent path differs on `d3-unsat-core`, `lattice/08`, `via_hole.ein` | measured | `node_census` § 6.1, same run |
-| every split C1 ⊆ C, and longer chains | measured | `node_census -- --paths`, `8a2dffe3`, 2026-11-02 (`node_census.md` § 11): 20 of 256 flagged nodes, 0 of 6 069 monotone at n ≤ 12; every maximal chain to 13 700 tree nodes |
+| every split C1 ⊆ C, and longer chains | measured | `node_census -- --paths`, `8a2dffe3`, 2026-11-02 (`node_census.md` § 11): 20 of 256 flagged nodes, 0 of 6 069 monotone at n ≤ 12 (1 of 6 071 once § 7.6's program was banked, `a3ac7d6f`); every maximal chain to 13 700 tree nodes |
 | the path tree collapses onto the cube iff the state is path-independent, and onto a state DAG always | argued; the second half's premise measured | the premise, a step is a function of the KB's contents: 688 809 steps from contents met before, 0 conflicts, same run (§ 11.5 there) |
 | (F)'s per-C state counts: 0 on an odd cycle, 1 stratified, several on an even cycle | **refuted**, measured | same run: from P, 1 on every flagged node, `d3-unsat-core`'s odd cycle included; from root, 0 on W8's four `{(q one)}`; 0 on `stratified_stale`'s ∅ (written into `node_census`); never 2 |
 | a node's status moves along an alive path | measured | same run: `lattice/08`'s hole in R by way of its parent; a node of R dead by way of an alive parent on the probe `via_hole` and on `ACTIVATOR_UNDER_ABSENT` |
 | path-independent ⇒ monotone | argued | premise: the KB never retracts. No test named here enforces it |
 | monotone ⇒ path-independent, given cumulativity | argued | premise: cumulativity |
-| a monotone program's saturation is cumulative | argued | the closure-operator test is adjacent; the `--control` run measures C1 = ∅ on every fact |
-| a stratified program evaluated stratum by stratum is cumulative | unverified | S1e2.1b.7's cumulativity census |
-| the FIFO example is path-dependent in the engine as written | unverified | the example banked as a fixture, read by `node_census` (S1e2.1b.7); its relative `stratified_stale` is measured |
+| a monotone program's saturation is cumulative | by fork, measured; from scratch, **refuted** | `node_census -- --cumulative --control --max-n 12`, `a3ac7d6f`, 2026-11-02 (`node_census.md` § 12.3): on 151 monotone cubes (n ≤ 12), 6 071 nodes, 0 of 12 135 fork tests change a fixpoint, and 1 of 25 124 from scratch, `11_fifo_gap_static` (§ 7.6) |
+| a stratified program evaluated stratum by stratum is cumulative | measured, under an emulation | `node_census -- --stratum-order`, same commit (§ 12.4 there): every node of every stratified program read, each `absent` rule's priority set by its stratum. As the engine admits today it is **refuted** on four programs, each a FIFO race (§ 12.3) |
+| the FIFO example is path-dependent in the engine as written | measured | [`examples/lattice/10_fifo_gap.ein`](../../../examples/lattice/10_fifo_gap.ein), `node_census -- --paths --cumulative --invariance`, same commit (§ 12.1 there) |
 | a state difference needs an `absent` | argued, and measured consistent | `node_census` § 2, § 4, § 6.1 |
 | an activator can hide an `absent` from root's plans | held by a test | `each_cause_has_a_fixture_whose_cube_shows_its_hole` |
 | a death resting on no `absent` over D is dead in every superset, the taint following each plan's activator (D6's (b)) | held by a test | `region.rs::an_untainted_death_is_dead_in_every_superset`, on every flagged cube within the limit |
@@ -683,7 +700,7 @@ site that concludes a positive fact: `d3-unsat-core`, `f07-fpoff`,
 | `dead` follows the state | argued | premise: the state is monotone |
 | `owes` breaks over a path-independent state | held by a test, and measured | `each_cause_has_a_fixture_whose_cube_shows_its_hole`; `node_census` § 2.1 |
 | a monotone program has both properties and no hole | held by a test | `a_monotone_verdict_makes_saturation_a_closure_operator`, `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged` |
-| a *Monotone* verdict can leave scratch ≠ fork through a FIFO race over a static read | argued, unverified | the program of § 7.6 written and run by `node_census` (S1e2.1b.7); the `--control` run finds no corpus case |
+| a *Monotone* verdict can leave scratch ≠ fork through a FIFO race over a static read | measured | [`examples/lattice/11_fifo_gap_static.ein`](../../../examples/lattice/11_fifo_gap_static.ein), `node_census -- --paths`, same commit (§ 12.2 there) |
 | 8 conservative flags of 18 within the limit | measured | `site_census`, `4562bf70` |
 | (E) leaves a monotone, path-independent state on every program that loads | argued | premise: S1e2.2.5's F1 reads D and its F3 sees compiled plans |
 | (E)'s 13 programs | measured | `site_census`, `4b822a8d` and `6743dd17` |
@@ -709,10 +726,10 @@ says which causes produce it.
 | c7 | an activator that compiles a refutation, hiding its `absent` | `ACTIVATOR_REFUTES` ([`written.rs`](../../../ein.rs/crates/ein-infer/examples/shared/written.rs)) | **the state, and `dead`**, through `(absent (?R ?x))` in a plan only a node compiles | `SiteKind::Activator` only: root compiled no plan of the rule | exercised: a dead hole | only through a dead parent: 1 of 4 nodes (§ 11.3 there) |
 | c8 | an even cycle through an `absent` | `features/07`, [`f07-fpoff`](../../../examples/ein-bugs/wrong-answers/f07-fpoff.ein) | **the state**, and stability: the written order of two rules at one priority moves the universe (`node_census.md` § 7.1) | two `SiteKind::Absent`; the cycle is no shipped check's (`node_census -- --strata`) | conservative | yes, as c1 |
 | c9 | an odd cycle through an `absent` | [`d3-unsat-core`](../../../corpus/fuzz_findings/d3-unsat-core.ein) | **the state**: a dead fixpoint's facts depend on admission order | `SiteKind::Absent`; the cycle as in c8 | conservative | yes: 4 of 32 nodes, through alive parents. § 6.1's other four were `-y`'s fail-fast stop (§ 11.2 there) |
-| c10 | the FIFO gap, at one priority | [`detector_proposal/fifo_gap.ein`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap.ein) (§ 7.3's example, drafted) | **the state**: cumulativity, on a stratified program | `SiteKind::Absent` on the reader | conservative | yes: `{a, b}` at once against by way of `{a}` |
-| c11 | the FIFO gap, the reader at an earlier priority | [`detector_proposal/fifo_gap_priority.ein`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap_priority.ein) | **the state**, in every written order: no equal-priority pair exists for a reorder to move | `SiteKind::Absent` on the reader | conservative | yes, as c10 |
+| c10 | the FIFO gap, at one priority | [`lattice/10_fifo_gap`](../../../examples/lattice/10_fifo_gap.ein) (§ 7.3's example) | **the state**: cumulativity, on a stratified program | `SiteKind::Absent` on the reader | conservative | yes: 1 of 4 nodes, `{a, b}` at once against by way of `{a}`, through an alive parent (`node_census.md` § 12.1) |
+| c11 | the FIFO gap, the reader at an earlier priority | [`detector_proposal/fifo_gap_priority.ein`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap_priority.ein) | **the state**, in every written order: no equal-priority pair exists for a reorder to move | `SiteKind::Absent` on the reader | conservative | yes, as c10, measured on the same node (§ 12.1 there) |
 | c12 | an activator derived under an `absent` | `ACTIVATOR_UNDER_ABSENT` (`written.rs`) | **the state, and `dead`**: the `absent` is in the activator's derivation, which no premise records | `SiteKind::Absent` (`act`) and `SiteKind::Activator` (`watch`) | exercised: a dead hole | yes: 2 of 8 nodes, through alive parents, and a node of R is dead that way (§ 11.3 there) |
-| c13 | a FIFO race over a static read (§ 7.6) | written into `node_census` by T1e2.1b.7.3 | **the state built from scratch**, under a *Monotone* verdict; a fork never meets it | nothing: no site | no violation (monotone) | argued (§ 7.6): between fork and scratch only |
+| c13 | a FIFO race over a static read (§ 7.6) | [`lattice/11_fifo_gap_static`](../../../examples/lattice/11_fifo_gap_static.ein) | **the state built from scratch**, under a *Monotone* verdict; a fork never meets it | nothing: no site | no violation (monotone) | between fork and scratch only: 1 of 2 nodes (§ 12.2 there) |
 
 | | *forbid* covers it (S1e2.2.5's F1–F3) | option (E) (D1) | option (D) (D2) | S1e2.1b.5's detector reports (drafted, awaiting the user's approval of [`detector_proposal.md`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md)) | bears on |
 |---|---|---|---|---|---|
@@ -739,8 +756,8 @@ measured: [`node_census.md`](../../../plans/m1e2_correctness/p1e2.1b_non_monoton
 `e7bec8f0`), all 2026-11-02. *The static check sees it as* is `monotone::classify`'s
 `SiteKind`, the same day. The *forbid* column is S1e2.4.1 § 1 and the taint
 census § 7 read against F1–F3; (E) and (D) are F21's D1 and D2 read against
-`site_census` and `node_census -- --strata`. c13 is argued in § 7.6, and
-T1e2.1b.7.3 runs it.
+`site_census` and `node_census -- --strata`. c10, c11 and c13 are
+`node_census.md` § 12 (`a3ac7d6f`).
 
 **c2's path dependence.** Fork and scratch agree on every node of
 `naf-upward-closure` (§ 2.1 there). Its one path-dependent node is reached
@@ -752,7 +769,8 @@ and `synth/trigger_hole` depend on the path the same way, and only that way.
 
 **The status and the state are apart, measured.** Five programs the cube calls
 *conservative* still have a broken state: `stale-naf-fork`, `features/07`,
-`d3-unsat-core`, `fifo_gap` and `stratified_stale`. Each holds a stale fact or
+`d3-unsat-core`, `fifo_gap` (banked since as `lattice/10_fifo_gap`) and
+`stratified_stale`. Each holds a stale fact or
 has a parent path that reaches another state, and `ein oracle` closes on each
 with *"the flagged sites break nothing here"*, which is true of the status
 only ([`detector_proposal.md` § 7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md#7-what-the-drafting-found),

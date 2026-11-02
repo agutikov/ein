@@ -128,16 +128,17 @@ L ──state──▶ KB ──(dead, owes)──▶ {0,1}²
      whatever built it (a fork from root, a parent's fixpoint, scratch).
      Path independence ⇒ monotone always holds, because construction is
      append-only: a path through C reaches a state ⊇ `state(C)`. The converse
-     needs cumulativity. A monotone program has it. A stratified program
-     evaluated stratum by stratum should have it, which is unverified and
-     measured by S1e2.1b.7's cumulativity census. The property is broken by
+     needs cumulativity. A monotone program has it, by fork. A stratified
+     program evaluated stratum by stratum has it, measured under an emulation
+     by S1e2.1b.7's cumulativity census ([`node_census.md` § 12](node_census.md#12-the-cumulativity-census-and-the-fifo-gap--s1e21b7)).
+     The property is broken by
      an odd-depth `absent` over D, and by the boundary's **FIFO admission** of
      equal-priority `absent` rules, which breaks cumulativity: r2 `a ∧ b ∧
      absent(q) → p` written before r1 `a ∧ absent(z) → q` gives {a, b, p, q},
      with `p` stale, when {a, b} is built at once, and {a, b, q} by way of
-     {a}. That state is path-dependent while the state function is monotone
-     (`node_census.md`'s written `stratified_stale`). This property is
-     Q-M1e2.2's subject.
+     {a}. That state is path-dependent while the state function is monotone,
+     banked as [`lattice/10_fifo_gap.ein`](../../../examples/lattice/10_fifo_gap.ein)
+     by S1e2.1b.7. This property is Q-M1e2.2's subject.
   2. **The status is monotone**: `dead` and *discharged* upward-closed.
      `dead` follows the state. `owes` does not: an obligation's trigger, or
      an activator that compiles an obligation, adds a debt over a monotone,

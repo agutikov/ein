@@ -810,3 +810,145 @@ are not read.
   reaches two stale-free states.
 - **What it does not read**: the five monotone cubes at n = 15–16, the
   flagged programs past the limit, and chains past depth 7.
+
+## 12. The cumulativity census, and the FIFO gap — S1e2.1b.7
+
+T1e2.1b.7.3, for three rows of
+[`monotonicity.md` § 7.8](../../../docs/kernel/inference/monotonicity.md#78-the-standing-of-each-claim):
+*a stratified program evaluated stratum by stratum is cumulative*, *the FIFO
+example is path-dependent in the engine as written*, and *a Monotone verdict
+can leave scratch ≠ fork through a FIFO race over a static read*.
+
+```sh
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative                      # § 12.3, the flagged cubes, 0.1 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative --written
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative \
+    plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/*.ein
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative --control --max-n 12   # § 12.3, 6.7 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --stratum-order --jobs 4            # § 12.4, 0.3 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --invariance \
+    examples/lattice/10_fifo_gap.ein examples/lattice/11_fifo_gap_static.ein                                                    # § 12.1–12.2
+```
+
+Taken 2026-11-02 at `a3ac7d6f` (the parent of the commit that adds the two
+fixtures and the two flags), release build, stdlib = the checkout, 16 jobs on
+a 32-thread machine. With the two fixtures banked the flagged selection is
+**19** programs, 260 nodes (§ 11's 18 and `10_fifo_gap`), and the monotone
+one **156** (§ 3's 155 and `11_fifo_gap_static`).
+
+### 12.1 The FIFO gap, banked
+
+[`examples/lattice/10_fifo_gap.ein`](../../../examples/lattice/10_fifo_gap.ein)
+is § 7.3's counter-example as written: r2 `a ∧ b ∧ absent(q) → p` before r1
+`a ∧ absent(z) → q`, both at priority 200, `a` and `b` the two candidates as
+hrules. It is stratified (z < q < p), flagged (r2's `absent` reads `q`, which
+`a` makes dynamic), and every node is in R. **The engine reproduces the gap as
+written**, first try:
+
+| node | built at once (fork; scratch is the same, root derives nothing) | by way of `{(a one)}` |
+|---|---|---|
+| `{(a one), (b one)}` | `(a one) (b one) (p one) (q one)`, with `(p one) ← r2 (absent (q one))` **stale** | `(a one) (b one) (q one)` |
+
+- **`--paths`**: 1 of 4 nodes depends on the path, through an alive parent
+  (every split and chain through `{(a one)}` reaches the second state); the
+  premise holds (12 repeated keys, 0 conflicts).
+- **`--cumulative`**: at `{(a one), (b one)}`, adding the derived `(q one)`
+  before saturating takes `(p one)` away, by fork and from scratch: X ⊆ Y ⊆
+  sat(X) and sat(Y) ≠ sat(X). It is the one node of the 19 flagged cubes where
+  cumulativity fails (§ 12.3).
+- **`--invariance`**: writing r1 before r2 moves the state of `{(a one), (b
+  one)}` on both routes and moves no status, no universe.
+- **The reader at an earlier priority**, the proposal's scratch copy
+  [`fifo_gap_priority.ein`](detector_proposal/fifo_gap_priority.ein) (r2 at
+  100), reads the same under `--paths` and `--cumulative`, and `--invariance`
+  finds no equal-priority pair to reorder. It is not banked: it is the same
+  gap, and the order check that tells the two apart is S1e2.1b.5's.
+
+### 12.2 The static variant, banked
+
+[`examples/lattice/11_fifo_gap_static.ein`](../../../examples/lattice/11_fifo_gap_static.ein)
+is the same program with `(a one)` given and only `b` a candidate. `q` is no
+relation a commitment can change, so r2's `absent` is static and **the static
+check calls the program monotone**: `ein solve` takes route 1, *"L1 dead is
+upward-closed"*.
+
+| node | by fork from root | from scratch |
+|---|---|---|
+| ∅ | `(a one) (q one)` | the same |
+| `{(b one)}` | `(a one) (b one) (q one)` | `(a one) (b one) (p one) (q one)`, `(p one)` **stale** |
+
+**§ 7.6's argument holds as measured.** Root settles the race before `b`
+exists, and a fork inherits `(q one)`. Scratch re-derives root inside the node,
+where r2 and r1 wait at one boundary and r2 is admitted first. `--cumulative`
+fails from scratch at `{(b one)}` and has nothing to test by fork (the fork
+derives nothing beyond root and the commitment there). The program was written
+into the census first, as `fifo_gap_static` in `--written`, and banked once it
+held. **So a *Monotone* verdict does not make fork and scratch one route**:
+§ 3's *0 of 268 213 monotone nodes* was a property of the corpus. Re-taken
+with the fixture banked (`node_census -- --control`, 60 s, the same commit):
+156 monotone cubes, 268 215 nodes, 0 statuses differ and **1 state**, this
+node, which holds the one stale fact from scratch. The path census's control
+(`--paths --control --max-n 12`, 36 s) finds the same one node of 6 071, and
+no other.
+
+### 12.3 The cumulativity census
+
+For every node, each construction's X (scratch: P ∪ C; fork: sat(P) ∪ C), and
+every fact f its fixpoint derived beyond X: is sat(X ∪ {f}) = sat(X)? One fact
+at a time, so it reads the single-fact case of X ⊆ Y ⊆ sat(X). Each node's
+provenance is reclaimed when it is done.
+
+| run | programs (stratified) | nodes | tests: scratch · fork | change the fixpoint: scratch · fork | where |
+|---|---:|---:|---:|---:|---|
+| the flagged cubes | 19 (16) | 260 | 177 · 171 | **1 · 1** | `10_fifo_gap`'s `{(a one), (b one)}` + `(q one)` |
+| S1e2.4.1's probes | 13 (13) | 206 | 129 · 113 | 0 · 0 | |
+| the written programs | 6 (6) | 20 | 15 · 6 | **2** · 0 | `stratified_stale`'s ∅ + `(q one)`; `fifo_gap_static`'s `{(b one)}` + `(q one)` |
+| the monotone cubes, n ≤ 12 | 151 (148) | 6 071 | 25 124 · 12 135 | **1** · 0 | `11_fifo_gap_static`'s `{(b one)}` + `(q one)`, from scratch |
+
+**The bound** is n ≤ 12, as § 11.4's: 151 of the 156 monotone cubes within the
+limit. A run to n ≤ 16 did not finish in 10 minutes (one `--cumulative
+--control --max-n 16`, cut at 600 s, 2026-11-02), so the five cubes at n = 15
+and 16 are not read.
+
+- **Every failure is a FIFO race on a stratified program**: two `absent` rules
+  waiting at one boundary, the reader of the other's conclusion admitted
+  first. No failure on an unstratifiable program: `features/07`, `f07-fpoff`
+  and `d3-unsat-core` are cumulative on every node, one fact at a time. Their
+  path dependence (§ 11) comes from a commitment that falsifies a guard, a
+  state function that is not monotone, and not from cumulativity.
+- **The engine's saturation is not cumulative on a stratified program in
+  general**: it fails on every program read where the FIFO race reaches,
+  `10_fifo_gap`, `fifo_gap_priority`, `stratified_stale` and
+  `fifo_gap_static`, and on no other node, flagged or monotone.
+
+### 12.4 Admission in stratum order, emulated
+
+F21's D2 names *admission in stratum order* as what closes the gap, and § 7.3
+argues a stratified program evaluated stratum by stratum is cumulative.
+`--stratum-order` emulates it without changing the engine: it rewrites the
+program's text so that every saturation rule reading under an `absent` gets
+the priority 10 + its stratum, and the boundary, which admits the lowest
+priority first, then admits in stratum order. A relation's stratum is the
+most `absent` edges on a path into it over `strata`'s graph, an edge counting
+at any `absent` depth; a cycle through one has no stratum order. Only rules
+written in the program's own text move. It is an emulation, with one gap it
+does not close: a candidate whose guard fails now and passes later, at an
+earlier stratum, is not waited for. No program read here has one.
+
+| run | no stratum order | text moved | R moves | a state moves | cumulative under it | stale nodes under it: scratch · fork |
+|---|---:|---:|---:|---:|---|---|
+| the flagged cubes, 19 | 3: `d3-unsat-core`, `features/07`, `f07-fpoff` | 11 | **0** | **1**: `10_fifo_gap`'s `{(a one), (b one)}`, fork and scratch, to `(a one) (b one) (q one)` | every node | **0** · 2 (`stale-naf-fork`, `-warn`: `{(q one)}`) |
+| the written programs, 6 | 0 | 5 | `stratified_stale`: its universe, on both routes (root becomes `{(q one)}`, the candidates `(p one)` and `(r one)`, as in § 7.1) | `fifo_gap_static`: scratch's `{(b one)}`, to the fork's | every node | **0** · 4 (`dead_root`, `dead_root_via`, `stratified_stale` 2) |
+| S1e2.4.1's probes, 13 within the limit | 1: `features12_scoped` (n = 0, a cycle over static relations) | 3 | 0 | 0 | every node | **0** · 1 (`not_conclusion`) |
+| `fifo_gap_priority` | | yes | 0 | `{(a one), (b one)}`, both routes | every node | 0 · 0 |
+
+- **Under it, every stratified program read is cumulative on every node**, and
+  **every node built from scratch is stale-free**: the perfect model, by § 4's
+  argument, now measured. That is § 7.3's premise measured under the
+  emulation.
+- **The fork is not repaired by it.** A fork keeps root's facts, so a fact root
+  derived under a guard a commitment falsifies stays stale: W8's `{(q one)}`,
+  `not_conclusion`'s `{(q A)}`, the written `dead_root`s. Stratum order closes
+  the FIFO gap, not the fork's staleness; (B) or (C) is what reaches that.
+- **On the corpus it moves one state**, the fixture's. No R, no universe, no
+  corpus program's answer besides the fixture written to show it.
