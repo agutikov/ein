@@ -26,29 +26,21 @@
 //! It writes nothing and changes no answer: it loads, saturates root, takes
 //! the universe and classifies, exactly as `region::prepare` does.
 
-use std::collections::{BTreeMap, BTreeSet};
-use std::path::{Path, PathBuf};
+// `site_census` reads the rest of it.
+#[allow(dead_code)]
+#[path = "shared/census.rs"]
+mod census;
 
-use ein_core::{Kb, Symbol, Terms};
-use ein_corpus::repo_root;
-use ein_infer::compile::SharedMemo;
-use ein_infer::events::Events;
-use ein_infer::hypgen::{HypGenStats, eligible_relations, generate_config_free};
+use std::collections::{BTreeMap, BTreeSet};
+use std::path::PathBuf;
+
+use census::{located, named, refutes};
+use ein_core::{Symbol, Terms};
+use ein_infer::hypgen::eligible_relations;
 use ein_infer::monotone::{self, Rel, SiteKind};
 use ein_infer::naf_deps::compute_naf_map;
 use ein_infer::plan::Plan;
-use ein_infer::saturator::{Saturator, Session};
-use ein_ir::{Ast, load, parse};
 use serde_json::json;
-
-fn loaded(path: &Path) -> Option<(Kb, Terms, Ast)> {
-    let text = std::fs::read_to_string(path).ok()?;
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let forms = parse(&mut ast, &text, path.to_str()).ok()?;
-    let kb = load(&mut ast, &mut terms, &forms, path.parent()).ok()?;
-    Some((kb, terms, ast))
-}
 
 /// `R ∈ set`, the wildcard negative `(not ?)` read both ways — `monotone`'s
 /// own membership test.
@@ -65,62 +57,6 @@ fn key(r: Rel, terms: &Terms) -> (String, bool) {
     (terms.sym(r.name).to_string(), r.negated)
 }
 
-/// `(false)` or `(not …)`, from every conclusion, `(false)` outranking.
-fn refutes(plan: &Plan, terms: &Terms) -> Option<&'static str> {
-    let w = monotone::writes_of(plan, terms);
-    if w.iter()
-        .any(|r| !r.negated && r.name == terms.kernel.r#false)
-    {
-        Some("(false)")
-    } else if w.iter().any(|r| r.negated) {
-        Some("(not …)")
-    } else {
-        None
-    }
-}
-
-/// `rule[a b]`.
-fn named(terms: &Terms, rule: Symbol, act: &[Symbol]) -> String {
-    let a: Vec<&str> = act.iter().map(|&s| terms.sym(s)).collect();
-    format!("{}[{}]", terms.sym(rule), a.join(" "))
-}
-
-/// Where `(rule NAME` is written, `file:line`: the entry itself, else every
-/// stdlib module that defines the name (a loaded rule carries no `Loc` the
-/// loader fills, so this reads the text).
-fn located(entry: &Path, name: &str) -> String {
-    let head = format!("(rule {name} ");
-    let find = |p: &Path| -> Option<usize> {
-        let text = std::fs::read_to_string(p).ok()?;
-        text.lines()
-            .position(|l| l.trim_start().starts_with(&head))
-            .map(|i| i + 1)
-    };
-    let rel = |p: &Path| {
-        p.strip_prefix(repo_root())
-            .unwrap_or(p)
-            .to_string_lossy()
-            .to_string()
-    };
-    if let Some(line) = find(entry) {
-        return format!("{}:{line}", rel(entry));
-    }
-    let mut hits: Vec<String> = std::fs::read_dir(repo_root().join("stdlib"))
-        .into_iter()
-        .flatten()
-        .flatten()
-        .map(|e| e.path())
-        .filter(|p| p.extension().is_some_and(|x| x == "ein"))
-        .filter_map(|p| find(&p).map(|line| format!("{}:{line}", rel(&p))))
-        .collect();
-    hits.sort();
-    if hits.is_empty() {
-        "?".to_string()
-    } else {
-        hits.join(" | ")
-    }
-}
-
 fn main() {
     let mut as_json = false;
     let mut files: Vec<PathBuf> = Vec::new();
@@ -131,14 +67,7 @@ fn main() {
         }
     }
     if files.is_empty() {
-        files = ein_corpus::corpus_files();
-        for row in ein_corpus::register().case {
-            for (_, a) in row.answers() {
-                files.push(repo_root().join(row.witness_of(a)));
-            }
-        }
-        files.sort();
-        files.dedup();
+        files = census::selection();
     }
 
     let (mut swept, mut flagged) = (0usize, 0usize);
@@ -146,76 +75,33 @@ fn main() {
     // rule-location → entries, per column.
     let mut by_rule: BTreeMap<(&'static str, String, String), BTreeSet<String>> = BTreeMap::new();
     for path in files {
-        let rel = path
-            .strip_prefix(repo_root())
-            .unwrap_or(&path)
-            .to_string_lossy()
-            .to_string();
-        let Some((mut kb, mut terms, ast)) = loaded(&path) else {
+        let rel = census::relative(&path);
+        let Some((mut kb, mut terms, ast)) = census::loaded(&path) else {
             continue;
         };
-        let memo = SharedMemo::default();
-        let mut events = Events::off();
 
-        // Root's fixpoint, and S1e.2.3's column off it.
-        let s1e23 = {
-            let mut s = Session {
-                kb: &mut kb,
-                terms: &mut terms,
-                ast: &ast,
-                events: &mut events,
-                memo: memo.clone(),
-            };
-            let Ok(mut sat) = Saturator::new(&mut s) else {
-                continue;
-            };
-            if sat.saturate(&mut s, None, &mut |_| {}).is_err() {
-                continue;
-            }
-            let Ok(eligible) = eligible_relations(&mut s) else {
-                continue;
-            };
-            compute_naf_map(&sat.engine, s.terms, &eligible)
-                .into_iter()
-                .filter_map(|d| {
-                    let r = d.refutation?;
-                    Some((
-                        d.rule,
-                        d.activator.clone(),
-                        r.concludes,
-                        r.watching.join(", "),
-                    ))
-                })
-                .collect::<Vec<_>>()
-        };
-
-        // The universe, config-free, and the static check — `region::prepare`.
-        let mut proposed = Vec::new();
-        {
-            let mut s = Session {
-                kb: &mut kb,
-                terms: &mut terms,
-                ast: &ast,
-                events: &mut events,
-                memo: memo.clone(),
-            };
-            let mut stats = HypGenStats::new();
-            if generate_config_free(&mut s, &mut stats, &mut |f| {
-                proposed.push(f);
-                std::ops::ControlFlow::Continue(())
-            })
-            .is_err()
-            {
-                continue;
-            }
-        }
-        if ein_infer::obligations::tally(&kb, &mut terms, &ast, &memo, &mut events).is_err() {
+        // Root's fixpoint, S1e.2.3's column off it, and the static check —
+        // `region::prepare`.
+        let Some((root, s1e23)) = census::root_of(&mut kb, &mut terms, &ast, |sat, s| {
+            let eligible = eligible_relations(s).ok()?;
+            Some(
+                compute_naf_map(&sat.engine, s.terms, &eligible)
+                    .into_iter()
+                    .filter_map(|d| {
+                        let r = d.refutation?;
+                        Some((
+                            d.rule,
+                            d.activator.clone(),
+                            r.concludes,
+                            r.watching.join(", "),
+                        ))
+                    })
+                    .collect::<Vec<_>>(),
+            )
+        }) else {
             continue;
-        }
-        let hypothesised: rustc_hash::FxHashSet<Symbol> =
-            proposed.iter().map(|&f| terms.facts.get(f).0).collect();
-        let plans = monotone::plans_of(&memo);
-        let m = monotone::classify(&kb, &terms, &plans, &hypothesised);
+        };
+        let (plans, m, proposed) = (root.plans, root.monotonicity, root.proposed);
         swept += 1;
 
         let dynamic: BTreeSet<(String, bool)> = m.dynamic.iter().map(|&r| key(r, &terms)).collect();
