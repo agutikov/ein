@@ -65,9 +65,20 @@
 //! Under [`standard_of_proof.md`](../../../../docs/kernel/standard_of_proof.md)'s
 //! rule 2 the argument is enough only while its premise is enforced, and the
 //! premise is enforced by the tests of the stage's (c), which fail when it stops
-//! being true. T1e2.1b.5.6 puts them in `ein-infer/tests/detector.rs`; until
-//! then the static half's own test there holds an empty [`Static`] on every
-//! monotone corpus program.
+//! being true:
+//!
+//! - `ein-infer/tests/region.rs::fact_grain_never_calls_a_violated_cube_monotone`
+//!   holds a *Monotone* verdict to no cube violation on every corpus file and
+//!   register witness within the oracle's limit, and `utils/region_synth.py`'s
+//!   check on the random programs `ein-cli/tests/region_dump.rs` draws;
+//! - `ein-infer/tests/detector.rs::a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split`
+//!   builds every node of every monotone corpus cube with `n ≤ 10` by fork, by
+//!   every split from a fixpoint that holds root's, and from scratch, and
+//!   reads each for stale facts: one state per node, no stale fact, and
+//!   scratch departing on `11_fifo_gap_static`'s `{(b one)}` alone; its
+//!   sibling `…_on_random_programs` does the same on random programs;
+//! - the same file holds an empty [`Static`] on every monotone corpus program,
+//!   and the order check to no false negative on the FIFO races.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;

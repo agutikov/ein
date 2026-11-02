@@ -7,12 +7,16 @@
 
 use std::path::Path;
 
-use ein_core::Terms;
+use ein_core::{FactId, Kb, Prov, Terms};
 use ein_corpus::{corpus_files, repo_root};
-use ein_infer::detector::{AtStake, Concludes, Static, Status, Warning};
+use ein_infer::canon::state_key;
+use ein_infer::compile::SharedMemo;
+use ein_infer::detector::{self, AtStake, Concludes, StaleCheck, Static, Status, Warning};
+use ein_infer::events::Events;
 use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_infer::monotone::Monotonicity;
-use ein_infer::region::{self, Options, Outcome};
+use ein_infer::region::{self, Nodes, Options, Outcome};
+use ein_infer::saturator::{Saturator, Session};
 use ein_ir::{Ast, load, parse};
 
 /// `stratified_stale`, `node_census`'s written program (`node_census.md`
@@ -476,4 +480,228 @@ fn the_spot_check_reads_three_parents_of_each_printed_state() {
         assert_eq!(p.differ, differ, "{rel}");
         assert_eq!(p.unprinted, None, "{rel}");
     }
+}
+
+// ── (c): robust, on the corpus ──────────────────────────────────────
+
+/// The bound on `n` for the split sweep: every split `C1 ⊆ C` of every node
+/// is `3ⁿ` saturations a program, so `n ≤ 10` is at most 59 049. Measured
+/// 2026-11-03: 147 monotone corpus cubes, 1 941 nodes, 37 172 splits, 4.8 s in
+/// a release build and 6.0 s in the gate's test profile. The eight monotone
+/// cubes at `n = 11…16` are past it; `node_census -- --paths --control
+/// --max-n 12` reads to 12 (`node_census.md` § 11.4).
+const SPLIT_BOUND: usize = 10;
+
+/// `sat(P ∪ C)` with `P` the program as loaded and not saturated: a node
+/// built **from scratch**, `node_census`'s step from the base.
+fn scratch(base: &mut Kb, terms: &mut Terms, ast: &Ast, facts: &[FactId]) -> Box<[FactId]> {
+    let mut kb = base.fork();
+    terms.provs.open_fork();
+    for &h in facts {
+        let (rel, args) = terms.facts.get(h);
+        let args = args.to_vec();
+        let prov = terms.provs.push(Prov::from_hypothesis(0, None));
+        kb.add_and_index_fact(terms, rel, &args, Some(prov))
+            .expect("room for a hypothesis");
+    }
+    {
+        let mut events = Events::off();
+        let mut s = Session {
+            kb: &mut kb,
+            terms,
+            ast,
+            events: &mut events,
+            memo: SharedMemo::default(),
+        };
+        let mut sat = Saturator::new(&mut s).expect("compiles");
+        sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+    }
+    let key = state_key(&kb);
+    terms.provs.discard_fork();
+    key
+}
+
+/// What one program's sweep found.
+#[derive(Default)]
+struct Swept {
+    nodes: u64,
+    splits: u64,
+    /// `node: fork ≠ split from C1`.
+    split_differs: Vec<String>,
+    /// `node` where scratch is not the fork.
+    scratch_differs: Vec<String>,
+    /// `node: fact`, a stale fact in a fork-built node.
+    stale: Vec<String>,
+}
+
+/// Every node of a monotone program's cube built by fork, by every split
+/// `sat(sat(root ∪ C1) ∪ (C \\ C1))` and from scratch, and read for stale
+/// facts — `None` when the program is flagged, refused, or past `bound`.
+fn sweep(text: &str, at: &Path, bound: usize) -> Option<Swept> {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let forms = parse(&mut ast, text, at.to_str()).ok()?;
+    let mut kb = load(&mut ast, &mut terms, &forms, at.parent()).ok()?;
+    let mut base = kb.fork();
+    let opts = Options {
+        limit: bound as u32,
+        ..Options::default()
+    };
+    let Ok(Outcome::Region(r)) = region::compute(&mut kb, &mut terms, &ast, &opts, &mut |_| {})
+    else {
+        return None;
+    };
+    if !r.monotonicity.is_monotone() {
+        return None;
+    }
+    let n = r.n();
+    let facts = |mask: u64| -> Vec<FactId> {
+        (0..n)
+            .filter(|b| mask >> b & 1 == 1)
+            .map(|b| r.candidates[b].fact)
+            .collect()
+    };
+    let mut out = Swept::default();
+    let mut keys: Vec<Box<[FactId]>> = Vec::with_capacity(1 << n);
+    {
+        let mut nodes = Nodes::new(&mut kb, &mut terms, &ast, &r.candidates).ok()?;
+        let check = StaleCheck::of(&nodes.plans());
+        for mask in 0..1u64 << n {
+            let (key, stale) = nodes
+                .with_fixpoint(&facts(mask), |kb, terms| {
+                    (
+                        state_key(kb),
+                        detector::stale_facts(kb, terms, &ast, &check),
+                    )
+                })
+                .ok()?;
+            out.nodes += 1;
+            out.stale
+                .extend(stale.into_iter().map(|f| format!("{}: {f}", r.name(mask))));
+            let mut sub = mask;
+            while sub != 0 {
+                sub = (sub - 1) & mask;
+                if sub == 0 {
+                    break;
+                }
+                let k = nodes.by_split(&facts(sub), &facts(mask & !sub)).ok()?;
+                out.splits += 1;
+                if k != key {
+                    out.split_differs
+                        .push(format!("{} from {}", r.name(mask), r.name(sub)));
+                }
+            }
+            keys.push(key);
+        }
+    }
+    for mask in 0..1u64 << n {
+        if scratch(&mut base, &mut terms, &ast, &facts(mask)) != keys[mask as usize] {
+            out.scratch_differs.push(r.name(mask));
+        }
+    }
+    Some(out)
+}
+
+/// **(c) 2 and 3: a *Monotone* verdict means one state per node, whatever
+/// built it, and the dynamic detector has nothing to find.** On every
+/// monotone corpus cube with `n ≤` [`SPLIT_BOUND`], every node built by fork
+/// is the node built by every split from a fixpoint that holds root's, fact
+/// for fact, and holds no stale fact — so no parent path can differ and the
+/// stale check would read nothing, which is why the detector is gated on the
+/// verdict (`detector.rs`'s module docs). **From scratch the verdict does not
+/// reach**: on `examples/lattice/11_fifo_gap_static.ein` an equal-priority
+/// race over a static read leaves `{(b one)}` a stale `(p one)` that the fork
+/// never holds (`monotonicity.md` § 7.6), and it is the one corpus node
+/// where scratch departs.
+#[test]
+fn a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split() {
+    let (mut programs, mut nodes, mut splits) = (0, 0, 0);
+    let mut failures: Vec<String> = Vec::new();
+    let mut scratch_differs: Vec<String> = Vec::new();
+    for path in corpus_files() {
+        let rel = path
+            .strip_prefix(repo_root())
+            .unwrap_or(&path)
+            .display()
+            .to_string();
+        let Ok(text) = std::fs::read_to_string(&path) else {
+            continue;
+        };
+        let Some(s) = sweep(&text, &path, SPLIT_BOUND) else {
+            continue;
+        };
+        programs += 1;
+        nodes += s.nodes;
+        splits += s.splits;
+        failures.extend(s.split_differs.iter().map(|d| format!("{rel}: split {d}")));
+        failures.extend(s.stale.iter().map(|d| format!("{rel}: stale {d}")));
+        scratch_differs.extend(s.scratch_differs.iter().map(|d| format!("{rel} {d}")));
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    assert_eq!(
+        scratch_differs,
+        ["examples/lattice/11_fifo_gap_static.ein {(b one)}"],
+        "scratch departs from the fork on exactly the static FIFO race"
+    );
+    eprintln!("{programs} monotone cubes, {nodes} nodes, {splits} splits");
+    assert!(programs > 140 && nodes > 1900, "the sweep is not vacuous");
+}
+
+/// **(c) 2 and 3 on random programs**: `utils/region_synth.py --random`
+/// writes a program for a random region, as `region_dump.rs`'s round trip
+/// draws them per commit (whose check holds (c) 1 on them: a *Monotone*
+/// verdict beside a cube violation fails it). Here every one the static
+/// check calls monotone is swept as the corpus is — by fork, by every split,
+/// from scratch, and read for stale facts — and none departs: no random
+/// program races two `absent` rules over a static read.
+#[test]
+fn a_monotone_verdict_is_one_state_per_node_on_random_programs() {
+    let dir = std::env::temp_dir().join(format!("ein-detector-random-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    let out = std::process::Command::new("python3")
+        .arg("-I")
+        .arg(repo_root().join("utils/region_synth.py"))
+        .args(["--random", "200", "--seed", "5", "--max-n", "6", "--write"])
+        .arg(&dir)
+        .output()
+        .expect("python3 runs utils/region_synth.py — the gate needs python3");
+    assert!(
+        out.status.success(),
+        "{}{}",
+        String::from_utf8_lossy(&out.stdout),
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let (mut programs, mut nodes) = (0, 0);
+    let mut failures: Vec<String> = Vec::new();
+    let mut files: Vec<_> = std::fs::read_dir(&dir)
+        .expect("written")
+        .filter_map(|e| e.ok().map(|e| e.path()))
+        .collect();
+    files.sort();
+    for path in &files {
+        let text = std::fs::read_to_string(path).expect("written");
+        let Some(s) = sweep(&text, path, 6) else {
+            continue;
+        };
+        let name = path.file_name().unwrap_or_default().to_string_lossy();
+        programs += 1;
+        nodes += s.nodes;
+        failures.extend(s.split_differs.iter().map(|d| format!("{name}: split {d}")));
+        failures.extend(s.stale.iter().map(|d| format!("{name}: stale {d}")));
+        failures.extend(
+            s.scratch_differs
+                .iter()
+                .map(|d| format!("{name}: scratch {d}")),
+        );
+    }
+    let _ = std::fs::remove_dir_all(&dir);
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    eprintln!(
+        "{programs} monotone random programs of {}, {nodes} nodes",
+        files.len()
+    );
+    assert!(
+        programs >= 50,
+        "only {programs} random programs were monotone"
+    );
 }

@@ -347,6 +347,12 @@ def check(path: Path, bin: str) -> list[str]:
     if mono != static:
         bad.append(f"the target is {'' if mono else 'not '}monotone and the static check says "
                    f"{'monotone' if static else 'not monotone'}")
+    # A Monotone verdict implies no cube violation, read off the oracle's own
+    # record rather than the target's (M1e2 S1e2.1b.5's test (c) 1).
+    v = region["region"]["violations"]
+    if static and (region["region"]["holes"] or v["dead_not_upward_closed"]["count"]
+                   or v["discharged_not_upward_closed"]["count"]):
+        bad.append("the static check says monotone and the cube has a violation")
     return bad
 
 
@@ -485,6 +491,8 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--random", type=int)
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--max-n", type=int, default=5)
+    ap.add_argument("--write", help="with --random: write the programs to this directory and check none "
+                    "(no binary needed); what `ein-infer/tests/detector.rs` sweeps")
     ap.add_argument("--bin")
     a = ap.parse_args(argv)
     bin = ein_bin(a.bin)
@@ -504,6 +512,21 @@ def main(argv: list[str]) -> int:
     if a.solution:
         for f in solution(Path(a.solution), Path(a.out or "."), bin):
             print(f)
+        return 0
+    if a.random and a.write:
+        rng = random.Random(a.seed)
+        out = Path(a.write)
+        out.mkdir(parents=True, exist_ok=True)
+        written = 0
+        for i in range(a.random):
+            spec = random_spec(rng, rng.randint(1, a.max_n), i)
+            try:
+                text = program(spec)
+            except RootDead:
+                continue
+            (out / f"{spec['name']}.ein").write_text(text, encoding="utf-8")
+            written += 1
+        print(f"random: {written} of {a.random} targets written to {out}, seed {a.seed}")
         return 0
     if a.random:
         rng = random.Random(a.seed)

@@ -175,7 +175,7 @@ runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constr
 path   = "examples/features/04_open.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "a feature demo of `open`, not of search — nothing bounds the hypothesis space, so `solve` measures the blind enumerator. no solve, solve -e: at the default -m 5 neither run ends in a verdict, they end in the OOM killer (14.3 GB of anonymous memory, 78 s), which is a property of an open domain and not of a budget. `render lattice` is the same search at -m 3, and its 10.2 s is the slowest thing in the corpus. **Not slow since M1e2 S1e2.1a.5's switch**: no cell runs the walk, and the region's description stops at the default --region-budget, 329 ms together (`utils/corpus_cost.py`, 2026-10-18)."
+note   = "a feature demo of `open`, not of search — nothing bounds the hypothesis space, so `solve` measures the blind enumerator. no solve, solve -e: at the default -m 5 neither run ends in a verdict, they end in the OOM killer (14.3 GB of anonymous memory, 78 s), which is a property of an open domain and not of a budget. `render lattice` is the same search at -m 3, and its 10.2 s is the slowest thing in the corpus. **Not slow since M1e2 S1e2.1a.5's switch**: no cell runs the walk, and the region's description stops at the default --region-budget, 329 ms together (`utils/corpus_cost.py`, 2026-10-18). M1e2 S1e2.1b.5's detector reads every node `render lattice` computes for stale facts (21 042 of its 64 761 hold one): 379 → 529 ms together, re-taken with `utils/corpus_cost.py --runs 3` on both binaries, 2026-11-03."
 
 [[entry]]
 path   = "examples/features/05_stdlib_domain_elim.ein"

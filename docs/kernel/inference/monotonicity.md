@@ -299,7 +299,32 @@ no order finding, no stale fact and no path difference **on nodes built by
 fork from root**, and on splits from a fixpoint that holds root's. It does not
 hold from scratch: [`lattice/11_fifo_gap_static`](../../../examples/lattice/11_fifo_gap_static.ein)
 (§ 7.6) is monotone by the check and holds a stale fact from scratch. No
-shipped route builds from scratch.
+shipped route builds from scratch. Under
+[`standard_of_proof.md`](../standard_of_proof.md)'s rule 2 the argument holds
+while its premise is enforced, and tests in the gate enforce it: a *Monotone*
+verdict beside a cube violation fails
+`region.rs::fact_grain_never_calls_a_violated_cube_monotone` (every corpus and
+register cube within the limit) and `region_synth.py`'s check (random
+programs); a node of a monotone cube with `n ≤ 10` that a split from root's
+fixpoint builds differently, or that holds a stale fact by fork, fails
+`detector.rs::a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split`
+(147 cubes, 1 941 nodes, 37 172 splits, 2026-11-03) and its sibling on random
+programs, which pin `11_fifo_gap_static`'s `{(b one)}` as the one corpus node
+where scratch departs.
+
+**What it costs, measured** 2026-11-03, release build, the binary at
+`b50b2906`, before S1e2.1b.5, against the one after it:
+
+| | unflagged (243 entries) | flagged (26) |
+|---|---|---|
+| a bare `ein solve`, best of 3: the `work` row | identical on every entry | identical on every entry |
+| … stdout, stderr, exit | byte-identical | the `lattice` block only (its first row less the stub's clause, then +5 to +11 rows); every other line, stderr and the exit code byte-identical |
+| … wall | median ratio 1.003 over all 243; the 18 above 50 ms within −1.2 % … +5.8 % one run each; `zebra.ein`, twelve interleaved runs each, median 1 781 → 1 798 ms, sd 22–29 ms | within the limit unchanged (2–7 ms, process start); past it +27 ms (`features/05`) to +151 ms (`features/04`, 1 241 → 1 392 ms), the stale check reading ~65 000 nodes |
+| the corpus runs, `utils/corpus_cost.py --runs 3`, summed per entry | no entry crosses 1 s | `features/04` 379 → 529 ms, `features/05` 828 → 879 ms, `features/01` 1 946 → 2 193 ms (slow already); none crosses 1 s, and `--check` finds 0 disagreements with the manifest |
+
+The `work` row counts the route's saturations, as before: the detector's own
+(the attribution's few, the spot check's at most six a printed state) are not
+in it, so no count moves; the `paths` row says how many parents it read.
 
 ## 6. How to solve
 
@@ -778,7 +803,7 @@ not a ruling (§ 8, D1).
 | (F)'s per-C state counts: 0 on an odd cycle, 1 stratified, several on an even cycle | **refuted**, measured | same run: from P, 1 on every flagged node, `d3-unsat-core`'s odd cycle included; from root, 0 on W8's four `{(q one)}`; 0 on `stratified_stale`'s ∅ (written into `node_census`); never 2 |
 | a node's status moves along an alive path | measured | same run: `lattice/08`'s hole in R by way of its parent; a node of R dead by way of an alive parent on the probe `via_hole` and on `ACTIVATOR_UNDER_ABSENT` |
 | path-independent ⇒ monotone | argued | premise: the KB never retracts. No test named here enforces it |
-| monotone ⇒ path-independent, given cumulativity | argued, and measured consistent | premise: cumulativity. By fork, every monotone cube read at n ≤ 12 is cumulative and path-independent; § 7.6's program is neither from scratch (`node_census.md` § 11.4, § 12) |
+| monotone ⇒ path-independent, given cumulativity | argued, and measured consistent; by fork and by every split from root's fixpoint, **held by a test** | premise: cumulativity. By fork, every monotone cube read at n ≤ 12 is cumulative and path-independent; § 7.6's program is neither from scratch (`node_census.md` § 11.4, § 12). Since M1e2 S1e2.1b.5, `ein-infer/tests/detector.rs::a_monotone_verdict_is_one_state_per_node_by_fork_and_by_every_split` builds every node of every monotone corpus cube with n ≤ 10 by fork and by every split `sat(sat(root ∪ C1) ∪ (C \ C1))`, and its sibling the random programs' |
 | a monotone program's saturation is cumulative | by fork, measured; from scratch, **refuted** | `node_census -- --cumulative --control --max-n 12`, `a3ac7d6f`, 2026-11-02 (`node_census.md` § 12.3): on 151 monotone cubes (n ≤ 12), 6 071 nodes, 0 of 12 135 fork tests change a fixpoint, and 1 of 25 124 from scratch, `11_fifo_gap_static` (§ 7.6) |
 | a stratified program evaluated stratum by stratum is cumulative | measured, under an emulation | `node_census -- --stratum-order`, same commit (§ 12.4 there): every node of every stratified program read, each `absent` rule's priority set by its stratum. As the engine admits today it is **refuted** on four programs, each a FIFO race (§ 12.3) |
 | the FIFO example is path-dependent in the engine as written | measured | [`examples/lattice/10_fifo_gap.ein`](../../../examples/lattice/10_fifo_gap.ein), `node_census -- --paths --cumulative --invariance`, same commit (§ 12.1 there) |
@@ -788,8 +813,8 @@ not a ruling (§ 8, D1).
 | an activator derived under an `absent` hides it from the refutation's derivation | held by a test, and measured | `region.rs::an_untainted_death_is_dead_in_every_superset` pins the empty `absent_premises`; `hole_census -- --written`, `4562bf70` |
 | `dead` follows the state | argued | premise: the state is monotone |
 | `owes` breaks over a path-independent state | held by a test, and measured | `each_cause_has_a_fixture_whose_cube_shows_its_hole`; `node_census` § 2.1 |
-| a monotone program has both properties and no hole | held by a test | `a_monotone_verdict_makes_saturation_a_closure_operator`, `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged` |
-| a *Monotone* verdict can leave scratch ≠ fork through a FIFO race over a static read | measured | [`examples/lattice/11_fifo_gap_static.ein`](../../../examples/lattice/11_fifo_gap_static.ein), `node_census -- --paths`, same commit (§ 12.2 there) |
+| a monotone program has both properties and no hole | held by a test | `a_monotone_verdict_makes_saturation_a_closure_operator`, `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged`; since S1e2.1b.5 `fact_grain_never_calls_a_violated_cube_monotone` holds the shipped verdict to no violation on every corpus and register cube within the limit, and `region_synth.py`'s check on random programs |
+| a *Monotone* verdict can leave scratch ≠ fork through a FIFO race over a static read | measured, and **held by a test** | [`examples/lattice/11_fifo_gap_static.ein`](../../../examples/lattice/11_fifo_gap_static.ein), `node_census -- --paths`, same commit (§ 12.2 there); since S1e2.1b.5 the same test pins `{(b one)}` as the one corpus node where scratch departs from the fork |
 | 8 conservative flags of 18 within the limit | measured | `site_census`, `4562bf70` |
 | (E) leaves a monotone, path-independent state on every program that loads | argued, and measured consistent | premise: S1e2.2.5's F1 reads D and its F3 sees compiled plans. Every program the path and cumulativity censuses find path-dependent is refused by (E) or *forbid*, but `ACTIVATOR_REFUTES` (F3) and § 7.6's program (by scratch only) (§ 8.1, D1) |
 | (E)'s 13 programs | measured | `site_census`, `4b822a8d` and `6743dd17`; 14 with `lattice/10_fifo_gap` (§ 8.1, `refutation_census -- --option-e`, `ed8a13f2`) |

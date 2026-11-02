@@ -958,15 +958,38 @@ impl<'a> Nodes<'a> {
         last: FactId,
     ) -> Result<Option<Box<[FactId]>>, SolveError> {
         self.terms.provs.open_fork();
-        let out = self.by_parent_in_fork(parent, last);
+        let out = self.split_in_fork(parent, &[last], true);
         self.terms.provs.discard_fork();
         out
     }
 
-    fn by_parent_in_fork(
+    /// The state of `sat(sat(root ∪ first) ∪ rest)`, a **split** of
+    /// `first ∪ rest` from a fixpoint that holds root's, dead or not — what
+    /// `ein-infer/tests/detector.rs` holds a *Monotone* verdict to (M1e2
+    /// S1e2.1b.5's test (c) 2). [`Self::by_parent`] is the one-fact split of
+    /// an alive parent.
+    pub fn by_split(
         &mut self,
-        parent: &[FactId],
-        last: FactId,
+        first: &[FactId],
+        rest: &[FactId],
+    ) -> Result<Box<[FactId]>, SolveError> {
+        self.terms.provs.open_fork();
+        let out = self.split_in_fork(first, rest, false);
+        self.terms.provs.discard_fork();
+        out.map(|k| k.expect("a dead parent is read"))
+    }
+
+    /// The plans compiled so far: root's, and any a node compiled — what
+    /// the detector's stale check reads a node against.
+    pub fn plans(&self) -> Vec<Arc<Plan>> {
+        crate::monotone::plans_of(&self.memo)
+    }
+
+    fn split_in_fork(
+        &mut self,
+        first: &[FactId],
+        rest: &[FactId],
+        skip_dead: bool,
     ) -> Result<Option<Box<[FactId]>>, SolveError> {
         let mut kb = fixpoint(
             self.root,
@@ -974,16 +997,18 @@ impl<'a> Nodes<'a> {
             self.terms,
             self.ast,
             &self.memo,
-            parent,
+            first,
         )?;
-        if crate::contradiction::has_contradiction(&kb, self.terms) {
+        if skip_dead && crate::contradiction::has_contradiction(&kb, self.terms) {
             return Ok(None);
         }
-        let (rel, args) = self.terms.facts.get(last);
-        let args = args.to_vec();
-        let prov = self.terms.provs.push(Prov::from_hypothesis(0, None));
-        kb.add_and_index_fact(self.terms, rel, &args, Some(prov))
-            .expect("room for a hypothesis");
+        for &h in rest {
+            let (rel, args) = self.terms.facts.get(h);
+            let args = args.to_vec();
+            let prov = self.terms.provs.push(Prov::from_hypothesis(0, None));
+            kb.add_and_index_fact(self.terms, rel, &args, Some(prov))
+                .expect("room for a hypothesis");
+        }
         let mut events = Events::off();
         let mut s = Session {
             kb: &mut kb,

@@ -470,7 +470,7 @@ fn fact_grain_never_calls_a_violated_cube_monotone() {
         let Some((mut kb, mut terms, ast)) = load() else {
             return;
         };
-        let Some((_, monotone, _)) = fact_grain_of(&mut kb, &mut terms, &ast) else {
+        let Some((flagged, monotone, _)) = fact_grain_of(&mut kb, &mut terms, &ast) else {
             return;
         };
         if !monotone {
@@ -483,6 +483,17 @@ fn fact_grain_never_calls_a_violated_cube_monotone() {
             return;
         };
         cubes += 1;
+        // The shipped check reads at relation grain, which flags a superset
+        // of fact grain's programs, so every cube it calls monotone is read
+        // here too: **a Monotone verdict implies no cube violation** — M1e2
+        // S1e2.1b.5's test (c) 1, on every corpus file and register witness
+        // within the limit (`region_synth.py --random`'s check holds it on
+        // random programs).
+        if !flagged && violated(&r) {
+            failures.push(format!(
+                "{name}: the static check says monotone, and the cube has a violation"
+            ));
+        }
         if violated(&r) {
             let t = &r.topology;
             failures.push(format!(

@@ -789,3 +789,200 @@ fn the_monotone_question_is_about_the_program() {
     );
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// The static rows of a read-out — `assumes`, `site`, `…`, `cycle`, `order`
+/// — in order: what `--monotone` prints after its `monotone` row, and what a
+/// flagged read-out's `lattice` block prints before its `status`.
+fn static_rows(out: &str) -> Vec<&str> {
+    out.lines()
+        .filter(|l| {
+            ["assumes", "site", "…", "cycle", "order"].iter().any(|k| {
+                l.strip_prefix("    ")
+                    .is_some_and(|r| r.starts_with(&format!("{k} ")))
+            })
+        })
+        .collect()
+}
+
+/// **One verdict** — M1e2 S1e2.1b.5's test (c) 5. On every corpus program,
+/// `ein solve FILE --monotone`'s verdict and sites are byte-equal to a
+/// read-out's `lattice` block (a describe stopped at once: `--region-limit
+/// 0 --region-budget 1`, which prints the block as every run does), to both
+/// runs' summaries' `monotonicity` blocks, and to `ein test`'s report wherever
+/// a `(solve … :expect …)` claim gives the file a row with `monotone`. One
+/// function, `monotone::classify`, and no surface that disagrees with it.
+#[test]
+fn one_verdict_on_every_corpus_program() {
+    let dir = scratch("one-verdict");
+    std::fs::create_dir_all(&dir).expect("scratch");
+    let report = dir.join("report.json");
+    let r = ein(&[
+        "test",
+        "examples",
+        "tests",
+        "stdlib",
+        "--json-report",
+        report.to_str().unwrap(),
+    ]);
+    // `examples/broken/` exits 2, as a load error does under `ein test`; the
+    // report is written whatever the code.
+    assert!(report.exists(), "{}", r.err);
+    let rows: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&report).expect("written")).expect("JSON");
+    let tested: std::collections::BTreeMap<String, bool> = rows["rows"]
+        .as_array()
+        .expect("rows")
+        .iter()
+        .filter_map(|row| {
+            let m = row["region"]["monotone"].as_bool()?;
+            Some((row["path"].as_str()?.to_string(), m))
+        })
+        .collect();
+    let files: Vec<String> = ein_corpus::corpus_files()
+        .iter()
+        .map(|p| {
+            p.strip_prefix(repo_root())
+                .unwrap_or(p)
+                .display()
+                .to_string()
+        })
+        .collect();
+    let failures = std::sync::Mutex::new(Vec::<String>::new());
+    let unread = std::sync::Mutex::new(Vec::<String>::new());
+    let (checked, flagged) = (
+        std::sync::atomic::AtomicUsize::new(0),
+        std::sync::atomic::AtomicUsize::new(0),
+    );
+    let jobs = std::thread::available_parallelism().map_or(1, |n| n.get().min(8));
+    std::thread::scope(|scope| {
+        for w in 0..jobs {
+            let (files, dir, tested) = (&files, &dir, &tested);
+            let (failures, checked, flagged, unread) = (&failures, &checked, &flagged, &unread);
+            scope.spawn(move || {
+                for (i, file) in files.iter().enumerate().skip(w).step_by(jobs) {
+                    let (a, b) = (
+                        dir.join(format!("{i}-m.json")),
+                        dir.join(format!("{i}-d.json")),
+                    );
+                    let asked = ein(&[
+                        "solve",
+                        file,
+                        "--monotone",
+                        "--json-summary",
+                        a.to_str().unwrap(),
+                    ]);
+                    if asked.code != 0 {
+                        // A file that does not load: no verdict to compare.
+                        continue;
+                    }
+                    let described = ein(&[
+                        "solve",
+                        file,
+                        "--region-limit",
+                        "0",
+                        "--region-budget",
+                        "1",
+                        "--json-summary",
+                        b.to_str().unwrap(),
+                    ]);
+                    if described.code != 0 {
+                        // A read-out that errs prints none: a goal the
+                        // compiler rejects ends the run where a state is
+                        // answered from it (`read_out.rs`), and `--monotone`
+                        // answers no query.
+                        unread
+                            .lock()
+                            .expect("one writer at a time")
+                            .push(file.clone());
+                        continue;
+                    }
+                    let mut bad = Vec::new();
+                    let monotone = line(&asked.out, "monotone").starts_with("yes");
+                    let Some(lattice) = described
+                        .out
+                        .lines()
+                        .find_map(|l| l.strip_prefix("  lattice "))
+                        .map(str::trim_start)
+                    else {
+                        failures.lock().expect("one writer at a time").push(format!(
+                            "{file}: the read-out has no lattice row (exit {}): {}",
+                            described.code, described.err
+                        ));
+                        continue;
+                    };
+                    if lattice.starts_with("monotone") != monotone {
+                        bad.push(format!(
+                            "verdict: `--monotone` {monotone}, lattice row `{lattice}`"
+                        ));
+                    }
+                    if !monotone {
+                        flagged.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                        let sites = line(&asked.out, "monotone").trim_start_matches("no — ");
+                        if !lattice
+                            .starts_with(&format!("not monotone: {sites} (the static check)"))
+                        {
+                            bad.push(format!("sites: `{sites}` against `{lattice}`"));
+                        }
+                    }
+                    if static_rows(&asked.out) != static_rows(&described.out) {
+                        bad.push(format!(
+                            "static rows:\n{}\nagainst\n{}",
+                            static_rows(&asked.out).join("\n"),
+                            static_rows(&described.out).join("\n")
+                        ));
+                    }
+                    let block = |p: &std::path::Path| -> serde_json::Value {
+                        let s: serde_json::Value =
+                            serde_json::from_str(&std::fs::read_to_string(p).expect("a summary"))
+                                .expect("JSON");
+                        let m = &s["monotonicity"];
+                        serde_json::json!([
+                            m["monotone"],
+                            m["sites"],
+                            m["assumes"],
+                            m["cycles"],
+                            m["order"]
+                        ])
+                    };
+                    if block(&a) != block(&b) {
+                        bad.push("the summaries' monotonicity blocks differ".to_string());
+                    }
+                    if let Some(&m) = tested.get(file.as_str())
+                        && m != monotone
+                    {
+                        bad.push(format!("`ein test`'s row says monotone = {m}"));
+                    }
+                    checked.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                    if !bad.is_empty() {
+                        failures
+                            .lock()
+                            .expect("one writer at a time")
+                            .push(format!("{file}: {}", bad.join("; ")));
+                    }
+                }
+            });
+        }
+    });
+    let failures = failures.into_inner().expect("joined");
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    let mut unread = unread.into_inner().expect("joined");
+    unread.sort();
+    assert_eq!(
+        unread,
+        [
+            "examples/ein-bugs/query-goal-free-head.ein",
+            "examples/features/02_star_in_identifiers.ein"
+        ],
+        "the programs whose read-out errs, and so has no lattice block to compare"
+    );
+    let (checked, flagged) = (checked.into_inner(), flagged.into_inner());
+    assert!(
+        checked > 200 && flagged >= 26,
+        "{checked} checked, {flagged} flagged"
+    );
+    assert!(
+        tested.values().any(|m| !m),
+        "no flagged program carries a solve claim: the `ein test` half reads nothing"
+    );
+    let _ = std::fs::remove_dir_all(&dir);
+}
