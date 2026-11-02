@@ -12,7 +12,8 @@ compares them node for node. `--json` is the form that test reads.
 The lattice over n candidate facts is the n-cube: a node is an n-bit mask, an
 edge adds or removes one fact, and layer k is the masks with k bits set. Every
 node C is appended to FILE as given facts and classified: dead (`ein saturate`
-derives `false`), owing n (`--json-summary`'s `region.root_owes` of a
+derives `false`, or `--json-summary`'s `region.root` says `dead`, which also
+counts a pair `X`, `(not X)`), owing n (`region.root_owes` of a
 `solve --region-budget 1`, which reads root and stops), or ok. R = the ok
 nodes. The closure is read off `ein saturate --dump`.
 
@@ -73,7 +74,13 @@ def classify(src, sub, d, H):
     subprocess.run([EIN, "solve", f, "--region-budget", "1", "--json-summary", j],
                    capture_output=True)
     with open(j) as fh:
-        owes = json.load(fh)["region"]["root_owes"]
+        region = json.load(fh)["region"]
+    # A pair contradiction, `X` beside `(not X)`, derives no `false` fact: the
+    # summary's `root` is the engine's own test (M1e2 S1e2.1b.2, which found
+    # the dump's `false` row missing 12 dead nodes of d3-unsat-core's 32).
+    if region["root"] == "dead":
+        return "dead", None
+    owes = region["root_owes"]
     held = {re.sub(r"\s+:(rule|source|hypothesis|using)\s+(\"[^\"]*\"|[^\s)]+)", "", l.strip())
             for l in sat.split("SATURATED KB DUMP", 1)[1].splitlines() if l.startswith("  (")}
     return (f"owes {owes}" if owes else "ok"), sorted(h for h in H if h in held)

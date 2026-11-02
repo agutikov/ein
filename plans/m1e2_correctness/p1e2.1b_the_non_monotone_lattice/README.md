@@ -38,6 +38,9 @@ frame, with one fixture per cause, the closure-operator test, seven drawings
 and the guard split held to the oracle. The split agrees on 19 of 21 cubes,
 and W8's two are the fork-or-scratch difference. Its cells for S1e2.1b.2–.4
 name their owners. Next by the work order: S1e2.1b.2–.4.
+**S1e2.1b.2 is under way** ([its stage file](s1e2.1b.2_fork_or_scratch.md),
+[the node census](node_census.md)): fork and scratch, node for node, differ
+on 4 of 256 flagged nodes and on none of 268 213 monotone ones.
 **Depends on:** S1e2.1a.1. Its detector gives this phase its census, and its
 stub is what [S1e2.1b.5](s1e2.1b.5_the_handling.md) replaces. Since
 2026-11-02 also [P1e2.4](../p1e2.4_what_the_switch_left/README.md), which runs

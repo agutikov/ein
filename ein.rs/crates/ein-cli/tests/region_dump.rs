@@ -142,8 +142,13 @@ fn require_python3() {
 /// below is not vacuous: none of the seven does (S1e2.1a.2).
 const MOVES: &str = "examples/saturation/transitive/taxonomy.ein";
 
+/// A program whose dead nodes die by a **pair**, `X` beside `(not X)`, which
+/// derives no `(false)` fact: 12 of its 32 nodes. `region.py` read only
+/// `false` until M1e2 S1e2.1b.2, and called those 12 alive.
+const PAIR: &str = "corpus/fuzz_findings/d3-unsat-core.ein";
+
 /// **Two routes agree.** The library oracle and `utils/region.py` on the
-/// seven programs and [`MOVES`], node for node: the status of every subset,
+/// seven programs, [`MOVES`] and [`PAIR`], node for node: the status of every subset,
 /// every alive node's closure (S1e2.1a.2), the two lines, the holes, the
 /// components' sizes, the maximal sub-cubes, `N`, and the N side of the
 /// duality. One of the seven has a hole.
@@ -152,7 +157,7 @@ fn the_oracle_and_the_per_subset_route_agree_node_for_node() {
     require_python3();
     let root = scratch("routes");
     let mut moved = 0;
-    for (i, file) in SEVEN.iter().chain([&MOVES]).enumerate() {
+    for (i, file) in SEVEN.iter().chain([&MOVES, &PAIR]).enumerate() {
         let dir = root.join(format!("{i}"));
         let r = dump(file, &[], &dir);
         assert_eq!(r.code, 0, "{file}: {}", r.err);
