@@ -381,7 +381,25 @@ repair edges; (b) R as convex pieces; (c) a qualifier; (d) a refusal. With
 (d1) dead and owing holes, one word or two, (d2) a claim form, (d3) the stub's
 words, (d4) `lattice/04`'s register row. Evidence:
 [S1e2.1b.3](../m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md)'s
-`hole_census.md`, each option drafted as a read-out on real programs.
+[`hole_census.md`](../m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md)
+(2026-11-02, `cargo run --release -p ein-infer --example hole_census`):
+
+- **the holes**: 18 on 9 of the 18 flagged corpus cubes within the limit, 8
+  dead and 10 owing, each with one of six causes and a site (§ 1–4); 166, all
+  owing, on `lattice/06_friends_tables` at `--region-limit 19` (§ 7); the same
+  by fork and from scratch on every program (§ 6);
+- **the shape**: the lines describe R plus its holes; the one-fact test
+  misreads 7 maximal and 20 minimal nodes on `06`; R's convex pieces are not a
+  partition (§ 5);
+- **each option drafted** on six real programs and two written ones, with its
+  line count and what it refuses and moves: (d) refuses the 26 flagged
+  programs, 8 of them with no hole; (c) moves 150 lines of
+  `corpus_shapes.md5`, (a) and (b) 18 (§ 9–10);
+- **(d4)**: no row filed; on `lattice/04` it follows from D4 alone.
+
+The agent's recommendation, not the user's: (a), with dead and owing holes
+named apart and the dead row naming the `absent` its refutation rests on
+(§ 10 there).
 **Until decided:** the listing is R, and the `lattice` row names up to four
 minimal holes with why each is out
 ([`read_out.md` § 6.3](../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#63-holes-the-stub-never-silent)).

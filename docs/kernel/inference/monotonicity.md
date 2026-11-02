@@ -96,7 +96,7 @@ come, you all sit*, has R of 21 isolated nodes and 166 holes. Its monotone twin
 | **learned nogoods, kill cache, singleton writeback** | sound: every superset of a dead set is dead | unsound where the refutation read a third-kind relation: W3, and `synth/three_components`' learned clauses {A,F} and {A,G} (S1e2.1a.8). The language is ruled, *forbid* ([S1e2.4.1 § 5](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling), 2026-11-02): a refutation may not rest on an `absent` over a relation a commitment can extend. **What a route may learn before that refusal ships is open**: F21's D6, measured by [S1e2.1b.4](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md). Since the switch no route learns on a flagged program | the dead row's evidence |
 | **saturation on the cube** | a **closure operator**: C ⊆ cl(C), cl(cl(C)) = cl(C), C ⊆ D ⇒ cl(C) ⊆ cl(D). R's states are closed sets, each the union of the intervals [g … cl] over its minimal generators g | cl need not be monotone. States still partition the commitments, but not as the closed sets of a closure system | `region.rs::a_monotone_verdict_makes_saturation_a_closure_operator`: every node of every monotone cube within the limit, dead ones included, and saturation moves a node on 15 of them. On `CL_NOT_MONOTONE`, flagged, cl is not monotone |
 | **a node's state** | unique, the least fixpoint: built by fork from root or from scratch, one fact set, by the theorem (`ein-cli/tests/region_dump.rs` holds `utils/region.py`, the scratch route, to the oracle on Q-M1e2.7's seven programs) | depends on the route. On W8's [`stale-naf-fork.ein`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein), `{(q one)}` is dead by fork, because root derived `(p one)` under `(absent (q one))`, and in R from scratch. A parent path can differ from both (§ 7.2). **Which one R is defined over is open**: Q-M1e2.2, F21's D2, with [S1e2.1b.2](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md)'s evidence | § 6.4: the guard split reads scratch, and disagrees with the oracle on exactly W8's two witnesses; § 7 |
-| **holes, reported** | there are none | the read-out names each minimal hole today (`ein solve examples/lattice/04_obligation_trigger_hole.ein`: `minimal hole {(seats Ann C1)} — owes 1`). **What is reported, a qualifier, the pieces or a refusal, is open**: Q-M1e2.7 (d), F21's D4, with [S1e2.1b.3](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md)'s evidence | `region.json`'s `holes`, `minimal_holes`, `repairs` |
+| **holes, reported** | there are none | the read-out names up to four minimal holes today (`ein solve examples/lattice/04_obligation_trigger_hole.ein`: `minimal hole {(seats Ann C1)} — owes 1`). **What is reported, a qualifier, the pieces or a refusal, is open**: Q-M1e2.7 (d), F21's D4, with [S1e2.1b.3](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md)'s evidence: every hole by cause and kind, and each option drafted on real programs ([hole census](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md)) | `region.json`'s `holes`, `minimal_holes`, `repairs` |
 | **certificate** | N, E and the static verdict: polynomial in \|N\| + \|E\| | the full classification. With the guard split, each cell's guess and its N and E (§ 6.4, not built) | route 1 is held to the oracle (`region.rs::route_1_is_the_oracle_on_every_monotone_program_it_reaches`) |
 | **detection** | static: [`monotone.rs`](../../../ein.rs/crates/ein-infer/src/monotone.rs), a sufficient condition read at **relation grain**, as the user ruled on 2026-11-02 ([S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)) | the static check flags a **site**; only the cube says whether it did harm | § 5 |
 
@@ -521,6 +521,16 @@ the case with absent in s1e2.4.1"*. For the state, no.
   `ACTIVATOR_REFUTES`). The rule a node compiles there reads
   `(absent (?R ?x))`; the program's only site is the activator, and a check of
   root's plans does not see the `absent`.
+- **An activator can hide the `absent` from a refutation's derivation as
+  well** (measured: `cargo run --release -p ein-infer --example hole_census --
+  --written`, 2026-11-02 at `4562bf70`,
+  [hole census § 2](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md#2-by-cause-and-kind)).
+  On `ein-infer/examples/shared/written.rs`'s `ACTIVATOR_UNDER_ABSENT`, `act`
+  derives the activator `(watch r)` under `(absent (q ?x))`, and the plan it
+  compiles refutes `(r A)` reading no `absent`. The dead hole `{(p A), (r A)}`
+  has no `absent` premise, because a derivation does not record the activator
+  its plan was compiled from. What that means for learning from a refutation
+  is M1e2 S1e2.1b.4's.
 
 ### 7.5 The status: `dead` follows the state, `owes` does not
 
@@ -630,6 +640,7 @@ site that concludes a positive fact: `d3-unsat-core`, `f07-fpoff`,
 | the FIFO example is path-dependent in the engine as written | unverified | the example banked as a fixture, read by `node_census` (S1e2.1b.7); its relative `stratified_stale` is measured |
 | a state difference needs an `absent` | argued, and measured consistent | `node_census` § 2, § 4, § 6.1 |
 | an activator can hide an `absent` from root's plans | held by a test | `each_cause_has_a_fixture_whose_cube_shows_its_hole` |
+| an activator derived under an `absent` hides it from the refutation's derivation | measured | `hole_census -- --written`, `4562bf70` |
 | `dead` follows the state | argued | premise: the state is monotone |
 | `owes` breaks over a path-independent state | held by a test, and measured | `each_cause_has_a_fixture_whose_cube_shows_its_hole`; `node_census` § 2.1 |
 | a monotone program has both properties and no hole | held by a test | `a_monotone_verdict_makes_saturation_a_closure_operator`, `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged` |
@@ -654,7 +665,7 @@ puts a warning on every surface that reports R saying so.
 | (E): *forbid* extended to every `absent` site | D1 | § 7.7; [`site_census.md`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md) | *forbid* as ruled; the 13 load |
 | what a node's state is (Q-M1e2.2): fork, scratch, guards as premises, refuse a cycle through an odd `absent`, the stable endpoints of every path (§ 7.2); (D)'s scope; admission in stratum order | D2 | § 7.2–7.3; [S1e2.1b.2](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md), `node_census.md` § 9–10 | fork from root |
 | whether a route may build a node from a parent's fixpoint on a flagged program | D3 | § 7.2 | only on a monotone program |
-| what is reported when R has holes (Q-M1e2.7 (d)) | D4 | § 7.5; [S1e2.1b.3](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md) | the read-out names up to four minimal holes |
+| what is reported when R has holes (Q-M1e2.7 (d)) | D4 | § 7.5; [S1e2.1b.3](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md), its [hole census](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md) | the read-out names up to four minimal holes |
 | refuse, qualify, or search differently | D5 | § 6 | route 2, and the warnings |
 | what a route may learn from a refutation resting on an `absent` | D6 | § 3's learned-nogoods row; [S1e2.1b.4](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md) | nothing, on a flagged program |
 | the search past the oracle's limit | D7 | § 6.4 | partial past `--region-limit`, the cube when asked |
