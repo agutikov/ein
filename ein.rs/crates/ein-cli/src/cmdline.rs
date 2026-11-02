@@ -409,6 +409,34 @@ fn solve_command() -> Command {
                      exits 0, and a run that stopped before it decided says so",
                 ),
         )
+        // M1e2 S1e2.1b.5, approved 2026-11-03: a question about the program.
+        .arg(
+            Arg::new("monotone")
+                .long("monotone")
+                .action(ArgAction::SetTrue)
+                .conflicts_with_all([
+                    "solutions",
+                    "single",
+                    "minimal",
+                    "maximal",
+                    "region-budget",
+                    "trace",
+                    "dump-lattice",
+                    "diff-models",
+                    "models",
+                    "print-final-state",
+                    "print-final-positive",
+                    "print-final-hfacts",
+                    "hyp-stats",
+                    "timing",
+                ])
+                .help(
+                    "is the program monotone? Root's fixpoint and the static check, \
+                     and nothing else: the sites, what each puts at stake, the \
+                     cycles and order findings. No node is built and R is not \
+                     described; every verdict exits 0",
+                ),
+        )
         .arg(
             Arg::new("region-budget")
                 .long("region-budget")

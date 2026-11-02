@@ -22,8 +22,9 @@ use std::collections::BTreeMap;
 use std::fmt::Write as _;
 
 use ein_infer::described::Described;
+use ein_infer::detector::ASSUMES;
 use ein_infer::expect::Outcome;
-use ein_infer::explore::{Ask, Licence, Route, Stopped, Verdict, Which};
+use ein_infer::explore::{Ask, Checked, Licence, Route, Stopped, Verdict, Which};
 use ein_infer::monotone::Monotonicity;
 use ein_infer::read_out::{Listed, Listing, Query, ReadOut};
 use ein_ir::expect::Over;
@@ -289,6 +290,113 @@ fn lattice_row(out: &mut Out, m: &Monotonicity, holes: Option<u64>) {
                 plural(m.sites.len() as u64, "site", "sites")
             ),
         );
+    }
+}
+
+// ── The warning, as rows ────────────────────────────────────────────
+
+/// How many sites, and how many stale nodes, the warning names on stdout
+/// before a `…` row says how many more `--dump-answer` writes (the
+/// proposal's § 0, approved 2026-11-03).
+pub const WARNING_ROWS: usize = 4;
+
+/// A row under the `lattice` row, at the hole rows' indent.
+fn sub_row(label: &str, value: impl AsRef<str>) -> String {
+    format!("    {label:<16}{}", value.as_ref())
+}
+
+/// The warning's static half, as rows under its first: `assumes`, a `site`
+/// per site (at most [`WARNING_ROWS`] unless `uncut`), each `cycle`, each
+/// `order` — what `ein solve --monotone` prints, and every flagged read-out's
+/// `lattice` block.
+pub fn static_rows(m: &Monotonicity, uncut: bool) -> Vec<String> {
+    let mut out = vec![sub_row("assumes", ASSUMES)];
+    let stakes = &m.detector.stakes;
+    for (i, s) in stakes.iter().enumerate() {
+        if i == WARNING_ROWS && !uncut {
+            out.push(sub_row(
+                "…",
+                format!(
+                    "{} more sites: --dump-answer DIR writes every one",
+                    group((stakes.len() - WARNING_ROWS) as u64)
+                ),
+            ));
+            break;
+        }
+        out.push(sub_row("site", s.text()));
+    }
+    for c in &m.detector.cycles {
+        out.push(sub_row("cycle", c.text()));
+    }
+    for o in ein_infer::detector::order_texts(&m.detector.order) {
+        out.push(sub_row("order", o));
+    }
+    out
+}
+
+/// `ein solve FILE --monotone`: a question about the program, answered by
+/// root's fixpoint and the static check — the proposal's § 2.2, approved
+/// 2026-11-03. The cube's half is not computed (option (i)): the `bit` row
+/// names what computes it. Every verdict exits 0.
+pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
+    let mut out = Out {
+        text: String::new(),
+        stderr: Vec::new(),
+        listed: 0,
+        uncut: o.uncut,
+        shown: Vec::new(),
+    };
+    out.line(format!("{} · {}", o.command, o.argv));
+    out.line(RULE);
+    out.row(
+        "asked",
+        "is the program monotone? — the static check, on root's fixpoint",
+    );
+    let m = &c.monotonicity;
+    if m.is_monotone() {
+        out.row(
+            "monotone",
+            "yes — no site: dead and discharged are upward-closed, so R has no hole and its two \
+             lines describe it",
+        );
+    } else {
+        out.row(
+            "monotone",
+            format!("no — {}", plural(m.sites.len() as u64, "site", "sites")),
+        );
+        for l in static_rows(m, o.uncut) {
+            out.line(l);
+        }
+        let n = c.n;
+        let bit = if n > limit as usize || n >= 64 {
+            format!("not computed — the cube is 2^{n} nodes, past --region-limit {limit}")
+        } else if c.root_dead {
+            // A bare `ein solve` decides a dead root by L0 and reads root
+            // alone, so it does not compute the cube here.
+            format!(
+                "not computed — the cube is 2^{n} = {} saturations: `ein oracle FILE` computes it",
+                group(1u64 << n)
+            )
+        } else {
+            format!(
+                "not computed — the cube is 2^{n} = {} saturations: `ein oracle FILE` computes it, \
+                 and so does a bare `ein solve FILE`",
+                group(1u64 << n)
+            )
+        };
+        out.line(sub_row("bit", bit));
+    }
+    out.row("universe", plural(c.n as u64, "candidate", "candidates"));
+    out.row(
+        "route",
+        "none — a question about the program: root's fixpoint, then the static check",
+    );
+    out.row("work", "1 saturation, root's · 0 facts beyond root");
+    Text {
+        stdout: out.text,
+        stderr: out.stderr,
+        code: 0,
+        shown: out.shown,
     }
 }
 

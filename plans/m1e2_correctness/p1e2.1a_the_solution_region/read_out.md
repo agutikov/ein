@@ -207,6 +207,7 @@ runs one program under each.
 | `-n N` | `N states of R (-n N)` | `states of R  2 states, as asked — R may hold more` | the first N in the route's order |
 | `--maximal -n N`, `--minimal -n N` | the same, of the line | `maximal line  1 state, as asked — the maximal line may hold more` | the same |
 | `--single` | `is R one state? (--single)` | `verdict  Ambiguity — R holds two states or more; two of them below` and `decided  yes — two states settle it; …` | the one state, or the two |
+| `--monotone` (M1e2 S1e2.1b.5, approved 2026-11-03) | `is the program monotone? — the static check, on root's fixpoint` | `monotone  yes — no site: …`, or `monotone  no — 1 site` with the warning's static rows (`assumes`, `site`, `cycle`, `order`) and a `bit` row, `not computed — …`, naming what computes the cube | none: it asks about the program, builds no node and lists no state; `route  none — a question about the program`, `work  1 saturation, root's · 0 facts beyond root` |
 
 - **k_s and k_c are not printed under a mode.** They are R's, and a mode did
   not describe R (rule 2). `--single`'s `Solution` certifies that the part it

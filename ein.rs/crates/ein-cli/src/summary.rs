@@ -314,6 +314,63 @@ pub fn build_region(
     Ok(Json::obj(pairs))
 }
 
+/// The summary of `ein solve --monotone`, `ein-summary/2` — M1e2 S1e2.1b.5:
+/// every key a region run's summary has, `asked.ask` = `"monotone"`, no
+/// region, no verdict, no query answered, root's one saturation as the work,
+/// and the static check's block.
+pub fn build_monotone(
+    ast: &Ast,
+    terms: &mut Terms,
+    kb: &mut Kb,
+    checked: &ein_infer::explore::Checked,
+    source: &str,
+    config: &SolverConfig,
+) -> Result<Json, String> {
+    let taken = matches!(std::env::var("EIN_LEFTOVER").as_deref(), Ok("1"));
+    let mut off = ein_infer::events::Events::off();
+    Ok(Json::obj(vec![
+        (
+            "schema",
+            Json::str(ein_render::dump::region_answer::SUMMARY),
+        ),
+        ("source", Json::str(source)),
+        (
+            "asked",
+            Json::obj(vec![
+                ("which", Json::Null),
+                ("ask", Json::str("monotone")),
+                ("n", Json::Null),
+            ]),
+        ),
+        ("region", Json::Null),
+        ("verdict", Json::Null),
+        ("queries", Json::Array(Vec::new())),
+        ("claim", Json::Null),
+        (
+            "work",
+            Json::obj(vec![
+                ("saturations", Json::int(1)),
+                ("facts", Json::int(0)),
+                ("layers", Json::Null),
+            ]),
+        ),
+        (
+            "monotonicity",
+            ein_render::dump::region::monotonicity_json(&checked.monotonicity, terms),
+        ),
+        (
+            "leftover",
+            Json::obj(vec![
+                ("taken", Json::Bool(taken)),
+                ("states", Json::Array(Vec::new())),
+                ("states_by_relation", Json::Array(Vec::new())),
+            ]),
+        ),
+        ("root", root_block(ast, terms, kb, &mut off)?),
+        ("config", config_block(config)),
+    ]))
+}
+
 /// The summary as JSON, two-space indented, **ASCII-only**, with a trailing
 /// newline.
 ///

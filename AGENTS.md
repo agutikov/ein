@@ -64,7 +64,7 @@ constrained-reasoning research.
   [configuration reference](docs/kernel/configuration.md)** — the 7
   `(config …)` flags a program can set (ten more retired, nine at M1e2
   S1e2.1a.5 and one at S1e2.1a.6, each refused with the stage and why), the
-  71 CLI options, the eight `EIN_*` names the binary actually reads, the
+  72 CLI options, the eight `EIN_*` names the binary actually reads, the
   precedence between the three, and on every flag row a *does it change the
   answer* and a *stability* column. Its defaults block is `ein solve
   --dump-config`'s own output (`EIN_BLESS=1` re-banks it). Two of the
@@ -581,7 +581,7 @@ set.** The shipped binary reads **eight** (three of them only in a non-default
 build), the test harness reads ten more, `utils/` and the shell two — and six
 greppable `EIN_*` names are not environment variables at all, `EIN_RS` and
 `EIN_RENDER_LEVI` among them. The whole census, classified, with the 17
-`(config …)` fields and the 71 CLI options beside it and a *does it change the
+`(config …)` fields and the 72 CLI options beside it and a *does it change the
 answer* column on every flag row:
 [`docs/kernel/configuration.md`](docs/kernel/configuration.md) (M1e S1e.5.1),
 pinned by `ein-cli/tests/config_reference.rs`.

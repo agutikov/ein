@@ -9,7 +9,9 @@
 > S1e2.1a.5's switch (2026-10-18) a program sets eight of them**, nine retired
 > with the walk, and `ein solve` has 33 options where it had 42. **Since
 > S1e2.1a.6 (2026-11-01) it sets seven**: `enable-symmetric-mirror`, the one
-> flag that changed R, retired too.
+> flag that changed R, retired too. **Since S1e2.1b.5 (2026-11-03)** `ein
+> solve` has 34: `--monotone`, the explicit check the user approved, asks
+> about the program instead of R.
 >
 > **It is a reference, not a narrative.** One row per knob. What a lever *does
 > to the search*, and what it was measured at, is
@@ -43,7 +45,7 @@
 | surface | how many | who owns the list |
 |---|---:|---|
 | `(config …)` flags | **7** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the ten a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **71** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| CLI options | **72** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **8** read by the shipped binary, of 26 greppable names | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -287,12 +289,12 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**71** options across fifteen parsers, in the default build (`einb`,
+**72** options across fifteen parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 33 |
+| `ein solve` | 34 |
 | `ein oracle` | 10 |
 | `ein test` | 8 |
 | `ein saturate` | 5 |
@@ -306,7 +308,7 @@ parallel copy. What this page states is the *shape*, read off that golden:
 
 `ein`, `ein kb`, `ein render` and `ein render constraints` take none — they are
 dispatchers. `ein kb save` exists only under the `einb` feature; a
-`--no-default-features` build has 70 and no `ein kb` at all. M1e2
+`--no-default-features` build has 71 and no `ein kb` at all. M1e2
 S1e2.1a.7 added the last two, `ein render region`'s `--visited` and
 `--answer`: a region run's `--dump-lattice` and `--dump-answer` drawn on the
 cube ([`04_dot_rendering.md` § Region rendering](ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)).
@@ -358,8 +360,11 @@ Five classes. Only the first touches the answer, and then only by asking a
 different question or stopping early.
 
 - **The question and its budget** — `--minimal`, `--maximal`, `--single`,
-  `-n`/`--solutions`, `--region-budget`, `--region-limit`, `-T`/`--max-time`.
-  The first four choose what is asked about R; the budget, the cube's limit
+  `-n`/`--solutions`, `--monotone`, `--region-budget`, `--region-limit`,
+  `-T`/`--max-time`. The first four choose what is asked about R, and
+  `--monotone` (M1e2 S1e2.1b.5) asks about the program instead: root's
+  fixpoint and the static check, no node built, every verdict exit 0, and
+  exclusive with the four. The budget, the cube's limit
   and the deadline stop a run, and then every surface says the answer is
   partial: a lower bound, a `note:` on stderr, `exhausted no` and why. A
   `-T` abort exits 2 and prints no answer, because a machine-dependent limit

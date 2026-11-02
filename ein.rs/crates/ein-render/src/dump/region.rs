@@ -147,7 +147,7 @@ pub fn monotonicity_json(m: &Monotonicity, terms: &Terms) -> Json {
             ),
         ])
     };
-    Json::obj(vec![
+    let mut pairs = vec![
         ("monotone", Json::Bool(m.is_monotone())),
         (
             "hypothesised",
@@ -181,8 +181,9 @@ pub fn monotonicity_json(m: &Monotonicity, terms: &Terms) -> Json {
             Json::Array(
                 m.sites
                     .iter()
-                    .map(|s| {
-                        Json::obj(vec![
+                    .enumerate()
+                    .map(|(i, s)| {
+                        let mut site = vec![
                             ("rule", Json::str(terms.sym(s.rule))),
                             (
                                 "activator",
@@ -196,12 +197,81 @@ pub fn monotonicity_json(m: &Monotonicity, terms: &Terms) -> Json {
                             ("kind", Json::str(s.kind.as_str())),
                             ("relation", Json::str(s.relation.label(terms))),
                             ("depth", Json::int(s.depth as i64)),
+                        ];
+                        // The detector's reading of the site (M1e2
+                        // S1e2.1b.5): additive, and on a flagged program only.
+                        if let Some(stake) = m.detector.stakes.get(i) {
+                            site.push(("concludes", Json::str(stake.concludes.as_str())));
+                            site.push(("at_stake", Json::str(stake.at_stake.key())));
+                        }
+                        Json::obj(site)
+                    })
+                    .collect(),
+            ),
+        ),
+    ];
+    pairs.extend(static_half(m));
+    Json::obj(pairs)
+}
+
+/// The detector's static half, after the static check's fields (M1e2
+/// S1e2.1b.5): what is assumed, the cycles through an `absent` over D, the
+/// order findings. Every key on every run, as `ein-summary/2` has one shape:
+/// on a monotone program the detector reads nothing, so `assumes` is `null`
+/// and the two lists are empty.
+fn static_half(m: &Monotonicity) -> Vec<(&'static str, Json)> {
+    let d = &m.detector;
+    vec![
+        (
+            "assumes",
+            if m.is_monotone() {
+                Json::Null
+            } else {
+                Json::obj(vec![
+                    ("node", Json::str("fork from root")),
+                    ("open", Json::str("Q-M1e2.2, F21")),
+                ])
+            },
+        ),
+        (
+            "cycles",
+            Json::Array(
+                d.cycles
+                    .iter()
+                    .map(|c| {
+                        Json::obj(vec![
+                            ("relations", strs(&c.relations)),
+                            ("negative", strs(&c.negative)),
+                            ("odd", Json::Bool(c.odd)),
                         ])
                     })
                     .collect(),
             ),
         ),
-    ])
+        (
+            "order",
+            Json::Array(
+                d.order
+                    .iter()
+                    .map(|r| {
+                        Json::obj(vec![
+                            ("reader", Json::str(&r.reader)),
+                            ("writer", Json::str(&r.writer)),
+                            ("relations", strs(&r.relations)),
+                            (
+                                "priorities",
+                                Json::Array(vec![
+                                    Json::int(r.reader_priority),
+                                    Json::int(r.writer_priority),
+                                ]),
+                            ),
+                            ("at_one_priority", Json::Bool(r.at_one_priority())),
+                        ])
+                    })
+                    .collect(),
+            ),
+        ),
+    ]
 }
 
 fn absents_json(m: &Monotonicity, terms: &Terms) -> Json {

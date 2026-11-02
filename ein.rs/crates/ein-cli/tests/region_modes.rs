@@ -669,3 +669,123 @@ fn the_oracle_takes_the_read_outs_options() {
     assert!(t.err.contains("--max-time"), "{}", t.err);
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// **`ein solve FILE --monotone`**, the explicit check the user approved on
+/// 2026-11-03 (M1e2 S1e2.1b.5, `detector_proposal.md` § 2.2): a question
+/// about the program, answered by root's fixpoint and the static check. The
+/// blocks are the proposal's drafted ones, byte for byte (its monotone one on
+/// `lattice/02` rather than zebra, which this file does not anchor on); every
+/// verdict exits 0; it is exclusive with the questions about R; and its
+/// summary says what was asked and describes no region.
+#[test]
+fn the_monotone_question_is_about_the_program() {
+    let header = |file: &str| {
+        format!(
+            "solve · {file} --monotone\n\
+             ──────────────────────────────────────────────────────────────\n\
+             \x20 asked             is the program monotone? — the static check, on root's fixpoint\n"
+        )
+    };
+    let tail = |n: &str| {
+        format!(
+            "  universe          {n}\n\
+             \x20 route             none — a question about the program: root's fixpoint, then the static check\n\
+             \x20 work              1 saturation, root's · 0 facts beyond root\n"
+        )
+    };
+    let assumes = "    assumes         every node is a fork of root (root's fixpoint, its commitment \
+                   added, saturated); what a node is on this program is open: Q-M1e2.2, F21\n";
+    let cases: Vec<(&str, String)> = vec![
+        (
+            THREE,
+            format!(
+                "  monotone          yes — no site: dead and discharged are upward-closed, so R \
+                 has no hole and its two lines describe it\n{}",
+                tail("3 candidates")
+            ),
+        ),
+        (
+            "examples/ein-bugs/naf-upward-closure.ein",
+            format!(
+                "  monotone          no — 1 site\n{assumes}\
+                 \x20   site            bad: absent reads q at absent depth 1, concludes (false) — \
+                 at stake: the state, and dead with it\n\
+                 \x20   bit             not computed — the cube is 2^2 = 4 saturations: `ein \
+                 oracle FILE` computes it, and so does a bare `ein solve FILE`\n{}",
+                tail("2 candidates")
+            ),
+        ),
+        (
+            "examples/features/07_unstratifiable.ein",
+            format!(
+                "  monotone          no — 2 sites\n{assumes}\
+                 \x20   site            derive-p: absent reads q at absent depth 1, concludes a \
+                 positive fact — at stake: the state\n\
+                 \x20   site            derive-q: absent reads p at absent depth 1, concludes a \
+                 positive fact — at stake: the state\n\
+                 \x20   cycle           even through an absent — derive-p: q →¬ p · derive-q: p \
+                 →¬ q — several states with no stale fact can exist\n\
+                 \x20   order           derive-p and derive-q each read under an absent what the \
+                 other concludes, both at priority 200: which the boundary admits first is the \
+                 order they are written in\n\
+                 \x20   bit             not computed — the cube is 2^1 = 2 saturations: `ein \
+                 oracle FILE` computes it, and so does a bare `ein solve FILE`\n{}",
+                tail("1 candidate")
+            ),
+        ),
+        (
+            "examples/lattice/06_friends_tables.ein",
+            format!(
+                "  monotone          no — 1 site\n{assumes}\
+                 \x20   site            group-seated-owed: obligation-trigger reads sits at \
+                 absent depth 0, concludes (open …) — at stake: the status: owes\n\
+                 \x20   bit             not computed — the cube is 2^19 nodes, past \
+                 --region-limit 16\n{}",
+                tail("19 candidates")
+            ),
+        ),
+    ];
+    for (file, body) in &cases {
+        let r = ein(&["solve", file, "--monotone"]);
+        assert_eq!(r.code, 0, "{file}: {}", r.err);
+        assert_eq!(r.out, format!("{}{body}", header(file)), "{file}");
+        assert_eq!(r.err, "", "{file}");
+    }
+    for other in ["--minimal", "--maximal", "--single", "-n 2"] {
+        let mut args = vec!["solve", THREE, "--monotone"];
+        args.extend(other.split(' '));
+        let r = ein(&args);
+        assert_eq!(r.code, 2, "--monotone {other}: {}", r.out);
+        assert!(r.err.contains("cannot be used with"), "{other}: {}", r.err);
+    }
+    let dir = scratch("monotone");
+    std::fs::create_dir_all(&dir).expect("scratch");
+    let summary = dir.join("s.json");
+    let answer = dir.join("answer");
+    let r = ein(&[
+        "solve",
+        "examples/ein-bugs/naf-upward-closure.ein",
+        "--monotone",
+        "--json-summary",
+        summary.to_str().unwrap(),
+        "--dump-answer",
+        answer.to_str().unwrap(),
+    ]);
+    assert_eq!(r.code, 0, "{}", r.err);
+    let s: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&summary).expect("written")).expect("JSON");
+    assert_eq!(s["asked"]["ask"], "monotone");
+    assert!(s["region"].is_null());
+    assert_eq!(s["work"]["saturations"], 1);
+    assert_eq!(s["monotonicity"]["monotone"], false);
+    assert_eq!(s["monotonicity"]["sites"][0]["at_stake"], "state, dead");
+    assert_eq!(
+        std::fs::read_to_string(answer.join("answer.txt")).expect("written"),
+        r.out
+    );
+    assert_eq!(
+        std::fs::read_to_string(answer.join("answer.json")).expect("written"),
+        std::fs::read_to_string(&summary).expect("written")
+    );
+    let _ = std::fs::remove_dir_all(&dir);
+}

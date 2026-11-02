@@ -1542,3 +1542,42 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
         root_dead: r.root_dead,
     }
 }
+
+// ── `--monotone`: a question about the program ──────────────────────────
+
+/// `ein solve FILE --monotone`'s answer, a question about the **program**
+/// rather than about `R` — M1e2 S1e2.1b.5, the form the user approved on
+/// 2026-11-03 ((a1) of
+/// [`detector_proposal.md`](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md)
+/// § 2.2). Its work is root's fixpoint and the static check, and nothing
+/// else: no node is built, so it has no `R` to disagree with `ein solve`
+/// about, and its verdict and sites are the ones every surface prints, from
+/// the same [`crate::monotone::classify`].
+#[derive(Clone, Debug)]
+pub struct Checked {
+    /// The universe, as every route has it: how many candidates.
+    pub n: usize,
+    pub monotonicity: Monotonicity,
+    /// Root's own fixpoint derives `(false)`.
+    pub root_dead: bool,
+    pub wall: Duration,
+}
+
+/// Answer `--monotone` about `root`, a **freshly loaded, unsaturated**
+/// program: root's fixpoint, the universe and the static check, narrated into
+/// `events` as every route narrates root.
+pub fn check_monotone(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    events: &mut Events,
+) -> Result<Checked, SolveError> {
+    let t0 = Instant::now();
+    let p = region::prepare_with(root, terms, ast, events)?;
+    Ok(Checked {
+        n: p.candidates.len(),
+        monotonicity: p.monotonicity,
+        root_dead: p.root_dead,
+        wall: t0.elapsed(),
+    })
+}

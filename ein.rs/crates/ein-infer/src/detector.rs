@@ -172,8 +172,13 @@ impl Stake {
     /// The `site` row: the site, what its rule concludes, what it puts at
     /// stake.
     pub fn text(&self) -> String {
-        let what = if self.kind == SiteKind::Activator {
+        let what = if self.kind == SiteKind::Activator && self.concludes == Concludes::NoRootPlan {
             format!("; {}", self.concludes.as_str())
+        } else if self.kind == SiteKind::Activator {
+            format!(
+                "; a plan root compiled of it concludes {}",
+                self.concludes.as_str()
+            )
         } else {
             format!(", concludes {}", self.concludes.as_str())
         };

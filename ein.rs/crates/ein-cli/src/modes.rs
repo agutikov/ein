@@ -109,6 +109,9 @@ pub fn header_argv(command: &str) -> String {
 
 pub fn run(m: &ArgMatches) -> i32 {
     let file = m.get_one::<String>("file").expect("required").clone();
+    if m.get_flag("monotone") {
+        return run_monotone(m, &file);
+    }
     let mut opts = explore::Options::new(mode_of(m));
     if let Some(&b) = m.get_one::<i64>("region-budget") {
         opts.budget = b as u64;
@@ -335,6 +338,98 @@ pub fn run(m: &ArgMatches) -> i32 {
         }
     }
     code
+}
+
+/// `ein solve FILE --monotone` — M1e2 S1e2.1b.5, the form the user approved
+/// on 2026-11-03: a question about the **program**. Root's fixpoint and the
+/// static check, [`ein_infer::explore::check_monotone`], and nothing else, so
+/// it has no R to disagree with a bare `ein solve` about, and its verdict and
+/// sites are the `lattice` block's. `--json-summary` writes `ein-summary/2`
+/// with `asked.ask = "monotone"` and no region, `--dump-answer` writes the
+/// read-out uncut (`answer.txt`) and the summary (`answer.json`), and
+/// `--events` narrates root and, on a flagged program, the `monotonicity`
+/// line. Every verdict exits 0.
+fn run_monotone(m: &ArgMatches, file: &str) -> i32 {
+    let limit = (*m.get_one::<i64>("region-limit").unwrap_or(&16)).clamp(0, 63) as u32;
+    let dump = m.get_one::<String>("dump-answer").cloned();
+    if let Some(dir) = dump.as_deref()
+        && let Err(e) = std::fs::create_dir_all(dir)
+    {
+        crate::solve::artefact_failed("dump-answer", dir, e);
+        return 1;
+    }
+    let summary_path = m.get_one::<String>("json-summary").cloned();
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let Some(mut kb) = crate::common::load_any_or_exit(&mut ast, &mut terms, Path::new(file))
+    else {
+        return 1;
+    };
+    let cfg = crate::solve::resolved_config(&kb, m);
+    if m.get_flag("dump-config") {
+        crate::printers::print_resolved_config(&cfg);
+    }
+    let mut events = crate::solve::events_start(m, file, &cfg);
+    crate::solve::events_load(&mut events, &terms, &kb);
+    let checked = match explore::check_monotone(&mut kb, &mut terms, &ast, &mut events) {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("{e}");
+            return 1;
+        }
+    };
+    let argv = header_argv("solve");
+    let render = |uncut: bool| {
+        ein_render::read_out::render_monotone(
+            &checked,
+            &ein_render::read_out::Options {
+                command: "solve",
+                argv: &argv,
+                file,
+                budget: 0,
+                uncut,
+            },
+            limit,
+        )
+    };
+    let text = render(false);
+    print!("{}", text.stdout);
+    if m.get_flag("stats") {
+        println!();
+        println!("  {:<18}{:.1} ms", "wall", checked.wall.as_secs_f64() * 1e3);
+    }
+    for l in &text.stderr {
+        eprintln!("{l}");
+    }
+    if summary_path.is_none() && dump.is_none() {
+        return text.code;
+    }
+    let summary =
+        match crate::summary::build_monotone(&ast, &mut terms, &mut kb, &checked, file, &cfg) {
+            Ok(s) => crate::summary::text(&s),
+            Err(e) => {
+                for (flag, path) in [("json-summary", &summary_path), ("dump-answer", &dump)] {
+                    if let Some(p) = path {
+                        crate::solve::artefact_failed(flag, p, &e);
+                    }
+                }
+                return text.code;
+            }
+        };
+    if let Some(path) = summary_path.as_deref()
+        && let Err(e) = std::fs::write(path, &summary)
+    {
+        crate::solve::artefact_failed("json-summary", path, e);
+    }
+    if let Some(dir) = dump.as_deref() {
+        let dir = Path::new(dir);
+        let written = std::fs::write(dir.join("answer.txt"), render(true).stdout)
+            .and_then(|()| std::fs::write(dir.join("answer.json"), &summary));
+        if let Err(e) = written {
+            crate::solve::artefact_failed("dump-answer", &dir.display().to_string(), e);
+        }
+    }
+    text.code
 }
 
 /// The `region` event that closes a region run's stream (`read_out.md`
