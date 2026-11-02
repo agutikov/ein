@@ -25,6 +25,10 @@ mod census;
 #[allow(dead_code)]
 #[path = "../examples/shared/fact_grain.rs"]
 mod fact_grain;
+// The programs written for this file and for P1e2.1b's censuses (S1e2.1b.3).
+#[allow(dead_code)]
+#[path = "../examples/shared/written.rs"]
+mod written;
 
 fn compute(rel: &str) -> (Outcome, Terms) {
     let path = repo_root().join(rel);
@@ -249,17 +253,11 @@ fn monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged() 
     assert!(r.topology.discharged_not_upward_closed.count > 0);
 }
 
-/// An activator compiling a **refutation** at a node: `{(p A)}` derives `(watch
-/// q)`, which compiles `watch` for `q`, and `(r A)` with `(q A)` absent is then
-/// a contradiction. No plan at root reads `q` under an `absent`, so the static
-/// check's one site is the activator, and a check that runs on root's plans
-/// cannot see the refutation.
-const ACTIVATOR_REFUTES: &str = "(relation p T) (relation q T) (relation r T) (relation watch T)
-     (r A)
-     (hrule g1 () :match (r ?x) :assert (p ?x))
-     (hrule g2 () :match (r ?x) :assert (q ?x))
-     (rule watch (?R) :match (and (r ?x) (absent (?R ?x))) :assert (false))
-     (rule act () :match (p ?x) :assert (watch q))";
+// An activator compiling a **refutation** at a node (`written.rs` has the text
+// and why): its one site is the activator, and a check that runs on root's
+// plans cannot see the refutation. The text lives beside the censuses that
+// read it too (M1e2 S1e2.1b.3), so a census and this test read one program.
+use written::ACTIVATOR_REFUTES;
 
 /// **One fixture per cause** — S1e2.1b.6, the comparison's *what causes it*
 /// row. Each program's only site is of its cause, and its cube shows the hole
