@@ -658,6 +658,78 @@ site that concludes a positive fact: `d3-unsat-core`, `f07-fpoff`,
 | (E) leaves a monotone, path-independent state on every program that loads | argued | premise: S1e2.2.5's F1 reads D and its F3 sees compiled plans |
 | (E)'s 13 programs | measured | `site_census`, `4b822a8d` and `6743dd17` |
 
+### 7.9 The causes, as one table
+
+Written 2026-11-02 by M1e2's
+[S1e2.1b.7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_the_consequences_written_down.md)
+from the census pages, one row per cause, each with a fixture. It decides
+nothing: every *covers* and every *bears on* cell names an option of
+[F21](../../../plans/followups/f21_non_monotone_programs_decided.md), which is
+open. **Path dependence is not a row**: it is a consequence, and its column
+says which causes produce it.
+
+| | cause | fixture | breaks | the static check sees it as | the cube calls it | path dependence |
+|---|---|---|---|---|---|---|
+| c1 | an `absent` that concludes a positive fact | [`features/07`](../../../examples/features/07_unstratifiable.ein), [`stale-naf-fork`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein) (W8) | **the state**: root's `(p one)` is kept under a guard the commitment falsifies | `SiteKind::Absent` | conservative | yes: fork ≠ scratch at `{(q one)}` (`node_census.md` § 2.1) |
+| c2 | an `absent` that refutes | [`naf-upward-closure`](../../../examples/ein-bugs/naf-upward-closure.ein) (W3's `bad`) | **the state, and `dead` with it**: `(false)` is a fact | `SiteKind::Absent`, concluding `(false)` | exercised: a dead hole | none by fork and scratch; through a dead parent, see c2's note below |
+| c3 | a refutation through a fact derived under an `absent` (`via`) | probe [`via_hole.ein`](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein); in the corpus `stale-naf-fork`'s `p-and-q-clash` | **the state, and `dead`**; the refuting rule reads no `absent` | `SiteKind::Absent` on the deriving rule; the refuting rule is no site | exercised: a dead hole | yes: a one-step parent path, 1 of 4 nodes (`node_census.md` § 6.1) |
+| c4 | an `absent` that takes a witness away | [`lattice/08`](../../../examples/lattice/08_absent_witness_hole.ein) | **the state, and `owes` with it** | `SiteKind::Absent` | exercised: an owing hole | yes, with nothing derived at root: 2 of 4 (§ 6.1 there) |
+| c5 | an obligation's trigger | [`lattice/04`](../../../examples/lattice/04_obligation_trigger_hole.ein), [`06_friends_tables`](../../../examples/lattice/06_friends_tables.ein) | **the status alone**: `owes` | `SiteKind::ObligationTrigger` | exercised: an owing hole | none: fork = scratch on every node, and no parent path differs |
+| c6 | an activator that compiles an obligation | [`lattice/09`](../../../examples/lattice/09_activator_hole.ein) | **the status alone**: `owes` | `SiteKind::Activator` | exercised: an owing hole | none |
+| c7 | an activator that compiles a refutation, hiding its `absent` | `ACTIVATOR_REFUTES` ([`written.rs`](../../../ein.rs/crates/ein-infer/examples/shared/written.rs)) | **the state, and `dead`**, through `(absent (?R ?x))` in a plan only a node compiles | `SiteKind::Activator` only: root compiled no plan of the rule | exercised: a dead hole | none in the one parent the spot check reads |
+| c8 | an even cycle through an `absent` | `features/07`, [`f07-fpoff`](../../../examples/ein-bugs/wrong-answers/f07-fpoff.ein) | **the state**, and stability: the written order of two rules at one priority moves the universe (`node_census.md` § 7.1) | two `SiteKind::Absent`; the cycle is no shipped check's (`node_census -- --strata`) | conservative | yes, as c1 |
+| c9 | an odd cycle through an `absent` | [`d3-unsat-core`](../../../corpus/fuzz_findings/d3-unsat-core.ein) | **the state**: a dead fixpoint's facts depend on admission order | `SiteKind::Absent`; the cycle as in c8 | conservative | yes: 8 of 26 one-step parent paths (§ 6.1 there) |
+| c10 | the FIFO gap, at one priority | [`detector_proposal/fifo_gap.ein`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap.ein) (§ 7.3's example, drafted) | **the state**: cumulativity, on a stratified program | `SiteKind::Absent` on the reader | conservative | yes: `{a, b}` at once against by way of `{a}` |
+| c11 | the FIFO gap, the reader at an earlier priority | [`detector_proposal/fifo_gap_priority.ein`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap_priority.ein) | **the state**, in every written order: no equal-priority pair exists for a reorder to move | `SiteKind::Absent` on the reader | conservative | yes, as c10 |
+| c12 | an activator derived under an `absent` | `ACTIVATOR_UNDER_ABSENT` (`written.rs`) | **the state, and `dead`**: the `absent` is in the activator's derivation, which no premise records | `SiteKind::Absent` (`act`) and `SiteKind::Activator` (`watch`) | exercised: a dead hole | yes: 1 of 6 parent paths |
+| c13 | a FIFO race over a static read (§ 7.6) | written into `node_census` by T1e2.1b.7.3 | **the state built from scratch**, under a *Monotone* verdict; a fork never meets it | nothing: no site | no violation (monotone) | argued (§ 7.6): between fork and scratch only |
+
+| | *forbid* covers it (S1e2.2.5's F1–F3) | option (E) (D1) | option (D) (D2) | S1e2.1b.5's detector reports (drafted, awaiting the user's approval of [`detector_proposal.md`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md)) | bears on |
+|---|---|---|---|---|---|
+| c1 | no: it concludes no refutation. `stale-naf-fork`'s downstream refutation is c3 | refuses it | `stale-naf-fork` is stratified and stays; `features/07` see c8 | `site … concludes a positive fact — at stake: the state`; `status monotone here (conservative)`; **`state stale facts — 1 of the cube's 2 nodes`** | D1, D2, D3 |
+| c2 | **yes**, under F1 (a), (b) and (c): the `direct` set ([S1e2.4.1 § 1](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#1-the-exposed-set-re-counted)) | refuses it, as *forbid* does | stays: stratified | `site … concludes (false) — at stake: the state, and dead with it`; `status non-monotone here (exercised, by bad)` | D4, D6; ruled by *forbid* |
+| c3 | only if **F2** takes `via` | refuses the deriving rule | stays | the deriving rule as the `site`; `status exercised, by derive-p`; `paths path-dependent` | D1, D6, F2 |
+| c4 | no: nothing refutes | refuses it | stays: stratified | `site … at stake: the state`; `status exercised`; `state no stale fact`; only `paths` sees the path dependence | D1, D2, D3, D4 |
+| c5 | no: it refutes nothing | no: not an `absent` site | stays | `site … obligation-trigger … at stake: the status: owes`; `status exercised` | D4, D7 |
+| c6 | no | no | stays | `site … its activator relation is one a commitment can change; root compiled no plan of it — at stake: the status: owes, through a plan a node compiles` | D4 |
+| c7 | only by **F3** at each node's compile, or by its drafted third placement; not at load ([taint census § 7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md#7-the-refutation-a-node-compiles-for-f3)) | only if the refusal reads the plans a node compiles | stays | `site watch: its activator relation … — at stake: the state, through a plan a node compiles`; `status exercised, by watch` (drafted on a copy of `written.rs`'s text) | D6, F3 |
+| c8 | no | refuses both rules | **refuses it** (over D) | two `site` rows, `cycle even through an absent — several states with no stale fact can exist`, `order … which the boundary admits first is the order they are written in`, `state stale facts` | D1, D2's (D) and (F) |
+| c9 | only through **F2**'s `via`: `fire-0` reads `r1`, which `fire-1` derives under the `absent` | refuses `fire-1` | **refuses it** (over D) | `cycle odd through an absent — a state with no stale fact need not exist`; `paths path-dependent — 3 of 34` | D2's (D) and (F), D3 |
+| c10 | no | refuses the reader | stays: stratified. Admission in stratum order closes it | `order … both at priority 200: which the boundary admits first is the order they are written in`; `state stale facts`; `paths path-dependent` | D2 (B) and stratum order, D3 |
+| c11 | no | refuses the reader | stays. Stratum order closes it | `order r2 (priority 100) … r2 is admitted first, whatever the order` | as c10 |
+| c12 | by neither F3 placement; only if F2's `via` follows a plan's activator | refuses `act` | stays | `site act` and `site watch`; `status exercised, by watch`; `state no stale fact`; `paths path-dependent — 1 of 6` | D1, D6's (b) with the activator walk |
+| c13 | no | no: no site | stays | nothing: the detector runs on a flagged program only ([`detector_proposal.md` § 7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md#7-what-the-drafting-found), item 7) | D2 (B) |
+
+**Where the cells come from.** *Breaks*, *path dependence* and *the cube* are
+measured: [`node_census.md`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md)
+§ 2, § 6.1 and § 7 (`bc1dff73`), the [hole census](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md)
+§ 2 (`072e6d0d`), the [taint census](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md)
+§ 3 and § 7 (`b6a3045b`), and the drafted detector's spot check
+([`detector_proposal.md` § 5](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md#5-the-parent-path-spot-check-priced),
+`e7bec8f0`), all 2026-11-02. *The static check sees it as* is `monotone::classify`'s
+`SiteKind`, the same day. The *forbid* column is S1e2.4.1 § 1 and the taint
+census § 7 read against F1–F3; (E) and (D) are F21's D1 and D2 read against
+`site_census` and `node_census -- --strata`. c13 is argued in § 7.6, and
+T1e2.1b.7.3 runs it.
+
+**c2's path dependence.** Fork and scratch agree on every node of
+`naf-upward-closure` (measured, § 2.1 there). A parent path can differ only
+through the dead parent `{(p A)}`, which would keep its `(false)` when `(q A)`
+is added: the spot check and `-y` skip a dead parent, and a route that learns
+from a dead node takes exactly that path. That is W3's mechanism read as a
+path. Argued here, and measured by T1e2.1b.7.2's path census.
+
+**The status and the state are apart, measured.** Five programs the cube calls
+*conservative* still have a broken state: `stale-naf-fork`, `features/07`,
+`d3-unsat-core`, `fifo_gap` and `stratified_stale`. Each holds a stale fact or
+has a parent path that reaches another state, and `ein oracle` closes on each
+with *"the flagged sites break nothing here"*, which is true of the status
+only ([`detector_proposal.md` § 7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md#7-what-the-drafting-found),
+items 1 and 5). **Past the limit**, `features/04_open` holds a stale
+`(open-slot …)` in 21 042 of the 64 761 members its describe met (item 2
+there). So *exercised* and *conservative* are words about the status, and
+c1, c8, c9, c10 and c11 break the state while the cube says *conservative*.
+
 ## 8. What is open
 
 Every decision about a non-monotone program was deferred on 2026-11-02 to
