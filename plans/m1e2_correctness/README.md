@@ -1,11 +1,14 @@
 # M1e2 — Correctness: every known wrong answer
 
-**Estimate:** ~14 weeks: 3 estimated phases and 29 stages, **62.5 days** of
-stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.2 27.5). Three more phases have
-stages named and few estimated: P1e2.1b (six, one estimated: S1e2.1b.6,
-4 days) and P1e2.1c (five, none estimated), both added or grown 2026-10-16,
-and P1e2.4 (two, none estimated), added 2026-11-01. One phase, P1e2.3, is
-planned and not specified (ruled 2026-11-02).
+**Estimate:** ~21 weeks: 7 estimated phases and 47 stages, **102.5 days** of
+stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.1b 15.5, P1e2.1c 17.5, P1e2.2
+27.5, P1e2.3 5, P1e2.4 2). P1e2.1b and P1e2.1c, added or grown 2026-10-16, had one stage
+estimated between them until 2026-11-02, when the other nine were specified.
+Where one of their stages ends in the user's ruling, its days are for the
+evidence, and P1e2.1c's S1e2.1c.5 re-scopes P1e2.2's 27.5. P1e2.4, added
+2026-11-01, is done, at its two stage files' 1 day each. P1e2.3, ruled a phase
+2026-11-02, was specified the same day at the user's *"write P1e2.3 plans
+also"*: four stages, 5 days.
 **Status:** created 2026-10-14 on the user's instruction: *"Create new
 milestone for correctness issues. … first phase is for solution dumps and
 rendering to markdown with graphs, so I can review all existing wrong
@@ -139,16 +142,17 @@ where it is cheap and exact, and
 |---|---|---:|---:|---|
 | [P1e2.1](p1e2.1_seeing_the_answer/README.md) | Seeing the answer: dumps, and the answer rendered for review | 7 | 12 d | `utils/review_bundle.py` → `build/review/`: every case's problem, every run's every artefact rendered with every graph as SVG, the right answer and the diff; the register as a cargo test; Q-M1e.20 answered; **the review held** |
 | [P1e2.1a](p1e2.1a_the_solution_region/README.md) | The solution region: R defined, computed, drawn and reported | 10 | 23 d | the answer redefined as a **region R** of the hypothesis lattice, with its minimal and maximal lines ([Q-M1e2.7](open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)), for a **monotone** program; a non-monotone one detected by a static check and reported through one stub; an oracle that computes R by saturation alone for n ≤ 16; the whole lattice drawn with the walk overlaid (a region run since S1e2.1a.7); programs written for a chosen region (S1e2.1a.8); the language and the read-out speaking R; the engine checked against the oracle under every lever; **the review resumed** |
-| [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) | The non-monotone lattice: what R is when adding a fact can take one away | 6 named | 4 d of 1 | the site census; a node's state, fork or scratch (Q-M1e2.2, W8); holes (Q-M1e2.7 (d)), from `absent` and from obligation triggers; the ruling on a refutation that rests on an `absent` applied to the region search (Q-M1e.9, W3; the ruling is P1e2.4's); the stub replaced; **the two lattices compared** in a `docs/kernel/` page, with how to solve each one stably, provably and effectively (S1e2.1b.6) |
-| [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 5 named | — | `ein solve`'s default describes R for every program the corpus holds, or says why not: the alive set at scale, the lines by duality, the non-monotone search, the flags at scale; the old walk's fate, and P1e2.2 re-scoped |
+| [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) | The non-monotone lattice: what R is when adding a fact can take one away | 6 | 15.5 d | the site census; a node's state, fork or scratch (Q-M1e2.2, W8); holes (Q-M1e2.7 (d)), from `absent` and from obligation triggers; the ruling on a refutation that rests on an `absent` applied to the region search (Q-M1e.9, W3; the ruling is P1e2.4's); the stub replaced; **the two lattices compared** in a `docs/kernel/` page, with how to solve each one stably, provably and effectively (S1e2.1b.6) |
+| [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 5 | 17.5 d | `ein solve`'s default describes R for every program the corpus holds, or says why not: the alive set at scale, the lines by duality, the non-monotone search, the flags at scale; the old walk's fate, and P1e2.2 re-scoped |
 | [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 13 | 27.5 d | every register row `fixed` or ruled `not-wrong`; no wrong answer at default settings; no lever that changes a certified answer |
-| P1e2.3 | Surfaces that misreport the answer | — | *planned*, specified when it starts | below |
-| [P1e2.4](p1e2.4_what_the_switch_left/README.md) | What the switch left: the `absent` ruling, and the read-out at scale | 2 named | — | Q-M1e2.5 ruled, *forbid* or *respect*, and applied to W3's rows (S1e2.4.1); `--models key` declines before it allocates, and the read-out forms measured in memory on the largest regions (S1e2.4.2) |
+| [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | Surfaces that misreport the answer | 4 | 5 d | every witness re-taken 2026-11-02 (S1–S3 and S6–S9 gone, S4 and P1 live, S5 moved to `-g`, S10 the forms past 100 lines); the summary's `root` block as ruled and unmoved by every lever (S1e2.3.1); no render view panics on a keyword pair (S1e2.3.2); the forms under the 100-line ruling (S1e2.3.3); Q-M1e.5 and Q-M1e.17 ruled and closed, the re-take re-takable (S1e2.3.4) |
+| [P1e2.4](p1e2.4_what_the_switch_left/README.md) | What the switch left: the `absent` ruling, and the read-out at scale | 2 | 2 d | Q-M1e2.5 ruled, *forbid* or *respect*, and applied to W3's rows (S1e2.4.1); `--models key` declines before it allocates, and the read-out forms measured in memory on the largest regions (S1e2.4.2) |
 
 **The order, ruled 2026-11-02.** P1e2.1a is done, and so is **P1e2.4**
 (2026-11-02). Next is P1e2.1b, where the user expects questions to discuss, then P1e2.1c, then
 P1e2.3. P1e2.4 was first put after P1e2.1c and moved ahead of P1e2.1b the same
-day, on the user's *"reorder P1e2.4 before P1e2.1b"*: P1e2.1b's S1e2.1b.4
+day, on the user's *"reorder P1e2.4 before P1e2.1b"*: P1e2.1b's
+[S1e2.1b.4](p1e2.1b_the_non_monotone_lattice/s1e2.1b.4_refutation_resting_on_absent.md)
 applies the *forbid* / *respect* ruling S1e2.4.1 takes. Only after P1e2.3 are
 the wrong answers revisited, S1e2.1.7 and then P1e2.2, and the
 revisit is the agent's first. The user, verbatim:
@@ -159,14 +163,16 @@ stated criterion decides. Only what it leaves ambiguous goes to the user.
 
 ### P1e2.3 — Surfaces that misreport the answer (proposed)
 
-*Proposed* means named and not specified, the
-[M1f S1f.5.3](../m1f_hypothesis_and_documentation/p1f.5_documentation_and_other/README.md)
-precedent. The survey found nine surfaces that state something false about a
-run whose **answer** is right, and one panic a well-formed program reaches.
-They are correctness issues and not wrong answers, so they are recorded here
-with their witnesses ([inventory § 3](inventory.md#3-cases)). **Ruled
-2026-11-02: they become a phase**, after P1e2.1c, specified when it starts. What the switch left of them, P1 and S4, is in
-[Q-M1e2.6](open_questions.md#q-m1e26--does-p1e23-become-a-phase)'s notes:
+**Specified 2026-11-02** as [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md),
+four stages and 5 days, at the user's *"write P1e2.3 plans also"*. The
+heading keeps *(proposed)* until its S1e2.3.4 re-points the eleven links that
+use this anchor. The survey found nine surfaces that state something false
+about a run whose **answer** is right, and one panic a well-formed program
+reaches ([inventory § 3](inventory.md#3-cases)); the user ruled on 2026-11-02
+that they become a phase, after P1e2.1c. The phase's
+[re-take at `7b33c3ab`](p1e2.3_surfaces_that_misreport_the_answer/README.md#the-re-take-2026-11-02)
+finds S1–S3 and S6–S9 gone, S4 and P1 live, and S5 moved to `-g`. The table
+below is the survey's, as taken:
 
 | id | what is false | settings |
 |---|---|---|
@@ -188,8 +194,9 @@ routes take config-free, and `summary::root_block` still runs the walk's
 lookahead and kill-cache flags and `EIN_OBLIGATION_CHOICE`, and the block
 counts root's facts **after** it. On `examples/branching/02_one_dead_one_alive.ein`:
 
-- `root.facts` is 27 where root's fixpoint holds 23: the other four are the
-  kill cache's `(not h)` writes;
+- `root.facts` is 27 where root's fixpoint holds 22: the other five are one
+  `(__closed__ …)` written by `emit_closed` and four `(not h)` written by the
+  kill cache;
 - `root.hypgen.emitted` is 30 where H holds 48;
 - both move with `(config :enable-pre-branch-lookahead false)` or
   `:enable-lookahead-kill-cache false` in the program (to 23, and to 34 or
@@ -203,6 +210,9 @@ are identical, so it is a surface and not a register row. `lever_invariance.rs`
 leaves the three fields out and says why. Its settings are now *default, and
 a lever*. Whether the block should describe H, root's fixpoint, or neither is
 this phase's to rule.
+The phase's [S1e2.3.1](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md)
+re-took it wider: `root.hypgen.emitted` differs from H on 71 of 212 files, and
+`root.facts` from root's fixpoint on 175, mostly by `emit_closed`'s writes.
 
 ## What it inherits from M1e
 
@@ -215,7 +225,7 @@ this phase's to rule.
 | [Q-M1e.16](../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one): the binding key | W7, S1e2.2.7 |
 | [Q-M1e.21](../../docs/history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about): fresh constants | W4, S1e2.2.4 |
 | [Q-M1e.20](../../docs/history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable): two renderers unreachable | S1e2.1.3, answered (a) |
-| [Q-M1e.5](../../docs/history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) and [Q-M1e.17](../../docs/history/m1e_review_processing/open_questions.md#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative) | S1 and S5 of the proposed P1e2.3 |
+| [Q-M1e.5](../../docs/history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) and [Q-M1e.17](../../docs/history/m1e_review_processing/open_questions.md#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative) | [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md)'s S1e2.3.4: S1 is gone, and S5 moved to `-g` |
 
 The ids stay `Q-M1e.<n>`. An id is sticky and is never reused, so this
 milestone cites them across the boundary, as M1f does.

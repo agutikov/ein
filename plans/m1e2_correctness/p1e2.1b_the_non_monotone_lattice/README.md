@@ -1,11 +1,17 @@
 # P1e2.1b — The non-monotone lattice: what R is when adding a fact can take one away
 
-**Estimate:** not yet for the phase. Six stages are named. One of them,
-[S1e2.1b.6](s1e2.1b.6_the_two_lattices_compared.md), is specified at 4 days
-(2026-10-16, at the user's request). The other five are specified when
+**Estimate:** ~3 weeks: 6 stages, 15.5 days.
+[S1e2.1b.6](s1e2.1b.6_the_two_lattices_compared.md) was specified at 4 days
+on 2026-10-16, at the user's request. The other five waited for
 [S1e2.1a.1](../p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md)'s
-detector has measured where the corpus is non-monotone, because the size of
-every stage here depends on that number.
+detector to measure where the corpus is non-monotone, and it has: 13 of 159
+regions flagged
+([region census § 1](../p1e2.1a_the_solution_region/region_census.md#1-reach),
+2026-10-16), and 22 of 204 programs that load
+([S1e2.4.1 § 1](../p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#1-the-exposed-set-re-counted),
+2026-11-02). They were specified on 2026-11-02 from those numbers, ahead of
+S1e2.1b.1's own census, which re-estimates them. Three of them end in a
+ruling that is the user's, and their days are for the evidence.
 **Status:** created 2026-10-15 on the user's instruction, given while
 answering S1e2.1a.1's open questions:
 
@@ -19,9 +25,10 @@ answering S1e2.1a.1's open questions:
 "This phase" in the quote is [P1e2.1a](../p1e2.1a_the_solution_region/README.md).
 Points 1–3 are S1e2.1a.1's, and this phase gets what they leave.
 **Depends on:** S1e2.1a.1. Its detector gives this phase its census, and its
-stub is what S1e2.1b.5 replaces. Since 2026-11-02 also
-[P1e2.4](../p1e2.4_what_the_switch_left/README.md), which runs first: its
-S1e2.4.1 takes the *forbid* / *respect* ruling S1e2.1b.4 applies.
+stub is what [S1e2.1b.5](s1e2.1b.5_the_handling.md) replaces. Since
+2026-11-02 also [P1e2.4](../p1e2.4_what_the_switch_left/README.md), which runs
+first: its S1e2.4.1 takes the *forbid* / *respect* ruling
+[S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) applies.
 **Blocks:** [S1e2.2.5](../p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)
 (W3) and [S1e2.2.6](../p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md)
 (W8), which take their reading from here. Also the review of any case whose
@@ -79,8 +86,10 @@ banked as a corpus fixture by S1e2.1a.1):
 `region.py … '(seats Ann C1)' '(meal Ann Soup)'` gives ∅ in R, `{(seats Ann
 C1)}` **owing 1**, and both facts together in R. The owing node is a hole.
 The two hrules make the generator's root list exactly those two facts. The
-engine answers `Solution`, k = 1, `{(meal Ann Soup)}`, which is on neither
-line.
+walk answered `Solution`, k = 1, `{(meal Ann Soup)}`, which is on neither
+line. Since the switch (2026-10-18), `ein solve` lists the cube's three states
+and names the hole: `minimal hole {(seats Ann C1)} — owes 1` (`ein solve
+examples/lattice/04_obligation_trigger_hole.ein`, 2026-11-02, `7b33c3ab`).
 Seating Ann derives `(is-a Ann Diner)`, and that is a debt `total-owed`
 did not have at ∅. A rule that states an obligation is a negation of its
 witness, so its **trigger** is non-monotone in the same sense an `absent` is.
@@ -109,15 +118,18 @@ reports both the sites and the violations the cube observed.
 
 | ID | title | the question |
 |---|---|---|
-| S1e2.1b.1 | The site census | where in the corpus the third-kind reads are, by rule family and by polarity, and on how many entries the cube observes a violation (a dead node with an alive superset, a discharged node with an owing superset, a hole) |
-| S1e2.1b.2 | A node's state, fork or scratch | Q-M1e2.2 for every node: which route R is defined over, and what the other route is then. W8 |
-| S1e2.1b.3 | Holes | Q-M1e2.7's (d): what is reported when the lines do not describe R, for both sources, `absent` and obligation triggers |
-| S1e2.1b.4 | A refutation that rests on an `absent` | whether a nogood, the kill cache or the singleton writeback may learn from such a refutation, applying the ruling [P1e2.4](../p1e2.4_what_the_switch_left/README.md)'s S1e2.4.1 took on 2026-11-02, **forbid**. Once S1e2.2.5's refusal ships, a program the engine loads refutes from no extendable absence, so what is left here is the derived case if S1e2.2.5's F2 leaves it out, and what may learn before the refusal ships. [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), W3, and [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here) (S1f.10.8's ruling) |
-| S1e2.1b.5 | The handling | S1e2.1a.1's stub replaced in `solve`, `ein test`, `--dump-region` and the bundle: refuse, qualify, or search differently, as ruled |
+| [S1e2.1b.1](s1e2.1b.1_the_site_census.md) | The site census | where in the corpus the third-kind reads are, by rule family and by polarity, and on how many entries the cube observes a violation (a dead node with an alive superset, a discharged node with an owing superset, a hole) |
+| [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md) | A node's state, fork or scratch | Q-M1e2.2 for every node: which route R is defined over, and what the other route is then. W8 |
+| [S1e2.1b.3](s1e2.1b.3_holes.md) | Holes | Q-M1e2.7's (d): what is reported when the lines do not describe R, for both sources, `absent` and obligation triggers |
+| [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) | A refutation that rests on an `absent` | whether a nogood, the kill cache or the singleton writeback may learn from such a refutation, applying the ruling [P1e2.4](../p1e2.4_what_the_switch_left/README.md)'s S1e2.4.1 took on 2026-11-02, **forbid**. Once S1e2.2.5's refusal ships, a program the engine loads refutes from no extendable absence, so what is left here is the derived case if S1e2.2.5's F2 leaves it out, and what may learn before the refusal ships. [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), W3, and [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here) (S1f.10.8's ruling) |
+| [S1e2.1b.5](s1e2.1b.5_the_handling.md) | The handling | S1e2.1a.1's stub replaced in `solve`, `ein test`, `ein oracle --dump` (which replaced `--dump-region`) and the bundle: refuse, qualify, or search differently, as ruled |
 | [S1e2.1b.6](s1e2.1b.6_the_two_lattices_compared.md) | The two lattices compared | the user's of 2026-10-16. A page in `docs/kernel/` with a table comparing monotone and non-monotone regions: what each means, how it looks on the lattice, what causes it, how to detect it, its properties, and how to solve each case in a way that is stable, proved and effective. It starts from *R is, in general, its node set* and lists what each property lets the engine simplify |
 
-Each stage gets a file once S1e2.1b.1 has a census. Until then the table is
-the scope. S1e2.1b.6 is the exception, with a file since 2026-10-16.
+Every stage has a file: S1e2.1b.6 since 2026-10-16, and the other five since
+2026-11-02. Those five were written before S1e2.1b.1's census, from what was
+already measured, and the census re-estimates them. S1e2.1b.2, .3 and .4 each
+end in a question for the user, with the evidence to rule on, and S1e2.1b.1
+and .5 may put one.
 
 **Work order:** .1, then .6 as the frame, then .2–.4. Each of .2–.4 fills its
 cell of .6's non-monotone column as it rules. .5 comes last.
@@ -126,14 +138,14 @@ cell of .6's non-monotone column as it rules. .5 comes last.
 
 | from | here |
 |---|---|
-| [Q-M1e2.7](../open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice) (d), holes | S1e2.1b.3 |
-| [Q-M1e2.2](../open_questions.md#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in), W8 | S1e2.1b.2 |
-| [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here), W3 | S1e2.1b.4 |
-| `naf_deps.rs`'s `RefutationUnderAbsentWarning` (M1e S1e.2.3), the containment | S1e2.1b.4, which also decides whether S1e2.1a.1's detector replaces it. It is the third-kind subset whose conclusion is a refutation and whose relation is eligible directly, not through D |
-| S1e2.1a.1's `non_monotone` stub | S1e2.1b.5 |
-| [S1e2.1a.3's census](../p1e2.1a_the_solution_region/region_census.md#5-holes-upward-closure-the-duality): the five programs with a hole. Two are W3's witnesses. Three have no register row, because whether today's answer on them is wrong depends on what R means here: `lattice/04_obligation_trigger_hole.ein` (Solution k = 1 where the fork route's R has 3 states), `synth/three_components.ein` and `synth/trigger_hole.ein` (written to have their holes, S1e2.1a.8) | S1e2.1b.3, which decides whether each gets a row |
-| the same census's [§ 9](../p1e2.1a_the_solution_region/region_census.md#9-the-config-principle): `-y` (`lattice-sanity-check`) aborts `corpus/fuzz_findings/d3-unsat-core.ein`, flagged non-monotone, with *"Saturation commutativity violated"*: a fork and its parent path reach different KBs | S1e2.1b.2, fork or scratch |
-| the census's [§ 8](../p1e2.1a_the_solution_region/region_census.md#8-monotonicity-the-static-check-against-the-cube): 13 programs flagged, a violation observed on 5. The other eight are where the check is conservative | S1e2.1b.1 starts from it |
+| [Q-M1e2.7](../open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice) (d), holes | [S1e2.1b.3](s1e2.1b.3_holes.md) |
+| [Q-M1e2.2](../open_questions.md#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in), W8 | [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md) |
+| [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here), W3 | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) |
+| `naf_deps.rs`'s `RefutationUnderAbsentWarning` (M1e S1e.2.3), the containment | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md), which also decides whether S1e2.1a.1's detector replaces it. It is the third-kind subset whose conclusion is a refutation and whose relation is eligible directly, not through D |
+| S1e2.1a.1's `non_monotone` stub | [S1e2.1b.5](s1e2.1b.5_the_handling.md) |
+| [S1e2.1a.3's census](../p1e2.1a_the_solution_region/region_census.md#5-holes-upward-closure-the-duality): the five programs with a hole. Two are W3's witnesses. The census left three with no register row, because whether the answer on them is wrong depends on what R means here. Since S1e2.1a.10 (2026-10-16), two of the three have rows, `W3/three-components` and `W3/trigger-hole`, for `synth/three_components.ein` and `synth/trigger_hole.ein`, which were written to have their holes at S1e2.1a.8. One still has none: `lattice/04_obligation_trigger_hole.ein`. The walk answered `Solution` k = 1 there, where the fork route's R has 3 states, and `ein solve` has listed the 3 states since the switch | [S1e2.1b.3](s1e2.1b.3_holes.md), which decides whether each gets a row |
+| the same census's [§ 9](../p1e2.1a_the_solution_region/region_census.md#9-the-config-principle): before the switch, `-y` (`lattice-sanity-check`) aborted `corpus/fuzz_findings/d3-unsat-core.ein`, which is flagged non-monotone, with *"Saturation commutativity violated"*: a fork and its parent path reach different KBs. Since the switch no route reads `-y` ([`configuration.md`](../../../docs/kernel/configuration.md): *unread*), so that probe is gone with the walk | [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md), fork or scratch |
+| the census's [§ 8](../p1e2.1a_the_solution_region/region_census.md#8-monotonicity-the-static-check-against-the-cube): 13 programs flagged, a violation observed on 5. The other eight are where the check is conservative | [S1e2.1b.1](s1e2.1b.1_the_site_census.md) starts from it |
 
 ## Where it stops
 

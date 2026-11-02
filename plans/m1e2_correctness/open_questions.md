@@ -15,11 +15,11 @@ rule on, not five stage files to find.
 | Q | title | needed by | status |
 |---|---|---|---|
 | [Q-M1e2.1](#q-m1e21--is-a-discharged-superset-of-a-discharged-state-a-new-model) | Is a discharged superset of a discharged state a new model? | [S1e2.2.3](p1e2.2_wrong_answers/s1e2.2.3_obligations_join_superset.md) (W5) | **ruled 2026-11-01**: *literal*, k = \|R\| = 7, as Q-M1e2.7's (a) had said; W5's `right` restated |
-| [Q-M1e2.2](#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in) | Does a guard's `absent` premise bind the state the search ends in? | [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s S1e2.1b.2, then [S1e2.2.6](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md) (W8) | open |
+| [Q-M1e2.2](#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in) | Does a guard's `absent` premise bind the state the search ends in? | [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s [S1e2.1b.2](p1e2.1b_the_non_monotone_lattice/s1e2.1b.2_fork_or_scratch.md), then [S1e2.2.6](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md) (W8) | open |
 | [Q-M1e2.3](#q-m1e23--what-does-exhausted-certify-when-the-rung-leaves-relations-uncovered) | What does `exhausted` certify when the rung leaves relations uncovered? | [S1e2.2.8](p1e2.2_wrong_answers/s1e2.2.8_uncovered_certified.md) (W6) | open |
 | [Q-M1e2.4](#q-m1e24--is-an-empty-unsat-core-a-core) | Is an empty unsat core a core? | [S1e2.2.13](p1e2.2_wrong_answers/s1e2.2.13_empty_core.md) (W12) | open |
-| [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [P1e2.4](p1e2.4_what_the_switch_left/README.md)'s S1e2.4.1, then [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) and P1e2.1b's S1e2.1b.4 | **ruled 2026-11-02: *forbid*** ([S1e2.4.1 § 5](p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)); F1–F5 are S1e2.2.5's |
-| [Q-M1e2.6](#q-m1e26--does-p1e23-become-a-phase) | Does P1e2.3 become a phase? | the milestone's scope | **ruled 2026-11-02**: yes, after P1e2.1c |
+| [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [P1e2.4](p1e2.4_what_the_switch_left/README.md)'s S1e2.4.1, then [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) and P1e2.1b's [S1e2.1b.4](p1e2.1b_the_non_monotone_lattice/s1e2.1b.4_refutation_resting_on_absent.md) | **ruled 2026-11-02: *forbid*** ([S1e2.4.1 § 5](p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)); F1–F5 are S1e2.2.5's |
+| [Q-M1e2.6](#q-m1e26--does-p1e23-become-a-phase) | Does P1e2.3 become a phase? | the milestone's scope; [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | **ruled 2026-11-02**: yes, after P1e2.1c; **specified the same day**, four stages, 5 d; closes at its S1e2.3.4 |
 | [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; on 2026-10-16 (a)–(c) and (e)–(i) [ruled for the monotone case](#the-second-answer-2026-10-16), and [(e)'s display and (h)'s names](#the-third-answer-2026-10-16); [the census](#the-census-2026-10-16) contradicts none |
 | [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) | Where does the rework of `ein solve` go? | P1e2.1a's S1e2.1a.5 (it must print `k` = \|R\|), and P1e2.2's scope | **ruled 2026-10-16**: [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) now, [P1e2.1c](p1e2.1c_the_region_search/README.md) next |
 
@@ -74,7 +74,8 @@ compose.
 the cube, and the question is then not only about the state the search ends
 in. Built on root's fixpoint (the engine's fork), `{(q one)}` on
 `stale-naf-fork.ein` is dead. Built from scratch (`region.py`), it is in R.
-[P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s S1e2.1b.2 owns the
+[P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s
+[S1e2.1b.2](p1e2.1b_the_non_monotone_lattice/s1e2.1b.2_fork_or_scratch.md) owns the
 question in that form.
 
 ## Q-M1e2.3 — What does `exhausted` certify when the rung leaves relations uncovered?
@@ -174,6 +175,18 @@ key|grid`, `-p`, `-P` or `--diff-models`, which print every listed state.
 and whether `--dump-answer`'s `answer.txt` is where the rest goes. That is a
 surface question
 ([the stage file](p1e2.4_what_the_switch_left/s1e2.4.2_models_key_declines.md#notes)).
+
+**Specified 2026-11-02**, at the user's *"write P1e2.3 plans also"*:
+[P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md), four stages and
+5 days. Its re-take at `7b33c3ab` corrects the notes above in three places.
+**S5 is not gone**: it moved to `-g`, whose `.max(1)` reads 0 and a negative
+as 1 with no word. **S4 is wider than the 2026-11-01 note**:
+`root.hypgen.emitted` differs from H on 71 of 212 files and `root.facts` from
+root's fixpoint on 175, mostly by `emit_closed`'s `(__closed__ …)` writes, and
+root's fixpoint on `branching/02` is 22, not 23. **P1 panics on a second
+door**, `render program`. The forms note above is the phase's S10. S1–S3 and
+S6–S9 are gone, each with what holds it or *nothing checks it*. The question
+closes at the phase's S1e2.3.4.
 
 ## Q-M1e2.7 — The answer is a region of the lattice
 
@@ -474,8 +487,8 @@ question into phase p1e2.1b"*. Sub-question (d) moved with it.
 - **(c) How does `:expect` state a region?** Today it states a model set,
   one line's worth.
 - **(d) What is reported when R has holes?** *Moved to
-  [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s S1e2.1b.3 on
-  2026-10-15.* Both lines no longer describe
+  [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md)'s
+  [S1e2.1b.3](p1e2.1b_the_non_monotone_lattice/s1e2.1b.3_holes.md) on 2026-10-15.* Both lines no longer describe
   R. Is the answer then the list of R's maximal convex pieces, or a
   qualifier, or a refusal (Q-M1e2.2's *refuse what cannot be stratified*)?
   The follow-up's recommendation: the outer lines stay the answer, and the
@@ -585,7 +598,7 @@ and the W11 sentence in
 | **(a)** | `k` = \|R\|, not \|max R\| | **ruled**, and its unit too (second answer): `k` is replaced by **k_s** (states) and **k_c** (commitments), both reported | S1e2.1a.5, S1e2.1a.9 |
 | **(b)** | `ein solve` studies the region first. Asking for one line is secondary. `hrules` move out of `(query …)`. Solve once, then queries ask about the region and about single solutions | **ruled**. The plan's answer to *"does it make sense?"* is below | S1e2.1a.4; [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) for the search |
 | **(c)** | three forms: `(solve :hrules …)`; `(solution (or (model …) …))`, the full expected region; `(query :goal … :expect …)`, the goal's projection, deduplicated | **ruled** as the direction. The grammar is S1e2.1a.4's page diff | S1e2.1a.4 |
-| **(d)** | moved | P1e2.1b | S1e2.1b.3 |
+| **(d)** | moved | P1e2.1b | [S1e2.1b.3](p1e2.1b_the_non_monotone_lattice/s1e2.1b.3_holes.md) |
 | **(e)** | asks for a way to expose saturation equivalence alongside commitments | **ruled**: k_s and k_c (second answer); `(region …)` with `(merged (to from) …)` (third answer) | S1e2.1a.1's record; S1e2.1a.4, S1e2.1a.5 |
 | **(f)** | asked: *is the obligations-only maximal line the whole candidate set?* | **ruled for P1e2.1a's scope** (second answer): yes, for a monotone program, and it is trivial. The non-monotone counterexample below is S1e2.1b.6's | S1e2.1a.3's page |
 | **(g)** | `exhausted` means complete information about R; a limited run gives partial information; *"region is a certificate of the lattice, right?"* | **ruled for P1e2.1a's scope** (second answer): exhausted = the full region; a limit makes it partial | S1e2.1a.5, S1e2.1a.9 |
@@ -923,7 +936,7 @@ The user, verbatim:
 
 | | ruling | the plan's note | where it lands |
 |---|---|---|---|
-| **root is not the search's to write** | the user's question: why write into root at all when a forced positive arrives? | **There is no need.** Root is `sat(program)`, and ∅ *is* root, a node like any other. In a monotone program, if every candidate but h is dead alone, every node holding another candidate is dead, so the alive nodes are at most ∅ and {h}. Two saturations then decide the whole region, and nothing has to be written. Promoting h into root decides nothing more, loses ∅, and makes the outcome depend on a config switch (`:enable-forced-positive`, and the lookahead that decides what *sole survivor* means). **Proposed: root is immutable. The search keeps what it learns in its own state.** The search's negative writes into root fall under the same principle, and they are parked with W11 | S1e2.1a.9 (route 1 writes nothing into root); [S1e2.2.2](p1e2.2_wrong_answers/s1e2.2.2_forced_positive_refutes.md) (W2); P1e2.1c's S1e2.1c.5 |
+| **root is not the search's to write** | the user's question: why write into root at all when a forced positive arrives? | **There is no need.** Root is `sat(program)`, and ∅ *is* root, a node like any other. In a monotone program, if every candidate but h is dead alone, every node holding another candidate is dead, so the alive nodes are at most ∅ and {h}. Two saturations then decide the whole region, and nothing has to be written. Promoting h into root decides nothing more, loses ∅, and makes the outcome depend on a config switch (`:enable-forced-positive`, and the lookahead that decides what *sole survivor* means). **Proposed: root is immutable. The search keeps what it learns in its own state.** The search's negative writes into root fall under the same principle, and they are parked with W11 | S1e2.1a.9 (route 1 writes nothing into root); [S1e2.2.2](p1e2.2_wrong_answers/s1e2.2.2_forced_positive_refutes.md) (W2); P1e2.1c's [S1e2.1c.5](p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md) |
 | **(h), the alive-set invariant** | rules are part of the program, so a name a rule asserts is a name of the program, never a new one | This **corrects the plan's second answer**, which called `alive-set-fresh-name.ein` ill-formed. It is well-formed. `Z` is a program name, the universe has to include it, and the missing candidates are an **engine bug**. That is Q-M1e.21's option (b): seed the names from the rules' `:assert` constants | [S1e2.2.4](p1e2.2_wrong_answers/s1e2.2.4_fresh_name_unreachable.md) (W4); `definitions.md` |
 | **(e), how a state's class is shown** | the full region lists **every valid commitment**, and **every state with several generating commitments, with its minimal ones**. The sketch is `(region (model …) (model …) …)` and `(merged (to from) (to from) …)` | For a monotone program the sketch is **exact and compact**. A state's class is the union of the intervals [from … to] over its minimal generators: if g ⊆ C ⊆ s and cl(g) = s, then s = cl(g) ⊆ cl(C) ⊆ cl(s) = s. So `(region …)` listing the states and `(merged …)` listing their minimal generators names every valid commitment, and k_c follows by inclusion–exclusion. **Proposed:** the read-out prints this block, and the language reads it back as an expectation. A run's region can then be banked as its own claim | S1e2.1a.4, S1e2.1a.5 |
 | **06's obligation** | a group that does not fit goes elsewhere. The obligation is the group's, not `total-owed` | **The program is then not monotone, by construction.** *Once a member sits, the others owe a seat* is an obligation whose trigger grows with the commitment, the second source of holes. The cube: R is 21 nodes (∅; the pair alone, 8; the trio alone, 4; both, 8), and **166 holes**, every partly seated group. The engine records 8. The natural way to write a conditional requirement makes trigger holes, so they are P1e2.1b's common case, not an exotic one. The everyone-sits version is kept as the monotone twin | [`06_friends_tables.ein`](../../examples/lattice/06_friends_tables.ein); S1e2.1b.6 |
