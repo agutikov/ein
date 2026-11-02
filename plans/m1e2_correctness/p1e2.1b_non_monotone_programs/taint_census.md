@@ -9,7 +9,7 @@ death rests on. It decides nothing: *forbid* stands as S1e2.4.1 ruled it, and
 until D6 is decided no route learns on a flagged program.
 
 ```sh
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example taint_census                 # § 1–5, 0.2 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example taint_census                 # § 1–5 and § 7, 0.2 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example taint_census -- --written    # the programs in shared/written.rs
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example taint_census -- \
     plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/*.ein                               # S1e2.4.1's probes
@@ -195,3 +195,52 @@ cargo test --release --manifest-path ein.rs/Cargo.toml -p ein-infer --test regio
 It holds whatever D6 decides: it is a property of the oracle's provenance and
 of the walk, and it fails the day (b) as the census reads it stops being sound
 on a cube the corpus has.
+
+## 7. The refutation a node compiles, for F3
+
+*Forbid* is a refusal of `(absent P)` ⟹ `(false)` or `(not …)` over a relation
+a commitment can extend. S1e2.2.5's F3 asks where it runs. A rule with
+parameters is compiled once per activator fact, so a node can compile a plan
+root never had, when a commitment derives an activator. Two placements are
+on the table: **at load**, on root's plans after root's saturation, where the
+static check runs; and **at each node's compile**, on every plan a node
+compiles that root did not. The census reads both:
+
+- **at load**: the refuting plans at root that read an `absent` over D at odd
+  depth;
+- **at each node's compile**: on every node of every cube within the limit,
+  each rule with parameters, each activator fact the node holds and root does
+  not, the plan compiled (`compile::compile_rule`), kept when it refutes, with
+  whether it reads an `absent` over D and whether its activator's own
+  derivation rests on one.
+
+| | corpus: flagged programs | within the limit: nodes that compile a refutation | `ACTIVATOR_REFUTES` | `ACTIVATOR_UNDER_ABSENT` |
+|---|---|---|---|---|
+| activator sites | **2** programs: `features/01` (`unknown-feeling`, a root plan that concludes a positive fact) and `lattice/09` (`total-owed`, an obligation) | — | `watch` | `watch` |
+| … whose rule concludes a refutation | **0** | — | 1 | 1 |
+| refutations a node compiles | — | **0**, on all 18 cubes and the 5 flagged probes | `watch` for `(watch q)`, first at `{(p A)}`: reads `(absent (q ?x))` over D | `watch` for `(watch r)`, first at `{(p A)}`: reads no `absent`; its activator rests on `act`'s `(absent (q ?x))` |
+| **caught at load** | **9** programs, the 13 rules of S1e2.4.1's `direct` set (`features/05` and `/12` among them, past the limit) | — | **no**: root has no plan of `watch` | **no** |
+| **caught at each node's compile** | the same 9: their plans exist at root | 0 more | **yes**, at the first node holding `(p A)` | **no**: the plan reads no `absent`. It is `via`, through the activator |
+
+**So on the corpus the two placements catch the same programs.** No corpus
+program has an activator in D whose rule refutes, and no node of a flagged
+corpus cube within the limit compiles a refutation. The difference is the
+written programs:
+
+- `ACTIVATOR_REFUTES` is caught at a node's compile and not at load. A check
+  at a node's compile runs where a route visits, so it is a refusal during a
+  run rather than before it, and past the limit it sees only the nodes the run
+  reached. A static check that reads every rule with parameters whose
+  activator relation is in D, and refuses one that concludes a refutation
+  from a body reading `(absent (?R …))` with `?R` a parameter, would catch it
+  at load; on the corpus it would read the two activator sites above and
+  refuse neither. That third placement is drafted here, not measured beyond
+  those two.
+- `ACTIVATOR_UNDER_ABSENT` is caught by neither. Its refutation reads no
+  `absent`; the `absent` is in its activator's derivation. *Forbid* reaches it
+  only if F2's `via` follows a plan's activator as a premise, or if F21's D1
+  (E) refuses `act`, an `absent` site that concludes a positive fact.
+
+Past the limit the census reads the static half only: `features/01`'s
+activator site is the one there, and its plan at root concludes a positive
+fact.
