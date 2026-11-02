@@ -23,13 +23,20 @@
 //! `route1_reach.md`'s tables were read off the rows; no script reads them.
 //!
 //! A row's `layers` are `[visited, dead, owing, in R, facts, wall]` per layer.
-//! Since M1e2 S1e2.1c.1 (`alive_set_reach.md`) a row also carries `facts`,
-//! the facts beyond root summed over the layers, and `top`, ⊤'s status,
-//! which the route saturates once when the budget stops it. None of it is
-//! read by a route.
+//! Since M1e2 S1e2.1c.1 (`alive_set_reach.md`) a row also carries, read off
+//! the class each visited point already has and from the same run:
+//! `layer_states`, per layer `[alive states, states in R, alive states first
+//! met]`; `alive_states`, the distinct alive states visited; `r_states_met`,
+//! the distinct states of R visited (`k_s` when the route finished);
+//! `extensions`, the alive states' distinct one-up extensions;
+//! `description.generators`, every state's minimal generators summed; and
+//! `top`, ⊤'s status, which the route saturates once when the budget stops
+//! it. None of it is read by a route.
 
 use std::path::{Path, PathBuf};
 use std::time::Instant;
+
+use rustc_hash::FxHashSet;
 
 use ein_core::Terms;
 use ein_corpus::repo_root;
@@ -114,6 +121,59 @@ fn main() {
             .zip(&d.layer_wall)
             .map(|(l, w)| json!([l.visited, l.dead, l.owing, l.r, l.facts, w.as_secs_f64()]))
             .collect();
+        // The states each layer met, read off the class every point carries
+        // (the first visited point with the same fixpoint): distinct states
+        // among the layer's alive points, among its members of R, and the
+        // alive states first met in it. Points are in visit order, a layer
+        // at a time, so a layer is a slice.
+        let mut start = 0usize;
+        let mut seen_alive = 0u64;
+        let mut seen_r = 0u64;
+        let layer_states: Vec<_> = d
+            .layers
+            .iter()
+            .map(|l| {
+                let end = start + l.visited as usize;
+                let (mut alive_c, mut r_c) = (FxHashSet::default(), FxHashSet::default());
+                let mut new = 0u64;
+                for (i, p) in d.points[start..end].iter().enumerate() {
+                    if p.status & region::DEAD != 0 {
+                        continue;
+                    }
+                    alive_c.insert(p.class);
+                    if p.in_r() {
+                        r_c.insert(p.class);
+                    }
+                    if p.class as usize == start + i {
+                        new += 1;
+                        seen_alive += 1;
+                        if p.in_r() {
+                            seen_r += 1;
+                        }
+                    }
+                }
+                start = end;
+                json!([alive_c.len(), r_c.len(), new])
+            })
+            .collect();
+        // The alive states' one-up extensions, distinct: each alive state's
+        // candidate set (its first point's closure) plus one candidate it does
+        // not hold. S1e2.1c.2's state route saturates exactly these, beside
+        // root, so this counts its work where `walk_and_region.md` § 6 bounded
+        // it by alive states × n.
+        let mut extensions: FxHashSet<Box<[u32]>> = FxHashSet::default();
+        for (i, p) in d.points.iter().enumerate() {
+            if p.status & region::DEAD != 0 || p.class as usize != i {
+                continue;
+            }
+            for b in 0..n as u32 {
+                if p.closure.binary_search(&b).is_err() {
+                    let mut e = p.closure.to_vec();
+                    e.insert(e.partition_point(|&x| x < b), b);
+                    extensions.insert(e.into_boxed_slice());
+                }
+            }
+        }
         let top = d.top.as_ref().map(|t| {
             json!({
                 "dead": t.status & region::DEAD != 0,
@@ -136,6 +196,10 @@ fn main() {
                 "nogoods": x.nogoods.len(), "components": x.components.len(),
                 "subcubes": x.subcubes.len(), "merged": x.merged.len(),
                 "empty_in_r": x.minimal.iter().any(|&i| d.points[i as usize].set.is_empty()),
+                // Every state's minimal generators, summed: a merged state's
+                // list, and one for each state a single commitment reaches.
+                "generators": x.merged.iter().map(|m| m.generators.len() as u64).sum::<u64>()
+                    + (x.k_s - x.merged.len() as u64),
             })
         });
         let mut wall2 = None;
@@ -171,8 +235,12 @@ fn main() {
                 "root_dead": d.root_dead,
                 "visited": d.points.len(),
                 "alive": alive,
+                "alive_states": seen_alive,
+                "r_states_met": seen_r,
+                "extensions": extensions.len(),
                 "facts": facts,
                 "layers": layers,
+                "layer_states": layer_states,
                 "declined": declined,
                 "top": top,
                 "description": desc,
