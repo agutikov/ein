@@ -1,5 +1,5 @@
 //! What the two corpus censuses of the static check share — M1e2
-//! [S1e2.1b.1](../../../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.1_the_site_census.md):
+//! [S1e2.1b.1](../../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.1_the_site_census.md):
 //! `refutation_census` (S1e2.4.1) and `site_census` (S1e2.1b.1) select the
 //! same files, load them the same way, and read the same root fixpoint, so
 //! that one's rows can be re-derived from the other's.

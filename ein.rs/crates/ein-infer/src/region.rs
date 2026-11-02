@@ -30,7 +30,7 @@
 //! writeback, no learned clause. Where adding a fact can take a conclusion
 //! away the from-scratch route can disagree with it (W8), and which one `R` is
 //! over is
-//! [P1e2.1b](../../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)'s
+//! [P1e2.1b](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s
 //! question. [`crate::monotone`] says whether a program can.
 //!
 //! ### The universe

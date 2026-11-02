@@ -15,7 +15,7 @@
 > adding a fact never takes a conclusion away and never adds a debt. That is
 > M1e2 P1e2.1a's scope. R is still a node set on any other program, but which
 > state a node is, and what a hole means, are open: M1e2
-> [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)
+> [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)
 > documents them, and the user deferred the decisions to
 > [F21](../../../plans/followups/f21_non_monotone_programs_decided.md) on
 > 2026-11-02. Until then a node is built by fork from root, as § 1.5 says.
@@ -186,7 +186,7 @@ The check reads at **relation grain**: a read is dynamic when its relation is
 in `D`, whatever its pattern, and the theorem is stated at that grain. The
 user ruled it on 2026-11-02 over a fact-grain reading, which was prototyped
 and held to the cube and changes no cube within the limit (M1e2
-[S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)).
+[S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)).
 
 ---
 
@@ -642,7 +642,7 @@ six shipped configurations answer it wrongly. In R's terms, `{(p A)}` is a
 An obligation whose trigger a commitment can grow makes a hole too
 ([`lattice/04`](../../../examples/lattice/04_obligation_trigger_hole.ein)).
 What the walk should do on such a program is
-[P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)'s.
+[P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s.
 
 ### 6.6 What the oracle does not check
 

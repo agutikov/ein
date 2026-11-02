@@ -9,7 +9,7 @@ days). The stages waited for
 [S1e2.1a.9](../p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)
 to measure how far its routes reach, which it did on 2026-10-16
 ([`route1_reach.md`](../p1e2.1a_the_solution_region/route1_reach.md)), and for
-[S1e2.1b.6](../p1e2.1b_the_non_monotone_lattice/s1e2.1b.6_the_two_lattices_compared.md)
+[S1e2.1b.6](../p1e2.1b_non_monotone_programs/s1e2.1b.6_monotone_and_non_monotone_programs_compared.md)
 to write down the strategies, which it did on 2026-11-02
 ([`monotonicity.md` § 6](../../../docs/kernel/inference/monotonicity.md#6-how-to-solve)). They
 were specified on 2026-11-02 with what is known now. P1e2.1b rules nothing
@@ -19,7 +19,7 @@ route this phase builds is for **monotone** programs.
 the plan's recommendation: the oracle becomes `solve`'s answer now
 (S1e2.1a.9), and the region search is a phase of its own, next.
 **Depends on:** S1e2.1a.9 (the default, its routes and its flags) and
-[P1e2.1b](../p1e2.1b_the_non_monotone_lattice/README.md): its detector
+[P1e2.1b](../p1e2.1b_non_monotone_programs/README.md): its detector
 (S1e2.1b.5), whose warnings every new route carries and keeps free on an
 unflagged program, and S1e2.1b.6's strategies for the monotone case.
 **Scope, since 2026-11-02.** The user deferred every decision about a

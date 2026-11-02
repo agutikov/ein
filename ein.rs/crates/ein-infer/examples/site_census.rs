@@ -1,5 +1,5 @@
 //! The site census — M1e2
-//! [S1e2.1b.1](../../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.1_the_site_census.md):
+//! [S1e2.1b.1](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.1_the_site_census.md):
 //! where the static check's sites are, per site rather than per program, and
 //! what the cube observes about each flagged program.
 //!

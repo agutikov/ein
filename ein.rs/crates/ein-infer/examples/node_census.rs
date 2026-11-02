@@ -1,5 +1,5 @@
 //! The node census — M1e2
-//! [S1e2.1b.2](../../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.2_fork_or_scratch.md):
+//! [S1e2.1b.2](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md):
 //! a node's state built two ways, compared node for node on every cube the
 //! oracle reaches.
 //!

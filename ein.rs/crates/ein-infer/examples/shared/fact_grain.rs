@@ -1,5 +1,5 @@
 //! The static check at **fact grain** — M1e2
-//! [S1e2.1b.1](../../../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.1_the_site_census.md)
+//! [S1e2.1b.1](../../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.1_the_site_census.md)
 //! T1e2.1b.1.2's prototype. It is computed **beside** [`monotone::classify`]
 //! and read by no route: `site_census` prints it and
 //! `ein-infer/tests/region.rs` holds it to the cube. Which grain the shipped

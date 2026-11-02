@@ -1,7 +1,7 @@
 # F21 — Non-monotone programs: node functions and path dependence, decided
 
 **Filed 2026-11-02**, from M1e2's
-[P1e2.1b](../m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md), on
+[P1e2.1b](../m1e2_correctness/p1e2.1b_non_monotone_programs/README.md), on
 the user's direction of that day, verbatim:
 
 > Currently my goal is not to build complete theory os solving the
@@ -26,7 +26,7 @@ what the engine does until it is taken. The docs half of the analysis, each
 claim labelled by its standing, is
 [`monotonicity.md` § 7](../../docs/kernel/inference/monotonicity.md#7-two-properties-of-the-node-functions-and-path-dependence).
 Each option's measured consequences per program are P1e2.1b's
-[S1e2.1b.7](../m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.7_the_consequences_written_down.md)'s.
+[S1e2.1b.7](../m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_the_consequences_written_down.md)'s.
 
 **Trigger** (any one):
 
@@ -87,7 +87,7 @@ saturating:
 
 Every shipped route builds a node from root with all of C at once, which is
 why C1 = ∅ is the only case a route has met. Measured
-([`node_census.md`](../m1e2_correctness/p1e2.1b_the_non_monotone_lattice/node_census.md),
+([`node_census.md`](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md),
 `bc1dff73`, 2026-11-02):
 
 - fork and scratch hold different facts on 4 of the 256 nodes of the 18
@@ -136,7 +136,7 @@ fails.
   S1e2.1b.7's cumulativity census measures it on each flagged program.
 - **The FIFO counter-example.** The boundary admits equal-priority candidates
   one a round in (priority, FIFO) order, not in stratum order
-  ([`node_census.md` § 4](../m1e2_correctness/p1e2.1b_the_non_monotone_lattice/node_census.md#4-the-staleness-census)).
+  ([`node_census.md` § 4](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#4-the-staleness-census)).
   Take r2 `a ∧ b ∧ absent(q) → p`, written before r1 `a ∧ absent(z) → q`.
   Built at once, {a, b} gives {a, b, p, q}, with `p` stale. By way of {a} it
   gives {a, b, q}. The state function is monotone, and the state is
@@ -248,7 +248,7 @@ were false"*.
   only trigger and activator holes remain (D4). That holds if the refusal
   reads D, not fact grain, and sees the plans a node compiles (F1, F3); it is
   an argument from the two sections above.
-- **What it costs.** [`site_census.md` § 2](../m1e2_correctness/p1e2.1b_the_non_monotone_lattice/site_census.md#2-the-sites)
+- **What it costs.** [`site_census.md` § 2](../m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md#2-the-sites)
   (`4b822a8d`) lists 12 programs with an `absent` site that concludes a
   positive fact, and `lattice/08` was banked after it (`6743dd17`): 13.
 
@@ -302,7 +302,7 @@ asked of every node. Moot under D1's (E).
 Sub-questions: **(D)'s scope**, over D (3 programs) or over all relations (6,
 three syntax fixtures with n = 0 added); and **stratum-order admission**,
 which closes the FIFO gap. Evidence:
-[`node_census.md`](../m1e2_correctness/p1e2.1b_the_non_monotone_lattice/node_census.md)
+[`node_census.md`](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md)
 § 4, § 5, § 7, § 9 and § 10, which also carries the agent's recommendation,
 not the user's: (B) with (D), admission in stratum order. The register's W8
 `right` blocks are (B)'s answer (§ 9 there). **Until decided:** (A).
@@ -334,7 +334,7 @@ programs.
 repair edges; (b) R as convex pieces; (c) a qualifier; (d) a refusal. With
 (d1) dead and owing holes, one word or two, (d2) a claim form, (d3) the stub's
 words, (d4) `lattice/04`'s register row. Evidence:
-[S1e2.1b.3](../m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.3_holes.md)'s
+[S1e2.1b.3](../m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md)'s
 `hole_census.md`, each option drafted as a read-out on real programs.
 **Until decided:** the listing is R, and the `lattice` row names up to four
 minimal holes with why each is out
@@ -359,7 +359,7 @@ node that derived it? (a) per program: no route learns on a flagged program;
 premise over D, read off provenance, which is
 [F18](f18_world_aware_negatives.md)'s narrow form; (c) the refusal first, a
 reorder of the milestone. Evidence:
-[S1e2.1b.4](../m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.4_refutation_resting_on_absent.md)'s
+[S1e2.1b.4](../m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md)'s
 taint census and the test it banks. **Until decided:** (a). F18 closes
 without being done once the refusal covers every refutation a route can learn
 from: D6's (c), or D1 with F2's `via` and F3.
@@ -392,8 +392,8 @@ split presumes D2. **Until decided:** (c), and (b) when asked.
 - [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md): the two
   kinds of program compared; § 7, this analysis with every claim labelled by
   its standing; § 8, what is open.
-- [`node_census.md`](../m1e2_correctness/p1e2.1b_the_non_monotone_lattice/node_census.md)
-  (D2, D3), [`site_census.md`](../m1e2_correctness/p1e2.1b_the_non_monotone_lattice/site_census.md)
+- [`node_census.md`](../m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md)
+  (D2, D3), [`site_census.md`](../m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md)
   (D1, D7), S1e2.1b.3's `hole_census.md` (D4), S1e2.1b.4's taint census (D6),
   S1e2.1b.7's consequences, path and cumulativity censuses (all).
 - [S1e2.4.1](../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md):

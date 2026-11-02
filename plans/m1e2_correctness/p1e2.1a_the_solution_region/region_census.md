@@ -177,7 +177,7 @@ Non-empty R, n > 0, monotone and flagged:
   P1e2.1b), and two programs S1e2.1a.8 wrote to have their holes. Whether
   today's answer on `lattice/04` is wrong depends on what R means on a
   non-monotone program, so its row waits for
-  [P1e2.1b](../p1e2.1b_the_non_monotone_lattice/README.md)'s S1e2.1b.3, which
+  [P1e2.1b](../p1e2.1b_non_monotone_programs/README.md)'s S1e2.1b.3, which
   now lists it.
 
 ## 6. Commitments against states (ruling (a) × (e))

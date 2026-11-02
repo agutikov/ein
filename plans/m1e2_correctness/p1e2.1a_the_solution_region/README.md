@@ -106,7 +106,7 @@ A program where adding a fact can take a conclusion away has a lattice the
 two lines do not describe. Such a program is **detected** here, by a static
 check over its compiled plans, and its answer is reported as *assuming a
 monotone lattice*. What its R is belongs to
-[P1e2.1b](../p1e2.1b_the_non_monotone_lattice/README.md). That includes
+[P1e2.1b](../p1e2.1b_non_monotone_programs/README.md). That includes
 holes, Q-M1e2.7's (d), and whether a node is built from root's fixpoint or
 from scratch.
 
@@ -120,7 +120,7 @@ has them verbatim. What they change here:
   guarantees convexity. The phase still finishes the monotone case and leaves
   the non-monotone one to P1e2.1b, but the definition page starts from the
   general case
-  ([S1e2.1b.6](../p1e2.1b_the_non_monotone_lattice/s1e2.1b.6_the_two_lattices_compared.md)'s
+  ([S1e2.1b.6](../p1e2.1b_non_monotone_programs/s1e2.1b.6_monotone_and_non_monotone_programs_compared.md)'s
   ladder).
 - **`k` is replaced by k_s and k_c** (a), (e): \|R\| in states and in
   commitments, both reported. The walk cannot count R, so
@@ -299,7 +299,7 @@ among them, is the re-scoping P1e2.1c's last stage does.
   oracle never assumes it: it enumerates, and does not prune by closure. A
   hole needs no `absent`: an obligation whose trigger a commitment can change
   makes one too
-  ([P1e2.1b](../p1e2.1b_the_non_monotone_lattice/README.md#what-non-monotone-means-and-what-is-not)).
+  ([P1e2.1b](../p1e2.1b_non_monotone_programs/README.md#what-non-monotone-means-and-what-is-not)).
   What a hole means is P1e2.1b's. This phase finds them and labels what it
   reports around them.
 - **The trivial line.** In an obligations-only program the maximal line is
@@ -323,7 +323,7 @@ among them, is the re-scoping P1e2.1c's last stage does.
 - [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)
   and [Q-M1e2.2](../open_questions.md#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in)
   are two of the ways R gets holes, and an obligation trigger is the third.
-  All three are [P1e2.1b](../p1e2.1b_the_non_monotone_lattice/README.md)'s.
+  All three are [P1e2.1b](../p1e2.1b_non_monotone_programs/README.md)'s.
 - [`lattice_dump.md`](../../../docs/kernel/inference/lattice_dump.md) and
   [`04_dot_rendering.md`](../../../docs/kernel/ir/03-ein-lang/04_dot_rendering.md)
   are the pages the drawing extends.

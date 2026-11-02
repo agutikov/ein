@@ -170,7 +170,7 @@ monotone verdict beside an observed violation as a defect, and
 `ein-infer/tests/region.rs` fails on one.
 
 **The grain is the relation's**, ruled by the user on 2026-11-02 (M1e2
-[S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)):
+[S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)):
 a read over a relation in `D` is dynamic whatever its pattern, even where no
 candidate, and nothing derived from one, can match it. A fact-grain reading
 was prototyped beside it and held to the cube, and it is not what ships.
@@ -193,7 +193,7 @@ cube shows none is a *conservative* flag.
   the cube, since route 1's licence is monotonicity. The words are the
   engine's, and *a monotone lattice* is the wrong term for what they mean, a
   node built by fork from root; M1e2's
-  [S1e2.1b.5](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.5_the_handling.md)
+  [S1e2.1b.5](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.5_the_detector.md)
   rewords them;
 - a `monotonicity` event ([`events.md`](events.md));
 - `--json-summary`'s `monotonicity` block, which every run carries, monotone
@@ -202,7 +202,7 @@ cube shows none is a *conservative* flag.
 What the region *is* on such a program — which route a node is built by, what
 a hole means, what may be learned from a refutation that rests on an
 `absent` — is open: M1e2's
-[P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)
+[P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)
 documents it, and the decisions are
 [F21](../../../plans/followups/f21_non_monotone_programs_decided.md)'s
 (2026-11-02). On one, `region.md` still computes everything, by fork from

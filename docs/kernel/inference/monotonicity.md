@@ -10,7 +10,7 @@ conclusion away and never adds a debt. This page sets the two cases side by
 side: what each means, what causes the second, how each looks on the lattice,
 how it is detected, what each property lets the engine simplify, and how to
 compute R stably, provably and effectively in each. M1e2
-[S1e2.1b.6](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.6_the_two_lattices_compared.md)
+[S1e2.1b.6](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.6_monotone_and_non_monotone_programs_compared.md)
 wrote it, at the user's request of 2026-10-16, for a reader who needs R **as a
 whole**: a complete answer with the provenance of its topology, the region's
 properties studied to improve a theory, or a search over theories for one
@@ -22,7 +22,7 @@ reported when R has holes, and what a search may learn from a refutation that
 rests on an `absent`. On 2026-11-02 the user deferred every decision about a
 non-monotone program to
 [F21](../../../plans/followups/f21_non_monotone_programs_decided.md), and
-M1e2's [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)
+M1e2's [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)
 detects, documents and warns (§ 8). Until a decision, the engine builds every
 node by fork from root. Every other claim carries a test, a dated command, or
 a theorem whose premise a test enforces
@@ -92,12 +92,12 @@ come, you all sit*, has R of 21 isolated nodes and 166 holes. Its monotone twin
 | **the lines, decided** | locally: a node of R is maximal iff every edge up leaves R, minimal iff every edge down does | globally only. Across a hole the one-fact test calls a node a line node that is not one | `region.json`'s `local_max` and `local_min`. On the monotone corpus they never disagree with the cube ([`solution_semantics.md` § 2.4](solution_semantics.md#24-shape)). On [`synth/local_not_global.ein`](../../../examples/lattice/synth/local_not_global.ein), *A and B together or not at all*, ∅ is maximal by the one-fact test and {A,B} minimal, and neither is (`region.rs::across_a_hole_the_one_fact_test_misreads_the_lines`) |
 | **N/E duality** | holds: the minimal line is E's alive members, the maximal line the discharged maximal sets containing no member of N | not guaranteed. It fails on the maximal side on `naf-upward-closure`, `synth/three_components` and `synth/trigger_hole`, which have holes, and on [`synth/maximal_not_top.ein`](../../../examples/lattice/synth/maximal_not_top.ein), which has none; it holds on `lattice/04`, `08` and `09` | `region.rs::the_duality_holds_without_holes_and_fails_on_the_hole`; `region.json`'s `duality` (`ein oracle FILE --dump DIR`, 2026-11-02) |
 | **trivial lines** | restrictions only: min = {∅}. Obligations only: max = {⊤}, so the maximal line says nothing (ruled for the monotone case, 2026-10-16) | max ≠ {⊤} where a trigger grows: `synth/maximal_not_top.ein` states obligations and nothing dead, and its maximal line is {A,B} while ⊤ owes | `every_synthetic_program_has_the_region_it_was_written_for` |
-| **learned nogoods, kill cache, singleton writeback** | sound: every superset of a dead set is dead | unsound where the refutation read a third-kind relation: W3, and `synth/three_components`' learned clauses {A,F} and {A,G} (S1e2.1a.8). The language is ruled, *forbid* ([S1e2.4.1 § 5](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling), 2026-11-02): a refutation may not rest on an `absent` over a relation a commitment can extend. **What a route may learn before that refusal ships is open**: F21's D6, measured by [S1e2.1b.4](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.4_refutation_resting_on_absent.md). Since the switch no route learns on a flagged program | the dead row's evidence |
+| **learned nogoods, kill cache, singleton writeback** | sound: every superset of a dead set is dead | unsound where the refutation read a third-kind relation: W3, and `synth/three_components`' learned clauses {A,F} and {A,G} (S1e2.1a.8). The language is ruled, *forbid* ([S1e2.4.1 § 5](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling), 2026-11-02): a refutation may not rest on an `absent` over a relation a commitment can extend. **What a route may learn before that refusal ships is open**: F21's D6, measured by [S1e2.1b.4](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md). Since the switch no route learns on a flagged program | the dead row's evidence |
 | **saturation on the cube** | a **closure operator**: C ⊆ cl(C), cl(cl(C)) = cl(C), C ⊆ D ⇒ cl(C) ⊆ cl(D). R's states are closed sets, each the union of the intervals [g … cl] over its minimal generators g | cl need not be monotone. States still partition the commitments, but not as the closed sets of a closure system | `region.rs::a_monotone_verdict_makes_saturation_a_closure_operator`: every node of every monotone cube within the limit, dead ones included, and saturation moves a node on 15 of them. On `CL_NOT_MONOTONE`, flagged, cl is not monotone |
-| **a node's state** | unique, the least fixpoint: built by fork from root or from scratch, one fact set, by the theorem (`ein-cli/tests/region_dump.rs` holds `utils/region.py`, the scratch route, to the oracle on Q-M1e2.7's seven programs) | depends on the route. On W8's [`stale-naf-fork.ein`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein), `{(q one)}` is dead by fork, because root derived `(p one)` under `(absent (q one))`, and in R from scratch. A parent path can differ from both (§ 7.2). **Which one R is defined over is open**: Q-M1e2.2, F21's D2, with [S1e2.1b.2](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.2_fork_or_scratch.md)'s evidence | § 6.4: the guard split reads scratch, and disagrees with the oracle on exactly W8's two witnesses; § 7 |
-| **holes, reported** | there are none | the read-out names each minimal hole today (`ein solve examples/lattice/04_obligation_trigger_hole.ein`: `minimal hole {(seats Ann C1)} — owes 1`). **What is reported, a qualifier, the pieces or a refusal, is open**: Q-M1e2.7 (d), F21's D4, with [S1e2.1b.3](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.3_holes.md)'s evidence | `region.json`'s `holes`, `minimal_holes`, `repairs` |
+| **a node's state** | unique, the least fixpoint: built by fork from root or from scratch, one fact set, by the theorem (`ein-cli/tests/region_dump.rs` holds `utils/region.py`, the scratch route, to the oracle on Q-M1e2.7's seven programs) | depends on the route. On W8's [`stale-naf-fork.ein`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein), `{(q one)}` is dead by fork, because root derived `(p one)` under `(absent (q one))`, and in R from scratch. A parent path can differ from both (§ 7.2). **Which one R is defined over is open**: Q-M1e2.2, F21's D2, with [S1e2.1b.2](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md)'s evidence | § 6.4: the guard split reads scratch, and disagrees with the oracle on exactly W8's two witnesses; § 7 |
+| **holes, reported** | there are none | the read-out names each minimal hole today (`ein solve examples/lattice/04_obligation_trigger_hole.ein`: `minimal hole {(seats Ann C1)} — owes 1`). **What is reported, a qualifier, the pieces or a refusal, is open**: Q-M1e2.7 (d), F21's D4, with [S1e2.1b.3](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md)'s evidence | `region.json`'s `holes`, `minimal_holes`, `repairs` |
 | **certificate** | N, E and the static verdict: polynomial in \|N\| + \|E\| | the full classification. With the guard split, each cell's guess and its N and E (§ 6.4, not built) | route 1 is held to the oracle (`region.rs::route_1_is_the_oracle_on_every_monotone_program_it_reaches`) |
-| **detection** | static: [`monotone.rs`](../../../ein.rs/crates/ein-infer/src/monotone.rs), a sufficient condition read at **relation grain**, as the user ruled on 2026-11-02 ([S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)) | the static check flags a **site**; only the cube says whether it did harm | § 5 |
+| **detection** | static: [`monotone.rs`](../../../ein.rs/crates/ein-infer/src/monotone.rs), a sufficient condition read at **relation grain**, as the user ruled on 2026-11-02 ([S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)) | the static check flags a **site**; only the cube says whether it did harm | § 5 |
 
 ## 4. The drawings
 
@@ -173,7 +173,7 @@ The check reads at **relation grain**, as the user ruled on 2026-11-02. A
 fact-grain reading, dynamic only where a candidate or a fact derived from one
 can match the read's pattern, was prototyped and held to the cube, and it is
 not what ships
-([site census § 5](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/site_census.md#5-the-grain)).
+([site census § 5](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md#5-the-grain)).
 
 ### 5.2 On the cube
 
@@ -323,7 +323,7 @@ oracle builds a node by fork from root, which already holds `(p one)`, derived
 under `(absent (q one))`; a cell builds it from scratch, where `(p one)` is
 never derived. So **the guard split is not yet sound against the oracle's
 node**. It gives the reading the scratch route gives, `{(q one)}` in R
-([P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md#why-a-phase-of-its-own),
+([P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md#why-a-phase-of-its-own),
 `utils/region.py`), and which reading R takes is open (F21's D2). On `features/07` and `f07-fpoff` one node lies in two cells: the
 program has two stable readings there, and the union is still the oracle's R.
 
@@ -401,7 +401,7 @@ each step forking the last fixpoint, writing the next facts and saturating:
 
 Every shipped route builds a node from root with all of C at once, so C1 = ∅
 is the only case a route meets. **Measured**
-([`node_census.md`](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/node_census.md),
+([`node_census.md`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md),
 `cargo run --release -p ein-infer --example node_census`, `bc1dff73`,
 2026-11-02):
 
@@ -614,21 +614,21 @@ user's direction: *"prepare everything we are able to do now, without making
 final decisions; And then leave further investigation of non-monotonic
 lattices as followup"*. Until a decision, the engine does what the last
 column says, and M1e2's
-[S1e2.1b.5](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.5_the_handling.md)
+[S1e2.1b.5](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.5_the_detector.md)
 puts a warning on every surface that reports R saying so.
 
 | decision | F21 | the evidence | until it is taken |
 |---|---|---|---|
-| (E): *forbid* extended to every `absent` site | D1 | § 7.7; [`site_census.md`](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/site_census.md) | *forbid* as ruled; the 13 load |
-| what a node's state is (Q-M1e2.2): fork, scratch, guards as premises, refuse a cycle through an odd `absent`; (D)'s scope; admission in stratum order | D2 | § 7.2–7.3; [S1e2.1b.2](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.2_fork_or_scratch.md), `node_census.md` § 9–10 | fork from root |
+| (E): *forbid* extended to every `absent` site | D1 | § 7.7; [`site_census.md`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md) | *forbid* as ruled; the 13 load |
+| what a node's state is (Q-M1e2.2): fork, scratch, guards as premises, refuse a cycle through an odd `absent`; (D)'s scope; admission in stratum order | D2 | § 7.2–7.3; [S1e2.1b.2](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md), `node_census.md` § 9–10 | fork from root |
 | whether a route may build a node from a parent's fixpoint on a flagged program | D3 | § 7.2 | only on a monotone program |
-| what is reported when R has holes (Q-M1e2.7 (d)) | D4 | § 7.5; [S1e2.1b.3](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.3_holes.md) | the read-out names up to four minimal holes |
+| what is reported when R has holes (Q-M1e2.7 (d)) | D4 | § 7.5; [S1e2.1b.3](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md) | the read-out names up to four minimal holes |
 | refuse, qualify, or search differently | D5 | § 6 | route 2, and the warnings |
-| what a route may learn from a refutation resting on an `absent` | D6 | § 3's learned-nogoods row; [S1e2.1b.4](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.4_refutation_resting_on_absent.md) | nothing, on a flagged program |
+| what a route may learn from a refutation resting on an `absent` | D6 | § 3's learned-nogoods row; [S1e2.1b.4](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md) | nothing, on a flagged program |
 | the search past the oracle's limit | D7 | § 6.4 | partial past `--region-limit`, the cube when asked |
 
 **Ruled**, and not open: the static check reads at relation grain (2026-11-02,
-[S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)),
+[S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)),
 and *forbid* (2026-11-02, S1e2.4.1 § 5).
 
 ## Cross-references
@@ -643,8 +643,8 @@ and *forbid* (2026-11-02, S1e2.4.1 § 5).
   time, which is why a fork and a scratch build can differ.
 - [`lattice_diagrams.md`](lattice_diagrams.md): **superseded**, the 2026-05
   design's search lattice, not the cube drawn here.
-- The phase: [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md),
-  its [site census](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/site_census.md)
-  and its [node census](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/node_census.md).
+- The phase: [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md),
+  its [site census](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md)
+  and its [node census](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md).
 - [F21](../../../plans/followups/f21_non_monotone_programs_decided.md): every
   decision this page leaves open, with § 7's analysis and the user's words.

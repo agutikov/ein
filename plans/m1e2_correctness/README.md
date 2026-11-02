@@ -120,7 +120,7 @@ built at `17422b32`, where every case page draws its run on R
 **Then the oracle's first question split the definition in two.** A node can
 be built on root's fixpoint or from scratch, and the two differ exactly where
 adding a fact can take a conclusion away. The user moved that case into a
-phase of its own, [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md),
+phase of its own, [P1e2.1b](p1e2.1b_non_monotone_programs/README.md),
 on 2026-10-15. P1e2.1a finishes the monotone case and *detects* the
 non-monotone one. P1e2.1b was to decide what R is there, and its first finding
 is already in: a hole needs no `absent`, because an obligation's trigger is
@@ -142,7 +142,7 @@ expected, or one line only. That is
 [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md)
 where it is cheap and exact, and
 [P1e2.1c](p1e2.1c_the_region_search/README.md) beyond that, building on P1e2.1b's
-[S1e2.1b.6](p1e2.1b_the_non_monotone_lattice/s1e2.1b.6_the_two_lattices_compared.md).
+[S1e2.1b.6](p1e2.1b_non_monotone_programs/s1e2.1b.6_monotone_and_non_monotone_programs_compared.md).
 `k` became **k_s** and **k_c**. The terms are in
 [`definitions.md`](p1e2.1a_the_solution_region/definitions.md).
 
@@ -152,7 +152,7 @@ where it is cheap and exact, and
 |---|---|---:|---:|---|
 | [P1e2.1](p1e2.1_seeing_the_answer/README.md) | Seeing the answer: dumps, and the answer rendered for review | 7 | 12 d | `utils/review_bundle.py` → `build/review/`: every case's problem, every run's every artefact rendered with every graph as SVG, the right answer and the diff; the register as a cargo test; Q-M1e.20 answered; **the review held** |
 | [P1e2.1a](p1e2.1a_the_solution_region/README.md) | The solution region: R defined, computed, drawn and reported | 10 | 23 d | the answer redefined as a **region R** of the hypothesis lattice, with its minimal and maximal lines ([Q-M1e2.7](open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)), for a **monotone** program; a non-monotone one detected by a static check and reported through one stub; an oracle that computes R by saturation alone for n ≤ 16; the whole lattice drawn with the walk overlaid (a region run since S1e2.1a.7); programs written for a chosen region (S1e2.1a.8); the language and the read-out speaking R; the engine checked against the oracle under every lever; **the review resumed** |
-| [P1e2.1b](p1e2.1b_the_non_monotone_lattice/README.md) | Non-monotone programs: detected, documented, warned | 7 | 21 d | **decides nothing** (re-planned 2026-11-02; every decision is [F21](../followups/f21_non_monotone_programs_decided.md)'s): the site census; a node's state by fork and from scratch, measured (Q-M1e2.2 deferred); holes by cause (Q-M1e2.7 (d) deferred); the evidence on a refutation that rests on an `absent`, for S1e2.2.5; monotone and non-monotone programs compared in [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md), with the two properties of the node functions and every option's consequences; an explicit monotonicity check, in a CLI form the user approves; a cheap detector in `ein solve`, warning on every surface that reports R, with no answer moved |
+| [P1e2.1b](p1e2.1b_non_monotone_programs/README.md) | Non-monotone programs: detected, documented, warned | 7 | 21 d | **decides nothing** (re-planned 2026-11-02; every decision is [F21](../followups/f21_non_monotone_programs_decided.md)'s): the site census; a node's state by fork and from scratch, measured (Q-M1e2.2 deferred); holes by cause (Q-M1e2.7 (d) deferred); the evidence on a refutation that rests on an `absent`, for S1e2.2.5; monotone and non-monotone programs compared in [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md), with the two properties of the node functions and every option's consequences; an explicit monotonicity check, in a CLI form the user approves; a cheap detector in `ein solve`, warning on every surface that reports R, with no answer moved |
 | [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 4 | 13 d | `ein solve`'s default describes R for every **monotone** program the corpus holds, or says why not: the alive set at scale, the lines by duality, the flags at scale; the old walk's fate, and P1e2.2 re-scoped. A flagged program keeps route 2 and P1e2.1b's warnings, and the non-monotone search moved to F21 (2026-11-02) |
 | [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 13 | 27.5 d | every register row `fixed` or ruled `not-wrong`; no wrong answer at default settings; no lever that changes a certified answer |
 | [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | Surfaces that misreport the answer | 4 | 5 d | every witness re-taken 2026-11-02 (S1–S3 and S6–S9 gone, S4 and P1 live, S5 moved to `-g`, S10 the forms past 100 lines); the summary's `root` block as ruled and unmoved by every lever (S1e2.3.1); no render view panics on a keyword pair (S1e2.3.2); the forms under the 100-line ruling (S1e2.3.3); Q-M1e.5 and Q-M1e.17 ruled and closed, the re-take re-takable (S1e2.3.4) |
@@ -163,7 +163,7 @@ where it is cheap and exact, and
 warn, with one question for the user (the explicit check's CLI form, on real
 programs), then P1e2.1c, scoped to monotone programs, then P1e2.3. P1e2.4 was first put after P1e2.1c and moved ahead of P1e2.1b the same
 day, on the user's *"reorder P1e2.4 before P1e2.1b"*: P1e2.1b's
-[S1e2.1b.4](p1e2.1b_the_non_monotone_lattice/s1e2.1b.4_refutation_resting_on_absent.md)
+[S1e2.1b.4](p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md)
 applies the *forbid* / *respect* ruling S1e2.4.1 takes. Only after P1e2.3 are
 the wrong answers revisited, S1e2.1.7 and then P1e2.2, and the
 revisit is the agent's first. The user, verbatim:

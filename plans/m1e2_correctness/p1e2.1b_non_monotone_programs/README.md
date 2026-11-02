@@ -2,7 +2,7 @@
 
 **Estimate:** ~4 weeks: 7 stages, **21 days**, 12.5 of them still to do.
 Re-planned 2026-11-02 on the user's direction below, from 6 stages and 14
-days: [S1e2.1b.5](s1e2.1b.5_the_handling.md) became the detector (3 → 5.5
+days: [S1e2.1b.5](s1e2.1b.5_the_detector.md) became the detector (3 → 5.5
 days), [S1e2.1b.7](s1e2.1b.7_the_consequences_written_down.md) is new (4.5
 days), and S1e2.1b.2–.4 end at their evidence, the days they had for a ruling
 spent on evidence instead. Before that the phase was 15.5 days when its stages
@@ -25,14 +25,14 @@ non-monotone program. It detects, documents, warns and prepares
 ([§ The goal](#the-goal-since-2026-11-02)), and every decision it was to take
 is [F21](../../followups/f21_non_monotone_programs_decided.md)'s.
 **Done:** [S1e2.1b.1](s1e2.1b.1_the_site_census.md) (the site census; the
-grain ruled *relation, as shipped*), [S1e2.1b.6](s1e2.1b.6_the_two_lattices_compared.md)
+grain ruled *relation, as shipped*), [S1e2.1b.6](s1e2.1b.6_monotone_and_non_monotone_programs_compared.md)
 ([`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md), one
 fixture per cause, the guard split held to the oracle) and
 [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md), at its evidence
 ([`node_census.md`](node_census.md)), with Q-M1e2.2 deferred to F21. **Next:**
 [S1e2.1b.3](s1e2.1b.3_holes.md).
 **Depends on:** S1e2.1a.1, whose detector gives this phase its census and
-whose stub [S1e2.1b.5](s1e2.1b.5_the_handling.md) replaces with warnings.
+whose stub [S1e2.1b.5](s1e2.1b.5_the_detector.md) replaces with warnings.
 Since 2026-11-02 also [P1e2.4](../p1e2.4_what_the_switch_left/README.md),
 done: its S1e2.4.1 ruled *forbid*.
 **Blocks:** [P1e2.1c](../p1e2.1c_the_region_search/README.md), whose
@@ -143,7 +143,7 @@ L ──state──▶ KB ──(dead, owes)──▶ {0,1}²
   *conservative* flags: on those programs the node functions are monotone on
   the program's own lattice while the program is not.
 
-The directory keeps its old name, `p1e2.1b_the_non_monotone_lattice`, until a
+The directory keeps its old name, `p1e2.1b_non_monotone_programs`, until a
 mechanical rename. Verbatim quotes keep their words.
 
 ## Why a phase of its own
@@ -261,8 +261,8 @@ reports both the sites and the violations the cube observed.
 | [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md) | A node's state, fork or scratch | 2.5 d | **done at its evidence** 2026-11-02 | [`node_census.md`](node_census.md): both routes node for node, staleness, stratification, invariance, cost, W8 computed under each option; the general path form recorded; **Q-M1e2.2 deferred to F21** (D1–D3) |
 | [S1e2.1b.3](s1e2.1b.3_holes.md) | Holes | 1.5 d | evidence only; not started | `hole_census.md`: every hole by cause and kind, each attributed to a site (the gap S1e2.1b.6 found closed), the read-out today, and each reporting option drafted on real programs with its consequences. The decision is F21's D4 |
 | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) | A refutation that rests on an `absent` | 1 d | evidence only; not started | the taint census, its test banked, both readings of *extendable* per dead node and the compiled-refutation case handed to S1e2.2.5 (F1–F3). What may learn is F21's D6 |
-| [S1e2.1b.5](s1e2.1b.5_the_handling.md) | The detector | 5.5 d | specified 2026-11-02 | an explicit check in the CLI form the user approved; a cheap detector in a bare `ein solve`, zero extra work on an unflagged program; a warning on every surface that reports R; held to the cube and to random programs |
-| [S1e2.1b.6](s1e2.1b.6_the_two_lattices_compared.md) | Monotone and non-monotone programs compared | 4 d | **done** 2026-11-02 | [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md), *current*; one fixture per cause; seven drawings; the guard split held to the oracle (19 of 21 cubes) |
+| [S1e2.1b.5](s1e2.1b.5_the_detector.md) | The detector | 5.5 d | specified 2026-11-02 | an explicit check in the CLI form the user approved; a cheap detector in a bare `ein solve`, zero extra work on an unflagged program; a warning on every surface that reports R; held to the cube and to random programs |
+| [S1e2.1b.6](s1e2.1b.6_monotone_and_non_monotone_programs_compared.md) | Monotone and non-monotone programs compared | 4 d | **done** 2026-11-02 | [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md), *current*; one fixture per cause; seven drawings; the guard split held to the oracle (19 of 21 cubes) |
 | [S1e2.1b.7](s1e2.1b.7_the_consequences_written_down.md) | The consequences written down | 4.5 d | specified and re-scoped 2026-11-02 (the analysis and three pages' terms were written with the re-plan) | the path and cumulativity censuses and the FIFO-gap fixture, so that `monotonicity.md` § 7.8's unverified rows are measured; the taxonomy of causes; each option's consequences per program; (E)'s rewrites; `monotone.rs`'s module docs |
 
 **Work order:** .1, .6 and .2 are done. Next .3 and .4, the evidence, in
@@ -316,7 +316,7 @@ precedent). No stage ends in a ruling.
 | [Q-M1e2.2](../open_questions.md#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in), W8 | [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md), done | F21's D1–D3 |
 | [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), [Q-M1e2.5](../open_questions.md#q-m1e25--does-s1f108s-ruling-move-here), W3 | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) | the language: ruled *forbid*, built by S1e2.2.5. What a route may learn: F21's D6 |
 | `naf_deps.rs`'s `RefutationUnderAbsentWarning` (M1e S1e.2.3), the containment | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md): both readings of *extendable* per dead node | under *forbid* it becomes the refusal's text, S1e2.2.5's T1e2.2.5.3 |
-| S1e2.1a.1's `non_monotone` stub | [S1e2.1b.5](s1e2.1b.5_the_handling.md): the stub's words become warnings that say what is assumed | refuse, qualify or search differently: F21's D5 |
+| S1e2.1a.1's `non_monotone` stub | [S1e2.1b.5](s1e2.1b.5_the_detector.md): the stub's words become warnings that say what is assumed | refuse, qualify or search differently: F21's D5 |
 | [S1e2.1a.3's census](../p1e2.1a_the_solution_region/region_census.md#5-holes-upward-closure-the-duality): five programs with a hole, of which `lattice/04_obligation_trigger_hole.ein` still has no register row | [S1e2.1b.3](s1e2.1b.3_holes.md) | the row follows from F21's D4 and D2: its (d4) |
 | the same census's [§ 9](../p1e2.1a_the_solution_region/region_census.md#9-the-config-principle): `-y` aborted `corpus/fuzz_findings/d3-unsat-core.ein` before the switch | [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md) ([`node_census.md` § 6.1](node_census.md#61-the--y-abort-on-d3-unsat-core)) | path dependence: F21's D3. The lever `-y`: [S1e2.1c.5](../p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md) |
 | the census's [§ 8](../p1e2.1a_the_solution_region/region_census.md#8-monotonicity-the-static-check-against-the-cube): 13 programs flagged, a violation observed on 5 | [S1e2.1b.1](s1e2.1b.1_the_site_census.md), done | the grain: ruled, relation |

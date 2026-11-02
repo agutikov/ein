@@ -258,7 +258,7 @@ facts of every state in R
   which the static check flags non-monotone, failed the probe with
   *"Saturation commutativity violated"*. No route runs the probe since the
   switch; which state a node of a non-monotone lattice is remains
-  [P1e2.1b](../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)'s
+  [P1e2.1b](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s
   S1e2.1b.2.
 
 **What the levers did to the walk's report** — the register rows they reached,

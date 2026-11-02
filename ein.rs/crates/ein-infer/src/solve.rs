@@ -2550,7 +2550,7 @@ impl Run<'_> {
     /// undo, so the lattice may have holes and two lines may not describe its
     /// region. What the search should *do* then — refuse, qualify, or search
     /// differently — is
-    /// [P1e2.1b](../../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)'s
+    /// [P1e2.1b](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s
     /// S1e2.1b.5, and until it is decided this changes **nothing** about the
     /// search. It narrates one `monotonicity` event, and the read-out
     /// ([`Solved::monotonicity`]) says the answer assumes a monotone lattice.

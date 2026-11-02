@@ -158,7 +158,7 @@ relation a commitment changes, an obligation's trigger over one, or a rule
 whose activator a commitment can derive. A program with a site has a lattice
 whose region may have holes, and `solve`'s `non_monotone` stub narrates this one
 line and changes nothing else about the search. What the search should do
-there is [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_the_non_monotone_lattice/README.md)'s.
+there is [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s.
 
 A monotone program emits nothing, so every stream of one is byte-identical to
 before the stage. The same verdict is `--json-summary`'s `monotonicity` block

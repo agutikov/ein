@@ -114,7 +114,7 @@ written twice), `group-seated-owed` (`lattice/06`) and `owe-2`
 (n = 35), and at fact grain the site is static. The rule writes
 `unknown-feeling` at arity 2, its activator has arity 1, and
 `compile::activators_for` filters by arity. **So the corpus has no exercised
-activator site**, and [S1e2.1b.6](s1e2.1b.6_the_two_lattices_compared.md)'s
+activator site**, and [S1e2.1b.6](s1e2.1b.6_monotone_and_non_monotone_programs_compared.md)'s
 synthetic fixture for that cause is still owed. This stage writes none, as its
 notes say.
 
@@ -218,7 +218,7 @@ layers in which every commitment was visited.
 - **The others certify ∅ as their one minimal state and nothing else**: ∅ is
   in R, so the minimal line is exactly {∅}. The maximal line needs the whole
   cube, and the row says so. `lattice/06` met 21 members, which is all of R
-  as [S1e2.1b.6](s1e2.1b.6_the_two_lattices_compared.md) states it. Nothing
+  as [S1e2.1b.6](s1e2.1b.6_monotone_and_non_monotone_programs_compared.md) states it. Nothing
   here certifies that.
 - **The oracle's cost at 17–19.** Only `lattice/06_friends_tables` is in that
   band among the flagged programs. Its projection (`region::Projection`, 64
@@ -430,8 +430,8 @@ added since. The 13 of 2026-10-16 are today's 14 within the limit less
 | [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md), fork or scratch | the 14 flagged cubes within the limit (232 nodes in all, n ≤ 7) and the 5 flagged probes. The four on which a site's rule fires at root (W8's family, § 2) are where fork and scratch can differ. The `-y` abort's site |
 | [S1e2.1b.3](s1e2.1b.3_holes.md), holes | the 6 corpus programs with a hole and the 4 probes, each minimal hole with its kind and its site (§ 3, § 6). `lattice/06` at `--region-limit 19`, projected at 46 s |
 | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md), a refutation on an `absent` | the 13 sites that conclude `(false)` (S1e2.4.1's `direct` set), the dead holes and dead witnesses with their `absent` premises named, and `via_hole`'s dead hole named through the deriving rule |
-| [S1e2.1b.5](s1e2.1b.5_the_handling.md), the handling | the 22 programs that carry the stub today, and the two that leave it if the grain ruling is (b) |
-| [S1e2.1b.6](s1e2.1b.6_the_two_lattices_compared.md), the comparison | the *detection* row: 22 of 204 programs flagged, 6 exercised and 8 conservative within the limit, 0 violations on 155 monotone cubes, and the corpus's one activator site, never exercised |
+| [S1e2.1b.5](s1e2.1b.5_the_detector.md), the handling | the 22 programs that carry the stub today, and the two that leave it if the grain ruling is (b) |
+| [S1e2.1b.6](s1e2.1b.6_monotone_and_non_monotone_programs_compared.md), the comparison | the *detection* row: 22 of 204 programs flagged, 6 exercised and 8 conservative within the limit, 0 violations on 155 monotone cubes, and the corpus's one activator site, never exercised |
 | [S1e2.1c.3](../p1e2.1c_the_region_search/s1e2.1c.3_the_non_monotone_search.md) | the 8 flagged programs past the limit and what route 2 certifies on each (§ 4) |
 
 ## 9. The re-estimate

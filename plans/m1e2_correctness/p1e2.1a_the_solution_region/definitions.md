@@ -16,7 +16,7 @@ The user asked for this table on 2026-10-16. It has four columns:
 **Scope.** The rows are written for a **monotone** program, which is what
 P1e2.1a solves. Where a definition changes for a non-monotone program, the row
 says so and points at
-[P1e2.1b](../p1e2.1b_the_non_monotone_lattice/README.md).
+[P1e2.1b](../p1e2.1b_non_monotone_programs/README.md).
 
 **Moved 2026-10-16.** S1e2.1a.3 rewrote
 [`solution_semantics.md`](../../../docs/kernel/inference/solution_semantics.md)
@@ -54,7 +54,7 @@ carry `:source "condition (n)"`, the numbered sentences of the puzzle. Its
 - **R is a property of a problem in a context.** The same problem in another
   context has another region. *Improving the theory* and *searching for a
   theory that gives a single solution* (the user, quoted in
-  [S1e2.1b.6](../p1e2.1b_the_non_monotone_lattice/s1e2.1b.6_the_two_lattices_compared.md))
+  [S1e2.1b.6](../p1e2.1b_non_monotone_programs/s1e2.1b.6_monotone_and_non_monotone_programs_compared.md))
   hold the problem fixed and vary the context.
 - **It is the split M2's NL → IR has to make.** The problem comes from the
   text. The ontology comes from world knowledge, which is exactly what a text
@@ -116,7 +116,7 @@ carry `:source "condition (n)"`, the numbered sentences of the puzzle. Its
 | **closure** cl(C) | the candidates `sat(root + C)` holds. Always C ⊆ cl(C) | here cl(C) = C everywhere | engine (the oracle) | S1e2.1a.2 |
 | **transient node** | a node with cl(C) ≠ C: saturation moves it. The `sat` arrow is C ⇒ cl(C) | `synth/merged_states`: {A} ⇒ {A,B} | engine (the drawing) | S1e2.1a.2 |
 | **state class** | the commitments that share one state. For a monotone program its **top** is the closed set cl(C), and its **bottoms** are the **minimal generators**: the least that must be guessed. The class is the union of the intervals [generator … top] | `synth/merged_states`: {A} and {A,B} are one state | ruled (third answer): shown as `(region (model …) …)` with `(merged (to from) …)` | (e) |
-| **monotone** (program) | no read of the third kind, so adding a candidate never takes a conclusion away and never adds a debt. Then dead and discharged are both upward-closed, R is convex, and cl is a closure operator | both seating programs | engine (the static check) | `monotone.rs`; [S1e2.1b.6](../p1e2.1b_the_non_monotone_lattice/s1e2.1b.6_the_two_lattices_compared.md) for the other kind |
+| **monotone** (program) | no read of the third kind, so adding a candidate never takes a conclusion away and never adds a debt. Then dead and discharged are both upward-closed, R is convex, and cl is a closure operator | both seating programs | engine (the static check) | `monotone.rs`; [S1e2.1b.6](../p1e2.1b_non_monotone_programs/s1e2.1b.6_monotone_and_non_monotone_programs_compared.md) for the other kind |
 
 ## The answer
 
