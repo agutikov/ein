@@ -110,6 +110,51 @@ oracle"*. The real question under Q-M1e2.2 is **is a node's state a function
 of C alone?** Longer chains and every split C1 ⊆ C are not measured yet
 (S1e2.1b.7's path census).
 
+### The traversal: a tree of paths, and what it may be memoized by
+
+The user, 2026-11-02: *"So, in general case that includes non-monotonic
+programs full traversal is again a tree that traverse all paths in a lattice,
+where steps are `add H_i` and `sat`; and in path-independent case it callapses
+back to lattice or something smaller (sat merges nodes) but in path-dependent
+doesn't?"* **Yes, with one refinement: a second memoization survives.**
+Argued, not tested:
+
+- **The general object is the path tree.** A node is an ordered sequence of
+  distinct candidates, and a step is `s → sat(s ∪ {h})`. Unmemoized it has
+  Σₖ n!/(n−k)! = ⌊e·n!⌋ nodes, ≈ 5.7·10¹³ at n = 16 against the cube's
+  2¹⁶ = 65 536.
+- **Two keys can memoize it:**
+
+  | memoize by | sound when | the tree collapses onto |
+  |---|---|---|
+  | **C**, the subset | the state is path-independent | the cube 2ⁿ, today's oracle |
+  | **the state**, the KB | always, if `sat(s ∪ {h})` is a function of s's contents and not of its insertion history (premise unverified for the engine) | a DAG of reachable states, acyclic because a step only adds |
+
+- **Path-independent: both keys are sound, and the result is smaller than the
+  cube.**
+  - The reachable states are the image of C ↦ sat(P ∪ C).
+  - Ordered by ⊆, they form a lattice: the join is sat(P ∪ C1 ∪ C2), the
+    bottom is root, and the meet exists but is not the intersection.
+  - This is the read-out's `merged`, k_c commitments onto k_s states. Zebra's
+    270 454 alive commitments land on 27 alive states
+    ([`walk_and_region.md` § 6](../m1e2_correctness/p1e2.1a_the_solution_region/walk_and_region.md#6-what-this-means-for-question-3)).
+- **Path-dependent: memoizing by C is unsound**, which is exactly the
+  parent-path difference above.
+  - Memoizing by state stays sound, but the DAG is not a lattice: one C
+    reaches several states, so there is no unique join.
+  - It can be larger than the cube.
+- **The reading this suggests, (F) in D2.** A node is *the set of states its
+  paths reach whose endpoint holds no stale fact*, that is, no `absent` guard
+  a path used is contradicted at its end.
+  - This is the stability condition of Reiter's default logic and of stable
+    models. An `absent` rule is a default; an extension is an application
+    order whose justifications all survive.
+  - Per C it would give 0 states on an odd cycle (`d3-unsat-core`), 1 on a
+    stratified program, and several on an even cycle (`features/07`, where
+    the guard split already finds *two stable readings*).
+  - These per-C counts are **unverified**. S1e2.1b.7's path census can
+    compute them on small cubes, over the state-memoized DAG.
+
 ### The state: path independence ⇔ monotonicity, given cumulativity
 
 The user's *"path-independence === monotonicity"* holds for the state, given
@@ -298,6 +343,7 @@ asked of every node. Moot under D1's (E).
 | **(B) scratch** | `sat(P ∪ C)` | `stale-naf-fork` and its twin gain `{(q one)}`; `features/07`, `f07-fpoff` and the probe `not_conclusion` lose a stale fact from one state. Saturation ×0.2–5.6 a node, root re-derived at every node. L0 stops being the node's construction. Exposed to the FIFO race on a stratified program, and possibly on one the check calls monotone (above) |
 | **(C) guards are premises** | (A) or (B), and a state holding a stale fact is not a solution | over (A): `features/07`, `f07-fpoff` lose `{(q one)}`; over (B): nothing on the corpus. A third node outcome, its own status or dead |
 | **(D) refuse a cycle through an odd `absent`** | a load error | over D: `features/07`, `f07-fpoff`, `d3-unsat-core` |
+| **(F) the stable endpoints of every path** | the set of states the path tree reaches at C whose facts are not stale ([§ The traversal](#the-traversal-a-tree-of-paths-and-what-it-may-be-memoized-by)); default logic's extensions | not measured. Per C: 0 on an odd cycle, 1 if stratified, several on an even cycle. The answer becomes a set of (C, state) pairs, so k_s counts states and not nodes. The cost is the state DAG, not the cube |
 
 Sub-questions: **(D)'s scope**, over D (3 programs) or over all relations (6,
 three syntax fixtures with n = 0 added); and **stratum-order admission**,

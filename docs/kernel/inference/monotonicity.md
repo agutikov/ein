@@ -422,6 +422,31 @@ a node other than the oracle's. Every split C1 ⊆ C and longer chains are
 node is open (§ 8, D2), and whether a route may extend a parent is open too
 (D3).
 
+**The traversal: a tree of paths, and what it may be memoized by** (argued,
+2026-11-02, from a question of the user's).
+
+- **The general object is the path tree.** A node is an ordered sequence of
+  distinct candidates, and a step is `s → sat(s ∪ {h})`. Unmemoized it has
+  ⌊e·n!⌋ nodes, ≈ 5.7·10¹³ at n = 16 against the cube's 65 536.
+- **Memoizing by C** is sound exactly when the state is path-independent, and
+  it collapses the tree onto the cube.
+- **Memoizing by the state** (the KB) is sound whenever a step is a function of
+  the KB's contents, not of its insertion history, a premise unverified for
+  the engine. It collapses the tree onto a DAG of reachable states, which is
+  acyclic because a step only adds.
+- **On a path-independent program**, the reachable states are the image of
+  C ↦ sat(P ∪ C). Ordered by ⊆, they form a lattice whose join is
+  sat(P ∪ C1 ∪ C2) and whose meet is not the intersection. That lattice is the
+  read-out's `merged`: k_c commitments onto k_s states.
+- **On a path-dependent program**, only the state key is sound. The DAG is not
+  a lattice, since one C reaches several states, and it can be larger than the
+  cube.
+- **This suggests one more reading of a node, open in F21's D2 as (F):** the
+  states its paths reach whose facts are not stale. That is the stability
+  condition of default logic and of stable models. It would give 0 states per
+  C on an odd cycle, 1 on a stratified program, and several on an even cycle.
+  These counts are unverified (§ 7.8).
+
 ### 7.3 The state: path-independent ⇔ monotone, given cumulativity
 
 - **Path-independent**: every path to C gives one fact set, `state(C)`.
@@ -591,6 +616,8 @@ site that concludes a positive fact: `d3-unsat-core`, `f07-fpoff`,
 | fork ≠ scratch on 4 of 256 flagged nodes, 0 of 268 213 monotone | measured | `node_census`, `bc1dff73`, 2026-11-02 |
 | a one-step parent path differs on `d3-unsat-core`, `lattice/08`, `via_hole.ein` | measured | `node_census` § 6.1, same run |
 | every split C1 ⊆ C, and longer chains | unverified | S1e2.1b.7's path census |
+| the path tree collapses onto the cube iff the state is path-independent, and onto a state DAG always | argued | premise for the second half: a step is a function of the KB's contents; unverified for the engine |
+| (F)'s per-C state counts: 0 on an odd cycle, 1 stratified, several on an even cycle | unverified | S1e2.1b.7's path census, over the state-memoized DAG |
 | path-independent ⇒ monotone | argued | premise: the KB never retracts. No test named here enforces it |
 | monotone ⇒ path-independent, given cumulativity | argued | premise: cumulativity |
 | a monotone program's saturation is cumulative | argued | the closure-operator test is adjacent; the `--control` run measures C1 = ∅ on every fact |
@@ -620,7 +647,7 @@ puts a warning on every surface that reports R saying so.
 | decision | F21 | the evidence | until it is taken |
 |---|---|---|---|
 | (E): *forbid* extended to every `absent` site | D1 | § 7.7; [`site_census.md`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/site_census.md) | *forbid* as ruled; the 13 load |
-| what a node's state is (Q-M1e2.2): fork, scratch, guards as premises, refuse a cycle through an odd `absent`; (D)'s scope; admission in stratum order | D2 | § 7.2–7.3; [S1e2.1b.2](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md), `node_census.md` § 9–10 | fork from root |
+| what a node's state is (Q-M1e2.2): fork, scratch, guards as premises, refuse a cycle through an odd `absent`, the stable endpoints of every path (§ 7.2); (D)'s scope; admission in stratum order | D2 | § 7.2–7.3; [S1e2.1b.2](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md), `node_census.md` § 9–10 | fork from root |
 | whether a route may build a node from a parent's fixpoint on a flagged program | D3 | § 7.2 | only on a monotone program |
 | what is reported when R has holes (Q-M1e2.7 (d)) | D4 | § 7.5; [S1e2.1b.3](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.3_holes.md) | the read-out names up to four minimal holes |
 | refuse, qualify, or search differently | D5 | § 6 | route 2, and the warnings |
