@@ -1,6 +1,6 @@
 # P1e2.1b — Non-monotone programs: detected, documented, warned
 
-**Estimate:** ~4 weeks: 7 stages, **21 days**, 12.5 of them still to do.
+**Estimate:** ~4 weeks: 7 stages, **21 days**, 8 of them still to do.
 Re-planned 2026-11-02 on the user's direction below, from 6 stages and 14
 days: [S1e2.1b.5](s1e2.1b.5_the_detector.md) became the detector (3 → 5.5
 days), [S1e2.1b.7](s1e2.1b.7_the_consequences_written_down.md) is new (4.5
@@ -36,8 +36,12 @@ fixture per cause, the guard split held to the oracle) and
 evidence ([`taint_census.md`](taint_census.md)), handed to S1e2.2.5 and F21's
 D6. [S1e2.1b.5](s1e2.1b.5_the_detector.md)'s first task is drafted:
 [`detector_proposal.md`](detector_proposal.md), the check's CLI form and the
-warnings on real programs. **Next:** the user's answers to its four questions,
-while S1e2.1b.7 runs.
+warnings on real programs. [S1e2.1b.7](s1e2.1b.7_the_consequences_written_down.md)
+is done (2026-11-02): the taxonomy, the path and cumulativity censuses, the
+FIFO-gap fixture and its static variant, each option's consequences per
+program and (E)'s rewrites, with every unverified row of `monotonicity.md`
+§ 7.8 measured or refuted. **Next:** the user's answers to the proposal's four
+questions, then S1e2.1b.5's build, last.
 **Depends on:** S1e2.1a.1, whose detector gives this phase its census and
 whose stub [S1e2.1b.5](s1e2.1b.5_the_detector.md) replaces with warnings.
 Since 2026-11-02 also [P1e2.4](../p1e2.4_what_the_switch_left/README.md),
@@ -271,13 +275,14 @@ reports both the sites and the violations the cube observed.
 | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) | A refutation that rests on an `absent` | 1 d | **done at its evidence** 2026-11-02 | the taint census, its test banked, both readings of *extendable* per dead node and the compiled-refutation case handed to S1e2.2.5 (F1–F3). What may learn is F21's D6 |
 | [S1e2.1b.5](s1e2.1b.5_the_detector.md) | The detector | 5.5 d | specified 2026-11-02; T1e2.1b.5.1 **drafted** the same day, awaiting the user's approval ([`detector_proposal.md`](detector_proposal.md)) | an explicit check in the CLI form the user approved; a cheap detector in a bare `ein solve`, zero extra work on an unflagged program; a warning on every surface that reports R; held to the cube and to random programs |
 | [S1e2.1b.6](s1e2.1b.6_monotone_and_non_monotone_programs_compared.md) | Monotone and non-monotone programs compared | 4 d | **done** 2026-11-02 | [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md), *current*; one fixture per cause; seven drawings; the guard split held to the oracle (19 of 21 cubes) |
-| [S1e2.1b.7](s1e2.1b.7_the_consequences_written_down.md) | The consequences written down | 4.5 d | specified and re-scoped 2026-11-02 (the analysis and three pages' terms were written with the re-plan) | the path and cumulativity censuses and the FIFO-gap fixture, so that `monotonicity.md` § 7.8's unverified rows are measured; the taxonomy of causes; each option's consequences per program; (E)'s rewrites; `monotone.rs`'s module docs |
+| [S1e2.1b.7](s1e2.1b.7_the_consequences_written_down.md) | The consequences written down | 4.5 d | **done** 2026-11-02 | [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md) § 7.9 (the taxonomy, thirteen causes), § 8.1 (each option's consequences per program, open, naming F21) and § 8.2 ((E)'s rewrites, eleven probes); [`node_census.md`](node_census.md) § 11–12 (the path and cumulativity censuses); `examples/lattice/10_fifo_gap.ein` and `11_fifo_gap_static.ein`; § 7.8 with no row left unverified; `monotone.rs`'s module docs in § 7's words |
 
-**Work order:** .1, .6, .2, .3 and .4 are done: the evidence is in. Next
-S1e2.1b.5's first task, the check's CLI form and the warnings drafted on real
-programs, which goes to the user; .7 is written while
-the user reads it. Then .5's build, last: its warnings cite .7's taxonomy, and
-its tests make .7's claims executable.
+**Work order:** .1, .6, .2, .3, .4 and .7 are done: the evidence is in and
+written down. S1e2.1b.5's first task, the check's CLI form and the warnings
+drafted on real programs, is with the user. Then .5's build, last: its
+warnings cite .7's taxonomy, and its tests make .7's claims executable,
+reading `lattice/10_fifo_gap` and naming `lattice/11_fifo_gap_static` as the
+case where scratch departs from a *Monotone* verdict.
 
 **Questions the phase puts to the user:** one, the explicit check's CLI form
 and the warnings' text, shown on real corpus programs with outputs before

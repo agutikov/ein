@@ -756,8 +756,8 @@ added the 50th option and no behaviour at all.** `ein test --json-report
 FILE.json` writes **one row per `(query …)` of the whole selection** — the
 claim's shape (`model` / `or` / `false`), how many models it lists, the
 relations its `:goal` closes, the outcome, and what the run found — since M1e2
-S1e2.1a.1 including whether the program's lattice is monotone and how many
-sites made it not. It is
+S1e2.1a.1 including whether the program is monotone, by the static check,
+and how many sites make it not. It is
 additive in the strict sense the other artefact flags are — stdout, stderr, the
 exit code and *what is solved* are identical with it and without it, so a query
 stating no `:expect` is still never solved and its row says so.

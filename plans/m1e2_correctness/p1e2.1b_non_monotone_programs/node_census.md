@@ -342,7 +342,9 @@ direct fork is scratch's node on every one of these nodes** (§ 2). What
 differs is the path: a parent derives a fact under an `absent` that the last
 fact falsifies, and the path keeps it. On an odd loop, `d3-unsat-core`'s four
 dead nodes, which facts a dead fixpoint holds also depends on the order of
-admission.
+admission. **Corrected by § 11.2 (S1e2.1b.7)**: those four were `-y`'s direct
+path, `try_commitment_set` under `enable-fail-fast-fork`, stopping at its first
+contradiction; built to quiescence, as the oracle builds a node, they agree.
 
 - **(A)**: no shipped route meets this. The oracle, route 1 and route 2 build
   every node from root at once. But the node is *root plus the commitment at

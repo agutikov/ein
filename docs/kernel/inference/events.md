@@ -100,7 +100,7 @@ difference a change to the engine or an optimisation introduces.
 | `load` | after `kb.from_ir` | `relations`, `rules`, `hrules`, `macros`, `facts` counts; `relation_names` and `rule_names` in registry order |
 | `region` | end of every **region run** — every `ein solve` and `ein test` file since M1e2 S1e2.1a.5's switch (T1e2.1a.5.2 added it). It replaced the walk's `verdict`, which went with the walk's CLI path | `asked`, `region`, `verdict`, `work`: the `ein-summary/2` blocks of the same names, each one JSON value, `region` without its `states` and `frontier` ([§ Region runs](#region-runs)) |
 | `warn` | **at root, before the search** — the alive-set check right after `load`, the `(absent …)` audit at root's first `quiesce`; one line per breach, in the checker's own order | `category`, `message` (rendered, one line) |
-| `monotonicity` | **at root, before the search**, after root's obligation tally — and **only when the program's lattice is not monotone** (M1e2 S1e2.1a.1) | `verdict` (`"non-monotone"`), `sites` (the count), `site` (one rendered line per site, sorted) |
+| `monotonicity` | **at root, before the search**, after root's obligation tally — and **only when the static check finds a site**, so the program is not monotone (M1e2 S1e2.1a.1) | `verdict` (`"non-monotone"`), `sites` (the count), `site` (one rendered line per site, sorted) |
 
 **`type` gained a fourth value at M1d
 [S1d.2.6](../../../docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus)
@@ -148,17 +148,19 @@ itself) for the second category, and `examples/ein-bugs/alive-set-fresh-name.ein
 for the third. `DerivedNafWarning` has no corpus witness — its witness is
 `ein-infer/tests/naf_semantics.rs`, on a program written in the test.
 
-#### `monotonicity` — the non-monotone lattice, a stub
+#### `monotonicity` — a program that is not monotone, a stub
 
 M1e2 [S1e2.1a.1](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
 [`ein_infer::monotone`](../../../ein.rs/crates/ein-infer/src/monotone.rs)
 classifies every relation a compiled plan reads. A **site** is a read a
 commitment can undo: an `(absent …)` at odd depth in a saturation rule over a
 relation a commitment changes, an obligation's trigger over one, or a rule
-whose activator a commitment can derive. A program with a site has a lattice
-whose region may have holes, and `solve`'s `non_monotone` stub narrates this one
-line and changes nothing else about the search. What the search should do
-there is [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s.
+whose activator a commitment can derive. On a program with a site the region
+may have holes, and `solve`'s `non_monotone` stub narrates this one line and
+changes nothing else about the search. What a node is there, and what the
+search should do, are open: [F21](../../../plans/followups/f21_non_monotone_programs_decided.md)'s,
+and [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)
+detects, documents and warns.
 
 A monotone program emits nothing, so every stream of one is byte-identical to
 before the stage. The same verdict is `--json-summary`'s `monotonicity` block

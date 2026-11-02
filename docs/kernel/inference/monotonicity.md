@@ -557,8 +557,12 @@ the case with absent in s1e2.4.1"*. For the state, no.
   `bc1dff73`): each of the 5 nodes where fork and scratch differ, 4 in the
   corpus and 1 probe, holds a fact derived under an `absent` that the
   commitment falsifies. Of the 11 parent-path differences, 7 hold such a
-  fact, and `d3-unsat-core`'s other 4 are dead nodes that differ by admission
-  order on an odd `absent` loop.
+  fact. `d3-unsat-core`'s other 4 were dead nodes `-y` built two ways, and
+  built to quiescence, as the oracle builds a node, they agree: the
+  difference was `-y`'s direct path stopping at its first contradiction
+  ([`node_census.md` § 11.2](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#112-the-flagged-cubes), 2026-11-02).
+  Since then the path census finds every state a path reaches beyond fork
+  and scratch holding such a fact, 21 of 21 (§ 11.5 there).
 - **An activator can hide the `absent`** (held by a test:
   `region.rs::each_cause_has_a_fixture_whose_cube_shows_its_hole`, its
   `ACTIVATOR_REFUTES`). The rule a node compiles there reads
@@ -692,11 +696,11 @@ not a ruling (§ 8, D1).
 | (F)'s per-C state counts: 0 on an odd cycle, 1 stratified, several on an even cycle | **refuted**, measured | same run: from P, 1 on every flagged node, `d3-unsat-core`'s odd cycle included; from root, 0 on W8's four `{(q one)}`; 0 on `stratified_stale`'s ∅ (written into `node_census`); never 2 |
 | a node's status moves along an alive path | measured | same run: `lattice/08`'s hole in R by way of its parent; a node of R dead by way of an alive parent on the probe `via_hole` and on `ACTIVATOR_UNDER_ABSENT` |
 | path-independent ⇒ monotone | argued | premise: the KB never retracts. No test named here enforces it |
-| monotone ⇒ path-independent, given cumulativity | argued | premise: cumulativity |
+| monotone ⇒ path-independent, given cumulativity | argued, and measured consistent | premise: cumulativity. By fork, every monotone cube read at n ≤ 12 is cumulative and path-independent; § 7.6's program is neither from scratch (`node_census.md` § 11.4, § 12) |
 | a monotone program's saturation is cumulative | by fork, measured; from scratch, **refuted** | `node_census -- --cumulative --control --max-n 12`, `a3ac7d6f`, 2026-11-02 (`node_census.md` § 12.3): on 151 monotone cubes (n ≤ 12), 6 071 nodes, 0 of 12 135 fork tests change a fixpoint, and 1 of 25 124 from scratch, `11_fifo_gap_static` (§ 7.6) |
 | a stratified program evaluated stratum by stratum is cumulative | measured, under an emulation | `node_census -- --stratum-order`, same commit (§ 12.4 there): every node of every stratified program read, each `absent` rule's priority set by its stratum. As the engine admits today it is **refuted** on four programs, each a FIFO race (§ 12.3) |
 | the FIFO example is path-dependent in the engine as written | measured | [`examples/lattice/10_fifo_gap.ein`](../../../examples/lattice/10_fifo_gap.ein), `node_census -- --paths --cumulative --invariance`, same commit (§ 12.1 there) |
-| a state difference needs an `absent` | argued, and measured consistent | `node_census` § 2, § 4, § 6.1 |
+| a state difference needs an `absent` | argued, and measured consistent | `node_census` § 2, § 4, § 6.1; and § 11.5: each of the 21 states a path reaches beyond fork and scratch holds a fact derived under an `absent` its node falsifies |
 | an activator can hide an `absent` from root's plans | held by a test | `each_cause_has_a_fixture_whose_cube_shows_its_hole` |
 | a death resting on no `absent` over D is dead in every superset, the taint following each plan's activator (D6's (b)) | held by a test | `region.rs::an_untainted_death_is_dead_in_every_superset`, on every flagged cube within the limit |
 | an activator derived under an `absent` hides it from the refutation's derivation | held by a test, and measured | `region.rs::an_untainted_death_is_dead_in_every_superset` pins the empty `absent_premises`; `hole_census -- --written`, `4562bf70` |
@@ -705,7 +709,7 @@ not a ruling (§ 8, D1).
 | a monotone program has both properties and no hole | held by a test | `a_monotone_verdict_makes_saturation_a_closure_operator`, `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged` |
 | a *Monotone* verdict can leave scratch ≠ fork through a FIFO race over a static read | measured | [`examples/lattice/11_fifo_gap_static.ein`](../../../examples/lattice/11_fifo_gap_static.ein), `node_census -- --paths`, same commit (§ 12.2 there) |
 | 8 conservative flags of 18 within the limit | measured | `site_census`, `4562bf70` |
-| (E) leaves a monotone, path-independent state on every program that loads | argued | premise: S1e2.2.5's F1 reads D and its F3 sees compiled plans |
+| (E) leaves a monotone, path-independent state on every program that loads | argued, and measured consistent | premise: S1e2.2.5's F1 reads D and its F3 sees compiled plans. Every program the path and cumulativity censuses find path-dependent is refused by (E) or *forbid*, but `ACTIVATOR_REFUTES` (F3) and § 7.6's program (by scratch only) (§ 8.1, D1) |
 | (E)'s 13 programs | measured | `site_census`, `4b822a8d` and `6743dd17`; 14 with `lattice/10_fifo_gap` (§ 8.1, `refutation_census -- --option-e`, `ed8a13f2`) |
 | each of them has a rewrite that keeps R | measured: **5 of the 6** within the limit and `features/12` past it keep R; `d3-unsat-core` has none found; 6 past the limit are not comparable | § 8.2's probes, `ein test` on each, `4502e841` |
 
@@ -729,7 +733,7 @@ says which causes produce it.
 | c6 | an activator that compiles an obligation | [`lattice/09`](../../../examples/lattice/09_activator_hole.ein) | **the status alone**: `owes` | `SiteKind::Activator` | exercised: an owing hole | none, as c5 |
 | c7 | an activator that compiles a refutation, hiding its `absent` | `ACTIVATOR_REFUTES` ([`written.rs`](../../../ein.rs/crates/ein-infer/examples/shared/written.rs)) | **the state, and `dead`**, through `(absent (?R ?x))` in a plan only a node compiles | `SiteKind::Activator` only: root compiled no plan of the rule | exercised: a dead hole | only through a dead parent: 1 of 4 nodes (§ 11.3 there) |
 | c8 | an even cycle through an `absent` | `features/07`, [`f07-fpoff`](../../../examples/ein-bugs/wrong-answers/f07-fpoff.ein) | **the state**, and stability: the written order of two rules at one priority moves the universe (`node_census.md` § 7.1) | two `SiteKind::Absent`; the cycle is no shipped check's (`node_census -- --strata`) | conservative | yes, as c1 |
-| c9 | an odd cycle through an `absent` | [`d3-unsat-core`](../../../corpus/fuzz_findings/d3-unsat-core.ein) | **the state**: a dead fixpoint's facts depend on admission order | `SiteKind::Absent`; the cycle as in c8 | conservative | yes: 4 of 32 nodes, through alive parents. § 6.1's other four were `-y`'s fail-fast stop (§ 11.2 there) |
+| c9 | an odd cycle through an `absent` | [`d3-unsat-core`](../../../corpus/fuzz_findings/d3-unsat-core.ein) | **the state**: a parent path keeps `(r1 o2 o2)`, derived under an `absent` the commitment falsifies | `SiteKind::Absent`; the cycle as in c8 | conservative | yes: 4 of 32 nodes, through alive parents. § 6.1's other four were `-y`'s fail-fast stop (§ 11.2 there) |
 | c10 | the FIFO gap, at one priority | [`lattice/10_fifo_gap`](../../../examples/lattice/10_fifo_gap.ein) (§ 7.3's example) | **the state**: cumulativity, on a stratified program | `SiteKind::Absent` on the reader | conservative | yes: 1 of 4 nodes, `{a, b}` at once against by way of `{a}`, through an alive parent (`node_census.md` § 12.1) |
 | c11 | the FIFO gap, the reader at an earlier priority | [`detector_proposal/fifo_gap_priority.ein`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap_priority.ein) | **the state**, in every written order: no equal-priority pair exists for a reorder to move | `SiteKind::Absent` on the reader | conservative | yes, as c10, measured on the same node (§ 12.1 there) |
 | c12 | an activator derived under an `absent` | `ACTIVATOR_UNDER_ABSENT` (`written.rs`) | **the state, and `dead`**: the `absent` is in the activator's derivation, which no premise records | `SiteKind::Absent` (`act`) and `SiteKind::Activator` (`watch`) | exercised: a dead hole | yes: 2 of 8 nodes, through alive parents, and a node of R is dead that way (§ 11.3 there) |

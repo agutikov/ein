@@ -256,10 +256,14 @@ facts of every state in R
 - **`lattice-sanity-check` aborted one program under the walk**:
   [`corpus/fuzz_findings/d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein),
   which the static check flags non-monotone, failed the probe with
-  *"Saturation commutativity violated"*. No route runs the probe since the
-  switch; which state a node of a non-monotone lattice is remains
-  [P1e2.1b](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s
-  S1e2.1b.2.
+  *"Saturation commutativity violated"*. Four of the eight nodes it found are
+  its own direct path stopping at the first contradiction
+  (`enable-fail-fast-fork`), and the other four a stale fact a parent path
+  keeps ([`node_census.md` § 11.2](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#112-the-flagged-cubes),
+  2026-11-02). No route runs the probe since the switch; which state a node of a program the static check flags is remains
+  open, [F21](../../plans/followups/f21_non_monotone_programs_decided.md)'s D2,
+  with [P1e2.1b](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s
+  S1e2.1b.2 and S1e2.1b.7 as its evidence.
 
 **What the levers did to the walk's report** — the register rows they reached,
 `-L`'s W1, W2 and W4 rows, `-K`'s W9 rows, the writeback's W3 row — were the

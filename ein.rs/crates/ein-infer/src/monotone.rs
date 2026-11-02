@@ -1,4 +1,4 @@
-//! Is a program's hypothesis lattice monotone? — M1e2
+//! Is a program monotone? — M1e2
 //! [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
 //!
 //! The answer to a program is the region `R` of its hypothesis lattice, the
@@ -38,15 +38,36 @@
 //! is in `D`: a commitment can then compile plans root never had, which this
 //! check cannot see.
 //!
+//! ### Which property it is about
+//!
+//! In the words of `docs/kernel/inference/monotonicity.md` § 7. The lattice,
+//! the commitments over the candidates ordered by ⊆, is the domain, and it is
+//! neither monotone nor not. What can be monotone are the functions on its
+//! nodes: the **state**, `C ⊆ C′ ⇒ state(C) ⊆ state(C′)`, and the **status**,
+//! `dead` and *discharged* upward-closed. A third and stronger property is the
+//! program's: its consequence operator is monotone on every KB. A site says
+//! the operator is not monotone over `D`, so the verdict approximates the
+//! third property, and the theorem below gives the first two from it.
+//!
+//! **The verdict is relative to root.** A read of a relation outside `D` is
+//! static because root's fixpoint completes it and a fork never re-derives it,
+//! so *Monotone* says the operator is monotone on root's fixpoint extended by
+//! commitments: on nodes built by fork from root, which is how every route
+//! builds one. A node built from scratch re-derives root inside itself, and
+//! there an equal-priority race over a static read can leave a stale fact on a
+//! program this check calls monotone (`examples/lattice/11_fifo_gap_static.ein`,
+//! M1e2 S1e2.1b.7).
+//!
 //! ### The theorem
 //!
-//! **A program with no site has a monotone lattice.** Every relation in `D` is
-//! then derived only through positive reads of `D` and reads of static
-//! relations, which have the same extension at every node; so each node's
-//! fixpoint contains its subsets' (`dead` is upward-closed, `(false)` being a
-//! fact), and every obligation's set of matches is fixed while its witnesses
-//! only grow (*discharged* is upward-closed). Both closures together leave `R`
-//! no holes, so its two lines describe it. That is a **sufficient** condition.
+//! **A program with no site has a monotone state and a monotone status**, on
+//! nodes built by fork from root. Every relation in `D` is then derived only
+//! through positive reads of `D` and reads of static relations, which have the
+//! same extension at every node; so each node's fixpoint contains its subsets'
+//! (`dead` is upward-closed, `(false)` being a fact), and every obligation's
+//! set of matches is fixed while its witnesses only grow (*discharged* is
+//! upward-closed). Both closures together leave `R` no holes, so its two lines
+//! describe it. That is a **sufficient** condition.
 //! A site can be harmless in practice, and [`crate::region`]'s cube is what
 //! says whether one was: it counts the violations it observes, and a
 //! `Monotone` verdict beside an observed violation is a defect in this module.
@@ -75,9 +96,11 @@
 //!
 //! It reads compiled plans and the program's registries and nothing else — no
 //! interning, no event, no counter — so a solve can ask it without moving.
-//! *What* the non-monotone case means is
-//! [P1e2.1b](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s,
-//! and [`crate::solve::solve`]'s `non_monotone` is the stub it replaces.
+//! *What* a node is on a program with a site is open:
+//! [F21](../../../../plans/followups/f21_non_monotone_programs_decided.md)'s
+//! D2. [P1e2.1b](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)
+//! detects, documents and warns, and [`crate::solve::solve`]'s `non_monotone`
+//! is the stub its S1e2.1b.5 replaces with warnings.
 
 use std::sync::Arc;
 
