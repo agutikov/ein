@@ -29,9 +29,10 @@
 //! search-time write: no lookahead, no forced positive, no kill cache, no
 //! writeback, no learned clause. Where adding a fact can take a conclusion
 //! away the from-scratch route can disagree with it (W8), and which one `R` is
-//! over is
-//! [P1e2.1b](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s
-//! question. [`crate::monotone`] says whether a program can.
+//! over is open:
+//! [F21](../../../../plans/followups/f21_non_monotone_programs_decided.md)'s
+//! D2. [`crate::monotone`] says whether a program can, and on one that can,
+//! [`crate::detector`] says what the read-out warns of.
 //!
 //! ### The universe
 //!
@@ -653,11 +654,26 @@ pub(crate) fn prepare_with(
     let plans = crate::monotone::plans_of(&memo);
     let monotonicity = crate::monotone::classify(root, terms, &plans, &hypothesised);
     if events.on() && !monotonicity.is_monotone() {
+        // The detector's static half (M1e2 S1e2.1b.5): optional fields, so
+        // `ein-events/1` stays. The dynamic half is the summary's and the
+        // read-out's, after the run.
+        let d = &monotonicity.detector;
         let sites: Vec<String> = monotonicity.sites.iter().map(|s| s.render(terms)).collect();
+        let at_stake: Vec<String> = d
+            .stakes
+            .iter()
+            .map(|s| s.at_stake.key().to_string())
+            .collect();
+        let cycles: Vec<String> = d.cycles.iter().map(|c| c.text()).collect();
+        let order = detector::order_texts(&d.order);
         events.emit("monotonicity", |l| {
             l.str("verdict", "non-monotone");
             l.num("sites", sites.len() as i64);
             l.owned_strs("site", sites);
+            l.owned_strs("at_stake", at_stake);
+            l.owned_strs("cycles", cycles);
+            l.owned_strs("order", order);
+            l.str("assumes", "fork");
         });
     }
     Ok(Prepared {

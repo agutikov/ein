@@ -111,7 +111,7 @@ either `region` with `refused: null`, or `region: null` with `refused`
 | `local_max`, `local_min` | nodes of `R` where the one-fact test and the whole cube disagree |
 | `violations` | `dead_not_upward_closed` (a dead node with an alive superset) and `discharged_not_upward_closed` (a discharged node with an owing superset), each with a count and the smallest pair |
 | `edges` | every upward edge, counted by the statuses at its two ends |
-| `root_dead`, `assumes_monotone` | root's own fixpoint is contradictory; the static check found a site |
+| `root_dead`, `assumes_monotone` | root's own fixpoint is contradictory; the static check flags the program, and the lines and components are computed over nodes built by fork from root (`region.md`'s *(nodes by fork)*). The name is kept from before M1e2 S1e2.1b.5; it means what this row says |
 | `nodes` | one record per mask: `mask`, `layer`, `facts`, `status`, `minimal`, `maximal`, `hole`, `component`, `class`, `closure`, `excluded`, `beyond`, `beyond_hypothesised`, `owes`, `owed`, `core`, `refuted_by`, `absent_premises`, and `state` (the node's facts beyond root's) under `--states` |
 
 ## `walk.json` — until the switch
@@ -186,18 +186,31 @@ and the **status**'s, which an obligation's trigger or an activator breaks
 with no `absent`. `region.md`'s violations are the status's. A program whose
 cube shows none is a *conservative* flag.
 
-**The stub.** A program with a site says so in three places:
+**The warning.** Since M1e2's
+[S1e2.1b.5](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.5_the_detector.md)
+(the wording the user approved on 2026-11-03), a program with a site says so,
+and says what [`ein_infer::detector`](../../../ein.rs/crates/ein-infer/src/detector.rs)
+found, in these places:
 
-- the read-out's `lattice` row, `not monotone: n sites (the static check) — …;
-  assumes a monotone lattice for what a node is (P1e2.1b)`, beside route 2,
-  the cube, since route 1's licence is monotonicity. The words are the
-  engine's, and *a monotone lattice* is the wrong term for what they mean, a
-  node built by fork from root; M1e2's
-  [S1e2.1b.5](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.5_the_detector.md)
-  rewords them;
-- a `monotonicity` event ([`events.md`](events.md));
+- the read-out's `lattice` block, beside route 2, the cube, since route 1's
+  licence is monotonicity: `not monotone: n sites (the static check) — h
+  holes`, then what is assumed (`assumes`, every node a fork of root, and what
+  a node is open: Q-M1e2.2, F21), each `site` with what it puts at stake, each
+  `cycle` and `order` finding, the `status` (the cube's violations,
+  *exercised* by the sites they are attributed to, *conservative*, or *not
+  known*), the `state` (the stale facts of every node the run computed) and
+  the `paths` (the spot check, at most three parents of each printed state),
+  then the minimal holes as before;
+- `ein solve FILE --monotone`, the static half alone, root's fixpoint and no
+  node;
+- a `monotonicity` event ([`events.md`](events.md)), with the static half;
 - `--json-summary`'s `monotonicity` block, which every run carries, monotone
-  or not.
+  or not: each site's `concludes` and `at_stake`, then `assumes`, `cycles`,
+  `order`, `status`, `state` (every stale node, uncut) and `paths`. On a
+  monotone program `assumes`, `status`, `state` and `paths` are `null` and the
+  two lists empty, because `ein-summary/2` has one shape;
+- `region.md`'s header and `region.json`'s `status` and `state`, which
+  `ein render region` labels.
 
 What the region *is* on such a program — which route a node is built by, what
 a hole means, what may be learned from a refutation that rests on an
@@ -206,8 +219,8 @@ a hole means, what may be learned from a refutation that rests on an
 documents it, and the decisions are
 [F21](../../../plans/followups/f21_non_monotone_programs_decided.md)'s
 (2026-11-02). On one, `region.md` still computes everything, by fork from
-root, and marks what assumes that (its words: *assumes a monotone
-lattice*).
+root, and marks what is computed over the nodes so built (its words: *nodes
+by fork*).
 
 **Measured** 2026-10-15, with `EIN_REGION_CENSUS=1 cargo test -p ein-infer
 --test region census_for_inspection -- --nocapture`: of the 183 corpus files

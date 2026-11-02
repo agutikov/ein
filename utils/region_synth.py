@@ -206,7 +206,7 @@ def topology(n: int, status: list[str]) -> dict:
 class RootDead(Exception):
     """∅ dead with R non-empty: the oracle builds every node from root's
     fixpoint, which already holds that `(false)`, so every node would be dead.
-    Which route a node is built by is P1e2.1b's question (W8)."""
+    Which route a node is built by is open: F21's D2 (W8)."""
 
 
 def program(spec: dict) -> str:
@@ -214,7 +214,7 @@ def program(spec: dict) -> str:
     n = len(cands)
     if status[0] == "dead" and "R" in status:
         raise RootDead(f"{spec['name']}: ∅ is dead and R is not empty — every node is built from root's "
-                       "fixpoint, which would already hold the (false); make ∅ owing (P1e2.1b, W8)")
+                       "fixpoint, which would already hold the (false); make ∅ owing (F21's D2, W8)")
     moved = {m for m in range(1 << n) if closure(m, implies) != m}
     dead_on = {m for m in range(1 << n) if status[m] == "dead" and m not in moved}
     dead_dc = set(moved)

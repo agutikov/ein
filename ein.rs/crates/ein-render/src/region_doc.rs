@@ -87,6 +87,13 @@ pub struct Cube {
 }
 
 /// `region.json`.
+/// What a site puts at stake, in the read-out's words, from `region.json`'s
+/// key; an unknown key as it is.
+fn at_stake_words(key: &str) -> String {
+    ein_infer::detector::AtStake::from_key(key)
+        .map_or_else(|| key.to_string(), |a| a.words().to_string())
+}
+
 #[derive(Clone, Debug, Default)]
 pub struct RegionDoc {
     pub source: String,
@@ -94,8 +101,15 @@ pub struct RegionDoc {
     pub limit: i64,
     pub candidates: Vec<String>,
     pub monotone: bool,
-    /// Each site, rendered `rule · kind · relation`.
+    /// Each site, rendered `rule · kind · relation`, with what it puts at
+    /// stake where `region.json` says (M1e2 S1e2.1b.5).
     pub sites: Vec<String>,
+    /// The detector's word for the cube's half: `exercised`, `conservative`
+    /// or `not known`; `None` on a monotone program or an older dump.
+    pub status: Option<String>,
+    /// How many nodes of the cube hold a stale fact, where `region.json`
+    /// says.
+    pub stale_nodes: Option<u64>,
     /// `Some(note)` when the oracle refused the cube.
     pub refused: Option<String>,
     pub cube: Option<Cube>,
@@ -150,7 +164,11 @@ impl RegionDoc {
                     .iter()
                     .map(|x| {
                         let f = |k| x.get(k).and_then(Json::as_str).unwrap_or("?");
-                        format!("{} · {} · {}", f("rule"), f("kind"), f("relation"))
+                        let stake = match x.get("at_stake").and_then(Json::as_str) {
+                            Some(k) => format!(" ({})", at_stake_words(k)),
+                            None => String::new(),
+                        };
+                        format!("{} · {} · {}{stake}", f("rule"), f("kind"), f("relation"))
                     })
                     .collect()
             })
@@ -169,6 +187,16 @@ impl RegionDoc {
                 .and_then(Json::as_bool)
                 .unwrap_or(true),
             sites,
+            status: m
+                .and_then(|m| m.get("status"))
+                .and_then(|s| s.get("bit"))
+                .and_then(Json::as_str)
+                .map(str::to_string),
+            stale_nodes: m
+                .and_then(|m| m.get("state"))
+                .and_then(|s| s.get("stale_nodes"))
+                .and_then(Json::as_i64)
+                .map(|n| n as u64),
             refused: j
                 .get("refused")
                 .and_then(|r| r.get("note"))

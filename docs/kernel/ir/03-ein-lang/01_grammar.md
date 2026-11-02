@@ -557,7 +557,8 @@ reserved, as before.
 
 **Who checks it.** `ein test` does, against R as `ein solve` describes it:
 route 1 on a monotone program, and the cube on one the static check flags,
-under *assumes a monotone lattice*. The claim is never checked against the
+every node a fork of root (what a node is there is open, F21's D2, and the
+read-out's `lattice` block warns of it). The claim is never checked against the
 walk. A route that stops at its budget, or a flagged program past the
 oracle's limit, leaves the claim `NOT CHECKED`. Until
 [S1e2.1a.5](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s

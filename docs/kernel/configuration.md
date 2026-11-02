@@ -262,7 +262,11 @@ facts of every state in R
   its own direct path stopping at the first contradiction
   (`enable-fail-fast-fork`), and the other four a stale fact a parent path
   keeps ([`node_census.md` § 11.2](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#112-the-flagged-cubes),
-  2026-11-02). No route runs the probe since the switch; which state a node of a program the static check flags is remains
+  2026-11-02). No route runs the probe since the switch. Its question ships
+  as the detector's parent-path spot check (M1e2 S1e2.1b.5, the read-out's
+  `paths` row), on a flagged program only, at most three one-step parents of
+  each printed state, built by the node function rather than by `-y`'s
+  fail-fast direct path; it answers nothing and moves nothing. Which state a node of a program the static check flags is remains
   open, [F21](../../plans/followups/f21_non_monotone_programs_decided.md)'s D2,
   with [P1e2.1b](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s
   S1e2.1b.2 and S1e2.1b.7 as its evidence.

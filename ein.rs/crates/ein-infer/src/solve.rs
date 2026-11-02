@@ -601,10 +601,11 @@ pub struct Solved {
     /// for a program that states no obligation, which is every corpus entry
     /// that declares no lower bound.
     pub owes: OwesReport,
-    /// Whether the program's lattice is monotone — M1e2
+    /// Whether the program is monotone — M1e2
     /// [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md),
     /// [`crate::monotone`] at root. A program with a site reached the
-    /// `non_monotone` stub P1e2.1b replaces.
+    /// `non_monotone` stub, which no command reaches since the switch; the
+    /// warnings that replaced it are [`crate::detector`]'s (S1e2.1b.5).
     pub monotonicity: Monotonicity,
     /// The two candidate lists the lattice is over.
     pub universe: Universe,
@@ -2540,20 +2541,22 @@ impl Run<'_> {
         }
     }
 
-    /// **The non-monotone lattice — a stub.** M1e2
+    /// **A non-monotone program — a stub.** M1e2
     /// [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md),
     /// on the user's instruction of 2026-10-15: *"implement detection of
     /// non-monotonicity and add a stub for handling this case in `solve` and
     /// other tools"*.
     ///
     /// Reached when [`crate::monotone`] finds a site: a read a commitment can
-    /// undo, so the lattice may have holes and two lines may not describe its
-    /// region. What the search should *do* then — refuse, qualify, or search
-    /// differently — is
-    /// [P1e2.1b](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s
-    /// S1e2.1b.5, and until it is decided this changes **nothing** about the
-    /// search. It narrates one `monotonicity` event, and the read-out
-    /// ([`Solved::monotonicity`]) says the answer assumes a monotone lattice.
+    /// undo, so the region may have holes and two lines may not describe it.
+    /// What a search should *do* then — refuse, qualify, or search
+    /// differently — is open:
+    /// [F21](../../../../plans/followups/f21_non_monotone_programs_decided.md)'s
+    /// D5. This changes **nothing** about the search, and narrates one
+    /// `monotonicity` event. Dead since M1e2 S1e2.1a.5's switch, in the walk's
+    /// library that no command reaches; the warnings every surface prints are
+    /// [`crate::detector`]'s (S1e2.1b.5), and this goes with the walk at
+    /// S1e2.1c.5.
     fn non_monotone(&mut self, terms: &Terms, events: &mut Events) {
         if events.on() {
             let m = &self.monotonicity;

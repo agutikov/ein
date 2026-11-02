@@ -2,7 +2,7 @@
 ;;;
 ;;; Seating Ann makes her a diner, and a diner owes a meal: an obligation whose
 ;;; trigger a commitment changes, so the static check flags the program and R
-;;; is the cube's (route 2), under *assumes a monotone lattice*. {(seats Ann
+;;; is the cube's (route 2), every node a fork of root (F21's D2). {(seats Ann
 ;;; C1)} alone is a hole between ∅ and the seated, fed state.
 ;;; The program is examples/lattice/04_obligation_trigger_hole.ein's.
 

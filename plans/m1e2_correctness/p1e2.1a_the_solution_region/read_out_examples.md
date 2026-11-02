@@ -32,7 +32,7 @@ is quoted.
 | [X5](#x5--latticesynthmerged_statesein-every-state-merged) | `lattice/synth/merged_states.ein` | 5 | ∅ not in R; a `(merged …)` on every state; two components |
 | [X6](#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe) | `tests/stdlib/closure/03_closed_and_owing.ein` | 0 | empty R, the owing kind; `--single` says `Open` |
 | [X7](#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) | `tests/stdlib/algebra/09_irreflexive_violated.ein` | 0 | empty R, the dead kind; `--single` says `Contradiction` |
-| [X8](#x8--ein-bugsnaf-upward-closureein-a-hole) | `ein-bugs/naf-upward-closure.ein` | 2 | a program the static check flags: route 2, a hole, the stub |
+| [X8](#x8--ein-bugsnaf-upward-closureein-a-hole) | `ein-bugs/naf-upward-closure.ein` | 2 | a program the static check flags: route 2, a hole, the warning |
 | [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: members, never line members |
 | [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: partial at the default budget and already answered; exhausted at 2²⁵, cut on stdout and whole in `answer.txt`; `--maximal -n 1`; `--single` |
 | [X11](#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) | `saturation/square-bwd/floors.ein` | 20 | R is the whole cube: partial, with both trivial lines certified; the first questions in 1–11 saturations |
@@ -788,9 +788,12 @@ exit 0
 W3's witness. A guard's `absent` makes `{(p A)}` dead alone and alive beside
 `(q A)`, so the static check flags the program and route 2 takes the whole cube,
 four saturations. R is `{∅, {q}, {p, q}}`, and `{p}` is a **hole**: outside R,
-between two members of it. The `lattice` row is S1e2.1a.1's stub, which says so,
-counts the holes and names each minimal one with why it is out; the `E` row is
-the cube's alone.
+between two members of it. The `lattice` block is the detector's warning (M1e2
+S1e2.1b.5, the wording approved on 2026-11-03), which replaced S1e2.1a.1's
+stub: what is assumed, the site and what it puts at stake, the status the cube
+shows (exercised, by `bad`), the state (no stale fact), the parent paths
+checked, and then each minimal hole with why it is out. The `E` row is the
+cube's alone.
 
 `ein solve examples/ein-bugs/naf-upward-closure.ein`
 
@@ -809,7 +812,12 @@ solve · examples/ein-bugs/naf-upward-closure.ein
   merged            none — every state is reached by one commitment, so k_c = k_s
   N                 1 minimal dead set
   E                 1 minimal discharging set
-  lattice           not monotone: 1 site (the static check) — 1 hole; assumes a monotone lattice for what a node is (P1e2.1b)
+  lattice           not monotone: 1 site (the static check) — 1 hole
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            bad: absent reads q at absent depth 1, concludes (false) — at stake: the state, and dead with it
+    status          non-monotone here (exercised, by bad) — the cube: 1 hole · 1 dead node with an alive superset · 0 discharged nodes with an owing superset
+    state           no stale fact in the cube's 4 nodes
+    paths           every parent path checked reaches the same state — 1 parent of 1 printed state
     minimal hole    {(p A)} — dead: (p A)
   universe          2 candidates, 1 dead alone
   route             2, the cube — no licence: the static check flags the program
@@ -845,7 +853,10 @@ cannot know that, so every count is a lower bound. What it *can* certify is
 one line: ∅ is in R, so the minimal line is exactly {∅}, whatever the program.
 That is the one state it lists. The other 20 members it met go to
 `--dump-answer`, and the query is answered over all 21 as a lower bound, with
-no `as :expect`: read back, that claim would say these classes are all.
+no `as :expect`: read back, that claim would say these classes are all. The
+warning says the cube's half is not known past the limit, reads the stale
+facts of every node the run computed, and checks no parent path, because the
+read-out prints no state of two commitments or more.
 
 `ein solve examples/lattice/06_friends_tables.ein`
 
@@ -862,7 +873,12 @@ solve · examples/lattice/06_friends_tables.ein
   components        not known: R was not exhausted
   sub-cubes         not known
   N                 ≥ 68 minimal dead sets — those met in layer order
-  lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated; assumes a monotone lattice for what a node is (P1e2.1b)
+  lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
+    status          not known — the cube is 2^19 nodes, past --region-limit 16
+    state           no stale fact in the 65 299 nodes the run computed
+    paths           not checked — the read-out prints no state of two commitments or more; its 21 members met would cost up to 104 saturations
   universe          19 candidates, dead alone not known: the run stopped before it visited each alone
   route             2, the cube — no licence: the static check flags the program
   work              65 299 saturations · 455 247 facts beyond root

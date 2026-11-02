@@ -21,6 +21,7 @@
 use std::path::Path;
 
 use ein_core::{FactId, Kb, Terms};
+use ein_infer::detector::{Status, Warning};
 use ein_infer::monotone::Monotonicity;
 use ein_infer::region::{Candidate, Class, Outcome, Region};
 use ein_infer::solve::Solved;
@@ -274,6 +275,112 @@ fn static_half(m: &Monotonicity) -> Vec<(&'static str, Json)> {
     ]
 }
 
+/// The detector's dynamic half (M1e2 S1e2.1b.5), after the static half:
+/// `status`, `state` and `paths`, each `null` where the run has none — on a
+/// monotone program, which the detector never reads, and `paths` where no
+/// read-out ran. Every key on every run, as `ein-summary/2` has one shape.
+pub fn warning_json(w: Option<&Warning>) -> Vec<(&'static str, Json)> {
+    let Some(w) = w else {
+        return vec![
+            ("status", Json::Null),
+            ("state", Json::Null),
+            ("paths", Json::Null),
+        ];
+    };
+    let n_limit = |why: &str, n: usize, limit: Option<u32>| {
+        let mut v = vec![
+            ("read", Json::Null),
+            ("bit", Json::str("not known")),
+            ("why", Json::str(why)),
+            ("n", Json::int(n as i64)),
+        ];
+        if let Some(l) = limit {
+            v.push(("limit", Json::int(l as i64)));
+        }
+        Json::obj(v)
+    };
+    let status = match &w.status {
+        Status::Exercised {
+            by,
+            holes,
+            dead_not_upward_closed,
+            discharged_not_upward_closed,
+        } => Json::obj(vec![
+            ("read", Json::str("the cube")),
+            ("bit", Json::str("exercised")),
+            ("by", strs(by)),
+            ("holes", Json::int(*holes as i64)),
+            (
+                "dead_not_upward_closed",
+                Json::int(*dead_not_upward_closed as i64),
+            ),
+            (
+                "discharged_not_upward_closed",
+                Json::int(*discharged_not_upward_closed as i64),
+            ),
+        ]),
+        Status::Conservative => Json::obj(vec![
+            ("read", Json::str("the cube")),
+            ("bit", Json::str("conservative")),
+            ("by", Json::Array(Vec::new())),
+            ("holes", Json::int(0)),
+            ("dead_not_upward_closed", Json::int(0)),
+            ("discharged_not_upward_closed", Json::int(0)),
+        ]),
+        Status::PastLimit { n, limit } => n_limit("past --region-limit", *n, Some(*limit)),
+        Status::NotRead { n } => n_limit("the run did not read every node", *n, None),
+        Status::RootDead { n, limit } => n_limit("root is dead (L0)", *n, Some(*limit)),
+    };
+    let state = Json::obj(vec![
+        (
+            "read",
+            Json::str(if w.state.cube {
+                "the cube"
+            } else {
+                "every node the run computed"
+            }),
+        ),
+        ("nodes", Json::int(w.state.nodes as i64)),
+        ("stale_nodes", Json::int(w.state.stale.len() as i64)),
+        (
+            "stale",
+            Json::Array(
+                w.state
+                    .stale
+                    .iter()
+                    .map(|s| {
+                        Json::obj(vec![
+                            ("node", Json::str(&s.node)),
+                            ("class", Json::str(s.class.as_str())),
+                            ("facts", strs(&s.facts)),
+                        ])
+                    })
+                    .collect(),
+            ),
+        ),
+    ]);
+    let paths = w.paths.as_ref().map_or(Json::Null, |p| {
+        Json::obj(vec![
+            ("bound", Json::int(p.bound as i64)),
+            ("states", Json::int(p.states as i64)),
+            ("parents", Json::int(p.parents as i64)),
+            ("dead_parents", Json::int(p.dead as i64)),
+            ("saturations", Json::int(p.saturations as i64)),
+            ("differ", strs(&p.differ)),
+            (
+                "unprinted",
+                p.unprinted.map_or(Json::Null, |(met, cost)| {
+                    Json::obj(vec![
+                        ("members", Json::int(met as i64)),
+                        ("saturations", Json::int(cost as i64)),
+                    ])
+                }),
+            ),
+        ])
+    });
+    vec![("status", status), ("state", state), ("paths", paths)]
+}
+
 fn absents_json(m: &Monotonicity, terms: &Terms) -> Json {
     Json::Array(
         m.absents
@@ -311,6 +418,18 @@ fn region_json(oracle: &Outcome, terms: &Terms, inputs: &RegionInputs) -> Json {
     };
     let mut m = monotonicity_json(monotonicity, terms);
     if let Json::Object(pairs) = &mut m {
+        let warning = match oracle {
+            Outcome::Region(r) => r.warning.as_deref(),
+            Outcome::Refused { .. } => None,
+        };
+        // The cube's half and the state: what `ein render region` labels.
+        if warning.is_some() {
+            pairs.extend(
+                warning_json(warning)
+                    .into_iter()
+                    .map(|(k, v)| (k.to_string(), v)),
+            );
+        }
         pairs.push(("absents".to_string(), absents_json(monotonicity, terms)));
     }
     let head = vec![
@@ -808,7 +927,7 @@ fn md_sets(r: &Region, ms: &[u64]) -> String {
 
 fn region_md(
     oracle: &Outcome,
-    terms: &Terms,
+    _terms: &Terms,
     walk: Option<&Walk>,
     inputs: &RegionInputs,
 ) -> String {
@@ -837,16 +956,51 @@ fn region_md(
             m.absent_reads.dynamic_monotone
         ));
     } else {
+        // The warning, as the read-out's `lattice` block says it (M1e2
+        // S1e2.1b.5, approved 2026-11-03).
         out.push_str(&format!(
             "**Not monotone: {} site{}.** A commitment can take a conclusion away or add a \
              debt, so the region may have holes and its two lines may not describe it. \
-             Everything below that assumes a monotone lattice says so; what the region \
-             means here is P1e2.1b's.\n\n",
+             Every node below is a fork of root: root's fixpoint, its commitment added, \
+             saturated. What a node is on such a program is open (Q-M1e2.2, F21), and a line \
+             marked *(nodes by fork)* is computed over the nodes so built.\n\n",
             m.sites.len(),
             if m.sites.len() == 1 { "" } else { "s" }
         ));
-        for s in &m.sites {
-            out.push_str(&format!("- {}\n", s.render(terms)));
+        for s in &m.detector.stakes {
+            out.push_str(&format!("- {}\n", s.text()));
+        }
+        for c in &m.detector.cycles {
+            out.push_str(&format!("- the cycle: {}\n", c.text()));
+        }
+        for o in ein_infer::detector::order_texts(&m.detector.order) {
+            out.push_str(&format!("- the order: {o}\n"));
+        }
+        if let Outcome::Region(r) = oracle
+            && let Some(w) = r.warning.as_deref()
+        {
+            let status = match &w.status {
+                Status::Exercised {
+                    by,
+                    holes,
+                    dead_not_upward_closed,
+                    discharged_not_upward_closed,
+                } => format!(
+                    "non-monotone here (exercised, by {}) — {}",
+                    by.join(", "),
+                    crate::read_out::violation_counts(
+                        *holes,
+                        *dead_not_upward_closed,
+                        *discharged_not_upward_closed
+                    )
+                ),
+                s => crate::read_out::status_text(s),
+            };
+            out.push_str(&format!("- the status: {status}\n"));
+            out.push_str(&format!(
+                "- the state: {}\n",
+                crate::read_out::state_text(&w.state)
+            ));
         }
         out.push('\n');
     }
@@ -873,7 +1027,7 @@ fn region_md(
     let assumes = if m.is_monotone() {
         ""
     } else {
-        " *(assumes a monotone lattice)*"
+        " *(nodes by fork)*"
     };
     out.push_str("## R — alive and discharged\n\n");
     out.push_str(&format!(

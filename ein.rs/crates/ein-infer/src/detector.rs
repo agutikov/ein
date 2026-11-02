@@ -145,6 +145,19 @@ impl AtStake {
         }
     }
 
+    /// The value whose [`Self::key`] is `key`.
+    pub fn from_key(key: &str) -> Option<AtStake> {
+        [
+            AtStake::State,
+            AtStake::StateAndDead,
+            AtStake::Owes,
+            AtStake::OwesThroughPlan,
+            AtStake::StateThroughPlan,
+        ]
+        .into_iter()
+        .find(|a| a.key() == key)
+    }
+
     /// The summary's and the event's key.
     pub fn key(self) -> &'static str {
         match self {

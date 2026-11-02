@@ -38,7 +38,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from review.util import (REPO, Invocation, SvgJob, details, doc, header, image, jsonl, load_json,
-                         read, rebase, rel, render_svgs, run, size_of, split_digraphs, table, write)
+                         read, rebase, rel, render_svgs, run, size_of, split_digraphs, table, warning_words,
+                         write)
 from review.rasterise import rasterise_text
 
 STEPS_PER_PAGE = 50
@@ -670,7 +671,8 @@ def region_pages(p: Pages) -> None:
         return
     n = region.get("n", "?")
     head = (f"n = {n} · |R| = {r.get('size', '—')}"
-            + ("" if region.get("monotonicity", {}).get("monotone", True) else " · **not monotone**"))
+            + ("" if region.get("monotonicity", {}).get("monotone", True)
+               else " · **not monotone**" + warning_words(region.get("monotonicity"))))
     lines = header("The region", "the lattice of commitments, every node classified by saturation alone — R by "
                    "brute force, the reference every mode is held to", "`ein oracle FILE --dump DIR`, "
                    "`ein render region DIR`", defined, [raw / "region.json", raw / "region.md",

@@ -1,5 +1,5 @@
 ;;; A hole made by an `absent` whose rule concludes a positive fact — M1e2
-;;; S1e2.1b.6, the first of the three causes of a non-monotone lattice
+;;; S1e2.1b.6, the first of the three causes of a non-monotone program
 ;;; (docs/kernel/inference/monotonicity.md).
 ;;;
 ;;; `total-owed meal is-a` says every Guest owes a meal. A seated guest who is
@@ -22,7 +22,7 @@
 ;;; The rule fires at no root fixpoint (its positive premise is a candidate),
 ;;; so the fork route and the scratch route build the same nodes here.
 ;;;
-;;; What R means on it is P1e2.1b's; this file's question is the cube.
+;;; What R means on it is open, F21's; this file's question is the cube.
 
 (import std.algebra :symbols (total-owed))
 

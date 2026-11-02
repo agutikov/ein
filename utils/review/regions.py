@@ -81,7 +81,11 @@ def survey(bin: str, tmp: Path) -> list[dict]:
             dead=sum(x["status"].startswith("dead") for x in nodes),
             moved=sum(not x["status"].startswith("dead") and x.get("closure", x["mask"]) != x["mask"] for x in nodes),
             local=len(r["local_max"]) + len(r["local_min"]),
-            monotone=region["monotonicity"]["monotone"])
+            monotone=region["monotonicity"]["monotone"],
+            # The detector's two findings (M1e2 S1e2.1b.5): the status's word
+            # and how many nodes hold a stale fact.
+            status=(region["monotonicity"].get("status") or {}).get("bit"),
+            stale=(region["monotonicity"].get("state") or {}).get("stale_nodes"))
         shutil.rmtree(d, ignore_errors=True)
         rows.append(row)
     return rows
@@ -184,12 +188,16 @@ def cmd_regions(out: Path, bin: str) -> int:
             return []
         svg = p.parent / "runs" / "run" / "img" / "region" / "region.svg"
         return [f"![{r['path']}]({rel(svg, index)})", ""] if svg.exists() else []
-    head = ["program", "n", "|R|", "min", "max", "holes", "comp.", "owing", "dead", "moved", "monotone", "why"]
+    head = ["program", "n", "|R|", "min", "max", "holes", "comp.", "owing", "dead", "moved", "monotone", "stale",
+            "why"]
     def row_of(r):
         if r.get("size") is None:
-            return [link(r), r["n"] if r["n"] is not None else "—", "—", "", "", "", "", "", "", "", "", r["refused"]]
+            return [link(r), r["n"] if r["n"] is not None else "—", "—", "", "", "", "", "", "", "", "", "",
+                    r["refused"]]
+        mono = "yes" if r["monotone"] else "**no**" + (f": {r['status']}" if r.get("status") else "")
+        stale = "" if r["monotone"] or r.get("stale") is None else r["stale"]
         return [link(r), r["n"], r["size"], r["minimal"], r["maximal"], r["holes"], r["components"], r["owing"],
-                r["dead"], r["moved"], "yes" if r["monotone"] else "**no**", ", ".join(tags(r))]
+                r["dead"], r["moved"], mono, stale, ", ".join(tags(r))]
 
     lines = ["# The region gallery", "",
              f"> Every corpus program's region — {len(have)} computed, {len(rows) - len(have)} not — and a page for the ones "

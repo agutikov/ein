@@ -100,7 +100,7 @@ difference a change to the engine or an optimisation introduces.
 | `load` | after `kb.from_ir` | `relations`, `rules`, `hrules`, `macros`, `facts` counts; `relation_names` and `rule_names` in registry order |
 | `region` | end of every **region run** — every `ein solve` and `ein test` file since M1e2 S1e2.1a.5's switch (T1e2.1a.5.2 added it). It replaced the walk's `verdict`, which went with the walk's CLI path | `asked`, `region`, `verdict`, `work`: the `ein-summary/2` blocks of the same names, each one JSON value, `region` without its `states` and `frontier` ([§ Region runs](#region-runs)) |
 | `warn` | **at root, before the search** — the alive-set check right after `load`, the `(absent …)` audit at root's first `quiesce`; one line per breach, in the checker's own order | `category`, `message` (rendered, one line) |
-| `monotonicity` | **at root, before the search**, after root's obligation tally — and **only when the static check finds a site**, so the program is not monotone (M1e2 S1e2.1a.1) | `verdict` (`"non-monotone"`), `sites` (the count), `site` (one rendered line per site, sorted) |
+| `monotonicity` | **at root, before the search**, after root's obligation tally — and **only when the static check finds a site**, so the program is not monotone (M1e2 S1e2.1a.1) | `verdict` (`"non-monotone"`), `sites` (the count), `site` (one rendered line per site, sorted); since M1e2 S1e2.1b.5 the detector's static half, optional: `at_stake` (one key per site, in `site`'s order), `cycles` and `order` (one rendered line each, as the read-out's `cycle` and `order` rows) and `assumes` (`"fork"`) |
 
 **`type` gained a fourth value at M1d
 [S1d.2.6](../../../docs/history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus)
@@ -148,23 +148,34 @@ itself) for the second category, and `examples/ein-bugs/alive-set-fresh-name.ein
 for the third. `DerivedNafWarning` has no corpus witness — its witness is
 `ein-infer/tests/naf_semantics.rs`, on a program written in the test.
 
-#### `monotonicity` — a program that is not monotone, a stub
+#### `monotonicity` — a program that is not monotone
 
-M1e2 [S1e2.1a.1](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
-[`ein_infer::monotone`](../../../ein.rs/crates/ein-infer/src/monotone.rs)
+M1e2 [S1e2.1a.1](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md),
+and [S1e2.1b.5](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.5_the_detector.md)'s
+fields. [`ein_infer::monotone`](../../../ein.rs/crates/ein-infer/src/monotone.rs)
 classifies every relation a compiled plan reads. A **site** is a read a
 commitment can undo: an `(absent …)` at odd depth in a saturation rule over a
 relation a commitment changes, an obligation's trigger over one, or a rule
 whose activator a commitment can derive. On a program with a site the region
-may have holes, and `solve`'s `non_monotone` stub narrates this one line and
-changes nothing else about the search. What a node is there, and what the
-search should do, are open: [F21](../../../plans/followups/f21_non_monotone_programs_decided.md)'s,
-and [P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)
+may have holes, and root's preparation narrates this one line; it changes
+nothing about the run. Since S1e2.1b.5 the line carries the
+[detector](../../../ein.rs/crates/ein-infer/src/detector.rs)'s static half,
+read at root before any node: what each site puts at stake (`at_stake`:
+`state`, `state, dead`, `status: owes`, or either through a node's plan),
+the cycles through an `absent` over D, the order findings, and what is
+assumed (`assumes: "fork"`, every node a fork of root). The fields are
+optional, so `ein-events/1` stays. The dynamic half (the status, the stale
+facts, the parent paths) needs the run, and is the read-out's and
+`--json-summary`'s, not the stream's: no event kind is added. What a node is
+on such a program, and what a search should do, are open:
+[F21](../../../plans/followups/f21_non_monotone_programs_decided.md)'s, and
+[P1e2.1b](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)
 detects, documents and warns.
 
 A monotone program emits nothing, so every stream of one is byte-identical to
 before the stage. The same verdict is `--json-summary`'s `monotonicity` block
-on every run, and a line under the verdict on stdout when there is a site. The
+on every run, and the `lattice` block on stdout, the warning under its first
+row when there is a site; `ein solve FILE --monotone` asks for it alone. The
 cover row is `examples/ein-bugs/naf-upward-closure.ein`, whose `bad` rule reads
 `q`, a hypothesised relation, inside an `absent`.
 

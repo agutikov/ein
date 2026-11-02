@@ -1,5 +1,5 @@
 ;;; A hole made by an activator — M1e2 S1e2.1b.6, the third of the three
-;;; causes of a non-monotone lattice (docs/kernel/inference/monotonicity.md).
+;;; causes of a non-monotone program (docs/kernel/inference/monotonicity.md).
 ;;; Until this file the corpus had no exercised activator site (M1e2
 ;;; S1e2.1b.1's site census).
 ;;;
@@ -19,7 +19,7 @@
 ;;; an `activator` site (the activator relation `total-owed` is one a
 ;;; commitment can change), and it is the program's only one.
 ;;;
-;;; What R means on it is P1e2.1b's; this file's question is the cube.
+;;; What R means on it is open, F21's; this file's question is the cube.
 
 (import std.algebra :symbols (total-owed))
 

@@ -106,6 +106,26 @@ def rebase(text: str, source: str, page: Path) -> str:
     return re.sub(r"\[([^\]]*)\]\(([^)\s]+)\)", fix, text)
 
 
+def warning_words(monotonicity: dict | None) -> str:
+    """What the detector found on a flagged program's cube (M1e2 S1e2.1b.5), as
+    the read-out's warning says it: the status, by the sites its violations are
+    attributed to, and the state. Empty where the block has no status: a
+    monotone program, a refused cube, or a dump from before the stage."""
+    m = monotonicity or {}
+    st = m.get("status") or {}
+    bit = st.get("bit")
+    if not bit:
+        return ""
+    by = st.get("by") or []
+    out = f": status {bit}" + (f" (by {', '.join(by)})" if by else "")
+    k = (m.get("state") or {}).get("stale_nodes")
+    if k == 0:
+        out += " · no stale fact"
+    elif k is not None:
+        out += f" · {k} node{'s hold' if k != 1 else ' holds'} a stale fact"
+    return out
+
+
 def size_of(path: Path) -> str:
     """`N lines` for a file, `N files` for a directory."""
     if path.is_dir():

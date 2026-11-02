@@ -303,10 +303,15 @@ pub fn build_region(
         ("source", Json::str(source)),
     ];
     pairs.extend(ein_render::dump::region_answer::summary_blocks(r));
-    pairs.push((
-        "monotonicity",
-        ein_render::dump::region::monotonicity_json(&r.answer.monotonicity, terms),
-    ));
+    let mut m = ein_render::dump::region::monotonicity_json(&r.answer.monotonicity, terms);
+    if let Json::Object(fields) = &mut m {
+        fields.extend(
+            ein_render::dump::region::warning_json(r.answer.warning.as_deref())
+                .into_iter()
+                .map(|(k, v)| (k.to_string(), v)),
+        );
+    }
+    pairs.push(("monotonicity", m));
     pairs.push(("leftover", leftover_block(ast, terms, kb, r)?));
     let mut off = ein_infer::events::Events::off();
     pairs.push(("root", root_block(ast, terms, kb, &mut off)?));
@@ -354,10 +359,19 @@ pub fn build_monotone(
                 ("layers", Json::Null),
             ]),
         ),
-        (
-            "monotonicity",
-            ein_render::dump::region::monotonicity_json(&checked.monotonicity, terms),
-        ),
+        ("monotonicity", {
+            // The static half only: `--monotone` reads no node, so the
+            // dynamic keys are null, and present because the shape is one.
+            let mut m = ein_render::dump::region::monotonicity_json(&checked.monotonicity, terms);
+            if let Json::Object(fields) = &mut m {
+                fields.extend(
+                    ein_render::dump::region::warning_json(None)
+                        .into_iter()
+                        .map(|(k, v)| (k.to_string(), v)),
+                );
+            }
+            m
+        }),
         (
             "leftover",
             Json::obj(vec![

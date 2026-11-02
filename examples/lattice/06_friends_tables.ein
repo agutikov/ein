@@ -20,7 +20,7 @@
 ;;; whose trigger, (sits ?a ?s), grows with the commitment: adding a fact adds
 ;;; a debt. So a partly seated group is a hole: {(sits Ann S1)} owes Bob a seat,
 ;;; and lies between ∅ and {(sits Ann S1), (sits Bob S2)}, both solutions. The
-;;; static check flags the rule, and what R means here is P1e2.1b's.
+;;; static check flags the rule, and what R means here is open: F21's.
 ;;;
 ;;; Measured 2026-10-16, with
 ;;;   ein solve -e examples/lattice/06_friends_tables.ein \

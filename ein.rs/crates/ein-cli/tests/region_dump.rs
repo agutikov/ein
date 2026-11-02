@@ -326,7 +326,7 @@ fn the_oracle_and_the_per_subset_route_agree_node_for_node() {
 /// holds this binary's oracle to it node for node, with the static check
 /// calling it monotone exactly when the target is. The one target it does not
 /// draw, a dead root under a non-empty R, it refuses by name: every node is
-/// built from root's fixpoint, which is P1e2.1b's question.
+/// built from root's fixpoint; what a node should be is F21's D2, open.
 #[test]
 fn a_random_region_written_as_a_program_comes_back() {
     require_python3();
@@ -478,20 +478,36 @@ fn region_states_keeps_every_nodes_state() {
     let _ = std::fs::remove_dir_all(&root);
 }
 
-/// **The stub's two halves**: the read-out's `lattice` row and the summary's
-/// block say *not monotone* on a program with a site, and *monotone* on one
-/// without.
+/// **The warning** (M1e2 S1e2.1b.5, the wording the user approved on
+/// 2026-11-03), which replaced S1e2.1a.1's stub: on a program with a site the
+/// read-out's `lattice` block says what is assumed, each site and what it
+/// puts at stake, whether it bit — the status and the state apart — and the
+/// parent paths checked, and the summary's block carries the same; on a
+/// monotone program the row is the one it was, and the block's detector keys
+/// are null.
 #[test]
-fn the_non_monotone_stub_says_so_where_there_is_a_site() {
-    let root = scratch("stub");
+fn the_warning_says_what_is_assumed_where_there_is_a_site() {
+    let root = scratch("warning");
     let cases = [
-        ("examples/ein-bugs/naf-upward-closure.ein", false),
-        ("examples/ein-bugs/wrong-answers/stale-naf-fork.ein", false),
-        ("examples/lattice/04_obligation_trigger_hole.ein", false),
-        ("examples/zebra2.ein", true),
-        ("examples/branching/15_lookahead_two_step_on.ein", true),
+        (
+            "examples/ein-bugs/naf-upward-closure.ein",
+            false,
+            "exercised",
+        ),
+        (
+            "examples/ein-bugs/wrong-answers/stale-naf-fork.ein",
+            false,
+            "conservative",
+        ),
+        (
+            "examples/lattice/04_obligation_trigger_hole.ein",
+            false,
+            "exercised",
+        ),
+        ("examples/zebra2.ein", true, ""),
+        ("examples/branching/15_lookahead_two_step_on.ein", true, ""),
     ];
-    for (i, (file, monotone)) in cases.iter().enumerate() {
+    for (i, (file, monotone, bit)) in cases.iter().enumerate() {
         let s = root.join(format!("{i}.json"));
         let r = ein(
             &[
@@ -504,15 +520,58 @@ fn the_non_monotone_stub_says_so_where_there_is_a_site() {
             ],
             &[],
         );
-        let line = r
-            .out
-            .lines()
-            .any(|l| l.starts_with("  lattice           not monotone"));
-        assert_eq!(line, !monotone, "{file}:\n{}", r.out);
+        let lines: Vec<&str> = r.out.lines().collect();
+        let at = lines
+            .iter()
+            .position(|l| l.starts_with("  lattice "))
+            .unwrap_or_else(|| panic!("{file}: no lattice row:\n{}", r.out));
+        let block: Vec<&str> = lines[at + 1..]
+            .iter()
+            .take_while(|l| l.starts_with("    "))
+            .copied()
+            .collect();
         let summary = json(&s);
-        assert_eq!(summary["monotonicity"]["monotone"], *monotone, "{file}");
-        let sites = summary["monotonicity"]["sites"].as_array().unwrap().len();
-        assert_eq!(sites == 0, *monotone, "{file}");
+        let m = &summary["monotonicity"];
+        assert_eq!(m["monotone"], *monotone, "{file}");
+        if *monotone {
+            assert_eq!(
+                lines[at], "  lattice           monotone (the static check) — R is convex: no hole",
+                "{file}"
+            );
+            assert!(block.is_empty(), "{file}: {block:?}");
+            for key in ["assumes", "status", "state", "paths"] {
+                assert!(m[key].is_null(), "{file}: {key} is {}", m[key]);
+            }
+            continue;
+        }
+        assert!(
+            lines[at].starts_with("  lattice           not monotone"),
+            "{file}"
+        );
+        assert!(!lines[at].contains("assumes"), "{file}: {}", lines[at]);
+        let label = |l: &&str| l.split_whitespace().next().unwrap_or("").to_string();
+        let labels: Vec<String> = block.iter().map(label).collect();
+        let sites = m["sites"].as_array().unwrap().len();
+        assert_eq!(labels[0], "assumes", "{file}");
+        assert_eq!(
+            labels.iter().filter(|l| *l == "site").count(),
+            sites,
+            "{file}"
+        );
+        for row in ["status", "state", "paths"] {
+            assert!(
+                labels.iter().any(|l| l == row),
+                "{file}: no {row} row in {block:?}"
+            );
+        }
+        assert!(
+            block.iter().any(|l| l.contains(&format!("({bit}"))),
+            "{file}: the status is not {bit}: {block:?}"
+        );
+        assert_eq!(m["status"]["bit"], *bit, "{file}");
+        assert!(m["state"]["stale_nodes"].is_u64(), "{file}");
+        assert_eq!(m["assumes"]["node"], "fork from root", "{file}");
+        assert!(!r.out.contains("monotone lattice"), "{file}");
     }
     let _ = std::fs::remove_dir_all(&root);
 }

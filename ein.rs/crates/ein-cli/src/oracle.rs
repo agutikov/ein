@@ -113,6 +113,27 @@ pub fn run(m: &ArgMatches) -> i32 {
         r.topology.discharged_not_upward_closed.count,
     );
     let monotone = r.monotonicity.is_monotone();
+    // What the closing line concludes, on a flagged program, from the
+    // detector: the status the cube shows, and whether a node's state holds a
+    // stale fact, which the status cannot show (M1e2 S1e2.1b.5).
+    let flagged_close = r.warning.as_deref().map(|w| match &w.status {
+        ein_infer::detector::Status::Exercised { by, .. } => {
+            format!(" — the status is not monotone here, by {}", by.join(", "))
+        }
+        _ => {
+            let k = w.state.stale.len();
+            match k {
+                0 => " — the status is monotone here; no node holds a stale fact".to_string(),
+                1 => {
+                    " — the status is monotone here; 1 node holds a stale fact (above)".to_string()
+                }
+                k => format!(
+                    " — the status is monotone here; {} nodes hold a stale fact (above)",
+                    ein_render::read_out::group(k as u64)
+                ),
+            }
+        }
+    });
     let mode = Mode {
         which: Which::All,
         ask: Ask::Describe,
@@ -140,10 +161,9 @@ pub fn run(m: &ArgMatches) -> i32 {
         violations.1,
         if violations.1 == 1 { "" } else { "s" },
         match (monotone, violations == (0, 0)) {
-            (true, true) => " — the static verdict holds",
-            (true, false) => " — THE STATIC VERDICT IS CONTRADICTED",
-            (false, true) => " — the flagged sites break nothing here",
-            (false, false) => "",
+            (true, true) => " — the static verdict holds".to_string(),
+            (true, false) => " — THE STATIC VERDICT IS CONTRADICTED".to_string(),
+            (false, _) => flagged_close.unwrap_or_default(),
         }
     );
     // `--models key|grid`, `-p` and `-P`, after the whole read-out.

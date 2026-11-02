@@ -371,12 +371,13 @@ fn solution_block(ast: &Ast, terms: &mut Terms, kb: &Kb, header: &str) -> Vec<St
 /// The `non_monotone` stub's line, under the verdict — M1e2
 /// [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
 ///
-/// A program `ein_infer::monotone` finds a site in has a lattice whose region
-/// may have holes, and every verdict word, `k` and `exhausted` the table
-/// prints was defined for one that has none. The search is unchanged, so the
-/// answer is unchanged; this says what it assumed. What the search should do
-/// instead is P1e2.1b's, and the sites are in `--json-summary`'s
-/// `monotonicity` block and `--dump-region`'s `region.md`.
+/// A program `ein_infer::monotone` finds a site in is a non-monotone program,
+/// whose region may have holes, and every verdict word, `k` and `exhausted`
+/// the table prints was defined for one that has none. The search is
+/// unchanged, so the answer is unchanged; this says what it assumed. What a
+/// search should do instead is F21's D5, open, and the sites are in
+/// `--json-summary`'s `monotonicity` block. Dead since M1e2 S1e2.1a.5's
+/// switch: nothing calls it, and it goes with the walk at S1e2.1c.5.
 ///
 /// A monotone program's table is returned untouched, so no golden of one
 /// moves.

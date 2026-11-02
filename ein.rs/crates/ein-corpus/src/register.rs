@@ -393,7 +393,7 @@ pub struct Region {
     /// One of [`ROUTES`].
     pub route: String,
     /// The static check's verdict. A flagged program's `R` is the cube's,
-    /// under *assumes a monotone lattice*.
+    /// every node a fork of root; what a node should be is F21's D2.
     pub monotone: bool,
     /// `|R|` in states.
     pub k_s: u64,

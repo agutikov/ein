@@ -258,6 +258,10 @@ struct RegionRan {
     k_s: u64,
     k_c: u64,
     ms: f64,
+    /// On a flagged program, the detector's three findings (M1e2 S1e2.1b.5):
+    /// the status's word, how many nodes hold a stale fact, how many parent
+    /// paths reach another state.
+    warning: Option<(&'static str, u64, u64)>,
 }
 
 /// What a query's claim was checked against — `ein-test-report/3`'s
@@ -360,6 +364,13 @@ impl Row {
                     ("ms", Json::Float(r.ms)),
                 ]),
             ));
+            if let (Some((status, stale, differ)), Some((_, Json::Object(fields)))) =
+                (r.warning, pairs.last_mut())
+            {
+                fields.push(("status".to_string(), Json::str(status)));
+                fields.push(("stale_nodes".to_string(), Json::int(stale as i64)));
+                fields.push(("paths_differ".to_string(), Json::int(differ as i64)));
+            }
         }
         Json::obj(pairs)
     }
@@ -780,6 +791,19 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
     };
     let mut worst = Came::Held;
     let mut lines: Vec<String> = Vec::new();
+    // The warning, beside each claim printed on a flagged program (the
+    // proposal's § 4.3, approved 2026-11-03): under `-v`, and under a claim
+    // that FAILED or was NOT CHECKED.
+    let warning = (!r.answer.monotonicity.is_monotone()).then(|| {
+        format!(
+            "    {}",
+            ein_render::read_out::warning_line(
+                &r.answer.monotonicity,
+                r.answer.warning.as_deref(),
+                r.answer.root_dead
+            )
+        )
+    });
     if let (Some(i), Some(claim)) = (solve_row, solve_claim.as_ref()) {
         let report = r.claim.clone().unwrap_or_else(|| Report {
             outcome: Outcome::NotChecked,
@@ -800,6 +824,13 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             k_s,
             k_c,
             ms,
+            warning: r.answer.warning.as_deref().map(|w| {
+                (
+                    w.status.word(),
+                    w.state.stale.len() as u64,
+                    w.paths.as_ref().map_or(0, |p| p.differ.len() as u64),
+                )
+            }),
         });
         let shape = match claim {
             ein_ir::claim::Claim::False => "(false)",
@@ -817,6 +848,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
                 _ => format!("  solve · :expect {shape} — {}", came.verb()),
             });
             lines.extend(report.lines.iter().map(|l| format!("    {l}")));
+            lines.extend(warning.clone());
         }
     }
     // The read-out answers the queries that have a :goal, in order.
@@ -876,6 +908,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
                 _ => format!("  {where_} — {}", came.verb()),
             });
             lines.extend(report.lines.iter().map(|l| format!("    {l}")));
+            lines.extend(warning.clone());
         }
     }
 

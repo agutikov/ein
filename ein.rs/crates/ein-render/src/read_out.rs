@@ -22,11 +22,12 @@ use std::collections::BTreeMap;
 use std::fmt::Write as _;
 
 use ein_infer::described::Described;
-use ein_infer::detector::ASSUMES;
+use ein_infer::detector::{ASSUMES, Paths, State, Status, Warning};
 use ein_infer::expect::Outcome;
 use ein_infer::explore::{Ask, Checked, Licence, Route, Stopped, Verdict, Which};
 use ein_infer::monotone::Monotonicity;
 use ein_infer::read_out::{Listed, Listing, Query, ReadOut};
+use ein_infer::region::Class;
 use ein_ir::expect::Over;
 
 /// The rule under the header.
@@ -270,26 +271,41 @@ fn partial_note(out: &mut Out, o: &Options, why: String) {
         .push(format!("note: {}: partial — {why}", o.file));
 }
 
-fn lattice_row(out: &mut Out, m: &Monotonicity, holes: Option<u64>) {
+/// The `lattice` row, and on a flagged program the warning under it — M1e2
+/// S1e2.1b.5, the wording the user approved on 2026-11-03: what is assumed,
+/// each site with what it puts at stake, the cycles and order findings, then
+/// whether a site bit, the status and the state apart, and the parent paths.
+/// A monotone program's one row is what it was. `holes` is the description's
+/// count where it has one; a whole cube's status counts them too.
+fn lattice_block(out: &mut Out, m: &Monotonicity, warning: Option<&Warning>, holes: Option<u64>) {
     if m.is_monotone() {
         out.row(
             "lattice",
             "monotone (the static check) — R is convex: no hole",
         );
-    } else {
-        let h = match holes {
-            Some(0) => "no hole in this cube".to_string(),
-            Some(h) => plural(h, "hole", "holes"),
-            None => "holes not known: the cube was not enumerated".to_string(),
-        };
-        out.row(
-            "lattice",
-            format!(
-                "not monotone: {} (the static check) — {h}; assumes a monotone lattice \
-                 for what a node is (P1e2.1b)",
-                plural(m.sites.len() as u64, "site", "sites")
-            ),
-        );
+        return;
+    }
+    let holes = holes.or_else(|| warning.and_then(|w| w.status.holes()));
+    let h = match holes {
+        Some(0) => "no hole in this cube".to_string(),
+        Some(h) => plural(h, "hole", "holes"),
+        None => "holes not known: the cube was not enumerated".to_string(),
+    };
+    out.row(
+        "lattice",
+        format!(
+            "not monotone: {} (the static check) — {h}",
+            plural(m.sites.len() as u64, "site", "sites")
+        ),
+    );
+    let uncut = out.uncut;
+    for l in static_rows(m, uncut) {
+        out.line(l);
+    }
+    if let Some(w) = warning {
+        for l in dynamic_rows(w, uncut) {
+            out.line(l);
+        }
     }
 }
 
@@ -332,6 +348,203 @@ pub fn static_rows(m: &Monotonicity, uncut: bool) -> Vec<String> {
         out.push(sub_row("order", o));
     }
     out
+}
+
+/// The dynamic rows: `status`, `state` and its `stale` rows, `paths`.
+pub fn dynamic_rows(w: &Warning, uncut: bool) -> Vec<String> {
+    let mut out = Vec::new();
+    out.push(sub_row("status", status_text(&w.status)));
+    let st = &w.state;
+    out.push(sub_row("state", state_text(st)));
+    if !st.stale.is_empty() {
+        let k = st.stale.len() as u64;
+        for (i, s) in st.stale.iter().enumerate() {
+            if i == WARNING_ROWS && !uncut {
+                out.push(sub_row(
+                    "…",
+                    format!(
+                        "{} more: --dump-answer DIR writes them",
+                        group(k - WARNING_ROWS as u64)
+                    ),
+                ));
+                break;
+            }
+            out.push(sub_row(
+                "stale",
+                format!(
+                    "{}, {}: {}",
+                    s.node,
+                    class_words(s.class),
+                    s.facts.join(" · ")
+                ),
+            ));
+        }
+    }
+    if let Some(p) = &w.paths {
+        out.push(sub_row("paths", paths_text(p)));
+    }
+    out
+}
+
+/// The `state` row: how many of the nodes the run computed hold a stale fact.
+pub fn state_text(st: &State) -> String {
+    let where_ = if st.cube {
+        format!("the cube's {} nodes", group(st.nodes))
+    } else {
+        format!("the {} the run computed", plural(st.nodes, "node", "nodes"))
+    };
+    if st.stale.is_empty() {
+        return format!("no stale fact in {where_}");
+    }
+    let k = st.stale.len() as u64;
+    format!(
+        "stale facts — {} of {where_} {} one: a fact whose absent guard the node's own fixpoint \
+         falsifies",
+        group(k),
+        if k == 1 { "holds" } else { "hold" }
+    )
+}
+
+/// `ein test`'s one line beside a claim on a flagged program (the proposal's
+/// § 4.3): the sites, what is assumed, the status, the state and, where one
+/// differs, the parent paths.
+pub fn warning_line(m: &Monotonicity, w: Option<&Warning>, root_dead: bool) -> String {
+    let mut s = format!(
+        "not monotone: {} · every node a fork of root{}; what a node is here is open (F21)",
+        plural(m.sites.len() as u64, "site", "sites"),
+        if root_dead {
+            ", so a dead root kills every node (L0)"
+        } else {
+            ""
+        }
+    );
+    let Some(w) = w else { return s };
+    s.push_str(&match &w.status {
+        Status::Exercised { by, .. } => {
+            format!(" · status non-monotone (exercised, by {})", by.join(", "))
+        }
+        Status::Conservative => " · status monotone (conservative)".to_string(),
+        Status::PastLimit { n, .. } | Status::NotRead { n } | Status::RootDead { n, .. } => {
+            format!(" · status not known (2^{n})")
+        }
+    });
+    let k = w.state.stale.len() as u64;
+    s.push_str(&if k == 0 {
+        " · no stale fact".to_string()
+    } else {
+        format!(
+            " · {} {} a stale fact",
+            plural(k, "node", "nodes"),
+            if k == 1 { "holds" } else { "hold" }
+        )
+    });
+    if let Some(p) = &w.paths
+        && !p.differ.is_empty()
+    {
+        s.push_str(&format!(
+            " · {} of {} reach another state",
+            group(p.differ.len() as u64),
+            plural(p.parents, "parent path", "parent paths")
+        ));
+    }
+    s
+}
+
+/// `in R`, `owing` or `dead`: a stale node's class.
+fn class_words(c: Class) -> &'static str {
+    match c {
+        Class::R => "in R",
+        Class::Owing => "owing",
+        Class::Dead => "dead",
+    }
+}
+
+/// The cube's counts, `1 hole · 1 dead node with an alive superset · …`.
+pub fn violation_counts(holes: u64, dead: u64, discharged: u64) -> String {
+    format!(
+        "{} · {} · {}",
+        plural(holes, "hole", "holes"),
+        plural(
+            dead,
+            "dead node with an alive superset",
+            "dead nodes with an alive superset"
+        ),
+        plural(
+            discharged,
+            "discharged node with an owing superset",
+            "discharged nodes with an owing superset"
+        )
+    )
+}
+
+/// The `status` row: whether a flagged site bit, in the status.
+pub fn status_text(s: &Status) -> String {
+    match s {
+        Status::Exercised {
+            by,
+            holes,
+            dead_not_upward_closed,
+            discharged_not_upward_closed,
+        } => format!(
+            "non-monotone here (exercised, by {}) — the cube: {}",
+            by.join(", "),
+            violation_counts(
+                *holes,
+                *dead_not_upward_closed,
+                *discharged_not_upward_closed
+            )
+        ),
+        Status::Conservative => "monotone here (conservative) — the cube: no hole, no dead node \
+                                 with an alive superset, no discharged node with an owing superset"
+            .to_string(),
+        Status::PastLimit { n, limit } => {
+            format!("not known — the cube is 2^{n} nodes, past --region-limit {limit}")
+        }
+        Status::NotRead { n } => format!(
+            "not known — this run stopped before it read the cube's 2^{n} nodes: `ein oracle \
+             FILE` reads them, and so does a bare `ein solve FILE`"
+        ),
+        Status::RootDead { n, limit } if *n <= *limit as usize && *n < 64 => format!(
+            "not known — root is dead, so every node is (L0), and the run read root alone: \
+             `ein oracle FILE` reads the cube's 2^{n} nodes"
+        ),
+        Status::RootDead { n, limit } => format!(
+            "not known — root is dead, so every node is (L0), and the cube is 2^{n} nodes, past \
+             --region-limit {limit}"
+        ),
+    }
+}
+
+/// The `paths` row: what the spot check read, and no more.
+pub fn paths_text(p: &Paths) -> String {
+    if p.states == 0
+        && let Some((met, cost)) = p.unprinted
+    {
+        return format!(
+            "not checked — the read-out prints no state of two commitments or more; its {} \
+                 met would cost up to {} saturations",
+            plural(met, "member", "members"),
+            group(cost)
+        );
+    }
+    if p.parents == 0 {
+        return "no state the read-out prints has an alive parent to check".to_string();
+    }
+    if p.differ.is_empty() {
+        return format!(
+            "every parent path checked reaches the same state — {} of {}",
+            plural(p.parents, "parent", "parents"),
+            plural(p.states, "printed state", "printed states")
+        );
+    }
+    let d = p.differ.len() as u64;
+    format!(
+        "path-dependent — {} of {} checked reach{} another state: {}",
+        group(d),
+        plural(p.parents, "parent path", "parent paths"),
+        if d == 1 { "es" } else { "" },
+        p.differ[0]
+    )
 }
 
 /// `ein solve FILE --monotone`: a question about the program, answered by
@@ -655,7 +868,12 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
         }
     }
     let holes = d.shape.as_ref().and_then(|s| s.holes.as_ref());
-    lattice_row(out, &d.monotonicity, holes.map(|h| h.0));
+    lattice_block(
+        out,
+        &d.monotonicity,
+        a.warning.as_deref(),
+        holes.map(|h| h.0),
+    );
     if let Some((count, minimal)) = holes
         && *count > 0
     {
@@ -855,7 +1073,7 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
     } else {
         a.shape.as_ref().and_then(|s| s.holes).map(|h| h as u64)
     };
-    lattice_row(out, &a.monotonicity, holes);
+    lattice_block(out, &a.monotonicity, a.warning.as_deref(), holes);
     out.row("universe", plural(a.n() as u64, "candidate", "candidates"));
     out.row(
         "route",

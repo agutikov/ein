@@ -28,7 +28,7 @@ from pathlib import Path
 
 from review.run import (RunResult, RunSpec, _safe, asked_text, build_run, call_to_fact, diff_block, grids_from,
                         node_links, overlay_head, set_text, state_files, state_href, verdict_block, yes)
-from review.util import REPO, details, doc, load_json, read, rel, run, table, write
+from review.util import REPO, details, doc, load_json, read, rel, run, table, warning_words, write
 
 REGISTER = REPO / "corpus/wrong_answers.toml"
 
@@ -288,7 +288,8 @@ def region_section(r: RunResult, page: Path, row: dict | None = None, heading: s
     def reg_cell(k, f=lambda v: v):
         return [f(reg.get(k)) if reg and reg.get(k) is not None else "—"] if row else []
     rows = [
-        ["route · monotone", f"the cube, 2^{cube.get('n')} nodes · {'monotone' if mono else '**not monotone**'}"]
+        ["route · monotone", f"the cube, 2^{cube.get('n')} nodes · "
+         + ("monotone" if mono else "**not monotone**" + warning_words(cube.get("monotonicity")))]
         + ([f"{reg['route']} · {'monotone' if reg['monotone'] else '**not monotone**'}"] if reg else (["—"] if row else []))
         + [f"route {region.get('route', '—')} · "
            + ("monotone" if ((s.get("monotonicity") or {}).get("monotone", True)) else "**not monotone**")],

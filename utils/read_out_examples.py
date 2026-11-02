@@ -124,7 +124,7 @@ add("""---
 | [X5](#x5--latticesynthmerged_statesein-every-state-merged) | `lattice/synth/merged_states.ein` | 5 | ∅ not in R; a `(merged …)` on every state; two components |
 | [X6](#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe) | `tests/stdlib/closure/03_closed_and_owing.ein` | 0 | empty R, the owing kind; `--single` says `Open` |
 | [X7](#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) | `tests/stdlib/algebra/09_irreflexive_violated.ein` | 0 | empty R, the dead kind; `--single` says `Contradiction` |
-| [X8](#x8--ein-bugsnaf-upward-closureein-a-hole) | `ein-bugs/naf-upward-closure.ein` | 2 | a program the static check flags: route 2, a hole, the stub |
+| [X8](#x8--ein-bugsnaf-upward-closureein-a-hole) | `ein-bugs/naf-upward-closure.ein` | 2 | a program the static check flags: route 2, a hole, the warning |
 | [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: members, never line members |
 | [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: partial at the default budget and already answered; exhausted at 2²⁵, cut on stdout and whole in `answer.txt`; `--maximal -n 1`; `--single` |
 | [X11](#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) | `saturation/square-bwd/floors.ein` | 20 | R is the whole cube: partial, with both trivial lines certified; the first questions in 1–11 saturations |
@@ -266,9 +266,12 @@ add("""## X8 — `ein-bugs/naf-upward-closure.ein`: a hole
 W3's witness. A guard's `absent` makes `{(p A)}` dead alone and alive beside
 `(q A)`, so the static check flags the program and route 2 takes the whole cube,
 four saturations. R is `{∅, {q}, {p, q}}`, and `{p}` is a **hole**: outside R,
-between two members of it. The `lattice` row is S1e2.1a.1's stub, which says so,
-counts the holes and names each minimal one with why it is out; the `E` row is
-the cube's alone.
+between two members of it. The `lattice` block is the detector's warning (M1e2
+S1e2.1b.5, the wording approved on 2026-11-03), which replaced S1e2.1a.1's
+stub: what is assumed, the site and what it puts at stake, the status the cube
+shows (exercised, by `bad`), the state (no stale fact), the parent paths
+checked, and then each minimal hole with why it is out. The `E` row is the
+cube's alone.
 """)
 add(block(["examples/ein-bugs/naf-upward-closure.ein"]))
 
@@ -283,7 +286,10 @@ cannot know that, so every count is a lower bound. What it *can* certify is
 one line: ∅ is in R, so the minimal line is exactly {∅}, whatever the program.
 That is the one state it lists. The other 20 members it met go to
 `--dump-answer`, and the query is answered over all 21 as a lower bound, with
-no `as :expect`: read back, that claim would say these classes are all.
+no `as :expect`: read back, that claim would say these classes are all. The
+warning says the cube's half is not known past the limit, reads the stale
+facts of every node the run computed, and checks no parent path, because the
+read-out prints no state of two commitments or more.
 """)
 add(block(["examples/lattice/06_friends_tables.ein"]))
 

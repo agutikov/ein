@@ -219,6 +219,88 @@ S1e2.1b.3 added a rule for each, and one for a refutation a node compiles; the
 re-take above names `soup-unless-allergic` and `total-owed`'s activator
 ([hole census § 8](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md#8-the-attribution-gap-closed)).
 
+### 5.3 The detector
+
+Built by M1e2's
+[S1e2.1b.5](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.5_the_detector.md),
+in the form and the words the user approved on 2026-11-03
+([`detector_proposal.md`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md)):
+[`ein_infer::detector`](../../../ein.rs/crates/ein-infer/src/detector.rs).
+It runs on a program the static check flags, and only there: no option turns
+it on or off, and on an unflagged program it does no work beyond the test of
+the verdict. It decides nothing (§ 8): no finding chooses a node, refuses a
+program or moves R.
+
+**The static half**, read off root's plans at load, before any node: what each
+site's rule concludes and which property it puts at stake (§ 7.6's table, per
+site: an `absent` puts the state at stake, and `dead` with it when it refutes;
+a trigger, the status; an activator, either, through the plan a node
+compiles); each **cycle through an `absent`** over D, with its parity; and each
+**order** finding, a rule that reads under an `absent` a relation in D another
+`absent` rule concludes, at one priority (the written order decides which the
+boundary admits first) or at an earlier one (the reader goes first in every
+order). `ein-infer/tests/detector.rs` pins every finding on the corpus by
+name: the cycles of `features/07` and `f07-fpoff` (even) and of
+`d3-unsat-core` (odd), and the order findings of the same two and of
+`lattice/10_fifo_gap` (§ 7.3).
+
+The cycle rows state the general theory, **argued**: an even cycle through an
+`absent` can have several states with no stale fact (two stable models), an
+odd one need not have any. What the corpus shows is narrower, **measured**: on
+every flagged corpus node, the odd cycle included, exactly one stale-free
+state is reached from P
+([`node_census.md` § 11.2](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#112-the-flagged-cubes),
+`8a2dffe3`, 2026-11-02), because the boundary's admission order picks one.
+
+**The dynamic half** says whether a site bit, with **the status and the state
+apart**, because the cube reads only the status (§ 7.9):
+
+- **the status**: the cube's violations (holes, dead nodes with an alive
+  superset, discharged nodes with an owing superset), each attributed to the
+  sites that made it by S1e2.1b.3's rule: *exercised*, *conservative*, or *not
+  known* where the run did not read the cube;
+- **the state**: every node the run computes is read for **stale facts**, a
+  fact whose `absent` guard the node's own fixpoint falsifies (`node_census.md`
+  § 4's check, with the engine's matcher), dead nodes included, because W8's
+  stale fact is in a dead node no run lists;
+- **the paths**: for each state the read-out prints of two commitments or
+  more, at most three of its one-step parents `C \ {h}`, each built, `h`
+  written, saturated, and compared with the state the route built. **Its reach
+  is one step.** On the probe `via_hole` and on `ACTIVATOR_UNDER_ABSENT` a node
+  of R is dead along a two-step chain through an alive parent, and one-step
+  parents see one of the two path-dependent nodes (`node_census.md` § 11.2).
+  The row says what was checked, *n parents of m printed states*, and claims
+  nothing more.
+
+**Where it is printed**: the read-out's `lattice` block on every run of a
+flagged program, under every question and from `ein oracle`; `ein solve FILE
+--monotone`, the static half alone; `--json-summary`'s `monotonicity` block;
+the `monotonicity` event (the static half); `ein test`, beside a claim under
+`-v` or a claim that failed; `region.md`, `region.json` and `ein render
+region`'s label; the review bundle. On stdout at most four sites and four
+stale nodes are named, then a `…` row naming `--dump-answer`, which writes
+them whole.
+
+**What it reports on the corpus**, `ein solve FILE --json-summary` on each of
+the 26 flagged corpus programs (release build, 2026-11-03): the status
+*exercised* on 10, *conservative* on 8, *not known* on 8 (§ 5.2's split, now
+printed); stale facts on 10, five of them conservative by the cube
+(`stale-naf-fork` and its `-warn` twin, `features/07`, `f07-fpoff`,
+`lattice/10_fifo_gap`) and five past the limit, where the read-out once said
+only *holes not known* (`features/01`: 24 754 of the 64 655 nodes the run
+computed; `features/04`: 21 042 of 64 761; the three `square-unique` demos:
+5 595, 5 835 and 4 876 of about 65 000); a parent path that differs on 2
+(`lattice/08`, 1 of 7; `lattice/10_fifo_gap`, 1 of 2), and on
+`d3-unsat-core`, outside the corpus, 3 of 34.
+
+**Why it costs nothing on an unflagged program** is an argument, beside the
+code in `detector.rs`, with its scope: no site means no negative edge over D,
+no order finding, no stale fact and no path difference **on nodes built by
+fork from root**, and on splits from a fixpoint that holds root's. It does not
+hold from scratch: [`lattice/11_fifo_gap_static`](../../../examples/lattice/11_fifo_gap_static.ein)
+(§ 7.6) is monotone by the check and holds a stale fact from scratch. No
+shipped route builds from scratch.
+
 ## 6. How to solve
 
 ### 6.1 Three words
@@ -739,7 +821,7 @@ says which causes produce it.
 | c12 | an activator derived under an `absent` | `ACTIVATOR_UNDER_ABSENT` (`written.rs`) | **the state, and `dead`**: the `absent` is in the activator's derivation, which no premise records | `SiteKind::Absent` (`act`) and `SiteKind::Activator` (`watch`) | exercised: a dead hole | yes: 2 of 8 nodes, through alive parents, and a node of R is dead that way (§ 11.3 there) |
 | c13 | a FIFO race over a static read (§ 7.6) | [`lattice/11_fifo_gap_static`](../../../examples/lattice/11_fifo_gap_static.ein) | **the state built from scratch**, under a *Monotone* verdict; a fork never meets it | nothing: no site | no violation (monotone) | between fork and scratch only: 1 of 2 nodes (§ 12.2 there) |
 
-| | *forbid* covers it (S1e2.2.5's F1–F3) | option (E) (D1) | option (D) (D2) | S1e2.1b.5's detector reports (drafted, awaiting the user's approval of [`detector_proposal.md`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md)) | bears on |
+| | *forbid* covers it (S1e2.2.5's F1–F3) | option (E) (D1) | option (D) (D2) | S1e2.1b.5's detector reports (built 2026-11-03, § 5.3; each cell is the binary's `ein solve FILE` row, on the fixture of the first table) | bears on |
 |---|---|---|---|---|---|
 | c1 | no: it concludes no refutation. `stale-naf-fork`'s downstream refutation is c3 | refuses it | `stale-naf-fork` is stratified and stays; `features/07` see c8 | `site … concludes a positive fact — at stake: the state`; `status monotone here (conservative)`; **`state stale facts — 1 of the cube's 2 nodes`** | D1, D2, D3 |
 | c2 | **yes**, under F1 (a), (b) and (c): the `direct` set ([S1e2.4.1 § 1](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#1-the-exposed-set-re-counted)) | refuses it, as *forbid* does | stays: stratified | `site … concludes (false) — at stake: the state, and dead with it`; `status non-monotone here (exercised, by bad)` | D4, D6; ruled by *forbid* |
@@ -747,7 +829,7 @@ says which causes produce it.
 | c4 | no: nothing refutes | refuses it | stays: stratified | `site … at stake: the state`; `status exercised`; `state no stale fact`; only `paths` sees the path dependence | D1, D2, D3, D4 |
 | c5 | no: it refutes nothing | no: not an `absent` site | stays | `site … obligation-trigger … at stake: the status: owes`; `status exercised` | D4, D7 |
 | c6 | no | no | stays | `site … its activator relation is one a commitment can change; root compiled no plan of it — at stake: the status: owes, through a plan a node compiles` | D4 |
-| c7 | only by **F3** at each node's compile, or by its drafted third placement; not at load ([taint census § 7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md#7-the-refutation-a-node-compiles-for-f3)) | only if the refusal reads the plans a node compiles | stays | `site watch: its activator relation … — at stake: the state, through a plan a node compiles`; `status exercised, by watch` (drafted on a copy of `written.rs`'s text) | D6, F3 |
+| c7 | only by **F3** at each node's compile, or by its drafted third placement; not at load ([taint census § 7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md#7-the-refutation-a-node-compiles-for-f3)) | only if the refusal reads the plans a node compiles | stays | `site watch: its activator relation … — at stake: the state, through a plan a node compiles`; `status exercised, by watch` (on `written.rs`'s text, written to a file) | D6, F3 |
 | c8 | no | refuses both rules | **refuses it** (over D) | two `site` rows, `cycle even through an absent — several states with no stale fact can exist`, `order … which the boundary admits first is the order they are written in`, `state stale facts` | D1, D2's (D) and (F) |
 | c9 | only through **F2**'s `via`: `fire-0` reads `r1`, which `fire-1` derives under the `absent` | refuses `fire-1` | **refuses it** (over D) | `cycle odd through an absent — a state with no stale fact need not exist`; `paths path-dependent — 3 of 34` | D2's (D) and (F), D3 |
 | c10 | no | refuses the reader | stays: stratified. Admission in stratum order closes it | `order … both at priority 200: which the boundary admits first is the order they are written in`; `state stale facts`; `paths path-dependent` | D2 (B) and stratum order, D3 |
@@ -794,9 +876,9 @@ Every decision about a non-monotone program was deferred on 2026-11-02 to
 user's direction: *"prepare everything we are able to do now, without making
 final decisions; And then leave further investigation of non-monotonic
 lattices as followup"*. Until a decision, the engine does what the last
-column says, and M1e2's
+column says, and since M1e2's
 [S1e2.1b.5](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.5_the_detector.md)
-puts a warning on every surface that reports R saying so.
+(2026-11-03) every surface that reports R carries a warning saying so (§ 5.3).
 
 | decision | F21 | the evidence | until it is taken |
 |---|---|---|---|

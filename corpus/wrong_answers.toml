@@ -163,8 +163,8 @@
 #     route     `route 1` (a monotone program's alive down-set) | `route 2`
 #               (the cube, for a program the static check flags)
 #     monotone  the static check's verdict. `false` means the region is the
-#               cube's, under *assumes a monotone lattice*: what R is there is
-#               P1e2.1b's
+#               cube's, every node a fork of root: what a node is there is
+#               open, F21's D2
 #     k_s, k_c  |R| in states and in commitments
 #     empty     `no-alive` | `all-owe`, exactly when k_s = 0
 #     minimal, maximal   the lines, as commitments: each the candidates it
@@ -903,7 +903,7 @@ k         = 1
 exhausted = true
 closes    = ["p"]
 models    = [["(p A)", "(p B)"]]
-qualifier = "assumes a monotone lattice: the static check flags this program, and what R is here is P1e2.1b's"
+qualifier = "every node a fork of root: the static check flags this program, and what a node is here is open (F21)"
 derived   = "the oracle: R has 4 states and one maximal, {(p A),(p B)}; (p Z) dies only after two firings, so the walk enters {(p A),(p B)} alive and never judges it complete (walk_census.md § 3.3)"
 
 [case.now]
@@ -960,7 +960,7 @@ k         = 2
 exhausted = true
 closes    = ["is-a", "r0", "r1"]
 models    = [["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0 o2 o3)", "(r0 o3 o2)"], ["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0 o2 o3)", "(r1 o2 o3)", "(r1 o3 o2)"]]
-qualifier = "assumes a monotone lattice: the static check flags this program, and what R is here is P1e2.1b's"
+qualifier = "every node a fork of root: the static check flags this program, and what a node is here is open (F21)"
 derived   = "the oracle: R has 20 states and two maximal; the walk records one (walk_and_region.md § 4.6)"
 
 [case.now]
@@ -1435,7 +1435,7 @@ k         = 3
 exhausted = true
 closes    = ["h"]
 models    = [["(h A)", "(h B)", "(h D)", "(h G)"], ["(h A)", "(h B)", "(h F)"], ["(h C)", "(h D)", "(h E)"]]
-qualifier = "assumes a monotone lattice: the static check flags this program, and what R is here is P1e2.1b's"
+qualifier = "every node a fork of root: the static check flags this program, and what a node is here is open (F21)"
 derived   = "the oracle: R has 13 states, maximal line 3, and the cube 3 holes (walk_census.md § 3.3)"
 
 [case.now]
@@ -1461,7 +1461,7 @@ question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/lattice/synth/trigger_hole.ein"
 status   = "open"
 look_at  = ["summary"]
-note     = "S1e2.1a.8's program written for a chosen region; its obligation-trigger hole is P1e2.1b's. W3: fixed at the switch by route 2 under *respect*, and re-opened on 2026-11-02 when the user ruled *forbid* (S1e2.4.1): the program is to be refused, which S1e2.2.5 builds"
+note     = "S1e2.1a.8's program written for a chosen region; its obligation-trigger hole is F21's D4, open. W3: fixed at the switch by route 2 under *respect*, and re-opened on 2026-11-02 when the user ruled *forbid* (S1e2.4.1): the program is to be refused, which S1e2.2.5 builds"
 open_because = "*forbid* (2026-11-02): rules `dead-1` and `dead-2` conclude (false) from an (absent (h …)), and h is a relation a commitment can still extend, so the right answer is a refusal at load. Today the program loads and [case.now] answers R by the cube; the refusal is S1e2.2.5's"
 
 [case.wrong]
@@ -1498,7 +1498,7 @@ k         = 1
 exhausted = true
 closes    = ["h"]
 models    = [["(h A)", "(h B)", "(h C)", "(h D)", "(h E)"]]
-qualifier = "assumes a monotone lattice: the static check flags this program, and what R is here is P1e2.1b's"
+qualifier = "every node a fork of root: the static check flags this program, and what a node is here is open (F21)"
 derived   = "the oracle: R has 9 states, maximal line one, all five candidates, and the cube 7 holes (walk_census.md § 3.3)"
 
 [case.now]
@@ -1935,7 +1935,7 @@ owner    = "S1e2.2.6"
 question = ["Q-M1e2.2"]
 witness  = "examples/features/07_unstratifiable.ein"
 status   = "open"
-open_because = "contested: what a node is when a guard's witness arrives later is P1e2.1b's, and R is over the fork route under *assumes a monotone lattice*. R's maximal line agrees with the right block's reading"
+open_because = "contested: what a node is when a guard's witness arrives later is F21's D2, and R is over nodes built by fork from root. R's maximal line agrees with the right block's reading"
 look_at  = ["root", "events writeback", "model 1"]
 note     = "the file's own header: {p, q} is not a model of this program under any reading"
 
@@ -1985,7 +1985,7 @@ k         = 1
 exhausted = true
 closes    = ["p", "q"]
 models    = [["(p one)", "(q one)"]]
-derived   = "today's answer, against the file's own header. The oracle's cube agrees: its node is a fork of root ([case.region]). Which node is right is P1e2.1b's"
+derived   = "today's answer, against the file's own header. The oracle's cube agrees: its node is a fork of root ([case.region]). Which node is right is open, F21's D2"
 
 [case.now]
 run       = "solve --maximal"
@@ -2007,7 +2007,7 @@ owner    = "S1e2.2.6"
 question = ["Q-M1e2.2"]
 witness  = "examples/ein-bugs/wrong-answers/stale-naf-fork.ein"
 status   = "open"
-open_because = "contested: what a node is when a guard's witness arrives later is P1e2.1b's, and R is over the fork route under *assumes a monotone lattice*, which keeps the stale (p one)"
+open_because = "contested: what a node is when a guard's witness arrives later is F21's D2, and R is over nodes built by fork from root, which keeps the stale (p one)"
 look_at  = ["root", "root-writes", "events hyp", "model 1"]
 
 [case.wrong]
@@ -2052,7 +2052,7 @@ k         = 1
 exhausted = true
 closes    = ["p", "q"]
 models    = [["(p one)"]]
-derived   = "today's answer: the fork holding both is dead, so root is the solution. The oracle's cube agrees: its node is a fork of root ([case.region]). Which node is right is P1e2.1b's"
+derived   = "today's answer: the fork holding both is dead, so root is the solution. The oracle's cube agrees: its node is a fork of root ([case.region]). Which node is right is open, F21's D2"
 
 [case.now]
 run       = "solve --maximal"
@@ -2390,7 +2390,7 @@ k         = 2
 exhausted = true
 closes    = ["is-a", "r0", "r1"]
 models    = [["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0 o2 o3)", "(r0 o3 o2)"], ["(is-a o2 T)", "(is-a o2 o3)", "(is-a o3 T)", "(is-a o3 o2)", "(r0 o2 o3)", "(r1 o2 o3)", "(r1 o3 o2)"]]
-qualifier = "assumes a monotone lattice: the static check flags this program, and what R is here is P1e2.1b's"
+qualifier = "every node a fork of root: the static check flags this program, and what a node is here is open (F21)"
 derived   = "the oracle: R has 20 states and two maximal ([case.region]), the states W1/d3-unsat-core records. With no Contradiction under R, the core this row is about is not R's answer. The user's reading of W11 is S1e2.1.7's and S1e2.2.12's"
 
 [[case.right.alternative]]

@@ -117,6 +117,23 @@ pub fn render(doc: &RegionDoc, run: &RunDoc, view: View) -> String {
 
 // ── which nodes ─────────────────────────────────────────────────────
 
+/// ` (1 site): status exercised · no stale fact` — what the title says of a
+/// flagged program, as the read-out's warning does (M1e2 S1e2.1b.5).
+fn flagged_words(doc: &RegionDoc) -> String {
+    let n = doc.sites.len();
+    let mut s = format!(" ({n} {})", if n == 1 { "site" } else { "sites" });
+    if let Some(status) = &doc.status {
+        s.push_str(&format!(": status {status}"));
+        match doc.stale_nodes {
+            Some(0) => s.push_str(" · no stale fact"),
+            Some(1) => s.push_str(" · 1 node holds a stale fact"),
+            Some(k) => s.push_str(&format!(" · {k} nodes hold a stale fact")),
+            None => {}
+        }
+    }
+    s
+}
+
 fn drawn(doc: &RegionDoc, ov: &Overlay, view: View) -> Vec<u64> {
     let Some(cube) = doc.cube.as_ref() else {
         return Vec::new();
@@ -507,7 +524,7 @@ fn dot(doc: &RegionDoc, cube: &Cube, run: &RunDoc, ov: &Overlay, view: View) -> 
             if doc.monotone {
                 "monotone".to_string()
             } else {
-                format!("NOT monotone ({} sites)", doc.sites.len())
+                format!("NOT monotone{}", flagged_words(doc))
             }
         ),
         format!(
@@ -972,7 +989,7 @@ fn legend(
     }
     if !doc.monotone {
         notes.push(format!(
-            "not monotone — sites: {}; the lines assume a monotone lattice (P1e2.1b)",
+            "not monotone — sites: {}; nodes by fork from root, what a node is here is open (F21)",
             doc.sites.join("; ")
         ));
     }
@@ -1128,7 +1145,7 @@ fn table(doc: &RegionDoc, run: &RunDoc, ov: &Overlay) -> String {
         if doc.monotone {
             "monotone".to_string()
         } else {
-            format!("**not monotone** ({} sites)", doc.sites.len())
+            format!("**not monotone**{}", flagged_words(doc))
         },
         md(&run.line())
     );

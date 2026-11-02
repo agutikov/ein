@@ -99,8 +99,9 @@
 //! *What* a node is on a program with a site is open:
 //! [F21](../../../../plans/followups/f21_non_monotone_programs_decided.md)'s
 //! D2. [P1e2.1b](../../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)
-//! detects, documents and warns, and [`crate::solve::solve`]'s `non_monotone`
-//! is the stub its S1e2.1b.5 replaces with warnings.
+//! detects, documents and warns: on a program with a site, [`crate::detector`]
+//! reads what every surface warns of (S1e2.1b.5), and `ein solve --monotone`
+//! prints this verdict alone.
 
 use std::sync::Arc;
 

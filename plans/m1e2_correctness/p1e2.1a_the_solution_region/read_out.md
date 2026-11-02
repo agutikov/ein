@@ -120,7 +120,7 @@ and the rule under it, so a transcript still starts the same way.
 | `merged` | how many states more than one commitment reaches, and their minimal generators | `1 state reached by more than one commitment, with 3 minimal` |
 | `N` | the minimal dead sets | `6 minimal dead sets` |
 | `E` | the minimal discharging sets. **Cube only**: route 1 computes only E's alive members, which are the minimal line | X8: `1 minimal discharging set` |
-| `lattice` | the static check, and through S1e2.1a.1's stub the holes (§ 6.3) | `monotone (the static check) — R is convex: no hole` |
+| `lattice` | the static check, and on a flagged program the detector's warning under it and the holes (§ 6.3) | `monotone (the static check) — R is convex: no hole` |
 | `universe` | n, and how many candidates are dead alone, which no state can hold | `9 candidates, 6 dead alone`; X6: `no candidate: R is {∅} or empty, decided by root alone` |
 | `route` | the route, and the licences it used | `1, the alive down-set — licence L1, dead is upward-closed` |
 | `work` | saturations, facts beyond root and layers, as the interface's § 2.1 asks of every run. They do not depend on the machine or on `-j` (`every_mode_at_four_jobs_is_every_mode_at_one`). A speed lever may move them, which C4 allows (*cost counters aside*), so the lever sweeps compare every row but this one (§ 12). The wall clock stays behind `-s` and `-t` | `14 saturations · 66 facts beyond root · 4 layers` |
@@ -283,23 +283,36 @@ not help everywhere: all 64 761 members `features/04_open.ein` meets are
 minimal, which is 585 192 lines. The 100-line rule (§ 4.1) bounds both, and
 every member is in `--dump-answer`.
 
-### 6.3 Holes: the stub, never silent
+### 6.3 Holes, and the warning: never silent
 
 On a flagged program that the cube reaches
 ([X8](read_out_examples.md#x8--ein-bugsnaf-upward-closureein-a-hole)), the
-`lattice` row is S1e2.1a.1's stub, extended with what the cube saw:
+`lattice` row was S1e2.1a.1's stub until M1e2 S1e2.1b.5 replaced it with the
+detector's warning, in the wording the user approved on 2026-11-03
+([`detector_proposal.md`](../p1e2.1b_non_monotone_programs/detector_proposal.md)
+§ 4.2):
 
 ```
-  lattice           not monotone: 1 site (the static check) — 1 hole; assumes a monotone lattice for what a node is (P1e2.1b)
+  lattice           not monotone: 1 site (the static check) — 1 hole
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            bad: absent reads q at absent depth 1, concludes (false) — at stake: the state, and dead with it
+    status          non-monotone here (exercised, by bad) — the cube: 1 hole · 1 dead node with an alive superset · 0 discharged nodes with an owing superset
+    state           no stale fact in the cube's 4 nodes
+    paths           every parent path checked reaches the same state — 1 parent of 1 printed state
     minimal hole    {(p A)} — dead: (p A)
 ```
 
-Every minimal hole is named with why it is out (its core, or what it owes),
-up to four, and the count is always printed. The `(region …)` listing is the
-cube's R either way: it lists states, so a hole needs no special form. What
-*assumes a monotone lattice* is the node itself, root's fixpoint plus the
-commitment, which P1e2.1b's S1e2.1b.2 may change. S1e2.1b.3 rules on (d) and
-replaces the stub.
+The rows say three things: **what is assumed** (`assumes`), **which property
+is at stake** (each `site`, with each `cycle` and `order` finding), and
+**whether it bit**, the status and the state apart, because the cube reads
+only the status (`status`, `state` with up to four `stale` rows, `paths`).
+On stdout at most four `site` and four `stale` rows are named, each then a
+`…` row naming `--dump-answer`, whose `answer.txt` has them all; the block is
+bounded on its own and does not take the listings' 100 lines. A monotone
+program's one row is unchanged. Every minimal hole is still named with why it
+is out (its core, or what it owes), up to four, and the count is always
+printed: the hole rows' form is F21's D4, open. The `(region …)` listing is the
+cube's R either way: it lists states, so a hole needs no special form.
 
 ## 7. Queries: projection classes
 

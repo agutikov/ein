@@ -445,7 +445,7 @@ named apart and the dead row naming the `absent` its refutation rests on
 [`monotonicity.md` § 8.1, D4](../../docs/kernel/inference/monotonicity.md#d4-what-is-reported-when-r-has-holes).
 **Until decided:** the listing is R, and the `lattice` row names up to four
 minimal holes with why each is out
-([`read_out.md` § 6.3](../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#63-holes-the-stub-never-silent)).
+([`read_out.md` § 6.3](../m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#63-holes-and-the-warning-never-silent)).
 
 ### D5 — the handling: refuse, qualify, or search differently
 

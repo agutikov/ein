@@ -17,8 +17,8 @@
 ;;; shows the hole. The two hrules make the root candidate list exactly the
 ;;; two facts above.
 ;;;
-;;; What the engine answers is not this file's question: P1e2.1b's is what R
-;;; means here.
+;;; What the engine answers is not this file's question: what R means here is
+;;; open, F21's (plans/followups/f21_non_monotone_programs_decided.md).
 
 (import std.algebra :symbols (total-owed))
 
