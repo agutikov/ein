@@ -1,0 +1,34 @@
+;;; S1e2.1b.7 probe — option (E)'s rewrite of
+;;; `examples/ein-bugs/wrong-answers/stale-naf-fork.ein` (W8) that keeps
+;;; today's R: the relation the `absent` reads, closed.
+;;;
+;;; Under F21's D1 (E), `derive-p`'s `(absent (q ?x))` over `q`, a relation a
+;;; commitment extends, is refused whatever it concludes. Closing `q`
+;;; (`:no-hypothesis (q)`) makes the read static: the program has no site,
+;;; route 1 answers it, and root's state, `(p one)`, is R's one state, as
+;;; today's fork gives it. The node `{(q one)}`, dead today, is no longer in
+;;; the cube. The register's `right` for W8 is the other reading, (B)'s:
+;;; `stale_naf_fork_dual_rail.ein` beside this file gives it.
+;;;
+;;; The `:expect` is the original's R, naming `p`, which holds on the
+;;; original as written too (it lists the state's `p`, and the original's only
+;;; state holds it). Re-take (2026-11-02):
+;;;   ein test plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_probes/stale_naf_fork_closed.ein
+;;;   ein solve plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_probes/stale_naf_fork_closed.ein
+(relation thing T)
+(relation p T)
+(relation q T)
+(thing one)
+(rule derive-p ()
+  :match  (and (thing ?x) (absent (q ?x)))
+  :assert (p ?x)
+  :priority 200)
+(rule p-and-q-clash ()
+  :match  (and (p ?x) (q ?x))
+  :assert (false)
+  :priority 300)
+(query :goal (q ?x))
+
+(solve
+  :no-hypothesis (q)
+  :expect (region (model (p one))))

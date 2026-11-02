@@ -1,0 +1,70 @@
+;;; S1e2.1b.7 probe — option (E)'s rewrite of
+;;; `examples/saturation/square-unique/corner-house.ein`, past the oracle's limit: one
+;;; line added at the end, `(solve :no-hypothesis (next-to))`.
+;;;
+;;; Under F21's D1 (E), `square-unique`'s `(absent (and (?R ?x ?z) (neq ?y ?z)))`
+;;; over `next-to` is refused: the blind rung proposes `next-to` between any two
+;;; objects. The corner inference is about the street the program states, so
+;;; closing `next-to` is what it means: root's fixpoint, and the inference the
+;;; demo shows, are unchanged, and the program is monotone, route 1, partial at
+;;; --region-budget. The original: flagged, route 2, partial past
+;;; --region-limit 16. Figures in docs/kernel/inference/monotonicity.md § 8.2.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein solve plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_probes/square_unique_corner_house_closed.ein
+
+;;; corner-house — the Zebra walkthrough's corner inference.
+;;;
+;;; This is the inference step the engine was MISSING before
+;;; square-unique landed. Norwegian lives in House-1, which is at
+;;; the corner of the row (only one neighbour: House-2). The puzzle
+;;; states Norwegian is next-to Blue. Therefore Blue lives in
+;;; House-2 — no branching needed.
+;;;
+;;; Ontology (background):
+;;;   - Two houses; House-1 is the leftmost corner with one
+;;;     materialised next-to neighbour (House-2).
+;;;   - `next-to` is symmetric; `(square-unique next-to House)`
+;;;     enables corner-projection inference.
+;;;
+;;; Facts (observed):
+;;;   - Norwegian lives in House-1.
+;;;   - Norwegian is next-to Blue.
+;;;
+;;; Question:
+;;;   Which house is Blue in?  (Answer: House-2.)
+;;;
+;;; Expected derivation:
+;;;   (next-to Norwegian Blue) + (next-to House-1 House-2)
+;;;   + (is-a House-1 House) + (co-located Norwegian House-1)
+;;;   + ∄ z ≠ House-2 with (next-to House-1 z)
+;;;   ⇒ (co-located Blue House-2)
+;;;   via rule `square-unique` with ?R = next-to, ?T = House.
+
+(rule square-unique (?R ?T)
+  :match  (and (?R ?a ?b)
+               (?R ?x ?y)
+               (is-a ?x ?T)
+               (co-located ?a ?x)
+               (absent (and (?R ?x ?z) (neq ?y ?z))))
+  :assert (co-located ?b ?y)
+  :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; carry {?a}↔{?x} to {?b}↔{?y}."
+  :priority 200)
+
+(relation is-a T T)
+(is-a House-1 House)
+(is-a House-2 House)
+(is-a Norwegian Nationality)
+(is-a Blue Color)
+(relation co-located T T)
+(relation next-to T T)
+(square-unique next-to House)
+
+(co-located Norwegian House-1 :source "(10)")
+(next-to Norwegian Blue :source "(15)")
+(next-to House-1 House-2 :source "(1)")
+
+(query :goal (co-located Blue House-2))
+
+;; S1e2.1b.7: the one line added.
+(solve :no-hypothesis (next-to))

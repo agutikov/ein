@@ -1,0 +1,48 @@
+;;; S1e2.1b.7 probe — option (E)'s rewrite of
+;;; `examples/features/07_unstratifiable.ein` (and of its twin
+;;; `ein-bugs/wrong-answers/f07-fpoff.ein`, W8): the even cycle
+;;; `p ← absent q; q ← absent p` written as the explicit choice it states.
+;;;
+;;; Each thing takes one side, P or Q (`functional` + `total-owed`), and the
+;;; side derives `p` or `q`. The program's two stable models are R's two
+;;; states, chosen by a commitment instead of by the order two rules at one
+;;; priority are written in. No `absent` is read: route 1 answers it.
+;;;
+;;; **It keeps R as `ein solve` prints the original's**, naming `q`:
+;;; `(region (model) (model (q one)))`. The states are (B)'s, not the fork's:
+;;; the original's `{(q one)}` holds the stale `(p one)` beside `(q one)`
+;;; (node_census.md § 2.1), and here the state with `q` holds `q` alone. And
+;;; the original's ∅ is a state of R, where here the empty commitment owes
+;;; the choice: R's states correspond, its nodes do not.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein test plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_probes/features07_choice.ein
+(import std.algebra :symbols (functional total-owed))
+
+(relation is-a T T)
+(relation p    Thing)
+(relation q    Thing)
+(relation side Thing Side)
+
+(is-a one Thing)
+(is-a P Side) (is-a Q Side)
+
+(functional side)
+(total-owed side is-a)
+
+(hrule choose () :match (and (is-a ?x Thing) (is-a ?s Side)) :assert (side ?x ?s))
+
+(rule p-side ()
+  :match  (side ?x P)
+  :assert (p ?x)
+  :priority 200)
+(rule q-side ()
+  :match  (side ?x Q)
+  :assert (q ?x)
+  :priority 200)
+
+(solve
+  :no-hypothesis (is-a)
+  :expect (region
+            (model)
+            (model (q one))))

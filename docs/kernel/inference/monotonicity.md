@@ -706,7 +706,8 @@ not a ruling (§ 8, D1).
 | a *Monotone* verdict can leave scratch ≠ fork through a FIFO race over a static read | measured | [`examples/lattice/11_fifo_gap_static.ein`](../../../examples/lattice/11_fifo_gap_static.ein), `node_census -- --paths`, same commit (§ 12.2 there) |
 | 8 conservative flags of 18 within the limit | measured | `site_census`, `4562bf70` |
 | (E) leaves a monotone, path-independent state on every program that loads | argued | premise: S1e2.2.5's F1 reads D and its F3 sees compiled plans |
-| (E)'s 13 programs | measured | `site_census`, `4b822a8d` and `6743dd17` |
+| (E)'s 13 programs | measured | `site_census`, `4b822a8d` and `6743dd17`; 14 with `lattice/10_fifo_gap` (§ 8.1, `refutation_census -- --option-e`, `ed8a13f2`) |
+| each of them has a rewrite that keeps R | measured: **5 of the 6** within the limit and `features/12` past it keep R; `d3-unsat-core` has none found; 6 past the limit are not comparable | § 8.2's probes, `ein test` on each, `4502e841` |
 
 ### 7.9 The causes, as one table
 
@@ -897,6 +898,8 @@ the program's, all of them, 44 of `corpus_exits.txt` and 385 of
 | `lattice/10_fifo_gap` | 2 | 6 + 35 | | none |
 | `saturation/square-unique/corner-house`, `cul-de-sac`, `terminus` | 118, 114, 153 | 4 + 35 each | | none |
 
+What each would be written as instead, and whether that keeps R, is § 8.2.
+
 Under F2 direct alone (E) also adds `d3-unsat-core` (no lines; `W1/` and
 `W11/d3-unsat-core`, both fixed, re-stated with a refusal as `right`) and W8's
 `stale-naf-fork` pair (1 + 35 each; `W8/stale-naf-fork`). (E) at F1 (b)
@@ -950,6 +953,56 @@ a cell builds from scratch. Past the limit the same 8 programs, with g from
 0 to 49. Under (b) of D7 nothing changes but the limit; under (c), today's,
 `features/04_open` keeps its partial answer and 21 042 of its 64 761 members
 met hold a stale fact (`detector_proposal.md` § 7).
+
+### 8.2 (E)'s rewrites
+
+Written 2026-11-02 by S1e2.1b.7, T1e2.1b.7.5, and **open** as § 8.1 is: what
+(E) would make the author write is evidence for F21's D1, not a ruling. For
+each of the 13 programs § 7.7 lists, and `lattice/10_fifo_gap` banked since,
+the rewrite the program's own text points to, from the menu S1e2.4.1 measured
+for *forbid*: the decided attribute of
+[`dual_rail.ein`](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/dual_rail.ein),
+the relation closed (`:no-hypothesis`), an obligation with hrules, an explicit
+choice, or *no rewrite that keeps R was found*. Each is banked as a probe in
+[`s1e2.1b.7_probes/`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_probes/)
+with its re-take command in its header. Where n ≤ 16 the probe carries the
+original's R, as `ein solve` prints it, as its own `(solve :expect (region …))`,
+and `ein test` holds it; past the limit the header gives its verdict and
+route. Taken with the release build at `4502e841`.
+
+| program | n | the rewrite | probe | keeps R | verdict and route, the original → the rewrite |
+|---|---:|---|---|---|---|
+| `features/07`, twin `f07-fpoff` | 1 | **an explicit choice**: each thing takes one side, P or Q (`functional` + `total-owed`), and the side derives `p` or `q` | `features07_choice.ein` | **yes, as printed**, naming `q`: `(region (model) (model (q one)))`. The states are (B)'s: here the state with `q` holds `q` alone, where the fork's holds the stale `p` too, and the empty commitment owes the choice | flagged, route 2 → monotone, route 1 |
+| `stale-naf-fork`, twin `-warn` | 1 | **the relation closed**, `(solve :no-hypothesis (q))` | `stale_naf_fork_closed.ein` | **yes**: `(region (model (p one)))`, which also holds on the original as written. The dead node `{(q one)}` leaves the cube | flagged, route 2 → monotone, route 1, no candidate |
+| ″ | | **the decided attribute**: `q-val` yes or no, `p` from the decided *no* | `stale_naf_fork_dual_rail.ein` | **no**: R is `(p one)` and `(q one)`, (B)'s R and the register's `right` for W8; the original's claim fails on it | → monotone, route 1 |
+| `lattice/08_absent_witness_hole` | 3 | **the decided attribute**: `allergic-val` yes or no, every guest owing it; the soup on the decided *no* | `lattice08_dual_rail.ein` | **yes, verbatim**: the original's five states. Its owing hole is still owing and no longer between two members of R, so R has no hole | flagged, route 2 → monotone, route 1 |
+| `lattice/10_fifo_gap` | 2 | **the reader deleted**: r2 never fires in the perfect model | `fifo_gap_without_r2.ein` | **yes, as printed**, naming `a` and `b`; `{a, b}` loses the stale `p`, as under stratum order | flagged, route 2 → monotone, route 1 |
+| `corpus/fuzz_findings/d3-unsat-core` | 5 | **no rewrite that keeps R was found**: the read made positive gives 24 states, `r1` closed gives 8 over 3 candidates and stays flagged, against the original's 20 | `d3_unsat_core_positive_read.ein`, the closer one | no | flagged, route 2 → monotone, route 1, a different R |
+| `features/12_expect_false` | 20 | the relation closed, S1e2.4.1's | [`features12_scoped.ein`](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/features12_scoped.ein) | **yes**: R = ∅ on both, `(false)` | route 1 by L0 → route 1 by L1, monotone |
+| `features/05_stdlib_domain_elim` | 56 | the relation closed, S1e2.4.1's: one line, `(solve :no-hypothesis (is-a))`; it closes `domain-elimination`'s read too | [`features05_scoped.ein`](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/features05_scoped.ein) | past the limit: the original's R is not known | flagged, route 2, partial → monotone, route 1, **exact: 32 states** over 26 candidates |
+| `features/01_not_and_absent` | 35 | the relations closed, `likes` and `is-a`. `likes` alone satisfies (E) and leaves the activator site of a relation-grain name collision, on 17 candidates | `features01_closed.ein` | past the limit; root's fixpoint is unchanged | flagged, route 2, partial → monotone, route 1, **exact: R = {∅}**, the query's one class the original's largest |
+| `features/04_open` | 81 | the relation closed, `house-color` | `features04_closed.ein` | past the limit; root's fixpoint is unchanged | flagged, route 2, partial → monotone, route 1, partial at `--region-budget`: 53 candidates, k_s ≥ 24 859, complete up to commitments of 3 (0.45 s) |
+| `saturation/square-unique/corner-house`, `cul-de-sac`, `terminus` | 118, 114, 153 | the relation closed, `next-to` | `square_unique_{corner_house,cul_de_sac,terminus}_closed.ein` | past the limit; root's fixpoint, the corner inference among it, is unchanged (`ein saturate`'s counts are identical) | flagged, route 2, partial → monotone, route 1, partial at `--region-budget`: 78, 77 and 104 candidates, k_s ≥ 79 158, 75 851 and 186 637, complete up to commitments of 3 (1.3, 1.4 and 5.6 s) |
+
+**What it comes to.** Of the 13: within the oracle's limit, **5 of 6 have a
+rewrite that keeps R** (2 of them, W8's `features/07` pair, as `ein solve`
+prints it and with (B)'s states, not the fork's), and **1, `d3-unsat-core`,
+has none that was found**. Past the limit, `features/12` keeps R (∅), and the
+other 6 have a monotone rewrite whose R cannot be held to the original's,
+which is not known; two of them become exact. The fixture banked since keeps
+R as printed. Every rewrite is monotone, so **none needs (E)'s refusal to be
+read as anything but a scope or a decision**: on the corpus, an `absent`
+concluding a positive fact was always one of three things, a relation the
+program states and should close, an attribute the search should decide, or a
+choice the program should state.
+
+**What the rewrites cost the programs.** Each changes the candidate universe:
+closing a relation removes candidates, a decided attribute adds one per value,
+an explicit choice adds the sides. So *keeps R* is R as the read-out prints it,
+over the relations the original names; the commitments that reach each state
+differ. The two W8 programs cannot keep both their text's intent and today's
+answer: the closed rewrite keeps today's R, the decided attribute gives the
+register's `right`.
 
 ## Cross-references
 

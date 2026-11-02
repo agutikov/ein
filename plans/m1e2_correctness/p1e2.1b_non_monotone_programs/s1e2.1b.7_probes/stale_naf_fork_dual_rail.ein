@@ -1,0 +1,51 @@
+;;; S1e2.1b.7 probe — option (E)'s rewrite of
+;;; `examples/ein-bugs/wrong-answers/stale-naf-fork.ein` (W8) with q as a
+;;; decision, in `dual_rail.ein`'s idiom (S1e2.4.1): **it does not keep
+;;; today's R**; it gives the register's `right`, (B)'s.
+;;;
+;;; `q-val` is a yes/no attribute the search must decide (`functional` +
+;;; `total-owed`), `(q ?x)` is its *yes*, and `p` is derived from the decided
+;;; *no* instead of from `q`'s absence. A state that has not decided q owes the
+;;; decision. R is two states, `(p one)` and `(q one)`: today, by fork, R is
+;;; `{∅}` alone, because root's `(p one)` meets a committed `(q one)` in the
+;;; clash. So under (E) W8's program cannot keep both its text's intent and
+;;; today's answer: `stale_naf_fork_closed.ein` keeps the answer.
+;;;
+;;; The `:expect` is this file's own R, naming `p` and `q`. Re-take
+;;; (2026-11-02):
+;;;   ein test plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_probes/stale_naf_fork_dual_rail.ein
+(import std.algebra :symbols (functional total-owed))
+
+(relation is-a  T T)
+(relation p     T)
+(relation q     T)
+(relation q-val T Bool)
+
+(is-a one T)
+(is-a yes Bool) (is-a no Bool)
+
+(functional q-val)
+(total-owed q-val is-a)
+
+(hrule guess-q () :match (and (is-a ?x T) (is-a ?v Bool)) :assert (q-val ?x ?v))
+
+(rule q-yes ()
+  :match  (q-val ?x yes)
+  :assert (q ?x)
+  :priority 100)
+(rule derive-p ()
+  :match  (q-val ?x no)
+  :assert (p ?x)
+  :priority 200)
+(rule p-and-q-clash ()
+  :match  (and (p ?x) (q ?x))
+  :assert (false)
+  :priority 300)
+
+(solve
+  :no-hypothesis (is-a)
+  :expect (region
+            (model (p one))
+            (model (q one))))
+
+(query :goal (q ?x))

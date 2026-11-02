@@ -1,0 +1,110 @@
+;;; S1e2.1b.7 probe — option (E)'s rewrite of `examples/features/04_open.ein`,
+;;; past the oracle's limit: one line added at the end,
+;;; `(solve :no-hypothesis (house-color))`.
+;;;
+;;; Under F21's D1 (E), `open-candidate`'s `(unknown (house-color …))` is
+;;; refused: the blind rung proposes `house-color`. The demo reads the slots the
+;;; program states, so closing `house-color` keeps its output at root and makes
+;;; the read static: monotone, route 1, partial at --region-budget on 53
+;;; candidates (complete up to commitments of 3). The original: flagged,
+;;; route 2, partial past --region-limit 16 at 81 candidates, 21 042 of the
+;;; 64 761 members met holding a stale `(open-slot …)`. The file's own comment
+;;; names the other rewrite, an `hrule` gated on `unknown`, which (E) does not
+;;; refuse (an hrule is no saturation rule) and which drops `open-slot`.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein solve plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_probes/features04_closed.ein
+
+;;; Ein — feature demo
+;;;
+;;; S1.5.8c T1.5.8c.3b — `(unknown P)` parser sugar.
+;;;
+;;; The kernel distinguishes THREE storage states for any
+;;; potential fact P:
+;;;
+;;;   - asserted: P is in the KB              → pattern `(P)`
+;;;   - negated : (not P) is in the KB         → pattern `(not P)`
+;;;   - open    : neither is in the KB         → pattern `(unknown P)`
+;;;
+;;; `(unknown P)` is the third pattern shape. It desugars at compile
+;;; time to:
+;;;
+;;;   (and (absent P) (absent (not P)))
+;;;
+;;; — saying "neither the positive nor the stored negative is
+;;; in the KB."
+;;;
+;;; Use case: gate hypothesis emission on still-undecided slots.
+;;; Without `(unknown …)`, an hrule would propose hypotheses even
+;;; for already-decided pairs and the engine has to filter them
+;;; out downstream. With `(unknown …)` the rule writer expresses
+;;; the gate declaratively.
+;;;
+;;; This demo: a small hypgen-style rule that emits a candidate
+;;; `(house-color ?h ?c)` ONLY for House-Color pairs still in
+;;; the open state.
+
+;; Demonstration rule — derives candidate facts.
+;; In real puzzles this'd be an `hrule` (hypothesis rule); for
+;; the demo we use `rule` so the firings land in (reasoning).
+;; stdlib pattern-macro sugar — forall/open from the std.macro module (S1.8.A5).
+(import std.macro :symbols (forall unknown))
+
+(rule open-candidate ()
+  :match  (and (is-a ?h House) (is-a ?c Color)
+               (unknown (house-color ?h ?c)))
+  :assert (open-slot ?h ?c)
+  :priority 300
+  :why    "({?h}, {?c}) is undecided")
+
+(relation house-color House Color)
+(relation is-a        T T)
+(relation open-slot   House Color)
+
+(is-a House T)
+(is-a Color T)
+(is-a House-1 House)  (is-a House-2 House)  (is-a House-3 House)
+(is-a Yellow  Color)  (is-a Red     Color)  (is-a Blue    Color)
+
+;; House-1's color is COMMITTED positive — Yellow.
+(house-color House-1 Yellow)
+
+;; House-2's color is COMMITTED negative — NOT Red.
+;; (the other two — Yellow/Blue — remain open for House-2.)
+(not (house-color House-2 Red))
+
+;; House-3 has no commitments — all three colors open.
+
+;; Expected derived output:
+;;
+;;   House-1 — no firings (Yellow asserted, others not negated
+;;            but the rule only fires on `open` which requires
+;;            BOTH absent (no positive AND no neg)). Actually:
+;;            (house-color House-1 Yellow) is asserted, so for
+;;            (House-1, Yellow): absent (house-color H1 Yellow)
+;;            fails → not open. For (House-1, Red): absent of
+;;            positive passes, absent of neg passes → open!
+;;            So (open-slot House-1 Red) and (open-slot House-1 Blue)
+;;            ARE emitted. This shows the rule correctly identifies
+;;            slots still up for grabs — even after one is committed,
+;;            the OTHERS for the same house remain open.
+;;
+;;   House-2 — Red is negated; Yellow and Blue are open:
+;;     (open-slot House-2 Yellow)
+;;     (open-slot House-2 Blue)
+;;     (open-slot House-2 Red) — NO, neg fact blocks (unknown).
+;;
+;;   House-3 — all three open:
+;;     (open-slot House-3 Yellow)
+;;     (open-slot House-3 Red)
+;;     (open-slot House-3 Blue)
+;;
+;; Total: 2 (H1) + 2 (H2) + 3 (H3) = 7 open-slot facts.
+
+
+(query
+  :goal (open-slot ?h ?c)
+)
+
+;; S1e2.1b.7: the one line added.
+(solve :no-hypothesis (house-color))

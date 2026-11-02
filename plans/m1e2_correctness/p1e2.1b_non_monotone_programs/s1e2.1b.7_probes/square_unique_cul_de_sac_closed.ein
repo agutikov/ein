@@ -1,0 +1,75 @@
+;;; S1e2.1b.7 probe — option (E)'s rewrite of
+;;; `examples/saturation/square-unique/cul-de-sac.ein`, past the oracle's limit: one
+;;; line added at the end, `(solve :no-hypothesis (next-to))`.
+;;;
+;;; Under F21's D1 (E), `square-unique`'s `(absent (and (?R ?x ?z) (neq ?y ?z)))`
+;;; over `next-to` is refused: the blind rung proposes `next-to` between any two
+;;; objects. The corner inference is about the street the program states, so
+;;; closing `next-to` is what it means: root's fixpoint, and the inference the
+;;; demo shows, are unchanged, and the program is monotone, route 1, partial at
+;;; --region-budget. The original: flagged, route 2, partial past
+;;; --region-limit 16. Figures in docs/kernel/inference/monotonicity.md § 8.2.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein solve plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_probes/square_unique_cul_de_sac_closed.ein
+
+;;; cul-de-sac — a corner inference in a generic street layout.
+;;;
+;;; A short street with a dead-end (Lot_3 is the cul-de-sac, with
+;;; only one adjacent lot: Lot_2). Alice owns Lot_3 and lives next
+;;; to Bob; Bob must therefore own Lot_2.
+;;;
+;;; The :T parameter for square-unique here is `Lot` — the type
+;;; whose members have all their adjacency materialised.
+;;;
+;;; Ontology (background):
+;;;   - Three lots in a row: Lot_1 — Lot_2 — Lot_3 (cul-de-sac).
+;;;   - `next-to` between lots is fully materialised below.
+;;;   - `(square-unique next-to Lot)` activates the rule for this
+;;;     type.
+;;;
+;;; Facts (observed):
+;;;   - Alice owns Lot_3.
+;;;   - Alice lives next-to Bob.
+;;;
+;;; Question:
+;;;   Which lot does Bob own?  (Answer: Lot_2 — Lot_3's only neighbour.)
+;;;
+;;; Expected derivation:
+;;;   (co-located Alice Lot_3) + (next-to Alice Bob)
+;;;   + (next-to Lot_3 Lot_2) + (is-a Lot_3 Lot)
+;;;   + ∄ z ≠ Lot_2 with (next-to Lot_3 z)
+;;;   ⇒ (co-located Bob Lot_2).
+
+(rule square-unique (?R ?T)
+  :match  (and (?R ?a ?b)
+               (?R ?x ?y)
+               (is-a ?x ?T)
+               (co-located ?a ?x)
+               (absent (and (?R ?x ?z) (neq ?y ?z))))
+  :assert (co-located ?b ?y)
+  :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; carry {?a}↔{?x} to {?b}↔{?y}."
+  :priority 200)
+
+(relation is-a T T)
+(is-a Lot_1 Lot)
+(is-a Lot_2 Lot)
+(is-a Lot_3 Lot)
+(is-a Alice Owner)
+(is-a Bob Owner)
+(relation co-located T T)
+(relation next-to T T)
+(square-unique next-to Lot)
+;; Full adjacency for the street — `Lot_3` is the cul-de-sac.
+(next-to Lot_1 Lot_2)
+(next-to Lot_2 Lot_1)
+(next-to Lot_2 Lot_3)
+(next-to Lot_3 Lot_2)
+
+(co-located Alice Lot_3 :source "(1)")
+(next-to Alice Bob :source "(2)")
+
+(query :goal (co-located Bob Lot_2))
+
+;; S1e2.1b.7: the one line added.
+(solve :no-hypothesis (next-to))

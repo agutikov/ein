@@ -1,0 +1,80 @@
+;;; S1e2.1b.7 probe — option (E)'s rewrite of
+;;; `examples/saturation/square-unique/terminus.ein`, past the oracle's limit: one
+;;; line added at the end, `(solve :no-hypothesis (next-to))`.
+;;;
+;;; Under F21's D1 (E), `square-unique`'s `(absent (and (?R ?x ?z) (neq ?y ?z)))`
+;;; over `next-to` is refused: the blind rung proposes `next-to` between any two
+;;; objects. The corner inference is about the street the program states, so
+;;; closing `next-to` is what it means: root's fixpoint, and the inference the
+;;; demo shows, are unchanged, and the program is monotone, route 1, partial at
+;;; --region-budget. The original: flagged, route 2, partial past
+;;; --region-limit 16. Figures in docs/kernel/inference/monotonicity.md § 8.2.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein solve plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_probes/square_unique_terminus_closed.ein
+
+;;; terminus — corner inference on a train line.
+;;;
+;;; A 4-station line: Central — Junction — Bridge — Terminus. The
+;;; Terminus station sits at the end of the line (only one adjacent
+;;; station: Bridge). Express service operates from Terminus and is
+;;; "next-to" the LocalShuttle. We can conclude that the LocalShuttle
+;;; operates from Bridge.
+;;;
+;;; Ontology (background):
+;;;   - Four stations in a line; `next-to` between stations is fully
+;;;     materialised (so the engine knows Terminus's neighbours
+;;;     completely).
+;;;   - `(square-unique next-to Station)` activates the rule on the
+;;;     Station type — services tied to stations propagate corner-
+;;;     side adjacency.
+;;;
+;;; Facts (observed):
+;;;   - Express operates from Terminus.
+;;;   - Express is next-to LocalShuttle (sister service on the
+;;;     adjacent station).
+;;;
+;;; Question:
+;;;   Which station does LocalShuttle operate from?  (Answer: Bridge.)
+;;;
+;;; Expected derivation:
+;;;   (co-located Express Terminus) + (next-to Express LocalShuttle)
+;;;   + (next-to Terminus Bridge) + (is-a Terminus Station)
+;;;   + ∄ z ≠ Bridge with (next-to Terminus z)
+;;;   ⇒ (co-located LocalShuttle Bridge).
+
+(rule square-unique (?R ?T)
+  :match  (and (?R ?a ?b)
+               (?R ?x ?y)
+               (is-a ?x ?T)
+               (co-located ?a ?x)
+               (absent (and (?R ?x ?z) (neq ?y ?z))))
+  :assert (co-located ?b ?y)
+  :why    "{?x} (an {?T}) has only {?y} as {?R}-neighbour; carry {?a}↔{?x} to {?b}↔{?y}."
+  :priority 200)
+
+(relation is-a T T)
+(is-a Central Station)
+(is-a Junction Station)
+(is-a Bridge Station)
+(is-a Terminus Station)
+(is-a Express Service)
+(is-a LocalShuttle Service)
+(relation co-located T T)
+(relation next-to T T)
+(square-unique next-to Station)
+;; Full station-adjacency (the line).
+(next-to Central Junction)
+(next-to Junction Central)
+(next-to Junction Bridge)
+(next-to Bridge Junction)
+(next-to Bridge Terminus)
+(next-to Terminus Bridge)
+
+(co-located Express Terminus :source "(1)")
+(next-to Express LocalShuttle :source "(2)")
+
+(query :goal (co-located LocalShuttle Bridge))
+
+;; S1e2.1b.7: the one line added.
+(solve :no-hypothesis (next-to))

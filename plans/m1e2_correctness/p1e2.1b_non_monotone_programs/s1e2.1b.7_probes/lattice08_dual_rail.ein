@@ -1,0 +1,62 @@
+;;; S1e2.1b.7 probe — option (E)'s rewrite of
+;;; `examples/lattice/08_absent_witness_hole.ein`: being allergic becomes a
+;;; decision, in `dual_rail.ein`'s idiom (S1e2.4.1).
+;;;
+;;; Under F21's D1 (E), `soup-unless-allergic`'s `(absent (allergic ?g))` is
+;;; refused although it concludes a positive fact. Here `allergic-val` is a
+;;; yes/no attribute every guest owes (`functional` + `total-owed`),
+;;; `(allergic ?g)` is its *yes*, and the soup is served on the decided *no*.
+;;; No saturation rule reads an `absent`, and both obligations are triggered
+;;; by given facts: the static check calls the program monotone and route 1
+;;; answers it.
+;;;
+;;; **It keeps R, verbatim**: the `:expect` below is `ein solve` on the
+;;; original, five states naming `allergic`, `meal` and `seats`, and it holds
+;;; here. What moves is the cube around R: the original's owing hole
+;;; `{(allergic Ann), (seats Ann C1)}` is here `{(allergic-val Ann yes),
+;;; (seats Ann C1)}`, still owing, and no longer between two members of R, so
+;;; R has no hole and its two lines describe it.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein test plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_probes/lattice08_dual_rail.ein
+(import std.algebra :symbols (functional total-owed))
+
+(relation is-a         T T)
+(relation seats        Guest Chair)
+(relation allergic     Guest)
+(relation allergic-val Guest Bool)
+(relation meal         Guest Food)
+
+(is-a Ann Guest) (is-a C1 Chair) (is-a Soup Food) (is-a Bread Food)
+(is-a yes Bool) (is-a no Bool)
+
+(functional allergic-val)
+(total-owed allergic-val is-a)
+
+(rule allergic-yes ()
+  :match  (allergic-val ?g yes)
+  :assert (allergic ?g)
+  :priority 100)
+
+(rule soup-unless-allergic ()
+  :match  (and (seats ?g ?c) (allergic-val ?g no))
+  :assert (meal ?g Soup)
+  :why    "{?g} is seated and not allergic, so {?g} has the soup"
+  :priority 200)
+
+(total-owed meal is-a)
+
+(hrule seat    () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c))
+(hrule allergy () :match (and (is-a ?g Guest) (is-a ?v Bool)) :assert (allergic-val ?g ?v))
+(hrule bread   () :match (is-a ?g Guest) :assert (meal ?g Bread))
+
+(solve
+  :no-hypothesis (is-a)
+  :expect (region
+            (model (meal Ann Bread))
+            (model (meal Ann Soup) (seats Ann C1))
+            (model (allergic Ann) (meal Ann Bread))
+            (model (meal Ann Bread) (meal Ann Soup) (seats Ann C1))
+            (model (allergic Ann) (meal Ann Bread) (seats Ann C1))))
+
+(query :goal (meal ?g ?f))

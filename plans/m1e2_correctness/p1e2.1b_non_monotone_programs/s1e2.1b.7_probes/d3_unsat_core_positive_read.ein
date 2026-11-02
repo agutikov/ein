@@ -1,0 +1,34 @@
+;;; S1e2.1b.7 probe — option (E) on `corpus/fuzz_findings/d3-unsat-core.ein`:
+;;; **no rewrite that keeps R was found.** This file is the closer of the two
+;;; tried, and it does not keep R.
+;;;
+;;; The program is a fuzz finding with no intended meaning: `fire-1` derives
+;;; `(r1 ?v2 ?v2)` under `(absent (not (r1 o3 ?v1)))`, and `fire-0` derives
+;;; the stored negative `fire-1` reads, an odd cycle through an `absent`. Under
+;;; (E) `fire-1` is refused. Two rewrites were tried, each by `ein solve`
+;;; against the original's R of 20 states over 5 candidates:
+;;;
+;;;   - the read made positive, `(r1 o3 ?v1)` for `(absent (not (r1 o3 ?v1)))`
+;;;     (this file): monotone, route 1, **24 states** over the same 5;
+;;;   - `r1` closed, `(solve :no-hypothesis (r1))` on the original: still
+;;;     flagged (1 site), route 2, **8 states** over 3 candidates.
+;;;
+;;; The original's cube is conservative (no hole, dead upward-closed), so a
+;;; program *synthesised* for its node set exists (`utils/region_synth.py`),
+;;; but that is not a rewrite of this one, and it would not hold its states.
+;;;
+;;; Re-take (2026-11-02):
+;;;   ein solve plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_probes/d3_unsat_core_positive_read.ein
+(relation r0 T T)
+(relation r1 T T)
+(relation is-a T T)
+(is-a o2 T)
+(is-a o3 T)
+(r0 o2 o3)
+(rule fire-0 (?P)
+  :match  (and (r1 ?v0 ?v1) (r0 ?v1 ?v0))
+  :assert (not (r1 ?v0 ?v0)))
+(fire-0 T)
+(rule fire-1 ()
+  :match  (and (is-a ?v0 T) (r0 ?v0 ?v1) (r1 ?v2 ?v3) (r1 o3 ?v1))
+  :assert (r1 ?v2 ?v2))
