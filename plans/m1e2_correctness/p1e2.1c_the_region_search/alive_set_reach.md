@@ -15,8 +15,8 @@ the flagged programs past the limit with what they get today.
 P1e2.1a's record and the first answer. This page is the second, and it does
 not edit the first.
 
-**Status:** T1e2.1c.1.1–.2 written 2026-11-03: §§ 1–3. The cubes and the cost
-table follow with T1e2.1c.1.3–.4.
+**Status:** T1e2.1c.1.1–.3 written 2026-11-03: §§ 1–4. The cost table follows
+with T1e2.1c.1.4.
 
 **This stage measures.** No golden, `:expect` or register row moved. The
 instrument is example code that no route reads:
@@ -37,6 +37,9 @@ utils/bench_env.sh --cores PT $R --budget 18446744073709551615 --facts 524288 --
 systemd-run --user --scope -q -p MemoryMax=11G -p MemorySwapMax=0 \
   python3 peak.py OUT.jsonl -- timeout 900 \
   utils/bench_env.sh --cores PT $R --budget 4194304 --jobs 16 FILE
+
+# § 4: two saturations, ∅ and ⊤, on every program
+utils/bench_env.sh --cores PT $R --budget 1 --jobs 1 > two.jsonl
 ```
 
 **Taken 2026-11-03 on `d2b6fdf0`.** The engine and `downset` are that
@@ -150,7 +153,8 @@ run met, labelled as a floor. It is not a total, and it is not extrapolated.
   includes `zebra`'s 270 912 visits, its k_c of 261 982 and its one state.
 - **The seven everything-alive cubes finish.** Each layer is exactly the
   binomial, C(20, k) or C(19, k). Every node is alive, discharged and in R,
-  so the cube is all of R, k_c = 2ⁿ, and N is empty. The *"presumably"* of 2026-10-16 is gone.
+  so the cube is all of R, k_c = 2ⁿ, and N is empty. § 4 decides the same in
+  two saturations. The *"presumably"* of 2026-10-16 is gone.
 - **The `zebra2-minus-15` pair does not finish** (§ 2.3). Each reached the
   ceiling's 2²² visits before layer 7, in 8.3 minutes and 3.6 GiB.
 - **Memory is a ceiling too.** Route 1 keeps every point it visits: its set,
@@ -330,3 +334,69 @@ not hold. That is a count the instrument takes (`extensions`):
   save is the route's to measure.
 - `zebra2-minus-15`'s row counts what its 4 709 states met by layer 6 extend
   to. It is a floor, because the alive set past layer 6 is not counted.
+
+## 4. The everything-alive cubes, decided
+
+**The argument** is [`read_out.md` § 6.2](../p1e2.1a_the_solution_region/read_out.md#62-a-partial-run-c3)'s
+X11, applied to every program and not just one. On a monotone program, dead
+is upward-closed (L1), so alive is downward-closed: **⊤ alive makes every node
+alive**. Discharged is upward-closed (L2), so **∅ discharged makes every node
+discharged**. Both together put every node in R: R is the one sub-cube
+[∅ … ⊤], k_c = 2ⁿ, N = ∅, and both lines are trivial. Two saturations decide
+it, ∅'s (root) and ⊤'s, and the test is exact both ways:
+
+- if ⊤ is dead, ⊤ is outside R;
+- if ∅ owes or is dead, ∅ is outside R.
+
+`route1_reach --budget 1` runs exactly those two saturations. It visits layer 0
+and declines layer 1, and the route then saturates ⊤ once.
+
+**Checked on every program, in both directions.** Over the 183 monotone
+programs, the two saturations decide R = the cube on **85**. Those 85 are
+exactly the programs whose k_c, counted by route 1 to the end (§ 1's sweep,
+§ 2's runs), is 2ⁿ.
+No program is decided without being the cube, and none is the cube without
+being decided. That holds on the 181 that route 1 counts. On the
+`zebra2-minus-15` pair, which it does not count, ⊤ is dead, so they are not
+the cube, and nothing contradicts that. Of the 98 programs not decided, 60
+fail on ∅, which owes or is dead, and 56 on ⊤, which is dead; 18 fail on both.
+
+Of the 85, 60 have n = 0, where ∅ is ⊤ and one saturation decides, and 74 have
+n ≤ 3. The other eleven are `features/03_forall` (n = 5), `syntax/equality`
+(6), `syntax/constraint-scopes` (12), `features/02_star_in_identifiers` (15),
+and **the seven past the oracle's limit**:
+
+| program | n | ∅ | ⊤ | the two saturations | k_c, counted | k_s, counted | the count's cost |
+|---|---:|---|---|---:|---:|---:|---|
+| `square-bwd/floors` | 20 | in R | alive, discharged, 24 facts | 0.13 ms | 1 048 576 = 2²⁰ | **27 559** | 1 048 576 saturations · 18 468 768 facts · 11.4 s |
+| `square-bwd/houses` | 20 | in R | alive, discharged, 24 facts | 0.13 ms | 2²⁰ | **27 559** | the same · 12.9 s |
+| `square-bwd/meetings` | 20 | in R | alive, discharged, 24 facts | 0.13 ms | 2²⁰ | **27 559** | the same · 13.4 s |
+| `square-fwd/floors` | 20 | in R | alive, discharged, 24 facts | 0.13 ms | 2²⁰ | **27 559** | the same · 13.2 s |
+| `square-fwd/houses` | 20 | in R | alive, discharged, 24 facts | 0.13 ms | 2²⁰ | **27 559** | the same · 12.4 s |
+| `square-fwd/meetings` | 20 | in R | alive, discharged, 24 facts | 0.13 ms | 2²⁰ | **27 559** | the same · 13.1 s |
+| `syntax/arg-kinds` | 19 | in R | alive, discharged, 19 facts | 0.03 ms | 524 288 = 2¹⁹ | **524 288** | 524 288 saturations · 4 980 736 facts · 1.81 s |
+
+The two saturations are `two.jsonl`'s `route1_reach --budget 1 --jobs 1`. The
+count is route 1 to the end at the ceiling, `--jobs 16` (§ 2.1).
+
+- **All seven are decided, and all seven are counted.** k_c = 2ⁿ by the two
+  saturations, and route 1's count agrees on each. k_s needs the states, and
+  the count finished on every one of them.
+- **The six `square-*` programs are one region six times.** They agree in
+  every column the instrument prints: k_s, the 29 711 generators, the
+  23 896 merged states, the 151 140 extensions, the facts per layer. They
+  differ only in their wall. So [`solve_interface.md`
+  § 3.4](../p1e2.1a_the_solution_region/solve_interface.md#34-what-it-costs)'s
+  27 559 for `square-bwd/floors` holds for all six.
+- **On `arg-kinds` every commitment is its own state**: k_s = k_c = 2¹⁹, and no
+  state has a second generator. A route over states saves nothing there (§ 3).
+
+**What describe prints today.** At the default budget, describe stops on all
+seven after layer 5 (`square-*`) or layer 6 (`arg-kinds`), having saturated
+∅ and then ⊤ once. Both trivial lines are certified, as X11 shows. Yet it
+prints k_c and k_s as lower bounds: *21 701* and *10 077* on the squares,
+*43 797* and *43 797* on `arg-kinds`. The two saturations it has already made
+decide k_c = 2ⁿ, and nothing reads them for that. That is
+[S1e2.1c.2](s1e2.1c.2_the_lines_by_duality.md)'s case, *"described in a
+handful of saturations, with k_s counted or the read-out saying it is not"*,
+and its input is here. Printing it is not this stage's: the stage measures.
