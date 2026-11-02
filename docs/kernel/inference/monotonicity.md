@@ -676,7 +676,10 @@ site that concludes a positive fact: `d3-unsat-core`, `f07-fpoff`,
 `/12`, the three `square-unique` demos, and `lattice/08`. Five of them
 *forbid* already reaches, under F1 (b) and F2 with `via`: `features/05` and
 `/12` by a refuting site of their own, `d3-unsat-core` and W8's pair through
-`via` (S1e2.4.1 § 1). (E) is an option, not a ruling (§ 8, D1).
+`via` (S1e2.4.1 § 1). Since M1e2's S1e2.1b.7 banked
+[`lattice/10_fifo_gap`](../../../examples/lattice/10_fifo_gap.ein), the list
+is 14, and § 8.1 has (E) under each reading of F1 and F2. (E) is an option,
+not a ruling (§ 8, D1).
 
 ### 7.8 The standing of each claim
 
@@ -800,9 +803,153 @@ puts a warning on every surface that reports R saying so.
 | what a route may learn from a refutation resting on an `absent` | D6 | § 3's learned-nogoods row; [S1e2.1b.4](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md), its [taint census](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md) | nothing, on a flagged program |
 | the search past the oracle's limit | D7 | § 6.4 | partial past `--region-limit`, the cube when asked |
 
+Each decision's consequences, per program, are § 8.1, open as the table is.
+
 **Ruled**, and not open: the static check reads at relation grain (2026-11-02,
 [S1e2.1b.1](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.1_the_site_census.md#the-question-it-puts-to-the-user)),
 and *forbid* (2026-11-02, S1e2.4.1 § 5).
+
+### 8.1 Each option's consequences, per program
+
+Written 2026-11-02 by M1e2's
+[S1e2.1b.7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/s1e2.1b.7_the_consequences_written_down.md),
+T1e2.1b.7.4. **Every table in § 8.1 is open, and every decision in it is
+[F21](../../../plans/followups/f21_non_monotone_programs_decided.md)'s.** A
+cell says what the option would move on the program, taken from the census
+page it names, or re-taken here with the command beside it, at `ed8a13f2`, the
+release build. *Lines* are the program's lines of
+`ein-cli/tests/golden/corpus_exits.txt` and
+`ein-render/tests/golden/corpus_shapes.md5`, counted from those files at the
+same commit: they bound what a build would move, and which of them move is
+the build's to say. Where the agent has a recommendation it is marked as the
+agent's, and it is not a ruling.
+
+#### D2: what a node's state is
+
+R, k_s and the states, from `node_census` (§ 9–10 there, `bc1dff73`, and
+re-taken with `node_census -- --json` for the fixtures banked since), the
+stratum-order column from `node_census -- --stratum-order` (§ 12.4 there),
+(F) from `node_census -- --paths` (§ 11). Every program not in the table
+moves under no option of D2: the other 13 of the 19 flagged corpus cubes
+within the limit, and every monotone cube within it but `11_fifo_gap_static`.
+Past the limit only `features/12` and `features/04` are measured.
+
+| program | lines | (A) fork, today | (B) scratch | (C) over (A) | (C) over (B) | (D) over D · over all | stratum order | (F) from P · from root |
+|---|---|---|---|---|---|---|---|---|
+| `features/07`, twin `f07-fpoff` | 6 + 35, 1 + 35; `W8/features-07` | R = {∅, {(q one)}}, k_s 2; `{(q one)}` holds `(p one) (q one)`; the written order of two rules moves the universe | R the same, `{(q one)}` holds `(q one)` alone; the order still moves the universe | R = {∅}, k_s 1: `{(q one)}` is the third outcome. `[case.now]` reads `[[]]` for `[["(q one)"]]` | as (B) | **refused**, a load error | no stratum order | (B)'s states · `{(q one)}` has none: R = {∅} |
+| `stale-naf-fork`, twin `-warn` | 1 + 35 each; `W8/stale-naf-fork` | R = {∅}, k_s 1: `{(q one)}` dead on the stale `(p one)` | **R = {∅, {(q one)}}, k_s 2**: the register's `right` | R = {∅}; `{(q one)}` the third outcome, dead on a stale fact | as (B) | stays: stratified | nothing moves: the fork keeps root's `(p one)` | as (B) · as (A) |
+| probe `not_conclusion` | none (a probe) | R = {∅, {(q A)}}; `{(q A)}` holds the stale `(not (p A))` | `{(q A)}` loses it | R = {∅} | as (B) | stays | nothing moves | as (B) · R = {∅} |
+| `d3-unsat-core` | none; `W1/d3-unsat-core`, `W11/d3-unsat-core` | R of 20 | the same: no node differs | the same: no stale node | the same | **refused**: both rows re-stated with a refusal as `right` | no stratum order | (A)'s state on every node, both ways: the other path states are stale |
+| `lattice/10_fifo_gap` | 6 + 35 | R = all 4; `{a, b}` holds the stale `p` | the same: root derives nothing | **R loses `{a, b}`**, k_s 4 → 3, maximal line `{a}`, `{b}` | as (C) over (A) | stays: stratified | **`{a, b}` loses `p`**; R unchanged | `{a, b}`'s state without `p`, both ways |
+| `lattice/11_fifo_gap_static`, monotone | 6 + 35 | R = 2; `{b}` holds `(q one)` | **`{b}` holds a stale `p`** | nothing moves | **R loses `{b}`**, k_s 2 → 1: a monotone program's R | stays | under (B), `{b}` is the fork's again | the fork's state, both ways |
+| written `stratified_stale` | none | R = {∅, {(r one)}}; `{(r one)}` holds two stale facts | `{(r one)}` holds `(p one) (r one)`; root keeps its stale `(p one)` | **R = ∅** | R = {{(r one)}} | stays | **the universe moves**, on both routes: root becomes `{(q one)}` | R = {{(r one)}} · R = ∅: ∅ has no stale-free state either way |
+| written `dead_root`, `dead_root_via` | none | R = ∅ (L0) | **R = {{(h A)}}** | R = ∅ | as (B) | stay | nothing moves | as (B) · as (A) |
+| `features/04_open`, n = 81 | 5 + 35 | partial past the limit: 64 761 members of R met | not measured | **21 042 of the 64 761 members met hold a stale `(open-slot …)` and leave R** (`detector_proposal.md` § 7) | not measured | stays: stratified | not run | not run |
+| `features/12`, n = 20 | 7 + 35; four `:expect`s | R = ∅ by L0 | R = ∅, measured: all 1 048 576 scratch nodes dead (§ 6.2); L0 is no longer its reason | unchanged, argued at fact grain | unchanged | stays: stratified | not run: past the limit | not run |
+| three `syntax/` fixtures, n = 0 | 2 + 35 each | — | — | — | — | stay · **refused** | no stratum order | — |
+
+What each costs, and what it settles, from the same pages:
+
+| | stable under rule order | what it leaves stale | cost |
+|---|---|---|---|
+| **(A)** | no on `features/07`, `f07-fpoff`, and on `10_fifo_gap`'s state (`node_census.md` § 7.1, § 12.1) | the fork's: W8's family, `not_conclusion`, the FIFO fixture | as today |
+| **(B)** | no on the same, and on `stratified_stale`, until admission follows the strata | the FIFO races: `10_fifo_gap`, `11_fifo_gap_static`, `stratified_stale` | saturation ×0.2–5.6 a node; root re-derived in every node; L0 is no longer a construction |
+| **(C)** | does not settle it (§ 7.2 there) | nothing in R: a stale state is the third outcome | a matcher call per fact with an `absent` premise (`detector_proposal.md` § 5) |
+| **(D)** | settles it on the corpus, by refusing the two unstable programs | as the reading it is combined with | a graph pass at load |
+| **stratum order** | yes on every stratified program read (§ 12.4 there) | the fork's, as (A); from scratch nothing | a change to the saturator's admission, emulated here by priorities |
+| **(F)** | depends on the order: it counts what the boundary's paths reach (§ 11.5 there) | nothing: a state that holds a stale fact is not counted | the state DAG: the census's 19 910 steps for the 256 flagged nodes, ≈ 3ⁿ against the cube's 2ⁿ |
+
+The agent's recommendation in `node_census.md` § 10, (B) with (D) and
+admission in stratum order, is unchanged by these measurements, and it is the
+agent's, not a ruling: under it every node read is stale-free from scratch,
+and § 12.2's monotone program needs the same admission order.
+
+#### D1: option (E), under each reading of F1 and F2
+
+`cargo run --release -p ein-infer --example refutation_census -- --option-e`
+(new with this stage; `ed8a13f2`), and `site_census --json`'s per-site fact-grain
+verdict for F1 (c). (E) refuses every saturation rule that reads at odd
+`absent` depth a relation a commitment can extend, whatever it concludes.
+**F2 does not move (E)'s set**: every `via` refutation on the corpus sits
+downstream of an `absent` rule (E) already refuses (`stale-naf-fork`'s
+`derive-p`, `d3-unsat-core`'s `fire-1`, `features/12`'s `forced`). F2 moves
+what *forbid* already covers, the baseline (E) is counted against.
+
+| F1 reading | (E) refuses | *forbid* refuses, direct · with `via` | (E) adds, over direct · over `via` | what the reading itself changes |
+|---|---:|---:|---:|---|
+| **(b) in D**, the static check's | **21** | 9 · 12 | 12 · **9** | — |
+| **(a) eligible**, S1e.2.3's | 23 | 10 · not computed: the `via` set is read over D | 13 · — | drops `d3-unsat-core` (its `absent` reads `(not r1)`, which no generator proposes) and `lattice/10_fifo_gap` (`q` is derived, not eligible); adds `features/03_forall`, **monotone** (n = 5, `undefeated` reads `player`), and three `syntax/` fixtures with n = 0 |
+| **(c) fact grain**, the prototype | 19 | 7 · 10 | 12 · 9 | `features/05` and `/12` leave: their reads ask for membership in a type, which no candidate has |
+
+The 9 that (E) adds under F1 (b) and F2 with `via`, each with what it would
+move as a refusal. Which of its cells a refusal moves is S1e2.2.5's F3 (only
+the subcommands that build a lattice, or every one that loads); the lines are
+the program's, all of them, 44 of `corpus_exits.txt` and 385 of
+`corpus_shapes.md5` in all:
+
+| program | n | lines | register | `:expect` |
+|---|---:|---|---|---|
+| `features/07_unstratifiable` | 1 | 6 + 35 | `W8/features-07` | none |
+| `ein-bugs/wrong-answers/f07-fpoff` | 1 | 1 + 35 | `W8/features-07` (twin) | none |
+| `features/01_not_and_absent` | 35 | 6 + 35 | | none |
+| `features/04_open` | 81 | 5 + 35 | | none |
+| `lattice/08_absent_witness_hole` | 3 | 6 + 35 | | none |
+| `lattice/10_fifo_gap` | 2 | 6 + 35 | | none |
+| `saturation/square-unique/corner-house`, `cul-de-sac`, `terminus` | 118, 114, 153 | 4 + 35 each | | none |
+
+Under F2 direct alone (E) also adds `d3-unsat-core` (no lines; `W1/` and
+`W11/d3-unsat-core`, both fixed, re-stated with a refusal as `right`) and W8's
+`stale-naf-fork` pair (1 + 35 each; `W8/stale-naf-fork`). (E) at F1 (b)
+leaves a monotone, path-independent state on every program that loads, by
+§ 7.7's argument, and the path census is consistent with it: every program
+§ 11 and § 12 find path-dependent is refused by (E) or by *forbid*, but two.
+`ACTIVATOR_REFUTES` is caught only if the refusal reads the plans a node
+compiles (F3), and `11_fifo_gap_static` depends on the path only between fork
+and scratch, so its fork state is path-independent.
+
+#### D3: path dependence as a constraint on P1e2.1c
+
+From the path census (`node_census.md` § 11) against
+[P1e2.1c](../../../plans/m1e2_correctness/p1e2.1c_the_region_search/README.md)'s
+region search, which builds a node by extending a parent where it can:
+
+| | what P1e2.1c may do | what it meets on the flagged corpus within the limit |
+|---|---|---|
+| **(i)** required of every program | extend a parent on any program that loads, once a reading under which a node is a function of C is taken: (B) with stratum order, or (E) | under today's fork, 20 of 256 nodes reach another state along some path; 10 along alive parents, and 3 change status that way, `lattice/08`'s hole moving into R among them. On the probe `via_hole` and on `ACTIVATOR_UNDER_ABSENT` a node of R is dead along an alive parent, so a route that extended parents would lose it |
+| **(ii)** required of monotone programs only | extend parents on a monotone program only, by fork; on a flagged one, build every node from root at once (today) | no path-dependent node on the 151 monotone cubes read (n ≤ 12), by fork. § 12.2's monotone program depends on the path only between fork and scratch, so a route that extends by fork is unaffected |
+
+**Until decided, (ii)**, and S1e2.1c.2 and .4 are scoped to monotone programs.
+
+#### D4: what is reported when R has holes
+
+[`hole_census.md` § 10](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md#10-the-consequences-per-option)
+(`c92d204e`) has the four options' consequences per program, and they stand.
+The two fixtures banked since add no hole: `lattice/10_fifo_gap` has none, and
+`lattice/11_fifo_gap_static` is monotone. So (a) and (b) move the same 18
+lines; (c) moves `10_fifo_gap`'s 6 read-out lines too, **156**; and (d) refuses
+**27** of the 210 programs that load and saturate (26 corpus entries and
+`d3-unsat-core`), 9 of them conservative.
+
+#### D6: what a route may learn from a refutation resting on an `absent`
+
+[`taint_census.md` § 4](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md#4-what-b-buys-over-a)
+(`b6a3045b`): under (b), with the taint following each plan's activator, a
+route may skip 91 of the 256 flagged nodes, 88 of them on `three_components`;
+under (a), none. The path census adds the other half: the paths that depend on
+a dead parent (§ 11.2, c2's note in § 7.9) are exactly the ones a route that
+learned from a tainted death would take, and the taint calls every one of
+those deaths tainted. `lattice/10_fifo_gap` has no dead node and moves
+nothing.
+
+#### D7: the search past the oracle's limit
+
+The guard split (§ 6.4), re-taken with `python3 utils/guard_split.py --corpus`
+at `ed8a13f2`: **22 programs within the limit, 20 agree with the oracle node for
+node**, `lattice/10_fifo_gap` among them, and W8's two still disagree, because
+a cell builds from scratch. Past the limit the same 8 programs, with g from
+0 to 49. Under (b) of D7 nothing changes but the limit; under (c), today's,
+`features/04_open` keeps its partial answer and 21 042 of its 64 761 members
+met hold a stale fact (`detector_proposal.md` § 7).
 
 ## Cross-references
 
