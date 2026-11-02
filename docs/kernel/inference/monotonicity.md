@@ -422,10 +422,28 @@ is the only case a route meets. **Measured**
 
 So on a flagged program, by today's fork, a node's state can depend on the
 path that built it, and a route that extended a parent's fixpoint would build
-a node other than the oracle's. Every split C1 ⊆ C and longer chains are
-**unverified**: M1e2's S1e2.1b.7 measures them. Which construction defines a
-node is open (§ 8, D2), and whether a route may extend a parent is open too
-(D3).
+a node other than the oracle's. **Every split C1 ⊆ C and every maximal chain
+are measured** since M1e2's S1e2.1b.7
+([`node_census.md` § 11](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#11-the-path-census--s1e21b7),
+`cargo run --release -p ein-infer --example node_census -- --paths`,
+2026-11-02, at `8a2dffe3`):
+
+- on the 18 flagged cubes within the limit, 20 of the 256 nodes reach two
+  states, and none reaches three. 10 of them depend on the path only through a
+  dead parent, which keeps its `(false)`. Along alive paths a node's **status**
+  moves on 3: `lattice/08`'s owing hole is in R by way of its parent, and W8's
+  `{(q one)}` is in R from scratch;
+- on the probe `via_hole.ein` and the written `ACTIVATOR_UNDER_ABSENT`, a node
+  of R is dead by way of an alive parent, through a chain no one-step parent
+  shows;
+- on `d3-unsat-core`, four of § 6.1's eight differences were the `-y` direct
+  path stopping at its first contradiction (`enable-fail-fast-fork`); built to
+  quiescence, as the oracle builds a node, those four agree;
+- on 150 monotone cubes (n ≤ 12, 6 069 nodes, 1 207 419 steps) no node depends
+  on the path. The five at n = 15–16 are past the census's bound.
+
+Which construction defines a node is open (§ 8, D2), and whether a route may
+extend a parent is open too (D3).
 
 **The traversal: a tree of paths, and what it may be memoized by** (argued,
 2026-11-02, from a question of the user's).
@@ -436,9 +454,12 @@ node is open (§ 8, D2), and whether a route may extend a parent is open too
 - **Memoizing by C** is sound exactly when the state is path-independent, and
   it collapses the tree onto the cube.
 - **Memoizing by the state** (the KB) is sound whenever a step is a function of
-  the KB's contents, not of its insertion history, a premise unverified for
-  the engine. It collapses the tree onto a DAG of reachable states, which is
-  acyclic because a step only adds.
+  the KB's contents, not of its insertion history. That premise is **measured**
+  for the engine on every cube the path census read: 688 809 steps taken from
+  contents another history had reached, each giving the same result
+  ([`node_census.md` § 11.5](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#115-what-it-settles-and-what-it-does-not)).
+  It collapses the tree onto a DAG of reachable states, which is acyclic
+  because a step only adds.
 - **On a path-independent program**, the reachable states are the image of
   C ↦ sat(P ∪ C). Ordered by ⊆, they form a lattice whose join is
   sat(P ∪ C1 ∪ C2) and whose meet is not the intersection. That lattice is the
@@ -448,9 +469,17 @@ node is open (§ 8, D2), and whether a route may extend a parent is open too
   cube.
 - **This suggests one more reading of a node, open in F21's D2 as (F):** the
   states its paths reach whose facts are not stale. That is the stability
-  condition of default logic and of stable models. It would give 0 states per
-  C on an odd cycle, 1 on a stratified program, and several on an even cycle.
-  These counts are unverified (§ 7.8).
+  condition of default logic and of stable models. It was argued to give 0
+  states per C on an odd cycle, 1 on a stratified program, and several on an
+  even cycle. **Measured, it does not** (§ 11.5 there): on every node of every
+  flagged cube within the limit, paths from P reach exactly one stale-free
+  state, the odd cycle `d3-unsat-core` included. Paths from root, the tree as
+  stated above, reach none on W8's four `{(q one)}` nodes, because root's
+  `(p one)` survives on every one of them; and the even cycle `features/07`
+  never reaches its second stable model, because the boundary admits
+  `derive-p` first. On the written stratified `stratified_stale` ∅ has no
+  stale-free state at all: the FIFO gap reaches root itself. So the count
+  depends on the admission order and on where a path starts.
 
 ### 7.3 The state: path-independent ⇔ monotone, given cumulativity
 
@@ -638,9 +667,10 @@ site that concludes a positive fact: `d3-unsat-core`, `f07-fpoff`,
 |---|---|---|
 | fork ≠ scratch on 4 of 256 flagged nodes, 0 of 268 213 monotone | measured | `node_census`, `bc1dff73`, 2026-11-02 |
 | a one-step parent path differs on `d3-unsat-core`, `lattice/08`, `via_hole.ein` | measured | `node_census` § 6.1, same run |
-| every split C1 ⊆ C, and longer chains | unverified | S1e2.1b.7's path census |
-| the path tree collapses onto the cube iff the state is path-independent, and onto a state DAG always | argued | premise for the second half: a step is a function of the KB's contents; unverified for the engine |
-| (F)'s per-C state counts: 0 on an odd cycle, 1 stratified, several on an even cycle | unverified | S1e2.1b.7's path census, over the state-memoized DAG |
+| every split C1 ⊆ C, and longer chains | measured | `node_census -- --paths`, `8a2dffe3`, 2026-11-02 (`node_census.md` § 11): 20 of 256 flagged nodes, 0 of 6 069 monotone at n ≤ 12; every maximal chain to 13 700 tree nodes |
+| the path tree collapses onto the cube iff the state is path-independent, and onto a state DAG always | argued; the second half's premise measured | the premise, a step is a function of the KB's contents: 688 809 steps from contents met before, 0 conflicts, same run (§ 11.5 there) |
+| (F)'s per-C state counts: 0 on an odd cycle, 1 stratified, several on an even cycle | **refuted**, measured | same run: from P, 1 on every flagged node, `d3-unsat-core`'s odd cycle included; from root, 0 on W8's four `{(q one)}`; 0 on `stratified_stale`'s ∅ (written into `node_census`); never 2 |
+| a node's status moves along an alive path | measured | same run: `lattice/08`'s hole in R by way of its parent; a node of R dead by way of an alive parent on the probe `via_hole` and on `ACTIVATOR_UNDER_ABSENT` |
 | path-independent ⇒ monotone | argued | premise: the KB never retracts. No test named here enforces it |
 | monotone ⇒ path-independent, given cumulativity | argued | premise: cumulativity |
 | a monotone program's saturation is cumulative | argued | the closure-operator test is adjacent; the `--control` run measures C1 = ∅ on every fact |
@@ -670,18 +700,18 @@ says which causes produce it.
 
 | | cause | fixture | breaks | the static check sees it as | the cube calls it | path dependence |
 |---|---|---|---|---|---|---|
-| c1 | an `absent` that concludes a positive fact | [`features/07`](../../../examples/features/07_unstratifiable.ein), [`stale-naf-fork`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein) (W8) | **the state**: root's `(p one)` is kept under a guard the commitment falsifies | `SiteKind::Absent` | conservative | yes: fork ≠ scratch at `{(q one)}` (`node_census.md` § 2.1) |
-| c2 | an `absent` that refutes | [`naf-upward-closure`](../../../examples/ein-bugs/naf-upward-closure.ein) (W3's `bad`) | **the state, and `dead` with it**: `(false)` is a fact | `SiteKind::Absent`, concluding `(false)` | exercised: a dead hole | none by fork and scratch; through a dead parent, see c2's note below |
-| c3 | a refutation through a fact derived under an `absent` (`via`) | probe [`via_hole.ein`](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein); in the corpus `stale-naf-fork`'s `p-and-q-clash` | **the state, and `dead`**; the refuting rule reads no `absent` | `SiteKind::Absent` on the deriving rule; the refuting rule is no site | exercised: a dead hole | yes: a one-step parent path, 1 of 4 nodes (`node_census.md` § 6.1) |
-| c4 | an `absent` that takes a witness away | [`lattice/08`](../../../examples/lattice/08_absent_witness_hole.ein) | **the state, and `owes` with it** | `SiteKind::Absent` | exercised: an owing hole | yes, with nothing derived at root: 2 of 4 (§ 6.1 there) |
-| c5 | an obligation's trigger | [`lattice/04`](../../../examples/lattice/04_obligation_trigger_hole.ein), [`06_friends_tables`](../../../examples/lattice/06_friends_tables.ein) | **the status alone**: `owes` | `SiteKind::ObligationTrigger` | exercised: an owing hole | none: fork = scratch on every node, and no parent path differs |
-| c6 | an activator that compiles an obligation | [`lattice/09`](../../../examples/lattice/09_activator_hole.ein) | **the status alone**: `owes` | `SiteKind::Activator` | exercised: an owing hole | none |
-| c7 | an activator that compiles a refutation, hiding its `absent` | `ACTIVATOR_REFUTES` ([`written.rs`](../../../ein.rs/crates/ein-infer/examples/shared/written.rs)) | **the state, and `dead`**, through `(absent (?R ?x))` in a plan only a node compiles | `SiteKind::Activator` only: root compiled no plan of the rule | exercised: a dead hole | none in the one parent the spot check reads |
+| c1 | an `absent` that concludes a positive fact | [`features/07`](../../../examples/features/07_unstratifiable.ein), [`stale-naf-fork`](../../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein) (W8) | **the state**: root's `(p one)` is kept under a guard the commitment falsifies | `SiteKind::Absent` | conservative | yes: fork ≠ scratch at `{(q one)}` (`node_census.md` § 2.1); from root no path reaches a stale-free state there (§ 11.2) |
+| c2 | an `absent` that refutes | [`naf-upward-closure`](../../../examples/ein-bugs/naf-upward-closure.ein) (W3's `bad`) | **the state, and `dead` with it**: `(false)` is a fact | `SiteKind::Absent`, concluding `(false)` | exercised: a dead hole | only through a dead parent: 1 of 4 nodes (`node_census.md` § 11.2) |
+| c3 | a refutation through a fact derived under an `absent` (`via`) | probe [`via_hole.ein`](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein); in the corpus `stale-naf-fork`'s `p-and-q-clash` | **the state, and `dead`**; the refuting rule reads no `absent` | `SiteKind::Absent` on the deriving rule; the refuting rule is no site | exercised: a dead hole | yes: 2 of 8 nodes, through alive parents, and one of them, a node of R, is dead that way (`node_census.md` § 11.3) |
+| c4 | an `absent` that takes a witness away | [`lattice/08`](../../../examples/lattice/08_absent_witness_hole.ein) | **the state, and `owes` with it** | `SiteKind::Absent` | exercised: an owing hole | yes, with nothing derived at root: 2 of 8 nodes, and along an alive path the owing hole is in R (§ 11.2 there) |
+| c5 | an obligation's trigger | [`lattice/04`](../../../examples/lattice/04_obligation_trigger_hole.ein), [`06_friends_tables`](../../../examples/lattice/06_friends_tables.ein) | **the status alone**: `owes` | `SiteKind::ObligationTrigger` | exercised: an owing hole | none: one state per node by every split and chain (§ 11.2 there) |
+| c6 | an activator that compiles an obligation | [`lattice/09`](../../../examples/lattice/09_activator_hole.ein) | **the status alone**: `owes` | `SiteKind::Activator` | exercised: an owing hole | none, as c5 |
+| c7 | an activator that compiles a refutation, hiding its `absent` | `ACTIVATOR_REFUTES` ([`written.rs`](../../../ein.rs/crates/ein-infer/examples/shared/written.rs)) | **the state, and `dead`**, through `(absent (?R ?x))` in a plan only a node compiles | `SiteKind::Activator` only: root compiled no plan of the rule | exercised: a dead hole | only through a dead parent: 1 of 4 nodes (§ 11.3 there) |
 | c8 | an even cycle through an `absent` | `features/07`, [`f07-fpoff`](../../../examples/ein-bugs/wrong-answers/f07-fpoff.ein) | **the state**, and stability: the written order of two rules at one priority moves the universe (`node_census.md` § 7.1) | two `SiteKind::Absent`; the cycle is no shipped check's (`node_census -- --strata`) | conservative | yes, as c1 |
-| c9 | an odd cycle through an `absent` | [`d3-unsat-core`](../../../corpus/fuzz_findings/d3-unsat-core.ein) | **the state**: a dead fixpoint's facts depend on admission order | `SiteKind::Absent`; the cycle as in c8 | conservative | yes: 8 of 26 one-step parent paths (§ 6.1 there) |
+| c9 | an odd cycle through an `absent` | [`d3-unsat-core`](../../../corpus/fuzz_findings/d3-unsat-core.ein) | **the state**: a dead fixpoint's facts depend on admission order | `SiteKind::Absent`; the cycle as in c8 | conservative | yes: 4 of 32 nodes, through alive parents. § 6.1's other four were `-y`'s fail-fast stop (§ 11.2 there) |
 | c10 | the FIFO gap, at one priority | [`detector_proposal/fifo_gap.ein`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap.ein) (§ 7.3's example, drafted) | **the state**: cumulativity, on a stratified program | `SiteKind::Absent` on the reader | conservative | yes: `{a, b}` at once against by way of `{a}` |
 | c11 | the FIFO gap, the reader at an earlier priority | [`detector_proposal/fifo_gap_priority.ein`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap_priority.ein) | **the state**, in every written order: no equal-priority pair exists for a reorder to move | `SiteKind::Absent` on the reader | conservative | yes, as c10 |
-| c12 | an activator derived under an `absent` | `ACTIVATOR_UNDER_ABSENT` (`written.rs`) | **the state, and `dead`**: the `absent` is in the activator's derivation, which no premise records | `SiteKind::Absent` (`act`) and `SiteKind::Activator` (`watch`) | exercised: a dead hole | yes: 1 of 6 parent paths |
+| c12 | an activator derived under an `absent` | `ACTIVATOR_UNDER_ABSENT` (`written.rs`) | **the state, and `dead`**: the `absent` is in the activator's derivation, which no premise records | `SiteKind::Absent` (`act`) and `SiteKind::Activator` (`watch`) | exercised: a dead hole | yes: 2 of 8 nodes, through alive parents, and a node of R is dead that way (§ 11.3 there) |
 | c13 | a FIFO race over a static read (§ 7.6) | written into `node_census` by T1e2.1b.7.3 | **the state built from scratch**, under a *Monotone* verdict; a fork never meets it | nothing: no site | no violation (monotone) | argued (§ 7.6): between fork and scratch only |
 
 | | *forbid* covers it (S1e2.2.5's F1–F3) | option (E) (D1) | option (D) (D2) | S1e2.1b.5's detector reports (drafted, awaiting the user's approval of [`detector_proposal.md`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md)) | bears on |
@@ -702,7 +732,7 @@ says which causes produce it.
 
 **Where the cells come from.** *Breaks*, *path dependence* and *the cube* are
 measured: [`node_census.md`](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md)
-§ 2, § 6.1 and § 7 (`bc1dff73`), the [hole census](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md)
+§ 2, § 6.1 and § 7 (`bc1dff73`) and § 11, the path census (`8a2dffe3`), the [hole census](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/hole_census.md)
 § 2 (`072e6d0d`), the [taint census](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md)
 § 3 and § 7 (`b6a3045b`), and the drafted detector's spot check
 ([`detector_proposal.md` § 5](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md#5-the-parent-path-spot-check-priced),
@@ -713,11 +743,12 @@ census § 7 read against F1–F3; (E) and (D) are F21's D1 and D2 read against
 T1e2.1b.7.3 runs it.
 
 **c2's path dependence.** Fork and scratch agree on every node of
-`naf-upward-closure` (measured, § 2.1 there). A parent path can differ only
-through the dead parent `{(p A)}`, which would keep its `(false)` when `(q A)`
-is added: the spot check and `-y` skip a dead parent, and a route that learns
-from a dead node takes exactly that path. That is W3's mechanism read as a
-path. Argued here, and measured by T1e2.1b.7.2's path census.
+`naf-upward-closure` (§ 2.1 there). Its one path-dependent node is reached
+through the dead parent `{(p A)}`, which keeps its `(false)` when `(q A)` is
+added (measured, § 11.2 there): the spot check and `-y` skip a dead parent,
+and a route that learns from a dead node takes exactly that path. That is W3's
+mechanism read as a path. c7 and the dead holes of `synth/three_components`
+and `synth/trigger_hole` depend on the path the same way, and only that way.
 
 **The status and the state are apart, measured.** Five programs the cube calls
 *conservative* still have a broken state: `stale-naf-fork`, `features/07`,

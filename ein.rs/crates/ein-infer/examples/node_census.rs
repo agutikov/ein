@@ -43,6 +43,9 @@
 #[allow(dead_code)]
 #[path = "shared/census.rs"]
 mod census;
+#[allow(dead_code)]
+#[path = "shared/written.rs"]
+mod written_rs;
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::hash::{Hash, Hasher};
@@ -143,6 +146,7 @@ const WRITTEN: &[(&str, &str)] = &[
 fn written() -> Vec<Source> {
     WRITTEN
         .iter()
+        .chain(written_rs::WRITTEN.iter())
         .map(|(name, text)| Source {
             name: format!("written:{name}"),
             text: text.to_string(),
@@ -1625,7 +1629,729 @@ fn scratch_cube_row(src: &Source, jobs: usize) -> Json {
             "first_not_dead": alive, "seconds": (t.elapsed().as_secs_f64() * 10.0).round() / 10.0 })
 }
 
+// ── The path census (S1e2.1b.7) ─────────────────────────────────────
+
+/// One program loaded once, every construction of a node run in it. Every KB
+/// shares one `Terms`, one `Ast` and one memo, so a step is the same function
+/// wherever it starts: branch a sealed KB, write facts with a hypothesis's
+/// provenance, `Saturator::new`, saturate, seal. [`World::of`] hands back
+/// beside it the program as loaded and not saturated, `base`, so
+/// `step(base, C)` is scratch, sat(P ∪ C), and `step(step(base, ∅), C)` is
+/// the fork, sat(sat(P) ∪ C).
+struct World {
+    terms: Terms,
+    ast: Ast,
+    memo: SharedMemo,
+    cands: Vec<FactId>,
+    texts: Vec<String>,
+    monotone: bool,
+    strata: Json,
+}
+
+/// A state as the path census reads it: its facts' digest, its two bits, how
+/// many of its facts are stale, and — kept only where asked — the facts.
+#[derive(Clone)]
+struct St {
+    digest: u64,
+    status: u8,
+    stale: usize,
+    facts: Vec<String>,
+    stale_list: Vec<String>,
+}
+
+impl World {
+    fn of(src: &Source) -> Option<(World, Kb)> {
+        let (mut kb, mut terms, ast) = src.load("", Terms::new())?;
+        let base = kb.fork();
+        let (root, ()) = census::root_of(&mut kb, &mut terms, &ast, |_, _| Some(()))?;
+        let mut cands = root.proposed.clone();
+        cands.sort_by_key(|&f| sexpr(&terms, f));
+        cands.dedup();
+        let texts: Vec<String> = cands.iter().map(|&f| sexpr(&terms, f)).collect();
+        let dynamic: BTreeSet<String> = root
+            .monotonicity
+            .dynamic
+            .iter()
+            .map(|r| r.label(&terms))
+            .collect();
+        let strata = strata(&kb, &terms, &root.plans, &dynamic);
+        Some((
+            World {
+                terms,
+                ast,
+                memo: SharedMemo::default(),
+                cands,
+                texts,
+                monotone: root.monotonicity.is_monotone(),
+                strata,
+            },
+            base,
+        ))
+    }
+
+    /// `sat(parent ∪ add)`: the one step every construction is made of.
+    fn step(&mut self, parent: &Kb, add: &[FactId]) -> Option<Kb> {
+        let mut kb = parent.branch();
+        for &h in add {
+            let (rel, args) = self.terms.facts.get(h);
+            let args = args.to_vec();
+            let prov = self.terms.provs.push(Prov::from_hypothesis(0, None));
+            kb.add_and_index_fact(&mut self.terms, rel, &args, Some(prov))
+                .ok()?;
+        }
+        let mut events = Events::off();
+        {
+            let mut s = Session {
+                kb: &mut kb,
+                terms: &mut self.terms,
+                ast: &self.ast,
+                events: &mut events,
+                memo: self.memo.clone(),
+            };
+            let mut sat = Saturator::new(&mut s).ok()?;
+            sat.saturate(&mut s, None, &mut |_| {}).ok()?;
+        }
+        kb.seal_top();
+        Some(kb)
+    }
+
+    fn facts_of(&self, mask: u64) -> Vec<FactId> {
+        bits(mask, self.cands.len())
+            .map(|b| self.cands[b])
+            .collect()
+    }
+
+    fn read(&mut self, kb: &Kb, keep: bool) -> St {
+        let mut facts: Vec<String> = kb.facts().map(|f| sexpr(&self.terms, f)).collect();
+        facts.sort();
+        let mut h = FxHasher::default();
+        facts.hash(&mut h);
+        let dead = !contradiction::detect(kb, &self.terms).is_empty();
+        let owes = obligations::tally(
+            kb,
+            &mut self.terms,
+            &self.ast,
+            &self.memo,
+            &mut Events::off(),
+        )
+        .map(|o| o.total())
+        .unwrap_or(usize::MAX);
+        let plans = monotone::plans_of(&self.memo);
+        let (stale, _) = stale_facts(kb, &self.terms, &self.ast, &plans);
+        St {
+            digest: h.finish(),
+            status: (if dead { DEAD } else { 0 }) | (if owes > 0 { OWING } else { 0 }),
+            stale: stale.len(),
+            facts: if keep { facts } else { Vec::new() },
+            stale_list: if keep {
+                stale.into_iter().map(|s| s.1).collect()
+            } else {
+                Vec::new()
+            },
+        }
+    }
+}
+
+/// One state a node's paths reach, with how it was reached.
+struct Reached {
+    st: St,
+    kb: Kb,
+    /// Reached by a path whose every intermediate state is alive (a one-step
+    /// path from P counts): what a route that never extends a dead node meets.
+    alive_path: bool,
+    /// Reached by a path from root, sat(P), one or more facts a step: the
+    /// path tree as F21 states it, which never builds from P with a
+    /// commitment written in.
+    rooted: bool,
+    /// Reached by these constructions: `fork`, `scratch`, a split, a chain,
+    /// a path of the DAG.
+    fork: bool,
+    scratch: bool,
+    split: bool,
+    chain: bool,
+    /// The first construction that reached it, for the text.
+    how: String,
+}
+
+/// Every `k`-subset … of `mask`, non-empty, as masks.
+fn submasks(mask: u64) -> Vec<u64> {
+    let mut out = Vec::new();
+    let mut s = mask;
+    while s != 0 {
+        out.push(s);
+        s = (s - 1) & mask;
+    }
+    out
+}
+
+/// How many nodes the path tree has to depth `k` over `n` candidates:
+/// Σ_{j ≤ k} n!/(n−j)!.
+fn tree_size(n: usize, k: usize) -> u128 {
+    let mut total: u128 = 1;
+    let mut term: u128 = 1;
+    for j in 0..k.min(n) {
+        term *= (n - j) as u128;
+        total += term;
+    }
+    total
+}
+
+/// The path census of one program: every node built by every construction.
+///
+/// - **the DAG** — every path from P: a first step `sat(P ∪ K₁)` (K₁ = ∅ is
+///   root, K₁ = C is scratch), then steps `s → sat(s ∪ Δ)` for any non-empty
+///   Δ, memoized by `(C, the state's facts)`. Its states at C are what every
+///   ordered set partition of C reaches, under the premise below;
+/// - **the splits** — `sat(sat(P ∪ C₁) ∪ (C \ C₁))` for every C₁ ⊆ C,
+///   computed apart from the DAG from scratch's own KB;
+/// - **the chains** — the unmemoized path tree from root, one candidate a
+///   step, to depth `chain_depth`: every maximal chain of every C with
+///   |C| ≤ `chain_depth`;
+/// - **the premise** — *a step is a function of the KB's contents*: every
+///   step any construction takes is keyed by (its parent's facts, what it
+///   adds), and two that share a key and differ in their result are a
+///   conflict.
+fn path_census(src: &Source, chain_bound: u128, keep: bool) -> Json {
+    let mut row = json!({ "path": src.name });
+    let Some((mut w, base)) = World::of(src) else {
+        row["loads"] = json!(false);
+        return row;
+    };
+    let n = w.cands.len();
+    row["n"] = json!(n);
+    row["monotone"] = json!(w.monotone);
+    row["stratified"] = w.strata["stratified"].clone();
+    row["stratified_over_d"] = w.strata["stratified_over_d"].clone();
+    if n > LIMIT {
+        row["past_limit"] = json!(true);
+        return row;
+    }
+    let t0 = Instant::now();
+    let size = 1usize << n;
+    let full = (size - 1) as u64;
+    let mut premise: FxHashMap<(u64, u64), u64> = FxHashMap::default();
+    let (mut premise_keys_repeated, mut premise_conflicts) = (0usize, 0usize);
+    let mut conflicts: Vec<String> = Vec::new();
+    let mut steps = 0usize;
+    // Record a step: (parent's facts, what it added as a mask over the
+    // candidates) → the result's facts.
+    let mut note = |parent: u64,
+                    add: u64,
+                    out: u64,
+                    what: String,
+                    premise: &mut FxHashMap<(u64, u64), u64>| {
+        match premise.get(&(parent, add)) {
+            Some(&o) => {
+                premise_keys_repeated += 1;
+                if o != out {
+                    premise_conflicts += 1;
+                    if conflicts.len() < 8 {
+                        conflicts.push(what);
+                    }
+                }
+            }
+            None => {
+                premise.insert((parent, add), out);
+            }
+        }
+    };
+
+    // Scratch, for every C: one step from P.
+    let mut scratch: Vec<(Kb, St)> = Vec::with_capacity(size);
+    let base_digest = {
+        let mut facts: Vec<String> = base.facts().map(|f| sexpr(&w.terms, f)).collect();
+        facts.sort();
+        let mut h = FxHasher::default();
+        facts.hash(&mut h);
+        h.finish()
+    };
+    for mask in 0..size as u64 {
+        let add = w.facts_of(mask);
+        let Some(kb) = w.step(&base, &add) else {
+            row["failed"] = json!("a scratch step");
+            return row;
+        };
+        steps += 1;
+        let st = w.read(&kb, keep);
+        note(base_digest, mask, st.digest, String::new(), &mut premise);
+        scratch.push((kb, st));
+    }
+    let root_digest = scratch[0].1.digest;
+
+    // The DAG, by popcount.
+    let mut order: Vec<u64> = (0..size as u64).collect();
+    order.sort_by_key(|m| (m.count_ones(), *m));
+    let mut reach: Vec<Vec<Reached>> = (0..size).map(|_| Vec::new()).collect();
+    reach[0].push(Reached {
+        st: scratch[0].1.clone(),
+        kb: scratch[0].0.branch(),
+        alive_path: true,
+        rooted: true,
+        fork: true,
+        scratch: true,
+        split: true,
+        chain: true,
+        how: "root".to_string(),
+    });
+    let mut fork_digest = vec![0u64; size];
+    fork_digest[0] = root_digest;
+    for &mask in order.iter().skip(1) {
+        let mut here: Vec<Reached> = Vec::new();
+        let put = |here: &mut Vec<Reached>, r: Reached| {
+            if let Some(x) = here.iter_mut().find(|x| x.st.digest == r.st.digest) {
+                x.alive_path |= r.alive_path;
+                x.rooted |= r.rooted;
+                x.fork |= r.fork;
+                x.scratch |= r.scratch;
+                x.split |= r.split;
+            } else {
+                here.push(r);
+            }
+        };
+        let (skb, sst) = (&scratch[mask as usize].0, scratch[mask as usize].1.clone());
+        put(
+            &mut here,
+            Reached {
+                st: sst,
+                kb: skb.branch(),
+                alive_path: true,
+                rooted: false,
+                fork: false,
+                scratch: true,
+                split: true,
+                chain: false,
+                how: "scratch".to_string(),
+            },
+        );
+        for delta in submasks(mask) {
+            let rest = mask & !delta;
+            let add = w.facts_of(delta);
+            let parents: Vec<(u64, u8, bool, bool, Kb, String)> = reach[rest as usize]
+                .iter()
+                .map(|p| {
+                    (
+                        p.st.digest,
+                        p.st.status,
+                        p.alive_path,
+                        p.rooted,
+                        p.kb.branch(),
+                        p.how.clone(),
+                    )
+                })
+                .collect();
+            for (pd, pstatus, palive, prooted, pkb, phow) in parents {
+                let Some(kb) = w.step(&pkb, &add) else {
+                    row["failed"] = json!("a DAG step");
+                    return row;
+                };
+                steps += 1;
+                let st = w.read(&kb, keep);
+                note(
+                    pd,
+                    delta,
+                    st.digest,
+                    format!("{} + {}", phow, name(&w.texts, delta)),
+                    &mut premise,
+                );
+                let is_fork = rest == 0;
+                if is_fork {
+                    fork_digest[mask as usize] = st.digest;
+                }
+                let how = format!("{phow} + {}", name(&w.texts, delta));
+                put(
+                    &mut here,
+                    Reached {
+                        st,
+                        kb,
+                        alive_path: palive && pstatus & DEAD == 0,
+                        rooted: prooted,
+                        fork: is_fork,
+                        scratch: false,
+                        split: false,
+                        chain: false,
+                        how,
+                    },
+                );
+            }
+        }
+        reach[mask as usize] = here;
+    }
+
+    // The splits, from scratch's own KB.
+    let mut split_states: Vec<BTreeSet<u64>> = vec![BTreeSet::new(); size];
+    for mask in 0..size as u64 {
+        for c1 in submasks(mask).into_iter().chain([0]) {
+            let rest = mask & !c1;
+            let d = if rest == 0 {
+                scratch[mask as usize].1.digest
+            } else {
+                let add = w.facts_of(rest);
+                let Some(kb) = w.step(&scratch[c1 as usize].0, &add) else {
+                    row["failed"] = json!("a split");
+                    return row;
+                };
+                steps += 1;
+                let st = w.read(&kb, false);
+                note(
+                    scratch[c1 as usize].1.digest,
+                    rest,
+                    st.digest,
+                    format!("scratch {} + {}", name(&w.texts, c1), name(&w.texts, rest)),
+                    &mut premise,
+                );
+                st.digest
+            };
+            split_states[mask as usize].insert(d);
+        }
+    }
+
+    // The chains: the unmemoized tree from root, one candidate a step.
+    let mut depth = 0usize;
+    while depth < n && tree_size(n, depth + 1) <= chain_bound {
+        depth += 1;
+    }
+    let mut chain_states: Vec<BTreeSet<u64>> = vec![BTreeSet::new(); size];
+    chain_states[0].insert(root_digest);
+    let mut tree_nodes = 1usize;
+    {
+        // (kb, its facts' digest, the commitment so far, the sequence)
+        let mut stack: Vec<(Kb, u64, u64, usize)> =
+            vec![(scratch[0].0.branch(), root_digest, 0, 0)];
+        while let Some((kb, d, mask, len)) = stack.pop() {
+            if len >= depth {
+                continue;
+            }
+            for b in 0..n {
+                if mask >> b & 1 == 1 {
+                    continue;
+                }
+                let h = w.cands[b];
+                let Some(child) = w.step(&kb, &[h]) else {
+                    row["failed"] = json!("a chain step");
+                    return row;
+                };
+                steps += 1;
+                tree_nodes += 1;
+                let st = w.read(&child, false);
+                note(d, 1 << b, st.digest, String::new(), &mut premise);
+                let m2 = mask | 1 << b;
+                chain_states[m2 as usize].insert(st.digest);
+                stack.push((child, st.digest, m2, len + 1));
+            }
+        }
+    }
+    for (mask, set) in chain_states.iter().enumerate() {
+        for x in reach[mask].iter_mut() {
+            if set.contains(&x.st.digest) {
+                x.chain = true;
+            }
+        }
+    }
+    for (mask, set) in split_states.iter().enumerate() {
+        for x in reach[mask].iter_mut() {
+            if set.contains(&x.st.digest) {
+                x.split = true;
+            }
+        }
+    }
+
+    // The oracle's node: is the fork here region::Nodes' fork?
+    let oracle = fork_route(src, Terms::new(), false);
+    let fork_is_oracle = oracle.as_ref().is_some_and(|o| {
+        o.uni.cands == w.texts
+            && (0..size).all(|m| {
+                o.reads[m].digest == fork_digest[m]
+                    && reach[m]
+                        .iter()
+                        .find(|x| x.st.digest == fork_digest[m])
+                        .is_some_and(|x| x.st.status == o.reads[m].status())
+            })
+    });
+    // And is scratch here `utils/region.py`'s, the text load?
+    let scratch_is_text = (0..size as u64).all(|m| {
+        scratch_node(src, &commitment_text(&w.texts, m), false, Terms::new())
+            .is_some_and(|r| r.digest == scratch[m as usize].1.digest)
+    });
+
+    // Per node.
+    let mut dependent = 0;
+    let mut dependent_alive = 0;
+    let mut beyond = 0;
+    let mut status_differ = 0;
+    let mut status_differ_alive = 0;
+    let mut splits_differ = 0;
+    let mut chains_differ = 0;
+    let mut chains_checked = 0;
+    let mut f_hist: BTreeMap<usize, usize> = BTreeMap::new();
+    let mut f_alive_hist: BTreeMap<usize, usize> = BTreeMap::new();
+    let mut f_rooted_hist: BTreeMap<usize, usize> = BTreeMap::new();
+    let mut states_hist: BTreeMap<usize, usize> = BTreeMap::new();
+    let mut rooted_hist: BTreeMap<usize, usize> = BTreeMap::new();
+    let mut pairs = 0;
+    let mut distinct: BTreeSet<u64> = BTreeSet::new();
+    let mut detail: Vec<Json> = Vec::new();
+    for mask in 0..size {
+        let here = &reach[mask];
+        pairs += here.len();
+        distinct.extend(here.iter().map(|x| x.st.digest));
+        let fd = fork_digest[mask];
+        let sd = scratch[mask].1.digest;
+        if here.len() > 1 {
+            dependent += 1;
+        }
+        let alive: Vec<&Reached> = here.iter().filter(|x| x.alive_path).collect();
+        if alive.len() > 1 {
+            dependent_alive += 1;
+        }
+        if here.iter().any(|x| x.st.digest != fd && x.st.digest != sd) {
+            beyond += 1;
+        }
+        let statuses: BTreeSet<u8> = here.iter().map(|x| x.st.status).collect();
+        if statuses.len() > 1 {
+            status_differ += 1;
+        }
+        let statuses_alive: BTreeSet<u8> = alive.iter().map(|x| x.st.status).collect();
+        if statuses_alive.len() > 1 {
+            status_differ_alive += 1;
+        }
+        if split_states[mask].len() > 1 {
+            splits_differ += 1;
+        }
+        if (mask as u64).count_ones() as usize <= depth {
+            chains_checked += 1;
+            if chain_states[mask].len() > 1 || !chain_states[mask].contains(&fd) {
+                chains_differ += 1;
+            }
+        }
+        let free = here.iter().filter(|x| x.st.stale == 0).count();
+        *f_hist.entry(free.min(2)).or_default() += 1;
+        let free_alive = here
+            .iter()
+            .filter(|x| x.st.stale == 0 && x.st.status & DEAD == 0)
+            .count();
+        *f_alive_hist.entry(free_alive.min(2)).or_default() += 1;
+        let rooted: Vec<&Reached> = here.iter().filter(|x| x.rooted).collect();
+        *f_rooted_hist
+            .entry(rooted.iter().filter(|x| x.st.stale == 0).count().min(2))
+            .or_default() += 1;
+        *states_hist.entry(here.len()).or_default() += 1;
+        *rooted_hist.entry(rooted.len()).or_default() += 1;
+        if keep && here.len() > 1 && detail.len() < 12 {
+            let fork_facts: BTreeSet<&String> = here
+                .iter()
+                .find(|x| x.st.digest == fd)
+                .map(|x| x.st.facts.iter().collect())
+                .unwrap_or_default();
+            let states: Vec<Json> = here
+                .iter()
+                .map(|x| {
+                    let mine: BTreeSet<&String> = x.st.facts.iter().collect();
+                    let mut by: Vec<&str> = Vec::new();
+                    if x.fork {
+                        by.push("fork");
+                    }
+                    if x.scratch {
+                        by.push("scratch");
+                    }
+                    if x.split {
+                        by.push("a split");
+                    }
+                    if x.chain {
+                        by.push("a chain");
+                    }
+                    if x.rooted {
+                        by.push("from root");
+                    }
+                    json!({
+                        "status": class(x.st.status),
+                        "by": by,
+                        "first": x.how,
+                        "alive_path": x.alive_path,
+                        "stale": x.st.stale_list,
+                        "only_here": mine.difference(&fork_facts).collect::<Vec<_>>(),
+                        "only_fork": fork_facts.difference(&mine).collect::<Vec<_>>(),
+                    })
+                })
+                .collect();
+            detail.push(json!({ "node": name(&w.texts, mask as u64), "states": states }));
+        }
+    }
+    let _ = full;
+    row["nodes"] = json!(size);
+    row["steps"] = json!(steps);
+    row["chain_depth"] = json!(depth);
+    row["tree_nodes"] = json!(tree_nodes);
+    row["fork_is_the_oracle"] = json!(fork_is_oracle);
+    row["scratch_is_the_text_load"] = json!(scratch_is_text);
+    row["premise"] = json!({
+        "keys": premise.len(),
+        "repeated": premise_keys_repeated,
+        "conflicts": premise_conflicts,
+        "first": conflicts,
+    });
+    row["dag"] = json!({ "pairs": pairs, "states": distinct.len() });
+    row["dependent"] = json!(dependent);
+    row["dependent_alive_paths"] = json!(dependent_alive);
+    row["beyond_fork_and_scratch"] = json!(beyond);
+    row["status_differs"] = json!(status_differ);
+    row["status_differs_alive_paths"] = json!(status_differ_alive);
+    row["splits_differ"] = json!(splits_differ);
+    row["chains_checked"] = json!(chains_checked);
+    row["chains_differ"] = json!(chains_differ);
+    row["stale_free_states_per_node"] = json!(
+        f_hist
+            .iter()
+            .map(|(k, v)| (
+                if *k >= 2 {
+                    "2+".to_string()
+                } else {
+                    k.to_string()
+                },
+                *v
+            ))
+            .collect::<BTreeMap<_, _>>()
+    );
+    row["stale_free_alive_states_per_node"] = json!(
+        f_alive_hist
+            .iter()
+            .map(|(k, v)| (
+                if *k >= 2 {
+                    "2+".to_string()
+                } else {
+                    k.to_string()
+                },
+                *v
+            ))
+            .collect::<BTreeMap<_, _>>()
+    );
+    let hist = |h: &BTreeMap<usize, usize>, cap: bool| -> Json {
+        json!(
+            h.iter()
+                .map(|(k, v)| (
+                    if cap && *k >= 2 {
+                        "2+".to_string()
+                    } else {
+                        k.to_string()
+                    },
+                    *v
+                ))
+                .collect::<BTreeMap<_, _>>()
+        )
+    };
+    row["stale_free_rooted_states_per_node"] = hist(&f_rooted_hist, true);
+    row["states_per_node"] = hist(&states_hist, false);
+    row["rooted_states_per_node"] = hist(&rooted_hist, false);
+    if keep {
+        row["detail"] = json!(detail);
+    }
+    row["ms"] = json!((t0.elapsed().as_secs_f64() * 1e4).round() / 10.0);
+    row
+}
+
+fn print_paths(row: &Json) {
+    if row.get("nodes").is_none() {
+        println!(
+            "{}: not read — {}",
+            row["path"].as_str().unwrap_or("?"),
+            if row["past_limit"].as_bool() == Some(true) {
+                "past the limit".to_string()
+            } else {
+                row.to_string()
+            }
+        );
+        return;
+    }
+    println!(
+        "{}  n {} · {} · stratified {} / over D {} · {} ms",
+        row["path"].as_str().unwrap_or("?"),
+        row["n"],
+        if row["monotone"].as_bool() == Some(true) {
+            "monotone"
+        } else {
+            "flagged"
+        },
+        row["stratified"],
+        row["stratified_over_d"],
+        row["ms"],
+    );
+    println!(
+        "  nodes {} · steps {} · chains to depth {} ({} tree nodes) · fork is the oracle {} · scratch is the text load {}",
+        row["nodes"],
+        row["steps"],
+        row["chain_depth"],
+        row["tree_nodes"],
+        row["fork_is_the_oracle"],
+        row["scratch_is_the_text_load"]
+    );
+    println!(
+        "  premise {} · DAG {} (C, state) pairs, {} distinct states",
+        row["premise"], row["dag"]["pairs"], row["dag"]["states"]
+    );
+    println!(
+        "  path-dependent nodes {} (alive paths {}) · beyond fork and scratch {} · status differs {} (alive paths {}) · splits differ {} · chains differ {} of {}",
+        row["dependent"],
+        row["dependent_alive_paths"],
+        row["beyond_fork_and_scratch"],
+        row["status_differs"],
+        row["status_differs_alive_paths"],
+        row["splits_differ"],
+        row["chains_differ"],
+        row["chains_checked"]
+    );
+    println!(
+        "  states per node {} · from root {} · stale-free states per node {} · alive and stale-free {} · from root and stale-free {}",
+        row["states_per_node"],
+        row["rooted_states_per_node"],
+        row["stale_free_states_per_node"],
+        row["stale_free_alive_states_per_node"],
+        row["stale_free_rooted_states_per_node"]
+    );
+    for d in row["detail"].as_array().into_iter().flatten() {
+        println!("  node {}", d["node"].as_str().unwrap_or("?"));
+        for s in d["states"].as_array().into_iter().flatten() {
+            println!(
+                "    {} by {} (first {}){} · only here {} · only fork {} · stale {}",
+                s["status"].as_str().unwrap_or("?"),
+                s["by"],
+                s["first"].as_str().unwrap_or("?"),
+                if s["alive_path"].as_bool() == Some(true) {
+                    ""
+                } else {
+                    " · only through a dead parent"
+                },
+                s["only_here"],
+                s["only_fork"],
+                s["stale"]
+            );
+        }
+    }
+}
+
 // ── The selection and main ──────────────────────────────────────────
+
+/// `f` over `items` on `jobs` threads, in order.
+fn par_map<T: Sync, R: Send>(items: &[T], jobs: usize, f: impl Fn(&T) -> R + Sync) -> Vec<R> {
+    let next = std::sync::atomic::AtomicUsize::new(0);
+    let out: Vec<std::sync::Mutex<Option<R>>> =
+        items.iter().map(|_| std::sync::Mutex::new(None)).collect();
+    std::thread::scope(|sc| {
+        for _ in 0..jobs.max(1).min(items.len().max(1)) {
+            sc.spawn(|| {
+                loop {
+                    let i = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                    if i >= items.len() {
+                        break;
+                    }
+                    let r = f(&items[i]);
+                    *out[i].lock().expect("a slot") = Some(r);
+                }
+            });
+        }
+    });
+    out.into_iter()
+        .map(|m| m.into_inner().expect("a slot").expect("filled"))
+        .collect()
+}
 
 /// Root's static verdict and `n`, read cheaply, for the selection.
 fn verdict(src: &Source) -> Option<(bool, usize)> {
@@ -1642,6 +2368,8 @@ fn main() {
     let mut jobs = std::thread::available_parallelism().map_or(1, |n| n.get().min(16));
     let (mut control, mut strata_only, mut inv, mut costs, mut use_written, mut scratch_cube) =
         (false, false, false, false, false, false);
+    let mut paths_mode = false;
+    let mut chain_bound: u128 = 13_700;
     let mut seeds = 8usize;
     let mut sample = 4096usize;
     let mut max_n = LIMIT;
@@ -1656,6 +2384,13 @@ fn main() {
             "--cost" => costs = true,
             "--written" => use_written = true,
             "--scratch-cube" => scratch_cube = true,
+            "--paths" => paths_mode = true,
+            "--chain-bound" => {
+                chain_bound = args
+                    .next()
+                    .and_then(|v| v.parse().ok())
+                    .expect("--chain-bound B")
+            }
             "--jobs" => jobs = args.next().and_then(|v| v.parse().ok()).expect("--jobs J"),
             "--seeds" => seeds = args.next().and_then(|v| v.parse().ok()).expect("--seeds S"),
             "--sample" => {
@@ -1787,6 +2522,72 @@ fn main() {
             })
             .collect()
     };
+
+    if paths_mode {
+        let rows = par_map(&chosen, jobs, |src| path_census(src, chain_bound, !control));
+        let mut sum: BTreeMap<&str, u64> = BTreeMap::new();
+        for row in &rows {
+            if as_json {
+                println!("{row}");
+            } else if !control || row["dependent"].as_u64().unwrap_or(0) > 0 {
+                print_paths(row);
+            }
+            if row.get("nodes").is_none() {
+                continue;
+            }
+            *sum.entry("programs").or_default() += 1;
+            for k in [
+                "nodes",
+                "steps",
+                "tree_nodes",
+                "dependent",
+                "dependent_alive_paths",
+                "beyond_fork_and_scratch",
+                "status_differs",
+                "status_differs_alive_paths",
+                "splits_differ",
+                "chains_differ",
+                "chains_checked",
+            ] {
+                *sum.entry(k).or_default() += row[k].as_u64().unwrap_or(0);
+            }
+            *sum.entry("premise_repeated").or_default() +=
+                row["premise"]["repeated"].as_u64().unwrap_or(0);
+            *sum.entry("premise_conflicts").or_default() +=
+                row["premise"]["conflicts"].as_u64().unwrap_or(0);
+            *sum.entry("dag_pairs").or_default() += row["dag"]["pairs"].as_u64().unwrap_or(0);
+            if row["fork_is_the_oracle"].as_bool() != Some(true) {
+                *sum.entry("fork_not_the_oracle").or_default() += 1;
+            }
+            if row["scratch_is_the_text_load"].as_bool() != Some(true) {
+                *sum.entry("scratch_not_the_text_load").or_default() += 1;
+            }
+            if row["dependent"].as_u64().unwrap_or(0) > 0 {
+                *sum.entry("programs_dependent").or_default() += 1;
+            }
+            for (field, prefix) in [
+                ("stale_free_states_per_node", "stale_free"),
+                ("stale_free_rooted_states_per_node", "stale_free_rooted"),
+            ] {
+                for (k, v) in row[field].as_object().into_iter().flatten() {
+                    *sum.entry(match (prefix, k.as_str()) {
+                        ("stale_free", "0") => "stale_free_0",
+                        ("stale_free", "1") => "stale_free_1",
+                        ("stale_free", _) => "stale_free_2+",
+                        (_, "0") => "stale_free_rooted_0",
+                        (_, "1") => "stale_free_rooted_1",
+                        _ => "stale_free_rooted_2+",
+                    })
+                    .or_default() += v.as_u64().unwrap_or(0);
+                }
+            }
+        }
+        if !as_json {
+            println!("\n{}", json!(sum));
+            println!("wall {:.1} s", t_all.elapsed().as_secs_f64());
+        }
+        return;
+    }
 
     if costs {
         let picked: Vec<&Source> = if control && !explicit {

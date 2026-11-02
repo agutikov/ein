@@ -25,6 +25,7 @@ cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example nod
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --strata       # § 5, every program that loads, 0.1 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance   # § 7, the levers, 0.9 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cost         # § 8
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths        # § 11, every split and chain (S1e2.1b.7)
 cargo test --release --manifest-path ein.rs/Cargo.toml -p ein-cli --test region_dump the_oracle_and_the_per_subset_route_agree_node_for_node
 ```
 
@@ -618,3 +619,194 @@ stratified reading. **If the user would rather keep the fork**, (A) with (D)
 gives the same corpus as today minus the three refused, and W8's
 `stale-naf-fork` rows close `not-wrong`. The guard split, though, then needs
 a fork-aware cell, which S1e2.1c.3 would have to design.
+
+## 11. The path census — S1e2.1b.7
+
+[S1e2.1b.7](s1e2.1b.7_the_consequences_written_down.md)'s T1e2.1b.7.2, for
+the rows [`monotonicity.md` § 7.8](../../../docs/kernel/inference/monotonicity.md#78-the-standing-of-each-claim)
+left *unverified*: every split C1 ⊆ C and longer chains, the state-memoized
+path DAG and (F)'s per-node counts, and the premise that a step is a function
+of the KB's contents. § 6.1 above read one-step parents, as `-y` built them.
+
+```sh
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths                    # § 11.2, the flagged cubes, 1.3 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths \
+    plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/*.ein                                        # § 11.3, 1.1 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --written          # § 11.3
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --control --max-n 12   # § 11.4, 36 s
+```
+
+Taken 2026-11-02 at `8a2dffe3` (the parent of the commit that adds `--paths`),
+release build, stdlib = the checkout, 16 jobs on a 32-thread machine, one
+program a job. `--written` carries six programs since this stage: § 2.3's
+three and the two of
+[`examples/shared/written.rs`](../../../ein.rs/crates/ein-infer/examples/shared/written.rs)
+(`activator_refutes`, `activator_under_absent`), and § 12's `fifo_gap_static`
+from T1e2.1b.7.3 on.
+
+### 11.1 What it builds
+
+One load per program. Every construction is one **step**, `s → sat(s ∪ Δ)`:
+branch a sealed KB, write Δ with a hypothesis's provenance, `Saturator::new`,
+saturate to quiescence. `base` is the program as loaded and not saturated, so
+`step(base, C)` is scratch, sat(P ∪ C), and `step(root, C)` is the fork,
+sat(sat(P) ∪ C). Every KB of a program shares one `Terms` and one memo.
+
+- **The DAG**: every path from P. A first step sat(P ∪ K₁), where K₁ = ∅ is
+  root and K₁ = C is scratch, then steps with any non-empty Δ, memoized by
+  *(C, the state's facts)*. Its states at C are what every ordered set
+  partition of C reaches, given the premise below. Σ_C Σ_{Δ ⊆ C} |states| ≈
+  3ⁿ steps.
+- **The splits**: sat(sat(P ∪ C1) ∪ (C \ C1)) for every C1 ⊆ C, from
+  scratch's own KB, apart from the DAG: 3ⁿ steps. C1 = ∅ is the fork, C1 = C
+  is scratch.
+- **The chains**: the unmemoized path tree from root, one candidate a step,
+  Σ_{j ≤ k} n!/(n − j)! nodes to depth k. **The bound** is 13 700 tree nodes
+  (`--chain-bound`, which is ⌊e·7!⌋): every maximal chain of every C on a cube
+  with n ≤ 7, and of every C with |C| ≤ k on a larger one, k the deepest
+  level within the bound (5 at n = 8, 4 at n = 9 and at n = 12). Within the
+  limit no flagged cube has n > 7, so on them every maximal chain is read.
+- **The premise**: every step any construction takes is keyed by *(its
+  parent's facts, what it adds)*. A key met twice is a step from the same
+  contents with another history: a chain against another chain, a split from
+  scratch's KB against the DAG's representative, a scratch load against a
+  fork when root derived nothing. Two that differ in their result would be a
+  **conflict**.
+- **The checks on the route**: the fork built here is `region::Nodes`' fork,
+  the oracle's node, fact for fact and bit for bit, and scratch built here is
+  § 2's text load, fact for fact, on every node read.
+
+Per node it counts the distinct states the constructions reach. A node is
+**path-dependent** when there are two or more. *Alive paths* keeps the states
+reached through no dead intermediate state, root included, which is what a
+route that never extends a dead node meets. *From root* keeps the paths that
+start at sat(P), the path tree as F21 states it, which never builds from P
+with a commitment written in. (F) is read both ways: the states of the node
+whose facts are not stale, from P and from root.
+
+### 11.2 The flagged cubes
+
+18 programs, 256 nodes, 19 910 steps, 14 448 chain-tree nodes:
+
+| | count |
+|---|---:|
+| the fork here is the oracle's node, on every node | **18 of 18** programs |
+| scratch here is the text load, on every node | **18 of 18** |
+| steps from contents met before (the premise checked) | 17 243 |
+| … with another result (a conflict) | **0** |
+| path-dependent nodes | **20**, on 10 programs |
+| … through alive paths only | 10 |
+| … reaching a state that is neither the fork's nor scratch's | 16 |
+| nodes whose status depends on the path | 13 |
+| … through alive paths only | **3**: `lattice/08`'s hole, and `stale-naf-fork`'s and its twin's `{(q one)}` |
+| distinct states at one node, at most | 2 |
+| (F) from P: stale-free states per node | **exactly 1 on all 256** |
+| (F) from root | 1 on 252; **0 on 4**: `{(q one)}` of `features/07`, `f07-fpoff`, `stale-naf-fork`, `stale-naf-fork-warn` |
+
+| program | n | nodes | path-dependent (alive paths) | beyond fork and scratch | status differs (alive paths) | splits differ | chains differ | what differs |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| `d3-unsat-core` | 5 | 32 | 4 (4) | 4 | 0 (0) | 4 | 4 of 32 | `(r1 o2 o2)` ← `fire-1 (absent (not (r1 o3 o3)))`, kept by way of a parent without `(r1 o3 o2)`, and stale there |
+| `naf-upward-closure`, `naf-nowb` | 2 | 4 | 1 (0) | 1 | 1 (0) | 1 | 1 of 4 | `{(p A), (q A)}` is dead by way of the dead `{(p A)}`, which keeps `(false)` ← `bad (absent (q A))` |
+| `features/07`, `f07-fpoff` | 1 | 2 | 1 (1) | 0 | 0 (0) | 1 | 0 of 2 | `{(q one)}`: the fork's stale `(p one)` against scratch (§ 2.1) |
+| `stale-naf-fork`, `-warn` | 1 | 2 | 1 (1) | 0 | 1 (1) | 1 | 0 of 2 | `{(q one)}`: dead by fork, in R by scratch (§ 2.1) |
+| `lattice/08_absent_witness_hole` | 3 | 8 | 2 (2) | 2 | **1 (1)** | 2 | 2 of 8 | by way of `{(seats Ann C1)}` a node keeps `(meal Ann Soup)`, stale. **The hole `{(allergic Ann), (seats Ann C1)}` is in R that way**, owing by fork and from scratch |
+| `synth/three_components` | 7 | 128 | 3 (0) | 3 | 3 (0) | 3 | 3 of 128 | three nodes of R are dead by way of a dead hole, `(false)` ← `dead-3` or `dead-7` kept |
+| `synth/trigger_hole` | 5 | 32 | 5 (0) | 5 | 5 (0) | 5 | 5 of 32 | the same, through `dead-1`'s holes |
+| the other 8 | | 64 | 0 | 0 | 0 | 0 | 0 | `lattice/04`, `lattice/09`, `synth/local_not_global`, `synth/maximal_not_top`, `tests/region/07_cube`, `branching/13`, `/14`, `alive-empty-interlayer`: one state per node by every construction |
+
+**What it adds to § 6.1.**
+
+- **Longer paths add what a one-step parent misses in two ways.** A path
+  through a dead parent, which `-y` skips (next item). And a chain through an
+  alive parent that is itself path-dependent: on the probe `via_hole` and the
+  written `activator_under_absent` (§ 11.3) the second node is reached that
+  way, and § 6.1 and the proposal's spot check, reading one-step parents,
+  each saw one node of the two. No node reaches a third state.
+- **`d3-unsat-core`'s four dead nodes of § 6.1 do not depend on the path.**
+  Built to quiescence by every construction, each has one state. `-y`'s
+  direct path ran `commitment::try_commitment_set`, which under
+  `enable-fail-fast-fork` (the default) stops at the first contradiction
+  (`saturate_until_dead`), and the facts it had not yet derived, `(r1 o3 o3)`,
+  were § 6.1's difference. The oracle's node saturates to quiescence, and the
+  four agree with it.
+- **A path through a dead parent** is where `naf-upward-closure`,
+  `three_components` and `trigger_hole` depend on the path: a dead node keeps
+  its `(false)` when the fact that would lift it is added. A route that never
+  extends a dead node does not meet it. A route that learns from a dead node
+  meets exactly it, which is W3.
+- **Along alive paths the status moves both ways.** On `lattice/08` an owing
+  hole is in R by way of its parent, so a route that extends parents would
+  report a node of R the oracle calls owing. On the probe `via_hole` and the
+  written `activator_under_absent` (§ 11.3) a node of R is dead by way of an
+  alive parent, so the same route would lose a node of R.
+
+### 11.3 S1e2.4.1's probes and the written programs
+
+| program | n | nodes | path-dependent (alive paths) | beyond fork and scratch | status differs (alive paths) | (F) from P · from root | what differs |
+|---|---:|---:|---:|---:|---:|---|---|
+| probe `via_hole` | 3 | 8 | 2 (2) | 2 | **1 (1)** | 1 on all · 1 on all | by way of `{(s one)}`, which derives `(p one)` under `(absent (q one))`, `{(q one), (r one), (s one)}` keeps it and `clash` refutes: **a node of R dead by way of an alive parent** |
+| probe `not_conclusion` | 1 | 2 | 1 (1) | 0 | 0 (0) | 1 on all · 0 on 1 | `{(q A)}`: the fork's stale `(not (p A))` (§ 2.2) |
+| the other 11 within the limit | | 196 | 0 | 0 | 0 | 1 on all | `three_components_owe` and `trigger_hole_owe`, the rewrites of the two synthetic programs with dead holes, depend on no path: their holes owe, and an owing parent keeps no `(false)` |
+| written `dead_root`, `dead_root_via` | 1 | 2 | 1 (0) | 0 | 1 (0) | 1 on all · 0 on 1 | `{(h A)}`: dead by fork, through the dead root; in R from scratch (§ 6.3) |
+| written `stratified_stale` | 1 | 2 | 1 (1) | 0 | 0 (0) | **0 on ∅** · 0 on both | ∅ has one state, scratch's root, and it holds the stale `(p one)` (§ 4); `{(r one)}` by fork holds two stale facts |
+| written `activator_refutes` | 2 | 4 | 1 (0) | 1 | 1 (0) | 1 on all | `{(p A), (q A)}` is dead by way of the dead `{(p A)}`, through the plan `watch` compiled for `(watch q)` |
+| written `activator_under_absent` | 3 | 8 | 2 (2) | 2 | **1 (1)** | 1 on all | by way of `{(p A)}` a node keeps `(watch r)` ← `act (absent (q A))`; `{(p A), (q A), (r A)}`, in R, is dead that way |
+
+The premise is met on all of them: 16 625 repeated keys over the probes and 59
+over the written programs, 0 conflicts. `features05_scoped` (n = 26) is past
+the limit.
+
+### 11.4 The control: the monotone cubes
+
+```sh
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --control --max-n 12 --json
+```
+
+**The bound is n ≤ 12**, where the DAG and the splits cost 3ⁿ ≤ 531 441
+steps a program: 150 of the 155 monotone cubes within the limit.
+`syntax/constraint-scopes` (n = 12) takes 36 s of the 36 s wall, 1 072 130
+steps. The five at n = 15 and 16 would take 14 to 43 million steps each and
+are not read.
+
+| | count |
+|---|---:|
+| monotone cubes, n ≤ 12 | 150 |
+| nodes | 6 069 |
+| steps | 1 207 419 |
+| chain-tree nodes | 68 458; every maximal chain on 2 437 nodes |
+| steps from contents met before | 654 882 |
+| … a conflict | **0** |
+| path-dependent nodes | **0** |
+| the fork here is the oracle's node · scratch here is the text load | 150 of 150 · 150 of 150 |
+| (F) from P and from root | 1 stale-free state on every node |
+
+### 11.5 What it settles, and what it does not
+
+- **The premise holds where it was read**: a step is a function of the KB's
+  contents on 688 809 steps from contents met before, flagged and monotone,
+  with no conflict. So memoizing the path tree by the state is sound on every
+  cube read here, and the DAG's states at a node are every path's.
+- **Path dependence is bounded by two states** on every node read. It occurs
+  on 10 of the 18 flagged cubes, on 2 of the 13 probes within the limit and
+  on all 5 written programs, and on no monotone cube read. Each of the 21
+  states a path reaches beyond fork and scratch holds a stale fact: a fact
+  derived under an `absent` the node's commitment falsifies, `(false)` kept
+  from a dead parent among them.
+- **(F)'s counts are not § 7.2's.** § 7.2 argued 0 stale-free states on an
+  odd cycle, 1 on a stratified program and several on an even one. Measured:
+  - on the odd cycle, `d3-unsat-core`, 1 on every node, from P and from root:
+    its contradictions are not stale, and its dead states are stale-free;
+  - on the even cycle, `features/07` and `f07-fpoff`, 1 from P on both nodes,
+    and **0 on `{(q one)}` from root**: no path reaches the program's second
+    stable model at ∅, because the boundary admits `derive-p` first in the
+    written order, and from root every path to `{(q one)}` keeps root's
+    `(p one)`;
+  - on the stratified `stale-naf-fork`, 0 on `{(q one)}` from root, for the
+    same reason; on the written stratified `stratified_stale`, **0 on ∅ from
+    P as well**, because the FIFO gap reaches root itself.
+  So under (F) a node's count is a property of the admission order as much as
+  of the program, and from root it is 0 on every node read here where root
+  derived a fact the commitment falsifies. No node of any cube read here
+  reaches two stale-free states.
+- **What it does not read**: the five monotone cubes at n = 15–16, the
+  flagged programs past the limit, and chains past depth 7.
