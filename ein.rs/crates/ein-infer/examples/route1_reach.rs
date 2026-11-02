@@ -20,7 +20,13 @@
 //! facts beyond root (`downset::DEFAULT_BUDGET`), and is off unless given.
 //!
 //! With no `FILE` it sweeps `corpus_files()` plus the register's witnesses.
-//! `utils/route1_reach.py` turns the rows into `route1_reach.md`'s tables.
+//! `route1_reach.md`'s tables were read off the rows; no script reads them.
+//!
+//! A row's `layers` are `[visited, dead, owing, in R, facts, wall]` per layer.
+//! Since M1e2 S1e2.1c.1 (`alive_set_reach.md`) a row also carries `facts`,
+//! the facts beyond root summed over the layers, and `top`, ⊤'s status,
+//! which the route saturates once when the budget stops it. None of it is
+//! read by a route.
 
 use std::path::{Path, PathBuf};
 use std::time::Instant;
@@ -108,6 +114,15 @@ fn main() {
             .zip(&d.layer_wall)
             .map(|(l, w)| json!([l.visited, l.dead, l.owing, l.r, l.facts, w.as_secs_f64()]))
             .collect();
+        let top = d.top.as_ref().map(|t| {
+            json!({
+                "dead": t.status & region::DEAD != 0,
+                "owing": t.status & region::OWING != 0,
+                "owes": t.owes,
+                "facts": d.top_facts,
+            })
+        });
+        let facts: u64 = d.layers.iter().map(|l| l.facts).sum();
         let declined = d.declined.as_ref().map(|x| match x {
             Declined::Budget { layer, next, .. } => {
                 json!({"why": "budget", "layer": layer, "next": next})
@@ -156,8 +171,10 @@ fn main() {
                 "root_dead": d.root_dead,
                 "visited": d.points.len(),
                 "alive": alive,
+                "facts": facts,
                 "layers": layers,
                 "declined": declined,
+                "top": top,
                 "description": desc,
                 "wall_route1": wall1,
                 "wall_root": d.cost.root.as_secs_f64(),
