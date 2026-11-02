@@ -23,6 +23,8 @@ cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example nod
     plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/*.ein                             # § 2.2, S1e2.4.1's probes
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --written      # § 2.3, three programs written into it
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --strata       # § 5, every program that loads, 0.1 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance   # § 7, the levers, 0.9 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cost         # § 8
 cargo test --release --manifest-path ein.rs/Cargo.toml -p ein-cli --test region_dump the_oracle_and_the_per_subset_route_agree_node_for_node
 ```
 
@@ -83,6 +85,9 @@ no command reaches it.
 | programs (D) would refuse, of the 208 that load and saturate | **3**: `features/07`, `f07-fpoff`, `d3-unsat-core` |
 | nodes where `-y`'s parent path and the direct fork differ | 10 corpus, 1 probe; the direct fork is scratch's node on all of them |
 | `features/12`, n = 20: scratch nodes that are not dead | 0 of 1 048 576 |
+| levers that move either route: `--jobs`, 8 interners, every flag | **none**, on 183 cubes |
+| … equal-priority rule order | moves **both** routes' universe on `features/07` and `f07-fpoff` |
+| a scratch node's saturation against a fork node | ×0.2–5.6; root re-derived at every node |
 
 ## 2. The flagged cubes
 
@@ -393,3 +398,223 @@ Under *forbid*, `dead_root` is the shape S1e2.2.5 refuses: a `(false)` from an
 `absent` over a relation a commitment can extend. `dead_root_via` is the `via`
 class its F2 decides. So under (B) the synthesizer could write the target, and
 under *forbid* the program it writes would be refused.
+
+## 7. Invariance
+
+```sh
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance                         # the flagged cubes, 0.9 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance --written
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance \
+    plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/*.ein
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance --control --max-n 9    # 149 monotone cubes, 10 s
+```
+
+Each route is re-run under four levers, and each run is compared with the
+route's own default run, node by node, keyed by the commitment's text:
+
+- **`--jobs`.** Fork: `region::compute` at 1 and at 16 jobs, status and state
+  class of every node. Scratch: the node fan-out at 1 and at 16 threads.
+- **Permuted interners.** 8 seeds, `id_order_invariance`'s (1 + 7919 i). Each
+  route is rebuilt on a `Terms` whose id space is a permutation of the default
+  run's, by that test's `permuted`, copied into the census.
+- **Equal-priority rule orders.** Every order of the program's `(rule …)`
+  forms within each priority: all of them where there are at most 24, else
+  the reverse and 8 seeded shuffles.
+- **Every `(config …)` flag** flipped from its default. A flag the program
+  already sets is skipped.
+
+A run moves **R** when a node's status moves, a **state** when a node's facts
+move, and the **universe** when the candidate list moves. On every run below
+the two routes moved on the same runs, so one count stands for both:
+
+| run | cubes | `--jobs` | interners | rule orders | flags |
+|---|---:|---|---|---|---|
+| the flagged cubes | 18 | 0 of 18 | 0 of 144 | **2 of 17** move the universe | 0 of 121 |
+| S1e2.4.1's probes | 13 | 0 of 13 | 0 of 104 | 0 of 13 | 0 of 89 |
+| the written programs | 3 | 0 of 3 | 0 of 24 | **1 of 1** moves the universe | 0 of 21 |
+| monotone, n ≤ 9 | 149 | 0 of 149 | 0 of 1 192 | 0 of 117 | 0 of 1 036 |
+
+### 7.1 What rule order moves
+
+**`features/07` and `f07-fpoff`.** Write `derive-q` before `derive-p`, and
+root derives `(q one)` where it derived `(p one)`. The candidate list becomes
+`{(p one)}`, and R is `{∅, {(p one)}}`, the mirror image of today's. That
+happens **on both routes**. The oracle's own R on `features/07` depends on
+which of two rules at priority 200 is written first, which is the config
+principle's *stable* ([`monotonicity.md` § 6.1](../../../docs/kernel/inference/monotonicity.md#61-three-words):
+*"it does not depend … on rule order"*) broken by today's node, not only by
+scratch.
+
+**`stratified_stale`**, written. With `derive-q` first, root is `{(q one)}`,
+the program's perfect model, and the universe grows to `{(p one), (r one)}`.
+This one is stratified, so (D) does not reach it (§ 4).
+
+### 7.2 What settles it
+
+- **(D)** refuses `features/07` and `f07-fpoff`. Of the 167 cubes
+  this run reorders (18 flagged, 149 monotone), they are the only ones whose
+  answer depends on rule order.
+- **(C) does not settle it.** Over (A), R is `{∅}` in both orders, but ∅'s state
+  is `{(p one)}` in one and `{(q one)}` in the other. Over (B), both orders keep
+  both stable models, under different universes. (C) removes stale states, and
+  each order's states are stale-free.
+- **On a stratified program**, what settles it is admitting candidates in
+  stratum order. Then scratch's root is the perfect model in every order
+  (§ 4's argument), and on the corpus no node moves, because every scratch
+  node there is already stale-free.
+
+## 8. Cost
+
+```sh
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cost              # the flagged cubes, 0.1 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cost --control    # the six monotone cubes with n ≥ 12, 4 096 nodes each, 7.6 s
+```
+
+One thread, each node read to its two bits only. **Fork**: branch root, write
+the commitment, resume, saturate, detect, tally. **Scratch**: parse and load
+the text with the commitment, saturate, detect, tally, with the saturation's
+share (from the end of the load) shown on its own. **Derived** is the facts
+the node's own saturation adds. For fork that is beyond root and beyond the
+commitment. For scratch it is beyond the load, which re-derives root's.
+
+| program | n | fork µs | scratch µs | ×  | saturation alone µs | × | derived: fork | scratch | root |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `d3-unsat-core` | 5 | 6.6 | 57.3 | 8.7 | 10.5 | 1.6 | 1.4 | 1.4 | 0 |
+| `branching/13` | 2 | 4.1 | 58.0 | 14.1 | 8.3 | 2.0 | 0.3 | 1.3 | 1 |
+| `branching/14` | 2 | 3.4 | 59.2 | 17.3 | 7.1 | 2.1 | 0.3 | 0.3 | 0 |
+| `alive-empty-interlayer` | 3 | 3.0 | 70.6 | 23.7 | 6.8 | 2.3 | 1.0 | 1.0 | 0 |
+| `naf-upward-closure` | 2 | 2.9 | 51.9 | 17.8 | 4.4 | 1.5 | 0.3 | 0.3 | 0 |
+| `f07-fpoff` | 1 | 1.5 | 50.1 | 33.0 | 7.8 | 5.1 | 0.0 | 0.5 | 1 |
+| `naf-nowb` | 2 | 2.3 | 40.2 | 17.3 | 3.7 | 1.6 | 0.3 | 0.3 | 0 |
+| `stale-naf-fork-warn` | 1 | 2.8 | 50.3 | 17.7 | 6.2 | 2.2 | 0.5 | 0.5 | 1 |
+| `stale-naf-fork` | 1 | 2.7 | 46.3 | 17.4 | 5.7 | 2.2 | 0.5 | 0.5 | 1 |
+| `features/07` | 1 | 1.4 | 50.6 | 36.9 | 7.5 | 5.4 | 0.0 | 0.5 | 1 |
+| `lattice/04` | 2 | 8.2 | 303.9 | 37.0 | 10.0 | 1.2 | 0.5 | 0.5 | 0 |
+| `lattice/08` | 3 | 7.0 | 306.7 | 44.1 | 12.5 | 1.8 | 0.3 | 0.3 | 0 |
+| `lattice/09` | 2 | 6.8 | 290.1 | 42.6 | 7.5 | 1.1 | 0.5 | 0.5 | 0 |
+| `synth/local_not_global` | 2 | 5.2 | 59.2 | 11.4 | 5.0 | 1.0 | 0.0 | 0.0 | 0 |
+| `synth/maximal_not_top` | 3 | 5.6 | 57.0 | 10.2 | 5.2 | 0.9 | 0.0 | 0.0 | 0 |
+| `synth/three_components` | 7 | 7.8 | 104.3 | 13.3 | 14.4 | 1.8 | 0.8 | 0.8 | 0 |
+| `synth/trigger_hole` | 5 | 6.8 | 74.8 | 11.0 | 9.3 | 1.4 | 0.1 | 0.1 | 0 |
+| `tests/region/07_cube` | 2 | 8.5 | 308.7 | 36.3 | 9.8 | 1.2 | 0.5 | 0.5 | 0 |
+| **control**, monotone | | | | | | | | | |
+| `branching/01_saturate_only` | 16 | 45.9 | 137.0 | 3.0 | 58.9 | 1.3 | 10.1 | 18.1 | 8 |
+| `features/02_star_in_identifiers` | 15 | 47.6 | 111.9 | 2.4 | 58.8 | 1.2 | 6.7 | 16.7 | 10 |
+| `lattice/07_two_pairs_two_tables` | 16 | 54.2 | 391.1 | 7.2 | 53.9 | 1.0 | 1.0 | 1.0 | 0 |
+| `type-exclusivity/pets` | 15 | 8.5 | 53.4 | 6.3 | 12.4 | 1.5 | 2.6 | 8.6 | 6 |
+| `syntax/constraint-scopes` | 12 | 2.0 | 33.2 | 16.9 | 0.4 | 0.2 | 0.0 | 0.0 | 0 |
+| `tests/stdlib/bijection/06_blind_enumeration` | 16 | 101.2 | 792.0 | 7.8 | 204.8 | 2.0 | 15.6 | 36.6 | 21 |
+
+The µs are means over every node, or over 4 096 nodes spread evenly over the
+cube where it has more. Three runs on 2026-11-02: on the six control cubes no mean
+moved by more than 1 %; on the flagged cubes, a few µs each over 2–128 nodes,
+a mean moved by up to 17 % and a ratio by up to 22 %. The table is the first
+run, and the ranges in the text cover all three.
+
+- **The saturation scratch adds is small**: ×0.2–5.6 of the fork's whole
+  node. It re-derives root at every node, which is the "derived" columns:
+  scratch = fork + root, to the rounding (`bijection/06`: 15.6 + 21 ≈ 36.6).
+  The biggest factors are on the smallest programs, where a fork derives
+  nothing and costs a branch.
+- **Parse and load dominate the prototype**: ×2.4–44 with them, about 290 µs
+  for any program that imports the stdlib (`lattice/04`, `08`, `09`,
+  `07_cube`). A build of (B) inside the engine would branch a loaded,
+  unsaturated program as the fork branches root, and would not pay them per
+  node. That is an argument; this prototype does not measure it.
+- `region.py`, two processes a node: 5–27 ms (§ Why a library prototype).
+
+## 9. W8's two rows, computed
+
+Each option's R, from the route that option defines, on the two witnesses and
+their twins. Both twins give their witness's answer on every option (§ 2.1).
+The node census prints these as `A_fork`, `B_scratch`, `C_over_A` and
+`C_over_B`. "State" is the facts beyond the program's own.
+
+**`W8/features-07`** (`features/07_unstratifiable.ein`, twin `f07-fpoff`):
+
+| option | R | k_s | maximal line | its state |
+|---|---|---:|---|---|
+| (A) fork | ∅, `{(q one)}` | 2 | `{(q one)}` | `(p one) (q one)`, which the fixture's header says is *"not a model of this program under any reading"* |
+| (B) scratch | ∅, `{(q one)}` | 2 | `{(q one)}` | `(q one)`. ∅'s state is `(p one)`: the program's two stable models, one per node |
+| (C) over (A) | ∅ | 1 | ∅ | `(p one)`; `{(q one)}` is the third outcome, alive and holding a stale fact |
+| (C) over (B) | as (B) | | | |
+| (D) | — | | | refused at load, exit 1 |
+
+**`W8/stale-naf-fork`** (`stale-naf-fork.ein`, twin `stale-naf-fork-warn`):
+
+| option | R | k_s | maximal line | its state |
+|---|---|---:|---|---|
+| (A) fork | ∅ | 1 | ∅ | `(p one)` |
+| (B) scratch | ∅, `{(q one)}` | 2 | `{(q one)}` | `(q one)` |
+| (C) over (A) | ∅ | 1 | ∅ | `(p one)`; `{(q one)}` is the third outcome, dead with its death resting on a stale fact |
+| (C) over (B) | as (B) | | | |
+| (D) | not refused: stratified | | | (A), (B) or (C), as composed |
+
+**The register's hand derivation is (B)'s answer, not (C)'s over (A).** Both
+rows' `right` block is labelled *guards are premises*, and both put
+`{(q one)}` in R with the state `(q one)`: *"committing (q one) withdraws (p
+one)"*. That is retraction, and computed it is (B), or (C) over (B). (C) over
+the fork does not withdraw `(p one)`. It disqualifies the state that holds
+it, and gives R = {∅} on both programs. So *guards are premises* names two
+different answers, depending on which node it is read over. The `[case.now]`
+of `W8/features-07` (`solve --maximal`, projected on `q`) reads
+`[["(q one)"]]` under (A) and (B) alike, and `[[]]` under (C) over (A).
+
+## 10. The options against the evidence
+
+| option | what moves, measured | stable under rule order | cost |
+|---|---|---|---|
+| **(A) fork** | nothing. W8's rows close `not-wrong` with the reason | **no** on `features/07`, `f07-fpoff` (§ 7.1) | as today |
+| **(B) scratch** | `stale-naf-fork` and `-warn`: R gains `{(q one)}`, k_s 1 → 2. `features/07` and `f07-fpoff`: `{(q one)}`'s state loses `(p one)`. The probe `not_conclusion`: `{(q A)}` loses `(not (p A))`. No other node of the 18 flagged and 155 monotone cubes. L0 is no longer the node's construction on a flagged program with a dead root, and `features/12` keeps R = ∅ by measurement (§ 6.2). The guard split agrees with it on all 21 cubes S1e2.1b.6 split, by that stage's run and § 2: its two disagreements with the oracle are (B)'s two extra nodes | no on `features/07`, `f07-fpoff`; no on the written `stratified_stale` until admission follows the strata | saturation ×0.2–5.6 a node; root re-derived at every node |
+| **(C) guards are premises** | over (A): `features/07` and `f07-fpoff` lose `{(q one)}` from R, k_s 2 → 1; `stale-naf-fork`'s `{(q one)}` becomes the third outcome; the probe's `{(q A)}` leaves R. Over (B): nothing on the corpus | does not settle it (§ 7.2) | a matcher call per fact with an `absent` premise |
+| **(D) refuse** | `features/07`, `f07-fpoff`, `d3-unsat-core` become load errors: 7 lines of `corpus_exits.txt`, 70 of `corpus_shapes.md5`, rows `W8/features-07`, `W1/d3-unsat-core`, `W11/d3-unsat-core` | settles it on the corpus | a graph pass at load |
+
+The goldens (B) touches are those of its four programs:
+`stale-naf-fork.ein` and `stale-naf-fork-warn.ein` (1 line of
+`corpus_exits.txt` and 35 of `corpus_shapes.md5` each), `features/07` (6 and
+35) and `f07-fpoff` (1 and 35). Which of those lines move is the build's to
+say (S1e2.1b.5).
+
+### The stage's recommendation, re-examined (mine)
+
+The stage recommended **(B) with (D)**, on two conditions: the stratification
+check refuses no program the corpus needs, and scratch is invariant on every
+stratified flagged cube.
+
+- **The second condition holds on the corpus**: every stratified flagged cube
+  and probe is unmoved by every lever on both routes (§ 7). It **fails on a
+  program written to break it**, `stratified_stale`. The reason is not
+  scratch. The boundary admits candidates in (priority, FIFO) order, not in
+  stratum order.
+- **The first is the user's to judge.** (D) refuses three programs: W8's two
+  witnesses, whose right answer is what is being ruled, and a fuzz finding
+  that witnesses two fixed rows. It refuses no puzzle, no stdlib test, and
+  nothing a monotone program uses.
+
+**So I keep it, amended.** (B) with (D), and the boundary admits candidates
+in stratum order. Under that order a stratified program's node is its perfect
+model, the one stable model, whatever order its rules are written in. By § 4's
+argument, no corpus node moves beyond the five listed above, because every
+corpus scratch node is already stale-free. The staleness check then stays as
+an assertion, not as an option: a stale fact in a node of a stratified program
+would be an engine defect. Two things favour it beyond the conditions:
+
+- it is **the reading the guard split already computes**, since a cell builds
+  its nodes from scratch. On all 21 cubes S1e2.1b.6 split, the split's R is
+  (B)'s node for node: its two disagreements with today's oracle are (B)'s two
+  extra nodes, and everywhere else (B) is the oracle (§ 2);
+- it is the only reading under which **a node is a function of its
+  commitment**, with no path (§ 6.1).
+
+**What it costs.** Root is re-derived inside every node: ×0.2–5.6 a node in
+saturation. L0 stops being a construction on a flagged program with a dead
+root. Building stratum-ordered admission is a change to the saturator, and
+whether it goes into S1e2.1b.5's build is part of the ruling.
+
+**If the user would rather not change the saturator**, (B) with (D) still
+holds on every corpus program. The written case then stays a known gap, and
+(C) over (B) would mark its ∅ *not a solution*, which is wrong under the
+stratified reading. **If the user would rather keep the fork**, (A) with (D)
+gives the same corpus as today minus the three refused, and W8's
+`stale-naf-fork` rows close `not-wrong`. The guard split, though, then needs
+a fork-aware cell, which S1e2.1c.3 would have to design.
