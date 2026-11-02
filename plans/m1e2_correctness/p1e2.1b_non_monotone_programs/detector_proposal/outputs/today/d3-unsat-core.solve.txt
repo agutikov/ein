@@ -1,0 +1,68 @@
+solve · corpus/fuzz_findings/d3-unsat-core.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      20
+  commitments (k_c) 20
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  maximal line      2 states
+  components        1
+  sub-cubes         2, 1 of dimension 4, 1 of dimension 3
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 2 minimal dead sets
+  E                 1 minimal discharging set
+  lattice           not monotone: 1 site (the static check) — no hole in this cube; assumes a monotone lattice for what a node is (P1e2.1b)
+  universe          5 candidates, 0 dead alone
+  route             2, the cube — no licence: the static check flags the program
+  work              32 saturations · 124 facts beyond root
+
+  (region
+    ;; state 1 of 20 — ∅, root itself · minimal
+    (model (is-a o2 T) (is-a o3 T) (r0 o2 o3))
+    ;; state 2 of 20 — 1 candidate · from {(is-a o2 o3)}
+    (model (is-a o2 T) (is-a o2 o3) (is-a o3 T) (r0 o2 o3))
+    ;; state 3 of 20 — 1 candidate · from {(is-a o3 o2)}
+    (model (is-a o2 T) (is-a o3 T) (is-a o3 o2) (r0 o2 o3))
+    ;; state 4 of 20 — 1 candidate · from {(r0 o3 o2)}
+    (model (is-a o2 T) (is-a o3 T) (r0 o2 o3) (r0 o3 o2))
+    ;; state 5 of 20 — 1 candidate · from {(r1 o2 o3)}
+    (model (is-a o2 T) (is-a o3 T) (r0 o2 o3) (r1 o2 o2) (r1 o2 o3))
+    ;; state 6 of 20 — 1 candidate · from {(r1 o3 o2)}
+    (model (is-a o2 T) (is-a o3 T) (r0 o2 o3) (r1 o3 o2))
+    ;; state 7 of 20 — 2 candidates · from {(is-a o2 o3), (is-a o3 o2)}
+    (model (is-a o2 T) (is-a o2 o3) (is-a o3 T) (is-a o3 o2) (r0 o2 o3))
+    ;; state 8 of 20 — 2 candidates · from {(is-a o2 o3), (r0 o3 o2)}
+    (model (is-a o2 T) (is-a o2 o3) (is-a o3 T) (r0 o2 o3) (r0 o3 o2))
+    ;; state 9 of 20 — 2 candidates · from {(is-a o2 o3), (r1 o2 o3)}
+    (model (is-a o2 T) (is-a o2 o3) (is-a o3 T) (r0 o2 o3) (r1 o2 o2)
+           (r1 o2 o3))
+    ;; state 10 of 20 — 2 candidates · from {(is-a o2 o3), (r1 o3 o2)}
+    (model (is-a o2 T) (is-a o2 o3) (is-a o3 T) (r0 o2 o3) (r1 o3 o2))
+    ;; state 11 of 20 — 2 candidates · from {(is-a o3 o2), (r0 o3 o2)}
+    (model (is-a o2 T) (is-a o3 T) (is-a o3 o2) (r0 o2 o3) (r0 o3 o2))
+    ;; state 12 of 20 — 2 candidates · from {(is-a o3 o2), (r1 o2 o3)}
+    (model (is-a o2 T) (is-a o3 T) (is-a o3 o2) (r0 o2 o3) (r1 o2 o2)
+           (r1 o2 o3))
+    ;; state 13 of 20 — 2 candidates · from {(is-a o3 o2), (r1 o3 o2)}
+    (model (is-a o2 T) (is-a o3 T) (is-a o3 o2) (r0 o2 o3) (r1 o3 o2))
+    ;; state 14 of 20 — 2 candidates · from {(r1 o2 o3), (r1 o3 o2)}
+    (model (is-a o2 T) (is-a o3 T) (r0 o2 o3) (r1 o2 o3) (r1 o3 o2))
+    ;; state 15 of 20 — 3 candidates · maximal · from {(is-a o2 o3), (is-a o3 o2), (r0 o3 o2)}
+    (model (is-a o2 T) (is-a o2 o3) (is-a o3 T) (is-a o3 o2) (r0 o2 o3)
+           (r0 o3 o2))
+    ;; state 16 of 20 — 3 candidates · from {(is-a o2 o3), (is-a o3 o2), (r1 o2 o3)}
+    (model (is-a o2 T) (is-a o2 o3) (is-a o3 T) (is-a o3 o2) (r0 o2 o3)
+           (r1 o2 o2) (r1 o2 o3))
+    ;; state 17 of 20 — 3 candidates · from {(is-a o2 o3), (is-a o3 o2), (r1 o3 o2)}
+    (model (is-a o2 T) (is-a o2 o3) (is-a o3 T) (is-a o3 o2) (r0 o2 o3)
+           (r1 o3 o2))
+    ;; state 18 of 20 — 3 candidates · from {(is-a o2 o3), (r1 o2 o3), (r1 o3 o2)}
+    (model (is-a o2 T) (is-a o2 o3) (is-a o3 T) (r0 o2 o3) (r1 o2 o3)
+           (r1 o3 o2))
+    ;; state 19 of 20 — 3 candidates · from {(is-a o3 o2), (r1 o2 o3), (r1 o3 o2)}
+    (model (is-a o2 T) (is-a o3 T) (is-a o3 o2) (r0 o2 o3) (r1 o2 o3)
+           (r1 o3 o2))
+    ;; state 20 of 20 — 4 candidates · maximal · from {(is-a o2 o3), (is-a o3 o2), (r1 o2 o3), (r1 o3 o2)}
+    (model (is-a o2 T) (is-a o2 o3) (is-a o3 T) (is-a o3 o2) (r0 o2 o3)
+           (r1 o2 o3) (r1 o3 o2)))

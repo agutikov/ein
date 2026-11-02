@@ -1,0 +1,22 @@
+programs that load and saturate: 208
+a cycle through an odd absent, over all relations: 6
+  corpus/fuzz_findings/d3-unsat-core.ein  n 5  flagged
+    odd  ["(not r1)","r1"] — ["fire-1: (not r1) →¬ r1"]
+  examples/ein-bugs/wrong-answers/f07-fpoff.ein  n 1  flagged
+    even ["p","q"] — ["derive-p: q →¬ p","derive-q: p →¬ q"]
+  examples/features/07_unstratifiable.ein  n 1  flagged
+    even ["p","q"] — ["derive-p: q →¬ p","derive-q: p →¬ q"]
+  examples/syntax/rule-forall-and-not.ein  n 0  monotone
+    odd  ["(not r)","r"] — ["f: r →¬ (not r)","f: r →¬ r"]
+  examples/syntax/rule-guards.ein  n 0  monotone
+    odd  ["s"] — ["g: s →¬ s"]
+  examples/syntax/rule-shared-guard-var.ein  n 0  monotone
+    odd  ["r"] — ["sh: r →¬ r"]
+… over D, which (D) refuses: 3
+  corpus/fuzz_findings/d3-unsat-core.ein
+    odd  ["(not r1)","r1"] — ["fire-1: (not r1) →¬ r1"]
+  examples/ein-bugs/wrong-answers/f07-fpoff.ein
+    even ["p","q"] — ["derive-p: q →¬ p","derive-q: p →¬ q"]
+  examples/features/07_unstratifiable.ein
+    even ["p","q"] — ["derive-p: q →¬ p","derive-q: p →¬ q"]
+wall 0.1 s

@@ -1,0 +1,65 @@
+== --bound 1
+examples/lattice/08_absent_witness_hole.ein  n 3 · flagged · the check 0.67 ms from the load · the static detector 12 µs
+  paths    bound 1 · 3 listed states of k ≥ 2 · 3 parents checked · 0 dead parents skipped · 6 saturations · 1 differ · 0.1 ms
+           {(allergic Ann), (meal Ann Bread), (seats Ann C1)} by way of its parent without (allergic Ann)
+corpus/fuzz_findings/d3-unsat-core.ein  n 5 · flagged · the check 0.14 ms from the load · the static detector 25 µs
+  paths    bound 1 · 14 listed states of k ≥ 2 · 14 parents checked · 0 dead parents skipped · 28 saturations · 0 differ · 0.4 ms
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap.ein  n 2 · flagged · the check 0.17 ms from the load · the static detector 19 µs
+  paths    bound 1 · 1 listed states of k ≥ 2 · 1 parents checked · 0 dead parents skipped · 2 saturations · 0 differ · 0.0 ms
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/activator_under_absent.ein  n 3 · flagged · the check 0.14 ms from the load · the static detector 10 µs
+  paths    bound 1 · 3 listed states of k ≥ 2 · 3 parents checked · 0 dead parents skipped · 6 saturations · 0 differ · 0.0 ms
+plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein  n 3 · flagged · the check 0.16 ms from the load · the static detector 16 µs
+  paths    bound 1 · 3 listed states of k ≥ 2 · 2 parents checked · 1 dead parents skipped · 5 saturations · 1 differ · 0.1 ms
+           {(q one), (s one)} by way of its parent without (q one)
+examples/lattice/synth/trigger_hole.ein  n 5 · flagged · the check 0.33 ms from the load · the static detector 34 µs
+  paths    bound 1 · 8 listed states of k ≥ 2 · 8 parents checked · 0 dead parents skipped · 16 saturations · 0 differ · 0.2 ms
+examples/lattice/synth/three_components.ein  n 7 · flagged · the check 0.34 ms from the load · the static detector 37 µs
+  paths    bound 1 · 10 listed states of k ≥ 2 · 10 parents checked · 0 dead parents skipped · 20 saturations · 0 differ · 0.2 ms
+wall 0.0 s
+== --bound 3
+examples/lattice/08_absent_witness_hole.ein  n 3 · flagged · the check 1.05 ms from the load · the static detector 15 µs
+  paths    bound 3 · 3 listed states of k ≥ 2 · 7 parents checked · 0 dead parents skipped · 14 saturations · 1 differ · 0.2 ms
+           {(allergic Ann), (meal Ann Bread), (seats Ann C1)} by way of its parent without (allergic Ann)
+corpus/fuzz_findings/d3-unsat-core.ein  n 5 · flagged · the check 0.24 ms from the load · the static detector 30 µs
+  paths    bound 3 · 14 listed states of k ≥ 2 · 34 parents checked · 0 dead parents skipped · 68 saturations · 3 differ · 1.3 ms
+           {(r1 o2 o3), (r1 o3 o2)} by way of its parent without (r1 o3 o2)
+           {(is-a o2 o3), (r1 o2 o3), (r1 o3 o2)} by way of its parent without (r1 o3 o2)
+           {(is-a o3 o2), (r1 o2 o3), (r1 o3 o2)} by way of its parent without (r1 o3 o2)
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap.ein  n 2 · flagged · the check 0.29 ms from the load · the static detector 14 µs
+  paths    bound 3 · 1 listed states of k ≥ 2 · 2 parents checked · 0 dead parents skipped · 4 saturations · 1 differ · 0.0 ms
+           {(a one), (b one)} by way of its parent without (b one)
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/activator_under_absent.ein  n 3 · flagged · the check 0.09 ms from the load · the static detector 6 µs
+  paths    bound 3 · 3 listed states of k ≥ 2 · 6 parents checked · 1 dead parents skipped · 13 saturations · 1 differ · 0.1 ms
+           {(p A), (q A)} by way of its parent without (q A)
+plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein  n 3 · flagged · the check 0.08 ms from the load · the static detector 9 µs
+  paths    bound 3 · 3 listed states of k ≥ 2 · 6 parents checked · 1 dead parents skipped · 13 saturations · 1 differ · 0.1 ms
+           {(q one), (s one)} by way of its parent without (q one)
+examples/lattice/synth/trigger_hole.ein  n 5 · flagged · the check 0.13 ms from the load · the static detector 8 µs
+  paths    bound 3 · 8 listed states of k ≥ 2 · 21 parents checked · 1 dead parents skipped · 43 saturations · 0 differ · 0.4 ms
+examples/lattice/synth/three_components.ein  n 7 · flagged · the check 0.31 ms from the load · the static detector 33 µs
+  paths    bound 3 · 10 listed states of k ≥ 2 · 22 parents checked · 3 dead parents skipped · 47 saturations · 0 differ · 0.6 ms
+wall 0.0 s
+== --bound 99
+examples/lattice/08_absent_witness_hole.ein  n 3 · flagged · the check 1.08 ms from the load · the static detector 13 µs
+  paths    bound 99 · 3 listed states of k ≥ 2 · 7 parents checked · 0 dead parents skipped · 14 saturations · 1 differ · 0.1 ms
+           {(allergic Ann), (meal Ann Bread), (seats Ann C1)} by way of its parent without (allergic Ann)
+corpus/fuzz_findings/d3-unsat-core.ein  n 5 · flagged · the check 0.18 ms from the load · the static detector 29 µs
+  paths    bound 99 · 14 listed states of k ≥ 2 · 35 parents checked · 0 dead parents skipped · 70 saturations · 4 differ · 1.0 ms
+           {(r1 o2 o3), (r1 o3 o2)} by way of its parent without (r1 o3 o2)
+           {(is-a o2 o3), (r1 o2 o3), (r1 o3 o2)} by way of its parent without (r1 o3 o2)
+           {(is-a o3 o2), (r1 o2 o3), (r1 o3 o2)} by way of its parent without (r1 o3 o2)
+           {(is-a o2 o3), (is-a o3 o2), (r1 o2 o3), (r1 o3 o2)} by way of its parent without (r1 o3 o2)
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap.ein  n 2 · flagged · the check 0.20 ms from the load · the static detector 23 µs
+  paths    bound 99 · 1 listed states of k ≥ 2 · 2 parents checked · 0 dead parents skipped · 4 saturations · 1 differ · 0.1 ms
+           {(a one), (b one)} by way of its parent without (b one)
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/activator_under_absent.ein  n 3 · flagged · the check 0.17 ms from the load · the static detector 10 µs
+  paths    bound 99 · 3 listed states of k ≥ 2 · 6 parents checked · 1 dead parents skipped · 13 saturations · 1 differ · 0.2 ms
+           {(p A), (q A)} by way of its parent without (q A)
+plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein  n 3 · flagged · the check 0.20 ms from the load · the static detector 20 µs
+  paths    bound 99 · 3 listed states of k ≥ 2 · 6 parents checked · 1 dead parents skipped · 13 saturations · 1 differ · 0.1 ms
+           {(q one), (s one)} by way of its parent without (q one)
+examples/lattice/synth/trigger_hole.ein  n 5 · flagged · the check 0.12 ms from the load · the static detector 8 µs
+  paths    bound 99 · 8 listed states of k ≥ 2 · 23 parents checked · 3 dead parents skipped · 49 saturations · 0 differ · 0.2 ms
+examples/lattice/synth/three_components.ein  n 7 · flagged · the check 0.16 ms from the load · the static detector 17 µs
+  paths    bound 99 · 10 listed states of k ≥ 2 · 23 parents checked · 3 dead parents skipped · 49 saturations · 0 differ · 0.4 ms
+wall 0.0 s

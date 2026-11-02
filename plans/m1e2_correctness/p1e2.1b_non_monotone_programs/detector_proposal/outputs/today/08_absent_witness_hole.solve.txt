@@ -1,0 +1,44 @@
+solve · examples/lattice/08_absent_witness_hole.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      5
+  commitments (k_c) 5
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 not in R — root owes 1 instance
+  minimal line      2 states, from 2 commitments — the least guess is 1 candidate
+  maximal line      1 state — ⊤, the trivial line: no restriction bites
+  components        1
+  sub-cubes         2, 1 of dimension 2, 1 of dimension 1
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 0 minimal dead sets
+  E                 2 minimal discharging sets
+  lattice           not monotone: 1 site (the static check) — 1 hole; assumes a monotone lattice for what a node is (P1e2.1b)
+    minimal hole    {(allergic Ann), (seats Ann C1)} — owes 1
+  universe          3 candidates, 0 dead alone
+  route             2, the cube — no licence: the static check flags the program
+  work              8 saturations · 14 facts beyond root
+
+  (region
+    ;; state 1 of 5 — 1 candidate · minimal · from {(meal Ann Bread)}
+    (model (meal Ann Bread))
+    ;; state 2 of 5 — 1 candidate · minimal · from {(seats Ann C1)}
+    (model (meal Ann Soup) (seats Ann C1))
+    ;; state 3 of 5 — 2 candidates · from {(allergic Ann), (meal Ann Bread)}
+    (model (allergic Ann) (meal Ann Bread))
+    ;; state 4 of 5 — 2 candidates · from {(meal Ann Bread), (seats Ann C1)}
+    (model (meal Ann Bread) (meal Ann Soup) (seats Ann C1))
+    ;; state 5 of 5 — 3 candidates · maximal · from {(allergic Ann), (meal Ann Bread), (seats Ann C1)}
+    (model (allergic Ann) (meal Ann Bread) (seats Ann C1)))
+
+  query             (meal ?g ?f)
+  over              all of R — 5 states → 3 projection classes
+    class 1 of 3    3 states (1, 3, 5)
+                      ?f = Bread · ?g = Ann
+    class 2 of 3    1 state (2)
+                      ?f = Soup · ?g = Ann
+    class 3 of 3    1 state (4)
+                      ?f = Bread · ?g = Ann
+                      ?f = Soup · ?g = Ann
+  as :expect        (or (model (meal Ann Bread))
+                        (model (meal Ann Soup))
+                        (model (meal Ann Bread) (meal Ann Soup)))

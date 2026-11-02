@@ -1,0 +1,35 @@
+solve · examples/ein-bugs/naf-upward-closure.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      3
+  commitments (k_c) 3
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  maximal line      1 state
+  components        1
+  sub-cubes         2, each of dimension 1
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 1 minimal dead set
+  E                 1 minimal discharging set
+  lattice           not monotone: 1 site (the static check) — 1 hole; assumes a monotone lattice for what a node is (P1e2.1b)
+    minimal hole    {(p A)} — dead: (p A)
+  universe          2 candidates, 1 dead alone
+  route             2, the cube — no licence: the static check flags the program
+  work              4 saturations · 5 facts beyond root
+
+  (region
+    ;; state 1 of 3 — ∅, root itself · minimal
+    (model)
+    ;; state 2 of 3 — 1 candidate · from {(q A)}
+    (model (q A))
+    ;; state 3 of 3 — 2 candidates · maximal · from {(p A), (q A)}
+    (model (p A) (q A)))
+
+  query             (is-a ?x T)
+  over              all of R — 3 states → 1 projection class
+    class 1 of 1    3 states (1, 2, 3)
+                      ?x = A
+  as :expect        (model (is-a A T))
+
+  (solve :expect)   holds

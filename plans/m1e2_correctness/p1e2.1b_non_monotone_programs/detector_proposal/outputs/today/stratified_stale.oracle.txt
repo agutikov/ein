@@ -1,0 +1,34 @@
+oracle · plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/stratified_stale.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      2
+  commitments (k_c) 2
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  maximal line      1 state — ⊤, the trivial line: no restriction bites
+  components        1
+  sub-cubes         1, of dimension 1
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 0 minimal dead sets
+  E                 1 minimal discharging set
+  lattice           not monotone: 2 sites (the static check) — no hole in this cube; assumes a monotone lattice for what a node is (P1e2.1b)
+  universe          1 candidate, 0 dead alone
+  route             2, the cube — no licence: asked for by name
+  work              2 saturations · 1 fact beyond root
+
+  (region
+    ;; state 1 of 2 — ∅, root itself · minimal
+    (model)
+    ;; state 2 of 2 — 1 candidate · maximal · from {(r one)}
+    (model (r one)))
+
+  query             (r ?x)
+  over              all of R — 2 states → 2 projection classes
+    class 1 of 2    1 state (1) — the goal has no row: undetermined here
+    class 2 of 2    1 state (2)
+                      ?x = one
+  as :expect        (or (model)
+                        (model (r one)))
+
+the cube   0 dead nodes with an alive superset · 0 discharged nodes with an owing superset — the flagged sites break nothing here

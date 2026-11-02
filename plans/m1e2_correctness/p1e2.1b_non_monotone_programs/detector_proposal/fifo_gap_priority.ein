@@ -1,0 +1,19 @@
+;;; fifo_gap.ein with r2 at priority 100, drafted for T1e2.1b.5.1's proposal
+;;; (M1e2 S1e2.1b.5) — NOT a fixture. The reader r2 is admitted before the
+;;; writer r1 in every written order, so {a, b} holds a stale `p` whatever
+;;; the text says, and no equal-priority pair exists for a reorder to move.
+;;; The order check as the stage words it (one priority) does not see it;
+;;; the drafted one reports it as "admitted first, whatever the order". No
+;;; test reads it.
+(relation thing T)
+(relation a T)
+(relation b T)
+(relation p T)
+(relation q T)
+(relation z T)
+(thing one)
+(hrule guess-a () :match (thing ?x) :assert (a ?x))
+(hrule guess-b () :match (thing ?x) :assert (b ?x))
+(rule r2 () :match (and (a ?x) (b ?x) (absent (q ?x))) :assert (p ?x) :priority 100)
+(rule r1 () :match (and (a ?x) (absent (z ?x))) :assert (q ?x) :priority 200)
+(query :goal (p ?x))

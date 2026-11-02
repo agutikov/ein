@@ -1,0 +1,35 @@
+solve · examples/lattice/04_obligation_trigger_hole.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      3
+  commitments (k_c) 3
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅
+  maximal line      1 state — ⊤, the trivial line: no restriction bites
+  components        1
+  sub-cubes         2, each of dimension 1
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 0 minimal dead sets
+  E                 1 minimal discharging set
+  lattice           not monotone: 1 site (the static check) — 1 hole; assumes a monotone lattice for what a node is (P1e2.1b)
+    minimal hole    {(seats Ann C1)} — owes 1
+  universe          2 candidates, 0 dead alone
+  route             2, the cube — no licence: the static check flags the program
+  work              4 saturations · 6 facts beyond root
+
+  (region
+    ;; state 1 of 3 — ∅, root itself · minimal
+    (model)
+    ;; state 2 of 3 — 1 candidate · from {(meal Ann Soup)}
+    (model (meal Ann Soup))
+    ;; state 3 of 3 — 2 candidates · maximal · from {(meal Ann Soup), (seats Ann C1)}
+    (model (meal Ann Soup) (seats Ann C1)))
+
+  query             (meal ?g ?f)
+  over              all of R — 3 states → 2 projection classes
+    class 1 of 2    1 state (1) — the goal has no row: undetermined here
+    class 2 of 2    2 states (2, 3)
+                      ?f = Soup · ?g = Ann
+  as :expect        (or (model)
+                        (model (meal Ann Soup)))

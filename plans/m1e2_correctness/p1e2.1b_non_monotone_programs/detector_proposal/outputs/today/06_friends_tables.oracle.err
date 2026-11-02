@@ -1,0 +1,1 @@
+error: examples/lattice/06_friends_tables.ein: 19 root candidates, over --region-limit 16: the region is 2^19 saturations and was not computed; pass --region-limit 19 to compute it

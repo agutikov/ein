@@ -1,0 +1,121 @@
+solve · examples/features/04_open.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      64 761   (a lower bound: the run stopped before R was exhausted)
+  commitments (k_c) 64 761   (a lower bound: the run stopped before R was exhausted)
+  exhausted         no — not monotone, and the question needs the whole cube: 2^81, past --region-limit 16
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  maximal line      not known — without a licence it needs the whole cube
+  components        not known: R was not exhausted
+  sub-cubes         not known
+  N                 ≥ 0 minimal dead sets — those met in layer order
+  lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated; assumes a monotone lattice for what a node is (P1e2.1b)
+  universe          81 candidates, dead alone not known: the run stopped before it visited each alone
+  route             2, the cube — no licence: the static check flags the program
+  work              64 761 saturations · 190 878 facts beyond root
+
+  ;; the line members this run certified. Not a (region …): read back, it would claim these are all of R.
+  ;; state 1 of 1 — ∅, root itself · minimal
+  (model (house-color House-1 Yellow) (is-a Blue Color) (is-a Color T)
+         (is-a House T) (is-a House-1 House) (is-a House-2 House)
+         (is-a House-3 House) (is-a Red Color) (is-a Yellow Color)
+         (open-slot House-1 Blue) (open-slot House-1 Red)
+         (open-slot House-2 Blue) (open-slot House-2 Yellow)
+         (open-slot House-3 Blue) (open-slot House-3 Red)
+         (open-slot House-3 Yellow))
+  ;; 64 760 other members met are not certified on a line, and not listed: --dump-answer DIR writes each to DIR/models/
+
+  query             (open-slot ?h ?c)
+  over              the 64 761 members met — 64 761 states → 277 projection classes  (a lower bound)
+    class 1 of 277  28 487 states
+                      ?c = Blue · ?h = House-1
+                      ?c = Blue · ?h = House-2
+                      ?c = Blue · ?h = House-3
+                      ?c = Red · ?h = House-1
+                      ?c = Red · ?h = House-3
+                      ?c = Yellow · ?h = House-2
+                      ?c = Yellow · ?h = House-3
+    class 2 of 277  1 270 states
+                      ?c = Blue · ?h = House-1
+                      ?c = Blue · ?h = House-2
+                      ?c = Blue · ?h = House-3
+                      ?c = House-1 · ?h = Blue
+                      ?c = Red · ?h = House-1
+                      ?c = Red · ?h = House-3
+                      ?c = Yellow · ?h = House-2
+                      ?c = Yellow · ?h = House-3
+    class 3 of 277  1 270 states
+                      ?c = Blue · ?h = House-1
+                      ?c = Blue · ?h = House-2
+                      ?c = Blue · ?h = House-3
+                      ?c = House-2 · ?h = Blue
+                      ?c = Red · ?h = House-1
+                      ?c = Red · ?h = House-3
+                      ?c = Yellow · ?h = House-2
+                      ?c = Yellow · ?h = House-3
+    class 4 of 277  1 270 states
+                      ?c = Blue · ?h = House-1
+                      ?c = Blue · ?h = House-2
+                      ?c = Blue · ?h = House-3
+                      ?c = House-3 · ?h = Blue
+                      ?c = Red · ?h = House-1
+                      ?c = Red · ?h = House-3
+                      ?c = Yellow · ?h = House-2
+                      ?c = Yellow · ?h = House-3
+    class 5 of 277  1 269 states
+                      ?c = Blue · ?h = House-1
+                      ?c = Blue · ?h = House-2
+                      ?c = Blue · ?h = House-3
+                      ?c = Red · ?h = Blue
+                      ?c = Red · ?h = House-1
+                      ?c = Red · ?h = House-3
+                      ?c = Yellow · ?h = House-2
+                      ?c = Yellow · ?h = House-3
+    class 6 of 277  1 269 states
+                      ?c = Blue · ?h = House-1
+                      ?c = Blue · ?h = House-2
+                      ?c = Blue · ?h = House-3
+                      ?c = Red · ?h = House-1
+                      ?c = Red · ?h = House-3
+                      ?c = Yellow · ?h = Blue
+                      ?c = Yellow · ?h = House-2
+                      ?c = Yellow · ?h = House-3
+    class 7 of 277  1 269 states
+                      ?c = Blue · ?h = House-1
+                      ?c = Blue · ?h = House-2
+                      ?c = Blue · ?h = House-3
+                      ?c = House-2 · ?h = House-1
+                      ?c = Red · ?h = House-1
+                      ?c = Red · ?h = House-3
+                      ?c = Yellow · ?h = House-2
+                      ?c = Yellow · ?h = House-3
+    class 8 of 277  1 269 states
+                      ?c = Blue · ?h = House-1
+                      ?c = Blue · ?h = House-2
+                      ?c = Blue · ?h = House-3
+                      ?c = House-3 · ?h = House-1
+                      ?c = Red · ?h = House-1
+                      ?c = Red · ?h = House-3
+                      ?c = Yellow · ?h = House-2
+                      ?c = Yellow · ?h = House-3
+    class 9 of 277  1 269 states
+                      ?c = Blue · ?h = House-1
+                      ?c = Blue · ?h = House-2
+                      ?c = Blue · ?h = House-3
+                      ?c = Red · ?h = House-1
+                      ?c = Red · ?h = House-3
+                      ?c = Yellow · ?h = House-1
+                      ?c = Yellow · ?h = House-2
+                      ?c = Yellow · ?h = House-3
+    class 10 of 277 1 269 states
+                      ?c = Blue · ?h = House-1
+                      ?c = Blue · ?h = House-2
+                      ?c = Blue · ?h = House-3
+                      ?c = House-1 · ?h = House-2
+                      ?c = Red · ?h = House-1
+                      ?c = Red · ?h = House-3
+                      ?c = Yellow · ?h = House-2
+                      ?c = Yellow · ?h = House-3
+                    … 267 more classes: --dump-answer DIR writes them to DIR/answer.txt
+  as :expect        not printed: these classes are a lower bound, and the claim would say they are all

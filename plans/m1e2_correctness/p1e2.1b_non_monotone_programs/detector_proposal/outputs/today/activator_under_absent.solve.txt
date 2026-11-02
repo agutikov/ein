@@ -1,0 +1,35 @@
+solve · plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/activator_under_absent.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      7
+  commitments (k_c) 7
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  maximal line      1 state
+  components        1
+  sub-cubes         3, each of dimension 2
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 1 minimal dead set
+  E                 1 minimal discharging set
+  lattice           not monotone: 2 sites (the static check) — 1 hole; assumes a monotone lattice for what a node is (P1e2.1b)
+    minimal hole    {(p A), (r A)} — dead: (r A)
+  universe          3 candidates, 0 dead alone
+  route             2, the cube — no licence: the static check flags the program
+  work              8 saturations · 15 facts beyond root
+
+  (region
+    ;; state 1 of 7 — ∅, root itself · minimal
+    (model)
+    ;; state 2 of 7 — 1 candidate · from {(p A)}
+    (model (p A))
+    ;; state 3 of 7 — 1 candidate · from {(q A)}
+    (model (q A))
+    ;; state 4 of 7 — 1 candidate · from {(r A)}
+    (model (r A))
+    ;; state 5 of 7 — 2 candidates · from {(p A), (q A)}
+    (model (p A) (q A))
+    ;; state 6 of 7 — 2 candidates · from {(q A), (r A)}
+    (model (q A) (r A))
+    ;; state 7 of 7 — 3 candidates · maximal · from {(p A), (q A), (r A)}
+    (model (p A) (q A) (r A)))

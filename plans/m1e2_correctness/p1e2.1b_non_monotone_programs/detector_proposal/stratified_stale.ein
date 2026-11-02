@@ -1,0 +1,13 @@
+;;; node_census's written `stratified_stale` (node_census.md § 2.3), copied as
+;;; a file for T1e2.1b.5.1's proposal (M1e2 S1e2.1b.5) — NOT a fixture.
+;;; Stratified (r < q < p), one priority, derive-p written first: root holds a
+;;; stale (p one) beside (q one) by scratch, and swapping the two rules' text
+;;; changes the universe (node_census.md § 7.1). No test reads it.
+(relation thing T)
+(relation p T)
+(relation q T)
+(relation r T)
+(thing one)
+(rule derive-p () :match (and (thing ?x) (absent (q ?x))) :assert (p ?x) :priority 200)
+(rule derive-q () :match (and (thing ?x) (absent (r ?x))) :assert (q ?x) :priority 200)
+(query :goal (r ?x))

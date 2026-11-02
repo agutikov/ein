@@ -1,0 +1,114 @@
+solve · examples/lattice/06_friends_tables.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      21   (a lower bound: the run stopped before R was exhausted)
+  commitments (k_c) 21   (a lower bound: the run stopped before R was exhausted)
+  exhausted         no — not monotone, and the question needs the whole cube: 2^19, past --region-limit 16
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅
+  maximal line      not known — without a licence it needs the whole cube
+  components        not known: R was not exhausted
+  sub-cubes         not known
+  N                 ≥ 68 minimal dead sets — those met in layer order
+  lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated; assumes a monotone lattice for what a node is (P1e2.1b)
+  universe          19 candidates, dead alone not known: the run stopped before it visited each alone
+  route             2, the cube — no licence: the static check flags the program
+  work              65 299 saturations · 455 247 facts beyond root
+
+  ;; the line members this run certified. Not a (region …): read back, it would claim these are all of R.
+  ;; state 1 of 1 — ∅, root itself · minimal
+  (model)
+  ;; 20 other members met are not certified on a line, and not listed: --dump-answer DIR writes each to DIR/models/
+
+  query             (sits ?p ?s)
+  over              the 21 members met — 21 states → 21 projection classes  (a lower bound)
+    class 1 of 21   1 state — the goal has no row: undetermined here
+    class 2 of 21   1 state
+                      ?p = Ann · ?s = B1
+                      ?p = Bob · ?s = B2
+    class 3 of 21   1 state
+                      ?p = Ann · ?s = B1
+                      ?p = Bob · ?s = B3
+    class 4 of 21   1 state
+                      ?p = Ann · ?s = B2
+                      ?p = Bob · ?s = B1
+    class 5 of 21   1 state
+                      ?p = Ann · ?s = B2
+                      ?p = Bob · ?s = B3
+    class 6 of 21   1 state
+                      ?p = Ann · ?s = B3
+                      ?p = Bob · ?s = B1
+    class 7 of 21   1 state
+                      ?p = Ann · ?s = B3
+                      ?p = Bob · ?s = B2
+    class 8 of 21   1 state
+                      ?p = Ann · ?s = S1
+                      ?p = Bob · ?s = S2
+    class 9 of 21   1 state
+                      ?p = Ann · ?s = S2
+                      ?p = Bob · ?s = S1
+    class 10 of 21  1 state
+                      ?p = Cat · ?s = B1
+                      ?p = Dan · ?s = B2
+                      ?p = Eve · ?s = B3
+    class 11 of 21  1 state
+                      ?p = Cat · ?s = B1
+                      ?p = Dan · ?s = B3
+                      ?p = Eve · ?s = B2
+    class 12 of 21  1 state
+                      ?p = Cat · ?s = B2
+                      ?p = Dan · ?s = B1
+                      ?p = Eve · ?s = B3
+    class 13 of 21  1 state
+                      ?p = Cat · ?s = B3
+                      ?p = Dan · ?s = B1
+                      ?p = Eve · ?s = B2
+    class 14 of 21  1 state
+                      ?p = Ann · ?s = S1
+                      ?p = Bob · ?s = S2
+                      ?p = Cat · ?s = B1
+                      ?p = Dan · ?s = B2
+                      ?p = Eve · ?s = B3
+    class 15 of 21  1 state
+                      ?p = Ann · ?s = S1
+                      ?p = Bob · ?s = S2
+                      ?p = Cat · ?s = B1
+                      ?p = Dan · ?s = B3
+                      ?p = Eve · ?s = B2
+    class 16 of 21  1 state
+                      ?p = Ann · ?s = S1
+                      ?p = Bob · ?s = S2
+                      ?p = Cat · ?s = B2
+                      ?p = Dan · ?s = B1
+                      ?p = Eve · ?s = B3
+    class 17 of 21  1 state
+                      ?p = Ann · ?s = S1
+                      ?p = Bob · ?s = S2
+                      ?p = Cat · ?s = B3
+                      ?p = Dan · ?s = B1
+                      ?p = Eve · ?s = B2
+    class 18 of 21  1 state
+                      ?p = Ann · ?s = S2
+                      ?p = Bob · ?s = S1
+                      ?p = Cat · ?s = B1
+                      ?p = Dan · ?s = B2
+                      ?p = Eve · ?s = B3
+    class 19 of 21  1 state
+                      ?p = Ann · ?s = S2
+                      ?p = Bob · ?s = S1
+                      ?p = Cat · ?s = B1
+                      ?p = Dan · ?s = B3
+                      ?p = Eve · ?s = B2
+    class 20 of 21  1 state
+                      ?p = Ann · ?s = S2
+                      ?p = Bob · ?s = S1
+                      ?p = Cat · ?s = B2
+                      ?p = Dan · ?s = B1
+                      ?p = Eve · ?s = B3
+    class 21 of 21  1 state
+                      ?p = Ann · ?s = S2
+                      ?p = Bob · ?s = S1
+                      ?p = Cat · ?s = B3
+                      ?p = Dan · ?s = B1
+                      ?p = Eve · ?s = B2
+  as :expect        not printed: these classes are a lower bound, and the claim would say they are all

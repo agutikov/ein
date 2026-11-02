@@ -1,0 +1,41 @@
+oracle · examples/branching/13_lookahead_naf_world.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      3
+  commitments (k_c) 4
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  maximal line      1 state — ⊤, the trivial line: no restriction bites
+  components        1
+  sub-cubes         1, of dimension 2
+  merged            1 state reached by more than one commitment, with 1 minimal
+  N                 0 minimal dead sets
+  E                 1 minimal discharging set
+  lattice           not monotone: 1 site (the static check) — no hole in this cube; assumes a monotone lattice for what a node is (P1e2.1b)
+  universe          2 candidates, 0 dead alone
+  route             2, the cube — no licence: asked for by name
+  work              4 saturations · 5 facts beyond root
+
+  (region
+    ;; state 1 of 3 — ∅, root itself · minimal
+    (model (blessed A) (cand A))
+    ;; state 2 of 3 — 1 candidate · from {(cand B)}
+    (model (blessed A) (cand A) (cand B))
+    ;; state 3 of 3 — 2 candidates · maximal · 2 commitments, 1 minimal
+    (model (blessed A) (blessed B) (cand A) (cand B))
+    ;; state 3 is reached by 2 commitments; its 1 minimal
+    (merged (model (blessed A) (blessed B) (cand A) (cand B))
+            (model (blessed B))))
+
+  query             (cand ?x)
+  over              all of R — 3 states → 2 projection classes
+    class 1 of 2    1 state (1)
+                      ?x = A
+    class 2 of 2    2 states (2, 3)
+                      ?x = A
+                      ?x = B
+  as :expect        (or (model (cand A))
+                        (model (cand A) (cand B)))
+
+the cube   0 dead nodes with an alive superset · 0 discharged nodes with an owing superset — the flagged sites break nothing here

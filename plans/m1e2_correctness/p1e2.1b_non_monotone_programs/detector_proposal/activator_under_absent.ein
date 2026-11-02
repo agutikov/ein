@@ -1,0 +1,13 @@
+;;; ein-infer/examples/shared/written.rs's ACTIVATOR_UNDER_ABSENT (hole_census.md
+;;; § 2, taint_census.md § 3), copied as a file for T1e2.1b.5.1's proposal
+;;; (M1e2 S1e2.1b.5) — NOT a fixture. `act` derives the activator (watch r)
+;;; under (absent (q ?x)); the plan it compiles refutes (r A) and reads no
+;;; absent, so the dead hole {(p A), (r A)} records no absent premise. No
+;;; test reads it.
+(relation thing T) (relation p T) (relation q T) (relation r T) (relation watch T)
+(thing A)
+(hrule g1 () :match (thing ?x) :assert (p ?x))
+(hrule g2 () :match (thing ?x) :assert (q ?x))
+(hrule g3 () :match (thing ?x) :assert (r ?x))
+(rule act () :match (and (p ?x) (absent (q ?x))) :assert (watch r))
+(rule watch (?R) :match (?R ?x) :assert (false))

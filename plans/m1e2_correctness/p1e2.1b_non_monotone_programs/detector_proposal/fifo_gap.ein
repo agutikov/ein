@@ -1,0 +1,19 @@
+;;; The FIFO gap, drafted for T1e2.1b.5.1's proposal (M1e2 S1e2.1b.5) — NOT
+;;; a fixture. monotonicity.md § 7.3's counter-example written out: r2
+;;; `a ∧ b ∧ absent(q) → p` before r1 `a ∧ absent(z) → q`, both at priority
+;;; 200, with `a` and `b` the two candidates. Built at once, {a, b} holds
+;;; `p` and `q`, `p` stale; by way of {a} it holds `q` alone. S1e2.1b.7 banks
+;;; the fixture under examples/lattice/; this file is a scratch copy so the
+;;; proposal's drafted rows can be re-taken, and no test reads it.
+(relation thing T)
+(relation a T)
+(relation b T)
+(relation p T)
+(relation q T)
+(relation z T)
+(thing one)
+(hrule guess-a () :match (thing ?x) :assert (a ?x))
+(hrule guess-b () :match (thing ?x) :assert (b ?x))
+(rule r2 () :match (and (a ?x) (b ?x) (absent (q ?x))) :assert (p ?x) :priority 200)
+(rule r1 () :match (and (a ?x) (absent (z ?x))) :assert (q ?x) :priority 200)
+(query :goal (p ?x))

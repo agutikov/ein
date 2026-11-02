@@ -1,0 +1,1 @@
+error: examples/zebra.ein: 56 root candidates, over --region-limit 16: the region is 2^56 saturations and was not computed; pass --region-limit 56 to compute it

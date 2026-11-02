@@ -1,0 +1,59 @@
+solve · examples/zebra.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      1   (a lower bound: complete up to commitments of 2 candidates)
+  commitments (k_c) 125   (a lower bound: complete up to commitments of 2 candidates)
+  exhausted         no — route 1 stopped before layer 3: its 1 303 commitments project 347 901 facts on top of the 197 472 spent, past --region-budget 524288
+  ∅                 not in R — root owes 36 instances
+  minimal line      ≥ 1 state — complete up to commitments of 2 candidates
+  maximal line      ≥ 1 state — all those a commitment of up to 1 candidate reaches
+  components        not known: R was not exhausted
+  sub-cubes         not known
+  N                 ≥ 432 minimal dead sets — complete up to size 2
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          56 candidates, 18 dead alone
+  route             1, the alive down-set — L1 dead is upward-closed
+  work              761 saturations · 197 865 facts beyond root · 3 layers
+
+  ;; the line members this run certified. Not a (region …): read back, it would claim these are all of R.
+  ;; state 1 of 1 — 18 candidates · minimal and maximal · minimal {(co-located Japanese House-5)} | {(co-located Juice House-4)} | {(co-located Lucky_Strike House-4)} | {(co-located Parliament House-5)} | … 59 more
+  (model (co-located Blue House-2) (co-located Chesterfields House-2)
+         (co-located Coffee Green) (co-located Coffee House-5)
+         (co-located Dog House-4) (co-located Dog Spaniard)
+         (co-located Englishman House-3) (co-located Englishman Red)
+         (co-located Fox House-1) (co-located Green Coffee)
+         (co-located Green House-5) (co-located Horse House-2)
+         (co-located House-1 Fox) (co-located House-1 Kools)
+         (co-located House-1 Norwegian) (co-located House-1 Water)
+         (co-located House-1 Yellow) (co-located House-2 Blue)
+         (co-located House-2 Chesterfields) (co-located House-2 Horse)
+         (co-located House-2 Tea) (co-located House-2 Ukrainian)
+         (co-located House-3 Englishman) (co-located House-3 Milk)
+         (co-located House-3 Old_Gold) (co-located House-3 Red)
+         (co-located House-3 Snail) (co-located House-4 Dog)
+         (co-located House-4 Ivory) (co-located House-4 Juice)
+         (co-located House-4 Lucky_Strike) (co-located House-4 Spaniard)
+         (co-located House-5 Coffee) (co-located House-5 Green)
+         (co-located House-5 Japanese) (co-located House-5 Parliament)
+         (co-located House-5 Zebra) (co-located Ivory House-4)
+         (co-located Japanese House-5) (co-located Japanese Parliament)
+         (co-located Juice House-4) (co-located Juice Lucky_Strike)
+         (co-located Kools House-1) (co-located Kools Yellow)
+         (co-located Lucky_Strike House-4) (co-located Lucky_Strike Juice)
+         (co-located Milk House-3) (co-located Norwegian House-1)
+         (co-located Old_Gold House-3) (co-located Old_Gold Snail)
+         (co-located Parliament House-5) (co-located Parliament Japanese)
+         (co-located Red Englishman) (co-located Red House-3)
+         (co-located Snail House-3) (co-located Snail Old_Gold)
+         (co-located Spaniard Dog) (co-located Spaniard House-4)
+         (co-located Tea House-2) (co-located Tea Ukrainian)
+         (co-located Ukrainian House-2) (co-located Ukrainian Tea)
+         (co-located Water House-1) (co-located Yellow House-1)
+         (co-located Yellow Kools) (co-located Zebra House-5))
+
+  query             (and (co-located Water ?h_water) (instance ?h_water House) (co-located ?who_water ?h_water) (instance ?who_water Nationality) (co-located Zebra ?h_zebra) (instance ?h_zebra House) (co-located ?who_zebra ?h_zebra) (instance ?who_zebra Nationality))
+  over              all of R — 1 state → 1 projection class  (a lower bound)
+    class 1 of 1    1 state
+                      ?h_water = House-1 · ?h_zebra = House-5 · ?who_water = Norwegian · ?who_zebra = Japanese
+                        “The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”
+  as :expect        not printed: these classes are a lower bound, and the claim would say they are all

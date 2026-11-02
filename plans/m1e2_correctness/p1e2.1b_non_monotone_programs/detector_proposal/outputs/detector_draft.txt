@@ -1,0 +1,412 @@
+examples/zebra.ein  n 56 · monotone · the check 6.79 ms from the load · the static detector 0 µs
+  run      route 1 · exhausted false · listed 1 · 761 saturations · 2328.5 ms
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           monotone (the static check) — R is convex: no hole
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          yes — no site: dead and discharged are upward-closed, so R has no hole and its two lines describe it
+  universe          56 candidates
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+examples/branching/13_lookahead_naf_world.ein  n 2 · flagged · the check 0.16 ms from the load · the static detector 12 µs
+  run      route 2 · exhausted true · listed 3 · 4 saturations · 0.1 ms
+  cube     4 nodes · conservative · stale nodes: in R 0, owing 0, dead 0 (dead on a stale fact 0) · matcher 5 µs · wall 0.0 ms
+  listed   3 states · 0 with a stale fact · matcher 1 µs · wall 0.0 ms
+  paths    bound 3 · 0 listed states of k ≥ 2 · 0 parents checked · 0 dead parents skipped · 0 saturations · 0 differ · 0.0 ms
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 1 site (the static check) — no hole in this cube
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            self-block: absent reads cand at absent depth 1, concludes (false) — at stake: the state, and dead with it
+    status          monotone here (conservative) — the cube: no hole, no dead node with an alive superset, no discharged node with an owing superset
+    state           no stale fact in the cube's 4 nodes
+    paths           no state the read-out prints has an alive parent to check
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 1 site
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            self-block: absent reads cand at absent depth 1, concludes (false) — at stake: the state, and dead with it
+    bit             not computed — the cube is 2^2 = 4 saturations: `ein oracle FILE` computes it, and so does a bare `ein solve FILE`
+  universe          2 candidates
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+examples/ein-bugs/naf-upward-closure.ein  n 2 · flagged · the check 0.09 ms from the load · the static detector 5 µs
+  run      route 2 · exhausted true · listed 3 · 4 saturations · 0.0 ms
+  cube     4 nodes · exercised · stale nodes: in R 0, owing 0, dead 0 (dead on a stale fact 0) · matcher 3 µs · wall 0.1 ms
+  listed   3 states · 0 with a stale fact · matcher 1 µs · wall 0.0 ms
+  paths    bound 3 · 1 listed states of k ≥ 2 · 1 parents checked · 1 dead parents skipped · 3 saturations · 0 differ · 0.0 ms
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 1 site (the static check) — 1 hole
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            bad: absent reads q at absent depth 1, concludes (false) — at stake: the state, and dead with it
+    status          non-monotone here (exercised, by bad) — the cube: 1 hole · 1 dead node with an alive superset · 0 discharged nodes with an owing superset
+    state           no stale fact in the cube's 4 nodes
+    paths           every parent path checked reaches the same state — 1 parent of 1 printed state
+    [today's minimal hole rows, unchanged: F21's D4]
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 1 site
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            bad: absent reads q at absent depth 1, concludes (false) — at stake: the state, and dead with it
+    bit             not computed — the cube is 2^2 = 4 saturations: `ein oracle FILE` computes it, and so does a bare `ein solve FILE`
+  universe          2 candidates
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+examples/lattice/08_absent_witness_hole.ein  n 3 · flagged · the check 0.38 ms from the load · the static detector 6 µs
+  run      route 2 · exhausted true · listed 5 · 8 saturations · 0.1 ms
+  cube     8 nodes · exercised · stale nodes: in R 0, owing 0, dead 0 (dead on a stale fact 0) · matcher 3 µs · wall 0.5 ms
+  listed   5 states · 0 with a stale fact · matcher 2 µs · wall 0.0 ms
+  paths    bound 3 · 3 listed states of k ≥ 2 · 7 parents checked · 0 dead parents skipped · 14 saturations · 1 differ · 0.1 ms
+           {(allergic Ann), (meal Ann Bread), (seats Ann C1)} by way of its parent without (allergic Ann)
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 1 site (the static check) — 1 hole
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            soup-unless-allergic: absent reads allergic at absent depth 1, concludes a positive fact — at stake: the state
+    status          non-monotone here (exercised, by soup-unless-allergic) — the cube: 1 hole · 0 dead nodes with an alive superset · 1 discharged node with an owing superset
+    state           no stale fact in the cube's 8 nodes
+    paths           path-dependent — 1 of 7 parent paths checked reaches another state: {(allergic Ann), (meal Ann Bread), (seats Ann C1)} by way of its parent without (allergic Ann)
+    [today's minimal hole rows, unchanged: F21's D4]
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 1 site
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            soup-unless-allergic: absent reads allergic at absent depth 1, concludes a positive fact — at stake: the state
+    bit             not computed — the cube is 2^3 = 8 saturations: `ein oracle FILE` computes it, and so does a bare `ein solve FILE`
+  universe          3 candidates
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+examples/lattice/04_obligation_trigger_hole.ein  n 2 · flagged · the check 0.35 ms from the load · the static detector 5 µs
+  run      route 2 · exhausted true · listed 3 · 4 saturations · 0.1 ms
+  cube     4 nodes · exercised · stale nodes: in R 0, owing 0, dead 0 (dead on a stale fact 0) · matcher 1 µs · wall 0.4 ms
+  listed   3 states · 0 with a stale fact · matcher 1 µs · wall 0.0 ms
+  paths    bound 3 · 1 listed states of k ≥ 2 · 2 parents checked · 0 dead parents skipped · 4 saturations · 0 differ · 0.0 ms
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 1 site (the static check) — 1 hole
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            total-owed [activator meal is-a]: obligation-trigger reads is-a at absent depth 0, concludes (open …) — at stake: the status: owes
+    status          non-monotone here (exercised, by total-owed [activator meal is-a]) — the cube: 1 hole · 0 dead nodes with an alive superset · 1 discharged node with an owing superset
+    state           no stale fact in the cube's 4 nodes
+    paths           every parent path checked reaches the same state — 2 parents of 1 printed state
+    [today's minimal hole rows, unchanged: F21's D4]
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 1 site
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            total-owed [activator meal is-a]: obligation-trigger reads is-a at absent depth 0, concludes (open …) — at stake: the status: owes
+    bit             not computed — the cube is 2^2 = 4 saturations: `ein oracle FILE` computes it, and so does a bare `ein solve FILE`
+  universe          2 candidates
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+examples/lattice/09_activator_hole.ein  n 2 · flagged · the check 0.34 ms from the load · the static detector 5 µs
+  run      route 2 · exhausted true · listed 3 · 4 saturations · 0.1 ms
+  cube     4 nodes · exercised · stale nodes: in R 0, owing 0, dead 0 (dead on a stale fact 0) · matcher 1 µs · wall 0.4 ms
+  listed   3 states · 0 with a stale fact · matcher 1 µs · wall 0.0 ms
+  paths    bound 3 · 1 listed states of k ≥ 2 · 2 parents checked · 0 dead parents skipped · 4 saturations · 0 differ · 0.0 ms
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 1 site (the static check) — 1 hole
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            total-owed: its activator relation is one a commitment can change; root compiled no plan of it — at stake: the status: owes, through a plan a node compiles
+    status          non-monotone here (exercised, by total-owed) — the cube: 1 hole · 0 dead nodes with an alive superset · 1 discharged node with an owing superset
+    state           no stale fact in the cube's 4 nodes
+    paths           every parent path checked reaches the same state — 2 parents of 1 printed state
+    [today's minimal hole rows, unchanged: F21's D4]
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 1 site
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            total-owed: its activator relation is one a commitment can change; root compiled no plan of it — at stake: the status: owes, through a plan a node compiles
+    bit             not computed — the cube is 2^2 = 4 saturations: `ein oracle FILE` computes it, and so does a bare `ein solve FILE`
+  universe          2 candidates
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+examples/ein-bugs/wrong-answers/stale-naf-fork.ein  n 1 · flagged · the check 0.08 ms from the load · the static detector 8 µs
+  run      route 2 · exhausted true · listed 1 · 2 saturations · 0.0 ms
+  cube     2 nodes · conservative · stale nodes: in R 0, owing 0, dead 1 (dead on a stale fact 1) · matcher 4 µs · wall 0.0 ms
+  listed   1 states · 0 with a stale fact · matcher 0 µs · wall 0.0 ms
+  paths    bound 3 · 0 listed states of k ≥ 2 · 0 parents checked · 0 dead parents skipped · 0 saturations · 0 differ · 0.0 ms
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 1 site (the static check) — no hole in this cube
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            derive-p: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    status          monotone here (conservative) — the cube: no hole, no dead node with an alive superset, no discharged node with an owing superset
+    state           stale facts — 1 of the cube's 2 nodes holds one: a fact whose absent guard the node's own fixpoint falsifies
+    stale           {(q one)}, dead: (p one) ← derive-p (absent (q one))
+    paths           no state the read-out prints has an alive parent to check
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 1 site
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            derive-p: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    bit             not computed — the cube is 2^1 = 2 saturations: `ein oracle FILE` computes it, and so does a bare `ein solve FILE`
+  universe          1 candidate
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+examples/features/07_unstratifiable.ein  n 1 · flagged · the check 0.08 ms from the load · the static detector 11 µs
+  run      route 2 · exhausted true · listed 2 · 2 saturations · 0.0 ms
+  cube     2 nodes · conservative · stale nodes: in R 1, owing 0, dead 0 (dead on a stale fact 0) · matcher 2 µs · wall 0.0 ms
+  listed   2 states · 1 with a stale fact · matcher 1 µs · wall 0.0 ms
+  paths    bound 3 · 0 listed states of k ≥ 2 · 0 parents checked · 0 dead parents skipped · 0 saturations · 0 differ · 0.0 ms
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 2 sites (the static check) — no hole in this cube
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            derive-p: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    site            derive-q: absent reads p at absent depth 1, concludes a positive fact — at stake: the state
+    cycle           even through an absent — derive-p: q →¬ p · derive-q: p →¬ q — several states with no stale fact can exist
+    order           derive-p and derive-q each read under an absent what the other concludes, both at priority 200: which the boundary admits first is the order they are written in
+    status          monotone here (conservative) — the cube: no hole, no dead node with an alive superset, no discharged node with an owing superset
+    state           stale facts — 1 of the cube's 2 nodes holds one: a fact whose absent guard the node's own fixpoint falsifies
+    stale           {(q one)}, in R: (p one) ← derive-p (absent (q one))
+    paths           no state the read-out prints has an alive parent to check
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 2 sites
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            derive-p: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    site            derive-q: absent reads p at absent depth 1, concludes a positive fact — at stake: the state
+    cycle           even through an absent — derive-p: q →¬ p · derive-q: p →¬ q — several states with no stale fact can exist
+    order           derive-p and derive-q each read under an absent what the other concludes, both at priority 200: which the boundary admits first is the order they are written in
+    bit             not computed — the cube is 2^1 = 2 saturations: `ein oracle FILE` computes it, and so does a bare `ein solve FILE`
+  universe          1 candidate
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+corpus/fuzz_findings/d3-unsat-core.ein  n 5 · flagged · the check 0.08 ms from the load · the static detector 13 µs
+  run      route 2 · exhausted true · listed 20 · 32 saturations · 0.4 ms
+  cube     32 nodes · conservative · stale nodes: in R 0, owing 0, dead 0 (dead on a stale fact 0) · matcher 23 µs · wall 0.2 ms
+  listed   20 states · 0 with a stale fact · matcher 5 µs · wall 0.1 ms
+  paths    bound 3 · 14 listed states of k ≥ 2 · 34 parents checked · 0 dead parents skipped · 68 saturations · 3 differ · 0.4 ms
+           {(r1 o2 o3), (r1 o3 o2)} by way of its parent without (r1 o3 o2)
+           {(is-a o2 o3), (r1 o2 o3), (r1 o3 o2)} by way of its parent without (r1 o3 o2)
+           {(is-a o3 o2), (r1 o2 o3), (r1 o3 o2)} by way of its parent without (r1 o3 o2)
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 1 site (the static check) — no hole in this cube
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            fire-1: absent reads (not r1) at absent depth 1, concludes a positive fact — at stake: the state
+    cycle           odd through an absent — fire-1: (not r1) →¬ r1 — a state with no stale fact need not exist
+    status          monotone here (conservative) — the cube: no hole, no dead node with an alive superset, no discharged node with an owing superset
+    state           no stale fact in the cube's 32 nodes
+    paths           path-dependent — 3 of 34 parent paths checked reach another state: {(r1 o2 o3), (r1 o3 o2)} by way of its parent without (r1 o3 o2)
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 1 site
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            fire-1: absent reads (not r1) at absent depth 1, concludes a positive fact — at stake: the state
+    cycle           odd through an absent — fire-1: (not r1) →¬ r1 — a state with no stale fact need not exist
+    bit             not computed — the cube is 2^5 = 32 saturations: `ein oracle FILE` computes it, and so does a bare `ein solve FILE`
+  universe          5 candidates
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap.ein  n 2 · flagged · the check 0.10 ms from the load · the static detector 10 µs
+  run      route 2 · exhausted true · listed 4 · 4 saturations · 0.0 ms
+  cube     4 nodes · conservative · stale nodes: in R 1, owing 0, dead 0 (dead on a stale fact 0) · matcher 4 µs · wall 0.0 ms
+  listed   4 states · 1 with a stale fact · matcher 7 µs · wall 0.0 ms
+  paths    bound 3 · 1 listed states of k ≥ 2 · 2 parents checked · 0 dead parents skipped · 4 saturations · 1 differ · 0.0 ms
+           {(a one), (b one)} by way of its parent without (b one)
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 1 site (the static check) — no hole in this cube
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            r2: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    order           r2 reads q under an absent and r1 concludes it, both at priority 200: which the boundary admits first is the order they are written in
+    status          monotone here (conservative) — the cube: no hole, no dead node with an alive superset, no discharged node with an owing superset
+    state           stale facts — 1 of the cube's 4 nodes holds one: a fact whose absent guard the node's own fixpoint falsifies
+    stale           {(a one), (b one)}, in R: (p one) ← r2 (absent (q one))
+    paths           path-dependent — 1 of 2 parent paths checked reaches another state: {(a one), (b one)} by way of its parent without (b one)
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 1 site
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            r2: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    order           r2 reads q under an absent and r1 concludes it, both at priority 200: which the boundary admits first is the order they are written in
+    bit             not computed — the cube is 2^2 = 4 saturations: `ein oracle FILE` computes it, and so does a bare `ein solve FILE`
+  universe          2 candidates
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap_priority.ein  n 2 · flagged · the check 0.08 ms from the load · the static detector 10 µs
+  run      route 2 · exhausted true · listed 4 · 4 saturations · 0.0 ms
+  cube     4 nodes · conservative · stale nodes: in R 1, owing 0, dead 0 (dead on a stale fact 0) · matcher 3 µs · wall 0.0 ms
+  listed   4 states · 1 with a stale fact · matcher 2 µs · wall 0.0 ms
+  paths    bound 3 · 1 listed states of k ≥ 2 · 2 parents checked · 0 dead parents skipped · 4 saturations · 1 differ · 0.0 ms
+           {(a one), (b one)} by way of its parent without (b one)
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 1 site (the static check) — no hole in this cube
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            r2: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    order           r2 (priority 100) reads q under an absent and r1 (200) concludes it: r2 is admitted first, whatever the order
+    status          monotone here (conservative) — the cube: no hole, no dead node with an alive superset, no discharged node with an owing superset
+    state           stale facts — 1 of the cube's 4 nodes holds one: a fact whose absent guard the node's own fixpoint falsifies
+    stale           {(a one), (b one)}, in R: (p one) ← r2 (absent (q one))
+    paths           path-dependent — 1 of 2 parent paths checked reaches another state: {(a one), (b one)} by way of its parent without (b one)
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 1 site
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            r2: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    order           r2 (priority 100) reads q under an absent and r1 (200) concludes it: r2 is admitted first, whatever the order
+    bit             not computed — the cube is 2^2 = 4 saturations: `ein oracle FILE` computes it, and so does a bare `ein solve FILE`
+  universe          2 candidates
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/stratified_stale.ein  n 1 · flagged · the check 0.07 ms from the load · the static detector 8 µs
+  run      route 2 · exhausted true · listed 2 · 2 saturations · 0.0 ms
+  cube     2 nodes · conservative · stale nodes: in R 2, owing 0, dead 0 (dead on a stale fact 0) · matcher 5 µs · wall 0.0 ms
+  listed   2 states · 2 with a stale fact · matcher 3 µs · wall 0.0 ms
+  paths    bound 3 · 0 listed states of k ≥ 2 · 0 parents checked · 0 dead parents skipped · 0 saturations · 0 differ · 0.0 ms
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 2 sites (the static check) — no hole in this cube
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            derive-p: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    site            derive-q: absent reads r at absent depth 1, concludes a positive fact — at stake: the state
+    order           derive-p reads q under an absent and derive-q concludes it, both at priority 200: which the boundary admits first is the order they are written in
+    status          monotone here (conservative) — the cube: no hole, no dead node with an alive superset, no discharged node with an owing superset
+    state           stale facts — 2 of the cube's 2 nodes hold one: a fact whose absent guard the node's own fixpoint falsifies
+    stale           ∅, in R: (p one) ← derive-p (absent (q one))
+    stale           {(r one)}, in R: (p one) ← derive-p (absent (q one)) · (q one) ← derive-q (absent (r one))
+    paths           no state the read-out prints has an alive parent to check
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 2 sites
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            derive-p: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    site            derive-q: absent reads r at absent depth 1, concludes a positive fact — at stake: the state
+    order           derive-p reads q under an absent and derive-q concludes it, both at priority 200: which the boundary admits first is the order they are written in
+    bit             not computed — the cube is 2^1 = 2 saturations: `ein oracle FILE` computes it, and so does a bare `ein solve FILE`
+  universe          1 candidate
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/activator_under_absent.ein  n 3 · flagged · the check 0.07 ms from the load · the static detector 5 µs
+  run      route 2 · exhausted true · listed 7 · 8 saturations · 0.1 ms
+  cube     8 nodes · exercised · stale nodes: in R 0, owing 0, dead 0 (dead on a stale fact 0) · matcher 7 µs · wall 0.2 ms
+  listed   7 states · 0 with a stale fact · matcher 2 µs · wall 0.0 ms
+  paths    bound 3 · 3 listed states of k ≥ 2 · 6 parents checked · 1 dead parents skipped · 13 saturations · 1 differ · 0.1 ms
+           {(p A), (q A)} by way of its parent without (q A)
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 2 sites (the static check) — 1 hole
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            act: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    site            watch: its activator relation is one a commitment can change; root compiled no plan of it — at stake: the state, through a plan a node compiles
+    status          non-monotone here (exercised, by watch) — the cube: 1 hole · 1 dead node with an alive superset · 0 discharged nodes with an owing superset
+    state           no stale fact in the cube's 8 nodes
+    paths           path-dependent — 1 of 6 parent paths checked reaches another state: {(p A), (q A)} by way of its parent without (q A)
+    [today's minimal hole rows, unchanged: F21's D4]
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 2 sites
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            act: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    site            watch: its activator relation is one a commitment can change; root compiled no plan of it — at stake: the state, through a plan a node compiles
+    bit             not computed — the cube is 2^3 = 8 saturations: `ein oracle FILE` computes it, and so does a bare `ein solve FILE`
+  universe          3 candidates
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein  n 3 · flagged · the check 0.09 ms from the load · the static detector 9 µs
+  run      route 2 · exhausted true · listed 7 · 8 saturations · 0.1 ms
+  cube     8 nodes · exercised · stale nodes: in R 0, owing 0, dead 0 (dead on a stale fact 0) · matcher 3 µs · wall 0.2 ms
+  listed   7 states · 0 with a stale fact · matcher 1 µs · wall 0.0 ms
+  paths    bound 3 · 3 listed states of k ≥ 2 · 6 parents checked · 1 dead parents skipped · 13 saturations · 1 differ · 0.1 ms
+           {(q one), (s one)} by way of its parent without (q one)
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 1 site (the static check) — 1 hole
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            derive-p: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    status          non-monotone here (exercised, by derive-p) — the cube: 1 hole · 1 dead node with an alive superset · 0 discharged nodes with an owing superset
+    state           no stale fact in the cube's 8 nodes
+    paths           path-dependent — 1 of 6 parent paths checked reaches another state: {(q one), (s one)} by way of its parent without (q one)
+    [today's minimal hole rows, unchanged: F21's D4]
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 1 site
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            derive-p: absent reads q at absent depth 1, concludes a positive fact — at stake: the state
+    bit             not computed — the cube is 2^3 = 8 saturations: `ein oracle FILE` computes it, and so does a bare `ein solve FILE`
+  universe          3 candidates
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+examples/lattice/synth/trigger_hole.ein  n 5 · flagged · the check 0.13 ms from the load · the static detector 8 µs
+  run      route 2 · exhausted true · listed 9 · 32 saturations · 0.2 ms
+  cube     32 nodes · exercised · stale nodes: in R 0, owing 0, dead 0 (dead on a stale fact 0) · matcher 10 µs · wall 0.6 ms
+  listed   9 states · 0 with a stale fact · matcher 2 µs · wall 0.1 ms
+  paths    bound 3 · 8 listed states of k ≥ 2 · 21 parents checked · 1 dead parents skipped · 43 saturations · 0 differ · 0.2 ms
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 3 sites (the static check) — 7 holes
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            dead-1: absent reads h at absent depth 1, concludes (false) — at stake: the state, and dead with it
+    site            dead-2: absent reads h at absent depth 1, concludes (false) — at stake: the state, and dead with it
+    site            owe-2: obligation-trigger reads h at absent depth 0, concludes (open …) — at stake: the status: owes
+    status          non-monotone here (exercised, by dead-1, owe-2) — the cube: 7 holes · 3 dead nodes with an alive superset · 4 discharged nodes with an owing superset
+    state           no stale fact in the cube's 32 nodes
+    paths           every parent path checked reaches the same state — 21 parents of 8 printed states
+    [today's minimal hole rows, unchanged: F21's D4]
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 3 sites
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            dead-1: absent reads h at absent depth 1, concludes (false) — at stake: the state, and dead with it
+    site            dead-2: absent reads h at absent depth 1, concludes (false) — at stake: the state, and dead with it
+    site            owe-2: obligation-trigger reads h at absent depth 0, concludes (open …) — at stake: the status: owes
+    bit             not computed — the cube is 2^5 = 32 saturations: `ein oracle FILE` computes it, and so does a bare `ein solve FILE`
+  universe          5 candidates
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+examples/lattice/06_friends_tables.ein  n 19 · flagged · the check 0.45 ms from the load · the static detector 16 µs
+  run      route 2 · exhausted false · listed 21 · 65299 saturations · 3022.7 ms
+  cube     not enumerated: 2^19
+  listed   21 states · 0 with a stale fact · matcher 10 µs · wall 0.4 ms
+  paths    bound 3 · 20 listed states of k ≥ 2 · 52 parents checked · 0 dead parents skipped · 104 saturations · 0 differ · 1.4 ms
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
+    status          not known — the cube is 2^19 nodes, past --region-limit 16
+    state           no stale fact in the 21 members met
+    paths           not checked — the read-out prints no state of two commitments or more; its 21 members met would cost 104 saturations
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 1 site
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
+    bit             not computed — the cube is 2^19 nodes, past --region-limit 16
+  universe          19 candidates
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+examples/features/04_open.ein  n 81 · flagged · the check 0.23 ms from the load · the static detector 10 µs
+  run      route 2 · exhausted false · listed 64761 · 64761 saturations · 252.4 ms
+  cube     not enumerated: 2^81
+  listed   64761 states · 21042 with a stale fact · matcher 355884 µs · wall 877.9 ms
+  paths    bound 3 · 64679 listed states of k ≥ 2 · 190797 parents checked · 0 dead parents skipped · 381594 saturations · 0 differ · 3742.0 ms
+  ── drafted: the lattice block of a bare `ein solve`, the spot check's row last
+  lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            open-candidate: absent reads house-color at absent depth 1, concludes a positive fact — at stake: the state
+    status          not known — the cube is 2^81 nodes, past --region-limit 16
+    state           stale facts — 21 042 of the 64 761 members met hold one: a fact whose absent guard the node's own fixpoint falsifies
+    stale           {(house-color House-1 Blue)}, in R: (open-slot House-1 Blue) ← open-candidate (absent (house-color House-1 Blue)) (absent (not (house-color House-1 Blue)))
+    stale           {(house-color House-1 Red)}, in R: (open-slot House-1 Red) ← open-candidate (absent (house-color House-1 Red)) (absent (not (house-color House-1 Red)))
+    stale           {(house-color House-2 Blue)}, in R: (open-slot House-2 Blue) ← open-candidate (absent (house-color House-2 Blue)) (absent (not (house-color House-2 Blue)))
+    stale           {(house-color House-2 Yellow)}, in R: (open-slot House-2 Yellow) ← open-candidate (absent (house-color House-2 Yellow)) (absent (not (house-color House-2 Yellow)))
+    …               21 038 more: --dump-answer DIR writes them
+    paths           not checked — the read-out prints no state of two commitments or more; its 64 761 members met would cost 381 594 saturations
+  ── drafted: `ein solve FILE --monotone`, after the header
+  asked             is the program monotone? — the static check, on root's fixpoint
+  monotone          no — 1 site
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            open-candidate: absent reads house-color at absent depth 1, concludes a positive fact — at stake: the state
+    bit             not computed — the cube is 2^81 nodes, past --region-limit 16
+  universe          81 candidates
+  route             none — a question about the program: root's fixpoint, then the static check
+  work              1 saturation, root's · 0 facts beyond root
+
+wall 10.3 s

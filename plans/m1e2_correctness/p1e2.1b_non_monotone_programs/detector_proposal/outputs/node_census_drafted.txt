@@ -1,0 +1,49 @@
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap.ein  n 2 · flagged (1 sites) · stratified true / over D true
+  nodes 4 · status agree 4 · state agree 4 · fork is the oracle: true
+  stale fork    nodes 1 (alive 1, in R 1, dead on stale 0) · facts 1 · inexact 0
+    {(a one), (b one)} R — ["(p one) ← r2 (absent (q one))"]
+  stale scratch nodes 1 (alive 1, in R 1, dead on stale 0) · facts 1 · inexact 0
+    {(a one), (b one)} R — ["(p one) ← r2 (absent (q one))"]
+  A_fork    |R| 4 k_s 4 holes 0 · minimal ["∅"] · maximal ["{(a one), (b one)}"] · states [["(a one)","(b one)","(p one)","(q one)"]]
+  B_scratch |R| 4 k_s 4 holes 0 · minimal ["∅"] · maximal ["{(a one), (b one)}"] · states [["(a one)","(b one)","(p one)","(q one)"]]
+  C_over_A  |R| 3 k_s 3 holes 0 · minimal ["∅"] · maximal ["{(a one)}","{(b one)}"] · states [["(a one)","(q one)"],["(b one)"]]
+  C_over_B  |R| 3 k_s 3 holes 0 · minimal ["∅"] · maximal ["{(a one)}","{(b one)}"] · states [["(a one)","(q one)"],["(b one)"]]
+  paths   {"checked":1,"differ":[{"node":"{(a one), (b one)} via {(a one)} + (b one): only direct [\"(p one)\"], only the path []","stale_on_the_path":[]}],"errors":0}
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap_priority.ein  n 2 · flagged (1 sites) · stratified true / over D true
+  nodes 4 · status agree 4 · state agree 4 · fork is the oracle: true
+  stale fork    nodes 1 (alive 1, in R 1, dead on stale 0) · facts 1 · inexact 0
+    {(a one), (b one)} R — ["(p one) ← r2 (absent (q one))"]
+  stale scratch nodes 1 (alive 1, in R 1, dead on stale 0) · facts 1 · inexact 0
+    {(a one), (b one)} R — ["(p one) ← r2 (absent (q one))"]
+  A_fork    |R| 4 k_s 4 holes 0 · minimal ["∅"] · maximal ["{(a one), (b one)}"] · states [["(a one)","(b one)","(p one)","(q one)"]]
+  B_scratch |R| 4 k_s 4 holes 0 · minimal ["∅"] · maximal ["{(a one), (b one)}"] · states [["(a one)","(b one)","(p one)","(q one)"]]
+  C_over_A  |R| 3 k_s 3 holes 0 · minimal ["∅"] · maximal ["{(a one)}","{(b one)}"] · states [["(a one)","(q one)"],["(b one)"]]
+  C_over_B  |R| 3 k_s 3 holes 0 · minimal ["∅"] · maximal ["{(a one)}","{(b one)}"] · states [["(a one)","(q one)"],["(b one)"]]
+  paths   {"checked":1,"differ":[{"node":"{(a one), (b one)} via {(a one)} + (b one): only direct [\"(p one)\"], only the path []","stale_on_the_path":[]}],"errors":0}
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/stratified_stale.ein  n 1 · flagged (2 sites) · stratified true / over D true
+  nodes 2 · status agree 2 · state agree 1 · fork is the oracle: true
+  differ {(r one)}  fork R []  scratch R []
+         only fork    ["(q one) ← derive-q [a site's rule]"]
+         only scratch []
+  stale fork    nodes 2 (alive 2, in R 2, dead on stale 0) · facts 3 · inexact 0
+    ∅ R — ["(p one) ← derive-p (absent (q one))"]
+    {(r one)} R — ["(p one) ← derive-p (absent (q one))","(q one) ← derive-q (absent (r one))"]
+  stale scratch nodes 1 (alive 1, in R 1, dead on stale 0) · facts 1 · inexact 0
+    ∅ R — ["(p one) ← derive-p (absent (q one))"]
+  A_fork    |R| 2 k_s 2 holes 0 · minimal ["∅"] · maximal ["{(r one)}"] · states [["(p one)","(q one)","(r one)"]]
+  B_scratch |R| 2 k_s 2 holes 0 · minimal ["∅"] · maximal ["{(r one)}"] · states [["(p one)","(r one)"]]
+  C_over_A  |R| 0 k_s 0 holes 0 · minimal [] · maximal [] · states []
+  C_over_B  |R| 1 k_s 1 holes 0 · minimal ["{(r one)}"] · maximal ["{(r one)}"] · states [["(p one)","(r one)"]]
+  paths   {"checked":0,"differ":[],"errors":0}
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/activator_under_absent.ein  n 3 · flagged (2 sites) · stratified true / over D true
+  nodes 8 · status agree 8 · state agree 8 · fork is the oracle: true
+  stale fork    nodes 0 (alive 0, in R 0, dead on stale 0) · facts 0 · inexact 0
+  stale scratch nodes 0 (alive 0, in R 0, dead on stale 0) · facts 0 · inexact 0
+  A_fork    |R| 7 k_s 7 holes 1 · minimal ["∅"] · maximal ["{(p A), (q A), (r A)}"] · states [["(p A)","(q A)","(r A)"]]
+  B_scratch |R| 7 k_s 7 holes 1 · minimal ["∅"] · maximal ["{(p A), (q A), (r A)}"] · states [["(p A)","(q A)","(r A)"]]
+  C_over_A  |R| 7 k_s 7 holes 1 · minimal ["∅"] · maximal ["{(p A), (q A), (r A)}"] · states [["(p A)","(q A)","(r A)"]]
+  C_over_B  |R| 7 k_s 7 holes 1 · minimal ["∅"] · maximal ["{(p A), (q A), (r A)}"] · states [["(p A)","(q A)","(r A)"]]
+  paths   {"checked":4,"differ":[{"node":"{(p A), (q A)} via {(p A)} + (q A): only direct [], only the path [\"(watch r)\"]","stale_on_the_path":["(watch r) ← act (absent (q A))"]}],"errors":0}
+
+4 programs, 18 nodes: status differs on 0, state on 1; fork ≠ oracle on 0 program(s)
+wall 0.0 s

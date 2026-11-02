@@ -1,0 +1,23 @@
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap.ein
+  jobs         {"fork_oracle_1_vs_16":"same","scratch_1_vs_16":"same"}
+  interners    {"failed":0,"fork":{"same":8},"runs":8,"scratch":{"same":8}}
+  rule_orders  {"failed":0,"fork":{"states":1},"runs":1,"scratch":{"states":1}}
+  flags        {"failed":0,"fork":{"same":7},"runs":7,"scratch":{"same":7}}
+    order ["r1","r2"] — fork "states" R ["{(a one), (b one)}","{(a one)}","{(b one)}","∅"] · scratch "states" R ["{(a one), (b one)}","{(a one)}","{(b one)}","∅"]
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/fifo_gap_priority.ein
+  jobs         {"fork_oracle_1_vs_16":"same","scratch_1_vs_16":"same"}
+  interners    {"failed":0,"fork":{"same":8},"runs":8,"scratch":{"same":8}}
+  rule_orders  {"failed":0,"fork":{},"runs":0,"scratch":{}}
+  flags        {"failed":0,"fork":{"same":7},"runs":7,"scratch":{"same":7}}
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/stratified_stale.ein
+  jobs         {"fork_oracle_1_vs_16":"same","scratch_1_vs_16":"same"}
+  interners    {"failed":0,"fork":{"same":8},"runs":8,"scratch":{"same":8}}
+  rule_orders  {"failed":0,"fork":{"universe":1},"runs":1,"scratch":{"universe":1}}
+  flags        {"failed":0,"fork":{"same":7},"runs":7,"scratch":{"same":7}}
+    order ["derive-q","derive-p"] — fork "universe" R ["{(p one), (r one)}","{(p one)}","{(r one)}","∅"] · scratch "universe" R ["{(p one), (r one)}","{(p one)}","{(r one)}","∅"]
+plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal/activator_under_absent.ein
+  jobs         {"fork_oracle_1_vs_16":"same","scratch_1_vs_16":"same"}
+  interners    {"failed":0,"fork":{"same":8},"runs":8,"scratch":{"same":8}}
+  rule_orders  {"failed":0,"fork":{"same":1},"runs":1,"scratch":{"same":1}}
+  flags        {"failed":0,"fork":{"same":7},"runs":7,"scratch":{"same":7}}
+wall 0.1 s

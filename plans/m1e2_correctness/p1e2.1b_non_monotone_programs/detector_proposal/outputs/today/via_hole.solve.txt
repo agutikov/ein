@@ -1,0 +1,43 @@
+solve · plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      7
+  commitments (k_c) 7
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  maximal line      1 state
+  components        1
+  sub-cubes         3, each of dimension 2
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 1 minimal dead set
+  E                 1 minimal discharging set
+  lattice           not monotone: 1 site (the static check) — 1 hole; assumes a monotone lattice for what a node is (P1e2.1b)
+    minimal hole    {(r one), (s one)} — dead: (r one) (s one)
+  universe          3 candidates, 0 dead alone
+  route             2, the cube — no licence: the static check flags the program
+  work              8 saturations · 15 facts beyond root
+
+  (region
+    ;; state 1 of 7 — ∅, root itself · minimal
+    (model)
+    ;; state 2 of 7 — 1 candidate · from {(q one)}
+    (model (q one))
+    ;; state 3 of 7 — 1 candidate · from {(r one)}
+    (model (r one))
+    ;; state 4 of 7 — 1 candidate · from {(s one)}
+    (model (s one))
+    ;; state 5 of 7 — 2 candidates · from {(q one), (r one)}
+    (model (q one) (r one))
+    ;; state 6 of 7 — 2 candidates · from {(q one), (s one)}
+    (model (q one) (s one))
+    ;; state 7 of 7 — 3 candidates · maximal · from {(q one), (r one), (s one)}
+    (model (q one) (r one) (s one)))
+
+  query             (s ?x)
+  over              all of R — 7 states → 2 projection classes
+    class 1 of 2    4 states (1, 2, 3, 5) — the goal has no row: undetermined here
+    class 2 of 2    3 states (4, 6, 7)
+                      ?x = one
+  as :expect        (or (model)
+                        (model (s one)))

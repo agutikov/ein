@@ -1,0 +1,29 @@
+oracle · examples/ein-bugs/wrong-answers/stale-naf-fork.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      1
+  commitments (k_c) 1
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅, the trivial line: no obligation is stated
+  maximal line      1 state
+  components        1
+  sub-cubes         1, of dimension 0
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 1 minimal dead set
+  E                 1 minimal discharging set
+  lattice           not monotone: 1 site (the static check) — no hole in this cube; assumes a monotone lattice for what a node is (P1e2.1b)
+  universe          1 candidate, 1 dead alone
+  route             2, the cube — no licence: asked for by name
+  work              2 saturations · 2 facts beyond root
+
+  (region
+    ;; state 1 of 1 — ∅, root itself · minimal and maximal
+    (model))
+
+  query             (q ?x)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1) — the goal has no row: undetermined here
+  as :expect        (model)
+
+the cube   0 dead nodes with an alive superset · 0 discharged nodes with an owing superset — the flagged sites break nothing here

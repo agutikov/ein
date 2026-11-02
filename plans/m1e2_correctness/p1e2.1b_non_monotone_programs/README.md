@@ -34,8 +34,10 @@ fixture per cause, the guard split held to the oracle) and
 ([`hole_census.md`](hole_census.md)), with Q-M1e2.7 (d) deferred to F21's D4.
 [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) is done at its
 evidence ([`taint_census.md`](taint_census.md)), handed to S1e2.2.5 and F21's
-D6. **Next:** [S1e2.1b.5](s1e2.1b.5_the_detector.md)'s first task, the
-check's CLI form and the warnings drafted on real programs, for the user.
+D6. [S1e2.1b.5](s1e2.1b.5_the_detector.md)'s first task is drafted:
+[`detector_proposal.md`](detector_proposal.md), the check's CLI form and the
+warnings on real programs. **Next:** the user's answers to its four questions,
+while S1e2.1b.7 runs.
 **Depends on:** S1e2.1a.1, whose detector gives this phase its census and
 whose stub [S1e2.1b.5](s1e2.1b.5_the_detector.md) replaces with warnings.
 Since 2026-11-02 also [P1e2.4](../p1e2.4_what_the_switch_left/README.md),
@@ -266,7 +268,7 @@ reports both the sites and the violations the cube observed.
 | [S1e2.1b.2](s1e2.1b.2_fork_or_scratch.md) | A node's state, fork or scratch | 2.5 d | **done at its evidence** 2026-11-02 | [`node_census.md`](node_census.md): both routes node for node, staleness, stratification, invariance, cost, W8 computed under each option; the general path form recorded; **Q-M1e2.2 deferred to F21** (D1–D3) |
 | [S1e2.1b.3](s1e2.1b.3_holes.md) | Holes | 1.5 d | **done at its evidence** 2026-11-02 | `hole_census.md`: every hole by cause and kind, each attributed to a site (the gap S1e2.1b.6 found closed), the read-out today, and each reporting option drafted on real programs with its consequences. The decision is F21's D4 |
 | [S1e2.1b.4](s1e2.1b.4_refutation_resting_on_absent.md) | A refutation that rests on an `absent` | 1 d | **done at its evidence** 2026-11-02 | the taint census, its test banked, both readings of *extendable* per dead node and the compiled-refutation case handed to S1e2.2.5 (F1–F3). What may learn is F21's D6 |
-| [S1e2.1b.5](s1e2.1b.5_the_detector.md) | The detector | 5.5 d | specified 2026-11-02 | an explicit check in the CLI form the user approved; a cheap detector in a bare `ein solve`, zero extra work on an unflagged program; a warning on every surface that reports R; held to the cube and to random programs |
+| [S1e2.1b.5](s1e2.1b.5_the_detector.md) | The detector | 5.5 d | specified 2026-11-02; T1e2.1b.5.1 **drafted** the same day, awaiting the user's approval ([`detector_proposal.md`](detector_proposal.md)) | an explicit check in the CLI form the user approved; a cheap detector in a bare `ein solve`, zero extra work on an unflagged program; a warning on every surface that reports R; held to the cube and to random programs |
 | [S1e2.1b.6](s1e2.1b.6_monotone_and_non_monotone_programs_compared.md) | Monotone and non-monotone programs compared | 4 d | **done** 2026-11-02 | [`monotonicity.md`](../../../docs/kernel/inference/monotonicity.md), *current*; one fixture per cause; seven drawings; the guard split held to the oracle (19 of 21 cubes) |
 | [S1e2.1b.7](s1e2.1b.7_the_consequences_written_down.md) | The consequences written down | 4.5 d | specified and re-scoped 2026-11-02 (the analysis and three pages' terms were written with the re-plan) | the path and cumulativity censuses and the FIFO-gap fixture, so that `monotonicity.md` § 7.8's unverified rows are measured; the taxonomy of causes; each option's consequences per program; (E)'s rewrites; `monotone.rs`'s module docs |
 
@@ -280,7 +282,9 @@ its tests make .7's claims executable.
 and the warnings' text, shown on real corpus programs with outputs before
 anything is built (S1e2.1b.5's T1e2.1b.5.1, the user's rule of 2026-10-16 and
 the [`solve_interface.md`](../p1e2.1a_the_solution_region/solve_interface.md)
-precedent). No stage ends in a ruling.
+precedent). No stage ends in a ruling. **Put 2026-11-02** as
+[`detector_proposal.md` § 8](detector_proposal.md#8-recommendation-and-the-questions)'s
+four questions: the form, the cube's half, the spot check, the wording.
 
 ## Acceptance
 
