@@ -29,6 +29,10 @@ mod fact_grain;
 #[allow(dead_code)]
 #[path = "../examples/shared/written.rs"]
 mod written;
+// The taint walk `taint_census` reads (S1e2.1b.4).
+#[allow(dead_code)]
+#[path = "../examples/shared/taint.rs"]
+mod taint;
 
 fn compute(rel: &str) -> (Outcome, Terms) {
     let path = repo_root().join(rel);
@@ -945,6 +949,150 @@ fn census_for_inspection() {
     eprintln!(
         "all enumerable: {sum:.2} s; whole census {:.2} s",
         t_all.elapsed().as_secs_f64()
+    );
+}
+
+// ── A refutation's taint — S1e2.1b.4 ────────────────────────────────
+
+/// Every dead node of `r`, as `(mask, untainted, a proper superset is
+/// alive)`, its taint read by `walk` off the node's own fixpoint. `kb` is the
+/// load `r` was computed on.
+fn deaths(
+    kb: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    r: &Region,
+    walk: taint::Walk,
+) -> Vec<(u64, bool, bool)> {
+    let root: rustc_hash::FxHashSet<ein_core::FactId> = kb.facts().collect();
+    let d = taint::Dynamic::of(r.monotonicity.dynamic.iter().map(|x| x.label(terms)));
+    let size = r.status.len() as u64;
+    let alive_above = |m: u64| {
+        (0..size).any(|x| x != m && x & m == m && r.status[x as usize] & region::DEAD == 0)
+    };
+    let mut nodes = region::Nodes::new(kb, terms, ast, &r.candidates).expect("prepares");
+    let mut out = Vec::new();
+    for m in 0..size {
+        if r.status[m as usize] & region::DEAD == 0 {
+            continue;
+        }
+        let facts: Vec<_> = (0..r.n())
+            .filter(|b| m >> b & 1 == 1)
+            .map(|b| r.candidates[b].fact)
+            .collect();
+        let untainted = nodes
+            .with_fixpoint(&facts, |kb, terms| {
+                taint::of(kb, terms, &root, &d, walk).untainted()
+            })
+            .expect("a node");
+        out.push((m, untainted, alive_above(m)));
+    }
+    out
+}
+
+/// **Option (b) of F21's D6, held to the oracle** — S1e2.1b.4. (b) would let
+/// a route learn from a dead node whose refutation rests on no `absent` over
+/// `D`, so it is sound only if every such death is upward-closed: **no
+/// untainted dead node has an alive superset**, and so every dead hole is
+/// tainted. Checked on every flagged corpus and register cube within the
+/// limit and on the programs in `written.rs`, with the taint read by
+/// `examples/shared/taint.rs`: every contradiction, both sides of a pair, and
+/// the activator of each plan a fact was derived by.
+///
+/// The activator half is not optional. On `ACTIVATOR_UNDER_ABSENT` the dead
+/// hole `{(p A), (r A)}` is refuted by a plan compiled from an activator `act`
+/// derived under `(absent (q ?x))`, and a derivation does not record its
+/// plan's activator: read off provenance alone, the death is untainted and
+/// `{(p A), (q A), (r A)}` above it is alive. The test pins that too, so it
+/// fails if the provenance-only reading stops being the counterexample it is.
+#[test]
+fn an_untainted_death_is_dead_in_every_superset() {
+    let oracle = Options {
+        jobs: std::thread::available_parallelism().map_or(1, |n| n.get().min(8)),
+        ..Options::default()
+    };
+    let full = taint::Walk { activators: true };
+    let mut failures: Vec<String> = Vec::new();
+    let (mut cubes, mut dead, mut untainted) = (0usize, 0usize, 0usize);
+    let mut check = |name: &str, load: &dyn Fn() -> Option<(Kb, Terms, Ast)>| {
+        // The static check first, on its own load, so a monotone cube is
+        // never enumerated.
+        let Some((mut kb, mut terms, ast)) = load() else {
+            return;
+        };
+        match census::root_of(&mut kb, &mut terms, &ast, |_, _| Some(())) {
+            Some((root, ())) if !root.monotonicity.is_monotone() => {}
+            _ => return,
+        }
+        let (mut kb, mut terms, ast) = load().expect("loaded once already");
+        let Ok(Outcome::Region(r)) =
+            region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
+        else {
+            return;
+        };
+        cubes += 1;
+        let holes: BTreeSet<u64> = r.topology.holes.iter().copied().collect();
+        for (m, clean, alive_above) in deaths(&mut kb, &mut terms, &ast, &r, full) {
+            dead += 1;
+            if clean {
+                untainted += 1;
+            }
+            if clean && alive_above {
+                failures.push(format!(
+                    "{name}: {} is dead on no `absent` over D, and a superset is alive",
+                    r.name(m)
+                ));
+            }
+            if holes.contains(&m) && clean {
+                failures.push(format!("{name}: the dead hole {} is untainted", r.name(m)));
+            }
+        }
+    };
+    for path in corpus_and_register() {
+        let rel = path
+            .strip_prefix(repo_root())
+            .unwrap_or(&path)
+            .to_string_lossy()
+            .to_string();
+        check(&rel, &|| loaded(&path));
+    }
+    for (name, text) in written::WRITTEN {
+        check(name, &|| Some(loaded_text(name, text)));
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    eprintln!("{cubes} flagged cubes, {dead} dead nodes, {untainted} untainted");
+    // 2026-11-02: 20 flagged cubes (18 corpus and register, 2 written), 124
+    // dead nodes, 100 of them untainted. A sweep that found none would pass.
+    assert!(cubes >= 20, "{cubes} flagged cubes");
+    assert!(
+        untainted >= 90 && dead > untainted,
+        "{dead} dead, {untainted} untainted"
+    );
+
+    // Read off provenance alone, `ACTIVATOR_UNDER_ABSENT`'s dead hole is
+    // untainted with an alive superset.
+    let (mut kb, mut terms, ast) =
+        loaded_text("activator_under_absent", written::ACTIVATOR_UNDER_ABSENT);
+    let Outcome::Region(r) =
+        region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
+            .expect("computes")
+    else {
+        panic!("activator_under_absent: within the limit");
+    };
+    assert_eq!(names(&r, &r.topology.holes), ["{(p A), (r A)}"]);
+    let hole = r.topology.holes[0];
+    assert!(r.nodes[hole as usize].absent_premises.is_empty());
+    let bare = deaths(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &r,
+        taint::Walk { activators: false },
+    );
+    assert!(
+        bare.iter()
+            .any(|&(m, clean, alive)| m == hole && clean && alive),
+        "{bare:?}"
     );
 }
 

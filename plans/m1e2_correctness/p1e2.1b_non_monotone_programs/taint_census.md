@@ -13,6 +13,7 @@ cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example tai
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example taint_census -- --written    # the programs in shared/written.rs
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example taint_census -- \
     plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/*.ein                               # S1e2.4.1's probes
+cargo test --release --manifest-path ein.rs/Cargo.toml -p ein-infer --test region an_untainted_death_is_dead_in_every_superset   # § 6
 ```
 
 Every command takes `--json` for one row per program. Taken 2026-11-02 at
@@ -166,3 +167,31 @@ under scratch it does not exist. It is the census's only premise recorded on a
 fact root holds, with its `-warn` twin. Under fork such a premise cannot make
 a death non-upward-closed, because a fork keeps root's facts in every node;
 the walk counts it anyway, which is conservative.
+
+## 6. The check, as a test
+
+[`ein-infer/tests/region.rs`](../../../ein.rs/crates/ein-infer/tests/region.rs)`::an_untainted_death_is_dead_in_every_superset`,
+banked by T1e2.1b.4.2, holds (b)'s soundness condition per commit:
+
+```sh
+cargo test --release --manifest-path ein.rs/Cargo.toml -p ein-infer --test region an_untainted_death_is_dead_in_every_superset
+```
+
+- On every flagged corpus and register cube within the limit, and on the two
+  programs in `written.rs`, **no untainted dead node has an alive superset**,
+  and **every dead hole is tainted**. The taint is `shared/taint.rs`'s full
+  walk, the census's. Monotone programs are skipped by the static check before
+  their cube is enumerated.
+- **It is not vacuous**: it reads 20 flagged cubes, 124 dead nodes and 100
+  untainted deaths (2026-11-02), and asserts at least 20, and at least 90
+  untainted below the dead.
+- **It pins the counterexample**: on `ACTIVATOR_UNDER_ABSENT` the oracle's
+  `absent_premises` for the dead hole `{(p A), (r A)}` is empty, and the walk
+  without activators calls it untainted beside an alive superset.
+- **It has teeth.** With the walk's activator half switched off, it fails on
+  `ACTIVATOR_UNDER_ABSENT`: *`{(p A), (r A)}` is dead on no `absent` over D,
+  and a superset is alive* (run 2026-11-02 and reverted).
+
+It holds whatever D6 decides: it is a property of the oracle's provenance and
+of the walk, and it fails the day (b) as the census reads it stops being sound
+on a cube the corpus has.

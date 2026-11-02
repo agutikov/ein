@@ -529,8 +529,11 @@ the case with absent in s1e2.4.1"*. For the state, no.
   derives the activator `(watch r)` under `(absent (q ?x))`, and the plan it
   compiles refutes `(r A)` reading no `absent`. The dead hole `{(p A), (r A)}`
   has no `absent` premise, because a derivation does not record the activator
-  its plan was compiled from. What that means for learning from a refutation
-  is M1e2 S1e2.1b.4's.
+  its plan was compiled from. Held by a test since M1e2 S1e2.1b.4:
+  `region.rs::an_untainted_death_is_dead_in_every_superset`, which also holds
+  that a death resting on no `absent` over D is dead in every superset on
+  every flagged cube within the limit, once the walk follows each plan's
+  activator.
 
 ### 7.5 The status: `dead` follows the state, `owes` does not
 
@@ -640,7 +643,7 @@ site that concludes a positive fact: `d3-unsat-core`, `f07-fpoff`,
 | the FIFO example is path-dependent in the engine as written | unverified | the example banked as a fixture, read by `node_census` (S1e2.1b.7); its relative `stratified_stale` is measured |
 | a state difference needs an `absent` | argued, and measured consistent | `node_census` § 2, § 4, § 6.1 |
 | an activator can hide an `absent` from root's plans | held by a test | `each_cause_has_a_fixture_whose_cube_shows_its_hole` |
-| an activator derived under an `absent` hides it from the refutation's derivation | measured | `hole_census -- --written`, `4562bf70` |
+| an activator derived under an `absent` hides it from the refutation's derivation | held by a test, and measured | `region.rs::an_untainted_death_is_dead_in_every_superset` pins the empty `absent_premises`; `hole_census -- --written`, `4562bf70` |
 | `dead` follows the state | argued | premise: the state is monotone |
 | `owes` breaks over a path-independent state | held by a test, and measured | `each_cause_has_a_fixture_whose_cube_shows_its_hole`; `node_census` § 2.1 |
 | a monotone program has both properties and no hole | held by a test | `a_monotone_verdict_makes_saturation_a_closure_operator`, `monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged` |
