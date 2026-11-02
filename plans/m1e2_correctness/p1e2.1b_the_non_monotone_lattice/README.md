@@ -25,7 +25,8 @@ answering S1e2.1a.1's open questions:
 "This phase" in the quote is [P1e2.1a](../p1e2.1a_the_solution_region/README.md).
 Points 1–3 are S1e2.1a.1's, and this phase gets what they leave.
 **S1e2.1b.1 started 2026-11-02** ([its stage file](s1e2.1b.1_the_site_census.md)):
-the census example is built (T1e2.1b.1.1).
+the census example is built (T1e2.1b.1.1), and the static check is prototyped
+at fact grain and held to the cube (T1e2.1b.1.2).
 **Depends on:** S1e2.1a.1. Its detector gives this phase its census, and its
 stub is what [S1e2.1b.5](s1e2.1b.5_the_handling.md) replaces. Since
 2026-11-02 also [P1e2.4](../p1e2.4_what_the_switch_left/README.md), which runs

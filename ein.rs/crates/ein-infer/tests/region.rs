@@ -16,6 +16,16 @@ use ein_infer::monotone::{Monotonicity, SiteKind};
 use ein_infer::region::{self, Options, Outcome, Region};
 use ein_ir::{Ast, load, parse};
 
+// The fact-grain prototype and the loader it shares with `site_census`
+// (M1e2 S1e2.1b.1). Neither ships: they are examples' code, held to the cube
+// here.
+#[allow(dead_code)]
+#[path = "../examples/shared/census.rs"]
+mod census;
+#[allow(dead_code)]
+#[path = "../examples/shared/fact_grain.rs"]
+mod fact_grain;
+
 fn compute(rel: &str) -> (Outcome, Terms) {
     let path = repo_root().join(rel);
     let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{rel}: {e}"));
@@ -237,6 +247,213 @@ fn monotone_programs_show_no_violation_and_the_non_monotone_three_are_flagged() 
     let (r, _) = region_of("examples/lattice/04_obligation_trigger_hole.ein");
     assert_eq!(names(&r, &r.topology.holes), ["{(seats Ann C1)}"]);
     assert!(r.topology.discharged_not_upward_closed.count > 0);
+}
+
+// ── Fact grain — S1e2.1b.1 ──────────────────────────────────────────
+
+/// Programs written to test the fact-grain prototype, each with what it is
+/// for: `(name, program, leaves the set at fact grain, its closure complete,
+/// its cube violated)`. Every one is flagged at relation grain. The corpus
+/// has no program within the oracle's limit that leaves the set, so without
+/// these the claim below would be vacuous where it matters.
+const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool, bool)] = &[
+    // A derived fact matches the read: `tag` writes `(q A Tagged)` from a
+    // candidate, so `bad`'s absence can be filled.
+    (
+        "derived",
+        "(relation p T) (relation s T) (relation q T T) (relation r T) (r A)
+         (hrule g1 () :match (r ?x) :assert (p ?x))
+         (hrule g2 () :match (r ?x) :assert (s ?x))
+         (rule tag () :match (s ?x) :assert (q ?x Tagged))
+         (rule bad () :match (and (p ?x) (absent (q ?x Tagged))) :assert (false))",
+        false,
+        true,
+        true,
+    ),
+    // The same, reading `(q ?x Other)`, which nothing a commitment adds has.
+    (
+        "static",
+        "(relation p T) (relation s T) (relation q T T) (relation r T) (r A)
+         (hrule g1 () :match (r ?x) :assert (p ?x))
+         (hrule g2 () :match (r ?x) :assert (s ?x))
+         (rule tag () :match (s ?x) :assert (q ?x Tagged))
+         (rule bad () :match (and (p ?x) (absent (q ?x Other))) :assert (false))",
+        true,
+        true,
+        false,
+    ),
+    // `done` is derived through a read at depth 2, a `forall` written out:
+    // a closure that followed only top-level reads would call `bad`'s
+    // `(absent (done W))` static, and the cube shows the hole it makes.
+    (
+        "even-depth",
+        "(relation p T) (relation s T) (relation done T) (relation world T)
+         (relation slot T) (world W) (s A) (slot A) (slot B)
+         (hrule g () :match (slot ?x) :assert (p ?x))
+         (rule all-p () :match (and (world ?w) (absent (and (s ?x) (absent (p ?x)))))
+                        :assert (done ?w))
+         (rule bad () :match (and (p B) (absent (done W))) :assert (false))",
+        false,
+        true,
+        true,
+    ),
+    // A stored negative a commitment derives fills the read.
+    (
+        "negative",
+        "(relation p T) (relation t T) (relation q T) (relation r T) (r A)
+         (hrule g1 () :match (r ?x) :assert (p ?x))
+         (hrule g2 () :match (r ?x) :assert (t ?x))
+         (rule neg () :match (p ?x) :assert (not (q ?x)))
+         (rule bad () :match (and (t ?x) (absent (not (q ?x)))) :assert (false))",
+        false,
+        true,
+        true,
+    ),
+    // A commitment derives an activator, `(watch q)`: the site stays, and
+    // the closure says it cannot see the plan that would compile.
+    (
+        "activator",
+        "(relation p T) (relation t T) (relation q T) (relation r T) (r A)
+         (hrule g1 () :match (r ?x) :assert (p ?x))
+         (hrule g2 () :match (r ?x) :assert (t ?x))
+         (rule watch (?R) :match (and (t ?x) (absent (?R ?x))) :assert (false))
+         (rule act () :match (p ?x) :assert (watch q))",
+        false,
+        false,
+        false,
+    ),
+    // `features/05`'s shape within the limit: membership between objects is
+    // proposed, and the read asks for membership in a type.
+    (
+        "type-constant",
+        "(relation is-a T T) (relation owns T T)
+         (is-a A Thing) (is-a B Thing) (is-a C Box) (owns A C)
+         (hrule g () :match (and (is-a ?x Thing) (is-a ?y Thing) (neq ?x ?y))
+                     :assert (is-a ?x ?y))
+         (rule check () :match (and (owns ?x ?y) (absent (is-a ?x Thing))) :assert (false))",
+        true,
+        true,
+        false,
+    ),
+];
+
+fn loaded_text(name: &str, text: &str) -> (Kb, Terms, Ast) {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let forms = parse(&mut ast, text, Some(name)).unwrap_or_else(|e| panic!("{name}: {e}"));
+    let kb = load(&mut ast, &mut terms, &forms, None).unwrap_or_else(|e| panic!("{name}: {e}"));
+    (kb, terms, ast)
+}
+
+/// The fact-grain verdict on one load: `(relation grain flags it, fact grain
+/// calls it monotone, its closure is complete)`.
+fn fact_grain_of(kb: &mut Kb, terms: &mut Terms, ast: &Ast) -> Option<(bool, bool, bool)> {
+    let (root, ()) = census::root_of(kb, terms, ast, |_, _| Some(()))?;
+    let mut cands = root.proposed.clone();
+    cands.sort_by_key(|&f| ein_infer::events::sexpr(terms, f));
+    cands.dedup();
+    let fg = fact_grain::classify(kb, terms, &root.plans, &cands, &root.monotonicity);
+    Some((
+        !root.monotonicity.is_monotone(),
+        fg.is_monotone(),
+        fg.complete,
+    ))
+}
+
+fn violated(r: &Region) -> bool {
+    let t = &r.topology;
+    !t.holes.is_empty()
+        || t.dead_not_upward_closed.count > 0
+        || t.discharged_not_upward_closed.count > 0
+}
+
+/// **The fact-grain prototype against the cube** — S1e2.1b.1 T1e2.1b.1.2.
+/// `examples/shared/fact_grain.rs` reads a site at fact grain: dynamic only
+/// when a candidate, or a fact a saturation plan derives from candidates, can
+/// match its pattern. Its claim is the theorem at that grain: **on no cube the
+/// oracle enumerates is its verdict monotone while the cube observes a
+/// violation** (a hole, a dead node with an alive superset, a discharged node
+/// with an owing superset). Checked on every corpus file and register witness
+/// within the limit, and on [`FACT_GRAIN_PROGRAMS`]. No route reads the
+/// prototype; the shipped check reads at relation grain until the user rules.
+#[test]
+fn fact_grain_never_calls_a_violated_cube_monotone() {
+    let oracle = Options {
+        jobs: std::thread::available_parallelism().map_or(1, |n| n.get().min(8)),
+        ..Options::default()
+    };
+    let mut failures: Vec<String> = Vec::new();
+    let mut cubes = 0usize;
+    let mut check = |name: &str, load: &dyn Fn() -> Option<(Kb, Terms, Ast)>| {
+        let Some((mut kb, mut terms, ast)) = load() else {
+            return;
+        };
+        let Some((_, monotone, _)) = fact_grain_of(&mut kb, &mut terms, &ast) else {
+            return;
+        };
+        if !monotone {
+            return;
+        }
+        let (mut kb, mut terms, ast) = load().expect("loaded once already");
+        let Ok(Outcome::Region(r)) =
+            region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
+        else {
+            return;
+        };
+        cubes += 1;
+        if violated(&r) {
+            let t = &r.topology;
+            failures.push(format!(
+                "{name}: fact grain says monotone, and the cube has {} holes, {} dead nodes with an \
+                 alive superset, {} discharged nodes with an owing superset",
+                t.holes.len(),
+                t.dead_not_upward_closed.count,
+                t.discharged_not_upward_closed.count
+            ));
+        }
+    };
+    for path in corpus_and_register() {
+        let rel = path
+            .strip_prefix(repo_root())
+            .unwrap_or(&path)
+            .to_string_lossy()
+            .to_string();
+        check(&rel, &|| loaded(&path));
+    }
+    for (name, text, ..) in FACT_GRAIN_PROGRAMS {
+        check(name, &|| Some(loaded_text(name, text)));
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    // 146 monotone cubes on 2026-10-16, all of them monotone at fact grain
+    // too. A sweep that silently found none would pass the loop above.
+    assert!(cubes >= 140, "{cubes} cubes checked");
+}
+
+/// The programs written for the prototype get the verdicts they were written
+/// for, and their cubes show what each was written to show — so the claim
+/// above is not vacuous on a program that leaves the set.
+#[test]
+fn fact_grain_on_programs_written_to_test_it() {
+    for &(name, text, leaves, complete, want_violated) in FACT_GRAIN_PROGRAMS {
+        let (mut kb, mut terms, ast) = loaded_text(name, text);
+        let (flagged, monotone, whole) =
+            fact_grain_of(&mut kb, &mut terms, &ast).expect("saturates");
+        assert!(flagged, "{name}: relation grain flags it");
+        assert_eq!(monotone, leaves, "{name}: leaves the set at fact grain");
+        assert_eq!(whole, complete, "{name}: the closure is complete");
+        let (mut kb, mut terms, ast) = loaded_text(name, text);
+        let Outcome::Region(r) =
+            region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
+                .expect("computes")
+        else {
+            panic!("{name}: within the limit");
+        };
+        assert_eq!(
+            violated(&r),
+            want_violated,
+            "{name}: what the cube observes"
+        );
+    }
 }
 
 /// **`--jobs` changes nothing.** The same record with one thread and with

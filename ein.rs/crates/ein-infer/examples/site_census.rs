@@ -9,8 +9,9 @@
 //! same program, asserting the two verdicts are one. Per **site**: the rule;
 //! where it is written (`file:line`, a stdlib module or the program); its
 //! [`SiteKind`], relation and `absent` depth; the activator; what the rule
-//! concludes; and whether it fires at root's fixpoint (an obligation:
-//! whether root owes it). Per **flagged program within
+//! concludes; whether it fires at root's fixpoint (an obligation: whether
+//! root owes it); and its verdict at **fact grain**, the prototype in
+//! `shared/fact_grain.rs`, which no route reads. Per **flagged program within
 //! the limit**: the cube's three violations, each with its smallest witness,
 //! every minimal hole and every witness attributed to the sites its `absent`
 //! premises or its owed instances name, and *exercised* or *conservative*.
@@ -32,6 +33,8 @@
 #[allow(dead_code)]
 #[path = "shared/census.rs"]
 mod census;
+#[path = "shared/fact_grain.rs"]
+mod fact_grain;
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -382,6 +385,84 @@ fn projection(path: &Path, n: usize) -> Option<region::Projection> {
     got
 }
 
+/// What C1 could do to the flag, at relation grain and with the check as it
+/// ships: the verdict over `H` without the candidates that name a type
+/// (Q-M1e.12's reading (c), with S1e2.2.10's definition: a type is an object
+/// on the right of an `is-a`), and each relation of `H` whose removal alone
+/// leaves no site — what the blind rung no longer proposing it would do —
+/// with how many of its facts root holds and whether a rule derives it, so
+/// a given-only relation can be told from a derived one.
+fn c1_row(root: &Root, kb: &Kb, terms: &Terms) -> Json {
+    let is_a = terms.syms.get("is-a");
+    let types: rustc_hash::FxHashSet<Symbol> = match is_a {
+        Some(isa) => kb
+            .facts()
+            .filter(|&f| terms.facts.get(f).0 == isa)
+            .filter_map(|f| terms.facts.get(f).1.get(1).and_then(|v| v.as_sym()))
+            .collect(),
+        None => rustc_hash::FxHashSet::default(),
+    };
+    let classify = |h: &rustc_hash::FxHashSet<Symbol>| {
+        monotone::classify(kb, terms, &root.plans, h).is_monotone()
+    };
+    let typed: rustc_hash::FxHashSet<Symbol> = root
+        .proposed
+        .iter()
+        .filter(|&&f| {
+            !terms
+                .facts
+                .get(f)
+                .1
+                .iter()
+                .any(|v| v.as_sym().is_some_and(|s| types.contains(&s)))
+        })
+        .map(|&f| terms.facts.get(f).0)
+        .collect();
+    let dropped_by_types = root
+        .proposed
+        .iter()
+        .filter(|&&f| {
+            terms
+                .facts
+                .get(f)
+                .1
+                .iter()
+                .any(|v| v.as_sym().is_some_and(|s| types.contains(&s)))
+        })
+        .count();
+    let h = &root.monotonicity.hypothesised;
+    let mut alone: Vec<Json> = Vec::new();
+    for &rel in h {
+        let rest: rustc_hash::FxHashSet<Symbol> = h.iter().copied().filter(|&x| x != rel).collect();
+        if classify(&rest) {
+            let given = kb.facts().filter(|&f| terms.facts.get(f).0 == rel).count();
+            let derived = root
+                .plans
+                .iter()
+                .filter(|p| kb.program().rules.contains(p.rule))
+                .any(|p| {
+                    monotone::writes_of(p, terms)
+                        .iter()
+                        .any(|w| !w.negated && w.name == rel)
+                });
+            alone.push(json!({
+                "relation": terms.sym(rel),
+                "candidates": root.proposed.iter().filter(|&&f| terms.facts.get(f).0 == rel).count(),
+                "facts_at_root": given,
+                "a_rule_derives_it": derived,
+            }));
+        }
+    }
+    // determinism-ok: rendered and sorted on the next line.
+    let mut type_names: Vec<&str> = types.iter().map(|&s| terms.sym(s)).collect();
+    type_names.sort();
+    json!({
+        "types": type_names,
+        "types_excluded": {"dropped": dropped_by_types, "monotone": classify(&typed)},
+        "unflagged_by_dropping": alone,
+    })
+}
+
 #[derive(Default)]
 struct Totals {
     given: usize,
@@ -393,6 +474,11 @@ struct Totals {
     sites_by_kind: BTreeMap<String, usize>,
     sites_by_module: BTreeMap<String, usize>,
     rules: BTreeMap<(String, String, String), BTreeSet<String>>,
+    fact_leaves: Vec<String>,
+    fact_incomplete: Vec<String>,
+    fact_unsound: Vec<String>,
+    c1_types: Vec<String>,
+    c1_drop: Vec<String>,
     unattributed: Vec<String>,
     monotone_violated: Vec<String>,
     // The four older selections.
@@ -466,11 +552,17 @@ fn main() {
         cands.dedup();
         let n = cands.len();
         let m = &root.monotonicity;
+        let fg = fact_grain::classify(&kb, &terms, &root.plans, &cands, m);
         let h: Vec<&str> = m.hypothesised.iter().map(|&s| terms.sym(s)).collect();
         row["n"] = json!(n);
         row["rung"] = json!(rung);
         row["H"] = json!(h);
         row["monotone"] = json!(m.is_monotone());
+        row["fact_grain"] = json!({
+            "monotone": fg.is_monotone(),
+            "complete": fg.complete,
+            "shapes": fg.shapes.len(),
+        });
 
         // The cube, on a second load: the oracle's own preparation.
         let mut cube = Json::Null;
@@ -548,7 +640,7 @@ fn main() {
 
         // Per site.
         let mut sites_json = Vec::new();
-        for site in &m.sites {
+        for (site, fact) in m.sites.iter().zip(&fg.sites) {
             let at = located_imported(&path, terms.sym(site.rule));
             let module = module_of(&at);
             *tot.sites_by_kind
@@ -574,10 +666,40 @@ fn main() {
                 "module": module,
                 "concludes": concludes(&root, &kb, &terms, site),
                 "at_root": at_root(&root, &kb, site),
+                "fact_grain": fact,
                 "render": site.render(&terms),
             }));
         }
         row["sites"] = json!(sites_json);
+        row["c1"] = c1_row(&root, &kb, &terms);
+        if row["c1"]["types_excluded"]["monotone"].as_bool() == Some(true) {
+            tot.c1_types.push(rel.clone());
+        }
+        for j in row["c1"]["unflagged_by_dropping"]
+            .as_array()
+            .into_iter()
+            .flatten()
+        {
+            tot.c1_drop.push(format!(
+                "{rel}: {} ({} facts at root{})",
+                j["relation"].as_str().unwrap_or(""),
+                j["facts_at_root"],
+                if j["a_rule_derives_it"].as_bool() == Some(true) {
+                    ", derived"
+                } else {
+                    ""
+                }
+            ));
+        }
+        if fg.is_monotone() {
+            tot.fact_leaves.push(rel.clone());
+            if violated {
+                tot.fact_unsound.push(rel.clone());
+            }
+        }
+        if !fg.complete {
+            tot.fact_incomplete.push(rel.clone());
+        }
         if n <= region::DEFAULT_LIMIT as usize && cube.is_object() {
             tot.within.push((rel.clone(), n, violated));
             row["verdict"] = json!(if violated {
@@ -608,7 +730,7 @@ fn main() {
 fn print_block(row: &Json) {
     let s = |v: &Json| v.as_str().unwrap_or("").to_string();
     println!(
-        "{}\n  n {}  rung {}  H {{{}}}",
+        "{}\n  n {}  rung {}  H {{{}}}  fact grain: {}{}",
         s(&row["path"]),
         row["n"],
         s(&row["rung"]),
@@ -616,6 +738,16 @@ fn print_block(row: &Json) {
             .as_array()
             .map(|a| a.iter().map(s).collect::<Vec<_>>().join(" "))
             .unwrap_or_default(),
+        if row["fact_grain"]["monotone"].as_bool() == Some(true) {
+            "monotone"
+        } else {
+            "flagged"
+        },
+        if row["fact_grain"]["complete"].as_bool() == Some(false) {
+            " (incomplete: an activator is dynamic)"
+        } else {
+            ""
+        },
     );
     for site in row["sites"].as_array().into_iter().flatten() {
         let act = site["activator"]
@@ -623,7 +755,7 @@ fn print_block(row: &Json) {
             .map(|a| a.iter().map(s).collect::<Vec<_>>().join(" "))
             .unwrap_or_default();
         println!(
-            "  site {:<18} {}[{}] reads {} @{} → {}  at root {}  ({}, {})",
+            "  site {:<18} {}[{}] reads {} @{} → {}  at root {}  ({}, {})  fact grain: {}",
             s(&site["kind"]),
             s(&site["rule"]),
             act,
@@ -633,8 +765,45 @@ fn print_block(row: &Json) {
             site["at_root"],
             s(&site["at"]),
             s(&site["module"]),
+            match site["fact_grain"].as_str() {
+                Some(w) => format!("dynamic, e.g. {w}"),
+                None => "static".to_string(),
+            }
         );
     }
+    let c1 = &row["c1"];
+    let alone: Vec<String> = c1["unflagged_by_dropping"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .map(|j| {
+            format!(
+                "{} ({} candidates, {} facts at root{})",
+                s(&j["relation"]),
+                j["candidates"],
+                j["facts_at_root"],
+                if j["a_rule_derives_it"].as_bool() == Some(true) {
+                    ", derived"
+                } else {
+                    ""
+                }
+            )
+        })
+        .collect();
+    println!(
+        "  C1: types excluded drops {} candidates → {}; dropping one relation from H unflags it: {}",
+        c1["types_excluded"]["dropped"],
+        if c1["types_excluded"]["monotone"].as_bool() == Some(true) {
+            "monotone"
+        } else {
+            "still flagged"
+        },
+        if alone.is_empty() {
+            "none".to_string()
+        } else {
+            alone.join("; ")
+        }
+    );
     let cube = &row["cube"];
     if cube.is_object() {
         println!(
@@ -748,6 +917,33 @@ fn print_totals(tot: &Totals, swept_selection: bool, wall: f64) {
     println!("flagged past the limit {}:", tot.past.len());
     for (p, n) in &tot.past {
         println!("    n={n:<3} {p}");
+    }
+    println!(
+        "fact grain: {} of {} flagged leave the set; incomplete on {}; a fact-grain monotone verdict beside a violation on {}",
+        tot.fact_leaves.len(),
+        tot.flagged,
+        tot.fact_incomplete.len(),
+        tot.fact_unsound.len()
+    );
+    for p in &tot.fact_leaves {
+        println!("    leaves        {p}");
+    }
+    for p in &tot.fact_incomplete {
+        println!("    incomplete    {p}");
+    }
+    for p in &tot.fact_unsound {
+        println!("    UNSOUND       {p}");
+    }
+    println!(
+        "C1 at relation grain: the universe without a candidate naming a type unflags {}; one relation of H removed unflags {}:",
+        tot.c1_types.len(),
+        tot.c1_drop.len()
+    );
+    for p in &tot.c1_types {
+        println!("    types         {p}");
+    }
+    for p in &tot.c1_drop {
+        println!("    without       {p}");
     }
     println!(
         "a violation no site is named for: {}; a monotone cube with a violation: {}",
