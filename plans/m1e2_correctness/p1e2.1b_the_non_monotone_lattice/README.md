@@ -1,6 +1,6 @@
 # P1e2.1b — The non-monotone lattice: what R is when adding a fact can take one away
 
-**Estimate:** ~3 weeks: 6 stages, 15.5 days.
+**Estimate:** ~3 weeks: 6 stages, 14 days (15.5 when specified).
 [S1e2.1b.6](s1e2.1b.6_the_two_lattices_compared.md) was specified at 4 days
 on 2026-10-16, at the user's request. The other five waited for
 [S1e2.1a.1](../p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md)'s
@@ -9,8 +9,10 @@ regions flagged
 ([region census § 1](../p1e2.1a_the_solution_region/region_census.md#1-reach),
 2026-10-16), and 22 of 204 programs that load
 ([S1e2.4.1 § 1](../p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#1-the-exposed-set-re-counted),
-2026-11-02). They were specified on 2026-11-02 from those numbers, ahead of
-S1e2.1b.1's own census, which re-estimates them. Three of them end in a
+2026-11-02). They were specified on 2026-11-02 from those numbers, **before** S1e2.1b.1's
+own census. The census re-estimated them the same day
+([site census § 9](site_census.md#9-the-re-estimate)): S1e2.1b.2 went from 3
+to 2.5 days, .3 from 2 to 1.5, .4 from 1.5 to 1, and .5 stayed at 3. Three of them end in a
 ruling that is the user's, and their days are for the evidence.
 **Status:** created 2026-10-15 on the user's instruction, given while
 answering S1e2.1a.1's open questions:
@@ -24,9 +26,11 @@ answering S1e2.1a.1's open questions:
 
 "This phase" in the quote is [P1e2.1a](../p1e2.1a_the_solution_region/README.md).
 Points 1–3 are S1e2.1a.1's, and this phase gets what they leave.
-**S1e2.1b.1 started 2026-11-02** ([its stage file](s1e2.1b.1_the_site_census.md)):
-the census example is built (T1e2.1b.1.1), and the static check is prototyped
-at fact grain and held to the cube (T1e2.1b.1.2).
+**S1e2.1b.1: T1e2.1b.1.1–.3 done 2026-11-02** ([its stage file](s1e2.1b.1_the_site_census.md),
+[the census](site_census.md)). 22 programs are flagged, 6 exercised and 8
+conservative within the limit. The static check is prototyped at fact grain
+and held to the cube, and S1e2.1b.2–.5 are re-estimated. **T1e2.1b.1.4 waits
+on the user's ruling** on the grain.
 **Depends on:** S1e2.1a.1. Its detector gives this phase its census, and its
 stub is what [S1e2.1b.5](s1e2.1b.5_the_handling.md) replaces. Since
 2026-11-02 also [P1e2.4](../p1e2.4_what_the_switch_left/README.md), which runs
@@ -130,7 +134,8 @@ reports both the sites and the violations the cube observed.
 
 Every stage has a file: S1e2.1b.6 since 2026-10-16, and the other five since
 2026-11-02. Those five were written before S1e2.1b.1's census, from what was
-already measured, and the census re-estimates them. S1e2.1b.2, .3 and .4 each
+already measured, and the census re-estimated them on 2026-11-02
+([§ 9](site_census.md#9-the-re-estimate)). S1e2.1b.2, .3 and .4 each
 end in a question for the user, with the evidence to rule on, and S1e2.1b.1
 and .5 may put one.
 
