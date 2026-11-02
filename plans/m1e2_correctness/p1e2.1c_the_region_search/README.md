@@ -18,6 +18,9 @@ route this phase builds is for **monotone** programs.
 **Status:** created 2026-10-16, on the user's *"Q-M1e2.8 - yes"*. That ruled
 the plan's recommendation: the oracle becomes `solve`'s answer now
 (S1e2.1a.9), and the region search is a phase of its own, next.
+**S1e2.1c.1 done 2026-11-03**, the first of its four stages:
+[`alive_set_reach.md`](alive_set_reach.md). S1e2.1c.2 is next, and it is
+measured against that page's table.
 **Depends on:** S1e2.1a.9 (the default, its routes and its flags) and
 [P1e2.1b](../p1e2.1b_non_monotone_programs/README.md): its detector
 (S1e2.1b.5), whose warnings every new route carries and keeps free on an
@@ -72,7 +75,7 @@ gives a meaning or retires.
 
 | ID | title | the question |
 |---|---|---|
-| [S1e2.1c.1](s1e2.1c.1_how_large_the_alive_set_gets.md) | How large the alive set gets | route 1's reach on the zebra family and the slow entries, and what a description costs as the alive set grows. First answer: [`route1_reach.md`](../p1e2.1a_the_solution_region/route1_reach.md) (zebra counted; `zebra2-minus-15` and the seven everything-alive cubes not) |
+| [S1e2.1c.1](s1e2.1c.1_how_large_the_alive_set_gets.md) | How large the alive set gets | route 1's reach on the zebra family and the slow entries, and what a description costs as the alive set grows. First answer: [`route1_reach.md`](../p1e2.1a_the_solution_region/route1_reach.md) (zebra counted; `zebra2-minus-15` and the seven everything-alive cubes not). **Done 2026-11-03**: [`alive_set_reach.md`](alive_set_reach.md). The seven cubes are decided in two saturations and counted, with k_s = 27 559 on each `square-*` and 2¹⁹ on `arg-kinds`. `zebra2-minus-15` runs to layer 6: 4 097 512 alive commitments, 4 709 alive states, none new at layer 6. There is a states column beside the commitments, and the cost table over every monotone program |
 | [S1e2.1c.2](s1e2.1c.2_the_lines_by_duality.md) | The lines by duality | for a monotone program only, enumerate N and E and dualise (MARCO-style, incremental hypergraph transversal), so that the lines, and with them k_s and k_c by sub-cubes, cost output size rather than \|alive\|. [`walk_and_region.md` § 6](../p1e2.1a_the_solution_region/walk_and_region.md#6-what-this-means-for-question-3) measured the state lattice beside the commitment one: zebra has 27 alive states against 270 454 alive commitments, and a route over states costs at most *states × n* |
 | [S1e2.1c.3](s1e2.1c.3_the_non_monotone_search.md) | The non-monotone search | **moved to [F21](../../followups/f21_non_monotone_programs_decided.md)'s D7, 2026-11-02.** Its file stays, with a banner, as the design notes the decision will start from |
 | [S1e2.1c.4](s1e2.1c.4_the_flags_at_scale.md) | The flags at scale | on a monotone program, *any*, *single*, *minimal* and *maximal* by the cheapest sound route for each, with the certificate each one is entitled to. The target is [`solve_interface.md` § 3.2](../p1e2.1a_the_solution_region/solve_interface.md#32-a-monotone-program-each-modes-route)'s right-hand column. It includes licence L5, the obligation tree, which decides `zebra2-obligations`' uniqueness in 9 enterings, and whether a `--count` is worth a flag |

@@ -15,8 +15,7 @@ the flagged programs past the limit with what they get today.
 P1e2.1a's record and the first answer. This page is the second, and it does
 not edit the first.
 
-**Status:** T1e2.1c.1.1–.3 written 2026-11-03: §§ 1–4. The cost table follows
-with T1e2.1c.1.4.
+**Status:** done 2026-11-03, T1e2.1c.1.1–.4, one commit each.
 
 **This stage measures.** No golden, `:expect` or register row moved. The
 instrument is example code that no route reads:
@@ -30,7 +29,7 @@ count, the alive states' one-up extensions and the generator total
 (cd ein.rs && cargo build --release -p ein-infer --example route1_reach)   # the instrument, system allocator
 R=ein.rs/target/release/examples/route1_reach
 
-# § 1: every corpus file and register witness, at the default budget (2^19 facts)
+# § 1, § 5, § 8: every corpus file and register witness, at the default budget (2^19 facts)
 utils/bench_env.sh --cores PT $R --budget 18446744073709551615 --facts 524288 --jobs 16 > default.jsonl
 
 # § 2, § 3: past the budget, one process per program, under the cap
@@ -40,6 +39,12 @@ systemd-run --user --scope -q -p MemoryMax=11G -p MemorySwapMax=0 \
 
 # § 4: two saturations, ∅ and ⊤, on every program
 utils/bench_env.sh --cores PT $R --budget 1 --jobs 1 > two.jsonl
+
+# § 5: describe by the binary, at the smallest budget that describes
+utils/bench_env.sh --cores PT ein.rs/target/release/ein solve FILE --region-budget F -j 16 -s
+
+# § 6: the flagged programs past the limit, as a bare run prints them
+ein.rs/target/release/ein solve FILE -s
 ```
 
 **Taken 2026-11-03 on `d2b6fdf0`.** The engine and `downset` are that
@@ -53,7 +58,8 @@ printed it:
 - 31 GiB and no swap; `--jobs 16` on every run unless a row says otherwise.
 
 `route1_reach` links the system allocator and the `ein` binary links
-snmalloc. One JSON line per program, and the tables were read off the lines.
+snmalloc, so § 5 gives the binary's wall beside the instrument's where it
+matters. One JSON line per program, and the tables were read off the lines.
 
 **The ceiling** is the same for every run past the budget:
 
@@ -106,7 +112,7 @@ counted 195 programs on 2026-10-16, split 162 / 13 / 20. What moved since:
 - **Every monotone program at `n ≤ 16` is still route 1's**: 156 of 156.
 
 **The slow entries** (`corpus/corpus.toml`, `slow = true`) are the same ten.
-Two are flagged: `features/01` and `lattice/06_friends_tables`. Of the
+Two are flagged: `features/01` and `lattice/06_friends_tables` (§ 6). Of the
 eight monotone ones, five are among the twelve, the zebra family. The other
 three finish at the default:
 
@@ -400,3 +406,306 @@ decide k_c = 2ⁿ, and nothing reads them for that. That is
 [S1e2.1c.2](s1e2.1c.2_the_lines_by_duality.md)'s case, *"described in a
 handful of saturations, with k_s counted or the read-out saying it is not"*,
 and its input is here. Printing it is not this stage's: the stage measures.
+
+## 5. What a description costs as the alive set grows
+
+**The table S1e2.1c.2 and S1e2.1c.4 are measured against.** Here are the
+monotone programs with at least 100 alive commitments, and the twelve past
+the budget, in order of |alive|. § 8 has every monotone program with
+n ≥ 1, in the same columns.
+
+| program | n | \|alive\| | alive states | extensions | k_c | k_s | min | max | generators | \|N\| | saturations | facts | wall | default |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| `lattice/07_two_pairs_two_tables` | 16 | 113 | 113 | 1 072 | 8 | 8 | 8 | 8 | 8 | 64 | 177 | 448 | 6.3 ms | yes |
+| `type-exclusivity/colors` | 8 | 169 | 169 | 246 | 169 | 169 | 1 | 9 | 169 | 4 | 173 | 644 | 828 µs | yes |
+| `type-exclusivity/nationalities` | 8 | 169 | 169 | 246 | 169 | 169 | 1 | 9 | 169 | 4 | 173 | 644 | 766 µs | yes |
+| `lattice/06_friends_tables_everyone_sits` | 19 | 277 | 277 | 3 044 | 8 | 8 | 8 | 8 | 8 | 68 | 345 | 969 | 1.3 ms | yes |
+| `branching/02_one_dead_one_alive` | 48 | 2 062 | 20 | 866 | 2 062 | 20 | 1 | 4 | 195 | 102 | 2 164 | 19 502 | 16.1 ms | yes |
+| `syntax/constraint-scopes` | 12 | 4 096 | 4 096 | 4 095 | 4 096 | 4 096 | 1 | 1 | 4 096 | 0 | 4 096 | 24 576 | 8.7 ms | yes |
+| `branching/08_hypothesis_relation_whitelist` | 38 | 5 782 | 34 | 1 098 | 5 782 | 34 | 1 | 8 | 443 | 164 | 5 946 | 55 506 | 24.4 ms | yes |
+| `zebra2-hints` | 36 | 8 316 | 6 | 190 | 8 316 | 6 | 1 | 2 | 21 | 73 | 8 389 | 309 545 | 0.50 s | yes |
+| `type-exclusivity/pets` | 15 | 11 339 | 11 339 | 26 191 | 11 339 | 11 339 | 1 | 39 | 11 339 | 12 | 11 351 | 76 743 | 23.3 ms | yes |
+| `branching/06_lookahead_on` | 204 | 18 622 | 74 | 14 594 | 18 622 | 74 | 1 | 22 | 1 227 | 570 | 19 192 | 180 962 | 88.6 ms | yes |
+| `branching/07_lookahead_off` | 204 | 18 622 | 74 | 14 594 | 18 622 | 74 | 1 | 22 | 1 227 | 570 | 19 192 | 180 962 | 90.6 ms | yes |
+| `features/02_star_in_identifiers` | 15 | 32 768 | 728 | 2 252 | 32 768 | 728 | 1 | 1 | 1 072 | 0 | 32 768 | 470 616 | 0.40 s | yes |
+| `zebra2-obligations` | 56 | 270 213 | 20 | 1 015 | 261 982 | 1 | 63 | 1 | 63 | 366 | 270 579 | 15 094 278 | 18.47 s | partial, layers 0–4 |
+| `zebra2` | 56 | 270 213 | 20 | 1 015 | 261 982 | 1 | 63 | 1 | 63 | 366 | 270 579 | 15 094 278 | 17.86 s | partial, layers 0–4 |
+| `zebra` | 56 | 270 454 | 27 | 1 374 | 261 982 | 1 | 63 | 1 | 63 | 458 | 270 912 | 30 251 060 | 26.08 s | partial, layers 0–2 |
+| `syntax/arg-kinds` | 19 | 524 288 | 524 288 | 524 287 | 524 288 | 524 288 | 1 | 1 | 524 288 | 0 | 524 288 | 4 980 736 | 1.81 s | partial, layers 0–6 |
+| `square-bwd/floors` | 20 | 1 048 576 | 27 559 | 151 140 | 1 048 576 | 27 559 | 1 | 1 | 29 711 | 0 | 1 048 576 | 18 468 768 | 11.42 s | partial, layers 0–5 |
+| `square-bwd/houses` | 20 | 1 048 576 | 27 559 | 151 140 | 1 048 576 | 27 559 | 1 | 1 | 29 711 | 0 | 1 048 576 | 18 468 768 | 12.86 s | partial, layers 0–5 |
+| `square-bwd/meetings` | 20 | 1 048 576 | 27 559 | 151 140 | 1 048 576 | 27 559 | 1 | 1 | 29 711 | 0 | 1 048 576 | 18 468 768 | 13.35 s | partial, layers 0–5 |
+| `square-fwd/floors` | 20 | 1 048 576 | 27 559 | 151 140 | 1 048 576 | 27 559 | 1 | 1 | 29 711 | 0 | 1 048 576 | 18 468 768 | 13.22 s | partial, layers 0–5 |
+| `square-fwd/houses` | 20 | 1 048 576 | 27 559 | 151 140 | 1 048 576 | 27 559 | 1 | 1 | 29 711 | 0 | 1 048 576 | 18 468 768 | 12.37 s | partial, layers 0–5 |
+| `square-fwd/meetings` | 20 | 1 048 576 | 27 559 | 151 140 | 1 048 576 | 27 559 | 1 | 1 | 29 711 | 0 | 1 048 576 | 18 468 768 | 13.09 s | partial, layers 0–5 |
+| `zebra2-minus-15-obligations` *(not finished)* | 96 | ≥ 4 097 512 | ≥ 4 709 | ≥ 411 209 | ≥ 2 840 307 | ≥ 32 | — | — | — | ≥ 27 804 | 4 125 317 | 378 138 052 | 493.49 s | partial, layers 0–2 |
+| `zebra2-minus-15` *(not finished)* | 96 | ≥ 4 097 512 | ≥ 4 709 | ≥ 411 209 | ≥ 2 840 307 | ≥ 32 | — | — | — | ≥ 27 804 | 4 125 317 | 378 138 052 | 494.97 s | partial, layers 0–2 |
+
+The columns:
+
+- **n**, **|alive|**, **alive states**: the down-set's commitments and their
+  distinct states (§ 3).
+- **extensions**: the alive states' distinct one-up extensions, the state
+  route's work as S1e2.1c.2 words it (§ 3.4).
+- **k_c**, **k_s**: R in commitments and in states.
+- **min**, **max**: the two lines' sizes, each in commitments.
+- **generators**: every state's minimal generators, summed. A state reached
+  by one commitment counts 1.
+- **|N|**: the minimal dead sets.
+- **saturations**, **facts**, **wall**: describe's work, i.e. route 1 to the
+  end at the ceiling, `--jobs 16`, in process. Saturations are the visited
+  commitments, plus ⊤ on a run that declined. Facts are those beyond root,
+  summed.
+- **default**: whether the default budget of 2¹⁹ facts describes it, or the
+  layers it stops after.
+
+A `≥` is what a run that did not finish met, labelled as such and never a
+total.
+
+**What it shows:**
+
+- **The cost follows |alive| times the size of a node, and neither n nor k_s.**
+  - `branching/06` has n = 204 and costs 0.09 s, because its alive set is
+    18 622 small nodes.
+  - `zebra2-hints` has n = 36 and costs 0.50 s for 8 389 nodes, each of
+    which derives 37 facts.
+  - `zebra` describes one state for 30 251 060 facts.
+  - `arg-kinds` describes 524 288 states for a sixth of that.
+- **k_s and |alive| are independent.** Across the table, the ratio
+  |alive| / alive states runs from 1 (`arg-kinds`, `pets`,
+  `constraint-scopes`) to 13 511 (`zebra2`).
+- **The default describes everything up to `features/02`**, at 470 616 facts.
+  Each of the ten that finish past it needs at least 9.5 times the budget:
+  `arg-kinds`, at 4 980 735 facts (§ 5.1).
+
+### 5.1 The smallest budget that describes each of the twelve, and the binary
+
+Route 1 checks its budget before each layer, against the facts spent plus a
+projection of the next layer: its size times the facts per node of the layer
+before ([`route1_reach.md` § 4](../p1e2.1a_the_solution_region/route1_reach.md#4-the-budget)).
+Replaying that rule over a finished run's layers gives the **smallest
+`--region-budget` under which describe finishes**. It is a count, and the
+binary confirms it:
+
+| program | `--region-budget` | describe by the binary | its `work` row | `-s` wall | process wall | peak RSS | the instrument's wall |
+|---|---:|---|---|---:|---:|---:|---:|
+| `zebra` | 30 251 060 | k_s 1, k_c 261 982, exhausted | 270 912 saturations · 30 251 060 facts beyond root · 19 layers | 19.16 s | 19.88 s | 217 MiB | 26.08 s |
+| `zebra` (one fact under) | 30 251 059 | partial: stopped before layer 18, the last; k_s ≥ 1, k_c ≥ 261 981 | 270 912 saturations · 30 251 341 facts beyond root · 18 layers | 19.39 s | 20.10 s | 233 MiB |  |
+| `zebra2` | 15 094 278 | k_s 1, k_c 261 982, exhausted | 270 579 saturations · 15 094 278 facts beyond root · 19 layers | 13.49 s | 13.97 s | 216 MiB | 17.86 s |
+| `square-bwd/floors` | 18 468 767 | k_s 27 559, k_c 1 048 576, exhausted | 1 048 576 saturations · 18 468 768 facts beyond root · 21 layers | 11.90 s | 13.18 s | 481 MiB | 11.42 s |
+| `syntax/arg-kinds` | 4 980 735 | k_s 524 288, k_c 524 288, exhausted | 524 288 saturations · 4 980 736 facts beyond root · 20 layers | 1.73 s | 5.74 s | 1.19 GiB | 1.81 s |
+
+- **The replay is exact.** At the replayed budget the binary describes `zebra`.
+  One fact under it, the binary stops before the last layer, whose one
+  commitment is the solution's 18 facts. It then saturates ⊤ instead: 270 911
+  visits plus ⊤, and ⊤'s 393 facts.
+- **The binary's work row is the instrument's**, saturation for saturation
+  and fact for fact.
+- **The `-s` wall is the route's; the process wall is everything.** The
+  binary links snmalloc. On the zebra family its `-s` wall is about three
+  quarters of the instrument's, and on the cubes it is about the same. On
+  `arg-kinds` the read-out costs more than the route.
+  `ein solve … -t` splits it into 1.71 s of route, 2.55 s of read-out (each
+  listed state's model, the queries) and 0.67 s of print. Describe's price
+  past the route grows with k_s, and k_s is 2¹⁹ there.
+- These walls are the ones a reader of `ein solve` pays at `-j 16`, taken
+  2026-11-03 with the commands above.
+
+## 6. The flagged programs past the limit
+
+**Listed, not measured.** On a program the static check flags, what a node's
+state is, and so what the alive set is, is open:
+[F21's D2](../../followups/f21_non_monotone_programs_decided.md#d2--q-m1e22-what-a-nodes-state-is).
+The search past the limit is
+[D7](../../followups/f21_non_monotone_programs_decided.md#d7--the-non-monotone-search-past-the-oracles-limit).
+So no alive set is counted below. Each row gives what a bare `ein solve FILE -s`
+certifies today, at `d2b6fdf0`, with the warning P1e2.1b put on every surface
+that reports R. The warning's three parts are as the binary prints them:
+
+- **what is assumed**, the same line on every row: *every node is a fork of
+  root (root's fixpoint, its commitment added, saturated); what a node is on
+  this program is open: Q-M1e2.2, F21*;
+- **what is at stake**, per site;
+- **whether it bit**, in the `status` and `state` lines.
+
+| program | n | route today | what it certifies | the warning: sites, at stake | `status` | `state` |
+|---|---:|---|---|---|---|---|
+| `features/01_not_and_absent` | 35 | 2, partial at 2¹⁶ | ∅ ∈ R; the minimal line {∅}; k_s, k_c ≥ 64 655 met; `exhausted no` | 2 sites (`unknown-feeling`): the state | not known — the cube is 2^35 nodes, past --region-limit 16 | stale facts — 24 754 of the 64 655 nodes the run computed hold one |
+| `features/04_open` | 81 | 2, partial at 2¹⁶ | ∅ ∈ R; the minimal line {∅}; k_s, k_c ≥ 64 761 met | 1 site (`open-candidate`): the state | not known — the cube is 2^81 nodes | stale facts — 21 042 of the 64 761 nodes |
+| `features/05_stdlib_domain_elim` | 56 | 2, partial at 2¹⁶ | ∅ ∈ R; the minimal line {∅}; k_s, k_c ≥ 7 176 met; N ≥ 21 | 4 sites (`domain-elimination`, `no-room-left`, `typecheck-arg-0`, `-1`): the state, and for three of them dead with it | not known — the cube is 2^56 nodes | no stale fact in the 65 156 nodes the run computed |
+| `lattice/06_friends_tables` | 19 | 2, partial at 2¹⁶ | ∅ ∈ R; the minimal line {∅}; k_s, k_c ≥ 21 met; N ≥ 68 | 1 site (`group-seated-owed`, an obligation trigger): the status, owes | not known — the cube is 2^19 nodes | no stale fact in the 65 299 nodes |
+| `square-unique/corner-house` | 118 | 2, partial at 2¹⁶ | ∅ ∈ R; the minimal line {∅}; k_s ≥ 65 214, k_c ≥ 65 389 met | 1 site (`square-unique`): the state | not known — the cube is 2^118 nodes | stale facts — 5 595 of the 65 389 nodes |
+| `square-unique/cul-de-sac` | 114 | 2, partial at 2¹⁶ | ∅ ∈ R; the minimal line {∅}; k_s ≥ 64 817, k_c ≥ 64 923 met | 1 site (`square-unique`): the state | not known — the cube is 2^114 nodes | stale facts — 5 835 of the 64 923 nodes |
+| `square-unique/terminus` | 153 | 2, partial at 2¹⁶ | ∅ ∈ R; the minimal line {∅}; k_s ≥ 64 514, k_c ≥ 65 029 met | 1 site (`square-unique`): the state | not known — the cube is 2^153 nodes | stale facts — 4 876 of the 65 029 nodes |
+| `features/12_expect_false` | 20 | **1**, by L0, one saturation | all of R: root is dead, so R is empty, k_s = k_c = 0, `exhausted yes` | 2 sites (`forced`, `no-room`): the state, and dead with it | not known — root is dead, so every node is (L0), and the cube is 2^20 nodes | no stale fact in the 1 node the run computed |
+
+- **Seven are past `--region-limit 16` with no licence**, the route-3 seven
+  of § 1. Route 2 visits the cube in layer order up to 2¹⁶ nodes and stops.
+  What it certifies without a licence is the minimal line, which is {∅}
+  because root is alive and in R on all seven. Its `maximal line` row reads
+  *not known — without a licence it needs the whole cube*. The counts it
+  prints are of what it met, each labelled *a lower bound*.
+- **`features/12` is the eighth** of
+  [`route1_reach.md` § 1](../p1e2.1a_the_solution_region/route1_reach.md#1-the-three-routes-over-the-corpus)'s
+  eight. It is past the limit, but its root is dead, so route 1 certifies
+  R = ∅ in one saturation. It still carries the warning, whose `status` line
+  says what L0 settles.
+- **The warning bit on five**: a stale fact in 4 876–24 754 nodes of the
+  cube's first 2¹⁶. On `features/05` and `lattice/06` it did not show within
+  the nodes computed. On `lattice/06` the site puts the status at stake, not
+  the state, which a stale fact cannot show.
+- Each of the seven also prints one line to stderr: *note: FILE: partial —
+  the question needs 2^n saturations, past --region-limit 16*. `features/12`
+  prints none.
+
+## 7. What it says for the stages that follow
+
+**For [S1e2.1c.2](s1e2.1c.2_the_lines_by_duality.md), the state route by
+duality:**
+
+- **Its input is measured, not bounded.** § 3 and § 8 count every monotone
+  program's alive states. § 3.4 counts its saturations as its acceptance
+  words them.
+- **The zebra family is its case.** It has 20–27 alive states, every one of
+  them generated by at most 2 candidates, and 1 016–1 375 saturations where
+  route 1 needs 270 579–270 912. Route 1 describes `zebra` only at
+  30 251 060 facts, 2^24.85 (§ 5.1). Whether the state route fits 2¹⁹ facts
+  depends on the facts a closed node derives, which this page does not
+  measure. That is S1e2.1c.2's budget question, (a), and it now has route 1's
+  side counted.
+- **The crossover is measured.** The state route without L1 saturates dead
+  extensions route 1's join never generates. It loses wherever states do not
+  collapse:
+  - `type-exclusivity/pets`: 26 192 against 11 351;
+  - `lattice/06_friends_tables_everyone_sits`: 3 045 against 345;
+  - `lattice/07_two_pairs_two_tables`: 1 073 against 177.
+
+  It breaks even where every commitment is a state and N is empty
+  (`arg-kinds`, `constraint-scopes`). So *"a route beside route 1, not in
+  place of it"* is right, and the rule that picks describe's route needs a
+  test that reads the program. Pruning extensions by the dead sets already
+  found would move the crossover. How far, the route will measure.
+- **The everything-alive cubes are decided in two saturations** on all 85
+  monotone programs where R is the cube, and on no other (§ 4). Describe
+  already makes both on the seven past the oracle's limit, and prints k_c as a
+  lower bound. k_s still needs the states: 27 559 on each `square-*`, 151 141
+  saturations by the state route against route 1's 1 048 576. On `arg-kinds`
+  k_s = 2¹⁹, so a route that visits each state once visits 2¹⁹.
+- **`zebra2-minus-15` is the open case.** Route 1 cannot finish it under this
+  ceiling. Through size 6 it has 4 097 512 alive commitments and 4 709 alive
+  states, and layer 6 met no new state (§ 3.2). Whether the state route
+  finishes it is S1e2.1c.2's to measure. This page does not predict it.
+- **Memory.** Route 1 keeps every visited point, at 0.4–0.9 KiB each (§ 2.1).
+  A route that keeps states keeps 870 times fewer on `zebra2-minus-15`'s first
+  six layers.
+
+**For [S1e2.1c.4](s1e2.1c.4_the_flags_at_scale.md):** § 5 and § 8 are the
+describe column it re-takes
+[`solve_interface.md` § 3.4](../p1e2.1a_the_solution_region/solve_interface.md#34-what-it-costs)
+against. Every other mode is its own.
+
+**For F21:** nothing. § 6 lists the flagged programs past the limit with
+what they get today, and measures nothing on them.
+
+## 8. The whole table
+
+Every monotone program with n ≥ 1, in § 5's columns, by |alive|, then n.
+The 97 monotone programs with n = 0 are one saturation each, and R is ∅'s
+state or empty:
+
+| n = 0 | programs | R | saturations |
+|---|---:|---|---:|
+| ∅ alive and discharged | 60 | {∅}: k_c = k_s = 1 | 1 |
+| ∅ alive, owing | 15 | empty | 1 |
+| ∅ dead | 22 | empty | 1 |
+
+Each of the 97 costs at most 5.9 ms.
+
+| program | n | \|alive\| | alive states | extensions | k_c | k_s | min | max | generators | \|N\| | saturations | facts | wall | default |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| `ein-bugs/alt-cap-core-reordered` | 70 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 506 µs | yes |
+| `ein-bugs/alt-cap-core` | 70 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 513 µs | yes |
+| `features/09_adjacent_via_same_house` | 82 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 400 µs | yes |
+| `ein-bugs/zebra2-hints` | 90 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 1.9 ms | yes |
+| `ein-bugs/wrong-answers/forced-1` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 2 | 2 | 213 µs | yes |
+| `ein-bugs/wrong-answers/forced-2-off` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 2 | 3 | 217 µs | yes |
+| `ein-bugs/wrong-answers/forced-2` | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 2 | 3 | 251 µs | yes |
+| `ein-bugs/alive-empty-phase1` | 2 | 1 | 1 | 2 | 1 | 1 | 1 | 1 | 1 | 2 | 3 | 4 | 269 µs | yes |
+| `ein-bugs/alive-set-fresh-name` | 2 | 1 | 1 | 2 | 1 | 1 | 1 | 1 | 1 | 2 | 3 | 6 | 249 µs | yes |
+| `ein-bugs/wrong-answers/forced-1-two` | 2 | 1 | 1 | 2 | 1 | 1 | 1 | 1 | 1 | 2 | 3 | 4 | 258 µs | yes |
+| `ein-bugs/wrong-answers/forced-2-two` | 2 | 1 | 1 | 2 | 1 | 1 | 1 | 1 | 1 | 2 | 3 | 6 | 283 µs | yes |
+| `ein-bugs/wrong-answers/fresh-name-default` | 2 | 1 | 1 | 2 | 1 | 1 | 1 | 1 | 1 | 2 | 3 | 6 | 333 µs | yes |
+| `ein-bugs/wrong-answers/fresh-name-nospawn` | 2 | 1 | 1 | 2 | 1 | 1 | 1 | 1 | 1 | 2 | 3 | 4 | 246 µs | yes |
+| `ein-bugs/wrong-answers/owed-two-step` | 2 | 1 | 1 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 3 | 6 | 312 µs | yes |
+| `ein-bugs/wrong-answers/tree-dead` | 2 | 1 | 1 | 2 | 0 | 0 | 0 | 0 | 0 | 2 | 3 | 4 | 304 µs | yes |
+| `branching/01_saturate_only` | 16 | 1 | 1 | 16 | 1 | 1 | 1 | 1 | 1 | 16 | 17 | 56 | 1.3 ms | yes |
+| `bijection/06_blind_enumeration` | 16 | 1 | 1 | 16 | 1 | 1 | 1 | 1 | 1 | 16 | 17 | 104 | 1.3 ms | yes |
+| `domain_elim/b_only` | 1 | 2 | 2 | 1 | 2 | 2 | 1 | 1 | 2 | 0 | 2 | 1 | 365 µs | yes |
+| `lattice/11_fifo_gap_static` | 1 | 2 | 2 | 1 | 2 | 2 | 1 | 1 | 2 | 0 | 2 | 1 | 270 µs | yes |
+| `branching/09_hrule` | 7 | 2 | 2 | 13 | 2 | 2 | 1 | 1 | 2 | 6 | 8 | 34 | 740 µs | yes |
+| `domain_elim/b_branch` | 7 | 2 | 2 | 13 | 2 | 2 | 1 | 1 | 2 | 6 | 8 | 13 | 344 µs | yes |
+| `features/13_mixed_solution_and_open` | 2 | 3 | 3 | 3 | 1 | 1 | 1 | 1 | 1 | 1 | 4 | 7 | 348 µs | yes |
+| `unsat-core-id-space` | 5 | 3 | 3 | 12 | 3 | 3 | 1 | 2 | 3 | 4 | 7 | 11 | 847 µs | yes |
+| `ein-bugs/mixed-type-hypothesis` | 2 | 4 | 4 | 3 | 4 | 4 | 1 | 1 | 4 | 0 | 4 | 4 | 234 µs | yes |
+| `ein-bugs/nested-fact-hypothesis` | 2 | 4 | 4 | 3 | 4 | 4 | 1 | 1 | 4 | 0 | 4 | 4 | 239 µs | yes |
+| `ein-bugs/wrong-answers/arity3` | 2 | 4 | 4 | 3 | 4 | 4 | 1 | 1 | 4 | 0 | 4 | 4 | 221 µs | yes |
+| `implies/org-chart` | 2 | 4 | 3 | 3 | 4 | 3 | 1 | 1 | 3 | 0 | 4 | 5 | 236 µs | yes |
+| `implies/parent-to-ancestor` | 2 | 4 | 3 | 3 | 4 | 3 | 1 | 1 | 3 | 0 | 4 | 5 | 247 µs | yes |
+| `implies/right-then-next` | 2 | 4 | 3 | 3 | 4 | 3 | 1 | 1 | 3 | 0 | 4 | 5 | 253 µs | yes |
+| `ein-bugs/alive-set-fresh-name-declared` | 6 | 4 | 4 | 19 | 4 | 4 | 1 | 1 | 4 | 4 | 8 | 19 | 333 µs | yes |
+| `branching/03_five_hyps_one_alive` | 132 | 4 | 2 | 262 | 4 | 2 | 1 | 1 | 3 | 130 | 134 | 442 | 2.0 ms | yes |
+| `branching/15_lookahead_two_step_on` | 3 | 5 | 5 | 7 | 5 | 5 | 1 | 2 | 5 | 2 | 7 | 12 | 300 µs | yes |
+| `branching/16_lookahead_two_step_off` | 3 | 5 | 5 | 7 | 5 | 5 | 1 | 2 | 5 | 2 | 7 | 12 | 328 µs | yes |
+| `ein-bugs/complete-records-stale` | 3 | 5 | 5 | 7 | 5 | 5 | 1 | 2 | 5 | 2 | 7 | 11 | 292 µs | yes |
+| `lattice/synth/one_model_per_component` | 4 | 5 | 5 | 10 | 4 | 4 | 4 | 4 | 4 | 6 | 11 | 22 | 329 µs | yes |
+| `lattice/02_genuine_3set_death` | 3 | 7 | 7 | 7 | 7 | 7 | 1 | 3 | 7 | 1 | 8 | 13 | 320 µs | yes |
+| `tests/region/01_states` | 3 | 7 | 7 | 7 | 7 | 7 | 1 | 3 | 7 | 1 | 8 | 13 | 374 µs | yes |
+| `tests/region/08_query_classes` | 3 | 7 | 7 | 7 | 7 | 7 | 1 | 3 | 7 | 1 | 8 | 13 | 310 µs | yes |
+| `features/11_expect_ambiguity` | 4 | 7 | 7 | 14 | 7 | 7 | 1 | 2 | 7 | 4 | 11 | 20 | 393 µs | yes |
+| `lattice/05_owed_seats_bounded` | 4 | 7 | 7 | 14 | 2 | 2 | 2 | 2 | 2 | 4 | 11 | 20 | 458 µs | yes |
+| `tests/region/09_query_over_maximal` | 4 | 7 | 7 | 14 | 7 | 7 | 1 | 2 | 7 | 4 | 11 | 20 | 370 µs | yes |
+| `branching/12_typed_blind_solve` | 25 | 7 | 3 | 71 | 7 | 3 | 1 | 2 | 5 | 25 | 32 | 356 | 2.7 ms | yes |
+| `lattice/03_state_hash_collision` | 3 | 8 | 5 | 7 | 8 | 5 | 1 | 1 | 5 | 0 | 8 | 16 | 298 µs | yes |
+| `transitive/colocation-chain` | 3 | 8 | 4 | 6 | 8 | 4 | 1 | 1 | 5 | 0 | 8 | 17 | 330 µs | yes |
+| `transitive/mealtimes` | 3 | 8 | 4 | 6 | 8 | 4 | 1 | 1 | 5 | 0 | 8 | 17 | 311 µs | yes |
+| `transitive/taxonomy` | 3 | 8 | 4 | 6 | 8 | 4 | 1 | 1 | 5 | 0 | 8 | 17 | 417 µs | yes |
+| `syntax/unary-and-nary` | 3 | 8 | 8 | 7 | 8 | 8 | 1 | 1 | 8 | 0 | 8 | 12 | 296 µs | yes |
+| `tests/region/03_merged_or` | 3 | 8 | 4 | 6 | 8 | 4 | 1 | 1 | 5 | 0 | 8 | 17 | 337 µs | yes |
+| `branching/05_mini_zebra` | 9 | 8 | 5 | 36 | 8 | 5 | 1 | 1 | 7 | 6 | 14 | 66 | 937 µs | yes |
+| `lattice/01_subset_pruned` | 4 | 12 | 12 | 15 | 12 | 12 | 1 | 2 | 12 | 1 | 13 | 23 | 375 µs | yes |
+| `ein-bugs/wrong-answers/owed-seats-renamed` | 4 | 16 | 16 | 15 | 7 | 7 | 2 | 1 | 7 | 0 | 16 | 32 | 386 µs | yes |
+| `ein-bugs/wrong-answers/owed-seats` | 4 | 16 | 16 | 15 | 7 | 7 | 2 | 1 | 7 | 0 | 16 | 32 | 347 µs | yes |
+| `ein-bugs/wrong-answers/uncovered-knows` | 4 | 16 | 16 | 15 | 7 | 7 | 2 | 1 | 7 | 0 | 16 | 32 | 394 µs | yes |
+| `ein-bugs/wrong-answers/uncovered` | 4 | 16 | 16 | 15 | 7 | 7 | 2 | 1 | 7 | 0 | 16 | 32 | 406 µs | yes |
+| `lattice/synth/merged_states` | 5 | 24 | 16 | 29 | 16 | 8 | 2 | 2 | 8 | 1 | 25 | 65 | 451 µs | yes |
+| `tests/region/02_merged_single` | 5 | 24 | 16 | 29 | 16 | 8 | 2 | 2 | 8 | 1 | 25 | 65 | 501 µs | yes |
+| `branching/04_two_levels` | 46 | 31 | 7 | 306 | 31 | 7 | 1 | 2 | 17 | 54 | 85 | 284 | 1.0 ms | yes |
+| `features/03_forall` | 5 | 32 | 21 | 30 | 32 | 21 | 1 | 1 | 21 | 0 | 32 | 92 | 517 µs | yes |
+| `lattice/synth/trivial_line` | 5 | 32 | 32 | 31 | 24 | 24 | 2 | 1 | 24 | 0 | 32 | 80 | 452 µs | yes |
+| `syntax/equality` | 6 | 64 | 64 | 63 | 64 | 64 | 1 | 1 | 64 | 0 | 64 | 192 | 612 µs | yes |
+| `branching/10_kill_cache_on` | 18 | 64 | 15 | 225 | 64 | 15 | 1 | 1 | 38 | 12 | 76 | 672 | 2.3 ms | yes |
+| `branching/11_kill_cache_off` | 18 | 64 | 15 | 225 | 64 | 15 | 1 | 1 | 38 | 12 | 76 | 672 | 2.4 ms | yes |
+| `lattice/07_two_pairs_two_tables` | 16 | 113 | 113 | 1 072 | 8 | 8 | 8 | 8 | 8 | 64 | 177 | 448 | 6.3 ms | yes |
+| `type-exclusivity/colors` | 8 | 169 | 169 | 246 | 169 | 169 | 1 | 9 | 169 | 4 | 173 | 644 | 828 µs | yes |
+| `type-exclusivity/nationalities` | 8 | 169 | 169 | 246 | 169 | 169 | 1 | 9 | 169 | 4 | 173 | 644 | 766 µs | yes |
+| `lattice/06_friends_tables_everyone_sits` | 19 | 277 | 277 | 3 044 | 8 | 8 | 8 | 8 | 8 | 68 | 345 | 969 | 1.3 ms | yes |
+| `branching/02_one_dead_one_alive` | 48 | 2 062 | 20 | 866 | 2 062 | 20 | 1 | 4 | 195 | 102 | 2 164 | 19 502 | 16.1 ms | yes |
+| `syntax/constraint-scopes` | 12 | 4 096 | 4 096 | 4 095 | 4 096 | 4 096 | 1 | 1 | 4 096 | 0 | 4 096 | 24 576 | 8.7 ms | yes |
+| `branching/08_hypothesis_relation_whitelist` | 38 | 5 782 | 34 | 1 098 | 5 782 | 34 | 1 | 8 | 443 | 164 | 5 946 | 55 506 | 24.4 ms | yes |
+| `zebra2-hints` | 36 | 8 316 | 6 | 190 | 8 316 | 6 | 1 | 2 | 21 | 73 | 8 389 | 309 545 | 0.50 s | yes |
+| `type-exclusivity/pets` | 15 | 11 339 | 11 339 | 26 191 | 11 339 | 11 339 | 1 | 39 | 11 339 | 12 | 11 351 | 76 743 | 23.3 ms | yes |
+| `branching/06_lookahead_on` | 204 | 18 622 | 74 | 14 594 | 18 622 | 74 | 1 | 22 | 1 227 | 570 | 19 192 | 180 962 | 88.6 ms | yes |
+| `branching/07_lookahead_off` | 204 | 18 622 | 74 | 14 594 | 18 622 | 74 | 1 | 22 | 1 227 | 570 | 19 192 | 180 962 | 90.6 ms | yes |
+| `features/02_star_in_identifiers` | 15 | 32 768 | 728 | 2 252 | 32 768 | 728 | 1 | 1 | 1 072 | 0 | 32 768 | 470 616 | 0.40 s | yes |
+| `zebra2-obligations` | 56 | 270 213 | 20 | 1 015 | 261 982 | 1 | 63 | 1 | 63 | 366 | 270 579 | 15 094 278 | 18.47 s | partial, layers 0–4 |
+| `zebra2` | 56 | 270 213 | 20 | 1 015 | 261 982 | 1 | 63 | 1 | 63 | 366 | 270 579 | 15 094 278 | 17.86 s | partial, layers 0–4 |
+| `zebra` | 56 | 270 454 | 27 | 1 374 | 261 982 | 1 | 63 | 1 | 63 | 458 | 270 912 | 30 251 060 | 26.08 s | partial, layers 0–2 |
+| `syntax/arg-kinds` | 19 | 524 288 | 524 288 | 524 287 | 524 288 | 524 288 | 1 | 1 | 524 288 | 0 | 524 288 | 4 980 736 | 1.81 s | partial, layers 0–6 |
+| `square-bwd/floors` | 20 | 1 048 576 | 27 559 | 151 140 | 1 048 576 | 27 559 | 1 | 1 | 29 711 | 0 | 1 048 576 | 18 468 768 | 11.42 s | partial, layers 0–5 |
+| `square-bwd/houses` | 20 | 1 048 576 | 27 559 | 151 140 | 1 048 576 | 27 559 | 1 | 1 | 29 711 | 0 | 1 048 576 | 18 468 768 | 12.86 s | partial, layers 0–5 |
+| `square-bwd/meetings` | 20 | 1 048 576 | 27 559 | 151 140 | 1 048 576 | 27 559 | 1 | 1 | 29 711 | 0 | 1 048 576 | 18 468 768 | 13.35 s | partial, layers 0–5 |
+| `square-fwd/floors` | 20 | 1 048 576 | 27 559 | 151 140 | 1 048 576 | 27 559 | 1 | 1 | 29 711 | 0 | 1 048 576 | 18 468 768 | 13.22 s | partial, layers 0–5 |
+| `square-fwd/houses` | 20 | 1 048 576 | 27 559 | 151 140 | 1 048 576 | 27 559 | 1 | 1 | 29 711 | 0 | 1 048 576 | 18 468 768 | 12.37 s | partial, layers 0–5 |
+| `square-fwd/meetings` | 20 | 1 048 576 | 27 559 | 151 140 | 1 048 576 | 27 559 | 1 | 1 | 29 711 | 0 | 1 048 576 | 18 468 768 | 13.09 s | partial, layers 0–5 |
+| `zebra2-minus-15-obligations` *(not finished)* | 96 | ≥ 4 097 512 | ≥ 4 709 | ≥ 411 209 | ≥ 2 840 307 | ≥ 32 | — | — | — | ≥ 27 804 | 4 125 317 | 378 138 052 | 493.49 s | partial, layers 0–2 |
+| `zebra2-minus-15` *(not finished)* | 96 | ≥ 4 097 512 | ≥ 4 709 | ≥ 411 209 | ≥ 2 840 307 | ≥ 32 | — | — | — | ≥ 27 804 | 4 125 317 | 378 138 052 | 494.97 s | partial, layers 0–2 |
