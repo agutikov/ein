@@ -395,6 +395,17 @@ EXAMPLES: dict[str, dict] = {
         "R": [["A", "ABCDE"], ["B", "ABCDE"]],
         "owing": [["", "CDE"]],
     },
+    "local_not_global": {
+        "name": "local_not_global",
+        "about": ("The lines, decided locally and globally (M1e2 S1e2.1b.6): A and B come\n"
+                  "together or not at all, as lattice/06_friends_tables' groups do. Either\n"
+                  "alone owes the other, so ∅ and {A,B} are in R with a hole on each side.\n"
+                  "Every edge out of ∅ and out of {A,B} leaves R, so the one-fact test calls\n"
+                  "∅ maximal and {A,B} minimal, and the cube says neither is."),
+        "candidates": "AB",
+        "R": [["", ""], ["AB", "AB"]],
+        "owing": [["A", "A"], ["B", "B"]],
+    },
     "maximal_not_top": {
         "name": "maximal_not_top",
         "about": ("Q-M1e2.7 (f)'s non-monotone half (M1e2 S1e2.1b.6): obligations and nothing\n"

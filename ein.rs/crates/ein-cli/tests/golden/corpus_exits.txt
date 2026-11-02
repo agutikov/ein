@@ -526,6 +526,10 @@
 0    examples/lattice/09_activator_hole.ein :: render rules
 0    examples/lattice/09_activator_hole.ein :: saturate
 0    examples/lattice/09_activator_hole.ein :: solve
+0    examples/lattice/synth/local_not_global.ein :: oracle --dump {out}/region
+0    examples/lattice/synth/local_not_global.ein :: render lattice
+0    examples/lattice/synth/local_not_global.ein :: saturate
+0    examples/lattice/synth/local_not_global.ein :: solve
 0    examples/lattice/synth/maximal_not_top.ein :: oracle --dump {out}/region
 0    examples/lattice/synth/maximal_not_top.ein :: render lattice
 0    examples/lattice/synth/maximal_not_top.ein :: saturate

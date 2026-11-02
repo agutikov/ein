@@ -1,0 +1,48 @@
+;;; local_not_global — a program written for its region, by utils/region_synth.py
+;;; (M1e2 S1e2.1a.8). Generated: edit the spec and regenerate, never this file:
+;;;   python3 utils/region_synth.py --example local_not_global --out <this file>
+;;;
+;;; The lines, decided locally and globally (M1e2 S1e2.1b.6): A and B come
+;;; together or not at all, as lattice/06_friends_tables' groups do. Either
+;;; alone owes the other, so ∅ and {A,B} are in R with a hole on each side.
+;;; Every edge out of ∅ and out of {A,B} leaves R, so the one-fact test calls
+;;; ∅ maximal and {A,B} minimal, and the cube says neither is.
+;;;
+;;; The cube is over 2 candidates (h A B), 4 nodes. The target:
+;;;   R           2 nodes in 2 component(s): 1 nodes from ∅; 1 nodes from {A,B}
+;;;   minimal     ∅
+;;;   maximal     {A,B}
+;;;   holes       {A}, {B}
+;;;   owing       2 nodes; dead 0
+;;;   monotone    no — a dead node revived or a debt added by growth needs an `absent` or an obligation trigger, so the static check should flag it
+;;;
+;;; 0 dead rule(s), 2 obligation rule(s), from the target's prime implicants.
+;;;
+;;; region-spec: {"name":"local_not_global","about":"The lines, decided locally and globally (M1e2 S1e2.1b.6): A and B come\ntogether or not at all, as lattice/06_friends_tables' groups do. Either\nalone owes the other, so ∅ and {A,B} are in R with a hole on each side.\nEvery edge out of ∅ and out of {A,B} leaves R, so the one-fact test calls\n∅ maximal and {A,B} minimal, and the cube says neither is.","candidates":"AB","R":[["",""],["AB","AB"]],"owing":[["A","A"],["B","B"]]}
+;;; region-status: RooR
+
+(relation h T)
+(relation slot T)
+(relation world T)
+(relation need T T)
+
+(world W)
+(slot A) (slot B)
+
+(need K1 B) (need K2 A)
+
+(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+
+(rule owe-1 ()
+  :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with A: one of B is required"
+  :priority 500)
+
+(rule owe-2 ()
+  :match  (and (h B) (absent (and (need K2 ?x) (h ?x))))
+  :assert (open h)
+  :why    "with B: one of A is required"
+  :priority 500)
+
+(query :goal (h ?x))

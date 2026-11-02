@@ -313,6 +313,22 @@ fn each_cause_has_a_fixture_whose_cube_shows_its_hole() {
     assert_eq!(r.nodes[1].refuted_by, ["watch"]);
 }
 
+/// **Across a hole the one-fact test misreads the lines** — S1e2.1b.6, the
+/// comparison's *lines* row. On a monotone cube a node of R is maximal exactly
+/// when every edge up leaves R, and the corpus never disagrees. On
+/// `synth/local_not_global`, *A and B together or not at all*, ∅ and {A,B}
+/// are in R with a hole on each side: the one-fact test calls ∅ maximal and
+/// {A,B} minimal, and the cube says neither is.
+#[test]
+fn across_a_hole_the_one_fact_test_misreads_the_lines() {
+    let (r, _) = region_of("examples/lattice/synth/local_not_global.ein");
+    assert!(!r.monotonicity.is_monotone());
+    assert_eq!(names(&r, &r.topology.holes), ["{(h A)}", "{(h B)}"]);
+    assert_eq!(names(&r, &r.topology.maximal), ["{(h A), (h B)}"]);
+    assert_eq!(names(&r, &r.topology.local_max), ["∅"]);
+    assert_eq!(names(&r, &r.topology.local_min), ["{(h A), (h B)}"]);
+}
+
 // ── Fact grain — S1e2.1b.1 ──────────────────────────────────────────
 
 /// Programs written to test the fact-grain prototype, each with what it is

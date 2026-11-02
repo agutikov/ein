@@ -297,6 +297,12 @@ runs   = ["solve", "saturate", "render rules", "render constraints", "render lat
 note   = "the third cause, an activator: a rule derives `(total-owed meal is-a)` once the kitchen opens, so a commitment compiles the stdlib rule root never had. lattice/04's cube by another mechanism, and until this file the corpus had no exercised activator site (M1e2 S1e2.1b.6)."
 
 [[entry]]
+path   = "examples/lattice/synth/local_not_global.ein"
+group  = "positive"
+runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
+note   = "the lines decided locally and globally: A and B together or not at all, so ∅ and {A,B} are in R with a hole on each side, and the one-fact test calls ∅ maximal and {A,B} minimal; written by utils/region_synth.py (M1e2 S1e2.1b.6)."
+
+[[entry]]
 path   = "examples/lattice/synth/maximal_not_top.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
