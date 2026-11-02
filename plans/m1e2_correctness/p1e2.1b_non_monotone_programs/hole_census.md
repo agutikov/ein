@@ -324,3 +324,383 @@ Every site named is the one the program was written to show:
 
 The other 19 items are named as before, each now with its cause. It is
 example code: no route reads it, and no answer moves.
+
+## 9. Each option, drafted on real programs
+
+The four options of [the stage](s1e2.1b.3_holes.md#the-options-for-f21s-d4),
+for F21's D4. **None is asked here.** Each is drafted as the rows it would
+print in place of today's `lattice` block, by the census itself from the cube
+it computed:
+
+```sh
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census -- --drafts --no-scratch \
+    examples/ein-bugs/naf-upward-closure.ein examples/lattice/04_obligation_trigger_hole.ein \
+    examples/lattice/08_absent_witness_hole.ein examples/lattice/synth/trigger_hole.ein \
+    plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example hole_census -- --drafts --no-scratch \
+    --limit 19 examples/lattice/06_friends_tables.ein
+```
+
+Taken 2026-11-02 at `c92d204e` with T1e2.1b.3.3's change. **Today's rows are
+the binary's**: the census prints them in `ein solve`'s format, and each was
+checked against `ein solve FILE` on the same day. **Every other block is
+drafted**: no command prints it. The wording is a placeholder for the option,
+not a proposal for its text, which is (d3)'s.
+
+- **(a) R, its lines and its holes named.** The `lattice` row says the lines
+  are R's own extremes and that not every node between them is in R. Then
+  every minimal hole, dead and owing named apart ((d1) drafted as two words):
+  a dead one with its refuting rule and the `absent` premises its refutation
+  rests on, an owing one with what it owes; its cause and site; and a second
+  row with its repair edges. The `(region …)` listing is R, as today.
+- **(b) R as convex pieces.** The `lattice` row, then § 5's pieces, each with
+  its own two lines, in place of the hole rows.
+- **(c) A qualifier.** Today's rows, with the stub reworded to say the lines
+  bound R and do not describe it.
+- **(d) A refusal.** A load error on stderr naming the sites, and nothing on
+  stdout.
+
+**Lines.** `ein solve`'s stdout today, and the `lattice` block under each
+option. Since the user's ruling of 2026-10-16 the **listings** (R's states, a
+line's members, each query's classes, `as :expect`) share 100 lines, and the
+rows above them do not count; `--dump-answer DIR` writes every listing whole to
+`DIR/answer.txt`. Option (a) as the stage states it puts the hole rows under
+that cap.
+
+| program | stdout today | its listings | `lattice` block today | (a) | (b) | (c) | (d) |
+|---|---:|---:|---:|---:|---:|---:|---|
+| `naf-upward-closure` | 35 | 13 | 2 | 3 | 4 | 2 | 1 line of stderr |
+| `lattice/04` | 35 | 14 | 2 | 3 | 4 | 2 | ″ |
+| `lattice/08` | 44 | 23 | 2 | 3 | 4 | 2 | ″ |
+| `synth/trigger_hole` | 88 | 66 | 3 | 5 | 8 | 3 | ″ |
+| probe `via_hole` | 43 | 22 | 2 | 3 | 4 | 2 | ″ |
+| `06_friends_tables`, bare | 114 | 100, cut | 1 | 1 | 1 | 1 | ″ |
+| `06_friends_tables`, `--region-limit 19` | 126 | 100, cut | 5 | **37** | **23** | 5 | ″ |
+
+On the five small programs every option fits beside the listings. On `06` at
+19 the listings are already cut today (*… 7 more classes: --dump-answer DIR
+writes them to DIR/answer.txt*); (a)'s 36 hole rows under the cap would leave
+64 lines for R's 21 states and the query's 21 classes, and the rest would go
+to `answer.txt`. `ein oracle --dump DIR`'s `region.md` already lists every
+minimal hole with why it is out (18 on `06`), so (a)'s `answer.txt` would
+repeat it in the read-out's form. Bare, past the limit, the cube is not
+enumerated and every option prints what today prints: *holes not known*.
+
+### naf-upward-closure, one dead hole
+
+`examples/ein-bugs/naf-upward-closure.ein`.
+
+Today, printed by `ein solve`:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole; assumes a monotone lattice for what a node is (P1e2.1b)
+    minimal hole    {(p A)} — dead: (p A)
+```
+
+(a), drafted:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole (1 dead): the lines are R's own minimal and maximal states, and R is not every node between them
+    dead hole       {(p A)} — refuted by bad, resting on (absent (q A)) (absent-refutes: bad)
+                      repaired by +(q A)
+```
+
+(b), drafted:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole: R is its convex pieces, below
+    pieces          2 convex pieces, each described by its own two lines; 1 state lies in more than one
+      piece 1 of 2  2 states — minimal ∅ · maximal {(q A)}
+      piece 2 of 2  2 states — minimal {(q A)} · maximal {(p A), (q A)}
+```
+
+(c), drafted:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole: the two lines bound R and do not describe it; R is the listing
+    minimal hole    {(p A)} — dead: (p A)
+```
+
+(d), drafted, on stderr:
+
+```
+error: examples/ein-bugs/naf-upward-closure.ein: not monotone, so R can have a hole — refused: bad: absent reads q at absent depth 1
+```
+
+### lattice/04, one owing hole by a trigger
+
+`examples/lattice/04_obligation_trigger_hole.ein`.
+
+Today, printed by `ein solve`:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole; assumes a monotone lattice for what a node is (P1e2.1b)
+    minimal hole    {(seats Ann C1)} — owes 1
+```
+
+(a), drafted:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole (1 owing): the lines are R's own minimal and maximal states, and R is not every node between them
+    owing hole      {(seats Ann C1)} — owes 1: meal owes Ann a Food. (trigger: total-owed [activator meal is-a])
+                      repaired by +(meal Ann Soup)
+```
+
+(b), drafted:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole: R is its convex pieces, below
+    pieces          2 convex pieces, each described by its own two lines; 1 state lies in more than one
+      piece 1 of 2  2 states — minimal ∅ · maximal {(meal Ann Soup)}
+      piece 2 of 2  2 states — minimal {(meal Ann Soup)} · maximal {(meal Ann Soup), (seats Ann C1)}
+```
+
+(c), drafted:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole: the two lines bound R and do not describe it; R is the listing
+    minimal hole    {(seats Ann C1)} — owes 1
+```
+
+(d), drafted, on stderr:
+
+```
+error: examples/lattice/04_obligation_trigger_hole.ein: not monotone, so R can have a hole — refused: total-owed [activator meal is-a]: obligation-trigger reads is-a at absent depth 0
+```
+
+### lattice/08, an owing hole from an `absent`
+
+`examples/lattice/08_absent_witness_hole.ein`.
+
+Today, printed by `ein solve`:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole; assumes a monotone lattice for what a node is (P1e2.1b)
+    minimal hole    {(allergic Ann), (seats Ann C1)} — owes 1
+```
+
+(a), drafted:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole (1 owing): the lines are R's own minimal and maximal states, and R is not every node between them
+    owing hole      {(allergic Ann), (seats Ann C1)} — owes 1: meal owes Ann a Food. (absent-witness: soup-unless-allergic)
+                      repaired by +(meal Ann Bread)
+```
+
+(b), drafted:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole: R is its convex pieces, below
+    pieces          2 convex pieces, each described by its own two lines; 3 states lie in more than one
+      piece 1 of 2  4 states — minimal {(meal Ann Bread)}, {(seats Ann C1)} · maximal {(allergic Ann), (meal Ann Bread)}, {(meal Ann Bread), (seats Ann C1)}
+      piece 2 of 2  4 states — minimal {(meal Ann Bread)} · maximal {(allergic Ann), (meal Ann Bread), (seats Ann C1)}
+```
+
+(c), drafted:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole: the two lines bound R and do not describe it; R is the listing
+    minimal hole    {(allergic Ann), (seats Ann C1)} — owes 1
+```
+
+(d), drafted, on stderr:
+
+```
+error: examples/lattice/08_absent_witness_hole.ein: not monotone, so R can have a hole — refused: soup-unless-allergic: absent reads allergic at absent depth 1
+```
+
+### synth/trigger_hole, both kinds
+
+`examples/lattice/synth/trigger_hole.ein`.
+
+Today, printed by `ein solve`:
+
+```
+  lattice           not monotone: 3 sites (the static check) — 7 holes; assumes a monotone lattice for what a node is (P1e2.1b)
+    minimal hole    {(h A), (h B)} — owes 1
+    minimal hole    {(h A), (h D)} — dead: (h A) (h D)
+```
+
+(a), drafted:
+
+```
+  lattice           not monotone: 3 sites (the static check) — 7 holes (3 dead, 4 owing): the lines are R's own minimal and maximal states, and R is not every node between them
+    owing hole      {(h A), (h B)} — owes 1: with B: one of C is required (trigger: owe-2)
+                      repaired by +(h C)
+    dead hole       {(h A), (h D)} — refuted by dead-1, resting on (absent (h B)), (absent (h E)) (absent-refutes: dead-1)
+                      repaired by +(h E)
+```
+
+(b), drafted:
+
+```
+  lattice           not monotone: 3 sites (the static check) — 7 holes: R is its convex pieces, below
+    pieces          6 convex pieces, each described by its own two lines; 7 states lie in more than one
+      piece 1 of 6  4 states — minimal {(h A)} · maximal {(h A), (h C), (h E)}
+      piece 2 of 6  4 states — minimal {(h A), (h C)} · maximal {(h A), (h B), (h C), (h E)}
+      piece 3 of 6  5 states — minimal {(h A), (h C)}, {(h A), (h E)} · maximal {(h A), (h B), (h C)}, {(h A), (h C), (h E)}, {(h A), (h D), (h E)}
+      piece 4 of 6  4 states — minimal {(h A), (h E)} · maximal {(h A), (h C), (h D), (h E)}
+      piece 5 of 6  5 states — minimal {(h A), (h B), (h C)}, {(h A), (h C), (h E)}, {(h A), (h D), (h E)} · maximal {(h A), (h B), (h C), (h E)}, {(h A), (h C), (h D), (h E)}
+      piece 6 of 6  4 states — minimal {(h A), (h C), (h E)} · maximal {(h A), (h B), (h C), (h D), (h E)}
+```
+
+(c), drafted:
+
+```
+  lattice           not monotone: 3 sites (the static check) — 7 holes: the two lines bound R and do not describe it; R is the listing
+    minimal hole    {(h A), (h B)} — owes 1
+    minimal hole    {(h A), (h D)} — dead: (h A) (h D)
+```
+
+(d), drafted, on stderr:
+
+```
+error: examples/lattice/synth/trigger_hole.ein: not monotone, so R can have a hole — refused: dead-1: absent reads h at absent depth 1; dead-2: absent reads h at absent depth 1; owe-2: obligation-trigger reads h at absent depth 0
+```
+
+### via_hole, dead through a derived relation
+
+`plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein`.
+
+Today, printed by `ein solve`:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole; assumes a monotone lattice for what a node is (P1e2.1b)
+    minimal hole    {(r one), (s one)} — dead: (r one) (s one)
+```
+
+(a), drafted:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole (1 dead): the lines are R's own minimal and maximal states, and R is not every node between them
+    dead hole       {(r one), (s one)} — refuted by clash, resting on (absent (q one)) (via: derive-p)
+                      repaired by +(q one)
+```
+
+(b), drafted:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole: R is its convex pieces, below
+    pieces          2 convex pieces, each described by its own two lines; 3 states lie in more than one
+      piece 1 of 2  6 states — minimal ∅ · maximal {(q one), (r one)}, {(q one), (s one)}
+      piece 2 of 2  4 states — minimal {(q one)} · maximal {(q one), (r one), (s one)}
+```
+
+(c), drafted:
+
+```
+  lattice           not monotone: 1 site (the static check) — 1 hole: the two lines bound R and do not describe it; R is the listing
+    minimal hole    {(r one), (s one)} — dead: (r one) (s one)
+```
+
+(d), drafted, on stderr:
+
+```
+error: plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/via_hole.ein: not monotone, so R can have a hole — refused: derive-p: absent reads q at absent depth 1
+```
+
+### `06_friends_tables` at `--region-limit 19`, 166 holes
+
+Today, printed by `ein solve examples/lattice/06_friends_tables.ein
+--region-limit 19`: the stub and the first four of the 18 minimal holes, each
+`— owes 1`.
+
+(a), drafted, 37 lines, of which the first five and two of the trio's:
+
+```
+  lattice           not monotone: 1 site (the static check) — 166 holes (166 owing): the lines are R's own minimal and maximal states, and R is not every node between them
+    owing hole      {(sits Ann B1)} — owes 1: Ann's group Pair sits, and Bob has no seat (trigger: group-seated-owed)
+                      repaired by +(sits Bob B2), +(sits Bob B3)
+    owing hole      {(sits Ann B2)} — owes 1: Ann's group Pair sits, and Bob has no seat (trigger: group-seated-owed)
+                      repaired by +(sits Bob B1), +(sits Bob B3)
+    …
+    owing hole      {(sits Cat B1)} — owes 2: Cat's group Trio sits, and Dan has no seat; Cat's group Trio sits, and Eve has no seat (trigger: group-seated-owed)
+                      no one fact takes it into R
+```
+
+(b), drafted, 23 lines: the `lattice` row, `21 convex pieces, each described
+by its own two lines`, and one row per state, each its own minimal and maximal
+member. (c): today's five rows, the stub reworded. (d): refused.
+
+### The written programs
+
+On `ACTIVATOR_REFUTES` (a)'s row reads *refuted by watch, resting on (absent
+(q A))*, and on `ACTIVATOR_UNDER_ABSENT` *refuted by watch, resting on no
+recorded `absent`*: § 2's finding, printed as (a) would print it. The other
+options print what they print on `naf-upward-closure`.
+
+## 10. The consequences, per option
+
+What each option would move, counted on the corpus. The goldens are
+`ein-render/tests/golden/corpus_shapes.md5`, whose renderings of every corpus
+entry include five read-outs (`read-out[describe]`, `[maximal]`, `[minimal]`,
+`[single]`, `[n2]`) and the `region-trace`, which repeats the `lattice` block;
+`ein-cli/tests/golden/corpus_exits.txt`; the read-out's golden page,
+[`read_out_examples.md`](../p1e2.1a_the_solution_region/read_out_examples.md),
+whose X8 is `naf-upward-closure` and X9 is `06_friends_tables` past the limit;
+and `ein-summary/2`'s `region.holes`, which lists every minimal hole with
+`set`, `dead`, `core` and `owes`. Counted 2026-11-02 at `c92d204e`, from the
+two golden files and `site_census --json`'s rows.
+
+| | (a) holes named | (b) convex pieces | (c) a qualifier | (d) a refusal |
+|---|---|---|---|---|
+| **refuses** | nothing | nothing | nothing | every program the static check flags: **26** of the 208 that load and saturate (25 corpus entries and `d3-unsat-core`), **8 of them conservative**, with no hole and R convex. `06_friends_tables` among them, and every conditional obligation written as the user wrote it |
+| **read-out lines** | the `describe` read-out of a program with a hole: the `lattice` row's text, and one row per minimal hole plus one of repair edges, where today has up to four | the same read-out: a `pieces` row and one per piece | the `lattice` row, wherever the stub prints it today: every flagged program, every mode | all of them: a load error on stderr and nothing on stdout |
+| **`corpus_shapes.md5`** | `read-out[describe]` and `region-trace` of the **9** corpus entries with a hole: **18** lines | the same **18** | `read-out[*]` and `region-trace` of all **25** flagged corpus entries: **150** lines | every rendering of the 25 that runs a lattice: **175** lines (5 read-outs, `region-trace`, `region-lattice` each), or all **875** if every subcommand refuses (S1e2.2.5's F3 asks the same of *forbid*) |
+| **`corpus_exits.txt`** | 0 | 0 | 0 | the cells of the 25 that run `solve`, `oracle` or `test`: **33** of their 104 (24, 7 and 2), all 0 → 1 or 2; all 104 if every subcommand refuses |
+| **`read_out_examples.md`** | X8 | X8 | X8, X9 | X8, X9 |
+| **`ein-summary/2`** | `holes.minimal[*]` gains `cause`, `sites` and `repairs`: additive | a `pieces` block: additive | none, unless the qualifier is a field | no summary |
+| **the register** | nothing | nothing | nothing | the 9 rows whose witness is flagged are re-stated with a refusal as `right`: `W1/alive-empty-interlayer`, `W1/` and `W11/d3-unsat-core`, W3's four (already a refusal under *forbid*), `W8/features-07`, `W8/stale-naf-fork` |
+| **new notions** | none: the oracle has every field | *convex piece*, which is not a partition (§ 5): a choice of which piece keeps a shared state, or overlapping pieces on the page | none | *R can have a hole*, decided statically: the static check's flag, sufficient and not necessary |
+| **`06` past the limit** | *holes not known: the cube was not enumerated*, as today; nothing to name | *pieces not known* | the qualifier, with the lines it qualifies not known | refused |
+| **`06` at `--region-limit 19`** | 37 rows for 5 today, +32; the listings were already cut at 100 | 23 rows, +18 | 5 rows, as today | refused |
+
+**What (a) prints that today does not, everywhere.** The `absent` a dead
+hole's refutation rests on (today only the core, § 4), the cause and site,
+the repair edges, and *every* minimal hole (today four). On the probe
+`via_hole` it is the only place `derive-p`, the rule two derivations up, is
+named. On `activator_under_absent` it says *no recorded `absent`*, which is
+§ 2's finding printed.
+
+**What (b) costs on the corpus.** 6 pieces against 2 line members on
+`trigger_hole`, with 7 states in more than one piece; 21 pieces of one state on
+`06`. Its rows say less than (a)'s about why a node is out, and the pieces
+need a rule the census had to choose (§ 5).
+
+**What (c) leaves out.** It is the stub reworded and needs no new row, which is
+also what S1e2.1b.5's warning does to the stub in the meantime (the stage's
+(d3)). What it does not say is which nodes are holes beyond the first four,
+why a dead hole is dead, or which fact repairs one: on `06`, 14 of 18 minimal
+holes stay unnamed on stdout.
+
+**What (d) costs.** 8 of the 26 programs it refuses have no hole within the
+limit (the conservative eight), so it refuses programs whose R two lines
+describe exactly; a refusal read off the cube instead would refuse 9 and could
+not run past the limit, where `06` is. It refuses the user's own way of
+writing a conditional obligation (`06_friends_tables`, Q-M1e2.7's third
+answer), and it is F21's D2 (D) extended from `absent` cycles to every site.
+
+**`lattice/04`'s row, (d4).** No row is filed, and the README's inherited
+row names F21's D4 (d4). Fork and scratch agree on every node of `lattice/04`
+(§ 6), so no reading of D2 moves its R. Under (a), (b) or (c) the answer is
+the R `ein solve` lists today and only the rows around the hole change, which
+is not a wrong answer. Under (d) the right answer is a refusal, and today's
+read-out would then be a row's `now`.
+
+**The sub-questions, against the drafts.** (d1): (a) is drafted with two
+words, *dead hole* and *owing hole*; with one word the `why` already tells them
+apart, as today. (d2): no option needs a claim form, since `(solve :expect
+(region …))` states R and R fixes its holes; (b) would want one only if the
+pieces were part of the answer and not of its description. (d3): (c) is the
+stub reworded, and S1e2.1b.5's warning rewords it in the meantime whatever is
+decided. (d4): above.
+
+**The stage's recommendation, re-examined against the evidence (mine, not a
+ruling).** (a), with dead and owing holes named apart and no new claim form,
+kept. Two things the census adds to it: the dead row should print the
+`absent` premises the refutation rests on, which today's row does not, and say
+so when there are none (`activator_under_absent`); and a repair edge is one
+fact, so on `06` 8 of 18 minimal holes have none to print. (b)'s pieces are
+not a partition and need a rule to be one; (c) prints less than the oracle
+holds; (d) refuses 8 programs with no hole and the user's conditional
+obligation.

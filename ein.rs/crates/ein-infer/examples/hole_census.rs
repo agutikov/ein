@@ -271,6 +271,10 @@ struct Hole {
     kind: &'static str,
     also_owes: bool,
     why: String,
+    /// A dead hole's refuting rules and the `absent` premises the oracle
+    /// read off its refutation.
+    refuted_by: Vec<String>,
+    absent: Vec<String>,
     attributed: Attributed,
 }
 
@@ -317,10 +321,13 @@ fn drafts(
         ),
     )];
     for h in minimal.iter().take(4) {
-        today.push(row(
-            "  minimal hole",
-            format!("{} — {}", r.name(h.mask), h.why),
-        ));
+        // As `ein solve` prints it: the core, or the count owed.
+        let why = if h.kind == "dead" {
+            h.why.clone()
+        } else {
+            format!("owes {}", r.nodes[h.mask as usize].owes)
+        };
+        today.push(row("  minimal hole", format!("{} — {why}", r.name(h.mask))));
     }
     // (a) R, its lines named as R's extremes, every minimal hole with its
     // cause, its site and its repair edges; dead and owing named apart.
@@ -332,22 +339,47 @@ fn drafts(
         ),
     )];
     for h in minimal {
-        let causes: Vec<&str> = h.attributed.causes.iter().map(|c| c.words()).collect();
+        let sites: Vec<&str> = h
+            .attributed
+            .sites
+            .iter()
+            .map(|s| s.split(':').next().unwrap_or(s))
+            .collect();
+        let why = if h.kind == "dead" {
+            format!(
+                "refuted by {}, resting on {}",
+                h.refuted_by.join(", "),
+                if h.absent.is_empty() {
+                    "no recorded `absent`".to_string()
+                } else {
+                    h.absent.join(", ")
+                }
+            )
+        } else {
+            h.why.clone()
+        };
+        let causes: Vec<&str> = h.attributed.causes.iter().map(|c| c.key()).collect();
         a.push(row(
             &format!("  {} hole", h.kind),
             format!(
-                "{} — {}; {}: {}",
+                "{} — {why} ({}: {})",
                 r.name(h.mask),
-                h.why,
                 causes.join(", "),
-                h.attributed.sites.join("; ")
+                sites.join(", ")
             ),
         ));
         let rep: Vec<String> = repairs_of(r, h.mask)
             .into_iter()
             .map(|(f, _)| format!("+{f}"))
             .collect();
-        a.push(row("", format!("  repaired by {}", rep.join(", "))));
+        a.push(row(
+            "",
+            if rep.is_empty() {
+                "  no one fact takes it into R".to_string()
+            } else {
+                format!("  repaired by {}", rep.join(", "))
+            },
+        ));
     }
     // (b) R as its convex pieces, each with its own two lines.
     let b = match pieces {
@@ -360,7 +392,14 @@ fn drafts(
             }
             let shared = seen.values().filter(|&&c| c > 1).count();
             let mut v = vec![row(
-                "pieces",
+                "lattice",
+                format!(
+                    "not monotone: {n_sites} (the static check) — {}: R is its convex pieces, below",
+                    plural(holes.len(), "hole", "holes")
+                ),
+            )];
+            v.push(row(
+                "  pieces",
                 format!(
                     "{}, each described by its own two lines{}",
                     plural(ps.len(), "convex piece", "convex pieces"),
@@ -373,10 +412,10 @@ fn drafts(
                         String::new()
                     }
                 ),
-            )];
+            ));
             for (i, p) in ps.iter().enumerate() {
                 v.push(row(
-                    &format!("  piece {} of {}", i + 1, ps.len()),
+                    &format!("    piece {} of {}", i + 1, ps.len()),
                     format!(
                         "{} — minimal {} · maximal {}",
                         plural(p.members.len(), "state", "states"),
@@ -477,6 +516,8 @@ fn row(src: &Source, limit: u32, jobs: usize, scratch: bool, with_drafts: bool) 
             kind,
             also_owes: kind == "dead" && status & OWING != 0,
             why,
+            refuted_by: node.refuted_by.clone(),
+            absent: node.absent_premises.clone(),
             attributed,
         });
     }
