@@ -151,10 +151,11 @@
 # **S1e2.2.14 fixed W15's eight rows the same day** (T1e2.2.14.2):
 # `invariant::program_names` is the one list of the program's names, and
 # `hypgen::candidate_objects` unions it into the names index, so each witness
-# answers its twin's R. Each flipped row's `[case.fixed]` carries the null id
-# in the flipping commit, and the stage's next commit writes the hash. W7's
-# row moved with R and stays open for W7's own defect: its `[case.now]` and
-# `[case.region]` are the two-state R, and its `right` is restated to R under
+# answers its twin's R. Each flipped row's `[case.fixed]` carried the null id
+# in the flipping commit, `15c9e700`, and the stage's next commit wrote the
+# hash. W7's row moved with R and stays open for W7's own defect: its
+# `[case.now]` and `[case.region]` are the two-state R, and its `right` is
+# restated to R under
 # the ruling, the `holds` facts of the maximal state and the six `noted` facts
 # a saturator that loses nothing derives there. The register reads **37 rows
 # fixed, 5 open and 1 not-wrong**.
@@ -2751,7 +2752,7 @@ status   = "fixed"
 look_at  = ["root", "answer", "summary"]
 
 [case.fixed]
-commit = "0000000"
+commit = "15c9e700"
 by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
 date   = "2026-11-04"
 
@@ -2815,7 +2816,7 @@ status   = "fixed"
 look_at  = ["root", "answer", "summary"]
 
 [case.fixed]
-commit = "0000000"
+commit = "15c9e700"
 by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
 date   = "2026-11-04"
 
@@ -2879,7 +2880,7 @@ status   = "fixed"
 look_at  = ["root", "answer", "summary"]
 
 [case.fixed]
-commit = "0000000"
+commit = "15c9e700"
 by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
 date   = "2026-11-04"
 
@@ -2932,7 +2933,7 @@ status   = "fixed"
 look_at  = ["root", "answer", "summary"]
 
 [case.fixed]
-commit = "0000000"
+commit = "15c9e700"
 by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
 date   = "2026-11-04"
 
@@ -2985,7 +2986,7 @@ status   = "fixed"
 look_at  = ["root", "answer", "summary"]
 
 [case.fixed]
-commit = "0000000"
+commit = "15c9e700"
 by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
 date   = "2026-11-04"
 
@@ -3039,7 +3040,7 @@ status   = "fixed"
 look_at  = ["root", "answer", "summary"]
 
 [case.fixed]
-commit = "0000000"
+commit = "15c9e700"
 by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
 date   = "2026-11-04"
 
@@ -3094,7 +3095,7 @@ status   = "fixed"
 look_at  = ["root", "answer", "summary"]
 
 [case.fixed]
-commit = "0000000"
+commit = "15c9e700"
 by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
 date   = "2026-11-04"
 
@@ -3148,7 +3149,7 @@ status   = "fixed"
 look_at  = ["root", "answer", "summary"]
 
 [case.fixed]
-commit = "0000000"
+commit = "15c9e700"
 by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
 date   = "2026-11-04"
 

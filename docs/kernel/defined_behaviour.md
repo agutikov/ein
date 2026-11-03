@@ -357,6 +357,15 @@ expects the panic in a debug build and the missing fact in a release one.
 > universe is seeded with every such constant, and the baseline below counts
 > them. Until then this section read clause 1 against the facts' names alone,
 > and *What a breach cost* is the program on which that cost a model.
+>
+> **Widened 2026-11-04** — M1e2
+> [S1e2.2.14](../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.14_unread_names.md).
+> The user ruled the same day that a name is any constant the program writes
+> in a fact, at any depth, or anywhere in a rule, `:match` included, and not
+> one only a query writes
+> ([Q-M1e2.9](../../plans/m1e2_correctness/open_questions.md#q-m1e29--which-constants-are-names-of-the-program)
+> (a)). R0 below is that list; a name only a `:match` or a nested fact wrote
+> was missing from the candidates until then (M1e2's W15).
 
 The prose form is three clauses about a rule library. The evaluable form has
 to name the sets and the moment, and there are **three readings**, ordered by
@@ -364,7 +373,7 @@ strength:
 
 | | claim | how it is checked |
 |---|---|---|
-| **R0** | every constant a rule's `:assert` names is among the blind enumerator's objects, whether or not a fact names it | statically, at load, over the registered rules: [`ein_infer::invariant::rule_constants`](../../ein.rs/crates/ein-infer/src/invariant.rs) is the one list, and `hypgen::candidate_objects` reads it |
+| **R0** | every name of the program — every constant a fact names at any depth, or a rule's `:match` or `:assert` names — is among the blind enumerator's objects, whether or not the names index holds it | statically, at load, over the facts and the registered rules: [`ein_infer::invariant::program_names`](../../ein.rs/crates/ein-infer/src/invariant.rs) is the one list, and `hypgen::candidate_objects` reads it |
 | **R1** | nothing a run *derives* names what the loaded program — its facts and its rules' constants — did not | a post-fixpoint scan, `Universe::breaches` |
 | **R2** | nothing the **search** reaches names what **root's fixpoint** and the rules' constants did not | the same scan, against a baseline taken at root's fixpoint |
 
@@ -374,9 +383,10 @@ taken once, at root's fixpoint
 and every route reads subsets of it. A name that arrived later would extend
 the blind enumerator's candidate-object pool into a region no route revisits.
 **R0 is what makes R2 hold for a rule's constant**: the pool is
-`kb.names()`, a function of the KB's facts, **∪ the rules' `:assert`
-constants**, so a constant that a rule asserts only inside a commitment is an
-object from root on. It is free and total: it reads the rules once, so it
+`kb.names()`, a function of the KB's facts' top level, **∪ every name of the
+program** (the facts' arguments at any depth, the rules' `:match` and
+`:assert` constants), so a constant that a rule asserts only inside a
+commitment is an object from root on. It is free and total: it reads the rules once, so it
 answers for *every run the program could have* rather than for the one that
 happened, and the same read cost **7 µs** on `examples/zebra2.ein` (84 facts,
 30 rules) when S1e.3.3 measured it. A *variable* leaf contributes nothing,
@@ -396,8 +406,8 @@ length. `Ann` in `examples/ein-bugs/mixed-type-hypothesis.ein` is interned at
 during the search (`ein-infer/tests/interning.rs` measures exactly that); what
 makes `Ann` a name of the program is that a rule names it. So the baseline is:
 every symbol the loaded facts mention at any depth, every constant a rule's
-`:assert` names, plus the relation registry's names and the symbols in their
-signatures.
+`:match` or `:assert` names, plus the relation registry's names and the
+symbols in their signatures.
 
 **What counts as a new relation.** The registry — *declared ∪ auto-vivified* —
 **∪ every constant head a rule can `:assert`**, and the widening is not a
@@ -433,8 +443,10 @@ it reached that state. Since S1e2.2.4 the two describe one R, four states
 until then a `warn` event, category `alive-set-invariant`, narrated each
 constant only a rule names, at root under `--events`; under the ruling none of
 them is new, so the line would say something false, and it left. The set is
-named by a test (`alive_invariant.rs::the_names_only_a_rule_mentions_are_seeded`:
-`Ann`, `G`, `Z`), and `ein solve FILE -H` lists the candidates the seed makes.
+named by a test (`alive_invariant.rs::every_name_of_the_program_is_a_candidate_object`:
+37 names on 16 programs that the names index does not hold, 2026-11-04; it was
+`Ann`, `G` and `Z` until S1e2.2.14), and `ein solve FILE -H` lists the
+candidates the seed makes.
 The F5 typed form is what would make a violation unrepresentable rather than
 detected.
 

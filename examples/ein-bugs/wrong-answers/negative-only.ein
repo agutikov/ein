@@ -1,6 +1,7 @@
 ;;; A name written **only inside a nested fact** never became a candidate —
 ;;; M1e2 **W15**, register row `W15/negative-only` (`corpus/wrong_answers.toml`),
-;;; fixed by S1e2.2.14 (2026-11-04). Banked from S1e2.2.4's residue probe of 2026-11-04.
+;;; fixed by S1e2.2.14 (2026-11-04). Banked from S1e2.2.4's residue probe
+;;; of the same day.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;

@@ -195,7 +195,10 @@ pre-conditions hold across the puzzle's rule library — collectively the
    of the program, so it is one of the program's names — the user's
    ruling of 2026-10-16 on Q-M1e.21, (b) — and since M1e2 S1e2.2.4
    the blind enumerator's objects are seeded with every constant a
-   rule's `:assert` names.
+   rule's `:assert` names; since S1e2.2.14 with every name of the
+   program, a constant a rule's `:match` names and one a fact names
+   only inside a nested fact included (Q-M1e2.9 (a), 2026-11-04;
+   a constant only a query names is not one).
 2. **No new relations.** Rules don't `:assert (relation N S₀ S₁)`
    declarations — the relation registry is fixed by the ontology
    block.
@@ -237,14 +240,15 @@ two describe one R.
 are, which one the soundness rests on, what the baseline is and what a breach
 is reported as — is
 [`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally).
-In short: [`ein_infer::invariant::rule_constants`](../../../ein.rs/crates/ein-infer/src/invariant.rs)
-reads the rules' `:assert` constants at load, and `hypgen::candidate_objects`
+In short: [`ein_infer::invariant::program_names`](../../../ein.rs/crates/ein-infer/src/invariant.rs)
+reads the program's names at load (the facts' arguments at any depth, the
+rules' `:match` and `:assert` constants), and `hypgen::candidate_objects`
 seeds the blind enumerator's objects with them;
-`ein-infer/tests/alive_invariant.rs` names the corpus programs whose rule
-mentions a constant no fact does — `mixed-type-hypothesis.ein` (`Ann`),
-`tests/stdlib/algebra/07_schroder.ein` (`G`) and W4's witness (`Z`) — holds
-each to the seed, and confirms that no run reaches a name outside the
-program's. The one shape that could name something else, a relation
+`ein-infer/tests/alive_invariant.rs` names the corpus programs with a name the
+KB's names index does not hold — 37 names on 16 programs (2026-11-04), among
+them `mixed-type-hypothesis.ein`'s `Ann`, `07_schroder.ein`'s `G`, W4's `Z`
+and W15's — holds each to the seed, and confirms that no run reaches a name
+outside the program's. The one shape that could name something else, a relation
 parameter bound to an integer, is refused at load or at compile
 ([`defined_behaviour.md` § 4.6](../defined_behaviour.md#46-a-relation-named-by-a-number--m1e2-s1e224)).
 

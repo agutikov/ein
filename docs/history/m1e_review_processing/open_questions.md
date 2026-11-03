@@ -1572,6 +1572,13 @@ pre-empts M20, which binds the same crates.
 > The residue below, a `(?R ?a ?b)` head bound to an integer, is refused at
 > load where the activator is written down and at compile where a rule
 > derives it ([§ 4.6](../../kernel/defined_behaviour.md#46-a-relation-named-by-a-number--m1e2-s1e224)).
+> **Widened 2026-11-04** by M1e2
+> [S1e2.2.14](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.14_unread_names.md),
+> on the user's ruling of that day
+> ([Q-M1e2.9](../../../plans/m1e2_correctness/open_questions.md#q-m1e29--which-constants-are-names-of-the-program)
+> (a)): the seed is every name of the program, `invariant::program_names`, a
+> constant a rule's `:match` names and one a fact names only inside a nested
+> fact included (M1e2's W15).
 > The entry below is the question as it was asked.
 
 The blind enumerator builds its candidate objects from `kb.names()` — a

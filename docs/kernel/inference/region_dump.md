@@ -249,8 +249,9 @@ are the user's ruling of 2026-10-15:
 
 It checks the **routes**: every `ein solve` mode is held to it
 (`ein-infer/tests/explore.rs`). It does not check the saturator, because they
-share it (W7), and it does not check that the candidate list is complete (W6,
-and W4 until M1e2 S1e2.2.4 seeded it with a rule's constants).
+share it (W7), and it does not check that the candidate list is complete (W6;
+W4 until M1e2 S1e2.2.4 seeded it with a rule's constants, and W15 until
+S1e2.2.14 made it every name of the program).
 The per-subset route, [`utils/region.py`](../../../utils/region.py), is a
 second implementation for small programs. It runs one `ein saturate` per
 subset, and `ein-cli/tests/region_dump.rs` holds the two to the same nodes on

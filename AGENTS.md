@@ -384,9 +384,11 @@ constrained-reasoning research.
   saturate → the NAF boundary → the routes over R, `explore` (the walk's
   hypothesis loop until M1e2 S1e2.1c.5 deleted it); and since M1e S1e.3.3
   `invariant.rs`, the **M1 alive-set invariant** — *no rule asserts a name
-  the program lacks* — whose list of the rules' `:assert` constants seeds the
-  blind enumerator's objects since M1e2 S1e2.2.4, because a rule's constant
-  is a name of the program (Q-M1e.21 (b)).
+  the program lacks* — whose list of the program's names seeds the blind
+  enumerator's objects: a rule's `:assert` constants since M1e2 S1e2.2.4,
+  because a rule's constant is a name of the program (Q-M1e.21 (b)), and
+  every constant a fact names at any depth or a rule's `:match` names since
+  S1e2.2.14 (Q-M1e2.9 (a); not one only a query names).
   [`examples/ein-bugs/alive-set-fresh-name.ein`](examples/ein-bugs/alive-set-fresh-name.ein)
   is the eleven lines on which a rule's constant missing from the candidates
   cost a model, W4), **`ein-einb`** (the
