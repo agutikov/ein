@@ -32,7 +32,7 @@ is quoted.
 | [X5](#x5--latticesynthmerged_statesein-every-state-merged) | `lattice/synth/merged_states.ein` | 5 | ∅ not in R; a `(merged …)` on every state; two components |
 | [X6](#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe) | `tests/stdlib/closure/03_closed_and_owing.ein` | 0 | empty R, the owing kind; `--single` says `Open` |
 | [X7](#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) | `tests/stdlib/algebra/09_irreflexive_violated.ein` | 0 | empty R, the dead kind; `--single` says `Contradiction` |
-| [X8](#x8--ein-bugsnaf-upward-closureein-a-hole) | `ein-bugs/naf-upward-closure.ein` | 2 | a program the static check flags: route 2, a hole, the warning |
+| [X8](#x8--lattice04_obligation_trigger_holeein-a-hole) | `lattice/04_obligation_trigger_hole.ein` | 2 | a program the static check flags: route 2, a hole, the warning |
 | [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: members, never line members |
 | [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: exhausted at the default budget by the state route, cut on stdout and whole in `answer.txt`; `--maximal -n 1`; `--single` |
 | [X11](#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) | `saturation/square-bwd/floors.ein` | 20 | R is the whole cube: decided, its states counted in part; the first questions in 1–11 saturations |
@@ -808,61 +808,70 @@ stderr: note: tests/stdlib/algebra/09_irreflexive_violated.ein: (solve :expect) 
 exit 0
 ```
 
-## X8 — `ein-bugs/naf-upward-closure.ein`: a hole
+## X8 — `lattice/04_obligation_trigger_hole.ein`: a hole
 
-W3's witness. A guard's `absent` makes `{(p A)}` dead alone and alive beside
-`(q A)`, so the static check flags the program and route 2 takes the whole cube,
-four saturations. R is `{∅, {q}, {p, q}}`, and `{p}` is a **hole**: outside R,
-between two members of it. The `lattice` block is the detector's warning (M1e2
-S1e2.1b.5, the wording approved on 2026-11-03), which replaced S1e2.1a.1's
-stub: what is assumed, the site and what it puts at stake, the status the cube
-shows (exercised, by `bad`), the state (no stale fact), the parent paths
-checked, and then each minimal hole with why it is out. The `E` row is the
-cube's alone.
+A hole with no `absent` in any saturation rule. `total-owed meal is-a` makes
+every diner owe a meal, and `seated-dines` derives `(is-a ?g Diner)` from a
+seat, so the obligation's trigger grows with the commitment: `{(seats Ann
+C1)}` owes, between ∅ and `{(meal Ann Soup), (seats Ann C1)}`, both in R. The
+static check flags the program and route 2 takes the whole cube, four
+saturations. R is `{∅, {meal}, {meal, seats}}`, and `{seats}` is a **hole**:
+outside R, between two members of it. The `lattice` block is the detector's
+warning (M1e2 S1e2.1b.5, the wording approved on 2026-11-03), which replaced
+S1e2.1a.1's stub: what is assumed, the site and what it puts at stake, the
+status the cube shows (exercised, by `total-owed`), the state (no stale fact),
+the parent paths checked, and then each minimal hole with why it is out. The
+`E` row is the cube's alone.
 
-`ein solve examples/ein-bugs/naf-upward-closure.ein`
+Until M1e2 S1e2.2.5 this section was W3's witness, `ein-bugs/naf-upward-closure.ein`,
+whose hole `{(p A)}` was **dead**: a refutation resting on an `(absent (q ?x))`
+over a relation the search extends. *Forbid* (ruled 2026-11-02) refuses that
+program, so `ein solve` on it exits 1 and prints one line naming `bad`, and
+no program of the corpus that loads has a dead hole.
+
+`ein solve examples/lattice/04_obligation_trigger_hole.ein`
 
 ```text
-solve · examples/ein-bugs/naf-upward-closure.ein
+solve · examples/lattice/04_obligation_trigger_hole.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      3
   commitments (k_c) 3
   exhausted         yes — every commitment is classified: this is all of R
   ∅                 in R — root is alive and owes nothing
-  minimal line      1 state — ∅, the trivial line: no obligation is stated
-  maximal line      1 state
+  minimal line      1 state — ∅
+  maximal line      1 state — ⊤, the trivial line: no restriction bites
   components        1
   sub-cubes         2, each of dimension 1
   merged            none — every state is reached by one commitment, so k_c = k_s
-  N                 1 minimal dead set
+  N                 0 minimal dead sets
   E                 1 minimal discharging set
   lattice           not monotone: 1 site (the static check) — 1 hole
     assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
-    site            bad: absent reads q at absent depth 1, concludes (false) — at stake: the state, and dead with it
-    status          non-monotone here (exercised, by bad) — the cube: 1 hole · 1 dead node with an alive superset · 0 discharged nodes with an owing superset
+    site            total-owed [activator meal is-a]: obligation-trigger reads is-a at absent depth 0, concludes (open …) — at stake: the status: owes
+    status          non-monotone here (exercised, by total-owed [activator meal is-a]) — the cube: 1 hole · 0 dead nodes with an alive superset · 1 discharged node with an owing superset
     state           no stale fact in the cube's 4 nodes
-    paths           every parent path checked reaches the same state — 1 parent of 1 printed state
-    minimal hole    {(p A)} — dead: (p A)
-  universe          2 candidates, 1 dead alone
+    paths           every parent path checked reaches the same state — 2 parents of 1 printed state
+    minimal hole    {(seats Ann C1)} — owes 1
+  universe          2 candidates, 0 dead alone
   route             2, the cube — no licence: the static check flags the program
-  work              4 saturations · 5 facts beyond root
+  work              4 saturations · 6 facts beyond root
 
   (region
     ;; state 1 of 3 — ∅, root itself · minimal
     (model)
-    ;; state 2 of 3 — 1 candidate · from {(q A)}
-    (model (q A))
-    ;; state 3 of 3 — 2 candidates · maximal · from {(p A), (q A)}
-    (model (p A) (q A)))
+    ;; state 2 of 3 — 1 candidate · from {(meal Ann Soup)}
+    (model (meal Ann Soup))
+    ;; state 3 of 3 — 2 candidates · maximal · from {(meal Ann Soup), (seats Ann C1)}
+    (model (meal Ann Soup) (seats Ann C1)))
 
-  query             (is-a ?x T)
-  over              all of R — 3 states → 1 projection class
-    class 1 of 1    3 states (1, 2, 3)
-                      ?x = A
-  as :expect        (model (is-a A T))
-
-  (solve :expect)   holds
+  query             (meal ?g ?f)
+  over              all of R — 3 states → 2 projection classes
+    class 1 of 2    1 state (1) — the goal has no row: undetermined here
+    class 2 of 2    2 states (2, 3)
+                      ?f = Soup · ?g = Ann
+  as :expect        (or (model)
+                        (model (meal Ann Soup)))
 
 exit 0
 ```

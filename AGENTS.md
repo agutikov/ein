@@ -120,7 +120,13 @@ constrained-reasoning research.
   so it reads 21 fixed, 13 open and 1 not wrong. P1e2.2's first stage,
   S1e2.2.4, fixed W4's two on 2026-11-04 by seeding the candidates with every
   constant a rule's `:assert` names (Q-M1e.21 (b)): 23 fixed, 11 open and 1
-  not wrong.
+  not wrong. S1e2.2.5 built *forbid*'s refusal the same day, with the user's
+  F2, *via, per activator* (a refutation resting on such an `absent` through a
+  fact a rule derived under it counts too): every command that takes the
+  universe refuses the program, `ein_infer::forbid`, and W3's four,
+  `W1/alive-empty-interlayer` and `W8/stale-naf-fork` are fixed by the
+  refusal: 29 fixed, 5 open and 1 not wrong, `W8/features-07` the one row
+  deferred to F21.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every

@@ -138,7 +138,7 @@ route 2, the cube, and visits every node.
 | [`lattice/08_absent_witness_hole.ein`](../../../examples/lattice/08_absent_witness_hole.ein) | an `absent` | an owing hole: being allergic takes away the soup that paid Ann's meal |
 | [`lattice/04_obligation_trigger_hole.ein`](../../../examples/lattice/04_obligation_trigger_hole.ein) | a trigger | an owing hole: seating Ann makes her a Diner, and a Diner owes a meal |
 | [`lattice/09_activator_hole.ein`](../../../examples/lattice/09_activator_hole.ein) | an activator | the same cube as `lattice/04`, by another mechanism: opening the kitchen declares that every guest owes a meal. The picture cannot tell the causes apart; the static check can |
-| [`lattice/synth/three_components.ein`](../../../examples/lattice/synth/three_components.ein) | `absent`s | the user's shape of 2026-10-15: three components, two of them with dead holes, each revived by a repair edge |
+| [`lattice/synth/three_components.ein`](../../../examples/lattice/synth/three_components.ein) | `absent`s | the user's shape of 2026-10-15: three components, two of them with dead holes, each revived by a repair edge. **Refused since M1e2 S1e2.2.5** (*forbid*): its drawing is of the region it had, kept as the record, and `utils/region_synth.py --example three_components` now writes the same region with its holes owing |
 
 ![lattice/08](diagrams/monotonicity_08_absent_witness_hole.svg)
 
@@ -152,7 +152,7 @@ Re-made with one command, from the repository root with `ein` on `PATH`:
 
 ```sh
 for p in branching/15_lookahead_two_step_on lattice/05_owed_seats_bounded lattice/synth/merged_states \
-         lattice/08_absent_witness_hole lattice/04_obligation_trigger_hole lattice/09_activator_hole lattice/synth/three_components; do
+         lattice/08_absent_witness_hole lattice/04_obligation_trigger_hole lattice/09_activator_hole; do
   f=examples/$p.ein; o=$(mktemp -d); d=docs/kernel/inference/diagrams/monotonicity_$(basename $p)
   ein oracle $f --dump $o/cube > /dev/null && ein solve $f --dump-lattice $o/lattice --dump-answer $o/answer > /dev/null &&
   ein render region $o/cube --visited $o/lattice --answer $o/answer > $d.dot && dot -Tsvg $d.dot -o $d.svg && rm -r $o
@@ -778,21 +778,28 @@ carries the qualifier.
 *Forbid*, ruled 2026-11-02
 ([S1e2.4.1 § 5](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)),
 refuses `(absent P)` ⟹ `(false)` or `(not …)` over a relation a commitment
-can still extend. The refusal is not built yet (M1e2's
-[S1e2.2.5](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md),
-with its F1–F5 open). It does not cover:
+can still extend. **Built by M1e2's
+[S1e2.2.5](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)
+on 2026-11-04** ([`ein_infer::forbid`](../../../ein.rs/crates/ein-infer/src/forbid.rs)),
+with F1 (b), D, and the user's F2 of that day, *via, per activator*; F3 reads
+root's plans and, from its pattern, every rule with parameters whose activator
+relation is in D. Three items of the list below are covered since then: the
+derived refutation (c3, c9) and both activator shapes (c7, c12). What it does
+not cover:
 
 - an `absent` that concludes a **positive** fact: `derive-p` on `features/07`
   and `stale-naf-fork`, `soup-unless-allergic` on `lattice/08`. Every state
   difference of § 7.4 is of this kind;
 - the **derived** refutation, S1e2.4.1's `via` class (`stale-naf-fork`'s
-  `p-and-q-clash`, the probe `via_hole.ein`), unless its F2 takes it;
+  `p-and-q-clash`, the probe `via_hole.ein`): **covered since 2026-11-04**,
+  F2 took `via`;
 - a refutation **compiled at a node** through an activator
-  (`ACTIVATOR_REFUTES`), unless its F3 reads the plans a node compiles;
+  (`ACTIVATOR_REFUTES`): **covered since 2026-11-04**, at load, by F3's read
+  of the rule's pattern;
 - a refutation through an **activator derived under an `absent`**
-  (`ACTIVATOR_UNDER_ABSENT`, § 7.4): the compiled plan reads no `absent`, so
-  a check of the plans a node compiles misses it too, unless F2's `via`
-  follows a plan's activator (measured, M1e2's
+  (`ACTIVATOR_UNDER_ABSENT`, § 7.4), whose compiled plan reads no `absent`:
+  **covered since 2026-11-04**, F2's `via` follows each plan's activator
+  (measured before it, M1e2's
   [taint census § 7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md#7-the-refutation-a-node-compiles-for-f3));
 - obligation **triggers and activators**, which refute nothing;
 - the **FIFO gap**.
@@ -874,16 +881,16 @@ says which causes produce it.
 |---|---|---|---|---|---|
 | c1 | no: it concludes no refutation. `stale-naf-fork`'s downstream refutation is c3 | refuses it | `stale-naf-fork` is stratified and stays; `features/07` see c8 | `site … concludes a positive fact — at stake: the state`; `status monotone here (conservative)`; **`state stale facts — 1 of the cube's 2 nodes`** | D1, D2, D3 |
 | c2 | **yes**, under F1 (a), (b) and (c): the `direct` set ([S1e2.4.1 § 1](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#1-the-exposed-set-re-counted)) | refuses it, as *forbid* does | stays: stratified | `site … concludes (false) — at stake: the state, and dead with it`; `status non-monotone here (exercised, by bad)` | D4, D6; ruled by *forbid* |
-| c3 | only if **F2** takes `via` | refuses the deriving rule | stays | the deriving rule as the `site`; `status exercised, by derive-p`; `paths path-dependent` | D1, D6, F2 |
+| c3 | **yes** since 2026-11-04: F2 took `via` | refuses the deriving rule | stays | the deriving rule as the `site`; `status exercised, by derive-p`; `paths path-dependent` | D1, D6, F2 |
 | c4 | no: nothing refutes | refuses it | stays: stratified | `site … at stake: the state`; `status exercised`; `state no stale fact`; only `paths` sees the path dependence | D1, D2, D3, D4 |
 | c5 | no: it refutes nothing | no: not an `absent` site | stays | `site … obligation-trigger … at stake: the status: owes`; `status exercised` | D4, D7 |
 | c6 | no | no | stays | `site … its activator relation is one a commitment can change; root compiled no plan of it — at stake: the status: owes, through a plan a node compiles` | D4 |
-| c7 | only by **F3** at each node's compile, or by its drafted third placement; not at load ([taint census § 7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md#7-the-refutation-a-node-compiles-for-f3)) | only if the refusal reads the plans a node compiles | stays | `site watch: its activator relation … — at stake: the state, through a plan a node compiles`; `status exercised, by watch` (on `written.rs`'s text, written to a file) | D6, F3 |
+| c7 | **yes** since 2026-11-04, at load: F3's read of a rule with parameters whose activator relation is in D, the drafted third placement ([taint census § 7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/taint_census.md#7-the-refutation-a-node-compiles-for-f3)) | only if the refusal reads the plans a node compiles | stays | `site watch: its activator relation … — at stake: the state, through a plan a node compiles`; `status exercised, by watch` (on `written.rs`'s text, written to a file) | D6, F3 |
 | c8 | no | refuses both rules | **refuses it** (over D) | two `site` rows, `cycle even through an absent — several states with no stale fact can exist`, `order … which the boundary admits first is the order they are written in`, `state stale facts` | D1, D2's (D) and (F) |
-| c9 | only through **F2**'s `via`: `fire-0` reads `r1`, which `fire-1` derives under the `absent` | refuses `fire-1` | **refuses it** (over D) | `cycle odd through an absent — a state with no stale fact need not exist`; `paths path-dependent — 3 of 34` | D2's (D) and (F), D3 |
+| c9 | **yes** since 2026-11-04, through F2's `via`: `fire-0` reads `r1`, which `fire-1` derives under the `absent` | refuses `fire-1` | **refuses it** (over D) | `cycle odd through an absent — a state with no stale fact need not exist`; `paths path-dependent — 3 of 34` | D2's (D) and (F), D3 |
 | c10 | no | refuses the reader | stays: stratified. Admission in stratum order closes it | `order … both at priority 200: which the boundary admits first is the order they are written in`; `state stale facts`; `paths path-dependent` | D2 (B) and stratum order, D3 |
 | c11 | no | refuses the reader | stays. Stratum order closes it | `order r2 (priority 100) … r2 is admitted first, whatever the order` | as c10 |
-| c12 | by neither F3 placement; only if F2's `via` follows a plan's activator | refuses `act` | stays | `site act` and `site watch`; `status exercised, by watch`; `state no stale fact`; `paths path-dependent — 1 of 6` | D1, D6's (b) with the activator walk |
+| c12 | **yes** since 2026-11-04: F2's `via` follows a plan's activator | refuses `act` | stays | `site act` and `site watch`; `status exercised, by watch`; `state no stale fact`; `paths path-dependent — 1 of 6` | D1, D6's (b) with the activator walk |
 | c13 | no | no: no site | stays | nothing: the detector runs on a flagged program only ([`detector_proposal.md` § 7](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md#7-what-the-drafting-found), item 7) | D2 (B) |
 
 **Where the cells come from.** *Breaks*, *path dependence* and *the cube* are
@@ -894,7 +901,8 @@ measured: [`node_census.md`](../../../plans/m1e2_correctness/p1e2.1b_non_monoton
 ([`detector_proposal.md` § 5](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/detector_proposal.md#5-the-parent-path-spot-check-priced),
 `e7bec8f0`), all 2026-11-02. *The static check sees it as* is `monotone::classify`'s
 `SiteKind`, the same day. The *forbid* column is S1e2.4.1 § 1 and the taint
-census § 7 read against F1–F3; (E) and (D) are F21's D1 and D2 read against
+census § 7 read against F1–F3, and since 2026-11-04 the refusal S1e2.2.5
+built (`ein-infer/tests/refutation_under_absent.rs` holds what it refuses); (E) and (D) are F21's D1 and D2 read against
 `site_census` and `node_census -- --strata`. c10, c11 and c13 are
 `node_census.md` § 12 (`a3ac7d6f`).
 

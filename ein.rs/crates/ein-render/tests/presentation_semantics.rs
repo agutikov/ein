@@ -13,7 +13,9 @@
 //! - the derivation-DAG trace view;
 //! - `render rules` / `render rule --name` as *static file views*;
 //! - the `→ ⊥` edge order (hazard H4);
-//! - the per-form dispatch's own shapes, and mode/view name resolution.
+//! - the per-form dispatch's own shapes, and mode/view name resolution;
+//! - the read-out's **dead hole**, which no program that loads has since
+//!   *forbid* (M1e2 S1e2.2.5), read at library level past the refusal.
 //!
 //! Until M1e2 S1e2.1c.5 three more: the walk's lattice under a shuffled
 //! traversal and its no-good back-edge, the walk's answer table and where its
@@ -461,5 +463,61 @@ fn the_bottom_edges_of_a_refutation_are_sorted_not_collection_ordered() {
             "co-located(Yellow, H5)",
         ],
         "the ⊥ edges are not in repr order:\n{dot}"
+    );
+}
+
+// ── the read-out's dead hole ───────────────────────────────────────
+
+/// **A dead hole is read out as dead, with what it died of.** The read-out
+/// has a line for a minimal hole of each kind, `— owes n` and `— dead: core`,
+/// and the cube's status counts dead nodes with an alive superset. Since M1e2
+/// S1e2.2.5 *forbid* refuses every program of the corpus with a dead hole —
+/// they were W3's four witnesses — so no `ein solve` prints the second kind,
+/// and the line is held here: `naf-upward-closure.ein`, D4's probe, read
+/// through `forbid::studying`, the library-level way past the refusal that no
+/// CLI path takes. The program is refused outside it, which is the other half.
+#[test]
+fn a_dead_hole_is_read_out_as_dead_with_its_core() {
+    let rel = "examples/ein-bugs/naf-upward-closure.ein";
+    let path = repo_root().join(rel);
+    let text = source(rel);
+    let run = || {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, &text, path.to_str()).expect("parses");
+        let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, path.parent()).expect("loads");
+        let opts = ein_infer::explore::Options::new(ein_infer::explore::Mode {
+            which: ein_infer::explore::Which::All,
+            ask: ein_infer::explore::Ask::Describe,
+        });
+        ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts)
+    };
+    assert!(matches!(run(), Err(ein_infer::SolveError::Refused(_))));
+    let r = ein_infer::forbid::studying(run).expect("studied, it answers");
+    let out = ein_render::read_out::render(
+        &r,
+        &ein_render::read_out::Options {
+            command: "solve",
+            argv: rel,
+            file: rel,
+            budget: ein_infer::downset::DEFAULT_BUDGET,
+            uncut: false,
+        },
+    )
+    .stdout;
+    let lines: Vec<&str> = out.lines().collect();
+    assert!(
+        lines.contains(&"    minimal hole    {(p A)} — dead: (p A)"),
+        "{out}"
+    );
+    assert!(
+        lines.iter().any(|l| l.starts_with("    status ")
+            && l.contains("(exercised, by bad)")
+            && l.contains("1 hole · 1 dead node with an alive superset")),
+        "{out}"
+    );
+    assert!(
+        lines.contains(&"  lattice           not monotone: 1 site (the static check) — 1 hole"),
+        "{out}"
     );
 }

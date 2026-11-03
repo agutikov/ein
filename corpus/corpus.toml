@@ -100,6 +100,7 @@ runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constr
 path   = "examples/branching/13_lookahead_naf_world.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "A refusal fixture since M1e2 S1e2.2.5 (*forbid*): `self-block` can never fire, and is refused by its shape: the check reads relations, not matches. `solve` and `render lattice` exit 1; the other runs read no universe and answer."
 
 # The other half of D3: a guard the lookahead must refuse to judge. Judged
 # eagerly it kills a live hypothesis and the verdict flips to Contradiction,
@@ -121,6 +122,7 @@ note   = "The DISABLED half — one `(config …)` line and one `:expect` apart 
 path   = "examples/branching/14_lookahead_unjudgeable.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
+note   = "A refusal fixture since M1e2 S1e2.2.5 (*forbid*): `premature-signoff` reads `signed` at absent depth 3, and odd depth is what the check reads. `solve` and `render lattice` exit 1; the other runs read no universe and answer."
 
 [[entry]]
 path   = "examples/domain_elim/ab.ein"
@@ -178,7 +180,7 @@ note   = "a feature demo of `open`, not of search — nothing bounds the hypothe
 path   = "examples/features/05_stdlib_domain_elim.ein"
 group  = "positive"
 runs   = ["saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "same shape as 04: the demo is the stdlib elimination rules, and the unbounded hypothesis space is incidental to it. no solve, solve -e: the runs do finish now — 3.0 s each — and they still measure the blind enumerator rather than the elimination rules, which `saturate` shows in 3.5 ms. Affordable is not the test; asking the fixture's question is."
+note   = "same shape as 04: the demo is the stdlib elimination rules, and the unbounded hypothesis space is incidental to it. no solve, solve -e: the runs do finish now — 3.0 s each — and they still measure the blind enumerator rather than the elimination rules, which `saturate` shows in 3.5 ms. Affordable is not the test; asking the fixture's question is. Since M1e2 S1e2.2.5 it closes `is-a`, `(solve :no-hypothesis (is-a))`, as its tests/stdlib/elim/ siblings do: `std.elim`'s typechecks conclude (false) from an absent over `is-a`, which *forbid* refuses while a commitment can extend it, and R is exact, 32 states over 26 candidates, where it was a lower bound past 2^56."
 
 [[entry]]
 path   = "examples/features/06_symmetric_native.ein"
@@ -220,7 +222,7 @@ note   = "M1c S1c.1.2 — `:expect (or …)`, the k>1 verdict. **Plain `solve` i
 path   = "examples/features/12_expect_false.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "saturate --dump", "render rules", "render constraints", "render lattice"]
-note   = "M1c S1c.1.2 — `:expect (false)`, the k=0 verdict, spelled with the kernel's own ⊥ rather than an invented word. Three pigeons, two holes, and the chain forced rather than searched, for two reasons its header carries: the blind version is Ambiguity k=6 rather than a contradiction, because a state leaving one pigeon nowhere is *complete* in an open world (M1d's subject), and it also has several equally small unsat cores, which is corpus/fuzz_findings/unsat-core-id-space.md reached from the corpus for the first time."
+note   = "M1c S1c.1.2 — `:expect (false)`, the k=0 verdict, spelled with the kernel's own ⊥ rather than an invented word. Three pigeons, two holes, and the chain forced rather than searched, for two reasons its header carries: the blind version is Ambiguity k=6 rather than a contradiction, because a state leaving one pigeon nowhere is *complete* in an open world (M1d's subject), and it also has several equally small unsat cores, which is corpus/fuzz_findings/unsat-core-id-space.md reached from the corpus for the first time. Since M1e2 S1e2.2.5 it closes `instance` too, `:no-hypothesis (in instance)`: `no-room`'s forall is an absent over `instance`, which *forbid* refuses while a commitment can extend it. H is empty, and the answer is root's, as it was."
 
 [[entry]]
 path   = "examples/features/13_mixed_solution_and_open.ein"
@@ -333,13 +335,13 @@ note   = "Q-M1e2.7 (i): exactly one of four, R four isolated nodes, each a compo
 path   = "examples/lattice/synth/three_components.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
-note   = "the user's shape (2026-10-15): R in three components — a monotone sub-cube, a one-node hole, a bigger hole — written by utils/region_synth.py, which holds the oracle to the header's target node for node (M1e2 S1e2.1a.8)."
+note   = "the user's shape (2026-10-15): R in three components — a monotone sub-cube, a one-node hole, a bigger hole — written by utils/region_synth.py, which holds the oracle to the header's target node for node (M1e2 S1e2.1a.8). **Refused since M1e2 S1e2.2.5** (*forbid*: `dead-3` and `dead-7` rest on an absent over h) and frozen as W3's witness: `solve`, `render lattice` and `oracle` exit 1, and region_synth.py now writes the same region with its holes owing."
 
 [[entry]]
 path   = "examples/lattice/synth/trigger_hole.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]
-note   = "a hole of each kind — an obligation trigger's and an absent's — beside an owing root; written by utils/region_synth.py (M1e2 S1e2.1a.8)."
+note   = "a hole of each kind — an obligation trigger's and an absent's — beside an owing root; written by utils/region_synth.py (M1e2 S1e2.1a.8). **Refused since M1e2 S1e2.2.5** (*forbid*: `dead-1` and `dead-2` rest on an absent over h) and frozen as W3's witness, as three_components.ein."
 
 [[entry]]
 path   = "examples/lattice/synth/trivial_line.ein"
@@ -556,13 +558,13 @@ note   = "M1e D1 — the alive-∅ record site at phase 1. `compute_alive` write
 path   = "examples/ein-bugs/alive-empty-interlayer.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e D1, the same defect between layers, whose trigger is the singleton writeback rather than the kill cache. **Fixed by M1e S1e.3.1 (`CO-M1`)**: the file answers `Contradiction k = 0`, and `:expect (false)` states that."
+note   = "M1e D1, the same defect between layers, whose trigger is the singleton writeback rather than the kill cache; fixed by M1e S1e.3.1 (`CO-M1`). Under R it answered four states. **Refused since M1e2 S1e2.2.5** (*forbid*): `totality` concludes (false) from (absent (p A)) over p, which the hrule proposes, so `solve` exits 1 (`W1/alive-empty-interlayer`)."
 
 [[entry]]
 path   = "examples/ein-bugs/naf-upward-closure.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "M1e Q-M1e.9 / S1e.2.3 — `dead` is **not** upward-closed under `absent`: `{(p A)}` dies while `{(p A), (q A)}` is alive, so the maximal state is never generated. Five of six shipped configurations answer it wrongly and all six report `exhausted = true`. It carries `(config :warn-derived-naf true)`, so the S1e.2.3 diagnostic is part of its recorded output — the containment as a fixture rather than a claim. `:expect` states today's answer (`(q A)` plus the cached `(not (p A))`) and is **meant to break** when F18 makes the three consumers world-aware or S1f.10.8 forbids the shape. Goal on `is-a` because the model has no `p` fact — Q-M1e.13."
+note   = "M1e Q-M1e.9 / S1e.2.3 — `dead` is **not** upward-closed under `absent`: `{(p A)}` dies while `{(p A), (q A)}` is alive, so the walk never generated the maximal state. **Refused since M1e2 S1e2.2.5** (*forbid*, ruled 2026-11-02): `bad` concludes (false) from (absent (q ?x)) over q, which a commitment can extend, so `solve` exits 1 naming it and `saturate` still saturates. W3's witness of the refusal (`W3/naf-upward-closure`), and the library-level fixture the read-out's dead-hole line is held on. Goal on `is-a` because the walk's model had no `p` fact — Q-M1e.13."
 
 [[entry]]
 path   = "examples/ein-bugs/alive-set-fresh-name.ein"
@@ -729,7 +731,7 @@ note   = "M1e2 W1 (`W1/fresh-name-nospawn`): alive-set-fresh-name.ein without it
 path   = "examples/ein-bugs/wrong-answers/naf-nowb.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W3's lever row (`W3/naf-nowb-L`): naf-upward-closure.ein with the singleton writeback off. Under -L the width-1 no-good and W1 together make a certified Contradiction of a program whose one model is {(p A), (q A)}."
+note   = "M1e2 W3's lever row (`W3/naf-nowb-L`): naf-upward-closure.ein with the singleton writeback off. Under -L the width-1 no-good and W1 together make a certified Contradiction of a program whose one model is {(p A), (q A)}. **Refused since M1e2 S1e2.2.5** (*forbid*), as naf-upward-closure.ein, whose program it is: `solve` exits 1 naming `bad`."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/owed-seats.ein"
@@ -765,13 +767,13 @@ note   = "M1e2 W6, contested (`W6/arity3`): the blind rung never proposes an ari
 path   = "examples/ein-bugs/wrong-answers/stale-naf-fork.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W8, contested (`W8/stale-naf-fork`): (p one), derived under (absent (q one)), survives the commitment of (q one) and kills it — Q-M1e2.2."
+note   = "M1e2 W8, contested (`W8/stale-naf-fork`): (p one), derived under (absent (q one)), survives the commitment of (q one) and kills it — Q-M1e2.2. **Refused since M1e2 S1e2.2.5**: the user's F2 of 2026-11-04 (*via*) counts `p-and-q-clash`, which reads `p` derived under (absent (q ?x)), so `solve` exits 1; the row left F21's deferral, fixed by the refusal."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W8's twin: stale-naf-fork.ein with :warn-derived-naf on, the same answer and no warn event — the S1e.2.3 diagnostic does not contain this shape."
+note   = "M1e2 W8's twin: stale-naf-fork.ein with :warn-derived-naf on, the same answer and no warn event — the S1e.2.3 diagnostic does not contain this shape. **Refused since M1e2 S1e2.2.5**, as stale-naf-fork.ein: what this twin showed, that the warning missed the derived case, is why the refusal reads it."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/f07-fpoff.ein"

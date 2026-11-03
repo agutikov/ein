@@ -44,10 +44,15 @@
 ;;; The user ruled *forbid* (Q-M1e2.5, M1e2 S1e2.4.1 § 5): `bad` concludes
 ;;; `(false)` from `(absent (q ?x))` over `q`, which a commitment can still
 ;;; extend, so the right answer to this program is a refusal at load, the
-;;; error naming the replacement. M1e2 S1e2.2.5 builds it. Until then the
-;;; program loads, and R's maximal state is the `{(p A), (q A)}` above, what
-;;; *respect* would have answered. Register row W3/naf-nowb-L, confirmed at the
+;;; error naming the replacement. Register row W3/naf-nowb-L, confirmed at the
 ;;; revisit (S1e2.1.7, 2026-11-03).
+;;;
+;;; ── 2026-11-04 — refused ───────────────────────────────────────────────
+;;;
+;;; M1e2 S1e2.2.5 built the refusal, as on `../naf-upward-closure.ein`, and
+;;; the row is fixed: `ein solve` exits 1 naming `bad` over `q`. Before that
+;;; R's maximal state was the `{(p A), (q A)}` above, what *respect* would have
+;;; answered, kept as the row's alternative.
 
 (config :warn-derived-naf true)
 

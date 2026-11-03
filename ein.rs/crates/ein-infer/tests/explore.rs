@@ -10,7 +10,8 @@
 //! - **C4** the same answer at one job and at four.
 //!
 //! Over every corpus file and register witness whose cube the oracle
-//! enumerates, monotone or flagged.
+//! enumerates, monotone or flagged. Where the oracle refuses the program
+//! (*forbid*, M1e2 S1e2.2.5), every mode refuses it with the same message.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -463,6 +464,7 @@ fn every_mode_is_the_oracle() {
     let mut failures: Vec<String> = Vec::new();
     let mut counted: BTreeMap<&str, usize> = BTreeMap::new();
     let mut stopped = 0usize;
+    let mut refused = 0usize;
     let oracle = region::Options {
         jobs: jobs(),
         ..region::Options::default()
@@ -476,9 +478,23 @@ fn every_mode_is_the_oracle() {
         let Some((mut kb, mut terms, ast)) = loaded(&path) else {
             continue;
         };
-        let Ok(Outcome::Region(r)) =
-            region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
-        else {
+        let out = region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {});
+        // A refusal is the whole answer, and every path gives it alike.
+        if let Err(ein_infer::SolveError::Refused(m)) = &out {
+            refused += 1;
+            for mode in cells(1) {
+                let (mut kb, mut terms, ast) = loaded(&path).expect("loaded once already");
+                match explore::run(&mut kb, &mut terms, &ast, &explore::Options::new(mode)) {
+                    Err(ein_infer::SolveError::Refused(n)) if n == *m => {}
+                    other => failures.push(format!(
+                        "{rel} {mode:?}: the oracle refuses and the mode answers {:?}",
+                        other.map(|a| a.route)
+                    )),
+                }
+            }
+            continue;
+        }
+        let Ok(Outcome::Region(r)) = out else {
             continue;
         };
         let root = facts_text(&kb, &terms);
@@ -574,11 +590,15 @@ fn every_mode_is_the_oracle() {
     // would pass the loop above without testing it.
     // 247 on 2026-10-16.
     assert!(stopped >= 200, "the budget stopped {stopped} runs");
+    // 2026-11-04: 9 flagged, since *forbid* (M1e2 S1e2.2.5) refuses ten
+    // programs of the corpus and the register, each refused alike by every
+    // mode.
     assert!(
         counted.get("monotone").copied().unwrap_or(0) >= 140
-            && counted.get("flagged").copied().unwrap_or(0) >= 10,
+            && counted.get("flagged").copied().unwrap_or(0) >= 8,
         "{counted:?}"
     );
+    assert!(refused >= 10, "{refused} refused");
     // L5 is used, not only licensed: the obligation tree answered real cells,
     // 168 of them on 2026-11-03.
     assert!(
@@ -602,10 +622,12 @@ fn every_mode_at_four_jobs_is_every_mode_at_one() {
     ] {
         let path = repo_root().join(rel);
         for mode in cells(3) {
+            // `naf-upward-closure`'s dead hole, studied past *forbid*'s
+            // refusal (M1e2 S1e2.2.5): C4 is about the machinery.
             let run = |jobs: usize| {
                 let mut opts = explore::Options::new(mode);
                 opts.jobs = jobs;
-                ask(&path, &opts).0
+                ein_infer::forbid::studying(|| ask(&path, &opts).0)
             };
             let (a, b) = (run(1), run(4));
             assert_eq!(

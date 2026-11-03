@@ -12,6 +12,7 @@ use std::path::{Path, PathBuf};
 use ein_core::{Kb, Terms};
 use ein_corpus::repo_root;
 use ein_infer::downset::{self, Declined, DownSet};
+use ein_infer::forbid;
 use ein_infer::monotone::{Monotonicity, SiteKind};
 use ein_infer::region::{self, Options, Outcome, Region};
 use ein_infer::states;
@@ -42,8 +43,13 @@ fn compute(rel: &str) -> (Outcome, Terms) {
     let mut terms = Terms::new();
     let forms = parse(&mut ast, &text, path.to_str()).expect("parses");
     let mut kb = load(&mut ast, &mut terms, &forms, path.parent()).expect("loads");
-    let out = region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
-        .unwrap_or_else(|e| panic!("{rel}: {e}"));
+    // A named fixture is read for its region, which is what these tests
+    // study, including the shapes *forbid* refuses (M1e2 S1e2.2.5): the dead
+    // holes of `naf-upward-closure` and the two `lattice/synth/` witnesses.
+    let out = forbid::studying(|| {
+        region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
+    })
+    .unwrap_or_else(|e| panic!("{rel}: {e}"));
     (out, terms)
 }
 
@@ -304,10 +310,12 @@ fn each_cause_has_a_fixture_whose_cube_shows_its_hole() {
     }
 
     let (mut kb, mut terms, ast) = loaded_text("activator-refutes", ACTIVATOR_REFUTES);
-    let Outcome::Region(r) =
+    // Refused since M1e2 S1e2.2.5 (F3's read of a rule with parameters), and
+    // studied here for the hole it would have.
+    let Outcome::Region(r) = forbid::studying(|| {
         region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
-            .expect("computes")
-    else {
+    })
+    .expect("computes") else {
         panic!("activator-refutes: within the limit");
     };
     let kinds: Vec<SiteKind> = r.monotonicity.sites.iter().map(|s| s.kind).collect();
@@ -536,10 +544,10 @@ fn fact_grain_on_programs_written_to_test_it() {
         assert_eq!(monotone, leaves, "{name}: leaves the set at fact grain");
         assert_eq!(whole, complete, "{name}: the closure is complete");
         let (mut kb, mut terms, ast) = loaded_text(name, text);
-        let Outcome::Region(r) =
+        let Outcome::Region(r) = forbid::studying(|| {
             region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
-                .expect("computes")
-        else {
+        })
+        .expect("computes") else {
             panic!("{name}: within the limit");
         };
         assert_eq!(
@@ -795,7 +803,9 @@ fn jobs_change_nothing() {
                 keep_states: true,
                 ..Options::default()
             };
-            match region::compute(&mut kb, &mut terms, &ast, &opts, &mut |_| {}).unwrap() {
+            let out =
+                forbid::studying(|| region::compute(&mut kb, &mut terms, &ast, &opts, &mut |_| {}));
+            match out.unwrap() {
                 Outcome::Region(r) => *r,
                 Outcome::Refused { n, .. } => panic!("{rel}: n = {n}"),
             }
@@ -982,7 +992,10 @@ fn deaths(
     let alive_above = |m: u64| {
         (0..size).any(|x| x != m && x & m == m && r.status[x as usize] & region::DEAD == 0)
     };
-    let mut nodes = region::Nodes::new(kb, terms, ast, &r.candidates).expect("prepares");
+    // The deaths of a program *forbid* refuses are what this reads (M1e2
+    // S1e2.2.5): studied, past the refusal.
+    let mut nodes =
+        forbid::studying(|| region::Nodes::new(kb, terms, ast, &r.candidates)).expect("prepares");
     let mut out = Vec::new();
     for m in 0..size {
         if r.status[m as usize] & region::DEAD == 0 {
@@ -1037,8 +1050,10 @@ fn an_untainted_death_is_dead_in_every_superset() {
             _ => return,
         }
         let (mut kb, mut terms, ast) = load().expect("loaded once already");
+        // A study of the shape: the programs *forbid* refuses are read too
+        // (M1e2 S1e2.2.5), since every dead hole is on one of them.
         let Ok(Outcome::Region(r)) =
-            region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
+            forbid::studying(|| region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {}))
         else {
             return;
         };
@@ -1085,10 +1100,10 @@ fn an_untainted_death_is_dead_in_every_superset() {
     // untainted with an alive superset.
     let (mut kb, mut terms, ast) =
         loaded_text("activator_under_absent", written::ACTIVATOR_UNDER_ABSENT);
-    let Outcome::Region(r) =
+    let Outcome::Region(r) = forbid::studying(|| {
         region::compute(&mut kb, &mut terms, &ast, &Options::default(), &mut |_| {})
-            .expect("computes")
-    else {
+    })
+    .expect("computes") else {
         panic!("activator_under_absent: within the limit");
     };
     assert_eq!(names(&r, &r.topology.holes), ["{(p A), (r A)}"]);
@@ -1358,8 +1373,10 @@ fn route_1_is_the_oracle_on_every_monotone_program_it_reaches() {
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     // The census of 2026-10-16 (`region_census.md`): 146 monotone cubes and
     // 13 flagged. A sweep that silently found none would pass the loop above.
+    // 2026-11-04: 158 monotone and 9 flagged, since *forbid* (M1e2 S1e2.2.5)
+    // refuses nine of the flagged cubes, which no route answers.
     assert!(
-        monotone >= 140 && flagged >= 10,
+        monotone >= 140 && flagged >= 8,
         "{monotone} monotone, {flagged} flagged"
     );
     assert!(
@@ -1678,8 +1695,9 @@ fn the_state_route_is_the_oracle_on_every_monotone_program_it_reaches() {
         fewer += usize::from(s.saturations() < route_1);
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
+    // 2026-11-04: 158 monotone and 9 flagged, as route 1's sweep above.
     assert!(
-        monotone >= 140 && flagged >= 10,
+        monotone >= 140 && flagged >= 8,
         "{monotone} monotone, {flagged} flagged"
     );
     eprintln!("{monotone} monotone, {flagged} flagged; fewer saturations on {fewer}");

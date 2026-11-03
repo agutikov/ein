@@ -10,9 +10,13 @@ re-scoped it the same day (its outcome column), and 27.5 before.
 objects (Q-M1e.21 (b)), W4's two rows are `fixed` (`02e9fb5f`), and the one
 shape the seed cannot hold, a relation parameter bound to an integer, is
 refused at load and at compile. The register reads 23 fixed, 11 open and 1
-not-wrong. **S1e2.2.5 started the same day and is paused on F2**: its
-witnesses re-taken and every move listed under each reading of `via`, which
-is put to the user ([T1e2.2.5.1](s1e2.2.5_naf_upward_closure.md#task-t1e2251--the-ruling)).
+not-wrong. **S1e2.2.5 started the same day**: its witnesses re-taken and
+every move listed under each reading of F2 (`c887a35b`), which the user ruled
+the same day, *via, per activator*. Its refusal is built (T1e2.2.5.2): every
+program whose refutation rests on an `absent` a commitment can fill is refused,
+W3's four rows, `W1/alive-empty-interlayer` and `W8/stale-naf-fork` are fixed
+by it, and the register reads 29 fixed, 5 open and 1 not-wrong; T1e2.2.5.3,
+`:warn-derived-naf` retiring, is next.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R
@@ -77,7 +81,7 @@ then wrong model sets, then certifications, then levers, then cores.
 | [S1e2.2.3](s1e2.2.3_obligations_join_superset.md) | **W5** the obligations rung records a superset of a model, chosen by name order | 1 + 2 + 3 | **default** (any obligation program) | new | 0 (2.5) d | **drop** | confirmed | the join re-checks its subsets; a model set that is invariant under renaming a constant; lattice and tree agree |
 | [S1e2.2.4](s1e2.2.4_fresh_name_unreachable.md) | **W4** a rule's fresh constant never becomes a hypothesis. **Done 2026-11-04**: seeded, both rows fixed, the residue refused | 2 | **default** | [Q-M1e.21](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about) | 2.5 (3) d | keep | confirmed | Q-M1e.21's candidate taken; the fresh-name fixtures answer the model `{(q A Z),(q B Z)}` |
 | [S1e2.2.5](s1e2.2.5_naf_upward_closure.md) | **W3** `dead` is not upward-closed under `absent` | 2 | **default** | [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), F18, S1f.10.8 | 2.5 (3) d | shrink | confirmed; gains `W1/alive-empty-interlayer` | the language ruling taken first; then the program is refused, or the three mechanisms stop learning from a refutation that rests on an `absent` |
-| [S1e2.2.6](s1e2.2.6_stale_naf_positive.md) | **W8** a positive derived under `absent` survives the commitment that falsifies its guard | 2 (contested) | **default** | new | 0.5 (2.5) d | restate | **deferred** (the user): both rows open, owned by F21; re-checks after S1e2.2.5's F2 | a reading; then no recorded state contains a fact whose `absent` premise the state contradicts, or the program is refused as unstratifiable |
+| [S1e2.2.6](s1e2.2.6_stale_naf_positive.md) | **W8** a positive derived under `absent` survives the commitment that falsifies its guard | 2 (contested) | **default** | new | 0.5 (2.5) d | restate | **deferred** (the user): both rows open, owned by F21; since S1e2.2.5's F2 (*via*, 2026-11-04) one, `W8/features-07`: `stale-naf-fork` is refused, its row fixed by S1e2.2.5 | a reading; then no recorded state contains a fact whose `absent` premise the state contradicts, or the program is refused as unstratifiable |
 | [S1e2.2.7](s1e2.2.7_binding_key_layout.md) | **W7** two activator layouts share a binding key, and a derivation is lost | 2 | **default** (release) | [Q-M1e.16](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | 1.5 d | keep | confirmed | Q-M1e.16's fix taken; the §3.2 program derives four `noted` facts in either activator order, in both profiles |
 | [S1e2.2.8](s1e2.2.8_uncovered_certified.md) | **W6** `exhausted = true` over relations the rung never hypothesises | 3 (contested) | **default** | M1d's eight measurements, #4 | 2 d | keep | confirmed: (a) *scoped*, ruled by the user | a reading; then the certification names its scope, or the rung covers what it certifies |
 | [S1e2.2.9](s1e2.2.9_kill_cache_off_entailment.md) | **W9** with the kill cache off, a state is recorded as consistent because an entailment went unnoticed | 1 | lever `-K` | Q-M1e.7 ruling A | 0 (1) d | **drop** | confirmed | `-K` changes cost and never an answer, or it is refused for certified runs |
@@ -122,7 +126,8 @@ went with those stages.
   `(absent …)` licenses. S1e2.2.5 applies *forbid*, ruled 2026-11-02, and its F2
   (whether a death that rests on an `absent` only through a derived fact counts,
   `via`) decides whether W8's two witnesses still load. S1e2.2.6's reading is
-  F21's D2, deferred, and what is left of it is the revisit's.
+  F21's D2, deferred, and what is left of it is the revisit's. **F2 took
+  `via` on 2026-11-04**: `stale-naf-fork` does not load, and W8 is one row.
 - **S1e2.2.4 and S1e2.2.10 no longer share a sitting**: C1's reading was ruled on 2026-11-03, (a), so each runs alone. Until then: **S1e2.2.4 and S1e2.2.10 in one sitting.** Both ask what the candidate list's
   universe is, and answering one alone risks answering the other by accident.
 - **S1e2.2.12 after S1e2.2.11**, if the second visit to W11 asks for a canonical

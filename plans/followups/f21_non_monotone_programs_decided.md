@@ -36,7 +36,9 @@ Each option's measured consequences per program are P1e2.1b's
   `lattice/06_friends_tables`, the conditional obligation (D7);
 - M1e2's [S1e2.2.5](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)
   builds *forbid*'s refusal: (E) is taken with it or explicitly declined, and
-  D6's window closes;
+  D6's window closes. **Fired 2026-11-04**: the refusal is built, with the
+  user's F2, *via, per activator*; (E) was declined for that build (D1 stays
+  open, below), and D6's window closed (below);
 - the wrong-answer revisit ([S1e2.1.7](../m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md))
   cannot settle W8 under today's documented node
   ([S1e2.2.6 § The deferral](../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md#the-deferral-and-the-milestones-acceptance));
@@ -362,6 +364,13 @@ answer moves until a decision is taken.
 
 ### D1 — (E): *forbid* extended to every `absent` site
 
+**Declined for S1e2.2.5's build, 2026-11-04**, as that stage's recorded
+default: *forbid* is built as ruled, `direct` and *via, per activator*, and
+the programs whose `absent` concludes a positive fact load. D1 stays open
+here. Of (E)'s 13 programs below, three are refused since then by *forbid*
+itself, through `via` (`d3-unsat-core`, `stale-naf-fork` and its twin), and
+`features/05` and `/12` close the relation their refutations read and load.
+
 [§ Option (E)](#option-e-and-its-13-programs) above. **Its consequences,
 per program and per reading of F1 and F2**:
 [`monotonicity.md` § 8.1, D1](../../docs/kernel/inference/monotonicity.md#d1-option-e-under-each-reading-of-f1-and-f2),
@@ -392,6 +401,13 @@ not the user's: (B) with (D), admission in stratum order. The register's W8
 emulated, is measured in § 12.4 there. **Each option's consequences, per
 program**: [`monotonicity.md` § 8.1, D2](../../docs/kernel/inference/monotonicity.md#d2-what-a-nodes-state-is).
 **Until decided:** (A).
+
+**Since 2026-11-04 one of W8's two witnesses is refused**: S1e2.2.5's F2 took
+`via`, so *forbid* refuses `stale-naf-fork` (its `p-and-q-clash` reads the
+`p` that `derive-p` derives under `(absent (q ?x))`), `W8/stale-naf-fork` is
+fixed by the refusal and owned by S1e2.2.5, and `d3-unsat-core`'s two rows
+hold the refusal as `right`. D2's W8 question is `W8/features-07`'s alone,
+the one row this followup owns.
 
 **At M1e2's wrong-answer revisit** ([S1e2.1.7](../m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03),
 2026-11-03) the user kept this deferral and amended the milestone's acceptance
@@ -500,7 +516,16 @@ test holds; (a) if that walk is not what is built.
 Its consequences beside the path census:
 [`monotonicity.md` § 8.1, D6](../../docs/kernel/inference/monotonicity.md#d6-what-a-route-may-learn-from-a-refutation-resting-on-an-absent).
 
-**Until decided:** (a). F18 closes without being done once the refusal covers
+**Closed 2026-11-04**, by D6's (c) in the form this paragraph names: the
+refusal shipped (M1e2 S1e2.2.5) and covers every refutation a route can learn
+from that the static check sees: F2 took `via` following each plan's
+activator, and F3 reads root's plans and every rule with parameters whose
+activator relation is in D, at load. No program that loads has a death a
+route could carry past its node on the corpus, the probes or the written
+programs ([`refutation_under_absent.rs`](../../ein.rs/crates/ein-infer/tests/refutation_under_absent.rs),
+`region.rs::an_untainted_death_is_dead_in_every_superset`, which studies the
+refused shapes past the refusal). F18 closes with it. Until then: (a). F18
+closes without being done once the refusal covers
 every refutation a route can learn from: D6's (c), or D1 with F2's `via` and
 F3. Since S1e2.1b.4, `via` there has to follow a plan's activator, or D1's (E)
 has to be taken, for `ACTIVATOR_UNDER_ABSENT` to be covered.

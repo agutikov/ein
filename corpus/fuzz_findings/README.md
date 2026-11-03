@@ -59,7 +59,7 @@ commit, which is the steady-state rule above with a name on it.
 |---|---|---|
 | [`binding-key-layout.ein`](binding-key-layout.md) and `-swapped` | `W7/binding-key-layout` | **not a fuzzer's find**: M1e S1e.1.4 wrote it by hand, as `defined_behaviour.md` § 3.2's thirteen lines. A debug build aborts on both files (`check_layout`), and every in-process corpus sweep is a debug test binary |
 | [`unsat-core-id-space.ein`](unsat-core-id-space.md) | `W11/unsat-core-id-space` | moves under a permuted interner, which `id_order_invariance` asserts of every corpus file |
-| `d3-unsat-core.ein` | `W11/d3-unsat-core` | the same, at the third seed — so the nightly's `EIN_ID_SEEDS=8` would fail on it |
+| `d3-unsat-core.ein` | `W11/d3-unsat-core`, `W1/d3-unsat-core` | the same, at the third seed — so the nightly's `EIN_ID_SEEDS=8` would fail on it. **Refused since M1e2 S1e2.2.5** (2026-11-04): `fire-0` concludes `(not …)` from `r1`, which `fire-1` derives under `(absent (not (r1 o3 ?v1)))`, a relation a commitment can extend, so *forbid* with F2's *via* refuses the program, and both rows hold the refusal. The file is kept as found: its text keys `ein-ir`'s `fuzz_seeds.txt` |
 
 The id-order half of a W11 row is held by
 `id_order_invariance::the_register_s_id_order_rows_answer_what_they_record`,
@@ -79,7 +79,8 @@ minimum from a different seed and then failing it under a permuted id space:
 | `d3-unsat-core.ein` | the printed **unsat core**: 6 facts under `EIN_FORK_DELTA=0`, 4 on the resumed path — a strict subset | the verdict, `k`, every counter. Only the fork path differs, so it **is** the resumed fork saturator, and the id-space sweep is green on it — **at seed 1 only**: at the third seed, 15839, `trace[answer]` moves 4 → 6 facts in one build (M1e2 W11, re-taken 2026-10-14) |
 | `d3-goal-row-order.ein` | which **binding row** the solve table shows, when one model satisfies the goal more than once | `summary.json`'s `goal_bindings`, which carries every row and sorts them. **Not the resumed fork's, though it reaches it**: the row moves under `EIN_ID_FILES` too, so the defect is the unsorted `rows[0]` and either row is a legitimate one — the filename is kept for the links, the note corrects the attribution. **Gone since M1e2's read-out printed every row sorted, and promoted to `examples/ein-bugs/d3-goal-row-order.ein` by M1e2 S1e2.3.4 (2026-11-03)**, so the id-order sweep permutes it per commit |
 
-Neither is reachable from a corpus entry. Both are one command to reproduce —
+Neither is reachable from a corpus entry. Both were one command to reproduce,
+and since M1e2 S1e2.2.5 the first exits 1 with *forbid*'s refusal —
 
 ```sh
 ein solve corpus/fuzz_findings/d3-unsat-core.ein --max-set-size 2

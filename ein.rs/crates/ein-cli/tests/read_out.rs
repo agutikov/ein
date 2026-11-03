@@ -373,9 +373,11 @@ fn count_prints_describes_rows_and_reads_no_state() {
     eprintln!(
         "{compared} programs compared, {partial} partial at 2^14, {claims} claims not checked"
     );
-    // 206 programs, 21 of them partial at 2^14, and 81 claims, on 2026-11-03.
+    // 206 programs, 21 of them partial at 2^14, and 81 claims, on 2026-11-03;
+    // 199, 20 and 79 on 2026-11-04, when *forbid* (M1e2 S1e2.2.5) refused nine
+    // corpus programs, which `--count` refuses as describe does.
     assert!(
-        compared >= 200 && partial >= 15 && claims >= 70,
+        compared >= 190 && partial >= 15 && claims >= 70,
         "{compared} compared, {partial} partial, {claims} claims"
     );
 }

@@ -480,9 +480,11 @@ fn the_shipped_environment_set_is_what_the_page_lists() {
 /// under every question on every program whose R is known.
 #[test]
 fn the_sanity_flag_adds_its_row_and_nothing_else() {
+    // The flagged one was `ein-bugs/naf-upward-closure.ein` until *forbid*
+    // refused it (M1e2 S1e2.2.5); `lattice/04`'s hole is an obligation's.
     let fixtures = [
         "examples/branching/04_two_levels.ein",
-        "examples/ein-bugs/naf-upward-closure.ein",
+        "examples/lattice/04_obligation_trigger_hole.ein",
     ];
     let run = |path: &Path| {
         let out = std::process::Command::new(env!("CARGO_BIN_EXE_ein"))

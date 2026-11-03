@@ -698,6 +698,40 @@ the second by `ein-infer/tests/compile_semantics.rs`'s
 the wrong arity activates nothing and is not checked; a string or a range
 binds a name, and a nested fact binds nothing.
 
+### 4.7 A refutation resting on an `absent` a commitment can fill — M1e2 S1e2.2.5
+
+*Forbid*, the user's ruling of 2026-11-02
+([S1e2.4.1 § 5](../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)),
+with its F2 of 2026-11-04, *via, per activator*: a rule that concludes
+`(false)` or `(not …)` may not rest on an `(absent P)` over a relation a
+commitment can still extend, the static check's `D`
+([`monotonicity.md`](inference/monotonicity.md)), directly, through a fact a
+rule derived under one, or through its activator. Over such a relation the
+shape calls a state that has not yet decided `P` a contradiction, so `dead`
+is not upward-closed. [`ein_infer::forbid`](../../ein.rs/crates/ein-infer/src/forbid.rs)
+reads it after root's fixpoint, where the static check runs, so it refuses
+**every command that takes the universe**: `ein solve` in every mode
+(`--monotone` and `--count` too), every `(solve :expect)` check, `ein test`,
+`ein oracle` and `ein render lattice`. `ein saturate` and `ein render
+rules|constraints|program|kb` take no universe and do not refuse. One line per
+refusing rule, sorted by rule:
+
+| cause | message | exit |
+|---|---|---|
+| the rule reads a relation in `D` inside an odd number of `absent`s | `rule '<r>'[ [activator <a…>]]: concludes <(false)\|(not …)> from (absent …) over <R>, a relation a commitment can still extend — <the rest>` | 1 (`ein test`: 2) |
+| it reads `<P>`, which rule `<d>` derives resting on such an `absent` | `… concludes <c> from <P>, which rule '<d>' derives resting on (absent …) over <R>, a relation a commitment can still extend — <the rest>` | 1 (2) |
+| its activator is such a fact | `… concludes <c> from its activator, which rule '<d>' derives resting on (absent …) over <R>, … — <the rest>` | 1 (2) |
+| a rule with parameters, whose activator a commitment can derive, reads its parameter's relation under an odd `absent` | `… concludes <c> from (absent …) over the relation its parameter ?<p> names, and a commitment can derive its activator, so a node can compile it over a relation a commitment can still extend — <the rest>` | 1 (2) |
+
+`<the rest>` names the three forms that say what was meant (F4): close the
+relation, `(solve :no-hypothesis (<R>))`, if no commitment is meant to extend
+it; state a requirement as a decision or an obligation (`functional` +
+`total-owed`, or `(open ?R)` with hrules); or conclude from a stored negative,
+as `std.algebra`'s `total` does. Pinned by
+`ein-infer/tests/refutation_under_absent.rs`, which holds the refused set of
+the corpus and the register exactly and the two written activator programs,
+and by `corpus/wrong_answers.toml`'s eight refused rows.
+
 ## 5. The CLI surface
 
 Everything a script or a habit can depend on is fixed: the five subcommands
@@ -716,8 +750,8 @@ and its exit codes **deliberately differ** from the other three's:
 | code | `solve` / `oracle` / `render` / `saturate` | `test` |
 |---|---|---|
 | 0 | success | every expectation held, and at least one was checked |
-| 1 | a load error — or a false `:expect`, or an `oracle` cube that contradicts a monotone static verdict | an expectation is **false**, or was not checked |
-| 2 | a usage error, or `-T` | a load error, a usage error, `-T` — or nothing to check |
+| 1 | a load error — or *forbid*'s refusal (§ 4.7), a false `:expect`, or an `oracle` cube that contradicts a monotone static verdict | an expectation is **false**, or was not checked |
+| 2 | a usage error, or `-T` | a load error or *forbid*'s refusal, a usage error, `-T` — or nothing to check |
 
 **An answer is never an exit code** on the other three: since M1e2
 S1e2.1a.5 a `solve --single` exits 0 whatever its word, and a run its budget

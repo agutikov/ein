@@ -4,10 +4,13 @@
 ;;; unchanged, 3 states (the `:expect` is the original's R), and the program
 ;;; is monotone.
 ;;;
+;;; Its `(config :enable-pre-branch-lookahead true)` line, copied from the
+;;; original, went on 2026-11-04 (M1e2 S1e2.2.5): the flag was retired at
+;;; S1e2.1c.5, so the probe had been a load error since 2026-11-03.
+;;;
 ;;; Re-take (2026-11-02):
 ;;;   ein solve plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/b14_without_signoff.ein
 
-(config :enable-pre-branch-lookahead true)
 
 (relation pending      T)
 (relation needs-review T)

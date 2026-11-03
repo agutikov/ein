@@ -266,7 +266,8 @@ facts of every state in R
   (§ 2.2): every parent, and on a monotone program a mismatch is an engine
   error. On `d3-unsat-core` it reads 35 parent paths and finds 4 that reach
   another state, where the bounded check reads 34 and finds 3 (`ein solve
-  corpus/fuzz_findings/d3-unsat-core.ein -y`, 2026-11-03). Which state a node of a program the static check flags is remains
+  corpus/fuzz_findings/d3-unsat-core.ein -y`, 2026-11-03; refused since M1e2
+  S1e2.2.5, *forbid* with F2's *via*, so the numbers are the record). Which state a node of a program the static check flags is remains
   open, [F21](../../plans/followups/f21_non_monotone_programs_decided.md)'s D2,
   with [P1e2.1b](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s
   S1e2.1b.2 and S1e2.1b.7 as its evidence.

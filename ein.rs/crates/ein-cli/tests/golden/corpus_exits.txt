@@ -83,17 +83,17 @@
 0    examples/branching/12_typed_blind_solve.ein :: saturate --dump
 0    examples/branching/12_typed_blind_solve.ein :: solve
 0    examples/branching/13_lookahead_naf_world.ein :: render constraints
-0    examples/branching/13_lookahead_naf_world.ein :: render lattice
+1    examples/branching/13_lookahead_naf_world.ein :: render lattice
 0    examples/branching/13_lookahead_naf_world.ein :: render rules
 0    examples/branching/13_lookahead_naf_world.ein :: saturate
 0    examples/branching/13_lookahead_naf_world.ein :: saturate --dump
-0    examples/branching/13_lookahead_naf_world.ein :: solve
+1    examples/branching/13_lookahead_naf_world.ein :: solve
 0    examples/branching/14_lookahead_unjudgeable.ein :: render constraints
-0    examples/branching/14_lookahead_unjudgeable.ein :: render lattice
+1    examples/branching/14_lookahead_unjudgeable.ein :: render lattice
 0    examples/branching/14_lookahead_unjudgeable.ein :: render rules
 0    examples/branching/14_lookahead_unjudgeable.ein :: saturate
 0    examples/branching/14_lookahead_unjudgeable.ein :: saturate --dump
-0    examples/branching/14_lookahead_unjudgeable.ein :: solve
+1    examples/branching/14_lookahead_unjudgeable.ein :: solve
 0    examples/branching/15_lookahead_two_step_on.ein :: render rules
 0    examples/branching/15_lookahead_two_step_on.ein :: saturate
 0    examples/branching/15_lookahead_two_step_on.ein :: solve
@@ -304,7 +304,7 @@
 0    examples/domain_elim/b_only.ein :: saturate
 0    examples/domain_elim/b_only.ein :: saturate --dump
 0    examples/domain_elim/b_only.ein :: solve
-0    examples/ein-bugs/alive-empty-interlayer.ein :: solve
+1    examples/ein-bugs/alive-empty-interlayer.ein :: solve
 0    examples/ein-bugs/alive-empty-phase1.ein :: solve
 0    examples/ein-bugs/alive-set-fresh-name-declared.ein :: solve
 0    examples/ein-bugs/alive-set-fresh-name-declared.ein :: test
@@ -329,7 +329,7 @@
 0    examples/ein-bugs/kwpair-below-the-filter.ein :: solve
 0    examples/ein-bugs/mixed-type-hypothesis.ein :: solve
 0    examples/ein-bugs/naf-upward-closure.ein :: saturate
-0    examples/ein-bugs/naf-upward-closure.ein :: solve
+1    examples/ein-bugs/naf-upward-closure.ein :: solve
 0    examples/ein-bugs/nested-core.ein :: solve
 0    examples/ein-bugs/nested-fact-hypothesis.ein :: solve
 0    examples/ein-bugs/query-goal-free-head-unsat.ein :: render rules
@@ -349,12 +349,12 @@
 0    examples/ein-bugs/wrong-answers/forced-2.ein :: solve
 0    examples/ein-bugs/wrong-answers/fresh-name-default.ein :: solve
 0    examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein :: solve
-0    examples/ein-bugs/wrong-answers/naf-nowb.ein :: solve
+1    examples/ein-bugs/wrong-answers/naf-nowb.ein :: solve
 0    examples/ein-bugs/wrong-answers/owed-seats-renamed.ein :: solve
 0    examples/ein-bugs/wrong-answers/owed-seats.ein :: solve
 0    examples/ein-bugs/wrong-answers/owed-two-step.ein :: solve
-0    examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein :: solve
-0    examples/ein-bugs/wrong-answers/stale-naf-fork.ein :: solve
+1    examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein :: solve
+1    examples/ein-bugs/wrong-answers/stale-naf-fork.ein :: solve
 0    examples/ein-bugs/wrong-answers/tree-dead.ein :: solve
 0    examples/ein-bugs/wrong-answers/uncovered-knows.ein :: solve
 0    examples/ein-bugs/wrong-answers/uncovered.ein :: solve
@@ -546,14 +546,14 @@
 0    examples/lattice/synth/one_model_per_component.ein :: render lattice
 0    examples/lattice/synth/one_model_per_component.ein :: saturate
 0    examples/lattice/synth/one_model_per_component.ein :: solve
-0    examples/lattice/synth/three_components.ein :: oracle --dump {out}/region
-0    examples/lattice/synth/three_components.ein :: render lattice
+1    examples/lattice/synth/three_components.ein :: oracle --dump {out}/region
+1    examples/lattice/synth/three_components.ein :: render lattice
 0    examples/lattice/synth/three_components.ein :: saturate
-0    examples/lattice/synth/three_components.ein :: solve
-0    examples/lattice/synth/trigger_hole.ein :: oracle --dump {out}/region
-0    examples/lattice/synth/trigger_hole.ein :: render lattice
+1    examples/lattice/synth/three_components.ein :: solve
+1    examples/lattice/synth/trigger_hole.ein :: oracle --dump {out}/region
+1    examples/lattice/synth/trigger_hole.ein :: render lattice
 0    examples/lattice/synth/trigger_hole.ein :: saturate
-0    examples/lattice/synth/trigger_hole.ein :: solve
+1    examples/lattice/synth/trigger_hole.ein :: solve
 0    examples/lattice/synth/trivial_line.ein :: oracle --dump {out}/region
 0    examples/lattice/synth/trivial_line.ein :: render lattice
 0    examples/lattice/synth/trivial_line.ein :: saturate

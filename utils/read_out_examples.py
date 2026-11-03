@@ -124,7 +124,7 @@ add("""---
 | [X5](#x5--latticesynthmerged_statesein-every-state-merged) | `lattice/synth/merged_states.ein` | 5 | ∅ not in R; a `(merged …)` on every state; two components |
 | [X6](#x6--testsstdlibclosure03_closed_and_owingein-r-empty-alive-nodes-owe) | `tests/stdlib/closure/03_closed_and_owing.ein` | 0 | empty R, the owing kind; `--single` says `Open` |
 | [X7](#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) | `tests/stdlib/algebra/09_irreflexive_violated.ein` | 0 | empty R, the dead kind; `--single` says `Contradiction` |
-| [X8](#x8--ein-bugsnaf-upward-closureein-a-hole) | `ein-bugs/naf-upward-closure.ein` | 2 | a program the static check flags: route 2, a hole, the warning |
+| [X8](#x8--lattice04_obligation_trigger_holeein-a-hole) | `lattice/04_obligation_trigger_hole.ein` | 2 | a program the static check flags: route 2, a hole, the warning |
 | [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: members, never line members |
 | [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: exhausted at the default budget by the state route, cut on stdout and whole in `answer.txt`; `--maximal -n 1`; `--single` |
 | [X11](#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) | `saturation/square-bwd/floors.ein` | 20 | R is the whole cube: decided, its states counted in part; the first questions in 1–11 saturations |
@@ -269,19 +269,28 @@ add("""**`--single`.** Expected one state, found none of the dead kind:
 """)
 add(block(["--single", "tests/stdlib/algebra/09_irreflexive_violated.ein"]))
 
-add("""## X8 — `ein-bugs/naf-upward-closure.ein`: a hole
+add("""## X8 — `lattice/04_obligation_trigger_hole.ein`: a hole
 
-W3's witness. A guard's `absent` makes `{(p A)}` dead alone and alive beside
-`(q A)`, so the static check flags the program and route 2 takes the whole cube,
-four saturations. R is `{∅, {q}, {p, q}}`, and `{p}` is a **hole**: outside R,
-between two members of it. The `lattice` block is the detector's warning (M1e2
-S1e2.1b.5, the wording approved on 2026-11-03), which replaced S1e2.1a.1's
-stub: what is assumed, the site and what it puts at stake, the status the cube
-shows (exercised, by `bad`), the state (no stale fact), the parent paths
-checked, and then each minimal hole with why it is out. The `E` row is the
-cube's alone.
+A hole with no `absent` in any saturation rule. `total-owed meal is-a` makes
+every diner owe a meal, and `seated-dines` derives `(is-a ?g Diner)` from a
+seat, so the obligation's trigger grows with the commitment: `{(seats Ann
+C1)}` owes, between ∅ and `{(meal Ann Soup), (seats Ann C1)}`, both in R. The
+static check flags the program and route 2 takes the whole cube, four
+saturations. R is `{∅, {meal}, {meal, seats}}`, and `{seats}` is a **hole**:
+outside R, between two members of it. The `lattice` block is the detector's
+warning (M1e2 S1e2.1b.5, the wording approved on 2026-11-03), which replaced
+S1e2.1a.1's stub: what is assumed, the site and what it puts at stake, the
+status the cube shows (exercised, by `total-owed`), the state (no stale fact),
+the parent paths checked, and then each minimal hole with why it is out. The
+`E` row is the cube's alone.
+
+Until M1e2 S1e2.2.5 this section was W3's witness, `ein-bugs/naf-upward-closure.ein`,
+whose hole `{(p A)}` was **dead**: a refutation resting on an `(absent (q ?x))`
+over a relation the search extends. *Forbid* (ruled 2026-11-02) refuses that
+program, so `ein solve` on it exits 1 and prints one line naming `bad`, and
+no program of the corpus that loads has a dead hole.
 """)
-add(block(["examples/ein-bugs/naf-upward-closure.ein"]))
+add(block(["examples/lattice/04_obligation_trigger_hole.ein"]))
 
 add("""## X9 — `lattice/06_friends_tables.ein`: flagged, and past the limit
 

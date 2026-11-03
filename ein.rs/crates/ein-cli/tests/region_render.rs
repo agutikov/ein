@@ -20,8 +20,10 @@
 use std::io::Write;
 use std::path::Path;
 use std::process::{Command, Stdio};
+use std::sync::{Arc, Mutex};
 
 use ein_corpus::{Scratch, repo_root};
+use ein_render::dump::region_lattice::{self, VisitedNode, Visits};
 use serde_json::Value as J;
 
 struct Run {
@@ -56,6 +58,103 @@ fn dumped(file: &str, flags: &[&str], dir: &Path) {
     args.extend(["--dump", &d]);
     let r = ein(&args);
     assert!(dir.join("region.json").is_file(), "{file}: {}", r.err);
+}
+
+/// What a region run visits, as `--dump-lattice`'s watch collects it.
+struct Collect(Arc<Mutex<Visits>>);
+
+impl ein_infer::events::Watch for Collect {
+    fn node(&mut self, v: &ein_infer::events::Visited<'_>) {
+        self.0.lock().expect("one watcher").nodes.push(VisitedNode {
+            commitment: v.commitment.to_vec(),
+            kind: v.kind,
+            owes: v.owes,
+            owed: v.owed.to_vec(),
+            core: v.core.to_vec(),
+            refuted_by: v.refuted_by.to_vec(),
+            closure: v.closure.to_vec(),
+            facts: v.facts,
+        });
+    }
+
+    fn step(&mut self, s: &ein_infer::events::Stepped) {
+        let mut v = self.0.lock().expect("one watcher");
+        let before = v.steps.iter().map(|(x, _)| x.visited as usize).sum();
+        v.steps.push((*s, before));
+    }
+}
+
+/// `file`'s cube in `cube` and its `--maximal` run's `answer/` and
+/// `lattice/` in `run`, written by the writers `ein oracle --dump` and `ein
+/// solve --maximal --dump-answer --dump-lattice` call, at library level and
+/// past *forbid*'s refusal (`forbid::studying`, M1e2 S1e2.2.5), which no CLI
+/// path lifts. W3's dead hole is the shape the refusal names, and its drawing
+/// is what the test below holds; `ein render region` reads the directories
+/// and refuses nothing.
+fn studied(file: &str, cube: &Path, run: &Path) {
+    let loaded = || {
+        let path = repo_root().join(file);
+        let text = std::fs::read_to_string(&path).expect(file);
+        let mut ast = ein_ir::Ast::new();
+        let mut terms = ein_core::Terms::new();
+        let forms = ein_ir::parse(&mut ast, &text, path.to_str()).expect("parses");
+        let kb = ein_ir::load(&mut ast, &mut terms, &forms, path.parent()).expect("loads");
+        (kb, terms, ast, text)
+    };
+    ein_infer::forbid::studying(|| {
+        let (mut kb, mut terms, ast, _) = loaded();
+        let out = ein_infer::region::compute(
+            &mut kb,
+            &mut terms,
+            &ast,
+            &ein_infer::region::Options::default(),
+            &mut |_| {},
+        )
+        .expect("studied, the cube is computed");
+        let inputs = ein_render::dump::region::RegionInputs {
+            source: file,
+            limit: ein_infer::region::DEFAULT_LIMIT,
+        };
+        ein_render::dump::write_cube_dir(cube, &out, &terms, &inputs).expect("the cube dir");
+
+        let (mut kb, mut terms, ast, text) = loaded();
+        let visits = Arc::new(Mutex::new(Visits::default()));
+        let mut events =
+            ein_infer::events::Events::off().watched(Box::new(Collect(visits.clone())));
+        let opts = ein_infer::explore::Options::new(ein_infer::explore::Mode {
+            which: ein_infer::explore::Which::Maximal,
+            ask: ein_infer::explore::Ask::Describe,
+        });
+        let r = ein_infer::read_out::run_with(&mut kb, &mut terms, &ast, &opts, &mut events)
+            .expect("studied, the run answers");
+        let candidates: Vec<String> = r.answer.candidates.iter().map(|c| c.text.clone()).collect();
+        let v = visits.lock().expect("the run is done").clone();
+        let lattice = region_lattice::Inputs {
+            source: file,
+            argv: "ein solve FILE --maximal",
+            route: "2, the cube",
+            candidates: &candidates,
+        };
+        let dir = run.join("lattice");
+        std::fs::create_dir_all(&dir).expect("lattice/");
+        region_lattice::write(&dir, &v, &lattice).expect("lattice/");
+        let config = kb.program().config.clone().unwrap_or_default();
+        let summary = ein_cli::summary::text(
+            &ein_cli::summary::build_region(&ast, &mut terms, &mut kb, &r, file, &config)
+                .expect("the summary"),
+        );
+        let inputs = ein_render::dump::region_answer::Inputs {
+            source: file,
+            program: &text,
+            summary: &summary,
+            answer_txt: "",
+            forms: &[],
+        };
+        let dir = run.join("answer");
+        std::fs::create_dir_all(&dir).expect("answer/");
+        ein_render::dump::region_answer::write(&dir, &r, &mut kb, &mut terms, &ast, &inputs)
+            .expect("answer/");
+    });
 }
 
 /// `ein solve FILE FLAGS --dump-answer DIR/answer --dump-lattice
@@ -174,11 +273,13 @@ fn graphviz_accepts(dot: &str) -> Result<(), String> {
 
 /// The programs every view is drawn for: a hole, an unsound lookahead, a
 /// forced positive, saturation moving nodes, an owing root, the n = 9 border
-/// view and the n = 8 lines view — and one directory over the limit.
+/// view and the n = 8 lines view — and one directory over the limit. The
+/// third was `naf-nowb`'s dead hole until *forbid* refused it (M1e2
+/// S1e2.2.5); the W3 test draws that one from a library-level fixture.
 const DRAWN: [(&str, &[&str]); 9] = [
     ("examples/branching/15_lookahead_two_step_on.ein", &[]),
     ("examples/lattice/04_obligation_trigger_hole.ein", &[]),
-    ("examples/ein-bugs/wrong-answers/naf-nowb.ein", &[]),
+    ("examples/lattice/08_absent_witness_hole.ein", &[]),
     ("examples/ein-bugs/wrong-answers/forced-2.ein", &[]),
     ("examples/ein-bugs/wrong-answers/owed-seats.ein", &[]),
     ("examples/saturation/transitive/taxonomy.ein", &[]),
@@ -337,7 +438,9 @@ fn w1_a_node_of_the_part_asked_that_no_state_holds_is_missing() {
 }
 
 /// **W3, drawn.** `naf-nowb` is not monotone: `{(p A)}` is a hole, dead
-/// under its `absent` guard, and `{(p A), (q A)}` above it is alive. The
+/// under its `absent` guard, and `{(p A), (q A)}` above it is alive. *Forbid*
+/// refuses the program since M1e2 S1e2.2.5, so its directories are written by
+/// [`studied`], a library-level fixture, and the drawing is held as it was. The
 /// region run takes the cube (route 2), visits every node and reports the
 /// alive superset — the hole carries its repair edge, and nothing is missing
 /// or read otherwise than the cube. A run that pruned above the dead `{(p
@@ -349,9 +452,8 @@ fn w3_the_hole_is_drawn_and_an_exclusion_the_cube_refutes_is_named() {
     let root = scratch("w3");
     let file = "examples/ein-bugs/wrong-answers/naf-nowb.ein";
     let cube = root.join("region");
-    dumped(file, &[], &cube);
     let run = root.join("run");
-    ran(file, &["--maximal"], &run);
+    studied(file, &cube, &run);
     let pa = mask_of(&cube, &["(p A)"]);
     let both = mask_of(&cube, &["(p A)", "(q A)"]);
     let dot = render_with(&cube, Some(&run), "full");

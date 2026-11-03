@@ -57,6 +57,9 @@ fn dump(file: &str, flags: &[&str], dir: &Path) -> Run {
     ein(&args, &[])
 }
 
+/// The one of [`SEVEN`] *forbid* refuses (M1e2 S1e2.2.5).
+const REFUSED: &str = "examples/ein-bugs/naf-upward-closure.ein";
+
 /// The seven programs of Q-M1e2.7's tables.
 const SEVEN: [&str; 7] = [
     "examples/branching/15_lookahead_two_step_on.ein",
@@ -76,7 +79,9 @@ fn the_flag_moves_no_answer() {
     for (i, file) in [
         "examples/branching/15_lookahead_two_step_on.ein",
         "examples/ein-bugs/wrong-answers/owed-seats.ein",
-        "examples/ein-bugs/naf-upward-closure.ein",
+        // A flagged program with a hole: `naf-upward-closure` until *forbid*
+        // refused it (M1e2 S1e2.2.5).
+        HOLE,
     ]
     .iter()
     .enumerate()
@@ -139,23 +144,39 @@ fn require_python3() {
 const MOVES: &str = "examples/saturation/transitive/taxonomy.ein";
 
 /// A program whose dead nodes die by a **pair**, `X` beside `(not X)`, which
-/// derives no `(false)` fact: 12 of its 32 nodes. `region.py` read only
-/// `false` until M1e2 S1e2.1b.2, and called those 12 alive.
-const PAIR: &str = "corpus/fuzz_findings/d3-unsat-core.ein";
+/// derives no `(false)` fact: 126 of its 128 nodes. `region.py` read only
+/// `false` until M1e2 S1e2.1b.2, and called such nodes alive; the finding
+/// was `corpus/fuzz_findings/d3-unsat-core.ein`'s 12 of 32, until *forbid*
+/// refused that program (M1e2 S1e2.2.5, F2's *via*).
+const PAIR: &str = "examples/branching/09_hrule.ein";
+
+/// A hole, since the seven's one, `naf-upward-closure`'s, is a refusal
+/// (M1e2 S1e2.2.5): an obligation's trigger, owing.
+const HOLE: &str = "examples/lattice/04_obligation_trigger_hole.ein";
 
 /// **Two routes agree.** The library oracle and `utils/region.py` on the
-/// seven programs, [`MOVES`] and [`PAIR`], node for node: the status of every subset,
-/// every alive node's closure (S1e2.1a.2), the two lines, the holes, the
-/// components' sizes, the maximal sub-cubes, `N`, and the N side of the
-/// duality. One of the seven has a hole.
+/// seven programs, [`MOVES`], [`PAIR`] and [`HOLE`], node for node: the status
+/// of every subset, every alive node's closure (S1e2.1a.2), the two lines, the
+/// holes, the components' sizes, the maximal sub-cubes, `N`, and the N side of
+/// the duality. One of the seven, `naf-upward-closure`, is refused since M1e2
+/// S1e2.2.5, and the oracle says so.
 #[test]
 fn the_oracle_and_the_per_subset_route_agree_node_for_node() {
     require_python3();
     let root = scratch("routes");
     let mut moved = 0;
-    for (i, file) in SEVEN.iter().chain([&MOVES, &PAIR]).enumerate() {
+    for (i, file) in SEVEN.iter().chain([&MOVES, &PAIR, &HOLE]).enumerate() {
         let dir = root.join(format!("{i}"));
         let r = dump(file, &[], &dir);
+        if *file == REFUSED {
+            assert_eq!(r.code, 1, "{file}: {}", r.err);
+            assert!(r.err.starts_with("rule 'bad': "), "{file}: {}", r.err);
+            assert!(
+                !dir.join("region.json").exists(),
+                "{file}: a refusal dumps nothing"
+            );
+            continue;
+        }
         assert_eq!(r.code, 0, "{file}: {}", r.err);
         let region = json(&dir.join("region.json"));
         let cands: Vec<String> = region["candidates"]
@@ -480,14 +501,16 @@ fn region_states_keeps_every_nodes_state() {
 #[test]
 fn the_warning_says_what_is_assumed_where_there_is_a_site() {
     let root = scratch("warning");
+    // `naf-upward-closure` (exercised) and `stale-naf-fork` (conservative)
+    // were the first two until *forbid* refused them (M1e2 S1e2.2.5).
     let cases = [
         (
-            "examples/ein-bugs/naf-upward-closure.ein",
+            "examples/lattice/08_absent_witness_hole.ein",
             false,
             "exercised",
         ),
         (
-            "examples/ein-bugs/wrong-answers/stale-naf-fork.ein",
+            "examples/features/07_unstratifiable.ein",
             false,
             "conservative",
         ),

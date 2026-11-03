@@ -34,8 +34,10 @@ pub const REGISTER: &str = "corpus/wrong_answers.toml";
 /// `/2` since M1e2 S1e2.1a.10 (2026-10-16): every row states its witness's R,
 /// [`Region`]. `/3` since S1e2.1a.5's switch (2026-10-18): every row states
 /// [`Now`], the region run that asks its question, and the walk's blocks are
-/// the record of what the walk said.
-pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/3";
+/// the record of what the walk said. `/4` since M1e2 S1e2.2.5 (2026-11-04):
+/// a right answer and a `now` can be a **refusal** ([`Right::refused`],
+/// [`Now::refused`]), *forbid*'s, and a refused row states no [`Region`].
+pub const REGISTER_SCHEMA: &str = "ein-wrong-answers/4";
 
 /// What a [`Now`] run's states are: all of R, or one of its lines.
 pub const LINES: [&str; 3] = ["all", "minimal", "maximal"];
@@ -246,16 +248,25 @@ pub struct Now {
     pub run: String,
     /// One of [`LINES`]: which part of R its states are.
     pub line: String,
+    /// The run refuses the program — M1e2 S1e2.2.5, *forbid*: exit 1, and
+    /// this is the first line of its stderr. A refused run lists nothing, so
+    /// the fields below keep their defaults.
+    #[serde(default)]
+    pub refused: Option<String>,
+    #[serde(default)]
     pub exhausted: bool,
     /// The states it lists.
+    #[serde(default)]
     pub k: usize,
     /// One of [`SUMMARY_EMPTY`], when the run established R empty.
     #[serde(default)]
     pub empty: Option<String>,
     /// The candidates' relations: what a state's `(model …)` names.
+    #[serde(default)]
     pub relations: Vec<String>,
     /// Each listed state's `(model …)`, sorted; for an owing empty R, its
     /// frontier's, which are the open states.
+    #[serde(default)]
     pub models: Vec<Vec<String>>,
 }
 
@@ -278,6 +289,19 @@ impl Now {
     /// it.
     pub fn against(&self, right: &Right) -> Vec<String> {
         let mut out = Vec::new();
+        // A refusal is the whole answer: it states no verdict, `k` or model.
+        match (right.refused, self.refused.is_some()) {
+            (true, true) => return out,
+            (true, false) => {
+                out.push("right: a refusal, now: an answer".to_string());
+                return out;
+            }
+            (false, true) => {
+                out.push("right: an answer, now: a refusal".to_string());
+                return out;
+            }
+            (false, false) => {}
+        }
         if let Some(v) = &right.verdict
             && v != self.verdict()
         {
@@ -432,6 +456,11 @@ pub struct Right {
     pub reading: Option<String>,
     /// From what the answer was derived.
     pub derived: String,
+    /// The answer is a **refusal** — M1e2 S1e2.2.5, *forbid*: the program is
+    /// refused before any question about a commitment, a load error's exit.
+    /// A refusal states no verdict, `k` or model.
+    #[serde(default)]
+    pub refused: bool,
     #[serde(default)]
     pub verdict: Option<String>,
     #[serde(default)]
@@ -502,8 +531,28 @@ impl Register {
                     out.push(at(format!("look_at {p:?} is not one of {LOOK_AT:?}")));
                 }
             }
-            if r.status == "fixed" && (r.right.verdict.is_none() || r.right.k.is_none()) {
+            if r.status == "fixed"
+                && !r.right.refused
+                && (r.right.verdict.is_none() || r.right.k.is_none())
+            {
                 out.push(at("a fixed row states the right verdict and k".to_string()));
+            }
+            if r.right.refused && (r.right.verdict.is_some() || r.right.k.is_some()) {
+                out.push(at("a refusal states no verdict and no k".to_string()));
+            }
+            if r.now.refused.is_some()
+                && (r.now.k != 0
+                    || r.now.exhausted
+                    || r.now.empty.is_some()
+                    || !r.now.models.is_empty()
+                    || !r.now.relations.is_empty())
+            {
+                out.push(at("a refused [now] lists nothing".to_string()));
+            }
+            if r.now.refused.is_some() && r.region.is_some() {
+                out.push(at(
+                    "a refused [now] has no [case.region]: the library refuses it too".to_string(),
+                ));
             }
             if (r.status == "open") != r.open_because.is_some() {
                 out.push(at(
@@ -657,6 +706,8 @@ impl Register {
                 }
             }
             match &r.region {
+                // A refused row states no region (M1e2 S1e2.2.5): checked above.
+                None if r.now.refused.is_some() => {}
                 None => out.push(format!("{}: no [case.region]", r.id)),
                 Some(g) => {
                     if !ROUTES.contains(&g.route.as_str()) {
@@ -705,18 +756,24 @@ impl Register {
         // per status, since a fixed row names the stage that fixed it and an
         // open one the stage that will. A row the review re-opened can move
         // to another stage (M1e2 S1e2.1.7: `W1/alive-empty-interlayer`'s
-        // refusal is S1e2.2.5's while W1's fixed rows stay S1e2.1a.5's).
+        // refusal was S1e2.2.5's while W1's fixed rows stayed S1e2.1a.5's),
+        // and so fixed rows share an owner per commit that fixed them (M1e2
+        // S1e2.2.5 fixed two W1 rows beside the switch's twelve).
         let mut by_case = std::collections::BTreeMap::<&str, &str>::new();
-        let mut by_status = std::collections::BTreeMap::<(&str, &str), &str>::new();
+        let mut by_status = std::collections::BTreeMap::<(&str, &str, Option<&str>), &str>::new();
         for r in &self.case {
             let title = *by_case.entry(r.case.as_str()).or_insert(r.title.as_str());
             let owner = *by_status
-                .entry((r.case.as_str(), r.status.as_str()))
+                .entry((
+                    r.case.as_str(),
+                    r.status.as_str(),
+                    r.fixed.as_ref().map(|f| f.commit.as_str()),
+                ))
                 .or_insert(r.owner.as_str());
             if (title, owner) != (r.title.as_str(), r.owner.as_str()) {
                 out.push(format!(
                     "{}: title differs from the case's first row, or owner from the first \
-                     row of its case and status",
+                     row of its case and status (and, for a fixed row, its fixing commit)",
                     r.id
                 ));
             }

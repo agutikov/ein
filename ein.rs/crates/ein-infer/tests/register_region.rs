@@ -8,7 +8,8 @@
 //! recomputes it with [`explore`], the code `ein solve` runs (route 1 on a
 //! monotone program, the cube on a flagged one), and holds every field to it:
 //! the route, the static verdict, k_s, k_c, the kind of an empty R, and both
-//! lines as commitments.
+//! lines as commitments. A row whose `now` is a refusal (M1e2 S1e2.2.5) states
+//! no region, and the library refuses its witness too.
 //!
 //! ```text
 //! cargo test -p ein-infer --test register_region
@@ -38,11 +39,14 @@ fn loaded(path: &Path) -> (Kb, Terms, Ast) {
 }
 
 fn ask(path: &Path, mode: Mode) -> Answer {
+    try_ask(path, mode).unwrap_or_else(|e| panic!("{}: {e:?}", path.display()))
+}
+
+fn try_ask(path: &Path, mode: Mode) -> Result<Answer, ein_infer::SolveError> {
     let (mut kb, mut terms, ast) = loaded(path);
     let mut opts = explore::Options::new(mode);
     opts.jobs = 4;
     explore::run(&mut kb, &mut terms, &ast, &opts)
-        .unwrap_or_else(|e| panic!("{}: {e:?}", path.display()))
 }
 
 /// The region as the library computes it, in the register's spelling.
@@ -228,6 +232,25 @@ fn every_row_states_its_witness_s_region() {
             continue;
         }
         if cfg!(debug_assertions) && row.wrong.debug_panic.is_some() {
+            continue;
+        }
+        // A refused row (M1e2 S1e2.2.5, *forbid*) states no region, and the
+        // library refuses its witness as the binary does.
+        if row.now.refused.is_some() {
+            let describe = Mode {
+                which: Which::All,
+                ask: Ask::Describe,
+            };
+            match try_ask(&repo_root().join(&row.witness), describe) {
+                Err(ein_infer::SolveError::Refused(_)) => {}
+                other => bad.push(format!(
+                    "{} ({}): [now] is a refusal and the library answers {:?}",
+                    row.id,
+                    row.witness,
+                    other.map(|a| a.route)
+                )),
+            }
+            checked += 1;
             continue;
         }
         let got = match computed(&repo_root().join(&row.witness)) {

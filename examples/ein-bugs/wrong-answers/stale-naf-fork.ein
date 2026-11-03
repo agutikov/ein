@@ -32,6 +32,19 @@
 ;;; reading — refuse what cannot be stratified — does not reach it.
 ;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
+;;;
+;;; ── 2026-11-04 — refused, *via* (M1e2 S1e2.2.5) ───────────────────────────
+;;;
+;;; The user ruled F2 *via, per activator*: a refutation resting on an
+;;; `absent` only through a fact a rule derived under it counts. Here
+;;; `p-and-q-clash` reads `(p ?x)`, which `derive-p` derives under
+;;; `(absent (q ?x))`, and `q` is a relation a commitment can extend; unfolded
+;;; it is `(thing ?x) (absent (q ?x)) (q ?x) ⟹ (false)`. So the program is
+;;; refused at load, every question about a commitment exits 1 naming
+;;; `p-and-q-clash`, `derive-p` and `q`, and register row W8/stale-naf-fork
+;;; left F21's deferral, fixed with the refusal as its right answer. The two
+;;; readings above are what Q-M1e2.2 (F21's D2) asks of a program that loads;
+;;; this one no longer does, and `W8/features-07` keeps the question.
 (relation thing T)
 (relation p T)
 (relation q T)

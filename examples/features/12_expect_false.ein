@@ -91,8 +91,15 @@
 (in P1 H1)
 (not (in P2 H1))
 
+;; `instance` is closed too (M1e2 S1e2.2.5, 2026-11-04): `no-room` concludes
+;; (false) from a `forall`, an (absent …) over `instance`, and with `instance`
+;; open the blind enumerator proposed `(instance H1 P1)` and the like, a
+;; relation a commitment can extend, which *forbid* (ruled 2026-11-02) refuses.
+;; The types are given in full, so no commitment is meant to extend them. H was
+;; 20 such candidates, every one dead alone; it is now none, and the answer is
+;; root's, as it was.
 (solve
-  :no-hypothesis (in)
+  :no-hypothesis (in instance)
   :expect (false))
 
 (query

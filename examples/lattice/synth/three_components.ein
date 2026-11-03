@@ -2,6 +2,15 @@
 ;;; (M1e2 S1e2.1a.8). Generated: edit the spec and regenerate, never this file:
 ;;;   python3 utils/region_synth.py --example three_components --out <this file>
 ;;;
+;;; ── 2026-11-04 — frozen, and refused (M1e2 S1e2.2.5) ──────────────────
+;;; `dead-3` and `dead-7` conclude (false) from an (absent (h …)) over h, which the
+;;; hrule proposes: the shape *forbid* rules out (2026-11-02), so every
+;;; question about a commitment exits 1 naming them, and this file is the
+;;; register's W3/three-components witness. It is no longer regenerated: since
+;;; this stage region_synth.py writes a dead node with a non-dead superset
+;;; as owing, so the command above now writes the same region with its
+;;; dead holes owing, and the target below describes this file as written.
+;;;
 ;;; The user's shape of 2026-10-15: R in three separate components — one
 ;;; monotone (a 2-dimensional sub-cube over C), one with a one-node hole (as
 ;;; ein-bugs/naf-upward-closure.ein has it), and one with a bigger hole. Each

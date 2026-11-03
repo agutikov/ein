@@ -706,15 +706,19 @@ fn the_monotone_question_is_about_the_program() {
                 tail("3 candidates")
             ),
         ),
+        // `ein-bugs/naf-upward-closure.ein` was this row until *forbid*
+        // refused it (M1e2 S1e2.2.5): `--monotone` takes the universe and runs
+        // the static check, and the refusal is read there. Its refusal is held
+        // below.
         (
-            "examples/ein-bugs/naf-upward-closure.ein",
+            "examples/lattice/08_absent_witness_hole.ein",
             format!(
                 "  monotone          no — 1 site\n{assumes}\
-                 \x20   site            bad: absent reads q at absent depth 1, concludes (false) — \
-                 at stake: the state, and dead with it\n\
-                 \x20   bit             not computed — the cube is 2^2 = 4 saturations: `ein \
+                 \x20   site            soup-unless-allergic: absent reads allergic at absent \
+                 depth 1, concludes a positive fact — at stake: the state\n\
+                 \x20   bit             not computed — the cube is 2^3 = 8 saturations: `ein \
                  oracle FILE` computes it, and so does a bare `ein solve FILE`\n{}",
-                tail("2 candidates")
+                tail("3 candidates")
             ),
         ),
         (
@@ -753,6 +757,14 @@ fn the_monotone_question_is_about_the_program() {
         assert_eq!(r.out, format!("{}{body}", header(file)), "{file}");
         assert_eq!(r.err, "", "{file}");
     }
+    let refused = ein(&[
+        "solve",
+        "examples/ein-bugs/naf-upward-closure.ein",
+        "--monotone",
+    ]);
+    assert_eq!(refused.code, 1, "{}", refused.out);
+    assert!(refused.out.is_empty(), "{}", refused.out);
+    assert!(refused.err.starts_with("rule 'bad': "), "{}", refused.err);
     for other in ["--minimal", "--maximal", "--single", "-n 2"] {
         let mut args = vec!["solve", THREE, "--monotone"];
         args.extend(other.split(' '));
@@ -765,7 +777,7 @@ fn the_monotone_question_is_about_the_program() {
     let answer = dir.join("answer");
     let r = ein(&[
         "solve",
-        "examples/ein-bugs/naf-upward-closure.ein",
+        "examples/lattice/08_absent_witness_hole.ein",
         "--monotone",
         "--json-summary",
         summary.to_str().unwrap(),
@@ -779,7 +791,7 @@ fn the_monotone_question_is_about_the_program() {
     assert!(s["region"].is_null());
     assert_eq!(s["work"]["saturations"], 1);
     assert_eq!(s["monotonicity"]["monotone"], false);
-    assert_eq!(s["monotonicity"]["sites"][0]["at_stake"], "state, dead");
+    assert_eq!(s["monotonicity"]["sites"][0]["at_stake"], "state");
     assert_eq!(
         std::fs::read_to_string(answer.join("answer.txt")).expect("written"),
         r.out
@@ -893,10 +905,11 @@ fn the_count_question_is_describes_counts() {
         c.out
     );
 
-    // A flagged program keeps the warning, and its spot check is not run.
+    // A flagged program keeps the warning, and its spot check is not run
+    // (`naf-upward-closure` until *forbid* refused it, M1e2 S1e2.2.5).
     let flagged = ein(&[
         "solve",
-        "examples/ein-bugs/naf-upward-closure.ein",
+        "examples/lattice/08_absent_witness_hole.ein",
         "--count",
     ]);
     assert_eq!(flagged.code, 0, "{}", flagged.err);
@@ -1019,7 +1032,8 @@ fn one_verdict_on_every_corpus_program() {
         .collect();
     let failures = std::sync::Mutex::new(Vec::<String>::new());
     let unread = std::sync::Mutex::new(Vec::<String>::new());
-    let (checked, flagged) = (
+    let (checked, flagged, refused) = (
+        std::sync::atomic::AtomicUsize::new(0),
         std::sync::atomic::AtomicUsize::new(0),
         std::sync::atomic::AtomicUsize::new(0),
     );
@@ -1027,7 +1041,8 @@ fn one_verdict_on_every_corpus_program() {
     std::thread::scope(|scope| {
         for w in 0..jobs {
             let (files, dir, tested) = (&files, &dir, &tested);
-            let (failures, checked, flagged, unread) = (&failures, &checked, &flagged, &unread);
+            let (failures, checked, flagged, unread, refused) =
+                (&failures, &checked, &flagged, &unread, &refused);
             scope.spawn(move || {
                 for (i, file) in files.iter().enumerate().skip(w).step_by(jobs) {
                     let (a, b) = (
@@ -1043,6 +1058,18 @@ fn one_verdict_on_every_corpus_program() {
                     ]);
                     if asked.code != 0 {
                         // A file that does not load: no verdict to compare.
+                        // A refused one (M1e2 S1e2.2.5) is refused alike by
+                        // the read-out, with the same lines.
+                        if asked.err.starts_with("rule '") {
+                            let d = ein(&["solve", file, "--region-limit", "0"]);
+                            if (d.code, &d.err) != (asked.code, &asked.err) {
+                                failures.lock().expect("one writer at a time").push(format!(
+                                    "{file}: `--monotone` refuses and the read-out exits {}: {}",
+                                    d.code, d.err
+                                ));
+                            }
+                            refused.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                        }
                         continue;
                     }
                     let described = ein(&[
@@ -1145,10 +1172,17 @@ fn one_verdict_on_every_corpus_program() {
         ],
         "the programs whose read-out errs, and so has no lattice block to compare"
     );
-    let (checked, flagged) = (checked.into_inner(), flagged.into_inner());
+    let (checked, flagged, refused) = (
+        checked.into_inner(),
+        flagged.into_inner(),
+        refused.into_inner(),
+    );
+    // 2026-11-04 (M1e2 S1e2.2.5): *forbid* refuses nine corpus programs, which
+    // were checked and flagged until then, and `features/05` and `/12` closed
+    // a relation and are monotone; 26 flagged before.
     assert!(
-        checked > 200 && flagged >= 26,
-        "{checked} checked, {flagged} flagged"
+        checked > 190 && flagged >= 14 && refused >= 9,
+        "{checked} checked, {flagged} flagged, {refused} refused"
     );
     assert!(
         tested.values().any(|m| !m),

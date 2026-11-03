@@ -328,7 +328,7 @@ every member is in `--dump-answer`.
 ### 6.3 Holes, and the warning: never silent
 
 On a flagged program that the cube reaches
-([X8](read_out_examples.md#x8--ein-bugsnaf-upward-closureein-a-hole)), the
+([X8](read_out_examples.md#x8--lattice04_obligation_trigger_holeein-a-hole)), the
 `lattice` row was S1e2.1a.1's stub until M1e2 S1e2.1b.5 replaced it with the
 detector's warning, in the wording the user approved on 2026-11-03
 ([`detector_proposal.md`](../p1e2.1b_non_monotone_programs/detector_proposal.md)

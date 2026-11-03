@@ -26,20 +26,22 @@
 ;; The `Contradiction` above was the walk's, and its hand derivation read the
 ;; search's own negatives as the state's (Q-M1e.7 ruling A). Under R a node is
 ;; `sat(root ∪ C)` with nothing the search wrote, so no `(not (p Z))` is ever
-;; stored, `mutex` and `totality` never fire, and R is the 4 states the
-;; `:expect` below lists, maximal `{(p A), (p B)}` (M1e2 S1e2.1a.5's switch).
+;; stored, `mutex` and `totality` never fire, and R is 4 states, maximal
+;; `{(p A), (p B)}` (M1e2 S1e2.1a.5's switch).
 ;; And `totality` concludes `(false)` from `(absent (p A))` over `p`, which the
 ;; hrule proposes: the shape the user ruled out on 2026-11-02 (*forbid*,
-;; Q-M1e2.5), so the right answer is a refusal at load, which M1e2 S1e2.2.5
-;; builds. Until then the program loads and the `:expect` states R. Register
-;; row W1/alive-empty-interlayer, re-opened at the revisit (S1e2.1.7).
+;; Q-M1e2.5), so the right answer is a refusal at load. Register row
+;; W1/alive-empty-interlayer, re-opened at the revisit (S1e2.1.7).
 ;;
-;; ── The `:expect`, and Q-M1e.13 ───────────────────────────────────────────
+;; ── 2026-11-04 — refused ──────────────────────────────────────────────────
 ;;
-;; The banked claim named `is-a` because the recorded model contained no `p`
-;; fact and an expectation must name the goal's relations (Q-M1e.13).
-;; `(false)` names nothing, so the goal goes back to the question the file is
-;; about. Q-M1e.13 itself is still open.
+;; M1e2 S1e2.2.5 built the refusal and the row is fixed: every question about
+;; a commitment exits 1 naming `totality` over `p`; `ein saturate` still
+;; saturates. The region claim this file carried stated R's four states,
+;; which is what the program answered until then and the row keeps as its
+;; alternative; a refused program has no R to check a claim against, so the
+;; claim went. Deleting `totality` keeps those four states and is monotone
+;; (M1e2 S1e2.4.1 § 2.1).
 
 (relation is-a T T)
 (relation p T)
@@ -70,16 +72,6 @@
   :match  (and (not (p Z)) (absent (p A)) (absent (p B)))
   :assert (false)
   :priority 400)
-
-(solve :expect (region
-                 ;; state 1 of 4 — ∅, root itself · minimal
-                 (model)
-                 ;; state 2 of 4 — 1 candidate · from {(p A)}
-                 (model (p A))
-                 ;; state 3 of 4 — 1 candidate · from {(p B)}
-                 (model (p B))
-                 ;; state 4 of 4 — 2 candidates · maximal · from {(p A), (p B)}
-                 (model (p A) (p B))))
 
 (query
   :goal   (p ?x))

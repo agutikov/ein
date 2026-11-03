@@ -229,13 +229,24 @@ Each is already enforced locally; this page is the shared reason.
   program that writes it is to be refused with the replacement named:
   `(open ?R)`, a decided attribute
   ([`dual_rail.ein`](../../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_probes/dual_rail.ein)),
-  or the relation closed. Building the refusal is
-  [S1e2.2.5](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)'s.
-  Until it ships the engine loads such a program, and since S1e2.1a.5's switch
-  (2026-10-18) none of the three mechanisms has a CLI path: the static check
-  flags the program, and the cube answers it, learning from no refutation.
+  or the relation closed. **Refused since
+  [S1e2.2.5](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md)
+  (2026-11-04)**, with the user's F2 of that day, *via, per activator*: the
+  refutation counts when it rests on the `absent` directly, through a fact a
+  rule derived under one (`stale-naf-fork.ein`'s `p-and-q-clash` reading `p`),
+  or through its activator. *Extendable* is the static check's `D`, at
+  relation grain (F1 (b)). [`ein_infer::forbid`](../../../ein.rs/crates/ein-infer/src/forbid.rs)
+  reads it after root's fixpoint, and every command that takes the universe
+  refuses the program, one line per refusing rule naming the three forms
+  ([`defined_behaviour.md` § 4.7](../defined_behaviour.md#47-a-refutation-resting-on-an-absent-a-commitment-can-fill--m1e2-s1e225)).
+  Before it, since S1e2.1a.5's switch (2026-10-18), the engine loaded such a
+  program and none of the three mechanisms had a CLI path: the static check
+  flagged the program, and the cube answered it, learning from no refutation.
   Two of them, the singleton writeback and the no-good clause, were the walk's
-  and were deleted with it at M1e2 S1e2.1c.5 (2026-11-03).
+  and were deleted with it at M1e2 S1e2.1c.5 (2026-11-03). What *forbid* does
+  not cover, an `absent` that concludes a positive fact, is
+  [F21](../../../plans/followups/f21_non_monotone_programs_decided.md)'s D1
+  (E), declined for this build.
   Note this is **not** the stratification hazard and the two do not overlap: a
   guard over a *rule-derived* relation can flip during saturation, and S1.21.8
   made that sound by judging it at a fixpoint. This one is a *commitment*

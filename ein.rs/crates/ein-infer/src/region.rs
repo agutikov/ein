@@ -679,6 +679,16 @@ pub(crate) fn prepare_with(
         .collect();
     let plans = crate::monotone::plans_of(&memo);
     let monotonicity = crate::monotone::classify(root, terms, &plans, &hypothesised);
+    // *Forbid* (M1e2 S1e2.2.5): a refutation resting on an `absent` over a
+    // relation a commitment can still extend refuses the program, here, after
+    // root's fixpoint and the static check, so every question about a
+    // commitment refuses alike. A monotone program pays one test.
+    if !crate::forbid::is_studying() {
+        let refused = crate::forbid::check(root, terms, ast, &plans, &monotonicity);
+        if !refused.is_empty() {
+            return Err(SolveError::Refused(crate::forbid::message(&refused, terms)));
+        }
+    }
     if events.on() && !monotonicity.is_monotone() {
         // The detector's static half (M1e2 S1e2.1b.5): optional fields, so
         // `ein-events/1` stays. The dynamic half is the summary's and the

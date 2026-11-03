@@ -15,7 +15,7 @@ rule on, not five stage files to find.
 | Q | title | needed by | status |
 |---|---|---|---|
 | [Q-M1e2.1](#q-m1e21--is-a-discharged-superset-of-a-discharged-state-a-new-model) | Is a discharged superset of a discharged state a new model? | [S1e2.2.3](p1e2.2_wrong_answers/s1e2.2.3_obligations_join_superset.md) (W5) | **ruled 2026-11-01**: *literal*, k = \|R\| = 7, as Q-M1e2.7's (a) had said; W5's `right` restated |
-| [Q-M1e2.2](#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in) | Does a guard's `absent` premise bind the state the search ends in? | [P1e2.1b](p1e2.1b_non_monotone_programs/README.md)'s [S1e2.1b.2](p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md) (the evidence, done), then [S1e2.2.6](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md) (W8) | **deferred to [F21](../followups/f21_non_monotone_programs_decided.md), 2026-11-02** (D1–D3); W8's tension with the milestone's acceptance **ruled 2026-11-03**: *amend the acceptance*, W8's rows open with F21 as owner ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)) |
+| [Q-M1e2.2](#q-m1e22--does-a-guards-absent-premise-bind-the-state-the-search-ends-in) | Does a guard's `absent` premise bind the state the search ends in? | [P1e2.1b](p1e2.1b_non_monotone_programs/README.md)'s [S1e2.1b.2](p1e2.1b_non_monotone_programs/s1e2.1b.2_fork_or_scratch.md) (the evidence, done), then [S1e2.2.6](p1e2.2_wrong_answers/s1e2.2.6_stale_naf_positive.md) (W8) | **deferred to [F21](../followups/f21_non_monotone_programs_decided.md), 2026-11-02** (D1–D3); W8's tension with the milestone's acceptance **ruled 2026-11-03**: *amend the acceptance*, W8's rows open with F21 as owner ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)); one row since 2026-11-04, when S1e2.2.5's F2 (*via*) refused `stale-naf-fork` |
 | [Q-M1e2.3](#q-m1e23--what-does-exhausted-certify-when-the-rung-leaves-relations-uncovered) | What does `exhausted` certify when the rung leaves relations uncovered? | [S1e2.2.8](p1e2.2_wrong_answers/s1e2.2.8_uncovered_certified.md) (W6) | **ruled 2026-11-03: (a)**, *scoped, and the read-out says so* ([S1e2.1.7 § The user's rulings](p1e2.1_seeing_the_answer/s1e2.1.7_the_review.md#the-users-rulings-2026-11-03)) |
 | [Q-M1e2.4](#q-m1e24--is-an-empty-unsat-core-a-core) | Is an empty unsat core a core? | [S1e2.2.13](p1e2.2_wrong_answers/s1e2.2.13_empty_core.md) (W12) | **closed 2026-11-03** at the revisit, by `solve_interface.md` § 0: W12's R is {∅}, so no core; no region run reports a 0-fact core (below) |
 | [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [P1e2.4](p1e2.4_what_the_switch_left/README.md)'s S1e2.4.1, then [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) and P1e2.1b's [S1e2.1b.4](p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md) | **ruled 2026-11-02: *forbid*** ([S1e2.4.1 § 5](p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)); F1–F5 are S1e2.2.5's; applied at the revisit (2026-11-03) to `W1/alive-empty-interlayer` too |
@@ -105,6 +105,11 @@ reviewed `deferred` (a verdict added to the register for them), with F21 as
 `owner`, and the milestone's acceptance lets such a row stay open, named at the
 close. S1e2.2.6 stays as restated: after S1e2.2.5's F2 it re-checks the
 reading.
+
+**2026-11-04, S1e2.2.5's F2: *via, per activator*** (the user's ruling of
+that day). *Forbid* refuses `stale-naf-fork` and its twin, so
+`W8/stale-naf-fork` is fixed by the refusal and the question is one witness's,
+`W8/features-07`, still deferred to F21's D2.
 
 ## Q-M1e2.3 — What does `exhausted` certify when the rung leaves relations uncovered?
 

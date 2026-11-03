@@ -1199,7 +1199,7 @@ fn events_off_formats_nothing_and_does_not_count() {
 /// [`events.md`](../../../../docs/kernel/inference/events.md) defines, and the
 /// kind each is here for.
 ///
-/// A six-file cover rather than the whole corpus: the sweep is 0.06 s this
+/// A seven-file cover rather than the whole corpus: the sweep is 0.06 s this
 /// way and 40 s the other, and the question — *is any kind unreachable?* — is
 /// answered as well by a cover as by a sweep. What the cover cannot do is
 /// notice a kind that stopped being emitted by a file **not** listed here,
@@ -1209,7 +1209,7 @@ fn events_off_formats_nothing_and_does_not_count() {
 /// a kind reachable only under an environment variable was a kind no
 /// default-environment sweep can see, which is how `traversal` shipped at M1d
 /// S1d.10.6 and reached M1e undocumented (`SE-M3`).
-const EVENT_COVER: [(&str, &str); 6] = [
+const EVENT_COVER: [(&str, &str); 7] = [
     (
         "examples/branching/01_saturate_only.ein",
         "the lifecycle and the deductive layer, `enter`, `layer` and `region`",
@@ -1235,10 +1235,17 @@ const EVENT_COVER: [(&str, &str); 6] = [
         "examples/ein-bugs/naf-upward-closure.ein",
         "warn — the `RefutationUnderAbsentWarning` category, from the only \
          corpus entry whose program carries `(config :warn-derived-naf true)` \
-         on an `absent` refutation, and `monotonicity`, a site. The \
+         on an `absent` refutation, narrated after root's saturation and \
+         before *forbid*'s refusal (M1e2 S1e2.2.5) ends the run. The \
          `alive-set-invariant` category had a row of its own, \
          `alive-set-fresh-name.ein`, until M1e2 S1e2.2.4 seeded the universe \
          with a rule's constants and the category left",
+    ),
+    (
+        "examples/lattice/04_obligation_trigger_hole.ein",
+        "monotonicity — a site, an obligation's trigger; the row above gave it \
+         until *forbid* (M1e2 S1e2.2.5) refused that program before the static \
+         check is narrated",
     ),
 ];
 

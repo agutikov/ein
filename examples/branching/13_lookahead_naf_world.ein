@@ -38,6 +38,17 @@
 ;; Its `(config :enable-pre-branch-lookahead true)` line went at M1e2 S1e2.1c.5 (2026-11-03),
 ;; when the user retired the flag: no route reads it, and a program that sets
 ;; it is refused at load.
+;;
+;; ── 2026-11-04 — a refusal fixture (M1e2 S1e2.2.5) ──────────────────────
+;; `self-block` concludes (false) from an (absent …) over a relation the blind
+;; generator proposes, the shape *forbid* rules out (2026-11-02), so every
+;; question about a commitment (`ein solve`, `ein render lattice`) exits 1
+;; naming it, and `ein saturate` still saturates. The lookahead this file was
+;; written for left with the walk. It stays as written because it shows a
+;; refusal no witness does: a rule that can never fire (its match needs `(cand
+;; ?x)` and its absence at once) is refused by its shape, since the check
+;; reads relations, not matches. Deleting the rule keeps R, three states (M1e2
+;; S1e2.4.1 § 2.1), and leaves a file about nothing.
 
 (relation ok      T)
 (relation blessed T)

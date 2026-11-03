@@ -17,6 +17,9 @@
 //! - an **open** row says why its `now` is still not `right` — what R shares
 //!   with the case, or the reading the case waits on.
 //!
+//! **Since M1e2 S1e2.2.5 a `now` can be a refusal** (*forbid*): the run exits
+//! 1, its stderr's first line is the recorded one, and it writes no summary.
+//!
 //! So this file's one job is that `now` is what the binary answers. A row
 //! whose run changes answer is news either way: a fixed row breaking, or an
 //! open one changing, which is a fix nobody intended or a new wrong answer.
@@ -127,6 +130,7 @@ fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
     Ok(Now {
         run: row.now.run.clone(),
         line,
+        refused: None,
         exhausted: region["exhausted"] == true,
         k: states.len(),
         empty,
@@ -188,14 +192,29 @@ fn every_row_answers_what_the_register_records() {
         std::fs::create_dir_all(&dir).expect("scratch dir");
         let got = run(row, &dir);
         runs += 1;
-        let diffs = if got.code != 0 {
+        let first = got
+            .stderr
+            .lines()
+            .find(|l| !l.is_empty())
+            .unwrap_or("<empty>");
+        // A refusal (M1e2 S1e2.2.5, *forbid*) is exit 1 and its first line,
+        // and no summary.
+        let diffs = if let Some(want) = &row.now.refused {
+            let mut d = Vec::new();
+            if got.code != 1 {
+                d.push(format!("exit: recorded 1, a refusal, got {}", got.code));
+            }
+            if first != want {
+                d.push(format!("refused: recorded {want:?}, got {first:?}"));
+            }
+            if got.summary.is_some() {
+                d.push("a refused run wrote a summary".to_string());
+            }
+            d
+        } else if got.code != 0 {
             vec![format!(
-                "exit: recorded 0, got {} — stderr: {}",
-                got.code,
-                got.stderr
-                    .lines()
-                    .find(|l| !l.is_empty())
-                    .unwrap_or("<empty>")
+                "exit: recorded 0, got {} — stderr: {first}",
+                got.code
             )]
         } else {
             match now_of(row, &got) {

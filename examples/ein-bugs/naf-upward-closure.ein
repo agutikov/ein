@@ -36,16 +36,13 @@
 ;;; as concluding `(false)` from an `(absent …)` over `q`, which this
 ;;; program's generator can still propose.
 ;;;
-;;; **Its `:expect` states today's answer and is meant to break.** When
-;;; F18 makes the three consumers world-aware — or S1f.10.8 forbids the shape
-;;; outright — the model here changes and this file has to be revisited. That
-;;; is the same tripwire `alive-empty-{phase1,interlayer}.ein` carry, and the
-;;; same reason.
+;;; Its `:expect` stated the answer of the day and was meant to break, and
+;;; it did: the shape is forbidden outright (below), and the claim went with
+;;; the answer it stated.
 ;;;
-;;; The goal is `is-a` rather than `p`, because the model the engine reaches
-;;; contains no `p` fact at all and an expectation cannot state an answer with
-;;; an empty goal extent — Q-M1e.13, the same reason `alive-empty-phase1.ein`
-;;; moved its goal.
+;;; The goal is `is-a` rather than `p`, because the model the walk reached
+;;; contained no `p` fact at all and an expectation cannot state an answer
+;;; with an empty goal extent — Q-M1e.13.
 ;;;
 ;;; ── The user's reading, 2026-08-28 ─────────────────────────────────────
 ;;;
@@ -64,10 +61,20 @@
 ;;; The user ruled *forbid* (Q-M1e2.5, M1e2 S1e2.4.1 § 5): `bad` concludes
 ;;; `(false)` from `(absent (q ?x))` over `q`, which a commitment can still
 ;;; extend, so the right answer to this program is a refusal at load, the
-;;; error naming the replacement. M1e2 S1e2.2.5 builds it. Until then the
-;;; program loads, and R's maximal state is the `{(p A), (q A)}` above, what
-;;; *respect* would have answered. Register row W3/naf-upward-closure, confirmed at the
-;;; revisit (S1e2.1.7, 2026-11-03).
+;;; error naming the replacement. Register row W3/naf-upward-closure, confirmed
+;;; at the revisit (S1e2.1.7, 2026-11-03).
+;;;
+;;; ── 2026-11-04 — refused ───────────────────────────────────────────────
+;;;
+;;; M1e2 S1e2.2.5 built the refusal. Every question about a commitment (`ein
+;;; solve` in every mode, `ein test`, `ein oracle`, `ein render lattice`)
+;;; exits 1 with one line naming `bad`, `(false)`, `q`, and the forms that say
+;;; what was meant; `ein saturate` still saturates. The row is fixed. Before
+;;; that the program loaded and its R was three states, `∅`, `{(q A)}` and
+;;; `{(p A), (q A)}`, with the dead hole `{(p A)}`: what *respect* would have
+;;; answered, kept as the row's alternative and as the library-level fixture
+;;; the read-out's dead-hole line is held on (`forbid::studying`). Its
+;;; `(solve :expect (region …))`, which stated that R, went with it.
 
 (config :warn-derived-naf true)
 
@@ -82,19 +89,6 @@
   :assert (false)
   :why    "{?x} has p without q"
   :priority 200)
-
-(solve
-  ;; Today's answer, and the tripwire: the search records `(q A)` and the
-  ;; cached `(not (p A))` and calls that a model. The maximal state is
-  ;; `{(p A), (q A)}`, so a world-aware fix drops `(not (p A))` and adds
-  ;; `(p A)` — and this line stops holding, which is the point of writing it.
-  :expect (region
-            ;; state 1 of 3 — ∅, root itself · minimal
-            (model)
-            ;; state 2 of 3 — 1 candidate · from {(q A)}
-            (model (q A))
-            ;; state 3 of 3 — 2 candidates · maximal · from {(p A), (q A)}
-            (model (p A) (q A))))
 
 (query
   :goal   (is-a ?x T))

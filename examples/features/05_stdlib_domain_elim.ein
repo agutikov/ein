@@ -72,6 +72,17 @@
 ;; The result fact is derived, carrying the four negative facts + the
 ;; Yellow is-a as its provenance premises.
 
+;; ── `is-a` is closed (M1e2 S1e2.2.5, 2026-11-04). `typecheck-arg-0`,
+;; ── `typecheck-arg-1` and `no-room-left` conclude (false) from an (absent …)
+;; ── over `is-a`, and with `is-a` open the blind enumerator proposes
+;; ── membership between two objects, `(is-a Red House-1)`: a relation a
+;; ── commitment can extend, which *forbid* (ruled 2026-11-02) refuses. The
+;; ── hierarchy is given in full above and no commitment is meant to extend it,
+;; ── so the program says so, as its four tests/stdlib/elim/ siblings do. R was
+;; ── 7 176 states and counting (2^56, past the oracle's limit); it is 32 states
+;; ── over 26 color-of candidates, exact.
+(solve :no-hypothesis (is-a))
+
 
 (query
   :goal (color-of ?h ?c)

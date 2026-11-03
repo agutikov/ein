@@ -26,6 +26,12 @@ node compiles (its F3). Until then, and for whatever those leave loading, what
 a route may learn is [F21](f21_non_monotone_programs_decided.md)'s D6, whose
 option (b) is this theme's narrow form.
 
+**Closed without being done, 2026-11-04.** S1e2.2.5's refusal shipped with
+the user's F2, *via, per activator*, covering the derived case and both
+activator shapes, and F3 reads the plans root compiles and every rule with
+parameters whose activator relation a commitment can derive. F21's D6 closed
+the same day. What is below is kept as the record of the theme.
+
 ## The theme
 
 `dead` is not upward-closed under `absent`. `sat` is *inflationary* — the KB is

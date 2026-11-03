@@ -37,6 +37,7 @@ pub mod expect;
 pub mod explain;
 pub mod explore;
 pub mod firing;
+pub mod forbid;
 pub mod hrule;
 pub mod hypgen;
 pub mod invariant;

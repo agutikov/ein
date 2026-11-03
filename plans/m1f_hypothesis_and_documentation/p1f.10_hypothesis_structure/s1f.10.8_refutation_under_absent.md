@@ -7,7 +7,9 @@
 > This stage keeps the corollary it writes into `absent_semantics.md`.
 >
 > **Ruled 2026-11-02: *forbid*** ([S1e2.4.1 § 5](../../m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)).
-> The refusal is M1e2's [S1e2.2.5](../../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md).
+> The refusal is M1e2's [S1e2.2.5](../../m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md),
+> **built 2026-11-04** with the user's F2, *via, per activator*; the corollary
+> is written in `absent_semantics.md` and `defined_behaviour.md` § 4.7.
 
 **Phase:** [P1f.10](README.md) (The structure of the hypothesis set)
 **Estimate:** 2.5 days — 3 until 2026-08-28, when

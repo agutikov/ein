@@ -1,50 +1,47 @@
-//! **A refutation resting on an `absent` the search can still fill** — M1e
-//! [S1e.2.3](../../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent),
-//! the containment for
-//! [Q-M1e.9](../../../../docs/history/m1e_review_processing/open_questions.md).
+//! **A refutation resting on an `absent` a commitment can still fill** — M1e
+//! [S1e.2.3](../../../../docs/history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)'s
+//! containment for
+//! [Q-M1e.9](../../../../docs/history/m1e_review_processing/open_questions.md),
+//! refused since M1e2
+//! [S1e2.2.5](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md).
 //!
-//! ## What is unsound, and why a warning is the right size of answer
+//! ## What is unsound
 //!
 //! `dead` is **not** upward-closed under `absent`. The premise
 //! [design/08](../../../../docs/history/m1a_rust/design/08_parallelism.md)
 //! states — *`X ⊆ Y ∧ dead(X) ⇒ dead(Y)`, because the KB is append-only and
 //! nothing retracts* — establishes that `sat` is **inflationary**, not that it
 //! is monotone in its input, and `(absent P)` is exactly what separates the
-//! two. A twenty-line probe has `{(p A)}` dead and `{(p A), (q A)}` alive, and
-//! **five of the six shipped configurations answer it wrongly**, every one of
-//! them reporting `exhausted = true`. Three mechanisms read the false premise
-//! and each is sufficient alone: the lookahead kill cache, the singleton
-//! writeback, and the width-1 no-good clause.
+//! two. A twenty-line probe has `{(p A)}` dead and `{(p A), (q A)}` alive.
+//!
+//! ## From a warning to a refusal
 //!
 //! [D4](../../../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md)
-//! ruled **B**: narrow the claim and diagnose it, rather than make the three
-//! consumers world-aware (that is `F18`) or refuse the shape at load (that is
-//! S1f.10.8's, and a refusal today would refuse `std.algebra`'s `connex`
-//! before anyone has decided whether that rule should be rewritten).
-//!
-//! ## This file is the census, and the census decided the default
-//!
-//! The stage's rule was: measure first, then set the default — *a warning
-//! nobody sees is not containment, and a warning that fires on `zebra2` is one
-//! that gets disabled*. The corpus is **not** silent, so the warning ships
-//! **on** but the seven exposed entries are named here rather than left to be
-//! rediscovered. They are the input
-//! [S1f.10.8](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)
-//! T1 starts from.
-//!
-//! The claim is deliberately **exact** — the set, not a bound — because both
-//! directions are findings. A new entry appearing means a program was written
-//! with the shape; one disappearing means a rule was rewritten, and S1f.10.8
-//! wants to know which.
+//! ruled **B** in M1e: narrow the claim and diagnose it, and this file was the
+//! census the warning's default was set from. The user ruled ***forbid*** on
+//! 2026-11-02 (M1e2 S1e2.4.1): over a relation a commitment can still extend,
+//! `(absent P)` ⟹ `(false)` or `(not …)` is an obligation written as a
+//! refutation, and a program that writes it is refused, the message naming a
+//! form that says what was meant. On 2026-11-04 the user ruled its F2, *via,
+//! per activator*: a refutation resting on such an `absent` only through a
+//! fact a rule derived under it counts too. [`ein_infer::forbid`] is the
+//! check, and this file holds what it refuses, exactly.
 
 use std::collections::BTreeSet;
 use std::path::Path;
 
 use ein_core::Terms;
 use ein_corpus::{corpus_files, repo_root};
+use ein_infer::SolveError;
 use ein_infer::events::Events;
-use ein_infer::naf_deps::{REFUTATION_UNDER_ABSENT, compute_naf_map, naf_warnings};
+use ein_infer::explore::{self, Ask, Mode, Which};
+use ein_infer::naf_deps::REFUTATION_UNDER_ABSENT;
 use ein_ir::{Ast, load, parse};
+
+// The programs written for P1e2.1b's censuses: the two activator shapes.
+#[allow(dead_code)]
+#[path = "../examples/shared/written.rs"]
+mod written;
 
 /// D4's probe, as a **corpus** fixture.
 ///
@@ -57,192 +54,185 @@ use ein_ir::{Ast, load, parse};
 /// answer and are meant to break.
 const PROBE: &str = "examples/ein-bugs/naf-upward-closure.ein";
 
-/// One exposed `(rule, activator)`, rendered for the golden set below.
+/// **What *forbid* refuses on the corpus and the register, exactly** — M1e2
+/// [S1e2.2.5](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md),
+/// 2026-11-04. Until then this was S1e.2.3's census of the exposed set, the
+/// rules the warning named: nine over seven entries on 2026-08-30, fourteen
+/// over ten by M1e2 S1e2.4.1's re-count, whose `direct` reading (thirteen
+/// over nine) the user ruled *forbid* on, with F2 *via, per activator*.
 ///
-/// `path::rule[activator] concludes ← watched` — the four things S1f.10.8 has
-/// to look at, and nothing else. The activator is in the key because the
-/// exposure is **per activator**: a T2 rule's watched relation is baked to a
-/// literal per activation, so `(connex likes)` can be exposed while
-/// `(connex is-a)` is not.
-fn exposure(path: &Path) -> Vec<String> {
-    let rel = path
-        .strip_prefix(repo_root())
-        .unwrap_or(path)
-        .to_string_lossy()
-        .to_string();
-    let text = std::fs::read_to_string(path).unwrap_or_else(|e| panic!("{rel}: {e}"));
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let Ok(forms) = parse(&mut ast, &text, path.to_str()) else {
-        // A `parse-negative` fixture states nothing about rules.
-        return Vec::new();
-    };
-    let Ok(mut kb) = load(&mut ast, &mut terms, &forms, path.parent()) else {
-        // Likewise `load-negative`: 41 of the 212 entries exist to be refused.
-        return Vec::new();
-    };
-    let mut events = Events::off();
-    let mut s = ein_infer::saturator::Session {
-        kb: &mut kb,
-        terms: &mut terms,
-        ast: &ast,
-        events: &mut events,
-        memo: Default::default(),
-    };
-    let Ok(mut sat) = ein_infer::saturator::Saturator::new(&mut s) else {
-        return Vec::new();
-    };
-    // Root saturation, because the map is only complete on a saturated cache:
-    // most NAF-bearing rules are activated by facts a rule derives, so their
-    // plan does not exist at load. A `compile-negative` fixture fails here.
-    if sat.saturate(&mut s, None, &mut |_| {}).is_err() {
-        return Vec::new();
-    }
-    let Ok(eligible) = ein_infer::hypgen::eligible_relations(&mut s) else {
-        return Vec::new();
-    };
-    compute_naf_map(&sat.engine, s.terms, &eligible)
-        .into_iter()
-        .filter_map(|d| {
-            let r = d.refutation?;
-            let act: Vec<&str> = d.activator.iter().map(|&a| s.terms.sym(a)).collect();
-            Some(format!(
-                "{rel}::{}[{}] {} ← {}",
-                s.terms.sym(d.rule),
-                act.join(" "),
-                r.concludes,
-                r.watching.join(", ")
-            ))
-        })
-        .collect()
-}
-
-/// **The corpus's exposed set, exactly** — nine rules over seven entries,
-/// measured 2026-08-30 over all 213 corpus files; ten over eight since M1e2
-/// S1e2.1.1 banked `ein-bugs/wrong-answers/naf-nowb.ein`, which is
-/// `naf-upward-closure.ein` with the singleton writeback off and W3's lever
-/// row in `corpus/wrong_answers.toml`.
-///
-/// Four of the eight are **probes**: `branching/13` and `14` are S1e.1.1's
-/// own lookahead-NAF fixtures, `ein-bugs/naf-upward-closure.ein` is
-/// [D4]'s probe itself, banked here, and `naf-nowb.ein` is its twin. `ein-bugs/alive-empty-interlayer.ein`
-/// is a recorded bug fixture whose `totality` rule has the probe's exact
-/// shape over a relation its own `(hrule guess …)` proposes.
-/// `syntax/rule-forall-and-not.ein` is the one `(not …)` row, and it is there
-/// because [`refuting_conclusion`](../src/naf_deps.rs) walks **every**
-/// conclusion: its `:assert` is `(and (r ?b ?a) (not (r ?a ?a)))`, so reading
-/// `assert_template()` alone — which is what `asserted_relation` does — would
-/// have missed it.
-///
-/// **Four rows are stdlib rules, and they are not the ones [D4] predicted.**
-/// D4 named `std.algebra`'s `connex` as the one stdlib rule with the exposed
-/// shape, reasoning that the `std.slots` prune / endpoint / adjacency family
-/// is safe because its `absent` reads the position structure. The first half
-/// holds — none of those 60 rules is here. The second does not: `connex` is
-/// activated **twice** in the corpus (`tests/stdlib/algebra/08` and `12`) and
-/// is exposed **neither** time, because both fixtures write
-/// `:no-hypothesis (instance lt)` and so exclude the subject relation from
-/// generation. What *is* exposed is `std.elim`'s `typecheck-arg-0` /
-/// `typecheck-arg-1` / `no-room-left` / `no-room`, whose guards read the
-/// **membership** relation — `is-a` on `features/05`, `instance` on
-/// `features/12` — which nothing in either file closes or excludes, so the
-/// blind enumerator can propose one.
-///
-/// That is the census's real result, and it is a result about *programs*
-/// rather than about rules: the same `connex` is exposed or not depending on
-/// what its file says about hypotheses, and the discipline that saves it is
-/// the query keyword rather than the rule's shape. It is also why the
-/// eligibility half had to be a program property — a syntactic census of the
-/// same tree finds **60** rules with an `absent` and a refuting conclusion,
-/// and nine of them matter.
-///
-/// **Four rows are written on purpose** (M1e2 S1e2.1a.8): the `dead-i` rules
-/// `utils/region_synth.py` wrote for the holes of `lattice/synth/three_components`
-/// and `trigger_hole`. A hole is a dead node under an alive one, and the only
-/// way to write one is a refutation resting on an `absent` over a relation the
-/// generator proposes, so these programs are exposed by construction.
-///
-/// [D4]: ../../../../docs/history/m1e_review_processing/search_soundness_probes/d4_q_m1e9_upward_closure.md
-const EXPOSED: &str = "\
-examples/branching/13_lookahead_naf_world.ein::self-block[] (false) \u{2190} cand
-examples/branching/14_lookahead_unjudgeable.ein::premature-signoff[] (false) \u{2190} needs-review, pending, signed
-examples/ein-bugs/alive-empty-interlayer.ein::totality[] (false) \u{2190} p
-examples/ein-bugs/naf-upward-closure.ein::bad[] (false) \u{2190} q
-examples/ein-bugs/wrong-answers/naf-nowb.ein::bad[] (false) \u{2190} q
-examples/features/05_stdlib_domain_elim.ein::no-room-left[color-of is-a House Color] (false) \u{2190} is-a
-examples/features/05_stdlib_domain_elim.ein::typecheck-arg-0[color-of is-a House] (false) \u{2190} is-a
-examples/features/05_stdlib_domain_elim.ein::typecheck-arg-1[color-of is-a Color] (false) \u{2190} is-a
-examples/features/12_expect_false.ein::no-room[in instance] (false) \u{2190} instance
-examples/lattice/synth/three_components.ein::dead-3[] (false) \u{2190} h
-examples/lattice/synth/three_components.ein::dead-7[] (false) \u{2190} h
-examples/lattice/synth/trigger_hole.ein::dead-1[] (false) \u{2190} h
-examples/lattice/synth/trigger_hole.ein::dead-2[] (false) \u{2190} h
-examples/syntax/rule-forall-and-not.ein::f[] (not \u{2026}) \u{2190} r
+/// Each row is the program and the first clause of its refusal's line: the
+/// rule, what it concludes, and what it rests on. The `direct` rows are W3's
+/// four witnesses, `W1/alive-empty-interlayer` and the two `branching/`
+/// refusal fixtures; the `via` rows are W8's `stale-naf-fork` pair and the
+/// fuzz finding `d3-unsat-core`. `features/05` and `/12`, `direct` too, close
+/// the relation their refutations read and load. The set is exact because
+/// both directions are findings: a new row is a program written with the
+/// shape, and a missing one is a rule rewritten or a refusal lost.
+const REFUSED: &str = "\
+corpus/fuzz_findings/d3-unsat-core.ein::rule 'fire-0' [activator T]: concludes (not \u{2026}) from r1, which rule 'fire-1' derives resting on (absent \u{2026}) over (not r1), a relation a commitment can still extend
+examples/branching/13_lookahead_naf_world.ein::rule 'self-block': concludes (false) from (absent \u{2026}) over cand, a relation a commitment can still extend
+examples/branching/14_lookahead_unjudgeable.ein::rule 'premature-signoff': concludes (false) from (absent \u{2026}) over signed, a relation a commitment can still extend
+examples/ein-bugs/alive-empty-interlayer.ein::rule 'totality': concludes (false) from (absent \u{2026}) over p, a relation a commitment can still extend
+examples/ein-bugs/naf-upward-closure.ein::rule 'bad': concludes (false) from (absent \u{2026}) over q, a relation a commitment can still extend
+examples/ein-bugs/wrong-answers/naf-nowb.ein::rule 'bad': concludes (false) from (absent \u{2026}) over q, a relation a commitment can still extend
+examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein::rule 'p-and-q-clash': concludes (false) from p, which rule 'derive-p' derives resting on (absent \u{2026}) over q, a relation a commitment can still extend
+examples/ein-bugs/wrong-answers/stale-naf-fork.ein::rule 'p-and-q-clash': concludes (false) from p, which rule 'derive-p' derives resting on (absent \u{2026}) over q, a relation a commitment can still extend
+examples/lattice/synth/three_components.ein::rule 'dead-3': concludes (false) from (absent \u{2026}) over h, a relation a commitment can still extend
+examples/lattice/synth/three_components.ein::rule 'dead-7': concludes (false) from (absent \u{2026}) over h, a relation a commitment can still extend
+examples/lattice/synth/trigger_hole.ein::rule 'dead-1': concludes (false) from (absent \u{2026}) over h, a relation a commitment can still extend
+examples/lattice/synth/trigger_hole.ein::rule 'dead-2': concludes (false) from (absent \u{2026}) over h, a relation a commitment can still extend
 ";
 
-#[test]
-fn the_corpus_exposed_set_is_exactly_these() {
-    let mut got: BTreeSet<String> = BTreeSet::new();
-    for path in corpus_files() {
-        got.extend(exposure(&path));
+/// The refusal of `text` (read from `at`), one row per refusing rule: the
+/// line up to its em dash. Empty for a program that does not load, or loads
+/// and is not refused.
+fn refusal(rel: &str, text: &str, at: &Path) -> Vec<String> {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let Ok(forms) = parse(&mut ast, text, at.to_str()) else {
+        return Vec::new();
+    };
+    let Ok(mut kb) = load(&mut ast, &mut terms, &forms, at.parent()) else {
+        return Vec::new();
+    };
+    // Root's fixpoint, the universe and the static check, where the refusal
+    // runs — `--monotone`'s question, and no route.
+    match explore::check_monotone(&mut kb, &mut terms, &ast, &mut Events::off()) {
+        Err(SolveError::Refused(m)) => m
+            .lines()
+            .map(|l| {
+                let head = l.split(" \u{2014} ").next().unwrap_or(l);
+                format!("{rel}::{head}")
+            })
+            .collect(),
+        _ => Vec::new(),
     }
-    let want: BTreeSet<String> = EXPOSED.lines().map(str::to_string).collect();
+}
+
+const DESCRIBE: Mode = Mode {
+    which: Which::All,
+    ask: Ask::Describe,
+};
+
+#[test]
+fn the_refused_set_is_exactly_these() {
+    let mut files = corpus_files();
+    for row in ein_corpus::register().case {
+        // W7's witness aborts a debug build, which is its defect.
+        if cfg!(debug_assertions) && row.wrong.debug_panic.is_some() {
+            continue;
+        }
+        files.push(repo_root().join(&row.witness));
+    }
+    files.sort();
+    files.dedup();
+    let mut got: BTreeSet<String> = BTreeSet::new();
+    for path in files {
+        let rel = path
+            .strip_prefix(repo_root())
+            .unwrap_or(&path)
+            .to_string_lossy()
+            .to_string();
+        let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{rel}: {e}"));
+        got.extend(refusal(&rel, &text, &path));
+    }
+    let want: BTreeSet<String> = REFUSED.lines().map(str::to_string).collect();
     let missing: Vec<&String> = want.difference(&got).collect();
     let extra: Vec<&String> = got.difference(&want).collect();
     assert!(
         missing.is_empty() && extra.is_empty(),
-        "the exposed set moved.\n  no longer exposed (a rule was rewritten — tell S1f.10.8): {missing:#?}\
-         \n  newly exposed (a program was written with the shape): {extra:#?}"
+        "the refused set moved.\n  no longer refused: {missing:#?}\n  newly refused: {extra:#?}"
     );
 }
 
-/// D4's probe, banked: the warning fires, and it names both replacements.
-///
-/// The probe is a **mis-encoded obligation** — it says *a world with `p` and
-/// without `q` is false* and never says *`q` is required*, which is what
-/// `(open ?R)` is for. That reading is the user's, 2026-08-28, and it is why
-/// the message has to say *instead* and not only *don't*.
+/// **The two written activator programs** (`examples/shared/written.rs`),
+/// which no corpus program has: F3's read of a rule with parameters refuses
+/// `ACTIVATOR_REFUTES` at load, where no plan of `watch` exists at root, and
+/// F2's *per activator* refuses `ACTIVATOR_UNDER_ABSENT`, whose refutation
+/// reads no `absent` and whose activator rests on one.
 #[test]
-fn the_probe_warns_and_the_message_names_both_replacements() {
+fn the_written_activator_programs_are_refused() {
+    let at = repo_root().join("written.ein");
+    let refutes = refusal("w", written::ACTIVATOR_REFUTES, &at);
+    assert_eq!(
+        refutes,
+        [
+            "w::rule 'watch': concludes (false) from (absent \u{2026}) over the relation its \
+          parameter ?R names, and a commitment can derive its activator, so a node can \
+          compile it over a relation a commitment can still extend"
+        ]
+    );
+    let under = refusal("w", written::ACTIVATOR_UNDER_ABSENT, &at);
+    assert_eq!(
+        under,
+        [
+            "w::rule 'watch': concludes (false) from its activator, which rule 'act' derives \
+          resting on (absent \u{2026}) over q, a relation a commitment can still extend"
+        ]
+    );
+}
+
+/// **The refusal is lifted only by `forbid::studying`**, the library-level
+/// fixture's way past it, which no CLI path calls: inside it D4's probe
+/// answers the R it had (three states, a dead hole), and after it the probe
+/// is refused again.
+#[test]
+fn studying_lifts_the_refusal_and_only_while_it_runs() {
+    let path = repo_root().join(PROBE);
+    let text = std::fs::read_to_string(&path).expect("the probe is checked in");
+    let run = || {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, &text, path.to_str()).expect("it parses");
+        let mut kb = load(&mut ast, &mut terms, &forms, path.parent()).expect("it loads");
+        explore::run(&mut kb, &mut terms, &ast, &explore::Options::new(DESCRIBE))
+    };
+    assert!(matches!(run(), Err(SolveError::Refused(_))));
+    let studied = ein_infer::forbid::studying(run).expect("studied, it answers");
+    assert_eq!(studied.counts.map(|c| c.k_s), Some(3));
+    assert!(!ein_infer::forbid::is_studying());
+    assert!(matches!(run(), Err(SolveError::Refused(_))));
+}
+
+/// D4's probe, banked: refused, and the message names the replacements —
+/// F4's three forms. The probe is a **mis-encoded obligation**: it says *a
+/// world with `p` and without `q` is false* and never says *`q` is
+/// required*. That reading is the user's, 2026-08-28, and it is why the
+/// message has to say *instead* and not only *don't*.
+#[test]
+fn the_probe_is_refused_and_the_message_names_the_replacements() {
     let path = repo_root().join(PROBE);
     let text = std::fs::read_to_string(&path).expect("the probe is checked in");
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = parse(&mut ast, &text, path.to_str()).expect("it parses");
     let mut kb = load(&mut ast, &mut terms, &forms, path.parent()).expect("it loads");
-    let mut events = Events::off();
-    let mut s = ein_infer::saturator::Session {
-        kb: &mut kb,
-        terms: &mut terms,
-        ast: &ast,
-        events: &mut events,
-        memo: Default::default(),
+    let Err(SolveError::Refused(m)) =
+        explore::run(&mut kb, &mut terms, &ast, &explore::Options::new(DESCRIBE))
+    else {
+        panic!("the probe is not refused");
     };
-    let mut sat = ein_infer::saturator::Saturator::new(&mut s).expect("a saturator");
-    sat.saturate(&mut s, None, &mut |_| {})
-        .expect("it saturates");
-    let eligible = ein_infer::hypgen::eligible_relations(&mut s).expect("an eligible set");
-
-    let ws = naf_warnings(&sat.engine, s.terms, &eligible);
-    assert_eq!(ws.len(), 1, "one warning, on one rule: {ws:#?}");
-    assert_eq!(ws[0].category, REFUTATION_UNDER_ABSENT);
-    let m = &ws[0].text;
+    assert_eq!(m.lines().count(), 1, "one line, one rule: {m}");
     for want in [
         "rule 'bad'",
         "concludes (false)",
         "over q",
-        "can still propose",
-        // The two replacements the acceptance asks for by name.
-        "STORED negative",
-        "`total`",
+        "a relation a commitment can still extend",
+        // The three forms the ruling measured.
+        "(solve :no-hypothesis (q))",
+        "functional + total-owed",
         "(open ?R)",
+        "a stored negative",
+        "total does",
     ] {
         assert!(m.contains(want), "the message does not say {want:?}:\n{m}");
     }
 }
 
 /// The warning is part of the fixture's **recorded output**, not only of a
-/// unit test — which is what makes the containment a fixture rather than a
+/// unit test, and it is narrated after root's saturation, before the refusal
+/// (M1e2 S1e2.2.5) ends the run — which is what makes the containment a fixture rather than a
 /// claim. `ein solve FILE --events` narrates it as a `warn` line after root's
 /// saturation, and the fixture's own `(config :warn-derived-naf true)` is what
 /// turns the line on. (Until M1e2 S1e2.1c.5 this read the walk's
@@ -261,8 +251,11 @@ fn the_fixtures_stream_carries_the_warning() {
         which: ein_infer::explore::Which::All,
         ask: ein_infer::explore::Ask::Describe,
     });
-    ein_infer::explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events)
-        .expect("the fixture solves");
+    let out = ein_infer::explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events);
+    assert!(
+        matches!(out, Err(SolveError::Refused(_))),
+        "the fixture is refused (M1e2 S1e2.2.5)"
+    );
     let stream = buf.to_string_lossy();
     assert!(
         stream

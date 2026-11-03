@@ -29,6 +29,11 @@ pub enum SolveError {
     /// an engine error, never an answer (M1e2 S1e2.1c.5, the user's ruling of
     /// 2026-11-03). The message names the state and the parent.
     SpotCheck(String),
+    /// *Forbid* (M1e2 S1e2.2.5): a refutation rests on an `absent` over a
+    /// relation a commitment can still extend, so the program is refused
+    /// before any question about a commitment is answered. One line per
+    /// refusing rule ([`crate::forbid`]); a load error's exit code.
+    Refused(String),
 }
 
 impl std::fmt::Display for SolveError {
@@ -39,6 +44,7 @@ impl std::fmt::Display for SolveError {
             SolveError::Unsupported(m) => f.write_str(m),
             SolveError::Deadline => f.write_str("--max-time reached inside the cube"),
             SolveError::SpotCheck(m) => f.write_str(m),
+            SolveError::Refused(m) => f.write_str(m),
         }
     }
 }

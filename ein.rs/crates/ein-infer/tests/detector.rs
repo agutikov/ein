@@ -14,6 +14,7 @@ use ein_infer::compile::SharedMemo;
 use ein_infer::detector::{self, AtStake, Concludes, StaleCheck, Static, Status, Warning};
 use ein_infer::events::Events;
 use ein_infer::explore::{self, Ask, Mode, Which};
+use ein_infer::forbid;
 use ein_infer::monotone::Monotonicity;
 use ein_infer::region::{self, Nodes, Options, Outcome};
 use ein_infer::saturator::{Saturator, Session};
@@ -42,8 +43,23 @@ const FIFO_GAP_PRIORITY: &str = "(relation thing T) (relation a T) (relation b T
      (rule r1 () :match (and (a ?x) (absent (z ?x))) :assert (q ?x) :priority 200)
      (query :goal (p ?x))";
 
+/// A flagged program whose root is dead, over 17 candidates: an obligation's
+/// trigger is its site, and `dead` fires at root.
+const ROOT_DEAD_PAST_THE_LIMIT: &str = "
+     (relation thing T) (relation h T) (relation need T T)
+     (thing A) (thing B) (thing C) (thing D) (thing E) (thing F) (thing G) (thing H)
+     (thing I) (thing J) (thing K) (thing L) (thing M) (thing N) (thing O) (thing P)
+     (thing Q)
+     (need K1 A)
+     (hrule guess () :match (thing ?x) :assert (h ?x))
+     (rule dead () :match (thing A) :assert (false))
+     (rule owe () :match (and (h ?x) (absent (and (need K1 ?y) (h ?y)))) :assert (open h))
+     (query :goal (h ?x))";
+
 /// The static check of `text` (read from `at`), through the oracle's own
 /// preparation — the cube is refused past the limit and the check still runs.
+/// Read past *forbid*'s refusal (M1e2 S1e2.2.5), which comes after the check:
+/// the static half is the program's, refused or not.
 fn checked(text: &str, at: &Path) -> Option<(Monotonicity, Terms)> {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -53,7 +69,8 @@ fn checked(text: &str, at: &Path) -> Option<(Monotonicity, Terms)> {
         limit: 0,
         ..Options::default()
     };
-    let m = match region::compute(&mut kb, &mut terms, &ast, &opts, &mut |_| {}).ok()? {
+    let out = forbid::studying(|| region::compute(&mut kb, &mut terms, &ast, &opts, &mut |_| {}));
+    let m = match out.ok()? {
         Outcome::Region(r) => r.monotonicity,
         Outcome::Refused { monotonicity, .. } => monotonicity,
     };
@@ -135,7 +152,11 @@ fn the_static_half_is_empty_on_a_monotone_program_and_named_on_a_flagged_one() {
             found_races.push(format!("{rel} {r}"));
         }
     }
-    assert_eq!(flagged, 26, "the flagged corpus programs");
+    // 24 since M1e2 S1e2.2.5 (2026-11-04): `features/05` and `/12` close the
+    // relation their `std.elim`-shaped refutations read, which *forbid* asked
+    // of them, and are monotone; the programs it refuses keep their static
+    // half, which `checked` reads before the refusal.
+    assert_eq!(flagged, 24, "the flagged corpus programs");
     assert_eq!(
         found_cycles,
         [
@@ -247,7 +268,9 @@ fn each_site_names_what_it_concludes_and_puts_at_stake() {
 }
 
 /// The warning a run of `mode` gives on `rel`, read-out and all — `limit` is
-/// `--region-limit`.
+/// `--region-limit`. Studied past *forbid*'s refusal (M1e2 S1e2.2.5): the
+/// warnings these tests hold are on the shapes it refuses, the dead hole and
+/// the stale fact, as a library-level fixture.
 fn warned(rel: &str, mode: Mode, limit: u32) -> Warning {
     let path = repo_root().join(rel);
     let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{rel}: {e}"));
@@ -257,7 +280,7 @@ fn warned(rel: &str, mode: Mode, limit: u32) -> Warning {
     let mut kb = load(&mut ast, &mut terms, &forms, path.parent()).expect("loads");
     let mut opts = explore::Options::new(mode);
     opts.limit = limit;
-    let r = ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts)
+    let r = forbid::studying(|| ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts))
         .unwrap_or_else(|e| panic!("{rel}: {e}"));
     *r.answer
         .warning
@@ -391,14 +414,20 @@ fn the_status_names_the_sites_its_violations_are_attributed_to() {
     assert_eq!(w.status, Status::Conservative);
     assert!(w.state.cube);
     // A dead root kills every node (L0), and the route reads root alone.
+    // `features/12` was the corpus's one flagged program with a dead root past
+    // the limit until M1e2 S1e2.2.5 closed its `instance`; a written one, an
+    // obligation's trigger beside a refutation root fires, holds the status.
+    let path = repo_root().join("written.ein");
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let forms = parse(&mut ast, ROOT_DEAD_PAST_THE_LIMIT, path.to_str()).expect("parses");
+    let mut kb = load(&mut ast, &mut terms, &forms, path.parent()).expect("loads");
+    let mut opts = explore::Options::new(DESCRIBE);
+    opts.limit = region::DEFAULT_LIMIT;
+    let r = ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts).expect("it answers");
     assert_eq!(
-        warned(
-            "examples/features/12_expect_false.ein",
-            DESCRIBE,
-            region::DEFAULT_LIMIT
-        )
-        .status,
-        Status::RootDead { n: 20, limit: 16 }
+        r.answer.warning.expect("a warning").status,
+        Status::RootDead { n: 17, limit: 16 }
     );
 }
 
