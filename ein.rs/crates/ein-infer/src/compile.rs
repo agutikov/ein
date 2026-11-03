@@ -757,6 +757,26 @@ impl<'a> Compiler<'a> {
         ))
     }
 
+    /// M1e2 S1e2.2.4 — a relation head written as a parameter, bound by the
+    /// activator to a value that is not a symbol: an integer, whose decimal
+    /// text this compiler would intern as a relation's name. That is a name
+    /// the program does not have, which no rule's text predicts and so no
+    /// candidate can hold (Q-M1e.21, ruled (b): rules cannot assert new
+    /// names). The loader refuses the activators it can read, a fact or a
+    /// literal in an `:assert`; this is the one a rule derives through a
+    /// variable, which only a run binds.
+    fn head_not_a_name(&self, node: NodeId, head: NodeId, v: Value) -> CompileError {
+        CompileError(format!(
+            "the relation head {} of {} at {} is bound to the integer {} — a \
+             relation is named by a symbol, not a number, and a rule cannot \
+             assert a name the program does not have.",
+            ein_ir::dump_compact(self.ast, head),
+            ein_ir::dump_compact(self.ast, node),
+            ein_ir::loc_repr(self.ast, self.ast.loc(node)),
+            self.terms.display(v),
+        ))
+    }
+
     fn empty_sub_plan(&self, node: NodeId) -> CompileError {
         // S1.22.0 — an empty sub-plan is not "a query that finds nothing", it
         // is a query that matches VACUOUSLY: running no steps yields one match,
@@ -786,6 +806,9 @@ impl<'a> Compiler<'a> {
             Node::Var(s) => {
                 let name = self.terms.intern_text(self.ast.sym(s)).expect("room");
                 match self.seed_value(name) {
+                    Some(v) if v.as_sym().is_none() => {
+                        return Err(self.head_not_a_name(node, head, v));
+                    }
                     Some(v) => {
                         let text = self.terms.display(v);
                         self.intern(&text)
@@ -925,10 +948,15 @@ impl<'a> Compiler<'a> {
                     }
                     Node::Var(s) => {
                         let name = self.terms.intern_text(self.ast.sym(s)).expect("room");
-                        self.seed_value(name).map(|v| {
-                            let text = self.terms.display(v);
-                            self.intern(&text)
-                        })
+                        match self.seed_value(name) {
+                            Some(v) if v.as_sym().is_none() => {
+                                return Err(self.head_not_a_name(node, head, v));
+                            }
+                            v => v.map(|v| {
+                                let text = self.terms.display(v);
+                                self.intern(&text)
+                            }),
+                        }
                     }
                     _ => None,
                 };

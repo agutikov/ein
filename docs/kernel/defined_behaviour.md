@@ -385,8 +385,10 @@ and that induction is confirmed rather than assumed: swept over every state a
 bounded describe meets on the corpus, the scan finds **nothing**, against
 either baseline (`ein-infer/tests/alive_invariant.rs`). The one shape outside
 the induction is a relation head written as a parameter and bound to an
-integer, whose decimal text the compiler interns as a name; no corpus program
-has one (`ein-infer/tests/interning.rs`).
+integer, whose decimal text the compiler would intern as a name, and it is
+**refused**: by the loader where the activator is written down, by the compiler
+where a rule derives it ([§ 4.6](#46-a-relation-named-by-a-number--m1e2-s1e224)).
+No corpus program has one.
 
 **The baseline.** *Everything the loaded program reaches*, not the interner's
 length. `Ann` in `examples/ein-bugs/mixed-type-hypothesis.ein` is interned at
@@ -671,6 +673,30 @@ length (7.55–21.00 bytes, `ein kb save`'s symbol-table header, 2026-09-01) the
 **byte** arena fills at 19–53 % of the id ceiling, not the other way round.
 `ein_core::intern::tests::the_arena_bound_is_the_byte_bound_and_not_the_id_bound`
 is what holds that.
+
+### 4.6 A relation named by a number — M1e2 S1e2.2.4
+
+A rule may name the relation it matches or asserts by a parameter, `(rule
+mirror (?R) :match (?R ?a ?b) :assert (?R ?b ?a))`, and its activator binds
+it: `(mirror q)`. An activator that binds such a parameter to an **integer**
+would have the compiler name a relation by the integer's decimal text, a name
+the program does not have, which no rule's text predicts and so no candidate
+can hold ([§ 3.3](#33-the-m1-alive-set-invariant-operationally)). The user
+ruled on 2026-10-16 that rules cannot assert new names
+([Q-M1e.21](../history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about)
+(b)), so both places that can see the binding refuse it, in ein's own words:
+
+| input | message | exit |
+|---|---|---|
+| a fact, or a literal in a rule's `:assert`, that activates rule `<r>` with an integer where a parameter names a relation | `rule '<r>': its parameter ?<p> names a relation, and <activator> binds it to the integer <n> at <loc> — a relation is named by a symbol, not a number, and a rule cannot assert a name the program does not have` (a loader message; `<loc>` is the integer's) | 1 |
+| the same activator, derived by a rule through a variable | `the relation head ?<p> of <form> at <loc> is bound to the integer <n> — …` (a `CompileError`, § 4's second row) | 1 |
+
+The first is pinned by
+[`examples/broken/load/relation_parameter_int.ein`](../../examples/broken/load/relation_parameter_int.ein),
+the second by `ein-infer/tests/compile_semantics.rs`'s
+`a_relation_parameter_a_rule_binds_to_a_number_is_refused`. An activator of
+the wrong arity activates nothing and is not checked; a string or a range
+binds a name, and a nested fact binds nothing.
 
 ## 5. The CLI surface
 

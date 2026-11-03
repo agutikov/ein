@@ -1,0 +1,22 @@
+;; M1e2 S1e2.2.4 — Q-M1e.21's residue, refused at load.
+;;
+;; `mirror` names the relation it matches and asserts by its parameter ?R,
+;; and the activator binds it: `(mirror q)` would assert `(q B A)`. `(mirror 3)`
+;; binds it to an integer, whose decimal text the compiler would intern as a
+;; relation's name — a name the program does not have, which no rule's text
+;; predicts and so no candidate can hold. The user ruled on 2026-10-16 that
+;; rules cannot assert new names (Q-M1e.21 (b)); every other name a rule can
+;; introduce is a constant it writes, which the candidates are seeded with
+;; since S1e2.2.4, so this is the one refused.
+;;
+;; The loader refuses it where the activator is written down: here, a fact.
+;; An activator a rule derives through a variable is the compiler's to refuse
+;; (`ein-infer/tests/compile_semantics.rs`).
+(relation q T T)
+
+(q A B)
+(mirror 3)
+
+(rule mirror (?R)
+  :match  (?R ?a ?b)
+  :assert (?R ?b ?a))

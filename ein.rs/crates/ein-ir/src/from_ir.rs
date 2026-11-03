@@ -139,9 +139,12 @@ pub fn load_query(
     // Pass 2 — rules. After this, rule-name resolution is possible.
     ingest_rules(ast, terms, &mut kb, &rules, &declared_macros, &mut errors)?;
     // Pass 3 — facts.
-    for form in facts {
+    for &form in &facts {
         ingest_fact(ast, terms, &mut kb, form, &mut errors)?;
     }
+    // A rule parameter that names a relation, bound to an integer by an
+    // activator the program writes down (M1e2 S1e2.2.4).
+    validate_relation_parameters(ast, terms, &kb, &facts, &mut errors);
 
     // Every query block, in source order — plural since M1c S1c.1.2, because a
     // second one used to load and be discarded in silence. `config` keeps
@@ -239,9 +242,10 @@ pub fn load_query(
 /// reads, kept in a different file.
 ///
 /// What it does not close is a *seeded* head — `(?rel ?a ?b)` where `?rel`
-/// binds to an integer, whose decimal text the compiler interns as a symbol.
-/// That needs a run to know, and `ein-infer/tests/interning.rs` is where the
-/// residue is measured rather than assumed.
+/// binds to an integer, whose decimal text the compiler would intern as a
+/// symbol. Since M1e2 S1e2.2.4 that is refused rather than measured:
+/// `validate_relation_parameters` where the activator is written down, and
+/// the compiler where a rule derives it.
 fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
     fn walk(ast: &Ast, terms: &mut Terms, node: NodeId) {
         match ast.node(node) {
@@ -863,6 +867,151 @@ fn ingest_rules(
         }
     }
     Ok(())
+}
+
+/// **A rule parameter that names a relation is bound to a name** — M1e2
+/// [S1e2.2.4](../../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.4_fresh_name_unreachable.md),
+/// Q-M1e.21's residue.
+///
+/// `(rule mirror (?R) :match (q ?a ?b) :assert (?R ?b ?a))` names the relation
+/// it matches and asserts by its parameter, and the activator binds it:
+/// `(mirror q)` asserts `q` facts. An activator that binds it to an
+/// **integer**, `(mirror 3)`, would have the compiler name a relation by the
+/// integer's decimal text — a name the program does not have, which no rule's
+/// text predicts, so the candidates cannot hold it. The user ruled on
+/// 2026-10-16 that rules cannot assert new names (Q-M1e.21 (b)), and every
+/// other name a rule can introduce is one of the program's
+/// (`ein_infer::invariant::rule_constants`), so this one is refused.
+///
+/// **Here, where the activator is written down**: a fact, or a literal in a
+/// rule's `:assert`. An activator a rule derives through a variable is known
+/// only to a run, and the compiler refuses it when it binds one
+/// (`ein_infer::compile`). An activator of the wrong arity activates nothing
+/// (`activators_for`'s filter), so it is not checked; a string or a range
+/// binds a name, and a nested fact binds nothing.
+fn validate_relation_parameters(
+    ast: &Ast,
+    terms: &Terms,
+    kb: &Kb,
+    facts: &[NodeId],
+    errors: &mut Vec<String>,
+) {
+    // Each rule with a parameter that names a relation: its name, its arity,
+    // and those parameters with their positions.
+    struct Named {
+        rule: Symbol,
+        arity: usize,
+        heads: Vec<(usize, Symbol)>,
+    }
+    let mut named: Vec<Named> = Vec::new();
+    for registry in [
+        &kb.program().rules,
+        &kb.program().hrules,
+        &kb.program().obligations,
+    ] {
+        for (name, rule) in registry.iter() {
+            let heads: Vec<(usize, Symbol)> = rule
+                .params
+                .iter()
+                .copied()
+                .enumerate()
+                .filter(|&(_, p)| {
+                    [rule.match_.as_ref(), rule.assert_.as_ref()]
+                        .into_iter()
+                        .flatten()
+                        .any(|pat| names_relation(ast, NodeId(pat.expr.0), terms.sym(p)))
+                })
+                .collect();
+            if !heads.is_empty() {
+                named.push(Named {
+                    rule: name,
+                    arity: rule.params.len(),
+                    heads,
+                });
+            }
+        }
+    }
+    if named.is_empty() {
+        return;
+    }
+    let mut check = |form: NodeId| {
+        let Some(sym) = ast.head_name(form).and_then(|h| terms.syms.get(h)) else {
+            return;
+        };
+        let Some(Named { rule, arity, heads }) = named.iter().find(|n| n.rule == sym) else {
+            return;
+        };
+        let args: Vec<NodeId> = ast
+            .form_args(form)
+            .iter()
+            .copied()
+            .filter(|&a| !matches!(ast.node(a), Node::KwPair { .. }))
+            .collect();
+        if args.len() != *arity {
+            return;
+        }
+        for &(i, param) in heads {
+            if let Node::Int(v) = ast.node(args[i]) {
+                // The integer's own position: a top-level form's is not kept
+                // through import resolution, and the integer is what is wrong.
+                errors.push(format!(
+                    "rule '{}': its parameter ?{} names a relation, and {} binds it to the \
+                     integer {} at {} — a relation is named by a symbol, not a number, and a \
+                     rule cannot assert a name the program does not have",
+                    terms.sym(*rule),
+                    terms.sym(param),
+                    crate::dump::dump_compact(ast, form),
+                    ast.sym(v),
+                    loc_repr(ast, ast.loc(args[i])),
+                ));
+            }
+        }
+    };
+    for &form in facts {
+        check(form);
+    }
+    // A rule's `:assert` derives an activator like a fact states one; walk
+    // every form under it, so `(and (mirror 3) …)` is read too.
+    let mut asserted: Vec<NodeId> = Vec::new();
+    for registry in [
+        &kb.program().rules,
+        &kb.program().hrules,
+        &kb.program().obligations,
+    ] {
+        for (_, rule) in registry.iter() {
+            if let Some(a) = rule.assert_.as_ref() {
+                sforms_under(ast, NodeId(a.expr.0), &mut asserted);
+            }
+        }
+    }
+    for form in asserted {
+        check(form);
+    }
+}
+
+/// Does `?param` stand as the head of a form anywhere under `node`?
+fn names_relation(ast: &Ast, node: NodeId, param: &str) -> bool {
+    match ast.node(node) {
+        Node::SForm { head, .. } => {
+            matches!(ast.node(head), Node::Var(s) if ast.sym(s) == param)
+                || ast
+                    .form_args(node)
+                    .iter()
+                    .any(|&a| names_relation(ast, a, param))
+        }
+        Node::KwPair { value, .. } => names_relation(ast, value, param),
+        _ => false,
+    }
+}
+
+/// Every form under `node`, `node` included, in pre-order.
+fn sforms_under(ast: &Ast, node: NodeId, out: &mut Vec<NodeId>) {
+    if let Node::SForm { .. } = ast.node(node) {
+        out.push(node);
+        for &a in ast.form_args(node) {
+            sforms_under(ast, a, out);
+        }
+    }
 }
 
 /// Is `node` the reserved verdict atom — `(open)` or `(open ?R)`?

@@ -1112,6 +1112,12 @@ group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]
 
 [[entry]]
+path   = "examples/broken/load/relation_parameter_int.ein"
+group  = "load-negative"
+runs   = ["solve", "saturate", "render rules"]
+note   = "M1e2 S1e2.2.4 — Q-M1e.21's residue: `(mirror 3)` binds a parameter that names a relation to an integer, whose decimal text the compiler would intern as a relation's name, a name the program does not have. Refused at load where the activator is written down; a derived one is the compiler's (`compile_semantics.rs`)."
+
+[[entry]]
 path   = "examples/broken/load/relation_reserved_name.ein"
 group  = "load-negative"
 runs   = ["solve", "saturate", "render rules"]

@@ -235,6 +235,9 @@
 1    examples/broken/load/relation_needs_a_name.ein :: render rules
 1    examples/broken/load/relation_needs_a_name.ein :: saturate
 1    examples/broken/load/relation_needs_a_name.ein :: solve
+0    examples/broken/load/relation_parameter_int.ein :: render rules
+1    examples/broken/load/relation_parameter_int.ein :: saturate
+1    examples/broken/load/relation_parameter_int.ein :: solve
 1    examples/broken/load/relation_reserved_name.ein :: render rules
 1    examples/broken/load/relation_reserved_name.ein :: saturate
 1    examples/broken/load/relation_reserved_name.ein :: solve

@@ -377,6 +377,62 @@ fn an_arity_mismatched_activator_is_refused_and_never_reaches_the_compiler() {
     );
 }
 
+// ── A relation named by a number — M1e2 S1e2.2.4 ───────────────────
+
+/// **A relation parameter bound to an integer is refused, wherever the
+/// binding is made** — M1e2 S1e2.2.4, Q-M1e.21's residue
+/// (`docs/kernel/defined_behaviour.md` § 4.6).
+///
+/// `mirror` names the relation it matches and asserts by its parameter, so
+/// `(mirror 3)` would have the compiler intern `3` as a relation's name: a
+/// name no rule's text predicts, which the candidates cannot hold. Written as
+/// a fact it is the loader's (`examples/broken/load/relation_parameter_int.ein`);
+/// derived through a variable, as `make` does here, only a run binds it, so
+/// root's saturation refuses it when it compiles `mirror` for that activator.
+/// Until then the program loaded, ran and answered, with a fact of relation
+/// `3` in every state.
+#[test]
+fn a_relation_parameter_a_rule_binds_to_a_number_is_refused() {
+    const MIRROR: &str = "(rule mirror (?R) :match (?R ?a ?b) :assert (?R ?b ?a))";
+    let derived = format!(
+        "(relation q T T)\n(q A B)\n(num 3)\n(rule make () :match (num ?n) :assert (mirror ?n))\n{MIRROR}"
+    );
+    let mut l = load_text(&derived);
+    let mut events = Events::off();
+    let mut s = Session {
+        kb: &mut l.kb,
+        terms: &mut l.terms,
+        ast: &l.ast,
+        events: &mut events,
+        memo: SharedMemo::default(),
+    };
+    let mut sat = Saturator::new(&mut s).expect("nothing is refused before `make` fires");
+    let err = sat
+        .saturate(&mut s, None, &mut |_| {})
+        .expect_err("`mirror` is refused for the derived (mirror 3)")
+        .to_string();
+    assert!(
+        err.contains("the relation head ?R of (?R ?a ?b) at Loc(")
+            && err.contains("is bound to the integer 3 — a relation is named by a symbol"),
+        "the compiler names the head, the form and the integer: {err}"
+    );
+
+    // Written down, in an `:assert` as in a fact, the loader sees it.
+    let literal = format!(
+        "(relation q T T)\n(q A B)\n(rule make () :match (q ?a ?b) :assert (mirror 3))\n{MIRROR}"
+    );
+    let e = load_error(&literal);
+    assert!(
+        e.contains("rule 'mirror': its parameter ?R names a relation, and (mirror 3) binds it to the integer 3 at Loc("),
+        "{e}"
+    );
+
+    // A name is what the parameter is for.
+    let mut ok = load_text(&format!("(relation q T T)\n(q A B)\n(mirror q)\n{MIRROR}"));
+    ok.saturate();
+    assert_eq!(ok.facts_under("q"), ["(q A B)", "(q B A)"]);
+}
+
 // ── `(config …)` coercion ──────────────────────────────────────────
 
 /// The numeric and string flags are retired — M1e2 S1e2.1a.5: every flag a

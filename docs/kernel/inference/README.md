@@ -244,7 +244,9 @@ seeds the blind enumerator's objects with them;
 mentions a constant no fact does — `mixed-type-hypothesis.ein` (`Ann`),
 `tests/stdlib/algebra/07_schroder.ein` (`G`) and W4's witness (`Z`) — holds
 each to the seed, and confirms that no run reaches a name outside the
-program's.
+program's. The one shape that could name something else, a relation
+parameter bound to an integer, is refused at load or at compile
+([`defined_behaviour.md` § 4.6](../defined_behaviour.md#46-a-relation-named-by-a-number--m1e2-s1e224)).
 
 Tracked at
 M1 Q-S1.5.4.D

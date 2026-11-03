@@ -103,6 +103,7 @@ fn the_load_negative_fixtures_are_byte_identical() {
         "relation_duplicate",
         "relation_malformed",
         "relation_needs_a_name",
+        "relation_parameter_int",
         "relation_reserved_name",
         "reserved_open_aliased",
         "reserved_open_direct",

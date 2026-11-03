@@ -116,9 +116,10 @@
 # blind enumerator's objects are seeded with every constant a rule's `:assert`
 # names (Q-M1e.21 (b), ruled 2026-10-16), so `Z` is in H and both witnesses
 # answer their control's R, four states. A row flipped by the commit that fixes
-# it cannot name that commit: in the flipping commit `[case.fixed]` carries
-# git's null id, `0000000`, and the stage's next commit writes the hash. The
-# register reads **23 rows fixed, 11 open and 1 not-wrong**.
+# it cannot name that commit: in the flipping commit, `02e9fb5f`,
+# `[case.fixed]` carried git's null id, `0000000`, and the stage's next commit
+# wrote the hash. The register reads **23 rows fixed, 11 open and 1
+# not-wrong**.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
@@ -1652,7 +1653,7 @@ status   = "fixed"
 look_at  = ["root-writes", "model 1", "events warn"]
 
 [case.fixed]
-commit = "0000000"
+commit = "02e9fb5f"
 by     = "S1e2.2.4 (T1e2.2.4.2), the seed: a rule's :assert constants join the blind enumerator's objects"
 date   = "2026-11-04"
 
@@ -1722,7 +1723,7 @@ look_at  = ["layer 1", "refuted", "events warn"]
 note     = "confounded with W1 at layer 0 (W1/fresh-name-nospawn): fixing W1 alone moves this to W4/fresh-name-default's wrong answer"
 
 [case.fixed]
-commit = "0000000"
+commit = "02e9fb5f"
 by     = "S1e2.2.4 (T1e2.2.4.2), the seed: a rule's :assert constants join the blind enumerator's objects"
 date   = "2026-11-04"
 

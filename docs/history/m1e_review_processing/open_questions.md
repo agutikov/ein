@@ -1561,6 +1561,9 @@ pre-empts M20, which binds the same crates.
 > KB's names, both W4 witnesses answer the control's R, and the
 > `alive-set-invariant` `warn` left with the premise it narrated
 > ([`defined_behaviour.md` § 3.3](../../kernel/defined_behaviour.md#33-the-m1-alive-set-invariant-operationally)).
+> The residue below, a `(?R ?a ?b)` head bound to an integer, is refused at
+> load where the activator is written down and at compile where a rule
+> derives it ([§ 4.6](../../kernel/defined_behaviour.md#46-a-relation-named-by-a-number--m1e2-s1e224)).
 > The entry below is the question as it was asked.
 
 The blind enumerator builds its candidate objects from `kb.names()` — a

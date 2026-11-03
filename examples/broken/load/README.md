@@ -64,8 +64,9 @@ oversight. Recorded so the gap is a decision and not a hole:
 Almost every message ends `at None`. The loader interpolates the form's
 `loc`, and the AST lowerer synthesises the heads of `relation` / `rule` /
 `macro` / `import` forms without one, so top-level forms carry no position.
-The single exception is `macro_arity_mismatch`, raised during expansion on a
-nested (located) node. It is a real usability bug, and
+The two exceptions are `macro_arity_mismatch`, raised during expansion on a
+nested (located) node, and `relation_parameter_int` (M1e2 S1e2.2.4), which
+positions its message at the activator's integer for the same reason. It is a real usability bug, and
 [`defined_behaviour.md` §1.5](../../../docs/kernel/defined_behaviour.md)
 states `at None` as the behaviour until it is fixed.
 
@@ -74,6 +75,19 @@ Reserved-name shadowing has one fixture per declarator namespace
 the message differs by namespace, so the fixtures cover the message set, and
 the sweep over `{absent, false, eq, relation}` stays a parametrized unit test
 where it belongs.
+
+## A relation named by a number — M1e2 S1e2.2.4
+
+`relation_parameter_int.ein` is Q-M1e.21's residue. A rule parameter that names
+a relation, `(?R ?a ?b)`, bound by its activator to an integer would have the
+compiler intern the integer's text as a relation's name: a name the program
+does not have, which no rule's text predicts and so no candidate can hold. The
+user ruled on 2026-10-16 that rules cannot assert new names, and the loader
+refuses the activator where it is written down — a fact, as here, or a literal
+in an `:assert`. One a rule derives through a variable is refused by the
+compiler, and has no fixture here because it loads
+(`ein-infer/tests/compile_semantics.rs`;
+[`defined_behaviour.md` § 4.6](../../../docs/kernel/defined_behaviour.md#46-a-relation-named-by-a-number--m1e2-s1e224)).
 
 ## Growth rule
 

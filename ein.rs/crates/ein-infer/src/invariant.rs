@@ -23,10 +23,12 @@
 //! is the program on which a rule's constant missing from the candidates cost
 //! a model (M1e2's W4).
 //!
-//! What a rule can still introduce that no static set predicts is a relation
+//! What a rule could still introduce that no static set predicts is a relation
 //! head written as a parameter and bound to an **integer**, whose decimal text
-//! the compiler interns as a name. `ein-infer/tests/interning.rs` names it,
-//! and no corpus program has one.
+//! the compiler would intern as a name. It is refused: by the loader where the
+//! activator is written down (`examples/broken/load/relation_parameter_int.ein`),
+//! by the compiler where a rule derives it. So the invariant is a property of
+//! the engine and a refusal, not a precondition on the rule library.
 //!
 //! This is not F5's typed form, which would make a violation unrepresentable.
 //! It is the cheap one: two set memberships per fact, against a baseline taken
@@ -170,10 +172,10 @@ impl RuleConstant {
 /// A **variable** leaf contributes nothing: a variable is bound by the match,
 /// or by the activator, so it can only carry a value a fact already holds.
 /// The one exception is a relation head written as a parameter, which the
-/// compiler names by the bound value's text: an integer there is the residue
-/// the module docs name. A **head** contributes nothing here: a relation an
-/// `:assert` names is the registry's business ([`Universe::of`] reads it off
-/// `relation_names`).
+/// compiler names by the bound value's text: an integer there is refused, at
+/// load or at compile, so it introduces nothing either. A **head** contributes
+/// nothing here: a relation an `:assert` names is the registry's business
+/// ([`Universe::of`] reads it off `relation_names`).
 pub fn rule_constants(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<RuleConstant> {
     let mut out = Vec::new();
     for (which, reg) in [

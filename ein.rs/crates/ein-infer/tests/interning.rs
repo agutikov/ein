@@ -36,12 +36,14 @@
 //! and then solved: growth before the mark is the loader's and the root
 //! saturation's business and is single-threaded by construction.
 //!
-//! It is a corpus-scale measurement, not a proof. One shape is known to be
-//! outside it and is named rather than hidden — a pattern head `(?rel ?a ?b)`
+//! It is a corpus-scale measurement, not a proof. One shape was known to be
+//! outside it and was named rather than hidden — a pattern head `(?rel ?a ?b)`
 //! whose `?rel` binds to an **integer**, whose decimal text the compiler
-//! interns as a symbol. Nothing in the corpus has one. What makes that
-//! survivable is that the consequence of being wrong is not a race but a
-//! *missing name*: a worker that cannot intern can only fall back, which is
+//! interns as a symbol. Nothing in the corpus has one, and since M1e2
+//! S1e2.2.4 no program can: the loader refuses the activator where it is
+//! written down and the compiler where a rule derives it, before the name is
+//! interned (`docs/kernel/defined_behaviour.md` § 4.6). A worker that cannot
+//! intern can only fall back, which is
 //! [S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)'s
 //! to build and this file's to keep honest.
 
