@@ -706,15 +706,11 @@ impl Form {
     }
 }
 
-/// Where a form's rest is, as the cut's line names it: `--dump-answer DIR`
-/// on `ein solve`. `ein oracle` writes no answer directory, so its forms
-/// point at the command that does, over the same R.
+/// Where a form's rest is, as the cut's line names it: the read-out's own
+/// [`ein_render::read_out::dump_hint`], so a form and the listings above it
+/// name one writer (M1e2 S1e2.3.7).
 pub(crate) fn dump_hint(command: &str) -> &'static str {
-    if command == "oracle" {
-        "ein solve FILE --dump-answer DIR"
-    } else {
-        "--dump-answer DIR"
-    }
+    ein_render::read_out::dump_hint(command)
 }
 
 /// Print the forms `shown` asks for after the read-out `text`, and return

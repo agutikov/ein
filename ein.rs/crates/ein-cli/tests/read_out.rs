@@ -409,3 +409,92 @@ fn a_nested_fact_in_a_core_prints_as_an_s_expression() {
         r.out
     );
 }
+
+/// **`ein oracle` names no option it refuses** — M1e2 S1e2.3.7's N4, the
+/// user's ruling of 2026-11-03.
+///
+/// Past 100 lines its read-out said `--dump-answer DIR writes …`, and `ein
+/// oracle` has no `--dump-answer`: it refuses the flag, exit 2. Each such line
+/// names `ein solve FILE --dump-answer DIR` instead, as the forms S1e2.3.3
+/// cut on `ein oracle` already did, and `as :expect`'s *it is in
+/// DIR/answer.txt* says which command writes that DIR. The command it names
+/// exits 0 and writes the whole of what the lines left out, over the oracle's
+/// R. `ein solve`'s own lines still name the flag alone, and `ein oracle`
+/// gained no flag. `03_forall.ein` carries all three kinds of line.
+#[test]
+fn the_oracles_read_out_names_the_command_that_writes_its_rest() {
+    const FORALL: &str = "examples/features/03_forall.ein";
+    const NAMED: &str = "ein solve FILE --dump-answer DIR";
+    let run = |args: &[&str]| {
+        let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+            .args(args)
+            .current_dir(repo_root())
+            .output()
+            .expect("the `ein` binary runs");
+        (
+            out.status.code().unwrap_or(-1),
+            String::from_utf8_lossy(&out.stdout).into_owned(),
+        )
+    };
+    let k_s = |text: &str| {
+        text.lines()
+            .find_map(|l| l.trim_start().strip_prefix("states (k_s)"))
+            .map(|v| v.trim().to_string())
+    };
+    let (code, oracle) = run(&["oracle", FORALL]);
+    assert_eq!(code, 0, "{oracle}");
+    let named: Vec<&str> = oracle.lines().filter(|l| l.contains("DIR")).collect();
+    for l in &named {
+        assert_eq!(
+            l.matches("--dump-answer").count(),
+            l.matches(NAMED).count(),
+            "a line names --dump-answer without `ein solve FILE`: {l}"
+        );
+    }
+    assert!(
+        named.iter().any(|l| l.starts_with("  ;; not shown: ")
+            && l.ends_with(&format!(
+                "— {NAMED} writes the whole (region …) to DIR/answer.txt"
+            ))),
+        "the region's cut:\n{oracle}"
+    );
+    assert!(
+        named.iter().any(|l| l
+            .trim_start()
+            .starts_with(&format!("… 3 more classes: {NAMED} writes them"))),
+        "the query's cut classes:\n{oracle}"
+    );
+    assert!(
+        named
+            .iter()
+            .any(|l| l.trim_start().starts_with("as :expect")
+                && l.ends_with(&format!("it is in DIR/answer.txt, which {NAMED} writes"))),
+        "as :expect:\n{oracle}"
+    );
+    assert_eq!(named.len(), 3, "{oracle}");
+
+    let dir = Scratch::new("ein-read-out-oracle");
+    let d = dir.join("d");
+    let d = d.to_string_lossy();
+    // No new flag: `ein oracle` still refuses it, before anything runs.
+    assert_eq!(run(&["oracle", FORALL, "--dump-answer", &d]).0, 2);
+    // The command the lines name exits 0, and writes R whole: the oracle's
+    // states, wrapped in `(region …)`, no listing cut.
+    let (code, solve) = run(&["solve", FORALL, "--dump-answer", &d]);
+    assert_eq!(code, 0, "{solve}");
+    let answer = std::fs::read_to_string(dir.join("d/answer.txt")).expect("answer.txt");
+    assert_eq!(k_s(&answer), k_s(&oracle), "{answer}");
+    assert!(answer.contains("\n  (region\n"), "{answer}");
+    for cut in ["not shown", "more classes", "not printed"] {
+        assert!(
+            !answer.contains(cut),
+            "answer.txt is cut ({cut}):\n{answer}"
+        );
+    }
+    // `ein solve`'s own lines are unchanged: the flag alone.
+    assert!(
+        solve.contains("— --dump-answer DIR writes the whole (region …) to DIR/answer.txt")
+            && !solve.contains(NAMED),
+        "{solve}"
+    );
+}

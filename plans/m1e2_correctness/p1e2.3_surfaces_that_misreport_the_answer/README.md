@@ -15,8 +15,10 @@ is fixed, S10 and S5 are under their rulings, S7 and S8 are pinned, Q-M1e.5,
 Q-M1e.17 and Q-M1e2.6 are closed, and the re-take below has no live row.
 The user added S1e2.3.5 and S1e2.3.6 on 2026-11-03, and **S1e2.3.5 is done**
 (2026-11-03): the gate runs the tests under a fresh `TMPDIR` in `build/` and
-fails on anything they leave. **The phase stays open** for S1e2.3.7, which the user ruled on 2026-11-03
-for [N1–N4](#candidates-found-on-the-way), and S1e2.3.6, last. Neither has
+fails on anything they leave. The user ruled on 2026-11-03 for
+[N1–N4](#candidates-found-on-the-way) in S1e2.3.7, and **S1e2.3.7 is done**
+(2026-11-03): the four lines say what they print, each held by a test, and no
+exit code moved. **The phase stays open** for S1e2.3.6, last, which has not
 started. The survey of 2026-10-14 named
 the surfaces ([inventory § 1](../inventory.md#1-table)), and the milestone
 README carried them as a *proposed* phase. On 2026-11-02 the user ruled that
@@ -170,7 +172,7 @@ Gone items get no stage. The table above records each and closes it here.
 | [S1e2.3.3](s1e2.3.3_the_forms_past_100_lines.md) | The forms after the read-out, past 100 lines (S10). **Done 2026-11-03**: ruled (a), applied | 1.5 d | the forms under the user's ruling, `--dump-answer` writing whatever stdout leaves out, and the review bundle still carrying every form uncut |
 | [S1e2.3.4](s1e2.3.4_the_inherited_questions_and_the_record.md) | The inherited questions, `-g`'s clamp, and the record (S5, Q-M1e.5, Q-M1e.17). **Done 2026-11-03**: Q4 (a), Q5 (b), Q6 (a) applied, the table re-taken | 1 d | Q-M1e.5 and Q-M1e.17 ruled and closed in M1e's register, and `-g` following the ruling with a test. `capture.sh`'s S and P lines re-take this table. The links to the proposed § are re-pointed, and Q-M1e2.6 is closed |
 | [S1e2.3.5](s1e2.3.5_test_scratch_left_in_tmp.md) | Test scratch left in `/tmp`. Added 2026-11-03 at the user's *"fix the tmp leak in those tests - add a new stage for that"*. **Done 2026-11-03**: `ein_corpus::Scratch`, every leaking writer on it, `utils/check_test_scratch.py` in the gate and in CI | 1 d | a gate run under an empty `TMPDIR` leaves nothing, every leaking writer on one self-removing scratch helper, and `./run_tests.sh` failing on leftover scratch |
-| [S1e2.3.7](s1e2.3.7_four_lines_that_misname.md) | Four lines that misname what they print (N1–N4). Added 2026-11-03 at the user's ruling *"New stage, before nightly"*, with the default fix for each | 1 d | `-f`'s header names the candidates' relations without `:hrules`, `-p`/`-P` say *facts beyond root*, `saturate --max-steps`' line, help and `defined_behaviour.md` § 4 row say what the binary does, and `ein oracle` names no option it refuses; each held by a test, no exit code moved |
+| [S1e2.3.7](s1e2.3.7_four_lines_that_misname.md) | Four lines that misname what they print (N1–N4). Added 2026-11-03 at the user's ruling *"New stage, before nightly"*, with the default fix for each. **Done 2026-11-03**: N1–N4 fixed, each with a test; `-p` and `-P` named as the facts beyond the program as loaded, which is what they print | 1 d | `-f`'s header names the candidates' relations without `:hrules`, `-p`/`-P` say *facts beyond root*, `saturate --max-steps`' line, help and `defined_behaviour.md` § 4 row say what the binary does, and `ein oracle` names no option it refuses; each held by a test, no exit code moved |
 | [S1e2.3.6](s1e2.3.6_the_nightly_workflow.md) | The nightly workflow green again (`deep-corpus`, failing since 2026-10-16). Added 2026-11-03 at the user's request, **last in the phase** | 1.5 d | every nightly step green locally at HEAD, each failure explained before it is fixed (the mutation bank's eight kills among them), and `./run_tests.sh --nightly` held to `nightly.yml` by a test |
 
 **Order.** S1e2.3.1–.3 are independent. S1e2.3.4's rulings can be taken on
@@ -201,25 +203,43 @@ recommendations are labelled as mine.
 These came up during the re-take and the stages' builds. None was in a stage
 until the user ruled on 2026-11-03 for *"New stage, before nightly"*: **all
 four are [S1e2.3.7](s1e2.3.7_four_lines_that_misname.md)'s**, each with the
-default fix the question put.
+default fix the question put. **All four are fixed** (2026-11-03), each held
+by a test, and no exit code moved.
 
 - **N1. `-f`'s header names `:hrules`.** It prints *"positive
   hypothesis-relation facts; :hrules ['color-loc', 'drink-loc', …]"* on
   `zebra2-obligations.ein`, which declares no `:hrules`. The list is the
   candidates' relations (`modes.rs:450`, `factdump.rs:35`), written in a
-  Python list's spelling.
+  Python list's spelling. **Fixed** at `f00a13bd` (T1e2.3.7.2): the header
+  names the relations as Ein spells names, `of the candidates' relations,
+  given ones too: color-loc drink-loc …`. Held by
+  `forms_cut::the_fact_dumps_headers_say_what_they_print`.
 - **N2. `-p` and `-P` call a commitment *derived*.** Their header says
   *"derived facts"* over a state's facts beyond root. On a six-line scratch
   program, state 3's two facts are `(not (p A))` and `(q A)`, and `(q A)` is
   the commitment, not a derivation. `read_out.md` § 8.6 defines `-p` as the
-  facts beyond root.
+  facts beyond root. **Fixed** at `f00a13bd` (T1e2.3.7.2), with one
+  correction to the note: `-p` prints the facts beyond the program as loaded,
+  root's own derivations among them, and not the facts beyond root. On 77 of
+  the 148 corpus programs whose `ein solve FILE -p` lists ∅, ∅'s block holds
+  facts (2026-11-03). The headers say what prints, *beyond the program as
+  loaded: root's derivations, the commitment and what it derives*, and so
+  does `-p`'s help. Whether `-p` should print the facts beyond root instead
+  is parked in [S1e2.3.7's notes](s1e2.3.7_four_lines_that_misname.md#notes).
+  Held by the same test.
 - **N3. `ein saturate --max-steps`'s limit line.** It names
   `Saturator._last_firing`, which no crate defines. It spells the firing as
   `Firing(rule='symmetric', … Fact(relation_name='co-located', …))`, S8's
   spelling on another surface (`saturate.rs:592`). It exits 0.
   `defined_behaviour.md` § 4's row for the step limit names a
   `--max-firings` budget that no command spells, with exit 1 and
-  `SaturatorStepLimitError`.
+  `SaturatorStepLimitError`. **Fixed** at `e49ee644` (T1e2.3.7.3): the line
+  names the flag, the firings run and the last firing in Ein's spelling, and
+  no longer says *without reaching fixed point*, which was false when the
+  N-th firing was the last. The help says what the binary does, and the row
+  moved to `defined_behaviour.md` § 5 with exit 0. The exit code did not
+  move. Held by
+  `cli_semantics::the_step_limit_is_one_line_in_eins_spelling_and_exits_0`.
 - **N4. `ein oracle`'s read-out names a flag `ein oracle` refuses.** Found by
   S1e2.3.3, 2026-11-03. Past 100 lines its cut says *"--dump-answer DIR
   writes the whole (region …) to DIR/answer.txt"* (`ein oracle
@@ -231,6 +251,10 @@ default fix the question put.
   `ein oracle` should take `--dump-answer`, is a new option and the user's.
   **Ruled 2026-11-03:** the oracle's read-out names `ein solve FILE
   --dump-answer DIR`, and `ein oracle` gets no new flag (S1e2.3.7).
+  **Fixed** at T1e2.3.7.4, the commit that records the stage: 10 lines on 7
+  corpus files moved, and on each of the 7 the named command exits 0 with the
+  oracle's count of states. Held by
+  `read_out::the_oracles_read_out_names_the_command_that_writes_its_rest`.
 
 ## Acceptance for the phase
 

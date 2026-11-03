@@ -36,6 +36,22 @@ pub const RULE: &str = "──────────────────�
 /// The most lines stdout's listings print together.
 pub const LIST_LINES: usize = 100;
 
+/// What `ein solve`'s cut lines name as the writer of the rest.
+const DUMP_FLAG: &str = "--dump-answer DIR";
+
+/// Where a cut listing's rest is, as its line names it: `--dump-answer DIR`
+/// on `ein solve`. `ein oracle` writes no answer directory and refuses the
+/// flag, so its lines name the command that writes one, over the same R: the
+/// forms' since M1e2 S1e2.3.3, the read-out's own since S1e2.3.7 (N4, the
+/// user's ruling of 2026-11-03, which added no flag to `ein oracle`).
+pub fn dump_hint(command: &str) -> &'static str {
+    if command == "oracle" {
+        "ein solve FILE --dump-answer DIR"
+    } else {
+        DUMP_FLAG
+    }
+}
+
 /// The most minimal commitments a member's comment names; the rest are
 /// counted. A `(region …)` lists them all in its `(merged …)`.
 const MINIMAL_SHOWN: usize = 4;
@@ -140,6 +156,8 @@ struct Out {
     listed: usize,
     uncut: bool,
     shown: Vec<usize>,
+    /// What a cut line names as the writer of the rest: [`dump_hint`].
+    hint: &'static str,
 }
 
 impl Out {
@@ -218,6 +236,7 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
         listed: 0,
         uncut: o.uncut,
         shown: Vec::new(),
+        hint: dump_hint(o.command),
     };
     let a = &r.answer;
     let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
@@ -342,12 +361,12 @@ fn lattice_block(
             plural(m.sites.len() as u64, "site", "sites")
         ),
     );
-    let uncut = out.uncut;
-    for l in static_rows(m, uncut) {
+    let (uncut, hint) = (out.uncut, out.hint);
+    for l in static_rows(m, uncut, hint) {
         out.line(l);
     }
     if let Some(w) = warning {
-        for l in dynamic_rows(w, uncut) {
+        for l in dynamic_rows(w, uncut, hint) {
             out.line(l);
         }
     }
@@ -369,7 +388,7 @@ fn sub_row(label: &str, value: impl AsRef<str>) -> String {
 /// per site (at most [`WARNING_ROWS`] unless `uncut`), each `cycle`, each
 /// `order` — what `ein solve --monotone` prints, and every flagged read-out's
 /// `lattice` block.
-pub fn static_rows(m: &Monotonicity, uncut: bool) -> Vec<String> {
+pub fn static_rows(m: &Monotonicity, uncut: bool, hint: &str) -> Vec<String> {
     let mut out = vec![sub_row("assumes", ASSUMES)];
     let stakes = &m.detector.stakes;
     for (i, s) in stakes.iter().enumerate() {
@@ -377,7 +396,7 @@ pub fn static_rows(m: &Monotonicity, uncut: bool) -> Vec<String> {
             out.push(sub_row(
                 "…",
                 format!(
-                    "{} more sites: --dump-answer DIR writes every one",
+                    "{} more sites: {hint} writes every one",
                     group((stakes.len() - WARNING_ROWS) as u64)
                 ),
             ));
@@ -395,7 +414,7 @@ pub fn static_rows(m: &Monotonicity, uncut: bool) -> Vec<String> {
 }
 
 /// The dynamic rows: `status`, `state` and its `stale` rows, `paths`.
-pub fn dynamic_rows(w: &Warning, uncut: bool) -> Vec<String> {
+pub fn dynamic_rows(w: &Warning, uncut: bool, hint: &str) -> Vec<String> {
     let mut out = Vec::new();
     out.push(sub_row("status", status_text(&w.status)));
     let st = &w.state;
@@ -407,7 +426,7 @@ pub fn dynamic_rows(w: &Warning, uncut: bool) -> Vec<String> {
                 out.push(sub_row(
                     "…",
                     format!(
-                        "{} more: --dump-answer DIR writes them",
+                        "{} more: {hint} writes them",
                         group(k - WARNING_ROWS as u64)
                     ),
                 ));
@@ -612,6 +631,7 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
         listed: 0,
         uncut: o.uncut,
         shown: Vec::new(),
+        hint: dump_hint(o.command),
     };
     out.line(format!("{} · {}", o.command, o.argv));
     out.line(RULE);
@@ -631,7 +651,7 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
             "monotone",
             format!("no — {}", plural(m.sites.len() as u64, "site", "sites")),
         );
-        for l in static_rows(m, o.uncut) {
+        for l in static_rows(m, o.uncut, out.hint) {
             out.line(l);
         }
         let n = c.n;
@@ -1400,10 +1420,11 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
             members(out, &listed, cands, None);
             if *others > 0 {
                 out.line(format!(
-                    "  ;; {} met {} not certified on a line, and not listed: --dump-answer DIR \
-                     writes each to DIR/models/",
+                    "  ;; {} met {} not certified on a line, and not listed: {} writes each \
+                     to DIR/models/",
                     plural(*others, "other member", "other members"),
-                    if *others == 1 { "is" } else { "are" }
+                    if *others == 1 { "is" } else { "are" },
+                    out.hint
                 ));
             }
         }
@@ -1523,8 +1544,9 @@ fn region(out: &mut Out, states: &[Listed], cands: &[String]) {
         ));
     }
     out.line(format!(
-        "  ;; not shown: {} — --dump-answer DIR writes the whole (region …) to DIR/answer.txt",
-        rest.join(" and ")
+        "  ;; not shown: {} — {} writes the whole (region …) to DIR/answer.txt",
+        rest.join(" and "),
+        out.hint
     ));
 }
 
@@ -1570,8 +1592,9 @@ fn members(out: &mut Out, states: &[(usize, &Listed)], cands: &[String], line: O
     out.shown = states[..shown].iter().map(|(i, _)| *i).collect();
     if shown < k {
         out.line(format!(
-            "  ;; … {}: --dump-answer DIR writes the listing uncut, to DIR/answer.txt",
-            plural((k - shown) as u64, "more state", "more states")
+            "  ;; … {}: {} writes the listing uncut, to DIR/answer.txt",
+            plural((k - shown) as u64, "more state", "more states"),
+            out.hint
         ));
     }
 }
@@ -1708,12 +1731,13 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
             out.row(
                 "",
                 format!(
-                    "… {}: --dump-answer DIR writes them to DIR/answer.txt",
+                    "… {}: {} writes them to DIR/answer.txt",
                     plural(
                         (q.classes.len() - shown) as u64,
                         "more class",
                         "more classes"
-                    )
+                    ),
+                    out.hint
                 ),
             );
         }
@@ -1736,9 +1760,17 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
             return;
         }
         if shown < q.classes.len() {
+            // `ein oracle` writes no DIR, so it names what does.
+            let by = if out.hint == DUMP_FLAG {
+                String::new()
+            } else {
+                format!(", which {} writes", out.hint)
+            };
             out.row(
                 "as :expect",
-                "not printed: stdout lists part of the classes; it is in DIR/answer.txt",
+                format!(
+                    "not printed: stdout lists part of the classes; it is in DIR/answer.txt{by}"
+                ),
             );
             return;
         }
@@ -1768,9 +1800,10 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, label: &str) {
             out.row(
                 "as :expect",
                 format!(
-                    "{}, past what is left of stdout's {LIST_LINES}: --dump-answer DIR writes \
-                     it to DIR/answer.txt",
-                    plural(lines.len() as u64, "line", "lines")
+                    "{}, past what is left of stdout's {LIST_LINES}: {} writes it to \
+                     DIR/answer.txt",
+                    plural(lines.len() as u64, "line", "lines"),
+                    out.hint
                 ),
             );
             return;

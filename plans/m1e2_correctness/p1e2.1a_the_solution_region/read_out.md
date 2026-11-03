@@ -536,8 +536,9 @@ which set that is:
 
 **Amended 2026-11-03, M1e2
 [S1e2.3.7](../p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.7_four_lines_that_misname.md)**,
-on the user's ruling of that day (N1, N2). Two rows above name a set other
-than the one that prints, and the forms' headers named a third:
+on the user's ruling of that day (N1, N2, N4). Two rows above name a set
+other than the one that prints, the forms' headers named a third, and `ein
+oracle`'s read-out named a flag it refuses:
 
 - **`-p` and `-P` print each listed state's facts beyond the program as
   loaded**, every one or the positive ones. `-P`'s set is the state's model as
@@ -557,8 +558,20 @@ than the one that prints, and the forms' headers named a third:
   (166 of 186 runs, the same sweep). It now names the relations as Ein spells
   names: `of the candidates' relations, given ones too: color-loc drink-loc
   nation-loc pet-loc smoke-loc`.
+- **`ein oracle`'s read-out names `ein solve FILE --dump-answer DIR`**
+  wherever `ein solve`'s names `--dump-answer DIR`: a cut region, a cut
+  listing, a query's cut classes, a long `as :expect`, the warning's rows
+  past four. `ein oracle` refuses `--dump-answer`, exit 2, and writes no
+  answer directory, so the line names the command that writes one, as its
+  forms' line has since S1e2.3.3. `as :expect`'s *it is in DIR/answer.txt*
+  adds *which ein solve FILE --dump-answer DIR writes*. Over the corpus
+  (`ein oracle FILE` on the 279 files, 2026-11-03), 10 lines on 7 files
+  moved and nothing else, and on each of the 7 the named command exits 0
+  with the oracle's count of states. `ein oracle` gained no flag, and `ein
+  solve`'s lines did not move.
 
-Held by `forms_cut::the_fact_dumps_headers_say_what_they_print`.
+Held by `forms_cut::the_fact_dumps_headers_say_what_they_print` and
+`read_out::the_oracles_read_out_names_the_command_that_writes_its_rest`.
 
 ## 9. Exit codes
 
