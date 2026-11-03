@@ -19,8 +19,9 @@ row id (`W1/branching-15`) or a case (`W1`, every row of it); a `.ein` path
 gets a page of its own with one `solve` run (flags after `--`; none describes
 all of R). `--corpus` builds one for every corpus entry with a declared
 `solve` run, at that run's flags and without events.
-`--smoke` builds one small case into a temporary directory and link-checks
-it: the per-commit gate's step, using the debug `ein` `cargo test` built.
+`--smoke` builds one small case, and one program whose solve is refused, into
+a temporary directory and link-checks it: the per-commit gate's step, using
+the debug `ein` `cargo test` built.
 A case that fails to build makes the command exit 1.
 `--regions` (S1e2.1a.8) surveys every corpus program's region and writes a
 gallery: the synthetic programs `utils/region_synth.py` wrote, the biggest
@@ -157,13 +158,17 @@ def cmd_corpus(args: list[str]) -> int:
 
 def cmd_smoke(args: list[str]) -> int:
     """One small register case into a temporary directory, link-checked, with
-    every SVG non-empty — the per-commit gate's step (S1e2.1.6)."""
+    every SVG non-empty — the per-commit gate's step (S1e2.1.6). Beside it, a
+    program whose `ein solve` is refused (its goal does not compile, exit 1),
+    so it writes no dump: a page that links a dump the run did not write
+    dangles, which is how the region gallery's `features/02` page did
+    (M1e2 S1e2.1.7)."""
     import subprocess
     import tempfile
     debug = REPO / "ein.rs/target/debug/ein"
     bin = take(args, "--bin") or os.environ.get("EIN_BIN") or str(debug)
     with tempfile.TemporaryDirectory(prefix="ein-review-smoke-") as tmp:
-        code = cmd_bundle(["--bin", bin, "--out", tmp, "W2/forced-2"])
+        code = cmd_bundle(["--bin", bin, "--out", tmp, "W2/forced-2", "examples/ein-bugs/query-goal-free-head.ein"])
         if code:
             return code
         svgs = list(Path(tmp).rglob("*.svg"))

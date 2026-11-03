@@ -26,8 +26,9 @@ from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
-from review.run import (RunResult, RunSpec, _safe, asked_text, build_run, call_to_fact, diff_block, form_text,
-                        grids_from, node_links, overlay_head, set_text, state_files, state_href, verdict_block, yes)
+from review.run import (RunResult, RunSpec, _safe, asked_text, build_run, call_to_fact, diff_block, dump_link,
+                        form_text, grids_from, node_links, overlay_head, set_text, state_files, state_href,
+                        verdict_block, yes)
 from review.util import REPO, details, doc, load_json, read, rel, run, table, warning_words, write
 
 REGISTER = REPO / "corpus/wrong_answers.toml"
@@ -229,12 +230,13 @@ def region_section(r: RunResult, page: Path, row: dict | None = None, heading: s
     part = {"minimal": "minimal line", "maximal": "maximal line"}.get(which, "R")
     cmd = f"`ein solve {r.spec.file}{' ' + ' '.join(r.spec.flags) if r.spec.flags else ''}`"
     rpage = r.out / "pages" / "region" / "index.md"
+    main = next((i for i in r.invocations if i.name == "main"), None)
     tinv = next((i for i in r.invocations if i.name == "render-region-table"), None)
     lines = [heading, "",
              f"R by brute force, `ein oracle {r.spec.file} --dump`, with this run ({cmd}) drawn on it from the "
              f"run's own dumps: `ein render region` [`region/`]({rel(raw / 'region' / 'region.json', page)}) "
-             f"`--visited` [`lattice/`]({rel(raw / 'lattice' / 'nodes.json', page)}) `--answer` "
-             f"[`answer/`]({rel(raw / 'answer' / 'index.json', page)}) "
+             f"`--visited` {dump_link(raw, 'lattice', '`lattice/`', page, main)} `--answer` "
+             f"{dump_link(raw, 'answer', '`answer/`', page, main)} "
              f"([legend]({doc(LEGEND, page)}#region-rendering--the-cube-and-a-region-run)). "
              f"[Every node]({rel(rpage, page)}), by layer, with what the run did there.", ""]
     reg = (row or {}).get("region")

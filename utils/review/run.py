@@ -276,6 +276,23 @@ def overlay_args(raw: Path) -> list[str]:
     return out
 
 
+# The run's two dumps, as `overlay_args` reads them: the directory and the file
+# that says it was written.
+DUMPS = {"lattice": "nodes.json", "answer": "index.json"}
+
+
+def dump_link(raw: Path, dump: str, label: str, page: Path, main: Invocation | None) -> str:
+    """A link from `page` to one of the run's two dumps, or, where the run
+    wrote none, the words saying so and why (M1e2 S1e2.1.7). A run that exits
+    non-zero, such as a goal that does not compile, writes neither dump, and a
+    link to it would dangle."""
+    target = raw / dump / DUMPS[dump]
+    if target.exists():
+        return f"[{label}]({rel(target, page)})"
+    why = f"the run exited {main.code}" if main is not None and main.code != 0 else "the run wrote none"
+    return f"{label} (not written: {why})"
+
+
 def state_files(answer: Path) -> list[dict]:
     """`index.json`'s state files — `models/` then `owing/` — each with its
     stem (`models/01`) and its kind."""
@@ -700,9 +717,9 @@ def region_pages(p: Pages) -> None:
                                                        p.raw / "oracle.stdout.txt"], index, head)
     lines += ["Fill is what the cube says, shape what this run did, border marks the lines and the defects. Every "
               "node's reason is in its tooltip: open the SVG on its own to hover. The run is drawn from its own "
-              f"[`--dump-lattice`]({rel(p.raw / 'lattice' / 'nodes.json', index)}) and "
-              f"[`--dump-answer`]({rel(p.raw / 'answer' / 'index.json', index)}) (`ein render region DIR --visited … "
-              "--answer …`).", ""]
+              f"{dump_link(p.raw, 'lattice', '`--dump-lattice`', index, p.inv.get('main'))} and "
+              f"{dump_link(p.raw, 'answer', '`--dump-answer`', index, p.inv.get('main'))} (`ein render region DIR "
+              "--visited … --answer …`).", ""]
     if oracle and oracle.code == 0:
         lines += details("the oracle's read-out (`ein oracle FILE`)", ["```text", verdict_block(oracle.stdout), "```"])
     for name, title in [("render-region", "The drawing"), ("render-region-lines", "The lines")]:
