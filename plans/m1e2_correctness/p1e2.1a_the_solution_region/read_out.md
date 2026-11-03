@@ -534,6 +534,32 @@ which set that is:
 | `-H` | H, the universe: the candidates per relation and those dead alone, read from the oracle's list. That is P1e2.3's S4, checked in T1e2.1a.5.2 |
 | `ein oracle` | the describe layout, with `route  2, the cube — no licence: asked for by name`, the `E` row, every hole row, and today's `the cube` line of violations. It gains `-T`, `--json-summary`, `--models`, `-p` and `-P` (interface § 6) |
 
+**Amended 2026-11-03, M1e2
+[S1e2.3.7](../p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.7_four_lines_that_misname.md)**,
+on the user's ruling of that day (N1, N2). Two rows above name a set other
+than the one that prints, and the forms' headers named a third:
+
+- **`-p` and `-P` print each listed state's facts beyond the program as
+  loaded**, every one or the positive ones. `-P`'s set is the state's model as
+  [`solution_semantics.md` § 3](../../../docs/kernel/inference/solution_semantics.md#3-model)
+  defines it, and that model holds root's own derivations. *Facts beyond
+  root* is the `work` row's set, which leaves them out. 148 corpus programs
+  list ∅ under `ein solve FILE -p`, and on 77 of them ∅'s block holds facts,
+  though ∅ has none beyond root (T1e2.3.7.1, 2026-11-03). The headers said
+  *derived facts*, and a commitment is not derived. They now say what prints:
+  `beyond the program as loaded: root's derivations, the commitment and what
+  it derives`, and `-P`'s adds `(not …) omitted`. What the forms print did
+  not move. Whether `-p` should print the facts beyond root instead is
+  parked in the stage's notes.
+- **`-f` prints every fact of the candidates' relations, given ones too**,
+  which is more than *its closure*. Its header named `:hrules ['color-loc',
+  …]`, in a Python list's spelling, on programs that declare no `:hrules`
+  (166 of 186 runs, the same sweep). It now names the relations as Ein spells
+  names: `of the candidates' relations, given ones too: color-loc drink-loc
+  nation-loc pet-loc smoke-loc`.
+
+Held by `forms_cut::the_fact_dumps_headers_say_what_they_print`.
+
 ## 9. Exit codes
 
 **An answer exits 0, and only an error does not** (§ 11, ruling 1): *"any

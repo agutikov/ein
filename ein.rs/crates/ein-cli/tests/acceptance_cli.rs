@@ -85,7 +85,8 @@ fn must_contain(out: &str, needles: &[&str], what: &str) {
 #[test]
 fn solve_zebra2_prints_the_answer_the_puzzle_asked_for() {
     // `-P` and `-H` are two surfaces nothing else in the suite runs end to end
-    // on the puzzle: the state's positive facts beyond root, and H.
+    // on the puzzle: the state's model (its positive facts beyond the
+    // program as loaded), and H.
     let (code, out) = ein(&["solve", "examples/zebra2.ein", "-P", "-H"]);
     assert_eq!(code, 0, "a solved puzzle exits 0");
     must_contain(

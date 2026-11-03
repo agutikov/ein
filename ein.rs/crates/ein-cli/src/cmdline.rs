@@ -618,8 +618,9 @@ fn solve_command() -> Command {
         .arg(flag(
             'p',
             "print-final-state",
-            "after the read-out, each state it showed, its facts beyond root: its \
-             model, in what the read-out left of stdout's 100 lines. \
+            "after the read-out, each state it showed, its facts beyond the \
+             program as loaded: root's derivations, its commitment and what that \
+             derives, in what the read-out left of stdout's 100 lines. \
              --dump-answer DIR writes every listed state's, as \
              DIR/forms/print-final-state.txt",
         ))
@@ -929,8 +930,9 @@ fn oracle_command() -> Command {
         .arg(flag(
             'p',
             "print-final-state",
-            "after the read-out, each state it showed, its facts beyond root: its \
-             model, in what the read-out left of stdout's 100 lines. `ein solve \
+            "after the read-out, each state it showed, its facts beyond the \
+             program as loaded: root's derivations, its commitment and what that \
+             derives, in what the read-out left of stdout's 100 lines. `ein solve \
              FILE -p --dump-answer DIR` writes every listed state's, as \
              DIR/forms/print-final-state.txt",
         ))

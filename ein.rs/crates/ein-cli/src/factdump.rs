@@ -6,12 +6,17 @@
 
 use ein_core::{Kb, Symbol, Terms};
 
+/// What `-p`'s and `-P`'s facts are, beyond the program as loaded.
+const WHAT_BEYOND: &str = "root's derivations, the commitment and what it derives";
+
 /// The three `--print-final-*` modes.
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum Mode {
-    /// `-p` — everything the engine derived: the propositional residue.
+    /// `-p` — every fact beyond the program as loaded: root's derivations,
+    /// the commitment and what it derives, the `(not …)` facts among them.
     All,
-    /// `-P` — `All` with the `(not …)` facts dropped: the positive residue.
+    /// `-P` — `All` with the `(not …)` facts dropped: the state's model, as
+    /// `solution_semantics.md` § 3 defines it.
     Positive,
     /// `-f` — only the facts of the candidates' relations, *whatever their
     /// origin*, so the given conditions count too.
@@ -27,30 +32,37 @@ pub fn final_state_lines(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol])
                 .facts()
                 .filter(|&f| targets.contains(&terms.facts.get(f).0))
                 .collect();
+            // The relations as Ein spells names, one space apart: they are
+            // the candidates', whether or not the program wrote `:hrules`
+            // (M1e2 S1e2.3.7's N1).
             let mut names: Vec<&str> = targets.iter().map(|&s| terms.sym(s)).collect();
             names.sort_unstable();
-            let shown: Vec<String> = names.iter().map(|n| ein_core::repr::repr_str(n)).collect();
-            (
-                picked,
+            let label = if names.is_empty() {
+                "of the candidates' relations: there is no candidate".to_string()
+            } else {
                 format!(
-                    "positive hypothesis-relation facts; :hrules [{}]",
-                    shown.join(", ")
-                ),
-            )
+                    "of the candidates' relations, given ones too: {}",
+                    names.join(" ")
+                )
+            };
+            (picked, label)
         }
         _ => {
+            // Beyond the program as loaded, not beyond root: root's own
+            // derivations are in every state's block, and a commitment is
+            // not derived (M1e2 S1e2.3.7's N2).
             let not = terms.syms.get("not");
             let picked: Vec<_> = kb
                 .facts()
-                .filter(|&f| is_derived(kb, terms, f))
+                .filter(|&f| beyond_the_program(kb, terms, f))
                 .filter(|&f| !(mode == Mode::Positive && Some(terms.facts.get(f).0) == not))
                 .collect();
             (
                 picked,
                 if mode == Mode::Positive {
-                    "derived facts, (not …) omitted".to_string()
+                    format!("beyond the program as loaded, (not …) omitted: {WHAT_BEYOND}")
                 } else {
-                    "derived facts".to_string()
+                    format!("beyond the program as loaded: {WHAT_BEYOND}")
                 },
             )
         }
@@ -71,9 +83,10 @@ pub fn final_state_lines(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol])
         .collect();
     keyed.sort_by(|a, b| (a.0, &a.1).cmp(&(b.0, &b.1)));
 
+    let n = keyed.len();
     let mut out = vec![format!(
-        "final-state facts ({label}; {} facts):",
-        keyed.len()
+        "final-state facts ({label}; {n} {}):",
+        if n == 1 { "fact" } else { "facts" }
     )];
     for (rel, args, _) in &keyed {
         // Note the unconditional separator: a nullary fact prints `(rel )`
@@ -84,10 +97,11 @@ pub fn final_state_lines(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol])
     out
 }
 
-/// Derived — produced by the engine, i.e. it has provenance and that
-/// provenance is not a `:source` ingestion. A fact with none is neither given
-/// nor derived, so it drops out of every `--print-final-*` mode but `hfacts`.
-fn is_derived(kb: &Kb, terms: &Terms, fact: ein_core::FactId) -> bool {
+/// Beyond the program as loaded: it has provenance, and that provenance is
+/// not a `:source` ingestion — a rule's firing (root's included) or a
+/// commitment's hypothesis. A fact with none is the loader's, so it drops out
+/// of every `--print-final-*` mode but `hfacts`.
+fn beyond_the_program(kb: &Kb, terms: &Terms, fact: ein_core::FactId) -> bool {
     match kb.primary(fact) {
         Some(p) => terms.provs.get(p).kind != ein_core::ProvKind::Source,
         None => false,

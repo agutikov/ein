@@ -289,3 +289,73 @@ fn the_oracle_points_at_solve_and_a_second_dump_leaves_no_stale_form() {
     assert_eq!(dump(THREE, &["--count"], &d).code, 0);
     assert!(!d.join("forms").exists(), "--count's dump kept forms/");
 }
+
+/// **The fact dumps' headers say what they print** — M1e2 S1e2.3.7's N1 and
+/// N2, the user's ruling of 2026-11-03, in `factdump.rs`.
+///
+/// `-f`'s header named `:hrules ['co-located', 'is-a']`, in a Python list's
+/// spelling, on `branching/02`, which declares no `:hrules`; it names the
+/// candidates' relations as Ein spells names. `-p`'s and `-P`'s
+/// called a state's facts *derived*, and on `lattice/02` state 2's one fact
+/// is its commitment. They are the facts beyond the program as loaded, and
+/// not *beyond root*: on `branching/02` ∅'s block lists root's derivations,
+/// and ∅ has no fact beyond root. So no header says *derived*, `:hrules` or
+/// *beyond root*, and each names the set it prints.
+#[test]
+fn the_fact_dumps_headers_say_what_they_print() {
+    const BEYOND: &str = "root's derivations, the commitment and what it derives";
+    const BRANCHING_02: &str = "examples/branching/02_one_dead_one_alive.ein";
+    // The line under a form's `── state … ──`.
+    let header = |r: &Run, state: &str| -> String {
+        assert_eq!(r.code, 0, "{}", r.err);
+        let at = r
+            .out
+            .find(&format!("── {state} ──\n"))
+            .unwrap_or_else(|| panic!("no `── {state} ──`:\n{}", r.out));
+        r.out[at..].lines().nth(1).unwrap_or_default().to_string()
+    };
+    // A program that declares no `:hrules`, as N1's witness,
+    // `zebra2-obligations.ein`, does not: naming a zebra puzzle here would
+    // make this file one of `world_anchors.rs`' list.
+    let f = ein(&["solve", BRANCHING_02, "-f"]);
+    assert_eq!(
+        header(&f, "state 1 of 20"),
+        "final-state facts (of the candidates' relations, given ones too: co-located is-a; 8 facts):"
+    );
+    let p = ein(&["solve", THREE, "-p"]);
+    let h = header(&p, "state 2 of 7");
+    assert_eq!(
+        h,
+        format!("final-state facts (beyond the program as loaded: {BEYOND}; 1 fact):")
+    );
+    assert!(
+        p.out.contains(&format!("{h}\n  (a-prop X)\n")),
+        "state 2's one fact is its commitment, (a-prop X):\n{}",
+        p.out
+    );
+    let pp = ein(&["solve", THREE, "-P"]);
+    assert_eq!(
+        header(&pp, "state 2 of 7"),
+        format!(
+            "final-state facts (beyond the program as loaded, (not …) omitted: {BEYOND}; 1 fact):"
+        )
+    );
+    let root = ein(&["solve", BRANCHING_02, "-p"]);
+    assert!(
+        root.out.contains("  ;; state 1 of 20 — ∅, root itself"),
+        "{}",
+        root.out
+    );
+    assert_eq!(
+        header(&root, "state 1 of 20"),
+        format!("final-state facts (beyond the program as loaded: {BEYOND}; 7 facts):"),
+        "∅'s block is root's own derivations"
+    );
+    for r in [&f, &p, &pp, &root] {
+        for l in r.out.lines().filter(|l| l.starts_with("final-state facts")) {
+            for wrong in ["derived facts", ":hrules", "[", "'color", "beyond root"] {
+                assert!(!l.contains(wrong), "`{wrong}` in {l}");
+            }
+        }
+    }
+}
