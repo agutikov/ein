@@ -1,10 +1,11 @@
 # P1e2.3 — Surfaces that misreport the answer
 
 **Milestone:** [M1e2](../README.md) (Correctness)
-**Estimate:** 7.5 days, six stages: S1e2.3.1 2, S1e2.3.2 0.5, S1e2.3.3 1.5,
-S1e2.3.4 1, S1e2.3.5 1, S1e2.3.6 1.5. Each stage file gives its basis. It was
-5 days and four stages until the user added S1e2.3.5 and S1e2.3.6 on
-2026-11-03.
+**Estimate:** 8.5 days, seven stages: S1e2.3.1 2, S1e2.3.2 0.5, S1e2.3.3 1.5,
+S1e2.3.4 1, S1e2.3.5 1, S1e2.3.7 1, S1e2.3.6 1.5. Each stage file gives its
+basis. It was 7.5 days and six stages until the user put N1–N4 in S1e2.3.7 on
+2026-11-03, and 5 days and four stages until the user added S1e2.3.5 and
+S1e2.3.6 the same day.
 **Status:** specified 2026-11-02; **started 2026-11-03**. S1e2.3.1's
 T1e2.3.1.1 took its evidence at `32496b97`, after P1e2.1c closed, and put Q1
 to the user the same day; the user ruled (a) that day, and **S1e2.3.1 is
@@ -14,8 +15,9 @@ is fixed, S10 and S5 are under their rulings, S7 and S8 are pinned, Q-M1e.5,
 Q-M1e.17 and Q-M1e2.6 are closed, and the re-take below has no live row.
 The user added S1e2.3.5 and S1e2.3.6 on 2026-11-03, and **S1e2.3.5 is done**
 (2026-11-03): the gate runs the tests under a fresh `TMPDIR` in `build/` and
-fails on anything they leave. **The phase stays open** for S1e2.3.6, which has
-not started. The survey of 2026-10-14 named
+fails on anything they leave. **The phase stays open** for S1e2.3.7, which the user ruled on 2026-11-03
+for [N1–N4](#candidates-found-on-the-way), and S1e2.3.6, last. Neither has
+started. The survey of 2026-10-14 named
 the surfaces ([inventory § 1](../inventory.md#1-table)), and the milestone
 README carried them as a *proposed* phase. On 2026-11-02 the user ruled that
 they *become a phase*, after P1e2.1c, *specified when it starts*
@@ -168,11 +170,13 @@ Gone items get no stage. The table above records each and closes it here.
 | [S1e2.3.3](s1e2.3.3_the_forms_past_100_lines.md) | The forms after the read-out, past 100 lines (S10). **Done 2026-11-03**: ruled (a), applied | 1.5 d | the forms under the user's ruling, `--dump-answer` writing whatever stdout leaves out, and the review bundle still carrying every form uncut |
 | [S1e2.3.4](s1e2.3.4_the_inherited_questions_and_the_record.md) | The inherited questions, `-g`'s clamp, and the record (S5, Q-M1e.5, Q-M1e.17). **Done 2026-11-03**: Q4 (a), Q5 (b), Q6 (a) applied, the table re-taken | 1 d | Q-M1e.5 and Q-M1e.17 ruled and closed in M1e's register, and `-g` following the ruling with a test. `capture.sh`'s S and P lines re-take this table. The links to the proposed § are re-pointed, and Q-M1e2.6 is closed |
 | [S1e2.3.5](s1e2.3.5_test_scratch_left_in_tmp.md) | Test scratch left in `/tmp`. Added 2026-11-03 at the user's *"fix the tmp leak in those tests - add a new stage for that"*. **Done 2026-11-03**: `ein_corpus::Scratch`, every leaking writer on it, `utils/check_test_scratch.py` in the gate and in CI | 1 d | a gate run under an empty `TMPDIR` leaves nothing, every leaking writer on one self-removing scratch helper, and `./run_tests.sh` failing on leftover scratch |
+| [S1e2.3.7](s1e2.3.7_four_lines_that_misname.md) | Four lines that misname what they print (N1–N4). Added 2026-11-03 at the user's ruling *"New stage, before nightly"*, with the default fix for each | 1 d | `-f`'s header names the candidates' relations without `:hrules`, `-p`/`-P` say *facts beyond root*, `saturate --max-steps`' line, help and `defined_behaviour.md` § 4 row say what the binary does, and `ein oracle` names no option it refuses; each held by a test, no exit code moved |
 | [S1e2.3.6](s1e2.3.6_the_nightly_workflow.md) | The nightly workflow green again (`deep-corpus`, failing since 2026-10-16). Added 2026-11-03 at the user's request, **last in the phase** | 1.5 d | every nightly step green locally at HEAD, each failure explained before it is fixed (the mutation bank's eight kills among them), and `./run_tests.sh --nightly` held to `nightly.yml` by a test |
 
 **Order.** S1e2.3.1–.3 are independent. S1e2.3.4's rulings can be taken on
 the first day, and its record task runs last. S1e2.3.5 runs after S1e2.3.1
-(both touch `lever_invariance.rs` and `config_reference.rs`). S1e2.3.6 is the
+(both touch `lever_invariance.rs` and `config_reference.rs`). S1e2.3.7 runs
+after S1e2.3.5 and before S1e2.3.6, by the user's ruling of 2026-11-03. S1e2.3.6 is the
 last stage of the phase, by the user's request of 2026-11-03, because the
 nightly re-runs what every other stage changes. Every question below can be put
 to the user at once, at the phase's start. Each one's evidence is already in
@@ -192,10 +196,12 @@ recommendations are labelled as mine.
 | Q5 | S1e2.3.4, **ruled (b) 2026-11-03** | Q-M1e.17, now on `-g`: what does a count of 0 or below mean? | (a) refuse below 1, as every other count option has since the switch; (b) 0 means no node lines, as `saturate --progress-every 0` does, and a negative is refused; (c) keep the clamp, and say so in the help | (b) |
 | Q6 | S1e2.3.4, **ruled (a) 2026-11-03** | S7's and S8's witnesses are gone, and nothing checks them. Bank them? | (a) pin both (a read-out cell for `nested-core.ein`; `d3-goal-row-order.ein` in the id-order sweep), about a quarter of a day; (b) close them on this re-take alone | (a) |
 
-## Candidates found on the way, not added
+## Candidates found on the way
 
-These came up during the re-take. None is in a stage. The user decides
-whether any joins one, and S1e2.3.3 is where the first two would go.
+These came up during the re-take and the stages' builds. None was in a stage
+until the user ruled on 2026-11-03 for *"New stage, before nightly"*: **all
+four are [S1e2.3.7](s1e2.3.7_four_lines_that_misname.md)'s**, each with the
+default fix the question put.
 
 - **N1. `-f`'s header names `:hrules`.** It prints *"positive
   hypothesis-relation facts; :hrules ['color-loc', 'drink-loc', …]"* on
@@ -223,7 +229,8 @@ whether any joins one, and S1e2.3.3 is where the first two would go.
   oracle` name `ein solve FILE --dump-answer DIR` instead, which writes the
   same R's forms. Whether the oracle's own read-out should say that too, or
   `ein oracle` should take `--dump-answer`, is a new option and the user's.
-  If added, it is S1e2.3.3's, which wrote the forms' half.
+  **Ruled 2026-11-03:** the oracle's read-out names `ein solve FILE
+  --dump-answer DIR`, and `ein oracle` gets no new flag (S1e2.3.7).
 
 ## Acceptance for the phase
 
