@@ -19,13 +19,13 @@ digraph dataflow {
   ast   [label="typed AST\n(SForm tuple)"];
   kb    [label="KnowledgeBase\n(facts + indexes)"];
   sat   [label="reasoning facts\n(saturation fixpoint)"];
-  verd  [label="verdict\nSolution / Ambiguity / Contradiction"];
+  verd  [label="the region R\n(--single: Solution / Ambiguity /\nContradiction / Open)"];
   out   [label="stdout table\n+ markdown trace", shape=note];
 
   src  -> ast  [label="ein_ir::parse"];
   ast  -> kb   [label="ein_ir::from_ir"];
   kb   -> sat  [label="ein_infer:\nEngine::compile_all\n→ Saturator::saturate"];
-  sat  -> verd [label="hypgen → apriori →\ncommitment → solve"];
+  sat  -> verd [label="hypgen (H) →\nexplore's routes"];
   verd -> out  [label="ein_render + ein_cli"];
 }
 ```
@@ -36,7 +36,12 @@ Each arrow names the **crate** that owns the transform:
 [`ein-infer`](../../ein.rs/crates/ein-infer/) saturates and searches,
 [`ein-render`](../../ein.rs/crates/ein-render/) + `ein-cli` render. The verdict
 is read from the model count `k` — never chosen by a flag (see
-[`README.md`](README.md)).
+[`README.md`](README.md)). The `sat → verd` arrow was the walk —
+`hypgen → apriori → commitment → solve`, read off `k` — until M1e2 S1e2.1c.5
+deleted it (2026-11-03); it is
+[`ein_infer::explore`](../../ein.rs/crates/ein-infer/src/explore.rs)'s routes
+over the region R since, and `--single`'s four words are read off R
+([`inference/solution_semantics.md`](inference/solution_semantics.md)).
 
 > **Driving this pipeline from another program** means one of two things.
 > From **Rust**, link the crates — the surface M20's Tauri backend and M10's
@@ -180,10 +185,10 @@ debt is the **leak list** below, where the two layers still interpenetrate.
 | typed IR → KB (ground atoms) | [`ein-ir/from_ir.rs`](../../ein.rs/crates/ein-ir/src/from_ir.rs), [`ein-core/kb.rs`](../../ein.rs/crates/ein-core/src/kb.rs), `ein-core/entities.rs`, [`ein-core/prov.rs`](../../ein.rs/crates/ein-core/src/prov.rs) | **leaks L2** — the ground-atom store carries worlds-layer state; provenance now also carries a firing's *negative* dependence (the boundary queries, S1.21.8 — **L6** half) |
 | monotone closure (Datalog-ish) | [`ein-infer/compile.rs`](../../ein.rs/crates/ein-infer/src/compile.rs), [`match_.rs`](../../ein.rs/crates/ein-infer/src/match_.rs), [`saturator.rs`](../../ein.rs/crates/ein-infer/src/saturator.rs), [`engine.rs`](../../ein.rs/crates/ein-infer/src/engine.rs), `firing.rs`, [`contradiction.rs`](../../ein.rs/crates/ein-infer/src/contradiction.rs), `predicates.rs`, `plan.rs` | **clean since S1.21.8** — `Plan::steps` is the purely positive residue compilation leaves after lifting the guards out; the closure runs to quiescence consulting no negation (**L1** closed) |
 | the NAF boundary itself | [`saturator.rs`](../../ein.rs/crates/ein-infer/src/saturator.rs) (`admit_from_boundary` / `first_failing` / `negative_premises`), the guard lift in [`compile.rs`](../../ein.rs/crates/ein-infer/src/compile.rs) + [`NafGuard`](../../ein.rs/crates/ein-infer/src/plan.rs), [`Matcher::holds`](../../ein.rs/crates/ein-infer/src/match_.rs) | **new, clean (S1.21.8)** — the one place `(absent …)` is answered, and only against a positive fixpoint, asked of the KB at quiescence directly |
-| assumptions / worlds lattice | `solve.rs`, `commitment.rs`, `apriori.rs`, `nogoods.rs`, [`hypgen.rs`](../../ein.rs/crates/ein-infer/src/hypgen.rs), [`lookahead.rs`](../../ein.rs/crates/ein-infer/src/lookahead.rs), `hrule.rs`, `closed.rs`, [`naf_deps.rs`](../../ein.rs/crates/ein-infer/src/naf_deps.rs) | **clean core, leaking rim** — `try_commitment_set` is a pure fork-write-saturate world transition and `apriori`/`nogoods` are pure set arithmetic; the rim still leaks **L3**, and **L6** is only half-closed (recorded, not interpreted) |
+| assumptions / worlds lattice | the routes — [`explore.rs`](../../ein.rs/crates/ein-infer/src/explore.rs), `downset.rs`, `states.rs`, `tree.rs`, over [`region.rs`](../../ein.rs/crates/ein-infer/src/region.rs)'s node; until M1e2 S1e2.1c.5 (2026-11-03) the walk's `solve.rs`, `commitment.rs`, `apriori.rs`, `nogoods.rs`, deleted with it — [`hypgen.rs`](../../ein.rs/crates/ein-infer/src/hypgen.rs), [`lookahead.rs`](../../ein.rs/crates/ein-infer/src/lookahead.rs), `hrule.rs`, `closed.rs`, [`naf_deps.rs`](../../ein.rs/crates/ein-infer/src/naf_deps.rs) | **clean core, leaking rim** — `try_commitment_set` was a pure fork-write-saturate world transition and `apriori`/`nogoods` pure set arithmetic, and a route's node is the same transition with no writeback and no learned clause; the walk's rim leaked **L3** (below, for what is left of it), and **L6** is only half-closed (recorded, not interpreted) |
 | complete model | [`hypgen.rs`](../../ein.rs/crates/ein-infer/src/hypgen.rs) (`complete` / `open_hypotheses` / `is_solution_node`) | **leaks L4** — defined *operationally through the worlds-layer generator*; evaluating it can mutate the KB under test (its NAF half — the lookahead's world — is fixed, D3) |
 | canonical key | [`canon.rs`](../../ein.rs/crates/ein-infer/src/canon.rs) (`state_key`) | **clean since P1.21 R1** — identity is the sorted canonical fact list itself, never a hash; but L4 taints its *input* |
-| models / refutations | [`verdict.rs`](../../ein.rs/crates/ein-infer/src/verdict.rs), `solve.rs`, [`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs), [`ein-render/trace/`](../../ein.rs/crates/ein-render/src/trace/) | **clean** — the verdict is read off the deduped model count `k`; the query `:goal` only projects afterwards |
+| models / refutations | [`explore.rs`](../../ein.rs/crates/ein-infer/src/explore.rs), [`read_out.rs`](../../ein.rs/crates/ein-infer/src/read_out.rs), [`verdict.rs`](../../ein.rs/crates/ein-infer/src/verdict.rs) (a query's goal; its verdict types and `solve.rs` went with the walk at M1e2 S1e2.1c.5, 2026-11-03), [`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs), [`ein-render/trace/`](../../ein.rs/crates/ein-render/src/trace/) | **clean** — the answer is R, read off each node's dead and owing bits (it was the walk's deduped model count `k`); the query `:goal` only projects afterwards |
 
 ### Leak list
 
@@ -230,6 +235,10 @@ closed by S1.21.8, one resolved by R2, one half-closed, three standing):
   instead of against whatever the old KB happened to hold — but the
   transition is still silent, and facts already derived through an absence
   the writeback invalidates are not retracted (no truth maintenance, E3).
+  **Since M1e2 S1e2.1c.5 (2026-11-03) only the kill cache has a writer**:
+  the singleton writeback and the forced-positive promotion were the walk's
+  and went with it, and no route writes root
+  ([`inference/solution_semantics.md` § 1.3](inference/solution_semantics.md#13-root)).
 - **L4 — `complete()` re-enters the worlds layer and can mutate the model
   under test** — **still open.** `complete(kb)` ≡ "hypgen proposes nothing"
   ([`hypgen.rs`](../../ein.rs/crates/ein-infer/src/hypgen.rs)); generation
@@ -238,7 +247,8 @@ closed by S1.21.8, one resolved by R2, one half-closed, three standing):
   ([`config.rs`](../../ein.rs/crates/ein-core/src/config.rs)), writes
   `(not h)` facts into the KB being checked — *before* the node record
   takes that same KB's `state_key`
-  (`solve.rs`).
+  (`solve.rs`, deleted with the walk at M1e2 S1e2.1c.5, 2026-11-03; no route
+  calls `complete`, and a route judges a node by its dead and owing bits).
   S1.21.8 fixed the NAF half of the sharp edge (divergence **D3**:
   [`lookahead.rs`](../../ein.rs/crates/ein-infer/src/lookahead.rs) now evaluates
   a rule's guards in the world *with* `h` — no match in `kb` **and** `h`
@@ -334,9 +344,9 @@ what each pair became:
 | one artifact, two copies | what it cost | how it ends |
 |---|---|---|
 | reserved names — [`imports.rs`](../../ein.rs/crates/ein-ir/src/imports.rs) against [`terms.rs`](../../ein.rs/crates/ein-core/src/terms.rs) | **a behavioural bug**: `(macro open …)` loaded through two of four import routes, exit 0 | **unified** — `ein_core::RESERVED` is the list; M1e S1e.2.1 |
-| the entering event — `dump/state.rs` against `dump/lattice.rs` | the same nine fields in two key orders, on a writer whose insertion-order preservation is its whole purpose | **unified** — one `Timeline::entering`; a test diffs the two dumpers' key order; M1e S1e.3.4 |
+| the entering event — `dump/state.rs` against `dump/lattice.rs` | the same nine fields in two key orders, on a writer whose insertion-order preservation is its whole purpose | **unified** — one `Timeline::entering`; a test diffs the two dumpers' key order; M1e S1e.3.4. Both dumpers went with the walk at M1e2 S1e2.1c.5 |
 | the gate's step list — [`run_tests.sh`](../../run_tests.sh) against [`per-commit.yml`](../../.github/workflows/per-commit.yml) | **three red CI commits**, recorded in both files' headers | **compared by a test** — `ein-cli/tests/gate_steps.rs`; M1e S1e.3.4 |
-| the model count — `Verdict::k` against three renderers that each chose one | two surfaces printing the wrong number, and one printing the right number under the wrong label | **unified** — `Verdict::read_out`; M1e S1e.3.4 |
+| the model count — `Verdict::k` against three renderers that each chose one | two surfaces printing the wrong number, and one printing the right number under the wrong label | **unified** — `Verdict::read_out`; M1e S1e.3.4. Deleted with the walk at M1e2 S1e2.1c.5; R's counts have one builder since, `ein_infer::described`, which the read-out and the claim check both read |
 | the macro pipeline — `macros.rs` against `from_ir.rs` | divergent duplicate and reserved-name semantics, and a doc comment naming the wrong one | M1e S1e.3.1 |
 
 Two things the table is worth reading for. First, **a comment predicting the
@@ -383,8 +393,8 @@ two need distinct names and a line at each saying what the other is.
 | add a **kernel primitive** (`absent`-like) | `ein-core/src/terms.rs` (the reserved atom) or `ein-infer/src/predicates.rs` + `compile.rs` + `match_.rs` + tests; a *negative* one also touches the saturator's boundary phase |
 | add a **top-level IR form**         | `ein-ir/src/{lex,parse,ast}.rs` + `from_ir.rs` (routing) + tests; update [`ir/03-ein-lang/00_ebnf.md`](ir/03-ein-lang/00_ebnf.md) and [`06_reserved_names.md`](ir/03-ein-lang/06_reserved_names.md) |
 | change **saturation order**         | `ein-infer/src/saturator.rs` (priority bands) |
-| change **search / verdict**         | `ein-infer/src/solve.rs` + `verdict.rs` |
-| add a **verdict word or count qualifier** | `ein-infer/src/verdict.rs` alone — `Verdict::read_out` is what every surface prints (M1e S1e.3.4); the renderers need no arm |
+| change **search / verdict**         | `ein-infer/src/explore.rs` and the route it takes (`downset.rs`, `states.rs`, `tree.rs`, `region.rs`) + `read_out.rs`; it was `solve.rs` + `verdict.rs` until the walk was deleted at M1e2 S1e2.1c.5 (2026-11-03) |
+| add a **verdict word or count qualifier** | `ein-infer/src/explore.rs`'s `Verdict` (`--single`'s words) and the read-out, `ein-infer/src/read_out.rs` + `ein-render/src/read_out.rs`; until M1e2 S1e2.1c.5 (2026-11-03) it was `verdict.rs` alone — `Verdict::read_out` was what every surface printed (M1e S1e.3.4) |
 | add a **config knob**               | `ein-core/src/config.rs` (`SolverConfig`) + its read site + the CLI flag in `ein-cli/src/cmdline.rs` |
 | add a **contradiction shape**       | `ein-infer/src/contradiction.rs` |
 | add a **render target**             | `ein-render/src/` + wire into `ein-cli/src/render.rs` |

@@ -17,6 +17,21 @@
 > *planned* how-to chapters (`01_matcher.md` … `05_trace.md`) see
 > [`README.md`](README.md); this file is the architecture + algorithms
 > overview those chapters sit under.
+>
+> **The search layer this page describes was deleted at M1e2 S1e2.1c.5
+> (2026-11-03).** It is *the walk* — `solve.rs`'s `Run`, `apriori.rs`,
+> `commitment.rs`, `nogoods.rs` and `verdict.rs`'s verdict types — which had no
+> CLI path after M1e2 S1e2.1a.5's switch (2026-10-18). Every question about the
+> answer is
+> [`ein_infer::explore`](../../../ein.rs/crates/ein-infer/src/explore.rs)'s
+> since, answered by a route over the region R
+> ([`solution_semantics.md`](solution_semantics.md)), each node a fork of root
+> saturated to quiescence with none of the walk's machinery
+> ([`region_dump.md`](region_dump.md)). So §§ 1–2's search layer, § 3's
+> commitment-set, no-good, record and verdict rows, O5's fail-fast fork, and
+> the *Ein today* paragraphs of O7 and O8 are the record of what M1 built. The
+> deductive layer and the generator (`hypgen`, `hrule`, `oblgen`,
+> `lookahead`) are current.
 
 ---
 
@@ -70,7 +85,11 @@ monotone/non-monotone seam:
 - **Search layer (non-monotone).** Branch: enumerate candidate
   *commitments*, fork-and-saturate each, learn from deaths, dedup models,
   read a verdict. `solve.rs`, `hypgen.rs`, `hrule.rs`, `oblgen.rs`,
-  `lookahead.rs`, `apriori.rs`, `commitment.rs`, `nogoods.rs`, `verdict.rs`.
+  `lookahead.rs`, `apriori.rs`, `commitment.rs`, `nogoods.rs`, `verdict.rs` —
+  of which `solve.rs`, `apriori.rs`, `commitment.rs`, `nogoods.rs` and
+  `verdict.rs`'s verdict types were deleted with the walk at M1e2 S1e2.1c.5
+  (2026-11-03). The search is the routes since: `explore.rs`, `region.rs`,
+  `downset.rs`, `states.rs`, `tree.rs`.
 
 Both lists are the layer split of
 [`implementation.md`](implementation.md)'s module map, which is the full one —
@@ -163,7 +182,8 @@ re-scanned (`Saturator::enqueue_pass`, `Matcher::run_seeded`).
 There is no second, queue-less loop: `Engine` is the compile cache, and
 `Saturator::step` is the only implementation of this paragraph (M1e `CD-M1`).
 
-**The search outer loop** (many KBs → a verdict). `Run::phase1` saturates
+**The search outer loop** (many KBs → a verdict), as the walk ran it until
+M1e2 S1e2.1c.5 deleted it (2026-11-03). `Run::phase1` saturates
 the root and runs the *forced-positive cascade* (while the alive set is a
 singleton, promote it to a root fact and re-saturate — unit propagation).
 `Run::phase2` then explores the **commitment-set lattice** breadth-first
@@ -199,10 +219,10 @@ and the normative reading of a boundary query is
 | 7 KB indexes (`ein-core/kb.rs`) | `by_rel`, **`by_rel_slot_val`** (the participation index, `(rel,slot,val)→facts`), `negated`, `rule_apps_*`, the per-name participation entries, … | database join indexes; RETE alpha-memories |
 | `EqClasses` (`ein-core/kb.rs`) — **no engine code calls it** (§O4) | union-find over names (a *placeholder* — no propagation, and matching does not consult it) | disjoint-set / congruence classes / e-graph |
 | `Prov` + `DerivationDag` (`ein-core/prov.rs`, `ein-core/walks.rs`) | per-**derivation** justification (`source`/`rule`/`hypothesis`) — a fact is an OR-node over the ones recorded for it (`Kb::justifications`); `absent` records the queries that had to *fail* (recorded, not yet interpreted); the derivation AND/OR graph, source frontier | TMS justifications; database why-provenance; proof terms |
-| `CanonicalSetId` (`apriori.rs`) | a sorted `Vec<FactId>` = one **commitment set** | a CSP partial assignment / an ATMS environment / an itemset |
-| no-good clause, a `Box<[FactId]>` in `Nogoods` (`ein-core/kb.rs`, `nogoods.rs`) | a learned "this combination is dead" clause, kept subsumption-minimal | CDCL conflict clause / CSP no-good |
-| `SolutionRecord` / `DeadCommitment` (`solve.rs`) | a recorded model / refutation with its `state_key` and core | model / unsat certificate |
-| `Verdict` (`verdict.rs`) | `Solution \| Ambiguity \| Contradiction \| Open` (§2 — the fourth is *owing*, not *unsat*) + optional `LatticeProof` | SAT/UNSAT/MULTIPLE + certificate |
+| `CanonicalSetId` (`apriori.rs`) | a sorted `Vec<FactId>` = one **commitment set** — the walk's, deleted with it at M1e2 S1e2.1c.5 (2026-11-03) | a CSP partial assignment / an ATMS environment / an itemset |
+| no-good clause, a `Box<[FactId]>` in `Nogoods` (`ein-core/kb.rs`, `nogoods.rs`) | a learned "this combination is dead" clause, kept subsumption-minimal; `nogoods.rs`, its learner, went with the walk at M1e2 S1e2.1c.5 (2026-11-03), and no route learns a clause | CDCL conflict clause / CSP no-good |
+| `SolutionRecord` / `DeadCommitment` (`solve.rs`) | a recorded model / refutation with its `state_key` and core — deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03) | model / unsat certificate |
+| `Verdict` (`verdict.rs`) | `Solution \| Ambiguity \| Contradiction \| Open` (§2 — the fourth is *owing*, not *unsat*) + optional `LatticeProof` — deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03); `--single`'s four words are `explore::Verdict`, read off R | SAT/UNSAT/MULTIPLE + certificate |
 
 ---
 
@@ -467,8 +487,11 @@ provably waste — and on zebra2 the clash lands after ~320 of ~2790 firings,
 i.e. **88 % of a dying fork's saturation** (64 % of *all* fork-saturation
 time across an exhaustive run). `contradiction::contradicts` is the
 incremental dual of the scan — one lookup, asked of each derived fact as
-it lands — and `try_commitment_set` stops there
-(`enable_fail_fast_fork`, default on). That is the cheap end of what watched
+it lands — and `try_commitment_set` stopped there
+(`enable_fail_fast_fork`, default on) until it went with the walk at M1e2
+S1e2.1c.5 (2026-11-03). A route's node is never stopped at the first
+contradiction, so a dead node's debts are its fixpoint's
+([`region_dump.md`](region_dump.md)). That is the cheap end of what watched
 literals buy in SAT: not "cost-free until a literal flips", but "ask at
 insertion instead of at quiescence", which is where the waste actually was.
 
@@ -569,7 +592,12 @@ candidates with downward-closed pruning **is Apriori** (Agrawal–Srikant 1994,
 frequent-itemset mining) — the prefix-join + "every subset of a frequent set
 is frequent" pruning.
 
-**Ein today.** This is the most non-standard part, and named honestly:
+**Ein today.** Route 1
+([`downset.rs`](../../../ein.rs/crates/ein-infer/src/downset.rs)) keeps the
+idea: layer by layer from ∅ by the prefix join over candidate indices,
+visiting a commitment only when every one-smaller subset is alive. The rest
+of this paragraph is the walk's, whose `apriori.rs` went with it at M1e2
+S1e2.1c.5 (2026-11-03). This is the most non-standard part, and named honestly:
 `apriori.rs` does **literal Apriori** — `apriori_prefix_join` builds size-k
 commitment sets from size-(k-1) ones sharing a (k-1)-prefix, and
 `filter_candidate` prunes any candidate that is a superset of a learned
@@ -592,7 +620,10 @@ activity heuristic, restarts, and clause-DB minimisation. CSP adds
 (Ginsberg), **MAC** (maintain arc consistency), **forward checking**, and
 **singleton arc consistency** (a one-variable lookahead).
 
-**Ein today.** A creditable CDCL-*flavoured* set: `nogoods.rs` learns
+**Ein today**, until M1e2 S1e2.1c.5 (2026-11-03) deleted the walk and with it
+`nogoods.rs`, the cascade and the singleton writeback; `lookahead.rs` and the
+kill cache stay, in the generator. Until then, a creditable CDCL-*flavoured*
+set: `nogoods.rs` learns
 subsumption-**minimal** conflict clauses and prunes by the subset test
 (O7's Apriori filter); `lookahead.rs` is a **one-step (singleton-consistency /
 forward-checking) lookahead** that kills candidates which would die in one

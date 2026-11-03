@@ -186,6 +186,15 @@ The view names accept friendly aliases: `per-step` (a), `aggregate`
 
 ## Branch rendering — the commitment lattice (S1.6.3)
 
+> **Deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03).** This section
+> describes `ein_render::lattice_dag`, which drew the walk's lattice proof;
+> it went with the walk, as did `dump/snapshot.rs`, the three DOT views that
+> ran the walk (`lattice`, `lattice-full`, `slice`) and the test named below. It is kept as the record of what the walk's trace and `ein render
+> lattice` drew until S1e2.1a.5's switch. `ein render lattice` draws a region
+> run's nodes since, R green, owing amber, dead red
+> ([`ein_render::dump::region_lattice`](../../../../ein.rs/crates/ein-render/src/dump/region_lattice.rs),
+> [`lattice_dump.md` § Under a region mode](../../inference/lattice_dump.md#under-a-region-mode--nodesjson-and-nodesmd)).
+
 The P1.5 ordered search tree was removed with the tree solver
 (2026-05-29); the engine now produces a **set-indexed commitment
 lattice**. `ein_render::lattice_dag`
@@ -412,7 +421,14 @@ W1's own `branching/15`, so a cluster per sub-cube cannot be drawn.
 The capstone output — what makes Ein *not just a solver* (idea 08)
 — is not DOT but a **markdown narrative** that threads the diagrams
 together. [`ein_render::trace`](../../../../ein.rs/crates/ein-render/src/trace/)
-(`ein solve <file> --trace=out.md`):
+(`ein solve <file> --trace=out.md`). The walk's half of it — `linearize` and
+`render_markdown` below, and the closing lattice DAG — went with the walk at
+M1e2 S1e2.1c.5 (2026-11-03); since M1e2 T1e2.1a.5.2 `--trace` writes the
+**region trace**
+([`trace/region.rs`](../../../../ein.rs/crates/ein-render/src/trace/region.rs)):
+the read-out's rows, root's derivation, each listed state's from its first
+minimal commitment, and `N`, each minimal dead set with why, in the same
+steps, slices and `<details>` blocks. As the walk's trace was:
 
 - `linearize(verdict)` turns the *unordered* commitment lattice into a
   depth-ordered story: the primary solution's firings as numbered
@@ -594,8 +610,9 @@ does not embed the whole KB per step — it embeds a **provenance cone**:
   hypothesis fact(s) (red seeds), the premises each firing consumed,
   the firings as rule-nodes (labelled with the rendered `:why`), and
   the derived facts (bold). **Only cone facts appear**, never the whole
-  KB. Negative / eliminated-alternative facts are greyed. Fed a
-  `DeadCommitment`'s `contradiction=(unsat_core, learned_clause)` it
+  KB. Negative / eliminated-alternative facts are greyed. Fed a dead
+  commitment's `contradiction=(unsat_core, learned_clause)` (the walk's
+  `DeadCommitment` until M1e2 S1e2.1c.5) it
   becomes the refuted-branch slice terminating in a `⊥` node tagged
   with the lifted no-good.
 - `render_state(kb, *, since=)` — the whole-KB snapshot

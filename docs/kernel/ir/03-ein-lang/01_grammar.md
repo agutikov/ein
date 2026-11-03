@@ -562,7 +562,8 @@ read-out's `lattice` block warns of it). The claim is never checked against the
 walk. A route that stops at its budget, or a flagged program past the
 oracle's limit, leaves the claim `NOT CHECKED`. Until
 [S1e2.1a.5](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.5_the_read_out.md)'s
-switch, bare `ein solve` is the walk and does not check it. `ein_infer::claim::print`
+switch, bare `ein solve` was the walk and did not check it; the walk was
+deleted at S1e2.1c.5 (2026-11-03). `ein_infer::claim::print`
 writes any R in this form, and `ein-infer/tests/claim_round_trip.rs` reads
 every corpus region it prints back as its own claim.
 `tests/region/` has one program per form.

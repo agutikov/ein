@@ -10,6 +10,12 @@ each feature works).
 
 > **Audience: engine contributors / advanced authors.** Most puzzle
 > authors only need the takeaway below.
+>
+> **Every row here measures the walk**, the search `ein solve` ran until M1e2
+> S1e2.1a.5's switch (2026-10-18), which M1e2 S1e2.1c.5 deleted (2026-11-03).
+> `utils/feature_matrix.py` re-takes the matrix against a binary built at or
+> before `7ec8a480`, the last that ran it. Whether a lever changes the answer
+> today is [`configuration.md`](../configuration.md)'s *R?* column.
 
 ## Takeaway
 
@@ -177,7 +183,7 @@ extra commitments rather than a price per branch.
   S1e2.1a.6** (2026-11-01): on a program with no such rule,
   `features/06_symmetric_native.ein`, turning the mirror off changed the
   answer, so the mirror is always on and setting the flag is a load error
-  ([`configuration.md` § 2.4](../configuration.md#24-the-ten-retired-flags)).
+  ([`configuration.md` § 2.4](../configuration.md#24-the-fourteen-retired-flags)).
   The rows here are the walk's record: `utils/feature_matrix.py` re-takes
   them against a binary built at or before `7ec8a480`, the last that ran the
   walk.

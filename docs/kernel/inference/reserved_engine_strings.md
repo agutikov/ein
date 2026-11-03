@@ -36,12 +36,14 @@ carrier head must be registered here **and** excluded in
 Three `Provenance(kind="rule", …)` records name a rule that does not
 exist in any `(rule …)` form. They are written by the **search** layer
 when it writes a conclusion back to root, and they all share one shape —
-**empty `premises_raw`**:
+**empty `premises_raw`**. Since M1e2 S1e2.1c.5 (2026-11-03) only the third
+has a writer: the first two were the walk's and went with it, and the names
+stay reserved in `ein_core::terms::ENGINE`.
 
 | name | written by | means |
 |---|---|---|
-| `<monotonic-unconditional>` | `solve.rs` | a size-1 dead clause's `(not h)` writeback: every branch assuming `h` died |
-| `<forced-positive>` | `promote_forced_positives` | a sole-surviving alive singleton promoted to a root fact |
+| `<monotonic-unconditional>` | `solve.rs`, deleted with the walk at M1e2 S1e2.1c.5 | a size-1 dead clause's `(not h)` writeback: every branch assuming `h` died |
+| `<forced-positive>` | `promote_forced_positives`, deleted with the walk at M1e2 S1e2.1c.5 | a sole-surviving alive singleton promoted to a root fact |
 | `<lookahead-dies-immediately>` | [`hypgen::write_negated`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) | the lookahead kill-cache's `(not h)` |
 
 The empty premise tuple is the **contract**, not an omission: these facts
@@ -68,6 +70,15 @@ A new writeback name must be registered here and must keep the
 empty-`premises_raw` shape, or the walks will try to expand it.
 
 ## Engine entry + verdict
+
+> **This section is the walk's read-out, deleted with the walk at M1e2
+> S1e2.1c.5 (2026-11-03)** — `solve.rs`, `LatticeProof` and `verdict.rs`'s
+> verdict types. Every question about the answer is
+> [`ein_infer::explore`](../../../ein.rs/crates/ein-infer/src/explore.rs)'s,
+> read off the region R ([`solution_semantics.md`](solution_semantics.md)),
+> and `--single`'s four words are `explore::Verdict`. What the section says
+> of the unsat core — `explain::smallest_contradiction_frontier` and its
+> caveats — is still the core a route reports for a dead node.
 
 There is **one** engine entry, `solve` — the verdict is **read from the
 result**, not chosen by which function was called. From the count `k`
@@ -150,7 +161,9 @@ the verdict is read off `k` afterwards.
 `ein_render::trace::Mode` — `Engine` / `Reorder`, the trace layout;
 `ein_cli::factdump::Mode`; and `ein_infer::oblgen::Mode`, the hypothesis
 ladder's rung. Recorded M1e S1e.2.2, which found this section by resolving
-every identifier on the page.)*
+every identifier on the page. The first went with the walk's trace at M1e2
+S1e2.1c.5 (2026-11-03); `ein_infer::explore::Mode`, a struct, is which part
+of R a run asks about and what it asks.)*
 
 ## Protocol enums
 
@@ -162,8 +175,8 @@ post-M1.
 | set | values | where |
 |-----|--------|-------|
 | provenance kind | `source` · `rule` · `hypothesis` · `rejected` | `ein-core/prov.rs` |
-| lattice node verdict | `alive` · `dead` · `solution` | `ein-infer/solve.rs` |
-| dead kind | `dead-pre` · `dead-post` | `ein-infer/solve.rs` (`DeadCommitment.kind`) |
+| lattice node verdict | `alive` · `dead` · `solution` | `ein-infer/solve.rs`, deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03) |
+| dead kind | `dead-pre` · `dead-post` | `ein-infer/solve.rs` (`DeadCommitment.kind`), deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03) |
 | hypgen scoring | `most-constrained` · `popularity` (`branch-info` reserved) | `hypgen.score_hypothesis` |
 
 ## `__closed__` — engine effect
@@ -227,9 +240,10 @@ blocks rule-derivation).
 
 ## Result-level invariants (S1.7.24)
 
-Not strings, but recorded here as part of the engine contract: the
-lattice snapshot (`ein-render/dump/snapshot.rs`) is **result-level** — it keys
+Not strings, but recorded here as part of the engine contract: the walk's
+lattice snapshot (`ein-render/dump/snapshot.rs`, deleted with the walk at M1e2
+S1e2.1c.5, 2026-11-03) was **result-level** — it keyed
 solutions/deads on the post-saturation `state_key`, NOT commitment paths, and
-**excludes learned nogoods** (a clause and its symmetric mirror are
+**excluded learned nogoods** (a clause and its symmetric mirror are
 equivalent only under symmetry, so the final nogood set is an
 order/orientation-sensitive optimisation artifact, not part of the result).

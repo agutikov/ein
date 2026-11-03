@@ -46,7 +46,8 @@ The four sub-trees layer on each other:
 
 4. **[`inference/`](inference/)** — the **rule firing engine**: the
    pattern matcher, the saturation loop and its NAF boundary,
-   hypothesis generation and the commitment-lattice search,
+   hypothesis generation and the search for the region R (the
+   commitment-lattice walk until M1e2 S1e2.1c.5 deleted it, 2026-11-03),
    contradiction analysis, the obligation pass, and trace generation.
    It shipped across P1.3–P1.6. The substrate is the data model (2);
    the language to define rules is (3); the engine is described here.

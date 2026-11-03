@@ -660,7 +660,8 @@ stopped writes one `note:` to stderr and exits 0 (the user's ruling of
 
 **Most of the rest of § 5 is the walk's surface as M1c–M1e defined it** — the
 verdict words' qualifiers, `--max-set-size 0`, `--models` on the `Ambiguity`
-arm — and no command reaches the walk since the switch. What carried over,
+arm — and no command reached the walk after the switch, and M1e2 S1e2.1c.5
+deleted it (2026-11-03), so those paragraphs are its record. What carried over,
 and where it is held: `-m` and `-E` are retired and refused with what replaced
 them; `-n 0` is still refused, exit 2, with the message below; the qualifier
 rule is the region read-out's, where every count that is not exact says *a

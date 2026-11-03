@@ -44,8 +44,9 @@ gate runs and produces exactly the answer this trace derives.
   - **`d` → `(layer, set-size)` (P1.5b).** The engine no longer has an
     ordered tree; it has a commitment lattice. `d` maps to **commitment-set
     size** (= the lattice *layer*): `d = 0` is the empty commitment (root
-    saturation), `d = 1` a size-1 commitment, and a `1→0` no-good is a
-    `DeadCommitment.learned_clause`. The acceptance matches *named firing +
+    saturation), `d = 1` a size-1 commitment, and a `1→0` no-good was the
+    walk's `DeadCommitment.learned_clause` (deleted with the walk at M1e2
+    S1e2.1c.5, 2026-11-03; a route's minimal dead sets are `N`). The acceptance matches *named firing +
     position-in-layer*, "or a recognisably equivalent" order — see
     `s1.6.5_idea08_checklist.md`.
 - Each row names the **ein rule** firing and the **premises → conclusion**

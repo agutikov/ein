@@ -61,10 +61,11 @@ constrained-reasoning research.
   diagnostics, orderings and error strings the engine defines normatively;
   and `inference/implementation.md` + `ir/02-data-model/03_implementation.md`,
   the module maps. **Since M1e S1e.5.1 there is also a
-  [configuration reference](docs/kernel/configuration.md)** — the 7
-  `(config …)` flags a program can set (ten more retired, nine at M1e2
-  S1e2.1a.5 and one at S1e2.1a.6, each refused with the stage and why), the
-  73 CLI options, the eight `EIN_*` names the binary actually reads, the
+  [configuration reference](docs/kernel/configuration.md)** — the 3
+  `(config …)` flags a program can set (fourteen more retired, nine at M1e2
+  S1e2.1a.5, one at S1e2.1a.6 and four at S1e2.1c.5, each refused with the
+  stage and why), the 71 CLI options, the three `EIN_*` names the binary
+  actually reads, the
   precedence between the three, and on every flag row a *does it change the
   answer* and a *stability* column. Its defaults block is `ein solve
   --dump-config`'s own output (`EIN_BLESS=1` re-banks it). Two of the
@@ -101,8 +102,10 @@ constrained-reasoning research.
   with `-n N`, and `ein oracle FILE [--dump DIR]`.
   `ein-infer/tests/explore.rs` holds every mode to the oracle. **Since
   S1e2.1a.5's switch (2026-10-18) a bare `ein solve` describes R**: the walk
-  has no CLI path (its library stays, uncalled, until P1e2.1c measures what of
-  it the modes reuse), its nine options are refused with what replaced each,
+  has no CLI path (its library stayed, uncalled, until P1e2.1c measured what of
+  it the modes reuse, and **S1e2.1c.5 deleted it on 2026-11-03**, keeping the
+  hypothesis generator the summary's `root` block calls), its nine options are
+  refused with what replaced each,
   the four verdict words are `--single`'s alone, every answer exits 0 and only
   a refuted claim exits 1, and
   [`corpus/wrong_answers.toml`](corpus/wrong_answers.toml) records 24 rows
@@ -356,7 +359,8 @@ constrained-reasoning research.
   off). The six that ship are `ein-core`
   (interning, `Value`/`FactId`, the layered COW KB, provenance), `ein-ir`
   (lex → parse → macros → imports → load), `ein-infer` (compile → match →
-  saturate → the NAF boundary → the hypothesis loop; and since M1e S1e.3.3
+  saturate → the NAF boundary → the routes over R, `explore` (the walk's
+  hypothesis loop until M1e2 S1e2.1c.5 deleted it); and since M1e S1e.3.3
   `invariant.rs`, which evaluates the **M1 alive-set invariant** — *no rule
   asserts a constant the ontology lacks* — at load and narrates a `warn` line
   per breach. Two corpus programs break it harmlessly, and
@@ -366,8 +370,8 @@ constrained-reasoning research.
   `.einb` binary KB container — [P1a.8](docs/history/m1a_rust/README.md#p1a8--binary-kb-container),
   and the **only crate that is not `#![forbid(unsafe_code)]`**: its `cast.rs`
   is the one audited module design/12 §2 permits `unsafe` in, which is why it
-  is a crate at all), `ein-render` (DOT views, the markdown trace, the
-  state/lattice dumps, the JSON summary) and `ein-cli`. They stack linearly up
+  is a crate at all), `ein-render` (DOT views, the read-out, the region trace,
+  the answer and lattice dumps, the JSON summary) and `ein-cli`. They stack linearly up
   to `ein-infer` and fork there — `ein-einb` and `ein-render` are siblings
   above it, and `ein-cli` depends on both. `ein-cli` fronts **five**
   subcommands — `ein {oracle,render,saturate,solve,test}`, `oracle` since M1e2
@@ -380,12 +384,13 @@ constrained-reasoning research.
   extension; `ein solve x.einb` is byte-identical to `ein solve x.ein` apart
   from the path it echoes. Anything crossing a tool boundary is still `.ein`
   text or the event protocol's JSON.
-- **`utils/`** — **thirty-one scripts, all but one driving `ein.rs`**.
+- **`utils/`** — **twenty-nine scripts, all but one driving `ein.rs`**.
   Every script that runs the engine names the binary — **`$EIN_BIN`** or
-  `--bin` — defaulting to `ein.rs/target/release/ein`, except the three that
-  want a build of their own (`fork_delta_verify.py` → `target-fd`,
-  `spec_audit.py` → `target-sa`, `profile_ein_rs.py` → `--profile profiling`,
-  which it builds).
+  `--bin` — defaulting to `ein.rs/target/release/ein`, except the one that
+  wants a build of its own (`profile_ein_rs.py` → `--profile profiling`,
+  which it builds). `fork_delta_verify.py` and `spec_audit.py`, which wanted
+  the walk's `fork-delta` and `spec-audit` builds, went with the walk at M1e2
+  S1e2.1c.5.
   [`utils/README.md`](utils/README.md) is the catalogue — one line per script
   in three groups (*renderers*, *checks*, **the M1a measurement set**). One
   thing worth knowing without opening it: run every measurement through
@@ -569,7 +574,6 @@ EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test lever_invariance   # M1e2: ev
 ein render region DIR [--visited D] [--answer D] [--view …]  # M1e2: an oracle dump drawn, a solve run on it
 ein solve … --dump-lattice DIR                               # M1e2: every node the run visited (ein render lattice draws them)
 cargo run --release -p ein-infer --example route1_reach      # M1e2: route 1, R from the alive down-set, over the corpus
-cargo run --release -p ein-infer --example walk_vs_region    # M1e2: the walk's answer and nodes against R
 ein render program|kb FILE                                   # M1e2: the program as written; a KB (or a dumped model)
 python3 utils/review_bundle.py                               # M1e2: build/review/, one page per register row
 python3 utils/review_bundle.py --regions                     # M1e2: build/review/regions/, every corpus region surveyed
@@ -577,10 +581,13 @@ python3 utils/region_synth.py --example three_components     # M1e2: a program w
 python3 utils/read_out_examples.py                           # M1e2: the read-out's golden page, written from the binary
 ```
 
-**Since M1e2 S1e2.1a.5 (2026-10-18) the walk has no CLI path**, so several of
-the paragraphs below describe it as M1d and M1e left it — `EIN_OBLIGATION_CHOICE`,
-`EIN_TRAVERSAL`, the stop policy, `Ambiguity`'s qualifier and the walk's
-`:expect` wording are records of the library, which no command reaches. What
+**Since M1e2 S1e2.1a.5 (2026-10-18) the walk has no CLI path, and since
+S1e2.1c.5 (2026-11-03) no code**, so several of the paragraphs below describe
+it as M1d and M1e left it — `EIN_OBLIGATION_CHOICE`, `EIN_TRAVERSAL`, the stop
+policy, `Ambiguity`'s qualifier and the walk's `:expect` wording are records
+of a library that was deleted. `EIN_OBLIGATION_CHOICE` is still read, by the
+generator the summary's `root` block calls; `EIN_TRAVERSAL` went with the
+walk. What
 carried over: `--models list|key|grid`, now over the states a run lists;
 `EIN_LEFTOVER`'s block in `ein-summary/2`; and `ein test --json-report`, now
 `ein-test-report/3`, a query row carrying its classes. The read-out's
@@ -590,11 +597,11 @@ and its golden page, written by the binary, is
 [`read_out_examples.md`](plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out_examples.md).
 
 **The `EIN_*` names in that block are the ones an agent needs, not the
-set.** The shipped binary reads **eight** (three of them only in a non-default
-build), the test harness reads ten more, `utils/` and the shell two — and six
+set.** The shipped binary reads **three** since M1e2 S1e2.1c.5 (eight
+before), the test harness reads ten more, `utils/` and the shell two — and six
 greppable `EIN_*` names are not environment variables at all, `EIN_RS` and
 `EIN_RENDER_LEVI` among them. The whole census, classified, with the 17
-`(config …)` fields and the 73 CLI options beside it and a *does it change the
+`(config …)` fields and the 71 CLI options beside it and a *does it change the
 answer* column on every flag row:
 [`docs/kernel/configuration.md`](docs/kernel/configuration.md) (M1e S1e.5.1),
 pinned by `ein-cli/tests/config_reference.rs`.
@@ -608,9 +615,11 @@ is measured against. It is deliberately not a `(config …)` field: `SolverConfi
 is rendered into the KB-shape digest, so a knob whose settings are being
 compared would re-bless every shape golden in the corpus.
 
-**`EIN_TRAVERSAL=tree`** is M1d
+**`EIN_TRAVERSAL=tree`** was M1d
 [S1d.10.6](docs/history/m1d_satisfiability/README.md#s1d106--the-traversal)'s
-and a **second traversal beside the lattice**, off by default. It branches on
+and a **second traversal beside the lattice**, off by default; it was deleted
+with the walk at M1e2 S1e2.1c.5, and this paragraph and the next two are its
+record. It branches on
 **one owed instance's alternatives** — jointly exhaustive by the obligation's
 meaning, so committing to one excludes its siblings with nothing to refute —
 where the lattice enumerates subsets of a fixed `alive` and prunes only through

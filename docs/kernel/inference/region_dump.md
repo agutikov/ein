@@ -116,7 +116,9 @@ either `region` with `refused: null`, or `region: null` with `refused`
 
 ## `walk.json` — until the switch
 
-`ein solve --dump-region` wrote it, and no command has since M1e2 S1e2.1a.5.
+`ein solve --dump-region` wrote it, and no command has since M1e2 S1e2.1a.5;
+its writer in `ein-render/src/dump/region.rs` went with the walk at M1e2
+S1e2.1c.5 (2026-11-03).
 It is described here because a directory dumped before the switch carries one.
 `ein render region` read it until S1e2.1a.7, and does not since: a build of
 `7ec8a480`, the last whose `ein solve` ran the walk, draws such a directory.

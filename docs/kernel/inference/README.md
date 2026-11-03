@@ -12,13 +12,25 @@
 > the module-level walkthrough is
 > [`implementation.md`](implementation.md).
 >
-> **Five sections lower down describe machinery that is gone, and each says
+> **The commitment-lattice search was deleted at M1e2 S1e2.1c.5
+> (2026-11-03).** That search, *the walk* (`solve.rs`, `apriori.rs`,
+> `commitment.rs`, `nogoods.rs`), had no CLI path after M1e2 S1e2.1a.5's
+> switch (2026-10-18); every question about the answer is
+> [`ein_infer::explore`](../../../ein.rs/crates/ein-infer/src/explore.rs)'s,
+> answered by a route over the region R
+> ([`solution_semantics.md`](solution_semantics.md)). What stays of P1.5's
+> search is the generator — `hypgen.rs`, `lookahead.rs`, `oblgen.rs`,
+> `hrule.rs`, `closed.rs` — which builds the routes' universe and which two
+> `--json-summary` blocks still call.
+>
+> **Six sections lower down describe machinery that is gone, and each says
 > so in its own banner**: *Mid-sweep saturation + per-sibling apriori
 > re-check* and *Determinism* (the removed tree solver), *Unconditional facts
-> — retired* (P1.21 R2), *Measured performance* (frozen constants), and
-> *Two engines, two termination criteria* (the engine split removed
-> 2026-06-16). The count was **two** until M1e S1e.2.2, which is why the last
-> of them read as current.
+> — retired* (P1.21 R2), *Set-indexed search* and the subsections under it
+> (the walk, deleted at M1e2 S1e2.1c.5), *Measured performance* (frozen
+> constants), and *Two engines, two termination criteria* (the engine split
+> removed 2026-06-16). The count was **two** until M1e S1e.2.2, which is why
+> the last of them read as current, and five until M1e2 S1e2.1c.5.
 
 The inference engine is what takes a populated
 [`KnowledgeBase`](../ir/02-data-model/02_store.md) and produces
@@ -96,11 +108,11 @@ derivation trace. Where each piece lives (`ein-infer/src/` unless noted):
 | Rule registry                   | `Rule` entity in [`02-data-model`](../ir/02-data-model/); puzzle rules authored inline or imported from the [stdlib](../../../stdlib/) |
 | Property-fact activation        | KB indexes `_rule_apps_by_rule` / `_rule_apps_on_relation` built at load |
 | Saturation loop                 | **shipped** — priority-banded, delta-driven `saturator.rs` (P1.3 S1.3.3; semi-naive in P1.8a); **two-phase since S1.21.8** — a purely positive closure runs to quiescence, then one boundary round admits at most one parked NAF-guarded candidate and the closure re-runs |
-| Hypothesis branching            | **shipped** — `hypgen.rs` enumerates candidates; the commitment-lattice search is `solve.rs` (P1.5–P1.5b) |
+| Hypothesis branching            | **shipped** — `hypgen.rs` enumerates candidates; the commitment-lattice search was `solve.rs` (P1.5–P1.5b), deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03), and the search is `explore.rs`'s routes since |
 | Contradiction detection         | **shipped** — `contradiction.rs` detects (`(X, ¬X)` pairs + `(false)`); `explain.rs` → `explain.rs` explains: smallest contradiction frontier — a minimum-cardinality AND/OR search over every recorded derivation (provenance-based, NAF-safe, budgeted); **not** a subset-minimal MUS |
 | Multi-justification provenance  | **shipped** — provenance is per *derivation*: `Fact.provenance` is the primary justification, `kb.justifications(fact)` returns every recorded one (capped per fact, shortest kept), so a fact is an OR-node over AND-nodes. Gated by `SolverConfig.record_alternative_justifications` (default on) |
-| Verdict                         | **shipped** — one `solve()`; `verdict.rs` reports `Solution` / `Ambiguity` / `Contradiction` / **`Open`** (M1d S1d.2.6 — consistent, quiescent, and owing a witness the program asked for), read off the model count `k`; the `k = 0` unsat core is that smallest explanation — of the root contradiction directly, or of each dead commitment, unioned across the deads |
-| Trace generation                | **shipped** — `DerivationDAG.to_dot()` + the markdown trace builder under [`ein-render/trace/`](../../../ein.rs/crates/ein-render/src/trace/) (P1.6) |
+| Verdict                         | **shipped** at M1 and **deleted** with the walk at M1e2 S1e2.1c.5 (2026-11-03); `--single`'s four words are `explore::Verdict` since, read off R. As M1 shipped it — one `solve()`; `verdict.rs` reports `Solution` / `Ambiguity` / `Contradiction` / **`Open`** (M1d S1d.2.6 — consistent, quiescent, and owing a witness the program asked for), read off the model count `k`; the `k = 0` unsat core is that smallest explanation — of the root contradiction directly, or of each dead commitment, unioned across the deads |
+| Trace generation                | **shipped** — `DerivationDAG.to_dot()` + the markdown trace builder under [`ein-render/trace/`](../../../ein.rs/crates/ein-render/src/trace/) (P1.6). The walk's linearizer went with it at M1e2 S1e2.1c.5 (2026-11-03); `--trace` writes the region trace (`trace/region.rs`) since M1e2 T1e2.1a.5.2 |
 | `(not P)` / `(absent P)` premises | S1.5.8c.1: `(not P)` in `:match` matches a STORED `(not P)` fact (uniform with all other patterns); `(absent P)` is the explicit NAF guard. The old NAF default on `(not P)` was dropped. |
 | `(forall ?b (G) (B))` / `(unknown P)` | S1.5.8c.3a/b sugars (now in `std.macro`): `forall` ⇒ `(absent (and G (absent B)))`, `unknown` ⇒ `(and (absent P) (absent (not P)))`. Compile to the `AbsentGuard` machinery; a `forall`'s **nested** absent is not lifted — it stays part of the negative query and the boundary evaluates the whole guard as one unit. |
 | `(absent …)` evaluated at the closure/world boundary | **shipped** S1.21.8 — guards are lifted out of the closure plan and judged against the positive fixpoint by [the boundary phase](../../../ein.rs/crates/ein-infer/src/saturator.rs), never mid-saturation. The fire-time re-check (`match.absents_still_pass`) and the absent-flip full-match split (`saturator._absent_relations`) are **deleted**, not bypassed; `Saturator.naf_dropped` is structurally 0. See § "NAF semantics" below. |
@@ -160,8 +172,9 @@ contributes, locked by S1.21.8:
 
 The solver **recomputes** the alive-candidate set per-KB via
 `compute_alive`
-(`= open_hypotheses(kb)`) — the open hypotheses are a pure function of the
-closed KB. The *set* is materialised only where a set is what the caller
+(`= open_hypotheses(kb)`; the walk's, deleted with it at M1e2 S1e2.1c.5,
+2026-11-03, while `hypgen::open_hypotheses` stays) — the open hypotheses are a
+pure function of the closed KB. The *set* is materialised only where a set is what the caller
 needs (layer enumeration); the completeness test asks the same generator for
 its first element and stops (`solution.complete`, S1.9.E16 — 8 of 9 zebra2
 calls are answered by candidate #1, and the peak open set is ~38 fact-ids, so
@@ -567,11 +580,11 @@ direction's NAF explicit in its own match clause.
 ## Determinism — content-based candidate ordering (S1.5a.1a)
 
 > **Reconcile note.** The names in this section are the **removed tree
-> solver's** (`_candidates_for` / `_candidate_sort_key`). The live ordering is
-> `apriori::order_candidates`
+> solver's** (`_candidates_for` / `_candidate_sort_key`). The ordering that
+> replaced them, `apriori::order_candidates`
 > (+ `_set_score`), applied by
-> `solve.rs`;
-> [`hypgen::score_hypothesis`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) is the
+> `solve.rs`, was deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03);
+> [`hypgen::score_hypothesis`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) was its
 > score key. The *principle* below — sort candidates by a content key, never by
 > hash iteration order — is unchanged.
 
@@ -615,10 +628,11 @@ mechanically checked by
 which fails on any hash-map iteration at a site whose order could reach an
 output unless it carries a `// determinism-ok:` reason.
 
-Three tests guard against an order leak.
+Three tests guarded against an order leak, and two still do.
 `lattice_semantics.rs`
-shuffles each layer's candidate order and asserts the resulting
-`LatticeSnapshotV1` still compares equal to the unshuffled run's;
+shuffled each layer's candidate order and asserted the resulting
+`LatticeSnapshotV1` still compared equal to the unshuffled run's, until it
+went with the walk at M1e2 S1e2.1c.5 (2026-11-03);
 [`id_order_invariance.rs`](../../../ein.rs/crates/ein-render/tests/id_order_invariance.rs)
 runs the whole corpus a second time with every interned name and integer
 assigned in a shuffled order and the `FactId` space offset, and requires the
@@ -757,9 +771,9 @@ C2.
 > **Superseded — describes the removed tree solver** (tree engine removed in
 > `8d77b02`; its last dead residue deleted in S1.9.E6a). The `_consume` loop,
 > `try_branch`, `back_propagate`, and `is_unconditional_death` named below no
-> longer exist. The live engine is the
-> set-indexed **lattice** (see *Set-indexed search — monotonic engine* below),
-> which bakes the per-set saturate-from-root pattern in from the start. (The
+> longer exist. The engine that replaced it was the
+> set-indexed **lattice** (see *Set-indexed search — monotonic engine* below,
+> itself deleted at M1e2 S1e2.1c.5), which bakes the per-set saturate-from-root pattern in from the start. (The
 > transitive "unconditional" walk that briefly survived the tree solver in
 > `commitment.rs` was itself retired in P1.21 R2 — see the
 > historical note *Unconditional facts — retired* below.)
@@ -913,6 +927,9 @@ sole-surviving slot value must hold). Everything else is per-branch: each
 commitment is evaluated independently against the post-Phase-1 root, and
 no fork fact ever merges back. Pinned by
 [`naf_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/naf_semantics.rs).
+Both writers were the walk's and went with it at M1e2 S1e2.1c.5
+(2026-11-03); no route writes root
+([`solution_semantics.md` § 1.3](solution_semantics.md#13-root)).
 
 **Resurrection path, if ever needed.** On a ruleset with **no** `absent`
 guards — checkable as every compiled plan's
@@ -941,6 +958,19 @@ death → `(not h)` into the parent" — `back_prop.is_unconditional_death` /
 solver's removal, deleted in S1.9.E6a.)
 
 ## Set-indexed search — monotonic engine (P1.5b S1.5b.0–.10)
+
+> **Superseded — describes the walk, deleted at M1e2 S1e2.1c.5
+> (2026-11-03).** This section and every subsection under it describe the
+> commitment-lattice search M1 shipped and `ein solve` ran until M1e2
+> S1e2.1a.5's switch (2026-10-18). `solve.rs`, `apriori.rs`, `commitment.rs`,
+> `nogoods.rs`, the `MonotonicDumper` / `LatticeDumper` hooks and the
+> verdict types (`Solution`, `Verdict`, `Answer`) went with it, as did most of
+> the code named below; `hypgen`, `explain` and `canon::state_key` remain. The
+> search is
+> [`explore.rs`](../../../ein.rs/crates/ein-infer/src/explore.rs)'s routes
+> over the region R since, defined by
+> [`solution_semantics.md`](solution_semantics.md), whose § 6 says where the
+> walk differed from R. Kept as the record of what M1 built.
 
 The tree engine's depth-first ordering over hypothesis branches
 prices in d! orderings of the same commitment set — for d=4 on

@@ -71,9 +71,11 @@ form of every fact, regardless of arity. See
 
 ### Layer
 **Two unrelated meanings.**
-1. **Lattice layer** — the depth of the monotonic solver's
-   breadth-first walk of the commitment lattice: layer *k* is the set of
-   size-*k* commitment sets. See
+1. **Lattice layer** — the depth of a breadth-first pass over the
+   commitment lattice: layer *k* is the set of size-*k* commitment sets.
+   Route 1 ([`downset.rs`](../../ein.rs/crates/ein-infer/src/downset.rs))
+   takes the lattice by layers, as the monotonic solver's walk did until
+   M1e2 S1e2.1c.5 deleted it (2026-11-03). See
    [`inference/architecture_and_algorithms.md`](inference/architecture_and_algorithms.md).
 2. **Architectural layer** — the deductive (monotone, saturating) half
    of the engine vs the search (non-monotone, branching) half.
@@ -211,7 +213,8 @@ an engine bug.
 the lookahead filter and the forced-positive cascade. It differs from the
 universe on 29 of the 194 corpus programs whose walk was read on 2026-10-16,
 which the config principle forbids. Called L1 because the search's first
-layer enters its singletons.
+layer enters its singletons. The walk was deleted at M1e2 S1e2.1c.5
+(2026-11-03), and every route's space is the universe.
 
 ### Commitment (L{n})
 A subset of the universe — a node of the lattice, and what a
@@ -229,7 +232,9 @@ generators** at the bottom — the least that must be guessed.
 
 ### Entering
 Forking root, adding a commitment's facts, saturating, and looking for a
-contradiction. The walk's unit of work (`enterings_total`). Three outcomes:
+contradiction. The walk's unit of work (`enterings_total`), deleted with it at
+M1e2 S1e2.1c.5 (2026-11-03); a route's unit is a **node**, the same fork,
+write and saturate, never stopped at the first contradiction. Three outcomes:
 `alive`, `dead-pre` (contradictory before saturation ran) and `dead-post`;
 **dead** is the union of the last two.
 
@@ -282,16 +287,18 @@ restrictions — rules that assert `(false)` — set its maximal line. See
 [`m1d/domain_contract.md`](../history/m1d_satisfiability/domain_contract.md).
 
 ### Exhausted
-Today: that the walk did not stop early — no depth cap reached with a live
-frontier, no `--solutions` cut, not the tree traversal. It certifies that
+Until the walk was deleted (M1e2 S1e2.1c.5, 2026-11-03): that the walk did
+not stop early — no depth cap reached with a live frontier, no `--solutions`
+cut, not the tree traversal. It certifies that
 **the lattice was walked**, which is not the same claim as *every solution
 in it was recognised*; the two are separated in
 [`inference/solution_semantics.md` §6](inference/solution_semantics.md).
-Ruled on 2026-10-16 to mean *the reported region is all of R*.
+Ruled on 2026-10-16 to mean *the reported region is all of R*, which is what
+a route's `exhausted` says: the part of R the run asked is all there.
 
 ### Config principle
 No config option affects the problem's lattice; config may only affect
-search speed (the user, 2026-10-15). A budget may stop the walk, and the
+search speed (the user, 2026-10-15). A budget may stop a run, and the
 report then says it is partial. See
 [`configuration.md` § 2.5](configuration.md#25-the-config-principle-read-against-every-row).
 

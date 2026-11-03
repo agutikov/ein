@@ -35,9 +35,12 @@ load-bearing to advisory.
 A **world** `W` is one [`KnowledgeBase`](../ir/02-data-model/02_store.md)
 instance under saturation: the root, or a fork
 `KB_C = fork(root) ∪ {h : h ∈ C}` for a commitment set `C`
-(`commitment::try_commitment_set`
-— fork, write the hypothesis facts, hand the fork to a fresh
-[`Saturator`](../../../ein.rs/crates/ein-infer/src/saturator.rs)).
+([`region.rs`](../../../ein.rs/crates/ein-infer/src/region.rs)'s `fixpoint`,
+which every route shares; the walk's `commitment::try_commitment_set` until
+M1e2 S1e2.1c.5 deleted it, 2026-11-03
+— fork, write the hypothesis facts, hand the fork to a
+[`Saturator`](../../../ein.rs/crates/ein-infer/src/saturator.rs) resuming
+root's).
 Within one `saturate()` run, `W` is **append-only**; `W(t)` denotes its
 fact set after `t` firings. Worlds are related only by fork: nothing
 evaluated in `KB_C` is meaningful in root or in any sibling `KB_C′`
@@ -135,8 +138,10 @@ Each is already enforced locally; this page is the shared reason.
 - **C1 — no root-merge.** An alive fork's derived facts may depend on an
   absence that holds in `KB_C` but not in root's future; they are never
   merged mid-search
-  (`solve.rs`
-  "keep root STABLE"; history:
+  (the walk's `solve.rs`
+  "keep root STABLE", deleted with it at M1e2 S1e2.1c.5, 2026-11-03; no route
+  writes root,
+  [`solution_semantics.md` § 1.3](solution_semantics.md#13-root); history:
   [README §Unconditional facts — retired](README.md#unconditional-facts--retired-s157--p121-r2)).
 - **C2 — negative dependence is now recorded** (was: "positive provenance
   is not dependence"). A firing admitted through the boundary writes the
@@ -229,6 +234,8 @@ Each is already enforced locally; this page is the shared reason.
   Until it ships the engine loads such a program, and since S1e2.1a.5's switch
   (2026-10-18) none of the three mechanisms has a CLI path: the static check
   flags the program, and the cube answers it, learning from no refutation.
+  Two of them, the singleton writeback and the no-good clause, were the walk's
+  and were deleted with it at M1e2 S1e2.1c.5 (2026-11-03).
   Note this is **not** the stratification hazard and the two do not overlap: a
   guard over a *rule-derived* relation can flip during saturation, and S1.21.8
   made that sound by judging it at a fixpoint. This one is a *commitment*

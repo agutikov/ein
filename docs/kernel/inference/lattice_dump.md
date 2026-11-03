@@ -12,8 +12,9 @@
 > fire under this commitment? did it fire when it shouldn't?).
 >
 > **Since M1e2 S1e2.1a.5's switch `ein solve --dump-lattice DIR` writes a
-> region run's nodes** (the next section), and the walk's tree the rest of the
-> page describes is reachable from Rust only.
+> region run's nodes** (the next section). The walk's tree the rest of the
+> page describes was reachable from Rust only after that, until M1e2 S1e2.1c.5
+> (2026-11-03) deleted it with the walk.
 
 ## Under a region mode — `nodes.json` and `nodes.md`
 
@@ -43,8 +44,12 @@ each read against it
 S1e2.1a.7).
 
 The rest of this page is the walk's tree, which `ein solve --dump-lattice`
-wrote until S1e2.1a.5's switch took the walk off the CLI. It is reached from
-Rust since (§ Programmatically), and `golden_dump.rs` still pins its format.
+wrote until S1e2.1a.5's switch took the walk off the CLI. It was reached from
+Rust after that (§ Programmatically), and `golden_dump.rs` pinned its format,
+until M1e2 S1e2.1c.5 (2026-11-03) deleted the walk and with it the tree's
+writers (`dump/lattice.rs`, `dump/state.rs`) and `golden_dump.rs`. No code
+writes or pins the tree since; what follows is its record, kept because a
+directory written before then has this shape.
 
 This page covers the **exhaustive** lattice sweep —
 `solve` run
@@ -108,14 +113,14 @@ manageable size. The exhaustive solve itself takes seconds.
 
 ### Programmatically
 
-The dumper is a Rust type,
+Until M1e2 S1e2.1c.5 (2026-11-03) deleted both, the dumper was a Rust type,
 `ein_render::dump::LatticeDumper`,
 handed to `ein_infer::solve::solve`
 as its `dumper` argument — the shape
 `golden_dump.rs`'s `run_dump`
-uses. The CLI's `--dump-lattice` (above) builds the same dumper the same way.
+used. The CLI's `--dump-lattice` (above) built the same dumper the same way.
 
-`LatticeDumper::new(None)` makes every hook a no-op (the call sites stay
+`LatticeDumper::new(None)` made every hook a no-op (the call sites stay
 uniform, nothing hits disk) — useful for a wrapper that streams the
 lifecycle events somewhere else.
 
@@ -229,15 +234,15 @@ on which bindings, in the context of each tested hypothesis.
 > **This folder has never been written.** The design is kept
 > below because `proof_summary.json` carries a `kb_index` list, and an empty
 > one is not a lost dump.
-> `dump/lattice.rs`
-> emits `("kb_index", Json::Array(Vec::new()))` under the comment *"Empty by
+> `dump/lattice.rs` (deleted with the walk at M1e2 S1e2.1c.5)
+> emitted `("kb_index", Json::Array(Vec::new()))` under the comment *"Empty by
 > construction — see the module docs"*, and those docs give the reason: the
 > per-`SetNode` DAG is built only by a builder that nothing on the shipping
 > path calls — the same fact that makes `ein render lattice --view full`
 > always take its fallback
 > ([S1a.5.1](../../history/m1a_rust/README.md#s1a51--dot-renderers)).
-> `lattice_semantics.rs`
-> pins it: `kb_index` empty, `state_key_merges` 0.
+> `lattice_semantics.rs`, deleted with it,
+> pinned it: `kb_index` empty, `state_key_merges` 0.
 
 **The dedup itself is real** — state-**key** dedup, P1.21 R1: exact
 canonical-representation equality, so two commitments whose post-saturation
@@ -321,6 +326,10 @@ M1e2 S1e2.1.3:
 | **From Rust?** | **Yes.** `LatticeDumper::new(Some(dir))` passed as `solve`'s `dumper` argument, with `SolveOptions { stop_after: None, store_lattice: true, .. }` — both types are `pub` and the shape is `golden_dump.rs`'s `run_dump`. It is not in [`docs/api/rust.md`](../../api/rust.md), whose worked example stops at solve-and-render |
 | **Is the format pinned?** | **Yes**, which is why this page is *current* rather than superseded: `golden_dump.rs` banks the timeline and every file under `enterings/`, and `corpus_shapes.md5` digests the rest of the tree for every corpus entry |
 
+**All three answers are no since M1e2 S1e2.1c.5 (2026-11-03)**, which deleted
+`LatticeDumper`, `solve` and `golden_dump.rs` with the walk; the table is the
+answers of M1e S1e.2.2 and M1e2 S1e2.1.3, kept as the record.
+
 So the artifact was real, produced and tested, and the only thing missing was
 a **documented way to ask for it**, which is a decision about the shipping
 surface and not one a doc pass takes. M1e2 took it.
@@ -338,17 +347,18 @@ answered (a) — a door each — on 2026-10-14.
 ## Cross-links
 
 - Engine overview: [README § Set-indexed search](README.md#set-indexed-search--monotonic-engine-p15b-s15b010).
-- Implementation: `ein-render/dump/lattice.rs`
+- Implementation, deleted with the walk at M1e2 S1e2.1c.5 (2026-11-03):
+  `ein-render/dump/lattice.rs`
   (`LatticeDumper` — this page's subject) and
   `ein-render/dump/state.rs`
   (`MonotonicDumper`, `ProgressDumper`).
-- Goldens: `golden_dump.rs`
+- Goldens, until then: `golden_dump.rs`
   (the timeline's per-entering `firings` count and every file under
-  `enterings/`) and `corpus_shapes.md5` (the rest of the tree, every corpus
-  entry).
+  `enterings/`), deleted with the walk, and `corpus_shapes.md5` (the rest of
+  the tree, every corpus entry), which stopped digesting it at the switch.
 - CLI: [`ein solve`](../../../ein.rs/crates/ein-cli/src/solve.rs)
   `--dump-lattice DIR` writes a region run's `nodes.json` / `nodes.md`, and
   `ein render lattice` draws them. The on-disk `LatticeDumper` tree is
-  reachable from Rust only (see *How to run it*).
-- Tests: `lattice_semantics.rs`.
+  reachable from nowhere since M1e2 S1e2.1c.5 (see *How to run it*).
+- Tests: `lattice_semantics.rs`, deleted with the walk.
 - Algorithm spec: [`algorithm_layer_n.md`](algorithm_layer_n.md).

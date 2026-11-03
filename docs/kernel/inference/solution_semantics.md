@@ -27,9 +27,10 @@
 > S1e2.1a.5's switch (2026-10-18) `ein solve` computes it: route 1 over the
 > alive down-set, the cube for a program the static check flags, and the
 > read-out of § 5.1. § 6 is the search `ein solve` ran until then, where it
-> differed from R and how each difference was reproduced; the walk is reached
-> from the library only since, and its reproductions run against a binary
-> built at or before commit 7ec8a480. R by brute force is
+> differed from R and how each difference was reproduced; the walk was reached
+> from the library only after that, until M1e2 S1e2.1c.5 deleted it
+> (2026-11-03), and its reproductions run against a binary built at or before
+> commit 7ec8a480. R by brute force is
 > [`ein oracle --dump`](region_dump.md), for n ≤ 16.
 
 ---
@@ -73,8 +74,9 @@ candidate list that leaves it out is an engine bug
 
 **Root** is `sat(program)`: the program's facts, saturated to quiescence by
 its rules, with nothing hypothesised. It is a node like any other, the node
-∅ of § 1.5. **Root is never written by the search.** The shipped walk still
-writes it (§ 6.3) until S1e2.1a.5 retires the walk. The rule follows from the
+∅ of § 1.5. **Root is never written by the search.** The walk wrote it
+(§ 6.3) until S1e2.1a.5 took it off the CLI, and S1e2.1c.5 deleted it
+(2026-11-03). The rule follows from the
 user's ruling of 2026-10-16 that every answer `ein solve` gives is the
 oracle's, since the oracle never writes
 ([`solve_interface.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md)).
@@ -491,7 +493,8 @@ classification is known.
 Everything above is the definition. Until M1e2 S1e2.1a.5 `ein solve` computed
 a **walk** over the lattice, and the walk tested a different predicate. Each
 difference below was observable then, and is reproduced since with a binary
-built at or before commit 7ec8a480, or from the library
+built at or before commit 7ec8a480, or, until M1e2 S1e2.1c.5 deleted the walk
+and the example with it (2026-11-03), from the library
 (`cargo run --release -p ein-infer --example walk_vs_region`). Measured over the 185 programs whose R is known
 ([`walk_and_region.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/walk_and_region.md),
 2026-10-16):
@@ -570,7 +573,9 @@ these facts. Write `K` for what the search wrote: **the engine recorded
 > re-saturation has nothing to read (W9). Both are
 > [M1e2](../../../plans/m1e2_correctness/README.md)'s.
 
-`record_node` has four callers:
+`record_node` had four callers, all in `solve.rs` and all deleted with the
+walk at M1e2 S1e2.1c.5 (2026-11-03); the line numbers are the file's before
+then:
 
 | caller | what it establishes | the last write before it |
 |---|---|---|
@@ -659,7 +664,9 @@ What the walk should do on such a program is
 ### 6.6 What the oracle does not check
 
 [`ein_infer::region`](../../../ein.rs/crates/ein-infer/src/region.rs) computes
-R by saturation alone and checks the **walk**. It shares the saturator with
+R by saturation alone and checked the **walk**, until M1e2 S1e2.1c.5 deleted
+it (2026-11-03); it checks every route since (`ein-infer/tests/explore.rs`).
+It shares the saturator with
 the engine, so it cannot see a derivation the saturator loses
 ([W7](../../../corpus/wrong_answers.toml)). It takes H from the generator, so
 it cannot see a candidate the generator never proposes (W4, W6).
@@ -688,6 +695,13 @@ it cannot see a candidate the generator never proposes (W4, W6).
 | a recorded node, the model set | `Run::record_node`, `Run::finalise`. Its doc comment carries § 2.6's conjuncts and which of them each of its **four** callers establishes |
 | today's verdict words, `k` | [`verdict.rs`](../../../ein.rs/crates/ein-infer/src/verdict.rs) |
 | today's `exhausted` | `Run::finalise`, from `lstate.truncated` |
+
+The rows that name `Run`, `compute_alive`, `apriori`, `commitment.rs` and
+`verdict.rs`'s verdict words name the walk's sites, deleted with it at M1e2
+S1e2.1c.5 (2026-11-03); they stay because § 6 cites them. A route's
+`exhausted` and `--single`'s four words are
+[`explore.rs`](../../../ein.rs/crates/ein-infer/src/explore.rs)'s `Answer` and
+`Verdict` since, and `hypgen::complete` has no caller on a route.
 
 ---
 
@@ -723,7 +737,8 @@ leave those out.
   270 454 alive.
 - **The walk against R** (S1e2.1a.9,
   [`walk_and_region.md`](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/walk_and_region.md),
-  `--example walk_vs_region`, 2026-10-16): `-e` gives R's maximal line on 143
+  `--example walk_vs_region`, 2026-10-16, an example deleted with the walk at
+  M1e2 S1e2.1c.5): `-e` gives R's maximal line on 143
   of the 172 monotone programs whose R is known, and `-e -m n` on 156. Zebra's
   walk enters 111 commitments where route 1 visits 270 912, because the walk
   stops at the first complete commitment of a state, and zebra has 27 alive
