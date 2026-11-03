@@ -400,18 +400,50 @@ that owe. ∅ ∉ R. Four of R's 63 minimal generators are single facts.
 
 | question | mode | the walk today | the walk, writes off | **now**, derived | **now**, measured | **at P1e2.1c** |
 |---|---|---:|---:|---:|---:|---:|
-| any solution | `-n 1` | 13 | 24 | ≤ 57: root, then layer 1 holds four members of R | 32 | 2, the tree |
-| a complete solution | `--maximal -n 1` | 13 | 24 | ≤ 95: + 38 extensions of s, all dead | 70 | ≤ 95 |
-| unique? | `--single` | 111 | 8 891 | ≤ 9 031: 8 472 owing + 63 minimal + 458 nogoods + 38 | 8 927, `Solution` | ≈ 47: the tree's 9, + 38 |
-| unique among complete? | `--maximal --single` | 111 | 8 891 | ≤ 8 863: the climb + the 8 310 alive nodes not under s + 458 | 8 818, `Solution` | ≤ 1 512, the state route; ≈ 47 here since k_s = 1 |
-| all complete | `--maximal` | 111 | 8 891 | ≤ 8 863 | 8 818, one state | as above |
-| the least guessed | `--minimal` | — | — | ≤ 8 993 | 8 889, one state | output-sized: 63 generators |
-| everything | (none) | — | — | 270 912. That is 2²⁴·⁹ facts, so it stops at the default budget with a partial answer that already prints s | 760, stopped after layer 2 with s printed | ≤ 1 512 + the transversals |
+| any solution | `-n 1` | 13 | 24 | ≤ 57: root, then layer 1 holds four members of R | 32 | 2, the tree; **measured 6** |
+| a complete solution | `--maximal -n 1` | 13 | 24 | ≤ 95: + 38 extensions of s, all dead | 70 | ≤ 95; **measured 43** |
+| unique? | `--single` | 111 | 8 891 | ≤ 9 031: 8 472 owing + 63 minimal + 458 nogoods + 38 | 8 927, `Solution` | ≈ 47: the tree's 9, + 38; **measured 49, `Solution`** |
+| unique among complete? | `--maximal --single` | 111 | 8 891 | ≤ 8 863: the climb + the 8 310 alive nodes not under s + 458 | 8 818, `Solution` | ≤ 1 512, the state route; ≈ 47 here since k_s = 1; **measured 49, `Solution`** |
+| all complete | `--maximal` | 111 | 8 891 | ≤ 8 863 | 8 818, one state | as above; **measured 49, one state** |
+| the least guessed | `--minimal` | — | — | ≤ 8 993 | 8 889, one state | output-sized: 63 generators; **measured 451, one state**, not output-sized: it extends every owing state |
+| everything | (none) | — | — | 270 912. That is 2²⁴·⁹ facts, so it stops at the default budget with a partial answer that already prints s | 760, stopped after layer 2 with s printed | ≤ 1 512 + the transversals; **measured 445**, exhausted |
 
 *Measured* is T1e2.1a.9.4's build, 2026-10-16, release, `-j 8`:
 `ein solve examples/zebra.ein MODE -s`, at the default budget for the first
 two rows and the last, and at `--region-budget 1048576` for the rest. Every
 measured count is under its derived bound.
+
+**The *at P1e2.1c* column, measured** (M1e2 S1e2.1c.4's T1e2.1c.4.3,
+2026-11-03, `9c00b013`, release, `utils/bench_env.sh --cores PT
+ein.rs/target/release/ein solve examples/zebra.ein MODE -s -t -j J` on an
+i9-14900HX pinned to its 8 physical P-cores, governor `powersave`, turbo on).
+Every row certifies at the default budget of 2²⁰ facts, and the costliest
+mode, `--minimal`, spends 109 187 facts:
+
+| mode | route | saturations · facts | route wall, `-j 1` / `-j 16` |
+|---|---|---:|---:|
+| `-n 1` | the obligation tree | 6 · 721 | 17 / 17 ms |
+| `--maximal -n 1` | the tree's first leaf, then the climb | 43 · 15 262 | 153 / 171 ms |
+| `--single` | the tree, then the leaf's 38 extensions, all dead | 49 · 17 620 | 166 / 84 ms |
+| `--maximal --single`, `--maximal` | the climb, then dualise and advance: every transversal is one of the 38 dead extensions | 49 · 17 620 | 174 / 193 ms; 177 / 193 ms |
+| `--minimal` | the tree's leaf shrunk, then every owing state extended once, and the duality | 451 · 109 187 | 1 008 / 229 ms |
+| `--minimal -n 1` | the tree's leaf, shrunk | 7 · 755 | 11 / 24 ms |
+| describe | the state route | 445 · 106 829 | 985 / 237 ms |
+
+- **Every measured count is under its derived bound**: 43 ≤ 95, 49 ≤ 1 512,
+  445 ≤ 1 512 + the transversals. The cells with no bound were estimates.
+  `-n 1`'s *2, the tree* and `--single`'s *≈ 47* were read off the walk's
+  tree on `zebra2-obligations`, whose nodes write forced positives and kill
+  caches into root. The obligation tree's nodes are the oracle's and do not,
+  so they meet the first leaf at 6 and `Solution` at 49.
+- **`--minimal`'s *output-sized* is not met** in saturations. The line by
+  duality needs every maximal owing state, so the route extends every owing
+  state, which is 26 of zebra's 27 alive states. That costs what describe
+  costs, 451 against 445. Its transversals are output-sized: 63 minimal
+  commitments, read in under a millisecond.
+- **`zebra2.ein`**: `-n 1` 5, `--single` 45 (8 616 on route 1), `--maximal`
+  45, `--minimal` 377, `-n 3` 8 and exhausted (18 086 and partial on route 1),
+  `-j 1`.
 
 - **The walk's 111 is not reachable soundly.** It rests on the walk's
   stronger node: with every search write off, the same walk needs 8 891
@@ -426,7 +458,9 @@ measured count is under its derived bound.
   11 ms), with writes on or off. On `zebra2-minus-15-obligations.ein`, `-n 2`
   is 5 enterings and the whole tree 86, giving 32 states. The 38 is s's
   maximality check, n − |s|. Reaching `zebra.ein` itself needs L5's
-  precondition on the hrule rung, which is P1e2.1c's to prove.
+  precondition on the hrule rung, which is P1e2.1c's to prove. *Proved at
+  S1e2.1c.4* (§ 3.1): `zebra.ein`'s 18 `slot-owed-room` debts are licensed,
+  and the obligation tree reaches its one state in 6 saturations.
 - **At the default budget, every *now* row from `--single` down stops
   partial on zebra.** They derive 875 260–916 398 facts, between 2¹⁹ and
   2²⁰, so `--region-budget 1048576` certifies each in about one second at
@@ -447,14 +481,20 @@ measured count is under its derived bound.
 **`examples/saturation/square-bwd/floors.ein`**: n = 20. Every commitment is
 alive and in R: k_c = 2²⁰, k_s = 27 559, the maximal line is {⊤}, ∅ ∈ R.
 
-| question | mode | the walk today | **now** |
-|---|---|---|---:|
-| any solution | `-n 1` | *no model found*, 21 699 enterings at `-m 5` | 1: root |
-| a complete solution | `--maximal -n 1` | the same; 1 047 552 enterings uncapped | ≤ 21: the climb |
-| unique? | `--single` | — | ≤ 2: the first alive singleton outside root's closure, `Ambiguity` |
-| unique among complete? / all complete | `--maximal --single` / `--maximal` | as above | ≤ 21: ⊤ holds every candidate, so no node lies outside it |
-| the least guessed | `--minimal` | — | 1: ∅ ∈ R |
-| everything | (none) | — | 2²⁰ visits, stopping at the budget in 0.3 s. Duality gives one sub-cube [∅ … ⊤] and k_c. k_s needs its 27 559 states |
+| question | mode | the walk today | **now** | **at P1e2.1c, measured** |
+|---|---|---|---:|---:|
+| any solution | `-n 1` | *no model found*, 21 699 enterings at `-m 5` | 1: root | 1 |
+| a complete solution | `--maximal -n 1` | the same; 1 047 552 enterings uncapped | ≤ 21: the climb | 11, and the climb ends at ⊤, so it certifies the whole line (L1) |
+| unique? | `--single` | — | ≤ 2: the first alive singleton outside root's closure, `Ambiguity` | 2, `Ambiguity` |
+| unique among complete? / all complete | `--maximal --single` / `--maximal` | as above | ≤ 21: ⊤ holds every candidate, so no node lies outside it | 11, `Solution` / one state |
+| the least guessed | `--minimal` | — | 1: ∅ ∈ R | 1 |
+| everything | (none) | — | 2²⁰ visits, stopping at the budget in 0.3 s. Duality gives one sub-cube [∅ … ⊤] and k_c. k_s needs its 27 559 states | 85 574 · 994 221 facts at the default budget, R decided, k_s ≥ 23 390 |
+
+*At P1e2.1c, measured* is `ein solve examples/saturation/square-bwd/floors.ein
+MODE -s -t -j 1`, the same build and machine as zebra's column above
+(2026-11-03, `9c00b013`): every mode but describe in at most 1.1 ms of route.
+The climb takes 11 saturations, not 21, because each step moves to the
+closure, and a closure holds more than the candidate added.
 
 This is the minimum-work principle at its plainest. The questions a person
 asks first cost 1–21 saturations. Only *describe everything* pays for 27 559
@@ -631,7 +671,9 @@ that stage is P1e2.2's re-scoping.
 - **The interim cost on zebra is accepted.** Between S1e2.1a.5 and P1e2.1c,
   zebra's `--single`, `--maximal` and `--minimal` need `--region-budget 2^21`
   to certify (§ 3.4). They answer correctly or say *partial*, where the walk
-  answered fast and, on `zebra2-hints`, wrongly.
+  answered fast and, on `zebra2-hints`, wrongly. *Ended 2026-11-03*: they
+  certified at the default budget once it was 2²⁰ (S1e2.1c.2), and since
+  S1e2.1c.4's routes they certify in 49, 49 and 451 saturations (§ 3.4).
 - **No `--count`.** Until the state route exists, counting costs what
   describing costs, so a flag for it would only filter the output. S1e2.1c.4
   adds it if the transversals turn out to dominate describe.

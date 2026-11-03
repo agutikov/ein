@@ -400,6 +400,24 @@ family's bare describe cheap: `zebra2` halved, and its dearest cell is now
 is S1e2.1c.4's to route. The six cubes' `render lattice` counts their states
 as far as 2²⁰ goes. **No cell was dropped** for its cost.
 
+## 10. The fourth re-take — 2026-11-03, M1e2 S1e2.1c.4's routes for the modes
+
+**No entry joined or left the slow set; two got cheaper.** M1e2 S1e2.1c.4
+routed every mode but describe over states: the obligation tree, the climb and
+dualise-and-advance, the shrink and the duality. The corpus's mode cells are
+`solve -n 3` and `solve --minimal`, on the zebra family.
+`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py --json cost.json`,
+2026-11-03, commit `9c00b013`, release, P-cores:
+
+| entry | cost | slowest cell | flag |
+|---|---:|---|---|
+| `zebra2`, `zebra2-obligations` | 6.09 / 5.99 s | `solve --trace`, 1.33 / 1.32 s | `cost_ms` 18 588 / 18 495 → 6 086 / 5 995. `solve -n 3` 9.42 s → 114 ms; `solve --minimal` 3 s → 0.57 s |
+
+Every other entry is within its recorded cost. The fourteen are the same
+fourteen, and `zebra2`'s and `zebra2-obligations`' flags stay: eleven cells
+of about 0.57 s apiece, bare describes and their artefacts, are 6 s together.
+**No cell was dropped** for its cost.
+
 ## Reproducing this file
 
 ```sh

@@ -332,8 +332,13 @@ constrained-reasoning research.
   joined, their `render lattice` counting states to the budget (1.6 s each).
   `features/02` and `zebra2-hints` left, which the state route describes in
   milliseconds. `zebra2` and `zebra2-obligations` dropped to 18.6 s apiece,
-  9.4 s of it `solve -n 3`, which is still route 1 with a cut, and the
-  `zebra2-minus-15` pair rose to 7.9 s. It was ten at M1e2 S1e2.1a.5's
+  9.4 s of it `solve -n 3`, which was still route 1 with a cut, and the
+  `zebra2-minus-15` pair rose to 7.9 s. M1e2 S1e2.1c.4 routed the modes over
+  states, and the re-take of the same day kept the same fourteen: `zebra2`
+  and `zebra2-obligations` fell to 6.1 s and 6.0 s, their `solve -n 3` to
+  114 ms ([corpus_cost.md
+  §10](docs/history/m1a_rust/measurements/corpus_cost.md#10-the-fourth-re-take--2026-11-03-m1e2-s1e21c4s-routes-for-the-modes)).
+  It was ten at M1e2 S1e2.1a.5's
   switch (2026-10-18), when `features/04_open` stopped being slow because no
   cell runs the walk, three before that, and
   seventeen before M1a T1a.7.2.0 made `branching/07_lookahead_off` 2.8×
