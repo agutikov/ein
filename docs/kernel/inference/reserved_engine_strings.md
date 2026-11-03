@@ -40,8 +40,8 @@ when it writes a conclusion back to root, and they all share one shape —
 
 | name | written by | means |
 |---|---|---|
-| `<monotonic-unconditional>` | [`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs) | a size-1 dead clause's `(not h)` writeback: every branch assuming `h` died |
-| `<forced-positive>` | [`promote_forced_positives`](../../../ein.rs/crates/ein-infer/src/solve.rs) | a sole-surviving alive singleton promoted to a root fact |
+| `<monotonic-unconditional>` | `solve.rs` | a size-1 dead clause's `(not h)` writeback: every branch assuming `h` died |
+| `<forced-positive>` | `promote_forced_positives` | a sole-surviving alive singleton promoted to a root fact |
 | `<lookahead-dies-immediately>` | [`hypgen::write_negated`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) | the lookahead kill-cache's `(not h)` |
 
 The empty premise tuple is the **contract**, not an omission: these facts
@@ -72,7 +72,7 @@ empty-`premises_raw` shape, or the walks will try to expand it.
 There is **one** engine entry, `solve` — the verdict is **read from the
 result**, not chosen by which function was called. From the count `k`
 of distinct (`state_key`-deduped) solution nodes,
-[`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)
+`solve.rs`
 names the
 verdict; `solve(..., store_lattice=True)` attaches a sound `LatticeProof`
 carrying both the gaps view (`proof.solutions` — every model) and the

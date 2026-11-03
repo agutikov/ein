@@ -1,9 +1,11 @@
 //! T1a.7.2.1 — **the seam a worker crosses**, without a thread yet.
 //!
 //! [S1a.7.2](../../../../docs/history/m1a_rust/README.md#s1a72--level-1-parallel-enterings)
-//! fans a layer out by handing every worker the same root and letting each run
-//! [`try_commitment_set`] against it. Four things have to be true before that
-//! is a design, and all four are properties of *types* rather than of threads,
+//! fanned a layer out by handing every worker the same root and letting each
+//! run the walk's `try_commitment_set` against it (deleted with the walk at
+//! M1e2 S1e2.1c.5, and with it the test that an entering on a worker view is
+//! the committer's; a route's fan-out is `region::fan_out`, held by
+//! `jobs_invariance`). Four things have to be true before that is a design, and all four are properties of *types* rather than of threads,
 //! which is why they are checked here and not behind a job count:
 //!
 //! 1. **Root is `&`.** [`Kb::branch`] takes a shared reference, so the claim
@@ -23,9 +25,6 @@
 
 use ein_core::intern::Overflow;
 use ein_core::{Kb, Terms, Value};
-use ein_infer::commitment::try_commitment_set;
-use ein_infer::compile::SharedMemo;
-use ein_infer::events::{self, Events};
 use ein_ir::{Ast, load_file};
 use std::path::PathBuf;
 
@@ -41,149 +40,6 @@ fn load(rel: &str) -> (Ast, Terms, Kb) {
     let mut terms = Terms::new();
     let kb = load_file(&mut ast, &mut terms, &repo_root().join(rel)).expect("loads");
     (ast, terms, kb)
-}
-
-/// A hypothesis out of the file's **own** vocabulary — `(color-loc Red
-/// House-1)` — looked up rather than invented, so an entering over it is an
-/// entering the search itself could have made.
-fn hypothesis(terms: &mut Terms, rel: &str, args: &[&str]) -> ein_core::FactId {
-    let rel = terms
-        .syms
-        .get(rel)
-        .unwrap_or_else(|| panic!("{rel} is not a name this file uses"));
-    let args: Vec<Value> = args
-        .iter()
-        .map(|&a| {
-            Value::sym(
-                terms
-                    .syms
-                    .get(a)
-                    .unwrap_or_else(|| panic!("{a} is not a name this file uses")),
-            )
-        })
-        .collect();
-    terms.intern_fact(rel, &args).expect("room")
-}
-
-/// What an entering produced, in a form two runs can be compared by.
-#[derive(PartialEq, Eq, Debug)]
-struct Outcome {
-    kind: &'static str,
-    firings: usize,
-    facts: usize,
-    core: Vec<String>,
-}
-
-fn outcome(terms: &Terms, r: &ein_infer::commitment::CommitmentSetResult) -> Outcome {
-    let mut core: Vec<String> = r
-        .unsat_core
-        .iter()
-        .map(|&f| events::sexpr(terms, f))
-        .collect();
-    core.sort();
-    Outcome {
-        kind: r.kind.as_str(),
-        firings: r.firings.len(),
-        facts: r.kb.n_facts(),
-        core,
-    }
-}
-
-/// **The seam, end to end.** The same entering, once on the committing thread
-/// and once on a worker's view, is the same entering.
-///
-/// The worker arm is exactly the shape the fan-out has: share the tables, take
-/// a view, open a region, enter, hand the region back with the result, and
-/// only then read what the result derived.
-#[test]
-fn an_entering_on_a_worker_view_is_the_entering_the_committer_would_have_run() {
-    for (rel, head, args) in [
-        ("examples/zebra2.ein", "color-loc", ["Red", "House-1"]),
-        ("examples/zebra.ein", "co-located", ["Red", "House-1"]),
-        (
-            "examples/branching/07_lookahead_off.ein",
-            "co-located",
-            ["Blue", "H5"],
-        ),
-    ] {
-        let (ast, mut terms, mut kb) = load(rel);
-        let h = hypothesis(&mut terms, head, &args);
-        let memo = SharedMemo::default();
-        let mut off = Events::off();
-
-        // The committing thread's arm: today's path, unchanged.
-        terms.provs.open_fork();
-        let direct = try_commitment_set(
-            kb.sealed(),
-            &mut terms,
-            &ast,
-            &mut off,
-            &memo,
-            &[h],
-            None,
-            None,
-        )
-        .expect("enters");
-        let expected = outcome(&terms, &direct);
-        drop(direct);
-        terms.provs.discard_fork();
-
-        // The worker's arm.
-        terms.share();
-        assert!(terms.is_shared(), "{rel}: share() did not lend the tables");
-        let region = {
-            let mut view = terms.worker();
-            view.provs.open_fork();
-            let result = try_commitment_set(
-                kb.sealed(),
-                &mut view,
-                &ast,
-                &mut off,
-                &memo,
-                &[h],
-                None,
-                None,
-            )
-            .expect("a worker enters");
-            let got = outcome(&view, &result);
-            assert_eq!(
-                expected, got,
-                "{rel}: the worker's entering is not the committer's"
-            );
-            // Every derivation the fork believes is one of the worker's own
-            // records, and they are readable through the view that made them.
-            let cited: Vec<_> = result
-                .kb
-                .facts()
-                .flat_map(|f| result.kb.justifications(f))
-                .collect();
-            assert!(
-                cited.iter().any(|p| p.is_fork()),
-                "{rel}: the fork cited no record of its own — the region is \
-                 not carrying what the commit will have to narrate"
-            );
-            view.provs.take_fork()
-        };
-        assert!(!region.is_empty(), "{rel}: the worker's region is empty");
-
-        // …and the commit can read them, by installing what the result
-        // carried. Nothing else may read a fork id while it is installed,
-        // which is why the region travels with the result rather than in a
-        // side table.
-        terms.reclaim();
-        assert!(
-            !terms.is_shared(),
-            "{rel}: reclaim() did not take them back"
-        );
-        let n = region.len();
-        let saved = terms.provs.swap_fork(region);
-        assert_eq!(
-            terms.provs.fork_is_empty(),
-            n == 0,
-            "{rel}: the installed region is the worker's"
-        );
-        let _ = terms.provs.swap_fork(saved);
-    }
 }
 
 /// **What a worker cannot do**, and what happens instead of a race.

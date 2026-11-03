@@ -490,7 +490,7 @@ initial KB. Nothing in the engine computes that object.
 What is printed and stored instead is the whole fact list of the solution
 state: `verdict.solutions[i].facts` in `--json-summary`, the `model n/k`
 blocks in `ein solve`, the `BTreeSet<Vec<String>>` that
-[`tree_traversal.rs`](../../../ein.rs/crates/ein-infer/tests/tree_traversal.rs)
+`tree_traversal.rs`
 compares fact for fact, and the variables
 [`model_set_census.py`](../../../utils/model_set_census.py) derives. All four
 include the negatives, the ontology and the rule markers —
@@ -584,7 +584,7 @@ answers what `-L` answers, which is what the hand derivations support.
 | [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) / [CO-M1](README.md#the-findings) | **fix (ii)** — re-saturate and re-check before recording, or the equivalent *dirty since its last saturation* guard ([D1](search_soundness_probes/d1_q4_which_route_reaches_the_site.md) option B). Fixes (i) and (iii) are off the table: neither reaches the inter-layer site, and (iii) would hide an entailed contradiction |
 | the read-out | a **projection** has to exist. `model` = positive part − positive initial KB, and `ein solve` / `--json-summary` print it under that name. P1e.5's S1e.5.3 |
 | the vocabulary | two objects, two names, in the four surfaces Q-M1e.7 lists — `SE-M1`'s defect at a second site. [S1e.3.2](README.md#s1e32--semantics-medium) |
-| every fact-set comparison | [`tree_traversal.rs`](../../../ein.rs/crates/ein-infer/tests/tree_traversal.rs), the corpus goldens, `model_set_census.py`'s variables — each has to say **which object** it compares. Comparing states is right for a search-equivalence test and wrong for a model-set one, and today they all compare states without saying so |
+| every fact-set comparison | `tree_traversal.rs`, the corpus goldens, `model_set_census.py`'s variables — each has to say **which object** it compares. Comparing states is right for a search-equivalence test and wrong for a model-set one, and today they all compare states without saying so |
 | the corpus | the fix can only move an entry whose program **reads** a fact the search wrote. Expected zero; it is the fix stage's to measure, not to assume |
 
 ### The three readings, as they were put
@@ -616,7 +616,7 @@ one of the three that leaves § 2 true of the thing the engine records.
 Raised by [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model)'s
 operational form, and it has a witness in the corpus today.
 
-`exhausted = !truncated` ([`solve.rs:2388`](../../../ein.rs/crates/ein-infer/src/solve.rs))
+`exhausted = !truncated` (`solve.rs:2388`)
 is set when the search did not stop early — no depth cap hit with a live
 frontier, no `stop_after` cut, not the tree. It is read by the verdict as a
 **certification**: `Ambiguity` prints a bare `k` rather than *"(a lower
@@ -808,7 +808,7 @@ the code that computes the structure.
 ### What is decided, and is *not* this question
 
 **The rung mode must be re-read at every node.** It is probed once at root
-([`solve.rs:889-914`](../../../ein.rs/crates/ein-infer/src/solve.rs)) on the
+(`solve.rs:889-914`) on the
 premise that *"the mode is a property of the program rather than of the node,
 so asking once is asking enough"*, and that premise is false: an activator is
 an ordinary fact, and a rule head can derive one inside a fork

@@ -136,16 +136,12 @@ ein-einb/tests/invalidation.rs
 ein-einb/tests/roundtrip.rs
 ein-infer/tests/acceptance.rs
 ein-infer/tests/explain_semantics.rs
-ein-infer/tests/layer_census.rs
 ein-infer/tests/naf_semantics.rs
 ein-infer/tests/obligation_reports.rs
 ein-infer/tests/obligation_rung.rs
-ein-infer/tests/obligation_rung_control.rs
 ein-infer/tests/region.rs
-ein-infer/tests/search_invariants.rs
 ein-infer/tests/search_semantics.rs
 ein-infer/tests/stdlib_coverage.rs
-ein-infer/tests/tree_traversal.rs
 ein-infer/tests/worker_view.rs
 ein-ir/tests/dump_goldens.rs
 ein-ir/tests/imports_semantics.rs

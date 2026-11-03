@@ -1,46 +1,36 @@
-//! `ein solve --dump-region DIR` — the solution region and this run's walk;
-//! and `ein oracle --dump DIR` — the region alone ([`write_cube_dir`]).
+//! `ein oracle --dump DIR` — the solution region, the cube
+//! ([`write_cube_dir`]).
 //!
 //! M1e2 [S1e2.1a.1](../../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
-//! Three files, documented in
+//! Two files, documented in
 //! [`region_dump.md`](../../../../../docs/kernel/inference/region_dump.md):
 //!
 //! - `region.json` — `ein_infer::region`'s cube: every node, its two bits and
 //!   their reasons, `R`'s lines, holes, components, sub-cubes, `N`, `E`, the
 //!   duality, the violations, and [`ein_infer::monotone`]'s verdict;
-//! - `walk.json` — what this run did with the lattice: the universe it started
-//!   from, every entering, the recorded nodes, the learned clauses and the
-//!   facts the search wrote at root, each commitment matched to the cube's
-//!   mask by fact text;
-//! - `region.md` — the two for a reader, and the cost.
+//! - `region.md` — the same for a reader, and the cost.
 //!
-//! The cube and the walk come from **two loads** of one program — the
-//! oracle's own, so that its interning cannot renumber the solve's — and are
-//! joined by rendered fact text, which is why every commitment here is text.
+//! A third, `walk.json`, was what the walk did with the lattice, written by
+//! the retired `ein solve --dump-region`; it went with the walk at M1e2
+//! S1e2.1c.5 (2026-11-03). A directory an older binary wrote may still hold
+//! one, and [`write_cube_dir`] removes it.
 
 use std::path::Path;
 
-use ein_core::{FactId, Kb, Terms};
+use ein_core::Terms;
 use ein_infer::detector::{Status, Warning};
 use ein_infer::monotone::Monotonicity;
-use ein_infer::region::{Candidate, Class, Outcome, Region};
-use ein_infer::solve::Solved;
-use ein_infer::verdict::{Answer, Verdict};
-use rustc_hash::{FxHashMap, FxHashSet};
+use ein_infer::region::{Class, Outcome, Region};
+use rustc_hash::FxHashSet;
 
 use super::json::{Json, dumps_indent};
 
 pub const REGION_SCHEMA: &str = "ein-region/1";
-pub const WALK_SCHEMA: &str = "ein-walk/1";
 
 /// What the CLI knows that the two halves do not.
 pub struct RegionInputs<'a> {
     pub source: &'a str,
     pub limit: u32,
-    /// The run's `--max-set-size` and `-n`: the walk's bounds, which say why a
-    /// node was never generated.
-    pub max_set_size: u32,
-    pub stop_after: Option<u64>,
 }
 
 /// Write `region.json` and `region.md` into `dir`, with no walk: what
@@ -66,43 +56,7 @@ pub fn write_cube_dir(
     )?;
     std::fs::write(
         dir.join("region.md"),
-        region_md(oracle, oracle_terms, None, inputs),
-    )?;
-    Ok(())
-}
-
-/// Write `region.json`, `walk.json` and `region.md` into `dir`.
-pub fn write_region_dir(
-    dir: &Path,
-    oracle: &Outcome,
-    oracle_terms: &Terms,
-    walk_terms: &Terms,
-    root: &Kb,
-    solved: &Solved,
-    inputs: &RegionInputs,
-) -> std::io::Result<()> {
-    std::fs::create_dir_all(dir)?;
-    let candidates: &[Candidate] = match oracle {
-        Outcome::Region(r) => &r.candidates,
-        Outcome::Refused { candidates, .. } => candidates,
-    };
-    let bits: FxHashMap<&str, usize> = candidates
-        .iter()
-        .enumerate()
-        .map(|(i, c)| (c.text.as_str(), i))
-        .collect();
-    let walk = Walk::of(walk_terms, root, solved, &bits);
-    std::fs::write(
-        dir.join("region.json"),
-        dumps_indent(&region_json(oracle, oracle_terms, inputs)) + "\n",
-    )?;
-    std::fs::write(
-        dir.join("walk.json"),
-        dumps_indent(&walk.json(inputs)) + "\n",
-    )?;
-    std::fs::write(
-        dir.join("region.md"),
-        region_md(oracle, oracle_terms, Some(&walk), inputs),
+        region_md(oracle, oracle_terms, inputs),
     )?;
     Ok(())
 }
@@ -634,281 +588,6 @@ fn region_block(r: &Region) -> Json {
     ])
 }
 
-// ── walk.json ──────────────────────────────────────────────────────
-
-/// A commitment of the walk, as text and, where every fact is a coordinate
-/// of the cube, as its mask.
-struct Set {
-    facts: Vec<String>,
-    mask: Option<u64>,
-}
-
-impl Set {
-    fn of(terms: &Terms, ids: &[FactId], bits: &FxHashMap<&str, usize>) -> Set {
-        let facts: Vec<String> = ids
-            .iter()
-            .map(|&f| ein_infer::events::sexpr(terms, f))
-            .collect();
-        let mask = facts
-            .iter()
-            .try_fold(0u64, |acc, f| bits.get(f.as_str()).map(|&b| acc | 1 << b));
-        Set { facts, mask }
-    }
-
-    fn json(&self) -> Json {
-        Json::obj(vec![
-            ("facts", strs(&self.facts)),
-            (
-                "mask",
-                match self.mask {
-                    Some(m) => Json::int(m as i64),
-                    None => Json::Null,
-                },
-            ),
-        ])
-    }
-}
-
-fn mask_json(m: Option<u64>) -> Json {
-    match m {
-        Some(m) => Json::int(m as i64),
-        None => Json::Null,
-    }
-}
-
-/// One refuted commitment of the walk.
-struct Dead {
-    set: Set,
-    layer: u32,
-    outcome: &'static str,
-    clause: Vec<String>,
-    core: Vec<String>,
-}
-
-/// What the run did with the lattice.
-struct Walk {
-    verdict: &'static str,
-    k: usize,
-    exhausted: bool,
-    monotone: bool,
-    proposed: Vec<String>,
-    alive0: Vec<String>,
-    /// Each entering, its layer, its outcome, and the cube node it stood on:
-    /// the commitment plus every promotion before it.
-    entered: Vec<(Set, u32, &'static str, Option<u64>)>,
-    /// Each recorded state, as what, its debt, and its cube node.
-    recorded: Vec<(Set, &'static str, usize, Option<u64>)>,
-    /// The forced positives, in order, and after how many enterings.
-    promotions: Vec<(String, usize)>,
-    dead: Vec<Dead>,
-    nogoods: Vec<Set>,
-    alive_at_end: Vec<Set>,
-    root_writes: Vec<String>,
-    has_proof: bool,
-}
-
-impl Walk {
-    fn of(terms: &Terms, root: &Kb, solved: &Solved, bits: &FxHashMap<&str, usize>) -> Walk {
-        let text = |ids: &[FactId]| -> Vec<String> {
-            ids.iter()
-                .map(|&f| ein_infer::events::sexpr(terms, f))
-                .collect()
-        };
-        let k = solved.answer.k(solved.stats.solution_nodes);
-        let mut w = Walk {
-            verdict: solved.answer.as_str(),
-            k,
-            exhausted: solved.stats.exhausted,
-            monotone: solved.monotonicity.is_monotone(),
-            proposed: text(&solved.universe.proposed),
-            alive0: text(&solved.universe.alive0),
-            entered: Vec::new(),
-            recorded: Vec::new(),
-            promotions: Vec::new(),
-            dead: Vec::new(),
-            nogoods: Vec::new(),
-            alive_at_end: Vec::new(),
-            root_writes: Vec::new(),
-            has_proof: solved.proof.is_some(),
-        };
-        let Some(proof) = solved.proof.as_ref() else {
-            return w;
-        };
-        let open = matches!(&solved.answer, Answer::Verdict(Verdict::Open { .. }));
-        // The root each entering stood on: the promotions before it, as cube
-        // bits. A promotion that is not a coordinate leaves no bit, and the
-        // node is then still the commitment's own.
-        let promoted_before = |at: usize| -> u64 {
-            proof
-                .promotions
-                .iter()
-                .filter(|p| p.after_enterings <= at)
-                .filter_map(|p| bits.get(ein_infer::events::sexpr(terms, p.fact).as_str()))
-                .fold(0u64, |acc, &b| acc | 1 << b)
-        };
-        for p in &proof.promotions {
-            w.promotions
-                .push((ein_infer::events::sexpr(terms, p.fact), p.after_enterings));
-        }
-        for (i, e) in proof.entered.iter().enumerate() {
-            let set = Set::of(terms, &e.commitment, bits);
-            let at = set.mask.map(|m| m | promoted_before(i));
-            w.entered.push((set, e.layer, e.kind.as_str(), at));
-        }
-        for s in &proof.solutions {
-            let kind = if open || (solved.owes.in_scope() && !s.owes.is_empty()) {
-                "open"
-            } else {
-                "model"
-            };
-            // Where its entering stood, or — for root, which has none — on the
-            // root every promotion moved.
-            let at = proof
-                .entered
-                .iter()
-                .rposition(|e| {
-                    e.commitment == s.commitment && e.kind == ein_infer::commitment::Kind::Alive
-                })
-                .unwrap_or(proof.entered.len());
-            let set = Set::of(terms, &s.commitment, bits);
-            let node = set.mask.map(|m| m | promoted_before(at));
-            w.recorded.push((set, kind, s.owes.total(), node));
-        }
-        for d in &proof.dead_commitments {
-            w.dead.push(Dead {
-                set: Set::of(terms, &d.commitment, bits),
-                layer: d.layer,
-                outcome: d.kind.as_str(),
-                clause: text(&d.learned_clause),
-                core: text(&d.unsat_core),
-            });
-        }
-        for g in &proof.learned_nogoods {
-            w.nogoods.push(Set::of(terms, g, bits));
-        }
-        for a in &proof.alive_at_end {
-            w.alive_at_end.push(Set::of(terms, a, bits));
-        }
-        let initial: FxHashSet<FactId> = proof.root_initial.iter().copied().collect();
-        let mut writes: Vec<String> = root
-            .facts()
-            .filter(|f| !initial.contains(f))
-            .map(|f| ein_infer::events::sexpr(terms, f))
-            .collect();
-        writes.sort();
-        w.root_writes = writes;
-        w
-    }
-
-    fn json(&self, inputs: &RegionInputs) -> Json {
-        Json::obj(vec![
-            ("schema", Json::str(WALK_SCHEMA)),
-            ("source", Json::str(inputs.source)),
-            (
-                "verdict",
-                Json::obj(vec![
-                    ("type", Json::str(self.verdict)),
-                    ("k", Json::int(self.k as i64)),
-                    ("exhausted", Json::Bool(self.exhausted)),
-                    ("monotone", Json::Bool(self.monotone)),
-                ]),
-            ),
-            (
-                "bounds",
-                Json::obj(vec![
-                    ("max_set_size", Json::int(inputs.max_set_size as i64)),
-                    (
-                        "solutions",
-                        match inputs.stop_after {
-                            Some(n) => Json::int(n as i64),
-                            None => Json::Null,
-                        },
-                    ),
-                ]),
-            ),
-            (
-                "universe",
-                Json::obj(vec![
-                    ("proposed", strs(&self.proposed)),
-                    ("alive0", strs(&self.alive0)),
-                ]),
-            ),
-            (
-                "promotions",
-                Json::Array(
-                    self.promotions
-                        .iter()
-                        .map(|(f, at)| {
-                            Json::obj(vec![
-                                ("fact", Json::str(f)),
-                                ("after_enterings", Json::int(*at as i64)),
-                            ])
-                        })
-                        .collect(),
-                ),
-            ),
-            (
-                "enterings",
-                Json::Array(
-                    self.entered
-                        .iter()
-                        .map(|(s, layer, kind, at)| {
-                            Json::obj(vec![
-                                ("commitment", s.json()),
-                                ("layer", Json::int(*layer as i64)),
-                                ("outcome", Json::str(*kind)),
-                                ("state_mask", mask_json(*at)),
-                            ])
-                        })
-                        .collect(),
-                ),
-            ),
-            (
-                "recorded",
-                Json::Array(
-                    self.recorded
-                        .iter()
-                        .map(|(s, kind, owes, at)| {
-                            Json::obj(vec![
-                                ("commitment", s.json()),
-                                ("as", Json::str(*kind)),
-                                ("owes", Json::int(*owes as i64)),
-                                ("state_mask", mask_json(*at)),
-                            ])
-                        })
-                        .collect(),
-                ),
-            ),
-            (
-                "dead",
-                Json::Array(
-                    self.dead
-                        .iter()
-                        .map(|d| {
-                            Json::obj(vec![
-                                ("commitment", d.set.json()),
-                                ("layer", Json::int(d.layer as i64)),
-                                ("outcome", Json::str(d.outcome)),
-                                ("learned_clause", strs(&d.clause)),
-                                ("core", strs(&d.core)),
-                            ])
-                        })
-                        .collect(),
-                ),
-            ),
-            (
-                "learned_nogoods",
-                Json::Array(self.nogoods.iter().map(Set::json).collect()),
-            ),
-            (
-                "alive_at_end",
-                Json::Array(self.alive_at_end.iter().map(Set::json).collect()),
-            ),
-            ("root_writes", strs(&self.root_writes)),
-        ])
-    }
-}
-
 // ── region.md ──────────────────────────────────────────────────────
 
 fn md_set(r: &Region, m: u64) -> String {
@@ -925,12 +604,7 @@ fn md_sets(r: &Region, ms: &[u64]) -> String {
         .join(", ")
 }
 
-fn region_md(
-    oracle: &Outcome,
-    _terms: &Terms,
-    walk: Option<&Walk>,
-    inputs: &RegionInputs,
-) -> String {
+fn region_md(oracle: &Outcome, _terms: &Terms, inputs: &RegionInputs) -> String {
     let mut out = format!("# Region · {}\n\n", inputs.source);
     let (candidates, m) = match oracle {
         Outcome::Region(r) => (&r.candidates, &r.monotonicity),
@@ -1016,9 +690,6 @@ fn region_md(
                 "## No region\n\n{}.\n\n",
                 refusal_note(*n, *limit)
             ));
-            if let Some(walk) = walk {
-                out.push_str(&walk_md(None, walk));
-            }
             return out;
         }
         Outcome::Region(r) => r,
@@ -1195,9 +866,6 @@ fn region_md(
             r.status.len()
         ));
     }
-    if let Some(walk) = walk {
-        out.push_str(&walk_md(Some(r), walk));
-    }
     out.push_str(&format!(
         "## Cost\n\nroot {:.3} ms · {} nodes {:.3} ms ({:.1} µs each) · topology {:.3} ms. \
          These are the only lines of this directory that differ between two runs.\n",
@@ -1207,155 +875,5 @@ fn region_md(
         r.cost.nodes.as_secs_f64() * 1e6 / r.status.len() as f64,
         r.cost.topology.as_secs_f64() * 1e3,
     ));
-    out
-}
-
-fn walk_md(r: Option<&Region>, walk: &Walk) -> String {
-    let mut out = String::from("## This run's walk\n\n");
-    out.push_str(&format!(
-        "Verdict **{}**, k = {}, exhausted = {}.\n\n",
-        walk.verdict, walk.k, walk.exhausted
-    ));
-    if let Some(r) = r {
-        let cube: Vec<&str> = r.candidates.iter().map(|c| c.text.as_str()).collect();
-        let proposed: Vec<&str> = walk.proposed.iter().map(String::as_str).collect();
-        let mut a = cube.clone();
-        a.sort();
-        let mut b = proposed.clone();
-        b.sort();
-        if a != b {
-            out.push_str(&format!(
-                "- **the run's own universe differs from the cube's**: it proposed {} \
-                 candidates against the cube's {}\n",
-                proposed.len(),
-                cube.len()
-            ));
-        }
-    }
-    // determinism-ok: `walk.alive0` is a Vec; this set is membership only.
-    let alive0: FxHashSet<&str> = walk.alive0.iter().map(String::as_str).collect();
-    let written: FxHashSet<&str> = walk.root_writes.iter().map(String::as_str).collect();
-    let (promoted, dropped): (Vec<&String>, Vec<&String>) = walk
-        .proposed
-        .iter()
-        .filter(|f| !alive0.contains(f.as_str()))
-        .partition(|f| written.contains(f.as_str()));
-    let tick = |v: &[&String]| {
-        v.iter()
-            .map(|f| format!("`{f}`"))
-            .collect::<Vec<_>>()
-            .join(", ")
-    };
-    out.push_str(&format!(
-        "- **alive₀**: {} of the {} proposed\n",
-        walk.alive0.len(),
-        walk.proposed.len(),
-    ));
-    if !promoted.is_empty() {
-        out.push_str(&format!(
-            "  - promoted to root by the forced-positive cascade: {}\n",
-            tick(&promoted)
-        ));
-    }
-    if !dropped.is_empty() {
-        out.push_str(&format!(
-            "  - dropped before the search (the lookahead, or a root negative it wrote): {}\n",
-            tick(&dropped)
-        ));
-    }
-    if !walk.has_proof {
-        out.push_str("- the run kept no proof, so its enterings are not listed\n\n");
-        return out;
-    }
-    out.push_str(&format!(
-        "- **{} enterings**, {} dead; {} learned clause{}; {} fact{} written at root\n",
-        walk.entered.len(),
-        walk.dead.len(),
-        walk.nogoods.len(),
-        if walk.nogoods.len() == 1 { "" } else { "s" },
-        walk.root_writes.len(),
-        if walk.root_writes.len() == 1 { "" } else { "s" },
-    ));
-    for f in &walk.root_writes {
-        out.push_str(&format!("  - `{f}`\n"));
-    }
-    out.push_str("- **recorded**:\n");
-    if walk.recorded.is_empty() {
-        out.push_str("  - nothing\n");
-    }
-    for (s, kind, owes, at) in &walk.recorded {
-        let place = match (r, *at) {
-            (Some(r), Some(m)) => {
-                let t = &r.topology;
-                // By state: a commitment whose saturation derives a
-                // candidate holds the state of a larger node.
-                let class = r.nodes[m as usize].class;
-                let on_line =
-                    |line: &[u64]| line.iter().any(|&x| r.nodes[x as usize].class == class);
-                let mut on = Vec::new();
-                if on_line(&t.minimal) {
-                    on.push("the minimal line");
-                }
-                if on_line(&t.maximal) {
-                    on.push("the maximal line");
-                }
-                format!(
-                    "{}{} in the cube, {}",
-                    if Some(m) != s.mask {
-                        format!("as the state {}: ", r.name(m))
-                    } else {
-                        String::new()
-                    },
-                    Class::of(r.status[m as usize]).as_str(),
-                    if on.is_empty() {
-                        "on neither line".to_string()
-                    } else {
-                        format!("on {}", on.join(" and "))
-                    }
-                )
-            }
-            (Some(_), None) => "outside the cube (a fact the root list does not have)".to_string(),
-            (None, _) => "no region to place it in".to_string(),
-        };
-        out.push_str(&format!(
-            "  - {} `{{{}}}`{} — {place}\n",
-            kind,
-            s.facts.join(", "),
-            if *owes > 0 {
-                format!(", owes {owes}")
-            } else {
-                String::new()
-            }
-        ));
-    }
-    if let Some(r) = r {
-        // The overlay's question in one line each — which nodes of each line
-        // the run recorded. Which line is *the* answer is S1e2.1a.3's ruling
-        // (a), so both are listed.
-        // By state, as `ein render region` compares: a line node is recorded
-        // when a recorded model holds its fixpoint.
-        let recorded: FxHashSet<u64> = walk
-            .recorded
-            .iter()
-            .filter(|x| x.1 == "model")
-            .filter_map(|x| x.3)
-            .map(|m| r.nodes[m as usize].class)
-            .collect();
-        for (line, masks) in [
-            ("minimal", &r.topology.minimal),
-            ("maximal", &r.topology.maximal),
-        ] {
-            let missing: Vec<u64> = masks
-                .iter()
-                .copied()
-                .filter(|&m| !recorded.contains(&r.nodes[m as usize].class))
-                .collect();
-            out.push_str(&format!(
-                "- **{line} line not recorded**: {}\n",
-                md_sets(r, &missing)
-            ));
-        }
-    }
-    out.push('\n');
     out
 }

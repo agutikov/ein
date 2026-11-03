@@ -102,9 +102,9 @@ use std::sync::Arc;
 
 use rustc_hash::FxHashMap;
 
+use crate::error::SolveError;
 use crate::explore::{Ask, Found, Licence, Mode, Route, Seen, Space, State, Step, Verdict, Which};
 use crate::oblgen::Alternatives;
-use crate::solve::SolveError;
 use crate::transversal::Bits;
 
 /// The largest step a route takes on one state's extensions, as

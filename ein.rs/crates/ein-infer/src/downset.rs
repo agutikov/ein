@@ -51,10 +51,10 @@ use ein_core::{FactId, Kb, Terms};
 use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet};
 
+use crate::error::SolveError;
 use crate::events::Events;
 use crate::monotone::Monotonicity;
 use crate::region::{Axes, Candidate, Cost, DEAD, OWING, Prepared, fan_out, pool_of, prepare};
-use crate::solve::SolveError;
 
 /// Facts beyond root past which a run stops, in every mode: `2²⁰`, ruled
 /// 2026-11-03 (S1e2.1c.2's T1e2.1c.2.6). The user first ruled `2²⁴`, which a

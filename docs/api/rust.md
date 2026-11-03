@@ -1,7 +1,8 @@
 # Ein — the Rust embedding API
 
 How to drive the engine **as a library from another Rust program**: load a
-`.ein` puzzle, solve it, and read the verdict with its explanation.
+`.ein` puzzle, ask a question about its answer — the region `R` — and read
+what came back with its explanation.
 
 > **Audience: embedders.** This page is the *programmatic* contract — the
 > crates you add to a `Cargo.toml` and the functions you call. If you want to
@@ -64,7 +65,7 @@ Every crate is `#![forbid(unsafe_code)]` except `ein-einb`, which is
 `deny` plus one `allow`ed module — `cast.rs`, the zero-copy reads, and the
 only `unsafe` in the repository. **There is no async runtime anywhere**: the
 engine is synchronous and `Send`, and `--jobs N` is a `rayon` pool built
-inside `solve`.
+inside a route.
 
 ## The five steps
 
@@ -72,9 +73,9 @@ inside `solve`.
 |---|---|---|
 | 1. arenas | `Ast::new()`, `Terms::new()` | `ein-ir`, `ein-core` |
 | 2. load | `ein_ir::load_file(&mut ast, &mut terms, path)` — or `ein_ir::parse` then `ein_ir::load` | `ein-ir` |
-| 3. saturate *(optional)* | `Saturator::new(&mut session)` + `.saturate(…)` | `ein-infer` |
-| 4. solve | `ein_infer::solve::solve(&mut kb, &mut terms, &ast, &mut events, dumper, &opts)` | `ein-infer` |
-| 5. read | `Answer` / `Verdict` / `Solution`, `goal_bindings`, `linearize` + `render_markdown` | `ein-infer`, `ein-render` |
+| 3. saturate *(optional)* | `ein_infer::region::root_firings`, or `Saturator::new(&mut session)` + `.saturate(…)` | `ein-infer` |
+| 4. ask | `ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts)` — or `ein_infer::explore::run` for the answer without its states read | `ein-infer` |
+| 5. read | `ReadOut` (`answer`, `states`, `queries`), `ein_render::trace::region::of_read_out` for the trace | `ein-infer`, `ein-render` |
 
 ### 1 — The two arenas
 
@@ -105,10 +106,13 @@ module.
 
 ### 3 — Saturate (optional)
 
-`solve` saturates internally, so reach for `Saturator` only when you want the
-deductive closure *without* the hypothesis search — what the monotonic rules
-alone derive. It runs inside a `Session`, which is the `(kb, terms, ast,
-events, memo)` bundle the engine's phases share.
+A route saturates root itself, so reach for this only when you want the
+deductive closure *without* the search — what the rules alone derive — or, as
+the example does, root's own firings for a trace.
+`ein_infer::region::root_firings` saturates root in place and returns them,
+and a route run on that root afterwards finds it saturated and leaves it as it
+is. Below it is `Saturator`, which runs inside a `Session`, the `(kb, terms,
+ast, events, memo)` bundle the engine's phases share.
 
 > **`Saturator::is_stalled` is not a read.** It asks a question and changes
 > the answer to later ones: a full enqueue pass runs first — a caller may have
@@ -120,52 +124,62 @@ events, memo)` bundle the engine's phases share.
 > `step` yourself, probe at a boundary you are willing to have observed
 > (M1e `CO-M6`).
 
-### 4 — Solve
+### 4 — Ask
 
-One entry, and **the verdict is read from the result rather than chosen**:
-`Solution` (one model) / `Ambiguity` (several) / `Contradiction` (none) /
-**`Open`** — consistent, quiescent, and still owing an obligation the program
-stated (M1d
-[S1d.2.6](../history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus)).
-There is no `mode` argument.
+The answer is the **region `R`**: the commitments whose state is alive and
+discharged
+([`solution_semantics.md`](../kernel/inference/solution_semantics.md)). A
+question about it is an `explore::Mode`, the two axes `ein solve` has — which
+part of `R` (`Which::All`, `Minimal`, `Maximal`) and what is asked of it
+(`Ask::Describe`, `Find(n)`, `Single`, `Count`) — and each is answered with the
+least work it needs, by one of the routes
+([`ein_infer::explore`](../../ein.rs/crates/ein-infer/src/explore.rs)). Every
+route uses one node function, so no two questions can read one commitment
+differently, and every answer is held to the oracle
+(`ein-infer/tests/explore.rs`). **There is one answering path**: the walk,
+which this page taught until M1e2 S1e2.1c.5, answered differently from
+`ein solve` and was deleted.
 
-`Open` is the arm an embedder is most likely to mis-file, because its `k` is
-**0** exactly as a `Contradiction`'s is, and it means *not yet a model* where
-`Contradiction` means *no model*. Branch on the variant, never on `k` alone.
-
-`SolveOptions` is a plain struct with a `Default`, so `..Default::default()`
-is the idiom. The fields an embedder actually sets:
+`explore::Options::new(mode)` takes the defaults `ein solve` takes. The fields
+an embedder sets:
 
 | field | |
 |---|---|
-| `stop_after` | `Some(1)` is the fast path — stop at the first complete, consistent model, `stats.exhausted == false`, so `k = 1` reads as *a* model rather than a certified-unique one. `None` exhausts the lattice |
-| `max_set_size` | commitment-set depth, default 5 |
-| `max_time`, `max_enterings` | budgets. What happens when one trips is `on_budget` |
-| `store_lattice` | keep the proof, which step 5's trace needs and nothing else |
-| `jobs` | `> 1` fans each lattice layer out over threads. **Same verdict, same models, same counters** — 20 712 corpus cells at `--jobs {2,4,8,16}` move nothing ([P1a.7](../history/m1a_rust/README.md#p1a7--parallelism)). Inert without the `parallel` feature |
-| `config` | the `SolverConfig` knobs; `None` takes the puzzle's own `(config …)` block |
+| `budget` | facts beyond root, summed over every fixpoint the run computes — `--region-budget`. A run that reaches it stops and says what it established, with `exhausted` false; it never changes an answer |
+| `limit` | the largest `n` whose whole cube a program the static check flags gets — `--region-limit` |
+| `jobs` | `> 1` fans the nodes out over threads, same answer. Inert without the `parallel` feature |
+| `deadline` | `-T`: an `Instant`, past which the run is an error, never an answer |
 
-`Events::off()` is the do-nothing narrator; `Events::to(sink, level)` writes
-the [`--events` protocol](../kernel/inference/events.md) instead. `NoDumper`
-is the do-nothing lattice dumper.
+`read_out::run` is `explore::run` plus every listed state read through the
+node function: each state's `(model …)` and each `(query …)`'s projection
+classes. `read_out::run_with` and `explore::run_with` take an `Events`
+narrator: `Events::off()` is the do-nothing one, and `Events::to(sink,
+level)` writes the [`--events` protocol](../kernel/inference/events.md).
 
 ### 5 — Read
 
-`solve` returns `Solved { answer, proof, stats, jobs }`. **`Answer::Aborted`
-sits outside `Verdict` on purpose**, so a caller that never sets a budget
-still has to name it once and exhaustive verdict handling stays exhaustive —
-`solution_nodes == 0` under an abort means *unexplored*, not *proven
-unsatisfiable*.
+`--single`'s word is `answer.verdict`: `Solution` (`R` is one state),
+`Ambiguity` (two or more; `states` holds two), `Contradiction` (`R` is empty
+and every node is dead) or **`Open`** (`R` is empty and every alive node
+owes an obligation the program stated, M1d
+[S1d.2.6](../history/m1d_satisfiability/README.md#s1d26--verdicts-counters-corpus)).
+`Open` is the arm an embedder is most likely to mis-file, because `R` is empty
+exactly as it is for a `Contradiction`, and it means *not yet a model* where
+`Contradiction` means *no model*. `None` means a budget or the deadline
+stopped the run before it decided.
 
-The bindings come from the **solution's own KB**, not from root:
-`goal_bindings(&ast, &mut terms, &model.kb, None)` projects the puzzle's
-`(query :goal …)` over the model, and `Some(node)` projects a different
-question. A `Contradiction`'s `unsat_core` is the *source frontier* that
+A described `R` is `answer.described`: its states with their commitments and
+lines, its counts (`k_s`, `k_c`), `N`, root's own debts and core, and how the
+run was partial if it was. The bindings come from **each state's own
+fixpoint**, not from root: `queries[i].classes` are a query's projection
+classes over the states listed, each with its binding rows and the rows
+rendered through the query's `:goal-text`. A root whose fixpoint is dead
+carries its unsat core in `described.root.core`: the *source frontier* that
 forces the conflict, not the conflicting facts themselves.
 
-For the narrative, `ein_render::linearize` turns a `Solved` (with its proof)
-into a `Trace`, and `render_markdown` renders it — the same document
-`ein solve --trace out.md` writes.
+For the narrative, `ein_render::trace::region::of_read_out` writes the
+markdown `ein solve --trace out.md` writes: root's derivation, then each
+listed state's from its first minimal commitment, then `N`.
 
 ## Worked example
 
@@ -174,12 +188,11 @@ use std::path::Path;
 
 use ein_core::Terms;
 use ein_infer::events::Events;
-use ein_infer::solve::{NoDumper, SolveOptions, Solved, solve};
-use ein_infer::verdict::{Answer, Verdict, goal_bindings};
+use ein_infer::explore::{self, Ask, Mode, Verdict, Which};
 use ein_ir::Ast;
-use ein_render::{LinearizeOpts, Mode, linearize, render_markdown};
 
-/// Solve one `.ein` file and report the model, as a downstream crate would.
+/// Ask whether one `.ein` file's answer is one state, and report it, as a
+/// downstream crate would.
 fn run(path: &Path) -> Result<String, String> {
     // 1 — the two arenas. `Ast` owns the parsed forms, `Terms` the interned
     //     symbols and values; both outlive the KB and are passed by `&mut`
@@ -193,66 +206,80 @@ fn run(path: &Path) -> Result<String, String> {
     let mut kb = ein_ir::load_file(&mut ast, &mut terms, path).map_err(|e| e.to_string())?;
     let loaded_facts = kb.n_facts();
 
-    // 3 — solve. One entry, and the verdict is *read* from the result rather
-    //     than chosen: `stop_after: Some(1)` is the fast path, `None`
-    //     exhausts the lattice and certifies unique / ambiguous / unsat.
-    //     `store_lattice` is what step 5 needs and nothing else.
-    let opts = SolveOptions {
-        stop_after: Some(1),
-        store_lattice: true,
-        ..SolveOptions::default()
-    };
-    let solved: Solved = solve(
-        &mut kb,
-        &mut terms,
-        &ast,
-        &mut Events::off(),
-        &mut NoDumper,
-        &opts,
-    )
-    .map_err(|e| e.to_string())?;
+    // 3 — root's derivation, kept for step 5's trace. The run below finds
+    //     root saturated and leaves it as it is; a caller that wants no trace
+    //     skips this.
+    let firings = ein_infer::region::root_firings(&mut kb, &mut terms, &ast, &mut Events::off())
+        .map_err(|e| e.to_string())?;
 
-    // 4 — read. `Answer::Aborted` is deliberately outside `Verdict`, so a
-    //     caller that never sets a budget still has to name it once.
+    // 4 — ask. A question is a `Mode`: which part of R (all of it, the
+    //     minimal line, the maximal line) and what is asked of it (describe
+    //     it, `Find(n)` states, or `Single`: is it exactly one state?). The
+    //     read-out answers it and reads every state it lists — each state's
+    //     `(model …)` and each query's projection classes over them.
+    let opts = explore::Options::new(Mode {
+        which: Which::All,
+        ask: Ask::Single,
+    });
+    let r =
+        ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts).map_err(|e| e.to_string())?;
+
+    // 5 — read. `verdict` is `None` only when a budget stopped the run before
+    //     it decided, so a caller that never sets one still has to name it.
     let mut out = format!("loaded {loaded_facts} facts\n");
-    match &solved.answer {
-        Answer::Verdict(Verdict::Solution(model)) => {
-            // The model is the solution's **own** KB — root plus what the
-            // winning commitment derived. Projecting the goal over `kb` would
-            // ask the question of the unsolved root and answer nothing.
-            out += &format!("model: {} facts\n", model.kb.n_facts());
-            for row in goal_bindings(&ast, &mut terms, &model.kb, None) {
-                for (var, val) in row {
-                    out += &format!("  {} = {}\n", terms.sym(var), terms.display(val));
+    match r.answer.verdict {
+        Some(Verdict::Solution) => {
+            // R's one state: the positive facts of the candidates' relations,
+            // and the query's rows in it — `(query …)` asked of the state, not
+            // of root, which would answer nothing.
+            out += &format!("one state: {} facts over H\n", r.states[0].model.len());
+            for class in r.queries.iter().flat_map(|q| &q.classes) {
+                for row in &class.rows {
+                    for (var, val) in row {
+                        out += &format!("  {var} = {val}\n");
+                    }
                 }
             }
         }
-        Answer::Verdict(Verdict::Ambiguity(models)) => {
-            out += &format!("{} distinct models\n", models.len());
-        }
-        Answer::Verdict(Verdict::Contradiction { unsat_core }) => {
-            out += &format!("unsat, core of {} facts\n", unsat_core.len());
-        }
-        // A state that is consistent and quiescent and still owes an
-        // obligation the program stated (M1d S1d.2.6). Not a model and not a
-        // refutation — a caller that reports `k` alone would call it neither.
-        Answer::Verdict(Verdict::Open { states, owes }) => {
-            let owed: usize = owes.iter().map(|o| o.total()).sum();
-            out += &format!("open: {} state(s), owes {owed}\n", states.len());
-        }
-        Answer::Aborted { reason } => out += &format!("aborted: {reason}\n"),
+        Some(Verdict::Ambiguity) => out += "R holds two states or more\n",
+        Some(Verdict::Contradiction) => out += "R is empty: every node is dead\n",
+        // Alive nodes, every one of which still owes an obligation the program
+        // stated (M1d S1d.2.6). Not a model and not a refutation — a caller
+        // that branches on "R is empty" alone would call it unsat.
+        Some(Verdict::Open) => out += "R is empty: every alive node owes\n",
+        None => out += &format!("undecided: {:?}\n", r.answer.stopped),
     }
+    // `exhausted`: the states listed are all of the part of R asked about.
+    // Under `Single` that is every word but `Ambiguity`, which lists two.
     out += &format!(
-        "k = {}, exhausted = {}\n",
-        solved.stats.solution_nodes, solved.stats.exhausted
+        "saturations: {}, R listed whole: {}\n",
+        r.answer.saturations, r.answer.exhausted
     );
 
-    // 5 — explain. The markdown derivation `--trace` writes, from the lattice
-    //     proof step 3 asked for.
-    let trace = linearize(&ast, &terms, &kb, &solved, LinearizeOpts::new());
-    let md = render_markdown(&trace, Mode::Engine, false);
-    out += &format!("trace: {} steps\n", trace.steps.len());
-    let _ = md;
+    // 6 — explain. The markdown `ein solve FILE --single --trace FILE.md`
+    //     writes: root's derivation, then each state's, from step 3's firings.
+    let md = ein_render::trace::region::of_read_out(
+        &r,
+        &mut kb,
+        &mut terms,
+        &ast,
+        &firings,
+        &ein_render::read_out::Options {
+            command: "solve",
+            argv: "",
+            file: &path.to_string_lossy(),
+            budget: opts.budget,
+            uncut: false,
+        },
+        ein_render::trace::region::Shape {
+            diagrams: false,
+            relevant: false,
+            reorder: false,
+            full_kb: false,
+        },
+    )?;
+    let steps = md.lines().filter(|l| l.starts_with("### Step ")).count();
+    out += &format!("trace: {steps} steps\n");
     Ok(out)
 }
 ```
@@ -261,24 +288,24 @@ Output, on [`examples/zebra2.ein`](../../examples/zebra2.ein):
 
 ```text
 loaded 84 facts
-model: 444 facts
+one state: 25 facts over H
   h_water = House-1
-  who_water = Norwegian
   h_zebra = House-5
+  who_water = Norwegian
   who_zebra = Japanese
-k = 1, exhausted = false
-trace: 244 steps
+saturations: 45, R listed whole: true
+trace: 569 steps
 ```
 
-> **`model:` moved from 434 to 444 on 2026-08-25**, and the ten are not
-> derivations. M1d
-> [S1d.2.4](../../docs/history/m1d_satisfiability/README.md#s1d24--obligations-in-the-saturator)
-> gave `bijective-setup` two more activators to fan out — `(total-owed R
-> is-a)` and `(surjective-owed R is-a)`, the obligation duals of the totality
-> scans — and `zebra2.ein` declares five bijections. An activator is an
-> ordinary stored fact, so the model carries 5 × 2 more of them. Every other
-> number on this page is unchanged, which is the claim that stage made and
-> this is where it is visible.
+> **This example asked the walk until 2026-11-03**, `ein_infer::solve::solve`
+> with `stop_after: Some(1)`, and printed *k = 1, exhausted = false* over a
+> 444-fact model. That was a second answering path beside `ein solve`'s, and
+> it answered differently; M1e2
+> [S1e2.1c.5](../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md)
+> deleted the walk on the user's ruling of that day and rewrote the example on
+> the routes `ein solve` takes. `one state` counts the state's `(model …)`,
+> the positive facts over H's relations and root's own, which is what tells
+> R's states apart; the trace is root's derivation and the state's.
 
 *The Norwegian drinks water in House-1; the Japanese owns the zebra in
 House-5* — the canonical Zebra answer, and the solve
@@ -286,12 +313,12 @@ House-5* — the canonical Zebra answer, and the solve
 target trace.
 
 <!-- prose -->
-The three counts above are asserted by `the_worked_example_runs`, which takes
-the `Solution` arm; `the_other_three_verdicts_are_reachable` takes
+The counts above are asserted by `the_worked_example_runs`, which takes the
+`Solution` arm; `the_other_three_verdicts_are_reachable` takes
 `Contradiction`, `Ambiguity` and `Open`, on three other files. So the `match`
-is five arms of which **four** have run. The fifth, `Answer::Aborted`, needs a
-budget no example here sets, and it is in the page because a caller that never
-sets one still has to name it.
+is five arms of which **four** have run. The fifth, `None`, needs a budget no
+example here sets, and it is in the page because a caller that never sets one
+still has to name it.
 <!-- prose -->
 
 ## Caching a loaded KB — `.einb`
@@ -314,8 +341,8 @@ major.minor this build reads.
 
 | feature | default | |
 |---|---|---|
-| `ein-infer/parallel` | on | `SolveOptions::jobs > 1`. Off, `jobs` is accepted and inert |
-| `ein-render/parallel` | on | forwards the above; `ein-render`'s solve helpers take a job count |
+| `ein-infer/parallel` | on | `explore::Options::jobs > 1`. Off, `jobs` is accepted and inert |
+| `ein-render/parallel` | on | forwards the above |
 | `ein-infer/counters` | off | the work counters, compiled out entirely when off |
 | `ein-cli/snmalloc` | on | the global allocator — on the **binary** only. A library that installs one makes the choice for everything that links it, which is why no engine crate has this row |
 
@@ -326,8 +353,8 @@ turning the defaults off is
 ## What is *not* the contract
 
 The matcher, the per-rule compiler, the hypothesis generator, the
-contradiction detector, the learned no-goods and the lattice driver's private
-helpers are internals. They are `pub` because the workspace is one unit and
+contradiction detector, the node function and the routes' private helpers are
+internals. They are `pub` because the workspace is one unit and
 the tests reach into them — **`pub` here is not a stability promise.** What
 this page names is; everything else moves.
 

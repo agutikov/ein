@@ -17,8 +17,8 @@ M1f's re-scope. M1e2 decides nothing here.
 
 This is the stage where the phase touches the engine, and it is one predicate
 in one place. `generate_layer`
-([`solve.rs:1659`](../../../ein.rs/crates/ein-infer/src/solve.rs), through
-[`apriori::filter_candidate`](../../../ein.rs/crates/ein-infer/src/apriori.rs))
+(`solve.rs:1659`, through
+`apriori::filter_candidate`)
 builds layer *L*'s candidates by prefix-joining `a_prev`, then drops a
 candidate for exactly two reasons: an element is no longer in `alive`, or a
 learned clause subsumes it. The stage adds a third:
@@ -53,7 +53,7 @@ with its own kind, so the core can cite it.
 
 - **Every corpus model set is identical, fact for fact**, at each entry's
   declared runs and at `-e`. The comparison is
-  [`tree_traversal.rs`](../../../ein.rs/crates/ein-infer/tests/tree_traversal.rs)'s
+  `tree_traversal.rs`'s
   — *never of `k`* — and it runs over the whole corpus, not a sample.
 - Every corpus **verdict word, `k`, and `exhausted`** identical.
 - The enterings delta is recorded **per entry**, and the entries where it is

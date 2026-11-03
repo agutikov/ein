@@ -1,18 +1,22 @@
 # `utils/` — the scripts that are not the engine
 
-**Thirty-one scripts, all but one driving `ein.rs`** — bar one,
+**Twenty-nine scripts, all but one driving `ein.rs`** — bar one,
 [`doc_audit.py`](doc_audit.py), whose subject is `docs/kernel/` and which reads
 the crates as text. Nothing here is built, shipped or imported by the engine;
 everything here *runs* it, *reads* it, or *renders* what it produced. If a check belongs in the gate it belongs in
 `cargo test`.
 
 **Naming the binary.** Every script that runs the engine says which build:
-`$EIN_BIN` or `--bin`, defaulting to `ein.rs/target/release/ein`. Three want a
-build of their own — `fork_delta_verify.py` → `target-fd`, `spec_audit.py` →
-`target-sa`, `profile_ein_rs.py` → `--profile profiling`, which it builds.
+`$EIN_BIN` or `--bin`, defaulting to `ein.rs/target/release/ein`. One wants a
+build of its own: `profile_ein_rs.py` → `--profile profiling`, which it builds.
+Two more did, `fork_delta_verify.py` (`--features fork-delta`) and
+`spec_audit.py` (`--features spec-audit`): they audited the walk's fork and its
+speculated layers, and went with the walk and their two features at M1e2
+[S1e2.1c.5](../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md)
+(2026-11-03).
 
-**Eight are the walk's instruments.** Since M1e2 S1e2.1a.5's switch no command
-runs the walk, and `fork_split.py`, `fork_delta_verify.py`, `e2e_baseline.py`,
+**Seven are the walk's instruments.** Since M1e2 S1e2.1a.5's switch no command
+runs the walk, and since S1e2.1c.5 no code: `fork_split.py`, `e2e_baseline.py`,
 `feature_matrix.py`, `layer_census.py`, `openness_census.py`,
 `model_set_census.py` and `closure_census.py` measure it: each says so in its
 docstring, re-takes against a binary built at or before commit 7ec8a480, and
@@ -101,9 +105,7 @@ ratio between two machines.
 | [`criterion_table.py`](criterion_table.py) | criterion's `estimates.json` as one table — mean, sd, relative sd, CI — with `--max-rsd` as an **exit code**. The console output scrolls and buries the one column a "3× faster" claim needs |
 | [`feature_matrix.py`](feature_matrix.py) | the `features.md` lever matrix: flip exactly one `SolverConfig` knob off the puzzle's own resolved config and re-solve. Round-robin over the cells, and a `control` cell byte-identical to the baseline — which is what prices the method |
 | [`fork_split.py`](fork_split.py) | what a run does at root versus per entering, split out of the `--events` stream at its `enter` events. The instrument behind `baseline.md` §9 |
-| [`fork_delta_verify.py`](fork_delta_verify.py) | does the **resumed** fork saturator reach the same fixpoint? One binary, twice, `EIN_FORK_DELTA=0` and unset — the resumed and the fresh saturator reach one fixpoint and narrate different amounts of it, and this keeps the difference measured |
 | [`corpus_cost.py`](corpus_cost.py) | what every corpus cell costs, on the engine that ships — mean, sd, relative sd, n, per cell and summed per entry, with `--also` for a run the manifest does not declare and `--check` as an exit code. [S1a.9.0](../docs/history/m1a_rust/README.md#s1a90--the-slow-corpus-re-priced)'s instrument: it is what re-took the `slow` flag, and what `corpus/corpus.toml`'s `cost_ms` is regenerated with |
-| [`spec_audit.py`](spec_audit.py) | how often a *speculated* entering would have been wrong. [S1a.7.0](../docs/history/m1a_rust/README.md#s1a70--the-speculation-audit)'s instrument, which measured the parallelism phase's central risk before any of it was built — 1 078 704 enterings speculated against layer-start root |
 
 Results: [`baseline.md`](../docs/history/m1a_rust/measurements/baseline.md),
 [`scaling.md`](../docs/history/m1a_rust/measurements/scaling.md) and

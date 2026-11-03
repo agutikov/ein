@@ -1,32 +1,20 @@
-//! The `--dump-states` tree.
+//! The answer as files: what `ein solve --dump-answer DIR`, `--dump-lattice
+//! DIR` and `ein oracle --dump DIR` write.
 //!
-//! Three dumper implementations behind the engine's lifecycle hooks:
-//! [`MonotonicDumper`] writes files, [`ProgressDumper`] streams the live
-//! `-v` view (and wraps it, so `-v` and `--dump-states` compose), and
-//! [`LatticeDumper`] writes the richer
-//! per-commitment tree with its proof summary.
-//!
-//! Structurally this is the same idea as the
-//! [`--events` protocol](../../../../../docs/kernel/inference/events.md) — a
-//! chronological log of what the search did — with a different schema and a
-//! directory instead of one file. They are emitted from overlapping call
-//! sites, so they have to agree about what happened, which is a property this
-//! stage can check and no earlier one could.
+//! The walk's `--dump-states` tree — its three dumpers behind the search's
+//! lifecycle hooks, the per-entering files and the lattice snapshot — was
+//! retired at M1e2 S1e2.1a.5's switch and deleted with the walk at S1e2.1c.5
+//! (2026-11-03). What is left is the region's: the cube
+//! ([`region`]), the answer directory ([`region_answer`]), every node a run
+//! visited ([`region_lattice`]), and the KB-to-`.ein` text every state file
+//! is written in ([`serialise`]).
 
-pub mod answer;
 pub mod json;
-pub mod lattice;
 pub mod region;
 pub mod region_answer;
 pub mod region_lattice;
 pub mod serialise;
-pub mod snapshot;
-pub mod state;
 
-pub use answer::{AnswerInputs, clear_previous, write_aborted_answer_dir, write_answer_dir};
 pub use json::Json;
-pub use lattice::LatticeDumper;
-pub use region::{RegionInputs, write_cube_dir, write_region_dir};
+pub use region::{RegionInputs, write_cube_dir};
 pub use serialise::kb_to_ein_text;
-pub use snapshot::{LatticeSnapshot, lattice_snapshot};
-pub use state::{MonotonicDumper, ProgressDumper};

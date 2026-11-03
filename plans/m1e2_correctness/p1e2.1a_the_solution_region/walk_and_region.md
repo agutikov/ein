@@ -18,7 +18,7 @@ WVR_SHOW=1 cargo run --release -p ein-infer --example walk_vs_region -- FILE    
 ```
 
 Taken 2026-10-16 on `90ca5418` plus the example, release build.
-[`walk_vs_region.rs`](../../../ein.rs/crates/ein-infer/examples/walk_vs_region.rs)
+`walk_vs_region.rs`
 takes every program whose R is known: route 1 at 2²⁰ visits (172 monotone
 programs), or the oracle at `n ≤ 16` for the 13 the static check flags. It
 runs the walk six ways, and puts every state the walk records, and every

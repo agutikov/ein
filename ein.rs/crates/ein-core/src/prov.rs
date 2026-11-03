@@ -303,11 +303,10 @@ impl ProvArena {
     /// Route what follows to the fork region: the caller is about to enter a
     /// commitment, and everything the fork derives dies with it.
     ///
-    /// The caller is the search layer, and the scope is one iteration of
-    /// `Run::phase2`'s candidate loop — which covers the nested
-    /// `try_commitment_set` calls a `-y` commutativity check or a `spec-audit`
-    /// build makes, because those are the fork's own speculation and die with
-    /// it too.
+    /// The caller is a route's node function (`ein_infer::region`), and the
+    /// scope is one node's fixpoint: read, then dropped. (It was one
+    /// iteration of the walk's candidate loop until M1e2 S1e2.1c.5 deleted the
+    /// walk.)
     pub fn open_fork(&mut self) {
         // Deliberately not an assertion that no region is open. One way to
         // arrive here with one is a `?` unwound past the discard, and that run

@@ -21,11 +21,11 @@ use ein_ir::{Ast, Node, NodeId};
 
 use crate::described::{Described, Owing};
 use crate::detector::{Paths, SPOT_PARENTS};
+use crate::error::SolveError;
 use crate::events::sexpr;
 use crate::expect::{Outcome, Report};
 use crate::explore::{self, Answer, Ask, Verdict, Which};
 use crate::region::Nodes;
-use crate::solve::SolveError;
 use crate::verdict::{goal_bindings, query_value, solve_value};
 use ein_ir::expect::Over;
 

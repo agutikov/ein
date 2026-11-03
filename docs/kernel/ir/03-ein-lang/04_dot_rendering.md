@@ -188,7 +188,7 @@ The view names accept friendly aliases: `per-step` (a), `aggregate`
 
 The P1.5 ordered search tree was removed with the tree solver
 (2026-05-29); the engine now produces a **set-indexed commitment
-lattice**. [`ein_render::lattice_dag`](../../../../ein.rs/crates/ein-render/src/lattice_dag.rs)
+lattice**. `ein_render::lattice_dag`
 renders it as a DAG (`render_lattice(proof | snapshot, view=)`):
 
 - `rankdir=LR`, ranked by **layer** (= commitment-set size); layer 0
@@ -210,7 +210,7 @@ renders it as a DAG (`render_lattice(proof | snapshot, view=)`):
   holds the two to each other, and the note to the help text.
 
 Fed a `LatticeSnapshotV1`
-([`dump/snapshot.rs`](../../../../ein.rs/crates/ein-render/src/dump/snapshot.rs))
+(`dump/snapshot.rs`)
 the diagram is **order-stable across `lattice_order_seed`** (reuses the
 S1.5b.31 shuffle-invariance guarantee).
 

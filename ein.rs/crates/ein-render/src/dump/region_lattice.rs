@@ -10,9 +10,8 @@
 //! batch. The firings of each node's saturation are `--events`', which
 //! narrates every node visited, so the directory does not hold a second copy.
 //!
-//! The walk's tree (`enterings/`, `proof_summary.json`) is
-//! [`super::lattice::LatticeDumper`]'s, and no command writes it once the walk
-//! has no CLI path.
+//! The walk's tree (`enterings/`, `proof_summary.json`) was its
+//! `LatticeDumper`'s, which went with the walk at M1e2 S1e2.1c.5.
 
 use std::path::Path;
 

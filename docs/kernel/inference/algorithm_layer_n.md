@@ -38,10 +38,10 @@ Companion to [`diagrams/algorithm_layer_n.dot`](diagrams/algorithm_layer_n.dot).
 Renders the per-candidate flow inside one BFS layer of the
 **unified set-search engine**'s shared private
 `_explore_layers` helper, called by all three public entries
-([`monotonic_solve`](../../../ein.rs/crates/ein-infer/src/solve.rs),
+(`monotonic_solve`,
 `gaps_solve`, `contradictions_solve`) which live side-by-side
 in
-[`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs).
+`solve.rs`.
 The layer-wrapping loop (enumerate → process → close layer →
 recompute alive → next layer) sits one level above.
 
@@ -71,7 +71,7 @@ SOLUTION kbs always; dead unsat-cores under
 correction also collapsed the "two engines" framing into
 **one unified engine with three sibling public entries** —
 all in
-[`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs),
+`solve.rs`,
 sharing the helper described here. See
 [`project-set-search-unified` memory] + the 2026-05-28
 conversation; [README](README.md) for the phase shape.
@@ -99,7 +99,7 @@ The diagram uses six colour bands:
 ## Engine surface — three sibling entries
 
 All three live in
-[`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)
+`solve.rs`
 and call the shared private
 ``_explore_layers(entry: Literal["monotonic","gaps","contradictions"], …)``
 helper (the per-candidate flow described in §3 below).
@@ -201,7 +201,7 @@ Drop ``C`` if any of:
 #### 3a. `try_commitment_set(root, C)`
 
 The single all-in-one primitive
-([`commitment.rs`](../../../ein.rs/crates/ein-infer/src/commitment.rs)):
+(`commitment.rs`):
 
 ```
 fork ← root.fork()
@@ -235,7 +235,7 @@ walk of `provenance.premises_raw`) never hits any
 `h_id ∈ frozenset(C)`. Equivalently — the derivation is valid
 in `(root, rules)` alone. The walker terminates at non-rule
 provenances (raw facts, hypothesis facts, forced-positive
-promotions). See [`commitment::try_commitment_set`](../../../ein.rs/crates/ein-infer/src/commitment.rs).
+promotions). See `commitment::try_commitment_set`.
 
 Note (user, 2026-05-25): under M1 all hypotheses are positive
 facts; negative hypotheses are a follow-up. The pre-sat
@@ -542,12 +542,12 @@ What stays:
 
 ## Cross-references
 
-- Engine entry: [`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs).
+- Engine entry: `solve.rs`.
 - Filter helpers:
-  [`nogoods.rs`](../../../ein.rs/crates/ein-infer/src/nogoods.rs)
+  `nogoods.rs`
   (`matches_any_nogood`, `emit_nogood`).
 - Commitment primitive:
-  [`commitment.rs`](../../../ein.rs/crates/ein-infer/src/commitment.rs)
+  `commitment.rs`
   (`try_commitment_set`).
 - State hash: [`canon.rs`](../../../ein.rs/crates/ein-infer/src/canon.rs).
 - Saturation commutativity premise:

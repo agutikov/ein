@@ -21,10 +21,11 @@
 //!   the default: the exit code, stdout, stderr and the `--json-summary`. The
 //!   summary's `config` object echoes the lever, so it is left out of the
 //!   comparison and checked to carry it: a lever that stopped reaching the run
-//!   cannot pass as one that changes nothing. The three `EIN_*` levers the
-//!   walk read (`EIN_OBLIGATION_CHOICE=off|fail-first`, `EIN_TRAVERSAL=tree`)
-//!   reach a run the same way, as a process, and nothing declares them, so
-//!   they are swept over the same files. The CLI shadows `-L`, `-K` and `-y`
+//!   cannot pass as one that changes nothing. The two `EIN_*` levers the
+//!   walk's generator reads (`EIN_OBLIGATION_CHOICE=off|fail-first`) reach a
+//!   run the same way, as a process, and nothing declares them, so they are
+//!   swept over the same files. The third, `EIN_TRAVERSAL=tree`, went with the
+//!   walk at M1e2 S1e2.1c.5. The CLI shadows `-L`, `-K` and `-y`
 //!   reach `-c`, the `run` event and the echo and nothing else
 //!   (`ein-cli/src/modes.rs`), so what this holds is the process path; the day
 //!   P1e2.1c wires one into a route, this is the test that has to stay green.
@@ -197,12 +198,12 @@ const SHADOWS: [(&str, &str, bool); 3] = [
     ("-y", "lattice-sanity-check", true),
 ];
 
-/// The walk's three environment levers (`configuration.md` § 4). Nothing
-/// declares them; they are swept over the files that declare a CLI lever.
-const ENV: [(&str, &str); 3] = [
+/// The walk generator's two environment levers (`configuration.md` § 4).
+/// Nothing declares them; they are swept over the files that declare a CLI
+/// lever.
+const ENV: [(&str, &str); 2] = [
     ("EIN_OBLIGATION_CHOICE", "off"),
     ("EIN_OBLIGATION_CHOICE", "fail-first"),
-    ("EIN_TRAVERSAL", "tree"),
 ];
 
 /// A lever: a CLI flag, or an environment variable set for the process.
@@ -400,12 +401,13 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
     // The selection did not collapse: twelve corpus entries declare levers,
     // and ten of them, every one outside the slow tier, have a known R
     // (2026-11-03, `--count` among the questions): 372 declared cells —
-    // sixteen questions each, thirteen where k_s = 1 — and 462 environment
-    // cells beside them.
+    // sixteen questions each, thirteen where k_s = 1 — and 308 environment
+    // cells beside them (462 until `EIN_TRAVERSAL` went with the walk at M1e2
+    // S1e2.1c.5, the same day).
     if !slow_too() {
         assert!(cut.is_empty(), "R is not known for {cut:?}");
         assert!(
-            known >= 10 && declared_cells >= 372 && env_cells >= 462,
+            known >= 10 && declared_cells >= 372 && env_cells >= 308,
             "{known} files, {declared_cells} declared cells, {env_cells} environment cells"
         );
     }

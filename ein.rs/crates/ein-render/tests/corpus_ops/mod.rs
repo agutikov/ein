@@ -17,7 +17,7 @@ use ein_ir::dump::{dump_canonical, dump_compact};
 use ein_ir::imports::Resolver;
 use ein_ir::macros::{collect_macros, expand_rule_clauses};
 use ein_ir::{Ast, parse};
-use ein_render::shape::{SOLVE_VIEWS, all_views, dot_shape};
+use ein_render::shape::{all_views, dot_shape};
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 
@@ -31,7 +31,8 @@ use std::sync::{Arc, Mutex};
 /// the read-out under each question, the region trace, and `ein render
 /// lattice`'s drawing of the nodes a description visits. The walk's surfaces
 /// (its solve table, trace, `--dump-states` tree, lattice proof and commit
-/// shape) left with its CLI path. An id leak that reaches an output reaches
+/// shape) left with its CLI path, and its three DOT views went with the walk
+/// at M1e2 S1e2.1c.5. An id leak that reaches an output reaches
 /// one of these, and one that reaches nothing here reaches nothing a user can
 /// see.
 pub fn ops() -> Vec<Op> {
@@ -47,12 +48,7 @@ pub fn ops() -> Vec<Op> {
         Op::Explain(false),
     ];
     out.extend(IR_MODES.iter().map(|m| Op::Ir(m)));
-    out.extend(
-        all_views()
-            .into_iter()
-            .filter(|v| !SOLVE_VIEWS.contains(v))
-            .map(Op::Dot),
-    );
+    out.extend(all_views().into_iter().map(Op::Dot));
     out.extend(READ_OUT_MODES.iter().map(|(m, _)| Op::ReadOut(m)));
     out.push(Op::RegionTrace);
     out.push(Op::RegionLattice);
@@ -230,7 +226,7 @@ pub fn run_with(terms: &mut Terms, path: &Path, op: Op, jobs: usize) -> Option<S
         });
     }
     let outcome = match op {
-        Op::Dot(view) => dot_shape(&mut ast, terms, &forms, base, view, jobs),
+        Op::Dot(view) => dot_shape(&mut ast, terms, &forms, base, view),
         Op::ReadOut(_) | Op::RegionTrace | Op::RegionLattice => {
             let mut kb = ein_ir::load(&mut ast, terms, &forms, base).ok()?;
             region_op(&ast, terms, &mut kb, path, op, jobs)

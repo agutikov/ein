@@ -20,8 +20,10 @@
 //! fact as *inexact*.
 //!
 //! Per program it also takes the rule dependency graph and its cycles through
-//! an odd `absent`, over all relations and over `D` (option (D)'s refusal), and
-//! the parent-path check `-y` used to run ([`sanity::check_commutativity`]).
+//! an odd `absent`, over all relations and over `D` (option (D)'s refusal).
+//! Its column of the parent-path check `-y` used to run, the walk's
+//! `sanity::check_commutativity`, went with the walk at M1e2 S1e2.1c.5
+//! (2026-11-03); `-y` is the detector's spot check now (`read_out.rs`).
 //! `--invariance` runs both routes under `--jobs`, permuted interners
 //! (`id_order_invariance`'s permutation), every order of equal-priority rules
 //! and every `(config …)` flag flipped. `--cost` times both routes per node.
@@ -63,7 +65,7 @@ use ein_infer::mt19937::Mt19937;
 use ein_infer::plan::{Disjunct, NafGuard, Plan, Slot, Span, Step};
 use ein_infer::region::{self, DEAD, OWING, Outcome, Topology};
 use ein_infer::saturator::{DEFAULT_PRIORITY, Saturator, Session};
-use ein_infer::{contradiction, obligations, sanity};
+use ein_infer::{contradiction, obligations};
 use ein_ir::{Ast, load, parse};
 use rustc_hash::{FxHashMap, FxHashSet, FxHasher};
 use serde_json::{Value as Json, json};
@@ -840,123 +842,7 @@ fn guarded(reads: &[Read]) -> Vec<u8> {
 
 // ── Comparing the two routes on one program ─────────────────────────
 
-/// The `-y` check on every node of two facts or more: does a `(k−1)`-subset
-/// parent path reach the direct path's state?
-fn paths(src: &Source) -> Json {
-    let Some((mut kb, mut terms, ast)) = src.load("", Terms::new()) else {
-        return Json::Null;
-    };
-    let Some((root, ())) = census::root_of(&mut kb, &mut terms, &ast, |_, _| Some(())) else {
-        return Json::Null;
-    };
-    let mut cands = root.proposed.clone();
-    cands.sort_by_key(|&f| sexpr(&terms, f));
-    cands.dedup();
-    let texts: Vec<String> = cands.iter().map(|&f| sexpr(&terms, f)).collect();
-    let n = cands.len();
-    if n > 10 {
-        return Json::Null;
-    }
-    let memo = SharedMemo::default();
-    let plans = root.plans.clone();
-    let (mut checked, mut errors) = (0, 0);
-    let mut differ: Vec<String> = Vec::new();
-    // (parent's facts, the fact added last, the line it explains)
-    let mut rebuild: Vec<(Vec<FactId>, FactId, usize)> = Vec::new();
-    for mask in 0..1u64 << n {
-        if mask.count_ones() < 2 {
-            continue;
-        }
-        let facts: Vec<FactId> = bits(mask, n).map(|b| cands[b]).collect();
-        checked += 1;
-        match sanity::check_commutativity(
-            &mut kb,
-            &mut terms,
-            &ast,
-            &mut Events::off(),
-            &memo,
-            &facts,
-        ) {
-            Ok(Some(e)) => {
-                let render = |ids: &[FactId]| -> BTreeSet<String> {
-                    ids.iter().map(|&f| sexpr(&terms, f)).collect()
-                };
-                let direct = render(&e.direct_state_key);
-                for (parent, key) in &e.parent_state_keys {
-                    let via = render(key);
-                    if let Some(&last) = facts.iter().find(|f| !parent.contains(f)) {
-                        rebuild.push((parent.clone(), last, differ.len()));
-                    }
-                    let missing: Vec<String> = facts
-                        .iter()
-                        .filter(|f| !parent.contains(f))
-                        .map(|&f| sexpr(&terms, f))
-                        .collect();
-                    differ.push(format!(
-                        "{} via {} + {}: only direct {:?}, only the path {:?}",
-                        name(&texts, mask),
-                        name(
-                            &texts,
-                            mask & !bits(mask, n)
-                                .filter(|&b| !parent.contains(&cands[b]))
-                                .fold(0, |a, b| a | 1 << b)
-                        ),
-                        missing.join(" "),
-                        direct.difference(&via).collect::<Vec<_>>(),
-                        via.difference(&direct).collect::<Vec<_>>(),
-                    ));
-                }
-            }
-            Ok(None) => {}
-            Err(_) => errors += 1,
-        }
-    }
-    // Each differing path's state, rebuilt as `-y` builds it (the parent's
-    // fixpoint, the last fact written, a full saturation) and read for
-    // staleness.
-    let mut stale_on_path: Vec<Vec<String>> = vec![Vec::new(); differ.len()];
-    if !rebuild.is_empty()
-        && let Ok(mut nodes) = region::Nodes::new(&mut kb, &mut terms, &ast, &[])
-    {
-        for (parent, last, line) in rebuild {
-            let got = nodes.with_fixpoints(std::slice::from_ref(&parent), |kbs, terms| {
-                let kb = &mut kbs[0];
-                let (rel, args) = terms.facts.get(last);
-                let args = args.to_vec();
-                let prov = terms.provs.push(Prov::from_hypothesis(0, None));
-                let _ = kb.add_and_index_fact(terms, rel, &args, Some(prov));
-                let mut events = Events::off();
-                let mut s = Session {
-                    kb,
-                    terms,
-                    ast: &ast,
-                    events: &mut events,
-                    memo: SharedMemo::default(),
-                };
-                if let Ok(mut sat) = Saturator::new(&mut s) {
-                    let _ = sat.saturate(&mut s, None, &mut |_| {});
-                }
-                stale_facts(s.kb, s.terms, &ast, &plans)
-                    .0
-                    .into_iter()
-                    .map(|x| x.1)
-                    .collect::<Vec<_>>()
-            });
-            if let Ok(v) = got {
-                stale_on_path[line] = v;
-            }
-        }
-    }
-
-    let differ: Vec<Json> = differ
-        .into_iter()
-        .zip(stale_on_path)
-        .map(|(d, st)| json!({ "node": d, "stale_on_the_path": st }))
-        .collect();
-    json!({ "checked": checked, "differ": differ, "errors": errors })
-}
-
-fn compare(src: &Source, jobs: usize, keep: bool, with_paths: bool) -> Json {
+fn compare(src: &Source, jobs: usize, keep: bool) -> Json {
     let mut row = json!({ "path": src.name });
     let Some(fork) = fork_route(src, Terms::new(), keep) else {
         row["loads"] = json!(false);
@@ -1074,9 +960,6 @@ fn compare(src: &Source, jobs: usize, keep: bool, with_paths: bool) -> Json {
             "C_over_A": reading(n, &guarded(&fork.reads), &fork.reads, uni),
             "C_over_B": reading(n, &guarded(&scratch), &scratch, uni),
         });
-    }
-    if with_paths {
-        row["paths"] = paths(src);
     }
     row
 }
@@ -3113,7 +2996,7 @@ fn main() {
     let (mut programs, mut nodes, mut status_differ, mut state_differ) = (0, 0, 0, 0);
     let mut oracle_mismatch: Vec<String> = Vec::new();
     for src in &chosen {
-        let row = compare(src, jobs, keep, keep);
+        let row = compare(src, jobs, keep);
         if as_json {
             println!("{row}");
         }
@@ -3212,9 +3095,6 @@ fn print_block(row: &Json) {
                 v["R"], v["k_s"], v["holes"], v["minimal"], v["maximal"], v["maximal_states"]
             );
         }
-    }
-    if !row["paths"].is_null() {
-        println!("  paths   {}", row["paths"]);
     }
     for c in s["cycles"].as_array().into_iter().flatten() {
         println!(

@@ -291,14 +291,14 @@ pub fn run(m: &ArgMatches) -> i32 {
     let t_run = Instant::now();
     let r = match read_out::run_with(&mut kb, &mut terms, &ast, &opts, &mut events) {
         Ok(r) => r,
-        Err(ein_infer::solve::SolveError::Deadline) => {
+        Err(ein_infer::SolveError::Deadline) => {
             eprintln!(
                 "** aborted: --max-time {} s reached before the question was decided **",
                 max_time.unwrap_or(0.0)
             );
             return 2;
         }
-        Err(ein_infer::solve::SolveError::Compile(e)) => {
+        Err(ein_infer::SolveError::Compile(e)) => {
             eprintln!("ein.inference.compile.CompileError: {e}");
             return 1;
         }

@@ -752,7 +752,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
     };
     let r = match ein_infer::read_out::run_with(&mut kb, &mut terms, &ast, &opts, &mut events) {
         Ok(r) => r,
-        Err(ein_infer::solve::SolveError::Deadline) => {
+        Err(ein_infer::SolveError::Deadline) => {
             // Never a pass and never a failure: the claims were neither
             // confirmed nor refuted.
             return failed(tally, "aborted before an answer: --max-time".to_string());

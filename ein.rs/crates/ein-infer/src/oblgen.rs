@@ -775,7 +775,7 @@ pub fn alternatives_of(
     root: &mut ein_core::Kb,
     terms: &mut ein_core::Terms,
     ast: &ein_ir::Ast,
-) -> Result<Option<Alternatives>, crate::solve::SolveError> {
+) -> Result<Option<Alternatives>, crate::error::SolveError> {
     let p = crate::region::prepare(root, terms, ast)?;
     if !p.monotonicity.is_monotone() || root.program().obligations.is_empty() {
         return Ok(None);

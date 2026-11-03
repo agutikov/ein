@@ -20,7 +20,7 @@ list and the list is shorter than it looks. **Eight** places impose an order;
 
 | # | where | over what | the choices | notes |
 |---|---|---|---|---|
-| 1 | [`apriori::order_candidates`](../../../ein.rs/crates/ein-infer/src/apriori.rs) `:214` | a layer's **commitment sets** | `lex` (default) · `score-sum` | `lattice-order`, and `-o` on the CLI. `lex` is `cmp_set` — the canonical tuple sort |
+| 1 | `apriori::order_candidates` `:214` | a layer's **commitment sets** | `lex` (default) · `score-sum` | `lattice-order`, and `-o` on the CLI. `lex` is `cmp_set` — the canonical tuple sort |
 | 2 | [`hypgen::score_hypothesis`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) `:815` | one **hypothesis**, as a number | `popularity` (default) · `most-constrained` | `hypgen-scoring`, with `hypgen-rel-weight` / `hypgen-obj-weight`. **`most-constrained` returns `0.0`** — a name with no implementation since S1.5a.7 |
 | 3 | [`hypgen::by_participation`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) `:701` | the blind rung's **focal objects** | fixed | most-participating first, symbol rank as tiebreak. **The one structural order in the engine**, and it is a degree count |
 | 4 | `hypgen::relation_plan` | **relations** within a focal object | fixed | the `:hypothesis-relations` / `:no-hypothesis` scoping, then declaration order |

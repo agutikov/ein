@@ -159,7 +159,7 @@ contributes, locked by S1.21.8:
 ## M1 invariant — alive-set soundness
 
 The solver **recomputes** the alive-candidate set per-KB via
-[`compute_alive`](../../../ein.rs/crates/ein-infer/src/solve.rs)
+`compute_alive`
 (`= open_hypotheses(kb)`) — the open hypotheses are a pure function of the
 closed KB. The *set* is materialised only where a set is what the caller
 needs (layer enumeration); the completeness test asks the same generator for
@@ -568,9 +568,9 @@ direction's NAF explicit in its own match clause.
 
 > **Reconcile note.** The names in this section are the **removed tree
 > solver's** (`_candidates_for` / `_candidate_sort_key`). The live ordering is
-> [`apriori::order_candidates`](../../../ein.rs/crates/ein-infer/src/apriori.rs)
+> `apriori::order_candidates`
 > (+ `_set_score`), applied by
-> [`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs);
+> `solve.rs`;
 > [`hypgen::score_hypothesis`](../../../ein.rs/crates/ein-infer/src/hypgen.rs) is the
 > score key. The *principle* below — sort candidates by a content key, never by
 > hash iteration order — is unchanged.
@@ -616,7 +616,7 @@ which fails on any hash-map iteration at a site whose order could reach an
 output unless it carries a `// determinism-ok:` reason.
 
 Three tests guard against an order leak.
-[`lattice_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/lattice_semantics.rs)
+`lattice_semantics.rs`
 shuffles each layer's candidate order and asserts the resulting
 `LatticeSnapshotV1` still compares equal to the unshuffled run's;
 [`id_order_invariance.rs`](../../../ein.rs/crates/ein-render/tests/id_order_invariance.rs)
@@ -946,17 +946,17 @@ The tree engine's depth-first ordering over hypothesis branches
 prices in d! orderings of the same commitment set — for d=4 on
 zebra2 that's 24× redundant work on each set. The **monotonic
 engine** under
-[`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)
+`solve.rs`
 collapses this by indexing by commitment **set** rather than
 path: layer N enumerates every size-N alive subset via
 Apriori-style prefix-join and enters each via the common
-[`commitment::try_commitment_set`](../../../ein.rs/crates/ein-infer/src/commitment.rs)
+`commitment::try_commitment_set`
 primitive; the root KB stays stable mid-search (P1.21 R2 — see
 *Unconditional facts — retired* above). There is **one entry**,
-[`solve`](../../../ein.rs/crates/ein-infer/src/solve.rs): it
+`solve`: it
 records every solution node (`consistent ∧ complete`, `state_key`-deduped)
 plus every refuted commitment, and
-[`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)
+`solve.rs`
 reads the verdict off the count `k` of distinct solution nodes —
 `k = 0` → Contradiction (unsat core — each dead commitment's *smallest*
 explanation, unioned across the deads), `k = 1` → Solution, `k > 1` →
@@ -966,7 +966,7 @@ by the input, not by which function was called (the unsound
 Q1.5b.7). The orthogonal **stop policy** (`stop_after=1` single / `N` /
 `None` exhaustive) only bounds how far the lattice is walked;
 `store_lattice=True` attaches a sound
-[`LatticeProof`](../../../ein.rs/crates/ein-infer/src/solve.rs)
+`LatticeProof`
 carrying both the gaps view (`proof.solutions`) and the contradictions
 view (`proof.dead_commitments` + `verdict.unsat_core`).
 
@@ -985,7 +985,7 @@ view (`proof.dead_commitments` + `verdict.unsat_core`).
    statement of this arm is [`algorithm_layer_n.md`](algorithm_layer_n.md)
    §3c.ii — a **historical record**; read its banner first.)
 2. **Solution at root.** The forced-positive cascade
-   ([`promote_forced_positives`](../../../ein.rs/crates/ein-infer/src/solve.rs),
+   (`promote_forced_positives`,
    the sound inter-layer prune) promotes each singleton-alive
    hypothesis to root, re-saturates, and repeats until the root
    itself is complete ∧ consistent. This is how
@@ -1068,7 +1068,7 @@ layer_NN_post.ein --since layer_NN_pre.ein` draws what a layer wrote to root.
 Six lifecycle hooks (`root_initial`, `layer_start`, `entering`,
 `layer_end`, `early_terminate`, `summary`) fire from the
 backbone; `dumper=None` is a no-op for every hook site. The
-[the `Dumper` hook](../../../ein.rs/crates/ein-render/src/dump/state.rs)
+the `Dumper` hook
 subclass streams the same events to stderr as live progress lines
 (so a multi-minute exhaustive `solve` isn't a silent hang) without
 needing an on-disk dump.

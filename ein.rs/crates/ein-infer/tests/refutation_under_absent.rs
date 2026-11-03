@@ -243,23 +243,32 @@ fn the_probe_warns_and_the_message_names_both_replacements() {
 
 /// The warning is part of the fixture's **recorded output**, not only of a
 /// unit test — which is what makes the containment a fixture rather than a
-/// claim. `solve_shape` filters the event log to `enter` / `nogood` /
-/// `writeback` / `warn`, and the fixture's own `(config :warn-derived-naf
-/// true)` is what turns the line on, since `solve` falls back to the KB's
-/// config when the caller passes none.
+/// claim. `ein solve FILE --events` narrates it as a `warn` line after root's
+/// saturation, and the fixture's own `(config :warn-derived-naf true)` is what
+/// turns the line on. (Until M1e2 S1e2.1c.5 this read the walk's
+/// `solve_shape`, deleted with the walk on the user's ruling of 2026-11-03.)
 #[test]
-fn the_fixtures_solve_shape_carries_the_warning() {
+fn the_fixtures_stream_carries_the_warning() {
     let path = repo_root().join(PROBE);
     let text = std::fs::read_to_string(&path).expect("the probe is checked in");
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = parse(&mut ast, &text, path.to_str()).expect("it parses");
     let mut kb = load(&mut ast, &mut terms, &forms, path.parent()).expect("it loads");
-    let shape = ein_infer::solve_shape(&ast, &mut terms, &mut kb, "default", 1)
+    let buf = ein_infer::events::Buffer::new();
+    let mut events = Events::to(Box::new(buf.clone()), ein_infer::events::Level::Normal);
+    let opts = ein_infer::explore::Options::new(ein_infer::explore::Mode {
+        which: ein_infer::explore::Which::All,
+        ask: ein_infer::explore::Ask::Describe,
+    });
+    ein_infer::explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events)
         .expect("the fixture solves");
+    let stream = buf.to_string_lossy();
     assert!(
-        shape.contains(REFUTATION_UNDER_ABSENT),
-        "the corpus shape does not carry the warning:\n{shape}"
+        stream
+            .lines()
+            .any(|l| l.contains("\"e\": \"warn\"") && l.contains(REFUTATION_UNDER_ABSENT)),
+        "the run's stream does not carry the warning:\n{stream}"
     );
 }
 

@@ -31,7 +31,8 @@ deductive closure as `redundant` firings, 94.6 % of them on `zebra -e`. Since
 the engine **resumes** root's saturation instead, so a fork narrates less of
 one derivation, and this is the instrument that says by how much: point
 `--bin` at a `--features fork-delta` build and set `EIN_FORK_DELTA=0` for the
-fresh shape.
+fresh shape. That feature went with the walk at M1e2 S1e2.1c.5, so both arms
+need a binary built at or before the commit before it.
 
 **Two attributions the inline script got wrong**, which is why this is a
 script and not a `grep`:

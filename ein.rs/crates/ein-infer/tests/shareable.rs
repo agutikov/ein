@@ -81,11 +81,12 @@ fn every_structure_a_worker_touches_is_send_and_sync() {
     // The per-engine plan list and the memo under it — design/06 § Win A.
     shareable::<ein_infer::Engine>();
     shareable::<ein_infer::SharedMemo>();
-    // The options a layer's workers all read.
-    shareable::<ein_infer::solve::SolveOptions>();
+    // The options a route's workers all read (the walk's `SolveOptions` and
+    // its commitment result went with the walk at M1e2 S1e2.1c.5).
+    shareable::<ein_infer::explore::Options>();
     shareable::<ein_core::config::SolverConfig>();
-    // What a commitment attempt returns, which crosses back on the join.
-    shareable::<ein_infer::commitment::CommitmentSetResult>();
+    // What a route returns.
+    shareable::<ein_infer::explore::Answer>();
 }
 
 /// **The finding, and its fix.** `events::Buffer` was `Rc<RefCell<Vec<u8>>>`

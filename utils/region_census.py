@@ -68,10 +68,9 @@ EIN = Path(os.environ.get("EIN_BIN", REPO / "ein.rs" / "target" / "release" / "e
 CLI_LEVERS: tuple = ()
 
 # The environment levers that steer the search and sit outside `SolverConfig`
-# (`configuration.md` § 5): the obligations rung's order and its `off`, and the
-# tree traversal.
-ENV_LEVERS = (("EIN_OBLIGATION_CHOICE", "off"), ("EIN_OBLIGATION_CHOICE", "fail-first"),
-              ("EIN_TRAVERSAL", "tree"))
+# (`configuration.md` § 5): the obligations rung's order and its `off`. The
+# walk's tree traversal, `EIN_TRAVERSAL`, went with the walk at M1e2 S1e2.1c.5.
+ENV_LEVERS = (("EIN_OBLIGATION_CHOICE", "off"), ("EIN_OBLIGATION_CHOICE", "fail-first"))
 
 # Every flag a `(config …)` can set, flipped away from its default — the three
 # with a CLI shadow too, because a program's own block and a CLI option reach

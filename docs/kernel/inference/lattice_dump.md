@@ -3,9 +3,9 @@
 > **Purpose.** When you need to know *which hypotheses the engine
 > tested at each layer* and *what every one of them derived —
 > survivors and casualties alike* — run the exhaustive
-> [`solve`](../../../ein.rs/crates/ein-infer/src/solve.rs) sweep
+> `solve` sweep
 > with a
-> [`LatticeDumper`](../../../ein.rs/crates/ein-render/src/dump/lattice.rs)
+> `LatticeDumper`
 > attached. The on-disk dump is the audit trail for debugging
 > **problem statements** (is the puzzle even consistent? which
 > committed pair kills it?) and **rules** (did the rule I expected
@@ -47,13 +47,13 @@ wrote until S1e2.1a.5's switch took the walk off the CLI. It is reached from
 Rust since (§ Programmatically), and `golden_dump.rs` still pins its format.
 
 This page covers the **exhaustive** lattice sweep —
-[`solve`](../../../ein.rs/crates/ein-infer/src/solve.rs) run
+`solve` run
 with `store_lattice=True` and an unbounded stop policy (`stop_after=None`)
 — which tests *every* commitment set layer-by-layer and so produces a
 complete per-hypothesis record. The default single-solution
 [`solve`](README.md#set-indexed-search--monotonic-engine-p15b-s15b010)
 (`stop_after=1`) early-terminates on the first solution and uses the lighter
-[`MonotonicDumper`](../../../ein.rs/crates/ein-render/src/dump/state.rs)
+`MonotonicDumper`
 (timeline + per-layer root snapshots only — no per-hypothesis folders, since
 most hypotheses are never reached), which **is** on the CLI:
 `ein solve --dump-states DIR`.
@@ -109,10 +109,10 @@ manageable size. The exhaustive solve itself takes seconds.
 ### Programmatically
 
 The dumper is a Rust type,
-[`ein_render::dump::LatticeDumper`](../../../ein.rs/crates/ein-render/src/dump/lattice.rs),
-handed to [`ein_infer::solve::solve`](../../../ein.rs/crates/ein-infer/src/solve.rs)
+`ein_render::dump::LatticeDumper`,
+handed to `ein_infer::solve::solve`
 as its `dumper` argument — the shape
-[`golden_dump.rs`'s `run_dump`](../../../ein.rs/crates/ein-render/tests/golden_dump.rs)
+`golden_dump.rs`'s `run_dump`
 uses. The CLI's `--dump-lattice` (above) builds the same dumper the same way.
 
 `LatticeDumper::new(None)` makes every hook a no-op (the call sites stay
@@ -229,14 +229,14 @@ on which bindings, in the context of each tested hypothesis.
 > **This folder has never been written.** The design is kept
 > below because `proof_summary.json` carries a `kb_index` list, and an empty
 > one is not a lost dump.
-> [`dump/lattice.rs`](../../../ein.rs/crates/ein-render/src/dump/lattice.rs)
+> `dump/lattice.rs`
 > emits `("kb_index", Json::Array(Vec::new()))` under the comment *"Empty by
 > construction — see the module docs"*, and those docs give the reason: the
 > per-`SetNode` DAG is built only by a builder that nothing on the shipping
 > path calls — the same fact that makes `ein render lattice --view full`
 > always take its fallback
 > ([S1a.5.1](../../history/m1a_rust/README.md#s1a51--dot-renderers)).
-> [`lattice_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/lattice_semantics.rs)
+> `lattice_semantics.rs`
 > pins it: `kb_index` empty, `state_key_merges` 0.
 
 **The dedup itself is real** — state-**key** dedup, P1.21 R1: exact
@@ -318,7 +318,7 @@ M1e2 S1e2.1.3:
 | | |
 |---|---|
 | **From the CLI?** | **No, since M1e2 S1e2.1a.5**: `--dump-lattice DIR` writes a region run's `ein-lattice/2`. From M1e2 S1e2.1.3 to the switch it wrote this tree, and before S1e2.1.3 it was **no** as well. `--dump-states DIR` builds a `MonotonicDumper` (`00_root_initial.ein`, `00_timeline.jsonl`, `layers/layer_NN_{pre,post}.ein`, `summary.json`, no `enterings/` or `proof_summary.json`), and `make_dumper` in [`ein-cli/src/solve.rs`](../../../ein.rs/crates/ein-cli/src/solve.rs) never chose a `LatticeDumper`. It does now, refused beside the flags that choose another dumper |
-| **From Rust?** | **Yes.** `LatticeDumper::new(Some(dir))` passed as `solve`'s `dumper` argument, with `SolveOptions { stop_after: None, store_lattice: true, .. }` — both types are `pub` and the shape is [`golden_dump.rs`'s `run_dump`](../../../ein.rs/crates/ein-render/tests/golden_dump.rs). It is not in [`docs/api/rust.md`](../../api/rust.md), whose worked example stops at solve-and-render |
+| **From Rust?** | **Yes.** `LatticeDumper::new(Some(dir))` passed as `solve`'s `dumper` argument, with `SolveOptions { stop_after: None, store_lattice: true, .. }` — both types are `pub` and the shape is `golden_dump.rs`'s `run_dump`. It is not in [`docs/api/rust.md`](../../api/rust.md), whose worked example stops at solve-and-render |
 | **Is the format pinned?** | **Yes**, which is why this page is *current* rather than superseded: `golden_dump.rs` banks the timeline and every file under `enterings/`, and `corpus_shapes.md5` digests the rest of the tree for every corpus entry |
 
 So the artifact was real, produced and tested, and the only thing missing was
@@ -338,11 +338,11 @@ answered (a) — a door each — on 2026-10-14.
 ## Cross-links
 
 - Engine overview: [README § Set-indexed search](README.md#set-indexed-search--monotonic-engine-p15b-s15b010).
-- Implementation: [`ein-render/dump/lattice.rs`](../../../ein.rs/crates/ein-render/src/dump/lattice.rs)
+- Implementation: `ein-render/dump/lattice.rs`
   (`LatticeDumper` — this page's subject) and
-  [`ein-render/dump/state.rs`](../../../ein.rs/crates/ein-render/src/dump/state.rs)
+  `ein-render/dump/state.rs`
   (`MonotonicDumper`, `ProgressDumper`).
-- Goldens: [`golden_dump.rs`](../../../ein.rs/crates/ein-render/tests/golden_dump.rs)
+- Goldens: `golden_dump.rs`
   (the timeline's per-entering `firings` count and every file under
   `enterings/`) and `corpus_shapes.md5` (the rest of the tree, every corpus
   entry).
@@ -350,5 +350,5 @@ answered (a) — a door each — on 2026-10-14.
   `--dump-lattice DIR` writes a region run's `nodes.json` / `nodes.md`, and
   `ein render lattice` draws them. The on-disk `LatticeDumper` tree is
   reachable from Rust only (see *How to run it*).
-- Tests: [`lattice_semantics.rs`](../../../ein.rs/crates/ein-infer/tests/lattice_semantics.rs).
+- Tests: `lattice_semantics.rs`.
 - Algorithm spec: [`algorithm_layer_n.md`](algorithm_layer_n.md).

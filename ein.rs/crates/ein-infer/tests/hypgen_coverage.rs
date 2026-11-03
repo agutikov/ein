@@ -1,15 +1,14 @@
 //! The enumerator's **coverage floors** — S1a.4.1's acceptance.
 //!
-//! The enumerator's bytes are `corpus_shapes.md5`'s — 78 files each for `hyp`,
-//! `hyp+closed`, `lattice`, `solve[default|exhaustive|shuffled]`, `commit`,
-//! `commit-nofailfast`, `explain`, `explain-noalts` and `naf`, digested
-//! *unnarrowed*.
+//! The enumerator's bytes are `corpus_shapes.md5`'s `hyp` and `hyp+closed`
+//! rows, digested *unnarrowed*.
 //!
-//! What a digest cannot do is the pair of tests below, and they are the
-//! reason this file exists. Both answer the question a digest cannot ask of
-//! itself: **was there anything to pin?** A counter that is zero everywhere
-//! is stable for the wrong reason, and two ordering modes that are secretly
-//! the same mode digest identically. They are floors under the digest.
+//! What a digest cannot do is the test below, and it is the reason this file
+//! exists. It answers the question a digest cannot ask of itself: **was there
+//! anything to pin?** A counter that is zero everywhere is stable for the
+//! wrong reason. Its sibling, that the walk's `score-sum` lattice order
+//! differs from `lex` somewhere, went with the walk's lattice order at M1e2
+//! S1e2.1c.5 (2026-11-03).
 
 use ein_core::Terms;
 use ein_corpus::corpus_files;
@@ -21,13 +20,6 @@ fn hyp_shape(path: &Path) -> Option<String> {
     let mut terms = Terms::new();
     let mut kb = load_file(&mut ast, &mut terms, path).ok()?;
     ein_infer::hyp_shape_with(&ast, &mut terms, &mut kb, false).ok()
-}
-
-fn lattice_shape(path: &Path) -> Option<String> {
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let mut kb = load_file(&mut ast, &mut terms, path).ok()?;
-    ein_infer::lattice_shape(&ast, &mut terms, &mut kb).ok()
 }
 
 /// The eight counters the stage names, each exercised somewhere in the corpus.
@@ -64,36 +56,5 @@ fn every_filter_and_skip_fires_somewhere_in_the_corpus() {
     assert_eq!(
         seen, KEYS,
         "a counter never fired on the corpus, so its digest pins a zero"
-    );
-}
-
-/// `score-sum` must actually order differently from `lex` somewhere.
-///
-/// Under `hypgen_scoring = "most-constrained"` every score is `0.0` and
-/// `score-sum` *is* `lex` — and a KB with no `(config …)` block takes that
-/// path (53 of the corpus's files do). If no file differentiated them, the
-/// `lattice` digest would be pinning `lex` twice and the second mode would be
-/// unowned.
-#[test]
-fn score_sum_orders_differently_from_lex_somewhere_in_the_corpus() {
-    let mut differing = 0;
-    for path in &corpus_files() {
-        let Some(text) = lattice_shape(path) else {
-            continue;
-        };
-        let line = |k: &str| {
-            text.lines()
-                .find(|l| l.starts_with(k))
-                .map(|l| l[k.len()..].to_string())
-        };
-        if let (Some(lex), Some(score)) = (line("ORDER lex "), line("ORDER score-sum "))
-            && lex != score
-        {
-            differing += 1;
-        }
-    }
-    assert!(
-        differing >= 5,
-        "score-sum differed from lex on only {differing} files"
     );
 }

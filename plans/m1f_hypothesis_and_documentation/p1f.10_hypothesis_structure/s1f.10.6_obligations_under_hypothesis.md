@@ -31,7 +31,7 @@ in general, and what is open is how far from fixed it can get.
 
 **The premise the tree traversal states is false.** `tree()` probes the
 generation rung once at root
-([`solve.rs:889-914`](../../../ein.rs/crates/ein-infer/src/solve.rs)) on the
+(`solve.rs:889-914`) on the
 stated premise that *"the mode is a property of the program rather than of the
 node, so asking once is asking enough"*, and the repo's own doc comment already
 refutes it — `activators_for`
@@ -124,7 +124,7 @@ real debt is settled
 So the assertion is two things, not one:
 
 1. `tree_models ⊇ lattice_models`, compared **fact for fact** (the
-   [`tree_traversal.rs`](../../../ein.rs/crates/ein-infer/tests/tree_traversal.rs)
+   `tree_traversal.rs`
    idiom — *"never of `k`"*), and
 2. **no node emitted a `rung` event with a mode other than `obligations`**.
 
@@ -235,7 +235,7 @@ and the probe is not.
 **Taken, 2026-08-29 — and the guard has shipped.**
 [S1e.2.1](../../../docs/history/m1e_review_processing/README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T3
 wrote it into `tree_node`
-([`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)): the mode is
+(`solve.rs`): the mode is
 re-read on every node the tree expands, and any mode but `Obligations` narrates
 a `traversal` event with the mode as its reason and stops descending. It cost
 what the stage predicted — nothing, since `tree_node` already built the

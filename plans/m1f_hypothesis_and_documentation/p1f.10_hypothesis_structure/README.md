@@ -82,7 +82,7 @@ Cutting this phase whole is therefore free again, which it had not been since
 
 The search enumerates **subsets of a fixed `alive` set**. Layer *L* enters the
 *L*-subsets that survive the apriori prefix-join and the no-good filter
-([`apriori.rs`](../../../ein.rs/crates/ein-infer/src/apriori.rs)), and the only
+(`apriori.rs`), and the only
 thing that removes a candidate before it is entered is a **learned clause** —
 which is to say, something the search already paid a death for.
 
@@ -217,7 +217,7 @@ Named here and used by every stage.
 
 - **Not one answer moves.** Every corpus entry's model set is identical fact
   for fact before and after, at the same `-m` and `-e`, and the check is the
-  comparison [`tree_traversal.rs`](../../../ein.rs/crates/ein-infer/tests/tree_traversal.rs)
+  comparison `tree_traversal.rs`
   already makes — *"never of `k`. Two searches that agree on a count and
   disagree on a model are exactly the failure"*.
 - **Every rung is measured before the next is built.** S1f.10.1's census is

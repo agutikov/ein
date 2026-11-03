@@ -116,7 +116,7 @@ That is the design this stage should take, and it costs no new keyword.
 
 ### What is deliberate and must stay
 
-[`answer.rs`](../../../ein.rs/crates/ein-render/src/answer.rs)'s header states
+`answer.rs`'s header states
 the rule the whole surface is built on:
 
 > **No hardcoded vocabulary.** … A relation without a `:why` renders as its raw

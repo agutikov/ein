@@ -98,7 +98,7 @@ use ein_ir::{Ast, NodeId};
 
 pub use header::{FORMAT_MAJOR, FORMAT_MINOR, Kind, is_einb};
 pub use meta::{Freshness, KbState, Meta, Source, engine_version, stdlib_digest};
-pub use solutions::{SolutionNode, Solutions};
+pub use solutions::{BaseStats, MonotonicStats, SolutionNode, Solutions};
 
 use header::{ALIGN, Entry, HEADER_LEN, Header};
 use wire::{Reader, Writer};

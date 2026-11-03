@@ -180,10 +180,10 @@ debt is the **leak list** below, where the two layers still interpenetrate.
 | typed IR → KB (ground atoms) | [`ein-ir/from_ir.rs`](../../ein.rs/crates/ein-ir/src/from_ir.rs), [`ein-core/kb.rs`](../../ein.rs/crates/ein-core/src/kb.rs), `ein-core/entities.rs`, [`ein-core/prov.rs`](../../ein.rs/crates/ein-core/src/prov.rs) | **leaks L2** — the ground-atom store carries worlds-layer state; provenance now also carries a firing's *negative* dependence (the boundary queries, S1.21.8 — **L6** half) |
 | monotone closure (Datalog-ish) | [`ein-infer/compile.rs`](../../ein.rs/crates/ein-infer/src/compile.rs), [`match_.rs`](../../ein.rs/crates/ein-infer/src/match_.rs), [`saturator.rs`](../../ein.rs/crates/ein-infer/src/saturator.rs), [`engine.rs`](../../ein.rs/crates/ein-infer/src/engine.rs), `firing.rs`, [`contradiction.rs`](../../ein.rs/crates/ein-infer/src/contradiction.rs), `predicates.rs`, `plan.rs` | **clean since S1.21.8** — `Plan::steps` is the purely positive residue compilation leaves after lifting the guards out; the closure runs to quiescence consulting no negation (**L1** closed) |
 | the NAF boundary itself | [`saturator.rs`](../../ein.rs/crates/ein-infer/src/saturator.rs) (`admit_from_boundary` / `first_failing` / `negative_premises`), the guard lift in [`compile.rs`](../../ein.rs/crates/ein-infer/src/compile.rs) + [`NafGuard`](../../ein.rs/crates/ein-infer/src/plan.rs), [`Matcher::holds`](../../ein.rs/crates/ein-infer/src/match_.rs) | **new, clean (S1.21.8)** — the one place `(absent …)` is answered, and only against a positive fixpoint, asked of the KB at quiescence directly |
-| assumptions / worlds lattice | [`solve.rs`](../../ein.rs/crates/ein-infer/src/solve.rs), [`commitment.rs`](../../ein.rs/crates/ein-infer/src/commitment.rs), [`apriori.rs`](../../ein.rs/crates/ein-infer/src/apriori.rs), [`nogoods.rs`](../../ein.rs/crates/ein-infer/src/nogoods.rs), [`hypgen.rs`](../../ein.rs/crates/ein-infer/src/hypgen.rs), [`lookahead.rs`](../../ein.rs/crates/ein-infer/src/lookahead.rs), `hrule.rs`, `closed.rs`, [`naf_deps.rs`](../../ein.rs/crates/ein-infer/src/naf_deps.rs) | **clean core, leaking rim** — `try_commitment_set` is a pure fork-write-saturate world transition and `apriori`/`nogoods` are pure set arithmetic; the rim still leaks **L3**, and **L6** is only half-closed (recorded, not interpreted) |
+| assumptions / worlds lattice | `solve.rs`, `commitment.rs`, `apriori.rs`, `nogoods.rs`, [`hypgen.rs`](../../ein.rs/crates/ein-infer/src/hypgen.rs), [`lookahead.rs`](../../ein.rs/crates/ein-infer/src/lookahead.rs), `hrule.rs`, `closed.rs`, [`naf_deps.rs`](../../ein.rs/crates/ein-infer/src/naf_deps.rs) | **clean core, leaking rim** — `try_commitment_set` is a pure fork-write-saturate world transition and `apriori`/`nogoods` are pure set arithmetic; the rim still leaks **L3**, and **L6** is only half-closed (recorded, not interpreted) |
 | complete model | [`hypgen.rs`](../../ein.rs/crates/ein-infer/src/hypgen.rs) (`complete` / `open_hypotheses` / `is_solution_node`) | **leaks L4** — defined *operationally through the worlds-layer generator*; evaluating it can mutate the KB under test (its NAF half — the lookahead's world — is fixed, D3) |
 | canonical key | [`canon.rs`](../../ein.rs/crates/ein-infer/src/canon.rs) (`state_key`) | **clean since P1.21 R1** — identity is the sorted canonical fact list itself, never a hash; but L4 taints its *input* |
-| models / refutations | [`verdict.rs`](../../ein.rs/crates/ein-infer/src/verdict.rs), [`solve.rs`](../../ein.rs/crates/ein-infer/src/solve.rs), [`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs), [`ein-render/trace/`](../../ein.rs/crates/ein-render/src/trace/) | **clean** — the verdict is read off the deduped model count `k`; the query `:goal` only projects afterwards |
+| models / refutations | [`verdict.rs`](../../ein.rs/crates/ein-infer/src/verdict.rs), `solve.rs`, [`explain.rs`](../../ein.rs/crates/ein-infer/src/explain.rs), [`ein-render/trace/`](../../ein.rs/crates/ein-render/src/trace/) | **clean** — the verdict is read off the deduped model count `k`; the query `:goal` only projects afterwards |
 
 ### Leak list
 
@@ -221,7 +221,7 @@ closed by S1.21.8, one resolved by R2, one half-closed, three standing):
   `<monotonic-unconditional>` (singleton-nogood death),
   `<lookahead-dies-immediately>` (kill cache), `<forced-positive>`
   (promotion) — each individually sound
-  ([`solve.rs`](../../ein.rs/crates/ein-infer/src/solve.rs),
+  (`solve.rs`,
   [`hypgen.rs`](../../ein.rs/crates/ein-infer/src/hypgen.rs)), but each is an
   unannounced world transition whose closure consequences are re-derived by
   ad-hoc re-saturations rather than by a declared boundary re-eval point.
@@ -238,7 +238,7 @@ closed by S1.21.8, one resolved by R2, one half-closed, three standing):
   ([`config.rs`](../../ein.rs/crates/ein-core/src/config.rs)), writes
   `(not h)` facts into the KB being checked — *before* the node record
   takes that same KB's `state_key`
-  ([`solve.rs`](../../ein.rs/crates/ein-infer/src/solve.rs)).
+  (`solve.rs`).
   S1.21.8 fixed the NAF half of the sharp edge (divergence **D3**:
   [`lookahead.rs`](../../ein.rs/crates/ein-infer/src/lookahead.rs) now evaluates
   a rule's guards in the world *with* `h` — no match in `kb` **and** `h`

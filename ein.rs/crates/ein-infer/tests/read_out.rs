@@ -116,7 +116,7 @@ fn every_state_is_the_oracles_and_every_claim_is_checked_once() {
                 // answered (M1a S1a.6.6): `query-goal-free-head.ein`, whose
                 // refusal `corpus_cli` banks, and `features/02_star_in_
                 // identifiers.ein`, which declares no `solve` for it.
-                Err(ein_infer::solve::SolveError::Compile(_)) => continue,
+                Err(ein_infer::SolveError::Compile(_)) => continue,
                 Err(e) => panic!("{rel}: {e}"),
             };
             let tag = format!("{rel} {which:?}");

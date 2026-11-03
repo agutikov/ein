@@ -683,7 +683,7 @@ it cannot see a candidate the generator never proposes (W4, W6).
 | owes, discharged | [`obligations.rs`](../../../ein.rs/crates/ein-infer/src/obligations.rs) `tally` |
 | an owed instance's alternatives, and L5's premise checked at load (M1e2 S1e2.1c.4): every instance root owes, licensed or with why not | [`oblgen.rs`](../../../ein.rs/crates/ein-infer/src/oblgen.rs) `alternatives_of`, `Alternatives`; held to the oracle by `ein-infer/tests/region.rs`'s `l5_is_the_oracle_on_every_monotone_program_it_reaches` |
 | the walk's `alive₀` | `Run::phase1` → `compute_alive` → `hypgen::open_hypotheses` |
-| the walk's commitment, entering | `apriori::CanonicalSetId`; [`commitment.rs`](../../../ein.rs/crates/ein-infer/src/commitment.rs) `try_commitment_set`, `Kind` |
+| the walk's commitment, entering | `apriori::CanonicalSetId`; `commitment.rs` `try_commitment_set`, `Kind` |
 | complete | `hypgen::complete` |
 | a recorded node, the model set | `Run::record_node`, `Run::finalise`. Its doc comment carries § 2.6's conjuncts and which of them each of its **four** callers establishes |
 | today's verdict words, `k` | [`verdict.rs`](../../../ein.rs/crates/ein-infer/src/verdict.rs) |

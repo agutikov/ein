@@ -32,7 +32,6 @@ use std::process::{Command, Stdio};
 use ein_core::{Kb, ProvKind, Symbol, Terms};
 use ein_corpus::repo_root;
 use ein_infer::events::{Buffer, Events, Level, sexpr};
-use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
 use ein_ir::{Ast, load_file};
 use serde_json::Value as J;
 
@@ -72,7 +71,8 @@ fn ein(args: &[&str]) -> Run {
 /// The same, with process environment. A **child** process is the only way to
 /// set an `EIN_*` name in this file: cargo runs these tests as threads of one
 /// binary, and a `set_var` here would be read by whatever else is mid-solve.
-/// Two callers — [`EVENT_COVER`]'s traversal row and [`ein_traversal`].
+/// Its environment callers were the walk's, deleted at M1e2 S1e2.1c.5; the
+/// stdlib-resolution test below still sets `EIN_STDLIB` through it.
 fn ein_env(env: &[(&str, &str)], args: &[&str]) -> Run {
     let mut cmd = Command::new(env!("CARGO_BIN_EXE_ein"));
     cmd.args(args).current_dir(repo_root());
@@ -1114,12 +1114,6 @@ const EVENT_COVER: [(&str, &str); 7] = [
     ),
 ];
 
-/// The kinds only the walk emits — its learned clauses, its root writeback and
-/// its tree — documented in `events.md` and reached by no command since M1e2
-/// S1e2.1a.5, because no command runs the walk. They are asserted *unreached*,
-/// so a route that starts emitting one is noticed.
-const WALK_ONLY: [&str; 3] = ["nogood", "traversal", "writeback"];
-
 /// Where the `--events` schema lives: the protocol is a product surface — a
 /// debugging tool, and M20's likely feed.
 const EVENTS_DOC: &str = "docs/kernel/inference/events.md";
@@ -1157,8 +1151,9 @@ fn schema_kinds() -> BTreeSet<String> {
     kinds
 }
 
-/// **Every kind the schema defines is emitted by some corpus fixture**, but
-/// the walk's three, which no command emits since M1e2 S1e2.1a.5.
+/// **Every kind the schema defines is emitted by some corpus fixture.** The
+/// walk's three, which no command emitted since M1e2 S1e2.1a.5 and this test
+/// held unreached, left the schema with the walk at S1e2.1c.5.
 ///
 /// A kind nothing reaches is a kind the engine can silently stop emitting
 /// while the tier that should catch it stays green — the same shape of problem
@@ -1189,26 +1184,16 @@ fn every_event_kind_the_schema_defines_is_reachable_from_the_corpus() {
         }
     }
     let schema = schema_kinds();
-    // The row count: the three payload tables have 22 kind cells (the walk's
-    // `verdict` left at M1e2 S1e2.1a.5 and `region` arrived at T1e2.1a.5.2),
-    // and a removed kind is a schema version bump (§ Versioning), so it should
-    // have to be typed here too.
+    // The row count: the three payload tables have 18 kind cells (the walk's
+    // `verdict` left at M1e2 S1e2.1a.5 and `region` arrived at T1e2.1a.5.2;
+    // its `nogood`, `writeback` and `traversal` left at S1e2.1c.5), so a
+    // removed kind has to be typed here too.
     assert!(
-        schema.len() >= 22,
+        schema.len() >= 18,
         "EVENTS.md parsed to only {} kinds — the table shape moved: {schema:?}",
         schema.len()
     );
-    for k in WALK_ONLY {
-        assert!(schema.contains(k), "{k} is not documented");
-        assert!(
-            !seen.contains_key(k),
-            "{k} is the walk's, and a run emitted it: a route narrates it now"
-        );
-    }
-    let missing: Vec<&String> = schema
-        .iter()
-        .filter(|k| !seen.contains_key(*k) && !WALK_ONLY.contains(&k.as_str()))
-        .collect();
+    let missing: Vec<&String> = schema.iter().filter(|k| !seen.contains_key(*k)).collect();
     assert!(
         missing.is_empty(),
         "no corpus fixture emits {missing:?}; the cover reached {:?}",
@@ -1344,15 +1329,13 @@ fn the_event_stream_does_not_depend_on_interning_order() {
         let mut kb = load_file(&mut ast, &mut terms, &path).expect("the fixture loads");
         let buffer = Buffer::new();
         let mut events = Events::to(Box::new(buffer.clone()), Level::Verbose);
-        let opts = SolveOptions {
-            stop_after: None,
-            max_set_size: 3,
-            store_lattice: false,
-            on_budget: OnBudget::Verdict,
-            max_enterings: Some(60),
-            ..SolveOptions::default()
-        };
-        solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
+        // `ein solve FILE --events`: a describe, whose stream narrates root and
+        // every node the route visits (the walk's stream until M1e2 S1e2.1c.5).
+        let opts = ein_infer::explore::Options::new(ein_infer::explore::Mode {
+            which: ein_infer::explore::Which::All,
+            ask: ein_infer::explore::Ask::Describe,
+        });
+        ein_infer::explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events)
             .expect("the fixture solves");
         buffer.to_string_lossy()
     }
@@ -1767,40 +1750,6 @@ fn a_stdlib_override_without_the_marker_is_refused_through_the_environment() {
         &["solve", "examples/features/10_expect.ein"],
     );
     assert_eq!(ok.code, 0, "{}{}", ok.out, ok.err);
-}
-
-// ── M1e S1e.2.1 — CO-H3(a): the tree and the stop policy ───────────
-
-/// **`EIN_TRAVERSAL=tree` changes nothing a run prints** — since M1e2
-/// S1e2.1a.5, because no command runs the walk, and the tree was the walk's.
-///
-/// Until then this test held the tree to `-n` and to a refusal of `-m`
-/// (M1e S1e.2.1, `CO-H3`(a)). The variable is still read by the walk's
-/// library code, which ships, so `configuration.md` § 4 lists it; this is
-/// the claim that a command's output does not depend on it, held from
-/// outside, and the retirement of `-m` the tree refused, held with it.
-#[test]
-fn the_walks_traversal_reaches_no_command() {
-    const FILE: &str = "examples/zebra2-minus-15-obligations.ein";
-    for args in [
-        vec!["solve", FILE, "--region-budget", "4096"],
-        vec!["test", "tests/stdlib/slots"],
-        vec!["render", "lattice", FILE, "--region-budget", "4096"],
-    ] {
-        let plain = ein(&args);
-        let tree = ein_env(&[("EIN_TRAVERSAL", "tree")], &args);
-        let strip = |r: &Run| {
-            r.out
-                .lines()
-                .map(|l| l.split("  (").next().unwrap_or(l).to_string())
-                .collect::<Vec<_>>()
-        };
-        assert_eq!(tree.code, plain.code, "{args:?}");
-        assert_eq!(strip(&tree), strip(&plain), "{args:?}: the tree reached it");
-    }
-    let m = ein(&["solve", FILE, "-m", "3"]);
-    assert_eq!(m.code, 2);
-    assert!(m.err.contains("-m/--max-set-size is retired"), "{}", m.err);
 }
 
 // ── The container sniff, in either feature set — M1e S1e.4.4, `EH-L2` ──

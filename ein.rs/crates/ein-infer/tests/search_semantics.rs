@@ -1,8 +1,6 @@
 //! The search layer's semantics — T1a.10.2.2.
 //!
-//! Everything above the saturator and below the CLI: the lattice's arithmetic
-//! ([`ein_infer::apriori`]), the commitment primitive
-//! ([`ein_infer::commitment`]), contradiction detection
+//! Everything above the saturator and below the CLI: contradiction detection
 //! ([`ein_infer::contradiction`]), the one-step lookahead
 //! ([`ein_infer::lookahead`]), the minimal-explanation search
 //! ([`ein_infer::explain`]), guided hypothesis generation
@@ -11,8 +9,6 @@
 //!
 //! | subject |
 //! |---|
-//! | canonicalise / prefix-join / filter / `layer_1` |
-//! | the alive / dead-pre / dead-post trichotomy, and fail-fast |
 //! | the two contradiction shapes and the incremental check |
 //! | `examples/saturation/`'s 24 per-rule demos |
 //! | the lookahead's kill conditions |
@@ -21,6 +17,12 @@
 //! | `consistent ∧ complete` |
 //! | canonical model identity (P1.21 R1) |
 //! | the blind enumerator's solve |
+//!
+//! Two subjects went with the walk on the user's ruling of 2026-11-03 (M1e2
+//! S1e2.1c.5): the walk's lattice arithmetic (`apriori`) and its commitment
+//! primitive (`commitment`, with fail-fast). The routes' node function and
+//! licences are `region.rs`'s and `explore.rs`'s tests. The two identity
+//! tests and the blind enumerator's ask `--maximal`.
 //!
 //! Internals — the alternative-justification table, what a generator was
 //! asked for — are not asserted; where one protects an observable, the
@@ -33,18 +35,12 @@ use std::path::{Path, PathBuf};
 use ein_core::{
     FactId, Justifications, Kb, ProvKind, SolverConfig, Symbol, Terms, Value, unsat_core,
 };
-use ein_infer::apriori::{
-    apriori_prefix_join, canonicalise, filter_candidate, generate_layer, layer_1,
-};
 use ein_infer::canon::state_key;
-use ein_infer::commitment::{Kind, try_commitment_set};
 use ein_infer::contradiction::{Contradiction, contradicts, detect};
 use ein_infer::explain::{
     ExplanationBudget, minimal_contradiction_frontier, smallest_contradiction_frontier,
 };
 use ein_infer::hypgen::{HypGenStats, Skip};
-use ein_infer::solve::{NoDumper, SolveOptions, Solved, solve};
-use ein_infer::verdict::{Answer, Verdict};
 use ein_infer::{Events, Firing, Lookahead, Matcher, Saturator, Session, SharedMemo};
 use ein_ir::{Ast, load_file, parse};
 use rustc_hash::FxHashSet;
@@ -152,490 +148,6 @@ fn union_core(kb: &Kb, terms: &Terms, how: Justifications) -> FxHashSet<FactId> 
         .map(Contradiction::witness)
         .collect();
     unsat_core(kb, terms, &w, how).into_iter().collect()
-}
-
-// ── The lattice's arithmetic ───────────────────────────────────────
-
-/// Four propositions whose **content** order is the reverse of their
-/// **interning** order, so every ordering assertion below separates the two.
-///
-/// The lattice sorts by content, `(relation name, args)`; a `FactId` is
-/// interning order, which is an artefact of what the loader happened to see
-/// first. An order that sorted by id would pass a test built on ids and produce a different
-/// traversal on every puzzle.
-fn four_out_of_order() -> (Terms, [FactId; 4]) {
-    let mut terms = Terms::new();
-    let d = fact(&mut terms, "p", &["d"]);
-    let c = fact(&mut terms, "p", &["c"]);
-    let b = fact(&mut terms, "p", &["b"]);
-    let a = fact(&mut terms, "p", &["a"]);
-    assert!(d.0 < c.0 && c.0 < b.0 && b.0 < a.0, "interned in reverse");
-    (terms, [a, b, c, d])
-}
-
-fn clause(mut ids: Vec<FactId>) -> Box<[FactId]> {
-    // `Nogoods` stores a clause sorted by `FactId`, because `is_subset` is a
-    // merge walk over that order and not a content one.
-    ids.sort_unstable();
-    ids.into_boxed_slice()
-}
-
-fn nogoods(clauses: &[Vec<FactId>]) -> ein_core::Nogoods {
-    let mut ng = ein_core::Nogoods::default();
-    for c in clauses {
-        ng.insert(clause(c.clone()));
-    }
-    ng
-}
-
-/// `canonicalise` is a *function of the set*, not of the iterable: order in,
-/// duplicates and all, cannot reach the answer, and a second application is a
-/// no-op.
-///
-/// The node identity of the whole lattice is this tuple, so an idempotence
-/// failure would not show up as a wrong answer — it would show up as the same
-/// commitment being entered twice under two spellings, which the dedup would
-/// never catch.
-#[test]
-fn canonicalise_sorts_dedups_and_is_idempotent() {
-    let (terms, [a, b, c, d]) = four_out_of_order();
-    let once = canonicalise(&terms, [c, a, d, b, a, c, d]);
-    assert_eq!(once, vec![a, b, c, d], "sorted by content, deduped");
-    assert_eq!(canonicalise(&terms, once.clone()), once, "idempotent");
-    assert_eq!(
-        canonicalise(&terms, [d, c, b, a]),
-        once,
-        "the input order does not reach the answer"
-    );
-    assert_ne!(
-        once,
-        vec![d, c, b, a],
-        "an id-ordered canonicalise would have produced exactly this"
-    );
-}
-
-/// The k = 1 → 2 step every real search takes first: a layer of singletons
-/// joins into every unordered pair, each exactly once, in canonical order.
-///
-/// Worth its own test rather than folding into the triangle case, because the
-/// singleton layer is the one where the shared prefix is **empty** — every
-/// pair of singletons agrees on it, so this is the only layer where the
-/// prefix-join's `break` never fires and its whole quadratic scan runs.
-#[test]
-fn the_join_from_singletons_is_every_unordered_pair_once() {
-    let (terms, [a, b, c, _d]) = four_out_of_order();
-    // Fed in reverse, because the join sorts its input before walking it.
-    let a_prev = vec![vec![c], vec![b], vec![a]];
-    assert_eq!(
-        apriori_prefix_join(&terms, &a_prev),
-        vec![vec![a, b], vec![a, c], vec![b, c]],
-        "C(3,2) pairs, canonical order, no repeats and no (x, x)"
-    );
-}
-
-/// A candidate holding an element that has left `alive` is dropped — and it is
-/// still dropped when a learned clause would also have dropped it.
-///
-/// The second half is the one that matters: the two checks are sequential, so
-/// a refactor that folded them into one condition could pass every
-/// single-cause test and silently drop the alive check on the overlap.
-#[test]
-fn a_candidate_with_a_dead_element_is_dropped() {
-    let (_terms, [a, b, c, _d]) = four_out_of_order();
-    let empty = ein_core::Nogoods::default();
-    let all: FxHashSet<FactId> = [a, b, c].into_iter().collect();
-    let without_b: FxHashSet<FactId> = [a, c].into_iter().collect();
-    let only_a: FxHashSet<FactId> = [a].into_iter().collect();
-
-    assert!(
-        filter_candidate(&[a, b, c], &all, &empty),
-        "everything alive and nothing learned — the control"
-    );
-    assert!(
-        !filter_candidate(&[a, b, c], &without_b, &empty),
-        "b left alive, and the no-good store is empty"
-    );
-    assert!(
-        !filter_candidate(&[a, b, c], &only_a, &nogoods(&[vec![a, b]])),
-        "both checks fail; neither short-circuits the other away"
-    );
-}
-
-/// A candidate is dropped iff some stored clause is a **subset** of it.
-///
-/// The direction is the whole point and it is easy to invert. A clause is
-/// "every branch whose path condition is a *superset* of this is dead", so
-/// containment runs clause ⊆ candidate; testing candidate ⊆ clause would keep
-/// exactly the branches the search has already refuted.
-#[test]
-fn a_candidate_containing_a_learned_clause_is_dropped() {
-    let (_terms, [a, b, c, d]) = four_out_of_order();
-    let alive: FxHashSet<FactId> = [a, b, c].into_iter().collect();
-
-    assert!(
-        !filter_candidate(&[a, b, c], &alive, &nogoods(&[vec![a, b]])),
-        "{{a,b}} ⊆ {{a,b,c}} — refuted"
-    );
-    assert!(
-        filter_candidate(&[a, b, c], &alive, &nogoods(&[vec![a, d]])),
-        "{{a,d}} holds a d the candidate lacks, so it says nothing about it"
-    );
-    assert!(
-        filter_candidate(&[a, b, c], &alive, &ein_core::Nogoods::default()),
-        "an empty store drops nothing"
-    );
-    assert!(
-        !filter_candidate(&[a, b, c], &alive, &nogoods(&[vec![d], vec![b, c]])),
-        "one matching clause among several is enough"
-    );
-}
-
-/// `generate_layer` is the join followed by the filter, and it returns the
-/// survivors **in the join's own emission order** — it does not re-sort.
-///
-/// That the order survives the filter is what makes the layer's traversal
-/// order a property of the lattice rather than of which candidates happened to
-/// die: re-sorting survivors would agree with this on the unfiltered case and
-/// diverge on every real one.
-#[test]
-fn generate_layer_is_join_then_filter_in_emission_order() {
-    let (terms, [a, b, c, d]) = four_out_of_order();
-    let a_prev = vec![
-        vec![a, b],
-        vec![a, c],
-        vec![a, d],
-        vec![b, c],
-        vec![b, d],
-        vec![c, d],
-    ];
-    let all: FxHashSet<FactId> = [a, b, c, d].into_iter().collect();
-    assert_eq!(
-        generate_layer(&terms, &a_prev, &all, &ein_core::Nogoods::default()),
-        vec![vec![a, b, c], vec![a, b, d], vec![a, c, d], vec![b, c, d]],
-        "unfiltered: every 3-subset once, canonical order"
-    );
-
-    // `b` was back-propagated dead after `a_prev` closed, and `{a,b}` was
-    // learned. The three b-bearing triples fail the alive check; `{a,c,d}`
-    // escapes the clause because it holds no `b`.
-    let without_b: FxHashSet<FactId> = [a, c, d].into_iter().collect();
-    assert_eq!(
-        generate_layer(&terms, &a_prev, &without_b, &nogoods(&[vec![a, b]])),
-        vec![vec![a, c, d]]
-    );
-}
-
-/// `layer_1` over an empty alive set yields **no** candidates — not one empty
-/// candidate.
-///
-/// The distinction decides termination rather than cost. `layer_1` is
-/// documented as "what the join would produce from `A_0 = {()}`", and an
-/// implementation that took that literally would hand the search a single
-/// empty commitment to enter, which is alive by construction and expands
-/// forever.
-#[test]
-fn layer_1_of_an_empty_alive_set_is_empty() {
-    let (terms, [a, b, c, _d]) = four_out_of_order();
-    let none: FxHashSet<FactId> = FxHashSet::default();
-    let out = layer_1(&terms, &none);
-    assert!(out.is_empty(), "got {out:?}");
-    assert!(
-        !out.contains(&Vec::new()),
-        "the empty commitment is not a candidate"
-    );
-
-    let some: FxHashSet<FactId> = [c, a, b].into_iter().collect();
-    assert_eq!(
-        layer_1(&terms, &some),
-        vec![vec![a], vec![b], vec![c]],
-        "the non-empty control, sorted by content"
-    );
-}
-
-// ── The commitment primitive ───────────────────────────────────────
-
-/// A fork whose hypothesis triggers a rule keeps the consequence to itself,
-/// and `hypothesis_facts` is exactly what was committed.
-///
-/// Both halves are P1.21 R2 and neither is visible from a verdict: an engine
-/// that wrote the derived fact back to root would still answer this puzzle
-/// correctly, and only start returning wrong models once a *later* commitment
-/// inherited a consequence of a hypothesis it never made.
-#[test]
-fn an_alive_entering_keeps_its_consequences_fork_local() {
-    let (ast, mut terms, mut kb) = kb_of(
-        "(rule swap ()\n  :match (target ?x ?y) :assert (other ?y ?x)\n\
-         \x20 :why \"swap target → other\" :priority 100)\n\
-         (relation target T T)\n(relation other T T)\n(is-a c T) (is-a d T)\n",
-    );
-    let h = fact(&mut terms, "target", &["c", "d"]);
-    let derived = fact(&mut terms, "other", &["d", "c"]);
-    let mut ev = Events::off();
-    let r = try_commitment_set(
-        kb.sealed(),
-        &mut terms,
-        &ast,
-        &mut ev,
-        &SharedMemo::default(),
-        &[h],
-        None,
-        None,
-    )
-    .expect("enters");
-
-    assert_eq!(r.kind, Kind::Alive);
-    assert_eq!(r.hypothesis_facts, vec![h], "only the committed writes");
-    assert!(r.kb.contains(derived), "the fork derived (other d c)");
-    assert!(!kb.contains(derived), "…and root did not learn it");
-    assert!(!kb.contains(h), "…nor the hypothesis itself");
-}
-
-/// Both death kinds report a non-empty unsat core naming a **committed
-/// hypothesis**, and the dead-post one gets there only after saturation ran.
-///
-/// A dead fork whose core did not name a hypothesis would be a dead *root*:
-/// the search would learn a clause it can never satisfy and prune branches
-/// that were never at fault. The two kinds reach the core by different routes
-/// — dead-pre's witness is the committed positive itself, dead-post's is a
-/// fact several firings downstream — so a core walk can be right for one and
-/// wrong for the other.
-///
-/// Merges the work-list's `dead-post-is-detected-after-saturation-ran`: the
-/// `firings` assertion below *is* that claim, and splitting it across two
-/// tests would mean entering the same commitment twice to check two halves of
-/// one result.
-#[test]
-fn a_dead_entering_names_a_committed_hypothesis_in_its_core() {
-    // dead-pre — root already carries the negation of what is committed.
-    let (ast, mut terms, mut kb) = kb_of(
-        "(relation target T T)\n(is-a c T) (is-a d T)\n\
-         (not (target c d) :source \"a prior back-prop write\")\n",
-    );
-    let h = fact(&mut terms, "target", &["c", "d"]);
-    let mut ev = Events::off();
-    let pre = try_commitment_set(
-        kb.sealed(),
-        &mut terms,
-        &ast,
-        &mut ev,
-        &SharedMemo::default(),
-        &[h],
-        None,
-        None,
-    )
-    .expect("enters");
-    assert_eq!(pre.kind, Kind::DeadPre);
-    assert!(pre.firings.is_empty(), "no saturation ran");
-    assert!(pre.unsat_core.contains(&h), "{:?}", pre.unsat_core);
-    assert_eq!(pre.hypothesis_facts, vec![h]);
-
-    // dead-post — two hypotheses whose rules derive `(x a)` and `(not (x a))`.
-    let (ast, mut terms, mut kb) = kb_of(CLASH_LADDER);
-    let h1 = fact(&mut terms, "h1", &["a"]);
-    let h2 = fact(&mut terms, "h2", &["a"]);
-    let mut ev = Events::off();
-    let post = try_commitment_set(
-        kb.sealed(),
-        &mut terms,
-        &ast,
-        &mut ev,
-        &SharedMemo::default(),
-        &[h1, h2],
-        None,
-        None,
-    )
-    .expect("enters");
-    assert_eq!(post.kind, Kind::DeadPost);
-    assert!(
-        !post.firings.is_empty(),
-        "dead-post means the post-saturation detector found it, not the pre-check"
-    );
-    assert_eq!(post.hypothesis_facts, vec![h1, h2]);
-    assert!(
-        post.unsat_core.contains(&h1) || post.unsat_core.contains(&h2),
-        "core {:?} names neither committed hypothesis",
-        post.unsat_core
-    );
-}
-
-/// `try_commitment_set(root.sealed(), [])` is the layer-zero sentinel: alive, nothing
-/// written, and over an already-saturated root the fork is root.
-///
-/// The empty set is not a degenerate input to be rejected — the search asks
-/// for it, and an implementation that treated "no hypotheses" as "nothing to
-/// check" and skipped the detector would call a contradictory root alive.
-#[test]
-fn the_empty_commitment_is_the_layer_zero_sentinel() {
-    let (ast, mut terms, mut kb) = kb_of(
-        "(rule sym-r ()\n  :match (r ?x ?y) :assert (r ?y ?x)\n\
-         \x20 :why \"symmetric r\" :priority 100)\n\
-         (relation r T T)\n(is-a a T) (is-a b T)\n(r a b :source \"(1)\")\n",
-    );
-    saturate(&ast, &mut terms, &mut kb);
-    let before: FxHashSet<FactId> = kb.facts().collect();
-
-    let mut ev = Events::off();
-    let r = try_commitment_set(
-        kb.sealed(),
-        &mut terms,
-        &ast,
-        &mut ev,
-        &SharedMemo::default(),
-        &[],
-        None,
-        None,
-    )
-    .expect("enters");
-
-    assert_eq!(r.kind, Kind::Alive);
-    assert!(r.hypothesis_facts.is_empty());
-    assert_eq!(
-        r.kb.facts().collect::<FxHashSet<_>>(),
-        before,
-        "a pre-saturated root has nothing left to derive"
-    );
-}
-
-/// A dead-post commitment plus a five-step ladder that is independent of the
-/// clash — the fixture the three fail-fast tests share.
-///
-/// `h1 → x` and `h2 → ¬x` kill the fork at priority 100; `chain0 → … → chain5`
-/// is queued behind them at 200. Fail-fast is visible as the ladder not being
-/// walked, which is a *fact-set* difference rather than only a counter one.
-const CLASH_LADDER: &str = "\
-(rule h1-implies-x () :match (h1 ?x) :assert (x ?x) :why \"h1 → x\" :priority 100)
-(rule h2-forbids-x () :match (h2 ?x) :assert (not (x ?x)) :why \"h2 → ¬x\" :priority 100)
-(rule step1 () :match (chain0 ?x) :assert (chain1 ?x) :why \"ladder\" :priority 200)
-(rule step2 () :match (chain1 ?x) :assert (chain2 ?x) :why \"ladder\" :priority 200)
-(rule step3 () :match (chain2 ?x) :assert (chain3 ?x) :why \"ladder\" :priority 200)
-(rule step4 () :match (chain3 ?x) :assert (chain4 ?x) :why \"ladder\" :priority 200)
-(rule step5 () :match (chain4 ?x) :assert (chain5 ?x) :why \"ladder\" :priority 200)
-(relation h1 T) (relation h2 T) (relation x T)
-(relation chain0 T) (relation chain1 T) (relation chain2 T)
-(relation chain3 T) (relation chain4 T) (relation chain5 T)
-(is-a a T)
-(chain0 a :source \"(1)\")
-";
-
-/// Enter `commitment` on a fresh `CLASH_LADDER` root with fail-fast set.
-fn ladder_entering(fail_fast: bool, names: &[&str]) -> (Terms, ein_infer::CommitmentSetResult) {
-    let (ast, mut terms, mut kb) = kb_of(CLASH_LADDER);
-    kb.program_mut().config = Some(SolverConfig {
-        enable_fail_fast_fork: fail_fast,
-        ..SolverConfig::default()
-    });
-    let commitment: Vec<FactId> = names.iter().map(|n| fact(&mut terms, n, &["a"])).collect();
-    let mut ev = Events::off();
-    let r = try_commitment_set(
-        kb.sealed(),
-        &mut terms,
-        &ast,
-        &mut ev,
-        &SharedMemo::default(),
-        &commitment,
-        None,
-        None,
-    )
-    .expect("enters");
-    (terms, r)
-}
-
-/// Fail-fast stops a dying fork at the firing that killed it, and the verdict
-/// does not move.
-///
-/// Sound because the KB is append-only — a contradiction can be created but
-/// never retracted — so the *only* thing that may differ between the two runs
-/// is how much dead-branch work was done. That is why this asserts a strict
-/// subset in both directions at once: fewer firings **and** fewer facts, with
-/// the clashing fact still present (it is what stopped it) and the ladder
-/// finished only in the full run. An "optimisation" that stopped one firing
-/// too early would lose the clash; one that stopped too late would keep the
-/// ladder.
-#[test]
-fn fail_fast_truncates_a_dying_fork_and_keeps_its_verdict() {
-    let (full_terms, full) = ladder_entering(false, &["h1", "h2"]);
-    let (fast_terms, fast) = ladder_entering(true, &["h1", "h2"]);
-
-    assert_eq!(full.kind, Kind::DeadPost);
-    assert_eq!(fast.kind, full.kind, "the verdict is the whole contract");
-    assert!(
-        fast.firings.len() < full.firings.len(),
-        "fast {} vs full {}",
-        fast.firings.len(),
-        full.firings.len()
-    );
-
-    // Two roots, two arenas, so the fact sets compare as s-expressions.
-    let full_facts = sexprs(&full_terms, full.kb.facts());
-    let fast_facts = sexprs(&fast_terms, fast.kb.facts());
-    assert!(
-        fast_facts.is_subset(&full_facts) && fast_facts.len() < full_facts.len(),
-        "a truncated fork is a strict prefix of the fixpoint one"
-    );
-    assert!(fast_facts.contains("(x a)"), "the clash is what stopped it");
-    assert!(full_facts.contains("(chain5 a)"), "the ladder ran in full");
-    assert!(!fast_facts.contains("(chain5 a)"), "…and not in fast");
-
-    let core = sexprs(&fast_terms, fast.unsat_core.iter().copied());
-    assert!(
-        core.contains("(h1 a)") || core.contains("(h2 a)"),
-        "a truncated fork still explains itself: {core:?}"
-    );
-}
-
-/// With no contradiction there is nothing to stop at, so the flag is invisible
-/// on a surviving fork.
-///
-/// This is the half that makes the previous test a *speed* claim rather than a
-/// semantic one. Fail-fast reads every derived fact through `contradicts`, and
-/// a check that answered `true` one fact early would truncate live branches
-/// too — which no verdict on a satisfiable puzzle would reveal, because the
-/// model it found would still be a model.
-#[test]
-fn fail_fast_does_not_touch_a_surviving_fork() {
-    let (full_terms, full) = ladder_entering(false, &["h1"]);
-    let (fast_terms, fast) = ladder_entering(true, &["h1"]);
-
-    assert_eq!(full.kind, Kind::Alive);
-    assert_eq!(fast.kind, Kind::Alive);
-    assert_eq!(fast.firings.len(), full.firings.len());
-    let fast_facts = sexprs(&fast_terms, fast.kb.facts());
-    assert_eq!(fast_facts, sexprs(&full_terms, full.kb.facts()));
-    assert!(fast_facts.contains("(chain5 a)"), "reached the fixpoint");
-}
-
-/// A commitment already refuted at root dies before any saturation, whatever
-/// the flag says.
-///
-/// Fail-fast lives inside the saturation loop, so the pre-check has to run in
-/// front of it. Reordering the two would still produce `dead-pre` — the
-/// detector would find the same pair — but with a firing list, and the search
-/// would have paid for a fork it never needed to build.
-#[test]
-fn fail_fast_cannot_reach_a_dead_pre() {
-    for flag in [false, true] {
-        let (ast, mut terms, mut kb) =
-            kb_of(&format!("{CLASH_LADDER}(not (h1 a) :source \"stated\")\n"));
-        kb.program_mut().config = Some(SolverConfig {
-            enable_fail_fast_fork: flag,
-            ..SolverConfig::default()
-        });
-        let h1 = fact(&mut terms, "h1", &["a"]);
-        let mut ev = Events::off();
-        let r = try_commitment_set(
-            kb.sealed(),
-            &mut terms,
-            &ast,
-            &mut ev,
-            &SharedMemo::default(),
-            &[h1],
-            None,
-            None,
-        )
-        .expect("enters");
-        assert_eq!(r.kind, Kind::DeadPre, "fail_fast={flag}");
-        assert!(r.firings.is_empty(), "fail_fast={flag}: saturation ran");
-    }
 }
 
 // ── Contradiction detection ────────────────────────────────────────
@@ -1412,18 +924,40 @@ fn solution_node_needs_both_halves() {
 
 // ── Canonical state identity ───────────────────────────────────────
 
-fn solve_file(rel: &str, stop_after: Option<u64>) -> (Solved, Terms) {
+/// `ein solve FILE --maximal`: R's maximal line, exhausted, each state's
+/// fixpoint handed to `read` as the node function every route uses builds it
+/// ([`ein_infer::region::Nodes`]). Since M1e2 S1e2.1c.5 these tests ask a
+/// route: the walk they first asked, whose models were the maximal line's
+/// states, was deleted on the user's ruling of 2026-11-03.
+fn maximal_line<R>(rel: &str, read: impl FnOnce(&mut [Kb], &mut Terms) -> R) -> R {
+    use ein_infer::explore::{self, Ask, Mode, Which};
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let mut kb = load_file(&mut ast, &mut terms, &repo_root().join(rel)).expect("loads");
-    let mut events = Events::off();
-    let opts = SolveOptions {
-        stop_after,
-        ..SolveOptions::default()
-    };
-    let solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
-        .unwrap_or_else(|e| panic!("{rel} solves: {e}"));
-    (solved, terms)
+    let a = explore::run(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &explore::Options::new(Mode {
+            which: Which::Maximal,
+            ask: Ask::Describe,
+        }),
+    )
+    .unwrap_or_else(|e| panic!("{rel} solves: {e}"));
+    assert!(a.exhausted, "{rel}: the maximal line is not known");
+    let sets: Vec<Vec<FactId>> = a
+        .states
+        .iter()
+        .map(|s| {
+            s.set
+                .iter()
+                .map(|&b| a.candidates[b as usize].fact)
+                .collect()
+        })
+        .collect();
+    let mut nodes =
+        ein_infer::region::Nodes::new(&mut kb, &mut terms, &ast, &a.candidates).expect("prepares");
+    nodes.with_fixpoints(&sets, read).expect("saturates")
 }
 
 /// Solution-node identity is the canonical fact list itself, never a digest of
@@ -1438,26 +972,20 @@ fn solve_file(rel: &str, stop_after: Option<u64>) -> (Solved, Terms) {
 /// caught it.
 #[test]
 fn state_key_is_identity_not_a_digest() {
-    let (solved, terms) = solve_file("examples/branching/04_two_levels.ein", None);
-    assert!(solved.stats.exhausted, "the lattice was fully explored");
-    assert_eq!(solved.stats.solution_nodes, 2);
-
-    let Answer::Verdict(Verdict::Ambiguity(branches)) = &solved.answer else {
-        panic!("expected Ambiguity, got {}", solved.answer.as_str());
-    };
-    assert_eq!(branches.len(), 2);
-
-    for s in branches {
-        let key = state_key(&s.kb);
-        let mut facts: Vec<FactId> = s.kb.facts().collect();
-        facts.sort_unstable();
-        assert_eq!(&*key, &facts[..], "the key is the representation");
-    }
-    assert_ne!(
-        sexprs(&terms, branches[0].kb.facts()),
-        sexprs(&terms, branches[1].kb.facts()),
-        "two lattice nodes that were never merged hold different facts"
-    );
+    maximal_line("examples/branching/04_two_levels.ein", |states, terms| {
+        assert_eq!(states.len(), 2, "two maximal states");
+        for kb in states.iter() {
+            let key = state_key(kb);
+            let mut facts: Vec<FactId> = kb.facts().collect();
+            facts.sort_unstable();
+            assert_eq!(&*key, &facts[..], "the key is the representation");
+        }
+        assert_ne!(
+            sexprs(terms, states[0].facts()),
+            sexprs(terms, states[1].facts()),
+            "two states that were never merged hold different facts"
+        );
+    });
 }
 
 /// Two different puzzles' root closures are different states, and their keys
@@ -1491,8 +1019,10 @@ fn distinct_closures_have_distinct_keys() {
 
 const BLIND: &str = "examples/branching/12_typed_blind_solve.ein";
 
-/// A puzzle with no `(hrule …)` solves on the blind combinatorial path, to
-/// exactly one model.
+/// A puzzle with no `(hrule …)` solves on the blind combinatorial path: its
+/// maximal line is the puzzle's two models, the two colourings of H2 and H3
+/// that the anchor `(color-of H1 Red)` leaves. The walk, asked for its first
+/// model, reported one; R holds both.
 ///
 /// The M1 gate (`zebra2`) is hrule-driven, so it never enters the blind
 /// branch of the generator at all. Without a fixture that both takes that path
@@ -1502,13 +1032,9 @@ const BLIND: &str = "examples/branching/12_typed_blind_solve.ein";
 /// this test on the path it names — an hrule added to the fixture would make
 /// the solve pass while testing nothing.
 #[test]
-fn the_blind_path_solves_to_a_single_model() {
-    let (solved, _terms) = solve_file(BLIND, Some(1));
-    assert_eq!(solved.stats.solution_nodes, 1);
-    match &solved.answer {
-        Answer::Verdict(Verdict::Solution(_)) => {}
-        other => panic!("blind-path fixture must solve, got {}", other.as_str()),
-    }
+fn the_blind_path_solves_to_its_two_models() {
+    let k = maximal_line(BLIND, |states, _| states.len());
+    assert_eq!(k, 2, "blind-path fixture must reach its two maximal states");
 
     let mut ast = Ast::new();
     let mut terms = Terms::new();
@@ -1519,7 +1045,7 @@ fn the_blind_path_solves_to_a_single_model() {
     );
 }
 
-/// The recovered model is a total House → Colour bijection, not a partial
+/// Each recovered model is a total House → Colour bijection, not a partial
 /// dead-end certified as complete.
 ///
 /// `complete` is the emptiness test on the open-hypothesis set, so a KB can be
@@ -1529,33 +1055,37 @@ fn the_blind_path_solves_to_a_single_model() {
 /// model from a stuck search: three cells, three houses, three colours, and
 /// the authored anchor still standing.
 #[test]
-fn the_blind_model_is_a_total_bijection() {
-    let (solved, terms) = solve_file(BLIND, Some(1));
-    let Answer::Verdict(Verdict::Solution(s)) = &solved.answer else {
-        panic!("expected a Solution, got {}", solved.answer.as_str());
-    };
-    let color_of: Symbol = terms.syms.get("color-of").expect("interned");
-    let cells: Vec<(String, String)> =
-        s.kb.facts_of(color_of)
-            .map(|f| {
-                let args = terms.facts.args(f);
-                assert_eq!(args.len(), 2, "color-of is binary");
-                let name = |v: Value| terms.sym(v.as_sym().expect("a symbol")).to_string();
-                (name(args[0]), name(args[1]))
+fn each_blind_model_is_a_total_bijection() {
+    let models: Vec<Vec<(String, String)>> = maximal_line(BLIND, |states, terms| {
+        let color_of: Symbol = terms.syms.get("color-of").expect("interned");
+        states
+            .iter()
+            .map(|kb| {
+                kb.facts_of(color_of)
+                    .map(|f| {
+                        let args = terms.facts.args(f);
+                        assert_eq!(args.len(), 2, "color-of is binary");
+                        let name = |v: Value| terms.sym(v.as_sym().expect("a symbol")).to_string();
+                        (name(args[0]), name(args[1]))
+                    })
+                    .collect()
             })
-            .collect();
-
-    assert_eq!(
-        cells.len(),
-        3,
-        "a bijection has exactly 3 positives: {cells:?}"
-    );
-    let houses: BTreeSet<&str> = cells.iter().map(|(h, _)| h.as_str()).collect();
-    let colours: BTreeSet<&str> = cells.iter().map(|(_, c)| c.as_str()).collect();
-    assert_eq!(houses, ["H1", "H2", "H3"].into_iter().collect());
-    assert_eq!(colours, ["Blue", "Green", "Red"].into_iter().collect());
-    assert!(
-        cells.contains(&("H1".to_string(), "Red".to_string())),
-        "the authored anchor is respected: {cells:?}"
-    );
+            .collect()
+    });
+    assert_eq!(models.len(), 2);
+    for cells in models {
+        assert_eq!(
+            cells.len(),
+            3,
+            "a bijection has exactly 3 positives: {cells:?}"
+        );
+        let houses: BTreeSet<&str> = cells.iter().map(|(h, _)| h.as_str()).collect();
+        let colours: BTreeSet<&str> = cells.iter().map(|(_, c)| c.as_str()).collect();
+        assert_eq!(houses, ["H1", "H2", "H3"].into_iter().collect());
+        assert_eq!(colours, ["Blue", "Green", "Red"].into_iter().collect());
+        assert!(
+            cells.contains(&("H1".to_string(), "Red".to_string())),
+            "the authored anchor is respected: {cells:?}"
+        );
+    }
 }

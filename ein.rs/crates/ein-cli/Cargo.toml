@@ -7,11 +7,8 @@ license.workspace    = true
 repository.workspace = true
 
 [features]
-# Forwarded so `cargo build --features fork-delta` on the binary means the
-# same as on the engine — S1a.6.9 T1a.6.9.2.
-fork-delta = ["ein-infer/fork-delta"]
-# Same forwarding, for S1a.7.0's instrument.
-spec-audit = ["ein-infer/spec-audit"]
+# `fork-delta` and `spec-audit`, forwarded here to the engine's instruments
+# of S1a.6.9 and S1a.7.0, went with the walk they audited at M1e2 S1e2.1c.5.
 # `--no-default-features` is the escape hatch, and since S1a.9.3 T1a.9.3.2 it
 # drops all three rather than two: no vendored C++ allocator, no container, no
 # work-stealing pool. It costs a measured **+25.2 % of `solve zebra2 -e`** and

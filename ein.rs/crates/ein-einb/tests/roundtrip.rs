@@ -270,29 +270,55 @@ fn a_saturated_zebra2_is_small_and_opens_cold_in_under_a_millisecond() {
 }
 
 /// A solved KB, its models stored as deltas, and a model put back together.
+///
+/// The model is R's one state, as `ein solve --single` decides it: since M1e2
+/// S1e2.1c.5 a route's, the walk this first stored having been deleted on the
+/// user's ruling of 2026-11-03. No command writes the section, so this is its
+/// one writer.
 #[test]
 fn a_stored_solution_reconstitutes_the_model_it_was_taken_from() {
-    use ein_infer::solve::{NoDumper, SolveOptions, solve};
+    use ein_infer::explore::{self, Ask, Mode, Verdict, Which};
 
     let path = repo_root().join("examples/zebra.ein");
     let (mut ast, mut terms, mut kb, forms) = load(&path).expect("zebra loads");
-    let mut events = ein_infer::events::Events::off();
-    let solved = solve(
+    let a = explore::run(
         &mut kb,
         &mut terms,
         &ast,
-        &mut events,
-        &mut NoDumper,
-        &SolveOptions::default(),
+        &explore::Options::new(Mode {
+            which: Which::All,
+            ask: Ask::Single,
+        }),
     )
     .expect("solve");
-    let models: Vec<Box<[ein_core::FactId]>> = match &solved.answer {
-        ein_infer::verdict::Answer::Verdict(ein_infer::verdict::Verdict::Solution(s)) => {
-            vec![ein_infer::state_key(&s.kb)]
-        }
-        other => panic!("zebra should have one model, got {}", other.as_str()),
+    assert_eq!(a.verdict, Some(Verdict::Solution), "zebra has one model");
+    let facts: Vec<ein_core::FactId> = a.states[0]
+        .set
+        .iter()
+        .map(|&b| a.candidates[b as usize].fact)
+        .collect();
+    let base = kb.fork();
+    let (stored, models) = {
+        let mut nodes = ein_infer::region::Nodes::new(&mut kb, &mut terms, &ast, &a.candidates)
+            .expect("prepares");
+        nodes
+            .with_fixpoints(&[facts], |kbs, terms| {
+                let model = &kbs[0];
+                (
+                    ein_einb::Solutions::of(
+                        &base,
+                        terms,
+                        &ast,
+                        ein_einb::solutions::VerdictKind::Solution,
+                        &[model],
+                        Vec::new(),
+                        ein_einb::MonotonicStats::default(),
+                    ),
+                    vec![ein_infer::state_key(model)],
+                )
+            })
+            .expect("saturates")
     };
-    let stored = ein_einb::Solutions::of(&kb, &mut terms, &ast, &solved.answer, solved.stats);
     assert_eq!(stored.nodes.len(), 1);
 
     let bytes = save_to_vec(

@@ -15,12 +15,12 @@
 use std::path::Path;
 
 use ein_core::{FactId, Kb, Terms};
+use ein_infer::SolveError;
 use ein_infer::described::Described;
 use ein_infer::expect::Outcome;
 use ein_infer::explore::{Ask, Route, Stopped, Verdict, Which};
 use ein_infer::read_out::{Listed, Listing, ReadOut};
 use ein_infer::region::Nodes;
-use ein_infer::solve::SolveError;
 use ein_ir::Ast;
 
 use super::json::{Json, dumps_indent};

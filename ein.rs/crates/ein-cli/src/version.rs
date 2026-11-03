@@ -82,9 +82,9 @@ fn container() -> String {
 /// This build's features — the binary's own, merged with the engine's, sorted
 /// and de-duplicated.
 ///
-/// De-duplicated because `fork-delta` and `spec-audit` are *forwarded*: they
-/// are features of both crates and one build turns on both halves. Sorted
-/// because the line is compared by eye between two binaries, and a set
+/// De-duplicated because a feature forwarded to the engine is a feature of
+/// both crates (`fork-delta` and `spec-audit` were, until M1e2 S1e2.1c.5
+/// retired them with the walk). Sorted because the line is compared by eye between two binaries, and a set
 /// printed in declaration order is a set two crates can disagree about the
 /// order of.
 pub fn features() -> Vec<&'static str> {

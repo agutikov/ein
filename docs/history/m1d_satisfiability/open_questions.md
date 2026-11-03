@@ -441,7 +441,7 @@ no node is ever *complete*, so `stop_after = 1` never has anything to stop at.
 ### Where the word comes from
 
 Two functions, and only one of them looks at the cap
-([`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)):
+(`solve.rs`):
 
 ```rust
 if layer == self.opts.max_set_size {

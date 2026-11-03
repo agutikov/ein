@@ -651,10 +651,10 @@ impl Saturator {
 
     /// Record the firing a caller driving `step` itself just consumed.
     ///
-    /// `saturate` does this internally; the fail-fast fork loop
-    /// ([`crate::commitment`]) drives `step` directly so it can stop at the
-    /// firing that kills the branch, and the runaway-budget message reads
-    /// `last_firing`.
+    /// `saturate` does this internally; the walk's fail-fast fork loop
+    /// (`commitment.rs`, deleted with the walk at M1e2 S1e2.1c.5) drove `step`
+    /// directly so it could stop at the firing that kills the branch, and the
+    /// runaway-budget message reads `last_firing`.
     pub fn set_last_firing(&mut self, firing: Firing) {
         self.last_firing = Some(firing);
     }

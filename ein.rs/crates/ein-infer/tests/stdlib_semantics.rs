@@ -27,8 +27,6 @@
 
 use ein_core::{FactId, Kb, Symbol, Terms, Value};
 use ein_infer::events::sexpr;
-use ein_infer::solve::{NoDumper, SolveOptions, solve};
-use ein_infer::verdict::{Answer, Verdict};
 use ein_infer::{Events, SaturateError, Saturator, Session, SharedMemo};
 use ein_ir::{Ast, load_file, parse};
 use std::path::PathBuf;
@@ -606,26 +604,41 @@ fn the_native_mirror_computes_the_same_closure_as_the_stdlib_rule() {
 
 // ── symmetric relations under search ───────────────────────────────
 
-/// Solve a corpus file exhaustively — `stop_after: None`, because a truncated
-/// search reports `k` as a lower bound and every claim below is about the
-/// exact count.
-fn solve_exhaustively(rel: &str) -> (Answer, u64, bool, Terms) {
+/// `ein solve FILE --maximal`, exhausted: the maximal line's states, each
+/// read whole through the node function every route uses. Since M1e2
+/// S1e2.1c.5 the two tests below ask a route: the walk they first asked, whose
+/// models were the maximal line's states, was deleted on the user's ruling of
+/// 2026-11-03. The claim is the same one — two orientations of one guess are
+/// one state, and two placements are two.
+fn maximal_line<R>(rel: &str, read: impl FnOnce(&mut [Kb], &mut Terms) -> R) -> R {
+    use ein_infer::explore::{self, Ask, Mode, Which};
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let mut kb = load_file(&mut ast, &mut terms, &repo_root().join(rel)).expect("loads");
-    let mut events = Events::off();
-    let opts = SolveOptions {
-        stop_after: None,
-        ..SolveOptions::default()
-    };
-    let solved = solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
-        .unwrap_or_else(|e| panic!("{rel} solves: {e:?}"));
-    (
-        solved.answer,
-        solved.stats.solution_nodes,
-        solved.stats.exhausted,
-        terms,
+    let a = explore::run(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &explore::Options::new(Mode {
+            which: Which::Maximal,
+            ask: Ask::Describe,
+        }),
     )
+    .unwrap_or_else(|e| panic!("{rel} solves: {e}"));
+    assert!(a.exhausted, "{rel}: the maximal line is not known");
+    let sets: Vec<Vec<ein_core::FactId>> = a
+        .states
+        .iter()
+        .map(|s| {
+            s.set
+                .iter()
+                .map(|&b| a.candidates[b as usize].fact)
+                .collect()
+        })
+        .collect();
+    let mut nodes =
+        ein_infer::region::Nodes::new(&mut kb, &mut terms, &ast, &a.candidates).expect("prepares");
+    nodes.with_fixpoints(&sets, read).expect("saturates")
 }
 
 fn holds(kb: &Kb, terms: &Terms, rel: &str, a: &str, b: &str) -> bool {
@@ -652,20 +665,21 @@ fn holds(kb: &Kb, terms: &Terms, rel: &str, a: &str, b: &str) -> bool {
 /// because `k = 1` says nothing about *which* model survived.
 #[test]
 fn an_undecided_symmetric_pair_is_one_model_not_two() {
-    let (answer, k, exhausted, terms) = solve_exhaustively("examples/branching/05_mini_zebra.ein");
-    assert!(exhausted, "uniqueness needs an exhausted search");
-    assert_eq!(k, 1, "the two orientations of one guess are one model");
-    let Answer::Verdict(Verdict::Solution(s)) = &answer else {
-        panic!("expected a Solution, got {}", answer.as_str());
-    };
-    assert!(
-        holds(&s.kb, &terms, "co-located", "Bob", "Coffee"),
-        "Bob drinks the Coffee"
-    );
-    assert!(
-        holds(&s.kb, &terms, "co-located", "Bob", "Dog"),
-        "Bob owns the Dog"
-    );
+    maximal_line("examples/branching/05_mini_zebra.ein", |states, terms| {
+        assert_eq!(
+            states.len(),
+            1,
+            "the two orientations of one guess are one model"
+        );
+        assert!(
+            holds(&states[0], terms, "co-located", "Bob", "Coffee"),
+            "Bob drinks the Coffee"
+        );
+        assert!(
+            holds(&states[0], terms, "co-located", "Bob", "Dog"),
+            "Bob owns the Dog"
+        );
+    });
 }
 
 /// **`a-two-model-symmetric-puzzle-is-not-double-counted`.**
@@ -679,13 +693,10 @@ fn an_undecided_symmetric_pair_is_one_model_not_two() {
 /// once pins the dedup between those two failures.
 #[test]
 fn a_genuinely_ambiguous_symmetric_puzzle_reports_exactly_its_two_models() {
-    let (answer, k, exhausted, _) = solve_exhaustively("examples/branching/04_two_levels.ein");
-    assert!(exhausted);
+    let k = maximal_line("examples/branching/04_two_levels.ein", |states, _| {
+        states.len()
+    });
     assert_eq!(k, 2, "two placements, not four orientations");
-    let Answer::Verdict(Verdict::Ambiguity(models)) = &answer else {
-        panic!("expected an Ambiguity, got {}", answer.as_str());
-    };
-    assert_eq!(models.len(), 2, "and both are recorded as branches");
 }
 
 // ── reflective activation ──────────────────────────────────────────

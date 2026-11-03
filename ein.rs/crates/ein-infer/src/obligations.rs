@@ -33,9 +33,10 @@
 //! `(false)` can be a fact because contradiction is extension-stable: a dead
 //! state stays dead under any addition. Openness is the opposite — it exists
 //! to be destroyed by an extension — so a stored `open` would survive its own
-//! discharge in a fork that paid it. The tally is state of the **search
-//! lattice node** ([`crate::commitment::CommitmentSetResult::owes`]), beside
-//! `kind`, which is the other per-node verdict that is not a fact.
+//! discharge in a fork that paid it. The tally is state of the **node**
+//! (`owes` on [`crate::region`]'s node and the routes' states; the walk's
+//! `CommitmentSetResult::owes` until M1e2 S1e2.1c.5 deleted the walk), beside
+//! its dead bit, which is the other per-node verdict that is not a fact.
 //!
 //! ### What it costs
 //!

@@ -60,12 +60,12 @@ use rustc_hash::{FxHashMap, FxHashSet};
 
 use crate::compile::SharedMemo;
 use crate::detector::{self, StaleCheck, Warning};
+use crate::error::SolveError;
 use crate::events::{Events, Level, sexpr};
 use crate::hypgen::HypGenStats;
 use crate::monotone::Monotonicity;
 use crate::plan::Plan;
 use crate::saturator::{Saturator, Session, Snapshot};
-use crate::solve::SolveError;
 
 /// The status bit of a node that derives `(false)`.
 pub const DEAD: u8 = 1;

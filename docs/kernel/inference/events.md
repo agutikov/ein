@@ -8,10 +8,11 @@
 object per line**, opt-in, off by default.
 Every compile miss, enqueue, firing, mirror, park/admit/retire, quiescence,
 alternative justification, obligation, load-time warning, generation rung,
-hypothesis verdict, entering, layer, no-good and writeback, in the order the
-engine performed them — with one exception, and it is declared: under
-`EIN_TRAVERSAL=tree` four of those kinds are not emitted at all, which is
-[§ `traversal`](#traversal--the-second-traversal-and-the-four-kinds-it-does-not-emit).
+hypothesis verdict, node visited, layer, monotonicity finding and region, in
+the order the engine performed them. The walk's no-good, writeback and
+traversal kinds went with the walk at M1e2 S1e2.1c.5 (2026-11-03), and
+[§ `traversal`](#traversal--the-second-traversal-and-the-four-kinds-it-does-not-emit)
+is kept as the record of the walk's tree.
 
 **[§ Events](#events) is the enumeration; that sentence is a summary of it.**
 The two were parallel copies until M1e `CD-M2`, and the sentence was the one
@@ -254,9 +255,16 @@ carrying it makes the heap's pop order checkable rather than inferred.
 | `hypskip` | a **pre-candidate** skip — *verbose only* | `relation`, `reason`, `object` (for `self_edge`) |
 | `enter` | `try_commitment_set` returns. **In a region run**, after each node's own events, in visit order | `layer`, `commitment`, `kind`, `n_firings`, `core`. **In a region run**: `layer` (the commitment's size), `commitment` (sorted), `kind` ∈ {`dead`, `owing`, `in-r`}, `owes`, `core` |
 | `layer` | every way out of a layer. **In a region run**, at the end of each route-1 or state-route layer | the census row — sixteen counters, below. **In a region run**: `layer` (0-based, the commitments' size), `visited`, `dead`, `owing`, `r`, `facts` — route 1's own counters. Under the state route (describe on a monotone program, M1e2 S1e2.1c.2) `layer` is the layer's index — root's 0, then one per state size extended — and the counters are its saturations |
-| `nogood` | `emit_nogood` | `clause`, `emitted`, `subsumed` |
-| `writeback` | singleton `(not h)` / forced-positive promotion | `fact`, `reason` |
-| `traversal` | the **second traversal** deciding whether to run — once at root, and again at any node that changes its mind. `EIN_TRAVERSAL=tree` only | `kind` (always `tree`), `verdict` ∈ {`accepted`, `declined`}, `reason` (the rung `mode`), then `max_set_size` + `stop_after` on `accepted` and `depth` on a node's `declined` |
+
+**Three kinds left this table at M1e2 S1e2.1c.5 (2026-11-03)**, the walk's:
+`nogood` (`emit_nogood`: `clause`, `emitted`, `subsumed`), `writeback` (a
+singleton `(not h)` or a forced-positive promotion: `fact`, `reason`) and
+`traversal` (its tree deciding whether to run: `kind`, `verdict`, `reason`,
+then `max_set_size` + `stop_after` or `depth`). No command emitted them since
+S1e2.1a.5's switch, and no code since S1e2.1c.5 deleted the walk on the user's
+ruling of that day. They went as S1e2.1a.5 took the walk's `verdict`, without
+a version bump: no stream any command has written since the switch carried
+one. `events_reference.rs` holds the page and the emitters equal both ways.
 
 `hyp`'s `verdict` is the *name of the thing that dropped the candidate*, not a
 boolean: `raw == emitted + Σ filtered` is the invariant `HypGenStats` already
@@ -359,6 +367,9 @@ goldens unreadable; ground rule 4 says an instrumented run is not a benchmark
 anyway. `utils/layer_census.py` times a **second, bare** child for that reason.
 
 #### `traversal` — the second traversal, and the four kinds it does not emit
+
+**A record, since M1e2 S1e2.1c.5 deleted the walk and its tree (2026-11-03)**:
+what the kind meant while the walk's tree emitted it.
 
 Added by M1e
 [S1e.3.2](../../history/m1e_review_processing/README.md#s1e32--semantics-medium)
@@ -491,11 +502,9 @@ switch every run, a bare description included, and `ein test`'s too:
    counters;
 5. **`region`**, last.
 
-`nogood`, `writeback` and `traversal` are the walk's, and no command emits
-them since the switch: `cli_semantics::every_event_kind_the_schema_defines_is_reachable_from_the_corpus`
-asserts them unreached, so a route that starts narrating one is noticed. The
-walk's payloads in the tables above are its record, reached from the library
-only.
+`nogood`, `writeback` and `traversal` were the walk's: no command emitted them
+since the switch, and they left the schema with the walk at S1e2.1c.5
+(§ Search layer).
 `region_modes.rs`'s `the_event_stream_is_the_runs_and_jobs_move_no_line`
 holds the shape and the `-j` invariance.
 

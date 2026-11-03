@@ -74,7 +74,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     let t0 = Instant::now();
     let outcome = match region::compute(&mut kb, &mut terms, &ast, &opts, &mut on_projection) {
         Ok(o) => o,
-        Err(ein_infer::solve::SolveError::Deadline) => {
+        Err(ein_infer::SolveError::Deadline) => {
             eprintln!(
                 "** aborted: --max-time {} s reached before the cube was done **",
                 max_time.unwrap_or(0.0)
@@ -90,8 +90,6 @@ pub fn run(m: &ArgMatches) -> i32 {
         let inputs = ein_render::dump::RegionInputs {
             source: &file,
             limit,
-            max_set_size: 0,
-            stop_after: None,
         };
         if let Err(e) = ein_render::dump::write_cube_dir(Path::new(dir), &outcome, &terms, &inputs)
         {

@@ -11,7 +11,6 @@
 
 #![forbid(unsafe_code)]
 
-pub mod answer;
 pub mod builder;
 pub mod constraints;
 pub mod derivation;
@@ -20,7 +19,6 @@ pub mod dump;
 pub mod grid;
 pub mod ir_dot;
 pub mod kb_dot;
-pub mod lattice_dag;
 pub mod models;
 pub mod palette;
 pub mod read_out;
@@ -31,7 +29,6 @@ pub mod shape;
 pub mod slice;
 pub mod trace;
 
-pub use answer::{render_answer, render_solution_table};
 pub use constraints::render_constraints;
 pub use derivation::{derivation_dag_to_dot, fact_dot_id};
 pub use dot_util::{esc, fact_key, fact_label, hashed_id, multiline, quote, value_label};
@@ -43,13 +40,9 @@ pub use dot_util::{esc, fact_key, fact_label, hashed_id, multiline, quote, value
 pub use ein_core::render_why;
 pub use ir_dot::{DotOpts, TraceView, to_dot as ir_to_dot, to_dot_form};
 pub use kb_dot::{ColourBy, KbDotOpts, to_dot as kb_to_dot};
-pub use lattice_dag::{FULL_VIEW_FALLBACK, LatticeSource, LatticeView, render_lattice};
 pub use models::{KeyOutcome, ModelsForm, key_table};
 pub use palette::{PALETTE, hash_color};
 pub use rules::{RuleMode, render_rule_form, render_rules_forms};
 pub use shape::dot_shape;
 pub use slice::{render_slice, render_solution, render_state};
-pub use trace::{
-    LinearizeOpts, Mode, Reductio, Trace, TraceStep, linearize, parse_trace_steps, render_markdown,
-    trace_to_ir,
-};
+pub use trace::{TraceStep, steps_of, steps_of_with};

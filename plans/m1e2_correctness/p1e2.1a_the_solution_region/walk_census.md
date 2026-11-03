@@ -18,7 +18,7 @@ Taken 2026-10-16 on `a9d4013a`, release build. Its engine sources are
 `06d62a7c`'s: the two commits since add an example and plan pages. The run
 writes one JSON line per cell on stdout and the census on stderr, and the
 tables below were read off both.
-[`walk_census.rs`](../../../ein.rs/crates/ein-infer/examples/walk_census.rs)
+`walk_census.rs`
 is the example. R comes from
 [`shared/known.rs`](../../../ein.rs/crates/ein-infer/examples/shared/known.rs),
 which `walk_vs_region` now shares.

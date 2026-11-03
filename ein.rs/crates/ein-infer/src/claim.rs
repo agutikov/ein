@@ -27,11 +27,11 @@ use ein_ir::claim::{Claim, Region as Stated};
 use ein_ir::expect::Model;
 
 use crate::described::{self, Described};
+use crate::error::SolveError;
 use crate::events::sexpr;
 use crate::expect::{Outcome, Report};
 use crate::explore::Route;
 use crate::region::{self, Axes, fan_out, pool_of, prepare};
-use crate::solve::SolveError;
 use crate::{downset, region::Candidate};
 
 /// How a claim is checked: the budgets of the two routes.

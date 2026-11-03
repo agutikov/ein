@@ -67,9 +67,9 @@ is a curiosity or the whole cost.
 
 T1d.10.1.1 adds it in two pieces.
 
-**In the engine**, [`apriori::filter_reason`](../../../ein.rs/crates/ein-infer/src/apriori.rs)
+**In the engine**, `apriori::filter_reason`
 returns *which* of the filter's two questions rejected a candidate rather than
-a bare `bool`, and [`LayerCensus`](../../../ein.rs/crates/ein-infer/src/solve.rs)
+a bare `bool`, and `LayerCensus`
 accumulates a sixteen-column row per layer, emitted as a `layer`
 event ([events.md](../../../docs/kernel/inference/events.md#layer--the-clause-yield-census)).
 Three design points are worth stating because each was a choice:
@@ -353,7 +353,7 @@ survives. The next layer's join emits `prefix + (s_last, t_last)` out of two
 surviving sets, so every element of every candidate is in `alive` — and nothing
 touches `alive` between the retain and the join. Layer 1 is not filtered at all.
 So the arm is unreachable from the solve loop, and
-[`layer_census.rs`](../../../ein.rs/crates/ein-infer/tests/layer_census.rs)
+`layer_census.rs`
 pins it.
 
 `filter_candidate`'s own doc says the check covers *"the single-element
@@ -572,7 +572,7 @@ is 94 %.
 - [`utils/layer_census.py`](../../../utils/layer_census.py) — the instrument
 - [events.md § `layer`](../../../docs/kernel/inference/events.md#layer--the-clause-yield-census)
   — the transport
-- [`ein-infer/tests/layer_census.rs`](../../../ein.rs/crates/ein-infer/tests/layer_census.rs)
+- `ein-infer/tests/layer_census.rs`
   — the arithmetic, and the inert filter arm
 - [F9](../../../plans/followups/f9_e_catalog.md) — the rejected search optimisations,
   every one of them judged on a puzzle from §2's left-hand column

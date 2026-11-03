@@ -5,16 +5,13 @@
 //!
 //! For each file and each mode it runs [`explore::run`], the routes
 //! `ein solve` takes, and prints one JSON line: the route, the licences,
-//! saturations, facts, the answer and the wall. With `--walk` it runs the
-//! walk's library instead, exhausted (`-e`), and prints its enterings and its
-//! models; run it under `EIN_TRAVERSAL=tree` for the walk's obligation tree,
-//! which reads that variable as it always has. Nothing here is read by a
-//! route.
+//! saturations, facts, the answer and the wall. Its `--walk` arm, which ran
+//! the walk's library for comparison, went with the walk at M1e2 S1e2.1c.5
+//! (2026-11-03). Nothing here is read by a route.
 //!
 //! ```sh
 //! cargo build --release -p ein-infer --example flags_reach
 //! ein.rs/target/release/examples/flags_reach [--budget F] [--jobs J] FILE…
-//! EIN_TRAVERSAL=tree ein.rs/target/release/examples/flags_reach --walk FILE…
 //! ein.rs/target/release/examples/flags_reach --table FILE…   # L5's table, timed
 //! ```
 
@@ -22,7 +19,6 @@ use std::path::Path;
 use std::time::Instant;
 
 use ein_core::Terms;
-use ein_infer::Events;
 use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_ir::{Ast, load, parse};
 use serde_json::json;
@@ -58,7 +54,6 @@ fn main() {
     })
     .budget;
     let mut jobs = 1usize;
-    let mut walk = false;
     let mut table = false;
     let mut files: Vec<String> = Vec::new();
     let mut args = std::env::args().skip(1);
@@ -71,7 +66,6 @@ fn main() {
                     .expect("--budget F")
             }
             "--jobs" => jobs = args.next().and_then(|s| s.parse().ok()).expect("--jobs J"),
-            "--walk" => walk = true,
             "--table" => table = true,
             f => files.push(f.to_string()),
         }
@@ -92,39 +86,6 @@ fn main() {
                 }),
                 Ok(None) => json!({"file": file, "instances": 0, "prepare_and_table_ms": ms}),
                 Err(e) => json!({"file": file, "error": e.to_string()}),
-            };
-            println!("{line}");
-            continue;
-        }
-        if walk {
-            let (mut kb, mut terms, ast) = loaded(file);
-            let opts = ein_infer::solve::SolveOptions {
-                stop_after: None,
-                max_set_size: u32::MAX,
-                ..ein_infer::solve::SolveOptions::default()
-            };
-            let t0 = Instant::now();
-            let r = ein_infer::solve::solve(
-                &mut kb,
-                &mut terms,
-                &ast,
-                &mut Events::off(),
-                &mut ein_infer::solve::NoDumper,
-                &opts,
-            );
-            let line = match r {
-                Ok(s) => json!({
-                    "file": file,
-                    "walk": std::env::var("EIN_TRAVERSAL").unwrap_or_default(),
-                    "answer": s.answer.as_str(),
-                    "models": s.stats.solution_nodes,
-                    "exhausted": s.stats.exhausted,
-                    "enterings": s.stats.base.enterings_total,
-                    "alive": s.stats.base.enterings_alive,
-                    "saturations": s.stats.base.saturate_count,
-                    "wall_ms": t0.elapsed().as_secs_f64() * 1000.0,
-                }),
-                Err(e) => json!({"file": file, "walk": "error", "error": e.to_string()}),
             };
             println!("{line}");
             continue;

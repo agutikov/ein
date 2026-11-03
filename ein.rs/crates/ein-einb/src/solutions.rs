@@ -23,13 +23,42 @@ use ein_core::facts::FactId;
 use ein_core::intern::Symbol;
 use ein_core::value::Value;
 use ein_core::{Kb, Terms};
-use ein_infer::solve::{BaseStats, MonotonicStats};
-use ein_infer::verdict::{Answer, Verdict};
 use ein_ir::Ast;
 
 use crate::tables::Maps;
 use crate::wire::{Reader, Writer};
 use crate::{EinbError, Result};
+
+/// The walk's per-candidate counters, as the section stores them.
+///
+/// They were `ein_infer::solve`'s until M1e2 S1e2.1c.5 deleted the walk on
+/// the user's ruling of 2026-11-03. The section's format did not move with
+/// it: no command writes the section, and a container that carries one still
+/// reads.
+#[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
+pub struct BaseStats {
+    pub enterings_total: u64,
+    pub enterings_alive: u64,
+    pub enterings_dead_pre: u64,
+    pub enterings_dead_post: u64,
+    pub facts_merged: u64,
+    pub forced_positives: u64,
+    pub saturate_count: u64,
+    pub layers_explored: u64,
+    pub nogoods_emitted: u64,
+    pub nogoods_subsumed: u64,
+}
+
+/// The walk's cumulative counters for one run, as the section stores them.
+#[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
+pub struct MonotonicStats {
+    pub base: BaseStats,
+    /// `k` — the deduped solution-node count.
+    pub solution_nodes: u64,
+    /// False when the lattice was **not** fully explored, so `k` is a lower
+    /// bound.
+    pub exhausted: bool,
+}
 
 /// The verdict, without the `Kb`s hanging off it.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -90,29 +119,25 @@ pub struct Solutions {
 }
 
 impl Solutions {
-    /// Read a finished solve into the stored shape.
+    /// The stored shape of `models`, each a state's whole KB, under
+    /// `verdict`.
     ///
     /// `base` is the KB the file will hold — the delta of every node is taken
     /// against it, so the two have to be saved together or the deltas name
-    /// nothing.
+    /// nothing. It took the walk's answer until M1e2 S1e2.1c.5 deleted the
+    /// walk; a caller now hands it the states a route reached, read through
+    /// `ein_infer::region::Nodes`.
     pub fn of(
         base: &Kb,
         terms: &mut Terms,
         ast: &Ast,
-        answer: &Answer,
+        verdict: VerdictKind,
+        models: &[&Kb],
+        unsat_core: Vec<FactId>,
         stats: MonotonicStats,
     ) -> Solutions {
-        let models: Vec<&Kb> = match answer {
-            Answer::Verdict(Verdict::Solution(s)) => vec![&s.kb],
-            Answer::Verdict(Verdict::Ambiguity(all)) => all.iter().map(|s| &s.kb).collect(),
-            // An open state is stored like a model: the container's job is to
-            // hand back what the solve reached, and the verdict tag beside it
-            // is what says these are owed rather than finished.
-            Answer::Verdict(Verdict::Open { states, .. }) => states.iter().map(|s| &s.kb).collect(),
-            _ => Vec::new(),
-        };
         let nodes = models
-            .into_iter()
+            .iter()
             .map(|kb| SolutionNode {
                 state_key: ein_infer::state_key(kb),
                 delta: kb.facts().filter(|f| !base.contains(*f)).collect(),
@@ -120,17 +145,8 @@ impl Solutions {
             })
             .collect();
         Solutions {
-            verdict: match answer {
-                Answer::Verdict(Verdict::Solution(_)) => VerdictKind::Solution,
-                Answer::Verdict(Verdict::Ambiguity(_)) => VerdictKind::Ambiguity,
-                Answer::Verdict(Verdict::Contradiction { .. }) => VerdictKind::Contradiction,
-                Answer::Verdict(Verdict::Open { .. }) => VerdictKind::Open,
-                Answer::Aborted { .. } => VerdictKind::Aborted,
-            },
-            unsat_core: match answer {
-                Answer::Verdict(Verdict::Contradiction { unsat_core }) => unsat_core.clone(),
-                _ => Vec::new(),
-            },
+            verdict,
+            unsat_core,
             nodes,
             stats,
         }

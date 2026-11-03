@@ -4,7 +4,12 @@
 //! [P1a.3](../../../../docs/history/m1a_rust/README.md#p1a3--deductive-core) (compile →
 //! match → saturate → the NAF boundary) and
 //! [P1a.4](../../../../docs/history/m1a_rust/README.md#p1a4--search-layer) (the
-//! hypothesis loop above it).
+//! hypothesis loop above it). The search is the region's since M1e2: every
+//! question about `R` is [`explore`]'s, answered by a route. P1a.4's
+//! hypothesis loop, the walk, had no command since S1e2.1a.5's switch and was
+//! deleted at S1e2.1c.5 on the user's ruling of 2026-11-03; its generator
+//! ([`hypgen`]) stays, because H is built by its ladder and two summary blocks
+//! still call it.
 //!
 //! The shape of a plan, the order of a firing sequence and the text of an
 //! error are all observable, and fixed: where no other page states one, it is
@@ -15,27 +20,23 @@
 
 #![forbid(unsafe_code)]
 
-pub mod apriori;
 /// What this build has compiled in — `ein --version`'s feature line.
 pub mod build;
 pub mod canon;
 pub mod claim;
 pub mod closed;
-pub mod commitment;
 pub mod compile;
 pub mod contradiction;
 pub mod described;
 pub mod detector;
 pub mod downset;
 pub mod engine;
+pub mod error;
 pub mod events;
 pub mod expect;
 pub mod explain;
 pub mod explore;
 pub mod firing;
-/// The T1a.6.9.2 verification instrument — off unless the build asked for it.
-#[cfg(feature = "fork-delta")]
-pub mod fork_audit;
 pub mod hrule;
 pub mod hypgen;
 pub mod invariant;
@@ -44,40 +45,30 @@ pub mod match_;
 pub mod monotone;
 pub mod mt19937;
 pub mod naf_deps;
-pub mod nogoods;
 pub mod oblgen;
 pub mod obligations;
 pub mod plan;
 pub mod predicates;
 pub mod read_out;
 pub mod region;
-pub mod sanity;
 pub mod saturator;
 pub mod shape;
-pub mod solve;
-/// The S1a.7.0 measurement instrument — off unless the build asked for it.
-#[cfg(feature = "spec-audit")]
-pub mod spec_audit;
 pub mod states;
 pub mod transversal;
 pub(crate) mod tree;
 pub mod verdict;
 
-pub use apriori::{
-    CanonicalSetId, Filter, apriori_prefix_join, canonicalise, filter_candidate, filter_reason,
-    generate_layer, layer_1, order_candidates,
-};
 pub use canon::{state_digest, state_key};
 pub use closed::{emit_closed, producible_relations};
-pub use commitment::{CommitmentSetResult, Kind, try_commitment_set};
 pub use compile::{
     CompileError, PlanKey, PlanMemo, SharedMemo, activators_for, asserted_relation, compile_rule,
     naf_relation_refs, negated_relation, plan_key,
 };
 pub use contradiction::{Contradiction, contradicts, detect, has_contradiction};
 pub use engine::Engine;
+pub use error::SolveError;
 pub use events::{Events, Level};
-pub use expect::{Outcome, Report, check};
+pub use expect::{Outcome, Report};
 pub use explain::{
     Explanation, ExplanationBudget, explain, minimal_contradiction_frontier,
     smallest_contradiction_frontier,
@@ -91,22 +82,15 @@ pub use hypgen::{
 pub use lookahead::Lookahead;
 pub use match_::{Emit, Match, Matcher};
 pub use naf_deps::{NafDep, compute_naf_map, derived_naf_warnings};
-pub use nogoods::emit_nogood;
 pub use obligations::{Owed, Owes};
 pub use plan::{
     Disjunct, GuardArg, GuardArgKind, MAX_REGS, NafGuard, Plan, PlanId, Probe, ProbeSrc, Reg,
     RelStep, Slot, Span, Step,
 };
 pub use predicates::Pred;
-pub use sanity::{SanityError, check_commutativity};
 pub use saturator::{SaturateError, Saturator, Session, Snapshot};
 pub use shape::{
-    commit_shape, explain_shape, hyp_shape, hyp_shape_with, lattice_shape, match_shape, naf_map,
-    plan_shape, plan_shape_with, saturate_events, solve_shape,
+    explain_shape, hyp_shape, hyp_shape_with, match_shape, naf_map, plan_shape, plan_shape_with,
+    saturate_events,
 };
-pub use solve::{
-    DeadCommitment, Dumper, EnteredRecord, EnteringInfo, LatticeProof, LatticeStats, LayerCensus,
-    MonotonicStats, NoDumper, OnBudget, Promotion, SolveError, SolveOptions, Solved, Universe,
-    solve,
-};
-pub use verdict::{Answer, Solution, Verdict, goal_bindings, query_value, solve_value};
+pub use verdict::{goal_bindings, query_value, solve_value};

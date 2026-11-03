@@ -10,7 +10,7 @@
 > | what this page presents as current | what holds today |
 > |---|---|
 > | **multi-parent integrate** — every layer-`k` set stores its `k` parents and the bubble runs through all of them (§ *Multi-parent intrinsic to BFS-by-size*) | dropped: under monotone saturation the nogood bubble is N-way idempotent and the unconditional bubble is always-true. Flat writes, and a learned no-good filtered by Apriori |
-> | **`try_branch(parent_kb, h)` once per hypothesis**, with `try_commitment_set` as *"the future commitment-set primitive"* parked in F9 (§ *Saturation arc as a first-class step*) | [`commitment::try_commitment_set`](../../../ein.rs/crates/ein-infer/src/commitment.rs) shipped and is the only entry; `try_branch` and `BranchResult` are the removed tree solver's and exist nowhere |
+> | **`try_branch(parent_kb, h)` once per hypothesis**, with `try_commitment_set` as *"the future commitment-set primitive"* parked in F9 (§ *Saturation arc as a first-class step*) | `commitment::try_commitment_set` shipped and is the only entry; `try_branch` and `BranchResult` are the removed tree solver's and exist nowhere |
 > | **state-*hash* dedup as primary structure** (§ *Dedup as primary structure, not optimisation*) | [`canon::state_key`](../../../ein.rs/crates/ein-infer/src/canon.rs) — the canonical fact set compared exactly, P1.21 R1. The 16-hex digest is a display id within one dump and never identity |
 >
 > Kept in place, for the reason and by the rule stated in

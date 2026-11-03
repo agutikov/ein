@@ -75,11 +75,11 @@ use crate::compile::SharedMemo;
 use crate::described::{self, Described};
 use crate::detector::{self, StaleCheck, StaleNode, Status, Warning};
 use crate::downset::{self, Declined, is_subset};
+use crate::error::SolveError;
 use crate::events::Events;
 use crate::monotone::Monotonicity;
 use crate::region::{self, Axes, Candidate, Outcome, Pool, Prepared, fan_out, pool_of};
 use crate::saturator::Snapshot;
-use crate::solve::SolveError;
 
 /// The largest step an exploration takes. Steps start at one node and double,
 /// so a question decided by its first node costs one saturation, and a long

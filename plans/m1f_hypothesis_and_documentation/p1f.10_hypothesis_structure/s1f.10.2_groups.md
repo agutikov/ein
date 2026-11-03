@@ -94,7 +94,7 @@ depends on the pivot choice. Two decisions:
    graph is benign. **Bound it, and log what was dropped** — the phase's own
    *no silent caps* rule.
 2. **In what order?** Canonical, by the same `cmp_set` the lattice orders
-   commitments with ([`apriori.rs`](../../../ein.rs/crates/ein-infer/src/apriori.rs)),
+   commitments with (`apriori.rs`),
    so that the cover is a function of the program and not of the enumeration.
 
 ### Task T1f.10.2.3 — The cover, as a thing the engine could hold

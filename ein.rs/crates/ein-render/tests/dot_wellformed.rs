@@ -40,15 +40,15 @@
 //! compile-error fixtures, and each is skipped by its reason. Every other
 //! error fails the sweep.
 //!
-//! **The walk's three views are left out by name**, `lattice`,
-//! `lattice-full` and `slice` (`ein_render::shape::SOLVE_VIEWS`): they render
-//! the walk's proof, which S1e2.1c.5 deletes on the user's ruling of
-//! 2026-11-03, and no command reaches them.
+//! **The walk's three views are gone**, `lattice`, `lattice-full` and
+//! `slice`: they rendered the walk's proof, and went with the walk at M1e2
+//! S1e2.1c.5 (2026-11-03). Until that commit this test left them out by name,
+//! so that a view erroring once its engine was gone could not pass here.
 
 use ein_core::Terms;
 use ein_corpus::{corpus_files, repo_root};
 use ein_ir::{Ast, parse};
-use ein_render::shape::{KB_VIEWS, SOLVE_VIEWS, all_views, dot_shape};
+use ein_render::shape::{KB_VIEWS, all_views, dot_shape};
 use std::io::Write;
 use std::process::{Command, Stdio};
 
@@ -186,20 +186,10 @@ fn a_view_splits_into_whole_digraphs() {
     assert_eq!(digraphs("digraph a { x; }\n").len(), 1);
 }
 
-/// The walk's views, which this no longer renders (the module note).
-const WALK_VIEWS: [&str; 3] = ["lattice", "lattice-full", "slice"];
-
 #[test]
 fn graphviz_accepts_every_view_of_every_corpus_file() {
     require_graphviz();
-    assert_eq!(
-        SOLVE_VIEWS, WALK_VIEWS,
-        "the views that run the engine are the walk's three"
-    );
-    let views: Vec<&str> = all_views()
-        .into_iter()
-        .filter(|v| !WALK_VIEWS.contains(v))
-        .collect();
+    let views = all_views();
     let (mut bad, mut checked) = (Vec::new(), 0usize);
     // Views that only Graphviz's own cross-graph bug objected to, kept for the
     // summary line: the check reached a verdict on them, it just took a second
@@ -237,7 +227,7 @@ fn graphviz_accepts_every_view_of_every_corpus_file() {
             let mut ast = Ast::new();
             let mut terms = Terms::new();
             let forms = parse(&mut ast, &text, path.to_str()).expect("it parsed above");
-            let out = match dot_shape(&mut ast, &mut terms, &forms, path.parent(), view, 1) {
+            let out = match dot_shape(&mut ast, &mut terms, &forms, path.parent(), view) {
                 Ok(out) => out,
                 Err(_) if !loads && KB_VIEWS.contains(view) => continue,
                 Err(_) if !saturates && *view == "kb-since" => continue,

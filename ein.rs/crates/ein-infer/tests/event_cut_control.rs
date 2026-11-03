@@ -18,26 +18,31 @@
 //! The last two are the *positive* controls: a cut that reported them would
 //! still be comparing narration. Run all three and the cut is calibrated in
 //! both directions rather than asserted.
+//!
+//! **Since M1e2 S1e2.1c.5 the streams are a route's** (`ein solve FILE
+//! --events`, describe): the walk whose streams this first cut was deleted on
+//! the user's ruling of 2026-11-03, and the cut is what `id_order_invariance`
+//! and `jobs_invariance` compare route streams with.
 
 use ein_core::Terms;
 use ein_corpus::repo_root;
 use ein_infer::events::{Buffer, Events, Level};
-use ein_infer::solve::{NoDumper, OnBudget, SolveOptions, solve};
+use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_ir::{Ast, parse};
 use serde_json::Value;
 
-/// The same three fixtures `golden_events.rs` pins, for the same reason: they
-/// are the smallest set that emits the whole elided vocabulary. A control that
-/// ran on a stream with no redundant firings would pass its second row by
-/// having nothing to delete.
-const STREAMS: [(&str, bool); 3] = [
-    ("examples/features/06_symmetric_native.ein", false),
-    ("examples/branching/12_typed_blind_solve.ein", false),
-    ("examples/domain_elim/ab.ein", false),
+/// The three fixtures `golden_events.rs` pinned until the walk left, for the
+/// same reason: they are the smallest set that emits the whole elided
+/// vocabulary. A control that ran on a stream with no redundant firings would
+/// pass its second row by having nothing to delete.
+const STREAMS: [&str; 3] = [
+    "examples/features/06_symmetric_native.ein",
+    "examples/branching/12_typed_blind_solve.ein",
+    "examples/domain_elim/ab.ein",
 ];
 
 /// One fixture's whole `--events` stream at `Level::Verbose`, parsed.
-fn stream(rel: &str, exhaustive: bool) -> Vec<Value> {
+fn stream(rel: &str) -> Vec<Value> {
     let path = repo_root().join(rel);
     let text = std::fs::read_to_string(&path).expect("the fixture is checked in");
     let mut ast = Ast::new();
@@ -47,14 +52,11 @@ fn stream(rel: &str, exhaustive: bool) -> Vec<Value> {
         ein_ir::load(&mut ast, &mut terms, &forms, path.parent()).expect("the fixture loads");
     let buf = Buffer::new();
     let mut events = Events::to(Box::new(buf.clone()), Level::Verbose);
-    let opts = SolveOptions {
-        stop_after: if exhaustive { None } else { Some(1) },
-        max_set_size: 5,
-        on_budget: OnBudget::Verdict,
-        ..SolveOptions::default()
-    };
-    solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts)
-        .expect("the fixture solves");
+    let opts = explore::Options::new(Mode {
+        which: Which::All,
+        ask: Ask::Describe,
+    });
+    explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events).expect("the fixture solves");
     buf.to_string_lossy()
         .lines()
         .filter(|l| !l.trim().is_empty())
@@ -95,8 +97,8 @@ fn the_cut_reports_a_dropped_derivation_and_ignores_dropped_narration() {
     let mut applied: Vec<usize> = vec![0; CASES.len()];
     let mut bad: Vec<String> = Vec::new();
 
-    for (rel, exhaustive) in STREAMS {
-        let log = stream(rel, exhaustive);
+    for rel in STREAMS {
+        let log = stream(rel);
         // A control over an unchanged stream first: if a log did not agree
         // with itself, every verdict below would be noise.
         assert!(
@@ -144,8 +146,8 @@ fn the_cut_reports_a_dropped_derivation_and_ignores_dropped_narration() {
 #[test]
 fn a_deleted_narration_event_still_moves_the_elided_count() {
     let mut checked = 0usize;
-    for (rel, exhaustive) in STREAMS {
-        let log = stream(rel, exhaustive);
+    for rel in STREAMS {
+        let log = stream(rel);
         let before = ein_narration::events::split(&log).elided_total();
         for which in ["redundant", "enqueue"] {
             let Some(mutated) = mutate(&log, which) else {

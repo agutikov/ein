@@ -89,6 +89,7 @@ use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet};
 
 use crate::compile::SharedMemo;
+use crate::error::SolveError;
 use crate::events::{Events, sexpr};
 use crate::match_::Matcher;
 use crate::monotone::{self, Monotonicity, SiteKind};
@@ -96,7 +97,6 @@ use crate::obligations::{self, Owed};
 use crate::plan::{Disjunct, NafGuard, Plan, Slot, Span, Step};
 use crate::region::{Candidate, DEAD, Node, Nodes, OWING, Topology};
 use crate::saturator::DEFAULT_PRIORITY;
-use crate::solve::SolveError;
 
 /// What the warning says is assumed, on every flagged program: the node is
 /// built by fork from root, and what it should be is open.

@@ -426,8 +426,11 @@ fn env_names_read_by_shipping_crates() -> Vec<String> {
 fn the_shipped_environment_set_is_what_the_page_lists() {
     let text = page();
     let read = env_names_read_by_shipping_crates();
+    // Three since M1e2 S1e2.1c.5 deleted the walk and the five names only it
+    // read (eight before): `EIN_STDLIB`, `EIN_LEFTOVER` and
+    // `EIN_OBLIGATION_CHOICE`, the last for the summary's `root` block.
     assert!(
-        read.len() >= 5,
+        read.len() >= 3,
         "the scanner found only {read:?} — it stopped seeing the call sites"
     );
 

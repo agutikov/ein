@@ -66,12 +66,11 @@ use std::path::Path;
 
 use ein_core::Terms;
 use ein_infer::events::Events;
-use ein_infer::solve::{NoDumper, SolveOptions, Solved, solve};
-use ein_infer::verdict::{Answer, Verdict, goal_bindings};
+use ein_infer::explore::{self, Ask, Mode, Verdict, Which};
 use ein_ir::Ast;
-use ein_render::{LinearizeOpts, Mode, linearize, render_markdown};
 
-/// Solve one `.ein` file and report the model, as a downstream crate would.
+/// Ask whether one `.ein` file's answer is one state, and report it, as a
+/// downstream crate would.
 fn run(path: &Path) -> Result<String, String> {
     // 1 — the two arenas. `Ast` owns the parsed forms, `Terms` the interned
     //     symbols and values; both outlive the KB and are passed by `&mut`
@@ -85,66 +84,80 @@ fn run(path: &Path) -> Result<String, String> {
     let mut kb = ein_ir::load_file(&mut ast, &mut terms, path).map_err(|e| e.to_string())?;
     let loaded_facts = kb.n_facts();
 
-    // 3 — solve. One entry, and the verdict is *read* from the result rather
-    //     than chosen: `stop_after: Some(1)` is the fast path, `None`
-    //     exhausts the lattice and certifies unique / ambiguous / unsat.
-    //     `store_lattice` is what step 5 needs and nothing else.
-    let opts = SolveOptions {
-        stop_after: Some(1),
-        store_lattice: true,
-        ..SolveOptions::default()
-    };
-    let solved: Solved = solve(
-        &mut kb,
-        &mut terms,
-        &ast,
-        &mut Events::off(),
-        &mut NoDumper,
-        &opts,
-    )
-    .map_err(|e| e.to_string())?;
+    // 3 — root's derivation, kept for step 5's trace. The run below finds
+    //     root saturated and leaves it as it is; a caller that wants no trace
+    //     skips this.
+    let firings = ein_infer::region::root_firings(&mut kb, &mut terms, &ast, &mut Events::off())
+        .map_err(|e| e.to_string())?;
 
-    // 4 — read. `Answer::Aborted` is deliberately outside `Verdict`, so a
-    //     caller that never sets a budget still has to name it once.
+    // 4 — ask. A question is a `Mode`: which part of R (all of it, the
+    //     minimal line, the maximal line) and what is asked of it (describe
+    //     it, `Find(n)` states, or `Single`: is it exactly one state?). The
+    //     read-out answers it and reads every state it lists — each state's
+    //     `(model …)` and each query's projection classes over them.
+    let opts = explore::Options::new(Mode {
+        which: Which::All,
+        ask: Ask::Single,
+    });
+    let r =
+        ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts).map_err(|e| e.to_string())?;
+
+    // 5 — read. `verdict` is `None` only when a budget stopped the run before
+    //     it decided, so a caller that never sets one still has to name it.
     let mut out = format!("loaded {loaded_facts} facts\n");
-    match &solved.answer {
-        Answer::Verdict(Verdict::Solution(model)) => {
-            // The model is the solution's **own** KB — root plus what the
-            // winning commitment derived. Projecting the goal over `kb` would
-            // ask the question of the unsolved root and answer nothing.
-            out += &format!("model: {} facts\n", model.kb.n_facts());
-            for row in goal_bindings(&ast, &mut terms, &model.kb, None) {
-                for (var, val) in row {
-                    out += &format!("  {} = {}\n", terms.sym(var), terms.display(val));
+    match r.answer.verdict {
+        Some(Verdict::Solution) => {
+            // R's one state: the positive facts of the candidates' relations,
+            // and the query's rows in it — `(query …)` asked of the state, not
+            // of root, which would answer nothing.
+            out += &format!("one state: {} facts over H\n", r.states[0].model.len());
+            for class in r.queries.iter().flat_map(|q| &q.classes) {
+                for row in &class.rows {
+                    for (var, val) in row {
+                        out += &format!("  {var} = {val}\n");
+                    }
                 }
             }
         }
-        Answer::Verdict(Verdict::Ambiguity(models)) => {
-            out += &format!("{} distinct models\n", models.len());
-        }
-        Answer::Verdict(Verdict::Contradiction { unsat_core }) => {
-            out += &format!("unsat, core of {} facts\n", unsat_core.len());
-        }
-        // A state that is consistent and quiescent and still owes an
-        // obligation the program stated (M1d S1d.2.6). Not a model and not a
-        // refutation — a caller that reports `k` alone would call it neither.
-        Answer::Verdict(Verdict::Open { states, owes }) => {
-            let owed: usize = owes.iter().map(|o| o.total()).sum();
-            out += &format!("open: {} state(s), owes {owed}\n", states.len());
-        }
-        Answer::Aborted { reason } => out += &format!("aborted: {reason}\n"),
+        Some(Verdict::Ambiguity) => out += "R holds two states or more\n",
+        Some(Verdict::Contradiction) => out += "R is empty: every node is dead\n",
+        // Alive nodes, every one of which still owes an obligation the program
+        // stated (M1d S1d.2.6). Not a model and not a refutation — a caller
+        // that branches on "R is empty" alone would call it unsat.
+        Some(Verdict::Open) => out += "R is empty: every alive node owes\n",
+        None => out += &format!("undecided: {:?}\n", r.answer.stopped),
     }
+    // `exhausted`: the states listed are all of the part of R asked about.
+    // Under `Single` that is every word but `Ambiguity`, which lists two.
     out += &format!(
-        "k = {}, exhausted = {}\n",
-        solved.stats.solution_nodes, solved.stats.exhausted
+        "saturations: {}, R listed whole: {}\n",
+        r.answer.saturations, r.answer.exhausted
     );
 
-    // 5 — explain. The markdown derivation `--trace` writes, from the lattice
-    //     proof step 3 asked for.
-    let trace = linearize(&ast, &terms, &kb, &solved, LinearizeOpts::new());
-    let md = render_markdown(&trace, Mode::Engine, false);
-    out += &format!("trace: {} steps\n", trace.steps.len());
-    let _ = md;
+    // 6 — explain. The markdown `ein solve FILE --single --trace FILE.md`
+    //     writes: root's derivation, then each state's, from step 3's firings.
+    let md = ein_render::trace::region::of_read_out(
+        &r,
+        &mut kb,
+        &mut terms,
+        &ast,
+        &firings,
+        &ein_render::read_out::Options {
+            command: "solve",
+            argv: "",
+            file: &path.to_string_lossy(),
+            budget: opts.budget,
+            uncut: false,
+        },
+        ein_render::trace::region::Shape {
+            diagrams: false,
+            relevant: false,
+            reorder: false,
+            full_kb: false,
+        },
+    )?;
+    let steps = md.lines().filter(|l| l.starts_with("### Step ")).count();
+    out += &format!("trace: {steps} steps\n");
     Ok(out)
 }
 // ─── page ───────────────────────────────────────────────────────────
@@ -158,24 +171,24 @@ fn the_worked_example_runs() {
     let out = run(&repo_root().join("examples/zebra2.ein")).expect("solve zebra2");
     let want = "\
 loaded 84 facts
-model: 444 facts
+one state: 25 facts over H
   h_water = House-1
-  who_water = Norwegian
   h_zebra = House-5
+  who_water = Norwegian
   who_zebra = Japanese
-k = 1, exhausted = false
-trace: 244 steps
+saturations: 45, R listed whole: true
+trace: 569 steps
 ";
     assert_eq!(out, want);
 }
 
 // ─── prose ──────────────────────────────────────────────────────────
-// The three counts above are asserted by `the_worked_example_runs`, which takes
-// the `Solution` arm; `the_other_three_verdicts_are_reachable` takes
+// The counts above are asserted by `the_worked_example_runs`, which takes the
+// `Solution` arm; `the_other_three_verdicts_are_reachable` takes
 // `Contradiction`, `Ambiguity` and `Open`, on three other files. So the `match`
-// is five arms of which **four** have run. The fifth, `Answer::Aborted`, needs a
-// budget no example here sets, and it is in the page because a caller that never
-// sets one still has to name it.
+// is five arms of which **four** have run. The fifth, `None`, needs a budget no
+// example here sets, and it is in the page because a caller that never sets one
+// still has to name it.
 // ─── prose ──────────────────────────────────────────────────────────
 
 /// A contradiction, an ambiguity and an **open** state take the other three
@@ -183,19 +196,20 @@ trace: 244 steps
 /// executed.
 ///
 /// The fourth arrived with M1d S1d.2.6 and is the one an embedder is most
-/// likely to get wrong: it is neither a model nor a refutation, so a caller
-/// that branches on `k` alone silently files it under *unsat*.
+/// likely to get wrong: R is empty there as it is for a `Contradiction`, so a
+/// caller that branches on "no state" alone silently files it under *unsat*.
 #[test]
 fn the_other_three_verdicts_are_reachable() {
     let bad = run(&repo_root().join("examples/ein-bugs/zebra2-bad.ein")).expect("solve");
-    assert!(bad.contains("unsat, core of "), "{bad}");
+    assert!(bad.contains("R is empty: every node is dead"), "{bad}");
     let hints = run(&repo_root().join("examples/zebra2-hints.ein")).expect("solve");
-    assert!(hints.contains("h_zebra = House-5"), "{hints}");
+    assert!(hints.contains("R holds two states or more"), "{hints}");
+    assert!(hints.contains("R listed whole: false"), "{hints}");
     let owing = run(&repo_root().join("tests/stdlib/algebra/23_total_owed.ein")).expect("solve");
-    assert!(owing.contains("open: 1 state(s), owes 1"), "{owing}");
-    // …and `k` beside it is the *search* counter, which S1d.2.6 left alone.
-    // The two disagreeing is the whole reason the arm exists.
-    assert!(owing.contains("k = 1, exhausted = "), "{owing}");
+    assert!(
+        owing.contains("R is empty: every alive node owes"),
+        "{owing}"
+    );
 }
 
 /// **The page quotes this file.** Both texts are the region between the two

@@ -1,14 +1,14 @@
 //! Negation as failure at the closure/world boundary — S1.21.8, as law.
 //!
 //! **T1a.10.2.2.** Six claims, all of them about the same boundary from a
-//! different side:
+//! different side, five of them here since M1e2 S1e2.1c.5:
 //!
 //! | its side of the boundary |
 //! |---|
 //! | the probes P1–P8 of [`docs/kernel/inference/absent_semantics.md`](../../../../docs/kernel/inference/absent_semantics.md) — what `(absent P)` *means* |
 //! | what the boundary *records*: the negative half of `Deps(Y)` |
 //! | the closure a guard is judged against, including one a rule built |
-//! | C1 — a NAF-derived fork fact is not a truth of root |
+//! | C1 — a NAF-derived fork fact is not a truth of root: the walk's, whose root writes it guarded; deleted with the walk on the user's ruling of 2026-11-03. A route writes nothing into root (`region.rs` § What a node is) |
 //! | the advisory stratification map and its one wired flag |
 //! | `(unknown P)`, which is two guards in a trench coat |
 //!
@@ -28,12 +28,10 @@
 //! not a stalled saturator, a guard set's `watched` key is complete — the
 //! observable is what is asserted here.
 
-use ein_core::{FactId, Kb, NafArg, NafRef, Prov, SolverConfig, Terms, Value};
-use ein_infer::commitment::{Kind, try_commitment_set};
+use ein_core::{FactId, Kb, NafArg, NafRef, Terms, Value};
 use ein_infer::compile::SharedMemo;
 use ein_infer::events::{self, Buffer, Events, Level};
 use ein_infer::saturator::{Saturator, Session};
-use ein_infer::solve::{NoDumper, SolveOptions, solve};
 use ein_infer::{Engine, compute_naf_map};
 use ein_ir::{Ast, parse};
 use std::collections::BTreeSet;
@@ -53,17 +51,6 @@ fn load_src(src: &str) -> (Ast, Terms, Kb) {
     let forms = parse(&mut ast, src, Some("<naf>")).expect("the fixture parses");
     let kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("the fixture loads");
     (ast, terms, kb)
-}
-
-/// Every fact of a KB as sorted s-expressions.
-///
-/// Sorted and rendered rather than compared by `FactId`, for the reason
-/// `search_invariants.rs` gives: an id is an interning artefact, and two KBs
-/// that hold the same facts are the claim.
-fn facts(kb: &Kb, terms: &Terms) -> Vec<String> {
-    let mut v: Vec<String> = kb.facts().map(|f| events::sexpr(terms, f)).collect();
-    v.sort();
-    v
 }
 
 /// A finished saturation: the world it reached, plus the boundary's counters.
@@ -169,16 +156,6 @@ fn find_fact(kb: &Kb, terms: &Terms, rel: &str, args: &[&str]) -> Option<FactId>
     kb.contains(id).then_some(id)
 }
 
-/// Intern a fact that need not exist yet — a hypothesis to commit to.
-fn intern_fact(terms: &mut Terms, rel: &str, args: &[&str]) -> FactId {
-    let r = terms.intern_text(rel).expect("room");
-    let vals: Vec<Value> = args
-        .iter()
-        .map(|a| Value::sym(terms.intern_text(a).expect("room")))
-        .collect();
-    terms.intern_fact(r, &vals).expect("room")
-}
-
 /// A recorded negative premise as `(rel arg …)`, with `_` where the query
 /// ranged free. That position is [`NafArg::Free`] and the distinction is the
 /// whole subject of one test below, so it gets a visible spelling.
@@ -203,253 +180,6 @@ fn naf_arg(terms: &Terms, a: &NafArg) -> String {
             },
         ),
     }
-}
-
-// ── C1 — a fork's NAF-derived fact is not a truth of root ──────────
-
-/// The P1.21 R2 probe, verbatim. `(y s)` follows from the **root** fact
-/// `(seed s)` plus the absence of `(x a)`, which is exactly why the retired
-/// "unconditional fact" walk read it as provably true at root — an `absent`
-/// guard contributes no premise, so the fact's positive provenance chain
-/// grounds out in root alone.
-const PROBE: &str = "\
-(rule y-when-no-x ()
-  :match  (and (seed ?s) (absent (x a)))
-  :assert (y ?s)
-  :why    \"no x(a) -> y {?s}\"
-  :priority 100)
-(rule x-y-clash ()
-  :match  (and (x ?o) (y ?s))
-  :assert (false)
-  :why    \"x and y together are inconsistent\"
-  :priority 250)
-(relation x T) (relation y T) (relation seed T) (relation g T)
-(is-a a T) (is-a s T) (is-a b T)
-(seed s)
-";
-
-/// **A fact derived through a guard stays in the fork that derived it.**
-///
-/// Not obvious, because the commitment `{g(b)}` has nothing to do with `x` or
-/// `y`: the fork derives `(y s)` for a reason that looks entirely root-local,
-/// and a merge policy keyed on "did this derivation use a hypothesis?" would
-/// wave it through. The absence it leaned on is the part with no premise to
-/// inspect, so the only safe rule is the one the engine implements — root is
-/// never written from a fork at all.
-#[test]
-fn a_naf_derived_fork_fact_never_reaches_root() {
-    let (ast, mut terms, mut kb) = load_src(PROBE);
-    let before = facts(&kb, &terms);
-    let h = intern_fact(&mut terms, "g", &["b"]);
-    let mut ev = Events::off();
-    let r = try_commitment_set(
-        kb.sealed(),
-        &mut terms,
-        &ast,
-        &mut ev,
-        &SharedMemo::default(),
-        &[h],
-        None,
-        None,
-    )
-    .expect("enters");
-
-    assert_eq!(r.kind, Kind::Alive);
-    assert!(
-        extent_of(&r.kb, &terms, "y").contains(&"(y s)".to_string()),
-        "the fork did not derive the NAF fact, so the test proves nothing"
-    );
-    assert_eq!(facts(&kb, &terms), before, "root gained a fork's fact");
-    assert!(
-        find_fact(&kb, &terms, "y", &["s"]).is_none(),
-        "(y s) leaked into root"
-    );
-}
-
-/// **The sibling world that supplies the missing positive is alive without
-/// it.**
-///
-/// This is the refutation, not a second illustration of the first test: a
-/// fact true *at root* must hold in every consistent extension of root, and
-/// `{x(a)}` is one — it saturates, it is alive, and `(y s)` is not in it.
-/// So `(y s)` is not a truth of root, however root-local its premises look.
-#[test]
-fn an_absent_derived_fact_is_not_a_truth_of_root() {
-    let (ast, mut terms, mut kb) = load_src(PROBE);
-    let h = intern_fact(&mut terms, "x", &["a"]);
-    let mut ev = Events::off();
-    let r = try_commitment_set(
-        kb.sealed(),
-        &mut terms,
-        &ast,
-        &mut ev,
-        &SharedMemo::default(),
-        &[h],
-        None,
-        None,
-    )
-    .expect("enters");
-
-    assert_eq!(r.kind, Kind::Alive, "the x-world is genuinely consistent");
-    assert!(
-        find_fact(&r.kb, &terms, "y", &["s"]).is_none(),
-        "the x-world holds (y s), so it is not the counterexample it has to be"
-    );
-}
-
-/// **Merging it would kill a consistent world** — the soundness bug, run.
-///
-/// The previous test says `(y s)` is not root-true; this one says what it
-/// *costs* to write it there anyway, because "unsound in principle" is the
-/// kind of claim that survives in a comment while the code quietly stops
-/// doing it. Perform the retired merge by hand and the alive `{x(a)}` world
-/// flips to `dead-post`: one fewer model, an undercounted `k`, and a verdict
-/// that says `Solution` where the truth was `Ambiguity`.
-#[test]
-fn merging_a_fork_fact_into_root_kills_a_consistent_world() {
-    let (ast, mut terms, mut kb) = load_src(PROBE);
-    // Root' = root + (y s), under a synthetic rule provenance — exactly the
-    // shape the extraction wrote.
-    let rule = terms
-        .intern_text("<retired-merge-simulation>")
-        .expect("room");
-    let y = terms.intern_text("y").expect("room");
-    let s_arg = Value::sym(terms.intern_text("s").expect("room"));
-    let prov = terms.provs.push(Prov::from_rule(rule, Box::new([]), None));
-    kb.add_and_index_fact(&mut terms, y, &[s_arg], Some(prov))
-        .expect("room");
-
-    let h = intern_fact(&mut terms, "x", &["a"]);
-    let mut ev = Events::off();
-    let r = try_commitment_set(
-        kb.sealed(),
-        &mut terms,
-        &ast,
-        &mut ev,
-        &SharedMemo::default(),
-        &[h],
-        None,
-        None,
-    )
-    .expect("enters");
-
-    assert_eq!(
-        r.kind,
-        Kind::DeadPost,
-        "the merge did not refute the x-world, so the extraction was harmless \
-         after all — which contradicts why it was removed"
-    );
-}
-
-/// The solve-level fixture. The NAF rule's positive premise is the
-/// *hypothesis*, so `(y …)` can only ever arise inside a fork; a root-grounded
-/// firing would have happened during Phase-1 saturation and proved nothing.
-/// No singleton ever dies and the alive set never becomes one, so the run
-/// performs zero *sound* root writes either — which is what lets the assertion
-/// be "byte-identical" rather than "identical apart from the writeback".
-const SOLVE_FIXTURE: &str = "\
-(rule y-when-h-no-x ()
-  :match  (and (h ?s ?t) (absent (x a s)))
-  :assert (y ?s ?t)
-  :why    \"h {?s} {?t} and no x(a,s) -> y {?s} {?t}\"
-  :priority 100)
-(rule x-y-clash ()
-  :match  (and (x ?o ?p) (y ?s ?t))
-  :assert (false)
-  :why    \"x and y together are inconsistent\"
-  :priority 250)
-(relation x Thing Thing)
-(relation h Thing Thing)
-(relation y Thing Thing)
-(relation never T)
-(is-a Thing T)
-(is-a a Thing) (is-a s Thing)
-
-(solve :hypothesis-relations (x h)) (query
-  :goal  (never ?q)
-)
-";
-
-/// **A whole search leaves root's fact set untouched.**
-///
-/// The per-commitment tests above are about one entering; this is the
-/// invariant across an exhaustive lattice walk, and it is worth its own test
-/// because the search layer *does* write to root — the singleton `(not h)`
-/// writeback and the forced-positive cascade are both root writes, and both
-/// are sound. The claim is that those are the *only* two: a fork fact is
-/// neither, so on a fixture where neither fires, root comes out unchanged.
-/// The two counters are what distinguishes "no fork fact leaked" from "no
-/// root write happened to run".
-#[test]
-fn a_naf_search_never_writes_a_fork_fact_to_root() {
-    let (ast, mut terms, mut kb) = load_src(SOLVE_FIXTURE);
-    let before = facts(&kb, &terms);
-    let mut ev = Events::off();
-    let opts = SolveOptions {
-        stop_after: None,
-        max_set_size: 4,
-        // Every death stays on the `try_commitment_set` path: a lookahead kill
-        // cache writes `(not h)` to root, which is a sound write and would
-        // muddy a stability check that is about the unsound one.
-        config: Some(SolverConfig {
-            enable_pre_branch_lookahead: false,
-            enable_lookahead_kill_cache: false,
-            ..SolverConfig::default()
-        }),
-        ..SolveOptions::default()
-    };
-    let solved = solve(&mut kb, &mut terms, &ast, &mut ev, &mut NoDumper, &opts).expect("solves");
-
-    assert!(
-        solved.stats.base.enterings_dead_post >= 2,
-        "no fork reached the x/y clash, so no fork derived (y …) through the \
-         guard and the fixture is not exercising NAF at all"
-    );
-    assert_eq!(facts(&kb, &terms), before, "root's fact set moved");
-    assert!(
-        extent_of(&kb, &terms, "y").is_empty(),
-        "a NAF-derived fork fact leaked into root"
-    );
-    assert_eq!(solved.stats.base.facts_merged, 0);
-    assert_eq!(solved.stats.base.forced_positives, 0);
-
-    // And the two worlds still say what they said before the search: the
-    // x-world is satisfiable against the post-solve root and holds no `y`,
-    // and the h-world derives its NAF fact fork-locally.
-    let x = intern_fact(&mut terms, "x", &["a", "s"]);
-    let memo = SharedMemo::default();
-    let rx = try_commitment_set(
-        kb.sealed(),
-        &mut terms,
-        &ast,
-        &mut ev,
-        &memo,
-        &[x],
-        None,
-        None,
-    )
-    .expect("enters");
-    assert_eq!(rx.kind, Kind::Alive);
-    assert!(extent_of(&rx.kb, &terms, "y").is_empty());
-
-    let h = intern_fact(&mut terms, "h", &["a", "s"]);
-    let rh = try_commitment_set(
-        kb.sealed(),
-        &mut terms,
-        &ast,
-        &mut ev,
-        &memo,
-        &[h],
-        None,
-        None,
-    )
-    .expect("enters");
-    assert_eq!(rh.kind, Kind::Alive);
-    assert_eq!(extent_of(&rh.kb, &terms, "y"), ["(y a s)"]);
-    assert!(
-        extent_of(&kb, &terms, "y").is_empty(),
-        "the probe itself wrote the fork fact back to root"
-    );
 }
 
 // ── The guard is judged against the positive fixpoint ──────────────
@@ -528,45 +258,6 @@ fn an_unstratifiable_loop_converges_to_a_supported_model() {
         "the q that p enabled is missing — something retracted p, and E3 says \
          nothing retracts"
     );
-}
-
-/// **The same ground guard answers differently in two worlds** — C6.
-///
-/// `(absent (r A B))` has no free variables: it is as close to a ground atom
-/// as a guard gets, and a naive implementation would be tempted to evaluate it
-/// once and cache the answer. It cannot be cached, because the answer is a
-/// property of the world asked, not of the query: root derives `gated`, and
-/// the fork that committed `(r A B)` — alive, consistent, saturated — does
-/// not. This is the reason C1 exists rather than a second illustration of it.
-#[test]
-fn absent_answers_differently_in_a_fork_than_at_root() {
-    let src = "(rule gate ()\n  :match (and (seed ?x) (absent (r A B)))\n  \
-               :assert (gated ?x)\n  :why \"gated unless (r A B)\" :priority 100)\n\
-               (relation seed T)\n(relation r T T)\n(relation gated T)\n\
-               (seed A :source \"(1)\")\n";
-    let (ast, mut terms, mut kb) = load_src(src);
-    let h = intern_fact(&mut terms, "r", &["A", "B"]);
-    let mut ev = Events::off();
-    let fork = try_commitment_set(
-        kb.sealed(),
-        &mut terms,
-        &ast,
-        &mut ev,
-        &SharedMemo::default(),
-        &[h],
-        None,
-        None,
-    )
-    .expect("enters");
-    assert_eq!(fork.kind, Kind::Alive);
-    assert!(
-        extent_of(&fork.kb, &terms, "gated").is_empty(),
-        "the fork committed (r A B) and still derived the gate"
-    );
-
-    // The same program, same query, no commitment.
-    let run = saturate(src);
-    assert_eq!(run.extent("gated"), ["(gated A)"]);
 }
 
 /// **A guard over a conjunction is ¬∃ over the conjunction's free variables.**
@@ -1151,19 +842,19 @@ const DERIVED_NAF: &str = "\
 /// never does.
 #[test]
 fn warn_derived_naf_gates_the_solve_time_warning() {
+    // Read by the route at root, after root's saturation, from the program's
+    // own `(config …)` (M1e2 S1e2.1a.5 kept the warnings when the walk left;
+    // the walk this first ran on was deleted at S1e2.1c.5).
     let stream = |warn: bool| {
-        let (ast, mut terms, mut kb) = load_src(DERIVED_NAF);
+        let src = format!("{DERIVED_NAF}(config :warn-derived-naf {warn})\n");
+        let (ast, mut terms, mut kb) = load_src(&src);
         let buf = Buffer::new();
         let mut ev = Events::to(Box::new(buf.clone()), Level::Normal);
-        let opts = SolveOptions {
-            stop_after: Some(1),
-            config: Some(SolverConfig {
-                warn_derived_naf: warn,
-                ..SolverConfig::default()
-            }),
-            ..SolveOptions::default()
-        };
-        solve(&mut kb, &mut terms, &ast, &mut ev, &mut NoDumper, &opts).expect("solves");
+        let opts = ein_infer::explore::Options::new(ein_infer::explore::Mode {
+            which: ein_infer::explore::Which::All,
+            ask: ein_infer::explore::Ask::Find(1),
+        });
+        ein_infer::explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut ev).expect("solves");
         buf.to_string_lossy()
     };
 

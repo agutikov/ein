@@ -48,7 +48,7 @@
 |---|---:|---|
 | `(config …)` flags | **7** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the ten a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
 | CLI options | **73** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
-| `EIN_*` environment | **8** read by the shipped binary, of 26 greppable names | § [4](#4-the-environment) |
+| `EIN_*` environment | **3** read by the shipped binary, of 26 greppable names on 2026-08-28 | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
 
@@ -431,9 +431,10 @@ different question or stopping early.
 
 ## 4. The environment
 
-Twenty-six `EIN_*` names are greppable in this tree. Eight are read by the
-shipped binary; ten by the test harness; two by `utils/` and the shell; and
-**six are not environment variables at all** — which is the part a grep
+Twenty-six `EIN_*` names were greppable in this tree on 2026-08-28. Three are
+read by the shipped binary since M1e2 S1e2.1c.5 (2026-11-03), which deleted the
+walk and the five it alone read (eight before); ten by the test harness; two by
+`utils/` and the shell; and **six are not environment variables at all** — which is the part a grep
 cannot tell you and the reason this section is a classification rather than a
 list.
 
@@ -448,28 +449,27 @@ and not a defect.
 ### Read by the shipped binary
 
 Read from the process environment by a crate that ships. None of them reaches
-`SolverConfig`, so none re-blesses a KB-shape golden. **Since M1e2
-S1e2.1a.5's switch only `EIN_STDLIB` and `EIN_LEFTOVER` are reached by a
-command.** The other six are read by the walk's library code, which ships,
-links and is reached by no command until P1e2.1c decides what of it the region
-routes reuse; setting one changes nothing an `ein` run prints, with one
-exception: `EIN_OBLIGATION_CHOICE` moves `--json-summary`'s `root.hypgen`,
-whose block still runs the walk's generator (§ 2.3, surface S4). The scan below
-pins the set *read by a shipping crate*, which is why they stay listed.
+`SolverConfig`, so none re-blesses a KB-shape golden. **All three are reached
+by a command.** `EIN_OBLIGATION_CHOICE` is read by the walk's hypothesis
+generator, which M1e2 S1e2.1c.5 kept when it deleted the walk on the user's
+ruling (a) of 2026-11-03, because `--json-summary`'s `root` block still runs it
+(§ 2.3, surface S4, P1e2.3's S1e2.3.1): the variable moves `root.hypgen` and
+nothing else a run prints. The scan below pins the set *read by a shipping
+crate*.
 
 | name | value | what it does | read at |
 |---|---|---|---|
 | `EIN_STDLIB` | a directory | overrides `std.*` resolution, ahead of the checkout walk and the embedded copy. Since M1e S1e.3.5 it **must carry `MANIFEST.sha256`**, the same marker the walk requires, and the refusal names the variable at the first `std.*` import — [`docs/install.md`](../install.md#point-it-at-a-different-stdlib). `ein --version` still reports an unprovable one as `unreadable` rather than refusing | `ein-ir/src/stdlib.rs` `resolve` |
-| `EIN_TRAVERSAL` | `tree` | **the walk's**: the per-obligation depth-first traversal beside its lattice (M1d S1d.10.6), § [What `EIN_TRAVERSAL=tree` reported](#what-ein_traversaltree-reports) | `ein-infer/src/solve.rs` `tree_traversal` |
-| `EIN_OBLIGATION_CHOICE` | `off` \| `fail-first` \| *(default)* `rule-order` | **the walk's**: its obligations rung's measurement lever; `off` is the pre-S1d.2.5 engine and the control arm of every number in `hypotheses_from_obligations.md`. The region's universe is taken config-free, rung order fixed | `ein-infer/src/oblgen.rs` |
+| `EIN_OBLIGATION_CHOICE` | `off` \| `fail-first` \| *(default)* `rule-order` | **the walk's generator's**: its obligations rung's measurement lever; `off` is the pre-S1d.2.5 engine and the control arm of every number in `hypotheses_from_obligations.md`. The region's universe is taken config-free, rung order fixed; only the summary's `root` block reads it | `ein-infer/src/oblgen.rs` |
 | `EIN_LEFTOVER` | `1` | fills `--json-summary`'s `leftover` block — what the blind enumerator would still propose at each **listed state**, outside H. Runs on a fork of each state, so nothing else in the summary moves (`leftover_probe.rs`) | `ein-cli/src/summary.rs` |
-| `EIN_BATCH_PER_WORKER` | a positive integer, default 512 | **the walk's**: enterings in flight per worker. Needs the `parallel` feature, which is **on** by default | `ein-infer/src/solve.rs` `batch_per_worker` |
-| `EIN_FORK_DELTA` | `0` | the pre-S1a.6.9 fresh-saturator fork path, for `utils/fork_delta_verify.py`'s two arms out of one binary. Needs `--features fork-delta`, **off** by default | `ein-infer/src/solve.rs` `resume_forks` |
-| `EIN_FORK_AUDIT` | a file path | one JSON-Lines record per entering. Needs `--features fork-delta`, **off** by default | `ein-infer/src/fork_audit.rs` |
-| `EIN_SPEC_AUDIT` | a file path | the speculation audit — every entering re-run against root as of layer start. Needs `--features spec-audit`, **off** by default | `ein-infer/src/spec_audit.rs` |
 
-The last three are the walk's too and need a non-default build. `ein
---version`'s `features` line says which build you have.
+**Five names left this table at M1e2 S1e2.1c.5 (2026-11-03)**, with the code
+that read them: the walk's `EIN_TRAVERSAL` (its tree traversal, below) and
+`EIN_BATCH_PER_WORKER` (its enterings in flight per worker), both in
+`solve.rs`; and the instruments `EIN_FORK_DELTA` and `EIN_FORK_AUDIT`
+(`--features fork-delta`, `utils/fork_delta_verify.py`) and `EIN_SPEC_AUDIT`
+(`--features spec-audit`, `utils/spec_audit.py`), which audited the walk's
+fork and its speculated layers and went with their features and drivers.
 
 ### Read by the test harness
 
@@ -480,7 +480,7 @@ or by one of the two dev-only crates (`ein-corpus`, `ein-narration`, both
 | name | what it does | read at |
 |---|---|---|
 | `EIN_BLESS` | `=1` rewrites a golden instead of comparing it — including this page's generated block | `ein-corpus/src/lib.rs` |
-| `EIN_CORPUS_SLOW` | `=1` adds the two `slow = true` corpus entries, and the deep arm of `obligation_rung` | `ein-cli/tests/corpus_cli.rs`, `ein-infer/tests/obligation_rung.rs` |
+| `EIN_CORPUS_SLOW` | `=1` adds the `slow = true` corpus entries' cells, and the deep arm of `obligation_rung` | `ein-cli/tests/corpus_cli.rs`, `ein-infer/tests/obligation_rung.rs` |
 | `EIN_CORPUS_TIMEOUT` | per-cell wall budget in seconds, default 300 | `ein-cli/tests/corpus_cli.rs` |
 | `EIN_ID_SEEDS` | how many interner permutations `id_order_invariance` sweeps | `ein-render/tests/id_order_invariance.rs` |
 | `EIN_ID_FILES` | point that sweep at a directory instead of the corpus — the fuzzer's seam | `ein-render/tests/id_order_invariance.rs` |
@@ -516,10 +516,10 @@ by six.
 
 ### What `EIN_TRAVERSAL=tree` reports
 
-**The record of the walk's tree.** Since M1e2 S1e2.1a.5 no command runs the
-walk, so no command reaches the tree; what follows is what it reported while
-one did, kept because the register's `W5` twin and M1d's traversal numbers
-cite it.
+**The record of the walk's tree.** Since M1e2 S1e2.1a.5 no command ran the
+walk, and since S1e2.1c.5 (2026-11-03) the walk and its tree are deleted, the
+variable with them; what follows is what it reported while a command ran it,
+kept because the register's `W5` twin and M1d's traversal numbers cite it.
 
 It was the one **experimental** surface in the system, and the only knob whose
 effect a reader cannot infer from the tables above: it does not change a

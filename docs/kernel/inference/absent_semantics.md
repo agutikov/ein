@@ -35,7 +35,7 @@ load-bearing to advisory.
 A **world** `W` is one [`KnowledgeBase`](../ir/02-data-model/02_store.md)
 instance under saturation: the root, or a fork
 `KB_C = fork(root) ∪ {h : h ∈ C}` for a commitment set `C`
-([`commitment::try_commitment_set`](../../../ein.rs/crates/ein-infer/src/commitment.rs)
+(`commitment::try_commitment_set`
 — fork, write the hypothesis facts, hand the fork to a fresh
 [`Saturator`](../../../ein.rs/crates/ein-infer/src/saturator.rs)).
 Within one `saturate()` run, `W` is **append-only**; `W(t)` denotes its
@@ -135,7 +135,7 @@ Each is already enforced locally; this page is the shared reason.
 - **C1 — no root-merge.** An alive fork's derived facts may depend on an
   absence that holds in `KB_C` but not in root's future; they are never
   merged mid-search
-  ([`solve.rs`](../../../ein.rs/crates/ein-infer/src/solve.rs)
+  (`solve.rs`
   "keep root STABLE"; history:
   [README §Unconditional facts — retired](README.md#unconditional-facts--retired-s157--p121-r2)).
 - **C2 — negative dependence is now recorded** (was: "positive provenance

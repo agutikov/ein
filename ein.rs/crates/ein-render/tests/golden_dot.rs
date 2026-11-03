@@ -1,6 +1,8 @@
 //! S1a.5.1 acceptance — the checked-in DOT goldens, byte for byte.
 //!
-//! Fifteen files under `ein.rs/crates/ein-render/tests/golden/dot/`, plus
+//! Fourteen files under `ein.rs/crates/ein-render/tests/golden/dot/` (the
+//! fifteenth, `lattice_render.dot`, went with the walk's lattice DAG at M1e2
+//! S1e2.1c.5), plus
 //! `kb_zebra_unified.dot` beside them, lock the bytes of every DOT emitter.
 //! Each case builds a deterministic input and renders it. One is covered
 //! elsewhere and is not repeated: `kb_provenance_dag` by `derivation_dot.rs`,
@@ -12,13 +14,10 @@
 
 use ein_core::{FactId, Kb, Symbol, Terms, Value};
 use ein_corpus::{golden, golden_path, repo_root};
-use ein_infer::commitment::Kind;
 use ein_infer::firing::Firing;
-use ein_infer::solve::{DeadCommitment, LatticeProof, LatticeStats, SolutionRecord};
 use ein_ir::{Ast, parse};
 use ein_render::ir_dot::{DotOpts, TraceView, render_query, render_trace, to_dot};
 use ein_render::kb_dot::KbDotOpts;
-use ein_render::lattice_dag::{LatticeSource, LatticeView, render_lattice};
 use ein_render::rules::{RuleMode, render_rule_form, render_rules_forms};
 use ein_render::slice::{render_slice, render_solution, render_state};
 
@@ -232,68 +231,5 @@ fn the_slice_golden_reproduces() {
     check_dot(
         "slice_render_slice",
         &render_slice(&terms, &[seed], &firings, None, "slice", None, None),
-    );
-}
-
-/// A three-cell lattice: one solution and two dead commitments, one of which
-/// carries a two-fact unsat core. No cell's representative is empty, which is
-/// what makes the root node the un-styled `root`, not `∅ root`.
-#[test]
-fn the_lattice_golden_reproduces() {
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let forms = parse(&mut ast, " ", None).expect("empty parses");
-    let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None).expect("empty loads");
-
-    let p = |terms: &mut Terms, rel: &str, arg: &str| {
-        let a = atom(terms, arg);
-        fact(terms, rel, &[a])
-    };
-    let (pa, pb, pc) = (
-        p(&mut terms, "p", "a"),
-        p(&mut terms, "p", "b"),
-        p(&mut terms, "p", "c"),
-    );
-    let qb = p(&mut terms, "q", "b");
-
-    let dead = |commitment: FactId, core: Vec<FactId>, kind: Kind| DeadCommitment {
-        commitment: vec![commitment],
-        unsat_core: core,
-        learned_clause: vec![commitment],
-        layer: 1,
-        kind,
-        state_key: Box::new([]),
-    };
-    let proof = LatticeProof {
-        solutions: vec![SolutionRecord {
-            commitment: vec![pa],
-            kb: kb.snapshot(),
-            firings: Vec::new(),
-            layer: 1,
-            // The lattice view does not read a node's tally.
-            owes: Default::default(),
-        }],
-        // This fixture renders the *lattice*, which does not read root's own
-        // saturation.
-        root_firings: Vec::new(),
-        root_initial: Vec::new(),
-        dead_commitments: vec![
-            dead(pb, vec![pb, qb], Kind::DeadPost),
-            dead(pc, vec![pc], Kind::DeadPre),
-        ],
-        alive_at_end: Vec::new(),
-        learned_nogoods: Vec::new(),
-        entered: Vec::new(),
-        promotions: Vec::new(),
-        stats: LatticeStats::default(),
-    };
-    check_dot(
-        "lattice_render",
-        &render_lattice(
-            &terms,
-            LatticeSource::Proof(&proof),
-            LatticeView::Solution,
-            "lattice",
-        ),
     );
 }

@@ -21,14 +21,8 @@ pub fn features() -> Vec<&'static str> {
     if cfg!(feature = "counters") {
         out.push("counters");
     }
-    if cfg!(feature = "fork-delta") {
-        out.push("fork-delta");
-    }
     if cfg!(feature = "parallel") {
         out.push("parallel");
-    }
-    if cfg!(feature = "spec-audit") {
-        out.push("spec-audit");
     }
     out
 }

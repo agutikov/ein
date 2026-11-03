@@ -32,7 +32,7 @@ reason the sketch is a non-starter:
 
 `(absent (p ?x))` is true of **A and B at load**, so `needs-p` fires in the
 *first* root saturation, `(false)` lands, and
-[`solve.rs:1091`](../../../../ein.rs/crates/ein-infer/src/solve.rs) returns
+`solve.rs:1091` returns
 `Phase1::Done`:
 
 ```

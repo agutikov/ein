@@ -84,10 +84,10 @@ use ein_ir::Ast;
 use rustc_hash::FxHashMap;
 
 use crate::downset::{Declined, Layer, Options};
+use crate::error::SolveError;
 use crate::events::Events;
 use crate::monotone::Monotonicity;
 use crate::region::{Axes, Candidate, Cost, NodeOut, Prepared, fan_out, pool_of, prepare};
-use crate::solve::SolveError;
 use crate::transversal::Bits;
 
 /// Nodes per fan-out, as route 1's.

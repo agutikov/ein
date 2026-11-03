@@ -20,7 +20,7 @@ times**:
 | # | where | shape |
 |---|---|---|
 | 1 | [`utils/model_set_census.py`](../../../../utils/model_set_census.py) | reads `--json-summary`'s `verdict.solutions`, turns them into decision variables |
-| 2 | [`ein-infer/tests/tree_traversal.rs`](../../../../ein.rs/crates/ein-infer/tests/tree_traversal.rs) | in-process, `BTreeSet<Vec<String>>` per run, `lattice.difference(&tree)` |
+| 2 | `ein-infer/tests/tree_traversal.rs` | in-process, `BTreeSet<Vec<String>>` per run, `lattice.difference(&tree)` |
 | 3 | the `--jobs` invariance sweep | 20 712 cells, byte-identical verbose streams |
 
 The stage's own Notes already say a fourth copy is not this stage's job, and

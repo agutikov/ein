@@ -27,7 +27,7 @@ A third, **`Q6`**, was here until 2026-08-28 — see below.
 
 **Q4 — the inter-layer alive-∅ path.** `phase2` calls `record_node(root)`
 when `compute_alive` comes back empty
-([`solve.rs:1528-1551`](../../../../ein.rs/crates/ein-infer/src/solve.rs)),
+(`solve.rs:1528-1551`),
 **without** the `has_contradiction` re-check that phase1 (`:1091`) and the
 cascade (`:2131`) both do. The review's argument for why this is currently
 safe is two-part — the writebacks are `(not h)` for `h ∉ root`, and root has
@@ -76,7 +76,7 @@ So the stage's Q5 scope is **`lattice/02` plus one purpose-built fixture**, and
 **Q6 left this stage.** The tree's inner-node rung flip — `tree()` probing the
 generation-ladder mode **once at root** on the premise that *the mode is a
 property of the program rather than of the node*
-([`solve.rs:889-914`](../../../../ein.rs/crates/ein-infer/src/solve.rs)) — is
+(`solve.rs:889-914`) — is
 now [S1f.10.6](../../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.6_obligations_under_hypothesis.md),
 which carries the reconnaissance this section held: the premise is already
 refuted by `activators_for`'s own doc comment, the three fact-dependent decline

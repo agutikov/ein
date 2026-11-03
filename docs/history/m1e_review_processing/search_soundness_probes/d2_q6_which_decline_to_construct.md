@@ -13,7 +13,7 @@
 **2026-08-28, by the user: the obligation has to be re-evaluated after each
 saturation** — the tree's rung mode is re-read at **every node**, not inherited
 from the root probe at
-[`solve.rs:889-914`](../../../../ein.rs/crates/ein-infer/src/solve.rs).
+`solve.rs:889-914`.
 
 The premise it overturns — *"the mode is a property of the program rather than
 of the node, so asking once is asking enough"* — was already refuted by this

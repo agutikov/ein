@@ -48,14 +48,23 @@
 use ein_core::Terms;
 use ein_corpus::{corpus_files, repo_root};
 use ein_infer::events::Events;
-use ein_infer::solve::{NoDumper, SolveOptions, solve};
+use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_ir::{Ast, parse};
 
-/// The whole corpus is swept, so a solve has to be bounded: this is the same
-/// budget `solve_shape` uses for the shape digests, and for the same reason.
-/// The question is *whether* the search interns, which the first enterings
-/// answer as well as the last.
-const MAX_ENTERINGS: u64 = 60;
+/// The whole corpus is swept, so a run has to be bounded: a describe that
+/// stops at a small budget, and a flagged program's cube only where it is
+/// small. The question is *whether* the search interns, which the first nodes
+/// answer as well as the last. Since M1e2 S1e2.1c.5 the search is a route's:
+/// the walk this first swept was deleted on the user's ruling of 2026-11-03.
+fn options() -> explore::Options {
+    let mut o = explore::Options::new(Mode {
+        which: Which::All,
+        ask: Ask::Describe,
+    });
+    o.budget = 20_000;
+    o.limit = 10;
+    o
+}
 
 #[test]
 fn the_search_interns_no_names() {
@@ -80,20 +89,14 @@ fn the_search_interns_no_names() {
             skipped += 1;
             continue;
         };
-        // Root saturation, then the mark. Everything after it is the search.
-        let mut events = Events::off();
-        if ein_infer::saturate_events(&ast, &mut terms, &mut kb).is_err() {
+        // Root saturation, then the mark. Everything after it is the search:
+        // H built at root's fixpoint, and every node the route saturates.
+        if ein_infer::region::root_firings(&mut kb, &mut terms, &ast, &mut Events::off()).is_err() {
             skipped += 1;
             continue;
         }
         let (syms, ints) = (terms.syms.len(), terms.ints.len());
-        let opts = SolveOptions {
-            stop_after: None,
-            max_enterings: Some(MAX_ENTERINGS),
-            on_budget: ein_infer::solve::OnBudget::Verdict,
-            ..SolveOptions::default()
-        };
-        if solve(&mut kb, &mut terms, &ast, &mut events, &mut NoDumper, &opts).is_err() {
+        if explore::run(&mut kb, &mut terms, &ast, &options()).is_err() {
             skipped += 1;
             continue;
         }
