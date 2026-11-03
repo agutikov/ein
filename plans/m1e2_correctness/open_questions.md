@@ -244,9 +244,10 @@ day: **no row is live**, and each names what holds it.
 | [S1e2.3.4](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.4_the_inherited_questions_and_the_record.md) | Q4 (a): Q-M1e.5 closed by the ruling of 2026-10-16; Q5 (b): `-g 0` is no node lines and a negative is refused, Q-M1e.17 closed; Q6 (a): S7 and S8 pinned | S5, and S7 and S8 held |
 
 S1–S3, S6 and S9 went at S1e2.1a.5's switch, each held by the test the table
-names. The phase stays open for the two stages the user added on 2026-11-03,
-S1e2.3.5 (test scratch left in `/tmp`) and S1e2.3.6 (the nightly workflow);
-neither is a surface, so this question does not wait for them.
+names. The user added three stages on 2026-11-03 that are not surfaces,
+S1e2.3.5 (test scratch left in `/tmp`), S1e2.3.7 (four lines that misname
+what they print) and S1e2.3.6 (the nightly workflow), so this question did not
+wait for them. All three are done, and the phase closed 2026-11-03.
 
 ## Q-M1e2.7 — The answer is a region of the lattice
 

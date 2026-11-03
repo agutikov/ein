@@ -27,8 +27,8 @@ Where one of their stages ends in the user's ruling, its days are for the
 evidence. P1e2.4, added
 2026-11-01, is done, at its two stage files' 1 day each. P1e2.3, ruled a phase
 2026-11-02, was specified the same day at the user's *"write P1e2.3 plans
-also"*: four stages, 5 days, and six since 2026-11-03; its S1e2.3.1–.4 are
-done (2026-11-03).
+also"*: four stages, 5 days, and seven since 2026-11-03; it **closed
+2026-11-03**, every stage done.
 **Status:** created 2026-10-14 on the user's instruction: *"Create new
 milestone for correctness issues. … first phase is for solution dumps and
 rendering to markdown with graphs, so I can review all existing wrong
@@ -169,7 +169,7 @@ where it is cheap and exact, and
 | [P1e2.1b](p1e2.1b_non_monotone_programs/README.md) | Non-monotone programs: detected, documented, warned | 7 | 21 d | **decides nothing** (re-planned 2026-11-02; every decision is [F21](../followups/f21_non_monotone_programs_decided.md)'s): the site census; a node's state by fork and from scratch, measured (Q-M1e2.2 deferred); holes by cause (Q-M1e2.7 (d) deferred); the evidence on a refutation that rests on an `absent`, for S1e2.2.5; monotone and non-monotone programs compared in [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md), with the two properties of the node functions and every option's consequences; an explicit monotonicity check, in a CLI form the user approves; a cheap detector in `ein solve`, warning on every surface that reports R, with no answer moved |
 | [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 4 | 16.5 d | `ein solve`'s default describes R for every **monotone** program the corpus holds, or says why not: the alive set at scale, the lines by duality, the flags at scale; the old walk's fate, and P1e2.2 re-scoped. **Done 2026-11-03**: no row closed by construction, four of P1e2.2's stages dropped, the walk deleted around S4 and `-L`, `-K` and four `enable-*` fields retired on the user's rulings, `-y` the spot check unbounded. A flagged program keeps route 2 and P1e2.1b's warnings, and the non-monotone search moved to F21 (2026-11-02) |
 | [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 13, 4 dropped | 13.5 d | every register row `fixed` or ruled `not-wrong`; re-scoped by S1e2.1c.5 on 2026-11-03 (27.5 d before), nine stages live; no wrong answer at default settings; no lever that changes a certified answer |
-| [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | Surfaces that misreport the answer | 7 | 8.5 d | every witness re-taken 2026-11-02 (S1–S3 and S6–S9 gone, S4 and P1 live, S5 moved to `-g`, S10 the forms past 100 lines); the summary's `root` block as ruled and unmoved by every lever (S1e2.3.1); no render view panics on a keyword pair (S1e2.3.2); the forms under the 100-line ruling (S1e2.3.3); Q-M1e.5 and Q-M1e.17 ruled and closed, the re-take re-takable (S1e2.3.4). **S1e2.3.1–.4 done 2026-11-03**: no surface of the re-take is live, each under its ruling; **S1e2.3.5 done 2026-11-03**: the gate checks its own scratch; **S1e2.3.7 done 2026-11-03**: N1–N4 say what they print, each held by a test, no exit code moved; S1e2.3.6, last, to come |
+| [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | Surfaces that misreport the answer | 7 | 8.5 d | every witness re-taken 2026-11-02 (S1–S3 and S6–S9 gone, S4 and P1 live, S5 moved to `-g`, S10 the forms past 100 lines); the summary's `root` block as ruled and unmoved by every lever (S1e2.3.1); no render view panics on a keyword pair (S1e2.3.2); the forms under the 100-line ruling (S1e2.3.3); Q-M1e.5 and Q-M1e.17 ruled and closed, the re-take re-takable (S1e2.3.4). **S1e2.3.1–.4 done 2026-11-03**: no surface of the re-take is live, each under its ruling; **S1e2.3.5 done 2026-11-03**: the gate checks its own scratch; **S1e2.3.7 done 2026-11-03**: N1–N4 say what they print, each held by a test, no exit code moved; **S1e2.3.6 done 2026-11-03**: every nightly step green under `./run_tests.sh --nightly`, which `nightly_steps.rs` holds to the workflow, the mutation bank's eight kills explained (165 of 217). **Closed 2026-11-03**, its acceptance re-taken line by line |
 | [P1e2.4](p1e2.4_what_the_switch_left/README.md) | What the switch left: the `absent` ruling, and the read-out at scale | 2 | 2 d | Q-M1e2.5 ruled, *forbid* or *respect*, and applied to W3's rows (S1e2.4.1); `--models key` declines before it allocates, and the read-out forms measured in memory on the largest regions (S1e2.4.2) |
 
 **The order, ruled 2026-11-02.** P1e2.1a is done, and so is **P1e2.4**
@@ -184,7 +184,8 @@ revisit is the agent's first. The user, verbatim:
 *"only after that revisit wrong answers - first your revisit and then if still remain any ambiguity or no criteria to decide correct solution - then I can review logs and renderings manually"*.
 So the revisit reads every unreviewed row against the definitions as they
 stand then, on a bundle rebuilt at that commit, and settles each row a
-stated criterion decides. Only what it leaves ambiguous goes to the user.
+stated criterion decides. Only what it leaves ambiguous goes to the user. P1e2.3
+closed on 2026-11-03, so by this order the revisit, S1e2.1.7, is next.
 
 ### P1e2.3 — Surfaces that misreport the answer
 
@@ -204,8 +205,14 @@ the summary's `root` block, is
 **S1e2.3.1–.4 are done** (2026-11-03): S4, P1, S10 and S5 under the user's
 rulings, S7 and S8 pinned, Q-M1e.5 and Q-M1e.17 closed. The user added three
 stages the same day. **S1e2.3.5** (test scratch left in `/tmp`) and
-**S1e2.3.7** (four lines that misname what they print, N1–N4) **are done**.
-**The phase stays open** for S1e2.3.6, the nightly workflow, last.
+**S1e2.3.7** (four lines that misname what they print, N1–N4) **are done**,
+and so is **S1e2.3.6** (the nightly workflow, last): every nightly step is
+green locally under `./run_tests.sh --nightly`, a new runner that
+`ein-cli/tests/nightly_steps.rs` holds to `nightly.yml`. **The phase closed
+2026-11-03**, its acceptance re-taken line by line
+([§ Acceptance for the phase, as met](p1e2.3_surfaces_that_misreport_the_answer/README.md#acceptance-for-the-phase-as-met)).
+The nightly is green here, not yet on GitHub: the user pushes, and the first
+scheduled run after the next push is the confirmation.
 
 ## What it inherits from M1e
 

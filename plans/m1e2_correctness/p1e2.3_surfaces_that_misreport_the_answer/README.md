@@ -6,7 +6,9 @@ S1e2.3.4 1, S1e2.3.5 1, S1e2.3.7 1, S1e2.3.6 1.5. Each stage file gives its
 basis. It was 7.5 days and six stages until the user put N1–N4 in S1e2.3.7 on
 2026-11-03, and 5 days and four stages until the user added S1e2.3.5 and
 S1e2.3.6 the same day.
-**Status:** specified 2026-11-02; **started 2026-11-03**. S1e2.3.1's
+**Status:** specified 2026-11-02; started 2026-11-03; **closed 2026-11-03**,
+every stage done and the [acceptance](#acceptance-for-the-phase-as-met)
+re-taken line by line at the close. S1e2.3.1's
 T1e2.3.1.1 took its evidence at `32496b97`, after P1e2.1c closed, and put Q1
 to the user the same day; the user ruled (a) that day, and **S1e2.3.1 is
 done** (T1e2.3.1.2–.4, 2026-11-03): S4 is fixed. The user ruled Q2–Q6 the
@@ -18,9 +20,11 @@ The user added S1e2.3.5 and S1e2.3.6 on 2026-11-03, and **S1e2.3.5 is done**
 fails on anything they leave. The user ruled on 2026-11-03 for
 [N1–N4](#candidates-found-on-the-way) in S1e2.3.7, and **S1e2.3.7 is done**
 (2026-11-03): the four lines say what they print, each held by a test, and no
-exit code moved. **The phase stays open** for S1e2.3.6, last, which started
-2026-11-03: every nightly step was run at `0d40f3a3`, and one fails, the
-mutation bank's eight kills. The survey of 2026-10-14 named
+exit code moved. **S1e2.3.6**, last, **is done** (2026-11-03): every step of the nightly is
+green locally under `./run_tests.sh --nightly`, which a test holds to the
+workflow, and the mutation bank's eight kills were explained before it was
+re-written. The user pushes; the first scheduled nightly after the next push
+is the confirmation, and this page does not claim it. The survey of 2026-10-14 named
 the surfaces ([inventory § 1](../inventory.md#1-table)), and the milestone
 README carried them as a *proposed* phase. On 2026-11-02 the user ruled that
 they *become a phase*, after P1e2.1c, *specified when it starts*
@@ -174,7 +178,7 @@ Gone items get no stage. The table above records each and closes it here.
 | [S1e2.3.4](s1e2.3.4_the_inherited_questions_and_the_record.md) | The inherited questions, `-g`'s clamp, and the record (S5, Q-M1e.5, Q-M1e.17). **Done 2026-11-03**: Q4 (a), Q5 (b), Q6 (a) applied, the table re-taken | 1 d | Q-M1e.5 and Q-M1e.17 ruled and closed in M1e's register, and `-g` following the ruling with a test. `capture.sh`'s S and P lines re-take this table. The links to the proposed § are re-pointed, and Q-M1e2.6 is closed |
 | [S1e2.3.5](s1e2.3.5_test_scratch_left_in_tmp.md) | Test scratch left in `/tmp`. Added 2026-11-03 at the user's *"fix the tmp leak in those tests - add a new stage for that"*. **Done 2026-11-03**: `ein_corpus::Scratch`, every leaking writer on it, `utils/check_test_scratch.py` in the gate and in CI | 1 d | a gate run under an empty `TMPDIR` leaves nothing, every leaking writer on one self-removing scratch helper, and `./run_tests.sh` failing on leftover scratch |
 | [S1e2.3.7](s1e2.3.7_four_lines_that_misname.md) | Four lines that misname what they print (N1–N4). Added 2026-11-03 at the user's ruling *"New stage, before nightly"*, with the default fix for each. **Done 2026-11-03**: N1–N4 fixed, each with a test; `-p` and `-P` named as the facts beyond the program as loaded, which is what they print | 1 d | `-f`'s header names the candidates' relations without `:hrules`, `-p`/`-P` say *facts beyond root*, `saturate --max-steps`' line, help and `defined_behaviour.md` § 4 row say what the binary does, and `ein oracle` names no option it refuses; each held by a test, no exit code moved |
-| [S1e2.3.6](s1e2.3.6_the_nightly_workflow.md) | The nightly workflow green again (`deep-corpus`, failing since 2026-10-16). Added 2026-11-03 at the user's request, **last in the phase** | 1.5 d | every nightly step green locally at HEAD, each failure explained before it is fixed (the mutation bank's eight kills among them), and `./run_tests.sh --nightly` held to `nightly.yml` by a test |
+| [S1e2.3.6](s1e2.3.6_the_nightly_workflow.md) | The nightly workflow green again (`deep-corpus`, failing since 2026-10-16). Added 2026-11-03 at the user's request, **last in the phase**. **Done 2026-11-03**: every step green under `./run_tests.sh --nightly`, held to `nightly.yml` by `nightly_steps.rs`; the bank's eight kills explained, 165 of 217 | 1.5 d | every nightly step green locally at HEAD, each failure explained before it is fixed (the mutation bank's eight kills among them), and `./run_tests.sh --nightly` held to `nightly.yml` by a test |
 
 **Order.** S1e2.3.1–.3 are independent. S1e2.3.4's rulings can be taken on
 the first day, and its record task runs last. S1e2.3.5 runs after S1e2.3.1
@@ -226,7 +230,8 @@ by a test, and no exit code moved.
   facts (2026-11-03). The headers say what prints, *beyond the program as
   loaded: root's derivations, the commitment and what it derives*, and so
   does `-p`'s help. Whether `-p` should print the facts beyond root instead
-  is parked in [S1e2.3.7's notes](s1e2.3.7_four_lines_that_misname.md#notes).
+  was parked in [S1e2.3.7's notes](s1e2.3.7_four_lines_that_misname.md#notes),
+  and is **ruled 2026-11-03: keep as built; closed**.
   Held by the same test.
 - **N3. `ein saturate --max-steps`'s limit line.** It names
   `Saturator._last_firing`, which no crate defines. It spells the firing as
@@ -282,6 +287,66 @@ by a test, and no exit code moved.
 - **No answer moves.** The register, `read_out_examples.md` and every corpus
   read-out are byte-identical before and after each stage, except where a
   stage names the line it moves.
+
+## Acceptance for the phase, as met
+
+Re-taken line by line on 2026-11-03, the day the phase closed, at the commit
+that closes it. `./run_tests.sh` was green there, and every step of the nightly
+was green under `./run_tests.sh --nightly` (S1e2.3.6, one commit earlier;
+this commit changes no code).
+
+- **No live row: holds.** The table was re-taken at the close with
+  `capture.sh`'s S and P lines (`OUT=build/s1e2.3.6/retake bash
+  plans/m1e2_correctness/probes/capture.sh`, on the release `ein` of the
+  closing commit), and every row reads as the re-take of S1e2.3.4 above has
+  it: S1's two runs say *stopped as asked* and *the claim is about all of
+  R, and this run is partial*; S2's trace is `# Region trace` with `11 339`
+  and `exhausted yes`, cut `16 (a lower bound …)` and *the state route
+  stopped*; S3's summary has no verdict, and `exhausted: false` with
+  `stopped.why: budget` on the cut; S4's `-H`, `root.hypgen.emitted` and
+  `region.universe.candidates` agree on `branching/02` (48, `root.facts` 22),
+  `owed-seats` (4) and `arity3` (2); S5's `-g 0` prints 0 node lines against
+  `-g 1`'s 13, and `-g=-1` and `-g -1` exit 2; S6 says *the goal has no row:
+  undetermined here*; S7's class lists `?x = A` then `?x = B`; S8's core is
+  `(not (p A))`, `(q A)`; S9's stdout and summary are identical with
+  `EIN_TRAVERSAL=tree`; P1's two doors exit 0; S10's forms print 128–134
+  lines on `pets` against the read-out's 124. Each row names the test that
+  holds it, and every one of those tests is in the per-commit gate.
+- **S4: holds.** The `root` block is root's fixpoint and H on all five
+  writers (S1e2.3.1). `summary_properties::the_description_is_coherent_on_every_corpus_cell`
+  holds it to what it describes, per commit, and `lever_invariance.rs`
+  compares it whole under every lever, per commit and, with the slow entries'
+  lever cells, nightly; both green at the close. The bundle's root page says
+  *root's fixpoint* under *Root is never written* (`utils/review/run.py`), and
+  the nightly's bundle step builds every case's page green.
+- **P1: holds.** The witness is the corpus entry
+  `examples/ein-bugs/kwpair-below-the-filter.ein`: `corpus_shapes.rs` and
+  `dot_wellformed.rs` run every view over it per commit, and `corpus_cli.rs`
+  holds its two render runs at exit 0.
+- **S10: holds.** `forms_cut.rs` holds the forms to Q3's ruling and the dump
+  to carrying each uncut. The review bundle carries every form uncut, and the
+  nightly builds it whole: 35 cases, 0 failed, at the close.
+- **Q-M1e.5 and Q-M1e.17: hold.** Both closed where they live, M1e's register,
+  by S1e2.3.4; Q-M1e2.6 closed in M1e2's.
+- **The re-take can be re-taken: holds.** It was, at the close (the first
+  item). S7's and S8's witnesses are corpus entries, `d3-goal-row-order.ein`
+  permuted by `id_order_invariance.rs` (one seed per commit, eight nightly)
+  and `nested-core.ein` asserted by `read_out::a_nested_fact_in_a_core_prints_as_an_s_expression`.
+- **Every golden a stage moved was named in its file before it moved:
+  holds.** S1e2.3.1–.5 and .7 each list theirs in their records. S1e2.3.6
+  moved none: no golden, no `corpus_exits.txt` row, no register row. The one
+  banked file it re-wrote, `tests/mutation_survivors.txt`, is not a golden,
+  and its diff was explained in `tests/README.md` before `--bless` wrote it.
+  Each of S1e2.3.6's commits was made after a green `./run_tests.sh`, as the
+  earlier stages' records say of theirs.
+- **No answer moved: holds.** S1e2.3.6 changed no engine source (`git diff
+  0d40f3a3 HEAD -- ein.rs/crates/*/src` is empty). S1e2.3.1–.3, .5 and .7
+  each say in their record that no answer moved, and name the lines they
+  moved; S1e2.3.4 names the goldens it moved before it moved them.
+
+**What is not claimed.** The nightly is green **locally**. The user pushes,
+and the first scheduled nightly after the next push is the confirmation; this
+record does not claim it.
 
 ## What it inherits
 
