@@ -663,6 +663,53 @@ fn solutions_takes_a_count_of_one_or_more_and_nothing_else() {
     }
 }
 
+/// **`-g/--progress-every` 0 means no node lines, and a negative is
+/// refused** — M1e2 S1e2.3.4, the user's ruling (b) of 2026-11-03 on
+/// [Q-M1e.17](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative).
+///
+/// The region modes clamped it with `.max(1)`, so `-v -g=0` and `-v -g=-3`
+/// logged every node, as `-g 1` does, with no word (P1e2.3's S5). Now `-g 0`
+/// is what `ein saturate --progress-every 0` is: the step lines and no node
+/// line. A negative is a usage error, exit 2, with a stderr `error:` that says
+/// why, in both spellings, since the option takes negative numbers as values.
+/// stdout never moves: the option is stderr's.
+#[test]
+fn progress_every_is_zero_for_no_node_lines_and_refuses_a_negative() {
+    const FIVE: &str = "examples/branching/05_mini_zebra.ein";
+    let node = |e: &str| e.lines().filter(|l| l.starts_with("  node ")).count();
+    let step = |e: &str| e.lines().filter(|l| l.contains(" visited — ")).count();
+    let plain = ein(&["solve", FIVE]);
+    let every = ein(&["solve", FIVE, "-v", "-g", "1"]);
+    let none = ein(&["solve", FIVE, "-v", "-g", "0"]);
+    for r in [&every, &none] {
+        assert_eq!(r.code, 0, "{}", r.err);
+        assert_eq!(r.out, plain.out, "-g moved stdout");
+    }
+    assert!(node(&every.err) > 1, "-g 1 logged no node:\n{}", every.err);
+    assert_eq!(node(&none.err), 0, "-g 0 logged a node:\n{}", none.err);
+    assert!(
+        step(&none.err) > 0 && step(&none.err) == step(&every.err),
+        "-g 0 must keep -v's step lines:\n{}",
+        none.err
+    );
+    for bad in [
+        &["-v", "-g=-1"][..],
+        &["-v", "-g", "-1"],
+        &["-v", "--progress-every=-3"],
+    ] {
+        let mut a = vec!["solve", FIVE];
+        a.extend(bad);
+        let r = ein(&a);
+        assert_eq!(r.code, 2, "{bad:?} was not a usage error:\n{}", r.err);
+        assert!(
+            r.err.starts_with("error:") && r.err.contains("invalid progress interval"),
+            "{bad:?} was refused without saying why:\n{}",
+            r.err
+        );
+        assert!(r.out.is_empty(), "{bad:?} printed to stdout:\n{}", r.out);
+    }
+}
+
 /// **`-j/--jobs` takes a count or the word `auto`, and refuses everything
 /// else** — [S1a.7.5](../../../../docs/history/m1a_rust/README.md#s1a75--the---jobs-contract)
 /// T1a.7.5.1.

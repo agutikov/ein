@@ -1,5 +1,7 @@
 # Wrong-answer inventory — `ein` @ `71dd237` (master), taken 2026-10-14
 
+> **S1–S9 and P1 as they stand today:** [P1e2.3's re-take](p1e2.3_surfaces_that_misreport_the_answer/README.md#the-re-take-2026-11-02), every row gone since 2026-11-03, with what holds each; `probes/nested-core.ein` is `examples/ein-bugs/nested-core.ein` since then, and `probes/tree-owed.ein` is deleted.
+
 **The evidence [M1e2](README.md) was planned from**, carried as written. A
 source document a milestone processes lives inside the milestone, which is the
 [`m1d/ideas.md`](../../docs/history/m1d_satisfiability/ideas.md) and M1e

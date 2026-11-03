@@ -1,0 +1,22 @@
+;;; **An unsat core that holds a nested fact** (P1e2.3's S8).
+;;;
+;;; Written for M1e2's survey (2026-10-14) as `probes/nested-core.ein`: the
+;;; unsat core contains a given negative fact, `(not (p A))`, whose argument is
+;;; a fact. The walk's read-out printed it as a struct repr,
+;;; `(not Fact(relation_name='p', args=('A',)))`. Gone since M1e2 S1e2.1a.5's
+;;; switch: the region read-out prints a core as s-expressions,
+;;;
+;;;   unsat core        (not (p A))
+;;;   unsat core        (q A)
+;;;   refuted by        boom
+;;;
+;;; Banked here by M1e2 S1e2.3.4 (the user's ruling (a) of 2026-11-03, *pin
+;;; both*): it is the only program known to print a nested fact in a core, and
+;;; nothing checked the spelling. `ein-cli/tests/read_out.rs` asserts the
+;;; line, and `corpus_shapes.md5`'s read-out digests hold the block.
+
+(relation p T)
+(relation q T)
+(not (p A))
+(q A)
+(rule boom () :match (and (not (p ?x)) (q ?x)) :assert (false))

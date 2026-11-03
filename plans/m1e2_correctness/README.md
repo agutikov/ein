@@ -25,7 +25,8 @@ Where one of their stages ends in the user's ruling, its days are for the
 evidence. P1e2.4, added
 2026-11-01, is done, at its two stage files' 1 day each. P1e2.3, ruled a phase
 2026-11-02, was specified the same day at the user's *"write P1e2.3 plans
-also"*: four stages, 5 days.
+also"*: four stages, 5 days, and six since 2026-11-03; its S1e2.3.1–.4 are
+done (2026-11-03).
 **Status:** created 2026-10-14 on the user's instruction: *"Create new
 milestone for correctness issues. … first phase is for solution dumps and
 rendering to markdown with graphs, so I can review all existing wrong
@@ -166,7 +167,7 @@ where it is cheap and exact, and
 | [P1e2.1b](p1e2.1b_non_monotone_programs/README.md) | Non-monotone programs: detected, documented, warned | 7 | 21 d | **decides nothing** (re-planned 2026-11-02; every decision is [F21](../followups/f21_non_monotone_programs_decided.md)'s): the site census; a node's state by fork and from scratch, measured (Q-M1e2.2 deferred); holes by cause (Q-M1e2.7 (d) deferred); the evidence on a refutation that rests on an `absent`, for S1e2.2.5; monotone and non-monotone programs compared in [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md), with the two properties of the node functions and every option's consequences; an explicit monotonicity check, in a CLI form the user approves; a cheap detector in `ein solve`, warning on every surface that reports R, with no answer moved |
 | [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 4 | 16.5 d | `ein solve`'s default describes R for every **monotone** program the corpus holds, or says why not: the alive set at scale, the lines by duality, the flags at scale; the old walk's fate, and P1e2.2 re-scoped. **Done 2026-11-03**: no row closed by construction, four of P1e2.2's stages dropped, the walk deleted around S4 and `-L`, `-K` and four `enable-*` fields retired on the user's rulings, `-y` the spot check unbounded. A flagged program keeps route 2 and P1e2.1b's warnings, and the non-monotone search moved to F21 (2026-11-02) |
 | [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 13, 4 dropped | 13.5 d | every register row `fixed` or ruled `not-wrong`; re-scoped by S1e2.1c.5 on 2026-11-03 (27.5 d before), nine stages live; no wrong answer at default settings; no lever that changes a certified answer |
-| [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | Surfaces that misreport the answer | 6 | 7.5 d | every witness re-taken 2026-11-02 (S1–S3 and S6–S9 gone, S4 and P1 live, S5 moved to `-g`, S10 the forms past 100 lines); the summary's `root` block as ruled and unmoved by every lever (S1e2.3.1); no render view panics on a keyword pair (S1e2.3.2); the forms under the 100-line ruling (S1e2.3.3); Q-M1e.5 and Q-M1e.17 ruled and closed, the re-take re-takable (S1e2.3.4) |
+| [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | Surfaces that misreport the answer | 6 | 7.5 d | every witness re-taken 2026-11-02 (S1–S3 and S6–S9 gone, S4 and P1 live, S5 moved to `-g`, S10 the forms past 100 lines); the summary's `root` block as ruled and unmoved by every lever (S1e2.3.1); no render view panics on a keyword pair (S1e2.3.2); the forms under the 100-line ruling (S1e2.3.3); Q-M1e.5 and Q-M1e.17 ruled and closed, the re-take re-takable (S1e2.3.4). **S1e2.3.1–.4 done 2026-11-03**: no surface of the re-take is live, each under its ruling; S1e2.3.5 and S1e2.3.6 to come |
 | [P1e2.4](p1e2.4_what_the_switch_left/README.md) | What the switch left: the `absent` ruling, and the read-out at scale | 2 | 2 d | Q-M1e2.5 ruled, *forbid* or *respect*, and applied to W3's rows (S1e2.4.1); `--models key` declines before it allocates, and the read-out forms measured in memory on the largest regions (S1e2.4.2) |
 
 **The order, ruled 2026-11-02.** P1e2.1a is done, and so is **P1e2.4**
@@ -183,63 +184,25 @@ So the revisit reads every unreviewed row against the definitions as they
 stand then, on a bundle rebuilt at that commit, and settles each row a
 stated criterion decides. Only what it leaves ambiguous goes to the user.
 
-### P1e2.3 — Surfaces that misreport the answer (proposed)
+### P1e2.3 — Surfaces that misreport the answer
 
-**Specified 2026-11-02** as [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md),
-four stages and 5 days, at the user's *"write P1e2.3 plans also"*. The
-heading keeps *(proposed)* until its S1e2.3.4 re-points the eleven links that
-use this anchor. The survey found nine surfaces that state something false
-about a run whose **answer** is right, and one panic a well-formed program
-reaches ([inventory § 3](inventory.md#3-cases)); the user ruled on 2026-11-02
-that they become a phase, after P1e2.1c. The phase's
-[re-take at `7b33c3ab`](p1e2.3_surfaces_that_misreport_the_answer/README.md#the-re-take-2026-11-02)
-finds S1–S3 and S6–S9 gone, S4 and P1 live, and S5 moved to `-g`. The table
-below is the survey's, as taken:
+**A pointer since 2026-11-03.** This § carried the phase while it was
+proposed: the survey's ten surfaces and S4's paragraph. **Specified
+2026-11-02** as [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md), at the user's *"write P1e2.3 plans
+also"*, and the user ruled that it becomes a phase, after P1e2.1c
+([Q-M1e2.6](open_questions.md#q-m1e26--does-p1e23-become-a-phase), closed
+2026-11-03). What stood here is in three places now. The survey's table, as
+taken at `71dd237`, is [inventory § 3](inventory.md#3-cases). The phase's
+[re-take](p1e2.3_surfaces_that_misreport_the_answer/README.md#the-re-take-2026-11-02) has one row per surface,
+re-taken on 2026-11-03 with every row gone and what holds each. S4's paragraph,
+the summary's `root` block, is
+[S1e2.3.1](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md)'s, which fixed it.
+`git log -p -- plans/m1e2_correctness/README.md` has the § as it stood.
 
-| id | what is false | settings |
-|---|---|---|
-| **S1** | `ein test`'s NOT CHECKED names two causes, and neither applies under the tree; `(not certified — pass --exhaustive)` is printed on runs that **did** pass `-e` (`ein solve -e -m 1 zebra2.ein`). Q-M1e.5's fourth instance plus a new site, `verdict.rs:200` | default (the hint) |
-| **S2** | the `--trace` headline says *No solution — 12 commitments refuted* on `pets.ein`, which has 39 models. Pinned by a golden named `trace_unsat.md` | default |
-| **S3** | `--json-summary` says `type = "Contradiction"` with a 6-fact core on the same truncated run | default |
-| **S4** | `-H` and `--json-summary`'s `root.hypgen` disagree, and each is wrong on one file (56 vs 38 on `zebra2`; 81 vs 96 on `zebra2-minus-15-obligations`; `-H` says 0 candidates where the run enters 3) | default |
-| **S5** | `-E=-3` prints `max-enterings (0)`; `-m=-3` is silently `-m 0` (Q-M1e.17) | lever |
-| **S6** | *"(no query goal to project)"* printed for a model in which the goal simply has no row | default |
-| **S7** | the displayed goal row is the first of an unsorted match, and moves under a permuted interner | default |
-| **S8** | a core prints `(not Fact(relation_name='p', args=('A',)))` | default |
-| **S9** | under the tree, `layers_explored` carries the deepest node (documented) | lever |
-| **P1** | `ein render constraints corpus/fuzz_findings/kwpair-below-the-filter.ein` panics, exit 101, at `dot_util.rs:152`, on a program the loader accepts | default |
-
-**S4 outlived the switch, and S1e2.1a.6's lever test found it again**
-(2026-11-01, T1e2.1a.6.2). Since the switch `-H` lists H, the universe the
-routes take config-free, and `summary::root_block` still runs the walk's
-`hypgen::generate` on a fork of root. That generator reads the program's
-lookahead and kill-cache flags and `EIN_OBLIGATION_CHOICE`, and the block
-counts root's facts **after** it. On `examples/branching/02_one_dead_one_alive.ein`:
-
-- `root.facts` is 27 where root's fixpoint holds 22: the other five are one
-  `(__closed__ …)` written by `emit_closed` and four `(not h)` written by the
-  kill cache;
-- `root.hypgen.emitted` is 30 where H holds 48;
-- both move with `(config :enable-pre-branch-lookahead false)` or
-  `:enable-lookahead-kill-cache false` in the program (to 23, and to 34 or
-  30), on 19 programs, while `-L` and `-K` leave them alone, so the summary's
-  `config` echo says *false* beside a block computed with *true*;
-- `root.hypgen` moves with `EIN_OBLIGATION_CHOICE=off` on an obligations
-  program (`owed-seats.ein`: `pre_candidate.closed_relation` 4 → 10).
-
-No answer moves: the read-out, the states, the classes and every other block
-are identical, so it is a surface and not a register row. `lever_invariance.rs`
-leaves the three fields out and says why. Its settings are now *default, and
-a lever*. Whether the block should describe H, root's fixpoint, or neither is
-this phase's to rule.
-The phase's [S1e2.3.1](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md)
-re-took it wider: `root.hypgen.emitted` differs from H on 71 of 212 files, and
-`root.facts` from root's fixpoint on 175, mostly by `emit_closed`'s writes.
-**Fixed 2026-11-03 by S1e2.3.1**, on the user's ruling (a) of that day: the
-block is root's fixpoint and H as every route starts from them, config-free,
-22 facts and 48 emitted on `branching/02`. `summary_properties.rs` holds it to
-both on every corpus cell, `lever_invariance.rs` compares it whole, and
-`EIN_OBLIGATION_CHOICE`, which then changed nothing printed, is retired.
+**S1e2.3.1–.4 are done** (2026-11-03): S4, P1, S10 and S5 under the user's
+rulings, S7 and S8 pinned, Q-M1e.5 and Q-M1e.17 closed. **The phase stays
+open** for the two stages the user added the same day, S1e2.3.5 (test scratch
+left in `/tmp`) and S1e2.3.6 (the nightly workflow, last).
 
 ## What it inherits from M1e
 
@@ -252,7 +215,7 @@ both on every corpus cell, `lever_invariance.rs` compares it whole, and
 | [Q-M1e.16](../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one): the binding key | W7, S1e2.2.7 |
 | [Q-M1e.21](../../docs/history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about): fresh constants | W4, S1e2.2.4 |
 | [Q-M1e.20](../../docs/history/m1e_review_processing/open_questions.md#q-m1e20--two-renderers-are-produced-tested-and-unreachable): two renderers unreachable | S1e2.1.3, answered (a) |
-| [Q-M1e.5](../../docs/history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) and [Q-M1e.17](../../docs/history/m1e_review_processing/open_questions.md#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative) | [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md)'s S1e2.3.4: S1 is gone, and S5 moved to `-g` |
+| [Q-M1e.5](../../docs/history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) and [Q-M1e.17](../../docs/history/m1e_review_processing/open_questions.md#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative) | [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md)'s S1e2.3.4: **both closed 2026-11-03**, Q-M1e.5 by the ruling of 2026-10-16 (the learning half to M1f's S1f.10.7), Q-M1e.17 by `-g`'s ruling (b) |
 
 The ids stay `Q-M1e.<n>`. An id is sticky and is never reused, so this
 milestone cites them across the boundary, as M1f does.
@@ -273,7 +236,13 @@ milestone cites them across the boundary, as M1f does.
   re-runs every witness, and every W-case answers its right answer. The
   corpus sweeps of [inventory § 4](inventory.md#4-reach--corpus-sweeps-run-for-this-inventory)
   are re-run. A new wrong answer found then becomes a register row and is not
-  waved through.
+  waved through. **The script's W lines cannot run as written** (reported by
+  P1e2.3's S1e2.3.4, 2026-11-03): they spell the walk's options, and most are
+  refused since S1e2.1a.5's switch as retired (`-e`, `-m`, `-L`, `-K`), so
+  each W line has to be re-spelt as a region run before this re-take. Its S
+  and P lines were re-spelt by S1e2.3.4 and write P1e2.3's table; the W lines
+  are this acceptance's, and the register's runs (`corpus/wrong_answers.toml`,
+  held by `wrong_answers.rs`) are where today's spellings are.
 - **The review bundle builds in the nightly** and its smoke step is in the
   per-commit gate.
 - `./run_tests.sh` green at every stage boundary, and every golden a stage

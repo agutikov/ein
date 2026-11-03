@@ -383,3 +383,33 @@ fn count_prints_describes_rows_and_reads_no_state() {
         "{compared} compared, {partial} partial, {claims} claims"
     );
 }
+
+/// **A core holding a nested fact prints it as an s-expression** — M1e2
+/// S1e2.3.4's pin of P1e2.3's S8, on the user's ruling (a) of 2026-11-03.
+/// `nested-core.ein`'s core is the given `(not (p A))` and `(q A)`; the walk
+/// printed the first as `(not Fact(relation_name='p', args=('A',)))`, a
+/// struct repr, and nothing checked the spelling once the region read-out
+/// replaced it. The line is the read-out's, and the summary's `region.core`
+/// carries the same two strings.
+#[test]
+fn a_nested_fact_in_a_core_prints_as_an_s_expression() {
+    let r = solve(&["examples/ein-bugs/nested-core.ein"]);
+    assert!(
+        r.out
+            .lines()
+            .any(|l| l == "  unsat core        (not (p A))"),
+        "the core's nested fact is not spelled `(not (p A))`:\n{}",
+        r.out
+    );
+    assert_eq!(rows(&r, "unsat core"), ["(not (p A))", "(q A)"]);
+    assert_eq!(rows(&r, "refuted by"), ["boom"]);
+    assert_eq!(
+        r.summary["region"]["core"],
+        serde_json::json!(["(not (p A))", "(q A)"])
+    );
+    assert!(
+        !r.out.contains("Fact("),
+        "a struct repr is back:\n{}",
+        r.out
+    );
+}

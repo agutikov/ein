@@ -20,7 +20,7 @@ records which question became which id.
 | [Q-M1e.2](#q-m1e2--may-a-review-finding-be-closed-by-a-comment) | May a finding be closed by a comment rather than a check? | **decided 2026-08-28** — *an argument suffices when its premise is itself enforced*, written into [`docs/kernel/standard_of_proof.md`](../../kernel/standard_of_proof.md). The `accepted` disposition's rule. **Owned since 2026-08-28** by [S1e.1.1](search_soundness_probes/README.md#task-t1e111--ratify-the-standard-of-proof--both-rules) T1, which ratifies it beside Q-M1e.1 rather than leaving the first `accepted` to decide it implicitly |
 | [Q-M1e.3](#q-m1e3--who-owns-a-page-that-should-be-neither-fixed-nor-deleted) | Who owns a `docs/kernel` page that should be neither fixed nor deleted? | **answered 2026-08-30 — (c)**, by [S1e.2.2](README.md#s1e22--code--doc-the-canonical-tree) T1. The destination was already written into [`docs/history/README.md`](../README.md): M1's survivors went to `docs/kernel/inference/` at P1.22, so `m1_core/` is a directory the tree **declined**, and what a superseded page needed was the banner. The general rule — *a page is moved into an existing milestone record, never made into one* — plus the triage of all 40 pages |
 | [Q-M1e.4](#q-m1e4--does-the-repo-want-an-exact-count-in-prose-at-all) | Does the repo want an exact count in prose at all? | **answered 2026-08-31 — yes, if the sentence carries the warrant**, and there are three: a **command** that re-takes it, a **date**, or a **test** that pins it. A count that can carry none is deleted. Which warrant fits follows from what the number *is* — a **size** takes the command (and all nine drifted counts are sizes), a **measurement** takes the date, a **test-pinned** count takes the test's name. The fourth shape the question lists — a checker asserting prose against a command — is **refused**: the counts that are right are the ones behind an instrument that is *run*, not one that exists |
-| [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | open — **and it has an instance again**: [S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) closed all three of `CO-H3` on 2026-08-29, and [S1e.3.2](README.md#s1e32--semantics-medium) found a fourth on 2026-08-31 — `ein test`'s `NOT CHECKED` line names two causes and under `EIN_TRAVERSAL=tree` neither applies. Documented, not fixed: the honest fix is a reason type in `ein-infer`, which is `T1d.10.6.4` again. [S1f.10.7](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)'s `--traversal` flag waits on it. Its fourth instance is also S1 of [M1e2's proposed P1e2.3](../../../plans/m1e2_correctness/README.md#p1e23--surfaces-that-misreport-the-answer-proposed) |
+| [Q-M1e.5](#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface) | Is *experimental* a licence to ship a surface whose read-out is false? | **closed 2026-11-03 — no**, by the user's ruling (a) on M1e2 [S1e2.3.4](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.4_the_inherited_questions_and_the_record.md)'s Q4: the ruling of 2026-10-16 answers it — *no two commands may disagree, and every answer agrees with the oracle* — and makes no exception for a surface called experimental ([§ Closed](#closed-2026-11-03--answered-by-the-ruling-of-2026-10-16)). Both instances are gone: `ein test`'s sentence at M1e2 S1e2.1a.5's switch, the tree with the walk at S1e2.1c.5. The learning half, learning on tree deaths, is M1f's [S1f.10.7](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md) |
 | [Q-M1e.6](#q-m1e6--what-is-a-solution-and-what-is-a-model) | What is a **solution**, and what is a **model**? | **decided 2026-08-28** by the user; binding on [Q5](search_soundness_probes/README.md) and on [P1f.10](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/README.md) |
 | [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) | The read-out prints the solution **KB** and calls it a model | **decided 2026-08-28 — A**: the recorded object is the *state*, `model` is a projection of it, and § 2 is evaluated on the state. Unblocks Q-M1e.8. S1e.3.2 applies it to the vocabulary, P1e.5's S1e.5.3 to the read-out |
 | [Q-M1e.8](#q-m1e8--exhausted-certifies-the-lattice-not-the-model-set) | `exhausted` certifies the **lattice**, not the model set | open — raised by Q-M1e.6; `lattice/02 -e -L` is the witness. The **record-site conformance check** is [S1e.1.1](search_soundness_probes/README.md#task-t1e114--the-record-site-conformance-check) T4 ([D3](search_soundness_probes/d3_q_m1e8_file_or_take.md), option B); the fix files to P1e.2 and, since [Q-M1e.7](#q-m1e7--the-read-out-prints-the-solution-kb-and-calls-it-a-model) was ruled on 2026-08-28, **is chosen**: re-saturate and re-check before recording. The chosen record-time re-saturation shipped as `CO-M1` (S1e.3.1) and does **not** cover the witness: on that path nothing reaches `record_node` at all. **Owned 2026-10-14** by [M1e2 S1e2.2.1](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.1_maximal_not_recorded.md) (W1), which also owns the layer-0 form the M1e2 survey found |
@@ -32,7 +32,7 @@ records which question became which id.
 | [Q-M1e.14](#q-m1e14--the-corpus---jobs-sweeps-per-layer-census-coverage-is-vacuous) | The corpus `--jobs` sweep's per-layer census coverage is **vacuous** | open — raised 2026-08-29 by [S1e.1.2](README.md#s1e12--determinism-under---jobs-q1) T3, which closed the unit half; **owner unassigned**, and the corpus half costs a golden. **Open, unowned on purpose** at the close: the next change to the parallel fan-out owns it |
 | [Q-M1e.15](#q-m1e15--the-alternatives-cap-decides-which-unsat-core-is-reported) | The **alternatives cap** decides which unsat core is reported | open — raised 2026-08-29 by [S1e.1.3](README.md#s1e13--what-the-core-promises-q2), which is the review's `Q2` answered **yes**; witnessed by a fixture pair, **owner unassigned**, and no shipped puzzle is changed by it. **Owned 2026-10-14** by [M1e2 S1e2.2.11](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.11_alt_cap_core.md) (W10) |
 | [Q-M1e.16](#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | The **binding key** compares two register layouts as one | open — raised 2026-08-29 by [S1e.1.4](README.md#s1e14--q-m1a8s-real-trigger-q3), which is the review's `Q3` answered and **`Q-M1a.8` closed as stated**. A well-formed program loses a derivation in a release build and trips a `debug_assert` in a test one; **owner unassigned**, and no corpus program can reach it. **Owned 2026-10-14** by [M1e2 S1e2.2.7](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.7_binding_key_layout.md) (W7) |
-| [Q-M1e.17](#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative) | Three `int_arg` options **silently reinterpret a negative** | open — raised 2026-08-29 by [S1e.1.5](README.md#s1e15---n-0-q7), which closed the third of them (`-n`) by refusing it. `-m` and `-E` still clamp, and `-E`'s abort line **prints the clamped number**; **owner unassigned**. **Owned 2026-10-14** by S5 of [M1e2's proposed P1e2.3](../../../plans/m1e2_correctness/README.md#p1e23--surfaces-that-misreport-the-answer-proposed) |
+| [Q-M1e.17](#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative) | Three `int_arg` options **silently reinterpret a negative** | **closed 2026-11-03**, by the user's ruling (b) on M1e2 [S1e2.3.4](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.4_the_inherited_questions_and_the_record.md)'s Q5 ([§ Closed](#closed-2026-11-03--each-of-the-three-rulings-applied)): `-m` and `-E` were retired at M1e2 S1e2.1a.5's switch, and the clamp had moved to `-g`, where `-g 0` now means no node lines, as `ein saturate --progress-every 0` does, and a negative is refused, exit 2 |
 | [Q-M1e.18](#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments) | Three kernel primitives are **not shape-pinned**, and drop their extra arguments | **answered 2026-08-29 — candidate (2)**, by [S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T1, which took the whole class rather than `CO-H1`'s one cell: `eq` and `absent` are checked at compile time and refused with a positioned `CompileError`. The grammar and the lexer's `SYMBOL` set are untouched, so no program that worked still works differently. `false` needed nothing |
 | [Q-M1e.19](#q-m1e19--algorithmic-pathology-has-no-owner) | **Algorithmic pathology** has no owner | open — the one of `Q9`'s four unswept surfaces with no home. The other three have one: this stage swept the parser/CLI edges, `cast.rs` goes with `ein-einb`'s next change, and micro-CSP ground truth is [M10](../../../plans/m10_external_benchmarks/README.md)'s thesis. **Open, no owner** at the close, and the closing claim says so |
 | [Q-M1e.20](#q-m1e20--two-renderers-are-produced-tested-and-unreachable) | **Two renderers are produced, tested and unreachable** — the per-hypothesis lattice dump and the unified KB DOT view | open — raised 2026-08-30 by [S1e.2.2](README.md#s1e22--code--doc-the-canonical-tree) T3, which was told to route the decision rather than take it in a doc pass; **owner unassigned**, and both are `pub` and golden-pinned today. **Owned 2026-10-14** by [M1e2 S1e2.1.3](../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.3_the_doors.md), option (a). **Answered 2026-10-14, (a)**: `ein render program`, `ein render kb` and `ein solve --dump-lattice` |
@@ -331,6 +331,30 @@ question is still the right home for:
    reason type — which is the same question as *what does a tree report where a
    lattice reports layers*, i.e. `T1d.10.6.4` again. Documented meanwhile in
    [`configuration.md` § What `EIN_TRAVERSAL=tree` reports](../../kernel/configuration.md).
+
+### Closed 2026-11-03 — answered by the ruling of 2026-10-16
+
+**Ruled (a) by the user on 2026-11-03**, on M1e2
+[S1e2.3.4](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.4_the_inherited_questions_and_the_record.md)'s Q4: *experimental* is no licence to ship a false
+surface. The ruling of 2026-10-16 already says so, verbatim: *"I don't want to
+have two different commands that give different and inconsistent results"*,
+and *"results must be consistent: region is a region of oracle, maxline is
+part of region, any model also part of region, independent of monotonicity"*
+([`solve_interface.md` § 0](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#0-the-ruling)).
+It makes no exception for a surface called experimental, so the general rule
+(item 2 above) is written: no surface, experimental or not, may state what the
+oracle contradicts or disagree with another command.
+
+Both instances are gone, re-taken by M1e2
+[P1e2.3](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/README.md#the-re-take-2026-11-02)
+as its S1. `ein test` runs a region mode since the switch (M1e2 S1e2.1a.5,
+2026-10-18), and a `NOT CHECKED` names the question the run asked; the old
+sentence appeared nowhere in `ein test -v examples tests stdlib`. The tree,
+and `EIN_TRAVERSAL` with it, was deleted with the walk at M1e2 S1e2.1c.5
+(2026-11-03). **Item 1, learning on tree deaths, goes to M1f's
+[S1f.10.7](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.7_tree_calibration_and_flag.md)**,
+which plans the `--traversal` flag that would bring a tree back; under this
+ruling it comes back held to the oracle like every other route.
 
 ## Q-M1e.6 — What is a **solution**, and what is a **model**?
 
@@ -1294,6 +1318,26 @@ mistake.
 whether a *budget* flag should be strict or forgiving, and that is a question
 about the CLI's manners rather than about the engine — which is why it is a
 question and not a fix.
+
+### Closed 2026-11-03 — each of the three rulings, applied
+
+M1e2's re-take of 2026-11-02 (P1e2.3's S5) found two of the three options
+gone: `-m` and `-E` were retired at S1e2.1a.5's switch (2026-10-18) and are
+refused, exit 2, naming what replaced each. The clamp had moved, though: the
+region modes' `-g`/`--progress-every` took `.max(1)`, so `-v -g=0` and `-v
+-g=-3` logged every node, as `-g 1` does, with no word, where the table
+above records the walk's `-g 0` as *disables*. **The user ruled (b) on
+2026-11-03**, on M1e2 [S1e2.3.4](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.4_the_inherited_questions_and_the_record.md)'s Q5: `-g 0` means no node lines, as
+`ein saturate --progress-every 0` does, and a negative is refused, exit 2,
+with a stderr `error:` that says why. Held by
+`ein-cli/tests/cli_semantics.rs::progress_every_is_zero_for_no_node_lines_and_refuses_a_negative`.
+
+So each of the candidate rulings is applied somewhere, and nothing is left to
+decide: **refuse** (`-n` since S1e.1.5; `-m` and `-E` retired; every count
+option the switch added; `-g`'s negative), **honour** (`-T` prints the
+negative it was given, and `saturate --max-steps` too), and the library clamp
+has nothing to guard, since no `SolveOptions` is built from `-m` or `-E` any
+more.
 
 ## Q-M1e.18 — Three kernel primitives are not shape-pinned, and drop their extra arguments
 

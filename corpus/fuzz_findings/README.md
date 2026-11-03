@@ -77,7 +77,7 @@ minimum from a different seed and then failing it under a permuted id space:
 | file | what differs | what is identical |
 |---|---|---|
 | `d3-unsat-core.ein` | the printed **unsat core**: 6 facts under `EIN_FORK_DELTA=0`, 4 on the resumed path — a strict subset | the verdict, `k`, every counter. Only the fork path differs, so it **is** the resumed fork saturator, and the id-space sweep is green on it — **at seed 1 only**: at the third seed, 15839, `trace[answer]` moves 4 → 6 facts in one build (M1e2 W11, re-taken 2026-10-14) |
-| `d3-goal-row-order.ein` | which **binding row** the solve table shows, when one model satisfies the goal more than once | `summary.json`'s `goal_bindings`, which carries every row and sorts them. **Not the resumed fork's, though it reaches it**: the row moves under `EIN_ID_FILES` too, so the defect is the unsorted `rows[0]` and either row is a legitimate one — the filename is kept for the links, the note corrects the attribution |
+| `d3-goal-row-order.ein` | which **binding row** the solve table shows, when one model satisfies the goal more than once | `summary.json`'s `goal_bindings`, which carries every row and sorts them. **Not the resumed fork's, though it reaches it**: the row moves under `EIN_ID_FILES` too, so the defect is the unsorted `rows[0]` and either row is a legitimate one — the filename is kept for the links, the note corrects the attribution. **Gone since M1e2's read-out printed every row sorted, and promoted to `examples/ein-bugs/d3-goal-row-order.ein` by M1e2 S1e2.3.4 (2026-11-03)**, so the id-order sweep permutes it per commit |
 
 Neither is reachable from a corpus entry. Both are one command to reproduce —
 

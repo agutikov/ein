@@ -91,13 +91,27 @@ fn region_budget_spec(s: &str) -> Result<i64, String> {
 }
 
 /// `--region-limit`'s `n` — **not negative**, the
-/// [S5](../../../../plans/m1e2_correctness/README.md#p1e23--surfaces-that-misreport-the-answer-proposed)
+/// [S5](../../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/README.md#the-re-take-2026-11-02)
 /// shape `int_arg` alone would let through.
 fn region_limit_spec(s: &str) -> Result<i64, String> {
     match int_arg(s)? {
         n if (0..=63).contains(&n) => Ok(n),
         n => Err(format!(
             "invalid region limit: '{n}' (expected 0 to 63 candidates)"
+        )),
+    }
+}
+
+/// `-g/--progress-every`'s `N` — **0 or more**: 0 logs no node line, as
+/// `ein saturate --progress-every 0` disables its progress, and a negative is
+/// refused (M1e2 S1e2.3.4, the user's ruling (b) of 2026-11-03, which closed
+/// Q-M1e.17). The region modes clamped it with `.max(1)`, so `-g=0` and
+/// `-g=-3` logged every node, as `-g 1` does, with no word.
+fn progress_every_spec(s: &str) -> Result<i64, String> {
+    match int_arg(s)? {
+        n if n >= 0 => Ok(n),
+        n => Err(format!(
+            "invalid progress interval: '{n}' (expected 0 or more nodes; 0 logs none)"
         )),
     }
 }
@@ -541,11 +555,13 @@ fn solve_command() -> Command {
                 .short('g')
                 .long("progress-every")
                 .value_name("PROGRESS_EVERY")
-                .value_parser(int_arg)
+                .value_parser(progress_every_spec)
+                .allow_negative_numbers(true)
                 .default_value("100")
                 .help(
-                    "under --verbose, log every N-th node (default 100; set 1 to \
-                     log every node)",
+                    "under --verbose, log every N-th node (default 100; 1 logs \
+                     every node, 0 none: the step lines alone). A negative is \
+                     refused",
                 ),
         )
         // ── what is printed beside the read-out ──

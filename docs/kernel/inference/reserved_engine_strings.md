@@ -188,10 +188,15 @@ isolated in
 (constant `CLOSED = "__closed__"`):
 
 - **Auto-inference** — `emit_closed` writes `(__closed__ R)` for every declared
-  relation no compiled rule positively asserts (`producible_relations`),
-  run once before the initial saturation.
-- **Hypgen suppression** — `hypgen._is_closed` reads `(__closed__ R)` facts and
-  contributes zero candidates for R.
+  relation no compiled rule positively asserts (`producible_relations`). The
+  walk ran it once before the initial saturation. **No route and no command
+  runs it** since M1e2
+  [S1e2.3.1](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md)
+  (2026-11-03): its one caller is `shape::hyp_shape_with`, the corpus's `hyp`
+  op. So a solve sees only the markers a program authors or `std.closure`
+  derives, and H holds the candidates of every other relation.
+- **Hypgen suppression** — `hypgen::closed_relations` reads the `(__closed__
+  R)` facts in the KB, and the generator contributes zero candidates for R.
 
 **Genuinely kernel** (a saturation rule can neither suppress hypgen generation
 nor introspect "no rule asserts R" — see the symmetric contrast in the

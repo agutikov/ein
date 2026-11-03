@@ -312,6 +312,8 @@
 0    examples/ein-bugs/alt-cap-core.ein :: solve
 0    examples/ein-bugs/alt-cap-core.ein :: test
 0    examples/ein-bugs/complete-records-stale.ein :: solve
+0    examples/ein-bugs/d3-goal-row-order.ein :: saturate
+0    examples/ein-bugs/d3-goal-row-order.ein :: solve
 1    examples/ein-bugs/fact-goal-binding.ein :: render rules
 0    examples/ein-bugs/fact-goal-binding.ein :: saturate
 0    examples/ein-bugs/fact-goal-binding.ein :: solve
@@ -325,6 +327,7 @@
 0    examples/ein-bugs/mixed-type-hypothesis.ein :: solve
 0    examples/ein-bugs/naf-upward-closure.ein :: saturate
 0    examples/ein-bugs/naf-upward-closure.ein :: solve
+0    examples/ein-bugs/nested-core.ein :: solve
 0    examples/ein-bugs/nested-fact-hypothesis.ein :: solve
 0    examples/ein-bugs/query-goal-free-head-unsat.ein :: render rules
 0    examples/ein-bugs/query-goal-free-head-unsat.ein :: saturate

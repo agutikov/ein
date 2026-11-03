@@ -1,5 +1,14 @@
 # d3-goal-row-order
 
+**Gone since M1e2 T1e2.1a.5.2, and pinned since S1e2.3.4 (2026-11-03).** The
+region read-out sorts a class's rows and prints every one, so no row is
+chosen: state 5's class lists `?x = A` and then `?x = B` under any id order.
+The witness is banked as the `regression` corpus entry
+[`examples/ein-bugs/d3-goal-row-order.ein`](../../examples/ein-bugs/d3-goal-row-order.ein),
+which `ein-render/tests/id_order_invariance.rs` permutes on every commit (the
+user's ruling (a) of 2026-11-03 on P1e2.3's Q6, *pin both*). This note and the
+`.ein` beside it stay: the `.ein` is a frontend-fuzzer seed.
+
 - found: 2026-08-20, `utils/fuzz_engine.py --seed 20260820`, mode `mixed`
 - property: **id-order** — the same answer under a permuted interner
 - re-found: 2026-08-21, by the rewritten fuzzer

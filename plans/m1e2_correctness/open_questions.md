@@ -19,7 +19,7 @@ rule on, not five stage files to find.
 | [Q-M1e2.3](#q-m1e23--what-does-exhausted-certify-when-the-rung-leaves-relations-uncovered) | What does `exhausted` certify when the rung leaves relations uncovered? | [S1e2.2.8](p1e2.2_wrong_answers/s1e2.2.8_uncovered_certified.md) (W6) | open |
 | [Q-M1e2.4](#q-m1e24--is-an-empty-unsat-core-a-core) | Is an empty unsat core a core? | [S1e2.2.13](p1e2.2_wrong_answers/s1e2.2.13_empty_core.md) (W12) | open |
 | [Q-M1e2.5](#q-m1e25--does-s1f108s-ruling-move-here) | Does S1f.10.8's ruling move here? | [P1e2.4](p1e2.4_what_the_switch_left/README.md)'s S1e2.4.1, then [S1e2.2.5](p1e2.2_wrong_answers/s1e2.2.5_naf_upward_closure.md) (W3) and P1e2.1b's [S1e2.1b.4](p1e2.1b_non_monotone_programs/s1e2.1b.4_refutation_resting_on_absent.md) | **ruled 2026-11-02: *forbid*** ([S1e2.4.1 § 5](p1e2.4_what_the_switch_left/s1e2.4.1_refutation_under_absent.md#5-the-ruling)); F1–F5 are S1e2.2.5's |
-| [Q-M1e2.6](#q-m1e26--does-p1e23-become-a-phase) | Does P1e2.3 become a phase? | the milestone's scope; [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | **ruled 2026-11-02**: yes, after P1e2.1c; **specified the same day**, four stages, 5 d; closes at its S1e2.3.4 |
+| [Q-M1e2.6](#q-m1e26--does-p1e23-become-a-phase) | Does P1e2.3 become a phase? | the milestone's scope; [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | **ruled 2026-11-02**: yes, after P1e2.1c; **specified the same day**, four stages, 5 d; **closed 2026-11-03** at its S1e2.3.4, every surface of the re-take gone, each under its stage's ruling ([§ Closed](#closed-2026-11-03--every-surface-gone-under-its-ruling)) |
 | [Q-M1e2.7](#q-m1e27--the-answer-is-a-region-of-the-lattice) | The answer is a region of the lattice | [P1e2.1a](p1e2.1a_the_solution_region/README.md), all of it; [P1e2.1b](p1e2.1b_non_monotone_programs/README.md) for (d); then every case the review has not read | **reading given 2026-10-15**; on 2026-10-16 (a)–(c) and (e)–(i) [ruled for the monotone case](#the-second-answer-2026-10-16), and [(e)'s display and (h)'s names](#the-third-answer-2026-10-16); [the census](#the-census-2026-10-16) contradicts none; **(d) deferred to [F21](../followups/f21_non_monotone_programs_decided.md), 2026-11-02** (D4) |
 | [Q-M1e2.8](#q-m1e28--where-does-the-rework-of-ein-solve-go) | Where does the rework of `ein solve` go? | P1e2.1a's S1e2.1a.5 (it must print `k` = \|R\|), and P1e2.2's scope | **ruled 2026-10-16**: [S1e2.1a.9](p1e2.1a_the_solution_region/s1e2.1a.9_solve_describes_the_region.md) now, [P1e2.1c](p1e2.1c_the_region_search/README.md) next |
 
@@ -156,8 +156,8 @@ ships, and from whatever F2 and F3 leave loading, is
 ## Q-M1e2.6 — Does P1e2.3 become a phase?
 
 Nine surfaces that misstate a run whose answer is right, and one reachable
-panic, are listed in the [milestone README](README.md#p1e23--surfaces-that-misreport-the-answer-proposed)
-with witnesses. They are correctness issues and not wrong answers. Whether
+panic, are listed in the [milestone README](README.md#p1e23--surfaces-that-misreport-the-answer)
+with witnesses (since 2026-11-03 a pointer to [the phase's re-take](p1e2.3_surfaces_that_misreport_the_answer/README.md#the-re-take-2026-11-02)). They are correctness issues and not wrong answers. Whether
 they belong in this milestone, a later one or a followup is the user's call.
 
 **Note, 2026-10-18 — S1e2.1a.5's switch removed eight of the ten surfaces**,
@@ -188,7 +188,7 @@ it. On `branching/02_one_dead_one_alive.ein` `-H` lists 48 candidates and
 holds 23, the other four being the kill cache's `(not h)` writes. The block
 moves with the program's flags on 19 programs, and `-L` and `-K` leave it
 alone. No answer moves. The witnesses and the reproduction are in
-[the README beside S4's row](README.md#p1e23--surfaces-that-misreport-the-answer-proposed).
+[S1e2.3.1](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md), which carries the README's S4 paragraph since 2026-11-03.
 So the question is P1's and S4's.
 
 **Note, 2026-11-03 — S4 is fixed** by P1e2.3's
@@ -228,6 +228,25 @@ root's fixpoint on `branching/02` is 22, not 23. **P1 panics on a second
 door**, `render program`. The forms note above is the phase's S10. S1–S3 and
 S6–S9 are gone, each with what holds it or *nothing checks it*. The question
 closes at the phase's S1e2.3.4.
+
+### Closed 2026-11-03 — every surface gone, under its ruling
+
+The user ruled every question of the phase on 2026-11-03, Q1 to Q6, and
+[S1e2.3.4](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.4_the_inherited_questions_and_the_record.md)
+re-took [the phase's table](p1e2.3_surfaces_that_misreport_the_answer/README.md#the-re-take-2026-11-02) the same
+day: **no row is live**, and each names what holds it.
+
+| stage | ruling | what it closed |
+|---|---|---|
+| [S1e2.3.1](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md) | Q1 (a): the summary's `root` block is root's fixpoint and H, config-free; `leftover` config-free; `EIN_OBLIGATION_CHOICE` retired | S4 |
+| [S1e2.3.2](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.2_a_keyword_pair_panics_two_views.md) | Q2 (a): `value_label` labels a keyword pair `:key value` for every caller | P1, on both doors |
+| [S1e2.3.3](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.3_the_forms_past_100_lines.md) | Q3 (a): the forms share the read-out's 100 lines, drawn from the states stdout showed; `--dump-answer` writes each uncut, one file per form | S10 |
+| [S1e2.3.4](p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.4_the_inherited_questions_and_the_record.md) | Q4 (a): Q-M1e.5 closed by the ruling of 2026-10-16; Q5 (b): `-g 0` is no node lines and a negative is refused, Q-M1e.17 closed; Q6 (a): S7 and S8 pinned | S5, and S7 and S8 held |
+
+S1–S3, S6 and S9 went at S1e2.1a.5's switch, each held by the test the table
+names. The phase stays open for the two stages the user added on 2026-11-03,
+S1e2.3.5 (test scratch left in `/tmp`) and S1e2.3.6 (the nightly workflow);
+neither is a surface, so this question does not wait for them.
 
 ## Q-M1e2.7 — The answer is a region of the lattice
 

@@ -1094,7 +1094,7 @@ fn universe(r: &ReadOut, terms: &Terms) -> Form {
 }
 
 /// `-v` and `--layer-progress`: the route's steps on stderr as it takes them,
-/// and under `-v` every `-g`-th node too.
+/// and under `-v` every `-g`-th node too, none at `-g 0`.
 struct Progress {
     every: Option<u64>,
     nodes: u64,
@@ -1107,9 +1107,12 @@ impl Progress {
         if !verbose && !m.get_flag("layer-progress") {
             return None;
         }
+        // `-g 0` logs no node line, and a negative never reaches here: the
+        // parser refuses it (M1e2 S1e2.3.4, the user's ruling (b) of
+        // 2026-11-03).
+        let every = *m.get_one::<i64>("progress-every").unwrap_or(&100);
         Some(Progress {
-            every: verbose
-                .then(|| (*m.get_one::<i64>("progress-every").unwrap_or(&100)).max(1) as u64),
+            every: (verbose && every > 0).then_some(every as u64),
             nodes: 0,
             steps: 0,
         })

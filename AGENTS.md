@@ -706,9 +706,12 @@ left alone by that stage and changed by another. Since M1d T1d.10.5.2b a
 exhaust the lattice*, not *the constraints are contradictory*.
 `saturation/type-exclusivity/pets.ein` is the fixture: `k = 0` at
 `-m 5`…`-m 8`, **35 models** at `-m 10`, and **39**, exhausted, at `-m 12`
-(re-taken 2026-10-14). Two surfaces still say the old word, the `--trace`
-headline and `--json-summary`'s `verdict.type`. They are S2 and S3 of
-[M1e2](plans/m1e2_correctness/README.md)'s proposed P1e2.3. And whether a
+(re-taken 2026-10-14). Two surfaces said the old word, the `--trace`
+headline and `--json-summary`'s `verdict.type`, until M1e2 S1e2.1a.5's switch
+(2026-10-18) removed both: they were S2 and S3 of
+[P1e2.3](plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/README.md),
+which found them gone at its re-take and left no surface live (2026-11-03).
+And whether a
 truncated refutation may be called anything stronger is still
 [Q-M1d.1](docs/history/m1d_satisfiability/open_questions.md#q-m1d1--may-the-search-stop-before-the-lattice-is-exhausted)'s
 question about a *word*.

@@ -392,7 +392,9 @@ different question or stopping early.
   contract, pinned by `ein-render/tests/jobs_invariance.rs` and
   `region_modes.rs::jobs_change_no_line_of_a_mode`. The default is 1 and stays
   1.
-- **Presentation** — `-p`, `-P`, `-f`, `-s`, `-t`, `-v`, `-H`, `-c`, `-g`,
+- **Presentation** — `-p`, `-P`, `-f`, `-s`, `-t`, `-v`, `-H`, `-c`, `-g`
+  (under `-v`, every N-th node; 0 logs none and a negative is refused, exit 2,
+  since M1e2 S1e2.3.4, the user's ruling (b) of 2026-11-03),
   `--layer-progress`, `--models` (`list`, `key`, `grid`, over the states the
   read-out showed), `--diff-models FILE`, and `ein render program`'s / `ein
   render kb`'s six, which draw a file and solve nothing, and `ein render
@@ -539,7 +541,13 @@ kept because the register's `W5` twin and M1d's traversal numbers cite it.
 
 It was the one **experimental** surface in the system, and the only knob whose
 effect a reader cannot infer from the tables above: it does not change a
-setting, it runs a **second traversal**. What that traversal *reports* has been
+setting, it runs a **second traversal**. What *experimental* licenses was
+[Q-M1e.5](../history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface)'s
+question, closed on 2026-11-03 by the user's ruling (a) on M1e2
+[S1e2.3.4](../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.4_the_inherited_questions_and_the_record.md):
+nothing. The ruling of 2026-10-16 already says that no two commands may
+disagree and every answer agrees with the oracle, and a surface called
+experimental is held to it like any other. What that traversal *reports* has been
 observable since M1d S1d.10.6 and stated nowhere, which is M1e
 [S1e.3.2](../history/m1e_review_processing/README.md#s1e32--semantics-medium)'s
 `SE-M3`. This is the shipped subset — not

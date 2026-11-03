@@ -46,8 +46,8 @@ cannot pay is `Open`, not `Contradiction`. The answer is one of:
 
 Surfaces that misstate a run whose answer is right (the inventory's S1–S9),
 and the one reachable panic (P1), are not stages here. They are
-[P1e2.3](../README.md#p1e23--surfaces-that-misreport-the-answer-proposed),
-proposed.
+[P1e2.3](../p1e2.3_surfaces_that_misreport_the_answer/README.md), a phase
+since 2026-11-02, whose S1e2.3.1–.4 left none of them live (2026-11-03).
 
 **Contested** cases are wrong under one reading of a ruling and right under
 another. Each contested stage starts with the reading, taken by the user in

@@ -898,6 +898,24 @@ Two things it settles that are easy to state loosely:
 Held by
 `ein-cli/tests/cli_semantics.rs::solutions_takes_a_count_of_one_or_more_and_nothing_else`.
 
+**`-g/--progress-every 0` logs no node line, and a negative is refused**
+(M1e2 [S1e2.3.4](../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.4_the_inherited_questions_and_the_record.md),
+the user's ruling (b) of 2026-11-03, which closed
+[Q-M1e.17](../history/m1e_review_processing/open_questions.md#q-m1e17--three-int_arg-options-silently-reinterpret-a-negative)).
+Under `-v` the step lines print and the node lines do not, which is what `ein
+saturate --progress-every 0` already meant; until then the region modes
+clamped 0 and every negative to 1 and logged every node with no word. A
+negative is a usage error, exit 2, in both spellings (`-g=-1` and `-g -1`,
+since the option takes negative numbers as values):
+
+```text
+$ ein solve x.ein -v -g=-1
+error: invalid value '-1' for '--progress-every <PROGRESS_EVERY>': invalid progress interval: '-1' (expected 0 or more nodes; 0 logs none)
+```
+
+Held by
+`cli_semantics.rs::progress_every_is_zero_for_no_node_lines_and_refuses_a_negative`.
+
 **M1d P1d.10 added the 51st option, and it moves no byte of stdout.** `ein
 solve --layer-progress` streams the **per-layer census** to stderr and nothing
 per entering — three lines a layer, where `--verbose` had one and a half:
@@ -942,8 +960,13 @@ on its own line rather than inside an 89-line text blob.
 
 ## 6. What is *not* defined, and is filed
 
-One rendering on this boundary is genuinely **under-determined**, and saying
-so is the point of listing it here:
+**Nothing, since M1e2's switch.** The one rendering below was genuinely
+**under-determined** while the walk printed it. The region read-out sorts a
+class's goal rows and prints every one (M1e2 T1e2.1a.5.2), so no row is
+chosen, and its witness is the corpus entry
+[`examples/ein-bugs/d3-goal-row-order.ein`](../../examples/ein-bugs/d3-goal-row-order.ein)
+since M1e2 S1e2.3.4, which `ein-render/tests/id_order_invariance.rs` permutes
+on every commit. The item is kept as the record of what was filed:
 
 - **The goal row a solve table prints.** If a model satisfies `(query :goal
   …)` more than once, the table prints the first row of an *unsorted* match,

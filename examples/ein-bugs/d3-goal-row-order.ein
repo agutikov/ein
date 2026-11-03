@@ -1,0 +1,28 @@
+;;; **The goal row a solve printed moved under a permuted interner** (P1e2.3's
+;;; S7).
+;;;
+;;; Found 2026-08-20 by `utils/fuzz_engine.py` (property `id-order`), re-found
+;;; from another seed on 2026-08-21; the note is
+;;; `corpus/fuzz_findings/d3-goal-row-order.md`. One model satisfies the goal
+;;; `(cand ?x)` twice, with `?x = A` and `?x = B`, and the walk's solve table
+;;; printed one row: `rows[0]` of an unsorted match, which moved when the
+;;; interner assigned ids in another order (design/02's forbidden class).
+;;;
+;;; Gone since M1e2 T1e2.1a.5.2: the region read-out sorts a class's rows and
+;;; prints them all, so state 5's class lists `?x = A` and then `?x = B` under
+;;; any id order. Banked here by M1e2 S1e2.3.4 (the user's ruling (a) of
+;;; 2026-11-03, *pin both*), because nothing checked the witness: the
+;;; per-commit sweep `ein-render/tests/id_order_invariance.rs` permutes every
+;;; corpus file, and a file under `corpus/fuzz_findings/` is not one. The fuzz
+;;; `.ein` stays there as a frontend-fuzzer seed.
+
+(relation ok      T)
+(relation blessed T)
+(relation cand    T)
+(rule promote ()
+  :match  (and (ok ?x) (blessed ?x))
+  :assert (cand ?x))
+(ok      B)
+(blessed A)
+(query
+  :goal (cand ?x))

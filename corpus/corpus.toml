@@ -648,6 +648,18 @@ group  = "regression"
 runs   = ["solve", "saturate", "render constraints", "render program"]
 note   = "M1e2 S1e2.3.2 (P1) — a keyword pair *below* an undeclared form, `(tracex (step s1 :rule … :using … :derives …) …)`. The loader accepts it as an ontology fact; `render constraints` and `render program` both exited 101 in `dot_util::value_label`, *not a value node: KwPair*, because `constraints.rs` filters a form's own keyword pairs one level deep and `ir_dot`'s ontology path filters none. Fixed on the user's ruling (a) of 2026-11-03: `value_label` labels a keyword pair `:key value` for every caller. Found by `utils/fuzz_engine.py` 2026-08-23 (`corpus/fuzz_findings/kwpair-below-the-filter.md`); banked here so `corpus_shapes.rs` and `dot_wellformed.rs` run every view over it."
 
+[[entry]]
+path   = "examples/ein-bugs/d3-goal-row-order.ein"
+group  = "regression"
+runs   = ["solve", "saturate"]
+note   = "M1e2 S1e2.3.4 (P1e2.3's S7) — one model satisfies the goal `(cand ?x)` twice, and the walk's table printed one row, `rows[0]` of an unsorted match, which moved under a permuted interner (`corpus/fuzz_findings/d3-goal-row-order.md`). Gone since T1e2.1a.5.2: the read-out sorts a class's rows and prints them all. Banked on the user's ruling (a) of 2026-11-03, *pin both*, so `id_order_invariance.rs` permutes it per commit; the fuzz `.ein` stays as a frontend-fuzzer seed."
+
+[[entry]]
+path   = "examples/ein-bugs/nested-core.ein"
+group  = "regression"
+runs   = ["solve"]
+note   = "M1e2 S1e2.3.4 (P1e2.3's S8) — the only program known to put a nested fact in an unsat core: the given `(not (p A))`. The walk printed it as `(not Fact(relation_name='p', args=('A',)))`; the region read-out prints `unsat core        (not (p A))`, which `ein-cli/tests/read_out.rs` asserts. Was M1e2's `probes/nested-core.ein`; banked on the user's ruling (a) of 2026-11-03, *pin both*."
+
 # ── regression: examples/ein-bugs/wrong-answers/ ────────────
 #
 # M1e2 S1e2.1.1 — witnesses of known wrong answers that existed only as

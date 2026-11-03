@@ -174,3 +174,23 @@ rather than walked by a second traversal. Calibrating against the tree is how
 the phase learns whether its ladder is worth climbing — and if H4 eats most of
 the ratio, that is the phase discovering early that its target was smaller
 than advertised, which is cheaper here than at S1f.10.5.
+
+**Handed here by M1e2, 2026-11-03.** Two things this stage inherits, written
+by M1e2's P1e2.3 rather than found here:
+
+- **Q-M1e.5 is closed, and its learning half is this stage's.** The user ruled
+  (a) on [S1e2.3.4](../../m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.4_the_inherited_questions_and_the_record.md)'s
+  Q4: *experimental* is no licence to ship a false surface, by the ruling of
+  2026-10-16 (*no two commands may disagree; every answer agrees with the
+  oracle*). A tree brought back behind `--traversal` is held to the oracle as
+  every route is. Learning on tree deaths, item 1 of
+  [Q-M1e.5](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e5--is-experimental-a-licence-to-ship-a-lying-surface),
+  comes with it.
+- **The walk is deleted** (M1e2 S1e2.1c.5, 2026-11-03), and `EIN_TRAVERSAL`
+  with it, so the flag this stage plans would bring a traversal back rather
+  than replace a variable. **`hypgen::generate_one_branch` is the one piece of
+  it left**: it was the tree's generator (one owed instance's alternatives),
+  it is `pub`, and nothing calls it, so nothing warns (found by M1e2 S1e2.3.1,
+  parked by S1e2.3.4). Keeping it or deleting it, with the `one_branch`
+  argument it threads through `generate_rungs`, is this stage's call: it is the
+  code the flag would call.
