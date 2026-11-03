@@ -1209,7 +1209,7 @@ fn events_off_formats_nothing_and_does_not_count() {
 /// a kind reachable only under an environment variable was a kind no
 /// default-environment sweep can see, which is how `traversal` shipped at M1d
 /// S1d.10.6 and reached M1e undocumented (`SE-M3`).
-const EVENT_COVER: [(&str, &str); 7] = [
+const EVENT_COVER: [(&str, &str); 6] = [
     (
         "examples/branching/01_saturate_only.ein",
         "the lifecycle and the deductive layer, `enter`, `layer` and `region`",
@@ -1235,14 +1235,10 @@ const EVENT_COVER: [(&str, &str); 7] = [
         "examples/ein-bugs/naf-upward-closure.ein",
         "warn — the `RefutationUnderAbsentWarning` category, from the only \
          corpus entry whose program carries `(config :warn-derived-naf true)` \
-         on an `absent` refutation, and `monotonicity`, a site",
-    ),
-    (
-        "examples/ein-bugs/alive-set-fresh-name.ein",
-        "warn — the `alive-set-invariant` category, the unconditional one, \
-         from a different call site. A second row for one kind because a \
-         cover that reached `warn` through the gated category alone would \
-         stay green if the static check stopped narrating",
+         on an `absent` refutation, and `monotonicity`, a site. The \
+         `alive-set-invariant` category had a row of its own, \
+         `alive-set-fresh-name.ein`, until M1e2 S1e2.2.4 seeded the universe \
+         with a rule's constants and the category left",
     ),
 ];
 

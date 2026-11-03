@@ -100,7 +100,7 @@ difference a change to the engine or an optimisation introduces.
 | `run` | process start | `version`, `level`, `impl`, `file`, `argv`, `config` (every resolved `SolverConfig` field, kebab-cased) |
 | `load` | after `kb.from_ir` | `relations`, `rules`, `hrules`, `macros`, `facts` counts; `relation_names` and `rule_names` in registry order |
 | `region` | end of every **region run** — every `ein solve` and `ein test` file since M1e2 S1e2.1a.5's switch (T1e2.1a.5.2 added it). It replaced the walk's `verdict`, which went with the walk's CLI path | `asked`, `region`, `verdict`, `work`: the `ein-summary/2` blocks of the same names, each one JSON value, `region` without its `states` and `frontier` ([§ Region runs](#region-runs)) |
-| `warn` | **at root, before the search** — the alive-set check right after `load`, the `(absent …)` audit at root's first `quiesce`; one line per breach, in the checker's own order | `category`, `message` (rendered, one line) |
+| `warn` | **at root, before the search** — the `(absent …)` audit at root's first `quiesce` (the alive-set check right after `load` narrated here too, until M1e2 S1e2.2.4); one line per breach, in the checker's own order | `category`, `message` (rendered, one line) |
 | `monotonicity` | **at root, before the search**, after root's obligation tally — and **only when the static check finds a site**, so the program is not monotone (M1e2 S1e2.1a.1) | `verdict` (`"non-monotone"`), `sites` (the count), `site` (one rendered line per site, sorted); since M1e2 S1e2.1b.5 the detector's static half, optional: `at_stake` (one key per site, in `site`'s order), `cycles` and `order` (one rendered line each, as the read-out's `cycle` and `order` rows) and `assumes` (`"fork"`) |
 
 **`type` gained a fourth value at M1d
@@ -123,31 +123,37 @@ artefact paths the *caller* chose, so `--events a.jsonl` against
 `--events b.jsonl` is not a divergence. Both stay in the file, where they
 document the run.
 
-#### `warn` — the three static checks, and what a category means
+#### `warn` — the two static checks, and what a category means
 
 `warn` is the only kind that is about the **program** rather than about a step
 the engine took, which is why its row is in the lifecycle and not in either
-layer below. Three categories ship, and the spelling is not uniform because two
-of them are class names and one is not:
+layer below. Two categories ship, both class names:
 
 | `category` | what it says | where |
 |---|---|---|
 | `DerivedNafWarning` | a rule's `(absent …)` reads a relation some rule *derives*, so its verdict depends on when it is asked | [`naf_deps.rs`](../../../ein.rs/crates/ein-infer/src/naf_deps.rs) |
 | `RefutationUnderAbsentWarning` | …and the reading is a **refutation**, which is [Q-M1e.9](../../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s shape | ⤳ |
-| `alive-set-invariant` | a rule asserts a constant the ontology does not name — M1e [`ST-M1`](../../history/m1e_review_processing/README.md#s1e33--state-model-medium), where a breach costs a **verdict** | [`invariant.rs`](../../../ein.rs/crates/ein-infer/src/invariant.rs) |
 
-The first two are **opt-in** behind `(config :warn-derived-naf true)` — one
-flag, two questions, because `SolverConfig` is rendered into the KB-shape
-digest and an eighteenth field would re-bless every shape golden in the corpus.
-The third is unconditional; like every other kind here it costs nothing while
-`--events` is off. A consumer should match on `category` and treat an unknown
-one as informational: this list grows whenever a static check does.
+Both are **opt-in** behind `(config :warn-derived-naf true)` — one flag, two
+questions, because `SolverConfig` is rendered into the KB-shape digest and an
+eighteenth field would re-bless every shape golden in the corpus. Like every
+other kind here they cost nothing while `--events` is off. A consumer should
+match on `category` and treat an unknown one as informational: this list grows
+whenever a static check does.
 
-Two corpus entries reach this kind, and they are the cover rows for it:
+**A third category, `alive-set-invariant`, shipped from M1e
+[`ST-M1`](../../history/m1e_review_processing/README.md#s1e33--state-model-medium)
+until M1e2 S1e2.2.4**, unconditionally: *new-object*, a rule asserts a
+constant no fact names. The user ruled on 2026-10-16 that such a constant is a
+name of the program (Q-M1e.21 (b)), S1e2.2.4 seeds the universe with it, and a
+line calling it new would be false, so the category left
+([`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally)).
+
+One corpus entry reaches this kind, and it is the cover row for it:
 `examples/ein-bugs/naf-upward-closure.ein` (which carries the `(config …)`
-itself) for the second category, and `examples/ein-bugs/alive-set-fresh-name.ein`
-for the third. `DerivedNafWarning` has no corpus witness — its witness is
-`ein-infer/tests/naf_semantics.rs`, on a program written in the test.
+itself), for the second category. `DerivedNafWarning` has no corpus witness —
+its witness is `ein-infer/tests/naf_semantics.rs`, on a program written in the
+test.
 
 #### `monotonicity` — a program that is not monotone
 
@@ -490,7 +496,7 @@ M1e2 [T1e2.1a.5.2](../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s
 switch every run, a bare description included, and `ein test`'s too:
 
 1. `run` and `load`, as above;
-2. **root**: the alive-set check's `warn` lines, root's saturation (`compile`,
+2. **root**: root's saturation (`compile`,
    `enqueue`, `fire`, …), its obligation pass (`owe`), **how H was built** —
    the generator's `rung` line where it reached the obligations rung, one
    `hyp` per candidate and, at `verbose`, the `hypskip`s — and on a program the

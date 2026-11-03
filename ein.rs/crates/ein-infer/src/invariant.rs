@@ -2,12 +2,31 @@
 //!
 //! `docs/kernel/inference/README.md` § M1 invariant states three clauses —
 //! rules assert no new objects, no new relations, and hypotheses connect
-//! existing names only — and concludes that `alive` is a pure function of the
-//! closed KB. Three shipped mechanisms cite that conclusion as their warrant:
-//! the per-KB `compute_alive` recompute, the
+//! existing names only — and concludes that the candidates are a pure
+//! function of the closed KB. Three mechanisms cited that conclusion as their
+//! warrant: the per-KB `compute_alive` recompute, the
 //! [`state_key`](crate::canon::state_key) dedup that produces `k`, and — since
 //! M1d — the tree traversal's exhaustiveness-by-discharge argument. Until M1e
 //! S1e.3.3 **nothing evaluated it**, which is `ST-M1`.
+//!
+//! # Since M1e2 S1e2.2.4: a rule's constant is a name of the program
+//!
+//! S1e.3.3 read clause 1 against the names the loaded **facts** mention, and
+//! found three programs whose rule asserts a constant no fact names. The user
+//! ruled on 2026-10-16 that such a constant is not new
+//! ([Q-M1e.21](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about)
+//! (b)): *"rules are part of root, so rules can't assert new names"*. So
+//! [`rule_constants`] is the one list of what a rule can introduce, and two
+//! readers take it: [`Universe::of`], whose baseline is every name of the
+//! program, and [`crate::hypgen::candidate_objects`], which **seeds** the
+//! blind enumerator's objects with it. `examples/ein-bugs/alive-set-fresh-name.ein`
+//! is the program on which a rule's constant missing from the candidates cost
+//! a model (M1e2's W4).
+//!
+//! What a rule can still introduce that no static set predicts is a relation
+//! head written as a parameter and bound to an **integer**, whose decimal text
+//! the compiler interns as a name. `ein-infer/tests/interning.rs` names it,
+//! and no corpus program has one.
 //!
 //! This is not F5's typed form, which would make a violation unrepresentable.
 //! It is the cheap one: two set memberships per fact, against a baseline taken
@@ -16,14 +35,13 @@
 //! # The three questions the operational form has to answer
 //!
 //! **What is the baseline?** The *names the loaded program reaches*, not the
-//! interner's length. Those are different sets and the difference is the whole
-//! finding: `Ann` in `examples/ein-bugs/mixed-type-hypothesis.ein` appears in
-//! an `hrule`'s `:assert` and in no fact, so `ein_ir::from_ir::intern_program_names`
+//! interner's length. Those are different sets: `Ann` in
+//! `examples/ein-bugs/mixed-type-hypothesis.ein` appears in an `hrule`'s
+//! `:assert` and in no fact, so `ein_ir::from_ir::intern_program_names`
 //! interns it at **load** — the interner never grows afterwards
-//! (`ein-infer/tests/interning.rs`) and the invariant is broken all the same,
-//! because the KB gained a name its ontology never had. So the baseline is
-//! [`Universe::of`]: every symbol the loaded facts mention, at any depth, plus
-//! the relation registry and its signatures.
+//! (`ein-infer/tests/interning.rs`). So the baseline is [`Universe::of`]:
+//! every symbol the loaded facts mention, at any depth, every constant a
+//! rule's `:assert` names, and the relation registry and its signatures.
 //!
 //! **What is a new relation?** A fact head that is not in
 //! [`ein_core::Program::relations`]. That registry is *declared ∪
@@ -36,12 +54,9 @@
 //! **When does it run?** At a fixpoint, and the honest scope is *every*
 //! fixpoint, because the warrant is used per KB. What it costs is
 //! [`Universe::breaches`]'s two bit tests per symbol against a baseline sized
-//! by the interner, and the caller decides how often to pay it. What ships is
-//! cheaper still: `solve.rs`'s `Run::phase1` runs the **static** half — the
-//! rules' `:assert` constants, once, at load — because that answers for every
-//! run the program could have rather than for the one that happened, and
-//! because it finds every breach the scan finds on the whole corpus
-//! (`ein-infer/tests/alive_invariant.rs`).
+//! by the interner, and the caller decides how often to pay it. No route pays
+//! it: `ein-infer/tests/alive_invariant.rs` runs it over every state a bounded
+//! describe meets on the whole corpus, and finds nothing.
 
 use ein_core::bitset::BitSet;
 use ein_core::{FactId, Kb, Symbol, Terms, Value};
@@ -54,8 +69,9 @@ use ein_ir::{Ast, Node, NodeId};
 /// thousands of facts.
 #[derive(Clone, Debug, Default)]
 pub struct Universe {
-    /// Every symbol the loaded facts mention, at any depth, plus the relation
-    /// registry's names and the symbols in their signatures.
+    /// Every symbol the loaded facts mention, at any depth, every constant a
+    /// rule's `:assert` names, plus the relation registry's names and the
+    /// symbols in their signatures.
     objects: BitSet,
     /// The relation registry as of load — declared ∪ auto-vivified.
     relations: BitSet,
@@ -77,7 +93,7 @@ pub struct Breach {
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum BreachKind {
-    /// Clause 1 / 3 — an argument names an object the ontology never had.
+    /// Clause 1 / 3 — an argument names an object the program never had.
     NewObject,
     /// Clause 2 — the fact's head is not a relation the program registered.
     NewRelation,
@@ -93,8 +109,7 @@ impl BreachKind {
 }
 
 impl Breach {
-    /// `<kind>: <name> in <fact>` — the one line a `warn` event and a debug
-    /// assertion both want.
+    /// `<kind>: <name> in <fact>` — the one line a report wants.
     pub fn render(&self, terms: &Terms) -> String {
         format!(
             "{}: `{}` in {}",
@@ -120,13 +135,112 @@ fn walk_value(terms: &Terms, v: Value, out: &mut impl FnMut(Symbol)) {
     }
 }
 
+/// A constant a registered rule's `:assert` names as an **object**, in an
+/// argument position — a name of the program, which a rule may assert
+/// (Q-M1e.21 (b), the user's ruling of 2026-10-16).
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct RuleConstant {
+    /// The declarator's name.
+    pub rule: Symbol,
+    /// `rule` / `hrule` / `obligation` — which registry it came from.
+    pub which: &'static str,
+    pub name: Symbol,
+}
+
+impl RuleConstant {
+    /// `` `Z`, asserted by rule `spawn` `` — what a report names it by.
+    pub fn render(&self, terms: &Terms) -> String {
+        format!(
+            "`{}`, asserted by {} `{}`",
+            terms.sym(self.name),
+            self.which,
+            terms.sym(self.rule)
+        )
+    }
+}
+
+/// **Every constant a rule's `:assert` can put into a KB as an object** — the
+/// one list of what a rule can introduce, in registry order, once per rule.
+///
+/// Free, and **total**: it reads the registered rules once, over the program,
+/// so it answers for every run the program could have rather than for the one
+/// that happened. All three registries, because an `hrule` is a rule by shape
+/// and its constants are names of the program as a rule's are.
+///
+/// A **variable** leaf contributes nothing: a variable is bound by the match,
+/// or by the activator, so it can only carry a value a fact already holds.
+/// The one exception is a relation head written as a parameter, which the
+/// compiler names by the bound value's text: an integer there is the residue
+/// the module docs name. A **head** contributes nothing here: a relation an
+/// `:assert` names is the registry's business ([`Universe::of`] reads it off
+/// `relation_names`).
+pub fn rule_constants(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<RuleConstant> {
+    let mut out = Vec::new();
+    for (which, reg) in [
+        ("rule", &kb.program().rules),
+        ("hrule", &kb.program().hrules),
+        ("obligation", &kb.program().obligations),
+    ] {
+        for (name, rule) in reg.iter() {
+            let Some(a) = rule.assert_.as_ref() else {
+                continue;
+            };
+            let mut seen: Vec<Symbol> = Vec::new();
+            walk_constants(ast, NodeId(a.expr.0), true, &mut |text, head| {
+                if head {
+                    return;
+                }
+                // Every leaf of a registered rule is interned at load
+                // (`from_ir::intern_program_names`), so a miss names nothing.
+                let Some(sym) = terms.syms.get(text) else {
+                    return;
+                };
+                if seen.contains(&sym) {
+                    return;
+                }
+                seen.push(sym);
+                out.push(RuleConstant {
+                    rule: name,
+                    which,
+                    name: sym,
+                });
+            });
+        }
+    }
+    out
+}
+
+/// The constants **only a rule** mentions: [`rule_constants`] that no loaded
+/// fact, relation or signature names. What the seed adds to the blind
+/// enumerator's objects over what the facts gave it — on the corpus `Ann`,
+/// `G` and `Z` (`ein-infer/tests/alive_invariant.rs`).
+pub fn seeded(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<RuleConstant> {
+    let facts = Universe::of_facts(kb, terms);
+    rule_constants(kb, terms, ast)
+        .into_iter()
+        .filter(|c| !facts.objects.contains(c.name.0))
+        .collect()
+}
+
 impl Universe {
-    /// The baseline, taken from a **loaded** KB — before any saturation.
+    /// The baseline, taken from a **loaded** KB — before any saturation: every
+    /// name of the program.
     ///
     /// Taking it after root saturation would make the check vacuous at root:
     /// whatever saturation invented would already be in the baseline. The
     /// caller is the loader's neighbour, not the search's.
-    pub fn of(kb: &Kb, terms: &Terms) -> Universe {
+    pub fn of(kb: &Kb, terms: &Terms, ast: &Ast) -> Universe {
+        let mut u = Universe::of_facts(kb, terms);
+        for c in rule_constants(kb, terms, ast) {
+            u.objects.insert(c.name.0);
+        }
+        u
+    }
+
+    /// [`Universe::of`] without the rules' constants: what the facts, the
+    /// registry and the kernel name. M1e S1e.3.3's baseline, and what
+    /// [`seeded`] is measured against.
+    fn of_facts(kb: &Kb, terms: &Terms) -> Universe {
         let mut u = Universe {
             objects: BitSet::new(),
             relations: BitSet::new(),
@@ -246,87 +360,6 @@ impl Universe {
 
     pub fn is_empty(&self) -> bool {
         self.objects.is_empty()
-    }
-
-    /// Every **constant** a rule's `:assert` can put into a KB that the
-    /// baseline does not have — the invariant read as what it says, *rules*
-    /// don't assert facts whose args introduce new names.
-    ///
-    /// This is the check that matters and it is free: it runs once, over the
-    /// program, and it is **total** — it answers for every run the program
-    /// could have, where a post-fixpoint scan answers only for the run that
-    /// happened. All three violations M1e S1e.3.3 found are here, and the
-    /// corpus sweep found none the sweep could see and this could not
-    /// (`ein-infer/tests/alive_invariant.rs`).
-    ///
-    /// A **variable** leaf contributes nothing: a variable is bound by the
-    /// match, so it can only carry a value the KB already holds. That is the
-    /// induction the dynamic half exists to confirm rather than to assume.
-    ///
-    /// `fact` on each breach is the `FactId` of nothing — there is no fact
-    /// yet — so this reports the rule and the name instead.
-    pub fn rule_breaches(&self, kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<RuleBreach> {
-        let mut out = Vec::new();
-        for (which, reg) in [
-            ("rule", &kb.program().rules),
-            ("hrule", &kb.program().hrules),
-            ("obligation", &kb.program().obligations),
-        ] {
-            for (name, rule) in reg.iter() {
-                let Some(a) = rule.assert_.as_ref() else {
-                    continue;
-                };
-                let mut seen: Vec<Symbol> = Vec::new();
-                walk_constants(ast, NodeId(a.expr.0), true, &mut |text, head| {
-                    let Some(sym) = terms.syms.get(text) else {
-                        return;
-                    };
-                    let known = if head {
-                        self.relations.contains(sym.0)
-                    } else {
-                        self.objects.contains(sym.0)
-                    };
-                    if known || seen.contains(&sym) {
-                        return;
-                    }
-                    seen.push(sym);
-                    out.push(RuleBreach {
-                        rule: name,
-                        which,
-                        name: sym,
-                        kind: if head {
-                            BreachKind::NewRelation
-                        } else {
-                            BreachKind::NewObject
-                        },
-                    });
-                });
-            }
-        }
-        out
-    }
-}
-
-/// A rule that can introduce a name the loaded program does not have.
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub struct RuleBreach {
-    /// The declarator's name.
-    pub rule: Symbol,
-    /// `rule` / `hrule` / `obligation` — which registry it came from.
-    pub which: &'static str,
-    pub name: Symbol,
-    pub kind: BreachKind,
-}
-
-impl RuleBreach {
-    pub fn render(&self, terms: &Terms) -> String {
-        format!(
-            "{}: `{}`, asserted by {} `{}`",
-            self.kind.as_str(),
-            terms.sym(self.name),
-            self.which,
-            terms.sym(self.rule)
-        )
     }
 }
 

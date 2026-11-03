@@ -44,6 +44,7 @@ use std::ops::ControlFlow;
 
 use ein_core::entities::NameCategory;
 use ein_core::{FactId, Kb, Symbol, Terms, Value};
+use ein_ir::Ast;
 use rustc_hash::FxHashSet;
 
 use crate::compile::CompileError;
@@ -440,7 +441,7 @@ fn generate_with(
     // `branching/{01,02,03,04,06,08,12}` and `features/05`, of which
     // `06_lookahead_on.ein` writes 162 `(not h)` facts mid-call. All are
     // byte-identical through the `hyp` stream.
-    let objects = candidate_objects(s.kb, s.terms);
+    let objects = candidate_objects(s.kb, s.terms, s.ast);
     let by_count = by_participation(s.kb, s.terms, &objects);
     let relations = relation_plan(s, &allowed, &excluded);
     for focal in by_count {
@@ -717,7 +718,18 @@ fn hypskip(s: &mut Session<'_>, rel: Symbol, reason: &str, object: Option<Symbol
 
 // ── The candidate-object set ───────────────────────────────────────
 
-/// The objects the enumerator may guess about, **sorted by name**.
+/// The objects the enumerator may guess about, **sorted by name**: every name
+/// the KB holds, and every constant a rule's `:assert` names.
+///
+/// **The second half is the seed**, M1e2 S1e2.2.4. A constant a rule asserts
+/// is a name of the program — Q-M1e.21 (b), the user's ruling of 2026-10-16,
+/// *"rules are part of root, so rules can't assert new names"* — so the
+/// universe holds it whether or not a fact names it yet. Until then the pool
+/// was `kb.names()` alone, a function of the facts: a constant that only a
+/// rule fired inside a fork could name entered no candidate, and
+/// `examples/ein-bugs/alive-set-fresh-name.ein` lost its model to it (W4).
+/// [`crate::invariant::rule_constants`] is the one list of what a rule can
+/// introduce, so this reads it rather than walking the rules a second way.
 ///
 /// A name-free signal (S1.7.23): a node of `object` category, minus the names
 /// a puzzle *declares as a type* in a relation signature, minus the reserved
@@ -730,7 +742,7 @@ fn hypskip(s: &mut Session<'_>, rel: Symbol, reason: &str, object: Option<Symbol
 /// Soundness does not depend on this set being tight, only tractability:
 /// type-wrong candidates that survive die downstream against the puzzle's own
 /// contradiction rules.
-pub fn candidate_objects(kb: &Kb, terms: &Terms) -> Vec<Symbol> {
+pub fn candidate_objects(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<Symbol> {
     // The same dense-id argument as `Kb::names` (T1a.6.4.2): every signature
     // symbol is a `u32`, so the set of type roles is a bitset built with one
     // OR per signature entry rather than a hash table filled per call.
@@ -743,6 +755,17 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms) -> Vec<Symbol> {
     let k = &terms.kernel;
     let reserved = [k.not, k.r#false, k.and, k.or, k.absent, k.eq, k.neq];
     let mut names = kb.names();
+    // The seed: a rule's constant no fact names yet joins the facts' names,
+    // once. On the corpus that is `Ann`, `G` and `Z` (`alive_invariant.rs`).
+    let mut seen = ein_core::BitSet::new();
+    for &n in &names {
+        seen.insert(n.0);
+    }
+    for c in crate::invariant::rule_constants(kb, terms, ast) {
+        if seen.insert(c.name.0) {
+            names.push(c.name);
+        }
+    }
     // T1a.6.4.2 — **drop first, then sort**. The two steps commute: the
     // comparator is a total order (a rank is a distinct `u32` per symbol), so
     // sorting the survivors and sorting-then-dropping give the same sequence
@@ -1191,11 +1214,29 @@ mod tests {
     /// `A`, which no signature mentions, is.
     #[test]
     fn candidate_objects_drop_signature_atoms_and_primitives() {
-        let (_ast, terms, kb) = kb_of("(relation r T)\n(r A)\n(not (r B))\n(relation s T)\n(s B)");
-        let names: Vec<&str> = candidate_objects(&kb, &terms)
+        let (ast, terms, kb) = kb_of("(relation r T)\n(r A)\n(not (r B))\n(relation s T)\n(s B)");
+        let names: Vec<&str> = candidate_objects(&kb, &terms, &ast)
             .iter()
             .map(|&s| terms.sym(s))
             .collect();
         assert_eq!(names, ["A", "B"], "sorted by name, T and `not` excluded");
+    }
+
+    /// **The seed** (M1e2 S1e2.2.4, Q-M1e.21 (b)): a constant only a rule's
+    /// `:assert` names is an object of the program before any fact names it,
+    /// and a constant the rule names that a fact already does is listed once.
+    /// Without the seed this is `["A", "B"]` and nothing is ever proposed
+    /// about `Z`.
+    #[test]
+    fn candidate_objects_seed_the_constants_a_rule_asserts() {
+        let (ast, terms, kb) = kb_of(
+            "(relation q T T)\n(q A B)\n\
+             (rule spawn () :match (q ?a ?b) :assert (and (q ?b Z) (q A ?a)))",
+        );
+        let names: Vec<&str> = candidate_objects(&kb, &terms, &ast)
+            .iter()
+            .map(|&s| terms.sym(s))
+            .collect();
+        assert_eq!(names, ["A", "B", "Z"], "Z seeded, A once, T excluded");
     }
 }

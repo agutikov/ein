@@ -1,8 +1,10 @@
-;;; The **M1 alive-set invariant**, broken on purpose — M1e S1e.3.3, `ST-M1`.
+;;; The **M1 alive-set invariant**, broken on purpose — M1e S1e.3.3, `ST-M1`;
+;;; and the program on which breaking it cost a model, M1e2's **W4**, fixed by
+;;; S1e2.2.4 (2026-11-04).
 ;;;
-;;; ── The premise this refutes ───────────────────────────────────────────
+;;; ── The premise this tested ────────────────────────────────────────────
 ;;;
-;;; `docs/kernel/inference/README.md` § M1 invariant:
+;;; `docs/kernel/inference/README.md` § M1 invariant, as M1 wrote it:
 ;;;
 ;;;   1. No new objects. Rules don't `:assert` facts whose args introduce
 ;;;      names that weren't already in the ontology / facts.
@@ -10,42 +12,43 @@
 ;;;   the current KB state; deeper branches **eliminate** candidates, never
 ;;;   extend the space.
 ;;;
-;;; The blind enumerator builds its candidate objects out of `kb.names()`,
+;;; The blind enumerator built its candidate objects out of `kb.names()`,
 ;;; which is a function of the KB's **facts**. So a rule asserting a constant
-;;; no fact mentions grows that pool inside a fork — while the lattice
-;;; enumerates subsets of the `alive` set computed at *root*, where the name
-;;; did not exist. The extended candidates are unreachable and nothing says so.
+;;; no fact mentions grew that pool only inside a fork, while the candidates
+;;; were taken at *root*, where the name did not exist. The extended
+;;; candidates were unreachable and nothing said so.
 ;;;
 ;;; ── What this program does ─────────────────────────────────────────────
 ;;;
-;;;   objects at root : A, B          (from `(p A B)`)
-;;;   alive₀          : (q A B), (q B A)
+;;;   objects at root : A, B          (from `(p A B)`), and Z, which `spawn` names
 ;;;
 ;;;   `spawn` turns any committed `q` into `(p ?b Z)` — and **Z is a name no
-;;;           fact has**, so it enters the KB only inside a fork.
-;;;   `no-a` / `no-b` refute every `q` that points at A or at B, which is both
-;;;           elements of alive₀ and nothing else.
+;;;           fact has**: only the rule names it.
+;;;   `no-a` / `no-b` refute every `q` that points at A or at B.
 ;;;
-;;; Every subset of alive₀ therefore dies, and the engine answers
+;;; `{(q A Z), (q B Z)}` saturates to a consistent, quiescent state, and it is
+;;; the maximal one: R is ∅, `{(q A Z)}`, `{(q B Z)}` and both.
 ;;;
-;;;   solutions (k)   0     exhausted = true
-;;;   verdict         No solution — the constraints are contradictory
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; **which is false.** `{(q A Z), (q B Z)}` saturates to a consistent,
-;;; quiescent, complete state — a model — and the search cannot reach it,
-;;; because neither element was ever in `alive₀`. The refutation is not
-;;; qualified by a cap: `exhausted = true` is the strong claim, and it is
-;;; wrong.
+;;; Without `Z` among the objects, the candidates were `(q A B)` and
+;;; `(q B A)`, both refuted in one firing. The walk answered
+;;; `k = 0, exhausted = true`, *No solution — the constraints are
+;;; contradictory*, with the file's lookahead off; that refutation was M1e2's
+;;; W1 at layer 0 as much as this case (`wrong-answers/fresh-name-nospawn.ein`
+;;; is this file without `spawn`, and refuted the same way). Since M1e2
+;;; S1e2.1a.5 the answer is a region, and R was `{∅}`: W4 in isolation, which
+;;; `wrong-answers/fresh-name-default.ein` is this file's program banked as.
 ;;;
-;;; ── Why the lookahead is off ───────────────────────────────────────────
-;;;
-;;; The flag chooses **which** wrong answer this file gives, and the sharper
-;;; one is worth banking. With pre-branch lookahead on, the kill cache refutes
-;;; both candidates before layer 1 and empties `alive`, so root itself is
-;;; recorded and the run says `Solution k = 1` over a model with no `q` at all
-;;; — a wrong *count* (1 where there are 2) rather than a wrong verdict. With
-;;; it off, each singleton is entered and dies, and `k = 0, exhausted = true`
-;;; is a **refutation**: a positive claim that no model exists.
+;;; The user ruled on 2026-10-16 that `Z` is not new (Q-M1e.21 (b)): *"rules
+;;; are part of root, so rules can't assert new names"*. A constant a rule
+;;; names is a name of the program, and since S1e2.2.4 the blind enumerator's
+;;; objects are seeded with every constant a rule's `:assert` names
+;;; (`hypgen::candidate_objects`, from `invariant::rule_constants`). H is the
+;;; six `q` candidates over A, B and Z, and R is the four states above —
+;;; `examples/ein-bugs/alive-set-fresh-name-declared.ein`'s, which names `Z`
+;;; in a fact. `ein-infer/tests/alive_invariant.rs` holds the pair to one R,
+;;; and `corpus/wrong_answers.toml`'s `W4/alive-set-fresh-name` holds the run.
 ;;;
 ;;; Deliberately **no `(absent …)` anywhere.** The obvious encoding of "Z must
 ;;; be reached" is a NAF guard, and it works — but it would also give this
@@ -58,24 +61,11 @@
 ;;;
 ;;; [`alive-set-fresh-name-declared.ein`](alive-set-fresh-name-declared.ein)
 ;;; is this file plus **one fact**, `(seen Z)`, which changes no rule and no
-;;; constraint and does nothing but put `Z` in the name universe at root. It
-;;; answers `Solution k = 1` over the model above. One fact is the whole
-;;; difference between a puzzle and a false refutation — and the same fact is
-;;; what makes the program *conform*, since putting the name in the ontology
-;;; is exactly what clause 1 asks for.
+;;; constraint and does nothing but put `Z` in a fact at root. Until S1e2.2.4
+;;; that one fact was the whole difference between the model and none; since
+;;; then the two files describe one R.
 ;;;
-;;; ── Status ─────────────────────────────────────────────────────────────
-;;;
-;;; **Not fixed, detected.** `ein_infer::invariant::Universe::rule_breaches`
-;;; reports `new-object: 'Z', asserted by rule 'spawn'` — at load, over the
-;;; program rather than over a run, so it answers for every run the program
-;;; could have. `ein-infer/tests/alive_invariant.rs` holds the corpus's whole
-;;; breach set, this file included; `--events` narrates it as a `warn` line.
-;;; What would make a violation *unrepresentable* is the docs' F5 typed form,
-;;; which has no schedule.
-;;;
-;;; `:expect` states **today's answer** and is meant to break, the same
-;;; tripwire `naf-upward-closure.ein` and `alive-empty-*.ein` carry.
+;;; `:expect` states R. It stated `(region (model))`, ∅ alone, until the seed.
 
 ;; Its `(config :enable-pre-branch-lookahead false)` line went at M1e2 S1e2.1c.5 (2026-11-03),
 ;; when the user retired the flag: no route reads it, and a program that sets
@@ -103,11 +93,16 @@
 
 (solve
   :no-hypothesis (p)
-  ;; Today's answer. The truth is `(model (q A Z) (q B Z))`, which the
-  ;; control reaches and this file's lattice cannot enumerate.
+  ;; The model the seed makes reachable: `q` is named, so this closes `q`.
   :expect (region
-            ;; state 1 of 1 — ∅, root itself · minimal and maximal
-            (model)))
+            ;; state 1 of 4 — ∅, root itself · minimal
+            (model)
+            ;; state 2 of 4 — 1 candidate · from {(q A Z)}
+            (model (q A Z))
+            ;; state 3 of 4 — 1 candidate · from {(q B Z)}
+            (model (q B Z))
+            ;; state 4 of 4 — 2 candidates · maximal · from {(q A Z), (q B Z)}
+            (model (q A Z) (q B Z))))
 
 (query
   :goal   (q ?x ?y))

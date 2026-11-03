@@ -1,34 +1,36 @@
 ;;; `alive-set-fresh-name.ein` at **default flags** — M1e2 **W4** in isolation:
-;;; a rule's fresh constant never becomes a hypothesis. Register row
-;;; `W4/fresh-name-default` (`corpus/wrong_answers.toml`).
+;;; a rule's fresh constant never became a hypothesis. Register row
+;;; `W4/fresh-name-default` (`corpus/wrong_answers.toml`), **fixed** by
+;;; S1e2.2.4 (2026-11-04).
 ;;;
-;;; Below this header the program is `../alive-set-fresh-name.ein` with its
-;;; `(config :enable-pre-branch-lookahead false)` line deleted and nothing
-;;; else; that file's header is the argument and is not repeated here.
+;;; Below this header the program is `../alive-set-fresh-name.ein`'s, which
+;;; lost its `(config :enable-pre-branch-lookahead false)` line at S1e2.1c.5;
+;;; that file's header is the argument and is not repeated here.
 ;;;
 ;;; ── Why this twin exists ───────────────────────────────────────────────────
 ;;;
-;;; The banked file's `k = 0, exhausted = true` is **confounded**: delete its
-;;; `spawn` rule — so no fresh name exists at all — and it still answers
-;;; `Contradiction` (`fresh-name-nospawn.ein`), which is W1 at layer 0 under
+;;; The banked file's `k = 0, exhausted = true` was **confounded**: delete its
+;;; `spawn` rule — so no fresh name exists at all — and it still answered
+;;; `Contradiction` (`fresh-name-nospawn.ein`), which was W1 at layer 0 under
 ;;; the file's lookahead-off line, not W4. With the lookahead on, the kill
-;;; cache refutes both candidates before layer 1, `alive` is empty, root is
-;;; recorded, and what is left is the fresh-name defect alone:
-;;;
-;;;   solutions (k)   1
-;;;   verdict         Solution        — a model with no `q` fact at all
-;;;   exhausted        true
+;;; cache refuted both candidates before layer 1, `alive` was empty, root was
+;;; recorded, and what was left was the fresh-name defect alone: `Solution`,
+;;; k = 1, over a model with no `q` fact at all. Under the region (M1e2
+;;; S1e2.1a.5) both files answered R = {∅}.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────────
 ;;;
 ;;; `{(q A Z), (q B Z)}` saturates to a consistent, quiescent state — `spawn`
 ;;; adds `(p Z Z)`, neither refutation fires — and every further `q` is
-;;; refuted, so it is the model: **`Solution`, k = 1, `{(q A Z), (q B Z)}`**,
-;;; which `../alive-set-fresh-name-declared.ein` (one fact, `(seen Z)`, more)
-;;; reaches. The model the engine records is root, which a `q` can still extend.
+;;; refuted, so it is the maximal state, and R is it, ∅ and its two
+;;; singletons. `../alive-set-fresh-name-declared.ein` (one fact, `(seen Z)`,
+;;; more) reaches it, and since S1e2.2.4, which seeds the blind enumerator's
+;;; objects with every constant a rule's `:assert` names (Q-M1e.21 (b), ruled
+;;; 2026-10-16), so does this file: `ein solve FILE --maximal` lists
+;;; `(model (q A Z) (q B Z))`.
 ;;;
-;;; **No `:expect`**: today's answer has an empty goal extent, and an
-;;; expectation cannot state one — Q-M1e.13. The register states it instead.
+;;; **No `:expect`**: the register states the run, and the banked file states
+;;; the region.
 ;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
 

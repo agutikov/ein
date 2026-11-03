@@ -66,9 +66,12 @@ region.
 A **name** is a constant the program mentions, in a fact **or in a rule**:
 rules are part of the program, so a rule cannot assert a new name (the user,
 2026-10-16). Ein never makes a name at run time, so the lattice below is
-finite. A name that a rule asserts and no fact mentions is still a name, and a
-candidate list that leaves it out is an engine bug
-([W4](../../../corpus/wrong_answers.toml)).
+finite. A name that a rule asserts and no fact mentions is still a name, and
+the candidate list holds it: the blind enumerator's objects are seeded with
+every constant a rule's `:assert` names
+([`hypgen::candidate_objects`](../../../ein.rs/crates/ein-infer/src/hypgen.rs),
+since M1e2 S1e2.2.4). A list that left it out was an engine bug, and was
+[W4](../../../corpus/wrong_answers.toml) until then.
 
 ### 1.3 Root
 
@@ -106,7 +109,8 @@ cascade (§ 6.3).
 
 **H must contain every fact a model needs** (ruling (h), 2026-10-16). If it
 does not, either the program is wrong (a name it never mentions) or the engine
-is (a candidate it never proposes, [W4](../../../corpus/wrong_answers.toml)).
+is (a candidate it never proposes, as a rule's constant was until M1e2
+S1e2.2.4, [W4](../../../corpus/wrong_answers.toml)).
 The universe is defined by the generator today. A declarative definition,
 every type-correct ground atom of every hypothesisable relation, is what a
 check of the generator would be held to, and is not written yet.
@@ -677,7 +681,8 @@ it (2026-11-03); it checks every route since (`ein-infer/tests/explore.rs`).
 It shares the saturator with
 the engine, so it cannot see a derivation the saturator loses
 ([W7](../../../corpus/wrong_answers.toml)). It takes H from the generator, so
-it cannot see a candidate the generator never proposes (W4, W6).
+it cannot see a candidate the generator never proposes (W6, and W4 until M1e2
+S1e2.2.4 seeded the candidates with a rule's constants).
 
 ---
 

@@ -3,30 +3,30 @@
 ;;;
 ;;; The added fact is `(seen Z)`, over a relation nothing else mentions. It
 ;;; changes no rule, no constraint, no goal and no config; all it does is put
-;;; `Z` in the KB's name universe at **root**, where `alive₀` is computed.
-;;; That is enough for the blind enumerator to propose `(q A Z)` and
-;;; `(q B Z)`, and the answer goes from
+;;; `Z` in a fact at **root**, where the candidates are taken. That was enough
+;;; for the blind enumerator to propose `(q A Z)` and `(q B Z)`, whose objects
+;;; were the KB's names, and the answer went from the twin's
 ;;;
 ;;;   solutions (k)   0     exhausted = true     No solution
 ;;;
-;;; to `Solution k = 1` over exactly that model, in seven enterings.
+;;; to `Solution k = 1` over exactly that model, in seven enterings — under the
+;;; region (M1e2 S1e2.1a.5), from R = {∅} to the four states below.
 ;;;
-;;; One fact is the whole difference, which is what makes this pair a
+;;; One fact was the whole difference, which is what made this pair a
 ;;; measurement of `ST-M1` rather than an illustration of it: the twin's
-;;; refutation is not a property of its constraints — its constraints are
-;;; these, to the character — and the M1 alive-set invariant, which the docs
-;;; state and nothing checked until S1e.3.3, is the only thing standing
-;;; between the two files.
+;;; refutation was not a property of its constraints — its constraints are
+;;; these, to the character.
 ;;;
-;;; And this file does **not** break the invariant, for the same one line:
-;;; `(seen Z)` puts `Z` in the ontology, which is precisely what clause 1
-;;; asks for. `invariant::Universe::rule_breaches` reports `spawn` on the twin
-;;; and nothing here. So the fact does two things and they are the same thing
-;;; — it makes the program conform, and it makes the answer right. That is
-;;; the tightest statement of what `ST-M1` is worth.
+;;; **Since M1e2 S1e2.2.4 the pair describes one R.** The user ruled on
+;;; 2026-10-16 that a constant a rule names is a name of the program
+;;; (Q-M1e.21 (b)), and the blind enumerator's objects are seeded with every
+;;; constant a rule's `:assert` names, so the twin's candidates hold `Z`
+;;; without a fact. `invariant::seeded` reports `spawn`'s `Z` on the twin and
+;;; nothing here, because `(seen Z)` names it; `ein-infer/tests/alive_invariant.rs`
+;;; holds the two to one region.
 ;;;
-;;; Read the twin for the mechanism, for why the lookahead is off, and for why
-;;; neither file contains an `(absent …)`.
+;;; Read the twin for the mechanism and for why neither file contains an
+;;; `(absent …)`.
 
 ;; Its `(config :enable-pre-branch-lookahead false)` line went at M1e2 S1e2.1c.5 (2026-11-03),
 ;; when the user retired the flag: no route reads it, and a program that sets

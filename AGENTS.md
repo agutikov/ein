@@ -117,7 +117,10 @@ constrained-reasoning research.
   The review (S1e2.1.7) finished on 2026-11-03 with every row read: W12 closed
   by `solve_interface.md` § 0, `W1/alive-empty-interlayer` re-opened under
   *forbid*, C1 ruled not wrong, and W8's two `deferred` to F21 and kept open,
-  so it reads 21 fixed, 13 open and 1 not wrong.
+  so it reads 21 fixed, 13 open and 1 not wrong. P1e2.2's first stage,
+  S1e2.2.4, fixed W4's two on 2026-11-04 by seeding the candidates with every
+  constant a rule's `:assert` names (Q-M1e.21 (b)): 23 fixed, 11 open and 1
+  not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
@@ -369,12 +372,13 @@ constrained-reasoning research.
   (lex → parse → macros → imports → load), `ein-infer` (compile → match →
   saturate → the NAF boundary → the routes over R, `explore` (the walk's
   hypothesis loop until M1e2 S1e2.1c.5 deleted it); and since M1e S1e.3.3
-  `invariant.rs`, which evaluates the **M1 alive-set invariant** — *no rule
-  asserts a constant the ontology lacks* — at load and narrates a `warn` line
-  per breach. Two corpus programs break it harmlessly, and
+  `invariant.rs`, the **M1 alive-set invariant** — *no rule asserts a name
+  the program lacks* — whose list of the rules' `:assert` constants seeds the
+  blind enumerator's objects since M1e2 S1e2.2.4, because a rule's constant
+  is a name of the program (Q-M1e.21 (b)).
   [`examples/ein-bugs/alive-set-fresh-name.ein`](examples/ein-bugs/alive-set-fresh-name.ein)
-  is eleven lines on which a breach costs a **verdict**: `k = 0, exhausted =
-  true` where a model exists), **`ein-einb`** (the
+  is the eleven lines on which a rule's constant missing from the candidates
+  cost a model, W4), **`ein-einb`** (the
   `.einb` binary KB container — [P1a.8](docs/history/m1a_rust/README.md#p1a8--binary-kb-container),
   and the **only crate that is not `#![forbid(unsafe_code)]`**: its `cast.rs`
   is the one audited module design/12 §2 permits `unsafe` in, which is why it

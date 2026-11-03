@@ -585,9 +585,13 @@ pub(crate) fn prepare(root: &mut Kb, terms: &mut Terms, ast: &Ast) -> Result<Pre
     prepare_with(root, terms, ast, &mut Events::off())
 }
 
-/// [`prepare`], narrating root into `events` as the walk does at root: the
-/// alive-set check's `warn` lines, root's saturation, its obligation pass,
-/// and — on a program the static check flags — one `monotonicity` line.
+/// [`prepare`], narrating root into `events` as the walk does at root:
+/// root's saturation, its obligation pass, and — on a program the static check
+/// flags — one `monotonicity` line.
+///
+/// It narrated an `alive-set-invariant` `warn` line per constant only a rule
+/// names until M1e2 S1e2.2.4, which seeds the universe with those constants
+/// (Q-M1e.21 (b)): a name of the program is not a breach of anything.
 pub(crate) fn prepare_with(
     root: &mut Kb,
     terms: &mut Terms,
@@ -595,16 +599,6 @@ pub(crate) fn prepare_with(
     events: &mut Events,
 ) -> Result<Prepared, SolveError> {
     let memo = SharedMemo::default();
-    if events.on() {
-        let u = crate::invariant::Universe::of(root, terms);
-        for b in u.rule_breaches(root, terms, ast) {
-            let line = b.render(terms);
-            events.emit("warn", |l| {
-                l.str("category", "alive-set-invariant");
-                l.str("message", &line);
-            });
-        }
-    }
 
     // Root's fixpoint, and the snapshot every node resumes from.
     let mut root_stats = RootStats::default();

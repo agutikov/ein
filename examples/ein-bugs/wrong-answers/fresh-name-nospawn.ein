@@ -14,18 +14,19 @@
 ;;; the one solution (Q-M1e.6, clause 3): **`Solution`, k = 1, a model with no
 ;;; `q` fact.**
 ;;;
-;;; ── What the engine says ───────────────────────────────────────────────────
+;;; ── What the walk said ─────────────────────────────────────────────────────
 ;;;
 ;;;   verdict         No solution — the constraints are contradictory
 ;;;   unsat core (2 facts)   (q A B)  (q B A)
 ;;;   exhausted        true
 ;;;
-;;; — the banked file's answer, with no fresh name in sight. With the lookahead
-;;; off each singleton is entered and dies at layer 1, and `phase2` breaks on
-;;; the empty layer without asking whether root is now complete.
-;;;
-;;; `:expect` states **today's** answer and is meant to break when S1e2.2.1
-;;; records root.
+;;; — the banked file's answer then, with no fresh name in sight. With the
+;;; lookahead off each singleton was entered and died at layer 1, and `phase2`
+;;; broke on the empty layer without asking whether root was now complete.
+;;; Since M1e2 S1e2.1a.5's switch the answer is the region, R = {∅}, root
+;;; itself, which `:expect` states. The banked file's R moved again at
+;;; S1e2.2.4, which seeded the candidates with `spawn`'s `Z`; with no `spawn`
+;;; here, nothing does.
 ;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
 

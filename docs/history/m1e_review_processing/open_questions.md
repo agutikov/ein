@@ -36,7 +36,7 @@ records which question became which id.
 | [Q-M1e.18](#q-m1e18--three-kernel-primitives-are-not-shape-pinned-and-drop-their-extra-arguments) | Three kernel primitives are **not shape-pinned**, and drop their extra arguments | **answered 2026-08-29 — candidate (2)**, by [S1e.2.1](README.md#s1e21--correctness-the-panic-the-guard-the-traversal) T1, which took the whole class rather than `CO-H1`'s one cell: `eq` and `absent` are checked at compile time and refused with a positioned `CompileError`. The grammar and the lexer's `SYMBOL` set are untouched, so no program that worked still works differently. `false` needed nothing |
 | [Q-M1e.19](#q-m1e19--algorithmic-pathology-has-no-owner) | **Algorithmic pathology** has no owner | open — the one of `Q9`'s four unswept surfaces with no home. The other three have one: this stage swept the parser/CLI edges, `cast.rs` goes with `ein-einb`'s next change, and micro-CSP ground truth is [M10](../../../plans/m10_external_benchmarks/README.md)'s thesis. **Open, no owner** at the close, and the closing claim says so |
 | [Q-M1e.20](#q-m1e20--two-renderers-are-produced-tested-and-unreachable) | **Two renderers are produced, tested and unreachable** — the per-hypothesis lattice dump and the unified KB DOT view | open — raised 2026-08-30 by [S1e.2.2](README.md#s1e22--code--doc-the-canonical-tree) T3, which was told to route the decision rather than take it in a doc pass; **owner unassigned**, and both are `pub` and golden-pinned today. **Owned 2026-10-14** by [M1e2 S1e2.1.3](../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.3_the_doors.md), option (a). **Answered 2026-10-14, (a)**: `ein render program`, `ein render kb` and `ein solve --dump-lattice` |
-| [Q-M1e.21](#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about) | A rule may **name an object the search can never hypothesise about** | open — raised 2026-08-31 by [S1e.3.3](README.md#s1e33--state-model-medium), which built the check `ST-M1` asked for and found the check has a live defect behind it: `k = 0, exhausted = true` on an eleven-line program with a model. **Owner unassigned**; three candidate fixes priced, and two corpus programs already break the invariant harmlessly. **Owned 2026-10-14** by [M1e2 S1e2.2.4](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.4_fresh_name_unreachable.md) (W4) |
+| [Q-M1e.21](#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about) | A rule may **name an object the search can never hypothesise about** | **ruled 2026-10-16: (b)**, seed the pool (the user: *"rules are part of root, so rules can't assert new names"*); **built 2026-11-04** by M1e2 S1e2.2.4, which closed W4 — raised 2026-08-31 by [S1e.3.3](README.md#s1e33--state-model-medium), which built the check `ST-M1` asked for and found the check has a live defect behind it: `k = 0, exhausted = true` on an eleven-line program with a model. **Owner unassigned**; three candidate fixes priced, and two corpus programs already break the invariant harmlessly. **Owned 2026-10-14** by [M1e2 S1e2.2.4](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.4_fresh_name_unreachable.md) (W4) |
 | [Q-M1e.22](#q-m1e22--should-a-failed-artefact-write-have-an-exit-code-of-its-own) | Should a **failed artefact write** have an exit code of its own? | open — raised 2026-08-31 by [S1e.3.5](README.md#s1e35--error-handling-medium), which ruled `EH-M1` the additive way and wrote it into `defined_behaviour.md` § 4.4. The residue is a **CLI-vocabulary** question and is one conversation with [TE-M4](README.md#the-findings)'s exit-2 overload; **owner unassigned**, and neither should be settled alone. **Owned 2026-10-14** by [M2 S2.1.2](../../../plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation/s2.1.2_feedback_object.md), whose feedback object already names the exit-2 overload |
 
 ---
@@ -1550,6 +1550,18 @@ pre-empts M20, which binds the same crates.
 > the M1 alive-set invariant and found, in the course of checking it, that
 > breaking it costs an answer. The check shipped; this is the defect it
 > detects and does not repair.
+>
+> **Ruled 2026-10-16, (b)**, by the user at M1e2
+> ([Q-M1e2.7 § The third answer](../../../plans/m1e2_correctness/open_questions.md#the-third-answer-2026-10-16)):
+> *"rules are part of root, so rules can't assert new names"*. A constant a
+> rule's `:assert` names is a name of the program, so (a)'s premise, that it
+> is fresh, is gone. **Built 2026-11-04** by M1e2
+> [S1e2.2.4](../../../plans/m1e2_correctness/p1e2.2_wrong_answers/s1e2.2.4_fresh_name_unreachable.md):
+> `hypgen::candidate_objects` unions `invariant::rule_constants` into the
+> KB's names, both W4 witnesses answer the control's R, and the
+> `alive-set-invariant` `warn` left with the premise it narrated
+> ([`defined_behaviour.md` § 3.3](../../kernel/defined_behaviour.md#33-the-m1-alive-set-invariant-operationally)).
+> The entry below is the question as it was asked.
 
 The blind enumerator builds its candidate objects from `kb.names()` — a
 function of the KB's **facts**. `alive₀` is computed once, at root's fixpoint,

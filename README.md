@@ -300,14 +300,16 @@ were measured, not assumed:
   seven lines, called *contradictory* although the program with no hypothesis
   is consistent. M1e2 S1e2.1a.5's switch made `ein solve` describe R, and
   [`corpus/wrong_answers.toml`](corpus/wrong_answers.toml) records each row's
-  answer now, held per commit by `ein-cli/tests/wrong_answers.rs`: **21 of 35
+  answer now, held per commit by `ein-cli/tests/wrong_answers.rs`: **23 of 35
   rows fixed** — W1, W2, W5, W9 and W11, the lookahead's and the forced
-  positive's unsound exclusions among them, which no route reads, and W13 —
-  and **14 open**, each saying why: W4 and W7, where R shares the defect (the
-  candidate list, the binding key); W10, which is in the core; W3, whose right
-  answer since the user's *forbid* of 2026-11-02 is a refusal at load, not yet
-  built; and W6, W8, W12 and C1, which wait on a reading. M1e2 S1e2.1c.5
-  re-scoped the stages that fix them on 2026-11-03
+  positive's unsound exclusions among them, which no route reads, W12 and W13,
+  and W4, a rule's constant missing from the candidates, which M1e2 S1e2.2.4
+  seeded on 2026-11-04 — one ruled not wrong (C1), and **11 open**, each saying
+  why: W7, where R shares the defect (the binding key); W10, which is in the
+  core; W3 and one of W1's, whose right answer since the user's *forbid* of
+  2026-11-02 is a refusal at load, not yet built; W6, whose fix follows the
+  reading ruled on 2026-11-03; and W8, deferred to a followup. P1e2.2 fixes
+  them, one stage per case
   ([P1e2.2](plans/m1e2_correctness/p1e2.2_wrong_answers/README.md)).
 - **An under-determined puzzle still does not finish.**
   `zebra2-minus-15.ein` has 32 complete answers. `ein solve --maximal` finds

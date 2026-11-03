@@ -191,7 +191,11 @@ pre-conditions hold across the puzzle's rule library — collectively the
 1. **No new objects.** Rules don't `:assert` facts whose args
    introduce names that weren't already in the ontology /
    facts. (Q40 nested-Fact args are existing facts, not new
-   names.)
+   names.) **A constant a rule names is not new**: rules are part
+   of the program, so it is one of the program's names — the user's
+   ruling of 2026-10-16 on Q-M1e.21, (b) — and since M1e2 S1e2.2.4
+   the blind enumerator's objects are seeded with every constant a
+   rule's `:assert` names.
 2. **No new relations.** Rules don't `:assert (relation N S₀ S₁)`
    declarations — the relation registry is fixed by the ontology
    block.
@@ -213,18 +217,19 @@ produces nested-Fact hypotheses), "alive is a pure function of the
 closed KB" no longer holds, and both the per-KB recompute and the
 state-key dedup lose their soundness warrant.
 
-**And it costs an answer — measured, M1e S1e.3.3.**
+**And it cost an answer — measured at M1e S1e.3.3, fixed at M1e2
+S1e2.2.4.**
 [`examples/ein-bugs/alive-set-fresh-name.ein`](../../../examples/ein-bugs/alive-set-fresh-name.ein)
-is eleven lines in which one rule asserts a constant no fact names. The name
-enters only inside a fork, while the lattice enumerates subsets of the `alive`
-set taken at root, so the candidates built from it are unreachable — and the
-engine answers `solutions (k) 0, exhausted = true`, *No solution — the
-constraints are contradictory*, where a model exists. A **refutation**, not a
-lower bound, and false. Its twin `…-declared.ein` is the same file plus the
-single fact `(seen Z)`, which changes no rule and no constraint and does
-nothing but put the name in the ontology; it answers `Solution k = 1` over
-exactly that model. This section used to explain the rule without exhibiting
-the consequence; the consequence is one fact wide.
+is eleven lines in which one rule asserts a constant no fact names. The
+candidate objects were the KB's names, a function of its facts, so the name
+entered only inside a fork, while the candidates were taken at root, and
+nothing was ever proposed about it. The walk answered `solutions (k) 0,
+exhausted = true`, *No solution — the constraints are contradictory*, and the
+region R = {∅}, where `{(q A Z), (q B Z)}` is the maximal state (M1e2's W4).
+Its twin `…-declared.ein` is the same file plus the single fact `(seen Z)`,
+which changes no rule and no constraint and does nothing but put the name in a
+fact; it reached that state. Since the seed, clause 1 as restated above, the
+two describe one R.
 
 **It is checked since M1e
 [S1e.3.3](../../history/m1e_review_processing/README.md#s1e33--state-model-medium)**
@@ -232,19 +237,21 @@ the consequence; the consequence is one fact wide.
 are, which one the soundness rests on, what the baseline is and what a breach
 is reported as — is
 [`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally).
-In short: [`ein_infer::invariant`](../../../ein.rs/crates/ein-infer/src/invariant.rs)
-reads the rules' `:assert` constants at load, in 7 µs on `zebra2`, and narrates
-a `warn` line per breach under `--events`;
-`ein-infer/tests/alive_invariant.rs` holds the corpus's whole breach set —
-**two** programs, `mixed-type-hypothesis.ein` and
-`tests/stdlib/algebra/07_schroder.ein`, neither of which pays for it — and
-confirms that no run reaches a name the static check did not predict.
+In short: [`ein_infer::invariant::rule_constants`](../../../ein.rs/crates/ein-infer/src/invariant.rs)
+reads the rules' `:assert` constants at load, and `hypgen::candidate_objects`
+seeds the blind enumerator's objects with them;
+`ein-infer/tests/alive_invariant.rs` names the corpus programs whose rule
+mentions a constant no fact does — `mixed-type-hypothesis.ein` (`Ann`),
+`tests/stdlib/algebra/07_schroder.ein` (`G`) and W4's witness (`Z`) — holds
+each to the seed, and confirms that no run reaches a name outside the
+program's.
 
 Tracked at
 M1 Q-S1.5.4.D
 as a long-term design seam. What F5's **typed** form would still add is the
-difference between *detected* and *unrepresentable*: this check tells you a
-rule can introduce a name, and a type would stop it being written.
+difference between *held* and *unrepresentable*: the seed and the scan hold the
+universe to the program's names, and a type would stop a rule writing anything
+else.
 
 ## NAF semantics — the closure/world boundary (S1.21.8)
 

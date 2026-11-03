@@ -568,13 +568,13 @@ note   = "M1e Q-M1e.9 / S1e.2.3 — `dead` is **not** upward-closed under `absen
 path   = "examples/ein-bugs/alive-set-fresh-name.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "M1e S1e.3.3 / `ST-M1` — the **M1 alive-set invariant** broken on purpose, and the first program on which breaking it costs an answer. `spawn` asserts `(p ?b Z)` and no fact names `Z`, so the name enters only inside a fork while the lattice enumerates subsets of the `alive` set taken at root. Every subset dies and the engine says `k = 0, exhausted = true` — a refutation, not a lower bound — where `{(q A Z)}` is a model. Its twin `alive-set-fresh-name-declared.ein` is this file plus the one fact `(seen Z)` and answers `Solution k = 1` over exactly that model. `:expect (false)` states today's answer and is meant to break."
+note   = "M1e S1e.3.3 / `ST-M1` — the **M1 alive-set invariant** broken on purpose, and the program on which breaking it cost a model: M1e2's W4 (`W4/alive-set-fresh-name`), fixed by S1e2.2.4 on 2026-11-04. `spawn` asserts `(p ?b Z)` and no fact names `Z`. The candidate objects were the KB's names, so no candidate was about `Z`: the walk said `k = 0, exhausted = true` and the region R = {∅}, where `{(q A Z), (q B Z)}` is the maximal state. A rule's constant is a name of the program (Q-M1e.21 (b), ruled 2026-10-16), the candidates are seeded with it, and R is four states, the `-declared` twin's. `:expect` states that R."
 
 [[entry]]
 path   = "examples/ein-bugs/alive-set-fresh-name-declared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "M1e S1e.3.3 — the control for the entry above: the same rules and constraints plus `(seen Z)`, one fact over a relation nothing else mentions, which does nothing but put `Z` in the name universe before `alive₀` is computed. `Solution k = 1` in seven enterings. The pair is what makes `ST-M1` a measurement: the twin's refutation is not a property of its constraints. Its plain `solve` cell exits **1** on purpose — a `(model …)` claim is a claim about the *exhausted* answer and `-n 1` stops at the first, so the run reports `NOT CHECKED`, the same cell `examples/features/11_expect_ambiguity.ein` carries since S1d.4.3 gave it a stderr diagnostic. The twin exits 0 there because a `(false)` claim needs no `-e`: a search that found no model at all did exhaust."
+note   = "M1e S1e.3.3 — the control for the entry above: the same rules and constraints plus `(seen Z)`, one fact over a relation nothing else mentions, which does nothing but put `Z` in a fact at root. Its R is four states, `{(q A Z), (q B Z)}` the maximal. Until M1e2 S1e2.2.4 seeded the candidates with a rule's constants, that one fact was the difference between this R and the twin's {∅}, which is what made `ST-M1` a measurement; since then the two describe one R (`ein-infer/tests/alive_invariant.rs`)."
 
 [[entry]]
 path   = "examples/ein-bugs/complete-records-stale.ein"
@@ -667,9 +667,9 @@ note   = "M1e2 S1e2.3.4 (P1e2.3's S8) — the only program known to put a nested
 # cannot point into a plan directory. **What each one answers, and what it
 # should answer, is `corpus/wrong_answers.toml`'s**, held by
 # `ein-cli/tests/wrong_answers.rs`; these rows only put the files in the sweep.
-# One carries an `:expect` (`fresh-name-nospawn.ein`'s `(false)`, today's
-# answer). The two that copy a fixture with one dropped it on purpose: today's
-# answer has an empty goal extent (Q-M1e.13), or the declared runs differ.
+# One carries an `:expect` (`fresh-name-nospawn.ein`'s, which states its R).
+# The two that copy a fixture with one dropped it on purpose: the walk's answer
+# had an empty goal extent (Q-M1e.13), or the declared runs differ.
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forced-1.ein"
@@ -717,13 +717,13 @@ note   = "M1e2 W1's control (`W1/owed-two-step`): the same obligation with one-f
 path   = "examples/ein-bugs/wrong-answers/fresh-name-default.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W4 in isolation (`W4/fresh-name-default`): alive-set-fresh-name.ein without its lookahead-off line — Solution k = 1 over a model with no q, where {(q A Z), (q B Z)} is the model. A second breach of the M1 alive-set invariant."
+note   = "M1e2 W4 in isolation (`W4/fresh-name-default`): alive-set-fresh-name.ein without its lookahead-off line — the walk said Solution k = 1 over a model with no q, and the region R = {∅}, where {(q A Z), (q B Z)} is the maximal state. Fixed by S1e2.2.4 (2026-11-04), which seeds the candidates with a rule's constants: R is four states. The program is the banked file's since S1e2.1c.5 took that file's lookahead line."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W1 (`W1/fresh-name-nospawn`): alive-set-fresh-name.ein without its spawn rule still answers a certified Contradiction — the banked file's k = 0 is W1 at layer 0, not the fresh name. `:expect (false)` states today's answer."
+note   = "M1e2 W1 (`W1/fresh-name-nospawn`): alive-set-fresh-name.ein without its spawn rule, on which the walk answered a certified Contradiction — so the banked file's k = 0 was W1 at layer 0, not the fresh name alone. Fixed by S1e2.1a.5's switch: R = {∅}, root itself, which `:expect` states. With no rule naming `Z`, the seed S1e2.2.4 added changes nothing here."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/naf-nowb.ein"

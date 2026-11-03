@@ -112,6 +112,14 @@
 # retired, and W1's reading kept lever rows as rows. Every row carries a
 # review, and the register reads **21 rows fixed, 13 open and 1 not-wrong**.
 #
+# **P1e2.2's first stage, S1e2.2.4, fixed W4's two rows on 2026-11-04**: the
+# blind enumerator's objects are seeded with every constant a rule's `:assert`
+# names (Q-M1e.21 (b), ruled 2026-10-16), so `Z` is in H and both witnesses
+# answer their control's R, four states. A row flipped by the commit that fixes
+# it cannot name that commit: in the flipping commit `[case.fixed]` carries
+# git's null id, `0000000`, and the stage's next commit writes the hash. The
+# register reads **23 rows fixed, 11 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -1640,9 +1648,13 @@ settings = "default"
 owner    = "S1e2.2.4"
 question = ["Q-M1e.21", "ST-M1"]
 witness  = "examples/ein-bugs/wrong-answers/fresh-name-default.ein"
-status   = "open"
-open_because = "R shares the candidate list this case is about: a rule's fresh constant is in no candidate, so H misses it and R is {∅} (solution_semantics.md § 6.6). The fix is the universe's, S1e2.2.4"
+status   = "fixed"
 look_at  = ["root-writes", "model 1", "events warn"]
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.4 (T1e2.2.4.2), the seed: a rule's :assert constants join the blind enumerator's objects"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve -e"
@@ -1665,10 +1677,12 @@ models    = [["(q A Z)", "(q B Z)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
+k_s      = 4
+k_c      = 4
 minimal  = [[]]
-maximal  = [[]]
+maximal  = [
+  ["(q A Z)", "(q B Z)"],
+]
 
 [case.right]
 verdict   = "Solution"
@@ -1676,7 +1690,7 @@ k         = 1
 exhausted = true
 closes    = ["q"]
 models    = [["(q A Z)", "(q B Z)"]]
-derived   = "alive-set-fresh-name.ein's header: {(q A Z),(q B Z)} saturates to a consistent, quiescent, complete state; the -declared control reaches it. The oracle's R is {∅}: it shares the candidate list this case is about (solution_semantics.md § 6.6), so [case.region] is not this answer"
+derived   = "alive-set-fresh-name.ein's header: {(q A Z),(q B Z)} saturates to a consistent, quiescent, complete state; the -declared control reaches it. The oracle's R was {∅} until S1e2.2.4 seeded the universe, because it shares the candidate list this case is about (solution_semantics.md § 6.6); since then [case.region] is this answer's R, the maximal state its maximal line"
 
 [case.review]
 verdict = "confirmed"
@@ -1691,7 +1705,7 @@ exhausted = true
 k         = 1
 relations = ["q"]
 models    = [
-  [],
+  ["(q A Z)", "(q B Z)"],
 ]
 
 [[case]]
@@ -1703,10 +1717,14 @@ settings = "lever: (config :enable-pre-branch-lookahead false) in the file"
 owner    = "S1e2.2.4"
 question = ["Q-M1e.21", "ST-M1"]
 witness  = "examples/ein-bugs/alive-set-fresh-name.ein"
-status   = "open"
-open_because = "R shares the candidate list this case is about: a rule's fresh constant is in no candidate, so H misses it and R is {∅} (solution_semantics.md § 6.6). The fix is the universe's, S1e2.2.4"
+status   = "fixed"
 look_at  = ["layer 1", "refuted", "events warn"]
 note     = "confounded with W1 at layer 0 (W1/fresh-name-nospawn): fixing W1 alone moves this to W4/fresh-name-default's wrong answer"
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.4 (T1e2.2.4.2), the seed: a rule's :assert constants join the blind enumerator's objects"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve -e"
@@ -1745,10 +1763,12 @@ core      = ["(q A B)", "(q B A)"]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
+k_s      = 4
+k_c      = 4
 minimal  = [[]]
-maximal  = [[]]
+maximal  = [
+  ["(q A Z)", "(q B Z)"],
+]
 
 [case.right]
 verdict   = "Solution"
@@ -1756,7 +1776,7 @@ k         = 1
 exhausted = true
 closes    = ["q"]
 models    = [["(q A Z)", "(q B Z)"]]
-derived   = "the file's header; the -declared control reaches it. The oracle's R is {∅}: it shares the candidate list this case is about (solution_semantics.md § 6.6), so [case.region] is not this answer"
+derived   = "the file's header; the -declared control reaches it. The oracle's R was {∅} until S1e2.2.4 seeded the universe, because it shares the candidate list this case is about (solution_semantics.md § 6.6); since then [case.region] is this answer's R, the maximal state its maximal line"
 
 [case.review]
 verdict = "confirmed"
@@ -1771,7 +1791,7 @@ exhausted = true
 k         = 1
 relations = ["q"]
 models    = [
-  [],
+  ["(q A Z)", "(q B Z)"],
 ]
 
 # ══ W5 — the obligations rung records a superset of a model ═══════════════════

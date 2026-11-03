@@ -225,8 +225,10 @@ committing thread. `ein --version` is what says which build you have.
   [`invariant.rs`](../../../ein.rs/crates/ein-infer/src/invariant.rs), whose
   operational form is
   [`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally):
-  a static read of the rules' `:assert` constants at load, a `warn` line per
-  breach under `--events`, and two corpus programs that break it.
+  a static read of the rules' `:assert` constants at load, which since M1e2
+  S1e2.2.4 seeds the blind enumerator's objects (a rule's constant is a name
+  of the program, Q-M1e.21 (b)), and a scan that finds no run reaching a name
+  outside the program's.
 - **Provenance is per derivation, not per fact** — a fact's `Prov` is the
   primary justification and the KB's justification index returns every recorded
   one, so a fact is an OR-node over AND-nodes and the proof structure is an
