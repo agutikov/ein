@@ -1,0 +1,51 @@
+;;; A name written **only inside a nested fact** never became a candidate —
+;;; M1e2 **W15**, register row `W15/negative-only` (`corpus/wrong_answers.toml`),
+;;; owned by S1e2.2.14. Banked from S1e2.2.4's residue probe of 2026-11-04.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; W4's program (`../alive-set-fresh-name.ein`) without its `spawn` rule,
+;;; plus the stored negative `(not (q Z A))`. `Z` is written in a fact, but
+;;; only inside the nested `(q Z A)`: the KB's names index does not index a
+;;; nested fact's arguments (Q40, *the nested fact is interned, not
+;;; believed*), and `Z` is in no rule's `:assert`, so the blind enumerator's
+;;; objects were A and B alone.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; The user ruled on 2026-11-04 that every constant a fact names, at any
+;;; depth, is a name of the program and so a candidate object (Q-M1e2.9 (a),
+;;; `solution_semantics.md` § 1.2 read literally). So H is `q` over A, B and Z
+;;; without self-edges and without the negated `(q Z A)`: five candidates,
+;;; three dead alone. `{(q A Z), (q B Z)}` is consistent and quiescent and is
+;;; the maximal state: R is ∅, `{(q A Z)}`, `{(q B Z)}` and both —
+;;; `negative-only-declared.ein`'s R, which names `Z` at top level.
+;;;
+;;; ── What the engine answers today ──────────────────────────────────────
+;;;
+;;; H is 2 candidates, `(q A B)` and `(q B A)`, both dead alone, and R is
+;;; `{∅}` (`ein solve FILE`, 2026-11-04). The register row holds that run
+;;; until S1e2.2.14's fix, and the fixing commit gives this file the
+;;; `(solve … :expect (region …))` that states R.
+
+(relation p T T)
+(relation q T T)
+
+(p A B)
+(not (q Z A))
+
+(rule no-a ()
+  :match  (q ?x A)
+  :assert (false)
+  :why    "nothing may reach A")
+
+(rule no-b ()
+  :match  (q ?x B)
+  :assert (false)
+  :why    "nothing may reach B")
+
+(solve
+  :no-hypothesis (p))
+
+(query
+  :goal   (q ?x ?y))

@@ -1,0 +1,45 @@
+;;; The **control** for [`negative-only.ein`](negative-only.ein) — that file
+;;; plus one fact, `(seen Z)` — M1e2 W15 (S1e2.2.14). Banked from S1e2.2.4's
+;;; residue probe of 2026-11-04.
+;;;
+;;; `(seen Z)` names `Z` at top level, over a relation nothing else mentions
+;;; and which is closed, and changes nothing else. With it H is five `q`
+;;; candidates (A, B and Z, no self-edge, and not the negated `(q Z A)`), and
+;;; R is four states, the maximal `{(q A Z), (q B Z)}`, which the `:expect`
+;;; below states. That is the right answer for `negative-only.ein` too: a
+;;; constant a fact names at any depth is a name of the program (Q-M1e2.9
+;;; (a), ruled 2026-11-04).
+
+(relation p T T)
+(relation q T T)
+(relation seen T)
+
+(p A B)
+(not (q Z A))
+(seen Z)   ; the one addition: Z named at top level
+
+(rule no-a ()
+  :match  (q ?x A)
+  :assert (false)
+  :why    "nothing may reach A")
+
+(rule no-b ()
+  :match  (q ?x B)
+  :assert (false)
+  :why    "nothing may reach B")
+
+(solve
+  :no-hypothesis (p seen)
+  ;; `q` is named, so this closes `q`: exactly these positive `q` facts.
+  :expect (region
+            ;; state 1 of 4 — ∅, root itself · minimal
+            (model)
+            ;; state 2 of 4 — 1 candidate · from {(q A Z)}
+            (model (q A Z))
+            ;; state 3 of 4 — 1 candidate · from {(q B Z)}
+            (model (q B Z))
+            ;; state 4 of 4 — 2 candidates · maximal · from {(q A Z), (q B Z)}
+            (model (q A Z) (q B Z))))
+
+(query
+  :goal   (q ?x ?y))

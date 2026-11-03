@@ -19,9 +19,11 @@ the same day, *via, per activator*. **It is done** (2026-11-04): every
 program whose refutation rests on an `absent` a commitment can fill is refused,
 W3's four rows, `W1/alive-empty-interlayer` and `W8/stale-naf-fork` are fixed
 by it (`597b2b7e`), `:warn-derived-naf` is retired, and the register reads 29
-fixed, 5 open and 1 not-wrong. Next is **S1e2.2.14**, then S1e2.2.15, both
-filed on 2026-11-04 (§ Dependencies inside the phase), then S1e2.2.6, W8's one
-row.
+fixed, 5 open and 1 not-wrong. **S1e2.2.14 started the same day**: its
+witnesses banked, W15 filed as eight `open` rows (29 fixed, 13 open, 1
+not-wrong) and every move listed before any edit (T1e2.2.14.1). Then
+S1e2.2.15, both filed on 2026-11-04 (§ Dependencies inside the phase), then
+S1e2.2.6, W8's one row.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R

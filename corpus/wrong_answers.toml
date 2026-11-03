@@ -135,6 +135,19 @@
 # register reads **29 rows fixed, 5 open and 1 not-wrong**, and W8/features-07
 # is the one row F21 still owns.
 #
+# **W15 was filed on 2026-11-04 by S1e2.2.14** (T1e2.2.14.1), on the user's
+# ruling of that day on Q-M1e2.9, (a): every constant a fact names at any
+# depth, or a rule's `:match` or `:assert`, is a name of the program and so a
+# candidate object, and a constant only a query names is not. Eight rows, all
+# `open`: the two banked witnesses (a name only a `:match` writes, and one only
+# a nested fact does), each with its `-declared` control, and six programs
+# whose R moves when each nested-fact name is declared — the three
+# `hypothesis-contradiction/*-disproved`, `syntax/equality` and W7's pair. A
+# row's `wrong` is a region run's answer at `b63a8738`, the run its `now` holds
+# while it is open. `syntax/arg-kinds`, whose H moves too, has no row: its R is
+# a lower bound both ways, and `[case.region]` states k_s exactly. The register
+# reads **29 rows fixed, 13 open and 1 not-wrong**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -2711,6 +2724,425 @@ k         = 1
 relations = []
 models    = [
   [],
+]
+
+# ══ W15 — a name written outside a top-level fact or an `:assert` ═══════════
+[[case]]
+id       = "W15/match-only"
+case     = "W15"
+title    = "a name the program writes outside a top-level fact or an `:assert` never becomes a candidate"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.14"
+question = ["Q-M1e2.9"]
+witness  = "examples/ein-bugs/wrong-answers/match-only.ein"
+status   = "open"
+open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `Z` is written only in `reach-z`'s `:match`, so no candidate is over `Z`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+look_at  = ["root", "answer", "summary"]
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve --maximal` on the witness, release, at b63a8738 (2026-11-04), before S1e2.2.14: the run [case.now] holds while the row is open"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [[]]
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/match-only-declared.ein"
+run       = "solve --maximal"
+by        = "region"
+why       = "+ (seen Z): Z named in a fact at root, which is what puts it among the candidates today; taken at b63a8738, release, 2026-11-04"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [["(q A Z)", "(q B Z)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [["(q A Z)", "(q B Z)"]]
+derived   = "Q-M1e2.9 (a), the user's ruling of 2026-11-04 (solution_semantics.md § 1.2 read literally): `Z`, written in `reach-z`'s `:match`, is a name of the program, so H is the six `q` candidates over A, B and Z, four dead alone, and {(q A Z), (q B Z)} is consistent and quiescent, the maximal state of R's four. The -declared control, which names `Z` in a fact, answers it, and `ein oracle` on the control agrees (2026-11-04, at b63a8738)"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["q"]
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W15/negative-only"
+case     = "W15"
+title    = "a name the program writes outside a top-level fact or an `:assert` never becomes a candidate"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.14"
+question = ["Q-M1e2.9"]
+witness  = "examples/ein-bugs/wrong-answers/negative-only.ein"
+status   = "open"
+open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `Z` is written only inside the nested `(q Z A)` of `(not (q Z A))`, whose arguments the names index does not hold (Q40), so no candidate is over `Z`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+look_at  = ["root", "answer", "summary"]
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve --maximal` on the witness, release, at b63a8738 (2026-11-04), before S1e2.2.14: the run [case.now] holds while the row is open"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [[]]
+
+[case.control]
+witness   = "examples/ein-bugs/wrong-answers/negative-only-declared.ein"
+run       = "solve --maximal"
+by        = "region"
+why       = "+ (seen Z): Z named at top level; taken at b63a8738, release, 2026-11-04"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [["(q A Z)", "(q B Z)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["q"]
+models    = [["(q A Z)", "(q B Z)"]]
+derived   = "Q-M1e2.9 (a), the user's ruling of 2026-11-04: a constant a fact names at any depth is a name of the program, so `Z` in `(not (q Z A))` is, and H is `q` over A, B and Z with no self-edge and not the negated (q Z A), five candidates, three dead alone; {(q A Z), (q B Z)} is the maximal state of R's four. The -declared control answers it, and `ein oracle` on the control agrees (2026-11-04, at b63a8738)"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["q"]
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W15/coloc-disproved"
+case     = "W15"
+title    = "a name the program writes outside a top-level fact or an `:assert` never becomes a candidate"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.14"
+question = ["Q-M1e2.9"]
+witness  = "examples/saturation/hypothesis-contradiction/coloc-disproved.ein"
+status   = "open"
+open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `House-2` and `Norwegian` are written only inside the nested facts of `(hypothesis …)` and `(contradiction-under …)`, from which root derives `(not (co-located Norwegian House-2))`, so no candidate is over `House-2` and `Norwegian`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+look_at  = ["root", "answer", "summary"]
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve --maximal` on the witness, release, at b63a8738 (2026-11-04), before S1e2.2.14: the run [case.now] holds while the row is open"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["co-located"]
+models    = [[]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["co-located"]
+models    = [["(co-located House-2 Norwegian)"]]
+derived   = "Q-M1e2.9 (a), the user's ruling of 2026-11-04: a constant a fact names at any depth is a name of the program, so `House-2` and `Norwegian` are, and H is the one candidate (co-located House-2 Norwegian), the direction root's derived negative does not refute; R is two states, ∅ and that commitment, the maximal. S1e2.2.4's residue probe twin, the file with each nested name declared at top level, answers it, re-taken on b63a8738 with `ein solve` and `ein oracle` (2026-11-04, build/s1e2.2.14/twins.txt)"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W15/next-to-disproved"
+case     = "W15"
+title    = "a name the program writes outside a top-level fact or an `:assert` never becomes a candidate"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.14"
+question = ["Q-M1e2.9"]
+witness  = "examples/saturation/hypothesis-contradiction/next-to-disproved.ein"
+status   = "open"
+open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `X` and `Y` are written only inside the nested facts of `(hypothesis …)` and `(contradiction-under …)`, from which root derives `(not (next-to X Y))`, so no candidate is over `X` and `Y`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+look_at  = ["root", "answer", "summary"]
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve --maximal` on the witness, release, at b63a8738 (2026-11-04), before S1e2.2.14: the run [case.now] holds while the row is open"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["next-to"]
+models    = [[]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["next-to"]
+models    = [["(next-to Y X)"]]
+derived   = "Q-M1e2.9 (a), the user's ruling of 2026-11-04: a constant a fact names at any depth is a name of the program, so `X` and `Y` are, and H is the one candidate (next-to Y X), the direction root's derived negative does not refute; R is two states, ∅ and that commitment, the maximal. S1e2.2.4's residue probe twin, the file with each nested name declared at top level, answers it, re-taken on b63a8738 with `ein solve` and `ein oracle` (2026-11-04, build/s1e2.2.14/twins.txt)"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W15/right-of-disproved"
+case     = "W15"
+title    = "a name the program writes outside a top-level fact or an `:assert` never becomes a candidate"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.14"
+question = ["Q-M1e2.9"]
+witness  = "examples/saturation/hypothesis-contradiction/right-of-disproved.ein"
+status   = "open"
+open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `A` and `B` are written only inside the nested facts of `(hypothesis …)` and `(contradiction-under …)`, from which root derives `(not (right-of A B))`, so no candidate is over `A` and `B`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+look_at  = ["root", "answer", "summary"]
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve --maximal` on the witness, release, at b63a8738 (2026-11-04), before S1e2.2.14: the run [case.now] holds while the row is open"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["right-of"]
+models    = [[]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["right-of"]
+models    = [["(right-of B A)"]]
+derived   = "Q-M1e2.9 (a), the user's ruling of 2026-11-04: a constant a fact names at any depth is a name of the program, so `A` and `B` are, and H is the one candidate (right-of B A), the direction root's derived negative does not refute; R is two states, ∅ and that commitment, the maximal. S1e2.2.4's residue probe twin, the file with each nested name declared at top level, answers it, re-taken on b63a8738 with `ein solve` and `ein oracle` (2026-11-04, build/s1e2.2.14/twins.txt)"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W15/binding-key-layout"
+case     = "W15"
+title    = "a name the program writes outside a top-level fact or an `:assert` never becomes a candidate"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.14"
+question = ["Q-M1e2.9"]
+witness  = "corpus/fuzz_findings/binding-key-layout.ein"
+not_in_corpus = "a debug build aborts on it (check_layout), and every in-process corpus sweep saturates every corpus file inside a debug test binary — W7's witness"
+status   = "open"
+open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `Y` is written only inside the nested `(src Y)` of the activator `(note edge (src Y))`, so no candidate is over `Y`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+look_at  = ["root", "answer", "summary"]
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve --maximal` on the witness, release, at b63a8738 (2026-11-04), before S1e2.2.14: the run [case.now] holds while the row is open"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["holds"]
+models    = [[]]
+debug_panic = "two plans share (rule, activator) and disagree on their register layout"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["holds"]
+models    = [["(holds 1)", "(holds 3)", "(holds Y)"]]
+derived   = "Q-M1e2.9 (a), the user's ruling of 2026-11-04: `Y`, written inside the activator's nested `(src Y)`, is a name of the program, so H is the one candidate (holds Y), and R is two states, ∅ and {(holds Y)}, the maximal. S1e2.2.4's residue probe twin, the file with `(probe-seen Y)` added, answers it, re-taken on b63a8738 with `ein solve` and `ein oracle` (2026-11-04, build/s1e2.2.14/twins.txt). This row claims the `holds` facts only: which `noted` facts a state holds is W7's (`W7/binding-key-layout`), whose `right` S1e2.2.14 restates to this R"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W15/binding-key-layout-swapped"
+case     = "W15"
+title    = "a name the program writes outside a top-level fact or an `:assert` never becomes a candidate"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.14"
+question = ["Q-M1e2.9"]
+witness  = "corpus/fuzz_findings/binding-key-layout-swapped.ein"
+not_in_corpus = "a debug build aborts on it (check_layout), and every in-process corpus sweep saturates every corpus file inside a debug test binary — W7's witness twin"
+status   = "open"
+open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `Y` is written only inside the nested `(src Y)` of the activator `(note edge (src Y))`, so no candidate is over `Y`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+look_at  = ["root", "answer", "summary"]
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve --maximal` on the witness, release, at b63a8738 (2026-11-04), before S1e2.2.14: the run [case.now] holds while the row is open"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["holds"]
+models    = [[]]
+debug_panic = "two plans share (rule, activator) and disagree on their register layout"
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 1
+k_c      = 1
+minimal  = [[]]
+maximal  = [[]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["holds"]
+models    = [["(holds 1)", "(holds 3)", "(holds Y)"]]
+derived   = "Q-M1e2.9 (a), the user's ruling of 2026-11-04: `Y`, written inside the activator's nested `(src Y)`, is a name of the program, so H is the one candidate (holds Y), and R is two states, ∅ and {(holds Y)}, the maximal. S1e2.2.4's residue probe twin, the file with `(probe-seen Y)` added, answers it, re-taken on b63a8738 with `ein solve` and `ein oracle` (2026-11-04, build/s1e2.2.14/twins.txt). This row claims the `holds` facts only: which `noted` facts a state holds is W7's (`W7/binding-key-layout`), whose `right` S1e2.2.14 restates to this R"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = []
+models    = [
+  [],
+]
+
+[[case]]
+id       = "W15/equality"
+case     = "W15"
+title    = "a name the program writes outside a top-level fact or an `:assert` never becomes a candidate"
+class    = "model set"
+settings = "default"
+owner    = "S1e2.2.14"
+question = ["Q-M1e2.9"]
+witness  = "examples/syntax/equality.ein"
+status   = "open"
+open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `House-1` is written only inside the nested `(color House-1)` of `(= (color House-1) Red)`, so no candidate is over `House-1`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+look_at  = ["root", "answer", "summary"]
+
+[case.wrong]
+run       = "solve --maximal"
+by        = "region"
+why       = "`ein solve --maximal` on the witness, release, at b63a8738 (2026-11-04), before S1e2.2.14: the run [case.now] holds while the row is open"
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["r"]
+models    = [["(r Red a)", "(r Red b)", "(r a Red)", "(r a b)", "(r b Red)", "(r b a)"]]
+
+[case.region]
+route    = "state route"
+monotone = true
+k_s      = 64
+k_c      = 64
+minimal  = [[]]
+maximal  = [["(r Red a)", "(r Red b)", "(r a Red)", "(r a b)", "(r b Red)", "(r b a)"]]
+
+[case.right]
+verdict   = "Solution"
+k         = 1
+exhausted = true
+closes    = ["r"]
+models    = [["(r House-1 Red)", "(r House-1 a)", "(r House-1 b)", "(r Red House-1)", "(r Red a)", "(r Red b)", "(r a House-1)", "(r a Red)", "(r a b)", "(r b House-1)", "(r b Red)", "(r b a)"]]
+derived   = "Q-M1e2.9 (a), the user's ruling of 2026-11-04: `House-1`, written inside the nested `(color House-1)`, is a name of the program, so H is `r` over Red, a, b and House-1 with no self-edge, twelve candidates, none dead, and R is the whole 2¹² cube, 4 096 states, the maximal all twelve. S1e2.2.4's residue probe twin, the file with `(probe-seen House-1)` added, answers it, re-taken on b63a8738 with `ein solve` and `ein oracle` (2026-11-04, build/s1e2.2.14/twins.txt)"
+
+[case.now]
+run       = "solve --maximal"
+line      = "maximal"
+exhausted = true
+k         = 1
+relations = ["r"]
+models    = [
+  ["(r Red a)", "(r Red b)", "(r a Red)", "(r a b)", "(r b Red)", "(r b a)"],
 ]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════

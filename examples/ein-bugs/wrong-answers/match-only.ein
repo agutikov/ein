@@ -1,0 +1,60 @@
+;;; A name written **only in a rule's `:match`** never became a candidate —
+;;; M1e2 **W15**, register row `W15/match-only` (`corpus/wrong_answers.toml`),
+;;; owned by S1e2.2.14. Banked from S1e2.2.4's residue probe of 2026-11-04.
+;;;
+;;; ── What this program is ───────────────────────────────────────────────
+;;;
+;;; W4's program (`../alive-set-fresh-name.ein`) with its `spawn` rule replaced
+;;; by `reach-z`, which names `Z` in its `:match` and not in its `:assert`.
+;;; `Z` is in no fact and in no `:assert`, so it was neither in the KB's names
+;;; nor in what S1e2.2.4 seeded the blind enumerator with (a rule's `:assert`
+;;; constants), and the candidates were `q` over `A` and `B` alone.
+;;;
+;;;   `no-a` / `no-b` refute every `q` that points at A or at B.
+;;;   `reach-z` says what reaching Z means; the query asks it.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; `solution_semantics.md` § 1.2: a name is *a constant the program mentions,
+;;; in a fact or in a rule*, and the user ruled on 2026-11-04 that this is
+;;; meant literally (Q-M1e2.9 (a)): a constant anywhere in a rule, `:match`
+;;; included, is a name of the program and so a candidate object. So H is the
+;;; six `q` candidates over A, B and Z, four of them dead alone, and
+;;; `{(q A Z), (q B Z)}` saturates to a consistent, quiescent state (`reach-z`
+;;; adds `(good A)` and `(good B)`) and is the maximal one: R is ∅,
+;;; `{(q A Z)}`, `{(q B Z)}` and both — `match-only-declared.ein`'s R, which
+;;; names `Z` in a fact.
+;;;
+;;; ── What the engine answers today ──────────────────────────────────────
+;;;
+;;; H is 2 candidates, `(q A B)` and `(q B A)`, both dead alone, and R is
+;;; `{∅}`: root itself, one state (`ein solve FILE`, 2026-11-04). The register
+;;; row holds that run until S1e2.2.14's fix, and the fixing commit gives
+;;; this file the `(solve … :expect (region …))` that states R.
+
+(relation p T T)
+(relation q T T)
+(relation good T)
+
+(p A B)
+
+(rule reach-z ()
+  :match  (q ?a Z)
+  :assert (good ?a)
+  :why    "{?a} reaches Z")
+
+(rule no-a ()
+  :match  (q ?x A)
+  :assert (false)
+  :why    "nothing may reach A")
+
+(rule no-b ()
+  :match  (q ?x B)
+  :assert (false)
+  :why    "nothing may reach B")
+
+(solve
+  :no-hypothesis (p good))
+
+(query
+  :goal   (good ?a))
