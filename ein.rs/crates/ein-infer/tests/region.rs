@@ -14,6 +14,7 @@ use ein_corpus::repo_root;
 use ein_infer::downset::{self, Declined, DownSet};
 use ein_infer::monotone::{Monotonicity, SiteKind};
 use ein_infer::region::{self, Options, Outcome, Region};
+use ein_infer::states;
 use ein_ir::{Ast, load, parse};
 
 // The fact-grain prototype and the loader it shares with `site_census`
@@ -1450,4 +1451,125 @@ fn route_1_declines_at_a_facts_budget_before_the_layer_that_would_pass_it() {
         "the layer's size times the facts per node of the layer before"
     );
     assert!(d.description.is_none());
+}
+
+// ── The state route — S1e2.1c.2 ─────────────────────────────────────────
+
+/// The state route against the oracle on one program: every disagreement, as
+/// lines.
+fn state_route_against_oracle(rel: &str, r: &Region, s: &states::StateRoute) -> Vec<String> {
+    let mut bad = Vec::new();
+    let texts = |c: &[region::Candidate]| c.iter().map(|c| c.text.clone()).collect::<Vec<_>>();
+    if texts(&r.candidates) != texts(&s.candidates) {
+        return vec![format!("{rel}: the two universes differ")];
+    }
+    if let Some(why) = &s.declined {
+        return vec![format!("{rel}: the state route declined ({why:?})")];
+    }
+    let n = r.n();
+    let size = 1usize << n;
+    let mask = |set: &[u32]| set.iter().fold(0u64, |m, &b| m | 1 << b);
+    let alive = |m: u64| r.status[m as usize] & region::DEAD == 0;
+    // The alive states are exactly the oracle's closures of alive nodes, each
+    // with the oracle's status.
+    let want: BTreeSet<u64> = (0..size as u64)
+        .filter(|&m| alive(m))
+        .map(|m| r.nodes[m as usize].closure)
+        .collect();
+    let got: BTreeSet<u64> = s.states.iter().map(|x| mask(&x.closure)).collect();
+    if got != want || got.len() != s.states.len() {
+        bad.push(format!(
+            "{rel}: {} alive states where the oracle has {}",
+            s.states.len(),
+            want.len()
+        ));
+        return bad;
+    }
+    for x in &s.states {
+        let m = mask(&x.closure);
+        if r.status[m as usize] != if x.owes > 0 { region::OWING } else { 0 } {
+            bad.push(format!("{rel}: {} has another status", r.name(m)));
+        }
+        if !x.extended {
+            bad.push(format!("{rel}: {} was not extended", r.name(m)));
+        }
+    }
+    bad
+}
+
+/// **The state route equals the oracle** — S1e2.1c.2's acceptance. On every
+/// corpus file and register witness whose cube the oracle enumerates and whose
+/// static verdict is monotone, the route meets exactly the alive states, each
+/// with the cube's status, and extends every one. It never saturates more than
+/// route 1 does. On every flagged program it declines.
+#[test]
+fn the_state_route_is_the_oracle_on_every_monotone_program_it_reaches() {
+    let mut failures: Vec<String> = Vec::new();
+    let (mut monotone, mut flagged, mut fewer) = (0usize, 0usize, 0usize);
+    let oracle = Options {
+        jobs: std::thread::available_parallelism().map_or(1, |n| n.get().min(8)),
+        ..Options::default()
+    };
+    for path in corpus_and_register() {
+        let rel = path
+            .strip_prefix(repo_root())
+            .unwrap_or(&path)
+            .to_string_lossy()
+            .to_string();
+        let Some((mut kb, mut terms, ast)) = loaded(&path) else {
+            continue;
+        };
+        let Ok(Outcome::Region(r)) =
+            region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
+        else {
+            continue;
+        };
+        let (mut kb1, mut terms1, ast1) = loaded(&path).expect("loaded once already");
+        let s = states::compute(
+            &mut kb1,
+            &mut terms1,
+            &ast1,
+            &downset::Options::unbounded(1),
+        )
+        .unwrap_or_else(|e| panic!("{rel}: {e}"));
+        if facts_text(&kb1, &terms1) != facts_text(&kb, &terms) {
+            failures.push(format!("{rel}: the state route's root is not sat(program)"));
+        }
+        if !r.monotonicity.is_monotone() {
+            flagged += 1;
+            if s.declined != Some(Declined::NotMonotone) {
+                failures.push(format!(
+                    "{rel}: flagged, and the state route did not decline"
+                ));
+            }
+            continue;
+        }
+        monotone += 1;
+        failures.extend(state_route_against_oracle(&rel, &r, &s));
+        let (mut kb2, mut terms2, ast2) = loaded(&path).expect("loaded once already");
+        let d = downset::compute(
+            &mut kb2,
+            &mut terms2,
+            &ast2,
+            &downset::Options::unbounded(1),
+        )
+        .unwrap_or_else(|e| panic!("{rel}: {e}"));
+        let route_1: u64 = d.layers.iter().map(|l| l.visited).sum();
+        if s.saturations() > route_1 {
+            failures.push(format!(
+                "{rel}: the state route saturated {} where route 1 saturates {route_1}",
+                s.saturations()
+            ));
+        }
+        fewer += usize::from(s.saturations() < route_1);
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    assert!(
+        monotone >= 140 && flagged >= 10,
+        "{monotone} monotone, {flagged} flagged"
+    );
+    eprintln!("{monotone} monotone, {flagged} flagged; fewer saturations on {fewer}");
+    // 2026-11-03: fewer saturations than route 1 on 13 of the monotone cubes,
+    // and the same number on the rest.
+    assert!(fewer >= 10, "fewer saturations on {fewer} programs");
 }

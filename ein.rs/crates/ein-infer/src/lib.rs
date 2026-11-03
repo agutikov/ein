@@ -58,6 +58,8 @@ pub mod solve;
 /// The S1a.7.0 measurement instrument — off unless the build asked for it.
 #[cfg(feature = "spec-audit")]
 pub mod spec_audit;
+pub mod states;
+pub mod transversal;
 pub mod verdict;
 
 pub use apriori::{
