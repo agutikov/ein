@@ -499,18 +499,9 @@ fn run_monotone(m: &ArgMatches, file: &str) -> i32 {
     if summary_path.is_none() && dump.is_none() {
         return text.code;
     }
-    let summary =
-        match crate::summary::build_monotone(&ast, &mut terms, &mut kb, &checked, file, &cfg) {
-            Ok(s) => crate::summary::text(&s),
-            Err(e) => {
-                for (flag, path) in [("json-summary", &summary_path), ("dump-answer", &dump)] {
-                    if let Some(p) = path {
-                        crate::solve::artefact_failed(flag, p, &e);
-                    }
-                }
-                return text.code;
-            }
-        };
+    let summary = crate::summary::text(&crate::summary::build_monotone(
+        &terms, &kb, &checked, file, &cfg,
+    ));
     if let Some(path) = summary_path.as_deref()
         && let Err(e) = std::fs::write(path, &summary)
     {

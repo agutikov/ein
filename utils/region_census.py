@@ -68,9 +68,12 @@ EIN = Path(os.environ.get("EIN_BIN", REPO / "ein.rs" / "target" / "release" / "e
 CLI_LEVERS: tuple = ()
 
 # The environment levers that steer the search and sit outside `SolverConfig`
-# (`configuration.md` § 5): the obligations rung's order and its `off`. The
-# walk's tree traversal, `EIN_TRAVERSAL`, went with the walk at M1e2 S1e2.1c.5.
-ENV_LEVERS = (("EIN_OBLIGATION_CHOICE", "off"), ("EIN_OBLIGATION_CHOICE", "fail-first"))
+# (`configuration.md` § 5). None is left: the walk's tree traversal,
+# `EIN_TRAVERSAL`, went with the walk at M1e2 S1e2.1c.5, and the obligations
+# rung's order, `EIN_OBLIGATION_CHOICE`, was retired at S1e2.3.1 (the user's
+# ruling of 2026-11-03) once the summary's `root` block stopped running the
+# walk's generator, the last pass that read it.
+ENV_LEVERS: tuple = ()
 
 # Every flag a `(config …)` can set, flipped away from its default.
 # `enable-symmetric-mirror` was the one flag that moved R (`features/06`), and

@@ -228,12 +228,12 @@ pub fn saturate_events(
 /// is the third line's point: the S1.9.E16 short-circuit is invisible in the
 /// boolean and visible in how many candidates were built to reach it.
 ///
-/// `closed` runs the auto-closure pass first — the *other* regime the
-/// generator is asked in, and the one `--hyp-stats` and the JSON summary use.
-/// Without it what this sees is the `(__closed__ R)` facts a puzzle authored
-/// or `std.closure` derived, which is also what `solve` sees: both call sites
-/// — the `--hyp-stats` preview and the JSON summary — run `emit_closed` on a
-/// **fork**.
+/// `closed` runs the auto-closure pass first — the *other* regime the walk's
+/// generator was asked in. Without it what this sees is the `(__closed__ R)`
+/// facts a puzzle authored or `std.closure` derived, which is also what every
+/// route sees. Since M1e2 S1e2.3.1 no command runs `emit_closed`: the JSON
+/// summary's `root` block, which ran it on a fork, is root's fixpoint and H as
+/// the routes have them, so this is the pass's one caller.
 pub fn hyp_shape(ast: &Ast, terms: &mut Terms, kb: &mut Kb) -> Result<String, String> {
     hyp_shape_with(ast, terms, kb, false)
 }

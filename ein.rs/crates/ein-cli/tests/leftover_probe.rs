@@ -15,7 +15,9 @@
 //! (`read_out.md` § 12) — a question about the universe, not about a route.
 //! Running it on a fork of the state's fixpoint is what makes it a read, and
 //! *that* is the claim worth a test, because it is the one that would fail
-//! silently.
+//! silently. Since M1e2 S1e2.3.1 (the user's ruling of 2026-11-03) the pass is
+//! **config-free**, as H's is: no lookahead filter drops a candidate before it
+//! is counted, and § 3 holds that too.
 
 use ein_core::Terms;
 use ein_corpus::repo_root;
@@ -79,7 +81,8 @@ fn the_leftover_probe_is_off_by_default_is_a_read_and_means_what_it_says() {
     // and not during it.
     unsafe { std::env::set_var("EIN_LEFTOVER", "1") };
     let after = summary("examples/branching/06_lookahead_on.ein");
-    let closed = summary("examples/branching/12_typed_blind_solve.ein");
+    let closed = summary("examples/saturation/square-fwd/houses.ein");
+    let typed = summary("examples/branching/12_typed_blind_solve.ein");
     let open = summary("examples/branching/05_mini_zebra.ein");
     unsafe { std::env::remove_var("EIN_LEFTOVER") };
 
@@ -108,24 +111,40 @@ fn the_leftover_probe_is_off_by_default_is_a_read_and_means_what_it_says() {
     // The two shapes a corpus entry comes in, and the contrast is the whole
     // point of the number:
     //
-    // * `branching/12_typed_blind_solve` closes its one relation, so at each
-    //   state of its maximal line every candidate the blind enumerator can
-    //   build is already a fact or already negated. **Zero** — the state is a
-    //   complete assignment, and the open- and closed-world readings agree.
+    // * `saturation/square-fwd/houses`' R is its whole cube, so its maximal
+    //   line is the one state that commits every candidate, and every
+    //   candidate the blind enumerator can build there is already a fact.
+    //   **Zero** — the state is a complete assignment, and the open- and
+    //   closed-world readings agree.
     // * `branching/05_mini_zebra` does not close `co-located`, and its
     //   **unique** maximal state still leaves dozens of atoms undecided: every
     //   pair the blind enumerator builds and no rule decides. Under an
     //   open-world reading that state is 2ⁿ models; the puzzle means the
     //   closed-world one, and nothing in the file says so. (`zebra2`'s one
-    //   state leaves 3 678, the number M1d measured, at seconds per run.)
+    //   state leaves 8 203 config-free, at seconds per run; M1d's 3 678 was
+    //   the count through the walk's lookahead, until 2026-11-03.)
     //
-    // Neither half is a golden — the bound is `> 0`, not the count this
-    // engine reports today.
+    // And the pass is config-free (M1e2 S1e2.3.1). `branching/12_typed_blind_solve`
+    // decides every well-typed `color-of` atom at each state of its maximal
+    // line, and leaves the type-wrong fillers — `(color-of Red Blue)` — that
+    // its `typecheck-arg-*` rules refute only once one is added. The walk's
+    // one-step lookahead dropped exactly those, and the count read 0; H keeps
+    // them, so the count outside H does too.
+    //
+    // No half is a golden — the bounds are `= 0` and `> 0`, not the counts
+    // this engine reports today.
     let rows = counts(&closed, "states");
     assert_eq!(rows.len() as u64, listed(&closed));
     assert!(
-        rows.iter().all(|&n| n == 0),
-        "a closed domain leaves nothing open: {rows:?}"
+        !rows.is_empty() && rows.iter().all(|&n| n == 0),
+        "a state that commits every candidate leaves nothing open: {rows:?}"
+    );
+    let rows = counts(&typed, "states");
+    assert_eq!(rows.len() as u64, listed(&typed));
+    assert!(
+        !rows.is_empty() && rows.iter().all(|&n| n > 0),
+        "the probe dropped what a refutation would only find on adding it — a \
+         filter H's pass does not apply: {rows:?}"
     );
     let rows = counts(&open, "states");
     assert_eq!(rows.len(), 1, "mini_zebra's maximal line is one state");

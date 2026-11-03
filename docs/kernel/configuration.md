@@ -17,6 +17,9 @@
 > a program sets three, and `ein solve` has 33: the user retired `-L`, `-K`
 > and the four `enable-*` fields no route read, and gave `-y` its meaning,
 > the detector's parent-path spot check, unbounded, on every program.
+> **Since S1e2.3.1 (the same day)** the binary reads two `EIN_*` names:
+> `EIN_OBLIGATION_CHOICE` retired once `--json-summary`'s `root` block, its
+> last reader, became root's fixpoint and H as the routes have them (§ 4).
 >
 > **It is a reference, not a narrative.** One row per knob. What a lever *does
 > to the search*, and what it was measured at, is
@@ -51,7 +54,7 @@
 |---|---:|---|
 | `(config …)` flags | **3** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the fourteen a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
 | CLI options | **71** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
-| `EIN_*` environment | **3** read by the shipped binary, of 26 greppable names on 2026-08-28 | § [4](#4-the-environment) |
+| `EIN_*` environment | **2** read by the shipped binary, of 26 greppable names on 2026-08-28 | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
 
@@ -69,7 +72,8 @@ the only way to see what a run actually used.
 
 Two things are deliberately *not* in that order. There is **no user-level
 config file** and no `$EIN_CONFIG`. And **no environment variable reaches
-`SolverConfig`**: the `EIN_*` levers that steered the walk sit beside it,
+`SolverConfig`**: the `EIN_*` levers that steered the walk sat beside it until
+each retired (§ 4),
 because `SolverConfig` is rendered into the KB-shape digest and a knob whose
 settings are being *compared* would re-bless every shape golden in the corpus
 (§ [5](#5-what-is-deliberately-not-configuration)).
@@ -152,30 +156,15 @@ the switch, and the user retired them on 2026-11-03 (§ 2.4); the fifth,
 | **contract** | stated here, exercised by the corpus or a named test, safe to depend on |
 | **check** | asks for more work and moves no answer: its own row, and on a failure an error, never a different answer. The corpus's `levers` cells run `-y` on every `cargo test`, `lever_invariance.rs` holds every question's read-out and summary unmoved under it but for its row (C4, § 2.5), and `config_reference.rs::the_sanity_flag_adds_its_row_and_nothing_else` holds the flag from outside |
 
-**One surface still reads two retired fields, at their defaults, and is wrong
-for its own reasons.**
-`--json-summary`'s `root` block (`summary::root_block`) runs the walk's
-hypothesis generator on a fork of root, which reads
-`enable-pre-branch-lookahead`, `enable-lookahead-kill-cache` and
-`EIN_OBLIGATION_CHOICE`, and counts root's facts after it. On
-`examples/branching/02_one_dead_one_alive.ein` `root.facts` is 27 where root's
-fixpoint holds 23, the other four being the kill cache's `(not h)` writes, and
-`root.hypgen.emitted` is 30 where H holds 48 (2026-11-01). Until M1e2
-S1e2.1c.5 both moved when the program set either flag; since the two retired
-(2026-11-03) the generator runs at their defaults on every program, so the
-block no longer moves with a lever, and what it describes is still S4's
-question. Nothing R is made of moves. M1e2 S1e2.1a.6's lever test
-found it on 19 programs (2026-11-01); it is surface S4 of the proposed
-[P1e2.3](../../plans/m1e2_correctness/README.md#p1e23--surfaces-that-misreport-the-answer-proposed),
-and until then the test leaves those three fields out.
-
 ### 2.4 The fourteen retired flags
 
 M1e2 S1e2.1a.5's switch retired nine, S1e2.1a.6 a tenth, and S1e2.1c.5 four
 more, each refused at load with the stage and the reason below
 (`ein_core::config::RETIRED`). Their fields stay on `SolverConfig` at their
-defaults — the lookahead and the kill cache read there by the generator the
-summary's `root` block calls, the rest for nothing — and the `.einb` container
+defaults — the lookahead and the kill cache read there only by the walk's
+generator, `hypgen::generate`, which no command runs since M1e2 S1e2.3.1 and
+which `shape.rs`'s `hyp_shape` still runs for the corpus's `hyp` digest; the
+rest for nothing — and the `.einb` container
 round-trips all seventeen, so its format did not move. A container stores its program as
 text and re-loads it on open, so one saved before a retirement whose program
 sets the flag is refused, as the `.ein` is.
@@ -254,8 +243,9 @@ facts of every state in R
   corpus program and register witness whose R is known (a bare describe
   exhausts), under each of `ein solve`'s fifteen questions, and compares the
   read-out uncut, its stderr lines, its exit code and the summary with the
-  program's own. It runs every `levers` cell the corpus declares, and the
-  three `EIN_*` levers on the same files, through the binary. On 2026-11-01:
+  program's own. It runs every `levers` cell the corpus declares through the
+  binary, and ran the `EIN_*` levers on the same files until the last of them
+  retired (§ 4). On 2026-11-01:
   180 programs and 18 816 cells in-process, 348 declared cells and 432
   environment cells through the binary, 14 s on this machine's eight workers.
   One flag moved: `enable-symmetric-mirror`, as above. With it retired the
@@ -441,9 +431,10 @@ different question or stopping early.
 
 ## 4. The environment
 
-Twenty-six `EIN_*` names were greppable in this tree on 2026-08-28. Three are
-read by the shipped binary since M1e2 S1e2.1c.5 (2026-11-03), which deleted the
-walk and the five it alone read (eight before); ten by the test harness; two by
+Twenty-six `EIN_*` names were greppable in this tree on 2026-08-28. Two are
+read by the shipped binary since M1e2 S1e2.3.1 (2026-11-03), which retired
+`EIN_OBLIGATION_CHOICE` (three after S1e2.1c.5 deleted the walk and the five it
+alone read the same day, eight before); ten by the test harness; two by
 `utils/` and the shell; and **six are not environment variables at all** — which is the part a grep
 cannot tell you and the reason this section is a classification rather than a
 list.
@@ -458,20 +449,14 @@ and not a defect.
 
 ### Read by the shipped binary
 
-Read from the process environment by a crate that ships. None of them reaches
-`SolverConfig`, so none re-blesses a KB-shape golden. **All three are reached
-by a command.** `EIN_OBLIGATION_CHOICE` is read by the walk's hypothesis
-generator, which M1e2 S1e2.1c.5 kept when it deleted the walk on the user's
-ruling (a) of 2026-11-03, because `--json-summary`'s `root` block still runs it
-(§ 2.3, surface S4, P1e2.3's S1e2.3.1): the variable moves `root.hypgen` and
-nothing else a run prints. The scan below pins the set *read by a shipping
-crate*.
+Read from the process environment by a crate that ships. Neither reaches
+`SolverConfig`, so neither re-blesses a KB-shape golden, and both are reached
+by a command. The scan below pins the set *read by a shipping crate*.
 
 | name | value | what it does | read at |
 |---|---|---|---|
 | `EIN_STDLIB` | a directory | overrides `std.*` resolution, ahead of the checkout walk and the embedded copy. Since M1e S1e.3.5 it **must carry `MANIFEST.sha256`**, the same marker the walk requires, and the refusal names the variable at the first `std.*` import — [`docs/install.md`](../install.md#point-it-at-a-different-stdlib). `ein --version` still reports an unprovable one as `unreadable` rather than refusing | `ein-ir/src/stdlib.rs` `resolve` |
-| `EIN_OBLIGATION_CHOICE` | `off` \| `fail-first` \| *(default)* `rule-order` | **the walk's generator's**: its obligations rung's measurement lever; `off` is the pre-S1d.2.5 engine and the control arm of every number in `hypotheses_from_obligations.md`. The region's universe is taken config-free, rung order fixed; only the summary's `root` block reads it | `ein-infer/src/oblgen.rs` |
-| `EIN_LEFTOVER` | `1` | fills `--json-summary`'s `leftover` block — what the blind enumerator would still propose at each **listed state**, outside H. Runs on a fork of each state, so nothing else in the summary moves (`leftover_probe.rs`) | `ein-cli/src/summary.rs` |
+| `EIN_LEFTOVER` | `1` | fills `--json-summary`'s `leftover` block — what the blind enumerator would still propose at each **listed state**, outside H. **Config-free** since M1e2 S1e2.3.1, as H is: no lookahead filter, so `zebra2`'s unique state leaves 8 203 where the walk's filter left 3 678 (`EIN_LEFTOVER=1 ein solve --maximal examples/zebra2.ein --json-summary J`, 2026-11-03). Runs on a fork of each state, so nothing else in the summary moves (`leftover_probe.rs`) | `ein-cli/src/summary.rs` |
 
 **Five names left this table at M1e2 S1e2.1c.5 (2026-11-03)**, with the code
 that read them: the walk's `EIN_TRAVERSAL` (its tree traversal, below) and
@@ -480,6 +465,18 @@ that read them: the walk's `EIN_TRAVERSAL` (its tree traversal, below) and
 (`--features fork-delta`, `utils/fork_delta_verify.py`) and `EIN_SPEC_AUDIT`
 (`--features spec-audit`, `utils/spec_audit.py`), which audited the walk's
 fork and its speculated layers and went with their features and drivers.
+
+**A sixth left at M1e2 S1e2.3.1 (the same day), retired by the user's
+ruling**: `EIN_OBLIGATION_CHOICE` (`off` \| `fail-first` \| `rule-order`), the
+obligations rung's walk-order lever, whose `off` was the pre-S1d.2.5 engine and
+the control arm of every number in `hypotheses_from_obligations.md`. No route
+walks the ladder, and the universe is taken config-free with the rung in report
+order, so its one reader after S1e2.1c.5 was `--json-summary`'s `root` block,
+which ran the walk's generator on a fork of root. Once that block became root's
+fixpoint and H as the routes have them, the variable changed nothing the binary
+prints, and `oblgen::Choice::from_env` went: a binary that sets it runs as one
+that does not, with no warning, as for the five above. The rung's order stays
+pinned at `rule-order`.
 
 ### Read by the test harness
 
@@ -606,9 +603,10 @@ each time: **every `SolverConfig` field is `--dump-config`-printed,
   differently on an 8-core machine than on a 4-core one, through a field the
   digest compares. Jobs is an execution knob; `SolverConfig` is the semantics.
 - **`--models`** (M1d T1d.3.3.4). Presentation has no business in the digest.
-- **`EIN_TRAVERSAL` and `EIN_OBLIGATION_CHOICE`**, the walk's. Both existed
-  to be *compared*, and a knob whose settings are being compared would
-  re-bless every shape golden in the corpus each time the comparison moved.
+- **`EIN_TRAVERSAL` and `EIN_OBLIGATION_CHOICE`**, the walk's, both retired
+  (§ 4). Both existed to be *compared*, and a knob whose settings are being
+  compared would re-bless every shape golden in the corpus each time the
+  comparison moved.
 
 And there is **no config file**. The `(config …)` head travels with the
 program, which is what makes a `.ein` reproducible on its own.

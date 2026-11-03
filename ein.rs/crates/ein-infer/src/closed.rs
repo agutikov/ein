@@ -15,12 +15,16 @@
 //! (functional ∧ total ⇒ closed). [`crate::hypgen`] does not care which path
 //! produced the fact — the index lookup is the same.
 //!
-//! **Where it is called from matters, and it is not `solve`.** Both call
-//! sites — the `--hyp-stats` preview and the JSON summary's root
-//! observables — run it on a **fork**, so the search itself sees every
-//! relation open. It moves a lot when it does run: over the corpus it takes
-//! `closed_relation` from 6 pre-candidate skips to 278 and `raw` from 4 479
-//! candidates to 3 022.
+//! **Where it is called from matters, and it is no command.** Since M1e2
+//! S1e2.3.1 no CLI path calls it: the JSON summary's `root` block, its last
+//! caller in `ein-cli`, became root's fixpoint and H as every route starts
+//! from them (the user's ruling (a) of 2026-11-03), and no route runs the
+//! pass, so every route sees each relation the program does not close itself
+//! as open. Its one caller is [`crate::shape::hyp_shape_with`], for the
+//! corpus's `hyp` op in `corpus_ops`, which asks the walk's generator in both
+//! regimes; S1e2.1c.5 kept the pass for it. It moves a lot when it does run:
+//! over the corpus it takes `closed_relation` from 6 pre-candidate skips to
+//! 278 and `raw` from 4 479 candidates to 3 022.
 
 use ein_core::{Symbol, Value};
 use rustc_hash::FxHashSet;

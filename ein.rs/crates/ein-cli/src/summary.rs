@@ -33,84 +33,54 @@ fn sparse(counts: &[u64; 4], name: impl Fn(usize) -> &'static str) -> Json {
     )
 }
 
-/// Root-saturation observables, computed on a fork so the caller's KB is
-/// untouched: how big the fixpoint is, how many plans it took, what the
-/// boundary did, and what hypgen would enumerate from it.
+/// `--json-summary`'s `root` block: root's fixpoint and how H was built, as
+/// every route starts from them — M1e2
+/// [S1e2.3.1](../../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md),
+/// the user's ruling (a) of 2026-11-03.
 ///
-/// It runs on the **live** event log, not a silent one: the summary is built
-/// after the `verdict` event and before `finish`, so its second root
-/// saturation is recorded — 92 further events on a fixture whose whole solve
-/// is 96.
-fn root_block(
-    ast: &Ast,
-    terms: &mut Terms,
-    kb: &mut Kb,
-    events: &mut ein_infer::events::Events,
-) -> Result<Json, String> {
-    use ein_infer::hypgen::generate;
-    use ein_infer::saturator::{Saturator, Session};
-    use std::ops::ControlFlow;
-
-    let mut root = kb.fork();
-    let (n_facts, by_rel, naf, hstats) = {
-        let mut s = Session {
-            kb: &mut root,
-            terms,
-            ast,
-            events,
-            memo: SharedMemo::default(),
-        };
-        ein_infer::closed::emit_closed(&mut s).map_err(crate::common::compile_error_line)?;
-        let mut sat = Saturator::new(&mut s).map_err(|e| crate::common::saturate_error_line(&e))?;
-        sat.saturate(&mut s, None, &mut |_| {})
-            .map_err(|e| crate::common::saturate_error_line(&e))?;
-        let mut hstats = HypGenStats::new();
-        generate(&mut s, &mut hstats, &mut |_| ControlFlow::Continue(()))
-            .map_err(crate::common::compile_error_line)?;
-        let naf = [
-            sat.naf_rounds,
-            sat.naf_admitted,
-            sat.naf_retired,
-            sat.naf_dropped,
-        ];
-        let mut by_rel: std::collections::BTreeMap<String, i64> = Default::default();
-        for f in s.kb.facts() {
-            let rel = s.terms.facts.get(f).0;
-            *by_rel.entry(s.terms.sym(rel).to_string()).or_default() += 1;
-        }
-        (s.kb.n_facts(), by_rel, naf, hstats)
-    };
-
-    let mut engine = ein_infer::Engine::new();
-    let fork = kb.fork();
-    engine
-        .compile_all(ast, terms, &fork, events)
-        .map_err(crate::common::compile_error_line)?;
-
-    Ok(Json::obj(vec![
-        ("facts", Json::int(n_facts as i64)),
+/// **It runs nothing.** `kb` is root's fixpoint already: every writer reaches
+/// the summary after [`ein_infer::region`]'s `prepare_with` has saturated root
+/// in place, and no route writes into root after it. `stats` is what that same
+/// pass counted ([`ein_infer::region::RootStats`]): the plans root's saturator
+/// compiled, its NAF boundary's counters, and the config-free generator pass
+/// whose `emitted` is H's size. So the block is config-free, no lever moves it,
+/// and `summary_properties.rs` holds `facts` to root's fixpoint and `emitted`
+/// to `region.universe.candidates`. Until that stage the block ran its own
+/// pass on a fork — `emit_closed`'s markers, a second saturation and the
+/// walk's generator with the lookahead and its kill cache on — and counted
+/// what that pass wrote as root's (27 facts where root holds 22 on
+/// `branching/02_one_dead_one_alive.ein`, and 30 candidates where H holds 48).
+fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> Json {
+    let mut by_rel: std::collections::BTreeMap<String, i64> = Default::default();
+    for f in kb.facts() {
+        let rel = terms.facts.get(f).0;
+        *by_rel.entry(terms.sym(rel).to_string()).or_default() += 1;
+    }
+    let h = &stats.hypgen;
+    Json::obj(vec![
+        ("facts", Json::int(kb.n_facts() as i64)),
         (
             "facts_by_relation",
             Json::Object(by_rel.into_iter().map(|(k, v)| (k, Json::int(v))).collect()),
         ),
-        ("plans", Json::int(engine.len() as i64)),
+        ("plans", Json::int(stats.plans as i64)),
         (
             "saturator",
             Json::obj(vec![
-                ("naf_rounds", Json::int(naf[0] as i64)),
-                ("naf_admitted", Json::int(naf[1] as i64)),
-                ("naf_retired", Json::int(naf[2] as i64)),
-                ("naf_dropped", Json::int(naf[3] as i64)),
+                ("naf_rounds", Json::int(stats.naf[0] as i64)),
+                ("naf_admitted", Json::int(stats.naf[1] as i64)),
+                ("naf_retired", Json::int(stats.naf[2] as i64)),
+                ("naf_dropped", Json::int(stats.naf[3] as i64)),
             ]),
         ),
         (
             "hypgen",
             Json::obj(vec![
-                ("raw", Json::int(hstats.raw as i64)),
-                ("emitted", Json::int(hstats.emitted as i64)),
+                ("raw", Json::int(h.raw as i64)),
+                ("emitted", Json::int(h.emitted as i64)),
                 (
                     "filtered",
-                    sparse(&hstats.filtered, |i| {
+                    sparse(&h.filtered, |i| {
                         [
                             Drop::FactAlreadyExists,
                             Drop::LookaheadKilled,
@@ -122,7 +92,7 @@ fn root_block(
                 ),
                 (
                     "pre_candidate",
-                    sparse(&hstats.pre_candidate, |i| {
+                    sparse(&h.pre_candidate, |i| {
                         [
                             Skip::ClosedRelation,
                             Skip::NoHypothesisRelation,
@@ -134,7 +104,7 @@ fn root_block(
                 ),
             ]),
         ),
-    ]))
+    ])
 }
 
 /// What the **blind** enumerator would still propose at one recorded state.
@@ -147,18 +117,18 @@ fn root_block(
 /// enumerator would guess at, and their number is the difference between "one
 /// model" and "2ⁿ models" when the reading is open-world.
 ///
-/// **It is a read, and that is the whole design.** The pass writes — a
-/// lookahead kill stores `(not h)` — so it runs on a fork of the state's KB
-/// and the fork is dropped on the next line. The state's own `state_key`, and
-/// therefore the model dedup that produced `k`, never sees it. P1d.2 declined
-/// this measurement because the pass it had in mind ran against the live node;
-/// the fork is the difference between the two, and it costs one generation
-/// call per *recorded model* rather than per entering.
+/// **It is a read, and that is the whole design.** The pass is config-free
+/// since M1e2 S1e2.3.1 (the user's ruling of 2026-11-03: no lookahead filter,
+/// so no `(not h)` kill is written) and writes nothing but the interning of
+/// its candidates; it still runs on a fork of the state's KB, dropped on the
+/// next line, so that no pass this probe makes can reach the state. P1d.2
+/// declined this measurement because the pass it had in mind ran against the
+/// live node; the fork is the difference between the two, and it costs one
+/// generation call per *listed state*.
 ///
 /// The event log is silent for the same reason `--events` output is a
 /// contract: a probe nobody asked for must not narrate into a stream somebody
-/// is diffing. [`root_block`] runs on the live log deliberately: its second
-/// root saturation is part of the recorded stream.
+/// is diffing.
 ///
 /// [P1d.2 handed forward]: `docs/history/m1d_satisfiability/hypotheses_from_obligations.md`
 fn leftover_at(
@@ -272,8 +242,10 @@ fn config_block(cfg: &SolverConfig) -> Json {
 /// [`read_out.md` § 8.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md#81---json-summary-ein-summary2).
 /// The read-out's blocks (`asked`, `region`, `verdict`, `queries`, `claim`,
 /// `work`) from [`ein_render::dump::region_answer::summary_blocks`], then the
-/// program's: the static check, `EIN_LEFTOVER`'s block, root's saturation and
-/// the resolved config. Every key on every run.
+/// program's: the static check, `EIN_LEFTOVER`'s block, root's fixpoint and H
+/// (`root_block`) and the resolved config. Every key on every run.
+///
+/// `kb` is the root the run answered from, at its fixpoint.
 pub fn build_region(
     ast: &Ast,
     terms: &mut Terms,
@@ -302,9 +274,11 @@ pub fn build_region(
         );
     }
     pairs.push(("monotonicity", m));
+    // Read before the probe forks the states, though the probe leaves root as
+    // it is: the block is root as the routes left it.
+    let root = root_block(terms, kb, &r.answer.root);
     pairs.push(("leftover", leftover_block(ast, terms, kb, r)?));
-    let mut off = ein_infer::events::Events::off();
-    pairs.push(("root", root_block(ast, terms, kb, &mut off)?));
+    pairs.push(("root", root));
     pairs.push(("config", config_block(config)));
     Ok(Json::obj(pairs))
 }
@@ -312,18 +286,17 @@ pub fn build_region(
 /// The summary of `ein solve --monotone`, `ein-summary/2` — M1e2 S1e2.1b.5:
 /// every key a region run's summary has, `asked.ask` = `"monotone"`, no
 /// region, no verdict, no query answered, root's one saturation as the work,
-/// and the static check's block.
+/// and the static check's block. Its `root` block is a region run's, so
+/// `root.hypgen.emitted` is the universe its stdout prints.
 pub fn build_monotone(
-    ast: &Ast,
-    terms: &mut Terms,
-    kb: &mut Kb,
+    terms: &Terms,
+    kb: &Kb,
     checked: &ein_infer::explore::Checked,
     source: &str,
     config: &SolverConfig,
-) -> Result<Json, String> {
+) -> Json {
     let taken = matches!(std::env::var("EIN_LEFTOVER").as_deref(), Ok("1"));
-    let mut off = ein_infer::events::Events::off();
-    Ok(Json::obj(vec![
+    Json::obj(vec![
         (
             "schema",
             Json::str(ein_render::dump::region_answer::SUMMARY),
@@ -370,9 +343,9 @@ pub fn build_monotone(
                 ("states_by_relation", Json::Array(Vec::new())),
             ]),
         ),
-        ("root", root_block(ast, terms, kb, &mut off)?),
+        ("root", root_block(terms, kb, &checked.root)),
         ("config", config_block(config)),
-    ]))
+    ])
 }
 
 /// The summary as JSON, two-space indented, **ASCII-only**, with a trailing

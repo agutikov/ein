@@ -321,6 +321,7 @@ pub(crate) fn compute_prepared(
         monotonicity,
         memo,
         plans,
+        root: _,
     } = prepared;
     let mut out = DownSet {
         candidates,

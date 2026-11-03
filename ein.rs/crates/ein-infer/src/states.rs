@@ -263,6 +263,7 @@ pub(crate) fn compute_prepared(
         monotonicity,
         memo,
         plans: _,
+        root: _,
     } = prepared;
     let n = candidates.len();
     let mut out = StateRoute {

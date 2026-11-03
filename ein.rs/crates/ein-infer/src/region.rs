@@ -198,6 +198,27 @@ pub struct Region {
     /// cube: the status, attributed, and every node's stale facts
     /// ([`crate::detector`], M1e2 S1e2.1b.5). `None` on a monotone program.
     pub warning: Option<Box<Warning>>,
+    /// What root's saturation and the universe's generator pass counted.
+    pub root: RootStats,
+}
+
+/// What `prepare_with` counted on its way to root's fixpoint and the
+/// universe, kept for `--json-summary`'s `root` block — M1e2
+/// [S1e2.3.1](../../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md),
+/// the user's ruling (a) of 2026-11-03: the block is root's fixpoint and H,
+/// config-free, so a summary reads what every route starts from and runs no
+/// pass of its own.
+#[derive(Clone, Debug, Default)]
+pub struct RootStats {
+    /// The plans root's saturator compiled, the derived activators' included.
+    pub plans: usize,
+    /// The NAF boundary's four counters from root's saturation: rounds,
+    /// admitted, retired, dropped.
+    pub naf: [u32; 4],
+    /// The universe's generator pass, [`crate::hypgen::generate_config_free`]
+    /// at root's fixpoint. Its `emitted` is `H`'s size: `seen_in_call` drops a
+    /// repeat before `emitted` counts one.
+    pub hypgen: HypGenStats,
 }
 
 impl Region {
@@ -299,6 +320,7 @@ pub(crate) fn compute_prepared(
         monotonicity,
         memo,
         plans,
+        root: root_stats,
     } = prepared;
     let n = candidates.len();
 
@@ -511,6 +533,7 @@ pub(crate) fn compute_prepared(
         },
         states,
         warning,
+        root: root_stats,
     })))
 }
 
@@ -530,6 +553,8 @@ pub(crate) struct Prepared {
     /// Root's plans, what the static check read: the detector's stale check
     /// and its attribution read a node against them.
     pub plans: Vec<Arc<Plan>>,
+    /// What root's saturation and the universe's pass counted.
+    pub root: RootStats,
 }
 
 /// Saturate `root`, a **freshly loaded** program, and return the firings
@@ -582,6 +607,7 @@ pub(crate) fn prepare_with(
     }
 
     // Root's fixpoint, and the snapshot every node resumes from.
+    let mut root_stats = RootStats::default();
     let snapshot = {
         let mut s = Session {
             kb: root,
@@ -592,6 +618,13 @@ pub(crate) fn prepare_with(
         };
         let mut sat = Saturator::new(&mut s)?;
         sat.saturate(&mut s, None, &mut |_| {})?;
+        root_stats.plans = sat.engine.len();
+        root_stats.naf = [
+            sat.naf_rounds,
+            sat.naf_admitted,
+            sat.naf_retired,
+            sat.naf_dropped,
+        ];
         // `(config :warn-derived-naf true)`'s two warnings, as the walk
         // narrated them after root's saturation: the stratification advice and
         // the refutation under `absent` (M1e S1e.2.3). Stream lines only, and
@@ -627,8 +660,7 @@ pub(crate) fn prepare_with(
             events,
             memo: memo.clone(),
         };
-        let mut stats = HypGenStats::new();
-        crate::hypgen::generate_config_free(&mut s, &mut stats, &mut |f| {
+        crate::hypgen::generate_config_free(&mut s, &mut root_stats.hypgen, &mut |f| {
             proposed.push(f);
             std::ops::ControlFlow::Continue(())
         })?;
@@ -684,6 +716,7 @@ pub(crate) fn prepare_with(
         monotonicity,
         memo,
         plans,
+        root: root_stats,
     })
 }
 

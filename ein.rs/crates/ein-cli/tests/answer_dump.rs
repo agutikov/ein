@@ -435,10 +435,12 @@ fn a_container_is_refused_because_it_carries_no_program() {
     let _ = std::fs::remove_dir_all(&root);
 }
 
-/// **Every `work` counter a summary carries is defined on the page.** The
-/// review bundle quotes `answer_dump.md` § The run summary beside each number,
-/// so a counter without a row would be printed with no meaning — and a row
-/// for a counter no summary carries is a definition of nothing.
+/// **Every `work` counter and every `root` field a summary carries is
+/// defined on the page.** The review bundle quotes `answer_dump.md` § The run
+/// summary beside each number, so a counter without a row would be printed
+/// with no meaning — and a row for a counter no summary carries is a
+/// definition of nothing. A `root` field is a dotted row (`root.hypgen.raw`)
+/// down to the sparse blocks, whose keys are data (M1e2 S1e2.3.1).
 #[test]
 fn every_summary_counter_is_defined_on_this_page() {
     let page = std::fs::read_to_string(repo_root().join("docs/kernel/inference/answer_dump.md"))
@@ -458,15 +460,31 @@ fn every_summary_counter_is_defined_on_this_page() {
     let r = dump("examples/zebra2.ein", &["-n", "1"], &[], &dir);
     assert_eq!(r.code, 0, "{}", r.err);
     let summary = json(&dir.with_extension("json"));
-    let keys: std::collections::BTreeSet<String> = summary["work"]
+    let mut keys: std::collections::BTreeSet<String> = summary["work"]
         .as_object()
         .expect("work")
         .keys()
         .cloned()
         .collect();
+    fn fields(v: &serde_json::Value, at: &str, out: &mut std::collections::BTreeSet<String>) {
+        const SPARSE: [&str; 3] = ["facts_by_relation", "filtered", "pre_candidate"];
+        for (k, child) in v.as_object().expect("an object") {
+            let name = format!("{at}.{k}");
+            if child.is_object() && !SPARSE.contains(&k.as_str()) {
+                fields(child, &name, out);
+            } else {
+                out.insert(name);
+            }
+        }
+    }
+    fields(&summary["root"], "root", &mut keys);
+    assert!(
+        keys.contains("root.hypgen.emitted") && keys.contains("root.saturator.naf_rounds"),
+        "the root block was not walked: {keys:?}"
+    );
     assert_eq!(
         keys, rows,
-        "the summary's counters and the page's rows differ"
+        "the summary's counters and fields and the page's rows differ"
     );
     let _ = std::fs::remove_dir_all(dir.parent().unwrap());
 }

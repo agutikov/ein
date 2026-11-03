@@ -263,35 +263,44 @@ pub fn generate_one_branch(
     Ok(out)
 }
 
-/// [`generate`] with the ladder's two upper rungs skipped — the blind
-/// combinatorial enumerator alone, whatever the program declares.
+/// The blind combinatorial enumerator alone, whatever the program declares,
+/// and **config-free** as [`generate_config_free`] is: no lookahead filter,
+/// no kill cache.
 ///
-/// **Not a search entry point.** The search always walks the ladder; this
-/// answers a question *about* a state that the ladder cannot be asked, because
-/// the rung that is active there stops as soon as its own candidates run out:
-/// *how many facts would the blind enumerator still propose at a node the rung
-/// called complete?* That number is the state's leftover-open count — M1d
+/// **Not a search entry point.** No route walks the ladder; this answers a
+/// question *about* a state that the ladder cannot be asked, because the rung
+/// that is active there stops as soon as its own candidates run out: *how many
+/// facts would the blind enumerator still propose at a state the rung called
+/// complete?* That number is the state's leftover-open count — M1d
 /// [S1d.3.1](../../../../docs/history/m1d_satisfiability/README.md#s1d31--what-the-models-differ-in)
 /// — and it is what separates "one model" from "2ⁿ models" when the reading
 /// is open-world.
 ///
-/// The caller **must** hand it a KB it is willing to see written to: with
-/// `enable_lookahead_kill_cache` on, the walk writes `(not h)` per lookahead
-/// kill, exactly as the search's own generation does. On a fork that is then
-/// discarded that write is invisible; on the node itself it would move the
-/// `state_key` and therefore the model dedup, which is why P1d.2 declined the
-/// probe rather than taking it against a live node.
+/// Config-free since M1e2
+/// [S1e2.3.1](../../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md),
+/// the user's ruling of 2026-11-03: the count is taken outside H, and H is
+/// taken with no filter, so a count through a filter H's pass does not apply
+/// would not be comparable with it. Until then the pass ran the walk's
+/// one-step lookahead, and `zebra2`'s unique model left 3 678 where it leaves
+/// 8 203 now. It writes nothing but the interning of its candidates.
 pub fn generate_blind(
     s: &mut Session<'_>,
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<(), CompileError> {
-    generate_rungs(s, stats, f, Rungs::BlindOnly, false)
+    generate_with(
+        s,
+        stats,
+        f,
+        Rungs::BlindOnly,
+        false,
+        Some(GenOptions::CONFIG_FREE),
+    )
 }
 
 /// The **config-free** candidate list: [`generate`] with the lookahead filter
 /// and its kill cache off and the obligations rung at its default order,
-/// whatever the program's `(config …)` and `EIN_OBLIGATION_CHOICE` say — M1e2
+/// whatever the program's `(config …)` says — M1e2
 /// [S1e2.1a.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/s1e2.1a.1_the_oracle.md).
 ///
 /// The user ruled on 2026-10-15 that no config option may change the
@@ -303,21 +312,31 @@ pub fn generate_config_free(
     stats: &mut HypGenStats,
     f: &mut dyn FnMut(FactId) -> ControlFlow<()>,
 ) -> Result<(), CompileError> {
-    let opts = GenOptions {
-        lookahead: false,
-        kill_cache: false,
-        choice: crate::oblgen::Choice::RuleOrder,
-    };
-    generate_with(s, stats, f, Rungs::Ladder, false, Some(opts))
+    generate_with(
+        s,
+        stats,
+        f,
+        Rungs::Ladder,
+        false,
+        Some(GenOptions::CONFIG_FREE),
+    )
 }
 
-/// What a call reads from the config and the environment, when the caller
-/// does not let it.
+/// What a call reads from the config, when the caller does not let it.
 #[derive(Clone, Copy)]
 struct GenOptions {
     lookahead: bool,
     kill_cache: bool,
     choice: crate::oblgen::Choice,
+}
+
+impl GenOptions {
+    /// No filter a switch applies, and the rung in report order.
+    const CONFIG_FREE: GenOptions = GenOptions {
+        lookahead: false,
+        kill_cache: false,
+        choice: crate::oblgen::Choice::RuleOrder,
+    };
 }
 
 /// Which rungs of the generation ladder a call is allowed to use.
@@ -344,7 +363,7 @@ fn generate_rungs(
     generate_with(s, stats, f, rungs, one_branch, None)
 }
 
-/// [`generate_rungs`], with the config and the environment overridable.
+/// [`generate_rungs`], with the config overridable.
 fn generate_with(
     s: &mut Session<'_>,
     stats: &mut HypGenStats,
@@ -355,10 +374,12 @@ fn generate_with(
 ) -> Result<(), CompileError> {
     ein_core::counters::bump(|c| c.hypgen_call += 1);
     let cfg = s.kb.program().config.clone().unwrap_or_default();
+    // The rung order is pinned: `EIN_OBLIGATION_CHOICE`, which could set it,
+    // was retired at M1e2 S1e2.3.1 (the user's ruling of 2026-11-03).
     let opts = opts.unwrap_or(GenOptions {
         lookahead: cfg.enable_pre_branch_lookahead,
         kill_cache: cfg.enable_lookahead_kill_cache,
-        choice: crate::oblgen::Choice::from_env(),
+        choice: crate::oblgen::Choice::RuleOrder,
     });
     // Built once per call (it compiles the rule plans, emitting `compile`
     // events as `Engine::compile_all` does) and reused per candidate.

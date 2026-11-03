@@ -148,6 +148,12 @@ pub struct RungReport {
 /// traversal would need on day one, and it costs one `sort_by_key` over the
 /// instance list.
 ///
+/// **Every caller passes [`Choice::RuleOrder`]** since M1e2 S1e2.3.1 retired
+/// `EIN_OBLIGATION_CHOICE`, the environment lever that chose the other two
+/// (the user's ruling of 2026-11-03): no route walks the ladder, the universe
+/// is taken in report order, and once the summary's `root` block read that
+/// pass the variable changed nothing the binary prints.
+///
 /// [the record §4]: `docs/history/m1d_satisfiability/hypotheses_from_obligations.md`
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Choice {
@@ -165,20 +171,6 @@ pub enum Choice {
 }
 
 impl Choice {
-    /// `EIN_OBLIGATION_CHOICE`, the measurement lever.
-    ///
-    /// Not a [`ein_core::SolverConfig`] field on purpose: the config is
-    /// rendered into the KB-shape digest, so a knob whose two settings are
-    /// being *compared* would re-bless every shape golden in the corpus to
-    /// record a default nobody has chosen yet.
-    pub fn from_env() -> Choice {
-        match std::env::var("EIN_OBLIGATION_CHOICE").as_deref() {
-            Ok("fail-first") => Choice::FailFirst,
-            Ok("off") => Choice::Off,
-            _ => Choice::RuleOrder,
-        }
-    }
-
     pub fn as_str(self) -> &'static str {
         match self {
             Choice::RuleOrder => "rule-order",
@@ -226,7 +218,7 @@ pub(crate) fn generate(
     one_branch: bool,
 ) -> Result<RungReport, CompileError> {
     if choice == Choice::Off {
-        return Ok(declined(s, "EIN_OBLIGATION_CHOICE=off"));
+        return Ok(declined(s, "choice off"));
     }
     let memo = s.memo.clone();
     let plans = crate::obligations::plans_for(s.kb, s.terms, s.ast, &memo)?;

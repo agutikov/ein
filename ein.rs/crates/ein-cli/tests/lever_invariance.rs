@@ -21,11 +21,11 @@
 //!   the default: the exit code, stdout, stderr and the `--json-summary`. The
 //!   summary's `config` object echoes the lever, so it is left out of the
 //!   comparison and checked to carry it: a lever that stopped reaching the run
-//!   cannot pass as one that changes nothing. The two `EIN_*` levers the
-//!   walk's generator reads (`EIN_OBLIGATION_CHOICE=off|fail-first`) reach a
-//!   run the same way, as a process, and nothing declares them, so they are
-//!   swept over the same files. The third, `EIN_TRAVERSAL=tree`, went with the
-//!   walk at M1e2 S1e2.1c.5. The one CLI lever left, `-y`, is the read-out's
+//!   cannot pass as one that changes nothing. No environment lever is left:
+//!   `EIN_TRAVERSAL=tree` went with the walk at M1e2 S1e2.1c.5, and
+//!   `EIN_OBLIGATION_CHOICE=off|fail-first`, swept here until then, was retired
+//!   at S1e2.3.1 once the summary's `root` block, its last reader, stopped
+//!   running the walk's generator. The one CLI lever left, `-y`, is the read-out's
 //!   (the detector's spot check, unbounded, on every program — the user's
 //!   ruling of 2026-11-03, which retired `-L` and `-K`): it adds its `paths`
 //!   row and the summary's `monotonicity.paths`, which a `-y` cell leaves out
@@ -41,20 +41,6 @@
 //! **Byte for byte, cost counters included**, because no route reads a lever
 //! today. The day one does, its `work` row and block may move, and this file
 //! is where that is relaxed, on purpose (`jobs_invariance.rs`'s stance).
-//!
-//! **Three fields of the summary are left out**, `root.facts`,
-//! `root.facts_by_relation` and `root.hypgen`, and the reason is a defect
-//! this test found and does not own. `summary::root_block` runs the **walk's**
-//! hypothesis generator on a fork of root, which reads the program's
-//! lookahead and kill-cache flags and `EIN_OBLIGATION_CHOICE`, and counts
-//! root's facts after it — so the block counts the kill cache's `(not h)`
-//! writes as root facts (27 where root's fixpoint holds 23 on
-//! `branching/02_one_dead_one_alive.ein`), describes a generator no route
-//! runs, and moves under `(config :enable-pre-branch-lookahead false)` while
-//! `-L` leaves it alone. Nothing R is made of moves: the read-out, the states,
-//! the classes and every other block are identical. It is surface **S4** of
-//! the proposed P1e2.3 (`plans/m1e2_correctness/README.md`), where
-//! T1e2.1a.6.2 parked it.
 //!
 //! **What R is known means here**: a bare describe exhausts at the default
 //! `--region-budget`, so the answer the lever is compared under is the whole
@@ -174,18 +160,11 @@ fn first_difference(a: &str, b: &str) -> String {
     unreachable!()
 }
 
-/// The summary as compared: less the `config` echo, and less the three
-/// fields of `root` that read the walk's generator (S4, the module note).
-/// The echo is returned.
+/// The summary as compared: less the `config` echo, which is returned.
 fn scrub(summary: &mut J) -> J {
     let Some(o) = summary.as_object_mut() else {
         return J::Null;
     };
-    if let Some(root) = o.get_mut("root").and_then(J::as_object_mut) {
-        for k in ["facts", "facts_by_relation", "hypgen"] {
-            root.remove(k);
-        }
-    }
     o.remove("config").unwrap_or(J::Null)
 }
 
@@ -218,30 +197,6 @@ fn summary_without_spot(summary: &str) -> String {
         m.remove("paths");
     }
     serde_json::to_string_pretty(&j).expect("serialises")
-}
-
-/// The walk generator's two environment levers (`configuration.md` § 4).
-/// Nothing declares them; they are swept over the files that declare a CLI
-/// lever.
-const ENV: [(&str, &str); 2] = [
-    ("EIN_OBLIGATION_CHOICE", "off"),
-    ("EIN_OBLIGATION_CHOICE", "fail-first"),
-];
-
-/// A lever: a CLI flag, or an environment variable set for the process.
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
-enum Lever {
-    Flag(String),
-    Env(&'static str, &'static str),
-}
-
-impl std::fmt::Display for Lever {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Lever::Flag(l) => write!(f, "{l}"),
-            Lever::Env(k, v) => write!(f, "{k}={v}"),
-        }
-    }
 }
 
 /// Every declared lever cell, by file: the corpus's `levers` columns, and the
@@ -287,27 +242,21 @@ struct Got {
     config: J,
 }
 
-fn solve(file: &str, flags: &[String], env: Option<(&str, &str)>) -> Got {
+fn solve(file: &str, flags: &[String]) -> Got {
     static RUN: AtomicUsize = AtomicUsize::new(0);
     let dir = std::env::temp_dir().join(format!("ein-lever-invariance-{}", std::process::id()));
     std::fs::create_dir_all(&dir).expect("a scratch directory");
     let json = dir.join(format!("{}.json", RUN.fetch_add(1, Ordering::Relaxed)));
     let _ = std::fs::remove_file(&json);
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_ein"));
-    cmd.arg("solve")
+    let out = Command::new(env!("CARGO_BIN_EXE_ein"))
+        .arg("solve")
         .arg(file)
         .args(flags)
         .arg("--json-summary")
         .arg(&json)
-        .current_dir(repo_root());
-    // The default is the default whatever the caller's shell exports.
-    for (k, _) in ENV {
-        cmd.env_remove(k);
-    }
-    if let Some((k, v)) = env {
-        cmd.env(k, v);
-    }
-    let out = cmd.output().expect("the `ein` binary runs");
+        .current_dir(repo_root())
+        .output()
+        .expect("the `ein` binary runs");
     let mut summary: J = std::fs::read_to_string(&json)
         .ok()
         .map(|s| serde_json::from_str(&s).expect("the summary parses"))
@@ -324,16 +273,16 @@ fn solve(file: &str, flags: &[String], env: Option<(&str, &str)>) -> Got {
 }
 
 /// **Every declared lever cell, under every question, prints what the
-/// default prints**, and so does each environment lever on the same files.
+/// default prints.**
 #[test]
 fn every_declared_lever_cell_moves_no_line_of_any_mode() {
     let cells = declared();
     // Each file's describe at the default, for its k_s and whether R is known.
     let files: Vec<String> = cells.keys().cloned().collect();
-    let bases = par_map(&files, |f| solve(f, &[], None));
+    let bases = par_map(&files, |f| solve(f, &[]));
     let mut known = 0usize;
     let mut cut = Vec::new();
-    let mut jobs: Vec<(String, Vec<String>, Option<Lever>)> = Vec::new();
+    let mut jobs: Vec<(String, Vec<String>, Option<String>)> = Vec::new();
     for (file, base) in files.iter().zip(&bases) {
         let s: J = serde_json::from_str(&base.summary).expect("re-parses");
         assert_eq!(
@@ -347,26 +296,20 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
             cut.push(file.clone());
         }
         let k_s = s["region"]["k_s"].as_u64().expect("a k_s");
-        let levers = cells[file]
-            .iter()
-            .map(|l| Lever::Flag(l.clone()))
-            .chain(ENV.iter().map(|&(k, v)| Lever::Env(k, v)));
-        let levers: Vec<Lever> = levers.collect();
         for (flags, _) in questions(k_s) {
             jobs.push((file.clone(), flags.clone(), None));
-            for lever in &levers {
+            for lever in &cells[file] {
                 jobs.push((file.clone(), flags.clone(), Some(lever.clone())));
             }
         }
     }
     let got = par_map(&jobs, |(file, flags, lever)| match lever {
-        None => solve(file, flags, None),
-        Some(Lever::Flag(l)) => {
+        None => solve(file, flags),
+        Some(l) => {
             let mut argv = flags.clone();
             argv.push(l.clone());
-            solve(file, &argv, None)
+            solve(file, &argv)
         }
-        Some(Lever::Env(k, v)) => solve(file, flags, Some((k, v))),
     });
     let mut defaults: BTreeMap<(&str, &[String]), &Got> = BTreeMap::new();
     for ((file, flags, lever), g) in jobs.iter().zip(&got) {
@@ -375,30 +318,25 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
         }
     }
     let mut bad = Vec::new();
-    let (mut declared_cells, mut env_cells) = (0usize, 0usize);
+    let mut declared_cells = 0usize;
     for ((file, flags, lever), g) in jobs.iter().zip(&got) {
-        let Some(lever) = lever else { continue };
-        let at = format!("{file} {} {lever}", flags.join(" "));
-        match lever {
-            Lever::Flag(l) => {
-                declared_cells += 1;
-                let Some(&(_, key, value)) = SHADOWS.iter().find(|(s, _, _)| s == l) else {
-                    bad.push(format!(
-                        "{at}: a lever this test does not know how to see reach a run"
-                    ));
-                    continue;
-                };
-                if g.config[key] != J::Bool(value) {
-                    bad.push(format!(
-                        "{at}: the summary's config does not carry the lever ({key} = {})",
-                        g.config[key]
-                    ));
-                }
-            }
-            Lever::Env(..) => env_cells += 1,
+        let Some(l) = lever else { continue };
+        let at = format!("{file} {} {l}", flags.join(" "));
+        declared_cells += 1;
+        let Some(&(_, key, value)) = SHADOWS.iter().find(|(s, _, _)| s == l) else {
+            bad.push(format!(
+                "{at}: a lever this test does not know how to see reach a run"
+            ));
+            continue;
+        };
+        if g.config[key] != J::Bool(value) {
+            bad.push(format!(
+                "{at}: the summary's config does not carry the lever ({key} = {})",
+                g.config[key]
+            ));
         }
         let d = defaults[&(file.as_str(), flags.as_slice())];
-        let spot = matches!(lever, Lever::Flag(l) if l == "-y");
+        let spot = l == "-y";
         let out = |t: &str| if spot { without_spot(t) } else { t.to_string() };
         let sum = |t: &str| {
             if spot {
@@ -420,29 +358,28 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
     }
     assert!(
         bad.is_empty(),
-        "{} of {} lever cells printed something the default does not (C4). A \
+        "{} of {declared_cells} lever cells printed something the default does not (C4). A \
          lever that changes an answer is a wrong answer and a register row, \
          never a weaker mode:\n\n{}",
         bad.len(),
-        declared_cells + env_cells,
         bad.join("\n\n")
     );
     eprintln!(
-        "{} files ({known} with R known), {declared_cells} declared cells, {env_cells} \
-         environment cells",
+        "{} files ({known} with R known), {declared_cells} declared cells",
         files.len()
     );
     // The selection did not collapse: eight corpus entries declare a lever,
     // `-y`, since M1e2 S1e2.1c.5 retired `-L` and `-K` (twelve declared one
     // before), and six of them, every one outside the slow tier, have a known
     // R (2026-11-03): 93 declared cells — sixteen questions each, thirteen
-    // where k_s = 1 — and 186 environment cells beside them, the two
-    // `EIN_OBLIGATION_CHOICE` settings over the same six files.
+    // where k_s = 1. The 186 environment cells beside them, the two
+    // `EIN_OBLIGATION_CHOICE` settings over the same six files, went when
+    // M1e2 S1e2.3.1 retired the variable.
     if !slow_too() {
         assert!(cut.is_empty(), "R is not known for {cut:?}");
         assert!(
-            known >= 6 && declared_cells >= 93 && env_cells >= 186,
-            "{known} files, {declared_cells} declared cells, {env_cells} environment cells"
+            known >= 6 && declared_cells >= 93,
+            "{known} files, {declared_cells} declared cells"
         );
     }
 }

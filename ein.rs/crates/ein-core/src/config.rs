@@ -54,8 +54,10 @@ pub const FLAGS: &[(&str, FieldKind)] = &[
 /// ruling of 2026-11-03, which reversed § 2.4's *kept, speed only*). Their
 /// fields stay on [`SolverConfig`] at their defaults, for the `.einb`
 /// container, which round-trips [`FIELDS`]; the lookahead and kill-cache
-/// fields are still read, at their defaults, by the hypothesis generator the
-/// summary's `root` block and `EIN_LEFTOVER`'s block call (surface S4).
+/// fields are still read, at their defaults, by the walk's generator
+/// (`hypgen::generate`), which no command runs since S1e2.3.1 made the
+/// summary's `root` block and `EIN_LEFTOVER`'s block config-free, and which
+/// `shape.rs`'s `hyp_shape` still runs for the corpus's `hyp` digest.
 pub const RETIRED: &[(&str, &str, &str)] = &[
     (
         "hypgen-scoring",
@@ -164,8 +166,8 @@ pub const FIELDS: &[(&str, FieldKind)] = &[
 #[derive(Clone, PartialEq, Debug)]
 pub struct SolverConfig {
     /// Topic B Tier B — the one-step rule simulator, `Lookahead::dies_immediately`.
-    /// **Retired at M1e2 S1e2.1c.5**: a program cannot set it, and the
-    /// hypothesis generator the summary's `root` block calls reads it at its
+    /// **Retired at M1e2 S1e2.1c.5**: a program cannot set it, and the walk's
+    /// generator, which no command runs since S1e2.3.1, reads it at its
     /// default.
     pub enable_pre_branch_lookahead: bool,
     /// Cache a lookahead kill as a `(not h)` fact, so later enumerations skip

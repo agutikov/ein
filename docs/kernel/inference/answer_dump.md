@@ -126,17 +126,46 @@ fixpoint of the program.
 beside it, so a reader never has to know which numbers were complete.
 
 The `work` block is what a reader asks *what did the run cost* of. Each
-counter is defined here; the review bundle quotes these rows beside the
-numbers rather than paraphrasing them, and
-`answer_dump::every_summary_counter_is_defined_on_this_page` fails when a
-counter appears in a summary without a row. The walk's twelve `stats`
-counters went with it at the switch.
+counter is defined here, and so is every field of the `root` block below; the
+review bundle quotes these rows beside the numbers rather than paraphrasing
+them, and `answer_dump::every_summary_counter_is_defined_on_this_page` fails
+when a counter or a field appears in a summary without a row. The walk's
+twelve `stats` counters went with it at the switch.
 
 | counter | what it counts |
 |---|---|
 | `saturations` | node fixpoints computed, root's included: one per node route 1 visits, one per node of the cube under route 2, one per extension the state route saturates (M1e2 S1e2.1c.2), plus one per listed state a mode re-reads. The read-out's `work` row is this number |
 | `facts` | facts those saturations derived beyond root's own fixpoint, summed over nodes — what `--region-budget` is spent against |
 | `layers` | route 1's layers visited, root's layer 0 included. Under the state route, its layers: root's, then one per state size it extended. `null` under route 2, which visits the cube in mask order and has no layers |
+
+The `root` block is **root's fixpoint and how H was built, as every route
+starts from them**: the KB `region::prepare_with` saturates in place and the
+counts its own pass took, read and not recomputed, so a summary adds no work
+and no lever moves the block. That is M1e2
+[S1e2.3.1](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.1_the_summary_root_block.md)'s
+ruling (a), the user's of 2026-11-03. Until then the block ran a pass of its
+own on a fork of root (`emit_closed`'s markers, a second saturation and the
+walk's generator with its lookahead and kill cache on) and counted what that
+pass wrote: 27 facts where root's fixpoint holds 22 on
+`examples/branching/02_one_dead_one_alive.ein`, and 30 candidates where H holds
+48. `summary_properties::the_description_is_coherent_on_every_corpus_cell`
+holds `root.facts` to root's fixpoint and `root.hypgen.emitted` to
+`region.universe.candidates` on every corpus cell, and `--monotone`'s block to
+the region run's.
+
+| field | what it holds |
+|---|---|
+| `root.facts` | the facts of root's fixpoint, `sat(program)`: what `ein saturate FILE` prints as *facts (total)* after saturation, and what state ∅'s file holds when ∅ ∈ R. No route writes into root, so it is root before any commitment and after every one |
+| `root.facts_by_relation` | those facts by relation name, sorted, only the relations that have one. They sum to `root.facts` |
+| `root.plans` | the plans root's saturator compiled, the derived activators' included. Measured equal to `monotonicity.plans.saturation` on all 218 corpus programs that write a summary under `ein solve -n 1` (2026-11-03, S1e2.3.1's census) |
+| `root.saturator.naf_rounds` | how many times root's saturation reached the NAF boundary with candidates parked on an `absent` guard, and judged them against the quiesced world |
+| `root.saturator.naf_admitted` | parked candidates the boundary admitted: every guard passed, and the firing was queued |
+| `root.saturator.naf_retired` | parked candidates the boundary retired as dead: an anti-monotone guard found a match, which a growing KB keeps |
+| `root.saturator.naf_dropped` | structurally 0 since S1.21.8: a guard is judged once, at the boundary, so no admitted firing is dropped at dequeue. Kept so a boundary rebuilt wrong shows here |
+| `root.hypgen.raw` | candidates the generator built at root's fixpoint, config-free (`hypgen::generate_config_free`: no lookahead filter, no kill cache, the obligations rung in report order), before any filter. It is `emitted` plus the sum of `filtered` |
+| `root.hypgen.emitted` | the candidates that survived every filter: **H**, the universe every route reads, so it equals `region.universe.candidates` and is the universe `ein solve --monotone` prints, whose `region` is `null`. A repeat is dropped as `seen_in_call` before it counts |
+| `root.hypgen.filtered` | why a built candidate is not in H, sparse, only the keys that fired: `fact_already_exists` (root holds it), `negated_fact` (root holds its `(not …)`), `seen_in_call` (proposed again, from another focal object). `lookahead_killed` is the walk's filter, which this pass does not run, so it never appears |
+| `root.hypgen.pre_candidate` | relation and slot skips before any candidate exists, sparse: `closed_relation` (a `(__closed__ R)` root holds, which the program states or derives through `std.closure`: no pass writes one), `no_hypothesis_relation` and `relation_not_whitelisted` (the query's `:no-hypothesis` and `:hypothesis-relations`), `self_edge` (both slots the same object) |
 
 ## What it costs
 

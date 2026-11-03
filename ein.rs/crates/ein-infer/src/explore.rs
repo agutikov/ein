@@ -78,7 +78,7 @@ use crate::downset::{self, Declined, is_subset};
 use crate::error::SolveError;
 use crate::events::Events;
 use crate::monotone::Monotonicity;
-use crate::region::{self, Axes, Candidate, Outcome, Pool, Prepared, fan_out, pool_of};
+use crate::region::{self, Axes, Candidate, Outcome, Pool, Prepared, RootStats, fan_out, pool_of};
 use crate::saturator::Snapshot;
 
 /// The largest step an exploration takes. Steps start at one node and double,
@@ -326,6 +326,9 @@ pub struct Answer {
     /// read-out has run, the parent-path spot check ([`crate::detector`]).
     /// `None` on a monotone program.
     pub warning: Option<Box<Warning>>,
+    /// What root's saturation and the universe's generator pass counted, as
+    /// every route starts from them: `--json-summary`'s `root` block.
+    pub root: RootStats,
 }
 
 impl Answer {
@@ -502,6 +505,8 @@ pub(crate) struct Space<'a> {
     records: Option<FxHashMap<Box<[u32]>, region::Node>>,
     /// Root's plans, what the attribution reads a node against.
     plans: Vec<std::sync::Arc<crate::plan::Plan>>,
+    /// What root's saturation and the universe's pass counted.
+    root_stats: RootStats,
 }
 
 /// `Ok(Err(stop))`: the step was not taken.
@@ -524,6 +529,7 @@ impl<'a> Space<'a> {
             monotonicity,
             memo,
             plans,
+            root: root_stats,
         } = prepared;
         let flagged = !monotonicity.is_monotone();
         let mut axes =
@@ -556,6 +562,7 @@ impl<'a> Space<'a> {
             stale: Vec::new(),
             records: (flagged && within).then(FxHashMap::default),
             plans,
+            root_stats,
         }
     }
 
@@ -596,6 +603,7 @@ impl<'a> Space<'a> {
             facts: self.spent,
             wall: Duration::ZERO,
             warning,
+            root: self.root_stats,
         }
     }
 
@@ -1072,6 +1080,8 @@ fn describe_route_1(
     opts: &Options,
     events: &mut Events,
 ) -> Result<Answer, SolveError> {
+    let mut prepared = prepared;
+    let root_stats = std::mem::take(&mut prepared.root);
     let d = downset::compute_prepared(
         root,
         terms,
@@ -1168,6 +1178,7 @@ fn describe_route_1(
         facts,
         wall: Duration::ZERO,
         warning,
+        root: root_stats,
     })
 }
 
@@ -1213,6 +1224,8 @@ fn describe_states(
     opts: &Options,
     events: &mut Events,
 ) -> Result<Answer, SolveError> {
+    let mut prepared = prepared;
+    let root_stats = std::mem::take(&mut prepared.root);
     let s = crate::states::compute_prepared(
         root,
         terms,
@@ -1301,6 +1314,7 @@ fn describe_states(
         facts: s.facts(),
         wall: Duration::ZERO,
         warning: None,
+        root: root_stats,
     })
 }
 
@@ -1521,6 +1535,7 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
         candidates: r.candidates,
         monotonicity: r.monotonicity,
         root_dead: r.root_dead,
+        root: r.root,
     }
 }
 
@@ -1542,6 +1557,9 @@ pub struct Checked {
     /// Root's own fixpoint derives `(false)`.
     pub root_dead: bool,
     pub wall: Duration,
+    /// What root's saturation and the universe's pass counted, as every route
+    /// has them: `--json-summary`'s `root` block.
+    pub root: RootStats,
 }
 
 /// Answer `--monotone` about `root`, a **freshly loaded, unsaturated**
@@ -1560,5 +1578,6 @@ pub fn check_monotone(
         monotonicity: p.monotonicity,
         root_dead: p.root_dead,
         wall: t0.elapsed(),
+        root: p.root,
     })
 }

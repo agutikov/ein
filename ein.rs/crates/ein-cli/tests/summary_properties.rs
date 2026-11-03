@@ -20,6 +20,13 @@
 //! The file's **first** test is about the frame the numbers arrive in:
 //! [`the_summary_has_one_shape_on_every_arm`] holds every arm — each question,
 //! each kind of R, a partial run, the cube — to one shape at every depth.
+//!
+//! **The `root` block is held to its subject**, not only to itself, since M1e2
+//! S1e2.3.1 (the user's ruling (a) of 2026-11-03): on every cell `root.facts`
+//! is root's fixpoint and `root.hypgen.emitted` is H, both as the routes start
+//! from them ([`root_of`]), and `--monotone`'s block is the region run's. Until
+//! then the block ran a pass of its own and the identities below it held while
+//! it described a generator no route runs (surface S4).
 
 use ein_core::Terms;
 use ein_corpus::{corpus_files, repo_root};
@@ -112,6 +119,28 @@ fn summary(path: &std::path::Path, mode: Mode, budget: u64) -> Option<J> {
     )
     .ok()?;
     serde_json::from_str(&ein_render::dump::json::dumps_indent(&json)).ok()
+}
+
+/// Root as every route starts from it, on a fresh load: the KB
+/// `region::prepare_with` leaves, through its public face
+/// [`explore::check_monotone`] — its fact count and H's size — and the `root`
+/// block `ein solve --monotone` writes from the same run.
+fn root_of(path: &std::path::Path) -> Option<(i64, i64, J)> {
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let mut kb = load_file(&mut ast, &mut terms, path).ok()?;
+    let config = kb.program().config.clone().unwrap_or_default();
+    let checked = explore::check_monotone(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &mut ein_infer::events::Events::off(),
+    )
+    .ok()?;
+    let mono =
+        ein_cli::summary::build_monotone(&terms, &kb, &checked, &path.to_string_lossy(), &config);
+    let mono: J = serde_json::from_str(&ein_render::dump::json::dumps_indent(&mono)).ok()?;
+    Some((kb.n_facts() as i64, checked.n as i64, mono["root"].clone()))
 }
 
 // ── The schema's shape, on every arm ────────────────────────────────
@@ -275,8 +304,10 @@ fn the_description_is_coherent_on_every_corpus_cell() {
         "root.hypgen.emitted",
     ];
 
+    let mut rooted = 0usize;
     for path in &corpus_files() {
         let rel = path.strip_prefix(repo_root()).unwrap_or(path);
+        let root = root_of(path);
         for (regime, mode) in REGIMES {
             let Some(s) = summary(path, mode, BUDGET) else {
                 continue;
@@ -412,6 +443,26 @@ fn the_description_is_coherent_on_every_corpus_cell() {
                 "hypgen.raw == emitted + sum(filtered)",
                 u(&s, "root.hypgen.raw") == u(&s, "root.hypgen.emitted") + filtered,
             );
+            // ── the root block against what it describes (S1e2.3.1) ─────
+            check(
+                "root.hypgen.emitted == region.universe.candidates",
+                u(&s, "root.hypgen.emitted") == u(&s, "region.universe.candidates"),
+            );
+            if let Some((facts, h, mono)) = &root {
+                rooted += 1;
+                check(
+                    "root.facts is root's fixpoint, as every route starts from it",
+                    u(&s, "root.facts") == *facts,
+                );
+                check(
+                    "root.hypgen.emitted is H, as every route starts from it",
+                    u(&s, "root.hypgen.emitted") == *h,
+                );
+                check(
+                    "--monotone's root block is the region run's",
+                    s["root"] == *mono,
+                );
+            }
             let keys: Vec<&str> = s["config"]
                 .as_object()
                 .map(|m| m.keys().map(String::as_str).collect())
@@ -443,6 +494,10 @@ fn the_description_is_coherent_on_every_corpus_cell() {
     assert!(
         described >= 150,
         "only {described} exhausted descriptions, so R's identities hold for few programs"
+    );
+    assert!(
+        rooted == cells,
+        "{rooted} of {cells} cells had root's fixpoint to hold the block to"
     );
     let mut silent: Vec<&str> = peak
         .iter()
