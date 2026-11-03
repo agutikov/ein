@@ -230,8 +230,9 @@ explicit audience banner.
   structural "where does X live?" map: data-flow, crate
   dependencies, milestone boundaries, and a change cookbook.
 - **Configuration**: [`configuration.md`](configuration.md) — every knob, on
-  all three surfaces: the 17 `(config …)` flags, the 74 CLI options, the
-  `EIN_*` environment, and the precedence between them. Each flag row carries
+  all three surfaces: the 2 `(config …)` flags a program can set and the
+  fifteen retired ones (M1e2 S1e2.2.5, `ein-cli/tests/config_reference.rs`),
+  the 71 CLI options, the `EIN_*` environment, and the precedence between them. Each flag row carries
   its default, what it changes, **whether it changes what a run reports and
   whether it changes R** (the config principle: no option may), and how far
   it may be depended on. The defaults block is `ein solve --dump-config`'s own

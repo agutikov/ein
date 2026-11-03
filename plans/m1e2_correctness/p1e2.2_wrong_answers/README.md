@@ -12,11 +12,11 @@ shape the seed cannot hold, a relation parameter bound to an integer, is
 refused at load and at compile. The register reads 23 fixed, 11 open and 1
 not-wrong. **S1e2.2.5 started the same day**: its witnesses re-taken and
 every move listed under each reading of F2 (`c887a35b`), which the user ruled
-the same day, *via, per activator*. Its refusal is built (T1e2.2.5.2): every
+the same day, *via, per activator*. **It is done** (2026-11-04): every
 program whose refutation rests on an `absent` a commitment can fill is refused,
 W3's four rows, `W1/alive-empty-interlayer` and `W8/stale-naf-fork` are fixed
-by it, and the register reads 29 fixed, 5 open and 1 not-wrong; T1e2.2.5.3,
-`:warn-derived-naf` retiring, is next.
+by it (`597b2b7e`), `:warn-derived-naf` is retired, and the register reads 29
+fixed, 5 open and 1 not-wrong. Next is S1e2.2.6, W8's one row.
 **Depends on:** [P1e2.1](../p1e2.1_seeing_the_answer/README.md), all of it,
 and [P1e2.1a](../p1e2.1a_the_solution_region/README.md), which redefines the
 answer as a region R
@@ -80,7 +80,7 @@ then wrong model sets, then certifications, then levers, then cores.
 | [S1e2.2.2](s1e2.2.2_forced_positive_refutes.md) | **W2** the forced-positive cascade refutes the program | 1 + 3 + 4 | **default** | new | 0 (2) d | **drop** | confirmed | a singleton that contradicts root is concluded false, not promoted; `forced-2.ein` answers `Solution`, not a 0-fact `Contradiction` |
 | [S1e2.2.3](s1e2.2.3_obligations_join_superset.md) | **W5** the obligations rung records a superset of a model, chosen by name order | 1 + 2 + 3 | **default** (any obligation program) | new | 0 (2.5) d | **drop** | confirmed | the join re-checks its subsets; a model set that is invariant under renaming a constant; lattice and tree agree |
 | [S1e2.2.4](s1e2.2.4_fresh_name_unreachable.md) | **W4** a rule's fresh constant never becomes a hypothesis. **Done 2026-11-04**: seeded, both rows fixed, the residue refused | 2 | **default** | [Q-M1e.21](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about) | 2.5 (3) d | keep | confirmed | Q-M1e.21's candidate taken; the fresh-name fixtures answer the model `{(q A Z),(q B Z)}` |
-| [S1e2.2.5](s1e2.2.5_naf_upward_closure.md) | **W3** `dead` is not upward-closed under `absent` | 2 | **default** | [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), F18, S1f.10.8 | 2.5 (3) d | shrink | confirmed; gains `W1/alive-empty-interlayer` | the language ruling taken first; then the program is refused, or the three mechanisms stop learning from a refutation that rests on an `absent` |
+| [S1e2.2.5](s1e2.2.5_naf_upward_closure.md) | **W3** `dead` is not upward-closed under `absent`. **Done 2026-11-04**: *forbid*'s refusal built with F2's *via*, six rows fixed by it and the two `d3-unsat-core` rows restated to it, `:warn-derived-naf` retired | 2 | **default** | [Q-M1e.9](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent), F18, S1f.10.8 | 2.5 (3) d | shrink | confirmed; gains `W1/alive-empty-interlayer` | the language ruling taken first; then the program is refused, or the three mechanisms stop learning from a refutation that rests on an `absent` |
 | [S1e2.2.6](s1e2.2.6_stale_naf_positive.md) | **W8** a positive derived under `absent` survives the commitment that falsifies its guard | 2 (contested) | **default** | new | 0.5 (2.5) d | restate | **deferred** (the user): both rows open, owned by F21; since S1e2.2.5's F2 (*via*, 2026-11-04) one, `W8/features-07`: `stale-naf-fork` is refused, its row fixed by S1e2.2.5 | a reading; then no recorded state contains a fact whose `absent` premise the state contradicts, or the program is refused as unstratifiable |
 | [S1e2.2.7](s1e2.2.7_binding_key_layout.md) | **W7** two activator layouts share a binding key, and a derivation is lost | 2 | **default** (release) | [Q-M1e.16](../../../docs/history/m1e_review_processing/open_questions.md#q-m1e16--the-binding-key-compares-two-register-layouts-as-one) | 1.5 d | keep | confirmed | Q-M1e.16's fix taken; the §3.2 program derives four `noted` facts in either activator order, in both profiles |
 | [S1e2.2.8](s1e2.2.8_uncovered_certified.md) | **W6** `exhausted = true` over relations the rung never hypothesises | 3 (contested) | **default** | M1d's eight measurements, #4 | 2 d | keep | confirmed: (a) *scoped*, ruled by the user | a reading; then the certification names its scope, or the rung covers what it certifies |

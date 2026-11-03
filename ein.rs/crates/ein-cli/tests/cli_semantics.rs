@@ -1199,7 +1199,7 @@ fn events_off_formats_nothing_and_does_not_count() {
 /// [`events.md`](../../../../docs/kernel/inference/events.md) defines, and the
 /// kind each is here for.
 ///
-/// A seven-file cover rather than the whole corpus: the sweep is 0.06 s this
+/// A six-file cover rather than the whole corpus: the sweep is 0.06 s this
 /// way and 40 s the other, and the question — *is any kind unreachable?* — is
 /// answered as well by a cover as by a sweep. What the cover cannot do is
 /// notice a kind that stopped being emitted by a file **not** listed here,
@@ -1209,7 +1209,7 @@ fn events_off_formats_nothing_and_does_not_count() {
 /// a kind reachable only under an environment variable was a kind no
 /// default-environment sweep can see, which is how `traversal` shipped at M1d
 /// S1d.10.6 and reached M1e undocumented (`SE-M3`).
-const EVENT_COVER: [(&str, &str); 7] = [
+const EVENT_COVER: [(&str, &str); 6] = [
     (
         "examples/branching/01_saturate_only.ein",
         "the lifecycle and the deductive layer, `enter`, `layer` and `region`",
@@ -1232,20 +1232,14 @@ const EVENT_COVER: [(&str, &str); 7] = [
          post-fixpoint obligation pass",
     ),
     (
-        "examples/ein-bugs/naf-upward-closure.ein",
-        "warn — the `RefutationUnderAbsentWarning` category, from the only \
-         corpus entry whose program carries `(config :warn-derived-naf true)` \
-         on an `absent` refutation, narrated after root's saturation and \
-         before *forbid*'s refusal (M1e2 S1e2.2.5) ends the run. The \
-         `alive-set-invariant` category had a row of its own, \
-         `alive-set-fresh-name.ein`, until M1e2 S1e2.2.4 seeded the universe \
-         with a rule's constants and the category left",
-    ),
-    (
         "examples/lattice/04_obligation_trigger_hole.ein",
-        "monotonicity — a site, an obligation's trigger; the row above gave it \
-         until *forbid* (M1e2 S1e2.2.5) refused that program before the static \
-         check is narrated",
+        "monotonicity — a site, an obligation's trigger. `naf-upward-closure.ein` \
+         gave it, and `warn`, until M1e2 S1e2.2.5: *forbid* refuses that \
+         program before the static check is narrated, and `warn` left the \
+         schema with `(config :warn-derived-naf true)`, the flag that gated it. \
+         The `alive-set-invariant` category had a row of its own, \
+         `alive-set-fresh-name.ein`, until S1e2.2.4 seeded the universe with a \
+         rule's constants",
     ),
 ];
 
@@ -1319,12 +1313,12 @@ fn every_event_kind_the_schema_defines_is_reachable_from_the_corpus() {
         }
     }
     let schema = schema_kinds();
-    // The row count: the three payload tables have 18 kind cells (the walk's
+    // The row count: the three payload tables have 17 kind cells (the walk's
     // `verdict` left at M1e2 S1e2.1a.5 and `region` arrived at T1e2.1a.5.2;
-    // its `nogood`, `writeback` and `traversal` left at S1e2.1c.5), so a
-    // removed kind has to be typed here too.
+    // its `nogood`, `writeback` and `traversal` left at S1e2.1c.5, and `warn`
+    // with its flag at S1e2.2.5), so a removed kind has to be typed here too.
     assert!(
-        schema.len() >= 18,
+        schema.len() >= 17,
         "EVENTS.md parsed to only {} kinds — the table shape moved: {schema:?}",
         schema.len()
     );

@@ -374,7 +374,8 @@ conclusion — no recursion through negation. Ein does **not** check
 it: [`naf_deps`](../../ein.rs/crates/ein-infer/src/naf_deps.rs) is the
 cheap static proxy (which guards watch a *rule-derived* relation
 rather than a declared-only one), behind the advisory
-`DerivedNafWarning` / `SolverConfig.warn_derived_naf` (default off).
+`DerivedNafWarning`, `naf_deps::derived_naf_warnings` (the
+`warn-derived-naf` flag that narrated it retired at M1e2 S1e2.2.5).
 On stratified inputs the boundary makes the answer independent of
 rule priority and firing order; on unstratified ones
 (`p ← absent q; q ← absent p`) the engine still reports **one** model,

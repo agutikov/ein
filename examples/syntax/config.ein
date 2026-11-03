@@ -6,8 +6,10 @@
 ;;; `examples/broken/load/config_unknown_flag.ein` is for.
 ;;;
 ;;; It set `:lattice-order-seed 3` until M1e2 S1e2.1a.5 retired that flag (an
-;;; order lever, which no route reads); `:warn-derived-naf` is one of the eight
-;;; a program can still set.
+;;; order lever, which no route reads), and `:warn-derived-naf true` until M1e2
+;;; S1e2.2.5 retired that one (its refutation half became *forbid*'s refusal);
+;;; `:record-alternative-justifications` is one of the two a program can still
+;;; set, and the one that moves no read-out of a program with no refutation.
 ;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
 ;;; rendered under every parse view and every op, and each rendering is
@@ -15,4 +17,4 @@
 ;;; shapes is drawn moves a digest. They exist because no *puzzle*
 ;;; contains these shapes.
 
-(config :warn-derived-naf true)
+(config :record-alternative-justifications false)

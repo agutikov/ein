@@ -828,53 +828,68 @@ const DERIVED_NAF: &str = "\
 (query :goal (out ?x ?y))
 ";
 
-/// **`warn-derived-naf` is what turns the stratification advisory on, and it
-/// is off by default.**
+/// **The stratification advisory is the library's, and no flag narrates it
+/// since M1e2 S1e2.2.5.**
 ///
-/// The distinction the warning draws — a guard watching a *rule-derived*
+/// The distinction the advisory draws — a guard watching a *rule-derived*
 /// relation, as against one whose extension the puzzle fixes — stopped being a
 /// soundness signal at S1.21.8 and became a stratification one: only derived
-/// NAF can make a rule set non-stratifiable, and on such a program the engine
-/// reports one model without saying that others exist. It stays off by
-/// default because it is advice about a program, not a diagnosis of a bug, and
-/// a default-on advisory on every zebra rule is noise. Both halves are
-/// asserted, because a flag that warns unconditionally is as wrong as one that
-/// never does.
+/// NAF can make a rule set non-stratifiable. `(config :warn-derived-naf true)`
+/// narrated it on the stream after root's saturation until S1e2.2.5 retired
+/// the flag (the user's ruling of 2026-11-04): its other half became *forbid*'s
+/// refusal, and a non-monotone site is the detector's warning on every surface.
+/// What is left is [`ein_infer::derived_naf_warnings`], read by the corpus's
+/// `naf` shape op. So: the library still names the rule and the relation; a
+/// run narrates no `warn`; and a program that sets the flag is refused with
+/// the stage that retired it.
 #[test]
-fn warn_derived_naf_gates_the_solve_time_warning() {
-    // Read by the route at root, after root's saturation, from the program's
-    // own `(config …)` (M1e2 S1e2.1a.5 kept the warnings when the walk left;
-    // the walk this first ran on was deleted at S1e2.1c.5).
-    let stream = |warn: bool| {
-        let src = format!("{DERIVED_NAF}(config :warn-derived-naf {warn})\n");
-        let (ast, mut terms, mut kb) = load_src(&src);
-        let buf = Buffer::new();
-        let mut ev = Events::to(Box::new(buf.clone()), Level::Normal);
-        let opts = ein_infer::explore::Options::new(ein_infer::explore::Mode {
-            which: ein_infer::explore::Which::All,
-            ask: ein_infer::explore::Ask::Find(1),
-        });
-        ein_infer::explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut ev).expect("solves");
-        buf.to_string_lossy()
+fn the_stratification_advisory_is_the_librarys_and_the_flag_is_retired() {
+    let (ast, mut terms, mut kb) = load_src(DERIVED_NAF);
+    let lines = {
+        let mut ev = Events::off();
+        let mut s = Session {
+            kb: &mut kb,
+            terms: &mut terms,
+            ast: &ast,
+            events: &mut ev,
+            memo: SharedMemo::default(),
+        };
+        let mut sat = Saturator::new(&mut s).expect("compiles");
+        sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+        ein_infer::derived_naf_warnings(&sat.engine, s.terms)
     };
-
-    let on = stream(true);
-    let warnings: Vec<&str> = on
-        .lines()
-        .filter(|l| l.contains("DerivedNafWarning"))
-        .collect();
-    assert_eq!(warnings.len(), 1, "expected one warning, got:\n{on}");
+    assert_eq!(lines.len(), 1, "expected one advisory, got {lines:?}");
     assert!(
-        warnings[0].contains("probe") && warnings[0].contains("target"),
-        "the warning names neither the rule nor the watched relation, so it \
-         cannot be acted on: {}",
-        warnings[0]
+        lines[0].contains("probe") && lines[0].contains("target"),
+        "the advisory names neither the rule nor the watched relation: {}",
+        lines[0]
     );
 
-    let off = stream(false);
+    let (ast, mut terms, mut kb) = load_src(DERIVED_NAF);
+    let buf = Buffer::new();
+    let mut ev = Events::to(Box::new(buf.clone()), Level::Normal);
+    let opts = ein_infer::explore::Options::new(ein_infer::explore::Mode {
+        which: ein_infer::explore::Which::All,
+        ask: ein_infer::explore::Ask::Find(1),
+    });
+    ein_infer::explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut ev).expect("solves");
+    let stream = buf.to_string_lossy();
     assert!(
-        !off.contains("DerivedNafWarning"),
-        "the advisory fired with the flag at its default"
+        !stream.contains("\"e\": \"warn\""),
+        "a run narrated a warn line:\n{stream}"
+    );
+
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let src = format!("{DERIVED_NAF}(config :warn-derived-naf true)\n");
+    let forms = parse(&mut ast, &src, Some("<naf>")).expect("parses");
+    let refused = match ein_ir::load(&mut ast, &mut terms, &forms, None) {
+        Ok(_) => panic!("a program that sets a retired flag loaded"),
+        Err(e) => e.to_string(),
+    };
+    assert!(
+        refused.contains("config flag :warn-derived-naf was retired at M1e2 S1e2.2.5"),
+        "{refused}"
     );
 }
 

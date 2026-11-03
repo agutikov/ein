@@ -224,12 +224,11 @@ fn leftover_block(
     ]))
 }
 
-/// The resolved config: the three flags a program can set since M1e2
-/// S1e2.1c.5 (`ein_core::config::FLAGS`), kebab-cased, in declaration order —
+/// The resolved config: the two flags a program can set since M1e2
+/// S1e2.2.5 (`ein_core::config::FLAGS`), kebab-cased, in declaration order —
 /// the same fields `--dump-config` prints.
 fn config_block(cfg: &SolverConfig) -> Json {
     Json::obj(vec![
-        ("warn-derived-naf", Json::Bool(cfg.warn_derived_naf)),
         ("lattice-sanity-check", Json::Bool(cfg.lattice_sanity_check)),
         (
             "record-alternative-justifications",

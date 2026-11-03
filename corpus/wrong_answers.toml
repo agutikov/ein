@@ -130,7 +130,8 @@
 # `W1/alive-empty-interlayer` are fixed; `W8/stale-naf-fork`, refused through
 # `via`, left F21's deferral and is fixed too; `W1/` and `W11/d3-unsat-core`,
 # refused the same way, stay fixed with the refusal as `right`. Each flipped
-# row's `[case.fixed]` carried the null id in the flipping commit. The
+# row's `[case.fixed]` carried the null id in the flipping commit, `597b2b7e`,
+# and the stage's next commit wrote the hash. The
 # register reads **29 rows fixed, 5 open and 1 not-wrong**, and W8/features-07
 # is the one row F21 still owns.
 #
@@ -952,10 +953,10 @@ question = ["Q-M1e.8", "Q-M1e2.5"]
 witness  = "examples/ein-bugs/alive-empty-interlayer.ein"
 status   = "fixed"
 look_at  = ["root-writes", "summary"]
-note     = "right under Q-M1e.7 ruling A, as the inventory had it; under R it is W9's direction, and the switch (fbcae3b2, 2026-10-18) made [case.now] answer R's 4 states. Re-opened at the revisit (S1e2.1.7, 2026-11-03) under *forbid*: rule `totality` is the shape the user ruled out on 2026-11-02, so the program is to be refused, which S1e2.2.5 builds. Its stage stays S1e2.2.5's, not S1e2.2.1's: the fix is the refusal, not the walk's record Fixed by S1e2.2.5 on 2026-11-04: the refusal shipped, and [case.now] is it."
+note     = "right under Q-M1e.7 ruling A, as the inventory had it; under R it is W9's direction, and the switch (fbcae3b2, 2026-10-18) made [case.now] answer R's 4 states. Re-opened at the revisit (S1e2.1.7, 2026-11-03) under *forbid*: rule `totality` is the shape the user ruled out on 2026-11-02, so the program is to be refused, which S1e2.2.5 builds. Its stage stays S1e2.2.5's, not S1e2.2.1's: the fix is the refusal, not the walk's record. Fixed by S1e2.2.5 on 2026-11-04: the refusal shipped, and [case.now] is it."
 
 [case.fixed]
-commit = "0000000"
+commit = "597b2b7e"
 by     = "S1e2.2.5's refusal, *forbid* (T1e2.2.5.2)"
 date   = "2026-11-04"
 
@@ -1015,7 +1016,7 @@ look_at  = ["summary"]
 note     = "the walk's -e answer on W11's witness; W11/d3-unsat-core is its core under solve -m 2"
 
 [case.fixed]
-commit = "0000000"
+commit = "597b2b7e"
 by     = "S1e2.2.5's refusal, *forbid* (T1e2.2.5.2)"
 date   = "2026-11-04"
 
@@ -1350,10 +1351,10 @@ question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/ein-bugs/naf-upward-closure.ein"
 status   = "fixed"
 look_at  = ["root-writes", "entering p(A)", "model 1"]
-note     = "Fixed at the switch by route 2 under *respect*, and re-opened on 2026-11-02 when the user ruled *forbid* (S1e2.4.1): the program is to be refused, which S1e2.2.5 builds Fixed by S1e2.2.5 on 2026-11-04: the refusal shipped, and [case.now] is it."
+note     = "Fixed at the switch by route 2 under *respect*, and re-opened on 2026-11-02 when the user ruled *forbid* (S1e2.4.1): the program is to be refused, which S1e2.2.5 builds. Fixed by S1e2.2.5 on 2026-11-04: the refusal shipped, and [case.now] is it."
 
 [case.fixed]
-commit = "0000000"
+commit = "597b2b7e"
 by     = "S1e2.2.5's refusal, *forbid* (T1e2.2.5.2)"
 date   = "2026-11-04"
 
@@ -1420,10 +1421,10 @@ question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/ein-bugs/wrong-answers/naf-nowb.ein"
 status   = "fixed"
 look_at  = ["entering p(A)", "events nogood", "layer 2", "summary"]
-note     = "two mechanisms: W3's width-1 no-good prunes the live superset, and W1 leaves the surviving {(q A)} unrecorded. W3: fixed at the switch by route 2 under *respect*, and re-opened on 2026-11-02 when the user ruled *forbid* (S1e2.4.1): the program is to be refused, which S1e2.2.5 builds Fixed by S1e2.2.5 on 2026-11-04: the refusal shipped, and [case.now] is it."
+note     = "two mechanisms: W3's width-1 no-good prunes the live superset, and W1 leaves the surviving {(q A)} unrecorded. W3: fixed at the switch by route 2 under *respect*, and re-opened on 2026-11-02 when the user ruled *forbid* (S1e2.4.1): the program is to be refused, which S1e2.2.5 builds. Fixed by S1e2.2.5 on 2026-11-04: the refusal shipped, and [case.now] is it."
 
 [case.fixed]
-commit = "0000000"
+commit = "597b2b7e"
 by     = "S1e2.2.5's refusal, *forbid* (T1e2.2.5.2)"
 date   = "2026-11-04"
 
@@ -1496,10 +1497,10 @@ question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/lattice/synth/three_components.ein"
 status   = "fixed"
 look_at  = ["summary"]
-note     = "S1e2.1a.8's program written for a chosen region; the walk never enters the two states it misses. W3: fixed at the switch by route 2 under *respect*, and re-opened on 2026-11-02 when the user ruled *forbid* (S1e2.4.1): the program is to be refused, which S1e2.2.5 builds Fixed by S1e2.2.5 on 2026-11-04: the refusal shipped, and [case.now] is it."
+note     = "S1e2.1a.8's program written for a chosen region; the walk never enters the two states it misses. W3: fixed at the switch by route 2 under *respect*, and re-opened on 2026-11-02 when the user ruled *forbid* (S1e2.4.1): the program is to be refused, which S1e2.2.5 builds. Fixed by S1e2.2.5 on 2026-11-04: the refusal shipped, and [case.now] is it."
 
 [case.fixed]
-commit = "0000000"
+commit = "597b2b7e"
 by     = "S1e2.2.5's refusal, *forbid* (T1e2.2.5.2)"
 date   = "2026-11-04"
 
@@ -1548,10 +1549,10 @@ question = ["Q-M1e.9", "F18", "S1f.10.8"]
 witness  = "examples/lattice/synth/trigger_hole.ein"
 status   = "fixed"
 look_at  = ["summary"]
-note     = "S1e2.1a.8's program written for a chosen region; its obligation-trigger hole is F21's D4, open. W3: fixed at the switch by route 2 under *respect*, and re-opened on 2026-11-02 when the user ruled *forbid* (S1e2.4.1): the program is to be refused, which S1e2.2.5 builds Fixed by S1e2.2.5 on 2026-11-04: the refusal shipped, and [case.now] is it."
+note     = "S1e2.1a.8's program written for a chosen region; its obligation-trigger hole is F21's D4, open. W3: fixed at the switch by route 2 under *respect*, and re-opened on 2026-11-02 when the user ruled *forbid* (S1e2.4.1): the program is to be refused, which S1e2.2.5 builds. Fixed by S1e2.2.5 on 2026-11-04: the refusal shipped, and [case.now] is it."
 
 [case.fixed]
-commit = "0000000"
+commit = "597b2b7e"
 by     = "S1e2.2.5's refusal, *forbid* (T1e2.2.5.2)"
 date   = "2026-11-04"
 
@@ -2149,7 +2150,7 @@ status   = "fixed"
 look_at  = ["root", "root-writes", "events hyp", "model 1"]
 
 [case.fixed]
-commit = "0000000"
+commit = "597b2b7e"
 by     = "S1e2.2.5's refusal, *forbid* (T1e2.2.5.2)"
 date   = "2026-11-04"
 
@@ -2525,7 +2526,7 @@ look_at  = ["refuted", "summary"]
 note     = "corpus/fuzz_findings/README.md says this file is green under a permuted id space; that is true at seed 1 only"
 
 [case.fixed]
-commit = "0000000"
+commit = "597b2b7e"
 by     = "S1e2.2.5's refusal, *forbid* (T1e2.2.5.2)"
 date   = "2026-11-04"
 

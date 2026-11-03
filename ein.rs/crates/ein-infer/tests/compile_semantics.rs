@@ -476,8 +476,9 @@ fn the_retired_flags_are_refused_with_why() {
 /// float halves retired with their flags.
 #[test]
 fn bool_flags_coerce_from_their_ir_shapes() {
-    assert!(cfg(":warn-derived-naf true").warn_derived_naf);
-    assert!(!cfg(":warn-derived-naf false").warn_derived_naf);
+    // `lattice-sanity-check` since M1e2 S1e2.2.5 retired `warn-derived-naf`.
+    assert!(cfg(":lattice-sanity-check true").lattice_sanity_check);
+    assert!(!cfg(":lattice-sanity-check false").lattice_sanity_check);
     // A quoted bool: `record-alternative-justifications` since M1e2 S1e2.1c.5
     // retired `enable-path-nogoods`, which carried it.
     assert!(
@@ -516,9 +517,9 @@ fn the_config_rejections_name_the_flag_and_the_shape_they_wanted() {
         );
     }
 
-    let not_a_bool = config(":warn-derived-naf 7").expect_err("not a boolean");
+    let not_a_bool = config(":lattice-sanity-check 7").expect_err("not a boolean");
     assert!(
-        not_a_bool.contains("config flag :warn-derived-naf expects true/false"),
+        not_a_bool.contains("config flag :lattice-sanity-check expects true/false"),
         "{not_a_bool}"
     );
 }

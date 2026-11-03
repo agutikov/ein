@@ -35,7 +35,6 @@ use ein_corpus::{corpus_files, repo_root};
 use ein_infer::SolveError;
 use ein_infer::events::Events;
 use ein_infer::explore::{self, Ask, Mode, Which};
-use ein_infer::naf_deps::REFUTATION_UNDER_ABSENT;
 use ein_ir::{Ast, load, parse};
 
 // The programs written for P1e2.1b's censuses: the two activator shapes.
@@ -230,15 +229,15 @@ fn the_probe_is_refused_and_the_message_names_the_replacements() {
     }
 }
 
-/// The warning is part of the fixture's **recorded output**, not only of a
-/// unit test, and it is narrated after root's saturation, before the refusal
-/// (M1e2 S1e2.2.5) ends the run — which is what makes the containment a fixture rather than a
-/// claim. `ein solve FILE --events` narrates it as a `warn` line after root's
-/// saturation, and the fixture's own `(config :warn-derived-naf true)` is what
-/// turns the line on. (Until M1e2 S1e2.1c.5 this read the walk's
-/// `solve_shape`, deleted with the walk on the user's ruling of 2026-11-03.)
+/// **The refusal is the stream's end, and no warning precedes it.** Until
+/// M1e2 S1e2.2.5 the fixture's own `(config :warn-derived-naf true)` made S1e.2.3's
+/// `RefutationUnderAbsentWarning` part of its recorded output, a `warn` line
+/// after root's saturation; that sentence is the refusal's now, the flag is
+/// retired and the fixture's line went. `ein solve FILE --events` narrates
+/// root's saturation and then stops: no `warn` line, no `monotonicity` line,
+/// no node.
 #[test]
-fn the_fixtures_stream_carries_the_warning() {
+fn the_fixtures_stream_ends_at_the_refusal() {
     let path = repo_root().join(PROBE);
     let text = std::fs::read_to_string(&path).expect("the probe is checked in");
     let mut ast = Ast::new();
@@ -247,26 +246,29 @@ fn the_fixtures_stream_carries_the_warning() {
     let mut kb = load(&mut ast, &mut terms, &forms, path.parent()).expect("it loads");
     let buf = ein_infer::events::Buffer::new();
     let mut events = Events::to(Box::new(buf.clone()), ein_infer::events::Level::Normal);
-    let opts = ein_infer::explore::Options::new(ein_infer::explore::Mode {
-        which: ein_infer::explore::Which::All,
-        ask: ein_infer::explore::Ask::Describe,
-    });
+    let opts = ein_infer::explore::Options::new(DESCRIBE);
     let out = ein_infer::explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events);
     assert!(
         matches!(out, Err(SolveError::Refused(_))),
         "the fixture is refused (M1e2 S1e2.2.5)"
     );
     let stream = buf.to_string_lossy();
+    for kind in ["warn", "monotonicity", "node"] {
+        assert!(
+            !stream.contains(&format!("\"e\": \"{kind}\"")),
+            "the run narrated a {kind} line before its refusal:\n{stream}"
+        );
+    }
     assert!(
-        stream
-            .lines()
-            .any(|l| l.contains("\"e\": \"warn\"") && l.contains(REFUTATION_UNDER_ABSENT)),
-        "the run's stream does not carry the warning:\n{stream}"
+        stream.contains("\"e\": \"quiesce\""),
+        "root's saturation is narrated:\n{stream}"
     );
 }
 
 /// The one existing hazard signal stays silent here, and that is the finding
-/// it was filed as: `warn_derived_naf` watches an `(absent …)` over a
+/// it was filed as: the stratification advisory (`warn_derived_naf`'s other
+/// half, retired with it at M1e2 S1e2.2.5; the library's
+/// `derived_naf_warnings` since) watches an `(absent …)` over a
 /// **rule-derived** relation, and `q` is only ever proposed by the generator.
 /// Two adjacent hazards, and until S1e.2.3 the engine had a warning for one.
 #[test]

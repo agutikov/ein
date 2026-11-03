@@ -35,12 +35,11 @@ pub enum FieldKind {
 
 /// The flags a `(config …)` takes, in declaration order: the eight
 /// `solve_interface.md` § 2.4 kept at M1e2 S1e2.1a.5's switch, less
-/// `enable-symmetric-mirror`, retired at S1e2.1a.6, and less the four
-/// `enable-*` levers retired at S1e2.1c.5 (the user's ruling of 2026-11-03).
-/// What `--dump-config` prints, what the KB-shape dump renders, and what the
-/// loader parses.
+/// `enable-symmetric-mirror`, retired at S1e2.1a.6, less the four `enable-*`
+/// levers retired at S1e2.1c.5 (the user's ruling of 2026-11-03), and less
+/// `warn-derived-naf`, retired at S1e2.2.5 (the user's of 2026-11-04). What
+/// `--dump-config` prints and what the loader parses.
 pub const FLAGS: &[(&str, FieldKind)] = &[
-    ("warn-derived-naf", FieldKind::Bool),
     ("lattice-sanity-check", FieldKind::Bool),
     ("record-alternative-justifications", FieldKind::Bool),
 ];
@@ -50,8 +49,10 @@ pub const FLAGS: &[(&str, FieldKind)] = &[
 /// rather than as an unknown flag. Nine went with the walk at S1e2.1a.5's
 /// switch (`solve_interface.md` § 2.4), `enable-symmetric-mirror` at
 /// S1e2.1a.6, the one flag that changed R (the user's ruling of 2026-11-01),
-/// and the four `enable-*` levers no route reads at S1e2.1c.5 (the user's
-/// ruling of 2026-11-03, which reversed § 2.4's *kept, speed only*). Their
+/// the four `enable-*` levers no route reads at S1e2.1c.5 (the user's
+/// ruling of 2026-11-03, which reversed § 2.4's *kept, speed only*), and
+/// `warn-derived-naf` at S1e2.2.5, when its refutation half became *forbid*'s
+/// refusal (the user's ruling of 2026-11-04). Their
 /// fields stay on [`SolverConfig`] at their defaults, for the `.einb`
 /// container, which round-trips [`FIELDS`]; the lookahead and kill-cache
 /// fields are still read, at their defaults, by the walk's generator
@@ -138,6 +139,15 @@ pub const RETIRED: &[(&str, &str, &str)] = &[
         "a node is never stopped at its first contradiction: a dead node's \
          debts and core are its fixpoint's",
     ),
+    (
+        "warn-derived-naf",
+        "S1e2.2.5",
+        "its refutation half is forbid's refusal: a refutation resting on an \
+         (absent …) over a relation a commitment can still extend refuses the \
+         program, whatever the config says; its stratification half was the \
+         walk's advice, and every non-monotone site is the detector's warning \
+         on every surface that reports R",
+    ),
 ];
 
 /// Every field of [`SolverConfig`], in **declaration order**: [`FLAGS`] and
@@ -188,8 +198,10 @@ pub struct SolverConfig {
     /// and filed as
     /// [Q-M1e.10](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert).
     pub print_alive: bool,
-    /// Warn about an `(absent …)` guard — **two questions behind one flag**,
-    /// emitted once each after root's saturation.
+    /// **Retired at M1e2 S1e2.2.5** (the user's ruling of 2026-11-04): a
+    /// program cannot set it, and nothing reads it. It was: warn about an
+    /// `(absent …)` guard — **two questions behind one flag**, emitted once
+    /// each after root's saturation.
     ///
     /// - `DerivedNafWarning`: the guard watches a **rule-derived**
     ///   relation. Since S1.21.8 a *stratification* signal, not a soundness
@@ -353,7 +365,7 @@ mod tests {
         // and then drops. Counting is the cheap half; the loader's own tests
         // check that each name reaches its field.
         assert_eq!(FIELDS.len(), 17);
-        assert_eq!((FLAGS.len(), RETIRED.len()), (3, 14));
+        assert_eq!((FLAGS.len(), RETIRED.len()), (2, 15));
         let mut names: Vec<&str> = FIELDS.iter().map(|(n, _)| *n).collect();
         names.sort_unstable();
         names.dedup();

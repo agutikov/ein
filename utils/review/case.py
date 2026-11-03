@@ -116,9 +116,30 @@ def project(facts: list[str], closes: list[str] | None) -> list[str]:
     return sorted(out)
 
 
-def now_differences(want: dict, got: dict | None) -> list[str]:
+def oracle_code(r: RunResult) -> str:
+    """The oracle's exit code, for a cube it did not write (M1e2 S1e2.2.5: a
+    refused program has none)."""
+    inv = next((i for i in r.invocations if i.name == "oracle"), None)
+    return str(inv.code) if inv is not None else "?"
+
+
+def now_differences(want: dict, got: dict | None, run: RunResult | None = None) -> list[str]:
     """Every field where the run disagrees with the row's `[case.now]` —
-    `wrong_answers.rs`'s `differences`, which the gate holds."""
+    `wrong_answers.rs`'s `differences`, which the gate holds. A refused `now`
+    (M1e2 S1e2.2.5, *forbid*) is exit 1, its stderr's first line, and no
+    summary."""
+    if want.get("refused"):
+        inv = run.invocations[0] if run and run.invocations else None
+        first = next((ln for ln in (inv.stderr if inv else "").splitlines() if ln), "<empty>")
+        out = []
+        if inv is None or inv.code != 1:
+            out.append(f"exit: recorded 1, a refusal, got {inv.code if inv else '?'}")
+        if first != want["refused"]:
+            out.append(f"refused: recorded {json.dumps(want['refused'], ensure_ascii=False)}, "
+                       f"got {json.dumps(first, ensure_ascii=False)}")
+        if got is not None:
+            out.append("a refused run wrote a summary")
+        return out
     if got is None:
         return ["no summary was written"]
     out = []
@@ -234,7 +255,11 @@ def region_section(r: RunResult, page: Path, row: dict | None = None, heading: s
     tinv = next((i for i in r.invocations if i.name == "render-region-table"), None)
     lines = [heading, "",
              f"R by brute force, `ein oracle {r.spec.file} --dump`, with this run ({cmd}) drawn on it from the "
-             f"run's own dumps: `ein render region` [`region/`]({rel(raw / 'region' / 'region.json', page)}) "
+             f"run's own dumps: `ein render region` "
+             + (f"[`region/`]({rel(raw / 'region' / 'region.json', page)}) "
+                if (raw / "region" / "region.json").exists() else
+                f"`region/` (not written: the oracle exited {oracle_code(r)}) ")
+             + 
              f"`--visited` {dump_link(raw, 'lattice', '`lattice/`', page, main)} `--answer` "
              f"{dump_link(raw, 'answer', '`answer/`', page, main)} "
              f"([legend]({doc(LEGEND, page)}#region-rendering--the-cube-and-a-region-run)). "
@@ -370,6 +395,14 @@ def fixed_callout(row: dict, page: Path) -> list[str]:
         return []
     w, now, right = row["wrong"], row["now"], row["right"]
     part = {"all": "all of R", "maximal": "the maximal line", "minimal": "the minimal line"}.get(now.get("line"), "?")
+    if now.get("refused"):
+        # A refusal (M1e2 S1e2.2.5, *forbid*): the program is refused, which
+        # is the register's `right`.
+        return [f"> **Fixed** by {f['by']}, `{f['commit']}` ({f['date']}). {recorded_by(w).capitalize()} gave "
+                f"*{w.get('verdict')}, k = {w.get('k')}, exhausted = {str(w.get('exhausted')).lower()}* "
+                f"(`ein {w['run']}`, the register's `wrong`). `ein {now['run']}` now **refuses the program**, "
+                f"exit 1: *{now['refused']}* — which is the register's `right`, a refusal; `wrong_answers.rs` "
+                "holds `[case.now]` to it, and this build re-ran it (§ 3).", ""]
     return [f"> **Fixed** by {f['by']}, `{f['commit']}` ({f['date']}). {recorded_by(w).capitalize()} gave "
             f"*{w.get('verdict')}, k = {w.get('k')}, exhausted = {str(w.get('exhausted')).lower()}* "
             f"(`ein {w['run']}`, the register's `wrong`). `ein {now['run']}` now answers {part}: "
@@ -439,14 +472,16 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
         ["carried as", ", ".join(row.get("question", [])) or "—"],
         ["wrong", walk_answer(w) + f" — *{recorded_by(w)}, as the register records it*"
                   + (f": {w['why']}" if by_region(w) and w.get("why") else "")],
-        ["now", f"`ein {now['run']}` → " + ("all of R" if now.get("line") == "all" else f"the {now.get('line')} line")
-                + f", k = {now.get('k')}, exhausted = "
-                f"{str(now.get('exhausted')).lower()}" + (f", R empty: {now['empty']}" if now.get("empty") else "")
+        ["now", (f"`ein {now['run']}` → **refused**, exit 1: `{now['refused']}`" if now.get("refused") else
+                 f"`ein {now['run']}` → " + ("all of R" if now.get("line") == "all" else f"the {now.get('line')} line")
+                 + f", k = {now.get('k')}, exhausted = "
+                 f"{str(now.get('exhausted')).lower()}" + (f", R empty: {now['empty']}" if now.get("empty") else ""))
                 + " — *the region run the register holds the row to*"],
         ["region", region_cell(row.get("region"))],
-        ["right", (f"{right.get('verdict', '—')}, k = {right.get('k', '—')}"
-                   + (f", exhausted = {str(right['exhausted']).lower()}" if "exhausted" in right else "")
-                   + (f" — *{right['reading']}*" if right.get("reading") else ""))],
+        ["right", (("**a refusal** — " + right.get("derived", "")) if right.get("refused") else
+                   (f"{right.get('verdict', '—')}, k = {right.get('k', '—')}"
+                    + (f", exhausted = {str(right['exhausted']).lower()}" if "exhausted" in right else "")))
+                  + (f" — *{right['reading']}*" if right.get("reading") else "")],
     ]
     if row.get("fixed"):
         f = row["fixed"]
@@ -524,7 +559,7 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
                 return c.answer.get(name, "—")
             return live(c)
         return f
-    diffs = now_differences(now, r.now)
+    diffs = now_differences(now, r.now, r)
     table_rows = [
         ["run", *per(run_cell)],
         ["asked", *per(lambda c: asked_text(c.result.summary) if c.result else "—")],
@@ -654,7 +689,7 @@ def index_page(out: Path, built: list[tuple[dict, Path, list[Col]]], extra: list
         for row, p, cols in built:
             w, r, now = row["wrong"], row["right"], row["now"]
             got = next(c.result for c in cols if c.result is not None)
-            diffs = now_differences(now, got.now)
+            diffs = now_differences(now, got.now, got)
             # What the right answer states differently from the walk's — read
             # off the two register blocks, the index's one comparison of its own.
             differs = [f for f in ("verdict", "k", "exhausted", "core") if f in r and r[f] != w.get(f)]
@@ -664,9 +699,10 @@ def index_page(out: Path, built: list[tuple[dict, Path, list[Col]]], extra: list
                 differs.append("qualifier")
             rows.append([f"[{row['id']}]({rel(p, page)})", row["owner"], row["settings"],
                          f"{w['verdict']} k={w['k']}" + (" *(region run)*" if by_region(w) else ""),
-                         f"`{now['run']}` {got.now['line'] if got.now else '?'} k={got.k}"
+                         (f"`{now['run']}` refused" if now.get("refused") else
+                          f"`{now['run']}` {got.now['line'] if got.now else '?'} k={got.k}")
                          + ("" if not diffs else " **(≠ the register: " + "; ".join(d.split(':')[0] for d in diffs) + ")**"),
-                         f"{r.get('verdict', '—')} k={r.get('k', '—')}",
+                         "a refusal" if r.get("refused") else f"{r.get('verdict', '—')} k={r.get('k', '—')}",
                          ", ".join(differs) or ("*a reading*" if r.get("reading") else "—"), row["status"],
                          f"`{row['fixed']['commit']}`" if row.get("fixed") else "—",
                          row["review"]["verdict"] if "review" in row else "—"])

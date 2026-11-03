@@ -433,8 +433,9 @@ machinery and **no stratification checker**. A genuinely non-stratified rule
 set (`p ← absent q; q ← absent p`) is still answered by operational order —
 now boundary-admission order rather than priority-then-FIFO — and the engine
 reports one model where several exist without saying so;
-`naf_deps`' `DerivedNafWarning` (advisory, `SolverConfig.warn_derived_naf`,
-default off) flags the shape that can cause it, re-grounded by S1.21.8 from a
+`naf_deps`' `DerivedNafWarning` (advisory; `SolverConfig.warn_derived_naf`
+narrated it until M1e2 S1e2.2.5 retired the flag) flags the shape that can
+cause it, re-grounded by S1.21.8 from a
 soundness warning to a stratification one. The **normative semantics**
 (worlds, the `W ⊭ ∃x̄.Pθ` definition, the single evaluation point E1 with
 E2 retired, corollaries C1–C7 with C4/C5 retired and C2 re-grounded, and the

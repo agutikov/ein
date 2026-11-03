@@ -36,8 +36,9 @@
 ;;;
 ;;; **Since M1e2 S1e2.1a.5 the program is `../naf-upward-closure.ein`'s.** The
 ;;; switch retired `:enable-singleton-writeback` (it wrote into root, which no
-;;; route does), so only `:warn-derived-naf` is left on the `(config …)` line;
-;;; R never read the writeback, and is the one it was.
+;;; route does), so only `:warn-derived-naf` was left on the `(config …)` line,
+;;; until M1e2 S1e2.2.5 retired that flag too and the line went; R never read
+;;; the writeback, and was the one it was.
 ;;;
 ;;; ── 2026-11-02 — *forbid* ──────────────────────────────────────────────
 ;;;
@@ -53,8 +54,6 @@
 ;;; the row is fixed: `ein solve` exits 1 naming `bad` over `q`. Before that
 ;;; R's maximal state was the `{(p A), (q A)}` above, what *respect* would have
 ;;; answered, kept as the row's alternative.
-
-(config :warn-derived-naf true)
 
 (relation is-a T T)
 (relation p T)

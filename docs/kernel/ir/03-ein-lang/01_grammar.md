@@ -450,9 +450,10 @@ For a rule author, three consequences:
 - **Non-stratified rule sets are still answered by operational order.**
   `p ← absent q` together with `q ← absent p` has two models; the
   engine picks one (by boundary-admission order) and does not report
-  that the other exists. `(config :warn-derived-naf true)` warns on the
-  shape that can cause it — NAF over a *rule-derived* relation — and a
-  static stratification check remains future work.
+  that the other exists. `naf_deps::derived_naf_warnings` names the shape
+  that can cause it — NAF over a *rule-derived* relation — (`(config
+  :warn-derived-naf true)` narrated it until M1e2 S1e2.2.5 retired the
+  flag), and a static stratification check remains future work.
 
 A **nested** `(absent …)` — what `forall` desugars to,
 `(absent (and G (absent B)))` — is not lifted separately: the whole

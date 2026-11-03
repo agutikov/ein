@@ -148,16 +148,17 @@ fn the_load_negative_fixtures_are_byte_identical() {
 #[test]
 fn the_config_coercion_table_is_stable() {
     let bodies = [
-        // Booleans: the atoms, the strings, and the wrong shapes.
-        "(config :warn-derived-naf true)",
-        "(config :warn-derived-naf false)",
-        "(config :warn-derived-naf \"true\")",
-        "(config :warn-derived-naf TRUE)",
-        "(config :warn-derived-naf 1)",
-        "(config :warn-derived-naf maybe)",
-        "(config :warn-derived-naf ?x)",
-        "(config :warn-derived-naf 1..5)",
-        "(config :warn-derived-naf (nested a))",
+        // Booleans: the atoms, the strings, and the wrong shapes. On
+        // `:warn-derived-naf` until M1e2 S1e2.2.5 retired it.
+        "(config :lattice-sanity-check true)",
+        "(config :lattice-sanity-check false)",
+        "(config :lattice-sanity-check \"true\")",
+        "(config :lattice-sanity-check TRUE)",
+        "(config :lattice-sanity-check 1)",
+        "(config :lattice-sanity-check maybe)",
+        "(config :lattice-sanity-check ?x)",
+        "(config :lattice-sanity-check 1..5)",
+        "(config :lattice-sanity-check (nested a))",
         // Since M1e2 S1e2.1a.5 every flag a program can set is a bool, and the
         // string, int and float flags below are retired: their rows pin the
         // refusal, which names why, and the coercions they reached are the
@@ -188,8 +189,8 @@ fn the_config_coercion_table_is_stable() {
         "(config :nope true)",
         "(config)",
         // Last one wins, and an earlier repeat of a key loses to a later.
-        "(config :warn-derived-naf true) (config :enable-path-nogoods false)",
-        "(config :warn-derived-naf true :warn-derived-naf false)",
+        "(config :lattice-sanity-check true) (config :enable-path-nogoods false)",
+        "(config :lattice-sanity-check true :lattice-sanity-check false)",
     ];
     let mut out = String::new();
     for body in bodies {

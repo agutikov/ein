@@ -1,33 +1,29 @@
-=== (config :warn-derived-naf true)
+=== (config :lattice-sanity-check true)
   QUERY None
-  CONFIG warn-derived-naf=True
+  CONFIG lattice-sanity-check=True
+  CONFIG record-alternative-justifications=True
+=== (config :lattice-sanity-check false)
+  QUERY None
   CONFIG lattice-sanity-check=False
   CONFIG record-alternative-justifications=True
-=== (config :warn-derived-naf false)
+=== (config :lattice-sanity-check "true")
   QUERY None
-  CONFIG warn-derived-naf=False
-  CONFIG lattice-sanity-check=False
+  CONFIG lattice-sanity-check=True
   CONFIG record-alternative-justifications=True
-=== (config :warn-derived-naf "true")
+=== (config :lattice-sanity-check TRUE)
   QUERY None
-  CONFIG warn-derived-naf=True
-  CONFIG lattice-sanity-check=False
+  CONFIG lattice-sanity-check=True
   CONFIG record-alternative-justifications=True
-=== (config :warn-derived-naf TRUE)
-  QUERY None
-  CONFIG warn-derived-naf=True
-  CONFIG lattice-sanity-check=False
-  CONFIG record-alternative-justifications=True
-=== (config :warn-derived-naf 1)
-  <KBLoadError> (config …): config flag :warn-derived-naf expects true/false, got Int(value=1)
-=== (config :warn-derived-naf maybe)
-  <KBLoadError> (config …): config flag :warn-derived-naf expects true/false, got Atom(name='maybe')
-=== (config :warn-derived-naf ?x)
-  <KBLoadError> (config …): config flag :warn-derived-naf expects true/false, got Var(name='x')
-=== (config :warn-derived-naf 1..5)
-  <KBLoadError> (config …): config flag :warn-derived-naf expects true/false, got Range(low=1, high=5)
-=== (config :warn-derived-naf (nested a))
-  <KBLoadError> (config …): config flag :warn-derived-naf expects true/false, got SForm(head=Atom(name='nested'), args=(Atom(name='a'),))
+=== (config :lattice-sanity-check 1)
+  <KBLoadError> (config …): config flag :lattice-sanity-check expects true/false, got Int(value=1)
+=== (config :lattice-sanity-check maybe)
+  <KBLoadError> (config …): config flag :lattice-sanity-check expects true/false, got Atom(name='maybe')
+=== (config :lattice-sanity-check ?x)
+  <KBLoadError> (config …): config flag :lattice-sanity-check expects true/false, got Var(name='x')
+=== (config :lattice-sanity-check 1..5)
+  <KBLoadError> (config …): config flag :lattice-sanity-check expects true/false, got Range(low=1, high=5)
+=== (config :lattice-sanity-check (nested a))
+  <KBLoadError> (config …): config flag :lattice-sanity-check expects true/false, got SForm(head=Atom(name='nested'), args=(Atom(name='a'),))
 === (config :hypgen-scoring most-constrained)
   <KBLoadError> (config …): config flag :hypgen-scoring was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
 === (config :hypgen-scoring "popularity")
@@ -69,16 +65,14 @@
   (config foo)
           ^
 === (config :nope true)
-  <KBLoadError> (config …): unknown config flag :nope (expected one of: lattice-sanity-check, record-alternative-justifications, warn-derived-naf)
+  <KBLoadError> (config …): unknown config flag :nope (expected one of: lattice-sanity-check, record-alternative-justifications)
 === (config)
   QUERY None
-  CONFIG warn-derived-naf=False
   CONFIG lattice-sanity-check=False
   CONFIG record-alternative-justifications=True
-=== (config :warn-derived-naf true) (config :enable-path-nogoods false)
+=== (config :lattice-sanity-check true) (config :enable-path-nogoods false)
   <KBLoadError> (config …): config flag :enable-path-nogoods was retired at M1e2 S1e2.1c.5: the walk's learned clauses: every route reads N, the minimal dead sets, by construction
-=== (config :warn-derived-naf true :warn-derived-naf false)
+=== (config :lattice-sanity-check true :lattice-sanity-check false)
   QUERY None
-  CONFIG warn-derived-naf=False
   CONFIG lattice-sanity-check=False
   CONFIG record-alternative-justifications=True

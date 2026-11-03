@@ -619,25 +619,6 @@ pub(crate) fn prepare_with(
             sat.naf_retired,
             sat.naf_dropped,
         ];
-        // `(config :warn-derived-naf true)`'s two warnings, as the walk
-        // narrated them after root's saturation: the stratification advice and
-        // the refutation under `absent` (M1e S1e.2.3). Stream lines only, and
-        // only when a stream is recording, so a run that asks for neither pays
-        // nothing — M1e2 S1e2.1a.5 kept them when the walk left.
-        let warn =
-            s.kb.program()
-                .config
-                .as_ref()
-                .is_some_and(|c| c.warn_derived_naf);
-        if warn && s.events.on() {
-            let eligible = crate::hypgen::eligible_relations(&mut s)?;
-            for w in crate::naf_deps::naf_warnings(&sat.engine, s.terms, &eligible) {
-                s.events.emit("warn", |l| {
-                    l.str("category", w.category);
-                    l.str("message", &w.text);
-                });
-            }
-        }
         sat.snapshot(s.kb)
     };
     let root_dead = crate::contradiction::has_contradiction(root, terms);

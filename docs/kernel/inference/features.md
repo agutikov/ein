@@ -183,7 +183,7 @@ extra commitments rather than a price per branch.
   S1e2.1a.6** (2026-11-01): on a program with no such rule,
   `features/06_symmetric_native.ein`, turning the mirror off changed the
   answer, so the mirror is always on and setting the flag is a load error
-  ([`configuration.md` § 2.4](../configuration.md#24-the-fourteen-retired-flags)).
+  ([`configuration.md` § 2.4](../configuration.md#24-the-fifteen-retired-flags)).
   The rows here are the walk's record: `utils/feature_matrix.py` re-takes
   them against a binary built at or before `7ec8a480`, the last that ran the
   walk.

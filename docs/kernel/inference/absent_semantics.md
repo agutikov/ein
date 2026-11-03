@@ -185,8 +185,9 @@ Each is already enforced locally; this page is the shared reason.
 
 - **Stratification checking.**
   [`naf_deps`](../../../ein.rs/crates/ein-infer/src/naf_deps.rs) is
-  *advisory* (`warn_derived_naf` defaults off); unstratifiable programs
-  are accepted (P3, P4).
+  *advisory*, a library function (`derived_naf_warnings`) since M1e2
+  S1e2.2.5 retired the `warn-derived-naf` flag that narrated it; unstratifiable
+  programs are accepted (P3, P4).
 - **Stable / well-founded model computation.** The fixpoint is
   *supported at the boundary*, not stable: P3's program has **no** stable
   model yet converges; P4's has two and the engine picks one — by
@@ -214,9 +215,10 @@ Each is already enforced locally; this page is the shared reason.
   ([Q-M1e.9](../../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)),
   banked as
   [`examples/ein-bugs/naf-upward-closure.ein`](../../../examples/ein-bugs/naf-upward-closure.ein),
-  and **diagnosed rather than fixed**: `warn_derived_naf` emits a
+  and **diagnosed rather than fixed** at M1e: `warn_derived_naf` emitted a
   `RefutationUnderAbsentWarning` naming the rule, the relation and the two
-  replacements — a stored-negative scan in `total`'s style, or `(open ?R)` if
+  replacements, until M1e2 S1e2.2.5 made that sentence the refusal's and
+  retired the flag — a stored-negative scan in `total`'s style, or `(open ?R)` if
   the constraint is a requirement rather than a refutation. Making the three
   consumers world-aware is
   [F18](../../../plans/followups/f18_world_aware_negatives.md), starting from
@@ -263,9 +265,11 @@ before any guard is asked.
 
 On **non-stratified** inputs the result is still defined by operational
 order — now boundary-admission order rather than priority-then-FIFO (P4).
-The engine reports one model where several exist and does not say so;
-`warn_derived_naf` is the advisory flag for the shape that can cause it,
-and a real stratification checker remains future work.
+Since M1e2 a describe reports R, by the cube on a program the static check
+flags, with the detector's warning naming the cycle and the order finding
+(`monotonicity.md` § 5); `naf_deps::derived_naf_warnings` names the shape that
+can cause it (the `warn_derived_naf` flag that narrated it retired at M1e2
+S1e2.2.5), and a real stratification checker remains future work.
 
 ## Worked micro-examples
 
@@ -327,7 +331,7 @@ fixes are pinned.
   world in which neither `p` nor `q` holds, admit both, and answer `{p, q}`,
   which is not a model of that program under any reading. A static
   stratification checker is the proper remedy and remains future work; see
-  `warn_derived_naf` for the advisory in the meantime.
+  `naf_deps::derived_naf_warnings` for the advisory in the meantime.
 
 ## Cross-references
 

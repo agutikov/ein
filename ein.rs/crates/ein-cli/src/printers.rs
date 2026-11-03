@@ -11,7 +11,6 @@ use ein_core::SolverConfig;
 pub fn print_resolved_config(cfg: &SolverConfig) {
     let b = |v: bool| if v { "true" } else { "false" }.to_string();
     let fields: Vec<(&str, String)> = vec![
-        ("warn-derived-naf", b(cfg.warn_derived_naf)),
         ("lattice-sanity-check", b(cfg.lattice_sanity_check)),
         (
             "record-alternative-justifications",

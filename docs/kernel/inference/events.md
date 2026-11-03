@@ -7,10 +7,12 @@
 — `ein test --events FILE` make the engine narrate what it did: **one JSON
 object per line**, opt-in, off by default.
 Every compile miss, enqueue, firing, mirror, park/admit/retire, quiescence,
-alternative justification, obligation, load-time warning, generation rung,
-hypothesis verdict, node visited, layer, monotonicity finding and region, in
-the order the engine performed them. The walk's no-good, writeback and
-traversal kinds went with the walk at M1e2 S1e2.1c.5 (2026-11-03), and
+alternative justification, obligation, generation rung, hypothesis verdict,
+node visited, layer, monotonicity finding and region, in the order the engine
+performed them. The walk's no-good, writeback and traversal kinds went with
+the walk at M1e2 S1e2.1c.5 (2026-11-03), the load-time `warn` with the flag
+that gated it at M1e2 S1e2.2.5 (2026-11-04,
+[§ `warn`](#warn--retired-at-m1e2-s1e225-with-the-flag-that-gated-it)), and
 [§ `traversal`](#traversal--the-second-traversal-and-the-four-kinds-it-does-not-emit)
 is kept as the record of the walk's tree.
 
@@ -100,7 +102,6 @@ difference a change to the engine or an optimisation introduces.
 | `run` | process start | `version`, `level`, `impl`, `file`, `argv`, `config` (every resolved `SolverConfig` field, kebab-cased) |
 | `load` | after `kb.from_ir` | `relations`, `rules`, `hrules`, `macros`, `facts` counts; `relation_names` and `rule_names` in registry order |
 | `region` | end of every **region run** — every `ein solve` and `ein test` file since M1e2 S1e2.1a.5's switch (T1e2.1a.5.2 added it). It replaced the walk's `verdict`, which went with the walk's CLI path | `asked`, `region`, `verdict`, `work`: the `ein-summary/2` blocks of the same names, each one JSON value, `region` without its `states` and `frontier` ([§ Region runs](#region-runs)) |
-| `warn` | **at root, before the search** — the `(absent …)` audit at root's first `quiesce` (the alive-set check right after `load` narrated here too, until M1e2 S1e2.2.4); one line per breach, in the checker's own order | `category`, `message` (rendered, one line) |
 | `monotonicity` | **at root, before the search**, after root's obligation tally — and **only when the static check finds a site**, so the program is not monotone (M1e2 S1e2.1a.1) | `verdict` (`"non-monotone"`), `sites` (the count), `site` (one rendered line per site, sorted); since M1e2 S1e2.1b.5 the detector's static half, optional: `at_stake` (one key per site, in `site`'s order), `cycles` and `order` (one rendered line each, as the read-out's `cycle` and `order` rows) and `assumes` (`"fork"`) |
 
 **`type` gained a fourth value at M1d
@@ -123,37 +124,24 @@ artefact paths the *caller* chose, so `--events a.jsonl` against
 `--events b.jsonl` is not a divergence. Both stay in the file, where they
 document the run.
 
-#### `warn` — the two static checks, and what a category means
+#### `warn` — retired at M1e2 S1e2.2.5, with the flag that gated it
 
-`warn` is the only kind that is about the **program** rather than about a step
-the engine took, which is why its row is in the lifecycle and not in either
-layer below. Two categories ship, both class names:
-
-| `category` | what it says | where |
-|---|---|---|
-| `DerivedNafWarning` | a rule's `(absent …)` reads a relation some rule *derives*, so its verdict depends on when it is asked | [`naf_deps.rs`](../../../ein.rs/crates/ein-infer/src/naf_deps.rs) |
-| `RefutationUnderAbsentWarning` | …and the reading is a **refutation**, which is [Q-M1e.9](../../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s shape | ⤳ |
-
-Both are **opt-in** behind `(config :warn-derived-naf true)` — one flag, two
-questions, because `SolverConfig` is rendered into the KB-shape digest and an
-eighteenth field would re-bless every shape golden in the corpus. Like every
-other kind here they cost nothing while `--events` is off. A consumer should
-match on `category` and treat an unknown one as informational: this list grows
-whenever a static check does.
-
-**A third category, `alive-set-invariant`, shipped from M1e
-[`ST-M1`](../../history/m1e_review_processing/README.md#s1e33--state-model-medium)
-until M1e2 S1e2.2.4**, unconditionally: *new-object*, a rule asserts a
-constant no fact names. The user ruled on 2026-10-16 that such a constant is a
-name of the program (Q-M1e.21 (b)), S1e2.2.4 seeds the universe with it, and a
-line calling it new would be false, so the category left
+`warn` was the one kind about the **program** rather than about a step the
+engine took: a line at root's first `quiesce`, `category` and `message`.
+Three categories shipped. `alive-set-invariant` (M1e `ST-M1`, unconditional)
+left at M1e2 S1e2.2.4, when the universe was seeded with a rule's constants
 ([`defined_behaviour.md` § 3.3](../defined_behaviour.md#33-the-m1-alive-set-invariant-operationally)).
-
-One corpus entry reaches this kind, and it is the cover row for it:
-`examples/ein-bugs/naf-upward-closure.ein` (which carries the `(config …)`
-itself), for the second category. `DerivedNafWarning` has no corpus witness —
-its witness is `ein-infer/tests/naf_semantics.rs`, on a program written in the
-test.
+`DerivedNafWarning` (a rule's `(absent …)` reads a relation some rule
+derives) and `RefutationUnderAbsentWarning` (…and concludes a refutation,
+[Q-M1e.9](../../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent)'s
+shape) were opt-in behind `(config :warn-derived-naf true)`, and left when
+S1e2.2.5 retired that flag on the user's ruling of 2026-11-04: the second's
+sentence is *forbid*'s refusal now, a load error rather than a line
+([`defined_behaviour.md` § 4.7](../defined_behaviour.md#47-a-refutation-resting-on-an-absent-a-commitment-can-fill--m1e2-s1e225)),
+and every non-monotone site is the detector's warning on every surface that
+reports R (`monotonicity` below). The first is the library's
+`naf_deps::derived_naf_warnings`, which the corpus's `naf` shape op reads. No
+code emits `warn`, so the kind left the tables above.
 
 #### `monotonicity` — a program that is not monotone
 

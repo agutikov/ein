@@ -1,5 +1,5 @@
 === (rule r () :match (x ?a)) ⏎ (relation) ⏎ (macro m (?a) (rel ?a)) ⏎ (macro m (?a) (other ?a)) ⏎ (config :nope true)
-  <KBLoadError> duplicate macro 'm' at None; (relation) needs a name at None; (rule r) missing :match or :assert at None; (config …): unknown config flag :nope (expected one of: lattice-sanity-check, record-alternative-justifications, warn-derived-naf)
+  <KBLoadError> duplicate macro 'm' at None; (relation) needs a name at None; (rule r) missing :match or :assert at None; (config …): unknown config flag :nope (expected one of: lattice-sanity-check, record-alternative-justifications)
 === (relation) ⏎ (relation eq) ⏎ (relation dup) ⏎ (relation dup) ⏎ (relation r (A B))
   <KBLoadError> (relation) needs a name at None; relation 'eq' shadows a reserved kernel name at None; duplicate relation 'dup' at None; malformed (relation) at None
 === (rule absent () :match (x ?a) :assert (y ?a)) ⏎ (rule ok () :match (x ?a) :assert (y ?a)) ⏎ (rule ok () :match (x ?a) :assert (z ?a))

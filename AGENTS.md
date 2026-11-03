@@ -61,10 +61,10 @@ constrained-reasoning research.
   diagnostics, orderings and error strings the engine defines normatively;
   and `inference/implementation.md` + `ir/02-data-model/03_implementation.md`,
   the module maps. **Since M1e S1e.5.1 there is also a
-  [configuration reference](docs/kernel/configuration.md)** — the 3
-  `(config …)` flags a program can set (fourteen more retired, nine at M1e2
-  S1e2.1a.5, one at S1e2.1a.6 and four at S1e2.1c.5, each refused with the
-  stage and why), the 71 CLI options, the two `EIN_*` names the binary
+  [configuration reference](docs/kernel/configuration.md)** — the 2
+  `(config …)` flags a program can set (fifteen more retired, nine at M1e2
+  S1e2.1a.5, one at S1e2.1a.6, four at S1e2.1c.5 and `warn-derived-naf` at
+  S1e2.2.5, each refused with the stage and why), the 71 CLI options, the two `EIN_*` names the binary
   actually reads, the
   precedence between the three, and on every flag row a *does it change the
   answer* and a *stability* column. Its defaults block is `ein solve

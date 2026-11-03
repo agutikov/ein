@@ -20,6 +20,8 @@
 > **Since S1e2.3.1 (the same day)** the binary reads two `EIN_*` names:
 > `EIN_OBLIGATION_CHOICE` retired once `--json-summary`'s `root` block, its
 > last reader, became root's fixpoint and H as the routes have them (§ 4).
+> **Since S1e2.2.5 (2026-11-04)** a program sets two: the user retired
+> `warn-derived-naf`, whose refutation half became *forbid*'s refusal.
 >
 > **It is a reference, not a narrative.** One row per knob. What a lever *does
 > to the search*, and what it was measured at, is
@@ -52,7 +54,7 @@
 
 | surface | how many | who owns the list |
 |---|---:|---|
-| `(config …)` flags | **3** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the fourteen a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
+| `(config …)` flags | **2** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the fifteen a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
 | CLI options | **71** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **2** read by the shipped binary, of 26 greppable names on 2026-08-28 | § [4](#4-the-environment) |
 
@@ -61,8 +63,8 @@
 1. **A CLI option** — but only the one that shadows a flag, § [3.2](#32-the-option-that-shadows-a-flag).
 2. **The program's own `(config …)` head.** Several blocks are allowed and the
    loader keeps the **last one whole** — not a merge:
-   `(config :warn-derived-naf true) (config :lattice-sanity-check true)` leaves
-   `warn-derived-naf` at its default
+   `(config :record-alternative-justifications false) (config :lattice-sanity-check true)`
+   leaves `record-alternative-justifications` at its default
    ([`from_ir.rs`](../../ein.rs/crates/ein-ir/src/from_ir.rs), `config_blocks.last()`;
    the last-wins rule is stated in [`01_grammar.md`](ir/03-ein-lang/01_grammar.md)).
 3. **`SolverConfig::default()`** — the block in § [2.1](#21-the-defaults).
@@ -80,10 +82,10 @@ settings are being *compared* would re-bless every shape golden in the corpus
 
 ---
 
-## 2. `(config …)` — the three solver flags
+## 2. `(config …)` — the two solver flags
 
 ```lisp
-(config :record-alternative-justifications false :warn-derived-naf true)
+(config :record-alternative-justifications false :lattice-sanity-check true)
 ```
 
 Names are `:kebab-case`, and since M1e2 S1e2.1a.5 every flag a program can set
@@ -95,10 +97,11 @@ declaration order, and the retired-flag message says why the flag went
 
 ```text
 kb load error: (config …): unknown config flag :nonsense (expected one of: …)
-kb load error: (config …): config flag :warn-derived-naf expects true/false, got Int(value=7)
+kb load error: (config …): config flag :lattice-sanity-check expects true/false, got Int(value=7)
 kb load error: (config …): config flag :lattice-order was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
 kb load error: (config …): config flag :enable-symmetric-mirror was retired at M1e2 S1e2.1a.6: off, it changed the answer, and no config option may. The mirror is what `(__symmetric__ R)` means, so it is always on: a relation that is not to be mirrored is not marked
 kb load error: (config …): config flag :enable-path-nogoods was retired at M1e2 S1e2.1c.5: the walk's learned clauses: every route reads N, the minimal dead sets, by construction
+kb load error: (config …): config flag :warn-derived-naf was retired at M1e2 S1e2.2.5: its refutation half is forbid's refusal: a refutation resting on an (absent …) over a relation a commitment can still extend refuses the program, whatever the config says; its stratification half was the walk's advice, and every non-monotone site is the detector's warning on every surface that reports R
 ```
 
 ### 2.1 The defaults
@@ -108,7 +111,6 @@ kb load error: (config …): config flag :enable-path-nogoods was retired at M1e
 <!-- generated: ein solve --dump-config -->
 ```text
 config (resolved)
-  warn-derived-naf                 false
   lattice-sanity-check             false
   record-alternative-justifications true
 ```
@@ -118,7 +120,6 @@ config (resolved)
 
 | flag | type | default | what it changes | answer? | R? | stability |
 |---|---|---|---|---|---|---|
-| `warn-derived-naf` | `bool` | `false` | **two questions, one flag**, both `warn` events on the stream after root's saturation, on every run that records one (M1e2 S1e2.1a.5 kept them when the walk left). `DerivedNafWarning` — the `(absent …)` guard watches a **rule-derived** relation: a *stratification* signal since S1.21.8, not a soundness one. `RefutationUnderAbsentWarning` (M1e [S1e.2.3](../history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)) — the rule concludes `(false)` or a `(not …)` from a guard over a relation the program's **generator can still propose**, which *is* a soundness signal: [`dead` is not upward-closed under `absent`](../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent) | no | no | contract |
 | `lattice-sanity-check` | `bool` | `false` | `-y`'s: the detector's parent-path spot check, **unbounded and on every program** — every one-step parent of every printed state of two commitments or more, built and saturated again (the user's ruling of 2026-11-03, M1e2 S1e2.1c.5; the walk's re-saturation of every parent path until then). On a program the static check flags it fills the warning's `paths` row and never fails the run; on a monotone one a path that reaches another state contradicts the § 5.1 theorem, and the run is an engine error, exit 2. A clean check prints its `paths` row; its saturations are that row's, outside `work`. `-y` sets it `true` | no | no | check |
 | `record-alternative-justifications` | `bool` | `true` | whether a re-derivation of a known fact is recorded as an alternative justification or dropped: the proof is an AND/OR graph, or a tree. It decides which minimal core a dead node's refutation names — the read-out's `unsat core`, the trace's `N` and `nogoods.json` | explanation only | no | contract |
 
@@ -148,6 +149,7 @@ about it.
 **No flag is unread since M1e2 S1e2.1c.5.** Four were, read by no route since
 the switch, and the user retired them on 2026-11-03 (§ 2.4); the fifth,
 `lattice-sanity-check`, got its meaning on a route the same day.
+`warn-derived-naf` retired at S1e2.2.5.
 
 **Stability** — what depending on a flag commits you to.
 
@@ -156,10 +158,10 @@ the switch, and the user retired them on 2026-11-03 (§ 2.4); the fifth,
 | **contract** | stated here, exercised by the corpus or a named test, safe to depend on |
 | **check** | asks for more work and moves no answer: its own row, and on a failure an error, never a different answer. The corpus's `levers` cells run `-y` on every `cargo test`, `lever_invariance.rs` holds every question's read-out and summary unmoved under it but for its row (C4, § 2.5), and `config_reference.rs::the_sanity_flag_adds_its_row_and_nothing_else` holds the flag from outside |
 
-### 2.4 The fourteen retired flags
+### 2.4 The fifteen retired flags
 
-M1e2 S1e2.1a.5's switch retired nine, S1e2.1a.6 a tenth, and S1e2.1c.5 four
-more, each refused at load with the stage and the reason below
+M1e2 S1e2.1a.5's switch retired nine, S1e2.1a.6 a tenth, S1e2.1c.5 four more,
+and S1e2.2.5 a fifteenth, each refused at load with the stage and the reason below
 (`ein_core::config::RETIRED`). Their fields stay on `SolverConfig` at their
 defaults — the lookahead and the kill cache read there only by the walk's
 generator, `hypgen::generate`, which no command runs since M1e2 S1e2.3.1 and
@@ -171,6 +173,7 @@ sets the flag is refused, as the `.ein` is.
 
 | flag | why it went |
 |---|---|
+| `warn-derived-naf` (S1e2.2.5) | **two questions, one flag**, both `warn` lines after root's saturation. `RefutationUnderAbsentWarning` (M1e [S1e.2.3](../history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)): a rule concluding `(false)` or `(not …)` from a guard over a relation a commitment can still extend, which is *forbid*'s refusal since this stage, a load error whatever the config says ([`defined_behaviour.md` § 4.7](defined_behaviour.md#47-a-refutation-resting-on-an-absent-a-commitment-can-fill--m1e2-s1e225)). `DerivedNafWarning`: the guard watches a rule-derived relation, a stratification signal since S1.21.8, whose advice was the walk's; every non-monotone site is the detector's warning on every surface since S1e2.1b.5, and the library's `derived_naf_warnings` stays, read by the corpus's `naf` shape op. The user retired it on 2026-11-04, and the `warn` event kind left the schema with it |
 | `enable-pre-branch-lookahead` (S1e2.1c.5) | the walk's one-step pre-filter, which no route runs: every route saturates each candidate's fork. Its one meaning on a route, a pre-filter on a monotone program, would save at most 194 of the 163 702 saturations describe costs over the corpus's 167 `solve` entries (an upper bound, 2026-11-03, S1e2.1c.5 § question 2), and would have to carry the dead singleton's owing bit. The user retired it on 2026-11-03, reversing `solve_interface.md` § 2.4's *kept, speed only* |
 | `enable-lookahead-kill-cache` (S1e2.1c.5) | it wrote the walk's lookahead kills into root, which no route does: L1 prunes a dead extension's supersets and writes nothing |
 | `enable-path-nogoods` (S1e2.1c.5) | the walk's learned clauses: every route reads N, the minimal dead sets, by construction |
@@ -188,9 +191,12 @@ seventeen that set the lookahead (the zebra2 family, regenerated by
 `examples/gen_zebra2_variants.py`, `branching/06`, `07` and `13`–`16`, the
 `alive-set-fresh-name` pair and `fresh-name-nospawn` among them),
 `branching/10` and `11` (the kill cache), `examples/zebra.ein` (three of the
-four), and `broken/load/config_bad_value.ein`, whose ill-typed value now rides
-`warn-derived-naf`. The pairs `06`/`07`, `10`/`11` and `15`/`16` now differ
-in their comments alone.
+four), and `broken/load/config_bad_value.ein`, whose ill-typed value rode
+`warn-derived-naf` until S1e2.2.5 and `lattice-sanity-check` since. The pairs
+`06`/`07`, `10`/`11` and `15`/`16` now differ in their comments alone. At
+S1e2.2.5 four lost the `warn-derived-naf` line: `naf-upward-closure.ein`,
+`naf-nowb.ein` and `stale-naf-fork-warn.ein`, refused by *forbid* either way,
+and `syntax/config.ein`, which sets `lattice-sanity-check` since.
 
 **What the answer column was read from.** A sweep of 2026-10-18: each of the
 eight settable then flipped in an appended `(config …)` block (last-wins, so programs with a
@@ -645,7 +651,7 @@ one or the other.
 | `the_cli_counts_come_from_the_golden` | § 3.1's per-parser counts or the total are not `help_shape.txt`'s |
 | `the_shipped_environment_set_is_what_the_page_lists` | a shipping crate reads an `EIN_*` name with no row in § 4's first class, or that class lists one nothing reads |
 | `the_unread_flags_change_nothing_printed` | flipping one of § 2.2's five **unread** flags changes `solve -p`'s stdout, stderr or exit code on either of two fixtures |
-| `the_retired_flags_are_refused_with_why` | a program setting one of § 2.4's ten loads, or is refused without the stage and the reason |
+| `the_retired_flags_are_refused_with_why` | a program setting one of § 2.4's fifteen loads, or is refused without the stage and the reason |
 | `the_surface_table_agrees_with_the_sections_it_summarises` | § 1's three counts are not the ones §§ 2–4 own |
 
 **Re-banking the block:**

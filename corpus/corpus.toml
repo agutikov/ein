@@ -773,7 +773,7 @@ note   = "M1e2 W8, contested (`W8/stale-naf-fork`): (p one), derived under (abse
 path   = "examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W8's twin: stale-naf-fork.ein with :warn-derived-naf on, the same answer and no warn event — the S1e.2.3 diagnostic does not contain this shape. **Refused since M1e2 S1e2.2.5**, as stale-naf-fork.ein: what this twin showed, that the warning missed the derived case, is why the refusal reads it."
+note   = "M1e2 W8's twin: stale-naf-fork.ein with :warn-derived-naf on, the same answer and no warn event — the S1e.2.3 diagnostic did not contain this shape. The flag retired at M1e2 S1e2.2.5 and the line went, so its program is stale-naf-fork.ein's. **Refused since M1e2 S1e2.2.5**, as stale-naf-fork.ein: what this twin showed, that the warning missed the derived case, is why the refusal reads it."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/f07-fpoff.ein"

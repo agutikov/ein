@@ -537,9 +537,10 @@ fn the_sanity_flag_adds_its_row_and_nothing_else() {
     }
 }
 
-/// The fourteen retired flags (nine at S1e2.1a.5, the mirror at S1e2.1a.6, the
-/// four `enable-*` levers at S1e2.1c.5) are load errors that say why, and
-/// which stage retired them, and none is offered among the valid names.
+/// The fifteen retired flags (nine at S1e2.1a.5, the mirror at S1e2.1a.6, the
+/// four `enable-*` levers at S1e2.1c.5, `warn-derived-naf` at S1e2.2.5) are
+/// load errors that say why, and which stage retired them, and none is offered
+/// among the valid names.
 #[test]
 fn the_retired_flags_are_refused_with_why() {
     let dir = Scratch::new("ein-config-reference");

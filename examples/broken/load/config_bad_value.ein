@@ -1,4 +1,5 @@
-;; …and a well-known key with an ill-typed value.
+;; …and a well-known key with an ill-typed value. The key was
+;; `:warn-derived-naf` until M1e2 S1e2.2.5 retired it.
 
 (relation r T T)
-(config :warn-derived-naf maybe)
+(config :lattice-sanity-check maybe)

@@ -2006,7 +2006,7 @@ mod tests {
     #[test]
     fn every_query_is_kept_and_the_last_config_still_wins() {
         let (_terms, kb) = ok("(query :goal (a ?x))\n(query :goal (b ?x) :mode all)\n\
-             (config :print-alive true)\n(config :warn-derived-naf true)");
+             (config :print-alive true)\n(config :lattice-sanity-check true)");
         let p = kb.program();
         assert_eq!(p.queries.len(), 2, "both blocks load");
         assert_eq!(p.queries[0].kw_pairs.len(), 1);
@@ -2017,7 +2017,7 @@ mod tests {
             "the active one is the first, not the last"
         );
         let config = p.config.as_ref().expect("a config");
-        assert!(config.warn_derived_naf);
+        assert!(config.lattice_sanity_check);
         assert!(!config.print_alive, "the earlier block is discarded whole");
     }
 

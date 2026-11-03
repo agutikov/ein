@@ -78,10 +78,10 @@ ENV_LEVERS: tuple = ()
 # Every flag a `(config …)` can set, flipped away from its default.
 # `enable-symmetric-mirror` was the one flag that moved R (`features/06`), and
 # M1e2 S1e2.1a.6 retired it; S1e2.1c.5 retired the four `enable-*` levers no
-# route read (the user's ruling of 2026-11-03). Setting one is a load error, so
-# none is a lever any more.
+# route read (the user's ruling of 2026-11-03), and S1e2.2.5 retired
+# `warn-derived-naf` (the user's of 2026-11-04). Setting one is a load error,
+# so none is a lever any more.
 CONFIG_LEVERS = {
-    "warn-derived-naf": "true",
     "lattice-sanity-check": "true",
     "record-alternative-justifications": "false",
 }

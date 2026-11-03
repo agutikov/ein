@@ -1,1 +1,1 @@
-(config …): config flag :warn-derived-naf expects true/false, got Atom(name='maybe')
+(config …): config flag :lattice-sanity-check expects true/false, got Atom(name='maybe')

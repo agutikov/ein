@@ -30,11 +30,12 @@
 ;;;
 ;;; ── What this file is for ──────────────────────────────────────────────
 ;;;
-;;; `(config :warn-derived-naf true)` turns on the S1e.2.3 diagnostic, so the
-;;; **warning is part of this file's recorded output** — that is what makes
-;;; the containment a fixture rather than a claim. The rule `bad` is reported
+;;; `(config :warn-derived-naf true)` turned on the S1e.2.3 diagnostic, so
+;;; the **warning was part of this file's recorded output** — that is what made
+;;; the containment a fixture rather than a claim. The rule `bad` was reported
 ;;; as concluding `(false)` from an `(absent …)` over `q`, which this
-;;; program's generator can still propose.
+;;; program's generator can still propose. Since M1e2 S1e2.2.5 that sentence is
+;;; the refusal's, and the flag is retired: the line went.
 ;;;
 ;;; Its `:expect` stated the answer of the day and was meant to break, and
 ;;; it did: the shape is forbidden outright (below), and the claim went with
@@ -75,8 +76,6 @@
 ;;; answered, kept as the row's alternative and as the library-level fixture
 ;;; the read-out's dead-hole line is held on (`forbid::studying`). Its
 ;;; `(solve :expect (region …))`, which stated that R, went with it.
-
-(config :warn-derived-naf true)
 
 (relation is-a T T)
 (relation p T)

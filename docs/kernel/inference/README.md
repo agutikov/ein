@@ -508,9 +508,19 @@ requirement. It shares `warn_derived_naf` rather than taking an eighteenth
 digest, so a new field re-blesses every shape golden in the corpus. Nine
 rules over seven corpus entries carry the shape, named in
 [`refutation_under_absent.rs`](../../../ein.rs/crates/ein-infer/tests/refutation_under_absent.rs);
-the fix is [F18](../../../plans/followups/f18_world_aware_negatives.md) and
-whether the shape stays legal is
+the fix was [F18](../../../plans/followups/f18_world_aware_negatives.md) and
+whether the shape stays legal
 [S1f.10.8](../../../plans/m1f_hypothesis_and_documentation/p1f.10_hypothesis_structure/s1f.10.8_refutation_under_absent.md)'s.
+
+**Both are gone from the stream since M1e2 S1e2.2.5** (2026-11-04). The user
+ruled the shape *forbid* (S1e2.4.1, 2026-11-02) and its F2, *via*: a program
+whose refutation rests on such an `absent`, directly or through a fact a rule
+derived under one, is refused, and the second warning's sentence is the
+refusal's ([`ein_infer::forbid`](../../../ein.rs/crates/ein-infer/src/forbid.rs),
+[`defined_behaviour.md` § 4.7](../defined_behaviour.md#47-a-refutation-resting-on-an-absent-a-commitment-can-fill--m1e2-s1e225)).
+The `warn-derived-naf` flag retired with it, so the first is the library's
+`derived_naf_warnings` and the corpus's `naf` shape op, F18 closed without
+being done, and the `warn` event kind left the schema.
 
 **Open follow-ups.**
 
@@ -526,7 +536,8 @@ whether the shape stays legal is
   rule sets, answers them by boundary-admission order, and reports one
   model without saying that others exist
   ([`absent_semantics.md` §Explicitly not provided](absent_semantics.md)).
-  `warn_derived_naf` is the advisory proxy in the meantime.
+  `naf_deps::derived_naf_warnings` is the advisory proxy in the meantime
+  (the `warn_derived_naf` flag that narrated it retired at M1e2 S1e2.2.5).
 - S1.7.4
   — static NAF dependency map: **shipped** 2026-06-01 (see "Static
   NAF dependency map" above). `Engine.naf_dependency_map()` +

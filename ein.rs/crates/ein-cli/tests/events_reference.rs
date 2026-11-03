@@ -198,9 +198,11 @@ fn every_row_has_an_emitter() {
 /// above already force the two sets equal, so this only guards against both
 /// halves shrinking together. 23 since M1e2 S1e2.1a.1 added `monotonicity`,
 /// 24 since T1e2.1a.5.2 added `region`, 23 since S1e2.1a.5's switch took
-/// the walk's `verdict` with its CLI path, and 20 since S1e2.1c.5 deleted the
-/// walk and its `nogood`, `writeback` and `traversal`.
+/// the walk's `verdict` with its CLI path, 20 since S1e2.1c.5 deleted the
+/// walk and its `nogood`, `writeback` and `traversal`, and 19 since S1e2.2.5
+/// retired `warn-derived-naf`, the flag that gated `warn`, the kind's last
+/// emitter.
 #[test]
-fn the_protocol_has_twenty_kinds() {
-    assert_eq!(emitted_kinds().len(), 20, "{:?}", emitted_kinds());
+fn the_protocol_has_nineteen_kinds() {
+    assert_eq!(emitted_kinds().len(), 19, "{:?}", emitted_kinds());
 }
