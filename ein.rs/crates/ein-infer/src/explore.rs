@@ -134,6 +134,11 @@ pub enum Licence {
     /// L2: discharged is upward-closed — an alive superset of a node of `R`
     /// is in `R`.
     DischargedUpward,
+    /// L3: a commitment's state is its closure's — so the state route visits
+    /// states, not commitments, and counts `k_c` over them as
+    /// `f(T) = 2^|T| − Σ f(S)` over the alive states `S ⊊ T`
+    /// ([`crate::states`], M1e2 S1e2.1c.2).
+    Closure,
     /// L4: a node of `R` is maximal when every one-up extension is dead.
     LocalLines,
     /// L7: every node of the cube, nothing skipped.
@@ -146,6 +151,7 @@ impl Licence {
             Licence::ForkOnlyAdds => "L0 a fork only adds: root is dead, so every node is",
             Licence::DeadUpward => "L1 dead is upward-closed",
             Licence::DischargedUpward => "L2 discharged is upward-closed",
+            Licence::Closure => "L3 a commitment's state is its closure's",
             Licence::LocalLines => "L4 the lines are local",
             Licence::TheCube => "L7 the cube",
         }

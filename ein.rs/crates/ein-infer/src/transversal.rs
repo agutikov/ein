@@ -144,7 +144,7 @@ impl Bits {
 /// Every edge that has no proper subset among `edges`, each once.
 pub fn minimal_edges(edges: &[Bits]) -> Vec<Bits> {
     let mut v: Vec<Bits> = edges.to_vec();
-    v.sort_by_key(|e| (e.len(), e.clone()));
+    v.sort_by(|a, b| (a.len(), a).cmp(&(b.len(), b)));
     v.dedup();
     let mut out: Vec<Bits> = Vec::new();
     for e in v {

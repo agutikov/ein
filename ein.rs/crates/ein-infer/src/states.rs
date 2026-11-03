@@ -615,3 +615,203 @@ fn emit_layer(events: &mut Events, layer: usize, stats: &Layer) {
         l.num("facts", stats.facts as i64);
     });
 }
+
+// ── R, read off the states ──────────────────────────────────────────────
+
+/// Branches a state's count may take ([`crate::transversal::count_hitting`])
+/// before it is counted from the states below it instead.
+const COUNT_LIMIT: u64 = 1 << 16;
+
+/// `R`, read off the states the route met: all of it when the route extended
+/// every alive state, and on a partial run what it certified.
+#[derive(Clone, Debug, Default)]
+pub struct Description {
+    /// Every alive state was extended: what follows is all of `R`.
+    pub exhausted: bool,
+    /// The states of `R` met, as indices into [`StateRoute::states`], in the
+    /// order met.
+    pub r: Vec<u32>,
+    /// `|R|` in commitments. On a partial run: every commitment of an
+    /// extended state of `R`, and those met of the rest — a lower bound.
+    pub k_c: u64,
+    /// Per state, the commitments that reach it, where the run counted them
+    /// exactly: every extended state (L3).
+    pub commitments: Vec<Option<u64>>,
+    /// Per state of `R` that was extended, its minimal generators, by size and
+    /// then by candidates. Empty where the run does not know them.
+    pub generators: Vec<Vec<Box<[u32]>>>,
+    /// The minimal line as commitments, by size and then by candidates, each
+    /// with the state it reaches. On a partial run, those certified.
+    pub minimal: Vec<(Box<[u32]>, u32)>,
+}
+
+/// `R` from what `s` met. `s` must not have declined for any reason but its
+/// budget.
+pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
+    let n = s.n();
+    let ns = s.states.len();
+    let exhausted = s.declined.is_none();
+    let mut parents: Vec<Vec<u32>> = vec![Vec::new(); ns];
+    for (i, st) in s.states.iter().enumerate() {
+        for &c in &st.children {
+            parents[c as usize].push(i as u32);
+        }
+    }
+    let edges_of = |i: usize| -> Vec<Bits> {
+        let st = &s.states[i];
+        parents[i]
+            .iter()
+            .map(|&p| st.bits.minus(&s.states[p as usize].bits))
+            .collect()
+    };
+
+    // How many commitments reach each extended state: the sets under it that
+    // lie under no state below it (L3).
+    let mut f: Vec<Option<u128>> = vec![None; ns];
+    let mut order: Vec<u32> = (0..ns as u32)
+        .filter(|&i| s.states[i as usize].extended)
+        .collect();
+    order.sort_by_key(|&i| s.states[i as usize].closure.len());
+    let overflow = || {
+        SolveError::Unsupported(
+            "a state's commitments pass 2^128: the state route cannot count them".to_string(),
+        )
+    };
+    let r_wanted: Vec<bool> = s.states.iter().map(|st| st.extended && st.in_r()).collect();
+    // A state whose every edge down is one candidate is the common case
+    // where commitments do not collapse (`syntax/arg-kinds`: every one of its
+    // 2¹⁹ states): its one minimal generator is those candidates, and its
+    // commitments are the subsets of S that hold them. No search is needed.
+    let mut forced: Vec<Option<Bits>> = vec![None; ns];
+    for &i in &order {
+        let i = i as usize;
+        if !r_wanted[i] {
+            continue;
+        }
+        let edges = crate::transversal::minimal_edges(&edges_of(i));
+        if edges.iter().all(|e| e.len() == 1) {
+            let mut g = Bits::empty(n);
+            for e in &edges {
+                g = g.or(e);
+            }
+            let free = s.states[i].closure.len() as u32 - g.len();
+            f[i] = Some(crate::transversal::pow2(free).ok_or_else(overflow)?);
+            forced[i] = Some(g);
+            continue;
+        }
+        if f[i].is_none() {
+            f[i] = Some(count_of(s, &parents, &edges_of, &mut f, i).ok_or_else(overflow)?);
+        }
+    }
+    let commitments: Vec<Option<u64>> = f
+        .iter()
+        .map(|x| x.and_then(|v| u64::try_from(v).ok()))
+        .collect();
+
+    let r: Vec<u32> = (0..ns as u32)
+        .filter(|&i| s.states[i as usize].in_r())
+        .collect();
+    let mut generators: Vec<Vec<Box<[u32]>>> = vec![Vec::new(); ns];
+    for &i in &r {
+        let i = i as usize;
+        if !s.states[i].extended {
+            continue;
+        }
+        generators[i] = match forced[i].take() {
+            Some(g) => vec![g.to_set()],
+            None => crate::transversal::minimal_transversals(n, &edges_of(i))
+                .iter()
+                .map(Bits::to_set)
+                .collect(),
+        };
+    }
+
+    // The minimal line: ∅ when root's state is in R; otherwise the minimal
+    // sets among the generators of R's extended states.
+    let root_in_r = !s.root.dead && s.root.owes == 0;
+    let minimal: Vec<(Box<[u32]>, u32)> = if root_in_r {
+        vec![(Box::default(), 0)]
+    } else {
+        let mut all: Vec<(Box<[u32]>, u32)> = r
+            .iter()
+            .flat_map(|&i| generators[i as usize].iter().map(move |g| (g.clone(), i)))
+            .collect();
+        all.sort_by(|a, b| (a.0.len(), &a.0).cmp(&(b.0.len(), &b.0)));
+        let mut kept: Vec<(Box<[u32]>, u32)> = Vec::new();
+        let mut kept_bits: Vec<Bits> = Vec::new();
+        for (g, i) in all {
+            let gb = Bits::of(n, &g);
+            if !kept_bits.iter().any(|k| k.is_subset(&gb)) {
+                kept_bits.push(gb);
+                kept.push((g, i));
+            }
+        }
+        kept
+    };
+    let k_c: u64 = if exhausted {
+        let mut sum = 0u128;
+        for &i in &r {
+            sum = sum
+                .checked_add(f[i as usize].expect("counted"))
+                .ok_or_else(overflow)?;
+        }
+        u64::try_from(sum).map_err(|_| overflow())?
+    } else {
+        r.iter()
+            .map(|&i| {
+                let st = &s.states[i as usize];
+                commitments[i as usize].unwrap_or(st.met)
+            })
+            .sum()
+    };
+
+    Ok(Description {
+        exhausted,
+        r,
+        k_c,
+        commitments,
+        generators,
+        minimal,
+    })
+}
+
+/// The commitments that reach state `i`: the subsets of its closure that meet
+/// every complement against a state one edge below it, counted by branching;
+/// past [`COUNT_LIMIT`], `2^|S|` less every state below it, each counted the
+/// same way. `None` past `u128`.
+fn count_of(
+    s: &StateRoute,
+    parents: &[Vec<u32>],
+    edges_of: &dyn Fn(usize) -> Vec<Bits>,
+    f: &mut [Option<u128>],
+    i: usize,
+) -> Option<u128> {
+    if let Some(v) = f[i] {
+        return Some(v);
+    }
+    let st = &s.states[i];
+    if let Some(v) = crate::transversal::count_hitting(&st.bits, &edges_of(i), COUNT_LIMIT) {
+        f[i] = Some(v);
+        return Some(v);
+    }
+    // Every closed set under S is alive, extended, and reached through the
+    // one-up edges: S's down-set in the state graph.
+    let mut below: Vec<u32> = Vec::new();
+    let mut seen = vec![false; s.states.len()];
+    let mut stack: Vec<u32> = parents[i].clone();
+    while let Some(t) = stack.pop() {
+        if std::mem::replace(&mut seen[t as usize], true) {
+            continue;
+        }
+        below.push(t);
+        stack.extend(parents[t as usize].iter().copied());
+    }
+    below.sort_by_key(|&t| s.states[t as usize].closure.len());
+    let mut v = crate::transversal::pow2(st.closure.len() as u32)?;
+    for t in below {
+        let ft = count_of(s, parents, edges_of, f, t as usize)?;
+        v = v.checked_sub(ft)?;
+    }
+    f[i] = Some(v);
+    Some(v)
+}

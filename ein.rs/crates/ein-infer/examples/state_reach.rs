@@ -63,6 +63,7 @@ fn main() {
     let mut facts = u64::MAX;
     let mut jobs = 1usize;
     let mut route1 = false;
+    let mut by_size = 0usize;
     let mut files: Vec<PathBuf> = Vec::new();
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
@@ -76,6 +77,12 @@ fn main() {
             "--facts" => facts = args.next().and_then(|v| v.parse().ok()).expect("--facts F"),
             "--jobs" => jobs = args.next().and_then(|v| v.parse().ok()).expect("--jobs J"),
             "--route1" => route1 = true,
+            "--by-size" => {
+                by_size = args
+                    .next()
+                    .and_then(|v| v.parse().ok())
+                    .expect("--by-size K")
+            }
             _ => files.push(PathBuf::from(a)),
         }
     }
@@ -113,6 +120,32 @@ fn main() {
             }
         };
         let wall = t.elapsed().as_secs_f64();
+        let t_desc = Instant::now();
+        let desc = match &s.declined {
+            Some(Declined::NotMonotone | Declined::Contradicted { .. }) => None,
+            _ => states::describe(&s).ok(),
+        };
+        let wall_desc = t_desc.elapsed().as_secs_f64();
+        let desc = desc.map(|d| {
+            let merged: Vec<u32> = d
+                .r
+                .iter()
+                .copied()
+                .filter(|&i| d.commitments[i as usize].is_some_and(|c| c > 1))
+                .collect();
+            json!({
+                "exhausted": d.exhausted,
+                "k_c": d.k_c,
+                "k_s": d.r.len(),
+                "minimal": d.minimal.len(),
+                "minimal_states": d.minimal.iter().map(|x| x.1).collect::<std::collections::BTreeSet<_>>().len(),
+                "least": d.minimal.iter().map(|x| x.0.len()).min(),
+                "merged": merged.len(),
+                "generators": d.r.iter().map(|&i| d.generators[i as usize].len() as u64).sum::<u64>(),
+                "maximal_alive": s.states.iter().filter(|x| x.maximal()).count(),
+                "r_by_size": r_by_size(&s, &d, by_size),
+            })
+        });
         let layers: Vec<_> = s
             .layers
             .iter()
@@ -152,11 +185,66 @@ fn main() {
                 "complete_up_to": s.complete_up_to,
                 "declined": declined(&s.declined),
                 "top": s.top.as_ref().map(|t| json!({"dead": t.dead, "owes": t.owes, "facts": t.facts})),
+                "description": desc,
                 "wall": wall,
+                "wall_description": wall_desc,
                 "wall_root": s.cost.root.as_secs_f64(),
                 "wall_nodes": s.cost.nodes.as_secs_f64(),
                 "route1": r1,
             })
         );
     }
+}
+
+/// The commitments of `R` of each size `0 ..= k`, counted from the states:
+/// every subset of an extended state of `R` that holds one of its minimal
+/// generators, enumerated. It is what route 1's per-layer `in R` column
+/// counts, read the other way, so the two routes compare layer by layer where
+/// route 1 does not finish (`--by-size K`; off at 0).
+fn r_by_size(s: &states::StateRoute, d: &states::Description, k: usize) -> Vec<u64> {
+    let mut out = vec![0u64; if k == 0 { 0 } else { k + 1 }];
+    for &i in &d.r {
+        let st = &s.states[i as usize];
+        let gens: Vec<u128> = d.generators[i as usize]
+            .iter()
+            .map(|g| {
+                g.iter()
+                    .map(|&b| st.closure.binary_search(&b).expect("in S"))
+                    .fold(0u128, |m, j| m | 1 << j)
+            })
+            .collect();
+        let m = st.closure.len();
+        for size in 0..out.len().min(m + 1) {
+            // Every `size`-subset of S, as a mask over S's positions.
+            let mut c: Vec<usize> = (0..size).collect();
+            loop {
+                let mask = c.iter().fold(0u128, |x, &j| x | 1 << j);
+                if gens.iter().any(|&g| g & !mask == 0) {
+                    out[size] += 1;
+                }
+                let mut j = size;
+                loop {
+                    if j == 0 {
+                        break;
+                    }
+                    j -= 1;
+                    if c[j] < m - size + j {
+                        break;
+                    }
+                    if j == 0 {
+                        j = usize::MAX;
+                        break;
+                    }
+                }
+                if size == 0 || j == usize::MAX || c[j] >= m - size + j {
+                    break;
+                }
+                c[j] += 1;
+                for l in j + 1..size {
+                    c[l] = c[l - 1] + 1;
+                }
+            }
+        }
+    }
+    out
 }

@@ -1468,6 +1468,7 @@ fn state_route_against_oracle(rel: &str, r: &Region, s: &states::StateRoute) -> 
     }
     let n = r.n();
     let size = 1usize << n;
+    let t = &r.topology;
     let mask = |set: &[u32]| set.iter().fold(0u64, |m, &b| m | 1 << b);
     let alive = |m: u64| r.status[m as usize] & region::DEAD == 0;
     // The alive states are exactly the oracle's closures of alive nodes, each
@@ -1494,13 +1495,80 @@ fn state_route_against_oracle(rel: &str, r: &Region, s: &states::StateRoute) -> 
             bad.push(format!("{rel}: {} was not extended", r.name(m)));
         }
     }
+    let d = match states::describe(s) {
+        Ok(d) => d,
+        Err(e) => return vec![format!("{rel}: {e}")],
+    };
+    // Per state of R: its commitments and its minimal generators.
+    let mut by_closure: BTreeMap<u64, Vec<u64>> = BTreeMap::new();
+    for m in 0..size as u64 {
+        if r.in_r(m) {
+            by_closure
+                .entry(r.nodes[m as usize].closure)
+                .or_default()
+                .push(m);
+        }
+    }
+    if d.r.len() != by_closure.len() {
+        bad.push(format!(
+            "{rel}: k_s {} against {}",
+            d.r.len(),
+            by_closure.len()
+        ));
+    }
+    for &i in &d.r {
+        let x = &s.states[i as usize];
+        let members = by_closure
+            .get(&mask(&x.closure))
+            .cloned()
+            .unwrap_or_default();
+        if d.commitments[i as usize] != Some(members.len() as u64) {
+            bad.push(format!(
+                "{rel}: {} has {:?} commitments, the oracle {}",
+                r.name(mask(&x.closure)),
+                d.commitments[i as usize],
+                members.len()
+            ));
+        }
+        let gens: BTreeSet<u64> = members
+            .iter()
+            .copied()
+            .filter(|&m| (0..n).all(|b| m >> b & 1 == 0 || !members.contains(&(m & !(1 << b)))))
+            .collect();
+        let got: BTreeSet<u64> = d.generators[i as usize].iter().map(|g| mask(g)).collect();
+        if got != gens {
+            bad.push(format!(
+                "{rel}: {}'s minimal generators differ",
+                r.name(mask(&x.closure))
+            ));
+        }
+    }
+    if d.k_c != t.size_r {
+        bad.push(format!("{rel}: k_c {} against |R| {}", d.k_c, t.size_r));
+    }
+    let set = |v: &[u64]| v.iter().copied().collect::<BTreeSet<u64>>();
+    let minimal: BTreeSet<u64> = d.minimal.iter().map(|(g, _)| mask(g)).collect();
+    for (what, got, want) in [
+        ("minimal", &minimal, set(&t.minimal)),
+        (
+            "E's alive members",
+            &minimal,
+            set(&t.duality.minimal_from_e),
+        ),
+    ] {
+        if *got != want {
+            bad.push(format!("{rel}: {what} differs"));
+        }
+    }
     bad
 }
 
 /// **The state route equals the oracle** — S1e2.1c.2's acceptance. On every
 /// corpus file and register witness whose cube the oracle enumerates and whose
 /// static verdict is monotone, the route meets exactly the alive states, each
-/// with the cube's status, and extends every one. It never saturates more than
+/// with the cube's status, extends every one, and reads off them the oracle's
+/// `k_s`, `k_c`, each state's commitments (L3) and minimal generators, and the
+/// minimal line, which is `E`'s alive members. It never saturates more than
 /// route 1 does. On every flagged program it declines.
 #[test]
 fn the_state_route_is_the_oracle_on_every_monotone_program_it_reaches() {
