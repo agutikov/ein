@@ -28,13 +28,36 @@
 //!
 //! ### The routes
 //!
-//! A monotone program takes **route 1**, the alive down-set
+//! **Describe** on a monotone program takes **the state route**
+//! ([`crate::states`], M1e2 S1e2.1c.2): every alive state once, its one-up
+//! extensions saturated, `R` read off the states. Every other question on a
+//! monotone program takes **route 1**, the alive down-set
 //! ([`crate::downset`]), with a cut per mode on what it expands and when it
 //! stops, plus the **climb**: from a node of `R`, add the lowest-index
 //! candidate whose extension is alive, until none is. A flagged program takes
 //! **route 2**, the cube: in layer order where the question can be decided
 //! early (`-n`, `--single`, over all of `R` or the minimal line), and whole
-//! ([`crate::region`]) where it cannot.
+//! ([`crate::region`]) where it cannot. A flagged program whose root is dead
+//! is decided by route 1 in one saturation (L0).
+//!
+//! ### Describe's route — a decision taken without a ruling
+//!
+//! **The rule reads the program and nothing else: the static check's
+//! verdict.** Monotone, describe takes the state route; flagged, it takes the
+//! cube as before, or route 1 when root is dead. No option chooses it.
+//!
+//! The argument is that the state route never does more than route 1. The
+//! alive commitments it saturates are distinct, so they are at most route 1's;
+//! a dead extension it saturates is pruned from every superset (L1), and
+//! the commitments that are a state already are read, not saturated (L3).
+//! That bounds the alive half and not the dead half, so the premise is
+//! measured and held: over the 181 monotone programs the corpus holds it
+//! saturates fewer nodes on 32 and the same on the rest, and derives no more
+//! facts on any (`alive_set_reach.md` § 9), and
+//! `the_state_route_never_does_more_than_route_1` fails on the first program
+//! where it would, at which point this rule is revisited. Where both routes
+//! finish, their read-outs are identical apart from the `route` and `work`
+//! rows (`ein-infer/tests/explore.rs`).
 
 use std::time::{Duration, Instant};
 
@@ -118,6 +141,9 @@ pub enum Route {
     DownSet,
     /// Route 2: the cube, in layer order or whole.
     Cube,
+    /// The state route: a monotone program's alive states, each once, and
+    /// `R` read off them ([`crate::states`]). Describe only, since S1e2.1c.2.
+    States,
 }
 
 /// A theorem a mode used to skip work —
@@ -324,7 +350,12 @@ pub fn run_with(
                 ask: Ask::Describe,
             })
         {
-            describe_route_1(root, terms, ast, prepared, t0, opts, events)?
+            // Describe's route: the module's § Describe's route.
+            if prepared.monotonicity.is_monotone() {
+                describe_states(root, terms, ast, prepared, t0, opts, events)?
+            } else {
+                describe_route_1(root, terms, ast, prepared, t0, opts, events)?
+            }
         } else {
             let mut sp = Space::open(root, terms, ast, prepared, opts, events);
             let out = match (opts.mode.which, opts.mode.ask) {
@@ -1126,6 +1157,7 @@ impl<'a> Space<'a> {
             exhausted: false,
             complete_up_to: None,
             stopped_before: None,
+            states_partial: None,
             root: described::Root {
                 alive: root.is_some_and(|r| !r.dead) || (root.is_none() && !self.root_dead),
                 owes: root.map_or(0, |r| r.owes),
@@ -1327,6 +1359,139 @@ fn describe_route_1(
         facts,
         wall: Duration::ZERO,
         warning,
+    })
+}
+
+/// Describe all of `R` by `route` — the state route or route 1 — whatever
+/// the rule would pick: for the tests that hold two routes to one read-out.
+/// `ein solve` never calls it; describe's route is the rule's (the module's
+/// § Describe's route). A flagged program is refused unless its root is dead.
+pub fn describe_by(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    opts: &Options,
+    route: Route,
+) -> Result<Answer, SolveError> {
+    let t0 = Instant::now();
+    let prepared = region::prepare_with(root, terms, ast, &mut Events::off())?;
+    let mut answer = match route {
+        Route::States if prepared.monotonicity.is_monotone() => {
+            describe_states(root, terms, ast, prepared, t0, opts, &mut Events::off())?
+        }
+        Route::DownSet if prepared.monotonicity.is_monotone() || prepared.root_dead => {
+            describe_route_1(root, terms, ast, prepared, t0, opts, &mut Events::off())?
+        }
+        _ => {
+            return Err(SolveError::Unsupported(format!(
+                "describe_by: route {route:?} does not take this program"
+            )));
+        }
+    };
+    answer.wall = t0.elapsed();
+    Ok(answer)
+}
+
+/// Describe all of `R` on a monotone program by the state route: every alive
+/// state once, `R` read off the states. Where a node contradicts the static
+/// verdict, the run refuses, as route 1's does.
+fn describe_states(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    prepared: Prepared,
+    t0: Instant,
+    opts: &Options,
+    events: &mut Events,
+) -> Result<Answer, SolveError> {
+    let s = crate::states::compute_prepared(
+        root,
+        terms,
+        ast,
+        prepared,
+        t0,
+        &downset::Options {
+            budget: opts.budget,
+            max_visits: u64::MAX,
+            jobs: opts.jobs,
+            deadline: opts.deadline,
+        },
+        events,
+    )?;
+    let stopped = match &s.declined {
+        None => None,
+        Some(Declined::Budget {
+            spent, projected, ..
+        }) => Some(Stopped::Budget {
+            spent: *spent,
+            projected: *projected,
+        }),
+        Some(Declined::Contradicted { .. } | Declined::NotMonotone) => {
+            return Err(SolveError::Unsupported(
+                "the state route saw a node contradict the static verdict; run `ein oracle` on \
+                 this program"
+                    .to_string(),
+            ));
+        }
+    };
+    let d = crate::states::describe(&s)?;
+    let described = described::of_states(&s, &d);
+    let mut licences = vec![Licence::DeadUpward, Licence::Closure, Licence::LocalLines];
+    if d.cube && !d.exhausted {
+        // ∅ and ⊤ in R decide that R is the cube: L2 is what says every
+        // node above ∅ is discharged.
+        licences.insert(1, Licence::DischargedUpward);
+    }
+    let set_of = |i: u32| s.states[i as usize].closure.clone();
+    let shape = d.exhausted.then(|| Shape {
+        empty_in_r: !s.root.dead && s.root.owes == 0,
+        minimal: d.minimal.iter().map(|(g, _)| g.clone()).collect(),
+        maximal: d.maximal.iter().map(|&i| set_of(i)).collect(),
+        components: d.components.as_ref().map_or(0, Vec::len),
+        subcubes: d.subcubes.as_ref().map(Vec::len),
+        nogoods: d.nogoods.as_ref().map_or(0, Vec::len),
+        holes: None,
+        merged: d
+            .r
+            .iter()
+            .filter(|&&i| d.commitments[i as usize].is_some_and(|c| c > 1))
+            .count(),
+    });
+    let states =
+        d.r.iter()
+            .map(|&i| {
+                let st = &s.states[i as usize];
+                State {
+                    set: d.generators[i as usize]
+                        .first()
+                        .cloned()
+                        .unwrap_or_else(|| st.from.clone()),
+                    closure: st.closure.clone(),
+                }
+            })
+            .collect();
+    Ok(Answer {
+        mode: opts.mode,
+        candidates: s.candidates.clone(),
+        monotonicity: s.monotonicity.clone(),
+        root_dead: s.root.dead,
+        route: Route::States,
+        licences,
+        exhausted: d.exhausted,
+        shape,
+        counts: Some(Counts {
+            k_c: described.k_c,
+            k_s: described.k_s(),
+        }),
+        described: Some(Box::new(described)),
+        states,
+        minimal: Vec::new(),
+        verdict: None,
+        stopped,
+        saturations: s.saturations(),
+        facts: s.facts(),
+        wall: Duration::ZERO,
+        warning: None,
     })
 }
 

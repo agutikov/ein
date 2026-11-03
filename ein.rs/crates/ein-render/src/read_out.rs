@@ -262,7 +262,10 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
 /// of those dead alone is the count: an exhausted run, one complete past layer
 /// 1, or a dead root, which leaves every one dead alone without a visit.
 pub fn dead_alone_known(d: &Described) -> bool {
-    d.exhausted || d.complete_up_to.is_some_and(|k| k >= 1) || !d.root.alive
+    d.exhausted
+        || d.complete_up_to.is_some_and(|k| k >= 1)
+        || d.states_partial.is_some_and(|p| p.up_to.is_some())
+        || !d.root.alive
 }
 
 /// The `note:` a partial run writes.
@@ -623,8 +626,17 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
     let n = d.n() as u64;
     let k_s = d.k_s();
     let cube = d.route == Route::Cube;
+    let sp = d.states_partial;
     let lb = if d.exhausted {
         String::new()
+    } else if let Some(p) = sp {
+        match p.up_to {
+            Some(k) => format!(
+                "   (a lower bound: complete up to states of {})",
+                plural(k as u64, "candidate", "candidates")
+            ),
+            None => "   (a lower bound: the run stopped before it extended a state)".to_string(),
+        }
     } else if let Some(l) = d.complete_up_to {
         format!(
             "   (a lower bound: complete up to commitments of {})",
@@ -634,12 +646,48 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
         "   (a lower bound: the run stopped before R was exhausted)".to_string()
     };
     out.row("states (k_s)", format!("{}{lb}", group(k_s)));
-    out.row("commitments (k_c)", format!("{}{lb}", group(d.k_c)));
+    // R itself is decided when it is the whole cube; only its states are not.
+    let decided = sp.is_some_and(|p| p.cube);
+    let lb_c = if decided { "" } else { lb.as_str() };
+    out.row("commitments (k_c)", format!("{}{lb_c}", group(d.k_c)));
     match (&a.stopped, d.exhausted) {
         (_, true) => out.row(
             "exhausted",
             "yes — every commitment is classified: this is all of R",
         ),
+        (Some(Stopped::Budget { spent, projected }), false) if sp.is_some() => {
+            let p = sp.expect("a state-route partial");
+            let (size, next) = p.stopped_at;
+            let why = format!(
+                "state route stopped before the states of {}: their {} extensions project \
+                 {} facts on top of the {} spent, past --region-budget {}",
+                plural(size as u64, "candidate", "candidates"),
+                group(next),
+                group(*projected),
+                group(*spent),
+                o.budget
+            );
+            if p.cube {
+                out.row(
+                    "exhausted",
+                    format!(
+                        "no — R is decided: ∅ and ⊤ are both in it, so it is the whole cube (L1, \
+                         L2), and only its states are not all counted. The {why}"
+                    ),
+                );
+            } else {
+                out.row("exhausted", format!("no — the {why}"));
+            }
+            partial_note(
+                out,
+                o,
+                format!(
+                    "the state route stopped before the states of {} at --region-budget {}",
+                    plural(size as u64, "candidate", "candidates"),
+                    o.budget
+                ),
+            );
+        }
         (Some(Stopped::Budget { spent, projected }), false) => {
             let (layer, next) = d
                 .stopped_before
@@ -742,6 +790,18 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                 "minimal line",
                 format!("{}{min_note}", plural(n_min, "state", "states")),
             );
+        } else if let Some(p) = sp {
+            out.row(
+                "minimal line",
+                match p.up_to {
+                    Some(k) => format!(
+                        "≥ {} — complete up to states of {}",
+                        plural(n_min, "state", "states"),
+                        plural(k as u64, "candidate", "candidates")
+                    ),
+                    None => format!("≥ {}", plural(n_min, "state", "states")),
+                },
+            );
         } else if let Some(l) = d.complete_up_to {
             out.row(
                 "minimal line",
@@ -785,6 +845,17 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                 "1 state — ⊤, every candidate: no node is dead, the trivial line, certified by \
                  one saturation",
             );
+        } else if let Some(p) = sp
+            && n_max > 0
+        {
+            out.row(
+                "maximal line",
+                format!(
+                    "≥ {} — all those of up to {}",
+                    plural(n_max, "state", "states"),
+                    plural(p.up_to.unwrap_or(0) as u64, "candidate", "candidates")
+                ),
+            );
         } else if n_max > 0 {
             out.row(
                 "maximal line",
@@ -821,7 +892,9 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                 }
                 let merged: Vec<&ein_infer::described::State> =
                     d.states.iter().filter(|s| s.commitments > 1).collect();
-                if merged.is_empty() {
+                if !d.exhausted {
+                    out.row("merged", "not known: the run did not meet every state");
+                } else if merged.is_empty() {
                     out.row(
                         "merged",
                         "none — every state is reached by one commitment, so k_c = k_s",
@@ -853,12 +926,19 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
                 out.row("sub-cubes", "not known");
                 out.row(
                     "N",
-                    match d.complete_up_to {
-                        Some(l) => format!(
+                    match (sp, d.complete_up_to) {
+                        (Some(p), _) if p.nogoods_known => {
+                            "0 minimal dead sets — ⊤ is alive, so no node is dead".to_string()
+                        }
+                        (Some(_), _) => format!(
+                            "≥ {} — those the run met with every one-down subset alive",
+                            plural(d.nogoods, "minimal dead set", "minimal dead sets")
+                        ),
+                        (None, Some(l)) => format!(
                             "≥ {} — complete up to size {l}",
                             plural(d.nogoods, "minimal dead set", "minimal dead sets")
                         ),
-                        None => format!(
+                        (None, None) => format!(
                             "≥ {} — those met in layer order",
                             plural(d.nogoods, "minimal dead set", "minimal dead sets")
                         ),
@@ -915,6 +995,10 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
     }
     let route = match (d.route, o.command) {
         (Route::DownSet, _) => format!("1, the alive down-set — {}", licences(&a.licences)),
+        (Route::States, _) => format!(
+            "the state route, every alive state once — {}",
+            licences(&a.licences)
+        ),
         (Route::Cube, "oracle") => "2, the cube — no licence: asked for by name".to_string(),
         (Route::Cube, _) => {
             "2, the cube — no licence: the static check flags the program".to_string()
@@ -1082,6 +1166,7 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
             match a.route {
                 Route::DownSet => "1, the alive down-set",
                 Route::Cube => "2, the cube",
+                Route::States => "the state route, every alive state once",
             },
             licences(&a.licences)
         ),

@@ -126,9 +126,9 @@ counters went with it at the switch.
 
 | counter | what it counts |
 |---|---|
-| `saturations` | node fixpoints computed, root's included: one per node route 1 visits, one per node of the cube under route 2, plus one per listed state a mode re-reads. The read-out's `work` row is this number |
+| `saturations` | node fixpoints computed, root's included: one per node route 1 visits, one per node of the cube under route 2, one per extension the state route saturates (M1e2 S1e2.1c.2), plus one per listed state a mode re-reads. The read-out's `work` row is this number |
 | `facts` | facts those saturations derived beyond root's own fixpoint, summed over nodes — what `--region-budget` is spent against |
-| `layers` | route 1's layers visited, root's layer 0 included. `null` under route 2, which visits the cube in mask order and has no layers |
+| `layers` | route 1's layers visited, root's layer 0 included. Under the state route, its layers: root's, then one per state size it extended. `null` under route 2, which visits the cube in mask order and has no layers |
 
 ## What it costs
 

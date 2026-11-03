@@ -1022,6 +1022,53 @@ impl<'a> Nodes<'a> {
         Ok(Some(crate::canon::state_key(&kb)))
     }
 
+    /// Why root plus `facts` is dead, as the node function records it: the
+    /// unsat core and the rules whose firing refuted it, both sorted — or two
+    /// empty lists when the fixpoint is alive. For a reader that names a
+    /// member of `N` its route did not saturate: the state route reads `N` off
+    /// the maximal alive states (M1e2 S1e2.1c.2), and the trace and the answer
+    /// dump print each member's core.
+    pub fn refutation(
+        &mut self,
+        facts: &[FactId],
+    ) -> Result<(Vec<String>, Vec<String>), SolveError> {
+        self.terms.provs.open_fork();
+        let out = fixpoint(
+            self.root,
+            &self.snapshot,
+            self.terms,
+            self.ast,
+            &self.memo,
+            facts,
+        )
+        .map(|fork| {
+            let contradictions = crate::contradiction::detect(&fork, self.terms);
+            let Some(first) = contradictions.first() else {
+                return (Vec::new(), Vec::new());
+            };
+            let witnesses: Vec<FactId> = contradictions.iter().map(|c| c.witness()).collect();
+            let core = crate::explain::smallest_contradiction_frontier(
+                &fork,
+                self.terms,
+                Some(&witnesses),
+            );
+            let mut rules: Vec<String> = [first.positive, Some(first.negative)]
+                .into_iter()
+                .flatten()
+                .filter_map(|f| fork.primary(f))
+                .map(|p| match self.terms.provs.get(p).rule {
+                    Some(r) => self.terms.sym(r).to_string(),
+                    None => "(given)".to_string(),
+                })
+                .collect();
+            rules.sort();
+            rules.dedup();
+            (sorted_text(self.terms, &core), rules)
+        });
+        self.terms.provs.discard_fork();
+        out
+    }
+
     /// `read` the fixpoint of root plus `facts`.
     pub fn with_fixpoint<R>(
         &mut self,

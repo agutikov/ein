@@ -421,7 +421,7 @@ fn a_route_that_stops_leaves_the_claim_unchecked() {
     );
     assert_eq!(o, Outcome::NotChecked, "{lines:#?}");
     assert!(
-        lines[0].contains("route 1 stopped at its budget"),
+        lines[0].contains("the state route stopped at its budget"),
         "{lines:#?}"
     );
 

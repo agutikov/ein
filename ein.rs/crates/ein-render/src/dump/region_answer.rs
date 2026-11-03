@@ -264,7 +264,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
         ),
         (
             "merged",
-            if shape.is_some() {
+            if shape.is_some() && d.exhausted {
                 Json::obj(vec![
                     ("states", Json::int(merged.len() as i64)),
                     (
@@ -340,6 +340,7 @@ fn route(r: Route) -> &'static str {
     match r {
         Route::DownSet => "1",
         Route::Cube => "2",
+        Route::States => "states",
     }
 }
 
@@ -673,21 +674,32 @@ pub fn write(
             index_owing.push(Json::obj(vec![("path", Json::str(path))]));
         }
     }
-    let dead: Vec<Json> = r
-        .described()
-        .map(|d| {
-            d.dead
-                .iter()
-                .map(|x| {
-                    Json::obj(vec![
-                        ("set", set_json(&cands, &x.set)),
-                        ("core", strs(&x.core)),
-                        ("refuted_by", strs(&x.refuted_by)),
-                    ])
-                })
-                .collect()
-        })
-        .unwrap_or_default();
+    let mut dead: Vec<Json> = Vec::new();
+    if let Some(d) = r.described() {
+        // A member of N the route did not saturate (the state route reads N
+        // off the maximal alive states) is saturated here for its core.
+        let mut nodes = None;
+        for x in &d.dead {
+            let (core, refuted_by) =
+                if d.route == Route::States && x.core.is_empty() && !x.set.is_empty() {
+                    if nodes.is_none() {
+                        nodes = Some(Nodes::new(root, terms, ast, &a.candidates).map_err(solve)?);
+                    }
+                    nodes
+                        .as_mut()
+                        .expect("made above")
+                        .refutation(&facts(&x.set))
+                        .map_err(solve)?
+                } else {
+                    (x.core.clone(), x.refuted_by.clone())
+                };
+            dead.push(Json::obj(vec![
+                ("set", set_json(&cands, &x.set)),
+                ("core", strs(&core)),
+                ("refuted_by", strs(&refuted_by)),
+            ]));
+        }
+    }
     std::fs::write(
         dir.join("nogoods.json"),
         dumps_indent(&Json::Array(dead)) + "\n",

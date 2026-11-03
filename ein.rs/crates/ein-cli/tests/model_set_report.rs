@@ -108,9 +108,11 @@ fn an_unexhausted_run_reports_states_found() {
     assert_eq!(stopped.code, 0);
     assert_eq!(
         row(&stopped, "states (k_s)"),
-        "states (k_s)      37   (a lower bound: complete up to commitments of 2 candidates)"
+        "states (k_s)      37   (a lower bound: complete up to states of 1 candidate)"
     );
-    assert!(row(&stopped, "exhausted").starts_with("exhausted         no — route 1 stopped"));
+    assert!(
+        row(&stopped, "exhausted").starts_with("exhausted         no — the state route stopped")
+    );
 }
 
 /// **the-key-is-a-projection-not-a-second-answer.** T1d.3.3.4's constraint,

@@ -141,10 +141,11 @@ fn solve_single_certifies_that_the_answer_is_the_only_one() {
         Some("yes".into()),
         "--single certifies uniqueness by deciding R holds no other state"
     );
-    // The control: the default run finds the same one state and does *not*
+    // The control: a describe its budget stops finds no more and does *not*
     // certify it. Without this, the test above would pass on a build that
-    // hardcoded the word.
-    let (_, plain) = ein(&["solve", "examples/zebra2.ein"]);
+    // hardcoded the word. (Since M1e2 S1e2.1c.2 a bare describe exhausts
+    // zebra2, by the state route, so the control names a budget.)
+    let (_, plain) = ein(&["solve", "examples/zebra2.ein", "--region-budget", "4096"]);
     assert_eq!(field(&plain, "exhausted"), Some("no".into()));
 }
 

@@ -363,7 +363,7 @@ fn verbose_reports_what_the_run_found() {
     assert_eq!(open.code, 0, "{}{}", open.out, open.err);
     assert!(
         open.out
-            .contains("solve · :expect (region …) — holds (route 1, k_s = 0, k_c = 0)"),
+            .contains("solve · :expect (region …) — holds (state route, k_s = 0, k_c = 0)"),
         "an owing R is described, and the header says how big:\n{}",
         open.out
     );

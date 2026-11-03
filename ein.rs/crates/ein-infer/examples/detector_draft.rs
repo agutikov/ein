@@ -201,7 +201,7 @@ fn draft(path: &Path, bound: usize) -> Json {
         return row;
     };
     row["run"] = json!({
-        "route": match a.route { explore::Route::DownSet => "1", explore::Route::Cube => "2" },
+        "route": match a.route { explore::Route::DownSet => "1", explore::Route::Cube => "2", explore::Route::States => "states" },
         "exhausted": a.exhausted,
         "listed": a.states.len(),
         "saturations": a.saturations,

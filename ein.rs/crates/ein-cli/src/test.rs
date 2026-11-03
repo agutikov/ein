@@ -816,6 +816,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         let route = match r.answer.route {
             explore::Route::DownSet => "route 1",
             explore::Route::Cube => "route 2",
+            explore::Route::States => "state route",
         };
         rows[i].outcome = came.key();
         rows[i].region = Some(RegionRan {

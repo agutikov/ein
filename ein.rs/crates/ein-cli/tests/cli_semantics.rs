@@ -1614,15 +1614,16 @@ fn layer_lines(err: &str) -> Vec<(u64, [u64; 5])> {
 ///
 /// The flag exists so a reader can watch a run that takes minutes, and a
 /// progress line nobody can add up is a progress line nobody can trust. Since
-/// M1e2 S1e2.1a.5 a row is route 1's layer: every node visited is dead,
-/// owing or in R, and the layers' visits and facts are the run's
-/// saturations and facts.
+/// M1e2 S1e2.1a.5 a row is a route's layer — since S1e2.1c.2 the state
+/// route's on a monotone program: root's, then one per state size extended.
+/// Every node visited is dead, owing or in R, and the layers' visits and facts
+/// are the run's saturations and facts.
 #[test]
 fn the_layer_progress_rows_add_up() {
     let r = ein(&["solve", "--layer-progress", TWO_MODELS]);
     assert_eq!(r.code, 0, "stderr:\n{}", r.err);
     let rows = layer_lines(&r.err);
-    assert_eq!(rows.len(), 5, "five layers:\n{}", r.err);
+    assert_eq!(rows.len(), 4, "four layers:\n{}", r.err);
     for (i, (layer, [visited, dead, owing, in_r, _])) in rows.iter().enumerate() {
         assert_eq!(*layer, i as u64, "the layers are not in order");
         assert_eq!(

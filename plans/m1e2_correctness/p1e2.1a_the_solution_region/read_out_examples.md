@@ -34,8 +34,8 @@ is quoted.
 | [X7](#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) | `tests/stdlib/algebra/09_irreflexive_violated.ein` | 0 | empty R, the dead kind; `--single` says `Contradiction` |
 | [X8](#x8--ein-bugsnaf-upward-closureein-a-hole) | `ein-bugs/naf-upward-closure.ein` | 2 | a program the static check flags: route 2, a hole, the warning |
 | [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: members, never line members |
-| [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: partial at the default budget and already answered; exhausted at 2²⁵, cut on stdout and whole in `answer.txt`; `--maximal -n 1`; `--single` |
-| [X11](#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) | `saturation/square-bwd/floors.ein` | 20 | R is the whole cube: partial, with both trivial lines certified; the first questions in 1–11 saturations |
+| [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: exhausted at the default budget by the state route, cut on stdout and whole in `answer.txt`; `--maximal -n 1`; `--single` |
+| [X11](#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) | `saturation/square-bwd/floors.ein` | 20 | R is the whole cube: decided, its states counted in part; the first questions in 1–11 saturations |
 | [X12](#x12--testsregion03_merged_orein-a-program-that-states-its-region) | `tests/region/03_merged_or.ein` | 3 | a program that states its region: the printed region is its claim |
 | [X13](#x13--saturationtype-exclusivitycolorsein-an-exhausted-r-past-100-lines) | `saturation/type-exclusivity/colors.ein` | 8 | an exhausted R past stdout's 100 lines: what fits, and where the rest is |
 
@@ -67,8 +67,8 @@ solve · examples/branching/05_mini_zebra.ein
   N                 6 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          9 candidates, 6 dead alone
-  route             1, the alive down-set — L1 dead is upward-closed
-  work              14 saturations · 66 facts beyond root · 4 layers
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              13 saturations · 60 facts beyond root · 4 layers
 
   (region
     ;; state 1 of 5 — ∅, root itself · minimal
@@ -144,7 +144,7 @@ solve · examples/lattice/02_genuine_3set_death.ein
   N                 1 minimal dead set
   lattice           monotone (the static check) — R is convex: no hole
   universe          3 candidates, 0 dead alone
-  route             1, the alive down-set — L1 dead is upward-closed
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              8 saturations · 13 facts beyond root · 4 layers
 
   (region
@@ -357,8 +357,8 @@ solve · examples/features/11_expect_ambiguity.ein
   N                 4 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          4 candidates, 0 dead alone
-  route             1, the alive down-set — L1 dead is upward-closed
-  work              11 saturations · 20 facts beyond root · 3 layers
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              11 saturations · 20 facts beyond root · 4 layers
 
   (region
     ;; state 1 of 7 — ∅, root itself · minimal
@@ -417,8 +417,8 @@ solve · examples/lattice/07_two_pairs_two_tables.ein
   N                 64 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          16 candidates, 0 dead alone
-  route             1, the alive down-set — L1 dead is upward-closed
-  work              177 saturations · 448 facts beyond root · 5 layers
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              177 saturations · 448 facts beyond root · 6 layers
 
   (region
     ;; state 1 of 8 — 4 candidates · minimal and maximal · from {(sits Ann S1), (sits Bob S2), (sits Cat S3), (sits Dan S4)}
@@ -563,8 +563,8 @@ solve · examples/lattice/synth/merged_states.ein
   N                 1 minimal dead set
   lattice           monotone (the static check) — R is convex: no hole
   universe          5 candidates, 0 dead alone
-  route             1, the alive down-set — L1 dead is upward-closed
-  work              25 saturations · 65 facts beyond root · 5 layers
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              18 saturations · 46 facts beyond root · 6 layers
 
   (region
     ;; state 1 of 8 — 2 candidates · minimal · 2 commitments, 1 minimal
@@ -677,8 +677,8 @@ solve · tests/stdlib/closure/03_closed_and_owing.ein
   empty             every alive node owes — no commitment pays every debt
   lattice           monotone (the static check) — R is convex: no hole
   universe          no candidate: R is {∅} or empty, decided by root alone
-  route             1, the alive down-set — L1 dead is upward-closed
-  work              1 saturation · 0 facts beyond root · 1 layer
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              1 saturation · 0 facts beyond root · 2 layers
 
   owing             ∅ — owes 1
                       r owes a1 a B.
@@ -738,7 +738,7 @@ solve · tests/stdlib/algebra/09_irreflexive_violated.ein
   empty             every node is dead — root's own fixpoint derives (false)
   lattice           monotone (the static check) — R is convex: no hole
   universe          no candidate: R is {∅} or empty, decided by root alone
-  route             1, the alive down-set — L1 dead is upward-closed
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
   work              1 saturation · 0 facts beyond root · 1 layer
 
   unsat core        (loops A A)
@@ -988,67 +988,18 @@ exit 0
 
 ## X10 — `zebra2.ein`: the puzzle
 
-**At the default budget** route 1 stops before layer 5. It is partial, and it
-has already answered the puzzle: the one state it found is certified minimal,
-reached from the single fact `(drink-loc Juice House-4)`, and certified
-maximal. The query's class is printed with the lower-bound label.
+**At the default budget** the state route describes R exhausted, since
+S1e2.1c.2: 374 saturations and 42 705 facts, where route 1 stopped before its
+layer 5 with the puzzle answered and nothing certified past it. R is one
+state, 261 982 commitments, 63 minimal generators, and four of them single
+facts. R as one `(region …)` is 111 lines, past stdout's 100, so stdout lists
+the state and leaves out the `(merged …)`, and says where it is. The query's
+class is exact, so it is printed with its `as :expect`.
 
 `ein solve examples/zebra2.ein`
 
 ```text
 solve · examples/zebra2.ein
-──────────────────────────────────────────────────────────────
-  asked             all of R — describe
-  states (k_s)      1   (a lower bound: complete up to commitments of 4 candidates)
-  commitments (k_c) 3 916   (a lower bound: complete up to commitments of 4 candidates)
-  exhausted         no — route 1 stopped before layer 5: its 10 131 commitments project 526 812 facts on top of the 353 194 spent, past --region-budget 524288
-  ∅                 not in R — root owes 36 instances
-  minimal line      ≥ 1 state — complete up to commitments of 4 candidates
-  maximal line      ≥ 1 state — all those a commitment of up to 3 candidates reaches
-  components        not known: R was not exhausted
-  sub-cubes         not known
-  N                 ≥ 366 minimal dead sets — complete up to size 4
-  lattice           monotone (the static check) — R is convex: no hole
-  universe          56 candidates, 21 dead alone
-  route             1, the alive down-set — L1 dead is upward-closed
-  work              5 909 saturations · 353 376 facts beyond root · 5 layers
-
-  ;; the line members this run certified. Not a (region …): read back, it would claim these are all of R.
-  ;; state 1 of 1 — 18 candidates · minimal and maximal · minimal {(drink-loc Juice House-4)} | {(nation-loc Japanese House-5)} | {(smoke-loc Lucky_Strike House-4)} | {(smoke-loc Parliament House-5)} | … 59 more
-  (model (color-loc Blue House-2) (color-loc Green House-5)
-         (color-loc Ivory House-4) (color-loc Red House-3)
-         (color-loc Yellow House-1) (drink-loc Coffee House-5)
-         (drink-loc Juice House-4) (drink-loc Milk House-3)
-         (drink-loc Tea House-2) (drink-loc Water House-1)
-         (nation-loc Englishman House-3) (nation-loc Japanese House-5)
-         (nation-loc Norwegian House-1) (nation-loc Spaniard House-4)
-         (nation-loc Ukrainian House-2) (pet-loc Dog House-4)
-         (pet-loc Fox House-1) (pet-loc Horse House-2) (pet-loc Snail House-3)
-         (pet-loc Zebra House-5) (smoke-loc Chesterfields House-2)
-         (smoke-loc Kools House-1) (smoke-loc Lucky_Strike House-4)
-         (smoke-loc Old_Gold House-3) (smoke-loc Parliament House-5))
-
-  query             (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))
-  over              all of R — 1 state → 1 projection class  (a lower bound)
-    class 1 of 1    1 state
-                      ?h_water = House-1 · ?h_zebra = House-5 · ?who_water = Norwegian · ?who_zebra = Japanese
-                        “The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”
-  as :expect        not printed: these classes are a lower bound, and the claim would say they are all
-
-stderr: note: examples/zebra2.ein: partial — route 1 stopped before layer 5 at --region-budget 524288
-
-exit 0
-```
-
-**At `--region-budget 33554432`** (2²⁵ facts; 22 s at `-j 8`) R is exhausted:
-one state, 261 982 commitments, 63 minimal generators, and four of them single
-facts. R as one `(region …)` is 111 lines, past stdout's 100, so stdout lists
-the state and leaves out the `(merged …)`, and says where it is.
-
-`ein solve --region-budget 33554432 examples/zebra2.ein` — 22 s at `-j 8`
-
-```text
-solve · --region-budget 33554432 examples/zebra2.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      1
@@ -1063,8 +1014,8 @@ solve · --region-budget 33554432 examples/zebra2.ein
   N                 366 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates, 21 dead alone
-  route             1, the alive down-set — L1 dead is upward-closed
-  work              270 579 saturations · 15 094 278 facts beyond root · 19 layers
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              374 saturations · 42 705 facts beyond root · 12 layers
 
   ;; R as one (region …) is 111 lines, past stdout's 100: what fits is below, not wrapped in a (region …)
   ;; state 1 of 1 — 18 candidates · minimal and maximal · 261 982 commitments, 63 minimal
@@ -1100,10 +1051,10 @@ exit 0
 whole `(region …)`, whose `(merged …)` lists all 63 minimal commitments. That
 is what pins k_c, and it reads back as the claim.
 
-`ein solve --dump-answer DIR --region-budget 33554432 examples/zebra2.ein` — `DIR/answer.txt`
+`ein solve --dump-answer DIR examples/zebra2.ein` — `DIR/answer.txt`
 
 ```text
-solve · --region-budget 33554432 examples/zebra2.ein
+solve · examples/zebra2.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
   states (k_s)      1
@@ -1118,8 +1069,8 @@ solve · --region-budget 33554432 examples/zebra2.ein
   N                 366 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          56 candidates, 21 dead alone
-  route             1, the alive down-set — L1 dead is upward-closed
-  work              270 579 saturations · 15 094 278 facts beyond root · 19 layers
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              374 saturations · 42 705 facts beyond root · 12 layers
 
   (region
     ;; state 1 of 1 — 18 candidates · minimal and maximal · 261 982 commitments, 63 minimal
@@ -1330,12 +1281,14 @@ exit 0
 ## X11 — `saturation/square-bwd/floors.ein`: a region that is the whole cube
 
 No restriction and no obligation: every commitment is alive and in R, 2²⁰ of
-them. **Describe** stops after layer 5, partial. Both lines are still exact:
-∅ is in R, so the minimal line is {∅}, and one saturation of ⊤ finds it alive
-and owing nothing, so the maximal line is {⊤}. Those two are what it lists.
-The 10 075 other members it met go to `--dump-answer`, not to the screen, and
-the query's one class is printed without `as :expect`, since it is a lower
-bound.
+them. **Describe** stops at the default budget, partial, and R is still
+decided: ∅ is in R, and one saturation of ⊤ finds it alive and owing nothing,
+so R is the whole cube (L1, L2). k_c, both lines, the one component, the one
+sub-cube and N are exact. What is not is the states: 27 559 of them, and the
+state route counts those of up to six candidates before its budget. The two
+line states are what it lists. The other members it met go to
+`--dump-answer`, not to the screen, and the query's one class is printed
+without `as :expect`, since it is a lower bound.
 
 `ein solve examples/saturation/square-bwd/floors.ein`
 
@@ -1343,19 +1296,20 @@ bound.
 solve · examples/saturation/square-bwd/floors.ein
 ──────────────────────────────────────────────────────────────
   asked             all of R — describe
-  states (k_s)      10 077   (a lower bound: complete up to commitments of 5 candidates)
-  commitments (k_c) 21 701   (a lower bound: complete up to commitments of 5 candidates)
-  exhausted         no — route 1 stopped before layer 6: its 38 760 commitments project 387 600 facts on top of the 197 809 spent, past --region-budget 524288
+  states (k_s)      17 449   (a lower bound: complete up to states of 6 candidates)
+  commitments (k_c) 1 048 576
+  exhausted         no — R is decided: ∅ and ⊤ are both in it, so it is the whole cube (L1, L2), and only its states are not all counted. The state route stopped before the states of 7 candidates: their 21 752 extensions project 195 768 facts on top of the 426 484 spent, past --region-budget 524288
   ∅                 in R — root is alive and owes nothing
   minimal line      1 state — ∅, the trivial line: no obligation is stated
   maximal line      1 state — ⊤, every candidate: no node is dead, the trivial line, certified by one saturation
-  components        not known: R was not exhausted
-  sub-cubes         not known
-  N                 ≥ 0 minimal dead sets — complete up to size 5
+  components        1
+  sub-cubes         1, of dimension 20
+  merged            not known: the run did not meet every state
+  N                 0 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          20 candidates, 0 dead alone
-  route             1, the alive down-set — L1 dead is upward-closed
-  work              21 701 saturations · 197 833 facts beyond root · 6 layers
+  route             the state route, every alive state once — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              42 711 saturations · 426 508 facts beyond root · 8 layers
 
   ;; the line members this run certified. Not a (region …): read back, it would claim these are all of R.
   ;; state 1 of 2 — ∅, root itself · minimal
@@ -1376,15 +1330,15 @@ solve · examples/saturation/square-bwd/floors.ein
          (co-located Floor4 Floor4) (co-located Floor4 Floor5)
          (co-located Floor5 Floor1) (co-located Floor5 Floor2)
          (co-located Floor5 Floor4) (co-located Floor5 Floor5))
-  ;; 10 075 other members met are not certified on a line, and not listed: --dump-answer DIR writes each to DIR/models/
+  ;; 17 447 other members met are not certified on a line, and not listed: --dump-answer DIR writes each to DIR/models/
 
   query             (co-located Floor2 Floor5)
-  over              all of R — 10 077 states → 1 projection class  (a lower bound)
-    class 1 of 1    10 077 states
+  over              all of R — 17 449 states → 1 projection class  (a lower bound)
+    class 1 of 1    17 449 states
                       the goal holds: it has no variable
   as :expect        not printed: these classes are a lower bound, and the claim would say they are all
 
-stderr: note: examples/saturation/square-bwd/floors.ein: partial — route 1 stopped before layer 6 at --region-budget 524288
+stderr: note: examples/saturation/square-bwd/floors.ein: partial — the state route stopped before the states of 7 candidates at --region-budget 524288
 
 exit 0
 ```
@@ -1512,8 +1466,8 @@ solve · tests/region/03_merged_or.ein
   N                 0 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          3 candidates, 0 dead alone
-  route             1, the alive down-set — L1 dead is upward-closed
-  work              8 saturations · 17 facts beyond root · 4 layers
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              7 saturations · 14 facts beyond root · 4 layers
 
   (region
     ;; state 1 of 4 — ∅, root itself · minimal
@@ -1576,8 +1530,8 @@ solve · examples/saturation/type-exclusivity/colors.ein
   N                 4 minimal dead sets
   lattice           monotone (the static check) — R is convex: no hole
   universe          8 candidates, 0 dead alone
-  route             1, the alive down-set — L1 dead is upward-closed
-  work              173 saturations · 644 facts beyond root · 7 layers
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              173 saturations · 644 facts beyond root · 8 layers
 
   ;; R as one (region …) is 537 lines, past stdout's 100: what fits is below, not wrapped in a (region …)
   ;; state 1 of 169 — ∅, root itself · minimal

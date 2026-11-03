@@ -370,6 +370,7 @@ fn region_op(
                     route: match a.route {
                         explore::Route::DownSet => "1, the alive down-set",
                         explore::Route::Cube => "2, the cube",
+                        explore::Route::States => "the state route, every alive state once",
                     },
                     candidates: &candidates,
                 },

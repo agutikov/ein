@@ -126,8 +126,8 @@ add("""---
 | [X7](#x7--testsstdlibalgebra09_irreflexive_violatedein-r-empty-every-node-dead) | `tests/stdlib/algebra/09_irreflexive_violated.ein` | 0 | empty R, the dead kind; `--single` says `Contradiction` |
 | [X8](#x8--ein-bugsnaf-upward-closureein-a-hole) | `ein-bugs/naf-upward-closure.ein` | 2 | a program the static check flags: route 2, a hole, the warning |
 | [X9](#x9--lattice06_friends_tablesein-flagged-and-past-the-limit) | `lattice/06_friends_tables.ein` | 19 | flagged and past `--region-limit`: members, never line members |
-| [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: partial at the default budget and already answered; exhausted at 2²⁵, cut on stdout and whole in `answer.txt`; `--maximal -n 1`; `--single` |
-| [X11](#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) | `saturation/square-bwd/floors.ein` | 20 | R is the whole cube: partial, with both trivial lines certified; the first questions in 1–11 saturations |
+| [X10](#x10--zebra2ein-the-puzzle) | `zebra2.ein` | 56 | the puzzle: exhausted at the default budget by the state route, cut on stdout and whole in `answer.txt`; `--maximal -n 1`; `--single` |
+| [X11](#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube) | `saturation/square-bwd/floors.ein` | 20 | R is the whole cube: decided, its states counted in part; the first questions in 1–11 saturations |
 | [X12](#x12--testsregion03_merged_orein-a-program-that-states-its-region) | `tests/region/03_merged_or.ein` | 3 | a program that states its region: the printed region is its claim |
 | [X13](#x13--saturationtype-exclusivitycolorsein-an-exhausted-r-past-100-lines) | `saturation/type-exclusivity/colors.ein` | 8 | an exhausted R past stdout's 100 lines: what fits, and where the rest is |
 """)
@@ -295,23 +295,20 @@ add(block(["examples/lattice/06_friends_tables.ein"]))
 
 add("""## X10 — `zebra2.ein`: the puzzle
 
-**At the default budget** route 1 stops before layer 5. It is partial, and it
-has already answered the puzzle: the one state it found is certified minimal,
-reached from the single fact `(drink-loc Juice House-4)`, and certified
-maximal. The query's class is printed with the lower-bound label.
+**At the default budget** the state route describes R exhausted, since
+S1e2.1c.2: 374 saturations and 42 705 facts, where route 1 stopped before its
+layer 5 with the puzzle answered and nothing certified past it. R is one
+state, 261 982 commitments, 63 minimal generators, and four of them single
+facts. R as one `(region …)` is 111 lines, past stdout's 100, so stdout lists
+the state and leaves out the `(merged …)`, and says where it is. The query's
+class is exact, so it is printed with its `as :expect`.
 """)
 add(block(["examples/zebra2.ein"]))
-add("""**At `--region-budget 33554432`** (2²⁵ facts; 22 s at `-j 8`) R is exhausted:
-one state, 261 982 commitments, 63 minimal generators, and four of them single
-facts. R as one `(region …)` is 111 lines, past stdout's 100, so stdout lists
-the state and leaves out the `(merged …)`, and says where it is.
-""")
-add(block(["--region-budget", "33554432", "--jobs", "8", "examples/zebra2.ein"], note="22 s at `-j 8`"))
 add("""**What `--dump-answer DIR` writes to `DIR/answer.txt`** for the same run: the
 whole `(region …)`, whose `(merged …)` lists all 63 minimal commitments. That
 is what pins k_c, and it reads back as the claim.
 """)
-add(block(["--uncut", "--region-budget", "33554432", "--jobs", "8", "examples/zebra2.ein"], note="`DIR/answer.txt`"))
+add(block(["--uncut", "examples/zebra2.ein"], note="`DIR/answer.txt`"))
 add("""**`--maximal -n 1`**: a complete solution, 54 saturations.
 """)
 add(block(["--maximal", "-n", "1", "examples/zebra2.ein"]))
@@ -322,12 +319,14 @@ add(block(["--single", "examples/zebra2.ein"]))
 add("""## X11 — `saturation/square-bwd/floors.ein`: a region that is the whole cube
 
 No restriction and no obligation: every commitment is alive and in R, 2²⁰ of
-them. **Describe** stops after layer 5, partial. Both lines are still exact:
-∅ is in R, so the minimal line is {∅}, and one saturation of ⊤ finds it alive
-and owing nothing, so the maximal line is {⊤}. Those two are what it lists.
-The 10 075 other members it met go to `--dump-answer`, not to the screen, and
-the query's one class is printed without `as :expect`, since it is a lower
-bound.
+them. **Describe** stops at the default budget, partial, and R is still
+decided: ∅ is in R, and one saturation of ⊤ finds it alive and owing nothing,
+so R is the whole cube (L1, L2). k_c, both lines, the one component, the one
+sub-cube and N are exact. What is not is the states: 27 559 of them, and the
+state route counts those of up to six candidates before its budget. The two
+line states are what it lists. The other members it met go to
+`--dump-answer`, not to the screen, and the query's one class is printed
+without `as :expect`, since it is a lower bound.
 """)
 add(block(["examples/saturation/square-bwd/floors.ein"]))
 add("""**The first questions** cost what [`solve_interface.md` § 3.4](solve_interface.md#34-what-it-costs)

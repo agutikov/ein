@@ -185,6 +185,12 @@ pub struct StateRoute {
     /// The largest state size extended — every alive state of at most this
     /// many candidates is in [`Self::states`] and extended.
     pub complete_up_to: Option<usize>,
+    /// On a run its budget stopped: the state size it did not extend.
+    pub stopped_size: Option<usize>,
+    /// Every commitment whose state the run knows, with that state: root,
+    /// each alive extension saturated, and each state's closure (L3). What a
+    /// partial run certifies about the commitments it met is read off it.
+    pub reached: FxHashMap<Box<[u32]>, u32>,
     pub top: Option<Top>,
     pub cost: Cost,
 }
@@ -275,6 +281,8 @@ pub(crate) fn compute_prepared(
         known: 0,
         declined: None,
         complete_up_to: None,
+        stopped_size: None,
+        reached: FxHashMap::default(),
         top: None,
         cost: Cost::default(),
     };
@@ -366,6 +374,8 @@ pub(crate) fn compute_prepared(
             let closure: Box<[u32]> = o.closure.into_boxed_slice();
             by_state.insert(o.state, 0);
             by_closure.insert(closure.clone(), 0);
+            out.reached.insert(Box::default(), 0);
+            out.reached.insert(closure.clone(), 0);
             pending.entry(closure.len()).or_default().push(0);
             out.states.push(State {
                 bits: Bits::of(n, &closure),
@@ -454,6 +464,7 @@ pub(crate) fn compute_prepared(
                 projected,
             });
             pending.insert(size, layer_states);
+            out.stopped_size = Some(size);
             break;
         }
 
@@ -539,6 +550,7 @@ pub(crate) fn compute_prepared(
                         }
                         by_state.insert(o.state, t);
                         by_closure.insert(closure.clone(), t);
+                        out.reached.insert(closure.clone(), t);
                         pending.entry(closure.len()).or_default().push(t);
                         out.states.push(State {
                             bits,
@@ -556,6 +568,7 @@ pub(crate) fn compute_prepared(
                     }
                 };
                 out.states[t as usize].met += 1;
+                out.reached.insert(set.clone(), t);
                 for &(s, _) in pairs {
                     // Discharged is upward-closed: a state of R has no owing
                     // state above it.
@@ -680,6 +693,10 @@ pub struct Description {
     /// `N`, by size and then by candidates — `None` where the run does not
     /// know it.
     pub nogoods: Option<Vec<Box<[u32]>>>,
+    /// On a partial run that does not know `N`: the members of it the run
+    /// met and certified, each a dead set it saturated whose every one-down
+    /// subset is a commitment it knows alive.
+    pub nogoods_met: Vec<Box<[u32]>>,
     /// The components' sizes in commitments, in the order of their least
     /// minimal commitment — `None` on a partial run.
     pub components: Option<Vec<u64>>,
@@ -778,6 +795,34 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
     // The minimal line: ∅ when root's state is in R; otherwise the minimal
     // sets among the generators of R's extended states.
     let root_in_r = !s.root.dead && s.root.owes == 0;
+    // A partial run knows the generators of the states it extended. Of a
+    // state it met and did not extend, it certifies a commitment it met when
+    // every one-down subset is a commitment whose state it knows and that
+    // state owes: the commitment is then minimal in R (L2), and so a minimal
+    // generator of its state.
+    let mut met: Vec<(&Box<[u32]>, u32)> = if exhausted {
+        Vec::new()
+    } else {
+        // determinism-ok: sorted by size and then candidates below.
+        s.reached.iter().map(|(c, &t)| (c, t)).collect()
+    };
+    met.sort_by(|a, b| (a.0.len(), a.0).cmp(&(b.0.len(), b.0)));
+    let mut probe: Vec<u32> = Vec::new();
+    for (c, t) in met {
+        let st = &s.states[t as usize];
+        if st.extended || !st.in_r() {
+            continue;
+        }
+        let certified = (0..c.len()).all(|k| {
+            crate::downset::without(c, k, &mut probe);
+            s.reached
+                .get(&probe[..])
+                .is_some_and(|&u| !s.states[u as usize].in_r())
+        });
+        if certified {
+            generators[t as usize].push(c.clone());
+        }
+    }
     let minimal: Vec<(Box<[u32]>, u32)> = if root_in_r {
         vec![(Box::default(), 0)]
     } else {
@@ -840,6 +885,20 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
     } else {
         None
     };
+    let mut nogoods_met: Vec<Box<[u32]>> = Vec::new();
+    if nogoods.is_none() {
+        for x in &s.dead {
+            let alive_below = x.set.is_empty()
+                || (0..x.set.len()).all(|k| {
+                    crate::downset::without(&x.set, k, &mut probe);
+                    s.reached.contains_key(&probe[..])
+                });
+            if alive_below {
+                nogoods_met.push(x.set.clone());
+            }
+        }
+        nogoods_met.sort_by(|a, b| (a.len(), a).cmp(&(b.len(), b)));
+    }
 
     let k_c: u64 = if exhausted {
         let mut sum = 0u128;
@@ -939,6 +998,7 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
         minimal,
         maximal,
         nogoods,
+        nogoods_met,
         components,
         subcubes,
         frontier,

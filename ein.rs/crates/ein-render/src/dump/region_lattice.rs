@@ -126,12 +126,12 @@ pub fn markdown(v: &Visits, inputs: &Inputs<'_>) -> String {
         format!("# Visited nodes — `{}`", inputs.source),
         String::new(),
         format!(
-            "`ein solve {}`: {} node{} by route {}, in visit order, over {} candidate{}. \
+            "`ein solve {}`: {} node{} by {}, in visit order, over {} candidate{}. \
              `nodes.json` holds the same, and `--events` each node's firings.",
             inputs.argv,
             v.nodes.len(),
             if v.nodes.len() == 1 { "" } else { "s" },
-            inputs.route,
+            by_route(inputs.route),
             inputs.candidates.len(),
             if inputs.candidates.len() == 1 {
                 ""
@@ -184,7 +184,7 @@ pub fn markdown(v: &Visits, inputs: &Inputs<'_>) -> String {
         out.push("## After the last step".to_string());
         out.push(String::new());
         out.push(
-            "A node visited outside a step: route 1's one saturation of ⊤ when its budget \
+            "A node visited outside a step: the route's one saturation of ⊤ when its budget \
              stopped it."
                 .to_string(),
         );
@@ -249,11 +249,11 @@ pub fn dot(v: &Visits, inputs: &Inputs<'_>, full: bool) -> String {
     out.push(format!(
         "  label={};",
         quote(&format!(
-            "{} — {} of {} nodes visited by route {}{}",
+            "{} — {} of {} nodes visited by {}{}",
             inputs.source,
             shown,
             v.nodes.len(),
-            inputs.route,
+            by_route(inputs.route),
             if full { "" } else { ": R and where it stops" }
         ))
     ));
@@ -301,4 +301,14 @@ pub fn dot(v: &Visits, inputs: &Inputs<'_>, full: bool) -> String {
     }
     out.push("}".to_string());
     format!("{}\n", out.join("\n"))
+}
+
+/// `route 1, the alive down-set` for a numbered route, and the state route's
+/// name as it is.
+fn by_route(route: &str) -> String {
+    if route.starts_with(|c: char| c.is_ascii_digit()) {
+        format!("route {route}")
+    } else {
+        route.to_string()
+    }
 }

@@ -23,6 +23,7 @@ use crate::downset::{DownSet, Point};
 use crate::explore::Route;
 use crate::monotone::Monotonicity;
 use crate::region::{Candidate, DEAD, OWING, Region};
+use crate::states::{self, StateRoute};
 
 /// Root, the commitment `∅`.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -133,8 +134,11 @@ pub struct Described {
     /// of at most this many candidates was visited.
     pub complete_up_to: Option<usize>,
     /// On a route-1 run its budget stopped: the layer it did not take, and
-    /// that layer's commitments.
+    /// that layer's commitments. On a state-route run, the same for its
+    /// layers, whose commitments are the extensions it did not saturate.
     pub stopped_before: Option<(usize, u64)>,
+    /// On a state-route run its budget stopped: how it is partial.
+    pub states_partial: Option<StatesPartial>,
     pub root: Root,
     /// Some node is alive.
     pub any_alive: bool,
@@ -403,6 +407,7 @@ pub fn of_downset(d: &DownSet) -> Described {
             Some(crate::downset::Declined::Budget { layer, next, .. }) => Some((layer, next)),
             _ => None,
         },
+        states_partial: None,
         root: root_of(points.first(), d.root_dead),
         any_alive,
         k_c,
@@ -478,6 +483,186 @@ fn maximal_met(d: &DownSet, index: &FxHashMap<&[u32], u32>) -> FxHashSet<u32> {
         })
         .map(|p| p.class)
         .collect()
+}
+
+/// How a state-route description its budget stopped is partial — M1e2
+/// S1e2.1c.2. Route 1's partial run is complete up to commitments of a size
+/// ([`Described::complete_up_to`]); the state route's is complete up to
+/// **states** of a size.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct StatesPartial {
+    /// Every alive state of at most this many candidates was met and
+    /// extended. `None` when the route stopped before extending any.
+    pub up_to: Option<usize>,
+    /// The state size the route did not extend, and that layer's extensions.
+    pub stopped_at: (usize, u64),
+    /// `R` is decided anyway: ∅ and ⊤ are both in it, so it is the whole cube
+    /// (L1, L2). `k_c`, both lines, the components, the sub-cubes and `N` are
+    /// exact; `k_s` and the merged states are not.
+    pub cube: bool,
+    /// `N` is known: ⊤ is alive, so no node is dead.
+    pub nogoods_known: bool,
+}
+
+/// The state route's run, described: exhausted when it extended every alive
+/// state, partial when its budget stopped it.
+pub fn of_states(s: &StateRoute, d: &states::Description) -> Described {
+    let n = s.n();
+    let exhausted = d.exhausted;
+    // determinism-ok: `d.minimal` and `d.maximal` are vectors in canonical
+    // order, collected into sets that are only looked up.
+    let minimal_states: FxHashSet<u32> = d.minimal.iter().map(|(_, i)| *i).collect();
+    // determinism-ok: as above.
+    let maximal: FxHashSet<u32> = d.maximal.iter().copied().collect();
+    let mut k_c = d.k_c;
+    let mut states: Vec<State> =
+        d.r.iter()
+            .map(|&i| {
+                let st = &s.states[i as usize];
+                let generators = d.generators[i as usize].clone();
+                State {
+                    rep: generators
+                        .first()
+                        .cloned()
+                        .unwrap_or_else(|| st.from.clone()),
+                    closure: st.closure.clone(),
+                    commitments: d.commitments[i as usize].unwrap_or(st.met),
+                    generators,
+                    minimal: minimal_states.contains(&i),
+                    maximal: maximal.contains(&i),
+                }
+            })
+            .collect();
+    // ⊤ saturated once on a partial run, as route 1 does: in R, it certifies
+    // the trivial maximal line.
+    if let Some(top) = &s.top
+        && !top.dead
+        && top.owes == 0
+    {
+        let all: Box<[u32]> = (0..n as u32).collect();
+        match states.iter_mut().find(|x| x.closure.len() == n) {
+            Some(x) => x.maximal = true,
+            None => {
+                if !d.cube {
+                    k_c += 1;
+                }
+                states.push(State {
+                    rep: all.clone(),
+                    closure: all,
+                    commitments: 1,
+                    generators: Vec::new(),
+                    minimal: false,
+                    maximal: true,
+                });
+            }
+        }
+    }
+    canonical(&mut states);
+    let shape = match (&d.components, &d.subcubes) {
+        (Some(c), Some(cubes)) => Some(Shape {
+            components: c.clone(),
+            subcubes: Some(cubes.iter().map(|(a, b)| b.len() - a.len()).collect()),
+            discharging: None,
+            holes: s.root.dead.then(|| (0, Vec::new())),
+        }),
+        _ => None,
+    };
+    // N where the run knows it; on a partial run, the members it certified.
+    let nogoods: Vec<Box<[u32]>> = d.nogoods.clone().unwrap_or_else(|| d.nogoods_met.clone());
+    let dead: Vec<Dead> = nogoods
+        .iter()
+        .map(|set| {
+            let saturated = s.dead.iter().find(|x| x.set == *set);
+            Dead {
+                set: set.clone(),
+                core: saturated.map(|x| x.core.clone()).unwrap_or_default(),
+                refuted_by: saturated.map(|x| x.refuted_by.clone()).unwrap_or_default(),
+            }
+        })
+        .collect();
+    // A candidate is dead alone when root's state plus it is dead: the first
+    // layer saturates every such extension, and a dead root makes every one.
+    let first = s.states.first();
+    let dead_alone_set: Vec<u32> = if s.root.dead {
+        (0..n as u32).collect()
+    } else {
+        (0..n as u32)
+            .filter(|&b| {
+                first.is_some_and(|r| {
+                    !r.bits.contains(b) && s.dead.iter().any(|x| x.set == super_with(&r.closure, b))
+                })
+            })
+            .collect()
+    };
+    let frontier = d
+        .frontier
+        .iter()
+        .map(|&i| {
+            let st = &s.states[i as usize];
+            Owing {
+                set: st.closure.clone(),
+                owes: st.owes,
+                owed: st.owed.clone(),
+            }
+        })
+        .collect();
+    let partial = match &s.declined {
+        Some(crate::downset::Declined::Budget { next, .. }) if !exhausted => Some(StatesPartial {
+            up_to: s.complete_up_to,
+            stopped_at: (s.stopped_size.unwrap_or(0), *next),
+            cube: d.cube,
+            nogoods_known: d.nogoods.is_some(),
+        }),
+        _ => None,
+    };
+    let any_dead = !s.dead.is_empty() || s.pruned > 0 || s.top.as_ref().is_some_and(|t| t.dead);
+    Described {
+        candidates: s.candidates.clone(),
+        monotonicity: s.monotonicity.clone(),
+        route: Route::States,
+        exhausted,
+        complete_up_to: None,
+        stopped_before: match s.declined {
+            Some(crate::downset::Declined::Budget { layer, next, .. }) => Some((layer, next)),
+            _ => None,
+        },
+        states_partial: partial,
+        root: Root {
+            alive: !s.root.dead,
+            owes: s.root.owes,
+            owed: s.root.owed.clone(),
+            core: s.root.core.clone(),
+            refuted_by: s.root.refuted_by.clone(),
+            sources: s.root.sources.clone(),
+        },
+        any_alive: !s.root.dead,
+        k_c,
+        // determinism-ok: `d.minimal` is a vector, by size and then candidates.
+        minimal_commitments: d.minimal.iter().map(|(g, _)| g.clone()).collect(),
+        nogoods: nogoods.len() as u64,
+        dead,
+        dead_alone: dead_alone_set.len() as u64,
+        dead_alone_set,
+        owing_met: s.states.iter().any(|x| x.owes > 0)
+            || s.dead.iter().any(|x| x.owes > 0)
+            || s.top.as_ref().is_some_and(|t| t.owes > 0),
+        dead_met: any_dead,
+        states,
+        shape,
+        frontier,
+        work: Work {
+            saturations: s.saturations(),
+            facts: s.facts(),
+            layers: Some(s.layers.len()),
+        },
+    }
+}
+
+fn super_with(set: &[u32], b: u32) -> Box<[u32]> {
+    let mut v = set.to_vec();
+    let at = v.partition_point(|&x| x < b);
+    v.insert(at, b);
+    v.into_boxed_slice()
 }
 
 /// `g ⊆ m`, as masks.
@@ -581,6 +766,7 @@ pub fn of_cube(r: &Region) -> Described {
         exhausted: true,
         complete_up_to: None,
         stopped_before: None,
+        states_partial: None,
         root: Root {
             alive: !r.root_dead && alive(0),
             owes: root.owes,

@@ -296,19 +296,42 @@ pub fn of_read_out(
             });
         }
     }
-    let dead = r
-        .described()
-        .map(|d| {
-            d.dead
-                .iter()
-                .map(|x| DeadTrace {
-                    set: set_name(&x.set),
-                    core: x.core.clone(),
-                    refuted_by: x.refuted_by.clone(),
-                })
-                .collect()
-        })
-        .unwrap_or_default();
+    let mut dead: Vec<DeadTrace> = Vec::new();
+    if let Some(d) = r.described() {
+        // A member of N the route did not saturate (the state route reads N
+        // off the maximal alive states) is saturated here for its core.
+        let mut nodes = None;
+        for x in &d.dead {
+            let (core, refuted_by) = if d.route == ein_infer::explore::Route::States
+                && x.core.is_empty()
+                && !x.set.is_empty()
+            {
+                if nodes.is_none() {
+                    nodes = Some(
+                        ein_infer::region::Nodes::new(kb, terms, ast, &a.candidates)
+                            .map_err(|e| e.to_string())?,
+                    );
+                }
+                let facts: Vec<ein_core::FactId> = x
+                    .set
+                    .iter()
+                    .map(|&b| a.candidates[b as usize].fact)
+                    .collect();
+                nodes
+                    .as_mut()
+                    .expect("made above")
+                    .refutation(&facts)
+                    .map_err(|e| e.to_string())?
+            } else {
+                (x.core.clone(), x.refuted_by.clone())
+            };
+            dead.push(DeadTrace {
+                set: set_name(&x.set),
+                core,
+                refuted_by,
+            });
+        }
+    }
     let owing = match &r.listing {
         Listing::Owing(f) => f
             .iter()

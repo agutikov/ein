@@ -92,6 +92,7 @@ fn computed(path: &Path) -> Result<Region, String> {
         route: match a.route {
             Route::DownSet => "route 1",
             Route::Cube => "route 2",
+            Route::States => "state route",
         }
         .to_string(),
         monotone: a.monotonicity.is_monotone(),

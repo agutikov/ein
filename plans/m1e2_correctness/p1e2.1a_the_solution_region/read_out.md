@@ -122,7 +122,7 @@ and the rule under it, so a transcript still starts the same way.
 | `E` | the minimal discharging sets. **Cube only**: route 1 computes only E's alive members, which are the minimal line | X8: `1 minimal discharging set` |
 | `lattice` | the static check, and on a flagged program the detector's warning under it and the holes (§ 6.3) | `monotone (the static check) — R is convex: no hole` |
 | `universe` | n, and how many candidates are dead alone, which no state can hold | `9 candidates, 6 dead alone`; X6: `no candidate: R is {∅} or empty, decided by root alone` |
-| `route` | the route, and the licences it used | `1, the alive down-set — licence L1, dead is upward-closed` |
+| `route` | the route, and the licences it used | `1, the alive down-set — licence L1, dead is upward-closed`; describe on a monotone program since M1e2 S1e2.1c.2: `the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local` |
 | `work` | saturations, facts beyond root and layers, as the interface's § 2.1 asks of every run. They do not depend on the machine or on `-j` (`every_mode_at_four_jobs_is_every_mode_at_one`). A speed lever may move them, which C4 allows (*cost counters aside*), so the lever sweeps compare every row but this one (§ 12). The wall clock stays behind `-s` and `-t` | `14 saturations · 66 facts beyond root · 4 layers` |
 
 **Then the region itself**, in the form S1e2.1a.4 reads back:
@@ -256,13 +256,27 @@ follows:
 | the listing | **the certified line members only**, as `(model …)`s, cut at 100 lines like any listing (§ 4.1), with one comment saying how many other members were met and that `--dump-answer` writes each to `models/` | rule 4; the floors run met 10 075 other members (X11), and they are not the answer to *describe* |
 | queries | over every member met, marked *a lower bound*, cut at 100 lines, and **no `as :expect`** | each class shown is real; there may be more, and a pasted claim would say there are not |
 
+**The state route's partial run** (describe on a monotone program, since M1e2
+[S1e2.1c.2](../p1e2.1c_the_region_search/s1e2.1c.2_the_lines_by_duality.md)).
+It takes the alive states by size and stops between sizes, so what it
+certifies is *complete up to states of k candidates*, not commitments:
+
+| row | on a partial state-route run | why it holds |
+|---|---|---|
+| `states (k_s)`, `commitments (k_c)` | `≥`, *complete up to states of k candidates*. k_c counts every commitment of a state it extended (L3) and those met of the rest | every alive state of at most k candidates was met and extended |
+| `minimal line` | `≥ m — complete up to states of k candidates` | a generator of an extended state of R has every member of R below it among the extended states; a commitment met whose every one-down subset is a known owing state is minimal (L2) |
+| `maximal line` | ⊤'s line as route 1's; otherwise `≥ m — all those of up to k candidates` | an extended state whose every extension is dead (L4) |
+| `N` | `≥ x — those the run met with every one-down subset alive`; `0` when ⊤ is alive | a dead set saturated whose one-down subsets are all known alive is minimal |
+| **R is the whole cube** | when ∅ and ⊤ are both in R: k_c = 2ⁿ, both lines, one component, one sub-cube and N = 0, exact; `merged` *not known*; the `exhausted` row says R is decided and only its states are not all counted | L1 and L2: ⊤ alive makes every node alive, ∅ discharged every node discharged |
+
 [X10](read_out_examples.md#x10--zebra2ein-the-puzzle) is zebra2 at the
-default budget. It is partial, and it has answered the puzzle: its one state is
-certified minimal (from the single fact `(drink-loc Juice House-4)`) and
-maximal, and the query's class is printed with its label.
+default budget. Until S1e2.1c.2 it was partial there, with the puzzle answered:
+its one state certified minimal (from the single fact
+`(drink-loc Juice House-4)`) and maximal. The state route describes it
+exhausted at the default budget since.
 [X11](read_out_examples.md#x11--saturationsquare-bwdfloorsein-a-region-that-is-the-whole-cube)
-is a cube that is all of R. Both trivial lines are certified, the first by
-root and the second by one saturation of ⊤.
+is a cube that is all of R, partial at the default budget: R is decided, its
+states are counted in part.
 
 **A program the static check flags, past `--region-limit`**
 ([X9](read_out_examples.md#x9--lattice06_friends_tablesein-flagged-and-past-the-limit)):

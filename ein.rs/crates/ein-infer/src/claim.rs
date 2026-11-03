@@ -147,36 +147,55 @@ fn lattice(
     let prepared = prepare(root, terms, ast)?;
     let monotone = prepared.monotonicity.is_monotone();
     let n = prepared.candidates.len();
-    // A dead root decides any program (`explore::Licence::ForkOnlyAdds`).
-    if monotone || prepared.root_dead {
+    // Describe's route, as `ein solve` takes it (`explore`'s § Describe's
+    // route): the state route on a monotone program, route 1 on a flagged one
+    // whose root is dead (`explore::Licence::ForkOnlyAdds`), the cube else.
+    let route_opts = downset::Options {
+        budget: opts.budget,
+        max_visits: u64::MAX,
+        jobs: opts.jobs,
+        deadline: None,
+    };
+    if monotone {
+        let s = crate::states::compute_prepared(
+            root,
+            terms,
+            ast,
+            prepared,
+            t0,
+            &route_opts,
+            &mut crate::events::Events::off(),
+        )?;
+        match &s.declined {
+            None => {
+                let d = crate::states::describe(&s)?;
+                return Ok(Ok(of_described(described::of_states(&s, &d))));
+            }
+            Some(downset::Declined::Budget { layer, .. }) => {
+                return Ok(Err((
+                    format!(
+                        "R was not described: the state route stopped at its budget of {} \
+                         facts, before layer {layer}",
+                        opts.budget
+                    ),
+                    true,
+                )));
+            }
+            // A node contradicted the static verdict: take the cube.
+            Some(_) => {}
+        }
+    } else if prepared.root_dead {
         let d = downset::compute_prepared(
             root,
             terms,
             ast,
             prepared,
             t0,
-            &downset::Options {
-                budget: opts.budget,
-                max_visits: u64::MAX,
-                jobs: opts.jobs,
-                deadline: None,
-            },
+            &route_opts,
             &mut crate::events::Events::off(),
         )?;
-        match &d.declined {
-            None => return Ok(Ok(of_described(described::of_downset(&d)))),
-            Some(downset::Declined::Budget { layer, .. }) => {
-                return Ok(Err((
-                    format!(
-                        "R was not described: route 1 stopped at its budget of {} facts, \
-                         before layer {layer}",
-                        opts.budget
-                    ),
-                    true,
-                )));
-            }
-            // The cube contradicted the static verdict: take the cube.
-            Some(_) => {}
+        if d.declined.is_none() {
+            return Ok(Ok(of_described(described::of_downset(&d))));
         }
     }
     if n > opts.limit as usize {
@@ -189,7 +208,7 @@ fn lattice(
             monotone,
         )));
     }
-    // A fresh preparation: the one above went to route 1, or was never used.
+    // A fresh preparation: the one above went to a route, or was never used.
     let prepared = prepare(root, terms, ast)?;
     let outcome = region::compute_prepared(
         root,
@@ -292,6 +311,7 @@ fn of_described(d: Described) -> Lattice {
         route: match d.route {
             Route::DownSet => "route 1",
             Route::Cube => "route 2",
+            Route::States => "state route",
         },
         monotone: d.monotonicity.is_monotone(),
         any_alive: d.any_alive,

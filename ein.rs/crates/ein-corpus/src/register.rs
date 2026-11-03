@@ -45,7 +45,7 @@ pub const LINES: [&str; 3] = ["all", "minimal", "maximal"];
 pub const SUMMARY_EMPTY: [&str; 2] = ["dead", "owing"];
 
 /// The routes that compute a [`Region`], as `ein solve` names them.
-pub const ROUTES: [&str; 2] = ["route 1", "route 2"];
+pub const ROUTES: [&str; 3] = ["route 1", "route 2", "state route"];
 
 /// The two kinds of an empty `R`.
 pub const EMPTY_KINDS: [&str; 2] = ["no-alive", "all-owe"];
