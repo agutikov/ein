@@ -343,7 +343,8 @@ fn render_command() -> Command {
 
 /// `ein solve` — the one command for R, `solve_interface.md` § 2.1. Since M1e2
 /// S1e2.1a.5's switch it describes R by default, and `--minimal`, `--maximal`,
-/// `--single` and `-n N` each ask one question about it.
+/// `--single` and `-n N` each ask one question about it; since T1e2.1c.4.6
+/// `--count` asks how many states and commitments R holds.
 ///
 /// The nine options the switch retired stay in the parser, **hidden**, so that
 /// a stale argv is refused with the sentence naming what replaced it
@@ -363,7 +364,7 @@ fn solve_command() -> Command {
     let cmd = Command::new("solve")
         .about(
             "the solution region R: describe it, or ask one question about it \
-             (--minimal, --maximal, --single, -n N)",
+             (--minimal, --maximal, --single, -n N, --count)",
         )
         .arg(Arg::new("file").required(true))
         // ── the question: which part of R, and what is asked of it ──
@@ -415,6 +416,21 @@ fn solve_command() -> Command {
                     "expect exactly one state in the chosen part of R, answered \
                      Solution, Ambiguity, Contradiction or Open; every answer \
                      exits 0, and a run that stopped before it decided says so",
+                ),
+        )
+        // M1e2 T1e2.1c.4.6, the user's ruling of 2026-11-03: R's two counts
+        // and nothing listed. Its refusals name what answers the other
+        // question (`crate::modes`'s `COUNT_REFUSES`), so they are not
+        // clap's conflicts.
+        .arg(
+            Arg::new("count")
+                .long("count")
+                .action(ArgAction::SetTrue)
+                .help(
+                    "how many states and commitments R holds: describe's route, \
+                     R's two counts and the rows that qualify them, and nothing \
+                     listed. No state is read, so no query is answered and no \
+                     claim checked. Over all of R only",
                 ),
         )
         // M1e2 S1e2.1b.5, approved 2026-11-03: a question about the program.

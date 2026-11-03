@@ -29,7 +29,9 @@ pub fn mode_of(m: &ArgMatches) -> Mode {
     } else {
         Which::All
     };
-    let ask = if m.get_flag("single") {
+    let ask = if m.get_flag("count") {
+        Ask::Count
+    } else if m.get_flag("single") {
         Ask::Single
     } else if let Some(&n) = m.get_one::<i64>("solutions") {
         Ask::Find(n as u64)
@@ -107,8 +109,82 @@ pub fn header_argv(command: &str) -> String {
     shown.join(" ")
 }
 
+/// What `--count` refuses beside it, each with the sentence its refusal
+/// prints: the command that answers what the other option asks. `--count`
+/// answers one question, *how many?*, over all of R, and reads no state
+/// (M1e2 T1e2.1c.4.6), so an option that asks for a line, a listed state, a
+/// claim or another question is a usage error, exit 2, as a retired option
+/// is (`crate::solve::RETIRED`).
+const COUNT_REFUSES: [(&str, &str); 12] = [
+    (
+        "minimal",
+        "--count is over all of R only, and --minimal asks about its minimal line: a bare \
+         `ein solve FILE` describes R, the minimal line's size among it, and `ein solve FILE \
+         --minimal` lists the line",
+    ),
+    (
+        "maximal",
+        "--count is over all of R only, and --maximal asks about its maximal line: a bare \
+         `ein solve FILE` describes R, the maximal line's size among it, and `ein solve FILE \
+         --maximal` lists the line",
+    ),
+    (
+        "solutions",
+        "--count lists no state, and -n N asks for N of them: `ein solve FILE -n N` finds them",
+    ),
+    (
+        "single",
+        "--count and --single are two questions: `ein solve FILE --single` asks whether R is \
+         one state, and stops at its second",
+    ),
+    (
+        "monotone",
+        "--count and --monotone are two questions: `ein solve FILE --monotone` asks whether the \
+         program is monotone, and builds no node",
+    ),
+    (
+        "models",
+        "--count lists no state, and --models draws the states listed: a bare `ein solve FILE \
+         --models FORM` draws R's",
+    ),
+    (
+        "diff-models",
+        "--count lists no state, and --diff-models compares the states listed with a file: a \
+         bare `ein solve FILE --diff-models FILE` compares R's",
+    ),
+    (
+        "print-final-state",
+        "--count reads no state, and -p prints each listed state's facts: a bare `ein solve \
+         FILE -p` prints R's",
+    ),
+    (
+        "print-final-positive",
+        "--count reads no state, and -P prints each listed state's positive facts: a bare `ein \
+         solve FILE -P` prints R's",
+    ),
+    (
+        "print-final-hfacts",
+        "--count reads no state, and -f prints each listed state's candidates: a bare `ein \
+         solve FILE -f` prints R's",
+    ),
+    (
+        "hyp-stats",
+        "--count lists nothing, and -H lists H, the universe: a bare `ein solve FILE -H` lists \
+         it, and --count's universe row counts it",
+    ),
+    (
+        "trace",
+        "--count reads no state, and --trace writes each listed state's derivation: a bare \
+         `ein solve FILE --trace FILE.md` writes R's",
+    ),
+];
+
 pub fn run(m: &ArgMatches) -> i32 {
     let file = m.get_one::<String>("file").expect("required").clone();
+    let counting = m.get_flag("count");
+    if counting && crate::solve::refuse_retired(m, &COUNT_REFUSES) {
+        return 2;
+    }
     if m.get_flag("monotone") {
         return run_monotone(m, &file);
     }
@@ -126,8 +202,10 @@ pub fn run(m: &ArgMatches) -> i32 {
     let dump = m.get_one::<String>("dump-answer").cloned();
     if let Some(dir) = dump.as_deref() {
         // Every state file starts with the program's source, which a
-        // container does not carry.
-        if crate::common::looks_like_einb(&crate::common::read_bytes_or_crash(Path::new(&file))) {
+        // container does not carry. `--count` writes none.
+        if !counting
+            && crate::common::looks_like_einb(&crate::common::read_bytes_or_crash(Path::new(&file)))
+        {
             eprintln!(
                 "error: --dump-answer {dir}: a .einb container carries no program source, and \
                  every file the answer directory holds starts with it — run it on the .ein"
@@ -317,7 +395,19 @@ pub fn run(m: &ArgMatches) -> i32 {
     {
         crate::solve::artefact_failed("json-summary", path, e);
     }
-    if let Some(dir) = dump.as_deref() {
+    if let Some(dir) = dump.as_deref()
+        && counting
+    {
+        // `--count`'s answer is its read-out and the summary: it reads no
+        // state, so there is no state file to write, as `--monotone` writes
+        // none.
+        let answer_txt = uncut(&r, &file, opts.budget);
+        if let Err(e) =
+            ein_render::dump::region_answer::write_counted(Path::new(dir), &answer_txt, &summary)
+        {
+            crate::solve::artefact_failed("dump-answer", dir, e);
+        }
+    } else if let Some(dir) = dump.as_deref() {
         let program = crate::solve::inlined_program(&file);
         let answer_txt = uncut(&r, &file, opts.budget);
         let inputs = ein_render::dump::region_answer::Inputs {
@@ -763,11 +853,12 @@ impl Watcher {
 /// read-out names it. A mode on the state route meets only the states its
 /// question needs (M1e2 S1e2.1c.4); describe meets every alive one.
 pub(crate) fn route_words(answer: &explore::Answer) -> &'static str {
-    let describe = answer.mode
-        == explore::Mode {
-            which: explore::Which::All,
-            ask: explore::Ask::Describe,
-        };
+    // `--count` takes describe's route.
+    let describe = answer.mode.which == explore::Which::All
+        && matches!(
+            answer.mode.ask,
+            explore::Ask::Describe | explore::Ask::Count
+        );
     match answer.route {
         explore::Route::DownSet => "1, the alive down-set",
         explore::Route::Cube => "2, the cube",
@@ -856,7 +947,11 @@ fn timing(r: &ReadOut, load: Duration, run: Duration, print: Duration) {
         (
             "read-out",
             read,
-            "each listed state's model, the queries".to_string(),
+            if r.answer.mode.ask == Ask::Count {
+                "none: --count reads no state and answers no query".to_string()
+            } else {
+                "each listed state's model, the queries".to_string()
+            },
         ),
         ("print", print, "the text".to_string()),
     ] {

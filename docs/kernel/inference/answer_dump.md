@@ -106,6 +106,14 @@ fixpoint of the program.
   `index.json` names this format, `models/` and `owing/` are cleared before
   writing. A directory holding anything else is written beside and nothing in
   it is deleted.
+- **`--count` writes two files** (M1e2 T1e2.1c.4.6): `answer.txt`, its
+  read-out uncut, every warning row among it, and `answer.json`, its summary,
+  whose `asked.ask` is `count` and whose `region.states` and
+  `region.frontier` are `null`. It reads no state, so it writes no state file,
+  no `index.json` and no `nogoods.json`, as `--monotone` writes none; and
+  where `index.json` names this format it removes what that dump left, the
+  two top-level files with the subtrees
+  (`region_modes.rs::the_count_question_is_describes_counts`).
 
 ## The run summary
 

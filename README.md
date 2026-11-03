@@ -135,7 +135,9 @@ part — the work done is the least the question needs:
 - **`--maximal` / `--minimal`** — one line; **`-n N`** — `N` states;
 - **`--single`** — *is R one state?*, answered in the four words
   `Solution` / `Ambiguity` / `Contradiction` / `Open`. They appear under
-  this flag alone.
+  this flag alone;
+- **`--count`** — *how many?*: R's two counts and the rows that qualify
+  them, by describe's route, with nothing listed and no state read.
 
 An empty R says which kind it is: **every node dead**, reported with root's
 unsat core and the `:source` of each core fact, or **every alive node owes**,
@@ -403,6 +405,7 @@ ein solve <file>                   # describe R: its states, lines, components, 
 ein solve <file> --single          # is R one state? Solution / Ambiguity / Contradiction / Open
 ein solve <file> --maximal         # the maximal line — the complete answers (--minimal: the minimal one)
 ein solve <file> -n N              # N states, the least work that finds them
+ein solve <file> --count           # how many: k_s and k_c, nothing listed
 ein solve <file> --jobs 8          # fan each layer out over 8 threads (or `auto`)
 ein solve <file> --trace out.md    # + a self-contained markdown derivation trace
 ein solve <file> --events e.jsonl  # + the narration stream, one JSON object per step

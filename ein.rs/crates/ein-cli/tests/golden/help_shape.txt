@@ -59,7 +59,8 @@ COMMAND ein render rules
   POSITIONAL file required=True help=
   SUBCOMMAND saturate (delegated)
 COMMAND ein solve
-  ABOUT the solution region R: describe it, or ask one question about it (--minimal, --maximal, --single, -n N)
+  ABOUT the solution region R: describe it, or ask one question about it (--minimal, --maximal, --single, -n N, --count)
+  OPTION --count -- metavar=- arity=0 default=False choices=- group=- required=False help=how many states and commitments R holds: describe's route, R's two counts and the rows that qualify them, and nothing listed. No state is read, so no query is answered and no claim checked. Over all of R only
   OPTION --diff-models -- metavar=FILE arity=1 default=None choices=- group=- required=False help=after the read-out, compare the states it listed with the models FILE lists ('closes R …', then 'model' and one fact per line): what matches, what is missing, what is spurious and what is one fact off
   OPTION --dump-answer -- metavar=DIR arity=1 default=None choices=- group=- required=False help=write the answer as files to DIR: answer.txt (the read-out uncut), answer.json (= --json-summary), index.json, one loadable file per state, the owing frontier and N (docs/kernel/inference/answer_dump.md). DIR is made before the run; past that, stdout, stderr and the exit code are unchanged.
   OPTION --dump-config -c metavar=- arity=0 default=False choices=- group=- required=False help=print the resolved config before the read-out

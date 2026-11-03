@@ -790,6 +790,173 @@ fn the_monotone_question_is_about_the_program() {
     let _ = std::fs::remove_dir_all(&dir);
 }
 
+/// **`ein solve FILE --count`** — M1e2 T1e2.1c.4.6, the user's ruling of
+/// 2026-11-03: R's two counts and the rows that qualify them, describe's
+/// route, nothing listed. The block on `pets` is T1e2.1c.4.5's draft, the one
+/// the user approved, byte for byte. Every option that asks what `--count`
+/// does not answer is a usage error naming the command that does; a claim the
+/// program states is not checked, and one row and a `note:` per claim say so;
+/// `--dump-answer` writes the read-out and the summary and no state, and
+/// clears what a describe's dump left; the levers, `-t`, `--events` and
+/// `--dump-lattice` are taken. What its counts are is held to describe's and
+/// the oracle's elsewhere (`read_out.rs`, `explore.rs`, `lever_invariance.rs`).
+#[test]
+fn the_count_question_is_describes_counts() {
+    let pets = "examples/saturation/type-exclusivity/pets.ein";
+    let r = ein(&["solve", pets, "--count"]);
+    assert_eq!((r.code, r.err.as_str()), (0, ""), "{}", r.err);
+    assert_eq!(
+        r.out,
+        format!(
+            "solve · {pets} --count\n\
+             ──────────────────────────────────────────────────────────────\n\
+             \x20 asked             how many states and commitments R holds (--count)\n\
+             \x20 states (k_s)      11 339\n\
+             \x20 commitments (k_c) 11 339\n\
+             \x20 exhausted         yes — every commitment is classified: this is all of R\n\
+             \x20 ∅                 in R — root is alive and owes nothing\n\
+             \x20 lattice           monotone (the static check) — R is convex: no hole\n\
+             \x20 universe          15 candidates, 0 dead alone\n\
+             \x20 route             the state route, every alive state once — L1 dead is \
+             upward-closed · L3 a commitment's state is its closure's · L4 the lines are local\n\
+             \x20 work              11 351 saturations · 76 743 facts beyond root · 14 layers\n"
+        )
+    );
+    // The levers move nothing, header included, and `-t` adds its block.
+    for lever in ["-L", "-K", "-y"] {
+        let l = ein(&["solve", pets, "--count", lever]);
+        assert_eq!(
+            (l.code, &l.out, &l.err),
+            (r.code, &r.out, &r.err),
+            "{lever}"
+        );
+    }
+    let t = ein(&["solve", pets, "--count", "-t"]);
+    assert!(
+        t.out.contains("\n  read-out ") && t.out.contains("none: --count reads no state"),
+        "{}",
+        t.out
+    );
+
+    // What it does not answer, each refused with the command that does.
+    for (other, names) in [
+        ("--minimal", "a bare `ein solve FILE` describes R"),
+        ("--maximal", "a bare `ein solve FILE` describes R"),
+        ("-n 2", "`ein solve FILE -n N`"),
+        ("--single", "`ein solve FILE --single`"),
+        ("--monotone", "`ein solve FILE --monotone`"),
+        ("--models key", "`ein solve FILE --models FORM`"),
+        ("--models list", "`ein solve FILE --models FORM`"),
+        ("--diff-models x", "`ein solve FILE --diff-models FILE`"),
+        ("-p", "`ein solve FILE -p`"),
+        ("-P", "`ein solve FILE -P`"),
+        ("-f", "`ein solve FILE -f`"),
+        ("-H", "`ein solve FILE -H`"),
+        ("--trace x.md", "`ein solve FILE --trace FILE.md`"),
+    ] {
+        let mut args = vec!["solve", THREE, "--count"];
+        args.extend(other.split(' '));
+        let x = ein(&args);
+        assert_eq!((x.code, x.out.as_str()), (2, ""), "--count {other}");
+        assert!(
+            x.err.starts_with("error: --count ") && x.err.contains(names),
+            "--count {other}: {}",
+            x.err
+        );
+    }
+
+    // A claim is not checked, and says so: one row, a note per claim, exit 0.
+    let claimed = "tests/region/03_merged_or.ein";
+    let c = ein(&["solve", claimed, "--count"]);
+    assert_eq!(c.code, 0, "{}", c.err);
+    assert_eq!(
+        line(&c.out, "claims"),
+        "not checked — 1 claim, the (solve :expect): --count reads no state, so it checks no \
+         claim; a bare `ein solve FILE` checks it"
+    );
+    assert_eq!(
+        c.err,
+        format!(
+            "note: {claimed}: (solve :expect) NOT CHECKED — --count reads no state, so it checks \
+             no claim: a bare `ein solve FILE` checks it\n"
+        )
+    );
+    assert!(
+        !c.out.contains("(region") && !c.out.contains("query "),
+        "{}",
+        c.out
+    );
+
+    // A flagged program keeps the warning, and its spot check is not run.
+    let flagged = ein(&[
+        "solve",
+        "examples/ein-bugs/naf-upward-closure.ein",
+        "--count",
+    ]);
+    assert_eq!(flagged.code, 0, "{}", flagged.err);
+    for row in ["assumes", "site", "status", "state", "paths"] {
+        assert!(
+            flagged
+                .out
+                .lines()
+                .any(|l| l.starts_with(&format!("    {row} "))),
+            "no `{row}` row: {}",
+            flagged.out
+        );
+    }
+    assert!(line(&flagged.out, "paths").starts_with("not checked — "));
+    assert!(!flagged.out.contains("minimal hole"), "{}", flagged.out);
+
+    // The summary and the answer directory: the read-out and the summary, no
+    // state, and nothing a describe's dump left behind.
+    let dir = scratch("count");
+    std::fs::create_dir_all(&dir).expect("scratch");
+    let summary = dir.join("s.json");
+    let answer = dir.join("answer");
+    let a = answer.to_str().unwrap();
+    assert_eq!(ein(&["solve", claimed, "--dump-answer", a]).code, 0);
+    assert!(answer.join("index.json").exists() && answer.join("models").exists());
+    let d = ein(&[
+        "solve",
+        claimed,
+        "--count",
+        "--json-summary",
+        summary.to_str().unwrap(),
+        "--dump-answer",
+        a,
+    ]);
+    assert_eq!((d.code, &d.out, &d.err), (c.code, &c.out, &c.err));
+    let mut written: Vec<String> = std::fs::read_dir(&answer)
+        .expect("written")
+        .map(|e| {
+            e.expect("an entry")
+                .file_name()
+                .to_string_lossy()
+                .to_string()
+        })
+        .collect();
+    written.sort();
+    assert_eq!(written, ["answer.json", "answer.txt"]);
+    assert_eq!(
+        std::fs::read_to_string(answer.join("answer.txt")).expect("written"),
+        c.out
+    );
+    assert_eq!(
+        std::fs::read_to_string(answer.join("answer.json")).expect("written"),
+        std::fs::read_to_string(&summary).expect("written")
+    );
+    let s: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&summary).expect("written")).expect("JSON");
+    assert_eq!(s["asked"]["ask"], "count");
+    assert_eq!(
+        (s["region"]["k_s"].as_u64(), s["region"]["k_c"].as_u64()),
+        (Some(4), Some(8))
+    );
+    assert!(s["region"]["states"].is_null() && s["region"]["frontier"].is_null());
+    assert_eq!(s["claim"]["outcome"], "not-checked");
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
 /// The static rows of a read-out — `assumes`, `site`, `…`, `cycle`, `order`
 /// — in order: what `--monotone` prints after its `monotone` row, and what a
 /// flagged read-out's `lattice` block prints before its `status`.

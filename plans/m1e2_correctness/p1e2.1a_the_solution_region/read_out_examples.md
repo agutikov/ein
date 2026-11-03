@@ -26,7 +26,7 @@ is quoted.
 | | program | n | what it shows |
 |---|---|---:|---|
 | [X1](#x1--branching05_mini_zebraein-everything-at-once) | `branching/05_mini_zebra.ein` | 9 | the default read-out, every row; `(merged …)` with `(or …)`; a query with an undetermined class |
-| [X2](#x2--lattice02_genuine_3set_deathein-one-program-every-mode) | `lattice/02_genuine_3set_death.ein` | 3 | one program under every mode: describe, `--maximal`, `--minimal`, `-n 2`, `--single`, `--maximal --single` |
+| [X2](#x2--lattice02_genuine_3set_deathein-one-program-every-mode) | `lattice/02_genuine_3set_death.ein` | 3 | one program under every mode: describe, `--maximal`, `--minimal`, `-n 2`, `--single`, `--maximal --single`, `--count` |
 | [X3](#x3--features11_expect_ambiguityein-a-query-over-the-maximal-line) | `features/11_expect_ambiguity.ein` | 4 | a query `:over maximal`: the walk's only `(or …)` claim, migrated, and holding |
 | [X4](#x4--lattice07_two_pairs_two_tablesein-components-and-projection-classes) | `lattice/07_two_pairs_two_tables.ein` | 16 | the user's two tables: 8 components, and 2 projection classes of 4 |
 | [X5](#x5--latticesynthmerged_statesein-every-state-merged) | `lattice/synth/merged_states.ein` | 5 | ∅ not in R; a `(merged …)` on every state; two components |
@@ -120,7 +120,7 @@ exit 0
 
 [`solution_semantics.md` § 2.5](../../../docs/kernel/inference/solution_semantics.md#25-worked-exampleslattice02_genuine_3set_deathein)'s
 worked example: three candidates, every pair alive, the triple dead, no
-obligation. Six runs, one per mode, so the same R can be read through each
+obligation. Seven runs, one per mode, so the same R can be read through each
 question.
 
 **Describe.** Seven states, the three pairs on the maximal line, three
@@ -325,6 +325,31 @@ solve · --maximal --single examples/lattice/02_genuine_3set_death.ein
     class 1 of 1    2 states
                       ?x = X
   as :expect        not printed: these classes are over the states listed, and the query asks about all of R
+
+exit 0
+```
+
+**`--count`.** *How many?*, and nothing else (M1e2 T1e2.1c.4.6, the user's
+ruling of 2026-11-03): describe's route and its two counts, with the rows that
+qualify them, `exhausted`, `∅`, `lattice`, `universe`, `route` and `work`, each
+describe's text. No state is read, so nothing is listed and the query is not
+answered. Over all of R only: beside `--minimal` or `--maximal` it is a usage
+error that names a bare `ein solve`.
+
+`ein solve --count examples/lattice/02_genuine_3set_death.ein`
+
+```text
+solve · --count examples/lattice/02_genuine_3set_death.ein
+──────────────────────────────────────────────────────────────
+  asked             how many states and commitments R holds (--count)
+  states (k_s)      7
+  commitments (k_c) 7
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          3 candidates, 0 dead alone
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              8 saturations · 13 facts beyond root · 4 layers
 
 exit 0
 ```
@@ -986,6 +1011,35 @@ stderr: note: examples/lattice/06_friends_tables.ein: partial — the question n
 exit 0
 ```
 
+**`--count`** on the same program: the counts are describe's lower bounds,
+for the same reason, and the warning is printed whole, since it qualifies them.
+Its `paths` row says the spot check was not run: `--count` reads no state.
+
+`ein solve --count examples/lattice/06_friends_tables.ein`
+
+```text
+solve · --count examples/lattice/06_friends_tables.ein
+──────────────────────────────────────────────────────────────
+  asked             how many states and commitments R holds (--count)
+  states (k_s)      21   (a lower bound: the run stopped before R was exhausted)
+  commitments (k_c) 21   (a lower bound: the run stopped before R was exhausted)
+  exhausted         no — not monotone, and the question needs the whole cube: 2^19, past --region-limit 16
+  ∅                 in R — root is alive and owes nothing
+  lattice           not monotone: 1 site (the static check) — holes not known: the cube was not enumerated
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is open: Q-M1e2.2, F21
+    site            group-seated-owed: obligation-trigger reads sits at absent depth 0, concludes (open …) — at stake: the status: owes
+    status          not known — the cube is 2^19 nodes, past --region-limit 16
+    state           no stale fact in the 65 299 nodes the run computed
+    paths           not checked — the read-out prints no state of two commitments or more; its 21 members met would cost up to 104 saturations
+  universe          19 candidates, dead alone not known: the run stopped before it visited each alone
+  route             2, the cube — no licence: the static check flags the program
+  work              65 299 saturations · 455 247 facts beyond root
+
+stderr: note: examples/lattice/06_friends_tables.ein: partial — the question needs 2^19 saturations, past --region-limit 16
+
+exit 0
+```
+
 ## X10 — `zebra2.ein`: the puzzle
 
 **At the default budget** the state route describes R exhausted, since
@@ -1498,6 +1552,32 @@ solve · tests/region/03_merged_or.ein
   as :expect        (model (co-located A C))
 
   (solve :expect)   holds
+
+exit 0
+```
+
+**`--count`** on the same program checks no claim, since it reads no state, and
+says so in one `claims` row, with a `note:` on stderr per claim. It exits 0: a
+claim not checked is not refuted.
+
+`ein solve --count tests/region/03_merged_or.ein`
+
+```text
+solve · --count tests/region/03_merged_or.ein
+──────────────────────────────────────────────────────────────
+  asked             how many states and commitments R holds (--count)
+  states (k_s)      4
+  commitments (k_c) 8
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          3 candidates, 0 dead alone
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              7 saturations · 14 facts beyond root · 4 layers
+
+  claims            not checked — 1 claim, the (solve :expect): --count reads no state, so it checks no claim; a bare `ein solve FILE` checks it
+
+stderr: note: tests/region/03_merged_or.ein: (solve :expect) NOT CHECKED — --count reads no state, so it checks no claim: a bare `ein solve FILE` checks it
 
 exit 0
 ```

@@ -11,7 +11,9 @@
 > S1e2.1a.6 (2026-11-01) it sets seven**: `enable-symmetric-mirror`, the one
 > flag that changed R, retired too. **Since S1e2.1b.5 (2026-11-03)** `ein
 > solve` has 34: `--monotone`, the explicit check the user approved, asks
-> about the program instead of R.
+> about the program instead of R. **Since T1e2.1c.4.6 (the same day)** it
+> has 35: `--count`, which the user ruled, asks how many states and
+> commitments R holds, and reads no state.
 >
 > **It is a reference, not a narrative.** One row per knob. What a lever *does
 > to the search*, and what it was measured at, is
@@ -45,7 +47,7 @@
 | surface | how many | who owns the list |
 |---|---:|---|
 | `(config …)` flags | **7** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the ten a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **72** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| CLI options | **73** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **8** read by the shipped binary, of 26 greppable names | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -293,12 +295,12 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**72** options across fifteen parsers, in the default build (`einb`,
+**73** options across fifteen parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 34 |
+| `ein solve` | 35 |
 | `ein oracle` | 10 |
 | `ein test` | 8 |
 | `ein saturate` | 5 |
@@ -312,7 +314,7 @@ parallel copy. What this page states is the *shape*, read off that golden:
 
 `ein`, `ein kb`, `ein render` and `ein render constraints` take none — they are
 dispatchers. `ein kb save` exists only under the `einb` feature; a
-`--no-default-features` build has 71 and no `ein kb` at all. M1e2
+`--no-default-features` build has 72 and no `ein kb` at all. M1e2
 S1e2.1a.7 added the last two, `ein render region`'s `--visited` and
 `--answer`: a region run's `--dump-lattice` and `--dump-answer` drawn on the
 cube ([`04_dot_rendering.md` § Region rendering](ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)).
@@ -364,11 +366,17 @@ Five classes. Only the first touches the answer, and then only by asking a
 different question or stopping early.
 
 - **The question and its budget** — `--minimal`, `--maximal`, `--single`,
-  `-n`/`--solutions`, `--monotone`, `--region-budget`, `--region-limit`,
-  `-T`/`--max-time`. The first four choose what is asked about R, and
-  `--monotone` (M1e2 S1e2.1b.5) asks about the program instead: root's
-  fixpoint and the static check, no node built, every verdict exit 0, and
-  exclusive with the four. The budget (`--region-budget`, default
+  `-n`/`--solutions`, `--count`, `--monotone`, `--region-budget`,
+  `--region-limit`, `-T`/`--max-time`. The first five choose what is asked
+  about R. `--count` (M1e2 T1e2.1c.4.6, the user's ruling of 2026-11-03) is
+  over all of R only: describe's route, R's two counts and the rows that
+  qualify them, no state read, so no query answered and no claim checked,
+  which one `claims` row and a `note:` per claim say. Beside an option that
+  asks what it does not answer (a line, `-n`, `--single`, `--monotone`, a
+  listed state's form, `-H`, `--trace`) it is a usage error, exit 2, naming
+  the command that answers it. `--monotone` (M1e2 S1e2.1b.5) asks about the
+  program instead: root's fixpoint and the static check, no node built, every
+  verdict exit 0, and exclusive with the others. The budget (`--region-budget`, default
   2²⁰ = 1 048 576 facts beyond root for every mode, ruled 2026-11-03; it was
   2¹⁹; `ein solve --help` states it, from `downset::DEFAULT_BUDGET`), the
   cube's limit and the deadline stop a run, and then every surface says the answer is

@@ -41,8 +41,9 @@ const EXPECTED: [(&str, usize); 12] = [
     // At S1e2.1a.5's switch the walk's nine went (hidden, refused with what
     // replaced each): `-e`, `-m`, `-E`, `-o`, `-z`, `-d`, `-D`,
     // `--dump-region`, `--region-states`. S1e2.1b.5 added `--monotone`, the
-    // explicit check the user approved on 2026-11-03.
-    ("COMMAND ein solve\n", 34),
+    // explicit check the user approved on 2026-11-03, and T1e2.1c.4.6
+    // `--count`, which the user ruled the same day.
+    ("COMMAND ein solve\n", 35),
     // S1e2.1a.9's `ein oracle`: `--region-limit`, `--dump`, `--states`,
     // `--jobs`, `--stats`; and S1e2.1a.5's five from `solve`, `-T`,
     // `--json-summary`, `--models`, `-p` and `-P`.
@@ -104,16 +105,16 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        63 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        64 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "63 options across the twelve parsers of `ein`, `solve`, `oracle`, \
+        "64 options across the twelve parsers of `ein`, `solve`, `oracle`, \
          `saturate` and `render`, plus `ein test`'s nine and `ein kb save --saturate`"
     );
 }
 
 /// **The whole rendering, checked in.**
 ///
-/// Every option of every parser — 72 across fifteen since M1e2 S1e2.1b.5, the count
+/// Every option of every parser — 73 across fifteen since M1e2 T1e2.1c.4.6, the count
 /// [`the_extractor_finds_the_whole_surface`] holds — each with its short key, metavar, arity,
 /// default, choices, group and help. A flag added, removed, renamed or
 /// re-defaulted shows up as a line.

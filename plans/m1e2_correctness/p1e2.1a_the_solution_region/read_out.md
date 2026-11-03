@@ -76,7 +76,7 @@ What is left to decide is how each surface says it.
 
 1. **It says what was asked, and what it lists.** Which part of R (all of R,
    the minimal line, the maximal line) and which question (describe, N
-   states, exactly one). That is the `asked` row on stdout, `asked` in the
+   states, exactly one; or how many, `--count`, since M1e2 T1e2.1c.4.6). That is the `asked` row on stdout, `asked` in the
    summary, and the line a dump's `index.json` names.
 2. **The counts are R's, named k_s and k_c, and only R's.** They are printed
    when the run described R. A mode counts its own line, under the line's
@@ -207,10 +207,14 @@ runs one program under each.
 | `-n N` | `N states of R (-n N)` | `states of R  2 states, as asked — R may hold more` | the first N in the route's order |
 | `--maximal -n N`, `--minimal -n N` | the same, of the line | `maximal line  1 state, as asked — the maximal line may hold more` | the same |
 | `--single` | `is R one state? (--single)` | `verdict  Ambiguity — R holds two states or more; two of them below` and `decided  yes — two states settle it; …` | the one state, or the two |
+| `--count` (M1e2 T1e2.1c.4.6, ruled 2026-11-03) | `how many states and commitments R holds (--count)` | describe's `states (k_s)` and `commitments (k_c)`, each qualified as describe qualifies it, then `exhausted`, `∅` or `empty`, `lattice` with a flagged program's warning, `universe`, `route` and `work`: describe's text, row for row, but the warning's `paths`, which says the spot check was not run | none: no state is read, so no query is answered. Each claim the program states is not checked, and one `claims` row says how many, with a `note:` per claim. Over all of R only |
 | `--monotone` (M1e2 S1e2.1b.5, approved 2026-11-03) | `is the program monotone? — the static check, on root's fixpoint` | `monotone  yes — no site: …`, or `monotone  no — 1 site` with the warning's static rows (`assumes`, `site`, `cycle`, `order`) and a `bit` row, `not computed — …`, naming what computes the cube | none: it asks about the program, builds no node and lists no state; `route  none — a question about the program`, `work  1 saturation, root's · 0 facts beyond root` |
 
 - **k_s and k_c are not printed under a mode.** They are R's, and a mode did
-  not describe R (rule 2). `--single`'s `Solution` certifies that the part it
+  not describe R (rule 2). `--count` is the exception that proves it: it asks
+  for R's two counts and nothing else, takes describe's route to them, and
+  is over all of R only, so beside `--minimal` or `--maximal` it is a usage
+  error that names a bare `ein solve`. `--single`'s `Solution` certifies that the part it
   asked about is one state, and its row says which: `Solution — R is one
   state`, or `— the maximal line is one state`.
 - **`route`, `lattice`, `universe` and `work` are printed under every mode**,
@@ -406,7 +410,7 @@ replace `verdict` (with its `solutions` and `open_states`), `stats` and
 `owes`:
 
 ```
-asked     {which: all|minimal|maximal, ask: describe|find|single, n}
+asked     {which: all|minimal|maximal, ask: describe|find|single|count, n}
 region    {k_s, k_c, exhausted, stopped: null | {why: asked|budget|limit|deadline, …},
            complete_up_to, root: in-r|owing|dead, root_owes, empty: null|dead|owing,
            minimal: {states, commitments, least, trivial}, maximal: {states, trivial},
@@ -425,7 +429,10 @@ work      {saturations, facts, layers}
 
 **Built in T1e2.1a.5.2's fifth step**, for the region modes; the walk keeps
 `ein-summary/1` until the switch removes it. Under a mode R was not described,
-so R's numbers are `null` and `states` holds the mode's own. A query's
+so R's numbers are `null` and `states` holds the mode's own. Under
+`--count` (T1e2.1c.4.6) R's numbers are describe's, and `states` and
+`frontier` are `null`: no state was read. Its queries are listed with no
+class (`over: listed`, none listed) and each claim `not-checked`. A query's
 `expect` is `null` until its `:expect` lands at the switch, so that the shape
 does not move then. `region_answer.rs` holds the key set to one shape on
 every arm, nine of them.
@@ -457,6 +464,10 @@ complete.
 - **The flags are additive**: stdout, stderr and the exit code are the same
   with them and without, so the header leaves them out, as it leaves out
   `-j`.
+- **Under `--count`** (T1e2.1c.4.6) the directory holds `answer.txt` and
+  `answer.json` and nothing else, as under `--monotone`: no state was read,
+  so there is no state file to write. What a previous `ein-answer/2` dump
+  left, its `index.json` and `nogoods.json` among it, is removed.
 
 ### 8.3 `--models list|key|grid`
 
@@ -507,7 +518,7 @@ solution of ein program is successful execution of ein tool"*.
 
 | run | 0 | 1 | 2 |
 |---|---|---|---|
-| every mode: describe, `-n`, `--minimal`, `--maximal`, `--single` | **every answer**: R empty of either kind, a partial run, `Solution`, `Ambiguity`, `Contradiction`, `Open`, and `--single` not decided | a claim the program states that the run **refutes** (`FAILED`) | usage, `-T` |
+| every mode: describe, `-n`, `--minimal`, `--maximal`, `--single`, `--count` | **every answer**: R empty of either kind, a partial run, `Solution`, `Ambiguity`, `Contradiction`, `Open`, and `--single` not decided | a claim the program states that the run **refutes** (`FAILED`) | usage, `-T` |
 | a load error | — | `ein solve` | `ein test`, unchanged |
 | `ein test` | every claim `holds` | a claim `FAILED` or `NOT CHECKED`, unchanged | a load error, usage |
 
@@ -546,7 +557,7 @@ prints, and nothing in it moves behind `-s`.
 |---|---|---|---|
 | does R have a node? | `states (k_s)`; `empty` and its kind | `-n 1` | |
 | is it the only one? | k_s = 1; `maximal line` 1 | `--single`; `--maximal --single` | |
-| how many? | `states (k_s)`, `commitments (k_c)` | | |
+| how many? | `states (k_s)`, `commitments (k_c)` | `--count`: the two rows and what qualifies them, nothing listed (T1e2.1c.4.6) | |
 | is a line trivial? | *the trivial line* on `minimal line` / `maximal line` | | |
 | how many minimal / maximal, and which? | the line rows; `· minimal` / `· maximal` on each state | `--minimal`, `--maximal` | |
 | components; is it one? | `components` | | |

@@ -213,6 +213,7 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
         Ask::Describe => format!("{line} — every state on it"),
         Ask::Find(n) => format!("{} of {line} (-n {n})", plural(n, "state", "states")),
         Ask::Single => format!("is {line} one state? (--single)"),
+        Ask::Count => "how many states and commitments R holds (--count)".to_string(),
     };
     out.line(format!("{} · {}", o.command, o.argv));
     out.line(RULE);
@@ -223,6 +224,15 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
         None => mode_rows(&mut out, r, o, line),
     }
     listing(&mut out, r, &cands);
+    if a.mode.ask == Ask::Count {
+        count_claims(&mut out, r, o);
+        return Text {
+            stdout: out.text,
+            stderr: out.stderr,
+            code: 0,
+            shown: out.shown,
+        };
+    }
     let mut code = queries(&mut out, r, o);
 
     if let Some(claim) = &r.claim {
@@ -620,9 +630,70 @@ fn licences(l: &[Licence]) -> String {
     l.iter().map(|l| l.label()).collect::<Vec<_>>().join(" · ")
 }
 
-/// The rows of a description, exhausted or partial.
+/// `--count`'s one row for the claims the program states, when it states
+/// any: none is checked, since `--count` reads no state, and none is skipped
+/// silently (M1e2 T1e2.1c.4.6). stderr gets one `note:` per claim, as a claim
+/// describe could not check does (`read_out.md` § 9).
+fn count_claims(out: &mut Out, r: &ReadOut, o: &Options) {
+    let n_q = r.queries.len();
+    let mut notes: Vec<String> = Vec::new();
+    for (qi, q) in r.queries.iter().enumerate() {
+        let Some(claim) = &q.claim else { continue };
+        let label = if n_q > 1 {
+            format!("query {} of {n_q}", qi + 1)
+        } else {
+            "query".to_string()
+        };
+        let why = claim.lines.first().cloned().unwrap_or_default();
+        notes.push(format!(
+            "note: {}: {label} :expect NOT CHECKED — {why}",
+            o.file
+        ));
+    }
+    let on_queries = notes.len() as u64;
+    if let Some(claim) = &r.claim {
+        let why = claim.lines.first().cloned().unwrap_or_default();
+        notes.push(format!(
+            "note: {}: (solve :expect) NOT CHECKED — {why}",
+            o.file
+        ));
+    }
+    if notes.is_empty() {
+        return;
+    }
+    let mut parts: Vec<String> = Vec::new();
+    match on_queries {
+        0 => {}
+        1 => parts.push("a query's :expect".to_string()),
+        k => parts.push(format!("{}' :expect", plural(k, "query", "queries"))),
+    }
+    if r.claim.is_some() {
+        parts.push("the (solve :expect)".to_string());
+    }
+    let k = notes.len() as u64;
+    out.blank();
+    out.row(
+        "claims",
+        format!(
+            "not checked — {}, {}: --count reads no state, so it checks no claim; a bare `ein \
+             solve FILE` checks {}",
+            plural(k, "claim", "claims"),
+            parts.join(" and "),
+            if k == 1 { "it" } else { "them" }
+        ),
+    );
+    out.stderr.extend(notes);
+}
+
+/// The rows of a description, exhausted or partial. Under `--count` (M1e2
+/// T1e2.1c.4.6) the rows that qualify R's two counts and no others: the
+/// counts, `exhausted`, `∅` or `empty`, `lattice` with its warning,
+/// `universe`, `route` and `work`, each the same text describe prints. The
+/// lines, components, sub-cubes, merged states, N, E and the minimal holes
+/// are describe's alone.
 fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
     let a = &r.answer;
+    let count = a.mode.ask == Ask::Count;
     let n = d.n() as u64;
     let k_s = d.k_s();
     let cube = d.route == Route::Cube;
@@ -757,7 +828,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
         );
     }
 
-    if k_s > 0 || !d.exhausted {
+    if !count && (k_s > 0 || !d.exhausted) {
         let n_min = d.states.iter().filter(|s| s.minimal).count() as u64;
         let n_max = d.states.iter().filter(|s| s.maximal).count() as u64;
         let min_note = if root.in_r() {
@@ -954,8 +1025,9 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
         a.warning.as_deref(),
         holes.map(|h| h.0),
     );
-    if let Some((count, minimal)) = holes
-        && *count > 0
+    if let Some((holes, minimal)) = holes
+        && *holes > 0
+        && !count
     {
         let cands: Vec<String> = d.candidates.iter().map(|c| c.text.clone()).collect();
         for h in minimal.iter().take(4) {
@@ -1286,6 +1358,7 @@ fn listing(out: &mut Out, r: &ReadOut, cands: &[String]) {
                 ));
             }
         }
+        Listing::Counted => {}
         Listing::Members => {
             if !r.states.is_empty() {
                 out.blank();

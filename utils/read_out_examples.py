@@ -118,7 +118,7 @@ add("""---
 | | program | n | what it shows |
 |---|---|---:|---|
 | [X1](#x1--branching05_mini_zebraein-everything-at-once) | `branching/05_mini_zebra.ein` | 9 | the default read-out, every row; `(merged …)` with `(or …)`; a query with an undetermined class |
-| [X2](#x2--lattice02_genuine_3set_deathein-one-program-every-mode) | `lattice/02_genuine_3set_death.ein` | 3 | one program under every mode: describe, `--maximal`, `--minimal`, `-n 2`, `--single`, `--maximal --single` |
+| [X2](#x2--lattice02_genuine_3set_deathein-one-program-every-mode) | `lattice/02_genuine_3set_death.ein` | 3 | one program under every mode: describe, `--maximal`, `--minimal`, `-n 2`, `--single`, `--maximal --single`, `--count` |
 | [X3](#x3--features11_expect_ambiguityein-a-query-over-the-maximal-line) | `features/11_expect_ambiguity.ein` | 4 | a query `:over maximal`: the walk's only `(or …)` claim, migrated, and holding |
 | [X4](#x4--lattice07_two_pairs_two_tablesein-components-and-projection-classes) | `lattice/07_two_pairs_two_tables.ein` | 16 | the user's two tables: 8 components, and 2 projection classes of 4 |
 | [X5](#x5--latticesynthmerged_statesein-every-state-merged) | `lattice/synth/merged_states.ein` | 5 | ∅ not in R; a `(merged …)` on every state; two components |
@@ -148,7 +148,7 @@ add("""## X2 — `lattice/02_genuine_3set_death.ein`: one program, every mode
 
 [`solution_semantics.md` § 2.5](../../../docs/kernel/inference/solution_semantics.md#25-worked-exampleslattice02_genuine_3set_deathein)'s
 worked example: three candidates, every pair alive, the triple dead, no
-obligation. Six runs, one per mode, so the same R can be read through each
+obligation. Seven runs, one per mode, so the same R can be read through each
 question.
 
 **Describe.** Seven states, the three pairs on the maximal line, three
@@ -178,6 +178,14 @@ add("""**`--maximal --single`.** The question a restrictions-only program means 
 them.
 """)
 add(block(["--maximal", "--single", "examples/lattice/02_genuine_3set_death.ein"]))
+add("""**`--count`.** *How many?*, and nothing else (M1e2 T1e2.1c.4.6, the user's
+ruling of 2026-11-03): describe's route and its two counts, with the rows that
+qualify them, `exhausted`, `∅`, `lattice`, `universe`, `route` and `work`, each
+describe's text. No state is read, so nothing is listed and the query is not
+answered. Over all of R only: beside `--minimal` or `--maximal` it is a usage
+error that names a bare `ein solve`.
+""")
+add(block(["--count", "examples/lattice/02_genuine_3set_death.ein"]))
 
 add("""## X3 — `features/11_expect_ambiguity.ein`: a query over the maximal line
 
@@ -292,6 +300,11 @@ facts of every node the run computed, and checks no parent path, because the
 read-out prints no state of two commitments or more.
 """)
 add(block(["examples/lattice/06_friends_tables.ein"]))
+add("""**`--count`** on the same program: the counts are describe's lower bounds,
+for the same reason, and the warning is printed whole, since it qualifies them.
+Its `paths` row says the spot check was not run: `--count` reads no state.
+""")
+add(block(["--count", "examples/lattice/06_friends_tables.ein"]))
 
 add("""## X10 — `zebra2.ein`: the puzzle
 
@@ -351,6 +364,11 @@ is checked against the R the run described, and the `(region …)` printed above
 the query is that claim's own text: one form, both directions.
 """)
 add(block(["tests/region/03_merged_or.ein"]))
+add("""**`--count`** on the same program checks no claim, since it reads no state, and
+says so in one `claims` row, with a `note:` on stderr per claim. It exits 0: a
+claim not checked is not refuted.
+""")
+add(block(["--count", "tests/region/03_merged_or.ein"]))
 
 colors = ["examples/saturation/type-exclusivity/colors.ein"]
 cut = run(colors)

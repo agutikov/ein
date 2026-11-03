@@ -76,6 +76,9 @@ pub enum Listing {
     Certified { others: u64 },
     /// A mode's answer: a line, an `-n` cut, `--single`'s one or two states.
     Members,
+    /// `--count`'s: nothing is listed, and no state is read (M1e2
+    /// T1e2.1c.4.6).
+    Counted,
 }
 
 /// One projection class: the goal's atoms under its rows, in the states that
@@ -171,6 +174,9 @@ pub fn of_answer(
     mut answer: Answer,
     opts: &explore::Options,
 ) -> Result<ReadOut, SolveError> {
+    if answer.mode.ask == Ask::Count {
+        return counted(root, terms, ast, answer);
+    }
     let mut states: Vec<Listed> = Vec::new();
     let mut owing: Vec<Owing> = Vec::new();
     let listing = match answer.described.as_deref() {
@@ -232,6 +238,7 @@ pub fn of_answer(
         }
     };
 
+    let goals = asked(root, ast);
     // Every state and frontier node, read once through the node function.
     let named: Vec<String> = {
         let mut v: Vec<String> = answer
@@ -243,28 +250,6 @@ pub fn of_answer(
         v.dedup();
         v
     };
-    let goals: Vec<Asked> = root
-        .program()
-        .queries
-        .iter()
-        .filter_map(|q| {
-            let goal = query_value(ast, q, "goal")?;
-            let text = query_value(ast, q, "goal-text").and_then(|n| match ast.node(n) {
-                Node::Str(s) => Some(ast.sym(s).to_string()),
-                _ => None,
-            });
-            // The loader refused every other value.
-            let over = query_value(ast, q, "over")
-                .and_then(|n| Over::parse(ast, n).ok())
-                .unwrap_or_default();
-            Some(Asked {
-                goal,
-                text,
-                over,
-                expect: query_value(ast, q, "expect"),
-            })
-        })
-        .collect();
     // A goal the compiler rejects — `(query :goal (?R Rex Animal))`, an
     // unbound relation head — ends the run where a state would be answered
     // from it, rather than projecting no row (M1a S1a.6.6). With no state
@@ -456,6 +441,104 @@ struct Asked {
     expect: Option<NodeId>,
 }
 
+/// The program's `(query …)` forms, in order.
+fn asked(root: &Kb, ast: &Ast) -> Vec<Asked> {
+    root.program()
+        .queries
+        .iter()
+        .filter_map(|q| {
+            let goal = query_value(ast, q, "goal")?;
+            let text = query_value(ast, q, "goal-text").and_then(|n| match ast.node(n) {
+                Node::Str(s) => Some(ast.sym(s).to_string()),
+                _ => None,
+            });
+            // The loader refused every other value.
+            let over = query_value(ast, q, "over")
+                .and_then(|n| Over::parse(ast, n).ok())
+                .unwrap_or_default();
+            Some(Asked {
+                goal,
+                text,
+                over,
+                expect: query_value(ast, q, "expect"),
+            })
+        })
+        .collect()
+}
+
+/// Why `--count` checks no claim: the one line every claim it leaves carries.
+pub const COUNT_CHECKS_NO_CLAIM: &str =
+    "--count reads no state, so it checks no claim: a bare `ein solve FILE` checks it";
+
+/// `--count`'s read-out — M1e2 T1e2.1c.4.6, the user's ruling of 2026-11-03:
+/// describe's answer, read no further. No state's model is read, so nothing is
+/// listed and no query is answered. Each query is kept with no class over the
+/// states listed, which are none, and each claim the program states, a query's
+/// `:expect` or its `(solve … :expect …)`, is not checked, with why, so that
+/// none is skipped silently. On a flagged program the detector's parent-path
+/// spot check is not run either, and its row says what it would cost, as it
+/// does where describe prints no state of two commitments or more.
+///
+/// A goal the compiler rejects is refused where describe refuses it, when `R`
+/// has a state, so the two exit alike on every program but one whose claim
+/// describe refutes.
+fn counted(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    mut answer: Answer,
+) -> Result<ReadOut, SolveError> {
+    let goals = asked(root, ast);
+    let met = answer.described.as_deref().map_or(0, |d| d.states.len());
+    if met > 0 {
+        for g in &goals {
+            if let Some(e) = crate::verdict::goal_plan_error(ast, terms, root, Some(g.goal)) {
+                return Err(SolveError::Compile(e));
+            }
+        }
+    }
+    if let (Some(d), Some(w)) = (answer.described.as_deref(), answer.warning.as_mut()) {
+        let cost: u64 = d
+            .states
+            .iter()
+            .filter(|s| s.rep.len() >= 2)
+            .map(|s| 2 * s.rep.len().min(SPOT_PARENTS) as u64)
+            .sum();
+        w.paths = Some(Paths {
+            bound: SPOT_PARENTS,
+            unprinted: (met > 0).then_some((met as u64, cost)),
+            ..Paths::default()
+        });
+    }
+    let not_checked = || Report {
+        outcome: Outcome::NotChecked,
+        lines: vec![COUNT_CHECKS_NO_CLAIM.to_string()],
+    };
+    let queries = goals
+        .iter()
+        .map(|g| Query {
+            goal: ein_ir::dump::dump_compact(ast, g.goal),
+            over: g.over,
+            as_asked: false,
+            exact: false,
+            classes: Vec::new(),
+            claim: g.expect.map(|_| not_checked()),
+        })
+        .collect();
+    let claim = root
+        .program()
+        .solve()
+        .and_then(|s| solve_value(ast, s, "expect"))
+        .map(|_| not_checked());
+    Ok(ReadOut {
+        answer,
+        listing: Listing::Counted,
+        states: Vec::new(),
+        queries,
+        claim,
+    })
+}
+
 /// What the run asked about R, for a claim it could not check.
 fn asked_words(answer: &Answer) -> String {
     match (answer.mode.which, answer.mode.ask) {
@@ -468,6 +551,7 @@ fn asked_words(answer: &Answer) -> String {
         (Which::Maximal, Ask::Find(n)) => format!("{n} states of its maximal line"),
         (Which::Minimal, Ask::Single) => "whether its minimal line is one state".to_string(),
         (Which::Maximal, Ask::Single) => "whether its maximal line is one state".to_string(),
+        (_, Ask::Count) => "how many states and commitments R holds (--count)".to_string(),
     }
 }
 

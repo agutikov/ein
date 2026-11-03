@@ -442,6 +442,7 @@ which `ein-cli/tests/read_out_examples.rs` holds to the binary:
 | a line | `--maximal`, `--minimal` | the line's states, exhausted or as far as the run went |
 | a part | `-n N` | `N` states of the part asked, each certified, nothing said of the rest |
 | one state? | `--single` | the word: `Solution` (one state), `Ambiguity` (two shown), `Contradiction` (every node dead), `Open` (every alive node owes) |
+| how many? | `--count` (M1e2 T1e2.1c.4.6) | k_s and k_c by describe's route, with `exhausted`, ∅, the static check, H, the route and the work: describe's rows, and nothing listed. No state is read, so no query is answered and no claim checked, and a `claims` row says so |
 
 Every count that is not exact says so — *a lower bound* and how far it is
 complete — and a run a budget stopped writes one `note:`. Every answer exits

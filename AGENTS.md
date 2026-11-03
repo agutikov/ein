@@ -64,7 +64,7 @@ constrained-reasoning research.
   [configuration reference](docs/kernel/configuration.md)** — the 7
   `(config …)` flags a program can set (ten more retired, nine at M1e2
   S1e2.1a.5 and one at S1e2.1a.6, each refused with the stage and why), the
-  72 CLI options, the eight `EIN_*` names the binary actually reads, the
+  73 CLI options, the eight `EIN_*` names the binary actually reads, the
   precedence between the three, and on every flag row a *does it change the
   answer* and a *stability* column. Its defaults block is `ein solve
   --dump-config`'s own output (`EIN_BLESS=1` re-banks it). Two of the
@@ -563,6 +563,7 @@ EIN_LEFTOVER=1    ein solve … --json-summary out.json        # the M1d S1d.3.1
 ein test examples tests stdlib --json-report r.json          # the M1d S1d.4.1 read-out
 ein solve … --dump-answer DIR                                # M1e2: the answer as files, each state loadable
 ein solve … --maximal | --minimal | --single | -n N --region-budget F   # M1e2: a question about R, the least work it needs
+ein solve … --count                                          # M1e2: how many, R's two counts by describe's route, no state read
 ein oracle FILE [--dump DIR]                                 # M1e2: R by brute force, 2ⁿ saturations — the reference every mode is held to
 EIN_CORPUS_SLOW=1 cargo test … -p ein-cli --test lever_invariance   # M1e2: every mode under every lever, + the slow pair's cells
 ein render region DIR [--visited D] [--answer D] [--view …]  # M1e2: an oracle dump drawn, a solve run on it
@@ -593,7 +594,7 @@ set.** The shipped binary reads **eight** (three of them only in a non-default
 build), the test harness reads ten more, `utils/` and the shell two — and six
 greppable `EIN_*` names are not environment variables at all, `EIN_RS` and
 `EIN_RENDER_LEVI` among them. The whole census, classified, with the 17
-`(config …)` fields and the 72 CLI options beside it and a *does it change the
+`(config …)` fields and the 73 CLI options beside it and a *does it change the
 answer* column on every flag row:
 [`docs/kernel/configuration.md`](docs/kernel/configuration.md) (M1e S1e.5.1),
 pinned by `ein-cli/tests/config_reference.rs`.

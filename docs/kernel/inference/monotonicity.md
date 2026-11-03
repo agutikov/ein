@@ -107,11 +107,15 @@ each with a bare `ein solve` on its cube. Fill is the node's status, shape is
 what the run did there, and border is the lines and the defects; a purple
 border is a hole, and a `+fact` edge is the repair that takes it back into R.
 
-The run is what makes the pairs comparable. On a monotone program `ein solve`
-takes route 1, which grows the alive down-set and never enters a node above a
-dead one: it visits 7 of 8 nodes on `branching/15`, 11 of 16 on `lattice/05`
-and 25 of 32 on `merged_states`. On a flagged program it takes route 2, the
-cube, and visits every node.
+The run is what makes the pairs comparable. On a monotone program a bare
+`ein solve` takes the state route (since M1e2 S1e2.1c.2): every alive state
+once, its one-up extensions saturated, never a node above a dead one, and a
+commitment that is a state already read rather than saturated (L3). It visits
+7 of 8 nodes on `branching/15`, 11 of 16 on `lattice/05` and 18 of 32 on
+`merged_states`, where route 1, which grew the alive down-set commitment by
+commitment, visited 25 (`ein solve FILE --dump-lattice DIR`, 2026-11-03; the
+`merged_states` drawing was re-made that day). On a flagged program it takes
+route 2, the cube, and visits every node.
 
 **Monotone.**
 
@@ -354,7 +358,7 @@ The user's, as this page uses them:
 
 ### 6.3 What the engine implements
 
-Two of these strategies, and none of the non-monotone ones:
+Three of these strategies, and none of the non-monotone ones:
 
 - **The oracle** — the general case, every node classified, at n ≤ 16
   ([`region_dump.md` § The limit](region_dump.md#the-limit)). It is `ein
@@ -364,12 +368,30 @@ Two of these strategies, and none of the non-monotone ones:
 - **Route 1** — a monotone program's R from its alive down-set and N, with the
   static verdict as its licence
   ([`ein_infer::downset`](../../../ein.rs/crates/ein-infer/src/downset.rs)).
-  It is a bare `ein solve` on a program the check calls monotone, and it is
-  held to the oracle node for node
+  It was a bare `ein solve` on a program the check calls monotone until M1e2
+  S1e2.1c.2. Since then it answers where root is dead, in one saturation: a
+  bare `ein solve` on a flagged program whose root is dead (L0), and every
+  other question on any program whose root is dead. It is held to the oracle
+  node for node
   (`region.rs::route_1_is_the_oracle_on_every_monotone_program_it_reaches`).
+- **The state route, and the routes over states** — a monotone program's
+  alive states, each at most once, with k_c counted over them (L3)
+  ([`ein_infer::states`](../../../ein.rs/crates/ein-infer/src/states.rs),
+  M1e2 S1e2.1c.2). It is a bare `ein solve` on a program the check calls
+  monotone, and `ein solve --count`, which takes describe's route
+  (T1e2.1c.4.6). The other questions take the routes over states of
+  [`ein_infer::tree`](../../../ein.rs/crates/ein-infer/src/tree.rs)
+  (S1e2.1c.4): the obligation tree (L5), the climb and dualise-and-advance
+  for the maximal line, and a shrink and the duality against the maximal
+  owing states for the minimal line. Each is held to the oracle
+  (`region.rs::the_state_route_is_the_oracle_on_every_monotone_program_it_reaches`,
+  `explore.rs::every_mode_is_the_oracle`), and where the state route and
+  route 1 both finish they print one read-out
+  (`route_invariance.rs::the_state_route_and_route_1_print_one_read_out`).
 
-The lines by duality past route 1's reach are
-[P1e2.1c](../../../plans/m1e2_correctness/p1e2.1c_the_region_search/README.md)'s.
+The lines by duality are
+[P1e2.1c](../../../plans/m1e2_correctness/p1e2.1c_the_region_search/README.md)'s,
+built at S1e2.1c.2 and S1e2.1c.4.
 The guard split is a prototype, below. Building any of it into `ein solve`
 is out of this page's scope
 ([Q-M1e2.8](../../../plans/m1e2_correctness/open_questions.md#q-m1e28--where-does-the-rework-of-ein-solve-go));
@@ -392,8 +414,9 @@ programs and runs them through the engine:
 - **The cells.** Each guess γ is checked by the cell's own rules, monotonically:
   a fact called present is owed, a fact called absent refutes. So R(P_γ) is
   the part of the cube on which the guess is the truth, and the split's R is
-  the union. Each cell is solved by a bare `ein solve`, route 1, and read back
-  from `--json-summary`: a state's commitments are the intervals [g … cl] over
+  the union. Each cell is solved by a bare `ein solve` (route 1 when the
+  prototype was written; the state route since M1e2 S1e2.1c.2, whose read-out
+  is route 1's where both finish), and read back from `--json-summary`: a state's commitments are the intervals [g … cl] over
   its minimal generators, which is exact because cl is a closure operator on
   a monotone cube (§ 3).
 - **The check.** The union is held to `ein oracle --dump` on the original
@@ -508,7 +531,7 @@ each step forking the last fixpoint, writing the next facts and saturating:
 | construction | form | used by |
 |---|---|---|
 | scratch | sat(P ∪ C) | `utils/region.py`; the guard split's cells (§ 6.4) |
-| fork from root | sat(sat(P) ∪ C), the case C1 = ∅ | every shipped route: the oracle, route 1, route 2 |
+| fork from root | sat(sat(P) ∪ C), the case C1 = ∅ | every shipped route: the oracle, route 1, route 2, the state route and the routes over states |
 | a parent path | sat(sat(P ∪ C \ {h}) ∪ {h}), and longer chains | the walk's `-y` check before 2026-10-18; any route that extends a parent's fixpoint |
 
 Every shipped route builds a node from root with all of C at once, so C1 = ∅
@@ -733,8 +756,9 @@ where § 7.3's FIFO race can still reach a static read: with `a` given and
 only `b` a candidate, r2 `a ∧ b ∧ absent(q) → p` written before r1
 `a ∧ absent(z) → q` has no site (`q` is not in D). **Measured**, banked as
 [`examples/lattice/11_fifo_gap_static.ein`](../../../examples/lattice/11_fifo_gap_static.ein):
-the static check calls it monotone and `ein solve` takes route 1, and its
-scratch state on {b} holds a stale `p` that its fork state does not
+the static check calls it monotone, so `ein solve` takes a monotone
+program's route (route 1 when it was measured, the state route since M1e2
+S1e2.1c.2), and its scratch state on {b} holds a stale `p` that its fork state does not
 ([`node_census.md` § 12.2](../../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#122-the-static-variant-banked), `a3ac7d6f`).
 Before it, the corpus showed no such case (the `--control` run: fork and
 scratch agreed on all 268 213 monotone nodes, `bc1dff73`). So building a node
@@ -747,7 +771,7 @@ carries the qualifier.
 |---|---|---|---|
 | **state monotone** (⇔ path-independent, given cumulativity) | `state`: L → KB | an odd-depth `absent` over D; the FIFO gap | which KB a node holds; whether a route that extends a parent agrees with the oracle (D1–D3) |
 | **status monotone** | `(dead, owes)`: KB → {0,1}² | `dead`: as the state. `owes`: a trigger, or an activator that compiles an obligation | holes, and whether two lines describe R (D4) |
-| **monotone program** | the operator, on every KB | any site | the static check's verdict, and route 1's licence |
+| **monotone program** | the operator, on every KB | any site | the static check's verdict, and the licences of route 1, the state route and the routes over states |
 
 ### 7.7 What *forbid* covers, and option (E)
 

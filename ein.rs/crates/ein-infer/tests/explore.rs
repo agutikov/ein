@@ -153,7 +153,7 @@ fn against(rel: &str, r: &Region, a: &Answer, budgeted: bool) -> Vec<String> {
     // C2: an exhausted part is all of the part.
     if a.exhausted {
         match a.mode.ask {
-            Ask::Describe | Ask::Find(_) => {
+            Ask::Describe | Ask::Find(_) | Ask::Count => {
                 if distinct != p.classes {
                     bad.push(format!(
                         "{tag}: exhausted with {} states where the oracle has {}",
@@ -193,13 +193,15 @@ fn against(rel: &str, r: &Region, a: &Answer, budgeted: bool) -> Vec<String> {
             _ => {}
         }
     }
-    if a.mode.ask == Ask::Describe && a.mode.which == Which::All {
+    // `--count` is held where describe is: its counts are R's.
+    let describes = matches!(a.mode.ask, Ask::Describe | Ask::Count) && a.mode.which == Which::All;
+    if describes {
         match &a.described {
             Some(d) => bad.extend(described_against(&tag, r, d)),
             None => bad.push(format!("{tag}: describe carries no description")),
         }
     }
-    if a.mode.ask == Ask::Describe && a.mode.which == Which::All && a.exhausted {
+    if describes && a.exhausted {
         let c = a.counts.expect("describe counts");
         let k_s = p.classes.len() as u64;
         if (c.k_c, c.k_s) != (r.topology.size_r, k_s) {
@@ -398,6 +400,9 @@ fn described_against(tag: &str, r: &Region, d: &Described) -> Vec<String> {
     bad
 }
 
+/// Every question of `ein solve`'s two axes: three parts of `R` × describe,
+/// `-n 1`, `-n 2`, `-n k+1`, `--single`; and `--count`, over all of `R`
+/// only (M1e2 T1e2.1c.4.6).
 fn cells(k: usize) -> Vec<Mode> {
     let mut v = Vec::new();
     for which in WHICH {
@@ -411,7 +416,32 @@ fn cells(k: usize) -> Vec<Mode> {
             v.push(Mode { which, ask });
         }
     }
+    v.push(Mode {
+        which: Which::All,
+        ask: Ask::Count,
+    });
     v
+}
+
+/// What an answer says, less the question it answers: `--count`'s must be
+/// describe's in every field, since it takes describe's route.
+fn said(a: &Answer) -> String {
+    format!(
+        "{:?} {:?} {:?} {:?} {} {:?} {:?} {:?} {:?} {} {} {:?} {:?}",
+        a.states,
+        a.minimal,
+        a.counts,
+        a.shape,
+        a.exhausted,
+        a.verdict,
+        a.stopped,
+        a.route,
+        a.licences,
+        a.saturations,
+        a.facts,
+        a.described,
+        a.warning
+    )
 }
 
 fn jobs() -> usize {
@@ -464,11 +494,21 @@ fn every_mode_is_the_oracle() {
             .entry(if monotone { "monotone" } else { "flagged" })
             .or_default() += 1;
         let k_s = part(&r, Which::All).classes.len();
+        // Describe's answer, unbudgeted and at the C3 budget, for `--count`'s
+        // to be held to.
+        let mut described: [Option<String>; 2] = [None, None];
         for mode in cells(k_s) {
             let mut opts = explore::Options::new(mode);
             opts.jobs = jobs();
             opts.budget = u64::MAX;
             let (a, after) = ask(&path, &opts);
+            match mode.ask {
+                Ask::Describe if mode.which == Which::All => described[0] = Some(said(&a)),
+                Ask::Count if described[0].as_deref() != Some(said(&a).as_str()) => {
+                    failures.push(format!("{rel} --count: not describe's answer"));
+                }
+                _ => {}
+            }
             if after != root {
                 failures.push(format!(
                     "{rel} {mode:?}: root afterwards is not sat(program)"
@@ -481,11 +521,8 @@ fn every_mode_is_the_oracle() {
             // and its warning; a monotone one whose root is alive takes the
             // state route for describe and the modes' routes over states
             // otherwise, naming L5 exactly when the obligation tree used it.
-            let describe = mode
-                == Mode {
-                    which: Which::All,
-                    ask: Ask::Describe,
-                };
+            let describe =
+                mode.which == Which::All && matches!(mode.ask, Ask::Describe | Ask::Count);
             let route_ok = if !monotone {
                 a.route == explore::Route::Cube && a.warning.is_some()
             } else if describe {
@@ -522,6 +559,13 @@ fn every_mode_is_the_oracle() {
                 let (b, _) = ask(&path, &opts);
                 stopped += usize::from(b.stopped.is_some());
                 failures.extend(against(&rel, &r, &b, true));
+                match mode.ask {
+                    Ask::Describe if mode.which == Which::All => described[1] = Some(said(&b)),
+                    Ask::Count if described[1].as_deref() != Some(said(&b).as_str()) => {
+                        failures.push(format!("{rel} --count at budget 8: not describe's answer"));
+                    }
+                    _ => {}
+                }
             }
         }
     }

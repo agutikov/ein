@@ -15,8 +15,9 @@
 //! - **[`every_declared_lever_cell_moves_no_line_of_any_mode`]**, through the
 //!   binary. Every `levers` cell `corpus/corpus.toml` declares, and every CLI
 //!   lever a `corpus/wrong_answers.toml` row's `settings` names, run under each
-//!   of `ein solve`'s fifteen questions (three parts of R × describe, `-n 1`,
-//!   `-n 2`, `-n k_s+1`, `--single`) and compared with the same question at
+//!   of `ein solve`'s sixteen questions (three parts of R × describe, `-n 1`,
+//!   `-n 2`, `-n k_s+1`, `--single`, and `--count` over all of R) and
+//!   compared with the same question at
 //!   the default: the exit code, stdout, stderr and the `--json-summary`. The
 //!   summary's `config` object echoes the lever, so it is left out of the
 //!   comparison and checked to carry it: a lever that stopped reaching the run
@@ -31,7 +32,7 @@
 //!   a `(config …)` can set, flipped from the program's own resolved value in
 //!   an appended block (the loader keeps the last block whole), on every
 //!   corpus program and register witness whose R is known, under the same
-//!   fifteen questions: the read-out the binary prints, rendered uncut, with
+//!   sixteen questions: the read-out the binary prints, rendered uncut, with
 //!   its stderr lines and exit code, and the summary. This is the route a flag
 //!   takes into the saturator, which every mode's every node runs.
 //!
@@ -85,11 +86,12 @@ use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_ir::{Ast, load, parse};
 use serde_json::Value as J;
 
-/// The fifteen questions of `ein solve`'s two axes, as flags: which part of R
+/// The sixteen questions of `ein solve`'s two axes, as flags: which part of R
 /// (all, the minimal line, the maximal line) × what is asked of it (describe,
-/// `-n 1`, `-n 2`, `-n k_s+1`, `--single`). `-n k_s+1` asks for more states
-/// than R holds, so it is the run that lists all of them; where that is
-/// `-n 2` already, it is asked once, and there are twelve.
+/// `-n 1`, `-n 2`, `-n k_s+1`, `--single`), and `--count`, over all of R
+/// only (M1e2 T1e2.1c.4.6). `-n k_s+1` asks for more states than R holds, so
+/// it is the run that lists all of them; where that is `-n 2` already, it is
+/// asked once, and there are thirteen.
 fn questions(k_s: u64) -> Vec<(Vec<String>, Mode)> {
     let mut out = Vec::new();
     for (wflag, which) in [
@@ -109,6 +111,13 @@ fn questions(k_s: u64) -> Vec<(Vec<String>, Mode)> {
             out.push((flags, Mode { which, ask }));
         }
     }
+    out.push((
+        vec!["--count".to_string()],
+        Mode {
+            which: Which::All,
+            ask: Ask::Count,
+        },
+    ));
     out
 }
 
@@ -390,12 +399,13 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
     );
     // The selection did not collapse: twelve corpus entries declare levers,
     // and ten of them, every one outside the slow tier, have a known R
-    // (2026-11-01): 348 declared cells — fifteen questions each, twelve where
-    // k_s = 1 — and 432 environment cells beside them.
+    // (2026-11-03, `--count` among the questions): 372 declared cells —
+    // sixteen questions each, thirteen where k_s = 1 — and 462 environment
+    // cells beside them.
     if !slow_too() {
         assert!(cut.is_empty(), "R is not known for {cut:?}");
         assert!(
-            known >= 10 && declared_cells >= 348 && env_cells >= 432,
+            known >= 10 && declared_cells >= 372 && env_cells >= 462,
             "{known} files, {declared_cells} declared cells, {env_cells} environment cells"
         );
     }
@@ -606,6 +616,39 @@ fn no_config_flag_moves_a_line_of_any_mode() {
         }
     }
     let (mut cells, mut bad) = (0usize, Vec::new());
+    // `--count` at the default budget prints describe's rows, but `asked` and
+    // the warning's `paths` (M1e2 T1e2.1c.4.6): one tool, one count, on every
+    // program whose R is known. `read_out.rs` holds the same at a small
+    // budget on every program, partial ones among them.
+    for (&i, out) in &defaults {
+        let k = &known[i];
+        let at = |m: Mode| k.questions.iter().position(|(_, q)| *q == m);
+        let (Some(d), Some(c)) = (
+            at(Mode {
+                which: Which::All,
+                ask: Ask::Describe,
+            }),
+            at(Mode {
+                which: Which::All,
+                ask: Ask::Count,
+            }),
+        ) else {
+            bad.push(format!(
+                "{}: no describe or --count question",
+                k.path.display()
+            ));
+            continue;
+        };
+        let shown: BTreeSet<&str> = out[d].lines().collect();
+        for l in out[c].lines().skip(3).take_while(|l| !l.is_empty()) {
+            if !l.starts_with("    paths ") && !shown.contains(l) {
+                bad.push(format!(
+                    "{}: --count prints a row describe does not: {l}",
+                    k.path.display()
+                ));
+            }
+        }
+    }
     for (&(i, flag), out) in items.iter().zip(&outputs) {
         let Some(flag) = flag else { continue };
         let k = &known[i];

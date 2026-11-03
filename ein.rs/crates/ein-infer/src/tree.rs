@@ -720,6 +720,7 @@ pub(crate) fn answer(sp: &mut Space<'_>, mode: Mode) -> Result<Found, SolveError
         (Which::Minimal, ask) => minimal(sp, &mut s, ask)?,
         (Which::Maximal, ask) => maximal(sp, &mut s, ask)?,
         (Which::All, Ask::Describe) => unreachable!("describe takes the state route"),
+        (_, Ask::Count) => unreachable!("--count is describe's question, and takes its route"),
     };
     f.route = Some(s.route());
     f.licences = s.licences(&f.licences);
@@ -886,6 +887,7 @@ fn minimal(sp: &mut Space<'_>, s: &mut Search, ask: Ask) -> Result<Found, SolveE
         Ask::Find(n) => n as usize,
         Ask::Single => 2,
         Ask::Describe => usize::MAX,
+        Ask::Count => unreachable!("--count is over all of R"),
     };
     // Each leaf, shrunk: a minimal commitment, and a state on the line.
     let mut found: Vec<(Box<[u32]>, u32)> = Vec::new();
@@ -952,6 +954,7 @@ fn minimal(sp: &mut Space<'_>, s: &mut Search, ask: Ask) -> Result<Found, SolveE
         Ask::Describe => true,
         Ask::Find(n) => k as u64 <= n,
         Ask::Single => k <= 1,
+        Ask::Count => unreachable!("--count is over all of R"),
     };
     let printed: Vec<u32> = if all {
         order
@@ -1011,6 +1014,7 @@ fn maximal(sp: &mut Space<'_>, s: &mut Search, ask: Ask) -> Result<Found, SolveE
         Ask::Find(n) => n as usize,
         Ask::Single => 2,
         Ask::Describe => usize::MAX,
+        Ask::Count => unreachable!("--count is over all of R"),
     };
     let root = s.root();
     let root_in_r = s.st[root as usize].in_r();

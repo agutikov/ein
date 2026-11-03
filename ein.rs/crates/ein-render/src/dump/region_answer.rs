@@ -72,7 +72,7 @@ fn outcome(o: Outcome) -> &'static str {
 fn stopped(r: &ReadOut, d: Option<&Described>) -> Json {
     let a = &r.answer;
     match &a.stopped {
-        None if !a.exhausted && a.mode.ask != Ask::Describe => {
+        None if !a.exhausted && !matches!(a.mode.ask, Ask::Describe | Ask::Count) => {
             Json::obj(vec![("why", Json::str("asked"))])
         }
         None => Json::Null,
@@ -104,6 +104,15 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
     let a = &r.answer;
     let d = r.described();
     let opt_int = |v: Option<u64>| v.map_or(Json::Null, |n| Json::int(n as i64));
+    // `--count` reads no state, so its states are not known here, which is
+    // not the same as none: `null`, as every key that does not apply is.
+    let states_json = |states: Vec<Json>| {
+        if a.mode.ask == Ask::Count {
+            Json::Null
+        } else {
+            Json::Array(states)
+        }
+    };
     let states: Vec<Json> = r
         .states
         .iter()
@@ -187,7 +196,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
             ),
             ("route", Json::str(route(a.route))),
             ("licences", licences(r)),
-            ("states", Json::Array(states)),
+            ("states", states_json(states)),
             ("frontier", frontier),
             ("core", core),
             ("refuted_by", refuted_by),
@@ -329,7 +338,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
         ),
         ("route", Json::str(route(d.route))),
         ("licences", licences(r)),
-        ("states", Json::Array(states)),
+        ("states", states_json(states)),
         ("frontier", frontier),
         ("core", core),
         ("refuted_by", refuted_by),
@@ -380,6 +389,7 @@ pub fn summary_blocks(r: &ReadOut) -> Vec<(&'static str, Json)> {
         Ask::Describe => ("describe", Json::Null),
         Ask::Find(n) => ("find", Json::int(n as i64)),
         Ask::Single => ("single", Json::Null),
+        Ask::Count => ("count", Json::Null),
     };
     let verdict = match (a.mode.ask, a.verdict) {
         (Ask::Single, Some(v)) => Json::obj(vec![
@@ -529,6 +539,28 @@ pub fn clear_previous(dir: &Path) -> std::io::Result<()> {
         }
     }
     Ok(())
+}
+
+/// `ein solve --count --dump-answer DIR` (M1e2 T1e2.1c.4.6): the read-out
+/// uncut as `answer.txt` and the summary as `answer.json`, and nothing else,
+/// since `--count` reads no state. What a previous `ein-answer/2` write left,
+/// its `index.json` and `nogoods.json` among it, is removed, so the directory
+/// names no state file that is not there.
+pub fn write_counted(dir: &Path, answer_txt: &str, summary: &str) -> Result<(), String> {
+    let io = |e: std::io::Error| e.to_string();
+    let ours = std::fs::read_to_string(dir.join("index.json"))
+        .is_ok_and(|t| t.contains(&format!("\"schema\": \"{ANSWER}\"")));
+    clear_previous(dir).map_err(io)?;
+    if ours {
+        for file in ["index.json", "nogoods.json"] {
+            match std::fs::remove_file(dir.join(file)) {
+                Err(e) if e.kind() != std::io::ErrorKind::NotFound => return Err(io(e)),
+                _ => {}
+            }
+        }
+    }
+    std::fs::write(dir.join("answer.txt"), answer_txt).map_err(io)?;
+    std::fs::write(dir.join("answer.json"), summary).map_err(io)
 }
 
 fn state_file(terms: &Terms, kb: &Kb, inputs: &Inputs, head: &[String]) -> String {

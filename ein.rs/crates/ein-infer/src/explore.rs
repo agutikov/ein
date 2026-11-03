@@ -6,7 +6,10 @@
 //!
 //! A question is a [`Mode`]: **which** part of `R` (all of it, the minimal
 //! line, the maximal line) and **what is asked** (describe it, find `N` of
-//! its states, or expect exactly one). [`run`] answers it.
+//! its states, or expect exactly one; or, over all of `R` only, count it).
+//! [`run`] answers it. `--count` (M1e2 T1e2.1c.4.6) is describe's question
+//! with the listing left out: [`run`] answers it by describe's route, and
+//! the read-out ([`crate::read_out`]) reads no state for it.
 //!
 //! ### Why no mode can disagree with the oracle
 //!
@@ -100,9 +103,16 @@ pub enum Ask {
     Find(u64),
     /// Is it exactly one state?
     Single,
+    /// How many states and commitments does it hold? `--count`, M1e2
+    /// T1e2.1c.4.6, the user's ruling of 2026-11-03: over all of `R` only,
+    /// since k_s and k_c are `R`'s. [`run`] answers it by describe's route,
+    /// so its counts are describe's by construction, and the read-out reads
+    /// no state ([`crate::read_out`]).
+    Count,
 }
 
-/// One question: `--minimal` / `--maximal` × describe / `-n N` / `--single`.
+/// One question: `--minimal` / `--maximal` × describe / `-n N` / `--single`,
+/// or `--count` over all of `R`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Mode {
     pub which: Which,
@@ -352,6 +362,28 @@ pub fn run_with(
     opts: &Options,
     events: &mut Events,
 ) -> Result<Answer, SolveError> {
+    if opts.mode.ask == Ask::Count {
+        // `--count` is describe's question with the listing left out, so it
+        // takes describe's route with describe's mode, and only the answer's
+        // label says what was asked: no path of its own to disagree by.
+        if opts.mode.which != Which::All {
+            return Err(SolveError::Unsupported(
+                "--count is over all of R only: k_s and k_c are R's, and a bare `ein solve FILE` \
+                 describes R, the lines' sizes among it"
+                    .to_string(),
+            ));
+        }
+        let describe = Options {
+            mode: Mode {
+                which: Which::All,
+                ask: Ask::Describe,
+            },
+            ..*opts
+        };
+        let mut answer = run_with(root, terms, ast, &describe, events)?;
+        answer.mode = opts.mode;
+        return Ok(answer);
+    }
     let t0 = Instant::now();
     let prepared = region::prepare_with(root, terms, ast, events)?;
     // A dead root is the whole answer on any program: every node is a fork of
@@ -1409,7 +1441,8 @@ pub fn of_cube(mode: Mode, r: region::Region) -> Answer {
     let mut exhausted = true;
     let mut verdict = None;
     match mode.ask {
-        Ask::Describe => {}
+        // `--count` reaches the cube as describe: `run` asks describe.
+        Ask::Describe | Ask::Count => {}
         Ask::Find(want) => {
             if (states.len() as u64) > want {
                 states.truncate(want as usize);

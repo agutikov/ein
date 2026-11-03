@@ -129,7 +129,7 @@ ein solve FILE  [WHICH]  [ASK]  [--region-budget N] [-T SECONDS] [-j JOBS]
                 [presentation] [artefacts] [speed levers]
 
 WHICH   (all of R, the default) | --minimal | --maximal
-ASK     (describe, the default) | -n N | --single
+ASK     (describe, the default) | -n N | --single | --count (over all of R only)
 ```
 
 **The two axes**, ruling 1's names, kept from `solve_flags.md` § 3:
@@ -154,6 +154,17 @@ ASK     (describe, the default) | -n N | --single
   solution states it as a claim, and a refuted claim exits 1.
 - **`--minimal` and `--maximal`** are mutually exclusive, and so are `-n` and
   `--single`.
+- **`--count`**, a fourth ask, *added 2026-11-03* by the user's ruling at
+  [S1e2.1c.4's T1e2.1c.4.5](../p1e2.1c_the_region_search/s1e2.1c.4_the_flags_at_scale.md#task-t1e21c45----count)
+  (§ 7): *how many states and commitments R holds*. It takes describe's
+  route and prints k_s and k_c with the rows that qualify them (`exhausted`,
+  `∅`, `lattice` with a flagged program's warning, `universe`, `route`,
+  `work`), and lists nothing: no state is read, so no query is answered and
+  no claim checked, and one `claims` row says so. It is over all of R only,
+  since k_s and k_c are R's: beside `--minimal`, `--maximal`, `-n` or
+  `--single` it is a usage error that names the command that answers the
+  other question. Built at
+  [T1e2.1c.4.6](../p1e2.1c_the_region_search/s1e2.1c.4_the_flags_at_scale.md#task-t1e21c46----count-built).
 - **What every run prints beside its answer** is the route it took, the
   licences it used, `exhausted`, and the work done (saturations, facts). How
   it is laid out is S1e2.1a.5's page diff. Exit codes other than `--single`'s
@@ -537,7 +548,7 @@ second state. That is why the second row exists (ruling (a)).
 
 | question | command | what you get |
 |---|---|---|
-| How many solutions? | `ein solve F` | k_s (states) and k_c (commitments) |
+| How many solutions? | `ein solve F --count` (since 2026-11-03, § 7); a bare `ein solve F` prints the same two rows above R in full | k_s (states) and k_c (commitments), with the rows that qualify them, and nothing listed |
 | Every complete solution | `ein solve F --maximal` | the maximal line |
 | Every minimal one | `ein solve F --minimal` | the minimal line |
 | Everything | `ein solve F` | R in full: both counts, both lines, components, maximal sub-cubes and their dimensions, the merged classes, `N` |
@@ -676,7 +687,16 @@ that stage is P1e2.2's re-scoping.
   S1e2.1c.4's routes they certify in 49, 49 and 451 saturations (§ 3.4).
 - **No `--count`.** Until the state route exists, counting costs what
   describing costs, so a flag for it would only filter the output. S1e2.1c.4
-  adds it if the transversals turn out to dominate describe.
+  adds it if the transversals turn out to dominate describe. *Superseded
+  2026-11-03*: the user ruled **`--count` in**, option (a) of
+  [S1e2.1c.4's T1e2.1c.4.5](../p1e2.1c_the_region_search/s1e2.1c.4_the_flags_at_scale.md#task-t1e21c45----count),
+  on that task's measurement. With k_c counted over the states, what a bare
+  describe still pays beyond its route is the listing, and it cost more than
+  the route on 69 of the 204 corpus programs that solve, by more than 10 ms
+  on 7: `type-exclusivity/pets` 1.69×, `syntax/constraint-scopes` 1.06×, and
+  five flagged programs past `--region-limit` 2.23–2.62× (`ein solve FILE -t
+  -j 1`, best of 3, `8f704f6c`). [T1e2.1c.4.6](../p1e2.1c_the_region_search/s1e2.1c.4_the_flags_at_scale.md#task-t1e21c46----count-built)
+  built it (§ 2.1).
 - **`solve_flags.md` § 10 stands**, except its route-3 bullet. A run past
   every route's reach now prints its certified part and its bounds (C3), and
   runs no second search of a different kind.
