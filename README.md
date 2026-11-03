@@ -300,11 +300,13 @@ were measured, not assumed:
   seven lines, called *contradictory* although the program with no hypothesis
   is consistent. M1e2 S1e2.1a.5's switch made `ein solve` describe R, and
   [`corpus/wrong_answers.toml`](corpus/wrong_answers.toml) records each row's
-  answer now, held per commit by `ein-cli/tests/wrong_answers.rs`: **29 of 35
+  answer now, held per commit by `ein-cli/tests/wrong_answers.rs`: **37 of 43
   rows fixed** — W1, W2, W5, W9 and W11, the lookahead's and the forced
   positive's unsound exclusions among them, which no route reads, W12 and W13,
   W4, a rule's constant missing from the candidates, which M1e2 S1e2.2.4
-  seeded on 2026-11-04, and W3, one of W1's and one of W8's, whose right answer
+  seeded on 2026-11-04, W15, a name written only in a rule's `:match` or
+  inside a nested fact, which M1e2 S1e2.2.14 made a candidate the same day on
+  the user's ruling on names (Q-M1e2.9 (a)), and W3, one of W1's and one of W8's, whose right answer
   since the user's *forbid* of 2026-11-02 is a refusal at load, which M1e2
   S1e2.2.5 built the same day (a refutation may not rest on an `absent` over a
   relation a commitment can still extend, directly or through a fact a rule

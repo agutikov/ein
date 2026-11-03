@@ -22,8 +22,10 @@
 //!   (`standard_of_proof.md`).
 //!
 //! `EIN_CORPUS_SLOW=1` adds the programs route 1 describes only past the
-//! default budget — the zebra family, the six `square-*` cubes and
-//! `syntax/arg-kinds` — at `--region-budget` 2²⁵, where both finish.
+//! default budget — the zebra family and the six `square-*` cubes — at
+//! `--region-budget` 2²⁵, where both finish. `syntax/arg-kinds` was one until
+//! M1e2 S1e2.2.14: its R is the whole cube of 41 candidates since, 2⁴¹
+//! commitments, which no budget of 2²⁵ facts describes, so it is skipped.
 //!
 //! ```text
 //! cargo test -p ein-cli --test route_invariance

@@ -15,12 +15,14 @@
 //! KB's names, so a constant only a rule names entered no candidate. The user
 //! ruled on 2026-10-16 that such a constant is a name of the program (Q-M1e.21
 //! (b): *"rules are part of root, so rules can't assert new names"*), and
-//! S1e2.2.4 seeds the universe with it. So the three readings S1e.3.3 named
-//! read today:
+//! S1e2.2.4 seeds the universe with it. S1e2.2.14 widened the seed to every
+//! name of the program, on the user's ruling of 2026-11-04 on Q-M1e2.9 (a): a
+//! constant in a rule's `:match`, and one a fact names only inside a nested
+//! fact, as well (M1e2's W15). So the three readings S1e.3.3 named read today:
 //!
 //! | | claim | corpus |
 //! |---|---|---|
-//! | **R0** | the constants **only a rule** mentions are seeded into the blind enumerator's objects | **3** programs have one (4 with the pair's twin), and each is seeded |
+//! | **R0** | every name of the program is among the blind enumerator's objects, the ones the names index does not hold included | **37** names on **16** programs the index does not hold (S1e2.2.4: 3 on 3), and each is a candidate object |
 //! | **R1** | nothing a run derives names what the loaded program, its rules' constants included, did not | **0** |
 //! | **R2** | nothing the **search** reaches names what **root's fixpoint** and the rules' constants did not | **0** |
 //!
@@ -66,33 +68,133 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
         .collect()
 }
 
-/// **Every constant only a rule mentions, corpus-wide**, as `(path, rendered)`.
+/// **Every name of the program the names index does not hold, corpus-wide**,
+/// at load, as `(path, [rendered…])` — what [`invariant::seeded`] reports.
 ///
-/// Until M1e2 S1e2.2.4 this was the corpus's breach set; it is the same three
-/// names, and each is now a name of the program the universe holds.
+/// Until M1e2 S1e2.2.4 these were the corpus's breaches; S1e2.2.4 made a
+/// rule's `:assert` constant a name of the program (`Ann`, `G`, `Z`), and
+/// S1e2.2.14, on the user's ruling of 2026-11-04 on Q-M1e2.9 (a), a constant
+/// in a rule's `:match` (`eq_arity_high`'s `A` and `B`, `match-only`'s `Z`)
+/// and one a fact names only inside a nested fact (the rest). Each is a
+/// candidate object.
 ///
 /// - `mixed-type-hypothesis.ein` — `Ann`, in an `hrule`'s `:assert`. That
 ///   query drives the hrule rung, whose candidates already named `Ann`; the
 ///   seed reaches its blind probe (`EIN_LEFTOVER`) alone.
-/// - `07_schroder.ein` — `G`, in the probe rule `probe-undecided`'s `:assert`.
-///   It fires in **root** saturation, so `G` was a name at root before the
-///   seed too.
-/// - `wrong-answers/fresh-name-default.ein` — `Z`, M1e2's W4 in isolation
-///   (`corpus/wrong_answers.toml`, `W4/fresh-name-default`): `spawn` fires
-///   only on a committed `q`, so before the seed no candidate named `Z` and R
-///   was {∅} where `{(q A Z), (q B Z)}` is the maximal state.
-const SEEDED: [(&str, &str); 3] = [
+/// - `07_schroder.ein` — `G`, in the probe rule `probe-undecided`, which fires
+///   in **root** saturation, so `G` was a name at root before the seed too;
+///   and `C`, `D`, inside its stored negatives.
+/// - `wrong-answers/fresh-name-default.ein` — `Z`, M1e2's W4 in isolation.
+/// - `wrong-answers/match-only.ein` and `negative-only.ein` — `Z`, M1e2's W15:
+///   before S1e2.2.14 no candidate named it, and R was {∅} where the
+///   `-declared` controls' four states are.
+/// - the three `*-disproved`, `syntax/equality` and `syntax/arg-kinds` — the
+///   corpus programs whose H that moved (W15's rows; `arg-kinds` has none, its
+///   R a lower bound both ways).
+/// - `broken/compile/eq_arity_high.ein` — a `:match` constant on a program the
+///   compiler refuses, so no run takes its candidates.
+/// - the rest — nested names on programs with no relation the blind rung
+///   proposes over, so H stays empty; `22_symmetric_negative`'s `C` is a
+///   name at root's fixpoint too, `(undecided B C)`.
+const SEEDED: [(&str, &[&str]); 16] = [
+    (
+        "examples/broken/compile/eq_arity_high.ein",
+        &[
+            "`A`, matched by rule `three-way-equality`",
+            "`B`, matched by rule `three-way-equality`",
+        ],
+    ),
+    (
+        "examples/ein-bugs/kwpair-below-the-filter.ein",
+        &[
+            "`s1`, in (tracex (step s1) (step s2) (step s3) (step s4))",
+            "`s2`, in (tracex (step s1) (step s2) (step s3) (step s4))",
+            "`s3`, in (tracex (step s1) (step s2) (step s3) (step s4))",
+            "`s4`, in (tracex (step s1) (step s2) (step s3) (step s4))",
+        ],
+    ),
     (
         "examples/ein-bugs/mixed-type-hypothesis.ein",
-        "`Ann`, asserted by hrule `guess`",
+        &["`Ann`, asserted by hrule `guess`"],
     ),
     (
         "examples/ein-bugs/wrong-answers/fresh-name-default.ein",
-        "`Z`, asserted by rule `spawn`",
+        &["`Z`, asserted by rule `spawn`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/match-only.ein",
+        &["`Z`, matched by rule `reach-z`"],
+    ),
+    (
+        "examples/ein-bugs/wrong-answers/negative-only.ein",
+        &["`Z`, in (not (q Z A))"],
+    ),
+    (
+        "examples/saturation/hypothesis-contradiction/coloc-disproved.ein",
+        &[
+            "`House-2`, in (hypothesis (co-located Norwegian House-2))",
+            "`Norwegian`, in (hypothesis (co-located Norwegian House-2))",
+        ],
+    ),
+    (
+        "examples/saturation/hypothesis-contradiction/next-to-disproved.ein",
+        &[
+            "`X`, in (hypothesis (next-to X Y))",
+            "`Y`, in (hypothesis (next-to X Y))",
+        ],
+    ),
+    (
+        "examples/saturation/hypothesis-contradiction/right-of-disproved.ein",
+        &[
+            "`A`, in (hypothesis (right-of A B))",
+            "`B`, in (hypothesis (right-of A B))",
+        ],
+    ),
+    (
+        "examples/syntax/arg-kinds.ein",
+        &["`a`, in (r (nested a b) c)", "`b`, in (r (nested a b) c)"],
+    ),
+    (
+        "examples/syntax/equality.ein",
+        &["`House-1`, in (= (color House-1) Red)"],
+    ),
+    (
+        "examples/syntax/negation.ein",
+        &["`a`, in (not (r a b))", "`b`, in (not (r a b))"],
+    ),
+    (
+        "examples/syntax/relation-decls.ein",
+        &[
+            "`R2`, in (ontology (relation R) (relation R2 T) (relation R3 T U V) (relation R4 7 T))",
+            "`R3`, in (ontology (relation R) (relation R2 T) (relation R3 T U V) (relation R4 7 T))",
+            "`R4`, in (ontology (relation R) (relation R2 T) (relation R3 T U V) (relation R4 7 T))",
+            "`R`, in (ontology (relation R) (relation R2 T) (relation R3 T U V) (relation R4 7 T))",
+            "`T`, in (ontology (relation R) (relation R2 T) (relation R3 T U V) (relation R4 7 T))",
+            "`U`, in (ontology (relation R) (relation R2 T) (relation R3 T U V) (relation R4 7 T))",
+            "`V`, in (ontology (relation R) (relation R2 T) (relation R3 T U V) (relation R4 7 T))",
+        ],
+    ),
+    (
+        "examples/syntax/wrappers.ein",
+        &[
+            "`T`, in (ontology (relation r T T) (is-a a T))",
+            "`a`, in (ontology (relation r T T) (is-a a T))",
+            "`b`, in (facts (r a b))",
+            "`c`, in (reasoning (r b c))",
+            "`r`, in (ontology (relation r T T) (is-a a T))",
+        ],
     ),
     (
         "tests/stdlib/algebra/07_schroder.ein",
-        "`G`, asserted by rule `probe-undecided`",
+        &[
+            "`C`, in (not (t A C))",
+            "`D`, in (not (t D F))",
+            "`G`, matched by rule `probe-undecided`",
+        ],
+    ),
+    (
+        "tests/stdlib/algebra/22_symmetric_negative.ein",
+        &["`C`, in (not (sits-with A C))"],
     ),
 ];
 
@@ -104,15 +206,17 @@ const PAIR: [&str; 2] = [
     "examples/ein-bugs/alive-set-fresh-name-declared.ein",
 ];
 
-/// **R0 — every constant only a rule mentions is seeded, over every corpus
+/// **R0 — every name of the program is a candidate object, over every corpus
 /// program.**
 ///
-/// Free: it reads the registered rules' `:assert` constants once, at load, and
-/// never runs the search. That is what makes it a statement about the
-/// *program*: a rule that would name a constant only on an input nobody has
-/// written is seeded all the same.
+/// Free: it reads the loaded facts at every depth and the registered rules'
+/// `:match` and `:assert` constants once, at load, and never runs the search.
+/// That is what makes it a statement about the *program*: a rule that would
+/// name a constant only on an input nobody has written is seeded all the
+/// same. What it lists is what the list adds over the names index; every name
+/// it lists is an object here, so every one is held to the candidates.
 #[test]
-fn the_names_only_a_rule_mentions_are_seeded() {
+fn every_name_of_the_program_is_a_candidate_object() {
     let mut found: Vec<(String, String)> = Vec::new();
     let mut programs = 0usize;
     for path in &corpus_files() {
@@ -149,14 +253,14 @@ fn the_names_only_a_rule_mentions_are_seeded() {
     found.sort();
     let mut want: Vec<(String, String)> = SEEDED
         .iter()
-        .map(|(p, b)| (p.to_string(), b.to_string()))
+        .flat_map(|(p, names)| names.iter().map(|n| (p.to_string(), n.to_string())))
         .collect();
     want.sort();
     assert_eq!(
         found, want,
-        "the corpus programs with a constant only a rule mentions moved. A new \
-         one is a program the seed reaches; a missing one means a fact now \
-         names it, and this list has to say so."
+        "the corpus programs with a name the names index does not hold moved. \
+         A new one is a program the seed reaches; a missing one means a fact now \
+         names it at top level, and this list has to say so."
     );
 }
 

@@ -719,17 +719,21 @@ fn hypskip(s: &mut Session<'_>, rel: Symbol, reason: &str, object: Option<Symbol
 // ── The candidate-object set ───────────────────────────────────────
 
 /// The objects the enumerator may guess about, **sorted by name**: every name
-/// the KB holds, and every constant a rule's `:assert` names.
+/// the KB holds, and every name of the program
+/// ([`crate::invariant::program_names`]).
 ///
-/// **The second half is the seed**, M1e2 S1e2.2.4. A constant a rule asserts
-/// is a name of the program — Q-M1e.21 (b), the user's ruling of 2026-10-16,
-/// *"rules are part of root, so rules can't assert new names"* — so the
-/// universe holds it whether or not a fact names it yet. Until then the pool
-/// was `kb.names()` alone, a function of the facts: a constant that only a
-/// rule fired inside a fork could name entered no candidate, and
-/// `examples/ein-bugs/alive-set-fresh-name.ein` lost its model to it (W4).
-/// [`crate::invariant::rule_constants`] is the one list of what a rule can
-/// introduce, so this reads it rather than walking the rules a second way.
+/// **The second half is the seed.** M1e2 S1e2.2.4 seeded the pool with every
+/// constant a rule's `:assert` names — Q-M1e.21 (b), the user's ruling of
+/// 2026-10-16, *"rules are part of root, so rules can't assert new names"* —
+/// and S1e2.2.14 with every name of the program, on the user's ruling of
+/// 2026-11-04 on Q-M1e2.9, (a): a constant in a rule's `:match` too, and one a
+/// fact names only inside a nested fact, whose arguments `kb.names()` does not
+/// index (Q40). A constant only a `(query …)` names is not one. Until then the
+/// pool missed them, and `examples/ein-bugs/alive-set-fresh-name.ein` (W4),
+/// `wrong-answers/match-only.ein` and `negative-only.ein` (W15) lost their
+/// models to it. [`crate::invariant::program_names`] is the one list of the
+/// program's names, so this reads it rather than walking the program a second
+/// way.
 ///
 /// A name-free signal (S1.7.23): a node of `object` category, minus the names
 /// a puzzle *declares as a type* in a relation signature, minus the reserved
@@ -755,15 +759,15 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<Symbol> {
     let k = &terms.kernel;
     let reserved = [k.not, k.r#false, k.and, k.or, k.absent, k.eq, k.neq];
     let mut names = kb.names();
-    // The seed: a rule's constant no fact names yet joins the facts' names,
-    // once. On the corpus that is `Ann`, `G` and `Z` (`alive_invariant.rs`).
+    // The seed: a name of the program the names index lacks joins it, once
+    // (`alive_invariant.rs` lists the corpus's).
     let mut seen = ein_core::BitSet::new();
     for &n in &names {
         seen.insert(n.0);
     }
-    for c in crate::invariant::rule_constants(kb, terms, ast) {
-        if seen.insert(c.name.0) {
-            names.push(c.name);
+    for n in crate::invariant::program_names(kb, terms, ast) {
+        if seen.insert(n.name.0) {
+            names.push(n.name);
         }
     }
     // T1a.6.4.2 — **drop first, then sort**. The two steps commute: the
@@ -1238,5 +1242,30 @@ mod tests {
             .map(|&s| terms.sym(s))
             .collect();
         assert_eq!(names, ["A", "B", "Z"], "Z seeded, A once, T excluded");
+    }
+
+    /// **Every name of the program** (M1e2 S1e2.2.14, the user's ruling of
+    /// 2026-11-04 on Q-M1e2.9, (a)): a constant only a `:match` names (`M`),
+    /// and one only a nested fact's argument names (`N`, inside the stored
+    /// negative), are objects of the program; a constant only a `(query …)`
+    /// names (`Q`) is not, because R is the program's and a query asks about
+    /// it. A nested fact's head (`q` inside `(not (q N A))`) is a relation,
+    /// not an argument. Before the ruling this was `["A", "B"]`.
+    #[test]
+    fn candidate_objects_hold_every_name_the_program_writes() {
+        let (ast, terms, kb) = kb_of(
+            "(relation q T T)\n(q A B)\n(not (q N A))\n\
+             (rule reach () :match (q ?a M) :assert (q ?a B))\n\
+             (query :goal (q Q ?x))",
+        );
+        let names: Vec<&str> = candidate_objects(&kb, &terms, &ast)
+            .iter()
+            .map(|&s| terms.sym(s))
+            .collect();
+        assert_eq!(
+            names,
+            ["A", "B", "M", "N"],
+            "M (a :match) and N (a nested fact) held, Q (a query) not"
+        );
     }
 }

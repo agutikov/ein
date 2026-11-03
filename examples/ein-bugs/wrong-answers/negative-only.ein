@@ -1,6 +1,6 @@
 ;;; A name written **only inside a nested fact** never became a candidate —
 ;;; M1e2 **W15**, register row `W15/negative-only` (`corpus/wrong_answers.toml`),
-;;; owned by S1e2.2.14. Banked from S1e2.2.4's residue probe of 2026-11-04.
+;;; fixed by S1e2.2.14 (2026-11-04). Banked from S1e2.2.4's residue probe of 2026-11-04.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
@@ -21,12 +21,14 @@
 ;;; the maximal state: R is ∅, `{(q A Z)}`, `{(q B Z)}` and both —
 ;;; `negative-only-declared.ein`'s R, which names `Z` at top level.
 ;;;
-;;; ── What the engine answers today ──────────────────────────────────────
+;;; ── What the engine answered, and why it does not any more ─────────────
 ;;;
-;;; H is 2 candidates, `(q A B)` and `(q B A)`, both dead alone, and R is
-;;; `{∅}` (`ein solve FILE`, 2026-11-04). The register row holds that run
-;;; until S1e2.2.14's fix, and the fixing commit gives this file the
-;;; `(solve … :expect (region …))` that states R.
+;;; Until S1e2.2.14 H was 2 candidates, `(q A B)` and `(q B A)`, both dead
+;;; alone, and R was `{∅}` (`ein solve FILE` at `b63a8738`, 2026-11-04).
+;;; Since then the blind enumerator's objects are every name of the program
+;;; (`invariant::program_names`), a nested fact's arguments among them, and
+;;; this file answers its control's R, which the `:expect` below states. The
+;;; register row `W15/negative-only` is fixed.
 
 (relation p T T)
 (relation q T T)
@@ -45,7 +47,18 @@
   :why    "nothing may reach B")
 
 (solve
-  :no-hypothesis (p))
+  :no-hypothesis (p)
+  ;; `q` is named, so this closes `q`: exactly these positive `q` facts —
+  ;; the -declared control's R, which this file answers since S1e2.2.14.
+  :expect (region
+            ;; state 1 of 4 — ∅, root itself · minimal
+            (model)
+            ;; state 2 of 4 — 1 candidate · from {(q A Z)}
+            (model (q A Z))
+            ;; state 3 of 4 — 1 candidate · from {(q B Z)}
+            (model (q B Z))
+            ;; state 4 of 4 — 2 candidates · maximal · from {(q A Z), (q B Z)}
+            (model (q A Z) (q B Z))))
 
 (query
   :goal   (q ?x ?y))

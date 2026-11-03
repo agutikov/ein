@@ -669,9 +669,10 @@ note   = "M1e2 S1e2.3.4 (P1e2.3's S8) — the only program known to put a nested
 # cannot point into a plan directory. **What each one answers, and what it
 # should answer, is `corpus/wrong_answers.toml`'s**, held by
 # `ein-cli/tests/wrong_answers.rs`; these rows only put the files in the sweep.
-# Three carry an `:expect`: `fresh-name-nospawn.ein`'s, which states its R, and
-# W15's two `-declared` controls', which state the R their witnesses should have
-# (M1e2 S1e2.2.14).
+# Five carry an `:expect`: `fresh-name-nospawn.ein`'s, which states its R, and
+# W15's two witnesses and their `-declared` controls', which state one R per
+# pair, the controls' from the day they were banked and the witnesses' since
+# the fix (M1e2 S1e2.2.14).
 # The two that copy a fixture with one dropped it on purpose: the walk's answer
 # had an empty goal extent (Q-M1e.13), or the declared runs differ.
 
@@ -787,25 +788,25 @@ note   = "M1e2 W8's twin: features/07 with the forced-positive cascade off, and 
 path   = "examples/ein-bugs/wrong-answers/match-only.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W15 (`W15/match-only`), S1e2.2.14: W4's program with `spawn` replaced by `reach-z`, which names `Z` only in its `:match`. A constant only a `:match` names was in no candidate, so H is 2, both dead, and R = {∅}, where the right R is the `-declared` control's four states (Q-M1e2.9 (a), ruled 2026-11-04: a constant anywhere in a rule is a name of the program). Banked from S1e2.2.4's residue probe."
+note   = "M1e2 W15 (`W15/match-only`): W4's program with `spawn` replaced by `reach-z`, which names `Z` only in its `:match`. A constant only a `:match` names was in no candidate, so H was 2, both dead, and R = {∅}, where the right R is the `-declared` control's four states (Q-M1e2.9 (a), ruled 2026-11-04: a constant anywhere in a rule is a name of the program). Fixed by S1e2.2.14 the same day: the candidates hold every name of the program, and R is four states, which `:expect` states. Banked from S1e2.2.4's residue probe."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/match-only-declared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "M1e2 W15's control for match-only.ein: the same program plus `(seen Z)`, which puts `Z` in a fact at root. H is 6 and R four states, `{(q A Z), (q B Z)}` the maximal, which its `:expect` states — the right answer for match-only.ein under Q-M1e2.9 (a)."
+note   = "M1e2 W15's control for match-only.ein: the same program plus `(seen Z)`, which puts `Z` in a fact at root. H is 6 and R four states, `{(q A Z), (q B Z)}` the maximal, which its `:expect` states — the right answer for match-only.ein under Q-M1e2.9 (a), which that file answers since S1e2.2.14."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/negative-only.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W15 (`W15/negative-only`), S1e2.2.14: W4's program without `spawn`, plus the stored negative `(not (q Z A))`. `Z` is written in a fact, but only inside a nested one, whose arguments the KB's names index does not hold (Q40), so H is 2, both dead, and R = {∅}, where the right R is the `-declared` control's four states (Q-M1e2.9 (a), ruled 2026-11-04: a constant a fact names at any depth is a name of the program). Banked from S1e2.2.4's residue probe."
+note   = "M1e2 W15 (`W15/negative-only`): W4's program without `spawn`, plus the stored negative `(not (q Z A))`. `Z` is written in a fact, but only inside a nested one, whose arguments the KB's names index does not hold (Q40), so H was 2, both dead, and R = {∅}, where the right R is the `-declared` control's four states (Q-M1e2.9 (a), ruled 2026-11-04: a constant a fact names at any depth is a name of the program). Fixed by S1e2.2.14 the same day: R is four states, which `:expect` states. Banked from S1e2.2.4's residue probe."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/negative-only-declared.ein"
 group  = "regression"
 runs   = ["solve", "test"]
-note   = "M1e2 W15's control for negative-only.ein: the same program plus `(seen Z)`, which names `Z` at top level. H is 5 and R four states, `{(q A Z), (q B Z)}` the maximal, which its `:expect` states — the right answer for negative-only.ein under Q-M1e2.9 (a)."
+note   = "M1e2 W15's control for negative-only.ein: the same program plus `(seen Z)`, which names `Z` at top level. H is 5 and R four states, `{(q A Z), (q B Z)}` the maximal, which its `:expect` states — the right answer for negative-only.ein under Q-M1e2.9 (a), which that file answers since S1e2.2.14."
 
 # ── compile-negative: examples/broken/compile/ ──────────────
 #

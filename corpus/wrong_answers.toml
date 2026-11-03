@@ -146,7 +146,18 @@
 # row's `wrong` is a region run's answer at `b63a8738`, the run its `now` holds
 # while it is open. `syntax/arg-kinds`, whose H moves too, has no row: its R is
 # a lower bound both ways, and `[case.region]` states k_s exactly. The register
-# reads **29 rows fixed, 13 open and 1 not-wrong**.
+# read **29 rows fixed, 13 open and 1 not-wrong**.
+#
+# **S1e2.2.14 fixed W15's eight rows the same day** (T1e2.2.14.2):
+# `invariant::program_names` is the one list of the program's names, and
+# `hypgen::candidate_objects` unions it into the names index, so each witness
+# answers its twin's R. Each flipped row's `[case.fixed]` carries the null id
+# in the flipping commit, and the stage's next commit writes the hash. W7's
+# row moved with R and stays open for W7's own defect: its `[case.now]` and
+# `[case.region]` are the two-state R, and its `right` is restated to R under
+# the ruling, the `holds` facts of the maximal state and the six `noted` facts
+# a saturator that loses nothing derives there. The register reads **37 rows
+# fixed, 5 open and 1 not-wrong**.
 #
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
@@ -2042,18 +2053,18 @@ debug_panic = "two plans share (rule, activator) and disagree on their register 
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
+k_s      = 2
+k_c      = 2
 minimal  = [[]]
-maximal  = [[]]
+maximal  = [["(holds Y)"]]
 
 [case.right]
 verdict   = "Solution"
 k         = 1
 exhausted = true
-closes    = ["noted"]
-models    = [["(noted 1 1)", "(noted 1 3)", "(noted 2 1)", "(noted 2 3)"]]
-derived   = "rule_semantics.rs's control: the nested-fact activator alone derives every (noted ?a ?f); adding an activator cannot remove a conclusion. The oracle's R shares the saturator this case is about (solution_semantics.md § 6.6), so [case.region] is not this answer"
+closes    = ["holds", "noted"]
+models    = [["(holds 1)", "(holds 3)", "(holds Y)", "(noted 1 1)", "(noted 1 3)", "(noted 1 Y)", "(noted 2 1)", "(noted 2 3)", "(noted 2 Y)"]]
+derived   = "R under the user's ruling on names (Q-M1e2.9 (a), 2026-11-04), restated by M1e2 S1e2.2.14: `Y`, written inside the activator's nested `(src Y)`, is a name of the program, so H is (holds Y) and R two states, ∅ and {(holds Y)}, the maximal. That state holds (holds Y) and every (noted ?a ?f) a saturator that loses nothing derives: rule_semantics.rs's control, the nested-fact activator alone derives every (noted ?a ?f), and adding an activator cannot remove a conclusion, so the six the swapped twin's maximal state holds (`ein solve --dump-answer`, 2026-11-04), of which this witness's lacks (noted 1 3). Until S1e2.2.14 this answer was root's alone, the four (noted …) of the walk's one model. The oracle's R shares the saturator this case is about (solution_semantics.md § 6.6), so [case.region] is this answer's lines and not its noted facts"
 
 [case.review]
 verdict = "confirmed"
@@ -2066,9 +2077,9 @@ run       = "solve --maximal"
 line      = "maximal"
 exhausted = true
 k         = 1
-relations = []
+relations = ["holds"]
 models    = [
-  [],
+  ["(holds 1)", "(holds 3)", "(holds Y)"],
 ]
 
 # ══ W8 — a positive derived under `absent` survives the commitment ════════════
@@ -2736,9 +2747,13 @@ settings = "default"
 owner    = "S1e2.2.14"
 question = ["Q-M1e2.9"]
 witness  = "examples/ein-bugs/wrong-answers/match-only.ein"
-status   = "open"
-open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `Z` is written only in `reach-z`'s `:match`, so no candidate is over `Z`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+status   = "fixed"
 look_at  = ["root", "answer", "summary"]
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve --maximal"
@@ -2764,10 +2779,10 @@ models    = [["(q A Z)", "(q B Z)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
+k_s      = 4
+k_c      = 4
 minimal  = [[]]
-maximal  = [[]]
+maximal  = [["(q A Z)", "(q B Z)"]]
 
 [case.right]
 verdict   = "Solution"
@@ -2784,7 +2799,7 @@ exhausted = true
 k         = 1
 relations = ["q"]
 models    = [
-  [],
+  ["(q A Z)", "(q B Z)"],
 ]
 
 [[case]]
@@ -2796,9 +2811,13 @@ settings = "default"
 owner    = "S1e2.2.14"
 question = ["Q-M1e2.9"]
 witness  = "examples/ein-bugs/wrong-answers/negative-only.ein"
-status   = "open"
-open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `Z` is written only inside the nested `(q Z A)` of `(not (q Z A))`, whose arguments the names index does not hold (Q40), so no candidate is over `Z`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+status   = "fixed"
 look_at  = ["root", "answer", "summary"]
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve --maximal"
@@ -2824,10 +2843,10 @@ models    = [["(q A Z)", "(q B Z)"]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
+k_s      = 4
+k_c      = 4
 minimal  = [[]]
-maximal  = [[]]
+maximal  = [["(q A Z)", "(q B Z)"]]
 
 [case.right]
 verdict   = "Solution"
@@ -2844,7 +2863,7 @@ exhausted = true
 k         = 1
 relations = ["q"]
 models    = [
-  [],
+  ["(q A Z)", "(q B Z)"],
 ]
 
 [[case]]
@@ -2856,9 +2875,13 @@ settings = "default"
 owner    = "S1e2.2.14"
 question = ["Q-M1e2.9"]
 witness  = "examples/saturation/hypothesis-contradiction/coloc-disproved.ein"
-status   = "open"
-open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `House-2` and `Norwegian` are written only inside the nested facts of `(hypothesis …)` and `(contradiction-under …)`, from which root derives `(not (co-located Norwegian House-2))`, so no candidate is over `House-2` and `Norwegian`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+status   = "fixed"
 look_at  = ["root", "answer", "summary"]
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve --maximal"
@@ -2873,10 +2896,10 @@ models    = [[]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
+k_s      = 2
+k_c      = 2
 minimal  = [[]]
-maximal  = [[]]
+maximal  = [["(co-located House-2 Norwegian)"]]
 
 [case.right]
 verdict   = "Solution"
@@ -2891,9 +2914,9 @@ run       = "solve --maximal"
 line      = "maximal"
 exhausted = true
 k         = 1
-relations = []
+relations = ["co-located"]
 models    = [
-  [],
+  ["(co-located House-2 Norwegian)"],
 ]
 
 [[case]]
@@ -2905,9 +2928,13 @@ settings = "default"
 owner    = "S1e2.2.14"
 question = ["Q-M1e2.9"]
 witness  = "examples/saturation/hypothesis-contradiction/next-to-disproved.ein"
-status   = "open"
-open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `X` and `Y` are written only inside the nested facts of `(hypothesis …)` and `(contradiction-under …)`, from which root derives `(not (next-to X Y))`, so no candidate is over `X` and `Y`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+status   = "fixed"
 look_at  = ["root", "answer", "summary"]
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve --maximal"
@@ -2922,10 +2949,10 @@ models    = [[]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
+k_s      = 2
+k_c      = 2
 minimal  = [[]]
-maximal  = [[]]
+maximal  = [["(next-to Y X)"]]
 
 [case.right]
 verdict   = "Solution"
@@ -2940,9 +2967,9 @@ run       = "solve --maximal"
 line      = "maximal"
 exhausted = true
 k         = 1
-relations = []
+relations = ["next-to"]
 models    = [
-  [],
+  ["(next-to Y X)"],
 ]
 
 [[case]]
@@ -2954,9 +2981,13 @@ settings = "default"
 owner    = "S1e2.2.14"
 question = ["Q-M1e2.9"]
 witness  = "examples/saturation/hypothesis-contradiction/right-of-disproved.ein"
-status   = "open"
-open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `A` and `B` are written only inside the nested facts of `(hypothesis …)` and `(contradiction-under …)`, from which root derives `(not (right-of A B))`, so no candidate is over `A` and `B`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+status   = "fixed"
 look_at  = ["root", "answer", "summary"]
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve --maximal"
@@ -2971,10 +3002,10 @@ models    = [[]]
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
+k_s      = 2
+k_c      = 2
 minimal  = [[]]
-maximal  = [[]]
+maximal  = [["(right-of B A)"]]
 
 [case.right]
 verdict   = "Solution"
@@ -2989,9 +3020,9 @@ run       = "solve --maximal"
 line      = "maximal"
 exhausted = true
 k         = 1
-relations = []
+relations = ["right-of"]
 models    = [
-  [],
+  ["(right-of B A)"],
 ]
 
 [[case]]
@@ -3004,9 +3035,13 @@ owner    = "S1e2.2.14"
 question = ["Q-M1e2.9"]
 witness  = "corpus/fuzz_findings/binding-key-layout.ein"
 not_in_corpus = "a debug build aborts on it (check_layout), and every in-process corpus sweep saturates every corpus file inside a debug test binary — W7's witness"
-status   = "open"
-open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `Y` is written only inside the nested `(src Y)` of the activator `(note edge (src Y))`, so no candidate is over `Y`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+status   = "fixed"
 look_at  = ["root", "answer", "summary"]
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve --maximal"
@@ -3022,10 +3057,10 @@ debug_panic = "two plans share (rule, activator) and disagree on their register 
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
+k_s      = 2
+k_c      = 2
 minimal  = [[]]
-maximal  = [[]]
+maximal  = [["(holds Y)"]]
 
 [case.right]
 verdict   = "Solution"
@@ -3040,9 +3075,9 @@ run       = "solve --maximal"
 line      = "maximal"
 exhausted = true
 k         = 1
-relations = []
+relations = ["holds"]
 models    = [
-  [],
+  ["(holds 1)", "(holds 3)", "(holds Y)"],
 ]
 
 [[case]]
@@ -3055,9 +3090,13 @@ owner    = "S1e2.2.14"
 question = ["Q-M1e2.9"]
 witness  = "corpus/fuzz_findings/binding-key-layout-swapped.ein"
 not_in_corpus = "a debug build aborts on it (check_layout), and every in-process corpus sweep saturates every corpus file inside a debug test binary — W7's witness twin"
-status   = "open"
-open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `Y` is written only inside the nested `(src Y)` of the activator `(note edge (src Y))`, so no candidate is over `Y`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+status   = "fixed"
 look_at  = ["root", "answer", "summary"]
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve --maximal"
@@ -3073,10 +3112,10 @@ debug_panic = "two plans share (rule, activator) and disagree on their register 
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 1
-k_c      = 1
+k_s      = 2
+k_c      = 2
 minimal  = [[]]
-maximal  = [[]]
+maximal  = [["(holds Y)"]]
 
 [case.right]
 verdict   = "Solution"
@@ -3091,9 +3130,9 @@ run       = "solve --maximal"
 line      = "maximal"
 exhausted = true
 k         = 1
-relations = []
+relations = ["holds"]
 models    = [
-  [],
+  ["(holds 1)", "(holds 3)", "(holds Y)"],
 ]
 
 [[case]]
@@ -3105,9 +3144,13 @@ settings = "default"
 owner    = "S1e2.2.14"
 question = ["Q-M1e2.9"]
 witness  = "examples/syntax/equality.ein"
-status   = "open"
-open_because = "the blind enumerator's objects are the KB's names and every constant a rule's `:assert` names (S1e2.2.4), and `House-1` is written only inside the nested `(color House-1)` of `(= (color House-1) Red)`, so no candidate is over `House-1`. The fix is S1e2.2.14's: one list of the program's names (Q-M1e2.9 (a)), which the candidates union"
+status   = "fixed"
 look_at  = ["root", "answer", "summary"]
+
+[case.fixed]
+commit = "0000000"
+by     = "S1e2.2.14 (T1e2.2.14.2), the names list: every constant a fact names at any depth, or a rule's :match or :assert, joins the blind enumerator's objects"
+date   = "2026-11-04"
 
 [case.wrong]
 run       = "solve --maximal"
@@ -3122,10 +3165,10 @@ models    = [["(r Red a)", "(r Red b)", "(r a Red)", "(r a b)", "(r b Red)", "(r
 [case.region]
 route    = "state route"
 monotone = true
-k_s      = 64
-k_c      = 64
+k_s      = 4096
+k_c      = 4096
 minimal  = [[]]
-maximal  = [["(r Red a)", "(r Red b)", "(r a Red)", "(r a b)", "(r b Red)", "(r b a)"]]
+maximal  = [["(r House-1 Red)", "(r House-1 a)", "(r House-1 b)", "(r Red House-1)", "(r Red a)", "(r Red b)", "(r a House-1)", "(r a Red)", "(r a b)", "(r b House-1)", "(r b Red)", "(r b a)"]]
 
 [case.right]
 verdict   = "Solution"
@@ -3142,7 +3185,7 @@ exhausted = true
 k         = 1
 relations = ["r"]
 models    = [
-  ["(r Red a)", "(r Red b)", "(r a Red)", "(r a b)", "(r b Red)", "(r b a)"],
+  ["(r House-1 Red)", "(r House-1 a)", "(r House-1 b)", "(r Red House-1)", "(r Red a)", "(r Red b)", "(r a House-1)", "(r a Red)", "(r a b)", "(r b House-1)", "(r b Red)", "(r b a)"],
 ]
 
 # ══ C1 — the untyped blind rung binds a type as an object ═════════════════════

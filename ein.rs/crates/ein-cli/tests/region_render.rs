@@ -579,9 +579,10 @@ fn a_reported_state_counts_as_the_node_its_saturation_lands_on() {
 }
 
 /// **The table's head names at most fifty nodes a list**, and how many
-/// there are. `syntax/equality.ein`'s R is its whole 2⁶ cube, so `-n 1`
-/// leaves 63 nodes *not reached*; each row's status says so, and the head
-/// links the first fifty. The gallery's `houses` (2²⁰, all R, stopped by the
+/// there are. `syntax/equality.ein`'s R is its whole 2¹² cube, so `-n 1`
+/// leaves 4 095 nodes *not reached*; each row's status says so, and the head
+/// links the first fifty. It was 2⁶ and 63 until M1e2 S1e2.2.14 made
+/// `House-1`, written only inside `(color House-1)`, a candidate object. The gallery's `houses` (2²⁰, all R, stopped by the
 /// budget) listed a million before the cap.
 #[test]
 fn the_head_names_at_most_fifty_nodes_a_list() {
@@ -598,10 +599,10 @@ fn the_head_names_at_most_fifty_nodes_a_list() {
         .unwrap_or_else(|| panic!("no not-reached line:\n{table}"));
     assert_eq!(line.matches("](#m").count(), 50, "{line}");
     assert!(
-        line.contains(", … 13 more: 63 in all, and each row's status says *not reached*"),
+        line.contains(", … 4045 more: 4095 in all, and each row's status says *not reached*"),
         "{line}"
     );
-    assert_eq!(table.matches(" · not reached |").count(), 63, "{table}");
+    assert_eq!(table.matches(" · not reached |").count(), 4095);
 }
 
 /// **A run of another program** is refused, exit 1: its commitments are not

@@ -16,12 +16,27 @@
 //! ruled on 2026-10-16 that such a constant is not new
 //! ([Q-M1e.21](../../../../docs/history/m1e_review_processing/open_questions.md#q-m1e21--a-rule-may-name-an-object-the-search-can-never-hypothesise-about)
 //! (b)): *"rules are part of root, so rules can't assert new names"*. So
-//! [`rule_constants`] is the one list of what a rule can introduce, and two
+//! [`rule_constants`] is the list of what a rule can introduce, and the blind
+//! enumerator's objects were **seeded** with it.
+//! `examples/ein-bugs/alive-set-fresh-name.ein` is the program on which a
+//! rule's constant missing from the candidates cost a model (M1e2's W4).
+//!
+//! # Since M1e2 S1e2.2.14: every constant the program writes, but a query's
+//!
+//! `solution_semantics.md` § 1.2 calls a name *a constant the program
+//! mentions, in a fact or in a rule*, and the user ruled on 2026-11-04 that
+//! this is meant literally
+//! ([Q-M1e2.9](../../../../plans/m1e2_correctness/open_questions.md#q-m1e29--which-constants-are-names-of-the-program)
+//! (a)): a constant in a rule's `:match` is one, as one in its `:assert` is,
+//! and so is a constant a fact names only inside a nested fact, whose
+//! arguments the KB's names index does not hold (Q40). A constant only a
+//! `(query …)` names is not: R is the program's, and a query asks about it.
+//! So [`program_names`] is the one list of the program's names, and two
 //! readers take it: [`Universe::of`], whose baseline is every name of the
-//! program, and [`crate::hypgen::candidate_objects`], which **seeds** the
-//! blind enumerator's objects with it. `examples/ein-bugs/alive-set-fresh-name.ein`
-//! is the program on which a rule's constant missing from the candidates cost
-//! a model (M1e2's W4).
+//! program, and [`crate::hypgen::candidate_objects`], which unions it into the
+//! names index. `examples/ein-bugs/wrong-answers/match-only.ein` and
+//! `negative-only.ein` are the two shapes on which a name missing from it cost
+//! a model (M1e2's W15).
 //!
 //! What a rule could still introduce that no static set predicts is a relation
 //! head written as a parameter and bound to an **integer**, whose decimal text
@@ -43,7 +58,8 @@
 //! interns it at **load** — the interner never grows afterwards
 //! (`ein-infer/tests/interning.rs`). So the baseline is [`Universe::of`]:
 //! every symbol the loaded facts mention, at any depth, every constant a
-//! rule's `:assert` names, and the relation registry and its signatures.
+//! rule's `:match` or `:assert` names, and the relation registry and its
+//! signatures.
 //!
 //! **What is a new relation?** A fact head that is not in
 //! [`ein_core::Program::relations`]. That registry is *declared ∪
@@ -72,8 +88,8 @@ use ein_ir::{Ast, Node, NodeId};
 #[derive(Clone, Debug, Default)]
 pub struct Universe {
     /// Every symbol the loaded facts mention, at any depth, every constant a
-    /// rule's `:assert` names, plus the relation registry's names and the
-    /// symbols in their signatures.
+    /// rule's `:match` or `:assert` names, plus the relation registry's names
+    /// and the symbols in their signatures.
     objects: BitSet,
     /// The relation registry as of load — declared ∪ auto-vivified.
     relations: BitSet,
@@ -137,23 +153,33 @@ fn walk_value(terms: &Terms, v: Value, out: &mut impl FnMut(Symbol)) {
     }
 }
 
-/// A constant a registered rule's `:assert` names as an **object**, in an
-/// argument position — a name of the program, which a rule may assert
-/// (Q-M1e.21 (b), the user's ruling of 2026-10-16).
+/// A constant a registered rule names in an **argument position** of its
+/// `:match` or its `:assert` — a name of the program (Q-M1e.21 (b), the
+/// user's ruling of 2026-10-16, for an `:assert`; Q-M1e2.9 (a), of
+/// 2026-11-04, for a `:match`).
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct RuleConstant {
     /// The declarator's name.
     pub rule: Symbol,
     /// `rule` / `hrule` / `obligation` — which registry it came from.
     pub which: &'static str,
+    /// `:match` or `:assert` — the clause it is written in, the first one
+    /// when both name it.
+    pub part: &'static str,
     pub name: Symbol,
 }
 
 impl RuleConstant {
-    /// `` `Z`, asserted by rule `spawn` `` — what a report names it by.
+    /// `` `Z`, asserted by rule `spawn` `` or `` `Z`, matched by rule
+    /// `reach-z` `` — what a report names it by.
     pub fn render(&self, terms: &Terms) -> String {
+        let verb = if self.part == ":match" {
+            "matched"
+        } else {
+            "asserted"
+        };
         format!(
-            "`{}`, asserted by {} `{}`",
+            "`{}`, {verb} by {} `{}`",
             terms.sym(self.name),
             self.which,
             terms.sym(self.rule)
@@ -161,8 +187,8 @@ impl RuleConstant {
     }
 }
 
-/// **Every constant a rule's `:assert` can put into a KB as an object** — the
-/// one list of what a rule can introduce, in registry order, once per rule.
+/// **Every constant a rule names in argument position**, in its `:match` and
+/// its `:assert`, in registry order, once per rule.
 ///
 /// Free, and **total**: it reads the registered rules once, over the program,
 /// so it answers for every run the program could have rather than for the one
@@ -174,7 +200,7 @@ impl RuleConstant {
 /// The one exception is a relation head written as a parameter, which the
 /// compiler names by the bound value's text: an integer there is refused, at
 /// load or at compile, so it introduces nothing either. A **head** contributes
-/// nothing here: a relation an `:assert` names is the registry's business
+/// nothing here: a relation a rule names is the registry's business
 /// ([`Universe::of`] reads it off `relation_names`).
 pub fn rule_constants(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<RuleConstant> {
     let mut out = Vec::new();
@@ -184,43 +210,129 @@ pub fn rule_constants(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<RuleConstant> {
         ("obligation", &kb.program().obligations),
     ] {
         for (name, rule) in reg.iter() {
-            let Some(a) = rule.assert_.as_ref() else {
-                continue;
-            };
             let mut seen: Vec<Symbol> = Vec::new();
-            walk_constants(ast, NodeId(a.expr.0), true, &mut |text, head| {
-                if head {
-                    return;
-                }
-                // Every leaf of a registered rule is interned at load
-                // (`from_ir::intern_program_names`), so a miss names nothing.
-                let Some(sym) = terms.syms.get(text) else {
-                    return;
+            for (part, pattern) in [(":match", &rule.match_), (":assert", &rule.assert_)] {
+                let Some(p) = pattern.as_ref() else {
+                    continue;
                 };
-                if seen.contains(&sym) {
-                    return;
-                }
-                seen.push(sym);
-                out.push(RuleConstant {
-                    rule: name,
-                    which,
-                    name: sym,
+                walk_constants(ast, NodeId(p.expr.0), true, &mut |text, head| {
+                    if head {
+                        return;
+                    }
+                    // Every leaf of a registered rule is interned at load
+                    // (`from_ir::intern_program_names`), so a miss names
+                    // nothing.
+                    let Some(sym) = terms.syms.get(text) else {
+                        return;
+                    };
+                    if seen.contains(&sym) {
+                        return;
+                    }
+                    seen.push(sym);
+                    out.push(RuleConstant {
+                        rule: name,
+                        which,
+                        part,
+                        name: sym,
+                    });
                 });
+            }
+        }
+    }
+    out
+}
+
+/// Where a name of the program is written.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Written {
+    /// In an argument position of a fact, at any depth: the top-level fact.
+    Fact(FactId),
+    /// In a rule's `:match` or `:assert`.
+    Rule(RuleConstant),
+}
+
+/// One name of the program, and the first place it is written.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct ProgramName {
+    pub name: Symbol,
+    pub written: Written,
+}
+
+impl ProgramName {
+    /// `` `Z`, in (not (q Z A)) `` or [`RuleConstant::render`]'s line.
+    pub fn render(&self, terms: &Terms) -> String {
+        match self.written {
+            Written::Fact(f) => format!(
+                "`{}`, in {}",
+                terms.sym(self.name),
+                crate::events::sexpr(terms, f)
+            ),
+            Written::Rule(c) => c.render(terms),
+        }
+    }
+}
+
+/// Every symbol in an **argument position** of a value, at any depth: a
+/// nested fact's arguments, and not its head.
+fn walk_args(terms: &Terms, v: Value, out: &mut impl FnMut(Symbol)) {
+    if let Some(s) = v.as_sym() {
+        out(s);
+    } else if let Some(f) = v.as_fact() {
+        for &a in terms.facts.args(f) {
+            walk_args(terms, a, out);
+        }
+    }
+}
+
+/// **Every name of the program** — M1e2 S1e2.2.14, on the user's ruling of
+/// 2026-11-04 on Q-M1e2.9 (a), `solution_semantics.md` § 1.2 read literally:
+/// every constant in an argument position of a fact, at any depth (a nested
+/// fact's arguments, which the names index does not hold, and not its head,
+/// which names a relation), and every constant in a rule's `:match` or
+/// `:assert` ([`rule_constants`]), each once, in that order.
+///
+/// No `(query …)` is read, and no `(solve …)` block: R is the program's, and a
+/// query asks about it. The facts are the KB's as given, the loaded program's
+/// or root's fixpoint, and a fixpoint names nothing the loaded facts and the
+/// rules do not (`ein-infer/tests/alive_invariant.rs`, R1), so either way it
+/// is the program's list.
+pub fn program_names(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<ProgramName> {
+    let mut out = Vec::new();
+    let mut seen = BitSet::new();
+    for f in kb.facts() {
+        for &a in terms.facts.args(f) {
+            walk_args(terms, a, &mut |s| {
+                if seen.insert(s.0) {
+                    out.push(ProgramName {
+                        name: s,
+                        written: Written::Fact(f),
+                    });
+                }
+            });
+        }
+    }
+    for c in rule_constants(kb, terms, ast) {
+        if seen.insert(c.name.0) {
+            out.push(ProgramName {
+                name: c.name,
+                written: Written::Rule(c),
             });
         }
     }
     out
 }
 
-/// The constants **only a rule** mentions: [`rule_constants`] that no loaded
-/// fact, relation or signature names. What the seed adds to the blind
-/// enumerator's objects over what the facts gave it — on the corpus `Ann`,
-/// `G` and `Z` (`ein-infer/tests/alive_invariant.rs`).
-pub fn seeded(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<RuleConstant> {
-    let facts = Universe::of_facts(kb, terms);
-    rule_constants(kb, terms, ast)
+/// The names of the program **the KB's names index does not hold**:
+/// [`program_names`] that [`Kb::names`] lacks, which is what the list adds to
+/// the blind enumerator's objects over what the facts' top level gave it.
+pub fn seeded(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<ProgramName> {
+    let mut indexed = BitSet::new();
+    for n in kb.names() {
+        indexed.insert(n.0);
+    }
+    program_names(kb, terms, ast)
         .into_iter()
-        .filter(|c| !facts.objects.contains(c.name.0))
+        .filter(|n| !indexed.contains(n.name.0))
         .collect()
 }
 
@@ -233,8 +345,8 @@ impl Universe {
     /// caller is the loader's neighbour, not the search's.
     pub fn of(kb: &Kb, terms: &Terms, ast: &Ast) -> Universe {
         let mut u = Universe::of_facts(kb, terms);
-        for c in rule_constants(kb, terms, ast) {
-            u.objects.insert(c.name.0);
+        for n in program_names(kb, terms, ast) {
+            u.objects.insert(n.name.0);
         }
         u
     }

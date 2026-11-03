@@ -129,7 +129,9 @@ constrained-reasoning research.
   deferred to F21. S1e2.2.14 filed W15 the same day, on the user's ruling on
   names (Q-M1e2.9 (a): a constant a fact names at any depth, or a rule's
   `:match` or `:assert`, is a candidate; one only a query names is not), as
-  eight open rows: 29 fixed, 13 open and 1 not wrong.
+  eight open rows, and fixed all eight the same day with one list of the
+  program's names, `invariant::program_names`, which the blind enumerator's
+  objects union: 37 fixed, 5 open and 1 not wrong.
   **This tree is now the only statement of intent that is
   not also the implementation**, so it is load-bearing: a claim here is
   checked by `cargo test --workspace` and by nothing else — though **not every
