@@ -1,8 +1,4 @@
-(config
-  :enable-pre-branch-lookahead true
-  :enable-lookahead-kill-cache true
-  :enable-path-nogoods true
-  :record-alternative-justifications false)
+(config :record-alternative-justifications false)
 
 (import std.algebra :symbols (symmetric symmetric-negative-setup includes))
 

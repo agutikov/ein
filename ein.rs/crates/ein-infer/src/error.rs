@@ -7,7 +7,9 @@
 //! [`crate::downset`]) and the read-out ([`crate::read_out`]) return it. The
 //! walk's two arms went with it: a budget that stopped the walk, which a route
 //! reports as an answer that says it is partial, and `-y`'s commutativity
-//! failure, which the walk's sanity probe raised.
+//! failure, which the walk's sanity probe raised. `-y` has the meaning the
+//! user ruled the same day, the detector's spot check unbounded, and its one
+//! failure is [`SolveError::SpotCheck`].
 
 use crate::compile::CompileError;
 use crate::saturator::SaturateError;
@@ -22,6 +24,11 @@ pub enum SolveError {
     /// `-T`: the wall clock ran out inside the run — M1e2 T1e2.1a.5.3. A
     /// machine-dependent limit is never an answer.
     Deadline,
+    /// `-y` on a program the static check calls monotone found a parent path
+    /// that reaches another state: the § 5.1 theorem says none can, so this is
+    /// an engine error, never an answer (M1e2 S1e2.1c.5, the user's ruling of
+    /// 2026-11-03). The message names the state and the parent.
+    SpotCheck(String),
 }
 
 impl std::fmt::Display for SolveError {
@@ -31,6 +38,7 @@ impl std::fmt::Display for SolveError {
             SolveError::Compile(e) => write!(f, "{e}"),
             SolveError::Unsupported(m) => f.write_str(m),
             SolveError::Deadline => f.write_str("--max-time reached inside the cube"),
+            SolveError::SpotCheck(m) => f.write_str(m),
         }
     }
 }

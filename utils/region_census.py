@@ -72,19 +72,15 @@ CLI_LEVERS: tuple = ()
 # walk's tree traversal, `EIN_TRAVERSAL`, went with the walk at M1e2 S1e2.1c.5.
 ENV_LEVERS = (("EIN_OBLIGATION_CHOICE", "off"), ("EIN_OBLIGATION_CHOICE", "fail-first"))
 
-# Every flag a `(config …)` can set, flipped away from its default — the three
-# with a CLI shadow too, because a program's own block and a CLI option reach
-# the oracle by different routes. `enable-symmetric-mirror` was the one flag
-# that moved R (`features/06`), and M1e2 S1e2.1a.6 retired it: setting it is a
-# load error, so it is not a lever any more.
+# Every flag a `(config …)` can set, flipped away from its default.
+# `enable-symmetric-mirror` was the one flag that moved R (`features/06`), and
+# M1e2 S1e2.1a.6 retired it; S1e2.1c.5 retired the four `enable-*` levers no
+# route read (the user's ruling of 2026-11-03). Setting one is a load error, so
+# none is a lever any more.
 CONFIG_LEVERS = {
-    "enable-pre-branch-lookahead": "false",
-    "enable-lookahead-kill-cache": "false",
     "warn-derived-naf": "true",
     "lattice-sanity-check": "true",
-    "enable-path-nogoods": "false",
     "record-alternative-justifications": "false",
-    "enable-fail-fast-fork": "false",
 }
 
 

@@ -79,13 +79,10 @@
 ;; bounds it; these knobs decide how hard each candidate is tested
 ;; before it is entered.
 (config
-  ;; one-step rule simulation kills a candidate before the fork
-  :enable-pre-branch-lookahead true
-  ;; a lookahead kill is cached as `(not h)` so the next enumeration
-  ;; skips it in O(1) instead of re-simulating
-  :enable-lookahead-kill-cache true
-  ;; CDCL-style path-condition no-good learning
-  :enable-path-nogoods true
+  ;; The walk's lookahead, its kill cache and its path no-goods were set
+  ;; here until M1e2 S1e2.1c.5 (2026-11-03), when the user retired the
+  ;; three flags: no route reads them, and a program that sets one is
+  ;; refused at load.
   ;; OFF, and this is the single most consequential knob in the file.
   ;; With multi-justification provenance on, a dead branch's no-good is
   ;; explained by searching the AND/OR proof graph for a genuinely

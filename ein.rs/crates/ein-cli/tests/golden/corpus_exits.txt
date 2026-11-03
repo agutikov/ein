@@ -25,8 +25,6 @@
 0    examples/branching/04_two_levels.ein :: solve --dump-lattice {out}/lattice
 0    examples/branching/04_two_levels.ein :: solve --minimal
 0    examples/branching/04_two_levels.ein :: solve --trace {out}/trace.md
-0    examples/branching/04_two_levels.ein :: solve -K
-0    examples/branching/04_two_levels.ein :: solve -L
 0    examples/branching/04_two_levels.ein :: solve -n 3
 0    examples/branching/04_two_levels.ein :: solve -p -s
 0    examples/branching/04_two_levels.ein :: solve -y
@@ -39,8 +37,6 @@
 0    examples/branching/05_mini_zebra.ein :: solve --dump-lattice {out}/lattice
 0    examples/branching/05_mini_zebra.ein :: solve --minimal
 0    examples/branching/05_mini_zebra.ein :: solve --trace {out}/trace.md
-0    examples/branching/05_mini_zebra.ein :: solve -K
-0    examples/branching/05_mini_zebra.ein :: solve -L
 0    examples/branching/05_mini_zebra.ein :: solve -n 3
 0    examples/branching/05_mini_zebra.ein :: solve -p -s
 0    examples/branching/05_mini_zebra.ein :: solve -y
@@ -92,16 +88,12 @@
 0    examples/branching/13_lookahead_naf_world.ein :: saturate
 0    examples/branching/13_lookahead_naf_world.ein :: saturate --dump
 0    examples/branching/13_lookahead_naf_world.ein :: solve
-0    examples/branching/13_lookahead_naf_world.ein :: solve -K
-0    examples/branching/13_lookahead_naf_world.ein :: solve -L
 0    examples/branching/14_lookahead_unjudgeable.ein :: render constraints
 0    examples/branching/14_lookahead_unjudgeable.ein :: render lattice
 0    examples/branching/14_lookahead_unjudgeable.ein :: render rules
 0    examples/branching/14_lookahead_unjudgeable.ein :: saturate
 0    examples/branching/14_lookahead_unjudgeable.ein :: saturate --dump
 0    examples/branching/14_lookahead_unjudgeable.ein :: solve
-0    examples/branching/14_lookahead_unjudgeable.ein :: solve -K
-0    examples/branching/14_lookahead_unjudgeable.ein :: solve -L
 0    examples/branching/15_lookahead_two_step_on.ein :: render rules
 0    examples/branching/15_lookahead_two_step_on.ein :: saturate
 0    examples/branching/15_lookahead_two_step_on.ein :: solve
@@ -294,8 +286,6 @@
 0    examples/domain_elim/ab.ein :: solve --dump-lattice {out}/lattice
 0    examples/domain_elim/ab.ein :: solve --minimal
 0    examples/domain_elim/ab.ein :: solve --trace {out}/trace.md
-0    examples/domain_elim/ab.ein :: solve -K
-0    examples/domain_elim/ab.ein :: solve -L
 0    examples/domain_elim/ab.ein :: solve -n 3
 0    examples/domain_elim/ab.ein :: solve -p -s
 0    examples/domain_elim/ab.ein :: solve -y
@@ -344,14 +334,12 @@
 0    examples/ein-bugs/wrong-answers/f07-fpoff.ein :: solve
 0    examples/ein-bugs/wrong-answers/forced-1-two.ein :: solve
 0    examples/ein-bugs/wrong-answers/forced-1.ein :: solve
-0    examples/ein-bugs/wrong-answers/forced-1.ein :: solve -L
 0    examples/ein-bugs/wrong-answers/forced-2-off.ein :: solve
 0    examples/ein-bugs/wrong-answers/forced-2-two.ein :: solve
 0    examples/ein-bugs/wrong-answers/forced-2.ein :: solve
 0    examples/ein-bugs/wrong-answers/fresh-name-default.ein :: solve
 0    examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein :: solve
 0    examples/ein-bugs/wrong-answers/naf-nowb.ein :: solve
-0    examples/ein-bugs/wrong-answers/naf-nowb.ein :: solve -L
 0    examples/ein-bugs/wrong-answers/owed-seats-renamed.ein :: solve
 0    examples/ein-bugs/wrong-answers/owed-seats.ein :: solve
 0    examples/ein-bugs/wrong-answers/owed-two-step.ein :: solve
@@ -460,8 +448,6 @@
 0    examples/lattice/01_subset_pruned.ein :: solve --dump-lattice {out}/lattice
 0    examples/lattice/01_subset_pruned.ein :: solve --minimal
 0    examples/lattice/01_subset_pruned.ein :: solve --trace {out}/trace.md
-0    examples/lattice/01_subset_pruned.ein :: solve -K
-0    examples/lattice/01_subset_pruned.ein :: solve -L
 0    examples/lattice/01_subset_pruned.ein :: solve -n 3
 0    examples/lattice/01_subset_pruned.ein :: solve -p -s
 0    examples/lattice/01_subset_pruned.ein :: solve -y
@@ -474,8 +460,6 @@
 0    examples/lattice/02_genuine_3set_death.ein :: solve --dump-lattice {out}/lattice
 0    examples/lattice/02_genuine_3set_death.ein :: solve --minimal
 0    examples/lattice/02_genuine_3set_death.ein :: solve --trace {out}/trace.md
-0    examples/lattice/02_genuine_3set_death.ein :: solve -K
-0    examples/lattice/02_genuine_3set_death.ein :: solve -L
 0    examples/lattice/02_genuine_3set_death.ein :: solve -n 3
 0    examples/lattice/02_genuine_3set_death.ein :: solve -p -s
 0    examples/lattice/02_genuine_3set_death.ein :: solve -y
@@ -488,8 +472,6 @@
 0    examples/lattice/03_state_hash_collision.ein :: solve --dump-lattice {out}/lattice
 0    examples/lattice/03_state_hash_collision.ein :: solve --minimal
 0    examples/lattice/03_state_hash_collision.ein :: solve --trace {out}/trace.md
-0    examples/lattice/03_state_hash_collision.ein :: solve -K
-0    examples/lattice/03_state_hash_collision.ein :: solve -L
 0    examples/lattice/03_state_hash_collision.ein :: solve -n 3
 0    examples/lattice/03_state_hash_collision.ein :: solve -p -s
 0    examples/lattice/03_state_hash_collision.ein :: solve -y
@@ -763,8 +745,6 @@
 0    examples/zebra2-obligations.ein :: solve --dump-lattice {out}/lattice
 0    examples/zebra2-obligations.ein :: solve --minimal
 0    examples/zebra2-obligations.ein :: solve --trace {out}/trace.md
-0    examples/zebra2-obligations.ein :: solve -K
-0    examples/zebra2-obligations.ein :: solve -L
 0    examples/zebra2-obligations.ein :: solve -n 3
 0    examples/zebra2-obligations.ein :: solve -p -s
 0    examples/zebra2-obligations.ein :: solve -y
@@ -778,8 +758,6 @@
 0    examples/zebra2.ein :: solve --minimal
 0    examples/zebra2.ein :: solve --region-budget 1
 0    examples/zebra2.ein :: solve --trace {out}/trace.md
-0    examples/zebra2.ein :: solve -K
-0    examples/zebra2.ein :: solve -L
 0    examples/zebra2.ein :: solve -n 3
 0    examples/zebra2.ein :: solve -p -s
 0    examples/zebra2.ein :: solve -y

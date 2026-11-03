@@ -35,26 +35,27 @@ pub enum FieldKind {
 
 /// The flags a `(config …)` takes, in declaration order: the eight
 /// `solve_interface.md` § 2.4 kept at M1e2 S1e2.1a.5's switch, less
-/// `enable-symmetric-mirror`, retired at S1e2.1a.6. What `--dump-config`
-/// prints, what the KB-shape dump renders, and what the loader parses.
+/// `enable-symmetric-mirror`, retired at S1e2.1a.6, and less the four
+/// `enable-*` levers retired at S1e2.1c.5 (the user's ruling of 2026-11-03).
+/// What `--dump-config` prints, what the KB-shape dump renders, and what the
+/// loader parses.
 pub const FLAGS: &[(&str, FieldKind)] = &[
-    ("enable-pre-branch-lookahead", FieldKind::Bool),
-    ("enable-lookahead-kill-cache", FieldKind::Bool),
     ("warn-derived-naf", FieldKind::Bool),
     ("lattice-sanity-check", FieldKind::Bool),
-    ("enable-path-nogoods", FieldKind::Bool),
     ("record-alternative-justifications", FieldKind::Bool),
-    ("enable-fail-fast-fork", FieldKind::Bool),
 ];
 
 /// The retired flags, each with the M1e2 stage that retired it and why — the
 /// loader's error, so a program that sets one is refused with the reason
 /// rather than as an unknown flag. Nine went with the walk at S1e2.1a.5's
-/// switch (`solve_interface.md` § 2.4), and `enable-symmetric-mirror` at
-/// S1e2.1a.6, the one flag that changed R (the user's ruling of 2026-11-01).
-/// Their fields stay on [`SolverConfig`] at their defaults: the nine for the
-/// walk's library code, which no command reaches, and the mirror's for the
-/// `.einb` container, since no code reads it — the mirror is always on.
+/// switch (`solve_interface.md` § 2.4), `enable-symmetric-mirror` at
+/// S1e2.1a.6, the one flag that changed R (the user's ruling of 2026-11-01),
+/// and the four `enable-*` levers no route reads at S1e2.1c.5 (the user's
+/// ruling of 2026-11-03, which reversed § 2.4's *kept, speed only*). Their
+/// fields stay on [`SolverConfig`] at their defaults, for the `.einb`
+/// container, which round-trips [`FIELDS`]; the lookahead and kill-cache
+/// fields are still read, at their defaults, by the hypothesis generator the
+/// summary's `root` block and `EIN_LEFTOVER`'s block call (surface S4).
 pub const RETIRED: &[(&str, &str, &str)] = &[
     (
         "hypgen-scoring",
@@ -110,6 +111,31 @@ pub const RETIRED: &[(&str, &str, &str)] = &[
         "it wrote into root, which no route does: a candidate dead alone leaves \
          the universe by L1",
     ),
+    (
+        "enable-pre-branch-lookahead",
+        "S1e2.1c.5",
+        "the walk's one-step pre-filter, which no route runs: every route \
+         saturates each candidate's fork, and the filter's measured saving \
+         was in the noise",
+    ),
+    (
+        "enable-lookahead-kill-cache",
+        "S1e2.1c.5",
+        "it wrote the walk's lookahead kills into root, which no route does: L1 \
+         prunes a dead extension's supersets and writes nothing",
+    ),
+    (
+        "enable-path-nogoods",
+        "S1e2.1c.5",
+        "the walk's learned clauses: every route reads N, the minimal dead sets, \
+         by construction",
+    ),
+    (
+        "enable-fail-fast-fork",
+        "S1e2.1c.5",
+        "a node is never stopped at its first contradiction: a dead node's \
+         debts and core are its fixpoint's",
+    ),
 ];
 
 /// Every field of [`SolverConfig`], in **declaration order**: [`FLAGS`] and
@@ -138,9 +164,13 @@ pub const FIELDS: &[(&str, FieldKind)] = &[
 #[derive(Clone, PartialEq, Debug)]
 pub struct SolverConfig {
     /// Topic B Tier B — the one-step rule simulator, `Lookahead::dies_immediately`.
+    /// **Retired at M1e2 S1e2.1c.5**: a program cannot set it, and the
+    /// hypothesis generator the summary's `root` block calls reads it at its
+    /// default.
     pub enable_pre_branch_lookahead: bool,
     /// Cache a lookahead kill as a `(not h)` fact, so later enumerations skip
     /// `h` through the O(1) negated index instead of re-running the match.
+    /// **Retired at M1e2 S1e2.1c.5**, as the lookahead is.
     pub enable_lookahead_kill_cache: bool,
     /// `"popularity"` (the default since S1.5a.7) or `"most-constrained"`.
     pub hypgen_scoring: String,
@@ -192,6 +222,13 @@ pub struct SolverConfig {
     ///
     /// [`print_alive`]: SolverConfig::print_alive
     pub candidate_order_seed: i64,
+    /// `-y`: the detector's parent-path spot check, **unbounded and on every
+    /// program** — the user's ruling of 2026-11-03 (M1e2 S1e2.1c.5). Every
+    /// one-step parent of every printed state of two commitments or more is
+    /// built and saturated again. On a program the static check flags it fills
+    /// the warning's `paths` row and never fails the run; on a monotone one a
+    /// parent path that reaches another state contradicts the § 5.1 theorem,
+    /// and the run is an engine error. Its cost is outside the `work` block.
     pub lattice_sanity_check: bool,
     /// `"lex"` (the default, and what the baselines were recorded under) or
     /// `"score-sum"`.
@@ -199,6 +236,8 @@ pub struct SolverConfig {
     /// `None` disables the per-layer shuffle; a seed makes traversal order a
     /// deterministic permutation, which is how shuffle-invariance is probed.
     pub lattice_order_seed: Option<i64>,
+    /// **Retired at M1e2 S1e2.1c.5, and read by nothing**: the walk's learned
+    /// clauses.
     pub enable_path_nogoods: bool,
     /// **Retired at M1e2 S1e2.1a.6, and read by nothing.** The saturator
     /// mirrors every relation marked `(__symmetric__ R)`, always; off, this
@@ -212,7 +251,8 @@ pub struct SolverConfig {
     /// rather than dropping it, making the proof structure an AND/OR graph.
     pub record_alternative_justifications: bool,
     /// S1.9.E23 — stop a fork's saturation at the firing that makes it
-    /// inconsistent. The verdict is unchanged either way.
+    /// inconsistent. **Retired at M1e2 S1e2.1c.5, and read by nothing**: a
+    /// route's node is never stopped early.
     pub enable_fail_fast_fork: bool,
 }
 
@@ -311,7 +351,7 @@ mod tests {
         // and then drops. Counting is the cheap half; the loader's own tests
         // check that each name reaches its field.
         assert_eq!(FIELDS.len(), 17);
-        assert_eq!((FLAGS.len(), RETIRED.len()), (7, 10));
+        assert_eq!((FLAGS.len(), RETIRED.len()), (3, 14));
         let mut names: Vec<&str> = FIELDS.iter().map(|(n, _)| *n).collect();
         names.sort_unstable();
         names.dedup();

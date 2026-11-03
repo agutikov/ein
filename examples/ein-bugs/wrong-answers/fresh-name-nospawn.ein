@@ -29,7 +29,9 @@
 ;;;
 ;;; Banked from M1e2's probes at S1e2.1.1.
 
-(config :enable-pre-branch-lookahead false)
+;; Its `(config :enable-pre-branch-lookahead false)` line went at M1e2 S1e2.1c.5 (2026-11-03),
+;; when the user retired the flag: no route reads it, and a program that sets
+;; it is refused at load.
 
 (relation p T T)
 (relation q T T)

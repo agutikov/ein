@@ -58,7 +58,9 @@
 ;;; move the golden and declare itself. It is the route
 ;;; `tests/stdlib/closure/02|03` took, cashed at M1d S1d.2.6.
 
-(config :enable-pre-branch-lookahead false)
+;; Its `(config :enable-pre-branch-lookahead false)` line went at M1e2 S1e2.1c.5 (2026-11-03),
+;; when the user retired the flag: no route reads it, and a program that sets
+;; it is refused at load.
 
 (relation is-a T T :why "{?1} is a {?2}")
 (relation cand T   :why "{?1} may be given p")

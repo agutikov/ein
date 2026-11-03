@@ -290,12 +290,23 @@ fn partial_note(out: &mut Out, o: &Options, why: String) {
 /// whether a site bit, the status and the state apart, and the parent paths.
 /// A monotone program's one row is what it was. `holes` is the description's
 /// count where it has one; a whole cube's status counts them too.
-fn lattice_block(out: &mut Out, m: &Monotonicity, warning: Option<&Warning>, holes: Option<u64>) {
+fn lattice_block(
+    out: &mut Out,
+    m: &Monotonicity,
+    warning: Option<&Warning>,
+    spot: Option<&Paths>,
+    holes: Option<u64>,
+) {
     if m.is_monotone() {
         out.row(
             "lattice",
             "monotone (the static check) — R is convex: no hole",
         );
+        // `-y` (M1e2 S1e2.1c.5): the spot check, unbounded, held to the
+        // theorem — a path that differed would have been the run's error.
+        if let Some(p) = spot {
+            out.line(sub_row("paths", paths_text(p)));
+        }
         return;
     }
     let holes = holes.or_else(|| warning.and_then(|w| w.status.holes()));
@@ -528,8 +539,18 @@ pub fn status_text(s: &Status) -> String {
     }
 }
 
-/// The `paths` row: what the spot check read, and no more.
+/// The `paths` row: what the spot check read, and no more. Under `-y`
+/// (`bound` `None`, M1e2 S1e2.1c.5) it says it read every parent.
 pub fn paths_text(p: &Paths) -> String {
+    let text = paths_words(p);
+    if p.bound.is_none() {
+        format!("{text} (-y: every one-step parent)")
+    } else {
+        text
+    }
+}
+
+fn paths_words(p: &Paths) -> String {
     if p.states == 0
         && let Some((met, cost)) = p.unprinted
     {
@@ -1023,6 +1044,7 @@ fn describe_rows(out: &mut Out, r: &ReadOut, d: &Described, o: &Options) {
         out,
         &d.monotonicity,
         a.warning.as_deref(),
+        r.spot.as_ref(),
         holes.map(|h| h.0),
     );
     if let Some((holes, minimal)) = holes
@@ -1233,7 +1255,13 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
     } else {
         a.shape.as_ref().and_then(|s| s.holes).map(|h| h as u64)
     };
-    lattice_block(out, &a.monotonicity, a.warning.as_deref(), holes);
+    lattice_block(
+        out,
+        &a.monotonicity,
+        a.warning.as_deref(),
+        r.spot.as_ref(),
+        holes,
+    );
     out.row("universe", plural(a.n() as u64, "candidate", "candidates"));
     out.row(
         "route",

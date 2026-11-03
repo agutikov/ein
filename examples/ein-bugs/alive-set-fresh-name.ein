@@ -77,7 +77,9 @@
 ;;; `:expect` states **today's answer** and is meant to break, the same
 ;;; tripwire `naf-upward-closure.ein` and `alive-empty-*.ein` carry.
 
-(config :enable-pre-branch-lookahead false)
+;; Its `(config :enable-pre-branch-lookahead false)` line went at M1e2 S1e2.1c.5 (2026-11-03),
+;; when the user retired the flag: no route reads it, and a program that sets
+;; it is refused at load.
 
 (relation p T T)
 (relation q T T)

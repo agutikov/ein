@@ -1228,15 +1228,12 @@ fn permutations(v: &[usize]) -> Vec<Vec<usize>> {
     out
 }
 
-/// The seven `(config …)` flags and their defaults (`configuration.md` § 2.1).
+/// The three `(config …)` flags and their defaults (`configuration.md` § 2.1),
+/// since M1e2 S1e2.1c.5 retired the four `enable-*` levers.
 const FLAGS: &[(&str, bool)] = &[
-    ("enable-pre-branch-lookahead", true),
-    ("enable-lookahead-kill-cache", true),
     ("warn-derived-naf", false),
     ("lattice-sanity-check", false),
-    ("enable-path-nogoods", true),
     ("record-alternative-justifications", true),
-    ("enable-fail-fast-fork", true),
 ];
 
 /// The program with one flag flipped from its default — `None` where the

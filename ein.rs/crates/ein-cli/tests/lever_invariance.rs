@@ -25,10 +25,11 @@
 //!   walk's generator reads (`EIN_OBLIGATION_CHOICE=off|fail-first`) reach a
 //!   run the same way, as a process, and nothing declares them, so they are
 //!   swept over the same files. The third, `EIN_TRAVERSAL=tree`, went with the
-//!   walk at M1e2 S1e2.1c.5. The CLI shadows `-L`, `-K` and `-y`
-//!   reach `-c`, the `run` event and the echo and nothing else
-//!   (`ein-cli/src/modes.rs`), so what this holds is the process path; the day
-//!   P1e2.1c wires one into a route, this is the test that has to stay green.
+//!   walk at M1e2 S1e2.1c.5. The one CLI lever left, `-y`, is the read-out's
+//!   (the detector's spot check, unbounded, on every program — the user's
+//!   ruling of 2026-11-03, which retired `-L` and `-K`): it adds its `paths`
+//!   row and the summary's `monotonicity.paths`, which a `-y` cell leaves out
+//!   on both sides ([`without_spot`]), and moves nothing else.
 //! - **[`no_config_flag_moves_a_line_of_any_mode`]**, in-process. Every flag
 //!   a `(config …)` can set, flipped from the program's own resolved value in
 //!   an appended block (the loader keeps the last block whole), on every
@@ -192,11 +193,32 @@ fn scrub(summary: &mut J) -> J {
 
 /// What each CLI lever writes into the resolved config, which the summary's
 /// `config` object echoes: the evidence that the lever reached the run.
-const SHADOWS: [(&str, &str, bool); 3] = [
-    ("-L", "enable-pre-branch-lookahead", false),
-    ("-K", "enable-lookahead-kill-cache", false),
-    ("-y", "lattice-sanity-check", true),
-];
+/// `-L` and `-K` were here until M1e2 S1e2.1c.5 retired them (the user's
+/// ruling of 2026-11-03); a register row's `settings` that names one records
+/// the walk, and is not swept.
+const SHADOWS: [(&str, &str, bool); 1] = [("-y", "lattice-sanity-check", true)];
+
+/// `-y`'s own output, which is the one thing it may add (M1e2 S1e2.1c.5): the
+/// spot check's `paths` row, under the `lattice` row, and the summary's
+/// `monotonicity.paths`. Both are left out of a `-y` comparison, on both sides
+/// — on a flagged program the bounded check prints the same row by default.
+/// Everything else, the `work` row and block included, must not move.
+fn without_spot(text: &str) -> String {
+    text.lines()
+        .filter(|l| !l.starts_with("    paths "))
+        .map(|l| format!("{l}\n"))
+        .collect()
+}
+
+fn summary_without_spot(summary: &str) -> String {
+    let Ok(mut j) = serde_json::from_str::<J>(summary) else {
+        return summary.to_string();
+    };
+    if let Some(m) = j.get_mut("monotonicity").and_then(J::as_object_mut) {
+        m.remove("paths");
+    }
+    serde_json::to_string_pretty(&j).expect("serialises")
+}
 
 /// The walk generator's two environment levers (`configuration.md` § 4).
 /// Nothing declares them; they are swept over the files that declare a CLI
@@ -244,6 +266,9 @@ fn declared() -> BTreeMap<String, BTreeSet<String>> {
         let lever: String = std::iter::once('-')
             .chain(rest.chars().take_while(|c| c.is_ascii_alphanumeric()))
             .collect();
+        if !SHADOWS.iter().any(|(s, _, _)| *s == lever) {
+            continue;
+        }
         if slow_too() || !slow.contains(&row.witness) {
             out.entry(row.witness).or_default().insert(lever);
         }
@@ -373,11 +398,20 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
             Lever::Env(..) => env_cells += 1,
         }
         let d = defaults[&(file.as_str(), flags.as_slice())];
+        let spot = matches!(lever, Lever::Flag(l) if l == "-y");
+        let out = |t: &str| if spot { without_spot(t) } else { t.to_string() };
+        let sum = |t: &str| {
+            if spot {
+                summary_without_spot(t)
+            } else {
+                t.to_string()
+            }
+        };
         for (what, x, y) in [
             ("exit", d.code.to_string(), g.code.to_string()),
-            ("stdout", d.stdout.clone(), g.stdout.clone()),
+            ("stdout", out(&d.stdout), out(&g.stdout)),
             ("stderr", d.stderr.clone(), g.stderr.clone()),
-            ("summary", d.summary.clone(), g.summary.clone()),
+            ("summary", sum(&d.summary), sum(&g.summary)),
         ] {
             if x != y {
                 bad.push(format!("{at}: {what} moved, {}", first_difference(&x, &y)));
@@ -398,16 +432,16 @@ fn every_declared_lever_cell_moves_no_line_of_any_mode() {
          environment cells",
         files.len()
     );
-    // The selection did not collapse: twelve corpus entries declare levers,
-    // and ten of them, every one outside the slow tier, have a known R
-    // (2026-11-03, `--count` among the questions): 372 declared cells —
-    // sixteen questions each, thirteen where k_s = 1 — and 308 environment
-    // cells beside them (462 until `EIN_TRAVERSAL` went with the walk at M1e2
-    // S1e2.1c.5, the same day).
+    // The selection did not collapse: eight corpus entries declare a lever,
+    // `-y`, since M1e2 S1e2.1c.5 retired `-L` and `-K` (twelve declared one
+    // before), and six of them, every one outside the slow tier, have a known
+    // R (2026-11-03): 93 declared cells — sixteen questions each, thirteen
+    // where k_s = 1 — and 186 environment cells beside them, the two
+    // `EIN_OBLIGATION_CHOICE` settings over the same six files.
     if !slow_too() {
         assert!(cut.is_empty(), "R is not known for {cut:?}");
         assert!(
-            known >= 10 && declared_cells >= 372 && env_cells >= 308,
+            known >= 6 && declared_cells >= 93 && env_cells >= 186,
             "{known} files, {declared_cells} declared cells, {env_cells} environment cells"
         );
     }
@@ -517,6 +551,17 @@ fn printed(path: &Path, text: &str, flags: &[String], mode: Mode) -> String {
         t.stdout,
         t.stderr.join("\n"),
         t.code
+    )
+}
+
+/// [`printed`] less `-y`'s own output ([`without_spot`]): the `paths` row of
+/// the read-out, and the summary's `monotonicity.paths`.
+fn printed_without_spot(text: &str) -> String {
+    let (head, summary) = text.split_once("--- summary\n").unwrap_or((text, ""));
+    format!(
+        "{}--- summary\n{}\n",
+        without_spot(head),
+        summary_without_spot(summary.trim_end())
     )
 }
 
@@ -662,6 +707,13 @@ fn no_config_flag_moves_a_line_of_any_mode() {
             .to_string();
         for (((flags, _), want), got) in k.questions.iter().zip(defaults[&i]).zip(out) {
             cells += 1;
+            // `:lattice-sanity-check true` is `-y`: its row is its own.
+            let (want, got) = if flag == "lattice-sanity-check" {
+                (printed_without_spot(want), printed_without_spot(got))
+            } else {
+                (want.clone(), got.clone())
+            };
+            let (want, got) = (&want, &got);
             if got != want {
                 bad.push(format!(
                     "{rel} {} with :{flag} flipped: {}",

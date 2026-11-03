@@ -128,6 +128,12 @@ pub struct ReadOut {
     pub queries: Vec<Query>,
     /// The program's `(solve … :expect …)`, checked.
     pub claim: Option<Report>,
+    /// `-y` on a monotone program: the parent-path spot check, unbounded,
+    /// whose every path reached its state (a path that did not is
+    /// [`SolveError::SpotCheck`]). On a flagged program the check is the
+    /// warning's `paths` ([`crate::detector::Warning::paths`]), and `None`
+    /// here.
+    pub spot: Option<Paths>,
 }
 
 impl ReadOut {
@@ -175,7 +181,7 @@ pub fn of_answer(
     opts: &explore::Options,
 ) -> Result<ReadOut, SolveError> {
     if answer.mode.ask == Ask::Count {
-        return counted(root, terms, ast, answer);
+        return counted(root, terms, ast, answer, opts);
     }
     let mut states: Vec<Listed> = Vec::new();
     let mut owing: Vec<Owing> = Vec::new();
@@ -265,10 +271,15 @@ pub fn of_answer(
     // Per goal, per state, its rows.
     let mut rows: Vec<Vec<Vec<Row>>> = vec![Vec::new(); goals.len()];
     let mut owing_states: Vec<OwingState> = Vec::new();
-    // The detector's spot check, on a flagged program: the parent paths of
-    // each printed state of two commitments or more.
-    let mut paths = answer.warning.is_some().then(|| Paths {
-        bound: SPOT_PARENTS,
+    // The detector's spot check: on a flagged program the parent paths of
+    // each printed state of two commitments or more, at most `SPOT_PARENTS`
+    // of each; under `-y` every one, and on a monotone program too (M1e2
+    // S1e2.1c.5, the user's ruling of 2026-11-03).
+    let unbounded = sanity(root, opts);
+    let bound = (!unbounded).then_some(SPOT_PARENTS);
+    let per_state = |n: usize| bound.map_or(n, |b| n.min(b));
+    let mut paths = (answer.warning.is_some() || unbounded).then(|| Paths {
+        bound,
         ..Paths::default()
     });
     if !states.is_empty() || !owing.is_empty() {
@@ -306,7 +317,7 @@ pub fn of_answer(
             for (s, key) in states.iter().zip(&direct) {
                 let Some(key) = key else { continue };
                 p.states += 1;
-                for i in 0..s.rep.len().min(SPOT_PARENTS) {
+                for i in 0..per_state(s.rep.len()) {
                     let parent: Vec<u32> = s
                         .rep
                         .iter()
@@ -344,19 +355,43 @@ pub fn of_answer(
         Listing::Owing(_) => Listing::Owing(owing_states),
         l => l,
     };
-    if let (Some(mut p), Some(w)) = (paths, answer.warning.as_mut()) {
-        // Nothing printed to check, and states met that are not printed: what
-        // checking theirs would cost, at most.
-        if p.states == 0 && states.iter().any(|s| !s.listed) {
-            let cost: u64 = states
-                .iter()
-                .filter(|s| s.rep.len() >= 2)
-                .map(|s| 2 * s.rep.len().min(SPOT_PARENTS) as u64)
-                .sum();
-            p.unprinted = Some((states.len() as u64, cost));
-        }
-        w.paths = Some(p);
+    // Nothing printed to check, and states met that are not printed: what
+    // checking theirs would cost, at most.
+    if let Some(p) = paths.as_mut()
+        && p.states == 0
+        && states.iter().any(|s| !s.listed)
+    {
+        let cost: u64 = states
+            .iter()
+            .filter(|s| s.rep.len() >= 2)
+            .map(|s| 2 * per_state(s.rep.len()) as u64)
+            .sum();
+        p.unprinted = Some((states.len() as u64, cost));
     }
+    let spot = match (paths, answer.warning.as_mut()) {
+        // A flagged program: the warning's `paths` row, which reports and
+        // never fails the run (F21: detect, do not decide).
+        (Some(p), Some(w)) => {
+            w.paths = Some(p);
+            None
+        }
+        // A monotone program under `-y`: every path must reach its state, by
+        // the § 5.1 theorem, so one that does not is the engine's error.
+        (Some(p), None) => {
+            if let Some(first) = p.differ.first() {
+                return Err(SolveError::SpotCheck(format!(
+                    "-y: {first}, on a program the static check calls monotone — a \
+                     parent path that reaches another state contradicts the § 5.1 \
+                     theorem, so this is an engine error ({} of {} parent paths \
+                     differ)",
+                    p.differ.len(),
+                    p.parents
+                )));
+            }
+            Some(p)
+        }
+        (None, _) => None,
+    };
 
     let queries = goals
         .iter()
@@ -430,6 +465,7 @@ pub fn of_answer(
         states,
         queries,
         claim,
+        spot,
     })
 }
 
@@ -487,6 +523,7 @@ fn counted(
     terms: &mut Terms,
     ast: &Ast,
     mut answer: Answer,
+    opts: &explore::Options,
 ) -> Result<ReadOut, SolveError> {
     let goals = asked(root, ast);
     let met = answer.described.as_deref().map_or(0, |d| d.states.len());
@@ -497,18 +534,29 @@ fn counted(
             }
         }
     }
-    if let (Some(d), Some(w)) = (answer.described.as_deref(), answer.warning.as_mut()) {
+    // What checking the met states would cost, at most: the warning's row on
+    // a flagged program, and under `-y` the spot check's on a monotone one.
+    let unbounded = sanity(root, opts);
+    let bound = (!unbounded).then_some(SPOT_PARENTS);
+    let mut spot = None;
+    if let Some(d) = answer.described.as_deref()
+        && (answer.warning.is_some() || unbounded)
+    {
         let cost: u64 = d
             .states
             .iter()
             .filter(|s| s.rep.len() >= 2)
-            .map(|s| 2 * s.rep.len().min(SPOT_PARENTS) as u64)
+            .map(|s| 2 * bound.map_or(s.rep.len(), |b| s.rep.len().min(b)) as u64)
             .sum();
-        w.paths = Some(Paths {
-            bound: SPOT_PARENTS,
+        let p = Paths {
+            bound,
             unprinted: (met > 0).then_some((met as u64, cost)),
             ..Paths::default()
-        });
+        };
+        match answer.warning.as_mut() {
+            Some(w) => w.paths = Some(p),
+            None => spot = Some(p),
+        }
     }
     let not_checked = || Report {
         outcome: Outcome::NotChecked,
@@ -536,7 +584,20 @@ fn counted(
         states: Vec::new(),
         queries,
         claim,
+        spot,
     })
+}
+
+/// `-y`, or the program's own `(config :lattice-sanity-check true)`: the
+/// parent-path spot check unbounded, on every program (M1e2 S1e2.1c.5, the
+/// user's ruling of 2026-11-03).
+fn sanity(root: &Kb, opts: &explore::Options) -> bool {
+    opts.sanity
+        || root
+            .program()
+            .config
+            .as_ref()
+            .is_some_and(|c| c.lattice_sanity_check)
 }
 
 /// What the run asked about R, for a claim it could not check.

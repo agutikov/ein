@@ -467,32 +467,24 @@ fn the_shipped_environment_set_is_what_the_page_lists() {
     }
 }
 
-// ── 5. The unread flags, and the retired ones ───────────────────────
+// ── 5. The sanity flag, and the retired ones ────────────────────────
 
-/// The five flags no route reads since M1e2 S1e2.1a.5 — the walk's lookahead,
-/// kill cache, learned clauses, fail-fast fork and sanity probe — are
-/// settable, validated, `--dump-config`-printed and `--json-summary`-echoed,
-/// and change nothing a run prints.
-///
-/// That is the page's one claim about behaviour that no other test covers,
-/// and it is the claim most likely to stop being true, because P1e2.1c wiring
-/// one into a route is a small change nobody would think to re-document. So it
-/// is held from the outside: stdout, stderr and the exit code, on two fixtures
-/// with different routes, byte for byte. `lever_invariance.rs` holds the CLI
-/// shadows of three of them the same way, under every question, and every flag
-/// on every program whose R is known (M1e2 S1e2.1a.6).
+/// **`:lattice-sanity-check true` is `-y`, and adds its row and nothing
+/// else.** Until M1e2 S1e2.1c.5 this test held five flags *unread*, settable
+/// and changing nothing printed. The user's ruling of 2026-11-03 retired four
+/// of them (the fourteen retired ones are the next test's) and gave the fifth
+/// a meaning: the detector's parent-path spot check, unbounded, on every
+/// program. So nothing on the page is unread any more, and what is held here
+/// is the one flag's claim from the outside: on a monotone fixture and a
+/// flagged one, the run exits as the default does and prints what it prints,
+/// plus one `paths` row that says it read every parent — on the flagged one
+/// in place of the bounded check's row. `lever_invariance.rs` holds the same
+/// under every question on every program whose R is known.
 #[test]
-fn the_unread_flags_change_nothing_printed() {
+fn the_sanity_flag_adds_its_row_and_nothing_else() {
     let fixtures = [
         "examples/branching/04_two_levels.ein",
         "examples/ein-bugs/naf-upward-closure.ein",
-    ];
-    let flags = [
-        "(config :enable-pre-branch-lookahead false)",
-        "(config :enable-lookahead-kill-cache false)",
-        "(config :enable-path-nogoods false)",
-        "(config :enable-fail-fast-fork false)",
-        "(config :lattice-sanity-check true)",
     ];
     let run = |path: &Path| {
         let out = std::process::Command::new(env!("CARGO_BIN_EXE_ein"))
@@ -507,6 +499,12 @@ fn the_unread_flags_change_nothing_printed() {
             String::from_utf8_lossy(&out.stderr).replace(&p, "F"),
         )
     };
+    let without = |t: &str| -> String {
+        t.lines()
+            .filter(|l| !l.starts_with("    paths "))
+            .map(|l| format!("{l}\n"))
+            .collect()
+    };
     for path in fixtures {
         let src = std::fs::read_to_string(repo_root().join(path)).expect(path);
         let tag = Path::new(path)
@@ -517,27 +515,29 @@ fn the_unread_flags_change_nothing_printed() {
         // the fixture set.
         let base = write_fixture(&format!("{tag}-base"), &src);
         let want = run(&base);
-        assert!(
-            want.1.contains("final-state facts"),
-            "{path}: the baseline run printed no state\n{}",
-            want.1
+        let alt = write_fixture(
+            &format!("{tag}-sanity"),
+            &format!("{src}\n(config :lattice-sanity-check true)\n"),
         );
-        for (i, flag) in flags.iter().enumerate() {
-            let alt = write_fixture(&format!("{tag}-{i}"), &format!("{src}\n{flag}\n"));
-            assert_eq!(
-                run(&alt),
-                want,
-                "{path}: {flag} changed the run. It is documented as unread in \
-                 docs/kernel/configuration.md — either a route reads it now \
-                 (update the page) or something else moved."
-            );
-        }
+        let got = run(&alt);
+        assert_eq!(
+            (got.0, without(&got.1), &got.2),
+            (want.0, without(&want.1), &want.2),
+            "{path}: :lattice-sanity-check true moved the run past its own row"
+        );
+        assert!(
+            got.1
+                .lines()
+                .any(|l| l.starts_with("    paths ") && l.ends_with("(-y: every one-step parent)")),
+            "{path}: no unbounded `paths` row:\n{}",
+            got.1
+        );
     }
 }
 
-/// The ten retired flags (nine at S1e2.1a.5, the mirror at S1e2.1a.6) are load
-/// errors that say why, and which stage retired them, and none is offered
-/// among the valid names.
+/// The fourteen retired flags (nine at S1e2.1a.5, the mirror at S1e2.1a.6, the
+/// four `enable-*` levers at S1e2.1c.5) are load errors that say why, and
+/// which stage retired them, and none is offered among the valid names.
 #[test]
 fn the_retired_flags_are_refused_with_why() {
     for (flag, stage, why) in RETIRED {

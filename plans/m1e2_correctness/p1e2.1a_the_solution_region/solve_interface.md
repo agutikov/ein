@@ -181,9 +181,9 @@ ASK     (describe, the default) | -n N | --single | --count (over all of R only)
 | `-T`, `--max-time S` | wall-clock abort | **kept**: abort, exit 2. A machine-dependent limit never becomes an answer |
 | `-j`, `--jobs` | threads | **kept**, every route |
 | `--region-limit N` | `--dump-region`'s n, default 16 | **kept**: the largest n for which a program that no faster route licenses gets the cube inside `solve` (route 2). `ein oracle` reads the same option |
-| `-L`, `--no-lookahead` | the walk's one-step lookahead off | **kept as a speed lever.** The lookahead becomes a pre-filter on a monotone program, where a one-firing death is a real refutation. A node it does not kill gets the full saturation. It no longer decides what is recorded, since `complete()` goes (§ 3.2) |
-| `-K`, `--no-kill-cache` | the `(not h)` cache off | **kept as a speed lever.** The cache becomes bookkeeping, a remembered dead extension that the join skips, and it writes no fact |
-| `-y`, `--lattice-sanity-check` | re-saturates every parent path | **kept**: a check. It can fail a run, and never changes an answer |
+| `-L`, `--no-lookahead` | the walk's one-step lookahead off | **kept as a speed lever.** The lookahead becomes a pre-filter on a monotone program, where a one-firing death is a real refutation. A node it does not kill gets the full saturation. It no longer decides what is recorded, since `complete()` goes (§ 3.2). **Retired at S1e2.1c.5 (2026-11-03)**, with its field (§ 2.4) |
+| `-K`, `--no-kill-cache` | the `(not h)` cache off | **kept as a speed lever.** The cache becomes bookkeeping, a remembered dead extension that the join skips, and it writes no fact. **Retired at S1e2.1c.5 (2026-11-03)**, with its field |
+| `-y`, `--lattice-sanity-check` | re-saturates every parent path | **kept**: a check. It can fail a run, and never changes an answer. Since S1e2.1c.5 (2026-11-03): the detector's parent-path spot check, unbounded, on every program |
 | `-o`, `--lattice-order` | within-layer order | **retired.** An order that is a lever could change which states `-n` prints (C4). Each route's order is part of its definition |
 | `-z`, `--shuffle`; `-d`, `--seed` | permute each layer | **retired**, as `-o`. Order invariance is tested inside the test suite, without a CLI lever |
 | `-e`, `--exhaustive` | do not stop at the first model | **retired**: the default is exhaustive. The usage error names the replacements, `--maximal` for the walk's maximal line and nothing for R |
@@ -252,8 +252,8 @@ it, the 17 fields:
 
 | field | proposed | why |
 |---|---|---|
-| `enable-pre-branch-lookahead`, `enable-lookahead-kill-cache`, `enable-path-nogoods`, `enable-fail-fast-fork` | **kept**, speed only | each prunes or stops work that a licence or a refutation already decides |
-| `lattice-sanity-check`, `warn-derived-naf`, `record-alternative-justifications` | **kept** | a check, a diagnostic, and the shape of an explanation |
+| `enable-pre-branch-lookahead`, `enable-lookahead-kill-cache`, `enable-path-nogoods`, `enable-fail-fast-fork` | **kept**, speed only; **retired at S1e2.1c.5** (2026-11-03) | each prunes or stops work that a licence or a refutation already decides. **Reversed by the user on 2026-11-03** ([S1e2.1c.5 § question 2](../p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md#2-each-unread-lever-a-meaning-on-a-route-or-retired)): no route read any of the four, the kill cache and the path no-goods are what L1 and N do by construction, a node is never stopped early, and the lookahead's measured saving was in the noise. Each is a load error naming the stage and why |
+| `lattice-sanity-check`, `warn-derived-naf`, `record-alternative-justifications` | **kept** | a check, a diagnostic, and the shape of an explanation. `lattice-sanity-check` (`-y`) has the meaning the user ruled on 2026-11-03: the detector's parent-path spot check, unbounded, on every program; a mismatch on a monotone program is an engine error, and on a flagged one a warning |
 | `enable-symmetric-mirror` | **unchanged here**; **retired at S1e2.1a.6** (2026-11-01) | it changes R. Its question is S1e2.1a.6's, and the user ruled to retire it: the mirror is always on |
 | `enable-singleton-writeback`, `enable-forced-positive` | **retired** | they write into root, which no mode does. What they knew survives as licence L1: a candidate dead alone leaves the universe, always |
 | `lattice-order`, `lattice-order-seed`, `hypgen-scoring`, `hypgen-rel-weight`, `hypgen-obj-weight` | **retired** | order levers, as `-o` (C4) |

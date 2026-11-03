@@ -234,11 +234,43 @@ fn static_half(m: &Monotonicity) -> Vec<(&'static str, Json)> {
 /// monotone program, which the detector never reads, and `paths` where no
 /// read-out ran. Every key on every run, as `ein-summary/2` has one shape.
 pub fn warning_json(w: Option<&Warning>) -> Vec<(&'static str, Json)> {
+    warning_json_with(w, None)
+}
+
+/// The spot check's `paths` object: what it read, and what differed. `bound`
+/// is `null` under `-y`, which reads every parent (M1e2 S1e2.1c.5).
+pub fn paths_json(p: &ein_infer::detector::Paths) -> Json {
+    Json::obj(vec![
+        ("bound", p.bound.map_or(Json::Null, |b| Json::int(b as i64))),
+        ("states", Json::int(p.states as i64)),
+        ("parents", Json::int(p.parents as i64)),
+        ("dead_parents", Json::int(p.dead as i64)),
+        ("saturations", Json::int(p.saturations as i64)),
+        ("differ", strs(&p.differ)),
+        (
+            "unprinted",
+            p.unprinted.map_or(Json::Null, |(met, cost)| {
+                Json::obj(vec![
+                    ("members", Json::int(met as i64)),
+                    ("saturations", Json::int(cost as i64)),
+                ])
+            }),
+        ),
+    ])
+}
+
+/// [`warning_json`], with `-y`'s spot check on a monotone program, which
+/// has no warning: `status` and `state` stay `null`, and `paths` is the
+/// check's.
+pub fn warning_json_with(
+    w: Option<&Warning>,
+    spot: Option<&ein_infer::detector::Paths>,
+) -> Vec<(&'static str, Json)> {
     let Some(w) = w else {
         return vec![
             ("status", Json::Null),
             ("state", Json::Null),
-            ("paths", Json::Null),
+            ("paths", spot.map_or(Json::Null, paths_json)),
         ];
     };
     let n_limit = |why: &str, n: usize, limit: Option<u32>| {
@@ -313,25 +345,7 @@ pub fn warning_json(w: Option<&Warning>) -> Vec<(&'static str, Json)> {
             ),
         ),
     ]);
-    let paths = w.paths.as_ref().map_or(Json::Null, |p| {
-        Json::obj(vec![
-            ("bound", Json::int(p.bound as i64)),
-            ("states", Json::int(p.states as i64)),
-            ("parents", Json::int(p.parents as i64)),
-            ("dead_parents", Json::int(p.dead as i64)),
-            ("saturations", Json::int(p.saturations as i64)),
-            ("differ", strs(&p.differ)),
-            (
-                "unprinted",
-                p.unprinted.map_or(Json::Null, |(met, cost)| {
-                    Json::obj(vec![
-                        ("members", Json::int(met as i64)),
-                        ("saturations", Json::int(cost as i64)),
-                    ])
-                }),
-            ),
-        ])
-    });
+    let paths = w.paths.as_ref().map_or(Json::Null, paths_json);
     vec![("status", status), ("state", state), ("paths", paths)]
 }
 

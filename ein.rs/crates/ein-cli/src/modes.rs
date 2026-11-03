@@ -59,13 +59,10 @@ const UNSHOWN: [&str; 9] = [
 ];
 
 /// [`UNSHOWN`]'s flags with no value: the trace's shape and stderr's
-/// progress change nothing stdout prints, and a lever changes nothing either,
-/// for `-j`'s reason (C4).
-const UNSHOWN_FLAGS: [&str; 16] = [
-    "-L",
-    "--no-lookahead",
-    "-K",
-    "--no-kill-cache",
+/// progress change nothing stdout prints. `-y` adds its own row, the spot
+/// check's, and changes no answer, so the header leaves it out as it leaves
+/// `-j` (C4).
+const UNSHOWN_FLAGS: [&str; 12] = [
     "-y",
     "--lattice-sanity-check",
     "--no-diagrams",
@@ -250,10 +247,12 @@ pub fn run(m: &ArgMatches) -> i32 {
         return 1;
     };
     let load = t_load.elapsed();
-    // The program's config with the levers on it: what `-c` prints and the
-    // `run` event carries. No route reads a lever yet (P1e2.1c), so a lever
-    // changes nothing printed, which the corpus's `levers` cells check.
+    // The program's config with `-y` on it: what `-c` prints and the `run`
+    // event carries. `-y` is the read-out's (the spot check, unbounded, M1e2
+    // S1e2.1c.5); no route reads it, so it moves no answer and no `work` row,
+    // which the corpus's `levers` cells check.
     let cfg = crate::solve::resolved_config(&kb, m);
+    opts.sanity = cfg.lattice_sanity_check;
     if m.get_flag("dump-config") {
         crate::printers::print_resolved_config(&cfg);
     }
@@ -301,6 +300,12 @@ pub fn run(m: &ArgMatches) -> i32 {
         Err(ein_infer::SolveError::Compile(e)) => {
             eprintln!("ein.inference.compile.CompileError: {e}");
             return 1;
+        }
+        // `-y` found a parent path that reaches another state on a monotone
+        // program: the engine's error, never an answer (M1e2 S1e2.1c.5).
+        Err(ein_infer::SolveError::SpotCheck(e)) => {
+            eprintln!("error: {e}");
+            return 2;
         }
         Err(e) => {
             eprintln!("{e}");

@@ -1,5 +1,3 @@
-(config :enable-pre-branch-lookahead true)
-
 (import std.algebra :symbols (symmetric transitive includes))
 
 (import

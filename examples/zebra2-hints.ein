@@ -100,8 +100,9 @@
 ;; stdlib pattern-macro sugar — forall/unknown from the std.macro module (S1.8.A5).
 (import std.macro :symbols (forall unknown))
 
-(config
-  :enable-pre-branch-lookahead true)
+;; Its `(config :enable-pre-branch-lookahead true)` line went at M1e2 S1e2.1c.5 (2026-11-03),
+;; when the user retired the flag: no route reads it, and a program that sets
+;; it is refused at load.
 
 ;; ──── General property rules — from std.algebra (S1.8.A5) ──
 (import std.algebra :symbols (symmetric transitive includes))

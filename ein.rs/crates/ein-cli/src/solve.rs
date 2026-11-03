@@ -23,7 +23,7 @@ use crate::common::read_text_or_crash;
 /// The nine options the switch retired (`solve_interface.md` § 2.1), each with
 /// the sentence its refusal prints: what replaces it. They stay in the parser,
 /// hidden, so that this is what a stale argv gets.
-pub(crate) const RETIRED: [(&str, &str); 9] = [
+pub(crate) const RETIRED: [(&str, &str); 11] = [
     (
         "exhaustive",
         "-e/--exhaustive is retired: `ein solve FILE` describes all of R, which \
@@ -70,6 +70,18 @@ pub(crate) const RETIRED: [(&str, &str); 9] = [
         "region-states",
         "--region-states moved: `ein oracle FILE --dump DIR --states`",
     ),
+    (
+        "no-lookahead",
+        "-L/--no-lookahead is retired (M1e2 S1e2.1c.5): no route runs the \
+         walk's one-step lookahead, and every route saturates each candidate's \
+         fork, so the lever changed nothing",
+    ),
+    (
+        "no-kill-cache",
+        "-K/--no-kill-cache is retired (M1e2 S1e2.1c.5): no route writes a kill \
+         into root, and L1 prunes a dead extension's supersets by construction, \
+         so the lever changed nothing",
+    ),
 ];
 
 /// Refuse the first retired option `m` carries, with its sentence. `true`
@@ -93,45 +105,30 @@ pub fn run(m: &ArgMatches) -> i32 {
     crate::modes::run(m)
 }
 
-/// `kb.config` (or defaults) plus the levers the command line sets. A command
-/// that does not define a lever leaves its field as the program set it.
+/// `kb.config` (or defaults) plus the lever the command line sets, `-y`, the
+/// one left since M1e2 S1e2.1c.5 retired `-L` and `-K`. A command that does
+/// not define it leaves the field as the program set it.
 pub(crate) fn resolved_config(kb: &Kb, m: &ArgMatches) -> SolverConfig {
     let mut cfg = kb.program().config.clone().unwrap_or_default();
     let on = |id: &str| m.try_get_one::<bool>(id).ok().flatten().copied() == Some(true);
-    if on("no-lookahead") {
-        cfg.enable_pre_branch_lookahead = false;
-    }
-    if on("no-kill-cache") {
-        cfg.enable_lookahead_kill_cache = false;
-    }
     if on("lattice-sanity-check") {
         cfg.lattice_sanity_check = true;
     }
     cfg
 }
 
-/// The resolved config as the `run` event's `config` object: the seven flags
+/// The resolved config as the `run` event's `config` object: the three flags
 /// a program can set (`ein_core::config::FLAGS`), kebab keys, JSON values, in
 /// declaration order.
 pub(crate) fn config_json(cfg: &SolverConfig) -> Vec<(&'static str, String)> {
     let b = |v: bool| v.to_string();
     vec![
-        (
-            "enable-pre-branch-lookahead",
-            b(cfg.enable_pre_branch_lookahead),
-        ),
-        (
-            "enable-lookahead-kill-cache",
-            b(cfg.enable_lookahead_kill_cache),
-        ),
         ("warn-derived-naf", b(cfg.warn_derived_naf)),
         ("lattice-sanity-check", b(cfg.lattice_sanity_check)),
-        ("enable-path-nogoods", b(cfg.enable_path_nogoods)),
         (
             "record-alternative-justifications",
             b(cfg.record_alternative_justifications),
         ),
-        ("enable-fail-fast-fork", b(cfg.enable_fail_fast_fork)),
     ]
 }
 

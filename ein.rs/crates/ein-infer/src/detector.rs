@@ -750,10 +750,14 @@ pub struct State {
 }
 
 /// The parent-path spot check: for each state the read-out prints of two
-/// commitments or more, up to [`SPOT_PARENTS`] of its parents `C \ {h}`.
+/// commitments or more, up to [`SPOT_PARENTS`] of its parents `C \ {h}`, or
+/// every one of them under `-y` (M1e2 S1e2.1c.5, the user's ruling of
+/// 2026-11-03), which runs it on a monotone program too.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Paths {
-    pub bound: usize,
+    /// Parents read per printed state: [`SPOT_PARENTS`], or `None` under
+    /// `-y`, every one.
+    pub bound: Option<usize>,
     /// Printed states of two commitments or more.
     pub states: u64,
     /// Parents checked: alive, built, `h` written, saturated.
@@ -783,7 +787,7 @@ pub struct Warning {
 }
 
 /// How many parents of each printed state the spot check reads — the user's
-/// approval of 2026-11-03.
+/// approval of 2026-11-03. `-y` lifts it ([`Paths::bound`]).
 pub const SPOT_PARENTS: usize = 3;
 
 // ── The stale check ─────────────────────────────────────────────────

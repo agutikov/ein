@@ -1,1 +1,1 @@
-(config …): config flag :enable-path-nogoods expects true/false, got Atom(name='maybe')
+(config …): config flag :warn-derived-naf expects true/false, got Atom(name='maybe')

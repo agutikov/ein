@@ -422,7 +422,11 @@ fn the_retired_flags_are_refused_with_why() {
 fn bool_flags_coerce_from_their_ir_shapes() {
     assert!(cfg(":warn-derived-naf true").warn_derived_naf);
     assert!(!cfg(":warn-derived-naf false").warn_derived_naf);
-    assert!(!cfg(r#":enable-path-nogoods "false""#).enable_path_nogoods);
+    // A quoted bool: `record-alternative-justifications` since M1e2 S1e2.1c.5
+    // retired `enable-path-nogoods`, which carried it.
+    assert!(
+        !cfg(r#":record-alternative-justifications "false""#).record_alternative_justifications
+    );
 }
 
 /// The two refusals name the flag and the shape they wanted — work-list

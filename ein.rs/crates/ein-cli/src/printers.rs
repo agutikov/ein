@@ -11,22 +11,12 @@ use ein_core::SolverConfig;
 pub fn print_resolved_config(cfg: &SolverConfig) {
     let b = |v: bool| if v { "true" } else { "false" }.to_string();
     let fields: Vec<(&str, String)> = vec![
-        (
-            "enable-pre-branch-lookahead",
-            b(cfg.enable_pre_branch_lookahead),
-        ),
-        (
-            "enable-lookahead-kill-cache",
-            b(cfg.enable_lookahead_kill_cache),
-        ),
         ("warn-derived-naf", b(cfg.warn_derived_naf)),
         ("lattice-sanity-check", b(cfg.lattice_sanity_check)),
-        ("enable-path-nogoods", b(cfg.enable_path_nogoods)),
         (
             "record-alternative-justifications",
             b(cfg.record_alternative_justifications),
         ),
-        ("enable-fail-fast-fork", b(cfg.enable_fail_fast_fork)),
     ];
     println!("config (resolved)");
     for (name, shown) in fields {

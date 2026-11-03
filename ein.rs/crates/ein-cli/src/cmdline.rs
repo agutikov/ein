@@ -346,9 +346,10 @@ fn render_command() -> Command {
 /// `--single` and `-n N` each ask one question about it; since T1e2.1c.4.6
 /// `--count` asks how many states and commitments R holds.
 ///
-/// The nine options the switch retired stay in the parser, **hidden**, so that
-/// a stale argv is refused with the sentence naming what replaced it
-/// (`crate::solve::RETIRED`) rather than with clap's "unexpected argument".
+/// The nine options the switch retired, and the two levers S1e2.1c.5 retired,
+/// stay in the parser, **hidden**, so that a stale argv is refused with the
+/// sentence naming what replaced it (`crate::solve::RETIRED`) rather than with
+/// clap's "unexpected argument".
 fn solve_command() -> Command {
     let retired = |id: &'static str, short: Option<char>, takes_value: bool| {
         let mut a = Arg::new(id).long(id).hide(true);
@@ -509,23 +510,14 @@ fn solve_command() -> Command {
                      same read-out, byte for byte",
                 ),
         )
-        // ── levers: speed only, and none of them read by a route yet ──
-        .arg(flag(
-            'L',
-            "no-lookahead",
-            "the one-step lookahead off — a lever: no route reads it until \
-             P1e2.1c gives it a speed, so it changes nothing printed",
-        ))
-        .arg(flag(
-            'K',
-            "no-kill-cache",
-            "the lookahead's kill cache off — a lever, as --no-lookahead",
-        ))
+        // ── a check: never changes an answer ──
         .arg(flag(
             'y',
             "lattice-sanity-check",
-            "the lattice sanity check on — a lever: no route runs it until \
-             P1e2.1c, so it changes nothing printed",
+            "the parent-path spot check, unbounded: every one-step parent of \
+             every printed state, built and saturated again. A row of its own; \
+             a mismatch on a monotone program is an engine error (exit 2), on \
+             a flagged one a warning",
         ))
         // ── progress, on stderr ──
         .arg(flag(
@@ -655,7 +647,10 @@ fn solve_command() -> Command {
         .arg(retired("seed", Some('d'), true))
         .arg(retired("dump-states", Some('D'), true))
         .arg(retired("dump-region", None, true))
-        .arg(retired("region-states", None, false));
+        .arg(retired("region-states", None, false))
+        // ── retired at M1e2 S1e2.1c.5, the user's ruling of 2026-11-03 ──
+        .arg(retired("no-lookahead", Some('L'), false))
+        .arg(retired("no-kill-cache", Some('K'), false));
 
     // ── event log (file only) ──
     let cmd = event_args(cmd);

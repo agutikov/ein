@@ -13,7 +13,10 @@
 > solve` has 34: `--monotone`, the explicit check the user approved, asks
 > about the program instead of R. **Since T1e2.1c.4.6 (the same day)** it
 > has 35: `--count`, which the user ruled, asks how many states and
-> commitments R holds, and reads no state.
+> commitments R holds, and reads no state. **Since S1e2.1c.5 (the same day)**
+> a program sets three, and `ein solve` has 33: the user retired `-L`, `-K`
+> and the four `enable-*` fields no route read, and gave `-y` its meaning,
+> the detector's parent-path spot check, unbounded, on every program.
 >
 > **It is a reference, not a narrative.** One row per knob. What a lever *does
 > to the search*, and what it was measured at, is
@@ -46,16 +49,16 @@
 
 | surface | how many | who owns the list |
 |---|---:|---|
-| `(config …)` flags | **7** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the ten a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
-| CLI options | **73** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
+| `(config …)` flags | **3** | `FLAGS` in [`config.rs`](../../ein.rs/crates/ein-core/src/config.rs), and `RETIRED` for the fourteen a program can no longer set; the form's shape is [`01_grammar.md` § Top-level forms](ir/03-ein-lang/01_grammar.md#2-top-level-forms) |
+| CLI options | **71** | `--help`, and [`golden/help_shape.txt`](../../ein.rs/crates/ein-cli/tests/golden/help_shape.txt), which `help_surface.rs` diffs |
 | `EIN_*` environment | **3** read by the shipped binary, of 26 greppable names on 2026-08-28 | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
 
-1. **A CLI option** — but only the three that shadow a flag, § [3.2](#32-the-three-options-that-shadow-a-flag).
+1. **A CLI option** — but only the one that shadows a flag, § [3.2](#32-the-option-that-shadows-a-flag).
 2. **The program's own `(config …)` head.** Several blocks are allowed and the
    loader keeps the **last one whole** — not a merge:
-   `(config :warn-derived-naf true) (config :enable-path-nogoods false)` leaves
+   `(config :warn-derived-naf true) (config :lattice-sanity-check true)` leaves
    `warn-derived-naf` at its default
    ([`from_ir.rs`](../../ein.rs/crates/ein-ir/src/from_ir.rs), `config_blocks.last()`;
    the last-wins rule is stated in [`01_grammar.md`](ir/03-ein-lang/01_grammar.md)).
@@ -73,7 +76,7 @@ settings are being *compared* would re-bless every shape golden in the corpus
 
 ---
 
-## 2. `(config …)` — the seven solver flags
+## 2. `(config …)` — the three solver flags
 
 ```lisp
 (config :record-alternative-justifications false :warn-derived-naf true)
@@ -91,6 +94,7 @@ kb load error: (config …): unknown config flag :nonsense (expected one of: …
 kb load error: (config …): config flag :warn-derived-naf expects true/false, got Int(value=7)
 kb load error: (config …): config flag :lattice-order was retired at M1e2 S1e2.1a.5: an order lever, and every route's order is part of its definition
 kb load error: (config …): config flag :enable-symmetric-mirror was retired at M1e2 S1e2.1a.6: off, it changed the answer, and no config option may. The mirror is what `(__symmetric__ R)` means, so it is always on: a relation that is not to be mirrored is not marked
+kb load error: (config …): config flag :enable-path-nogoods was retired at M1e2 S1e2.1c.5: the walk's learned clauses: every route reads N, the minimal dead sets, by construction
 ```
 
 ### 2.1 The defaults
@@ -100,13 +104,9 @@ kb load error: (config …): config flag :enable-symmetric-mirror was retired at
 <!-- generated: ein solve --dump-config -->
 ```text
 config (resolved)
-  enable-pre-branch-lookahead      true
-  enable-lookahead-kill-cache      true
   warn-derived-naf                 false
   lattice-sanity-check             false
-  enable-path-nogoods              true
   record-alternative-justifications true
-  enable-fail-fast-fork            true
 ```
 <!-- /generated -->
 
@@ -114,13 +114,9 @@ config (resolved)
 
 | flag | type | default | what it changes | answer? | R? | stability |
 |---|---|---|---|---|---|---|
-| `enable-pre-branch-lookahead` | `bool` | `true` | the walk's one-step lookahead, which dropped a candidate it could prove died. **No route reads it** since the switch: route 1 and the cube take H config-free (`region.rs` § The universe). `-L` sets it `false` | unread | no | lever, unread |
-| `enable-lookahead-kill-cache` | `bool` | `true` | the walk's cache of a lookahead kill as `(not h)`. No route reads it; `-K` sets it `false` | unread | no | lever, unread |
 | `warn-derived-naf` | `bool` | `false` | **two questions, one flag**, both `warn` events on the stream after root's saturation, on every run that records one (M1e2 S1e2.1a.5 kept them when the walk left). `DerivedNafWarning` — the `(absent …)` guard watches a **rule-derived** relation: a *stratification* signal since S1.21.8, not a soundness one. `RefutationUnderAbsentWarning` (M1e [S1e.2.3](../history/m1e_review_processing/README.md#s1e23--q-m1e9s-containment-a-diagnostic-for-a-refutation-resting-on-an-absent)) — the rule concludes `(false)` or a `(not …)` from a guard over a relation the program's **generator can still propose**, which *is* a soundness signal: [`dead` is not upward-closed under `absent`](../history/m1e_review_processing/open_questions.md#q-m1e9--is-dead-really-upward-closed-under-absent) | no | no | contract |
-| `lattice-sanity-check` | `bool` | `false` | the walk's re-saturation of every `(k−1)`-subset parent path, aborting on a mismatch. No route runs it; `-y` sets it `true` | unread | no | probe, unread |
-| `enable-path-nogoods` | `bool` | `true` | whether the walk's dead commitment emitted a learned clause. No route reads it: route 1's `N` is the minimal dead sets it met, not a learned clause | unread | no | lever, unread |
+| `lattice-sanity-check` | `bool` | `false` | `-y`'s: the detector's parent-path spot check, **unbounded and on every program** — every one-step parent of every printed state of two commitments or more, built and saturated again (the user's ruling of 2026-11-03, M1e2 S1e2.1c.5; the walk's re-saturation of every parent path until then). On a program the static check flags it fills the warning's `paths` row and never fails the run; on a monotone one a path that reaches another state contradicts the § 5.1 theorem, and the run is an engine error, exit 2. A clean check prints its `paths` row; its saturations are that row's, outside `work`. `-y` sets it `true` | no | no | check |
 | `record-alternative-justifications` | `bool` | `true` | whether a re-derivation of a known fact is recorded as an alternative justification or dropped: the proof is an AND/OR graph, or a tree. It decides which minimal core a dead node's refutation names — the read-out's `unsat core`, the trace's `N` and `nogoods.json` | explanation only | no | contract |
-| `enable-fail-fast-fork` | `bool` | `true` | whether the walk's fork stopped at the firing that made it inconsistent. No route reads it: every node is run to its fixpoint, so a dead node's debts are its fixpoint's | unread | no | lever, unread |
 
 ### 2.3 Reading the judgement columns
 
@@ -144,52 +140,52 @@ about it.
 | **yes** | can change R's description, a state or a class |
 | **explanation only** | the same R and states; a different unsat core or proof shape |
 | **no** | the same read-out; counters and the wall clock may move |
-| **unread** | read by no route since M1e2 S1e2.1a.5 — the walk's library reads it, and no command runs the walk. P1e2.1c gives it a meaning on a route or retires it |
+
+**No flag is unread since M1e2 S1e2.1c.5.** Four were, read by no route since
+the switch, and the user retired them on 2026-11-03 (§ 2.4); the fifth,
+`lattice-sanity-check`, got its meaning on a route the same day.
 
 **Stability** — what depending on a flag commits you to.
 
 | value | means |
 |---|---|
 | **contract** | stated here, exercised by the corpus or a named test, safe to depend on |
-| **lever, unread** | kept by the interface as a speed lever (`solve_interface.md` § 2.4) and read by no route yet. The corpus's `levers` cells run `-L`, `-K` and `-y` on every `cargo test`, and `lever_invariance.rs` holds every question's read-out and summary unmoved under them (C4, § 2.5) |
-| **probe, unread** | exists to test an *invariance*, and no route runs it yet |
+| **check** | asks for more work and moves no answer: its own row, and on a failure an error, never a different answer. The corpus's `levers` cells run `-y` on every `cargo test`, `lever_invariance.rs` holds every question's read-out and summary unmoved under it but for its row (C4, § 2.5), and `config_reference.rs::the_sanity_flag_adds_its_row_and_nothing_else` holds the flag from outside |
 
-**The four "unread" flags and `lattice-sanity-check` are the inert flags of
-[Q-M1e.10](../history/m1e_review_processing/open_questions.md#q-m1e10--two-config--flags-are-inert)'s
-kind**, said here rather than left to be found: settable, validated,
-`--dump-config`-printed, `--json-summary`-echoed, rendered into the KB-shape
-digest — and read by no route. They are kept because the approved interface
-keeps them as levers for P1e2.1c's routes, and the claim that they move
-nothing is held from outside by
-`config_reference.rs::the_unread_flags_change_nothing_printed`, and on every
-program whose R is known by `lever_invariance.rs` (§ 2.5).
-
-**One surface still reads two of them, and is wrong for it.**
+**One surface still reads two retired fields, at their defaults, and is wrong
+for its own reasons.**
 `--json-summary`'s `root` block (`summary::root_block`) runs the walk's
 hypothesis generator on a fork of root, which reads
 `enable-pre-branch-lookahead`, `enable-lookahead-kill-cache` and
 `EIN_OBLIGATION_CHOICE`, and counts root's facts after it. On
 `examples/branching/02_one_dead_one_alive.ein` `root.facts` is 27 where root's
 fixpoint holds 23, the other four being the kill cache's `(not h)` writes, and
-`root.hypgen.emitted` is 30 where H holds 48. Both move when the program sets
-either flag, and `-L` and `-K` leave them alone, so the CLI shadow and the flag
-it shadows disagree. Nothing R is made of moves. M1e2 S1e2.1a.6's lever test
+`root.hypgen.emitted` is 30 where H holds 48 (2026-11-01). Until M1e2
+S1e2.1c.5 both moved when the program set either flag; since the two retired
+(2026-11-03) the generator runs at their defaults on every program, so the
+block no longer moves with a lever, and what it describes is still S4's
+question. Nothing R is made of moves. M1e2 S1e2.1a.6's lever test
 found it on 19 programs (2026-11-01); it is surface S4 of the proposed
 [P1e2.3](../../plans/m1e2_correctness/README.md#p1e23--surfaces-that-misreport-the-answer-proposed),
 and until then the test leaves those three fields out.
 
-### 2.4 The ten retired flags
+### 2.4 The fourteen retired flags
 
-M1e2 S1e2.1a.5's switch retired nine, and S1e2.1a.6 a tenth, each refused at
-load with the stage and the reason below (`ein_core::config::RETIRED`). Their
-fields stay on `SolverConfig` at their defaults, the nine for the walk's
-library code and the tenth for nothing, and the `.einb` container round-trips
-all seventeen, so its format did not move. A container stores its program as
+M1e2 S1e2.1a.5's switch retired nine, S1e2.1a.6 a tenth, and S1e2.1c.5 four
+more, each refused at load with the stage and the reason below
+(`ein_core::config::RETIRED`). Their fields stay on `SolverConfig` at their
+defaults — the lookahead and the kill cache read there by the generator the
+summary's `root` block calls, the rest for nothing — and the `.einb` container
+round-trips all seventeen, so its format did not move. A container stores its program as
 text and re-loads it on open, so one saved before a retirement whose program
 sets the flag is refused, as the `.ein` is.
 
 | flag | why it went |
 |---|---|
+| `enable-pre-branch-lookahead` (S1e2.1c.5) | the walk's one-step pre-filter, which no route runs: every route saturates each candidate's fork. Its one meaning on a route, a pre-filter on a monotone program, would save at most 194 of the 163 702 saturations describe costs over the corpus's 167 `solve` entries (an upper bound, 2026-11-03, S1e2.1c.5 § question 2), and would have to carry the dead singleton's owing bit. The user retired it on 2026-11-03, reversing `solve_interface.md` § 2.4's *kept, speed only* |
+| `enable-lookahead-kill-cache` (S1e2.1c.5) | it wrote the walk's lookahead kills into root, which no route does: L1 prunes a dead extension's supersets and writes nothing |
+| `enable-path-nogoods` (S1e2.1c.5) | the walk's learned clauses: every route reads N, the minimal dead sets, by construction |
+| `enable-fail-fast-fork` (S1e2.1c.5) | a node is never stopped at its first contradiction: a dead node's debts and core are its fixpoint's, which E, the detector's stale check and N read |
 | `enable-symmetric-mirror` (S1e2.1a.6) | off, it took the mirror's facts out of root's fixpoint and so changed R, the one flag that did (§ 2.5). The mirror is what `(__symmetric__ R)` means, and the user ruled on 2026-11-01 that it stays always on: a relation that is not to be mirrored is not marked. The register's W13 |
 | `hypgen-scoring`, `hypgen-rel-weight`, `hypgen-obj-weight`, `lattice-order`, `lattice-order-seed` | order levers: every route's order is part of its definition, so `-n N` prints the same states under every lever (C4) |
 | `enable-singleton-writeback`, `enable-forced-positive` | they wrote into root, which no route does. What they knew survives as licence L1: a candidate dead alone leaves the universe |
@@ -198,7 +194,14 @@ sets the flag is refused, as the `.ein` is.
 Six corpus files set one, and lost the line at the switch: `examples/zebra.ein`
 (`lattice-order`, `enable-forced-positive`), `examples/syntax/config.ein`, and
 three register witnesses whose program is now their sibling's (`forced-2-off`,
-`f07-fpoff`, `naf-nowb`).
+`f07-fpoff`, `naf-nowb`). At S1e2.1c.5 twenty lost a line or a word: the
+seventeen that set the lookahead (the zebra2 family, regenerated by
+`examples/gen_zebra2_variants.py`, `branching/06`, `07` and `13`–`16`, the
+`alive-set-fresh-name` pair and `fresh-name-nospawn` among them),
+`branching/10` and `11` (the kill cache), `examples/zebra.ein` (three of the
+four), and `broken/load/config_bad_value.ein`, whose ill-typed value now rides
+`warn-derived-naf`. The pairs `06`/`07`, `10`/`11` and `15`/`16` now differ
+in their comments alone.
 
 **What the answer column was read from.** A sweep of 2026-10-18: each of the
 eight settable then flipped in an appended `(config …)` block (last-wins, so programs with a
@@ -266,9 +269,14 @@ facts of every state in R
   keeps ([`node_census.md` § 11.2](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/node_census.md#112-the-flagged-cubes),
   2026-11-02). No route runs the probe since the switch. Its question ships
   as the detector's parent-path spot check (M1e2 S1e2.1b.5, the read-out's
-  `paths` row), on a flagged program only, at most three one-step parents of
-  each printed state, built by the node function rather than by `-y`'s
-  fail-fast direct path; it answers nothing and moves nothing. Which state a node of a program the static check flags is remains
+  `paths` row), on a flagged program at most three one-step parents of each
+  printed state, built by the node function rather than by the walk's
+  fail-fast direct path; it answers nothing and moves nothing. **Since
+  S1e2.1c.5 (2026-11-03) `-y` is that check unbounded and on every program**
+  (§ 2.2): every parent, and on a monotone program a mismatch is an engine
+  error. On `d3-unsat-core` it reads 35 parent paths and finds 4 that reach
+  another state, where the bounded check reads 34 and finds 3 (`ein solve
+  corpus/fuzz_findings/d3-unsat-core.ein -y`, 2026-11-03). Which state a node of a program the static check flags is remains
   open, [F21](../../plans/followups/f21_non_monotone_programs_decided.md)'s D2,
   with [P1e2.1b](../../plans/m1e2_correctness/p1e2.1b_non_monotone_programs/README.md)'s
   S1e2.1b.2 and S1e2.1b.7 as its evidence.
@@ -277,9 +285,9 @@ facts of every state in R
 `-L`'s W1, W2 and W4 rows, `-K`'s W9 rows, the writeback's W3 row — were the
 walk's, and flipped to `fixed` at the switch where R answers them
 ([`corpus/wrong_answers.toml`](../../corpus/wrong_answers.toml)). Under a region
-run every lever reads **no** or **unread**, and so do `--jobs` (§ 3.3) and
-every presentation and artefact option: they change speed, or what is printed
-beside the answer, never the answer.
+run every flag reads **no**, and so do `--jobs` (§ 3.3) and every
+presentation and artefact option: they change speed, or what is printed beside
+the answer, never the answer.
 
 ---
 
@@ -295,12 +303,12 @@ arity, default, choices, group and help string, diffed by
 [`defined_behaviour.md` § The CLI surface](defined_behaviour.md#5-the-cli-surface).
 A third enumeration would be [AR-M1](../history/m1e_review_processing/README.md#the-findings)'s
 parallel copy. What this page states is the *shape*, read off that golden:
-**73** options across fifteen parsers, in the default build (`einb`,
+**71** options across fifteen parsers, in the default build (`einb`,
 `parallel`, `snmalloc`).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 35 |
+| `ein solve` | 33 |
 | `ein oracle` | 10 |
 | `ein test` | 8 |
 | `ein saturate` | 5 |
@@ -314,7 +322,7 @@ parallel copy. What this page states is the *shape*, read off that golden:
 
 `ein`, `ein kb`, `ein render` and `ein render constraints` take none — they are
 dispatchers. `ein kb save` exists only under the `einb` feature; a
-`--no-default-features` build has 72 and no `ein kb` at all. M1e2
+`--no-default-features` build has 70 and no `ein kb` at all. M1e2
 S1e2.1a.7 added the last two, `ein render region`'s `--visited` and
 `--answer`: a region run's `--dump-lattice` and `--dump-answer` drawn on the
 cube ([`04_dot_rendering.md` § Region rendering](ir/03-ein-lang/04_dot_rendering.md#region-rendering--the-cube-and-a-region-run)).
@@ -327,7 +335,8 @@ the oracle by `ein-infer/tests/explore.rs`, and printed in
 [`read_out.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/read_out.md)'s
 read-out. Every answer exits 0. **Nine options retired** and stay in the
 parser hidden, so a stale argv is refused, exit 2, with what replaced it
-(`ein-cli/src/solve.rs`'s `RETIRED`):
+(`ein-cli/src/solve.rs`'s `RETIRED`), and S1e2.1c.5 retired two more, `-L`
+and `-K` (§ 3.2):
 
 | retired | replaced by |
 |---|---|
@@ -343,22 +352,22 @@ parser hidden, so a stale argv is refused, exit 2, with what replaced it
 `--region-budget`, and draws the nodes a describing run visits. The design is
 [`solve_interface.md`](../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md).
 
-### 3.2 The three options that shadow a flag
+### 3.2 The option that shadows a flag
 
-`ein-cli`'s `resolved_config` is the whole of it: three options, three flags,
-and each writes in one direction only. There is no `--lookahead`, so an option
-can never restore a default the program turned off. All three flags are
-**unread** by every route (§ 2.2), so each option changes nothing printed, and
-the header line leaves them out, as it leaves out `-j`.
+`ein-cli`'s `resolved_config` is the whole of it: one option, one flag, written
+in one direction only.
 
 | option | flag | set to |
 |---|---|---|
-| `-L`, `--no-lookahead` | `enable-pre-branch-lookahead` | `false` |
-| `-K`, `--no-kill-cache` | `enable-lookahead-kill-cache` | `false` |
 | `-y`, `--lattice-sanity-check` | `lattice-sanity-check` | `true` |
 
-Verify any row the same way — a `(config …)` head that sets the flag the other
-way, and `--dump-config` to see which won.
+`-L`/`--no-lookahead` and `-K`/`--no-kill-cache` shadowed
+`enable-pre-branch-lookahead` and `enable-lookahead-kill-cache` until M1e2
+S1e2.1c.5 retired them with their flags (the user's ruling of 2026-11-03):
+they stay in the parser hidden and are refused, exit 2, with why, as the
+switch's nine are. `-y` changes no answer and adds its own `paths` row; the
+header line leaves it out, as it leaves out `-j`. Verify the row the same way
+as any — a `(config …)` head that sets the flag, and `--dump-config` to see it.
 
 ### 3.3 What an option can do to the answer
 
@@ -385,8 +394,9 @@ different question or stopping early.
   is never an answer. **`-n 0` is refused**, exit 2, since M1e
   [S1e.1.5](../history/m1e_review_processing/README.md#s1e15---n-0-q7), and so
   is every negative.
-- **The three shadows** — § [3.2](#32-the-three-options-that-shadow-a-flag),
-  unread.
+- **The check** — `-y`, § [3.2](#32-the-option-that-shadows-a-flag): its own
+  row, and on a monotone program a mismatch is an engine error, exit 2; never
+  a different answer.
 - **Execution** — `--jobs N` / `--jobs auto`: the same read-out, byte for byte,
   by [S1a.7.5](../history/m1a_rust/README.md#s1a75--the---jobs-contract)'s
   contract, pinned by `ein-render/tests/jobs_invariance.rs` and

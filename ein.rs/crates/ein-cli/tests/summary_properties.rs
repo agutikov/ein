@@ -34,13 +34,10 @@ use serde_json::Value as J;
 /// | `root.saturator.naf_dropped` | structurally 0 since S1.21.8 moved NAF to the closure/world boundary: a guard is parked or admitted, never dropped, and reporting anything else means the boundary was rebuilt wrong |
 const STRUCTURAL_ZEROS: [&str; 1] = ["root.saturator.naf_dropped"];
 
-/// The `config` block's key set, exactly: the seven flags a program can set
-/// since M1e2 S1e2.1a.6 retired `enable-symmetric-mirror`.
-const CONFIG_KEYS: [&str; 7] = [
-    "enable-fail-fast-fork",
-    "enable-lookahead-kill-cache",
-    "enable-path-nogoods",
-    "enable-pre-branch-lookahead",
+/// The `config` block's key set, exactly: the three flags a program can set
+/// since M1e2 S1e2.1c.5 retired the four `enable-*` levers (seven after
+/// S1e2.1a.6 retired `enable-symmetric-mirror`).
+const CONFIG_KEYS: [&str; 3] = [
     "lattice-sanity-check",
     "record-alternative-justifications",
     "warn-derived-naf",

@@ -254,29 +254,16 @@ fn leftover_block(
     ]))
 }
 
-/// The resolved config: the seven flags a program can set
-/// (`ein_core::config::FLAGS`), kebab-cased, in declaration order — the same
-/// fields `--dump-config` prints.
+/// The resolved config: the three flags a program can set since M1e2
+/// S1e2.1c.5 (`ein_core::config::FLAGS`), kebab-cased, in declaration order —
+/// the same fields `--dump-config` prints.
 fn config_block(cfg: &SolverConfig) -> Json {
     Json::obj(vec![
-        (
-            "enable-pre-branch-lookahead",
-            Json::Bool(cfg.enable_pre_branch_lookahead),
-        ),
-        (
-            "enable-lookahead-kill-cache",
-            Json::Bool(cfg.enable_lookahead_kill_cache),
-        ),
         ("warn-derived-naf", Json::Bool(cfg.warn_derived_naf)),
         ("lattice-sanity-check", Json::Bool(cfg.lattice_sanity_check)),
-        ("enable-path-nogoods", Json::Bool(cfg.enable_path_nogoods)),
         (
             "record-alternative-justifications",
             Json::Bool(cfg.record_alternative_justifications),
-        ),
-        (
-            "enable-fail-fast-fork",
-            Json::Bool(cfg.enable_fail_fast_fork),
         ),
     ])
 }
@@ -306,9 +293,12 @@ pub fn build_region(
     let mut m = ein_render::dump::region::monotonicity_json(&r.answer.monotonicity, terms);
     if let Json::Object(fields) = &mut m {
         fields.extend(
-            ein_render::dump::region::warning_json(r.answer.warning.as_deref())
-                .into_iter()
-                .map(|(k, v)| (k.to_string(), v)),
+            ein_render::dump::region::warning_json_with(
+                r.answer.warning.as_deref(),
+                r.spot.as_ref(),
+            )
+            .into_iter()
+            .map(|(k, v)| (k.to_string(), v)),
         );
     }
     pairs.push(("monotonicity", m));

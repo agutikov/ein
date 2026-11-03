@@ -1,39 +1,23 @@
 === (config :warn-derived-naf true)
   QUERY None
-  CONFIG enable-pre-branch-lookahead=True
-  CONFIG enable-lookahead-kill-cache=True
   CONFIG warn-derived-naf=True
   CONFIG lattice-sanity-check=False
-  CONFIG enable-path-nogoods=True
   CONFIG record-alternative-justifications=True
-  CONFIG enable-fail-fast-fork=True
 === (config :warn-derived-naf false)
   QUERY None
-  CONFIG enable-pre-branch-lookahead=True
-  CONFIG enable-lookahead-kill-cache=True
   CONFIG warn-derived-naf=False
   CONFIG lattice-sanity-check=False
-  CONFIG enable-path-nogoods=True
   CONFIG record-alternative-justifications=True
-  CONFIG enable-fail-fast-fork=True
 === (config :warn-derived-naf "true")
   QUERY None
-  CONFIG enable-pre-branch-lookahead=True
-  CONFIG enable-lookahead-kill-cache=True
   CONFIG warn-derived-naf=True
   CONFIG lattice-sanity-check=False
-  CONFIG enable-path-nogoods=True
   CONFIG record-alternative-justifications=True
-  CONFIG enable-fail-fast-fork=True
 === (config :warn-derived-naf TRUE)
   QUERY None
-  CONFIG enable-pre-branch-lookahead=True
-  CONFIG enable-lookahead-kill-cache=True
   CONFIG warn-derived-naf=True
   CONFIG lattice-sanity-check=False
-  CONFIG enable-path-nogoods=True
   CONFIG record-alternative-justifications=True
-  CONFIG enable-fail-fast-fork=True
 === (config :warn-derived-naf 1)
   <KBLoadError> (config …): config flag :warn-derived-naf expects true/false, got Int(value=1)
 === (config :warn-derived-naf maybe)
@@ -85,31 +69,16 @@
   (config foo)
           ^
 === (config :nope true)
-  <KBLoadError> (config …): unknown config flag :nope (expected one of: enable-fail-fast-fork, enable-lookahead-kill-cache, enable-path-nogoods, enable-pre-branch-lookahead, lattice-sanity-check, record-alternative-justifications, warn-derived-naf)
+  <KBLoadError> (config …): unknown config flag :nope (expected one of: lattice-sanity-check, record-alternative-justifications, warn-derived-naf)
 === (config)
   QUERY None
-  CONFIG enable-pre-branch-lookahead=True
-  CONFIG enable-lookahead-kill-cache=True
   CONFIG warn-derived-naf=False
   CONFIG lattice-sanity-check=False
-  CONFIG enable-path-nogoods=True
   CONFIG record-alternative-justifications=True
-  CONFIG enable-fail-fast-fork=True
 === (config :warn-derived-naf true) (config :enable-path-nogoods false)
-  QUERY None
-  CONFIG enable-pre-branch-lookahead=True
-  CONFIG enable-lookahead-kill-cache=True
-  CONFIG warn-derived-naf=False
-  CONFIG lattice-sanity-check=False
-  CONFIG enable-path-nogoods=False
-  CONFIG record-alternative-justifications=True
-  CONFIG enable-fail-fast-fork=True
+  <KBLoadError> (config …): config flag :enable-path-nogoods was retired at M1e2 S1e2.1c.5: the walk's learned clauses: every route reads N, the minimal dead sets, by construction
 === (config :warn-derived-naf true :warn-derived-naf false)
   QUERY None
-  CONFIG enable-pre-branch-lookahead=True
-  CONFIG enable-lookahead-kill-cache=True
   CONFIG warn-derived-naf=False
   CONFIG lattice-sanity-check=False
-  CONFIG enable-path-nogoods=True
   CONFIG record-alternative-justifications=True
-  CONFIG enable-fail-fast-fork=True

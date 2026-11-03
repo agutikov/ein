@@ -166,8 +166,9 @@ fn n_is_n_states_of_the_part_of_r_asked_about() {
 
 #[test]
 fn the_retired_options_are_refused_with_what_replaced_them() {
-    // The nine the switch retired (`solve_interface.md` § 2.1), and only
-    // those: every other option of `solve`'s is a mode's.
+    // The nine the switch retired (`solve_interface.md` § 2.1) and the two
+    // levers S1e2.1c.5 retired (the user's ruling of 2026-11-03), and only
+    // those: every other option of `solve`'s is a mode's or a check.
     for (args, name) in [
         (vec!["--maximal", "-e"], "--exhaustive"),
         (vec!["--single", "-m", "3"], "--max-set-size"),
@@ -184,6 +185,8 @@ fn the_retired_options_are_refused_with_what_replaced_them() {
             "--dump-region",
         ),
         (vec!["--maximal", "--region-states"], "--region-states"),
+        (vec!["--minimal", "-L"], "--no-lookahead"),
+        (vec!["--minimal", "-K"], "--no-kill-cache"),
     ] {
         let mut a = vec!["solve", THREE];
         a.extend(args.iter());
@@ -483,8 +486,10 @@ fn the_event_stream_is_the_runs_and_jobs_move_no_line() {
 
 /// The walk's other options, taken by the modes — T1e2.1a.5.3's first step.
 /// `-c` and `-t` add a block to stdout, `-v` and `--layer-progress` write the
-/// route's steps to stderr, and the levers `-L`, `-K` and `-y` change nothing
-/// printed, header included (C4): no route reads them until P1e2.1c.
+/// route's steps to stderr, and `-y` adds its `paths` row and nothing else,
+/// header included (C4): the spot check, unbounded, the user's ruling of
+/// 2026-11-03 (M1e2 S1e2.1c.5), which retired `-L` and `-K` — refused, as
+/// the switch's nine are, and held by `the_retired_options_are_refused_with_what_replaced_them`.
 #[test]
 fn the_modes_take_the_walks_other_options() {
     let zebra = "examples/branching/05_mini_zebra.ein";
@@ -496,14 +501,25 @@ fn the_modes_take_the_walks_other_options() {
     };
     let bare = run(&[]);
     assert_eq!(bare.code, 0, "{}", bare.err);
-    for lever in [&["-L"][..], &["-K"], &["-y"], &["-L", "-K", "-y"]] {
-        let r = run(lever);
-        assert_eq!(
-            (r.code, &r.out, &r.err),
-            (bare.code, &bare.out, &bare.err),
-            "{lever:?} moved the read-out"
-        );
-    }
+    let y = run(&["-y"]);
+    let without = |t: &str| -> String {
+        t.lines()
+            .filter(|l| !l.starts_with("    paths "))
+            .map(|l| format!("{l}\n"))
+            .collect()
+    };
+    assert_eq!(
+        (y.code, without(&y.out), &y.err),
+        (bare.code, without(&bare.out), &bare.err),
+        "-y moved the read-out past its own row"
+    );
+    assert!(
+        y.out
+            .contains("\n    paths           every parent path checked reaches the same state")
+            && y.out.contains("(-y: every one-step parent)"),
+        "-y on a monotone program prints its row: {}",
+        y.out
+    );
     let c = run(&["-c"]);
     assert!(
         c.out.starts_with("config (resolved)\n")
@@ -512,9 +528,9 @@ fn the_modes_take_the_walks_other_options() {
         "{}",
         c.out
     );
-    let cl = run(&["-c", "-L"]);
+    let cl = run(&["-c", "-y"]);
     assert!(
-        cl.out.contains("enable-pre-branch-lookahead      false"),
+        cl.out.contains("lattice-sanity-check             true"),
         "-c shows the lever: {}",
         cl.out
     );
@@ -822,15 +838,21 @@ fn the_count_question_is_describes_counts() {
              \x20 work              11 351 saturations · 76 743 facts beyond root · 14 layers\n"
         )
     );
-    // The levers move nothing, header included, and `-t` adds its block.
-    for lever in ["-L", "-K", "-y"] {
-        let l = ein(&["solve", pets, "--count", lever]);
-        assert_eq!(
-            (l.code, &l.out, &l.err),
-            (r.code, &r.out, &r.err),
-            "{lever}"
-        );
-    }
+    // `-y` reads no state under `--count` either: its row says what checking
+    // the states met would cost, and nothing else moves. `-t` adds its block.
+    let l = ein(&["solve", pets, "--count", "-y"]);
+    let rest: String = l
+        .out
+        .lines()
+        .filter(|x| !x.starts_with("    paths "))
+        .map(|x| format!("{x}\n"))
+        .collect();
+    assert_eq!((l.code, &rest, &l.err), (r.code, &r.out, &r.err), "-y");
+    assert!(
+        l.out.contains("    paths           not checked"),
+        "{}",
+        l.out
+    );
     let t = ein(&["solve", pets, "--count", "-t"]);
     assert!(
         t.out.contains("\n  read-out ") && t.out.contains("none: --count reads no state"),

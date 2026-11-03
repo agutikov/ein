@@ -133,6 +133,11 @@ pub struct Options {
     pub jobs: usize,
     /// `-T`: checked before each step, as the budget is.
     pub deadline: Option<Instant>,
+    /// `-y`: the parent-path spot check, unbounded and on every program — read
+    /// by the read-out ([`crate::read_out`]), not by a route, so no answer and
+    /// no `work` count depends on it. The program's own `(config
+    /// :lattice-sanity-check true)` turns it on as well (M1e2 S1e2.1c.5).
+    pub sanity: bool,
 }
 
 impl Options {
@@ -143,6 +148,7 @@ impl Options {
             limit: region::DEFAULT_LIMIT,
             jobs: 1,
             deadline: None,
+            sanity: false,
         }
     }
 }
