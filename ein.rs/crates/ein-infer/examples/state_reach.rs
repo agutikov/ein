@@ -64,6 +64,7 @@ fn main() {
     let mut jobs = 1usize;
     let mut route1 = false;
     let mut by_size = 0usize;
+    let mut duality = false;
     let mut files: Vec<PathBuf> = Vec::new();
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
@@ -77,6 +78,7 @@ fn main() {
             "--facts" => facts = args.next().and_then(|v| v.parse().ok()).expect("--facts F"),
             "--jobs" => jobs = args.next().and_then(|v| v.parse().ok()).expect("--jobs J"),
             "--route1" => route1 = true,
+            "--duality" => duality = true,
             "--by-size" => {
                 by_size = args
                     .next()
@@ -135,15 +137,22 @@ fn main() {
                 .collect();
             json!({
                 "exhausted": d.exhausted,
+                "cube": d.cube,
                 "k_c": d.k_c,
                 "k_s": d.r.len(),
                 "minimal": d.minimal.len(),
                 "minimal_states": d.minimal.iter().map(|x| x.1).collect::<std::collections::BTreeSet<_>>().len(),
                 "least": d.minimal.iter().map(|x| x.0.len()).min(),
+                "maximal": d.maximal.len(),
+                "nogoods": d.nogoods.as_ref().map(Vec::len),
+                "components": d.components,
+                "subcubes": d.subcubes.as_ref().map(Vec::len),
                 "merged": merged.len(),
                 "generators": d.r.iter().map(|&i| d.generators[i as usize].len() as u64).sum::<u64>(),
+                "frontier": d.frontier.len(),
                 "maximal_alive": s.states.iter().filter(|x| x.maximal()).count(),
                 "r_by_size": r_by_size(&s, &d, by_size),
+                "duality": duality.then(|| dual_check(&s, &d)),
             })
         });
         let layers: Vec<_> = s
@@ -247,4 +256,45 @@ fn r_by_size(s: &states::StateRoute, d: &states::Description, k: usize) -> Vec<u
         }
     }
     out
+}
+
+/// The duality, the other way: the complements of `N`'s minimal transversals
+/// are the maximal alive sets, so they must be the maximal alive states this
+/// route read off by L4, and kept where discharged, its maximal line
+/// (`--duality`). `[holds, |Tr(N)|, seconds]`.
+fn dual_check(s: &states::StateRoute, d: &states::Description) -> serde_json::Value {
+    use ein_infer::transversal::{Bits, minimal_transversals};
+    let n = s.n();
+    let Some(nogoods) = &d.nogoods else {
+        return serde_json::Value::Null;
+    };
+    let t = Instant::now();
+    let edges: Vec<Bits> = nogoods.iter().map(|g| Bits::of(n, g)).collect();
+    let full = Bits::full(n);
+    let mut from_n: Vec<Bits> = minimal_transversals(n, &edges)
+        .iter()
+        .map(|t| full.minus(t))
+        .collect();
+    let mut read: Vec<Bits> = s
+        .states
+        .iter()
+        .filter(|x| x.maximal())
+        .map(|x| x.bits.clone())
+        .collect();
+    from_n.sort();
+    read.sort();
+    let line: Vec<Bits> = d
+        .maximal
+        .iter()
+        .map(|&i| s.states[i as usize].bits.clone())
+        .collect();
+    let kept = from_n
+        .iter()
+        .filter(|m| s.states.iter().any(|x| x.bits == **m && x.in_r()))
+        .count();
+    json!([
+        from_n == read && kept == line.len(),
+        from_n.len(),
+        t.elapsed().as_secs_f64()
+    ])
 }

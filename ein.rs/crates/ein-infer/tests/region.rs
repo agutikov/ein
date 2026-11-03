@@ -1548,6 +1548,12 @@ fn state_route_against_oracle(rel: &str, r: &Region, s: &states::StateRoute) -> 
     }
     let set = |v: &[u64]| v.iter().copied().collect::<BTreeSet<u64>>();
     let minimal: BTreeSet<u64> = d.minimal.iter().map(|(g, _)| mask(g)).collect();
+    let maximal: BTreeSet<u64> = d
+        .maximal
+        .iter()
+        .map(|&i| mask(&s.states[i as usize].closure))
+        .collect();
+    let nogoods: BTreeSet<u64> = d.nogoods.iter().flatten().map(|g| mask(g)).collect();
     for (what, got, want) in [
         ("minimal", &minimal, set(&t.minimal)),
         (
@@ -1555,10 +1561,48 @@ fn state_route_against_oracle(rel: &str, r: &Region, s: &states::StateRoute) -> 
             &minimal,
             set(&t.duality.minimal_from_e),
         ),
+        ("maximal", &maximal, set(&t.maximal)),
+        ("maximal from N", &maximal, set(&t.duality.maximal_from_n)),
+        ("N", &nogoods, set(&t.nogoods)),
     ] {
         if *got != want {
             bad.push(format!("{rel}: {what} differs"));
         }
+    }
+    let mut comps = d.components.clone().unwrap_or_default();
+    let mut want_comps: Vec<u64> = t.components.iter().map(|c| c.size).collect();
+    comps.sort_unstable();
+    want_comps.sort_unstable();
+    if comps != want_comps {
+        bad.push(format!(
+            "{rel}: components {comps:?} against {want_comps:?}"
+        ));
+    }
+    let cubes: BTreeSet<(u64, u64)> = d
+        .subcubes
+        .iter()
+        .flatten()
+        .map(|(a, b)| (mask(a), mask(b)))
+        .collect();
+    let want_cubes: BTreeSet<(u64, u64)> = t.subcubes.iter().flatten().copied().collect();
+    if cubes != want_cubes {
+        bad.push(format!("{rel}: sub-cubes differ"));
+    }
+    let frontier: BTreeSet<u64> = d
+        .frontier
+        .iter()
+        .map(|&i| mask(&s.states[i as usize].closure))
+        .collect();
+    let want_frontier: BTreeSet<u64> = if by_closure.is_empty() {
+        (0..size as u64)
+            .filter(|&m| alive(m) && r.status[m as usize] & region::OWING != 0)
+            .filter(|&m| !(0..n).any(|b| m >> b & 1 == 0 && alive(m | 1 << b)))
+            .collect()
+    } else {
+        BTreeSet::new()
+    };
+    if frontier != want_frontier {
+        bad.push(format!("{rel}: the owing frontier differs"));
     }
     bad
 }
@@ -1567,9 +1611,11 @@ fn state_route_against_oracle(rel: &str, r: &Region, s: &states::StateRoute) -> 
 /// corpus file and register witness whose cube the oracle enumerates and whose
 /// static verdict is monotone, the route meets exactly the alive states, each
 /// with the cube's status, extends every one, and reads off them the oracle's
-/// `k_s`, `k_c`, each state's commitments (L3) and minimal generators, and the
-/// minimal line, which is `E`'s alive members. It never saturates more than
-/// route 1 does. On every flagged program it declines.
+/// `R`: `k_s`, `k_c`, each state's commitments (L3) and minimal generators,
+/// both lines (and each again by duality, from `E`'s alive members and from
+/// `N`), `N` itself, the components, the sub-cubes and the owing frontier. It
+/// never saturates more than route 1 does. On every flagged program it
+/// declines.
 #[test]
 fn the_state_route_is_the_oracle_on_every_monotone_program_it_reaches() {
     let mut failures: Vec<String> = Vec::new();

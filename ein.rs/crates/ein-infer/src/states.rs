@@ -44,6 +44,32 @@
 //! (L3). The oracle holds the route on every monotone cube it enumerates
 //! (`ein-infer/tests/region.rs`).
 //!
+//! ### Where N and E come from — a decision taken without a ruling
+//!
+//! [`describe`] reads both lines, `N` and `E`'s alive members off the states
+//! this route met, and enumerates neither separately:
+//!
+//! - **the maximal line** is the states of `R` whose every one-up extension
+//!   is dead (L4), and the maximal alive states are the same test without
+//!   *of `R`*;
+//! - **`N`** is the minimal transversals of the maximal alive states'
+//!   complements: the duality of Q-M1e2.7 read from the alive side, since a
+//!   set is dead exactly when no maximal alive set holds it (L1);
+//! - **`E`'s alive members**, the minimal line, are the minimal sets among the
+//!   minimal generators of `R`'s states.
+//!
+//! The alternative is a MARCO-style enumeration of `N` and the maximal alive
+//! sets that never meets the alive set, which saturates at least once per
+//! member of each (Liffiton et al., *Constraints* 2016). Describe cannot use it
+//! instead of this route, because `k_s`, `k_c` and the merged states need
+//! every state of `R`. Beside this route it would only add saturations, and
+//! read here, `N` and `E` cost none. The argument holds while describe needs
+//! the states, which is what *describe* asks (`solution_semantics.md` § 2.3),
+//! and while this route meets every alive state, which
+//! `ein-infer/tests/region.rs` holds to the oracle. A mode that asks for a line
+//! alone is S1e2.1c.4's, and that is where an enumeration without the states
+//! can win.
+//!
 //! ### Where it stops
 //!
 //! At the budget route 1 uses, facts beyond root, checked before each layer
@@ -618,6 +644,10 @@ fn emit_layer(events: &mut Events, layer: usize, stats: &Layer) {
 
 // ── R, read off the states ──────────────────────────────────────────────
 
+/// A sub-cube `[a … b]`: its bottom, a minimal commitment, and its top, a
+/// maximal state's closure.
+pub type SubCube = (Box<[u32]>, Box<[u32]>);
+
 /// Branches a state's count may take ([`crate::transversal::count_hitting`])
 /// before it is counted from the states below it instead.
 const COUNT_LIMIT: u64 = 1 << 16;
@@ -632,7 +662,8 @@ pub struct Description {
     /// order met.
     pub r: Vec<u32>,
     /// `|R|` in commitments. On a partial run: every commitment of an
-    /// extended state of `R`, and those met of the rest — a lower bound.
+    /// extended state of `R`, and those met of the rest — a lower bound,
+    /// unless [`Self::cube`].
     pub k_c: u64,
     /// Per state, the commitments that reach it, where the run counted them
     /// exactly: every extended state (L3).
@@ -643,6 +674,24 @@ pub struct Description {
     /// The minimal line as commitments, by size and then by candidates, each
     /// with the state it reaches. On a partial run, those certified.
     pub minimal: Vec<(Box<[u32]>, u32)>,
+    /// The states of `R` on the maximal line, by size and then by candidates:
+    /// every one-up extension dead (L4).
+    pub maximal: Vec<u32>,
+    /// `N`, by size and then by candidates — `None` where the run does not
+    /// know it.
+    pub nogoods: Option<Vec<Box<[u32]>>>,
+    /// The components' sizes in commitments, in the order of their least
+    /// minimal commitment — `None` on a partial run.
+    pub components: Option<Vec<u64>>,
+    /// The maximal sub-cubes `[a … b]`, `a` on the minimal line and `b` on the
+    /// maximal one — `None` on a partial run.
+    pub subcubes: Option<Vec<SubCube>>,
+    /// When `R` is empty and root is alive: the maximal alive states, every
+    /// one owing, by size and then by candidates.
+    pub frontier: Vec<u32>,
+    /// ∅ and ⊤ are both in `R`, so `R` is the whole cube (L1, L2) — decided by
+    /// two saturations even on a partial run.
+    pub cube: bool,
 }
 
 /// `R` from what `s` met. `s` must not have declined for any reason but its
@@ -748,6 +797,50 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
         }
         kept
     };
+    let by_size = |v: &mut Vec<u32>| {
+        v.sort_by(|&a, &b| {
+            let (x, y) = (&s.states[a as usize].closure, &s.states[b as usize].closure);
+            (x.len(), x).cmp(&(y.len(), y))
+        })
+    };
+    let mut maximal: Vec<u32> = r
+        .iter()
+        .copied()
+        .filter(|&i| s.states[i as usize].maximal())
+        .collect();
+    by_size(&mut maximal);
+
+    let top_alive =
+        s.top.as_ref().is_some_and(|t| !t.dead) || s.states.iter().any(|st| st.closure.len() == n);
+    let top_in_r = s.top.as_ref().is_some_and(|t| !t.dead && t.owes == 0)
+        || s.states.iter().any(|st| st.closure.len() == n && st.in_r());
+    let cube = root_in_r && top_in_r;
+
+    // N, by duality: the minimal transversals of the maximal alive states'
+    // complements — a set is dead exactly when no maximal alive state holds
+    // it (L1). Where N comes from is a decision taken without a ruling; the
+    // module's § "Where N and E come from" gives its argument.
+    let nogoods = if exhausted {
+        let full = Bits::full(n);
+        let edges: Vec<Bits> = s
+            .states
+            .iter()
+            .filter(|st| st.maximal())
+            .map(|st| full.minus(&st.bits))
+            .collect();
+        Some(
+            crate::transversal::minimal_transversals(n, &edges)
+                .iter()
+                .map(Bits::to_set)
+                .collect(),
+        )
+    } else if top_alive {
+        // ⊤ alive: nothing is dead (L1).
+        Some(Vec::new())
+    } else {
+        None
+    };
+
     let k_c: u64 = if exhausted {
         let mut sum = 0u128;
         for &i in &r {
@@ -756,6 +849,9 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
                 .ok_or_else(overflow)?;
         }
         u64::try_from(sum).map_err(|_| overflow())?
+    } else if cube {
+        u64::try_from(crate::transversal::pow2(n as u32).ok_or_else(overflow)?)
+            .map_err(|_| overflow())?
     } else {
         r.iter()
             .map(|&i| {
@@ -765,6 +861,75 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
             .sum()
     };
 
+    let (components, subcubes) = if exhausted {
+        // Union-find over R's states, joined by their one-up edges inside R.
+        let mut parent: Vec<u32> = (0..ns as u32).collect();
+        fn find(p: &mut [u32], x: u32) -> u32 {
+            let mut root = x;
+            while p[root as usize] != root {
+                root = p[root as usize];
+            }
+            let mut y = x;
+            while p[y as usize] != root {
+                let next = p[y as usize];
+                p[y as usize] = root;
+                y = next;
+            }
+            root
+        }
+        for &i in &r {
+            for &c in &s.states[i as usize].children {
+                if s.states[c as usize].in_r() {
+                    let (a, b) = (find(&mut parent, i), find(&mut parent, c));
+                    if a != b {
+                        parent[a.max(b) as usize] = a.min(b);
+                    }
+                }
+            }
+        }
+        let mut size: FxHashMap<u32, u128> = FxHashMap::default();
+        for &i in &r {
+            let c = find(&mut parent, i);
+            *size.entry(c).or_default() += f[i as usize].expect("counted");
+        }
+        let mut comps: Vec<u64> = Vec::new();
+        let mut seen: Vec<u32> = Vec::new();
+        for (_, i) in &minimal {
+            let c = find(&mut parent, *i);
+            if !seen.contains(&c) {
+                seen.push(c);
+                comps.push(u64::try_from(size[&c]).map_err(|_| overflow())?);
+            }
+        }
+        let mut cubes: Vec<SubCube> = Vec::new();
+        for (a, _) in &minimal {
+            let ab = Bits::of(n, a);
+            for &m in &maximal {
+                let st = &s.states[m as usize];
+                if ab.is_subset(&st.bits) {
+                    cubes.push((a.clone(), st.closure.clone()));
+                }
+            }
+        }
+        (Some(comps), Some(cubes))
+    } else if cube {
+        (
+            Some(vec![k_c]),
+            Some(vec![(Box::default(), (0..n as u32).collect())]),
+        )
+    } else {
+        (None, None)
+    };
+
+    let mut frontier: Vec<u32> = if exhausted && r.is_empty() && !s.root.dead {
+        (0..ns as u32)
+            .filter(|&i| s.states[i as usize].maximal())
+            .collect()
+    } else {
+        Vec::new()
+    };
+    by_size(&mut frontier);
+
     Ok(Description {
         exhausted,
         r,
@@ -772,6 +937,12 @@ pub fn describe(s: &StateRoute) -> Result<Description, SolveError> {
         commitments,
         generators,
         minimal,
+        maximal,
+        nogoods,
+        components,
+        subcubes,
+        frontier,
+        cube,
     })
 }
 
