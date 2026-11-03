@@ -1758,3 +1758,177 @@ fn the_state_route_is_route_1_on_zebra2_minus_15_through_layer_6() {
     assert_eq!(d.r.len(), 32, "k_s");
     assert_eq!(d.k_c, 241_462_963);
 }
+
+// ── L5 — S1e2.1c.4 ──────────────────────────────────────────────────
+
+/// **L5 is the oracle's**: an owed instance's alternatives are exhaustive.
+/// On every monotone cube the oracle enumerates whose program states an
+/// obligation, read at every alive state, for every instance L5's premise
+/// licenses (`oblgen::alternatives`, checked at load):
+///
+/// - the instance is owed at the state exactly when none of its alternatives
+///   is in the state — the premise, read against the state's own fixpoint,
+///   whose debts `obligations::tally` counts as every route's node does;
+/// - **the licence**: every member of R above a state that owes it holds one
+///   of its alternatives, so an owing state whose every alternative is dead
+///   has no member of R above it.
+///
+/// And no state owes an instance root did not. The modes' obligation tree
+/// (`crate::tree`) rests on these three and checks the first and the third on
+/// every node it computes; this holds the second, before any mode relies on
+/// it.
+#[test]
+fn l5_is_the_oracle_on_every_monotone_program_it_reaches() {
+    use ein_infer::events::Events;
+    let mut failures: Vec<String> = Vec::new();
+    let (mut programs, mut licensed, mut checked, mut owing) = (0usize, 0usize, 0usize, 0usize);
+    let oracle = Options {
+        jobs: std::thread::available_parallelism().map_or(1, |n| n.get().min(8)),
+        ..Options::default()
+    };
+    for path in corpus_and_register() {
+        let rel = path
+            .strip_prefix(repo_root())
+            .unwrap_or(&path)
+            .to_string_lossy()
+            .to_string();
+        let Some((mut kb, mut terms, ast)) = loaded(&path) else {
+            continue;
+        };
+        let Ok(Outcome::Region(r)) =
+            region::compute(&mut kb, &mut terms, &ast, &oracle, &mut |_| {})
+        else {
+            continue;
+        };
+        if !r.monotonicity.is_monotone() {
+            continue;
+        }
+        let (mut kb1, mut terms1, ast1) = loaded(&path).expect("loaded once already");
+        let Some(table) = ein_infer::oblgen::alternatives_of(&mut kb1, &mut terms1, &ast1)
+            .unwrap_or_else(|e| panic!("{rel}: {e}"))
+        else {
+            continue;
+        };
+        programs += 1;
+        let lic: Vec<(usize, u64)> = table
+            .instances
+            .iter()
+            .enumerate()
+            .filter_map(|(i, x)| {
+                let alts = x.alternatives.as_ref().ok()?;
+                Some((i, alts.iter().fold(0u64, |m, &b| m | 1 << b)))
+            })
+            .collect();
+        licensed += usize::from(!lic.is_empty());
+        let n = r.n();
+        let alive = |m: u64| r.status[m as usize] & region::DEAD == 0;
+        let in_r: Vec<u64> = (0..1u64 << n).filter(|&m| r.in_r(m)).collect();
+        // Every alive state: an alive mask that is its own closure.
+        let states: Vec<u64> = (0..1u64 << n)
+            .filter(|&m| alive(m) && r.nodes[m as usize].closure == m)
+            .collect();
+        let memo = ein_infer::SharedMemo::default();
+        let mut nodes = region::Nodes::new(&mut kb1, &mut terms1, &ast1, &r.candidates)
+            .unwrap_or_else(|e| panic!("{rel}: {e}"));
+        for m in states {
+            let facts: Vec<_> = (0..n)
+                .filter(|b| m >> b & 1 == 1)
+                .map(|b| r.candidates[b].fact)
+                .collect();
+            let owed: Vec<Option<u32>> = nodes
+                .with_fixpoint(&facts, |kb, terms| {
+                    ein_infer::obligations::tally(kb, terms, &ast1, &memo, &mut Events::off())
+                        .expect("the tally compiles")
+                        .instances()
+                        .iter()
+                        .map(|o| {
+                            let key = (o.rule, o.activator.clone(), o.bindings.clone());
+                            table.index.get(&key).copied()
+                        })
+                        .collect()
+                })
+                .unwrap_or_else(|e| panic!("{rel}: {e}"));
+            checked += 1;
+            if owed.contains(&None) {
+                failures.push(format!(
+                    "{rel}: {} owes an instance root did not",
+                    r.name(m)
+                ));
+            }
+            for &(i, alts) in &lic {
+                let witnessed = m & alts != 0;
+                let is_owed = owed.contains(&Some(i as u32));
+                if witnessed == is_owed {
+                    failures.push(format!(
+                        "{rel}: {} {} instance {i}, with {} alternative in it",
+                        r.name(m),
+                        if is_owed { "owes" } else { "has paid" },
+                        if witnessed { "an" } else { "no" }
+                    ));
+                }
+                if !is_owed {
+                    continue;
+                }
+                owing += 1;
+                for &d in &in_r {
+                    if d & m == m && r.nodes[d as usize].closure & alts == 0 {
+                        failures.push(format!(
+                            "{rel}: {} is in R above {}, which owes instance {i}, and holds \
+                             none of its alternatives",
+                            r.name(d),
+                            r.name(m)
+                        ));
+                    }
+                }
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    // Not vacuous: the licence binds on real programs and real debts — 40
+    // programs, 12 with a licensed instance, 284 states and 299 owed licensed
+    // instances on 2026-11-03.
+    assert!(
+        programs >= 35 && licensed >= 10 && checked >= 250 && owing >= 250,
+        "{programs} programs, {licensed} with a licensed instance, {checked} states, \
+         {owing} owed licensed instances"
+    );
+    eprintln!(
+        "L5: {programs} programs, {licensed} with a licensed instance, {checked} states, \
+         {owing} owed licensed instances"
+    );
+}
+
+/// L5's premise on the zebra family, past the oracle's limit: what the table
+/// licenses, and why it licenses no more. On `zebra.ein` the hrule proposes
+/// `(co-located v House-n)` only, so each `slot-owed-room` debt is licensed
+/// and no `slot-owed-fill` one is: its witnesses `(co-located House-n v)` are
+/// derived by symmetry, never proposed.
+#[test]
+fn l5_licenses_what_its_premise_holds_of_on_the_zebra_family() {
+    for (file, instances, licensed) in [
+        ("examples/zebra.ein", 36, 18),
+        ("examples/zebra2.ein", 36, 36),
+        ("examples/zebra2-obligations.ein", 36, 36),
+        ("examples/zebra2-minus-15.ein", 46, 46),
+    ] {
+        let (mut kb, mut terms, ast) = loaded(&repo_root().join(file)).expect("loads");
+        let t = ein_infer::oblgen::alternatives_of(&mut kb, &mut terms, &ast)
+            .expect("prepares")
+            .expect("a monotone program with obligations");
+        assert_eq!(
+            (t.instances.len(), t.licensed()),
+            (instances, licensed),
+            "{file}"
+        );
+        for i in &t.instances {
+            let rule = terms.sym(i.key.0).to_string();
+            match (&i.alternatives, rule.as_str()) {
+                (Ok(a), _) => assert!(!a.is_empty(), "{file}: {rule} licensed, no alternative"),
+                (Err(why), "slot-owed-fill") => {
+                    assert!(why.contains("no candidate proposes"), "{file}: {why}")
+                }
+                (Err(why), _) => panic!("{file}: {rule} not licensed: {why}"),
+            }
+        }
+    }
+}

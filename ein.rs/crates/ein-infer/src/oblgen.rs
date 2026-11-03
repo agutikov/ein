@@ -608,6 +608,15 @@ fn witness_fact(
     slots: Span,
     regs: &[Value],
 ) -> Option<FactId> {
+    let args = witness_args(plan, slots, regs)?;
+    // A lent table cannot number a proposition nobody has numbered yet; the
+    // refusal ends this branch exactly as it ends a blind fill.
+    s.terms.intern_fact(rel, &args).ok()
+}
+
+/// The witness step's arguments under one scan row — `None` when a slot is
+/// neither a constant nor a bound register.
+fn witness_args(plan: &Plan, slots: Span, regs: &[Value]) -> Option<Vec<Value>> {
     let mut args: Vec<Value> = Vec::with_capacity(slots.len());
     for slot in plan.slots(slots) {
         let v = match slot {
@@ -620,9 +629,244 @@ fn witness_fact(
         }
         args.push(v);
     }
-    // A lent table cannot number a proposition nobody has numbered yet; the
-    // refusal ends this branch exactly as it ends a blind fill.
-    s.terms.intern_fact(rel, &args).ok()
+    Some(args)
+}
+
+// ── L5's table: each owed instance's alternatives (M1e2 S1e2.1c.4) ─────────
+
+/// One obligation instance as the table and the node function both key it:
+/// the rule, the activator's arguments and the match's bindings, which is
+/// [`crate::obligations::Owed`]'s identity.
+pub type InstanceKey = (Symbol, Box<[Symbol]>, Box<[(Symbol, Value)]>);
+
+/// Every obligation instance root owes, each with the candidates that can
+/// witness it — licence L5's alternatives — or why that set is not known.
+/// Built once at root by `alternatives`, and held to the oracle by
+/// `ein-infer/tests/region.rs`'s
+/// `l5_is_the_oracle_on_every_monotone_program_it_reaches`.
+#[derive(Clone, Debug, Default)]
+pub struct Alternatives {
+    /// In [`crate::obligations::tally`]'s report order.
+    pub instances: Vec<Instance>,
+    /// Each instance's place in [`Self::instances`].
+    pub index: rustc_hash::FxHashMap<InstanceKey, u32>,
+}
+
+/// One instance root owes.
+#[derive(Clone, Debug)]
+pub struct Instance {
+    pub key: InstanceKey,
+    /// The candidates (bit indices, ascending) that can witness it, when L5's
+    /// premise holds of it; why not, when it does not.
+    pub alternatives: Result<Box<[u32]>, String>,
+    /// Witnesses left out because root's fixpoint stores their negative: no
+    /// alive fixpoint holds one.
+    pub excluded: u32,
+}
+
+impl Alternatives {
+    /// Instances L5 licenses.
+    pub fn licensed(&self) -> usize {
+        self.instances
+            .iter()
+            .filter(|i| i.alternatives.is_ok())
+            .count()
+    }
+}
+
+/// **L5's premise, checked at load** — M1e2
+/// [S1e2.1c.4](../../../../plans/m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.4_the_flags_at_scale.md),
+/// [`solve_interface.md` § 3.1](../../../../plans/m1e2_correctness/p1e2.1a_the_solution_region/solve_interface.md#31-the-licences).
+///
+/// `kb` is root's fixpoint, on a program the static check calls monotone, and
+/// `candidates` maps each candidate of `H` to its bit. For every obligation
+/// instance root owes, in report order, this reads every fact that can
+/// witness it, and the instance is **licensed** when each of them is a
+/// candidate or has its negative stored at root. It is not licensed when:
+///
+/// - its rule is the bare `(open)`, which names no witness relation;
+/// - its witness step does not resolve ([`project`]);
+/// - its trigger, or any read of its guards beside the witness step, is of a
+///   relation a commitment can change (`D`, [`crate::monotone`]): the set of
+///   witnesses could then grow underneath the instance, or the instance be
+///   paid some other way;
+/// - a fact that can witness it is neither a candidate nor excluded at root.
+///
+/// Every scan is root's own matcher, run once; nothing is interned and no
+/// event is narrated. The guard's sub-plan is scanned with the witness step
+/// skipped, as the obligations rung does ([`generate`]), which is the reuse
+/// of the walk's library T1e2.1c.4.4 records.
+pub(crate) fn alternatives(
+    kb: &ein_core::Kb,
+    terms: &mut ein_core::Terms,
+    ast: &ein_ir::Ast,
+    memo: &crate::compile::SharedMemo,
+    monotonicity: &crate::monotone::Monotonicity,
+    candidates: &rustc_hash::FxHashMap<FactId, u32>,
+) -> Result<Alternatives, CompileError> {
+    let mut out = Alternatives::default();
+    if kb.program().obligations.is_empty() {
+        return Ok(out);
+    }
+    let plans = crate::obligations::plans_for(kb, terms, ast, memo)?;
+    let terms: &ein_core::Terms = terms;
+    let mut matcher = Matcher::new();
+    let mut guards = Matcher::new();
+    for plan in plans {
+        let premise: Result<Proj, String> = match crate::obligations::open_argument(&plan, terms) {
+            None => Err("a bare `(open)` names no relation, so no fact witnesses it".into()),
+            Some(_) => match project(&plan, terms) {
+                None => Err("its witness step does not resolve".into()),
+                Some(p) => static_premises(&p, monotonicity, terms).map(|()| p),
+            },
+        };
+        // The instances, as `obligations::tally` finds them: one per distinct
+        // bindings, judged by the first disjunct that reached them.
+        // (disjunct, registers, bindings) per match.
+        type Hit = (usize, Box<[Value]>, Box<[(Symbol, Value)]>);
+        let mut hits: Vec<Hit> = Vec::new();
+        let mut seen: FxHashSet<Box<[(Symbol, Value)]>> = FxHashSet::default();
+        matcher.run(kb, terms, ast, &plan, &mut |m| {
+            let bindings: Box<[(Symbol, Value)]> =
+                m.bindings().collect::<Vec<_>>().into_boxed_slice();
+            if seen.insert(bindings.clone()) {
+                hits.push((m.disjunct, m.regs().into(), bindings));
+            }
+            ControlFlow::Continue(())
+        });
+        for (disjunct, regs, bindings) in hits {
+            let span = plan.disjuncts[disjunct].guards;
+            if plan
+                .guards(span)
+                .iter()
+                .any(|g| guards.holds(kb, terms, ast, &plan, g, &regs))
+            {
+                continue;
+            }
+            let (alternatives, excluded) = match &premise {
+                Err(why) => (Err(why.clone()), 0),
+                Ok(p) => {
+                    match witnesses(kb, terms, ast, &mut guards, p, disjunct, &regs, candidates) {
+                        Ok((alts, excluded)) => (Ok(alts), excluded),
+                        Err(why) => (Err(why), 0),
+                    }
+                }
+            };
+            let key: InstanceKey = (plan.rule, plan.activator_args.clone(), bindings);
+            out.index.insert(key.clone(), out.instances.len() as u32);
+            out.instances.push(Instance {
+                key,
+                alternatives,
+                excluded,
+            });
+        }
+    }
+    Ok(out)
+}
+
+/// L5's table on a **freshly loaded** program: root saturated, the
+/// universe taken and the static check run as every route does
+/// ([`crate::region`]). `None` on a program the static check flags, or one
+/// that states no obligation. For the tests and the instruments that hold L5
+/// to the oracle and count what it licenses.
+pub fn alternatives_of(
+    root: &mut ein_core::Kb,
+    terms: &mut ein_core::Terms,
+    ast: &ein_ir::Ast,
+) -> Result<Option<Alternatives>, crate::solve::SolveError> {
+    let p = crate::region::prepare(root, terms, ast)?;
+    if !p.monotonicity.is_monotone() || root.program().obligations.is_empty() {
+        return Ok(None);
+    }
+    let candidates: rustc_hash::FxHashMap<FactId, u32> = p
+        .candidates
+        .iter()
+        .enumerate()
+        .map(|(i, c)| (c.fact, i as u32))
+        .collect();
+    Ok(Some(alternatives(
+        root,
+        terms,
+        ast,
+        &p.memo,
+        &p.monotonicity,
+        &candidates,
+    )?))
+}
+
+/// The trigger and every guard read beside the witness step are static, or
+/// which one is not.
+fn static_premises(
+    p: &Proj,
+    monotonicity: &crate::monotone::Monotonicity,
+    terms: &ein_core::Terms,
+) -> Result<(), String> {
+    for (d, &(gi, at)) in p.witness.iter().enumerate() {
+        let disjunct = &p.plan.disjuncts[d];
+        let mut reads = crate::monotone::reads_in(&p.plan, disjunct.steps, None, terms);
+        for (j, g) in p.plan.guards(disjunct.guards).iter().enumerate() {
+            let skip = (j == gi).then_some(at);
+            reads.extend(crate::monotone::reads_in(&p.plan, g.sub, skip, terms));
+        }
+        if let Some(rel) = reads.into_iter().find(|&r| monotonicity.changes(r, terms)) {
+            return Err(format!(
+                "it reads `{}` beside its witness, a relation a commitment can change",
+                rel.label(terms)
+            ));
+        }
+    }
+    Ok(())
+}
+
+/// One instance's witnesses at root: its alternatives (candidate bits,
+/// ascending) and how many root excludes, or why the premise fails.
+#[allow(clippy::too_many_arguments)]
+fn witnesses(
+    kb: &ein_core::Kb,
+    terms: &ein_core::Terms,
+    ast: &ein_ir::Ast,
+    matcher: &mut Matcher,
+    p: &Proj,
+    disjunct: usize,
+    regs: &[Value],
+    candidates: &rustc_hash::FxHashMap<FactId, u32>,
+) -> Result<(Box<[u32]>, u32), String> {
+    let (gi, at) = p.witness[disjunct];
+    let guard = &p.plan.guards(p.plan.disjuncts[disjunct].guards)[gi];
+    let Step::Rel(step) = p.plan.steps(guard.sub)[at] else {
+        return Err("its witness step is not a relation".into());
+    };
+    let mut rows: Vec<Box<[Value]>> = Vec::new();
+    matcher.scan_without(kb, terms, ast, &p.plan, guard, regs, at, &mut |sub| {
+        rows.push(sub.into());
+        ControlFlow::Continue(())
+    });
+    let rel = terms.sym(step.rel).to_string();
+    let mut alts: Vec<u32> = Vec::new();
+    let mut excluded = 0u32;
+    for row in &rows {
+        let Some(args) = witness_args(&p.plan, step.slots, row) else {
+            return Err(format!("a `{rel}` witness has a slot nothing binds"));
+        };
+        let Some(fact) = terms.probe_fact(step.rel, &args) else {
+            return Err(format!(
+                "a `{rel}` fact can witness it that no candidate proposes"
+            ));
+        };
+        if let Some(&b) = candidates.get(&fact) {
+            alts.push(b);
+        } else if kb.is_negated(fact) {
+            excluded += 1;
+        } else {
+            return Err(format!(
+                "`{}` can witness it and is not a candidate",
+                crate::events::sexpr(terms, fact)
+            ));
+        }
+    }
+    alts.sort_unstable();
+    alts.dedup();
+    Ok((alts.into_boxed_slice(), excluded))
 }
 
 #[cfg(test)]

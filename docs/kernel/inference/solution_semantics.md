@@ -679,6 +679,7 @@ it cannot see a candidate the generator never proposes (W4, W6).
 | every question `ein solve` asks about R: the lines, `-n`, `--single`, each with its licences, and describe's route | [`explore.rs`](../../../ein.rs/crates/ein-infer/src/explore.rs) `run`, `Mode`, `Answer`, `Licence` (L3 is `Licence::Closure`) |
 | monotone | [`monotone.rs`](../../../ein.rs/crates/ein-infer/src/monotone.rs) |
 | owes, discharged | [`obligations.rs`](../../../ein.rs/crates/ein-infer/src/obligations.rs) `tally` |
+| an owed instance's alternatives, and L5's premise checked at load (M1e2 S1e2.1c.4): every instance root owes, licensed or with why not | [`oblgen.rs`](../../../ein.rs/crates/ein-infer/src/oblgen.rs) `alternatives_of`, `Alternatives`; held to the oracle by `ein-infer/tests/region.rs`'s `l5_is_the_oracle_on_every_monotone_program_it_reaches` |
 | the walk's `alive₀` | `Run::phase1` → `compute_alive` → `hypgen::open_hypotheses` |
 | the walk's commitment, entering | `apriori::CanonicalSetId`; [`commitment.rs`](../../../ein.rs/crates/ein-infer/src/commitment.rs) `try_commitment_set`, `Kind` |
 | complete | `hypgen::complete` |

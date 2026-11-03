@@ -325,6 +325,46 @@ impl Monotonicity {
     pub fn is_monotone(&self) -> bool {
         self.sites.is_empty()
     }
+
+    /// Is `rel` in `D` — a relation some commitment can change? A relation
+    /// outside it is static: complete at root, and the same at every node.
+    /// L5's premise reads it (`crate::oblgen::alternatives`, M1e2 S1e2.1c.4).
+    pub fn changes(&self, rel: Rel, terms: &Terms) -> bool {
+        if rel.is_any_negative(terms) {
+            return self.dynamic.iter().any(|x| x.negated);
+        }
+        self.dynamic.contains(&rel)
+            || (rel.negated && self.dynamic.contains(&Rel::neg(terms.kernel.not)))
+    }
+}
+
+/// Every relation `span` of `plan` reads, nested `absent`s included, less the
+/// top-level step at `skip` — the reads a guard makes beside its witness
+/// (M1e2 S1e2.1c.4's L5).
+pub fn reads_in(plan: &Plan, span: Span, skip: Option<usize>, terms: &Terms) -> Vec<Rel> {
+    let mut out = Vec::new();
+    for (i, step) in plan.steps(span).iter().enumerate() {
+        if skip == Some(i) {
+            continue;
+        }
+        match step {
+            Step::Rel(r) if r.rel == terms.kernel.not => {
+                let before = out.len();
+                for slot in plan.slots(r.slots) {
+                    if let Slot::Nested { rel, .. } = slot {
+                        out.push(Rel::neg(*rel));
+                    }
+                }
+                if out.len() == before {
+                    out.push(Rel::neg(terms.kernel.not));
+                }
+            }
+            Step::Rel(r) => out.push(Rel::pos(r.rel)),
+            Step::Absent { sub } => out.extend(reads_in(plan, *sub, None, terms)),
+            Step::Guard { .. } => {}
+        }
+    }
+    out
 }
 
 /// Every plan the memo holds — what a run compiled.

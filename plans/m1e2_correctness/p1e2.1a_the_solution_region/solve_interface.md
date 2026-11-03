@@ -267,7 +267,7 @@ class.
 | **L2** | discharged is upward-closed | monotone | every alive superset of a node of R is in R. So `--minimal` does not expand a node of R, and when ∅ ∈ R, R is the whole alive set |
 | **L3** | a commitment's state is its closure's | monotone | visit states, not commitments, and count k_c as f(T) = 2^\|T\| − Σ f(S) over the alive states S ⊊ T |
 | **L4** | the lines are local | monotone, so no hole | a node of R is maximal exactly when every one-up extension is dead, and minimal exactly when every one-down subset owes. A line member is certified with at most n saturations |
-| **L5** | an owed instance's alternatives are exhaustive | monotone, and every fact that can witness the instance is in H | branch on one owed instance's alive alternatives. **An alive node owing an instance whose every alternative is dead has no member of R above it.** That is the user's *owing meets dead*, and it ends a branch |
+| **L5** | an owed instance's alternatives are exhaustive | monotone, and, per instance: every fact that can witness it is in H or excluded at root, and its guard reads nothing else a commitment can change (checked at load since S1e2.1c.4) | branch on one owed instance's alive alternatives. **An alive node owing an instance whose every alternative is dead has no member of R above it.** That is the user's *owing meets dead*, and it ends a branch |
 | **L6** | trivial lines | the program's shape | restrictions only: the minimal line is {∅} when root is alive, one saturation. Obligations only: the maximal line is {⊤}, one saturation |
 | **L7** | the cube | always | 2ⁿ saturations decide everything. That is `ein oracle`, and route 2 inside `solve` |
 
@@ -277,11 +277,42 @@ L1–L4 and L6 are [`solution_semantics.md`](../../../docs/kernel/inference/solu
 [S1e2.1c.2](../p1e2.1c_the_region_search/s1e2.1c.2_the_lines_by_duality.md)**
 (2026-11-03): `explore::Licence::Closure`, printed on describe's `route` row,
 and held to the oracle on every monotone cube by
-`the_state_route_is_the_oracle_on_every_monotone_program_it_reaches`. **L5 is new.** Its argument: at a node C owing instance I, every
-discharged D ⊇ C holds a witness a of I. Since a ∈ H, a is in D's closure,
-so D's state is above C ∪ {a}; if that node is dead, so is D. Its
-precondition is checkable when the program loads. It is proved and held to
-the oracle at P1e2.1c before any mode relies on it.
+`the_state_route_is_the_oracle_on_every_monotone_program_it_reaches`.
+
+**L5 is proved, checked at load and held to the oracle since M1e2
+[S1e2.1c.4](../p1e2.1c_the_region_search/s1e2.1c.4_the_flags_at_scale.md)'s
+T1e2.1c.4.1** (2026-11-03), before any mode relies on it. The argument: at a
+state C owing instance I, let D ⊇ C be a member of R. On a monotone program
+I's trigger reads only static relations, so I is an instance at D, and D is
+discharged, so a guard of I holds there. **The premise, sharpened here** from
+*every fact that can witness the instance is in H*: every read of that guard
+beside its witness step is static, so the guard holds at D exactly when a
+witness fact w is in D's fixpoint, and w is one of the facts the guard admits
+at root; and each of those is a candidate, or has its negative stored at root,
+which no alive fixpoint can hold. So w is a candidate in D's closure and not
+in C's, D's state is above C ∪ {w}, and if that node is dead, so is D (L1,
+L3). The sharpening is needed: a guard that reads a relation a commitment can
+grow could be paid by a fact already in C.
+
+- **Checked at load**: `oblgen::alternatives` reads every instance root owes,
+  with the candidates that can witness it, and licenses the instance only when
+  the premise holds of it; it names why not otherwise. Nothing is interned.
+- **Held to the oracle**:
+  `l5_is_the_oracle_on_every_monotone_program_it_reaches`
+  (`ein-infer/tests/region.rs`), on every monotone cube the oracle enumerates
+  whose program states an obligation, at every alive state: a licensed
+  instance is owed exactly when none of its alternatives is in the state,
+  every member of R above a state that owes it holds one of them, and no state
+  owes an instance root did not. 40 programs, 12 with a licensed instance, 284
+  states and 299 owed licensed instances (2026-11-03).
+- **The hrule rung**: the premise is about H as a set, whatever rung proposed
+  it, so it is checked the same way. `zebra.ein` licenses 18 of its 36 root
+  debts, every `slot-owed-room` one: the hrule proposes each attribute value's
+  `(co-located v House-n)`. No `slot-owed-fill` one is licensed: its
+  witnesses `(co-located House-n v)` are derived by symmetry and never
+  proposed. `zebra2`, its obligations twin and the `zebra2-minus-15` pair
+  license every debt, 36 and 46
+  (`l5_licenses_what_its_premise_holds_of_on_the_zebra_family`).
 
 ### 3.2 A monotone program: each mode's route
 
