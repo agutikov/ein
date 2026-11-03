@@ -3,7 +3,10 @@
 **Milestone:** [M1e2](../README.md) (Correctness)
 **Estimate:** 5 days, four stages: S1e2.3.1 2, S1e2.3.2 0.5, S1e2.3.3 1.5,
 S1e2.3.4 1. Each stage file gives its basis.
-**Status:** specified 2026-11-02; not started. The survey of 2026-10-14 named
+**Status:** specified 2026-11-02; **started 2026-11-03**. S1e2.3.1's
+T1e2.3.1.1 took its evidence at `32496b97`, after P1e2.1c closed, and put Q1
+to the user the same day; its T1e2.3.1.2–.4 wait on the ruling. The other
+stages have not started. The survey of 2026-10-14 named
 the surfaces ([inventory § 1](../inventory.md#1-table)), and the milestone
 README carried them as a *proposed* phase. On 2026-11-02 the user ruled that
 they *become a phase*, after P1e2.1c, *specified when it starts*
@@ -134,7 +137,7 @@ Gone items get no stage. The table above records each and closes it here.
 
 | ID | title | est. | ends with |
 |---|---|---:|---|
-| [S1e2.3.1](s1e2.3.1_the_summary_root_block.md) | The summary's `root` block describes a generator no route runs (S4) | 2 d | the user's ruling (H, root's fixpoint, or neither) applied on all four writers. `lever_invariance.rs` stops scrubbing the three fields, and an identity in `summary_properties.rs` holds the block to what it describes. `configuration.md` loses its one exception |
+| [S1e2.3.1](s1e2.3.1_the_summary_root_block.md) | The summary's `root` block describes a generator no route runs (S4). **Evidence re-taken 2026-11-03; Q1 put to the user** | 2 d | the user's ruling (H, root's fixpoint, or neither) applied on all five writer paths. `lever_invariance.rs` stops scrubbing the three fields, and an identity in `summary_properties.rs` holds the block to what it describes. `configuration.md` loses its S4 paragraph |
 | [S1e2.3.2](s1e2.3.2_a_keyword_pair_panics_two_views.md) | A keyword pair panics two render views (P1) | 0.5 d | `value_label` total, or the views filtering, as ruled. The witness is banked as a `regression` corpus entry whose `render constraints` and `render program` runs exit 0 |
 | [S1e2.3.3](s1e2.3.3_the_forms_past_100_lines.md) | The forms after the read-out, past 100 lines (S10) | 1.5 d | the forms under the user's ruling, `--dump-answer` writing whatever stdout leaves out, and the review bundle still carrying every form uncut |
 | [S1e2.3.4](s1e2.3.4_the_inherited_questions_and_the_record.md) | The inherited questions, `-g`'s clamp, and the record (S5, Q-M1e.5, Q-M1e.17) | 1 d | Q-M1e.5 and Q-M1e.17 ruled and closed in M1e's register, and `-g` following the ruling with a test. `capture.sh`'s S and P lines re-take this table. The links to the proposed § are re-pointed, and Q-M1e2.6 is closed |
@@ -151,7 +154,7 @@ recommendations are labelled as mine.
 
 | # | stage | the question | options | recommended |
 |---|---|---|---|---|
-| Q1 | S1e2.3.1 | What does `--json-summary`'s `root` block describe? | (a) H and root's fixpoint, both config-free, keeping the key set; (b) root's fixpoint only, with H left to `region.universe` and `-H`; (c) neither, and the block goes | (b) |
+| Q1 | S1e2.3.1 | What does `--json-summary`'s `root` block describe? Under (b) or (c), does the schema go to `ein-summary/3`? And does `EIN_LEFTOVER`'s `leftover` block follow (sub-question 2)? | (a) H and root's fixpoint, both config-free, keeping the key set; (b) root's fixpoint only, with H left to `region.universe` and `-H`; (c) neither, and the block goes | (a), re-taken 2026-11-03 (it was (b) on 2026-11-02): `emitted` is H's size by construction, so (a) needs no new key, no extra work and no schema bump; `--monotone`'s summary has no other H. `/3` under (b) or (c). `leftover` follows, config-free, and `EIN_OBLIGATION_CHOICE`, which then changes nothing, retires |
 | Q2 | S1e2.3.2 | A keyword pair below a form: render it or filter it? | (a) `value_label` renders `:key value`, as `ir_dot.rs` already does, for every caller; (b) each view filters keyword pairs at every depth; (c) (b) for `render constraints` and (a) for `render program`, the program as written | (a) |
 | Q3 | S1e2.3.3 | Do the forms share stdout's 100 lines? | (a) they share them, and `--dump-answer` writes each form uncut; (b) each form gets its own 100 lines, with the rest in the dump; (c) they are exempt, because a form is asked for by name, and the rule says so; (d) a form goes to a file only | (a) |
 | Q4 | S1e2.3.4 | Q-M1e.5: is *experimental* a licence to ship a false surface? | (a) answered by the ruling of 2026-10-16 (*no two commands may disagree; every answer agrees with the oracle*), so no; close it, and hand the learning half to S1e2.1c.4 and M1f's S1f.10.7; (b) keep it open for P1e2.1c's tree route, the next surface that could be experimental; (c) close it as moot, with no rule | (a) |
@@ -187,7 +190,7 @@ whether any joins one, and S1e2.3.3 is where the first two would go.
   holds it. S5 follows Q5. Re-taking this page's table on the day the phase
   closes finds every row *gone*, with what holds it named.
 - **S4:** the summary's `root` block says what Q1's ruling says, on `ein solve`,
-  `ein oracle`, `ein test` and `answer.json`. Every config flag, CLI lever and
+  `ein solve --monotone`, `ein oracle`, `ein test` and `answer.json`. Every config flag, CLI lever and
   environment lever leaves it unmoved on every program `lever_invariance.rs`
   sweeps, with the three fields no longer scrubbed. The bundle's root page
   agrees with its own sentence that root is never written.
