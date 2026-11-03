@@ -62,8 +62,34 @@ pub struct Text {
     pub stderr: Vec<String>,
     pub code: i32,
     /// The states stdout printed, as indices into `ReadOut::states` — what
-    /// `--trace` traces.
+    /// `--trace` traces, and what the forms after the read-out draw from
+    /// (M1e2 S1e2.3.3).
     pub shown: Vec<usize>,
+    /// The lines the listings spent of [`LIST_LINES`]: what is left of them
+    /// is the forms' (M1e2 S1e2.3.3, the user's ruling (a) of 2026-11-03).
+    pub listed: usize,
+}
+
+impl Text {
+    /// What the read-out left of [`LIST_LINES`] for the forms printed after
+    /// it.
+    pub fn left(&self) -> usize {
+        LIST_LINES.saturating_sub(self.listed)
+    }
+}
+
+/// How many of `blocks` fit in `left` lines: all, or whole blocks while they
+/// fit and at least one. The read-out's listings are cut by it, and since
+/// M1e2 S1e2.3.3 the forms printed after the read-out too.
+pub fn fit(left: usize, blocks: &[Vec<String>]) -> usize {
+    let mut lines = 0usize;
+    for (i, b) in blocks.iter().enumerate() {
+        lines = lines.saturating_add(b.len());
+        if lines > left {
+            return i.max(1);
+        }
+    }
+    blocks.len()
 }
 
 /// `261 982`: digit groups of three, the corpus pages' spelling.
@@ -143,15 +169,7 @@ impl Out {
     /// How many of `blocks` fit in what is left: all, or whole blocks while
     /// they fit and at least one.
     fn fit(&self, blocks: &[Vec<String>]) -> usize {
-        let left = self.left();
-        let mut lines = 0usize;
-        for (i, b) in blocks.iter().enumerate() {
-            lines = lines.saturating_add(b.len());
-            if lines > left {
-                return i.max(1);
-            }
-        }
-        blocks.len()
+        fit(self.left(), blocks)
     }
 
     /// Print what [`Self::fit`] allows, count it, and return how many.
@@ -231,6 +249,7 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
             stderr: out.stderr,
             code: 0,
             shown: out.shown,
+            listed: out.listed,
         };
     }
     let mut code = queries(&mut out, r, o);
@@ -265,6 +284,7 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
         stderr: out.stderr,
         code,
         shown: out.shown,
+        listed: out.listed,
     }
 }
 
@@ -644,6 +664,7 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
         stderr: out.stderr,
         code: 0,
         shown: out.shown,
+        listed: out.listed,
     }
 }
 

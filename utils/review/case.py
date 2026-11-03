@@ -26,8 +26,8 @@ from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
-from review.run import (RunResult, RunSpec, _safe, asked_text, build_run, call_to_fact, diff_block, grids_from,
-                        node_links, overlay_head, set_text, state_files, state_href, verdict_block, yes)
+from review.run import (RunResult, RunSpec, _safe, asked_text, build_run, call_to_fact, diff_block, form_text,
+                        grids_from, node_links, overlay_head, set_text, state_files, state_href, verdict_block, yes)
 from review.util import REPO, details, doc, load_json, read, rel, run, table, warning_words, write
 
 REGISTER = REPO / "corpus/wrong_answers.toml"
@@ -567,7 +567,7 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
         st = listed(c.result)
         lines += [f"### {c.label} — {len(st)} listed state(s), {asked_text(c.result.summary)}", ""]
         grid = next((i for i in c.result.invocations if i.name == "grid"), None)
-        grids = grids_from(grid.stdout) if grid else []
+        grids = grids_from(form_text(c.result.out, "grid", "grid", grid.stdout)) if grid else []
         files = {f.get("state"): f for f in state_files(c.result.out / "raw" / "answer") if f["kind"] == "models"}
         for i, s in enumerate(st):
             facts = project(s.get("facts", []), closes)
@@ -586,7 +586,7 @@ def case_page(row: dict, out: Path, bin: str) -> tuple[Path, list[Col]]:
         diff_inv = next((i for i in c.result.invocations if i.name == "diff"), None)
         if diff_inv:
             lines += [f"**{c.label} against the right answer** (`--diff-models`, verbatim):", "", "```text",
-                      diff_block(diff_inv), "```", ""]
+                      diff_block(diff_inv, c.result.out), "```", ""]
 
     # 5 — the region.
     lines += region_section(r, page, row, "## 5 · The region")

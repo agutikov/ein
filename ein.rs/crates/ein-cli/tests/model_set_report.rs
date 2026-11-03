@@ -225,14 +225,24 @@ fn the_key_table_names_its_size_its_alternatives_and_one_row_per_state() {
 /// these"* cannot be taken and the form declines rather than printing an
 /// arbitrary basis. The states are listed above it either way, so the exit
 /// code is 0 and nothing is withheld.
+///
+/// Since M1e2 S1e2.3.3 (the user's ruling (a) of 2026-11-03) the form on
+/// stdout is drawn from the states stdout showed, 9 of the 22, and their key
+/// declines too, at `C(38, 7)`; the 22 states' key, and its decline, is
+/// `--dump-answer`'s `forms/key.txt`.
 #[test]
 fn an_unaffordable_key_says_why() {
+    let dir = std::env::temp_dir().join(format!("ein-key-declines-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    let d = dir.to_string_lossy().to_string();
     let run = ein(&[
         "solve",
         "examples/branching/06_lookahead_on.ein",
         "--maximal",
         "--models",
         "key",
+        "--dump-answer",
+        &d,
     ]);
     assert_eq!(run.code, 0);
     assert_eq!(
@@ -241,10 +251,16 @@ fn an_unaffordable_key_says_why() {
     );
     // Whitespace-normalised, because the reason is wrapped to the page and
     // where it wraps is layout rather than content.
-    let flat = run.out.split_whitespace().collect::<Vec<_>>().join(" ");
+    let flat = |t: &str| t.split_whitespace().collect::<Vec<_>>().join(" ");
     assert!(
-        flat.contains("C(42, 8) = 118 030 185 candidates is over the budget"),
+        flat(&run.out).contains("C(38, 7) = 12 620 256 candidates is over the budget"),
         "the reason should name the number that made it unaffordable:\n{}",
+        run.out
+    );
+    assert!(
+        run.out
+            .contains("models — the determining key of the 9 states shown above, of the 22 listed"),
+        "{}",
         run.out
     );
     // The states are listed above it, as far as stdout's 100 lines go, and
@@ -260,6 +276,12 @@ fn an_unaffordable_key_says_why() {
         "{}",
         run.out
     );
+    let uncut = std::fs::read_to_string(dir.join("forms/key.txt")).expect("forms/key.txt");
+    assert!(
+        flat(&uncut).contains("C(42, 8) = 118 030 185 candidates is over the budget"),
+        "the 22 states' key:\n{uncut}"
+    );
+    let _ = std::fs::remove_dir_all(&dir);
 }
 
 /// **only-a-set-has-a-key.** The flag is inert where one state or none is

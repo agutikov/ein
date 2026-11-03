@@ -18,8 +18,9 @@ pub enum Mode {
     Hfacts,
 }
 
-/// Dump a slice of a solution kb's facts in canonical order.
-pub fn print_final_state(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol]) {
+/// A slice of a state's facts in canonical order, as the lines the form
+/// prints: its label, then one fact per line.
+pub fn final_state_lines(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol]) -> Vec<String> {
     let (mut facts, label): (Vec<_>, String) = match mode {
         Mode::Hfacts => {
             let picked: Vec<_> = kb
@@ -70,13 +71,17 @@ pub fn print_final_state(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol])
         .collect();
     keyed.sort_by(|a, b| (a.0, &a.1).cmp(&(b.0, &b.1)));
 
-    println!("final-state facts ({label}; {} facts):", keyed.len());
+    let mut out = vec![format!(
+        "final-state facts ({label}; {} facts):",
+        keyed.len()
+    )];
     for (rel, args, _) in &keyed {
         // Note the unconditional separator: a nullary fact prints `(rel )`
         // here, where `sexpr` would spell it `(rel)`. This line has its own
         // join, and the difference is observable.
-        println!("  ({rel} {})", args.join(" "));
+        out.push(format!("  ({rel} {})", args.join(" ")));
     }
+    out
 }
 
 /// Derived — produced by the engine, i.e. it has provenance and that

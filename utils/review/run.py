@@ -202,13 +202,19 @@ def drive(spec: RunSpec, out: Path, bin: str) -> list[Invocation]:
     if spec.events:
         main += ["--events", str(raw / "events.jsonl"), "--events-level", "verbose"]
     invs = [run("main", main, spec.env)]
+    # Since S1e2.3.3 a form shares stdout's 100 lines with the read-out, and
+    # `--dump-answer` writes it uncut under `forms/`: each form run writes its
+    # own answer directory, and the pages read the uncut file (`form_text`).
     invs.append(run("grid", solve + ["--models", "grid",
-                                     "--json-summary", str(raw / "summary.grid.json")], spec.env))
+                                     "--json-summary", str(raw / "summary.grid.json"),
+                                     "--dump-answer", str(raw / FORM_DIRS["grid"])], spec.env))
     invs.append(run("key", solve + ["--models", "key",
-                                    "--json-summary", str(raw / "summary.key.json")], spec.env))
+                                    "--json-summary", str(raw / "summary.key.json"),
+                                    "--dump-answer", str(raw / FORM_DIRS["key"])], spec.env))
     if spec.diff_models:
         invs.append(run("diff", solve + ["--diff-models", str(spec.diff_models),
-                                         "--json-summary", str(raw / "summary.diff.json")], spec.env))
+                                         "--json-summary", str(raw / "summary.diff.json"),
+                                         "--dump-answer", str(raw / FORM_DIRS["diff"])], spec.env))
     # R by brute force: the cube `ein render region` draws, and the answer
     # cross-check 5 holds the run to. Past --region-limit it refuses, exit 2.
     limit = flag_value(spec.flags, "--region-limit")
@@ -395,9 +401,15 @@ def verdict_block(stdout: str) -> str:
     return "\n".join(lines[start:end]).rstrip()
 
 
-def diff_block(inv: Invocation) -> str:
-    """`--diff-models`' block, verbatim: from `the states listed against` to the blank
-    line that ends it — or the refusal, when the file did not parse."""
+def diff_block(inv: Invocation, run_out: Path | None = None) -> str:
+    """`--diff-models`' block, verbatim: the uncut file the run's
+    `--dump-answer` wrote (S1e2.3.3) when there is one; else from `the states
+    listed against` to the blank line that ends it — or the refusal, when the
+    file did not parse."""
+    if run_out is not None:
+        text = form_text(run_out, "diff", "diff-models")
+        if text.strip():
+            return text.strip("\n")
     lines = inv.stdout.splitlines()
     start = next((i for i, l in enumerate(lines) if l.startswith(("the states listed against", "models against"))), None)
     if start is None:
@@ -776,6 +788,25 @@ def overlay_head(table_md: str) -> list[str]:
 
 # ── the answer ────────────────────────────────────────────────────────────────
 
+# The answer directory each invocation writes. `main`'s holds `-p` and `-H`
+# under `forms/`, and each form run's holds its form (S1e2.3.3).
+FORM_DIRS = {"main": "answer", "grid": "answer.grid", "key": "answer.key", "diff": "answer.diff"}
+
+
+def form_text(run_out: Path, inv: str, form: str, stdout: str = "") -> str:
+    """A form uncut: `forms/<form>.txt` in the answer directory invocation
+    `inv` wrote — since S1e2.3.3 stdout holds only what fits of it in the 100
+    lines it shares with the read-out. A run that wrote no file (an older
+    binary, a refused run) falls back to its stdout."""
+    f = run_out / "raw" / FORM_DIRS[inv] / "forms" / f"{form}.txt"
+    return read(f) if f.exists() else stdout
+
+
+def form_files(run_out: Path) -> list[Path]:
+    """Every form file the run's invocations wrote, for the pages' raw lists."""
+    return sorted(f for d in FORM_DIRS.values() for f in (run_out / "raw" / d / "forms").glob("*.txt"))
+
+
 def grids_from(stdout: str) -> list[str]:
     """`--models grid`'s per-state grid blocks, in order, verbatim."""
     out, cur = [], None
@@ -805,17 +836,18 @@ def answer_pages(p: Pages, s: dict | None) -> None:
                    "commitment, its `(model …)`", "`--dump-answer DIR`, `--models grid`, `--models key`, "
                    "`ein render kb … --since FILE`", defined,
                    [raw / "index.json", raw / "answer.json", raw / "answer.txt", p.raw / "grid.stdout.txt",
-                    p.raw / "key.stdout.txt"], page,
+                    p.raw / "key.stdout.txt", *form_files(p.out)], page,
                    f"asked **{asked_text(s)}** · {len(listed)} state(s) listed of {len(states)} reached · "
                    f"exhausted = {yes(region.get('exhausted'))}"
                    + (f" · R empty: **{region['empty']}**" if region.get("empty") else ""))
     lines += details("`answer.txt` — the read-out, uncut", ["```text", read(raw / "answer.txt").rstrip(), "```"])
     key = p.inv.get("key")
-    if key and "determining key" in key.stdout:
+    key_text = form_text(p.out, "key", "key", key.stdout) if key else ""
+    if "determining key" in key_text:
         lines += ["## The determining key (`--models key`)", "", "```text"]
-        lines += key.stdout.split("determining key", 1)[1].splitlines()[:200]
+        lines += key_text.split("determining key", 1)[1].splitlines()[:200]
         lines += ["```", ""]
-    grids = grids_from(p.inv["grid"].stdout) if "grid" in p.inv else []
+    grids = grids_from(form_text(p.out, "grid", "grid", p.inv["grid"].stdout)) if "grid" in p.inv else []
     gi = 0
     files = state_files(raw)
     for f in files[:STATES_DRAWN]:
@@ -1208,7 +1240,7 @@ def run_page(p: Pages, s: dict | None) -> Path:
         lines += ["## stderr", "", "```text", main.stderr.strip() or "(empty)", "```", ""]
     if "diff" in p.inv:
         lines += ["## Against the right answer — `--diff-models`, verbatim", "", "```text",
-                  diff_block(p.inv["diff"]), "```", ""]
+                  diff_block(p.inv["diff"], p.out), "```", ""]
     fails = [c for c in p.checks if c[1] is False]
     applicable = [c for c in p.checks if c[1] is not None]
     lines += [f"## Cross-checks — {len(applicable) - len(fails)} of {len(applicable)} pass", ""]
@@ -1255,7 +1287,7 @@ def build_run(spec: RunSpec, out: Path, bin: str) -> RunResult:
     consistency(p, summary, trace, events)
     run_page(p, summary)
     region = (summary or {}).get("region") or {}
-    now = now_of(summary, p.inv["main"].stdout)
+    now = now_of(summary, form_text(p.out, "main", "hyp-stats", p.inv["main"].stdout))
     return RunResult(out, spec, invs, summary, p.checks, p.pages,
                      ((summary or {}).get("verdict") or {}).get("type", ""),
                      now["k"] if now else None, region.get("exhausted") if summary else None, now, p.lattice,

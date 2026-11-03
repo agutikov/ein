@@ -558,7 +558,9 @@ fn solve_command() -> Command {
             'H',
             "hyp-stats",
             "after the read-out, H, the universe: the candidates by relation, \
-             each dead alone marked",
+             each dead alone marked. Its candidates share stdout's 100 lines \
+             with the read-out; --dump-answer DIR writes it whole, as \
+             DIR/forms/hyp-stats.txt",
         ))
         .arg(flag(
             't',
@@ -581,6 +583,7 @@ fn solve_command() -> Command {
                 .help(models_help(
                     "each as a table, the anchor type's objects down the side, \
                      where the program's declarations license one",
+                    "--dump-answer DIR",
                 )),
         )
         .arg(
@@ -588,27 +591,35 @@ fn solve_command() -> Command {
                 .long("diff-models")
                 .value_name("FILE")
                 .help(
-                    "after the read-out, compare the states it listed with the \
+                    "after the read-out, compare the states it showed with the \
                      models FILE lists ('closes R …', then 'model' and one fact per \
                      line): what matches, what is missing, what is spurious and \
-                     what is one fact off",
+                     what is one fact off, in what the read-out left of stdout's \
+                     100 lines. --dump-answer DIR writes it uncut, over every \
+                     listed state, as DIR/forms/diff-models.txt",
                 ),
         )
         .arg(flag(
             'p',
             "print-final-state",
-            "after the read-out, each listed state's facts beyond root: its model",
+            "after the read-out, each state it showed, its facts beyond root: its \
+             model, in what the read-out left of stdout's 100 lines. \
+             --dump-answer DIR writes every listed state's, as \
+             DIR/forms/print-final-state.txt",
         ))
         .arg(flag(
             'P',
             "print-final-positive",
-            "like --print-final-state but drops the (not …) facts",
+            "like --print-final-state but drops the (not …) facts; \
+             DIR/forms/print-final-positive.txt",
         ))
         .arg(flag(
             'f',
             "print-final-hfacts",
-            "after the read-out, each listed state's facts of the candidates' \
-             relations: what its commitment is made of",
+            "after the read-out, each state it showed, its facts of the \
+             candidates' relations: what its commitment is made of, in what the \
+             read-out left of stdout's 100 lines. --dump-answer DIR writes every \
+             listed state's, as DIR/forms/print-final-hfacts.txt",
         ))
         // ── files ──
         .arg(
@@ -619,10 +630,11 @@ fn solve_command() -> Command {
                 .help(
                     "write the answer as files to DIR: answer.txt (the read-out \
                      uncut), answer.json (= --json-summary), index.json, one \
-                     loadable file per state, the owing frontier and N \
-                     (docs/kernel/inference/answer_dump.md). DIR is made before \
-                     the run; past that, stdout, stderr and the exit code are \
-                     unchanged.",
+                     loadable file per state, the owing frontier, N, and each \
+                     form asked for (-H, --models, -p, -P, -f, --diff-models) \
+                     uncut under forms/ (docs/kernel/inference/answer_dump.md). \
+                     DIR is made before the run; past that, stdout, stderr and \
+                     the exit code are unchanged.",
                 ),
         )
         .arg(
@@ -895,29 +907,38 @@ fn oracle_command() -> Command {
                 .default_value("list")
                 .help(models_help(
                     "each as a table, where the program's declarations license one",
+                    "`ein solve FILE --dump-answer DIR`",
                 )),
         )
         .arg(flag(
             'p',
             "print-final-state",
-            "after the read-out, each listed state's facts beyond root: its model",
+            "after the read-out, each state it showed, its facts beyond root: its \
+             model, in what the read-out left of stdout's 100 lines. `ein solve \
+             FILE -p --dump-answer DIR` writes every listed state's, as \
+             DIR/forms/print-final-state.txt",
         ))
         .arg(flag(
             'P',
             "print-final-positive",
-            "like --print-final-state but drops the (not …) facts",
+            "like --print-final-state but drops the (not …) facts; \
+             DIR/forms/print-final-positive.txt",
         ))
 }
 
-/// `--models`' help, `grid`'s gloss aside. The key's decline is said with the
-/// bound it is priced against (M1e2 S1e2.4.2), read from the constant, so the
-/// help cannot state a bound the renderer does not apply.
-fn models_help(grid: &str) -> String {
+/// `--models`' help, `grid`'s gloss and where the rest is aside. The key's
+/// decline is said with the bound it is priced against (M1e2 S1e2.4.2), read
+/// from the constant, so the help cannot state a bound the renderer does not
+/// apply. Where the rest is: M1e2 S1e2.3.3, the user's ruling (a) of
+/// 2026-11-03.
+fn models_help(grid: &str, dump: &str) -> String {
     format!(
-        "after the read-out, the states it listed: 'key' (the smallest set of \
+        "after the read-out, the states it showed: 'key' (the smallest set of \
          slots that tells them apart, and the table of combinations that occur; \
          declined, with the reason, past a {} MiB pair table or its search \
-         budget) or 'grid' ({grid}). 'list', the default, adds nothing",
+         budget) or 'grid' ({grid}), in what the read-out left of stdout's 100 \
+         lines. {dump} writes the form uncut, over every listed state, as \
+         DIR/forms/key.txt or grid.txt. 'list', the default, adds nothing",
         ein_render::models::PAIR_TABLE_BOUND >> 20
     )
 }

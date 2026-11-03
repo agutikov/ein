@@ -643,6 +643,32 @@ pub enum KeyOf {
     /// line, so a row added to the program leaves R that state alone; a
     /// state below the line leaves R the states above it.
     States { maximal: bool },
+    /// The states stdout showed, a part of the `listed` the run listed (M1e2
+    /// S1e2.3.3): the rows tell these apart and no more, since a state not
+    /// shown may share a row, so the table claims nothing of R.
+    Shown { listed: usize },
+}
+
+/// A key table in its three parts — M1e2 S1e2.3.3, so a caller that shares
+/// stdout's lines can cut the rows and keep the rest: the lines above the
+/// rows (the size, why these, the column heads), one line per row, and the
+/// guarantee under them.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct KeyParts {
+    pub head: Vec<String>,
+    pub rows: Vec<String>,
+    pub tail: Vec<String>,
+}
+
+/// [`key_table_of`] in its parts, or the reason it declined.
+pub fn key_parts_of(
+    terms: &Terms,
+    models: &[&Kb],
+    exhausted: bool,
+    indent: &str,
+    of: KeyOf,
+) -> Result<KeyParts, String> {
+    key_build(terms, models, exhausted, indent, of)
 }
 
 /// [`key_table`] over `of`.
@@ -653,6 +679,19 @@ pub fn key_table_of(
     indent: &str,
     of: KeyOf,
 ) -> KeyOutcome {
+    match key_build(terms, models, exhausted, indent, of) {
+        Ok(p) => KeyOutcome::Table(p.head.into_iter().chain(p.rows).chain(p.tail).collect()),
+        Err(why) => KeyOutcome::Unaffordable(why),
+    }
+}
+
+fn key_build(
+    terms: &Terms,
+    models: &[&Kb],
+    exhausted: bool,
+    indent: &str,
+    of: KeyOf,
+) -> Result<KeyParts, String> {
     // `k` is one per **distinct** model, which is what it means everywhere
     // else in the verdict, and *the same model* is the same state key
     // (`ein_infer::canon::state_key`). Two identical models are a pair no
@@ -681,7 +720,7 @@ pub fn key_table_of(
     if k >= 2
         && let Some(why) = key_over_bound(k, None)
     {
-        return KeyOutcome::Unaffordable(why);
+        return Err(why);
     }
     let models: Vec<&Kb> = ein_infer::canon::distinct_by_state(models, |m| *m)
         .into_iter()
@@ -689,32 +728,30 @@ pub fn key_table_of(
         .collect();
     debug_assert_eq!(models.len(), k, "one notion of the same state");
     let Some(v) = variables(terms, &models) else {
-        return KeyOutcome::Unaffordable(
-            "the models differ in no single-valued slot and no varying atom".to_string(),
-        );
+        return Err("the models differ in no single-valued slot and no varying atom".to_string());
     };
     let n = v.vary.len();
     if let Some(why) = key_over_bound(k, Some(n)) {
-        return KeyOutcome::Unaffordable(why);
+        return Err(why);
     }
     let (sep, full, bits) = separating(&v);
     let mut budget = Budget(KEY_NODE_BUDGET);
     let Some(size) = min_key_size(&sep, &full, bits, &mut budget) else {
-        return KeyOutcome::Unaffordable(format!(
+        return Err(format!(
             "no determining set of the {n} varying slots was found within \
              {KEY_NODE_BUDGET} search nodes"
         ));
     };
     let combos = binomial(n, size);
     if combos > KEY_TABLE_BUDGET {
-        return KeyOutcome::Unaffordable(format!(
+        return Err(format!(
             "the smallest determining set is {size} of {n} varying slots, and \
              C({n}, {size}) = {} candidates is over the budget",
             group(combos)
         ));
     }
     let Some(keys) = all_keys(&v, &sep, &full, bits, size, &mut budget) else {
-        return KeyOutcome::Unaffordable(format!(
+        return Err(format!(
             "the smallest determining set is {size} of {n} varying slots, and enumerating \
              them exceeded {KEY_NODE_BUDGET} search nodes"
         ));
@@ -782,8 +819,8 @@ pub fn key_table_of(
         &w.iter().map(|n| "-".repeat(*n)).collect::<Vec<_>>(),
         &w,
     ));
-    out.extend(rows.iter().map(|r| pad_row(indent, r, &w)));
-    out.push(String::new());
+    let table: Vec<String> = rows.iter().map(|r| pad_row(indent, r, &w)).collect();
+    let mut tail = vec![String::new()];
 
     // The guarantee, and it is the whole reason this is a representation and
     // not merely a smaller print: re-saturating with a row is what makes the
@@ -811,8 +848,14 @@ pub fn key_table_of(
              added to the program make its state root, and R the states above it.",
             rows.len(),
         ),
+        KeyOf::Shown { listed } => format!(
+            "{} rows, one per state shown above{rest}. They tell these states apart and no \
+             more: the run listed {}, and a state not shown may share a row.",
+            rows.len(),
+            group(listed as u128),
+        ),
     };
-    if !exhausted {
+    if !exhausted && !matches!(of, KeyOf::Shown { .. }) {
         // *Alone* is the word the caveat takes back, and taking it back is the
         // whole of what `exhausted = false` costs this form. A row's four
         // values still hold in the model they came from — no row can be
@@ -823,8 +866,12 @@ pub fn key_table_of(
              would add a row — or share one, which would mean this key is too small.",
         );
     }
-    out.extend(wrap(&prose, &format!("{indent}  ")));
-    KeyOutcome::Table(out)
+    tail.extend(wrap(&prose, &format!("{indent}  ")));
+    Ok(KeyParts {
+        head: out,
+        rows: table,
+        tail,
+    })
 }
 
 /// Greedy wrap at 78 columns, indent included — the width the record prices
@@ -1130,8 +1177,25 @@ pub fn diff_lines(
     want_label: &dyn Fn(usize) -> String,
     indent: &str,
 ) -> Vec<String> {
-    let mut out = vec![format!("{indent}{what}")];
-    out.push(format!(
+    let (head, items) = diff_parts(diff, what, got_label, want_label, indent);
+    head.into_iter()
+        .chain(items.into_iter().flatten())
+        .collect()
+}
+
+/// [`diff_lines`] as its head (what was compared, the counts, why nothing
+/// paired) and its items, one per matched pair, near pair, missing model and
+/// spurious state — M1e2 S1e2.3.3, so a caller that shares stdout's lines can
+/// cut the items.
+pub fn diff_parts(
+    diff: &SetDiff,
+    what: &str,
+    got_label: &dyn Fn(usize) -> String,
+    want_label: &dyn Fn(usize) -> String,
+    indent: &str,
+) -> (Vec<String>, Vec<Vec<String>>) {
+    let mut head = vec![format!("{indent}{what}")];
+    head.push(format!(
         "{indent}  {} matched, {} near, {} missing, {} spurious — {}",
         diff.matched.len(),
         diff.near.len(),
@@ -1144,35 +1208,37 @@ pub fn diff_lines(
         }
     ));
     if let Some(why) = &diff.unpaired {
-        out.extend(wrap(&format!("{why}."), &format!("{indent}  ")));
+        head.extend(wrap(&format!("{why}."), &format!("{indent}  ")));
     }
+    let mut items: Vec<Vec<String>> = Vec::new();
     for (i, j) in &diff.matched {
-        out.push(format!(
+        items.push(vec![format!(
             "{indent}  = {} is {}",
             got_label(*i),
             want_label(*j)
-        ));
+        )]);
     }
     for n in &diff.near {
-        out.push(format!(
+        let mut b = vec![format!(
             "{indent}  ~ {} is nearly {}",
             got_label(n.got),
             want_label(n.want)
-        ));
+        )];
         for f in &n.lacking {
-            out.push(format!("{indent}      lacks {f}"));
+            b.push(format!("{indent}      lacks {f}"));
         }
         for f in &n.extra {
-            out.push(format!("{indent}      has   {f}"));
+            b.push(format!("{indent}      has   {f}"));
         }
+        items.push(b);
     }
     for j in &diff.missing {
-        out.push(format!("{indent}  - missing: {}", want_label(*j)));
+        items.push(vec![format!("{indent}  - missing: {}", want_label(*j))]);
     }
     for i in &diff.spurious {
-        out.push(format!("{indent}  + spurious: {}", got_label(*i)));
+        items.push(vec![format!("{indent}  + spurious: {}", got_label(*i))]);
     }
-    out
+    (head, items)
 }
 
 #[cfg(test)]

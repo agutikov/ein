@@ -9,8 +9,8 @@ S1e2.3.4 1, S1e2.3.5 1, S1e2.3.6 1.5. Each stage file gives its basis. It was
 T1e2.3.1.1 took its evidence at `32496b97`, after P1e2.1c closed, and put Q1
 to the user the same day; the user ruled (a) that day, and **S1e2.3.1 is
 done** (T1e2.3.1.2–.4, 2026-11-03): S4 is fixed. The user ruled Q2–Q6 the
-same day, and **S1e2.3.2 is done** (2026-11-03): P1 is fixed. The other
-stages have not started. The survey of 2026-10-14 named
+same day, and **S1e2.3.2 and S1e2.3.3 are done** (2026-11-03): P1 is fixed,
+and S10 is under the ruling. The other stages have not started. The survey of 2026-10-14 named
 the surfaces ([inventory § 1](../inventory.md#1-table)), and the milestone
 README carried them as a *proposed* phase. On 2026-11-02 the user ruled that
 they *become a phase*, after P1e2.1c, *specified when it starts*
@@ -73,7 +73,7 @@ an absence is settled by naming the thing that checks it).
 | **S8** | `ein solve probes/nested-core.ein` | `unsat core (not (p A))`, `unsat core (q A)`, `refuted by boom` | **gone** | `fbcae3b2`: the region read-out prints s-expressions. **Nothing checks it**: the read-out page's one core is flat, `(loops A A)` |
 | **S9** | `EIN_TRAVERSAL=tree ein solve -s F --json-summary J` against the same without, F = `owed-seats.ein` | stdout identical, timing rows aside; summaries identical. `ein-summary/2` has no `layers_explored` | **gone** | `fbcae3b2`: only the walk reads `EIN_TRAVERSAL` (`solve.rs:932`), and no command reaches the walk. Held by `lever_invariance.rs`'s environment cells (`EIN_TRAVERSAL=tree` over ten files) and `cli_semantics`'s `WALK_ONLY` (`nogood`, `traversal`, `writeback` never emitted) |
 | **P1** | `ein render constraints corpus/fuzz_findings/kwpair-below-the-filter.ein`; then `render rules\|constraints\|program\|kb`, `solve` (bare, `--maximal`, `--minimal`, `--single`) and `oracle` over the 281 files | panics, exit 101, at `dot_util.rs:150:32`, *not a value node: KwPair*. **`ein render program` panics on the same file**: a door added at S1e2.1.3, after the survey. `saturate` and `solve` exit 0 on it. No other panic in the sweep | **live**, on two doors, at the re-take; **gone 2026-11-03** | **S1e2.3.2**, `38b2bff3`, on the user's ruling (a): `value_label` labels a keyword pair `:key value`, and both doors draw the witness, exit 0. Held by `dot_util::tests::a_keyword_pair_below_a_form_is_labelled_key_value` and the `regression` entry `examples/ein-bugs/kwpair-below-the-filter.ein`, whose two render runs `corpus_cli.rs` holds at 0 and whose every view `corpus_shapes.rs` and `dot_wellformed.rs` run ([`defined_behaviour.md` § 2.5](../../../docs/kernel/defined_behaviour.md#25-a-render-view-labels-an-ir-form-as-written-a-keyword-pair-as-key-value)) |
-| **S10** | `ein solve examples/saturation/type-exclusivity/pets.ein` with `--models grid`, `--models key`, `-p`, `-P`, `-f`; `ein solve -n 1 -H examples/branching/06_lookahead_on.ein` | the bare read-out is 124 lines. `--models grid` adds to 34 143 lines (2.2 MB), `-p` 178 858, `-P` 102 622, `-f` 136 639; `--models key` declines, 130. `-H` takes `branching/06`'s 22 lines to 230. No form reaches `answer.txt`: `--dump-answer` on `colors.ein --models grid -H` writes neither | **live**, and not a misreport: every line is true | named here, from Q-M1e2.6's note of 2026-11-02. **S1e2.3.3** |
+| **S10** | `ein solve examples/saturation/type-exclusivity/pets.ein` with `--models grid`, `--models key`, `-p`, `-P`, `-f`; `ein solve -n 1 -H examples/branching/06_lookahead_on.ein` | the bare read-out is 124 lines. `--models grid` adds to 34 143 lines (2.2 MB), `-p` 178 858, `-P` 102 622, `-f` 136 639; `--models key` declines, 130. `-H` takes `branching/06`'s 22 lines to 230. No form reaches `answer.txt`: `--dump-answer` on `colors.ein --models grid -H` writes neither | **live**, and not a misreport: every line is true, at the re-take; **gone 2026-11-03** | named here, from Q-M1e2.6's note of 2026-11-02. **S1e2.3.3**, on the user's ruling (a): the six forms share the read-out's 100 lines, drawn from the states stdout showed, at least one item each and a line naming the rest, which `--dump-answer DIR` writes uncut as `DIR/forms/<form>.txt`. `pets` is 124 lines bare and 128–134 with any one form; `branching/06 -n 1 -H` is 119. Held by `ein-cli/tests/forms_cut.rs` (pets, every form: one item, the line, the file uncut and named in `index.json`, the read-out and summary unmoved; seven states uncut: stdout's form is its file) and `model_set_report::an_unaffordable_key_says_why` |
 
 The files of the sweeps are the 281 `.ein` files under `examples/`, `tests/`,
 `stdlib/`, `corpus/fuzz_findings/` and `plans/m1e2_correctness/probes/`
@@ -143,7 +143,7 @@ Gone items get no stage. The table above records each and closes it here.
 |---|---|---:|---|
 | [S1e2.3.1](s1e2.3.1_the_summary_root_block.md) | The summary's `root` block describes a generator no route runs (S4). **Done 2026-11-03**: ruled (a), applied | 2 d | the user's ruling (H, root's fixpoint, or neither) applied on all five writer paths. `lever_invariance.rs` stops scrubbing the three fields, and an identity in `summary_properties.rs` holds the block to what it describes. `configuration.md` loses its S4 paragraph |
 | [S1e2.3.2](s1e2.3.2_a_keyword_pair_panics_two_views.md) | A keyword pair panics two render views (P1). **Done 2026-11-03**: ruled (a), applied (`38b2bff3`) | 0.5 d | `value_label` total, or the views filtering, as ruled. The witness is banked as a `regression` corpus entry whose `render constraints` and `render program` runs exit 0 |
-| [S1e2.3.3](s1e2.3.3_the_forms_past_100_lines.md) | The forms after the read-out, past 100 lines (S10) | 1.5 d | the forms under the user's ruling, `--dump-answer` writing whatever stdout leaves out, and the review bundle still carrying every form uncut |
+| [S1e2.3.3](s1e2.3.3_the_forms_past_100_lines.md) | The forms after the read-out, past 100 lines (S10). **Done 2026-11-03**: ruled (a), applied | 1.5 d | the forms under the user's ruling, `--dump-answer` writing whatever stdout leaves out, and the review bundle still carrying every form uncut |
 | [S1e2.3.4](s1e2.3.4_the_inherited_questions_and_the_record.md) | The inherited questions, `-g`'s clamp, and the record (S5, Q-M1e.5, Q-M1e.17) | 1 d | Q-M1e.5 and Q-M1e.17 ruled and closed in M1e's register, and `-g` following the ruling with a test. `capture.sh`'s S and P lines re-take this table. The links to the proposed § are re-pointed, and Q-M1e2.6 is closed |
 | [S1e2.3.5](s1e2.3.5_test_scratch_left_in_tmp.md) | Test scratch left in `/tmp`. Added 2026-11-03 at the user's *"fix the tmp leak in those tests - add a new stage for that"* | 1 d | a gate run under an empty `TMPDIR` leaves nothing, every leaking writer on one self-removing scratch helper, and `./run_tests.sh` failing on leftover scratch |
 | [S1e2.3.6](s1e2.3.6_the_nightly_workflow.md) | The nightly workflow green again (`deep-corpus`, failing since 2026-10-16). Added 2026-11-03 at the user's request, **last in the phase** | 1.5 d | every nightly step green locally at HEAD, each failure explained before it is fixed (the mutation bank's eight kills among them), and `./run_tests.sh --nightly` held to `nightly.yml` by a test |
@@ -192,6 +192,16 @@ whether any joins one, and S1e2.3.3 is where the first two would go.
   `defined_behaviour.md` § 4's row for the step limit names a
   `--max-firings` budget that no command spells, with exit 1 and
   `SaturatorStepLimitError`.
+- **N4. `ein oracle`'s read-out names a flag `ein oracle` refuses.** Found by
+  S1e2.3.3, 2026-11-03. Past 100 lines its cut says *"--dump-answer DIR
+  writes the whole (region …) to DIR/answer.txt"* (`ein oracle
+  examples/saturation/type-exclusivity/colors.ein`, line 120), and so do a
+  cut query's lines and the warning rows; `ein oracle` has no
+  `--dump-answer` and refuses it, exit 2. The forms S1e2.3.3 cut on `ein
+  oracle` name `ein solve FILE --dump-answer DIR` instead, which writes the
+  same R's forms. Whether the oracle's own read-out should say that too, or
+  `ein oracle` should take `--dump-answer`, is a new option and the user's.
+  If added, it is S1e2.3.3's, which wrote the forms' half.
 
 ## Acceptance for the phase
 

@@ -195,6 +195,29 @@ listing instead of a shared one let a read-out reach 186 lines
 (`lattice/synth/trivial_line.ein`: a 50-line region, 93 lines of classes and
 a 40-line `as :expect`).
 
+**Amended 2026-11-03, M1e2
+[S1e2.3.3](../p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.3_the_forms_past_100_lines.md)**,
+on the user's ruling (a) of that day: **the forms printed after the read-out
+are listings too, and share the same 100 lines.** They are `-H`'s candidates,
+`--models key`'s rows, `--models grid`'s, `-p`'s, `-P`'s and `-f`'s states,
+and `--diff-models`' entries, in that order, after every listing above. Each
+is drawn from the states stdout showed, so the screen and the forms agree.
+Each prints whole items while what the read-out left lasts, and at least one.
+A form's head is never cut, as the summary rows are not: its title, the
+key's size and column heads, `-H`'s line per relation, the diff's counts. Its
+last line, `;; not shown: …`, names what it left out and the file that holds
+it. **`--dump-answer DIR` writes each form asked for uncut**, drawn from every
+listed state, as `DIR/forms/<form>.txt` (`hyp-stats`, `key`, `grid`,
+`print-final-state`, `print-final-positive`, `print-final-hfacts`,
+`diff-models`), named in `index.json`'s `forms`. **`answer.txt` stays the
+read-out uncut.** `ein oracle` writes no answer directory, so its forms' line
+names `ein solve FILE --dump-answer DIR`. `--count` lists no state and still
+refuses every form (T1e2.1c.4.6). On `pets.ein` the forms went from up to
+178 858 stdout lines (`-p`) to at most 134, and their files hold what they
+printed before, byte for byte (`ein solve
+examples/saturation/type-exclusivity/pets.ein FORM | wc -l`, 2026-11-03;
+`ein-cli/tests/forms_cut.rs`).
+
 ## 5. The modes
 
 [X2](read_out_examples.md#x2--lattice02_genuine_3set_deathein-one-program-every-mode)

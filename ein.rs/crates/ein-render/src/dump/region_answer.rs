@@ -513,6 +513,10 @@ pub struct Inputs<'a> {
     pub summary: &'a str,
     /// The read-out with no listing cut, which `answer.txt` is.
     pub answer_txt: &'a str,
+    /// Each form the run printed after its read-out, uncut, by its name:
+    /// `forms/<name>.txt` (M1e2 S1e2.3.3, the user's ruling (a) of
+    /// 2026-11-03).
+    pub forms: &'a [(&'a str, String)],
 }
 
 /// `NN` of `of`, zero-padded to the width of `of`.
@@ -521,8 +525,9 @@ fn nn(i: usize, of: usize) -> String {
     format!("{:0width$}", i + 1)
 }
 
-/// The state files' subtrees this writer owns.
-const SUBTREES: [&str; 2] = ["models", "owing"];
+/// The subtrees this writer owns: the state files, and since M1e2 S1e2.3.3
+/// the forms.
+const SUBTREES: [&str; 3] = ["models", "owing", "forms"];
 
 /// Remove what a previous `ein-answer/2` write left, and nothing else: a
 /// directory whose `index.json` names another schema, or none, is written
@@ -594,7 +599,8 @@ fn state_file(terms: &Terms, kb: &Kb, inputs: &Inputs, head: &[String]) -> Strin
 /// Write `ein-answer/2` into `dir`, which exists: `answer.txt`, `answer.json`,
 /// one loadable program per state the run reached under `models/` (listed or
 /// not: a partial run's other members are where its cut says they are), the
-/// owing frontier of an empty R under `owing/`, `nogoods.json`, and
+/// owing frontier of an empty R under `owing/`, `nogoods.json`, each form the
+/// run printed after its read-out, uncut, under `forms/` (M1e2 S1e2.3.3), and
 /// `index.json` naming what each file is. Each state is read again through the
 /// node function every route uses.
 pub fn write(
@@ -707,6 +713,19 @@ pub fn write(
             index_owing.push(Json::obj(vec![("path", Json::str(path))]));
         }
     }
+    // Each form uncut, the stdout form's rest (M1e2 S1e2.3.3).
+    let mut index_forms: Vec<Json> = Vec::new();
+    if !inputs.forms.is_empty() {
+        std::fs::create_dir_all(dir.join("forms")).map_err(io)?;
+    }
+    for (form, text) in inputs.forms {
+        let path = format!("forms/{form}.txt");
+        std::fs::write(dir.join(&path), text).map_err(io)?;
+        index_forms.push(Json::obj(vec![
+            ("form", Json::str(*form)),
+            ("path", Json::str(path)),
+        ]));
+    }
     let mut dead: Vec<Json> = Vec::new();
     if let Some(d) = r.described() {
         // A member of N the route did not saturate (the state route reads N
@@ -753,6 +772,7 @@ pub fn write(
         ("region", get("region")),
         ("models", Json::Array(index_states)),
         ("owing", Json::Array(index_owing)),
+        ("forms", Json::Array(index_forms)),
     ]);
     std::fs::write(dir.join("index.json"), dumps_indent(&index) + "\n").map_err(io)?;
     Ok(())

@@ -689,7 +689,11 @@ rule is the region read-out's, where every count that is not exact says *a
 lower bound* and how far it is complete, and a run that stopped never says R
 is empty (`cli_semantics::a_stopped_run_does_not_report_r_empty`);
 `--models list|key|grid` draws the states a run lists, and `key` is inert
-below two (`model_set_report.rs`). Past a 16 MiB pair table `key` declines
+below two (`model_set_report.rs`). Since M1e2 S1e2.3.3 (the user's ruling (a)
+of 2026-11-03) the forms after the read-out (`-H`, `--models key|grid`, `-p`,
+`-P`, `-f`, `--diff-models`) draw the states stdout showed and share its 100
+lines, at least one item each, and `--dump-answer DIR` writes each uncut, over
+every listed state, as `DIR/forms/<form>.txt` (`forms_cut.rs`). Past a 16 MiB pair table `key` declines
 before it allocates the table, with the numbers and exit 0, and so does
 `--diff-models`' near pairing (M1e2 S1e2.4.2, `ein-render/tests/key_declines.rs`;
 the bound is [`configuration.md` § 3](configuration.md)'s).

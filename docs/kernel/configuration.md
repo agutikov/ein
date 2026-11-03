@@ -394,12 +394,19 @@ different question or stopping early.
   1.
 - **Presentation** — `-p`, `-P`, `-f`, `-s`, `-t`, `-v`, `-H`, `-c`, `-g`,
   `--layer-progress`, `--models` (`list`, `key`, `grid`, over the states the
-  read-out listed), `--diff-models FILE`, and `ein render program`'s / `ein
+  read-out showed), `--diff-models FILE`, and `ein render program`'s / `ein
   render kb`'s six, which draw a file and solve nothing, and `ein render
   region`'s three, which draw an `ein oracle --dump` directory (`--view`) with
   a solve run's `--dump-lattice` and `--dump-answer` on it (`--visited`,
   `--answer`) and load nothing. stdout and stderr only; a `--diff-models` file that does not parse
-  is a usage error, exit 2, before the run. **Two of them compare the listed
+  is a usage error, exit 2, before the run. **Six of them are forms printed
+  after the read-out, and share its 100 lines** (M1e2
+  [S1e2.3.3](../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.3_the_forms_past_100_lines.md),
+  the user's ruling (a) of 2026-11-03): `-H`, `--models key|grid`, `-p`,
+  `-P`, `-f` and `--diff-models` are drawn from the states stdout showed and
+  print what fits, at least one item, and then a line naming the rest; that
+  rest is `--dump-answer DIR`'s `forms/<form>.txt`, uncut and drawn from every
+  listed state ([`answer_dump.md`](inference/answer_dump.md)). **Two of them compare the listed
   states pairwise, and each prices its pair table before it allocates it**
   (M1e2 [S1e2.4.2](../../plans/m1e2_correctness/p1e2.4_what_the_switch_left/s1e2.4.2_models_key_declines.md)).
   The bound is `ein_render::models::PAIR_TABLE_BOUND`, **16 MiB**, a constant
@@ -413,6 +420,8 @@ different question or stopping early.
   by `ein-render/tests/key_declines.rs`, which measures what each holds with a
   counting allocator. `ein solve examples/saturation/type-exclusivity/pets.ein
   --models key` held 8.1 GB before the bound and 84 MiB after it (2026-11-02).
+  Since S1e2.3.3 stdout's key on `pets` is the 38 shown states', and the
+  11 339 states' key is priced and declined only under `--dump-answer`.
 - **Artefacts** — `--events`, `--events-level`, `--json-summary`
   (`ein-summary/2`), `--json-report` (`ein-test-report/3`), `--trace` with its
   four modifiers (`-F`, `-G`, `-l`, `-R`), `--dump-lattice`

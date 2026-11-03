@@ -2,7 +2,8 @@
 
 **What a solve answered, as files.** One directory per run: the read-out
 uncut, the summary, one **loadable** program per state the run reached, the
-owing frontier of an empty R, the minimal dead sets, and an index naming each.
+owing frontier of an empty R, the minimal dead sets, each form asked for
+uncut, and an index naming each.
 M1e2
 [S1e2.1.2](../../../plans/m1e2_correctness/p1e2.1_seeing_the_answer/s1e2.1.2_every_answer_a_file.md)
 added the flag for the walk, because a person reviewing a wrong answer needs
@@ -28,6 +29,7 @@ out/
   models/NN.ein   program + one state's facts, one per state the run reached
   owing/NN.ein    program + one owing node's facts, on an empty R of the owing kind
   nogoods.json    N: each minimal dead set, its core and the rules that refuted it
+  forms/F.txt     each form asked for, uncut: -H, --models key|grid, -p, -P, -f, --diff-models
 ```
 
 - **`NN` is stdout's numbering.** `models/02.ein` is *state 2 of k* in the
@@ -46,6 +48,21 @@ out/
 - **`owing/`** holds the frontier of an empty R whose nodes all owe, each with
   what it owes. **`nogoods.json`** is `[]` where N is empty or was not
   computed (a line mode does not compute it).
+- **`forms/`** (M1e2
+  [S1e2.3.3](../../../plans/m1e2_correctness/p1e2.3_surfaces_that_misreport_the_answer/s1e2.3.3_the_forms_past_100_lines.md),
+  the user's ruling (a) of 2026-11-03) holds each form the run was asked
+  for, uncut and drawn from every listed state, the states `answer.txt`
+  lists: `hyp-stats.txt` (`-H`), `key.txt` or `grid.txt` (`--models`),
+  `print-final-state.txt`, `print-final-positive.txt` and
+  `print-final-hfacts.txt` (`-p`, `-P`, `-f`) and `diff-models.txt`
+  (`--diff-models`). stdout prints what fits of each in what the read-out
+  left of its 100 lines, drawn from the states it showed, and its last line
+  names the file. A file is what the form prints with nothing cut: where
+  nothing is cut it is stdout's form byte for byte, and on `pets.ein` it is
+  what the form printed before the stage
+  (`ein-cli/tests/forms_cut.rs`). `index.json`'s **`forms`** lists each as
+  `{form, path}`, in the order stdout prints them, and is `[]` where no form
+  was asked for.
 
 What the walk's directory held and this one does not: `program.ein`,
 `root.ein` and `root_writes.json` (root is never written: a region run
@@ -84,8 +101,11 @@ fixpoint of the program.
   `answer_dump::the_flag_moves_no_answer`, on three questions — so the
   read-out's header leaves the flag out, as it leaves out `-j`.
 - **`answer.json` is `--json-summary`**, byte for byte, and **`answer.txt` is
-  stdout**, on every question
-  (`answer_dump::answer_json_is_the_json_summary_byte_for_byte`).
+  stdout's read-out uncut**, on every question
+  (`answer_dump::answer_json_is_the_json_summary_byte_for_byte`). The forms
+  printed after the read-out are not in it: each is its own file under
+  `forms/`, and the read-out and the summary are the same with any form and
+  without (`forms_cut.rs`).
 - **The directory is made before the run**, and a run that cannot make it
   exits 1 without solving — [`defined_behaviour.md` §
   4.4](../defined_behaviour.md#44-an-artefact-flags-failure--m1e-s1e35). The
@@ -103,14 +123,15 @@ fixpoint of the program.
   exits 2, and the directory it made first stays empty
   (`answer_dump::a_stopped_run_still_says_what_it_is`).
 - **A second dump into the same directory leaves nothing stale.** When
-  `index.json` names this format, `models/` and `owing/` are cleared before
-  writing. A directory holding anything else is written beside and nothing in
-  it is deleted.
+  `index.json` names this format, `models/`, `owing/` and `forms/` are
+  cleared before writing. A directory holding anything else is written beside
+  and nothing in it is deleted.
 - **`--count` writes two files** (M1e2 T1e2.1c.4.6): `answer.txt`, its
   read-out uncut, every warning row among it, and `answer.json`, its summary,
   whose `asked.ask` is `count` and whose `region.states` and
   `region.frontier` are `null`. It reads no state, so it writes no state file,
-  no `index.json` and no `nogoods.json`, as `--monotone` writes none; and
+  no form, no `index.json` and no `nogoods.json`, as `--monotone` writes none
+  (every form is refused beside `--count`, exit 2); and
   where `index.json` names this format it removes what that dump left, the
   two top-level files with the subtrees
   (`region_modes.rs::the_count_question_is_describes_counts`).

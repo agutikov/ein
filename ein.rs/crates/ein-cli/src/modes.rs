@@ -314,7 +314,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     };
     let run = t_run.elapsed();
     let t_print = Instant::now();
-    let code = print(
+    let (code, text) = print(
         &r,
         "solve",
         &file,
@@ -326,10 +326,25 @@ pub fn run(m: &ArgMatches) -> i32 {
         return code;
     }
     emit_region(&mut events, &r);
-    if let Err(e) = extras(&Shown::of(m), &r, &mut kb, &mut terms, &ast, want.as_ref()) {
-        eprintln!("{e}");
-        return 1;
-    }
+    // The forms share what the read-out left of stdout's 100 lines; under
+    // `--dump-answer` each is also kept uncut for `DIR/forms/`.
+    let forms = match extras(
+        &Shown::of(m),
+        &r,
+        &text,
+        dump_hint("solve"),
+        dump.is_some(),
+        &mut kb,
+        &mut terms,
+        &ast,
+        want.as_ref(),
+    ) {
+        Ok(f) => f,
+        Err(e) => {
+            eprintln!("{e}");
+            return 1;
+        }
+    };
     if m.get_flag("timing") {
         timing(&r, load, run, t_print.elapsed());
     }
@@ -420,6 +435,7 @@ pub fn run(m: &ArgMatches) -> i32 {
             program: &program,
             summary: &summary,
             answer_txt: &answer_txt,
+            forms: &forms,
         };
         if let Err(e) = ein_render::dump::region_answer::write(
             Path::new(dir),
@@ -548,11 +564,17 @@ pub(crate) fn emit_region(events: &mut ein_infer::events::Events, r: &ReadOut) {
     });
 }
 
-/// What a region run prints after its read-out when asked, over **the states
-/// it listed** — `read_out.md` § 8.3 and § 8.6: `--models key|grid`, then
-/// `-p`, `-P` and `-f` per state, then `--diff-models FILE`. Each block
-/// says which set it is drawn from. These are asked for by name, so the
-/// shared 100 lines do not cut them.
+/// What a region run prints after its read-out when asked — `read_out.md`
+/// § 8.3 and § 8.6: `-H`, then `--models key|grid`, then `-p`, `-P` and `-f`,
+/// each its own form, then `--diff-models FILE`.
+///
+/// **They share stdout's 100 lines with the read-out** (M1e2 S1e2.3.3, the
+/// user's ruling (a) of 2026-11-03). Each is drawn from the states stdout
+/// showed, so the screen and the forms agree; each prints its items while
+/// what the read-out left of the lines lasts, and at least one; and its last
+/// line says what it left out and where that is. `--dump-answer DIR` writes
+/// each form uncut, drawn from every listed state, as `DIR/forms/<form>.txt`.
+///
 /// What [`extras`] is asked to print — read off `solve`'s flags, or
 /// `oracle`'s, which has fewer of them.
 pub(crate) struct Shown {
@@ -583,22 +605,150 @@ impl Shown {
     }
 }
 
+/// One form after the read-out, as items, so stdout can cut it where the
+/// read-out cuts its listings and the dump can write it whole.
+struct Form {
+    /// Its file under `DIR/forms/`, `.txt` added.
+    name: &'static str,
+    /// The lines above its items, never cut, as the read-out's rows are not.
+    head: Vec<String>,
+    /// Its items in groups, each group under a line that is never cut: `-H`'s
+    /// relations. Every other form is one group with no line.
+    groups: Vec<(Option<String>, Vec<Vec<String>>)>,
+    /// The lines under its items, printed when every item is.
+    tail: Vec<String>,
+    /// What one item is, counted in the cut's line: `more state`.
+    unit: (&'static str, &'static str),
+    /// Items the uncut form holds and this one does not draw: the listed
+    /// states stdout did not show.
+    beyond: usize,
+    /// What the uncut form says that no cut of these items holds: a key or a
+    /// comparison of every listed state, where stdout drew a part of them.
+    also: Option<String>,
+}
+
+impl Form {
+    fn one_group(items: Vec<Vec<String>>) -> Vec<(Option<String>, Vec<Vec<String>>)> {
+        vec![(None, items)]
+    }
+
+    /// The form uncut: what `--dump-answer` writes as its file.
+    fn text(&self) -> String {
+        let mut out = String::new();
+        let mut put = |l: &str| {
+            out.push_str(l);
+            out.push('\n');
+        };
+        for l in &self.head {
+            put(l);
+        }
+        for (line, items) in &self.groups {
+            if let Some(l) = line {
+                put(l);
+            }
+            for l in items.iter().flatten() {
+                put(l);
+            }
+        }
+        for l in &self.tail {
+            put(l);
+        }
+        out
+    }
+
+    /// Print what fits in `left`, at least one item, then where the rest
+    /// is; `left` is what the next form gets.
+    fn print_cut(&self, left: &mut usize, hint: &str) {
+        for l in &self.head {
+            println!("{l}");
+        }
+        let total: usize = self.groups.iter().map(|(_, i)| i.len()).sum();
+        let mut printed = 0usize;
+        let mut cut = false;
+        for (line, items) in &self.groups {
+            if let Some(l) = line {
+                println!("{l}");
+            }
+            for it in items {
+                if !cut && (printed == 0 || it.len() <= *left) {
+                    for l in it {
+                        println!("{l}");
+                    }
+                    *left = left.saturating_sub(it.len());
+                    printed += 1;
+                } else {
+                    cut = true;
+                }
+            }
+        }
+        if !cut {
+            for l in &self.tail {
+                println!("{l}");
+            }
+        }
+        let mut rest: Vec<String> = Vec::new();
+        let more = total - printed + self.beyond;
+        if more > 0 {
+            rest.push(format!(
+                "{} {}",
+                ein_render::read_out::group(more as u64),
+                if more == 1 { self.unit.0 } else { self.unit.1 }
+            ));
+        }
+        rest.extend(self.also.clone());
+        if !rest.is_empty() {
+            println!(
+                "  ;; not shown: {} — {hint} writes the form uncut to DIR/forms/{}.txt",
+                rest.join(", and "),
+                self.name
+            );
+        }
+    }
+}
+
+/// Where a form's rest is, as the cut's line names it: `--dump-answer DIR`
+/// on `ein solve`. `ein oracle` writes no answer directory, so its forms
+/// point at the command that does, over the same R.
+pub(crate) fn dump_hint(command: &str) -> &'static str {
+    if command == "oracle" {
+        "ein solve FILE --dump-answer DIR"
+    } else {
+        "--dump-answer DIR"
+    }
+}
+
+/// Print the forms `shown` asks for after the read-out `text`, and return
+/// each uncut, by name, when `dump` asks for them (`--dump-answer`).
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn extras(
     shown: &Shown,
     r: &ReadOut,
+    text: &ein_render::read_out::Text,
+    hint: &str,
+    dump: bool,
     kb: &mut ein_core::Kb,
     terms: &mut Terms,
     ast: &Ast,
     want: Option<&(String, ein_render::models::Expected)>,
-) -> Result<(), String> {
-    use crate::factdump::print_final_state;
+) -> Result<Vec<(&'static str, String)>, String> {
+    use crate::factdump::{Mode as Dump, final_state_lines};
+    use ein_render::read_out::group;
+    let plural = |n: usize, one: &str, many: &str| {
+        format!("{} {}", group(n as u64), if n == 1 { one } else { many })
+    };
+    let mut left = text.left();
+    let mut uncut: Vec<(&'static str, String)> = Vec::new();
+    if shown.universe {
+        let h = universe(r, terms);
+        h.print_cut(&mut left, hint);
+        if dump {
+            uncut.push((h.name, h.text()));
+        }
+    }
     let form = shown.form.as_deref();
     let dumps = &shown.dumps;
-    if shown.universe {
-        universe(r, terms);
-    }
     if !matches!(form, Some("key" | "grid")) && dumps.is_empty() && want.is_none() {
-        return Ok(());
+        return Ok(uncut);
     }
     let a = &r.answer;
     let listed: Vec<(usize, &ein_infer::read_out::Listed)> = r.listed().collect();
@@ -609,7 +759,22 @@ pub(crate) fn extras(
         ein_infer::read_out::Listing::Owing(f) if listed.is_empty() => f,
         _ => &[],
     };
-    let what = match (r.described().is_some(), &r.listing) {
+    // Every listed state, and the ones stdout showed: a prefix of them, since
+    // every listing is cut from its end. The frontier is never cut.
+    let all = if frontier.is_empty() {
+        listed.len()
+    } else {
+        frontier.len()
+    };
+    let on_screen = if frontier.is_empty() {
+        listed
+            .iter()
+            .take_while(|(i, _)| text.shown.contains(i))
+            .count()
+    } else {
+        all
+    };
+    let what_all = match (r.described().is_some(), &r.listing) {
         _ if !frontier.is_empty() => {
             "the owing frontier — R is empty, and every alive node owes".to_string()
         }
@@ -620,11 +785,31 @@ pub(crate) fn extras(
             if listed.len() == 1 { "state" } else { "states" }
         ),
     };
+    let what_shown = match (r.described().is_some(), &r.listing) {
+        (true, ein_infer::read_out::Listing::Region) => format!(
+            "the {} shown above, of R's {}",
+            plural(on_screen, "state", "states"),
+            group(all as u64)
+        ),
+        (true, _) => format!(
+            "the {} shown above, of the {} this run certified",
+            plural(on_screen, "line member", "line members"),
+            group(all as u64)
+        ),
+        (false, _) => format!(
+            "the {} shown above, of the {} listed",
+            plural(on_screen, "state", "states"),
+            group(all as u64)
+        ),
+    };
     let of = |set: &[u32]| -> Vec<ein_core::FactId> {
         set.iter().map(|&b| a.candidates[b as usize].fact).collect()
     };
+    // The states read: the ones stdout showed, or every listed one when the
+    // dump writes the forms uncut. The first `on_screen` are stdout's.
+    let reads = if dump { all } else { on_screen };
     let sets: Vec<Vec<ein_core::FactId>> = if frontier.is_empty() {
-        listed.iter().map(|(_, s)| of(&s.rep)).collect()
+        listed[..reads].iter().map(|(_, s)| of(&s.rep)).collect()
     } else {
         frontier.iter().map(|o| of(&o.node.set)).collect()
     };
@@ -637,11 +822,12 @@ pub(crate) fn extras(
             targets.push(rel);
         }
     }
-    let n = sets.len();
     let exhausted = a.exhausted;
+    let maximal = listed.iter().all(|(_, s)| s.maximal);
+    let n_states = r.states.len();
     let mut nodes =
         ein_infer::region::Nodes::new(kb, terms, ast, &a.candidates).map_err(|e| e.to_string())?;
-    nodes
+    let written = nodes
         .with_fixpoints(&sets, |kbs, terms| {
             let label = |i: usize| match frontier.get(i) {
                 Some(o) => format!(
@@ -650,103 +836,191 @@ pub(crate) fn extras(
                     frontier.len(),
                     o.node.owes
                 ),
-                None => format!("state {} of {}", listed[i].0 + 1, r.states.len()),
+                None => format!("state {} of {n_states}", listed[i].0 + 1),
             };
-            match form {
-                // A key tells states apart, so one state or none has no key,
-                // and the flag is inert there, as it was on the walk's
-                // single-model verdicts (M1d S1d.3.3).
-                Some("key") if n < 2 => {}
-                Some("key") => {
-                    println!();
-                    println!("models — the determining key of {what}");
-                    let refs: Vec<&ein_core::Kb> = kbs.iter().collect();
-                    let of = ein_render::models::KeyOf::States {
-                        maximal: listed.iter().all(|(_, s)| s.maximal),
-                    };
-                    match ein_render::models::key_table_of(terms, &refs, exhausted, "  ", of) {
-                        ein_render::models::KeyOutcome::Table(rows) => {
-                            for l in rows {
-                                println!("{l}");
-                            }
-                        }
-                        ein_render::models::KeyOutcome::Unaffordable(why) => {
-                            println!("  determining key — none within budget");
-                            for l in ein_render::models::wrap(&format!("{why}."), "    ") {
-                                println!("{l}");
-                            }
-                        }
-                    }
-                }
-                Some("grid") => {
-                    println!();
-                    println!("models — {what}, each as a grid");
-                    for (i, kb) in kbs.iter().enumerate() {
-                        println!();
-                        println!("  ── {} ──", label(i));
-                        for l in ein_render::grid::grid_or_reason(terms, kb, "  ") {
-                            println!("{l}");
-                        }
-                    }
-                }
-                _ => {}
-            }
-            for (i, kb) in kbs.iter().enumerate() {
-                if dumps.is_empty() {
-                    break;
-                }
-                println!();
-                println!("── {} ──", label(i));
-                for d in dumps {
-                    print_final_state(terms, kb, *d, &targets);
-                }
-            }
-            if let Some((path, want)) = want {
-                use ein_render::models::{comparable_facts, diff_lines, diff_model_sets};
-                let closes = want.closes.as_deref();
-                let got: Vec<Vec<String>> = if frontier.is_empty() {
-                    kbs.iter()
-                        .map(|kb| comparable_facts(terms, kb, closes))
-                        .collect()
-                } else {
-                    Vec::new()
+            let unit = if frontier.is_empty() {
+                ("more state", "more states")
+            } else {
+                ("more owing node", "more owing nodes")
+            };
+            // The forms over the first `c` states read: stdout's, or all.
+            let forms_over = |c: usize, kbs: &[ein_core::Kb], terms: &Terms| -> Vec<Form> {
+                let whole = c == all;
+                let what = if whole { &what_all } else { &what_shown };
+                let beyond = all - c;
+                let also = |what: &str| {
+                    (!whole).then(|| format!("{what} of all {} listed", group(all as u64)))
                 };
-                let d = diff_model_sets(&got, &want.models);
-                let over = match closes {
-                    Some(c) => format!("compared over {}", c.join(" ")),
-                    None => "compared as positive facts minus the given ones".to_string(),
-                };
-                let head = if frontier.is_empty() {
-                    format!("{what} against {path}, {over}")
-                } else {
-                    format!("R's states (none) against {path}, {over}")
-                };
-                let got_label = |i: usize| label(i);
-                let want_label = |j: usize| {
-                    let facts = &want.models[j];
-                    format!(
-                        "model {} of the file [{}]",
-                        j + 1,
-                        if facts.is_empty() {
-                            "no facts".to_string()
+                let mut out: Vec<Form> = Vec::new();
+                match form {
+                    // A key tells states apart, so one state or none has no
+                    // key, and the flag is inert there, as it was on the
+                    // walk's single-model verdicts (M1d S1d.3.3).
+                    Some("key") if all < 2 => {}
+                    Some("key") => {
+                        let mut head = vec![
+                            String::new(),
+                            format!("models — the determining key of {what}"),
+                        ];
+                        let mut rows: Vec<Vec<String>> = Vec::new();
+                        let mut tail: Vec<String> = Vec::new();
+                        if c < 2 {
+                            head.push(
+                                "  one state shown: a key tells states apart, and needs two"
+                                    .to_string(),
+                            );
                         } else {
-                            facts.join(" ")
+                            let refs: Vec<&ein_core::Kb> = kbs[..c].iter().collect();
+                            let of = if whole {
+                                ein_render::models::KeyOf::States { maximal }
+                            } else {
+                                ein_render::models::KeyOf::Shown { listed: all }
+                            };
+                            match ein_render::models::key_parts_of(
+                                terms, &refs, exhausted, "  ", of,
+                            ) {
+                                Ok(p) => {
+                                    head.extend(p.head);
+                                    rows = p.rows.into_iter().map(|l| vec![l]).collect();
+                                    tail = p.tail;
+                                }
+                                Err(why) => {
+                                    head.push("  determining key — none within budget".to_string());
+                                    head.extend(ein_render::models::wrap(
+                                        &format!("{why}."),
+                                        "    ",
+                                    ));
+                                }
+                            }
                         }
-                    )
-                };
-                println!();
-                for l in diff_lines(&d, &head, &got_label, &want_label, "") {
-                    println!("{l}");
+                        out.push(Form {
+                            name: "key",
+                            head,
+                            groups: Form::one_group(rows),
+                            tail,
+                            unit: ("more row", "more rows"),
+                            beyond: 0,
+                            also: also("the key"),
+                        });
+                    }
+                    Some("grid") => {
+                        let items = (0..c)
+                            .map(|i| {
+                                let mut b = vec![String::new(), format!("  ── {} ──", label(i))];
+                                b.extend(ein_render::grid::grid_or_reason(terms, &kbs[i], "  "));
+                                b
+                            })
+                            .collect();
+                        out.push(Form {
+                            name: "grid",
+                            head: vec![String::new(), format!("models — {what}, each as a grid")],
+                            groups: Form::one_group(items),
+                            tail: Vec::new(),
+                            unit,
+                            beyond,
+                            also: None,
+                        });
+                    }
+                    _ => {}
                 }
+                for d in dumps {
+                    let items = (0..c)
+                        .map(|i| {
+                            let mut b = vec![String::new(), format!("── {} ──", label(i))];
+                            b.extend(final_state_lines(terms, &kbs[i], *d, &targets));
+                            b
+                        })
+                        .collect();
+                    out.push(Form {
+                        name: match d {
+                            Dump::All => "print-final-state",
+                            Dump::Positive => "print-final-positive",
+                            Dump::Hfacts => "print-final-hfacts",
+                        },
+                        head: Vec::new(),
+                        groups: Form::one_group(items),
+                        tail: Vec::new(),
+                        unit,
+                        beyond,
+                        also: None,
+                    });
+                }
+                if let Some((path, want)) = want {
+                    use ein_render::models::{comparable_facts, diff_model_sets, diff_parts};
+                    let closes = want.closes.as_deref();
+                    let got: Vec<Vec<String>> = if frontier.is_empty() {
+                        kbs[..c]
+                            .iter()
+                            .map(|kb| comparable_facts(terms, kb, closes))
+                            .collect()
+                    } else {
+                        Vec::new()
+                    };
+                    let d = diff_model_sets(&got, &want.models);
+                    let over = match closes {
+                        Some(c) => format!("compared over {}", c.join(" ")),
+                        None => "compared as positive facts minus the given ones".to_string(),
+                    };
+                    let head_line = if frontier.is_empty() {
+                        format!("{what} against {path}, {over}")
+                    } else {
+                        format!("R's states (none) against {path}, {over}")
+                    };
+                    let want_label = |j: usize| {
+                        let facts = &want.models[j];
+                        format!(
+                            "model {} of the file [{}]",
+                            j + 1,
+                            if facts.is_empty() {
+                                "no facts".to_string()
+                            } else {
+                                facts.join(" ")
+                            }
+                        )
+                    };
+                    let (h, items) = diff_parts(&d, &head_line, &label, &want_label, "");
+                    let mut head = vec![String::new()];
+                    head.extend(h);
+                    if !whole {
+                        head.push(
+                            "  over the states shown above only: a model missing here may be a \
+                             listed state stdout did not show"
+                                .to_string(),
+                        );
+                    }
+                    out.push(Form {
+                        name: "diff-models",
+                        head,
+                        groups: Form::one_group(items),
+                        tail: Vec::new(),
+                        unit: ("more entry", "more entries"),
+                        beyond: 0,
+                        also: also("the comparison"),
+                    });
+                }
+                out
+            };
+            for f in forms_over(on_screen, kbs, terms) {
+                f.print_cut(&mut left, hint);
             }
-            let _ = n;
+            if dump {
+                forms_over(all, kbs, terms)
+                    .into_iter()
+                    .map(|f| (f.name, f.text()))
+                    .collect()
+            } else {
+                Vec::new()
+            }
         })
-        .map_err(|e| e.to_string())
+        .map_err(|e| e.to_string())?;
+    uncut.extend(written);
+    Ok(uncut)
 }
 
 /// `-H`: H, the universe — every candidate, by relation, and those dead
 /// alone, which no state of R can hold (`read_out.md` § 8.6, P1e2.3's S4).
-fn universe(r: &ReadOut, terms: &Terms) {
+/// A relation's line is never cut; its candidates are the form's items.
+fn universe(r: &ReadOut, terms: &Terms) -> Form {
     let a = &r.answer;
     let dead: Option<&[u32]> = r
         .described()
@@ -763,22 +1037,25 @@ fn universe(r: &ReadOut, terms: &Terms) {
     by_rel.sort_by(|x, y| x.0.cmp(&y.0));
     let is_dead = |i: usize| dead.is_some_and(|d| d.contains(&(i as u32)));
     let n_dead = dead.map_or(0, <[u32]>::len);
-    println!();
-    println!(
-        "H — the universe: {} candidate{} over {} relation{}{}",
-        a.candidates.len(),
-        if a.candidates.len() == 1 { "" } else { "s" },
-        by_rel.len(),
-        if by_rel.len() == 1 { "" } else { "s" },
-        match dead {
-            Some(_) => format!(", {n_dead} dead alone"),
-            None =>
-                ", dead alone not known: this run did not visit every candidate alone".to_string(),
-        }
-    );
+    let head = vec![
+        String::new(),
+        format!(
+            "H — the universe: {} candidate{} over {} relation{}{}",
+            a.candidates.len(),
+            if a.candidates.len() == 1 { "" } else { "s" },
+            by_rel.len(),
+            if by_rel.len() == 1 { "" } else { "s" },
+            match dead {
+                Some(_) => format!(", {n_dead} dead alone"),
+                None => ", dead alone not known: this run did not visit every candidate alone"
+                    .to_string(),
+            }
+        ),
+    ];
+    let mut groups: Vec<(Option<String>, Vec<Vec<String>>)> = Vec::new();
     for (rel, cands) in &by_rel {
         let d = cands.iter().filter(|(i, _)| is_dead(*i)).count();
-        println!(
+        let line = format!(
             "  {rel:<16}{} candidate{}{}",
             cands.len(),
             if cands.len() == 1 { "" } else { "s" },
@@ -793,13 +1070,26 @@ fn universe(r: &ReadOut, terms: &Terms) {
             .map(|(_, t)| t.chars().count())
             .max()
             .unwrap_or(0);
-        for (i, text) in cands {
-            if is_dead(*i) {
-                println!("    {text:<width$}   dead alone");
-            } else {
-                println!("    {text}");
-            }
-        }
+        let items = cands
+            .iter()
+            .map(|(i, text)| {
+                vec![if is_dead(*i) {
+                    format!("    {text:<width$}   dead alone")
+                } else {
+                    format!("    {text}")
+                }]
+            })
+            .collect();
+        groups.push((Some(line), items));
+    }
+    Form {
+        name: "hyp-stats",
+        head,
+        groups,
+        tail: Vec::new(),
+        unit: ("more candidate", "more candidates"),
+        beyond: 0,
+        also: None,
     }
 }
 
@@ -973,7 +1263,8 @@ fn uncut(r: &ReadOut, file: &str, budget: u64) -> String {
     .stdout
 }
 
-/// Print `r`, write its stderr lines, and return its exit code. `-T` aborts
+/// Print `r`, write its stderr lines, and return its exit code and the text
+/// printed, whose `shown` and `listed` the forms after it read. `-T` aborts
 /// with 2 before anything is printed.
 pub fn print(
     r: &ReadOut,
@@ -982,13 +1273,13 @@ pub fn print(
     budget: u64,
     max_time: Option<f64>,
     stats: bool,
-) -> i32 {
+) -> (i32, ein_render::read_out::Text) {
     if r.answer.stopped == Some(Stopped::Deadline) {
         eprintln!(
             "** aborted: --max-time {} s reached before the question was decided **",
             max_time.unwrap_or(0.0)
         );
-        return 2;
+        return (2, ein_render::read_out::Text::default());
     }
     let argv = header_argv(command);
     let text = ein_render::read_out::render(
@@ -1013,5 +1304,5 @@ pub fn print(
     for l in &text.stderr {
         eprintln!("{l}");
     }
-    text.code
+    (text.code, text)
 }
