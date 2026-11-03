@@ -678,7 +678,7 @@ note   = "M1e2 W2 (`W2/forced-2`): one candidate refuted in two firings; the cas
 path   = "examples/ein-bugs/wrong-answers/forced-2-off.ein"
 group  = "regression"
 runs   = ["solve"]
-note   = "M1e2 W1 at layer 0 (`W1/forced-2-off`): forced-2.ein with the cascade off, which falls through into W1 — the reason S1e2.2.1 runs before S1e2.2.2."
+note   = "M1e2 W1 at layer 0 (`W1/forced-2-off`): forced-2.ein with the cascade off, which falls through into W1 — the reason S1e2.2.1 was to run before S1e2.2.2, until S1e2.1c.5 dropped both (2026-11-03)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/forced-2-two.ein"

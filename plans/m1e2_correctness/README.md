@@ -1,8 +1,14 @@
 # M1e2 — Correctness: every known wrong answer
 
-**Estimate:** ~21 weeks: 7 estimated phases and 47 stages, **103.5 days** of
-stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.1b 21, P1e2.1c 13, P1e2.2
-27.5, P1e2.3 5, P1e2.4 2). It was 101 until the user re-planned P1e2.1b on
+**Estimate:** ~18 weeks: 7 estimated phases and 47 stages, four of them
+dropped, **89.5 days** of stage estimates (P1e2.1 12, P1e2.1a 23, P1e2.1b 21,
+P1e2.1c 13, P1e2.2 13.5, P1e2.3 5, P1e2.4 2). It was 103.5 until P1e2.1c's
+[S1e2.1c.5](p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md)
+re-scoped P1e2.2 on 2026-11-03, from 27.5 days to 13.5: four of its stages
+are dropped, because their rows were fixed by S1e2.1a.5's switch and their
+fixes were to the walk, three shrank, one was restated and five were kept.
+It was 101 until
+the user re-planned P1e2.1b on
 2026-11-02 to detect, document and warn, and to decide nothing: P1e2.1b went
 from 14 days to 21 (the detector 5.5, a new stage of consequences 4.5), and
 P1e2.1c from 17.5 to 13, its non-monotone search moved to
@@ -11,7 +17,7 @@ before S1e2.1b.1's census re-estimated S1e2.1b.2–.5 the same day, three of
 the four downwards. P1e2.1b and P1e2.1c, added or grown 2026-10-16, had one stage
 estimated between them until 2026-11-02, when the other nine were specified.
 Where one of their stages ends in the user's ruling, its days are for the
-evidence, and P1e2.1c's S1e2.1c.5 re-scopes P1e2.2's 27.5. P1e2.4, added
+evidence. P1e2.4, added
 2026-11-01, is done, at its two stage files' 1 day each. P1e2.3, ruled a phase
 2026-11-02, was specified the same day at the user's *"write P1e2.3 plans
 also"*: four stages, 5 days.
@@ -153,8 +159,8 @@ where it is cheap and exact, and
 | [P1e2.1](p1e2.1_seeing_the_answer/README.md) | Seeing the answer: dumps, and the answer rendered for review | 7 | 12 d | `utils/review_bundle.py` → `build/review/`: every case's problem, every run's every artefact rendered with every graph as SVG, the right answer and the diff; the register as a cargo test; Q-M1e.20 answered; **the review held** |
 | [P1e2.1a](p1e2.1a_the_solution_region/README.md) | The solution region: R defined, computed, drawn and reported | 10 | 23 d | the answer redefined as a **region R** of the hypothesis lattice, with its minimal and maximal lines ([Q-M1e2.7](open_questions.md#q-m1e27--the-answer-is-a-region-of-the-lattice)), for a **monotone** program; a non-monotone one detected by a static check and reported through one stub; an oracle that computes R by saturation alone for n ≤ 16; the whole lattice drawn with the walk overlaid (a region run since S1e2.1a.7); programs written for a chosen region (S1e2.1a.8); the language and the read-out speaking R; the engine checked against the oracle under every lever; **the review resumed** |
 | [P1e2.1b](p1e2.1b_non_monotone_programs/README.md) | Non-monotone programs: detected, documented, warned | 7 | 21 d | **decides nothing** (re-planned 2026-11-02; every decision is [F21](../followups/f21_non_monotone_programs_decided.md)'s): the site census; a node's state by fork and from scratch, measured (Q-M1e2.2 deferred); holes by cause (Q-M1e2.7 (d) deferred); the evidence on a refutation that rests on an `absent`, for S1e2.2.5; monotone and non-monotone programs compared in [`monotonicity.md`](../../docs/kernel/inference/monotonicity.md), with the two properties of the node functions and every option's consequences; an explicit monotonicity check, in a CLI form the user approves; a cheap detector in `ein solve`, warning on every surface that reports R, with no answer moved |
-| [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 4 | 13 d | `ein solve`'s default describes R for every **monotone** program the corpus holds, or says why not: the alive set at scale, the lines by duality, the flags at scale; the old walk's fate, and P1e2.2 re-scoped. A flagged program keeps route 2 and P1e2.1b's warnings, and the non-monotone search moved to F21 (2026-11-02) |
-| [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 13 | 27.5 d | every register row `fixed` or ruled `not-wrong`; no wrong answer at default settings; no lever that changes a certified answer |
+| [P1e2.1c](p1e2.1c_the_region_search/README.md) | The region search: R past the oracle's reach | 4 | 13 d | `ein solve`'s default describes R for every **monotone** program the corpus holds, or says why not: the alive set at scale, the lines by duality, the flags at scale; the old walk's fate, and P1e2.2 re-scoped (done 2026-11-03: no row closed by construction, four of P1e2.2's stages dropped). A flagged program keeps route 2 and P1e2.1b's warnings, and the non-monotone search moved to F21 (2026-11-02) |
+| [P1e2.2](p1e2.2_wrong_answers/README.md) | The wrong answers, one stage each | 13, 4 dropped | 13.5 d | every register row `fixed` or ruled `not-wrong`; re-scoped by S1e2.1c.5 on 2026-11-03 (27.5 d before), nine stages live; no wrong answer at default settings; no lever that changes a certified answer |
 | [P1e2.3](p1e2.3_surfaces_that_misreport_the_answer/README.md) | Surfaces that misreport the answer | 4 | 5 d | every witness re-taken 2026-11-02 (S1–S3 and S6–S9 gone, S4 and P1 live, S5 moved to `-g`, S10 the forms past 100 lines); the summary's `root` block as ruled and unmoved by every lever (S1e2.3.1); no render view panics on a keyword pair (S1e2.3.2); the forms under the 100-line ruling (S1e2.3.3); Q-M1e.5 and Q-M1e.17 ruled and closed, the re-take re-takable (S1e2.3.4) |
 | [P1e2.4](p1e2.4_what_the_switch_left/README.md) | What the switch left: the `absent` ruling, and the read-out at scale | 2 | 2 d | Q-M1e2.5 ruled, *forbid* or *respect*, and applied to W3's rows (S1e2.4.1); `--models key` declines before it allocates, and the read-out forms measured in memory on the largest regions (S1e2.4.2) |
 

@@ -79,6 +79,15 @@
 # and read by the user only where that leaves ambiguity. The revisit runs on a
 # bundle rebuilt then (S1e2.1.7).
 #
+# **Re-scoped 2026-11-03 by S1e2.1c.5**, which closed no row: every open row was
+# put through its method's three questions, and the one whose `now` answers its
+# `right` with the mechanism in code no route reaches, W12, is contested, so it
+# waits for the revisit. `ein-corpus`'s `an_open_row_is_open_by_the_method` holds
+# that rule per commit. P1e2.2 dropped the four stages whose rows are all fixed
+# and whose fix was to the walk: W1's, W2's, W5's and W9's 18 rows now name
+# S1e2.1a.5, the stage that fixed them, as `owner`. The register still reads
+# **21 rows fixed and 14 open**.
+#
 # ── What holds it ─────────────────────────────────────────────────────────────
 #
 # `ein-cli/tests/wrong_answers.rs`, in the gate. For every row it runs
@@ -104,7 +113,9 @@
 #
 #   id        `<case>/<witness>`, stable — the review bundle's directory name
 #   case      the inventory's id;  title / class / settings: the case's, per row
-#   owner     the P1e2.2 stage that fixes it;  question: the ids that carried it
+#   owner     the P1e2.2 stage that fixes it, or the stage that fixed it where
+#             S1e2.1c.5 dropped its P1e2.2 stage (S1e2.1a.5; S1e2.1a.6 for W13);
+#             question: the ids that carried it
 #   witness   a `corpus/corpus.toml` entry, or a file under `corpus/fuzz_findings/`
 #             with `not_in_corpus` saying why it cannot be one
 #   status    open | fixed | not-wrong | merged:<id>
@@ -202,7 +213,7 @@ case     = "W1"
 title    = "a maximal alive commitment is never recorded"
 class    = "verdict + certification"
 settings = "default"
-owner    = "S1e2.2.1"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.8"]
 witness  = "examples/branching/15_lookahead_two_step_on.ein"
 status   = "fixed"
@@ -263,7 +274,7 @@ case     = "W1"
 title    = "a maximal alive commitment is never recorded"
 class    = "verdict + certification"
 settings = "default"
-owner    = "S1e2.2.1"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.8"]
 witness  = "examples/branching/16_lookahead_two_step_off.ein"
 status   = "fixed"
@@ -341,7 +352,7 @@ case     = "W1"
 title    = "a maximal alive commitment is never recorded"
 class    = "verdict + certification"
 settings = "lever: -L"
-owner    = "S1e2.2.1"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.8"]
 witness  = "examples/lattice/02_genuine_3set_death.ein"
 status   = "fixed"
@@ -421,7 +432,7 @@ case     = "W1"
 title    = "a maximal alive commitment is never recorded"
 class    = "verdict + certification"
 settings = "default"
-owner    = "S1e2.2.1"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/wrong-answers/forced-2-two.ein"
 status   = "fixed"
@@ -496,12 +507,12 @@ case     = "W1"
 title    = "a maximal alive commitment is never recorded"
 class    = "verdict + certification"
 settings = "lever: (config :enable-forced-positive false) in the file"
-owner    = "S1e2.2.1"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/wrong-answers/forced-2-off.ein"
 status   = "fixed"
 look_at  = ["layer 1", "refuted", "summary"]
-note     = "W2's witness with the cascade off falls through into W1 at layer 0 — why S1e2.2.1 runs before S1e2.2.2"
+note     = "W2's witness with the cascade off falls through into W1 at layer 0 — why S1e2.2.1 was to run before S1e2.2.2, until S1e2.1c.5 dropped both (2026-11-03)"
 
 [case.fixed]
 commit = "fbcae3b2"
@@ -561,7 +572,7 @@ case     = "W1"
 title    = "a maximal alive commitment is never recorded"
 class    = "verdict + certification"
 settings = "default"
-owner    = "S1e2.2.1"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/wrong-answers/owed-two-step.ein"
 status   = "fixed"
@@ -642,7 +653,7 @@ case     = "W1"
 title    = "a maximal alive commitment is never recorded"
 class    = "verdict + certification"
 settings = "lever: (config :enable-pre-branch-lookahead false) in the file"
-owner    = "S1e2.2.1"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/wrong-answers/fresh-name-nospawn.ein"
 status   = "fixed"
@@ -707,7 +718,7 @@ case     = "W1"
 title    = "a maximal alive commitment is never recorded"
 class    = "verdict + certification"
 settings = "default"
-owner    = "S1e2.2.1"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.8"]
 witness  = "examples/zebra2-hints.ein"
 status   = "fixed"
@@ -763,7 +774,7 @@ case     = "W1"
 title    = "a maximal alive commitment is never recorded"
 class    = "verdict + certification"
 settings = "the file's (config :enable-pre-branch-lookahead false)"
-owner    = "S1e2.2.1"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.8"]
 witness  = "examples/branching/07_lookahead_off.ein"
 status   = "fixed"
@@ -864,7 +875,7 @@ case     = "W1"
 title    = "a maximal alive commitment is never recorded"
 class    = "verdict + certification"
 settings = "default"
-owner    = "S1e2.2.1"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.8"]
 witness  = "examples/ein-bugs/alive-empty-interlayer.ein"
 status   = "fixed"
@@ -924,7 +935,7 @@ case     = "W1"
 title    = "a maximal alive commitment is never recorded"
 class    = "verdict + certification"
 settings = "default"
-owner    = "S1e2.2.1"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.8"]
 witness  = "corpus/fuzz_findings/d3-unsat-core.ein"
 not_in_corpus = "it moves under a permuted interner at the third seed, which the nightly's EIN_ID_SEEDS=8 would assert"
@@ -982,7 +993,7 @@ case     = "W1"
 title    = "a maximal alive commitment is never recorded"
 class    = "verdict + certification"
 settings = "lever: -L"
-owner    = "S1e2.2.1"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.8"]
 witness  = "examples/branching/04_two_levels.ein"
 status   = "fixed"
@@ -1046,7 +1057,7 @@ case     = "W1"
 title    = "a maximal alive commitment is never recorded"
 class    = "verdict + certification"
 settings = "lever: -L"
-owner    = "S1e2.2.1"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.8"]
 witness  = "examples/lattice/01_subset_pruned.ein"
 status   = "fixed"
@@ -1111,7 +1122,7 @@ case     = "W2"
 title    = "the forced-positive cascade refutes a consistent program"
 class    = "verdict + certification + core"
 settings = "default"
-owner    = "S1e2.2.2"
+owner    = "S1e2.1a.5"
 witness  = "examples/ein-bugs/wrong-answers/forced-2.ein"
 status   = "fixed"
 look_at  = ["root-writes", "events writeback", "summary"]
@@ -1177,7 +1188,7 @@ case     = "W2"
 title    = "the forced-positive cascade refutes a consistent program"
 class    = "verdict + certification + core"
 settings = "lever: -L"
-owner    = "S1e2.2.2"
+owner    = "S1e2.1a.5"
 witness  = "examples/ein-bugs/wrong-answers/forced-1.ein"
 status   = "fixed"
 look_at  = ["root-writes", "events writeback", "summary"]
@@ -1652,7 +1663,7 @@ case     = "W5"
 title    = "the obligations rung records a superset of a model, chosen by name order"
 class    = "verdict + model set + certification"
 settings = "default"
-owner    = "S1e2.2.3"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e2.1"]
 witness  = "examples/ein-bugs/wrong-answers/owed-seats.ein"
 status   = "fixed"
@@ -2073,7 +2084,7 @@ case     = "W9"
 title    = "the kill cache's writes remove a state of R"
 class    = "verdict"
 settings = "default"
-owner    = "S1e2.2.9"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.7"]
 witness  = "examples/ein-bugs/complete-records-stale.ein"
 status   = "fixed"
@@ -2149,7 +2160,7 @@ case     = "W9"
 title    = "the kill cache's writes remove a state of R"
 class    = "verdict"
 settings = "default"
-owner    = "S1e2.2.9"
+owner    = "S1e2.1a.5"
 question = ["Q-M1e.7"]
 witness  = "examples/ein-bugs/alive-empty-phase1.ein"
 status   = "fixed"

@@ -792,6 +792,51 @@ mod tests {
         assert!(defects(&row).iter().any(|d| d.contains("is not one of")));
     }
 
+    /// **An open row is open by the method**, M1e2 S1e2.1c.5's step 2,
+    /// questions (i) and (iii), held without a run. A row whose `[case.now]`
+    /// answers its `right` on every field the register records closes by
+    /// construction, unless its reading is contested: a contested row keeps
+    /// its stage and its question, and the revisit (S1e2.1.7) reads it. A
+    /// `right` that states what `[case.now]` does not record keeps the row
+    /// open on that field, and the row's run shows it, not this comparison:
+    /// a refusal, which states no verdict; a core; a qualifier; or facts over
+    /// a relation no candidate is over, since a state's `(model …)` names H's
+    /// relations only (W7's `noted`, W8's `p`). Taken 2026-11-03: no row
+    /// closed, and W12 is the one contested row (i) holds for.
+    #[test]
+    fn an_open_row_is_open_by_the_method() {
+        let mut bad = Vec::new();
+        for r in &register().case {
+            if r.status != "open" {
+                continue;
+            }
+            let differs = r.now.against(&r.right);
+            // A state's `(model …)` names the candidates' relations only, so
+            // facts `right` states over any other relation are not in `now`.
+            let beyond_h = r.right.models.is_some()
+                && r.right.closes.iter().any(|c| !r.now.relations.contains(c));
+            let unrecorded: Vec<&str> = [
+                (r.right.verdict.is_none(), "a refusal or no answer"),
+                (r.right.core.is_some(), "a core"),
+                (r.right.qualifier.is_some(), "a qualifier"),
+                (beyond_h, "facts over a relation no candidate is over"),
+            ]
+            .into_iter()
+            .filter_map(|(on, what)| on.then_some(what))
+            .collect();
+            let contested = r.class.contains("contested");
+            if differs.is_empty() && unrecorded.is_empty() && !contested {
+                bad.push(format!(
+                    "{}: open, uncontested, and [now] answers [right] on every field the \
+                     register records — it closes by construction (S1e2.1c.5's method): \
+                     flip it to fixed with the test that holds it",
+                    r.id
+                ));
+            }
+        }
+        assert!(bad.is_empty(), "{}", bad.join("\n"));
+    }
+
     #[test]
     fn a_fact_is_over_its_head() {
         assert_eq!(relation_of("(p A)"), "p");

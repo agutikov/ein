@@ -4,6 +4,14 @@
 **Estimate:** 3 days
 **Depends on:** [S1f.10.2](s1f.10.2_groups.md) — the cover, and its one owner.
 **Blocks:** [S1f.10.5](s1f.10.5_ordering.md) only.
+**Parked 2026-11-03, from M1e2:** the join this stage restricts is the walk's
+(`generate_layer` in `solve.rs`, `apriori.rs`). No `ein` command reaches it since
+M1e2 S1e2.1a.5's switch, no route uses it
+([T1e2.1c.4.4](../../m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.4_the_flags_at_scale.md#task-t1e21c44--what-of-the-walks-library-the-routes-reuse)),
+and [S1e2.1c.5](../../m1e2_correctness/p1e2.1c_the_region_search/s1e2.1c.5_wrong_answers_re_scoped.md)'s
+step 5 deletes it. M1e2's S1e2.2.1 and S1e2.2.3, which were to hand this stage a
+fixed join, are dropped. Whether this stage survives, and over which route, is
+M1f's re-scope. M1e2 decides nothing here.
 
 ## Context
 
