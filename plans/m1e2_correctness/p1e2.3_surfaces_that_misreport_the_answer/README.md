@@ -1,8 +1,10 @@
 # P1e2.3 — Surfaces that misreport the answer
 
 **Milestone:** [M1e2](../README.md) (Correctness)
-**Estimate:** 5 days, four stages: S1e2.3.1 2, S1e2.3.2 0.5, S1e2.3.3 1.5,
-S1e2.3.4 1. Each stage file gives its basis.
+**Estimate:** 7.5 days, six stages: S1e2.3.1 2, S1e2.3.2 0.5, S1e2.3.3 1.5,
+S1e2.3.4 1, S1e2.3.5 1, S1e2.3.6 1.5. Each stage file gives its basis. It was
+5 days and four stages until the user added S1e2.3.5 and S1e2.3.6 on
+2026-11-03.
 **Status:** specified 2026-11-02; **started 2026-11-03**. S1e2.3.1's
 T1e2.3.1.1 took its evidence at `32496b97`, after P1e2.1c closed, and put Q1
 to the user the same day; the user ruled (a) that day, and **S1e2.3.1 is
@@ -142,9 +144,14 @@ Gone items get no stage. The table above records each and closes it here.
 | [S1e2.3.2](s1e2.3.2_a_keyword_pair_panics_two_views.md) | A keyword pair panics two render views (P1) | 0.5 d | `value_label` total, or the views filtering, as ruled. The witness is banked as a `regression` corpus entry whose `render constraints` and `render program` runs exit 0 |
 | [S1e2.3.3](s1e2.3.3_the_forms_past_100_lines.md) | The forms after the read-out, past 100 lines (S10) | 1.5 d | the forms under the user's ruling, `--dump-answer` writing whatever stdout leaves out, and the review bundle still carrying every form uncut |
 | [S1e2.3.4](s1e2.3.4_the_inherited_questions_and_the_record.md) | The inherited questions, `-g`'s clamp, and the record (S5, Q-M1e.5, Q-M1e.17) | 1 d | Q-M1e.5 and Q-M1e.17 ruled and closed in M1e's register, and `-g` following the ruling with a test. `capture.sh`'s S and P lines re-take this table. The links to the proposed § are re-pointed, and Q-M1e2.6 is closed |
+| [S1e2.3.5](s1e2.3.5_test_scratch_left_in_tmp.md) | Test scratch left in `/tmp`. Added 2026-11-03 at the user's *"fix the tmp leak in those tests - add a new stage for that"* | 1 d | a gate run under an empty `TMPDIR` leaves nothing, every leaking writer on one self-removing scratch helper, and `./run_tests.sh` failing on leftover scratch |
+| [S1e2.3.6](s1e2.3.6_the_nightly_workflow.md) | The nightly workflow green again (`deep-corpus`, failing since 2026-10-16). Added 2026-11-03 at the user's request, **last in the phase** | 1.5 d | every nightly step green locally at HEAD, each failure explained before it is fixed (the mutation bank's eight kills among them), and `./run_tests.sh --nightly` held to `nightly.yml` by a test |
 
 **Order.** S1e2.3.1–.3 are independent. S1e2.3.4's rulings can be taken on
-the first day, and its record task runs last. Every question below can be put
+the first day, and its record task runs last. S1e2.3.5 runs after S1e2.3.1
+(both touch `lever_invariance.rs` and `config_reference.rs`). S1e2.3.6 is the
+last stage of the phase, by the user's request of 2026-11-03, because the
+nightly re-runs what every other stage changes. Every question below can be put
 to the user at once, at the phase's start. Each one's evidence is already in
 its stage file.
 
