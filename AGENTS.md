@@ -385,7 +385,8 @@ constrained-reasoning research.
   extension; `ein solve x.einb` is byte-identical to `ein solve x.ein` apart
   from the path it echoes. Anything crossing a tool boundary is still `.ein`
   text or the event protocol's JSON.
-- **`utils/`** — **twenty-nine scripts, all but one driving `ein.rs`**.
+- **`utils/`** — **thirty scripts** (`ls utils/*.py utils/*.sh | wc -l`,
+  2026-11-03), **all but one driving `ein.rs`**.
   Every script that runs the engine names the binary — **`$EIN_BIN`** or
   `--bin` — defaulting to `ein.rs/target/release/ein`, except the one that
   wants a build of its own (`profile_ein_rs.py` → `--profile profiling`,
@@ -770,7 +771,11 @@ whole census in 0.04 s. A file that did not load carries **no claim** —
 
 **`./run_tests.sh` runs every step of the per-commit CI tier**, in its order,
 since M1c S1c.1.5 — **six** static checks (~5 s warm; `--tests-only` skips them
-and the bench smoke), then `cargo test --workspace`, then the bench smoke test. **`cargo test
+and the bench smoke), then `cargo test --workspace`, then the bench smoke test.
+Since M1e2 S1e2.3.5 the gate checks its own scratch: the tests run with
+`TMPDIR` set to a fresh directory under `build/`, and
+`utils/check_test_scratch.py` fails the gate on anything they leave there,
+naming the file that writes it. **`cargo test
 --workspace` alone is not the gate**: it checks none of the six, and until
 S1c.1.5 neither did this script, which is why CI was red for three commits on
 findings the local run reported as a pass. A local gate that is a subset of the

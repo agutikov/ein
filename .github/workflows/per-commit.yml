@@ -12,8 +12,9 @@
 # reads this file and `run_tests.sh` and compares the commands after
 # normalising away the path spellings. A `# gate-step` marker is what makes a
 # `run:` here part of that list: the provisioning steps (checkout, toolchain,
-# cache, Python, Graphviz) are not gate steps and are excluded by name in the
-# test, so an *unmarked* new step fails it rather than being ignored.
+# cache, Python, Graphviz, the tests' `TMPDIR`) are not gate steps and are
+# excluded by name in the test, so an *unmarked* new step fails it rather than
+# being ignored.
 
 name: per-commit
 
@@ -52,6 +53,10 @@ jobs:
     name: ein.rs — build, lint, test
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: ein.rs } }
+    # M1e2 S1e2.3.5 — the tests' `TMPDIR`, a fresh directory under `build/`,
+    # which the step after the tests holds empty. `run_tests.sh` names its own
+    # `build/gate-tmp-<pid>`; the two steps that read it are spelt the same.
+    env: { GATE_TMP: "${{ github.workspace }}/build/gate-tmp" }
     steps:
       - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
@@ -70,6 +75,9 @@ jobs:
       # been reporting a pass for 5 209 renderings nothing checked. S1a.10.3
       # made it fail instead, and this line is the other half of that.
       - run: sudo apt-get update && sudo apt-get install -y graphviz
+      # The tests' `TMPDIR` has to exist before rustc and the tests write to
+      # it; `run_tests.sh` makes its own just before its test step.
+      - run: mkdir -p "${GATE_TMP}"
       # gate-step
       - run: cargo fmt --all --check
       # gate-step
@@ -85,7 +93,12 @@ jobs:
       # The whole gate. Covers the corpus-completeness check, the corpus sweep
       # through the CLI and the embedded-stdlib digest.
       # gate-step
-      - run: cargo test --workspace
+      - run: TMPDIR="${GATE_TMP}" cargo test --workspace
+      # M1e2 S1e2.3.5 — the tests left nothing in their `TMPDIR`: every entry
+      # named with the file that writes it, and a failure if there is one.
+      # gate-step
+      - run: python3 utils/check_test_scratch.py "${GATE_TMP}"
+        working-directory: ${{ github.workspace }}
       # M1e2 S1e2.1.6 — the review bundle for one small case, with the debug
       # `ein` the step above built, link-checked in a temporary directory.
       # gate-step

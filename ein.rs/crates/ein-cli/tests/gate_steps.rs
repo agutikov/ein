@@ -22,10 +22,10 @@
 //! The marker on the workflow side carries no content — it says *this is a
 //! gate step*, not *this is which one* — so it cannot go stale the way a
 //! duplicated command would. Provisioning steps (checkout, toolchain, cache,
-//! Python, Graphviz) are excluded, and [`NOT_GATE_STEPS`] is where that
-//! exclusion is written down: an unmarked `run:` the test does not recognise
-//! **fails**, because the failure this file exists to prevent is CI gaining a
-//! step the gate does not have.
+//! Python, Graphviz, the tests' `TMPDIR`) are excluded, and [`NOT_GATE_STEPS`]
+//! is where that exclusion is written down: an unmarked `run:` the test does
+//! not recognise **fails**, because the failure this file exists to prevent is
+//! CI gaining a step the gate does not have.
 //!
 //! ## What it does not catch
 //!
@@ -53,10 +53,17 @@ use ein_corpus::repo_root;
 /// `run_tests.sh`'s counterpart is a `command -v dot` that exits 127 — the
 /// same requirement, expressed as a check rather than as an install, which is
 /// why it is not a step on either list.
-const NOT_GATE_STEPS: &[(&str, &str)] = &[(
-    "sudo apt-get update && sudo apt-get install -y graphviz",
-    "provisioning: the gate checks for `dot` and exits 127 instead",
-)];
+const NOT_GATE_STEPS: &[(&str, &str)] = &[
+    (
+        "sudo apt-get update && sudo apt-get install -y graphviz",
+        "provisioning: the gate checks for `dot` and exits 127 instead",
+    ),
+    (
+        "mkdir -p \"${GATE_TMP}\"",
+        "provisioning: the tests' TMPDIR (M1e2 S1e2.3.5), which the gate makes \
+         itself just before its test step",
+    ),
+];
 
 /// The gate steps of `run_tests.sh`, in order.
 fn shell_steps(text: &str) -> Vec<String> {

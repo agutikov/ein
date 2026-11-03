@@ -12,8 +12,10 @@ done** (T1e2.3.1.2–.4, 2026-11-03): S4 is fixed. The user ruled Q2–Q6 the
 same day, and **S1e2.3.2, S1e2.3.3 and S1e2.3.4 are done** (2026-11-03): P1
 is fixed, S10 and S5 are under their rulings, S7 and S8 are pinned, Q-M1e.5,
 Q-M1e.17 and Q-M1e2.6 are closed, and the re-take below has no live row.
-**The phase stays open** for S1e2.3.5 and S1e2.3.6, which the user added on
-2026-11-03 and which have not started. The survey of 2026-10-14 named
+The user added S1e2.3.5 and S1e2.3.6 on 2026-11-03, and **S1e2.3.5 is done**
+(2026-11-03): the gate runs the tests under a fresh `TMPDIR` in `build/` and
+fails on anything they leave. **The phase stays open** for S1e2.3.6, which has
+not started. The survey of 2026-10-14 named
 the surfaces ([inventory § 1](../inventory.md#1-table)), and the milestone
 README carried them as a *proposed* phase. On 2026-11-02 the user ruled that
 they *become a phase*, after P1e2.1c, *specified when it starts*
@@ -165,7 +167,7 @@ Gone items get no stage. The table above records each and closes it here.
 | [S1e2.3.2](s1e2.3.2_a_keyword_pair_panics_two_views.md) | A keyword pair panics two render views (P1). **Done 2026-11-03**: ruled (a), applied (`38b2bff3`) | 0.5 d | `value_label` total, or the views filtering, as ruled. The witness is banked as a `regression` corpus entry whose `render constraints` and `render program` runs exit 0 |
 | [S1e2.3.3](s1e2.3.3_the_forms_past_100_lines.md) | The forms after the read-out, past 100 lines (S10). **Done 2026-11-03**: ruled (a), applied | 1.5 d | the forms under the user's ruling, `--dump-answer` writing whatever stdout leaves out, and the review bundle still carrying every form uncut |
 | [S1e2.3.4](s1e2.3.4_the_inherited_questions_and_the_record.md) | The inherited questions, `-g`'s clamp, and the record (S5, Q-M1e.5, Q-M1e.17). **Done 2026-11-03**: Q4 (a), Q5 (b), Q6 (a) applied, the table re-taken | 1 d | Q-M1e.5 and Q-M1e.17 ruled and closed in M1e's register, and `-g` following the ruling with a test. `capture.sh`'s S and P lines re-take this table. The links to the proposed § are re-pointed, and Q-M1e2.6 is closed |
-| [S1e2.3.5](s1e2.3.5_test_scratch_left_in_tmp.md) | Test scratch left in `/tmp`. Added 2026-11-03 at the user's *"fix the tmp leak in those tests - add a new stage for that"* | 1 d | a gate run under an empty `TMPDIR` leaves nothing, every leaking writer on one self-removing scratch helper, and `./run_tests.sh` failing on leftover scratch |
+| [S1e2.3.5](s1e2.3.5_test_scratch_left_in_tmp.md) | Test scratch left in `/tmp`. Added 2026-11-03 at the user's *"fix the tmp leak in those tests - add a new stage for that"*. **Done 2026-11-03**: `ein_corpus::Scratch`, every leaking writer on it, `utils/check_test_scratch.py` in the gate and in CI | 1 d | a gate run under an empty `TMPDIR` leaves nothing, every leaking writer on one self-removing scratch helper, and `./run_tests.sh` failing on leftover scratch |
 | [S1e2.3.6](s1e2.3.6_the_nightly_workflow.md) | The nightly workflow green again (`deep-corpus`, failing since 2026-10-16). Added 2026-11-03 at the user's request, **last in the phase** | 1.5 d | every nightly step green locally at HEAD, each failure explained before it is fixed (the mutation bank's eight kills among them), and `./run_tests.sh --nightly` held to `nightly.yml` by a test |
 
 **Order.** S1e2.3.1–.3 are independent. S1e2.3.4's rulings can be taken on

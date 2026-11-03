@@ -2,9 +2,9 @@
 #
 # run_tests.sh — the gate.
 #
-#     ./run_tests.sh                 # six static checks, the tests, the review-bundle smoke, the bench smoke
+#     ./run_tests.sh                 # six static checks, the tests and their scratch check, the review-bundle smoke, the bench smoke
 #     ./run_tests.sh --slow          # + the 12 slow corpus cells, + 8 id seeds
-#     ./run_tests.sh --tests-only    # cargo test and the review-bundle smoke — no checks, no bench smoke
+#     ./run_tests.sh --tests-only    # cargo test, its scratch check and the review-bundle smoke — no static checks, no bench smoke
 #     ./run_tests.sh -p ein-ir       # anything else is forwarded to cargo test
 #
 # **The gate needs Graphviz on `PATH`**: `ein-render/tests/dot_wellformed.rs`
@@ -66,6 +66,18 @@
 # this script rather than out of this sentence. Nothing turns them off
 # silently — a missing `rustfmt`, `clippy` or `python3` is exit 127 here, the
 # same as a missing `cargo` or `dot`.
+#
+# **Since M1e2 S1e2.3.5 the gate checks its own scratch.** `cargo test` runs
+# with `TMPDIR` set to `build/gate-tmp-<pid>`, fresh and empty, and
+# `utils/check_test_scratch.py` fails the gate on anything a test left there,
+# naming the file that writes each entry. Nothing had looked: 1 098
+# `/tmp/ein-*` directories had piled up by 2026-11-03, eleven more per run, in
+# a 16 GB tmpfs that test scratch had filled once. `build/` is gitignored and
+# on disk. A test makes its scratch with `ein_corpus::Scratch`, which removes
+# itself on drop. The directory is removed on every exit, and after a red
+# `cargo test` it is not checked: a failing test may leave its scratch, and the
+# failure is what to read. `--tests-only` keeps the check, which is not a
+# static one.
 
 set -euo pipefail
 
@@ -174,8 +186,20 @@ if [[ "${CHECKS}" == 1 ]]; then
     fi
 fi
 
+# The tests' `TMPDIR` (M1e2 S1e2.3.5, the header's last paragraph): this
+# process's, so two gates never share one, and gone however the script ends.
+GATE_TMP="${SCRIPT_DIR}/build/gate-tmp-$$"
+rm -rf "${GATE_TMP}"
+mkdir -p "${GATE_TMP}"
+trap 'rm -rf "${GATE_TMP}"' EXIT
+
 step "cargo test --workspace"
-cargo test --manifest-path "${MANIFEST}" --workspace ${ARGS[@]+"${ARGS[@]}"}
+TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" --workspace ${ARGS[@]+"${ARGS[@]}"}
+
+# Everything a test left in its `TMPDIR`, named with the file that wrote it;
+# exit 1 if there is anything. Reached only after a green `cargo test`.
+step "utils/check_test_scratch.py"
+python3 "${SCRIPT_DIR}/utils/check_test_scratch.py" "${GATE_TMP}"
 
 # M1e2 S1e2.1.6 — the review bundle for one small register case, built into a
 # temporary directory with the debug `ein` the step above just tested, every
